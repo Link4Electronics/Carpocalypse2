@@ -1,0 +1,122 @@
+name: reccmp-report
+
+on:
+  push:
+    branches:
+      - "main"
+    # The report files are committed back to this repo by this workflow; ignore
+    # those commits so they do not retrigger a new run.
+    paths-ignore:
+      - "reccmp-report/**"
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * *"
+
+permissions:
+  actions: read
+  contents: write
+
+env:
+  RECCMP_TARGET: CARMA2_HW
+  RECCMP_SYMBOL_COUNT: 5162 # FIXME: remove once reccmp supports symbol count in reccmp-project.yml
+
+jobs:
+  report:
+    name: Generate and publish reccmp report
+    runs-on: windows-2025-vs2026
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          submodules: recursive
+
+      - name: Fetch MSVC11 (Visual C++ 97 SP3)
+        uses: actions/checkout@v6
+        with:
+          repository: archaic-msvc/msvc500sp3
+          path: msvc500
+
+      - name: Setup MSVC11 (Visual C++ 97 SP3)
+        shell: cmd
+        run: |
+          echo INCLUDE=${{ github.workspace }}\msvc500\include;${{ github.workspace }}\msvc500\atl\include;${{ github.workspace }}\msvc500\mfc\include>>%GITHUB_ENV%
+          echo LIB=${{ github.workspace }}\msvc500\lib;${{ github.workspace }}\msvc500\mfc\lib>>%GITHUB_ENV%
+          echo ${{ github.workspace }}\msvc500\bin>>%GITHUB_PATH%
+          echo ${{ github.workspace }}\msvc500\redist>>%GITHUB_PATH%
+
+      - name: Setup Ninja
+        uses: ./.github/actions/setup-ninja
+
+      - name: Setup Python
+        uses: actions/setup-python@main
+        with:
+          python-version: 3.x
+
+      - name: Install reccmp
+        shell: sh
+        run: |
+          python -m pip -q install reccmp
+
+      - name: Download original binaries
+        shell: sh
+        run: |
+          mkdir originals
+
+          curl -fLSs -o d3d.bdd.txt https://gist.githubusercontent.com/madebr/92b121cfd427c51b771fb614b4c893f4/raw/d3d.bdd.txt
+          python .github/binendec.py -D -i d3d.bdd.txt -o originals/d3d.bdd
+
+          curl -fLSs -o CARMA2_HW.EXE.txt https://gist.githubusercontent.com/madebr/92b121cfd427c51b771fb614b4c893f4/raw/CARMA2_HW.EXE.txt
+          python .github/binendec.py -D -i CARMA2_HW.EXE.txt -o originals/CARMA2_HW.EXE
+
+          curl -fLSs -o carma2.exe.txt https://gist.githubusercontent.com/madebr/92b121cfd427c51b771fb614b4c893f4/raw/carma2.exe.txt
+          python .github/binendec.py -D -i carma2.exe.txt -o originals/carma2.exe
+
+      - name: Fetch latest report
+        shell: sh
+        # The first run has no previous report to diff against.
+        run: |
+          curl -fsSL -o prev-report.json https://raw.githubusercontent.com/${{ github.repository }}/refs/heads/main/reccmp-report/report.json || echo "No previous report found"
+
+      - name: Detect originals
+        shell: sh
+        run: |
+          reccmp-project detect --what original --search-path originals
+
+      - name: CMake (configure)
+        shell: sh
+        run: |
+          cmake -S . -B build -GNinja -DREC2_MATCHING=TRUE -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_C_COMPILER=cl -DCMAKE_CXX_COMPILER=cl -DREC2_VENDORED=ON
+
+      - name: CMake (build)
+        shell: sh
+        run: |
+          cmake --build build
+
+      - name: Run reccmp
+        working-directory: build
+        shell: bash
+        run: |
+          diff_args=()
+          if [ -s ../prev-report.json ]; then
+            diff_args+=(--diff ../prev-report.json)
+          fi
+          reccmp-reccmp --no-color --target "$RECCMP_TARGET" \
+            "${diff_args[@]}" \
+            --json new-reccmp-report.json \
+            --json-diet \
+            -T "$RECCMP_SYMBOL_COUNT" \
+            -S new-reccmp-progress.svg \
+            >reccmp-output.txt
+          cat reccmp-output.txt
+
+      - name: Publish reccmp report
+        shell: bash
+        run: |
+          mkdir -p reccmp-report
+          cp build/new-reccmp-progress.svg reccmp-report/progress.svg
+          cp build/new-reccmp-report.json reccmp-report/report.json
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add reccmp-report/progress.svg reccmp-report/report.json
+          git commit -m "Update reccmp report from ${GITHUB_SHA::7}" || echo "No changes to commit"
+          git push

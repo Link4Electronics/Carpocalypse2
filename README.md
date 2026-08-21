@@ -5,7 +5,7 @@ This repo attempts to document 1998's Carmageddon 2 by writing equivalent C code
 
 ## Status
 
-<img width="50%" src="https://gist.githubusercontent.com/Link4Electronics/92b121cfd427c51b771fb614b4c893f4/raw/CARMA2_HW.svg">
+<img width="50%" src="reccmp-report/progress.svg">
 
 ## Requirements
 
