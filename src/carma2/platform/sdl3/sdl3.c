@@ -331,6 +331,7 @@ int PDGetASCIIFromKey(int pKey) {
 
 int PDCheckDriveExists2(const char* pThe_path, const char* pFile_name, tU32 pMin_size) {
     char the_path[256];
+    const char* lookup;
     SDL_PathInfo info;
 
     if (pFile_name != NULL) {
@@ -341,7 +342,16 @@ int PDCheckDriveExists2(const char* pThe_path, const char* pFile_name, tU32 pMin
     if (the_path[0] && the_path[1] == ':' && the_path[2] == '\0') {
         strcat(the_path, gDir_separator);
     }
-    if (!SDL_GetPathInfo(the_path, &info)) {
+#ifndef _WIN32
+    /* Linux is case-sensitive; the game data is not. */
+    {
+        extern const char* carpocalypse2_fix_path_case(const char* pPath);
+        lookup = carpocalypse2_fix_path_case(the_path);
+    }
+#else
+    lookup = the_path;
+#endif
+    if (!SDL_GetPathInfo(lookup, &info)) {
         return 0;
     }
     return info.type == SDL_PATHTYPE_FILE && info.size >= pMin_size;

@@ -65,6 +65,10 @@ elseif(CARPOCALYPSE2_PLATFORM_SDL3)
         sdl3/sdl3_ssdx.h
     )
     target_link_libraries(c2_platform PRIVATE SDL3::SDL3)
+    if(UNIX AND NOT APPLE)
+        # Case-insensitive file name resolution (see sdl3/sdl3_casefix.c).
+        target_sources(c2_platform PRIVATE sdl3/sdl3_casefix.c)
+    endif()
 else()
     message(FATAL_ERROR "Unsupported platform")
 endif()
@@ -104,6 +108,11 @@ target_link_libraries(carpocalypse2 PRIVATE
 )
 if(MSVC)
     target_link_options(carpocalypse2 PRIVATE "-MAP:$<TARGET_FILE_DIR:carpocalypse2>/$<TARGET_FILE_BASE_NAME:carpocalypse2>.map")
+endif()
+if(CARPOCALYPSE2_PLATFORM_SDL3 AND UNIX AND NOT APPLE)
+    # Interpose fopen() with a case-insensitive resolver; the game requests its
+    # data files in Windows-style casing (see sdl3/sdl3_casefix.c).
+    target_link_options(carpocalypse2 PRIVATE "-Wl,--wrap=fopen")
 endif()
 if(CARPOCALYPSE2_MATCHING)
     add_dependencies(carpocalypse2 brender_driver_d3d)
