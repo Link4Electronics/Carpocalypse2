@@ -1,7 +1,7 @@
-#ifndef REC2_CAR_H
-#define REC2_CAR_H
+#ifndef CARPOCALYPSE2_CAR_H
+#define CARPOCALYPSE2_CAR_H
 
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 
 #include "c2_hooks.h"
 
@@ -200,4 +200,4 @@ float C2_HOOK_STDCALL frac(float pN);
 
 void C2_HOOK_FASTCALL MakeLiftGoUp(tNon_car_spec* pNon_car);
 
-#endif //REC2_CAR_H
+#endif //CARPOCALYPSE2_CAR_H

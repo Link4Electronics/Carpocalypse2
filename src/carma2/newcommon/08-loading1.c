@@ -23,13 +23,13 @@
 #include "platform.h"
 #include "globvars.h"
 #include "globvrpb.h"
-#include "rec2_macros.h"
+#include "carpocalypse2_macros.h"
 
 #include <ctype.h>
 #include <stdarg.h>
 #include "c2_string.h"
 
-#ifdef REC2_MATCHING
+#ifdef CARPOCALYPSE2_MATCHING
 #include <windows.h>
 #endif
 
@@ -649,7 +649,7 @@ char * C2_HOOK_FASTCALL GetALineWithNoPossibleService(FILE* pF, char* pS) {
             len--;
         }
         memcpy(pS, result, len + 1);
-#ifdef REC2_FIX_BUGS
+#ifdef CARPOCALYPSE2_FIX_BUGS
         return pS;
 #else
         return result;
@@ -841,7 +841,7 @@ void C2_HOOK_FASTCALL DisposeCar(tCar_spec* pCar_spec, int pOwner) {
         gFunk_groove_flags[pCar_spec->fg_index] = 0;
         pCar_spec->driver_name[0] = '\0';
         if (pCar_spec->driver == eDriver_local_human) {
-            for (i = 0; i < (int)REC2_ASIZE(pCar_spec->cockpit_images); i++) {
+            for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(pCar_spec->cockpit_images); i++) {
                 if (pCar_spec->cockpit_images[i] != NULL) {
                     BrMemFree(pCar_spec->cockpit_images[i]);
                 }
@@ -881,7 +881,7 @@ void C2_HOOK_FASTCALL DisposeCar(tCar_spec* pCar_spec, int pOwner) {
             if (pCar_spec->prat_cam_bottom != NULL) {
                 BrPixelmapFree(pCar_spec->prat_cam_bottom);
             }
-            for (i = 0; i < (int)REC2_ASIZE(pCar_spec->damage_units); i++) {
+            for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(pCar_spec->damage_units); i++) {
                 if (pCar_spec->damage_units[i].images != NULL) {
                     BrPixelmapFree(pCar_spec->damage_units[i].images);
                 }
@@ -891,7 +891,7 @@ void C2_HOOK_FASTCALL DisposeCar(tCar_spec* pCar_spec, int pOwner) {
             }
             gProgram_state.car_name[0] = '\0';
         }
-        for (i = 0; i < (int)REC2_ASIZE(pCar_spec->damage_programs); i++) {
+        for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(pCar_spec->damage_programs); i++) {
             BrMemFree(pCar_spec->damage_programs[i].clauses);
         }
         car_crush_spec = pCar_spec->car_crush_spec;
@@ -995,7 +995,7 @@ void C2_HOOK_FASTCALL DisposeRace(void) {
 
 // FUNCTION: CARMA2_HW 0x004910d0
 int GetRegisterSourceLocation(char* pSource_location) {
-#ifdef REC2_MATCHING
+#ifdef CARPOCALYPSE2_MATCHING
     HKEY hKey;
     LONG status;
     char message[256];

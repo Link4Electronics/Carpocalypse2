@@ -1,5 +1,5 @@
-#ifndef REC2_PMSETUP_H
-#define REC2_PMSETUP_H
+#ifndef CARPOCALYPSE2_PMSETUP_H
+#define CARPOCALYPSE2_PMSETUP_H
 
 #include "c2_hooks.h"
 
@@ -11,4 +11,4 @@ void C2_HOOK_CDECL BrPixelmapBegin(void);
 
 void C2_HOOK_CDECL BrPixelmapEnd(void);
 
-#endif // REC2_PMSETUP_H
+#endif // CARPOCALYPSE2_PMSETUP_H

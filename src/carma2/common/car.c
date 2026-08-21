@@ -36,8 +36,8 @@
 
 #include "brender/brender.h"
 #include "brender/br_inline_funcs.h"
-#include "rec2_macros.h"
-#include "rec2_types.h"
+#include "carpocalypse2_macros.h"
+#include "carpocalypse2_types.h"
 
 #include "c2_stdlib.h"
 #include "c2_string.h"
@@ -346,7 +346,7 @@ int C2_HOOK_FASTCALL CollideCamera2(br_vector3* car_pos, br_vector3* cam_pos, br
             }
             a = BrVector3LengthSquared(&tv);
             b = BrVector3Dot(&tv, &delta);
-            discr = REC2_SQR(b) - 4.f * a * (l - REC2_SQR(gMin_camera_car_distance));
+            discr = CARPOCALYPSE2_SQR(b) - 4.f * a * (l - CARPOCALYPSE2_SQR(gMin_camera_car_distance));
             if (discr >= 0.f && a != 0.f) {
                 br_material* material;
                 br_vector3 tv2;
@@ -385,7 +385,7 @@ int C2_HOOK_FASTCALL CollideCamera2(br_vector3* car_pos, br_vector3* cam_pos, br
     BrVector3Set(&tv, hither, hither, hither);
     BrVector3Sub(&bnds.original_bounds.min, cam_pos, &tv);
     BrVector3Add(&bnds.original_bounds.min, cam_pos, &tv);
-    count = FindFacesInBox(&bnds, face_list, REC2_ASIZE(face_list), NULL);
+    count = FindFacesInBox(&bnds, face_list, CARPOCALYPSE2_ASIZE(face_list), NULL);
     for (i = 0; i < count; i++) {
         tFace_ref* fr = &face_list[i];
         if ((fr->material->flags & BR_MATF_TWO_SIDED) && BrVector3Dot(&fr->normal, &delta) > 0.f) {
@@ -395,7 +395,7 @@ int C2_HOOK_FASTCALL CollideCamera2(br_vector3* car_pos, br_vector3* cam_pos, br
         face_dots[i] = BrVector3Dot(&tv, &fr->normal);
     }
 
-    for (i = 0; i < REC2_ASIZE(index_min_dots); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(index_min_dots); i++) {
         int j;
         float min_dot = 100.f;
         int index_min_dot;
@@ -499,7 +499,7 @@ int C2_HOOK_FASTCALL CollideCamera2(br_vector3* car_pos, br_vector3* cam_pos, br
 // FUNCTION: CARMA2_HW 0x0041f4f0
 void C2_HOOK_FAKE_THISCALL FlyCar(tCar_spec* c, undefined4 pArg2, br_scalar dt) {
 
-    REC2_THISCALL_UNUSED(pArg2);
+    CARPOCALYPSE2_THISCALL_UNUSED(pArg2);
 
     NOT_IMPLEMENTED();
 }
@@ -607,7 +607,7 @@ void C2_HOOK_FASTCALL ResetCarSpecialVolume(tPhysics_object* pCollision_info) {
 // FUNCTION: CARMA2_HW 0x004175e0
 void C2_HOOK_FAKE_THISCALL ControlCar4(tCar_spec* c, undefined4 pArg2, br_scalar dt) {
 
-    REC2_THISCALL_UNUSED(pArg2);
+    CARPOCALYPSE2_THISCALL_UNUSED(pArg2);
 
     if (c->keys.left) {
         if (c->turn_speed < 0.f) {
@@ -675,11 +675,11 @@ void C2_HOOK_FASTCALL RememberSafePosition(tCar_spec* car, tU32 pTime_difference
         return;
     }
 
-    REC2_BUG_ON(REC2_ASIZE(car->oldd) != 4);
+    CARPOCALYPSE2_BUG_ON(CARPOCALYPSE2_ASIZE(car->oldd) != 4);
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tCar_spec, susp_height, 0x1218);
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tCar_spec, oldd, 0x1264);
 
-    for (i = 0; i < REC2_ASIZE(car->oldd); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(car->oldd); i++) {
         if (car->susp_height[i / 2] <= car->oldd[i]) {
             return;
         }
@@ -692,7 +692,7 @@ void C2_HOOK_FASTCALL RememberSafePosition(tCar_spec* car, tU32 pTime_difference
         && !car->field_0x195c
         && car->car_master_actor->t.t.mat.m[1][1] >= 0.8f) {
 
-        REC2_BUG_ON(REC2_ASIZE(car->last_safe_positions) != 20);
+        CARPOCALYPSE2_BUG_ON(CARPOCALYPSE2_ASIZE(car->last_safe_positions) != 20);
         /* Only check last 5 positions */
         for (i = 0; i < 5; i++) {
             BrVector3Sub(&r, &car->car_master_actor->t.t.translate.t, (br_vector3*)car->last_safe_positions[i].m[3]);
@@ -701,7 +701,7 @@ void C2_HOOK_FASTCALL RememberSafePosition(tCar_spec* car, tU32 pTime_difference
                 return;
             }
         }
-        for (i = REC2_ASIZE(car->last_safe_positions) - 1; i > 0; i--) {
+        for (i = CARPOCALYPSE2_ASIZE(car->last_safe_positions) - 1; i > 0; i--) {
             BrMatrix34Copy(&car->last_safe_positions[i], &car->last_safe_positions[i - 1]);
         }
         BrMatrix34Copy(&car->last_safe_positions[0], &car->car_master_actor->t.t.mat);
@@ -767,12 +767,12 @@ void C2_HOOK_FASTCALL ControlOurCar(tU32 pTime_difference) {
         for (i = 0; i < gNumber_of_net_players; i++) {
 
             if (i != gThis_net_player_index) {
-                ControlCar[gControl__car](gNet_players[i].car REC2_THISCALL_EDX, 0.001f * pTime_difference);
+                ControlCar[gControl__car](gNet_players[i].car CARPOCALYPSE2_THISCALL_EDX, 0.001f * pTime_difference);
             }
         }
     }
     if (gCar_flying) {
-        FlyCar(gCar_to_view REC2_THISCALL_EDX, pTime_difference / 1000.f);
+        FlyCar(gCar_to_view CARPOCALYPSE2_THISCALL_EDX, pTime_difference / 1000.f);
         return;
     }
 
@@ -825,7 +825,7 @@ void C2_HOOK_FASTCALL ControlOurCar(tU32 pTime_difference) {
             }
         }
     }
-    ControlCar[gControl__car](car REC2_THISCALL_EDX, pTime_difference / 1000.0f);
+    ControlCar[gControl__car](car CARPOCALYPSE2_THISCALL_EDX, pTime_difference / 1000.0f);
     RememberSafePosition(car, pTime_difference);
     if (gCamera_reset) {
         BrVector3SetFloat(&minus_k, 0.0f, 0.0f, -1.0f);
@@ -979,14 +979,14 @@ void C2_HOOK_FASTCALL InitialiseCar2(tCar_spec* pCar, int pClear_disabled_flag) 
     BrMatrix34Copy(&pCar->old_frame_mat, &safe_position);
     BrMatrix34Copy(&pCar->collision_info->transform_matrix, &safe_position);
     BrMatrix34ApplyP(&pCar->pos, &pCar->collision_info->cmpos, &pCar->collision_info->transform_matrix);
-    for (j = 0; j < REC2_ASIZE(pCar->oldd); j++) {
+    for (j = 0; j < CARPOCALYPSE2_ASIZE(pCar->oldd); j++) {
         pCar->oldd[j] = pCar->ride_height;
     }
     pCar->gear = 0.f;
     pCar->revs = 0.f;
     pCar->traction_control = 1;
     BrVector3Negate(&pCar->direction, (br_vector3*)car_actor->t.t.mat.m[2]);
-    for (j = 0; j < REC2_ASIZE(pCar->last_safe_positions); j++) {
+    for (j = 0; j < CARPOCALYPSE2_ASIZE(pCar->last_safe_positions); j++) {
         BrMatrix34Copy(&pCar->last_safe_positions[j], &safe_position);
     }
     pCar->collision_info->field_0x261 = 0;
@@ -1074,12 +1074,12 @@ void C2_HOOK_FASTCALL InitialiseCar2(tCar_spec* pCar, int pClear_disabled_flag) 
         pCar->joystick.right = -1;
     }
     TotallyRepairACar(pCar);
-    SetCarSuspGiveAndHeight(pCar REC2_THISCALL_EDX, 1.f, 1.f, 1.f, 0.f, 0.f);
-    for (j = 0; j < REC2_ASIZE(pCar->powerups); j++) {
+    SetCarSuspGiveAndHeight(pCar CARPOCALYPSE2_THISCALL_EDX, 1.f, 1.f, 1.f, 0.f, 0.f);
+    for (j = 0; j < CARPOCALYPSE2_ASIZE(pCar->powerups); j++) {
         pCar->powerups[j] = 0;
     }
     if (gNet_mode != eNet_mode_none && (net_player == NULL || !net_player->field_0x80)) {
-        for (j = 0; j < REC2_ASIZE(pCar->power_up_levels); j++) {
+        for (j = 0; j < CARPOCALYPSE2_ASIZE(pCar->power_up_levels); j++) {
             if (gNet_mode == eNet_mode_none) {
                 pCar->power_up_levels[j] = gInitial_APO[j].initial[gProgram_state.skill_level];
             } else {
@@ -1286,7 +1286,7 @@ void C2_HOOK_FASTCALL MungeCarGraphics(tU32 pFrame_period) {
             } else {
                 the_car = GetCarSpec(cat, car);
             }
-            if (!(the_car != NULL && the_car->driver == eDriver_local_human) && PointOutOfSight(&the_car->pos REC2_THISCALL_EDX, gYon_squared)) {
+            if (!(the_car != NULL && the_car->driver == eDriver_local_human) && PointOutOfSight(&the_car->pos CARPOCALYPSE2_THISCALL_EDX, gYon_squared)) {
                 the_car->car_master_actor->render_style = BR_RSTYLE_NONE;
             } else {
                 the_car->car_master_actor->render_style = BR_RSTYLE_DEFAULT;
@@ -1348,22 +1348,22 @@ void C2_HOOK_FASTCALL MungeCarGraphics(tU32 pFrame_period) {
                 }
             }
             for (i = 0; i < the_car->number_of_steerable_wheels; i++) {
-                ControlBoundFunkGroove(the_car->steering_ref[i] REC2_THISCALL_EDX, the_car->steering_angle);
+                ControlBoundFunkGroove(the_car->steering_ref[i] CARPOCALYPSE2_THISCALL_EDX, the_car->steering_angle);
             }
-            for (i = 0; i < REC2_ASIZE(the_car->rf_sus_ref); i++) {
-                ControlBoundFunkGroove(the_car->rf_sus_ref[i] REC2_THISCALL_EDX, the_car->rf_sus_position);
+            for (i = 0; i < CARPOCALYPSE2_ASIZE(the_car->rf_sus_ref); i++) {
+                ControlBoundFunkGroove(the_car->rf_sus_ref[i] CARPOCALYPSE2_THISCALL_EDX, the_car->rf_sus_position);
                 if ((i & 1) != 0) {
-                    ControlBoundFunkGroove(the_car->lf_sus_ref[i] REC2_THISCALL_EDX, -the_car->lf_sus_position);
+                    ControlBoundFunkGroove(the_car->lf_sus_ref[i] CARPOCALYPSE2_THISCALL_EDX, -the_car->lf_sus_position);
                 } else {
-                    ControlBoundFunkGroove(the_car->lf_sus_ref[i] REC2_THISCALL_EDX, the_car->lf_sus_position);
+                    ControlBoundFunkGroove(the_car->lf_sus_ref[i] CARPOCALYPSE2_THISCALL_EDX, the_car->lf_sus_position);
                 }
             }
-            for (i = 0; i < REC2_ASIZE(the_car->rr_sus_ref); i++) {
-                ControlBoundFunkGroove(the_car->rr_sus_ref[i] REC2_THISCALL_EDX, the_car->rr_sus_position);
+            for (i = 0; i < CARPOCALYPSE2_ASIZE(the_car->rr_sus_ref); i++) {
+                ControlBoundFunkGroove(the_car->rr_sus_ref[i] CARPOCALYPSE2_THISCALL_EDX, the_car->rr_sus_position);
                 if ((i & 1) != 0) {
-                    ControlBoundFunkGroove(the_car->lr_sus_ref[i] REC2_THISCALL_EDX, -the_car->lr_sus_position);
+                    ControlBoundFunkGroove(the_car->lr_sus_ref[i] CARPOCALYPSE2_THISCALL_EDX, -the_car->lr_sus_position);
                 } else {
-                    ControlBoundFunkGroove(the_car->lr_sus_ref[i] REC2_THISCALL_EDX, the_car->lr_sus_position);
+                    ControlBoundFunkGroove(the_car->lr_sus_ref[i] CARPOCALYPSE2_THISCALL_EDX, the_car->lr_sus_position);
                 }
             }
             if (!gAction_replay_mode || !ARReplayIsReallyPaused()) {
@@ -1373,10 +1373,10 @@ void C2_HOOK_FASTCALL MungeCarGraphics(tU32 pFrame_period) {
                 if (gAction_replay_mode && ARGetReplayDirection() < 0) {
                     wheel_speed = -wheel_speed;
                 }
-                ControlBoundFunkGroovePlus(the_car->non_driven_wheels_spin_ref_1 REC2_THISCALL_EDX, wheel_speed);
-                ControlBoundFunkGroovePlus(the_car->non_driven_wheels_spin_ref_2 REC2_THISCALL_EDX, wheel_speed);
-                ControlBoundFunkGroovePlus(the_car->non_driven_wheels_spin_ref_3 REC2_THISCALL_EDX, wheel_speed);
-                ControlBoundFunkGroovePlus(the_car->non_driven_wheels_spin_ref_4 REC2_THISCALL_EDX, wheel_speed);
+                ControlBoundFunkGroovePlus(the_car->non_driven_wheels_spin_ref_1 CARPOCALYPSE2_THISCALL_EDX, wheel_speed);
+                ControlBoundFunkGroovePlus(the_car->non_driven_wheels_spin_ref_2 CARPOCALYPSE2_THISCALL_EDX, wheel_speed);
+                ControlBoundFunkGroovePlus(the_car->non_driven_wheels_spin_ref_3 CARPOCALYPSE2_THISCALL_EDX, wheel_speed);
+                ControlBoundFunkGroovePlus(the_car->non_driven_wheels_spin_ref_4 CARPOCALYPSE2_THISCALL_EDX, wheel_speed);
                 if (the_car->driver >= eDriver_net_human) {
                     if (the_car->gear != 0.f) {
                         wheel_speed = -(the_car->revs
@@ -1394,10 +1394,10 @@ void C2_HOOK_FASTCALL MungeCarGraphics(tU32 pFrame_period) {
                         wheel_speed = -wheel_speed;
                     }
                 }
-                ControlBoundFunkGroovePlus(the_car->driven_wheels_spin_ref_1 REC2_THISCALL_EDX, wheel_speed);
-                ControlBoundFunkGroovePlus(the_car->driven_wheels_spin_ref_2 REC2_THISCALL_EDX, wheel_speed);
-                ControlBoundFunkGroovePlus(the_car->driven_wheels_spin_ref_3 REC2_THISCALL_EDX, wheel_speed);
-                ControlBoundFunkGroovePlus(the_car->driven_wheels_spin_ref_4 REC2_THISCALL_EDX, wheel_speed);
+                ControlBoundFunkGroovePlus(the_car->driven_wheels_spin_ref_1 CARPOCALYPSE2_THISCALL_EDX, wheel_speed);
+                ControlBoundFunkGroovePlus(the_car->driven_wheels_spin_ref_2 CARPOCALYPSE2_THISCALL_EDX, wheel_speed);
+                ControlBoundFunkGroovePlus(the_car->driven_wheels_spin_ref_3 CARPOCALYPSE2_THISCALL_EDX, wheel_speed);
+                ControlBoundFunkGroovePlus(the_car->driven_wheels_spin_ref_4 CARPOCALYPSE2_THISCALL_EDX, wheel_speed);
             }
             if (gAction_replay_mode) {
                 MungeSpecialVolume(the_car->collision_info);
@@ -2249,7 +2249,7 @@ void C2_HOOK_FASTCALL SwingCamera(br_matrix34* pM1, br_matrix34* pM2, br_vector3
 
     v18 = pOmega->v[0] * pM1->m[0][1] + pOmega->v[1] * pM1->m[1][1] + pOmega->v[2] * pM1->m[2][1];
     abs_v18 = fabsf(v18);
-    v8 = BrRadianToAngle((float)pTime_difference * (abs_v18 + REC2_PI_F / 36.f) / 1000.f);
+    v8 = BrRadianToAngle((float)pTime_difference * (abs_v18 + CARPOCALYPSE2_PI_F / 36.f) / 1000.f);
     v9 = BrRadianToAngle((float)sqrt(fabsf(v17)));
 
     if (!(gUNK_006792f4 == 0 && v16 > 0.f && v9 < v8) && !gCar_flying && !manual_swing) {
@@ -2514,7 +2514,7 @@ void C2_HOOK_FASTCALL CheckForDeAttachmentOfNonCars(tU32 pTime) {
 
                         if (non_car->flags & 0x10000) {
                             if (Vector3DistanceSquared(&non_car->collision_info->field_0x17c,
-                                    (br_vector3*)non_car->collision_info->transform_matrix.m[3]) > REC2_SQR(.005f)) {
+                                    (br_vector3*)non_car->collision_info->transform_matrix.m[3]) > CARPOCALYPSE2_SQR(.005f)) {
                                 drop = 0;
                             } else {
                                 BrVector3Copy((br_vector3 *) &non_car->collision_info->transform_matrix.m[3],

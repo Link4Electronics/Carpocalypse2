@@ -1,8 +1,8 @@
-#ifndef REC2_OPPOPROC_H
-#define REC2_OPPOPROC_H
+#ifndef CARPOCALYPSE2_OPPOPROC_H
+#define CARPOCALYPSE2_OPPOPROC_H
 
 #include <brender/brender.h>
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 
 #include "c2_hooks.h"
 
@@ -19,4 +19,4 @@ int C2_HOOK_FASTCALL CalcCorners(tCorner* pCorners, int pSection, float pWidth, 
 
 int C2_HOOK_FASTCALL CalcSOCs(int pNext_section, int pCount_corners, tCorner *pCorners, tOpponent_spec *pOpponent_spec, tSOC* pSocs, tCar_spec* pCar);
 
-#endif //REC2_OPPONENT_H
+#endif //CARPOCALYPSE2_OPPONENT_H

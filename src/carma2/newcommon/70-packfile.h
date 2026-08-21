@@ -1,7 +1,7 @@
 #ifndef GUARD_70_PACKFILE_H
 #define GUARD_70_PACKFILE_H
 
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 #include "c2_hooks.h"
 
 #include <stdio.h>

@@ -1,9 +1,9 @@
-#ifndef REC2_INTRFACE_H
-#define REC2_INTRFACE_H
+#ifndef CARPOCALYPSE2_INTRFACE_H
+#define CARPOCALYPSE2_INTRFACE_H
 
 #include "c2_hooks.h"
 
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 
 extern int gAlways_typing;
 extern int gDisabled_count;
@@ -29,4 +29,4 @@ void C2_HOOK_FASTCALL ChangeSelectionTo(int pNew_choice, int pNew_mode);
 
 void C2_HOOK_FASTCALL SetAlwaysTyping(void);
 
-#endif //REC2_INTRFACE_H
+#endif //CARPOCALYPSE2_INTRFACE_H

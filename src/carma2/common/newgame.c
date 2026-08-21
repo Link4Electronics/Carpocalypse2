@@ -7,9 +7,9 @@
 #include "structur.h"
 #include "utility.h"
 
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 
-#include "rec2_macros.h"
+#include "carpocalypse2_macros.h"
 #include <stdio.h>
 
 
@@ -44,7 +44,7 @@ void C2_HOOK_FASTCALL DefaultNetSettings(void) {
     }
     ReadNetworkSettings(file, &gNet_settings[0]);
     PFrewind(file);
-    for (i = 1; i < REC2_ASIZE(gNet_settings); i++) {
+    for (i = 1; i < CARPOCALYPSE2_ASIZE(gNet_settings); i++) {
         pOptions = &gNet_settings[i];
         ReadNetworkSettings(file, pOptions);
     }
@@ -83,7 +83,7 @@ void C2_HOOK_FASTCALL ReadNetGameChoices(tNet_game_type* pGame_type, tNet_game_o
 void C2_HOOK_FASTCALL DisposeJoinList(int pExemption) {
     int i;
 
-    for (i = 0; i < REC2_ASIZE(gGames_to_join); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gGames_to_join); i++) {
         if (i == pExemption) {
             continue;
         }
@@ -120,7 +120,7 @@ void C2_HOOK_FASTCALL SetUpOtherNetThings(tNet_game_details* pGame_details) {
 void C2_HOOK_FASTCALL InitGamesToJoin(void) {
     int i;
 
-    for (i = 0; i < REC2_ASIZE(gGames_to_join); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gGames_to_join); i++) {
 
         gGames_to_join[i].game = NULL;
     }

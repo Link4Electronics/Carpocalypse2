@@ -254,7 +254,7 @@ br_tv_template* C2_HOOK_STDCALL FindStateTemplate(br_soft_renderer* self, soft_s
             return self->device->templates.partCullTemplate;
         }
 
-#ifndef REC2_MATCHING
+#ifndef CARPOCALYPSE2_MATCHING
         C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(soft_state_all, cull.type, 0x8);
         C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(soft_state_all, cull.space, 0xc);
 #endif
@@ -270,7 +270,7 @@ br_tv_template* C2_HOOK_STDCALL FindStateTemplate(br_soft_renderer* self, soft_s
             return self->device->templates.partSurfaceTemplate;
         }
 
-#ifndef REC2_MATCHING
+#ifndef CARPOCALYPSE2_MATCHING
         C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(soft_state_all, surface.colour, 0x14);
         C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(soft_state_all, surface.opacity, 0x18);
         C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(soft_state_all, surface.ka, 0x1c);
@@ -295,7 +295,7 @@ br_tv_template* C2_HOOK_STDCALL FindStateTemplate(br_soft_renderer* self, soft_s
             return self->device->templates.partMatrixTemplate;
         }
 
-#ifndef REC2_MATCHING
+#ifndef CARPOCALYPSE2_MATCHING
         C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(soft_state_all, matrix.model_to_view, 0x49c);
         C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(soft_state_all, matrix.view_to_screen, 0x4cc);
         C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(soft_state_all, matrix.view_to_environment, 0x50c);
@@ -315,13 +315,13 @@ br_tv_template* C2_HOOK_STDCALL FindStateTemplate(br_soft_renderer* self, soft_s
             return self->device->templates.partEnableTemplate;
         }
 
-#ifndef REC2_MATCHING
+#ifndef CARPOCALYPSE2_MATCHING
         C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(soft_state_all, enable.flags, 0x568);
 #endif
 
         entries = partEnableTemplateEntries;
         n_entries = BR_ASIZE(partEnableTemplateEntries);
-#ifndef REC2_MATCHING
+#ifndef CARPOCALYPSE2_MATCHING
         C2_HOOK_BUG_ON(BR_ASIZE(partEnableTemplateEntries) != 6);
 #endif
         tpp = &self->device->templates.partEnableTemplate;
@@ -332,7 +332,7 @@ br_tv_template* C2_HOOK_STDCALL FindStateTemplate(br_soft_renderer* self, soft_s
             return self->device->templates.partHiddenSurfaceTemplate;
         }
 
-#ifndef REC2_MATCHING
+#ifndef CARPOCALYPSE2_MATCHING
         C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(soft_state_all, hidden.type, 0x570);
         C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(soft_state_all, hidden.order_table, 0x574);
         C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(soft_state_all, hidden.heap, 0x578);
@@ -344,7 +344,7 @@ br_tv_template* C2_HOOK_STDCALL FindStateTemplate(br_soft_renderer* self, soft_s
 
         entries = partHiddenSurfaceTemplateEntries;
         n_entries = BR_ASIZE(partHiddenSurfaceTemplateEntries);
-#ifndef REC2_MATCHING
+#ifndef CARPOCALYPSE2_MATCHING
         C2_HOOK_BUG_ON(BR_ASIZE(partHiddenSurfaceTemplateEntries) != 7);
 #endif
         tpp = &self->device->templates.partHiddenSurfaceTemplate;
@@ -355,7 +355,7 @@ br_tv_template* C2_HOOK_STDCALL FindStateTemplate(br_soft_renderer* self, soft_s
             return self->device->templates.partBoundsTemplate;
         }
 
-#ifndef REC2_MATCHING
+#ifndef CARPOCALYPSE2_MATCHING
         C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(soft_state_all, bounds.min, 0x558);
         C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(soft_state_all, bounds.max, 0x560);
 #endif

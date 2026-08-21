@@ -12,7 +12,7 @@
 
 #include "c2_string.h"
 
-#include "rec2_macros.h"
+#include "carpocalypse2_macros.h"
 
 
 // GLOBAL: CARMA2_HW 0x0065fec0
@@ -62,7 +62,7 @@ void C2_HOOK_FASTCALL ReadShrapnelSpec(FILE* pF, tShrapnel_spec* pShrapnel_specs
     for (i = 0; i < *pShrapnel_count; i++) {
         tShrapnel_spec *spec = &pShrapnel_specs[i];
 
-        spec->type = GetALineAndInterpretCommand(pF, gShrapnel_type_names, REC2_ASIZE(gShrapnel_type_names));
+        spec->type = GetALineAndInterpretCommand(pF, gShrapnel_type_names, CARPOCALYPSE2_ASIZE(gShrapnel_type_names));
         if (spec->type == kShrapnelType_Abstract) {
             spec->type_info.abstract.count_materials = GetAnInt(pF);
             for (j = 0; j < spec->type_info.abstract.count_materials; j++) {
@@ -207,7 +207,7 @@ void C2_HOOK_FASTCALL ReadShrapnelSpec(FILE* pF, tShrapnel_spec* pShrapnel_specs
 #endif
                 }
                 if (k == gCount_smashable_noncar_shrapnel_actors) {
-                    if (gCount_smashable_noncar_shrapnel_actors < REC2_ASIZE(gSmashable_noncar_shrapnel_actors)) {
+                    if (gCount_smashable_noncar_shrapnel_actors < CARPOCALYPSE2_ASIZE(gSmashable_noncar_shrapnel_actors)) {
                         gSmashable_noncar_shrapnel_actors[gCount_smashable_noncar_shrapnel_actors] = match_sep_actor;
                         gCount_smashable_noncar_shrapnel_actors += 1;
                     }
@@ -255,7 +255,7 @@ void C2_HOOK_FASTCALL ReadShrapnelSideEffects(FILE* pF, tShrapnel_side_effects* 
         C2_HOOK_BUG_ON(sizeof(tSmash_side_effect) != 0x4c);
 #if 0
         /* FIXME: remove once we found something */
-        PDFatalError("Non-zero non shash side effect detected! Notify rec2 developers!");
+        PDFatalError("Non-zero non shash side effect detected! Notify carpocalypse2 developers!");
 #endif
         pShrapnel_side_effects->side_effects = BrMemAllocate(pShrapnel_side_effects->count_side_effects * sizeof(tSmash_side_effect), kMem_smash_side_effects);
         for (i = 0; i < pShrapnel_side_effects->count_side_effects; i++) {
@@ -285,9 +285,9 @@ void C2_HOOK_FASTCALL ReadShrapnelSideEffects(FILE* pF, tShrapnel_side_effects* 
             } else {
                 pShrapnel_side_effects->side_effects[i].field_0x28 = 0;
             }
-            pShrapnel_side_effects->side_effects[i].field_0x4 = GetALineAndInterpretCommand(pF, gPosition_type_names, REC2_ASIZE(gPosition_type_names));
+            pShrapnel_side_effects->side_effects[i].field_0x4 = GetALineAndInterpretCommand(pF, gPosition_type_names, CARPOCALYPSE2_ASIZE(gPosition_type_names));
             LoadMinMax(pF, &pShrapnel_side_effects->side_effects[i].bounds);
-            pShrapnel_side_effects->side_effects[i].field_0x44 = GetALineAndInterpretCommand(pF, gSmash_side_effect_direction_names, REC2_ASIZE(gSmash_side_effect_direction_names));
+            pShrapnel_side_effects->side_effects[i].field_0x44 = GetALineAndInterpretCommand(pF, gSmash_side_effect_direction_names, CARPOCALYPSE2_ASIZE(gSmash_side_effect_direction_names));
             pShrapnel_side_effects->side_effects[i].field_0x48 = GetAScalar(pF);
         }
     }
@@ -305,7 +305,7 @@ void C2_HOOK_FASTCALL ReadNonCarCuboidActivation(FILE* pF, tNon_car_cuboid_activ
 
 #if 1
         /* FIXME: remove once we found something */
-        PDFatalError("Non-zero non car cuboid activation detected! Notify rec2 developers!");
+        PDFatalError("Non-zero non car cuboid activation detected! Notify carpocalypse2 developers!");
 #endif
         pNon_car_cuboid_activations->activations = BrMemAllocate(pNon_car_cuboid_activations->count_activations * sizeof(tNon_car_cuboid_activation), kMem_smash_side_effects);
         for (i = 0; i < pNon_car_cuboid_activations->count_activations; i++) {
@@ -314,7 +314,7 @@ void C2_HOOK_FASTCALL ReadNonCarCuboidActivation(FILE* pF, tNon_car_cuboid_activ
             GetPairOfInts(pF, &i1, &i2);
             pNon_car_cuboid_activations->activations[i].field_0x0 = (tS16)(i1 * 1000);
             pNon_car_cuboid_activations->activations[i].field_0x2 = (tS16)(i2 * 1000);
-            pNon_car_cuboid_activations->activations[i].field_0x4 = GetALineAndInterpretCommand(pF, gPosition_type_names, REC2_ASIZE(gPosition_type_names));
+            pNon_car_cuboid_activations->activations[i].field_0x4 = GetALineAndInterpretCommand(pF, gPosition_type_names, CARPOCALYPSE2_ASIZE(gPosition_type_names));
             pNon_car_cuboid_activations->activations[i].field_0x8 = (tS8)GetAnInt(pF);
             LoadMinMax(pF, &pNon_car_cuboid_activations->activations[i].bounds);
             GetPairOfFloats(pF,

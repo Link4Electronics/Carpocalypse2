@@ -8,7 +8,7 @@
 #include "c2_string.h"
 
 
-#ifdef REC2_MATCHING
+#ifdef CARPOCALYPSE2_MATCHING
 
 // GLOBAL: CARMA2_HW 0x0054053f
 br_token cpu_types[] = {

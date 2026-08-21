@@ -3,7 +3,7 @@
 
 #include "c2_hooks.h"
 
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 
 extern tFrontend_spec gFrontend_WRECKS;
 extern tWreck_gallery_sell_info gWreck_gallery_sell_infos[32];

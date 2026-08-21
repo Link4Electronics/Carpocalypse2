@@ -1,7 +1,7 @@
 #ifndef GUARD_00_CAR_H
 #define GUARD_00_CAR_H
 
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 
 extern int gCunning_stunt_bonus[3];
 extern float gArmour_starting_value[100];

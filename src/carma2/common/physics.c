@@ -16,7 +16,7 @@
 #include "c2_stdlib.h"
 #include "c2_string.h"
 
-#include "rec2_macros.h"
+#include "carpocalypse2_macros.h"
 
 #define PHYSICS_BUFFER_PART_SIZE 40000
 #define PHYSICS_BUFFER_OTHER_SIZE 50000
@@ -180,10 +180,10 @@ void C2_HOOK_FASTCALL InitPhysics(void) {
 int C2_HOOK_FASTCALL PHILInit(void) {
     int i;
 
-    C2_HOOK_BUG_ON(REC2_ASIZE(gPhil_queued_objects.headers) != 100);
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gPhil_queued_objects.headers) != 100);
     C2_HOOK_BUG_ON(sizeof(gPhil_queued_objects.headers[0]) != 0x18);
 
-    for (i = 0; i < REC2_ASIZE(gPhil_queued_objects.headers); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gPhil_queued_objects.headers); i++) {
         gPhil_queued_objects.headers[i].collision_info = NULL;
     }
     gPHIL_count_list_collision_infos = 0;
@@ -332,7 +332,7 @@ void C2_HOOK_FASTCALL ReadMechanicsShapes(tPhysics_shape** pShape, FILE* pF) {
             int j;
 
             count_points = GetAnInt(pF);
-            if (count_points > REC2_ASIZE(points)) {
+            if (count_points > CARPOCALYPSE2_ASIZE(points)) {
                 FatalError(kFatalError_TooManyExtraPointsForCarIndex_S, " Too many points in wire frame shape ");
             }
             for (j = 0; j < count_points; j++) {
@@ -383,9 +383,9 @@ void C2_HOOK_FASTCALL UpdateCollisionObject(tPhysics_object* pCollision_info) {
     pCollision_info->bb2 = pCollision_info->bb1;
 
     pCollision_info->radius_squared = 0.f
-            + MAX(REC2_SQR(pCollision_info->bb2.min.v[0]), REC2_SQR(pCollision_info->bb2.max.v[0]))
-            + MAX(REC2_SQR(pCollision_info->bb2.min.v[1]), REC2_SQR(pCollision_info->bb2.max.v[1]))
-            + MAX(REC2_SQR(pCollision_info->bb2.min.v[2]), REC2_SQR(pCollision_info->bb2.max.v[2]));
+            + MAX(CARPOCALYPSE2_SQR(pCollision_info->bb2.min.v[0]), CARPOCALYPSE2_SQR(pCollision_info->bb2.max.v[0]))
+            + MAX(CARPOCALYPSE2_SQR(pCollision_info->bb2.min.v[1]), CARPOCALYPSE2_SQR(pCollision_info->bb2.max.v[1]))
+            + MAX(CARPOCALYPSE2_SQR(pCollision_info->bb2.min.v[2]), CARPOCALYPSE2_SQR(pCollision_info->bb2.max.v[2]));
     pCollision_info->radius = sqrtf(pCollision_info->radius_squared);
 }
 
@@ -839,8 +839,8 @@ tPhysicsError C2_HOOK_FASTCALL ConvexHull3D(tCollision_shape_polyhedron_data* pP
     br_vector3 original_points[300];
     tPolyhedron_edge_indexes indices[894];
 
-    if (pPolyhedron->count_points > REC2_ASIZE(original_points)) {
-        pPolyhedron->count_points = REC2_ASIZE(original_points);
+    if (pPolyhedron->count_points > CARPOCALYPSE2_ASIZE(original_points)) {
+        pPolyhedron->count_points = CARPOCALYPSE2_ASIZE(original_points);
     }
 
     original_count_points = pPolyhedron->count_points;
@@ -946,7 +946,7 @@ void C2_HOOK_FASTCALL FillInShape(tPhysics_shape* pShape) {
             pShape->common.bb.min.v[i] -= pShape->sphere.sphere.radius;
             pShape->common.bb.max.v[i] += pShape->sphere.sphere.radius;
         }
-        pShape->sphere.sphere.radius_squared = REC2_SQR(pShape->sphere.sphere.radius);
+        pShape->sphere.sphere.radius_squared = CARPOCALYPSE2_SQR(pShape->sphere.sphere.radius);
         break;
     default:
         PhysicsError(ePhysicsError_UnknownShapeType, NULL);
@@ -960,7 +960,7 @@ tPhysics_object* C2_HOOK_FAKE_THISCALL MungeSphereObject(br_model* pModel, undef
     tPhysics_shape* shape;
     br_vector3 tv;
 
-    REC2_THISCALL_UNUSED(pArg2);
+    CARPOCALYPSE2_THISCALL_UNUSED(pArg2);
 
     C2_HOOK_BUG_ON(sizeof(tPhysics_object) != 1240);
 
@@ -975,9 +975,9 @@ tPhysics_object* C2_HOOK_FAKE_THISCALL MungeSphereObject(br_model* pModel, undef
     UpdateCollisionObject(collision_info);
     collision_info->M = pWeight;
     BrVector3Set(&collision_info->I,
-        REC2_SQR(shape->sphere.sphere.radius) * pWeight / 6.f,
-        REC2_SQR(shape->sphere.sphere.radius) * pWeight / 6.f,
-        REC2_SQR(shape->sphere.sphere.radius) * pWeight / 6.f);
+        CARPOCALYPSE2_SQR(shape->sphere.sphere.radius) * pWeight / 6.f,
+        CARPOCALYPSE2_SQR(shape->sphere.sphere.radius) * pWeight / 6.f,
+        CARPOCALYPSE2_SQR(shape->sphere.sphere.radius) * pWeight / 6.f);
     BrVector3SetFloat(&collision_info->field_0x54, 0.f, -0.05797102f, 0.f);
     collision_info->actor = BrActorAllocate(BR_ACTOR_MODEL, NULL);
     BrMatrix34Copy(&collision_info->actor->t.t.mat, &collision_info->transform_matrix);
@@ -1233,9 +1233,9 @@ tPhysics_object* C2_HOOK_FAKE_THISCALL MungeBoxObject(br_model* pModel, undefine
     BrVector3Sub(&tv1, &pModel->bounds.max, &pModel->bounds.min);
     BrVector3Scale(&tv1, &tv1, .5f);
     BrVector3Set(&box->I,
-        (REC2_SQR(tv1.v[1]) + REC2_SQR(tv1.v[2])) * pMass / 12.f,
-        (REC2_SQR(tv1.v[0]) + REC2_SQR(tv1.v[2])) * pMass / 12.f,
-        (REC2_SQR(tv1.v[0]) + REC2_SQR(tv1.v[1])) * pMass / 12.f);
+        (CARPOCALYPSE2_SQR(tv1.v[1]) + CARPOCALYPSE2_SQR(tv1.v[2])) * pMass / 12.f,
+        (CARPOCALYPSE2_SQR(tv1.v[0]) + CARPOCALYPSE2_SQR(tv1.v[2])) * pMass / 12.f,
+        (CARPOCALYPSE2_SQR(tv1.v[0]) + CARPOCALYPSE2_SQR(tv1.v[1])) * pMass / 12.f);
     BrVector3SetFloat(&box->field_0x54, 0.f, 1/-17.25f, 0.f);
     box->actor = BrActorAllocate(BR_ACTOR_MODEL, NULL);
     BrMatrix34Copy(&box->actor->t.t.mat, &box->transform_matrix);
@@ -1473,7 +1473,7 @@ void C2_HOOK_FASTCALL MakeObjectDoSomething(tPhysics_object* pObject, tPhysics_o
         pObject->disable_move_rotate = 0;
         if (pObject->child != NULL || pObject->physics_joint1 != NULL || pObject->physics_joint2 != NULL) {
             if (pObject->field_0x218 == 0) {
-                MoveJointedObject(pObject REC2_THISCALL_EDX, 0.f);
+                MoveJointedObject(pObject CARPOCALYPSE2_THISCALL_EDX, 0.f);
             }
             MakeObjectListDoSomething(pObject->child);
         }
@@ -1523,7 +1523,7 @@ int C2_HOOK_FASTCALL PHILAddObject(tPhysics_object* pObject) {
         return 0;
     }
     object_info = NULL;
-    for (i = 0; i < REC2_ASIZE(gPhil_queued_objects.headers); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gPhil_queued_objects.headers); i++) {
         tPHIL_queued_header* current_object_info = &gPhil_queued_objects.headers[i];
 
         if (current_object_info->collision_info == NULL) {
@@ -1570,7 +1570,7 @@ void C2_HOOK_FASTCALL PHILMungeObjects(tPhysics_object* pObjects) {
         tSpecial_volume* original_last_special_volume;
         float original_water_depth_factor;
 
-#ifdef REC2_FIX_BUGS
+#ifdef CARPOCALYPSE2_FIX_BUGS
         original_last_special_volume = NULL;
 #endif
 
@@ -1680,7 +1680,7 @@ void C2_HOOK_FASTCALL PHILInterpolateObjects(tPhysics_object* pObjects, tU32 pTi
 
         object_info = object->field_0x240;
         if (object_info != NULL && object_info->field_0x8 == 2) {
-            InterpolateSingleObject(object REC2_THISCALL_EDX, -dt);
+            InterpolateSingleObject(object CARPOCALYPSE2_THISCALL_EDX, -dt);
         }
     }
 }

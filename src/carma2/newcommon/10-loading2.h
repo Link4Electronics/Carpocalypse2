@@ -2,7 +2,7 @@
 #define GUARD_10_LOADING2_H
 
 #include "c2_hooks.h"
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 
 extern void C2_HOOK_FASTCALL LoadInRegisteeDir(const char *pRoot, const char *pSubDir, int pInitialize_palettes);
 

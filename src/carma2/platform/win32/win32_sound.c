@@ -2,7 +2,7 @@
 
 #include "platform.h"
 #include "s3/internal/audio.h"
-#include "rec2_macros.h"
+#include "carpocalypse2_macros.h"
 
 // GLOBAL: CARMA2_HW 0x006aaa1c
 LPDIRECTSOUND gDirectSound;
@@ -88,7 +88,7 @@ int C2_HOOK_FASTCALL PDS3DDXInit(void) {
     if (FAILED(IDirectSound_SetCooperativeLevel(gPD_S3_direct_sound, gHWnd, DSSCL_EXCLUSIVE))) {
         return 0;
     }
-    for (i = 0; i < (int)REC2_ASIZE(gPDS3_volume_factors); i++) {
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gPDS3_volume_factors); i++) {
 
         gPDS3_volume_factors[i] = (int)(-(9999.0 - (log10(((double)i + 1.0) * 9999.0 / 256.0) * 9999.0 / 3.0 - 4300.0)));
     }

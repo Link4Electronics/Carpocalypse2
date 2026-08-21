@@ -8,8 +8,8 @@
 #include "platform.h"
 #include "utility.h"
 
-#include "rec2_macros.h"
-#include "rec2_types.h"
+#include "carpocalypse2_macros.h"
+#include "carpocalypse2_types.h"
 
 #include "c2_string.h"
 
@@ -298,7 +298,7 @@ void C2_HOOK_FASTCALL MungeJoystickHeadups(void) {
         return;
     }
 
-    for (i = 0; i < REC2_ASIZE(gRace_head_ups); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gRace_head_ups); i++) {
 
         if (gINT_0068b8e8 && headup_text != NULL) {
             int font;

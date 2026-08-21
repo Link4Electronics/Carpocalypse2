@@ -1,5 +1,5 @@
-#ifndef REC2_DATAFILE_H
-#define REC2_DATAFILE_H
+#ifndef CARPOCALYPSE2_DATAFILE_H
+#define CARPOCALYPSE2_DATAFILE_H
 
 #include "c2_hooks.h"
 
@@ -204,4 +204,4 @@ void C2_HOOK_STDCALL DfClose(br_datafile* df);
 
 int C2_HOOK_CDECL BrWriteModeSet(int mode);
 
-#endif // REC2_DATAFILE_H
+#endif // CARPOCALYPSE2_DATAFILE_H

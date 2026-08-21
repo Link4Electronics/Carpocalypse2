@@ -172,7 +172,7 @@ br_int_32 C2_HOOK_CDECL BrVSprintfN(char* buf, br_size_t buf_size, const char* f
 // FUNCTION: CARMA2_HW 0x0053f410
 br_int_32 C2_HOOK_CDECL BrVSScanf(char* buf, const char* fmt, va_list args) {
 
-#ifdef REC2_MATCHING
+#ifdef CARPOCALYPSE2_MATCHING
     int i;
     unsigned long arg_block[16];
 

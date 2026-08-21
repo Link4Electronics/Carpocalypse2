@@ -25,7 +25,7 @@
 
 #include <brender/brender.h>
 
-#include "rec2_macros.h"
+#include "carpocalypse2_macros.h"
 
 #include <ctype.h>
 #include "c2_stdlib.h"
@@ -249,7 +249,7 @@ void C2_HOOK_FASTCALL InitCrushSystems(void) {
     C2_HOOK_BUG_ON(sizeof(tCrush_info) != 0x104);
     C2_HOOK_BUG_ON(sizeof(tPhysics_object) != 0x4d8);
 
-    for (i = 0; i < REC2_ASIZE(gCrush_array_0067a190); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gCrush_array_0067a190); i++) {
         gCrush_array_0067a190[i] = 0;
     }
     gDAT_00679440 = 0;
@@ -260,7 +260,7 @@ void C2_HOOK_FASTCALL InitCrushSystems(void) {
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tCrush_info, field_0xdc, 0xdc);
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tCrush_info, field_0xe0, 0xe0);
 
-#ifndef REC2_MATCHING
+#ifndef CARPOCALYPSE2_MATCHING
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPhysics_shape, common.next, 0x34);
 #endif
 
@@ -276,7 +276,7 @@ void C2_HOOK_FASTCALL InitCrushSystems(void) {
     }
     gDetached_bit_driver = eDriver_detached_bit;
 
-    for (i = 0; i < REC2_ASIZE(gTrack_crush_joints); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gTrack_crush_joints); i++) {
         gTrack_crush_joints[i] = AllocatePhysicsJoint(3, kMem_crush_data);
     }
 
@@ -306,7 +306,7 @@ void C2_HOOK_FASTCALL InitCrushSystems(void) {
 void C2_HOOK_FASTCALL ClearCrushLists(void) {
     int i;
 
-    C2_HOOK_BUG_ON(REC2_ASIZE(gCrush_lists) != 8);
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gCrush_lists) != 8);
     C2_HOOK_BUG_ON(sizeof(gCrush_lists[0]) != 0x158);
 
     for (i = 0; gCrush_lists[i].car_spec != NULL; i++) {
@@ -318,9 +318,9 @@ void C2_HOOK_FASTCALL ClearCrushLists(void) {
 void C2_HOOK_FASTCALL ResetCrushSystems(void) {
     int i;
 
-    C2_HOOK_BUG_ON(REC2_ASIZE(gTrack_crush_joints) != 32);
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gTrack_crush_joints) != 32);
 
-    for (i = 0; i < REC2_ASIZE(gTrack_crush_joints); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gTrack_crush_joints); i++) {
         gTrack_crush_joints[i]->type = eJoint_none;
     }
     gDetached_bit_crush_info_buffer.field_0x8 = 0;
@@ -424,7 +424,7 @@ void C2_HOOK_FASTCALL LoadNoncarActivation(FILE* pF, tNoncar_activation** pNonca
         GetPairOfInts(pF, &v1, &v2);
         activation->time_0x0 = 1000 * v1;
         activation->time_0x2 = 1000 * v2;
-        activation->location_type = GetALineAndInterpretCommand(pF, gPosition_type_names, REC2_ASIZE(gPosition_type_names));
+        activation->location_type = GetALineAndInterpretCommand(pF, gPosition_type_names, CARPOCALYPSE2_ASIZE(gPosition_type_names));
         activation->field_0x8 = GetAnInt(pF);
         LoadMinMax(pF, &activation->bounds);
         ReadSmashableInitialSpeed(pF, &activation->speed_info);
@@ -433,7 +433,7 @@ void C2_HOOK_FASTCALL LoadNoncarActivation(FILE* pF, tNoncar_activation** pNonca
 
 void C2_HOOK_FASTCALL ReadAward(FILE* pF, tAward_info* pAward_info) {
 
-    pAward_info->frequency = GetALineAndInterpretCommand(pF, gRepeatability_names, REC2_ASIZE(gRepeatability_names));
+    pAward_info->frequency = GetALineAndInterpretCommand(pF, gRepeatability_names, CARPOCALYPSE2_ASIZE(gRepeatability_names));
     if (pAward_info->frequency != kRepeatability_None) {
         pAward_info->field_0x4 = GetAScalar(pF);
         pAward_info->field_0x8 = GetAScalar(pF);
@@ -472,7 +472,7 @@ void C2_HOOK_FASTCALL LoadSmashableLevels(FILE* pF, tSmashable_level** pSmashabl
         /* flags */
         level->flags = GetAnInt(pF);
         if (pIs_texture_change) {
-            level->collision_type = GetALineAndInterpretCommand(pF, gSmashable_collision_type_names, REC2_ASIZE(gSmashable_collision_type_names));
+            level->collision_type = GetALineAndInterpretCommand(pF, gSmashable_collision_type_names, CARPOCALYPSE2_ASIZE(gSmashable_collision_type_names));
         }
         /* number of possible sounds */
         level->count_sounds = GetAnInt(pF);
@@ -541,7 +541,7 @@ void C2_HOOK_FASTCALL LoadCarCrushDataEntry(FILE* pF, tCar_crush_buffer_entry* p
     }
     StringTransformToLower(pCar_crush_buffer_entry->actor_name);
     /* Softness */
-    switch (GetALineAndInterpretCommand(pF, gSoftness_names, REC2_ASIZE(gSoftness_names))) {
+    switch (GetALineAndInterpretCommand(pF, gSoftness_names, CARPOCALYPSE2_ASIZE(gSoftness_names))) {
     case eSoftness_VerySoft:
         pCar_crush_buffer_entry->softness_factor = 4.f;
         break;
@@ -565,7 +565,7 @@ void C2_HOOK_FASTCALL LoadCarCrushDataEntry(FILE* pF, tCar_crush_buffer_entry* p
     gCrush_data_entry_counter++;
 
     /* Crush type */
-    switch (GetALineAndInterpretCommand(pF, gCrush_type_names, REC2_ASIZE(gCrush_type_names))) {
+    switch (GetALineAndInterpretCommand(pF, gCrush_type_names, CARPOCALYPSE2_ASIZE(gCrush_type_names))) {
     case eCrushType_Flap:
         C2_HOOK_BUG_ON(sizeof(tCar_crush_flap_data) != 44);
         pCar_crush_buffer_entry->flap_data = BrMemAllocate(sizeof(tCar_crush_flap_data), kMem_crush_data);
@@ -589,7 +589,7 @@ void C2_HOOK_FASTCALL LoadCarCrushDataEntry(FILE* pF, tCar_crush_buffer_entry* p
         pCar_crush_buffer_entry->detach_data = BrMemAllocate(sizeof(tCar_crush_detach_data), kMem_crush_data);
         pCar_crush_buffer_entry->detach_data->field_0x0 = 0.f;
         /* Ease of flap */
-        switch (GetALineAndInterpretCommand(pF, gEase_of_detachment_names, REC2_ASIZE(gEase_of_detachment_names))) {
+        switch (GetALineAndInterpretCommand(pF, gEase_of_detachment_names, CARPOCALYPSE2_ASIZE(gEase_of_detachment_names))) {
         case eEaseOfDetachment_VeryEasy:
             pCar_crush_buffer_entry->detach_data->force = gNormal_force_to_detach * 0.25f;
             break;
@@ -613,7 +613,7 @@ void C2_HOOK_FASTCALL LoadCarCrushDataEntry(FILE* pF, tCar_crush_buffer_entry* p
             pCar_crush_buffer_entry->detach_data->type = eDetachType_fully_detachable;
         }
         /* shape */
-        switch (GetALineAndInterpretCommand(pF, gCar_crush_shape_names, REC2_ASIZE(gCar_crush_shape_names))) {
+        switch (GetALineAndInterpretCommand(pF, gCar_crush_shape_names, CARPOCALYPSE2_ASIZE(gCar_crush_shape_names))) {
         case eCarCrushShape_poly:
             pCar_crush_buffer_entry->detach_data->count_shape_points = GetAnInt(pF);
             for (i = 0; i < pCar_crush_buffer_entry->detach_data->count_shape_points; i++) {
@@ -632,7 +632,7 @@ void C2_HOOK_FASTCALL LoadCarCrushDataEntry(FILE* pF, tCar_crush_buffer_entry* p
         pCar_crush_buffer_entry->detach_data = BrMemAllocate(sizeof(tCar_crush_detach_data), kMem_crush_data);
         pCar_crush_buffer_entry->detach_data->field_0x0 = 0.f;
         /* Ease of detachment */
-        switch (GetALineAndInterpretCommand(pF, gEase_of_detachment_names, REC2_ASIZE(gEase_of_detachment_names))) {
+        switch (GetALineAndInterpretCommand(pF, gEase_of_detachment_names, CARPOCALYPSE2_ASIZE(gEase_of_detachment_names))) {
         case eEaseOfDetachment_VeryEasy:
             pCar_crush_buffer_entry->detach_data->force = gNormal_force_to_detach * .25f;
             break;
@@ -651,12 +651,12 @@ void C2_HOOK_FASTCALL LoadCarCrushDataEntry(FILE* pF, tCar_crush_buffer_entry* p
             break;
         }
         /* Type */
-        pCar_crush_buffer_entry->detach_data->type = GetALineAndInterpretCommand(pF, gDetach_type_names, REC2_ASIZE(gDetach_type_names));
+        pCar_crush_buffer_entry->detach_data->type = GetALineAndInterpretCommand(pF, gDetach_type_names, CARPOCALYPSE2_ASIZE(gDetach_type_names));
         if (pCar_crush_buffer_entry->detach_data->type == eDetachType_joint_index) {
             /* FIXME: not used in C2 game data */
             pCar_crush_buffer_entry->detach_data->field_0x30 = GetAnInt(pF);
         }
-        switch (GetALineAndInterpretCommand(pF, gCar_crush_shape_names, REC2_ASIZE(gCar_crush_shape_names))) {
+        switch (GetALineAndInterpretCommand(pF, gCar_crush_shape_names, CARPOCALYPSE2_ASIZE(gCar_crush_shape_names))) {
         case eCarCrushShape_poly:
             pCar_crush_buffer_entry->detach_data->count_shape_points = GetAnInt(pF);
             if (pCar_crush_buffer_entry->detach_data->count_shape_points > 16) {
@@ -879,11 +879,11 @@ int C2_HOOK_CDECL LinkCrushModel(br_actor* pActor, void* pData) {
                 }
             }
         }
-        if (crush_idx < REC2_ASIZE(user_crush_data->models)) {
-            if (user_crush_data->models[crush_idx] != NULL && crush_idx < REC2_ASIZE(user_crush_data->models) - 1) {
+        if (crush_idx < CARPOCALYPSE2_ASIZE(user_crush_data->models)) {
+            if (user_crush_data->models[crush_idx] != NULL && crush_idx < CARPOCALYPSE2_ASIZE(user_crush_data->models) - 1) {
                 memmove(&user_crush_data->models[crush_idx + 1],
                     &user_crush_data->models[crush_idx],
-                    (REC2_ASIZE(user_crush_data->models) - crush_idx - 1) * sizeof(br_model*));
+                    (CARPOCALYPSE2_ASIZE(user_crush_data->models) - crush_idx - 1) * sizeof(br_model*));
             }
             user_crush_data->models[crush_idx] = model;
         }
@@ -899,7 +899,7 @@ intptr_t C2_HOOK_CDECL AccumulateSquashVertices(br_actor* actor, void* pData) {
     if (crush_data != NULL && crush_data->crush_data != NULL) {
         int i;
 
-        for (i = 0; i < REC2_ASIZE(crush_data->models); i++) {
+        for (i = 0; i < CARPOCALYPSE2_ASIZE(crush_data->models); i++) {
             if (crush_data->models[i] != NULL) {
                 context->count_vertices += crush_data->models[i]->nvertices;
             }
@@ -1058,7 +1058,7 @@ void C2_HOOK_FASTCALL SetUpSemiDetachJointStuff(tCar_crush_detach_data* pDetach_
         int i;
         const br_vector3* bounds_points = &pBounds->min;
         br_vector3 closest_corner;
-#ifdef REC2_FIX_BUGS
+#ifdef CARPOCALYPSE2_FIX_BUGS
         BrVector3Copy(&closest_corner, &bounds_points[0]);
 #endif
 
@@ -1317,7 +1317,7 @@ void C2_HOOK_FASTCALL SetUpShapeLimitingStuff(tCar_crush_spec* pCar_crush, tCar_
     }
     BrVector3InvScale(&wheel_all_bounds.min, &wheel_all_bounds.min, WORLD_SCALE);
     BrVector3InvScale(&wheel_all_bounds.max, &wheel_all_bounds.max, WORLD_SCALE);
-    for (i = 0; i < REC2_ASIZE(pCar_spec->wheel_actors); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(pCar_spec->wheel_actors); i++) {
         br_actor* wheel_actor = pCar_spec->wheel_actors[i];
         tUser_crush_data* user_crush_data;
         br_model* wheel_model;
@@ -1736,7 +1736,7 @@ void C2_HOOK_FASTCALL TotallyRepairModel(br_model* pModel) {
     if (vertex_detail_data == NULL) {
         return;
     }
-    if (pModel->nvertices > REC2_ASIZE(vector_mash)) {
+    if (pModel->nvertices > CARPOCALYPSE2_ASIZE(vector_mash)) {
         PDFatalError("Holy polygons Batman! There's a lot of vertices on that model.");
     }
     for (i = 0; i < pModel->nvertices; i++) {
@@ -1868,7 +1868,7 @@ void C2_HOOK_FASTCALL CompletelyUnBendCollisionShapes(tCar_spec* pCar_spec) {
 void C2_HOOK_FASTCALL CompletelyUnBendWheels(tCar_spec* pCar_spec) {
     int i;
 
-    for (i = 0; i < REC2_ASIZE(pCar_spec->wheel_actors); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(pCar_spec->wheel_actors); i++) {
         br_actor *actor;
         tGroovidelic_spec *groove;
 
@@ -1891,10 +1891,10 @@ void C2_HOOK_FASTCALL CompletelyUnBendWheels(tCar_spec* pCar_spec) {
         }
     }
 
-    for (i = 0; i < REC2_ASIZE(pCar_spec->wpos); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(pCar_spec->wpos); i++) {
         BrVector3Copy(&pCar_spec->wpos[i], &pCar_spec->car_crush_spec->field_0x234[i]);
     }
-    SetCarSuspGiveAndHeight(pCar_spec REC2_THISCALL_EDX, 1.f, 1.f, 1.f, 0.f, 0.f);
+    SetCarSuspGiveAndHeight(pCar_spec CARPOCALYPSE2_THISCALL_EDX, 1.f, 1.f, 1.f, 0.f, 0.f);
     pCar_spec->field_0x1260 = 0.f;
 }
 
@@ -2132,7 +2132,7 @@ void C2_HOOK_FASTCALL TotallyRepairACar(tCar_spec* pCar_spec) {
         PipeInstantUnSmudge(pCar_spec);
     }
     pCar_spec->repair_time += 100000;
-    for (i = 0; i < REC2_ASIZE(pCar_spec->damage_units); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(pCar_spec->damage_units); i++) {
         pCar_spec->damage_units[i].damage_level = 0;
         pCar_spec->damage_units[i].last_level = 0;
         pCar_spec->damage_units[i].smoke_last_level = 0;
@@ -2246,7 +2246,7 @@ void C2_HOOK_FASTCALL DoWheelDamage(tU32 pFrame_period) {
         if ((car != NULL && car->driver >= eDriver_oppo) && !(car->car_crush_spec != NULL && car->car_crush_spec->field_0x144)) {
             int j;
 
-            for (j = 0; j < REC2_ASIZE(car->wheel_dam_offset); j++) {
+            for (j = 0; j < CARPOCALYPSE2_ASIZE(car->wheel_dam_offset); j++) {
                 int damage;
                 br_scalar y_amount;
                 br_scalar z_amount;
@@ -2260,7 +2260,7 @@ void C2_HOOK_FASTCALL DoWheelDamage(tU32 pFrame_period) {
                     car->wheel_dam_offset[j] = 0.f;
                     continue;
                 }
-                if (PointOutOfSight(&car->pos REC2_THISCALL_EDX, 32.f)) {
+                if (PointOutOfSight(&car->pos CARPOCALYPSE2_THISCALL_EDX, 32.f)) {
                     break;
                 }
                 y_amount = (damage - 30) * gWobble_spam_y[damage % 8];
@@ -2327,7 +2327,7 @@ void C2_HOOK_FASTCALL DoSpams(void) {
     int i;
 
     for (i = 0; i < gCount_car_damage_crush_list; i++) {
-        TotallySpamTheModel(gCar_damage_crush_list[i].car REC2_THISCALL_EDX, gCar_damage_crush_list[i].damage);
+        TotallySpamTheModel(gCar_damage_crush_list[i].car CARPOCALYPSE2_THISCALL_EDX, gCar_damage_crush_list[i].damage);
     }
     gCount_car_damage_crush_list = 0;
 }
@@ -2581,8 +2581,8 @@ void C2_HOOK_FASTCALL LinkSmashies(br_actor* pActor, tCar_crush_buffer_entry* pC
             FatalError(kFatalError_CannotFindSmashMaterial_S, smashable->material_name);
         }
         MungeMaterial(pActor, 0, smashable->funk_material, smashable->funk_material,
-            REC2_ASIZE(indices), indices, &count_indices,
-            REC2_ASIZE(vertices), vertices, &count_vertices, &smashable->field_0x60);
+            CARPOCALYPSE2_ASIZE(indices), indices, &count_indices,
+            CARPOCALYPSE2_ASIZE(vertices), vertices, &count_vertices, &smashable->field_0x60);
         for (j = 0; j < count_indices; j++) {
             if (j == 0) {
                 BrVector3Copy(&smashable->field_0x54, &pActor->model->vertices[indices[j]].p);
@@ -2718,7 +2718,7 @@ void C2_HOOK_FASTCALL KnackerThisCar(tCar_spec* pCar) {
 void C2_HOOK_FASTCALL RecordLastDamage(tCar_spec* pCar) {
     int i;
 
-    for (i = 0; i < REC2_ASIZE(pCar->damage_units); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(pCar->damage_units); i++) {
         pCar->damage_units[i].last_level = pCar->damage_units[i].damage_level;
     }
     pCar->damage_magnitude_accumulator = 0.0;
@@ -2735,7 +2735,7 @@ void C2_HOOK_FASTCALL RecordLastDamage(tCar_spec* pCar) {
 void C2_HOOK_FASTCALL SetSmokeLastDamageLevel(tCar_spec* pCar) {
     int i;
 
-    for (i = 0; i < REC2_ASIZE(pCar->damage_units); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(pCar->damage_units); i++) {
         pCar->damage_units[i].smoke_last_level = pCar->damage_units[i].damage_level;
     }
 }
@@ -2778,9 +2778,9 @@ void C2_HOOK_FASTCALL SphericizePhysics(tCar_spec* pCar, const br_vector3* pCent
     BrVector3Copy(&pCar->collision_info->cmpos, pCenter);
     pCar->collision_info->M = 50.f;
     BrVector3Set(&pCar->collision_info->I,
-        REC2_SQR(pCar->collision_info->shape->sphere.sphere.radius) * pCar->collision_info->M / WORLD_SCALE,
-        REC2_SQR(pCar->collision_info->shape->sphere.sphere.radius) * pCar->collision_info->M / WORLD_SCALE,
-        REC2_SQR(pCar->collision_info->shape->sphere.sphere.radius) * pCar->collision_info->M / WORLD_SCALE);
+        CARPOCALYPSE2_SQR(pCar->collision_info->shape->sphere.sphere.radius) * pCar->collision_info->M / WORLD_SCALE,
+        CARPOCALYPSE2_SQR(pCar->collision_info->shape->sphere.sphere.radius) * pCar->collision_info->M / WORLD_SCALE,
+        CARPOCALYPSE2_SQR(pCar->collision_info->shape->sphere.sphere.radius) * pCar->collision_info->M / WORLD_SCALE);
     pCar->collision_info->world_friction = 16.f;
     gGonad_sphere_collision_shape->common.type = kCollisionShapeType_Box;
     while (!TestForCarInSensiblePlace(pCar, &delta)) {

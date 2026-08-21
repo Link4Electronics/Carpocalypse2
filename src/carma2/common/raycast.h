@@ -1,9 +1,9 @@
-#ifndef REC2_RAYCAST_H
-#define REC2_RAYCAST_H
+#ifndef CARPOCALYPSE2_RAYCAST_H
+#define CARPOCALYPSE2_RAYCAST_H
 
 #include "c2_hooks.h"
 
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 
 extern br_actor* gY_picking_camera;
 extern br_scalar gLowest_y_above;
@@ -49,4 +49,4 @@ void C2_HOOK_FASTCALL FindBestY(br_vector3* pPosition, br_actor* pWorld, br_scal
 
 void C2_HOOK_FASTCALL DrMatrix34ApplyLPInverse(br_vector3* pDest, const br_vector3* pOrigin, const br_matrix34* pMatrix);
 
-#endif //REC2_RAYCAST_H
+#endif //CARPOCALYPSE2_RAYCAST_H

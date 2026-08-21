@@ -1,7 +1,7 @@
-#ifndef REC2_COMPRESS_H
-#define REC2_COMPRESS_H
+#ifndef CARPOCALYPSE2_COMPRESS_H
+#define CARPOCALYPSE2_COMPRESS_H
 
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 
 #include "c2_hooks.h"
 
@@ -17,4 +17,4 @@ void C2_HOOK_FASTCALL CompressMatrix34(tCompressed_matrix3* pCompressed_matrix3,
 
 void C2_HOOK_FASTCALL ExpandMatrix34(br_matrix34* pMat, const tCompressed_matrix3* pCompressed, int pInactive);
 
-#endif //REC2_COMPRESS_H
+#endif //CARPOCALYPSE2_COMPRESS_H

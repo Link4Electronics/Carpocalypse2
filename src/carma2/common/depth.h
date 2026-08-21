@@ -1,9 +1,9 @@
-#ifndef REC2_DEPTH_H
-#define REC2_DEPTH_H
+#ifndef CARPOCALYPSE2_DEPTH_H
+#define CARPOCALYPSE2_DEPTH_H
 
 #include "c2_hooks.h"
 
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 #include <brender/brender.h>
 
 extern int gSky_on;
@@ -103,4 +103,4 @@ int C2_HOOK_FASTCALL DoSubAquaCam(void);
 
 void C2_HOOK_FASTCALL DoSpecialCameraEffect(br_actor* pCamera, br_matrix34* pCamera_to_world);
 
-#endif //REC2_DEPTH_H
+#endif //CARPOCALYPSE2_DEPTH_H

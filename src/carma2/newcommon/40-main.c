@@ -3,7 +3,7 @@
 #include "globvars.h"
 #include "globvrpb.h"
 #include "platform.h"
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 #include "01-network.h"
 #include "08-loading1.h"
 #include "41-utility.h"

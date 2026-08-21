@@ -193,7 +193,7 @@ void C2_HOOK_CDECL BrImageDereference(br_image* image) {
             break;
     }
 #ifdef BRENDER_FIX_BUGS
-    /* Added by rec2: fixes DEP */
+    /* Added by carpocalypse2: fixes DEP */
     for (i = 0; i < image->n_sections; i++) {
         PDMapImageSection(image->sections[i].base, image->sections[i].mem_size,
                           kMemory_section_read | kMemory_section_write);

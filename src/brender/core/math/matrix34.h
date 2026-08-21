@@ -1,5 +1,5 @@
-#ifndef REC2_MATRIX34_H
-#define REC2_MATRIX34_H
+#ifndef CARPOCALYPSE2_MATRIX34_H
+#define CARPOCALYPSE2_MATRIX34_H
 
 #include "c2_hooks.h"
 
@@ -95,4 +95,4 @@ void C2_HOOK_CDECL BrMatrix34PreShearZ(br_matrix34* mat, br_scalar sx, br_scalar
 
 void C2_HOOK_CDECL BrMatrix34PostShearZ(br_matrix34* mat, br_scalar sx, br_scalar sy);
 
-#endif // REC2_MATRIX34_H
+#endif // CARPOCALYPSE2_MATRIX34_H

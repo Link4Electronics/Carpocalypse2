@@ -13,7 +13,7 @@
 br_error C2_HOOK_STDCALL CheckPrimitiveState(br_soft_renderer* self) {
     br_error r;
 
-#ifndef REC2_MATCHING
+#ifndef CARPOCALYPSE2_MATCHING
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(br_soft_renderer, state.pstate, 0x794);
 #endif
 

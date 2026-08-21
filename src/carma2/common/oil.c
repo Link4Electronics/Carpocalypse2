@@ -11,7 +11,7 @@
 
 #include <brender/brender.h>
 
-#include "rec2_macros.h"
+#include "carpocalypse2_macros.h"
 
 
 // GLOBAL: CARMA2_HW 0x0065a398
@@ -38,12 +38,12 @@ void C2_HOOK_FASTCALL InitOilSpills(void) {
 
     C2_HOOK_BUG_ON(sizeof(tOil_spill_info) != 0x54);
 
-    for (i = 0; i < REC2_ASIZE(gOil_pixie_names); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gOil_pixie_names); i++) {
         gOil_pixies[i] = LoadPixelmap(gOil_pixie_names[i]);
         BrMapAdd(gOil_pixies[i]);
     }
 
-    for (i = 0; i < REC2_ASIZE(gOily_spills); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gOily_spills); i++) {
         oily_material = BrMaterialAllocate(NULL);
         BrMaterialAdd(oily_material);
         oily_material->flags |= BR_MATF_LIGHT;
@@ -95,7 +95,7 @@ void C2_HOOK_FASTCALL InitOilSpills(void) {
 void C2_HOOK_FASTCALL ResetOilSpills(void) {
     int i;
 
-    for (i = 0; i < REC2_ASIZE(gOily_spills); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gOily_spills); i++) {
         gOily_spills[i].actor->render_style = BR_RSTYLE_NONE;
         gOily_spills[i].car = NULL;
         gOily_spills[i].car_actor = NULL;
@@ -155,7 +155,7 @@ int C2_HOOK_FASTCALL OKToSpillOil(tOil_spill_info* pOil) {
         pOil->full_size);
     BrMatrix34PreRotateY(&pOil->actor->t.t.mat, angle_to_rotate_by);
     kev_bounds.mat = &pOil->car_actor->t.t.mat;
-    face_count = FindFacesInBox(&kev_bounds, the_list, REC2_ASIZE(the_list), NULL);
+    face_count = FindFacesInBox(&kev_bounds, the_list, CARPOCALYPSE2_ASIZE(the_list), NULL);
     BrVector3Set(&v, .0f, .2f, .0f);
     BrVector3Add(&ray_pos, &pOil->car_actor->t.t.translate.t, &v);
     if (ray_dir.v[1] * ray_dir.v[1] <= 2 * BR_SCALAR_EPSILON) {
@@ -210,7 +210,7 @@ void C2_HOOK_FASTCALL ProcessOilSpills(tU32 pFrame_period) {
     br_vector3 v;
     tNet_message* message;
 
-#ifndef REC2_MATCHING
+#ifndef CARPOCALYPSE2_MATCHING
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tOil_spill_info, position, 0x34);
     /* FIXME: unconditional assert */
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tNet_message, contents.oil_spill.player, 0x1c);
@@ -220,7 +220,7 @@ void C2_HOOK_FASTCALL ProcessOilSpills(tU32 pFrame_period) {
 #endif
 
     time = GetTotalTime();
-    for (i = 0; i < REC2_ASIZE(gOily_spills); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gOily_spills); i++) {
         br_model* the_model;
         tOil_spill_info* oil = &gOily_spills[i];
 
@@ -241,7 +241,7 @@ void C2_HOOK_FASTCALL ProcessOilSpills(tU32 pFrame_period) {
                         oil->car_actor = NULL;
                     } else {
                         oil->spill_time = time;
-                        if (gNext_oil_pixie > 0) { /* REC2_ASIZE(gOil_pixies) */
+                        if (gNext_oil_pixie > 0) { /* CARPOCALYPSE2_ASIZE(gOil_pixies) */
                             gNext_oil_pixie = 0;
                         }
                         if (oil->car == NULL) {
@@ -325,7 +325,7 @@ void C2_HOOK_FASTCALL ProcessOilSpills(tU32 pFrame_period) {
 // FUNCTION: CARMA2_HW 0x004a74e0
 int C2_HOOK_FASTCALL GetOilSpillCount(void) {
 
-    return REC2_ASIZE(gOily_spills);
+    return CARPOCALYPSE2_ASIZE(gOily_spills);
 }
 
 // FUNCTION: CARMA2_HW 0x004a74f0

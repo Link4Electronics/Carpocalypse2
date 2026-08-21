@@ -1,6 +1,6 @@
 #include "racemem.h"
 
-#include "rec2_macros.h"
+#include "carpocalypse2_macros.h"
 
 #include "c2_string.h"
 
@@ -17,7 +17,7 @@ void C2_HOOK_FASTCALL ClearAllRuntimeVariables(void) {
 // FUNCTION: CARMA2_HW 0x004e7440
 int C2_HOOK_FASTCALL GetRuntimeVariable(int pAddress) {
 
-    if (pAddress >= 0 && pAddress < REC2_ASIZE(gRace_memory)) {
+    if (pAddress >= 0 && pAddress < CARPOCALYPSE2_ASIZE(gRace_memory)) {
         return gRace_memory[pAddress];
     }
     return 0;

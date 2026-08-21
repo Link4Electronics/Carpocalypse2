@@ -34,7 +34,7 @@ void C2_HOOK_CDECL BrStdioFailure(char* message) {
     fputs(message, stderr);
     fputc('\n', stderr);
     fflush(stderr);
-#ifdef REC2_MATCHING
+#ifdef CARPOCALYPSE2_MATCHING
     exit(10);
 #else
     abort();

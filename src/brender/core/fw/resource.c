@@ -35,7 +35,7 @@ resource_header* C2_HOOK_CDECL UserToRes(void* r) {
     while (p[-1] == 0) {
         p--;
     }
-#ifdef REC2_MATCHING
+#ifdef CARPOCALYPSE2_MATCHING
     p -= offsetof(struct resource_header, magic_num) + sizeof(((struct resource_header *)NULL)->magic_num);
 #else
     p -= sizeof(resource_header);

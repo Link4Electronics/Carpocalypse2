@@ -11,5 +11,5 @@ target_include_directories(carma2 PRIVATE $<TARGET_PROPERTY:DirectX::d3dim,INTER
 target_link_libraries(carma2 DirectX::dxguid)
 target_link_libraries(carma2 c2_hooks)
 
-if(REC2_MATCHING)
+if(CARPOCALYPSE2_MATCHING)
 endif()

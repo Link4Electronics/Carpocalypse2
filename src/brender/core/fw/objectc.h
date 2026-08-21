@@ -1,5 +1,5 @@
-#ifndef REC2_OBJECTC_H
-#define REC2_OBJECTC_H
+#ifndef CARPOCALYPSE2_OBJECTC_H
+#define CARPOCALYPSE2_OBJECTC_H
 
 #include "brender/br_types.h"
 
@@ -27,4 +27,4 @@ void C2_HOOK_CDECL _M_br_object_container_tokensMatchEnd(br_object_container* se
 
 br_error C2_HOOK_CDECL BrObjectContainerFree(br_object_container* self, br_token type, const char* pattern, br_token_value* tv);
 
-#endif // REC2_OBJECTC_H
+#endif // CARPOCALYPSE2_OBJECTC_H

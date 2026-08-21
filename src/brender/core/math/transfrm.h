@@ -1,5 +1,5 @@
-#ifndef REC2_TRANSFRM_H
-#define REC2_TRANSFRM_H
+#ifndef CARPOCALYPSE2_TRANSFRM_H
+#define CARPOCALYPSE2_TRANSFRM_H
 
 #include "c2_hooks.h"
 
@@ -22,4 +22,4 @@ void C2_HOOK_CDECL BrMatrix34ToTransform(br_transform* xform, const br_matrix34*
 
 void C2_HOOK_CDECL BrTransformToTransform(br_transform* dest, const br_transform* src);
 
-#endif // REC2_TRANSFRM_H
+#endif // CARPOCALYPSE2_TRANSFRM_H

@@ -4,8 +4,8 @@
 
 #include "platform.h"
 
-#include "rec2_macros.h"
-#include "rec2_types.h"
+#include "carpocalypse2_macros.h"
+#include "carpocalypse2_types.h"
 
 // GLOBAL: CARMA2_HW 0x00655f58
 tGraf_data gGraf_data[2] = {
@@ -684,10 +684,10 @@ int gGraf_data_index;
 void C2_HOOK_FASTCALL CalcGrafDataIndex(void) {
     int i;
 
-    REC2_BUG_ON(sizeof(tGraf_data) != 1312);
-    REC2_BUG_ON(sizeof(tGraf_spec) != 52);
+    CARPOCALYPSE2_BUG_ON(sizeof(tGraf_data) != 1312);
+    CARPOCALYPSE2_BUG_ON(sizeof(tGraf_spec) != 52);
 
-    for (i = 0; i < REC2_ASIZE(gGraf_data); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gGraf_data); i++) {
         if (gGraf_specs[gGraf_spec_index].total_width == gGraf_data[i].width && gGraf_specs[gGraf_spec_index].total_height == gGraf_data[i].height) {
             gReal_graf_data_index = i;
             gGraf_data_index = i;

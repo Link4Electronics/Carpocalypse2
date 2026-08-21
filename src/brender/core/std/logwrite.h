@@ -1,5 +1,5 @@
-#ifndef REC2_LOGWRITE_H
-#define REC2_LOGWRITE_H
+#ifndef CARPOCALYPSE2_LOGWRITE_H
+#define CARPOCALYPSE2_LOGWRITE_H
 
 #include "c2_hooks.h"
 

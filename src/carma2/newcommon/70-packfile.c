@@ -5,7 +5,7 @@
 #include "52-errors.h"
 #include "69-sound.h"
 #include "platform.h"
-#include "rec2_macros.h"
+#include "carpocalypse2_macros.h"
 
 #include <string.h>
 
@@ -30,10 +30,10 @@ void C2_HOOK_FASTCALL InitPackFiles(void) {
 
     C2_HOOK_BUG_ON(sizeof(tTwatVfsMountPoint) != 264);
 
-    for (i = 1; i < (int)REC2_ASIZE(gTwatVfsFiles); i++) {
+    for (i = 1; i < (int)CARPOCALYPSE2_ASIZE(gTwatVfsFiles); i++) {
         gTwatVfsFiles[i].start = NULL;
     }
-    for (i = 0; i < (int)REC2_ASIZE(gTwatVfsMountPoints); i++) {
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gTwatVfsMountPoints); i++) {
         gTwatVfsMountPoints[i].header = NULL;
     }
 
@@ -50,7 +50,7 @@ tTWTVFS C2_HOOK_FASTCALL OpenPackFile(const char* path) {
     int i;
 
     // file header must be 56 bytes for compatibility with .TWT files
-    REC2_BUG_ON(sizeof(tTwatFileHeader) != 56);
+    CARPOCALYPSE2_BUG_ON(sizeof(tTwatFileHeader) != 56);
 
     strcpy(twatFilePath, path);
     strcat(twatFilePath, ".TWT");
@@ -58,7 +58,7 @@ tTWTVFS C2_HOOK_FASTCALL OpenPackFile(const char* path) {
     f = fopen(twatFilePath, "rb");
     if (f != NULL) {
         for (twt = 0; ; twt++) {
-            if (twt >= (int)REC2_ASIZE(gTwatVfsMountPoints)) {
+            if (twt >= (int)CARPOCALYPSE2_ASIZE(gTwatVfsMountPoints)) {
                 fclose(f);
                 return -1;
             }
@@ -98,7 +98,7 @@ void C2_HOOK_FASTCALL ClosePackFile(tTWTVFS twt) {
 // FUNCTION: CARMA2_HW 0x004b4760
 void C2_HOOK_FASTCALL PFfclose(FILE* pFile) {
 
-    if ((uintptr_t)pFile >= REC2_ASIZE(gTwatVfsFiles)) {
+    if ((uintptr_t)pFile >= CARPOCALYPSE2_ASIZE(gTwatVfsFiles)) {
         fclose(pFile);
     } else {
         gTwatVfsFiles[(uintptr_t)pFile].start = NULL;
@@ -112,12 +112,12 @@ FILE* C2_HOOK_FASTCALL PFfopen(const char* pPath, const char* mode) {
     int file_index;
     size_t twt_path_len;
 
-    for (twt = 0; twt < (int)REC2_ASIZE(gTwatVfsMountPoints); twt++) {
+    for (twt = 0; twt < (int)CARPOCALYPSE2_ASIZE(gTwatVfsMountPoints); twt++) {
         if (gTwatVfsMountPoints[twt].header != NULL && strstr(pPath, gTwatVfsMountPoints[twt].path) == pPath) {
             twt_path_len = strlen(gTwatVfsMountPoints[twt].path);
             for (i = 0; i < gTwatVfsMountPoints[twt].header->nbFiles; i++) {
                 if (DRStricmp(gTwatVfsMountPoints[twt].header->fileHeaders[i].filename, &pPath[twt_path_len + 1]) == 0) {
-                    for (file_index = 0; file_index < (int)REC2_ASIZE(gTwatVfsFiles) - 1; file_index++) {
+                    for (file_index = 0; file_index < (int)CARPOCALYPSE2_ASIZE(gTwatVfsFiles) - 1; file_index++) {
                         if (gTwatVfsFiles[file_index].start != NULL) {
                             continue;
                         }
@@ -140,7 +140,7 @@ int C2_HOOK_FASTCALL PFfgetc(FILE* pFile) {
     tTwatVfsFile* twtFile;
     int result;
 
-    if ((intptr_t)pFile >= REC2_ASIZE(gTwatVfsFiles)) {
+    if ((intptr_t)pFile >= CARPOCALYPSE2_ASIZE(gTwatVfsFiles)) {
         return fgetc(pFile);
     }
     twtFile = &gTwatVfsFiles[(uintptr_t)pFile];
@@ -163,7 +163,7 @@ char* C2_HOOK_FASTCALL PFfgets(char* buffer, br_size_t size, FILE* pFile) {
     char* writePtr;
     int i;
 
-    if ((intptr_t)pFile >= REC2_ASIZE(gTwatVfsFiles)) {
+    if ((intptr_t)pFile >= CARPOCALYPSE2_ASIZE(gTwatVfsFiles)) {
         return fgets(buffer, size, pFile);
     }
     twtFile = &gTwatVfsFiles[(uintptr_t)pFile];
@@ -192,7 +192,7 @@ char* C2_HOOK_FASTCALL PFfgets(char* buffer, br_size_t size, FILE* pFile) {
 int C2_HOOK_FASTCALL PFungetc(int ch, FILE* pFile) {
     tTwatVfsFile* twtFile;
 
-    if ((uintptr_t)pFile >= REC2_ASIZE(gTwatVfsFiles)) {
+    if ((uintptr_t)pFile >= CARPOCALYPSE2_ASIZE(gTwatVfsFiles)) {
         return ungetc(ch, pFile);
     }
     twtFile = &gTwatVfsFiles[(intptr_t)pFile];
@@ -213,7 +213,7 @@ br_size_t C2_HOOK_FASTCALL PFfread(void* buf, br_size_t size, unsigned int n, vo
     tU8 *pos;
     tU8 *end;
 
-    if ((uintptr_t)f >= REC2_ASIZE(gTwatVfsFiles) + 1) {
+    if ((uintptr_t)f >= CARPOCALYPSE2_ASIZE(gTwatVfsFiles) + 1) {
         return fread(buf, size, n, f);
     }
     read_size = size * n;
@@ -234,7 +234,7 @@ br_size_t C2_HOOK_FASTCALL PFfread(void* buf, br_size_t size, unsigned int n, vo
 // STUB: CARMA2_HW 0x004b4a80
 int C2_HOOK_FASTCALL PFfwrite(const void* buf, br_size_t size, unsigned int n, void* f) {
 
-    if ((uintptr_t)f >= REC2_ASIZE(gTwatVfsFiles)) {
+    if ((uintptr_t)f >= CARPOCALYPSE2_ASIZE(gTwatVfsFiles)) {
         return fwrite(buf, size, n, f);
     }
     FatalError(kFatalError_WriteAttemptToPackedFile_S, "unknown");
@@ -244,7 +244,7 @@ int C2_HOOK_FASTCALL PFfwrite(const void* buf, br_size_t size, unsigned int n, v
 int C2_HOOK_FASTCALL PFftell(FILE* pF) {
     int pos;
 
-    if ((uintptr_t)pF >= REC2_ASIZE(gTwatVfsFiles)) {
+    if ((uintptr_t)pF >= CARPOCALYPSE2_ASIZE(gTwatVfsFiles)) {
         return ftell(pF);
     }
     pos = gTwatVfsFiles[(uintptr_t)pF].pos - gTwatVfsFiles[(uintptr_t)pF].start;
@@ -257,7 +257,7 @@ int C2_HOOK_FASTCALL PFfseek(FILE* pF, int offset, int whence) {
     tTwatVfsFile* twtFile;
     tU8 *newpos;
 
-    if ((intptr_t)pF >= REC2_ASIZE(gTwatVfsFiles)) {
+    if ((intptr_t)pF >= CARPOCALYPSE2_ASIZE(gTwatVfsFiles)) {
         return fseek(pF, offset, whence);
     }
     twtFile = &gTwatVfsFiles[(uintptr_t)pF];
@@ -286,7 +286,7 @@ int C2_HOOK_FASTCALL PFfseek(FILE* pF, int offset, int whence) {
 void C2_HOOK_FASTCALL PFrewind(FILE* pF) {
     tTwatVfsFile* twtFile;
 
-    if ((int)pF >= REC2_ASIZE(gTwatVfsFiles)) {
+    if ((int)pF >= CARPOCALYPSE2_ASIZE(gTwatVfsFiles)) {
         rewind(pF);
     } else {
         twtFile = &gTwatVfsFiles[(uintptr_t)pF];
@@ -299,7 +299,7 @@ void C2_HOOK_FASTCALL PFrewind(FILE* pF) {
 int C2_HOOK_FASTCALL PFfeof(FILE* pFile) {
     tTwatVfsFile* twtFile;
 
-    if ((int)pFile >= REC2_ASIZE(gTwatVfsFiles)) {
+    if ((int)pFile >= CARPOCALYPSE2_ASIZE(gTwatVfsFiles)) {
         return feof(pFile);
     } else {
         twtFile = &gTwatVfsFiles[(uintptr_t)pFile];
@@ -313,7 +313,7 @@ void C2_HOOK_FASTCALL PFForEveryFile(const char* pThe_path, tPDForEveryFileRecur
     int i;
     char buffer[256];
 
-    for (twt = 0; twt < (int)REC2_ASIZE(gTwatVfsMountPoints); twt++) {
+    for (twt = 0; twt < (int)CARPOCALYPSE2_ASIZE(gTwatVfsMountPoints); twt++) {
         if (gTwatVfsMountPoints[twt].header == NULL) {
             continue;
         }
@@ -335,7 +335,7 @@ void C2_HOOK_FASTCALL PFForEveryFile2(const char* path, tEnumPathCallback pCallb
     int i;
     tPath_name twt_filePath;
 
-    for (twt = 0; twt < (int)REC2_ASIZE(gTwatVfsMountPoints); twt++) {
+    for (twt = 0; twt < (int)CARPOCALYPSE2_ASIZE(gTwatVfsMountPoints); twt++) {
         if (gTwatVfsMountPoints[twt].header != NULL && DRStricmp(gTwatVfsMountPoints[twt].path, path) == 0) {
             for (i = 0; i < gTwatVfsMountPoints[twt].header->nbFiles; i++) {
                 PathCat(twt_filePath, path, gTwatVfsMountPoints[twt].header->fileHeaders[i].filename);

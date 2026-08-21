@@ -1,6 +1,6 @@
 #include "38-flicplay.h"
 
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 
 // GLOBAL: CARMA2_HW 0x0068b8b4
 float gFlic_sound_delay_pre_smack;

@@ -5,7 +5,7 @@
 #include "37-brucetrk.h"
 #include "globvars.h"
 #include "globvrkm.h"
-#include "rec2_macros.h"
+#include "carpocalypse2_macros.h"
 
 // GLOBAL: CARMA2_HW 0x00591188
 int gSky_on = 1;
@@ -129,10 +129,10 @@ void C2_HOOK_FASTCALL FrobFog(void) {
     if (material != NULL) {
         FogAccordingToGPSCDE(material);
     }
-    for (i = 0; i < (int)REC2_ASIZE(gMaterial); i++) {
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gMaterial); i++) {
         FogAccordingToGPSCDE(gMaterial[i]);
     }
-    for (i = 0; i < (int)REC2_ASIZE(gCurrent_race.material_modifiers); i++) {
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gCurrent_race.material_modifiers); i++) {
         if (gCurrent_race.material_modifiers[i].skid_mark_material != NULL) {
             FogAccordingToGPSCDE(gCurrent_race.material_modifiers[i].skid_mark_material);
         }
@@ -257,7 +257,7 @@ void C2_HOOK_STDCALL SetYon(br_scalar pYon) {
         pYon = 5.0f;
     }
 
-    for (i = 0; i < REC2_ASIZE(gCamera_list); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gCamera_list); i++) {
         if (gCamera_list[i] != NULL) {
             camera_ptr = gCamera_list[i]->type_data;
             camera_ptr->yon_z = pYon;

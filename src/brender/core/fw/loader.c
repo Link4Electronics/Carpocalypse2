@@ -101,7 +101,7 @@ br_image* C2_HOOK_STDCALL ImageLoad(const char* name) {
 
 	img->type = BR_IMG_FRAMEWORK;
 
-#ifndef REC2_MATCHING
+#ifndef CARPOCALYPSE2_MATCHING
     C2_HOOK_BUG_ON(sizeof(br_image_section) != 0x18);
 #endif
 	img->sections = BrResAllocate(img, sizeof(br_image_section) * coff_header.n_sections, BR_MEMORY_IMAGE_SECTIONS);
@@ -119,9 +119,9 @@ br_image* C2_HOOK_STDCALL ImageLoad(const char* name) {
 		img->sections[i].mem_size	 = section_header.virtual_size;
 		img->sections[i].data_size 	 = section_header.data_size;
 		img->sections[i].data_offset = section_header.data_offset;
-#ifdef REC2_FIX_BUGS
-		img->sections[i].flags       = section_header.flags;  /* Added by rec2 */
-#endif /* REC2_FIX_BUGS */
+#ifdef CARPOCALYPSE2_FIX_BUGS
+		img->sections[i].flags       = section_header.flags;  /* Added by carpocalypse2 */
+#endif /* CARPOCALYPSE2_FIX_BUGS */
 	}
 
 	arena_size = nt_header.image_size;
@@ -163,7 +163,7 @@ br_image* C2_HOOK_STDCALL ImageLoad(const char* name) {
 
 		ed = (export_directory*)(arena_base + nt_header.directories[DIRECTORY_EXPORT].rva);
 
-		img->identifier = BrResStrDup(img, (char*)(arena_base + ed->name));  /* BrResStrDup added by rec2 */
+		img->identifier = BrResStrDup(img, (char*)(arena_base + ed->name));  /* BrResStrDup added by carpocalypse2 */
 		img->ordinal_base = ed->ordinal_base;
 		img->n_functions = ed->n_entries;
 		img->functions = (void**)(arena_base + ed->export_table);
@@ -277,7 +277,7 @@ br_image* C2_HOOK_STDCALL ImageLoad(const char* name) {
 	}
 
 #ifdef BRENDER_FIX_BUGS
-    /* Added by rec2: fixes DEP */
+    /* Added by carpocalypse2: fixes DEP */
     for (i = 0; i < coff_header.n_sections; i++) {
         br_uint_32 map_flags = 0;
         if (img->sections[i].flags & IMAGE_SECTION_FLAG_MEM_EXECUTE) {

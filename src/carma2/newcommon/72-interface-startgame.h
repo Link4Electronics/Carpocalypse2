@@ -1,7 +1,7 @@
 #ifndef GUARD_72_STARTGAME_H
 #define GUARD_72_STARTGAME_H
 
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 
 extern tFrontend_spec gFrontend_START_GAME;
 

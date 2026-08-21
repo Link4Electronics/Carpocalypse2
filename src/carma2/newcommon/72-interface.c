@@ -19,8 +19,8 @@
 #include "72-interface-quit.h"
 #include "globvars.h"
 #include "platform.h"
-#include "rec2_macros.h"
-#include "rec2_types.h"
+#include "carpocalypse2_macros.h"
+#include "carpocalypse2_types.h"
 
 #include "c2_string.h"
 #include <ctype.h>
@@ -277,7 +277,7 @@ void C2_HOOK_FASTCALL FuckWithWidths(tFrontend_spec* pFrontend) {
 
     // item = pFrontend->items;
     for (i = 0; i < pFrontend->count_items; i++) {
-#ifdef REC2_FIX_BUGS
+#ifdef CARPOCALYPSE2_FIX_BUGS
         text = NULL;
 #endif
 
@@ -312,7 +312,7 @@ br_pixelmap* C2_HOOK_FASTCALL GetThisFuckingPixelmapPleaseMrTwatter(const char* 
     f = PFfopen(the_path, "rb");
     if (f != NULL) {
         PFfclose(f);
-        count = BrPixelmapLoadMany(the_path, pixelmaps, REC2_ASIZE(pixelmaps));
+        count = BrPixelmapLoadMany(the_path, pixelmaps, CARPOCALYPSE2_ASIZE(pixelmaps));
         strcpy(the_path, pName);
         str = strchr(the_path, '.');
         *str = '\0';
@@ -364,7 +364,7 @@ void C2_HOOK_FASTCALL LoadMenuSettings(tFrontend_spec* pFrontend) {
 
     f = DRfopen(path, "rt");
     if (f == NULL) {
-#ifdef REC2_FIX_BUGS
+#ifdef CARPOCALYPSE2_FIX_BUGS
         FatalError(kFatalError_Mysterious_SS, pFrontend->name, path);
 #else
         FatalError(kFatalError_Mysterious_SS);
@@ -414,7 +414,7 @@ void C2_HOOK_FASTCALL LoadMenuSettings(tFrontend_spec* pFrontend) {
     }
     // Copy item 99 (=last index)
     // FIXME: stringid = 0x401 (==> find out function of this item)
-    memcpy(&pFrontend->items[REC2_ASIZE(pFrontend->items) - 1], &gDefault_last_interface_item, sizeof(tFrontend_item_spec));
+    memcpy(&pFrontend->items[CARPOCALYPSE2_ASIZE(pFrontend->items) - 1], &gDefault_last_interface_item, sizeof(tFrontend_item_spec));
 
     pFrontend->count_scrollers = GetAnInt(f);
     if (pFrontend->count_scrollers != 0) {
@@ -453,7 +453,7 @@ void C2_HOOK_FASTCALL LoadMenuSettings(tFrontend_spec* pFrontend) {
         }
     }
 
-#ifdef REC2_FIX_BUGS
+#ifdef CARPOCALYPSE2_FIX_BUGS
     PFfclose(f);
 #else
     fclose(f);
@@ -703,7 +703,7 @@ void C2_HOOK_FASTCALL FRONTEND_CreateMenuButton(tFrontend_brender_item* pFronten
     pFrontend_brender_item->model = BrModelAllocate("ButtonModel", 4, 2);
     pFrontend_brender_item->material = BrMaterialAllocate("ButtonMaterial");
     if (pFrontend_brender_item->model == NULL || pFrontend_brender_item->material == NULL || pFrontend_brender_item->actor == NULL) {
-#ifdef REC2_FIX_BUGS
+#ifdef CARPOCALYPSE2_FIX_BUGS
         FatalError(kFatalError_OOM_S, "");
 #else
         FatalError(kFatalError_OOM_S);
@@ -1128,7 +1128,7 @@ void C2_HOOK_FASTCALL KillAPOactor(br_actor* pActor) {
 int C2_HOOK_FASTCALL LoadGameOutFunc(tFrontend_spec* pFrontend) {
     int i;
 
-    for (i = 0; i < (int)REC2_ASIZE(gFrontend_billboard_actors); i++) {
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gFrontend_billboard_actors); i++) {
         KillAPOactor(gFrontend_billboard_actors[i]);
     }
     BrActorFree(gFrontend_menu_camera);

@@ -1,5 +1,5 @@
-#ifndef REC2_V1DBFILE_H
-#define REC2_V1DBFILE_H
+#ifndef CARPOCALYPSE2_V1DBFILE_H
+#define CARPOCALYPSE2_V1DBFILE_H
 
 #include "c2_hooks.h"
 
@@ -149,4 +149,4 @@ br_error C2_HOOK_CDECL BrActorFileCount(char* filename, br_uint_16* num);
 
 br_error C2_HOOK_CDECL BrMaterialFileCount(char* filename, br_uint_16* num);
 
-#endif // REC2_V1DBFILE_H
+#endif // CARPOCALYPSE2_V1DBFILE_H

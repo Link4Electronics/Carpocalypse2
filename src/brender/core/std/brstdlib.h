@@ -1,5 +1,5 @@
-#ifndef REC2_BRSTDLIB_H
-#define REC2_BRSTDLIB_H
+#ifndef CARPOCALYPSE2_BRSTDLIB_H
+#define CARPOCALYPSE2_BRSTDLIB_H
 
 #include "c2_hooks.h"
 
@@ -57,4 +57,4 @@ br_int_32 C2_HOOK_CDECL BrVSprintfN(char* buf, br_size_t buf_size, const char* f
 
 br_int_32 C2_HOOK_CDECL BrVSScanf(char* buf, const char* fmt, va_list args);
 
-#endif // REC2_BRSTDLIB_H
+#endif // CARPOCALYPSE2_BRSTDLIB_H

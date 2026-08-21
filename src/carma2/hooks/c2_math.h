@@ -1,5 +1,5 @@
-#ifndef REC2_MATH_H
-#define REC2_MATH_H
+#ifndef CARPOCALYPSE2_MATH_H
+#define CARPOCALYPSE2_MATH_H
 
 #include <math.h>
 
@@ -27,4 +27,4 @@
 
 #endif
 
-#endif // REC2_MATH_H
+#endif // CARPOCALYPSE2_MATH_H

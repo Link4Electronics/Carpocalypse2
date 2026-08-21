@@ -2,7 +2,7 @@
 
 #include "utility.h"
 
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 
 #include "controls.h"
 #include "drmem.h"

@@ -1,5 +1,5 @@
-#ifndef REC2_BREXCEPT_H
-#define REC2_BREXCEPT_H
+#ifndef CARPOCALYPSE2_BREXCEPT_H
+#define CARPOCALYPSE2_BREXCEPT_H
 
 #include "c2_hooks.h"
 
@@ -15,4 +15,4 @@ br_exception C2_HOOK_CDECL _BrExceptionValueFetch(br_exception type, void** evp)
 
 void* C2_HOOK_CDECL _BrExceptionResource(void);
 
-#endif // REC2_BREXCEPT_H
+#endif // CARPOCALYPSE2_BREXCEPT_H

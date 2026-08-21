@@ -1,11 +1,11 @@
-#ifndef REC2_WORLD_H
-#define REC2_WORLD_H
+#ifndef CARPOCALYPSE2_WORLD_H
+#define CARPOCALYPSE2_WORLD_H
 
 #include "c2_hooks.h"
 
 #include "c2_stdio.h"
 
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 
 extern int gSize_powerup_queue;
 extern br_scalar gSight_distance_squared;
@@ -396,4 +396,4 @@ float C2_HOOK_FAKE_THISCALL ControlBoundFunkGroovePlus(int pSlot_number, undefin
 
 void C2_HOOK_FASTCALL ProcessTrack(br_actor* pWorld, tTrack_spec* pTrack_spec, br_actor* pCamera, br_matrix34* pCamera_to_world_transform);
 
-#endif // REC2_WORLD_H
+#endif // CARPOCALYPSE2_WORLD_H

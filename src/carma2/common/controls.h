@@ -1,7 +1,7 @@
-#ifndef REC2_CONTROLS_H
-#define REC2_CONTROLS_H
+#ifndef CARPOCALYPSE2_CONTROLS_H
+#define CARPOCALYPSE2_CONTROLS_H
 
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 
 #include "c2_hooks.h"
 
@@ -289,4 +289,4 @@ void C2_HOOK_FASTCALL LookRight(void);
 
 void C2_HOOK_FASTCALL DisplayUserMessage(void);
 
-#endif //REC2_CONTROLS_H
+#endif //CARPOCALYPSE2_CONTROLS_H

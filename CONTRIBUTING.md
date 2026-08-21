@@ -1,4 +1,4 @@
-# Contributing to rec2
+# Contributing to carpocalypse2
 
 Documenting a complete game is no easy task. So every little help is much appreciated.
 

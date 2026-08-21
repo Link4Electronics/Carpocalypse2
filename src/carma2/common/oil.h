@@ -1,7 +1,7 @@
-#ifndef REC2_OIL_H
-#define REC2_OIL_H
+#ifndef CARPOCALYPSE2_OIL_H
+#define CARPOCALYPSE2_OIL_H
 
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 
 #include "c2_hooks.h"
 
@@ -27,4 +27,4 @@ void C2_HOOK_FASTCALL GetOilSpillDetails(int pIndex, br_actor** pActor, br_scala
 
 void C2_HOOK_FASTCALL MungeIndexedOilsHeightAboveGround(int pIndex);
 
-#endif //REC2_OIL_H
+#endif //CARPOCALYPSE2_OIL_H

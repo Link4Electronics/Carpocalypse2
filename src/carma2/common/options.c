@@ -7,8 +7,8 @@
 
 #include "c2_string.h"
 
-#include "rec2_macros.h"
-#include "rec2_types.h"
+#include "carpocalypse2_macros.h"
+#include "carpocalypse2_types.h"
 
 
 // GLOBAL: CARMA2_HW 0x00688458
@@ -38,7 +38,7 @@ void C2_HOOK_FASTCALL StripControls(char* pStr) {
         if ((tU8)pStr[i] < ' ') {
             memmove(&pStr[i], &pStr[i + 1], (len - i) * sizeof(char));
             len--;
-#ifdef REC2_FIX_BUGS
+#ifdef CARPOCALYPSE2_FIX_BUGS
             /* correctly handle stripping multiple control characters */
             i--;
 #endif
@@ -57,7 +57,7 @@ void C2_HOOK_FASTCALL LoadKeyNames(void) {
     if (f == NULL) {
         FatalError(kFatalError_CantOpenKeyNamesFile);
     }
-    for (i = 0; i < REC2_ASIZE(gKey_names); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gKey_names); i++) {
         PFfgets(s, sizeof(s), f);
         StripControls(s);
         gKey_names[i] = BrMemAllocate(strlen(s) + 1, kMem_misc);
@@ -69,7 +69,7 @@ void C2_HOOK_FASTCALL LoadKeyNames(void) {
 void C2_HOOK_FASTCALL DisposeKeyNames(void) {
     int i;
 
-    for (i = 0; i < REC2_ASIZE(gKey_names); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gKey_names); i++) {
         BrMemFree(gKey_names[i]);
     }
 }
@@ -79,10 +79,10 @@ void C2_HOOK_FASTCALL BackupKeyMappings(void) {
 
     gOrig_key_map_index = gKey_map_index;
 
-    C2_HOOK_BUG_ON(REC2_ASIZE(gBackup_key_mappings) != 4);
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gBackup_key_mappings) != 4);
     C2_HOOK_BUG_ON(sizeof(gKey_mapping) != 4 * 77);
 
-    for (i = 0; i < REC2_ASIZE(gBackup_key_mappings); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gBackup_key_mappings); i++) {
 
         gKey_map_index = i;
         LoadKeyMapping();

@@ -1,5 +1,5 @@
-#ifndef REC2_MEM_H
-#define REC2_MEM_H
+#ifndef CARPOCALYPSE2_MEM_H
+#define CARPOCALYPSE2_MEM_H
 
 #include "c2_hooks.h"
 
@@ -17,4 +17,4 @@ extern void* C2_HOOK_CDECL BrMemCalloc(int nelems, br_size_t size, br_uint_8 typ
 
 extern char* C2_HOOK_CDECL BrMemStrDup(const char* str);
 
-#endif // REC2_MEM_H
+#endif // CARPOCALYPSE2_MEM_H

@@ -50,7 +50,7 @@ int main(int argc, char *argv[]) {
 
     g_PerformanceFrequency = SDL_GetPerformanceFrequency();
 
-    g_SDL_Window = SDL_CreateWindow("rec2", 640, 480, SDL_WINDOW_OPENGL);
+    g_SDL_Window = SDL_CreateWindow("carpocalypse2", 640, 480, SDL_WINDOW_OPENGL);
     if (g_SDL_Window == NULL) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "SDL_CreateWindow failed (%s)", SDL_GetError());
         SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "SDL_CreateWindow failed", SDL_GetError(), NULL);
@@ -59,7 +59,7 @@ int main(int argc, char *argv[]) {
     }
     gHWnd = g_SDL_Window;
 
-    const char* args[] = { "rec2", NULL };
+    const char* args[] = { "carpocalypse2", NULL };
 
     GameMain(1, args);
 

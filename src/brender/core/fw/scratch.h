@@ -1,5 +1,5 @@
-#ifndef REC2_SCRATCH_H
-#define REC2_SCRATCH_H
+#ifndef CARPOCALYPSE2_SCRATCH_H
+#define CARPOCALYPSE2_SCRATCH_H
 
 #include "c2_hooks.h"
 
@@ -17,4 +17,4 @@ char* C2_HOOK_CDECL BrScratchString(void);
 
 br_size_t C2_HOOK_CDECL BrScratchStringSize(void);
 
-#endif // REC2_SCRATCH_H
+#endif // CARPOCALYPSE2_SCRATCH_H

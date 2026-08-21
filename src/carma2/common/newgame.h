@@ -1,9 +1,9 @@
-#ifndef REC2_NEWGAME_H
-#define REC2_NEWGAME_H
+#ifndef CARPOCALYPSE2_NEWGAME_H
+#define CARPOCALYPSE2_NEWGAME_H
 
 #include "c2_hooks.h"
 
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 
 extern tNet_game_options gNet_settings[9];
 extern int gNet_grid_starts[10];
@@ -31,4 +31,4 @@ void C2_HOOK_FASTCALL SetUpOtherNetThings(tNet_game_details* pGame_details);
 
 void C2_HOOK_FASTCALL InitGamesToJoin(void);
 
-#endif //REC2_NEWGAME_H
+#endif //CARPOCALYPSE2_NEWGAME_H

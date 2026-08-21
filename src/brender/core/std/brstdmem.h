@@ -1,5 +1,5 @@
-#ifndef REC2_BRSTDMEM_H
-#define REC2_BRSTDMEM_H
+#ifndef CARPOCALYPSE2_BRSTDMEM_H
+#define CARPOCALYPSE2_BRSTDMEM_H
 
 #include "c2_hooks.h"
 
@@ -16,4 +16,4 @@ br_size_t C2_HOOK_CDECL BrStdlibInquire(br_uint_8 type);
 
 br_uint_32 C2_HOOK_CDECL BrStdlibAlign(br_uint_8 type);
 
-#endif // REC2_BRSTDMEM_H
+#endif // CARPOCALYPSE2_BRSTDMEM_H

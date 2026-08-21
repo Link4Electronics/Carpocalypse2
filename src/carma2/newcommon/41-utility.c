@@ -15,7 +15,7 @@
 #include "globvars.h"
 #include "globvrpb.h"
 #include "platform.h"
-#include "rec2_macros.h"
+#include "carpocalypse2_macros.h"
 
 #include "c2_string.h"
 
@@ -162,7 +162,7 @@ br_scalar C2_HOOK_STDCALL SRandomPosNeg(br_scalar pN) {
 // FUNCTION: CARMA2_HW 0x00513690
 void C2_HOOK_FASTCALL PathCat(char* pDestn_str, const char* pStr_1, const char* pStr_2) {
 
-#ifdef REC2_FIX_BUGS
+#ifdef CARPOCALYPSE2_FIX_BUGS
     if (pDestn_str != pStr_1) { // Added to avoid strcpy overlap checks
         strcpy(pDestn_str, pStr_1);
     }
@@ -588,9 +588,9 @@ int C2_HOOK_FASTCALL Flash(tU32 pPeriod, tU32* pLast_change, int* pCurrent_state
 
 double C2_HOOK_FASTCALL RGBDifferenceSqr(tRGB_colour* pColour_1, tRGB_colour* pColour_2) {
 
-    return REC2_SQR(pColour_1->red - pColour_2->red)
-           + REC2_SQR(pColour_1->green - pColour_2->green)
-           + REC2_SQR(pColour_1->blue - pColour_2->blue);
+    return CARPOCALYPSE2_SQR(pColour_1->red - pColour_2->red)
+           + CARPOCALYPSE2_SQR(pColour_1->green - pColour_2->green)
+           + CARPOCALYPSE2_SQR(pColour_1->blue - pColour_2->blue);
 }
 
 int C2_HOOK_FASTCALL FindBestMatch(tRGB_colour* pRGB_colour, br_pixelmap* pPalette) {
@@ -1404,7 +1404,7 @@ void C2_HOOK_FASTCALL WhitenVertexRGB(br_model** pModels, int pCount) {
     }
 }
 
-#ifdef REC2_MATCHING
+#ifdef CARPOCALYPSE2_MATCHING
 // FUNCTION: CARMA2_HW 0x00518700
 void C2_HOOK_FASTCALL BRPM_convert(br_pixelmap* pMap, int pPixel_type) {
     void* pixel;
@@ -1574,7 +1574,7 @@ void C2_HOOK_FASTCALL DrPixelmapRectangleCopyPossibleLock(br_pixelmap* dst, br_i
 // FUNCTION: CARMA2_HW 0x005191f0
 void C2_HOOK_FASTCALL PixelmapSwapByteOrder(br_pixelmap* pMap) {
 
-#if 0 // FIXME: introduce endian.h-like rec2_endian.h header
+#if 0 // FIXME: introduce endian.h-like carpocalypse2_endian.h header
     br_uint_16 y;
     br_uint_8* row_ptr;
     br_colour* ptr;

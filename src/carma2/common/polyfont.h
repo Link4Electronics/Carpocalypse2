@@ -1,8 +1,8 @@
-#ifndef REC2_POLYFONT_H
-#define REC2_POLYFONT_H
+#ifndef CARPOCALYPSE2_POLYFONT_H
+#define CARPOCALYPSE2_POLYFONT_H
 
 #include <brender/brender.h>
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 
 #include "c2_hooks.h"
 
@@ -57,4 +57,4 @@ void C2_HOOK_FASTCALL TransparentPolyFontText(const char* pText, int pX, int pY,
 
 void C2_HOOK_FASTCALL PolyClipName(char *pText, int pFont, int pWidth);
 
-#endif //REC2_POLYFONT_H
+#endif //CARPOCALYPSE2_POLYFONT_H

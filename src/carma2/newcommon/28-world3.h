@@ -2,7 +2,7 @@
 #define GUARD_28_WORLD3_H
 
 #include "brender/brender.h"
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 
 extern br_actor* gAdditional_actors;
 

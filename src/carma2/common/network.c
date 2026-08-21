@@ -574,7 +574,7 @@ void C2_HOOK_FASTCALL NetSendMessageStacks(void) {
 int C2_HOOK_FASTCALL NetInitialise(void) {
     int i;
 
-#ifndef REC2_MATCHING
+#ifndef CARPOCALYPSE2_MATCHING
     C2_HOOK_BUG_ON(sizeof(tMin_message) != 0x5c);
     C2_HOOK_BUG_ON(sizeof(tMid_message) != 0x84);
     C2_HOOK_BUG_ON(sizeof(tMax_message) != 0x204);

@@ -1,6 +1,6 @@
 import collections
 
-# Shared types between Ghidra's Jython and rec2's Pythoh scripts
+# Shared types between Ghidra's Jython and carpocalypse2's Pythoh scripts
 
 class FunctionArgument:
     def __init__(self, type, name):

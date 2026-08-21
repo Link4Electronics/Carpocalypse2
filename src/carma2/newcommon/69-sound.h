@@ -1,7 +1,7 @@
 #ifndef GUARD_69_SOUND_H
 #define GUARD_69_SOUND_H
 
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 #include "brender/brender.h"
 #include "s3/s3.h"
 

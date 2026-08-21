@@ -1,5 +1,5 @@
-#ifndef REC2_TOKEN_H
-#define REC2_TOKEN_H
+#ifndef CARPOCALYPSE2_TOKEN_H
+#define CARPOCALYPSE2_TOKEN_H
 
 #include "c2_hooks.h"
 
@@ -21,4 +21,4 @@ br_int_32 C2_HOOK_CDECL BrTokenFindMany(const char* pattern, br_token* tokens, b
 
 br_token C2_HOOK_CDECL BrTokenFindType(br_token* ptype, const char* base, br_token* types, br_int_32 ntypes);
 
-#endif // REC2_TOKEN_H
+#endif // CARPOCALYPSE2_TOKEN_H

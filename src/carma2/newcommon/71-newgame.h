@@ -2,7 +2,7 @@
 #define GUARD_71_NEWGAME_H
 
 #include "c2_hooks.h"
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 
 extern tNet_game_options gNet_settings[9];
 

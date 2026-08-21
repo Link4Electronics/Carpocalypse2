@@ -1,9 +1,9 @@
-#ifndef REC2_GRAPHICS_H
-#define REC2_GRAPHICS_H
+#ifndef CARPOCALYPSE2_GRAPHICS_H
+#define CARPOCALYPSE2_GRAPHICS_H
 
 #include "c2_hooks.h"
 
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 
 extern int gPalette_changed;
 extern int gPalette_munged;
@@ -338,4 +338,4 @@ void C2_HOOK_FASTCALL DRPixelmapCopyMapBlack(br_pixelmap* pDest, br_pixelmap* pS
 
 void C2_HOOK_FASTCALL RenderShadows(br_actor* pWorld, tTrack_spec* pTrack_spec, br_actor* pCamera, br_matrix34* pCamera_to_world_transform);
 
-#endif //REC2_GRAPHICS_H
+#endif //CARPOCALYPSE2_GRAPHICS_H

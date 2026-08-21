@@ -1,5 +1,5 @@
-#ifndef REC2_IO_H_
-#define REC2_IO_H_
+#ifndef CARPOCALYPSE2_IO_H_
+#define CARPOCALYPSE2_IO_H_
 
 #ifdef _MSC_VER
 #include <io.h>
@@ -25,4 +25,4 @@
 
 #endif
 
-#endif //REC2_IO_H_
+#endif //CARPOCALYPSE2_IO_H_

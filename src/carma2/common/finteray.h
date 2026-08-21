@@ -1,9 +1,9 @@
-#ifndef REC2_FINTERAY_H
-#define REC2_FINTERAY_H
+#ifndef CARPOCALYPSE2_FINTERAY_H
+#define CARPOCALYPSE2_FINTERAY_H
 
 #include "c2_hooks.h"
 
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 
 extern int gPling_materials;
 extern int gTemp_group;

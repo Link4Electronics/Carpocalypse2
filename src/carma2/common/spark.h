@@ -1,7 +1,7 @@
-#ifndef REC2_SPARK_H
-#define REC2_SPARK_H
+#ifndef CARPOCALYPSE2_SPARK_H
+#define CARPOCALYPSE2_SPARK_H
 
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 #include "brender/brender.h"
 
 #include "c2_stdio.h"
@@ -154,4 +154,4 @@ void C2_HOOK_FASTCALL ReplaySmoke(br_pixelmap* pRender_screen, br_pixelmap* pDep
 
 void C2_HOOK_FASTCALL RenderSmoke(br_pixelmap* pRender_screen, br_pixelmap* pDepth_buffer, br_actor* pCamera, br_matrix34* pCamera_to_world, tU32 pTime);
 
-#endif //REC2_SPARK_H
+#endif //CARPOCALYPSE2_SPARK_H

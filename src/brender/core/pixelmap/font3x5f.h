@@ -1,5 +1,5 @@
-#ifndef REC2_FONT3X5F_H
-#define REC2_FONT3X5F_H
+#ifndef CARPOCALYPSE2_FONT3X5F_H
+#define CARPOCALYPSE2_FONT3X5F_H
 
 #include "c2_hooks.h"
 
@@ -7,4 +7,4 @@
 
 extern br_font br_font3x5f;
 
-#endif // REC2_FONT3X5F_H
+#endif // CARPOCALYPSE2_FONT3X5F_H

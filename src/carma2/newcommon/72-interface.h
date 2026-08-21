@@ -2,7 +2,7 @@
 #define GUARD_72_INTERFACE_H
 
 #include "c2_hooks.h"
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 
 extern tFrontend_brender_item gFrontend_brender_items[100];
 extern tFrontend_spec* gCurrent_frontend_spec;

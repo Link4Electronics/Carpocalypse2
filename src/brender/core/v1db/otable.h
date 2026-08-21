@@ -1,5 +1,5 @@
-#ifndef REC2_OTABLE_H
-#define REC2_OTABLE_H
+#ifndef CARPOCALYPSE2_OTABLE_H
+#define CARPOCALYPSE2_OTABLE_H
 
 #include "brender/br_types.h"
 
@@ -31,4 +31,4 @@ void C2_HOOK_STDCALL RenderOrderTableList(void);
 
 void C2_HOOK_STDCALL RenderPrimaryOrderTable(void);
 
-#endif // REC2_OTABLE_H
+#endif // CARPOCALYPSE2_OTABLE_H

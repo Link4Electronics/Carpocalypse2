@@ -2,7 +2,7 @@
 #define GUARD_27_POWERUP_H
 
 #include "c2_hooks.h"
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 
 extern tHeadup_icon gPickedup_powerups[20];
 extern tSlot_info gCost_APO;

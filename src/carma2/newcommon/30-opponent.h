@@ -1,7 +1,7 @@
 #ifndef GUARD_30_OPPONENT_H
 #define GUARD_30_OPPONENT_H
 
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 
 extern float gOpponent_nastyness_frigger;
 extern int gMinTimeOpponentRepair;

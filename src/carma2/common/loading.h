@@ -1,12 +1,12 @@
-#ifndef REC2_LOADING_H
-#define REC2_LOADING_H
+#ifndef CARPOCALYPSE2_LOADING_H
+#define CARPOCALYPSE2_LOADING_H
 
 #include "c2_hooks.h"
 
 #include "c2_stdio.h"
 
 #include "brender/br_types.h"
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 
 #define TWT_MOUNT_SUCCEEDED(TWTVFS) ((TWTVFS) >= 0)
 
@@ -495,4 +495,4 @@ void C2_HOOK_FASTCALL GetPairOfFloatPercents(FILE* pF, float* pF1, float* pF2);
 
 void C2_HOOK_FASTCALL GetThreeFloatPercents(FILE* pF, float* pF1, float* pF2, float* pF3);
 
-#endif //REC2_LOADING_H
+#endif //CARPOCALYPSE2_LOADING_H

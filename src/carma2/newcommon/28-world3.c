@@ -9,7 +9,7 @@
 #include "70-packfile.h"
 #include "globvars.h"
 #include "globvrpb.h"
-#include "rec2_macros.h"
+#include "carpocalypse2_macros.h"
 
 #include <string.h>
 
@@ -52,7 +52,7 @@ void C2_HOOK_FASTCALL InitTreeSurgery(void) {
             GetAString(file, gTree_surgery_pass2[i].original);
             GetAString(file, gTree_surgery_pass2[i].replacement);
         }
-#ifdef REC2_FIX_BUGS
+#ifdef CARPOCALYPSE2_FIX_BUGS
         PFfclose(file);
 #endif
     } else {
@@ -308,9 +308,9 @@ int C2_HOOK_FASTCALL AddPixelmaps(tBrender_storage* pStorage_space, const char* 
     total = 0;
     if (gDisableTiffConversion) {
         SepDirAndFilename(path, path_dirname, path_stem);
-        new_ones = LoadBunchOfPixies(path_dirname, path_stem, temp_array, REC2_ASIZE(temp_array));
+        new_ones = LoadBunchOfPixies(path_dirname, path_stem, temp_array, CARPOCALYPSE2_ASIZE(temp_array));
     } else {
-        new_ones = DRPixelmapLoadMany(path, temp_array, REC2_ASIZE(temp_array));
+        new_ones = DRPixelmapLoadMany(path, temp_array, CARPOCALYPSE2_ASIZE(temp_array));
     }
     if (new_ones == 0) {
         FatalError(kFatalError_CantLoadPixelmapFile_S, path);
@@ -420,7 +420,7 @@ br_material* C2_HOOK_FASTCALL LoadSingleMaterial(tBrender_storage* pStorage_spac
         FatalError(kFatalError_InsufficientMaterialSlots);
         return NULL;
     }
-#ifdef REC2_FIX_BUGS
+#ifdef CARPOCALYPSE2_FIX_BUGS
     return NULL;
 #endif
 }
@@ -452,7 +452,7 @@ int C2_HOOK_FASTCALL AddShadeTables(tBrender_storage* pStorage_space, const char
     int total;
     int i;
 
-    total = BrPixelmapLoadMany(pPath, temp_array, REC2_ASIZE(temp_array));
+    total = BrPixelmapLoadMany(pPath, temp_array, CARPOCALYPSE2_ASIZE(temp_array));
     if (total == 0) {
         FatalError(kFatalError_CannotLoadShadeTableFileOrItIsEmpty_S, pPath);
     }
@@ -487,7 +487,7 @@ int C2_HOOK_FASTCALL AddModels(tBrender_storage* pStorage_space, const char* pPa
     br_model* temp_array[2000];
 
     new_ones = 0;
-    total = BrModelLoadMany(pPath, temp_array, REC2_ASIZE(temp_array));
+    total = BrModelLoadMany(pPath, temp_array, CARPOCALYPSE2_ASIZE(temp_array));
     WhitenVertexRGB(temp_array, total);
     if (total == 0) {
         FatalError(kFatalError_CannotLoadModelFileOrItIsEmpty_S, pPath);
@@ -525,7 +525,7 @@ int C2_HOOK_FASTCALL AddMaterials(tBrender_storage* pStorage_space, const char* 
     br_material* temp_array[500];
 
     new_ones = 0;
-    total = BrMaterialLoadMany(pPath, temp_array, REC2_ASIZE(temp_array));
+    total = BrMaterialLoadMany(pPath, temp_array, CARPOCALYPSE2_ASIZE(temp_array));
     if (total == 0) {
         FatalError(kFatalError_CannotLoadMaterialFileOrItIsEmpty_S, pPath);
     }
@@ -596,7 +596,7 @@ int C2_HOOK_FASTCALL GetFileName(const char *path, tName_list *pList) {
     }
     SepDirAndFilename(pathUpper, dir_path, stem_path);
     strcpy(pList->items[pList->size], stem_path);
-    if (pList->size < (int)REC2_ASIZE(pList->items)) {
+    if (pList->size < (int)CARPOCALYPSE2_ASIZE(pList->items)) {
         pList->size += 1;
     }
     return 0;
@@ -630,7 +630,7 @@ int C2_HOOK_FASTCALL GetAdditionalFileName(const char* path, tName_list* pList) 
     }
     if (!alreadyInList) {
         strcpy(pList->items[pList->size], stem_path);
-        if (pList->size < (int)REC2_ASIZE(pList->items)) {
+        if (pList->size < (int)CARPOCALYPSE2_ASIZE(pList->items)) {
             pList->size += 1;
         }
     }

@@ -1,12 +1,12 @@
-#ifndef REC2_PEDESTRN_H
-#define REC2_PEDESTRN_H
+#ifndef CARPOCALYPSE2_PEDESTRN_H
+#define CARPOCALYPSE2_PEDESTRN_H
 
 #include "c2_stdio.h"
 
 #include "c2_hooks.h"
 
 #include <brender/brender.h>
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 
 extern tPedestrian* gPedestrian_array;
 extern int gPed_count;
@@ -296,4 +296,4 @@ void C2_HOOK_FASTCALL RenderLollipops(br_pixelmap* pRender_buffer, br_pixelmap* 
 
 int C2_HOOK_FASTCALL CalmDownAllPeds(void);
 
-#endif //REC2_PEDESTRN_H
+#endif //CARPOCALYPSE2_PEDESTRN_H

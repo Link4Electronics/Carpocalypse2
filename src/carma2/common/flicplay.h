@@ -1,9 +1,9 @@
-#ifndef REC2_FLICPLAY_H
-#define REC2_FLICPLAY_H
+#ifndef CARPOCALYPSE2_FLICPLAY_H
+#define CARPOCALYPSE2_FLICPLAY_H
 
 #include "c2_hooks.h"
 
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 
 int C2_HOOK_FASTCALL GetPanelFlicFrameIndex(int pIndex);
 

@@ -1,5 +1,5 @@
-#ifndef REC2_PMDSPTCH_H
-#define REC2_PMDSPTCH_H
+#ifndef CARPOCALYPSE2_PMDSPTCH_H
+#define CARPOCALYPSE2_PMDSPTCH_H
 
 #include "c2_hooks.h"
 
@@ -81,4 +81,4 @@ br_pixelmap* C2_HOOK_CDECL BrPixelmapDirectLock(br_pixelmap* src, br_boolean blo
 
 br_pixelmap* C2_HOOK_CDECL BrPixelmapDirectUnlock(br_pixelmap* src);
 
-#endif // REC2_PMDSPTCH_H
+#endif // CARPOCALYPSE2_PMDSPTCH_H

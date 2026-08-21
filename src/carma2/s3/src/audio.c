@@ -6,8 +6,8 @@
 #include "sample.h"
 #include "platform.h"
 
-#include "rec2_macros.h"
-#include "rec2_types.h"
+#include "carpocalypse2_macros.h"
+#include "carpocalypse2_types.h"
 
 #include <ctype.h>
 #include "c2_io.h"
@@ -575,7 +575,7 @@ void* C2_HOOK_FASTCALL S3LoadSoundBankFile(const char* pPath) {
         buffer[file_size] = '\0';
         bytes_read = fread(buffer, 1, file_size, f);
         if (bytes_read != file_size) {
-#ifdef REC2_FIX_BUGS
+#ifdef CARPOCALYPSE2_FIX_BUGS
             fclose(f);
 #endif
             gS3_last_error = eS3_error_readfile;
@@ -601,7 +601,7 @@ void* C2_HOOK_FASTCALL S3LoadSoundBankFile(const char* pPath) {
             return NULL;
         }
         if (c2_fstat32(fd, &stat) != 0) {
-#ifdef REC2_FIX_BUGS
+#ifdef CARPOCALYPSE2_FIX_BUGS
             c2_close(fd);
 #endif
             gS3_last_error = eS3_error_readfile;
@@ -616,7 +616,7 @@ void* C2_HOOK_FASTCALL S3LoadSoundBankFile(const char* pPath) {
         buffer[stat.st_size] = '\0';
         bytes_read = c2_read(fd, buffer, stat.st_size);
         if (bytes_read != stat.st_size) {
-#ifdef REC2_FIX_BUGS
+#ifdef CARPOCALYPSE2_FIX_BUGS
             c2_close(fd);
 #endif
             gS3_last_error = eS3_error_readfile;

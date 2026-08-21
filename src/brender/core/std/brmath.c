@@ -15,7 +15,7 @@ float C2_HOOK_CDECL BrFloatCeil(float f) {
 // FUNCTION: CARMA2_HW 0x0053f4e0
 float C2_HOOK_CDECL BrFloatSqrt(float f) {
 
-#ifdef REC2_MATCHING
+#ifdef CARPOCALYPSE2_MATCHING
     return (float)sqrt(f);
 #else
     return sqrtf(f);

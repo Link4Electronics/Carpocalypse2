@@ -3,7 +3,7 @@
 
 #include "c2_hooks.h"
 #include "brender/brender.h"
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 
 extern int C2_HOOK_FASTCALL LoadBunchOfPixies(const char* pathRoot, const char* textureName, br_pixelmap** textureBuffer, size_t bufferCapacity);
 

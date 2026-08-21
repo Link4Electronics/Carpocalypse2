@@ -4,7 +4,7 @@
 #include "loading.h"
 
 #include "brender/brender.h"
-#include "rec2_macros.h"
+#include "carpocalypse2_macros.h"
 
 #include "c2_hooks.h"
 
@@ -60,7 +60,7 @@ void C2_HOOK_FASTCALL ReadExplosion(FILE *pF, tExplosion_animation* pAnimation) 
         /* min scaling factor, max scaling factor */
         GetPairOfFloats(pF, &group->min_scaling_factor, &group->max_scaling_factor);
         /* rotate mode */
-        group->rotate_modus = GetALineAndInterpretCommand(pF, gExplosion_rotate_names, REC2_ASIZE(gExplosion_rotate_names));
+        group->rotate_modus = GetALineAndInterpretCommand(pF, gExplosion_rotate_names, CARPOCALYPSE2_ASIZE(gExplosion_rotate_names));
         /* number of frames */
         group->count_frames = GetAnInt(pF);
         group->frames = BrMemAllocate(group->count_frames * sizeof(tExplosion_animation_frame), kMem_explosion_data);

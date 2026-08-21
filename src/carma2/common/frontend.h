@@ -1,11 +1,11 @@
-#ifndef REC2_FRONTEND_H
-#define REC2_FRONTEND_H
+#ifndef CARPOCALYPSE2_FRONTEND_H
+#define CARPOCALYPSE2_FRONTEND_H
 
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 
 #include "c2_hooks.h"
 
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 
 extern br_actor* gFrontend_billboard_actors[8];
 extern br_actor* gFrontend_menu_camera;
@@ -204,4 +204,4 @@ void C2_HOOK_FASTCALL SelectThisItemIn(tFrontend_spec* pFrontend, int pGroup, in
 
 int C2_HOOK_FASTCALL WhichItemIsSelectedIn(tFrontend_spec* pFrontend, int pGroup);
 
-#endif //REC2_FRONTEND_H
+#endif //CARPOCALYPSE2_FRONTEND_H

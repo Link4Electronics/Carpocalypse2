@@ -1,5 +1,5 @@
-#ifndef REC2_FILE_H
-#define REC2_FILE_H
+#ifndef CARPOCALYPSE2_FILE_H
+#define CARPOCALYPSE2_FILE_H
 
 #include "c2_hooks.h"
 
@@ -33,4 +33,4 @@ void C2_HOOK_CDECL BrFileAdvance(long count, void* f);
 
 int C2_HOOK_CDECL BrFilePrintf(void* f, char* fmt, ...);
 
-#endif // REC2_FILE_H
+#endif // CARPOCALYPSE2_FILE_H

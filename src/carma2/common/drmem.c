@@ -3,8 +3,8 @@
 #include "52-errors.h"
 #include "loading.h"
 
-#include "rec2_macros.h"
-#include "rec2_types.h"
+#include "carpocalypse2_macros.h"
+#include "carpocalypse2_types.h"
 
 #include "brender/brender.h"
 
@@ -362,7 +362,7 @@ void C2_HOOK_FASTCALL InstallDRMemCalls(void) {
 void C2_HOOK_FASTCALL CreateStainlessClasses(void) {
     int i;
 
-    for (i = 129; i < 129 + REC2_ASIZE(gStainless_classes); i++) {
+    for (i = 129; i < 129 + CARPOCALYPSE2_ASIZE(gStainless_classes); i++) {
         gStainless_classes[i - 129].res_class = i;
         if (!BrResClassAdd(&gStainless_classes[i - 129])) {
             FatalError(kFatalError_OOM_S);

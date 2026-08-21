@@ -9,8 +9,8 @@
 #include "utility.h"
 #include "world.h"
 
-#include "rec2_macros.h"
-#include "rec2_types.h"
+#include "carpocalypse2_macros.h"
+#include "carpocalypse2_types.h"
 #include "brender/brender.h"
 
 #include "c2_string.h"
@@ -120,7 +120,7 @@ void C2_HOOK_FASTCALL GetRangeOfValuesFromPixelmap(br_pixelmap* pMap, br_uint_32
     for (y = 0; y < pMap->height; y++) {
         for (x = 0; x < pMap->width; x++) {
             colour = BrPixelmapPixelGet(pMap, x, y);
-            colour_component = REC2_RGB555_B(colour);
+            colour_component = CARPOCALYPSE2_RGB555_B(colour);
             if (colour_component < *pDarkest) {
                 *pDarkest = colour_component;
             }
@@ -145,7 +145,7 @@ int C2_HOOK_FASTCALL CreateTintedPoly(int x0, int y0, int width, int height, int
     br_uint_32 colour_range;
 
     tintedIndex = -1;
-    for (i = 0; i < REC2_ASIZE(gTintedPolys); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gTintedPolys); i++) {
         if (gTintedPolys[i].actor == NULL) {
             tintedIndex = i;
             break;
@@ -207,8 +207,8 @@ int C2_HOOK_FASTCALL CreateTintedPoly(int x0, int y0, int width, int height, int
                 for (x = 0; x < 32; x++) {
                     br_uint_32 v;
                     colour = BrPixelmapPixelGet(map, x, y);
-                    v = (br_uint_32)((float)(REC2_RGB555_B(colour) - darkest_colour) * arg1 / colour_range);
-                    gTintedPolys[tintedIndex].tints1[y + x * 64] = REC2_CLAMP(v, 0u, (br_uint_32)arg1);
+                    v = (br_uint_32)((float)(CARPOCALYPSE2_RGB555_B(colour) - darkest_colour) * arg1 / colour_range);
+                    gTintedPolys[tintedIndex].tints1[y + x * 64] = CARPOCALYPSE2_CLAMP(v, 0u, (br_uint_32)arg1);
                 }
             }
             memset(gTintedPolys[tintedIndex].tints2, 0, sizeof(gTintedPolys[tintedIndex].tints2));
@@ -267,9 +267,9 @@ int C2_HOOK_FASTCALL CreateTintedPoly(int x0, int y0, int width, int height, int
             gTintedPolys[tintedIndex].subClass = arg1;
             switch (arg1) {
                 case 0:
-                    gTintedPolys[tintedIndex].color2_red = REC2_RGB888_R(arg2);
-                    gTintedPolys[tintedIndex].color2_grn = REC2_RGB888_G(arg2);
-                    gTintedPolys[tintedIndex].color2_blu = REC2_RGB888_B(arg2);
+                    gTintedPolys[tintedIndex].color2_red = CARPOCALYPSE2_RGB888_R(arg2);
+                    gTintedPolys[tintedIndex].color2_grn = CARPOCALYPSE2_RGB888_G(arg2);
+                    gTintedPolys[tintedIndex].color2_blu = CARPOCALYPSE2_RGB888_B(arg2);
                     gTintedPolys[tintedIndex].colour = arg3;
                     gTintedPolys[tintedIndex].material->colour = BR_COLOUR_RGB(gTintedPolys[tintedIndex].color2_red, gTintedPolys[tintedIndex].color2_grn, gTintedPolys[tintedIndex].color2_blu);
                     BrMaterialUpdate(gTintedPolys[tintedIndex].material, BR_MATU_ALL);
@@ -399,7 +399,7 @@ void C2_HOOK_FASTCALL FreeTintedPolyActor(int pTintedIndex) {
 void C2_HOOK_FASTCALL FreeAllTintedPolyActor(void) {
     int i;
 
-    for (i = 0; i < REC2_ASIZE(gTintedPolys); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gTintedPolys); i++) {
         FreeTintedPolyActor(i);
     }
 }
@@ -428,9 +428,9 @@ void C2_HOOK_FASTCALL UpdateTintedPolyActor(int pTintedIndex) {
         v_bl = BrPixelmapPixelGet(map, map->width / 4, map->height / 4);
         v_br = BrPixelmapPixelGet(map, map->width - map->width / 4, map->height - map->height / 4);
 
-        new_red = (REC2_RGB888_R(v_tl) + REC2_RGB888_R(v_tr) + REC2_RGB888_R(v_bl) + REC2_RGB888_R(v_br)) / 4;
-        new_grn = (REC2_RGB888_G(v_tl) + REC2_RGB888_G(v_tr) + REC2_RGB888_G(v_bl) + REC2_RGB888_G(v_br)) / 4;
-        new_grn = (REC2_RGB888_B(v_tl) + REC2_RGB888_B(v_tr) + REC2_RGB888_B(v_bl) + REC2_RGB888_B(v_br)) / 4;
+        new_red = (CARPOCALYPSE2_RGB888_R(v_tl) + CARPOCALYPSE2_RGB888_R(v_tr) + CARPOCALYPSE2_RGB888_R(v_bl) + CARPOCALYPSE2_RGB888_R(v_br)) / 4;
+        new_grn = (CARPOCALYPSE2_RGB888_G(v_tl) + CARPOCALYPSE2_RGB888_G(v_tr) + CARPOCALYPSE2_RGB888_G(v_bl) + CARPOCALYPSE2_RGB888_G(v_br)) / 4;
+        new_grn = (CARPOCALYPSE2_RGB888_B(v_tl) + CARPOCALYPSE2_RGB888_B(v_tr) + CARPOCALYPSE2_RGB888_B(v_bl) + CARPOCALYPSE2_RGB888_B(v_br)) / 4;
     }
     time = GetTotalTime();
     if (gTintedPolys[pTintedIndex].color_red + gTintedPolys[pTintedIndex].color_grn + gTintedPolys[pTintedIndex].color_blu == 0) {
@@ -500,7 +500,7 @@ void C2_HOOK_FASTCALL TurnTintedPolyOn(int pTintedIndex) {
 // FUNCTION: CARMA2_HW 0x004d8250
 void C2_HOOK_FASTCALL TurnTintedPolyOff(int pTintedIndex) {
 
-#ifdef REC2_FIX_BUGS
+#ifdef CARPOCALYPSE2_FIX_BUGS
     if (pTintedIndex < 0) {
         return;
     }
@@ -585,7 +585,7 @@ br_material* C2_HOOK_FASTCALL InWater(int pTintedIndex) {
 void C2_HOOK_FASTCALL UpdateTintedPolys(void) {
     int i;
 
-    for (i = 0; i < REC2_ASIZE(gTintedPolys); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gTintedPolys); i++) {
         ProcessTintedPoly(i);
     }
 }

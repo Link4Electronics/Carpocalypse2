@@ -1,5 +1,5 @@
-#ifndef REC2_FIXED_H
-#define REC2_FIXED_H
+#ifndef CARPOCALYPSE2_FIXED_H
+#define CARPOCALYPSE2_FIXED_H
 
 #include "c2_hooks.h"
 

@@ -76,7 +76,7 @@ void KeyBegin(void) {
     gASCII_shift_table[27] = 'G';
     gASCII_shift_table[28] = 'H';
     gASCII_shift_table[29] = 'I';
-#if defined(REC2_FIX_BUGS)
+#if defined(CARPOCALYPSE2_FIX_BUGS)
     gASCII_shift_table[30] = 'J';
 #endif
     gASCII_shift_table[31] = 'K';

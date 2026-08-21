@@ -6,7 +6,7 @@
 
 #include <brender/brender.h>
 
-#include "rec2_macros.h"
+#include "carpocalypse2_macros.h"
 
 
 // GLOBAL: CARMA2_HW 0x006a20d0

@@ -11,7 +11,7 @@
 #include "63-loading3.h"
 #include "70-packfile.h"
 #include "globvars.h"
-#include "rec2_macros.h"
+#include "carpocalypse2_macros.h"
 
 #include <limits.h>
 #include <string.h>
@@ -191,13 +191,13 @@ static void C2_HOOK_FASTCALL ReadMoodMessages(void) {
     PathCat(path, gApplication_path, "STATUS.TXT");
     f = PFfopen(path, "rt");
     if (f != NULL) {
-        for (mood = 0; mood < (int)REC2_ASIZE(gOppo_status_messages); mood += 1) {
+        for (mood = 0; mood < (int)CARPOCALYPSE2_ASIZE(gOppo_status_messages); mood += 1) {
             int i;
 
-            C2_HOOK_ASSERT(mood < REC2_ASIZE(gOppo_status_messages));
+            C2_HOOK_ASSERT(mood < CARPOCALYPSE2_ASIZE(gOppo_status_messages));
 
             gOppo_status_messages[mood].count = GetAnInt(f);
-            C2_HOOK_ASSERT(gOppo_status_messages[mood].count < REC2_ASIZE(gOppo_status_messages[mood].messages));
+            C2_HOOK_ASSERT(gOppo_status_messages[mood].count < CARPOCALYPSE2_ASIZE(gOppo_status_messages[mood].messages));
             for (i = 0; i < gOppo_status_messages[mood].count; i++) {
 
 
@@ -279,8 +279,8 @@ void C2_HOOK_FASTCALL InitMap(void) {
     gFLOAT_0068d8a0 = (float)gINT_0074abd4;
     gFLOAT_0068d8a4 = (float)gINT_0074abd0;
     gMini_map_arrow_z = 0.0f;
-    gFLOAT_0074ab9c = (float)REC2_SQR((double)(gHeadup_map_half_height + gHeadup_map_half_width) * 0.45);
-    gFLOAT_0074abb8 = (float)REC2_SQR(gCurrent_graf_data->field_0x51c + 1);
+    gFLOAT_0074ab9c = (float)CARPOCALYPSE2_SQR((double)(gHeadup_map_half_height + gHeadup_map_half_width) * 0.45);
+    gFLOAT_0074abb8 = (float)CARPOCALYPSE2_SQR(gCurrent_graf_data->field_0x51c + 1);
     if (!gInitMap_done) {
         gCheckpoint_numbers = LoadPixelmap("CPNUMB.PIX");
         if (gCheckpoint_numbers == NULL) {
@@ -322,7 +322,7 @@ void C2_HOOK_FASTCALL ConvertCarIcons(br_pixelmap* pMap) {
     int car_icon_height;
     br_model* model;
 
-    C2_HOOK_BUG_ON(REC2_ASIZE(gCar_icons) != 128);
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gCar_icons) != 128);
     memset(gCar_icons, 0, sizeof(gCar_icons));
     car_icon_height = gCurrent_graf_data->car_icon_height;
     count_car_icons = gIcons_pix->height / car_icon_height;
@@ -367,7 +367,7 @@ void C2_HOOK_FASTCALL ConvertCarIcons(br_pixelmap* pMap) {
             texture_y += icon_height;
             if (texture_y >= 64) {
                 gSize_font_texture_pages++;
-                if (gSize_font_texture_pages >= (int)REC2_ASIZE(gTexture_maps)) {
+                if (gSize_font_texture_pages >= (int)CARPOCALYPSE2_ASIZE(gTexture_maps)) {
                     FatalError(kFatalError_CouldNotCreateTexturesPages_S, "CAR ICONS");
                 }
                 texture_x = 0;

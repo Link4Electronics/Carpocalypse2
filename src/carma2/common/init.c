@@ -46,7 +46,7 @@
 
 #include "brender/brender.h"
 
-#include "rec2_macros.h"
+#include "carpocalypse2_macros.h"
 
 #include "c2_stdlib.h"
 #include "c2_string.h"
@@ -102,7 +102,7 @@ void C2_HOOK_FASTCALL InitialiseDeathRace(int pArgc, const char** pArgv) {
 void C2_HOOK_FASTCALL InitialiseApplication(int pArgc, const char **pArgv) {
     tTWTVFS twt;
 
-#ifndef REC2_MATCHING
+#ifndef CARPOCALYPSE2_MATCHING
     C2_HOOK_BUG_ON(sizeof(int) != 4);
     C2_HOOK_BUG_ON(offsetof(tOpponent_spec, complete_race_data) != 184);
     C2_HOOK_BUG_ON(offsetof(tOpponent_spec, time_for_this_objective_to_finish) != 0x74);
@@ -316,9 +316,9 @@ void C2_HOOK_FASTCALL AllocateActors(void) {
         FatalError(kFatalError_CannotAllocateSelf);
     }
 
-    C2_HOOK_BUG_ON(REC2_ASIZE(gOther_selfs) != 4);
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gOther_selfs) != 4);
 
-    for (i = 0; i < REC2_ASIZE(gOther_selfs); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gOther_selfs); i++) {
         gOther_selfs[i] = BrActorAllocate(BR_ACTOR_NONE, NULL);
         if (gOther_selfs[i] == NULL) {
             FatalError(kFatalError_CannotAllocateSelf);
@@ -332,9 +332,9 @@ void C2_HOOK_FASTCALL AllocateCamera(void) {
     br_camera* camera_ptr;
     int i;
 
-    C2_HOOK_BUG_ON(REC2_ASIZE(gCamera_list) != 2);
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gCamera_list) != 2);
 
-    for (i = 0; i < REC2_ASIZE(gCamera_list); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gCamera_list); i++) {
         gCamera_list[i] = BrActorAllocate(BR_ACTOR_CAMERA, NULL);
         if (gCamera_list[i] == NULL) {
             FatalError(kFatalError_CannotAllocateCamera);
@@ -977,7 +977,7 @@ void C2_HOOK_FASTCALL InitSmokeStuff(void) {
     gBlend_model = BrModelAllocate("gBlend_model", 4, 2);
     gBlend_model2 = BrModelAllocate("gBlend_model2", 6, 4);
     gBlend_actor = BrActorAllocate(BR_ACTOR_MODEL, NULL);
-    for (i = 0; i < REC2_ASIZE(gBR_smoke_structs); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gBR_smoke_structs); i++) {
         gBR_smoke_structs[i].material = BrMaterialAllocate("some smoke");
     }
     if (gBlend_model == NULL || gBlend_actor == NULL) {
@@ -1027,7 +1027,7 @@ void C2_HOOK_FASTCALL InitSmokeStuff(void) {
     smoke_pm->map = gRender_palette;
     BrMapAdd(smoke_pm);
 
-    for (i = 0; i < REC2_ASIZE(gBR_smoke_structs); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gBR_smoke_structs); i++) {
         gBR_smoke_structs[i].material->flags = BR_MATF_LIGHT | BR_MATF_PRELIT | BR_MATF_SMOOTH | BR_MATF_PERSPECTIVE;
         gBR_smoke_structs[i].material->extra_prim = fadealpha;
         gBR_smoke_structs[i].material->colour_map = smoke_pm;
@@ -1079,7 +1079,7 @@ void C2_HOOK_FASTCALL InitGameAccordingToSkillLevel(void) {
     gProgram_state.rank = gInitial_rank;
     gProgram_state.credits_per_rank = gCredits_per_rank[gProgram_state.skill_level];
     gProgram_state.credits = gStarting_money[gProgram_state.skill_level];
-    for (i = 0; i < REC2_ASIZE(gInitial_APO); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gInitial_APO); i++) {
         gCurrent_APO_levels[i] = gNet_mode == eNet_mode_none ? gInitial_APO[i].initial[gProgram_state.skill_level] : gInitial_APO[i].initial_network[gCurrent_net_game->type];
         gCurrent_APO_potential_levels[i] = gNet_mode == eNet_mode_none ? gInitial_APO_potential[i].initial[gProgram_state.skill_level] : gInitial_APO_potential[i].initial_network[gCurrent_net_game->type];
     }
@@ -1298,9 +1298,9 @@ void C2_HOOK_FASTCALL ReinitialiseRearviewCamera(void) {
 static void C2_HOOK_FASTCALL InitRaceHeadups(void) {
     int i;
 
-    C2_HOOK_BUG_ON(REC2_ASIZE(gRace_head_ups) != 22);
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gRace_head_ups) != 22);
 
-    for (i = 0; i < REC2_ASIZE(gRace_head_ups); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gRace_head_ups); i++) {
         gRace_head_ups[i] = NewTextHeadupSlot(16 + i, 0, 0, -1, "");
     }
     if (gNet_mode == eNet_mode_none) {
@@ -1311,8 +1311,8 @@ static void C2_HOOK_FASTCALL InitRaceHeadups(void) {
         gTime_awarded_headup = NewTextHeadupSlot(11, 0, 0, -2, "");
         gLaps_headup = NewTextHeadupSlot(8, 0, 0, -6, "");
 
-        C2_HOOK_BUG_ON(REC2_ASIZE(gInitial_powerup_slots) != 3);
-        for (i = 0; i < REC2_ASIZE(gInitial_powerup_slots); i++) {
+        C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gInitial_powerup_slots) != 3);
+        for (i = 0; i < CARPOCALYPSE2_ASIZE(gInitial_powerup_slots); i++) {
             int current, max;
 
             if (gNet_mode == eNet_mode_none) {
@@ -1328,8 +1328,8 @@ static void C2_HOOK_FASTCALL InitRaceHeadups(void) {
         gNet_cash_headup = NewTextHeadupSlot(13, 0, 0, -6, "");
         gNet_ped_headup = NewTextHeadupSlot(14, 0, 0, -6, "");
 
-        C2_HOOK_BUG_ON(REC2_ASIZE(gInitial_powerup_slots) != 3);
-        for (i = 0; i < REC2_ASIZE(gInitial_powerup_slots); i++) {
+        C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gInitial_powerup_slots) != 3);
+        for (i = 0; i < CARPOCALYPSE2_ASIZE(gInitial_powerup_slots); i++) {
             if (gNet_mode == eNet_mode_none) {
                 gInitial_powerup_slots[i] = gMax_APO[i].initial[gProgram_state.skill_level];
             } else {
@@ -1342,7 +1342,7 @@ static void C2_HOOK_FASTCALL InitRaceHeadups(void) {
 void C2_HOOK_FASTCALL Modify2DCopyPixelmaps(void) {
     int i;
 
-    for (i = 0; i < REC2_ASIZE(gFonts); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gFonts); i++) {
         BRPM_convert(gFonts[i].images, gBack_screen->type);
     }
     BRPM_convert(gIcons_pix, gBack_screen->type);
@@ -1466,7 +1466,7 @@ void C2_HOOK_FASTCALL InitRace(void) {
     gShow_peds_on_map = 0;
 
     PossibleService();
-    SetCarSuspGiveAndHeight(&gProgram_state.current_car REC2_THISCALL_EDX, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f);
+    SetCarSuspGiveAndHeight(&gProgram_state.current_car CARPOCALYPSE2_THISCALL_EDX, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f);
     ResetPowerups();
     PossibleService();
     ResetSparks();

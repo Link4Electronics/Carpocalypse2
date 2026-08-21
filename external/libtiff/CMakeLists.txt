@@ -1,4 +1,4 @@
-if(REC2_MATCHING)
+if(CARPOCALYPSE2_MATCHING)
     add_library(tiff STATIC
         libtiff-3.4/libtiff/tif_aux.c
         libtiff-3.4/libtiff/tif_close.c

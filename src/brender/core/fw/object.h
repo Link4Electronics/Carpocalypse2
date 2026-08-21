@@ -1,5 +1,5 @@
-#ifndef REC2_OBJECT_H
-#define REC2_OBJECT_H
+#ifndef CARPOCALYPSE2_OBJECT_H
+#define CARPOCALYPSE2_OBJECT_H
 
 #include "brender/br_types.h"
 
@@ -17,4 +17,4 @@ br_error C2_HOOK_CDECL _M_br_object_queryAllSize(br_object* self, br_size_t* psi
 
 void C2_HOOK_CDECL _BrObjectFree(void* res, br_uint_8 res_class, br_size_t size);
 
-#endif // REC2_OBJECT_H
+#endif // CARPOCALYPSE2_OBJECT_H

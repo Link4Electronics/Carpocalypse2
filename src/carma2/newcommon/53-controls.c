@@ -2,7 +2,7 @@
 
 #include "70-packfile.h"
 #include "platform.h"
-#include "rec2_macros.h"
+#include "carpocalypse2_macros.h"
 
 #include "c2_string.h"
 
@@ -202,15 +202,15 @@ void C2_HOOK_FASTCALL InitAbuseomatic(void) {
     gString[20] = '\0';
     PDBuildAppPath(path);
     strcat(path, "ABUSE.TXT");
-    for (i = 0; i < REC2_ASIZE(gAbuse_text); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gAbuse_text); i++) {
         gAbuse_text[i] = NULL;
     }
     f = PFfopen(path, "rt");
     if (f == NULL) {
         return;
     }
-    for (i = 0; i < (int)REC2_ASIZE(gAbuse_text); i++) {
-        if (PFfgets(s, REC2_ASIZE(s) - 1, f) == NULL) {
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gAbuse_text); i++) {
+        if (PFfgets(s, CARPOCALYPSE2_ASIZE(s) - 1, f) == NULL) {
             break;
         }
         // len = strlen(s);
@@ -231,7 +231,7 @@ void C2_HOOK_FASTCALL InitAbuseomatic(void) {
 void C2_HOOK_FASTCALL DisposeAbuseomatic(void) {
     int i;
 
-    for (i = 0; i < (int)REC2_ASIZE(gAbuse_text); i++) {
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gAbuse_text); i++) {
         if (gAbuse_text[i] != NULL) {
             BrMemFree(gAbuse_text[i]);
         }

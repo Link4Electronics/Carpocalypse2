@@ -1,5 +1,5 @@
-#ifndef REC2_LEXER_H
-#define REC2_LEXER_H
+#ifndef CARPOCALYPSE2_LEXER_H
+#define CARPOCALYPSE2_LEXER_H
 
 #include "c2_hooks.h"
 
@@ -49,4 +49,4 @@ br_int_32 C2_HOOK_CDECL BrParseMatrixFixed(br_lexer* l, br_fixed_ls* m, br_int_3
 
 br_int_32 C2_HOOK_CDECL BrParseMatrixFloat(br_lexer* l, br_float* m, br_int_32 width, br_int_32 max_h);
 
-#endif // REC2_LEXER_H
+#endif // CARPOCALYPSE2_LEXER_H

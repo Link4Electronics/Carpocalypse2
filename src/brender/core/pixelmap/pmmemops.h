@@ -1,5 +1,5 @@
-#ifndef REC2_PMMEMOPS_H
-#define REC2_PMMEMOPS_H
+#ifndef CARPOCALYPSE2_PMMEMOPS_H
+#define CARPOCALYPSE2_PMMEMOPS_H
 
 #include "brender/br_types.h"
 
@@ -19,4 +19,4 @@ void C2_HOOK_CDECL pm_mem_set_colour(br_uint_8* dest, br_uint_32 dest_qual, br_u
 
 br_uint_32 C2_HOOK_CDECL pm_mem_read_colour(void* src, br_uint_32 src_qual, br_uint_32 bpp);
 
-#endif //REC2_PMMEMOPS_H
+#endif //CARPOCALYPSE2_PMMEMOPS_H

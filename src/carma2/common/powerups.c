@@ -30,10 +30,10 @@
 
 #include "brender/brender.h"
 
-#include "rec2_macros.h"
+#include "carpocalypse2_macros.h"
 
 #include "c2_string.h"
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 
 
 // GLOBAL: CARMA2_HW 0x007059e0
@@ -353,10 +353,10 @@ void C2_HOOK_FASTCALL InitRepulseEffects(void) {
     }
     BrMapAdd(repulse);
 
-    C2_HOOK_BUG_ON(REC2_ASIZE(gRepulse_links) != 6);
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gRepulse_links) != 6);
     C2_HOOK_BUG_ON(sizeof(tRepulse_link) != 0x28);
 
-    for (i = 0; i < REC2_ASIZE(gRepulse_links); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gRepulse_links); i++) {
         tRepulse_link *link = &gRepulse_links[i];
         br_model *model;
         br_material *material;
@@ -417,10 +417,10 @@ void C2_HOOK_FASTCALL InitTail(void) {
         is_link = i != gCount_mutant_tail_parts - 1;
         if (is_link) {
             model = BrModelFind("TAILLINK");
-            collision_info = MungeBoxObject(model REC2_THISCALL_EDX, gMass_mutant_tail_link);
+            collision_info = MungeBoxObject(model CARPOCALYPSE2_THISCALL_EDX, gMass_mutant_tail_link);
         } else {
             model = BrModelFind("TAILBALL");
-            collision_info = MungeSphereObject(model REC2_THISCALL_EDX, gMass_mutant_tail_ball);
+            collision_info = MungeSphereObject(model CARPOCALYPSE2_THISCALL_EDX, gMass_mutant_tail_ball);
         }
 
         C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPhysics_object, physics_joint1, 0x188);
@@ -480,9 +480,9 @@ void C2_HOOK_FASTCALL RemoveRepulseEffect(tRepulse_link* pRepulse) {
 void C2_HOOK_FASTCALL ResetRepulseEffects(void) {
     int i;
 
-    C2_HOOK_BUG_ON(REC2_ASIZE(gRepulse_links) != 6);
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gRepulse_links) != 6);
 
-    for (i = 0; i < REC2_ASIZE(gRepulse_links); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gRepulse_links); i++) {
         RemoveRepulseEffect(&gRepulse_links[i]);
     }
 }
@@ -491,9 +491,9 @@ void C2_HOOK_FASTCALL ResetRepulseEffects(void) {
 void C2_HOOK_FASTCALL EmptyInventory(void) {
     int i;
 
-    C2_HOOK_BUG_ON(REC2_ASIZE(gInventory) != 20);
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gInventory) != 20);
 
-    for (i = 0; i < REC2_ASIZE(gInventory); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gInventory); i++) {
         gInventory[i] = -1;
     }
     gInventory_selected = -1;
@@ -505,7 +505,7 @@ void C2_HOOK_FASTCALL EmptyInventory(void) {
 void C2_HOOK_FASTCALL ResetPowerups(void) {
     int i;
 
-    C2_HOOK_BUG_ON(REC2_ASIZE(gRespawn_powerups) != 100);
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gRespawn_powerups) != 100);
     C2_HOOK_BUG_ON(sizeof(gRespawn_powerups[0]) != 0xc);
 
     gRace_powerup_respawn_bools = gPowerup_respawn_specs[gNet_mode == eNet_mode_none ? 0 : 1].bools;
@@ -514,10 +514,10 @@ void C2_HOOK_FASTCALL ResetPowerups(void) {
         gPowerup_array[i].got_time = 0;
         gPowerup_array[i].current_value = -1;
     }
-    for (i = 0; i < REC2_ASIZE(gRespawn_powerups); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gRespawn_powerups); i++) {
         gRespawn_powerups[i].actor = NULL;
     }
-    for (i = 0; i < REC2_ASIZE(gPickedup_powerups); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gPickedup_powerups); i++) {
         if (gPickedup_powerups[i].icon_actor != NULL) {
             gPickedup_powerups[i].icon_actor->render_style = BR_RSTYLE_NONE;
         }
@@ -665,7 +665,7 @@ void C2_HOOK_FASTCALL LoadPowerups(void) {
     LoadAllImagesInDirectory(&gMisc_storage_space, the_path);
     ClosePackFileAndSetTiffLoading(twtvfs);
 
-    for (i = 0; i < REC2_ASIZE(gFizzle_in); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gFizzle_in); i++) {
         gFizzle_in[i] = DRMapFindMeAPixie(gFizzle_names[i]);
     }
     gFizzle_height = gFizzle_in[0]->height / 4;
@@ -796,7 +796,7 @@ static void C2_HOOK_FASTCALL ReadPowerupSmashable(FILE* pF, tSmashable_item_spec
     int i;
     int d1, d2;
 
-#ifndef REC2_MATCHING
+#ifndef CARPOCALYPSE2_MATCHING
     C2_HOOK_BUG_ON(offsetof(tShrapnel_spec, initial_pos) != 40);
     C2_HOOK_BUG_ON(offsetof(tShrapnel_spec, type_info) != 56);
     C2_HOOK_BUG_ON(sizeof(tShrapnel_spec) != 88);
@@ -835,9 +835,9 @@ static void C2_HOOK_FASTCALL ReadPowerupSmashable(FILE* pF, tSmashable_item_spec
         pSmashable_spec->mode_data.shrapnel.connotations.variable_changes.runtime_changes[i].field_0x2 = d1;
     }
     pSmashable_spec->trigger_type = kSmashableTrigger_Model | kSmashableTrigger_Number;
-    REC2_BUG_ON((kSmashableTrigger_Model | kSmashableTrigger_Number) != 0x3);
+    CARPOCALYPSE2_BUG_ON((kSmashableTrigger_Model | kSmashableTrigger_Number) != 0x3);
     pSmashable_spec->mode = kSmashableMode_Remove;
-    REC2_BUG_ON(kSmashableMode_Remove != 0x3);
+    CARPOCALYPSE2_BUG_ON(kSmashableMode_Remove != 0x3);
 }
 
 // FUNCTION: CARMA2_HW 0x004efa00
@@ -863,11 +863,11 @@ void C2_HOOK_FASTCALL InitMineShit(void) {
     ClosePackFileAndSetTiffLoading(twt);
 
     C2_HOOK_BUG_ON(sizeof(tShit_mine) != 56);
-    C2_HOOK_BUG_ON(REC2_ASIZE(gShit_mines) != 20);
-    for (i = 0; i < REC2_ASIZE(gShit_mines); i++) {
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gShit_mines) != 20);
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gShit_mines); i++) {
         gShit_mines[i].flags = 4;
         gShit_mines[i].field_0x35 = 0;
-        gShit_mines[i].collision_info = MungeSphereObject(BrModelFind("SHITMINE.ACT") REC2_THISCALL_EDX, gMass_mine);
+        gShit_mines[i].collision_info = MungeSphereObject(BrModelFind("SHITMINE.ACT") CARPOCALYPSE2_THISCALL_EDX, gMass_mine);
         gShit_mines[i].collision_info->uid = i;
         gShit_mines[i].collision_info->flags_0x238 = 0x40;
         gShit_mines[i].collision_info->owner = &gShit_mines[i];
@@ -878,7 +878,7 @@ void C2_HOOK_FASTCALL InitMineShit(void) {
 
 void C2_HOOK_FASTCALL FillInMine(tNet_message_chunk* pChunk, tShit_mine* pMine, int pArg3) {
 
-#ifndef REC2_MATCHING
+#ifndef CARPOCALYPSE2_MATCHING
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tNet_message_chunk, mine_explode.mine_index, 0x2);
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tNet_message_chunk, mine_explode.field_0x3, 0x3);
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tNet_message_chunk, mine_explode.field_0x4, 0x4);
@@ -945,9 +945,9 @@ void C2_HOOK_FASTCALL ProcessShitMines(tU32 pTime) {
     int i;
     int play_effect;
 
-    C2_HOOK_BUG_ON(REC2_ASIZE(gShit_mines) != 20);
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gShit_mines) != 20);
 
-    for (i = 0; i < REC2_ASIZE(gShit_mines); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gShit_mines); i++) {
         tShit_mine* mine = &gShit_mines[i];
 
         if (!(mine->flags & 0x1)) {
@@ -962,7 +962,7 @@ void C2_HOOK_FASTCALL ProcessShitMines(tU32 pTime) {
                 mine->flags &= ~0x80;
                 car_vulnerable = CarVulnerableByMine(car);
                 if (car_vulnerable) {
-                    TotallySpamTheModel(car REC2_THISCALL_EDX, 0.1f * mine->max_damage);
+                    TotallySpamTheModel(car CARPOCALYPSE2_THISCALL_EDX, 0.1f * mine->max_damage);
                 }
                 if (car_vulnerable && (gNet_mode == eNet_mode_none || gNet_mode == eNet_mode_host)) {
                     car->collision_info->v.v[1] += FRandomBetween(mine->field3_0xc, mine->initial_y_speed_factor) / (car->collision_info->M * WORLD_SCALE);
@@ -975,8 +975,8 @@ void C2_HOOK_FASTCALL ProcessShitMines(tU32 pTime) {
                     if (!car->invulnerable_no_damage) {
                         int j;
 
-                        C2_HOOK_BUG_ON(REC2_ASIZE(car->damage_units) != 12);
-                        for (j = 0; j < REC2_ASIZE(car->damage_units); j++) {
+                        C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(car->damage_units) != 12);
+                        for (j = 0; j < CARPOCALYPSE2_ASIZE(car->damage_units); j++) {
                             DoDamage(car, j, IRandomBetween(0, (int)(25.f * mine->max_damage)));
                         }
                         if (car != mine->field_0x30) {
@@ -1032,7 +1032,7 @@ void C2_HOOK_FASTCALL MaxOutAPO(void) {
 void C2_HOOK_FASTCALL CheckRespawnQueue(tU32 pTime) {
     int i;
 
-    for (i = 0; i < REC2_ASIZE(gRespawn_powerups); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gRespawn_powerups); i++) {
         tRespawn_powerup *respawn_powerup = &gRespawn_powerups[i];
         if (respawn_powerup->actor == NULL || pTime < respawn_powerup->respawn_time) {
             continue;
@@ -1784,7 +1784,7 @@ void C2_HOOK_FASTCALL RemoveFromCloakingList(tCar_spec* pCar_spec) {
         for (i = 0; i < gCount_cloaked_cars; i++) {
             if (gCloaked_cars[i] == pCar_spec) {
                 memmove(&gCloaked_cars[i], &gCloaked_cars[i + 1],
-                    (REC2_ASIZE(gCloaked_cars) - i - 1) * sizeof(tCar_spec *));
+                    (CARPOCALYPSE2_ASIZE(gCloaked_cars) - i - 1) * sizeof(tCar_spec *));
                 gCount_cloaked_cars -= 1;
                 break;
             }
@@ -2223,7 +2223,7 @@ void C2_HOOK_FASTCALL DrawKeyPowerups(tU32 pTime) {
                         x, gCurrent_graf_data->keyboard_powerup_y, 1) + gCurrent_graf_data->keyboard_powerup_spacing_x;
                 }
                 i += 1;
-                if (i >= REC2_ASIZE(gInventory)) {
+                if (i >= CARPOCALYPSE2_ASIZE(gInventory)) {
                     i = 0;
                 }
             } while (i != gInventory_selected);
@@ -2243,7 +2243,7 @@ void C2_HOOK_FASTCALL DrawKeyPowerups(tU32 pTime) {
                             x, gCurrent_graf_data->keyboard_powerup_y, 1) + gCurrent_graf_data->keyboard_powerup_spacing_x;
                     }
                     i += 1;
-                    if (i >= REC2_ASIZE(gInventory)) {
+                    if (i >= CARPOCALYPSE2_ASIZE(gInventory)) {
                         i = 0;
                     }
                 } while (i != gInventory_selected);
@@ -2274,7 +2274,7 @@ void C2_HOOK_FASTCALL MayQueuePowerupRespawn(int pPowerup_index, br_actor* actor
     int i;
 
     if (actor != NULL && gRace_powerup_respawn_bools[pPowerup_index] && (gNet_mode == eNet_mode_none || gCurrent_net_game->options.powerup_respawn)) {
-        for (i = 0; i < REC2_ASIZE(gRespawn_powerups); i++) {
+        for (i = 0; i < CARPOCALYPSE2_ASIZE(gRespawn_powerups); i++) {
             if (gRespawn_powerups[i].actor != NULL) {
                 gRespawn_powerups[i].actor = actor;
                 gRespawn_powerups[i].index = pPowerup_index;;

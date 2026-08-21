@@ -1,5 +1,5 @@
-#ifndef REC2_BRSTDFILE_H
-#define REC2_BRSTDFILE_H
+#ifndef CARPOCALYPSE2_BRSTDFILE_H
+#define CARPOCALYPSE2_BRSTDFILE_H
 
 #include "c2_hooks.h"
 
@@ -31,4 +31,4 @@ void C2_HOOK_CDECL BrStdioPutLine(char* buf, void* f);
 
 void C2_HOOK_CDECL BrStdioAdvance(br_size_t count, void* f);
 
-#endif // REC2_BRSTDFILE_H
+#endif // CARPOCALYPSE2_BRSTDFILE_H

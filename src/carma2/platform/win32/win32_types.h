@@ -1,7 +1,7 @@
 #ifndef C2_WIN32_TYPES_H
 #define C2_WIN32_TYPES_H
 
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 
 #include <dinput.h>
 

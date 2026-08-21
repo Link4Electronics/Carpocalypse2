@@ -1,10 +1,6 @@
 [submodule "external/libtiff/libtiff"]
 	path = external/libtiff/libtiff
 	url = https://gitlab.com/libtiff/libtiff.git
-[submodule "external/dxsdk/dxsdk"]
-	path = external/dxsdk/dxsdk
-	url = https://github.com/madebr/dxsdk
-	branch = v7.0a
 [submodule "zlib"]
 	path = external/zlib/zlib
 	url = https://github.com/madler/zlib.git

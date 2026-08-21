@@ -1,6 +1,6 @@
 #include "24-loadsave.h"
 
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 
 // GLOBAL: CARMA2_HW 0x0068b8ec
 int gSave_game_out_of_sync;

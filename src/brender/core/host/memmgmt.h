@@ -1,5 +1,5 @@
-#ifndef REC2_MEMMGMT_H
-#define REC2_MEMMGMT_H
+#ifndef CARPOCALYPSE2_MEMMGMT_H
+#define CARPOCALYPSE2_MEMMGMT_H
 
 #include "brender/br_types.h"
 
@@ -27,4 +27,4 @@ br_error C2_HOOK_CDECL HostSelectorBaseQuery(br_uint_32 *basep, br_uint_16 sel);
 
 br_error C2_HOOK_CDECL HostSelectorLimitQuery(br_uint_32 *limitp, br_uint_16 sel);
 
-#endif // REC2_MEMMGMT_H
+#endif // CARPOCALYPSE2_MEMMGMT_H

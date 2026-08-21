@@ -18,14 +18,14 @@
 #include "41-utility.h"
 #include "70-packfile.h"
 
-#include "rec2_macros.h"
+#include "carpocalypse2_macros.h"
 
 #include "c2_direct.h"
 #include <stdio.h>
 #include "c2_string.h"
 
 #include "brender/brender.h"
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 
 #include <direct.h>
 #include <windows.h>
@@ -507,9 +507,9 @@ LRESULT CALLBACK Carma2MainWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
             break;
         case WM_CHAR:
             if (0x1f < (char) wParam && (char) wParam != 0x7f) {
-                if (gKeyboardBufferLength >= REC2_ASIZE(gKeyboardBuffer)) {
-                    memmove(gKeyboardBuffer, &gKeyboardBuffer[1], REC2_ASIZE(gKeyboardBuffer) - 1);
-                    gKeyboardBufferLength = REC2_ASIZE(gKeyboardBuffer) - 1;
+                if (gKeyboardBufferLength >= CARPOCALYPSE2_ASIZE(gKeyboardBuffer)) {
+                    memmove(gKeyboardBuffer, &gKeyboardBuffer[1], CARPOCALYPSE2_ASIZE(gKeyboardBuffer) - 1);
+                    gKeyboardBufferLength = CARPOCALYPSE2_ASIZE(gKeyboardBuffer) - 1;
                 }
                 gKeyboardBuffer[gKeyboardBufferLength] = (unsigned char) wParam;
                 gKeyboardBufferLength++;
@@ -717,7 +717,7 @@ void C2_HOOK_FASTCALL PDEnumPath(const char *path, tEnumPathCallback pCallback, 
     size_t lenLnk;
     int callback_res;
 
-    GetCurrentDirectory(REC2_ASIZE(originalCurrentDirectory), originalCurrentDirectory);
+    GetCurrentDirectory(CARPOCALYPSE2_ASIZE(originalCurrentDirectory), originalCurrentDirectory);
     bSucceeded = SetCurrentDirectoryA(path);
     if (!bSucceeded) {
         return;
@@ -906,7 +906,7 @@ void C2_HOOK_FASTCALL PDInstallErrorHandlers(void) {
 // FUNCTION: CARMA2_HW 0x0051c290
 int C2_HOOK_FASTCALL PDInitScreenVars(int pArgc, const char **pArgv) {
     gGraf_spec_index = gDefault_spec_index;
-#ifdef REC2_MATCHING
+#ifdef CARPOCALYPSE2_MATCHING
     gGraf_spec_index = gDefault_spec_index;
 #else
     gGraf_data_index = gDefault_data_index;

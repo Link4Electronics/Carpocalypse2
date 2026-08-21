@@ -1,5 +1,5 @@
-#ifndef REC2_PMFILE_H
-#define REC2_PMFILE_H
+#ifndef CARPOCALYPSE2_PMFILE_H
+#define CARPOCALYPSE2_PMFILE_H
 
 #include "brender/br_types.h"
 
@@ -29,4 +29,4 @@ br_pixelmap* C2_HOOK_CDECL BrPixelmapLoad(const char* filename);
 
 br_uint_32 C2_HOOK_CDECL BrPixelmapSave(const char* filename, br_pixelmap* ptr);
 
-#endif // REC2_PMFILE_H
+#endif // CARPOCALYPSE2_PMFILE_H

@@ -1,5 +1,5 @@
-#ifndef REC2_TOKENVAL_H
-#define REC2_TOKENVAL_H
+#ifndef CARPOCALYPSE2_TOKENVAL_H
+#define CARPOCALYPSE2_TOKENVAL_H
 
 #include "c2_hooks.h"
 
@@ -55,4 +55,4 @@ br_boolean C2_HOOK_CDECL BrTokenValueCompare(br_token_value* tv1, br_token_value
 
 br_error C2_HOOK_CDECL BrTokenValueDup(br_token_value** dstp, br_token_value* src);
 
-#endif // REC2_TOKENVAL_H
+#endif // CARPOCALYPSE2_TOKENVAL_H

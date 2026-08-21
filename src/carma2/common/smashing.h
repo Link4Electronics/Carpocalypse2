@@ -1,7 +1,7 @@
-#ifndef REC2_SMASHING_H
-#define REC2_SMASHING_H
+#ifndef CARPOCALYPSE2_SMASHING_H
+#define CARPOCALYPSE2_SMASHING_H
 
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 
 #include "c2_hooks.h"
 
@@ -70,4 +70,4 @@ void C2_HOOK_FASTCALL TotallyRepairSmash(tCar_spec *pCar_Spec, tCar_crush_buffer
 
 void C2_HOOK_FASTCALL ApplyInitialMovement(undefined4* pArg1, br_vector3* pArg2, br_vector3* pArg3, br_vector3* pArg4, float pArg5, br_vector3* pArg6, br_vector3* pArg7, br_vector3* pArg8);
 
-#endif //REC2_SMASHING_H
+#endif //CARPOCALYPSE2_SMASHING_H

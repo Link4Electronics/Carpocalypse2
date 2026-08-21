@@ -34,7 +34,7 @@
 #include "70-packfile.h"
 #include "71-newgame.h"
 #include "globvars.h"
-#include "rec2_macros.h"
+#include "carpocalypse2_macros.h"
 
 #include "c2_string.h"
 
@@ -130,7 +130,7 @@ void C2_HOOK_FASTCALL LoadBunchOParameters(tSlot_info* pSlot_info) {
     /* (armour|power|offensive), each network game type */
     GetALineAndDontArgue(gTempFile, s);
     str = strtok(s, "\t ,/");
-    for (i = 0; i < (int)REC2_ASIZE(pSlot_info->initial_network); i++) {
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(pSlot_info->initial_network); i++) {
         sscanf(str, "%d", &pSlot_info->initial_network[i]);
         str = strtok(NULL, "\t ,/");
     }
@@ -144,7 +144,7 @@ void C2_HOOK_FASTCALL LoadBunchOFloatParameters(tFloat_bunch_info *pBunch) {
     GetThreeFloats(gTempFile, &pBunch->initial[0], &pBunch->initial[1], &pBunch->initial[2]);
     GetALineAndDontArgue(gTempFile, s);
     str = strtok(s, "\t ,/");
-    for (i = 0; i < (int)REC2_ASIZE(pBunch->initial_network); i++) {
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(pBunch->initial_network); i++) {
         sscanf(str, "%f", &pBunch->initial_network[i]);
         str = strtok(NULL, "\t ,/");
     }
@@ -186,7 +186,7 @@ void C2_HOOK_FASTCALL LoadGeneralParameters(void) {
 
     gTempFile = PFfopen(the_path, "rb");
     if (gTempFile != NULL) {
-        PFfgets(s, REC2_ASIZE(s) - 1, gTempFile);
+        PFfgets(s, CARPOCALYPSE2_ASIZE(s) - 1, gTempFile);
         PFfclose(gTempFile);
 
         for (i = 0; (unsigned)i < strlen(gDecode_string); i++) {
@@ -331,7 +331,7 @@ void C2_HOOK_FASTCALL LoadGeneralParameters(void) {
     power_mult = GetAScalar(gTempFile);
     /* Offensive per-level multiplier */
     offensive_mult = GetAScalar(gTempFile);
-    for (i = 1; i < (int)REC2_ASIZE(gArmour_starting_value); i++) {
+    for (i = 1; i < (int)CARPOCALYPSE2_ASIZE(gArmour_starting_value); i++) {
         gArmour_starting_value[i] = gArmour_starting_value[i - 1] * armour_mult;
         gPower_starting_value[i] = gPower_starting_value[i - 1] * power_mult;
         gOffensive_starting_value[i] = gOffensive_starting_value[i - 1] * offensive_mult;
@@ -345,8 +345,8 @@ void C2_HOOK_FASTCALL LoadGeneralParameters(void) {
     /* Starting money in network mode */
     GetALineAndDontArgue(gTempFile, s);
     str = strtok(s, "\t ,/");
-#if defined(REC2_FIX_BUGS)
-    for (i = 0; i < (int)REC2_ASIZE(gNet_starting_money); i++) {
+#if defined(CARPOCALYPSE2_FIX_BUGS)
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gNet_starting_money); i++) {
 #else
     for (i = 0; i < 5; i++) {
 #endif
@@ -373,7 +373,7 @@ void C2_HOOK_FASTCALL LoadGeneralParameters(void) {
     /* Score targets for each net game type */
     GetALineAndDontArgue(gTempFile, s);
     str = strtok(s, "\t ,/");
-    for (i = 0; i < (int)REC2_ASIZE(gNet_score_targets); i++) {
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gNet_score_targets); i++) {
         sscanf(str, "%d", &gNet_score_targets[i]);
         str = strtok(NULL, "\t ,/");
     }
@@ -413,12 +413,12 @@ void C2_HOOK_FASTCALL LoadGeneralParameters(void) {
      * network game. Zero means don't tick up.
      */
     time = 1000 * GetAnInt(gTempFile);
-    for (i = 0; i < (int)REC2_ASIZE(gAuto_increase_credits_dt); i++) {
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gAuto_increase_credits_dt); i++) {
         gAuto_increase_credits_dt[i] = (int)((float)time / (0.02f * (float)gRecovery_cost.initial[i]));
     }
     GetALineAndDontArgue(gTempFile, s);
     str = strtok(s, "\t ,/");
-    for (i = 0; i < (int)REC2_ASIZE(gNet_score_targets); i++) {
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gNet_score_targets); i++) {
         int t;
         sscanf(str, "%d", &t);
         gNet_auto_increase_credits_dt[i] = (int)((float)(1000 * t) / (.02f * (float)gRecovery_cost.initial_network[i]));
@@ -455,7 +455,7 @@ void C2_HOOK_FASTCALL LoadKeyMapping(void) {
         FatalError(kFatalError_CouldNotOpenKeyMapFile);
     }
 
-    for (i = 0; i < (int)REC2_ASIZE(gKey_mapping); i++) {
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gKey_mapping); i++) {
         fscanf((FILE*)f, "%d", &gKey_mapping[i]);
     }
     PFfclose(f);
@@ -568,7 +568,7 @@ void C2_HOOK_FASTCALL LoadMiscStrings(void) {
     if (f == NULL) {
         FatalError(kFatalError_CannotOpenTEXT_TXT);
     }
-    for (i = 0; i < (int)REC2_ASIZE(gMisc_strings); i++) {
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gMisc_strings); i++) {
         if (PFfeof(f)) {
             break;
         }

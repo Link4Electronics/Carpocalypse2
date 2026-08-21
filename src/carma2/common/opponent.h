@@ -1,8 +1,8 @@
-#ifndef REC2_OPPONENT_H
-#define REC2_OPPONENT_H
+#ifndef CARPOCALYPSE2_OPPONENT_H
+#define CARPOCALYPSE2_OPPONENT_H
 
 #include <brender/brender.h>
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 
 #include "c2_stdio.h"
 
@@ -216,4 +216,4 @@ int C2_HOOK_FASTCALL RematerialiseOpponentOnThisSection(tOpponent_spec* pOpponen
 
 float C2_HOOK_FASTCALL GetOpponentsSectionWidth(const tOpponent_spec* pOpponent_spec, tS16 pSection);
 
-#endif //REC2_OPPONENT_H
+#endif //CARPOCALYPSE2_OPPONENT_H

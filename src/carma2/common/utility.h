@@ -1,8 +1,8 @@
-#ifndef REC2_UTILITY_H
-#define REC2_UTILITY_H
+#ifndef CARPOCALYPSE2_UTILITY_H
+#define CARPOCALYPSE2_UTILITY_H
 
 #include "brender/br_types.h"
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 
 #include "c2_hooks.h"
 
@@ -154,4 +154,4 @@ void C2_HOOK_FASTCALL WaitFor(tU32 pDelay);
 
 void C2_HOOK_FASTCALL DRMatrix34TApplyP(br_vector3* pA, br_vector3* pB, br_matrix34* pC);
 
-#endif // REC2_UTILITY_H
+#endif // CARPOCALYPSE2_UTILITY_H

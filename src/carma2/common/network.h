@@ -1,7 +1,7 @@
-#ifndef REC2_NETWORK_H
-#define REC2_NETWORK_H
+#ifndef CARPOCALYPSE2_NETWORK_H
+#define CARPOCALYPSE2_NETWORK_H
 
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 
 #include "c2_hooks.h"
 
@@ -146,4 +146,4 @@ extern void C2_HOOK_FASTCALL NetBroadcastContents(tNet_message_chunk* pMessage);
 
 extern int C2_HOOK_FASTCALL NetGuaranteedSendMessageToEverybody(tNet_game_details* pNet_game, tNet_message* pMessage, undefined4 pArg3);
 
-#endif // REC2_NETWORK_H
+#endif // CARPOCALYPSE2_NETWORK_H

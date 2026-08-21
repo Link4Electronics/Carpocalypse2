@@ -6,7 +6,7 @@
 #include "70-packfile.h"
 #include "globvars.h"
 
-#include "rec2_macros.h"
+#include "carpocalypse2_macros.h"
 
 // GLOBAL: CARMA2_HW 0x00763960
 tNet_game_options gNet_settings[9];
@@ -37,7 +37,7 @@ void C2_HOOK_FASTCALL DefaultNetSettings(void) {
     }
     ReadNetworkSettings(file, &gNet_settings[0]);
     PFrewind(file);
-    for (i = 1; i < (int)REC2_ASIZE(gNet_settings); i++) {
+    for (i = 1; i < (int)CARPOCALYPSE2_ASIZE(gNet_settings); i++) {
         pOptions = &gNet_settings[i];
         ReadNetworkSettings(file, pOptions);
     }

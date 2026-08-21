@@ -10,12 +10,12 @@
 #include "platform.h"
 #include "utility.h"
 
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 #include "brender/br_types.h"
 
 #include "c2_string.h"
 
-#include "rec2_macros.h"
+#include "carpocalypse2_macros.h"
 
 
 // GLOBAL: CARMA2_HW 0x00765ea0
@@ -311,8 +311,8 @@ void C2_HOOK_FASTCALL CreatePolyFont(const char* pName, int pSize, int pIndex) {
     gPoly_fonts[pIndex].widthOfBlank = GetAnInt(f);
     gPoly_fonts[pIndex].fontSize = pSize;
     gPoly_fonts[pIndex].available = 1;
-    C2_HOOK_BUG_ON(REC2_ASIZE(gPoly_fonts[pIndex].glyphs) != 256);
-    for (i = 0; i < REC2_ASIZE(gPoly_fonts[pIndex].glyphs); i++) {
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gPoly_fonts[pIndex].glyphs) != 256);
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gPoly_fonts[pIndex].glyphs); i++) {
         tPolyFontGlyph* glyph = &gPoly_fonts[pIndex].glyphs[i];
 
         glyph->model = NULL;
@@ -407,7 +407,7 @@ void C2_HOOK_FASTCALL CreatePolyFont(const char* pName, int pSize, int pIndex) {
             tex_x = 0;
             if (tex_y >= 64) {
                 gSize_font_texture_pages++;
-                if (gSize_font_texture_pages >= REC2_ASIZE(gTexture_maps)) {
+                if (gSize_font_texture_pages >= CARPOCALYPSE2_ASIZE(gTexture_maps)) {
                     FatalError(kFatalError_CouldNotCreateTexturesPages_S, pName);
                 }
                 tex_x = 0;
@@ -450,7 +450,7 @@ void C2_HOOK_FASTCALL ConvertCarIcons(br_pixelmap* pMap) {
     int texture_x;
     int texture_y;
 
-    C2_HOOK_BUG_ON(REC2_ASIZE(gCar_icons) != 128);
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gCar_icons) != 128);
     memset(gCar_icons, 0, sizeof(gCar_icons));
     count_car_icons = gIcons_pix->height / gCurrent_graf_data->car_icon_height;
 
@@ -495,7 +495,7 @@ void C2_HOOK_FASTCALL ConvertCarIcons(br_pixelmap* pMap) {
             texture_y += icon_height;
             if (texture_y >= 64) {
                 gSize_font_texture_pages++;
-                if (gSize_font_texture_pages >= REC2_ASIZE(gTexture_maps)) {
+                if (gSize_font_texture_pages >= CARPOCALYPSE2_ASIZE(gTexture_maps)) {
                     FatalError(kFatalError_CouldNotCreateTexturesPages_S, "CAR ICONS");
                 }
                 texture_x = 0;
@@ -522,11 +522,11 @@ void C2_HOOK_FASTCALL InitPolyFonts(void) {
     tPath_name the_path;
     FILE* f;
 
-    C2_HOOK_BUG_ON(REC2_ASIZE(gPoly_font_materials) != 80);
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gPoly_font_materials) != 80);
 
     PrintMemoryDump(0, "START OF InitPolyFonts()");
 
-    for (i = 0; i < REC2_ASIZE(gPoly_font_materials); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gPoly_font_materials); i++) {
 
         gPoly_font_materials[i] = CreatePolyMaterial(0);
     }
@@ -540,8 +540,8 @@ void C2_HOOK_FASTCALL InitPolyFonts(void) {
     gString_root_actor->t.type = BR_TRANSFORM_TRANSLATION;
     BrVector3Set(&gString_root_actor->t.t.translate.t, 0.f, 0.f, 0.f);
 
-    C2_HOOK_BUG_ON(REC2_ASIZE(gPolyfont_glyph_actors) != 256);
-    for (i = 0; i < REC2_ASIZE(gPolyfont_glyph_actors); i++) {
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gPolyfont_glyph_actors) != 256);
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gPolyfont_glyph_actors); i++) {
         br_actor* actor;
 
         actor = BrActorAllocate(BR_ACTOR_MODEL, NULL);
@@ -566,8 +566,8 @@ void C2_HOOK_FASTCALL InitPolyFonts(void) {
      * the colour for each corner of every character in that font.
      */
 
-    C2_HOOK_BUG_ON(REC2_ASIZE(gPoly_font_border_colours) != 27);
-    for (i = 0; i < REC2_ASIZE(gPoly_font_border_colours); i++) {
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gPoly_font_border_colours) != 27);
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gPoly_font_border_colours); i++) {
         tPolyFontBorderColours *border;
 
         border = &gPoly_font_border_colours[i];
@@ -581,7 +581,7 @@ void C2_HOOK_FASTCALL InitPolyFonts(void) {
         /* Bottom/Right */
         GetThreeInts(f, &border->br.r, &border->br.g, &border->br.b);
     }
-#if defined(REC2_FIX_BUGS)
+#if defined(CARPOCALYPSE2_FIX_BUGS)
     PFfclose(f);
 #else
     fclose(f);
@@ -594,7 +594,7 @@ void C2_HOOK_FASTCALL InitPolyFonts(void) {
     CreatePolyFont("TINYFONT", 8, kPolyfont_ingame_tiny_green);
 
     CreatePolyFont("BIGYELLOWTIMER", 32, kPolyfont_ingame_big_timer);
-    for (i = 0; i < REC2_ASIZE(gPoly_fonts->glyphs); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gPoly_fonts->glyphs); i++) {
         gPoly_fonts[kPolyfont_ingame_big_timer].glyphs[i].glyph_width = 27;
     }
     gPoly_fonts[kPolyfont_ingame_big_timer].glyphs[58].glyph_width = 11;
@@ -621,7 +621,7 @@ void C2_HOOK_FASTCALL CreatePolyFontWithTimerFix(int pFont, const char* pName, f
     CreatePolyFont(pName, pSize, pFont);
     if (pFont == kPolyfont_ingame_big_timer) {
         /* 0x10 -> kPolyfont_ingame_big_timer */
-        for (i = 0; i < REC2_ASIZE(gPoly_fonts[kPolyfont_ingame_big_timer].glyphs); i++) {
+        for (i = 0; i < CARPOCALYPSE2_ASIZE(gPoly_fonts[kPolyfont_ingame_big_timer].glyphs); i++) {
             gPoly_fonts[kPolyfont_ingame_big_timer].glyphs[i].glyph_width = 27;
         }
         gPoly_fonts[kPolyfont_ingame_big_timer].glyphs[58].glyph_width = 11; /* FIXME: What is gyph 58? */
@@ -696,7 +696,7 @@ void C2_HOOK_FASTCALL DisposeInterfaceFonts(void) {
 void C2_HOOK_FASTCALL RemovePolyFont(int pFont) {
     int i;
 
-    for (i = 0; i < REC2_ASIZE(gPoly_fonts[pFont].glyphs); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gPoly_fonts[pFont].glyphs); i++) {
         tPolyFontGlyph* glyph = &gPoly_fonts[pFont].glyphs[i];
 
         if (glyph->used) {
@@ -750,7 +750,7 @@ void C2_HOOK_FASTCALL RenderPolyTextLine(const char *pText, int pX, int pY, int 
     }
 
     text_len = strlen(pText);
-    if (gCount_polyfont_glyph_actors + text_len >= REC2_ASIZE(gPolyfont_glyph_actors)) {
+    if (gCount_polyfont_glyph_actors + text_len >= CARPOCALYPSE2_ASIZE(gPolyfont_glyph_actors)) {
         /* line is not drawn */
         /* FIXME: log debug message */
         return;
@@ -839,7 +839,7 @@ void C2_HOOK_FASTCALL TransparentPolyFontText(const char* pText, int pX, int pY,
     }
 
     text_len = strlen(pText);
-    if (gCount_polyfont_glyph_actors + text_len >= REC2_ASIZE(gPolyfont_glyph_actors)) {
+    if (gCount_polyfont_glyph_actors + text_len >= CARPOCALYPSE2_ASIZE(gPolyfont_glyph_actors)) {
         /* line is not drawn */
         /* FIXME: log debug message */
         return;

@@ -1,11 +1,11 @@
-#ifndef REC2_CRUSH_H
-#define REC2_CRUSH_H
+#ifndef CARPOCALYPSE2_CRUSH_H
+#define CARPOCALYPSE2_CRUSH_H
 
 #include "c2_hooks.h"
 
 #include "c2_stdio.h"
 
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 
 extern br_vector3 gBatty_gravity;
 extern tU8 gCrush_data_entry_counter;
@@ -234,4 +234,4 @@ void C2_HOOK_FASTCALL SphericizePhysics(tCar_spec* pCar, const br_vector3* pCent
 
 void C2_HOOK_FASTCALL SphericizeCar(tCar_spec* pCar);
 
-#endif // REC2_CRUSH_H
+#endif // CARPOCALYPSE2_CRUSH_H

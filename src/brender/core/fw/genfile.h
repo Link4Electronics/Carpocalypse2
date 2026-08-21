@@ -1,5 +1,5 @@
-#ifndef REC2_GENFILE_H
-#define REC2_GENFILE_H
+#ifndef CARPOCALYPSE2_GENFILE_H
+#define CARPOCALYPSE2_GENFILE_H
 
 #include "c2_hooks.h"
 
@@ -22,4 +22,4 @@ int C2_HOOK_STDCALL FopWrite_END(br_datafile* df);
 
 int C2_HOOK_STDCALL FopWrite_FILE_INFO(br_datafile* df, br_uint_32 type);
 
-#endif // REC2_GENFILE_H
+#endif // CARPOCALYPSE2_GENFILE_H

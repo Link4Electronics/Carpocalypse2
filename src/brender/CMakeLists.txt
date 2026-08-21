@@ -201,7 +201,7 @@ if(MSVC)
     set_property(TARGET brender-static PROPERTY ARCHIVE_OUTPUT_NAME "libbrender")
 endif()
 
-if(REC2_FIX_BUGS)
+if(CARPOCALYPSE2_FIX_BUGS)
     target_compile_definitions(brender-static PRIVATE BRENDER_FIX_BUGS)
 endif()
 target_include_directories(brender-static
@@ -305,7 +305,7 @@ endif()
 
 add_library(BRender::BRender ALIAS brender-static)
 
-if(REC2_MATCHING)
+if(CARPOCALYPSE2_MATCHING)
     set(CMAKE_CXX_FLAGS "/W3 /GX /DWIN32 /D_WINDOWS")
     set(CMAKE_CXX_FLAGS_DEBUG "/Gm /Od /D_DEBUG")
     set(CMAKE_CXX_FLAGS_RELEASE "/O2 /D \"NDEBUG\"")

@@ -1,5 +1,5 @@
-#ifndef REC2_BRPRINTF_H
-#define REC2_BRPRINTF_H
+#ifndef CARPOCALYPSE2_BRPRINTF_H
+#define CARPOCALYPSE2_BRPRINTF_H
 
 #include "c2_hooks.h"
 
@@ -13,4 +13,4 @@ int C2_HOOK_CDECL BrLogPrintf(char* fmt, ...);
 
 br_int_32 C2_HOOK_CDECL BrSScanf(char* str, char* fmt, ...);
 
-#endif // REC2_BRPRINTF_H
+#endif // CARPOCALYPSE2_BRPRINTF_H

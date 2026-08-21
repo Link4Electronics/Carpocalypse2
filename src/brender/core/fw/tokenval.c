@@ -866,7 +866,7 @@ void C2_HOOK_STDCALL DumpObject(br_object* h, char* prefix, char* info, br_putli
 
 // FUNCTION: CARMA2_HW 0x0052e9e0
 void C2_HOOK_CDECL BrTokenValueDump(br_token_value* tv, char* prefix, br_putline_cbfn* putline, void* arg) {
-#ifdef REC2_MATCHING
+#ifdef CARPOCALYPSE2_MATCHING
     (void) tv;
     (void) prefix;
     (void) putline;

@@ -3,10 +3,10 @@
 #include "brender/brender.h"
 #include "52-errors.h"
 
-#include "rec2_macros.h"
-#include "rec2_types.h"
+#include "carpocalypse2_macros.h"
+#include "carpocalypse2_types.h"
 
-#ifdef REC2_MATCHING
+#ifdef CARPOCALYPSE2_MATCHING
 #include <windows.h>
 #endif
 
@@ -285,7 +285,7 @@ const char* gMem_names[256] = {
     NULL,
 };
 
-#ifdef REC2_MATCHING
+#ifdef CARPOCALYPSE2_MATCHING
 // GLOBAL: CARMA2_HW 0x00681fa8
 br_size_t gPage_size;
 
@@ -320,7 +320,7 @@ void* C2_HOOK_CDECL DRStdlibAllocate(br_size_t size, br_uint_8 type) {
     void* p;
     char s[256];
 
-#ifdef REC2_MATCHING
+#ifdef CARPOCALYPSE2_MATCHING
     if (size != 0) {
         p = HeapAlloc(GetProcessHeap(), 0, size);
         if (p != NULL) {
@@ -359,7 +359,7 @@ void* C2_HOOK_CDECL DRStdlibAllocate(br_size_t size, br_uint_8 type) {
 // FUNCTION: CARMA2_HW 0x0044c990
 void C2_HOOK_CDECL DRStdlibFree(void* mem) {
 
-    #ifdef REC2_MATCHING
+    #ifdef CARPOCALYPSE2_MATCHING
     if (mem == NULL) {
         FatalError(kFatalError_OOM_S, "NULL POINTER BEING FREED");
     }
@@ -393,7 +393,7 @@ void C2_HOOK_FASTCALL InstallDRMemCalls(void) {
 void C2_HOOK_FASTCALL CreateStainlessClasses(void) {
     int i;
 
-    for (i = 129; i < 129 + (int)REC2_ASIZE(gStainless_classes); i++) {
+    for (i = 129; i < 129 + (int)CARPOCALYPSE2_ASIZE(gStainless_classes); i++) {
         gStainless_classes[i - 129].res_class = i;
         if (!BrResClassAdd(&gStainless_classes[i - 129])) {
             FatalError(kFatalError_OOM_S);

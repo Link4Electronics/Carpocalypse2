@@ -6,7 +6,7 @@
 
 #include "platform.h"
 
-#include "rec2_macros.h"
+#include "carpocalypse2_macros.h"
 
 #include "c2_string.h"
 
@@ -289,13 +289,13 @@ tU32* C2_HOOK_FASTCALL KevKeyService(void) {
 void C2_HOOK_FASTCALL ResetPollKeys(void) {
     int i;
 
-    C2_HOOK_BUG_ON(REC2_ASIZE(gKey_array) != 151);
-    C2_HOOK_BUG_ON(REC2_ASIZE(gJoy_array) != 8);
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gKey_array) != 151);
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gJoy_array) != 8);
 
-    for (i = 0; i < REC2_ASIZE(gKey_array); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gKey_array); i++) {
         gKey_array[i] = 0;
     }
-    for (i = 0; i < REC2_ASIZE(gJoy_array); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gJoy_array); i++) {
         gJoy_array[i] = -1;
     }
 }
@@ -304,7 +304,7 @@ void C2_HOOK_FASTCALL ResetPollKeys(void) {
 void C2_HOOK_FASTCALL CyclePollKeys(void) {
     int i;
 
-    for (i = 0; i < REC2_ASIZE(gKey_array); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gKey_array); i++) {
         if (gKey_array[i] > gKey_poll_counter) {
             gKey_array[i] = 0;
             if (i > 143) {
@@ -334,7 +334,7 @@ int C2_HOOK_FASTCALL KeyIsDown(int pKey_index) {
     case -2:
         return 1;
     case -1:
-        for (i = 0; i < REC2_ASIZE(gGo_ahead_keys); i++) {
+        for (i = 0; i < CARPOCALYPSE2_ASIZE(gGo_ahead_keys); i++) {
             if (gKey_array[gGo_ahead_keys[i]]) {
                 return 1;
             }
@@ -375,8 +375,8 @@ int C2_HOOK_FASTCALL PDAnyKeyDown(void) {
 
     CheckKeysForMouldiness();
 
-#ifndef REC2_MATCHING
-    C2_HOOK_BUG_ON(142 < REC2_ASIZE(gKey_array));
+#ifndef CARPOCALYPSE2_MATCHING
+    C2_HOOK_BUG_ON(142 < CARPOCALYPSE2_ASIZE(gKey_array));
 #endif
 
     CheckKeysForMouldiness();

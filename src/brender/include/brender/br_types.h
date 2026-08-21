@@ -1588,7 +1588,7 @@ typedef struct br_image_section {
     br_uint_32 data_offset;
     br_uint_32 data_size;
 #ifdef BRENDER_FIX_BUGS
-    br_uint_32 flags; /* Added by rec2 */
+    br_uint_32 flags; /* Added by carpocalypse2 */
 #endif
 } br_image_section;
 

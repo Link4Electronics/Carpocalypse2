@@ -3,7 +3,7 @@
 
 #include "c2_hooks.h"
 
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 
 extern tFrontend_spec gFrontend_LOAD_GAME;
 extern int gFrontend_count_saved_games;

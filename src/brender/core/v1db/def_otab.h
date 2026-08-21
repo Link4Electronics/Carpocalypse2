@@ -1,5 +1,5 @@
-#ifndef REC2_DEF_OTAB_H
-#define REC2_DEF_OTAB_H
+#ifndef CARPOCALYPSE2_DEF_OTAB_H
+#define CARPOCALYPSE2_DEF_OTAB_H
 
 #include "c2_hooks.h"
 
@@ -7,4 +7,4 @@
 
 extern br_order_table _BrDefaultOrderTable;
 
-#endif // REC2_DEF_OTAB_H
+#endif // CARPOCALYPSE2_DEF_OTAB_H

@@ -1,5 +1,5 @@
-#ifndef REC2_HOOK_H
-#define REC2_HOOK_H
+#ifndef CARPOCALYPSE2_HOOK_H
+#define CARPOCALYPSE2_HOOK_H
 
 #include "c2_hooks.h"
 
@@ -13,4 +13,4 @@ br_error C2_HOOK_CDECL HostExceptionHook(host_exception_hook *h, br_uint_8 excep
 
 br_error C2_HOOK_CDECL HostExceptionUnhook(host_exception_hook *h);
 
-#endif // REC2_HOOK_H
+#endif // CARPOCALYPSE2_HOOK_H

@@ -1,5 +1,5 @@
-if(REC2_FIX_BUGS)
-    add_definitions(-DREC2_FIX_BUGS)
+if(CARPOCALYPSE2_FIX_BUGS)
+    add_definitions(-DCARPOCALYPSE2_FIX_BUGS)
 endif()
 
 add_subdirectory(hooks)

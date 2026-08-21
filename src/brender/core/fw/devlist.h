@@ -1,5 +1,5 @@
-#ifndef REC2_DEVLIST_H
-#define REC2_DEVLIST_H
+#ifndef CARPOCALYPSE2_DEVLIST_H
+#define CARPOCALYPSE2_DEVLIST_H
 
 #include "c2_hooks.h"
 

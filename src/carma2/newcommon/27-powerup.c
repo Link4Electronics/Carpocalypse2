@@ -3,7 +3,7 @@
 #include "16-graphics1.h"
 #include "32-spark.h"
 #include "globvrpb.h"
-#include "rec2_macros.h"
+#include "carpocalypse2_macros.h"
 
 #include "c2_string.h"
 
@@ -554,10 +554,10 @@ void C2_HOOK_FASTCALL RemoveFromCloakingList(tCar_spec* pCar) {
         for (i = 0; i < gCount_cloaked_cars; i++) {
 
             if (gCloaked_cars[i] == pCar) {
-#ifdef REC2_FIX_BUGS
+#ifdef CARPOCALYPSE2_FIX_BUGS
                 memmove(&gCloaked_cars[i], &gCloaked_cars[i + 1], (gCount_cloaked_cars - i - 1) * sizeof(tCar_spec*));
 #else
-                memcpy(&gCloaked_cars[i], &gCloaked_cars[i + 1], (REC2_ASIZE(gCloaked_cars) - i - 1) * sizeof(tCar_spec*));
+                memcpy(&gCloaked_cars[i], &gCloaked_cars[i + 1], (CARPOCALYPSE2_ASIZE(gCloaked_cars) - i - 1) * sizeof(tCar_spec*));
 #endif
                 gCount_cloaked_cars -= 1;
                 break;

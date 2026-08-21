@@ -1,5 +1,5 @@
-#ifndef REC2_DEF_MDL_H
-#define REC2_DEF_MDL_H
+#ifndef CARPOCALYPSE2_DEF_MDL_H
+#define CARPOCALYPSE2_DEF_MDL_H
 
 #include "c2_hooks.h"
 
@@ -7,4 +7,4 @@
 
 extern br_model _BrDefaultModel;
 
-#endif // REC2_DEF_MDL_H
+#endif // CARPOCALYPSE2_DEF_MDL_H

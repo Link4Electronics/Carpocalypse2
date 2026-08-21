@@ -1,5 +1,5 @@
-#ifndef REC2_HIMAGE_H
-#define REC2_HIMAGE_H
+#ifndef CARPOCALYPSE2_HIMAGE_H
+#define CARPOCALYPSE2_HIMAGE_H
 
 #include "c2_hooks.h"
 
@@ -13,4 +13,4 @@ void* C2_HOOK_CDECL HostImageLookupName(void* img, const char* name, br_uint_32 
 
 void* C2_HOOK_CDECL HostImageLookupOrdinal(void* img, br_uint_32 ordinal);
 
-#endif // REC2_HIMAGE_H
+#endif // CARPOCALYPSE2_HIMAGE_H

@@ -1,9 +1,9 @@
-#ifndef REC2_DISPLAYS_H
-#define REC2_DISPLAYS_H
+#ifndef CARPOCALYPSE2_DISPLAYS_H
+#define CARPOCALYPSE2_DISPLAYS_H
 
 #include "c2_hooks.h"
 
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 
 extern tHeadup gHeadups[37];
 extern br_material* gAcc_poly_material;
@@ -176,4 +176,4 @@ void C2_HOOK_FASTCALL CleanPolyFontDangler(void);
 
 void C2_HOOK_FASTCALL StopRenderingHeadups(void);
 
-#endif //REC2_DISPLAYS_H
+#endif //CARPOCALYPSE2_DISPLAYS_H

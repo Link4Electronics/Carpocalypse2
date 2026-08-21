@@ -1,5 +1,5 @@
-#ifndef REC2_MAIN_H
-#define REC2_MAIN_H
+#ifndef CARPOCALYPSE2_MAIN_H
+#define CARPOCALYPSE2_MAIN_H
 
 #include "c2_hooks.h"
 
@@ -15,4 +15,4 @@ void C2_HOOK_FASTCALL ServiceTheGame(int pRacing);
 
 void C2_HOOK_FASTCALL ServiceGameInRace(void);
 
-#endif // REC2_MAIN_H
+#endif // CARPOCALYPSE2_MAIN_H

@@ -1,7 +1,7 @@
-#ifndef REC2_SDL3_H
-#define REC2_SDL3_H
+#ifndef CARPOCALYPSE2_SDL3_H
+#define CARPOCALYPSE2_SDL3_H
 
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 
 #include <SDL3/SDL.h>
 
@@ -116,4 +116,4 @@ extern void PDDisposeActionReplayBuffer(void);
 
 extern void SDL3ServiceMessages(void);
 
-#endif /* REC2_SDL3_H */
+#endif /* CARPOCALYPSE2_SDL3_H */

@@ -1,5 +1,5 @@
-#ifndef REC2_VECTOR_H
-#define REC2_VECTOR_H
+#ifndef CARPOCALYPSE2_VECTOR_H
+#define CARPOCALYPSE2_VECTOR_H
 
 #include "c2_hooks.h"
 

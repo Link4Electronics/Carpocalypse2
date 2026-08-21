@@ -14,7 +14,7 @@
 
 #include "brender/brender.h"
 
-#include "rec2_macros.h"
+#include "carpocalypse2_macros.h"
 
 #include "c2_string.h"
 
@@ -464,15 +464,15 @@ int gFlic_bunch8[16] = {
 
 // GLOBAL: CARMA2_HW 0x00599c10
 tFlic_bunch gFlic_bunch[9] = {
-    { REC2_ASIZE(gFlic_bunch0), gFlic_bunch0 },
-    { REC2_ASIZE(gFlic_bunch1), gFlic_bunch1 },
-    { REC2_ASIZE(gFlic_bunch2), gFlic_bunch2 },
-    { REC2_ASIZE(gFlic_bunch3), gFlic_bunch3 },
-    { REC2_ASIZE(gFlic_bunch4), gFlic_bunch4 },
-    { REC2_ASIZE(gFlic_bunch5), gFlic_bunch5 },
-    { REC2_ASIZE(gFlic_bunch6), gFlic_bunch6 },
-    { REC2_ASIZE(gFlic_bunch7), gFlic_bunch7 },
-    { REC2_ASIZE(gFlic_bunch8), gFlic_bunch8 },
+    { CARPOCALYPSE2_ASIZE(gFlic_bunch0), gFlic_bunch0 },
+    { CARPOCALYPSE2_ASIZE(gFlic_bunch1), gFlic_bunch1 },
+    { CARPOCALYPSE2_ASIZE(gFlic_bunch2), gFlic_bunch2 },
+    { CARPOCALYPSE2_ASIZE(gFlic_bunch3), gFlic_bunch3 },
+    { CARPOCALYPSE2_ASIZE(gFlic_bunch4), gFlic_bunch4 },
+    { CARPOCALYPSE2_ASIZE(gFlic_bunch5), gFlic_bunch5 },
+    { CARPOCALYPSE2_ASIZE(gFlic_bunch6), gFlic_bunch6 },
+    { CARPOCALYPSE2_ASIZE(gFlic_bunch7), gFlic_bunch7 },
+    { CARPOCALYPSE2_ASIZE(gFlic_bunch8), gFlic_bunch8 },
 };
 
 // GLOBAL: CARMA2_HW 0x006861e8
@@ -1153,7 +1153,7 @@ void C2_HOOK_FASTCALL SwapScreen(void) {
 void C2_HOOK_FASTCALL InitFlics(void) {
     int i;
 
-    for (i = 0; i < REC2_ASIZE(gMain_flic_list); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gMain_flic_list); i++) {
         gMain_flic_list[i].data_ptr = NULL;
     }
 }
@@ -1252,7 +1252,7 @@ void C2_HOOK_FASTCALL UnlockBunchOfFlics(int pBunch_index) {
 void C2_HOOK_FASTCALL FlushAllFlics(int pBunch_index) {
     int i;
 
-    for (i = 0; i < REC2_ASIZE(gFlic_bunch); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gFlic_bunch); i++) {
         FreeFlic(i);
     }
 }
@@ -1429,7 +1429,7 @@ void C2_HOOK_FASTCALL ServicePanelFlics(int pCopy_to_buffer) {
     DontLetFlicFuckWithPalettes();
     TurnFlicTransparencyOn();
 
-    for (i = 0; i < REC2_ASIZE(gPanel_flic); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gPanel_flic); i++) {
         old_last_time[i] = gLast_panel_frame_time[i];
         if (gPanel_buffer[i] != NULL && gPanel_flic[i].data != NULL) {
             if (old_last_time[i] != 0) {
@@ -1529,7 +1529,7 @@ void C2_HOOK_FASTCALL LoadInterfaceStrings(void) {
         strtok(s2, ".");
         strcat(s2, ".FLI");
         gTranslations[i].flic_index = -1;
-        for (j = 0; j < REC2_ASIZE(gMain_flic_list); j++) {
+        for (j = 0; j < CARPOCALYPSE2_ASIZE(gMain_flic_list); j++) {
             if (strcmp(gMain_flic_list[j].file_name, s2) == 0) {
                 gTranslations[i].flic_index = j;
                 break;

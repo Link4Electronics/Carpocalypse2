@@ -1,5 +1,5 @@
-#ifndef REC2_MATRIX23_H
-#define REC2_MATRIX23_H
+#ifndef CARPOCALYPSE2_MATRIX23_H
+#define CARPOCALYPSE2_MATRIX23_H
 
 #include "c2_hooks.h"
 
@@ -59,4 +59,4 @@ void C2_HOOK_CDECL BrMatrix23PreShearY(br_matrix23* mat, br_scalar sx);
 
 void C2_HOOK_CDECL BrMatrix23PostShearY(br_matrix23* mat, br_scalar sx);
 
-#endif // REC2_MATRIX23_H
+#endif // CARPOCALYPSE2_MATRIX23_H

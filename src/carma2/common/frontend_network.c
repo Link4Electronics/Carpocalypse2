@@ -21,7 +21,7 @@
 
 #include "c2_string.h"
 
-#include "rec2_macros.h"
+#include "carpocalypse2_macros.h"
 
 
 
@@ -168,7 +168,7 @@ void C2_HOOK_FASTCALL NetworkJoinUpdateScroller(tFrontend_spec* pFrontend) {
 
     have_game = 0;
     PossibleService();
-    for (i = 0; i < REC2_ASIZE(gGames_to_join); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gGames_to_join); i++) {
         if (gGames_to_join[i].game != NULL) {
             have_game = 1;
         }

@@ -28,7 +28,7 @@
 #include "platform.h"
 
 #include <brender/brender.h>
-#include "rec2_macros.h"
+#include "carpocalypse2_macros.h"
 
 #include <tiffio.h>
 #include <zlib.h>
@@ -37,7 +37,7 @@
 #include "c2_stdlib.h"
 #include "c2_string.h"
 #include "c2_sys_stat.h"
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 
 #include <assert.h>
 #include <c2_sys_stat.h>
@@ -555,9 +555,9 @@ int C2_HOOK_FASTCALL LoadBunchOfPixies(const char* pathRoot, const char* texture
 void C2_HOOK_FASTCALL ParseSpecialVolume(FILE* pF, tSpecial_volume* pSpec, char* pScreen_name_str, int soundfx) {
     char s[256];
 
-    REC2_BUG_ON(sizeof(tSpecial_volume) != 220);
-    REC2_BUG_ON(sizeof(tSpecial_volume_soundfx_data) != 36);
-    REC2_BUG_ON(offsetof(tSpecial_volume, gravity_multiplier) != 136);
+    CARPOCALYPSE2_BUG_ON(sizeof(tSpecial_volume) != 220);
+    CARPOCALYPSE2_BUG_ON(sizeof(tSpecial_volume_soundfx_data) != 36);
+    CARPOCALYPSE2_BUG_ON(offsetof(tSpecial_volume, gravity_multiplier) != 136);
 
     /* gravity multiplier */
     pSpec->gravity_multiplier = GetAFloat(pF);
@@ -592,7 +592,7 @@ void C2_HOOK_FASTCALL ParseSpecialVolume(FILE* pF, tSpecial_volume* pSpec, char*
     /* material index */
     pSpec->material_modifier_index = GetAnInt(pF);
     if (soundfx) {
-        pSpec->soundfx_type = GetALineAndInterpretCommand(pF, gSoundType_Choices, REC2_ASIZE(gSoundType_Choices));
+        pSpec->soundfx_type = GetALineAndInterpretCommand(pF, gSoundType_Choices, CARPOCALYPSE2_ASIZE(gSoundType_Choices));
         if (pSpec->soundfx_type != kSoundFx_None) {
             ReadSoundSpec(pF, &pSpec->soundfx_data);
         }
@@ -616,7 +616,7 @@ int C2_HOOK_FASTCALL GetFileName(const char *path, tName_list *pList) {
     }
     SepDirAndFilename(pathUpper, dir_path, stem_path);
     strcpy(pList->items[pList->size], stem_path);
-    if (pList->size < REC2_ASIZE(pList->items)) {
+    if (pList->size < CARPOCALYPSE2_ASIZE(pList->items)) {
         pList->size += 1;
     }
     return 0;
@@ -651,7 +651,7 @@ int C2_HOOK_FASTCALL GetAdditionalFileName(const char* path, tName_list* pList) 
     }
     if (!alreadyInList) {
         strcpy(pList->items[pList->size], stem_path);
-        if (pList->size < REC2_ASIZE(pList->items)) {
+        if (pList->size < CARPOCALYPSE2_ASIZE(pList->items)) {
             pList->size += 1;
         }
     }
@@ -788,7 +788,7 @@ br_pixelmap* C2_HOOK_FASTCALL Read_DEFAULT_ACT(const char* textureDir, int flags
         *errorCode = 5;
         return NULL;
     }
-    if (fread(defaultActBuffer, REC2_ASIZE(defaultActBuffer), 1, (FILE*)f) == 0) {
+    if (fread(defaultActBuffer, CARPOCALYPSE2_ASIZE(defaultActBuffer), 1, (FILE*)f) == 0) {
         PFfclose(f);
         *errorCode = 5;
         return NULL;
@@ -1288,7 +1288,7 @@ br_pixelmap* C2_HOOK_FASTCALL DRLdImg(const char* texturePathDir, const char* te
     int nb;
 
     if (gDisableTiffConversion) {
-        nb = LoadBunchOfPixies(texturePathDir, textureName, textures, REC2_ASIZE(textures));
+        nb = LoadBunchOfPixies(texturePathDir, textureName, textures, CARPOCALYPSE2_ASIZE(textures));
         if (nb == 0) {
             *errorCode = 1;
             return NULL;
@@ -1328,9 +1328,9 @@ int C2_HOOK_FASTCALL AddPixelmaps(tBrender_storage* pStorage_space, const char* 
     result = 0;
     if (gDisableTiffConversion) {
         SepDirAndFilename(path, path_dirname, path_stem);
-        nbLoaded = LoadBunchOfPixies(path_dirname, path_stem, pixelmaps, REC2_ASIZE(pixelmaps));
+        nbLoaded = LoadBunchOfPixies(path_dirname, path_stem, pixelmaps, CARPOCALYPSE2_ASIZE(pixelmaps));
     } else {
-        nbLoaded = DRPixelmapLoadMany(path, pixelmaps, REC2_ASIZE(pixelmaps));
+        nbLoaded = DRPixelmapLoadMany(path, pixelmaps, CARPOCALYPSE2_ASIZE(pixelmaps));
     }
     if (nbLoaded == 0) {
         FatalError(kFatalError_CantLoadPixelmapFile_S, path);
@@ -1620,7 +1620,7 @@ void C2_HOOK_FASTCALL LoadIfItsAShadeTable(const char* pPath) {
         return;
     }
     storage_space = gStorage_for_callbacks;
-    total = BrPixelmapLoadMany(pPath, temp_array, REC2_ASIZE(temp_array));
+    total = BrPixelmapLoadMany(pPath, temp_array, CARPOCALYPSE2_ASIZE(temp_array));
     if (total == 0) {
         FatalError(kFatalError_CannotLoadShadeTableFileOrItIsEmpty_S, pPath);
     }
@@ -1754,7 +1754,7 @@ int C2_HOOK_FASTCALL AddMaterials(tBrender_storage* pStorage_space, const char* 
     br_material* temp_array[500];
 
     new_ones = 0;
-    total = BrMaterialLoadMany(pPath, temp_array, REC2_ASIZE(temp_array));
+    total = BrMaterialLoadMany(pPath, temp_array, CARPOCALYPSE2_ASIZE(temp_array));
     if (total == 0) {
         FatalError(kFatalError_CannotLoadMaterialFileOrItIsEmpty_S, pPath);
     }
@@ -1893,7 +1893,7 @@ int C2_HOOK_FASTCALL AddModels(tBrender_storage* pStorage_space, const char* pPa
     br_model* temp_array[2000];
 
     new_ones = 0;
-    total = BrModelLoadMany(pPath, temp_array, REC2_ASIZE(temp_array));
+    total = BrModelLoadMany(pPath, temp_array, CARPOCALYPSE2_ASIZE(temp_array));
     WhitenVertexRGB(temp_array, total);
     if (total == 0) {
         FatalError(kFatalError_CannotLoadModelFileOrItIsEmpty_S, pPath);
@@ -2162,10 +2162,10 @@ br_uint_32 C2_HOOK_FASTCALL AddProximities(br_actor* pActor, br_material* pMat, 
 void C2_HOOK_FASTCALL ShiftBoundGrooveFunks(char* pStart, char* pEnd, ptrdiff_t pDelta) {
     int i;
 
-    C2_HOOK_BUG_ON(REC2_ASIZE(gGroove_funk_bindings) != 1440);
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gGroove_funk_bindings) != 1440);
     C2_HOOK_BUG_ON(sizeof(tGroove_funk_binding) != 0x8);
 
-    for (i = 0; i < REC2_ASIZE(gGroove_funk_bindings); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gGroove_funk_bindings); i++) {
         if (pStart <= (char*)gGroove_funk_bindings[i].v && (char*)gGroove_funk_bindings[i].v < pEnd) {
             gGroove_funk_bindings[i].v = (float*)((char*)gGroove_funk_bindings[i].v + (pDelta & ~(sizeof(void*) - 1)));
         }
@@ -2239,7 +2239,7 @@ br_material* C2_HOOK_FASTCALL FindSmashableMaterial(const char* pStr, tFunkotron
 
 void C2_HOOK_FASTCALL AddFunkGrooveBinding(int pSlot_number, float* pPeriod_address) {
 
-    if (pSlot_number < 0 || pSlot_number >= REC2_ASIZE(gGroove_funk_bindings)) {
+    if (pSlot_number < 0 || pSlot_number >= CARPOCALYPSE2_ASIZE(gGroove_funk_bindings)) {
         FatalError(kFatalError_DefinedRefNumOfControlledGoorvFunkOutOfRange);
     }
 
@@ -2284,7 +2284,7 @@ void C2_HOOK_FASTCALL AddFunkotronics(FILE* pF, int pOwner, int pRef_offset, tCa
     float yon_factor;
     float fov_factor;
 
-#ifndef REC2_MATCHING
+#ifndef CARPOCALYPSE2_MATCHING
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tFunkotronic_spec, flags, 0x4);
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tFunkotronic_spec, material, 0x8);
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tFunkotronic_spec, mode, 0xc);
@@ -2384,7 +2384,7 @@ void C2_HOOK_FASTCALL AddFunkotronics(FILE* pF, int pOwner, int pRef_offset, tCa
             BrResFree(the_funk->material->identifier);
             the_funk->material->identifier = NULL;
         }
-        the_funk->mode = GetALineAndInterpretCommand(pF, gFunk_nature_names, REC2_ASIZE(gFunk_nature_names));
+        the_funk->mode = GetALineAndInterpretCommand(pF, gFunk_nature_names, CARPOCALYPSE2_ASIZE(gFunk_nature_names));
         the_funk->proximity_count = 0;
         the_funk->proximity_array = NULL;
         if (the_funk->mode == eFunk_mode_distance) {
@@ -2393,10 +2393,10 @@ void C2_HOOK_FASTCALL AddFunkotronics(FILE* pF, int pOwner, int pRef_offset, tCa
             the_funk->proximity_count = 0;
             DRActorEnumRecurseWithMat(gUniverse_actor, NULL, AddProximities, the_funk);
         }
-        the_funk->matrix_mod_type = GetALineAndInterpretCommand(pF, gFunk_type_names, REC2_ASIZE(gFunk_type_names));
+        the_funk->matrix_mod_type = GetALineAndInterpretCommand(pF, gFunk_type_names, CARPOCALYPSE2_ASIZE(gFunk_type_names));
         the_funk->flags &= ~0x1;
         if (the_funk->matrix_mod_type != eMatrix_mod_none) {
-            the_funk->matrix_mode = GetALineAndInterpretCommand(pF, gFunk_move_names, REC2_ASIZE(gFunk_move_names));
+            the_funk->matrix_mode = GetALineAndInterpretCommand(pF, gFunk_move_names, CARPOCALYPSE2_ASIZE(gFunk_move_names));
         }
         switch (the_funk->matrix_mod_type) {
         case eMatrix_mod_spin:
@@ -2532,7 +2532,7 @@ void C2_HOOK_FASTCALL AddFunkotronics(FILE* pF, int pOwner, int pRef_offset, tCa
         default:
             break;
         }
-        the_funk->lighting_animation_type = GetALineAndInterpretCommand(pF, gFunk_move_names, REC2_ASIZE(gFunk_move_names));
+        the_funk->lighting_animation_type = GetALineAndInterpretCommand(pF, gFunk_move_names, CARPOCALYPSE2_ASIZE(gFunk_move_names));
         if (the_funk->lighting_animation_type != eMove_none) {
             switch (the_funk->lighting_animation_type) {
             case eMove_controlled:
@@ -2561,11 +2561,11 @@ void C2_HOOK_FASTCALL AddFunkotronics(FILE* pF, int pOwner, int pRef_offset, tCa
             the_funk->direct_delta = (d_max - d_min) / 2.0f;
             the_funk->specular_delta = (s_max - s_min) / 2.0f;
         }
-        the_funk->texture_animation_type = GetALineAndInterpretCommand(pF, gFunk_anim_names, REC2_ASIZE(gFunk_anim_names));
+        the_funk->texture_animation_type = GetALineAndInterpretCommand(pF, gFunk_anim_names, CARPOCALYPSE2_ASIZE(gFunk_anim_names));
         if (the_funk->texture_animation_type != eTexture_animation_none
                 && the_funk->texture_animation_type != eTexture_animation_mirror
                 && the_funk->texture_animation_type != eTexture_animation_camera) {
-            the_funk->time_mode = GetALineAndInterpretCommand(pF, gTime_mode_names, REC2_ASIZE(gTime_mode_names));
+            the_funk->time_mode = GetALineAndInterpretCommand(pF, gTime_mode_names, CARPOCALYPSE2_ASIZE(gTime_mode_names));
         }
         if (the_funk->texture_animation_type == eTexture_animation_flic && gAusterity_mode) {
             the_funk->texture_animation_type = eTexture_animation_none;
@@ -2574,7 +2574,7 @@ void C2_HOOK_FASTCALL AddFunkotronics(FILE* pF, int pOwner, int pRef_offset, tCa
         the_funk->last_frame = 0.0f;
         switch (the_funk->texture_animation_type) {
         case eTexture_animation_frames:
-            the_funk->texture_animation_data.frames_info.mode = GetALineAndInterpretCommand(pF, gFunk_move_names, REC2_ASIZE(gFunk_move_names));
+            the_funk->texture_animation_data.frames_info.mode = GetALineAndInterpretCommand(pF, gFunk_move_names, CARPOCALYPSE2_ASIZE(gFunk_move_names));
             switch (the_funk->texture_animation_data.frames_info.mode) {
             case eMove_controlled:
             case eMove_absolute:
@@ -2658,7 +2658,7 @@ void C2_HOOK_FASTCALL AddFunkotronics(FILE* pF, int pOwner, int pRef_offset, tCa
             }
             break;
         case eTexture_animation_camera:
-            the_funk->texture_animation_data.camera_info.mode = GetALineAndInterpretCommand(pF, gCamera_animation_names, REC2_ASIZE(gCamera_animation_names));
+            the_funk->texture_animation_data.camera_info.mode = GetALineAndInterpretCommand(pF, gCamera_animation_names, CARPOCALYPSE2_ASIZE(gCamera_animation_names));
             GetPairOfFloats(pF, &yon_factor, &fov_factor);
             the_funk->texture_animation_data.camera_info.field_0x60 = GetAnInt(pF);
             the_funk->texture_animation_data.camera_info.count = GetAnInt(pF);
@@ -2888,7 +2888,7 @@ void C2_HOOK_FASTCALL AddGroovidelics(FILE* pF, int pOwner, br_actor* pParent_ac
     int d_2;
     br_vector3 p;
 
-#ifndef REC2_MATCHING
+#ifndef CARPOCALYPSE2_MATCHING
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tGroovidelic_spec, owner, 0x0);
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tGroovidelic_spec, block_flags, 0x8);
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tGroovidelic_spec, actor, 0xc);
@@ -2970,13 +2970,13 @@ void C2_HOOK_FASTCALL AddGroovidelics(FILE* pF, int pOwner, br_actor* pParent_ac
             }
             the_groove->actor = gGroove_by_proxy_actor;
         }
-        the_groove->lollipop_mode = GetALineAndInterpretCommand(pF, gLollipop_names, REC2_ASIZE(gLollipop_names));
-        the_groove->mode = GetALineAndInterpretCommand(pF, gGroove_nature_names, REC2_ASIZE(gGroove_nature_names));
-        the_groove->path_type = GetALineAndInterpretCommand(pF, gGroove_path_names, REC2_ASIZE(gGroove_path_names));
+        the_groove->lollipop_mode = GetALineAndInterpretCommand(pF, gLollipop_names, CARPOCALYPSE2_ASIZE(gLollipop_names));
+        the_groove->mode = GetALineAndInterpretCommand(pF, gGroove_nature_names, CARPOCALYPSE2_ASIZE(gGroove_nature_names));
+        the_groove->path_type = GetALineAndInterpretCommand(pF, gGroove_path_names, CARPOCALYPSE2_ASIZE(gGroove_path_names));
         the_groove->path_interrupt_status = eInterrupt_none;
         the_groove->object_interrupt_status = eInterrupt_none;
         if (the_groove->path_type != eGroove_path_none) {
-            the_groove->path_mode = GetALineAndInterpretCommand(pF, gFunk_move_names, REC2_ASIZE(gFunk_move_names));
+            the_groove->path_mode = GetALineAndInterpretCommand(pF, gFunk_move_names, CARPOCALYPSE2_ASIZE(gFunk_move_names));
         }
         switch (the_groove->path_type) {
         case eGroove_path_straight:
@@ -3036,16 +3036,16 @@ void C2_HOOK_FASTCALL AddGroovidelics(FILE* pF, int pOwner, br_actor* pParent_ac
                 break;
             }
             the_groove->path_data.circular_info.radius = GetAFloat(pF);
-            the_groove->path_data.circular_info.axis =  GetALineAndInterpretCommand(pF, gAxis_names, REC2_ASIZE(gAxis_names));
+            the_groove->path_data.circular_info.axis =  GetALineAndInterpretCommand(pF, gAxis_names, CARPOCALYPSE2_ASIZE(gAxis_names));
             break;
         default:
             break;
         }
 
-        the_groove->object_type = GetALineAndInterpretCommand(pF, gGroove_object_names, REC2_ASIZE(gGroove_object_names));
+        the_groove->object_type = GetALineAndInterpretCommand(pF, gGroove_object_names, CARPOCALYPSE2_ASIZE(gGroove_object_names));
         BrVector3Copy(&the_groove->object_position, &the_groove->actor->t.t.translate.t);
         if (the_groove->object_type != eGroove_object_none) {
-            the_groove->object_mode = GetALineAndInterpretCommand(pF, gFunk_move_names, REC2_ASIZE(gFunk_move_names));
+            the_groove->object_mode = GetALineAndInterpretCommand(pF, gFunk_move_names, CARPOCALYPSE2_ASIZE(gFunk_move_names));
         }
         switch (the_groove->object_type) {
         case eGroove_object_spin:
@@ -3069,7 +3069,7 @@ void C2_HOOK_FASTCALL AddGroovidelics(FILE* pF, int pOwner, br_actor* pParent_ac
                 &the_groove->object_centre.v[0],
                 &the_groove->object_centre.v[1],
                 &the_groove->object_centre.v[2]);
-            the_groove->object_data.spin_info.axis = GetALineAndInterpretCommand(pF, gAxis_names, REC2_ASIZE(gAxis_names));
+            the_groove->object_data.spin_info.axis = GetALineAndInterpretCommand(pF, gAxis_names, CARPOCALYPSE2_ASIZE(gAxis_names));
             break;
         case eGroove_object_rock:
             switch (the_groove->object_mode) {
@@ -3092,7 +3092,7 @@ void C2_HOOK_FASTCALL AddGroovidelics(FILE* pF, int pOwner, br_actor* pParent_ac
                 &the_groove->object_centre.v[0],
                 &the_groove->object_centre.v[1],
                 &the_groove->object_centre.v[2]);
-            the_groove->object_data.rock_info.axis = GetALineAndInterpretCommand(pF, gAxis_names, REC2_ASIZE(gAxis_names));
+            the_groove->object_data.rock_info.axis = GetALineAndInterpretCommand(pF, gAxis_names, CARPOCALYPSE2_ASIZE(gAxis_names));
             the_groove->object_data.rock_info.max_angle = GetAFloat(pF);
             break;
         case eGroove_object_throb:
@@ -3204,9 +3204,9 @@ void C2_HOOK_FASTCALL InitRepairAnimations(void) {
     int i;
 
     C2_HOOK_BUG_ON(sizeof(tRepair_animation) != 0xc);
-    C2_HOOK_BUG_ON(REC2_ASIZE(gRepair_animations) != 25);
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gRepair_animations) != 25);
 
-    for (i = 0; i < REC2_ASIZE(gRepair_animations); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gRepair_animations); i++) {
         gRepair_animations[i].field_0x0 = 0;
     }
 }
@@ -3319,7 +3319,7 @@ void C2_HOOK_FASTCALL ReadConnotations(FILE* pF, tConnotations* pConnotations, t
 
     ReadSmashSounds(pF, pConnotations, pStorage);
 
-#ifndef REC2_MATCHING
+#ifndef CARPOCALYPSE2_MATCHING
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tSmashable_item_spec, mode_data, 0x14);
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tSmashable_item_spec_shrapnel, connotations.count_shrapnel, 0x14);
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tSmashable_item_spec_shrapnel, connotations.shrapnel, 0x18);
@@ -3402,7 +3402,7 @@ void C2_HOOK_FASTCALL ReadSmashableEnvironment(FILE* pF, const char* pPath) {
         }
 
         /* Mode */
-        spec->mode = GetALineAndInterpretCommand(pF, gSmashable_item_mode_names, REC2_ASIZE(gSmashable_item_mode_names));
+        spec->mode = GetALineAndInterpretCommand(pF, gSmashable_item_mode_names, CARPOCALYPSE2_ASIZE(gSmashable_item_mode_names));
         switch (spec->mode) {
         case kSmashableMode_Decal:
         case kSmashableMode_TextureChange:
@@ -3483,21 +3483,21 @@ void C2_HOOK_FASTCALL DisposeSmashableEnvironment(void) {
 void C2_HOOK_FASTCALL ReinitSmashing(void) {
     int i;
 
-    C2_HOOK_BUG_ON(REC2_ASIZE(gSmash_glass_fragments) != 200);
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gSmash_glass_fragments) != 200);
     C2_HOOK_BUG_ON(sizeof(gSmash_glass_fragments[0]) != 0x38);
-    C2_HOOK_BUG_ON(REC2_ASIZE(gDecals) != 50);
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gDecals) != 50);
     C2_HOOK_BUG_ON(sizeof(gDecals[0]) != 0x8);
-    C2_HOOK_BUG_ON(REC2_ASIZE(gQueued_net_smashes) != 50);
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gQueued_net_smashes) != 50);
     C2_HOOK_BUG_ON(sizeof(gQueued_net_smashes[0]) != 0x38);
     C2_HOOK_BUG_ON(sizeof(tStored_smash) != 0x38);
 
-    for (i = 0; i < REC2_ASIZE(gSmash_glass_fragments); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gSmash_glass_fragments); i++) {
         gSmash_glass_fragments[i].end_time = 0;
     }
-    for (i = 0; i < REC2_ASIZE(gDecals); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gDecals); i++) {
         gDecals[i].time = 0;
     }
-    for (i = 0; i < REC2_ASIZE(gQueued_net_smashes); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gQueued_net_smashes); i++) {
         gQueued_net_smashes[i].field_0x4 = 0;
     }
     gSize_powerup_queue = 0;
@@ -3534,8 +3534,8 @@ void C2_HOOK_FASTCALL ReadSpecialVolumes(FILE* pF) {
 
             PossibleService();
 
-            C2_HOOK_BUG_ON(REC2_ASIZE(gSpecial_effects_boundary_choices) != 4);
-            spec->boundary_type = GetALineAndInterpretCommand(pF, gSpecial_effects_boundary_choices, REC2_ASIZE(gSpecial_effects_boundary_choices));
+            C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gSpecial_effects_boundary_choices) != 4);
+            spec->boundary_type = GetALineAndInterpretCommand(pF, gSpecial_effects_boundary_choices, CARPOCALYPSE2_ASIZE(gSpecial_effects_boundary_choices));
             if (spec->boundary_type == eFx_boundary_new) {
                 spec->boundary_type = eFx_boundary_box;
             }
@@ -3596,7 +3596,7 @@ void C2_HOOK_FASTCALL ReadSoundGenerators(tTrack_spec* pTrack_spec, FILE* pF) {
         char name[32];
 
         generator = &gProgram_state.track_sound_generators[i];
-        generator->type = GetALineAndInterpretCommand(pF, gSoundGeneratorTypeNames, REC2_ASIZE(gSoundGeneratorTypeNames));
+        generator->type = GetALineAndInterpretCommand(pF, gSoundGeneratorTypeNames, CARPOCALYPSE2_ASIZE(gSoundGeneratorTypeNames));
         if (generator->type == kSoundGeneratorType_noncar) {
             char identifier[4];
             br_model* model;
@@ -4063,7 +4063,7 @@ void C2_HOOK_FASTCALL LoadTrack(const char* pFile_name, tTrack_spec* pTrack_spec
     PathCat(gAdditional_model_path, gApplication_path, "MODELS");
     PathCat(gAdditional_model_path, gAdditional_model_path, str);
     PossibleService();
-    gNumber_of_additional_models = BrModelLoadMany(gAdditional_model_path, gAdditional_models, REC2_ASIZE(gAdditional_models));
+    gNumber_of_additional_models = BrModelLoadMany(gAdditional_model_path, gAdditional_models, CARPOCALYPSE2_ASIZE(gAdditional_models));
     for (i = 0; i < gNumber_of_additional_models; i++) {
         gAdditional_models[i]->flags = BR_MODF_UPDATEABLE;
     }
@@ -4135,7 +4135,7 @@ void C2_HOOK_FASTCALL LoadTrack(const char* pFile_name, tTrack_spec* pTrack_spec
     PossibleService();
 
     /* Depth cue mode ("none", "dark" or "fog") */
-    gProgram_state.default_depth_effect.type = GetALineAndInterpretCommand(f, gDepth_effect_names, REC2_ASIZE(gDepth_effect_names));
+    gProgram_state.default_depth_effect.type = GetALineAndInterpretCommand(f, gDepth_effect_names, CARPOCALYPSE2_ASIZE(gDepth_effect_names));
 
     /* Degree of fog/darkness */
     GetPairOfInts(f,
@@ -4336,7 +4336,7 @@ void C2_HOOK_FASTCALL LoadTrack(const char* pFile_name, tTrack_spec* pTrack_spec
         }
     }
     PackFileRerevertTiffLoading();
-    for (i = count_material_modifiers; i < REC2_ASIZE(pRace_info->material_modifiers) - 1; i++) {
+    for (i = count_material_modifiers; i < CARPOCALYPSE2_ASIZE(pRace_info->material_modifiers) - 1; i++) {
         tMaterial_modifiers* modifier = &pRace_info->material_modifiers[i];
 
         modifier->car_wall_friction = 1.f;
@@ -4350,16 +4350,16 @@ void C2_HOOK_FASTCALL LoadTrack(const char* pFile_name, tTrack_spec* pTrack_spec
         modifier->smoke_type = 1;
         modifier->skid_mark_material = NULL;
     }
-    pRace_info->material_modifiers[REC2_ASIZE(pRace_info->material_modifiers) - 1].car_wall_friction = 1.f;
-    pRace_info->material_modifiers[REC2_ASIZE(pRace_info->material_modifiers) - 1].tyre_road_friction = 1.f;
-    pRace_info->material_modifiers[REC2_ASIZE(pRace_info->material_modifiers) - 1].down_force = 0.f;
-    pRace_info->material_modifiers[REC2_ASIZE(pRace_info->material_modifiers) - 1].bumpiness = 0.f;
-    pRace_info->material_modifiers[REC2_ASIZE(pRace_info->material_modifiers) - 1].tyre_noise_index = -1;
-    pRace_info->material_modifiers[REC2_ASIZE(pRace_info->material_modifiers) - 1].crash_noise_index = 0;
-    pRace_info->material_modifiers[REC2_ASIZE(pRace_info->material_modifiers) - 1].scrape_noise_index = 0;
-    pRace_info->material_modifiers[REC2_ASIZE(pRace_info->material_modifiers) - 1].sparkiness = 0.f;
-    pRace_info->material_modifiers[REC2_ASIZE(pRace_info->material_modifiers) - 1].smoke_type = 1;
-    pRace_info->material_modifiers[REC2_ASIZE(pRace_info->material_modifiers) - 1].skid_mark_material = NULL;
+    pRace_info->material_modifiers[CARPOCALYPSE2_ASIZE(pRace_info->material_modifiers) - 1].car_wall_friction = 1.f;
+    pRace_info->material_modifiers[CARPOCALYPSE2_ASIZE(pRace_info->material_modifiers) - 1].tyre_road_friction = 1.f;
+    pRace_info->material_modifiers[CARPOCALYPSE2_ASIZE(pRace_info->material_modifiers) - 1].down_force = 0.f;
+    pRace_info->material_modifiers[CARPOCALYPSE2_ASIZE(pRace_info->material_modifiers) - 1].bumpiness = 0.f;
+    pRace_info->material_modifiers[CARPOCALYPSE2_ASIZE(pRace_info->material_modifiers) - 1].tyre_noise_index = -1;
+    pRace_info->material_modifiers[CARPOCALYPSE2_ASIZE(pRace_info->material_modifiers) - 1].crash_noise_index = 0;
+    pRace_info->material_modifiers[CARPOCALYPSE2_ASIZE(pRace_info->material_modifiers) - 1].scrape_noise_index = 0;
+    pRace_info->material_modifiers[CARPOCALYPSE2_ASIZE(pRace_info->material_modifiers) - 1].sparkiness = 0.f;
+    pRace_info->material_modifiers[CARPOCALYPSE2_ASIZE(pRace_info->material_modifiers) - 1].smoke_type = 1;
+    pRace_info->material_modifiers[CARPOCALYPSE2_ASIZE(pRace_info->material_modifiers) - 1].skid_mark_material = NULL;
 
     gDefault_water_spec_vol_real->material_modifier_index = 10;
 
@@ -4610,13 +4610,13 @@ br_material* C2_HOOK_FASTCALL DisposeSuffixedMaterials(br_model* pModel, tU16 pF
         return NULL;
     }
     max_suffix_len = 0;
-    for (s = 0; s < REC2_ASIZE(suffixes); s++) {
+    for (s = 0; s < CARPOCALYPSE2_ASIZE(suffixes); s++) {
         if (max_suffix_len < strlen(suffixes[s])) {
             max_suffix_len = strlen(suffixes[s]);
         }
     }
     id = BrMemAllocate(strlen(mat->identifier) + max_suffix_len + 1, kMem_new_mat_id);
-    for (s = 0; s < REC2_ASIZE(suffixes); s++) {
+    for (s = 0; s < CARPOCALYPSE2_ASIZE(suffixes); s++) {
         sprintf(id, "%s%s", mat->identifier, suffixes[s]);
         victim = BrMaterialFind(id);
         if (victim != NULL) {
@@ -5062,7 +5062,7 @@ int C2_HOOK_FASTCALL PointOutOfSight(const br_vector3* pPoint, undefined4 pArg2,
     br_vector3 distance_vector;
     int i;
 
-#define CAMERA_MAX_DISTANCE(A) ((pMax_distance != 0.f) ? pMax_distance : REC2_SQR(((br_camera*)(A)->type_data)->yon_z))
+#define CAMERA_MAX_DISTANCE(A) ((pMax_distance != 0.f) ? pMax_distance : CARPOCALYPSE2_SQR(((br_camera*)(A)->type_data)->yon_z))
 
     if (gMirror_on__graphics) {
         BrVector3Sub(&distance_vector, pPoint, (br_vector3*)gRearview_camera_to_world.m[3]);
@@ -5098,7 +5098,7 @@ void C2_HOOK_FASTCALL PathGrooveBastard(tGroovidelic_spec* pGroove, tU32 pTime, 
     br_scalar pos;
     float f_the_time = (float)pTime;
 
-#ifndef REC2_MATCHING
+#ifndef CARPOCALYPSE2_MATCHING
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tGroovidelic_spec, path_interrupt_status, 0x20);
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tGroovidelic_spec, path_resumption_value, 0x24);
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tGroovidelic_spec, path_data.straight_info.period.value, 0x28);
@@ -5273,7 +5273,7 @@ void C2_HOOK_FASTCALL ObjectGrooveBastard(tGroovidelic_spec* pGroove, tU32 pTime
     br_bounds* bounds;
     float f_the_time = (float)pTime;
 
-#ifndef REC2_MATCHING
+#ifndef CARPOCALYPSE2_MATCHING
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tGroovidelic_spec, object_type, 0x5c);
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tGroovidelic_spec, object_interrupt_status, 0x64);
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tGroovidelic_spec, object_resumption_value, 0x68);
@@ -5759,7 +5759,7 @@ void C2_HOOK_FASTCALL FunkThoseTronics(void) {
                 }
                 update_flags = 0;
                 assert(the_funk->texture_animation_data.frames_info.current_frame >= 0);
-                assert(the_funk->texture_animation_data.frames_info.current_frame < REC2_ASIZE(the_funk->texture_animation_data.frames_info.textures));
+                assert(the_funk->texture_animation_data.frames_info.current_frame < CARPOCALYPSE2_ASIZE(the_funk->texture_animation_data.frames_info.textures));
                 new_colour_map = the_funk->texture_animation_data.frames_info.textures[the_funk->texture_animation_data.frames_info.current_frame];
                 if (the_material->colour_map != new_colour_map) {
                     the_material->colour_map = new_colour_map;
@@ -5833,7 +5833,7 @@ void C2_HOOK_FASTCALL FunkThoseTronics(void) {
                 br_actor *camera_actor;
                 if (the_funk->texture_animation_data.camera_info.count == 1) {
                     camera_actor = the_funk->texture_animation_data.camera_info.actors[0];
-#ifdef REC2_FIX_BUGS
+#ifdef CARPOCALYPSE2_FIX_BUGS
                     BrVector3Sub(&camera_look, &gProgram_state.current_car.pos,
                                  &camera_actor->t.t.translate.t);
 #endif
@@ -5881,7 +5881,7 @@ void C2_HOOK_FASTCALL FunkThoseTronics(void) {
 // FUNCTION: CARMA2_HW 0x004e5ad0
 void C2_HOOK_FASTCALL RenderThisHeadup(br_actor* pActor) {
 
-    if (gHud_actor_storage_size >= REC2_ASIZE(gHud_actor_storage)) {
+    if (gHud_actor_storage_size >= CARPOCALYPSE2_ASIZE(gHud_actor_storage)) {
         BrFailure("Not enough HUD actor storage");
     }
     gHud_actor_storage[gHud_actor_storage_size] = pActor;
@@ -6079,7 +6079,7 @@ tSpecial_volume* C2_HOOK_FASTCALL FindSpecialVolume(br_vector3* pP, tSpecial_vol
         br_vector3 sound_dir;
         int fartest_bnds_axis;
 
-#ifdef REC2_FIX_BUGS
+#ifdef CARPOCALYPSE2_FIX_BUGS
         fartest_bnds_axis = 0;
 #endif
 
@@ -6161,7 +6161,7 @@ void C2_HOOK_FAKE_THISCALL ControlBoundFunkGroove(int pSlot_number, undefined4 p
     if (pSlot_number < 0) {
         return;
     }
-    if (pSlot_number >= REC2_ASIZE(gGroove_funk_bindings)) {
+    if (pSlot_number >= CARPOCALYPSE2_ASIZE(gGroove_funk_bindings)) {
         FatalError(kFatalError_UsedRefNumOfControlledGroovidelicFunkotronicIsOutOfRange);
     }
     if (!gGroove_funk_bindings[pSlot_number].field_0x4) {
@@ -6175,7 +6175,7 @@ float C2_HOOK_FAKE_THISCALL ControlBoundFunkGroovePlus(int pSlot_number, undefin
     if (pSlot_number < 0) {
         return 0.f;
     }
-    if (pSlot_number >= REC2_ASIZE(gGroove_funk_bindings)) {
+    if (pSlot_number >= CARPOCALYPSE2_ASIZE(gGroove_funk_bindings)) {
         FatalError(kFatalError_UsedRefNumOfControlledGroovidelicFunkotronicIsOutOfRange);
     }
     if (!gGroove_funk_bindings[pSlot_number].field_0x4) {

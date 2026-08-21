@@ -17,7 +17,7 @@
 
 #include "brender/brender.h"
 
-#include "rec2_macros.h"
+#include "carpocalypse2_macros.h"
 
 #include <ctype.h>
 #include "c2_stdlib.h"

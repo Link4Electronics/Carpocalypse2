@@ -4,7 +4,7 @@
 #include "opponent.h"
 #include "platform.h"
 
-#include "rec2_macros.h"
+#include "carpocalypse2_macros.h"
 
 // FUNCTION: CARMA2_HW 0x004b13c0
 void C2_HOOK_CDECL DoNotDprintf_oppoproc(const char* pMessage, ...) {

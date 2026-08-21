@@ -8,7 +8,7 @@
 #include "globvars.h"
 #include "globvrkm.h"
 
-#include "rec2_macros.h"
+#include "carpocalypse2_macros.h"
 
 #include <stdio.h>
 
@@ -80,7 +80,7 @@ void C2_HOOK_FASTCALL AllocateActors(void) {
         FatalError(kFatalError_CannotAllocateSelf);
     }
 
-    for (i = 0; i <= (int)REC2_ASIZE(gOther_selfs) - 1; i++) {
+    for (i = 0; i <= (int)CARPOCALYPSE2_ASIZE(gOther_selfs) - 1; i++) {
         gOther_selfs[i] = BrActorAllocate(BR_ACTOR_NONE, NULL);
         if (gOther_selfs[i] == NULL) {
             FatalError(kFatalError_CannotAllocateSelf);
@@ -95,7 +95,7 @@ void C2_HOOK_FASTCALL AllocateCamera(void) {
     br_camera* camera_ptr;
     int i;
 
-    for (i = 0; i < (int)REC2_ASIZE(gCamera_list); i++) {
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gCamera_list); i++) {
         gCamera_list[i] = BrActorAllocate(BR_ACTOR_CAMERA, NULL);
         if (gCamera_list[i] == NULL) {
             FatalError(kFatalError_CannotAllocateCamera);

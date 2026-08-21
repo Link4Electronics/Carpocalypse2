@@ -1,7 +1,7 @@
 #ifndef GUARD_55_VOLUME_H
 #define GUARD_55_VOLUME_H
 
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 #include "c2_hooks.h"
 
 #include <stdio.h>

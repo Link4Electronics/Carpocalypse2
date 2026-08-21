@@ -1,7 +1,7 @@
-#ifndef REC2_SDL3_NET_H
-#define REC2_SDL3_NET_H
+#ifndef CARPOCALYPSE2_SDL3_NET_H
+#define CARPOCALYPSE2_SDL3_NET_H
 
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 
 #include <sys/socket.h>
 
@@ -35,4 +35,4 @@ extern void PDNetStartProducingJoinList(void);
 
 extern void PDNetEndJoinList(void);
 
-#endif /* REC2_SDL3_NET_H */
+#endif /* CARPOCALYPSE2_SDL3_NET_H */

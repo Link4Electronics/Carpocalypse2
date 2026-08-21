@@ -2,7 +2,7 @@
 #define GUARD_68_TIMER_H
 
 #include "c2_hooks.h"
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 
 #define TIMER_MNG 0
 #define TIMER_ROB 1

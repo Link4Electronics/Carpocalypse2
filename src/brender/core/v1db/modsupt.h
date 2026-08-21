@@ -1,5 +1,5 @@
-#ifndef REC2_MODSUPT_H
-#define REC2_MODSUPT_H
+#ifndef CARPOCALYPSE2_MODSUPT_H
+#define CARPOCALYPSE2_MODSUPT_H
 
 #include "c2_hooks.h"
 
@@ -17,4 +17,4 @@ br_primitive_list* C2_HOOK_CDECL BrPrimitiveListAllocate(br_uint_32 prim_type, b
 
 br_uint_32 C2_HOOK_CDECL BrModelAddPrimitiveList(br_model* model, br_primitive_list* primitive_list);
 
-#endif // REC2_MODSUPT_H
+#endif // CARPOCALYPSE2_MODSUPT_H

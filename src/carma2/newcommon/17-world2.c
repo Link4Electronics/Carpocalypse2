@@ -2,7 +2,7 @@
 
 #include "41-utility.h"
 #include "globvars.h"
-#include "rec2_macros.h"
+#include "carpocalypse2_macros.h"
 
 #include "c2_string.h"
 
@@ -59,7 +59,7 @@ int C2_HOOK_FASTCALL PointOutOfSight(const br_vector3* pPoint, undefined4 pArg2,
     br_vector3 distance_vector;
     int i;
 
-#define CAMERA_MAX_DISTANCE(A) ((pMax_distance != 0.f) ? pMax_distance : REC2_SQR(((br_camera*)(A)->type_data)->yon_z))
+#define CAMERA_MAX_DISTANCE(A) ((pMax_distance != 0.f) ? pMax_distance : CARPOCALYPSE2_SQR(((br_camera*)(A)->type_data)->yon_z))
 
     if (gMirror_on__graphics) {
         BrVector3Sub(&distance_vector, pPoint, (br_vector3*)gRearview_camera_to_world.m[3]);
@@ -429,13 +429,13 @@ br_material* C2_HOOK_FASTCALL DisposeSuffixedMaterials(br_model* pModel, tU16 pF
     mat = pModel->faces[pFace].material;
     if (mat->identifier != NULL) {
         max_suffix_len = 0;
-        for (s = 0; s < REC2_ASIZE(suffixes); s++) {
+        for (s = 0; s < CARPOCALYPSE2_ASIZE(suffixes); s++) {
             if (max_suffix_len < strlen(suffixes[s])) {
                 max_suffix_len = strlen(suffixes[s]);
             }
         }
         id = BrMemAllocate(strlen(mat->identifier) + max_suffix_len + 1, kMem_new_mat_id);
-        for (s = 0; s < REC2_ASIZE(suffixes); s++) {
+        for (s = 0; s < CARPOCALYPSE2_ASIZE(suffixes); s++) {
             sprintf(id, "%s%s", mat->identifier, suffixes[s]);
             victim = BrMaterialFind(id);
             if (victim != NULL) {
@@ -443,7 +443,7 @@ br_material* C2_HOOK_FASTCALL DisposeSuffixedMaterials(br_model* pModel, tU16 pF
                 BrMaterialFree(victim);
             }
         }
-#ifdef REC2_FIX_BUGS
+#ifdef CARPOCALYPSE2_FIX_BUGS
         BrMemFree(id);
 #endif
     }
@@ -514,7 +514,7 @@ void C2_HOOK_FASTCALL BuildColourTable(br_pixelmap* pPalette) {
     float nearest_distance;
     float distance;
 
-    for (i = 0; i < (int)REC2_ASIZE(gRGB_colours); i++) {
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gRGB_colours); i++) {
         nearest_distance = 196608.f;
         red = (gRGB_colours[i] >> 16) & 0xFF;
         green = (gRGB_colours[i] >> 8) & 0xFF;

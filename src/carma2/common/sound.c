@@ -18,7 +18,7 @@
 
 #include "c2_string.h"
 
-#include "rec2_macros.h"
+#include "carpocalypse2_macros.h"
 
 
 // GLOBAL: CARMA2_HW 0x00595c48
@@ -175,7 +175,7 @@ void C2_HOOK_FASTCALL UsePathFileToDetermineIfFullInstallation(void) {
 void C2_HOOK_FASTCALL ReadSoundSpec(FILE* pF, tSpecial_volume_soundfx_data* pSpec) {
     int i;
 
-    pSpec->periodicity = GetALineAndInterpretCommand(pF, gSound_periodicity_choices, REC2_ASIZE(gSound_periodicity_choices));
+    pSpec->periodicity = GetALineAndInterpretCommand(pF, gSound_periodicity_choices, CARPOCALYPSE2_ASIZE(gSound_periodicity_choices));
     if (pSpec->periodicity == kSoundFxPeriodicity_None) {
         return;
     }
@@ -191,8 +191,8 @@ void C2_HOOK_FASTCALL ReadSoundSpec(FILE* pF, tSpecial_volume_soundfx_data* pSpe
     pSpec->field_0x14 = BR_FIXED_INT(GetAnInt(pF)) / 100;
     pSpec->count_sound_alternatives = GetAnInt(pF);
 
-    C2_HOOK_BUG_ON(REC2_ASIZE(pSpec->sound_alternatives) != 5);
-    if (pSpec->count_sound_alternatives > REC2_ASIZE(pSpec->sound_alternatives)) {
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(pSpec->sound_alternatives) != 5);
+    if (pSpec->count_sound_alternatives > CARPOCALYPSE2_ASIZE(pSpec->sound_alternatives)) {
         FatalError(kFatalError_TooManyEnvironmentalSoundAlternatives);
     }
     for (i = 0; i < pSpec->count_sound_alternatives; i++) {
@@ -310,7 +310,7 @@ tS3_outlet* C2_HOOK_FASTCALL GetOutletFromIndex(int pIndex) {
 int C2_HOOK_FASTCALL GetIndexFromOutlet(tS3_outlet* pOutlet) {
     int i;
 
-    for (i = 0; i < REC2_ASIZE(gIndexed_outlets); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gIndexed_outlets); i++) {
         if (gIndexed_outlets[i] == pOutlet) {
             return i;
         }
@@ -339,13 +339,13 @@ int C2_HOOK_FASTCALL DRS3StartCDA(int pSound) {
                 do {
                     switch (pSound) {
                     case 9997:
-                        pSound = gRandom_CDA_tunes_2[IRandomBetween(0, REC2_ASIZE(gRandom_CDA_tunes_2) - 1)];
+                        pSound = gRandom_CDA_tunes_2[IRandomBetween(0, CARPOCALYPSE2_ASIZE(gRandom_CDA_tunes_2) - 1)];
                         break;
                     case 9998:
-                        pSound = gRandom_CDA_tunes_1[IRandomBetween(0, REC2_ASIZE(gRandom_CDA_tunes_1) - 1)];
+                        pSound = gRandom_CDA_tunes_1[IRandomBetween(0, CARPOCALYPSE2_ASIZE(gRandom_CDA_tunes_1) - 1)];
                         break;
                     default:
-                        pSound = gRandom_CDA_tunes[IRandomBetween(0, REC2_ASIZE(gRandom_CDA_tunes) - 1)];
+                        pSound = gRandom_CDA_tunes[IRandomBetween(0, CARPOCALYPSE2_ASIZE(gRandom_CDA_tunes) - 1)];
                     }
                 } while (pSound == gLast_tune);
             }
@@ -680,13 +680,13 @@ void C2_HOOK_FASTCALL InitSoundSources(void) {
             }
         }
 
-        C2_HOOK_BUG_ON(REC2_ASIZE(gEnvironment_sound_sources) != 5);
+        C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gEnvironment_sound_sources) != 5);
         C2_HOOK_BUG_ON(sizeof(gEnvironment_sound_sources[0]) != 0x1c);
         C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tEnvironment_sound_source, source, 0x0);
         C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tEnvironment_sound_source, position, 0x4);
         C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tEnvironment_sound_source, field_0x10, 0x10);
 
-        for (i = 0; i < REC2_ASIZE(gEnvironment_sound_sources); i++) {
+        for (i = 0; i < CARPOCALYPSE2_ASIZE(gEnvironment_sound_sources); i++) {
             tEnvironment_sound_source* env_src;
 
             env_src = &gEnvironment_sound_sources[i];
@@ -834,14 +834,14 @@ void C2_HOOK_FASTCALL MungeEnvironmentalSound(void) {
     if (gAmbient_sound) {
         int i;
 
-        for (i = 0; i < REC2_ASIZE(gEnvironment_sound_sources); i++) {
+        for (i = 0; i < CARPOCALYPSE2_ASIZE(gEnvironment_sound_sources); i++) {
             gEnvironment_sound_sources[i].field_0x18 = 0;
         }
         if (!gFaded_palette) {
             FindSpecialVolume((br_vector3*)gCamera_to_world.m[3], 0, 1);
             MungeSoundGenerators();
         }
-        for (i = 0; i < REC2_ASIZE(gEnvironment_sound_sources); i++) {
+        for (i = 0; i < CARPOCALYPSE2_ASIZE(gEnvironment_sound_sources); i++) {
 
             if (gEnvironment_sound_sources[i].field_0x18 == 0 && gEnvironment_sound_sources[i].field_0x10 != NULL) {
                 S3UpdateSoundSource(gXXX_outlet, -1, gEnvironment_sound_sources[i].source, -1.f, -1, -1, 0, -1, -1);

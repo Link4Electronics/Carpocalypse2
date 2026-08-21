@@ -1,9 +1,9 @@
-#ifndef REC2_REPLAY_H
-#define REC2_REPLAY_H
+#ifndef CARPOCALYPSE2_REPLAY_H
+#define CARPOCALYPSE2_REPLAY_H
 
 #include "c2_hooks.h"
 
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 
 extern tActionReplayCameraMode gAction_replay_camera_mode;
 extern int gAction_replay_manual_camera_target_type;
@@ -61,4 +61,4 @@ void C2_HOOK_FASTCALL SynchronizeActionReplay(void);
 
 void C2_HOOK_FASTCALL DoActionReplayPostSwap(void);
 
-#endif //REC2_REPLAY_H
+#endif //CARPOCALYPSE2_REPLAY_H

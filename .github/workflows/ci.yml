@@ -2,6 +2,12 @@ name: Build
 
 on: [push, pull_request]
 
+# Base URL hosting the original binaries encoded as text files
+# (decoded via `.github/binendec.py`). Set this repository variable to
+# your own hosted copy, e.g. https://raw.githubusercontent.com/<org>/<repo>/main/originals
+env:
+  ORIGINALS_TEXT_URL: ${{ vars.ORIGINALS_TEXT_URL }}
+
 jobs:
   Build:
     name: ${{ matrix.platform.name }}
@@ -15,12 +21,10 @@ jobs:
         platform:
           - { name: MinGW,  os: ubuntu-latest, cmake-args: '-DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/mingw32.cmake', werror: true }
           - { name: MSVC,   os: windows-latest, werror: true }
-          - { name: MSVC5,  os: windows-2025-vs2026, msvc5: true, cmake-args: '-DREC2_MATCHING=TRUE -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_C_COMPILER=cl -DCMAKE_CXX_COMPILER=cl', werror: false }
+          - { name: MSVC5,  os: windows-2025-vs2026, msvc5: true, cmake-args: '-DCARPOCALYPSE2_MATCHING=TRUE -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_C_COMPILER=cl -DCMAKE_CXX_COMPILER=cl', werror: false }
     steps:
-    - name: Fetch rec2 sources
+    - name: Fetch carpocalypse2 sources
       uses: actions/checkout@v6
-      with:
-        submodules: true
     - name: Fetch MSVC11 (Visual C++ 97 SP3)
       uses: actions/checkout@v6
       if: ${{ matrix.platform.msvc5 }}
@@ -49,7 +53,7 @@ jobs:
         sudo apt-get install gcc-mingw-w64-i686 g++-mingw-w64-i686
     - name: CMake (configure)
       run: |
-        cmake -S . -B build -GNinja ${{ matrix.platform.cmake-args }} -DREC2_VENDORED=ON -DREC2_WERROR=${{ (matrix.platform.werror && 'ON') || 'OFF' }}
+        cmake -S . -B build -GNinja ${{ matrix.platform.cmake-args }} -DCARPOCALYPSE2_VENDORED=ON -DCARPOCALYPSE2_WERROR=${{ (matrix.platform.werror && 'ON') || 'OFF' }}
     - name: CMake (build)
       run: |
         cmake --build build ${{ matrix.platform.build-args }}
@@ -61,23 +65,29 @@ jobs:
       if: ${{ matrix.platform.msvc5 }}
       shell: sh
       run: |
+        if [ -z "$ORIGINALS_TEXT_URL" ]; then
+          echo "::error::ORIGINALS_TEXT_URL repository variable is not configured (base URL hosting the encoded original binaries)"
+          exit 1
+        fi
         mkdir originals
 
-        curl -fLSs -o d3d.bdd.txt https://gist.githubusercontent.com/madebr/92b121cfd427c51b771fb614b4c893f4/raw/d3d.bdd.txt
+        curl -fLSs -o d3d.bdd.txt "${ORIGINALS_TEXT_URL}/d3d.bdd.txt"
         python .github/binendec.py -D -i d3d.bdd.txt -o originals/d3d.bdd
 
-        curl -fLSs -o CARMA2_HW.EXE.txt https://gist.githubusercontent.com/madebr/92b121cfd427c51b771fb614b4c893f4/raw/CARMA2_HW.EXE.txt
+        curl -fLSs -o CARMA2_HW.EXE.txt "${ORIGINALS_TEXT_URL}/CARMA2_HW.EXE.txt"
         python .github/binendec.py -D -i CARMA2_HW.EXE.txt -o originals/CARMA2_HW.EXE
 
-        curl -fLSs -o carma2.exe.txt https://gist.githubusercontent.com/madebr/92b121cfd427c51b771fb614b4c893f4/raw/carma2.exe.txt
+        curl -fLSs -o carma2.exe.txt "${ORIGINALS_TEXT_URL}/carma2.exe.txt"
         python .github/binendec.py -D -i carma2.exe.txt -o originals/carma2.exe
     - name: Run reccmp
       uses: ./.github/actions/reccmp
-      if: ${{ matrix.platform.msvc5 }}
+      # Skipped until the PROGRESS_GIST repository variable is configured
+      # (format: <owner>/<gist-id>); the composite action publishes progress there.
+      if: ${{ matrix.platform.msvc5 && vars.PROGRESS_GIST != '' }}
       with:
-        root-repo: madebr/rec2
-        root-branch: master
-        gist-repo: madebr/92b121cfd427c51b771fb614b4c893f4
+        root-repo: ${{ github.repository }}
+        root-branch: main
+        gist-repo: ${{ vars.PROGRESS_GIST }}
         target: CARMA2_HW
         symbol-count: 5162  # FIXME: remove once reccmp supports symbol count in reccmp-project.yml
         original-search-path: '${{ github.workspace }}/originals'

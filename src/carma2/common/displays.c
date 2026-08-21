@@ -24,7 +24,7 @@
 
 #include "c2_string.h"
 
-#include "rec2_macros.h"
+#include "carpocalypse2_macros.h"
 
 
 // GLOBAL: CARMA2_HW 0x0067c500
@@ -348,9 +348,9 @@ void C2_HOOK_FASTCALL LoadHeadupMessageFile(void) {
     count = GetAnInt(f);
 
     C2_HOOK_BUG_ON(sizeof(tHud_message) != 0x88);
-    C2_HOOK_BUG_ON(REC2_ASIZE(gHud_messages) != 46);
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gHud_messages) != 46);
 
-    if (count > REC2_ASIZE(gHud_messages)) {
+    if (count > CARPOCALYPSE2_ASIZE(gHud_messages)) {
         BrFailure("Error - Too many Headup messages ", path);
     }
     for (i = 0; i < count; i++) {
@@ -386,8 +386,8 @@ void C2_HOOK_FASTCALL LoadHeadupMessageFile(void) {
 void C2_HOOK_FASTCALL InitHeadups(void) {
     int i;
 
-    C2_HOOK_BUG_ON(REC2_ASIZE(gHeadups) != 37);
-    for (i = 0; i < REC2_ASIZE(gHeadups); i++) {
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gHeadups) != 37);
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gHeadups); i++) {
         gHeadups[i].type = eHeadup_unused;
     }
 
@@ -494,7 +494,7 @@ void C2_HOOK_FASTCALL ClearHeadupSlot(int pSlot_index) {
     int i;
     tHeadup* the_headup;
 
-    for (i = 0; i < REC2_ASIZE(gHeadups); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gHeadups); i++) {
         the_headup = &gHeadups[i];
         if (the_headup->type != eHeadup_unused && the_headup->slot_index == pSlot_index) {
             ClearHeadup(i);
@@ -508,10 +508,10 @@ void C2_HOOK_FASTCALL ClearHeadupSlot(int pSlot_index) {
 void C2_HOOK_FASTCALL ClearHeadups(void) {
     int i;
 
-    C2_HOOK_BUG_ON(REC2_ASIZE(gHeadups) != 37);
-    C2_HOOK_BUG_ON(REC2_ASIZE(gOld_times) != 10);
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gHeadups) != 37);
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gOld_times) != 10);
 
-    for (i = 0; i < REC2_ASIZE(gHeadups); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gHeadups); i++) {
         if (gHeadups[i].type != eHeadup_unused) {
             ClearHeadup(i);
         }
@@ -520,7 +520,7 @@ void C2_HOOK_FASTCALL ClearHeadups(void) {
     gLast_credit_headup__displays = -1;
     gLast_time_credit_headup = -1;
     gLast_earn_time = 0;
-    for (i = 0; i < REC2_ASIZE(gOld_times); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gOld_times); i++) {
         gOld_times[i] = 0;
     }
     gLast_fancy_time = 0;
@@ -546,7 +546,7 @@ int C2_HOOK_FASTCALL MungeHeadupWidth(tHeadup* pHeadup) {
 
     C2_HOOK_BUG_ON(sizeof(tHeadup) != 356);
 
-#ifndef REC2_MATCHING
+#ifndef CARPOCALYPSE2_MATCHING
     C2_HOOK_BUG_ON((int)&((tHeadup*)0)->data.text_info.text != 0x4c);
     C2_HOOK_BUG_ON((int)&((tHeadup*)0)->data.coloured_text_info.coloured_font != 0x148);
 #endif
@@ -606,7 +606,7 @@ int C2_HOOK_FASTCALL FindAHeadupHoleWoofBarkSoundsABitRude(int pSlot_index) {
     tHeadup* the_headup;
 
     empty_one = -1;
-    for (i = 0; i < REC2_ASIZE(gHeadups); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gHeadups); i++) {
         the_headup = &gHeadups[i];
         if (pSlot_index >= 0 && the_headup->slot_index == pSlot_index) {
             return i;
@@ -689,7 +689,7 @@ void C2_HOOK_FASTCALL DoPSPowerHeadup(int pLevel, const char* pAPO_str) {
         gPrev_ps_apo_levels[2] = pLevel;
         changed = gPS_apo_level_changed[2];
         break;
-#ifdef REC2_FIX_BUGS
+#ifdef CARPOCALYPSE2_FIX_BUGS
     default:
         abort();
 #endif
@@ -1118,7 +1118,7 @@ void C2_HOOK_FASTCALL ChangingView(void) {
         } else {
             gProgram_state.which_view = gProgram_state.new_view;
             switch (gProgram_state.new_view) {
-#ifdef REC2_FIX_BUGS
+#ifdef CARPOCALYPSE2_FIX_BUGS
             default:
                 abort();
 #endif
@@ -1293,7 +1293,7 @@ void C2_HOOK_FASTCALL DoDamageScreen(tU32 pThe_time) {
 
     DRPixelmapCopy(gDamage_hud, gGrey_top5);
 
-    for (i = 0; i < REC2_ASIZE(gProgram_state.current_car.damage_units); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gProgram_state.current_car.damage_units); i++) {
         the_damage = &gProgram_state.current_car.damage_units[i];
         if (i != eDamage_driver) {
             the_image = the_damage->images;
@@ -1336,7 +1336,7 @@ void C2_HOOK_FASTCALL DoHeadups(tU32 pThe_time) {
         MoveHeadupTo(gTimer_headup, 389, 13);
     }
 
-    for (i = 0; i < REC2_ASIZE(gHeadups); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gHeadups); i++) {
         the_headup = &gHeadups[i];
         if (the_headup->type != eHeadup_unused
                 && (gProgram_state.which_view == eView_forward || !the_headup->cockpit_anchored)
@@ -1583,32 +1583,32 @@ void C2_HOOK_FASTCALL DoInstruments(tU32 pThe_time) {
                     the_angle = DEG_TO_RAD((float)gProgram_state.current_car.speedo_end_angle[gProgram_state.cockpit_on]);
                 }
                 if (the_angle < 0.0) {
-                    the_angle += REC2_TAU;
-                } else if (the_angle >= REC2_TAU) {
-                    the_angle -= REC2_TAU;
+                    the_angle += CARPOCALYPSE2_TAU;
+                } else if (the_angle >= CARPOCALYPSE2_TAU) {
+                    the_angle -= CARPOCALYPSE2_TAU;
                 }
-                the_angle2 = REC2_PI_OVER_2 - the_angle;
+                the_angle2 = CARPOCALYPSE2_PI_OVER_2 - the_angle;
                 if (the_angle2 < 0.0) {
-                    the_angle2 += REC2_TAU;
+                    the_angle2 += CARPOCALYPSE2_TAU;
                 }
-                if (the_angle2 > REC2_3PI_OVER_2) {
-                    cos_angle = gCosine_array[(unsigned int)((REC2_TAU - the_angle2) / REC2_PI * 128.0)];
-                } else if (the_angle2 > REC2_PI) {
-                    cos_angle = -gCosine_array[(unsigned int)((the_angle2 - REC2_PI) / REC2_PI * 128.0)];
-                } else if (the_angle2 > REC2_PI_OVER_2) {
-                    cos_angle = -gCosine_array[(unsigned int)((REC2_PI - the_angle2) / REC2_PI * 128.0)];
+                if (the_angle2 > CARPOCALYPSE2_3PI_OVER_2) {
+                    cos_angle = gCosine_array[(unsigned int)((CARPOCALYPSE2_TAU - the_angle2) / CARPOCALYPSE2_PI * 128.0)];
+                } else if (the_angle2 > CARPOCALYPSE2_PI) {
+                    cos_angle = -gCosine_array[(unsigned int)((the_angle2 - CARPOCALYPSE2_PI) / CARPOCALYPSE2_PI * 128.0)];
+                } else if (the_angle2 > CARPOCALYPSE2_PI_OVER_2) {
+                    cos_angle = -gCosine_array[(unsigned int)((CARPOCALYPSE2_PI - the_angle2) / CARPOCALYPSE2_PI * 128.0)];
                 } else {
-                    cos_angle = gCosine_array[(unsigned int)(the_angle2 / REC2_PI * 128.0)];
+                    cos_angle = gCosine_array[(unsigned int)(the_angle2 / CARPOCALYPSE2_PI * 128.0)];
                 }
 
-                if (the_angle > REC2_3PI_OVER_2) {
-                    sin_angle = gCosine_array[(unsigned int)((REC2_TAU - the_angle) / REC2_PI * 128.0)];
-                } else if (the_angle > REC2_PI) {
-                    sin_angle = -gCosine_array[(unsigned int)((the_angle - REC2_PI) / REC2_PI * 128.0)];
-                } else if (the_angle > REC2_PI_OVER_2) {
-                    sin_angle = -gCosine_array[(unsigned int)((REC2_PI - the_angle) / REC2_PI * 128.0)];
+                if (the_angle > CARPOCALYPSE2_3PI_OVER_2) {
+                    sin_angle = gCosine_array[(unsigned int)((CARPOCALYPSE2_TAU - the_angle) / CARPOCALYPSE2_PI * 128.0)];
+                } else if (the_angle > CARPOCALYPSE2_PI) {
+                    sin_angle = -gCosine_array[(unsigned int)((the_angle - CARPOCALYPSE2_PI) / CARPOCALYPSE2_PI * 128.0)];
+                } else if (the_angle > CARPOCALYPSE2_PI_OVER_2) {
+                    sin_angle = -gCosine_array[(unsigned int)((CARPOCALYPSE2_PI - the_angle) / CARPOCALYPSE2_PI * 128.0)];
                 } else {
-                    sin_angle = gCosine_array[(unsigned int)(the_angle / REC2_PI * 128.0)];
+                    sin_angle = gCosine_array[(unsigned int)(the_angle / CARPOCALYPSE2_PI * 128.0)];
                 }
 
                 PoshDrawLine(

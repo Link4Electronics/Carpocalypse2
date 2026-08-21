@@ -1,5 +1,5 @@
-#ifndef REC2_GENCOPY_H
-#define REC2_GENCOPY_H
+#ifndef CARPOCALYPSE2_GENCOPY_H
+#define CARPOCALYPSE2_GENCOPY_H
 
 #include "c2_hooks.h"
 
@@ -11,4 +11,4 @@ br_error C2_HOOK_STDCALL GeneralCopy(br_device_pixelmap* dst, br_device_pixelmap
 
 br_error C2_HOOK_STDCALL GeneralRectangleStretchCopy(br_device_pixelmap* dst, br_rectangle* d, br_device_pixelmap* src, br_rectangle* s);
 
-#endif // REC2_GENCOPY_H
+#endif // CARPOCALYPSE2_GENCOPY_H

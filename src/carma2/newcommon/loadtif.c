@@ -6,8 +6,8 @@
 #include "globvars.h"
 #include "loadtif_zlib.h"
 #include "platform.h"
-#include "rec2_macros.h"
-#include "rec2_types.h"
+#include "carpocalypse2_macros.h"
+#include "carpocalypse2_types.h"
 
 #include "c2_string.h"
 
@@ -76,8 +76,8 @@ br_pixelmap* C2_HOOK_FASTCALL LoadDefaultPalette(const char* pData_dir_path, int
         *pError_code = 5;
         return NULL;
     }
-    if (fread(buffer, REC2_ASIZE(buffer), 1, f) == 0) {
-#ifdef REC2_FIX_BUGS
+    if (fread(buffer, CARPOCALYPSE2_ASIZE(buffer), 1, f) == 0) {
+#ifdef CARPOCALYPSE2_FIX_BUGS
         fclose(f);
 #endif
         *pError_code = 5;
@@ -630,9 +630,9 @@ int BuildPathWithDirAndSuffix(char* pDest_dir_path, char* pDest_file_path, const
 
 br_uint_32 C2_HOOK_FASTCALL RGB565Error(br_colour pColour, br_uint_16 pRGB565) {
 
-    return REC2_SQR(((pColour >> 16) & 0xff) - ((pRGB565 >> 8) & 0xf8))
-            + REC2_SQR(((pColour >> 8) & 0xff) - ((pRGB565 >> 3) & 0xfc))
-            + REC2_SQR(((pColour >> 0) & 0xff) - ((pRGB565 & 0x1f) << 3));
+    return CARPOCALYPSE2_SQR(((pColour >> 16) & 0xff) - ((pRGB565 >> 8) & 0xf8))
+            + CARPOCALYPSE2_SQR(((pColour >> 8) & 0xff) - ((pRGB565 >> 3) & 0xfc))
+            + CARPOCALYPSE2_SQR(((pColour >> 0) & 0xff) - ((pRGB565 & 0x1f) << 3));
 }
 
 int C2_HOOK_FASTCALL FindPaletteColourRGB565(br_colour pColour, br_pixelmap *pPalette) {
@@ -658,9 +658,9 @@ int C2_HOOK_FASTCALL FindPaletteColourRGB565(br_colour pColour, br_pixelmap *pPa
 
 br_uint_32 C2_HOOK_FASTCALL XRGB8888Error(br_colour pColour, br_uint_32 pXRGB8888) {
 
-    return REC2_SQR(((pColour >> 16) & 0xff) - ((pXRGB8888 >> 16)  & 0xff))
-            + REC2_SQR(((pColour >> 8) & 0xff) - ((pXRGB8888 >> 8) & 0xff))
-            + REC2_SQR(((pColour >> 0) & 0xff) - ((pXRGB8888 >> 0) & 0xff));
+    return CARPOCALYPSE2_SQR(((pColour >> 16) & 0xff) - ((pXRGB8888 >> 16)  & 0xff))
+            + CARPOCALYPSE2_SQR(((pColour >> 8) & 0xff) - ((pXRGB8888 >> 8) & 0xff))
+            + CARPOCALYPSE2_SQR(((pColour >> 0) & 0xff) - ((pXRGB8888 >> 0) & 0xff));
 }
 
 int C2_HOOK_FASTCALL FindPaletteColourXRGB8888(br_colour pColour, br_pixelmap *pPalette) {

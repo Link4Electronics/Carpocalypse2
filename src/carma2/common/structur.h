@@ -1,9 +1,9 @@
-#ifndef REC2_STRUCTUR_H
-#define REC2_STRUCTUR_H
+#ifndef CARPOCALYPSE2_STRUCTUR_H
+#define CARPOCALYPSE2_STRUCTUR_H
 
 #include "c2_hooks.h"
 
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 
 extern int gMirror_on__structur;
 extern int gLoad_last_save_game;
@@ -63,4 +63,4 @@ void C2_HOOK_FASTCALL GoingBackToRaceFromInterface(void);
 
 void C2_HOOK_FASTCALL SendGameplayToHost(tNet_gameplay_mess pMess, int pParam_1, int pParam_2, int pParam_3, int pParam_4);
 
-#endif // REC2_STRUCTUR_H
+#endif // CARPOCALYPSE2_STRUCTUR_H

@@ -1,7 +1,7 @@
-#ifndef REC2_RACESTRT_H
-#define REC2_RACESTRT_H
+#ifndef CARPOCALYPSE2_RACESTRT_H
+#define CARPOCALYPSE2_RACESTRT_H
 
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 
 #include "c2_hooks.h"
 
@@ -17,4 +17,4 @@ int C2_HOOK_FASTCALL SortOpponents(void);
 
 void C2_HOOK_FASTCALL CheckPlayersAreResponding(void);
 
-#endif //REC2_RACESTRT_H
+#endif //CARPOCALYPSE2_RACESTRT_H

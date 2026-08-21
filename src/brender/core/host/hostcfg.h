@@ -1,5 +1,5 @@
-#ifndef REC2_HOSTCFG_H
-#define REC2_HOSTCFG_H
+#ifndef CARPOCALYPSE2_HOSTCFG_H
+#define CARPOCALYPSE2_HOSTCFG_H
 
 #include "brender/br_types.h"
 
@@ -13,4 +13,4 @@ br_error C2_HOOK_CDECL HostIniQuery(char* ini_file, char* section_name, char* en
 
 br_error C2_HOOK_CDECL HostRegistryQuery(void* hKey, char* Path, char* entry, char* Buffer, br_uint_16 max, br_uint_16* size);
 
-#endif //REC2_HOSTCFG_H
+#endif //CARPOCALYPSE2_HOSTCFG_H

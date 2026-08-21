@@ -2,7 +2,7 @@
 
 #include "loading.h"
 
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 
 #include "c2_string.h"
 

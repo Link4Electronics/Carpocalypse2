@@ -10,8 +10,8 @@
 
 #include <brender/brender.h>
 
-#include "rec2_macros.h"
-#include "rec2_types.h"
+#include "carpocalypse2_macros.h"
+#include "carpocalypse2_types.h"
 
 #include "platform.h"
 
@@ -90,11 +90,11 @@ void C2_HOOK_FASTCALL PlaySmackerFile(const char* pSmack_name) {
     if (gNoCutscenes) {
         return;
     }
-    palette_pixels = NULL; /* Added by rec2 */
+    palette_pixels = NULL; /* Added by carpocalypse2 */
     if (gBack_screen->type == BR_PMT_INDEX_8) {
         smackBufferFlags = 0;
         palette_pixels = gCurrent_palette->pixels;
-        smackBlitFlags = 0; /** Added by rec2 */
+        smackBlitFlags = 0; /** Added by carpocalypse2 */
     } else if (gBack_screen->type == BR_PMT_RGB_555) {
         smackBufferFlags = SMACKBUFFER555;
         smackBlitFlags = SMACKBUFFER555 | SMACKBLIT2X;
@@ -175,7 +175,7 @@ void C2_HOOK_FASTCALL PlaySmackerFile(const char* pSmack_name) {
             BrPixelmapFree(gSmackerCurrentPalette);
             goto load_failed;
         }
-        for (i = 0; i < REC2_ASIZE(gSmackMaterials); i++) {
+        for (i = 0; i < CARPOCALYPSE2_ASIZE(gSmackMaterials); i++) {
             gSmackMaterials[i] = BrMaterialAllocate("Devious Smack Material");
             if (gSmackMaterials[i] == NULL) {
                 PDEnterDebugger("No Smack material");
@@ -198,7 +198,7 @@ void C2_HOOK_FASTCALL PlaySmackerFile(const char* pSmack_name) {
             BrMapAdd(gSmackMaterials[i]->colour_map);
             BrMaterialAdd(gSmackMaterials[i]);
         }
-        for (mati = 0, i = 0, vertex_start = 0, face_start = 0; mati < REC2_ASIZE(gSmackMaterials); i++) {
+        for (mati = 0, i = 0, vertex_start = 0, face_start = 0; mati < CARPOCALYPSE2_ASIZE(gSmackMaterials); i++) {
             b = (float) (-128 * i - 48);
             u = (float) (-128 * (i + 1) - 48);
             for (j = 0; j < 5; mati++, j++, vertex_start += 4, face_start += 2) {  // 5 == SMACK_WIDTH / 64
@@ -270,7 +270,7 @@ void C2_HOOK_FASTCALL PlaySmackerFile(const char* pSmack_name) {
                             ((br_uint_32 *) gSmackerCurrentPalette->pixels)[i] = paletteColour;
                         }
                         BrMapAdd(gSmackerCurrentPalette);
-                        for (i = 0; i < REC2_ASIZE(gSmackMaterials); i++) {
+                        for (i = 0; i < CARPOCALYPSE2_ASIZE(gSmackMaterials); i++) {
                             gSmackMaterials[i]->colour_map->map = gSmackerCurrentPalette;
                             BrMapUpdate(gSmackMaterials[i]->colour_map->map, BR_MAPU_ALL);
                             BrMapUpdate(gSmackMaterials[i]->colour_map, BR_MAPU_ALL);
@@ -280,7 +280,7 @@ void C2_HOOK_FASTCALL PlaySmackerFile(const char* pSmack_name) {
                     SmackDoFrame(smackHandle);
                     BrPixelmapFill(gDepth_buffer, -1);
                     for (i = 0, buffer_start = 0;
-                         i < REC2_ASIZE(gSmackMaterials); buffer_start += 64 * SMACK_WIDTH) {
+                         i < CARPOCALYPSE2_ASIZE(gSmackMaterials); buffer_start += 64 * SMACK_WIDTH) {
                         current_buffer_start = buffer_start;
                         for (j = 0; j < 5; j++, current_buffer_start += 64, i++) {
                             material_pixels = gSmackMaterials[i]->colour_map->pixels;
@@ -311,7 +311,7 @@ void C2_HOOK_FASTCALL PlaySmackerFile(const char* pSmack_name) {
                 }
             }
             if (gSmackerActor != NULL) {
-                for (i = 0; i < REC2_ASIZE(gSmackMaterials); i++) {
+                for (i = 0; i < CARPOCALYPSE2_ASIZE(gSmackMaterials); i++) {
                     BrMapRemove(gSmackMaterials[i]->colour_map);
                     BrPixelmapFree(gSmackMaterials[i]->colour_map);
                     gSmackMaterials[i]->colour_map = NULL;
@@ -348,7 +348,7 @@ void C2_HOOK_FASTCALL PlaySmackerFile(const char* pSmack_name) {
                             gBack_screen->type == BR_PMT_RGB_555) {
                             SmackBlitSetPalette(smackBlitHandle, smackHandle->Palette, smackHandle->PalType);
                         } else {
-                            /* Check added by rec2 */
+                            /* Check added by carpocalypse2 */
                             if (palette_pixels == NULL) {
                                 abort();
                             }

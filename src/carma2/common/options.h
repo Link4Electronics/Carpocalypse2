@@ -1,5 +1,5 @@
-#ifndef REC2_OPTIONS_H
-#define REC2_OPTIONS_H
+#ifndef CARPOCALYPSE2_OPTIONS_H
+#define CARPOCALYPSE2_OPTIONS_H
 
 #include "c2_hooks.h"
 
@@ -19,4 +19,4 @@ void C2_HOOK_FASTCALL BackupKeyMappings(void);
 
 void C2_HOOK_FASTCALL Joystick_BackupSettings(void);
 
-#endif //REC2_OPTIONS_H
+#endif //CARPOCALYPSE2_OPTIONS_H

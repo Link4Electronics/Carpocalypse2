@@ -1,5 +1,5 @@
-#ifndef REC2_PREPMESH_H
-#define REC2_PREPMESH_H
+#ifndef CARPOCALYPSE2_PREPMESH_H
+#define CARPOCALYPSE2_PREPMESH_H
 
 #include "c2_hooks.h"
 
@@ -49,4 +49,4 @@ extern void C2_HOOK_CDECL BrModelUpdate(br_model* model, br_uint_16 flags);
 
 extern void C2_HOOK_STDCALL BrModelClear(br_model* model);
 
-#endif // REC2_PREPMESH_H
+#endif // CARPOCALYPSE2_PREPMESH_H

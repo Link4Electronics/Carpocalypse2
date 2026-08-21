@@ -297,7 +297,7 @@ int C2_HOOK_FASTCALL BroadcastMessage(void) {
 
 void C2_HOOK_FASTCALL MakeMessageToSend(int pMessage_type) {
 
-#if defined(REC2_FIX_BUGS)
+#if defined(CARPOCALYPSE2_FIX_BUGS)
     sprintf(gSend_buffer, "XXXX%s%1d", BROADCAST_HEADER, pMessage_type);
 #else
     sprintf(gSend_buffer, "XXXX%s%0.1d", BROADCAST_HEADER, pMessage_type);

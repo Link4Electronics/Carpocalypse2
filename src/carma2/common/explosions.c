@@ -12,7 +12,7 @@
 #include "c2_hooks.h"
 #include "c2_string.h"
 
-#include "rec2_macros.h"
+#include "carpocalypse2_macros.h"
 
 
 // GLOBAL: CARMA2_HW 0x006a55c8
@@ -26,7 +26,7 @@ void C2_HOOK_FASTCALL InitExplosions(void) {
     int i;
     tExplosion* explosion;
 
-    for (i = 0; i < REC2_ASIZE(gExplosions); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gExplosions); i++) {
         explosion = &gExplosions[i];
 
         explosion->actor = BrActorAllocate(BR_ACTOR_MODEL, NULL);
@@ -68,16 +68,16 @@ void C2_HOOK_FASTCALL InitExplosions(void) {
 void C2_HOOK_FASTCALL ResetExplosions(void) {
     int i;
 
-    C2_HOOK_BUG_ON(REC2_ASIZE(gExplosions) != 50);
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gExplosions) != 50);
     C2_HOOK_BUG_ON(sizeof(gExplosions[0]) != 0x78);
-    C2_HOOK_BUG_ON(REC2_ASIZE(gSmash_explosions) != 20);
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gSmash_explosions) != 20);
     C2_HOOK_BUG_ON(sizeof(gSmash_explosions[0]) != 0xc8);
 
-    for (i = 0; i < REC2_ASIZE(gExplosions); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gExplosions); i++) {
         gExplosions[i].start = 0;
         gExplosions[i].finished = 0;
     }
-    for (i = 0; i < REC2_ASIZE(gSmash_explosions); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gSmash_explosions); i++) {
         gSmash_explosions[i].active = 0;
     }
 }
@@ -119,7 +119,7 @@ void C2_HOOK_FASTCALL MungeExplosions(void) {
     tU32 now;
 
     now = GetTotalTime();
-    for (i = 0; i < REC2_ASIZE(gExplosions); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gExplosions); i++) {
         tExplosion* explosion = &gExplosions[i];
         int frame;
         undefined prev_frame;
@@ -143,7 +143,7 @@ void C2_HOOK_FASTCALL MungeExplosions(void) {
             explosion->finished = 1;
             continue;
         }
-        if (PointOutOfSightNotAR(&explosion->collision_actor->t.t.translate.t REC2_THISCALL_EDX, 0.f)) {
+        if (PointOutOfSightNotAR(&explosion->collision_actor->t.t.translate.t CARPOCALYPSE2_THISCALL_EDX, 0.f)) {
             if (explosion->actor->parent != NULL) {
                 BrActorRemove(explosion->actor);
             }

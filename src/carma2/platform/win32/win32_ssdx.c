@@ -16,7 +16,7 @@
 #include "c2_stdlib.h"
 #include "c2_string.h"
 
-#include "rec2_macros.h"
+#include "carpocalypse2_macros.h"
 
 // GLOBAL: CARMA2_HW 0x006aa9e0
 int gUse_DirectDraw;
@@ -129,9 +129,9 @@ void C2_HOOK_FASTCALL LocalWindowedDDSetup(int pWidth, int pHeight, int* pPitch)
     }
 
     hdc = GetDC(gHWnd_SSDX);
-    GetSystemPaletteEntries(hdc, 0, REC2_ASIZE(gSSDX_system_palette), gSSDX_system_palette);
+    GetSystemPaletteEntries(hdc, 0, CARPOCALYPSE2_ASIZE(gSSDX_system_palette), gSSDX_system_palette);
     ReleaseDC(gHWnd_SSDX, hdc);
-    for (i = 0; i < REC2_ASIZE(gSSDX_system_palette); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gSSDX_system_palette); i++) {
         if (i > 10 && i < 245) {
             gSSDX_system_palette[i].peFlags = 0;
         } else {

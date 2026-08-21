@@ -9,7 +9,7 @@
 
 #include <brender/brender.h>
 
-#include "rec2_macros.h"
+#include "carpocalypse2_macros.h"
 
 #include "c2_string.h"
 
@@ -42,12 +42,12 @@ void C2_HOOK_FASTCALL InitSkids(void) {
     int sl;
     br_model* square;
     br_pixelmap* pm;
-#if defined(REC2_FIX_BUGS)
+#if defined(CARPOCALYPSE2_FIX_BUGS)
     char mat_name[32];
 #endif
     char* str;
 
-    for (mat = 0; mat < REC2_ASIZE(gMaterial_names); mat++) {
+    for (mat = 0; mat < CARPOCALYPSE2_ASIZE(gMaterial_names); mat++) {
         if (gProgram_state.sausage_eater_mode) {
             str = gBoring_material_names[mat];
         } else {
@@ -61,7 +61,7 @@ void C2_HOOK_FASTCALL InitSkids(void) {
                 str = gMaterial_names[mat];
             }
 
-#if defined(REC2_FIX_BUGS)
+#if defined(CARPOCALYPSE2_FIX_BUGS)
             // Avoid modification of read-only data by strtok.
             strcpy(mat_name, str);
             str = mat_name;
@@ -85,7 +85,7 @@ void C2_HOOK_FASTCALL InitSkids(void) {
 
     C2_HOOK_BUG_ON(sizeof(tSkid) != 28);
 
-    for (skid = 0; skid < REC2_ASIZE(gSkids); skid++) {
+    for (skid = 0; skid < CARPOCALYPSE2_ASIZE(gSkids); skid++) {
         gSkids[skid].actor = BrActorAllocate(BR_ACTOR_MODEL, NULL);
         BrActorAdd(gOther_selfs[3], gSkids[skid].actor);
         gSkids[skid].actor->render_style = BR_RSTYLE_NONE;
@@ -122,7 +122,7 @@ void C2_HOOK_FASTCALL HideSkid(int pSkid_num) {
 void C2_HOOK_FASTCALL HideSkids(void) {
     int skid;
 
-    for (skid = 0; skid < REC2_ASIZE(gSkids); skid++) {
+    for (skid = 0; skid < CARPOCALYPSE2_ASIZE(gSkids); skid++) {
         HideSkid(skid);
     }
 }
@@ -285,9 +285,9 @@ int C2_HOOK_FASTCALL SkidSection(tS16* pSkid_id, br_vector3* pSkid_start, br_vec
         return 1;
     }
 
-    C2_HOOK_BUG_ON(REC2_ASIZE(gSkids) != 100);
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gSkids) != 100);
 
-    if (*pSkid_id < REC2_ASIZE(gSkids) && gSkids[*pSkid_id].actor->material == pMaterial) {
+    if (*pSkid_id < CARPOCALYPSE2_ASIZE(gSkids) && gSkids[*pSkid_id].actor->material == pMaterial) {
         br_scalar tmp = BrVector3LengthSquared((br_vector3*)gSkids[*pSkid_id].actor->t.t.mat.m[2]);
         if (tmp < 2 * (pTexture_step * pTexture_step) && pTexture_step * pTexture_step <= 2 * tmp) {
             if (BrVector3LengthSquared((br_vector3*)gSkids[*pSkid_id].actor->t.t.mat.m[0]) <= 0.5f) {
@@ -321,7 +321,7 @@ int C2_HOOK_FASTCALL SkidSection(tS16* pSkid_id, br_vector3* pSkid_start, br_vec
     StretchMark(&gSkids[gCurrent_skid], pPrev_pos, pPos, pTexture_start, pTexture_step);
     PipeSingleSkidAdjustment(gCurrent_skid, &gSkids[gCurrent_skid].actor->t.t.mat, pMaterial);
     *pSkid_id = gCurrent_skid;
-    gCurrent_skid = (gCurrent_skid + 1) % REC2_ASIZE(gSkids);
+    gCurrent_skid = (gCurrent_skid + 1) % CARPOCALYPSE2_ASIZE(gSkids);
     return 0;
 }
 
@@ -339,7 +339,7 @@ void C2_HOOK_FASTCALL InitCarSkidStuff(tCar_spec* pCar) {
 void C2_HOOK_FASTCALL SkidsPerFrame(void) {
     int i;
 
-    for (i = 0; i < REC2_ASIZE(gSkids); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gSkids); i++) {
         tSkid *skid = &gSkids[i];
 
         if (skid->actor->render_style != BR_RSTYLE_NONE) {

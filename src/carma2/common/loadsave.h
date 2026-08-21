@@ -1,9 +1,9 @@
-#ifndef REC2_LOADSAVE_H
-#define REC2_LOADSAVE_H
+#ifndef CARPOCALYPSE2_LOADSAVE_H
+#define CARPOCALYPSE2_LOADSAVE_H
 
 #include "c2_hooks.h"
 
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 
 extern int gValid_stashed_save_game;
 extern int gSave_game_out_of_sync;
@@ -35,4 +35,4 @@ int C2_HOOK_FASTCALL DoLoadGame(int pIndex);
 
 void C2_HOOK_FASTCALL MakeSavedGame(tSave_game* pSave_game);
 
-#endif // REC2_LOADSAVE_H
+#endif // CARPOCALYPSE2_LOADSAVE_H

@@ -1,5 +1,5 @@
-#ifndef REC2_ACTSUPT_H
-#define REC2_ACTSUPT_H
+#ifndef CARPOCALYPSE2_ACTSUPT_H
+#define CARPOCALYPSE2_ACTSUPT_H
 
 #include "c2_hooks.h"
 
@@ -43,4 +43,4 @@ void C2_HOOK_STDCALL ActorToBounds(br_bounds* dest, br_actor* ap, br_model* mode
 
 br_bounds* C2_HOOK_CDECL BrActorToBounds(br_bounds* b, br_actor* ap);
 
-#endif // REC2_ACTSUPT_H
+#endif // CARPOCALYPSE2_ACTSUPT_H

@@ -1,8 +1,8 @@
-#ifndef REC2_BRUCETRK_H
-#define REC2_BRUCETRK_H
+#ifndef CARPOCALYPSE2_BRUCETRK_H
+#define CARPOCALYPSE2_BRUCETRK_H
 
 #include <brender/brender.h>
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 
 #include "c2_hooks.h"
 
@@ -44,4 +44,4 @@ intptr_t C2_HOOK_CDECL FoundAnActor(br_actor* pActor, void* pContext);
 
 void C2_HOOK_FASTCALL RenderTrack(br_actor* pWorld, tTrack_spec* pTrack_spec, br_actor* pCamera, br_matrix34* pCamera_to_world);
 
-#endif //REC2_BRUCETRK_H
+#endif //CARPOCALYPSE2_BRUCETRK_H

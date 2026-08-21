@@ -1,5 +1,5 @@
-#ifndef REC2_RESREG_H
-#define REC2_RESREG_H
+#ifndef CARPOCALYPSE2_RESREG_H
+#define CARPOCALYPSE2_RESREG_H
 
 #include "c2_hooks.h"
 
@@ -23,4 +23,4 @@ br_uint_32 C2_HOOK_CDECL BrResClassCount(char* pattern);
 
 br_uint_32 C2_HOOK_CDECL BrResClassEnum(char* pattern, br_resclass_enum_cbfn* callback, void* arg);
 
-#endif // REC2_RESREG_H
+#endif // CARPOCALYPSE2_RESREG_H

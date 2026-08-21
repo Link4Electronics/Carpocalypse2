@@ -16,7 +16,7 @@
 #include "sound.h"
 #include "utility.h"
 
-#include "rec2_macros.h"
+#include "carpocalypse2_macros.h"
 
 #include <ctype.h>
 #include "c2_string.h"
@@ -96,7 +96,7 @@ int C2_HOOK_FASTCALL LoadGameInFunc(tFrontend_spec* pFrontend) {
     camera->width = 640.f;
     camera->height = 480.f;
 
-    for (i = 0; i < REC2_ASIZE(gFrontend_billboard_actors); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gFrontend_billboard_actors); i++) {
         gFrontend_billboard_actors[i] = CreateAPOactor();
     }
     gFrontend_APO_Colour_1 = FudgeBRenderIntoTheNinetiesWithSomeProperFuckingColourSupport(
@@ -116,7 +116,7 @@ int C2_HOOK_FASTCALL LoadGameInFunc(tFrontend_spec* pFrontend) {
 int C2_HOOK_FASTCALL LoadGameOutFunc(tFrontend_spec* pFrontend) {
     int i;
 
-    for (i = 0; i < REC2_ASIZE(gFrontend_billboard_actors); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gFrontend_billboard_actors); i++) {
         KillAPOactor(gFrontend_billboard_actors[i]);
     }
     BrActorFree(gFrontend_menu_camera);

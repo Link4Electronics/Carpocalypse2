@@ -3,7 +3,7 @@
 
 #include "c2_hooks.h"
 #include "brender/brender.h"
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 
 extern br_pixelmap* gTexture_maps[1024];
 extern int gSize_font_texture_pages;

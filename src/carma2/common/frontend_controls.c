@@ -11,7 +11,7 @@
 #include "platform.h"
 #include "sound.h"
 
-#include "rec2_macros.h"
+#include "carpocalypse2_macros.h"
 
 // GLOBAL: CARMA2_HW 0x00604940
 tFrontend_spec gFrontend_CONTROLS = {
@@ -124,7 +124,7 @@ int gINT_00688748;
 // FUNCTION: CARMA2_HW 0x00472210
 void C2_HOOK_FASTCALL DisplayJoystickSettings(tFrontend_spec *pFrontend) {
 
-    C2_HOOK_BUG_ON(REC2_ASIZE(gFrontend_controls_indices) != 15);
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gFrontend_controls_indices) != 15);
 
     if (gJoystick_index != -1) {
         int i;
@@ -145,7 +145,7 @@ void C2_HOOK_FASTCALL DisplayJoystickSettings(tFrontend_spec *pFrontend) {
             pFrontend->items[19 + i].enabled = kFrontendItemEnabled_enabled;
             pFrontend->items[23 + i].enabled = kFrontendItemEnabled_enabled;
         }
-        for (i = 0; i < REC2_ASIZE(gFrontend_controls_indices); i++) {
+        for (i = 0; i < CARPOCALYPSE2_ASIZE(gFrontend_controls_indices); i++) {
 
             pFrontend->items[gFrontend_controls_indices[i]].enabled = kFrontendItemEnabled_enabled;
         }
@@ -170,7 +170,7 @@ void C2_HOOK_FASTCALL DisplayJoystickSettings(tFrontend_spec *pFrontend) {
             pFrontend->items[19 + i].enabled = kFrontendItemEnabled_disabled;
             pFrontend->items[23 + i].enabled = kFrontendItemEnabled_disabled;
         }
-        for (i = 0; i < REC2_ASIZE(gFrontend_controls_indices); i++) {
+        for (i = 0; i < CARPOCALYPSE2_ASIZE(gFrontend_controls_indices); i++) {
 
             pFrontend->items[gFrontend_controls_indices[i]].enabled = kFrontendItemEnabled_disabled;
         }
@@ -330,7 +330,7 @@ int C2_HOOK_FASTCALL Controls_SlotActivated(tFrontend_spec* pFrontend) {
         if (key != -1 && key != 63) {
             int i;
 
-            for (i = 28; i < REC2_ASIZE(gKey_mapping); i++) {
+            for (i = 28; i < CARPOCALYPSE2_ASIZE(gKey_mapping); i++) {
 
                 if (gKey_mapping[i] == key && i != gControls_frontend_to_key_mapping_lut[key_array_index]) {
                     int j;
@@ -395,7 +395,7 @@ int C2_HOOK_FASTCALL Controls_Ok(tFrontend_spec* pFrontend) {
     gINT_00688748 = -1;
     WaitForNoKeys();
 
-    for (i = 28; i < REC2_ASIZE(gKey_mapping); i++) {
+    for (i = 28; i < CARPOCALYPSE2_ASIZE(gKey_mapping); i++) {
 
         if (gKey_mapping[i] == -2) {
             gINT_00688748 = i;
@@ -404,7 +404,7 @@ int C2_HOOK_FASTCALL Controls_Ok(tFrontend_spec* pFrontend) {
     }
     if (gJoystick_index == -1) {
 
-        for (i = 28; i < REC2_ASIZE(gKey_mapping); i++) {
+        for (i = 28; i < CARPOCALYPSE2_ASIZE(gKey_mapping); i++) {
 
             if (gKey_mapping[i] >= 107 && gKey_mapping[i] <= 142) {
                 gINT_00688748 = i;

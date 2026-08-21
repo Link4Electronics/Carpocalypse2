@@ -1,7 +1,7 @@
-#ifndef REC2_REPLAY_CALLBACKS_H
-#define REC2_REPLAY_CALLBACKS_H
+#ifndef CARPOCALYPSE2_REPLAY_CALLBACKS_H
+#define CARPOCALYPSE2_REPLAY_CALLBACKS_H
 
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 
 extern const tReplay_callback gReplay_callbacks[70];
 
@@ -243,4 +243,4 @@ void C2_HOOK_FASTCALL UndoTransformType(tPipe_chunk** pChunk, tPipe_chunk* pPrev
 
 void C2_HOOK_FASTCALL ApplyOppoRenderage(tPipe_chunk** pChunk);
 
-#endif //REC2_REPLAY_CALLBACKS_H
+#endif //CARPOCALYPSE2_REPLAY_CALLBACKS_H

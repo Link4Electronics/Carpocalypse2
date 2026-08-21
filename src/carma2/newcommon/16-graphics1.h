@@ -2,7 +2,7 @@
 #define GUARD_16_GRAPHICS1_H
 
 #include "c2_hooks.h"
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 
 extern int gRender_indent;
 extern int gWidth;

@@ -1,5 +1,5 @@
-#ifndef REC2_TYPES_H
-#define REC2_TYPES_H
+#ifndef CARPOCALYPSE2_TYPES_H
+#define CARPOCALYPSE2_TYPES_H
 
 #include <brender/br_types.h>
 #include <s3/s3.h>
@@ -5747,4 +5747,4 @@ enum {
 };
 
 
-#endif // REC2_TYPES_H
+#endif // CARPOCALYPSE2_TYPES_H

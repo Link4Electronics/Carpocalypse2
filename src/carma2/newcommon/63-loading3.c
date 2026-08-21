@@ -4,11 +4,11 @@
 #include "18-graphics2.h"
 #include "41-utility.h"
 #include "70-packfile.h"
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 #include "globvars.h"
 #include "platform.h"
 #include "loadtif.h"
-#include "rec2_macros.h"
+#include "carpocalypse2_macros.h"
 
 #include <string.h>
 
@@ -55,7 +55,7 @@ br_pixelmap* C2_HOOK_FASTCALL DRLdImg(const char* texturePathDir, const char* te
     int nb;
 
     if (gDisableTiffConversion) {
-        nb = LoadBunchOfPixies(texturePathDir, textureName, textures, REC2_ASIZE(textures));
+        nb = LoadBunchOfPixies(texturePathDir, textureName, textures, CARPOCALYPSE2_ASIZE(textures));
         if (nb != 0) {
             *errorCode = 0;
             return textures[0];
@@ -160,7 +160,7 @@ void C2_HOOK_FASTCALL DRLoadPalette(const char* pPath_name) {
     int number_of_palettes;
     int i;
 
-    number_of_palettes = BrPixelmapLoadMany(pPath_name, palette_array, REC2_ASIZE(palette_array));
+    number_of_palettes = BrPixelmapLoadMany(pPath_name, palette_array, CARPOCALYPSE2_ASIZE(palette_array));
     for (i = 0; i < number_of_palettes; i++) {
         palette_array[i]->row_bytes = (palette_array[i]->row_bytes + 3) & ~0x3;
         palette_array[i]->base_x = 0;
@@ -175,7 +175,7 @@ void C2_HOOK_FASTCALL DRLoadShadeTable(const char* pPath_name) {
     int number_of_tables;
     int i;
 
-    number_of_tables = BrPixelmapLoadMany(pPath_name, table_array, REC2_ASIZE(table_array));
+    number_of_tables = BrPixelmapLoadMany(pPath_name, table_array, CARPOCALYPSE2_ASIZE(table_array));
     for (i = 0; i < number_of_tables; i++) {
         table_array[i]->row_bytes = (table_array[i]->row_bytes + 3) & ~0x3;
         table_array[i]->base_x = 0;
@@ -191,7 +191,7 @@ void C2_HOOK_FASTCALL DRLoadMaterials(const char* pPath_name) {
     int number_of_materials;
 
     PossibleService();
-    number_of_materials = BrMaterialLoadMany(pPath_name, material_array, REC2_ASIZE(material_array));
+    number_of_materials = BrMaterialLoadMany(pPath_name, material_array, CARPOCALYPSE2_ASIZE(material_array));
     for (i = 0; i < number_of_materials; i++) {
         material_array[i]->flags &= ~BR_MATF_LIGHT;
     }
@@ -205,7 +205,7 @@ void C2_HOOK_FASTCALL DRLoadModels(const char* pPath_name) {
     int number_of_models;
 
     PossibleService();
-    number_of_models = BrModelLoadMany(pPath_name, model_array, REC2_ASIZE(model_array));
+    number_of_models = BrModelLoadMany(pPath_name, model_array, CARPOCALYPSE2_ASIZE(model_array));
     WhitenVertexRGB(model_array, number_of_models);
     for (i = 0; i < number_of_models; i++) {
         model_array[i]->flags = BR_MODF_UPDATEABLE;
@@ -220,7 +220,7 @@ void C2_HOOK_FASTCALL DRLoadActors(const char* pPath_name) {
     int number_of_actors;
 
     PossibleService();
-    number_of_actors = BrActorLoadMany(pPath_name, actor_array, REC2_ASIZE(actor_array));
+    number_of_actors = BrActorLoadMany(pPath_name, actor_array, CARPOCALYPSE2_ASIZE(actor_array));
     for (i = 0; i < number_of_actors; i++) {
         gActor_array[gNumber_of_actors] = actor_array[i];
         gNumber_of_actors++;

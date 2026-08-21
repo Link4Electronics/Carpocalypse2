@@ -1,5 +1,5 @@
-#ifndef REC2_INIT_H
-#define REC2_INIT_H
+#ifndef CARPOCALYPSE2_INIT_H
+#define CARPOCALYPSE2_INIT_H
 
 #include "brender/brender.h"
 
@@ -71,4 +71,4 @@ void C2_HOOK_FASTCALL LoadInTrack(void);
 
 void C2_HOOK_FASTCALL DisposeTrack(void);
 
-#endif //REC2_INIT_H
+#endif //CARPOCALYPSE2_INIT_H

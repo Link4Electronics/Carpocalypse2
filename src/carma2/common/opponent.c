@@ -20,7 +20,7 @@
 
 #include <brender/brender.h>
 
-#include "rec2_macros.h"
+#include "carpocalypse2_macros.h"
 
 #include "c2_string.h"
 
@@ -337,12 +337,12 @@ void C2_HOOK_FASTCALL LoadInOppoPaths(FILE* pF) {
             br_vector3 section_v;
             br_scalar distance;
 
-            C2_HOOK_BUG_ON(REC2_ASIZE(scalars) != 6);
+            C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(scalars) != 6);
 
             PossibleService();
 
             /* x, y, z, type[0], type[1], type[2] */
-            GetNScalars(pF, REC2_ASIZE(scalars), scalars);
+            GetNScalars(pF, CARPOCALYPSE2_ASIZE(scalars), scalars);
             BrVector3Set(&gProgram_state.AI_vehicles.cop_start_points[i],
                 scalars[0], scalars[1], scalars[2]);
 
@@ -842,7 +842,7 @@ void C2_HOOK_FASTCALL InitOpponents(tRace_info* pRace_info) {
         }
         gChallenger_index__opponent = -1;
     }
-    /* cops are not initialized in rec2 */
+    /* cops are not initialized in carpocalypse2 */
 
     opponents_left = NumberOfOpponentsStillRunning();
     if (opponents_left != 0) {
@@ -1145,7 +1145,7 @@ void C2_HOOK_FASTCALL RecordNextTrailNode(tCar_spec* pPursuee) {
 
     if (pPursuee->my_trail.has_deviated_recently || !visible) {
         if ((visible && length > 2.0f) || (!visible && length > 1.5f)) {
-            if (pPursuee->my_trail.number_of_nodes < REC2_ASIZE(pPursuee->my_trail.trail_nodes)) {
+            if (pPursuee->my_trail.number_of_nodes < CARPOCALYPSE2_ASIZE(pPursuee->my_trail.trail_nodes)) {
                 pPursuee->my_trail.number_of_nodes += 1;
             } else {
                 memmove(&pPursuee->my_trail.trail_nodes[0], &pPursuee->my_trail.trail_nodes[1], sizeof(pPursuee->my_trail.trail_nodes[0]));
@@ -1306,7 +1306,7 @@ void C2_HOOK_FASTCALL WeightedFindNearestNodeAndSection(tCar_spec* pCar, br_vect
     br_vector3 a;
     br_vector3 p;
 
-#ifdef REC2_FIX_BUGS
+#ifdef CARPOCALYPSE2_FIX_BUGS
     nearest_section = -1;
 #endif
 
@@ -1422,7 +1422,7 @@ int C2_HOOK_FASTCALL ShiftOpponentsProjectedRoute(tOpponent_spec* pOpponent_spec
     if (pOpponent_spec->nnext_sections <= pPlaces) {
         return 0;
     }
-    for (i = 0; i < REC2_ASIZE(pOpponent_spec->next_sections) - pPlaces; i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(pOpponent_spec->next_sections) - pPlaces; i++) {
         pOpponent_spec->next_sections[i].section_no = pOpponent_spec->next_sections[pPlaces + i].section_no;
         pOpponent_spec->next_sections[i].direction = pOpponent_spec->next_sections[pPlaces + i].direction;
     }
@@ -1652,7 +1652,7 @@ void C2_HOOK_FASTCALL CalcRaceRoute(tOpponent_spec *pOpponent_spec) {
     br_vector3 intersect;
     int i;
 
-    if (pOpponent_spec->nnext_sections >= REC2_ASIZE(pOpponent_spec->next_sections)) {
+    if (pOpponent_spec->nnext_sections >= CARPOCALYPSE2_ASIZE(pOpponent_spec->next_sections)) {
         DoNotDprintf_opponent("%s: CalcRaceRoute() - Pissing off 'cos projected route full up", pOpponent_spec->car_spec->driver_name);
         return;
     }
@@ -1669,7 +1669,7 @@ void C2_HOOK_FASTCALL CalcRaceRoute(tOpponent_spec *pOpponent_spec) {
             pOpponent_spec->complete_race_data.found_race_section = 1;
         }
     }
-    while (pOpponent_spec->nnext_sections < REC2_ASIZE(pOpponent_spec->next_sections) && !pOpponent_spec->complete_race_data.finished_calcing_race_route) {
+    while (pOpponent_spec->nnext_sections < CARPOCALYPSE2_ASIZE(pOpponent_spec->next_sections) && !pOpponent_spec->complete_race_data.finished_calcing_race_route) {
         node_no = gProgram_state.AI_vehicles.path_sections[pOpponent_spec->next_sections[pOpponent_spec->nnext_sections - 1].section_no].node_indices[pOpponent_spec->next_sections[pOpponent_spec->nnext_sections - 1].direction];
         race_section_count = 0;
         normal_section_ok_direction_count = 0;
@@ -1948,7 +1948,7 @@ tFollow_path_result C2_HOOK_FASTCALL ProcessFollowPath(tOpponent_spec* pOpponent
                 SetMaxSpeedFromSOCs(socs, count_socs, &data->desired_speed, speed, &oppo_pos2d, &corners[0], pOpponent_spec);
             }
         } else {
-            if (BrVector2LengthSquared(&oppo_pos_rel_next) <= REC2_SQR(data->field_0x4c)) {
+            if (BrVector2LengthSquared(&oppo_pos_rel_next) <= CARPOCALYPSE2_SQR(data->field_0x4c)) {
 
                 count_corners = CalcCorners(corners, straight_section_no, width, &start2d, pOpponent_spec);
                 count_socs = CalcSOCs(corners[0].section, count_corners, corners, pOpponent_spec, socs, pOpponent_spec->car_spec);
@@ -2124,7 +2124,7 @@ void C2_HOOK_FASTCALL ObjectiveComplete(tOpponent_spec* pOpponent_spec) {
 // FUNCTION: CARMA2_HW 0x004ab150
 int C2_HOOK_FASTCALL AddToOpponentsProjectedRoute(tOpponent_spec* pOpponent_spec, tS16 pSection_no, int pDirection) {
 
-    if (pOpponent_spec->nnext_sections >= REC2_ASIZE(pOpponent_spec->next_sections)) {
+    if (pOpponent_spec->nnext_sections >= CARPOCALYPSE2_ASIZE(pOpponent_spec->next_sections)) {
         return 0;
     }
     pOpponent_spec->next_sections[pOpponent_spec->nnext_sections].section_no = pSection_no;
@@ -2264,7 +2264,7 @@ void C2_HOOK_FASTCALL ProcessReturnToStart(tOpponent_spec* pOpponent_spec, tProc
                     ShiftOpponentsProjectedRoute(pOpponent_spec, pOpponent_spec->follow_path_data.section_no - 20000);
                     pOpponent_spec->follow_path_data.section_no = 20000;
                 }
-                if (pOpponent_spec->nnext_sections < REC2_ASIZE(pOpponent_spec->next_sections) - 1) {
+                if (pOpponent_spec->nnext_sections < CARPOCALYPSE2_ASIZE(pOpponent_spec->next_sections) - 1) {
                     CalcReturnToStartPointRoute(pOpponent_spec);
                 }
                 res = ProcessFollowPath(pOpponent_spec, ePOC_run, 0, 0, 0);
@@ -2308,7 +2308,7 @@ void C2_HOOK_FASTCALL ProcessCompleteRace(tOpponent_spec* pOpponent_spec, tProce
             ShiftOpponentsProjectedRoute(pOpponent_spec, pOpponent_spec->follow_path_data.section_no - 20000);
             pOpponent_spec->follow_path_data.section_no = 20000;
         }
-        if (pOpponent_spec->nnext_sections < REC2_ASIZE(pOpponent_spec->next_sections) - 1 && !pOpponent_spec->complete_race_data.finished_calcing_race_route) {
+        if (pOpponent_spec->nnext_sections < CARPOCALYPSE2_ASIZE(pOpponent_spec->next_sections) - 1 && !pOpponent_spec->complete_race_data.finished_calcing_race_route) {
             CalcRaceRoute(pOpponent_spec);
         }
         if (pOpponent_spec->nnext_sections == 0) {
@@ -2366,8 +2366,8 @@ void C2_HOOK_FASTCALL ProcessRunAway(tOpponent_spec* pOpponent_spec, tProcess_ob
                 ShiftOpponentsProjectedRoute(pOpponent_spec, pOpponent_spec->follow_path_data.section_no - 20000);
                 pOpponent_spec->follow_path_data.section_no = 20000;
             }
-            if (pOpponent_spec->nnext_sections < REC2_ASIZE(pOpponent_spec->next_sections)) {
-                TopUpRandomRoute(pOpponent_spec, REC2_ASIZE(pOpponent_spec->next_sections) - pOpponent_spec->nnext_sections);
+            if (pOpponent_spec->nnext_sections < CARPOCALYPSE2_ASIZE(pOpponent_spec->next_sections)) {
+                TopUpRandomRoute(pOpponent_spec, CARPOCALYPSE2_ASIZE(pOpponent_spec->next_sections) - pOpponent_spec->nnext_sections);
             }
             if (ProcessFollowPath(pOpponent_spec, ePOC_run, 0, 0, 0) == eFPR_given_up) {
                 ClearOpponentsProjectedRoute(pOpponent_spec);

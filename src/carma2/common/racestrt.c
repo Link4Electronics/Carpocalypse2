@@ -6,7 +6,7 @@
 #include "platform.h"
 #include "utility.h"
 
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 
 #include "c2_stdlib.h"
 

@@ -12,7 +12,7 @@
 
 #include <brender/brender.h>
 
-#include "rec2_macros.h"
+#include "carpocalypse2_macros.h"
 
 #include "c2_string.h"
 
@@ -374,7 +374,7 @@ void C2_HOOK_FASTCALL InitLastDamageArrayEtc(void) {
     int car_count;
     tCar_spec* car;
 
-    C2_HOOK_BUG_ON(REC2_ASIZE(car->frame_start_damage) != 12);
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(car->frame_start_damage) != 12);
 
     for (cat = eVehicle_self; cat <= eVehicle_not_really; cat++) {
         if (cat == eVehicle_self) {
@@ -389,7 +389,7 @@ void C2_HOOK_FASTCALL InitLastDamageArrayEtc(void) {
                 car = GetCarSpec(cat, i);
             }
             if (cat != eVehicle_not_really) {
-                for (j = 0; j < REC2_ASIZE(car->frame_start_damage); j++) {
+                for (j = 0; j < CARPOCALYPSE2_ASIZE(car->frame_start_damage); j++) {
                     car->frame_start_damage[j] = 0;
                 }
             }
@@ -487,10 +487,10 @@ void C2_HOOK_FASTCALL PipeCarPositions(void) {
             tU8 damage_deltas[12];
             int any_damage;
 
-            C2_HOOK_BUG_ON(REC2_ASIZE(car->damage_units) != 12);
+            C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(car->damage_units) != 12);
 
             any_damage = 0;
-            for (i = 0; i < REC2_ASIZE(car->damage_units); i++) {
+            for (i = 0; i < CARPOCALYPSE2_ASIZE(car->damage_units); i++) {
                 int damage;
                 int damage_delta;
 

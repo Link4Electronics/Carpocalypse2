@@ -103,7 +103,7 @@ target_include_directories(c2_newcommon
 )
 target_link_libraries(c2_newcommon
     PUBLIC
-        rec2_headers
+        carpocalypse2_headers
         BRender::Headers
         c2_hooks
         c2_platform
@@ -118,6 +118,6 @@ if(NOT MSVC)
     add_compile_options(-Wredundant-decls)
 endif()
 
-if(MSVC AND NOT REC2_MATCHING)
+if(MSVC AND NOT CARPOCALYPSE2_MATCHING)
     add_compile_definitions(-D_CRT_NONSTDC_NO_DEPRECATE)
 endif()

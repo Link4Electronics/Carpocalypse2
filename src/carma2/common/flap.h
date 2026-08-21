@@ -1,9 +1,9 @@
-#ifndef REC2_FLAP_H
-#define REC2_FLAP_H
+#ifndef CARPOCALYPSE2_FLAP_H
+#define CARPOCALYPSE2_FLAP_H
 
 #include "c2_hooks.h"
 
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 
 tPhysics_object* C2_HOOK_FASTCALL DetachBit(tCar_spec* pCar, br_actor* pActor, br_bounds3* pBounds);
 

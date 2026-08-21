@@ -1,5 +1,5 @@
-#ifndef REC2_DBSETUP_H
-#define REC2_DBSETUP_H
+#ifndef CARPOCALYPSE2_DBSETUP_H
+#define CARPOCALYPSE2_DBSETUP_H
 
 #include "c2_hooks.h"
 
@@ -46,4 +46,4 @@ void C2_HOOK_CDECL BrV1dbBeginWrapper_Float(void);
 void C2_HOOK_CDECL BrV1dbEndWrapper_Float
 (void);
 
-#endif // REC2_DBSETUP_H
+#endif // CARPOCALYPSE2_DBSETUP_H

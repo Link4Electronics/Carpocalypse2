@@ -38,8 +38,8 @@
 #include "brender/brender.h"
 #include "brender/br_types.h"
 
-#include "rec2_macros.h"
-#include "rec2_types.h"
+#include "carpocalypse2_macros.h"
+#include "carpocalypse2_types.h"
 
 #include "c2_string.h"
 
@@ -525,7 +525,7 @@ float gPrevious_rear_yon;
 void C2_HOOK_FASTCALL ClearWobbles(void) {
     int i;
 
-    for (i = 0; i < REC2_ASIZE(gWobble_array); ++i) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gWobble_array); ++i) {
         gWobble_array[i].time_started = 0;
     }
 }
@@ -535,7 +535,7 @@ void C2_HOOK_FASTCALL InitWobbleStuff(void) {
     int i;
 
     ClearWobbles();
-    for (i = 0; i < REC2_ASIZE(gCosine_array); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gCosine_array); i++) {
         gCosine_array[i] = cosf(i / 64.0f * 3.141592653589793f / 2.0f);
     }
 
@@ -568,7 +568,7 @@ void C2_HOOK_FASTCALL BuildColourTable(br_pixelmap* pPalette) {
     float nearest_distance;
     float distance;
 
-    for (i = 0; i < REC2_ASIZE(gRGB_colours); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gRGB_colours); i++) {
         nearest_distance = 196608.f;
         red = (gRGB_colours[i] >> 16) & 0xFF;
         green = (gRGB_colours[i] >> 8) & 0xFF;
@@ -753,11 +753,11 @@ void C2_HOOK_FASTCALL EndMouseCursor(void) {
 void C2_HOOK_FASTCALL InitTransientBitmaps(void) {
     int i;
 
-    C2_HOOK_BUG_ON(REC2_ASIZE(gTransient_bitmaps) != 50);
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gTransient_bitmaps) != 50);
     C2_HOOK_BUG_ON(sizeof(tTransient_bm) != 0x18);
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tTransient_bm, in_use, 4);
 
-    for (i = 0; i < REC2_ASIZE(gTransient_bitmaps); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gTransient_bitmaps); i++) {
         gTransient_bitmaps[i].in_use = 0;
     }
 }
@@ -769,7 +769,7 @@ void C2_HOOK_FASTCALL RemoveTransientBitmaps(int pGraphically_remove_them) {
 
     if (gNoTransients && pGraphically_remove_them) {
         for (order_number = gNext_transient - 1; order_number >= 0; order_number--) {
-            for (i = 0; i < REC2_ASIZE(gTransient_bitmaps); i++) {
+            for (i = 0; i < CARPOCALYPSE2_ASIZE(gTransient_bitmaps); i++) {
                 if (gTransient_bitmaps[i].pixmap != NULL && gTransient_bitmaps[i].order_number == order_number) {
                     if (gTransient_bitmaps[i].in_use) {
                         BrPixelmapRectangleCopy(gBack_screen,
@@ -801,7 +801,7 @@ void C2_HOOK_FASTCALL DeallocateTransientBitmap(int pIndex) {
 void C2_HOOK_FASTCALL DeallocateAllTransientBitmaps(void) {
     int i;
 
-    for (i = 0; i < REC2_ASIZE(gTransient_bitmaps); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gTransient_bitmaps); i++) {
         DeallocateTransientBitmap(i);
     }
 }
@@ -1074,7 +1074,7 @@ void C2_HOOK_FASTCALL DisposeFont(int pFont_ID) {
 void C2_HOOK_FASTCALL InitDRFonts(void) {
     int i;
 
-    for (i = 0; i < REC2_ASIZE(gFonts); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gFonts); i++) {
         gFonts[i].file_read_once = 0;
         gFonts[i].images = NULL;
         gFonts[i].id = 11;
@@ -1091,13 +1091,13 @@ void C2_HOOK_FASTCALL ReadMoodMessages(void) {
     if (f == NULL) {
         FatalError(kFatalError_CantFindFile_S, "STATUS.TXT");
     }
-    for (mood = 0; mood < REC2_ASIZE(gOppo_status_messages); mood += 1) {
+    for (mood = 0; mood < CARPOCALYPSE2_ASIZE(gOppo_status_messages); mood += 1) {
         int i;
 
-        C2_HOOK_ASSERT(mood < REC2_ASIZE(gOppo_status_messages));
+        C2_HOOK_ASSERT(mood < CARPOCALYPSE2_ASIZE(gOppo_status_messages));
 
         gOppo_status_messages[mood].count = GetAnInt(f);
-        C2_HOOK_ASSERT(gOppo_status_messages[mood].count < REC2_ASIZE(gOppo_status_messages[mood].messages));
+        C2_HOOK_ASSERT(gOppo_status_messages[mood].count < CARPOCALYPSE2_ASIZE(gOppo_status_messages[mood].messages));
         for (i = 0; i < gOppo_status_messages[mood].count; i++) {
             char s[256];
 
@@ -1177,8 +1177,8 @@ void C2_HOOK_FASTCALL InitMap(void) {
     gFLOAT_0068d8a0 = (float)gINT_0074abd4;
     gFLOAT_0068d8a4 = (float)gINT_0074abd0;
     gMini_map_arrow_z = 0.f;
-    gFLOAT_0074ab9c = REC2_SQR((float)(gHeadup_map_half_height + gHeadup_map_half_width) * 0.45f);
-    gFLOAT_0074abb8 = REC2_SQR((float)(gCurrent_graf_data->field_0x51c + 1));
+    gFLOAT_0074ab9c = CARPOCALYPSE2_SQR((float)(gHeadup_map_half_height + gHeadup_map_half_width) * 0.45f);
+    gFLOAT_0074abb8 = CARPOCALYPSE2_SQR((float)(gCurrent_graf_data->field_0x51c + 1));
     if (!gInitMap_done) {
         gCheckpoint_numbers = LoadPixelmap("CPNUMB.PIX");
         if (gCheckpoint_numbers == NULL) {
@@ -1232,7 +1232,7 @@ void C2_HOOK_FASTCALL InitShadow(void) {
 
     C2_HOOK_BUG_ON(sizeof(gShadow_clip_planes[0]) != 8);
 
-    for (i = 0; i < REC2_ASIZE(gShadow_clip_planes); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gShadow_clip_planes); i++) {
         gShadow_clip_planes[i].clip = BrActorAllocate(BR_ACTOR_CLIP_PLANE, NULL);
         BrActorAdd(gUniverse_actor, gShadow_clip_planes[i].clip);
         BrClipPlaneDisable(gShadow_clip_planes[i].clip);
@@ -1255,8 +1255,8 @@ void C2_HOOK_FASTCALL InitShadow(void) {
 br_uint_32 C2_HOOK_CDECL SaveShadeTable(br_pixelmap* pTable, void* pArg) {
     br_pixelmap* copy;
 
-    C2_HOOK_BUG_ON(REC2_ASIZE(gSaved_shade_tables) != 100);
-    if (gSaved_table_count == REC2_ASIZE(gSaved_shade_tables)) {
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gSaved_shade_tables) != 100);
+    if (gSaved_table_count == CARPOCALYPSE2_ASIZE(gSaved_shade_tables)) {
         return 1;
     }
     gSaved_shade_tables[gSaved_table_count].original = pTable;
@@ -1716,7 +1716,7 @@ void C2_HOOK_FASTCALL CalculateWobblitude(tU32 pThe_time) {
     }
     gScreen_wobble_x = 0;
     gScreen_wobble_y = 0;
-    for (i = 0; i < REC2_ASIZE(gWobble_array); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gWobble_array); i++) {
         if (gWobble_array[i].time_started != 0) {
             time_going = pThe_time - gWobble_array[i].time_started;
             if (time_going > 1000) {
@@ -1923,7 +1923,7 @@ void C2_HOOK_FASTCALL MungeClipPlane(br_vector3* pLight, tCar_spec* pCar, br_vec
         ((br_vector4*)new_clip->type_data)->v[1] = v4.v[1];
         ((br_vector4*)new_clip->type_data)->v[2] = v4.v[2];
         ((br_vector4*)new_clip->type_data)->v[3] = -BrVector3Dot(&v1, &v4);
-        length = REC2_SQR(v1.v[2] - v2.v[2]) + REC2_SQR(v1.v[0] - v2.v[0]);
+        length = CARPOCALYPSE2_SQR(v1.v[2] - v2.v[2]) + CARPOCALYPSE2_SQR(v1.v[0] - v2.v[0]);
         gShadow_clip_planes[gShadow_clip_plane_count].length = length;
         gShadow_clip_plane_count += 1;
     }
@@ -2045,7 +2045,7 @@ void C2_HOOK_FASTCALL ProcessShadow(tCar_spec* pCar, br_actor* pWorld, tTrack_sp
     tUser_crush_data* user_crush_data;
     br_model* car_crush_model;
 
-#if defined(REC2_FIX_BUGS)
+#if defined(CARPOCALYPSE2_FIX_BUGS)
     ray_length = 0.f;
 #endif
 
@@ -2091,7 +2091,7 @@ void C2_HOOK_FASTCALL ProcessShadow(tCar_spec* pCar, br_actor* pWorld, tTrack_sp
     } else {
         BrVector3Set(&kev_bounds.original_bounds.min,  1000.f,  1000.f,  1000.f);
         BrVector3Set(&kev_bounds.original_bounds.max, -1000.f, -1000.f, -1000.f);
-        for (i = 0; i < REC2_ASIZE(shadow_points_world); i++) {
+        for (i = 0; i < CARPOCALYPSE2_ASIZE(shadow_points_world); i++) {
             BrMatrix34ApplyP(&shadow_points_world[i], &gShadow_points[i], &pCar->car_master_actor->t.t.mat);
             if (shadow_points_world[i].v[0] < kev_bounds.original_bounds.min.v[0]) {
                 kev_bounds.original_bounds.min.v[0] = shadow_points_world[i].v[0];
@@ -2111,7 +2111,7 @@ void C2_HOOK_FASTCALL ProcessShadow(tCar_spec* pCar, br_actor* pWorld, tTrack_sp
         }
         kev_bounds.original_bounds.min.v[1] -= 4.4f;
         kev_bounds.mat = &gIdentity34;
-        face_count = FindFacesInBox(&kev_bounds, the_list, REC2_ASIZE(the_list), NULL);
+        face_count = FindFacesInBox(&kev_bounds, the_list, CARPOCALYPSE2_ASIZE(the_list), NULL);
         face_ref = the_list;
         highest_underneath = 1000.f;
         ray_length = kev_bounds.original_bounds.max.v[1] - kev_bounds.original_bounds.min.v[1];
@@ -2178,7 +2178,7 @@ void C2_HOOK_FASTCALL ProcessShadow(tCar_spec* pCar, br_actor* pWorld, tTrack_sp
                             highest_underneath = ray_length * distance;
                         }
                     }
-                    if (f_num >= REC2_ASIZE(faces)) {
+                    if (f_num >= CARPOCALYPSE2_ASIZE(faces)) {
                         break;
                     }
                 }
@@ -2344,7 +2344,7 @@ void C2_HOOK_FASTCALL FoxyStuff(br_matrix34* pMat34, br_actor* pCamera, br_pixel
 
                     count += 1;
                     wheel_actors = fox_car->wheel_actors;
-                    for (j = 0; j < REC2_ASIZE(fox_car->wheel_actors); j++) {
+                    for (j = 0; j < CARPOCALYPSE2_ASIZE(fox_car->wheel_actors); j++) {
                         if (wheel_actors[j] != NULL) {
                             wheel_actors[j]->render_style = BR_RSTYLE_NONE;
                         }
@@ -2372,7 +2372,7 @@ void C2_HOOK_FASTCALL FoxyStuff(br_matrix34* pMat34, br_actor* pCamera, br_pixel
                         br_actor **wheel_actors;
 
                         wheel_actors = fox_car->wheel_actors;
-                        for (j = 0; j < REC2_ASIZE(fox_car->wheel_actors); j++) {
+                        for (j = 0; j < CARPOCALYPSE2_ASIZE(fox_car->wheel_actors); j++) {
                             if (wheel_actors[j] != NULL) {
                                 wheel_actors[j]->render_style = BR_RSTYLE_DEFAULT;
                                 BrZbsSceneRenderAdd(wheel_actors[j]);
@@ -2452,7 +2452,7 @@ void C2_HOOK_FASTCALL DoARenderPass(br_matrix34* pMat34, br_actor* pCamera, br_p
     }
     FixificateClipulatingPlaneyThings(gCamera);
     BrZbsSceneRenderBegin(gUniverse_actor, pCamera, pColour, pDepth);
-    for (i = REC2_ASIZE(gOther_selfs); i > 0; i--) {
+    for (i = CARPOCALYPSE2_ASIZE(gOther_selfs); i > 0; i--) {
         if (i != 2) {
             BrSetScreenZOffset(i);
             BrZbsSceneRenderAdd(gOther_selfs[i - 1]);
@@ -2688,7 +2688,7 @@ void C2_HOOK_FASTCALL DrawArrow(br_pixelmap* pScreen, br_uint_32 pArrow_index, c
         }
     }
 
-    for (i = 0; i < REC2_ASIZE(colours); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(colours); i++) {
         colour = colours[i];
         point_count = gArrows[i][pArrow_index & 0x3][0];
         arrow_ptr = &gArrows[i][pArrow_index & 0x3][1];

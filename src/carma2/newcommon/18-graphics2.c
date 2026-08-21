@@ -4,7 +4,7 @@
 #include "52-errors.h"
 #include "globvars.h"
 #include "platform.h"
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 
 #include <string.h>
 

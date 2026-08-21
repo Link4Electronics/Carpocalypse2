@@ -1,9 +1,9 @@
-#ifndef REC2_VIDEO_H
-#define REC2_VIDEO_H
+#ifndef CARPOCALYPSE2_VIDEO_H
+#define CARPOCALYPSE2_VIDEO_H
 
 #include "c2_hooks.h"
 
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 
 extern int gRecording_paused;
 extern tU32 gRecording_time;
@@ -41,4 +41,4 @@ void C2_HOOK_FASTCALL FreeS3SoundOutput(void);
 
 int C2_HOOK_FASTCALL MovieRecordFrame(br_pixelmap *pScreen, int pFrame_period);
 
-#endif //REC2_VIDEO_H
+#endif //CARPOCALYPSE2_VIDEO_H

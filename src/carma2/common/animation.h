@@ -1,11 +1,11 @@
-#ifndef REC2_ANIMATION_H
-#define REC2_ANIMATION_H
+#ifndef CARPOCALYPSE2_ANIMATION_H
+#define CARPOCALYPSE2_ANIMATION_H
 
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 
 #include "c2_hooks.h"
 #include "c2_stdio.h"
 
 void C2_HOOK_FASTCALL ReadExplosion(FILE *pF, tExplosion_animation* pAnimation);
 
-#endif // REC2_ANIMATION_H
+#endif // CARPOCALYPSE2_ANIMATION_H

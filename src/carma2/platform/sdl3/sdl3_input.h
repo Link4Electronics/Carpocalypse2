@@ -1,7 +1,7 @@
-#ifndef REC2_SDL3_INPUT_H
-#define REC2_SDL3_INPUT_H
+#ifndef CARPOCALYPSE2_SDL3_INPUT_H
+#define CARPOCALYPSE2_SDL3_INPUT_H
 
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 
 extern int gASCII_table[151];
 extern int gASCII_shift_table[151];
@@ -46,4 +46,4 @@ extern int PDGetJoy2Y(void);
 
 extern void PDInitJoysticks(void);
 
-#endif /* REC2_SDL3_INPUT_H */
+#endif /* CARPOCALYPSE2_SDL3_INPUT_H */

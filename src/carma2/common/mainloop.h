@@ -1,9 +1,9 @@
-#ifndef REC2_MAINLOOP_H
-#define REC2_MAINLOOP_H
+#ifndef CARPOCALYPSE2_MAINLOOP_H
+#define CARPOCALYPSE2_MAINLOOP_H
 
 #include "c2_hooks.h"
 
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 
 extern tU32 gLast_tick_count;
 extern tU32 gOld_camera_time;
@@ -55,4 +55,4 @@ int C2_HOOK_FASTCALL MungeRaceFinished(void);
 
 void C2_HOOK_FASTCALL LoseOldestWastedMessage(void);
 
-#endif // REC2_MAINLOOP_H
+#endif // CARPOCALYPSE2_MAINLOOP_H

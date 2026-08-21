@@ -10,7 +10,7 @@
 #include "70-packfile.h"
 #include "globvars.h"
 #include "platform.h"
-#include "rec2_macros.h"
+#include "carpocalypse2_macros.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -500,7 +500,7 @@ void C2_HOOK_FASTCALL InitSoundSources(void) {
             }
         }
 
-        for (i = 0; i < (int)REC2_ASIZE(gEnvironment_sound_sources); i++) {
+        for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gEnvironment_sound_sources); i++) {
 
             env_src = &gEnvironment_sound_sources[i];
             env_src->field_0x10 = NULL;
@@ -562,7 +562,7 @@ void C2_HOOK_FASTCALL DisposeSoundSources(void) {
                     }
                 }
                 // FIXME: move outside of car category loop?
-                for (i = 0; i < (int)REC2_ASIZE(gEnvironment_sound_sources); i++) {
+                for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gEnvironment_sound_sources); i++) {
                     if (gEnvironment_sound_sources[i].source != NULL) {
                         S3BindAmbientSoundToOutlet(gXXX_outlet, -1, gEnvironment_sound_sources[i].source, 100.0f, 0, 0, 0, BR_FIXED_INT(1), BR_FIXED_INT(1));
                     }
@@ -723,7 +723,7 @@ tS3_outlet* C2_HOOK_FASTCALL GetOutletFromIndex(int pIndex) {
 int C2_HOOK_FASTCALL GetIndexFromOutlet(tS3_outlet* pOutlet) {
     int i;
 
-    for (i = 0; i < (int)REC2_ASIZE(gIndexed_outlets); i++) {
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gIndexed_outlets); i++) {
         if (gIndexed_outlets[i] == pOutlet) {
             return i;
         }
@@ -748,13 +748,13 @@ int C2_HOOK_FASTCALL DRS3StartCDA(int pSound) {
                 do {
                     switch (pSound) {
                         case 9997:
-                            pSound = gRandom_CDA_tunes_2[IRandomBetween(0, REC2_ASIZE(gRandom_CDA_tunes_2) - 1)];
+                            pSound = gRandom_CDA_tunes_2[IRandomBetween(0, CARPOCALYPSE2_ASIZE(gRandom_CDA_tunes_2) - 1)];
                             break;
                         case 9998:
-                            pSound = gRandom_CDA_tunes_1[IRandomBetween(0, REC2_ASIZE(gRandom_CDA_tunes_1) - 1)];
+                            pSound = gRandom_CDA_tunes_1[IRandomBetween(0, CARPOCALYPSE2_ASIZE(gRandom_CDA_tunes_1) - 1)];
                             break;
                         default:
-                            pSound = gRandom_CDA_tunes[IRandomBetween(0, REC2_ASIZE(gRandom_CDA_tunes) - 1)];
+                            pSound = gRandom_CDA_tunes[IRandomBetween(0, CARPOCALYPSE2_ASIZE(gRandom_CDA_tunes) - 1)];
                     }
                 } while (pSound == gLast_tune);
             }
@@ -816,7 +816,7 @@ void C2_HOOK_FASTCALL ReadSoundSpec(FILE* pF, tSpecial_volume_soundfx_data* pSpe
     int i;
     float f1, f2;
 
-    pSpec->periodicity = GetALineAndInterpretCommand(pF, gSound_periodicity_choices, REC2_ASIZE(gSound_periodicity_choices));
+    pSpec->periodicity = GetALineAndInterpretCommand(pF, gSound_periodicity_choices, CARPOCALYPSE2_ASIZE(gSound_periodicity_choices));
     if (pSpec->periodicity != kSoundFxPeriodicity_None) {
         switch (pSpec->periodicity) {
         case kSoundFxPeriodicity_Periodic:
@@ -828,7 +828,7 @@ void C2_HOOK_FASTCALL ReadSoundSpec(FILE* pF, tSpecial_volume_soundfx_data* pSpe
             pSpec->random.min_gap = (int)(1000.0f * f1);
             pSpec->random.max_gap = (int)(1000.0f * f2);
             break;
-#ifdef REC2_FIX_BUGS
+#ifdef CARPOCALYPSE2_FIX_BUGS
         default:
             break;
 #endif
@@ -836,8 +836,8 @@ void C2_HOOK_FASTCALL ReadSoundSpec(FILE* pF, tSpecial_volume_soundfx_data* pSpe
         pSpec->max_deviation = BR_FIXED_INT(GetAnInt(pF)) / 100;
         pSpec->count_sound_alternatives = GetAnInt(pF);
 
-        C2_HOOK_BUG_ON(REC2_ASIZE(pSpec->sound_alternatives) != 5);
-        if (pSpec->count_sound_alternatives > (int)REC2_ASIZE(pSpec->sound_alternatives)) {
+        C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(pSpec->sound_alternatives) != 5);
+        if (pSpec->count_sound_alternatives > (int)CARPOCALYPSE2_ASIZE(pSpec->sound_alternatives)) {
             FatalError(kFatalError_TooManyEnvironmentalSoundAlternatives);
         }
         for (i = 0; i < pSpec->count_sound_alternatives; i++) {
@@ -867,7 +867,7 @@ void C2_HOOK_FASTCALL BuggerModelName(tTrack_spec* pTrack_spec, const char* pNam
     sprintf(identifier, "%c%02d", ')', pIndex);
     model = BrModelFind(identifier);
     if (model == NULL || model->identifier == NULL) {
-#ifdef REC2_FIX_BUGS
+#ifdef CARPOCALYPSE2_FIX_BUGS
         FatalError(kFatalError_CannotFindModelReferencedInSoundGeneratorList_S, identifier);
 #else
         FatalError(kFatalError_CannotFindModelReferencedInSoundGeneratorList_S);
@@ -892,7 +892,7 @@ void C2_HOOK_FASTCALL ReadSoundGenerators(tTrack_spec* pTrack_spec, FILE* pF) {
         gProgram_state.track_sound_generators = BrMemAllocate(gProgram_state.count_track_sound_generators * sizeof(tTrackSoundGenerator), kMem_sound_generator);
         for (i = 0, generator = gProgram_state.track_sound_generators; i < gProgram_state.count_track_sound_generators; i++, generator++) {
 
-            generator->type = GetALineAndInterpretCommand(pF, gSound_generator_type_names, REC2_ASIZE(gSound_generator_type_names));
+            generator->type = GetALineAndInterpretCommand(pF, gSound_generator_type_names, CARPOCALYPSE2_ASIZE(gSound_generator_type_names));
             switch (generator->type) {
             case kSoundGeneratorType_point:
                 GetThreeFloats(pF, &x, &y, &z);
@@ -936,7 +936,7 @@ void C2_HOOK_FASTCALL WriteOutSoundSpec(FILE* pF, tSpecial_volume_soundfx_data* 
            (double)pSpec->random.min_gap / 1000.0,
            (double)pSpec->random.max_gap / 1000.0);
         break;
-#ifdef REC2_FIX_BUGS
+#ifdef CARPOCALYPSE2_FIX_BUGS
     default:
         break;
 #endif

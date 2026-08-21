@@ -1,7 +1,7 @@
-#ifndef REC2_TIMERS_H
-#define REC2_TIMERS_H
+#ifndef CARPOCALYPSE2_TIMERS_H
+#define CARPOCALYPSE2_TIMERS_H
 
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 
 #include "c2_hooks.h"
 
@@ -86,4 +86,4 @@ static void inline Timers_Force(int pType) {
     gTimers[gTimers_max_index].start_time = PDGetMicroseconds();
 }
 
-#endif //REC2_TIMERS_H
+#endif //CARPOCALYPSE2_TIMERS_H

@@ -1,5 +1,5 @@
-#ifndef REC2_ANGLES_H
-#define REC2_ANGLES_H
+#ifndef CARPOCALYPSE2_ANGLES_H
+#define CARPOCALYPSE2_ANGLES_H
 
 #include "c2_hooks.h"
 
@@ -42,4 +42,4 @@ br_quat* C2_HOOK_CDECL BrEulerToQuat(br_quat* q, const br_euler* euler);
 
 br_euler* C2_HOOK_CDECL BrQuatToEuler(br_euler* euler, const br_quat* q);
 
-#endif // REC2_ANGLES_H
+#endif // CARPOCALYPSE2_ANGLES_H

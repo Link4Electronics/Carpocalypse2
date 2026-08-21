@@ -32,7 +32,7 @@ void C2_HOOK_FASTCALL DoMainScreen(void) {
 void C2_HOOK_FASTCALL DoOptionsMenu(void) {
     tPlayer_status player_status;
 
-#ifdef REC2_FIX_BUGS
+#ifdef CARPOCALYPSE2_FIX_BUGS
     player_status = ePlayer_status_unknown;
 #endif
 

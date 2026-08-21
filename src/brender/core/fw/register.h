@@ -1,5 +1,5 @@
-#ifndef REC2_REGISTER_H
-#define REC2_REGISTER_H
+#ifndef CARPOCALYPSE2_REGISTER_H
+#define CARPOCALYPSE2_REGISTER_H
 
 #include "c2_hooks.h"
 
@@ -31,4 +31,4 @@ void* C2_HOOK_STDCALL BrRegistryAddStatic(br_registry* reg, br_registry_entry* b
 
 void* C2_HOOK_STDCALL BrRegistryRemoveStatic(br_registry* reg, void* item);
 
-#endif // REC2_REGISTER_H
+#endif // CARPOCALYPSE2_REGISTER_H

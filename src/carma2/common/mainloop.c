@@ -38,7 +38,7 @@
 #include "utility.h"
 #include "world.h"
 
-#include "rec2_macros.h"
+#include "carpocalypse2_macros.h"
 
 
 // GLOBAL: CARMA2_HW 0x0079efb0
@@ -189,13 +189,13 @@ void C2_HOOK_FASTCALL CalculateFrameRate(void) {
     new_time = PDGetTotalTime();
     if (new_time != last_time) {
         new_rate = 10000 / (new_time - last_time);
-        last_rates[REC2_ASIZE(last_rates) - 1] = new_rate;
+        last_rates[CARPOCALYPSE2_ASIZE(last_rates) - 1] = new_rate;
         gFrame_rate = new_rate;
-        for (i = 0; i < REC2_ASIZE(last_rates); i++) {
+        for (i = 0; i < CARPOCALYPSE2_ASIZE(last_rates); i++) {
             gFrame_rate += last_rates[i];
         }
-        gFrame_rate /= REC2_ASIZE(last_rates) + 1;
-        for (i = 0; i < REC2_ASIZE(last_rates) - 1; i++) {
+        gFrame_rate /= CARPOCALYPSE2_ASIZE(last_rates) + 1;
+        for (i = 0; i < CARPOCALYPSE2_ASIZE(last_rates) - 1; i++) {
             last_rates[i] = last_rates[i + 1];
         }
         last_time = new_time;
@@ -869,7 +869,7 @@ int C2_HOOK_FASTCALL MungeRaceFinished(void) {
                 completion_bonus = gCurrent_race.completion_bonus_field_0x3c[gProgram_state.skill_level];
                 break;
             default:
-                REC2_UNREACHABLE();
+                CARPOCALYPSE2_UNREACHABLE();
                 break;
             }
         }

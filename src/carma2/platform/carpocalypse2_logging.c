@@ -1,9 +1,9 @@
-#include "rec2_logging.h"
+#include "carpocalypse2_logging.h"
 
 #include <stdio.h>
 #include <stdarg.h>
 
-void C2_HOOK_CDECL rec2_log_warn(const char* fmt, ...) {
+void C2_HOOK_CDECL carpocalypse2_log_warn(const char* fmt, ...) {
     va_list va;
 
     va_start(va, fmt);

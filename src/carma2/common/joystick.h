@@ -1,9 +1,9 @@
-#ifndef REC2_JOYSTICK_H
-#define REC2_JOYSTICK_H
+#ifndef CARPOCALYPSE2_JOYSTICK_H
+#define CARPOCALYPSE2_JOYSTICK_H
 
 #include "c2_hooks.h"
 
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 
 extern float gForce_feedback_upper_limit;
 extern float Force_feedback_lower_limit;
@@ -53,4 +53,4 @@ void C2_HOOK_FASTCALL MungeJoystickHeadups(void);
 
 int C2_HOOK_FASTCALL HasCurrentJoystick(void);
 
-#endif /* REC2_JOYSTICK_H */
+#endif /* CARPOCALYPSE2_JOYSTICK_H */

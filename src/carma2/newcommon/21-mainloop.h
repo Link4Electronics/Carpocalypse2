@@ -2,7 +2,7 @@
 #define GUARD_21_MAINLOOP_H
 
 #include "c2_hooks.h"
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 
 extern int gCredits_per_second_time_bonus[3];  /* FIXME: rename to gPoints_per_second */
 extern int gAuto_increase_credits_dt[3];

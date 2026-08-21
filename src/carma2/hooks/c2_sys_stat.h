@@ -1,5 +1,5 @@
-#ifndef REC2_SYS_STAT_H_
-#define REC2_SYS_STAT_H_
+#ifndef CARPOCALYPSE2_SYS_STAT_H_
+#define CARPOCALYPSE2_SYS_STAT_H_
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -7,7 +7,7 @@
 #include <sys/stat.h>
 
 #ifdef _WIN32
-#ifdef REC2_MATCHING
+#ifdef CARPOCALYPSE2_MATCHING
 #define struct_c2_stat32 struct _stat
 #define c2_fstat32 _fstat
 #define c2_stat32 _stat
@@ -22,4 +22,4 @@
 #define c2_stat32 stat
 #endif
 
-#endif //REC2_SYS_STAT_H_
+#endif //CARPOCALYPSE2_SYS_STAT_H_

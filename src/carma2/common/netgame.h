@@ -1,7 +1,7 @@
-#ifndef REC2_NETGAME_H
-#define REC2_NETGAME_H
+#ifndef CARPOCALYPSE2_NETGAME_H
+#define CARPOCALYPSE2_NETGAME_H
 
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 
 #include "c2_hooks.h"
 
@@ -52,4 +52,4 @@ void C2_HOOK_FASTCALL DoNetScores2(int pOnly_sort_scores);
 
 void C2_HOOK_FASTCALL DoNetScores(void);
 
-#endif // REC2_NETGAME_H
+#endif // CARPOCALYPSE2_NETGAME_H

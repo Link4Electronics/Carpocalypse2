@@ -14,7 +14,7 @@
 #include "trig.h"
 #include "utility.h"
 
-#include "rec2_macros.h"
+#include "carpocalypse2_macros.h"
 
 #include "c2_string.h"
 
@@ -224,7 +224,7 @@ void C2_HOOK_FASTCALL LoadInShrapnel(void) {
 void C2_HOOK_FASTCALL InitShrapnel(void) {
     int i;
 
-    for (i = 0; i < REC2_ASIZE(gShrapnel); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gShrapnel); i++) {
         gShrapnel[i].actor = BrActorAllocate(BR_ACTOR_MODEL, NULL);
         gShrapnel[i].actor->parent = NULL;
         gShrapnel[i].actor->model = gShrapnel_model[i % 2];
@@ -254,18 +254,18 @@ void C2_HOOK_FASTCALL InitFlame(void) {
     gLollipop_model = BrModelAllocate("Lollipop", 4, 2);
     strcpy(name, "FLAMES.PIX");
     strcpy(gCurrent_load_directory, "COMMON");
-    if (LoadTextureTryAllLocations(name, gFlame_map, REC2_ASIZE(gFlame_map)) != REC2_ASIZE(gFlame_map)) {
+    if (LoadTextureTryAllLocations(name, gFlame_map, CARPOCALYPSE2_ASIZE(gFlame_map)) != CARPOCALYPSE2_ASIZE(gFlame_map)) {
         FatalError(kFatalError_CantLoadPixelmapFile_S, name);
     }
-    C2_HOOK_BUG_ON(REC2_ASIZE(gFlame_map) != 20);
-    BrMapAddMany(gFlame_map, REC2_ASIZE(gFlame_map));
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gFlame_map) != 20);
+    BrMapAddMany(gFlame_map, CARPOCALYPSE2_ASIZE(gFlame_map));
 
     C2_HOOK_BUG_ON(sizeof(tSmoke_column) != 124);
-    C2_HOOK_BUG_ON(REC2_ASIZE(gSmoke_column) != 10);
-    for (i = 0; i < REC2_ASIZE(gSmoke_column); i++) {
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gSmoke_column) != 10);
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gSmoke_column); i++) {
 
         gSmoke_column[i].flame_actor = BrActorAllocate(BR_ACTOR_NONE, NULL);
-        for (j = 0; j < REC2_ASIZE(gSmoke_column[i].frame_count); j++) {
+        for (j = 0; j < CARPOCALYPSE2_ASIZE(gSmoke_column[i].frame_count); j++) {
             actor = BrActorAllocate(BR_ACTOR_MODEL, NULL);
             material = BrMaterialAllocate(NULL);
             BrActorAdd(gSmoke_column[i].flame_actor, actor);
@@ -324,7 +324,7 @@ void C2_HOOK_FASTCALL InitSplash(FILE* pF) {
 #else
             strcpy(the_path, s);
 #endif
-            num_files = LoadTextureTryAllLocations(the_path, &splash_maps[gNum_splash_types], REC2_ASIZE(splash_maps));
+            num_files = LoadTextureTryAllLocations(the_path, &splash_maps[gNum_splash_types], CARPOCALYPSE2_ASIZE(splash_maps));
             if (num_files == 0) {
                 FatalError(kFatalError_CantLoadPixelmapFile_S, the_path);
             }
@@ -332,7 +332,7 @@ void C2_HOOK_FASTCALL InitSplash(FILE* pF) {
         }
     } else {
         strcpy(the_path, "SPLSHBLU.PIX");
-        gNum_splash_types = LoadTextureTryAllLocations(the_path, splash_maps, REC2_ASIZE(splash_maps));
+        gNum_splash_types = LoadTextureTryAllLocations(the_path, splash_maps, CARPOCALYPSE2_ASIZE(splash_maps));
     }
     BrMapAddMany(splash_maps, gNum_splash_types);
     for (i = 0; i < gNum_splash_types; i++) {
@@ -361,7 +361,7 @@ void C2_HOOK_FASTCALL InitSplash(FILE* pF) {
     gSplash_model->faces[0].smoothing = 1;
     gSplash_model->faces[1].smoothing = 1;
     BrModelAdd(gSplash_model);
-    for (i = 0; i < REC2_ASIZE(gSplash); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gSplash); i++) {
         gSplash[i].actor = BrActorAllocate(BR_ACTOR_MODEL, NULL);
         actor = gSplash[i].actor;
         actor->model = gSplash_model;
@@ -434,7 +434,7 @@ void C2_HOOK_FASTCALL MungeSplash(tU32 pTime) {
         if (gProgram_state.current_car.collision_info->water_d != 10000.f) {
             CreateSplash(gProgram_state.current_car.collision_info, pTime);
         }
-        for (i = 0; i < REC2_ASIZE(gReplay_splashes); i++) {
+        for (i = 0; i < CARPOCALYPSE2_ASIZE(gReplay_splashes); i++) {
             tReplay_splash *replay_splash = &gReplay_splashes[i];
 
             if (gReplay_splash_flags & (1 << i)) {
@@ -498,7 +498,7 @@ void C2_HOOK_FASTCALL MungeSplash(tU32 pTime) {
     if (gSplash_flags) {
         int i;
 
-        for (i = 0; i < REC2_ASIZE(gSplash); i++) {
+        for (i = 0; i < CARPOCALYPSE2_ASIZE(gSplash); i++) {
             tSplash *splash = &gSplash[i];
 
             if (!(gSplash_flags & (1 << i))) {
@@ -514,7 +514,7 @@ void C2_HOOK_FASTCALL MungeSplash(tU32 pTime) {
                 if (gProgram_state.cockpit_on) {
                     br_scalar ts;
 
-                    ts = sqrtf(REC2_SQR(gCamera_to_world.m[0][2]) + REC2_SQR(gCamera_to_world.m[0][0]));
+                    ts = sqrtf(CARPOCALYPSE2_SQR(gCamera_to_world.m[0][2]) + CARPOCALYPSE2_SQR(gCamera_to_world.m[0][0]));
                     DRMatrix34PreRotateZ(&splash->actor->t.t.mat, -FastScalarArcTan2Angle(gCamera_to_world.m[0][1], ts));
                 }
                 splash->just_done = 0;
@@ -532,7 +532,7 @@ void C2_HOOK_FASTCALL ReplayShrapnel(tU32 pTime) {
     int i;
     br_matrix34* mat;
 
-    for (i = 0; i < REC2_ASIZE(gShrapnel); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gShrapnel); i++) {
         mat = &gShrapnel[i].actor->t.t.mat;
         if (gShrapnel_flags & (1 << i)) {
             gShrapnel[i].age += (tU32)(ARGetReplayRate() * (float)pTime);
@@ -571,7 +571,7 @@ void C2_HOOK_FASTCALL MungeShrapnel(tU32 pTime) {
         int i;
 
         ARStartPipingSession(ePipe_chunk_shrapnel);
-        for (i = 0; i < REC2_ASIZE(gShrapnel); i++) {
+        for (i = 0; i < CARPOCALYPSE2_ASIZE(gShrapnel); i++) {
             br_matrix34* mat;
             br_scalar ts;
 
@@ -755,7 +755,7 @@ void C2_HOOK_FASTCALL BlendifyCar(tCar_spec* pCar_spec) {
 void C2_HOOK_FASTCALL StopCarSmokingInstantly(tCar_spec* pCar_spec) {
     int i;
 
-    for (i = 0; i < REC2_ASIZE(gSmoke_column); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gSmoke_column); i++) {
         if (gSmoke_column[i].core.car == pCar_spec) {
             gSmoke_column[i].lifetime = 0;
         }
@@ -794,7 +794,7 @@ void C2_HOOK_FASTCALL PipeInstantUnSmudge(tCar_spec* pCar_spec) {
                     if (model->flags & BR_MODF_UPDATEABLE) {
                         model->vertices[model->prepared->groups[group].vertex_user[v]].index = 0;
                     }
-                    if (n >= REC2_ASIZE(data)) {
+                    if (n >= CARPOCALYPSE2_ASIZE(data)) {
                         group = model->prepared->ngroups;
                         break;
                     }
@@ -820,7 +820,7 @@ void C2_HOOK_FASTCALL PipeInstantUnSmudge(tCar_spec* pCar_spec) {
                         if (b_model->flags & BR_MODF_UPDATEABLE) {
                             b_model->vertices[b_model->prepared->groups[group].vertex_user[v]].index = 0;
                         }
-                        if (n >= REC2_ASIZE(data)) {
+                        if (n >= CARPOCALYPSE2_ASIZE(data)) {
                             group = b_model->prepared->groups[group].nvertices;
                             break;
                         }
@@ -840,7 +840,7 @@ void C2_HOOK_FASTCALL PipeInstantUnSmudge(tCar_spec* pCar_spec) {
 void C2_HOOK_FASTCALL StopCarSmoking(tCar_spec* pCar) {
     int i;
 
-    for (i = 0; i < REC2_ASIZE(gSmoke_column); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gSmoke_column); i++) {
         if (gSmoke_column[i].core.car == pCar && gSmoke_column[i].lifetime > 2000) {
             gSmoke_column[i].lifetime = 2000;
         }
@@ -851,7 +851,7 @@ void C2_HOOK_FASTCALL StopCarSmoking(tCar_spec* pCar) {
 void C2_HOOK_FASTCALL StopObjectSmokingInstantly(tPhysics_object* pObject) {
     size_t i;
 
-    for (i = 0; i < REC2_ASIZE(gSmoke_column); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gSmoke_column); i++) {
 
         if (gSmoke_column[i].core.collision_info == pObject) {
             gSmoke_column[i].lifetime = 0;
@@ -943,7 +943,7 @@ void C2_HOOK_FASTCALL CreateSmokeColumn2(undefined4 pArg1, br_actor* pActor, tCa
 void C2_HOOK_FASTCALL ReplaySmokeColumn(tU32 pTime) {
     int i;
 
-    for (i = 0; i < REC2_ASIZE(gSmoke_column); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gSmoke_column); i++) {
         if (gColumn_flags & (1 << i)) {
             br_vector3 dummy;
 
@@ -968,7 +968,7 @@ void C2_HOOK_FASTCALL MungeSmokeColumn(tU32 pTime) {
     }
 
     gPHIL_mechanics_time_sync = 1;
-    for (i = 0; i < REC2_ASIZE(gSmoke_column); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gSmoke_column); i++) {
         if (!(gColumn_flags & (1 << i))) {
             continue;
         }
@@ -997,7 +997,7 @@ void C2_HOOK_FASTCALL MungeSmokeColumn(tU32 pTime) {
                         if (c->knackered) {
                             int plane;
 
-                            plane = IRandomBetween(0, REC2_ASIZE(gSmoke_column[i].core.car->fire_vertex) - 1);
+                            plane = IRandomBetween(0, CARPOCALYPSE2_ASIZE(gSmoke_column[i].core.car->fire_vertex) - 1);
                             SmudgeCar(c, gSmoke_column[i].core.car->fire_vertex[plane]);
                         }
                     }
@@ -1188,7 +1188,7 @@ void C2_HOOK_FASTCALL ReplaySparks(br_pixelmap* pRender_screen, br_pixelmap* pDe
     br_vector3 tv;
     br_vector3 new_pos;
 
-    for (i = 0; i < REC2_ASIZE(gSparks); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gSparks); i++) {
         if (gSpark_flags & (1 << i)) {
             if (gSparks[i].car != NULL) {
 #ifdef __GNUC__
@@ -1270,7 +1270,7 @@ void C2_HOOK_FASTCALL RenderSparks(br_pixelmap* pRender_screen, br_pixelmap* pDe
         return;
     }
     ARStartPipingSession(ePipe_chunk_spark);
-    for (i = 0; i < REC2_ASIZE(gSparks); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gSparks); i++) {
         if (!((1u << i) & gSpark_flags)) {
             continue;
         }
@@ -1435,7 +1435,7 @@ void C2_HOOK_FASTCALL DrawTheGlow(br_pixelmap* pRender_screen, br_pixelmap* pDep
     if (gColumn_flags != 0) {
         seed = rand();
         srand(GetTotalTime());
-        for (i = 0; i < REC2_ASIZE(gSmoke_column); i++) {
+        for (i = 0; i < CARPOCALYPSE2_ASIZE(gSmoke_column); i++) {
             if (((1u << i) & gColumn_flags) != 0 && gSmoke_column[i].colour <= 1) {
                 strength = 0.5f;
                 if (gSmoke_column[i].lifetime < 4000) {
@@ -1453,7 +1453,7 @@ void C2_HOOK_FASTCALL ReplaySmoke(br_pixelmap* pRender_screen, br_pixelmap* pDep
     br_scalar aspect;
     int i;
 
-    for (i = 0; i < REC2_ASIZE(gSmoke); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gSmoke); i++) {
         if (gSmoke_flags & (1u << i)) {
             aspect = 1.f + (gSmoke[i].radius - .05f) * 4.f / 2.f;
             if (gSmoke[i].type & 0x10) {
@@ -1512,7 +1512,7 @@ void C2_HOOK_FASTCALL RenderSmoke(br_pixelmap* pRender_screen, br_pixelmap* pDep
         return;
     }
     ARStartPipingSession(ePipe_chunk_smoke);
-    for (i = 0; i < REC2_ASIZE(gSmoke); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gSmoke); i++) {
         if (gSmoke_flags & (1u << i)) {
             if (gSmoke[i].strength > 0.0) {
                 if (gSmoke[i].time_sync != 0) {
@@ -1527,16 +1527,16 @@ void C2_HOOK_FASTCALL RenderSmoke(br_pixelmap* pRender_screen, br_pixelmap* pDep
             }
         }
     }
-    for (i = 0; i < REC2_ASIZE(gSmoke); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gSmoke); i++) {
         if (gSmoke_flags & (1u << i)) {
             if ((gSmoke[i].type & 0xf) == 7) {
                 not_lonely |= 1u << i;
             } else if (!(not_lonely & (1u << i))) {
-                for (j = i + 1; j < REC2_ASIZE(gSmoke); j++) {
+                for (j = i + 1; j < CARPOCALYPSE2_ASIZE(gSmoke); j++) {
                     if ((gSmoke_flags & (1u << j))) {
                         BrVector3Sub(&tv, &gSmoke[i].pos, &gSmoke[i].pos);
                         ts = BrVector3LengthSquared(&tv);
-                        if (REC2_SQR(gSmoke[i].radius + gSmoke[j].radius) > ts) {
+                        if (CARPOCALYPSE2_SQR(gSmoke[i].radius + gSmoke[j].radius) > ts) {
                             not_lonely |= (1u << j) | (1u << i);
                             break;
                         }

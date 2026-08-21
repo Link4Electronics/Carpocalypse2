@@ -42,7 +42,7 @@
 #include "globvrpb.h"
 #include "platform.h"
 
-#include "rec2_macros.h"
+#include "carpocalypse2_macros.h"
 
 #include <string.h>
 #include <time.h>
@@ -761,7 +761,7 @@ void C2_HOOK_FASTCALL InitGameAccordingToSkillLevel(void) {
     gProgram_state.rank = gInitial_rank;
     gProgram_state.credits_per_rank = gCredits_per_rank[gProgram_state.skill_level];
     gProgram_state.credits = gStarting_money[gProgram_state.skill_level];
-    for (i = 0; i < (int)REC2_ASIZE(gInitial_APO); i++) {
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gInitial_APO); i++) {
         gCurrent_APO_levels[i] = gNet_mode == eNet_mode_none ? gInitial_APO[i].initial[gProgram_state.skill_level] : gInitial_APO[i].initial_network[gCurrent_net_game->type];
         gCurrent_APO_potential_levels[i] = gNet_mode == eNet_mode_none ? gInitial_APO_potential[i].initial[gProgram_state.skill_level] : gInitial_APO_potential[i].initial_network[gCurrent_net_game->type];
     }

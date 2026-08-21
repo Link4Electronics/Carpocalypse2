@@ -6,7 +6,7 @@
 
 #include "c2_string.h"
 
-#include "rec2_macros.h"
+#include "carpocalypse2_macros.h"
 
 // GLOBAL: CARMA2_HW 0x00761b80
 tSpecial_volume gDefault_default_water_spec_vol;
@@ -64,7 +64,7 @@ void C2_HOOK_FASTCALL ParseSpecialVolume(FILE* pF, tSpecial_volume* pSpec, char*
     /* material index */
     pSpec->material_modifier_index = GetAnInt(pF);
     if (soundfx) {
-        pSpec->soundfx_type = GetALineAndInterpretCommand(pF, gSoundType_choices, REC2_ASIZE(gSoundType_choices));
+        pSpec->soundfx_type = GetALineAndInterpretCommand(pF, gSoundType_choices, CARPOCALYPSE2_ASIZE(gSoundType_choices));
         if (pSpec->soundfx_type != kSoundFx_None) {
             ReadSoundSpec(pF, &pSpec->soundfx_data);
         }

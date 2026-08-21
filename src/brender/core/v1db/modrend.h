@@ -1,5 +1,5 @@
-#ifndef REC2_MODREND_H
-#define REC2_MODREND_H
+#ifndef CARPOCALYPSE2_MODREND_H
+#define CARPOCALYPSE2_MODREND_H
 
 #include "c2_hooks.h"
 
@@ -23,4 +23,4 @@ void C2_HOOK_STDCALL boundingBoxRenderEdges(br_actor* actor, br_model* model, br
 
 void C2_HOOK_STDCALL boundingBoxRenderFaces(br_actor* actor, br_model* model, br_material* material, void* render_data, br_uint_8 style, int on_screen);
 
-#endif // REC2_MODREND_H
+#endif // CARPOCALYPSE2_MODREND_H

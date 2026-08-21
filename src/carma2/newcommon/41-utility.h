@@ -3,7 +3,7 @@
 
 #include "brender/br_types.h"
 #include "c2_hooks.h"
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 
 extern char* gMisc_strings[300];
 

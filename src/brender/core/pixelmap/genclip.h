@@ -1,5 +1,5 @@
-#ifndef REC2_GENCLIP_H
-#define REC2_GENCLIP_H
+#ifndef CARPOCALYPSE2_GENCLIP_H
+#define CARPOCALYPSE2_GENCLIP_H
 
 #include "c2_hooks.h"
 
@@ -15,4 +15,4 @@ br_clip_result C2_HOOK_CDECL PixelmapRectangleClipTwo(br_rectangle* r_out, br_po
 
 br_clip_result C2_HOOK_CDECL PixelmapCopyBitsClip(br_rectangle* r_out, br_point* p_out, br_rectangle* r_in, br_point* p_in, br_pixelmap* pm);
 
-#endif // REC2_GENCLIP_H
+#endif // CARPOCALYPSE2_GENCLIP_H

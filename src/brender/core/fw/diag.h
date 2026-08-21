@@ -1,5 +1,5 @@
-#ifndef REC2_DIAG_H
-#define REC2_DIAG_H
+#ifndef CARPOCALYPSE2_DIAG_H
+#define CARPOCALYPSE2_DIAG_H
 
 #include "c2_hooks.h"
 
@@ -13,4 +13,4 @@ extern void C2_HOOK_CDECL _BrAssert(const char* condition, const char* file, uns
 
 extern void C2_HOOK_CDECL _BrUAssert(const char* condition, const char* file, unsigned int line);
 
-#endif // REC2_DIAG_H
+#endif // CARPOCALYPSE2_DIAG_H

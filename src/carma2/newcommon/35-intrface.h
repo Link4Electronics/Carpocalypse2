@@ -2,7 +2,7 @@
 #define GUARD_35_INTRFACE_H
 
 #include "c2_hooks.h"
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 
 extern int gMouse_in_use;
 

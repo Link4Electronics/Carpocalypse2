@@ -2,7 +2,7 @@
 
 #include "08-loading1.h"
 #include "platform.h"
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 
 #include <stdarg.h>
 #include <stdio.h>
@@ -206,7 +206,7 @@ void C2_NORETURN C2_HOOK_CDECL FatalError(int pStr_index, ...) {
     char temp_str[1024];
     char* sub_pt;
     int sub_int;
-#ifdef REC2_FIX_BUGS
+#ifdef CARPOCALYPSE2_FIX_BUGS
     char int_str[32];
 #endif
     va_list ap;
@@ -226,7 +226,7 @@ void C2_NORETURN C2_HOOK_CDECL FatalError(int pStr_index, ...) {
         strcat(the_str, temp_str);
     }
 
-#ifdef REC2_FIX_BUGS
+#ifdef CARPOCALYPSE2_FIX_BUGS
     sub_str = int_str;
 #endif
     while ((sub_pt = strchr(the_str, '@')) != NULL) {
@@ -250,7 +250,7 @@ void C2_HOOK_FASTCALL CloseDiagnostics(void) {
 
 // FUNCTION: CARMA2_HW 0x0044c580
 void C2_HOOK_FASTCALL OpenDiagnostics(void) {
-#ifndef REC2_MATCHING
+#ifndef CARPOCALYPSE2_MATCHING
     // FIXME: use c2_stdio functions
     //    gDiagnostic_file = fopen("DIAGNOST.TXT", "w");
     gDiagnostic_file = fopen("DIAGNOST.TXT", "w");
@@ -270,7 +270,7 @@ void C2_HOOK_CDECL dr_dprintf(const char* fmt_string, ...) {
     va_list args;
     tU32 the_time;
 
-#ifndef REC2_MATCHING
+#ifndef CARPOCALYPSE2_MATCHING
     if (gDiagnostic_file == NULL) {
         OpenDiagnostics();
     }

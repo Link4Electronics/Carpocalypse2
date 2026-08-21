@@ -1,5 +1,5 @@
-#ifndef REC2_PMGEN_H
-#define REC2_PMGEN_H
+#ifndef CARPOCALYPSE2_PMGEN_H
+#define CARPOCALYPSE2_PMGEN_H
 
 #include "brender/br_types.h"
 
@@ -47,4 +47,4 @@ br_error C2_HOOK_CDECL _M_br_device_pixelmap_gen_directLock(br_device_pixelmap* 
 
 br_error C2_HOOK_CDECL _M_br_device_pixelmap_gen_directUnlock(br_device_pixelmap* self);
 
-#endif //REC2_PMGEN
+#endif //CARPOCALYPSE2_PMGEN

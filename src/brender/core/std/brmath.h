@@ -1,5 +1,5 @@
-#ifndef REC2_BRMATH_H
-#define REC2_BRMATH_H
+#ifndef CARPOCALYPSE2_BRMATH_H
+#define CARPOCALYPSE2_BRMATH_H
 
 #include "c2_hooks.h"
 
@@ -15,4 +15,4 @@ float C2_HOOK_CDECL BrFloatPow(float a, float b);
 
 float C2_HOOK_CDECL BrFloatAtan2(float x, float y);
 
-#endif // REC2_BRMATH_H
+#endif // CARPOCALYPSE2_BRMATH_H

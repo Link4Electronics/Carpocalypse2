@@ -59,7 +59,7 @@ target_compile_definitions(brender_driver_d3d
 )
 set_property(TARGET brender_driver_d3d PROPERTY PREFIX "")
 
-if(REC2_MATCHING)
+if(CARPOCALYPSE2_MATCHING)
     set_property(TARGET brender_driver_d3d PROPERTY OUTPUT_NAME "d3d")
     set_property(TARGET brender_driver_d3d PROPERTY SUFFIX ".bdd")
 

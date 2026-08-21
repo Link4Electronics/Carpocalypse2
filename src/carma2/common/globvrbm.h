@@ -1,5 +1,5 @@
-#ifndef REC2_GLOBVRBM_H
-#define REC2_GLOBVRBM_H
+#ifndef CARPOCALYPSE2_GLOBVRBM_H
+#define CARPOCALYPSE2_GLOBVRBM_H
 
 #include "c2_hooks.h"
 
@@ -130,4 +130,4 @@ extern int gOffence_dim_h;
 extern int gOffence_dim_x;
 extern int gOffence_dim_y;
 
-#endif //REC2_GLOBVRBM_H
+#endif //CARPOCALYPSE2_GLOBVRBM_H

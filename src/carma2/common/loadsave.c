@@ -6,7 +6,7 @@
 #include "platform.h"
 #include "utility.h"
 
-#include "rec2_macros.h"
+#include "carpocalypse2_macros.h"
 
 #include "c2_string.h"
 
@@ -45,7 +45,7 @@ void C2_HOOK_FASTCALL MaybeRestoreSavedGame(void) {
 int C2_HOOK_FASTCALL DoLoadGame2(tSave_game* pSave_game) {
     int i;
 
-    C2_HOOK_BUG_ON(REC2_ASIZE(gProgram_state.cars_available) != 60);
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gProgram_state.cars_available) != 60);
 
     if (pSave_game->magic != 0x12345678) {
         return 0;
@@ -63,7 +63,7 @@ int C2_HOOK_FASTCALL DoLoadGame2(tSave_game* pSave_game) {
     }
     gProgram_state.number_of_cars = pSave_game->number_of_cars;
     gProgram_state.current_car_index = pSave_game->current_car_index;
-    for (i = 0; i < REC2_ASIZE(gProgram_state.cars_available); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gProgram_state.cars_available); i++) {
         gProgram_state.cars_available[i] = pSave_game->cars[i];
     }
     for (i = 0; i < 3; i++) {
@@ -181,7 +181,7 @@ int C2_HOOK_FASTCALL DoLoadGame(int pIndex) {
 void C2_HOOK_FASTCALL MakeSavedGame(tSave_game* pSave_game) {
     int i;
 
-    C2_HOOK_BUG_ON(REC2_ASIZE(gProgram_state.cars_available) != 60);
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gProgram_state.cars_available) != 60);
 
     pSave_game->magic = 0x12345678;
     pSave_game->skill_level = gProgram_state.skill_level;
@@ -198,7 +198,7 @@ void C2_HOOK_FASTCALL MakeSavedGame(tSave_game* pSave_game) {
     }
     pSave_game->number_of_cars = gProgram_state.number_of_cars;
     pSave_game->current_car_index = gProgram_state.current_car_index;
-    for (i = 0; i < REC2_ASIZE(gProgram_state.cars_available); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gProgram_state.cars_available); i++) {
         pSave_game->cars[i] = gProgram_state.cars_available[i];
     }
     for (i = 0; i < 3; i++) {

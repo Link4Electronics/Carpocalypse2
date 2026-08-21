@@ -2,8 +2,8 @@
 
 #include "41-utility.h"
 #include "globvars.h"
-#include "rec2_types.h"
-#include "rec2_macros.h"
+#include "carpocalypse2_types.h"
+#include "carpocalypse2_macros.h"
 
 // GLOBAL: CARMA2_HW 0x006a55c8
 tExplosion gExplosions[50];
@@ -14,7 +14,7 @@ void C2_HOOK_FASTCALL InitExplosions(void) {
     int capacity;
     tExplosion* explosion;
 
-    capacity = (int)REC2_ASIZE(gExplosions);
+    capacity = (int)CARPOCALYPSE2_ASIZE(gExplosions);
     for (i = 0, explosion = gExplosions; i < capacity; explosion++, i++) {
 
         explosion->actor = BrActorAllocate(BR_ACTOR_MODEL, NULL);

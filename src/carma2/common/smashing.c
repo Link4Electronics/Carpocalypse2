@@ -18,7 +18,7 @@
 
 #include "c2_string.h"
 
-#include "rec2_macros.h"
+#include "carpocalypse2_macros.h"
 
 
 // GLOBAL: CARMA2_HW 0x006b78e0
@@ -72,9 +72,9 @@ int gINT_006a3334;
 void C2_HOOK_FASTCALL InitGlassFragments(void) {
     int i;
 
-    C2_HOOK_BUG_ON(REC2_ASIZE(gSmash_glass_fragments) != 200);
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gSmash_glass_fragments) != 200);
 
-    for (i = 0; i < REC2_ASIZE(gSmash_glass_fragments); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gSmash_glass_fragments); i++) {
         tSmash_vertex *smash_vertex;
 
         smash_vertex = &gSmash_glass_fragments[i];
@@ -94,9 +94,9 @@ void C2_HOOK_FASTCALL InitGlassFragments(void) {
 void C2_HOOK_FASTCALL InitDecals(void) {
     int i;
 
-    C2_HOOK_BUG_ON(REC2_ASIZE(gDecals) != 50);
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gDecals) != 50);
 
-    for (i = 0; i < REC2_ASIZE(gDecals); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gDecals); i++) {
         tDecal *smash_quad;
 
         smash_quad = &gDecals[i];
@@ -126,14 +126,14 @@ void C2_HOOK_FASTCALL InitSmashing(void) {
 void C2_HOOK_FASTCALL ReadSmashableInitialPosition(FILE* pFile, tSmashable_initial_position_spec*  pInitial_pos) {
 
     /* Initial position type */
-    pInitial_pos->type = GetALineAndInterpretCommand(pFile, gInitial_smashable_position_type_names, REC2_ASIZE(gInitial_smashable_position_type_names));
+    pInitial_pos->type = GetALineAndInterpretCommand(pFile, gInitial_smashable_position_type_names, CARPOCALYPSE2_ASIZE(gInitial_smashable_position_type_names));
 
     switch (pInitial_pos->type) {
         case kInitialSmashablePosition_SphereClumped:
             /* Sphere radius */
             pInitial_pos->position.sphere.radius = GetAScalar(pFile);
             /* Sphere centre */
-            pInitial_pos->position.sphere.where = GetALineAndInterpretCommand(pFile, gInitial_position_sphere_where, REC2_ASIZE(gInitial_position_sphere_where));
+            pInitial_pos->position.sphere.where = GetALineAndInterpretCommand(pFile, gInitial_position_sphere_where, CARPOCALYPSE2_ASIZE(gInitial_position_sphere_where));
             break;
         case kInitialSmashablePosition_BoxClumped:
             GetThreeFloats(pFile, &pInitial_pos->position.box.v[0], &pInitial_pos->position.box.v[1], &pInitial_pos->position.box.v[2]);
@@ -183,7 +183,7 @@ void C2_HOOK_FASTCALL InitSmashTargets(void) {
 void C2_HOOK_FASTCALL AddSmashableRaceTarget(br_model* pModel, br_actor* pActor, int pUnknown) {
 
     C2_HOOK_BUG_ON(sizeof(tSmashable_race_target) != 12);
-    if (gCount_smashable_race_targets < REC2_ASIZE(gSmashable_race_targets)) {
+    if (gCount_smashable_race_targets < CARPOCALYPSE2_ASIZE(gSmashable_race_targets)) {
         gSmashable_race_targets[gCount_smashable_race_targets].model = pModel;
         gSmashable_race_targets[gCount_smashable_race_targets].actor = pActor;
         gSmashable_race_targets[gCount_smashable_race_targets].field_0x8 = pUnknown;
@@ -253,7 +253,7 @@ void C2_HOOK_FASTCALL DoFragMovement(tSmash_vertex* pFragment, tU32  pTime, floa
     if (f_dt != 0.f && !pFragment->field_0x34) {
 
         pFragment->actor->t.t.translate.t.v[0] += pFragment->v.v[0] * f_dt / WORLD_SCALE;
-        pFragment->actor->t.t.translate.t.v[1] += (pFragment->v.v[1] * f_dt - 9.8f / 2.f * gGravity_multiplier * REC2_SQR(f_dt)) / WORLD_SCALE;
+        pFragment->actor->t.t.translate.t.v[1] += (pFragment->v.v[1] * f_dt - 9.8f / 2.f * gGravity_multiplier * CARPOCALYPSE2_SQR(f_dt)) / WORLD_SCALE;
         pFragment->actor->t.t.translate.t.v[2] += pFragment->v.v[2] * f_dt / WORLD_SCALE;
         pFragment->v.v[1] -= f_dt * gGravity_multiplier / WORLD_SCALE;
         omega = BrVector3Length(&pFragment->omega);
@@ -290,13 +290,13 @@ void C2_HOOK_FASTCALL MungeGlassFragments2(int pEnd_race) {
     int i;
     int j;
 
-    C2_HOOK_BUG_ON(REC2_ASIZE(gSmash_glass_fragments) != 200);
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gSmash_glass_fragments) != 200);
     C2_HOOK_BUG_ON(sizeof(tSmash_vertex) != 0x38);
 
     the_time = GetTotalTime();
     if (prev_glass_munge != 0) {
         f_prev_glass_munge = (float)prev_glass_munge;
-        for (i = 0; i < REC2_ASIZE(gSmash_glass_fragments); i++) {
+        for (i = 0; i < CARPOCALYPSE2_ASIZE(gSmash_glass_fragments); i++) {
             fragment = &gSmash_glass_fragments[i];
             if (fragment->end_time != 0) {
                 if (!pEnd_race && (the_time < fragment->end_time || (gAction_replay_mode && ARGetReplayRate() <= 0.f)) && the_time >= fragment->field_0xc) {
@@ -317,7 +317,7 @@ void C2_HOOK_FASTCALL MungeGlassFragments2(int pEnd_race) {
                             PipeSingleBloodSpurt(field_0x18, fragment->time_last_move, 0, NULL, NULL, NULL);
                         }
                     }
-                    for (j = 0; j < REC2_ASIZE(gSmash_glass_fragments); j++) {
+                    for (j = 0; j < CARPOCALYPSE2_ASIZE(gSmash_glass_fragments); j++) {
                         if (gSmash_glass_fragments[j].end_time != 0 &&
                                 gSmash_glass_fragments[j].field_0x18 == field_0x18) {
                             KillFragment(fragment);
@@ -336,7 +336,7 @@ void C2_HOOK_FASTCALL MungeAnimationRepairs(void) {
     int i;
 
     the_time = GetTotalTime();
-    for (i = 0; i < REC2_ASIZE(gRepair_animations); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gRepair_animations); i++) {
         animation = &gRepair_animations[i];
         if (animation->field_0x0 != NULL && the_time - animation->field_0x4 >= 150) {
             NOT_IMPLEMENTED();
@@ -431,7 +431,7 @@ void C2_HOOK_FASTCALL DoDelayedNonCar(tU32 pTime, tDelayed_non_car* pDelayed_non
                     br_vector3 speed;
                     br_vector3 omega;
 
-#ifdef REC2_FIX_BUGS
+#ifdef CARPOCALYPSE2_FIX_BUGS
                     BrVector3Set(&speed, 0.f, 0.f, 0.f);
                     BrVector3Set(&omega, 0.f, 0.f, 0.f);
 #endif
@@ -482,13 +482,13 @@ void C2_HOOK_FASTCALL MungeDelayedSideEffects(void) {
     int i;
     tU32 the_time;
 
-#ifndef REC2_MATCHING
+#ifndef CARPOCALYPSE2_MATCHING
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tSmash_explosion, what.non_car, 0x8);
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tSmash_explosion, what.non_car.count_actions, 0x24);
 #endif
 
     the_time = PDGetTotalTime();
-    for (i = 0; i < REC2_ASIZE(gSmash_explosions); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gSmash_explosions); i++) {
         tSmash_explosion* delayed_effect = &gSmash_explosions[i];
 
         if (delayed_effect->active) {

@@ -1,5 +1,5 @@
-#ifndef REC2_IMAGE_H
-#define REC2_IMAGE_H
+#ifndef CARPOCALYPSE2_IMAGE_H
+#define CARPOCALYPSE2_IMAGE_H
 
 #include "c2_hooks.h"
 
@@ -27,4 +27,4 @@ void C2_HOOK_CDECL BrImageFree(br_image* image);
 
 void C2_HOOK_CDECL _BrImageFree(void* res, br_uint_8 res_class, br_size_t size);
 
-#endif // REC2_IMAGE_H
+#endif // CARPOCALYPSE2_IMAGE_H

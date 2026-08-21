@@ -44,7 +44,7 @@
 
 #define BrDegreeToRadian(d) ((br_scalar)((d) * (PI / 180.0)))
 
-#ifdef REC2_MATCHING
+#ifdef CARPOCALYPSE2_MATCHING
 #define BrDegreeToAngle(d) ((br_angle)(long)((d) * (65536.0 / 360.0))) // "d * 182.044444444"
 #else
 #define BrDegreeToAngle(d) ((br_angle)(long)((d) * (65536.0f / 360.0f))) // "d * 182.044444444"

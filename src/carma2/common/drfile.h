@@ -1,5 +1,5 @@
-#ifndef REC2_DRFILE_H
-#define REC2_DRFILE_H
+#ifndef CARPOCALYPSE2_DRFILE_H
+#define CARPOCALYPSE2_DRFILE_H
 
 #include "c2_hooks.h"
 
@@ -28,4 +28,4 @@ void C2_HOOK_CDECL DRStdioAdvance(br_size_t count, void *f);
 
 void C2_HOOK_FASTCALL InstallDRFileCalls(void);
 
-#endif // REC2_DRFILE_H
+#endif // CARPOCALYPSE2_DRFILE_H

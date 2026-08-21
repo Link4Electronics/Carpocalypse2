@@ -5,8 +5,8 @@
 #include "52-errors.h"
 #include "70-packfile.h"
 #include "globvars.h"
-#include "rec2_macros.h"
-#include "rec2_types.h"
+#include "carpocalypse2_macros.h"
+#include "carpocalypse2_types.h"
 
 #include "c2_string.h"
 
@@ -33,7 +33,7 @@ void C2_HOOK_FASTCALL IString_Load(void) {
         FatalError(kFatalError_CannotOpenTEXT_TXT);
     }
     gCount_interface_strings = 0;
-    for (i = 0; i < (int)REC2_ASIZE(gInterface_strings); i++) {
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gInterface_strings); i++) {
         if (PFfeof(f)) {
             break;
         }

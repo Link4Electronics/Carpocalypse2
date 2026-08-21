@@ -1,5 +1,5 @@
-#ifndef REC2_QUAT_H
-#define REC2_QUAT_H
+#ifndef CARPOCALYPSE2_QUAT_H
+#define CARPOCALYPSE2_QUAT_H
 
 #include "c2_hooks.h"
 
@@ -21,4 +21,4 @@ br_matrix4* C2_HOOK_CDECL BrQuatToMatrix4(br_matrix4* mat, const br_quat* q);
 
 br_quat* C2_HOOK_CDECL BrMatrix4ToQuat(br_quat* q, const br_matrix4* mat);
 
-#endif // REC2_QUAT_H
+#endif // CARPOCALYPSE2_QUAT_H

@@ -7,7 +7,7 @@
 #include "globvars.h"
 #include "globvrpb.h"
 
-#include "rec2_macros.h"
+#include "carpocalypse2_macros.h"
 
 #include <stdlib.h>
 

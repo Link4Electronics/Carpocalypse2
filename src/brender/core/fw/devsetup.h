@@ -1,5 +1,5 @@
-#ifndef REC2_DEVSETUP_H
-#define REC2_DEVSETUP_H
+#ifndef CARPOCALYPSE2_DEVSETUP_H
+#define CARPOCALYPSE2_DEVSETUP_H
 
 #include <brender/brender.h>
 
@@ -29,4 +29,4 @@ extern br_error C2_HOOK_CDECL BrPrimitiveLibraryFind(br_primitive_library** ppl,
 
 extern br_error C2_HOOK_CDECL BrGeometryFormatFind(br_geometry** pgf, br_renderer* renderer, br_renderer_facility* renderer_facility, br_token scalar_type, br_token format_type);
 
-#endif //REC2_DEVSETUP_H
+#endif //CARPOCALYPSE2_DEVSETUP_H

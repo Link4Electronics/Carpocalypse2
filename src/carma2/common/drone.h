@@ -1,7 +1,7 @@
-#ifndef REC2_DRONE_H
-#define REC2_DRONE_H
+#ifndef CARPOCALYPSE2_DRONE_H
+#define CARPOCALYPSE2_DRONE_H
 
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 
 #include "c2_hooks.h"
 
@@ -135,4 +135,4 @@ void C2_HOOK_FASTCALL StartRenderingThisDrone(tDrone_spec* pDrone);
 
 br_vector3* C2_HOOK_FASTCALL GetCurrentViewDroneDirection(void);
 
-#endif //REC2_DRONE_H
+#endif //CARPOCALYPSE2_DRONE_H

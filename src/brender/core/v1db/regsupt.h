@@ -1,5 +1,5 @@
-#ifndef REC2_REGSUPT_H
-#define REC2_REGSUPT_H
+#ifndef CARPOCALYPSE2_REGSUPT_H
+#define CARPOCALYPSE2_REGSUPT_H
 
 #include "c2_hooks.h"
 
@@ -77,4 +77,4 @@ br_uint_32 C2_HOOK_CDECL BrTableCount(const char* pattern);
 
 br_uint_32 C2_HOOK_CDECL BrTableEnum(const char* pattern, br_table_enum_cbfn* callback, void* arg);
 
-#endif // REC2_REGSUPT_H
+#endif // CARPOCALYPSE2_REGSUPT_H

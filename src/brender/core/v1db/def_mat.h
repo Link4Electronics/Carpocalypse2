@@ -1,5 +1,5 @@
-#ifndef REC2_DEF_MAT_H
-#define REC2_DEF_MAT_H
+#ifndef CARPOCALYPSE2_DEF_MAT_H
+#define CARPOCALYPSE2_DEF_MAT_H
 
 #include "c2_hooks.h"
 
@@ -7,4 +7,4 @@
 
 br_material* C2_HOOK_CDECL SetupDefaultMaterial(void);
 
-#endif // REC2_DEF_MAT_H
+#endif // CARPOCALYPSE2_DEF_MAT_H

@@ -1,5 +1,5 @@
-#ifndef REC2_STDDIAG_H
-#define REC2_STDDIAG_H
+#ifndef CARPOCALYPSE2_STDDIAG_H
+#define CARPOCALYPSE2_STDDIAG_H
 
 #include "c2_hooks.h"
 
@@ -12,4 +12,4 @@ void C2_HOOK_CDECL BrStdioWarning(char* message);
 
 void C2_HOOK_CDECL BrStdioFailure(char* message);
 
-#endif // REC2_STDDIAG_H
+#endif // CARPOCALYPSE2_STDDIAG_H

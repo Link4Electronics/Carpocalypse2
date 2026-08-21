@@ -1,5 +1,5 @@
-#ifndef REC2_PREPMAP_H
-#define REC2_PREPMAP_H
+#ifndef CARPOCALYPSE2_PREPMAP_H
+#define CARPOCALYPSE2_PREPMAP_H
 
 #include "c2_hooks.h"
 
@@ -11,4 +11,4 @@ void C2_HOOK_STDCALL BrBufferUpdate(br_pixelmap* pm, br_token use, br_uint_16 fl
 
 void C2_HOOK_STDCALL BrBufferClear(br_pixelmap* pm);
 
-#endif // REC2_PREPMAP_H
+#endif // CARPOCALYPSE2_PREPMAP_H

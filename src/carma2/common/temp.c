@@ -4,8 +4,8 @@
 #include "52-errors.h"
 #include "graphics.h"
 
-#include "rec2_macros.h"
-#include "rec2_types.h"
+#include "carpocalypse2_macros.h"
+#include "carpocalypse2_types.h"
 
 
 // GLOBAL: CARMA2_HW 0x006a6d38
@@ -30,7 +30,7 @@ br_material* C2_HOOK_FASTCALL LoadTemporaryMaterial(const char* pName) {
     if (material == NULL) {
         FatalError(kFatalError_CannotFindSmashMaterial_S, pName);
     }
-    if (gMaterials_to_adapt_count < REC2_ASIZE(gMaterials_to_adapt)) {
+    if (gMaterials_to_adapt_count < CARPOCALYPSE2_ASIZE(gMaterials_to_adapt)) {
         gMaterials_to_adapt[gMaterials_to_adapt_count] = material;
         gMaterials_to_adapt_count++;
     }
@@ -40,7 +40,7 @@ br_material* C2_HOOK_FASTCALL LoadTemporaryMaterial(const char* pName) {
 // FUNCTION: CARMA2_HW 0x004ea820
 void C2_HOOK_FASTCALL TemporaryMaterialStore(br_material* pMaterial) {
 
-    if (gMaterials_to_adapt_count < REC2_ASIZE(gMaterials_to_adapt)) {
+    if (gMaterials_to_adapt_count < CARPOCALYPSE2_ASIZE(gMaterials_to_adapt)) {
         gMaterials_to_adapt[gMaterials_to_adapt_count] = pMaterial;
         gMaterials_to_adapt_count += 1;
     }

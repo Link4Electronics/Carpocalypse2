@@ -19,6 +19,9 @@ permissions:
 env:
   RECCMP_TARGET: CARMA2_HW
   RECCMP_SYMBOL_COUNT: 5162 # FIXME: remove once reccmp supports symbol count in reccmp-project.yml
+  # Base URL hosting the original binaries encoded as text files
+  # (decoded via `.github/binendec.py`); set as a repository variable.
+  ORIGINALS_TEXT_URL: ${{ vars.ORIGINALS_TEXT_URL }}
 
 jobs:
   report:
@@ -27,8 +30,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
-        with:
-          submodules: recursive
 
       - name: Fetch MSVC11 (Visual C++ 97 SP3)
         uses: actions/checkout@v6
@@ -60,15 +61,19 @@ jobs:
       - name: Download original binaries
         shell: sh
         run: |
+          if [ -z "$ORIGINALS_TEXT_URL" ]; then
+            echo "::error::ORIGINALS_TEXT_URL repository variable is not configured (base URL hosting the encoded original binaries)"
+            exit 1
+          fi
           mkdir originals
 
-          curl -fLSs -o d3d.bdd.txt https://gist.githubusercontent.com/madebr/92b121cfd427c51b771fb614b4c893f4/raw/d3d.bdd.txt
+          curl -fLSs -o d3d.bdd.txt "${ORIGINALS_TEXT_URL}/d3d.bdd.txt"
           python .github/binendec.py -D -i d3d.bdd.txt -o originals/d3d.bdd
 
-          curl -fLSs -o CARMA2_HW.EXE.txt https://gist.githubusercontent.com/madebr/92b121cfd427c51b771fb614b4c893f4/raw/CARMA2_HW.EXE.txt
+          curl -fLSs -o CARMA2_HW.EXE.txt "${ORIGINALS_TEXT_URL}/CARMA2_HW.EXE.txt"
           python .github/binendec.py -D -i CARMA2_HW.EXE.txt -o originals/CARMA2_HW.EXE
 
-          curl -fLSs -o carma2.exe.txt https://gist.githubusercontent.com/madebr/92b121cfd427c51b771fb614b4c893f4/raw/carma2.exe.txt
+          curl -fLSs -o carma2.exe.txt "${ORIGINALS_TEXT_URL}/carma2.exe.txt"
           python .github/binendec.py -D -i carma2.exe.txt -o originals/carma2.exe
 
       - name: Fetch latest report
@@ -85,7 +90,7 @@ jobs:
       - name: CMake (configure)
         shell: sh
         run: |
-          cmake -S . -B build -GNinja -DREC2_MATCHING=TRUE -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_C_COMPILER=cl -DCMAKE_CXX_COMPILER=cl -DREC2_VENDORED=ON
+          cmake -S . -B build -GNinja -DCARPOCALYPSE2_MATCHING=TRUE -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_C_COMPILER=cl -DCMAKE_CXX_COMPILER=cl -DCARPOCALYPSE2_VENDORED=ON
 
       - name: CMake (build)
         shell: sh

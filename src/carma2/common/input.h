@@ -1,9 +1,9 @@
-#ifndef REC2_INPUT_H
-#define REC2_INPUT_H
+#ifndef CARPOCALYPSE2_INPUT_H
+#define CARPOCALYPSE2_INPUT_H
 
 #include "c2_hooks.h"
 
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 
 extern tJoy_array gJoy_array;
 extern tKey_array gKey_array;
@@ -79,4 +79,4 @@ void C2_HOOK_FASTCALL EndRollingLetters(void);
 
 void C2_HOOK_FASTCALL SetJoystickArrays(int* pKeys, int pMark);
 
-#endif // REC2_INPUT_H
+#endif // CARPOCALYPSE2_INPUT_H

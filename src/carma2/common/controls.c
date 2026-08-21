@@ -38,7 +38,7 @@
 
 #include "c2_string.h"
 
-#include "rec2_macros.h"
+#include "carpocalypse2_macros.h"
 
 
 // GLOBAL: CARMA2_HW 0x0067c474
@@ -730,10 +730,10 @@ int C2_HOOK_CDECL ToggleDoorsActorCallback(br_actor* pActor, void* data) {
         return 0;
     }
 
-    C2_HOOK_BUG_ON(REC2_ASIZE(gToggled_doors) != 16);
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gToggled_doors) != 16);
 
     if (crush_buffer->flap_data->field_0x0) {
-        if (gCount_toggled_doors != REC2_ASIZE(gToggled_doors)) {
+        if (gCount_toggled_doors != CARPOCALYPSE2_ASIZE(gToggled_doors)) {
             for (i = 0; i < gCount_toggled_doors; i++) {
                 if (gToggled_doors[i].actor == pActor) {
                     return 0;
@@ -746,7 +746,7 @@ int C2_HOOK_CDECL ToggleDoorsActorCallback(br_actor* pActor, void* data) {
             gCount_toggled_doors += 1;
         }
     } else {
-        if (gCount_toggled_doors != REC2_ASIZE(gToggled_doors)) {
+        if (gCount_toggled_doors != CARPOCALYPSE2_ASIZE(gToggled_doors)) {
             for (i = 0; i < gCount_toggled_doors; i++) {
                 if (gToggled_doors[i].actor == pActor) {
                     return 0;
@@ -995,11 +995,11 @@ void C2_HOOK_FASTCALL F4Key(void) {
         if (PDKeyDown(0)) {
             gWhich_edit_mode -= 1;
             if (gWhich_edit_mode < 0) {
-                gWhich_edit_mode = REC2_ASIZE(gEdit_funcs) - 1;
+                gWhich_edit_mode = CARPOCALYPSE2_ASIZE(gEdit_funcs) - 1;
             }
         } else {
             gWhich_edit_mode += 1;
-            if (gWhich_edit_mode >= REC2_ASIZE(gEdit_funcs)) {
+            if (gWhich_edit_mode >= CARPOCALYPSE2_ASIZE(gEdit_funcs)) {
                 gWhich_edit_mode = 0;
             }
         }
@@ -1412,7 +1412,7 @@ void C2_HOOK_FASTCALL ToggleCockpit(void) {
 void C2_HOOK_FASTCALL DisposeAbuseomatic(void) {
     int i;
 
-    for (i = 0; i < REC2_ASIZE(gAbuse_text); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gAbuse_text); i++) {
         if (gAbuse_text[i] != NULL) {
             BrMemFree(gAbuse_text[i]);
         }
@@ -1483,7 +1483,7 @@ void C2_HOOK_FASTCALL CheckToggles(int pRacing) {
     int i;
     int new_state;
 
-    for (i = 0; i < REC2_ASIZE(gToggle_array); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gToggle_array); i++) {
         if (!pRacing && gToggle_array[i].in_game_only) {
             continue;
         }
@@ -1846,7 +1846,7 @@ void C2_HOOK_FASTCALL CheckOtherRacingKeys(void) {
             bodywork_repair_amount = RepairCar(gProgram_state.current_car.car_ID, gFrame_period, &amount);
             NeedToExpandBoundingBox = bodywork_repair_amount > 0.f;
             cost = 0;
-            for (i = 0; i < REC2_ASIZE(gProgram_state.current_car.damage_units); i++) {
+            for (i = 0; i < CARPOCALYPSE2_ASIZE(gProgram_state.current_car.damage_units); i++) {
                 tDamage_unit* unit = &gProgram_state.current_car.damage_units[i];
 
                 old_level = unit->damage_level;
@@ -2033,7 +2033,7 @@ void C2_HOOK_FASTCALL FlipUpCar(tCar_spec* pCar_spec) {
         BrVector3Negate(&pCar_spec->direction, (br_vector3*)pCar_spec->collision_info->transform_matrix.m[2]);
 
         for (j = 0; j <= new_pos; j++) {
-            for (k = 0; k < REC2_ASIZE(pCar_spec->last_safe_positions) - 1; k++) {
+            for (k = 0; k < CARPOCALYPSE2_ASIZE(pCar_spec->last_safe_positions) - 1; k++) {
                 BrMatrix34Copy(&pCar_spec->last_safe_positions[k], &pCar_spec->last_safe_positions[k + 1]);
             }
         }
@@ -2049,7 +2049,7 @@ void C2_HOOK_FASTCALL FlipUpCar(tCar_spec* pCar_spec) {
     BrVector3Copy((br_vector3*)pCar_spec->collision_info->transform_matrix.m[3],
         &pCar_spec->car_master_actor->t.t.translate.t);
     pCar_spec->curvature = 0.f;
-    for (i = 0; i < REC2_ASIZE(pCar_spec->oldd); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(pCar_spec->oldd); i++) {
         pCar_spec->oldd[i] = pCar_spec->ride_height;
     }
     pCar_spec->revs = 0.f;
@@ -2161,7 +2161,7 @@ void C2_HOOK_FASTCALL EnterUserMessage(void) {
             strcpy(the_message, gNet_players[gThis_net_player_index].player_name);
             the_message[len + 0] = ':';
             the_message[len + 1] = ' ';
-            gString[REC2_ASIZE(gString) - 1] = '\0';
+            gString[CARPOCALYPSE2_ASIZE(gString) - 1] = '\0';
             NetSendHeadupToAllPlayers(the_message);
             gString[20] = '\0';
             NewTextHeadupSlot(4, 0, 1000, -4, GetMiscString(eMiscString_message_sent));
@@ -2594,7 +2594,7 @@ void C2_HOOK_FASTCALL DecreaseYon(void) {
     if (gCamera_yon < 5.0f) {
         gCamera_yon = 5.0f;
     }
-    for (i = 0; i < REC2_ASIZE(gCamera_list); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gCamera_list); i++) {
         camera = gCamera_list[i]->type_data;
         camera->yon_z = gYon_multiplier * gCamera_yon;
     }
@@ -2609,7 +2609,7 @@ void C2_HOOK_FASTCALL IncreaseYon(void) {
     int i;
 
     gCamera_yon += 5.f;
-    for (i = 0; i < REC2_ASIZE(gCamera_list); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gCamera_list); i++) {
         camera = gCamera_list[i]->type_data;
         camera->yon_z = gYon_multiplier * gCamera_yon;
     }
@@ -2767,7 +2767,7 @@ void C2_HOOK_FASTCALL MungeRepulseRays(tU32 pTime) {
     int i;
 
     ARStartPipingSession(ePipe_chunk_repulse_ray);
-    for (i = 0; i < REC2_ASIZE(gRepulse_links); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gRepulse_links); i++) {
         tRepulse_link* link = &gRepulse_links[i];
         tU32 delta_time;
         br_model *model;
@@ -2935,15 +2935,15 @@ void C2_HOOK_FASTCALL InitAbuseomatic(void) {
     gString[20] = '\0';
     PDBuildAppPath(path);
     strcat(path, "ABUSE.TXT");
-    for (i = 0; i < REC2_ASIZE(gAbuse_text); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gAbuse_text); i++) {
         gAbuse_text[i] = NULL;
     }
     f = PFfopen(path, "rt");
     if (f == NULL) {
         return;
     }
-    for (i = 0; i < REC2_ASIZE(gAbuse_text); i++) {
-        if (PFfgets(s, REC2_ASIZE(s) - 1, f) == NULL) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gAbuse_text); i++) {
+        if (PFfgets(s, CARPOCALYPSE2_ASIZE(s) - 1, f) == NULL) {
             break;
         }
         len = strlen(s);

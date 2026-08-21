@@ -1,5 +1,5 @@
-#ifndef REC2_ENABLES_H
-#define REC2_ENABLES_H
+#ifndef CARPOCALYPSE2_ENABLES_H
+#define CARPOCALYPSE2_ENABLES_H
 
 #include "c2_hooks.h"
 
@@ -35,4 +35,4 @@ void C2_HOOK_STDCALL BrSetupHorizons(br_actor* world, br_matrix34* world_to_view
 
 void C2_HOOK_STDCALL BrActorEnableCheck(br_actor* a);
 
-#endif // REC2_ENABLES_H
+#endif // CARPOCALYPSE2_ENABLES_H

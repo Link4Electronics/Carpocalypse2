@@ -1,11 +1,11 @@
-#ifndef REC2_SOUND_H
-#define REC2_SOUND_H
+#ifndef CARPOCALYPSE2_SOUND_H
+#define CARPOCALYPSE2_SOUND_H
 
 #include "c2_hooks.h"
 
 #include "c2_stdio.h"
 
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 
 extern int gSound_detail_level;
 extern int gCD_fully_installed;
@@ -103,4 +103,4 @@ int C2_HOOK_FASTCALL DRS3StopSound(tS3_sound_tag pSound_tag);
 
 int C2_HOOK_FASTCALL DRS3StartSound3D(tS3_outlet* pOutlet, int pSound_id, const br_vector3* pInitial_position, const br_vector3* pInitial_velocity, int pRepeats, int pVolume, int pPitch, int pSpeed);
 
-#endif // REC2_SOUND_H
+#endif // CARPOCALYPSE2_SOUND_H

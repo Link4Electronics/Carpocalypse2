@@ -31,7 +31,7 @@
 
 #include <brender/brender.h>
 
-#include "rec2_macros.h"
+#include "carpocalypse2_macros.h"
 #include "c2_string.h"
 #include "brender/br_types.h"
 
@@ -269,7 +269,7 @@ void C2_HOOK_FASTCALL IString_Load(void) {
         FatalError(kFatalError_CannotOpenTEXT_TXT);
     }
     gCount_interface_strings = 0;
-    for (i = 0; !PFfeof(f) && i < REC2_ASIZE(gInterface_strings); i++) {
+    for (i = 0; !PFfeof(f) && i < CARPOCALYPSE2_ASIZE(gInterface_strings); i++) {
         GetALineAndDontArgue(f, s);
         gInterface_strings[i] = BrMemAllocate(strlen(s) + 1, kMem_misc_string);
         strcpy(gInterface_strings[i], s);
@@ -324,7 +324,7 @@ void C2_HOOK_FASTCALL LoadMenuImages(void) {
         gFrontend_images[i + 8] = LoadPixelmap(s); /* FIXME: magic number */
     }
 
-#if defined(REC2_FIX_BUGS)
+#if defined(CARPOCALYPSE2_FIX_BUGS)
     PFfclose(f);
 #endif
 }
@@ -465,7 +465,7 @@ static void C2_HOOK_FASTCALL LoadMenuModels(void) {
         }
     }
 
-#if defined(REC2_FIX_BUGS)
+#if defined(CARPOCALYPSE2_FIX_BUGS)
     PFfclose(f);
 #endif
 }
@@ -490,7 +490,7 @@ br_pixelmap* C2_HOOK_FASTCALL GetThisFuckingPixelmapPleaseMrTwatter(const char* 
         return result;
     }
     PFfclose(f);
-    count = BrPixelmapLoadMany(the_path, pixelmaps, REC2_ASIZE(pixelmaps));
+    count = BrPixelmapLoadMany(the_path, pixelmaps, CARPOCALYPSE2_ASIZE(pixelmaps));
     strcpy(the_path, pName);
     str = strchr(the_path, '.');
     *str = '\0';
@@ -1879,7 +1879,7 @@ int C2_HOOK_FASTCALL Generic_MenuHandler(tFrontend_spec* pFrontend) {
     int mouse_x;
     tFrontend_slider* slider;
 
-    item_mouse = 0; /* Added by rec2 */
+    item_mouse = 0; /* Added by carpocalypse2 */
 
     if (gTyping) {
         int input;

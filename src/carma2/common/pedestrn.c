@@ -26,8 +26,8 @@
 #include "c2_stdlib.h"
 #include "c2_string.h"
 
-#include "rec2_macros.h"
-#include "rec2_types.h"
+#include "carpocalypse2_macros.h"
+#include "carpocalypse2_types.h"
 
 #define GET_PED_COLLISION_OBJECT(PED) ( ((PED)->character->field_0x14 & 1) ? (PED)->character->personality->form->simple_physicing[(PED)->character->field_0x5].collision_info : GetRootObject((PED)->character))
 
@@ -634,7 +634,7 @@ int C2_HOOK_FASTCALL GetPedPosition(int pIndex, br_vector3* pPos) {
 void C2_HOOK_FASTCALL ClearOutMorphs(void) {
     int i;
 
-    for (i = 0; i < REC2_ASIZE(gPed_morphs); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gPed_morphs); i++) {
         gPed_morphs[i].field_0x4 = 0;
     }
 }
@@ -643,10 +643,10 @@ void C2_HOOK_FASTCALL ClearOutMorphs(void) {
 void C2_HOOK_FASTCALL InitBoner(tPedForms_vtable* pTable) {
     int i;
 
-    C2_HOOK_BUG_ON(REC2_ASIZE(gPed_forms) != 20);
-    C2_HOOK_BUG_ON(REC2_ASIZE(gPed_personalities) != 50);
-    C2_HOOK_BUG_ON(REC2_ASIZE(gPed_moves) != 250);
-    C2_HOOK_BUG_ON(REC2_ASIZE(gPed_remaps) != 10);
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gPed_forms) != 20);
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gPed_personalities) != 50);
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gPed_moves) != 250);
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gPed_remaps) != 10);
 
     gPed_vtable = pTable;
     memset(gPed_forms, 0, sizeof(gPed_forms));
@@ -657,7 +657,7 @@ void C2_HOOK_FASTCALL InitBoner(tPedForms_vtable* pTable) {
     ClearOutMorphs();
 
     for (i = 0; i < 256; i++) {
-        float a = (i * 256) * 2 * REC2_PI_F / 256.f / 256.f;
+        float a = (i * 256) * 2 * CARPOCALYPSE2_PI_F / 256.f / 256.f;
         gPed_sin_table[i] = sinf(a);
         gPed_cos_table[i] = cosf(a);
     }
@@ -688,7 +688,7 @@ void C2_HOOK_FASTCALL DRVector3SafeCross(br_vector3* pDest, const br_vector3* pA
 void C2_HOOK_FAKE_THISCALL ScaleModelXYZ(br_model* pModel, int pArg2, float pX, float pY, float pZ) {
     int i;
 
-    REC2_THISCALL_UNUSED(pArg2);
+    CARPOCALYPSE2_THISCALL_UNUSED(pArg2);
 
     for (i = 0; i < pModel->nvertices; i++) {
         pModel->vertices[i].p.v[0] *= pX;
@@ -702,7 +702,7 @@ void C2_HOOK_FAKE_THISCALL ScaleModelXYZ(br_model* pModel, int pArg2, float pX, 
 void C2_HOOK_FAKE_THISCALL ScaleModel(br_model* pModel, int pArg2, float pScale) {
     int i;
 
-    REC2_THISCALL_UNUSED(pArg2);
+    CARPOCALYPSE2_THISCALL_UNUSED(pArg2);
 
     for (i = 0; i < pModel->nvertices; i++) {
         pModel->vertices[i].p.v[0] *= pScale;
@@ -732,7 +732,7 @@ br_model* ReadSmashableInitialModel(FILE* pFile, br_scalar pScale_factor) {
     if (model == NULL) {
         FatalError(kFatalError_CannotFindGibletModel_S, s);
     }
-    ScaleModel(model REC2_THISCALL_EDX, scale * pScale_factor);
+    ScaleModel(model CARPOCALYPSE2_THISCALL_EDX, scale * pScale_factor);
     model->faces[0].material->index_base = index;
     model->faces[0].material->index_range = 1;
     model->faces[0].material->colour = BR_COLOUR_RGB(r, g, b);
@@ -767,7 +767,7 @@ void C2_HOOK_FASTCALL ReadPedGiblets(FILE* pFile) {
 
     ReadMinMaxTimeInMilliseconds(pFile, gGiblet_min_max_time);
 
-    REC2_BUG_ON(sizeof(tPed_giblet_size_spec) != 24);
+    CARPOCALYPSE2_BUG_ON(sizeof(tPed_giblet_size_spec) != 24);
 
     /* Number of giblet sizes */
     gGiblet_size_count = GetAnInt(pFile);
@@ -968,7 +968,7 @@ void C2_HOOK_FASTCALL InitFaceCaches(void) {
     C2_HOOK_BUG_ON(sizeof(tPed_face_cache_0x34) != 52);
     C2_HOOK_BUG_ON(sizeof(tPed_face_cache_0x50) != 80);
 
-    for (i = 0; i < REC2_ASIZE(gPed_cache_sizes_1); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gPed_cache_sizes_1); i++) {
         gPed_face_cache_heads[i] = BrMemAllocate(gPed_cache_sizes_1[i] * sizeof(tPed_face_cache_0x34), kMem_ped_face_cache);
         for (j = 0; j < gPed_cache_sizes_1[i]; j++) {
             gPed_face_cache_heads[i][j].field_0x0 = BrMemAllocate(gPed_cache_sizes_2[i] * sizeof(tPed_face_cache_0x50), kMem_ped_face_cache);
@@ -1004,7 +1004,7 @@ void C2_HOOK_FASTCALL InitNapalmNolts(void) {
     int j;
     br_model* model;
 
-    for (i = 0; i < REC2_ASIZE(gBurning_ped_materials); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gBurning_ped_materials); i++) {
         model = BrModelAllocate(NULL, 4, 2);
         gBurning_ped_models[i] = model;
         model->faces[0].vertices[0] = 0;
@@ -1041,9 +1041,9 @@ void C2_HOOK_FASTCALL InitNapalmNolts(void) {
     }
 
     C2_HOOK_BUG_ON(sizeof(tNapalm_bolt) != 0x6c);
-    for (i = 0; i < REC2_ASIZE(gNapalm_bolts); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gNapalm_bolts); i++) {
         gNapalm_bolts[i].ped = NULL;
-        for (j = 0; j < REC2_ASIZE(gBurning_ped_materials); j++) {
+        for (j = 0; j < CARPOCALYPSE2_ASIZE(gBurning_ped_materials); j++) {
             br_actor* actor;
 
             actor = BrActorAllocate(BR_ACTOR_MODEL, NULL);
@@ -1170,7 +1170,7 @@ void C2_HOOK_FASTCALL ReadPedSpecs(FILE* pF) {
 tPed_personality* FindOrOpenPersonality(const char* pName) {
     int i;
 
-    for (i = 0; i < REC2_ASIZE(gPed_personalities); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gPed_personalities); i++) {
         if (gPed_personalities[i] == NULL) {
             continue;
         }
@@ -1445,7 +1445,7 @@ int C2_HOOK_FASTCALL SetCharacterMove(tPed_character_instance* pPed,int pMove_ac
     if (pArg4 != 0 && original_ped_move != NULL && pArg6 != 0) {
         int i;
 
-        for (i = 0; i < REC2_ASIZE(gPed_morphs); i++) {
+        for (i = 0; i < CARPOCALYPSE2_ASIZE(gPed_morphs); i++) {
             if (!gPed_morphs[i].field_0x4) {
                 pPed->field_0xbc = &gPed_morphs[i];
                 break;
@@ -1781,12 +1781,12 @@ void C2_HOOK_FASTCALL SetModelCallbacks(tPed_character_instance* pPed) {
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPed_personality, bones, 0x2c);
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPed_personality_bone, models, 0x0);
 
-    C2_HOOK_BUG_ON(REC2_ASIZE(pPed->personality->bones->models) != 4);
-    for (i = 0; i < REC2_ASIZE(pPed->personality->bones->models); i++) {
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(pPed->personality->bones->models) != 4);
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(pPed->personality->bones->models); i++) {
         int j;
 
-        C2_HOOK_BUG_ON(REC2_ASIZE(pPed->personality->bones->models[i].models) != 2);
-        for (j = 0; j < REC2_ASIZE(pPed->personality->bones->models[i].models); j++) {
+        C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(pPed->personality->bones->models[i].models) != 2);
+        for (j = 0; j < CARPOCALYPSE2_ASIZE(pPed->personality->bones->models[i].models); j++) {
             br_model* model;
 
             model = pPed->personality->bones->models[i].models[j];
@@ -1888,7 +1888,7 @@ void C2_HOOK_FASTCALL SpawnPedsOnFace(br_face *pFace, br_model *pModel) {
         }
     }
 
-#ifdef REC2_FIX_BUGS
+#ifdef CARPOCALYPSE2_FIX_BUGS
     if (ped_spec == NULL) {
         PDFatalError("Could not find ped spec");
     }
@@ -1990,13 +1990,13 @@ void C2_HOOK_FASTCALL DisposePedStuff(void) {
 void C2_HOOK_FASTCALL ResetPedFaceCache(void) {
     int i;
 
-    for (i = 0; i < REC2_ASIZE(gPed_cache_sizes_1); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gPed_cache_sizes_1); i++) {
         int j;
 
         gPed_face_caches[i] = gPed_face_cache_heads[i];
         for (j = 0; j < gPed_cache_sizes_1[i]; j++) {
             gPed_face_cache_heads[i][j].field_0x14 = 0;
-            if (j != gPed_cache_sizes_1[REC2_ASIZE(gPed_cache_sizes_1) - 1]) {
+            if (j != gPed_cache_sizes_1[CARPOCALYPSE2_ASIZE(gPed_cache_sizes_1) - 1]) {
                 gPed_face_cache_heads[i][j].next = &gPed_face_cache_heads[i][j + 1];
                 gPed_face_cache_heads[i][j + 1].prev = &gPed_face_cache_heads[i][j];
             } else {
@@ -2014,11 +2014,11 @@ void C2_HOOK_FASTCALL ResetPedSystem(void) {
 void C2_HOOK_FASTCALL ResetNapalmBolts(void) {
     int i;
 
-    for (i = 0; i < REC2_ASIZE(gNapalm_bolts); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gNapalm_bolts); i++) {
         int j;
 
         gNapalm_bolts[0].ped = NULL;
-        for (j = 0; j < REC2_ASIZE(gNapalm_bolts[0].actors); j++) {
+        for (j = 0; j < CARPOCALYPSE2_ASIZE(gNapalm_bolts[0].actors); j++) {
             gNapalm_bolts[0].actors[j]->render_style = BR_RSTYLE_NONE;
         }
     }
@@ -2081,7 +2081,7 @@ void C2_HOOK_FASTCALL RenderElectroBastardRays(br_pixelmap* pRender_screen, br_p
 
     the_time = GetTotalTime();
     ARStartPipingSession(ePipe_chunk_prox_ray);
-    for (i = 0; i < REC2_ASIZE(gProximity_rays); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gProximity_rays); i++) {
 
         if (gProximity_rays[i].start_time == 0) {
             continue;
@@ -2198,7 +2198,7 @@ void C2_HOOK_FASTCALL MungeNapalm(void) {
 
     the_time = GetTotalTime();
     ARStartPipingSession(ePipe_chunk_burning_ped);
-    for (i = 0; i < REC2_ASIZE(gNapalm_bolts); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gNapalm_bolts); i++) {
         tNapalm_bolt* bolt;
         int bolt_hit_target;
 
@@ -2225,9 +2225,9 @@ void C2_HOOK_FASTCALL MungeNapalm(void) {
                 delta_time = the_time - bolt->field_0x28;
                 if (the_time - bolt->field_0x24 > 50) {
 
-                    C2_HOOK_BUG_ON((REC2_ASIZE(bolt->field_0x2c) - 1) * sizeof(br_vector3) != 0x30);
+                    C2_HOOK_BUG_ON((CARPOCALYPSE2_ASIZE(bolt->field_0x2c) - 1) * sizeof(br_vector3) != 0x30);
 
-                    memmove(&bolt->field_0x2c[1], &bolt->field_0x2c[0], (REC2_ASIZE(bolt->field_0x2c) - 1) * sizeof(br_vector3));
+                    memmove(&bolt->field_0x2c[1], &bolt->field_0x2c[0], (CARPOCALYPSE2_ASIZE(bolt->field_0x2c) - 1) * sizeof(br_vector3));
                     BrVector3Sub(&bolt->field_0x2c[0], &bolt->ped->pos, &bolt->actors[0]->t.t.translate.t);
                     BrVector3Normalise(&bolt->field_0x2c[0], &bolt->field_0x2c[0]);
                     BrVector3Scale(&bolt->field_0x2c[0], &bolt->field_0x2c[0], FRandomBetween(.8f, 1.25f));
@@ -2242,15 +2242,15 @@ void C2_HOOK_FASTCALL MungeNapalm(void) {
                 object = bolt->ped->character->personality->form->simple_physicing[bolt->ped->character->field_0x5].collision_info;
                 BrVector3Sub(&delta_move, &bolt->actors[0]->t.t.translate.t, &object->actor->t.t.translate.t);
                 delta_length_sq = BrVector3LengthSquared(&delta_move);
-                if (delta_length_sq < REC2_SQR(object->bb1.max.v[0])
-                        || delta_length_sq < REC2_SQR(object->bb1.max.v[1])
-                        || delta_length_sq < REC2_SQR(object->bb1.max.v[2])
-                        || delta_length_sq < REC2_SQR(object->bb1.min.v[0])
-                        || delta_length_sq < REC2_SQR(object->bb1.min.v[1])
-                        || delta_length_sq < REC2_SQR(object->bb1.min.v[2])) {
+                if (delta_length_sq < CARPOCALYPSE2_SQR(object->bb1.max.v[0])
+                        || delta_length_sq < CARPOCALYPSE2_SQR(object->bb1.max.v[1])
+                        || delta_length_sq < CARPOCALYPSE2_SQR(object->bb1.max.v[2])
+                        || delta_length_sq < CARPOCALYPSE2_SQR(object->bb1.min.v[0])
+                        || delta_length_sq < CARPOCALYPSE2_SQR(object->bb1.min.v[1])
+                        || delta_length_sq < CARPOCALYPSE2_SQR(object->bb1.min.v[2])) {
                     int j;
 
-                    for (j = 0; j < REC2_ASIZE(bolt->actors); j++) {
+                    for (j = 0; j < CARPOCALYPSE2_ASIZE(bolt->actors); j++) {
                         br_vector3 delta_world;
 
                         if (j != 0) {
@@ -2292,9 +2292,9 @@ void C2_HOOK_FASTCALL MungeNapalm(void) {
             int j;
             tU32 time = the_time;
 
-            C2_HOOK_BUG_ON(REC2_ASIZE(flame_positions) != REC2_ASIZE(gFlamed_ped_flame_scales));
+            C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(flame_positions) != CARPOCALYPSE2_ASIZE(gFlamed_ped_flame_scales));
             memset(flame_positions, 0, sizeof(flame_positions));
-            for (j = 0; i < REC2_ASIZE(flame_positions); i++) {
+            for (j = 0; i < CARPOCALYPSE2_ASIZE(flame_positions); i++) {
                 br_actor* actor = bolt->actors[j];
                 if (!gAction_replay_mode) {
                     time = (int)((float)time - 0.036f);
@@ -2384,7 +2384,7 @@ int C2_HOOK_FASTCALL PedFallingForever(tPedestrian* pPed) {
     }
     MakePedVanish(pPed);
     if (pPed->hit_points > 0) {
-        ScoreForKilledPedestrian(pPed REC2_THISCALL_EDX, pPed->pos.v[1] - FindYVerticallyBelow(&pPed->pos));
+        ScoreForKilledPedestrian(pPed CARPOCALYPSE2_THISCALL_EDX, pPed->pos.v[1] - FindYVerticallyBelow(&pPed->pos));
     }
     return 1;
 }
@@ -2392,7 +2392,7 @@ int C2_HOOK_FASTCALL PedFallingForever(tPedestrian* pPed) {
 void C2_HOOK_FASTCALL KillNapalmBolt(tNapalm_bolt* pBolt) {
     size_t i;
 
-    for (i = 0; i < REC2_ASIZE(pBolt->actors); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(pBolt->actors); i++) {
         pBolt->actors[i]->render_style = BR_RSTYLE_NONE;
     }
     pBolt->ped = NULL;
@@ -2662,7 +2662,7 @@ void C2_HOOK_FASTCALL CheckForAvoidingAction(tPedestrian* pPed, tU32 pTime) {
 
 void C2_HOOK_FASTCALL SetRandomOmega(tPhysics_object* pObject, float pMax) {
 
-#ifdef REC2_FIX_BUGS
+#ifdef CARPOCALYPSE2_FIX_BUGS
     BrVector3Set(&pObject->omega, SRandomPosNeg(1.f), SRandomPosNeg(1.f), SRandomPosNeg(1.f));
     BrVector3Normalise(&pObject->omega, &pObject->omega);
     BrVector3Scale(&pObject->omega, &pObject->omega, pMax);
@@ -2872,7 +2872,7 @@ void C2_HOOK_FASTCALL MungePedestrians(void) {
                 ped->flags &= ~0x1;
             } else {
                 ped->flags |= 0x1;
-                if (scare_now && ped->action == ePed_action_walking && count_scared_pedestrians < REC2_ASIZE(scared_pedestrians)) {
+                if (scare_now && ped->action == ePed_action_walking && count_scared_pedestrians < CARPOCALYPSE2_ASIZE(scared_pedestrians)) {
                     scared_pedestrians[count_scared_pedestrians] = ped;
                     count_scared_pedestrians += 1;
                 }
@@ -2911,7 +2911,7 @@ void C2_HOOK_FASTCALL MungePedestrians(void) {
                 if (ped->field_0x0c != NULL && ped->field_0x0c->field_0x98 != 0) {
                     if (ped->field_0x0c->field_0x98 >= 0) {
                         if (ped->hit_points > 0) {
-                            ScoreForKilledPedestrian(ped REC2_THISCALL_EDX, 0.f);
+                            ScoreForKilledPedestrian(ped CARPOCALYPSE2_THISCALL_EDX, 0.f);
                         }
                         StopObjectSmokingInstantly(ped->character->personality->form->simple_physicing[ped->character->field_0x5].collision_info);
                         ped->field_0x0c->field_0x98 = 0;
@@ -2929,7 +2929,7 @@ void C2_HOOK_FASTCALL MungePedestrians(void) {
                 ped->flags &= ~0x1;
                 continue;
             }
-            /* FIXME: does MakeCharacterCollideWorthy return a enum or count (use REC2_ASIZE)? */
+            /* FIXME: does MakeCharacterCollideWorthy return a enum or count (use CARPOCALYPSE2_ASIZE)? */
             if (MakeCharacterCollideworthy(ped->character, 0, 0) == 21) {
                 CharacterNoLongerRenderable(ped->character);
                 ped->flags &= ~0x1;
@@ -2975,7 +2975,7 @@ void C2_HOOK_FASTCALL MungePedestrians(void) {
                 oldest_time = the_time + 1;
                 oldest_index = 0;
 
-                for (j = 0; j < REC2_ASIZE(gPed_cache_006944c0); j++) {
+                for (j = 0; j < CARPOCALYPSE2_ASIZE(gPed_cache_006944c0); j++) {
                     if (gPed_cache_006944c0[i].field_0xb4 == NULL) {
                         ped->field_0x0c = &gPed_cache_006944c0[j];
                     }
@@ -2984,7 +2984,7 @@ void C2_HOOK_FASTCALL MungePedestrians(void) {
                         oldest_time = gPed_cache_006944c0[j].field_0x74;
                     }
                 }
-                if (j == REC2_ASIZE(gPed_cache_006944c0)) {
+                if (j == CARPOCALYPSE2_ASIZE(gPed_cache_006944c0)) {
                     /* FIXME: should these 2 lines be reversed? */
                     ped->field_0x0c = &gPed_cache_006944c0[oldest_index];
                     gPed_cache_006944c0[oldest_index].field_0xb4->field_0x0c = NULL;
@@ -3152,7 +3152,7 @@ void C2_HOOK_FASTCALL MungePedestrians(void) {
                 unsigned int j;
 
                 for (j = 0; j < count_scared_pedestrians; j++) {
-                    if (scared_pedestrians[j]->action == ePed_action_walking && Vector3DistanceSquared(ped_pos, &scared_pedestrians[j]->pos) < REC2_SQR(3.f)) {
+                    if (scared_pedestrians[j]->action == ePed_action_walking && Vector3DistanceSquared(ped_pos, &scared_pedestrians[j]->pos) < CARPOCALYPSE2_SQR(3.f)) {
                         ScarePedestrian(ped, the_time, 1, 0);
                     }
                 }
@@ -3215,7 +3215,7 @@ void C2_HOOK_FASTCALL CBLoadForm(tPed_form* pPed_form, FILE* pF) {
 
     /* Other stuff */
 
-    pPed_form->non_humanoid = GetALineAndInterpretCommand(pF, gForm_non_humanoid_names, REC2_ASIZE(gForm_non_humanoid_names)) == 0;
+    pPed_form->non_humanoid = GetALineAndInterpretCommand(pF, gForm_non_humanoid_names, CARPOCALYPSE2_ASIZE(gForm_non_humanoid_names)) == 0;
 
     /* Index of head bone */
     pPed_form->index_head_bone = GetAnInt(pF);
@@ -3240,9 +3240,9 @@ void C2_HOOK_FASTCALL CBLoadPersonality(tPed_personality* pPersonality, FILE* pF
     FILE* sound_f;
     int i;
 
-#ifndef REC2_MATCHING
+#ifndef CARPOCALYPSE2_MATCHING
     C2_HOOK_BUG_ON(sizeof(tPed_personality_sounds) != 0x84);
-    C2_HOOK_BUG_ON(REC2_ASIZE(((tPed_personality_sounds*)NULL)->sounds) != 11);
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(((tPed_personality_sounds*)NULL)->sounds) != 11);
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPed_personality, sounds, 0x64)
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPed_personality, jump_height, 0x50)
 #endif
@@ -3260,7 +3260,7 @@ void C2_HOOK_FASTCALL CBLoadPersonality(tPed_personality* pPersonality, FILE* pF
 
     pPersonality->sounds = BrMemAllocate(sizeof(tPed_personality_sounds), kMem_misc_poly_ped);
 
-    for (i = 0; i < REC2_ASIZE(pPersonality->sounds->sounds); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(pPersonality->sounds->sounds); i++) {
         int j;
 
         pPersonality->sounds->sounds[i].count_sounds = GetAnInt(sound_f);
@@ -3339,16 +3339,16 @@ tPed_remap* C2_HOOK_FASTCALL ReadRemap(const char *pFile_name) {
 
         GetALineAndDontArgue(f, remap->bones[i].name);
         for (j = 0; j < 3; j++) {
-            remap->bones[i].general_remap[j] = GetALineAndInterpretCommand(f, gPed_remap_axis_choices, REC2_ASIZE(gPed_remap_axis_choices));
+            remap->bones[i].general_remap[j] = GetALineAndInterpretCommand(f, gPed_remap_axis_choices, CARPOCALYPSE2_ASIZE(gPed_remap_axis_choices));
         }
         for (j = 0; j < 3; j++) {
-            remap->bones[i].powerup_axis[j] = GetALineAndInterpretCommand(f, gPed_remap_axis_choices, REC2_ASIZE(gPed_remap_axis_choices));
+            remap->bones[i].powerup_axis[j] = GetALineAndInterpretCommand(f, gPed_remap_axis_choices, CARPOCALYPSE2_ASIZE(gPed_remap_axis_choices));
         }
         GetALineAndDontArgue(f, s);
     }
     strcpy(remap->name, pFile_name);
     for (i = 0; ; i++) {
-        if (i >= REC2_ASIZE(gPed_remaps)) {
+        if (i >= CARPOCALYPSE2_ASIZE(gPed_remaps)) {
             FatalError(kFatalError_BonerError_TooManyRemapsLoaded);
         }
         if (gPed_remaps[i] == NULL) {
@@ -3429,7 +3429,7 @@ void C2_HOOK_FASTCALL RemapVector(br_vector3* pV, const tPed_remap_bone* pRemap)
 tPed_remap* C2_HOOK_FASTCALL FindOrOpenRemap(const char* pName) {
     int i;
 
-    for (i = 0; i < REC2_ASIZE(gPed_remaps); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gPed_remaps); i++) {
         if (gPed_remaps[i] != NULL && strcmp(gPed_remaps[i]->name, pName) == 0) {
             return gPed_remaps[i];
         }
@@ -3476,7 +3476,7 @@ tPed_move* C2_HOOK_FASTCALL ReadMove(const char* pName, tPed_form* pForm, const 
     C2_HOOK_BUG_ON(sizeof(tPed_move_frame_axis) != 0x3);
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPed_move, frames, 0x4c);
 
-#ifdef REC2_FIX_BUGS
+#ifdef CARPOCALYPSE2_FIX_BUGS
     BrVector3Set(&rot_pos, 0.f, 0.f, 0.f);
 #endif
 
@@ -3596,7 +3596,7 @@ tPed_move* C2_HOOK_FASTCALL ReadMove(const char* pName, tPed_form* pForm, const 
     strcpy(move->name, pName);
 
     for (i = 0; ; i++) {
-        if (i >= REC2_ASIZE(gPed_moves)) {
+        if (i >= CARPOCALYPSE2_ASIZE(gPed_moves)) {
             FatalError(kFatalError_BonerError_TooManyMovesLoaded);
         }
         if (gPed_moves[i] == NULL) {
@@ -3610,7 +3610,7 @@ tPed_move* C2_HOOK_FASTCALL ReadMove(const char* pName, tPed_form* pForm, const 
 tPed_move* C2_HOOK_FASTCALL FindOrOpenMove(const char* pName, tPed_form* pForm, const char* pLooping_reset_flags, const br_vector3* pMovement_direction, tU32 flags) {
     int i;
 
-    for (i = 0; i < REC2_ASIZE(gPed_moves); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gPed_moves); i++) {
         if (gPed_moves[i] != NULL) {
             if (strcmp(gPed_moves[i]->name, pName) == 0) {
                 return gPed_moves[i];
@@ -3738,8 +3738,8 @@ tPed_form* C2_HOOK_FASTCALL SetUpCharacterForm(const char* pName) {
             C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPed_form_bone, indices, 0x28);
 
             /* Collision detection type */
-            collision_detection_type = GetALineAndInterpretCommand(f, gPed_form_collision_type_names, REC2_ASIZE(gPed_form_collision_type_names));
-            joint_type = GetALineAndInterpretCommand(f, gPed_form_bone_joint_type_names, REC2_ASIZE(gPed_form_bone_joint_type_names));
+            collision_detection_type = GetALineAndInterpretCommand(f, gPed_form_collision_type_names, CARPOCALYPSE2_ASIZE(gPed_form_collision_type_names));
+            joint_type = GetALineAndInterpretCommand(f, gPed_form_bone_joint_type_names, CARPOCALYPSE2_ASIZE(gPed_form_bone_joint_type_names));
             joint = NULL;
             if (joint_type < 0 || joint_type == ePed_form_bone_hinge_none) {
                 bone->indices[0] = -1;
@@ -3774,7 +3774,7 @@ tPed_form* C2_HOOK_FASTCALL SetUpCharacterForm(const char* pName) {
                             /* Limit type */
                             limit->type = GetALineAndInterpretCommand(f,
                                 gPed_form_joint_limit_type_names,
-                                REC2_ASIZE(gPed_form_joint_limit_type_names));
+                                CARPOCALYPSE2_ASIZE(gPed_form_joint_limit_type_names));
                             /* Child vector */
                             GetAVector(f, &limit->child);
                             /* Parent vector */
@@ -3928,7 +3928,7 @@ tPed_form* C2_HOOK_FASTCALL SetUpCharacterForm(const char* pName) {
 
     strcpy(form->name, pName);
     for (i = 0; ; i++) {
-        if (i >= REC2_ASIZE(gPed_forms)) {
+        if (i >= CARPOCALYPSE2_ASIZE(gPed_forms)) {
             FatalError(kFatalError_BonerError_TooManyFormsLoaded);
         }
         if (gPed_forms[i] == NULL) {
@@ -3953,7 +3953,7 @@ FILE* C2_HOOK_FASTCALL BonerOpenDefaultMoves(const char* pName) {
 tPed_form* C2_HOOK_FASTCALL FindOrOpenForm(const char* pName) {
     int i;
 
-    for (i = 0; i < REC2_ASIZE(gPed_forms); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gPed_forms); i++) {
         if (gPed_forms[i] != NULL) {
             if (strcmp(gPed_forms[i]->name, pName) == 0) {
                 return gPed_forms[i];
@@ -3993,7 +3993,7 @@ br_model* C2_HOOK_FASTCALL BonerCloneModel(br_model *pModel, int pIndex, int pUp
     sprintf(str + strlen(str), "%d.MAT", pIndex);
     original_material = pModel->faces[0].material;
     cloned_material = BrMaterialFind(str);
-    if (cloned_material == NULL && gCount_pedestrian_personality_cloned_materials < REC2_ASIZE(gPedestrian_character_cloned_materials)) {
+    if (cloned_material == NULL && gCount_pedestrian_personality_cloned_materials < CARPOCALYPSE2_ASIZE(gPedestrian_character_cloned_materials)) {
         cloned_material = DRMaterialClone(original_material, 0);
         cloned_material->identifier = BrResStrDup(cloned_material, identifier);
         BrMaterialUpdate(cloned_material, BR_MATU_ALL);
@@ -4207,7 +4207,7 @@ tPed_personality* C2_HOOK_FASTCALL ReadPersonality(const char* pName) {
                 /* Scaling factor */
                 personality->moves[i].scale_factor = GetAScalar(move_f);
                 /* Grounding mode */
-                personality->moves[i].grounding_mode = GetALineAndInterpretCommand(move_f, gPed_personality_grounding_type_names, REC2_ASIZE(gPed_personality_grounding_type_names));
+                personality->moves[i].grounding_mode = GetALineAndInterpretCommand(move_f, gPed_personality_grounding_type_names, CARPOCALYPSE2_ASIZE(gPed_personality_grounding_type_names));
                 /* Grounding offset */
                 personality->moves[i].grounding_offset = GetAScalar(move_f);
                 break;
@@ -4260,7 +4260,7 @@ tPed_personality* C2_HOOK_FASTCALL ReadPersonality(const char* pName) {
     PFfclose(f);
     strcpy(personality->name, pName);
     for (i = 0; ; i++) {
-        if (i >= REC2_ASIZE(gPed_personalities)) {
+        if (i >= CARPOCALYPSE2_ASIZE(gPed_personalities)) {
             FatalError(kFatalError_BonerError_TooManyPersonalitiesLoaded);
         }
         if (gPed_personalities[i] == NULL) {

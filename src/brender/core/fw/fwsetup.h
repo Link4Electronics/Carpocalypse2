@@ -1,5 +1,5 @@
-#ifndef REC2_FWSETUP_H
-#define REC2_FWSETUP_H
+#ifndef CARPOCALYPSE2_FWSETUP_H
+#define CARPOCALYPSE2_FWSETUP_H
 
 #include "c2_hooks.h"
 
@@ -17,4 +17,4 @@ extern br_filesystem* C2_HOOK_CDECL BrFilesystemSet(br_filesystem* newfs);
 
 extern br_allocator* C2_HOOK_CDECL BrAllocatorSet(br_allocator* newal);
 
-#endif // REC2_FWSETUP_H
+#endif // CARPOCALYPSE2_FWSETUP_H

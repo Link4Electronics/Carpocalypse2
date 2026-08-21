@@ -1,7 +1,7 @@
-#ifndef REC2_MAINMENU_H
-#define REC2_MAINMENU_H
+#ifndef CARPOCALYPSE2_MAINMENU_H
+#define CARPOCALYPSE2_MAINMENU_H
 
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 
 #include "c2_hooks.h"
 
@@ -11,4 +11,4 @@ void C2_HOOK_FASTCALL DoMainScreen(void);
 
 void C2_HOOK_FASTCALL DoOptionsMenu(void);
 
-#endif //REC2_MAINMENU_H
+#endif //CARPOCALYPSE2_MAINMENU_H

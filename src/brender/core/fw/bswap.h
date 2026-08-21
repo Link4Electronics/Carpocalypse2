@@ -1,5 +1,5 @@
-#ifndef REC2_BSWAP_H
-#define REC2_BSWAP_H
+#ifndef CARPOCALYPSE2_BSWAP_H
+#define CARPOCALYPSE2_BSWAP_H
 
 #include "c2_hooks.h"
 
@@ -13,4 +13,4 @@ br_float C2_HOOK_CDECL BrSwapFloat(br_float f);
 
 void* C2_HOOK_CDECL BrSwapBlock(void* block, int count, int size);
 
-#endif // REC2_BSWAP_H
+#endif // CARPOCALYPSE2_BSWAP_H

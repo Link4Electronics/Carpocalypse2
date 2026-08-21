@@ -2,7 +2,7 @@
 #define C2_HOOKS_H
 
 #if defined(_MSC_VER)
-#ifdef REC2_MATCHING
+#ifdef CARPOCALYPSE2_MATCHING
 #define C2_NORETURN
 #else
 #define C2_NORETURN __declspec(noreturn)
@@ -20,11 +20,11 @@
 #else
 #define C2_FUNCTION __FUNCTION__
 #endif
-extern C2_NORETURN void rec2_error(const char *reason, const char *function, const char *file, int line);
-#define NOT_IMPLEMENTED() rec2_error("Not implemented", C2_FUNCTION, __FILE__, __LINE__)
-#define UNUSED() rec2_error("Unused", C2_FUNCTION, __FILE__, __LINE__)
+extern C2_NORETURN void carpocalypse2_error(const char *reason, const char *function, const char *file, int line);
+#define NOT_IMPLEMENTED() carpocalypse2_error("Not implemented", C2_FUNCTION, __FILE__, __LINE__)
+#define UNUSED() carpocalypse2_error("Unused", C2_FUNCTION, __FILE__, __LINE__)
 
-#ifdef REC2_MATCHING
+#ifdef CARPOCALYPSE2_MATCHING
 
 #define C2_HOOK_CDECL __cdecl
 #define C2_HOOK_FASTCALL __fastcall

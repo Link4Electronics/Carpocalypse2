@@ -28,8 +28,8 @@
 #include "platform.h"
 
 #include <brender/brender.h>
-#include "rec2_logging.h"
-#include "rec2_macros.h"
+#include "carpocalypse2_logging.h"
+#include "carpocalypse2_macros.h"
 
 #include "c2_math.h"
 #include <stdio.h>
@@ -37,7 +37,7 @@
 #include "c2_string.h"
 
 #include "brender/brender.h"
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 #include "brender/br_types.h"
 
 #define OPPONENT_APC_IDX 98
@@ -1187,7 +1187,7 @@ FILE* C2_HOOK_FASTCALL DRfopen(const char* pFilename, const char* pMode) {
 // FUNCTION: CARMA2_HW 0x004b4760
 void C2_HOOK_FASTCALL PFfclose(FILE* pFile) {
 
-    if ((uintptr_t)pFile > REC2_ASIZE(gTwatVfsFiles)) {
+    if ((uintptr_t)pFile > CARPOCALYPSE2_ASIZE(gTwatVfsFiles)) {
         fclose(pFile);
     } else {
         gTwatVfsFiles[(uintptr_t)pFile].start = NULL;
@@ -1199,7 +1199,7 @@ br_size_t C2_HOOK_FASTCALL PFfread(void* buf, br_size_t size, unsigned int n, vo
     tTwatVfsFile* twtFile;
     int totalSize;
 
-    if ((int)f < REC2_ASIZE(gTwatVfsFiles)) {
+    if ((int)f < CARPOCALYPSE2_ASIZE(gTwatVfsFiles)) {
         twtFile = &gTwatVfsFiles[(uintptr_t)f];
         totalSize = size * n;
         if (twtFile->end - twtFile->pos < totalSize) {
@@ -1217,7 +1217,7 @@ br_size_t C2_HOOK_FASTCALL PFfread(void* buf, br_size_t size, unsigned int n, vo
 // FUNCTION: CARMA2_HW 0x004b4a80
 br_size_t C2_HOOK_FASTCALL PFfwrite(const void* buf, br_size_t size, unsigned int n, void* f) {
 
-    if ((int)f < REC2_ASIZE(gTwatVfsFiles)) {
+    if ((int)f < CARPOCALYPSE2_ASIZE(gTwatVfsFiles)) {
         FatalError(kFatalError_WriteAttemptToPackedFile_S, "unknown");
     }
     return fwrite(buf, size, n, f);
@@ -1227,7 +1227,7 @@ br_size_t C2_HOOK_FASTCALL PFfwrite(const void* buf, br_size_t size, unsigned in
 int C2_HOOK_FASTCALL DRfgetpos(FILE* pFile, fpos_t* pos) {
     tTwatVfsFile* twtFile;
 
-    if ((int)pFile < REC2_ASIZE(gTwatVfsFiles)) {
+    if ((int)pFile < CARPOCALYPSE2_ASIZE(gTwatVfsFiles)) {
         twtFile = &gTwatVfsFiles[(uintptr_t)pFile];
         *(tU8 **) pos = twtFile->pos;
         twtFile->error = 0;
@@ -1240,7 +1240,7 @@ int C2_HOOK_FASTCALL DRfgetpos(FILE* pFile, fpos_t* pos) {
 int C2_HOOK_FASTCALL PFfeof(FILE* pFile) {
     tTwatVfsFile* twtFile;
 
-    if ((int)pFile < REC2_ASIZE(gTwatVfsFiles)) {
+    if ((int)pFile < CARPOCALYPSE2_ASIZE(gTwatVfsFiles)) {
         twtFile = &gTwatVfsFiles[(uintptr_t)pFile];
         return twtFile->pos >= twtFile->end;
     }
@@ -1251,7 +1251,7 @@ int C2_HOOK_FASTCALL PFfeof(FILE* pFile) {
 int C2_HOOK_FASTCALL DRferror(FILE* pFile) {
     tTwatVfsFile* twtFile;
 
-    if ((int)pFile < REC2_ASIZE(gTwatVfsFiles)) {
+    if ((int)pFile < CARPOCALYPSE2_ASIZE(gTwatVfsFiles)) {
         twtFile = &gTwatVfsFiles[(uintptr_t)pFile];
         return twtFile->error;
     }
@@ -1262,7 +1262,7 @@ int C2_HOOK_FASTCALL DRferror(FILE* pFile) {
 void C2_HOOK_FASTCALL DRclearerr(FILE* pFile) {
     tTwatVfsFile* twtFile;
 
-    if ((int)pFile < REC2_ASIZE(gTwatVfsFiles)) {
+    if ((int)pFile < CARPOCALYPSE2_ASIZE(gTwatVfsFiles)) {
         twtFile = &gTwatVfsFiles[(uintptr_t)pFile];
         twtFile->error = 0;
         return;
@@ -1275,7 +1275,7 @@ int C2_HOOK_FASTCALL PFfgetc(FILE* pFile) {
     tTwatVfsFile* twtFile;
     int result;
 
-    if ((int)pFile < REC2_ASIZE(gTwatVfsFiles)) {
+    if ((int)pFile < CARPOCALYPSE2_ASIZE(gTwatVfsFiles)) {
         twtFile = &gTwatVfsFiles[(uintptr_t)pFile];
         if (twtFile->pos >= twtFile->end) {
             twtFile->error = -1;
@@ -1294,7 +1294,7 @@ int C2_HOOK_FASTCALL DRfgetc2(FILE* pFile) {
     tTwatVfsFile* twtFile;
     int result;
 
-    if ((int)pFile < REC2_ASIZE(gTwatVfsFiles)) {
+    if ((int)pFile < CARPOCALYPSE2_ASIZE(gTwatVfsFiles)) {
         twtFile = &gTwatVfsFiles[(uintptr_t)pFile];
         if (twtFile->pos >= twtFile->end) {
             twtFile->error = -1;
@@ -1312,7 +1312,7 @@ int C2_HOOK_FASTCALL DRfgetc2(FILE* pFile) {
 int C2_HOOK_FASTCALL PFungetc(int ch, FILE* file) {
     tTwatVfsFile* twtFile;
 
-    if ((int)file < REC2_ASIZE(gTwatVfsFiles)) {
+    if ((int)file < CARPOCALYPSE2_ASIZE(gTwatVfsFiles)) {
         twtFile = &gTwatVfsFiles[(uintptr_t)file];
         twtFile->pos--;
         *twtFile->pos = ch;
@@ -1329,7 +1329,7 @@ char* C2_HOOK_FASTCALL PFfgets(char* buffer, br_size_t size, FILE* pFile) {
     char* b;
     size_t i;
 
-    if ((int)pFile < REC2_ASIZE(gTwatVfsFiles)) {
+    if ((int)pFile < CARPOCALYPSE2_ASIZE(gTwatVfsFiles)) {
         twtFile = &gTwatVfsFiles[(uintptr_t)pFile];
         b = buffer;
         for (i = 0; i < size; i++) {
@@ -1359,7 +1359,7 @@ int C2_HOOK_FASTCALL PFfseek(FILE* pF, int offset, int whence) {
     tTwatVfsFile* twtFile;
     tU8 *newpos;
 
-    if ((int)pF < REC2_ASIZE(gTwatVfsFiles)) {
+    if ((int)pF < CARPOCALYPSE2_ASIZE(gTwatVfsFiles)) {
         twtFile = &gTwatVfsFiles[(uintptr_t)pF];
         switch (whence) {
         case SEEK_SET:
@@ -1390,7 +1390,7 @@ int C2_HOOK_FASTCALL PFfseek(FILE* pF, int offset, int whence) {
 int C2_HOOK_FASTCALL PFftell(FILE* pF) {
     tTwatVfsFile* twtFile;
 
-    if ((int)pF < REC2_ASIZE(gTwatVfsFiles)) {
+    if ((int)pF < CARPOCALYPSE2_ASIZE(gTwatVfsFiles)) {
         twtFile = &gTwatVfsFiles[(uintptr_t)pF];
         return twtFile->pos - twtFile->start;
     }
@@ -1401,7 +1401,7 @@ int C2_HOOK_FASTCALL PFftell(FILE* pF) {
 int C2_HOOK_FASTCALL DRfsetpos(FILE* pF, fpos_t* pos) {
     tTwatVfsFile* twtFile;
 
-    if ((int)pF < REC2_ASIZE(gTwatVfsFiles)) {
+    if ((int)pF < CARPOCALYPSE2_ASIZE(gTwatVfsFiles)) {
         twtFile = &gTwatVfsFiles[(uintptr_t)pF];
         if (twtFile->start <= *(tU8**)pos && *(tU8**)pos <= twtFile->end) {
             twtFile->pos = *(tU8**)pos;
@@ -1418,7 +1418,7 @@ int C2_HOOK_FASTCALL DRfsetpos(FILE* pF, fpos_t* pos) {
 void C2_HOOK_FASTCALL PFrewind(FILE* pF) {
     tTwatVfsFile* twtFile;
 
-    if ((int)pF < REC2_ASIZE(gTwatVfsFiles)) {
+    if ((int)pF < CARPOCALYPSE2_ASIZE(gTwatVfsFiles)) {
         twtFile = &gTwatVfsFiles[(uintptr_t)pF];
         twtFile->pos = twtFile->start;
         twtFile->error = 0;
@@ -1433,10 +1433,10 @@ void C2_HOOK_FASTCALL InitPackFiles(void) {
 
     C2_HOOK_BUG_ON(sizeof(tTwatVfsMountPoint) != 264);
 
-    for (i = 1; i < REC2_ASIZE(gTwatVfsFiles); i++) {
+    for (i = 1; i < CARPOCALYPSE2_ASIZE(gTwatVfsFiles); i++) {
         gTwatVfsFiles[i].start = NULL;
     }
-    for (i = 0; i < REC2_ASIZE(gTwatVfsMountPoints); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gTwatVfsMountPoints); i++) {
         gTwatVfsMountPoints[i].header = NULL;
     }
 
@@ -1453,7 +1453,7 @@ tTWTVFS C2_HOOK_FASTCALL OpenPackFile(const char* path) {
     int i;
 
     // file header must be 56 bytes for compatibility with .TWT files
-    REC2_BUG_ON(sizeof(tTwatFileHeader) != 56);
+    CARPOCALYPSE2_BUG_ON(sizeof(tTwatFileHeader) != 56);
 
     strcpy(twatFilePath, path);
     strcat(twatFilePath, ".TWT");
@@ -1463,7 +1463,7 @@ tTWTVFS C2_HOOK_FASTCALL OpenPackFile(const char* path) {
         return -1;
     }
     for (twt = 0; ; twt++) {
-        if (twt >= REC2_ASIZE(gTwatVfsMountPoints)) {
+        if (twt >= CARPOCALYPSE2_ASIZE(gTwatVfsMountPoints)) {
             fclose(f);
             return -1;
         }
@@ -1507,7 +1507,7 @@ FILE* C2_HOOK_FASTCALL PFfopen(const char* pPath, const char* mode) {
     C2_HOOK_BUG_ON(sizeof(tTwatVfsFile) != 16);
     C2_HOOK_BUG_ON(sizeof(tTwatFileHeader) != 56);
 
-    for (twt = 0; twt < REC2_ASIZE(gTwatVfsMountPoints); twt++) {
+    for (twt = 0; twt < CARPOCALYPSE2_ASIZE(gTwatVfsMountPoints); twt++) {
         if (gTwatVfsMountPoints[twt].header == NULL) {
             continue;
         }
@@ -1517,7 +1517,7 @@ FILE* C2_HOOK_FASTCALL PFfopen(const char* pPath, const char* mode) {
         twt_path_len = strlen(gTwatVfsMountPoints[twt].path);
         for (i = 0; i < gTwatVfsMountPoints[twt].header->nbFiles; i++) {
             if (DRStricmp(gTwatVfsMountPoints[twt].header->fileHeaders[i].filename, &pPath[twt_path_len + 1]) == 0) {
-                for (file_index = 1; file_index < REC2_ASIZE(gTwatVfsFiles); file_index++) {
+                for (file_index = 1; file_index < CARPOCALYPSE2_ASIZE(gTwatVfsFiles); file_index++) {
                     if (gTwatVfsFiles[file_index].start != NULL) {
                         continue;
                     }
@@ -1551,7 +1551,7 @@ void C2_HOOK_FASTCALL PFForEveryFile(const char* pThe_path, tPDForEveryFileRecur
     int i;
     char buffer[256];
 
-    for (twt = 0; twt < REC2_ASIZE(gTwatVfsMountPoints); twt++) {
+    for (twt = 0; twt < CARPOCALYPSE2_ASIZE(gTwatVfsMountPoints); twt++) {
         if (gTwatVfsMountPoints[twt].header == NULL) {
             continue;
         }
@@ -1573,7 +1573,7 @@ void C2_HOOK_FASTCALL PFForEveryFile2(const char* path, tEnumPathCallback pCallb
     int i;
     tPath_name twt_filePath;
 
-    for (twt = 0; twt < REC2_ASIZE(gTwatVfsMountPoints); twt++) {
+    for (twt = 0; twt < CARPOCALYPSE2_ASIZE(gTwatVfsMountPoints); twt++) {
         if (gTwatVfsMountPoints[twt].header != NULL && DRStricmp(gTwatVfsMountPoints[twt].path, path) == 0) {
             for (i = 0; i < gTwatVfsMountPoints[twt].header->nbFiles; i++) {
                 PathCat(twt_filePath, path, gTwatVfsMountPoints[twt].header->fileHeaders[i].filename);
@@ -1667,7 +1667,7 @@ br_pixelmap* C2_HOOK_FASTCALL RealLoadPixelmap(const char* pPath_name) {
     if (!gDisableTiffConversion) {
         pm = LoadTiffTexture_Ex(path, texture_name, gRender_palette, gPixelFlags | 0x40, &error);
     } else {
-        if (LoadBunchOfPixies(path, texture_name, pixelmaps, REC2_ASIZE(pixelmaps)) != 0) {
+        if (LoadBunchOfPixies(path, texture_name, pixelmaps, CARPOCALYPSE2_ASIZE(pixelmaps)) != 0) {
             error = 0;
             pm = pixelmaps[0];
         } else {
@@ -1681,7 +1681,7 @@ br_pixelmap* C2_HOOK_FASTCALL RealLoadPixelmap(const char* pPath_name) {
         if (!gDisableTiffConversion) {
             pm = LoadTiffTexture_Ex(path, texture_name, gRender_palette, gPixelFlags | 0x40, &error);
         } else {
-            if (LoadBunchOfPixies(path, texture_name, pixelmaps, REC2_ASIZE(pixelmaps)) != 0) {
+            if (LoadBunchOfPixies(path, texture_name, pixelmaps, CARPOCALYPSE2_ASIZE(pixelmaps)) != 0) {
                 pm = pixelmaps[0];
             } else {
                 pm = NULL;
@@ -1712,15 +1712,15 @@ void C2_HOOK_FASTCALL LoadBunchOParameters(tSlot_info* pSlot_info) {
     const char *str;
     int i;
 
-    C2_HOOK_BUG_ON(REC2_ASIZE(pSlot_info->initial) != 3);
-    C2_HOOK_BUG_ON(REC2_ASIZE(pSlot_info->initial_network) != 8);
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(pSlot_info->initial) != 3);
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(pSlot_info->initial_network) != 8);
 
     /* (armour|power|offensive), single player, each skill level */
     GetThreeInts(gTempFile, &pSlot_info->initial[0], &pSlot_info->initial[1], &pSlot_info->initial[2]);
     /* (armour|power|offensive), each network game type */
     GetALineAndDontArgue(gTempFile, s);
     str = strtok(s, "\t ,/");
-    for (i = 0; i < REC2_ASIZE(pSlot_info->initial_network); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(pSlot_info->initial_network); i++) {
         sscanf(str, "%d", &pSlot_info->initial_network[i]);
         str = strtok(NULL, "\t ,/");
     }
@@ -1731,13 +1731,13 @@ void C2_HOOK_FASTCALL LoadBunchOFloatParameters(tFloat_bunch_info *pBunch) {
     const char *str;
     int i;
 
-    C2_HOOK_BUG_ON(REC2_ASIZE(pBunch->initial) != 3);
-    C2_HOOK_BUG_ON(REC2_ASIZE(pBunch->initial_network) != 8);
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(pBunch->initial) != 3);
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(pBunch->initial_network) != 8);
 
     GetThreeFloats(gTempFile, &pBunch->initial[0], &pBunch->initial[1], &pBunch->initial[2]);
     GetALineAndDontArgue(gTempFile, s);
     str = strtok(s, "\t ,/");
-    for (i = 0; i < REC2_ASIZE(pBunch->initial_network); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(pBunch->initial_network); i++) {
         sscanf(str, "%f", &pBunch->initial_network[i]);
         str = strtok(NULL, "\t ,/");
     }
@@ -1758,7 +1758,7 @@ void C2_HOOK_FASTCALL LoadGeneralParameters(void) {
 
     gTempFile = PFfopen(the_path, "rb");
     if (gTempFile != NULL) {
-        PFfgets(s, REC2_ASIZE(s)-1, gTempFile);
+        PFfgets(s, CARPOCALYPSE2_ASIZE(s)-1, gTempFile);
         PFfclose(gTempFile);
 
         for (i = 0; i < strlen(gDecode_string); i++) {
@@ -1903,7 +1903,7 @@ void C2_HOOK_FASTCALL LoadGeneralParameters(void) {
     power_mult = GetAScalar(gTempFile);
     /* Offensive per-level multiplier */
     offensive_mult = GetAScalar(gTempFile);
-    for (i = 1; i < REC2_ASIZE(gArmour_starting_value); i++) {
+    for (i = 1; i < CARPOCALYPSE2_ASIZE(gArmour_starting_value); i++) {
         gArmour_starting_value[i] = gArmour_starting_value[i - 1] * armour_mult;
         gPower_starting_value[i] = gPower_starting_value[i - 1] * power_mult;
         gOffensive_starting_value[i] = gOffensive_starting_value[i - 1] * offensive_mult;
@@ -1917,8 +1917,8 @@ void C2_HOOK_FASTCALL LoadGeneralParameters(void) {
     /* Starting money in network mode */
     GetALineAndDontArgue(gTempFile, s2);
     str = strtok(s2, "\t ,/");
-#if defined(REC2_FIX_BUGS)
-    for (i = 0; i < REC2_ASIZE(gNet_starting_money); i++) {
+#if defined(CARPOCALYPSE2_FIX_BUGS)
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gNet_starting_money); i++) {
 #else
     for (i = 0; i < 5; i++) {
 #endif
@@ -1945,7 +1945,7 @@ void C2_HOOK_FASTCALL LoadGeneralParameters(void) {
     /* Score targets for each net game type */
     GetALineAndDontArgue(gTempFile, s2);
     str = strtok(s2, "\t ,/");
-    for (i = 0; i < REC2_ASIZE(gNet_score_targets); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gNet_score_targets); i++) {
         sscanf(str, "%d", &gNet_score_targets[i]);
         str = strtok(NULL, "\t ,/");
     }
@@ -1985,12 +1985,12 @@ void C2_HOOK_FASTCALL LoadGeneralParameters(void) {
      * network game. Zero means don't tick up.
      */
     time = GetAnInt(gTempFile);
-    for (i = 0; (int)i < REC2_ASIZE(gAuto_increase_credits_dt); i++) {
+    for (i = 0; (int)i < CARPOCALYPSE2_ASIZE(gAuto_increase_credits_dt); i++) {
         gAuto_increase_credits_dt[i] = (int)((float)(1000 * time) / (.02f * (float)gRecovery_cost.initial[i]));
     }
     GetALineAndDontArgue(gTempFile, s2);
     str = strtok(s2, "\t ,/");
-    for (i = 0; (int)i < REC2_ASIZE(gNet_score_targets); i++) {
+    for (i = 0; (int)i < CARPOCALYPSE2_ASIZE(gNet_score_targets); i++) {
         int t;
         sscanf(str, "%d", &t);
         gNet_auto_increase_credits_dt[i] = (int)((float)(1000 * t) / (.02f * (float)gRecovery_cost.initial_network[i]));
@@ -2031,7 +2031,7 @@ void C2_HOOK_FASTCALL LoadKeyMapping(void) {
         FatalError(kFatalError_CouldNotOpenKeyMapFile);
     }
 
-    for (i = 0; i < REC2_ASIZE(gKey_mapping); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gKey_mapping); i++) {
         fscanf((FILE*)f, "%d", &gKey_mapping[i]);
     }
     PFfclose(f);
@@ -2049,7 +2049,7 @@ void C2_HOOK_FASTCALL SaveKeyMapping(void) {
     if (f == NULL) {
         FatalError(kFatalError_CouldNotOpenKeyMapFile);
     }
-    for (i = 0; i < REC2_ASIZE(gKey_mapping); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gKey_mapping); i++) {
         fprintf(f, "%d", gKey_mapping[i]);
         fputc('\r', f);
         fputc('\n', f);
@@ -2069,7 +2069,7 @@ void C2_HOOK_FASTCALL LoadHeadupImages(void) {
     int i;
     br_pixelmap* pixmap;
 
-    for (i = 0; i < REC2_ASIZE(gHeadup_image_info); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gHeadup_image_info); i++) {
         PossibleService();
         if (gHeadup_image_info[i].avail == eNet_or_otherwise
                 || (gHeadup_image_info[i].avail == eNot_net && gNet_mode == eNet_mode_none)
@@ -2098,7 +2098,7 @@ void C2_HOOK_FASTCALL LoadMiscStrings(void) {
     if (f == NULL) {
         FatalError(kFatalError_CannotOpenTEXT_TXT);
     }
-    for (i = 0; i < REC2_ASIZE(gMisc_strings); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gMisc_strings); i++) {
         if (PFfeof(f)) {
             break;
         }
@@ -2300,7 +2300,7 @@ void C2_HOOK_FASTCALL LoadRaces(tRace_list_spec* pRace_list, int* pCount, int pR
         pRace_list[i].count_opponents = GetAnInt(f);
         /* Number of explicit opponents */
         pRace_list[i].count_explicit_opponents = GetAnInt(f);
-        C2_HOOK_ASSERT(pRace_list[i].count_explicit_opponents <= REC2_ASIZE(pRace_list[i].explicit_opponents));
+        C2_HOOK_ASSERT(pRace_list[i].count_explicit_opponents <= CARPOCALYPSE2_ASIZE(pRace_list[i].explicit_opponents));
         for (j = 0; j < pRace_list[i].count_explicit_opponents; j++) {
             pRace_list[i].explicit_opponents[j] = GetAnInt(f);
         }
@@ -2338,7 +2338,7 @@ void C2_HOOK_FASTCALL LoadRaces(tRace_list_spec* pRace_list, int* pCount, int pR
         case kRaceType_Cars:
             /* Number of opponents that must be killed (-1 means all) */
             pRace_list[i].options.cars.count_opponents = GetAnInt(f);
-            C2_HOOK_ASSERT(pRace_list[i].options.cars.count_opponents <= (int)REC2_ASIZE(pRace_list[i].options.cars.opponents));
+            C2_HOOK_ASSERT(pRace_list[i].options.cars.count_opponents <= (int)CARPOCALYPSE2_ASIZE(pRace_list[i].options.cars.opponents));
             for (j = 0; j < pRace_list[i].options.cars.count_opponents; j++) {
                 pRace_list[i].options.cars.opponents[j] = GetAnInt(f);
             }
@@ -2528,7 +2528,7 @@ int C2_HOOK_FASTCALL SaveOptions(void) {
 
 #define BAIL_IF_NEGATIVE(VAL)            \
     if ((VAL) < 0) {                     \
-        rec2_log_warn(#VAL " FAILED\n"); \
+        carpocalypse2_log_warn(#VAL " FAILED\n"); \
         return 0;                        \
     }
 
@@ -2807,7 +2807,7 @@ void C2_HOOK_FASTCALL InitTreeSurgery(void) {
         GetAString(file, gTree_surgery_pass2[i].original);
         GetAString(file, gTree_surgery_pass2[i].replacement);
     }
-#if defined(REC2_FIX_BUGS)
+#if defined(CARPOCALYPSE2_FIX_BUGS)
     PFfclose(file);
 #endif
 }
@@ -2893,7 +2893,7 @@ void C2_HOOK_FASTCALL DRLoadPalette(const char* pPath_name) {
     int number_of_palettes;
     int i;
 
-    number_of_palettes = BrPixelmapLoadMany(pPath_name, palette_array, REC2_ASIZE(palette_array));
+    number_of_palettes = BrPixelmapLoadMany(pPath_name, palette_array, CARPOCALYPSE2_ASIZE(palette_array));
     for (i = 0; i < number_of_palettes; i++) {
         palette_array[i]->row_bytes = (palette_array[i]->row_bytes + 3) & ~0x3;
         palette_array[i]->base_x = 0;
@@ -2908,7 +2908,7 @@ void C2_HOOK_FASTCALL DRLoadShadeTable(const char* pPath_name) {
     int number_of_tables;
     int i;
 
-    number_of_tables = BrPixelmapLoadMany(pPath_name, table_array, REC2_ASIZE(table_array));
+    number_of_tables = BrPixelmapLoadMany(pPath_name, table_array, CARPOCALYPSE2_ASIZE(table_array));
     for (i = 0; i < number_of_tables; i++) {
         table_array[i]->row_bytes = (table_array[i]->row_bytes + 3) & ~0x3;
         table_array[i]->base_x = 0;
@@ -2924,7 +2924,7 @@ void C2_HOOK_FASTCALL DRLoadMaterials(const char* pPath_name) {
     int number_of_materials;
 
     PossibleService();
-    number_of_materials = BrMaterialLoadMany(pPath_name, material_array, REC2_ASIZE(material_array));
+    number_of_materials = BrMaterialLoadMany(pPath_name, material_array, CARPOCALYPSE2_ASIZE(material_array));
     for (i = 0; i < number_of_materials; i++) {
         material_array[i]->flags &= ~BR_MATF_LIGHT;
     }
@@ -2938,7 +2938,7 @@ void C2_HOOK_FASTCALL DRLoadModels(const char* pPath_name) {
     int number_of_models;
 
     PossibleService();
-    number_of_models = BrModelLoadMany(pPath_name, model_array, REC2_ASIZE(model_array));
+    number_of_models = BrModelLoadMany(pPath_name, model_array, CARPOCALYPSE2_ASIZE(model_array));
     WhitenVertexRGB(model_array, number_of_models);
     for (i = 0; i < number_of_models; i++) {
         model_array[i]->flags = BR_MODF_UPDATEABLE;
@@ -2979,7 +2979,7 @@ void C2_HOOK_FASTCALL DRLoadActors(const char* pPath_name) {
     int number_of_actors;
 
     PossibleService();
-    number_of_actors = BrActorLoadMany(pPath_name, actor_array, REC2_ASIZE(actor_array));
+    number_of_actors = BrActorLoadMany(pPath_name, actor_array, CARPOCALYPSE2_ASIZE(actor_array));
     for (i = 0; i < number_of_actors; i++) {
         gActor_array[gNumber_of_actors] = actor_array[i];
         gNumber_of_actors++;
@@ -3139,7 +3139,7 @@ void C2_HOOK_FASTCALL LoadOpponents(void) {
         /* Cost to buy it */
         gOpponents[i].price = GetAnInt(f);
         /* Network availability ('eagle', or 'all') */
-        gOpponents[i].network_availability = GetALineAndInterpretCommand(f, gNet_avail_names, REC2_ASIZE(gNet_avail_names));
+        gOpponents[i].network_availability = GetALineAndInterpretCommand(f, gNet_avail_names, CARPOCALYPSE2_ASIZE(gNet_avail_names));
 
         gOpponents[i].mug_shot_image_data = NULL;
         gOpponents[i].grid_icon_image = NULL;
@@ -3165,7 +3165,7 @@ void C2_HOOK_FASTCALL LoadOpponents(void) {
             GetPairOfInts(f, &the_chunk->x_coord, &the_chunk->y_coord);
             GetPairOfInts(f, &the_chunk->frame_cue, &the_chunk->frame_end);
             the_chunk->line_count = GetAnInt(f);
-            while (the_chunk->line_count > REC2_ASIZE(the_chunk->text)) {
+            while (the_chunk->line_count > CARPOCALYPSE2_ASIZE(the_chunk->text)) {
                 the_chunk->line_count--;
                 GetALineAndDontArgue(f, s);
             }
@@ -3240,9 +3240,9 @@ void C2_HOOK_FASTCALL LoadDroneTypeInfo(const char* pDrone_name) {
     if (strcmp(pDrone_name, str) != 0) {
         FatalError(kFatalError_UnableToOpenDroneFileOrFileCorrupted_S, pDrone_name);
     }
-    strncpy(drone->name, pDrone_name, REC2_ASIZE(drone->name) - 1);
+    strncpy(drone->name, pDrone_name, CARPOCALYPSE2_ASIZE(drone->name) - 1);
 
-    drone->type = GetALineAndInterpretCommand(f, gDrone_type_names, REC2_ASIZE(gDrone_type_names));
+    drone->type = GetALineAndInterpretCommand(f, gDrone_type_names, CARPOCALYPSE2_ASIZE(gDrone_type_names));
     if (drone->type < 0) {
         FatalError(kFatalError_UnableToOpenDroneFileOrFileCorrupted_S, pDrone_name);
     }
@@ -3379,7 +3379,7 @@ void C2_HOOK_FASTCALL LoadPanGameDroneInfo(void) {
     sscanf(str, "%d", &version);
     if (version == 1) {
         memset(gDrone_forms, 0, sizeof(gDrone_forms));
-        for (gCount_drone_forms = 0; gCount_drone_forms < REC2_ASIZE(gDrone_forms); gCount_drone_forms++) {
+        for (gCount_drone_forms = 0; gCount_drone_forms < CARPOCALYPSE2_ASIZE(gDrone_forms); gCount_drone_forms++) {
             GetALineAndDontArgue(f, s);
             if (strcmp(s, "END OF DRONES") == 0 || PFfeof(f)) {
                 break;
@@ -3412,10 +3412,10 @@ void C2_HOOK_FASTCALL LoadRaceInfo(int pRace_index, tRace_info* pRace_info) {
 void C2_HOOK_FASTCALL InitFunkGrooveFlags(void) {
     int i;
 
-    C2_HOOK_BUG_ON(REC2_ASIZE(gFunk_groove_flags) != 30);
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gFunk_groove_flags) != 30);
 
     // Starting from 1
-    for (i = 1; i < REC2_ASIZE(gFunk_groove_flags); i++) {
+    for (i = 1; i < CARPOCALYPSE2_ASIZE(gFunk_groove_flags); i++) {
         gFunk_groove_flags[i] = 0;
     }
 }
@@ -3466,7 +3466,7 @@ void C2_HOOK_FASTCALL LoadGear(FILE* pF, int pIndex, tCar_spec* pCar_spec) {
 void C2_HOOK_FASTCALL AdjustCarCoordinates(tCar_spec* pCar) {
     int i;
 
-    for (i = 0; i < REC2_ASIZE(pCar->render_left); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(pCar->render_left); i++) {
         pCar->render_left[i] -= gCurrent_graf_data->cock_margin_x;
         pCar->render_top[i] -= gCurrent_graf_data->cock_margin_y;
         pCar->render_right[i] -= gCurrent_graf_data->cock_margin_x;
@@ -3484,13 +3484,13 @@ void C2_HOOK_FASTCALL AdjustCarCoordinates(tCar_spec* pCar) {
     pCar->speedo_y[1] -= gCurrent_graf_data->cock_margin_y;
     pCar->tacho_x[1] -= gCurrent_graf_data->cock_margin_x;
     pCar->tacho_y[1] -= gCurrent_graf_data->cock_margin_y;
-    for (i = 0; i < REC2_ASIZE(pCar->lhands_x); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(pCar->lhands_x); i++) {
         pCar->lhands_x[i] -= gCurrent_graf_data->cock_margin_x;
         pCar->lhands_y[i] -= gCurrent_graf_data->cock_margin_y;
         pCar->rhands_x[i] -= gCurrent_graf_data->cock_margin_x;
         pCar->rhands_y[i] -= gCurrent_graf_data->cock_margin_y;
     }
-    for (i = 0; i < REC2_ASIZE(pCar->damage_units); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(pCar->damage_units); i++) {
         pCar->damage_units[i].x_coord -= gCurrent_graf_data->cock_margin_x;
         pCar->damage_units[i].y_coord -= gCurrent_graf_data->cock_margin_y;
     }
@@ -3647,7 +3647,7 @@ void C2_HOOK_FASTCALL GetDamageProgram(FILE* pF, tCar_spec* pCar_spec, tImpact_l
             /* Damage */
             GetALineAndDontArgue(pF, s);
             str = strtok(s, "\t ,/");
-            for (k = 0; k < REC2_ASIZE(gDamage_names); k++) {
+            for (k = 0; k < CARPOCALYPSE2_ASIZE(gDamage_names); k++) {
                 if (strcmp(str, gDamage_names[k]) == 0) {
                     the_clause->effects[j].type = k;
                     break;
@@ -3761,7 +3761,7 @@ void C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, tCar_spec*
         gGroove_funk_offset = 0;
     } else {
         gGroove_funk_offset = -1;
-        for (i = 1; i < REC2_ASIZE(gFunk_groove_flags); i++) {
+        for (i = 1; i < CARPOCALYPSE2_ASIZE(gFunk_groove_flags); i++) {
             if (!gFunk_groove_flags[i]) {
                 pCar_spec->fg_index = i;
                 gFunk_groove_flags[i] = 1;
@@ -3830,8 +3830,8 @@ void C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, tCar_spec*
         FatalError(kFatalError_FileIsCorrupted_S, pCar_name);
     }
     if (pDriver_name[0] != '\0') {
-        memcpy(pCar_spec->driver_name, pDriver_name, REC2_ASIZE(pCar_spec->driver_name));
-        pCar_spec->driver_name[REC2_ASIZE(pCar_spec->driver_name) - 1] = '\0';
+        memcpy(pCar_spec->driver_name, pDriver_name, CARPOCALYPSE2_ASIZE(pCar_spec->driver_name));
+        pCar_spec->driver_name[CARPOCALYPSE2_ASIZE(pCar_spec->driver_name) - 1] = '\0';
     } else {
         strcpy(pCar_spec->driver_name, "X");
     }
@@ -3842,7 +3842,7 @@ void C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, tCar_spec*
     pCar_spec->time_last_victim = 0;
     pCar_spec->disabled = 0;
     pCar_spec->active = 1;
-    for (i = 0; i < REC2_ASIZE(pCar_spec->power_up_levels); ++i) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(pCar_spec->power_up_levels); ++i) {
         pCar_spec->power_up_levels[i] = gCurrent_APO_levels[i];
         pCar_spec->power_up_slots[i] = gCurrent_APO_potential_levels[i];
     }
@@ -3855,7 +3855,7 @@ void C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, tCar_spec*
         if (twt >= 0) {
             PackFileRevertTiffLoading();
         }
-        for (i = 0; i < REC2_ASIZE(pCar_spec->cockpit_images); i++) {
+        for (i = 0; i < CARPOCALYPSE2_ASIZE(pCar_spec->cockpit_images); i++) {
             /* [0] Cockpit forward image file names
              * [1] Cockpit left image file names
              * [2] Cockpit right image file names */
@@ -4002,7 +4002,7 @@ void C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, tCar_spec*
         pCar_spec->prat_cam_bottom = LoadPixelmap(str);
         PossibleService();
 
-        for (i = 0; i < REC2_ASIZE(pCar_spec->damage_units); i++) {
+        for (i = 0; i < CARPOCALYPSE2_ASIZE(pCar_spec->damage_units); i++) {
             C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tCar_spec, damage_units, 0x4d8);
             if (i == eDamage_driver) {
                 pCar_spec->damage_units[i].images = NULL;
@@ -4023,7 +4023,7 @@ void C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, tCar_spec*
                 sscanf(str, "%d", &pCar_spec->damage_units[i].x_coord);
                 str = strtok(NULL, "\t ,/");
                 sscanf(str, "%d", &pCar_spec->damage_units[i].y_coord);
-                for (k = 0; k < REC2_ASIZE(pCar_spec->damage_units[i].periods); k++) {
+                for (k = 0; k < CARPOCALYPSE2_ASIZE(pCar_spec->damage_units[i].periods); k++) {
                     str = strtok(NULL, "\t ,/");
                     sscanf(str, "%f", &temp_float);
                     pCar_spec->damage_units[i].periods[k] = (int)(1000.0f / temp_float / 2.0f);
@@ -4056,7 +4056,7 @@ void C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, tCar_spec*
 
         /* Number of dimmed areas (external) */
         pCar_spec->dim_count[0] = GetAnInt(g);
-        for (i = 0; i < REC2_ASIZE(pCar_spec->dim_count); i++) {
+        for (i = 0; i < CARPOCALYPSE2_ASIZE(pCar_spec->dim_count); i++) {
             for (j = 0; j < pCar_spec->dim_count[i]; j++) {
                 GetFourInts(g,
                     &pCar_spec->dim_left[i][j],
@@ -4154,7 +4154,7 @@ void C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, tCar_spec*
     str = strtok(s, "\t ,/");
     sscanf(str, "%d", &pCar_spec->count_detail_levels);
     pCar_spec->count_detail_levels++;
-    if (pCar_spec->count_detail_levels > REC2_ASIZE(((tUser_crush_data*)0)->models)) {
+    if (pCar_spec->count_detail_levels > CARPOCALYPSE2_ASIZE(((tUser_crush_data*)0)->models)) {
         PDFatalError("Too many levels of detail");
     }
     pCar_spec->detail_levels[0] = 0.f;
@@ -4256,7 +4256,7 @@ void C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, tCar_spec*
     /* Left-front suspension parts GroovyFunkRef */
     GetALineAndDontArgue(f, s);
     str = strtok(s, "\t ,/");
-    for (i = 0; i < REC2_ASIZE(pCar_spec->lf_sus_ref); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(pCar_spec->lf_sus_ref); i++) {
         sscanf(str, "%d", &pCar_spec->lf_sus_ref[i]);
         AddRefOffset(&pCar_spec->lf_sus_ref[i]);
         str = strtok(NULL, "\t ,/");
@@ -4268,7 +4268,7 @@ void C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, tCar_spec*
     /* Right-front suspension parts GroovyFunkRef */
     GetALineAndDontArgue(f, s);
     str = strtok(s, "\t ,/");
-    for (i = 0; i < REC2_ASIZE(pCar_spec->rf_sus_ref); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(pCar_spec->rf_sus_ref); i++) {
         sscanf(str, "%d", &pCar_spec->rf_sus_ref[i]);
         AddRefOffset(&pCar_spec->rf_sus_ref[i]);
         str = strtok(NULL, "\t ,/");
@@ -4279,7 +4279,7 @@ void C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, tCar_spec*
     /* Left-rear suspension parts GroovyFunkRef */
     GetALineAndDontArgue(f, s);
     str = strtok(s, "\t ,/");
-    for (i = 0; i < REC2_ASIZE(pCar_spec->lr_sus_ref); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(pCar_spec->lr_sus_ref); i++) {
         sscanf(str, "%d", &pCar_spec->lr_sus_ref[i]);
         AddRefOffset(&pCar_spec->lr_sus_ref[i]);
         str = strtok(NULL, "\t ,/");
@@ -4290,7 +4290,7 @@ void C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, tCar_spec*
     /* Right-rear suspension parts GroovyFunkRef */
     GetALineAndDontArgue(f, s);
     str = strtok(s, "\t ,/");
-    for (i = 0; i < REC2_ASIZE(pCar_spec->rr_sus_ref); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(pCar_spec->rr_sus_ref); i++) {
         sscanf(str, "%d", &pCar_spec->rr_sus_ref[i]);
         AddRefOffset(&pCar_spec->rr_sus_ref[i]);
         str = strtok(NULL, "\t ,/");
@@ -4335,7 +4335,7 @@ void C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, tCar_spec*
     GetALineAndDontArgue(f, s);
     str = strtok(s, "\t ,/");
     sscanf(str, "%f", &temp_float);
-    pCar_spec->driven_wheels_circum = (float)(2.f * temp_float * REC2_PI);
+    pCar_spec->driven_wheels_circum = (float)(2.f * temp_float * CARPOCALYPSE2_PI);
 
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tCar_spec, non_driven_wheels_circum, 0x4bc);
 
@@ -4343,7 +4343,7 @@ void C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, tCar_spec*
     GetALineAndDontArgue(f, s);
     str = strtok(s, "\t ,/");
     sscanf(str, "%f", &temp_float);
-    pCar_spec->non_driven_wheels_circum = (float)(temp_float * 2.f * REC2_PI);
+    pCar_spec->non_driven_wheels_circum = (float)(temp_float * 2.f * CARPOCALYPSE2_PI);
 
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tCar_spec, car_model_variable, 0x400);
 
@@ -4357,17 +4357,17 @@ void C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, tCar_spec*
 
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tCar_spec, wheel_actors, 0x12ec);
 
-    for (i = 0; i < REC2_ASIZE(gWheel_actor_names); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gWheel_actor_names); i++) {
         pCar_spec->wheel_actors[i] = DRActorFindRecurse(pCar_spec->car_master_actor, gWheel_actor_names[i]);
     }
 
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tCar_spec, pivot_actors, 0x1304);
 
-    for (i = 0; i < REC2_ASIZE(gPivot_actor_names); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gPivot_actor_names); i++) {
         pCar_spec->pivot_actors[i] = DRActorFindRecurse(pCar_spec->car_master_actor, gPivot_actor_names[i]);
     }
 
-    for (i = 0; i < REC2_ASIZE(pCar_spec->wheel_actors); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(pCar_spec->wheel_actors); i++) {
         br_vector3 avg;
         br_actor* actor;
         br_model* model;
@@ -4390,7 +4390,7 @@ void C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, tCar_spec*
         }
     }
 
-    for (i = 0; i < REC2_ASIZE(pCar_spec->pivot_actors); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(pCar_spec->pivot_actors); i++) {
         br_actor* actor;
 
         actor = pCar_spec->pivot_actors[i];
@@ -4421,10 +4421,10 @@ void C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, tCar_spec*
     all_fire_zero = 1;
 
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tCar_spec, fire_vertex, 0xac);
-    C2_HOOK_BUG_ON(REC2_ASIZE(pCar_spec->fire_vertex) != 12);
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(pCar_spec->fire_vertex) != 12);
 
     /* damage vertices fire points */
-    for (i = 0; i < REC2_ASIZE(pCar_spec->fire_vertex); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(pCar_spec->fire_vertex); i++) {
         int vertex_i;
 
         pCar_spec->fire_vertex[i] = GetAnInt(f);
@@ -4448,7 +4448,7 @@ void C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, tCar_spec*
     }
 
     if (all_fire_zero) {
-        for (i = 0; i < REC2_ASIZE(pCar_spec->fire_vertex); i++) {
+        for (i = 0; i < CARPOCALYPSE2_ASIZE(pCar_spec->fire_vertex); i++) {
             pCar_spec->fire_vertex[i] = IRandomBetween(0, count_vertices - 1);
         }
     }
@@ -4627,7 +4627,7 @@ void C2_HOOK_FASTCALL ReadMechanics(FILE* pF, tCar_spec* c, int pSpec_version) {
     br_scalar friction_non_steer_1, friction_non_steer_2;
     int wpos_i;
 
-#if defined(REC2_FIX_BUGS)
+#if defined(CARPOCALYPSE2_FIX_BUGS)
     friction_non_steer_1 = 0.f;
     friction_non_steer_2 = 0.f;
     friction_steer = 0.f;
@@ -4731,9 +4731,9 @@ void C2_HOOK_FASTCALL ReadMechanics(FILE* pF, tCar_spec* c, int pSpec_version) {
         FatalError(kFatalError_InvalidScreenDepthSetting);
     }
 
-    C2_HOOK_BUG_ON(REC2_ASIZE(c->wpos) != 4);
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(c->wpos) != 4);
 
-    for (i = 0; i < REC2_ASIZE(c->wpos); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(c->wpos); i++) {
         /* Wheels entry #1 */
         /* Type */
         GetAnInt(pF);
@@ -4748,7 +4748,7 @@ void C2_HOOK_FASTCALL ReadMechanics(FILE* pF, tCar_spec* c, int pSpec_version) {
         GetThreeFloats(pF, &wpos.v[0], &wpos.v[1], &wpos.v[2]);
 
         if (Vector3IsZero(&wpos)) {
-            for (j = 0; j < REC2_ASIZE(c->wheel_actors); j++) {
+            for (j = 0; j < CARPOCALYPSE2_ASIZE(c->wheel_actors); j++) {
                 br_actor* parent;
 
                 if (c->wheel_actors[j] == NULL) {
@@ -4857,9 +4857,9 @@ void C2_HOOK_FASTCALL ReadMechanics(FILE* pF, tCar_spec* c, int pSpec_version) {
     c->mu.v[1] *= sqrtf((c->wpos[0].v[2] - c->collision_info->cmpos.v[2]) / (c->wpos[0].v[2] - c->wpos[2].v[2]) * c->collision_info->M * 5.f);
     c->mu.v[2] *= sqrtf((c->wpos[2].v[2] - c->collision_info->cmpos.v[2]) / (c->wpos[2].v[2] - c->wpos[0].v[2]) * c->collision_info->M * 5.f);
 
-    C2_HOOK_BUG_ON(REC2_ASIZE(c->wpos) != 4);
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(c->wpos) != 4);
 
-    for (i = 0; i < REC2_ASIZE(c->wpos); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(c->wpos); i++) {
         BrVector3Scale(&c->wpos[i], &c->wpos[i], WORLD_SCALE);
         c->wpos[i].v[1] = c->ride_height;
     }
@@ -4900,7 +4900,7 @@ br_material* C2_HOOK_FASTCALL GetSimpleMaterial(char* pName, tRendererShadingTyp
         colour = (r << 16) | (g << 8) | (b << 0);
     }
 
-    for (i = 0; i < REC2_ASIZE(gSimple_materials); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gSimple_materials); i++) {
         if (gSimple_materials[i] == NULL) {
             break;
         }
@@ -4908,7 +4908,7 @@ br_material* C2_HOOK_FASTCALL GetSimpleMaterial(char* pName, tRendererShadingTyp
             return gSimple_materials[i];
         }
     }
-    if (i >= REC2_ASIZE(gSimple_materials)) {
+    if (i >= CARPOCALYPSE2_ASIZE(gSimple_materials)) {
         return NULL;
     }
     gSimple_materials[i] = BrMaterialAllocate("Simple");
@@ -5080,7 +5080,7 @@ int C2_HOOK_FASTCALL AddSmoothModels(tBrender_storage* pStorage, const char* pPa
     int i;
 
     new_ones = 0;
-    count = BrModelLoadMany(pPath, temp_array, REC2_ASIZE(temp_array));
+    count = BrModelLoadMany(pPath, temp_array, CARPOCALYPSE2_ASIZE(temp_array));
     WhitenVertexRGB(temp_array, count);
     if (count == 0) {
         FatalError(kFatalError_CannotLoadModelFileOrItIsEmpty_S, pPath);
@@ -5188,7 +5188,7 @@ void C2_HOOK_FASTCALL ReadNonCarMechanicsData(FILE* pF, tNon_car_spec* pNon_car_
 
         /* torque (KN m) needed to move object */
         ts = GetAFloat(pF);
-        pNon_car_spec->min_torque_squared = REC2_SQR(ts / WORLD_SCALE);
+        pNon_car_spec->min_torque_squared = CARPOCALYPSE2_SQR(ts / WORLD_SCALE);
 
         BrVector3Set(&pNon_car_spec->I_over_M,
             (het * het + wid * wid) / 12.f,
@@ -5240,7 +5240,7 @@ void C2_HOOK_FASTCALL ReadNonCarMechanicsData(FILE* pF, tNon_car_spec* pNon_car_
 
         /* torque (KN m) needed to move object */
         ts = GetAFloat(pF);
-        pNon_car_spec->min_torque_squared = REC2_SQR(ts / WORLD_SCALE);
+        pNon_car_spec->min_torque_squared = CARPOCALYPSE2_SQR(ts / WORLD_SCALE);
 
         BrVector3Set(&pNon_car_spec->I_over_M,
             (het * het + wid * wid) / 12.f,
@@ -5561,9 +5561,9 @@ int C2_HOOK_FASTCALL ReadPastThisLine(FILE* pF, const char* pLine) {
 int C2_HOOK_FASTCALL MatchFGType(const char* pS) {
     int i;
 
-    C2_HOOK_BUG_ON(REC2_ASIZE(gGroove_funk_type_names) != 3);
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gGroove_funk_type_names) != 3);
 
-    for (i = 0; i < REC2_ASIZE(gGroove_funk_type_names); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gGroove_funk_type_names); i++) {
 
         if (strcmp(pS, gGroove_funk_type_names[i]) == 0) {
             return i;
@@ -5575,9 +5575,9 @@ int C2_HOOK_FASTCALL MatchFGType(const char* pS) {
 tFunk_groove_axis GetAxisFromString(const char* pS) {
     int i;
 
-    C2_HOOK_BUG_ON(REC2_ASIZE(gAxis_names) != 3);
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gAxis_names) != 3);
 
-    for (i = 0; i < REC2_ASIZE(gAxis_names); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gAxis_names); i++) {
 
         if (strcmp(pS, gAxis_names[i]) == 0) {
             return i;
@@ -5589,9 +5589,9 @@ tFunk_groove_axis GetAxisFromString(const char* pS) {
 tFunk_groove_reverseness GetReversenessFromString(const char* pS) {
     int i;
 
-    C2_HOOK_BUG_ON(REC2_ASIZE(gReverseness_type_names) != 2);
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gReverseness_type_names) != 2);
 
-    for (i = 0; i < REC2_ASIZE(gReverseness_type_names); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gReverseness_type_names); i++) {
 
         if (strcmp(pS, gReverseness_type_names[i]) == 0) {
             return i;
@@ -5603,9 +5603,9 @@ tFunk_groove_reverseness GetReversenessFromString(const char* pS) {
 tFunk_groove_speed_control GetSpeedControlFromString(const char* pS) {
     int i;
 
-    C2_HOOK_BUG_ON(REC2_ASIZE(gFunk_speed_control_names) != 2);
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gFunk_speed_control_names) != 2);
 
-    for (i = 0; i < REC2_ASIZE(gFunk_speed_control_names); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gFunk_speed_control_names); i++) {
 
         if (strcmp(pS, gFunk_speed_control_names[i]) == 0) {
             return i;
@@ -5618,7 +5618,7 @@ tFunk_groove_speed_control GetSpeedControlFromString(const char* pS) {
 void C2_HOOK_FASTCALL LoadFunksAndGrooves(tDrone_spec* pDrone, FILE* pF) {
 
     C2_HOOK_BUG_ON(sizeof(tFunk_grooves) != 0xa4);
-    C2_HOOK_BUG_ON(REC2_ASIZE(pDrone->funk_grooves->items) != 10);
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(pDrone->funk_grooves->items) != 10);
 
     if (!ReadPastThisLine(pF, "START OF FUNKYGROOVY STUFF")) {
         FatalError(kFatalError_UnableToOpenDroneFileOrFileCorrupted_S, pDrone->form->name);
@@ -5640,7 +5640,7 @@ void C2_HOOK_FASTCALL LoadFunksAndGrooves(tDrone_spec* pDrone, FILE* pF) {
         if (strcmp(s, "END OF FUNKYGROOVY STUFF") == 0 || PFfeof(pF)) {
             break;
         }
-        if (pDrone->funk_grooves->count >= REC2_ASIZE(pDrone->funk_grooves->items)) {
+        if (pDrone->funk_grooves->count >= CARPOCALYPSE2_ASIZE(pDrone->funk_grooves->items)) {
             FatalError(kFatalError_UnableToOpenDroneFileOrFileCorrupted_S, pDrone->form->name);
         }
         funk_groove = &pDrone->funk_grooves->items[pDrone->funk_grooves->count];
@@ -5678,7 +5678,7 @@ void C2_HOOK_FASTCALL LoadFunksAndGrooves(tDrone_spec* pDrone, FILE* pF) {
             }
             funk_groove->spinny.reverse = reverseness;
 
-            funk_groove->spinny.omega = REC2_PI_F * GetAScalar(pF);
+            funk_groove->spinny.omega = CARPOCALYPSE2_PI_F * GetAScalar(pF);
             break;
 
         case eFunk_groove_type_steering_groove:
@@ -5721,7 +5721,7 @@ void C2_HOOK_FASTCALL LoadDrone(int pIndex) {
     tTWTVFS twt;
     FILE* f;
 
-#ifndef REC2_MATCHING
+#ifndef CARPOCALYPSE2_MATCHING
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tDrone_spec, collision_info.shape, 0x118);
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tDrone_spec, field_0x46, 0x46);
 

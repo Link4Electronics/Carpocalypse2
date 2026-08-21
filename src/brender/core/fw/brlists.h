@@ -1,5 +1,5 @@
-#ifndef REC2_BRLISTS_H
-#define REC2_BRLISTS_H
+#ifndef CARPOCALYPSE2_BRLISTS_H
+#define CARPOCALYPSE2_BRLISTS_H
 
 #include "c2_hooks.h"
 
@@ -29,4 +29,4 @@ void C2_HOOK_CDECL BrSimpleInsert(br_simple_list* list, br_simple_node* here, br
 
 br_simple_node* C2_HOOK_CDECL BrSimpleRemove(br_simple_node* node);
 
-#endif // REC2_BRLISTS_H
+#endif // CARPOCALYPSE2_BRLISTS_H

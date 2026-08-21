@@ -8,8 +8,8 @@
 #include "brender/brender.h"
 #include "globvars.h"
 #include "platform.h"
-#include "rec2_types.h"
-#include "rec2_macros.h"
+#include "carpocalypse2_types.h"
+#include "carpocalypse2_macros.h"
 
 // GLOBAL: CARMA2_HW 0x00703e24
 int gWidth;
@@ -143,7 +143,7 @@ void C2_HOOK_FASTCALL SetBRenderScreenAndBuffers(int pX_offset, int pY_offset, i
 void C2_HOOK_FASTCALL ClearWobbles(void) {
     int i;
 
-    for (i = 0; i < (int)REC2_ASIZE(gWobble_array); ++i) {
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gWobble_array); ++i) {
         gWobble_array[i].time_started = 0;
     }
 }
@@ -153,7 +153,7 @@ void C2_HOOK_FASTCALL InitWobbleStuff(void) {
     int i;
 
     ClearWobbles();
-    for (i = 0; i < (int)REC2_ASIZE(gCosine_array); i++) {
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gCosine_array); i++) {
         gCosine_array[i] = (float)cos((double)i / 64.0 * 3.141592653589793 / 2.0);
     }
 

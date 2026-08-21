@@ -1,13 +1,13 @@
 add_library(c2_platform STATIC
     platform.h
-    rec2_logging.c
+    carpocalypse2_logging.c
 )
 
 add_library(c2_platform_brender STATIC
     platform.h
 )
 
-if(REC2_PLATFORM_WIN32)
+if(CARPOCALYPSE2_PLATFORM_WIN32)
     target_sources(c2_platform_brender PRIVATE
         win32/win32_br_platform.c
     )
@@ -47,7 +47,7 @@ if(REC2_PLATFORM_WIN32)
         target_link_libraries(c2_platform PRIVATE dsound)
         target_compile_definitions(c2_platform PRIVATE DSOUND_ENABLED)
     endif()
-elseif(REC2_PLATFORM_SDL3)
+elseif(CARPOCALYPSE2_PLATFORM_SDL3)
     target_sources(c2_platform_brender PRIVATE
         sdl3/sdl3_br_platform.c
         sdl3/sdl3_br_platform.h
@@ -69,7 +69,7 @@ else()
     message(FATAL_ERROR "Unsupported platform")
 endif()
 
-if(REC2_PLATFORM_SDL3)
+if(CARPOCALYPSE2_PLATFORM_SDL3)
     find_package(SDL3 REQUIRED CONFIG)
 endif()
 
@@ -93,20 +93,20 @@ target_link_libraries(c2_platform_brender
         c2_hooks
 )
 
-add_executable(rec2 WIN32
+add_executable(carpocalypse2 WIN32
     $<TARGET_OBJECTS:c2_newcommon>
     $<TARGET_OBJECTS:c2_platform>
 )
-target_link_libraries(rec2 PRIVATE
+target_link_libraries(carpocalypse2 PRIVATE
     BRender::BRender
     c2_newcommon
     c2_platform
 )
 if(MSVC)
-    target_link_options(rec2 PRIVATE "-MAP:$<TARGET_FILE_DIR:rec2>/$<TARGET_FILE_BASE_NAME:rec2>.map")
+    target_link_options(carpocalypse2 PRIVATE "-MAP:$<TARGET_FILE_DIR:carpocalypse2>/$<TARGET_FILE_BASE_NAME:carpocalypse2>.map")
 endif()
-if(REC2_MATCHING)
-    add_dependencies(rec2 brender_driver_d3d)
+if(CARPOCALYPSE2_MATCHING)
+    add_dependencies(carpocalypse2 brender_driver_d3d)
 
     set(CMAKE_C_FLAGS "/W3 /GX /DWIN32 /D_WINDOWS")
     set(CMAKE_C_FLAGS_DEBUG "/Gm /Od /D_DEBUG /MLd")

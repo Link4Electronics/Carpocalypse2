@@ -18,7 +18,7 @@
 #include <stdio.h>
 #include "c2_string.h"
 
-#include "rec2_macros.h"
+#include "carpocalypse2_macros.h"
 
 #include <stdarg.h>
 
@@ -268,10 +268,10 @@ void C2_HOOK_FASTCALL LoadInDronePaths(FILE* pF) {
                 GetNScalars(pF, 1, float_buffer);
                 node->field_0x12e = (int)float_buffer[0];
 
-                C2_HOOK_BUG_ON(REC2_ASIZE(node->sections) != 8);
+                C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(node->sections) != 8);
 
                 node->count_sections = GetAnInt(pF);
-                if (node->count_sections > REC2_ASIZE(node->sections)) {
+                if (node->count_sections > CARPOCALYPSE2_ASIZE(node->sections)) {
 
                     sprintf(s, "ERROR - drone node %d has too many sections", i);
                     PDFatalError(s);
@@ -363,7 +363,7 @@ void C2_HOOK_FASTCALL InitDroneCollisionObject(tDrone_spec *pDrone_spec) {
     br_vector3 size;
     tPhysics_shape* original_shape;
 
-#ifdef REC2_FIX_BUGS
+#ifdef CARPOCALYPSE2_FIX_BUGS
     original_shape = NULL;
 #endif
 

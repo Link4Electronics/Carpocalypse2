@@ -1,5 +1,5 @@
-#ifndef REC2_ERRORS_H
-#define REC2_ERRORS_H
+#ifndef CARPOCALYPSE2_ERRORS_H
+#define CARPOCALYPSE2_ERRORS_H
 
 #include "brender/br_types.h"
 
@@ -20,4 +20,4 @@ void C2_HOOK_CDECL dr_dprintf(const char* fmt_string, ...);
 
 //int DoErrorInterface(int pMisc_text_index);
 
-#endif // REC2_ERRORS_H
+#endif // CARPOCALYPSE2_ERRORS_H

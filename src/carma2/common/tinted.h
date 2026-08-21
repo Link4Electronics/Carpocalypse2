@@ -1,10 +1,10 @@
-#ifndef REC2_TINTED_H
-#define REC2_TINTED_H
+#ifndef CARPOCALYPSE2_TINTED_H
+#define CARPOCALYPSE2_TINTED_H
 
 #include "c2_hooks.h"
 
 #include <brender/brender.h>
-#include <rec2_types.h>
+#include <carpocalypse2_types.h>
 
 extern int gHud_tinted1;
 extern int gHud_tinted2;
@@ -59,4 +59,4 @@ void C2_HOOK_FASTCALL FUN_004d86e0(int pIndex);
 
 int C2_HOOK_FASTCALL TintedPolyIsOn(int pIndex);
 
-#endif //REC2_TINTED_H
+#endif //CARPOCALYPSE2_TINTED_H

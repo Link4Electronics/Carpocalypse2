@@ -9,7 +9,7 @@
 #include "40-main.h"
 #include "61-pedestrn.h"
 
-#include "rec2_macros.h"
+#include "carpocalypse2_macros.h"
 
 #include <windows.h>
 
@@ -66,7 +66,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
                 } else if (strcmp(currentArgument, "-SCALEMOUSE") == 0) {
                     gScaleMouse = 1;
                 }
-#ifdef REC2_FIX_BUGS
+#ifdef CARPOCALYPSE2_FIX_BUGS
                 else {
                     dr_dprintf("Unknown argument: \"%s\"", currentArgument);
                 }
@@ -85,7 +85,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
     wndCls.lpfnWndProc = Carma2MainWndProc;
     wndCls.cbClsExtra = 0;
     wndCls.cbWndExtra = 0;
-#ifdef REC2_FIX_BUGS
+#ifdef CARPOCALYPSE2_FIX_BUGS
     wndCls.hInstance = hInstance;
 #else
     wndCls.hInstance = gHInstance;
@@ -116,13 +116,13 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
     gHInstance = hInstance;
     gNShowCmd = nShowCmd;
     gPathNetworkIni[0] = '\0';
-    lencwd = GetCurrentDirectoryA(REC2_ASIZE(gPathNetworkIni), gPathNetworkIni);
+    lencwd = GetCurrentDirectoryA(CARPOCALYPSE2_ASIZE(gPathNetworkIni), gPathNetworkIni);
     if (lencwd != 0 && strlen(gPathNetworkIni) == lencwd) {
         gPathNetworkIniValid = 1;
         strcat(gPathNetworkIni, "\\");
         strcat(gPathNetworkIni, "NETWORK.INI");
     }
 
-    GameMain(REC2_ASIZE(args), args);
+    GameMain(CARPOCALYPSE2_ASIZE(args), args);
     return gProgram_result;
 }

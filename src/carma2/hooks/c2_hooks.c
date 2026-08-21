@@ -7,7 +7,7 @@
 #include <windows.h>
 #endif
 
-extern C2_NORETURN void rec2_error(const char *reason, const char *function, const char *file, int line) {
+extern C2_NORETURN void carpocalypse2_error(const char *reason, const char *function, const char *file, int line) {
     char buffer[512];
 
     sprintf(buffer, "!! CRITICAL ERROR !!\n"

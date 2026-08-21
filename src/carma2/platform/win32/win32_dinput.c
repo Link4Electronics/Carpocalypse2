@@ -10,7 +10,7 @@
 #include "joystick.h"
 #include "41-utility.h"
 
-#include "rec2_macros.h"
+#include "carpocalypse2_macros.h"
 
 #include "c2_stdlib.h"
 #include "c2_string.h"
@@ -129,7 +129,7 @@ static int InitDirectInput(void) {
 
     if (gDirectInputJoystickHandle == NULL) {
         memset(gDirectInputJoystickDevices, 0, sizeof(IDirectInputDeviceA *));
-        for (i = 0; i < REC2_ASIZE(gDirectInputJoystickInfos); i++) {
+        for (i = 0; i < CARPOCALYPSE2_ASIZE(gDirectInputJoystickInfos); i++) {
             gDirectInputJoystickInfos[i].buttonMask = 0;
             gDirectInputJoystickInfos[i].axisMask = 0;
             gDirectInputJoystickInfos[i].devSubType = 0;
@@ -225,7 +225,7 @@ tDirectInputJoystickInfo* C2_HOOK_FASTCALL JoystickDInputGetInfo(int pJoystickIn
         info->count_buttons = caps.dwButtons; // unsure
         device_obj_descr.dwSize = sizeof(device_obj_descr);
 
-        for (i = 0; i < caps.dwButtons && i < REC2_ASIZE(((tJoystickInputState*)NULL)->buttons); i++) {
+        for (i = 0; i < caps.dwButtons && i < CARPOCALYPSE2_ASIZE(((tJoystickInputState*)NULL)->buttons); i++) {
             hRes = IDirectInputDevice2_GetObjectInfo(device, &device_obj_descr,
                                                      offsetof(tJoystickInputState, buttons) + i, DIPH_BYOFFSET);
             if (hRes == DI_OK) {
@@ -351,7 +351,7 @@ void C2_HOOK_FASTCALL AttachJoystickButtonInfos(size_t pSize, tWin32_void_voidpt
     int i;
 
     original_index = gJoystick_index;
-    for (i = 0; i < REC2_ASIZE(gDirectInputJoystickDevices); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gDirectInputJoystickDevices); i++) {
         IDirectInputDevice2A *device;
 
         device = gDirectInputJoystickDevices[i];
@@ -398,7 +398,7 @@ void C2_HOOK_FASTCALL CollectJoystickButtonInfo(tButtonJoystickInfo* pInfo) {
     }
     strcpy(pInfo->productName, GetCurrentJoystickName());
     pInfo->count_buttons = GetCurrentJoystickCountButtons();
-    for (i = 0; i < REC2_ASIZE(((tButtonJoystickInfo*)NULL)->buttons); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(((tButtonJoystickInfo*)NULL)->buttons); i++) {
         if (i < pInfo->count_buttons) {
             pInfo->buttons[i] = i;
         } else {
@@ -443,7 +443,7 @@ int C2_HOOK_FASTCALL CreateDinputEffect(int joystick_index, tJoystick_effect_des
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tJoystick_effect_description, field_0x48, 0x48);
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tJoystick_effect_description, field_0x4c, 0x4c);
 
-    if (effect_id >= REC2_ASIZE(gJoystick_effects)) {
+    if (effect_id >= CARPOCALYPSE2_ASIZE(gJoystick_effects)) {
         dr_dprintf("Reached hardcoded limit for # of effects.");
         return -1;
     }
@@ -549,7 +549,7 @@ int C2_HOOK_FASTCALL ReadIforceEffectsNames(const char *path, char **names, size
         char c;
         fread(&chunk_size, 1, sizeof(tU32), f);
 
-        while ((c = fgetc(f)) != '\0' && len_name < REC2_ASIZE(buffer) && !feof(f)) {
+        while ((c = fgetc(f)) != '\0' && len_name < CARPOCALYPSE2_ASIZE(buffer) && !feof(f)) {
             buffer[len_name] = c;
             len_name += 1;
         }
@@ -580,7 +580,7 @@ int C2_HOOK_FASTCALL ResetForceFeedback(void) {
     result = 0;
     if (gJoystickFFB != 0) {
         int i;
-        for (i = 0; i < REC2_ASIZE(gDirectInputJoystickDevices); i++) {
+        for (i = 0; i < CARPOCALYPSE2_ASIZE(gDirectInputJoystickDevices); i++) {
             IDirectInputDevice2A *device = gDirectInputJoystickDevices[i];
             if (device != NULL && (gJoystickFFB & (1 << i))) {
                 IDirectInputDevice2_SendForceFeedbackCommand(device, DISFFC_RESET);
@@ -613,7 +613,7 @@ int C2_HOOK_FASTCALL InitForceFeedback(void) {
     if (gIfr_project == NULL) {
         PDFatalError("Cant enable I-Force");
     }
-    count_effects = ReadIforceEffectsNames(path, effect_names, REC2_ASIZE(effect_names));
+    count_effects = ReadIforceEffectsNames(path, effect_names, CARPOCALYPSE2_ASIZE(effect_names));
     for (i = 0; i < count_effects; i++) {
         int count;
         DIEFFECT di_effect;
@@ -644,7 +644,7 @@ void C2_HOOK_FASTCALL ResetDInputJoystickFFB(int pIndex) {
 void C2_HOOK_FASTCALL RegisterJoystickFFBForces(void) {
     tJoystick_effect_description description;
 
-#ifdef REC2_FIX_BUGS
+#ifdef CARPOCALYPSE2_FIX_BUGS
     memset(&description, 0, sizeof(description));
 #endif
     description.type = eJoystick_effect_Friction;
@@ -657,7 +657,7 @@ void C2_HOOK_FASTCALL RegisterJoystickFFBForces(void) {
     description.field_0x4c = 0x5a;
     gBasic_friction_joystick_effect_index = CreateDinputEffect(gJoystick_index, &description, "Basic Friction");
 
-#ifdef REC2_FIX_BUGS
+#ifdef CARPOCALYPSE2_FIX_BUGS
     memset(&description, 0, sizeof(description));
 #endif
     description.type = eJoystick_effect_ConstantForce;
@@ -669,7 +669,7 @@ void C2_HOOK_FASTCALL RegisterJoystickFFBForces(void) {
     description.field_0x4c = 0x5a;
     gBasic_force_joystick_effect_index = CreateDinputEffect(gJoystick_index, &description, "Basic Force");
 
-#ifdef REC2_FIX_BUGS
+#ifdef CARPOCALYPSE2_FIX_BUGS
     memset(&description, 0, sizeof(description));
 #endif
     description.type = eJoystick_effect_ConstantForce;
@@ -694,7 +694,7 @@ int C2_HOOK_FASTCALL JoystickDInputBegin(void) {
             IDirectInput_EnumDevices(gDirectInputJoystickHandle, DIDEVTYPE_JOYSTICK, Win32DInputJoystickEnum, gDirectInputJoystickHandle, DIEDFL_ATTACHEDONLY);
         }
         if (gCountEnumeratedJoystickDinputDevices != 0) {
-            for (i = 0; i < REC2_ASIZE(gDirectInputJoystickDevices); i++) {
+            for (i = 0; i < CARPOCALYPSE2_ASIZE(gDirectInputJoystickDevices); i++) {
                 JoystickDInputGetInfo(i, NULL, NULL);
                 if (gDirectInputJoystickDevices[i] != NULL) {
                     AcquireDInputJoystickDevice(i);
@@ -776,7 +776,7 @@ void C2_HOOK_FASTCALL KeyBegin(void) {
     gASCII_shift_table[27] = 'G';
     gASCII_shift_table[28] = 'H';
     gASCII_shift_table[29] = 'I';
-#if defined(REC2_FIX_BUGS)
+#if defined(CARPOCALYPSE2_FIX_BUGS)
     gASCII_shift_table[30] = 'J';
 #endif
     gASCII_shift_table[31] = 'K';

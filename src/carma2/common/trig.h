@@ -1,5 +1,5 @@
-#ifndef REC2_TRIG_H
-#define REC2_TRIG_H
+#ifndef CARPOCALYPSE2_TRIG_H
+#define CARPOCALYPSE2_TRIG_H
 
 #include "c2_hooks.h"
 
@@ -71,4 +71,4 @@ void C2_HOOK_FASTCALL DRMatrix23PostRotate(br_matrix23* mat, br_angle rz);
 
 void C2_HOOK_FASTCALL DRMatrix34RotateCos(br_matrix34* pDest, const br_vector3* pAxis, float pCosA);
 
-#endif //REC2_TRIG_H
+#endif //CARPOCALYPSE2_TRIG_H

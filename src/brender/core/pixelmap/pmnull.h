@@ -1,5 +1,5 @@
-#ifndef REC2_PMNULL_H
-#define REC2_PMNULL_H
+#ifndef CARPOCALYPSE2_PMNULL_H
+#define CARPOCALYPSE2_PMNULL_H
 
 #include "brender/br_types.h"
 
@@ -45,4 +45,4 @@ br_error C2_HOOK_CDECL _M_br_device_pixelmap_null_pixelAddressQuery(br_device_pi
 
 br_error C2_HOOK_CDECL _M_br_device_pixelmap_null_pixelAddressSet(br_device_pixelmap* self, void* ptr, br_uint_32* qual);
 
-#endif //REC2_PMNULL_H
+#endif //CARPOCALYPSE2_PMNULL_H

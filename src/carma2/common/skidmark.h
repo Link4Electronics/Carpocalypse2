@@ -1,7 +1,7 @@
-#ifndef REC2_SKIDMARK_H
-#define REC2_SKIDMARK_H
+#ifndef CARPOCALYPSE2_SKIDMARK_H
+#define CARPOCALYPSE2_SKIDMARK_H
 
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 
 #include "c2_hooks.h"
 #include "c2_stdio.h"
@@ -32,4 +32,4 @@ void C2_HOOK_FASTCALL InitCarSkidStuff(tCar_spec* pCar);
 
 void C2_HOOK_FASTCALL SkidsPerFrame(void);
 
-#endif // REC2_SKIDMARK_H
+#endif // CARPOCALYPSE2_SKIDMARK_H

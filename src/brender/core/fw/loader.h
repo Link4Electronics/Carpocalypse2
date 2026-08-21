@@ -1,5 +1,5 @@
-#ifndef REC2_LOADER_H
-#define REC2_LOADER_H
+#ifndef CARPOCALYPSE2_LOADER_H
+#define CARPOCALYPSE2_LOADER_H
 
 #include "c2_hooks.h"
 
@@ -7,4 +7,4 @@
 
 br_image* C2_HOOK_STDCALL ImageLoad(const char* name);
 
-#endif // REC2_LOADER_H
+#endif // CARPOCALYPSE2_LOADER_H

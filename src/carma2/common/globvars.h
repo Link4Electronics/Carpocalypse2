@@ -1,10 +1,10 @@
-#ifndef REC2_GLOBVARS_H
-#define REC2_GLOBVARS_H
+#ifndef CARPOCALYPSE2_GLOBVARS_H
+#define CARPOCALYPSE2_GLOBVARS_H
 
 #include "c2_hooks.h"
 
 //#include "brender/br_types.h"
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 
 extern int gApplicationDataTwtMounted;
 extern tPath_name gApplication_path;
@@ -255,4 +255,4 @@ extern int gSound_available;
 extern tPixelFlags gPixelFlags;
 extern int gNo_credits_APO_restore;
 
-#endif // REC2_GLOBVARS_H
+#endif // CARPOCALYPSE2_GLOBVARS_H

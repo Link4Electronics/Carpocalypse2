@@ -73,21 +73,21 @@ int C2_HOOK_FASTCALL CreditsScreenInfunc(tFrontend_spec* pFrontend) {
         GetALineAndDontArgue(f, s);
         if (strncmp(s, "FONT", 4) == 0) {
             strncpy(small_buf, &s[5], sizeof(small_buf) - 1);
-#ifdef REC2_FIX_BUGS
+#ifdef CARPOCALYPSE2_FIX_BUGS
             small_buf[sizeof(small_buf) - 1] = '\0';
 #endif
             gCredits_fonts[i] = atoi(small_buf);
         } else if (strncmp(s, "SPACE", 5) == 0) {
             double space_height;
             strncpy(small_buf, &s[6], sizeof(small_buf) - 1);
-#ifdef REC2_FIX_BUGS
+#ifdef CARPOCALYPSE2_FIX_BUGS
             small_buf[sizeof(small_buf) - 1] = '\0';
 #endif
             space_height = (double)PolyFontHeight(gCredits_fonts[i]) * atof(small_buf);
             gCredits_heights[i] += (int)space_height;
         } else if (strncmp(s, "THROB", 5) == 0) {
             strncpy(small_buf, &s[6], sizeof(small_buf) - 1);
-#ifdef REC2_FIX_BUGS
+#ifdef CARPOCALYPSE2_FIX_BUGS
             small_buf[sizeof(small_buf) - 1] = '\0';
 #endif
             if (strncmp(small_buf, "ON", 2) == 0) {
@@ -107,7 +107,7 @@ int C2_HOOK_FASTCALL CreditsScreenInfunc(tFrontend_spec* pFrontend) {
             gCredits_heights[i + 1] = 0;
         }
     }
-#ifdef REC2_FIX_BUGS
+#ifdef CARPOCALYPSE2_FIX_BUGS
     PFfclose(f);
 #endif
     gCredits_total_height += 480;

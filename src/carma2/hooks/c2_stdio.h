@@ -1,5 +1,5 @@
-#ifndef REC2_STDIO_H
-#define REC2_STDIO_H
+#ifndef CARPOCALYPSE2_STDIO_H
+#define CARPOCALYPSE2_STDIO_H
 
 #include <stdio.h>
 
@@ -15,4 +15,4 @@
 #endif
 #define c2_rename rename
 
-#endif //REC2_STDIO_H
+#endif //CARPOCALYPSE2_STDIO_H

@@ -1,5 +1,5 @@
-#ifndef REC2_CUTSCENE_H
-#define REC2_CUTSCENE_H
+#ifndef CARPOCALYPSE2_CUTSCENE_H
+#define CARPOCALYPSE2_CUTSCENE_H
 
 #include "c2_hooks.h"
 
@@ -23,4 +23,4 @@ void C2_HOOK_FASTCALL DoGameCompletedAnimation(void);
 
 void C2_HOOK_FASTCALL StartLoadingScreen(void);
 
-#endif // REC2_CUTSCENE_H
+#endif // CARPOCALYPSE2_CUTSCENE_H

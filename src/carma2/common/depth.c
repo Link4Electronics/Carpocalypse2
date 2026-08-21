@@ -16,7 +16,7 @@
 #include "world.h"
 #include "utility.h"
 
-#include "rec2_macros.h"
+#include "carpocalypse2_macros.h"
 
 
 // GLOBAL: CARMA2_HW 0x0079ec44
@@ -208,10 +208,10 @@ void C2_HOOK_FASTCALL FrobFog(void) {
     if (material != NULL) {
         FogAccordingToGPSCDE(material);
     }
-    for (i = 0; i < REC2_ASIZE(gMaterial); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gMaterial); i++) {
         FogAccordingToGPSCDE(gMaterial[i]);
     }
-    for (i = 0; i < REC2_ASIZE(gCurrent_race.material_modifiers); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gCurrent_race.material_modifiers); i++) {
         if (gCurrent_race.material_modifiers[i].skid_mark_material != NULL) {
             FogAccordingToGPSCDE(gCurrent_race.material_modifiers[i].skid_mark_material);
         }
@@ -383,7 +383,7 @@ void C2_HOOK_STDCALL SetYon(br_scalar pYon) {
         pYon = 5.0f;
     }
 
-    for (i = 0; i < REC2_ASIZE(gCamera_list); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gCamera_list); i++) {
         if (gCamera_list[i] != NULL) {
             camera_ptr = gCamera_list[i]->type_data;
             camera_ptr->yon_z = pYon;
@@ -448,7 +448,7 @@ int Log2(int pNumber) {
     bits[13] = 0x2000;
     bits[14] = 0x4000;
     bits[15] = 0x8000;
-    for (i = REC2_ASIZE(bits) - 1; i >= 0; --i) {
+    for (i = CARPOCALYPSE2_ASIZE(bits) - 1; i >= 0; --i) {
         if (bits[i] & pNumber) {
             return i;
         }
@@ -539,14 +539,14 @@ br_scalar C2_HOOK_FASTCALL CalculateWrappingMultiplier(br_scalar pValue, br_scal
     br_scalar trunc_k;
     int int_k;
 
-    k = (float)(pYon * 1.3f * REC2_TAU / pValue);
+    k = (float)(pYon * 1.3f * CARPOCALYPSE2_TAU / pValue);
     int_k = (int)k;
     if (k - (br_scalar)int_k <= .5f) {
         trunc_k = (br_scalar)int_k;
     } else {
         trunc_k = (br_scalar)int_k + 1.f;
     }
-    return (float)(trunc_k / REC2_TAU * pValue);
+    return (float)(trunc_k / CARPOCALYPSE2_TAU * pValue);
 }
 
 // FUNCTION: CARMA2_HW 0x00445e20
@@ -654,7 +654,7 @@ void C2_HOOK_FASTCALL AssertYons(void) {
     br_camera* camera_ptr;
     int i;
 
-    for (i = 0; i < REC2_ASIZE(gCamera_list); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gCamera_list); i++) {
         camera_ptr = gCamera_list[i]->type_data;
         camera_ptr->yon_z = gYon_multiplier * gCamera_yon;
     }

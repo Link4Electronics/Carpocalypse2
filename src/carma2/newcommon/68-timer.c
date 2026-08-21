@@ -3,7 +3,7 @@
 #include "19-font.h"
 #include "globvars.h"
 #include "platform.h"
-#include "rec2_macros.h"
+#include "carpocalypse2_macros.h"
 
 #include "c2_string.h"
 
@@ -47,8 +47,8 @@ void C2_HOOK_FASTCALL Timers_Init(void) {
 
     gTimers_stack_size = 0;
 
-    for (i = 0; i < (int)REC2_ASIZE(gTimers); i++) {
-        for (j = 0; j < (int)REC2_ASIZE(gTimers[i].durations); j++) {
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gTimers); i++) {
+        for (j = 0; j < (int)CARPOCALYPSE2_ASIZE(gTimers[i].durations); j++) {
             gTimers[i].durations[j] = 0;
         }
         gTimers[i].longest_duration = 0;
@@ -56,15 +56,15 @@ void C2_HOOK_FASTCALL Timers_Init(void) {
 
     gTimers_frame_count = 0;
     gTimers_enough_samples = 0;
-    gTimers_max_index = REC2_ASIZE(gTimers) - 1;
+    gTimers_max_index = CARPOCALYPSE2_ASIZE(gTimers) - 1;
     gTimers_draw_x = 34;
     gTimers_draw_y = gBack_screen->height > 250 ? 150 : 0;
     gTimers_draw_y_stride = 9;
 
-#ifdef REC2_FIX_BUGS
-#define LEN_IDENTIFIER(I) REC2_ASIZE(gTimers[I].identifier)
+#ifdef CARPOCALYPSE2_FIX_BUGS
+#define LEN_IDENTIFIER(I) CARPOCALYPSE2_ASIZE(gTimers[I].identifier)
 #else
-#define LEN_IDENTIFIER(I) (REC2_ASIZE(gTimers[I].identifier) - 1)
+#define LEN_IDENTIFIER(I) (CARPOCALYPSE2_ASIZE(gTimers[I].identifier) - 1)
 #endif
 #define TIMER_COLOUR_NAME(I, NAME, R5, G6, B5)                          \
     do {                                                                \
@@ -100,7 +100,7 @@ void C2_HOOK_FASTCALL Timers_Init(void) {
 void C2_HOOK_FASTCALL Timers_StartFrame(void) {
     int i;
 
-    for (i = 0; i < (int)REC2_ASIZE(gTimers); i++) {
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gTimers); i++) {
         gTimers[i].durations[gTimers[i].index] = 0;
     }
     gTimers[TIMER_OQQ].start_time = PDGetMicroseconds();
@@ -124,9 +124,9 @@ void C2_HOOK_FASTCALL Timers_EndFrame(void) {
     }
 
     total_duration = 0;
-    for (i = 0; i < (int)REC2_ASIZE(gTimers); i++) {
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gTimers); i++) {
         gTimers[i].total_duration = 0;
-        for (j = 0; j < (int)REC2_ASIZE(gTimers[i].durations); j++) {
+        for (j = 0; j < (int)CARPOCALYPSE2_ASIZE(gTimers[i].durations); j++) {
             gTimers[i].total_duration += gTimers[i].durations[j];
         }
         gTimers[i].index = 0;
@@ -151,12 +151,12 @@ void C2_HOOK_FASTCALL Timers_Draw(br_pixelmap* pScreen) {
     total_duration = 0;
     longest_duration_timer = -1;
     longest_duration = 0;
-    for (i = 0; i < (int)REC2_ASIZE(gTimers); i++) {
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gTimers); i++) {
         total_duration += gTimers[i].total_duration;
     }
 
     draw_factor = (float)(pScreen->width - 2 *  gTimers_draw_x) / (float)total_duration;
-    for (i = 0; i < (int)REC2_ASIZE(gTimers); i++) {
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gTimers); i++) {
 
         DRPixelmapText(pScreen,
             10,
@@ -208,12 +208,12 @@ void C2_HOOK_FASTCALL Timers_Draw(br_pixelmap* pScreen) {
         (int)(gTimers_draw_x + draw_factor * 10000.0),
         gTimers_draw_y - 1,
         (int)(gTimers_draw_x + draw_factor * 10000.0),
-        gTimers_draw_y + (REC2_ASIZE(gTimers) - 1) * gTimers_draw_y_stride + 3,
+        gTimers_draw_y + (CARPOCALYPSE2_ASIZE(gTimers) - 1) * gTimers_draw_y_stride + 3,
         RGB565_TO_BACKSCREEN_COLOUR(0x1f, 0x00, 0x00));
     sprintf(tolerance_str, "8.38ms, tollerance = %i", gTimers_tolerance);
     DRPixelmapText(pScreen,
         (int)(((double)gTimers_draw_x + draw_factor * 10000.0) - 13.0),
-        gTimers_draw_y + 7 + gTimers_draw_y_stride * (REC2_ASIZE(gTimers) - 1),
+        gTimers_draw_y + 7 + gTimers_draw_y_stride * (CARPOCALYPSE2_ASIZE(gTimers) - 1),
         &gFonts[1],
         tolerance_str,
         0);

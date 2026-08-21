@@ -1,5 +1,5 @@
-#ifndef REC2_HSTSETUP_H
-#define REC2_HSTSETUP_H
+#ifndef CARPOCALYPSE2_HSTSETUP_H
+#define CARPOCALYPSE2_HSTSETUP_H
 
 #include "c2_hooks.h"
 
@@ -11,4 +11,4 @@ void C2_HOOK_CDECL HostEnd(void);
 
 br_error C2_HOOK_CDECL HostInfo(host_info* buffer, br_size_t buffersize);
 
-#endif // REC2_HSTSETUP_H
+#endif // CARPOCALYPSE2_HSTSETUP_H

@@ -23,7 +23,7 @@ target_link_libraries(s3
     PUBLIC
         c2_hooks
         BRender::Headers
-        rec2_headers
+        carpocalypse2_headers
         c2_platform
 )
 add_library(S3::S3 ALIAS s3)
@@ -31,7 +31,7 @@ if(NOT MSVC)
     target_link_libraries(s3 PRIVATE m)
 endif()
 
-if(REC2_MATCHING)
+if(CARPOCALYPSE2_MATCHING)
     set(CMAKE_C_FLAGS "/W3 /GX /DWIN32 /D_WINDOWS")
     set(CMAKE_C_FLAGS_DEBUG "/Gm /Od /D_DEBUG /MLd")
     set(CMAKE_C_FLAGS_RELEASE "/O0 /DNDEBUG /ML")

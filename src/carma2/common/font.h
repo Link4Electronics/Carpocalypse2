@@ -1,10 +1,10 @@
-#ifndef REC2_FONT_H
-#define REC2_FONT_H
+#ifndef CARPOCALYPSE2_FONT_H
+#define CARPOCALYPSE2_FONT_H
 
 #include "c2_hooks.h"
 
 #include "brender/brender.h"
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 
 extern br_pixelmap* gTexture_maps[1024];
 extern tPolyFontBorderColours gPoly_font_border_colours[27];
@@ -25,4 +25,4 @@ void C2_HOOK_FASTCALL ColourVertices(br_model* pModel, int fontIdx);
 
 br_material* C2_HOOK_FASTCALL GetPolyFontMaterial(int fontIdx, char character);
 
-#endif //REC2_FONT_H
+#endif //CARPOCALYPSE2_FONT_H

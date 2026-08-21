@@ -1,5 +1,5 @@
-#ifndef REC2_RESOURCE_H
-#define REC2_RESOURCE_H
+#ifndef CARPOCALYPSE2_RESOURCE_H
+#define CARPOCALYPSE2_RESOURCE_H
 
 #include "c2_hooks.h"
 
@@ -45,4 +45,4 @@ extern void C2_HOOK_CDECL BrResDump(void* vres, br_putline_cbfn* putline, void* 
 
 extern char* C2_HOOK_CDECL BrResClassIdentifier(br_uint_8 res_class);
 
-#endif // REC2_RESOURCE_H
+#endif // CARPOCALYPSE2_RESOURCE_H

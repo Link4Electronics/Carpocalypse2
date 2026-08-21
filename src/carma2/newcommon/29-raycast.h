@@ -1,7 +1,7 @@
 #ifndef GUARD_29_RAYCAST_H
 #define GUARD_29_RAYCAST_H
 
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 
 // DRActorToRoot
 

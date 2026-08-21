@@ -1,7 +1,7 @@
-#ifndef REC2_PHYSICS_H
-#define REC2_PHYSICS_H
+#ifndef CARPOCALYPSE2_PHYSICS_H
+#define CARPOCALYPSE2_PHYSICS_H
 
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 
 #include "c2_hooks.h"
 
@@ -179,4 +179,4 @@ int C2_HOOK_FASTCALL SizeOfObjectNetworkStuff(tPhysics_joint_type pType);
 
 int C2_HOOK_FASTCALL GetHierarchyNetworkSize(tPhysics_object* pObject);
 
-#endif //REC2_PHYSICS_H
+#endif //CARPOCALYPSE2_PHYSICS_H

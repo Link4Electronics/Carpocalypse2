@@ -209,7 +209,7 @@ br_tv_template* C2_HOOK_CDECL _M_br_renderer_state_stored_soft_templateQuery(br_
 
     if (self->device->templates.rendererStateStoredTemplate == NULL) {
 
-#ifndef REC2_MATCHING
+#ifndef CARPOCALYPSE2_MATCHING
         C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(br_soft_device, templates.rendererStateStoredTemplate, 0x20);
         C2_HOOK_BUG_ON(BR_ASIZE(rendererStateStoredTemplateEntries) != 4);
 #endif

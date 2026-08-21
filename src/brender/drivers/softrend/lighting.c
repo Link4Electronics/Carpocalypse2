@@ -86,7 +86,7 @@ br_int_32 C2_HOOK_CDECL _M_br_geometry_lighting_soft_space(br_geometry_lighting_
 // FUNCTION: CARMA2_HW 0x00540ee0
 br_tv_template* C2_HOOK_CDECL _M_br_geometry_lighting_soft_templateQuery(br_geometry_lighting_soft* self) {
 
-#ifndef REC2_MATCHING
+#ifndef CARPOCALYPSE2_MATCHING
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(br_soft_device, templates.geometryLightingTemplate, 0x30);
     C2_HOOK_BUG_ON(BR_ASIZE(geometryLightingTemplateEntries) != 3);
 #endif
@@ -137,7 +137,7 @@ br_error C2_HOOK_CDECL _M_br_geometry_lighting_soft_render(br_geometry_lighting_
 
     CacheUpdate(renderer);
 
-#ifndef REC2_MATCHING
+#ifndef CARPOCALYPSE2_MATCHING
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(br_soft_renderer, state.cache.comp_offsets, 0x5a4);
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(br_soft_renderer, state.cache.comp_scales, 0x5e4);
 #endif

@@ -1,9 +1,9 @@
-#ifndef REC2_PIPING_H
-#define REC2_PIPING_H
+#ifndef CARPOCALYPSE2_PIPING_H
+#define CARPOCALYPSE2_PIPING_H
 
 #include "c2_hooks.h"
 
-#include "rec2_types.h"
+#include "carpocalypse2_types.h"
 
 extern undefined4* gCrush_space;
 extern tU8* gPipe_play_ptr;
@@ -167,4 +167,4 @@ void C2_HOOK_FASTCALL PipeSingleBloodSpurt(uintptr_t pId, undefined4 pArg2, unde
 
 void C2_HOOK_FASTCALL PipeSingleEndShitMine(br_actor* pActor);
 
-#endif //REC2_PIPING_H
+#endif //CARPOCALYPSE2_PIPING_H

@@ -14,7 +14,7 @@
 #include "sound.h"
 #include "utility.h"
 
-#include "rec2_macros.h"
+#include "carpocalypse2_macros.h"
 
 #include "c2_string.h"
 

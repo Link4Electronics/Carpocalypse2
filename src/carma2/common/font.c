@@ -4,7 +4,7 @@
 #include "loading.h"
 #include "utility.h"
 
-#include "rec2_macros.h"
+#include "carpocalypse2_macros.h"
 
 #include "c2_string.h"
 
@@ -53,7 +53,7 @@ br_pixelmap* C2_HOOK_FASTCALL GetThisFuckingPixelmap(const char* path, const cha
     }
     PFfclose(f);
     if (loadFromDisk) {
-        gPixelmapBufferSize = BrPixelmapLoadMany(pathBuffer, gPixelmapBuffer, REC2_ASIZE(gPixelmapBuffer));
+        gPixelmapBufferSize = BrPixelmapLoadMany(pathBuffer, gPixelmapBuffer, CARPOCALYPSE2_ASIZE(gPixelmapBuffer));
     }
     strcpy(pathBuffer, glyph_name);
 
@@ -146,12 +146,12 @@ br_material* C2_HOOK_FASTCALL GetPolyFontMaterial(int fontIdx, char character) {
     // Find "oldest" material, and re-use
     while (1) {
         currentPolyFontMaterialIdx += 1;
-        if (currentPolyFontMaterialIdx >= REC2_ASIZE(gPoly_font_materials)) {
+        if (currentPolyFontMaterialIdx >= CARPOCALYPSE2_ASIZE(gPoly_font_materials)) {
             currentPolyFontMaterialIdx = 0;
         }
         polyFontMaterialCounter = (polyFontMaterialCounter + 1) & 0xffff;
         pMaterial = gPoly_font_materials[currentPolyFontMaterialIdx];
-        if ((polyFontMaterialCounter - POLYFONT_MATERIAL_GET_COUNTER(pMaterial)) >= REC2_ASIZE(gPoly_font_materials)) {
+        if ((polyFontMaterialCounter - POLYFONT_MATERIAL_GET_COUNTER(pMaterial)) >= CARPOCALYPSE2_ASIZE(gPoly_font_materials)) {
             break;
         }
     }

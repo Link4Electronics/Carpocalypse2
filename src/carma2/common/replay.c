@@ -20,7 +20,7 @@
 
 #include "c2_string.h"
 
-#include "rec2_macros.h"
+#include "carpocalypse2_macros.h"
 
 
 // GLOBAL: CARMA2_HW 0x0079efa8
@@ -198,7 +198,7 @@ void C2_HOOK_FASTCALL PositionExternalCamera(tCar_spec* pCar_spec, tU32 pTime) {
                 camera->hither_z = gCamera_cockpit_hither;
                 PositionCarMountedCamera(c, pTime);
                 break;
-#ifdef REC2_FIX_BUGS
+#ifdef CARPOCALYPSE2_FIX_BUGS
             default:
                 abort();
 #endif
@@ -272,9 +272,9 @@ void C2_HOOK_FASTCALL ToggleReplay(int* pArg1, int* pArg2) {
 // FUNCTION: CARMA2_HW 0x004c6bf0
 void C2_HOOK_FASTCALL InitialiseActionReplay(void) {
 
-    C2_HOOK_BUG_ON(REC2_ASIZE(gReplay_callbacks) != 70);
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gReplay_callbacks) != 70);
 
-    ARInitialise(!gAusterity_mode && gNet_mode == eNet_mode_none, REC2_ASIZE(gReplay_callbacks), gReplay_callbacks);
+    ARInitialise(!gAusterity_mode && gNet_mode == eNet_mode_none, CARPOCALYPSE2_ASIZE(gReplay_callbacks), gReplay_callbacks);
     if (!gAusterity_mode && gNet_mode == eNet_mode_none) {
         gCrush_space = BrMemAllocate(0x4000, kMem_pipe_model_geometry);
     } else {
