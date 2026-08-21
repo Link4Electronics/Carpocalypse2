@@ -5,7 +5,13 @@
 #define CARPOCALYPSE2_THISCALL_UNUSED(VAR) do { (void)VAR; } while (0)
 #define CARPOCALYPSE2_THISCALL_EDX , 0
 
+/* Compile-time layout checks must only fire in matching (MSVC 5, x86) builds;
+ * on other compilers/architectures struct sizes legitimately differ. */
+#ifdef CARPOCALYPSE2_MATCHING
 #define CARPOCALYPSE2_BUG_ON(condition) ((void)sizeof(char[1 - 2*!!(condition)]))
+#else
+#define CARPOCALYPSE2_BUG_ON(condition)
+#endif
 
 #define CARPOCALYPSE2_ASIZE(ARR)  ((sizeof(ARR))/sizeof(*(ARR)))
 

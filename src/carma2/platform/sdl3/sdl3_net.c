@@ -438,6 +438,9 @@ tS3_error_codes C2_HOOK_FASTCALL PDS3PlayCDAChannel(tS3_channel *pChannel) {
 void PDS3ServiceCDA(int pDelta_time) {
 }
 
+void C2_HOOK_FASTCALL PDS3UpdateCDAVolume(tS3_channel *pChannel, int pVolume) {
+}
+
 void *PDS3CreateSoundBuffer(tS3_wav_info *pWav_info, void *pWav_buffer) {
     return NULL;
 }

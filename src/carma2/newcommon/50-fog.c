@@ -3,6 +3,9 @@
 // GLOBAL: CARMA2_HW 0x006a6d38
 int gMaterials_to_adapt_count;
 
+// GLOBAL: CARMA2_HW 0x006a8298
+int gAllow_material_adapt;
+
 // FUNCTION: CARMA2_HW 0x004ea760
 void C2_HOOK_FASTCALL InitFogificateMaterials(void) {
 
@@ -17,9 +20,9 @@ void C2_HOOK_FASTCALL InitFogificateMaterials(void) {
 
 // EnableAutoFogification
 
-// STUB: CARMA2_HW 0x004ea850
+// FUNCTION: CARMA2_HW 0x004ea850
 void C2_HOOK_FASTCALL DisableAutoFogification(void) {
-    NOT_IMPLEMENTED();
+    gAllow_material_adapt = 0;
 }
 
 // STUB: CARMA2_HW 0x004ea860

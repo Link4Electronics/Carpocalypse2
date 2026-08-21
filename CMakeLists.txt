@@ -160,7 +160,11 @@ endif()
 
 add_subdirectory(src/brender)
 add_subdirectory(src/carma2)
-add_subdirectory(src/launcher)
+# The launcher is plain Win32 code (windows.h, DirectInput); it cannot be built
+# natively on Linux. The MinGW toolchain builds it because WIN32 is defined there.
+if(WIN32)
+    add_subdirectory(src/launcher)
+endif()
 
 set(CARM2_LOCATION "" CACHE FILEPATH "Path of Carmageddon II")
 if(CARM2_LOCATION)
@@ -175,7 +179,9 @@ if(CARPOCALYPSE2_MATCHING)
 
     reccmp_add_target(carpocalypse2 ID CARMA2_HW)
     reccmp_add_target(brender_driver_d3d ID D3D)
-    reccmp_add_target(carma2 ID LAUNCHER)
+    if(WIN32)
+        reccmp_add_target(carma2 ID LAUNCHER)
+    endif()
 
     reccmp_configure()
 endif()

@@ -5,6 +5,9 @@
 // GLOBAL: CARMA2_HW 0x0068b8ec
 int gSave_game_out_of_sync;
 
+// GLOBAL: CARMA2_HW 0x0068c728
+int gCount_saved_games;
+
 // GLOBAL: CARMA2_HW 0x0068c72c
 tSave_game* gSaved_games;
 
@@ -28,9 +31,12 @@ void C2_HOOK_FASTCALL EndSavedGamesList(void) {
     gSaved_games = NULL;
 }
 
-// STUB: CARMA2_HW 0x00491cb0
+// FUNCTION: CARMA2_HW 0x00491cb0
 tSave_game* C2_HOOK_FASTCALL GetNthSavedGame(int pN) {
-    NOT_IMPLEMENTED();
+    if (gSaved_games == NULL || pN >= gCount_saved_games) {
+        return NULL;
+    }
+    return &gSaved_games[gCount_saved_games - pN - 1];
 }
 
 // DoLoadGame2
