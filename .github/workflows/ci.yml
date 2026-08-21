@@ -62,7 +62,7 @@ jobs:
       with:
         python-version: 3.x
     - name: Download binaries for reccmp
-      if: ${{ matrix.platform.msvc5 }}
+      if: ${{ matrix.platform.msvc5 && vars.ORIGINALS_TEXT_URL != '' }}
       shell: sh
       run: |
         if [ -z "$ORIGINALS_TEXT_URL" ]; then

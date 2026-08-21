@@ -5,6 +5,7 @@
 #include "globvars.h"
 #include "platform.h"
 #include "carpocalypse2_types.h"
+#include "carpocalypse2_macros.h"
 
 #include <string.h>
 
@@ -162,15 +163,23 @@ void C2_HOOK_FASTCALL InitPaletteAnimate(void) {
 
 // FadePaletteDown
 
+// GLOBAL: CARMA2_HW 0x0067be98
+tTransient_bm gTransient_bitmaps[50];
+
 // FadePaletteUp
 
 // EnsurePaletteUp
 
 // EnsureRenderPalette
 
-// STUB: CARMA2_HW 0x0043dff0
+// FUNCTION: CARMA2_HW 0x0043dff0
 void C2_HOOK_FASTCALL InitTransientBitmaps(void) {
-    NOT_IMPLEMENTED();
+    int i;
+
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gTransient_bitmaps); i++) {
+        gTransient_bitmaps[i].pixmap = NULL;
+        gTransient_bitmaps[i].in_use = 0;
+    }
 }
 
 // DeallocateTransientBitmap

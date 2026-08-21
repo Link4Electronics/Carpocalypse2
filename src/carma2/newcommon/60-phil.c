@@ -1,5 +1,8 @@
 #include "60-phil.h"
 
+// GLOBAL: CARMA2_HW 0x0065d004
+int gPHIL_enabled = 1;
+
 // ScalarToFraction
 
 // FractionToScalar
@@ -38,9 +41,9 @@
 
 // PHILInit
 
-// STUB: CARMA2_HW 0x004b5d20
+// FUNCTION: CARMA2_HW 0x004b5d20
 void C2_HOOK_FASTCALL PHILDisable(void) {
-    NOT_IMPLEMENTED();
+    gPHIL_enabled = 1;
 }
 
 // PHILAddObject
