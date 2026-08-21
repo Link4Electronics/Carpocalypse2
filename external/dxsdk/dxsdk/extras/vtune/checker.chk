@@ -1,0 +1,27 @@
+c:\vtuneenv\vtune40
+Program Files\Program Files=VTune Program
+Program Files\Program Files=VTune_Base_K
+Program Files\Callgraph=VTune Callgraph Support
+Program Files\Code Coach=VTune Coach
+Program Files\Examples=VTune Basic Examples
+Program Files\Additional VTune Files\VTune NT50 Drivers=VTune NT50 driver files
+Program Files\Additional VTune Files\VTune NT40 Drivers=VTune NT40 driver files
+Program Files\Program Files (Self register)=VTune Self-Registering
+Program Files\JCom=VTune_Jcom
+System Files\System Files=System Files
+System Files\System Files (Self register)=System Self Registered
+System Files\Additional System Files\VTune Win95 System=VTune Win95 System Files
+System Files\Additional System Files\VTune Win98 System=VTune Win98 System Files
+System Files\Additional System Files\VTune NT40 System=VTune NT40 System Files
+System Files\Additional System Files\VTune NT50 System=VTune NT50 System Files
+System Files\ODBC\ISODBC Microsoft Text Driver=ISODBC Text Driver Files
+System Files\ODBC\ISODBC Microsoft Text Driver=ISODBC Text Driver Self-reg Files
+System Files\ODBC\ISODBC ODBC Uninstall Files=ISODBC Uninstall Files
+System Files\ODBC\ISODBC Desktop DB Common Files=ISODBC Desktop DB Common Files
+System Files\ODBC\ISODBC Desktop DB Common Files=ISODBC Desktop DB Self-reg Files
+System Files\ODBC\ISODBC ODBC Core-Desktop DB Files=ISODBC ODBC Core-Desktop DB Files
+System Files\ODBC\ISODBC ODBC Core=ISODBC ODBC Core Files
+System Files\ODBC\ISODBC MS Code Page Translator Files=ISODBC MS Code Page Translator Files
+VTune 740 Counters (NT)=VTune 740 Counters NT
+VTune 740 Counters (9x)=VTune 740 Counters 9x
+Getting Started Guides=VTune Getting Started

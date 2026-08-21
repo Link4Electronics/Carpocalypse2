@@ -1,0 +1,9 @@
+reccmp-user.yml
+reccmp-build.yml
+/*build*
+*.py[co]
+*.class
+symbols.json
+*.gpr
+*.lock
+*.rep

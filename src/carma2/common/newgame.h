@@ -1,0 +1,34 @@
+#ifndef REC2_NEWGAME_H
+#define REC2_NEWGAME_H
+
+#include "c2_hooks.h"
+
+#include "rec2_types.h"
+
+extern tNet_game_options gNet_settings[9];
+extern int gNet_grid_starts[10];
+extern int gRace_index;
+extern int gLast_graph_sel;
+extern tJoinable_game gGames_to_join[6];
+
+void C2_HOOK_FASTCALL DefaultNetSettings(void);
+
+void C2_HOOK_FASTCALL SetOptions(tNet_game_type pGame_type, tNet_game_options* pGame_options);
+
+void C2_HOOK_FASTCALL SetGameTarget(tNet_game_type* pGame_type, tNet_game_options* pGame_options);
+
+void C2_HOOK_FASTCALL ReadNetGameChoices(tNet_game_type* pGame_type, tNet_game_options* pGame_options, int* pRace_index);
+
+void C2_HOOK_FASTCALL DisposeJoinList(int pExemption);
+
+void C2_HOOK_FASTCALL DisposeJoinableGame(int pIndex);
+
+int C2_HOOK_FASTCALL ChooseNetCar(tNet_game_details* pNet_game, tNet_game_options* pOptions, int* pCar_index, int pIm_the_host_so_fuck_off);
+
+void C2_HOOK_FASTCALL AddToJoinList(tNet_game_details* pGame);
+
+void C2_HOOK_FASTCALL SetUpOtherNetThings(tNet_game_details* pGame_details);
+
+void C2_HOOK_FASTCALL InitGamesToJoin(void);
+
+#endif //REC2_NEWGAME_H

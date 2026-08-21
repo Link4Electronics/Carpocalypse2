@@ -1,0 +1,84 @@
+{\rtf1\ansi\ansicpg1252\uc1 \deff0\deflang1033\deflangfe1033{\fonttbl{\f0\froman\fcharset0\fprq2{\*\panose 02020603050405020304}Times New Roman;}{\f1\fswiss\fcharset0\fprq2{\*\panose 020b0604020202020204}Arial;}
+{\f16\froman\fcharset238\fprq2 Times New Roman CE;}{\f17\froman\fcharset204\fprq2 Times New Roman Cyr;}{\f19\froman\fcharset161\fprq2 Times New Roman Greek;}{\f20\froman\fcharset162\fprq2 Times New Roman Tur;}
+{\f21\froman\fcharset186\fprq2 Times New Roman Baltic;}{\f22\fswiss\fcharset238\fprq2 Arial CE;}{\f23\fswiss\fcharset204\fprq2 Arial Cyr;}{\f25\fswiss\fcharset161\fprq2 Arial Greek;}{\f26\fswiss\fcharset162\fprq2 Arial Tur;}
+{\f27\fswiss\fcharset186\fprq2 Arial Baltic;}}{\colortbl;\red0\green0\blue0;\red0\green0\blue255;\red0\green255\blue255;\red0\green255\blue0;\red255\green0\blue255;\red255\green0\blue0;\red255\green255\blue0;\red255\green255\blue255;\red0\green0\blue128;
+\red0\green128\blue128;\red0\green128\blue0;\red128\green0\blue128;\red128\green0\blue0;\red128\green128\blue0;\red128\green128\blue128;\red192\green192\blue192;}{\stylesheet{\nowidctlpar\widctlpar\adjustright \fs20\cgrid \snext0 Normal;}{
+\s1\qc\keepn\nowidctlpar\widctlpar\adjustright \fs28\cgrid \sbasedon0 \snext0 heading 1;}{\s4\fi-360\li360\sa120\keepn\nowidctlpar\widctlpar\adjustright \cgrid \sbasedon0 \snext0 heading 4;}{\*\cs10 \additive Default Paragraph Font;}{
+\s15\qj\nowidctlpar\widctlpar\adjustright \b\f1\fs18\cgrid \sbasedon0 \snext15 Body Text;}{\s16\nowidctlpar\widctlpar\tqc\tx4320\tqr\tx8640\adjustright \fs20\cgrid \sbasedon0 \snext16 header;}{\s17\nowidctlpar\widctlpar\tqc\tx4320\tqr\tx8640\adjustright 
+\fs20\cgrid \sbasedon0 \snext17 footer;}}{\*\listtable{\list\listtemplateid67698703\listsimple{\listlevel\levelnfc0\leveljc0\levelfollow0\levelstartat1\levelspace0\levelindent0{\leveltext\'02\'00.;}{\levelnumbers\'01;}\fbias0 \fi-360\li360
+\jclisttab\tx360 }{\listname ;}\listid1014842378}{\list\listtemplateid67698703\listsimple{\listlevel\levelnfc0\leveljc0\levelfollow0\levelstartat1\levelspace0\levelindent0{\leveltext\'02\'00.;}{\levelnumbers\'01;}\fbias0 \fi-360\li360\jclisttab\tx360 }
+{\listname ;}\listid1935891383}}{\*\listoverridetable{\listoverride\listid1014842378\listoverridecount0\ls1}{\listoverride\listid1935891383\listoverridecount0\ls2}}{\info
+{\title IMPORTANT - READ THIS BEFORE OPENING OR INSTALLING: By opening this package, or reproducing, installing, or using the enclosed materials, you are agreeing to be bound by the terms of this agreement}{\author ACES}{\operator Richard Vireday}
+{\creatim\yr1999\mo1\dy21\hr16\min35}{\revtim\yr1999\mo1\dy21\hr16\min35}{\printim\yr1999\mo1\dy7\hr10\min54}{\version2}{\edmins1}{\nofpages2}{\nofwords927}{\nofchars5285}{\*\company Intel Debugger Geeks}{\nofcharsws6490}{\vern71}}
+\widowctrl\ftnbj\aenddoc\formshade\viewkind4\viewscale100\pgbrdrhead\pgbrdrfoot \fet0\sectd \linex0\endnhere\sectdefaultcl {\footer \pard\plain \s17\nowidctlpar\widctlpar\tqc\tx4320\tqr\tx8640\adjustright \fs20\cgrid {010798/mlbd/lal
+\par }}{\*\pnseclvl1\pnucrm\pnstart1\pnindent720\pnhang{\pntxta .}}{\*\pnseclvl2\pnucltr\pnstart1\pnindent720\pnhang{\pntxta .}}{\*\pnseclvl3\pndec\pnstart1\pnindent720\pnhang{\pntxta .}}{\*\pnseclvl4\pnlcltr\pnstart1\pnindent720\pnhang{\pntxta )}}
+{\*\pnseclvl5\pndec\pnstart1\pnindent720\pnhang{\pntxtb (}{\pntxta )}}{\*\pnseclvl6\pnlcltr\pnstart1\pnindent720\pnhang{\pntxtb (}{\pntxta )}}{\*\pnseclvl7\pnlcrm\pnstart1\pnindent720\pnhang{\pntxtb (}{\pntxta )}}{\*\pnseclvl8
+\pnlcltr\pnstart1\pnindent720\pnhang{\pntxtb (}{\pntxta )}}{\*\pnseclvl9\pnlcrm\pnstart1\pnindent720\pnhang{\pntxtb (}{\pntxta )}}\pard\plain \qc\nowidctlpar\widctlpar\tx316\adjustright \fs20\cgrid {\b\f1\fs24\ul 
+IMPORTANT - READ BEFORE COPYING, INSTALLING OR USING}{\b\f1\fs24 .
+\par }\pard\plain \s15\qj\nowidctlpar\widctlpar\adjustright \b\f1\fs18\cgrid {Do not copy, install, or use the \ldblquote Materials\rdblquote  provided under this license agreement (\ldblquote Agreement\rdblquote 
+), until you have carefully read the following terms and conditions.
+\par }\pard\plain \qc\nowidctlpar\widctlpar\adjustright \fs20\cgrid {\b\f1\fs18 
+\par }\pard \qj\nowidctlpar\widctlpar\adjustright {\b\f1\fs18 By copying, installing, or otherwise 
+using the Materials, you agree to be bound by the terms of this Agreement.   If you do not agree to the terms of this Agreement, do not copy, install, or use the Materials.}{\caps 
+\par }\pard \nowidctlpar\widctlpar\adjustright {
+\par }\pard\plain \s1\qc\keepn\nowidctlpar\widctlpar\outlinelevel0\adjustright \fs28\cgrid {VTune\'99 Performance Analyzer}{\f1\cgrid0  }{4.0 License Agreement
+\par }\pard\plain \nowidctlpar\widctlpar\adjustright \fs20\cgrid {
+\par }{\b LICENSE GRANT}{: Subject to the License Restrictions below, Intel Corporation ("Intel") grants to you the following non-exclusive, non-assignable royalty-free copyright licenses in the "Materials" below, which ar
+e identified specifically in License Definitions at the end of this Agreement, and in any updates thereto that Intel may offer in the future.
+\par 
+\par }{\ul Developer Tools}{ include developer documentation, installation or development utilities, and other materials.  You may use them internally for the purposes of using the Materials as licensed hereunder, but you may not redistribute them.  
+\par 
+\par }{\ul Sample Source}{ may include example interface or application source code.  You may copy, modify and compile the Sample Source and distribute it in your own products in binary and source code form.  
+\par 
+\par }{\ul Licensed Binaries}{ are redistributable code provided in binary form. You may copy and distribute Licensed Binaries with your product.  
+\par 
+\par }{\ul End-User Documentation}{ includes textual materials intended for end users.  You may copy, modify and distribute them.
+\par 
+\par }{\b LICENSE RESTRICTIONS}{: 
+\par You may not reverse-assemble, reverse-compile, or otherwise reverse-engineer any software provided solely in binary form. 
+\par 
+\par Upon Intel's release of an update, upgrade 
+or new version of the Materials, you will make reasonable efforts to discontinue distribution of the enclosed Materials and you will make reasonable efforts to distribute such updates, upgrades or new versions to your customers who have received the Mater
+ials herein.  
+\par  
+\par Distribution of the Materials is also subject to the following limitations:  You (i) shall be solely responsible to your customers for any update or support obligation or other liability which may arise from the distribution, (ii) do not ma
+ke any statement that your product is "certified," or that its performance is guaranteed, by Intel, (iii) do not use Intel's name or trademarks to market your product without written permission, (iv) shall prohibit disassembly and reverse engineering, (v)
+ 
+shall not publish reviews of Materials designated as beta without written permission by Intel, and (vi) shall indemnify, hold harmless, and defend Intel and its suppliers from and against any claims or lawsuits, including attorney's fees, that arise or re
+sult from your distribution of any product.  
+\par 
+\par }{\b COPYRIGHT}{: Title to the Materials and all copies thereof remain with Intel or its suppliers.  The Materials are copyrighted and are protected by United States copyright laws and international treaty provisions.
+  You will not remove any copyright notice from the Materials.  You agree to prevent any unauthorized copying of the Materials.  Except as expressly provided herein, Intel does not grant any express or implied right to you under Intel patents, copyrights,
+ trademarks, or trade secret information.  
+\par 
+\par }{\b REPLACEMENTS}{: The Materials are provided "AS IS" without warranty of any kind.  If the media on which the Materials are furnished are found to be defective in material or workmanship under normal use for a period
+ of ninety (90) days from the date of receipt, Intel's entire liability and your exclusive remedy shall be the replacement of the media.  This offer is void if the media defect results from accident, abuse, or misapplication.  
+\par 
+\par }\pard \nowidctlpar\widctlpar\tx720\adjustright {\b USER SUBMISSIONS}{:  You agre
+e that any material, information or other communication, including all data, images, sounds, text, and other things embodied therein, you transmit or post to an Intel website will be considered non-confidential ("Communications"). Intel will have no confi
+d
+entiality obligations with respect to the Communications.  You agree that Intel and its designees will be free to copy, modify, create derivative works, publicly display, disclose, distribute, license and sublicense through multiple tiers of distribution 
+and licensees, incorporate and otherwise use the Communications, including derivative works thereto, for any and all commercial or non-commercial purposes.}{\f1\cgrid0 
+\par }\pard \nowidctlpar\widctlpar\adjustright {
+\par }{\b LIMITATION OF LIABILITY}{: THE ABOVE REPLACEMENT PROVISION IS THE ONLY WARRANTY OF ANY KIND.  INTEL OF
+FERS NO OTHER WARRANTY EITHER EXPRESS OR IMPLIED INCLUDING THOSE OF MERCHANTABILITY, NONINFRINGEMENT OF THIRD-PARTY INTELLECTUAL PROPERTY OR FITNESS FOR A PARTICULAR PURPOSE. NEITHER INTEL NOR ITS SUPPLIERS SHALL BE LIABLE FOR ANY DAMAGES WHATSOEVER (INCL
+U
+DING, WITHOUT LIMITATION, DAMAGES FOR LOSS OF BUSINESS PROFITS, BUSINESS INTERRUPTION, LOSS OF BUSINESS INFORMATION, OR OTHER LOSS) ARISING OUT OF THE USE OF OR INABILITY TO USE THE SOFTWARE, EVEN IF INTEL HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAG
+ES.  BECAUSE SOME JURISDICTIONS PROHIBIT THE EXCLUSION OR LIMITATION OF LIABILITY FOR CONSEQUENTIAL OR INCIDENTAL DAMAGES, THE ABOVE LIMITATION MAY NOT APPLY TO YOU.  
+\par 
+\par }{\b TERMINATION OF THIS LICENSE}{: Intel may terminate this license at any time if you are in 
+breach of any of its terms and conditions.  Upon termination, you will immediately destroy the Materials or return all copies of the Materials to Intel along with any copies you have made.
+\par 
+\par }{\b U.S. GOVERNMENT RESTRICTED RIGHTS}{: The Materials are provided with
+ "RESTRICTED RIGHTS." Use, duplication or disclosure by the Government is subject to restrictions set forth in FAR52.227-14 and DFAR252.227-7013 et seq. or its successor.  Use of the Materials by the Government constitutes acknowledgment of Intel's rights
+ in them.
+\par 
+\par }{\b APPLICABLE LAWS}{: Any claim arising under or relating to this Agreement shall be governed by the internal substantive laws of the State of Delaware or federal courts located in Delaware, without regard to principles of conflict of laws.  You may n
+ot export the Materials in violation of applicable export laws.  
+\par 
+\par }\pard\plain \s1\keepn\nowidctlpar\widctlpar\outlinelevel0\adjustright \fs28\cgrid {\b\caps\fs20 License Definitions}{\fs20 
+: The Materials are classified as follows and are located in the following directories located on your system after the installation has successfully been completed:}{
+\par }\pard\plain \nowidctlpar\widctlpar\adjustright \fs20\cgrid {\ul 
+\par Developer Tools}{ are located in the installation directory c:\\Program Files\\Intel\\VTune40}{\f1\cgrid0 
+\par }{
+\par }}

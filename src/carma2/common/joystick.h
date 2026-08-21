@@ -1,0 +1,56 @@
+#ifndef REC2_JOYSTICK_H
+#define REC2_JOYSTICK_H
+
+#include "c2_hooks.h"
+
+#include "rec2_types.h"
+
+extern float gForce_feedback_upper_limit;
+extern float Force_feedback_lower_limit;
+extern int gJoystick_index;
+extern float gOriginal_joystick_x;
+extern float gOriginal_joystick_y;
+extern int gOriginal_joystick_fbb;
+extern int gOriginal_joystick_dpad;
+extern int gOrig_joystick_index;
+extern float gJoystick_x_steering;
+extern float gJoystick_y_throttle;
+extern int gINT_00596308;
+extern tHeadup_text_buffer gJoystick_headup_buffer_0079d8a0;
+
+
+void C2_HOOK_FASTCALL SetupFFBValues(void);
+
+int C2_HOOK_FASTCALL PlayExclusiveFFBEffect(const char* pEffect_name, int pArg2);
+
+void C2_HOOK_FASTCALL InitJoysticks(void);
+
+float C2_HOOK_FASTCALL GetJoystickX(void);
+
+float C2_HOOK_FASTCALL GetJoystickY(void);
+
+int C2_HOOK_FASTCALL GetJoystickFBBGain(void);
+
+void C2_HOOK_FASTCALL SetJoystickX(float pValue);
+
+void C2_HOOK_FASTCALL SetJoystickY(float pValue);
+
+void C2_HOOK_FASTCALL SetJoystickFFBGain(int pValue);
+
+void C2_HOOK_FASTCALL SetJoystickDPadEnabled(int pEnabled);
+
+void C2_HOOK_FASTCALL Joystick_BackupSettings(void);
+
+void C2_HOOK_FASTCALL EnableJoysticks(void);
+
+void C2_HOOK_FASTCALL DisableJoysticks(void);
+
+void C2_HOOK_FASTCALL FUN_0045b0a0(tHeadup_text_buffer* pText_buffer);
+
+int C2_HOOK_FASTCALL FUN_CheckJoystickHeadupButtons(tButtonJoystickInfo** pJoystick_info);
+
+void C2_HOOK_FASTCALL MungeJoystickHeadups(void);
+
+int C2_HOOK_FASTCALL HasCurrentJoystick(void);
+
+#endif /* REC2_JOYSTICK_H */

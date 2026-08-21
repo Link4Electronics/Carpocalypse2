@@ -1,0 +1,18 @@
+c:\Program Files\Intel\VTune40
+Windows System Files=Automation Self-reg Shared Files
+Windows System Files=Automation Shared Files
+Windows System Files=VTune Windows Files
+Windows System Files=VTune Windows Self-reg Files
+Windows System Files=Windows System Self-reg Files
+Windows System Files=Windows System Self-reg Shared Files
+ISODBC Common\Core-Desktop DB Files=ISODBC ODBC Core-Desktop DB Shared Files
+ISODBC Common\Core=Automation Shared Files
+ISODBC Common\Core=Automation Self-reg Shared Files
+ISODBC Common\Core=ISODBC ODBC Core Shared Files
+ISODBC Common\Uninstall Files=ISODBC Uninstall Files
+ISODBC Common\Desktop DB Common Files=Automation Shared Files
+ISODBC Common\Desktop DB Common Files=Automation Self-reg Shared Files
+ISODBC Common\Desktop DB Common Files=ISODBC Desktop DB Common Shared Files
+ISODBC Common\Desktop DB Common Files=ISODBC Desktop DB Self-reg Shared Files
+ISODBC Common\OLE DB Provider=OLE DB Shared Files
+ISODBC Common\OLE DB Provider=OLE DB Self-reg Shared Files

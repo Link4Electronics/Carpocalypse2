@@ -1,0 +1,11 @@
+DirectX Software Development Kit Redistributable Code
+-------------------------------------------------------------
+Redistributable Code is identified as all the files in the 
+following directories on the DirectX 7 SDK CD:
+
+redist/directx7/
+
+All files in the following directories must be included
+in any distribution of DirectX 7 Redistributable Code:
+
+redist/directx7/

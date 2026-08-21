@@ -1,0 +1,176 @@
+#ifndef BR_INLINE_FUNCS_H
+#define BR_INLINE_FUNCS_H
+
+#include "br_defs.h"
+
+#define BrVector2Length(v1) BR_LENGTH2((v1)->v[0], (v1)->v[1])
+#define BrVector2LengthSquared(v1) BR_SQR2((v1)->v[0], (v1)->v[1])
+#define BrVector2Dot(v1, v2) BR_MAC2((v1)->v[0], (v2)->v[0], (v1)->v[1], (v2)->v[1])
+
+#define BrVector2Copy(v1, v2)    \
+    do {                         \
+        (v1)->v[0] = (v2)->v[0]; \
+        (v1)->v[1] = (v2)->v[1]; \
+    } while (0)
+
+#define BrVector2Set(v1, s1, s2) \
+    do {                         \
+        (v1)->v[0] = (s1);       \
+        (v1)->v[1] = (s2);       \
+    } while (0)
+
+#define BrVector2Add(v1, v2, v3)               \
+    do {                                       \
+        (v1)->v[0] = (v2)->v[0] + (v3)->v[0] ; \
+        (v1)->v[1] = (v2)->v[1] + (v3)->v[1] ; \
+    } while (0)
+
+#define BrVector2Sub(v1, v2, v3)               \
+    do {                                       \
+        (v1)->v[0] = (v2)->v[0] - (v3)->v[0] ; \
+        (v1)->v[1] = (v2)->v[1] - (v3)->v[1] ; \
+    } while (0)
+
+#define BrVector2Scale(v1, v2, s)      \
+    do {                               \
+        (v1)->v[0] = (s) * (v2)->v[0]; \
+        (v1)->v[1] = (s) * (v2)->v[1]; \
+    } while (0)
+
+#define BrVector2Normalise(v1, v2)                               \
+    do {                                                         \
+        br_scalar _scale;                                        \
+        _scale = BR_LENGTH2((v2)->v[0], (v2)->v[1]); \
+        if (_scale > BR_SCALAR_EPSILON * 2) {                    \
+            _scale = 1.0f / _scale;                              \
+            (v1)->v[0] = (v2)->v[0] * _scale;                    \
+            (v1)->v[1] = (v2)->v[1] * _scale;                    \
+        } else {                                                 \
+            (v1)->v[0] = 1.0f;                                   \
+            (v1)->v[1] = 0.0f;                                   \
+        }                                                        \
+    } while (0)
+
+#define BrVector3Length(v1) BR_LENGTH3((v1)->v[0], (v1)->v[1], (v1)->v[2])
+#define BrVector3LengthSquared(v1) BR_SQR3((v1)->v[0], (v1)->v[1], (v1)->v[2])
+#define BrVector3Dot(v1, v2) BR_MAC3((v1)->v[0], (v2)->v[0], (v1)->v[1], (v2)->v[1], (v1)->v[2], (v2)->v[2])
+
+#define BrVector3Copy(v1, v2)    \
+    do {                         \
+        (v1)->v[0] = (v2)->v[0]; \
+        (v1)->v[1] = (v2)->v[1]; \
+        (v1)->v[2] = (v2)->v[2]; \
+    } while (0)
+
+#define BrVector3Negate(v1, v2)   \
+    do {                          \
+        (v1)->v[0] = -(v2)->v[0]; \
+        (v1)->v[1] = -(v2)->v[1]; \
+        (v1)->v[2] = -(v2)->v[2]; \
+    } while (0)
+
+#define BrVector3Set(v1, s1, s2, s3) \
+    do {                             \
+        (v1)->v[0] = (s1);           \
+        (v1)->v[1] = (s2);           \
+        (v1)->v[2] = (s3);           \
+    } while (0)
+
+#define BrVector3Cross(v1, v2, v3)                                      \
+    do {                                                                \
+        (v1)->v[0] = (v2)->v[1] * (v3)->v[2] - (v2)->v[2] * (v3)->v[1]; \
+        (v1)->v[1] = (v2)->v[2] * (v3)->v[0] - (v2)->v[0] * (v3)->v[2]; \
+        (v1)->v[2] = (v2)->v[0] * (v3)->v[1] - (v2)->v[1] * (v3)->v[0]; \
+    } while (0)
+
+#define BrVector3Add(v1, v2, v3)              \
+    do {                                      \
+        (v1)->v[0] = (v2)->v[0] + (v3)->v[0]; \
+        (v1)->v[1] = (v2)->v[1] + (v3)->v[1]; \
+        (v1)->v[2] = (v2)->v[2] + (v3)->v[2]; \
+    } while (0)
+
+#define BrVector3Sub(v1, v2, v3)              \
+    do {                                      \
+        (v1)->v[0] = (v2)->v[0] - (v3)->v[0]; \
+        (v1)->v[1] = (v2)->v[1] - (v3)->v[1]; \
+        (v1)->v[2] = (v2)->v[2] - (v3)->v[2]; \
+    } while (0)
+
+#define BrVector3Mul(v1, v2, v3)              \
+    do {                                      \
+        (v1)->v[0] = (v2)->v[0] * (v3)->v[0]; \
+        (v1)->v[1] = (v2)->v[1] * (v3)->v[1]; \
+        (v1)->v[2] = (v2)->v[2] * (v3)->v[2]; \
+    } while (0)
+
+#define BrVector3Accumulate(v1, v2) \
+    do {                            \
+        (v1)->v[0] += (v2)->v[0];   \
+        (v1)->v[1] += (v2)->v[1];   \
+        (v1)->v[2] += (v2)->v[2];   \
+    } while (0)
+
+#define BrVector3Scale(v1, v2, s)      \
+    do {                               \
+        (v1)->v[0] = (v2)->v[0] * (s); \
+        (v1)->v[1] = (v2)->v[1] * (s); \
+        (v1)->v[2] = (v2)->v[2] * (s); \
+    } while (0)
+
+#define BrVector3InvScale(v1, v2, s)       \
+    do {                                   \
+        br_scalar __scale = 1.0f / (s);    \
+        (v1)->v[0] = (v2)->v[0] * __scale; \
+        (v1)->v[1] = (v2)->v[1] * __scale; \
+        (v1)->v[2] = (v2)->v[2] * __scale; \
+    } while (0)
+
+#define BrVector3Normalise(v1, v2)                               \
+    do {                                                         \
+        br_scalar _scale;                                        \
+        _scale = BR_LENGTH3((v2)->v[0], (v2)->v[1], (v2)->v[2]); \
+        if (_scale > BR_SCALAR_EPSILON * 2) {                    \
+            _scale = 1.0f / _scale;                              \
+            (v1)->v[0] = (v2)->v[0] * _scale;                    \
+            (v1)->v[1] = (v2)->v[1] * _scale;                    \
+            (v1)->v[2] = (v2)->v[2] * _scale;                    \
+        } else {                                                 \
+            (v1)->v[0] = 1.0f;                                   \
+            (v1)->v[1] = 0.0f;                                   \
+            (v1)->v[2] = 0.0f;                                   \
+        }                                                        \
+    } while (0)
+
+#define BrVector3NormaliseQuick(v1, v2)                                  \
+    do {                                                                 \
+        br_scalar _scale;                                                \
+        _scale = 1.0 / (BR_LENGTH3((v2)->v[0], (v2)->v[1], (v2)->v[2])); \
+        BrVector3Scale(v1, v2, _scale);                                  \
+    } while (0)
+
+#define BrVector4Copy(v1, v2)    \
+    do {                         \
+        (v1)->v[0] = (v2)->v[0]; \
+        (v1)->v[1] = (v2)->v[1]; \
+        (v1)->v[2] = (v2)->v[2]; \
+        (v1)->v[3] = (v2)->v[3]; \
+    } while (0)
+
+#define BrVector4Negate(v1, v2)   \
+    do {                          \
+        (v1)->v[0] = -(v2)->v[0]; \
+        (v1)->v[1] = -(v2)->v[1]; \
+        (v1)->v[2] = -(v2)->v[2]; \
+        (v1)->v[3] = -(v2)->v[3]; \
+    } while (0)
+
+#define BrVector4Dot(v1, v2) BR_MAC4((v1)->v[0], (v2)->v[0], (v1)->v[1], (v2)->v[1], (v1)->v[2], (v2)->v[2], (v1)->v[3], (v2)->v[3])
+
+#define BR_ONE_LS 65536
+#define BR_FIXED_INT(I) ((br_fixed_ls)(((int)(I)) * BR_ONE_LS))
+#define BR_FIXED_UINT(I) ((br_fixed_ls)(((unsigned int)(I)) * BR_ONE_LS))
+#define BrFixedToFloat(s) ((float)((s) * (1.0f / (float)BR_ONE_LS)))
+#define BrFixedToInt(s) ((s) / BR_ONE_LS)
+#define BrFloatToFixed(f)	((br_fixed_ls)((f)*(float)BR_ONE_LS))
+#endif

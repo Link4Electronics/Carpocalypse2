@@ -1,0 +1,384 @@
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=windows-1252">
+<META NAME="Generator" CONTENT="Microsoft Word 97">
+<TITLE>Release Notes</TITLE>
+<META NAME="Template" CONTENT="C:\Program Files\Microsoft Office\Office\html.dot">
+</HEAD>
+<BODY TEXT="#000000" LINK="#0000ff" VLINK="#800080" BGCOLOR="#ffffff">
+
+<FONT SIZE=3><P><IMG SRC="logo.gif" WIDTH=180 HEIGHT=95></P>
+<P>&nbsp;</P>
+</FONT><B><I><FONT SIZE=6><P ALIGN="CENTER">VTune&#153; Performance Analyzer 4.0<BR>
+Release Notes</B></I></FONT><FONT SIZE=3> </P>
+</FONT><FONT FACE="Arial"><H3>Contents</H3>
+</FONT><FONT SIZE=3><P></FONT><A HREF="#Overview"><FONT FACE="Arial" SIZE=3>1.0 Overview</FONT></A><FONT FACE="Arial" SIZE=3> <BR>
+</FONT><A HREF="#System_Requirements"><FONT FACE="Arial" SIZE=3>2.0 System Requirements</FONT></A><FONT FACE="Arial" SIZE=3> <BR>
+</FONT><A HREF="#License_Definitions"><FONT FACE="Arial" SIZE=3>3.0 License Definitions</FONT></A><FONT FACE="Arial" SIZE=3> <BR>
+</FONT><A HREF="#Installation"><FONT FACE="Arial" SIZE=3>4.0 Installation</FONT></A><FONT FACE="Arial" SIZE=3> <BR>
+</FONT><A HREF="#Whats_New"><FONT FACE="Arial" SIZE=3>5.0 What's New in Version 4.0</FONT></A><FONT FACE="Arial" SIZE=3> <BR>
+</FONT><A HREF="#Getting_Started"><FONT FACE="Arial" SIZE=3>6.0 Getting Started</FONT></A><FONT FACE="Arial" SIZE=3><BR>
+</FONT><A HREF="#Example_Programs"><FONT FACE="Arial" SIZE=3>7.0 Example Programs</FONT></A><FONT FACE="Arial" SIZE=3><BR>
+</FONT><A HREF="#Known_Limitations"><FONT FACE="Arial" SIZE=3>8.0 Known Limitations in Version 4.0</FONT></A><FONT FACE="Arial" SIZE=3> <BR>
+</FONT><A HREF="#Technical_Support"><FONT FACE="Arial" SIZE=3>9.0 Technical Support and Feedback</FONT></A><FONT FACE="Arial" SIZE=3> </P>
+</FONT><FONT SIZE=3><P>&nbsp;<BR>
+<A NAME="Overview"></P>
+</FONT><FONT FACE="Arial"><H3>1.0 Overview</H3>
+</FONT><FONT SIZE=3><P></A>The VTune&#153; Performance Analyzer is designed to provide an integrated tuning environment for Microsoft* Windows* 95, Windows 98, and Windows NT* systems.</P>
+<P>Additional information on this software as well as other Intel&reg; software performance products is available at </FONT><A HREF="http://developer.intel.com/vtune"><FONT SIZE=3>http://developer.intel.com/vtune</FONT></A><FONT SIZE=3>.</P>
+</FONT><FONT FACE="Arial" SIZE=3><P><A NAME="System_Requirements"></P>
+</FONT><FONT FACE="Arial"><H3>2.0 System Requirements</H3>
+</FONT><B><FONT SIZE=3><P></A>Minimum hardware requirements:</B> </P></FONT>
+
+<UL>
+<LI>A Pentium<SUP>&reg;</SUP> processor-based system and 32 MBytes of RAM. Be sure to use at least the minimum amount of virtual memory that Windows recommends or the VTune analyzer will experience unexpected failures. </LI>
+<LI>Pentium Pro, Pentium II, Pentium II Xeon&#153;, Intel Celeron&#153;, or Pentium </FONT><FONT FACE="Arial" SIZE=3>III</FONT><FONT SIZE=3> processor-based system for event-based sampling. </LI>
+<LI>Installation requires 40 MBytes of space on the hard disk you specify to install the VTune analyzer on. This may be a local hard disk or a network drive. </LI>
+<LI>Additionally, 18 MBytes of disk space is required for system files on the drive containing the system directory (assumed in this discussion to be C:). The additional hard disk space on C: is needed for updating and installing the DLLs and OCXs that the VTune analyzer requires to be in the system directory. Even if you install the VTune analyzer on a hard disk other than C:, please make sure that you have 18 MBytes on C:.</LI></UL>
+
+<B><P>Minimum software requirements: </B>Microsoft Windows 95, Windows 98, or Windows NT 4.0 operating system with Service Pack 3 or later. The VTune analyzer has also been tested with Windows 2000 Beta 3 (build 1946.1).</P>
+</FONT><FONT FACE="Arial" SIZE=3><P><A NAME="License_Definitions"></P>
+</FONT><FONT FACE="Arial"><H3>3.0 License Definitions</H3>
+</FONT><FONT SIZE=3><P></A>The VTune analyzer license (</FONT><FONT FACE="Courier" SIZE=2>LICENSE.WRI</FONT><FONT SIZE=3>) refers to developer tools that are found in the VTune analyzer installation directory.</P>
+</FONT><FONT FACE="Arial" SIZE=3><P><A NAME="Installation"></P>
+</FONT><FONT FACE="Arial"><H3>4.0 Installation</H3>
+</FONT><B><FONT SIZE=3><P></A>To install on Windows 95:</P></B></FONT>
+<P>Insert the CD into the drive and auto-execution will invoke </FONT><FONT FACE="Courier" SIZE=2>setup.exe</FONT><FONT SIZE=3>. Make sure that the VTune analyzer is selected to be installed.</P>
+<B><P>Caveats:</P>
+</B><P>When looking at system modules on Windows 95, you can display symbolic information for these modules if you install the symbol files that are distributed with the SDK, DDK, and/or OS distribution diskettes/CDs.</P>
+<P>Install all symbol files and individual VXDs that are part of </FONT><FONT FACE="Courier" SIZE=2>VMM32.VXD</FONT><FONT SIZE=3> and that are included in the Windows 95 DDK. For example, to view the hotspots for the module VMM, install the symbols and the debug version of the VXDs from the DDK, and then associate the files </FONT><FONT FACE="Courier" SIZE=2>VMM.VXD</FONT><FONT SIZE=3> and </FONT><FONT FACE="Courier" SIZE=2>VMM.SYM</FONT><FONT SIZE=3> with the VMM module in the Hotspots or Static Code Analysis window. Note however, that the debug version of VMM32 does not have the same performance characteristics as the retail version.</P>
+<B><P>To install on Windows NT:</P>
+</B><P>Installation Notes:</P>
+
+<UL>
+<LI>The VTune analyzer requires Windows NT Version 4.0 with Service Pack 3 or later to be installed. </LI>
+<LI>Administrator rights are required.</LI></UL>
+
+<P>Insert the CD into the drive. Auto-execution on Windows NT will invoke </FONT><FONT FACE="Courier" SIZE=2>setup.exe</FONT><FONT SIZE=3>. Make sure that the VTune analyzer is selected to be installed.</P>
+
+<UL>
+<LI>If the User ID of the person using the VTune analyzer is different from the User ID of the person who installed the VTune analyzer, the person using the VTune analyzer must use the Update User’s Registry utility in the program group. </LI>
+<LI>To do sampling on Windows NT, you must have administrator rights or have the "Profile system performance" right assigned to your user account by the administrator. Otherwise, the VTune analyzer will not be able to collect samples. To assign this right, the administrator must do the following:</LI></UL>
+
+<OL>
+<OL>
+
+<LI>Open the Programs\Administrative Tools (Common)\User Manager.</LI>
+<LI>Single click the user who needs the right assigned.</LI>
+<LI>Select the Policies\User Rights menu item. In this window, check the "Show Advanced User Rights" checkbox at the bottom of the window.</LI>
+<LI>Click on the right pull-down menu and select "Profile system performance".</LI>
+<LI>Select the Add button and specify the user.</LI>
+<LI>Click Add, then OK.</LI>
+<LI>Click OK in the User Rights Policy dialog box to finish.</LI></OL>
+</OL>
+
+<B><P>Caveats:</P>
+
+<UL>
+</B><LI>When sampling on Windows NT, the output directory must be a local drive. The VTune analyzer may not be able to record samples on a network or a mapped drive. </LI>
+<LI>During sampling, the VTune analyzer can track the modules belonging to your application when you use the "Program Name" or "Application to Activate" modes specified on the Automation options page of the Options dialog box. When using "None," all modules that get loaded after the VTune analyzer starts sampling will be attributed to OTHER32 in the Modules report. </LI>
+<LI>In order for the VTune analyzer to correctly attribute the samples on Windows NT to the Win32* Subsystem Server process, please use </FONT><FONT FACE="Courier" SIZE=2>regedit</FONT><FONT SIZE=3> to set bit 0x10000 in the registry variable:</LI></UL>
+
+</FONT><PRE>
+&#9;&#9;[HKEY_LOCAL_MACHINE]
+&#9;    &#9;    SYSTEM
+&#9;&#9;&#9;CurrentControlSet
+&#9;&#9;&#9;    Control
+&#9;&#9;&#9;&#9;SessionManager
+&#9;&#9;&#9;&#9;    <B>GlobalFlag</PRE><DIR>
+
+</B><FONT SIZE=3><P>Setting this bit in GlobalFlag will allow samples to be correctly attributed to the DLLs that are opened by the Subsystem Server process, for example the Windows NT Video DLL. If this bit in GlobalFlag is not set, samples collected in modules opened by the Subsystem Server process will be attributed to OTHER32. Be sure to not inadvertently change the other bit settings in GlobalFlag when setting bit 0x10000. </P></DIR>
+
+
+<UL>
+<LI>To use an alternate symbol path for DBG files, define the environment variable: </FONT><FONT FACE="Courier" SIZE=2>_NT_ALT_SYMBOL_PATH</FONT><FONT SIZE=3>. For instance, if your files are under </FONT><FONT FACE="Courier" SIZE=2>D:\support\debug\i386\symbols\dll\*.dbg</FONT><FONT SIZE=3>, you should set:</LI></UL>
+<DIR>
+
+<P>&#9;</FONT><FONT FACE="Courier" SIZE=2>_NT_ALT_SYMBOL_PATH = d:\support\debug\i386 </P></DIR>
+
+
+<UL>
+</FONT><FONT SIZE=3><LI>When looking at system modules on Windows NT, you can display symbolic information for these modules if you install the symbol files that are distributed with the SDK, DDK, and/or OS distribution diskettes/CDs.</LI></UL>
+
+<B><P>To Uninstall the VTune Analyzer:</P>
+</B><P>When the VTune analyzer is uninstalled using the UnInstall VTune Analyzer icon in the program group, only files installed by the VTune analyzer are deleted. Files that were created after installation, such as the database files (*.ldb and *.mdb) created at the end of the sampling session in the output directory and the binary files instrumented for a call graph in the cache directory, are not deleted. Delete the remaining files and directories yourself.</P>
+</FONT><FONT FACE="Arial" SIZE=3><P><A NAME="Directory_Structure"></P>
+</FONT><FONT FACE="Arial"><H3><A NAME="Whats_New"></A>5.0 What’s New in the VTune&#153; Performance Analyzer Version 4.0</H3>
+</FONT><FONT SIZE=3><P>Following are the new features introduced in this version. See "What's New" in the online-help for more details on these features.</P>
+
+<UL>
+<LI>Intel Pentium </FONT><FONT FACE="Arial" SIZE=3>III</FONT><FONT SIZE=3> processor support. You can use sampling, call graph profiling, or assembly analysis to analyze the performance of your application on the Pentium </FONT><FONT FACE="Arial" SIZE=3>III</FONT><FONT SIZE=3> processor and find potential performance bottlenecks. You can select a Pentium </FONT><FONT FACE="Arial" SIZE=3>III</FONT><FONT SIZE=3> processor-specific event and run a sampling session based on this event.<BR>
+You can use the coach to analyze performance bottlenecks and get tuning advice specific to the Pentium </FONT><FONT FACE="Arial" SIZE=3>III</FONT><FONT SIZE=3> processor. The coach analyzes your code and, whenever appropriate, to boost the performance of your program, suggests intrinsics corresponding to the Streaming SIMD Extentions.<BR>
+From the assembly view, you can display context-sensitive online help descriptions of the Pentium </FONT><FONT FACE="Arial" SIZE=3>III</FONT><FONT SIZE=3> processor instructions. </LI>
+<LI>Improved counter data collection using chronologies. The VTune analyzer now reports counter data separately for each instance of an object. The GUI for the collection and display of the data has also been improved. </LI>
+<LI>Bytecode Accelerator. The VTune analyzer allows you to identify critical time-intensive Java* methods in the Hotspots report of your Java application and compile them to native Intel architecture (IA) code for faster performance. </LI>
+<LI>Source View Enhancement. The VTune analyzer allows you to view all the collected events, in the source view, from a session at once and to switch sessions at the source view level. The VTune analyzer allows you to open the source view from hotspot, static code analysis, or call graph and to view any collected event or call graph information on this source view. </LI>
+<LI>Event ratios. Event ratios provide detailed performance information based on Pentium Pro, Pentium II, and Pentium </FONT><FONT FACE="Arial" SIZE=3>III</FONT><FONT SIZE=3> processor performance-related events monitored and collected in an event-based analysis session. The information is displayed in the Source, Mixed Source/Assembly, and Assembly views. </LI>
+<LI>Call site information. Call graph profiling now includes collecting and analyzing call-site information and displaying the results in the call list and Source views.</LI></UL>
+
+<P>&nbsp;</P>
+</FONT><FONT FACE="Helvetica"><H3><A NAME="Getting_Started"></A>6.0 Getting Started</H3>
+</FONT><FONT SIZE=3><P>All information about the VTune analyzer is contained in the online help. The context-sensitive online help can be activated in several ways:</P>
+
+<UL>
+<LI>Click the right-mouse button to invoke online help for the active item on the screen. </LI>
+<LI>Press the &lt;F1&gt; key to invoke online help and display the overview help topic corresponding to the active VTune analyzer window. From the overview help topic, you can navigate to related help topics. </LI>
+<LI>Click on the buttons of the Assistant bar on the right inside the VTune analyzer main window to invoke context-sensitive How To, Tips, and Troubleshooting topics.</LI></UL>
+
+<P>The product package also includes reference cards that provide a quick tour of all of the main features of the VTune analyzer.</P>
+<P>The VTune analyzer supports applications generated with the following compilers and development environments when correct debug symbols are available:</P></FONT>
+<TABLE BORDER CELLSPACING=3 CELLPADDING=7 WIDTH=485>
+<TR><TD WIDTH="51%" VALIGN="TOP">
+<FONT SIZE=3><P><B>Compiler Environment</B></FONT></TD>
+<TD WIDTH="22%" VALIGN="TOP">
+<B><FONT SIZE=3><P>Source View</B></FONT></TD>
+<TD WIDTH="27%" VALIGN="TOP">
+<B><FONT SIZE=3><P>Call Graph Support</B></FONT></TD>
+</TR>
+<TR><TD WIDTH="51%" VALIGN="TOP">
+<FONT SIZE=3><P>Microsoft Visual C++* 5.0/6.0</FONT></TD>
+<TD WIDTH="22%" VALIGN="TOP">
+<FONT SIZE=3><P>Yes</FONT></TD>
+<TD WIDTH="27%" VALIGN="TOP">
+<FONT SIZE=3><P>Yes</FONT></TD>
+</TR>
+<TR><TD WIDTH="51%" VALIGN="TOP">
+<FONT SIZE=3><P>Intel C/C++ Compiler 4.0</FONT></TD>
+<TD WIDTH="22%" VALIGN="TOP">
+<FONT SIZE=3><P>Yes</FONT></TD>
+<TD WIDTH="27%" VALIGN="TOP">
+<FONT SIZE=3><P>Yes</FONT></TD>
+</TR>
+<TR><TD WIDTH="51%" VALIGN="TOP">
+<FONT SIZE=3><P>Microsoft Visual Basic* 5.0/6.0</FONT></TD>
+<TD WIDTH="22%" VALIGN="TOP">
+<FONT SIZE=3><P>Yes</FONT></TD>
+<TD WIDTH="27%" VALIGN="TOP">
+<FONT SIZE=3><P>Yes</FONT></TD>
+</TR>
+<TR><TD WIDTH="51%" VALIGN="TOP">
+<FONT SIZE=3><P>Intel Fortran Compiler 2.0</FONT></TD>
+<TD WIDTH="22%" VALIGN="TOP">
+<FONT SIZE=3><P>Yes</FONT></TD>
+<TD WIDTH="27%" VALIGN="TOP">
+<FONT SIZE=3><P>Yes</FONT></TD>
+</TR>
+<TR><TD WIDTH="51%" VALIGN="TOP">
+<FONT SIZE=3><P>Borland* C++Builder* 4.0</FONT></TD>
+<TD WIDTH="22%" VALIGN="TOP">
+<FONT SIZE=3><P>Yes</FONT></TD>
+<TD WIDTH="27%" VALIGN="TOP">
+<FONT SIZE=3><P>Yes</FONT></TD>
+</TR>
+<TR><TD WIDTH="51%" VALIGN="TOP">
+<FONT SIZE=3><P>Borland JBuilder* 2</FONT></TD>
+<TD WIDTH="22%" VALIGN="TOP">
+<FONT SIZE=3><P>Yes</FONT></TD>
+<TD WIDTH="27%" VALIGN="TOP">
+<FONT SIZE=3><P>Yes</FONT></TD>
+</TR>
+<TR><TD WIDTH="51%" VALIGN="TOP">
+<FONT SIZE=3><P>Borland Delphi* 4.0</FONT></TD>
+<TD WIDTH="22%" VALIGN="TOP">
+<FONT SIZE=3><P>Yes</FONT></TD>
+<TD WIDTH="27%" VALIGN="TOP">
+<FONT SIZE=3><P>&nbsp;</FONT></TD>
+</TR>
+<TR><TD WIDTH="51%" VALIGN="TOP">
+<FONT SIZE=3><P>Watcom* 11.0</FONT></TD>
+<TD WIDTH="22%" VALIGN="TOP">
+<FONT SIZE=3><P>Yes</FONT></TD>
+<TD WIDTH="27%" VALIGN="TOP">
+<FONT SIZE=3><P>&nbsp;</FONT></TD>
+</TR>
+<TR><TD WIDTH="51%" VALIGN="TOP">
+<FONT SIZE=3><P>Microsoft Visual J++* 2.0</FONT></TD>
+<TD WIDTH="22%" VALIGN="TOP">
+<FONT SIZE=3><P>Yes</FONT></TD>
+<TD WIDTH="27%" VALIGN="TOP">
+<FONT SIZE=3><P>Yes</FONT></TD>
+</TR>
+</TABLE>
+
+<FONT SIZE=2><P>&nbsp;</P>
+</FONT><FONT FACE="Arial"><H3><A NAME="Example_Programs"></A>7.0 Example Programs</H3>
+</FONT><FONT SIZE=3><P>A set of example programs is provided in the </FONT><FONT FACE="Courier" SIZE=2>examples</FONT><FONT SIZE=3> directory.</P>
+<B><P>Demo Program:</B> The demo program example contains fragments of code, which can be used to view the advice given by the code coach. The example program includes chronologies. However, the option to collect chronologies is turned off by default. If you want to collect chronology data, check the Collect Chronology Data option checkbox on the Advanced options page of the Options dialog box before running a session.</P>
+<B><P>Manual Session:</B> The Manual Session example allows you to start PC sampling without starting an application.</P>
+<B><P>Simulation Demo:</B> The Simulation Session example shows Pentium II processor simulation results such as partial stalls, MOB stalls, BTB miss, and data cache miss. Open the online help for the reported stalls, after running dynamic analysis, to have a complete explanation.</P>
+<B><P>Search:</B> The Search example performs different search mechanisms on a text file.</P>
+<B><P>MS Java Example:</B> The Java example can be used to perform Java call graph profiling.</P>
+<P>Other examples are available from the VTune analyzer website, URL: </FONT><A HREF="http://developer.intel.com/vtune"><FONT SIZE=3>http://developer.intel.com/vtune</FONT></A><FONT SIZE=3>, accessible from the Help menu.</P>
+</FONT><FONT FACE="Arial" SIZE=3><P><A NAME="Known_Limitations"></A></P>
+</FONT><FONT FACE="Arial"><H3>8.0 Known Limitations In Version 4.0</H3>
+</FONT><B><FONT SIZE=3><P></A>Installation</B></P></FONT>
+
+<UL>
+<LI>Sometimes InstallShield* will report that it cannot install the software and displays a cryptic error message. This may be due to low disk space, or your </FONT><FONT FACE="Courier" SIZE=2>%TEMP%</FONT><FONT SIZE=3> directory is full. You must first clean up/delete the files in your </FONT><FONT FACE="Courier" SIZE=2>%TEMP%</FONT><FONT SIZE=3> directory, then run scandisk or chkdsk on your drive. You can then try to reinstall the software.</LI></UL>
+
+<B><P>Registry Corruption</P>
+
+<UL>
+</B><LI>The VTune analyzer registry sometimes gets corrupted if the VTune analyzer hangs. Use the "Update User's Registry" program from the program group to restore the registry.</LI></UL>
+
+<B><P>Options</P>
+
+<UL>
+</B><LI>The VTune analyzer may hang if you open the Options dialog box, by clicking on the Configure Options button or using the Configure menu/Options command, while a static code analysis or dynamic code analysis is in progress. </LI>
+<LI>If you have NuMega* SoftIce* running while the VTune analyzer is running, SoftIce will report a fault if you open the VTune analyzer's Options dialog box. To workaround this issue, turn faults to off while setting the options in the VTune analyzer. </LI>
+<LI>The Source View options may not work correctly if more than one Source view is open. Close all open Source views and open only the desired one.</LI></UL>
+
+<B><P>Sampling</P>
+
+<UL>
+</B><LI>Multiple instances of the VTune analyzer can be invoked; however, only one version of the VTune analyzer will be able to perform sampling. It is not recommended that multiple instances of the VTune analyzer be run together. </LI>
+<LI>Sometimes the VTune analyzer fails to load an application because it cannot find some of the DLLs. </LI>
+<LI>Application names to be sampled cannot be longer than 64 characters and cannot contain non-alphanumeric characters such as '!'.</LI>
+<LI>Drilling down on a single sample may cause the VTune analyzer to fail.  It is not recommended to drill down only on one sample.  Drill down over multiple samples.</LI>
+</UL>
+
+<B><P>Call Graph</P>
+
+<UL>
+</B><LI>You must delete the project files (</FONT><FONT FACE="Courier" SIZE=2>.vts</FONT><FONT SIZE=3>) generated by older versions of the VTune analyzer and create new project files for them in order to generate correct call graph information. </LI>
+<LI>If you encounter an error during instrumentation, then try clearing the cache (using the Clear Cache button in the Win32* Call Graph Setup dialog box) and re-instrumenting. </LI>
+<LI>If you get results that seem too large, they may be a side effect of the run-time instrumentation (</FONT><FONT FACE="Courier" SIZE=2>LoadLibrary</FONT><FONT SIZE=3>). Try re-running the application, without re-instrumentation. In order to improve accuracy, you can add, in advance, the dynamically loaded module to the module list by using the Add Module button. </LI>
+<LI>In order to get call graph information for executables produced by Microsoft Visual Basic 6.0, you need to define the environment variable, </FONT><FONT FACE="Courier" SIZE=2>LINKER=/fixed:no</FONT><FONT SIZE=3>, before building the application. In Windows NT, it should be added in the Control Panel/System/Environment. In Windows 95 or Windows 98, it should be added in the </FONT><FONT FACE="Courier" SIZE=2>autoexec.bat</FONT><FONT SIZE=3> file. This will cause generation of base relocations in the image which are needed in order to instrument it. </LI>
+<LI>In order to instrument an application that consists of more than one process (e.g. client-server), the other process should be added to the module list by using the Add Module button in the Win32* Call Graph Setup dialog box.<BR>
+When instrumenting more than one process, make sure that: </LI></UL>
+<DIR>
+<DIR>
+
+<P>-- the other process isn't currently running in the system, and<BR>
+-- the instrumented server is killed after completing the run</P></DIR>
+
+<P>Currently, there isn't a way to view the call graph for the other process.</P></DIR>
+
+
+<UL>
+<LI>In Windows 95 and Windows 98, some user DLLS may be loaded by the system and won't be instrumented. In order to instrument these DLLs, use the Add Module button in the Win32* Call Graph Setup dialog box and use the original name as the Instrumented Module Name (the path remains in the cache). </LI>
+<LI>If an executable contains a Shared Section which it uses to communicate with another process, the other process must be instrumented (in order to force both processes to use the same DLL with the shared section). </LI>
+<LI>It is recommended not to use in-place instrumentation (same name, same directory). </LI>
+<LI>Some functions cannot be profiled. These are rare extreme cases. In this case, it will seem as if the caller of the non-instrumented function called its callees. </LI>
+<LI>In Windows 95 and Windows 98, inter-DLL calls (e.g., user32 calling kernel32) will not appear in the call graph. </LI>
+<LI>The new Microsoft Delayed-Load feature is treated like a dynamically loaded library (run-time vs. instrumentation-time). </LI>
+<LI>For the Win32 call graph, exit the application being profiled normally to end the call graph session. Do not use the Stop Session button to end the session. </LI>
+<LI>When first moving the Zoom slider on the call graph view, the graph scale is reset to the smallest possible scale. After that, the slider works normally. </LI>
+<LI>You may get an error stating that the VTune analyzer cannot find the file of the Java program when you try to view its source file. This happens when you run a Win32 call graph profiling session on a Win32 project beforehand without exiting and reinvoking the VTune analyzer. The call graph will display the names of the Java methods incorrectly; therefore, the VTune analyzer cannot find the associated source file. </LI>
+<LI>Call site support has not been implemented for Java call graph. </LI>
+<LI>For Java applications, call graph data in the Source view appears only for current method. To get call graph data for another method, reenter the source view from the call graph of the desired method. </LI>
+<LI>Transitioning from any place in the Source view to the Call Graph view for Java code will always bring you to the previously selected method. </LI>
+<LI>The VTune analyzer may get confused when there are </FONT><FONT FACE="Courier" SIZE=2>.prf</FONT><FONT SIZE=3> files in the working directory which are not created by the VTune analyzer. </LI>
+<LI>Renaming </FONT><FONT FACE="Courier" SIZE=2>.prf</FONT><FONT SIZE=3> files manually may result in a loss of consistency between call graph and sampling data. </LI>
+<LI>The RVA filed is sometimes wrong in the Call List window in the view by call sites. </LI>
+<LI>Call graph instrumentation problems might occur on Windows 2000. </LI>
+<LI>Running Java call graph with the Automatically increment option turned off (in the Sampling options page of the Options dialog box) will delete previously collected sampling data for the session. To get both sampling and call graph data for the same session, run the call graph first then run the sampling session. Take note that if you run call graph again, without incrementing the session ID, it will delete the previously collected sampling data.</LI>
+<LI>For Java applications, sampling and call graph data cannot be displayed simultaneously in the source view. When coming to the source view from the call graph view, only the call graph data will be displayed. When coming from the hotspots view, only sampling data will be displayed. When coming from the Static Code Analysis view, none of these data will be displayed. </LI>
+<LI>The function names of Intel C/C++ compiler-generated Pentium </FONT><FONT FACE="Arial" SIZE=3>III</FONT><FONT SIZE=3> processor 128-bit stack alignment functions, with multiple entry points, will appear at least twice in the call graph grid (with the same name) if the entry points are called during execution.</LI></UL>
+
+<B><P>Code Coach</P>
+
+<UL>
+</B><LI>Makefile processing for the code coach will run properly only when a compiler is set up to run. For instance, if you requested that the compiler run from the CD-ROM, makefile processing for code coach will run only if the compiler CD-ROM is present in the CD-ROM drive. </LI>
+<LI>If you used the Microsoft Visual C++ IDE to generate a makefile for the code coach, your source directories specified under Tools/Options/Directories are not contained in the makefile. If the code coach fails to find the include files residing in these directories, you will need to add these directories to the </FONT><FONT FACE="Courier" SIZE=2>INCLUDE</FONT><FONT SIZE=3> environment variable (before starting the VTune analyzer), or specify the directories in the make option </FONT><FONT FACE="Courier" SIZE=2>INCLUDE="..."</FONT><FONT SIZE=3>.</LI>
+<LI>The code coach will generate an "Invalid combination of type specifiers" error when it encounters the following line in a Watcom header file:  </FONT><FONT FACE="Courier" SIZE=2>typedef long char wchar_t </FONT>   The workaround is to specify </FONT><FONT FACE="Courier" SIZE=2>-D_WCHAR_T_DEFINED -Dwchar_t=short</FONT> as an option in the code coach.</LI>
+</UL>
+
+<B><P>Dynamic Analysis</P>
+
+<UL>
+</B><LI>No support is available for the Intel Celeron processor and the Pentium II Xeon processor. </LI>
+<LI>No support is available for Java code. </LI>
+<LI>Laptop users running Windows 95 should avoid selecting the Uniform Sampling in the Dynamic Analysis Setup dialog box. This may cause Windows 95 to crash.</LI></UL>
+
+<B><P>Static Analysis</P>
+
+<UL>
+</B><LI>Static code analysis does not recognize symbolic information in </FONT><FONT FACE="Courier" SIZE=2>csm.vxd</FONT><FONT SIZE=3> file. </LI>
+<LI>In the case of large source files (3000 lines of code or more), the VTune analyzer minimizes the graphic display in the Static Assembly Analysis view. The graphic display for the pairing, penalty, warning, instruction cache, and decoder group columns is provided only for the assembly code lines that correspond to the first line of the selected source code. The mnemonic information corresponding to these graphics is displayed in their respective columns even though the graphics are disabled.</LI></UL>
+
+<B><P>Mixed Source and Assembly View</P>
+
+<UL>
+</B><LI>Loading and displaying large source files (7000 lines of code or more) in the Mixed Source and Assembly view can be very slow. </LI>
+<LI>Labels containing more than one "::" are parsed incorrectly in MIX/ASM views </LI>
+<LI>You might run into problems displaying source and assembly for virtual functions compiled with Watcom* 11.0.</LI></UL>
+
+<B><P>Bytecode Accelerator</P>
+
+<UL>
+</B><LI>To use the bytecode accelerator under any environment, include the VTune analyzer installation directory in the </FONT><FONT FACE="Courier" SIZE=2>PATH, CLASSPATH</FONT><FONT SIZE=3> and </FONT><FONT FACE="Courier" SIZE=2>LIB</FONT><FONT SIZE=3> environment variables. </LI>
+<LI>To use the bytecode accelerator under the Microsoft environment, you must install the Microsoft Java Development Kit. It is available from </FONT><A HREF="www.microsoft.com/java"><FONT SIZE=3>www.microsoft.com/java</FONT></A><FONT SIZE=3>. After installing the Microsoft JDK, you must add the </FONT><I><FONT FACE="Courier" SIZE=2>JDK_root_install_path</I></FONT><FONT FACE="Courier" SIZE=3>\lib\i386</FONT><FONT SIZE=3> directory to your </FONT><FONT FACE="Courier" SIZE=2>LIB</FONT><FONT SIZE=3> environment variable. The bytecode accelerator must be able to find the </FONT><FONT FACE="Courier" SIZE=2>msjava.lib</FONT><FONT SIZE=3> library in order to create native binaries for the Microsoft Java environment. This note does not apply to Borland JBuilder 2 users. </LI>
+<LI>The bytecode accelerator does not generate correct code for the following Java syntax:</LI></UL>
+<DIR>
+<DIR>
+
+</FONT><FONT FACE="Courier" SIZE=2><P>i = a[(a=b)[n]];</P></DIR>
+
+</FONT><FONT SIZE=3><P>The workaround is that you can delay the assignment of array variable </FONT><FONT FACE="Courier" SIZE=2>a</FONT><FONT SIZE=3> after the array reference to bypass the problem.</P><DIR>
+
+</FONT><FONT FACE="Courier" SIZE=2><P>i = a[b[n]];<BR>
+a = b;</P></DIR>
+</DIR>
+
+
+<UL>
+</FONT><FONT SIZE=3><LI>The following statement of comparing equality of the same float/double variable may be eliminated by the bytecode accelerator and the effect may introduce different outcome.</LI></UL>
+<DIR>
+<DIR>
+
+<P>"When a test contains an if statement of "if (y == y) s++" inside a loop statement, the same variable comparison is considered to be equal by the optimizer, so the if statement is considered dead code and is removed. Because of this optimization, the compiler produces a different answer than the JIT code."</P></DIR>
+</DIR>
+
+
+<UL>
+<LI>Floating-point expressions may result in different precisions and a floating-point comparison of equality may fail because of the precision difference. </LI>
+<LI>The bytecode accelerator gives different results than the JIT code for the following Java syntax:</LI></UL>
+<DIR>
+<DIR>
+
+</FONT><FONT FACE="Courier" SIZE=2><P>a = "abc"<BR>
+if (a == "abc")</P></DIR>
+
+</FONT><FONT SIZE=3><P>The compiler treats the first </FONT><FONT FACE="Courier" SIZE=2>abc</FONT><FONT SIZE=3> as a different object than the second </FONT><FONT FACE="Courier" SIZE=2>abc</FONT><FONT SIZE=3> and gives a FALSE result of this string object comparison. If the intention is to compare the value of string variable </FONT><FONT FACE="Courier" SIZE=2>a</FONT><FONT SIZE=3> to </FONT><FONT FACE="Courier" SIZE=2>abc</FONT><FONT SIZE=3>, you can use the predefined method of class </FONT><FONT FACE="Courier" SIZE=2>String</FONT><FONT SIZE=3> to do the comparison.</P></DIR>
+
+
+<UL>
+<LI>Currently the bytecode accelerator does not support overloaded methods in the Microsoft VM environment. </LI>
+<LI>Currently the bytecode accelerator does not support the JNI interface in the Microsoft VM environment.</LI></UL>
+
+<B><P>Intel740&#153; Graphics Accelerator</P>
+
+<UL>
+</B><LI>The Intel740&#153; Graphics Accelerator performance counters are not available in Windows 2000.</LI></UL>
+
+<B><P><A NAME="Technical_Support">Compiler Intrinsics</P>
+
+<UL>
+</B><LI>You will find more up-to-date compiler intrinsics information at </FONT><A HREF="http://developer.intel.com/"><FONT SIZE=3>http://developer.intel.com</FONT></A><FONT SIZE=3>. The online help will be updated to reflect the new instrinsic names at a later release.</LI></UL>
+
+</FONT><FONT FACE="Arial"><H3>9.0 Technical Support and Feedback</H3>
+</FONT><FONT SIZE=3><P></A>Your feedback on Intel software is very important to us. We will strive to provide you with answers or solutions to problems you might encounter with the software. To give feedback or report any problems with installation or use, you can do the following: </P>
+
+<UL>
+<LI>call Intel Developer Support Hotline: (800) 628-8686 </LI>
+<LI>send email to </FONT><A HREF="mailto:developer_support@intel.com"><FONT SIZE=3>developer_support@intel.com</FONT></A></LI></UL>
+
+<FONT SIZE=3><P>When submitting a problem description by e-mail, please include your name, company, phone number, product name and version, compiler name and version, OS/service pack, and information about your development environment. </P>
+<P>You can find up-to-date information on the product and software updates at </FONT><A HREF="http://developer.intel.com/vtune"><FONT SIZE=3>http://developer.intel.com/vtune</FONT></A><FONT SIZE=3>.</P>
+</FONT><FONT FACE="Arial" SIZE=1><P>&nbsp;</P>
+<P>Intel, the Intel logo, and Pentium are registered trademarks of Intel Corporation. <BR>
+Intel386, Intel486, MMX, and VTune are trademarks of Intel Corporation. <BR>
+*Other brands and names are the property of their respective owners. </P>
+<P>Copyright &copy; 1998-1999, Intel Corporation, All Rights Reserved. </P>
+<P><script language="JavaScript"><!--
+lastmod = document.lastModified   
+lastmoddate = Date.parse(lastmod)  
+if(lastmoddate == 0){              
+ document.writeln("Last modified: unknown.")
+ } else {
+ document.writeln("Last modified: " + lastmod)
+}
+//--></script><BR>
+Reference: readme.htm </FONT></BODY>
+</HTML>

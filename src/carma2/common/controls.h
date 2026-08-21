@@ -1,0 +1,292 @@
+#ifndef REC2_CONTROLS_H
+#define REC2_CONTROLS_H
+
+#include "rec2_types.h"
+
+#include "c2_hooks.h"
+
+extern int gEntering_message;
+extern char* gAbuse_text[10];
+extern int gRecovery_voucher_count;
+extern int gAuto_repair;
+extern int gInstant_handbrake;
+extern tU32 gToo_poor_for_recovery_timeout;
+extern int gCheckpoint_finder_enabled;
+extern int gCount_toggled_doors;
+extern int gINT_0068b8e4;
+extern int gINT_0068b8e8;
+extern int gHad_auto_recover;
+extern tU32 gPalette_fade_time;
+extern int gRecover_timer;
+extern int gToo_late;
+extern int gINT_0067c470;
+extern int gWhich_edit_mode;
+extern tEdit_func* gEdit_funcs[2][18][8];
+extern int gAllow_car_flying;
+extern tCar_spec* gTarget_lock_car_1;
+extern tCar_spec* gTarget_lock_car_2;
+extern int gInventory_cycling;
+extern tU32 gInventory_timeout;
+extern char gString[84];
+extern int gInvulnerability;
+extern int gCancel_recover;
+extern int gRepair_last_time;
+extern tU32 gLast_repair_time;
+
+void C2_HOOK_FASTCALL SetSoundDetailLevel(int pLevel);
+
+void C2_HOOK_FASTCALL ReallySetSoundDetailLevel(int pLevel);
+
+int C2_HOOK_FASTCALL GetSoundDetailLevel(void);
+
+void C2_HOOK_FASTCALL ToggleMiniMap(void);
+
+void C2_HOOK_FASTCALL ToggleFlaps(void);
+
+int C2_HOOK_FASTCALL ToggleFlapsCB(tPhysics_object* pCollision_info, void* data);
+
+int C2_HOOK_CDECL ToggleDoorsActorCallback(br_actor* pActor, void* data);
+
+void C2_HOOK_FASTCALL ToggleMap2(void);
+
+void C2_HOOK_FASTCALL ToggleMap(void);
+
+void C2_HOOK_FASTCALL ToggleHeadupMap(void);
+
+void C2_HOOK_FASTCALL CycleMapOptions(void);
+
+void C2_HOOK_FASTCALL ToggleMapTransparency(void);
+
+void C2_HOOK_FASTCALL SetRecovery(void);
+
+int C2_HOOK_FASTCALL CheckRecoverCost(void);
+
+void C2_HOOK_FASTCALL AbortRace(void);
+
+void C2_HOOK_FASTCALL ToggleHeadupLevel(void);
+
+void C2_HOOK_FASTCALL SetFlag(int i);
+
+void C2_HOOK_FASTCALL SetFlag2(int i);
+
+void C2_HOOK_FASTCALL F4Key(void);
+
+void C2_HOOK_FASTCALL EnsureSpecialVolumesHidden(void);
+
+void C2_HOOK_FASTCALL ShowSpecialVolumesIfRequ(void);
+
+void C2_HOOK_FASTCALL DoEditModeKey(int pIndex);
+
+void C2_HOOK_FASTCALL F5Key(void);
+
+void C2_HOOK_FASTCALL F6Key(void);
+
+void C2_HOOK_FASTCALL F7Key(void);
+
+void C2_HOOK_FASTCALL F8Key(void);
+
+void C2_HOOK_FASTCALL F10Key(void);
+
+void C2_HOOK_FASTCALL F11Key(void);
+
+void C2_HOOK_FASTCALL F12Key(void);
+
+void C2_HOOK_FASTCALL NumberKey0(void);
+
+void C2_HOOK_FASTCALL NumberKey1(void);
+
+void C2_HOOK_FASTCALL NumberKey2(void);
+
+void C2_HOOK_FASTCALL NumberKey3(void);
+
+void C2_HOOK_FASTCALL NumberKey4(void);
+
+void C2_HOOK_FASTCALL NumberKey5(void);
+
+void C2_HOOK_FASTCALL NumberKey6(void);
+
+void C2_HOOK_FASTCALL NumberKey7(void);
+
+void C2_HOOK_FASTCALL NumberKey8(void);
+
+void C2_HOOK_FASTCALL NumberKey9(void);
+
+void C2_HOOK_FASTCALL ToggleFlying(void);
+
+void C2_HOOK_FASTCALL ScreenSmaller(void);
+
+void C2_HOOK_FASTCALL ScreenLarger(void);
+
+void C2_HOOK_FASTCALL BuyArmour(void);
+
+void C2_HOOK_FASTCALL BuyPower(void);
+
+void C2_HOOK_FASTCALL BuyOffense(void);
+
+void C2_HOOK_FASTCALL ViewNetPlayer(void);
+
+void C2_HOOK_FASTCALL UserSendMessage(void);
+
+void C2_HOOK_FASTCALL ToggleTargetLock(void);
+
+void C2_HOOK_FASTCALL CycleTargetLock(void);
+
+void C2_HOOK_FASTCALL ToggleInventory(void);
+
+void C2_HOOK_FASTCALL LeftInventory(void);
+
+void C2_HOOK_FASTCALL RightInventory(void);
+
+void C2_HOOK_FASTCALL ChangeCameraTypeInGame(void);
+
+void C2_HOOK_FASTCALL ChangeCameraType(void);
+
+void C2_HOOK_FASTCALL ToggleCockpit(void);
+
+void C2_HOOK_FASTCALL DisposeAbuseomatic(void);
+
+void C2_HOOK_FASTCALL CheckForCheatingGits(void);
+
+void C2_HOOK_FASTCALL CheckKevKeys(void);
+
+void C2_HOOK_FASTCALL CheckSystemKeys(int pRacing);
+
+void C2_HOOK_FASTCALL CheckToggles(int pRacing);
+
+void C2_HOOK_FASTCALL CheckHorn3D(tCar_spec* pCar);
+
+int C2_HOOK_FASTCALL CarWorldOffFallenCheckThingy(tCar_spec* pCar, int pCheck_around);
+
+int C2_HOOK_FASTCALL HasCarFallenOffWorld(tCar_spec* pCar);
+
+void C2_HOOK_FASTCALL CheckHornLocal(tCar_spec* pCar);
+
+void C2_HOOK_FASTCALL CheckHorns(void);
+
+void C2_HOOK_FASTCALL CheckMapRenderMove(void);
+
+void C2_HOOK_FASTCALL SetFlipUpCar(tCar_spec* pCar);
+
+void C2_HOOK_FASTCALL CheckOtherRacingKeys(void);
+
+void C2_HOOK_FASTCALL FlipUpCar(tCar_spec* pCar_spec);
+
+void C2_HOOK_FASTCALL FlipUpCollisionInfo(tPhysics_object* pCollision_info);
+
+void C2_HOOK_FASTCALL ResetRecoveryVouchers(void);
+
+void C2_HOOK_FASTCALL EnterUserMessage(void);
+
+void C2_HOOK_FASTCALL MapChanged(void);
+
+void C2_HOOK_FASTCALL CheckMapMoveKeys(int pKey0);
+
+void C2_HOOK_FASTCALL PollCameraControls(tU32 pCamera_period);
+
+void C2_HOOK_FASTCALL ExplodeCar(tCar_spec* pCar);
+
+void C2_HOOK_FASTCALL CheckRecoveryOfCars(tU32 pEndFrameTime);
+
+void C2_HOOK_FASTCALL BrakeInstantly(void);
+
+void C2_HOOK_FASTCALL PollCarControls(tU32 pTime_difference);
+
+void C2_HOOK_FASTCALL FUN_0045a670(void);
+
+void C2_HOOK_FASTCALL FUN_0045acf0(void);
+
+void C2_HOOK_FASTCALL BuyPSPowerup(int pIndex);
+
+void C2_HOOK_FASTCALL FinishRace(int i);
+
+void C2_HOOK_FASTCALL GetPowerup(int pNum);
+
+void C2_HOOK_FASTCALL SteelBollock(void);
+
+void C2_HOOK_FASTCALL RichardsSphere(int pNum);
+
+void C2_HOOK_FASTCALL CycleCarSimplificationLevel(void);
+
+void C2_HOOK_FASTCALL ToggleSky(void);
+
+void C2_HOOK_FASTCALL CycleYonFactor(void);
+
+void C2_HOOK_FASTCALL ToggleAccessoryRendering(void);
+
+void C2_HOOK_FASTCALL DecreaseYon(void);
+
+void C2_HOOK_FASTCALL IncreaseYon(void);
+
+void C2_HOOK_FASTCALL CycleSoundDetailLevel(void);
+
+void C2_HOOK_FASTCALL ShowCurrentJoystickName(void);
+
+void C2_HOOK_FASTCALL ToggleJoystickHeadup(void);
+
+void C2_HOOK_FASTCALL ToggleJoystickYAxis(void);
+
+void C2_HOOK_FASTCALL ToggleJoystickDPad(void);
+
+void C2_HOOK_FASTCALL CycleJoystick(void);
+
+void C2_HOOK_FASTCALL ToggleJoystickEnable(void);
+
+void C2_HOOK_FASTCALL IncreaseJoystickFFB(void);
+
+void C2_HOOK_FASTCALL FUN_00447330(void);
+
+void C2_HOOK_FASTCALL FUN_00447340(void);
+
+void C2_HOOK_FASTCALL CycleInvulnerability(void);
+
+void C2_HOOK_FASTCALL ResetMan(void);
+
+void C2_HOOK_FASTCALL NextPedCam(void);
+
+void C2_HOOK_FASTCALL PrevPedCam(void);
+
+void C2_HOOK_FASTCALL FindNearestPed(void);
+
+void C2_HOOK_FASTCALL ToggleTimerFreeze(void);
+
+void C2_HOOK_FASTCALL EarnDosh(void);
+
+void C2_HOOK_FASTCALL LoseDosh(void);
+
+void C2_HOOK_FASTCALL ViewOpponent(void);
+
+void C2_HOOK_FASTCALL MungeRepulseRays(tU32 pTime);
+
+void C2_HOOK_FASTCALL GotPowerupN(int pN);
+
+void C2_HOOK_FASTCALL GotPowerup0(void);
+
+void C2_HOOK_FASTCALL GotPowerup1(void);
+
+void C2_HOOK_FASTCALL GotPowerup2(void);
+
+void C2_HOOK_FASTCALL GotPowerup3(void);
+
+void C2_HOOK_FASTCALL GotPowerup4(void);
+
+void C2_HOOK_FASTCALL GotPowerup5(void);
+
+void C2_HOOK_FASTCALL GotPowerup6(void);
+
+void C2_HOOK_FASTCALL GotPowerup7(void);
+
+void C2_HOOK_FASTCALL GotPowerup8(void);
+
+void C2_HOOK_FASTCALL GotPowerup9(void);
+
+void C2_HOOK_FASTCALL InitAbuseomatic(void);
+
+void C2_HOOK_FASTCALL LookLeft(void);
+
+void C2_HOOK_FASTCALL LookForward(void);
+
+void C2_HOOK_FASTCALL LookRight(void);
+
+void C2_HOOK_FASTCALL DisplayUserMessage(void);
+
+#endif //REC2_CONTROLS_H

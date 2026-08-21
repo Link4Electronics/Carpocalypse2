@@ -1,0 +1,182 @@
+#ifndef REC2_PHYSICS_H
+#define REC2_PHYSICS_H
+
+#include "rec2_types.h"
+
+#include "c2_hooks.h"
+
+extern tPhysicsError_cbfn* gPhysics_error_cb;
+extern void* gPhysics_buffer1_ptr;
+extern void* gPhysics_buffer2_ptr;
+extern void* gPhysics_buffer3_ptr;
+extern int gPhysics_other_buffer_capacity;
+extern void* gPhysics_other_buffer;
+extern tU8 gTemporary_physics_render_buffer[300000];
+extern int gCollision_info_uid_counter;
+extern int gPHIL_enabled;
+extern int gFace_num__car;
+extern int gPHIL_doing_physics;
+extern int gPHIL_object_added;
+extern tU32 gPHIL_last_physics_tick;
+extern int gPHIL_mechanics_time_sync;
+extern tWorld_callback_active_passive_cbfn* gPHIL_original_activate_passive;
+extern tPhysics_callbacks* gPHIL_callbacks;
+extern tU32 gPHIL_last_physics_tick;
+
+#define NET_OBJECT_HIERARCHY_DEFAULT_SIZE 72
+
+void C2_HOOK_FASTCALL DoPhysicsError(tPhysicsError pError, const char* pMessage);
+
+void C2_HOOK_FASTCALL SetUpTestObjects(void);
+
+void C2_HOOK_FASTCALL PhysicsSetErrorHandler(tPhysicsError_cbfn* pError_cbfn);
+
+void C2_HOOK_FASTCALL InitPhysicsWorkspace(tU8* pBuffer, int pSize);
+
+void C2_HOOK_FASTCALL InitPhysics(void);
+
+int C2_HOOK_FASTCALL PHILInit(void);
+
+void C2_HOOK_FASTCALL PHILDisable(void);
+
+tCollision_shape_box* C2_HOOK_FASTCALL AllocateBoxCollisionShape(br_uint_8 pType);
+
+tCollision_shape_sphere* C2_HOOK_FASTCALL AllocateShapeSphere(br_uint_8 pType);
+
+tCollision_shape_polyhedron* C2_HOOK_FASTCALL AllocateShapePolyhedron(int pCount_points, br_uint_8 pType);
+
+tCollision_shape_wireframe* C2_HOOK_FASTCALL AllocateWireFrameCollisionShape(int pcount_points, int pCount_lines, br_uint_8 pType);
+
+void C2_HOOK_FASTCALL ReadMechanicsShapes(tPhysics_shape** pShape, FILE* pF);
+
+int C2_HOOK_FASTCALL ArePointsColinear(const br_vector3* pV1, const br_vector3* pV2, const br_vector3* pV3);
+
+void C2_HOOK_FASTCALL UpdateCollisionObject(tPhysics_object* pCollision_info);
+
+tPhysicsError C2_HOOK_FASTCALL ProcessTetrahedronPolyhedronCollisionShape(tCollision_shape_polyhedron_data* pPolyhedron, tPolyhedron_edge_indexes* pEdges);
+
+int C2_HOOK_FASTCALL PolyhedronCollisionShape_AddPoint(tCollision_shape_polyhedron_data* pPolyhedron, br_vector3* pVertex, tU8 pVertex_index, tPolyhedron_edge_indexes* pEdge_to_plane_indices);
+
+br_scalar C2_HOOK_FASTCALL ComparePolyhedronPlaneToNormal(const br_vector3* pV1, const br_vector3* pV2);
+
+int C2_HOOK_CDECL ComparePolyhedronPointIndicesToNormal(const int* pIndex1, const int* pIndex2);
+
+tPhysicsError C2_HOOK_FASTCALL AddPolyhedronCollisionShapePlanes(tCollision_shape_polyhedron_data* pPolyhedron);
+
+tPhysicsError C2_HOOK_FASTCALL ConvexHull3D(tCollision_shape_polyhedron_data* pPolyhedron);
+
+void C2_HOOK_FASTCALL GetBoundsFromPointList(const br_vector3* pVertices, int pCount_vertices, br_bounds3* pBounds);
+
+void C2_HOOK_FASTCALL FillInShape(tPhysics_shape* pShape);
+
+tPhysics_object* C2_HOOK_FAKE_THISCALL MungeSphereObject(br_model* pModel, undefined4 pArg2, float pWeight);
+
+void C2_HOOK_FASTCALL PositionChildren(tPhysics_object *pCollision_info);
+
+void C2_HOOK_FASTCALL InternalPositionChildren(tPhysics_object *pParent, tPhysics_object *pRoot);
+
+int C2_HOOK_CDECL PHILSetObjectProperty(tPhysics_object *pCollision_info, int pParam, ...);
+
+float C2_HOOK_FASTCALL PHILGetObjectProperty(tPhysics_object *pCollision_info, int pParam);
+
+void C2_HOOK_FASTCALL SetCollisionInfoDoNothing(tPhysics_object *pCollision_info, tU8 pDisable);
+
+void C2_HOOK_FASTCALL SetCollisionInfoChildsDoNothing(tPhysics_object *pCollision_info, tU8 pDisable);
+
+int C2_HOOK_FASTCALL PHILRemoveObject(tPhysics_object* pCollision_info);
+
+void C2_HOOK_FASTCALL AddCollisionInfoChild(tPhysics_object* pParent, tPhysics_object* pChild);
+
+int C2_HOOK_FASTCALL PhysicsObjectRecurse(tPhysics_object* pCollision_info, tEnumCollision_cbfn* pCallback, void* pUser_data);
+
+int C2_HOOK_FASTCALL TestForObjectInSensiblePlace(tPhysics_object* pCollision_info_1, tPhysics_object* pCollision_info_2, br_vector3* pVec3, tWorld_callbacks* pCar_callbacks);
+
+tPhysics_object* C2_HOOK_FAKE_THISCALL MungeBoxObject(br_model* pModel, undefined4 pArg2, float pMass);
+
+tPhysics_joint* C2_HOOK_FASTCALL AllocatePhysicsJoint(int pCount_limits, int pType);
+
+tPhysics_joint* C2_HOOK_FASTCALL ClonePhysicsJoint(const tPhysics_joint* pJoint, int pType);
+
+void C2_HOOK_FASTCALL PhysicsAddObject(tPhysics_object* pParent, tPhysics_object* pChild);
+
+void C2_HOOK_FASTCALL GetNonCars(void);
+
+void C2_HOOK_FASTCALL ApplyPhysicsToCars(tU32 pLast_tick_time, tU32 pFrame_period);
+
+tPhysics_object* C2_HOOK_FASTCALL PHILGetFirstObject(void);
+
+tPhysics_object* C2_HOOK_FASTCALL PHILGetNextObject(tPhysics_object* pCollision_info);
+
+void C2_HOOK_FASTCALL InternalPrepareObject(tPhysics_object* pObject);
+
+void C2_HOOK_FAKE_THISCALL MoveJointedObject(tPhysics_object* pObject, undefined4 pArg2, float pDelta_time);
+
+void C2_HOOK_FASTCALL MakeObjectListDoSomething(tPhysics_object* pObject);
+
+int C2_HOOK_FASTCALL CheckForObjectHierachyTouchingAnotherObject(tPhysics_object* pObject, tPhysics_object* pList, tPhysics_object* pList_original);
+
+int C2_HOOK_FASTCALL PHILMakeObjectActive(tPhysics_object* pObject, const br_vector3* pVel, const br_vector3* pOmega, int pArg4);
+
+void C2_HOOK_FASTCALL CheckForObjectHierachyTouchingObjectList(tPhysics_object* pObject, tPhysics_object* pList, tPhysics_object* pList_original);
+
+int C2_HOOK_FASTCALL PHILAddActiveObject(tPhysics_object* pInfo, undefined4* pArg2, const br_vector3* pArg3, const br_vector3* pArg4);
+
+void C2_HOOK_FASTCALL SwapPair(tPhysics_object* pObj1, tPhysics_object* pObj2);
+
+void C2_HOOK_FASTCALL CheckObjectsPostionInList(tPhysics_object* pObject, tPhysics_object** pList);
+
+void C2_HOOK_FASTCALL MakeObjectDoSomething(tPhysics_object* pObject, tPhysics_object* pList);
+
+void C2_HOOK_FASTCALL AddObjectToReducedList(tPhysics_object* pObject, tPhysics_object** pReduced_list);
+
+void C2_HOOK_FASTCALL PrepareObject(tPhysics_object* pObject, tPhysics_object** pList);
+
+int C2_HOOK_FASTCALL PHILAddObject(tPhysics_object* pObject);
+
+void C2_HOOK_FASTCALL PHILMungeObjects(tPhysics_object* pObjects);
+
+void C2_HOOK_FASTCALL FlushQueuedAddsAndRemoves(void);
+
+void C2_HOOK_FASTCALL PHILInterpolateObjects(tPhysics_object* pObjects, tU32 pTime);
+
+void C2_HOOK_FASTCALL PHILDoPhysics(tPhysics_callbacks* pCallbacks, tU32 pLast_tick_time, tU32 pFrame_period);
+
+int C2_HOOK_FASTCALL TimeToSendData(void);
+
+void C2_HOOK_FASTCALL PHILActivatePassive(tPhysics_object* pObject);
+
+void C2_HOOK_FASTCALL TestAutoSpecialVolume(tPhysics_object* pObject);
+
+void C2_HOOK_FASTCALL MungeSpecialVolume(tPhysics_object* pObject);
+
+void C2_HOOK_FASTCALL ProcessGravity(tPHIL_queued_header* pObject_info, tPhysics_object* pObject, float pGravity);
+
+void C2_HOOK_FASTCALL ProcessDrag2(tPHIL_queued_header* pObject_info, tPhysics_object* pObject, float pDrag, int pObject_info_flags, tSpecial_volume* pSpecial_volume);
+
+void C2_HOOK_FASTCALL ProcessDrag(tPHIL_queued_header* pObject_info, tPhysics_object* pObject, float pDrag);
+
+void C2_HOOK_FASTCALL LevelOutOnSurface(tPhysics_object *pObject);
+
+void C2_HOOK_FASTCALL MarkObjectAndChildrenAsPassive(tPhysics_object* pObject);
+
+void C2_HOOK_FASTCALL DoCollisions(tPhysics_object** pObject_list, tWorld_callbacks* pWorld_callbacks);
+
+int C2_HOOK_FASTCALL PHILSetPassiveObjectsMatrix(tPhysics_object* pObject, br_matrix34* pMatrix);
+
+void C2_HOOK_FAKE_THISCALL InterpolateSingleObject(tPhysics_object* pObject, tU32 pTime, float pDt);
+
+void C2_HOOK_FASTCALL ChangedObjectsCallbacks(tPhysics_object* pObjects, tPhysics_callbacks* pCallbacks, tU32 pPeriod);
+
+void C2_HOOK_FASTCALL ResetObjectList(tPhysics_object* pObjects);
+
+int C2_HOOK_FASTCALL PhysicsObjectRecurseChildren(tPhysics_object* pObject, tEnumCollision_cbfn* pCallback, void* pContext);
+
+int C2_HOOK_FASTCALL GetObjectNetworkStuff(tPhysics_object* pObject, tU8* pBuffer, int pSize);
+
+int C2_HOOK_FASTCALL GetHierarchyNetworkStuff(tPhysics_object* pObject, tU8* pNet_data, int pRemaining);
+
+int C2_HOOK_FASTCALL SizeOfObjectNetworkStuff(tPhysics_joint_type pType);
+
+int C2_HOOK_FASTCALL GetHierarchyNetworkSize(tPhysics_object* pObject);
+
+#endif //REC2_PHYSICS_H

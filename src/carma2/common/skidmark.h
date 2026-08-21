@@ -1,0 +1,35 @@
+#ifndef REC2_SKIDMARK_H
+#define REC2_SKIDMARK_H
+
+#include "rec2_types.h"
+
+#include "c2_hooks.h"
+#include "c2_stdio.h"
+
+extern char* gBoring_material_names[2];
+extern char* gMaterial_names[2];
+extern br_material* gMaterial[2];
+extern tSkid gSkids[100];
+extern int gCurrent_skid;
+
+void C2_HOOK_FASTCALL InitSkids(void);
+
+void C2_HOOK_FASTCALL HideSkid(int pSkid_num);
+
+void C2_HOOK_FASTCALL HideSkids(void);
+
+void C2_HOOK_FASTCALL ReadSpillData(FILE *pF,tSlick_spec *pSlick_spec);
+
+void  C2_HOOK_FASTCALL AdjustSkid(int pSkid_num, br_matrix34* pMatrix, br_material* pMaterial);
+
+void C2_HOOK_FASTCALL StretchMark(tSkid* pMark, br_vector3* pFrom, br_vector3* pTo, br_scalar pTexture_start, br_scalar pTexture_step);
+
+void C2_HOOK_FASTCALL SkidMark(tCar_spec* pCar_spec, int pWheel_num);
+
+int C2_HOOK_FASTCALL SkidSection(tS16* pSkid_id, br_vector3* pSkid_start, br_vector3* pSkid_end, br_material* pMaterial, br_vector3* pPos, br_vector3* pNorm, br_vector3* pPrev_pos, br_vector3* pPrev_norm, br_scalar pTexture_start, br_scalar pTexture_step);
+
+void C2_HOOK_FASTCALL InitCarSkidStuff(tCar_spec* pCar);
+
+void C2_HOOK_FASTCALL SkidsPerFrame(void);
+
+#endif // REC2_SKIDMARK_H

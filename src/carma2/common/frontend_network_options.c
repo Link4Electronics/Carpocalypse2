@@ -1,0 +1,353 @@
+#include "frontend_network_options.h"
+
+#include "frontend.h"
+#include "frontend_main.h"
+#include "frontend_network.h"
+#include "frontend_quit.h"
+#include "globvars.h"
+#include "loading.h"
+#include "newgame.h"
+#include "platform.h"
+
+#include "c2_string.h"
+
+
+// GLOBAL: CARMA2_HW 0x00610208
+tFrontend_spec gFrontend_NETWORK_OPTIONS = {
+    "NetworkOptions",
+    0,
+    33,
+    NetOptions_Infunc,
+    NetOptions_Outfunc,
+    Generic_MenuHandler,
+    &gFrontend_MAIN,
+    0,
+    0,
+    0,
+    0,
+    5,
+    0,
+    {
+        { 0x9c,     temp,                       NULL, 0, 17, 18, 0, 0, 0, 0, 0, 1, },
+        { 0xcd,     temp,                       NULL, 0, 17, 18, 0, 0, 0, 0, 0, 1, },
+        { 0xf1,     temp,                       NULL, 0, 17, 18, 0, 0, 0, 0, 1, 1, },
+        { 0xf2,     temp,                       NULL, 0, 17, 18, 0, 0, 0, 0, 1, 1, },
+        { 0xcf,     temp,                       NULL, 0, 17, 18, 0, 0, 0, 0, 0, 1, },
+        { 0xf1,     temp,                       NULL, 0, 17, 18, 0, 0, 0, 0, 1, 1, },
+        { 0xf2,     temp,                       NULL, 0, 17, 18, 0, 0, 0, 0, 1, 1, },
+        { 0xa7,     temp,                       NULL, 0, 17, 18, 0, 0, 0, 0, 0, 1, },
+        { 0x9e,     temp,                       NULL, 0, 17, 18, 0, 0, 0, 0, 1, 1, },
+        { 0x9f,     temp,                       NULL, 0, 17, 18, 0, 0, 0, 0, 1, 1, },
+        { 0xe6,     temp,                       NULL, 0, 17, 18, 0, 0, 0, 0, 0, 1, },
+        { 0xf1,     temp,                       NULL, 0, 17, 18, 0, 0, 0, 0, 1, 1, },
+        { 0xf2,     temp,                       NULL, 0, 17, 18, 0, 0, 0, 0, 1, 1, },
+        { 0xd0,     temp,                       NULL, 0, 17, 18, 0, 0, 0, 0, 0, 1, },
+        { 0xc6,     temp,                       NULL, 0, 17, 18, 0, 0, 0, 0, 1, 1, },
+        { 0xc7,     temp,                       NULL, 0, 17, 18, 0, 0, 0, 0, 1, 1, },
+        { 0xd1,     temp,                       NULL, 0, 17, 18, 0, 0, 0, 0, 0, 1, },
+        { 0xf1,     temp,                       NULL, 0, 17, 18, 0, 0, 0, 0, 1, 1, },
+        { 0xf2,     temp,                       NULL, 0, 17, 18, 0, 0, 0, 0, 1, 1, },
+        { 0xe7,     temp,                       NULL, 0, 17, 18, 0, 0, 0, 0, 0, 1, },
+        { 0xd3,     temp,                       NULL, 0, 17, 18, 0, 0, 0, 0, 1, 1, },
+        { 0xd4,     temp,                       NULL, 0, 17, 18, 0, 0, 0, 0, 1, 1, },
+        { 0xd5,     temp,                       NULL, 0, 17, 18, 0, 0, 0, 0, 1, 1, },
+        { 0xc8,     temp,                       NULL, 0, 17, 18, 0, 0, 0, 0, 0, 1, },
+        { 0x404,    temp,                       NULL, 0, 17, 18, 0, 0, 0, 0, 1, 1, },
+        { 0xe8,     temp,                       NULL, 0, 17, 18, 0, 0, 0, 0, 0, 1, },
+        { 0x404,    temp,                       NULL, 0, 17, 18, 0, 0, 0, 0, 1, 1, },
+        { 0x403,    NetOptions_CreditsRoller,   NULL, 0, 17, 18, 0, 0, 0, 0, 1, 1, },
+        { 0x403,    NetOptions_CreditsRoller,   NULL, 0, 17, 18, 0, 0, 0, 0, 1, 1, },
+        { 0x403,    NetOptions_TargetRoller,    NULL, 0, 17, 18, 0, 0, 0, 0, 1, 1, },
+        { 0x403,    NetOptions_TargetRoller,    NULL, 0, 17, 18, 0, 0, 0, 0, 1, 1, },
+        { 0x7,      NetOptions_Ok,              NULL, 0, 17, 18, 0, 0, 0, 0, 1, 1, },
+        { 0x8,      NetOptions_Cancel,          NULL, 0, 17, 18, 0, 0, 0, 0, 1, 1, },
+    }
+};
+
+// GLOBAL: CARMA2_HW 0x006864a0
+tNet_game_options gFrontend_backup_net_options;
+
+// GLOBAL: CARMA2_HW 0x006886e8
+tStruct_00686508 gUNK_006886e8;
+
+// GLOBAL: CARMA2_HW 0x006883b0
+tStruct_00686508 gUNK_006883b0;
+
+void C2_HOOK_FASTCALL DisplayNetworkOptions(tFrontend_spec* pFrontend) {
+
+    if (gFrontend_net_options.show_players_on_map) {
+        SelectThisItemIn(pFrontend, 1, 2);
+    } else {
+        SelectThisItemIn(pFrontend, 1, 3);
+    }
+    if (gFrontend_net_options.powerup_respawn) {
+        SelectThisItemIn(pFrontend, 2, 5);
+    } else {
+        SelectThisItemIn(pFrontend, 2, 6);
+    }
+    if (gFrontend_net_options.open_game) {
+        SelectThisItemIn(pFrontend, 3, 8);
+    } else {
+        SelectThisItemIn(pFrontend, 3, 9);
+    }
+    if (gFrontend_net_options.grid_start) {
+        SelectThisItemIn(pFrontend, 4, 11);
+    } else {
+        SelectThisItemIn(pFrontend, 4, 12);
+    }
+    switch (gFrontend_net_options.race_sequence_type) {
+    case 0:
+        SelectThisItemIn(pFrontend, 5, 14);
+        break;
+    case 1:
+        SelectThisItemIn(pFrontend, 5, 15);
+        break;
+    }
+    if (gFrontend_net_options.random_car_choice) {
+        SelectThisItemIn(pFrontend, 6, 17);
+    } else {
+        SelectThisItemIn(pFrontend, 6, 18);
+    }
+    switch (gFrontend_net_options.car_choice) {
+    case 0:
+        SelectThisItemIn(pFrontend, 7, 20);
+        break;
+    case 1:
+        SelectThisItemIn(pFrontend, 7, 21);
+        break;
+    case 2:
+        SelectThisItemIn(pFrontend, 7, 22);
+        break;
+    }
+    sprintf(pFrontend->items[24].text, "%i", gFrontend_net_options.starting_credits);
+    switch (gFrontend_game_type) {
+    case eNet_game_type_fight_to_death:
+    case eNet_game_type_2:
+    case eNet_game_type_checkpoint:
+    case eNet_game_type_4:
+    case eNet_game_type_6:
+        pFrontend->items[25].stringId = 232;
+        break;
+    case eNet_game_type_1:
+        pFrontend->items[25].stringId = 233;
+        break;
+    case eNet_game_type_5:
+        pFrontend->items[25].stringId = 234;
+        break;
+    case eNet_game_type_foxy:
+        pFrontend->items[25].stringId = 235;
+        break;
+    }
+    pFrontend->items[25].enabled = kFrontendItemEnabled_enabled;
+    pFrontend->items[26].enabled = kFrontendItemEnabled_enabled;
+    pFrontend->items[30].enabled = kFrontendItemEnabled_enabled;
+    pFrontend->items[29].enabled = kFrontendItemEnabled_enabled;
+    switch (gFrontend_game_type) {
+    case eNet_game_type_fight_to_death:
+    case eNet_game_type_2:
+    case eNet_game_type_checkpoint:
+    case eNet_game_type_4:
+    case eNet_game_type_6:
+        pFrontend->items[25].enabled = kFrontendItemEnabled_disabled;
+        pFrontend->items[26].enabled = kFrontendItemEnabled_disabled;
+        pFrontend->items[30].enabled = kFrontendItemEnabled_disabled;
+        pFrontend->items[29].enabled = kFrontendItemEnabled_disabled;
+        strcpy(pFrontend->items[26].text, "----");
+        break;
+    case eNet_game_type_1:
+    case eNet_game_type_5:
+        sprintf(pFrontend->items[26].text, "%i", gFrontend_net_options.starting_target);
+        break;
+    case eNet_game_type_foxy:
+        {
+            int seconds = gFrontend_net_options.starting_target / 1000;
+            int minutes = (seconds / 60) % 60;
+            int hours = seconds / 3600;
+            if (hours == 0) {
+                sprintf(pFrontend->items[26].text, "%02i:%02i", minutes, seconds % 60);
+            } else {
+                sprintf(pFrontend->items[26].text, "%02i:%02i:%02i", hours, minutes, seconds % 60);
+            }
+        }
+        break;
+    }
+    FuckWithWidths(pFrontend);
+}
+
+void C2_HOOK_FASTCALL BackupNetworkOptions(void) {
+
+    C2_HOOK_BUG_ON(sizeof(gFrontend_net_options) != 0x30);
+    C2_HOOK_BUG_ON(sizeof(gFrontend_backup_net_options) != 0x30);
+    memcpy(&gFrontend_backup_net_options, &gFrontend_net_options, sizeof(gFrontend_net_options));
+}
+
+// FUNCTION: CARMA2_HW 0x00472ed0
+int C2_HOOK_FASTCALL NetOptions_Infunc(tFrontend_spec* pFrontend) {
+
+    Generic_Infunc(pFrontend);
+    DisplayNetworkOptions(pFrontend);
+    BackupNetworkOptions();
+    gUNK_006886e8.field_0x0 = 24;
+    gUNK_006886e8.field_0x4 = 28;
+    gUNK_006886e8.field_0x8 = 27;
+    gUNK_006886e8.next = &gUNK_006883b0;
+    gUNK_006883b0.field_0x0 = 26;
+    gUNK_006883b0.field_0x4 = 30;
+    gUNK_006883b0.field_0x8 = 29;
+    gUNK_006883b0.next = NULL;
+    gPTR_00686508 = &gUNK_006886e8;
+    return 0;
+}
+
+// FUNCTION: CARMA2_HW 0x00473210
+int C2_HOOK_FASTCALL NetOptions_Outfunc(tFrontend_spec* pFrontend) {
+
+    return 0;
+}
+
+// FUNCTION: CARMA2_HW 0x00473220
+int C2_HOOK_FASTCALL NetOptions_CreditsRoller(tFrontend_spec* pFrontend) {
+
+    gFrontend_net_current_roll = PDGetTotalTime();
+    if (gFrontend_net_current_roll - gFrontend_net_last_roll < 300) {
+        return 0;
+    }
+    if (gFrontend_selected_item_index == 28) {
+        gFrontend_net_options.starting_credits += 1000;
+    } else if (gFrontend_selected_item_index == 27) {
+        gFrontend_net_options.starting_credits -= 1000;
+    }
+    if (gFrontend_net_options.starting_credits < 0) {
+        gFrontend_net_options.starting_credits = 0;
+    } else if (gFrontend_net_options.starting_credits > 500000) {
+        gFrontend_net_options.starting_credits = 500000;
+    }
+    gFrontend_net_last_roll = gFrontend_net_current_roll;
+    sprintf(pFrontend->items[24].text, "%i", gFrontend_net_options.starting_credits);
+    FuckWithWidths(pFrontend);
+    return 0;
+}
+
+// FUNCTION: CARMA2_HW 0x004732b0
+int C2_HOOK_FASTCALL NetOptions_TargetRoller(tFrontend_spec* pFrontend) {
+    int increment;
+    int minimum;
+    int maximum;
+
+    gFrontend_net_current_roll = PDGetTotalTime();
+    if (gFrontend_net_current_roll - gFrontend_net_last_roll < 300) {
+        return 0;
+    }
+    switch (gFrontend_game_type) {
+    case eNet_game_type_1:
+        increment = 1;
+        minimum = 1;
+        maximum = 64;
+        break;
+    case eNet_game_type_5:
+        increment = 1;
+        minimum = 1;
+        maximum = 100;
+        break;
+    case eNet_game_type_foxy:
+        increment = 30 * 1000;
+        minimum = 30 * 1000;
+        maximum = 2 * 60 * 60 * 1000;
+        break;
+    default:
+        gFrontend_net_last_roll = gFrontend_net_current_roll;
+        return 0;
+    }
+    if (gFrontend_selected_item_index == 29) {
+        gFrontend_net_options.starting_target -= increment;
+    } else if ((gFrontend_selected_item_index == 30)) {
+        gFrontend_net_options.starting_target += increment;
+    }
+    if (gFrontend_net_options.starting_target < minimum) {
+        gFrontend_net_options.starting_target = minimum;
+    } else if (gFrontend_net_options.starting_target > maximum) {
+        gFrontend_net_options.starting_target = maximum;
+    }
+    gFrontend_net_last_roll = gFrontend_net_current_roll;
+    switch (gFrontend_game_type) {
+    case eNet_game_type_fight_to_death:
+    case eNet_game_type_2:
+    case eNet_game_type_checkpoint:
+    case eNet_game_type_4:
+    case eNet_game_type_6:
+        strcpy(pFrontend->items[26].text, "----");
+        break;
+    case eNet_game_type_1:
+    case eNet_game_type_5:
+        sprintf(pFrontend->items[26].text, "%i", gFrontend_net_options.starting_target);
+        break;
+    case eNet_game_type_foxy:
+        {
+            int seconds = gFrontend_net_options.starting_target / 1000;
+            int minutes = (seconds / 60) % 60;
+            int hours = seconds / 3600;
+            if (hours == 0) {
+                sprintf(pFrontend->items[26].text, "%02i:%02i", minutes, seconds % 60);
+            } else {
+                sprintf(pFrontend->items[26].text, "%02i:%02i:%02i", hours, minutes, seconds % 60);
+            }
+        }
+        break;
+    default:
+        break;
+    }
+    FuckWithWidths(pFrontend);
+    return 0;
+}
+
+// FUNCTION: CARMA2_HW 0x00473470
+int C2_HOOK_FASTCALL NetOptions_Ok(tFrontend_spec* pFrontend) {
+
+    if (WhichItemIsSelectedIn(pFrontend, 1) == 2) {
+        gFrontend_net_options.show_players_on_map = 1;
+    } else {
+        gFrontend_net_options.show_players_on_map = 0;
+    }
+    if (WhichItemIsSelectedIn(pFrontend, 2) == 5) {
+        gFrontend_net_options.powerup_respawn = 1;
+    } else {
+        gFrontend_net_options.powerup_respawn = 0;
+    }
+    if (WhichItemIsSelectedIn(pFrontend, 3) == 8) {
+        gFrontend_net_options.open_game = 1;
+    } else {
+        gFrontend_net_options.open_game = 0;
+    }
+    if (WhichItemIsSelectedIn(pFrontend, 4) == 11) {
+        gFrontend_net_options.grid_start = 1;
+    } else {
+        gFrontend_net_options.grid_start = 0;
+    }
+    if (WhichItemIsSelectedIn(pFrontend, 6) == 17) {
+        gFrontend_net_options.random_car_choice = 1;
+    } else {
+        gFrontend_net_options.random_car_choice = 0;
+    }
+    gFrontend_net_options.race_sequence_type = WhichItemIsSelectedIn(pFrontend, 5) - 14;
+    gFrontend_net_options.car_choice = WhichItemIsSelectedIn(pFrontend, 7) - 20;
+
+    C2_HOOK_BUG_ON(sizeof(gNet_settings[0]) != 0x30);
+    C2_HOOK_BUG_ON(sizeof(gFrontend_net_options) != 0x30);
+    memcpy(&gNet_settings[0], &gFrontend_net_options, sizeof(gFrontend_net_options));
+    memcpy(&gNet_settings[gNet_last_game_type], &gFrontend_net_options, sizeof(gFrontend_net_options));
+    SaveOptions();
+    return 0;
+}
+
+void C2_HOOK_FASTCALL RestoreNetworkOptions(void) {
+
+    C2_HOOK_BUG_ON(sizeof(gFrontend_backup_net_options) != 0x30);
+    memmove(&gFrontend_net_options, &gFrontend_backup_net_options, sizeof(gFrontend_backup_net_options));
+}
+
+// FUNCTION: CARMA2_HW 0x00473550
+int C2_HOOK_FASTCALL NetOptions_Cancel(tFrontend_spec* pFrontend) {
+
+    RestoreNetworkOptions();
+    return 0;
+}

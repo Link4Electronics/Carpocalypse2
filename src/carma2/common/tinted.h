@@ -1,0 +1,62 @@
+#ifndef REC2_TINTED_H
+#define REC2_TINTED_H
+
+#include "c2_hooks.h"
+
+#include <brender/brender.h>
+#include <rec2_types.h>
+
+extern int gHud_tinted1;
+extern int gHud_tinted2;
+extern int gHud_tinted3;
+extern int gHud_tinted4;
+extern tTintedPoly gTintedPolys[10];
+
+extern int gINT_006a0440;
+extern int gINT_006a0444;
+extern int gINT_006a0448;
+extern int gINT_006a044c;
+
+void C2_HOOK_FASTCALL InitTintedPolyStuff(void);
+
+br_material* C2_HOOK_FASTCALL BuildTintedPolyMaterial(int pOpacity);
+
+void C2_HOOK_FASTCALL GetRangeOfValuesFromPixelmap(br_pixelmap* pMap, br_uint_32* pDarkest, br_uint_32* pBrightest);
+
+int C2_HOOK_FASTCALL CreateTintedPoly(int x0, int y0, int width, int height, int class, int arg1, int arg2, int arg3);
+
+br_model* C2_HOOK_FASTCALL BuildTintedPolyModel(int x0, int y0, int width, int height, int nbX, int nbY);
+
+void C2_HOOK_FASTCALL FreeTintedPolyActor(int pTintedIndex);
+
+void C2_HOOK_FASTCALL FreeAllTintedPolyActors(void);
+
+void C2_HOOK_FASTCALL UpdateTintedPolyActor(int pTintedIndex);
+
+void C2_HOOK_FASTCALL TurnTintedPolyOn(int pTintedIndex);
+
+void C2_HOOK_FASTCALL TurnTintedPolyOff(int pTintedIndex);
+
+void C2_HOOK_FASTCALL RenderTintedPolys(void);
+
+void C2_HOOK_FASTCALL SetTintedPolyColour(int pTintedIndex, int pRed, int pGreen, int pBlue);
+
+void C2_HOOK_FASTCALL SetTintedPolySize(int pTintedIndex, int x0, int y0, int width, int height);
+
+void C2_HOOK_FASTCALL SetTintedPolyRefMaterial(int pTintedIndex, br_vector3* pPosition);
+
+br_material* C2_HOOK_FASTCALL InWater(int pTintedIndex);
+
+void C2_HOOK_FASTCALL UpdateTintedPolys(void);
+
+void C2_HOOK_FASTCALL SetTintedFromSpecialVolume(int pIndex, br_vector3* pPosition);
+
+void C2_HOOK_FASTCALL ProcessTintedPoly(int pIndex);
+
+void C2_HOOK_FASTCALL TintedAnimateSawToothColor(int pIndex);
+
+void C2_HOOK_FASTCALL FUN_004d86e0(int pIndex);
+
+int C2_HOOK_FASTCALL TintedPolyIsOn(int pIndex);
+
+#endif //REC2_TINTED_H

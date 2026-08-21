@@ -1,0 +1,5750 @@
+#ifndef REC2_TYPES_H
+#define REC2_TYPES_H
+
+#include <brender/br_types.h>
+#include <s3/s3.h>
+
+#include "c2_stdio.h"
+
+#define kMax_netplayers 12
+#define kMax_crush_datas 64
+
+#define kMax_headup_detail_level 5
+
+#define PEDESTRIAN_MAX_COUNT 2000
+
+typedef char tPath_name[256];
+
+typedef unsigned char tU8;
+typedef signed char tS8;
+typedef unsigned short tU16;
+typedef signed short tS16;
+typedef unsigned int tU32;
+typedef signed int tS32;
+
+typedef int tTWTVFS;
+typedef tU32 tPlayer_ID;
+typedef tU8 tNet_message_type;
+
+// FIXME: incomplete type
+typedef struct tCar_spec tCar_spec;
+typedef struct tCar_crush_spec tCar_crush_spec;
+typedef struct tPhysics_object tPhysics_object;
+typedef struct tFace_ref tFace_ref;
+typedef struct tNon_car_spec tNon_car_spec;
+typedef struct tPath_section tPath_section;
+typedef struct tPowerup tPowerup;
+typedef struct tRace_list_spec tRace_list_spec;
+typedef struct tMin_message tMin_message;
+typedef struct tMid_message tMid_message;
+typedef struct tMax_message tMax_message;
+typedef struct tSmashable_level tSmashable_level;
+typedef union tPhysics_shape tPhysics_shape;
+typedef struct tPedestrian tPedestrian;
+typedef struct tPedestrian_distances tPedestrian_distances;
+typedef struct tRace_pedestrian tRace_pedestrian;
+typedef struct tDrone_spec tDrone_spec;
+typedef struct tDrone_path_node tDrone_path_node;
+typedef struct tSave_game tSave_game;
+typedef struct tPipe_smudge_data tPipe_smudge_data;
+typedef struct tPath_node tPath_node;
+typedef struct tNet_game_details tNet_game_details;
+typedef struct tNet_message tNet_message;
+typedef struct tPipe_chunk tPipe_chunk;
+typedef struct tPipe_chunk_data tPipe_chunk_data;
+typedef struct tNet_stored_smash tNet_stored_smash;
+typedef struct tPhysics_joint tPhysics_joint;
+typedef struct tPed_personality tPed_personality;
+typedef struct tCar_crush_vertex_data tCar_crush_vertex_data;
+typedef struct tPed_face_cache_0x34 tPed_face_cache_0x34;
+typedef struct tPed_anim_seq tPed_anim_seq;
+
+typedef char tPed_animal_name[50]; /* FIXME: should not really exist */
+
+// Function callbacks are moved to a header for automatic SRE project generation
+typedef void C2_HOOK_FASTCALL tEdit_func(void);
+typedef int C2_HOOK_CDECL dr_pick2d_cbfn(br_actor*, br_model*, br_material*, br_vector3*, br_vector3*, br_scalar, br_scalar, void*);
+typedef int C2_HOOK_CDECL dr_modelpick2d_cbfn(br_model*, br_actor*, br_material*, br_vector3*, br_vector3*, br_scalar, int, int, int, br_vector3*, br_vector2*, void*);
+typedef int C2_HOOK_CDECL dr_modelpick2d_raycast_cbfn(br_model*, br_material*, br_vector3*, br_vector3*, br_scalar, int, int, int, br_vector3*, br_vector2*, void*);
+typedef void (C2_HOOK_FASTCALL * tPlayFlic_DoPerFrame)(void);
+typedef void (C2_HOOK_FASTCALL * tPDForEveryFile_cbfn)(const char*);
+typedef void (C2_HOOK_FASTCALL * tPDForEveryFileRecurse_cbfn)(const char*);
+typedef int  C2_HOOK_FASTCALL tGot_proc(tPowerup*, tCar_spec*);
+typedef void C2_HOOK_FASTCALL tLose_proc(tPowerup*, tCar_spec*);
+typedef void C2_HOOK_FASTCALL tPeriodic_proc(tPowerup*, tU32);
+typedef void C2_HOOK_FASTCALL tForEachPedestrian_cbfn(tPedestrian*, tCar_spec*, float, tU32, tPedestrian_distances*);
+typedef void C2_HOOK_FASTCALL material_cbfn(br_material*);
+typedef int C2_HOOK_FASTCALL tMaterialMaybeUpdate_cbfn(br_material*);
+typedef int C2_HOOK_FASTCALL tEnumCollision_cbfn(tPhysics_object* pCollision_info, void* pUser_data);
+typedef void C2_HOOK_FASTCALL tAddToJoinListProc(tNet_game_details*);
+typedef int C2_HOOK_FASTCALL tARScanBuffer_callback(tPipe_chunk*, int, tU32);
+typedef int C2_HOOK_FASTCALL tARScanBuffer_time_check(tU32);
+typedef br_uint_32 C2_HOOK_FASTCALL recurse_with_mat_cbfn(br_actor*, br_material*, void*);
+typedef br_uint_32 C2_HOOK_FASTCALL recurse_with_trans_cbfn(br_actor*, br_matrix34*, void*);
+typedef br_material* C2_HOOK_FASTCALL tPMFMCB(br_model*, tU16);
+typedef void C2_HOOK_FASTCALL tPiping_chunk_callback_reset(void);
+typedef int C2_HOOK_FASTCALL tPiping_chunk_callback_calc_length(void*);
+typedef void C2_HOOK_FASTCALL tPiping_chunk_callback_apply(void*);
+typedef void C2_HOOK_FASTCALL tPiping_chunk_callback_undo(void*, void*);
+typedef intptr_t C2_HOOK_FASTCALL tDRActorEnumRecurseWithTranslation_cbfn(br_actor*, br_vector3*, void*);
+typedef intptr_t C2_HOOK_FASTCALL tDRActorEnumRecurseWithSnart_cbfn(br_actor*, br_matrix34*, void*);
+typedef int C2_HOOK_FASTCALL tDrone_form_within_rendering_distance_cbfn(const br_vector3 *pPos);
+typedef int C2_HOOK_FASTCALL tDrone_form_within_processing_distance_cbfn(const br_vector3 *pPos);
+typedef void C2_HOOK_FASTCALL tFunk_index_cbfn(int pFunk_index);
+typedef void C2_HOOK_FASTCALL tWorld_callback_active_passive_cbfn(tPhysics_object*);
+typedef intptr_t C2_HOOK_FASTCALL tNearbyActors_cbfn(br_actor*, void*);
+typedef void C2_HOOK_FASTCALL tDoSomethingsToCheckpoints_cbfn(br_pixelmap* pMap, int pCheckPoint, tU32 pTime, int pEnable);
+typedef void C2_HOOK_FASTCALL tTurn_on_AR_callback(void);
+typedef void C2_HOOK_FASTCALL tTurn_off_AR_callback(void);
+typedef void C2_HOOK_FASTCALL tAfter_AR_callback(void);
+typedef void C2_HOOK_FASTCALL tZappy_AR_callback(void);
+typedef void C2_HOOK_FASTCALL tPreprocess_AR_callback(int pFrame_period);
+typedef void C2_HOOK_FASTCALL tPostProcess_AR_callback(int pFrame_period);
+
+typedef enum {
+    eFPR_OK = 0,
+    eFPR_end_of_path = 1,
+    eFPR_given_up = 2,
+} tFollow_path_result;
+
+typedef enum tPath_section_type_enum {
+    ePST_normal = 0,
+    ePST_race_path = 1,
+    ePST_cheat_only = 2,
+    ePST_count = 3
+} tPath_section_type_enum;
+
+typedef enum tPursue_car_state {
+    ePCS_what_now = 0,
+    ePCS_following_trail = 1,
+    ePCS_following_line_of_sight = 2,
+    ePCS_backing_up = 3
+} tPursue_car_state;
+
+typedef enum  {
+    eNet_synch_host_first = 0,
+    eNet_synch_host_subsequent = 1,
+    eNet_synch_client = 2
+} tNet_synch_mode;
+
+typedef enum {
+    eTime_bonus_none = 0,
+    eTime_bonus_initial_pause = 1,
+    eTime_bonus_race_bonus = 2,
+    eTime_bonus_tb_up = 3,
+    eTime_bonus_tb_pause = 4,
+    eTime_bonus_tb_down = 5,
+    eTime_bonus_end_pause = 6
+} tTime_bonus_state;
+
+typedef enum {
+    eRace_not_over_yet = -1,
+    eRace_over_0 = 0, /* FIXME */
+    eRace_over_1 = 1, /* FIXME */
+    eRace_over_2 = 2, /* FIXME */
+    eRace_over_3 = 3, /* FIXME */
+    eRace_over_abandoned = 4,
+    eRace_over_out_of_time = 5,
+    eRace_over_6 = 6, /* FIXME */
+    eRace_over_7 = 7, /* FIXME */
+    eRace_over_8 = 8, /* FIXME */
+    eRace_over_9 = 9, /* FIXME */
+} tRace_over_reason;
+
+typedef enum {
+    eNet_gameplay_checkpoint = 0,
+    eNet_gameplay_wrong_checkpoint = 1,
+    eNet_gameplay_host_paused = 4,
+    eNet_gameplay_host_unpaused = 5,
+} tNet_gameplay_mess;
+
+typedef enum {
+    eDrone_state_START = 0,
+    eDrone_state_RUN = 1,
+    eDrone_state_DEFAULT = 3,
+    eDrone_state_STOP = 4,
+} tDroneStateFuncState;
+
+typedef struct tSave_camera {
+    int saved;
+    br_scalar zoom;
+    br_angle yaw;
+} tSave_camera;
+
+typedef struct {
+    int field_0x0_bit0 : 1;
+    int field_0x0_bit1 : 1;
+    int field_0x0_bit2 : 1;
+    int field_0x0_bit3 : 1;
+    int field_0x0_bit4 : 1;
+    int field_0x0_bit5 : 1;
+    int field_0x0_bit6 : 1;
+    int field_0x0_bit7 : 1;
+} tCamera_key_flags;
+
+typedef struct {
+    size_t count_vertices;
+    float bens_z_min;
+    float bens_z_max;
+} tAccumulateSquashVertices_UserData;
+
+typedef struct {
+    tCar_spec* car;
+    br_vector3 force;
+} tFlapBit_arg;
+
+typedef struct {
+    int field_0x0;
+    tCar_spec* car;
+    tPhysics_object* collision_info;
+    br_actor* car_actor;
+} tSmoke_column_core;
+
+typedef struct {
+    tU16 v[3];
+} tCompressed_vector3;
+
+typedef struct {
+    tCompressed_vector3 m0;
+    tCompressed_vector3 m1;
+    tCompressed_vector3 p;
+} tCompressed_matrix3;
+
+typedef struct {
+    tCompressed_vector3 m[4];
+} tCompressed_matrix34;
+
+typedef struct {
+    tPiping_chunk_callback_reset* reset;
+    int length;
+    tPiping_chunk_callback_calc_length* calc_length;
+    tPiping_chunk_callback_apply* apply;
+    undefined4 field_0x10;
+    tPiping_chunk_callback_undo* undo;
+} tPiping_chunk_callback;
+
+typedef struct {
+    tU16 vertex_index;
+    tU16 light_index;
+} tSmudged_vertex;
+
+typedef struct tPipe_smudge_data {
+    tU16 vertex_count;
+    undefined field_0x2[2];
+    int model_index;
+    tSmudged_vertex vertex_changes[];
+} tPipe_smudge_data;
+
+typedef struct {
+    br_vector3 direction;
+} tPipe_ped_dir_data;
+
+typedef struct {
+    tU16 render;
+} tPipe_drone_render;
+
+typedef struct {
+    tS16 move_id;
+    tS16 original_move_id;
+    tS16 field_0x4;
+    tS16 field_0x6;
+    undefined4 field_0x8;
+    undefined4 field_0xc;
+    undefined4 field_0x10;
+    br_vector3 original_pos;
+    br_vector3 pos;
+    int original_action;
+    int action;
+    br_matrix34 field_0x34;
+} tPipe_ped_move_data;
+
+typedef struct {
+    int pitch;
+    br_vector3 position;
+    tS16 outlet;
+    tS16 volume;
+} tPipe_shunk_single_sound;
+
+typedef struct {
+    br_matrix34 matrix;
+} tPipe_ped_physics_data;
+
+typedef struct {
+    tS16 field_0x48;
+    tS16 field_0x74;
+    tS16 field_0x70;
+    tCompressed_matrix34 matrix;
+} tPipe_drone_corner_pos;
+
+typedef struct {
+    tS16 field_0x0;
+} tPipe_single_ds_model;
+
+typedef struct {
+    br_vector3 vector;
+} tPipe_single_vector;
+
+typedef struct {
+    int enable;
+    int block_flags;
+} tPipe_single_groove_on_of;
+
+typedef struct {
+    tS8 type_from;
+    tS8 type_to;
+} tPipe_single_transform_type;
+
+typedef struct {
+    br_model* model;
+    tCompressed_vector3 vectors[];
+} tPipe_model_mash;
+
+typedef struct {
+    tU16 flags;
+} tPipe_funk_enable;
+
+typedef struct {
+    undefined4 field_0x0;
+    tU16 field_0x4;
+    tU16 field_0x6;
+} tPipe_single_drone_straight_pos;
+
+typedef struct {
+    tU16 enable;
+} tPipe_single_oppo_renderage;
+
+typedef struct {
+    undefined field_0x00;
+    undefined field_0x01;
+    undefined field_0x02;
+    undefined field_0x03;
+    tS8 field_0x04;
+    tU8 field_0x05;
+    undefined field_0x06;
+    tU8 field_0x07;
+    br_vector3 field_0x08;
+    br_vector3 field_0x14;
+    br_matrix34 field_0x20;
+} tPipe_single_ped_status;
+
+typedef struct {
+    br_vector3 p;
+    br_vector3 v;
+} tPipe_single_ped_pos;
+
+typedef struct {
+    undefined4 field_0x0;
+    undefined4 field_0x4;
+} tPipe_single_vanished_dismembered;
+
+typedef struct {
+    undefined2 field_0x0;
+    undefined2 field_0x2;
+    undefined2 field_0x4;
+    undefined2 field_0x6;
+    br_model* model;
+} tPipe_single_ped_model_change;
+
+typedef struct {
+    tU16 steering_angle;
+    tU8 lf_sus_position;
+    tU8 rf_sus_position;
+    tU8 lr_sus_position;
+    tU8 rr_sus_position;
+} tPipe_single_graphical_wheel_stuff;
+
+typedef struct {
+    br_matrix34 mat;
+    br_vector3 v;
+    tS16 speedo_speed;
+    union {
+        tU16 flags;
+        struct {
+            tU16 revs: 11;
+            tU16 frame_collision_flag: 1;
+            tU16 gear: 4;
+        };
+    };
+    int field_0x40;
+} tPipe_car_chunk;
+
+typedef struct {
+    undefined4 field_0x0;
+    tPedestrian* ped;
+    br_actor* actor;
+} tPipe_ped_incident;
+
+typedef struct {
+    tPedestrian* ped;
+    br_vector3 positions[7];
+} tPipe_burning_ped;
+
+typedef struct {
+    void (C2_HOOK_FASTCALL * reset)(void);
+    tU32 length;
+    int (C2_HOOK_FASTCALL * calc_length)(tPipe_chunk* pChunk);
+    void (C2_HOOK_FASTCALL * apply)(tPipe_chunk** pChunk);
+    undefined4 flags;
+    void (C2_HOOK_FASTCALL * undo)(tPipe_chunk** pChunk, tPipe_chunk* pPrev_chunk);
+} tReplay_callback;
+
+typedef struct {
+    br_actor* actor;
+    br_matrix34 matrix;
+} tPipe_chunk_non_car;
+
+typedef struct {
+    br_matrix34 matrix;
+} tPipe_phil_object;
+
+typedef struct {
+    br_vector3 pos;
+    tU16 age;
+    br_material* material;
+} tPipe_chunk_shrapnel;
+
+typedef struct {
+    tSmoke_column_core core;
+    tU16 vertex;
+} tPipe_chunk_smoke_column;
+
+typedef struct {
+    int index;
+} tPipe_chunk_powerup_respawn;
+
+typedef struct {
+    br_vector3 *origin;
+    br_vector3 *victim;
+    tU32 time;
+} tPipe_chunk_repulse_ray;
+
+typedef struct {
+    tS8 wobble_x;
+    tS8 wobble_y;
+} tPipe_chunk_screen_wobble;
+
+typedef struct {
+    tU32 time;
+} tPipe_chunk_frame_finish;
+
+typedef struct {
+    br_vector3 p;
+    br_vector3 v;
+} tPipe_chunk_spark;
+
+typedef struct {
+    tS16 v[3];
+} tReduced_pos;
+
+typedef struct {
+    tReduced_pos pos;
+    tU16 radius;
+    tU8 strength;
+    tU8 type;
+} tPipe_chunk_smoke;
+
+typedef struct {
+    tU16 ped_index;
+    tU16 car_ID;
+    tU32 time;
+} tPipe_chunk_prox_ray;
+
+typedef struct {
+    br_matrix34 m;
+} tPipe_chunk_end_shit_mine;
+
+typedef enum {
+    ePipe_chunk_frame_finish = 0,
+    ePipe_chunk_ped_incident = 1,
+    ePipe_chunk_single_sound = 2,
+    ePipe_chunk_car = 5,
+    ePipe_chunk_single_graphpical_wheel_stuff = 6,
+    ePipe_chunk_damage = 7,
+    ePipe_chunk_special = 8,
+    ePipe_chunk_spark = 10,
+    ePipe_chunk_shrapnel = 11,
+    ePipe_chunk_screen_wobble = 12,
+    ePipe_chunk_non_car = 14,
+    ePipe_chunk_smoke = 15,
+    ePipe_chunk_smoke_column = 17,
+    ePipe_chunk_smudge = 19,
+    ePipe_chunk_prox_ray = 21,
+    ePipe_chunk_flap_bits = 23,
+    ePipe_model_mash = 24,
+    ePipe_smash_texture_change = 36,
+    ePipe_chunk_repulse_ray = 37,
+    ePipe_chunk_single_ped_status = 40,
+    ePipe_chunk_ped_dir = 41,
+    ePipe_chunk_ped_move = 42,
+    ePipe_chunk_ped_physics = 43,
+    ePipe_chunk_single_ped_pos = 46,
+    ePipe_chunk_single_ped_model_change = 47,
+    ePipe_chunk_phil_object = 48,
+    ePipe_single_groove_on_off = 51,
+    ePipe_funk_enable = 54,
+    ePipe_chunk_single_vanished_dismembered = 55,
+    ePipe_single_ds_model = 56,
+    ePipe_single_vector3 = 58,
+    ePipe_chunk_drone_render = 60,
+    ePipe_chunk_drone_corner_pos = 61,
+    ePipe_chunk_single_drone_straight_pos = 62,
+    ePipe_chunk_burning_ped = 64,
+    ePipe_chunk_powerup_respawn = 65,
+    ePipe_chunk_end_shit_mine = 65,
+    ePipe_single_transform_type = 68,
+    ePipe_chunk_single_oppo_renderage = 69,
+} tPipe_chunk_type;
+
+typedef struct tPipe_chunk_data {
+    tU32 count;
+    union {
+        tPipe_chunk_non_car non_car;
+        tPipe_ped_physics_data ped_physics;
+        tPipe_phil_object phil_object;
+        char raw_data[0];
+    } data;
+} tPipe_chunk_data;
+
+typedef struct tPipe_chunk {
+    tPipe_chunk_type type;
+    tU32 count;
+    char data[];
+} tPipe_chunk;
+
+typedef struct {
+    tCar_spec* car_spec;
+    undefined4 field_0x4;
+    br_pixelmap* texture1;
+    br_pixelmap* texture2;
+} tPipe_smash_texture_change;
+
+typedef void C2_HOOK_FASTCALL tDrone_state_function(tDrone_spec*, tDroneStateFuncState);
+
+typedef int tJoy_array[8];
+typedef int tKey_array[151];
+
+typedef struct {
+    br_matrix34* mat;
+    br_bounds original_bounds;
+    br_vector3 box_centre;
+    br_scalar radius;
+    br_bounds real_bounds;
+} tBounds;
+
+typedef struct {
+    int x;
+    int y;
+} tMouse_coord;
+
+typedef struct {
+    int r;
+    int g;
+    int b;
+} tRGBColour;
+
+typedef struct {
+    int match_type;
+    char identifier_value;
+    tS8 identifier_index;
+    tU16 match_flags;
+    float max_dist_axis;
+    float max_dist_squared;
+    br_vector3* pos;
+    int (C2_HOOK_FASTCALL * callback)(br_actor*, void*);
+    void* callback_context;
+} tFoundAnActor_context;
+
+typedef struct {
+    tDrone_spec* drone;
+    int model_start;
+    int model_end;
+} tLinkyCallback_context;
+
+typedef struct {
+    br_material* material_0x0;
+    br_material* material_0x4;
+    int capacity_indices;
+    tU16* indices;
+    int count_indices;
+    int capacity_vertices;
+    tCar_crush_vertex_data* vertices;
+    int count_vertices;
+    br_vector3 field_0x20;
+} tMungeMaterialCB_Context;
+
+typedef struct {
+    br_actor* clip;
+    br_scalar length;
+} tClip_details;
+
+typedef struct {
+    tU32 total_duration;
+    tU32 durations[1];
+    tU8 index;
+    undefined field_0x9[3];
+    tU32 start_time;
+    tU32 longest_duration;
+    int colour;
+    char identifier[4];
+} tTimer;
+
+typedef struct tToggle_element {
+    int key1;
+    int key2;
+    int in_game_only;
+    int exact_modifiers;
+    int on_last_time;
+    void (C2_HOOK_FASTCALL *action_proc)(void);
+} tToggle_element;
+
+typedef struct tCheat {
+    tU32 code;
+    tU32 code2;
+    void (C2_HOOK_FASTCALL * action_proc)(int);
+    int num;
+} tCheat;
+
+typedef struct {
+    tRGBColour tl;
+    tRGBColour tr;
+    tRGBColour bl;
+    tRGBColour br;
+} tPolyFontBorderColours;
+
+typedef struct tPolyFont tPolyFont;
+
+typedef struct tText_chunk {
+    int frame_cue;
+    int frame_end;
+    int x_coord;
+    int y_coord;
+    int line_count;
+    char* text[8];
+} tText_chunk;
+
+typedef struct {
+    char name[8];
+} tTree_surgery_pass1;
+
+typedef struct {
+    char original[24];
+    char replacement[24];
+} tTree_surgery_pass2;
+
+typedef enum {
+    eSO_main_menu_invoked = 0,
+    eSO_game_over = 1,
+    eSO_game_completed = 2,
+    eSO_continue = 3
+} tSO_result;
+
+typedef enum {
+    eRace_game_abandonned = 0,
+    eRace_aborted = 1,
+    eRace_timed_out = 2,
+    eRace_completed = 3
+} tRace_result;
+
+typedef struct {
+    br_pixelmap* original;
+    br_pixelmap* copy;
+} tSaved_table;
+
+typedef enum {
+    ePOC_start = 0,
+    ePOC_run = 1,
+    ePOC_die = 2,
+} tProcess_objective_command;
+
+typedef enum {
+    eVehicle_self = 0,
+    eVehicle_net_player = 1,
+    eVehicle_opponent = 2,
+    eVehicle_rozzer = 3,
+    eVehicle_drone = 4,
+    eVehicle_not_really = 5
+} tVehicle_type;
+
+typedef enum {
+    eSoftness_VerySoft = 0,
+    eSoftness_Soft = 1,
+    eSoftness_Normal = 2,
+    eSoftness_Hard = 3,
+    eSoftness_VeryHard = 4,
+    eSoftness_Uncrushable = 5,
+} tSoftness;
+
+typedef enum {
+    eCrushType_Boring = 0,
+    eCrushType_Flap = 1,
+    eCrushType_Detach = 2,
+} tCrush_type;
+
+typedef enum {
+    eEaseOfDetachment_VeryEasy = 0,
+    eEaseOfDetachment_Easy = 1,
+    eEaseOfDetachment_Normal = 2,
+    eEaseOfDetachment_Hard = 3,
+    eEaseOfDetachment_VeryHard = 4,
+} tEase_of_detachment;
+
+typedef enum {
+    eCarCrushShape_box = 0,
+    eCarCrushShape_poly = 1,
+} tCar_crush_shape;
+
+typedef enum {
+    eGroove_mode_constant = 0,
+    eGroove_mode_distance = 1,
+} tGroove_trigger_mode;
+
+typedef enum {
+    eGroove_path_none = -1,
+    eGroove_path_straight = 0,
+    eGroove_path_circular = 1,
+} tGroove_path_mode;
+
+typedef enum {
+    eLollipop_none = -1,
+    eLollipop_x_match = 0,
+    eLollipop_y_match = 1,
+    eLollipop_z_match = 2,
+} tLollipop_mode;
+
+typedef enum {
+    eMove_none = -1,
+    eMove_linear = 0,
+    eMove_harmonic = 1,
+    eMove_flash = 2,
+    eMove_controlled = 3,
+    eMove_absolute = 4,
+    eMove_continuous = 5,
+    eMove_texturebits = 6,
+} tMove_mode;
+
+typedef enum {
+    eInterrupt_none = 0,
+    eInterrupt_less_than = 1,
+    eInterrupt_greater_than = 2,
+} tInterrupt_status;
+
+typedef enum {
+    eGroove_object_none = -1,
+    eGroove_object_spin = 0,
+    eGroove_object_rock = 1,
+    eGroove_object_throb = 2,
+    eGroove_object_shear = 3,
+} tGroove_object_mode;
+
+typedef enum {
+    eCar_owner_none = 0,
+    eCar_owner_someone = 1,
+    eCar_owner_self = 2,
+    eCar_owner_not_allowed = 3
+} tCar_detail_ownership;
+
+typedef enum {
+    eJoint_none = 0,
+    eJoint_hinge = 1,
+    eJoint_universal = 2,
+    eJoint_ball_n_socket = 3,
+    eJoint_quick_hinge = 4,
+    eJoint_translation = 5,
+} tPhysics_joint_type;
+
+typedef enum {
+    ePed_form_collision_type_box = 0,
+    ePed_form_collision_type_polyhedron = 1,
+    ePed_form_collision_type_line = 2,
+    ePed_form_collision_type_polygon = 3,
+    ePed_form_collision_type_sphere = 4,
+    ePed_form_collision_type_none = 8,
+} tPed_form_collision_detection_type;
+
+typedef enum {
+    ePed_form_bone_hinge_none = eJoint_none,
+    ePed_form_bone_hinge_hinge = eJoint_hinge,
+    ePed_form_bone_hinge_universal = eJoint_universal,
+    ePed_form_bone_hinge_ball_n_socket = eJoint_ball_n_socket,
+    ePed_form_bone_hinge_quick_hinge = eJoint_quick_hinge,
+    ePed_form_bone_hinge_phantom = 8,
+    ePed_form_bone_hinge_false = 9,
+} tPed_form_bone_hinge_type;
+
+typedef enum tSpecial_type {
+    ePipe_special_fade = 0,
+} tSpecial_type;
+
+typedef struct {
+    tCar_detail_ownership ownership;
+    char name[16];
+} tCar_detail_info;
+
+typedef struct {
+    int count;
+    br_vector3 pos;
+    br_vector3 v;
+    br_vector3 length;
+    br_vector3 normal;
+    tU32 time_sync;
+    tCar_spec* car;
+    tU8 colour;
+} tSpark;
+
+typedef struct {
+    int flags;
+    tU32 next_think_time;
+    tPhysics_object* collision_info;
+    float field3_0xc;
+    float initial_y_speed_factor;
+    float initial_z_omega_factor;
+    float initial_x_omega_factor;
+    undefined field_0x1c[12];
+    tCar_spec* car;
+    float max_damage;
+    tCar_spec* field_0x30;
+    undefined field_0x34;
+    tU8 field_0x35;
+    undefined field_0x36[2];
+} tShit_mine;
+
+typedef struct {
+    br_model* model;
+    br_material* material;
+    int used;
+    br_uint_32 index;
+    br_uint_32 glyph_width;
+    br_vector2 texCoord;
+} tPolyFontGlyph;
+
+typedef struct tPolyFont {
+    char name[68];
+    br_uint_32 numberOfCharacters;
+    br_uint_32 interCharacterSpacing;
+    br_uint_32 asciiOffset;
+    br_uint_32 fontCharacterHeight;
+    br_uint_32 widthOfBlank;
+    br_uint_32 fontSize;
+    br_uint_32 unknown_0x5c;
+    int available;
+    tPolyFontGlyph glyphs[256]; /* unsure about offset */
+    br_model* model;
+} tPolyFont;
+
+typedef struct {
+    br_model* model;
+    int index;
+} tCar_icon;
+
+typedef struct tFlic_bunch {
+    char count;
+    int* indexes;
+} tFlic_bunch;
+
+typedef struct tFlic_spec {
+    char* file_name;
+    int interruptable;
+    int queued;
+    int frame_rate;
+    int repeat;
+    int x_offset;
+    int y_offset;
+    tS8* data_ptr;
+    tU32 the_size;
+} tFlic_spec;
+
+typedef struct tFlic_descriptor* tFlic_descriptor_ptr;
+
+typedef struct tFlic_descriptor {
+    char* data;
+    char* data_start;
+    char file_name[32];
+    tU8* first_pixel;
+    tU32 bytes_remaining;
+    tU32 frame_period;
+    tU32 last_frame;
+    br_pixelmap* the_pixelmap;
+    int x_offset;
+    int y_offset;
+    int width;
+    int height;
+    int frames_left;
+    int current_frame;
+    int the_index;
+    int new_format;
+    int must_finish;
+    int bytes_still_to_be_read;
+    int bytes_in_buffer;
+    void* f;
+    tFlic_descriptor_ptr next;
+} tFlic_descriptor;
+
+typedef enum tJustification {
+    eJust_left = 0,
+    eJust_right = 1,
+    eJust_centre = 2
+} tJustification;
+
+typedef struct tHeadup_slot {
+    int x;
+    int y;
+    int colour;
+    int cockpit_anchored;
+    int dimmed_background;
+    int dim_left;
+    int dim_top;
+    int dim_right;
+    int dim_bottom;
+    tJustification justification;
+    int field_0x28; // FIXME: unknown
+} tHeadup_slot;
+
+typedef struct tTranslation_record {
+    int flic_index;
+    int x;
+    int y;
+    int font_index;
+    tJustification justification;
+    char* text;
+} tTranslation_record;
+
+typedef int (C2_HOOK_FASTCALL * tEnumPathCallback)(const char*, void*);
+
+typedef enum {
+    kLoadTextureFlags_16bbp = 0x01,
+    kLoadTextureFlags_UseARGB1555 = 0x02,
+    kLoadTextureFlags_SaveBrenderTexture = 0x04,
+    kLoadTextureFlags_KeepShadeTable = 0x08,
+    kLoadTextureFlags_PalatteRGB555 = 0x10,
+    kLoadTextureFlags_ForceTiff = 0x20,
+    kLoadTextureFlags_SaveTextureCompressed = 0x40,
+} tLoadTextureFlags;
+
+typedef struct {
+    tCar_spec* car;
+    tPedestrian* ped;
+    tU32 start_time;
+} tProximity_ray;
+
+// relict from Carmageddon I
+
+typedef struct tFlicette {
+    int flic_index;
+    int x[2];
+    int y[2];
+} tFlicette;
+
+typedef struct tMouse_area {
+    int left[2];
+    int top[2];
+    int right[2];
+    int bottom[2];
+    int new_choice;
+    int new_mode;
+    int available_when_typing;
+    int (C2_HOOK_FASTCALL*mouse_click)(int*, int*, int, int);
+} tMouse_area;
+
+typedef struct tRectile {
+    int left[2];
+    int top[2];
+    int right[2];
+    int bottom[2];
+} tRectile;
+
+typedef struct tInterface_spec {
+    int initial_imode;
+    int first_opening_flic;
+    int second_opening_flic;
+    int end_flic_go_ahead;
+    int end_flic_escaped;
+    int end_flic_otherwise;
+    int flic_bunch_to_load;
+    int move_left_new_mode[2];
+    int move_left_delta[2];
+    int move_left_min[2];
+    int move_left_max[2];
+    int (C2_HOOK_FASTCALL*move_left_proc[2])(int*, int*);
+    int move_right_new_mode[2];
+    int move_right_delta[2];
+    int move_right_min[2];
+    int move_right_max[2];
+    int (C2_HOOK_FASTCALL*move_right_proc[2])(int*, int*);
+    int move_up_new_mode[2];
+    int move_up_delta[2];
+    int move_up_min[2];
+    int move_up_max[2];
+    int (C2_HOOK_FASTCALL*move_up_proc[2])(int*, int*);
+    int move_down_new_mode[2];
+    int move_down_delta[2];
+    int move_down_min[2];
+    int move_down_max[2];
+    int (C2_HOOK_FASTCALL*move_down_proc[2])(int*, int*);
+    int go_ahead_allowed[2];
+    int (C2_HOOK_FASTCALL*go_ahead_proc[2])(int*, int*);
+    int escape_allowed[2];
+    int (C2_HOOK_FASTCALL*escape_proc[2])(int*, int*);
+    int (C2_HOOK_FASTCALL*exit_proc)(int*, int*);
+    void (C2_HOOK_FASTCALL*draw_proc)(int, int);
+    tU32 time_out;
+    void (C2_HOOK_FASTCALL*start_proc1)(void);
+    void (C2_HOOK_FASTCALL*start_proc2)(void);
+    int (C2_HOOK_FASTCALL*done_proc)(int, int, int, int, int);
+    int font_needed;
+    int typeable[2];
+    void (C2_HOOK_FASTCALL*get_original_string)(int, int, char*, int*);
+    int escape_code;
+    int dont_save_or_load;
+    int number_of_button_flics;
+    tFlicette* flicker_on_flics;
+    tFlicette* flicker_off_flics;
+    tFlicette* pushed_flics;
+    int number_of_mouse_areas;
+    tMouse_area* mouse_areas;
+    int number_of_recopy_areas;
+    tRectile* recopy_areas;
+} tInterface_spec;
+
+typedef struct tLoadDirectoryStructureCBResult {
+    char* name;
+    struct tLoadDirectoryStructureCBResult* next;
+} tLoadDirectoryStructureCBResult;
+
+typedef struct {
+    const char* directory;
+    br_pixelmap* pPalette;
+    int loadFlags;
+    int* errorCode;
+    tLoadDirectoryStructureCBResult* results;
+    int isTiffx : 1;
+} tLoadDirectoryStructureCBData;
+
+typedef enum tNet_mode {
+    eNet_mode_none = 0,
+    eNet_mode_thinking_about_it = 1,
+    eNet_mode_host = 2,
+    eNet_mode_client = 3
+} tNet_mode;
+
+typedef enum tCar_texturing_level {
+    eCTL_none = 0,
+    eCTL_transparent = 1,
+    eCTL_full = 2,
+    eCTL_count = 3,
+} tCar_texturing_level;
+
+typedef enum tRoad_texturing_level {
+    eRTL_none = 0,
+    eRTL_full = 1,
+    eRTL_count = 2
+} tRoad_texturing_level;
+
+typedef enum tWall_texturing_level {
+    eWTL_none = 0,
+    eWTL_linear = 1,
+    eWTL_full = 2,
+    eWTL_count = 3
+} tWall_texturing_level;
+
+typedef enum tShadow_level {
+    eShadow_none = 0,
+    eShadow_us_only = 1,
+    eShadow_us_and_opponents = 2,
+    eShadow_everyone = 3
+} tShadow_level;
+
+typedef enum tAdd_to_storage_result {
+    eStorage_not_enough_room = 0,
+    eStorage_duplicate = 1,
+    eStorage_allocated = 2
+} tAdd_to_storage_result;
+
+typedef enum {
+    eOpponent_status_Uninitialized = -1,
+    eOpponent_status_Racing = 0,
+    eOpponent_status_Trying_to_kill_you = 1,
+    eOpponent_status_Running_away = 2,
+    eOpponent_status_Trying_to_get_to_you = 3,
+    eOpponent_status_Frozen = 4,
+    eOpponent_status_Confused = 5,
+    eOpponent_status_On_grid = 6,
+    eOpponent_status_Stunned = 7,
+    eOpponent_status_Wasted = 8
+} tOpponent_Status;
+
+typedef struct {
+    int width;
+    int height;
+    int field_0x8;
+    int field_0xc;
+    int rolling_letter_x_pitch;
+    int field_0x14;
+    int field_0x18;
+    int field_0x1c;
+    int field_0x20;
+    int save_slot_letter_height;
+    int field_0x28;
+    int field_0x2c;
+    int field_0x30;
+    int field_0x34;
+    int field_0x38;
+    int field_0x3c;
+    int field_0x40;
+    int field_0x44;
+    int field_0x48;
+    int field_0x4c;
+    int field_0x50;
+    int field_0x54;
+    int field_0x58;
+    int field_0x5c;
+    int field_0x60;
+    int field_0x64;
+    int field_0x68;
+    int field_0x6c;
+    int field_0x70;
+    int field_0x74;
+    int field_0x78;
+    int field_0x7c;
+    int field_0x80;
+    int field_0x84;
+    int field_0x88;
+    int field_0x8c;
+    int field_0x90;
+    int field_0x94;
+    int field_0x98;
+    int field_0x9c;
+    int field_0xa0;
+    int field_0xa4;
+    int field_0xa8;
+    int field_0xac;
+    int field_0xb0;
+    int field_0xb4;
+    int field_0xb8;
+    int field_0xbc;
+    int field_0xc0;
+    int field_0xc4;
+    int field_0xc8;
+    int field_0xcc;
+    int field_0xd0;
+    int field_0xd4;
+    int field_0xd8;
+    int field_0xdc;
+    int field_0xe0;
+    int field_0xe4;
+    int field_0xe8;
+    int field_0xec;
+    int field_0xf0;
+    int field_0xf4;
+    int field_0xf8;
+    int field_0xfc;
+    int field_0x100;
+    int cock_margin_x;
+    int cock_margin_y;
+    int field_0x10c;
+    int field_0x110;
+    int field_0x114;
+    int field_0x118;
+    int field_0x11c;
+    int field_0x120;
+    int field_0x124;
+    int field_0x128;
+    int field_0x12c;
+    int field_0x130;
+    int field_0x134;
+    int field_0x138;
+    int field_0x13c;
+    int field_0x140;
+    int field_0x144;
+    int field_0x148;
+    int field_0x14c;
+    int field_0x150;
+    int field_0x154;
+    int field_0x158;
+    int field_0x15c;
+    int field_0x160;
+    int field_0x164;
+    int field_0x168;
+    int field_0x16c;
+    int field_0x170;
+    int field_0x174;
+    int field_0x178;
+    int field_0x17c;
+    int field_0x180;
+    int field_0x184;
+    int field_0x188;
+    int field_0x18c;
+    int field_0x190;
+    int field_0x194;
+    int field_0x198;
+    int field_0x19c;
+    int field_0x1a0;
+    int field_0x1a4;
+    int field_0x1a8;
+    int field_0x1ac;
+    int field_0x1b0;
+    int field_0x1b4;
+    int field_0x1b8;
+    int field_0x1bc;
+    int field_0x1c0;
+    int field_0x1c4;
+    int field_0x1c8;
+    int field_0x1cc;
+    int field_0x1d0;
+    int field_0x1d4;
+    int field_0x1d8;
+    int field_0x1dc;
+    int field_0x1e0;
+    int field_0x1e4;
+    int field_0x1e8;
+    int field_0x1ec;
+    int field_0x1f0;
+    int field_0x1f4;
+    int field_0x1f8;
+    int field_0x1fc;
+    int field_0x200;
+    int field_0x204;
+    int field_0x208;
+    int field_0x20c;
+    int field_0x210;
+    int field_0x214;
+    int field_0x218;
+    int field_0x21c;
+    int field_0x220;
+    int field_0x224;
+    int field_0x228;
+    int field_0x22c;
+    int field_0x230;
+    int field_0x234;
+    int field_0x238;
+    int field_0x23c;
+    int field_0x240;
+    int field_0x244;
+    int field_0x248;
+    int field_0x24c;
+    int field_0x250;
+    int field_0x254;
+    int field_0x258;
+    int field_0x25c;
+    int field_0x260;
+    int field_0x264;
+    int field_0x268;
+    int field_0x26c;
+    int field_0x270;
+    int field_0x274;
+    int field_0x278;
+    int field_0x27c;
+    int field_0x280;
+    int field_0x284;
+    int field_0x288;
+    int field_0x28c;
+    int power_up_icon_x;
+    int power_up_space_between_icon_text_dx;
+    int power_up_icon_y;
+    int power_up_icon_y_pitch;
+    int power_up_space_between_icon_text_dy;
+    int keyboard_powerup_x;
+    int keyboard_powerup_y;
+    int keyboard_powerup_bg_y;
+    int keyboard_powerup_bg_bottom;
+    int keyboard_powerup_bg_x;
+    int keyboard_powerup_spacing_x;
+    int field_0x2bc;
+    int field_0x2c0;
+    int field_0x2c4;
+    int field_0x2c8;
+    int field_0x2cc;
+    int field_0x2d0;
+    int field_0x2d4;
+    int field_0x2d8;
+    int field_0x2dc;
+    int field_0x2e0;
+    int field_0x2e4;
+    int field_0x2e8;
+    int field_0x2ec;
+    int field_0x2f0;
+    int field_0x2f4;
+    int field_0x2f8;
+    int field_0x2fc;
+    int field_0x300;
+    int field_0x304;
+    int field_0x308;
+    int field_0x30c;
+    int field_0x310;
+    int field_0x314;
+    int field_0x318;
+    int field_0x31c;
+    int field_0x320;
+    int field_0x324;
+    int field_0x328;
+    int field_0x32c;
+    int field_0x330;
+    int field_0x334;
+    int field_0x338;
+    int field_0x33c;
+    int field_0x340;
+    int field_0x344;
+    int field_0x348;
+    int field_0x34c;
+    int field_0x350;
+    int field_0x354;
+    int field_0x358;
+    int field_0x35c;
+    int field_0x360;
+    int field_0x364;
+    int field_0x368;
+    int field_0x36c;
+    int field_0x370;
+    int field_0x374;
+    int field_0x378;
+    int field_0x37c;
+    int field_0x380;
+    int field_0x384;
+    int field_0x388;
+    int field_0x38c;
+    int field_0x390;
+    int field_0x394;
+    int field_0x398;
+    int field_0x39c;
+    int field_0x3a0;
+    int field_0x3a4;
+    int field_0x3a8;
+    int field_0x3ac;
+    int field_0x3b0;
+    int field_0x3b4;
+    int field_0x3b8;
+    int field_0x3bc;
+    int field_0x3c0;
+    int field_0x3c4;
+    int field_0x3c8;
+    int field_0x3cc;
+    int field_0x3d0;
+    int field_0x3d4;
+    int field_0x3d8;
+    int field_0x3dc;
+    int field_0x3e0;
+    int field_0x3e4;
+    int map_render_x_marg;
+    int map_render_y_marg;
+    int field_0x3f0;
+    int field_0x3f4;
+    int field_0x3f8;
+    int field_0x3fc;
+    int field_0x400;
+    int field_0x404;
+    int field_0x408;
+    int field_0x40c;
+    int field_0x410;
+    int field_0x414;
+    int field_0x418;
+    int field_0x41c;
+    int car_icon_height;
+    int field_0x424;
+    int field_0x428;
+    int field_0x42c;
+    int field_0x430;
+    int field_0x434;
+    int field_0x438;
+    int field_0x43c;
+    int field_0x440;
+    int field_0x444;
+    int field_0x448;
+    int field_0x44c;
+    int field_0x450;
+    int field_0x454;
+    int field_0x458;
+    int field_0x45c;
+    int field_0x460;
+    int field_0x464;
+    int field_0x468;
+    int field_0x46c;
+    int field_0x470;
+    int field_0x474;
+    int field_0x478;
+    int field_0x47c;
+    int field_0x480;
+    int field_0x484;
+    int field_0x488;
+    int field_0x48c;
+    int field_0x490;
+    int field_0x494;
+    int field_0x498;
+    int field_0x49c;
+    int field_0x4a0;
+    int field_0x4a4;
+    int field_0x4a8;
+    int field_0x4ac;
+    int field_0x4b0;
+    int net_message_enter_y;
+    int field_0x4b8;
+    int field_0x4bc;
+    int field_0x4c0;
+    int field_0x4c4;
+    int field_0x4c8;
+    int field_0x4cc;
+    int field_0x4d0;
+    int field_0x4d4;
+    int field_0x4d8;
+    int field_0x4dc;
+    int field_0x4e0;
+    int field_0x4e4;
+    int field_0x4e8;
+    int field_0x4ec;
+    int field_0x4f0;
+    int field_0x4f4;
+    int field_0x4f8;
+    int field_0x4fc;
+    int field_0x500;
+    int field_0x504;
+    int field_0x508;
+    int field_0x50c;
+    int field_0x510;
+    int field_0x514;
+    int field_0x518;
+    int field_0x51c;
+} tGraf_data;
+
+typedef enum tRolling_type {
+    eRT_alpha = 0,
+    eRT_numeric = 1,
+    eRT_looping_random = 2,
+    eRT_looping_single = 3
+} tRolling_type;
+
+typedef struct tRolling_letter {
+    int letters[9];
+    int x_coord;
+    int y_coord;
+    int number_of_letters;
+    tRolling_type rolling_type;
+    float current_offset;
+} tRolling_letter;
+
+typedef enum {
+    kPixelFlags_16bbp = 0x1,
+    kPixelFlags_unknown = 0x2,
+    kPixelFlags_unknown_0x4 = 0x4,
+} tPixelFlags;
+
+typedef enum {
+    kRaceType_Carma1 = 0,
+    kRaceType_Cars = 1,
+    kRaceType_Peds = 2,
+    kRaceType_Checkpoints = 3,
+    kRaceType_Smash = 4,
+    kRaceType_SmashNPed = 5,
+} eRaceType;
+
+typedef struct {
+    br_actor* actor;
+    br_material* material;
+} tExtra_render;
+
+typedef struct {
+    int depth_bits;
+    int depth_bytes;
+    int doubled;
+    int total_width;
+    int total_height;
+    long black_value;
+    int colour_index;
+    char* data_dir_name;
+    char* gfx_init_string;
+    int row_bytes;
+    int phys_width;
+    int phys_height;
+    void* base_addr;
+} tGraf_spec;
+
+typedef struct {
+    tU32 flags;
+    int models_count;
+    int materials_count;
+    int shade_tables_count;
+    int pixelmaps_count;
+    int sounds_count;
+    int max_pixelmaps;
+    int max_shade_tables;
+    int max_materials;
+    int max_models;
+    int max_sounds;
+    br_model** models;
+    br_pixelmap** pixelmaps;
+    br_pixelmap** shade_tables;
+    br_material** materials;
+    int* sounds;
+    br_pixelmap** materialProps;
+} tBrender_storage;
+
+typedef struct {
+    int size;
+    char items[1000][16];
+} tName_list;
+
+typedef struct {
+    tU32 fileSize;
+    char filename[48];
+    tU8* data;
+} tTwatFileHeader;
+
+typedef struct {
+    tU32 twatFileSize;
+    tS32 nbFiles;
+    tTwatFileHeader fileHeaders[];
+} tTwatHeader;
+
+typedef struct {
+    tTwatHeader* header;
+    char path[256];
+    tU8* data;
+} tTwatVfsMountPoint;
+
+typedef struct {
+    tU8* start;
+    tU8* pos;
+    tU8* end;
+    int error;
+} tTwatVfsFile;
+
+typedef struct tWobble_spec {
+    float amplitude_x;
+    float amplitude_y;
+    float period;
+    int time_started;
+} tWobble_spec;
+
+typedef enum tNet_head_avail {
+    eNet_or_otherwise = 0,
+    eNet_only = 1,
+    eNot_net = 2,
+    eNot_ever_ever_ever = 3,
+} tNet_head_avail;
+
+typedef struct tHeadup_info {
+    char* name;
+    tNet_head_avail avail;
+} tHeadup_info;
+
+typedef enum {
+    kSoundFx_None = -1,
+    kSoundFx_Saturated = 0,
+    kSoundFx_Scattered = 1,
+} tSpecial_volume_soundfx_type;
+
+typedef enum {
+    kSoundFxPeriodicity_None = -1,
+    kSoundFxPeriodicity_Random = 0,
+    kSoundFxPeriodicity_Periodic = 1,
+    kSoundFxPeriodicity_Continuous = 2,
+} tSpecial_volume_soundfx_periodicity_type;
+
+typedef enum tKey_down_result {
+    tKey_down_no = 0,
+    tKey_down_yes = 1,
+    tKey_down_still = 2,
+    tKey_down_repeat = 3
+} tKey_down_result;
+
+typedef struct {
+    tSpecial_volume_soundfx_periodicity_type periodicity;
+    union {
+        struct {
+            int min_gap;
+            int max_gap;
+        } random;
+        int period;
+    };
+    undefined4 field_0xc;
+    int count_sound_alternatives;
+    br_fixed_ls max_deviation; // fixedpoint integer? (* 16 / 100)
+    tS16 sound_alternatives[5];
+    tS16 unknown3;
+} tSpecial_volume_soundfx_data;
+
+typedef enum {
+    eFx_boundary_box = 0,
+    eFx_boundary_plane = 1,
+    eFx_boundary_default = 2,
+    eFx_boundary_new = 3,
+} tSpecial_volume_boundary_type;
+
+typedef struct {
+    tSpecial_volume_boundary_type boundary_type;
+    union {
+        struct {
+            br_matrix34 mat;
+            br_matrix34 inv_mat;
+            br_vector3 axis_length;
+            br_bounds3 bounds;
+        } box;
+        br_vector4 plane;
+    } boundary;
+    br_scalar gravity_multiplier;
+    br_scalar viscosity_multiplier;
+    float car_damage_per_ms;
+    float ped_damage_per_ms;
+    int camera_special_effect_index;
+    int sky_col;
+    int entry_noise;
+    int exit_noise;
+    int engine_noise_index;
+    br_pixelmap* screen_pixelmap;
+    int material_modifier_index;
+    tSpecial_volume_soundfx_type soundfx_type;
+    tSpecial_volume_soundfx_data soundfx_data;
+} tSpecial_volume;
+
+typedef struct {
+    float* v;
+    undefined4 field_0x4;
+} tGroove_funk_binding;
+
+typedef enum {
+    eFunk_mode_constant = 0,
+    eFunk_mode_distance = 1,
+    eFunk_mode_last_lap_only = 2,
+    eFunk_mode_all_laps_but_last = 3
+} tFunk_trigger_mode;
+
+typedef enum {
+    eMatrix_mod_none = -1,
+    eMatrix_mod_spin = 0,
+    eMatrix_mod_rock = 1,
+    eMatrix_mod_throb = 2,
+    eMatrix_mod_slither = 3,
+    eMatrix_mod_roll = 4
+} tMatrix_mod_type;
+
+typedef enum {
+    eTexture_animation_none = -1,
+    eTexture_animation_frames = 0,
+    eTexture_animation_flic = 1,
+    eTexture_animation_camera = 2,
+    eTexture_animation_mirror = 3
+} tTexture_animation_type;
+
+typedef struct {
+    br_vector3 v[3];
+    br_vector3 n;
+    br_scalar d;
+} tFunk_proximity;
+
+typedef enum {
+    eTime_mode_approximate = 0,
+    eTime_mode_accurate = 1
+} tAnimation_time_mode;
+
+typedef enum {
+    eFunk_camera_static = 0,
+    eFunk_camera_tracking = 1,
+} tFunk_camera_mode;
+
+typedef struct {
+    tU8 count;
+    tU8 bits[35];
+    tCar_spec* car;
+} tFunk_texturebits;
+
+typedef struct {
+    int owner;
+    tU32 flags;
+    br_material *material;
+    tFunk_trigger_mode mode;
+    tMatrix_mod_type matrix_mod_type;
+    tMove_mode matrix_mode;
+    union {
+        struct {
+            float period;
+        } spin_info;
+        struct {
+            tFunk_texturebits* data;
+        } texture_info;
+        struct {
+            float period;
+            float x_centre;
+            float y_centre;
+            float rock_angle;
+        } rock_info;
+        struct {
+            float x_period;
+            float y_period;
+            float x_centre;
+            float y_centre;
+            float x_magnitude;
+            float y_magnitude;
+        } throb_info;
+        struct {
+            float x_period;
+            float y_period;
+            float x_magnitude;
+            float y_magnitude;
+        } slither_info;
+        struct {
+            float x_period;
+            float y_period;
+        } roll_info;
+    } matrix_mod_data;
+    tMove_mode lighting_animation_type;
+    union {
+        struct {
+            float period;
+        } controlled;
+        struct {
+            tFunk_texturebits* data;
+        } texture_info;
+        struct {
+            float period;
+        } rock_info;
+    } lighting_animation_data;
+    float ambient_base;
+    float ambient_delta;
+    float direct_base;
+    float direct_delta;
+    float specular_base;
+    float specular_delta;
+    tTexture_animation_type texture_animation_type;
+    tAnimation_time_mode time_mode;
+    float last_frame;
+    union {
+        struct {
+            tMove_mode mode;
+            union {
+                struct {
+                    float period;
+                } controlled;
+                struct {
+                    tFunk_texturebits *data;
+                } texture_info;
+                struct {
+                    float period;
+                } rock_info;
+            };
+            int texture_count;
+            int current_frame;
+            undefined has_matrix;
+            br_pixelmap *textures[8];
+            br_matrix23 mat[8];
+        } frames_info;
+        struct {
+            tU8* flic_data;
+            tU32 flic_data_length;
+            tFlic_descriptor flic_descriptor;
+            undefined4 field_0x68;
+        } flic_info;
+        struct {
+            tFunk_camera_mode mode;
+            int field_0x60;
+            int count;
+            br_actor* actors[8];
+        } camera_info;
+        struct {
+            int field_0x5c;
+            float yon;
+            br_actor* actor;
+            br_matrix34 mat;
+            br_bounds bounds;
+        } mirror_info;
+    } texture_animation_data;
+    int proximity_count;
+    tFunk_proximity* proximity_array;
+} tFunkotronic_spec;
+
+typedef struct {
+    br_vertex* vertices[3];
+    br_vector3 points[3];
+} tFunk_temp_buffer;
+
+// FIXME: PROBABLY WRONG!!!!!!
+typedef enum tCar_choice {
+    eNet_car_eagle = 0,
+    eNet_car_novelty = 1,
+    eNet_car_all = 2,
+} tCar_choice;
+
+typedef enum tNet_sequence_type {
+    eNet_sequence_sequential = 0,
+    eNet_sequence_random = 1,
+} tNet_sequence_type;
+
+typedef struct tNet_game_options {
+    int show_players_on_map;
+    int enable_text_messages;
+    int show_powerups_on_map;
+    int powerup_respawn;
+    int open_game;
+    int starting_credits;
+    int grid_start;
+    int starting_target;
+    int waste_to_transfer;
+    int random_car_choice;
+    tNet_sequence_type race_sequence_type;
+    tCar_choice car_choice;
+} tNet_game_options;
+
+typedef struct tTransient_bm {
+    br_pixelmap* pixmap;
+    int in_use;
+    int x_coord;
+    int y_coord;
+    int order_number;
+    int user_data;
+} tTransient_bm;
+
+typedef struct {
+    br_pixelmap* images;
+    int file_read_once;
+    int height;
+    int width;
+    int spacing;
+    int offset;
+    int num_entries;
+    int id;
+    int width_table[224];
+} tDR_font;
+
+typedef enum {
+    eHeadup_unused = 0,
+    eHeadup_text = 1,
+    eHeadup_coloured_text = 2,
+    eHeadup_image = 3,
+    eHeadup_fancy = 4,
+    eHeadup_box_text = 5,
+} tHeadup_type;
+
+typedef struct tHeadup {
+    tHeadup_type type;
+    int x;
+    int y;
+    int original_x;
+    int right_edge;
+    int flash_period;
+    int slot_index;
+    int dimmed_background;
+    int dim_left;
+    int dim_top;
+    int dim_right;
+    int dim_bottom;
+    int clever;
+    int cockpit_anchored;
+    int flash_state;
+    int field_0x3c;
+    tJustification justification;
+    tU32 end_time;
+    tU32 last_flash;
+    union {
+        struct {
+            char text[252];
+            int colour;
+            br_font* font;
+        } text_info;
+        struct {
+            char text[252];
+            tDR_font* font;
+            tU32 font_index;
+            int offset;
+            undefined4 field_0x108;
+            int end_offset;
+            undefined4 fancy_stage;
+            tU32 start_time;
+        } fancy_info;
+        struct {
+            char text[252];
+            tDR_font* font;
+            tU32 font_index;
+            undefined4 field_0x104;
+            undefined4 field_0x108;
+            undefined4 field_0x10c;
+            undefined4 field_0x110;
+            undefined4 field_0x114;
+        } image_info;
+        struct {
+            char text[252];
+            tDR_font* coloured_font;
+        } coloured_text_info;
+        struct {
+            undefined field_0x0[280];
+        } unknown;
+    } data;
+} tHeadup;
+
+typedef struct {
+    int flash_rate;
+    int lifetime;
+    int font_index;
+    char text[256];
+} tQueued_headup;
+
+typedef struct {
+    float opacity;
+    br_pixelmap* map;
+} tExplosion_frame;
+
+typedef struct {
+    tU32 start;
+    tU32 period;
+    undefined field_0x8;
+    tU8 count_frames;
+    tU8 finished;
+    undefined field_0xb;
+    br_actor* collision_actor;
+    br_actor* actor;
+    float field_0x14;
+    br_angle angle;
+    undefined padding[2];
+    br_vector3 field_0x1c;
+    tExplosion_frame frames[10];
+} tExplosion;
+
+typedef struct {
+    br_actor* actor;
+    tU32 time;
+} tDelayed_non_car_actor_item;
+
+typedef struct {
+    br_vector3 field_0x0;
+    br_vector3 field_0xc;
+    undefined4* field_0x18;
+    int count_actions;
+    tDelayed_non_car_actor_item actor_time_actions[20];
+} tDelayed_non_car;
+
+typedef struct {
+    br_vector3 field_0x0;
+    br_vector3 field_0xc;
+    tU32 field_0x18;
+    br_vector3 field_0x1c;
+    undefined field_0x28[0x38 - 0x28];
+    undefined4 field_0x38;
+    undefined field_0x3c[0x80 - 0x3c];
+    br_actor *field_0x80;
+    undefined field_0x84[0x88 - 0x84];
+    undefined4 field_0x88;
+    float field_0x8c;
+    tPhysics_object* field_0x90;
+    undefined field_0x94[0xc0 - 0x94];
+} tDelayed_smash;
+
+typedef struct {
+    int type; /* FIXME: enum (0: non_car, 1: smash)*/
+    int active;
+    union {
+        tDelayed_non_car non_car;
+        tDelayed_smash smash;
+    } what;
+} tSmash_explosion;
+
+typedef struct {
+    tCar_spec* car;
+    int powerup_index;
+    br_actor* actor;
+} tPowerup_queue_item;
+
+typedef struct {
+    tCar_spec* car;
+    undefined4 field_0x4;
+    br_actor* actor;
+    undefined field_0xc;
+    undefined field_0xd;
+    undefined field_0xe;
+    undefined field_0xf;
+    undefined4 field_0x10;
+    undefined field_0x14;
+    undefined field_0x15;
+    undefined field_0x16;
+    undefined field_0x17;
+    undefined field_0x18;
+    undefined field_0x19;
+    undefined field_0x1a;
+    undefined field_0x1b;
+    undefined field_0x1c;
+    undefined field_0x1d;
+    undefined field_0x1e;
+    undefined field_0x1f;
+    br_vector3 field_0x20;
+    undefined field_0x2c;
+    undefined field_0x2d;
+    undefined field_0x2e;
+    undefined field_0x2f;
+    undefined field_0x30;
+    undefined field_0x31;
+    undefined field_0x32;
+    undefined field_0x33;
+    undefined field_0x34;
+    undefined field_0x35;
+    undefined field_0x36;
+    undefined field_0x37;
+    undefined field_0x38;
+    undefined field_0x39;
+    undefined field_0x3a;
+    undefined field_0x3b;
+    undefined field_0x3c;
+    undefined field_0x3d;
+    undefined field_0x3e;
+    undefined field_0x3f;
+    undefined4 field_0x40;
+    undefined4 field_0x44;
+    undefined4 field_0x48;
+    br_matrix34 field_0x4c;
+    br_vector3 field_0x7c;
+} tQueued_smash;
+
+typedef enum {
+    kRendererShadingType_Undefined = -1,
+    kRendererShadingType_Default = 1,
+    kRendererShadingType_Diffuse1 = 3,
+    kRendererShadingType_Specular = 2,
+    kRendererShadingType_Diffuse2 = 0,
+    kRendererShadingType_AmbientOnly = 4,
+} tRendererShadingType;
+
+typedef enum {
+    kFrontendItemEnabled_default = 0,
+    kFrontendItemEnabled_enabled = 1,
+    kFrontendItemEnabled_disabled = -1,
+} eFrontendItemEnabled;
+
+typedef enum {
+    kFrontendSelectableButton = 0,
+    kFrontendSelectableOption = 1,
+} eFrontendSelectableType;
+
+typedef struct tStruct_00686508 {
+    int field_0x0;
+    int field_0x4;
+    int field_0x8;
+    struct tStruct_00686508* next;
+} tStruct_00686508;
+
+typedef struct tFrontend_slider {
+    tU8 flags;
+    int itemid_left_reference;
+    int itemid_start;
+    int width;
+    float value;
+    float field_0x14;
+    float field_0x18;
+    void (C2_HOOK_FASTCALL * callback)(struct tFrontend_slider *);
+    struct tFrontend_slider* next;
+} tFrontend_slider;
+
+typedef struct {
+    int field_0x00;
+    int field_0x04;
+    int first_item_id;
+    int last_item_id;
+    undefined4 field_0x10;
+    undefined4 field_0x14;
+} tFrontend_level_spec;
+
+typedef struct {
+    int id;
+    int count;
+    int nbDisplayedAtOnce;
+    int indexTopItem;
+    int indexFirstScrollableItem;
+    int indexLastScrollableItem;
+    int greyedOutBackdrop;
+    int x_greyArea;
+    int y_greyArea;
+    int width_greyArea;
+    int height_greyArea;
+    int indexOfItemAtTop;
+    int unknown;  // FIXME: unknown
+} tFrontend_scroller_spec;
+
+typedef struct {
+    int id;
+    int count;
+    int indexFirstItem;
+    int indexLastItem;
+    int greyboxRequested;
+    int x_greybox;
+    int y_greybox;
+    int width_greybox;
+    int height_greybox;
+    int indexSelected;
+    int unknown;  // FIXME: unknown
+} tFrontend_radio_spec;
+
+typedef struct tFrontend_spec tFrontend_spec;
+
+typedef struct tFrontend_item_spec {
+    int stringId;
+    int (C2_HOOK_FASTCALL * action)(tFrontend_spec*);
+    tFrontend_spec* menuInfo;
+    int field_0xc;
+    int unlitFont;
+    int highFont;
+    int x;
+    int y;
+    int width;
+    int height;
+    eFrontendItemEnabled enabled;
+    int visible;
+    int map_index; /* 0 = no image */
+    int greyedBackdrop;
+    eFrontendSelectableType selectable;
+    int radioButton_selected;
+    int group;
+    int idLevelBar;
+    int wrapText;
+    int glowDisabled;
+    int x2;
+    int y2;
+    tU8 flags;
+    char text[255];
+} tFrontend_item_spec;
+
+typedef struct tFrontend_spec {
+    char name[256];
+    int timeout;
+    int count_items;
+    int (C2_HOOK_FASTCALL * create)(struct tFrontend_spec*);
+    int (C2_HOOK_FASTCALL * destroy)(struct tFrontend_spec*);
+    int (C2_HOOK_FASTCALL * tick)(struct tFrontend_spec*);
+    struct tFrontend_spec* previous;
+    int default_item;
+    undefined4 unknown2;  // FIXME: unknown
+    undefined4 unknown3;  // FIXME: unknown
+    int model_A_index;
+    int model_B_index;
+    int model_C_index;
+    tFrontend_item_spec items[100];
+    int count_scrollers;
+    tFrontend_scroller_spec scrollers[100];
+    int count_radios;
+    tFrontend_radio_spec radios[100];
+    int count_groups;
+    int loaded;
+    char unknownLongString[260];  // FIXME: unknown
+    char backdrop_name[256];
+    tFrontend_level_spec levels[100];
+    int count_levels;
+    char unknownshortString[56];  // FIXME: unknown
+    int isPreviousSomeOtherMenu;
+    undefined4 unknownLastInt;  // FIXME: unknown
+} tFrontend_spec;
+
+typedef struct {
+    br_actor* actor;
+    br_model* model;
+    br_material* material;
+    br_pixelmap* field_0xc;
+    br_pixelmap* field_0x10;
+    br_token_value prims[3];
+} tFrontend_brender_item;
+
+typedef struct {
+    int sold;
+    undefined field_0x4[3];
+} tWreck_gallery_sell_info;
+
+typedef struct {
+    undefined field_0x0[16];
+    br_actor* actor;
+    br_matrix34 field_0x14;
+    br_matrix34 original_matrix;
+    br_matrix34 field_0x74;
+} tWreck_gallery_car_info;
+
+typedef struct tConnected_items {
+    int field_0x0;
+    int range_length;
+    int field_0x8;
+    int count_ranges;
+    int range_starts[7];
+    struct tConnected_items* next;
+} tConnected_items;
+
+typedef struct {
+    br_actor* actor;
+    br_material* material;
+    br_model* model;
+    br_uint_32 color_red;
+    br_uint_32 color_grn;
+    br_uint_32 color_blu;
+    br_uint_32 color2_red;
+    br_uint_32 color2_grn;
+    br_uint_32 color2_blu;
+    int subClass;
+    br_uint_8 field_0x28;
+    br_uint_8 field_0x29;
+    br_uint_8 field_0x30;
+    br_uint_8 field_0x31;
+    br_material* material2;
+    int used;
+    int visible;
+    int class;
+    int lastTime;
+    br_colour colour;
+    br_pixelmap* pixelmap;
+    br_colour colours[256];
+    br_uint_32 tints1[2048];
+    br_uint_32 tints2[2048];
+    br_uint_32 tints3[2048];
+    br_uint_32 unknown_1;  // FIXME: unknown
+    br_uint_32 unknown_2;  // FIXME: unknown
+} tTintedPoly;
+
+typedef struct {
+    char message[128];
+    int font1;
+    int font2;
+} tHud_message;
+
+typedef struct tRace_group_spec {
+    int count_races;
+    tRace_list_spec* races;
+    tRace_list_spec* mission;
+} tRace_group_spec;
+
+typedef struct tRace_list_spec {
+    char name[64];                      /* readable name */
+    char interface_name[32];            /* interface element name */
+    char file_name[32];                 /* Text file name */
+    char description[256];
+    br_scalar opponent_nastiness_level;
+    int count_opponents;
+    int expansion;
+    int no_time_awards;
+    int is_boundary;                    /* boundary race/mission */
+    union {
+        int count_explicit_opponents;       /* Number of explicit opponents */
+        int been_there_done_that;
+    };
+    int explicit_opponents[15];         /* positive number: index / negative number: hardness */
+    int count_powerup_exclusions;
+    int* powerup_exclusions;
+    int count_laps;
+    int completion_bonus[3];
+    int completion_bonus_peds[3];
+    int completion_bonus_opponents[3];
+    int initial_timer[3];
+    eRaceType race_type;
+    union {
+        struct {
+            int count_laps;
+        } checkpoints;
+        struct {
+            int count_opponents;
+            int opponents[10];
+        } cars;
+        struct {
+            int count_ped_groups;
+            int ped_groups[10];
+        } peds;
+        struct {
+            int var_smash_number;
+            int var_smash_target;
+        } smash;
+        struct {
+            int var_smash_number;
+            int var_smash_target;
+            int ped_group_index;
+        } smash_and_peds;
+    } options;
+    tRace_group_spec* group;
+} tRace_list_spec;
+
+typedef struct {
+    int x_coord;
+    int y_coord;
+    int damage_level;
+    int last_level;
+    int smoke_last_level;
+    int periods[5];
+    br_pixelmap* images;
+} tDamage_unit;
+
+typedef enum {
+    eImpact_top = 0,
+    eImpact_bottom = 1,
+    eImpact_left = 2,
+    eImpact_right = 3,
+    eImpact_front = 4,
+    eImpact_back = 5,
+    eImpact_location_count = 6,
+    eImpact_unknown = 7
+} tImpact_location;
+
+typedef enum {
+    eAxis_x = 0,
+    eAxis_y = 1,
+    eAxis_z = 2
+} tAxis_comp;
+
+typedef enum {
+    eCondition_less_than = 0,
+    eCondition_greater_than = 1
+} tCondition_operator;
+
+typedef struct {
+    tAxis_comp axis_comp;
+    int condition_operator;
+    float comparitor;
+} tDamage_condition;
+
+typedef enum {
+    eDamage_engine = 0,
+    eDamage_transmission = 1,
+    eDamage_driver = 2,
+    eDamage_steering = 3,
+    eDamage_lf_brake = 4,
+    eDamage_rf_brake = 5,
+    eDamage_lr_brake = 6,
+    eDamage_rr_brake = 7,
+    eDamage_lf_wheel = 8,
+    eDamage_rf_wheel = 9,
+    eDamage_lr_wheel = 10,
+    eDamage_rr_wheel = 11
+} tDamage_type;
+
+typedef struct  {
+    tDamage_type type;
+    float weakness_factor;
+} tDamage_effect;
+
+typedef struct {
+    tDamage_condition conditions[2];
+    int effect_count;
+    int condition_count;
+    tDamage_effect effects[4];
+} tDamage_clause;
+
+typedef struct {
+    int clause_count;
+    tDamage_clause* clauses;
+} tDamage_program;
+
+typedef enum tDriver {
+    eDriver_non_car_unused_slot = 0,
+    eDriver_detached_bit = 2,
+    eDriver_split_car = 3,
+    eDriver_4 = 4,
+    eDriver_oppo = 6,
+    eDriver_net_human = 7,
+    eDriver_local_human = 8
+} tDriver;
+
+typedef enum {
+    eView_undefined = 0,
+    eView_left = 1,
+    eView_forward = 2,
+    eView_right = 3
+} tWhich_view;
+
+typedef enum {
+    eProg_intro = 0,
+    eProg_opening = 1,
+    eProg_idling = 2,
+    eProg_demo = 3,
+    eProg_game_starting = 4,
+    eProg_game_ongoing = 5,
+    eProg_quit = 6
+} tProg_status;
+
+typedef struct {
+    br_vector3 trail_nodes[25];
+    br_vector3 base_heading;
+    tU32 time_of_next_recording;
+    tU32 end_of_deviation;
+    tU8 number_of_nodes;
+    tU8 has_deviated_recently;
+    tU8 nodes_shifted_this_frame;
+    undefined field_0x143;
+} tPursuee_trail;
+
+typedef struct {
+    br_material* material;
+    int count_maps;
+    br_pixelmap* maps[3];
+} tCarCockpitMaterial;
+
+typedef struct {
+    int joystick_acc : 8;
+    int joystick_dec : 8;
+    unsigned int left : 1;        // 0x10000     bit 17
+    unsigned int right : 1;       // 0x20000     bit 18
+    unsigned int acc : 1;         // 0x40000     bit 19
+    unsigned int dec : 1;         // 0x80000     bit 20
+    unsigned int brake : 1;       // 0x100000    bit 21
+    unsigned int up : 1;          // 0x200000    bit 22
+    unsigned int down : 1;        // 0x400000    bit 23
+    unsigned int holdw : 1;       // 0x800000    bit 24
+    unsigned int backwards : 1;   // 0x1000000   bit 25
+    unsigned int change_up : 1;   // 0x2000000   bit 26
+    unsigned int change_down : 1; // 0x4000000   bit 27
+    unsigned int horn : 1;        // 0x8000000   bit 28
+} tCar_controls;
+
+typedef struct {
+    tS32 left;
+    tS32 right;
+    tS32 acc;
+    tS32 dec;
+} tJoystick;
+
+typedef struct tCar_spec {
+    int index;
+    int disabled;
+    tPhysics_object* collision_info;
+    tDriver driver;
+    br_actor* car_master_actor;
+    undefined field_0x14[8];
+    br_matrix34 old_frame_mat;
+    br_vector3 pos;
+    br_vector3 centre_of_mass_world_scale;
+    int frame_collision_flag;
+    undefined field_0x68[4];
+    int count_shrapnel_materials;
+    br_vector3 direction;
+    float speed;
+    short car_ID;
+    undefined field_0x82;
+    undefined field_0x83;
+    br_material* shrapnel_materials[3];
+    undefined field_0x90[28];
+    tU16 fire_vertex[12];
+    float dt;
+    undefined* field_0xc8;
+    char name[32];
+    char driver_name[32];
+    char grid_icon_names[3][14];
+    undefined field_0x136;
+    undefined field_0x137;
+    undefined4* cockpit_images[3];
+    br_pixelmap* prat_cam_left;
+    br_pixelmap* prat_cam_top;
+    br_pixelmap* prat_cam_right;
+    br_pixelmap* prat_cam_bottom;
+    undefined field_0x154[4];
+    br_pixelmap* speedo_image[2];
+    br_pixelmap* tacho_image[2];
+    br_pixelmap* damage_background;
+    br_pixelmap* lhands_images[7];
+    br_pixelmap* rhands_images[7];
+    br_pixelmap* grid_icon_image;
+    br_pixelmap* gears_image;
+    int fg_index;
+    int underwater_ability;
+    int invulnerable_no_crushage;
+    int invulnerable_no_damage;
+    int invulnerable_no_wastage;
+    int is_race_goal;
+    int wall_climber_mode;
+    int can_be_stolen;
+    int has_been_stolen;
+    int active;
+    int knackered;
+    int pre_car_col_knackered;
+    int render_left[3];
+    int render_top[3];
+    int render_right[3];
+    int render_bottom[3];
+    int mirror_left;
+    int mirror_top;
+    int mirror_right;
+    int mirror_bottom;
+    int prat_left;
+    int prat_top;
+    int prat_right;
+    int prat_bottom;
+    int speedo_x[2];
+    int speedo_y[2];
+    int speedo_centre_x[2];
+    int speedo_centre_y[2];
+    int speedo_x_pitch[2];
+    int speedo_y_pitch[2];
+    int speedo_radius_1[2];
+    int speedo_radius_2[2];
+    int speedo_start_angle[2];
+    int speedo_end_angle[2];
+    int speedo_needle_colour[2];
+    int tacho_x[2];
+    int tacho_y[2];
+    int tacho_centre_x[2];
+    int tacho_centre_y[2];
+    int tacho_x_pitch[2];
+    int tacho_y_pitch[2];
+    int tacho_radius_1[2];
+    int tacho_radius_2[2];
+    int tacho_start_angle[2];
+    int tacho_end_angle[2];
+    int tacho_needle_colour[2];
+    int gear_x[2];
+    int gear_y[2];
+    int red_line;
+    int lhands_x[7];
+    int lhands_y[7];
+    int rhands_x[7];
+    int rhands_y[7];
+    int number_of_hands_images;
+    int max_speed;
+    int damage_x_offset;
+    int damage_y_offset;
+    int damage_background_x;
+    int damage_background_y;
+    int dim_count[2];
+    int dim_left[2][4];
+    int dim_top[2][4];
+    int dim_right[2][4];
+    int dim_bottom[2][4];
+    int car_model_variable;
+    int number_of_steerable_wheels;
+    int steering_ref[6];
+    int lf_sus_ref[4];
+    int rf_sus_ref[4];
+    int lr_sus_ref[2];
+    int rr_sus_ref[2];
+    int driven_wheels_spin_ref_1;
+    int driven_wheels_spin_ref_2;
+    int driven_wheels_spin_ref_3;
+    int driven_wheels_spin_ref_4;
+    int non_driven_wheels_spin_ref_1;
+    int non_driven_wheels_spin_ref_2;
+    int non_driven_wheels_spin_ref_3;
+    int non_driven_wheels_spin_ref_4;
+    int engine_noises[3];
+    float driver_x_offset;
+    float driver_y_offset;
+    float driver_z_offset;
+    float mirror_x_offset;
+    float mirror_y_offset;
+    float mirror_z_offset;
+    float rearview_camera_angle;
+    float head_left_angle;
+    float head_right_angle;
+    float steering_angle;
+    float speedo_speed;
+    float lf_sus_position;
+    float rf_sus_position;
+    float lr_sus_position;
+    float rr_sus_position;
+    float driven_wheels_circum;
+    float non_driven_wheels_circum;
+    float bounce_rate;
+    float bounce_amount;
+    float field_0x4c8;
+    float damage_multiplier;
+    float grip_multiplier;
+    float field_0x4d4;
+    tDamage_unit damage_units[12];
+    tS8 frame_start_damage[12];
+    float last_impact_location;
+    tDamage_program damage_programs[6];
+    tHeadup_slot headup_slots[2][20];
+    undefined field_0xe08[4];
+    br_actor* car_model_actor;
+    br_actor* car_actor;
+    int count_detail_levels;
+    int field_0xe18;
+    float detail_levels[2];
+    int use_shell_model;
+    br_model* shell_model;
+    undefined field158_0xe2c[12];
+    br_matrix34 last_safe_positions[20];
+    int wheel_slip;
+    float damping;
+    float sk[2];
+    float sb[2];
+    float steerable_suspension_give;
+    float susp_give;
+    float susp_height[2];
+    float ride_height;
+    br_vector3 wpos[4];
+    float curvature;
+    float maxcurve;
+    float turn_speed;
+    float field_0x1260;
+    float oldd[4];
+    int material_index[4];
+    int dust_time[4];
+    br_vector3 mu;
+    float traction_multiplier;
+    float downforce_to_weight;
+    undefined field_0x12a8;
+    undefined field_0x12a9;
+    undefined field_0x12aa;
+    undefined field_0x12ab;
+    float initial_brake;
+    float brake_increase;
+    float friction_slipping_reduction;
+    float acc_force;
+    float torque;
+    float brake_force;
+    int traction_control;
+    float steerable_rolling_resistance;
+    float rolling_resistance;
+    tCar_controls keys;
+    tJoystick joystick;
+    undefined field_0x12e4[4];
+    int number_of_wheels_on_ground;
+    br_actor* wheel_actors[6];
+    br_actor* pivot_actors[6];
+    undefined field_0x131c[16];
+    float wheel_dam_offset[4];
+    float damage_magnitude_accumulator;
+    float revs;
+    float target_revs;
+    undefined field_0x1348[12];
+    float max_force_front;
+    float max_force_rear;
+    float gear; /* FIXME: should be an int? */
+    int just_changed_gear;
+    int max_gear;
+    float speed_revs_ratio;
+    float force_torque_ratio;
+    tS3_sound_source* sound_source;
+     br_matrix34 pre_car_col_mat;
+    float pre_car_col_speed;
+    br_vector3 pre_car_col_direction;
+    br_vector3 pre_car_col_velocity;
+    br_vector3 pre_car_col_velocity_car_space;
+    br_vector3 vel;
+    undefined field_0x13cc[8];
+    float field_0x13e0;
+    int time_last_hit;
+    int time_last_victim;
+    tCar_spec* last_hit_by;
+    undefined* field_0x13f0;
+    int no_of_processes_recording_my_trail;
+    tPursuee_trail my_trail;
+    unsigned int grudge_raised_recently : 1;   // @0x13c  // 0x1
+    unsigned int big_bang : 1;                 // @0x13c  // 0x2
+    unsigned int scary_bang : 1;               // @0x13c  // 0x4
+    undefined4 field_0x1540;
+    undefined4 field_0x1544;
+    tU32 field_0x1548;
+    tU32 end_steering_damage_effect;
+    tU32 end_trans_damage_effect;
+    int false_key_left;
+    int false_key_right;
+    tS16 field_0x155c;
+    undefined field_0x155e[2];
+    struct tCar_spec* last_person_to_hit_us;
+    struct tCar_spec* last_person_we_hit;
+    undefined field_0x1568[44];
+    int shadow_intersection_flags;
+    tU32 last_bounce;
+    int new_skidding;
+    int old_skidding;
+    tS16 old_skid[4];
+    br_vector3 special_start[4];
+    br_vector3 prev_skid_pos[4];
+    br_vector3 field_0x160c[4];
+    br_vector3 field_0x163c[4];
+    br_vector3 nor[4];
+    br_vector3 prev_nor[4];
+    float oil_remaining[4];
+    float maybe_blood_remaining[4];
+    float total_length[4];
+    br_material* field_0x16fc[4];
+    float proxy_ray_distance;
+    int powerups[100];
+    tU32 time_to_recover;
+    tU32 repair_time;
+    int power_up_levels[3];
+    int power_up_slots[3];
+    int horn_sound_tag;
+    int is_girl;
+    tU8 field_0x18c8;
+    int field_0x18cc;
+    float softness_factor;
+    tCar_crush_spec* car_crush_spec;
+    br_vector3 camera_bumper_position;
+    br_vector3 camera_cockpit_position;
+    int count_window_materials;
+    tCarCockpitMaterial window_materials[5];
+    tU16 old_material_count;
+    tU16 new_material_count;
+    undefined4 field_0x195c;
+    br_pixelmap* field_0x1960;
+} tCar_spec;
+
+typedef struct {
+    br_actor* actor_0x0;
+    br_actor* actor_0x4;
+    br_actor* actor_0x8;
+} tTrack_square;
+
+typedef struct {
+    tU8 ncolumns_x;
+    tU8 ncolumns_z;
+    undefined field_0x2;
+    undefined field_0x3;
+    float column_size_x;
+    float column_size_z;
+    float origin_x;
+    float origin_z;
+    br_actor* the_actor; /* for newcity1 ==> actor from newcity1.twt/newcity1.act */
+    tTrack_square** columns;
+    int count_non_cars;
+    br_actor** non_car_list;
+} tTrack_spec;
+
+typedef enum {
+    eDepth_effect_none = -1,
+    eDepth_effect_darkness = 0,
+    eDepth_effect_fog = 1,
+    eDepth_effect_colour = 2,
+} tDepth_effect_type;
+
+typedef struct {
+    int red;
+    int green;
+    int blue;
+} tRGB_colour;
+
+typedef struct {
+    tDepth_effect_type type;
+    int start;
+    int end;
+    tRGB_colour colour;
+    br_pixelmap* sky_texture;
+} tDepth_effect;
+
+typedef struct {
+    br_material* material;
+    float min_x;
+    float min_z;
+    float max_x;
+    float max_z;
+} tSpecial_screen;
+
+typedef enum {
+    kSoundGeneratorType_noncar = 0,
+    kSoundGeneratorType_actor = 1,
+    kSoundGeneratorType_point = 2,
+} tSoundGeneratorType;
+
+typedef struct {
+    tSoundGeneratorType type;
+    tSpecial_volume_soundfx_data fx;
+    tSpecial_volume_soundfx_data fx1_noncar;
+    tSpecial_volume_soundfx_data fx2_noncar;
+    br_vector3 point;
+} tTrackSoundGenerator;
+
+typedef struct {
+    tS3_sound_source *source;
+    br_vector3 position;
+    void* field_0x10;
+    undefined field_0x14[0x18 - 0x14];
+    undefined4 field_0x18;
+} tEnvironment_sound_source;
+
+typedef struct {
+    tSpecial_volume_soundfx_data soundfx;
+    tTrackSoundGenerator* generator;
+    br_actor* actor;
+    br_vector3 pos;
+} tEnvironment_sound_generator_info;
+
+typedef struct {
+    int count;
+    tEnvironment_sound_generator_info* sources;
+} tEnvironment_sound_generator_vector;
+
+typedef struct {
+    int count;
+    char *messages[10];
+} tOppo_status_messages;
+
+typedef enum {
+    eOOT_none = 0,
+    eOOT_complete_race = 1,
+    eOOT_pursue_and_twat = 2,
+    eOOT_run_away = 3,
+    eOOT_get_near_player = 4,
+    eOOT_levitate = 5,
+    eOOT_knackered_and_freewheeling = 6,
+    eOOT_frozen = 7,
+    eOOT_wait_for_some_hapless_sod = 8,
+    eOOT_return_to_start = 9
+} tOpponent_objective_type;
+
+typedef struct {
+    int field_0x0 : 1;
+    int field_0x4;
+} tSOC;
+
+typedef struct {
+    br_vector2 field_0x00;
+    float field_0x08;
+    float field_0x0c;
+    undefined4 left_not_right;
+    undefined4 section;
+    undefined4 field_0x18;
+} tCorner;
+
+typedef struct {
+    tS16 section_no;
+    tU8 direction;
+    undefined field_0x3;
+} tRoute_section;
+
+typedef struct {
+    tU8 finished_calcing_race_route;
+    tU8 found_race_section;
+} tComplete_race_data;
+
+typedef struct tReturn_to_start_data {
+    br_vector3 nearest_path_point;
+    tS16 section_no;
+    tU8 waiting_near_start;
+} tReturn_to_start_data;
+
+typedef struct tRun_away_data {
+    tU32 time_to_stop;
+} tRun_away_data;
+
+typedef struct {
+    tU32 struggle_time;
+    tU32 last_finished_struggle_time;
+    tU32 field_0x08;
+    tU32 borrowed_time_start;
+    float prev_acc;
+    float prev_acc_error;
+    float desired_speed;
+    float last_distance;
+    br_vector3 cheaty_intersect;
+    tS16 section_no;
+    tS16 first_section_no;
+    tS16 last_struggle_section;
+    undefined field_0x32[2];
+    unsigned int number_of_struggles: 8;
+    unsigned int has_moved_during_this_task: 1;
+    unsigned int made_it: 1;
+    unsigned int cheating: 1;
+    unsigned int cornering: 1;
+    unsigned int left_not_right: 1;
+    undefined4 field_0x38;
+    int moving_to_intersect;
+    br_vector2 field_0x40;
+    float field_0x48;
+    float field_0x4c;
+    float corner_width;
+    int corner_section;
+} tFollow_path_data;
+
+typedef struct tPath_node {
+    br_vector3 pos;
+    tU16 sections[8];
+    tU8 number_of_sections;
+    undefined field_0x1d[3];
+} tPath_node;
+
+typedef struct tPath_section {
+    tU16 node_indices[2];
+    tU8 min_speed[2];
+    tU8 max_speed[2];
+    br_scalar width;
+    br_scalar length;
+    tU8 type;
+    tU8 one_way;
+} tPath_section;
+
+typedef struct {
+    tCar_spec* pursuee;
+    tU32 time_of_next_visibility_check;
+    tU32 start_backup_time;
+    tU32 time_last_twatted_em;
+    tU32 time_pursuee_last_visible;
+    tU32 time_last_away_from_pursuee;
+    tPath_node direct_line_nodes[2];
+    tPath_section direct_line_section;
+    tU8 state;
+} tPursue_car_data;
+
+typedef struct {
+    int index;
+    tOpponent_objective_type current_objective;
+    tCar_spec* car_spec;
+    float nastiness;
+    float distance_to_camera;
+    float distance_from_home;
+    float player_to_oppo_d;
+    br_vector3 start_pos;
+    br_vector3 start_direction;
+    br_vector3 pos_last_frame;
+    br_vector3 player_to_oppo_v;
+    tU32 next_out_of_world_check;
+    tU32 next_repair_check;
+    tU32 repair_interval;
+    tU32 last_repair_time;
+    tU32 stun_time_ends;
+    tU32 next_player_visibility_check;
+    tU32 last_moved_ok;
+    tU32 last_in_view;
+    tU32 time_last_processed;
+    tU32 time_this_objective_started;
+    tU32 time_for_this_objective_to_finish;
+    tS16 players_section_when_last_calced_full_path;
+    undefined field_0x7a[2];
+    int nnext_sections;
+    tRoute_section next_sections[12];
+    unsigned int new_objective_required : 1;         // @0xb0  // 0x1
+    unsigned int finished_for_this_race : 1;         // @0xb0  // 0x2
+    unsigned int knackeredness_detected : 1;         // @0xb0  // 0x4
+    unsigned int physics_me : 1;                     // @0xb0  // 0x8
+    unsigned int pursue_from_start : 1;              // @0xb0  // 0x10
+    unsigned int cheating : 1;                       // @0xb0  // 0x20
+    unsigned int last_cheating_value : 1;            // @0xb0  // 0x40
+    unsigned int pursuing_player_before_freeze : 1;  // @0xb0  // 0x80
+    unsigned int has_moved_at_some_point : 1;        // @0xb0  // 0x100
+    unsigned int player_in_view_now : 1;             // @0xb0  // 0x200
+    unsigned int acknowledged_piv : 1;               // @0xb0  // 0x400
+    unsigned int murder_reported : 1;                // @0xb0  // 0x800
+    undefined4 field_0xb4;
+    tComplete_race_data complete_race_data;
+    tFollow_path_data follow_path_data;
+    tPursue_car_data pursue_car_data;
+    undefined field_0x184[12];
+    tRun_away_data run_away_data;
+    tReturn_to_start_data return_to_start_data;
+} tOpponent_spec;
+
+typedef struct {
+    int number_of_opponents;
+    int number_of_cops;
+    int number_of_path_nodes;
+    int number_of_path_sections;
+    br_vector3 cop_start_points[10];
+    br_vector3 cop_start_vectors[10];
+    tOpponent_spec opponents[30];
+    tOpponent_spec cops[10];
+    tPath_node* path_nodes;
+    tPath_section* path_sections;
+} tIntelligent_vehicles;
+
+typedef enum {
+    eVT_Scene = 0,
+    eVT_Info = 1,
+    eVT_Opponents = 2
+} tRace_sel_view_type;
+
+typedef enum tFrank_anne {
+    eFrankie = 0,
+    eAnnie = 1
+} tFrank_anne;
+
+typedef struct {
+    int credits;
+    tU32 view_change_start;
+    tU32 pratcam_move_start;
+    int peds_killed;
+    int sausage_eater_mode;
+    int rank;
+    int field_0x18;
+    int last_slot;
+    int skill_level;
+    undefined4 field_0x24;
+    int racing;
+    int field_0x2c;
+    int cut_scene;
+    int saving;
+    int loading;
+    int dont_save_or_load;
+    int dont_load;
+    int mirror_on;
+    int prat_cam_on;
+    int cockpit_on;
+    int cockpit_image_index;
+    int current_render_left;
+    int current_render_top;
+    int current_render_right;
+    int current_render_bottom;
+    int frame_rate_headup;
+    int field26_0x68;
+    int revs;
+    int music_volume;
+    int effects_volume;
+    int current_race_index;
+    int redo_race_index;
+    int credits_per_rank;
+    int game_completed;
+    int number_of_cars;
+    int current_car_index;
+    tWhich_view which_view;
+    tWhich_view new_view;
+    tWhich_view pending_view;
+    tWhich_view old_view;
+    tRace_sel_view_type view_type;
+    tProg_status prog_status;
+    tFrank_anne frank_or_anniness;
+    tCar_spec current_car;
+    char player_name[14];
+    char track_file_name[64];
+    char car_name[64];
+    char padding_0x1a9e[2];
+    int cars_available[60];
+    br_vector3 initial_position;
+    float initial_yaw;
+    tTrack_spec track_spec;
+    tDepth_effect default_depth_effect;
+    tDepth_effect current_depth_effect;
+    int special_volume_count;
+    tSpecial_volume* special_volumes;
+    int count_track_sound_generators;
+    tTrackSoundGenerator* track_sound_generators;
+    br_pixelmap* standard_screen;
+    br_pixelmap* standard_screen_dark;
+    br_pixelmap* standard_screen_fog;
+    int special_screens_count;
+    tSpecial_screen* special_screens;
+    tIntelligent_vehicles AI_vehicles;
+    tNon_car_spec* non_cars;
+    int num_non_car_spaces;
+} tProgram_state;
+
+typedef struct {
+    tPowerup* powerup;
+    int fizzle_stage;
+    int fizzle_direction;
+    tU32 fizzle_start;
+    br_actor* icon_actor;
+} tHeadup_icon;
+
+typedef enum {
+    ePowerup_dummy = 0,
+    ePowerup_instantaneous = 1,
+    ePowerup_timed = 2,
+    ePowerup_whole_race = 3,
+} tPowerup_type;
+
+typedef struct {
+    br_actor* actor;
+    int index;
+    tU32 respawn_time;
+} tRespawn_powerup;
+
+typedef enum {
+    eNet_powerup_local = 0,
+    eNet_powerup_global = 1,
+    eNet_powerup_inappropriate = 2,
+    eNet_powerup_off_before_snapweld = 4,
+} tNet_powerup_type;
+
+typedef struct tPowerup{
+    tPowerup_type type;
+    undefined4 got_time;
+    int duration;
+    tU32 lose_time;
+    int group_inclusion;
+    struct br_pixelmap * icon;
+    int fizzle_type;
+    int number_of_float_params;
+    int number_of_integer_params;
+    int* integer_params;
+    int current_value;
+    int prat_cam_event;
+    int value;
+    int initial_value;
+    tNet_powerup_type net_type;
+    tGot_proc* got_proc;
+    tLose_proc* lose_proc;
+    tPeriodic_proc* periodic_proc;
+    float * float_params;
+    tCar_spec* car;
+    char message[64]; /* name is written here */
+    br_actor* icon_actor;
+    br_token_value material_prims[3];
+} tPowerup;
+
+typedef struct {
+    int initial[3];
+    int initial_network[8];
+} tSlot_info;
+
+typedef struct {
+    float initial[3];
+    float initial_network[8];
+} tFloat_bunch_info;
+
+typedef struct {
+    float opacity;
+    br_pixelmap* map;
+} tExplosion_animation_frame;
+
+typedef enum {
+    kExplosionRotateModus_NoRotate = 0,
+    kExplosionRotateModus_RandomRotate = 1,
+} tExplosion_animation_rotate_modus;
+
+typedef struct {
+    tU16 min_count;
+    tU16 max_count;
+    tU16 count_frames;
+    tU16 min_start_delay_ms;
+    tU16 max_start_delay_ms;
+    tU16 min_frametime_ms;
+    tU16 max_frametime_ms;
+    char padding_0xe[2];
+    float min_scaling_factor;
+    float max_scaling_factor;
+    br_vector3 min_xyz_factor;
+    br_vector3 max_xyz_factor;
+    br_vector3 offset;
+    tExplosion_animation_rotate_modus rotate_modus;
+    tExplosion_animation_frame* frames;
+} tExplosion_animation_group;
+
+typedef struct {
+    int count_groups;
+    tExplosion_animation_group* groups;
+} tExplosion_animation;
+
+typedef struct {
+    tU8* bools;
+} tPowerup_respawn_spec;
+
+typedef enum {
+    kRepeatability_None,
+    kRepeatability_SingleShot,
+    kRepeatability_Repeated,
+    kRepeatability_DoItRegardless,
+} tRepeatability;
+
+typedef enum {
+    kShrapnelRelPos_SphereClumped = 0,
+    kShrapnelRelPos_BoxClumped = 1,
+    kShrapnelRelPos_ActorBased = 2
+} tShrapnel_rel_pos_type;
+
+typedef struct {
+    tShrapnel_rel_pos_type type;
+    br_vector3 pos;
+} tShrapnel_pos;
+
+typedef struct {
+    br_actor* actor;
+    br_vector3 v;
+    tU32 time_sync;
+    tU32 age;
+    br_scalar shear1;
+    br_scalar shear2;
+    br_vector3 axis;
+} tShrapnel;
+
+typedef enum {
+    kShrapnelType_Abstract = 0,
+    kShrapnelType_Shards = 1,
+    kShrapnelType_GhostParts = 2,
+    kShrapnelType_NonCars = 3,
+} tShrapnel_type;
+
+typedef enum {
+    kInitialSmashablePosition_SphereClumped = 0,
+    kInitialSmashablePosition_BoxClumped = 1,
+    kInitialSmashablePosition_ActorBased = 2,
+} tInitial_smashable_position_type;
+
+typedef enum {
+    kSmashableSpherePosition_Impact = 0,
+    kSmashableSpherePosition_Model = 0,
+} tSmashable_sphere_position;
+
+typedef struct {
+    tInitial_smashable_position_type type;
+    union {
+        struct {
+            float radius;
+            tSmashable_sphere_position where;
+        } sphere;
+        br_vector3 box;
+    } position;
+} tSmashable_initial_position_spec;
+
+typedef struct {
+    tShrapnel_type type;
+    float min_speed_towards_you;
+    float max_speed_towards_you;
+    float impactee_velocity_factor;
+    float random_velocity_max;
+    float random_up_velocity_max;
+    float random_normal_velocity_max;
+    float random_spin_rate_max;
+    float min_time_ms;
+    float max_time_ms;
+    tSmashable_initial_position_spec initial_pos;
+    union {
+        struct {
+            int count_materials;
+            br_material* materials[5];
+        } abstract;
+        struct {
+            br_material* material;
+            float field_0x4;
+            int field_0x8;
+        } material;
+        struct {
+            br_material* material;
+            float field_0x4;
+            int field_0x8;
+        } shard;
+        struct {
+            int field_0x0;
+            int field_0x4;
+            int count_actors;
+            float bounds_dx;
+            float bounds_dy;
+            br_actor** actors;
+        } ghost;
+        struct {
+            int amount_min;
+            int amount_max;
+            int count_actors;
+            br_actor** actors;
+            int probability_fire;
+            int count_fire_columns;
+            int min_smokiness;
+            int max_smokiness;
+        } noncar;
+    } type_info;
+} tShrapnel_spec;
+
+typedef struct {
+    br_model* model;
+    br_actor* actor;
+    int field_0x8;
+} tSmashable_race_target;
+
+typedef enum {
+    kSmashableTrigger_Material = 0,
+    kSmashableTrigger_Model = 1,
+    kSmashableTrigger_Number = 2,
+} tSmashable_trigger_type;
+
+typedef struct {
+    short field_0x0;
+    short field_0x2;
+} tSmash_run_time_variable_change;
+
+typedef enum {
+    kSmashableMode_NoChange = 0,
+    kSmashableMode_Decal = 1,
+    kSmashableMode_TextureChange = 2,
+    kSmashableMode_Remove = 3,
+    kSmashableMode_ReplaceModel = 4,
+    kSmashableMode_Crush = 5,
+} tSmashable_item_mode;
+
+typedef struct {
+    br_actor* actor;
+    tU32 time;
+} tDecal;
+typedef struct {
+    undefined4 field_0x0;
+    undefined4 field_0x4;
+    undefined4 field_0x8[12];
+} tQueued_net_smash;
+
+typedef struct { /* FIXME: maybe equal to tQueued_net_smash */
+    undefined4 field_0x0[14];
+} tStored_smash;
+
+typedef struct {
+    int field_0x0;
+    float field_0x4;
+    float field_0x8;
+    float field_0xc;
+    float field_0x10;
+    float field_0x14;
+    float field_0x18;
+    float field_0x1c;
+    float field_0x20;
+    float field_0x24;
+    br_material* material;
+    br_material* material2;
+} tSlick_spec;
+
+typedef struct {
+    tS16 field_0x0;
+    tS16 field_0x2;
+    int field_0x4;
+    tS8 field_0x8;
+    undefined field_0x9[3];
+    br_bounds3 bounds;
+    float field_0x24;
+    float field_0x28;
+    float field_0x2c;
+    float field_0x30;
+    float field_0x34;
+    float field_0x38;
+    float field_0x3c;
+} tNon_car_cuboid_activation;
+
+typedef struct {
+    int count_activations;
+    tNon_car_cuboid_activation* activations;
+} tNon_car_cuboid_activations;
+
+typedef struct {
+    tS16 field_0x0;
+    tS16 field_0x2;
+    undefined4 field_0x4;
+    char field_0x8[0x20];
+    undefined4 field_0x28;
+    br_bounds3 bounds;
+    undefined4 field_0x44;
+    float field_0x48;
+} tSmash_side_effect;
+
+typedef struct {
+    int count_side_effects;
+    tSmash_side_effect* side_effects;
+} tShrapnel_side_effects;
+
+typedef struct {
+    tRepeatability frequency;
+    float field_0x4;
+    float field_0x8;
+    int field_0xc;
+    int field_0x10;
+} tAward_info;
+
+typedef char tSmashable_environment_name[32];
+
+typedef union {
+    struct {
+        tU8 field_0x0;
+        tU8 field_0x1;
+        undefined field_0x2;
+        undefined field_0x3;
+    } number;
+    br_actor* actor;
+    br_material* material;
+    br_model* model;
+} tSmashable_item_spec_trigger;
+
+typedef struct {
+    tExplosion_animation explosion_animation;
+    tSlick_spec slick;
+} tSpecial_effects_spec;
+
+typedef struct {
+    tNon_car_cuboid_activations activations;
+    tShrapnel_side_effects side_effects;
+    int extension_arg;
+    int extension_flags;
+    int room_turn_on_code;
+} tSide_effects;
+
+typedef struct {
+    tU8 count;
+    undefined field_0x01;
+    tSmash_run_time_variable_change runtime_changes[5];
+    undefined field_0x16;
+    undefined field_0x17;
+} tVariable_changes;
+
+typedef struct {
+    int count_sounds;
+    int sounds[3];
+    int count_shrapnel;
+    tShrapnel_spec shrapnel[6];
+    tSpecial_effects_spec special_effects;
+    tSide_effects side_effects;
+    tAward_info award;
+    undefined field_0x28c[4];
+    tVariable_changes variable_changes;
+} tConnotations;
+
+typedef struct {
+    float removal_threshold;
+    tConnotations connotations;
+} tSmashable_item_spec_shrapnel;
+
+typedef struct {
+    char undefined_0x0[4];
+    int count_sounds;
+    int sounds[3];
+    undefined field_0x18[44];
+    undefined4 field_0x40;
+    tSmashable_item_spec_trigger trigger;
+    int count_levels;
+    undefined4 field_0x4c;
+    tSmashable_level* levels;
+    float field_0x54;
+    float field_0x58;
+    float field_0x5c;
+    float field_0x60;
+    float field_0x64;
+    float field_0x68;
+    undefined4 field_0x6c;
+    undefined4 field_0x70;
+    undefined4 field_0x74;
+    undefined4 field_0x78;
+} tSmashable_item_spec_texture_change;
+
+typedef struct {
+    int chance_fire;
+    int model_1_int;
+    int model_2_int;
+    int model_3_int;
+} tSmokeFireChance;
+
+typedef struct {
+    br_model* model;
+    tSmokeFireChance smoke_fire_chance;
+} tSmashReplace;
+
+typedef struct {
+    int flags;
+    tSmashable_item_spec_trigger trigger_object;
+    tSmashable_trigger_type trigger_type;
+    tSmashable_item_mode mode;
+    undefined4 field_0x10;
+    union {
+        tSmashable_item_spec_shrapnel shrapnel;
+        tSmashable_item_spec_texture_change texture_change;
+        tU16 field_0x14; /* FIXME */
+    } mode_data;
+    tSmashReplace replace;
+    undefined4 field_0x2d4;
+    undefined4 field_0x2d8;
+    undefined field_0x2dc;
+    undefined field_0x2dd[3];
+} tSmashable_item_spec;
+
+typedef struct {
+    tRGB_colour directional;
+    float ambient_else;
+    float diffuse_else;
+    float ambient_1;
+    float diffuse_1;
+    float ambient_0;
+    float diffuse_0;
+} tLighting_data;
+
+typedef struct tMaterial_exception {
+    struct tMaterial_exception* next;
+    char* texture_name;
+    int flags;
+} tMaterial_exception;
+
+typedef enum {
+    eMaterial_exception_nobilinear = 0x1,
+    eMaterial_exception_wrap = 0x2,
+} tMaterial_exception_flags;
+
+typedef struct {
+    br_vector3 pos;
+    br_scalar r;
+    br_scalar strength;
+    br_colour col;
+    float aspect;
+    br_material* material;
+    br_model* model;
+} tBRender_smoke;
+
+typedef struct tSmoke {
+    tU32 time_sync;
+    br_vector3 pos;
+    br_vector3 v;
+    br_scalar radius;
+    br_scalar strength;
+    br_scalar decay_factor;
+    tU8 type;
+    tU8 pipe_me;
+} tSmoke;
+
+typedef struct {
+    br_actor* actor;
+    br_model* model;
+    tU32 end_time;
+    tU32 field_0xc;
+    tU32 field_0x10;
+    tU32 time_last_move;
+    tU32 field_0x18;
+    br_vector3 v;
+    br_vector3 omega;
+    undefined field_0x34;
+    undefined field_0x35[0x38-0x35];
+} tSmash_vertex;
+
+typedef struct {
+    br_actor* actor;
+    br_actor* car_actor;
+    br_model* car_model;
+    tCar_spec* car;
+    tU32 spill_time;
+    tU32 stop_time;
+    float full_size;
+    float current_size;
+    float field_0x20;
+    float grow_rate;
+    br_vector3 original_pos;
+    br_vector3 position;
+    float field_0x40;
+    float field_0x44;
+    float field_0x48;
+    float field_0x4c;
+    undefined4 field_0x50;
+} tOil_spill_info;
+
+typedef struct {
+    br_actor* actor;
+    br_vector3 normal;
+    br_vector3 pos;
+} tSkid;
+
+typedef struct {
+    int id;
+    int frametime;
+    tU32 flags;
+    char biped_export_filename[40];
+    char looping_reset_flags[40];
+    br_vector3 movement_direction;
+} tPed_form_move_buffer_item;
+
+typedef enum {
+    ePed_remap_axis_positive_x = 0,
+    ePed_remap_axis_positive_y = 1,
+    ePed_remap_axis_positive_z = 2,
+    ePed_remap_axis_negative_x = 3,
+    ePed_remap_axis_negative_y = 4,
+    ePed_remap_axis_negative_z = 5,
+} tPed_remap_axis;
+
+typedef struct {
+    char name[40];
+    tPed_remap_axis general_remap[3];
+    tPed_remap_axis powerup_axis[3];
+} tPed_remap_bone;
+
+typedef struct {
+    char name[40];
+    int count_bones;
+    tPed_remap_bone* bones;
+} tPed_remap;
+
+typedef struct {
+    undefined field_0x0;
+    undefined field_0x1[0x4 - 0x1];
+    br_actor** actors;
+} tPed_form_actor_set;
+
+typedef struct {
+    tPed_form_collision_detection_type type;
+    tPhysics_object* collision_info;
+} tPed_form_simple_phys;
+
+typedef struct {
+    tU8 field_0x0;
+    undefined field_0x1[3];
+    tPhysics_object** collision_infos;
+} tPed_form_boned_phys;
+
+typedef struct {
+    char name[40];
+    tS8 indices[4];
+    tPed_remap_bone *remapped_bone;
+    tPhysics_joint* hinge;
+} tPed_form_bone;
+
+typedef struct {
+    tU8 euler1;
+    tU8 euler2;
+    tU8 euler3;
+} tPed_move_frame_axis;
+
+typedef struct {
+    br_matrix34 mat;
+    tPed_move_frame_axis* axis;
+} tPed_move_frame;
+
+typedef struct {
+    char name[40];
+    tS16 count_frames;
+    tU8 field_0x2a;
+    tU8 looping_reset_flags;
+    tU32 frametime;
+    tU32 move_flags;
+    br_vector3 field_0x34;
+    br_vector3 field_0x40;
+    tPed_move_frame* frames;
+} tPed_move;
+
+typedef struct {
+    int id;
+    tPed_move* move;
+} tPed_form_move;
+
+typedef struct {
+    undefined field_0x0[0x30];
+} tPed_form_dismembered_character;
+
+typedef struct {
+    char name[40];
+    tU8 count_moves;
+    tU8 count_bones;
+    tU8 max_rendering_at_once;
+    tU8 max_simple_physicing_at_once;
+    tU8 max_boned_physicing_at_once;
+    tU8 max_stored_dismembered_characters;
+    undefined field_0x2e[2];
+    tPed_form_actor_set* actor_sets;
+    tPed_form_boned_phys* boned_physicing;
+    tPed_form_simple_phys* simple_physicing;
+    tPed_form_bone* bones;
+    tPed_form_move* moves;
+    tPed_remap* remap;
+    tPed_form_dismembered_character** stored_dismembered_characters;
+    tS8 non_humanoid;
+    tS8 index_head_bone;
+    tS8 axis_when_lying_down_A;
+    tS8 axis_when_lying_down_B;
+} tPed_form;
+
+typedef struct {
+    float field_0x0;
+    float field_0x4;
+    br_vector3 field_0x8;
+    br_vector3 field_0x14;
+    br_vector3 field_0x20;
+    undefined field_0x2c;
+    undefined field_0x2d[0x10][6];
+    undefined field_0x8d[0xcf];
+} tPed_morph;
+
+typedef struct {
+    undefined4 (C2_HOOK_FASTCALL * passive_collision)(undefined4*, undefined4, undefined4*);
+    int (C2_HOOK_FASTCALL * active_halted)(undefined4*, undefined4*);
+    void (C2_HOOK_FASTCALL * moved_by_physics)(undefined4*, undefined4*, undefined4);
+    int (C2_HOOK_FASTCALL * move_completed)(undefined4*);
+    void (C2_HOOK_FASTCALL * fill_in_object)(undefined4*, undefined4);
+    void (C2_HOOK_FASTCALL * load_form)(tPed_form* pPed_form, FILE* pF);
+    void (C2_HOOK_FASTCALL * dispose_form)(undefined4*);
+    void (C2_HOOK_FASTCALL * load_personality)(tPed_personality*, FILE*);
+    void (C2_HOOK_FASTCALL * dispose_personality)(undefined4*);
+} tPedForms_vtable;
+
+typedef struct {
+    float min_speed;
+    float max_speed;
+    float impactee_velocity_factor;
+    float random_velocity_max;
+    float random_up_velocity_max;
+    float random_normal_velocity_max;
+    float random_spin_rate_max;
+} tSmashable_initial_speed_spec;
+
+typedef enum {
+    eNonCarLocation_Relative = 0,
+    eNonCarLocation_Absolute = 1
+} tNon_car_location_type;
+
+typedef struct {
+    undefined2 time_0x0;
+    undefined2 time_0x2;
+    tNon_car_location_type location_type;
+    int field_0x8; /* can be -1 in file */
+    br_bounds3 bounds;
+    tSmashable_initial_speed_spec speed_info;
+} tNoncar_activation;
+
+typedef enum {
+    kCollisionShapeType_Box = 0,
+    kCollisionShapeType_Polyhedron = 1,
+    kCollisionShapeType_Wireframe = 2,
+    kCollisionShapeType_Wireframe_Polyhedron = 3,
+    kCollisionShapeType_Sphere = 4,
+} tCollision_shape_type;
+
+typedef struct tCollision_shape_common {
+    tCollision_shape_type type;
+    br_bounds3 bb;
+    br_bounds3 field_0x1c;
+    tPhysics_shape* next;
+} tCollision_shape_common;
+
+typedef struct {
+    tU8 index1;
+    tU8 index2;
+} tPolyhedron_edge_indexes; /* FIXME: better name */
+
+typedef struct {
+    int count_points;
+    int count_edges;
+    int count_planes;
+    br_vector3* points;
+    tPolyhedron_edge_indexes* edges;
+    br_vector4* planes;
+} tCollision_shape_polyhedron_data;
+
+typedef struct tCollision_shape_polyhedron {
+    tCollision_shape_common common;
+    tCollision_shape_polyhedron_data polyhedron;
+} tCollision_shape_polyhedron;
+
+typedef struct {
+    tCollision_shape_common common;
+} tCollision_shape_box;
+
+typedef struct {
+    br_scalar radius;
+    br_vector3 center;
+    br_scalar radius_squared;
+} tCollision_shape_sphere_data;
+
+typedef struct {
+    tCollision_shape_common common;
+    tCollision_shape_sphere_data sphere;
+} tCollision_shape_sphere;
+
+typedef struct {
+    int count_points;
+    int count_lines;
+    br_vector3* points;
+    tPolyhedron_edge_indexes* lines;
+} tCollision_shape_wireframe_data;
+
+typedef struct {
+    tCollision_shape_common common;
+    tCollision_shape_wireframe_data wireframe;
+} tCollision_shape_wireframe;
+
+typedef union tPhysics_shape {
+    tCollision_shape_common common;
+    tCollision_shape_box box;
+    tCollision_shape_sphere sphere;
+    tCollision_shape_wireframe wireframe;
+    tCollision_shape_polyhedron polyhedron;
+} tPhysics_shape;
+
+typedef enum {
+    kTextureLevelCollisionChange_Solid = 0,
+    kTextureLevelCollisionChange_PassThrough = 1,
+    kTextureLevelCollisionChange_Edges = 2
+} tSmashable_texture_level_collision_type;
+
+typedef struct tSmashable_level {
+    br_pixelmap * pixelmaps[3];
+    int count_pixelmaps;
+    float trigger_threshold;
+    int count_sounds;
+    int sounds[3];
+    int count_shrapnels;
+    tShrapnel_spec shrapnels[6];
+    tExplosion_animation animation;
+    tSlick_spec slick;
+    int count_noncar_activations;
+    tNoncar_activation* noncar_activations;
+    tShrapnel_side_effects side_effects;
+    int field_0x280;
+    int extension_flags;
+    int room_turn_on_code;
+    tAward_info award;
+    undefined field_0x2a0[4];
+    tU8 count_runtime_variable_changes;
+    undefined field_0x2a5;
+    tSmash_run_time_variable_change runtime_variable_changes[1]; /* FIXME: unknown size */
+    undefined field_0x2aa[18];
+    int flags;
+    tSmashable_texture_level_collision_type collision_type;
+} tSmashable_level;
+
+typedef struct {
+    tCar_spec* car;
+    float value;
+} tInitPhysCrushDataCB_Data;
+
+typedef struct {
+    br_vector3* point;
+    float distance;
+    float softness_factor;
+} tSoftnessOfNearestPointCB_Context;
+
+typedef struct  {
+    tU8 field_0x0;
+    undefined field_0x1;
+    tU16 field_0x2;
+    tU16 field_0x4;
+    tU16 field_0x6;
+    tU16 field_0x8;
+    tU16 hinge0;
+    tU16 field_0xc;
+    tU16 hinge1;
+    tU16 hinge2;
+    tU16 field_0x12;
+    tU8 field_0x14;
+    tU8 field_0x15;
+    undefined field_0x16[2];
+    float field_0x18;
+    float field_0x1c;
+    tU8 kev_o_flap;
+    undefined field_0x21[7];
+    tU8 is_door;
+    undefined field_0x29[3];
+} tCar_crush_flap_data;
+
+typedef enum {
+    eDetachType_normal=0,
+    eDetachType_stubborn=1,
+    eDetachType_fully_detachable=2,
+    eDetachType_joint_index=3,
+    eDetachType_kev_o_flap=5
+} tDetach_type;
+
+typedef struct {
+    br_vector3 field_0x0;
+    br_vector3 field_0xc;
+    br_vector3 field_0x18;
+    float field_0x24;
+    tU16 field_0x28;
+    undefined field_0x2a[2];
+    br_vector3 field_0x2c;
+} tCar_crush_reordered_shape_info;
+
+typedef struct {
+    tCollision_shape_polyhedron* field_0x0;
+    tCollision_shape_polyhedron* field_0x4;
+    undefined4 field_0x8;
+    int count_points;
+    int count_points_add_8;
+    int original_count_points;
+    tCar_crush_reordered_shape_info* field_0x18;
+} tCar_crush_shape_info;
+
+typedef struct {
+    struct {
+        int network_id;
+        undefined field_0x4;
+        undefined field_0x5[3];
+    } items[12];
+} tCar_crush_network_shapes;
+
+typedef struct  {
+    float field_0x0;
+    float force;
+    tU16 min_vertex;
+    tU16 max_vertex;
+    undefined field_0xc[24];
+    tDetach_type type;
+    undefined4 field_0x28;
+    tCar_spec* field_0x2c;
+    tU16 field_0x30;
+    tU8 field_0x32;
+    tU8 field_0x33;
+    int count_shape_points; /* >0 if shape is poly, ==0 if box */
+    int shape_points[16];
+    undefined field_0x78[16];
+} tCar_crush_detach_data;
+
+typedef struct {
+    char material_name[16];
+    undefined field_0x10[48];
+    int funk;
+    br_material* funk_material;
+    int count_smashable_levels;
+    undefined4 field_0x4c;
+    tSmashable_level* levels;
+    br_vector3 field_0x54;
+    br_vector3 field_0x60;
+    int field_0x6c;
+    tU16* field_0x70;
+    int field_0x74;
+    tCar_crush_vertex_data* field_0x78;
+} tCar_crush_smashable_part;
+
+typedef struct {
+    char actor_name[16];
+    undefined field_0xc[16];
+    tU8 id;
+    undefined field_0x21[3];
+    float field_0x24;
+    float softness_factor;
+    tU8 field_0x2c;
+    undefined field_0x2d[3];
+    tCar_crush_flap_data* flap_data;
+    tCar_crush_detach_data* detach_data;
+    tU16 count_smashables;
+    undefined field_0x3a[2];
+    tCar_crush_smashable_part* smashables;
+} tCar_crush_buffer_entry;
+
+typedef struct {
+    int count_entries;
+    tCar_crush_buffer_entry* entries[kMax_crush_datas];
+} tCar_crush_buffer;
+
+typedef struct {
+    float values[4];
+} tCar_crush_limit;
+
+typedef struct {
+    tCar_crush_limit limits[3][2];
+} tCar_crush_limits;
+
+typedef struct {
+    int counts[3][2];
+} tCar_crush_count_limits;
+
+typedef struct tCar_crush_vertex_data {
+    tU16 field_0x0[3];
+} tCar_crush_vertex_data;
+
+typedef struct tCar_bit_spec {
+    br_actor* field_0x0;
+    br_actor* field_0x4;
+    tPhysics_object* field_0x8;
+    undefined4* field_0xc;
+    tU32 field_0x10;
+} tCar_bit_spec;
+
+typedef struct tCar_crush_spec {
+    int count_shapes;
+    tCar_crush_shape_info* field_0x4;
+    int expand_bounding_box;
+    tPhysics_shape *field_0xc;
+    br_vector3 field_0x10;
+    int version_le_100;
+    tCar_crush_network_shapes* network_stuff;
+    undefined2 field_0x24;
+    undefined2 field_0x26;
+    int field_0x28;
+    tCar_crush_count_limits count_limits;
+    tCar_crush_limits limits;
+    tCar_crush_count_limits field_0xa4;
+    tCar_crush_limits field_0xbc;
+    br_bounds3 field_0x11c;
+    tU8 field_0x134;
+    undefined field_0x135[3];
+    br_vector3 field_0x138;
+    tU8 field_0x144;
+    undefined field_0x145[3];
+    float bendability_factor;
+    float bend_z_min;
+    float bend_z_max;
+    undefined field_0x154[0x174 - 0x154];
+    float field_0x174;
+    undefined field_0x178[0x180 - 0x178];
+    float field_0x180;
+    undefined field_0x184[0x1cc - 0x184];
+    tCar_crush_vertex_data* field_0x1cc;
+    undefined field_0x1d0[28];
+    br_vector3 field_0x1ec[6];
+    br_vector3 field_0x234[4];
+    br_vector3 field_0x264;
+    int field_0x270;
+    tCar_bit_spec field_0x274[3];
+    int field_0x2b0;
+    tCar_bit_spec field_0x2b4[3];
+    undefined field_0x2f0[456];
+    tU8 field_0x4b8;
+    undefined field_0x4b9[3];
+    float snappability_factor;
+    float split_y_pos;
+    undefined field_0x4c4[8];
+    br_actor* actor; /* ->user is tCar_spec pointer */
+    br_actor* model_actor;
+    undefined field_0x4d4[0x548 - 0x4d4];
+    br_vector3 field_0x548;
+    float field_0x554;
+    br_vector3 driver_position;
+    tCollision_shape_wireframe* field_0x564[4];
+    tU32 field_0x574;
+    int nb_entries;
+} tCar_crush_spec;
+
+typedef struct tCrush_net_detach_list_item {
+    br_actor* actor;
+    tCar_spec* car;
+    undefined field_0x8[28];
+} tCrush_net_detach_list_item;
+
+typedef struct tCrush_net_semi_detach_bit_list_item {
+    br_actor* actor;
+    tCar_spec* car;
+    undefined field_0x8[68];
+} tCrush_net_semi_detach_bit_list_item;
+
+typedef struct tCrush_net_full_detach_bit_list_item {
+    tCar_spec* car;
+    tPhysics_object* object;
+    undefined field_0x8[0xc - 0x8];
+} tCrush_net_full_detach_bit_list_item;
+
+typedef struct tCrush_net_reattach_bit_list_item {
+    tCar_spec* car;
+    undefined field_0x4[8];
+} tCrush_net_reattach_bit_list_item;
+
+typedef struct tCrush_detach_list_item {
+    br_actor* actor;
+    tCar_spec* car;
+    float field_0x8;
+    tU32 time;
+    undefined4 field_0x10;
+} tCrush_detach_list_item;
+
+typedef struct tCar_damge_crush_list_item {
+    tCar_spec* car;
+    float damage;
+} tCar_damge_crush_list_item;
+
+typedef struct {
+    int owner;
+    int done_this_frame;
+    int block_flags;
+    br_actor* actor;
+    tLollipop_mode lollipop_mode;
+    tGroove_trigger_mode mode;
+    tGroove_path_mode path_type;
+    tMove_mode path_mode;
+    tInterrupt_status path_interrupt_status;
+    float path_resumption_value;
+    union {
+        struct {
+            union {
+                struct {
+                    float value;
+                } period;
+                struct {
+                    tFunk_texturebits *data;
+                } texture_info;
+            };
+            float x_delta;
+            float y_delta;
+            float z_delta;
+            br_vector3 centre;
+        } straight_info;
+        struct {
+            union {
+                struct {
+                    float value;
+                } period;
+                struct {
+                    tFunk_texturebits *data;
+                } texture_info;
+            };
+            float radius;
+            br_vector3 centre;
+            tAxis_comp axis;
+        } circular_info;
+        undefined field_0x28[20];
+    } path_data;
+    br_vector3 object_centre;
+    br_vector3 object_position;
+    tGroove_object_mode object_type;
+    tMove_mode object_mode; /* Created by retype action */
+    tInterrupt_status object_interrupt_status; /* Created by retype action */
+    float object_resumption_value;
+    union {
+        struct {
+            union {
+                struct {
+                    float value;
+                } period;
+                struct {
+                    tFunk_texturebits *data;
+                } texture_info;
+            };
+            tAxis_comp axis;
+        } spin_info;
+        struct {
+            union {
+                struct {
+                    float value;
+                } period;
+                struct {
+                    tFunk_texturebits *data;
+                } texture_info;
+            };
+            float max_angle;
+            float current_angle;
+            tAxis_comp axis;
+        } rock_info;
+        struct {
+            union {
+                struct {
+                    float value;
+                } x_period;
+                struct {
+                    tFunk_texturebits *data;
+                } x_texture_info;
+            };
+            union {
+                struct {
+                    float value;
+                } y_period;
+                struct {
+                    tFunk_texturebits *data;
+                } y_texture_info;
+            };
+            union {
+                struct {
+                    float value;
+                } z_period;
+                struct {
+                    tFunk_texturebits *data;
+                } z_texture_info;
+            };
+            float x_magnitude;
+            float y_magnitude;
+            float z_magnitude;
+        } throb_info;
+        struct {
+            union {
+                struct {
+                    float value;
+                } x_period;
+                struct {
+                    tFunk_texturebits *data;
+                } x_texture_info;
+            };
+            union {
+                struct {
+                    float value;
+                } y_period;
+                struct {
+                    tFunk_texturebits *data;
+                } y_texture_info;
+            };
+            union {
+                struct {
+                    float value;
+                } z_period;
+                struct {
+                    tFunk_texturebits *data;
+                } z_texture_info;
+            };
+            float x_magnitude;
+            float y_magnitude;
+            float z_magnitude;
+        } shear_info;
+        undefined field_0x6c[24];
+    } object_data;
+} tGroovidelic_spec;
+
+typedef struct {
+    br_model** models;
+    int model_count;
+    int count_detail_levels;
+} tCrush_model_pool;
+
+typedef struct {
+    tCompressed_vector3 p;
+    tU8 flags;
+    undefined field_0x7;
+    tS16 limit_number;
+} tModel_detail_vertex_data;
+
+typedef struct {
+    undefined field_0x0[4];
+    tModel_detail_vertex_data* field_0x4;
+    undefined field_0x8[4];
+} tUser_detail_level_model;
+
+typedef struct {
+    br_model* models[2]; /* model for every detail level. Each model has a tUser_detail_level_model. */
+    tCar_crush_buffer_entry* crush_data;
+    tGroovidelic_spec* groove;
+} tUser_crush_data;
+
+typedef struct {
+    undefined field_0x00[4];
+    tU16 field_0x04;
+    undefined2 field_0x06;
+    undefined4 field_0x08;
+    float field_0x0c;
+    float field_0x10;
+    float field_0x14;
+} tCollision_info_owner;
+
+typedef enum {
+    eJoint_limit_plane = 0,
+    eJoint_limit_universal = 1,
+    eJoint_limit_10 = 10,
+    eJoint_limit_11 = 11,
+} tPhysics_joint_limit_type;
+
+typedef struct {
+    tPhysics_joint_limit_type type;
+    float value;
+    br_vector3 child;
+    br_vector3 parent;
+} tPhysics_joint_limit;
+
+typedef struct tPhysics_joint {
+    tPhysics_joint_type type;
+    br_scalar friction;
+    br_vector3 field_0x08;
+    br_vector3 field_0x14;
+    br_vector3 hinge_axis2;
+    br_vector3 hinge_axis3;
+    br_vector3 hinge_axis;
+    br_vector3 parent_bone_axis;
+    int count_limits;
+    tPhysics_joint_limit limits[];
+} tPhysics_joint;
+
+typedef struct tPhysics_object {
+    br_actor* actor;
+    float M;
+    br_vector3 I;
+    br_vector3 cmpos;
+    tPhysics_shape* shape;
+    br_bounds3 bb1;
+    br_bounds3 bb2;
+    br_vector3 field_0x54;
+    br_scalar world_friction;
+    br_scalar object_friction;
+    br_vector3 v;
+    br_vector3 omega;
+    br_vector3 pos;
+    br_matrix34 transform_matrix;
+    undefined field_0xbc[48];
+    tU8 disable_move_rotate; /* FIXME: rename to doing_nothing_flag? */
+    undefined field_0xed;
+    undefined field_0xee[2];
+    undefined4 field_0xf0;
+    br_bounds3 field_0xf4;
+    br_bounds3 field_0x10c;
+    br_bounds3 field_0x124;
+    float radius_squared;
+    float radius;
+    br_matrix34 field_0x144;
+    tU16 box_face_start;
+    tU16 box_face_end;
+    tU16 box_face_ref;
+    undefined field_0x17a[2];
+    br_vector3 field_0x17c;
+    tPhysics_joint* physics_joint1;
+    tPhysics_joint* physics_joint2;
+    tU8 uid;
+    undefined field_0x191[11];
+    int flags;
+    int field_0x1a0;
+    undefined4 field_0x1a4;
+    br_vector3 velocity_car_space;
+    undefined field_0x1b4[12];
+    br_vector3 rotate_omega;
+    undefined field_0x1cc[12];
+    undefined4 field183_0x1d8;
+    undefined field_0x1dc;
+    undefined collision_flag;
+    undefined field_0x1de;
+    undefined field_0x1df;
+    undefined field_0x1e0[8];
+    br_matrix34 field_0x1e8;
+    undefined4 field_0x218;
+    float field_0x21c;
+    tPhysics_object* next;
+    tPhysics_object* child;
+    tPhysics_object* parent;
+    tPhysics_object* prev;
+    tPhysics_object* field_0x230;
+    void* field_0x234;
+    tU8 flags_0x238;
+    tU8 field_0x239;
+    undefined field_0x23a[2];
+    void* owner; /* points to tCollision_info_owner (used in PHILSetObjectProperty) */
+    void* field_0x240;
+    br_vector3 water_normal;
+    br_scalar water_d; /* Created by retype action */
+    br_scalar water_depth_factor;
+    tSpecial_volume* last_special_volume;
+    tSpecial_volume* auto_special_volume;
+    undefined field_0x260[1];
+    undefined field_0x261;
+    undefined field_0x262[6];
+    tU32 message_time; // 0x268
+    undefined field_0x26c[560];
+    undefined4 field_0x49c; /* tU32 last_car_car_collision: */
+    undefined field_0x4a0[52];
+    tU8 drivable_on;
+    undefined field_0x4d5[3];
+} tPhysics_object;
+
+typedef struct {
+    tPhysics_object* collision_info;
+    undefined2 field_0x4;
+    undefined field_0x6[0x8 - 0x6];
+    undefined4 field_0x8;
+    float field_0xc;
+    float field_0x10;
+    float field_0x14;
+} tPHIL_queued_header;
+
+typedef struct {
+    tPhysics_object* collision_info;
+    undefined2 field_0x4;
+    undefined field_0x6[0x2];
+    undefined4 field_0x8;
+    float field_0xc;
+    float field_0x10;
+    float field_0x14;
+    br_vector3 field_0x18;
+    br_vector3 field_0x24;
+    br_matrix34 field_0x30;
+    undefined flags;
+    undefined field_0x61[3];
+} tPHIL_queued_object_info;
+
+typedef union {
+    struct {
+        tPHIL_queued_object_info _field_0x0;
+        undefined _field_0x64;
+        tPHIL_queued_header headers[100];
+    };
+    struct {
+        tPHIL_queued_object_info objects[25];
+    };
+} tPHIL_queued_objects;
+
+typedef struct {
+    tPhysics_object* object;
+    undefined2 field_0x4;
+    undefined field_0x6[0x2];
+    undefined4 field_0x8;
+    float field_0xc;
+    float field_0x10;
+    float field_0x14;
+    br_vector3 field_0x18;
+    br_vector3 field_0x24;
+    br_matrix34 field_0x30;
+    undefined flags;
+    undefined field_0x61[3];
+} tQueued_object_info;
+
+typedef struct {
+    undefined field_0x0[0x8];
+    tPhysics_object* collision_object;
+    undefined field_0xc[0xd0];
+    float field_0xdc;
+    float field_0xe0;
+    undefined field_0xe4[0x20];
+} tCrush_info;
+
+typedef struct {
+    tCrush_info* crush_infos;
+    int capacity;
+    undefined4 field_0x8;
+} tCrush_info_buffer;
+
+typedef struct {
+    int count;
+    br_vector3 vectors[4];
+    br_vector3 field_0x34;
+    float field_0x40;
+    br_vector3 field_0x44;
+    undefined4 field_0x50;
+} tCar_crush;
+
+typedef struct {
+    tU8 count;
+    undefined field_0x1;
+    tCompressed_vector3 vectors[4];
+    tU16 field_0x1a;
+    tCompressed_vector3 field_0x1c;
+    undefined field_0x22[2];
+    undefined4 field_0x24;
+} tCompressed_car_crush;
+
+typedef struct {
+    tCar_spec* car_spec;
+    int count;
+    tCar_crush items[4];
+} tCrush_list_item;
+
+typedef struct {
+    int count;
+    undefined field_0x4[0x30];
+    float field_0x34;
+    br_vector3 field_0x38;
+} tQueued_drone_crush_item;
+
+typedef struct {
+    undefined4* field_0x0;
+    int count;
+    tQueued_drone_crush_item items[2];
+} tQueued_drone_crush;
+
+typedef struct {
+    tU32 time;
+    br_vector3* pos_origin;
+    br_vector3* pos_victim;
+    br_actor* actor;
+    undefined4 field_0x10;
+    br_material* material;
+    float field_0x18;
+    float field_0x1c;
+    tCar_spec* car;
+    undefined4 field_0x24;
+} tRepulse_link;
+
+typedef struct {
+    tU32 min_time_between;
+    tU32 max_time_between;
+    float min_walk_speed_factor;
+    float max_walk_speed_factor;
+    br_angle max_random_angle;
+    tU8 padding_0x12[2];
+} tPed_movement_spec;
+
+typedef struct {
+    br_vector3 field_0x00;
+    br_vector3 field_0x0c;
+    undefined field_0x18;
+    undefined field_0x19;
+    undefined field_0x1a;
+    undefined field_0x1b[0x1b-0x1a];
+    const tPed_anim_seq* field_0x1c;
+    undefined field_0x20[1];
+    undefined field_0x21;
+    undefined field_0x22[1];
+    undefined field_0x23[10];
+    undefined field_0x2d[1];
+    undefined2 field_0x2e;
+    br_vector3 field_0x30;
+    br_vector3 field_0x3c;
+    br_vector3 field_0x48;
+    br_vector3 field_0x54;
+    br_vector3 field_0x60;
+    tU32 field_0x6c;
+    tU32 field_0x70;
+    tU32 field_0x74;
+    tU32 field_0x78;
+    tU32 next_turn_time;
+    undefined4 field_0x80;
+    tU32 field_0x84;
+    tU32 field_0x88;
+    tU32 field_0x8c;
+    tU32 field_0x90;
+    tU32 field_0x94;
+    int field_0x98;
+    undefined4 field_0x9c;
+    int field_0xa0;
+    br_vector3 field_0xa4;
+    tPed_face_cache_0x34* field_0xb0;
+    tPedestrian* field_0xb4;
+    float field_0xb8;
+    undefined field_0xbc[0x4];
+    tCar_spec* field_0xc0;
+    int field_0xc4;
+    tS16 field_0xc8;
+    undefined field_0xca;
+    undefined field_0xcb[1];
+    br_vector3 field_0xcc;
+    br_vector3 field_0xd8;
+    br_vector3 field_0xe4;
+    br_vector3 field_0xf0;
+    br_vector3 field_0xfc;
+    br_vector3 field_0x108;
+    undefined field_0x114[0x124-0x114];
+    float field_0x124;
+    float field_0x128;
+} tPed_cache_006944c0;
+
+typedef struct {
+    undefined field_0x0[0x50];
+} tPed_face_cache_0x50;
+
+typedef struct tPed_face_cache_0x34 {
+    tPed_face_cache_0x50* field_0x0;
+    undefined field_0x4;
+    tU8 count;
+    undefined field_0x6;
+    undefined field_0x7;
+    undefined4 field_0x8;
+    struct tPed_face_cache_0x34* next;
+    struct tPed_face_cache_0x34* prev;
+    tPedestrian* field_0x14;
+    br_bounds3* field_0x18;
+    undefined field_0x1c[0x14];
+    tFace_ref* field_0x30;
+} tPed_face_cache_0x34;
+
+typedef struct {
+    tU8 flags;
+    tU8 max_count;
+    tU8 model_count;
+    undefined field_0x3;
+    float min_force;
+    float instance_force;
+    br_model* models[3];
+} tPed_giblet_size_spec;
+
+typedef struct {
+    char name[16];
+} tPed_group_member_spec;
+
+typedef struct {
+    int count;
+    tPed_group_member_spec *members;
+} tPed_group_spec;
+
+typedef struct {
+    tPedestrian* ped;
+    br_actor* actors[7];
+    undefined4 field_0x20;
+    undefined4 field_0x24;
+    tU32 field_0x28;
+    br_vector3 field_0x2c[5];
+    tCar_spec* field_0x68;
+} tNapalm_bolt;
+
+typedef struct {
+    tU8 flags;
+    undefined field_0x1;
+    undefined field_0x2;
+    undefined field_0x3;
+    br_material* material;
+} tRace_spec_exclusion_material;
+
+typedef struct {
+    tU8 count_exclusion_materials;
+    tU8 count_exception_materials;
+    tU8 exclusions_ok_when_scared;
+    undefined field8_0x17;
+    tRace_spec_exclusion_material *exclusion_materials;
+    br_material **exception_materials;
+} tRace_ped_exclusion_spec;
+
+typedef struct {
+    tPed_movement_spec* movement;
+    tPed_group_spec* group;
+    br_material* spawn_material;
+    float density; /* peds per 100 square meters */
+    float field_0x10;
+    tRace_ped_exclusion_spec exclusion;
+} tRace_ped_spec;
+
+typedef struct {
+    br_model* models[2];
+} tPed_peeps_bone_models;
+
+typedef struct {
+    tPed_peeps_bone_models models[4];
+    br_vector3 field_0x20;
+    br_vector3 field_0x2c;
+    tPhysics_joint* hinge;
+} tPed_personality_bone;
+
+typedef enum {
+    ePed_personality_floating = -1,
+    ePed_personality_grounded = 0,
+} tPed_personality_move_grounding_mode;
+
+typedef struct {
+    tPed_personality_move_grounding_mode grounding_mode;
+    float grounding_offset;
+    float scale_factor;
+} tPed_personality_move;
+
+typedef struct {
+    struct {
+        tU16 count_sounds;
+        tU16 sounds[5];
+    } sounds[11];
+} tPed_personality_sounds;
+
+typedef struct tPed_personality {
+    char name[32];
+    undefined field_0x20[0x8];
+    tPed_form* form;
+    tPed_personality_bone* bones;
+    tPed_personality_move* moves;
+    br_bounds3 bb;
+    float M;
+    float jump_height;
+    br_vector3 centre_of_mass;
+    float radius;
+    tPed_personality_sounds* sounds;
+} tPed_personality;
+
+typedef struct {
+    tPed_personality* personality;
+    tS8 field_0x4;
+    undefined field_0x5;
+    undefined field_0x6;
+    tS8 field_0x7;
+    tS8 field_0x8;
+    tU8 field_0x9;
+    undefined field_0xa;
+    undefined field_0xb;
+    undefined4 field_0xc;
+    undefined4 field_0x10;
+    undefined4 field_0x14;
+    undefined4 field_0x18;
+    undefined2 field_0x1c;
+    undefined2 field_0x1e;
+    undefined2 field_0x20;
+    undefined field_0x22[0x2];
+    undefined4 field_0x24;
+    undefined4 field_0x28;
+    br_matrix34 field_0x2c;
+    br_matrix34 field_0x5c;
+    br_matrix34 field_0x8c;
+    tPed_morph* field_0xbc;
+    br_vector3 field_0xc0;
+    br_vector3 field_0xcc;
+    br_vector3 field_0xd8;
+    tPedestrian* ped;
+    br_matrix34* field_0xe8;
+} tPed_character_instance;
+
+typedef enum {
+    ePed_action_walking = 0,
+    ePed_action_running = 1,
+    ePed_action_panicking = 2,
+    ePed_action_falling = 3,
+    ePed_action_getting_up = 4,
+    ePed_action_impacting = 5,
+    ePed_action_dead = 6,
+} tPed_action;
+
+typedef struct tPedestrian {
+    tPed_character_instance* character;
+    tS8 hit_points;
+    undefined field_0x05;
+    undefined2 field_0x06;
+    tU16 flags;
+    undefined field_0x0a;
+    undefined field_0x0b;
+    tPed_cache_006944c0* field_0x0c;
+    tPed_action action;
+    tPed_movement_spec* movement_spec;
+    tRace_ped_exclusion_spec* exclusion_spec;
+    br_vector3 pos;
+    tU32 field_0x28;
+    undefined field_0x2c[0x4c - 0x2c];
+    float speed_factor;
+    tPedestrian* next;
+} tPedestrian;
+
+typedef struct tPed_anim_seq {
+    tU8 count;
+    tU8 poses[];
+} tPed_anim_seq;
+
+typedef struct tRace_pedestrian {
+    undefined field_0x0[228];
+    tPedestrian* ped;
+    undefined field_0xe8[88];
+} tRace_pedestrian;
+
+typedef struct {
+    br_vector3 points[4];
+} tQuad;
+
+typedef struct {
+    br_scalar forward_acceleration;
+    br_scalar reverse_acceleration;
+    br_scalar forward_resistance;
+    br_scalar reverse_resistance;
+    tU32 pause_at_top;
+} tJoint_translation_params;
+
+typedef struct tNon_car_spec {
+    int index;
+    undefined field_0x4[4];
+    tPhysics_object* collision_info;
+    tDriver driver;
+    br_actor* actor;
+    undefined field_0x14[4];
+    br_scalar break_off_radians_squared;
+    undefined field_0x1c[80];
+    int count_shrapnel_materials;
+    undefined field_0x70[16];
+    tS16 car_ID;
+    undefined field_0x82[2];
+    br_material* shrapnel_materials[3];
+    undefined field_0x90[60];
+    float free_mass;
+    float attached_mass;
+    float min_torque_squared;
+    float snap_off_cosine;
+    float tumble_factor;
+    float tumble_threshold; /* m/s */
+    br_vector3 I_over_M;
+    tPhysics_joint* field_0xf0;
+    tJoint_translation_params* translation_parameters;
+    tU8 field_0xf8[4];
+    tU8 field_0xfc;
+    tU8 number_of_pushes;
+    tU32 flags;
+} tNon_car_spec;
+
+typedef struct {
+    char productName[80];
+    size_t count_buttons;
+    int buttons[32]; /* index if available, -1 if not */
+    int field_0xd4;
+    float field_0xd8;
+    float field_0xdc;
+    int field_0xe0; /* float or int. init=0 */
+    int field_0xe4; /* init = 50*/
+    int field_0xe8; /* float or int. init=0 */
+} tButtonJoystickInfo;
+
+typedef struct tHeadup_text {
+    char text[40];
+    undefined field_0x28[0x38 - 0x28];
+    struct tHeadup_text* next;
+} tHeadup_text;
+
+typedef struct {
+    tHeadup_text* texts;
+    tHeadup_text* field_0x4;
+    int count;
+    int pos_last_add;
+    int field_0x10;
+    int field_0x14;
+    tHeadup_text* text_last_add;
+} tHeadup_text_buffer;
+
+typedef struct {
+    int timer_increments[3];
+    int count_quads;
+    tQuad quads[4];
+    br_vector3 normals[4];
+    br_vector3 pos;
+    br_vector2 map_position;
+} tRace_checkpoint_spec;
+
+typedef struct {
+    int index;
+    int net_player_index; /* FIXME: order correct? */
+    int ranking; /* FIXME: order correct? */
+    tCar_spec* car_spec;
+} tOpp_spec;
+
+typedef struct {
+    float car_wall_friction;
+    float tyre_road_friction;
+    float down_force;
+    float bumpiness;
+    int tyre_noise_index;
+    int crash_noise_index;
+    int scrape_noise_index;
+    float sparkiness;
+    int smoke_type; /* room for expansion */
+    br_material* skid_mark_material;
+} tMaterial_modifiers;
+
+typedef struct {
+    br_vector3 pos;
+    float yaw;
+} tNet_starts;
+
+typedef struct {
+    int index;
+    int total_laps;
+    int check_point_count;
+    int initial_timer[3];
+    int completion_bonus[3];
+    int completion_bonus_peds[3];
+    int completion_bonus_opponents[3];
+    int completion_bonus_field_0x3c[3];
+    undefined field_0x48[72];
+    int number_of_racers;
+    int count_network_start_points;
+    tRace_list_spec* race_spec;
+    tNet_starts net_starts[24];
+    tRace_checkpoint_spec checkpoints[5];
+    undefined field_0x780[1380];
+    tOpp_spec opponent_list[30];
+    br_vector3 initial_position;
+    float initial_yaw;
+    br_matrix34 map_transformation;
+    br_pixelmap* map_image;
+    tMaterial_modifiers material_modifiers[11];
+} tRace_info;
+
+typedef enum {
+    kActionReplayCameraMode_Invalid = -1,
+    kActionReplayCameraMode_Standard = 0,
+    kActionReplayCameraMode_Panning = 1,
+    kActionReplayCameraMode_ActionTracking = 2,
+    kActionReplayCameraMode_Manual = 3,
+    kActionReplayCameraMode_Rigid = 4,
+    kActionReplayCameraMode_Peds = 5,
+    kActionReplayCameraMode_Drone = 6,
+    kActionReplayCameraMode_Reversing = 7,
+    kActionReplayCameraMode_Internal = 8,
+} tActionReplayCameraMode;
+
+typedef enum {
+    ePlayer_status_unknown = 0,
+    ePlayer_status_ready = 1,
+    ePlayer_status_loading = 2,
+    ePlayer_status_wrecks_gallery = 3,
+    ePlayer_status_summary = 4,
+    ePlayer_status_not_responding = 5,
+    ePlayer_status_racing = 6,
+    ePlayer_status_main_menu = 7,
+    ePlayer_status_recovering = 8,
+    ePlayer_status_action_replay = 9
+} tPlayer_status;
+
+typedef enum {
+    eNet_avail_never = 0,
+    eNet_avail_eagle = 1,
+    eNet_avail_hawk = 2,
+    eNet_avail_all = 3
+} tNet_avail;
+
+typedef struct {
+    tU8 grudge_against_player;
+} tOppo_psyche;
+
+typedef struct {
+    char name[24];
+    char abbrev_name[56];
+    char car_file_name[64];
+    char car_name[32];
+    char line1_topspeed[32];
+    char line2_weight[32];
+    char line3_acceleration[32];
+    char line4_description[120];
+    tU8* mug_shot_image_data;
+    tU8* stolen_car_image_data;
+    int mug_shot_image_data_length;
+    int stolen_car_image_data_length;
+    int car_number;
+    int strength_rating;
+    int price;
+    int picked;
+    int dead;
+    int text_chunk_count;
+    tNet_avail network_availability;
+    br_pixelmap* grid_icon_image;
+    tOppo_psyche psyche;
+    undefined field_0x1b9[3];
+    tText_chunk* text_chunks;
+} tOpponent;
+
+typedef enum {
+    eNet_game_type_fight_to_death = 0,
+    eNet_game_type_1 = 1, /* FIXME */
+    eNet_game_type_2 = 2, /* FIXME */
+    eNet_game_type_checkpoint = 3,
+    eNet_game_type_4 = 4, /* FIXME */
+    eNet_game_type_5 = 5, /* FIXME */
+    eNet_game_type_6 = 6, /* FIXME */
+    eNet_game_type_foxy = 7
+} tNet_game_type;
+
+typedef struct {
+    char addr[16]; /* struct sockaddr addr; */
+} tPD_net_player_info;
+
+typedef struct {
+    char addr[16]; /* struct sockaddr addr; */
+    tU32 last_response;
+} tPD_net_game_info;
+
+typedef enum {
+    eNet_game_XXXXX = -1, /* FIXE: remove eNet_game_XXXXX and add real stages */
+    eNet_game_stage0 = 0, /* FIXE: remove eNet_game_stage0 and add real stages */
+    eNet_game_playing = 2,
+} tNet_game_stage;
+
+typedef struct {
+    tNet_game_stage stage;
+} tNet_game_status;
+
+typedef struct tNet_game_details {
+    tPD_net_player_info pd_net_info;
+    undefined4 field_0x10;
+    char field_0x14[28];
+    tPlayer_ID host_ID;
+    int num_players;
+    int start_race;
+    int no_races_yet;
+    tNet_game_status status;
+    tNet_game_options options;
+    tNet_game_type type;
+} tNet_game_details;
+
+typedef struct {
+    tNet_game_details* game;
+    tU32 time;
+} tJoinable_game;
+
+typedef struct {
+    tPD_net_player_info pd_net_info;
+    tU32 this_players_time_stamp;
+    tU32 last_heard_from_him;
+    tU32 reposition_time;
+    int last_waste_message;
+    int host;
+    tPlayer_ID ID;
+    char player_name[32];
+    tPlayer_status player_status;
+    int car_index;
+    int grid_index;
+    int grid_position_set;
+    undefined field_0x58[4];
+    int opponent_list_index;
+    undefined field_0x60[4];
+    int score2;
+    int credits;
+    int wasted;
+    int wasteage_attributed;
+    undefined field_0x74[4];
+    undefined field_0x78[4];
+    int field_0x7c;
+    int field_0x80;
+    undefined field_0x84[4];
+    int field_0x88;
+    int next_car_index;
+    int score;
+    undefined field_0x94[4];
+    struct br_matrix34 initial_position;
+    struct tCar_spec * car;
+    tNet_message* field_0xcc;
+    undefined field_0xd0[4];
+} tNet_game_player_info;
+
+typedef enum {
+    kDroneType_car = 0,
+    kDroneType_plane = 1,
+    kDroneType_train = 2,
+    kDroneType_chopper = 3,
+} tDrone_type;
+
+typedef struct {
+    char name[13];
+    undefined field_0xd[3];
+    tDrone_type type;
+    float M;
+    float speed;
+    float min_speed;
+    float max_speed;
+    float max_acceleration;
+    float crushability;
+    int flags;
+    struct br_vector3 center;
+    float crush_limits_front;
+    float crush_limits_back;
+    float crush_limits_left;
+    float crush_limits_right;
+    float crush_limits_bottom;
+    float crush_limits_top;
+    br_bounds3 field_0x54;
+    undefined4 field_0x6c;
+    int model_start;
+    int model_end;
+    int model_index;
+    int count_models;
+    tU8* field_0x80;
+    br_model** models;
+} tDrone_form;
+
+typedef struct tDrone_path_node_section {
+    tS16 node1;
+    tS16 node2;
+    br_vector3 field_0x04;
+    br_vector3 field_0x10;
+    float field_0x1c;
+    tU8 type;
+    tU8 field_0x21;
+    undefined field_0x22[2];
+} tDrone_path_node_section;
+
+typedef struct tDrone_path_node {
+    br_vector3 position;
+    tDrone_path_node_section sections[8];
+    tU16 count_sections;
+    tU8 field_0x12e;
+    undefined field_0x12f;
+    tS16 type;
+    undefined field_0x132[2];
+} tDrone_path_node;
+
+typedef struct tFace_ref {
+    br_material* material;
+    br_vector3 v[3];
+    br_vector2* map[3];
+    br_vector3 normal;
+    int flags;
+    br_scalar d;
+    br_actor* a;
+    tS16 g;
+    tS16 f;
+} tFace_ref;
+
+typedef struct {
+    tSmoke_column_core core;
+    int time;
+    tU32 lifetime;
+    int count;
+    int colour;
+    int whiter;
+    br_actor * flame_actor;
+    int frame_count[3];
+    br_vector3 pos;
+    float scale_x[3];
+    float scale_y[3];
+    float offset_x[3];
+    float offset_z[3];
+    tU32 smudge_timer;
+    int vertex_index;
+    int upright;
+} tSmoke_column;
+
+typedef struct {
+    br_actor* actor;
+    br_vector3 v;
+    int just_done;
+    float size;
+    float scale_x;
+} tSplash;
+
+typedef struct {
+    union {
+        br_actor* actor;
+        tPedestrian* ped;
+        tPhysics_object* phil_object;
+    } object;
+    undefined4 type;
+    float water_density;
+    br_vector3 normal;
+    float field_0x18;
+    br_bounds3 bb;
+} tReplay_splash;
+
+typedef struct {
+    br_model* model;
+    undefined field_0x4[12];
+} tFrontend_model;
+
+typedef enum {
+    eFunk_groove_type_unknown = -1,
+    eFunk_groove_type_spinny_groove = 0,
+    eFunk_groove_type_steering_groove = 1,
+    eFunk_groove_type_spinny_funk = 2,
+} tFunk_groove_type;
+
+typedef enum {
+    tFunk_groove_axis_x = 0,
+    tFunk_groove_axis_y = 1,
+    tFunk_groove_axis_z = 2,
+} tFunk_groove_axis;
+
+typedef enum {
+    tFunk_groove_reverseness_forward = 0,
+    tFunk_groove_reverseness_backward = 1,
+} tFunk_groove_reverseness;
+
+typedef enum {
+    tFunk_groove_speed_control_controlled = 0,
+    tFunk_groove_speed_control_dronespeed = 1,
+} tFunk_groove_speed_control;
+
+typedef struct {
+    tS8 type; /* tFunk_groove_type */
+    br_actor* actor;
+    union {
+        struct {
+            unsigned int reverse: 1;        /* 0: forward, 1: reverse */
+        } steering;
+        struct {
+            br_scalar omega;
+            unsigned int axis : 2;          /* 0: x, 1: y, 2: z*/
+            unsigned int speed_control : 1; /* 0: controlled, 1: dronespeed */
+            unsigned int reverse: 1;        /* 0: forward, 1: reverse */
+        } spinny;
+    };
+} tFunk_groove;
+
+typedef struct {
+    int count;
+    tFunk_groove items[10];
+} tFunk_grooves;
+
+typedef struct tDrone_spec {
+    int id;
+    tDrone_form* form;
+    tU16 field_0x8_pathnode_id;
+    tU16 field_0xa_pathnode_id;
+    tS16 field_0xc;
+    tS16 field_0xe;
+    undefined4 field_0x10;
+    undefined4 field_0x14;
+    br_vector3 field_0x18;
+    br_vector3 pos;
+    tU32 time_last_munge;
+    tU32 last_collide_check;
+    int current_state;
+    int prev_states[2];
+    tU8 field_0x44;
+    undefined field_0x45;
+    tU8 field_0x46;
+    undefined field_0x47;
+    float field_0x48;
+    float field_0x4c;
+    float field_0x50;
+    br_bounds3 field_0x54;
+    undefined4 field_0x6c;
+    float h_radius;
+    float field_0x74;
+    undefined field_0x78[96];
+    tU8 left_turn;
+    undefined field_0xd9[3];
+    tU32 field_0xdc;
+    float field_0xe0;
+    float field_0xe4;
+    float field_0xe8;
+    br_actor* actor;
+    br_actor* model_actor;
+    int field_0xf4;
+    tPhysics_object collision_info;
+    tFunk_grooves* funk_grooves;
+    undefined4 field_0x5d4;
+} tDrone_spec;
+
+typedef struct {
+    void *field_0x0;
+    tU32 field_0x4;
+    undefined4 field_0x8;
+} tRepair_animation;
+
+typedef enum {
+    eNet_message_chunk_type_netsynch = 0xe,
+    eNet_message_chunk_type_car_crush = 0x20,
+    eNet_message_chunk_type_toggle_doors = 0x2c,
+} tNet_message_chunk_type;
+
+typedef struct {
+    tU8 size;
+    tU8 type;
+} tNet_message_chunk_header;
+
+typedef struct {
+    tNet_message_chunk_header header;
+    int id;
+} tNet_message_chunk_toggle_doors;
+
+typedef struct {
+    tNet_message_chunk_header header;
+    tPlayer_ID player;
+    br_scalar full_size;
+    br_scalar grow_rate;
+    br_scalar current_size;
+} tNet_message_chunk_oil_spill;
+
+typedef struct {
+    tNet_message_chunk_header header;
+    int car_id;
+    tCompressed_car_crush car_crush;
+} tNet_message_car_crush;
+
+typedef struct {
+    int ID;
+    tU8 field_0x4;
+    undefined field_0x5[0x8 - 0x5];
+    tU32 field_0x8;
+    tCompressed_vector3 bounds_min;
+    tCompressed_vector3 bounds_max;
+} tNet_message_chunk_detach_bit;
+
+typedef struct {
+    tNet_message_chunk_header header;
+    int general_score;
+    int scores[12];
+} tNet_message_chunk_scores;
+
+typedef struct {
+    tNet_message_chunk_header header;
+} tNet_message_guaranteed;
+
+typedef struct {
+    tNet_message_chunk_header header;
+    tU8 data[];
+} tNet_message_chunk_raw;
+
+typedef struct {
+    br_actor* actor;
+    tCar_spec* car;
+    int field_0x8;
+    float field_0xc;
+} tToggled_door;
+
+typedef struct tWorld_callbacks {
+    int (C2_HOOK_FASTCALL * process_forces)(void*, float*, int arg3);
+    int (C2_HOOK_FASTCALL * process_joint_forces)(undefined4, undefined4, undefined4);
+    void (C2_HOOK_FASTCALL * new_face_list)(tPhysics_object*, undefined4 *);
+    int (C2_HOOK_FASTCALL * find_faces_in_box)(tBounds*, tFace_ref*, int, struct tWorld_callbacks*);
+    tNon_car_spec* (C2_HOOK_FASTCALL * pull_actor_from_world)(br_actor*);
+    void (C2_HOOK_FASTCALL * stop_groovidelic)(br_actor*);
+    float (C2_HOOK_FASTCALL * get_friction_from_face)(void*);
+    void (C2_HOOK_FASTCALL * activate_passive)(tPhysics_object*);
+} tWorld_callbacks;
+
+typedef struct {
+    tWorld_callbacks* world_callbacks;
+    void (C2_HOOK_FASTCALL *pre_collision)(void);
+    void (C2_HOOK_FASTCALL *post_collision)(void);
+    void (C2_HOOK_FASTCALL *changed_objects)(tPhysics_object*, undefined4);
+    int (C2_HOOK_FASTCALL *active_halted)(tPhysics_object*);
+    int (C2_HOOK_FASTCALL *passive_activated)(tPhysics_object*);
+    void* callback_0x18;
+} tPhysics_callbacks;
+
+typedef struct tSave_game {
+    tU32 magic;
+    char player_name[14];
+    char car_name[32];
+    char date[8];
+    undefined field_0x03a[24];
+    char time[8];
+    undefined field_0x05a[26];
+    tS32 races_finished[100];
+    tS32 credits;
+    tS32 skill_level;
+    tS32 game_completed;
+    tS32 number_of_cars;
+    tS32 cars[60];
+    tS32 current_car_index;
+    tS32 current_race_index;
+    tS32 is_boundary_race;
+    tS32 apo_levels[3];
+    tS32 apo_potential[3];
+} tSave_game;
+
+typedef struct tMin_message {
+    tU8 buffer[92];
+} tMin_message;
+
+typedef struct tMid_message {
+    tU8 buffer[132];
+} tMid_message;
+
+typedef struct tMax_message {
+    tU8 buffer[516];
+} tMax_message;
+
+typedef struct {
+    tNet_message* message;
+    undefined4 send_time;
+    undefined4 next_resend_time;
+    tU32 resend_period;
+    undefined4 recieved;
+    undefined pd_address[16];
+    tPlayer_ID local_id;
+    tU32 (C2_HOOK_FASTCALL*NotifyFail)(tU32 time, tNet_message* pMessage);
+    undefined2 field_0x2c;
+    undefined field_0x2e[2];
+    undefined4 field_0x30;
+} tGuaranteed_message;
+
+typedef struct {
+    tNet_message_chunk_header header;
+    tS8 mine_index;
+    undefined field_0x3;
+    undefined field_0x4;
+    undefined field_0x5;
+    undefined field_0x6[0x8-0x6];
+    tS32 field_0x8;
+    tU8 object_hierarchy[];
+} tNet_message_chunk_mine_explode;
+
+typedef union {
+    tNet_message_chunk_raw raw;
+    tNet_message_chunk_scores scores; /* type = 0x18 */
+    tNet_message_chunk_oil_spill oil_spill; /* type = 0x1f*/
+    tNet_message_car_crush car_crush; /* type = 0x20 */
+    tNet_message_chunk_toggle_doors toggle_doors; /* type = 0x2c */
+    tNet_message_chunk_mine_explode mine_explode; /* type = 0x31 */
+    tNet_message_chunk_detach_bit detach_bit; /* type = 0x33 */
+} tNet_message_chunk;
+
+typedef struct {
+    undefined4 field_0x0;
+    undefined4 field_0x4;
+    undefined4 field_0x8;
+    undefined4 field_0xc;
+    undefined4 field_0x10;
+    undefined2 field_0x14;
+    undefined2 field_0x16;
+} tNet_message_header;
+
+typedef struct {
+    tNet_message_guaranteed header;
+    tNet_message_chunk contents;
+} tNet_guaranteed_body;
+
+typedef struct tNet_message {
+    tNet_message_header header;
+    union {
+        tNet_message_chunk contents;
+        tNet_guaranteed_body guaranteed;
+    };
+} tNet_message;
+
+typedef struct tNet_message_memory {
+    struct tNet_message_memory* next;
+    tNet_message message;
+} tNet_message_memory;
+
+enum {
+    kMiscString_ShadowNone = 104,
+    kMiscString_ShadowUsOnly = 105,
+    kMiscString_ShadowUsAndOpponents = 106,
+    kMiscString_ShadowEveryone = 107,
+};
+
+enum {
+    eMiscString_timer_frozen = 1,
+    eMiscString_minimap_on = 2,
+    eMiscString_minimap_off = 3,
+    eMiscString_repairing_for_free = 4,
+    eMiscString_repair_cost_colon = 5,
+    eMiscString_recovery_cost_colon = 7,
+    eMiscString_credits = 12,
+    eMiscString_credit = 13,
+    eMiscString_lost_credits_prefix = 14,
+    eMiscString_credits_gained = 16,
+    eMiscString_credits_lost = 17,
+    eMiscString_kills = 18,
+    eMiscString_wasted = 19,
+    eMiscString_lap = 20,
+    eMiscString_cp = 21,
+    eMiscString_completion_bonus_colon = 22,
+    eMiscString_time_bonus_colon = 23,
+    eMiscString_action_replay_unavailable = 37,
+    eMiscString_instant_repair = 41,
+    eMiscString_final_lap = 42,
+    eMiscString_wrong_checkpoint = 43,
+    eMiscString_bad_boy = 44,
+    eMiscString_credit_fine = 45,
+    eMiscString_credits_abbrev = 47,
+    eMiscString_recovering_for_free = 48,
+    eMiscString_has_joined_the_game = 58,
+    eMiscString_driven_to_destruction = 59,
+    eMiscString_car_crusher = 60,
+    eMiscString_smashy_things = 61,
+    eMiscString_checkpoint_stampede = 62,
+    eMiscString_sudden_death = 63,
+    eMiscString_lap_me = 64,
+    eMiscString_curse_of_the_vampire = 65,
+    eMiscString_fox_n_hounds = 66,
+    eMiscString_starting = 68,
+    eMiscString_ready = 69,
+    eMiscString_playing = 70,
+    eMiscString_closed = 71,
+    eMiscString_open = 72,
+    eMiscString_status_unknown = 77,
+    eMiscString_status_ready = 78,
+    eMiscString_status_loading = 79,
+    eMiscString_status_in_wrecks_galleray = 80,
+    eMiscString_status_in_race_summary = 81,
+    eMiscString_status_not_responding = 82,
+    eMiscString_status_racing = 83,
+    eMiscString_status_in_main_menu = 84,
+    eMiscString_status_recovering = 85,
+    eMiscString_status_in_action_replay = 86,
+    eMiscString_host_abandoned_race = 87,
+    eMiscString_host = 88,
+    eMiscString_cant_afford_to_recover = 96,
+    eMiscString_recovery_in = 97,
+    eMiscString_second = 98,
+    eMiscString_seconds = 99,
+    eMiscString_track_appears_very_quickly = 100,
+    eMiscString_track_appears_quite_quickly = 101,
+    eMiscString_track_appears_quite_late = 102,
+    eMiscString_track_appears_very_late = 103,
+    eMiscString_sky_texture_on = 108,
+    eMiscString_sky_texture_off = 109,
+    eMiscString_no_sky_texture_for_this_race = 110,
+    eMiscString_depth_cueing_on = 111,
+    eMiscString_depth_cueing_off = 112,
+    eMiscString_there_is_no_depth_cueing_for_this_race = 113,
+    eMiscString_yon_increased_to_D = 114,
+    eMiscString_yon_decreased_to_D = 115,
+    eMiscString_fewest_sounds = 116,
+    eMiscString_partial_sound = 117,
+    eMiscString_all_sounds = 118,
+    eMiscString_car_simplification_level_D = 119,
+    eMiscString_accessories_on = 120,
+    eMiscString_accessories_off = 121,
+    eMiscString_net_games_always_accessorized = 124,
+    eMiscString_recovery_cancelled = 125,
+    eMiscString_task_switched = 139,
+    eMiscString_driven_to_destruction_description = 194,
+    eMiscString_car_crusher_description = 195,
+    eMiscString_smashy_things_description = 196,
+    eMiscString_checkpoint_stampede_description = 197,
+    eMiscString_sudden_death_description = 198,
+    eMiscString_lap_me_description = 199,
+    eMiscString_curse_of_the_vampire_description = 200,
+    eMiscString_fox_n_hounds_description = 201,
+    eMiscString_game_type = 207,
+    eMiscString_player = 210,
+    eMiscString_played = 211,
+    eMiscString_won = 212,
+    eMiscString_score = 213,
+    eMiscString_fox_cant_do_that = 214,
+    eMiscString_watching = 217,
+    eMiscString_race_leader = 218,
+    eMiscString_message_sent = 226,
+    eMiscString_enter_message = 226,
+    eMiscString_too_late_to_cancel = 242,
+    eMiscString_could_not_find_carmageddon_cd = 243,
+    eMiscString_no_target_to_lock_onto = 250,
+    eMiscString_locked_onto = 251,
+    eMiscString_target_lock_off = 252,
+    eMiscString_checkpoint_finder_turned_off = 254,
+    eMiscString_checkpoint_finder_turned_on = 255,
+    eMiscString_standard_cam = 262,
+    eMiscString_panning_cam = 263,
+    eMiscString_action_tracking_cam = 264,
+    eMiscString_manual_cam = 265,
+    eMiscString_rigid_cam = 266,
+    eMiscString_ped_cam = 267,
+    eMiscString_drone_cam = 268,
+    eMiscString_reversing_cam = 269,
+    eMiscString_internal_cam = 270,
+    eMiscString_camera = 271,
+    eMiscString_pedestrians_are_calm_now = 274,
+    eMiscString_targets = 276,
+    eMiscString_initialising_movie = 277,
+    eMiscString_recording_movie = 279,
+    eMiscString_please_wait = 280,
+    eMiscString_post_processing = 282,
+    eMiscString_movie_error = 284,
+    eMiscString_aborting = 285,
+    eMiscString_press_return_to_commit_suicide = 286,
+    eMiscString_no_HUD = 287,
+    eMiscString_minimal_HUD = 288,
+    eMiscString_full_HUD = 289,
+    eMiscString_game_auto_saved = 290,
+    eMiscString_dream_on = 291,
+    eMiscString_not_wasted = 292,
+    eMiscString_already_have_it = 292,
+
+    eMiscString_netgame_stage_start = eMiscString_starting,
+    eMiscString_network_type_start = eMiscString_driven_to_destruction,
+    eMiscString_network_type_description_start = eMiscString_driven_to_destruction_description,
+    eMiscString_player_status_start = eMiscString_status_unknown,
+};
+
+enum {
+    kBoner_mem_type_remap = 0x81,
+    kBoner_mem_type_sequence = 0x82,
+    kMem_nodes_array = 0x83,
+    kMem_sections_array = 0x84,
+    kBoner_mem_type_frame_2 = 0x85,
+    kMem_columns_z = 0x86,
+    kMem_columns_x = 0x87,
+    kMem_non_car_list = 0x88,
+    kMem_simp_level = 0x89,
+    kMem_crush_data = 0x8a,
+    kMem_drone_collision_stuff = 0x8b,
+    kBoner_mem_type_form = 0x8c,
+    kBoner_mem_type_actor_sets = 0x8d,
+    kBoner_mem_type_simple_phys = 0x8e,
+    kBoner_mem_type_boned_phys = 0x8f,
+    kBoner_mem_type_bone_info = 0x90,
+    kBoner_mem_type_boned_coll = 0x91,
+    kBoner_mem_type_boned_coll_obj = 0x92,
+    kBoner_mem_type_simple_coll_obj = 0x93,
+    kBoner_mem_type_actor_ptrs = 0x94,
+    kBoner_mem_type_moves = 0x95,
+    kBoner_mem_type_stored_ptrs = 0x96,
+    kBoner_mem_type_stored = 0x97,
+    kBoner_mem_type_person = 0x98,
+    kBoner_mem_type_person_parts = 0x99,
+    kBoner_mem_type_person_moves = 0x9a,
+    kBoner_mem_type_char_instance = 0x9b,
+    kMem_boner_type_frames = 0x9c,
+    kMem_smash_levels = 0x9d,
+    kMem_smash_side_effects = 0x9e,
+    kMem_damage_clauses = 0x9f,
+    kMem_undamaged_vertices = 0xa0,
+    kMem_race_text_chunk = 0xa1,
+    kMem_race_text_str = 0xa2,
+    kMem_oppo_array = 0xa3,
+    kMem_oppo_text_chunk = 0xa4,
+    kMem_oppo_text_str = 0xa5,
+    kMem_br_font = 0xa6,
+    kMem_br_font_wid = 0xa7,
+    kMem_br_font_enc = 0xa8,
+    kMem_br_font_glyphs = 0xa9,
+    kMem_oppo_car_spec = 0xaa,
+    kMem_misc_string = 0xab,
+    kMem_mac_host_buffer_1 = 0xac,
+    kMem_mac_host_buffer_2 = 0xad,
+    kMem_mac_net_details = 0xae,
+    kMem_back_pixels = 0xaf,
+    kMem_quit_vfy_pixels = 0xb0,
+    kMem_quit_vfy_pal = 0xb1,
+    kMem_net_min_messages = 0xb2,
+    kMem_net_mid_messages = 0xb3,
+    kMem_net_max_messages = 0xb4,
+    kMem_net_pid_details = 0xb5,
+    kMem_net_car_spec = 0xb6,
+    kMem_dynamic_message = 0xb7,
+    kMem_player_list_join = 0xb8,
+    kMem_player_list_leave = 0xb9,
+    kMem_oppo_new_nodes = 0xba,
+    kMem_oppo_new_sections = 0xbb,
+    kMem_drone_model_dup = 0xbc,
+    kMem_oppo_bit_per_node = 0xbd,
+    kMem_smash_poly_array = 0xbe,
+    kMem_smash_vertex_array = 0xbf,
+    kMem_ped_array_stain = 0xc0,
+    kMem_ped_array = 0xc1,
+    kMem_ped_instructions = 0xc2,
+    kMem_ped_new_instruc = 0xc3,
+    kMem_pipe_model_geometry = 0xc4,
+    kMem_powerup_array = 0xc5,
+    kMem_powerup_parms = 0xc6,
+    kMem_noisey_parts = 0xc7,
+    kMem_sound_generator = 0xc8,
+    kMem_pratcam_flic_array = 0xc9,
+    kMem_pratcam_flic_data = 0xca,
+    kMem_pratcam_sequence_array = 0xcb,
+    kMem_pratcam_pixelmap = 0xcc,
+    kMem_video_pixels = 0xcd,
+    kMem_funk_prox_array = 0xce,
+    kMem_new_mat_id = 0xcf,
+    kMem_packed_file = 0xd0,
+    kMem_stored_smash = 0xd1,
+    kMem_special_volume = 0xd2,
+    kMem_special_screen = 0xd3,
+    kMem_saved_gam = 0xd5,
+    kMem_new_save_game = 0xd6,
+    kMem_stor_space_table = 0xd7,
+    kMem_boner = 0xd8,
+    kMem_ped_face_cache = 0xd9,
+    kMem_misc_poly_ped = 0xda,
+    kMem_physics_joint = 0xdb,
+    kMem_funk_spec = 0xdc,
+    kMem_groove_spec = 0xdd,
+    kMem_non_car_spec = 0xde,
+    kMem_S3_scan_name = 0xdf,
+    kMem_S3_sound_header = 0xe0,
+    kMem_S3_sample = 0xe1,
+    kMem_S3_mac_channel = 0xe2,
+    kMem_S3_mac_path = 0xe3,
+    kMem_S3_sentinel = 0xe4,
+    kMem_S3_outlet = 0xe5,
+    kMem_S3_channel_00593a58 = 0xe6,
+    kMem_S3_descriptor = 0xe7,
+    kMem_S3_reverse_buffer = 0xe8,
+    kMem_S3_source = 0xe9,
+    kMem_drone_specs = 0xea,
+    kMem_drone_paths = 0xeb,
+    kMem_S3_DOS_SOS_patch = 0xec,
+    kMem_S3_DOS_SOS_song_structure = 0xed,
+    kMem_S3_DOS_SOS_song_data = 0xee,
+    kMem_S3_Windows_95_load_WAV_file = 0xef,
+    kMem_S3_Windows_95_create_temp_buffer_space_to_reverse_sample = 0xf0,
+    kMem_S3_Windows_95_path = 0xf1,
+    kMem_drone_funk_groove = 0xf2,
+    kMem_abuse_text = 0xf3,
+    kMem_action_replay_buffer = 0xf4,
+    kMem_master_crush_data = 0xf5,
+    kMem_collision_object = 0xf6,
+    kMem_collision_shape = 0xf7,
+    kMem_smashable_info = 0xf8,
+    kMem_smashable_env_info = 0xf9,
+    kMem_detached_bit_non_car_spec = 0xfa,
+    kMem_cloned_block = 0xfb,
+    kMem_explosion_data = 0xfc,
+    kMem_misc = 0xfd,
+    kMem_exception = 0xfe,
+};
+
+typedef enum {
+    ePhysicsError_Ok = 0,
+    ePhysicsError_UnknownShapeType = 1,
+    ePhysicsError_WireFrameHasNoPoints = 2,
+    ePhysicsError_PolyhedronHasNoPoints = 3,
+    ePhysicsError_UnknownHingeType = 5,
+    ePhysicsError_OutOfMemory = 6,
+    ePhysicsError_InsufficientSizedBuffer = 12
+} tPhysicsError;
+
+// Function callback for automatic SRE project generation
+typedef void C2_HOOK_FASTCALL tPhysicsError_cbfn(tPhysicsError, const char* pMessage);
+
+enum {
+    // FIXME: add all c2 FatalError types
+    kFatalError_InvalidScreenDepthSetting = 0x00,
+    kFatalError_AllocateOffScreenBuffer = 0x01,
+    kFatalError_AllocateZBuffer = 0x02,
+    kFatalError_CouldNotAllocateRootActor = 0x03,
+    kFatalError_CannotAllocateCamera = 0x05,
+    kFatalError_CannotAllocateSelf = 0x06,
+    kFatalError_FailToOpenGeneralSettings = 0x08,
+    kFatalError_CouldNotOpenKeyMapFile = 0x09,
+    kFatalError_unableToFindRequiredPalette = 0x0a,
+    kFatalError_CouldNotOpenFlicFile_S = 0x0d,
+    kFatalError_FlicFileWasNot8BitsDeep_S = 0x0f,
+    kFatalError_CouldNotAscertainFrameRateForFlicFile = 0x10,
+    kFatalError_CannotLoadFontImage_S = 0x14,
+    kFatalError_CannotLoadFontWidthTable_S = 0x15,
+    kFatalError_ScreenWidthHeightDoesNotMatchGrafData = 0x18,
+    kFatalError_CannotLoadCarResolutionIndependentFile = 0x19,
+    kFatalError_CannotLoadDamageImage = 0x1b,
+    kFatalError_CannotLoadSpeedoImage = 0x23,
+    kFatalError_CannotOpenRacesFile = 0x32,
+    kFatalError_CannotOpenOpponentsFile = 0x36,
+    kFatalError_OpponentCountMismatchesActualNumberOfOpponents = 0x37,
+    kFatalError_FunkotronicFile = 0x3e,
+    kFatalError_ErrorWithinGroovidelicFile = 0x3f,
+    kFatalError_CannotFindMainMaterialInFunkotronicFile_S = 0x40,
+    kFatalError_CannotFindActorReferencedInGroovidelicFile_S = 0x41,
+    kFatalError_CannotFindAnimationFramePixelmapReferencedInFunkotronicFile = 0x42,
+    kFatalError_InsufficientPixelmapSlots = 0x43,
+    kFatalError_InsufficientShadeTableSlots = 0x44,
+    kFatalError_InsufficientMaterialSlots = 0x45,
+    kFatalError_InsufficientModelSlots = 0x46,
+    kFatalError_CannotLoadCarActor = 0x47,
+    kFatalError_DefinedRefNumOfControlledGoorvFunkOutOfRange = 0x48,
+    kFatalError_UsedRefNumOfControlledGroovidelicFunkotronicIsOutOfRange = 0x49,
+    kFatalError_CantLoadPixelmapFile_S = 0x4f,
+    kFatalError_CannotLoadShadeTableFileOrItIsEmpty_S = 0x50,
+    kFatalError_CannotLoadMaterialFileOrItIsEmpty_S = 0x51,
+    kFatalError_CannotLoadModelFileOrItIsEmpty_S = 0x52,
+    kFatalError_CannotLoadDepthCueShadeTable = 0x57,
+    kFatalError_CannotFindSkyMaterial_S = 0x59,
+    kFatalError_UnknownDamageType_S = 0x5b,
+    kFatalError_ConfusedByFormatOfConditionalDamageInCarFile = 0x5c,
+    kFatalError_TooManyExtraPointsForCarIndex_S = 0x5d,
+    kFatalError_OOM_S = 0x5e,
+    kFatalError_CannotOpenTEXT_TXT = 0x63,
+    kFatalError_CannotFindFlicReferencedTranslation_S = 0x65,
+    kFatalError_CannotOpenHeadupsFile = 0x66,
+    kFatalError_CannotOpenCarResolutionDependentFile = 0x68,
+    kFatalError_CantOpenKeyNamesFile = 0x61,
+    kFatalError_CantOpen_S = 0x6b,
+    kFatalError_CannotLoadAGeneratedShadeTable = 0x6d,
+    kFatalError_RanOutOfFunkGrooveSlotBunches = 0x71,
+    kFatalError_FileIsCorrupted_S = 0x73,
+    kFatalError_CantFindFile_S = 0x75,
+    kFatalError_CantLoadCrushDataFile_S = 0x76,
+    kFatalError_CantLoadSmashPix_S = 0x77,
+    kFatalError_CannotFindSmashMaterial_S = 0x78,
+    kFatalError_CannotFindSmashModel_S = 0x79,
+    kFatalError_TooManyCrushLimits = 0x7a,
+    kFatalError_TooManyCrushDatas = 0x7c,
+    kFatalError_ChunkIsTooLargeToPipe = 0x7d,
+    kFatalError_CannotFindSmashActorModel_S = 0x81,
+    kFatalError_ProblemWithSpecialVolumeNumber_I = 0x82,
+    kFatalError_TooManyEnvironmentalSoundAlternatives = 0x83,
+    kFatalError_CannotFindModelReferencedInSoundGeneratorList_S = 0x84,
+    kFatalError_InsufficientSoundSlotsInStorageArea = 0x85,
+    kFatalError_BonerError_UnableToOpenFile_S = 0x86,
+    kFatalError_BonerError_UnableToAllocateMemory = 0x87,
+    kFatalError_BonerError_UnableToLinkForm_to_personality_S = 0x88,
+    kFatalError_BonerError_UnableToFindModel_S = 0x89,
+    kFatalError_BonerError_UnableToFindBone_S = 0x8a,
+    kFatalError_BonerError_TooManyFormsLoaded = 0x8b,
+    kFatalError_BonerError_TooManyPersonalitiesLoaded = 0x8c,
+    kFatalError_BonerError_TooManyMovesLoaded = 0x8d,
+    kFatalError_BonerError_TooManyRemapsLoaded = 0x8e,
+    kFatalError_BonerError_SyntaxErrorInFormFileExpected_S = 0x8f,
+    kFatalError_BonerError_IllegalMoveID_S = 0x90,
+    kFatalError_CannotOpenPedFile_S = 0xa0,
+    kFatalError_CoreMoveMissingFor_SS = 0xa1,
+    kFatalError_BadMoveAttemptedFor_SS = 0xa2,
+    kFatalError_CyclicMoveDefinitionFor_SS = 0xa3,
+    kFatalError_CannotFindPedSpawnMaterial_S = 0xa4,
+    kFatalError_CannotMovePedIndexOutOfRangeForMaterial_S = 0xa5,
+    kFatalError_CannotGroupPedIndexOutOfRangeForMaterial_S = 0xa6,
+    kFatalError_CantFindPedTexture_S = 0xa8,
+    kFatalError_CannotFindGibletModel_S = 0xa9,
+    kFatalError_WrongCrushDataFileVersion_SDD = 0xab,
+    kFatalError_ShapeDataIsWrong = 0xad,
+    kFatalError_UnknownNonCarCommand = 0xad,
+    kFatalError_UnableToOpenDroneFileOrFileCorrupted_S = 0xaf,
+    kFatalError_DuplicatePixelmap_S = 0xb5,
+    kFatalError_FileMustStartWith_SS = 0xb0,
+    kFatalError_CantCopeWithVersionFor_SS = 0xb1,
+    kFatalError_Mysterious_SS = 0xb2,
+    kFatalError_DuplicateModel_S = 0xb3,
+    kFatalError_DuplicateMaterial_S = 0xb4,
+    kFatalError_WriteAttemptToPackedFile_S = 0xb6,
+    kFatalError_CouldNotCreateTexturesPages_S = 0xb7,
+    kFatalError_MysteriousX_SS = 0xbd,
+};
+
+typedef enum {
+    kFrontend_menu_main = 0,
+    kFrontend_menu_options = 1,
+    kFrontend_menu_wrecks = 2,
+    kFrontend_menu_netsync = 3,
+    kFrontend_menu_networksummary = 4,
+    kFrontend_menu_credits = 5,
+    kFrontend_menu_newgame = 6,
+} tFrontendMenuType;
+
+enum {
+    kPolyfont_hand_green_15pt_unlit     = 0,
+    kPolyfont_hand_green_15pt_lit       = 1,
+    kPolyfont_hand_red_15pt_unlit       = 2,
+    kPolyfont_hand_red_15pt_lit         = 3,
+    kPolyfont_serp_red_15pt_lit         = 4,
+    kPolyfont_serp_red_30pt_lit         = 5,
+    kPolyfont_serp_green_30pt_unlit     = 6,
+    kPolyfont_serp_green_30pt_lit       = 7,
+    kPolyfont_serp_green_38pt_unlit     = 8,
+    kPolyfont_serp_green_38pt_lit       = 9,
+    kPolyfont_hand_green_10pt_unlit     = 10,
+    kPolyfont_hand_green_10pt_lit       = 11,
+    kPolyfont_ingame_tiny_yellow        = 12,
+    kPolyfont_ingame_tiny_blue          = 13,
+    kPolyfont_ingame_tiny_red           = 14,
+    kPolyfont_ingame_tiny_green         = 15,
+    kPolyfont_ingame_big_timer          = 16,
+    kPolyfont_ingame_medium_red         = 17,
+    kPolyfont_ingame_medium_blue        = 18,
+    kPolyfont_ingame_medium_orange      = 19,
+    kPolyfont_ingame_medium_green       = 20,
+    kPolyfont_ingame_italic_yellow      = 21,
+    kPolyfont_ingame_italic_green       = 22,
+    kPolyfont_ingame_italic_blue        = 23,
+    kPolyfont_ingame_italic_red         = 24,
+    kPolyfont_netpos                    = 25,
+    kPolyfont_highlighter               = 26,
+};
+
+enum {
+    eSoundId_pratcam_whirr_noise = 1000,
+    eSoundId_warning_buzzer_noise = 1001,
+    eSoundId_LeftButton = 3000,
+    eSoundId_Done = 3004,
+    eSoundId_EscEsc = 3005,
+    eSoundId_Swingin = 3006,
+    eSoundId_Swingout = 3007,
+    eSoundId_CantAffordPart = 3100,
+    eSoundId_NapalmHitCrackls = 3702,
+    eSoundId_PedValium = 3801,
+    eSoundId_SmashRepair = 4550,
+    eSoundId_BendCar = 5099,
+    eSoundId_DamageRepair = 5200,
+    eSoundId_Horn = 5209,
+    eSoundId_Cop_Siren = 5350,
+    eSoundId_Explosion = 5400,
+    eSoundId_FlaskGone = 5401,
+    eSoundId_Countdown_Go = 8000,
+    eSoundId_Countdown_One = 8001,
+    eSoundId_Countdown_Two = 8002,
+    eSoundId_Countdown_Three = 8003,
+    eSoundId_Countdown_Four = 8004,
+    eSoundId_Countdown_Five = 8005,
+    eSoundId_OutOfTime2 = 8010,
+    eSoundId_RaceComplete = 8011,
+    eSoundId_Checkpoint = 8012,
+    eSoundId_WrongCheckpoint = 8013,
+    eSoundId_FinalLap = 8014,
+    eSoundId_Clap = 8015,
+    eSoundId_HeyYou = 8016,
+    eSoundId_TyreScreeching = 9000,
+
+    eSoundId_Countdown_Start = eSoundId_Countdown_Go,
+};
+
+enum {
+    eNetMsg_none = 0xff,
+};
+
+
+#endif // REC2_TYPES_H
