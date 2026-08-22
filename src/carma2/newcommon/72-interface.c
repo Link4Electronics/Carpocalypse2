@@ -901,7 +901,6 @@ int C2_HOOK_FASTCALL FRONTEND_DestroyMenu(tFrontend_spec* pFrontend) {
         BrActorRemove(gFrontend_actor->children);
     }
     for (i = 0; i < gFrontend_count_brender_items; i++) {
-
         BrMaterialRemove(gFrontend_brender_items[i].material);
         BrModelRemove(gFrontend_brender_items[i].model);
         gFrontend_brender_items[i].actor->render_style = BR_RSTYLE_NONE;
@@ -1066,15 +1065,18 @@ int C2_HOOK_FASTCALL FRONTEND_Main(tFrontend_spec* pFrontend_spec) {
             }
         }
 
-        /* Render items on top */
+        /* Draw menu item labels as simple text overlay */
         {
-            extern void carpocalypse2_DrawMenuItem(br_pixelmap* pm, int x, int y, const char* text, int hl);
+            extern void carpocalypse2_DrawText(br_pixelmap* pm, int x, int y, const char* text, br_uint_16 colour);
             for (i = 0; i < pFrontend_spec->count_items; i++) {
                 tFrontend_item_spec* item = &pFrontend_spec->items[i];
-                if (item->visible) {
-                    carpocalypse2_DrawMenuItem(gBack_screen,
-                        item->x, item->y, item->text, (i == current_item));
-                }
+                if (!item->visible) continue;
+                if (item->text[0] == '\0') continue;
+
+                carpocalypse2_DrawText(gBack_screen,
+                    item->x, item->y,
+                    item->text,
+                    i == current_item ? 0xFFFF : 0x7BDE);
             }
         }
 

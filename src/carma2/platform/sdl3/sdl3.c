@@ -823,16 +823,24 @@ void carpocalypse2_PresentFrame(void) {
 
     {
         int x, y;
-        int w = gBack_screen->width < surface->w ? gBack_screen->width : surface->w;
-        int h = gBack_screen->height < surface->h ? gBack_screen->height : surface->h;
+        int src_w = gBack_screen->width;
+        int src_h = gBack_screen->height;
+        int dst_w = surface->w;
+        int dst_h = surface->h;
+        br_uint_16* src_base = (br_uint_16*)gBack_screen->pixels;
+        int src_stride = gBack_screen->row_bytes / 2;
 
-        /* Blit RGB565 back screen → window surface (typically RGBA32).
-         * The game's renderer fills gBack_screen; we just present it. */
-        for (y = 0; y < h; y++) {
-            br_uint_16* srow = (br_uint_16*)((char*)gBack_screen->pixels + y * gBack_screen->row_bytes);
+        /* Nearest-neighbour scale from back_screen (640×480) to window size */
+        for (y = 0; y < dst_h; y++) {
             Uint32* drow = (Uint32*)((char*)surface->pixels + y * surface->pitch);
-            for (x = 0; x < w; x++) {
-                br_uint_16 px = srow[x];
+            int sy = y * src_h / dst_h;
+            if (sy >= src_h) sy = src_h - 1;
+            br_uint_16* srow = (br_uint_16*)((char*)src_base + sy * gBack_screen->row_bytes);
+
+            for (x = 0; x < dst_w; x++) {
+                int sx = x * src_w / dst_w;
+                if (sx >= src_w) sx = src_w - 1;
+                br_uint_16 px = srow[sx];
                 unsigned r = ((px >> 11) & 0x1F) << 3;
                 unsigned g = ((px >> 5) & 0x3F) << 2;
                 unsigned b = (px & 0x1F) << 3;
@@ -856,6 +864,7 @@ void carpocalypse2_ClearBackScreen(void) {
 
 static int menu_key_pressed;
 static int menu_key_value;
+static int menu_quit_requested;
 
 int carpocalypse2_PollMenuInput(int* pCurrent, int count_items) {
     SDL_Event event;
@@ -863,6 +872,7 @@ int carpocalypse2_PollMenuInput(int* pCurrent, int count_items) {
     while (SDL_PollEvent(&event)) {
         if (event.type == SDL_EVENT_QUIT) {
             menu_key_pressed = 0;
+            menu_quit_requested = 1;
             return -2; /* quit */
         }
         if (event.type == SDL_EVENT_KEY_DOWN) {
