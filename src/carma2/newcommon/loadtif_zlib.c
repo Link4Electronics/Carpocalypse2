@@ -5,6 +5,10 @@
 #include "c2_string.h"
 #include <stdio.h>
 
+#ifndef _WIN32
+extern const char* carpocalypse2_fix_path_case(const char* pPath);
+#endif
+
 // GLOBAL: CARMA2_HW 0x006631c0
 br_filesystem gZlib_filesystem = {
     "Zlib filesystem",
@@ -30,8 +34,15 @@ br_uint_32 C2_HOOK_CDECL ZlibFsGetAttributes(void) {
 
 // FUNCTION: CARMA2_HW 0x0051dc10
 void* C2_HOOK_CDECL ZlibFsOpenRead(const char* buffer, br_size_t capacity, br_mode_test_cbfn* cbfn, int* type) {
-
-    return gzopen(buffer, "rb");
+    const char* path = buffer;
+#ifndef _WIN32
+    /* Linux case-sensitivity: resolve to the actual on-disk casing. */
+    {
+        extern const char* carpocalypse2_fix_path_case(const char* pPath);
+        path = carpocalypse2_fix_path_case(buffer);
+    }
+#endif
+    return gzopen(path, "rb");
 }
 
 // FUNCTION: CARMA2_HW 0x0051dc20

@@ -825,24 +825,9 @@ void carpocalypse2_PresentFrame(void) {
         int x, y;
         int w = gBack_screen->width < surface->w ? gBack_screen->width : surface->w;
         int h = gBack_screen->height < surface->h ? gBack_screen->height : surface->h;
-        Uint32* dst = (Uint32*)surface->pixels;
-        br_uint_16* src = (br_uint_16*)gBack_screen->pixels;
-        int frame = (int)(SDL_GetTicks() / 250);
 
-        /* Render a moving colour-bar test pattern into back_screen */
-        for (y = 0; y < h; y++) {
-            for (x = 0; x < w; x++) {
-                if (frame % 2 == 0) {
-                    src[y * gBack_screen->row_bytes / 2 + x] =
-                        (br_uint_16)((x * y / 4 + frame * 32) & 0xFFFF);
-                } else {
-                    src[y * gBack_screen->row_bytes / 2 + x] =
-                        (br_uint_16)(((x + frame * 8) ^ (y + frame * 4)) * 64 & 0xFFFF);
-                }
-            }
-        }
-
-        /* Blit RGB565 → window surface (typically RGBA32) */
+        /* Blit RGB565 back screen → window surface (typically RGBA32).
+         * The game's renderer fills gBack_screen; we just present it. */
         for (y = 0; y < h; y++) {
             br_uint_16* srow = (br_uint_16*)((char*)gBack_screen->pixels + y * gBack_screen->row_bytes);
             Uint32* drow = (Uint32*)((char*)surface->pixels + y * surface->pitch);
