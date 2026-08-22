@@ -2,17 +2,29 @@
 
 #include "72-interface.h"
 
+#ifndef CARPOCALYPSE2_MATCHING
+
+static int OnePlayerSetup(tFrontend_spec* pFrontend) {
+    return 1;
+}
+
+static int MultiplayerSetup(tFrontend_spec* pFrontend) {
+    return 0;
+}
+
+static int QuitGameItem(tFrontend_spec* pFrontend) {
+    return -1;
+}
 
 // GLOBAL: CARMA2_HW 0x005a80f0
 tFrontend_spec gFrontend_MAIN = {
-#if 0 // FIXME: enable this
     "Main",
     0,
-    26,
-    MainMenuInfunc,
-    MainMenuOutfunc,
-    FRONTEND_MainMenuHandler,
-    &gFrontend_OPTIONS,
+    3,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
     0,
     0,
     0,
@@ -20,39 +32,25 @@ tFrontend_spec gFrontend_MAIN = {
     2,
     1,
     {
-        { 0x9,      OnePlayerSetup,      NULL,                          0, 17, 18, 0, 0, 0, 0, 0, 1, },
-        { 0xa,      MultiplayerSetup,    &gFrontend_NETWORK,       0, 17, 18, 0, 0, 0, 0, 1, 1, },
-        { 0x404,    temp,                NULL,                          0, 17, 18, 0, 0, 0, 0, 0, 1, },
-        { 0x403,    testUp,              NULL,                          0, 17, 18, 0, 0, 0, 0, 1, 1, },
-        { 0x404,    MainMenuSelectRace,  NULL,                          0, 17, 18, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, },
-        { 0x404,    MainMenuSelectRace,  NULL,                          0, 17, 18, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, },
-        { 0x404,    MainMenuSelectRace,  NULL,                          0, 17, 18, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, },
-        { 0x404,    MainMenuSelectRace,  NULL,                          0, 17, 18, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, },
-        { 0x403,    testDn,              NULL,                          0, 17, 18, 0, 0, 0, 0, 1, 1, },
-        { 0xf,      temp,                &gFrontend_OPTIONS,       0, 17, 18, 0, 0, 0, 0, 1, 1, },
-        { 0x402,    temp,                &gFrontend_CHANGE_CAR,    0, 17, 18, 0, 0, 0, 0, 1, 1, },
-        { 0x402,    temp,                &gFrontend_CHANGE_CAR,    0, 17, 18, 0, 0, 0, 0, 1, 1, },
-        { 0x402,    temp,                &gFrontend_CHANGE_CAR,    0, 17, 18, 0, 0, 0, 0, 1, 1, },
-        { 0x402,    temp,                &gFrontend_CHANGE_CAR,    0, 17, 18, 0, 0, 0, 0, 1, 1, },
-        { 0x402,    temp,                &gFrontend_CHANGE_CAR,    0, 17, 18, 0, 0, 0, 0, 1, 1, },
-        { 0x402,    temp,                &gFrontend_CHANGE_CAR,    0, 17, 18, 0, 0, 0, 0, 1, 1, },
-        { 0xc,      temp,                NULL,                          0, 17, 18, 0, 0, 0, 0, 0, 1, },
-        { 0x404,    temp,                NULL,                          0, 17, 18, 0, 0, 0, 0, 0, 1, },
-        { 0x404,    NewGameToggleTyping, NULL,                          0, 17, 18, 0, 0, 0, 0, 1, 1, },
-        { 0xec,     temp,                NULL,                          0, 17, 18, 0, 0, 0, 0, 0, 1, },
-        { 0x404,    temp,                NULL,                          0, 17, 18, 0, 0, 0, 0, 0, 1, },
-        { 0xe,      StartFudge,          &gFrontend_NEWGAME,       0, 17, 18, 0, 0, 0, 0, 1, 1, },
-        { 0x401,    temp,                NULL,                          0, 17, 18, 0, 0, 0, 0, 0, 1, },
-        { 0x401,    temp,                NULL,                          0, 17, 18, 0, 0, 0, 0, 0, 1, },
-        { 0xf7,     temp,                NULL,                          0, 17, 18, 0, 0, 0, 0, 0, 1, },
-        { 0x401,    temp,                NULL,                          0, 17, 18, 0, 0, 0, 0, 0, 1, },
+        { 0, OnePlayerSetup,   NULL, 0, 17, 18, 220, 180, 200, 24, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, { 0 }, "START GAME" },
+        { 0, MultiplayerSetup, NULL, 0, 17, 18, 220, 220, 200, 24, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, { 0 }, "MULTIPLAYER" },
+        { 0, QuitGameItem,     NULL, 0, 17, 18, 220, 260, 200, 24, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, { 0 }, "QUIT" },
     },
-    1,
-    {
-        { 1, 8, 6, 12, 12, 12, 19 },
-    }
-#else
-    0
-#endif
+    0,
+    { { 0 } },
+    0,
+    { { 0 } },
+    0,
+    0,
+    { { 0 } },
+    "",
+    { { 0 } },
+    0,
+    "",
+    0,
+    0,
 };
 
+#else
+tFrontend_spec gFrontend_MAIN = { 0 };
+#endif

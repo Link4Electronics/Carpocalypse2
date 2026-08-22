@@ -34,6 +34,7 @@ br_uint_32 C2_HOOK_CDECL ZlibFsGetAttributes(void) {
 
 // FUNCTION: CARMA2_HW 0x0051dc10
 void* C2_HOOK_CDECL ZlibFsOpenRead(const char* buffer, br_size_t capacity, br_mode_test_cbfn* cbfn, int* type) {
+    void* f;
     const char* path = buffer;
 #ifndef _WIN32
     /* Linux case-sensitivity: resolve to the actual on-disk casing. */
@@ -42,7 +43,27 @@ void* C2_HOOK_CDECL ZlibFsOpenRead(const char* buffer, br_size_t capacity, br_mo
         path = carpocalypse2_fix_path_case(buffer);
     }
 #endif
-    return gzopen(path, "rb");
+    f = gzopen(path, "rb");
+    if (f == NULL) {
+        return NULL;
+    }
+
+    /* Read magic bytes and call the identifier, matching BrFileOpenRead protocol. */
+    if (cbfn != NULL && type != NULL && capacity > 0) {
+        unsigned char magics[8];
+        int n;
+
+        for (n = 0; n < (int)capacity; n++) {
+            if (gzread(f, &magics[n], 1) <= 0) {
+                break;
+            }
+        }
+        *type = cbfn(magics, n);
+
+        /* Rewind so chunk readers start from byte 0. */
+        gzrewind(f);
+    }
+    return f;
 }
 
 // FUNCTION: CARMA2_HW 0x0051dc20

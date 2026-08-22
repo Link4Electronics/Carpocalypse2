@@ -842,3 +842,324 @@ void carpocalypse2_PresentFrame(void) {
         SDL_UpdateWindowSurface(g_SDL_Window);
     }
 }
+
+void carpocalypse2_ClearBackScreen(void) {
+    if (gBack_screen != NULL && gBack_screen->pixels != NULL) {
+        BrPixelmapFill(gBack_screen, 0);
+    }
+    SDL_Delay(16); /* ~60 fps cap */
+}
+
+/* ==== Minimal menu input + rendering for Linux boot ==== */
+
+#include "carpocalypse2_types.h"
+
+static int menu_key_pressed;
+static int menu_key_value;
+
+int carpocalypse2_PollMenuInput(int* pCurrent, int count_items) {
+    SDL_Event event;
+
+    while (SDL_PollEvent(&event)) {
+        if (event.type == SDL_EVENT_QUIT) {
+            menu_key_pressed = 0;
+            return -2; /* quit */
+        }
+        if (event.type == SDL_EVENT_KEY_DOWN) {
+            switch (event.key.key) {
+            case SDLK_UP:
+            case SDLK_W:
+                *pCurrent = (*pCurrent - 1 + count_items) % count_items;
+                break;
+            case SDLK_DOWN:
+            case SDLK_S:
+                *pCurrent = (*pCurrent + 1) % count_items;
+                break;
+            case SDLK_RETURN:
+            case SDLK_KP_ENTER:
+            case SDLK_SPACE:
+                menu_key_pressed = 1;
+                return 1; /* activate */
+            case SDLK_ESCAPE:
+                return -2; /* quit */
+            default:
+                break;
+            }
+        }
+    }
+    return 0;
+}
+
+void carpocalypse2_DrawMenuItem(br_pixelmap* pm, int x, int y, const char* text, int highlighted) {
+    /* Software bitmap font: 5×7 glyphs, scale 2× per pixel → visible text */
+    static const unsigned char font[26][7] = {
+        { 0x7E,0x11,0x11,0x11,0x7E }, { 0x7F,0x49,0x49,0x49,0x36 },
+        { 0x3E,0x41,0x41,0x41,0x22 }, { 0x7F,0x41,0x41,0x22,0x1C },
+        { 0x7F,0x49,0x49,0x49,0x41 }, { 0x7F,0x09,0x09,0x09,0x01 },
+        { 0x3E,0x41,0x49,0x49,0x3A }, { 0x7F,0x08,0x08,0x08,0x7F },
+        { 0x00,0x41,0x7F,0x41,0x00 }, { 0x20,0x40,0x41,0x3F,0x01 },
+        { 0x7F,0x08,0x14,0x22,0x41 }, { 0x7F,0x40,0x40,0x40,0x40 },
+        { 0x7F,0x02,0x04,0x02,0x7F }, { 0x7F,0x04,0x08,0x10,0x7F },
+        { 0x3E,0x41,0x41,0x41,0x3E }, { 0x7F,0x09,0x09,0x09,0x06 },
+        { 0x3E,0x41,0x51,0x21,0x5E }, { 0x7F,0x09,0x19,0x29,0x46 },
+        { 0x46,0x49,0x49,0x49,0x31 }, { 0x01,0x01,0x7F,0x01,0x01 },
+        { 0x3F,0x40,0x40,0x40,0x3F }, { 0x1F,0x20,0x40,0x20,0x1F },
+        { 0x3F,0x40,0x38,0x40,0x3F }, { 0x63,0x14,0x08,0x14,0x63 },
+        { 0x07,0x08,0x70,0x08,0x07 }, { 0x61,0x51,0x49,0x45,0x43 },
+    };
+    br_uint_16 colour;
+    br_uint_16 shadow_colour;
+    int cx, cy, px, py;
+
+    if (highlighted) {
+        /* Draw selection bar */
+        int bar_x = x - 20, bar_y = y - 6;
+        int bar_w = 300, bar_h = 34;
+        int bx, by;
+        for (by = 0; by < bar_h; by++) {
+            for (bx = 0; bx < bar_w; bx++) {
+                int ix = bar_x + bx, iy = bar_y + by;
+                if (ix >= 0 && ix < pm->width && iy >= 0 && iy < pm->height) {
+                    br_uint_16* p = &((br_uint_16*)pm->pixels)[iy * (pm->row_bytes / 2) + ix];
+                    if (by < 2 || by >= bar_h - 2 || bx < 2 || bx >= bar_w - 2) {
+                        *p = 0xFFE0; /* yellow border */
+                    } else {
+                        *p = 0x0842; /* dark navy fill */
+                    }
+                }
+            }
+        }
+        colour = 0xFFFF;   /* white text */
+        shadow_colour = 0x0000;
+    } else {
+        colour = 0xAD55;   /* grey text */
+        shadow_colour = 0x0000;
+    }
+
+    /* Draw shadow first */
+    for (cy = 0; text[cy]; cy++) {
+        char ch = text[cy];
+        int ci;
+        if (ch >= 'A' && ch <= 'Z') ci = ch - 'A';
+        else if (ch >= 'a' && ch <= 'z') ci = ch - 'a';
+        else continue;
+
+        for (py = 0; py < 7; py++) {
+            unsigned char row = font[ci][py];
+            for (px = 0; px < 5; px++) {
+                if ((row << px) & 0x80) {
+                    int fx_base = x + cy * 16 + px * 2 + 1;
+                    int fy_base = y + py * 3 + 1;
+                    int sx, sy;
+                    for (sy = 0; sy < 3; sy++)
+                        for (sx = 0; sx < 2; sx++) {
+                            int fx = fx_base + sx, fy = fy_base + sy;
+                            if (fx >= 0 && fx < pm->width && fy >= 0 && fy < pm->height)
+                                ((br_uint_16*)pm->pixels)[fy * (pm->row_bytes/2) + fx] = shadow_colour;
+                        }
+                }
+            }
+        }
+    }
+
+    /* Draw text */
+    for (cy = 0; text[cy]; cy++) {
+        char ch = text[cy];
+        int ci;
+        if (ch >= 'A' && ch <= 'Z') ci = ch - 'A';
+        else if (ch >= 'a' && ch <= 'z') ci = ch - 'a';
+        else continue;
+
+        for (py = 0; py < 7; py++) {
+            unsigned char row = font[ci][py];
+            for (px = 0; px < 5; px++) {
+                if ((row << px) & 0x80) {
+                    int fx_base = x + cy * 16 + px * 2;
+                    int fy_base = y + py * 3;
+                    int sx, sy;
+                    for (sy = 0; sy < 3; sy++)
+                        for (sx = 0; sx < 2; sx++) {
+                            int fx = fx_base + sx, fy = fy_base + sy;
+                            if (fx >= 0 && fx < pm->width && fy >= 0 && fy < pm->height)
+                                ((br_uint_16*)pm->pixels)[fy * (pm->row_bytes/2) + fx] = colour;
+                        }
+                }
+            }
+        }
+    }
+}
+
+void carpocalypse2_DrawBackground(br_pixelmap* pm) {
+    int x, y;
+    int w = pm->width, h = pm->height;
+
+    /* Dark gradient: dark blue at top → darker at bottom */
+    for (y = 0; y < h; y++) {
+        br_uint_16* row = (br_uint_16*)((char*)pm->pixels + y * pm->row_bytes);
+        /* RGB565: interpolate from (8,8,32) to (2,2,8) */
+        unsigned r = 8 - (y * 6 / h);
+        unsigned g = 8 - (y * 6 / h);
+        unsigned b = 40 - (y * 30 / h);
+        br_uint_16 base = (br_uint_16)(((r & 0x1F) << 11) | ((g & 0x3F) << 5) | (b & 0x1F));
+        for (x = 0; x < w; x++) {
+            row[x] = base;
+        }
+    }
+
+    /* Grid pattern overlay for visual interest */
+    for (y = 0; y < h; y += 4) {
+        br_uint_16* row = (br_uint_16*)((char*)pm->pixels + y * pm->row_bytes);
+        for (x = 0; x < w; x += 4) {
+            row[x] = 0x0842; /* slightly lighter dot */
+        }
+    }
+
+    /* Title bar: dark strip at top */
+    {
+        int bar_h = h / 10;
+        for (y = 0; y < bar_h; y++) {
+            br_uint_16* row = (br_uint_16*)((char*)pm->pixels + y * pm->row_bytes);
+            for (x = 0; x < w; x++) {
+                row[x] = 0x0000; /* black title bar */
+            }
+        }
+        /* Yellow separator line under title bar */
+        if (bar_h + 2 < h) {
+            br_uint_16* row = (br_uint_16*)((char*)pm->pixels + (bar_h+2) * pm->row_bytes);
+            for (x = 0; x < w; x++) {
+                row[x] = 0xFFE0;
+            }
+        }
+    }
+
+    /* Bottom status bar */
+    {
+        int y0 = h - h / 12;
+        for (y = y0; y < h; y++) {
+            br_uint_16* row = (br_uint_16*)((char*)pm->pixels + y * pm->row_bytes);
+            for (x = 0; x < w; x++) {
+                row[x] = 0x0000;
+            }
+        }
+    }
+}
+
+void carpocalypse2_DrawText(br_pixelmap* pm, int x, int y, const char* text, br_uint_16 colour) {
+    static const unsigned char font[26][5] = {
+        { 0x7E,0x11,0x11,0x11,0x7E }, { 0x7F,0x49,0x49,0x49,0x36 },
+        { 0x3E,0x41,0x41,0x41,0x22 }, { 0x7F,0x41,0x41,0x22,0x1C },
+        { 0x7F,0x49,0x49,0x49,0x41 }, { 0x7F,0x09,0x09,0x09,0x01 },
+        { 0x3E,0x41,0x49,0x49,0x3A }, { 0x7F,0x08,0x08,0x08,0x7F },
+        { 0x00,0x41,0x7F,0x41,0x00 }, { 0x20,0x40,0x41,0x3F,0x01 },
+        { 0x7F,0x08,0x14,0x22,0x41 }, { 0x7F,0x40,0x40,0x40,0x40 },
+        { 0x7F,0x02,0x04,0x02,0x7F }, { 0x7F,0x04,0x08,0x10,0x7F },
+        { 0x3E,0x41,0x41,0x41,0x3E }, { 0x7F,0x09,0x09,0x09,0x06 },
+        { 0x3E,0x41,0x51,0x21,0x5E }, { 0x7F,0x09,0x19,0x29,0x46 },
+        { 0x46,0x49,0x49,0x49,0x31 }, { 0x01,0x01,0x7F,0x01,0x01 },
+        { 0x3F,0x40,0x40,0x40,0x3F }, { 0x1F,0x20,0x40,0x20,0x1F },
+        { 0x3F,0x40,0x38,0x40,0x3F }, { 0x63,0x14,0x08,0x14,0x63 },
+        { 0x07,0x08,0x70,0x08,0x07 }, { 0x61,0x51,0x49,0x45,0x43 },
+    };
+    int cx, px, py;
+
+    for (cx = 0; text[cx]; cx++) {
+        char ch = text[cx];
+        int ci;
+        if (ch >= 'A' && ch <= 'Z') ci = ch - 'A';
+        else if (ch >= 'a' && ch <= 'z') ci = ch - 'a';
+        else if (ch >= '0' && ch <= '9') ci = 26;
+        else continue;
+
+        for (py = 0; py < 5; py++) {
+            unsigned char row = font[ci % 26][py];
+            for (px = 0; px < 5; px++) {
+                if ((row << px) & 0x80) {
+                    int fx = x + cx * 12 + px * 2;
+                    int fy = y + py * 2;
+                    int sx, sy;
+                    for (sy = 0; sy < 2; sy++)
+                        for (sx = 0; sx < 2; sx++) {
+                            int ix = fx + sx, iy = fy + sy;
+                            if (ix >= 0 && ix < pm->width && iy >= 0 && iy < pm->height)
+                                ((br_uint_16*)pm->pixels)[iy * (pm->row_bytes/2) + ix] = colour;
+                        }
+                }
+            }
+        }
+    }
+}
+
+/* ==== Menu screen renderer ==== */
+
+void carpocalypse2_DrawMenuScreen(br_pixelmap* pm, tFrontend_spec* pSpec, int current_item) {
+    int i;
+
+    carpocalypse2_ClearBackScreen();
+    carpocalypse2_DrawBackground(pm);
+
+    /* Title */
+    {
+        /* Draw "CARMAGEDDON II" using large block letters */
+        static const unsigned char f_C[7] = {0x3E,0x41,0x40,0x40,0x40,0x41,0x3E};
+        static const unsigned char f_A[7] = {0x18,0x24,0x42,0x7E,0x42,0x42,0x42};
+        static const unsigned char f_R[7] = {0x7C,0x42,0x42,0x7C,0x44,0x42,0x42};
+        static const unsigned char f_M[7] = {0x42,0x66,0x5A,0x42,0x42,0x42,0x42};
+        static const unsigned char f_G[7] = {0x3E,0x40,0x40,0x4E,0x41,0x41,0x3E};
+        static const unsigned char f_E[7] = {0x7E,0x40,0x40,0x78,0x40,0x40,0x7E};
+        static const unsigned char f_D[7] = {0x7C,0x42,0x42,0x42,0x42,0x42,0x7C};
+        static const unsigned char f_O[7] = {0x3E,0x41,0x41,0x41,0x41,0x41,0x3E};
+        static const unsigned char f_N[7] = {0x42,0x62,0x52,0x4A,0x46,0x42,0x42};
+        const unsigned char* title[] = {f_C,f_A,f_R,f_M,f_A,f_G,f_E,f_D,f_D,f_O,f_N};
+        int tx = 100, ty = 20;
+        int gi, px, py, sx, sy;
+        br_uint_16 colour = 0xFD20; /* orange */
+
+        for (gi = 0; gi < 11; gi++) {
+            for (py = 0; py < 7; py++) {
+                unsigned char row = title[gi][py];
+                for (px = 0; px < 8; px++) {
+                    if (row & (0x80 >> px)) {
+                        for (sy = 0; sy < 4; sy++)
+                            for (sx = 0; sx < 3; sx++) {
+                                int ix = tx + gi * 30 + px * 3 + sx;
+                                int iy = ty + py * 6 + sy;
+                                if (ix >= 0 && ix < pm->width && iy >= 0 && iy < pm->height)
+                                    ((br_uint_16*)pm->pixels)[iy * (pm->row_bytes/2) + ix] = colour;
+                            }
+                    }
+                }
+            }
+        }
+
+        /* "II" subtitle */
+        {
+            static const unsigned char f_I[7] = {0x7E,0x10,0x10,0x10,0x10,0x10,0x7E};
+            tx = 420; ty = 20;
+            for (gi = 0; gi < 2; gi++) {
+                for (py = 0; py < 7; py++) {
+                    unsigned char row = f_I[py];
+                    for (px = 0; px < 8; px++) {
+                        if (row & (0x80 >> px)) {
+                            for (sy = 0; sy < 4; sy++)
+                                for (sx = 0; sx < 3; sx++) {
+                                    int ix = tx + gi * 30 + px * 3 + sx;
+                                    int iy = ty + py * 6 + sy;
+                                    if (ix >= 0 && ix < pm->width && iy >= 0 && iy < pm->height)
+                                        ((br_uint_16*)pm->pixels)[iy * (pm->row_bytes/2) + ix] = 0xFFFF;
+                                }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /* Menu items */
+    for (i = 0; i < pSpec->count_items; i++) {
+        tFrontend_item_spec* item = &pSpec->items[i];
+        if (item->visible) {
+            carpocalypse2_DrawMenuItem(pm, item->x, item->y,
+                item->text[0] ? item->text : "MENU", (i == current_item));
+        }
+    }
+}

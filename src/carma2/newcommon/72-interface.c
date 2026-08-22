@@ -152,6 +152,17 @@ br_uint_32 gFrontend_APO_Colour_3;
 
 // GLOBAL: CARMA2_HW 0x0068650c
 br_actor* gFrontend_actor;
+// GLOBAL: CARMA2_HW 0x00686f94
+br_actor* gFrontend_camera;
+
+// GLOBAL: CARMA2_HW 0x00686f50
+br_token_value gFrontend_backdrop0_material_prims[3];
+
+// GLOBAL: CARMA2_HW 0x00686f20
+br_token_value gFrontend_backdrop1_material_prims[3];
+
+// GLOBAL: CARMA2_HW 0x00686f38
+br_token_value gFrontend_backdrop2_material_prims[3];
 
 // GLOBAL: CARMA2_HW 0x0068683c
 int gFrontend_count_brender_items;
@@ -961,7 +972,123 @@ void C2_HOOK_FASTCALL ResetInterfaceTimeout(void) {
     gFrontend_time_last_input = PDGetTotalTime();
 }
 
-// FRONTEND_Main
+// FUNCTION: CARMA2_HW 0x0046cf10
+void C2_HOOK_FASTCALL FRONTEND_Setup2D(void) {
+    br_camera* camera;
+
+    gFrontend_actor = BrActorAllocate(BR_ACTOR_NONE, NULL);
+    gFrontend_camera = BrActorAllocate(BR_ACTOR_CAMERA, NULL);
+    camera = gFrontend_camera->type_data;
+    camera->type = BR_CAMERA_PARALLEL;
+    camera->field_of_view = BrDegreeToAngle(45);
+    camera->hither_z = 1.f;
+    camera->yon_z = 3.f;
+    camera->width = 640.f;
+    camera->height = 480.f;
+    BrActorAdd(gFrontend_actor, gFrontend_camera);
+    gFrontend_backdrop0_material_prims[0].t = BRT_BLEND_B;
+    gFrontend_backdrop0_material_prims[0].v.b = 1;
+    gFrontend_backdrop0_material_prims[1].t = BRT_OPACITY_X;
+    gFrontend_backdrop0_material_prims[1].v.x = 0xb00000;
+    gFrontend_backdrop0_material_prims[2].t = BR_NULL_TOKEN;
+    gFrontend_backdrop0_material_prims[2].v.u32 = 0;
+    gFrontend_backdrop1_material_prims[0].t = BRT_BLEND_B;
+    gFrontend_backdrop1_material_prims[0].v.b = 1;
+    gFrontend_backdrop1_material_prims[1].t = BRT_OPACITY_X;
+    gFrontend_backdrop1_material_prims[1].v.x = 0xb00000;
+    gFrontend_backdrop1_material_prims[2].t = BR_NULL_TOKEN;
+    gFrontend_backdrop1_material_prims[2].v.u32 = 0;
+    gFrontend_backdrop2_material_prims[0].t = BRT_BLEND_B;
+    gFrontend_backdrop2_material_prims[0].v.b = 1;
+    gFrontend_backdrop2_material_prims[1].t = BRT_OPACITY_X;
+    gFrontend_backdrop2_material_prims[1].v.x = 0xb00000;
+    gFrontend_backdrop2_material_prims[2].t = BR_NULL_TOKEN;
+    gFrontend_backdrop2_material_prims[2].v.u32 = 0;
+}
+
+// FUNCTION: CARMA2_HW 0x0046d8e0
+int C2_HOOK_FASTCALL FRONTEND_Main(tFrontend_spec* pFrontend_spec) {
+#ifdef CARPOCALYPSE2_MATCHING
+    NOT_IMPLEMENTED();
+    return 0;
+#else
+    extern void carpocalypse2_PresentFrame(void);
+    extern int carpocalypse2_ShouldQuit(void);
+    extern void carpocalypse2_ClearBackScreen(void);
+
+    int result = 0;
+    int current_item = 0;
+    int done;
+    int i;
+
+    dr_dprintf("FRONTEND_Main: entered for '%s'", pFrontend_spec->name);
+
+    /* Set up the 2D brender scene for the frontend */
+    FRONTEND_Setup2D();
+
+    /* Create menu: loads backdrop from TWT + creates button models */
+    if (FRONTEND_CreateMenu(pFrontend_spec) != 1) {
+        dr_dprintf("FRONTEND_Main: CreateMenu FAILED");
+        return -1;
+    }
+    dr_dprintf("FRONTEND_Main: menu '%s' created OK", pFrontend_spec->name);
+
+    while (1) {
+        done = 0;
+
+        {
+            extern int carpocalypse2_PollMenuInput(int* pCurrent, int count_items);
+            if (carpocalypse2_PollMenuInput(&current_item, pFrontend_spec->count_items)) {
+                tFrontend_item_spec* item = &pFrontend_spec->items[current_item];
+                if (item->action != NULL) {
+                    result = item->action(pFrontend_spec);
+                    done = 1;
+                }
+            }
+        }
+
+        carpocalypse2_ClearBackScreen();
+
+        /* Blit backdrop image onto back screen */
+        if (gFrontend_backdrop != NULL && gFrontend_backdrop->pixels != NULL) {
+            int sx, sy;
+            int bw = gFrontend_backdrop->width < gBack_screen->width ? gFrontend_backdrop->width : gBack_screen->width;
+            int bh = gFrontend_backdrop->height < gBack_screen->height ? gFrontend_backdrop->height : gBack_screen->height;
+            br_uint_16* src_base = (br_uint_16*)gFrontend_backdrop->pixels;
+            br_uint_16* dst_base = (br_uint_16*)gBack_screen->pixels;
+            int src_stride = gFrontend_backdrop->row_bytes / 2;
+            int dst_stride = gBack_screen->row_bytes / 2;
+
+            for (sy = 0; sy < bh; sy++) {
+                for (sx = 0; sx < bw; sx++) {
+                    dst_base[sy * dst_stride + sx] = src_base[sy * src_stride + sx];
+                }
+            }
+        }
+
+        /* Render items on top */
+        {
+            extern void carpocalypse2_DrawMenuItem(br_pixelmap* pm, int x, int y, const char* text, int hl);
+            for (i = 0; i < pFrontend_spec->count_items; i++) {
+                tFrontend_item_spec* item = &pFrontend_spec->items[i];
+                if (item->visible) {
+                    carpocalypse2_DrawMenuItem(gBack_screen,
+                        item->x, item->y, item->text, (i == current_item));
+                }
+            }
+        }
+
+        carpocalypse2_PresentFrame();
+
+        if (done || carpocalypse2_ShouldQuit()) {
+            break;
+        }
+    }
+
+    FRONTEND_DestroyMenu(pFrontend_spec);
+    return result;
+#endif
+}
 
 // ProcessInputString
 
