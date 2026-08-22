@@ -86,7 +86,11 @@ void C2_HOOK_FASTCALL SetQuickTimeDefaults(void) {
 
 // STUB: CARMA2_HW 0x004e1a20
 void C2_HOOK_FASTCALL MovieStopRecordingIfNecessary(void) {
+#ifndef CARPOCALYPSE2_MATCHING
+    /* stub: no-op for Linux boot */
+#else
     NOT_IMPLEMENTED();
+#endif
 }
 
 // GenerateOneMovieFrame

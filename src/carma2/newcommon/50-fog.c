@@ -27,6 +27,10 @@ void C2_HOOK_FASTCALL DisableAutoFogification(void) {
 
 // STUB: CARMA2_HW 0x004ea860
 void C2_HOOK_FASTCALL RemoveMaterialFromFogification(br_material* pMaterial) {
+#ifndef CARPOCALYPSE2_MATCHING
+    /* stub: no-op for Linux boot */
+#else
     NOT_IMPLEMENTED();
+#endif
 }
 

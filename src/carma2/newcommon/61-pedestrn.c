@@ -88,7 +88,11 @@ int gExplosives_on = 1;
 
 // STUB: CARMA2_HW 0x004cadc0
 void C2_HOOK_FASTCALL InitPolyPedSystem(void) {
+#ifndef CARPOCALYPSE2_MATCHING
+    /* stub: no-op for Linux boot */
+#else
     NOT_IMPLEMENTED();
+#endif
 }
 
 // DisposePedSpawnSpec
@@ -364,17 +368,29 @@ void C2_HOOK_FASTCALL SetDefaultPedFolderNames(void) {
 
 // STUB: CARMA2_HW 0x004d6f50
 void C2_HOOK_FASTCALL SetZombiePedFolderNames(void) {
+#ifndef CARPOCALYPSE2_MATCHING
+    /* stub: no-op for Linux boot */
+#else
     NOT_IMPLEMENTED();
+#endif
 }
 
 // STUB: CARMA2_HW 0x004d6f30
 void C2_HOOK_FASTCALL SetBloodPedFolderNames(void) {
+#ifndef CARPOCALYPSE2_MATCHING
+    /* stub: no-op for Linux boot */
+#else
     NOT_IMPLEMENTED();
+#endif
 }
 
 // STUB: CARMA2_HW 0x004d6f70
 void C2_HOOK_FASTCALL SetAlienPedFolderNames(void) {
+#ifndef CARPOCALYPSE2_MATCHING
+    /* stub: no-op for Linux boot */
+#else
     NOT_IMPLEMENTED();
+#endif
 }
 
 // AddChangedPoint

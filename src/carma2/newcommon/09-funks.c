@@ -27,7 +27,11 @@ void C2_HOOK_STDCALL SetSightDistance(br_scalar pYon) {
 
 // STUB: CARMA2_HW 0x00474950
 void C2_HOOK_FASTCALL DisposeFunkotronics(int pOwner) {
+#ifndef CARPOCALYPSE2_MATCHING
+    /* stub: no-op for Linux boot */
+#else
     NOT_IMPLEMENTED();
+#endif
 }
 
 // CalcProximities
@@ -42,7 +46,11 @@ void C2_HOOK_FASTCALL DisposeFunkotronics(int pOwner) {
 
 // STUB: CARMA2_HW 0x00476430
 void C2_HOOK_FASTCALL DisposeGroovidelics(int pOwner) {
+#ifndef CARPOCALYPSE2_MATCHING
+    /* stub: no-op for Linux boot */
+#else
     NOT_IMPLEMENTED();
+#endif
 }
 
 // AddNewGroovidelic

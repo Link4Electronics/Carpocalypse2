@@ -204,7 +204,11 @@ void C2_HOOK_FASTCALL InitExplosions(void) {
 
 // STUB: CARMA2_HW 0x004efe00
 void C2_HOOK_FASTCALL InitSmashing(void) {
+#ifndef CARPOCALYPSE2_MATCHING
+    /* stub: no-op for Linux boot */
+#else
     NOT_IMPLEMENTED();
+#endif
 }
 
 // VerySimpleRotate
@@ -221,7 +225,11 @@ void C2_HOOK_FASTCALL InitSmashing(void) {
 
 // STUB: CARMA2_HW 0x004f02b0
 void C2_HOOK_FASTCALL CleanUpSmashStuff(void) {
+#ifndef CARPOCALYPSE2_MATCHING
+    /* stub: no-op for Linux boot */
+#else
     NOT_IMPLEMENTED();
+#endif
 }
 
 // DisposeSmashData

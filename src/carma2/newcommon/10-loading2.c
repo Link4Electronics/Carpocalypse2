@@ -439,7 +439,11 @@ void C2_HOOK_FASTCALL LoadGeneralParameters(void) {
 
 // STUB: CARMA2_HW 0x00487dc0
 void C2_HOOK_FASTCALL FinishLoadingGeneral(void) {
+#ifndef CARPOCALYPSE2_MATCHING
+    /* stub: no-op for Linux boot */
+#else
     NOT_IMPLEMENTED();
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00487e10
@@ -535,14 +539,22 @@ void C2_HOOK_FASTCALL InitInterfaceLoadState(void) {
 
 // STUB: CARMA2_HW 0x0048c150
 void C2_HOOK_FASTCALL LoadHeadupImages(void) {
+#ifndef CARPOCALYPSE2_MATCHING
+    /* stub: no-op for Linux boot */
+#else
     NOT_IMPLEMENTED();
+#endif
 }
 
 // OpenRaceFile
 
 // STUB: CARMA2_HW 0x0048c1c0
 void C2_HOOK_FASTCALL LoadRaces(tRace_list_spec* pRace_list, int* pCount, int pRace_type_index) {
+#ifndef CARPOCALYPSE2_MATCHING
+    /* stub: no-op for Linux boot */
+#else
     NOT_IMPLEMENTED();
+#endif
 }
 
 // LoadRaceInfo

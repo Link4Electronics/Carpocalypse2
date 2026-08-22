@@ -1,4 +1,5 @@
 #include "15-displays.h"
+#include "globvars.h"
 
 // GLOBAL: CARMA2_HW 0x00655e54
 int gHeadup_detail_level = 5;
@@ -7,7 +8,11 @@ int gHeadup_detail_level = 5;
 
 // STUB: CARMA2_HW 0x00449090
 void C2_HOOK_FASTCALL InitHeadups(void) {
+#ifndef CARPOCALYPSE2_MATCHING
+    /* stub: no-op for Linux boot */
+#else
     NOT_IMPLEMENTED();
+#endif
 }
 
 // ClearHeadup
@@ -64,14 +69,32 @@ void C2_HOOK_FASTCALL InitHeadups(void) {
 
 // DoTestHeadup
 
-// STUB: CARMA2_HW 0x0044ba60
+// FUNCTION: CARMA2_HW 0x0044ba60
 int C2_HOOK_FASTCALL HighResHeadupWidth(int pWidth) {
-    NOT_IMPLEMENTED();
+    int result;
+
+    if (gDevious_2d == 0 || gTexture_power_of_2 == 0) {
+        return pWidth;
+    }
+    result = 1;
+    while (result < pWidth) {
+        result *= 2;
+    }
+    return result;
 }
 
-// STUB: CARMA2_HW 0x0044ba90
+// FUNCTION: CARMA2_HW 0x0044ba90
 int C2_HOOK_FASTCALL HighResHeadupHeight(int pHeight) {
-    NOT_IMPLEMENTED();
+    int result;
+
+    if (gDevious_2d == 0 || gTexture_power_of_2 == 0) {
+        return pHeight;
+    }
+    result = 1;
+    while (result < pHeight) {
+        result *= 2;
+    }
+    return result;
 }
 
 // DrawThisCarIconNow

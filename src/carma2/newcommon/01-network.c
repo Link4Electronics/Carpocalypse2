@@ -239,7 +239,11 @@ void C2_HOOK_FASTCALL NetLeaveGameLowLevel(void) {
 
 // STUB: CARMA2_HW 0x0049dc90
 void C2_HOOK_FASTCALL NetLeaveGame(tNet_game_details* pNet_game) {
+#ifndef CARPOCALYPSE2_MATCHING
+    /* stub: no-op for Linux boot */
+#else
     NOT_IMPLEMENTED();
+#endif
 }
 
 // NetSetPlayerSystemInfo
@@ -319,7 +323,11 @@ tNet_message* C2_HOOK_FASTCALL NetBuildMessage(undefined pArg1, undefined4 pArg2
 
 // STUB: CARMA2_HW 0x0049fcf0
 void C2_HOOK_FASTCALL NetSendMessageStacks(void) {
+#ifndef CARPOCALYPSE2_MATCHING
+    /* stub: no-op for Linux boot */
+#else
     NOT_IMPLEMENTED();
+#endif
 }
 
 // STUB: CARMA2_HW 0x0049fdb0
@@ -428,22 +436,38 @@ int C2_HOOK_FASTCALL NetDisposeMessage(tNet_game_details* pDetails, tNet_message
 
 // STUB: CARMA2_HW 0x004a4a40
 void C2_HOOK_FASTCALL NetReceiveAndProcessMessages(void) {
+#ifndef CARPOCALYPSE2_MATCHING
+    /* stub: no-op for Linux boot */
+#else
     NOT_IMPLEMENTED();
+#endif
 }
 
 // STUB: CARMA2_HW 0x004a4ac0
 void C2_HOOK_FASTCALL BroadcastStatus(void) {
+#ifndef CARPOCALYPSE2_MATCHING
+    /* stub: no-op for Linux boot */
+#else
     NOT_IMPLEMENTED();
+#endif
 }
 
 // STUB: CARMA2_HW 0x004a4da0
 void C2_HOOK_FASTCALL CheckForDisappearees(void) {
+#ifndef CARPOCALYPSE2_MATCHING
+    /* stub: no-op for Linux boot */
+#else
     NOT_IMPLEMENTED();
+#endif
 }
 
 // STUB: CARMA2_HW 0x004a5240
 void C2_HOOK_FASTCALL CheckForPendingStartRace(void) {
+#ifndef CARPOCALYPSE2_MATCHING
+    /* stub: no-op for Linux boot */
+#else
     NOT_IMPLEMENTED();
+#endif
 }
 
 // STUB: CARMA2_HW 0x004a5280
@@ -489,7 +513,11 @@ void C2_HOOK_FASTCALL NetService(int pIn_race) {
 
 // STUB: CARMA2_HW 0x004a57e0
 void C2_HOOK_FASTCALL NetPlayerStatusChanged(tPlayer_status pNew_status) {
+#ifndef CARPOCALYPSE2_MATCHING
+    /* stub: no-op for Linux boot */
+#else
     NOT_IMPLEMENTED();
+#endif
 }
 
 // NetGetPlayerStatus
@@ -508,7 +536,11 @@ void C2_HOOK_FASTCALL NetPlayerStatusChanged(tPlayer_status pNew_status) {
 
 // STUB: CARMA2_HW 0x004a6080
 void C2_HOOK_FASTCALL ResendGuaranteedMessages(void) {
+#ifndef CARPOCALYPSE2_MATCHING
+    /* stub: no-op for Linux boot */
+#else
     NOT_IMPLEMENTED();
+#endif
 }
 
 // NetWaitForGuaranteeReplies

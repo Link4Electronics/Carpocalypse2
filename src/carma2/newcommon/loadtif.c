@@ -4,6 +4,10 @@
 #include "41-utility.h"
 #include "70-packfile.h"
 #include "globvars.h"
+
+#ifndef _WIN32
+extern const char* carpocalypse2_fix_path_case(const char* pPath);
+#endif
 #include "loadtif_zlib.h"
 #include "platform.h"
 #include "carpocalypse2_macros.h"
@@ -348,7 +352,13 @@ int C2_HOOK_FASTCALL PDGetLastModificationTime(const char* pPath) {
 // FUNCTION: CARMA2_HW 0x00486c00
 int C2_HOOK_FASTCALL PDFileExists(const char *pPath) {
     struct stat statbuf;
-
+#ifndef _WIN32
+    /* Linux is case-sensitive; game data is not. */
+    {
+        extern const char* carpocalypse2_fix_path_case(const char* pPath);
+        pPath = carpocalypse2_fix_path_case(pPath);
+    }
+#endif
     return stat(pPath, &statbuf) == 0;
 }
 

@@ -148,7 +148,11 @@ void C2_HOOK_FASTCALL InitializePalettes(void) {
 
 // STUB: CARMA2_HW 0x004b52a0
 void C2_HOOK_FASTCALL InitPaletteAnimate(void) {
+#ifndef CARPOCALYPSE2_MATCHING
+    /* stub: no-op for Linux boot */
+#else
     NOT_IMPLEMENTED();
+#endif
 }
 
 // RevertPalette
@@ -188,7 +192,11 @@ void C2_HOOK_FASTCALL InitTransientBitmaps(void) {
 
 // STUB: CARMA2_HW 0x0043e010
 void C2_HOOK_FASTCALL RemoveTransientBitmaps(int pGraphically_remove_them) {
+#ifndef CARPOCALYPSE2_MATCHING
+    /* stub: no-op for Linux boot */
+#else
     NOT_IMPLEMENTED();
+#endif
 }
 
 // SaveTransient
@@ -204,26 +212,42 @@ int C2_HOOK_FASTCALL DoMouseCursor(void) {
 
 // STUB: CARMA2_HW 0x0043e6c0
 void C2_HOOK_FASTCALL StartMouseCursor(void) {
+#ifndef CARPOCALYPSE2_MATCHING
+    /* stub: no-op for Linux boot */
+#else
     NOT_IMPLEMENTED();
+#endif
 }
 
 // STUB: CARMA2_HW 0x0043e710
 void C2_HOOK_FASTCALL EndMouseCursor(void) {
+#ifndef CARPOCALYPSE2_MATCHING
+    /* stub: no-op for Linux boot */
+#else
     NOT_IMPLEMENTED();
+#endif
 }
 
 // DRDrawLine
 
 // STUB: CARMA2_HW 0x0047b880
 void C2_HOOK_FASTCALL ClearEntireScreen(void) {
+#ifndef CARPOCALYPSE2_MATCHING
+    /* stub: no-op for Linux boot */
+#else
     NOT_IMPLEMENTED();
+#endif
 }
 
 // DistanceFromPlane
 
 // STUB: CARMA2_HW 0x0047b960
 void C2_HOOK_FASTCALL KillSplashScreen(void) {
+#ifndef CARPOCALYPSE2_MATCHING
+    /* stub: no-op for Linux boot */
+#else
     NOT_IMPLEMENTED();
+#endif
 }
 
 // SplashScreenWith

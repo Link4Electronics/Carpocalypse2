@@ -50,9 +50,27 @@ int gCredits_checkpoint[3];
 
 // InitialiseProgramState
 
-// STUB: CARMA2_HW 0x00503c50
+// FUNCTION: CARMA2_HW 0x00503c50
 void C2_HOOK_FASTCALL DoProgram(void) {
+#ifdef CARPOCALYPSE2_MATCHING
     NOT_IMPLEMENTED();
+#else
+    /*
+     * Minimal boot loop: keeps the SDL window alive and renders a test
+     * pattern into the back screen each frame. A proper state machine
+     * (logos → frontend → race) replaces this once those systems work.
+     */
+    extern void carpocalypse2_PresentFrame(void);
+    extern int carpocalypse2_ShouldQuit(void);
+    int frame;
+
+    for (frame = 0; frame < 1800; frame++) {
+        if (carpocalypse2_ShouldQuit()) {
+            break;
+        }
+        carpocalypse2_PresentFrame();
+    }
+#endif
 }
 
 // JumpTheStart

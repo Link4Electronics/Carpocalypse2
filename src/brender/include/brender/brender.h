@@ -1,4 +1,7 @@
 #ifndef BRENDER_H
+#ifndef _BRENDER_H_
+#define _BRENDER_H_
+#endif
 #define BRENDER_H
 
 #include "c2_hooks.h"

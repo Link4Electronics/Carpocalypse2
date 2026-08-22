@@ -127,7 +127,11 @@ void C2_HOOK_FASTCALL DisposeNetHeadups(void) {
 
 // STUB: CARMA2_HW 0x0049b9a0
 void C2_HOOK_FASTCALL CheckForNeedyEnvironmentRecipients(void) {
+#ifndef CARPOCALYPSE2_MATCHING
+    /* stub: no-op for Linux boot */
+#else
     NOT_IMPLEMENTED();
+#endif
 }
 
 // ReceivedGameplay

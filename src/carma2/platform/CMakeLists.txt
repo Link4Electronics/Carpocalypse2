@@ -61,10 +61,14 @@ elseif(CARPOCALYPSE2_PLATFORM_SDL3)
         sdl3/sdl3_input.h
         sdl3/sdl3_net.c
         sdl3/sdl3_net.h
+        sdl3/sdl3_plib.c
+        sdl3/sdl3_rend.c
         sdl3/sdl3_ssdx.c
         sdl3/sdl3_ssdx.h
     )
     target_link_libraries(c2_platform PRIVATE SDL3::SDL3)
+    # sdl3_rend.c uses BRender DDI internals (core headers)
+    target_link_libraries(c2_platform PRIVATE BRender::ddi)
     if(UNIX AND NOT APPLE)
         # Case-insensitive file name resolution (see sdl3/sdl3_casefix.c).
         target_sources(c2_platform PRIVATE sdl3/sdl3_casefix.c)

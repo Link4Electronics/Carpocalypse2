@@ -136,7 +136,11 @@ float C2_HOOK_FASTCALL ARGetReplayRate(void) {
 
 // STUB: CARMA2_HW 0x004c6c60
 void C2_HOOK_FASTCALL DisposeActionReplay(void) {
+#ifndef CARPOCALYPSE2_MATCHING
+    /* stub: no-op for Linux boot */
+#else
     NOT_IMPLEMENTED();
+#endif
 }
 
 // CheckIncident
@@ -193,7 +197,11 @@ void C2_HOOK_FASTCALL DisposeActionReplay(void) {
 
 // STUB: CARMA2_HW 0x004c84a0
 void C2_HOOK_FASTCALL PipeSingleSound(tS3_outlet* pOutlet, int pSound, tS3_volume pL_volume, tS3_volume pR_volume, int pPitch, const br_vector3* pPosition) {
+#ifndef CARPOCALYPSE2_MATCHING
+    /* stub: no-op for Linux boot */
+#else
     NOT_IMPLEMENTED();
+#endif
 }
 
 // PipeSingleSpecial

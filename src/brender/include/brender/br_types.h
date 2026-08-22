@@ -2428,7 +2428,7 @@ typedef struct br_primitive_state_dispatch {
     br_error (C2_HOOK_CDECL*_queryManySize)(br_object*, br_size_t*, br_token_value*);
     br_error (C2_HOOK_CDECL*_queryAll)(br_object*, br_token_value*, br_size_t);
     br_error (C2_HOOK_CDECL*_queryAllSize)(br_object*, br_size_t*);
-    br_error (C2_HOOK_CDECL*_partSet)(br_primitive_state*, br_token, br_int_32, br_token, br_uint_32);
+    br_error (C2_HOOK_CDECL*_partSet)(br_primitive_state*, br_token, br_int_32, br_token, uintptr_t);
     br_error (C2_HOOK_CDECL*_partSetMany)(br_primitive_state*, br_token, br_int_32, br_token_value*, br_int_32*);
     br_error (C2_HOOK_CDECL*_partQuery)(br_primitive_state*, br_token, br_int_32, br_uint_32*, br_token);
     br_error (C2_HOOK_CDECL*_partQueryBuffer)(br_primitive_state*, br_token, br_int_32, br_uint_32*, br_uint_32*, br_size_t, br_token);

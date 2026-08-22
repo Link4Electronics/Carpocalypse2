@@ -6,7 +6,11 @@
 
 // STUB: CARMA2_HW 0x00401000
 void C2_HOOK_FASTCALL InitPanGameAIWorld(void) {
+#ifndef CARPOCALYPSE2_MATCHING
+    /* stub: no-op for Linux boot */
+#else
     NOT_IMPLEMENTED();
+#endif
 }
 
 // LoadAIWorldTrackInfo

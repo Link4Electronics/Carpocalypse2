@@ -131,6 +131,24 @@ int C2_HOOK_CDECL _M_br_renderer_facility_soft_rendererNew(br_soft_renderer_faci
 
     BrTokenValueSetMany(&rt, &count, NULL, tv, self->device->templates.rendererNewTemplate);
 
+#ifndef CARPOCALYPSE2_MATCHING
+    /*
+     * x64 hosts: the retail token-value conversions copy pointers at 32-bit
+     * width (see ValueQuery/ValueSet conv 3), so rt.dest/rt.prims come back
+     * truncated. Recover the full pointers straight from the tv array.
+     */
+    {
+        br_token_value* it;
+        for (it = tv; it != NULL && it->t != BR_NULL_TOKEN; it++) {
+            if (it->t == BRT_DESTINATION_O) {
+                rt.dest = it->v.o;
+            } else if (it->t == BRT_PRIMITIVE_LIBRARY_O) {
+                rt.prims = (br_primitive_library*)it->v.o;
+            }
+        }
+    }
+#endif
+
     self->num_instances += 1;
 
     if (rt.prims == NULL) {

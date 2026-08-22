@@ -725,13 +725,18 @@ br_error C2_HOOK_CDECL BrTokenValueQueryAllSize(br_size_t* psize, void* block, b
 }
 
 // FUNCTION: CARMA2_HW 0x0052e5b0
-br_error C2_HOOK_CDECL BrTokenValueSet(void* mem, br_uint_32* pcombined_mask, br_token t, br_uint_32 value, br_tv_template* template) {
+br_error C2_HOOK_CDECL BrTokenValueSet(void* mem, br_uint_32* pcombined_mask, br_token t, uintptr_t value, br_tv_template* template) {
     br_int_32 o;
     br_error r;
     br_token_value tv;
 
     tv.t = t;
+#ifdef CARPOCALYPSE2_MATCHING
     tv.v.u32 = value;
+#else
+    /* 64-bit hosts: value may carry a pointer at full width. */
+    *(void**)&tv.v = (void*)value;
+#endif
     if (template->n_map_entries == 0) {
         templateMakeMap(template);
     }

@@ -17,6 +17,7 @@
 
 #include <stdlib.h>
 
+#include "carpocalypse2_macros.h"
 #ifdef SDL_PLATFORM_WINDOWS
 #include <windows.h>
 #else
@@ -68,7 +69,8 @@ br_diaghandler gPD_error_handler;
 int gGraf_spec_index;
 /* The software renderer device registered by BrDrv1SoftRendBegin (see
  * drivers/softrend/driver.c). */
-char* gRenderer = "SOFTRNDF";
+/* The SDLREND output device from sdl3_rend.c (memory-backed screen). */
+char* gRenderer = "SDLREND";
 int gUnknown_int_0074ca94;
 int gUnknown_int_0074cf48;
 tJoystick_info g_Joystick_infos[16];
@@ -301,7 +303,9 @@ C2_NORETURN void PDShutdownSystem(void) {
         SDL_ShowWindow(g_SDL_Window);
         if (gIsFatalError) {
             dr_dprintf("Displaying fatal error...");
-            SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Carmageddon Fatal error", gFatalErrorMessage, g_SDL_Window);
+            if (getenv("CARPOCALYPSE2_NO_DIALOG") == NULL) {
+                SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Carmageddon Fatal error", gFatalErrorMessage, g_SDL_Window);
+            }
         }
         if (g_SDL_Window != NULL) {
             dr_dprintf("Destroying window...");
@@ -606,7 +610,22 @@ void PDInstallErrorHandlers(void) {
 }
 
 int PDInitScreenVars(int pArgc, const char **pArgv) {
-    gGraf_spec_index = gDefault_spec_index;
+    int i;
+
+    /* Hardware edition defaults to the largest available mode; the low-res
+     * software specs lack the PIX16 asset variants on partial installs. */
+    {
+        int best_area = -1;
+        int best = gDefault_spec_index;
+        for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gGraf_specs); i++) {
+            int area = gGraf_specs[i].total_width * gGraf_specs[i].total_height;
+            if (area > best_area) {
+                best_area = area;
+                best = i;
+            }
+        }
+        gGraf_spec_index = best;
+    }
     gGraf_data_index = gDefault_data_index;
     return 1;
 }
@@ -626,13 +645,11 @@ void PDAllocateScreenAndBack(void) {
 
     gNbPixelBits = 16;
     {
+        extern void carpocalypse2_RegisterSDLRenderer(void);
         br_error dev_r;
-        br_device* found = NULL;
-        if (BrDevFind(&found, "*") == 0 && found != NULL) {
-            dr_dprintf("BRender device present: '%s'", found->dispatch->_identifier((br_object*)found));
-        } else {
-            dr_dprintf("No BRender devices registered");
-        }
+
+        carpocalypse2_RegisterSDLRenderer();
+
         dev_r = BrDevBeginVar(&gScreen, gRenderer,
             BRT_WINDOW_FULLSCREEN_B, 1,
             BRT_WINDOW_HANDLE_H, gHWnd,
@@ -770,4 +787,73 @@ void PDDisposeActionReplayBuffer(void) {
 int PDmemicmp(const char* str1, const char* str2, size_t count) {
 
     return memcmp(str1, str2, count);
+}
+
+/* ==== Minimal presentation for Linux boot ==== */
+
+#include "globvars.h"
+#include "25-grafdata.h"
+
+int carpocalypse2_ShouldQuit(void) {
+    SDL_Event event;
+    while (SDL_PollEvent(&event)) {
+        if (event.type == SDL_EVENT_QUIT) {
+            return 1;
+        }
+        if (event.type == SDL_EVENT_KEY_DOWN && event.key.key == SDLK_ESCAPE) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+void carpocalypse2_PresentFrame(void) {
+    SDL_Surface* surface;
+
+    if (g_SDL_Window == NULL || gBack_screen == NULL || gBack_screen->pixels == NULL) {
+        SDL_Delay(16);
+        return;
+    }
+
+    surface = SDL_GetWindowSurface(g_SDL_Window);
+    if (surface == NULL) {
+        SDL_Delay(16);
+        return;
+    }
+
+    {
+        int x, y;
+        int w = gBack_screen->width < surface->w ? gBack_screen->width : surface->w;
+        int h = gBack_screen->height < surface->h ? gBack_screen->height : surface->h;
+        Uint32* dst = (Uint32*)surface->pixels;
+        br_uint_16* src = (br_uint_16*)gBack_screen->pixels;
+        int frame = (int)(SDL_GetTicks() / 250);
+
+        /* Render a moving colour-bar test pattern into back_screen */
+        for (y = 0; y < h; y++) {
+            for (x = 0; x < w; x++) {
+                if (frame % 2 == 0) {
+                    src[y * gBack_screen->row_bytes / 2 + x] =
+                        (br_uint_16)((x * y / 4 + frame * 32) & 0xFFFF);
+                } else {
+                    src[y * gBack_screen->row_bytes / 2 + x] =
+                        (br_uint_16)(((x + frame * 8) ^ (y + frame * 4)) * 64 & 0xFFFF);
+                }
+            }
+        }
+
+        /* Blit RGB565 → window surface (typically RGBA32) */
+        for (y = 0; y < h; y++) {
+            br_uint_16* srow = (br_uint_16*)((char*)gBack_screen->pixels + y * gBack_screen->row_bytes);
+            Uint32* drow = (Uint32*)((char*)surface->pixels + y * surface->pitch);
+            for (x = 0; x < w; x++) {
+                br_uint_16 px = srow[x];
+                unsigned r = ((px >> 11) & 0x1F) << 3;
+                unsigned g = ((px >> 5) & 0x3F) << 2;
+                unsigned b = (px & 0x1F) << 3;
+                drow[x] = SDL_MapSurfaceRGB(surface, (Uint8)r, (Uint8)g, (Uint8)b);
+            }
+        }
+        SDL_UpdateWindowSurface(g_SDL_Window);
+    }
 }

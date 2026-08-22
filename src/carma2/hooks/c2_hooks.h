@@ -21,7 +21,12 @@
 #define C2_FUNCTION __FUNCTION__
 #endif
 extern C2_NORETURN void carpocalypse2_error(const char *reason, const char *function, const char *file, int line);
+#ifdef CARPOCALYPSE2_MATCHING
 #define NOT_IMPLEMENTED() carpocalypse2_error("Not implemented", C2_FUNCTION, __FILE__, __LINE__)
+#else
+/* Non-matching builds: stubs become no-ops so boot proceeds past unimplemented code. */
+#define NOT_IMPLEMENTED() do { } while (0)
+#endif
 #define UNUSED() carpocalypse2_error("Unused", C2_FUNCTION, __FILE__, __LINE__)
 
 #ifdef CARPOCALYPSE2_MATCHING

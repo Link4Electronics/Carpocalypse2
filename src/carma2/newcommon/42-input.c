@@ -10,7 +10,11 @@ int gEdge_trigger_mode;
 
 // STUB: CARMA2_HW 0x00481eb0
 void C2_HOOK_FASTCALL PollKeys(void) {
+#ifndef CARPOCALYPSE2_MATCHING
+    /* stub: no-op for Linux boot */
+#else
     NOT_IMPLEMENTED();
+#endif
 }
 
 // CyclePollKeys
@@ -30,8 +34,12 @@ int C2_HOOK_FASTCALL EitherMouseButtonDown(void) {
 
 // STUB: CARMA2_HW 0x00482550
 int C2_HOOK_FASTCALL PDKeyDown(int pKey_index) {
+#ifndef CARPOCALYPSE2_MATCHING
+    return 0;
+#else
     NOT_IMPLEMENTED();
     return 0;
+#endif
 }
 
 // PDKeyDown3
@@ -57,22 +65,38 @@ int C2_HOOK_FASTCALL KeyIsDown(int pKey_index) {
 
 // STUB: CARMA2_HW 0x004833b0
 void C2_HOOK_FASTCALL WaitForNoKeys(void) {
+#ifndef CARPOCALYPSE2_MATCHING
+    /* stub: no-op for Linux boot */
+#else
     NOT_IMPLEMENTED();
+#endif
 }
 
 // STUB: CARMA2_HW 0x00483c10
 void C2_HOOK_FASTCALL GetMousePosition(int *pX, int *pY) {
+#ifndef CARPOCALYPSE2_MATCHING
+    /* stub: no-op for Linux boot */
+#else
     NOT_IMPLEMENTED();
+#endif
 }
 
 // STUB: CARMA2_HW 0x00483c90
 void C2_HOOK_FASTCALL InitRollingLetters(void) {
+#ifndef CARPOCALYPSE2_MATCHING
+    /* stub: no-op for Linux boot */
+#else
     NOT_IMPLEMENTED();
+#endif
 }
 
 // STUB: CARMA2_HW 0x00483ce0
 void C2_HOOK_FASTCALL EndRollingLetters(void) {
+#ifndef CARPOCALYPSE2_MATCHING
+    /* stub: no-op for Linux boot */
+#else
     NOT_IMPLEMENTED();
+#endif
 }
 
 // AddRollingLetter
@@ -81,7 +105,11 @@ void C2_HOOK_FASTCALL EndRollingLetters(void) {
 
 // STUB: CARMA2_HW 0x00484120
 void C2_HOOK_FASTCALL RevertTyping(int pSlot_index, char* pRevert_str) {
+#ifndef CARPOCALYPSE2_MATCHING
+    /* stub: no-op for Linux boot */
+#else
     NOT_IMPLEMENTED();
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00484600

@@ -88,7 +88,10 @@ void C2_HOOK_STDCALL prepareEdges(v11group* group, br_model* model) {
     pm_edge_scratch = BrScratchAllocate(scratch_size);
 
     pm_edge_hash = (struct pm_temp_edge**)pm_edge_scratch;
-    pm_edge_table = (struct pm_temp_edge*)(pm_edge_scratch) + group->nvertices * sizeof(*pm_edge_hash);
+    /* Byte-offset semantics: the hash region is nvertices pointer-sized
+     * entries; adding the count to a pm_temp_edge* would scale by the (larger)
+     * element size and push the table past the end of the scratch block. */
+    pm_edge_table = (struct pm_temp_edge*)(pm_edge_scratch + group->nvertices * sizeof(*pm_edge_hash));
 
     BrMemSet(pm_edge_hash, 0, group->nvertices * sizeof(*pm_edge_hash));
 

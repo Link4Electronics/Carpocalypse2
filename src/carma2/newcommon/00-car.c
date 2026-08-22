@@ -27,7 +27,11 @@ br_vector3 gZero_v__car;  // FIXME: make const?
 
 // STUB: CARMA2_HW 0x00413f40
 void C2_HOOK_FASTCALL SwitchCarModels(tCar_spec* pCar, int pIndex) {
+#ifndef CARPOCALYPSE2_MATCHING
+    /* stub: no-op for Linux boot */
+#else
     NOT_IMPLEMENTED();
+#endif
 }
 
 // InitialiseCar2

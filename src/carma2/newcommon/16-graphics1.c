@@ -67,7 +67,11 @@ void C2_HOOK_FASTCALL SetShadowLevel(tShadow_level pLevel) {
 
 // STUB: CARMA2_HW 0x004e99d0
 void C2_HOOK_FASTCALL InitShadow(void) {
+#ifndef CARPOCALYPSE2_MATCHING
+    /* stub: no-op for Linux boot */
+#else
     NOT_IMPLEMENTED();
+#endif
 }
 
 // SaveShadeTable
@@ -76,7 +80,11 @@ void C2_HOOK_FASTCALL InitShadow(void) {
 
 // STUB: CARMA2_HW 0x004e9b60
 void C2_HOOK_FASTCALL DisposeSavedShadeTables(void) {
+#ifndef CARPOCALYPSE2_MATCHING
+    /* stub: no-op for Linux boot */
+#else
     NOT_IMPLEMENTED();
+#endif
 }
 
 // ShadowMode
@@ -184,7 +192,11 @@ void C2_HOOK_FASTCALL InitWobbleStuff(void) {
 
 // STUB: CARMA2_HW 0x004e5ad0
 void C2_HOOK_FASTCALL RenderThisHeadup(br_actor* pActor) {
+#ifndef CARPOCALYPSE2_MATCHING
+    /* stub: no-op for Linux boot */
+#else
     NOT_IMPLEMENTED();
+#endif
 }
 
 // StopRenderingHeadups

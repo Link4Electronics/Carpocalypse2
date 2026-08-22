@@ -187,7 +187,7 @@ br_tv_template * C2_HOOK_CDECL  C2_HOOK_CDECL _M_br_primitive_state_d3d_template
 }
 
 // FUNCTION: D3D 0x10006b60
-br_error C2_HOOK_CDECL  C2_HOOK_CDECL _M_br_primitive_state_d3d_partSet(br_primitive_state_d3d* self, br_token part, br_int_32 index, br_token t, br_uint_32 value) {
+br_error C2_HOOK_CDECL  C2_HOOK_CDECL _M_br_primitive_state_d3d_partSet(br_primitive_state_d3d* self, br_token part, br_int_32 index, br_token t, uintptr_t value) {
     br_error r;
     br_tv_template* tp = findTemplate(part);
     br_uint_32 m;

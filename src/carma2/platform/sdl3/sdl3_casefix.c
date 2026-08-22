@@ -14,6 +14,7 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <strings.h>
 #include <dirent.h>
@@ -82,7 +83,14 @@ FILE* __wrap_fopen(const char* pPath, const char* pMode) {
 
     f = __real_fopen(pPath, pMode);
     if (f == NULL) {
-        f = __real_fopen(carpocalypse2_fix_path_case(pPath), pMode);
+        const char* fixed = carpocalypse2_fix_path_case(pPath);
+        f = __real_fopen(fixed, pMode);
+        if (getenv("CARPOCALYPSE2_FOPEN_DEBUG") != NULL) {
+            fprintf(stderr, "[fopen MISS] %s%s\n", pPath, (f != NULL) ? "  (case-fixed OK)" : "");
+            if (f == NULL && fixed != pPath) {
+                fprintf(stderr, "[fopen miss2] %s\n", fixed);
+            }
+        }
     }
     return f;
 }

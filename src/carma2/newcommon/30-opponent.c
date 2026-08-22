@@ -113,7 +113,11 @@ int gMaxTimeOpponentRepair;
 
 // STUB: CARMA2_HW 0x004a7a60
 void C2_HOOK_FASTCALL ForceRebuildActiveCarList(void) {
+#ifndef CARPOCALYPSE2_MATCHING
+    /* stub: no-op for Linux boot */
+#else
     NOT_IMPLEMENTED();
+#endif
 }
 
 // OpponentRepairNecessary

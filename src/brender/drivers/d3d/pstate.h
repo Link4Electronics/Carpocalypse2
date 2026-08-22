@@ -20,7 +20,7 @@ br_int_32 C2_HOOK_CDECL  C2_HOOK_CDECL _M_br_primitive_state_d3d_space(br_primit
 
 br_tv_template * C2_HOOK_CDECL  C2_HOOK_CDECL _M_br_primitive_state_d3d_templateQuery(br_primitive_state_d3d* self);
 
-br_error C2_HOOK_CDECL  C2_HOOK_CDECL _M_br_primitive_state_d3d_partSet(br_primitive_state_d3d* self, br_token part, br_int_32 index, br_token t, br_uint_32 value);
+br_error C2_HOOK_CDECL  C2_HOOK_CDECL _M_br_primitive_state_d3d_partSet(br_primitive_state_d3d* self, br_token part, br_int_32 index, br_token t, uintptr_t value);
 
 br_error C2_HOOK_CDECL _M_br_primitive_state_d3d_partSetMany(br_primitive_state_d3d* self, br_token part, br_int_32 index, br_token_value* tv, br_int_32* pcount);
 

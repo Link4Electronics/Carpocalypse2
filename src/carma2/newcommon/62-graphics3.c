@@ -284,17 +284,47 @@ void C2_HOOK_FASTCALL InitMap(void) {
     if (!gInitMap_done) {
         gCheckpoint_numbers = LoadPixelmap("CPNUMB.PIX");
         if (gCheckpoint_numbers == NULL) {
+#ifndef CARPOCALYPSE2_MATCHING
+            dr_dprintf("WARNING: CPNUMB.PIX not found, using dummy");
+            gCheckpoint_numbers = DRPixelmapAllocate(gBack_screen->type, 8, 80, NULL, 0);
+            if (gCheckpoint_numbers == NULL) {
+                FatalError(kFatalError_CantFindFile_S, "CPNUMB.PIX");
+            }
+#else
             FatalError(kFatalError_CantFindFile_S, "CPNUMB.PIX");
+#endif
         }
+#ifndef CARPOCALYPSE2_MATCHING
+        if (gCheckpoint_numbers != NULL)
+#endif
         BRPM_convert(gCheckpoint_numbers, gBack_screen->type);
         gSmashy_dot = LoadPixelmap("SMASHY.PIX");
         if (gSmashy_dot == NULL) {
+#ifndef CARPOCALYPSE2_MATCHING
+            dr_dprintf("WARNING: SMASHY.PIX not found, using dummy");
+            gSmashy_dot = DRPixelmapAllocate(gBack_screen->type, 8, 8, NULL, 0);
+            if (gSmashy_dot == NULL) {
+                FatalError(kFatalError_CantFindFile_S, "SMASHY.PIX");
+            }
+#else
             FatalError(kFatalError_CantFindFile_S, "SMASHY.PIX");
+#endif
         }
+#ifndef CARPOCALYPSE2_MATCHING
+        if (gSmashy_dot != NULL)
+#endif
         BRPM_convert(gSmashy_dot, gBack_screen->type);
         gAlt_meter = LoadPixelmap("ALTMETER.PIX");
         if (gAlt_meter == NULL) {
+#ifndef CARPOCALYPSE2_MATCHING
+            dr_dprintf("WARNING: ALTMETER.PIX not found, using dummy");
+            gAlt_meter = DRPixelmapAllocate(gBack_screen->type, 8, 8, NULL, 0);
+            if (gAlt_meter == NULL) {
+                FatalError(kFatalError_CantFindFile_S, "ALTMETER.PIX");
+            }
+#else
             FatalError(kFatalError_CantFindFile_S, "ALTMETER.PIX");
+#endif
         }
         gCheckpoint_digit_height = gCheckpoint_numbers->height / 10;
         gCheckpoint_digit_center_y = gCheckpoint_digit_height / 2;

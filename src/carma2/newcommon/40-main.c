@@ -61,7 +61,11 @@ C2_NORETURN void C2_HOOK_FASTCALL QuitGame(void) {
 
 // STUB: CARMA2_HW 0x00492180
 void C2_HOOK_FASTCALL ServiceGame(void) {
+#ifndef CARPOCALYPSE2_MATCHING
+    /* stub: no-op for Linux boot */
+#else
     NOT_IMPLEMENTED();
+#endif
 }
 
 // ServiceGameInRace
