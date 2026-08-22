@@ -7,5 +7,20 @@ else()
         src/dummy/dummy.c
     )
     target_include_directories(smackw32_smackw32_dummy PUBLIC "${CMAKE_CURRENT_LIST_DIR}/include")
-    add_library(Smackw32::Smackw32 ALIAS smackw32_smackw32_dummy)
+    if(CARPOCALYPSE2_MATCHING OR NOT CARPOCALYPSE2_PLATFORM_SDL3)
+        add_library(Smackw32::Smackw32 ALIAS smackw32_smackw32_dummy)
+    else()
+        # Real .SMK playback via libsmacker (LGPL-2.1+, see external/libsmacker).
+        add_library(smackw32_smackw32_libsmacker STATIC
+            src/libsmacker/libsmacker_adapter.c
+            ../libsmacker/smacker.c
+            ../libsmacker/smk_bitstream.c
+            ../libsmacker/smk_hufftree.c
+        )
+        target_include_directories(smackw32_smackw32_libsmacker
+            PUBLIC "${CMAKE_CURRENT_LIST_DIR}/include"
+            PRIVATE "${CMAKE_CURRENT_LIST_DIR}/../libsmacker"
+        )
+        add_library(Smackw32::Smackw32 ALIAS smackw32_smackw32_libsmacker)
+    endif()
 endif()

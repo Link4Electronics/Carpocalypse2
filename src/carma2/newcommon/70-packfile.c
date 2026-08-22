@@ -78,7 +78,7 @@ tTWTVFS C2_HOOK_FASTCALL OpenPackFile(const char* path) {
 
         fileData = (tU8*)&gTwatVfsMountPoints[twt].header->fileHeaders[gTwatVfsMountPoints[twt].header->nbFiles];
         for (i = 0; i < gTwatVfsMountPoints[twt].header->nbFiles; i++) {
-            gTwatVfsMountPoints[twt].header->fileHeaders[i].data = fileData;
+            gTwatVfsMountPoints[twt].header->fileHeaders[i].data_offset = (tU32)(fileData - (tU8*)gTwatVfsMountPoints[twt].header);
             fileData += (gTwatVfsMountPoints[twt].header->fileHeaders[i].fileSize + 3u) & ~3u;
         }
         return twt;
@@ -117,13 +117,14 @@ FILE* C2_HOOK_FASTCALL PFfopen(const char* pPath, const char* mode) {
             twt_path_len = strlen(gTwatVfsMountPoints[twt].path);
             for (i = 0; i < gTwatVfsMountPoints[twt].header->nbFiles; i++) {
                 if (DRStricmp(gTwatVfsMountPoints[twt].header->fileHeaders[i].filename, &pPath[twt_path_len + 1]) == 0) {
+                    tU8* data = gTwatVfsMountPoints[twt].data + gTwatVfsMountPoints[twt].header->fileHeaders[i].data_offset;
                     for (file_index = 0; file_index < (int)CARPOCALYPSE2_ASIZE(gTwatVfsFiles) - 1; file_index++) {
                         if (gTwatVfsFiles[file_index].start != NULL) {
                             continue;
                         }
-                        gTwatVfsFiles[file_index + 1].start = gTwatVfsMountPoints[twt].header->fileHeaders[i].data;
-                        gTwatVfsFiles[file_index + 1].pos = gTwatVfsMountPoints[twt].header->fileHeaders[i].data;
-                        gTwatVfsFiles[file_index + 1].end = gTwatVfsMountPoints[twt].header->fileHeaders[i].data + gTwatVfsMountPoints[twt].header->fileHeaders[i].fileSize;
+                        gTwatVfsFiles[file_index + 1].start = data;
+                        gTwatVfsFiles[file_index + 1].pos = data;
+                        gTwatVfsFiles[file_index + 1].end = data + gTwatVfsMountPoints[twt].header->fileHeaders[i].fileSize;
                         gTwatVfsFiles[file_index + 1].error = 0;
                         return (FILE*)(file_index + 1);
                     }

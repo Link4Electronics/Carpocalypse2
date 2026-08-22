@@ -66,7 +66,9 @@ bool gIsFatalError;
 int gExit_code;
 br_diaghandler gPD_error_handler;
 int gGraf_spec_index;
-char* gRenderer = "glrend";
+/* The software renderer device registered by BrDrv1SoftRendBegin (see
+ * drivers/softrend/driver.c). */
+char* gRenderer = "SOFTRNDF";
 int gUnknown_int_0074ca94;
 int gUnknown_int_0074cf48;
 tJoystick_info g_Joystick_infos[16];
@@ -623,15 +625,25 @@ void PDAllocateScreenAndBack(void) {
     SSDXStart(gHWnd, 0, 1, SSDX_InitDirectSound);
 
     gNbPixelBits = 16;
-    BrDevBeginVar(&gScreen, gRenderer,
-        BRT_WINDOW_FULLSCREEN_B, 1,
-        BRT_WINDOW_HANDLE_H, gHWnd,
-        BRT_WIDTH_I32, 640,
-        BRT_HEIGHT_I32, 480,
-        BRT_PIXEL_BITS_I32, 16,
-        BRT_PIXEL_TYPE_U8, BR_PMT_RGB_565,
-        BR_NULL_TOKEN
-    );
+    {
+        br_error dev_r;
+        br_device* found = NULL;
+        if (BrDevFind(&found, "*") == 0 && found != NULL) {
+            dr_dprintf("BRender device present: '%s'", found->dispatch->_identifier((br_object*)found));
+        } else {
+            dr_dprintf("No BRender devices registered");
+        }
+        dev_r = BrDevBeginVar(&gScreen, gRenderer,
+            BRT_WINDOW_FULLSCREEN_B, 1,
+            BRT_WINDOW_HANDLE_H, gHWnd,
+            BRT_WIDTH_I32, 640,
+            BRT_HEIGHT_I32, 480,
+            BRT_PIXEL_BITS_I32, 16,
+            BRT_PIXEL_TYPE_U8, BR_PMT_RGB_565,
+            BR_NULL_TOKEN
+        );
+        dr_dprintf("BrDevBeginVar('%s') -> %d", gRenderer, dev_r);
+    }
     if (gScreen == NULL) {
         BrFailure("Unable to allocate Main Front Screen");
     }

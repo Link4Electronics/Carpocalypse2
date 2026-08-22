@@ -1483,7 +1483,10 @@ typedef struct {
 typedef struct {
     tU32 fileSize;
     char filename[48];
-    tU8* data;
+    /* Offset of the file data inside the .TWT blob. The retail x86 build kept
+     * a 32-bit pointer here (the record must stay exactly 56 bytes); we store
+     * an offset instead so the layout also holds on 64-bit hosts. */
+    tU32 data_offset;
 } tTwatFileHeader;
 
 typedef struct {
