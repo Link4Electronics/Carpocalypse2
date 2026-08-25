@@ -28,6 +28,7 @@
 
 #include "carpocalypse2_macros.h"
 #include "carpocalypse2_types.h"
+#include "c2_math.h"
 
 #define GET_PED_COLLISION_OBJECT(PED) ( ((PED)->character->field_0x14 & 1) ? (PED)->character->personality->form->simple_physicing[(PED)->character->field_0x5].collision_info : GetRootObject((PED)->character))
 

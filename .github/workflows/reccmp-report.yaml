@@ -9,8 +9,6 @@ on:
     paths-ignore:
       - "reccmp-report/**"
   workflow_dispatch:
-  schedule:
-    - cron: "0 0 * * *"
 
 permissions:
   actions: read
@@ -19,9 +17,6 @@ permissions:
 env:
   RECCMP_TARGET: CARMA2_HW
   RECCMP_SYMBOL_COUNT: 5162 # FIXME: remove once reccmp supports symbol count in reccmp-project.yml
-  # Base URL hosting the original binaries encoded as text files
-  # (decoded via `.github/binendec.py`); set as a repository variable.
-  ORIGINALS_TEXT_URL: ${{ vars.ORIGINALS_TEXT_URL }}
 
 jobs:
   report:
@@ -58,23 +53,16 @@ jobs:
         run: |
           python -m pip -q install reccmp
 
-      - name: Download original binaries
+      - name: Download original binary
         shell: sh
         run: |
-          if [ -z "$ORIGINALS_TEXT_URL" ]; then
-            echo "::error::ORIGINALS_TEXT_URL repository variable is not configured (base URL hosting the encoded original binaries)"
-            exit 1
-          fi
           mkdir originals
-
-          curl -fLSs -o d3d.bdd.txt "${ORIGINALS_TEXT_URL}/d3d.bdd.txt"
-          python .github/binendec.py -D -i d3d.bdd.txt -o originals/d3d.bdd
-
-          curl -fLSs -o CARMA2_HW.EXE.txt "${ORIGINALS_TEXT_URL}/CARMA2_HW.EXE.txt"
-          python .github/binendec.py -D -i CARMA2_HW.EXE.txt -o originals/CARMA2_HW.EXE
-
-          curl -fLSs -o carma2.exe.txt "${ORIGINALS_TEXT_URL}/carma2.exe.txt"
-          python .github/binendec.py -D -i carma2.exe.txt -o originals/carma2.exe
+          # The reccmp report only compares the CARMA2_HW target, which needs
+          # just CARMA2_HW.EXE. Fetched from a public archive.org item; the
+          # sha256 must match reccmp-project.yml.
+          curl -fLSs -o originals/CARMA2_HW.EXE \
+            "https://archive.org/download/carma-2-hw/CARMA2_HW.EXE"
+          echo "9b896c2cbb170c01b3e9f904ce5e1808db29fe5b51184a5d55a6d19b1799b58d  originals/CARMA2_HW.EXE" | sha256sum -c -
 
       - name: Fetch latest report
         shell: sh

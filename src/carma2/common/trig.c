@@ -1,4 +1,5 @@
 #include "trig.h"
+#include "c2_math.h"
 
 
 // GLOBAL: CARMA2_HW 0x00661398

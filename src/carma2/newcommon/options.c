@@ -3,7 +3,7 @@
 #include "70-packfile.h"
 #include "globvars.h"
 extern int gKey_map_index;
-extern int gKey_mapping[70];
+extern int gKey_mapping[77];
 extern void C2_HOOK_FASTCALL LoadKeyMapping(void);
 extern int gOrig_key_map_index;
 

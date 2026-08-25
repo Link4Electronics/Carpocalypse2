@@ -13,6 +13,7 @@
 #include "utility.h"
 
 #include "c2_stdlib.h"
+#include "c2_math.h"
 
 
 // FUNCTION: CARMA2_HW 0x00433350

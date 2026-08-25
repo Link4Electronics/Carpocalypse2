@@ -41,6 +41,7 @@
 
 #include <assert.h>
 #include <c2_sys_stat.h>
+#include "c2_math.h"
 
 #define RGB565_R(V) (((V) & 0xf800) >> 11)
 #define RGB565_G(V) (((V) & 0x07e0) >> 5)

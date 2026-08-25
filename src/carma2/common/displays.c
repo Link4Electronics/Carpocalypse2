@@ -25,6 +25,7 @@
 #include "c2_string.h"
 
 #include "carpocalypse2_macros.h"
+#include "c2_math.h"
 
 
 // GLOBAL: CARMA2_HW 0x0067c500

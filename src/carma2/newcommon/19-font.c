@@ -1,7 +1,6 @@
 #include "19-font.h"
 #include <stdlib.h>
 #include <stdio.h>
-#include <SDL3/SDL.h>
 
 #include "05-drmem.h"
 #include "08-loading1.h"

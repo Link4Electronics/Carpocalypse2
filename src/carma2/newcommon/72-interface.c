@@ -112,7 +112,7 @@ extern void C2_HOOK_FASTCALL LoadKeyMapping(void);
 extern void C2_HOOK_FASTCALL ChangeKeyMapIndex(int pIndex);
 extern void C2_HOOK_FASTCALL CyclePollKeys(void);
 extern void C2_HOOK_FASTCALL Joystick_BackupSettings(void);
-extern void C2_HOOK_CDECL SetJoystickDPadEnabled(int pEnabled);
+extern void C2_HOOK_FASTCALL SetJoystickDPadEnabled(int pEnabled);
 extern void C2_HOOK_FASTCALL DisableJoysticks(void);
 extern void C2_HOOK_FASTCALL EnableJoysticks(void);
 extern float C2_HOOK_FASTCALL GetJoystickX(void);

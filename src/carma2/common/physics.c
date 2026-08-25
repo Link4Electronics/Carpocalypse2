@@ -17,6 +17,7 @@
 #include "c2_string.h"
 
 #include "carpocalypse2_macros.h"
+#include "c2_math.h"
 
 #define PHYSICS_BUFFER_PART_SIZE 40000
 #define PHYSICS_BUFFER_OTHER_SIZE 50000
