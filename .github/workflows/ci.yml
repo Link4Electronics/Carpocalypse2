@@ -1,22 +1,15 @@
 name: CI
 
+# Runs on PRs and manual dispatch only; pushes to main are covered by the
+# reccmp-report workflow.
 on:
-  push:
   pull_request:
-
-# Base URL hosting the original binaries encoded as text files
-# (decoded via `.github/binendec.py`). Set this repository variable to
-# your own hosted copy, e.g. https://raw.githubusercontent.com/<org>/<repo>/main/originals
-env:
-  ORIGINALS_TEXT_URL: ${{ vars.ORIGINALS_TEXT_URL }}
+  workflow_dispatch:
 
 jobs:
   build:
     name: "CI ${{ matrix.platform.name }}"
     runs-on: "${{ matrix.platform.os }}"
-    environment:
-      name: gist-environment
-      deployment: false
     strategy:
       fail-fast: false
       matrix:
@@ -97,31 +90,33 @@ jobs:
           cmake --build build
 
       # -- reccmp (MSVC5 leg only) -------------------------------------------
-      - name: Download originals for reccmp
-        if: ${{ matrix.platform.msvc5 && vars.ORIGINALS_TEXT_URL != '' }}
+      - name: Install reccmp
+        if: ${{ matrix.platform.msvc5 }}
+        run: |
+          python -m pip -q install reccmp
+
+      - name: Download original binary
+        if: ${{ matrix.platform.msvc5 }}
         run: |
           mkdir originals
+          # Only the CARMA2_HW target is compared, which needs just
+          # CARMA2_HW.EXE. Fetched from a public archive.org item; the sha256
+          # must match reccmp-project.yml.
+          curl -fLSs -o originals/CARMA2_HW.EXE \
+            "https://archive.org/download/carma-2-hw/CARMA2_HW.EXE"
+          echo "9b896c2cbb170c01b3e9f904ce5e1808db29fe5b51184a5d55a6d19b1799b58d  originals/CARMA2_HW.EXE" | sha256sum -c -
 
-          curl -fLSs -o d3d.bdd.txt "${ORIGINALS_TEXT_URL}/d3d.bdd.txt"
-          python .github/binendec.py -D -i d3d.bdd.txt -o originals/d3d.bdd
-
-          curl -fLSs -o CARMA2_HW.EXE.txt "${ORIGINALS_TEXT_URL}/CARMA2_HW.EXE.txt"
-          python .github/binendec.py -D -i CARMA2_HW.EXE.txt -o originals/CARMA2_HW.EXE
-
-          curl -fLSs -o carma2.exe.txt "${ORIGINALS_TEXT_URL}/carma2.exe.txt"
-          python .github/binendec.py -D -i carma2.exe.txt -o originals/carma2.exe
+      - name: Detect originals
+        if: ${{ matrix.platform.msvc5 }}
+        run: |
+          reccmp-project detect --what original --search-path originals
 
       - name: Run reccmp
-        uses: ./.github/actions/reccmp
-        # Skipped until the PROGRESS_GIST repository variable is configured
-        # (format: <owner>/<gist-id>); the composite action publishes progress there.
-        if: ${{ matrix.platform.msvc5 && vars.PROGRESS_GIST != '' }}
-        with:
-          root-repo: ${{ github.repository }}
-          root-branch: main
-          gist-repo: ${{ vars.PROGRESS_GIST }}
-          target: CARMA2_HW
-          symbol-count: 5162  # FIXME: remove once reccmp supports symbol count in reccmp-project.yml
-          original-search-path: '${{ github.workspace }}/originals'
-          working-directory: '${{ github.workspace }}/build'
-          gist-token: ${{ secrets.GIST_TOKEN }}
+        if: ${{ matrix.platform.msvc5 }}
+        working-directory: build
+        shell: sh
+        run: |
+          reccmp-reccmp --no-color --target CARMA2_HW \
+            --json reccmp-report.json --json-diet \
+            -T 5162 \
+            -S reccmp-progress.svg
