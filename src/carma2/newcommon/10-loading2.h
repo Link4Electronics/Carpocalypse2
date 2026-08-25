@@ -92,7 +92,7 @@ extern void C2_HOOK_FASTCALL LoadRaces(tRace_list_spec* pRace_list, int* pCount,
 
 // LoadRaceInfo
 
-// LoadOpponents
+extern void C2_HOOK_FASTCALL LoadOpponents(void);
 
 // AboutToLoadFirstCar
 

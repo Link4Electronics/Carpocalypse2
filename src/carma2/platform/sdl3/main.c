@@ -1,5 +1,6 @@
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
+#include <signal.h>
 
 #include "sdl3.h"
 #include "sdl3_platform.h"
@@ -9,9 +10,20 @@
 #include "40-main.h"
 #include "61-pedestrn.h"
 
+extern int carpocalypse2_MenuQuitRequested(void);
+extern void carpocalypse2_RequestQuit(void);
+
+static void carpocalypse2_SignalHandler(int sig) {
+    (void)sig;
+    carpocalypse2_RequestQuit();
+}
+
 int main(int argc, char *argv[]) {
     int i;
     char *path;
+
+    signal(SIGINT, carpocalypse2_SignalHandler);
+    signal(SIGTERM, carpocalypse2_SignalHandler);
 
     gAFE = 0;
     SetDefaultPedFolderNames();

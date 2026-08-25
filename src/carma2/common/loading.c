@@ -1483,7 +1483,7 @@ tTWTVFS C2_HOOK_FASTCALL OpenPackFile(const char* path) {
 
     fileData = (tU8*)&gTwatVfsMountPoints[twt].header->fileHeaders[gTwatVfsMountPoints[twt].header->nbFiles];
     for (i = 0; i < gTwatVfsMountPoints[twt].header->nbFiles; i++) {
-        gTwatVfsMountPoints[twt].header->fileHeaders[i].data = fileData;
+        gTwatVfsMountPoints[twt].header->fileHeaders[i].data_offset = (tU32)(uintptr_t)fileData;
         fileData += (gTwatVfsMountPoints[twt].header->fileHeaders[i].fileSize + 3u) & ~3u;
     }
     return twt;
@@ -1521,9 +1521,9 @@ FILE* C2_HOOK_FASTCALL PFfopen(const char* pPath, const char* mode) {
                     if (gTwatVfsFiles[file_index].start != NULL) {
                         continue;
                     }
-                    gTwatVfsFiles[file_index].start = gTwatVfsMountPoints[twt].header->fileHeaders[i].data;
-                    gTwatVfsFiles[file_index].pos = gTwatVfsMountPoints[twt].header->fileHeaders[i].data;
-                    gTwatVfsFiles[file_index].end = gTwatVfsMountPoints[twt].header->fileHeaders[i].data + gTwatVfsMountPoints[twt].header->fileHeaders[i].fileSize;
+                    gTwatVfsFiles[file_index].start = (tU8*)((uintptr_t)gTwatVfsMountPoints[twt].header->fileHeaders[i].data_offset + (uintptr_t)gTwatVfsMountPoints[twt].data);
+                    gTwatVfsFiles[file_index].pos = (tU8*)((uintptr_t)gTwatVfsMountPoints[twt].header->fileHeaders[i].data_offset + (uintptr_t)gTwatVfsMountPoints[twt].data);
+                    gTwatVfsFiles[file_index].end = (tU8*)((uintptr_t)gTwatVfsMountPoints[twt].header->fileHeaders[i].data_offset + gTwatVfsMountPoints[twt].header->fileHeaders[i].fileSize);
                     gTwatVfsFiles[file_index].error = 0;
                     return (FILE*)file_index;
                 }

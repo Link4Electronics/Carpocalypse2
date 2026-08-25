@@ -60,12 +60,22 @@ br_tv_template_entry partEnableTemplateEntries[] = {
 // GLOBAL: CARMA2_HW 0x0058c5e0
 br_tv_template_entry partHiddenSurfaceTemplateEntries[] = {
     { BRT_TYPE_T,               NULL,   offsetof(soft_state_all, hidden.type),          7,  3,  0,  0x3001 },
+#ifdef CARPOCALYPSE2_MATCHING
     { BRT_V1ORDER_TABLE_P,      NULL,   offsetof(soft_state_all, hidden.order_table),   7,  3,  0,  0x1, },
     { BRT_V1PRIMITIVE_HEAP_P,   NULL,   offsetof(soft_state_all, hidden.heap),          7,  3,  0,  0x3001, },
     { BRT_V1INSERT_FUNCTION_P,  NULL,   offsetof(soft_state_all, hidden.insert_fn),     7,  3,  0,  0x1, },
     { BRT_V1INSERT_ARG1_P,      NULL,   offsetof(soft_state_all, hidden.insert_arg1),   7,  3,  0,  0x1, },
     { BRT_V1INSERT_ARG2_P,      NULL,   offsetof(soft_state_all, hidden.insert_arg2),   7,  3,  0,  0x1, },
     { BRT_V1INSERT_ARG3_P,      NULL,   offsetof(soft_state_all, hidden.insert_arg3),   7,  3,  0,  0x1, },
+#else
+    /* 64-bit hosts: pointer parts use full-width conversion (conv 33) */
+    { BRT_V1ORDER_TABLE_P,      NULL,   offsetof(soft_state_all, hidden.order_table),   7,  33, 0,  0x1, },
+    { BRT_V1PRIMITIVE_HEAP_P,   NULL,   offsetof(soft_state_all, hidden.heap),          7,  33, 0,  0x3001, },
+    { BRT_V1INSERT_FUNCTION_P,  NULL,   offsetof(soft_state_all, hidden.insert_fn),     7,  33, 0,  0x1, },
+    { BRT_V1INSERT_ARG1_P,      NULL,   offsetof(soft_state_all, hidden.insert_arg1),   7,  33, 0,  0x1, },
+    { BRT_V1INSERT_ARG2_P,      NULL,   offsetof(soft_state_all, hidden.insert_arg2),   7,  33, 0,  0x1, },
+    { BRT_V1INSERT_ARG3_P,      NULL,   offsetof(soft_state_all, hidden.insert_arg3),   7,  33, 0,  0x1, },
+#endif
 };
 
 // GLOBAL: CARMA2_HW 0x0058c688

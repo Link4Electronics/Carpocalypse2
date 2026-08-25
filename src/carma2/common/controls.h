@@ -45,7 +45,7 @@ void C2_HOOK_FASTCALL ToggleFlaps(void);
 
 int C2_HOOK_FASTCALL ToggleFlapsCB(tPhysics_object* pCollision_info, void* data);
 
-int C2_HOOK_CDECL ToggleDoorsActorCallback(br_actor* pActor, void* data);
+intptr_t C2_HOOK_CDECL ToggleDoorsActorCallback(br_actor* pActor, void* data);
 
 void C2_HOOK_FASTCALL ToggleMap2(void);
 

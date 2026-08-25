@@ -712,7 +712,7 @@ int C2_HOOK_FASTCALL ToggleFlapsCB(tPhysics_object* pCollision_info, void* data)
 }
 
 // FUNCTION: CARMA2_HW 0x0042ddc0
-int C2_HOOK_CDECL ToggleDoorsActorCallback(br_actor* pActor, void* data) {
+intptr_t C2_HOOK_CDECL ToggleDoorsActorCallback(br_actor* pActor, void* data) {
     tCar_spec* pCar = data;
     tUser_crush_data* user_data;
     tCar_crush_buffer_entry* crush_buffer;

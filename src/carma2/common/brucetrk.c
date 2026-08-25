@@ -568,7 +568,7 @@ void C2_HOOK_FASTCALL ProcessNearbyActors(tTrack_spec* pTrack, br_vector3* pPos,
     found_an_actor_context.match_flags = pMatch_flags;
     found_an_actor_context.max_dist_axis = pMax_dist;
     found_an_actor_context.pos = pPos;
-    found_an_actor_context.callback = pCallback;
+    found_an_actor_context.callback = (int (*)(br_actor*, void*))pCallback;
     found_an_actor_context.callback_context = pContext;
     for (x = xmin; x < xmax; x++) {
         for (z = zmin; z < zmax; z++) {

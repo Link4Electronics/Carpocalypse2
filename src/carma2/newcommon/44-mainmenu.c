@@ -8,9 +8,6 @@
 
 #ifdef CARPOCALYPSE2_MATCHING
 #include "c2_hooks.h"
-#else
-extern void carpocalypse2_PresentFrame(void);
-extern int carpocalypse2_ShouldQuit(void);
 #endif
 
 // QuitVerifyStart
@@ -25,21 +22,23 @@ int C2_HOOK_FASTCALL DoVerifyQuit(int pReplace_background) {
 
 // FUNCTION: CARMA2_HW 0x00494540
 int C2_HOOK_FASTCALL DoMainScreen(void) {
+#ifdef CARPOCALYPSE2_MATCHING
+    NOT_IMPLEMENTED();
+    return 0;
+#else
     int result;
 
-    strcpy(gFrontend_MAIN.backdrop_name, "MAIN.BKD");
-    result = FRONTEND_Main(&gFrontend_MAIN);
+    result = FRONTEND_Main(kFrontend_menu_main);
 
-    switch (result) {
-    case 0: /* stay in menu */
-        return 1;
-    case 1: /* start game */
-        gProgram_state.prog_status = eProg_game_starting;
-        return 1;
-    default:
+    if (result < 0) {
         gProgram_state.prog_status = eProg_quit;
         return 0;
     }
+    if (result > 0) {
+        gProgram_state.prog_status = eProg_game_starting;
+    }
+    return 1;
+#endif
 }
 
 // DoOptionsMenu

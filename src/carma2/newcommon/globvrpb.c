@@ -27,3 +27,5 @@ int gStart_race_sent;
 
 // GLOBAL: CARMA2_HW 0x0074b778
 int gRendering_mirror;
+int gFrontend_opponent_profile_pic_needs_update;
+int gLast_host_query;

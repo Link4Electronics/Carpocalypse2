@@ -39,7 +39,7 @@ extern int C2_HOOK_FASTCALL FindPrevActiveItem(tFrontend_spec* pFrontend, int pS
 
 // RaceIndex
 
-extern int C2_HOOK_FASTCALL FuckingMakeTheFuckingRaceAndGroupsDisplayHaveTheRightCuntingStuffInIt(tFrontend_spec* pFrontend);
+extern void C2_HOOK_FASTCALL FuckingMakeTheFuckingRaceAndGroupsDisplayHaveTheRightCuntingStuffInIt(tFrontend_spec* pFrontend);
 
 extern void C2_HOOK_FASTCALL RefreshRacesScroller(tFrontend_spec* pFrontend);
 
@@ -185,7 +185,7 @@ extern void C2_HOOK_FASTCALL MaybeDoMouseCursor(void);
 
 extern void C2_HOOK_FASTCALL ResetInterfaceTimeout(void);
 
-extern int C2_HOOK_FASTCALL FRONTEND_Main(tFrontend_spec* pFrontend_spec);
+extern int C2_HOOK_FASTCALL FRONTEND_Main(tFrontendMenuType pFrontendType);
 
 // ProcessInputString
 

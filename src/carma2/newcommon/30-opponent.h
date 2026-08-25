@@ -179,7 +179,7 @@ extern tCar_spec* C2_HOOK_FASTCALL GetCarSpec(tVehicle_type pCategory, int pInde
 
 // GetOpponentsSectionMaxSpeed
 
-// InitOpponentPsyche
+extern void C2_HOOK_FASTCALL InitOpponentPsyche(int pOpponent_index);
 
 // ClearTwattageOccurrenceVariables
 

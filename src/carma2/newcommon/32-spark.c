@@ -1,5 +1,8 @@
 #include "32-spark.h"
 
+// GLOBAL: CARMA2_HW 0x006b7880
+br_material* gBlack_material;
+
 // GLOBAL: CARMA2_HW 0x00660110
 int gSmoke_on = 1;
 

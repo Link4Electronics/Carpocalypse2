@@ -63,6 +63,9 @@ extern void PDScreenBufferSwap(int pRendering_area_only);
 extern void PDInitTimer(void);
 
 extern tU32 PDGetTotalTime(void);
+extern tGraf_spec gGraf_specs[2];
+extern int gGraf_spec_index;
+extern int gCurrent_graf_data_index;
 
 extern int PDGetMicroseconds(void);
 

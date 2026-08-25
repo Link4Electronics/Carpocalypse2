@@ -1066,7 +1066,7 @@ void C2_HOOK_FASTCALL FuckWithWidths(tFrontend_spec* pFrontend) {
 void C2_HOOK_FASTCALL MungeButtonModels(tFrontend_spec* pFrontend, int pButton_index) {
     int i;
 
-    tFrontend_scroller_spec* scroller = &pFrontend->scrollers[pIndex];
+    tFrontend_scroller_spec* scroller = &pFrontend->scrollers[pButton_index];
 
     for (i = 0; i < scroller->nbDisplayedAtOnce; i++) {
         int item_idx = scroller->indexFirstScrollableItem + i;

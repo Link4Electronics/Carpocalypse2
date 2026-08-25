@@ -1,5 +1,17 @@
 #include "10-loading2.h"
 
+extern int gKey_map_index;
+extern void C2_HOOK_FASTCALL PossibleService(void);
+extern void C2_HOOK_FASTCALL InitFunkGrooveFlags(void);
+const char* gNet_avail_names[4] = {
+    "never",
+    "human",
+    "stiff",
+    "always"
+};
+
+int gGroove_funk_offset;
+
 #include "00-car.h"
 #include "02-init.h"
 #include "07-structur.h"
@@ -44,8 +56,6 @@ FILE* gTempFile;
 // GLOBAL: CARMA2_HW 0x0068c718
 const char* gPedTextTxtPath;
 
-// GLOBAL: CARMA2_HW 0x0068b88c
-int gKey_map_index;
 
 #define DECODE_OFFSET 50
 // GLOBAL: CARMA2_HW 0x00655e38
@@ -559,9 +569,112 @@ void C2_HOOK_FASTCALL LoadRaces(tRace_list_spec* pRace_list, int* pCount, int pR
 
 // LoadRaceInfo
 
-// LoadOpponents
+extern char* gCurrent_palette_pixels;
+extern br_pixelmap* gOrig_render_palette;
+extern br_pixelmap* gFlic_palette;
+extern int gFaded_palette;
+extern void C2_HOOK_FASTCALL PDSetPalette(br_pixelmap* pPalette);
 
-// AboutToLoadFirstCar
+extern int gPalette_munged;
+extern br_pixelmap* gScratch_palette;
+br_pixelmap* gMini_map_glowing_line_palettes[3];
+br_pixelmap* gPalette_0074a604;
+
+extern br_colour* gScratch_pixels;
+br_pixelmap* gPalette_0074a600;
+br_pixelmap* gPalette_0074a66c;
+br_pixelmap* gPalette_0074a5fc;
+br_pixelmap* gPalette_0074a670;
+
+// FUNCTION: CARMA2_HW 0x0048c930
+void C2_HOOK_FASTCALL LoadOpponents(void) {
+    FILE* f;
+    tPath_name the_path;
+    int i;
+    int j;
+    int k;
+    char s[256];
+    char* str;
+    tText_chunk* the_chunk;
+
+    PathCat(the_path, gApplication_path, "OPPONENT.TXT");
+    f = DRfopen(the_path, "rt");
+    if (f == NULL) {
+        FatalError(kFatalError_CannotOpenOpponentsFile);
+    }
+    GetALineAndDontArgue(f, s);
+    str = strtok(s, "\t ,/");
+    sscanf(str, "%d", &gNumber_of_racers);
+    gOpponents = BrMemAllocate(sizeof(tOpponent) * gNumber_of_racers, kMem_oppo_array);
+
+    for (i = 0; i < gNumber_of_racers; i++) {
+        PossibleService();
+        GetALineAndDontArgue(f, gOpponents[i].name);
+        if (strcmp(gOpponents[i].name, "END") == 0) {
+            FatalError(kFatalError_OpponentCountMismatchesActualNumberOfOpponents);
+        }
+        GetALineAndDontArgue(f, s);
+        strcpy(gOpponents[i].abbrev_name, strtok(s, "\t ,/"));
+        GetALineAndDontArgue(f, gOpponents[i].car_name);
+        /* Strength rating (1-5) */
+        gOpponents[i].strength_rating = GetAnInt(f);
+        /* Cost to buy it */
+        gOpponents[i].price = GetAnInt(f);
+        /* Network availability ('eagle', or 'all') */
+        gOpponents[i].network_availability = GetALineAndInterpretCommand(f, gNet_avail_names, CARPOCALYPSE2_ASIZE(gNet_avail_names));
+
+        gOpponents[i].mug_shot_image_data = NULL;
+        gOpponents[i].grid_icon_image = NULL;
+        gOpponents[i].stolen_car_image_data = NULL;
+
+        /* vehicle filename */
+        GetALineAndDontArgue(f, s);
+        strcpy(gOpponents[i].car_file_name, strtok(s, "\t ,/"));
+
+        /* vehicle description */
+        GetALineAndDontArgue(f, gOpponents[i].line1_topspeed);
+        GetALineAndDontArgue(f, gOpponents[i].line2_weight);
+        GetALineAndDontArgue(f, gOpponents[i].line3_acceleration);
+        GetALineAndDontArgue(f, gOpponents[i].line4_description);
+
+        C2_HOOK_BUG_ON(sizeof(tText_chunk) != 52);
+        gOpponents[i].text_chunk_count = 0;
+        gOpponents[i].text_chunks = BrMemAllocate(sizeof(tText_chunk) * gOpponents[i].text_chunk_count, kMem_oppo_text_chunk);
+
+        for (j = 0; j < gOpponents[i].text_chunk_count; j++) {
+            the_chunk = &gOpponents[i].text_chunks[j];
+            PossibleService();
+            GetPairOfInts(f, &the_chunk->x_coord, &the_chunk->y_coord);
+            GetPairOfInts(f, &the_chunk->frame_cue, &the_chunk->frame_end);
+            the_chunk->line_count = GetAnInt(f);
+            while (the_chunk->line_count > CARPOCALYPSE2_ASIZE(the_chunk->text)) {
+                the_chunk->line_count--;
+                GetALineAndDontArgue(f, s);
+            }
+
+            for (k = 0; k < the_chunk->line_count; k++) {
+                GetALineAndDontArgue(f, s);
+                the_chunk->text[k] = BrMemAllocate(strlen(s) + 1, kMem_oppo_text_str);
+                strcpy(the_chunk->text[k], s);
+            }
+        }
+        gOpponents[i].dead = 0;
+        InitOpponentPsyche(i);
+    }
+    GetALineAndDontArgue(f, s);
+    if (strcmp(s, "END") != 0) {
+        FatalError(kFatalError_OpponentCountMismatchesActualNumberOfOpponents);
+    }
+    PFfclose(f);
+}
+
+
+// FUNCTION: CARMA2_HW 0x0048cd80
+void C2_HOOK_FASTCALL AboutToLoadFirstCar(void) {
+
+    InitFunkGrooveFlags();
+    gGroove_funk_offset = 0;
+}
 
 // LoadOpponentsCars
 
@@ -790,3 +903,39 @@ void C2_HOOK_FASTCALL SetDefaultTextFileName(void) {
     gPedTextTxtPath = "TEXT.TXT";
 }
 
+
+// FUNCTION: CARMA2_HW 0x004b5090
+void C2_HOOK_FASTCALL InitializePalettes(void) {
+    br_pixelmap* render_palette;
+
+    gCurrent_palette_pixels = BrMemAllocate(256 * sizeof(br_uint_32), kMem_misc);
+    gPalette_changed = 0;
+    gCurrent_palette = DRPixelmapAllocate(BR_PMT_RGBX_888, 1, 256, gCurrent_palette_pixels, 0);
+    gRender_palette = BrTableFind("DRRENDER.PAL");
+    if (gRender_palette == NULL) {
+        FatalError(kFatalError_unableToFindRequiredPalette);
+    }
+    NobbleNonzeroBlacks(gRender_palette);
+    gOrig_render_palette = BrPixelmapAllocateSub(gRender_palette, 0, 0, gRender_palette->width, gRender_palette->height);
+    gOrig_render_palette->pixels = BrMemAllocate(256 * sizeof(br_uint_32), kMem_misc);
+    memcpy(gOrig_render_palette->pixels, gRender_palette->pixels, 256 * sizeof(br_uint_32));
+    gFlic_palette = BrTableFind("DRACEFLC.PAL");
+    render_palette = gRender_palette;
+    if (gFlic_palette == NULL) {
+        FatalError(kFatalError_unableToFindRequiredPalette);
+    }
+    ((br_uint_32*)gRender_palette->pixels)[0] = 0;
+    memcpy(gCurrent_palette_pixels, gRender_palette->pixels, 256 * sizeof(br_uint_32));
+    gPalette_changed = 0;
+    if (!gFaded_palette) {
+        PDSetPalette(gRender_palette);
+    }
+    gPalette_munged |= render_palette != gRender_palette;
+    gScratch_pixels = BrMemAllocate(256 * sizeof(br_uint_32), kMem_misc);
+    gScratch_palette = DRPixelmapAllocate(BR_PMT_RGBX_888, 1, 256, gScratch_pixels, 0);
+    gMini_map_glowing_line_palettes[0] = (br_pixelmap*)-1; /* FIXME: invalid pointer! */
+    gMini_map_glowing_line_palettes[1] = gPalette_0074a604;
+    gMini_map_glowing_line_palettes[2] = gPalette_0074a600;
+    gPalette_0074a66c = gPalette_0074a5fc;
+    gPalette_0074a670 = NULL;
+}

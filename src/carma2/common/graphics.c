@@ -1684,18 +1684,6 @@ void C2_HOOK_FASTCALL EnsureRenderPalette(void) {
     }
 }
 
-void C2_HOOK_FASTCALL CleanPolyFontDanglers(void) {
-    int i;
-
-    for (i = 0; i < gCount_polyfont_glyph_actors; i++) {
-        br_actor* a = gPolyfont_glyph_actors[i];
-        if (a->parent != NULL) {
-            BrActorRemove(a);
-        }
-    }
-    gCount_polyfont_glyph_actors = 0;
-}
-
 // FUNCTION: CARMA2_HW 0x004e5a70
 void C2_HOOK_FASTCALL StartRenderingHeadups(void) {
 

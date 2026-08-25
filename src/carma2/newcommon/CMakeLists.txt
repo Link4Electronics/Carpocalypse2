@@ -77,6 +77,7 @@ add_library(c2_newcommon STATIC
     72-interface-netsync.c
     72-interface-network.c
     72-interface-network_options.c
+    72-interface-changecar.c
     72-interface-networksummary.c
     72-interface-newgame.c
     72-interface-options.c
@@ -95,6 +96,7 @@ add_library(c2_newcommon STATIC
     globvrme.c
     globvrpb.c
     joystick.c
+    options.c
 )
 
 target_include_directories(c2_newcommon

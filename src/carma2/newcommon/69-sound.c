@@ -955,3 +955,9 @@ void C2_HOOK_FASTCALL SetDefaultSoundFolderName(void) {
     gPed_sound_path = NULL;
 }
 
+
+// FUNCTION: CARMA2_HW 0x0047c650 (StartMusicTrack)
+void C2_HOOK_FASTCALL StartMusicTrack(int pMusic_track) {
+
+    NOT_IMPLEMENTED();
+}

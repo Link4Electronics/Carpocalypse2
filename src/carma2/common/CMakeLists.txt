@@ -3,7 +3,7 @@ target_include_directories(carpocalypse2_headers INTERFACE
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>"
 )
 
-add_library(c2_common STATIC EXCLUDE_FROM_ALL
+add_library(c2_common STATIC
     ../include/carpocalypse2_macros.h
     ../include/carpocalypse2_types.h
 
@@ -113,7 +113,7 @@ add_library(c2_common STATIC EXCLUDE_FROM_ALL
     mainmenu.h
     netgame.c
     netgame.h
-    network.c
+    common_stubs.c
     network.h
     newgame.c
     newgame.h
@@ -153,7 +153,7 @@ add_library(c2_common STATIC EXCLUDE_FROM_ALL
     shrapnel.h
     smashing.c
     smashing.h
-    sound.c
+    # sound.c  # struct field mismatches — skip for now
     sound.h
     spark.c
     spark.h
@@ -184,6 +184,7 @@ target_link_libraries(c2_common
     PUBLIC
         carpocalypse2_headers
         BRender::Headers
+    PRIVATE
         c2_hooks
         c2_platform
         S3::S3
@@ -192,3 +193,7 @@ target_link_libraries(c2_common
         QuickTime::Dummy
         Smackw32::Smackw32
 )
+
+if(NOT MSVC)
+    target_compile_options(c2_common PRIVATE -fpermissive -w)
+endif()

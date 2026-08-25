@@ -1,4 +1,5 @@
 #include "30-opponent.h"
+#include "globvars.h"
 
 #include <c2_hooks.h>
 
@@ -196,7 +197,11 @@ tCar_spec* C2_HOOK_FASTCALL GetCarSpec(tVehicle_type pCategory, int pIndex) {
 
 // GetOpponentsSectionMaxSpeed
 
-// InitOpponentPsyche
+// FUNCTION: CARMA2_HW 0x004aee90
+void C2_HOOK_FASTCALL InitOpponentPsyche(int pOpponent_index) {
+
+    gOpponents[pOpponent_index].psyche.grudge_against_player = 0;
+}
 
 // ClearTwattageOccurrenceVariables
 

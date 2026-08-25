@@ -170,6 +170,12 @@ br_error C2_HOOK_STDCALL ValueQuery(br_token_value* tv, void** pextra, br_size_t
             return 0x1001;
         }
         return custp->query(&tv->v.u32, pextra, pextra_size, block, tep);
+#ifndef CARPOCALYPSE2_MATCHING
+    case 33:
+        /* full-width pointer (64-bit hosts) */
+        *(void**)&tv->v = *(void**)mem;
+        break;
+#endif
     case 3:
         /* void* */
         tv->v.u32 = *(br_uint_32*)mem;
@@ -381,6 +387,12 @@ br_error C2_HOOK_STDCALL ValueSet(void* block, br_token_value* tv, br_tv_templat
     mem = (br_uint_8*)block + tep->offset;
 
     switch (tep->conv) {
+#ifndef CARPOCALYPSE2_MATCHING
+    case 33:
+        /* full-width pointer (64-bit hosts) */
+        *(void**)mem = *(void**)&tv->v;
+        break;
+#endif
     case 3:
         /* void* */
         *(br_uint_32*)mem = tv->v.u32;

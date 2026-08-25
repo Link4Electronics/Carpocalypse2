@@ -23,6 +23,9 @@
 #include "platform.h"
 #include "globvars.h"
 #include "globvrpb.h"
+// GLOBAL: CARMA2_HW 0x0068b88c
+int gKey_map_index;
+
 #include "carpocalypse2_macros.h"
 
 #include <ctype.h>
@@ -1017,4 +1020,16 @@ int GetRegisterSourceLocation(char* pSource_location) {
     strcpy(pSource_location, "DATA");
     return 1;
 #endif
+}
+
+// FUNCTION: CARMA2_HW 0x0048e9e0
+void C2_HOOK_FASTCALL InitFunkGrooveFlags(void) {
+    int i;
+
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gFunk_groove_flags) != 30);
+
+    // Starting from 1
+    for (i = 1; i < CARPOCALYPSE2_ASIZE(gFunk_groove_flags); i++) {
+        gFunk_groove_flags[i] = 0;
+    }
 }

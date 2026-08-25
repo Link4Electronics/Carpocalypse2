@@ -635,6 +635,7 @@ void C2_HOOK_FASTCALL Init2DStuff(void) {
         strcpy(gProgram_state.player_name, "MAX DAMAGE"); \
         RestoreOptions(); \
         LoadKeyMapping(); \
+        LoadOpponents(); \
         if (!PDInitScreenVars(pArgc, pArgv)) { \
             FatalError(0); \
         } \
@@ -658,6 +659,7 @@ void C2_HOOK_FASTCALL Init2DStuff(void) {
         InitMap(); \
         PrintMemoryDump(0, "AFTER INITIALISING GENERAL STORAGE AND LOADING IN REG"); \
         Init2DStuffForPolyFonts(); \
+        InitPolyFonts(); \
         InitLineStuff(); \
         InitSmokeStuff(); \
         PrintMemoryDump(0, "AFTER INITING LINE AND SMOKE STUFF"); \

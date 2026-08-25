@@ -1,5 +1,18 @@
 #include "53-controls.h"
 
+#include "globvars.h"
+#include "platform.h"
+#include "69-sound.h"
+#include "08-loading1.h"
+#include "42-input.h"
+extern tU32* C2_HOOK_FASTCALL KevKeyService(void);
+
+// GLOBAL: CARMA2_HW 0x0068b8e4
+int gINT_0068b8e4;
+
+// GLOBAL: CARMA2_HW 0x0068b8e8
+int gINT_0068b8e8;
+
 #include "70-packfile.h"
 #include "platform.h"
 #include "carpocalypse2_macros.h"
@@ -143,7 +156,17 @@ char* gAbuse_text[10];
 
 // CheckSystemKeys
 
-// CheckForCheatingGits
+// FUNCTION: CARMA2_HW 0x00443c50
+void C2_HOOK_FASTCALL CheckForCheatingGits(void) {
+    tU32* keys;
+
+    keys = KevKeyService();
+    if (keys[0] == 0x616fb8ea && keys[0] == 0x7c6100a8) {
+        ToggleSoundEnable();
+        gProgram_state.game_completed = 1;
+        DRS3StartSound(gEffects_outlet, eSoundId_FlaskGone);
+    }
+}
 
 // CheckKevKeys
 
