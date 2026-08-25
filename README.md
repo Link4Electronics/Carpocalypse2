@@ -1,7 +1,7 @@
-# Carmageddon 2 disassembly
+# Carmageddon 2 decompilation
 
 
-This repo attempts to document 1998's Carmageddon 2 by writing equivalent C code and just for the dissassemble.
+This repo attempts to document 1998's Carmageddon 2 by writing equivalent C code.
 
 ## Status
 
@@ -27,3 +27,14 @@ This repo attempts to document 1998's Carmageddon 2 by writing equivalent C code
 - Exact same behavior as the original
 - Matching binary
 - Every single commit should compile and work: this enables `git-bisect` to search for regressions
+
+## Legal
+
+Carpocalypse2 is a fan-made reverse-engineering research project,
+licensed under the [GNU GPL v3](LICENSE). It contains no original game
+code or assets — a legally obtained copy of *Carmageddon II:
+Carpocalypse Now* is required to use it.
+
+This project is not associated with, or endorsed by, SCi, Stainless
+Software or THQ Nordic. All trademarks and copyrights related to
+Carmageddon are the property of their respective owners.

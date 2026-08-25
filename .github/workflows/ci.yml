@@ -1,6 +1,8 @@
-name: Build
+name: CI
 
-on: [push, pull_request]
+on:
+  push:
+  pull_request:
 
 # Base URL hosting the original binaries encoded as text files
 # (decoded via `.github/binendec.py`). Set this repository variable to
@@ -9,9 +11,9 @@ env:
   ORIGINALS_TEXT_URL: ${{ vars.ORIGINALS_TEXT_URL }}
 
 jobs:
-  Build:
-    name: ${{ matrix.platform.name }}
-    runs-on: ${{ matrix.platform.os }}
+  build:
+    name: "CI ${{ matrix.platform.name }}"
+    runs-on: "${{ matrix.platform.os }}"
     environment:
       name: gist-environment
       deployment: false
@@ -19,77 +21,107 @@ jobs:
       fail-fast: false
       matrix:
         platform:
-          - { name: MinGW,  os: ubuntu-latest, cmake-args: '-DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/mingw32.cmake', werror: true }
-          - { name: MSVC,   os: windows-latest, werror: true }
-          - { name: MSVC5,  os: windows-2025-vs2026, msvc5: true, cmake-args: '-DCARPOCALYPSE2_MATCHING=TRUE -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_C_COMPILER=cl -DCMAKE_CXX_COMPILER=cl', werror: false }
+          - {
+              name: "MinGW",
+              os: ubuntu-latest,
+              werror: true,
+              cmake-args: '-DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/mingw32.cmake',
+            }
+          - {
+              name: "MSVC",
+              os: windows-latest,
+              werror: true,
+            }
+          - {
+              name: "MSVC5",
+              os: windows-2025-vs2026,
+              msvc5: true,
+              # Matching build: original compiler, original flags.
+              cmake-args: '-DCARPOCALYPSE2_MATCHING=TRUE -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_C_COMPILER=cl -DCMAKE_CXX_COMPILER=cl',
+            }
+    defaults:
+      run:
+        shell: sh
     steps:
-    - name: Fetch carpocalypse2 sources
-      uses: actions/checkout@v6
-    - name: Fetch MSVC11 (Visual C++ 97 SP3)
-      uses: actions/checkout@v6
-      if: ${{ matrix.platform.msvc5 }}
-      with:
-        repository: archaic-msvc/msvc500sp3
-        path: msvc500
-    - name: Setup MSVC11 (Visual C++ 97 SP3)
-      if: ${{ matrix.platform.msvc5 }}
-      shell: cmd
-      run: |
-        echo INCLUDE=${{ github.workspace }}\msvc500\include;${{ github.workspace }}\msvc500\atl\include;${{ github.workspace }}\msvc500\mfc\include>>%GITHUB_ENV%
-        echo LIB=${{ github.workspace }}\msvc500\lib;${{ github.workspace }}\msvc500\mfc\lib>>%GITHUB_ENV%
-        echo ${{ github.workspace }}\msvc500\bin>>%GITHUB_PATH%
-        echo ${{ github.workspace }}\msvc500\redist>>%GITHUB_PATH%
-    - name: Setup Ninja
-      uses: ./.github/actions/setup-ninja
-    - name: Setup modern MSVC
-      uses: TheMrMilchmann/setup-msvc-dev@v4
-      if: ${{ matrix.platform.name == 'MSVC' }}
-      with:
-        arch: x86
-    - name: Install MinGW
-      if: ${{ matrix.platform.name == 'MinGW' }}
-      run: |
-        sudo apt-get update
-        sudo apt-get install gcc-mingw-w64-i686 g++-mingw-w64-i686
-    - name: CMake (configure)
-      run: |
-        cmake -S . -B build -GNinja ${{ matrix.platform.cmake-args }} -DCARPOCALYPSE2_VENDORED=ON -DCARPOCALYPSE2_WERROR=${{ (matrix.platform.werror && 'ON') || 'OFF' }}
-    - name: CMake (build)
-      run: |
-        cmake --build build ${{ matrix.platform.build-args }}
-    - name: Download binaries for reccmp
-      uses: actions/setup-python@main
-      with:
-        python-version: 3.x
-    - name: Download binaries for reccmp
-      if: ${{ matrix.platform.msvc5 && vars.ORIGINALS_TEXT_URL != '' }}
-      shell: sh
-      run: |
-        if [ -z "$ORIGINALS_TEXT_URL" ]; then
-          echo "::error::ORIGINALS_TEXT_URL repository variable is not configured (base URL hosting the encoded original binaries)"
-          exit 1
-        fi
-        mkdir originals
+      - name: Fetch carpocalypse2 sources
+        uses: actions/checkout@v6
 
-        curl -fLSs -o d3d.bdd.txt "${ORIGINALS_TEXT_URL}/d3d.bdd.txt"
-        python .github/binendec.py -D -i d3d.bdd.txt -o originals/d3d.bdd
+      # -- MSVC5 (Visual C++ 97 SP3): the original matching toolchain ------
+      - name: Fetch MSVC5 (Visual C++ 97 SP3)
+        if: ${{ !!matrix.platform.msvc5 }}
+        uses: actions/checkout@v6
+        with:
+          repository: archaic-msvc/msvc500sp3
+          path: msvc500
 
-        curl -fLSs -o CARMA2_HW.EXE.txt "${ORIGINALS_TEXT_URL}/CARMA2_HW.EXE.txt"
-        python .github/binendec.py -D -i CARMA2_HW.EXE.txt -o originals/CARMA2_HW.EXE
+      - name: Setup MSVC5 (Visual C++ 97 SP3)
+        if: ${{ !!matrix.platform.msvc5 }}
+        shell: cmd
+        run: |
+          echo INCLUDE=%GITHUB_WORKSPACE%\msvc500\include;%GITHUB_WORKSPACE%\msvc500\atl\include;%GITHUB_WORKSPACE%\msvc500\mfc\include>>%GITHUB_ENV%
+          echo LIB=%GITHUB_WORKSPACE%\msvc500\lib;%GITHUB_WORKSPACE%\msvc500\mfc\lib>>%GITHUB_ENV%
+          echo %GITHUB_WORKSPACE%\msvc500\bin>>%GITHUB_PATH%
+          echo %GITHUB_WORKSPACE%\msvc500\redist>>%GITHUB_PATH%
 
-        curl -fLSs -o carma2.exe.txt "${ORIGINALS_TEXT_URL}/carma2.exe.txt"
-        python .github/binendec.py -D -i carma2.exe.txt -o originals/carma2.exe
-    - name: Run reccmp
-      uses: ./.github/actions/reccmp
-      # Skipped until the PROGRESS_GIST repository variable is configured
-      # (format: <owner>/<gist-id>); the composite action publishes progress there.
-      if: ${{ matrix.platform.msvc5 && vars.PROGRESS_GIST != '' }}
-      with:
-        root-repo: ${{ github.repository }}
-        root-branch: main
-        gist-repo: ${{ vars.PROGRESS_GIST }}
-        target: CARMA2_HW
-        symbol-count: 5162  # FIXME: remove once reccmp supports symbol count in reccmp-project.yml
-        original-search-path: '${{ github.workspace }}/originals'
-        working-directory: '${{ github.workspace }}/build'
-        gist-token: ${{ secrets.GIST_TOKEN }}
+      # -- Toolchain plumbing ----------------------------------------------
+      - name: Set up Ninja
+        uses: ./.github/actions/setup-ninja
+
+      - name: Setup modern MSVC (x86)
+        if: ${{ matrix.platform.name == 'MSVC' }}
+        uses: TheMrMilchmann/setup-msvc-dev@v4
+        with:
+          arch: x86
+
+      - name: Install MinGW (i686 cross)
+        if: ${{ matrix.platform.name == 'MinGW' }}
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-mingw-w64-i686 g++-mingw-w64-i686
+
+      - name: Set up Python (reccmp)
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.x
+
+      # -- Build -------------------------------------------------------------
+      - name: Configure (CMake)
+        run: |
+          cmake -S . -B build -GNinja \
+            ${{ matrix.platform.cmake-args }} \
+            -DCARPOCALYPSE2_VENDORED=ON \
+            -DCARPOCALYPSE2_WERROR=${{ (matrix.platform.werror && 'ON') || 'OFF' }}
+
+      - name: Build (CMake)
+        run: |
+          cmake --build build
+
+      # -- reccmp (MSVC5 leg only) -------------------------------------------
+      - name: Download originals for reccmp
+        if: ${{ matrix.platform.msvc5 && vars.ORIGINALS_TEXT_URL != '' }}
+        run: |
+          mkdir originals
+
+          curl -fLSs -o d3d.bdd.txt "${ORIGINALS_TEXT_URL}/d3d.bdd.txt"
+          python .github/binendec.py -D -i d3d.bdd.txt -o originals/d3d.bdd
+
+          curl -fLSs -o CARMA2_HW.EXE.txt "${ORIGINALS_TEXT_URL}/CARMA2_HW.EXE.txt"
+          python .github/binendec.py -D -i CARMA2_HW.EXE.txt -o originals/CARMA2_HW.EXE
+
+          curl -fLSs -o carma2.exe.txt "${ORIGINALS_TEXT_URL}/carma2.exe.txt"
+          python .github/binendec.py -D -i carma2.exe.txt -o originals/carma2.exe
+
+      - name: Run reccmp
+        uses: ./.github/actions/reccmp
+        # Skipped until the PROGRESS_GIST repository variable is configured
+        # (format: <owner>/<gist-id>); the composite action publishes progress there.
+        if: ${{ matrix.platform.msvc5 && vars.PROGRESS_GIST != '' }}
+        with:
+          root-repo: ${{ github.repository }}
+          root-branch: main
+          gist-repo: ${{ vars.PROGRESS_GIST }}
+          target: CARMA2_HW
+          symbol-count: 5162  # FIXME: remove once reccmp supports symbol count in reccmp-project.yml
+          original-search-path: '${{ github.workspace }}/originals'
+          working-directory: '${{ github.workspace }}/build'
+          gist-token: ${{ secrets.GIST_TOKEN }}
