@@ -61,6 +61,9 @@ extern tU32 gFrontend_last_scroll;
 extern tU32 gFrontend_time_last_input;
 extern tRace_group_spec* gRace_groups;
 extern void C2_HOOK_FASTCALL FillInRaceDescription(char* pDest, int pRace_index);
+extern int C2_HOOK_CDECL sub_576c00(int pValue, int pDivisor);
+extern int gFrontend_scrollbars_updated;
+extern tU32 gFrontend_time_last_input;
 extern int gMouse_in_use;
 extern br_actor* gFrontend_menu_camera;
 extern br_actor* gFrontend_billboard_actors[8];
@@ -160,6 +163,20 @@ void C2_HOOK_FASTCALL FuckingMakeTheFuckingRaceAndGroupsDisplayHaveTheRightCunti
     }
 }
 
+// FUNCTION: CARMA2_HW 0x00576c00
+int C2_HOOK_CDECL sub_576c00(int pValue, int pDivisor) {
+    int quotient;
+    int remainder;
+
+    quotient = pValue / pDivisor;
+    remainder = pValue % pDivisor;
+    if (pValue < 0 && remainder > 0) {
+        quotient += 1;
+        remainder -= pDivisor;
+    }
+    return quotient;
+}
+
 // FUNCTION: CARMA2_HW 0x00469a40
 int C2_HOOK_FASTCALL MainMenuInfunc(tFrontend_spec* pFrontend) {
     int group;
@@ -167,18 +184,30 @@ int C2_HOOK_FASTCALL MainMenuInfunc(tFrontend_spec* pFrontend) {
     int i;
     char group_name[12];
     br_camera* camera;
+    tRace_list_spec* race;
 
-    DefaultInfunc(pFrontend);
-    ResetInterfaceTimeout();
+    if (pFrontend->loaded == 0) {
+        LoadMenuSettings(pFrontend);
+        FuckWithWidths(pFrontend);
+    }
+    if (pFrontend->previous != NULL) {
+        pFrontend->previous->isPreviousSomeOtherMenu = 1;
+    }
+    gFrontend_scrollbars_updated = 0;
+    EdgeTriggerModeOff();
+    WaitForNoKeys();
+    EdgeTriggerModeOn();
+    gFrontend_time_last_input = PDGetTotalTime();
     group = (gCurrent_race_group - gRace_groups) % 10;
     sprintf(group_name, "%s %d", IString_Get(78), group + 1);
     strcpy(pFrontend->items[2].text, group_name);
     race_index = 4 * group;
     for (i = pFrontend->scrollers[0].indexFirstScrollableItem; i <= pFrontend->scrollers[0].indexLastScrollableItem; i++, race_index += 1) {
         tFrontend_item_spec* item = &pFrontend->items[i];
-        strcpy(item->text, gRace_list[race_index].name);
+        race = &gRace_list[race_index];
+        strcpy(item->text, race->name);
         item->radioButton_selected = race_index == gProgram_state.current_race_index;
-        if (gRace_list[race_index].is_boundary) {
+        if (race->is_boundary) {
             item->unlitFont = 2;
             item->highFont = 3;
         } else {
@@ -186,7 +215,12 @@ int C2_HOOK_FASTCALL MainMenuInfunc(tFrontend_spec* pFrontend) {
             item->highFont = 1;
         }
     }
-    FuckingMakeTheFuckingRaceAndGroupsDisplayHaveTheRightCuntingStuffInIt(pFrontend);
+    if (gIs_boundary_race || gProgram_state.game_completed) {
+        pFrontend->items[7].enabled = 1;
+    } else {
+        pFrontend->items[7].enabled = -1;
+    }
+    sub_576c00(gProgram_state.current_race_index, 4);
     FillInRaceDescription(pFrontend->items[22].text, gProgram_state.current_race_index);
     strcpy(pFrontend->items[18].text, gProgram_state.player_name);
     strcpy(pFrontend->items[20].text, gOpponents[gProgram_state.current_car_index].car_name);

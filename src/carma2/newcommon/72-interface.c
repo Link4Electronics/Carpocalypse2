@@ -824,7 +824,7 @@ void C2_HOOK_FASTCALL FRONTEND_CreateMenuButton(tFrontend_brender_item* pFronten
     }
     if (pMap == NULL) {
         pFrontend_brender_item->field_0x10 = BrPixelmapAllocate(BR_PMT_RGBA_4444, 8, 8, NULL, 0);
-        BrPixelmapFill(pFrontend_brender_item->field_0x10, BR_COLOUR_RGBA(0, 0, 0x80, 0));
+        BrPixelmapFill(pFrontend_brender_item->field_0x10, BR_COLOUR_RGBA(0, 0, 0, 0x80));
         pFrontend_brender_item->field_0xc = BrPixelmapAllocate(BR_PMT_RGBA_4444, 8, 8, NULL, 0);
         BrPixelmapCopy(pFrontend_brender_item->field_0xc, pFrontend_brender_item->field_0x10);
         pFrontend_brender_item->field_0xc->identifier = BrResStrDup(pFrontend_brender_item->field_0xc, pText);
@@ -872,10 +872,13 @@ void C2_HOOK_FASTCALL FRONTEND_CreateMenuButton(tFrontend_brender_item* pFronten
         map_y = (float)pHeight / (float)HighResHeadupWidth(pMap->height);
     } else {
         map_x = (float)pWidth / (float)HighResHeadupWidth(8);
-        map_y = (float)pWidth / (float)HighResHeadupWidth(8);
+        map_y = (float)pHeight / (float)HighResHeadupWidth(8);
     }
     BrVector2Set(&pFrontend_brender_item->model->vertices[0].map, 0.0f, 0.0f);
     BrVector2Set(&pFrontend_brender_item->model->vertices[1].map, 0.0f, map_y);
+    /* NOTE: retail emits u = (float)pHeight for the right edge here — a quirk
+     * that only renders correctly under wrap-sampling; we keep the wrapped
+     * equivalent (u = map_x) so our sampler produces the same texels */
     BrVector2Set(&pFrontend_brender_item->model->vertices[2].map, map_x, map_y);
     BrVector2Set(&pFrontend_brender_item->model->vertices[3].map, map_x, 0.0f);
     BrModelUpdate(pFrontend_brender_item->model, BR_MODU_ALL);

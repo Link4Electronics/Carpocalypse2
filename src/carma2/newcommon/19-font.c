@@ -1383,6 +1383,12 @@ void C2_HOOK_FASTCALL InitDRFonts(void) {
     }
 }
 
+// FUNCTION: CARMA2_HW 0x00466210
+int C2_HOOK_FASTCALL GetPolyFontIndexToReplaceDRfontWith(const tDR_font* pFont) {
+
+    return gDRFont_to_polyfont_mapping[pFont->id];
+}
+
 // FUNCTION: CARMA2_HW 0x00465a70
 void C2_HOOK_FASTCALL DRPixelmapText(br_pixelmap* pPixelmap, int pX, int pY, const tDR_font* pFont, const char* pText, int pRight_edge) {
 #ifndef CARPOCALYPSE2_MATCHING
@@ -1633,8 +1639,4 @@ br_font* C2_HOOK_FASTCALL LoadBRFont(const char* pName) {
     return the_font;
 }
 
-// FUNCTION: CARMA2_HW 0x00466210
-int C2_HOOK_FASTCALL GetPolyFontIndexToReplaceDRfontWith(const tDR_font* pFont) {
 
-    return gDRFont_to_polyfont_mapping[pFont->id];
-}
