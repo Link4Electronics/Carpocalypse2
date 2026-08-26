@@ -567,6 +567,7 @@ static br_error C2_HOOK_CDECL state_stateCopy(br_primitive_state_sdl* self, br_p
 typedef struct local_block_sdl {
     brp_block p;
     br_primitive_state_sdl* state;
+    br_uint_32 sig;
 } local_block_sdl;
 
 /*
@@ -757,20 +758,19 @@ static void C2_HOOK_CDECL sdlTriangleRender(brp_block* block, brp_vertex* v0, br
                     unsigned r = (t >> 8) & 0xF;
                     unsigned g = (t >> 4) & 0xF;
                     unsigned b = t & 0xF;
+                    unsigned ta = (t >> 12) & 0xF;
                     float sa = alpha_val;
+                    if (ta == 0) {
+                        /* texel-alpha transparency: fully transparent texel */
+                        goto next;
+                    }
                     if (r == 15 && g == 0 && b == 15) {
                         /* magenta chroma key (retail colour-key semantics) */
                         goto next;
                     }
-                    if (smooth) {
-                        r = (unsigned)(((r * 17) * rr) / 255.f);
-                        g = (unsigned)(((g * 17) * gg) / 255.f);
-                        b = (unsigned)(((b * 17) * bb) / 255.f);
-                    } else {
-                        r = r * 17;
-                        g = g * 17;
-                        b = b * 17;
-                    }
+                    r = r * 17;
+                    g = g * 17;
+                    b = b * 17;
                     if (prim_flags & PRIMF_BLEND) {
                         /* retail blends with the material opacity constant */
                         sa = alpha_val;
@@ -882,6 +882,7 @@ static br_error C2_HOOK_CDECL state_renderBegin(br_primitive_state_sdl* self, br
     if (lb == NULL) {
         return SDL_PRIM_UNSUPPORTED;
     }
+    lb->sig = flags;
     lb->p.render = (brp_render_fn*)sdlTriangleRender;
     lb->p.chain = NULL;
     lb->p.type = BRT_TRIANGLE;

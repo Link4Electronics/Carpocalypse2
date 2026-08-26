@@ -790,8 +790,9 @@ static br_pixelmap* PolyPixGetGlyphMap(tPolyPixSet* ps, int ascii) {
             tU16 r5 = (src >> 11) & 0x1F;
             tU16 g6 = (src >> 5) & 0x3F;
             tU16 b5 = src & 0x1F;
-            /* back to 4444 nibbles: r@8-11, g@4-7, b@0-3, alpha@12-15 */
-            row[x] = (tU16)((r5 >> 1) << 8 | (g6 >> 1) << 4 | (b5 >> 1) | 0xF000);
+            /* back to 4444 nibbles: r@8-11, g@4-7, b@0-3, alpha@12-15;
+             * src==0 is the magenta chroma key -> fully transparent */
+            row[x] = src == 0 ? 0 : (tU16)(0xF000 | ((r5 >> 1) << 8) | ((g6 >> 1) << 4) | (b5 >> 1));
         }
     }
     return pm;
@@ -888,6 +889,41 @@ void C2_HOOK_FASTCALL LoadPolyFont(const char* pName, int pSize, int pIndex) {
                 fflush(stdout);
                 BrFailure("BLOODY FONTS :(");
             } else {
+#ifndef CARPOCALYPSE2_MATCHING
+                /* Tint the glyph with this font slot's border colours
+                 * (bilinear across the four corners) before packing, so the
+                 * text colour matches the retail vertex-colour modulation
+                 * without relying on the software vertex pipeline. */
+                {
+                    int px, py;
+                    tRGBColour* tl = &gPoly_font_border_colours[pIndex].tl;
+                    tRGBColour* tr = &gPoly_font_border_colours[pIndex].tr;
+                    tRGBColour* bl = &gPoly_font_border_colours[pIndex].bl;
+                    tRGBColour* br = &gPoly_font_border_colours[pIndex].br;
+                    for (py = 0; py < pSize; py++) {
+                        for (px = 0; px < pSize; px++) {
+                            tU16 v;
+                            int r, g, b;
+                            float fx = (pSize > 1) ? (float)px / (pSize - 1) : 0.f;
+                            float fy = (pSize > 1) ? (float)py / (pSize - 1) : 0.f;
+                            v = *(tU16*)((char*)map->pixels + py * map->row_bytes + px * 2);
+                            if ((v >> 12) == 0) {
+                                continue;
+                            }
+                            /* multiply, mirroring the retail vertex-colour
+                             * modulation (texel * border colour / 255) */
+                            r = (int)((((tl->r * (1-fx) + tr->r * fx) * (1-fy)) + ((bl->r * (1-fx) + br->r * fx) * fy)) * ((v >> 8 & 0xF) * 17) / 255.f);
+                            g = (int)((((tl->g * (1-fx) + tr->g * fx) * (1-fy)) + ((bl->g * (1-fx) + br->g * fx) * fy)) * ((v >> 4 & 0xF) * 17) / 255.f);
+                            b = (int)((((tl->b * (1-fx) + br->b * fx) * (1-fy)) + ((bl->b * (1-fx) + br->b * fx) * fy)) * ((v & 0xF) * 17) / 255.f);
+                            if (r > 255) r = 255;
+                            if (g > 255) g = 255;
+                            if (b > 255) b = 255;
+                            v = (tU16)(0xF000 | ((r >> 4) << 8) | ((g >> 4) << 4) | (b >> 4));
+                            *(tU16*)((char*)map->pixels + py * map->row_bytes + px * 2) = v;
+                        }
+                    }
+                }
+#endif
                 DRPixelmapRectangleCopy(
                         gTexture_maps[gSize_font_texture_pages],
                         tex_x, tex_y,
