@@ -869,7 +869,7 @@ void C2_HOOK_FASTCALL FRONTEND_CreateMenuButton(tFrontend_brender_item* pFronten
     BrModelAdd(pFrontend_brender_item->model);
     if (pMap != NULL) {
         map_x = (float)pWidth / (float)HighResHeadupWidth(pMap->width);
-        map_y = (float)pWidth / (float)HighResHeadupWidth(pMap->height);
+        map_y = (float)pHeight / (float)HighResHeadupWidth(pMap->height);
     } else {
         map_x = (float)pWidth / (float)HighResHeadupWidth(8);
         map_y = (float)pWidth / (float)HighResHeadupWidth(8);
@@ -3492,12 +3492,44 @@ void C2_HOOK_FASTCALL Generic_UnMungeActiveItems(tFrontend_spec* pFrontend) {
 
 void C2_HOOK_FASTCALL FRONTEND_DrawMenu(tFrontend_spec* pFrontend) {
     int i;
+    int j;
+    int time;
+    int scroll_area_containing_selected_item;
     br_fixed_ls blend_x;
+    tConnected_items* connected_items;
+    const char* text;
 
     if (gFrontend_leave_current_menu || pFrontend->count_items <= 0) {
         return;
     }
-    Generic_MungeActiveItems(pFrontend);
+    gCount_connected_items_indices = 0;
+    if (gFrontend_selected_item_index != -1) {
+        connected_items = gConnected_items;
+        scroll_area_containing_selected_item = 0;
+        for (; connected_items != NULL; connected_items = connected_items->next) {
+            for (i = 0; i < connected_items->count_ranges; i++) {
+                if (connected_items->range_starts[i] <= gFrontend_selected_item_index
+                        && gFrontend_selected_item_index < connected_items->range_starts[i] + connected_items->range_length) {
+                    scroll_area_containing_selected_item = gFrontend_selected_item_index - connected_items->range_starts[i] + 1;
+                    break;
+                }
+            }
+            if (scroll_area_containing_selected_item != 0) {
+                break;
+            }
+        }
+        if (scroll_area_containing_selected_item == 0) {
+            gCount_connected_items_indices = 1;
+            gConnected_items_indices[0] = gFrontend_selected_item_index;
+            pFrontend->items[gFrontend_selected_item_index].flags |= 0x1;
+        } else {
+            for (i = 0; i < connected_items->count_ranges; i++) {
+                gConnected_items_indices[gCount_connected_items_indices] = scroll_area_containing_selected_item + connected_items->range_starts[i] - 1;
+                pFrontend->items[scroll_area_containing_selected_item + connected_items->range_starts[i] - 1].flags |= 0x1;
+                gCount_connected_items_indices += 1;
+            }
+        }
+    }
     for (i = 0; i < gFrontend_count_brender_items; i++) {
         tFrontend_brender_item* brender_item = &gFrontend_brender_items[i];
         tFrontend_item_spec* item = &pFrontend->items[i];
@@ -3517,7 +3549,7 @@ void C2_HOOK_FASTCALL FRONTEND_DrawMenu(tFrontend_spec* pFrontend) {
             }
             TransparentPolyFontTextInABox(item->highFont, text,
                 item->x, item->y, item->x + item->width, item->y + item->height, eJust_left, 1,
-                item->radioButton_selected ? 0.3 - 0.7 * gFrontend_throb_factor : 0.6 * gFrontend_throb_factor);
+                item->radioButton_selected ? 0.3 + 0.7 * gFrontend_throb_factor : 0.6 * gFrontend_throb_factor);
         } else if (item->enabled >= 0) {
             if (item->radioButton_selected) {
                 if (text != NULL) {
@@ -3555,9 +3587,17 @@ void C2_HOOK_FASTCALL FRONTEND_DrawMenu(tFrontend_spec* pFrontend) {
             }
         }
     }
-    FRONTEND_PingPongFlash();
+    time = (int)PDGetTotalTime() % 750;
+    if (time < 375) {
+        gFrontend_throb_factor = (double)time / (750.0 / 2.0);
+    } else {
+        gFrontend_throb_factor = (double)(750 - time) / (750.0 / 2.0);
+    }
     PossibleService();
-    Generic_UnMungeActiveItems(pFrontend);
+    for (i = 0; i < gCount_connected_items_indices; i++) {
+        pFrontend->items[gConnected_items_indices[i]].flags &= ~0x1;
+    }
+    gCount_connected_items_indices = 0;
 }
 
 

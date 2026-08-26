@@ -212,8 +212,27 @@ int C2_HOOK_FASTCALL MainMenuInfunc(tFrontend_spec* pFrontend) {
 
 // FUNCTION: CARMA2_HW 0x00469df0
 int C2_HOOK_FASTCALL MainMenuOutfunc(tFrontend_spec* pFrontend) {
+    br_actor* actor;
 
-    KillAPOactor(gFrontend_billboard_actors[0]);
+    actor = gFrontend_billboard_actors[0];
+    if (actor != NULL) {
+        if (actor->material->colour_map != NULL) {
+            BrMapRemove(actor->material->colour_map);
+            BrPixelmapFree(actor->material->colour_map);
+        }
+        if (actor->material != NULL) {
+            BrMaterialRemove(actor->material);
+            BrMaterialFree(actor->material);
+        }
+        if (actor->model != NULL) {
+            BrModelRemove(actor->model);
+            BrModelFree(actor->model);
+        }
+        if (actor->parent != NULL) {
+            BrActorRemove(actor);
+        }
+        BrActorFree(actor);
+    }
     BrActorFree(gFrontend_menu_camera);
     gFrontend_menu_camera = NULL;
     SaveOptions();
@@ -546,14 +565,29 @@ int C2_HOOK_FASTCALL testDn(tFrontend_spec *pFrontend) {
 // FUNCTION: CARMA2_HW 0x00469ea0
 int C2_HOOK_FASTCALL MainMenuSelectRace(tFrontend_spec* pFrontend) {
     char group_name[12];
+    int race_index;
+    int i;
 
-    gProgram_state.current_race_index = RaceIndex(pFrontend->items[gFrontend_selected_item_index].text);
+    race_index = gFrontend_selected_item_index;
+    for (i = 0; i < gNumber_of_races; i++) {
+        if (DRStricmp(pFrontend->items[gFrontend_selected_item_index].text, gRace_list[i].name) == 0) {
+            race_index = i;
+            break;
+        }
+    }
+    gProgram_state.current_race_index = race_index;
     pFrontend->items[22].highFont = 11;
     pFrontend->items[22].unlitFont = 11;
     if (!gMouse_in_use) {
-        FillInRaceDescription(pFrontend->items[22].text, gProgram_state.current_race_index);
+        char* str;
+
+        strcpy(pFrontend->items[22].text, gRace_list[race_index].name);
+        str = pFrontend->items[22].text;
+        MungeMetaCharactersChar(str, 'R', '\r');
+        MungeMetaCharactersNum(str, gRace_list[race_index].count_explicit_opponents, 'O');
+        MungeMetaCharactersNum(str, gRace_list[race_index].count_laps, 'L');
     }
-    gCurrent_race_group = gRace_list[gProgram_state.current_race_index].group;
+    gCurrent_race_group = gRace_list[race_index].group;
     sprintf(group_name, "%s %d", IString_Get(78), (gCurrent_race_group - gRace_groups) % 10 + 1);
     strcpy(pFrontend->items[2].text, group_name);
     FuckWithWidths(pFrontend);

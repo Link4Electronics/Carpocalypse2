@@ -1533,6 +1533,7 @@ int C2_HOOK_FASTCALL DRTextCleverWidth(const tDR_font* pFont, const char* pText)
     int len;
     int result;
     int spacing;
+    tS8 c;
 
     polyfont_index = GetPolyFontIndexToReplaceDRfontWith(pFont);
     len = strlen(pText);
@@ -1540,8 +1541,6 @@ int C2_HOOK_FASTCALL DRTextCleverWidth(const tDR_font* pFont, const char* pText)
     i = 0;
     result = 0;
     for (; i < len; i++) {
-        tS8 c;
-
         c = pText[i];
         if (c < 0) {
             polyfont_index = GetPolyFontIndexToReplaceDRfontWith(&gFonts[-(int)c]);
@@ -1551,7 +1550,14 @@ int C2_HOOK_FASTCALL DRTextCleverWidth(const tDR_font* pFont, const char* pText)
             } else {
                 spacing = 0;
             }
-            result += spacing + CharacterWidth(polyfont_index, c);
+            if (('a' <= c) && (c <= 'z')) {
+                c = c - 'a' + 'A';
+            }
+            if (gPoly_fonts[polyfont_index].glyphs[c].used) {
+                result += spacing + gPoly_fonts[polyfont_index].glyphs[c].glyph_width;
+            } else {
+                result += spacing + gPoly_fonts[polyfont_index].widthOfBlank;
+            }
         }
     }
     return result;
