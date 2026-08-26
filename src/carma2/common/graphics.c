@@ -180,7 +180,7 @@ tShadow_level gShadow_level = eShadow_us_only;
 
 
 // GLOBAL: CARMA2_HW 0x007663e0
-tDR_font gFonts[24];
+tDR_font gFonts[28];
 
 
 // GLOBAL: CARMA2_HW 0x006a22bc

@@ -14,7 +14,7 @@ extern tWobble_spec gWobble_array[5];
 extern float gCosine_array[64];
 extern br_pixelmap* gCurrent_palette;
 extern br_pixelmap* gRender_palette;
-extern tDR_font gFonts[24];
+extern tDR_font gFonts[28];
 
 extern br_pixelmap* gOrig_render_palette;
 extern br_pixelmap* gFlic_palette;
