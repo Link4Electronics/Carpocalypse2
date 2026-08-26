@@ -1099,7 +1099,9 @@ void C2_HOOK_FASTCALL PolyFontText(const char *pText, int pX, int pY, int pFont,
     float draw_x;
     int draw_y;
 
-    CheckAvailabilityOfThisFont(pFont);
+    if (!gPoly_fonts[pFont].available) {
+        CheckAvailabilityOfThisFont(pFont);
+    }
     if (pRender) {
         CleanPolyFontDanglers();
     }
@@ -1109,10 +1111,50 @@ void C2_HOOK_FASTCALL PolyFontText(const char *pText, int pX, int pY, int pFont,
         break;
 #endif
     case eJust_centre:
-        pX -= PolyFontTextWidth(pFont, pText) / 2;
+        draw_y = 0;
+        if (!gPoly_fonts[pFont].available) {
+            CheckAvailabilityOfThisFont(pFont);
+        }
+        text_len = (int)strlen(pText);
+        for (i = 0; i < text_len; i++) {
+            tU8 c = pText[i];
+            if (c >= 'a' && c <= 'z') {
+                c = c - 'a' + 'A';
+            }
+            if (gPoly_fonts[pFont].glyphs[c].used) {
+                draw_y += gPoly_fonts[pFont].glyphs[c].glyph_width;
+            } else {
+                draw_y += gPoly_fonts[pFont].widthOfBlank;
+            }
+        }
+        if (text_len > 1) {
+            pX -= ((text_len - 1) * gPoly_fonts[pFont].interCharacterSpacing + draw_y) / 2;
+        } else {
+            pX -= draw_y / 2;
+        }
         break;
     case eJust_right:
-        pX -= PolyFontTextWidth(pFont, pText);
+        draw_y = 0;
+        if (!gPoly_fonts[pFont].available) {
+            CheckAvailabilityOfThisFont(pFont);
+        }
+        text_len = (int)strlen(pText);
+        for (i = 0; i < text_len; i++) {
+            tU8 c = pText[i];
+            if (c >= 'a' && c <= 'z') {
+                c = c - 'a' + 'A';
+            }
+            if (gPoly_fonts[pFont].glyphs[c].used) {
+                draw_y += gPoly_fonts[pFont].glyphs[c].glyph_width;
+            } else {
+                draw_y += gPoly_fonts[pFont].widthOfBlank;
+            }
+        }
+        if (text_len > 1) {
+            pX -= (text_len - 1) * gPoly_fonts[pFont].interCharacterSpacing + draw_y;
+        } else {
+            pX -= draw_y;
+        }
         break;
     }
 
@@ -1184,7 +1226,9 @@ void C2_HOOK_FASTCALL TransparentPolyFontText(const char *pText, int pX, int pY,
     int draw_y;
     br_token_value tvs[3];
 
-    CheckAvailabilityOfThisFont(pFont);
+    if (!gPoly_fonts[pFont].available) {
+        CheckAvailabilityOfThisFont(pFont);
+    }
     if (pRender) {
         CleanPolyFontDanglers();
     }
@@ -1194,10 +1238,50 @@ void C2_HOOK_FASTCALL TransparentPolyFontText(const char *pText, int pX, int pY,
         break;
 #endif
     case eJust_centre:
-        pX -= PolyFontTextWidth(pFont, pText) / 2;
+        draw_y = 0;
+        if (!gPoly_fonts[pFont].available) {
+            CheckAvailabilityOfThisFont(pFont);
+        }
+        text_len = (int)strlen(pText);
+        for (i = 0; i < text_len; i++) {
+            tU8 c = pText[i];
+            if (c >= 'a' && c <= 'z') {
+                c = c - 'a' + 'A';
+            }
+            if (gPoly_fonts[pFont].glyphs[c].used) {
+                draw_y += gPoly_fonts[pFont].glyphs[c].glyph_width;
+            } else {
+                draw_y += gPoly_fonts[pFont].widthOfBlank;
+            }
+        }
+        if (text_len > 1) {
+            pX -= ((text_len - 1) * gPoly_fonts[pFont].interCharacterSpacing + draw_y) / 2;
+        } else {
+            pX -= draw_y / 2;
+        }
         break;
     case eJust_right:
-        pX -= PolyFontTextWidth(pFont, pText);
+        draw_y = 0;
+        if (!gPoly_fonts[pFont].available) {
+            CheckAvailabilityOfThisFont(pFont);
+        }
+        text_len = (int)strlen(pText);
+        for (i = 0; i < text_len; i++) {
+            tU8 c = pText[i];
+            if (c >= 'a' && c <= 'z') {
+                c = c - 'a' + 'A';
+            }
+            if (gPoly_fonts[pFont].glyphs[c].used) {
+                draw_y += gPoly_fonts[pFont].glyphs[c].glyph_width;
+            } else {
+                draw_y += gPoly_fonts[pFont].widthOfBlank;
+            }
+        }
+        if (text_len > 1) {
+            pX -= (text_len - 1) * gPoly_fonts[pFont].interCharacterSpacing + draw_y;
+        } else {
+            pX -= draw_y;
+        }
         break;
     }
 
