@@ -185,6 +185,7 @@ void C2_HOOK_FASTCALL SolidPolyFontTextInABox(int pFont, const char* pText, int 
 void C2_HOOK_FASTCALL PolyFontTextInABox(int pFont, const char* pText, int pLeft, int pTop, int pRight, int pBottom, tJustification pJust, int pRender) {
     char s[256];
     int s_len;
+    int x;
     int y;
     int in_start_put;
     int in_end_put;
@@ -217,10 +218,7 @@ void C2_HOOK_FASTCALL PolyFontTextInABox(int pFont, const char* pText, int pLeft
             text_x += CharacterWidth(pFont, (tU8)chr);
         }
         in_end_put = in_pos;
-        if (text_x <= max_width && !newline) {
-            s_len++;
-            in_pos++;
-        } else {
+        if (text_x > max_width || newline) {
             int len_put;
 
             /* Avoid breaking words in parts ... */
@@ -238,27 +236,36 @@ void C2_HOOK_FASTCALL PolyFontTextInABox(int pFont, const char* pText, int pLeft
             }
             s[len_put] = '\0';
             if (pJust == eJust_centre) {
-                PolyFontText(s, (pRight + pLeft) / 2, y, pFont, pJust, gRender_poly_text);
+                x = (pRight + pLeft) / 2;
             } else {
-                PolyFontText(s, pLeft, y, pFont, pJust, gRender_poly_text);
+                x = pLeft;
             }
+            PolyFontText(s, x, y, pFont, pJust, gRender_poly_text);
             while (pText[in_end_put] == '\r' || pText[in_end_put] == ' ') {
                 in_end_put++;
             }
             y += PolyFontHeight(pFont);
-            s_len = 0;
             text_x = 0;
             in_start_put = in_end_put;
+            s_len = 0;
             in_pos = in_end_put;
+        } else {
+            s_len++;
+            in_pos++;
         }
     }
     if (s_len != 0) {
+        int x;
+        tJustification justif;
 
         if (pJust == eJust_centre) {
-            PolyFontText(s, (pRight + pLeft) / 2, y, pFont, pJust, gRender_poly_text);
+            x = (pRight + pLeft) / 2;
+            justif = eJust_centre;
         } else {
-            PolyFontText(s, pLeft, y, pFont, pJust, gRender_poly_text);
+            x = pLeft;
+            justif = pJust;
         }
+        PolyFontText(s, x, y, pFont, justif, gRender_poly_text);
     }
 }
 
@@ -266,78 +273,89 @@ void C2_HOOK_FASTCALL PolyFontTextInABox(int pFont, const char* pText, int pLeft
 void C2_HOOK_FASTCALL TransparentPolyFontTextInABox(int pFont, const char* pText, int pLeft, int pTop, int pRight, int pBottom, tJustification pJust, undefined4 pUnknown, double pBlend) {
     char s[256];
     int s_len;
+    int x;
     int y;
     int in_start_put;
     int in_end_put;
-    int str_i;
+    int in_pos;
     int newline;
     int text_x;
+    int max_width;
+
+    if (pText == NULL) {
+        return;
+    }
 
     in_start_put = 0;
     text_x = 0;
-    if (pText != NULL) {
-        str_i = 0;
-        s_len = 0;
-        s[s_len] = '\0';
-        y = pTop;
+    max_width = pRight - pLeft;
+    in_pos = 0;
+    s_len = 0;
+    s[s_len] = '\0';
+    y = pTop;
 
-        while (pText[str_i] != '\0') {
-            int chr;
+    while (pText[in_pos] != '\0') {
+        int chr;
 
-            chr = pText[str_i];
-            newline = chr == '\r';
-            s[s_len] = chr;
-            if (newline) {
-                s[s_len] = ' ';
-            }
-            s[s_len + 1] = '\0';
-            if (!newline) {
-                text_x += CharacterWidth(pFont, (tU8)chr);
-            }
-            in_end_put = str_i;
-            if (text_x <= pRight - pLeft && !newline) {
-                s_len++;
-                str_i++;
-            } else {
-                int len_put;
-
-                /* Avoid breaking words in parts ... */
-                while (in_end_put > in_start_put && pText[in_end_put] != ' ') {
-                    in_end_put -= 1;
-                }
-                /* ... but break when the word is too long */
-                if (in_end_put == in_start_put) {
-                    in_end_put = str_i;
-                }
-                len_put = in_end_put - in_start_put;
-                s[len_put + 1] = '\0';
-                if (pText[in_end_put] == ' ') {
-                    in_end_put += 1;
-                }
-                s[len_put] = '\0';
-                if (pJust == eJust_centre) {
-                    TransparentPolyFontText(s, (pRight + pLeft) / 2, y, pFont, pJust, gRender_poly_text, pBlend);
-                } else {
-                    TransparentPolyFontText(s, pLeft, y, pFont, pJust, gRender_poly_text, pBlend);
-                }
-                while (pText[in_end_put] == '\r' || pText[in_end_put] == ' ') {
-                    in_end_put++;
-                }
-                y += (2 * PolyFontHeight(pFont)) / 2;
-                text_x = 0;
-                in_start_put = in_end_put;
-                s_len = 0;
-                str_i = in_start_put;
-            }
+        chr = pText[in_pos];
+        newline = chr == '\r';
+        s[s_len] = chr;
+        if (newline) {
+            s[s_len] = ' ';
         }
-        if (s_len != 0) {
+        s[s_len + 1] = '\0';
+        if (!newline) {
+            text_x += CharacterWidth(pFont, (tU8)chr);
+        }
+        in_end_put = in_pos;
+        if (text_x > max_width || newline) {
+            int len_put;
 
+            /* Avoid breaking words in parts ... */
+            while (in_end_put > in_start_put && pText[in_end_put] != ' ') {
+                in_end_put -= 1;
+            }
+            /* ... but break when the word is too long */
+            if (in_end_put == in_start_put) {
+                in_end_put = in_pos;
+            }
+            len_put = in_end_put - in_start_put;
+            s[len_put + 1] = '\0';
+            if (pText[in_end_put] == ' ') {
+                in_end_put += 1;
+            }
+            s[len_put] = '\0';
             if (pJust == eJust_centre) {
-                TransparentPolyFontText(s, (pRight + pLeft) / 2, y, pFont, pJust, gRender_poly_text, pBlend);
+                x = (pRight + pLeft) / 2;
             } else {
-                TransparentPolyFontText(s, pLeft, y, pFont, pJust, gRender_poly_text, pBlend);
+                x = pLeft;
             }
+            TransparentPolyFontText(s, x, y, pFont, pJust, gRender_poly_text, pBlend);
+            while (pText[in_end_put] == '\r' || pText[in_end_put] == ' ') {
+                in_end_put++;
+            }
+            y += PolyFontHeight(pFont);
+            text_x = 0;
+            in_start_put = in_end_put;
+            s_len = 0;
+            in_pos = in_start_put;
+        } else {
+            s_len++;
+            in_pos++;
         }
+    }
+    if (s_len != 0) {
+        int x;
+        tJustification justif;
+
+        if (pJust == eJust_centre) {
+            x = (pRight + pLeft) / 2;
+            justif = eJust_centre;
+        } else {
+            x = pLeft;
+            justif = pJust;
+        }
+        TransparentPolyFontText(s, x, y, pFont, justif, gRender_poly_text, pBlend);
     }
 }
 
@@ -1595,36 +1613,32 @@ void C2_HOOK_FASTCALL DRPixelmapCleverText(br_pixelmap* pPixelmap, int pX, int p
 int C2_HOOK_FASTCALL PolyFontTextWidth(int pFont, const char* pText) {
     int len;
     int i;
-    int text_width;
-    int spacing;
+    int result;
 
-    text_width = 0;
-    spacing = 0;
-    if (!gPoly_fonts[pFont].available) {
-        CheckAvailabilityOfThisFont(pFont);
-    }
+    CheckAvailabilityOfThisFont(pFont);
     len = (int)strlen(pText);
+    result = 0;
     for (i = 0; i < len; i++) {
         tU8 c = pText[i];
         if (c >= 'a' && c <= 'z') {
             c = c - 'a' + 'A';
         }
         if (gPoly_fonts[pFont].glyphs[c].used) {
-            text_width += gPoly_fonts[pFont].glyphs[c].glyph_width;
+            result += gPoly_fonts[pFont].glyphs[c].glyph_width;
         } else {
-            text_width += gPoly_fonts[pFont].widthOfBlank;
+            result += gPoly_fonts[pFont].widthOfBlank;
         }
     }
     if (len > 1) {
-        spacing = (len - 1) * gPoly_fonts[pFont].interCharacterSpacing;
+        result += (len - 1) * gPoly_fonts[pFont].interCharacterSpacing;
     }
-    return text_width + spacing;
+    return result;
 }
 
 // FUNCTION: CARMA2_HW 0x00465d50
 int C2_HOOK_FASTCALL DRTextWidth(const tDR_font* pFont, const char* pText) {
 
-    return PolyFontTextWidth(GetPolyFontIndexToReplaceDRfontWith(pFont), pText);
+    return PolyFontTextWidth(gDRFont_to_polyfont_mapping[pFont->id], pText);
 }
 
 // FUNCTION: CARMA2_HW 0x00465e10
@@ -1667,7 +1681,7 @@ void C2_HOOK_FASTCALL DRPixelmapCentredText(br_pixelmap* pPixelmap, int pX, int 
     int width_over_2;
 
     width_over_2 = DRTextWidth(pFont, pText) / 2;
-    DRPixelmapText(pPixelmap, pX - width_over_2, pY, pFont, pText, pX + width_over_2);
+    DRPixelmapText(pPixelmap, pX - width_over_2, pY, pFont, pText, width_over_2 + pX);
 }
 
 // FUNCTION: CARMA2_HW 0x00466000
