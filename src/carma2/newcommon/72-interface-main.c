@@ -184,30 +184,29 @@ int C2_HOOK_FASTCALL MainMenuInfunc(tFrontend_spec* pFrontend) {
     int i;
     char group_name[12];
     br_camera* camera;
-    tRace_list_spec* race;
 
     if (pFrontend->loaded == 0) {
         LoadMenuSettings(pFrontend);
         FuckWithWidths(pFrontend);
-    }
-    if (pFrontend->previous != NULL) {
-        pFrontend->previous->isPreviousSomeOtherMenu = 1;
+        if (pFrontend->previous != NULL) {
+            pFrontend->previous->isPreviousSomeOtherMenu = 1;
+        }
     }
     gFrontend_scrollbars_updated = 0;
     EdgeTriggerModeOff();
     WaitForNoKeys();
     EdgeTriggerModeOn();
-    gFrontend_time_last_input = PDGetTotalTime();
+    ResetInterfaceTimeout();
     group = (gCurrent_race_group - gRace_groups) % 10;
     sprintf(group_name, "%s %d", IString_Get(78), group + 1);
     strcpy(pFrontend->items[2].text, group_name);
     race_index = 4 * group;
     for (i = pFrontend->scrollers[0].indexFirstScrollableItem; i <= pFrontend->scrollers[0].indexLastScrollableItem; i++, race_index += 1) {
         tFrontend_item_spec* item = &pFrontend->items[i];
-        race = &gRace_list[race_index];
-        strcpy(item->text, race->name);
+
+        strcpy(item->text, gRace_list[race_index].name);
         item->radioButton_selected = race_index == gProgram_state.current_race_index;
-        if (race->is_boundary) {
+        if (gRace_list[race_index].is_boundary) {
             item->unlitFont = 2;
             item->highFont = 3;
         } else {

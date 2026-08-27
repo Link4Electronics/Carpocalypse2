@@ -1115,7 +1115,7 @@ br_material* C2_HOOK_FASTCALL GetPolyFontMaterial(int pFont_index, char pChar) {
 void C2_HOOK_FASTCALL PolyFontText(const char *pText, int pX, int pY, int pFont, tJustification pJust, int pRender) {
     int text_len;
     int i;
-    int draw_x;
+    float draw_x;
     int draw_y;
 
     if (!gPoly_fonts[pFont].available) {
@@ -1444,8 +1444,8 @@ void C2_HOOK_FASTCALL LoadFont(int pFont_ID) {
     if (gFonts[pFont_ID].file_read_once) {
         return;
     }
-    the_path[strlen(the_path) - 3] = '\0';
-    strcat(the_path, "TXT");
+    the_path[strlen(the_path) - 4] = '\0';
+    strcat(the_path, ".TXT");
     file = DRfopen(the_path, "rt");
     if (file == NULL) {
         FatalError(kFatalError_CannotLoadFontWidthTable_S, gFont_names[pFont_ID]);

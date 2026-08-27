@@ -340,17 +340,18 @@ int C2_HOOK_FASTCALL temp(tFrontend_spec* pFrontend) {
 
 // FUNCTION: CARMA2_HW 0x00466ce0
 void C2_HOOK_FASTCALL MungeButtonModels(tFrontend_spec* pFrontend, int pButton_index) {
-    br_model* model;
-    int item_index;
     int i;
+    int item_idx;
 
-    for (i = 0; i < pFrontend->scrollers[pButton_index].nbDisplayedAtOnce; i++) {
-        item_index = pFrontend->scrollers[pButton_index].indexFirstScrollableItem + i;
-        model = gFrontend_brender_items[item_index].model;
+    tFrontend_scroller_spec* scroller = &pFrontend->scrollers[pButton_index];
 
-        gFrontend_brender_items[item_index].model->vertices[2].p.v[0] = gFrontend_brender_items[item_index].model->vertices[3].p.v[0] = gFrontend_brender_items[item_index].model->vertices[1].p.v[0] + pFrontend->items[item_index].width;
-        gFrontend_brender_items[item_index].model->vertices[1].p.v[1] = gFrontend_brender_items[item_index].model->vertices[2].p.v[1] = gFrontend_brender_items[item_index].model->vertices[3].p.v[1] - pFrontend->items[item_index].height;
-        BrModelUpdate(model, BR_MODU_VERTEX_POSITIONS);
+    for (i = 0; i < scroller->nbDisplayedAtOnce; i++) {
+        item_idx = scroller->indexFirstScrollableItem + i;
+        gFrontend_brender_items[item_idx].model->vertices[3].p.v[0] = gFrontend_brender_items[item_idx].model->vertices[1].p.v[0] + pFrontend->items[item_idx].width;
+        gFrontend_brender_items[item_idx].model->vertices[2].p.v[0] = gFrontend_brender_items[item_idx].model->vertices[3].p.v[0];
+        gFrontend_brender_items[item_idx].model->vertices[2].p.v[1] = gFrontend_brender_items[item_idx].model->vertices[3].p.v[1] - pFrontend->items[item_idx].height;
+        gFrontend_brender_items[item_idx].model->vertices[1].p.v[1] = gFrontend_brender_items[item_idx].model->vertices[2].p.v[1];
+        BrModelUpdate(gFrontend_brender_items[item_idx].model, BR_MODU_VERTEX_POSITIONS);
     }
 }
 
