@@ -70,6 +70,7 @@ int C2_HOOK_FASTCALL PlayExclusiveFFBEffect(const char* pEffect_name, int pArg2)
     NOT_IMPLEMENTED();
 }
 
+// FUNCTION: CARMA2_HW 0x004575b0
 void C2_HOOK_FASTCALL InitJoysticks(void) {
 
     PDInitJoysticks();
