@@ -2797,6 +2797,7 @@ void C2_HOOK_FASTCALL ScrollSet_DisplayEntry(tConnected_items* pScroll_set, int 
 
 // FUNCTION: CARMA2_HW 0x004720e0
 
+#pragma auto_inline(off)
 void C2_HOOK_FASTCALL RefreshScrollSet(tFrontend_spec* pFrontend) {
     int i;
 
@@ -2809,6 +2810,7 @@ void C2_HOOK_FASTCALL RefreshScrollSet(tFrontend_spec* pFrontend) {
     pFrontend->items[64].visible = gControls_scroller.field_0x8 != gControls_scroller.field_0x0 - gControls_scroller.range_length;
     FuckWithWidths(pFrontend);
 }
+#pragma auto_inline(on)
 
 
 int C2_HOOK_FASTCALL DetermineKeyArrayIndex(void) {
@@ -3999,9 +4001,12 @@ int C2_HOOK_FASTCALL Controls_Infunc(tFrontend_spec* pFrontend) {
 // FUNCTION: CARMA2_HW 0x00472a30
 
 int C2_HOOK_FASTCALL Controls_Outfunc(tFrontend_spec* pFrontend) {
+    int i;
 
     Generic_Outfunc(pFrontend);
-    DisposeKeyNames();
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gKey_names); i++) {
+        BrMemFree(gKey_names[i]);
+    }
     SaveKeyMapping();
     return 1;
 }

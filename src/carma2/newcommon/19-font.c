@@ -155,8 +155,8 @@ int C2_HOOK_FASTCALL FindCharacterWidth(br_pixelmap* pMap) {
 int C2_HOOK_FASTCALL CharacterWidth(int pFont_index, tU8 pCharacter) {
     tPolyFont* font;
 
-    if ('a' <= pCharacter && pCharacter <= 'z') {
-        pCharacter = pCharacter - 'a' + 'A';
+    if (pCharacter >= 'a' && pCharacter <= 'z') {
+        pCharacter += 'A' - 'a';
     }
 
     font = &gPoly_fonts[pFont_index];
@@ -1614,20 +1614,13 @@ int C2_HOOK_FASTCALL PolyFontTextWidth(int pFont, const char* pText) {
     int len;
     int i;
     int result;
+    tU8 c;
 
     CheckAvailabilityOfThisFont(pFont);
     len = (int)strlen(pText);
     result = 0;
     for (i = 0; i < len; i++) {
-        tU8 c = pText[i];
-        if (c >= 'a' && c <= 'z') {
-            c = c - 'a' + 'A';
-        }
-        if (gPoly_fonts[pFont].glyphs[c].used) {
-            result += gPoly_fonts[pFont].glyphs[c].glyph_width;
-        } else {
-            result += gPoly_fonts[pFont].widthOfBlank;
-        }
+        result += CharacterWidth(pFont, pText[i]);
     }
     if (len > 1) {
         result += (len - 1) * gPoly_fonts[pFont].interCharacterSpacing;
