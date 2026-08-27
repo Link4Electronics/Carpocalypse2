@@ -444,7 +444,7 @@ br_error C2_HOOK_CDECL _M_br_device_pixelmap_mem_copyFrom(br_device_pixelmap* se
                     bytes);
         }
     } else {
-        if ((self->pm_row_bytes & 0x7) == 0) {
+        if ((dest->pm_row_bytes & 0x7) == 0) {
             pm_mem_copy_colour_rowbyrow(
                     (br_uint_8*)dest->pm_pixels, dest->pm_pixels_qualifier,
                     (br_uint_8*)self->pm_pixels, self->pm_pixels_qualifier,
