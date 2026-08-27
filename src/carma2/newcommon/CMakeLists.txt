@@ -82,6 +82,7 @@ add_library(c2_newcommon STATIC
     72-interface-newgame.c
     72-interface-options.c
     72-interface-quit.c
+    72-interface-graphics.c
     72-interface-startgame.c
     72-interface-wrecks.c
     72-interface-scrollers.c
