@@ -415,43 +415,4 @@ void PDNetEndJoinList(void) {
     gJoinable_games = NULL;
 }
 
-tS3_error_codes C2_HOOK_FASTCALL PDS3StartMidiChannel(tS3_channel *pChannel) {
-    return eS3_error_memory;
-}
 
-int PDS3StopMidiChannel(tS3_channel *pChannel) {
-    return 0;
-}
-
-int PDS3IsMIDIStopped(tS3_channel *pChannel) {
-    return 1;
-}
-
-int PDS3StopCDAChannel(tS3_channel *pChannel) {
-    return 0;
-}
-
-tS3_error_codes C2_HOOK_FASTCALL PDS3PlayCDAChannel(tS3_channel *pChannel) {
-    return eS3_error_memory;
-}
-
-void PDS3ServiceCDA(int pDelta_time) {
-}
-
-void C2_HOOK_FASTCALL PDS3UpdateCDAVolume(tS3_channel *pChannel, int pVolume) {
-}
-
-void *PDS3CreateSoundBuffer(tS3_wav_info *pWav_info, void *pWav_buffer) {
-    return NULL;
-}
-
-int PDS3PlaySample(tS3_channel *pChannel) {
-    return 0;
-}
-
-int PDS3IsSamplePlaying(tS3_channel *pChannel) {
-    return 0;
-}
-
-void PDS3ReleaseSound(tS3_descriptor *pSound_descriptor) {
-}

@@ -59,6 +59,7 @@ elseif(CARPOCALYPSE2_PLATFORM_SDL3)
         sdl3/sdl3.h
         sdl3/sdl3_input.c
         sdl3/sdl3_input.h
+        sdl3/sdl3_audio.c
         sdl3/sdl3_net.c
         sdl3/sdl3_net.h
         sdl3/sdl3_plib.c
@@ -117,6 +118,9 @@ if(CARPOCALYPSE2_PLATFORM_SDL3 AND UNIX AND NOT APPLE)
     # Interpose fopen() with a case-insensitive resolver; the game requests its
     # data files in Windows-style casing (see sdl3/sdl3_casefix.c).
     target_link_options(carpocalypse2 PRIVATE "-Wl,--wrap=fopen")
+    # The S3 sound layer opens data files with open()/open64() rather than
+    # fopen(), so route those through the same case-insensitive resolver too.
+    target_link_options(carpocalypse2 PRIVATE "-Wl,--wrap=open" "-Wl,--wrap=open64")
 endif()
 if(CARPOCALYPSE2_MATCHING)
     add_dependencies(carpocalypse2 brender_driver_d3d)

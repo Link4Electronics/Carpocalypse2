@@ -18,6 +18,9 @@
 #include <string.h>
 #include <strings.h>
 #include <dirent.h>
+#include <fcntl.h>
+#include <stdarg.h>
+#include <sys/stat.h>
 
 const char* carpocalypse2_fix_path_case(const char* pPath) {
     static char fixed[1024];
@@ -93,4 +96,47 @@ FILE* __wrap_fopen(const char* pPath, const char* pMode) {
         }
     }
     return f;
+}
+
+/* The S3 sound layer opens data files with open() rather than fopen(), so we
+ * wrap open()/open64() through the same case-insensitive resolver. */
+extern int __real_open(const char* pPath, int pFlags, ...);
+extern int __real_open64(const char* pPath, int pFlags, ...);
+
+static int case_fix_open(const char* pPath, int pFlags, mode_t pMode) {
+    int fd;
+
+    fd = (int)__real_open(pPath, pFlags, pMode);
+    if (fd < 0) {
+        const char* fixed = carpocalypse2_fix_path_case(pPath);
+        fd = (int)__real_open(fixed, pFlags, pMode);
+        if (getenv("CARPOCALYPSE2_FOPEN_DEBUG") != NULL) {
+            fprintf(stderr, "[open MISS] %s%s\n", pPath, (fd >= 0) ? "  (case-fixed OK)" : "");
+        }
+    }
+    return fd;
+}
+
+int __wrap_open(const char* pPath, int pFlags, ...) {
+    mode_t mode = 0;
+    va_list ap;
+
+    if ((pFlags & O_CREAT) != 0) {
+        va_start(ap, pFlags);
+        mode = (mode_t)va_arg(ap, int);
+        va_end(ap);
+    }
+    return case_fix_open(pPath, pFlags, mode);
+}
+
+int __wrap_open64(const char* pPath, int pFlags, ...) {
+    mode_t mode = 0;
+    va_list ap;
+
+    if ((pFlags & O_CREAT) != 0) {
+        va_start(ap, pFlags);
+        mode = (mode_t)va_arg(ap, int);
+        va_end(ap);
+    }
+    return case_fix_open(pPath, pFlags, mode);
 }
