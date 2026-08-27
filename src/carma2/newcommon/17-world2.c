@@ -488,6 +488,12 @@ void C2_HOOK_FASTCALL SetCarSimplificationLevel(int pLevel) {
     gCar_simplification_level = pLevel;
 }
 
+// FUNCTION: CARMA2_HW 0x00448f20
+int C2_HOOK_FASTCALL GetCarSimplificationLevel(void) {
+
+    return gCar_simplification_level;
+}
+
 // GetCarSimplificationLevel
 
 // FUNCTION: CARMA2_HW 0x00448f90

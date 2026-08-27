@@ -270,9 +270,17 @@ void C2_HOOK_STDCALL SetYon(br_scalar pYon) {
     gCamera_yon = pYon;
 }
 
-// GetYon
+// FUNCTION: CARMA2_HW 0x00446bb0
+br_scalar C2_HOOK_STDCALL GetYon(void) {
 
-// GetSkyTextureOn
+    return gCamera_yon;
+}
+
+// FUNCTION: CARMA2_HW 0x00446e00
+int C2_HOOK_FASTCALL GetSkyTextureOn(void) {
+
+    return gSky_on;
+}
 
 // FUNCTION: CARMA2_HW 0x00446e10
 void C2_HOOK_FASTCALL SetSkyTextureOn(int skyTextureOn) {
@@ -300,7 +308,11 @@ void C2_HOOK_FASTCALL ToggleSkyQuietly(void) {
 
 // ToggleSky
 
-// GetDepthCueingOn
+// FUNCTION: CARMA2_HW 0x00446f90
+int C2_HOOK_FASTCALL GetDepthCueingOn(void) {
+
+    return gDepth_cueing_on;
+}
 
 // FUNCTION: CARMA2_HW 0x00446fa0
 void C2_HOOK_FASTCALL SetDepthCueingOn(int pOn) {

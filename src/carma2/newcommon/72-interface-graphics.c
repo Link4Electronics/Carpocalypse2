@@ -8,6 +8,7 @@
 #include "33-depth.h"
 #include "35-intrface.h"
 #include "37-brucetrk.h"
+#include "42-input.h"
 #include "57-drone.h"
 #include "61-pedestrn.h"
 #include "69-sound.h"
@@ -26,6 +27,10 @@ extern int gTraffic_disabled;
 extern int gAnimalsOn;
 extern int gFlameThrowerOn;
 extern int gExplosives_on;
+extern int gFrontend_scrollbars_updated;
+extern tFrontend_slider* gCurrent_frontend_scrollbars;
+extern tConnected_items* gConnected_items;
+extern tStruct_00686508* gPTR_00686508;
 
 // GLOBAL: CARMA2_HW 0x0063e528
 tFrontend_spec gFrontend_GRAPHICS = {
@@ -98,78 +103,6 @@ tFrontend_spec gFrontend_GRAPHICS = {
         { 0x39, temp, NULL,         0, 0, 0, 0, 0, 0, 0, 1, 1 },
     },
 };
-
-// FUNCTION: CARMA2_HW 0x00448f20
-int C2_HOOK_FASTCALL GetCarSimplificationLevel(void) {
-
-    return gCar_simplification_level;
-}
-
-// FUNCTION: CARMA2_HW 0x00446bb0
-br_scalar C2_HOOK_STDCALL GetYon(void) {
-
-    return gCamera_yon;
-}
-
-// FUNCTION: CARMA2_HW 0x0040dfe0
-br_scalar C2_HOOK_STDCALL GetYonFactor(void) {
-
-    return gYon_factor;
-}
-
-// FUNCTION: CARMA2_HW 0x004e9950
-tShadow_level C2_HOOK_FASTCALL GetShadowLevel(void) {
-
-    return gShadow_level;
-}
-
-// FUNCTION: CARMA2_HW 0x004569e0
-int C2_HOOK_FASTCALL GetSoundDetailLevel(void) {
-
-    return gSound_detail_level;
-}
-
-// FUNCTION: CARMA2_HW 0x004d6fc0
-int C2_HOOK_FASTCALL GetHowMuchBloodAndSnotToSmearAbout(void) {
-
-    return 2 - gGoreLevel;
-}
-
-// FUNCTION: CARMA2_HW 0x00446e00
-int C2_HOOK_FASTCALL GetSkyTextureOn(void) {
-
-    return gSky_on;
-}
-
-// FUNCTION: CARMA2_HW 0x00446f90
-int C2_HOOK_FASTCALL GetDepthCueingOn(void) {
-
-    return gDepth_cueing_on;
-}
-
-// FUNCTION: CARMA2_HW 0x0044ed00
-int C2_HOOK_FASTCALL GetDronesOn(void) {
-
-    return !gTraffic_disabled;
-}
-
-// FUNCTION: CARMA2_HW 0x004d6fd0
-int C2_HOOK_FASTCALL GetAnimalsOn(void) {
-
-    return gAnimalsOn;
-}
-
-// FUNCTION: CARMA2_HW 0x004d6fe0
-int C2_HOOK_FASTCALL IsItOkayToFireHorribleBallsOfNastyNapalmDeathAtPerfectlyInnocentPassersByAndByInnocentIDoMeanInTheBiblicalSense(void) {
-
-    return gFlameThrowerOn;
-}
-
-// FUNCTION: CARMA2_HW 0x004d6ff0
-int C2_HOOK_FASTCALL IsItReallyOKThatWeDontMakeAnyEffortToProtectAnySadFuckersOutThereThatDontWishToSeeInnocentPeopleBlownToBitsByHighExplosiveMinesAndShells(void) {
-
-    return gExplosives_on;
-}
 
 // FUNCTION: CARMA2_HW 0x004b4090
 void C2_HOOK_FASTCALL GetGraphicsSettingsData(tFrontend_spec* pFrontend) {
@@ -303,7 +236,20 @@ void C2_HOOK_FASTCALL GetGraphicsSettingsData(tFrontend_spec* pFrontend) {
 // FUNCTION: CARMA2_HW 0x004747e0
 int C2_HOOK_FASTCALL Graphics_Infunc(tFrontend_spec* pFrontend) {
 
-    Generic_Infunc(pFrontend);
+    if (!pFrontend->loaded) {
+        LoadMenuSettings(pFrontend);
+        FuckWithWidths(pFrontend);
+        if (pFrontend->previous != NULL) {
+            pFrontend->previous->isPreviousSomeOtherMenu = 1;
+        }
+    }
+    gFrontend_scrollbars_updated = 0;
+    EdgeTriggerModeOff();
+    WaitForNoKeys();
+    EdgeTriggerModeOn();
+    gCurrent_frontend_scrollbars = NULL;
+    gConnected_items = NULL;
+    gPTR_00686508 = NULL;
     GetGraphicsSettingsData(pFrontend);
     return 1;
 }
@@ -470,7 +416,6 @@ void C2_HOOK_FASTCALL SetGraphicsSettingsData(tFrontend_spec* pFrontend) {
 // FUNCTION: CARMA2_HW 0x00474850
 int C2_HOOK_FASTCALL Graphics_Outfunc(tFrontend_spec* pFrontend) {
 
-    Generic_Outfunc(pFrontend);
     SetGraphicsSettingsData(pFrontend);
     return 1;
 }

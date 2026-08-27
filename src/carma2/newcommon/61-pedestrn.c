@@ -395,13 +395,29 @@ void C2_HOOK_FASTCALL SetAlienPedFolderNames(void) {
 
 // AddChangedPoint
 
-// GetHowMuchBloodAndSnotToSmearAbout
+// FUNCTION: CARMA2_HW 0x004d6fc0
+int C2_HOOK_FASTCALL GetHowMuchBloodAndSnotToSmearAbout(void) {
 
-// AreWeGoingToOutrageAnimalLoversAroundTheGlobe
+    return 2 - gGoreLevel;
+}
 
-// IsItOkayToFireHorribleBallsOfNastyNapalmDeathAtPerfectlyInnocentPassersByAndByInnocentIDoMeanInTheBiblicalSense
+// FUNCTION: CARMA2_HW 0x004d6fd0
+int C2_HOOK_FASTCALL GetAnimalsOn(void) {
 
-// IsItReallyOKThatWeDontMakeAnyEffortToProtectAnySadFuckersOutThereThatDontWishToSeeInnocentPeopleBlownToBitsByHighExplosiveMinesAndShells
+    return gAnimalsOn;
+}
+
+// FUNCTION: CARMA2_HW 0x004d6fe0
+int C2_HOOK_FASTCALL IsItOkayToFireHorribleBallsOfNastyNapalmDeathAtPerfectlyInnocentPassersByAndByInnocentIDoMeanInTheBiblicalSense(void) {
+
+    return gFlameThrowerOn;
+}
+
+// FUNCTION: CARMA2_HW 0x004d6ff0
+int C2_HOOK_FASTCALL IsItReallyOKThatWeDontMakeAnyEffortToProtectAnySadFuckersOutThereThatDontWishToSeeInnocentPeopleBlownToBitsByHighExplosiveMinesAndShells(void) {
+
+    return gExplosives_on;
+}
 
 // FUNCTION: CARMA2_HW 0x004d7000
 void C2_HOOK_FASTCALL SetAnimalsOn(int pNewAnimalsOn) {

@@ -9,6 +9,7 @@
 #include "10-loading2.h"
 #include "35-intrface.h"
 #include "40-main.h"
+#include "42-input.h"
 #include "69-sound.h"
 #include "globvars.h"
 #include "globvrpb.h"
@@ -18,6 +19,9 @@ extern tFrontend_spec gFrontend_CONTROLS;
 extern tFrontend_spec gFrontend_LOAD_GAME;
 extern int C2_HOOK_FASTCALL Generic_MenuHandler(tFrontend_spec* pFrontend);
 extern tFrontend_slider* gCurrent_frontend_scrollbars;
+extern int gFrontend_scrollbars_updated;
+extern tConnected_items* gConnected_items;
+extern tStruct_00686508* gPTR_00686508;
 
 extern int C2_HOOK_FASTCALL Options_Infunc(tFrontend_spec* pFrontend);
 extern int C2_HOOK_FASTCALL Options_Outfunc(tFrontend_spec* pFrontend);
@@ -93,7 +97,20 @@ void C2_HOOK_FASTCALL DisplayVolumeSettings(tFrontend_spec* pFrontend) {
 // FUNCTION: CARMA2_HW 0x00474530
 int C2_HOOK_FASTCALL Options_Infunc(tFrontend_spec* pFrontend) {
 
-    Generic_Infunc(pFrontend);
+    if (!pFrontend->loaded) {
+        LoadMenuSettings(pFrontend);
+        FuckWithWidths(pFrontend);
+        if (pFrontend->previous != NULL) {
+            pFrontend->previous->isPreviousSomeOtherMenu = 1;
+        }
+    }
+    gFrontend_scrollbars_updated = 0;
+    EdgeTriggerModeOff();
+    WaitForNoKeys();
+    EdgeTriggerModeOn();
+    gCurrent_frontend_scrollbars = NULL;
+    gConnected_items = NULL;
+    gPTR_00686508 = NULL;
     gOptions_sound_slider.flags = 0;
     gOptions_sound_slider.itemid_left_reference = 10;
     gOptions_sound_slider.itemid_start = 6;
@@ -126,7 +143,6 @@ int C2_HOOK_FASTCALL Options_Infunc(tFrontend_spec* pFrontend) {
 // FUNCTION: CARMA2_HW 0x00474690
 int C2_HOOK_FASTCALL Options_Outfunc(tFrontend_spec* pFrontend) {
 
-    Generic_Outfunc(pFrontend);
     SaveOptions();
     return 1;
 }
