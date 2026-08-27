@@ -86,10 +86,7 @@ void C2_HOOK_CDECL V1Face_CullNone(br_geometry* self, br_soft_renderer* renderer
     C2_HOOK_BUG_ON(TFF_VISIBLE != 0x4);
     C2_HOOK_BUG_ON(sizeof(v11face) != 0x1c);
 
-    for (f = 0; f < rend.nfaces; f++) {
-        tfp = &rend.temp_faces[f];
-        fp = &rend.faces[f];
-
+    for (f = 0, tfp = rend.temp_faces, fp = rend.faces; f < rend.nfaces; f++, tfp++, fp++) {
         tfp->flag = TFF_VISIBLE;
 
         rend.vertex_counts[fp->vertices[0]] += 1;
