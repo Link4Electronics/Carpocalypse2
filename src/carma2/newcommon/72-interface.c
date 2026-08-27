@@ -997,13 +997,14 @@ int C2_HOOK_FASTCALL FRONTEND_CreateMenu(tFrontend_spec* pFrontend_spec) {
 int C2_HOOK_FASTCALL FRONTEND_DestroyMenu(tFrontend_spec* pFrontend) {
     char s[256];
     tS8 i;
+    const char* backdrop = "Backdrop";
 
     sprintf(s, "START OF FRONTEND_DestroyMenu for menu '%s'", pFrontend->name);
     PrintMemoryDump(0, s);
     if (pFrontend->destroy != NULL) {
         pFrontend->destroy(pFrontend);
     }
-    while (gFrontend_actor->children != NULL && strcmp("Backdrop", gFrontend_actor->children->identifier) != 0) {
+    while (gFrontend_actor->children != NULL && strcmp(backdrop, gFrontend_actor->children->identifier) != 0) {
         BrActorRemove(gFrontend_actor->children);
     }
     for (i = 0; i < gFrontend_count_brender_items; i++) {
