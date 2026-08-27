@@ -196,7 +196,7 @@ int C2_HOOK_FASTCALL MainMenuInfunc(tFrontend_spec* pFrontend) {
     EdgeTriggerModeOff();
     WaitForNoKeys();
     EdgeTriggerModeOn();
-    ResetInterfaceTimeout();
+    gFrontend_time_last_input = PDGetTotalTime();
     group = (gCurrent_race_group - gRace_groups) % 10;
     sprintf(group_name, "%s %d", IString_Get(78), group + 1);
     strcpy(pFrontend->items[2].text, group_name);
