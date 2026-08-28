@@ -13,6 +13,9 @@ int gSky_on = 1;
 // GLOBAL: CARMA2_HW 0x0079ec1c
 br_pixelmap* gSwap_sky_texture;
 
+// GLOBAL: CARMA2_HW 0x0079ec20
+br_pixelmap* gDepth_shade_table;
+
 // GLOBAL: CARMA2_HW 0x0067c4e0
 br_material* gHorizon_material;
 

@@ -9,6 +9,8 @@
 
 // CalculateWrappingMultiplier
 
+extern br_pixelmap* gDepth_shade_table;
+
 extern br_scalar C2_HOOK_FASTCALL DepthCueingShiftToDistance(int pDistance);
 
 extern void C2_HOOK_FASTCALL FogAccordingToGPSCDE(br_material* pMaterial);

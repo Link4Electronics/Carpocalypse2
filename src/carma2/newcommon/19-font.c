@@ -10,6 +10,7 @@
 #include "52-errors.h"
 #include "62-graphics3.h"
 #include "70-packfile.h"
+#include "loadtif.h"
 #include "globvars.h"
 #include "platform.h"
 #include "carpocalypse2_macros.h"
@@ -1424,6 +1425,22 @@ void C2_HOOK_FASTCALL LoadFont(int pFont_ID) {
             if (biggest >= 0) {
                 gFonts[pFont_ID].images = maps[biggest];
             }
+        }
+    }
+    if (gFonts[pFont_ID].images == NULL) {
+        /* Try TIFF from FONTS/tiffrgb/ */
+        tPath_name tif_path;
+        tPath_name base_path;
+        int tif_err;
+
+        strcpy(base_path, the_path);
+        PathCat(tif_path, the_path, "tiffrgb");
+        PathCat(tif_path, tif_path, gFont_names[pFont_ID]);
+        strcat(tif_path, ".tif");
+        gFonts[pFont_ID].images = LoadTiff16bit(tif_path, 0, &tif_err);
+        if (gFonts[pFont_ID].images != NULL) {
+            strcpy(the_path, base_path);
+            strcat(the_path, ".PIX");
         }
     }
     if (gFonts[pFont_ID].images == NULL) {

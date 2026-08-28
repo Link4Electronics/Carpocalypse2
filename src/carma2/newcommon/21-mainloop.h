@@ -7,6 +7,7 @@
 extern int gCredits_per_second_time_bonus[3];  /* FIXME: rename to gPoints_per_second */
 extern int gAuto_increase_credits_dt[3];
 extern tU32 gNet_auto_increase_credits_dt[8];
+extern char gHeadup_oppo_ped_text[64];
 
 // CalculateFrameRate
 

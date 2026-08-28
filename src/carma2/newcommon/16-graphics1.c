@@ -1,12 +1,16 @@
 #include "16-graphics1.h"
 
 #include "02-init.h"
+#include "15-displays.h"
 #include "19-font.h"
+#include "21-mainloop.h"
 #include "41-utility.h"
 #include "52-errors.h"
 #include "63-loading3.h"
 #include "brender/brender.h"
 #include "globvars.h"
+#include "globvrbm.h"
+#include "globvrpb.h"
 #include "platform.h"
 #include "carpocalypse2_types.h"
 #include "carpocalypse2_macros.h"
@@ -46,6 +50,21 @@ int gRender_indent;
 
 // GLOBAL: CARMA2_HW 0x006baa40
 tU8 gTemporary_physics_render_buffer[300000];
+
+// GLOBAL: CARMA2_HW 0x00705188
+int gScreen_wobble_x;
+
+// GLOBAL: CARMA2_HW 0x00705184
+int gScreen_wobble_y;
+
+// GLOBAL: CARMA2_HW 0x00703e28
+int gHud_actor_storage_size;
+
+// GLOBAL: CARMA2_HW 0x00704e60
+br_actor* gHud_actor_storage[128];
+
+// GLOBAL: CARMA2_HW 0x00655e54
+int gHeadup_detail_level = 5;
 
 // MungeClipPlane
 
@@ -194,18 +213,81 @@ void C2_HOOK_FASTCALL InitWobbleStuff(void) {
 
 // RenderAFrame
 
-// StartRenderingHeadups
+// FUNCTION: CARMA2_HW 0x004e5a70
+void C2_HOOK_FASTCALL StartRenderingHeadups(void) {
 
-// STUB: CARMA2_HW 0x004e5ad0
-void C2_HOOK_FASTCALL RenderThisHeadup(br_actor* pActor) {
-#ifndef CARPOCALYPSE2_MATCHING
-    /* stub: no-op for Linux boot */
-#else
-    NOT_IMPLEMENTED();
-#endif
+    CleanPolyFontDanglers();
+    gHud_actor_storage_size = 0;
+    gRender_poly_text = 0;
 }
 
-// StopRenderingHeadups
+// FUNCTION: CARMA2_HW 0x004e5ad0
+void C2_HOOK_FASTCALL RenderThisHeadup(br_actor* pActor) {
+
+    if (gHud_actor_storage_size >= (int)CARPOCALYPSE2_ASIZE(gHud_actor_storage)) {
+        BrFailure("Not enough HUD actor storage");
+    }
+    gHud_actor_storage[gHud_actor_storage_size] = pActor;
+    gHud_actor_storage_size += 1;
+}
+
+void C2_HOOK_FASTCALL CleanPolyFontDangler(void) {
+    int i;
+    br_actor* a;
+
+    for (i = 0; i < gCount_polyfont_glyph_actors; i++) {
+        a = gPolyfont_glyph_actors[i];
+        if (a->parent != NULL) {
+            BrActorRemove(a);
+        }
+    }
+    gCount_polyfont_glyph_actors = 0;
+}
+
+// FUNCTION: CARMA2_HW 0x004e5b00
+void C2_HOOK_FASTCALL StopRenderingHeadups(void) {
+    int original_origin_x;
+    int original_origin_y;
+    int original_base_x;
+    int original_base_Y;
+    int i;
+    br_actor* a;
+
+    if (gCount_polyfont_glyph_actors != 0) {
+        BrActorAdd(gHUD_root, gString_root_actor);
+    }
+    for (i = 0; i < gHud_actor_storage_size; i++) {
+        a = gHud_actor_storage[i];
+        if (a != NULL && a->prev == NULL) {
+            BrActorAdd(gHUD_root, a);
+        }
+    }
+    original_origin_x = gRender_screen->origin_x;
+    original_origin_y = gRender_screen->origin_y;
+    original_base_x = gRender_screen->base_x;
+    original_base_Y = gRender_screen->base_y;
+    gRender_screen->origin_x = 0;
+    gRender_screen->origin_y = 0;
+    gRender_screen->base_x = 0;
+    gRender_screen->base_y = 0;
+    BrZbSceneRender(gHUD_root, gHUD_camera, gRender_screen, gDepth_buffer);
+    gRender_screen->origin_x = original_origin_x;
+    gRender_screen->origin_y = original_origin_y;
+    gRender_screen->base_x = original_base_x;
+    gRender_screen->base_y = original_base_Y;
+    if (gString_root_actor->parent != NULL) {
+        BrActorRemove(gString_root_actor);
+    }
+    for (i = 0; i < gHud_actor_storage_size; i++) {
+        a = gHud_actor_storage[i];
+        if (a != NULL && a->parent != NULL) {
+            BrActorRemove(a);
+        }
+    }
+    gHud_actor_storage_size = 0;
+    CleanPolyFontDangler();
+    gRender_poly_text = 1;
+}
 
 // FUNCTION: CARMA2_HW 0x004e5c70
 void C2_HOOK_FASTCALL CleanPolyFontDanglers(void) {
@@ -218,4 +300,65 @@ void C2_HOOK_FASTCALL CleanPolyFontDanglers(void) {
         }
     }
     gCount_polyfont_glyph_actors = 0;
+}
+
+// FUNCTION: CARMA2_HW 0x0044b6a0
+void C2_HOOK_FASTCALL DoTestHeadup(void) {
+    // GLOBAL: CARMA2_HW 0x006815c0
+    static int do_headup_material;
+
+    do_headup_material = !do_headup_material;
+    if (do_headup_material) {
+        BrMapUpdate(gCurrent_rev, BR_MAPU_ALL);
+        gStatbarHUD1_material->colour_map = gCurrent_rev;
+        BrMaterialUpdate(gStatbarHUD1_material, BR_MATU_COLOURMAP);
+    } else {
+        BrMapUpdate(gDamage_hud, BR_MAPU_ALL);
+        gStatbarHUD5_material->colour_map = gDamage_hud;
+        BrMaterialUpdate(gStatbarHUD5_material, BR_MATU_COLOURMAP);
+    }
+    if (gNet_mode == eNet_mode_none) {
+        BrMatrix34Translate(&gArmour_actor->t.t.mat, 0.f, 0.f, 0.f);
+        BrMatrix34Translate(&gPower_actor->t.t.mat, 0.f, 0.f, 0.f);
+        BrMatrix34Translate(&gOffense_actor->t.t.mat, 0.f, 0.f, 0.f);
+        if (gHeadup_detail_level % 3 > 0) {
+            BrMatrix34Translate(&gStatbarHUD1_actor->t.t.mat, 142.f, 0.f, 0.f);
+            BrMatrix34Translate(&gStatbarHUD5_actor->t.t.mat, -178.f, 0.f, 0.f);
+            RenderThisHeadup(gStatbarHUD1_actor);
+            RenderThisHeadup(gStatbarHUD5_actor);
+            RenderThisHeadup(gTimerLeftHUD_actor);
+            RenderThisHeadup(gTimerRightHUD_actor);
+            if (gHeadup_detail_level % 3 > 1) {
+                RenderThisHeadup(gArmour_actor);
+                RenderThisHeadup(gPower_actor);
+                RenderThisHeadup(gOffense_actor);
+                RenderThisHeadup(gStatbarRightHUD_actor);
+                RenderThisHeadup(gStatbarHUD3_actor);
+                BrMatrix34Translate(&gStatbarHUD1_actor->t.t.mat, 0.f, 0.f, 0.f);
+                BrMatrix34Translate(&gStatbarHUD5_actor->t.t.mat, 0.f, 0.f, 0.f);
+            } else {
+                PolyFontText(gHeadup_oppo_ped_text, 335, 50, kPolyfont_ingame_medium_blue, eJust_centre, 0);
+            }
+        }
+        if (gHeadup_detail_level >= 1) {
+            RenderThisHeadup(gHeadup_actor);
+        }
+    } else {
+        if (gHeadup_detail_level % 3 >= 1) {
+            BrMatrix34Translate(&gStatbarHUD5_actor->t.t.mat, -448.f, 0.f, 0.f);
+            RenderThisHeadup(gStatbarHUD5_actor);
+            RenderThisHeadup(gStatbarHUD1_actor);
+            if (gHeadup_detail_level % 3 >= 2) {
+                BrMatrix34Translate(&gArmour_actor->t.t.mat, 48.f, 35.f, 0.f);
+                BrMatrix34Translate(&gPower_actor->t.t.mat, -102.f, 5.f, 0.f);
+                BrMatrix34Translate(&gOffense_actor->t.t.mat, -252.f, -25.f, 0.f);
+                RenderThisHeadup(gArmour_actor);
+                RenderThisHeadup(gPower_actor);
+                RenderThisHeadup(gOffense_actor);
+            }
+        }
+        if (gHeadup_detail_level >= 3) {
+            RenderThisHeadup(gHeadup_actor);
+        }
+    }
 }

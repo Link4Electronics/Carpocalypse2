@@ -340,7 +340,14 @@ void C2_HOOK_FASTCALL EndMouseCursor(void) {
     gMouse_started = 0;
 }
 
-// DRDrawLine
+// FUNCTION: CARMA2_HW 0x0047b450
+void C2_HOOK_FASTCALL DRDrawLine(br_pixelmap* pDestn, int pX1, int pY1, int pX2, int pY2, int pColour) {
+
+    if (gBack_screen->type == BR_PMT_RGB_565) {
+        pColour = PaletteEntry16Bit(gRender_palette, pColour);
+    }
+    BrPixelmapLine(pDestn, pX1, pY1, pX2, pY2, pColour);
+}
 
 // STUB: CARMA2_HW 0x0047b880
 void C2_HOOK_FASTCALL ClearEntireScreen(void) {

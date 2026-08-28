@@ -1,45 +1,680 @@
 #include "15-displays.h"
-#include "globvars.h"
-#include "19-font.h"
-#include "c2_string.h"
 
+#include <stdlib.h>
+
+#include "04-netgame.h"
+#include "08-loading1.h"
+#include "16-graphics1.h"
+#include "18-graphics2.h"
+#include "19-font.h"
+#include "25-grafdata.h"
+#include "33-depth.h"
+#include "41-utility.h"
+#include "63-loading3.h"
+#include "70-packfile.h"
+#include "c2_string.h"
+#include "globvars.h"
+#include "globvrbm.h"
+#include "globvrkm.h"
+#include "globvrpb.h"
+#include "platform.h"
+#include "carpocalypse2_macros.h"
+
+// GLOBAL: CARMA2_HW 0x0067c500
 tHeadup gHeadups[37];
 
+// GLOBAL: CARMA2_HW 0x0067f890
+tQueued_headup gQueued_headups[4];
 
-// GLOBAL: CARMA2_HW 0x00655e54
-int gHeadup_detail_level = 5;
+// GLOBAL: CARMA2_HW 0x0067f888
+int gQueued_headup_count;
 
-// LoadHeadupMessageFile
+// GLOBAL: CARMA2_HW 0x0067fcf8
+tU32 gLast_centre_headup;
 
-// STUB: CARMA2_HW 0x00449090
-void C2_HOOK_FASTCALL InitHeadups(void) {
-#ifndef CARPOCALYPSE2_MATCHING
-    /* stub: no-op for Linux boot */
-#else
-    NOT_IMPLEMENTED();
-#endif
+// GLOBAL: CARMA2_HW 0x0079eaa8
+int gCredits_won_headup;
+
+// GLOBAL: CARMA2_HW 0x0079eaf4
+int gPed_kill_count_headup;
+
+// GLOBAL: CARMA2_HW 0x0079eaf8
+int gCar_kill_count_headup;
+
+// GLOBAL: CARMA2_HW 0x0079eaec
+int gTimer_headup;
+
+// GLOBAL: CARMA2_HW 0x0079eb40
+int gTime_awarded_headup;
+
+// GLOBAL: CARMA2_HW 0x0079eaf0
+int gLaps_headup;
+
+// GLOBAL: CARMA2_HW 0x0079eae8
+int gNet_cash_headup;
+
+// GLOBAL: CARMA2_HW 0x0079eaa4
+int gNet_ped_headup;
+
+// GLOBAL: CARMA2_HW 0x005913d4
+int gLast_fancy_index = -1;
+
+// GLOBAL: CARMA2_HW 0x005913d8
+int gLast_credit_headup__displays = -1;
+
+// GLOBAL: CARMA2_HW 0x005913dc
+int gLast_time_credit_headup = -1;
+
+// GLOBAL: CARMA2_HW 0x0067f874
+tU32 gLast_earn_time;
+
+// GLOBAL: CARMA2_HW 0x0067fd34
+tU32 gLast_fancy_time;
+
+// GLOBAL: CARMA2_HW 0x0067fcc4
+tU32 gLast_time_earn_time;
+
+// GLOBAL: CARMA2_HW 0x0079eac0
+int gOld_times[10];
+
+// GLOBAL: CARMA2_HW 0x0067fcd8
+br_font* gBR_fonts[4];
+
+// GLOBAL: CARMA2_HW 0x0067fd00
+br_pixelmap* gRevs[13];
+
+// GLOBAL: CARMA2_HW 0x0074cf84
+br_pixelmap* gArmour_colour_map;
+
+// GLOBAL: CARMA2_HW 0x0067fcd0
+br_pixelmap* gPowerbar;
+
+// GLOBAL: CARMA2_HW 0x0074cab4
+br_pixelmap* gPower_colour_map;
+
+// GLOBAL: CARMA2_HW 0x0074cf5c
+br_pixelmap* gOffensive_colour_map;
+
+// GLOBAL: CARMA2_HW 0x006815bc
+br_pixelmap* gIcon_test;
+
+// GLOBAL: CARMA2_HW 0x0074ca1c
+br_pixelmap* gCurrent_rev;
+
+// GLOBAL: CARMA2_HW 0x0067c4f8
+br_pixelmap* gHud_curve1;
+
+// GLOBAL: CARMA2_HW 0x0067fcfc
+br_pixelmap* gHud_curve2;
+
+// GLOBAL: CARMA2_HW 0x0067f87c
+br_pixelmap* gHud_curve3;
+
+// GLOBAL: CARMA2_HW 0x0067fcf4
+br_pixelmap* gGrey_top5;
+
+// GLOBAL: CARMA2_HW 0x0074cf00
+br_pixelmap* gDamage_hud;
+
+// GLOBAL: CARMA2_HW 0x0074ca80
+br_pixelmap* gTimer_lhs;
+
+// GLOBAL: CARMA2_HW 0x0074ca44
+br_pixelmap* gHud_timer_rhs;
+
+// GLOBAL: CARMA2_HW 0x006815b8
+br_pixelmap* gIcon_armour;
+
+// GLOBAL: CARMA2_HW 0x006815b4
+br_pixelmap* gIcon_power;
+
+// GLOBAL: CARMA2_HW 0x0067c4f0
+br_pixelmap* gIcon_offense;
+
+// GLOBAL: CARMA2_HW 0x0067c4f4
+br_pixelmap* gIcon_greyBloc1;
+
+// GLOBAL: CARMA2_HW 0x0067fce8
+br_pixelmap* gIcon_litBloc1;
+
+// GLOBAL: CARMA2_HW 0x0067fcd4
+br_pixelmap* gIcon_grnBlock1;
+
+// GLOBAL: CARMA2_HW 0x0067fd40
+tHud_message gHud_messages[46];
+
+// GLOBAL: CARMA2_HW 0x00705be0
+int gCredit_multiplier;
+
+// GLOBAL: CARMA2_HW 0x0067f878
+int gLast_credit_amount;
+
+// GLOBAL: CARMA2_HW 0x0067fcc0
+tU32 gLast_fancy_headup;
+
+// GLOBAL: CARMA2_HW 0x005913ec
+int gPrev_ps_apo_levels[3] = { -1, -1, -1};
+
+// GLOBAL: CARMA2_HW 0x005913f8
+int gPrev_ps_drawn_levels[3] = { -1, -1, -1};
+
+// GLOBAL: CARMA2_HW 0x005913e0
+int gPS_apo_level_changed[3] = { 1, 1, 1};
+
+// GLOBAL: CARMA2_HW 0x0068d6ec
+int gBack_original_origin_x;
+
+// GLOBAL: CARMA2_HW 0x0068d6e8
+int gBack_original_origin_y;
+
+// GLOBAL: CARMA2_HW 0x0068d88c
+int gBack_original_base_x;
+
+// GLOBAL: CARMA2_HW 0x0068d888
+int gBack_original_base_y;
+
+static void C2_HOOK_FASTCALL LoadHeadupMessageFile(void) {
+    FILE* f;
+    tPath_name path;
+    int i;
+    int count;
+
+    PathCat(path, gApplication_path, "SCROLLERS.TXT");
+    f = DRfopen(path, "rt");
+    if (f == NULL) {
+        BrFailure("Couldn't open ", path);
+    }
+    /*
+     * # of Headup scrolly messages
+     * Format:  Font index, Message string
+     * N.B use underscore "_" where you want a space in the string
+     **/
+    count = GetAnInt(f);
+
+    C2_HOOK_BUG_ON(sizeof(tHud_message) != 0x88);
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gHud_messages) != 46);
+
+    if (count > CARPOCALYPSE2_ASIZE(gHud_messages)) {
+        BrFailure("Error - Too many Headup messages ", path);
+    }
+    for (i = 0; i < count; i++) {
+        char s[256];
+        char *str;
+        tHud_message *hud_message;
+        int len;
+        int j;
+
+        hud_message = &gHud_messages[i];
+        GetALineAndDontArgue(f, s);
+
+        str = strtok(s, "\t ,/");
+        sscanf(str, "%d", &hud_message->font1);
+
+        str = strtok(NULL, "\t ,/");
+        sscanf(str, "%d", &hud_message->font2);
+
+        str = strtok(NULL, "\t ,/");
+        strcpy(hud_message->message, str);
+
+        len = strlen(hud_message->message);
+        for (j = 0; j < len; j++) {
+            if (hud_message->message[j] == '_') {
+                hud_message->message[j] = ' ';
+            }
+        }
+    }
+    PFfclose(f);
 }
 
-// ClearHeadup
+// FUNCTION: CARMA2_HW 0x00449090
+void C2_HOOK_FASTCALL InitHeadups(void) {
+    int i;
 
-// ClearHeadupSlot
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gHeadups) != 37);
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gHeadups); i++) {
+        gHeadups[i].type = eHeadup_unused;
+    }
 
-// ClearHeadups
+    gBR_fonts[0] = BrFontProp4x6;
+    gBR_fonts[1] = BrFontProp7x9;
+    gBR_fonts[2] = gFont_7;
+    gBR_fonts[3] = gHeadup_font;
+    gRevs[ 0] = LoadPixelmap("rev1.tif");
+    gRevs[ 1] = LoadPixelmap("rev2.tif");
+    gRevs[ 2] = LoadPixelmap("rev3.tif");
+    gRevs[ 3] = LoadPixelmap("rev4.tif");
+    gRevs[ 4] = LoadPixelmap("rev5.tif");
+    gRevs[ 5] = LoadPixelmap("rev6.tif");
+    gRevs[ 6] = LoadPixelmap("rev7.tif");
+    gRevs[ 7] = LoadPixelmap("rev8.tif");
+    gRevs[ 8] = LoadPixelmap("rev9.tif");
+    gRevs[ 9] = LoadPixelmap("rev10.tif");
+    gRevs[10] = LoadPixelmap("rev11.tif");
+    gRevs[11] = LoadPixelmap("rev12.tif");
+    gRevs[12] = LoadPixelmap("rev13.tif");
+    gPowerbar = LoadPixelmap("powerbar.tif");
 
-// DimAFewBits
+    gArmour_colour_map = BrPixelmapAllocate(BR_PMT_RGBA_4444,
+        gPowerbar->width, gPowerbar->height,
+        NULL, 0);
+    gArmour_colour_map->identifier = BrResStrDup(gArmour_colour_map, "Armour_area");
+    BrMapAdd(gArmour_colour_map);
 
-// KillOldestQueuedHeadup
+    gPower_colour_map = LoadPixelmap("powerbar.tif");
+    BrMapAdd(gPower_colour_map);
 
-// DoTestPowerHeadup
+    gOffensive_colour_map = LoadPixelmap("powerbar.tif");
+    BrMapAdd(gOffensive_colour_map);
 
-// DoPSPowerupHeadups
+    gIcon_test = LoadPixelmap("icontest.tif");
 
-// DoHeadups
+    gCurrent_rev = gRevs[0];
+    BrMapAdd(gRevs[0]);
 
-// FindAHeadupHoleWoofBarkSoundsABitRude
+    gHud_curve1 = LoadPixelmap("hudcurve1.tif");
+    BrMapAdd(gHud_curve1);
+    gHud_curve2 = LoadPixelmap("hudcurve2.tif");
+    BrMapAdd(gHud_curve2);
+    gHud_curve3 = LoadPixelmap("hudcurve3.tif");
+    BrMapAdd(gHud_curve3);
 
-// FUNCTION: CARMA2_HW 0x0044a1a0
-int C2_HOOK_FASTCALL IsHeadupTextClever(char* pText) {
+    gGrey_top5 = LoadPixelmap("greytop5.tif");
+    gDamage_hud = BrPixelmapAllocate(BR_PMT_RGBA_4444,
+        gGrey_top5->width, gGrey_top5->height,
+        NULL, 0);
+    BrMapAdd(gDamage_hud);
+    BrMapUpdate(gDamage_hud, BR_MAPU_ALL);
+
+    gStatbarHUD5_material->colour_map = gDamage_hud;
+    BrMaterialUpdate(gStatbarHUD5_material, BR_MATU_COLOURMAP);
+
+    gTimer_lhs = LoadPixelmap("timerlhs.tif");
+    BrMapAdd(gTimer_lhs);
+    gTimerLeftHUD_material->colour_map = gTimer_lhs;
+    BrMaterialUpdate(gTimerLeftHUD_material, BR_MATU_COLOURMAP);
+    gTimerLeftHUD_model->vertices[1].p.v[0] = (float)gTimerLeftHUD_dim_x;
+    gTimerLeftHUD_model->vertices[0].p.v[0] = gTimerLeftHUD_model->vertices[1].p.v[0];
+    gTimerLeftHUD_model->vertices[3].p.v[1] = (float)-gTimerLeftHUD_dim_y;
+    gTimerLeftHUD_model->vertices[0].p.v[1] = gTimerLeftHUD_model->vertices[3].p.v[1];
+    gTimerLeftHUD_model->vertices[3].p.v[0] = (float)gTimerLeftHUD_dim_w + gTimerLeftHUD_model->vertices[1].p.v[0];
+    gTimerLeftHUD_model->vertices[2].p.v[0] = gTimerLeftHUD_model->vertices[3].p.v[0];
+    gTimerLeftHUD_model->vertices[2].p.v[1] = gTimerLeftHUD_model->vertices[3].p.v[1] - (float)gTimerLeftHUD_dim_h;
+    gTimerLeftHUD_model->vertices[1].p.v[1] = gTimerLeftHUD_model->vertices[2].p.v[1];
+    BrModelUpdate(gTimerLeftHUD_model, BR_MODU_VERTEX_POSITIONS);
+
+    gHud_timer_rhs = LoadPixelmap("timerrhs.tif");
+    BrMapAdd(gHud_timer_rhs);
+    gTimerRightHUD_material->colour_map = gHud_timer_rhs;
+    BrMaterialUpdate(gTimerRightHUD_material, BR_MATU_COLOURMAP);
+
+    gTimerRightHUD_model->vertices[1].p.v[0] = (float)gTimerRightHUD_dim_x;
+    gTimerRightHUD_model->vertices[0].p.v[0] = gTimerRightHUD_model->vertices[1].p.v[0];
+    gTimerRightHUD_model->vertices[3].p.v[1] = (float)-gTimerRightHUD_dim_y;
+    gTimerRightHUD_model->vertices[0].p.v[1] = gTimerRightHUD_model->vertices[3].p.v[1];
+    gTimerRightHUD_model->vertices[3].p.v[0] = (float)gTimerRightHUD_dim_w + gTimerRightHUD_model->vertices[1].p.v[0];
+    gTimerRightHUD_model->vertices[2].p.v[0] = gTimerRightHUD_model->vertices[3].p.v[0];
+    gTimerRightHUD_model->vertices[2].p.v[1] = gTimerRightHUD_model->vertices[3].p.v[1] - (float)gTimerRightHUD_dim_h;
+    gTimerRightHUD_model->vertices[1].p.v[1] = gTimerRightHUD_model->vertices[2].p.v[1];
+    BrModelUpdate(gTimerRightHUD_model, BR_MODU_VERTEX_POSITIONS);
+
+    gIcon_armour = LoadPixelmap("iconarmour.tif");
+    gIcon_power = LoadPixelmap("iconpower.tif");
+    gIcon_offense = LoadPixelmap("iconoffense.tif");
+    gIcon_greyBloc1 = LoadPixelmap("greybloc1.tif");
+    gIcon_litBloc1 = LoadPixelmap("litbloc1.tif");
+    gIcon_grnBlock1 = LoadPixelmap("grnblock1.tif");
+
+    LoadHeadupMessageFile();
+}
+
+// FUNCTION: CARMA2_HW 0x00449630
+void C2_HOOK_FASTCALL ClearHeadup(int pIndex) {
+
+    gHeadups[pIndex].type = eHeadup_unused;
+}
+
+// FUNCTION: CARMA2_HW 0x00449650
+void C2_HOOK_FASTCALL ClearHeadupSlot(int pSlot_index) {
+    int i;
+    tHeadup* the_headup;
+
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gHeadups); i++) {
+        the_headup = &gHeadups[i];
+        if (the_headup->type != eHeadup_unused && the_headup->slot_index == pSlot_index) {
+            ClearHeadup(i);
+            return;
+        }
+        the_headup++;
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x00449690
+void C2_HOOK_FASTCALL ClearHeadups(void) {
+    int i;
+
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gHeadups) != 37);
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gOld_times) != 10);
+
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gHeadups); i++) {
+        if (gHeadups[i].type != eHeadup_unused) {
+            ClearHeadup(i);
+        }
+    }
+    gLast_fancy_index = -1;
+    gLast_credit_headup__displays = -1;
+    gLast_time_credit_headup = -1;
+    gLast_earn_time = 0;
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gOld_times); i++) {
+        gOld_times[i] = 0;
+    }
+    gLast_fancy_time = 0;
+    gLast_time_earn_time = 0;
+    gQueued_headup_count = 0;
+    gLast_centre_headup = 0;
+}
+
+// FUNCTION: CARMA2_HW 0x00449fa0
+int C2_HOOK_FASTCALL FindAHeadupHoleWoofBarkSoundsABitRude(int pSlot_index) {
+    int i;
+    int empty_one;
+    tHeadup* the_headup;
+
+    empty_one = -1;
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gHeadups); i++) {
+        the_headup = &gHeadups[i];
+        if (pSlot_index >= 0 && the_headup->slot_index == pSlot_index) {
+            return i;
+        }
+        if (the_headup->type == eHeadup_unused) {
+            empty_one = i;
+        }
+    }
+    return empty_one;
+}
+
+void C2_HOOK_FASTCALL KillOldestQueuedHeadup(void) {
+
+    C2_HOOK_BUG_ON(sizeof(tQueued_headup) != 0x10c);
+
+    gQueued_headup_count -= 1;
+    memmove(&gQueued_headups[0], &gQueued_headups[1], gQueued_headup_count * sizeof(tQueued_headup));
+}
+
+// FUNCTION: CARMA2_HW 0x004497b0
+void C2_HOOK_FASTCALL ClearQueuedHeadups(void) {
+
+    while (gQueued_headup_count != 0) {
+        KillOldestQueuedHeadup();
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x00449830
+void C2_HOOK_FASTCALL DoPSPowerHeadup(int pLevel, const char* pAPO_str) {
+    int changed;
+    br_pixelmap *dest_pm;
+    br_pixelmap *icon;
+    int count_slots;
+    int level;
+    int i;
+    int j;
+    int delta;
+    int delta_x = 2;
+
+    switch (pAPO_str[0]) {
+    case 'A':
+        dest_pm = gArmour_colour_map;
+        icon = gIcon_armour;
+        count_slots = gProgram_state.current_car.power_up_slots[0];
+        if (pLevel != gPrev_ps_apo_levels[0]
+                || gProgram_state.current_car.power_up_slots[0] != gPrev_ps_drawn_levels[0]) {
+            gPS_apo_level_changed[0] = 1;
+        } else {
+            gPS_apo_level_changed[0] = 1;
+        }
+        gPrev_ps_drawn_levels[0] = gProgram_state.current_car.power_up_slots[0];
+        gPrev_ps_apo_levels[0] = pLevel;
+        changed = gPS_apo_level_changed[0];
+        break;
+    case 'P':
+        dest_pm = gPower_colour_map;
+        icon = gIcon_power;
+        count_slots = gProgram_state.current_car.power_up_slots[1];
+        if (pLevel != gPrev_ps_apo_levels[1]
+                || gProgram_state.current_car.power_up_slots[1] != gPrev_ps_drawn_levels[1]) {
+            gPS_apo_level_changed[1] = 1;
+        } else {
+            gPS_apo_level_changed[1] = 1;
+        }
+        gPrev_ps_drawn_levels[1] = gProgram_state.current_car.power_up_slots[1];
+        gPrev_ps_apo_levels[1] = pLevel;
+        changed = gPS_apo_level_changed[1];
+        break;
+    case 'O':
+        dest_pm = gOffensive_colour_map;
+        icon = gIcon_offense;
+        count_slots = gProgram_state.current_car.power_up_slots[2];
+        if (pLevel != gPrev_ps_apo_levels[2]
+                || gProgram_state.current_car.power_up_slots[2] != gPrev_ps_drawn_levels[2]) {
+            gPS_apo_level_changed[2] = 1;
+        } else {
+            gPS_apo_level_changed[2] = 1;
+        }
+        gPrev_ps_drawn_levels[2] = gProgram_state.current_car.power_up_slots[2];
+        gPrev_ps_apo_levels[2] = pLevel;
+        changed = gPS_apo_level_changed[2];
+        break;
+    }
+    if (changed) {
+        DRPixelmapCopy(dest_pm, gPowerbar);
+        DRPixelmapRectangleMaskedCopy(dest_pm, delta_x, 0, icon, 0, 0, icon->width, icon->height);
+        count_slots = count_slots - pLevel;
+        level = pLevel;
+
+        /* Draw staggered APO levels */
+        for (i = 0; i < 15; i += 5) {
+            for (j = 0; j < 10; j++) {
+                delta = delta_x;
+                if (level > 0) {
+                    DRPixelmapRectangleMaskedCopy(dest_pm,
+                        j * gIcon_litBloc1->width + delta + icon->width + 2, i,
+                        gIcon_litBloc1, 0, 0, gIcon_litBloc1->width, gIcon_litBloc1->height);
+                    level -= 1;
+                } else if (count_slots > 0) {
+                    DRPixelmapRectangleMaskedCopy(dest_pm,
+                        j * gIcon_grnBlock1->width + delta + icon->width + 2, i,
+                        gIcon_grnBlock1, 0, 0, gIcon_grnBlock1->width, gIcon_grnBlock1->height);
+                    count_slots -= 1;
+                } else {
+                    DRPixelmapRectangleMaskedCopy(dest_pm,
+                      j * gIcon_greyBloc1->width + delta + icon->width + 2, i,
+                      gIcon_greyBloc1, 0, 0, gIcon_greyBloc1->width, gIcon_greyBloc1->height);
+                }
+            }
+            delta -= 2;
+        }
+        switch (pAPO_str[0]) {
+        case 'A':
+            BrMapUpdate(gArmour_colour_map, BR_MAPU_ALL);
+            gArmour_material->colour_map = gArmour_colour_map;
+            BrMaterialUpdate(gArmour_material, BR_MATU_COLOURMAP);
+            break;
+        case 'P':
+            BrMapUpdate(gPower_colour_map, BR_MAPU_ALL);
+            gPower_material->colour_map = gPower_colour_map;
+            BrMaterialUpdate(gPower_material, BR_MATU_COLOURMAP);
+            break;
+        case 'O':
+            BrMapUpdate(gOffensive_colour_map, BR_MAPU_ALL);
+            gOffence_material->colour_map = gOffensive_colour_map;
+            BrMaterialUpdate(gOffence_material, BR_MATU_COLOURMAP);
+            break;
+        }
+    }
+    gArmour_actor->render_style = BR_RSTYLE_FACES;
+    gPower_actor->render_style = BR_RSTYLE_FACES;
+    gOffense_actor->render_style = BR_RSTYLE_FACES;
+}
+
+// FUNCTION: CARMA2_HW 0x00449800
+void C2_HOOK_FASTCALL DoPSPowerupHeadups(void) {
+
+    DoPSPowerHeadup(gProgram_state.current_car.power_up_levels[0], "A");
+    DoPSPowerHeadup(gProgram_state.current_car.power_up_levels[1], "P");
+    DoPSPowerHeadup(gProgram_state.current_car.power_up_levels[2], "O");
+}
+
+// FUNCTION: CARMA2_HW 0x004496f0
+void C2_HOOK_FASTCALL DimAFewBits(void) {
+    int i;
+
+#define DIM_INDEX gProgram_state.cockpit_on && gProgram_state.cockpit_image_index >= 0
+    for (i = 0; i < gProgram_state.current_car.dim_count[DIM_INDEX]; i++) {
+        DimRectangle(
+            gBack_screen,
+            gProgram_state.current_car.dim_left[DIM_INDEX][i],
+            gProgram_state.current_car.dim_top[DIM_INDEX][i],
+            gProgram_state.current_car.dim_right[DIM_INDEX][i],
+            gProgram_state.current_car.dim_bottom[DIM_INDEX][i],
+            1);
+    }
+#undef DIM_INDEX
+}
+
+// FUNCTION: CARMA2_HW 0x0047cbd0
+void C2_HOOK_FASTCALL DimRectangle(br_pixelmap* pPixelmap, int pLeft, int pTop, int pRight, int pBottom, int pKnock_out_corners) {
+    tU8* ptr;
+    tU8* depth_table_ptr;
+    tU8* right_ptr;
+    int x;
+    int y;
+    int line_skip;
+    int width;
+
+    if (gDevious_2d) {
+        DeviouslyDimRectangle(pPixelmap, pLeft, pTop, pRight, pBottom, pKnock_out_corners);
+        return;
+    }
+
+    ptr = (tU8*)pPixelmap->pixels + pLeft + pPixelmap->row_bytes * pTop;
+    line_skip = pPixelmap->row_bytes - pRight + pLeft;
+    depth_table_ptr = gDepth_shade_table->pixels;
+    x = gDepth_shade_table->row_bytes * gDim_amount;
+    width = pRight - pLeft;
+
+    if (pKnock_out_corners) {
+        ptr++;
+        for (right_ptr = ptr + width - 2; ptr < right_ptr; ptr++) {
+            *ptr = depth_table_ptr[*ptr + x];
+        }
+        ptr += line_skip + 1;
+        for (y = pTop + 1; y < (pBottom - 1); y++, ptr += line_skip) {
+            for (right_ptr = ptr + width; ptr < right_ptr; ptr++) {
+                *ptr = depth_table_ptr[*ptr + x];
+            }
+        }
+        ptr++;
+        for (right_ptr = ptr + width - 2; ptr < right_ptr; ptr++) {
+            *ptr = depth_table_ptr[*ptr + x];
+        }
+    } else {
+        for (y = pTop; y < pBottom; y++) {
+            for (right_ptr = ptr + width; ptr < right_ptr; ptr++) {
+                *ptr = depth_table_ptr[*ptr + x];
+            }
+            ptr += line_skip;
+        }
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x0047cce0
+void C2_HOOK_FASTCALL DimRectangleClipped(br_pixelmap* pPixelmap, int pLeft, int pTop, int pRight, int pBottom, int pKnock_out_corners) {
+
+    if (pLeft < 0) {
+        pLeft = 0;
+    }
+    if (pTop < 0) {
+        pTop = 0;
+    }
+    if (pRight > pPixelmap->width) {
+        pRight = pPixelmap->width;
+    }
+    if (pBottom > pPixelmap->height) {
+        pBottom = pPixelmap->height;
+    }
+    if (pLeft < pRight && pTop < pBottom) {
+        DimRectangle(pPixelmap, pLeft, pTop, pRight, pBottom, pKnock_out_corners);
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x0047cad0
+void C2_HOOK_FASTCALL DeviouslyDimRectangle(br_pixelmap* pPixelmap, int pLeft, int pTop, int pRight, int pBottom, int pKnock_out_corners) {
+
+    gDim_model->vertices[1].p.v[0] = (float)pLeft;
+    gDim_model->vertices[0].p.v[0] = gDim_model->vertices[1].p.v[0];
+    gDim_model->vertices[3].p.v[0] = (float)pRight;
+    gDim_model->vertices[2].p.v[0] = gDim_model->vertices[3].p.v[0];
+    gDim_model->vertices[3].p.v[1] = -(float)pTop;
+    gDim_model->vertices[0].p.v[1] = gDim_model->vertices[3].p.v[1];
+    gDim_model->vertices[2].p.v[1] = -(float)pBottom;
+    gDim_model->vertices[1].p.v[1] = gDim_model->vertices[2].p.v[1];
+    BrModelUpdate(gDim_model, BR_MODU_VERTEX_POSITIONS);
+    gDim_actor->render_style = BR_RSTYLE_FACES;
+    if (gDim_actor->prev == NULL) {
+        BrActorAdd(g2d_camera, gDim_actor);
+    }
+    BrZbsSceneRender(g2d_camera, g2d_camera, gBack_screen, gDepth_buffer);
+    if (gDim_actor->parent != NULL) {
+        BrActorRemove(gDim_actor);
+    }
+    gDim_actor->render_style = BR_RSTYLE_NONE;
+}
+
+// FUNCTION: CARMA2_HW 0x0044a9d0
+void C2_HOOK_FASTCALL DoDamageScreen(tU32 pThe_time) {
+    int i;
+    int y_pitch;
+    int the_step;
+    int the_wobble_x;
+    int the_wobble_y;
+    br_pixelmap* the_image;
+    tDamage_unit* the_damage;
+
+    if (&gProgram_state.current_car != gCar_to_view) {
+        return;
+    }
+    if (gProgram_state.cockpit_on && gProgram_state.cockpit_image_index >= 0) {
+        if (gProgram_state.which_view != eView_forward) {
+            return;
+        }
+        the_wobble_x = gScreen_wobble_x;
+        the_wobble_y = gScreen_wobble_y;
+    } else {
+        the_wobble_x = gProgram_state.current_car.damage_x_offset;
+        the_wobble_y = gProgram_state.current_car.damage_y_offset;
+    }
+
+    DRPixelmapCopy(gDamage_hud, gGrey_top5);
+
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gProgram_state.current_car.damage_units); i++) {
+        the_damage = &gProgram_state.current_car.damage_units[i];
+        if (i != eDamage_driver) {
+            the_image = the_damage->images;
+            the_step = 5 * the_damage->damage_level / 100;
+            y_pitch = (the_image->height / 2) / 5;
+            DRPixelmapRectangleMaskedCopy(
+                gDamage_hud,
+                the_wobble_x + gProgram_state.current_car.damage_units[i].x_coord,
+                the_wobble_y + gProgram_state.current_car.damage_units[i].y_coord,
+                the_image,
+                0,
+                y_pitch * (2 * the_step + ((pThe_time / the_damage->periods[the_step]) & 1)),
+                the_image->width,
+                y_pitch);
+        }
+    }
+}
+
+static int C2_HOOK_FASTCALL IsHeadupTextClever(char* pText) {
 
     while (*pText) {
         if (*(signed char*)pText < 0) {
@@ -109,37 +744,555 @@ int C2_HOOK_FASTCALL MungeHeadupWidth(tHeadup* pHeadup) {
     return width;
 }
 
-// NewTextHeadupSlot2
+// FUNCTION: CARMA2_HW 0x00449fd0
+int C2_HOOK_FASTCALL NewTextHeadupSlot2(int pSlot_index, int pFlash_rate, int pLifetime, int pFont_index, const char* pText, int pQueue_it) {
+    int index;
+    tHeadup* the_headup;
+    tHeadup_slot* headup_slot;
+    tU32 time;
 
-// NewTextHeadupSlot
+    time = PDGetTotalTime();
+    if (pQueue_it && pSlot_index == 4 && time - gLast_centre_headup < 1000) {
+        if (gQueued_headup_count == 4) {
+            KillOldestQueuedHeadup();
+        }
+        gQueued_headups[gQueued_headup_count].flash_rate = pFlash_rate;
+        gQueued_headups[gQueued_headup_count].lifetime = pLifetime;
+        gQueued_headups[gQueued_headup_count].font_index = pFont_index;
+        strcpy(gQueued_headups[gQueued_headup_count].text, pText);
+        gQueued_headup_count++;
+        return -1;
+    }
+    index = FindAHeadupHoleWoofBarkSoundsABitRude(pSlot_index);
+    if (index < 0) {
+        return index;
+    }
+    if (pSlot_index == 4) {
+        gLast_centre_headup = time;
+    }
+    headup_slot = &gProgram_state.current_car.headup_slots[gProgram_state.cockpit_on][pSlot_index];
+    the_headup = &gHeadups[index];
+    the_headup->data.coloured_text_info.coloured_font = &gFonts[-pFont_index];
+    if (pSlot_index == 4) {
+        the_headup->type = eHeadup_box_text;
+    } else {
+        the_headup->type = eHeadup_coloured_text;
+    }
+    strcpy(the_headup->data.coloured_text_info.text, pText);
 
-// NewImageHeadupSlot
+    the_headup->slot_index = pSlot_index;
+    the_headup->justification = headup_slot->justification;
+    if (pSlot_index < 0) {
+        the_headup->cockpit_anchored = 0;
+    } else {
+        the_headup->cockpit_anchored = headup_slot->cockpit_anchored;
+    }
+    the_headup->field_0x3c = headup_slot->field_0x28;
+    the_headup->dimmed_background = headup_slot->dimmed_background;
+    the_headup->dim_left = headup_slot->dim_left;
+    the_headup->dim_top = headup_slot->dim_top;
+    the_headup->dim_right = headup_slot->dim_right;
+    the_headup->dim_bottom = headup_slot->dim_bottom;
+    the_headup->original_x = headup_slot->x;
+    the_headup->right_edge = MungeHeadupWidth(the_headup) + the_headup->x;
+    the_headup->y = headup_slot->y;
+    if (pFlash_rate) {
+        the_headup->flash_period = 1000 / pFlash_rate;
+    } else {
+        the_headup->flash_period = 0;
+    }
+    the_headup->last_flash = 0;
+    the_headup->flash_state = 0;
+    if (pLifetime) {
+        the_headup->end_time = GetTotalTime() + pLifetime;
+    } else {
+        the_headup->end_time = 0;
+    }
+    return index;
+}
 
-// DoFancyHeadup
+// FUNCTION: CARMA2_HW 0x0044a380
+int C2_HOOK_FASTCALL NewTextHeadupSlot(int pSlot_index, int pFlash_rate, int pLifetime, int pFont_index, const char* pText) {
 
-// MoveHeadupTo
+    return NewTextHeadupSlot2(pSlot_index, pFlash_rate, pLifetime, pFont_index, pText, 1);
+}
 
-// ChangeHeadupText
+// FUNCTION: CARMA2_HW 0x0044a3a0
+int C2_HOOK_FASTCALL NewImageHeadupSlot(int pSlot_index, int pFlash_rate, int pLifetime, int pImage_index) {
+    int index;
 
-// DoDamageScreen
+    index = FindAHeadupHoleWoofBarkSoundsABitRude(pSlot_index);
+    if (index >= 0) {
+        tHeadup* the_headup;
+        tHeadup_slot* headup_slot;
 
-// DoInstruments
+        headup_slot = &gProgram_state.current_car.headup_slots[gProgram_state.cockpit_on][pSlot_index];
+        the_headup = &gHeadups[index];
+        the_headup->type = eHeadup_image;
+        the_headup->slot_index = pSlot_index;
+        the_headup->justification = headup_slot->justification;
+        if (pSlot_index >= 0) {
+            the_headup->cockpit_anchored = headup_slot->cockpit_anchored;
+        } else {
+            the_headup->cockpit_anchored = 0;
+        }
+        the_headup->dimmed_background = headup_slot->dimmed_background;
+        the_headup->dim_left = headup_slot->dim_left;
+        the_headup->dim_top = headup_slot->dim_top;
+        the_headup->dim_right = headup_slot->dim_right;
+        the_headup->dim_bottom = headup_slot->dim_bottom;
+        the_headup->original_x = headup_slot->x;
 
-// ChangingView
+        switch (headup_slot->justification) {
+        case eJust_left:
+            the_headup->x = the_headup->original_x;
+            break;
+        case eJust_right:
+            the_headup->x = the_headup->original_x + DRTextWidth(&gFonts[gHud_messages[pImage_index].font1], gHud_messages[pImage_index].message);
+            break;
+        case eJust_centre:
+            the_headup->x = the_headup->original_x + DRTextWidth(&gFonts[gHud_messages[pImage_index].font1], gHud_messages[pImage_index].message) / 2;
+            break;
+        }
+        the_headup->y = headup_slot->y;
+        if (pFlash_rate != 0) {
+            the_headup->flash_period = 1000 / pFlash_rate;
+        } else {
+            the_headup->flash_period = 0;
+        }
+        the_headup->last_flash = 0;
+        the_headup->flash_state = 0;
+        if (pLifetime != 0) {
+            the_headup->end_time = GetTotalTime() + pLifetime;
+        } else {
+            the_headup->end_time = 0;
+        }
+        strcpy(the_headup->data.image_info.text , gHud_messages[pImage_index].message);
+        the_headup->data.image_info.font_index = gHud_messages[pImage_index].font2;
+        the_headup->data.image_info.font = &gFonts[gHud_messages[pImage_index].font1];
+        switch (the_headup->justification) {
+        case eJust_left:
+            the_headup->data.image_info.field_0x104 = 0;
+            the_headup->data.image_info.field_0x10c = -DRTextWidth(the_headup->data.image_info.font, the_headup->data.image_info.text);
+            break;
+        case eJust_right:
+            the_headup->data.image_info.field_0x104 = DRTextWidth(the_headup->data.image_info.font, the_headup->data.image_info.text);
+            the_headup->data.image_info.field_0x10c = 0;
+            break;
+        case eJust_centre:
+            the_headup->data.image_info.field_0x104 =  DRTextWidth(the_headup->data.image_info.font, the_headup->data.image_info.text) / 2;
+            the_headup->data.image_info.field_0x10c = -DRTextWidth(the_headup->data.image_info.font, the_headup->data.image_info.text) / 2;
+            break;
+        }
+    }
+    return index;
+}
 
-// EarnCredits2
+// FUNCTION: CARMA2_HW 0x0044a600
+void C2_HOOK_FASTCALL DoFancyHeadup(int pIndex) {
+    tU32 the_time;
+    int temp_ref;
+    int center;
 
-// EarnCredits
+    center = gCurrent_graf_data->width / 2;
+    the_time = GetTotalTime();
+    if (gMap_view == 2) {
+        return;
+    }
+    if (gLast_fancy_index >= 0 && the_time - gLast_fancy_time <= 2000 && pIndex < gLast_fancy_index) {
+        return;
+    }
+    temp_ref = NewImageHeadupSlot(6, 0, 2000, pIndex + 10);
+    if (temp_ref >= 0) {
+        tHeadup* the_headup;
 
-// EarnCredits100
+        gLast_fancy_headup = temp_ref;
+        gLast_fancy_index = pIndex;
+        gLast_fancy_time = the_time;
 
-// SpendCredits
+        the_headup = &gHeadups[temp_ref];
+        the_headup->type = eHeadup_fancy;
+        the_headup->data.fancy_info.field_0x108 = 0;
+        the_headup->data.fancy_info.fancy_stage = 0;
+        switch (the_headup->justification) {
+        case eJust_left:
+            the_headup->data.fancy_info.offset = center;
+            the_headup->data.fancy_info.end_offset = -DRTextWidth(the_headup->data.fancy_info.font, the_headup->data.fancy_info.text);
+            break;
+        case eJust_right:
+            the_headup->data.fancy_info.offset = center + DRTextWidth(the_headup->data.fancy_info.font, the_headup->data.fancy_info.text) / 2;
+            the_headup->data.fancy_info.end_offset = center;
+            break;
+        case eJust_centre:
+            the_headup->data.fancy_info.offset =  center + DRTextWidth(the_headup->data.fancy_info.font, the_headup->data.fancy_info.text) / 2;
+            the_headup->data.fancy_info.end_offset = -center - DRTextWidth(the_headup->data.fancy_info.font, the_headup->data.fancy_info.text) / 2;
+            break;
+        }
+    }
+}
 
-// AwardTime
+// FUNCTION: CARMA2_HW 0x0044a860
+void C2_HOOK_FASTCALL MoveHeadupTo(int pHeadup_index, int pX, int pY) {
+    int delta_x;
 
-// AwardTime5
+    if (pHeadup_index >= 0) {
+        delta_x = gHeadups[pHeadup_index].x - gHeadups[pHeadup_index].original_x;
+        gHeadups[pHeadup_index].original_x = pX;
+        gHeadups[pHeadup_index].x = delta_x + pX;
+        gHeadups[pHeadup_index].y = pY;
+    }
+}
 
-// DoTestHeadup
+// FUNCTION: CARMA2_HW 0x00449b10
+void C2_HOOK_FASTCALL DoHeadups(tU32 pThe_time) {
+    int i;
+    int x_offset;
+    int y_offset;
+    tHeadup* the_headup;
+
+    if (gNet_mode != eNet_mode_none) {
+        DoNetScores();
+    }
+    if (gQueued_headup_count && PDGetTotalTime() - gLast_centre_headup >= 1000) {
+        NewTextHeadupSlot(4,
+            gQueued_headups[0].flash_rate,
+            gQueued_headups[0].lifetime,
+            gQueued_headups[0].font_index,
+            gQueued_headups[0].text);
+        KillOldestQueuedHeadup();
+    }
+    if (gHeadup_detail_level == 0 || gHeadup_detail_level == 3) {
+        MoveHeadupTo(gTimer_headup, 634, 2);
+    } else {
+        MoveHeadupTo(gTimer_headup, 389, 13);
+    }
+
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gHeadups); i++) {
+        the_headup = &gHeadups[i];
+        if (the_headup->type != eHeadup_unused
+                && (gProgram_state.which_view == eView_forward || !the_headup->cockpit_anchored)
+                && (the_headup->type == eHeadup_image
+                    || the_headup->type == eHeadup_fancy
+                    || (the_headup->type == eHeadup_text && the_headup->data.text_info.text[0] != '\0')
+                    || ((the_headup->type == eHeadup_coloured_text || the_headup->type == eHeadup_box_text)
+                        && the_headup->data.text_info.text[0] != '\0'))) {
+            if (the_headup->type == eHeadup_fancy || the_headup->end_time == 0 || pThe_time < the_headup->end_time) {
+                if (the_headup->flash_period == 0
+                        || Flash(the_headup->flash_period, &the_headup->last_flash, &the_headup->flash_state)) {
+
+                    switch (the_headup->type) {
+                    case eHeadup_text:
+                        if (the_headup->cockpit_anchored) {
+                            y_offset = gScreen_wobble_y;
+                        } else {
+                            y_offset = 0;
+                        }
+                        if (the_headup->cockpit_anchored) {
+                            x_offset = gScreen_wobble_x;
+                        } else {
+                            x_offset = 0;
+                        }
+                        BrPixelmapText(
+                            gRender_screen,
+                            x_offset + the_headup->x,
+                            y_offset + the_headup->y,
+                            the_headup->data.text_info.colour,
+                            the_headup->data.text_info.font,
+                            the_headup->data.text_info.text);
+                        break;
+                    case eHeadup_coloured_text:
+                        if (gHeadup_detail_level == 2 || gHeadup_detail_level == 5
+                                || (i != gCredits_won_headup
+                                    && i != gPed_kill_count_headup
+                                    && i != gCar_kill_count_headup
+                                    && i != gLaps_headup)) {
+                            if (the_headup->clever) {
+                                if (the_headup->cockpit_anchored) {
+                                    y_offset = gScreen_wobble_y;
+                                } else {
+                                    y_offset = 0;
+                                }
+                                if (the_headup->cockpit_anchored) {
+                                    x_offset = gScreen_wobble_x;
+                                } else {
+                                    x_offset = 0;
+                                }
+                                DRPixelmapCleverText(
+                                        gBack_screen,
+                                        x_offset + the_headup->x,
+                                        y_offset + the_headup->y,
+                                        the_headup->data.coloured_text_info.coloured_font,
+                                        the_headup->data.coloured_text_info.text,
+                                        the_headup->right_edge);
+                            } else {
+                                if (the_headup->cockpit_anchored) {
+                                    y_offset = gScreen_wobble_y;
+                                } else {
+                                    y_offset = 0;
+                                }
+                                if (the_headup->cockpit_anchored) {
+                                    x_offset = gScreen_wobble_x;
+                                } else {
+                                    x_offset = 0;
+                                }
+                                DRPixelmapText(
+                                        gBack_screen,
+                                        x_offset + the_headup->x,
+                                        y_offset + the_headup->y,
+                                        the_headup->data.coloured_text_info.coloured_font,
+                                        the_headup->data.coloured_text_info.text,
+                                        the_headup->right_edge);
+                            }
+                        }
+                        break;
+                    case eHeadup_image:
+                        PolyFontText(the_headup->data.image_info.text,
+                             the_headup->original_x + the_headup->data.image_info.field_0x104,
+                             the_headup->y,
+                             the_headup->data.image_info.font_index, eJust_centre, 0);
+                        break;
+
+                    case eHeadup_fancy:
+                        switch (the_headup->data.fancy_info.fancy_stage) {
+                        case 0:
+                            the_headup->data.fancy_info.offset -= 325 * gFrame_period / 1000;
+                            if (the_headup->data.fancy_info.offset <= 0) {
+                                the_headup->data.fancy_info.offset = 0;
+                                the_headup->data.fancy_info.fancy_stage = 1;
+                                the_headup->data.fancy_info.start_time = GetTotalTime();
+                            }
+                            PolyFontText(the_headup->data.fancy_info.text,
+                                the_headup->data.fancy_info.offset,
+                                the_headup->y,
+                                the_headup->data.fancy_info.font_index,
+                                eJust_centre,
+                                0);
+                            break;
+                        case 1:
+                            if (pThe_time - the_headup->data.fancy_info.start_time > 1000) {
+                                the_headup->data.fancy_info.fancy_stage = 2;
+                                the_headup->data.fancy_info.start_time = GetTotalTime();
+                            }
+                            PolyFontText(the_headup->data.fancy_info.text,
+                                the_headup->data.fancy_info.offset,
+                                the_headup->y,
+                                the_headup->data.fancy_info.font_index,
+                                eJust_centre,
+                                0);
+                            break;
+                        case 2:
+                            the_headup->data.fancy_info.offset -= 325 * gFrame_period / 1000;
+                            if (the_headup->data.fancy_info.offset <= the_headup->data.fancy_info.end_offset) {
+                                ClearHeadup(i);
+                            } else {
+                                PolyFontText(the_headup->data.fancy_info.text,
+                                    the_headup->data.fancy_info.offset,
+                                    the_headup->y,
+                                    the_headup->data.fancy_info.font_index,
+                                    eJust_centre,
+                                    0);
+                            }
+                            break;
+                        default:
+                            break;
+                        }
+                        break;
+
+                    case eHeadup_box_text:
+                        if (the_headup->cockpit_anchored) {
+                            y_offset = gScreen_wobble_y;
+                        } else {
+                            y_offset = 0;
+                        }
+                        if (the_headup->cockpit_anchored) {
+                            x_offset = gScreen_wobble_x;
+                        } else {
+                            x_offset = 0;
+                        }
+                        OoerrIveGotTextInMeBoxMissus(
+                            the_headup->data.coloured_text_info.coloured_font - gFonts,
+                            the_headup->data.coloured_text_info.text,
+                            gRender_screen,
+                            gRender_screen->width / 10,
+                            x_offset + the_headup->y,
+                            9 * gRender_screen->width / 10,
+                            y_offset + the_headup->y + 60,
+                            1);
+                        break;
+                    default:
+                        break;
+                    }
+                }
+            } else {
+                ClearHeadup(i);
+            }
+        }
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x0044aad0
+void C2_HOOK_FASTCALL DoInstruments(tU32 pThe_time) {
+    char buffer[8];
+    br_pixelmap* speedo_image;
+    int the_wobble_x;
+    int the_wobble_y;
+    int gear;
+    int gear_height;
+    double the_angle;
+    double the_angle2;
+    double sin_angle;
+    double cos_angle;
+    double speed_mph;
+
+    if (gCar_to_view != NULL && gCar_to_view->driver >= eDriver_oppo) {
+        speed_mph = gCar_to_view->speedo_speed * WORLD_SCALE / 1600.0f * 1000.f * 3600.0f;
+        if (speed_mph < 0.0f) {
+            speed_mph = 0.0f;
+        }
+        if (gHeadup_detail_level == 0 || gHeadup_detail_level == 3) {
+            if (!gAction_replay_mode) {
+                sprintf(buffer, "%03i", (int)speed_mph);
+                PolyFontText(buffer, 1, 1, kPolyfont_ingame_medium_green, eJust_left, 0);
+            }
+        } else {
+            if (gProgram_state.cockpit_on && gProgram_state.cockpit_image_index >= 0) {
+                if (gProgram_state.which_view != eView_forward) {
+                    return;
+                }
+                the_wobble_x = gScreen_wobble_x;
+                the_wobble_y = gScreen_wobble_y;
+            } else {
+                the_wobble_x = 0;
+                the_wobble_y = 0;
+            }
+            if (gProgram_state.current_car.tacho_radius_2[gProgram_state.cockpit_on] >= 0) {
+                int rev;
+
+                rev = div((int)gCar_to_view->revs, div(gCar_to_view->red_line, 11).quot).quot;
+                if (rev < 0) {
+                    rev = 0;
+                } else if (rev > 11) {
+                    rev = 11;
+                }
+                gCurrent_rev = gRevs[rev];
+            } else {
+                speedo_image = gRevs[div((int)gCar_to_view->revs, 11).quot];
+                BrPixelmapRectangleCopy(gCurrent_rev,
+                    gProgram_state.current_car.tacho_x[gProgram_state.cockpit_on] + the_wobble_x,
+                    gProgram_state.current_car.tacho_y[gProgram_state.cockpit_on] + the_wobble_y,
+                    speedo_image, 0, 0, speedo_image->width, speedo_image->height);
+
+            }
+            if (!gProgram_state.cockpit_on || gProgram_state.cockpit_image_index < 0 || gProgram_state.which_view == eView_forward) {
+
+                gear = (int)gCar_to_view->gear;
+                if (gear < 0) {
+                    gear = -1;
+                }
+                gear_height = gProgram_state.current_car.gears_image->height / 8;
+                DRPixelmapRectangleMaskedCopy(gCurrent_rev,
+                    gProgram_state.current_car.gear_x[gProgram_state.cockpit_on] + the_wobble_x,
+                    gProgram_state.current_car.gear_y[gProgram_state.cockpit_on] + the_wobble_y,
+                    gProgram_state.current_car.gears_image,
+                    0, (gear + 1) * gear_height,
+                    gProgram_state.current_car.gears_image->width,
+                    gear_height);
+            }
+            speedo_image = gProgram_state.current_car.speedo_image[gProgram_state.cockpit_on];
+            if (gProgram_state.current_car.speedo_radius_2[gProgram_state.cockpit_on] >= 0) {
+                if (speedo_image != NULL && (!gProgram_state.cockpit_on || gProgram_state.cockpit_image_index < 0)) {
+                    DRPixelmapRectangleMaskedCopy(gCurrent_rev,
+                        gProgram_state.current_car.speedo_x[gProgram_state.cockpit_on] + the_wobble_x,
+                        gProgram_state.current_car.speedo_y[gProgram_state.cockpit_on] + the_wobble_y,
+                        speedo_image, 0, 0, speedo_image->width, speedo_image->height);
+                }
+                if (speed_mph <= gProgram_state.current_car.max_speed) {
+                    the_angle = DEG_TO_RAD(gProgram_state.current_car.speedo_start_angle[gProgram_state.cockpit_on]
+                        + ((float)gProgram_state.current_car.speedo_end_angle[gProgram_state.cockpit_on] - (float)gProgram_state.current_car.speedo_start_angle[gProgram_state.cockpit_on]) * speed_mph
+                            / (float)gProgram_state.current_car.max_speed);
+                } else {
+                    the_angle = DEG_TO_RAD((float)gProgram_state.current_car.speedo_end_angle[gProgram_state.cockpit_on]);
+                }
+                if (the_angle < 0.0) {
+                    the_angle += CARPOCALYPSE2_TAU;
+                } else if (the_angle >= CARPOCALYPSE2_TAU) {
+                    the_angle -= CARPOCALYPSE2_TAU;
+                }
+                the_angle2 = CARPOCALYPSE2_PI_OVER_2 - the_angle;
+                if (the_angle2 < 0.0) {
+                    the_angle2 += CARPOCALYPSE2_TAU;
+                }
+                if (the_angle2 > CARPOCALYPSE2_3PI_OVER_2) {
+                    cos_angle = gCosine_array[(unsigned int)((CARPOCALYPSE2_TAU - the_angle2) / CARPOCALYPSE2_PI * 128.0)];
+                } else if (the_angle2 > CARPOCALYPSE2_PI) {
+                    cos_angle = -gCosine_array[(unsigned int)((the_angle2 - CARPOCALYPSE2_PI) / CARPOCALYPSE2_PI * 128.0)];
+                } else if (the_angle2 > CARPOCALYPSE2_PI_OVER_2) {
+                    cos_angle = -gCosine_array[(unsigned int)((CARPOCALYPSE2_PI - the_angle2) / CARPOCALYPSE2_PI * 128.0)];
+                } else {
+                    cos_angle = gCosine_array[(unsigned int)(the_angle2 / CARPOCALYPSE2_PI * 128.0)];
+                }
+
+                if (the_angle > CARPOCALYPSE2_3PI_OVER_2) {
+                    sin_angle = gCosine_array[(unsigned int)((CARPOCALYPSE2_TAU - the_angle) / CARPOCALYPSE2_PI * 128.0)];
+                } else if (the_angle > CARPOCALYPSE2_PI) {
+                    sin_angle = -gCosine_array[(unsigned int)((the_angle - CARPOCALYPSE2_PI) / CARPOCALYPSE2_PI * 128.0)];
+                } else if (the_angle > CARPOCALYPSE2_PI_OVER_2) {
+                    sin_angle = -gCosine_array[(unsigned int)((CARPOCALYPSE2_PI - the_angle) / CARPOCALYPSE2_PI * 128.0)];
+                } else {
+                    sin_angle = gCosine_array[(unsigned int)(the_angle / CARPOCALYPSE2_PI * 128.0)];
+                }
+
+                PoshDrawLine(
+                    gBack_screen,
+                    (int)((double)gProgram_state.current_car.speedo_radius_1[gProgram_state.cockpit_on] * sin_angle
+                    + (double)the_wobble_x
+                    + (double)gProgram_state.current_car.speedo_centre_x[gProgram_state.cockpit_on]),
+                    (float)the_angle,
+                    (int)((double)gProgram_state.current_car.speedo_centre_y[gProgram_state.cockpit_on]
+                    - (double)gProgram_state.current_car.speedo_radius_1[gProgram_state.cockpit_on] * cos_angle
+                    + (double)the_wobble_y),
+                    (int)((double)gProgram_state.current_car.speedo_radius_2[gProgram_state.cockpit_on] * sin_angle
+                    + (double)the_wobble_x
+                    + (double)gProgram_state.current_car.speedo_centre_x[gProgram_state.cockpit_on]),
+                    (int)((double)gProgram_state.current_car.speedo_centre_y[gProgram_state.cockpit_on]
+                    + (double)the_wobble_y
+                    - (double)gProgram_state.current_car.speedo_radius_2[gProgram_state.cockpit_on] * cos_angle),
+                    gProgram_state.current_car.speedo_needle_colour[gProgram_state.cockpit_on]);
+            } else if (speedo_image != NULL) {
+                DrawNumberAt(speedo_image,
+                    gCurrent_rev,
+                    gProgram_state.current_car.speedo_x[gProgram_state.cockpit_on] + the_wobble_x,
+                    gProgram_state.current_car.speedo_y[gProgram_state.cockpit_on] + the_wobble_y,
+                    gProgram_state.current_car.speedo_x_pitch[gProgram_state.cockpit_on],
+                    gProgram_state.current_car.speedo_y_pitch[gProgram_state.cockpit_on],
+                    (int)speed_mph, 3, 1);
+            }
+        }
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x0047c740
+void C2_HOOK_FASTCALL PoshDrawLine(br_pixelmap* pDestn, int pX1, float pAngle, int pY1, int pX2, int pY2, int pColour) {
+
+    // FIXME: order of arguments is non-sensical (pX1 and pAngle should be switched)
+    if (pColour < 0) {
+        if (pAngle >= 0.785 && pAngle <= 5.498 && (pAngle <= 2.356 || pAngle >= 3.926)) {
+            if ((pAngle <= 0.785 || pAngle >= 1.57) && (pAngle <= 3.926 || pAngle >= 4.712)) {
+                DRDrawLine(pDestn, pX1 - 1, pY1, pX2 - 1, pY2, -pColour - 1);
+                DRDrawLine(pDestn, pX1 + 1, pY1, pX2 + 1, pY2, 1 - pColour);
+            } else {
+                DRDrawLine(pDestn, pX1 - 1, pY1, pX2 - 1, pY2, 1 - pColour);
+                DRDrawLine(pDestn, pX1 + 1, pY1, pX2 + 1, pY2, -pColour - 1);
+            }
+        } else {
+            DRDrawLine(pDestn, pX1, pY1 + 1, pX2, pY2 + 1, -pColour - 1);
+            DRDrawLine(pDestn, pX1, pY1 - 1, pX2, pY2 - 1, 1 - pColour);
+        }
+        DRDrawLine(pDestn, pX1, pY1, pX2, pY2, -pColour);
+    } else {
+        DRDrawLine(pDestn, pX1, pY1, pX2, pY2, pColour);
+    }
+}
 
 // FUNCTION: CARMA2_HW 0x0044ba60
 int C2_HOOK_FASTCALL HighResHeadupWidth(int pWidth) {
@@ -150,7 +1303,7 @@ int C2_HOOK_FASTCALL HighResHeadupWidth(int pWidth) {
     }
     result = 1;
     while (result < pWidth) {
-        result *= 2;
+        result <<= 1;
     }
     return result;
 }
@@ -164,7 +1317,7 @@ int C2_HOOK_FASTCALL HighResHeadupHeight(int pHeight) {
     }
     result = 1;
     while (result < pHeight) {
-        result *= 2;
+        result <<= 1;
     }
     return result;
 }

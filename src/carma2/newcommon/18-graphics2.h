@@ -60,7 +60,8 @@ extern void C2_HOOK_FASTCALL StartMouseCursor(void);
 
 extern void C2_HOOK_FASTCALL EndMouseCursor(void);
 
-// DRDrawLine
+// FUNCTION: CARMA2_HW 0x0047b450
+extern void C2_HOOK_FASTCALL DRDrawLine(br_pixelmap* pDestn, int pX1, int pY1, int pX2, int pY2, int pColour);
 
 extern void C2_HOOK_FASTCALL ClearEntireScreen(void);
 

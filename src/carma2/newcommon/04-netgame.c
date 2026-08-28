@@ -73,9 +73,17 @@ br_pixelmap* gDigits_pix;
 
 // DrawScoreBoxes
 
-// DoNetScores2
+// FUNCTION: CARMA2_HW 0x00499a00
+void C2_HOOK_FASTCALL DoNetScores2(int pOnly_sort_scores) {
 
-// DoNetScores
+    NOT_IMPLEMENTED();
+}
+
+// FUNCTION: CARMA2_HW 0x004999f0
+void C2_HOOK_FASTCALL DoNetScores(void) {
+
+    DoNetScores2(0);
+}
 
 // FUNCTION: CARMA2_HW 0x0049a710
 void C2_HOOK_FASTCALL InitNetHeadups(void) {

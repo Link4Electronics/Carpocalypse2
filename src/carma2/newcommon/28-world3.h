@@ -6,6 +6,9 @@
 
 extern br_actor* gAdditional_actors;
 
+extern char gCurrent_load_directory[256];
+extern char gCurrent_load_name[256];
+
 extern void C2_HOOK_FASTCALL InitTreeSurgery(void);
 
 // ModelIsATree
@@ -24,9 +27,9 @@ extern void C2_HOOK_FASTCALL InitTreeSurgery(void);
 
 // GetFaceFlag
 
-// MungeTrackModel
+extern void C2_HOOK_FASTCALL MungeTrackModel(br_model* pModel);
 
-// LoadTrack
+extern void C2_HOOK_FASTCALL LoadTrack(const char* pFile_name, tTrack_spec* pTrack_spec, tRace_info* pRace_info);
 
 // RemoveBounds
 

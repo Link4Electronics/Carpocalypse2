@@ -186,6 +186,18 @@ FILE *gActionReplayBufferFile;
 
 #define Win32AllocateActionReplayBuffer PDReallyAllocateActionReplayBuffer
 
+/* ==== Quit flag plumbing (mirrors the SDL3 platform) ==== */
+
+static int menu_quit_requested;
+
+int C2_HOOK_FASTCALL carpocalypse2_MenuQuitRequested(void) {
+    return menu_quit_requested;
+}
+
+void C2_HOOK_FASTCALL carpocalypse2_RequestQuit(void) {
+    menu_quit_requested = 1;
+}
+
 // FUNCTION: CARMA2_HW 0x0051b810
 void C2_HOOK_FASTCALL Win32AllocateActionReplayBuffer(void) {
     MEMORYSTATUS memory_status;

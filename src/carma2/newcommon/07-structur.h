@@ -46,6 +46,8 @@ extern int gCredits_checkpoint[3];
 
 // InitialiseProgramState
 
+extern void C2_HOOK_FASTCALL carpocalypse2_TestRenderTrack(void);
+
 extern void C2_HOOK_FASTCALL DoProgram(void);
 
 // JumpTheStart

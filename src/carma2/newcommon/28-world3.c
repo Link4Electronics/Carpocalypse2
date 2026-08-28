@@ -9,9 +9,21 @@
 #include "70-packfile.h"
 #include "globvars.h"
 #include "globvrpb.h"
+#ifdef CARPOCALYPSE2_MATCHING
+#include "c2_hooks.h"
+#endif
 #include "carpocalypse2_macros.h"
 
 #include <string.h>
+
+extern void C2_HOOK_FASTCALL LoadTrackMaterials(tBrender_storage* pStorage, const char* pPath);
+extern void C2_HOOK_FASTCALL LoadTrackModels(tBrender_storage* pStorage, const char* pPath);
+
+// GLOBAL: CARMA2_HW 0x00762180
+char gCurrent_load_directory[256];
+
+// GLOBAL: CARMA2_HW 0x00761a80
+char gCurrent_load_name[256];
 
 // GLOBAL: CARMA2_HW 0x006b75c0
 br_actor* gAdditional_actors;
@@ -77,9 +89,124 @@ void C2_HOOK_FASTCALL InitTreeSurgery(void) {
 
 // GetFaceFlag
 
-// MungeTrackModel
+// FUNCTION: CARMA2_HW 0x00504bf0
+void C2_HOOK_FASTCALL MungeTrackModel(br_model* pModel) {
+    int* vertex_index_buffer;
+    int (* face_index_buffer)[3];
+    int i;
 
-// LoadTrack
+    vertex_index_buffer = BrMemAllocate((pModel->nvertices + 1) * sizeof(int), BR_MEMORY_APPLICATION);
+    face_index_buffer = BrMemAllocate(pModel->nfaces * 3 * sizeof(int), BR_MEMORY_APPLICATION);
+
+    for (i = 1; i < pModel->nvertices; i++) {
+        if (vertex_index_buffer[i] == 0) {
+            int j;
+
+            vertex_index_buffer[i] = i;
+            for (j = i + 1; j <= pModel->nvertices; j++) {
+                br_vector3 d;
+
+                BrVector3Sub(&d, &pModel->vertices[i - 1].p, &pModel->vertices[j - 1].p);
+                if (BrVector3LengthSquared(&d) < 1e-8f) {
+                    vertex_index_buffer[j] = i;
+                }
+            }
+        }
+    }
+    for (i = 0; i < pModel->nfaces; i++) {
+        int j;
+
+        for (j = 0; j < 3; j++) {
+            face_index_buffer[i][j] = vertex_index_buffer[1 + pModel->faces[i].vertices[j]];
+        }
+    }
+    if (pModel->nfaces > 1) {
+        for (i = 0; i < pModel->nfaces - 1; i++) {
+            int j;
+
+            for (j = i + 1; j < pModel->nfaces; j++) {
+                int l;
+
+                for (l = 0; l < 3; l++) {
+                    int m;
+                    int s1a = face_index_buffer[i][l];
+                    int s1b = face_index_buffer[i][(l + 1) % 3];
+
+                    for (m = 0; m < 3; m++) {
+                        int s2a = face_index_buffer[j][m];
+                        int s2b = face_index_buffer[j][(m + 1) % 3];
+
+                        if ((s1a == s2a && s1b == s2b) || (s1a == s2b && s1b == s2a)) {
+                            br_vector3 d21, o31b, o31a, c2;
+                            float d;
+                            int s1c, s2c;
+
+                            pModel->faces[j].flags |= 1 << m;
+                            BrVector3Sub(&d21, &pModel->vertices[s2b - 1].p, &pModel->vertices[s2a - 1].p);
+                            s1c = face_index_buffer[i][(l + 2) % 3];
+                            s2c = face_index_buffer[j][(m + 2) % 3];
+                            BrVector3Sub(&o31b, &pModel->vertices[s2c - 1].p, &pModel->vertices[s2a - 1].p);
+                            BrVector3Sub(&o31a, &pModel->vertices[s1c - 1].p, &pModel->vertices[s2c - 1].p);
+                            BrVector3Cross(&c2, &o31b, &d21);
+                            d = BrVector3Dot(&o31a, &c2);
+                            if (d < .0001f && (((pModel->faces[i].material == NULL ||
+                                                 !(pModel->faces[i].material->flags & BR_MATF_TWO_SIDED)) &&
+                                                (pModel->faces[j].material == NULL ||
+                                                 !(pModel->faces[j].material->flags & BR_MATF_TWO_SIDED))) ||
+                                               d >= -.0001f)) {
+                                pModel->faces[j].flags |= 1 << l;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    BrMemFree(vertex_index_buffer);
+    BrMemFree(face_index_buffer);
+    pModel->flags |= BR_MODF_UPDATEABLE;
+    BrModelUpdate(pModel, BR_MODU_FACES);
+}
+
+// FUNCTION: CARMA2_HW 0x00504bf0
+void C2_HOOK_FASTCALL LoadTrack(const char* pFile_name, tTrack_spec* pTrack_spec, tRace_info* pRace_info) {
+    int i;
+    char local_directory[256];
+    char local_name[256];
+    char local_race_path[256];
+    char actor_path[256];
+
+    strcpy(gCurrent_load_directory, "RACES");
+    strcpy(gCurrent_load_name, pFile_name);
+    gCurrent_load_name[strlen(gCurrent_load_name) - 4] = '\0';
+
+    strcpy(local_directory, gCurrent_load_directory);
+    strcpy(local_name, gCurrent_load_name);
+
+    PathCat(gRace_path, gApplication_path, local_directory);
+    strcpy(local_race_path, gRace_path);
+
+    PathCat(gRace_path, gRace_path, local_name);
+
+    OpenPackFileAndSetTiffLoading(gRace_path);
+
+    LoadAllImagesInDirectory(&gTrack_storage_space, gRace_path);
+    LoadAllShadeTablesInDirectory(&gTrack_storage_space, gRace_path);
+    LoadTrackMaterials(&gTrack_storage_space, gRace_path);
+    LoadTrackModels(&gTrack_storage_space, gRace_path);
+
+    for (i = 0; i < gTrack_storage_space.models_count; i++) {
+        MungeTrackModel(gTrack_storage_space.models[i]);
+    }
+
+    PathCat(actor_path, gRace_path, local_name);
+    strcat(actor_path, ".ACT");
+    pTrack_spec->the_actor = BrActorLoad(actor_path);
+
+    gTrack_actor = pTrack_spec->the_actor;
+
+    BrActorAdd(gUniverse_actor, pTrack_spec->the_actor);
+}
 
 // RemoveBounds
 
