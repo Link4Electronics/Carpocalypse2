@@ -119,4 +119,6 @@ extern void PDDisposeActionReplayBuffer(void);
 
 extern void SDL3ServiceMessages(void);
 
+extern void carpocalypse2_LoadingScreenHold(int pMilliseconds);
+
 #endif /* CARPOCALYPSE2_SDL3_H */

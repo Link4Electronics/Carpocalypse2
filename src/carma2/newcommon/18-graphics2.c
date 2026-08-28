@@ -22,6 +22,7 @@ extern void C2_HOOK_FASTCALL TurnTintedPolyOff(int pIndex);
 extern void C2_HOOK_FASTCALL ProcessTintedPoly(int pIndex);
 extern void C2_HOOK_FASTCALL RenderTintedPolys(void);
 extern tU32 C2_HOOK_FASTCALL PDGetTotalTime(void);
+extern br_pixelmap* C2_HOOK_FASTCALL LoadPixelmap(const char* pPath_name);
 extern int gMouse_in_use;
 extern tTintedPoly gTintedPolys[10];
 extern tGraf_spec gGraf_specs[2];
@@ -352,16 +353,55 @@ void C2_HOOK_FASTCALL ClearEntireScreen(void) {
 
 // DistanceFromPlane
 
-// STUB: CARMA2_HW 0x0047b960
+// GLOBAL: CARMA2_HW 0x0068be20
+br_pixelmap* gCurrent_splash;
+
+// FUNCTION: CARMA2_HW 0x0047b960
 void C2_HOOK_FASTCALL KillSplashScreen(void) {
-#ifndef CARPOCALYPSE2_MATCHING
-    /* stub: no-op for Linux boot */
-#else
-    NOT_IMPLEMENTED();
-#endif
+
+    if (gCurrent_splash != NULL) {
+        BrMapRemove(gCurrent_splash);
+        BrPixelmapFree(gCurrent_splash);
+        gCurrent_splash = NULL;
+    }
 }
 
-// SplashScreenWith
+// FUNCTION: CARMA2_HW 0x0047b990
+void C2_HOOK_FASTCALL SplashScreenWith(const char* pPixmap_name) {
+    br_pixelmap* the_map;
+    tPixelFlags pixelFlags;
+
+    the_map = BrMapFind(pPixmap_name);
+    if (gCurrent_splash != NULL) {
+        if (the_map == gCurrent_splash) {
+            return;
+        }
+        if (gCurrent_splash != NULL) {
+            BrMapRemove(gCurrent_splash);
+            BrPixelmapFree(gCurrent_splash);
+        }
+    }
+    pixelFlags = gPixelFlags;
+    gCurrent_splash = the_map;
+    if (the_map == NULL) {
+        gCurrent_splash = LoadPixelmap(pPixmap_name);
+        BRPM_convert(gCurrent_splash, gBack_screen->type);
+        if (gCurrent_splash != NULL) {
+            BrMapAdd(gCurrent_splash);
+        }
+    }
+    gPixelFlags = pixelFlags;
+    if (gCurrent_splash != NULL) {
+        DRPixelmapRectangleCopy(gBack_screen,
+                0, 0, gCurrent_splash,
+                0, 0,
+                gCurrent_splash->width, gCurrent_splash->height);
+        PDScreenBufferSwap(0);
+        BrMapRemove(gCurrent_splash);
+        BrPixelmapFree(gCurrent_splash);
+        gCurrent_splash = NULL;
+    }
+}
 
 // FUNCTION: CARMA2_HW 0x0047ba80
 void C2_HOOK_FASTCALL DRPixelmapRectangleMaskedCopy(br_pixelmap* pDest, br_int_16 pDest_x, br_int_16 pDest_y, const br_pixelmap* pSource, br_int_16 pSource_x, br_int_16 pSource_y, br_int_16 pWidth, br_int_16 pHeight) {

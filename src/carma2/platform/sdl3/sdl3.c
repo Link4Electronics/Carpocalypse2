@@ -405,6 +405,17 @@ void PDScreenBufferSwap(int pRendering_area_only) {
     carpocalypse2_PresentFrame();
 }
 
+void carpocalypse2_LoadingScreenHold(int pMilliseconds) {
+    extern void SDL3ServiceMessages(void);
+    extern void carpocalypse2_PresentFrame(void);
+    unsigned int start = SDL_GetTicks();
+    while (SDL_GetTicks() - start < (unsigned int)pMilliseconds) {
+        SDL3ServiceMessages();
+        carpocalypse2_PresentFrame();
+        SDL_Delay(16);
+    }
+}
+
 void PDInitTimer(void) {
     gPerformanceCounterInitialized = false;
     g_PerformanceFrequency = SDL_GetPerformanceFrequency();

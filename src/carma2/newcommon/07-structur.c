@@ -98,8 +98,14 @@ void C2_HOOK_FASTCALL DoProgram(void) {
             break;
 
         case eProg_demo:
-        case eProg_game_starting:
         case eProg_game_ongoing:
+            gProgram_state.prog_status = eProg_quit;
+            break;
+
+        case eProg_game_starting:
+            SplashScreenWith("LOADSCRN.PIX");
+            extern void carpocalypse2_LoadingScreenHold(int pMilliseconds);
+            carpocalypse2_LoadingScreenHold(4000);
             gProgram_state.prog_status = eProg_quit;
             break;
 
