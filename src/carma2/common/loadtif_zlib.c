@@ -7,6 +7,8 @@
 
 #ifndef _WIN32
 extern const char* carpocalypse2_fix_path_case(const char* pPath);
+#endif
+
 // GLOBAL: CARMA2_HW 0x006631c0
 br_filesystem gZlib_filesystem = {
     "Zlib filesystem",
@@ -23,8 +25,6 @@ br_filesystem gZlib_filesystem = {
     ZlibFsPutLine,
     ZlibFsAdvance,
 };
-
-#endif
 
 // FUNCTION: CARMA2_HW 0x0051db90
 br_uint_32 C2_HOOK_CDECL ZlibFsGetAttributes(void) {
