@@ -1,14 +1,30 @@
-#ifndef CARPOCALYPSE2_MAINMENU_H
+#ifndef GUARD_MAINMENU_H
+#define GUARD_MAINMENU_H
+
+#include "carpocalypse2_types.h"
+
+
+#include "c2_hooks.h"
+
+// QuitVerifyStart
+
+// QuitVerifyDone
+
+extern int C2_HOOK_FASTCALL DoVerifyQuit(int pReplace_background);
+
+// DoMainScreen
+
+// DoOptionsMenu
+
 #define CARPOCALYPSE2_MAINMENU_H
 
 #include "carpocalypse2_types.h"
 
 #include "c2_hooks.h"
 
-int C2_HOOK_FASTCALL DoVerifyQuit(int pReplace_background);
 
-void C2_HOOK_FASTCALL DoMainScreen(void);
+int C2_HOOK_FASTCALL DoMainScreen(void);
 
 void C2_HOOK_FASTCALL DoOptionsMenu(void);
 
-#endif //CARPOCALYPSE2_MAINMENU_H
+#endif // GUARD_MAINMENU_H

@@ -1,7 +1,7 @@
 #include "spark.h"
 
 #include "depth.h"
-#include "52-errors.h"
+#include "errors.h"
 #include "globvars.h"
 #include "globvrpb.h"
 #include "graphics.h"
@@ -17,11 +17,12 @@
 #include "carpocalypse2_macros.h"
 
 #include "c2_string.h"
+#include "spark.h"
 
-
-// GLOBAL: CARMA2_HW 0x00660110
-int gSmoke_on = 1;
-
+#define CHARS1_TO_INT(A)            ((A) - '0')
+#define CHARS2_TO_INT(A, B)         (10 * CHARS1_TO_INT(A) + CHARS1_TO_INT(B))
+#define CHARS3_TO_INT(A, B, C)      (10 * CHARS2_TO_INT(A, B) + CHARS1_TO_INT(C))
+#define CHARS4_TO_INT(A, B, C, D)   (10 * CHARS3_TO_INT(A, B, C) + CHARS1_TO_INT(D))
 // GLOBAL: CARMA2_HW 0x006b7840
 int gShade_list[16];
 
@@ -33,9 +34,6 @@ int gNum_dust_tables;
 
 // GLOBAL: CARMA2_HW 0x006aa588
 br_model* gShrapnel_model[2];
-
-// GLOBAL: CARMA2_HW 0x006b7880
-br_material* gBlack_material;
 
 // GLOBAL: CARMA2_HW 0x006a9180
 tShrapnel gShrapnel[30];
@@ -112,22 +110,12 @@ tSmoke gSmoke[25];
 // GLOBAL: CARMA2_HW 0x006aa590
 int gSmoke_flags;
 
-#define CHARS1_TO_INT(A)            ((A) - '0')
-#define CHARS2_TO_INT(A, B)         (10 * CHARS1_TO_INT(A) + CHARS1_TO_INT(B))
-#define CHARS3_TO_INT(A, B, C)      (10 * CHARS2_TO_INT(A, B) + CHARS1_TO_INT(C))
-#define CHARS4_TO_INT(A, B, C, D)   (10 * CHARS3_TO_INT(A, B, C) + CHARS1_TO_INT(D))
+void (C2_HOOK_FASTCALL * StopCarBeingIt_original)(tCar_spec* pCar);
+// GLOBAL: CARMA2_HW 0x006b7880
+br_material* gBlack_material;
 
-// FUNCTION: CARMA2_HW 0x004fc9d0
-void C2_HOOK_FASTCALL SetSmokeOn(int pSmoke_on) {
-
-    gSmoke_on = pSmoke_on;
-}
-
-// FUNCTION: CARMA2_HW 0x004fca30
-int C2_HOOK_FASTCALL GetSmokeOn(void) {
-
-    return gSmoke_on;
-}
+// GLOBAL: CARMA2_HW 0x00660110
+int gSmoke_on = 1;
 
 // FUNCTION: CARMA2_HW 0x004fb910
 void C2_HOOK_FASTCALL GenerateSmokeShades(void) {
@@ -195,12 +183,6 @@ void C2_HOOK_FASTCALL ModelScale(br_model* pModel, float pScale) {
         BrVector3Scale(&pModel->vertices[i].p, &pModel->vertices[i].p, pScale);
     }
     BrModelUpdate(pModel, BR_MODU_ALL);
-}
-
-// FUNCTION: CARMA2_HW 0x005162a0
-float C2_HOOK_FASTCALL DistanceFromFaceND(const br_vector3* pP, const br_vector3* pN, br_scalar pF) {
-
-    return BrVector3Dot(pP, pN) - pF;
 }
 
 // FUNCTION: CARMA2_HW 0x004f87a0
@@ -400,7 +382,6 @@ void C2_HOOK_FASTCALL DisposeKevStuff(void) {
     NOT_IMPLEMENTED();
 }
 
-void (C2_HOOK_FASTCALL * StopCarBeingIt_original)(tCar_spec* pCar);
 // FUNCTION: CARMA2_HW 0x004fe570
 void C2_HOOK_FASTCALL StopCarBeingIt(tCar_spec* pCar) {
 
@@ -610,14 +591,6 @@ void C2_HOOK_FASTCALL MungeShrapnel(tU32 pTime) {
     }
 }
 
-// FUNCTION: CARMA2_HW 0x004fb9c0
-void C2_HOOK_FASTCALL GenerateItFoxShadeTable(void) {
-
-    if (gIt_shade_table == NULL) {
-        gIt_shade_table = GenerateDarkenedShadeTable(16, gRender_palette, 0, 255, 254, .25f, .5f, .75f, .6f);
-    }
-}
-
 void C2_HOOK_FASTCALL ForEveryModelMaterial(br_model* pModel, tMaterialMaybeUpdate_cbfn* pCallback) {
     int i;
     int need_update;
@@ -728,12 +701,6 @@ intptr_t C2_HOOK_FASTCALL UnBlendifyMaterialCB(br_material* pMaterial) {
     return 1;
 }
 
-// FUNCTION: CARMA2_HW 0x004fed40
-void C2_HOOK_FASTCALL UnBlendifyCar(tCar_spec* pCar_spec) {
-
-    ForEveryCarMaterial(pCar_spec, UnBlendifyMaterialCB, 1);
-}
-
 // FUNCTION: CARMA2_HW 0x004fed00
 intptr_t C2_HOOK_FASTCALL BlendifyMaterialCB(br_material* pMaterial) {
 
@@ -743,12 +710,6 @@ intptr_t C2_HOOK_FASTCALL BlendifyMaterialCB(br_material* pMaterial) {
     BlendifyMaterial(pMaterial, 25);
     BrMaterialUpdate(pMaterial, BR_MATU_ALL);
     return 1;
-}
-
-// FUNCTION: CARMA2_HW 0x004fecf0
-void C2_HOOK_FASTCALL BlendifyCar(tCar_spec* pCar_spec) {
-
-    ForEveryCarMaterial(pCar_spec, BlendifyMaterialCB, 1);
 }
 
 // FUNCTION: CARMA2_HW 0x004fca70
@@ -1588,3 +1549,278 @@ void C2_HOOK_FASTCALL RenderSmoke(br_pixelmap* pRender_screen, br_pixelmap* pDep
         BrActorAdd(gDont_render_actor, gBlend_actor);
     }
 }
+// DrawDot
+
+// SetWorldToScreen
+
+// DrawLine3DThroughBRender
+
+// DrawLine3D
+
+// DrawLine2D
+
+// SetLineModelCols
+
+// ReplaySparks
+
+// RenderSparks
+
+// CreateSingleSpark
+
+// CreateSparks
+
+// CreateSparkShower
+
+// AdjustSpark
+
+// AdjustShrapnel
+
+// ResetSparks
+
+// ResetShrapnel
+
+// CreateShrapnelShower2
+
+// CreateShrapnelShowerWorld
+
+// CreateShrapnelShower
+
+// random
+
+// InitShrapnel
+
+// LoadInShrapnel
+
+// KillShrapnel
+
+// DisposeShrapnel
+
+// ReplayShrapnel
+
+// ActorFunks
+
+// STUB: CARMA2_HW 0x004f8ca0
+void C2_HOOK_FASTCALL MasterDisableCarFunks(tCar_spec* pCar) {
+#ifndef CARPOCALYPSE2_MATCHING
+    /* stub: no-op for Linux boot */
+#else
+    NOT_IMPLEMENTED();
+#endif
+}
+
+// STUB: CARMA2_HW 0x004f8e10
+void C2_HOOK_FASTCALL MasterEnableCarFunks(tCar_spec* pCar) {
+#ifndef CARPOCALYPSE2_MATCHING
+    /* stub: no-op for Linux boot */
+#else
+    NOT_IMPLEMENTED();
+#endif
+}
+
+// SetPixelmap
+
+// STUB: CARMA2_HW 0x004f8f30
+void C2_HOOK_FASTCALL DoCamouflageThing(tCar_spec* pCar) {
+#ifndef CARPOCALYPSE2_MATCHING
+    /* stub: no-op for Linux boot */
+#else
+    NOT_IMPLEMENTED();
+#endif
+}
+
+// DoSolidGraniteThing
+
+// DoTrueColModelThing
+
+// SetFoxModelCallback
+
+// ResetFoxModelCallback
+
+// ResetFoxLighting
+
+// CancelAlternateFoxEffect
+
+// SetFoxLighting
+
+// SetupAlternateFoxEffect
+
+// RestorePixelmap
+
+// STUB: CARMA2_HW 0x004f9620
+void C2_HOOK_FASTCALL RestoreCarPixelmaps(tCar_spec* pCar_spec) {
+#ifndef CARPOCALYPSE2_MATCHING
+    /* stub: no-op for Linux boot */
+#else
+    NOT_IMPLEMENTED();
+#endif
+}
+
+// MungeShrapnel
+
+// DrMatrix34Rotate
+
+// CmpSmokeZ
+
+// STUB: CARMA2_HW 0x004f9fc0
+void C2_HOOK_FASTCALL InitSmokeStuff(void) {
+#ifndef CARPOCALYPSE2_MATCHING
+    /* stub: no-op for Linux boot */
+#else
+    NOT_IMPLEMENTED();
+#endif
+}
+
+// RenderRecordedSmokeCircles
+
+// RecordSmokeCircle
+
+// SmokeCircle3D
+
+// ReplaySmoke
+
+// GenerateContinuousSmoke
+
+// RenderSmoke
+
+// CreatePuffOfSmoke
+
+// ResetSmoke
+
+// AdjustSmoke
+
+// ActorError
+
+// AdjustSmokeColumn
+
+// CreateSmokeColumn2
+
+// CreateSmokeColumn
+
+// GenerateSmokeShades
+
+// STUB: CARMA2_HW 0x004fb9c0
+void C2_HOOK_FASTCALL GenerateItFoxShadeTable(void) {
+#ifndef CARPOCALYPSE2_MATCHING
+    /* stub: no-op for Linux boot */
+#else
+    NOT_IMPLEMENTED();
+#endif
+}
+
+// AdjustFlame
+
+// ReplayFlame
+
+// FlameAnimate
+
+// DoSmokeColumn
+
+// ReplaySmokeColumn
+
+// MungeSmokeColumn
+
+// DisposeFlame
+
+// InitFlame
+
+// InitSplash
+
+// DisposeSplash
+
+// DrawTheGlow
+
+// PipeInstantUnSmudge
+
+// SmudgeCar
+
+// FUNCTION: CARMA2_HW 0x004fc9d0
+void C2_HOOK_FASTCALL SetSmokeOn(int pSmoke_on) {
+
+    gSmoke_on = pSmoke_on;
+}
+
+// FUNCTION: CARMA2_HW 0x004fca30
+int C2_HOOK_FASTCALL GetSmokeOn(void) {
+
+    return gSmoke_on;
+}
+
+// StopCarSmoking
+
+// StopCarSmokingInstantly
+
+// StopObjectSmokingInstantly
+
+// ConditionalSmokeColumn
+
+// SingleSplash
+
+// GeneralCreateSplash
+
+// CreateSplash
+
+// GetVelocitiesFromMatrices
+
+// MungeSplash
+
+// GetSmokeShadeTables
+
+// FreeSmokeShadeTables
+
+// LoadInKevStuff
+
+// DisposeKevStuff
+
+// DisposeKevStuffCar
+
+// MakeCarIt
+
+// StopCarBeingIt
+
+// ForEveryModelMaterial
+
+// ForEveryActorMaterial
+
+// ForEveryActorMaterialNoGrooves
+
+// ForEveryCarMaterial
+
+// ForEveryCarModelCB
+
+// ForEveryCarModel
+
+// MightBlendifyMaterial
+
+// BlendifyMaterialCB
+
+// STUB: CARMA2_HW 0x004fecf0
+void C2_HOOK_FASTCALL BlendifyCar(tCar_spec* pCar) {
+#ifndef CARPOCALYPSE2_MATCHING
+    /* stub: no-op for Linux boot */
+#else
+    NOT_IMPLEMENTED();
+#endif
+}
+
+// UnBlendifyMaterialCB
+
+// STUB: CARMA2_HW 0x004fed40
+void C2_HOOK_FASTCALL UnBlendifyCar(tCar_spec* pCar_spec) {
+#ifndef CARPOCALYPSE2_MATCHING
+    /* stub: no-op for Linux boot */
+#else
+    NOT_IMPLEMENTED();
+#endif
+}
+
+// IsCarSmoking
+
+// ClearSplashReplay
+
+// GetSplashIndex
+
+// ClearSplashes
+
+// AdjustSplashReplay
+
+// InitReplaySplashes

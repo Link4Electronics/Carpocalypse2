@@ -43,7 +43,8 @@
 #include "c2_string.h"
 
 #include "c2_math.h"
-
+#include "car.h"
+typedef void (C2_HOOK_FAKE_THISCALL * tControl_car_fn)(tCar_spec* pCar_spec, undefined4 pArg2, float pT);
 
 // GLOBAL: CARMA2_HW 0x0074a5f4
 int gOver_shoot;
@@ -59,9 +60,6 @@ int gNum_active_cars;
 
 // GLOBAL: CARMA2_HW 0x006793a0
 int gFreeze_mechanics;
-
-// GLOBAL: CARMA2_HW 0x006793d8
-int gCar_simplification_level;
 
 // GLOBAL: CARMA2_HW 0x0079eda0
 tNon_car_spec* gActive_non_car_list[99];
@@ -126,9 +124,6 @@ int gNet_player_to_view_index = -1;
 
 // GLOBAL: CARMA2_HW 0x00679304
 br_angle gPanning_camera_angle;
-
-// GLOBAL: CARMA2_HW 0x0068b8d0
-br_vector3 gZero_v__car;
 
 // GLOBAL: CARMA2_HW 0x006792c8
 tSave_camera gSave_camera[2];
@@ -198,6 +193,40 @@ const float gCar_simplification_factor[2][5] = {
     { 20.0f, 3.0f, 1.5f, 0.75f, 0.0f },
     { 50.0f, 5.0f, 2.5f, 1.50f, 0.0f }
 };
+
+// GLOBAL: CARMA2_HW 0x0058f660
+tControl_car_fn ControlCar[6] = {
+    ControlCar1,
+    ControlCar2,
+    ControlCar3,
+    ControlCar4,
+    ControlCar5,
+    NULL,
+};
+
+// GLOBAL: CARMA2_HW 0x0058f678
+int gControl__car = 3;
+
+// GLOBAL: CARMA2_HW 0x00763500
+int gCunning_stunt_bonus[3];
+
+// GLOBAL: CARMA2_HW 0x0074d1c0
+float gArmour_starting_value[100];
+
+// GLOBAL: CARMA2_HW 0x00761f60
+float gPower_starting_value[100];
+
+// GLOBAL: CARMA2_HW 0x00761d40
+float gOffensive_starting_value[100];
+
+// GLOBAL: CARMA2_HW 0x0075ba20
+tFloat_bunch_info gCar_softness;
+
+// GLOBAL: CARMA2_HW 0x0074d600
+tFloat_bunch_info gCar_car_damage_multiplier;
+
+// GLOBAL: CARMA2_HW 0x0068b8d0
+br_vector3 gZero_v__car;  // FIXME: make const?
 
 // FUNCTION: CARMA2_HW 0x004105f0
 void C2_HOOK_FASTCALL SetUpPanningCamera(tCar_spec* c) {
@@ -708,21 +737,6 @@ void C2_HOOK_FASTCALL RememberSafePosition(tCar_spec* car, tU32 pTime_difference
         time_count = 0;
     }
 }
-
-typedef void (C2_HOOK_FAKE_THISCALL * tControl_car_fn)(tCar_spec* pCar_spec, undefined4 pArg2, float pT);
-
-// GLOBAL: CARMA2_HW 0x0058f660
-tControl_car_fn ControlCar[6] = {
-    ControlCar1,
-    ControlCar2,
-    ControlCar3,
-    ControlCar4,
-    ControlCar5,
-    NULL,
-};
-
-// GLOBAL: CARMA2_HW 0x0058f678
-int gControl__car = 3;
 
 // FUNCTION: CARMA2_HW 0x00414cb0
 void C2_HOOK_FASTCALL ControlOurCar(tU32 pTime_difference) {
@@ -1711,26 +1725,6 @@ void C2_HOOK_FASTCALL MasterEnableFunkotronic(int pFunk_index) {
     gFunkotronics_array[pFunk_index].flags &= ~0x2;
 }
 
-// FUNCTION: CARMA2_HW 0x004f8e10
-void C2_HOOK_FASTCALL MasterEnableCarFunks(tCar_spec* pCar_spec) {
-
-    NOT_IMPLEMENTED();
-#if 0
-    int i;
-#endif
-
-    DRActorEnumRecurse(pCar_spec->car_model_actor, ActorFunks, MasterEnableFunkotronic);
-#if 0
-    for (i = 0; i < pCar_spec->car_crush_spec->field_0x2b0; i++) {
-        ActorFunks(pCar_spec->car_crush_spec->field_0x274[i].actor, MasterEnableFunkotronic);
-    }
-
-    for (i = 0; i < pCar_spec->car_crush_spec->count_of_field_0x2b0; i++) {
-        ActorFunks(pCar_spec->car_crush_spec->field_0x2b4[0].actor, MasterEnableFunkotronic);
-    }
-#endif
-}
-
 // FUNCTION: CARMA2_HW 0x004f9760
 int C2_HOOK_FASTCALL RestorePixelmap(br_material* pMaterial) {
 
@@ -1740,22 +1734,6 @@ int C2_HOOK_FASTCALL RestorePixelmap(br_material* pMaterial) {
         return 1;
     }
     return 0;
-}
-
-// FUNCTION: CARMA2_HW 0x004f9620
-void C2_HOOK_FASTCALL RestoreCarPixelmaps(tCar_spec* pCar_spec) {
-
-    MasterEnableCarFunks(pCar_spec);
-    ForEveryCarMaterial(pCar_spec, RestorePixelmap, 1);
-}
-
-// FUNCTION: CARMA2_HW 0x005160f0
-int C2_HOOK_FASTCALL TestForNan(float* f) {
-
-    if (f == NULL) {
-        return 0;
-    }
-    return isnan(*f);
 }
 
 // FUNCTION: CARMA2_HW 0x0040f510
@@ -2633,12 +2611,6 @@ int C2_HOOK_FASTCALL APTCPassiveActivated(tPhysics_object* pArg1) {
     return 0;
 }
 
-// FUNCTION: CARMA2_HW 0x00515c20
-float C2_HOOK_STDCALL frac(float pN) {
-
-    return pN - (float)(int)pN;
-}
-
 // FUNCTION: CARMA2_HW 0x00418230
 void C2_HOOK_FASTCALL MakeLiftGoUp(tNon_car_spec* pNon_car) {
 
@@ -2649,3 +2621,193 @@ void C2_HOOK_FASTCALL MakeLiftGoUp(tNon_car_spec* pNon_car) {
         pNon_car->flags |= 0x1;
     }
 }
+// DamageUnit
+
+// SwitchCarModel
+
+// STUB: CARMA2_HW 0x00413f40
+void C2_HOOK_FASTCALL SwitchCarModels(tCar_spec* pCar, int pIndex) {
+#ifndef CARPOCALYPSE2_MATCHING
+    /* stub: no-op for Linux boot */
+#else
+    NOT_IMPLEMENTED();
+#endif
+}
+
+// InitialiseCar2
+
+// InitialiseCar
+
+// InitialiseCarsEtc
+
+// SetInitialPosition
+
+// SetInitialPositions
+
+// InitialiseNonCar
+
+// NewFaceListCallBack
+
+// IsCarInTheSea
+
+// RememberSafePosition
+
+// ControlNetCars
+
+// ControlOurCar
+
+// CalcEngineForce
+
+// PrepareCars
+
+// CalcGraphicalWheelStuff
+
+// FinishCars
+
+// GetNonCars
+
+// GetNetPos
+
+// MungeCarsMass
+
+// AddDrag
+
+// DragChildren
+
+// DoCarStuff
+
+// DoNonCarStuff
+
+// RemoveFlyingCar
+
+// RestoreFlyingCar
+
+// GetDrivableOnList
+
+// APTCPreCollision
+
+// SetCollisionFlagsAndStuff
+
+// APTCPostCollision
+
+// APTCActiveHalted
+
+// APTCPassiveActivated
+
+// APTCChangedObjects
+
+// ApplyPhysicsToCars
+
+// MoveAndCollideCar
+
+// MoveAndCollideNonCar
+
+// ControlCar2
+
+// ControlCar3
+
+// ControlCar4
+
+// ControlCar5
+
+// ControlCar1
+
+// SteeringSelfCentre
+
+// NonCarSnapOff
+
+// TestNonCarSnapOff
+
+// TumbleObjectWithV
+
+// TumbleObject
+
+// MakeLiftGoUp
+
+// NonCarCalcForce
+
+// DoBumpiness
+
+// SmashFacesWithWheels
+
+// ConditionallyNoteSkid
+
+// NudgeObject
+
+// CalcForce
+
+// DoRevs
+
+// ScrapeNoise
+
+// SkidNoise
+
+// StopSkid
+
+// CrashNoise
+
+// CrushAndDamageCar
+
+// PointInFaceByQuiteABitActually
+
+// DoEnvironmentSmashes
+
+// ProcessForcesCallBack
+
+// ProcessJointForcesCallBack
+
+// MultiFindFloorInBoxM
+
+// MultiRayCastOnObjects
+
+// MultiFindFloorInBoxBU
+
+// FindFace
+
+// findfloor
+
+// FindFloorInBoxBU
+
+// CancelPendingCunningStunt
+
+// SetAmbientPratCam
+
+// SetTextureBits
+
+// MungeSomeOtherCarGraphics
+
+// MungeCarGraphics
+
+// TurnOffNonGroovers
+
+// DoLODCarModels
+
+// DoComplexCarModels
+
+// ResetCarScreens
+
+// FlyCar
+
+// GetCarOverallBoundsMinY
+
+// SetCarSuspGiveAndHeight
+
+// TestForCarInSensiblePlace
+
+// PullActorFromWorld
+
+// DoPullActorFromWorld
+
+// PipeNonCarObject
+
+// PipeNonCars
+
+// CheckForDeAttachmentOfNonCars
+
+// AdjustNonCar
+
+// GetPrecalculatedFacesUnderCar
+
+// TurnOnNonCar
+
+// TurnOffNonCar

@@ -1,36 +1,246 @@
-#ifndef CARPOCALYPSE2_DRONE_H
+#ifndef GUARD_DRONE_H
+#define GUARD_DRONE_H
+
+#include "carpocalypse2_types.h"
+
+
+#include "c2_hooks.h"
+
+// DoNotDprintf
+
+// CrappyLittleVector3DPrintf
+
+// CrappyLittleDrivingStateInfoDprintf
+
+// DroneStraightestArcForCorner2D
+
+// OpenDroneFile
+
+// LoadDroneTypeInfo
+
+// ReallyRemoveDroneFromPHIL
+
+// RemoveDroneFromPHIL
+
+// InitDroneCollisionObject
+
+// ReallyAddDroneToPHIL
+
+// AddDroneToPHIL
+
+// PreprocessDronePaths
+
+// LinkyCallback
+
+// LinkDroneActorsToModelsAndSetRenderStyle
+
+// LoadDroneActorsModels
+
+// ReadPastBoundsShapesHeader
+
+// ReadPastThisLine
+
+// MatchFGType
+
+// GetAxisFromString
+
+// GetSpeedControlFromString
+
+// MrFindy
+
+// FindDroneChildActor
+
+// GetReversenessFromString
+
+// LoadFunksAndGrooves
+
+// LoadDrone
+
+// CalculateDrivingInfo
+
+// PauseDroneState
+
+// UnPauseDroneState
+
+// NewDroneState
+
+// ResetDroneCrushyModel
+
+// ResetDroneModel
+
+// DroneCarWithinRenderingDistance
+
+// DronePlaneWithinRenderingDistance
+
+// DroneTrainWithinRenderingDistance
+
+// SemiInitDroneSpec
+
+// InitDroneSpec
+
+// ChooseNextNode
+
+// DroneOrientationChanged
+
+// DroneyObjectInSensiblePlace
+
+// StopRenderingThisDrone
+
+// StopProcessingThisDrone
+
+// StartRenderingThisDrone
+
+// CheckDroneInSensiblePlaceBeforeStartingToProcessTheCuntingThing
+
+// StartProcessingThisDrone
+
+// DroneCarWithinProcessingDistance
+
+// DronePlaneWithinProcessingDistance
+
+// DroneTrainWithinProcessingDistance
+
+// CalcRenderBoundsCentre
+
+// DoDroneDistanceChecks
+
+// DoDroneFunkyGroovyThings
+
+// ProcessThisDrone
+
+// DroneStateFuncReset
+
+// InitDroneDrivingInfo
+
+// MoveThisDronePlane
+
+// MoveThisDroneCar
+
+// PipeDroneMatrix
+
+// PossiblyPipeDroneMovement
+
+// DroneStateFuncControlledMovement
+
+// DoDroneHaltingStuff
+
+// DroneStateFuncPhysicsActive
+
+// DroneStateFuncStationaryPassive
+
+// GetNewCrushyModelForDrone
+
+extern void C2_HOOK_FASTCALL SetTrafficOn(int pTraffic_on);
+
+// OtherPerambulatoryInstasificationIsEnablificated
+
+// LoadPanGameDroneInfo
+
+// InitDrones
+
+// DisposeDronesRaceStuff
+
+// LoadPerRaceDroneStuff
+
+// GetDroneCrushData
+
+// AllocateAndInitDrones
+
+// LoadInDronePaths
+
+// DronePreCollisionStuff
+
+// DoDronePerGameFrameStuff
+
+// MyDroneHathCollideth
+
+// MyDroneHathHalteth
+
+// MoveMyDroneBaby
+
+// DroneLookWhereYoureGoingYouBlindCunt
+
+// OKToViewDrones
+
+// GetCurrentViewDroneMat
+
+// GetCurrentViewDroneDirection
+
+// ApplyDroneRender2
+
+// ApplyDroneStraightPos2
+
+// ApplyDroneCornerPos2
+
+// ReallocModelFacesAndVertices
+
+// CalcNFacesAndVerticesInEditModel
+
+// InitialiseEditModelsEtc
+
+// UpdateEditModels
+
+// WriteOutDronePaths
+
 #define CARPOCALYPSE2_DRONE_H
 
 #include "carpocalypse2_types.h"
 
 #include "c2_hooks.h"
 
+
 extern int gCount_drones;
+
 extern tDrone_form gDrone_forms[64];
+
 extern int gCount_drone_forms;
+
 extern tDrone_state_function* gDrone_state_functions[6];
+
 extern tPhysics_object* gList_collision_infos;
+
 extern int gDrones_unmodified;
+
 extern int gCount_rendered_drones;
+
 extern int gCurrent_selected_drone;
+
 extern int gINT_006820d4;
+
 extern int gINT_006844fc;
+
 extern int gINT_00681fb0;
+
 extern tDrone_spec* gDrone_specs;
+
 extern int gShow_drone_paths;
+
 extern int gCount_active_drones;
+
 extern int gFrame;
+
 extern tDrone_path_node* gDrone_path_nodes;
+
 extern int gCount_drone_path_nodes;
+
 extern br_vector3 gRender_bounds_centre;
+
 extern tDrone_form_within_rendering_distance_cbfn* gDrone_form_within_rendering_distance_functions[4];
+
 extern tDrone_form_within_processing_distance_cbfn* gDrone_form_within_processing_distance_functions[4];
+
 extern br_model* gElasticatey_drone_path_model;
+
 extern br_actor* gDrone_path_model_actor;
+
 extern int gDrone_paths_elasticating;
+
 extern int gSelected_drone_path_node_index;
+
 extern int gSelected_edit_drone_path;
+
 extern tU32 gNext_drone_edit_path_munge;
+
 extern int gSelected_drone_path_index;
 
 void C2_HOOK_CDECL DoNotDprintf(const char* message, ...);
@@ -135,4 +345,4 @@ void C2_HOOK_FASTCALL StartRenderingThisDrone(tDrone_spec* pDrone);
 
 br_vector3* C2_HOOK_FASTCALL GetCurrentViewDroneDirection(void);
 
-#endif //CARPOCALYPSE2_DRONE_H
+#endif // GUARD_DRONE_H

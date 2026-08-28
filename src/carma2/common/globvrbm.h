@@ -5,7 +5,6 @@
 
 #include <brender/br_types.h>
 
-extern int gCar_flying;
 extern br_actor* gPrat_actor;
 extern br_actor* g2d_camera;
 extern br_actor* gPowerupHUD_actor;
@@ -129,5 +128,7 @@ extern int gOffence_dim_w;
 extern int gOffence_dim_h;
 extern int gOffence_dim_x;
 extern int gOffence_dim_y;
+
+extern int gCar_flying;
 
 #endif //CARPOCALYPSE2_GLOBVRBM_H

@@ -1,14 +1,69 @@
-#ifndef CARPOCALYPSE2_REPLAY_H
+#ifndef GUARD_REPLAY_H
+#define GUARD_REPLAY_H
+
+#include "c2_hooks.h"
+#include "carpocalypse2_types.h"
+
+
+extern int gAR_camera_type;
+
+// ActualActionReplayHeadups
+
+// DoActionReplayPostSwap
+
+// DoZappyActionReplayHeadups
+
+// DoActionReplayHeadups
+
+// PreProcess
+
+// PostProcess
+
+// DoActionReplay
+
+// MoveToEndOfReplay
+
+// MoveToStartOfReplay
+
+// PollActionReplayControls
+
+// CheckReplayTurnOn
+
+// InitializeActionReplayPix
+
+// FreeActionReplayPix
+
+// SynchronizeActionReplay
+
+// TurnOnActionReplay
+
+// TurnOffActionReplay
+
+// AfterActionReplay
+
+// ToggleReplay
+
+// DisplayMovieStatusPanel
+
+// ApplyTime
+
+// ARSetPause
+
 #define CARPOCALYPSE2_REPLAY_H
 
 #include "c2_hooks.h"
 
 #include "carpocalypse2_types.h"
 
+
 extern tActionReplayCameraMode gAction_replay_camera_mode;
+
 extern int gAction_replay_manual_camera_target_type;
+
 extern tU32 gLast_synch_time;
+
 extern int gSingle_frame_mode;
+
 extern int gKey_down;
 
 void C2_HOOK_FASTCALL SetQuickTimeDefaults(void);
@@ -61,4 +116,4 @@ void C2_HOOK_FASTCALL SynchronizeActionReplay(void);
 
 void C2_HOOK_FASTCALL DoActionReplayPostSwap(void);
 
-#endif //CARPOCALYPSE2_REPLAY_H
+#endif // GUARD_REPLAY_H

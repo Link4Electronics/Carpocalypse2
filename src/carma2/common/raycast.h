@@ -1,21 +1,67 @@
-#ifndef CARPOCALYPSE2_RAYCAST_H
+#ifndef GUARD_RAYCAST_H
+#define GUARD_RAYCAST_H
+
+#include "c2_hooks.h"
+
+
+#include "carpocalypse2_types.h"
+
+// DRActorToRoot
+
+extern void C2_HOOK_FASTCALL InitRayCasting(void);
+
+// BadDiv
+
+// DRVector2AccumulateScale
+
+// PickBoundsTestRay
+
+// ActorPick2D
+
+// DRScenePick2DXY
+
+// DRScenePick2D
+
+// DRModelPick2D
+
+// FindHighestPolyCallBack
+
+// FindHighestCallBack
+
+// FindBestY
+
+// FindYVerticallyBelowPolyCallBack
+
+// FindYVerticallyBelowCallBack
+
+// FindYVerticallyBelow
+
+// FindYVerticallyBelow2
+
 #define CARPOCALYPSE2_RAYCAST_H
 
 #include "c2_hooks.h"
 
 #include "carpocalypse2_types.h"
 
-extern br_actor* gY_picking_camera;
-extern br_scalar gLowest_y_above;
-extern br_scalar gHighest_y_below;
-extern br_scalar gCurrent_y;
-extern br_model* gAbove_model;
-extern br_model* gBelow_model;
-extern int gAbove_face_index;
-extern int gBelow_face_index;
-extern br_material* gMaterial_below;
 
-void C2_HOOK_FASTCALL InitRayCasting(void);
+extern br_actor* gY_picking_camera;
+
+extern br_scalar gLowest_y_above;
+
+extern br_scalar gHighest_y_below;
+
+extern br_scalar gCurrent_y;
+
+extern br_model* gAbove_model;
+
+extern br_model* gBelow_model;
+
+extern int gAbove_face_index;
+
+extern int gBelow_face_index;
+
+extern br_material* gMaterial_below;
 
 int C2_HOOK_FASTCALL PickBoundsTestRay__raycast(br_bounds* b, br_vector3* rp, br_vector3* rd, br_scalar t_near, br_scalar t_far, br_scalar* new_t_near, br_scalar* new_t_far);
 
@@ -49,4 +95,4 @@ void C2_HOOK_FASTCALL FindBestY(br_vector3* pPosition, br_actor* pWorld, br_scal
 
 void C2_HOOK_FASTCALL DrMatrix34ApplyLPInverse(br_vector3* pDest, const br_vector3* pOrigin, const br_matrix34* pMatrix);
 
-#endif //CARPOCALYPSE2_RAYCAST_H
+#endif // GUARD_RAYCAST_H

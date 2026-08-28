@@ -25,7 +25,7 @@
 #include "core/pixelmap/pixelmap.h"
 #include "core/pixelmap/pmmem.h"
 
-#include "52-errors.h"
+#include "errors.h"
 
 /* From drivers/softrend/device.c */
 extern br_device* C2_HOOK_STDCALL DeviceSoftAllocate(const char* identifier);

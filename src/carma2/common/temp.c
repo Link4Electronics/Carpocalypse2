@@ -1,28 +1,18 @@
 #include "temp.h"
 
 #include "depth.h"
-#include "52-errors.h"
+#include "errors.h"
 #include "graphics.h"
 
 #include "carpocalypse2_macros.h"
 #include "carpocalypse2_types.h"
-
-
 // GLOBAL: CARMA2_HW 0x006a6d38
-int gMaterials_to_adapt_count;
-
+extern int gMaterials_to_adapt_count;
 // GLOBAL: CARMA2_HW 0x006a3340
 br_material* gMaterials_to_adapt[200];
 
 // GLOBAL: CARMA2_HW 0x006a8298
-int gAllow_material_adapt;
-
-// FUNCTION: CARMA2_HW 0x004ea760
-void C2_HOOK_FASTCALL InitFogificateMaterials(void) {
-
-    gMaterials_to_adapt_count = 0;
-}
-
+extern int gAllow_material_adapt;
 br_material* C2_HOOK_FASTCALL LoadTemporaryMaterial(const char* pName) {
     br_material* material;
 
@@ -49,11 +39,6 @@ void C2_HOOK_FASTCALL TemporaryMaterialStore(br_material* pMaterial) {
 // FUNCTION: CARMA2_HW 0x004ea840
 void C2_HOOK_FASTCALL EnableAutoFogification(void) {
     gAllow_material_adapt = 1;
-}
-
-// FUNCTION: CARMA2_HW 0x004ea850
-void C2_HOOK_FASTCALL DisableAutoFogification(void) {
-    gAllow_material_adapt = 0;
 }
 
 // FUNCTION: CARMA2_HW 0x004ea7c0

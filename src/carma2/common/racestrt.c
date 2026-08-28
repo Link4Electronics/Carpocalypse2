@@ -9,14 +9,17 @@
 #include "carpocalypse2_types.h"
 
 #include "c2_stdlib.h"
+#include "racestrt.h"
 
+// SortGridFunction
 
+// SortOpponents
+
+// DoGridPosition
+
+// ReceivedViewCar
 // GLOBAL: CARMA2_HW 0x006a0c74
 int gOur_starting_position;
-
-// GLOBAL: CARMA2_HW 0x006a0d38
-tU32 gLast_host_query;
-
 
 // FUNCTION: CARMA2_HW 0x004e2b50
 int C2_HOOK_CDECL SortGridFunction(const void* pFirst_one, const void* pSecond_one) {

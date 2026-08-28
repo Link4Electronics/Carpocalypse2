@@ -3,11 +3,11 @@
 #include "win32.h"
 #include "win32net.h"
 
-#include "52-errors.h"
+#include "errors.h"
 #include "globvars.h"
-#include "08-loading1.h"
-#include "40-main.h"
-#include "61-pedestrn.h"
+#include "loading1.h"
+#include "main.h"
+#include "pedestrn.h"
 
 #include "carpocalypse2_macros.h"
 

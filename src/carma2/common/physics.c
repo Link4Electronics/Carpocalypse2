@@ -1,7 +1,7 @@
 #include "physics.h"
 
 #include "car.h"
-#include "52-errors.h"
+#include "errors.h"
 #include "globvrpb.h"
 #include "loading.h"
 #include "netgame.h"
@@ -21,8 +21,358 @@
 
 #define PHYSICS_BUFFER_PART_SIZE 40000
 #define PHYSICS_BUFFER_OTHER_SIZE 50000
+#include "physics.h"
 
+// count
 
+// DrMatrix34ApplyLPInverse
+
+// AddObjectWallForce
+
+// AddObjectObjectForce
+
+// RayCastThruFaceList
+
+// RayCastThruFaceList2
+
+// RayCastInBox
+
+// FaceOffCount2
+
+// FaceOffCount
+
+// FaceOnCount
+
+// EliminateFaces
+
+// GetShapePoint
+
+// GetObjectObjectEdgeIntersections
+
+// GetFaceEdgeIntersection
+
+// GetSphereToFacePoints
+
+// CheckSingleEdgeWithSphere
+
+// GetSphereToEdgePoints
+
+// GetCornerToFacePoints
+
+// CylinderCheck
+
+// CheckTwoEdges
+
+// WorldPointCollision
+
+// CheckSingleEdgeWithObjectEdges
+
+// GetEdgeToEdgePoints
+
+// SetUpWorkspace
+
+// GetObjectWallForceInfo
+
+// GetObjectCornerToObjectFacePoints
+
+// BoundsOverlapTest
+
+// GetObjectObjectEdgePoints
+
+// GetSphereNonSphereForceInfo
+
+// GetSphereSphereForceInfo
+
+// GetSphereShapeForceInfo
+
+// GetNonSphereNonSphereForceInfo
+
+// GetNonSphereShapeForceInfo
+
+// GetObjectObjectForceInfo
+
+// AddOldForces
+
+// TestShapeEdgeIntersection
+
+// TestObjectOverlap
+
+// TestObjectOverlapIgnoreCloseRelatives
+
+// TestObjectOverlapRecurse
+
+// TestForObjectInSensiblePlace
+
+// HierarchyCalcEnergy
+
+// CheckCollisionList
+
+// MakeJointVelocitiesVector
+
+// ApplySingleForce
+
+// ApplyJointForces
+
+// SkipForces
+
+// ScaleUpObjectMI
+
+// CheckForTwang
+
+// CreateJointForce
+
+// CreateJointTorque
+
+// AllocateObjectWorkspace
+
+// RedoQuickHingeVelocities
+
+// GetJointForces
+
+// GetUniversalRotationAngle
+
+// GetObjectsParent
+
+// GetJointLimits
+
+// GetListJointLimits
+
+// GetGroupJointLimits
+
+// LimitOmega
+
+// CapOmega
+
+// ListLimitOmega
+
+// GroupLimitOmega
+
+// PositionWorldJointedObject
+
+// TranslateAndRotatePartialObject
+
+// TranslateAndRotateJointedObject
+
+// CountJointForces
+
+// MoveJointedObject
+
+// TellPhysicsJointsHaveChanged
+
+// CombineBounds
+
+// GetWorldBoundingBoxForObjects
+
+// GetWorldBoundingBoxForObject
+
+// MatricesAreIdentical
+
+// InternalPrepareObject
+
+// PrepareObject
+
+// PrepareForCollisions
+
+// CheckPointVelocities
+
+// WriteNewPositions
+
+// SetListDoingNothingFlag
+
+// SetGroupDoingNothingFlag
+
+// SetHierarchyDoingNothingFlag
+
+// CheckDoingNothingFlag
+
+// SetGroup
+
+// GroupTogether
+
+// GetPreCalculatedJointForces
+
+// MakeObjectListDoSomething
+
+// CheckForObjectTouchingAnotherObject
+
+// CheckForObjectListTouchingAnotherObject
+
+// CheckForObjectHierachyTouchingAnotherObject
+
+// CheckForObjectHierachyTouchingObjectList
+
+// MakeObjectDoSomething
+
+// GetReducedList
+
+// ReduceReducedList
+
+// SetObjectTrialPositionType
+
+// FillInTrialWorkspace
+
+// FlagsAreGo
+
+// CollideObjectWithReducedObjectList
+
+// AddObjectToReducedList
+
+// ReducedFindObjectCollisions
+
+// FindObjectCollisions
+
+// DoRigidJoints
+
+// DoInterGroupCollisions
+
+// ReduceEffectOfForces
+
+// DoCollisions
+
+// AddDoubleTorqueToMatrix
+
+// DRMatrix33Inverse
+
+// SetUpQuickHingeData
+
+// InitQuickHinge
+
+// CalcQuickHingeData
+
+// SetUpForce
+
+// SetUpTorqueHingePartners
+
+// SetUpHingePartners
+
+// MakeMatrix
+
+// RestoreListOmega
+
+// RestoreGroupOmegas
+
+// MakeVelocitiesVector2
+
+// MakeVelocitiesVector
+
+// NewAddFrictionObjectObject
+
+// NewAddFriction
+
+// ApplyForces
+
+// DoJointFriction
+
+// ListDoJointFriction
+
+// PostAddFriction
+
+// RotateObjectSecondOrder
+
+// RotateObjectFirstOrder
+
+// RotateObject
+
+// TranslateObject
+
+// GetFacesNearObject
+
+// ResetObjectAndChildren
+
+// ResetObjectList
+
+// RepositionObjectGroup
+
+// SimpleRotate
+
+// InterpolateSingleObject
+
+// InterpolateObjects
+
+// ApplyGravitySingleObject
+
+// ApplyGravity
+
+// SetGravityDeltaV
+
+// TrialPositionChildren
+
+// InternalPositionChildren
+
+// PositionChildren
+
+// ApplyTorque
+
+// ApplyDiminishingTorque
+
+// OrderObjectListOnX
+
+// SwapPair
+
+// CheckObjectsPostionInList
+
+// TestForWrongAnswer
+
+// RQIterativeImprovement
+
+// RQExpand
+
+// RQSingleExpand
+
+// RQDcmpV
+
+// MakeIdentity
+
+// SparseRQDcmpV
+
+// MakeMatrixFromIndices
+
+// HasBeenDoneBefore
+
+// RemoveRQSingularities
+
+// AddToMatrix
+
+// RQRemovedOneTooManyForces
+
+// GetInverseM
+
+// RQMatrixSolveNoNegatives
+
+// RQMatrixSolveWithNegatives
+
+// MatrixProcess
+
+// RqBackSub
+
+// GetPhysicsScratchPointer
+
+// IncreasePhysicsScratchPointer
+
+// ClearPhysicsScratchSpace
+
+// AllocateShapeSphere
+
+// AllocateShapePolyhedron
+
+// AllocateShapeWireFrame
+
+// AllocateShapeBox
+
+// GetJointSize
+
+// AllocatePhysicsJoint
+
+// ClonePhysicsJoint
+
+// FreeShape
+typedef enum {
+    ePlaneSide_positive = 0,
+    ePlaneSide_negative = 1,
+    ePlaneSide_zero = 2,
+} tPlane_side;
+
+typedef int C2_HOOK_FASTCALL tPhysicsObject_cbfn(tPhysics_object* pObject, void* pContext);
 // GLOBAL: CARMA2_HW 0x006940c0
 tPhysicsError_cbfn* gPhysics_error_cb;
 
@@ -41,14 +391,8 @@ int gPhysics_other_buffer_capacity;
 // GLOBAL: CARMA2_HW 0x006940c4
 void* gPhysics_other_buffer;
 
-// GLOBAL: CARMA2_HW 0x006baa40
-tU8 gTemporary_physics_render_buffer[300000];
-
 // GLOBAL: CARMA2_HW 0x006a0adc
 int gCollision_info_uid_counter;
-
-// GLOBAL: CARMA2_HW 0x0065d004
-int gPHIL_enabled = 1;
 
 // GLOBAL: CARMA2_HW 0x0065d010
 int gFace_num__car = 1;
@@ -166,17 +510,6 @@ void C2_HOOK_FASTCALL InitPhysicsWorkspace(tU8* pBuffer, int pSize) {
     gPhysics_other_buffer = pBuffer + 3 * PHYSICS_BUFFER_PART_SIZE;
 }
 
-// FUNCTION: CARMA2_HW 0x004b5ca0
-void C2_HOOK_FASTCALL InitPhysics(void) {
-
-    UNUSED();
-
-    PhysicsSetErrorHandler(DoPhysicsError);
-    InitPhysicsWorkspace(gTemporary_physics_render_buffer, sizeof(gTemporary_physics_render_buffer));
-
-    C2_HOOK_BUG_ON(sizeof(gTemporary_physics_render_buffer) != 300000);
-}
-
 // FUNCTION: CARMA2_HW 0x004b5cc0
 int C2_HOOK_FASTCALL PHILInit(void) {
     int i;
@@ -198,11 +531,6 @@ int C2_HOOK_FASTCALL PHILInit(void) {
     gPHIL_mechanics_time_sync = 1;
     gPHIL_enabled = 0;
     return 0;
-}
-
-// FUNCTION: CARMA2_HW 0x004b5d20
-void C2_HOOK_FASTCALL PHILDisable(void) {
-    gPHIL_enabled = 1;
 }
 
 // FUNCTION: CARMA2_HW 0x004c5e00
@@ -505,12 +833,6 @@ tPhysicsError C2_HOOK_FASTCALL ProcessTetrahedronPolyhedronCollisionShape(tColli
     pPolyhedron->count_edges = 6;
     return ePhysicsError_Ok;
 }
-
-typedef enum {
-    ePlaneSide_positive = 0,
-    ePlaneSide_negative = 1,
-    ePlaneSide_zero = 2,
-} tPlane_side;
 
 static tPlane_side calculate_plane_side(br_vector4* pPlane, br_vector3* pPoint) {
     br_scalar s;
@@ -1165,13 +1487,6 @@ void C2_HOOK_FASTCALL SetCollisionInfoChildsDoNothing(tPhysics_object *pCollisio
             SetCollisionInfoDoNothing(child->child,pDisable);
         }
     }
-}
-
-// FUNCTION: CARMA2_HW 0x004b5ea0
-int C2_HOOK_FASTCALL PHILRemoveObject(tPhysics_object* pCollision_info) {
-
-    NOT_IMPLEMENTED();
-    return 0;
 }
 
 // FUNCTION: CARMA2_HW 0x004c63d0
@@ -1830,8 +2145,6 @@ void C2_HOOK_FASTCALL ResetObjectList(tPhysics_object* pObjects) {
     NOT_IMPLEMENTED();
 }
 
-typedef int C2_HOOK_FASTCALL tPhysicsObject_cbfn(tPhysics_object* pObject, void* pContext);
-
 // FUNCTION: CARMA2_HW 0x004c64b0
 int C2_HOOK_FASTCALL PhysicsObjectRecurseChildren(tPhysics_object* pObject, tEnumCollision_cbfn* pCallback, void* pContext) {
     tPhysics_object* child;
@@ -1909,3 +2222,76 @@ int C2_HOOK_FASTCALL GetHierarchyNetworkSize(tPhysics_object* pObject) {
     }
     return size;
 }
+// FUNCTION: CARMA2_HW 0x004c5e80
+void C2_HOOK_FASTCALL FreeShapeList(tPhysics_shape *pShape) {
+
+    if (pShape->common.next != NULL) {
+        FreeShapeList(pShape->common.next);
+    }
+    BrMemFree(pShape);
+}
+
+// FUNCTION: CARMA2_HW 0x004c5ea0
+void C2_HOOK_FASTCALL FreePhysicsJoint(tPhysics_joint* pJoint) {
+
+    BrMemFree(pJoint);
+}
+
+// GetBoundsFromPointList
+
+// FillInShape
+
+// UpdateCollisionObject
+
+// PhysicsError
+
+// PhysicsWarning
+
+// PhysicsSetErrorHandler
+
+// RepositionAndOrientateChildren
+
+// PhysicsAddObject
+
+// PhysicsAddObjectList
+
+// PhysicsRemoveObject
+
+// PhysicsObjectRecurse
+
+// PhysicsObjectRecurseChildren
+
+// InitPhysicsWorkspace
+
+// FindFacesInBox
+
+// GetFrictionFromFace
+
+// DoPhysicsError
+
+// ResetMan2
+
+// SetUpTestObjects
+
+// ResetObjectList
+
+// ResetMan
+
+// STUB: CARMA2_HW 0x004b5ca0
+void C2_HOOK_FASTCALL InitPhysics(void) {
+#ifndef CARPOCALYPSE2_MATCHING
+    /* stub: no-op for Linux boot */
+#else
+    NOT_IMPLEMENTED();
+#endif
+}
+
+// PointOutOfSightNotAR
+
+// CalcCollObjIDFromCarSpec
+
+// CalcCollObjID
+
+// GetCarSpecFromCollObjID
+
+// GetCollObjFromID

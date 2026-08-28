@@ -1,10 +1,56 @@
-#ifndef CARPOCALYPSE2_OPPOPROC_H
+#ifndef GUARD_OPPOPROC_H
+#define GUARD_OPPOPROC_H
+
+#include "c2_hooks.h"
+#include "carpocalypse2_types.h"
+#include <brender/brender.h>
+
+
+// DoNotDprintf
+
+// StraightestArcForCorner2D
+
+// CornerFudge
+
+// MaxCurvatureForCarSpeed
+
+// Vector2Cross
+
+// RoughlyColinear
+
+// GetStraight
+
+// TimeToStopStruggling
+
+// TimeToBeBrakingWhenStruggling
+
+// CalcCorners
+
+// Distance2D
+
+// SectionLength2D
+
+// NearestSectionInStraight
+
+// SetMaxSpeedFromSOCs
+
+// CalcSOCs
+
+// StuffDataFromCorner
+
+// SetCurvature
+
+// ProcessFollowPath
+
+// FollowCheatyPath
+
 #define CARPOCALYPSE2_OPPOPROC_H
 
 #include <brender/brender.h>
 #include "carpocalypse2_types.h"
 
 #include "c2_hooks.h"
+
 
 
 void C2_HOOK_CDECL DoNotDprintf_oppoproc(const char* pMessage, ...);
@@ -19,4 +65,4 @@ int C2_HOOK_FASTCALL CalcCorners(tCorner* pCorners, int pSection, float pWidth, 
 
 int C2_HOOK_FASTCALL CalcSOCs(int pNext_section, int pCount_corners, tCorner *pCorners, tOpponent_spec *pOpponent_spec, tSOC* pSocs, tCar_spec* pCar);
 
-#endif //CARPOCALYPSE2_OPPONENT_H
+#endif // GUARD_OPPOPROC_H

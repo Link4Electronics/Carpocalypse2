@@ -12,23 +12,17 @@
 
 #define NBR_ROLLING_LETTERS 500
 #define ROLLING_LETTER_LOOP_RANDOM 96
-
-
+#include "input.h"
+#include "carpocalypse2_types.h"
+#include "carpocalypse2_macros.h"
+#include "platform.h"
 // GLOBAL: CARMA2_HW 0x00657200
 int gGo_ahead_keys[3] = { 51, 52, 106 };
 
 // GLOBAL: CARMA2_HW 0x0068c1c4
-int gEdge_trigger_mode;
-
-// GLOBAL: CARMA2_HW 0x0074b5c0
-tJoy_array gJoy_array;
-
-// GLOBAL: CARMA2_HW 0x0068bee0
-tKey_array gKey_array;
-
+extern int gEdge_trigger_mode;
 // GLOBAL: CARMA2_HW 0x0068bed4
-int gKey_poll_counter;
-
+extern int gKey_poll_counter;
 // GLOBAL: CARMA2_HW 0x006571f8
 tMouse_coord gCurrent_mouse_position = {-1, -1};
 
@@ -89,42 +83,29 @@ tU32 gLast_key_down_time;
 // GLOBAL: CARMA2_HW 0x0068bed8
 int gModifiers_down;
 
+extern tU32 gKeys_pressed;
+
+// GLOBAL: CARMA2_HW 0x0074b5c0
+tJoy_array gJoy_array;
+
+// GLOBAL: CARMA2_HW 0x0068bee0
+tKey_array gKey_array;
+
+// GLOBAL: CARMA2_HW 0x0068bed4
+int gKey_poll_counter;
+
+// GLOBAL: CARMA2_HW 0x0074b5e0
+int gKey_mapping[77];
+
+// GLOBAL: CARMA2_HW 0x0068c1c4
+int gEdge_trigger_mode;
+
+// GLOBAL: CARMA2_HW 0x006571f8
+int gLast_mouse_x_coord;
+// GLOBAL: CARMA2_HW 0x006571fc
+int gLast_mouse_y_coord;
+
 // STUB: CARMA2_HW 0x0045c0b0
-int C2_HOOK_FASTCALL LoadJoystickPreferences(void) {
-
-    NOT_IMPLEMENTED();
-    return 0;
-}
-
-// FUNCTION: CARMA2_HW 0x00482d70
-int C2_HOOK_FASTCALL AnyKeyDown(void) {
-    int the_key;
-
-    the_key = PDAnyKeyDown();
-    return (the_key != -1 && the_key != 4) || EitherMouseButtonDown();
-}
-
-// FUNCTION: CARMA2_HW 0x004833b0
-void C2_HOOK_FASTCALL WaitForNoKeys(void) {
-
-    while (AnyKeyDown() || EitherMouseButtonDown()) {
-        CheckQuit();
-    }
-    CheckQuit();
-}
-
-// FUNCTION: CARMA2_HW 0x00484600
-void C2_HOOK_FASTCALL EdgeTriggerModeOn(void) {
-
-    gEdge_trigger_mode = 1;
-}
-
-// FUNCTION: CARMA2_HW 0x00484610
-void C2_HOOK_FASTCALL EdgeTriggerModeOff(void) {
-
-    gEdge_trigger_mode = 0;
-}
-
 int C2_HOOK_FASTCALL AnyModifiersDown(void) {
     int i;
 
@@ -185,106 +166,6 @@ tKey_down_result C2_HOOK_FASTCALL EdgeTriggeryKey(int pKey_index, int pReset) {
     return tKey_down_yes;
 }
 
-// FUNCTION: CARMA2_HW 0x004824c0
-int C2_HOOK_FASTCALL EitherMouseButtonDown(void) {
-    tMouse_coord pos;
-    tMouse_coord prev_pos = gCurrent_mouse_position;
-    int left;
-    int right;
-
-    GetMousePosition(&pos.x, &pos.y);
-    if (prev_pos.x == pos.x && prev_pos.y == pos.y) {
-        tMouse_coord click_pos;
-
-        int ok = PDGetMouseClickPosition(&click_pos.x, &click_pos.y);
-        if (ok && pos.x == click_pos.x && pos.y == click_pos.y) {
-            return 2;
-        }
-    }
-    PDMouseButtons(&left, &right);
-    if (left || right) {
-        return 1;
-    }
-    return 0;
-}
-
-// FUNCTION: CARMA2_HW 0x00482550
-int C2_HOOK_FASTCALL PDKeyDown(int pKey_index) {
-    tKey_down_result result;
-
-    result = EdgeTriggeryKey(pKey_index, 0);
-    if (!gEdge_trigger_mode || pKey_index <= 10) {
-        return result != tKey_down_no;
-    }
-    return result == tKey_down_yes || result == tKey_down_repeat;
-}
-
-// FUNCTION: CARMA2_HW 0x00481eb0
-void C2_HOOK_FASTCALL PollKeys(void) {
-
-    gKey_poll_counter += 1;
-    PDSetKeyArray(gKey_array, gKey_poll_counter);
-    SetJoystickArrays(gKey_array, gKey_poll_counter);
-    gLast_poll_keys = PDGetTotalTime();
-}
-
-// FUNCTION: CARMA2_HW 0x00482f10
-tU32* C2_HOOK_FASTCALL KevKeyService(void) {
-    static tU32 sum = 0;
-    static tU32 code = 0;
-    static tU32 code2 = 0;
-    static int last_key = -1;
-    static int last_single_key = -1;
-    static tU32 last_time = 0;
-    static tU32 return_val[2];
-    tU32 keys;
-
-    return_val[0] = 0;
-    return_val[1] = 0;
-    keys = gKeys_pressed;
-
-    if (keys < 0x6B) {
-        last_single_key = gKeys_pressed;
-    } else {
-        if (keys > 0x6b00) {
-            sum = 0;
-            code = 0;
-            return return_val;
-        }
-        if ((keys & 0xff) != last_single_key && keys >> 8 != last_single_key) {
-            sum = 0;
-            code = 0;
-            return return_val;
-        }
-        if (keys >> 8 != last_single_key) {
-            sum = 0;
-            code = 0;
-            return return_val;
-        }
-        if ((keys & 0xff) == last_single_key) {
-            keys = keys >> 8;
-        }
-        keys = keys & 0xff;
-    }
-
-    if (keys != 0 && keys != last_key) {
-        sum += keys;
-        code += keys << 11;
-        code = (code >> 17) + (code << 4);
-        code2 = (code2 >> 29) + keys * keys + (code2 << 3);
-        last_time = PDGetTotalTime();
-    } else if ((tU32)PDGetTotalTime() > last_time + 1000) {
-        return_val[0] = (code >> 11) + (sum << 21);
-        return_val[1] = code2;
-        // printf("final value: code=%lx, code2=%lx\n", return_val[0], return_val[1]);
-        code = 0;
-        code2 = 0;
-        sum = 0;
-    }
-    last_key = keys;
-    return return_val;
-}
-
 // FUNCTION: CARMA2_HW 0x004821a0
 void C2_HOOK_FASTCALL ResetPollKeys(void) {
     int i;
@@ -300,21 +181,6 @@ void C2_HOOK_FASTCALL ResetPollKeys(void) {
     }
 }
 
-// FUNCTION: CARMA2_HW 0x00482160
-void C2_HOOK_FASTCALL CyclePollKeys(void) {
-    int i;
-
-    for (i = 0; i < CARPOCALYPSE2_ASIZE(gKey_array); i++) {
-        if (gKey_array[i] > gKey_poll_counter) {
-            gKey_array[i] = 0;
-            if (i > 143) {
-                gJoy_array[i - 143] = -1; // yes this is a little weird I know...
-            }
-        }
-    }
-    gKey_poll_counter = 0;
-}
-
 // FUNCTION: CARMA2_HW 0x004821c0
 void C2_HOOK_FASTCALL CheckKeysForMouldiness(void) {
 
@@ -325,96 +191,10 @@ void C2_HOOK_FASTCALL CheckKeysForMouldiness(void) {
     }
 }
 
-// FUNCTION: CARMA2_HW 0x00483040
-int C2_HOOK_FASTCALL KeyIsDown(int pKey_index) {
-    int i;
-
-    CheckKeysForMouldiness();
-    switch (pKey_index) {
-    case -2:
-        return 1;
-    case -1:
-        for (i = 0; i < CARPOCALYPSE2_ASIZE(gGo_ahead_keys); i++) {
-            if (gKey_array[gGo_ahead_keys[i]]) {
-                return 1;
-            }
-        }
-        return 0;
-    default:
-        return gKey_array[gKey_mapping[pKey_index]];
-    }
-}
-
 // FUNCTION: CARMA2_HW 0x004833a0
 int C2_HOOK_FASTCALL KeyIsDownNoMouldiness(int pKey_index) {
 
     return gKey_array[gKey_mapping[pKey_index]];
-}
-
-// FUNCTION: CARMA2_HW 0x00483c10
-void C2_HOOK_FASTCALL GetMousePosition(int *pX, int *pY) {
-
-    PDGetMousePosition(pX, pY);
-    if (*pX < 0) {
-        *pX = 0;
-    } else if (*pX > gGraf_specs[gGraf_spec_index].total_width) {
-        *pX = gGraf_specs[gGraf_spec_index].total_width;
-    }
-    if (*pY < 0) {
-        *pY = 0;
-    } else if (*pY > gGraf_specs[gGraf_spec_index].total_height) {
-        *pY = gGraf_specs[gGraf_spec_index].total_height;
-    }
-    gCurrent_mouse_position.x = *pX;
-    gCurrent_mouse_position.y = *pY;
-}
-
-// FUNCTION: CARMA2_HW 0x00482a00
-int C2_HOOK_FASTCALL PDAnyKeyDown(void) {
-    int i;
-
-    CheckKeysForMouldiness();
-
-#ifndef CARPOCALYPSE2_MATCHING
-    C2_HOOK_BUG_ON(142 < CARPOCALYPSE2_ASIZE(gKey_array));
-#endif
-
-    CheckKeysForMouldiness();
-    for (i = 142; i >= 0; --i) {
-        if (gKey_array[i] && i != 4) {
-            if (!gEdge_trigger_mode) {
-                return i;
-            }
-            switch (EdgeTriggeryKey(i, 0)) {
-                case tKey_down_no:
-                case tKey_down_still:
-                    return -1;
-                case tKey_down_yes:
-                case tKey_down_repeat:
-                    return i;
-            }
-        }
-    }
-    if (gEdge_trigger_mode) {
-        EdgeTriggeryKey(0, 1);
-    }
-    return -1;
-}
-
-// FUNCTION: CARMA2_HW 0x00483c90
-void C2_HOOK_FASTCALL InitRollingLetters(void) {
-    int i;
-
-    C2_HOOK_BUG_ON(sizeof(tRolling_letter) != 0x38);
-    C2_HOOK_BUG_ON(NBR_ROLLING_LETTERS != 500);
-    C2_HOOK_BUG_ON(NBR_ROLLING_LETTERS * sizeof(tRolling_letter) != 28000);
-
-    gLast_roll = 0;
-    gCurrent_cursor = -1;
-    gRolling_letters = BrMemAllocate(NBR_ROLLING_LETTERS * sizeof(tRolling_letter), kMem_misc);
-    for (i = 0; i < NBR_ROLLING_LETTERS; i++) {
-        gRolling_letters[i].number_of_letters = -1;
-    }
 }
 
 // FUNCTION: CARMA2_HW 0x00483cf0
@@ -507,21 +287,6 @@ int C2_HOOK_FASTCALL ChangeCharTo(int pSlot_index, int pChar_index, char pNew_ch
     let->rolling_type = new_type;
     let->current_offset = (float)(gCurrent_graf_data->save_slot_letter_height * let->number_of_letters);
     return i;
-}
-
-// FUNCTION: CARMA2_HW 0x00484120
-void C2_HOOK_FASTCALL RevertTyping(int pSlot_index, char* pRevert_str) {
-    unsigned i;
-
-    for (i = 0; (int)i < gThe_length; i++) {
-        ChangeCharTo(pSlot_index, i, i >= strlen(pRevert_str) ? ' ' : pRevert_str[i]);
-    }
-}
-
-// FUNCTION: CARMA2_HW 0x00483ce0
-void C2_HOOK_FASTCALL EndRollingLetters(void) {
-
-    BrMemFree(gRolling_letters);
 }
 
 // FUNCTION: CARMA2_HW 0x00482770
@@ -637,4 +402,212 @@ void C2_HOOK_FASTCALL SetJoystickArrays(int* pKeys, int pMark) {
         }
         gJoy2_y = new_joy2_y;
     }
+}
+// SetJoystickArrays
+
+// FUNCTION: CARMA2_HW 0x00481eb0
+void C2_HOOK_FASTCALL PollKeys(void) {
+
+    gKey_poll_counter += 1;
+    PDSetKeyArray(gKey_array, gKey_poll_counter);
+}
+
+// CyclePollKeys
+
+// ResetPollKeys
+
+// CheckKeysForMouldiness
+
+// FUNCTION: CARMA2_HW 0x004824c0
+int C2_HOOK_FASTCALL EitherMouseButtonDown(void) {
+    int x_coord;
+    int y_coord;
+    int click_x_coord;
+    int click_y_coord;
+    int left_button_down;
+    int right_button_down;
+    int previous_x;
+    int previous_y;
+
+    previous_x = gLast_mouse_x_coord;
+    previous_y = gLast_mouse_y_coord;
+    GetMousePosition(&x_coord, &y_coord);
+    if (previous_x == x_coord && previous_y == y_coord && PDGetMouseClickPosition(&click_x_coord, &click_y_coord) != 0
+            && x_coord == click_x_coord && y_coord == click_y_coord) {
+        return 2;
+    }
+    PDMouseButtons(&left_button_down, &right_button_down);
+    return (left_button_down || right_button_down) ? 1 : 0;
+}
+
+// AnyModifiersDown
+
+// EdgeTriggeryKey
+
+// STUB: CARMA2_HW 0x00482550
+int C2_HOOK_FASTCALL PDKeyDown(int pKey_index) {
+#ifndef CARPOCALYPSE2_MATCHING
+    return 0;
+#else
+    NOT_IMPLEMENTED();
+    return 0;
+#endif
+}
+
+// PDKeyDown3
+
+// FUNCTION: CARMA2_HW 0x00482a00
+int C2_HOOK_FASTCALL PDAnyKeyDown(void) {
+    int i;
+
+    PollKeys();
+    for (i = CARPOCALYPSE2_ASIZE(gKey_array) - 1; i >= 0; i--) {
+        if (gKey_array[i] != 0) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+// STUB: CARMA2_HW 0x00482d70
+int C2_HOOK_FASTCALL AnyKeyDown(void) {
+    NOT_IMPLEMENTED();
+}
+
+// FUNCTION: CARMA2_HW 0x00482f10
+tU32* C2_HOOK_FASTCALL KevKeyService(void) {
+    static tU32 sum = 0;
+    static tU32 code = 0;
+    static tU32 code2 = 0;
+    static int last_key = -1;
+    static int last_single_key = -1;
+    static tU32 last_time = 0;
+    static tU32 return_val[2];
+    tU32 keys;
+
+    return_val[0] = 0;
+    return_val[1] = 0;
+    keys = gKeys_pressed;
+
+    if (keys < 0x6B) {
+        last_single_key = gKeys_pressed;
+    } else {
+        if (keys > 0x6b00) {
+            sum = 0;
+            code = 0;
+            return return_val;
+        }
+        if ((keys & 0xff) != last_single_key && keys >> 8 != last_single_key) {
+            sum = 0;
+            code = 0;
+            return return_val;
+        }
+        if (keys >> 8 != last_single_key) {
+            sum = 0;
+            code = 0;
+            return return_val;
+        }
+        if ((keys & 0xff) == last_single_key) {
+            keys = keys >> 8;
+        }
+        keys = keys & 0xff;
+    }
+
+    if (keys != 0 && keys != last_key) {
+        sum += keys;
+        code += keys << 11;
+        code = (code >> 17) + (code << 4);
+        code2 = (code2 >> 29) + keys * keys + (code2 << 3);
+        last_time = PDGetTotalTime();
+    } else if ((tU32)PDGetTotalTime() > last_time + 1000) {
+        return_val[0] = (code >> 11) + (sum << 21);
+        return_val[1] = code2;
+        // printf("final value: code=%lx, code2=%lx\n", return_val[0], return_val[1]);
+        code = 0;
+        code2 = 0;
+        sum = 0;
+    }
+    last_key = keys;
+    return return_val;
+}
+
+// STUB: CARMA2_HW 0x00483040
+int C2_HOOK_FASTCALL KeyIsDown(int pKey_index) {
+    NOT_IMPLEMENTED();
+}
+
+// KeyIsDownNoMouldiness
+
+// STUB: CARMA2_HW 0x004833b0
+void C2_HOOK_FASTCALL WaitForNoKeys(void) {
+#ifndef CARPOCALYPSE2_MATCHING
+    /* stub: no-op for Linux boot */
+#else
+    NOT_IMPLEMENTED();
+#endif
+}
+
+// FUNCTION: CARMA2_HW 0x00483c10
+void C2_HOOK_FASTCALL GetMousePosition(int *pX, int *pY) {
+
+    PDGetMousePosition(pX, pY);
+    if (*pX < 0) {
+        *pX = 0;
+    } else if (*pX > gGraf_specs[gGraf_spec_index].total_width) {
+        *pX = gGraf_specs[gGraf_spec_index].total_width;
+    }
+    if (*pY < 0) {
+        *pY = 0;
+        gLast_mouse_x_coord = *pX;
+        gLast_mouse_y_coord = *pY;
+        return;
+    } else if (*pY > gGraf_specs[gGraf_spec_index].total_height) {
+        *pY = gGraf_specs[gGraf_spec_index].total_height;
+    }
+    gLast_mouse_x_coord = *pX;
+    gLast_mouse_y_coord = *pY;
+}
+
+// STUB: CARMA2_HW 0x00483c90
+void C2_HOOK_FASTCALL InitRollingLetters(void) {
+#ifndef CARPOCALYPSE2_MATCHING
+    /* stub: no-op for Linux boot */
+#else
+    NOT_IMPLEMENTED();
+#endif
+}
+
+// STUB: CARMA2_HW 0x00483ce0
+void C2_HOOK_FASTCALL EndRollingLetters(void) {
+#ifndef CARPOCALYPSE2_MATCHING
+    /* stub: no-op for Linux boot */
+#else
+    NOT_IMPLEMENTED();
+#endif
+}
+
+// AddRollingLetter
+
+// ChangeCharTo
+
+// STUB: CARMA2_HW 0x00484120
+void C2_HOOK_FASTCALL RevertTyping(int pSlot_index, char* pRevert_str) {
+#ifndef CARPOCALYPSE2_MATCHING
+    /* stub: no-op for Linux boot */
+#else
+    NOT_IMPLEMENTED();
+#endif
+}
+
+// FUNCTION: CARMA2_HW 0x00484600
+void C2_HOOK_FASTCALL EdgeTriggerModeOn(void) {
+
+    gEdge_trigger_mode = 1;
+}
+
+
+// FUNCTION: CARMA2_HW 0x00484610
+void C2_HOOK_FASTCALL EdgeTriggerModeOff(void) {
+
+    gEdge_trigger_mode = 0;
 }

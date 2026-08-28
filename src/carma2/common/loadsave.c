@@ -9,19 +9,24 @@
 #include "carpocalypse2_macros.h"
 
 #include "c2_string.h"
+#include "loadsave.h"
 
-
-// GLOBAL: CARMA2_HW 0x00688ae4
-int gValid_stashed_save_game;
+#include "platform.h"
+#include "globvars.h"
+#include "loading1.h"
+#include "packfile.h"
+#include "utility.h"
+extern void C2_HOOK_FASTCALL SplungeSomeData(void* pData, size_t size);
+// GLOBAL: CARMA2_HW 0x00688780
+tSave_game gStashed_save_game;
 
 // GLOBAL: CARMA2_HW 0x0068b8ec
 int gSave_game_out_of_sync;
 
-// GLOBAL: CARMA2_HW 0x00688780
-tSave_game gStashed_save_game;
-
 // GLOBAL: CARMA2_HW 0x0068c728
 int gCount_saved_games;
+
+int gFrontend_count_saved_games;
 
 // GLOBAL: CARMA2_HW 0x0068c72c
 tSave_game* gSaved_games;
@@ -83,44 +88,54 @@ void C2_HOOK_FASTCALL DoLoadMostRecentGame(void) {
     }
 }
 
-// FUNCTION: CARMA2_HW 0x00491ac0
-void C2_HOOK_FASTCALL DoSaveGame(void) {
-    tPath_name the_path;
-    tSave_game save_game;
-    FILE* f;
+// FUNCTION: CARMA2_HW 0x004919a0
+void C2_HOOK_FASTCALL MakeSavedGame(tSave_game* pSave_game) {
+    int i;
 
-    C2_HOOK_BUG_ON(sizeof(save_game) != 0x328);
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gProgram_state.cars_available) != 60);
 
-    if (gNet_mode == eNet_mode_none) {
-        PathCat(the_path, gApplication_path, "SAVEDGAMES.ARS");
-        PDFileUnlock(the_path);
-        f = DRfopen(the_path,"ab+");
-        if (f != NULL) {
-            PFfseek(f, 0, SEEK_END);
-            gCurrent_APO_potential_levels[0] = gProgram_state.current_car.power_up_slots[0];
-            gCurrent_APO_potential_levels[1] = gProgram_state.current_car.power_up_slots[1];
-            gCurrent_APO_potential_levels[2] = gProgram_state.current_car.power_up_slots[2];
-            gCurrent_APO_levels[0] = gProgram_state.current_car.power_up_levels[0];
-            gCurrent_APO_levels[1] = gProgram_state.current_car.power_up_levels[1];
-            gCurrent_APO_levels[2] = gProgram_state.current_car.power_up_levels[2];
-            MakeSavedGame(&save_game);
-            Encryptificate(&save_game, 1);
-            PFfwrite(&save_game, 1, sizeof(save_game), f);
-            PFfclose(f);
-            gSave_game_out_of_sync = 0;
-        }
+    pSave_game->magic = 0x12345678;
+    pSave_game->skill_level = gProgram_state.skill_level;
+    pSave_game->game_completed = gProgram_state.game_completed;
+    pSave_game->current_race_index = gProgram_state.current_race_index;
+    pSave_game->is_boundary_race = gIs_boundary_race;
+    pSave_game->credits = gProgram_state.credits;
+    strcpy(pSave_game->car_name, gProgram_state.car_name);
+    strcpy(pSave_game->player_name, gProgram_state.player_name);
+    PDGetCurrentTime(pSave_game->time);
+    PDGetCurrentDate(pSave_game->date);
+    for (i = 0; i < gNumber_of_races; i++) {
+        pSave_game->races_finished[i] = gRace_list[i].count_opponents;
+    }
+    pSave_game->number_of_cars = gProgram_state.number_of_cars;
+    pSave_game->current_car_index = gProgram_state.current_car_index;
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gProgram_state.cars_available); i++) {
+        pSave_game->cars[i] = gProgram_state.cars_available[i];
+    }
+    for (i = 0; i < 3; i++) {
+        pSave_game->apo_levels[i] = gCurrent_APO_levels[i];
+        pSave_game->apo_potential[i] = gCurrent_APO_potential_levels[i];
     }
 }
+#include "carpocalypse2_types.h"
 
-// FUNCTION: CARMA2_HW 0x00500060
-void C2_HOOK_FASTCALL SplungeSomeData(void* pData, size_t size) {
-
-}
-
+// FUNCTION: CARMA2_HW 0x00500090
 void C2_HOOK_FASTCALL Encryptificate(tSave_game* pSave_games, int pCount) {
 
     C2_HOOK_BUG_ON(sizeof(tSave_game) != 0x328);
     SplungeSomeData(pSave_games, pCount * sizeof(tSave_game));
+}
+
+
+// MakeSavedGame
+
+// STUB: CARMA2_HW 0x00491ac0
+void C2_HOOK_FASTCALL DoSaveGame(void) {
+#ifndef CARPOCALYPSE2_MATCHING
+    /* stub: no-op for Linux boot */
+#else
+    NOT_IMPLEMENTED();
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00491bb0
@@ -161,48 +176,17 @@ void C2_HOOK_FASTCALL EndSavedGamesList(void) {
 
 // FUNCTION: CARMA2_HW 0x00491cb0
 tSave_game* C2_HOOK_FASTCALL GetNthSavedGame(int pN) {
-
-    if (gSaved_games != NULL && pN < gCount_saved_games) {
-        return &gSaved_games[gCount_saved_games - pN - 1];
+    if (gSaved_games == NULL || pN >= gCount_saved_games) {
+        return NULL;
     }
-    return NULL;
+    return &gSaved_games[gCount_saved_games - pN - 1];
 }
 
-// FUNCTION: CARMA2_HW 0x00491e20
+// DoLoadGame2
+
+// STUB: CARMA2_HW 0x00491e20
 int C2_HOOK_FASTCALL DoLoadGame(int pIndex) {
-
-    if (gSaved_games != NULL && pIndex >= 0 && pIndex < gCount_saved_games) {
-        return DoLoadGame2(&gSaved_games[gCount_saved_games - pIndex - 1]);
-    }
-    return 0;
+    NOT_IMPLEMENTED();
 }
 
-// FUNCTION: CARMA2_HW 0x004919a0
-void C2_HOOK_FASTCALL MakeSavedGame(tSave_game* pSave_game) {
-    int i;
-
-    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gProgram_state.cars_available) != 60);
-
-    pSave_game->magic = 0x12345678;
-    pSave_game->skill_level = gProgram_state.skill_level;
-    pSave_game->game_completed = gProgram_state.game_completed;
-    pSave_game->current_race_index = gProgram_state.current_race_index;
-    pSave_game->is_boundary_race = gIs_boundary_race;
-    pSave_game->credits = gProgram_state.credits;
-    strcpy(pSave_game->car_name, gProgram_state.car_name);
-    strcpy(pSave_game->player_name, gProgram_state.player_name);
-    PDGetCurrentTime(pSave_game->time);
-    PDGetCurrentDate(pSave_game->date);
-    for (i = 0; i < gNumber_of_races; i++) {
-        pSave_game->races_finished[i] = gRace_list[i].count_opponents;
-    }
-    pSave_game->number_of_cars = gProgram_state.number_of_cars;
-    pSave_game->current_car_index = gProgram_state.current_car_index;
-    for (i = 0; i < CARPOCALYPSE2_ASIZE(gProgram_state.cars_available); i++) {
-        pSave_game->cars[i] = gProgram_state.cars_available[i];
-    }
-    for (i = 0; i < 3; i++) {
-        pSave_game->apo_levels[i] = gCurrent_APO_levels[i];
-        pSave_game->apo_potential[i] = gCurrent_APO_potential_levels[i];
-    }
-}
+// DoLoadMostRecentGame

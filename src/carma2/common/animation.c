@@ -1,14 +1,12 @@
 #include "animation.h"
 
-#include "52-errors.h"
+#include "errors.h"
 #include "loading.h"
 
 #include "brender/brender.h"
 #include "carpocalypse2_macros.h"
 
 #include "c2_hooks.h"
-
-
 // GLOBAL: CARMA2_HW 0x0065fee8
 const char* gExplosion_rotate_names[2] = {
     "norotate",

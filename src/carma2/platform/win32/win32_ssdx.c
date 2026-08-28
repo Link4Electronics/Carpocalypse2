@@ -3,9 +3,9 @@
 #include "win32.h"
 #include "win32_sound.h"
 
-#include "52-errors.h"
+#include "errors.h"
 #include "globvars.h"
-#include "16-graphics1.h"
+#include "graphics1.h"
 
 #include "platform.h"
 

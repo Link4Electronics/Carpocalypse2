@@ -14,8 +14,6 @@
 
 #include "c2_stdlib.h"
 #include "c2_math.h"
-
-
 // FUNCTION: CARMA2_HW 0x00433350
 tPhysics_object* C2_HOOK_FASTCALL DetachBit(tCar_spec* pCar, br_actor* pActor, br_bounds3* pBounds) {
 

@@ -1,7 +1,7 @@
 #include "shrapnel.h"
 
 #include "crush.h"
-#include "52-errors.h"
+#include "errors.h"
 #include "loading.h"
 #include "smashing.h"
 #include "temp.h"
@@ -13,8 +13,6 @@
 #include "c2_string.h"
 
 #include "carpocalypse2_macros.h"
-
-
 // GLOBAL: CARMA2_HW 0x0065fec0
 const char* gShrapnel_type_names[4] = {
     "abstract",

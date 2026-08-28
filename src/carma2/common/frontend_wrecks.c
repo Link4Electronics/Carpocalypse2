@@ -17,40 +17,6 @@
 #include "carpocalypse2_macros.h"
 
 #include "c2_string.h"
-
-
-
-// GLOBAL: CARMA2_HW 0x005f8e68
-tFrontend_spec gFrontend_WRECKS = {
-    "Wrecks",
-    0,
-    12,
-    WrecksInFunc,
-    WrecksOutFunc,
-    WrecksUpdateFunc,
-    &gFrontend_MAIN,
-    0,
-    0,
-    0,
-    0,
-    8,
-    0,
-    {
-        { 0xd7,  temp,              NULL, 0, 0, 0, 0, 0, 0, 0, 0, 1, },
-        { 0x402, temp,              NULL, 0, 0, 0, 0, 0, 0, 0, 0, 1, },
-        { 0x404, temp,              NULL, 0, 0, 0, 0, 0, 0, 0, 0, 1, },
-        { 0x403, ScrollToPrevCar,   NULL, 0, 0, 0, 0, 0, 0, 0, 1, 1, },
-        { 0x403, ScrollToNextCar,   NULL, 0, 0, 0, 0, 0, 0, 0, 1, 1, },
-        { 0x4f,  temp,              NULL, 0, 0, 0, 0, 0, 0, 0, 1, 1, },
-        { 0x404, temp,              NULL, 0, 0, 0, 0, 0, 0, 0, 1, 1, },
-        { 0xd9,  temp,              NULL, 0, 0, 0, 0, 0, 0, 0, 1, 1, },
-        { 0x404, temp,              NULL, 0, 0, 0, 0, 0, 0, 0, 1, 1, },
-        { 0xdd,  BuyCurrentCar,     NULL, 0, 0, 0, 0, 0, 0, 0, 1, 1, },
-        { 0x7,   temp,              NULL, 1, 0, 0, 0, 0, 0, 0, 1, 1, },
-        { 0x402, temp,              NULL, 0, 0, 0, 0, 0, 0, 0, 1, 1, },
-    },
-};
-
 // GLOBAL: CARMA2_HW 0x00763720
 tWreck_gallery_sell_info gWreck_gallery_sell_infos[32];
 
@@ -83,12 +49,6 @@ int gFrontend_wrecks_rotate_prev_x = -1;
 
 // GLOBAL: CARMA2_HW 0x0059b0e0
 int gFrontend_wrecks_rotate_prev_y = -1;
-
-// GLOBAL: CARMA2_HW 0x00686828
-int gFrontend_opponent_profile_pic_needs_update;
-
-// GLOBAL: CARMA2_HW 0x00763924
-int gHierarchy_has_actor;
 
 // GLOBAL: CARMA2_HW 0x00763928
 int gPicked_wreck;
@@ -195,16 +155,6 @@ int C2_HOOK_FASTCALL WrecksOutFunc(tFrontend_spec* pFrontend) {
     DisposeWrecksGallery();
     DRS3StartSound(gEffects_outlet, eSoundId_Swingout);
     return 1;
-}
-
-// FUNCTION: CARMA2_HW 0x0046f560
-int C2_HOOK_CDECL HeirarchyPick(br_actor* a, void* ref) {
-
-    if (a == (br_actor*)ref) {
-        gHierarchy_has_actor = 1;
-    }
-    BrActorEnum(a, HeirarchyPick, ref);
-    return 0;
 }
 
 // FUNCTION: CARMA2_HW 0x0046f4f0

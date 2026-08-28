@@ -1,11 +1,19 @@
 #include "globvars.h"
-
-
+#include "globvars.h"
+// GLOBAL: CARMA2_HW 0x00761a5c
+extern const char* gDir_separator;
+// GLOBAL: CARMA2_HW 0x0074c9f4
+extern const char* gRenderer_fixup_basename;
+// GLOBAL: CARMA2_HW 0x0074ca6c
+extern const char* gRenderer_fixup_extension;
 // GLOBAL: CARMA2_HW 0x0068b868
 int gApplicationDataTwtMounted;
 
 // GLOBAL: CARMA2_HW 0x0075ba60
 tPath_name gApplication_path;
+
+// GLOBAL: CARMA2_HW 0x0074d0a0
+char gRace_path[256];
 
 // GLOBAL: CARMA2_HW 0x00761a5c
 const char* gDir_separator;
@@ -129,7 +137,6 @@ int gAuto_load;
 // GLOBAL: CARMA2_HW 0x006aa5c4
 int gRussels_fannies;
 
-
 // GLOBAL: CARMA2_HW 0x00705220
 char gQuick_time_quality[32];
 
@@ -139,22 +146,12 @@ char gQuick_time_compressor[32];
 // GLOBAL: CARMA2_HW 0x0065ef30
 int gQuick_time_banner_number = 1;
 
-// GLOBAL: CARMA2_HW 0x00705340
-char gQuick_time_banner_texture_name[256];
-
-// GLOBAL: CARMA2_HW 0x00705440
-char gQuick_time_temp_path[256];
-
-// GLOBAL: CARMA2_HW 0x00705240
-char gQuick_time_movie_path_stub[256];
-
 
 // GLOBAL: CARMA2_HW 0x007638a0
 int gNet_last_game_type;
 
 // GLOBAL: CARMA2_HW 0x0075b9a4
 int gMap_view;
-
 
 // GLOBAL: CARMA2_HW 0x0074cadc
 int gLock_often;
@@ -332,8 +329,6 @@ int gArrow_mode;
 // GLOBAL: CARMA2_HW 0x0074d040
 int gRace_head_ups[22];
 
-//int gInfo_on;
-
 // GLOBAL: CARMA2_HW 0x0068b86c
 int gHost_abandon_game;
 
@@ -342,70 +337,32 @@ int gRecover_car;
 
 // GLOBAL: CARMA2_HW 0x0068b874
 int gDisallow_abandon_race;
-//int gPipe_reg_snap_before_new_game;
-//int gPipe_reg_snap_before_our_car;
-//int gPipe_reg_snap_after_our_car;
-
 // GLOBAL: CARMA2_HW 0x00676914
 int gAction_replay_mode = 0;
-//int gDefault_engine_noise_index;
-//int gAusterity_mode;
-//int gAustere_override;
-
-//int gKey_map_index;
-
 // GLOBAL: CARMA2_HW 0x0068b890
 int gInterface_within_race_mode;
-//int gCut_scene_override;
-//int gGame_to_load = -1;
-//int gCD_is_in_drive;
-
 // GLOBAL: CARMA2_HW 0x0068b8a8
 br_pixelmap* gRearview_screen;
-//br_scalar gCut_delay_1;
-//br_scalar gCut_delay_2;
-//br_scalar gCut_delay_3;
-//br_scalar gCut_delay_4;
-
 // GLOBAL: CARMA2_HW 0x00655ddc
 br_scalar gYon_multiplier = 1.f;
-//tSave_game* gPre_race_saved_game;
-//VFILE* gDiagnostic_file;
-//br_vector3 gDisabled_vector;
-
 // GLOBAL: CARMA2_HW 0x0068b8e0
 tU32 gI_am_cheating;
-//char gNet_player_name[32];
-//br_matrix34 gRearview_camera_to_world;
-//tSpecial_volume gDefault_default_water_spec_vol;
-//br_matrix34 gCamera_to_world;
-//tRace_list_spec gRace_list[100];
-
 // GLOBAL: CARMA2_HW 0x00762124
 float gPinball_factor;
 
 // GLOBAL: CARMA2_HW 0x007620f0
 float gOpponent_speed_factor;
-//float gCar_crush_min_fold;
-//float gNet_recovery_cost[7];
-//float gCar_crush_softness;
-
 // GLOBAL: CARMA2_HW 0x007634b0
 br_vector3* gOur_pos;
-//float gCar_crush_max_fold;
-
 // GLOBAL: CARMA2_HW 0x00761f00
 tBrender_storage gNet_cars_storage_space;
-//float gNet_softness[7];
-//tS32 gJoystick_deadzone;
-//float gCar_crush_limit_deviant;
-//float gNet_offensive[7];
-//float gCar_crush_split_chance;
-
 // GLOBAL: CARMA2_HW 0x0074d1a8
 float gGravity_multiplier;
-//float gCar_crush_wibble;
-//float gRepair_cost[3];
+// GLOBAL: CARMA2_HW 0x00761d00
+tFloat_bunch_info gRepair_cost;
+
+// GLOBAL: CARMA2_HW 0x007634c0
+tFloat_bunch_info gRecovery_cost;
 
 // GLOBAL: CARMA2_HW 0x0074d634
 float gCop_speed_factor;
@@ -415,32 +372,12 @@ float gDefault_gravity;
 
 // GLOBAL: CARMA2_HW 0x0074d350
 tU32 gKeys_pressed;
-//tSpecial_volume* gDefault_water_spec_vol;
-//float gNet_repair_cost[7];
-
 // GLOBAL: CARMA2_HW 0x0079efb4
 tU32 gLast_replay_frame_time;
-//tU32 gTag_start_time;
-//tOpponent* gOpponents;
-//tU32 gLast_credit_tick;
-//tBrender_storage gTheir_cars_storage_space;
-
 // GLOBAL: CARMA2_HW 0x0074d62c
 tU32 gRace_finished;
-//tU32 gFrame_start_time;
-//tProgram_state gProgram_state;
-//tU32 gCredit_period_single[3];
-
 // GLOBAL: CARMA2_HW 0x00763460
 tU32 gRace_start;
-//tBrender_storage gTrack_storage_space;
-//tU32 gCredit_period;
-//tU32 gCredit_period_network[7];
-//tBrender_storage gOur_car_storage_space;
-//tU32 gFox_start_time;
-//tBrender_storage gPedestrians_storage_space;
-//tRace_info gCurrent_race;
-
 // GLOBAL: CARMA2_HW 0x0068be28
 br_actor* gSelf;
 
@@ -452,14 +389,8 @@ br_actor* gRearview_camera;
 
 // GLOBAL: CARMA2_HW 0x0074d3e8
 br_scalar gCamera_hither;
-//br_scalar gCamera_angle;
-//br_pixelmap* gDigits_pix;
-//br_pixelmap* gRender_shade_table;
-
 // GLOBAL: CARMA2_HW 0x0075b93c
 br_pixelmap* gRearview_depth_buffer;
-//br_pixelmap* gWhole_screen;
-
 // GLOBAL: CARMA2_HW 0x0068b8ac
 br_pixelmap* gIcons_pix;
 
@@ -468,29 +399,12 @@ br_actor* gCamera;
 
 // GLOBAL: CARMA2_HW 0x0074d644
 br_actor* gOther_selfs[4];
-//br_actor* gArrow_actor;
-//br_pixelmap* gIcons_pix_low_res;
-//int gInitial_net_credits[5];
-//float gCar_cred_value[3];
-//int gNo_races_yet;
-
 // GLOBAL: CARMA2_HW 0x0074d3d0
 int gJump_start_fine[3];
-//int gReal_graf_data_index;
-//float gCar_time_value[3];
-//int gTyping_slot;
-//int gCunning_stunt_bonus[3];
-
 // GLOBAL: CARMA2_HW 0x007634f0
 tU32 gKnobbled_frame_period;
-//int gWait_for_it;
-//int gCheck_point_cash[3];
-//int gPoints_per_second[3];
-
 // GLOBAL: CARMA2_HW 0x00761edc
 tU32 gMap_time;
-//int gPed_time_value[3];
-
 // GLOBAL: CARMA2_HW 0x0074d1a0
 int gAbandon_game;
 
@@ -508,20 +422,13 @@ int gFree_repairs;
 
 // GLOBAL: CARMA2_HW 0x0075bb64
 int gFreeze_timer;
-//int gRoll_over_creds[3];
-
 // GLOBAL: CARMA2_HW 0x0074d09c
 int gShow_peds_on_map;
 
 // GLOBAL: CARMA2_HW 0x0074d444
 int gOn_drugs;
-//int gWasted_time[3];
-
 // GLOBAL: CARMA2_HW 0x00761eec
 int gCheckpoint;
-//int gRoll_over_time[3];
-//int gWasted_creds[3];
-
 // GLOBAL: CARMA2_HW 0x00761ee8
 tU32 gTimer;
 
@@ -533,27 +440,222 @@ int gCountdown;
 
 // GLOBAL: CARMA2_HW 0x00761ee0
 int gFrame_rate;
-//int gNumber_of_racers;
-
 // GLOBAL: CARMA2_HW 0x00762328
 int gSound_enabled;
-//int gGraf_spec_index;
-
 // GLOBAL: CARMA2_HW 0x00761ee4
 int gSound_available;
-//int gNumber_of_races;
-//char gDir_separator[3] = "";
-
-
 // GLOBAL: CARMA2_HW 0x0074ca18
 tPixelFlags gPixelFlags;
 
 // GLOBAL: CARMA2_HW 0x0074d358
 int gNo_credits_APO_restore;
 
-
 // GLOBAL: CARMA2_HW 0x0074d3dc
 int gAFE;
 
 // GLOBAL: CARMA2_HW 0x0068b894
 int gNoCutscenes;
+
+//int gInfo_on;
+
+//int gPipe_reg_snap_before_new_game;
+//int gPipe_reg_snap_before_our_car;
+//int gPipe_reg_snap_after_our_car;
+
+//int gDefault_engine_noise_index;
+//int gAusterity_mode;
+//int gAustere_override;
+
+//int gKey_map_index;
+
+//int gCut_scene_override;
+//int gGame_to_load = -1;
+//int gCD_is_in_drive;
+
+//br_scalar gCut_delay_1;
+//br_scalar gCut_delay_2;
+//br_scalar gCut_delay_3;
+//br_scalar gCut_delay_4;
+
+//tSave_game* gPre_race_saved_game;
+//VFILE* gDiagnostic_file;
+//br_vector3 gDisabled_vector;
+
+//char gNet_player_name[32];
+//br_matrix34 gRearview_camera_to_world;
+//tSpecial_volume gDefault_default_water_spec_vol;
+//br_matrix34 gCamera_to_world;
+//tRace_list_spec gRace_list[100];
+
+//float gCar_crush_min_fold;
+//float gNet_recovery_cost[7];
+//float gCar_crush_softness;
+
+//float gCar_crush_max_fold;
+
+//float gNet_softness[7];
+//tS32 gJoystick_deadzone;
+//float gCar_crush_limit_deviant;
+//float gNet_offensive[7];
+//float gCar_crush_split_chance;
+
+//float gCar_crush_wibble;
+//float gRepair_cost[3];
+
+//tSpecial_volume* gDefault_water_spec_vol;
+//float gNet_repair_cost[7];
+
+//tU32 gTag_start_time;
+//tOpponent* gOpponents;
+//tU32 gLast_credit_tick;
+//tBrender_storage gTheir_cars_storage_space;
+
+//tU32 gFrame_start_time;
+//tProgram_state gProgram_state;
+//tU32 gCredit_period_single[3];
+
+//tBrender_storage gTrack_storage_space;
+//tU32 gCredit_period;
+//tU32 gCredit_period_network[7];
+//tBrender_storage gOur_car_storage_space;
+//tU32 gFox_start_time;
+//tBrender_storage gPedestrians_storage_space;
+//tRace_info gCurrent_race;
+
+//br_scalar gCamera_angle;
+//br_pixelmap* gDigits_pix;
+//br_pixelmap* gRender_shade_table;
+
+//br_pixelmap* gWhole_screen;
+
+//br_actor* gArrow_actor;
+//br_pixelmap* gIcons_pix_low_res;
+//int gInitial_net_credits[5];
+//float gCar_cred_value[3];
+//int gNo_races_yet;
+
+//int gReal_graf_data_index;
+//float gCar_time_value[3];
+//int gTyping_slot;
+//int gCunning_stunt_bonus[3];
+
+//int gWait_for_it;
+//int gCheck_point_cash[3];
+//int gPoints_per_second[3];
+
+//int gPed_time_value[3];
+
+//int gRoll_over_creds[3];
+
+//int gWasted_time[3];
+
+//int gRoll_over_time[3];
+//int gWasted_creds[3];
+
+//int gNumber_of_racers;
+
+//int gGraf_spec_index;
+
+//int gNumber_of_races;
+//char gDir_separator[3] = "";
+//int gInfo_on;
+
+//int gPipe_reg_snap_before_new_game;
+//int gPipe_reg_snap_before_our_car;
+//int gPipe_reg_snap_after_our_car;
+
+//int gDefault_engine_noise_index;
+//int gAusterity_mode;
+//int gAustere_override;
+
+//int gKey_map_index;
+
+//int gCut_scene_override;
+//int gGame_to_load = -1;
+//int gCD_is_in_drive;
+
+//br_scalar gCut_delay_1;
+//br_scalar gCut_delay_2;
+//br_scalar gCut_delay_3;
+//br_scalar gCut_delay_4;
+
+//tSave_game* gPre_race_saved_game;
+//VFILE* gDiagnostic_file;
+//br_vector3 gDisabled_vector;
+
+//char gNet_player_name[32];
+//br_matrix34 gRearview_camera_to_world;
+//tSpecial_volume gDefault_default_water_spec_vol;
+//br_matrix34 gCamera_to_world;
+//tRace_list_spec gRace_list[100];
+
+//float gCar_crush_min_fold;
+//float gNet_recovery_cost[7];
+//float gCar_crush_softness;
+
+//float gCar_crush_max_fold;
+
+//float gNet_softness[7];
+//tS32 gJoystick_deadzone;
+//float gCar_crush_limit_deviant;
+//float gNet_offensive[7];
+//float gCar_crush_split_chance;
+
+//float gCar_crush_wibble;
+
+//tSpecial_volume* gDefault_default_water_spec_vol;
+//float gNet_repair_cost[7];
+
+//tU32 gTag_start_time;
+//tOpponent* gOpponents;
+//tU32 gLast_credit_tick;
+//tBrender_storage gTheir_cars_storage_space;
+
+//tU32 gFrame_start_time;
+//tProgram_state gProgram_state;
+//tU32 gCredit_period_single[3];
+
+//tBrender_storage gTrack_storage_space;
+//tU32 gCredit_period;
+//tU32 gCredit_period_network[7];
+//tBrender_storage gOur_car_storage_space;
+//tU32 gFox_start_time;
+//tBrender_storage gPedestrians_storage_space;
+//tRace_info gCurrent_race;
+
+//br_scalar gCamera_angle;
+//br_pixelmap* gDigits_pix;
+//br_pixelmap* gRender_shade_table;
+
+//br_pixelmap* gWhole_screen;
+
+//br_actor* gArrow_actor;
+//br_pixelmap* gIcons_pix_low_res;
+//int gInitial_net_credits[5];
+//float gCar_cred_value[3];
+//int gNo_races_yet;
+
+//int gReal_graf_data_index;
+//float gCar_time_value[3];
+//int gTyping_slot;
+//int gCunning_stunt_bonus[3];
+
+//int gWait_for_it;
+//int gCheck_point_cash[3];
+//int gPoints_per_second[3];
+
+//int gPed_time_value[3];
+
+//int gRoll_over_creds[3];
+
+//int gWasted_time[3];
+
+//int gRoll_over_time[3];
+//int gWasted_creds[3];
+
+//int gNumber_of_racers;
+
+//int gGraf_spec_index;
+
+//int gNumber_of_races;
+//char gDir_separator[3] = "";

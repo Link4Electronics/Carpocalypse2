@@ -64,11 +64,11 @@ br_pixelmap* C2_HOOK_FASTCALL GetThisFuckingPixelmapPleaseMrTwatter(const char* 
 
 int C2_HOOK_FASTCALL FRONTEND_CreateMenu(tFrontend_spec* pFrontend_spec);
 
-void C2_HOOK_FASTCALL FRONTEND_CreateMenuButton(tFrontend_brender_item* Frontend_brender_item, tS16 pX, tS16 pY, tS16 pWidth, tS16 pHeight, br_colour pColour, br_pixelmap* pMap, const char* pText);
+void C2_HOOK_FASTCALL FRONTEND_CreateMenuButton(tFrontend_brender_item* pFrontend_brender_item, tS16 pX, tS16 pY, tS16 pWidth, tS16 pHeight, br_colour pColour, br_pixelmap* pMap, const char* pText);
 
 int C2_HOOK_FASTCALL FRONTEND_CreateMenu(tFrontend_spec* pFrontend_spec);
 
-void C2_HOOK_FASTCALL FRONTEND_Setup(tFrontendMenuType pFrontendType);
+void C2_HOOK_FASTCALL FRONTEND_Setup(tFrontendMenuType pType);
 
 int C2_HOOK_FASTCALL FRONTEND_Redraw(void);
 
@@ -80,11 +80,11 @@ void C2_HOOK_FASTCALL Generic_LinkInEffect(void);
 
 void C2_HOOK_FASTCALL Generic_LinkOutEffect(void);
 
-void C2_HOOK_FASTCALL BuildAPO(int pCurrent, int pPotential, int pActorIdx, int pAPO);
+void C2_HOOK_FASTCALL BuildAPO(int pCurrent, int pPotential, int pActor_index, int pAPO);
 
-void C2_HOOK_FASTCALL PrepareAPO(int pActorIdx);
+void C2_HOOK_FASTCALL PrepareAPO(int pActor_index);
 
-int C2_HOOK_FASTCALL FRONTEND_Main(tFrontendMenuType pFrontend);
+int C2_HOOK_FASTCALL FRONTEND_Main(tFrontendMenuType pFrontendType);
 
 void C2_HOOK_FASTCALL PrintAPO(int pX, int pY, int pIndex, int pTex_index);
 
@@ -94,7 +94,7 @@ void C2_HOOK_FASTCALL MorphBlob(br_model* pModel_from, br_model* pModel_to, br_m
 
 void C2_HOOK_FASTCALL FuckWithWidths(tFrontend_spec* pFrontend);
 
-void C2_HOOK_FASTCALL MungeButtonModels(tFrontend_spec* pFrontend, int pIndex);
+void C2_HOOK_FASTCALL MungeButtonModels(tFrontend_spec* pFrontend, int pButton_index);
 
 void C2_HOOK_FASTCALL UpdateScrollPositions(tFrontend_spec* pFrontend);
 
@@ -102,7 +102,7 @@ void C2_HOOK_FASTCALL RefreshRacesScroller(tFrontend_spec* pFrontend);
 
 int C2_HOOK_FASTCALL DetermineKeyArrayIndex(void);
 
-int C2_HOOK_FASTCALL GetItemAtMousePos(tFrontend_spec *pFrontend,int mouse_x,int mouse_y);
+int C2_HOOK_FASTCALL GetItemAtMousePos(tFrontend_spec *pFrontend, int pX, int pY);
 
 int C2_HOOK_FASTCALL FindNextActiveItem(tFrontend_spec* pFrontend, int pStart_index);
 
@@ -188,9 +188,9 @@ void C2_HOOK_FASTCALL FrontEndHideMouse(void);
 
 void C2_HOOK_FASTCALL DodgyPause(tU32 pTime);
 
-void C2_HOOK_FASTCALL StartGettingInputString(char* pBuffer, int pBuffer_size);
+int C2_HOOK_FASTCALL StartGettingInputString(char* pBuffer, int pBuffer_size);
 
-void C2_HOOK_FASTCALL StopGettingInputString(void);
+int C2_HOOK_FASTCALL StopGettingInputString(void);
 
 int C2_HOOK_FASTCALL ToggleTyping(tFrontend_spec* pFrontend);
 

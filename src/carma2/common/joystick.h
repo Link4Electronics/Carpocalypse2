@@ -5,19 +5,30 @@
 
 #include "carpocalypse2_types.h"
 
-extern float gForce_feedback_upper_limit;
-extern float Force_feedback_lower_limit;
 extern int gJoystick_index;
-extern float gOriginal_joystick_x;
-extern float gOriginal_joystick_y;
-extern int gOriginal_joystick_fbb;
-extern int gOriginal_joystick_dpad;
-extern int gOrig_joystick_index;
 extern float gJoystick_x_steering;
 extern float gJoystick_y_throttle;
-extern int gINT_00596308;
-extern tHeadup_text_buffer gJoystick_headup_buffer_0079d8a0;
 
+
+extern int C2_HOOK_FASTCALL LoadJoystickPreferences(void);
+
+extern float gForce_feedback_upper_limit;
+
+extern float Force_feedback_lower_limit;
+
+extern float gOriginal_joystick_x;
+
+extern float gOriginal_joystick_y;
+
+extern int gOriginal_joystick_fbb;
+
+extern int gOriginal_joystick_dpad;
+
+extern int gOrig_joystick_index;
+
+extern int gINT_00596308;
+
+extern tHeadup_text_buffer gJoystick_headup_buffer_0079d8a0;
 
 void C2_HOOK_FASTCALL SetupFFBValues(void);
 

@@ -1,4 +1,222 @@
-#ifndef CARPOCALYPSE2_UTILITY_H
+#ifndef GUARD_UTILITY_H
+#define GUARD_UTILITY_H
+
+#include "c2_stdio.h"
+#include <stdint.h>
+
+
+#include "brender/br_types.h"
+#include "c2_hooks.h"
+#include "carpocalypse2_types.h"
+
+extern char* gMisc_strings[300];
+
+extern br_error C2_HOOK_FASTCALL DRBrEnd(void);
+
+extern void C2_HOOK_FASTCALL Uppercaseificate(char* dest, const char* src);
+
+extern int C2_HOOK_FASTCALL CheckQuit(void);
+
+extern double C2_HOOK_FASTCALL sqr(double pN);
+
+extern int C2_HOOK_FASTCALL IRandomBetween(int pA, int pB);
+
+extern int C2_HOOK_FASTCALL PercentageChance(int pC);
+
+extern int C2_HOOK_FASTCALL IRandomPosNeg(int pN);
+
+extern float C2_HOOK_STDCALL FRandomBetween(float pA, float pB);
+
+extern float C2_HOOK_STDCALL FRandomPosNeg(float pN);
+
+extern br_scalar C2_HOOK_STDCALL SRandomBetween(br_scalar pA, br_scalar pB);
+
+extern br_scalar C2_HOOK_STDCALL SRandomPosNeg(br_scalar pN);
+
+extern void C2_HOOK_FASTCALL PathCat(char* pDestn_str, const char* pStr_1, const char* pStr_2);
+
+// tandeg
+
+extern tU32 C2_HOOK_FASTCALL GetFileLength(FILE* pF);
+
+extern br_pixelmap* C2_HOOK_FASTCALL DRPixelmapAllocate(br_uint_8 pType, br_uint_16 pW, br_uint_16 pH, void* pPixels, int pFlags);
+
+extern br_pixelmap* C2_HOOK_FASTCALL DRPixelmapAllocateSub(br_pixelmap* pPm, br_uint_16 pX, br_uint_16 pY, br_uint_16 pW, br_uint_16 pH);
+
+extern br_pixelmap* C2_HOOK_FASTCALL DRImageLoad(const char* path);
+
+// DRPixelmapLoad
+
+extern void C2_HOOK_FASTCALL SepDirAndFilename(const char* path, char* dirPath, char* stemPath);
+
+// DRLoadMultiplePix
+
+extern int C2_HOOK_FASTCALL DRPixelmapLoadMany(const char* texturePathNoExt, br_pixelmap** pixelmaps, size_t capacity);
+
+// WaitFor
+
+intptr_t C2_HOOK_FASTCALL DRActorEnumRecurse(br_actor* pActor, br_actor_enum_cbfn* callback, void* arg);
+
+extern intptr_t C2_HOOK_CDECL CompareActorID(br_actor* pActor, void* pArg);
+
+extern br_actor* C2_HOOK_FASTCALL DRActorFindRecurse(br_actor* pSearch_root, const char* pName);
+
+extern br_uint_32 C2_HOOK_FASTCALL DRActorEnumRecurseWithMat(br_actor* pActor, br_material* pMat, recurse_with_mat_cbfn* pCall_back, void* pArg);
+
+extern br_uint_32 C2_HOOK_FASTCALL DRActorEnumRecurseWithTrans(br_actor* pActor, br_matrix34* pMatrix, recurse_with_trans_cbfn* pCall_back, void* pArg);
+
+// DRActorEnumRecurseWithSnart
+
+// sign
+
+extern FILE* C2_HOOK_FASTCALL OpenUniqueFileB(char* pPrefix, char* pExtension);
+
+extern void C2_HOOK_FASTCALL PrintScreenFile(FILE* pF);
+
+extern void C2_HOOK_FASTCALL PrintScreenFile16(FILE* pF);
+
+extern tU32 C2_HOOK_FASTCALL GetTotalTime(void);
+
+extern tU32 C2_HOOK_FASTCALL GetRaceTime(void);
+
+extern void C2_HOOK_FASTCALL AddLostTime(tU32 pLost_time);
+
+extern void C2_HOOK_FASTCALL AssertThisTimeAsCurrentTime(void);
+
+extern void C2_HOOK_FASTCALL TimerString(tU32 pTime, char* pStr, undefined4 pArg3, int pFudge_colon, int pFloat);
+
+extern const char* C2_HOOK_FASTCALL GetMiscString(int pIndex);
+
+extern int C2_HOOK_FASTCALL Flash(tU32 pPeriod, tU32* pLast_change, int* pCurrent_state);
+
+extern double C2_HOOK_FASTCALL RGBDifferenceSqr(tRGB_colour* pColour_1, tRGB_colour* pColour_2);
+
+extern int C2_HOOK_FASTCALL FindBestMatch(tRGB_colour* pRGB_colour, br_pixelmap* pPalette);
+
+extern void C2_HOOK_FASTCALL BuildShadeTablePath(char* pThe_path, int pR, int pG, int pB);
+
+extern br_pixelmap* C2_HOOK_FASTCALL LoadGeneratedShadeTable(int pR, int pG, int pB);
+
+extern void C2_HOOK_FASTCALL SaveGeneratedShadeTable(br_pixelmap* pThe_table, int pR, int pG, int pB);
+
+extern br_pixelmap* C2_HOOK_FASTCALL GenerateShadeTable(int pHeight, br_pixelmap* pPalette, int pRed_mix, int pGreen_mix, int pBlue_mix, float pQuarter, float pHalf, float pThree_quarter);
+
+extern br_pixelmap* C2_HOOK_FASTCALL GenerateDarkenedShadeTable(int pHeight, br_pixelmap* pPalette, int pRed_mix, int pGreen_mix, int pBlue_mix, float pQuarter, float pHalf, float pThree_quarter, br_scalar pDarken);
+
+extern void C2_HOOK_FASTCALL PossibleService(void);
+
+extern void C2_HOOK_FASTCALL DRMatrix34TApplyP(br_vector3* pA, const br_vector3* pB, const br_matrix34* pC);
+
+extern void C2_HOOK_FASTCALL DRPixelmapRectangleCopy(br_pixelmap* dst, br_int_16 dx, br_int_16 dy, br_pixelmap* src, br_int_16 sx, br_int_16 sy, br_int_16 w, br_int_16 h);
+
+extern int C2_HOOK_FASTCALL NormalSideOfPlane(br_vector3* pPoint, br_vector3* pNormal, br_scalar pD);
+
+extern br_material* C2_HOOK_FASTCALL DRMaterialClone(br_material* pMaterial, int pSet_identifier);
+
+extern int C2_HOOK_FASTCALL DRStricmp(const char* p1, const char* p2);
+
+extern void C2_HOOK_FASTCALL DRstrlwr(char* s);
+
+int C2_HOOK_FASTCALL PDCheckDriveExists(const char* pThe_path);
+
+extern br_actor* C2_HOOK_FASTCALL CloneActor(br_actor* pActor);
+
+extern void C2_HOOK_FASTCALL CalcActorGlobalPos(br_vector3* pResult, br_actor* pActor);
+
+extern float C2_HOOK_STDCALL frac(float pN);
+
+extern intptr_t C2_HOOK_CDECL FindMaterialCB(br_actor* pActor, void* data);
+
+extern br_material* C2_HOOK_FASTCALL FindMaterial(const char* pName, br_actor* pActor, int pRecursive);
+
+extern void C2_HOOK_FASTCALL BlendifyMaterialTablishly(br_material* pMaterial, int pPercent);
+
+extern void C2_HOOK_FASTCALL BlendifyMaterialPrimitively(br_material* pMaterial, int pPercent);
+
+extern void C2_HOOK_FASTCALL BlendifyMaterial(br_material* pMaterial, int pPercent);
+
+extern void C2_HOOK_FASTCALL DRModelUpdateAndKevificateMaterials(br_model* pModel, br_uint_16 pFlags);
+
+extern int C2_HOOK_FASTCALL DRModelUpdateDeluxTurbo(br_actor* pActor, br_model* pModel, br_uint_16 pFlags);
+
+// DistanceFromFace
+
+extern void C2_HOOK_FASTCALL DRBoundsCopy(br_bounds3* pDest, const br_bounds3* pSrc);
+
+extern int C2_HOOK_FASTCALL TestForNan(const float* f);
+
+extern int C2_HOOK_FASTCALL DRVector3TestForNan(const br_vector3* pV);
+
+extern void C2_HOOK_FASTCALL DRScaleModel(br_model* pModel, float pScale);
+
+extern float C2_HOOK_FASTCALL DistanceFromFaceND(const br_vector3* pP, const br_vector3* pN, br_scalar pF);
+
+extern int C2_HOOK_FASTCALL DRVector3NonZero(const br_vector3* pV);
+
+extern void C2_HOOK_FASTCALL DRVector3Diminish(br_vector3* pV1, const br_vector3* pV2);
+
+extern tU16 C2_HOOK_FASTCALL DRScalarToU16(float pValue, float pMin, float pMax);
+
+extern br_scalar C2_HOOK_FASTCALL DRU16ToScalar(tU16 pValue, float pMin, float pMax);
+
+extern void C2_HOOK_FASTCALL CompressVector3(tCompressed_vector3* pDest, const br_vector3* pSrc, float pMin, float pMax);
+
+extern void C2_HOOK_FASTCALL ExpandVector3(br_vector3* pDest, const tCompressed_vector3 *pSrc, float pMin, float pMax);
+
+extern void C2_HOOK_FASTCALL CompressMatrix34(tCompressed_matrix3* pCompressed_matrix3, int* pInactive, const br_matrix34* pMatrix);
+
+extern void C2_HOOK_FASTCALL ExpandMatrix34(br_matrix34* pMatrix, const tCompressed_matrix3* pCompressed, int pInactive);
+
+extern void C2_HOOK_FASTCALL PossibleLock(int pValue);
+
+extern int C2_HOOK_FASTCALL PossibleUnlock(int pValue);
+
+extern tU16 C2_HOOK_FASTCALL PaletteEntry16Bit(br_pixelmap* pPal, int pEntry);
+
+// Colour24BitTo16Bit
+
+extern br_pixelmap* C2_HOOK_FASTCALL PaletteOf16Bits(br_pixelmap* pSrc);
+
+extern void C2_HOOK_FASTCALL Copy8BitTo16Bit(br_pixelmap* pDst, br_pixelmap* pSrc, br_pixelmap* pPalette);
+
+extern void C2_HOOK_FASTCALL DRPixelmapCopy(br_pixelmap* dst, br_pixelmap* src);
+
+// tMaterial_exception* C2_HOOK_FASTCALL FindExceptionInList(const char* pIdentifier, tMaterial_exception* pList)
+
+extern void C2_HOOK_FASTCALL NobbleNonzeroBlacks(br_pixelmap* pPalette);
+
+extern void C2_HOOK_FASTCALL GlorifyMaterial(br_material** pMaterials, int pCount, tRendererShadingType pShading);
+
+// FindBestColourMatch
+
+extern void C2_HOOK_FASTCALL WhitenVertexRGB(br_model** pModels, int pCount);
+
+extern void C2_HOOK_FASTCALL BRPM_convert(br_pixelmap* pMap, int pPixel_type);
+
+extern void C2_HOOK_FASTCALL PrintScreen(void);
+
+// FudgeBRenderIntoTheNinetiesWithSomeProperFuckingColourSupport
+
+// GetBlenficatiousnessOfMaterialTablishly
+
+// GetBlenficatiousnessOfMaterialPrimitively
+
+// GetBlenficatiousnessOfMaterial
+
+extern char* C2_HOOK_FASTCALL MungeCommas(int pValue);
+
+extern void C2_HOOK_FASTCALL MungeMetaCharacters(char* pText, char pMeta, const char* pRepl);
+
+extern void C2_HOOK_FASTCALL MungeMetaCharactersChar(char* pText, char pMeta, char pChar);
+
+extern void C2_HOOK_FASTCALL MungeMetaCharactersNum(char* pText, char pMeta, int pNum);
+
+extern void C2_HOOK_FASTCALL DrPixelmapRectangleCopyPossibleLock(br_pixelmap* dst, br_int_32 dx, br_int_32 dy, br_pixelmap* src, br_int_32 sx, br_int_32 sy, br_int_32 w, br_int_32 h);
+
+extern void C2_HOOK_FASTCALL PixelmapSwapByteOrder(br_pixelmap* pMap);
+
+extern void C2_HOOK_FASTCALL EnsurePixelmapAllowed(br_pixelmap* pMap, undefined4 pArg2);
+
 #define CARPOCALYPSE2_UTILITY_H
 
 #include "brender/br_types.h"
@@ -10,27 +228,24 @@
 
 #include <stdint.h>
 
-extern const tU8 gLong_key[16];
-extern const tU8 gOther_long_key[16];
-extern int gDecode_thing;
-extern tU32 last_service;
-extern br_vector3 y_unit_vector;
-extern br_pixelmap* g16bit_palette;
-extern br_pixelmap* gPalette_source;
 
-br_error C2_HOOK_FASTCALL DRBrEnd(void);
+extern const tU8 gLong_key[16];
+
+extern int gDecode_thing;
+
+extern tU32 last_service;
+
+extern br_vector3 y_unit_vector;
+
+extern br_pixelmap* g16bit_palette;
+
+extern br_pixelmap* gPalette_source;
 
 void C2_HOOK_FASTCALL StringTransformToLower(char* pStr);
 
-void C2_HOOK_FASTCALL Uppercaseificate(char* dest, const char* src);
+char * C2_HOOK_FASTCALL GetALineWithNoPossibleService(FILE* pF, char* pS);
 
-int C2_HOOK_FASTCALL PDCheckDriveExists(const char* pThe_path);
-
-char* C2_HOOK_FASTCALL GetALineWithNoPossibleService(FILE* pF, char* pS);
-
-char* C2_HOOK_FASTCALL GetALineAndDontArgue(FILE* pF, char* pS);
-
-void C2_HOOK_FASTCALL PathCat(char* pDestn_str, const char* pStr_1, const char* pStr_2);
+char * C2_HOOK_FASTCALL GetALineAndDontArgue(FILE* pF, char* pS);
 
 void C2_HOOK_FASTCALL DecodeLine2(char* pS);
 
@@ -38,57 +253,7 @@ void C2_HOOK_FASTCALL EncodeLine2(char* pS);
 
 void C2_HOOK_FASTCALL EncodeFile(char* pThe_path);
 
-int C2_HOOK_FASTCALL DRStricmp(const char* p1, const char* p2);
-
-tU32 C2_HOOK_FASTCALL GetTotalTime(void);
-
-void C2_HOOK_FASTCALL PossibleService(void);
-
-br_pixelmap* C2_HOOK_FASTCALL DRPixelmapAllocate(br_uint_8 pType, br_uint_16 pW, br_uint_16 pH, void* pPixels, int pFlags);
-
-br_pixelmap* C2_HOOK_FASTCALL DRPixelmapAllocateSub(br_pixelmap* pPm, br_uint_16 pX, br_uint_16 pY, br_uint_16 pW, br_uint_16 pH);
-
-br_pixelmap* C2_HOOK_FASTCALL DRImageLoad(const char* path);
-
-void C2_HOOK_FASTCALL DRPixelmapRectangleCopy(br_pixelmap* dst, br_int_16 dx, br_int_16 dy, br_pixelmap* src, br_int_16 sx, br_int_16 sy, br_uint_16 w, br_uint_16 h);
-
-intptr_t C2_HOOK_FASTCALL DRActorEnumRecurse(br_actor* pActor, br_actor_enum_cbfn* callback, void* arg);
-
-void C2_HOOK_FASTCALL SepDirAndFilename(const char* path, char* dirPath, char* stemPath);
-
-tU32 C2_HOOK_FASTCALL GetFileLength(FILE* pF);
-
-double C2_HOOK_FASTCALL sqr(double pN);
-
-br_pixelmap* C2_HOOK_FASTCALL GenerateDarkenedShadeTable(int pHeight, br_pixelmap* pPalette, int pRed_mix, int pGreen_mix, int pBlue_mix, float pQuarter, float pHalf, float pThree_quarter, br_scalar pDarken);
-
-br_pixelmap* C2_HOOK_FASTCALL GenerateShadeTable(int pHeight, br_pixelmap* pPalette, int pRed_mix, int pGreen_mix, int pBlue_mix, float pQuarter, float pHalf, float pThree_quarter);
-
-int C2_HOOK_FASTCALL IRandomBetween(int pA, int pB);
-
-float C2_HOOK_STDCALL FRandomBetween(float pA, float pB);
-
-br_scalar C2_HOOK_STDCALL SRandomBetween(br_scalar pA, br_scalar pB);
-
-const char* C2_HOOK_FASTCALL GetMiscString(int pIndex);
-
-void C2_HOOK_FASTCALL AddLostTime(tU32 pLost_time);
-
-int C2_HOOK_FASTCALL CheckQuit(void);
-
 float C2_HOOK_STDCALL tandeg(float pAngle);
-
-intptr_t C2_HOOK_CDECL CompareActorID(br_actor* pActor, void* pArg);
-
-br_actor* C2_HOOK_FASTCALL DRActorFindRecurse(br_actor* pSearch_root, const char* pName);
-
-FILE* C2_HOOK_FASTCALL OpenUniqueFileB(char* pPrefix, char* pExtension);
-
-void C2_HOOK_FASTCALL PrintScreenFile(FILE* pF);
-
-void C2_HOOK_FASTCALL PrintScreenFile16(FILE* pF);
-
-void C2_HOOK_FASTCALL PrintScreen(void);
 
 int C2_HOOK_CDECL DumpVisibleActorsCB(br_actor* pActor, void* pData);
 
@@ -98,60 +263,16 @@ tU32 C2_HOOK_FASTCALL FudgeBRenderIntoTheNinetiesWithSomeProperFuckingColourSupp
 
 int C2_HOOK_FASTCALL LoadTextureTryAllLocations(char* pName, br_pixelmap** pMaps, int pCapacity);
 
-int C2_HOOK_FASTCALL PercentageChance(int pC);
-
-tU32 C2_HOOK_FASTCALL GetRaceTime(void);
-
-intptr_t C2_HOOK_CDECL FindMaterialCB(br_actor* pActor, void* data);
-
-br_material* C2_HOOK_FASTCALL FindMaterial(const char* pName, br_actor* pActor, int pRecursive);
-
-void C2_HOOK_FASTCALL BlendifyMaterialTablishly(br_material* pMaterial, int pPercent);
-
-void C2_HOOK_FASTCALL BlendifyMaterialPrimitively(br_material* pMaterial, int pPercent);
-
-void C2_HOOK_FASTCALL BlendifyMaterial(br_material* pMaterial, int pPercent);
-
-void C2_HOOK_FASTCALL DRModelUpdateAndKevificateMaterials(br_model* pModel, br_uint_16 pFlags);
-
-float C2_HOOK_STDCALL FRandomPosNeg(float pN);
-
-br_scalar C2_HOOK_STDCALL SRandomPosNeg(br_scalar pN);
-
-void C2_HOOK_FASTCALL PixelmapSwapByteOrder(br_pixelmap* pMap);
-
-void C2_HOOK_FASTCALL TimerString(tU32 pTime, char* pStr, undefined4 pArg3, int pFudge_colon, int pFloat);
-
-int C2_HOOK_FASTCALL Flash(tU32 pPeriod, tU32* pLast_change, int* pCurrent_state);
-
-br_uint_32 C2_HOOK_FASTCALL DRActorEnumRecurseWithMat(br_actor* pActor, br_material* pMat, recurse_with_mat_cbfn* pCall_back, void* pArg);
-
-br_uint_32 C2_HOOK_FASTCALL DRActorEnumRecurseWithTrans(br_actor* pActor, br_matrix34* pMatrix, recurse_with_trans_cbfn* pCall_back, void* pArg);
-
-int C2_HOOK_FASTCALL NormalSideOfPlane(br_vector3* pPoint, br_vector3* pNormal, br_scalar pD);
-
-br_material* C2_HOOK_FASTCALL DRMaterialClone(br_material* pMaterial, int pSet_identifier);
-
 int C2_HOOK_FASTCALL GetBlendificatiousnessOfMaterialTablishly(br_material *pMaterial);
 
 int C2_HOOK_FASTCALL GetBlendificatiousnessOfMaterialPrimitively(br_material *pMaterial);
 
 int C2_HOOK_FASTCALL GetBlendificatiousnessOfMaterial(br_material *pMaterial);
 
-tU16 C2_HOOK_FASTCALL PaletteEntry16Bit(br_pixelmap* pPal, int pEntry);
-
 tU16 C2_HOOK_FASTCALL Colour24BitTo16Bit(br_colour pColour);
-
-br_pixelmap* C2_HOOK_FASTCALL PaletteOf16Bits(br_pixelmap* pSrc);
-
-void C2_HOOK_FASTCALL Copy8BitTo16Bit(br_pixelmap* pDst, br_pixelmap* pSrc, br_pixelmap* pPalette);
-
-void C2_HOOK_FASTCALL DRPixelmapCopy(br_pixelmap* dst, br_pixelmap* src);
 
 int C2_HOOK_FASTCALL sign(int pNumber);
 
 void C2_HOOK_FASTCALL WaitFor(tU32 pDelay);
 
-void C2_HOOK_FASTCALL DRMatrix34TApplyP(br_vector3* pA, br_vector3* pB, br_matrix34* pC);
-
-#endif // CARPOCALYPSE2_UTILITY_H
+#endif // GUARD_UTILITY_H

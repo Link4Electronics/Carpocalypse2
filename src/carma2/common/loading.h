@@ -33,10 +33,10 @@ extern int gTraffic_disabled;
 
 extern tSpecial_volume gDefault_default_water_spec_vol;
 
-extern char* gPedsFolder;
-extern char* gPed_sound_path;
-extern char* gPowerup_txt_path;
-extern char* gPedTextTxtPath;
+extern const char* gPedsFolder;
+extern const char* gPed_sound_path;
+extern const char* gPowerup_txt_path;
+extern const char* gPedTextTxtPath;
 extern char* gPedTexturePath;
 
 extern int gCurrent_race_file_index;
@@ -53,7 +53,7 @@ extern float gCamera_angle;
 extern const char* gWheel_actor_names[6];
 extern const char* gPivot_actor_names[6];
 extern float gMass_mine;
-extern tSpecial_volume gDefault_default_water_spec_vol;/* FIXME: rename to gDefault_default_water_spec_vol*/
+extern tSpecial_volume gDefault_default_water_spec_vol;
 extern tSpecial_volume* gDefault_water_spec_vol_real;
 extern int gFirst_drone_processing;
 extern tU32 gTime_stamp_for_this_munging;
@@ -207,9 +207,9 @@ void C2_HOOK_FASTCALL GetFourInts(FILE* pF, int* pF1, int* pF2, int* pF3, int* p
 
 float C2_HOOK_FASTCALL GetAFloat(FILE* pF);
 
-float C2_HOOK_FASTCALL GetAScalar(FILE* pF);
+br_scalar C2_HOOK_FASTCALL GetAScalar(FILE* pF);
 
-void C2_HOOK_FASTCALL GetPairOfScalars(FILE* pF, br_scalar* pS1, br_scalar* pS2);
+void GetPairOfScalars(FILE* pF, br_scalar* pS1, br_scalar* pS2);
 
 void C2_HOOK_FASTCALL GetThreeScalars(FILE* pF, br_scalar* pS1, br_scalar* pS2, br_scalar* pS3);
 
@@ -239,7 +239,7 @@ void C2_HOOK_FASTCALL PFfclose(FILE* pFile);
 
 br_size_t C2_HOOK_FASTCALL PFfread(void* buf, br_size_t size, unsigned int n, void* f);
 
-br_size_t C2_HOOK_FASTCALL PFfwrite(const void* buf, br_size_t size, unsigned int n, void* f);
+int C2_HOOK_FASTCALL PFfwrite(const void* buf, br_size_t size, unsigned int n, void* f);
 
 int C2_HOOK_FASTCALL DRfgetpos(FILE* pFile, fpos_t* pos);
 
@@ -253,7 +253,7 @@ int C2_HOOK_FASTCALL PFfgetc(FILE* pFile);
 
 int C2_HOOK_FASTCALL DRfgetc2(FILE* pFile);
 
-int C2_HOOK_FASTCALL PFungetc(int ch, FILE* file);
+int C2_HOOK_FASTCALL PFungetc(int ch, FILE* pFile);
 
 char* C2_HOOK_FASTCALL PFfgets(char* buffer, br_size_t size, FILE* pFile);
 
@@ -345,21 +345,21 @@ int C2_HOOK_FASTCALL CarmaCDinDriveOrFullGameInstalled(void);
 
 br_pixelmap* C2_HOOK_FASTCALL DRPixelmapLoad(char* pFile_name);
 
-void C2_HOOK_FASTCALL DRLoadPalette(const char* p_path);
+void C2_HOOK_FASTCALL DRLoadPalette(const char* pPath_name);
 
-void C2_HOOK_FASTCALL DRLoadShadeTable(const char* p_path);
+void C2_HOOK_FASTCALL DRLoadShadeTable(const char* pPath_name);
 
-void C2_HOOK_FASTCALL DRLoadMaterials(const char* p_path);
+void C2_HOOK_FASTCALL DRLoadMaterials(const char* pPath_name);
 
-void C2_HOOK_FASTCALL DRLoadModels(const char* p_path);
+void C2_HOOK_FASTCALL DRLoadModels(const char* pPath_name);
 
 br_model* C2_HOOK_FASTCALL LoadModel(const char* pName);
 
 br_actor* C2_HOOK_FASTCALL LoadActor(const char* pName);
 
-void C2_HOOK_FASTCALL DRLoadActors(const char* p_path);
+void C2_HOOK_FASTCALL DRLoadActors(const char* pPath_name);
 
-void C2_HOOK_FASTCALL DRLoadLights(const char* p_path);
+void C2_HOOK_FASTCALL DRLoadLights(const char* pPath_name);
 
 void C2_HOOK_FASTCALL InitializePalettes(void);
 
@@ -369,7 +369,7 @@ br_material* C2_HOOK_FASTCALL LoadMaterial(const char* pThe_path);
 
 void C2_HOOK_FASTCALL FillInRaceInfo(tRace_info* pThe_race);
 
-void C2_HOOK_FASTCALL DisposePhysicsObject(tPhysics_object* pCollision_info);
+void C2_HOOK_FASTCALL DisposePhysicsObject(tPhysics_object* pObject);
 
 void C2_HOOK_FASTCALL DisposeCar(tCar_spec* pCar_spec, int pOwner);
 

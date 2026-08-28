@@ -1,4 +1,47 @@
-#ifndef CARPOCALYPSE2_BRUCETRK_H
+#ifndef GUARD_BRUCETRK_H
+#define GUARD_BRUCETRK_H
+
+#include "carpocalypse2_types.h"
+#include <brender/brender.h>
+
+
+#include "c2_hooks.h"
+#include "brender/brender.h"
+
+extern br_material* gDefault_track_material;
+
+// AssertNoncars
+
+// AllocateActorMatrix
+
+// DisposeActorMatrix
+
+// DisposeRuntimeBuiltModels
+
+// DisposeColumns
+
+// XZToColumnXZ
+
+// FindNonCarsCB
+
+// MungeFaces
+
+// ProcessModelsCB
+
+// ProcessModels
+
+// ExtractColumns
+
+// RenderTrack
+
+// GetYonFactor
+
+extern void C2_HOOK_STDCALL SetYonFactor(br_scalar pNew);
+
+// FoundAnActor
+
+// ProcessNearbyActors
+
 #define CARPOCALYPSE2_BRUCETRK_H
 
 #include <brender/brender.h>
@@ -6,11 +49,10 @@
 
 #include "c2_hooks.h"
 
+
 extern int gRender_alternative_track_actors;
 
 br_scalar C2_HOOK_STDCALL GetYonFactor(void);
-
-void C2_HOOK_STDCALL SetYonFactor(br_scalar pNew);
 
 void C2_HOOK_FASTCALL MungeFaces(br_actor* pActor, br_model* pModel);
 
@@ -44,4 +86,4 @@ intptr_t C2_HOOK_CDECL FoundAnActor(br_actor* pActor, void* pContext);
 
 void C2_HOOK_FASTCALL RenderTrack(br_actor* pWorld, tTrack_spec* pTrack_spec, br_actor* pCamera, br_matrix34* pCamera_to_world);
 
-#endif //CARPOCALYPSE2_BRUCETRK_H
+#endif // GUARD_BRUCETRK_H

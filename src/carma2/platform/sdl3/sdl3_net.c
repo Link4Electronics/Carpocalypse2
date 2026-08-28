@@ -2,9 +2,9 @@
 
 #include "sdl3.h"
 
-#include "52-errors.h"
+#include "errors.h"
 #include "globvrpb.h"
-#include "01-network.h"
+#include "network.h"
 
 #include <SDL3/SDL.h>
 

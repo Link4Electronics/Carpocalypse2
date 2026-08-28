@@ -5,7 +5,7 @@
 #include "controls.h"
 #include "crush.h"
 #include "displays.h"
-#include "52-errors.h"
+#include "errors.h"
 #include "explosions.h"
 #include "funk.h"
 #include "globvars.h"
@@ -34,11 +34,6 @@
 
 #include "c2_string.h"
 #include "carpocalypse2_types.h"
-
-
-// GLOBAL: CARMA2_HW 0x007059e0
-tHeadup_icon gPickedup_powerups[20];
-
 // GLOBAL: CARMA2_HW 0x0065feb0
 const char* gRepeatability_names[4] = {
     "none",
@@ -73,8 +68,7 @@ int gFizzle_height;
 int gNumber_of_powerups;
 
 // GLOBAL: CARMA2_HW 0x006a0a54
-tPowerup* gPowerup_array;
-
+extern tPowerup* gPowerup_array;
 // GLOBAL: CARMA2_HW 0x006a0948
 int gNumber_of_powerup_respawn_specs;
 
@@ -324,13 +318,6 @@ tU32 gNext_goody_time;
 // GLOBAL: CARMA2_HW 0x006a0958
 undefined4 gDAT_006a0958;
 
-// GLOBAL: CARMA2_HW 0x006a0454
-int gCount_cloaked_cars;
-
-// GLOBAL: CARMA2_HW 0x006a0910
-tCar_spec* gCloaked_cars[12];
-
-
 // FUNCTION: CARMA2_HW 0x004df1e0
 int C2_HOOK_FASTCALL GetPowerupCount(void) {
 
@@ -461,14 +448,6 @@ void C2_HOOK_FASTCALL InitTail(void) {
     gMutant_tail_state = 0;
 }
 
-// FUNCTION: CARMA2_HW 0x004d9ea0
-void C2_HOOK_FASTCALL InitPowerups(void) {
-
-    InitRepulseEffects();
-    InitTail();
-    InitMineShit();
-}
-
 void C2_HOOK_FASTCALL RemoveRepulseEffect(tRepulse_link* pRepulse) {
 
     pRepulse->time = 0;
@@ -533,90 +512,6 @@ void C2_HOOK_FASTCALL ResetPowerups(void) {
     gNext_goody_time = 0;
 }
 
-// FUNCTION: CARMA2_HW 0x004e07f0
-void C2_HOOK_FASTCALL PrintPowerupIconIn3D(int pX, int pY, tHeadup_icon* pIcon, tPowerup* pPowerup, int pScale, tU32 pTime) {
-    float f;
-    float scale;
-    float angle;
-    br_fixed_ls prev_opacity;
-
-    if (pIcon == NULL) {
-        pPowerup->icon_actor->render_style = BR_RSTYLE_FACES;
-        BrVector3Set(&pIcon->icon_actor->t.t.translate.t, (float)pX + 16.f, (float)-(pY + 16), 0.f);
-        RenderThisHeadup(pIcon->icon_actor);
-        return;
-    }
-    if (pIcon->icon_actor != NULL) {
-        pIcon->icon_actor->render_style = BR_RSTYLE_FACES;
-        if (pScale) {
-            f = (float)(pTime - pIcon->fizzle_start) / 600.f;
-            if (pIcon->fizzle_direction >= 0) {
-                scale = 1.f + 5.f * (1.f - f);
-                angle = 1.f - f;
-            } else {
-                scale = 1.01f - f;
-                angle = f;
-            }
-            BrMatrix34Scale(&pIcon->icon_actor->t.t.mat, scale, scale, 1.f);
-            BrMatrix34PostRotateZ(&pIcon->icon_actor->t.t.mat, BrScalarToFixed(1.f - angle / 2.f));
-            pIcon->icon_actor->material->extra_prim[1].v.x = BR_FIXED_INT((1.f - angle) * 255.f);
-            BrMaterialUpdate(pIcon->icon_actor->material, BR_MATU_EXTRA_PRIM);
-        } else {
-            prev_opacity = pIcon->icon_actor->material->extra_prim[1].v.x;
-            pIcon->icon_actor->material->extra_prim[1].v.x = 0xff0000;
-            if (prev_opacity != pIcon->icon_actor->material->extra_prim[1].v.x) {
-                BrMaterialUpdate(pIcon->icon_actor->material, BR_MATU_EXTRA_PRIM);
-            }
-            BrMatrix34Identity(&pIcon->icon_actor->t.t.mat);
-        }
-        BrVector3Set(&pIcon->icon_actor->t.t.translate.t, (float)pX + 16.f, (float)-(pY + 16.f), 0.f);
-        RenderThisHeadup(pIcon->icon_actor);
-    }
-}
-
-// FUNCTION: CARMA2_HW 0x004e09d0
-br_actor* C2_HOOK_FASTCALL CreateBillBoard(br_pixelmap* pMap) {
-    br_actor* actor;
-    br_material* material;
-    br_model* model;
-    br_scalar half_width;
-    br_scalar half_height;
-
-    model = BrModelAllocate("Billboard Model", 4, 2);
-    material = BrMaterialAllocate("Billboard Material");
-    actor = BrActorAllocate(BR_ACTOR_MODEL, NULL);
-    actor->identifier = "Billboard Actor";
-    actor->model = model;
-    actor->material = material;
-    actor->render_style = BR_RSTYLE_FACES;
-    model->faces[0].vertices[0] = 0;
-    model->faces[0].vertices[1] = 1;
-    model->faces[0].vertices[2] = 2;
-    model->faces[1].vertices[0] = 2;
-    model->faces[1].vertices[1] = 3;
-    model->faces[1].vertices[2] = 0;
-    model->faces[0].material = NULL;
-    model->faces[1].material = NULL;
-    half_width = (float)(pMap->width / 2);
-    half_height = (float)(pMap->height / 2);
-    BrVector3Set(&model->vertices[0].p, -half_width,  half_height, -2.f);
-    BrVector3Set(&model->vertices[1].p, -half_width, -half_height, -2.f);
-    BrVector3Set(&model->vertices[2].p,  half_width, -half_height, -2.f);
-    BrVector3Set(&model->vertices[3].p,  half_width,  half_height, -2.f);
-    BrVector2Set(&model->vertices[0].map, 0.f, 0.f);
-    BrVector2Set(&model->vertices[1].map, 0.f, 1.f);
-    BrVector2Set(&model->vertices[2].map, 1.f, 1.f);
-    BrVector2Set(&model->vertices[3].map, 1.f, 0.f);
-    material->colour = 0;
-    material->colour_map = pMap;
-    material->flags = BR_MATF_ALWAYS_VISIBLE | BR_MATF_FORCE_FRONT;
-    model->flags |= BR_MODF_KEEP_ORIGINAL;
-    BrMapAdd(pMap);
-    BrMaterialAdd(material);
-    BrModelAdd(model);
-    return actor;
-}
-
 static br_pixelmap* DRMapFindMeAPixie(const char* name) {
     char s[256];
     br_pixelmap* map;
@@ -638,158 +533,6 @@ static br_pixelmap* DRMapFindMeAPixie(const char* name) {
         return map;
     }
     return NULL;
-}
-
-// FUNCTION: CARMA2_HW 0x004d96c0
-void C2_HOOK_FASTCALL LoadPowerups(void) {
-    FILE* f;
-    tPath_name the_path;
-    tTWTVFS twtvfs;
-    int action_index;
-    int first;
-    int i, j, k;
-    int time;
-    int count_index_groups;
-    int index_range;
-    char s[256];
-    tPowerup* the_powerup;
-
-    C2_HOOK_BUG_ON(sizeof(tPowerup) != 172);
-
-    if (gPowerup_txt_path == NULL) {
-        SetDefaultPowerupFilename();
-    }
-    PathCat(the_path, gApplication_path, gGraf_specs[gGraf_spec_index].data_dir_name);
-    PathCat(the_path, the_path, "POWERUPS");
-    twtvfs = OpenPackFileAndSetTiffLoading(the_path);
-    LoadAllImagesInDirectory(&gMisc_storage_space, the_path);
-    ClosePackFileAndSetTiffLoading(twtvfs);
-
-    for (i = 0; i < CARPOCALYPSE2_ASIZE(gFizzle_in); i++) {
-        gFizzle_in[i] = DRMapFindMeAPixie(gFizzle_names[i]);
-    }
-    gFizzle_height = gFizzle_in[0]->height / 4;
-
-    PathCat(the_path, gApplication_path, gPowerup_txt_path);
-    f = DRfopen(the_path, "rt");
-    if (f == NULL) {
-        FatalError(kFatalError_CannotLoadCarResolutionIndependentFile);
-    }
-    /* Number of powerups */
-    gNumber_of_powerups = GetAnInt(f);
-    gPowerup_array = BrMemAllocate(sizeof(tPowerup) * gNumber_of_powerups, kMem_powerup_array);
-    for (i = 0; i < gNumber_of_powerups; i++) {
-        the_powerup = &gPowerup_array[i];
-
-        GetALineAndDontArgue(f, the_powerup->message);
-        if (strcmp(the_powerup->message, "dummy") == 0) {
-            the_powerup->type = ePowerup_dummy;
-        } else {
-            if (strcmp(the_powerup->message, "n/a") == 0) {
-                the_powerup->message[0] = '\0';
-            }
-            GetAString(f, s);
-            the_powerup->icon = DRMapFindMeAPixie(s);
-            if (the_powerup->icon != NULL) {
-                BrMapAdd(the_powerup->icon);
-                BRPM_convert(the_powerup->icon, gBack_screen->type);
-            }
-            if (the_powerup->icon != NULL) {
-                the_powerup->icon_actor = CreateBillBoard(the_powerup->icon);
-                the_powerup->icon_actor->material->extra_prim = the_powerup->material_prims;
-            }
-
-            /* Fizzle type */
-            the_powerup->fizzle_type = GetAnInt(f);
-            /* Time limit (-1 instantaneous, 0 whole race, x seconds) */
-            time = 1000 * GetAnInt(f);
-            the_powerup->duration = time;
-            if (time < 0) {
-                the_powerup->type = ePowerup_instantaneous;
-            } else if (time == 0) {
-                the_powerup->type = ePowerup_whole_race;
-            } else {
-                the_powerup->type = ePowerup_timed;
-            }
-            /* Initial value for keyboard operable powerups
-             * (zero if not key operable,
-             *  positive if time in seconds,
-             *  negative if number of uses)
-             */
-            the_powerup->initial_value = GetAnInt(f);
-            if (the_powerup->initial_value > 0) {
-                the_powerup->initial_value *= 1000;
-            }
-            /* Action index */
-            action_index = GetAnInt(f);
-            if (action_index >= 0) {
-                the_powerup->got_proc = gGot_procs[action_index];
-                the_powerup->lose_proc = gLose_procs[action_index];
-                the_powerup->periodic_proc = gPeriodic_procs[action_index];
-            } else {
-                the_powerup->lose_proc = NULL;
-                the_powerup->periodic_proc = NULL;
-                the_powerup->got_proc = NULL;
-            }
-            /*  Number of floating point params */
-            the_powerup->number_of_float_params = GetAnInt(f);
-            the_powerup->float_params = BrMemAllocate(sizeof(float) * the_powerup->number_of_float_params, kMem_powerup_parms);
-            for (j = 0; j < the_powerup->number_of_float_params; j++) {
-                the_powerup->float_params[j] = GetAFloat(f);
-            }
-            /* Number of integer params */
-            the_powerup->number_of_integer_params = GetAnInt(f);
-            the_powerup->integer_params = BrMemAllocate(sizeof(int) * the_powerup->number_of_integer_params, kMem_powerup_parms);
-            for (j = 0; j < the_powerup->number_of_integer_params; j++) {
-                the_powerup->integer_params[j] = GetAnInt(f);
-            }
-            /* Group inclusion */
-            the_powerup->group_inclusion = GetAnInt(f);
-            /* Pratcam sequence */
-            the_powerup->prat_cam_event = GetAnInt(f);
-            /* Flags (1 = net_global, 2 = net_inappropriate, 4 = off_before_snapweld) */
-            the_powerup->net_type = GetAnInt(f);
-        }
-    }
-
-    /* RESPAWN SPECS */
-
-    /* Number of respawn specs */
-    gNumber_of_powerup_respawn_specs = GetAnInt(f);
-    gPowerup_respawn_specs = BrMemAllocate(gNumber_of_powerup_respawn_specs * sizeof(tPowerup_respawn_spec), kMem_powerup_array);
-    for (i = 0; i < gNumber_of_powerup_respawn_specs; i++) {
-        gPowerup_respawn_specs[i].bools = BrMemAllocate(gNumber_of_powerups * sizeof(tU8), kMem_powerup_array);
-        /* Number of index groups */
-        count_index_groups = GetAnInt(f);
-        for (j = 0; j < count_index_groups; j++) {
-            index_range = GetAnInt(f);
-            if (index_range >= 0) {
-                /* index_range is index */
-                gPowerup_respawn_specs[i].bools[index_range] = 1;
-            }  else {
-                /* index_range is range */
-                first = GetAnInt(f);
-                for (k = first; k < first - index_range; k++) {
-                    gPowerup_respawn_specs[i].bools[k] = 1;
-                }
-            }
-        }
-    }
-    gRace_powerup_respawn_bools = gPowerup_respawn_specs[0].bools;
-
-    /* NETWORK AUTO-GOODIES */
-
-    /* Min,max times between Auto-goodies */
-    GetPairOfInts(f, &gNet_powerup_time_between_goodies_min, &gNet_powerup_time_between_goodies_max);
-    gNet_powerup_time_between_goodies_min *= 1000;
-    gNet_powerup_time_between_goodies_max *= 1000;
-    /* Number of goodies to choose from */
-    gNet_count_powerup_goodies = GetAnInt(f);
-    gNet_powerup_goodies = BrMemAllocate(gNet_count_powerup_goodies * sizeof(int), kMem_powerup_array);
-    for (i = 0; i < gNet_count_powerup_goodies; i++) {
-        gNet_powerup_goodies[i] = GetAnInt(f);
-    }
-    PFfclose(f);
 }
 
 static void C2_HOOK_FASTCALL ReadPowerupSmashable(FILE* pF, tSmashable_item_spec* pSmashable_spec) {
@@ -1007,18 +750,6 @@ void C2_HOOK_FASTCALL ProcessShitMines(tU32 pTime) {
     }
 }
 
-// FUNCTION: CARMA2_HW 0x004e06a0
-void C2_HOOK_FASTCALL RemoveTail(void) {
-
-    NOT_IMPLEMENTED();
-}
-
-// FUNCTION: CARMA2_HW 0x004da730
-void C2_HOOK_FASTCALL CloseDownPowerUps(void) {
-
-    NOT_IMPLEMENTED();
-}
-
 // FUNCTION: CARMA2_HW 0x00502e00
 void C2_HOOK_FASTCALL MaxOutAPO(void) {
     int i;
@@ -1071,17 +802,6 @@ void C2_HOOK_FASTCALL AutoGoody(tU32 pTime) {
             && pTime > gNext_goody_time) {
         gNext_goody_time = GetNextGoodyTime(pTime);
         GotPowerupEarwig(&gProgram_state.current_car, gNet_powerup_goodies[IRandomBetween(0, gNet_count_powerup_goodies - 1)], 2, 0);
-    }
-}
-
-void C2_HOOK_FASTCALL PeriodicCloaking(void) {
-
-    if (gNet_mode != eNet_mode_none) {
-        int i;
-
-        for (i = 0; i < gCount_cloaked_cars; i++) {
-            DoCamouflageThing(gCloaked_cars[i]);
-        }
     }
 }
 
@@ -1768,45 +1488,6 @@ int C2_HOOK_FASTCALL CutOffTail(tPowerup* powerup, tCar_spec* car) {
     return 0;
 }
 
-// FUNCTION: CARMA2_HW 0x004e0c40
-int C2_HOOK_FASTCALL TurnOnCloaking(tPowerup* powerup, tCar_spec* car) {
-
-    NOT_IMPLEMENTED();
-    return 0;
-}
-
-// FUNCTION: CARMA2_HW 0x004e0cb0
-void C2_HOOK_FASTCALL RemoveFromCloakingList(tCar_spec* pCar_spec) {
-
-    if (gNet_mode != eNet_mode_none) {
-        int i;
-
-        for (i = 0; i < gCount_cloaked_cars; i++) {
-            if (gCloaked_cars[i] == pCar_spec) {
-                memmove(&gCloaked_cars[i], &gCloaked_cars[i + 1],
-                    (CARPOCALYPSE2_ASIZE(gCloaked_cars) - i - 1) * sizeof(tCar_spec *));
-                gCount_cloaked_cars -= 1;
-                break;
-            }
-        }
-    }
-}
-
-// FUNCTION: CARMA2_HW 0x004e0d10
-int C2_HOOK_FASTCALL IsCarCloaked(tCar_spec* pCar_spec) {
-
-    if (gNet_mode != eNet_mode_none) {
-        int i;
-
-        for (i = 0; i < gCount_cloaked_cars; i++) {
-            if (gCloaked_cars[i] == pCar_spec) {
-                return 1;
-            }
-        }
-    }
-    return 0;
-}
-
 // FUNCTION: CARMA2_HW 0x004dc9c0
 void C2_HOOK_FASTCALL ResetPedSpeed(tPowerup* powerup, tCar_spec* car) {
 
@@ -2009,17 +1690,6 @@ void C2_HOOK_FASTCALL ResetPissedPeds(tPowerup* powerup, tCar_spec* car) {
 void C2_HOOK_FASTCALL ResetPissed(tPowerup* powerup, tCar_spec* car) {
 
     NOT_IMPLEMENTED();
-}
-
-// FUNCTION: CARMA2_HW 0x004e0d50
-void C2_HOOK_FASTCALL TurnOffCloaking(tPowerup* powerup, tCar_spec* car) {
-
-    if (gNet_mode != eNet_mode_none) {
-        UnBlendifyCar(car);
-        RemoveFromCloakingList(car);
-        MasterEnableCarFunks(car);
-        RestoreCarPixelmaps(car);
-    }
 }
 
 // FUNCTION: CARMA2_HW 0x004dcc00

@@ -14,11 +14,8 @@
 #include <TextUtils.h>
 
 #include "c2_string.h"
-
-
 // GLOBAL: CARMA2_HW 0x006a0c24
-int gQuickTime_initialized;
-
+extern int gQuickTime_initialized;
 // GLOBAL: CARMA2_HW 0x006a23b8
 int gShow_status_message;
 
@@ -73,18 +70,6 @@ tU32 gRecording_time;
 // GLOBAL: CARMA2_HW 0x006baa28
 int gRecording_mouse_disabled;
 
-
-// FUNCTION: CARMA2_HW 0x004e1700
-void C2_HOOK_CDECL InitQuickTimeStuff(void) {
-
-    gQuickTime_initialized = 0;
-    if (InitializeQTML(0) == noErr && EnterMovies() == noErr) {
-        gQuickTime_initialized = 1;
-    }
-    gQuick_time_temp_path[0] = '\0';
-    gQuick_time_movie_path_stub[0] = '\0';
-    gQuick_time_banner_texture_name[0] = '\0';
-}
 
 // FUNCTION: CARMA2_HW 0x004e2110
 void C2_HOOK_FASTCALL KillStatusMessage(void) {
@@ -170,13 +155,6 @@ int C2_HOOK_FASTCALL MovieStopRecordingAndSave(void) {
         FreeOffQTshite();
     }
     return 1;
-}
-
-// FUNCTION: CARMA2_HW 0x004e1a20
-void C2_HOOK_FASTCALL MovieStopRecordingIfNecessary(void) {
-
-    MovieStopRecordingAndSave();
-    KillStatusMessage();
 }
 
 // FUNCTION: CARMA2_HW 0x004e2140

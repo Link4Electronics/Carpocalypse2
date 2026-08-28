@@ -39,11 +39,7 @@
 #include "world.h"
 
 #include "carpocalypse2_macros.h"
-
-
-// GLOBAL: CARMA2_HW 0x0079efb0
-tU32 gLast_tick_count;
-
+#include "mainloop.h"
 // GLOBAL: CARMA2_HW 0x0068c814
 tU32 gOld_camera_time;
 
@@ -110,15 +106,24 @@ tU32 gLast_wasted_message_start;
 // GLOBAL: CARMA2_HW 0x0068c748
 int gQueued_wasted_messages[5];
 
-// GLOBAL: CARMA2_HW 0x0079eb00
-char gHeadup_oppo_ped_text[64];
-
 // GLOBAL: CARMA2_HW 0x0068c75c
 int gCompletion_bonus_post_race;
 
 // GLOBAL: CARMA2_HW 0x0068c780
 int gTime_bonus;
 
+
+// GLOBAL: CARMA2_HW 0x00761ef0
+int gCredits_per_second_time_bonus[3];  /* FIXME: rename to gPoints_per_second */
+
+// GLOBAL: CARMA2_HW 0x0074b740
+int gAuto_increase_credits_dt[3];
+
+// GLOBAL: CARMA2_HW 0x0074b720
+tU32 gNet_auto_increase_credits_dt[8];
+
+// GLOBAL: CARMA2_HW 0x0079eb00
+char gHeadup_oppo_ped_text[64];
 
 // FUNCTION: CARMA2_HW 0x00401170
 void C2_HOOK_FASTCALL MungeAIWorld(tU32 pFrame_period) {
@@ -907,3 +912,24 @@ void C2_HOOK_FASTCALL LoseOldestWastedMessage(void) {
     gQueued_wasted_messages_count -= 1;
     gLast_wasted_message_start = GetTotalTime();
 }
+// CalculateFrameRate
+
+// LoseOldestWastedMassage
+
+// QueueWastedMassage
+
+// MungeHeadups
+
+// UpdateFramePeriod
+
+// CheckTimer
+
+// MungeRaceFinished
+
+// CalculateCameraStuff
+
+// CheckActiveCarList
+
+// MainGameLoop
+
+// DoRace

@@ -1,4 +1,225 @@
-#ifndef CARPOCALYPSE2_SPARK_H
+#ifndef GUARD_SPARK_H
+#define GUARD_SPARK_H
+
+#include "brender/brender.h"
+#include "c2_stdio.h"
+
+
+#include "c2_hooks.h"
+#include "carpocalypse2_types.h"
+
+// DrawDot
+
+// SetWorldToScreen
+
+// DrawLine3DThroughBRender
+
+// DrawLine3D
+
+// DrawLine2D
+
+// SetLineModelCols
+
+// ReplaySparks
+
+// RenderSparks
+
+// CreateSingleSpark
+
+// CreateSparks
+
+// CreateSparkShower
+
+// AdjustSpark
+
+// AdjustShrapnel
+
+// ResetSparks
+
+// ResetShrapnel
+
+// CreateShrapnelShower2
+
+// CreateShrapnelShowerWorld
+
+// CreateShrapnelShower
+
+// random
+
+// InitShrapnel
+
+// LoadInShrapnel
+
+// KillShrapnel
+
+// DisposeShrapnel
+
+// ReplayShrapnel
+
+// ActorFunks
+
+extern void C2_HOOK_FASTCALL MasterDisableCarFunks(tCar_spec* pCar);
+
+void C2_HOOK_FASTCALL MasterEnableCarFunks(tCar_spec* pCar);
+
+// SetPixelmap
+
+extern void C2_HOOK_FASTCALL DoCamouflageThing(tCar_spec* pCar);
+
+// DoSolidGraniteThing
+
+// DoTrueColModelThing
+
+// SetFoxModelCallback
+
+// ResetFoxModelCallback
+
+// ResetFoxLighting
+
+// CancelAlternateFoxEffect
+
+// SetFoxLighting
+
+// SetupAlternateFoxEffect
+
+// RestorePixelmap
+
+void C2_HOOK_FASTCALL RestoreCarPixelmaps(tCar_spec* pCar_spec);
+
+// MungeShrapnel
+
+// DrMatrix34Rotate
+
+// CmpSmokeZ
+
+extern void C2_HOOK_FASTCALL InitSmokeStuff(void);
+
+// RenderRecordedSmokeCircles
+
+// RecordSmokeCircle
+
+// SmokeCircle3D
+
+// ReplaySmoke
+
+// GenerateContinuousSmoke
+
+// RenderSmoke
+
+// CreatePuffOfSmoke
+
+// ResetSmoke
+
+// AdjustSmoke
+
+// ActorError
+
+// AdjustSmokeColumn
+
+// CreateSmokeColumn2
+
+// CreateSmokeColumn
+
+// GenerateSmokeShades
+
+extern void C2_HOOK_FASTCALL GenerateItFoxShadeTable(void);
+
+// AdjustFlame
+
+// ReplayFlame
+
+// FlameAnimate
+
+// DoSmokeColumn
+
+// ReplaySmokeColumn
+
+// MungeSmokeColumn
+
+// DisposeFlame
+
+// InitFlame
+
+// InitSplash
+
+// DisposeSplash
+
+// DrawTheGlow
+
+// PipeInstantUnSmudge
+
+// SmudgeCar
+
+void C2_HOOK_FASTCALL SetSmokeOn(int pSmoke_on);
+
+extern int C2_HOOK_FASTCALL GetSmokeOn(void);
+
+// StopCarSmoking
+
+// StopCarSmokingInstantly
+
+// StopObjectSmokingInstantly
+
+// ConditionalSmokeColumn
+
+// SingleSplash
+
+// GeneralCreateSplash
+
+// CreateSplash
+
+// GetVelocitiesFromMatrices
+
+// MungeSplash
+
+// GetSmokeShadeTables
+
+// FreeSmokeShadeTables
+
+// LoadInKevStuff
+
+// DisposeKevStuff
+
+// DisposeKevStuffCar
+
+// MakeCarIt
+
+// StopCarBeingIt
+
+// ForEveryModelMaterial
+
+// ForEveryActorMaterial
+
+// ForEveryActorMaterialNoGrooves
+
+// ForEveryCarMaterial
+
+// ForEveryCarModelCB
+
+// ForEveryCarModel
+
+// MightBlendifyMaterial
+
+// BlendifyMaterialCB
+
+extern void C2_HOOK_FASTCALL BlendifyCar(tCar_spec* pCar);
+
+// UnBlendifyMaterialCB
+
+void C2_HOOK_FASTCALL UnBlendifyCar(tCar_spec* pCar_spec);
+
+// IsCarSmoking
+
+// ClearSplashReplay
+
+// GetSplashIndex
+
+// ClearSplashes
+
+// AdjustSplashReplay
+
+// InitReplaySplashes
+
 #define CARPOCALYPSE2_SPARK_H
 
 #include "carpocalypse2_types.h"
@@ -8,41 +229,68 @@
 
 #include "c2_hooks.h"
 
+
 extern int gSmoke_on;
+
 extern int gShade_list[16];
+
 extern int* gShade_table; /* FIXME: rename to gDust_table*/
+
 extern int gNum_dust_tables;
+
 extern br_model* gShrapnel_model[2];
+
 extern br_material* gBlack_material;
+
 extern tShrapnel gShrapnel[30];
+
 extern int gColumn_flags;
+
 extern br_model* gLollipop_model;
+
 extern br_pixelmap* gFlame_map[20];
+
 extern tSmoke_column gSmoke_column[10];
+
 extern int gSplash_flags;
+
 extern br_model* gSplash_model;
+
 extern int gNum_splash_types;
+
 extern br_material* gSplash_material[20];
+
 extern tSplash gSplash[32];
+
 extern int gSpark_flags;
+
 extern br_pixelmap* gIt_shade_table;
+
 extern int gDust_rotate;
+
 extern tReplay_splash gReplay_splashes[10];
+
 extern int gReplay_splash_flags;
+
 extern tU32 gNext_AFE_color_cycle;
+
 extern int gAFE_color_cycle;
+
 extern int gShrapnel_flags;
+
 extern br_camera* gSpark_cam;
+
 extern br_matrix4 gCameraToScreen;
+
 extern tSpark gSparks[32];
+
 extern tBRender_smoke* gBR_smoke_pointers[35];
+
 extern int gN_BR_smoke_structs;
+
 extern tSmoke gSmoke[25];
+
 extern int gSmoke_flags;
-
-void C2_HOOK_FASTCALL SetSmokeOn(int pSmoke_on);
-
-int C2_HOOK_FASTCALL GetSmokeOn(void);
 
 void C2_HOOK_FASTCALL GenerateSmokeShades(void);
 
@@ -76,8 +324,6 @@ void C2_HOOK_FASTCALL KillShrapnel(int i);
 
 void C2_HOOK_FASTCALL MungeShrapnel(tU32 pTime);
 
-void C2_HOOK_FASTCALL GenerateItFoxShadeTable(void);
-
 void C2_HOOK_FASTCALL ForEveryModelMaterial(br_model* pModel, tMaterialMaybeUpdate_cbfn* pCallback);
 
 intptr_t C2_HOOK_CDECL ForEveryActorMaterial(br_actor* pActor, void* pContext);
@@ -88,11 +334,7 @@ void C2_HOOK_FASTCALL ForEveryCarMaterial(tCar_spec* pCar_spec, tMaterialMaybeUp
 
 intptr_t C2_HOOK_FASTCALL UnBlendifyMaterialCB(br_material* pMaterial);
 
-void C2_HOOK_FASTCALL UnBlendifyCar(tCar_spec* pCar_spec);
-
 intptr_t C2_HOOK_FASTCALL BlendifyMaterialCB(br_material* pMaterial);
-
-void C2_HOOK_FASTCALL BlendifyCar(tCar_spec* pCar_spec);
 
 void C2_HOOK_FASTCALL StopCarSmokingInstantly(tCar_spec* pCar_spec);
 
@@ -154,4 +396,4 @@ void C2_HOOK_FASTCALL ReplaySmoke(br_pixelmap* pRender_screen, br_pixelmap* pDep
 
 void C2_HOOK_FASTCALL RenderSmoke(br_pixelmap* pRender_screen, br_pixelmap* pDepth_buffer, br_actor* pCamera, br_matrix34* pCamera_to_world, tU32 pTime);
 
-#endif //CARPOCALYPSE2_SPARK_H
+#endif // GUARD_SPARK_H

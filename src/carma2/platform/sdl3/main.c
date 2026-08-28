@@ -5,10 +5,10 @@
 #include "sdl3.h"
 #include "sdl3_platform.h"
 
-#include "52-errors.h"
+#include "errors.h"
 #include "globvars.h"
-#include "40-main.h"
-#include "61-pedestrn.h"
+#include "main.h"
+#include "pedestrn.h"
 
 extern int carpocalypse2_MenuQuitRequested(void);
 extern void carpocalypse2_RequestQuit(void);

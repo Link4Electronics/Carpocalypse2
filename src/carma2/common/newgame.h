@@ -1,17 +1,49 @@
-#ifndef CARPOCALYPSE2_NEWGAME_H
+#ifndef GUARD_NEWGAME_H
+#define GUARD_NEWGAME_H
+
+#include "c2_hooks.h"
+#include "carpocalypse2_types.h"
+
+extern tNet_game_options gNet_settings[9];
+
+// SetGameTarget
+
+// SetOptions
+
+// ReadNetGameChoices
+
+// PickARandomCar
+
+// RequestCarDetails
+
+// SetNetAvailability
+
+extern void C2_HOOK_FASTCALL DefaultNetSettings(void);
+
+// DisposeJoinableGame
+
+// InitGamesToJoin
+
+// DisposeJoinList
+
+// AddToJoinList
+
+// FillInRaceDescription
+
 #define CARPOCALYPSE2_NEWGAME_H
 
 #include "c2_hooks.h"
 
 #include "carpocalypse2_types.h"
 
-extern tNet_game_options gNet_settings[9];
-extern int gNet_grid_starts[10];
-extern int gRace_index;
-extern int gLast_graph_sel;
-extern tJoinable_game gGames_to_join[6];
 
-void C2_HOOK_FASTCALL DefaultNetSettings(void);
+extern int gNet_grid_starts[10];
+
+extern int gRace_index;
+
+extern int gLast_graph_sel;
+
+extern tJoinable_game gGames_to_join[6];
 
 void C2_HOOK_FASTCALL SetOptions(tNet_game_type pGame_type, tNet_game_options* pGame_options);
 
@@ -31,4 +63,4 @@ void C2_HOOK_FASTCALL SetUpOtherNetThings(tNet_game_details* pGame_details);
 
 void C2_HOOK_FASTCALL InitGamesToJoin(void);
 
-#endif //CARPOCALYPSE2_NEWGAME_H
+#endif // GUARD_NEWGAME_H

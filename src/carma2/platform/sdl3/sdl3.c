@@ -5,15 +5,15 @@
 #include "sdl3_input.h"
 #include "sdl3_ssdx.h"
 
-#include "25-grafdata.h"
-#include "05-drmem.h"
-#include "52-errors.h"
+#include "grafdata.h"
+#include "drmem.h"
+#include "errors.h"
 #include "globvars.h"
-#include "18-graphics2.h"
-#include "02-init.h"
-#include "42-input.h"
+#include "graphics2.h"
+#include "init.h"
+#include "input.h"
 #include "platform.h"
-#include "41-utility.h"
+#include "utility.h"
 
 #include <stdlib.h>
 

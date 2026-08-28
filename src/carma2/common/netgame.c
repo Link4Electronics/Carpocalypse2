@@ -9,8 +9,11 @@
 #include "utility.h"
 
 #include <brender/brender.h>
+#include "netgame.h"
 
-
+#include "network.h"
+#include "loading3.h"
+#include "globvars.h"
 // GLOBAL: CARMA2_HW 0x0074a738
 int gInitialised_grid;
 
@@ -35,21 +38,8 @@ tU32 gTime_for_punishment;
 // GLOBAL: CARMA2_HW 0x0068d920
 int gINT_0068d920;
 
-// FUNCTION: CARMA2_HW 0x0049bd10
-void C2_HOOK_FASTCALL DefaultNetName(void) {
-
-    /* FIXME: 32 overflows the player_name field */
-    C2_HOOK_ASSERT((uintptr_t)&gProgram_state.player_name == 0x0075d590);
-    NetObtainSystemUserName(gProgram_state.player_name, 32);
-}
-
-// FUNCTION: CARMA2_HW 0x0049ee20
-void C2_HOOK_FASTCALL NetObtainSystemUserName(char* pName, int pMax_length) {
-
-    PDNetObtainSystemUserName(pName, pMax_length);
-    pName[9] = '\0';
-}
-
+// GLOBAL: CARMA2_HW 0x0075b8f8
+br_pixelmap* gDigits_pix;
 
 // FUNCTION: CARMA2_HW 0x00499260
 void C2_HOOK_FASTCALL DisableCar(tCar_spec* pCar) {
@@ -241,6 +231,71 @@ void C2_HOOK_FASTCALL SendCarData(tU32 pNext_frame_time) {
     }
     NOT_IMPLEMENTED();
 }
+// SendShapeNumbers
+
+// ClearShapeStatusFlag
+
+// SendNonCar
+
+// HostFillInCarContents
+
+// ClientSendCarData
+
+// DistanceBetweenCars
+
+// CarShapeNeedsSendingToPlayer
+
+// AddShapeStuffToMechanicsMessage
+
+// TimeToSendData
+
+// SendCarData
+
+// ReceivedRecover
+
+// CopyMechanics
+
+// ReceivedShapeNumbers
+
+// FillInSimpleCarPos
+
+// ReceivedSimpleCarPos
+
+// ReceivedMechanics
+
+// ReceivedCopInfo
+
+// SendAllNonCarPositions
+
+// ReceivedNonCarPosition
+
+// ReceivedNonCar
+
+// SignalToStartRace
+
+// SignalToRepositionCar
+
+// SetUpNetCarPositions
+
+// ReinitialiseCar
+
+// RepositionPlayer
+
+// DisableCar
+
+// EnableCar
+
+// DoNetworkHeadups
+
+// SortNetHeadAscending
+
+// SortNetHeadDescending
+
+// ClipName
+
+// CreateBoxes
+
+// DrawScoreBoxes
 
 // FUNCTION: CARMA2_HW 0x00499a00
 void C2_HOOK_FASTCALL DoNetScores2(int pOnly_sort_scores) {
@@ -253,3 +308,80 @@ void C2_HOOK_FASTCALL DoNetScores(void) {
 
     DoNetScores2(0);
 }
+
+// FUNCTION: CARMA2_HW 0x0049a710
+void C2_HOOK_FASTCALL InitNetHeadups(void) {
+
+    gDigits_pix = LoadPixelmap("HDIGITS.PIX");
+    if (gDigits_pix != NULL) {
+        BrMapAdd(gDigits_pix);
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x0049a730
+void C2_HOOK_FASTCALL DisposeNetHeadups(void) {
+
+    if (gDigits_pix != NULL) {
+        BrMapRemove(gDigits_pix);
+        BrPixelmapFree(gDigits_pix);
+    }
+}
+
+// EverybodysLost
+
+// DeclareWinner
+
+// PlayerIsIt
+
+// CheckForVampireWinner
+
+// PlayerIsInfected
+
+// FarEnoughAway
+
+// CarInContactWithFox
+
+// SelectRandomFox
+
+// CalcPlayerScores
+
+// SendPlayerScores
+
+// DoNetGameManagement
+
+// InitialisePlayerScore
+
+// InitPlayers
+
+// UseGeneralScore
+
+// NetSendEnvironmentChanges
+
+// STUB: CARMA2_HW 0x0049b9a0
+void C2_HOOK_FASTCALL CheckForNeedyEnvironmentRecipients(void) {
+#ifndef CARPOCALYPSE2_MATCHING
+    /* stub: no-op for Linux boot */
+#else
+    NOT_IMPLEMENTED();
+#endif
+}
+
+// ReceivedGameplay
+
+// SendGameplay
+
+// SendGameplayToAllPlayers
+
+// SendGameplayToHost
+
+// InitNetGameplayStuff
+
+// FUNCTION: CARMA2_HW 0x0049bd10
+void C2_HOOK_FASTCALL DefaultNetName(void) {
+
+    NetObtainSystemUserName(gProgram_state.player_name, 32);
+}
+
+// AddPlayerToShapeStatusLists
+
+// RemovePlayerFromShapeStatusLists

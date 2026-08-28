@@ -1,36 +1,242 @@
-#ifndef CARPOCALYPSE2_CONTROLS_H
+#ifndef GUARD_CONTROLS_H
+#define GUARD_CONTROLS_H
+
+#include "carpocalypse2_types.h"
+
+
+#include "c2_hooks.h"
+
+extern float gMap_render_x;
+extern float gMap_render_y;
+extern float gMap_render_width;
+extern float gMap_render_height;
+extern int gMap_trans;
+extern int gHeadup_map_x;
+extern int gHeadup_map_y;
+extern int gHeadup_map_w;
+extern int gHeadup_map_h;
+
+// CompleteRace
+
+// AbortRace
+
+// F4Key
+
+// SetFlag
+
+// FinishRace
+
+// EnsureSpecialVolumesHidden
+
+// ShowSpecialVolumesIfRequ
+
+// DoEditModeKey
+
+// F5Key
+
+// F6Key
+
+// F7Key
+
+// F8Key
+
+// F10Key
+
+// F11Key
+
+// F12Key
+
+// NumberKey0
+
+// NumberKey1
+
+// NumberKey2
+
+// NumberKey3
+
+// NumberKey4
+
+// NumberKey5
+
+// NumberKey6
+
+// NumberKey7
+
+// NumberKey8
+
+// NumberKey9
+
+// LookLeft
+
+// LookForward
+
+// LookRight
+
+// ToggleMiniMap
+
+// CheckToggles
+
+// CarWorldOffFallenCheckThingy
+
+// HasCarFallenOffWorld
+
+// CheckForBeingOutOfThisWorld
+
+// CheckHornLocal
+
+// CheckHorn3D
+
+// CheckHorns
+
+// SetQuickRecovery
+
+// SetRecovery
+
+// RecoverCar
+
+// CheckMapRenderMove
+
+// ExplodeCar
+
+// CheckRecoveryOfCars
+
+// TradeInAPO
+
+// CheckOtherRacingKeys
+
+// CheckRecoverCost
+
+// SortOutRecover
+
+// SetFlipUpCar
+
+// AlignChildren
+
+// FlipUpCar
+
+// GetPowerup
+
+// CheckSystemKeys
+
+// CheckForCheatingGits
+
+// CheckKevKeys
+
+// BrakeInstantly
+
+// PollCarControls
+
+// PollCameraControls
+
+// SetFlag2
+
+// ToggleFlying
+
+// CycleInvulnerability
+
+// ToggleTimerFreeze
+
+// EarnDosh
+
+// LoseDosh
+
+// ToggleHeadupMap
+
+// HackyMapFixForMac3dfx
+
+// ToggleMap
+
+// GetRecoverVoucherCount
+
+// AddVouchers
+
+// ResetRecoveryVouchers
+
+// CycleYonFactor
+
+// CycleSoundDetailLevel
+
+// CycleCarSimplificationLevel
+
+// ToggleAccessoryRendering
+
+// UserSendMessage
+
+// EnterUserMessage
+
+// DisplayUserMessage
+
+extern void C2_HOOK_FASTCALL InitAbuseomatic(void);
+
+extern void C2_HOOK_FASTCALL DisposeAbuseomatic(void);
+
+// ChangeCameraTypeInGame
+
+// SteelBollock
+
+// RichardsSphere
+
+// ToggleHeadupLevel
+
 #define CARPOCALYPSE2_CONTROLS_H
 
 #include "carpocalypse2_types.h"
 
 #include "c2_hooks.h"
 
+
 extern int gEntering_message;
+
 extern char* gAbuse_text[10];
+
 extern int gRecovery_voucher_count;
+
 extern int gAuto_repair;
+
 extern int gInstant_handbrake;
+
 extern tU32 gToo_poor_for_recovery_timeout;
+
 extern int gCheckpoint_finder_enabled;
+
 extern int gCount_toggled_doors;
+
 extern int gINT_0068b8e4;
+
 extern int gINT_0068b8e8;
+
 extern int gHad_auto_recover;
+
 extern tU32 gPalette_fade_time;
+
 extern int gRecover_timer;
+
 extern int gToo_late;
+
 extern int gINT_0067c470;
+
 extern int gWhich_edit_mode;
+
 extern tEdit_func* gEdit_funcs[2][18][8];
+
 extern int gAllow_car_flying;
+
 extern tCar_spec* gTarget_lock_car_1;
+
 extern tCar_spec* gTarget_lock_car_2;
+
 extern int gInventory_cycling;
+
 extern tU32 gInventory_timeout;
+
 extern char gString[84];
+
 extern int gInvulnerability;
+
 extern int gCancel_recover;
+
 extern int gRepair_last_time;
+
 extern tU32 gLast_repair_time;
 
 void C2_HOOK_FASTCALL SetSoundDetailLevel(int pLevel);
@@ -142,8 +348,6 @@ void C2_HOOK_FASTCALL ChangeCameraTypeInGame(void);
 void C2_HOOK_FASTCALL ChangeCameraType(void);
 
 void C2_HOOK_FASTCALL ToggleCockpit(void);
-
-void C2_HOOK_FASTCALL DisposeAbuseomatic(void);
 
 void C2_HOOK_FASTCALL CheckForCheatingGits(void);
 
@@ -279,8 +483,6 @@ void C2_HOOK_FASTCALL GotPowerup8(void);
 
 void C2_HOOK_FASTCALL GotPowerup9(void);
 
-void C2_HOOK_FASTCALL InitAbuseomatic(void);
-
 void C2_HOOK_FASTCALL LookLeft(void);
 
 void C2_HOOK_FASTCALL LookForward(void);
@@ -289,4 +491,4 @@ void C2_HOOK_FASTCALL LookRight(void);
 
 void C2_HOOK_FASTCALL DisplayUserMessage(void);
 
-#endif //CARPOCALYPSE2_CONTROLS_H
+#endif // GUARD_CONTROLS_H

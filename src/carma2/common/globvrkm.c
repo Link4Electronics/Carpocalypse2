@@ -1,8 +1,9 @@
 #include "globvrkm.h"
 
 #include "globvars.h"
+#include "globvrkm.h"
 
-
+#include "globvars.h"
 // GLOBAL: CARMA2_HW 0x0074c7b0
 br_actor* gCamera_list[2];
 

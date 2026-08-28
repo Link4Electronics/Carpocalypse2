@@ -5,7 +5,45 @@
 #include "platform.h"
 
 #include "carpocalypse2_macros.h"
+#include "oppoproc.h"
 
+// DoNotDprintf
+
+// StraightestArcForCorner2D
+
+// CornerFudge
+
+// MaxCurvatureForCarSpeed
+
+// Vector2Cross
+
+// RoughlyColinear
+
+// GetStraight
+
+// TimeToStopStruggling
+
+// TimeToBeBrakingWhenStruggling
+
+// CalcCorners
+
+// Distance2D
+
+// SectionLength2D
+
+// NearestSectionInStraight
+
+// SetMaxSpeedFromSOCs
+
+// CalcSOCs
+
+// StuffDataFromCorner
+
+// SetCurvature
+
+// ProcessFollowPath
+
+// FollowCheatyPath
 // FUNCTION: CARMA2_HW 0x004b13c0
 void C2_HOOK_CDECL DoNotDprintf_oppoproc(const char* pMessage, ...) {
 }

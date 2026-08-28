@@ -2,9 +2,9 @@
 
 #include "win32.h"
 
-#include "40-main.h"
-#include "52-errors.h"
-#include "70-packfile.h"
+#include "main.h"
+#include "errors.h"
+#include "packfile.h"
 #include "platform.h"
 
 #include <windows.h>

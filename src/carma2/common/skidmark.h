@@ -1,4 +1,42 @@
-#ifndef CARPOCALYPSE2_SKIDMARK_H
+#ifndef GUARD_SKIDMARK_H
+#define GUARD_SKIDMARK_H
+
+#include "c2_stdio.h"
+#include "carpocalypse2_types.h"
+
+
+#include "c2_hooks.h"
+
+// StretchMark
+
+// MaterialFromIndex
+
+// AdjustSkid
+
+// FarFromLine2D
+
+// Reflex2D
+
+extern void C2_HOOK_FASTCALL InitSkids(void);
+
+// HideSkid
+
+// HideSkids
+
+// SkidLen
+
+// UglyWidthChange
+
+// GenericSkidSection
+
+// WheelSkidSection
+
+// SkidMark
+
+// InitCarSkidStuff
+
+// SkidsPerFrame
+
 #define CARPOCALYPSE2_SKIDMARK_H
 
 #include "carpocalypse2_types.h"
@@ -6,13 +44,16 @@
 #include "c2_hooks.h"
 #include "c2_stdio.h"
 
-extern char* gBoring_material_names[2];
-extern char* gMaterial_names[2];
-extern br_material* gMaterial[2];
-extern tSkid gSkids[100];
-extern int gCurrent_skid;
 
-void C2_HOOK_FASTCALL InitSkids(void);
+extern char* gBoring_material_names[2];
+
+extern char* gMaterial_names[2];
+
+extern br_material* gMaterial[2];
+
+extern tSkid gSkids[100];
+
+extern int gCurrent_skid;
 
 void C2_HOOK_FASTCALL HideSkid(int pSkid_num);
 
@@ -32,4 +73,4 @@ void C2_HOOK_FASTCALL InitCarSkidStuff(tCar_spec* pCar);
 
 void C2_HOOK_FASTCALL SkidsPerFrame(void);
 
-#endif // CARPOCALYPSE2_SKIDMARK_H
+#endif // GUARD_SKIDMARK_H

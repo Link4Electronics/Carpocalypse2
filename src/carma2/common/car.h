@@ -1,42 +1,265 @@
-#ifndef CARPOCALYPSE2_CAR_H
+#ifndef GUARD_CAR_H
+#define GUARD_CAR_H
+
+#include "c2_hooks.h"
+
+
+#include "carpocalypse2_types.h"
+
+extern int gCunning_stunt_bonus[3];
+extern float gArmour_starting_value[100];
+extern float gPower_starting_value[100];
+extern float gOffensive_starting_value[100];
+extern tFloat_bunch_info gCar_softness;
+extern tFloat_bunch_info gCar_car_damage_multiplier;
+extern br_vector3 gZero_v__car;
+
+// DamageUnit
+
+// SwitchCarModel
+
+extern void C2_HOOK_FASTCALL SwitchCarModels(tCar_spec* pCar, int pIndex);
+
+// InitialiseCar2
+
+// InitialiseCar
+
+// InitialiseCarsEtc
+
+// SetInitialPosition
+
+// SetInitialPositions
+
+// InitialiseNonCar
+
+// NewFaceListCallBack
+
+// IsCarInTheSea
+
+// RememberSafePosition
+
+// ControlNetCars
+
+// ControlOurCar
+
+// CalcEngineForce
+
+// PrepareCars
+
+// CalcGraphicalWheelStuff
+
+// FinishCars
+
+// GetNonCars
+
+// GetNetPos
+
+// MungeCarsMass
+
+// AddDrag
+
+// DragChildren
+
+// DoCarStuff
+
+// DoNonCarStuff
+
+// RemoveFlyingCar
+
+// RestoreFlyingCar
+
+// GetDrivableOnList
+
+// APTCPreCollision
+
+// SetCollisionFlagsAndStuff
+
+// APTCPostCollision
+
+// APTCActiveHalted
+
+// APTCPassiveActivated
+
+// APTCChangedObjects
+
+// ApplyPhysicsToCars
+
+// MoveAndCollideCar
+
+// MoveAndCollideNonCar
+
+// ControlCar2
+
+// ControlCar3
+
+// ControlCar4
+
+// ControlCar5
+
+// ControlCar1
+
+// SteeringSelfCentre
+
+// NonCarSnapOff
+
+// TestNonCarSnapOff
+
+// TumbleObjectWithV
+
+// TumbleObject
+
+// MakeLiftGoUp
+
+// NonCarCalcForce
+
+// DoBumpiness
+
+// SmashFacesWithWheels
+
+// ConditionallyNoteSkid
+
+// NudgeObject
+
+// CalcForce
+
+// DoRevs
+
+// ScrapeNoise
+
+// SkidNoise
+
+// StopSkid
+
+// CrashNoise
+
+// CrushAndDamageCar
+
+// PointInFaceByQuiteABitActually
+
+// DoEnvironmentSmashes
+
+// ProcessForcesCallBack
+
+// ProcessJointForcesCallBack
+
+// MultiFindFloorInBoxM
+
+// MultiRayCastOnObjects
+
+// MultiFindFloorInBoxBU
+
+// FindFace
+
+// findfloor
+
+// FindFloorInBoxBU
+
+// CancelPendingCunningStunt
+
+// SetAmbientPratCam
+
+// SetTextureBits
+
+// MungeSomeOtherCarGraphics
+
+// MungeCarGraphics
+
+// TurnOffNonGroovers
+
+// DoLODCarModels
+
+// DoComplexCarModels
+
+// ResetCarScreens
+
+// FlyCar
+
+// GetCarOverallBoundsMinY
+
+// SetCarSuspGiveAndHeight
+
+// TestForCarInSensiblePlace
+
+// PullActorFromWorld
+
+// DoPullActorFromWorld
+
+// PipeNonCarObject
+
+// PipeNonCars
+
+// CheckForDeAttachmentOfNonCars
+
+// AdjustNonCar
+
+// GetPrecalculatedFacesUnderCar
+
+// TurnOnNonCar
+
+// TurnOffNonCar
+
 #define CARPOCALYPSE2_CAR_H
 
 #include "carpocalypse2_types.h"
 
 #include "c2_hooks.h"
 
+
 extern int gOver_shoot;
+
 extern tCar_spec* gActive_car_list[139];
+
 extern int gNum_cars_and_non_cars;
+
 extern int gNum_active_cars;
+
 extern int gNum_active_non_cars;
+
 extern int gFreeze_mechanics;
+
 extern int gCar_simplification_level;
+
 extern tNon_car_spec* gActive_non_car_list[99];
-extern int gNum_active_non_cars;
+
 extern br_scalar gMin_world_y;
+
 extern tPhysics_object* gUnknown_car_collision_info;
+
 extern br_vector3 gAverage_grid_position;
 
 extern int gTesting_car_for_sensible_place;
+
 extern tWorld_callbacks gWorld_callbacks;
+
 extern tPhysics_callbacks gCar_physics_callbacks;
+
 extern int gFace_count;
+
 extern tFace_ref gFace_list__car[300];
+
 extern int gCamera_mode;
+
 extern int gCamera_frozen;
+
 extern int gOpponent_viewing_mode;
+
 extern int gNet_player_to_view_index;
-extern br_vector3 gZero_v__car;
+
 extern int gInTheSea;
+
 extern int gStop_opponents_moving;
+
 extern int gSkid_tag[2];
+
 extern tCar_spec* gLast_car_to_skid[2];
+
 extern br_vector3 gCar_to_view_original_v;
+
 extern tCamera_key_flags gCamera_key_flags;
+
 extern tU32 gLast_cunning_stunt;
+
 extern br_actor* gPed_actor;
-extern const float gCar_simplification_factor[2][5];
 
 void C2_HOOK_FASTCALL SetUpPanningCamera(tCar_spec* c);
 
@@ -122,13 +345,13 @@ intptr_t C2_HOOK_CDECL ActorFunks(br_actor* pActor, void* pContext);
 
 void C2_HOOK_FASTCALL MasterEnableFunkotronic(int pFunk_index);
 
-void C2_HOOK_FASTCALL MasterEnableCarFunks(tCar_spec* pCar_spec);
+void C2_HOOK_FASTCALL MasterEnableCarFunks(tCar_spec* pCar);
 
 int C2_HOOK_FASTCALL RestorePixelmap(br_material* pMaterial);
 
 void C2_HOOK_FASTCALL RestoreCarPixelmaps(tCar_spec* pCar_spec);
 
-int C2_HOOK_FASTCALL TestForNan(float* f);
+int C2_HOOK_FASTCALL TestForNan(const float* f);
 
 void C2_HOOK_FASTCALL CheckDisablePlingMaterials(tCar_spec* pCar);
 
@@ -161,10 +384,6 @@ void C2_HOOK_FASTCALL CollideCameraWithOtherCars(br_vector3* pPos, br_vector3* p
 void C2_HOOK_FASTCALL PointCameraAtCar(br_vector3* pPos, br_matrix34* pMat, float pFov_factor);
 
 void C2_HOOK_FASTCALL SwingCamera(br_matrix34* pM1, br_matrix34* pM2, br_vector3* pVn, br_vector3* pOmega, float pSpeed, float pSpeedo_speed, tU32 pTime_difference, tCar_spec* pCar);
-
-void C2_HOOK_FASTCALL CollideCameraWithOtherCars(br_vector3* pPos, br_vector3* pCamera_pos);
-
-void C2_HOOK_FASTCALL PointCameraAtCar(br_vector3* pPos, br_matrix34* pMat, float pFov_factor);
 
 int C2_HOOK_FASTCALL IsCarInTheSea(void);
 
@@ -200,4 +419,4 @@ float C2_HOOK_STDCALL frac(float pN);
 
 void C2_HOOK_FASTCALL MakeLiftGoUp(tNon_car_spec* pNon_car);
 
-#endif //CARPOCALYPSE2_CAR_H
+#endif // GUARD_CAR_H

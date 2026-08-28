@@ -5,7 +5,7 @@
 #include "compress.h"
 #include "controls.h"
 #include "depth.h"
-#include "52-errors.h"
+#include "errors.h"
 #include "flap.h"
 #include "globvars.h"
 #include "globvrpb.h"
@@ -32,68 +32,40 @@
 #include "c2_string.h"
 
 #include "c2_math.h"
-
-
 // GLOBAL: CARMA2_HW 0x00679698
-float gDistortion_factor;
-
+extern br_scalar gDistortion_factor;
 // GLOBAL: CARMA2_HW 0x006796b8
-float gMin_crush_force;
-
+extern br_scalar gMin_crush_force;
 // GLOBAL: CARMA2_HW 0x0067bdec
-float gMax_crush_force;
-
+extern br_scalar gMax_crush_force;
 // GLOBAL: CARMA2_HW 0x006796b0
-float gForce_to_movement_factor;
-
+extern br_scalar gForce_to_movement_factor;
 // GLOBAL: CARMA2_HW 0x0067bacc
-float gMax_crush_dist_sq;
-
+extern br_scalar gMax_crush_dist_sq;
 // GLOBAL: CARMA2_HW 0x0067bac8
-float gMin_force_to_split_XZ_per_tonne;
-
+extern br_scalar gMin_force_to_split_XZ_per_tonne;
 // GLOBAL: CARMA2_HW 0x0067bd5c
-float gMin_force_to_split_Y_per_tonne;
-
+extern br_scalar gMin_force_to_split_Y_per_tonne;
 // GLOBAL: CARMA2_HW 0x0067bd64
-int gMin_split_damage;
-
+extern int gMin_split_damage;
 // GLOBAL: CARMA2_HW 0x0067b7d0
-int gMax_split_damage;
-
+extern int gMax_split_damage;
 // GLOBAL: CARMA2_HW 0x0067be04
-float gChance_of_inverse_buckle;
-
+extern br_scalar gChance_of_inverse_buckle;
 // GLOBAL: CARMA2_HW 0x0067b7b4
-float gFlap_inertia_fudge_biscuit;
-
-// GLOBAL: CARMA2_HW 0x0067be78
-br_vector3 gBatty_gravity;
-
+extern br_scalar gFlap_inertia_fudge_biscuit;
 // GLOBAL: CARMA2_HW 0x0067bdf8
-float gTorque_to_snap_per_tonne;
-
-// GLOBAL: CARMA2_HW 0x00679550
-float gMax_detach_time_ms;
-
+extern br_scalar gTorque_to_snap_per_tonne;
 // GLOBAL: CARMA2_HW 0x0067944c
-float gNormal_force_to_detach;
-
-// GLOBAL: CARMA2_HW 0x0067bde8
-float gMin_bend_force;
-
+extern br_scalar gNormal_force_to_detach;
 // GLOBAL: CARMA2_HW 0x0067be00
-float gChance_of_bending;
-
+extern br_scalar gChance_of_bending;
 // GLOBAL: CARMA2_HW 0x0067a18c
-float gMin_bend_angle;
-
+extern br_scalar gMin_bend_angle;
 // GLOBAL: CARMA2_HW 0x0067b7b0
-int gMin_bend_damage;
-
+extern int gMin_bend_damage;
 // GLOBAL: CARMA2_HW 0x0067bdf4
-int gMax_bend_damage;
-
+extern int gMax_bend_damage;
 // GLOBAL: CARMA2_HW 0x0067be08
 tU8 gCrush_data_entry_counter;
 
@@ -242,67 +214,6 @@ float gWobble_spam_z[8] = { 0.4f, -0.25f, 0.0f, 0.25f, 0.0f, 0.15f, -0.4f, -0.15
 // GLOBAL: CARMA2_HW 0x00590060
 float gWheel_circ_to_width = .16f;
 
-// FUNCTION: CARMA2_HW 0x00429fa0
-void C2_HOOK_FASTCALL InitCrushSystems(void) {
-    int i;
-
-    C2_HOOK_BUG_ON(sizeof(tCrush_info) != 0x104);
-    C2_HOOK_BUG_ON(sizeof(tPhysics_object) != 0x4d8);
-
-    for (i = 0; i < CARPOCALYPSE2_ASIZE(gCrush_array_0067a190); i++) {
-        gCrush_array_0067a190[i] = 0;
-    }
-    gDAT_00679440 = 0;
-
-    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tCrush_info_buffer, crush_infos, 0x0);
-    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tCrush_info_buffer, capacity, 0x4);
-    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tCrush_info, collision_object, 0x8);
-    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tCrush_info, field_0xdc, 0xdc);
-    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tCrush_info, field_0xe0, 0xe0);
-
-#ifndef CARPOCALYPSE2_MATCHING
-    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPhysics_shape, common.next, 0x34);
-#endif
-
-    gDetached_bit_crush_info_buffer.capacity = 16;
-    gDetached_bit_crush_info_buffer.crush_infos = BrMemAllocate(gDetached_bit_crush_info_buffer.capacity * sizeof(tCrush_info), kMem_crush_data);
-    gDetached_bit_collision_infos = BrMemAllocate(gDetached_bit_crush_info_buffer.capacity * sizeof(tPhysics_object),kMem_crush_data);
-    for (i = 0; i < gDetached_bit_crush_info_buffer.capacity; i++) {
-        gDetached_bit_crush_info_buffer.crush_infos[i].field_0xdc = 1.f;
-        gDetached_bit_crush_info_buffer.crush_infos[i].field_0xe0 = 0.28985506f;
-        gDetached_bit_crush_info_buffer.crush_infos[i].collision_object = &gDetached_bit_collision_infos[i];
-        // FIXME: AllocateShapePolyhedron should return tPhysics_shape pointer
-        gDetached_bit_collision_infos[i].shape = (tPhysics_shape*)AllocateShapePolyhedron(16, kMem_crush_data);
-    }
-    gDetached_bit_driver = eDriver_detached_bit;
-
-    for (i = 0; i < CARPOCALYPSE2_ASIZE(gTrack_crush_joints); i++) {
-        gTrack_crush_joints[i] = AllocatePhysicsJoint(3, kMem_crush_data);
-    }
-
-    gSplit_car_crush_info_buffer.capacity = 3;
-    gSplit_car_crush_info_buffer.crush_infos = BrMemAllocate(gSplit_car_crush_info_buffer.capacity * sizeof(tCrush_info), kMem_crush_data);
-    gSplit_car_collision_infos = BrMemAllocate(gSplit_car_crush_info_buffer.capacity * sizeof(tPhysics_object),kMem_crush_data);
-    for (i = 0; i < gSplit_car_crush_info_buffer.capacity; i++) {
-        int j;
-        tPhysics_shape* shape = NULL;
-        for (j = 0; j < 4; j++) {
-            tPhysics_shape* polyhedron = (tPhysics_shape*)AllocateShapePolyhedron(16, kMem_crush_data);
-            if (shape != NULL) {
-                shape->common.next = polyhedron;
-            } else {
-                gSplit_car_collision_infos[i].shape = polyhedron;
-            }
-            shape = polyhedron;
-        }
-        if (shape != NULL) {
-            shape->common.next = NULL;
-        }
-    }
-    gSplit_car_driver = eDriver_split_car;
-    gGonad_sphere_collision_shape = (tPhysics_shape*)AllocateShapeSphere(kMem_crush_data);
-}
-
 void C2_HOOK_FASTCALL ClearCrushLists(void) {
     int i;
 
@@ -336,62 +247,6 @@ void C2_HOOK_FASTCALL ResetCrushSystems(void) {
     gCount_net_crush_full_detach_bit_list = 0;
     gCount_net_crush_reattach_bit_list = 0;
     gCount_car_damage_crush_list = 0;
-}
-
-// FUNCTION: CARMA2_HW 0x00429bb0
-void C2_HOOK_FASTCALL ReadCrushSettings(FILE* file) {
-    char s[256];
-
-    while (1) {
-        if (!GetALineAndDontArgue(file, s)) {
-            PDFatalError("Can't find start of CRUSH SETTINGS in .TXT file");
-        }
-        if (strcmp(s, "START OF CRUSH SETTINGS") == 0) {
-            break;
-        }
-    }
-    if (GetAnInt(file) != 4) {
-        PDFatalError("Wrong version of CRUSH SETTINGS");
-    }
-    /* CRUSHING */
-    gDistortion_factor = GetAScalar(file);
-    gMin_crush_force = GetAScalar(file);
-    gMax_crush_force = GetAScalar(file);
-    gForce_to_movement_factor = GetAScalar(file);
-    gMax_crush_dist_sq = GetAScalar(file);
-
-    /* SPLITTING */
-    gMin_force_to_split_XZ_per_tonne = GetAScalar(file);
-    gMin_force_to_split_Y_per_tonne = GetAScalar(file);
-    gMin_split_damage = GetAnInt(file);
-    gMax_split_damage = GetAnInt(file);
-
-    /* BUCKLING */
-    gChance_of_inverse_buckle = GetAScalar(file);
-
-    /* FLAPPING AND JOINT SNAPPING */
-    gFlap_inertia_fudge_biscuit = GetAScalar(file);
-    gBatty_gravity.v[1] = GetAScalar(file);
-    gTorque_to_snap_per_tonne = GetAScalar(file);
-
-    /* DETACHING */
-    gMax_detach_time_ms = GetAScalar(file);
-    gNormal_force_to_detach = GetAScalar(file);
-
-    /* BENDING */
-    gMin_bend_force = GetAScalar(file);
-    gChance_of_bending = GetAScalar(file);
-    gMin_bend_angle = GetAScalar(file);
-    gMin_bend_damage = GetAnInt(file);
-    gMax_bend_damage = GetAnInt(file);
-    while (1) {
-        if (!GetALineAndDontArgue(file, s)) {
-            PDFatalError("Can't find end of CRUSH SETTINGS in .TXT file");
-        }
-        if (strcmp(s, "END OF CRUSH SETTINGS") == 0) {
-            break;
-        }
-    }
 }
 
 // FUNCTION: CARMA2_HW 0x004ef460
@@ -2122,61 +1977,6 @@ void C2_HOOK_FASTCALL DoCompletelyUnBentThings(tCar_spec* pCar_spec) {
     DRActorEnumRecurse(pCar_spec->car_model_actor, EnableGroovers, NULL);
 }
 
-// FUNCTION: CARMA2_HW 0x00439510
-void C2_HOOK_FASTCALL TotallyRepairACar(tCar_spec* pCar_spec) {
-    int i;
-    tCar_crush_spec* car_crush;
-
-    StopCarSmokingInstantly(pCar_spec);
-    if (ARIsActionReplayAvailable()) {
-        PipeInstantUnSmudge(pCar_spec);
-    }
-    pCar_spec->repair_time += 100000;
-    for (i = 0; i < CARPOCALYPSE2_ASIZE(pCar_spec->damage_units); i++) {
-        pCar_spec->damage_units[i].damage_level = 0;
-        pCar_spec->damage_units[i].last_level = 0;
-        pCar_spec->damage_units[i].smoke_last_level = 0;
-    }
-    if (pCar_spec->use_shell_model) {
-        return;
-    }
-    car_crush = pCar_spec->car_crush_spec;
-    if (car_crush == NULL) {
-        return;
-    }
-    if (car_crush->field_0x4b8 != 0) {
-        WeldCar(pCar_spec);
-    }
-    for (i = 0; i < car_crush->field_0x2b0; i++) {
-        ReAttachBit(pCar_spec, car_crush->field_0x2b4[i].field_0x4, car_crush->field_0x2b4[i].field_0x0, NULL);
-    }
-    for (i = 0; i < car_crush->field_0x270; i++) {
-        ReAttachBit(pCar_spec, car_crush->field_0x274[i].field_0x4, car_crush->field_0x274[i].field_0x0, car_crush->field_0x274[i].field_0x8);
-    }
-    car_crush->field_0x270 = 0;
-    DRActorEnumRecurse(pCar_spec->car_model_actor, MakeCarModelsMaterialsSingleSided, pCar_spec);
-    PipeSingleDSModel(0, pCar_spec);
-    if (car_crush->field_0x144) {
-        DoCompletelyUnBentThings(pCar_spec);
-    }
-    ARStartPipingSession(24);
-    PhysicsObjectRecurse(pCar_spec->collision_info, TotallyRepairObject, pCar_spec);
-    AREndPipingSession();
-    dr_dprintf("TotallyRepairACar() - Point 7");
-    TotallyRepairCarCollisionShapes(pCar_spec);
-    dr_dprintf("TotallyRepairACar() - Point 8");
-    PhysicsObjectRecurse(pCar_spec->collision_info, BattenDownTheObjects, pCar_spec);
-    dr_dprintf("TotallyRepairACar() - Point 19");
-    if (gProgram_state.prog_status != eProg_idling) {
-        dr_dprintf("TotallyRepairACar() - Point 10");
-        SwapShapesIfPossible(pCar_spec);
-    }
-    dr_dprintf("TotallyRepairACar() - Point 11");
-    pCar_spec->use_shell_model = 1;
-    RemoveCarFromCrushLists(pCar_spec);
-    dr_dprintf("TotallyRepairACar() - Point 12");
-}
-
 // FUNCTION: CARMA2_HW 0x00439bf0
 void C2_HOOK_FASTCALL TotallyRepairCar(void) {
 
@@ -2613,15 +2413,6 @@ void C2_HOOK_FASTCALL LinkSmashies(br_actor* pActor, tCar_crush_buffer_entry* pC
         smashable->funk_material->colour_map = smashable->levels->pixelmaps[0];
         BrMaterialUpdate(smashable->funk_material, BR_MATU_COLOURMAP);
     }
-}
-
-// FUNCTION: CARMA2_HW 0x00516160
-int C2_HOOK_FASTCALL DRVector3TestForNan(const br_vector3* pV) {
-
-    if (pV == NULL) {
-        return 0;
-    }
-    return isnan(pV->v[0]) || isnan(pV->v[1]) || isnan(pV->v[2]);
 }
 
 // FUNCTION: CARMA2_HW 0x00429d90

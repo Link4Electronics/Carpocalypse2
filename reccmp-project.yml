@@ -4,7 +4,7 @@ targets:
     source_root:
       - src/brender
       - src/carma2/hooks
-      - src/carma2/newcommon
+      - src/carma2/common
       - src/carma2/platform
       - src/carma2/s3
       - external/dummyqt

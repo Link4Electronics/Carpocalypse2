@@ -37,9 +37,9 @@ extern int gCount_crush_detach_list;
 extern int gCount_net_crush_detach_list;
 extern int gCount_net_crush_semi_detach_bit_list;
 extern int gCount_net_crush_full_detach_bit_list;
-extern float gMax_detach_time_ms;
+extern br_scalar gMax_detach_time_ms;
 extern tCrush_list_item gCrush_lists[8];
-extern float gMin_bend_force;
+extern br_scalar gMin_bend_force;
 extern float gWobble_spam_y[8];
 extern float gWobble_spam_z[8];
 extern float gWheel_circ_to_width;
@@ -50,7 +50,7 @@ void C2_HOOK_FASTCALL ClearCrushLists(void);
 
 void C2_HOOK_FASTCALL ResetCrushSystems(void);
 
-void C2_HOOK_FASTCALL ReadCrushSettings(FILE* file);
+void C2_HOOK_FASTCALL ReadCrushSettings(FILE* pF);
 
 void C2_HOOK_FASTCALL LoadMinMax(FILE* pF, br_bounds3* pBounds);
 

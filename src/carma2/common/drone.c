@@ -1,7 +1,7 @@
 #include "drone.h"
 
 #include "compress.h"
-#include "52-errors.h"
+#include "errors.h"
 #include "finteray.h"
 #include "globvars.h"
 #include "globvrpb.h"
@@ -21,8 +21,7 @@
 #include "carpocalypse2_macros.h"
 
 #include <stdarg.h>
-
-
+#include "drone.h"
 // GLOBAL: CARMA2_HW 0x006820d0
 int gCount_drones;
 
@@ -123,6 +122,9 @@ tU32 gNext_drone_edit_path_munge;
 
 // GLOBAL: CARMA2_HW 0x005947b8
 int gSelected_drone_path_index = -1;
+
+// GLOBAL: CARMA2_HW 0x00684518
+int gTraffic_disabled;
 
 // FUNCTION: CARMA2_HW 0x0044cfc0
 void C2_HOOK_CDECL DoNotDprintf(const char* format, ...) {
@@ -1119,3 +1121,188 @@ br_vector3* C2_HOOK_FASTCALL GetCurrentViewDroneDirection(void) {
         return &gDefault_drone_direction;
     }
 }
+// DoNotDprintf
+
+// CrappyLittleVector3DPrintf
+
+// CrappyLittleDrivingStateInfoDprintf
+
+// DroneStraightestArcForCorner2D
+
+// OpenDroneFile
+
+// LoadDroneTypeInfo
+
+// ReallyRemoveDroneFromPHIL
+
+// RemoveDroneFromPHIL
+
+// InitDroneCollisionObject
+
+// ReallyAddDroneToPHIL
+
+// AddDroneToPHIL
+
+// PreprocessDronePaths
+
+// LinkyCallback
+
+// LinkDroneActorsToModelsAndSetRenderStyle
+
+// LoadDroneActorsModels
+
+// ReadPastBoundsShapesHeader
+
+// ReadPastThisLine
+
+// MatchFGType
+
+// GetAxisFromString
+
+// GetSpeedControlFromString
+
+// MrFindy
+
+// FindDroneChildActor
+
+// GetReversenessFromString
+
+// LoadFunksAndGrooves
+
+// LoadDrone
+
+// CalculateDrivingInfo
+
+// PauseDroneState
+
+// UnPauseDroneState
+
+// NewDroneState
+
+// ResetDroneCrushyModel
+
+// ResetDroneModel
+
+// DroneCarWithinRenderingDistance
+
+// DronePlaneWithinRenderingDistance
+
+// DroneTrainWithinRenderingDistance
+
+// SemiInitDroneSpec
+
+// InitDroneSpec
+
+// ChooseNextNode
+
+// DroneOrientationChanged
+
+// DroneyObjectInSensiblePlace
+
+// StopRenderingThisDrone
+
+// StopProcessingThisDrone
+
+// StartRenderingThisDrone
+
+// CheckDroneInSensiblePlaceBeforeStartingToProcessTheCuntingThing
+
+// StartProcessingThisDrone
+
+// DroneCarWithinProcessingDistance
+
+// DronePlaneWithinProcessingDistance
+
+// DroneTrainWithinProcessingDistance
+
+// CalcRenderBoundsCentre
+
+// DoDroneDistanceChecks
+
+// DoDroneFunkyGroovyThings
+
+// ProcessThisDrone
+
+// DroneStateFuncReset
+
+// InitDroneDrivingInfo
+
+// MoveThisDronePlane
+
+// MoveThisDroneCar
+
+// PipeDroneMatrix
+
+// PossiblyPipeDroneMovement
+
+// DroneStateFuncControlledMovement
+
+// DoDroneHaltingStuff
+
+// DroneStateFuncPhysicsActive
+
+// DroneStateFuncStationaryPassive
+
+// GetNewCrushyModelForDrone
+
+// FUNCTION: CARMA2_HW 0x0044ed00
+int C2_HOOK_FASTCALL GetDronesOn(void) {
+
+    return !gTraffic_disabled;
+}
+
+// FUNCTION: CARMA2_HW 0x0044ecf0
+void C2_HOOK_FASTCALL SetTrafficOn(int pTraffic_on) {
+
+    gTraffic_disabled = !pTraffic_on;
+}
+
+// OtherPerambulatoryInstasificationIsEnablificated
+
+// LoadPanGameDroneInfo
+
+// InitDrones
+
+// DisposeDronesRaceStuff
+
+// LoadPerRaceDroneStuff
+
+// GetDroneCrushData
+
+// AllocateAndInitDrones
+
+// LoadInDronePaths
+
+// DronePreCollisionStuff
+
+// DoDronePerGameFrameStuff
+
+// MyDroneHathCollideth
+
+// MyDroneHathHalteth
+
+// MoveMyDroneBaby
+
+// DroneLookWhereYoureGoingYouBlindCunt
+
+// OKToViewDrones
+
+// GetCurrentViewDroneMat
+
+// GetCurrentViewDroneDirection
+
+// ApplyDroneRender2
+
+// ApplyDroneStraightPos2
+
+// ApplyDroneCornerPos2
+
+// ReallocModelFacesAndVertices
+
+// CalcNFacesAndVerticesInEditModel
+
+// InitialiseEditModelsEtc
+
+// UpdateEditModels
+
+// WriteOutDronePaths

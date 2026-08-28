@@ -1,26 +1,545 @@
-#ifndef CARPOCALYPSE2_PIPING_H
+#ifndef GUARD_PIPING_H
+#define GUARD_PIPING_H
+
+#include "carpocalypse2_types.h"
+
+
+#include "c2_hooks.h"
+#include <s3/s3.h>
+
+// ARReplayForwards
+
+// ARReplayIsReallyPaused
+
+// ARReplayPauseState
+
+extern float C2_HOOK_FASTCALL ARGetReplayRate(void);
+
+// ARSetReplayRate
+
+// ARGetReplayDirection
+
+// ARSetReplayDirection
+
+// ARResetPiping
+
+// ARInitialise
+
+// ARDispose
+
+// LengthOfChunk
+
+// LengthOfSession
+
+// ARAdvanceChunkPtr
+
+// PipingFrameReset
+
+// ARPipeSearchForwards
+
+// ARIsActionReplayAvailable
+
+// ARSomeReplayLeft
+
+// DisablePipedSounds
+
+// EnablePipedSounds
+
+// StartPipingSession2
+
+// ARStartPipingSession
+
+// EndPipingSession2
+
+// AREndPipingSession
+
+// ARAddDataToSession
+
+// ARAddVariedDataToSession
+
+// ARDoSingleSession
+
+// ARDoSingleVariedSession
+
+// ARResetPipePlayToEnd
+
+// ARGetPipePlayPtr
+
+// ARSetPipePlayPtr
+
+// ApplyPipedSession
+
+// MoveSessionPointerBackOne
+
+// MoveSessionPointerForwardOne
+
+// FindPreviousChunk
+
+// UndoPipedSession
+
+// ARScanBuffer
+
+// CheckSound
+
+// SoundTimeout
+
+// ScanAndPlaySoundsToBe
+
+// ARGetStartTime
+
+// ARDisableAdvance
+
+// AREnableAdvance
+
+// FindNextChunk
+
+// MoveReplayBuffer
+
+// ARMoveToEndOfReplay
+
+// ARMoveToStartOfReplay
+
+// ARDoActionReplay
+
+// ReverseSound
+
+// ARGoBackwards
+
+// ARGoForwards
+
+// ARService
+
+// ARMainLoopStart
+
+// ARToggleReplay
+
+// GetReducedPos
+
+// SaveReducedPos
+
+// InitLastDamageArrayEtc
+
+// PipeObjectPosition
+
+// PipeCarPositions
+
+// DoSmudge
+
+// DoOilSpillAR
+
+// CheckCar
+
+// CarTimeout
+
+// ScanCarsPositions
+
+// InitialiseActionReplay
+
+extern void C2_HOOK_FASTCALL DisposeActionReplay(void);
+
+// CheckIncident
+
+// GetNextIncident
+
+// AddCrushToPipingSession
+
+// AddSmudgeToPipingSession
+
+// AddSparkToPipingSession
+
+// AddShrapnelToPipingSession
+
+// AddNonCarToPipingSession
+
+// AddSmokeToPipingSession
+
+// AddSmokeColumnToPipingSession
+
+// AddFlameToPipingSession
+
+// AddSplashToPipingSession
+
+// AddExtendedSplashToPipingSession
+
+// AddCarToPipingSession
+
+// AddDamageToPipingSession
+
+// AddProxRayToPipingSession
+
+// AddFlapToPipingSession
+
+// AddModelMashToPipingSession
+
+// AddRepulseRayToPipingSession
+
+// AddNapalmBoltToPipingSession
+
+// PipeSingleCrush
+
+// PipeSingleScreenWobble
+
+// PipeSingleGrooveStop
+
+// PipeSingleNonCar
+
+// PipeSingleOilSpill
+
+// PipeSingleFrameFinish
+
+// PipeSingleGraphicalWheelStuff
+
+extern void C2_HOOK_FASTCALL PipeSingleSound(tS3_outlet* pOutlet, int pSound, tS3_volume pL_volume, tS3_volume pR_volume, int pPitch, const br_vector3* pPosition);
+
+// PipeSingleSpecial
+
+// PipeSingleCarIncident
+
+// PipeSinglePedIncident
+
+// PipeSingleWallIncident
+
+// PipeSingleSkidAdjustment
+
+// PipeSingleFlap
+
+// PipeSingleRelink
+
+// PipeSingleIdentity
+
+// PipeSingleSplitWeld
+
+// PipeSingleShrapnelShower
+
+// PipeSingleExplosion
+
+// PipeSingleNonCarCreation
+
+// PipeSingleSmashModelChange
+
+// PipeSingleSmashRemoveFaces
+
+// PipeSingleSmashDecal
+
+// PipeSingleSmashTextureChange
+
+// PipeSinglePedStatus
+
+// PipeSinglePedDir
+
+// PipeSinglePedMove
+
+// PipeSinglePedPhysics
+
+// PipeSinglePedDismember
+
+// PipeSinglePedFPChange
+
+// PipeSinglePedPos
+
+// PipeSinglePedModelChange
+
+// PipeSinglePHILObject
+
+// PipeSingleGibShower
+
+// PipeSingleBloodSpurt
+
+// PipeSingleGrooveOnOff
+
+// PipeSinglePowerupGot
+
+// PipeSinglePowerupLose
+
+// PipeSingleFunkEnable
+
+// PipeSingleVanishedDismembered
+
+// PipeSingleDSModel
+
+// PipeSingleVector3
+
+// PipeSingleDroneRender
+
+// PipeSingleDroneCornerPos
+
+// PipeSingleDroneStraightPos
+
+// PipeSinglePowerupRespawn
+
+// PipeSingleShitMine
+
+// PipeSingleEndShitMine
+
+// PipeSingleTransformType
+
+// PipeSingleOppoRenderage
+
+// ApplyCrush
+
+// ApplySmudge
+
+// ApplySpark
+
+// ApplyShrapnel
+
+// ApplyScreenWobble
+
+// ApplyGrooveStop
+
+// ApplyNonCar
+
+// ApplySmoke
+
+// ApplySmokeColumn
+
+// ApplyFlame
+
+// ApplySplash
+
+// ApplyExtendedSplash
+
+// ApplyOilSpill
+
+// ApplyFrameBoundary
+
+// ApplySound
+
+// ApplyCar
+
+// ApplyGWS
+
+// ApplyDamage
+
+// ApplySpecial
+
+// ApplyProxRay
+
+// ApplySkidAdjustment
+
+// ApplyFlap
+
+// ApplyModelMash
+
+// ApplyRelink
+
+// ApplyIdentity
+
+// ApplySplitWeld
+
+// ApplyBend
+
+// ApplyUnBend
+
+// ApplyEndMyBend
+
+// ApplyShrapnelShower
+
+// ApplyExplosion
+
+// ApplyNonCarCreation
+
+// ApplySmashModelChange
+
+// ApplySmashRemoveFaces
+
+// ApplySmashDecal
+
+// ApplySmashTextureChange
+
+// ApplyRepulseRay
+
+// ApplyActorTrans
+
+// ApplyPedStatus
+
+// ApplyPedDir
+
+// ApplyPedMove
+
+// ApplyPedPhysics
+
+// ApplyPedDismember
+
+// ApplyPedFPChange
+
+// ApplyPedPos
+
+// ApplyPedModelChange
+
+// ApplyPHILObject
+
+// ApplyGibShower
+
+// ApplyBloodSpurt
+
+// ApplyGrooveOnOff
+
+// ApplyPowerupGot
+
+// ApplyPowerupLose
+
+// ApplyFunkEnable
+
+// ApplyVanishDismembered
+
+// ApplyDSModel
+
+// ApplyPedDiagnostics
+
+// ApplyVector3
+
+// ApplyDroneRender
+
+// ApplyDroneCornerPos
+
+// ApplyDroneStraightPos
+
+// ApplyDroneUnused
+
+// ApplyNapalmBolt
+
+// ApplyPowerupRespawn
+
+// ApplyShitMine
+
+// ApplyEndShitMine
+
+// ApplyTransformType
+
+// ApplyOppoRenderage
+
+// UndoCrush
+
+// UndoSmudge
+
+// UndoDamage
+
+// UndoSpecial
+
+// UndoScreenWobble
+
+// UndoSplash
+
+// UndoExtendedSplash
+
+// UndoSkidAdjustment
+
+// UndoFlap
+
+// UndoModelMash
+
+// UndoRelink
+
+// UndoSplitWeld
+
+// UndoBend
+
+// UndoUnBend
+
+// UndoShrapnelShower
+
+// UndoNonCarCreation
+
+// UndoSmashModelChange
+
+// UndoSmashRemoveFaces
+
+// UndoSmashDecal
+
+// UndoSmashTextureChange
+
+// UndoActorTrans
+
+// UndoPedStatus
+
+// UndoPedMove
+
+// UndoPedDismember
+
+// UndoPedFPChange
+
+// UndoPedPos
+
+// UndoPedModelChange
+
+// UndoGibShower
+
+// UndoBloodSpurt
+
+// UndoGrooveOnOff
+
+// UndoPowerupGot
+
+// UndoPowerupLose
+
+// UndoFunkEnable
+
+// UndoVanishDismembered
+
+// UndoVector3
+
+// UndoNapalmBolt
+
+// UndoPowerupRespawn
+
+// UndoShitMine
+
+// UndoEndShitMine
+
+// UndoTransformType
+
+// CalcCrushLength
+
+// CalcShrapnelLength
+
+// CalcSmudgeLength
+
+// CalcModelMashLength
+
+// CalcEndMyBendLength
+
+// CalcRemoveFacesLength
+
 #define CARPOCALYPSE2_PIPING_H
 
 #include "c2_hooks.h"
 
 #include "carpocalypse2_types.h"
 
+
 extern undefined4* gCrush_space;
+
 extern tU8* gPipe_play_ptr;
+
 extern int gPlay_direction;
+
 extern tU8* gPipe_record_ptr;
+
 extern tU8* gPipe_buffer_oldest;
+
 extern float gReplay_rate;
+
 extern tU32 gYoungest_time;
+
 extern tU32 gOldest_time;
+
 extern br_vector3 gCar_pos;
+
 extern br_scalar gMax_distance;
+
 extern br_vector3 gReference_pos;
+
 extern tCar_spec* gCar_ptr;
+
 extern tU32 gTrigger_time;
+
 extern tPipe_smudge_data* gSmudge_space;
+
 extern const tReplay_callback* gPipe_callbacks;
+
 extern int gPipe_count_callbacks;
+
 extern tU32 gPipe_buffer_size;
 
 int C2_HOOK_FASTCALL ARToggleReplay(tTurn_on_AR_callback* pTurn_on_AR_cb, tTurn_off_AR_callback* pTurn_off_AR_cb, tAfter_AR_callback* pAfter_AR_cb, tZappy_AR_callback* pZappy_AR_cb, tPreprocess_AR_callback* pPreprocess_cb, tPostProcess_AR_callback* pPostProcess_cb, int* pArg7, int* pArg8);
@@ -34,8 +553,6 @@ void C2_HOOK_FASTCALL ARInitialise(int pEnable, int pCount_callbacks, const tRep
 int C2_HOOK_FASTCALL ARIsActionReplayAvailable(void);
 
 void C2_HOOK_FASTCALL DisposePiping(void);
-
-void C2_HOOK_FASTCALL DisposeActionReplay(void);
 
 void C2_HOOK_FASTCALL StartPipingSession2(tPipe_chunk_type pType, int pMunge_reentrancy);
 
@@ -86,8 +603,6 @@ void C2_HOOK_FASTCALL ARScanBuffer(tU8** pPtr, tPipe_chunk_type pType, tU32 pDef
 void C2_HOOK_FASTCALL ScanCarsPositions(tCar_spec* pCar, br_vector3* pSource_pos, br_scalar pMax_distance_sqr, tU32 pOffset_time, tU32 pTime_period, br_vector3* pCar_pos, tU32* pTime_returned);
 
 void C2_HOOK_FASTCALL PipeSingleOilSpill(int pIndex, br_matrix34* pMat, br_scalar pFull_size, br_scalar pGrow_rate, tU32 pSpill_time, tU32 pStop_time, tCar_spec* pCar, br_vector3* pOriginal_pos, br_pixelmap* pPixelmap);
-
-void C2_HOOK_FASTCALL PipeSingleSound(tS3_outlet* pOutlet, int pSound, tS3_volume pL_volume, tS3_volume pR_volume, int pPitch, const br_vector3* pPosition);
 
 void C2_HOOK_FASTCALL PipeSinglePedMove(tPedestrian* pPed, tS16 pArg2, tS16 pOriginal_move_id, tS16 pMove_id, undefined4 pArg5,undefined4 pArg6, int pArg7, undefined4 pArg8, br_vector3* pOriginal_pos, br_vector3* pPos, int pOriginal_action, int pAction, br_matrix34* pArg13);
 
@@ -167,4 +682,4 @@ void C2_HOOK_FASTCALL PipeSingleBloodSpurt(uintptr_t pId, undefined4 pArg2, unde
 
 void C2_HOOK_FASTCALL PipeSingleEndShitMine(br_actor* pActor);
 
-#endif //CARPOCALYPSE2_PIPING_H
+#endif // GUARD_PIPING_H

@@ -1,29 +1,451 @@
-#ifndef CARPOCALYPSE2_PHYSICS_H
+#ifndef GUARD_PHYSICS_H
+#define GUARD_PHYSICS_H
+
+#include "c2_hooks.h"
+#include "carpocalypse2_types.h"
+
+// count
+
+// DrMatrix34ApplyLPInverse
+
+// AddObjectWallForce
+
+// AddObjectObjectForce
+
+// RayCastThruFaceList
+
+// RayCastThruFaceList2
+
+// RayCastInBox
+
+// FaceOffCount2
+
+// FaceOffCount
+
+// FaceOnCount
+
+// EliminateFaces
+
+// GetShapePoint
+
+// GetObjectObjectEdgeIntersections
+
+// GetFaceEdgeIntersection
+
+// GetSphereToFacePoints
+
+// CheckSingleEdgeWithSphere
+
+// GetSphereToEdgePoints
+
+// GetCornerToFacePoints
+
+// CylinderCheck
+
+// CheckTwoEdges
+
+// WorldPointCollision
+
+// CheckSingleEdgeWithObjectEdges
+
+// GetEdgeToEdgePoints
+
+// SetUpWorkspace
+
+// GetObjectWallForceInfo
+
+// GetObjectCornerToObjectFacePoints
+
+// BoundsOverlapTest
+
+// GetObjectObjectEdgePoints
+
+// GetSphereNonSphereForceInfo
+
+// GetSphereSphereForceInfo
+
+// GetSphereShapeForceInfo
+
+// GetNonSphereNonSphereForceInfo
+
+// GetNonSphereShapeForceInfo
+
+// GetObjectObjectForceInfo
+
+// AddOldForces
+
+// TestShapeEdgeIntersection
+
+// TestObjectOverlap
+
+// TestObjectOverlapIgnoreCloseRelatives
+
+// TestObjectOverlapRecurse
+
+// TestForObjectInSensiblePlace
+
+// HierarchyCalcEnergy
+
+// CheckCollisionList
+
+// MakeJointVelocitiesVector
+
+// ApplySingleForce
+
+// ApplyJointForces
+
+// SkipForces
+
+// ScaleUpObjectMI
+
+// CheckForTwang
+
+// CreateJointForce
+
+// CreateJointTorque
+
+// AllocateObjectWorkspace
+
+// RedoQuickHingeVelocities
+
+// GetJointForces
+
+// GetUniversalRotationAngle
+
+// GetObjectsParent
+
+// GetJointLimits
+
+// GetListJointLimits
+
+// GetGroupJointLimits
+
+// LimitOmega
+
+// CapOmega
+
+// ListLimitOmega
+
+// GroupLimitOmega
+
+// PositionWorldJointedObject
+
+// TranslateAndRotatePartialObject
+
+// TranslateAndRotateJointedObject
+
+// CountJointForces
+
+// MoveJointedObject
+
+// TellPhysicsJointsHaveChanged
+
+// CombineBounds
+
+// GetWorldBoundingBoxForObjects
+
+// GetWorldBoundingBoxForObject
+
+// MatricesAreIdentical
+
+// InternalPrepareObject
+
+// PrepareObject
+
+// PrepareForCollisions
+
+// CheckPointVelocities
+
+// WriteNewPositions
+
+// SetListDoingNothingFlag
+
+// SetGroupDoingNothingFlag
+
+// SetHierarchyDoingNothingFlag
+
+// CheckDoingNothingFlag
+
+// SetGroup
+
+// GroupTogether
+
+// GetPreCalculatedJointForces
+
+// MakeObjectListDoSomething
+
+// CheckForObjectTouchingAnotherObject
+
+// CheckForObjectListTouchingAnotherObject
+
+// CheckForObjectHierachyTouchingAnotherObject
+
+// CheckForObjectHierachyTouchingObjectList
+
+// MakeObjectDoSomething
+
+// GetReducedList
+
+// ReduceReducedList
+
+// SetObjectTrialPositionType
+
+// FillInTrialWorkspace
+
+// FlagsAreGo
+
+// CollideObjectWithReducedObjectList
+
+// AddObjectToReducedList
+
+// ReducedFindObjectCollisions
+
+// FindObjectCollisions
+
+// DoRigidJoints
+
+// DoInterGroupCollisions
+
+// ReduceEffectOfForces
+
+// DoCollisions
+
+// AddDoubleTorqueToMatrix
+
+// DRMatrix33Inverse
+
+// SetUpQuickHingeData
+
+// InitQuickHinge
+
+// CalcQuickHingeData
+
+// SetUpForce
+
+// SetUpTorqueHingePartners
+
+// SetUpHingePartners
+
+// MakeMatrix
+
+// RestoreListOmega
+
+// RestoreGroupOmegas
+
+// MakeVelocitiesVector2
+
+// MakeVelocitiesVector
+
+// NewAddFrictionObjectObject
+
+// NewAddFriction
+
+// ApplyForces
+
+// DoJointFriction
+
+// ListDoJointFriction
+
+// PostAddFriction
+
+// RotateObjectSecondOrder
+
+// RotateObjectFirstOrder
+
+// RotateObject
+
+// TranslateObject
+
+// GetFacesNearObject
+
+// ResetObjectAndChildren
+
+// ResetObjectList
+
+// RepositionObjectGroup
+
+// SimpleRotate
+
+// InterpolateSingleObject
+
+// InterpolateObjects
+
+// ApplyGravitySingleObject
+
+// ApplyGravity
+
+// SetGravityDeltaV
+
+// TrialPositionChildren
+
+// InternalPositionChildren
+
+// PositionChildren
+
+// ApplyTorque
+
+// ApplyDiminishingTorque
+
+// OrderObjectListOnX
+
+// SwapPair
+
+// CheckObjectsPostionInList
+
+// TestForWrongAnswer
+
+// RQIterativeImprovement
+
+// RQExpand
+
+// RQSingleExpand
+
+// RQDcmpV
+
+// MakeIdentity
+
+// SparseRQDcmpV
+
+// MakeMatrixFromIndices
+
+// HasBeenDoneBefore
+
+// RemoveRQSingularities
+
+// AddToMatrix
+
+// RQRemovedOneTooManyForces
+
+// GetInverseM
+
+// RQMatrixSolveNoNegatives
+
+// RQMatrixSolveWithNegatives
+
+// MatrixProcess
+
+// RqBackSub
+
+// GetPhysicsScratchPointer
+
+// IncreasePhysicsScratchPointer
+
+// ClearPhysicsScratchSpace
+
+// AllocateShapeSphere
+
+// AllocateShapePolyhedron
+
+// AllocateShapeWireFrame
+
+// AllocateShapeBox
+
+// GetJointSize
+
+// AllocatePhysicsJoint
+
+// ClonePhysicsJoint
+
+// FreeShape
+
+extern void C2_HOOK_FASTCALL FreeShapeList(tPhysics_shape *pShape);
+
+extern void C2_HOOK_FASTCALL FreePhysicsJoint(tPhysics_joint* pJoint);
+
+// GetBoundsFromPointList
+
+// FillInShape
+
+// UpdateCollisionObject
+
+// PhysicsError
+
+// PhysicsWarning
+
+// PhysicsSetErrorHandler
+
+// RepositionAndOrientateChildren
+
+// PhysicsAddObject
+
+// PhysicsAddObjectList
+
+// PhysicsRemoveObject
+
+// PhysicsObjectRecurse
+
+// PhysicsObjectRecurseChildren
+
+// InitPhysicsWorkspace
+
+// FindFacesInBox
+
+// GetFrictionFromFace
+
+// DoPhysicsError
+
+// ResetMan2
+
+// SetUpTestObjects
+
+// ResetObjectList
+
+// ResetMan
+
+extern void C2_HOOK_FASTCALL InitPhysics(void);
+
+// PointOutOfSightNotAR
+
+// CalcCollObjIDFromCarSpec
+
+// CalcCollObjID
+
+// GetCarSpecFromCollObjID
+
+// GetCollObjFromID
+
 #define CARPOCALYPSE2_PHYSICS_H
 
 #include "carpocalypse2_types.h"
 
 #include "c2_hooks.h"
 
+
 extern tPhysicsError_cbfn* gPhysics_error_cb;
+
 extern void* gPhysics_buffer1_ptr;
+
 extern void* gPhysics_buffer2_ptr;
+
 extern void* gPhysics_buffer3_ptr;
+
 extern int gPhysics_other_buffer_capacity;
+
 extern void* gPhysics_other_buffer;
+
 extern tU8 gTemporary_physics_render_buffer[300000];
+
 extern int gCollision_info_uid_counter;
+
 extern int gPHIL_enabled;
+
 extern int gFace_num__car;
+
 extern int gPHIL_doing_physics;
+
 extern int gPHIL_object_added;
-extern tU32 gPHIL_last_physics_tick;
-extern int gPHIL_mechanics_time_sync;
-extern tWorld_callback_active_passive_cbfn* gPHIL_original_activate_passive;
-extern tPhysics_callbacks* gPHIL_callbacks;
+
 extern tU32 gPHIL_last_physics_tick;
 
+extern int gPHIL_mechanics_time_sync;
+
+extern tWorld_callback_active_passive_cbfn* gPHIL_original_activate_passive;
+
+extern tPhysics_callbacks* gPHIL_callbacks;
+
+
 #define NET_OBJECT_HIERARCHY_DEFAULT_SIZE 72
+
 
 void C2_HOOK_FASTCALL DoPhysicsError(tPhysicsError pError, const char* pMessage);
 
@@ -32,8 +454,6 @@ void C2_HOOK_FASTCALL SetUpTestObjects(void);
 void C2_HOOK_FASTCALL PhysicsSetErrorHandler(tPhysicsError_cbfn* pError_cbfn);
 
 void C2_HOOK_FASTCALL InitPhysicsWorkspace(tU8* pBuffer, int pSize);
-
-void C2_HOOK_FASTCALL InitPhysics(void);
 
 int C2_HOOK_FASTCALL PHILInit(void);
 
@@ -83,7 +503,7 @@ void C2_HOOK_FASTCALL SetCollisionInfoDoNothing(tPhysics_object *pCollision_info
 
 void C2_HOOK_FASTCALL SetCollisionInfoChildsDoNothing(tPhysics_object *pCollision_info, tU8 pDisable);
 
-int C2_HOOK_FASTCALL PHILRemoveObject(tPhysics_object* pCollision_info);
+int C2_HOOK_FASTCALL PHILRemoveObject(tPhysics_object* pObject);
 
 void C2_HOOK_FASTCALL AddCollisionInfoChild(tPhysics_object* pParent, tPhysics_object* pChild);
 
@@ -179,4 +599,4 @@ int C2_HOOK_FASTCALL SizeOfObjectNetworkStuff(tPhysics_joint_type pType);
 
 int C2_HOOK_FASTCALL GetHierarchyNetworkSize(tPhysics_object* pObject);
 
-#endif //CARPOCALYPSE2_PHYSICS_H
+#endif // GUARD_PHYSICS_H

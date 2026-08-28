@@ -1,6 +1,6 @@
 #include "brucetrk.h"
 
-#include "52-errors.h"
+#include "errors.h"
 #include "globvars.h"
 #include "globvrpb.h"
 #include "init.h"
@@ -15,11 +15,10 @@
 #include "c2_string.h"
 
 #include "carpocalypse2_macros.h"
-
-
+#include "brucetrk.h"
+#include "carpocalypse2_types.h"
 // GLOBAL: CARMA2_HW 0x00655e60
-br_scalar gYon_factor = 0.25f;
-
+extern br_scalar gYon_factor;
 // GLOBAL: CARMA2_HW 0x0079efac
 int gMax_count_non_cars;
 
@@ -29,21 +28,14 @@ int gCount_track_non_cars;
 // GLOBAL: CARMA2_HW 0x0058f490
 int gRender_alternative_track_actors = 1;
 
-// FUNCTION: CARMA2_HW 0x0040dfe0
-br_scalar C2_HOOK_STDCALL GetYonFactor(void) {
-
-    return gYon_factor;
-}
-
-// FUNCTION: CARMA2_HW 0x0040dff0
-void C2_HOOK_STDCALL SetYonFactor(br_scalar pNew) {
-
-    gYon_factor = pNew;
-}
-
-
 // GLOBAL: CARMA2_HW 0x00679264
 br_actor* gMr_blendy;
+
+// GLOBAL: CARMA2_HW 0x00655e60
+br_scalar gYon_factor = 0.25f;
+
+// GLOBAL: CARMA2_HW 0x0074b74c
+br_material* gDefault_track_material;
 
 // FUNCTION: CARMA2_HW 0x0040d530
 void C2_HOOK_FASTCALL MungeFaces(br_actor* pActor, br_model* pModel) {
@@ -469,30 +461,6 @@ void C2_HOOK_FASTCALL DisposeColumns(tTrack_spec* pTrack_spec) {
 }
 
 
-// FUNCTION: CARMA2_HW 0x0040cb90
-void C2_HOOK_FASTCALL XZToColumnXZ(tU8* pColumn_x, tU8* pColumn_z, br_scalar pX, br_scalar pZ, tTrack_spec* pTrack_spec) {
-    br_scalar x;
-    br_scalar z;
-
-    x = (pX - pTrack_spec->origin_x) / pTrack_spec->column_size_x;
-    z = (pZ - pTrack_spec->origin_z) / pTrack_spec->column_size_z;
-    if (x < 0.0f) {
-        x = 0.0f;
-    }
-    if (x >= pTrack_spec->ncolumns_x) {
-        x = pTrack_spec->ncolumns_x - 1.0f;
-    }
-    if (z < 0.0f) {
-        z = 0.0f;
-    }
-    if (z >= pTrack_spec->ncolumns_z) {
-        z = pTrack_spec->ncolumns_z - 1.0f;
-    }
-    *pColumn_x = (tU8)x;
-    *pColumn_z = (tU8)z;
-}
-
-
 // FUNCTION: CARMA2_HW 0x0040e000
 void C2_HOOK_FASTCALL ProcessNearbyActors(tTrack_spec* pTrack, br_vector3* pPos, float pMax_dist, int pMatch_type, int pIdentifier_value, int pIdentifier_index, int pMatch_flags, tNearbyActors_cbfn* pCallback, void* pContext) {
 
@@ -717,3 +685,64 @@ void C2_HOOK_FASTCALL RenderTrack(br_actor* pWorld, tTrack_spec* pTrack_spec, br
         }
     }
 }
+// AssertNoncars
+
+// AllocateActorMatrix
+
+// DisposeActorMatrix
+
+// DisposeRuntimeBuiltModels
+
+// DisposeColumns
+
+
+// FUNCTION: CARMA2_HW 0x0040cb90
+void C2_HOOK_FASTCALL XZToColumnXZ(tU8* pColumn_x, tU8* pColumn_z, br_scalar pX, br_scalar pZ, tTrack_spec* pTrack_spec) {
+    br_scalar x;
+    br_scalar z;
+
+    x = (pX - pTrack_spec->origin_x) / pTrack_spec->column_size_x;
+    z = (pZ - pTrack_spec->origin_z) / pTrack_spec->column_size_z;
+    if (x < 0.0f) {
+        x = 0.0f;
+    }
+    if (x >= pTrack_spec->ncolumns_x) {
+        x = pTrack_spec->ncolumns_x - 1.0f;
+    }
+    if (z < 0.0f) {
+        z = 0.0f;
+    }
+    if (z >= pTrack_spec->ncolumns_z) {
+        z = pTrack_spec->ncolumns_z - 1.0f;
+    }
+    *pColumn_x = (tU8)x;
+    *pColumn_z = (tU8)z;
+}
+
+// FindNonCarsCB
+
+// MungeFaces
+
+// ProcessModelsCB
+
+// ProcessModels
+
+// ExtractColumns
+
+// RenderTrack
+
+// FUNCTION: CARMA2_HW 0x0040dfe0
+br_scalar C2_HOOK_STDCALL GetYonFactor(void) {
+
+    return gYon_factor;
+}
+
+// FUNCTION: CARMA2_HW 0x0040dff0
+void C2_HOOK_STDCALL SetYonFactor(br_scalar pNew) {
+
+    gYon_factor = pNew;
+}
+
+// FoundAnActor
+
+// ProcessNearbyActors

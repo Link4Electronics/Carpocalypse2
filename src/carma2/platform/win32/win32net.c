@@ -2,9 +2,9 @@
 
 #include "win32.h"
 
-#include "52-errors.h"
+#include "errors.h"
 #include "globvrpb.h"
-#include "01-network.h"
+#include "network.h"
 #include "platform.h"
 
 #include "c2_string.h"

@@ -1,7 +1,44 @@
 #include "trig.h"
 #include "c2_math.h"
+#include "trig.h"
 
+// FastFloatSin
 
+// FastFloatCos
+
+// FastScalarSin
+
+// FastScalarCos
+
+// FastScalarSinAngle
+
+// FastScalarCosAngle
+
+// FastFloatArcTan2
+
+// FastScalarArcTan2
+
+// FastFloatArcTan2Angle
+
+// FastScalarArcTan2Angle
+
+// DRMatrix34RotateX
+
+// DRMatrix34RotateY
+
+// DRMatrix34RotateZ
+
+// DRMatrix34PostRotateX
+
+// DRMatrix34PostRotateY
+
+// DRMatrix34PreRotateZ
+
+// DRMatrix34PostRotateZ
+
+// DRMatrix23Rotate
+
+// DRMatrix23PostRotate
 // GLOBAL: CARMA2_HW 0x00661398
 float gFloat_sine_table[91] = {
     0.0f,

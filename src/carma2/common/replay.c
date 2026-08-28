@@ -21,11 +21,7 @@
 #include "c2_string.h"
 
 #include "carpocalypse2_macros.h"
-
-
-// GLOBAL: CARMA2_HW 0x0079efa8
-tActionReplayCameraMode gAction_replay_camera_mode;
-
+#include "replay.h"
 // GLOBAL: CARMA2_HW 0x00679278
 int gAction_replay_manual_camera_target_type;
 
@@ -48,25 +44,8 @@ tU32 gLast_synch_time;
 // GLOBAL: CARMA2_HW 0x006a2374
 int gKey_down;
 
-// FUNCTION: CARMA2_HW 0x004e1740
-void C2_HOOK_FASTCALL SetQuickTimeDefaults(void) {
-
-    if (gQuick_time_quality[0] == '\0') {
-        strcpy(gQuick_time_quality, "normal");
-    }
-    if (gQuick_time_compressor[0] == '\0') {
-        strcpy(gQuick_time_compressor, "animation");
-    }
-    if (gQuick_time_temp_path[0] == '\0') {
-        PathCat(gQuick_time_temp_path, gApplication_path, "QTTMP");
-    }
-    if (gQuick_time_movie_path_stub[0] == '\0') {
-        PathCat(gQuick_time_movie_path_stub, gApplication_path, "MOVIE");
-    }
-    if (gQuick_time_banner_texture_name[0] == '\0') {
-        strcpy(gQuick_time_banner_texture_name, "ARBANNER.PIX");
-    }
-}
+// GLOBAL: CARMA2_HW 0x0058f620
+int gAR_camera_type = 2;
 
 // FUNCTION: CARMA2_HW 0x0040e700
 void C2_HOOK_FASTCALL MungeCarMaterials(tCar_spec* pCar, int pInternal_cam) {
@@ -313,11 +292,6 @@ int C2_HOOK_FASTCALL ARReplayIsReallyPaused(void) {
     return gReplay_rate == 0.f;
 }
 
-// FUNCTION: CARMA2_HW 0x00402390
-float C2_HOOK_FASTCALL ARGetReplayRate(void) {
-    return gReplay_rate;
-}
-
 // FUNCTION: CARMA2_HW 0x004c80b0
 void C2_HOOK_FASTCALL PipeSingleGrooveStop(int pGroove_index, br_matrix34* pMatrix, int pPath_interrupt, int pObject_interrupt, float pPath_resumption, float pObject_resumption) {
 
@@ -359,3 +333,44 @@ void C2_HOOK_FASTCALL DoActionReplayPostSwap(void) {
 
     RemoveTransientBitmaps(1);
 }
+// ActualActionReplayHeadups
+
+// DoActionReplayPostSwap
+
+// DoZappyActionReplayHeadups
+
+// DoActionReplayHeadups
+
+// PreProcess
+
+// PostProcess
+
+// DoActionReplay
+
+// MoveToEndOfReplay
+
+// MoveToStartOfReplay
+
+// PollActionReplayControls
+
+// CheckReplayTurnOn
+
+// InitializeActionReplayPix
+
+// FreeActionReplayPix
+
+// SynchronizeActionReplay
+
+// TurnOnActionReplay
+
+// TurnOffActionReplay
+
+// AfterActionReplay
+
+// ToggleReplay
+
+// DisplayMovieStatusPanel
+
+// ApplyTime
+
+// ARSetPause

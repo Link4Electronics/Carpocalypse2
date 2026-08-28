@@ -1,6 +1,5 @@
 #include "globvrbm.h"
-
-
+#include "globvrbm.h"
 // GLOBAL: CARMA2_HW 0x0074ca90
 br_actor* gPrat_actor;
 

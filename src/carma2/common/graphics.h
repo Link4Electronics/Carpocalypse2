@@ -94,8 +94,8 @@ extern float gHeadup_map_x_float;
 extern float gHeadup_map_y_float;
 extern float gHeadup_map_w_float;
 extern float gHeadup_map_h_float;
-extern tU32 gINT_0074ab88;
-extern tU32 gINT_0074ab8c;
+extern int gINT_0074ab88;
+extern int gINT_0074ab8c;
 extern int gINT_0074ab94;
 extern int gINT_0074abec;
 extern br_pixelmap* gMap_overlay;
@@ -160,7 +160,7 @@ void C2_HOOK_FASTCALL DRSetPalette(br_pixelmap* pThe_palette);
 
 void C2_HOOK_FASTCALL SplashScreenWith(const char* pPixmap_name);
 
-void C2_HOOK_FASTCALL BRPM_convert(br_pixelmap* pixelmap, int pixelType);
+void C2_HOOK_FASTCALL BRPM_convert(br_pixelmap* pMap, int pPixel_type);
 
 void C2_HOOK_FASTCALL AllocateCursorActors(void);
 
@@ -242,9 +242,9 @@ void C2_HOOK_FASTCALL AdjustRenderScreenSize(void);
 
 void C2_HOOK_FASTCALL CleanPolyFontDanglers(void);
 
-void C2_HOOK_FASTCALL DRPixelmapRectangleMaskedCopy(br_pixelmap* pDest, br_int_16 pDest_x, br_int_16 pDest_y, br_pixelmap* pSource, br_int_16 pSource_x, br_int_16 pSource_y, br_int_16 pWidth, br_int_16 pHeight);
+void C2_HOOK_FASTCALL DRPixelmapRectangleMaskedCopy(br_pixelmap* pDest, br_int_16 pDest_x, br_int_16 pDest_y, const br_pixelmap* pSource, br_int_16 pSource_x, br_int_16 pSource_y, br_int_16 pWidth, br_int_16 pHeight);
 
-void C2_HOOK_FASTCALL DrawNumberAt(br_pixelmap* pSrc, br_pixelmap* pDest, int pX, int pY, int pX_pitch, int pY_pitch, int pValue ,int pDigit_count, int pLeading_zeroes);
+void C2_HOOK_FASTCALL DrawNumberAt(const br_pixelmap* pSrc, br_pixelmap* pDest, int pX, int pY, int pX_pitch, int pY_pitch, int pValue, int pDigit_count, int pLeading_zeroes);
 
 void C2_HOOK_FASTCALL DisposeSavedShadeTables(void);
 
@@ -292,7 +292,7 @@ void C2_HOOK_FASTCALL FoxyStuff(br_matrix34* pMat34, br_actor* pCamera, br_pixel
 
 int C2_HOOK_FASTCALL ConditionallyFillWithSky(br_pixelmap* pPixelmap);
 
-void C2_HOOK_FASTCALL FixificateClipulatingPlaneyThings(br_actor* pCamera);
+void C2_HOOK_FASTCALL FixificateClipulatingPlaneyThings(void);
 
 void C2_HOOK_FASTCALL ProcessNonTrackActors(br_pixelmap* pRender_buffer, br_pixelmap* pDepth_buffer, br_actor* pCamera, br_matrix34* pCamera_to_world);
 

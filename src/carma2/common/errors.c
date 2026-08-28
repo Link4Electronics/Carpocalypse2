@@ -1,4 +1,4 @@
-#include "52-errors.h"
+#include "errors.h"
 
 #include "loading.h"
 #include "utility.h"
@@ -11,9 +11,26 @@
 #include <stdarg.h>
 #include <stdint.h>
 //#include "c2_string.h"
+#include "errors.h"
+
+#include "loading1.h"
+#include "platform.h"
+#include "carpocalypse2_types.h"
+
+#include <stdarg.h>
+#include <stdio.h>
+
+#include "c2_string.h"
+// GLOBAL: CARMA2_HW 0x00591708
+extern const char* gError_messages[184];
+// GLOBAL: CARMA2_HW 0x006b2e00
+int gError_code;
+
+extern FILE* gDiagnostic_file;
+FILE* gDiagnostic_file;
 
 // GLOBAL: CARMA2_HW 0x00591708
-const char* gError_messages[186] = {
+const char* gError_messages[184] = {
     "Unable to support this screen depth setting",
     "Couldn't allocate off-screen buffer",
     "Couldn't allocate Z-Buffer",
@@ -200,60 +217,6 @@ const char* gError_messages[186] = {
     "Could not create textures pages \"%\".",
 };
 
-// GLOBAL: CARMA2_HW 0x006b2e00
-int gError_code;
-
-FILE* gDiagnostic_file;
-
-// FUNCTION: CARMA2_HW 0x0044c230
-void C2_NORETURN C2_HOOK_CDECL FatalError(int pStr_index, ...) {
-    char the_str[1024];
-    char* sub_str;
-    char temp_str[1024];
-    char* sub_pt;
-    int sub_int;
-    va_list ap;
-
-    if (pStr_index < 1000) {
-        strcpy(the_str, gError_messages[pStr_index]);
-    } else {
-        strcpy(the_str, "Physics Error: %");
-    }
-
-    sub_pt = temp_str;
-    va_start(ap, pStr_index);
-    while (1) {
-        sub_pt = strchr(the_str, '%');
-        if (sub_pt == NULL) {
-            break;
-        }
-        sub_str = va_arg(ap, char*);
-        StripCRNL(sub_str);
-        strcpy(temp_str, sub_pt + 1);
-        strcpy(sub_pt, sub_str);
-        strcat(the_str, temp_str);
-    }
-
-    dr_dprintf("FatalError After strings %s\n", the_str);
-    sub_pt = the_str;
-    while (1) {
-        sub_str = strchr(the_str, '@');
-        if (sub_str == NULL) {
-            break;
-        }
-        sub_int = va_arg(ap, int);
-        strcpy(temp_str, sub_str + 1);
-        sprintf(sub_str, "%d", sub_int);
-        StripCRNL(sub_str);
-        strcat(the_str, temp_str);
-    }
-    va_end(ap);
-    dr_dprintf("FatalError Finish %s\n", the_str);
-
-    dr_dprintf(the_str);
-    PDFatalError(the_str);
-}
-
 //// IDA: void __cdecl NonFatalError(int pStr_index, ...)
 //void NonFatalError(int pStr_index, ...) {
 //    char the_str[256];
@@ -285,16 +248,63 @@ void C2_NORETURN C2_HOOK_CDECL FatalError(int pStr_index, ...) {
 //    PDNonFatalError(temp_str);
 //}
 
+// This function is stripped from the retail binary, we've guessed at the implementation
+// Renamed from dprintf to avoid collisions to stdio
+// This function is stripped from the retail binary, we've guessed at the implementation
+// STUB: CARMA2_HW 0x0044c230
+void C2_NORETURN C2_HOOK_CDECL FatalError(int pStr_index, ...) {
+    char the_str[1024];
+    char* sub_str;
+    char temp_str[1024];
+    char* sub_pt;
+    int sub_int;
+#ifdef CARPOCALYPSE2_FIX_BUGS
+    char int_str[32];
+#endif
+    va_list ap;
+
+    if (pStr_index >= 1000) {
+        strcpy(the_str, "Physics Error: %");
+    } else {
+        strcpy(the_str, gError_messages[pStr_index]);
+    }
+
+    va_start(ap, pStr_index);
+    while ((sub_pt = strchr(the_str, '%')) != NULL) {
+        sub_str = va_arg(ap, char*);
+        StripCRNL(sub_str);
+        strcpy(temp_str, sub_pt + 1);
+        strcpy(sub_pt, sub_str);
+        strcat(the_str, temp_str);
+    }
+
+#ifdef CARPOCALYPSE2_FIX_BUGS
+    sub_str = int_str;
+#endif
+    while ((sub_pt = strchr(the_str, '@')) != NULL) {
+        sub_int = va_arg(ap, int);
+        sprintf(sub_str, "%d", sub_int);
+        StripCRNL(sub_str);
+        strcpy(temp_str, sub_pt + 1);
+        strcpy(sub_pt, sub_str);
+        strcat(the_str, temp_str);
+    }
+    va_end(ap);
+
+    dr_dprintf(the_str);
+    PDFatalError(the_str);
+}
+
 // FUNCTION: CARMA2_HW 0x0044c570
 void C2_HOOK_FASTCALL CloseDiagnostics(void) {
 
 }
 
-// This function is stripped from the retail binary, we've guessed at the implementation
 // FUNCTION: CARMA2_HW 0x0044c580
 void C2_HOOK_FASTCALL OpenDiagnostics(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     // FIXME: use c2_stdio functions
-//    gDiagnostic_file = fopen("DIAGNOST.TXT", "w");
+    //    gDiagnostic_file = fopen("DIAGNOST.TXT", "w");
     gDiagnostic_file = fopen("DIAGNOST.TXT", "w");
     if (gDiagnostic_file == NULL) {
         return;
@@ -302,6 +312,7 @@ void C2_HOOK_FASTCALL OpenDiagnostics(void) {
     fputs("DIAGNOSTIC OUTPUT\n", gDiagnostic_file);
     // todo: generate a real date
     fprintf(gDiagnostic_file, "Date / time : %s\n\n\n", __DATE__ " : " __TIME__);
+#endif
 }
 
 // Renamed from dprintf to avoid collisions to stdio
@@ -311,6 +322,7 @@ void C2_HOOK_CDECL dr_dprintf(const char* fmt_string, ...) {
     va_list args;
     tU32 the_time;
 
+#ifndef CARPOCALYPSE2_MATCHING
     if (gDiagnostic_file == NULL) {
         OpenDiagnostics();
     }
@@ -324,4 +336,5 @@ void C2_HOOK_CDECL dr_dprintf(const char* fmt_string, ...) {
     fputs("\n", gDiagnostic_file);
 
     fflush(gDiagnostic_file);
+#endif
 }

@@ -2,7 +2,7 @@
 
 #include "animation.h"
 #include "car.h"
-#include "52-errors.h"
+#include "errors.h"
 #include "explosions.h"
 #include "globvars.h"
 #include "globvrpb.h"
@@ -31,8 +31,14 @@
 #include "c2_math.h"
 
 #define GET_PED_COLLISION_OBJECT(PED) ( ((PED)->character->field_0x14 & 1) ? (PED)->character->personality->form->simple_physicing[(PED)->character->field_0x5].collision_info : GetRootObject((PED)->character))
+#include "pedestrn.h"
 
+#include "loading2.h"
+#include "powerup.h"
+#include "loading3.h"
+#include "sound.h"
 
+#define PED_SCALAR_EPSILON (2.384186e-6f)
 // GLOBAL: CARMA2_HW 0x0065d7a8
 int gPed_cache_sizes_2[4] = {
     5, 10, 40, 75,
@@ -609,7 +615,20 @@ const tPed_anim_seq gCalm_ped_anim_sequence = {
     2, { 0, 99 },
 };
 
-#define PED_SCALAR_EPSILON (2.384186e-6f)
+// GLOBAL: CARMA2_HW 0x006a0414
+const char* gPedsFolder;
+
+// GLOBAL: CARMA2_HW 0x0065d7d4
+int gGoreLevel = 1;
+
+// GLOBAL: CARMA2_HW 0x0065d7c8
+int gAnimalsOn = 1;
+
+// GLOBAL: CARMA2_HW 0x0065d7cc
+int gFlameThrowerOn = 1;
+
+// GLOBAL: CARMA2_HW 0x0065d7d0
+int gExplosives_on = 1;
 
 // FUNCTION: CARMA2_HW 0x004d2c40
 int C2_HOOK_FASTCALL GetPedCount(void) {
@@ -983,20 +1002,6 @@ void C2_HOOK_FASTCALL InitOtherPedStuff(void) {
 
     gSelected_ped = 0;
     gProx_ray_shade_table = GenerateShadeTable(8, gRender_palette, 0xd7, 0xff, 0xe9, .5f, .75f, .9f);
-}
-
-// FUNCTION: CARMA2_HW 0x004cadc0
-void C2_HOOK_FASTCALL InitPolyPedSystem(void) {
-
-    if (gPedsFolder == NULL) {
-        SetDefaultPedFolderNames();
-    }
-
-    InitBoner(&gPed_forms_vtable);
-    ReadSettingsFile();
-    InitFaceCaches();
-    InitNapalmNolts();
-    InitOtherPedStuff();
 }
 
 // FUNCTION: CARMA2_HW 0x004cb630
@@ -1980,12 +1985,6 @@ void C2_HOOK_FASTCALL FinishUpLoadingPeds(void) {
         gPedestrian_array[i].character->ped = &gPedestrian_array[i];
         C2_HOOK_BUG_ON(offsetof(tRace_pedestrian, ped) != 0xe4);
     }
-}
-
-// FUNCTION: CARMA2_HW 0x004cb8d0
-void C2_HOOK_FASTCALL DisposePedStuff(void) {
-
-    NOT_IMPLEMENTED();
 }
 
 void C2_HOOK_FASTCALL ResetPedFaceCache(void) {
@@ -3394,11 +3393,6 @@ FILE* C2_HOOK_FASTCALL BonerOpenMoves(const char* pName) {
     return DRfopen(path, "rb");
 }
 
-// FUNCTION: CARMA2_HW 0x00516350
-int C2_HOOK_FASTCALL DRVector3NonZero(br_vector3* pV) {
-    return pV->v[0] == 0.f && pV->v[1] == 0.f && pV->v[2] == 0.f;
-}
-
 void C2_HOOK_FASTCALL BonerReadPersonalityModels(const char* pName) {
     tPath_name path;
 
@@ -4589,3 +4583,607 @@ int C2_HOOK_FASTCALL CalmDownAllPeds(void) {
     gPed_valium_left = 5000;
     return 1;
 }
+// OrientationChanged
+
+// AssertRootObjectsMatrix
+
+// InitFaceCaches
+
+// ResetPedFaceCache
+
+// SetPedCurrentFace
+
+// RecachePedestrian
+
+// SetCharacterDirectionAR
+
+// PedApplyPedDir
+
+// SetCharacterMoveAR
+
+// SetPedStartRun
+
+// PedApplyPedMove
+
+// PedUndoPedMove
+
+// PedApplyPedFPChange
+
+// PedApplyStatus
+
+// PedUndoStatus
+
+// SetCharacterPhysicsLevelAR
+
+// PedApplyPedPhysics
+
+// PedApplyPedPos
+
+// PedApplyVanishDismembered
+
+// SetCharacterPositionAR
+
+// SetCharacterBoneModelAR
+
+// PedApplyPedModelChangeP
+
+// PedApplyPedModelChange
+
+// DismemberCharacterAR
+
+// PedApplyDismember
+
+// PedUndoDismember
+
+// ReadPedSpecs
+
+// GetPedPos
+
+// SetUpGibSlicks
+
+// ReadInGiblets
+
+// ReadSettingsFile
+
+// InitOtherPedStuff
+
+// InitNapalmNolts
+
+// STUB: CARMA2_HW 0x004cadc0
+void C2_HOOK_FASTCALL InitPolyPedSystem(void) {
+#ifndef CARPOCALYPSE2_MATCHING
+    /* stub: no-op for Linux boot */
+#else
+    NOT_IMPLEMENTED();
+#endif
+}
+
+// DisposePedSpawnSpec
+
+// DisposeCharacterInstances
+
+// STUB: CARMA2_HW 0x004cb8d0
+void C2_HOOK_FASTCALL DisposePedStuff(void) {
+
+    NOT_IMPLEMENTED();
+}
+
+// BonerOpenCharacterForm
+
+// BonerOpenDefaultMoves
+
+// BonerOpenPersonality
+
+// BonerOpenMoves
+
+// BonerOpenRemaps
+
+// BonerReadPersonalityModels
+
+// MakeActorRenderable
+
+// StopActorBeingRenderable
+
+// IsActorRenderworthy
+
+// SetPedXZDirection
+
+// StopPedNoise
+
+// MakePedNoise
+
+// SetPedMove
+
+// StartPedRunning
+
+// AcceleratePed
+
+// MungePedHeadAnim
+
+// SetPedHeadAnim
+
+// ClearPedHeadAnim
+
+// ScarePedestrian
+
+// PedAnimCausesMovement
+
+// StopSmoothTurning
+
+// SetKnockedOverMove
+
+// DoPostElectricution
+
+// CBMoveCompleted
+
+// CBLoadForm
+
+// CBDisposeForm
+
+// CBLoadPersonality
+
+// CBDisposePersonality
+
+// CBFillInObject
+
+// DoGibShower
+
+// PedApplyGibShower
+
+// PedUndoGibShower
+
+// DoGiblets
+
+// DoBloodSpurt
+
+// DoSpurt
+
+// PedApplyBloodSpurt
+
+// PedUndoBloodSpurt
+
+// OneLessPed
+
+// ScoreForKilledPedestrian
+
+// KillPedestrian
+
+// DismemberPed
+
+// DamagePedestrian
+
+// SetLastHitter
+
+// MakePedVanish
+
+// CBPassiveCollision
+
+// BastardIt
+
+// MungeProxRay
+
+// DoToPeds
+
+// DoPedAnnihilator
+
+// RepulseIt
+
+// DoPedestrianRepulsifictor
+
+// CompileBurnableList
+
+// SortPedListFunction
+
+// ChoosePedToNapalm
+
+// DoPedNapalm
+
+// KillNapalmBolt
+
+// MungeNapalm
+
+// PedHeadingTowardsCollisionObject
+
+// OutsideFaceXZ
+
+// RescanPedProximity
+
+// RecacheAndSetFace
+
+// PedScanForObjects
+
+// CatAndMouseBonus
+
+// StillifyCorpse
+
+// StraightenOutPed
+
+// ActiveHalted
+
+// CBActiveHalted
+
+// RecordPedSlide
+
+// PedProcessForces
+
+// CBMovedByPhysics
+
+// GetPedCount
+
+// GetPedPosition
+
+// TurnLimbsOnAndOff
+
+// SetModelCallBacks
+
+// BuildPedestrian
+
+// AreaOfTriangle
+
+// MakeRandomPointInTriangle
+
+// SpawnPedsOnFace
+
+// FinishUpLoadingPeds
+
+// MakeFlagWavingBastardWaveHisFlagWhichIsTheProbablyTheLastThingHeWillEverDo
+
+// SetNextRandomTurn
+
+// RandomWander
+
+// ResetScanDirection
+
+// CheckForAvoidingAction
+
+// SmoothTurnPedestrian
+
+// SetThisPedPhysicing
+
+// InitProcessData
+
+// PedFallingForever
+
+// MakeEmBleed
+
+// CheckPowerupMoveSubstitution
+
+// SetRandomOmega
+
+// RenderLimbs
+
+// MungePedestrians
+
+// FUN_1011cb0c
+
+// PossiblePedSmear
+
+// LastChanceForPedEffects
+
+// ResetPedSystem
+
+// ResetNapalmBolts
+
+// ARResetNapalmBolts
+
+// AdjustNapalmBolt
+
+// InitPedsForRace
+
+// RenderElectroBastardRays
+
+// AdjustProxRay
+
+// ResetProxRay
+
+// GetTestPed
+
+// NextPedCam
+
+// PrevPedCam
+
+// FindNearestPed
+
+// ResetPedNearness
+
+// PedPreCollisionStuff
+
+// UpdateIfBackwardsAR
+
+// ChangePedScaling
+
+// ChangeHeadScaling
+
+// MakeMaterialBlendy
+
+// UnmakeMaterialBlendy
+
+// TurnOffCollisions
+
+// TurnOnCollisions
+
+// UpdateModels
+
+// TurnOnGhostPeds
+
+// TurnOffGhostPeds
+
+// MutatePed
+
+// FlushAllPedCaches
+
+// SavePedStuff
+
+// ComparePedStuff
+
+// AdjustPedDiagnostics
+
+// CalmDownAllPeds
+
+// FUNCTION: CARMA2_HW 0x004d6f10
+void C2_HOOK_FASTCALL SetDefaultPedFolderNames(void) {
+    gPedsFolder = "PEDS";
+    SetDefaultSoundFolderName();
+    SetDefaultPowerupFilename();
+    SetDefaultTextFileName();
+    SetDefaultPixelmapFolderName();
+}
+
+// STUB: CARMA2_HW 0x004d6f50
+void C2_HOOK_FASTCALL SetZombiePedFolderNames(void) {
+#ifndef CARPOCALYPSE2_MATCHING
+    /* stub: no-op for Linux boot */
+#else
+    NOT_IMPLEMENTED();
+#endif
+}
+
+// STUB: CARMA2_HW 0x004d6f30
+void C2_HOOK_FASTCALL SetBloodPedFolderNames(void) {
+#ifndef CARPOCALYPSE2_MATCHING
+    /* stub: no-op for Linux boot */
+#else
+    NOT_IMPLEMENTED();
+#endif
+}
+
+// STUB: CARMA2_HW 0x004d6f70
+void C2_HOOK_FASTCALL SetAlienPedFolderNames(void) {
+#ifndef CARPOCALYPSE2_MATCHING
+    /* stub: no-op for Linux boot */
+#else
+    NOT_IMPLEMENTED();
+#endif
+}
+
+// AddChangedPoint
+
+// FUNCTION: CARMA2_HW 0x004d6fc0
+int C2_HOOK_FASTCALL GetHowMuchBloodAndSnotToSmearAbout(void) {
+
+    return 2 - gGoreLevel;
+}
+
+// FUNCTION: CARMA2_HW 0x004d6fd0
+int C2_HOOK_FASTCALL GetAnimalsOn(void) {
+
+    return gAnimalsOn;
+}
+
+// FUNCTION: CARMA2_HW 0x004d6fe0
+int C2_HOOK_FASTCALL IsItOkayToFireHorribleBallsOfNastyNapalmDeathAtPerfectlyInnocentPassersByAndByInnocentIDoMeanInTheBiblicalSense(void) {
+
+    return gFlameThrowerOn;
+}
+
+// FUNCTION: CARMA2_HW 0x004d6ff0
+int C2_HOOK_FASTCALL IsItReallyOKThatWeDontMakeAnyEffortToProtectAnySadFuckersOutThereThatDontWishToSeeInnocentPeopleBlownToBitsByHighExplosiveMinesAndShells(void) {
+
+    return gExplosives_on;
+}
+
+// FUNCTION: CARMA2_HW 0x004d7000
+void C2_HOOK_FASTCALL SetAnimalsOn(int pNewAnimalsOn) {
+
+    gAnimalsOn = pNewAnimalsOn;
+}
+
+// FUNCTION: CARMA2_HW 0x004d7010
+void C2_HOOK_FASTCALL SetFlameThrowerOn(int pNewFlameThrowerOn) {
+
+    gFlameThrowerOn = pNewFlameThrowerOn;
+}
+
+// FUNCTION: CARMA2_HW 0x004d7020
+void C2_HOOK_FASTCALL SetExplosivesOn(int pExplosives_on) {
+
+    gExplosives_on = pExplosives_on;
+}
+
+// FUNCTION: CARMA2_HW 0x004d7030
+void C2_HOOK_FASTCALL SetGoreLevel(int pNewLevel) {
+
+    gGoreLevel = 2 - pNewLevel;
+}
+
+// ClearOutMorphs
+
+// InitBoner
+
+// DRVector3SafeCross
+
+// DRVector3SafeCrossXZ
+
+// ScaleModelXYZ
+
+// ScaleModel
+
+// DisposeMove
+
+// DisposeAllLoadedMoves
+
+// ReadRemap
+
+// DisposeRemap
+
+// DisposeAllLoadedRemaps
+
+// FindOrOpenRemap
+
+// Flip3DStoBRaxes
+
+// ReadMove
+
+// FindOrOpenMove
+
+// RemapVector
+
+// RemapPowerupVector
+
+// RemapModelAxis
+
+// SetUpCharacterForm
+
+// DisposeCharacterForm
+
+// DisposeAllLoadedForms
+
+// DisposeCharacterInstance
+
+// FindOrOpenForm
+
+// MakeRotationMatrix
+
+// SetBoner
+
+// CalcBoundsRadius
+
+// BonerCloneModel
+
+// ReadPersonality
+
+// DisposePersonality
+
+// DisposeAllLoadedPersonalities
+
+// FindOrOpenPersonality
+
+// BuildCharacterInstance
+
+// GetCharacterMatrixPtr
+
+// GetBoneMatrixPtr
+
+// GetCharacterActorPtr
+
+// SetCharacterBonePositions
+
+// MakeCharacterRenderable2
+
+// MakeCharacterRenderable
+
+// CharacterNoLongerRenderable
+
+// CalcCollisionObjectThings
+
+// SetCollisionObject
+
+// FindAndSetSeveredPhysicsSet
+
+// SetSeveredLimbObject
+
+// MakeCharacterCollideworthy2
+
+// MakeCharacterCollideworthy
+
+// GetRootObject
+
+// CharacterNoLongerCollideworthy
+
+// SetObjectV
+
+// SetObjectOmega
+
+// MakePartPhysicallyActive
+
+// TurnPhysicsOn
+
+// MakeCharacterPhysicworthy
+
+// RecalculateOrientationOfRoot
+
+// BonerActiveHalted2
+
+// CharacterNoLongerPhysicworthy
+
+// SetCharacterPhysicsLevel
+
+// StopCharacterMorphing
+
+// MorphCharacterBonePositions
+
+// StopCharacterMove
+
+// MungeCharacterAnimation
+
+// SetOnGroundVector
+
+// ResetAnimation
+
+// SetCharacterMove
+
+// DRMatrix34RotateCos
+
+// DropPointOntoPlane
+
+// SetCharacterDirection
+
+// SetCharacterPosition
+
+// DisposeClonedMaterials
+
+// DisposeAllBonerData
+
+// SetCharacterBoneModel
+
+// SetCharacterBoneModelP
+
+// SetCharacterAllBonesModel
+
+// GetCharacterBoneModel
+
+// GetCharacterModelSet
+
+// BonerPassiveCollision
+
+// BonerActiveHalted
+
+// BonerPedMovedByPhysics
+
+// DismemberCharacter
+
+// GetClearanceFromCharacterInstance
+
+// VectorScaleVector
+
+// ScaleCharacterBone
+
+// ScaleCollisionObject
+
+// ScaleFormBone
+
+// ScaleBone
+
+// MungeAllCharacterMaterials
+
+// MungeAllCharacterObjects
+
+// MungeAllCharacterModels
+
+// DisableOverallMovement
+
+// EnableOverallMovement
+
+// EnableRetainRootMode
+
+// DisableRetainRootMode

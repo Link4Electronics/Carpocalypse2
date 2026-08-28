@@ -50,7 +50,7 @@ void C2_HOOK_FASTCALL ResetPowerups(void);
 
 void C2_HOOK_FASTCALL PrintPowerupIconIn3D(int pX, int pY, tHeadup_icon* pIcon, tPowerup* pPowerup, int pScale, tU32 pTime);
 
-br_actor* C2_HOOK_FASTCALL CreateBillBoard(br_pixelmap* pMap);
+br_actor* C2_HOOK_FASTCALL CreateBillBoard(br_pixelmap* pTexture);
 
 void C2_HOOK_FASTCALL LoadPowerups(void);
 
@@ -206,13 +206,13 @@ int C2_HOOK_FASTCALL GrowATail(tPowerup* powerup, tCar_spec* car);
 
 int C2_HOOK_FASTCALL CutOffTail(tPowerup* powerup, tCar_spec* car);
 
-int C2_HOOK_FASTCALL TurnOnCloaking(tPowerup* powerup, tCar_spec* car);
+int C2_HOOK_FASTCALL TurnOnCloaking(tPowerup* pPowerup, tCar_spec* pCar);
 
-void C2_HOOK_FASTCALL RemoveFromCloakingList(tCar_spec* pCar_spec);
+void C2_HOOK_FASTCALL RemoveFromCloakingList(tCar_spec* pCar);
 
-int C2_HOOK_FASTCALL IsCarCloaked(tCar_spec* pCar_spec);
+int C2_HOOK_FASTCALL IsCarCloaked(tCar_spec* pCar);
 
-void C2_HOOK_FASTCALL TurnOffCloaking(tPowerup* pPowerup, tCar_spec* pCar_spec);
+void C2_HOOK_FASTCALL TurnOffCloaking(tPowerup* pPowerup, tCar_spec* pCar);
 
 void C2_HOOK_FASTCALL ResetPedSpeed(tPowerup* powerup, tCar_spec* car);
 
@@ -282,7 +282,7 @@ void C2_HOOK_FASTCALL ResetPissedPeds(tPowerup* powerup, tCar_spec* car);
 
 void C2_HOOK_FASTCALL ResetPissed(tPowerup* powerup, tCar_spec* car);
 
-void C2_HOOK_FASTCALL TurnOffCloaking(tPowerup* powerup, tCar_spec* car);
+void C2_HOOK_FASTCALL TurnOffCloaking(tPowerup* pPowerup, tCar_spec* pCar);
 
 void C2_HOOK_FASTCALL TheEffectsOfDrugs(tPowerup* powerup, tU32 time);
 

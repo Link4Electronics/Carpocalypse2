@@ -1,7 +1,6 @@
 #include "replay_callbacks.h"
 
 #include "spark.h"
-
 // GLOBAL: CARMA2_HW 0x0065d0c8
 const tReplay_callback gReplay_callbacks[70] = {
     {

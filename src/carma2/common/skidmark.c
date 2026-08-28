@@ -1,6 +1,6 @@
 #include "skidmark.h"
 
-#include "52-errors.h"
+#include "errors.h"
 #include "globvars.h"
 #include "graphics.h"
 #include "loading.h"
@@ -12,8 +12,19 @@
 #include "carpocalypse2_macros.h"
 
 #include "c2_string.h"
+#include "skidmark.h"
 
+// StretchMark
 
+// MaterialFromIndex
+
+// AdjustSkid
+
+// FarFromLine2D
+
+// Reflex2D
+
+// STUB: CARMA2_HW 0x004e9c40
 // GLOBAL: CARMA2_HW 0x0065fe08
 char* gBoring_material_names[2] = {
     "OILSMEAR.MAT",
@@ -26,91 +37,11 @@ char* gMaterial_names[2] = {
     "GIBSMEAR.MAT",
 };
 
-// GLOBAL: CARMA2_HW 0x0074cee8
-br_material* gMaterial[2];
-
 // GLOBAL: CARMA2_HW 0x006a27f0
 tSkid gSkids[100];
 
 // GLOBAL: CARMA2_HW 0x006a27e8
 int gCurrent_skid;
-
-// FUNCTION: CARMA2_HW 0x004e9c40
-void C2_HOOK_FASTCALL InitSkids(void) {
-    int skid;
-    int mat;
-    int sl;
-    br_model* square;
-    br_pixelmap* pm;
-#if defined(CARPOCALYPSE2_FIX_BUGS)
-    char mat_name[32];
-#endif
-    char* str;
-
-    for (mat = 0; mat < CARPOCALYPSE2_ASIZE(gMaterial_names); mat++) {
-        if (gProgram_state.sausage_eater_mode) {
-            str = gBoring_material_names[mat];
-        } else {
-            str = gMaterial_names[mat];
-        }
-        gMaterial[mat] = BrMaterialFind(str);
-        if (gMaterial[mat] == NULL) {
-            if (gProgram_state.sausage_eater_mode) {
-                str = gBoring_material_names[mat];
-            } else {
-                str = gMaterial_names[mat];
-            }
-
-#if defined(CARPOCALYPSE2_FIX_BUGS)
-            // Avoid modification of read-only data by strtok.
-            strcpy(mat_name, str);
-            str = mat_name;
-#endif
-            sl = strlen(strtok(str, "."));
-            strcpy(str + sl, ".PIX");
-            pm = LoadPixelmap(str);
-            if (pm == NULL) {
-                FatalError(kFatalError_CantLoadPixelmapFile_S, str);
-            }
-            BrMapAdd(pm);
-            strcpy(str + sl, ".MAT");
-            gMaterial[mat] = LoadMaterial(str);
-            if (gMaterial[mat] == NULL) {
-                BrFatal("C:\\Carma2\\Source\\Common\\Skidmark.c", 215, "Couldn't find %s", gMaterial_names[mat]);
-            }
-            GlorifyMaterial(&gMaterial[mat], 1, kRendererShadingType_AmbientOnly);
-            BrMaterialAdd(gMaterial[mat]);
-        }
-    }
-
-    C2_HOOK_BUG_ON(sizeof(tSkid) != 28);
-
-    for (skid = 0; skid < CARPOCALYPSE2_ASIZE(gSkids); skid++) {
-        gSkids[skid].actor = BrActorAllocate(BR_ACTOR_MODEL, NULL);
-        BrActorAdd(gOther_selfs[3], gSkids[skid].actor);
-        gSkids[skid].actor->render_style = BR_RSTYLE_NONE;
-        square = BrModelAllocate(NULL, 4, 2);
-        BrVector3Set(&square->vertices[0].p, -0.5f, 0.0f, -0.5f);
-        BrVector3Set(&square->vertices[1].p, -0.5f, 0.0f, 0.5f);
-        BrVector3Set(&square->vertices[2].p, 0.5f, 0.0f, 0.5f);
-        BrVector3Set(&square->vertices[3].p, 0.5f, 0.0f, -0.5f);
-        BrVector2Set(&square->vertices[0].map, 0.0f, 0.0f);
-        BrVector2Set(&square->vertices[1].map, 0.0f, 1.0f);
-        BrVector2Set(&square->vertices[2].map, 1.0f, 1.0f);
-        BrVector2Set(&square->vertices[3].map, 1.0f, 0.0f);
-        square->faces[0].vertices[0] = 0;
-        square->faces[0].vertices[1] = 1;
-        square->faces[0].vertices[2] = 2;
-        square->faces[0].smoothing = 1;
-        square->faces[1].vertices[0] = 0;
-        square->faces[1].vertices[1] = 2;
-        square->faces[1].vertices[2] = 3;
-        square->faces[1].smoothing = 1;
-        square->flags |= BR_MODF_KEEP_ORIGINAL;
-        BrModelAdd(square);
-        gSkids[skid].actor->model = square;
-    }
-}
 
 // FUNCTION: CARMA2_HW 0x004e9ee0
 void C2_HOOK_FASTCALL HideSkid(int pSkid_num) {
@@ -347,3 +278,28 @@ void C2_HOOK_FASTCALL SkidsPerFrame(void) {
         }
     }
 }
+void C2_HOOK_FASTCALL InitSkids(void) {
+#ifndef CARPOCALYPSE2_MATCHING
+    /* stub: no-op for Linux boot */
+#else
+    NOT_IMPLEMENTED();
+#endif
+}
+
+// HideSkid
+
+// HideSkids
+
+// SkidLen
+
+// UglyWidthChange
+
+// GenericSkidSection
+
+// WheelSkidSection
+
+// SkidMark
+
+// InitCarSkidStuff
+
+// SkidsPerFrame

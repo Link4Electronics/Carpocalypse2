@@ -1,13 +1,51 @@
-#ifndef CARPOCALYPSE2_OIL_H
+#ifndef GUARD_OIL_H
+#define GUARD_OIL_H
+
+#include "carpocalypse2_types.h"
+
+
+#include "c2_hooks.h"
+
+extern void C2_HOOK_FASTCALL InitOilSpills(void);
+
+// ResetOilSpills
+
+// QueueOilSpill2
+
+// QueueOilSpill
+
+// OKToSpillOil
+
+// MungeOilsHeightAboveGround
+
+// MungeIndexedOilsHeightAboveGround
+
+// SetInitialOilStuff
+
+// ProcessOilSpills
+
+// GetOilSpillCount
+
+// GetOilSpillDetails
+
+// PointInSpill
+
+// GetOilFrictionFactors
+
+// AdjustOilSpill
+
+// ReceivedOilSpill
+
+// RemoveCarsOilSlicks
+
 #define CARPOCALYPSE2_OIL_H
 
 #include "carpocalypse2_types.h"
 
 #include "c2_hooks.h"
 
-extern int gNext_oil_pixie;
 
-void C2_HOOK_FASTCALL InitOilSpills(void);
+extern int gNext_oil_pixie;
 
 void C2_HOOK_FASTCALL ResetOilSpills(void);
 
@@ -27,4 +65,4 @@ void C2_HOOK_FASTCALL GetOilSpillDetails(int pIndex, br_actor** pActor, br_scala
 
 void C2_HOOK_FASTCALL MungeIndexedOilsHeightAboveGround(int pIndex);
 
-#endif //CARPOCALYPSE2_OIL_H
+#endif // GUARD_OIL_H

@@ -8,6 +8,7 @@
 
 extern int gApplicationDataTwtMounted;
 extern tPath_name gApplication_path;
+extern char gRace_path[256];
 extern const char* gDir_separator;
 
 //extern br_font* gBig_font;
@@ -47,9 +48,6 @@ extern int gRussels_fannies;
 extern char gQuick_time_quality[32];
 extern char gQuick_time_compressor[32];
 extern int gQuick_time_banner_number;
-extern char gQuick_time_banner_texture_name[256];
-extern char gQuick_time_temp_path[256];
-extern char gQuick_time_movie_path_stub[256];
 
 extern int gNet_last_game_type;
 extern int gMap_view;
@@ -166,12 +164,12 @@ extern tBrender_storage gNet_cars_storage_space;
 //extern float gNet_offensive[7];
 //extern float gCar_crush_split_chance;
 extern float gGravity_multiplier;
-//extern float gCar_crush_wibble;
-//extern float gRepair_cost[3];
+extern tFloat_bunch_info gRepair_cost;
+extern tFloat_bunch_info gRecovery_cost;
 extern float gCop_speed_factor;
 extern float gDefault_gravity;
 extern tU32 gKeys_pressed;
-//extern tSpecial_volume* gDefault_water_spec_vol;
+//extern tSpecial_volume* gDefault_default_water_spec_vol;
 //extern float gNet_repair_cost[7];
 extern tU32 gLast_replay_frame_time;
 //extern tU32 gTag_start_time;
@@ -254,5 +252,11 @@ extern int gSound_available;
 //extern int gNumber_of_races;
 extern tPixelFlags gPixelFlags;
 extern int gNo_credits_APO_restore;
+
+extern char gQuick_time_banner_texture_name[256];
+
+extern char gQuick_time_temp_path[256];
+
+extern char gQuick_time_movie_path_stub[256];
 
 #endif // CARPOCALYPSE2_GLOBVARS_H

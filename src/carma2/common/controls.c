@@ -5,7 +5,7 @@
 #include "crush.h"
 #include "depth.h"
 #include "displays.h"
-#include "52-errors.h"
+#include "errors.h"
 #include "finteray.h"
 #include "globvars.h"
 #include "globvrkm.h"
@@ -39,13 +39,16 @@
 #include "c2_string.h"
 
 #include "carpocalypse2_macros.h"
+#include "controls.h"
 
-
+#include "globvars.h"
+#include "platform.h"
+#include "sound.h"
+#include "loading1.h"
+#include "input.h"
+extern tU32* C2_HOOK_FASTCALL KevKeyService(void);
 // GLOBAL: CARMA2_HW 0x0067c474
 int gEntering_message;
-
-// GLOBAL: CARMA2_HW 0x0067c3c8
-char* gAbuse_text[10];
 
 // GLOBAL: CARMA2_HW 0x00590970
 tCheat gKev_keys[] = {
@@ -209,12 +212,6 @@ tU32 gToo_poor_for_recovery_timeout;
 // GLOBAL: CARMA2_HW 0x00659b28
 int gCheckpoint_finder_enabled = 1;
 
-
-// GLOBAL: CARMA2_HW 0x0068b8e4
-int gINT_0068b8e4;
-
-// GLOBAL: CARMA2_HW 0x0068b8e8
-int gINT_0068b8e8;
 
 // GLOBAL: CARMA2_HW 0x0067c460
 int gHad_auto_recover;
@@ -633,9 +630,6 @@ int gInventory_cycling;
 // GLOBAL: CARMA2_HW 0x006a0954
 tU32 gInventory_timeout;
 
-// GLOBAL: CARMA2_HW 0x0067c400
-char gString[84];
-
 // GLOBAL: CARMA2_HW 0x0067c498
 int gInvulnerability;
 
@@ -649,11 +643,45 @@ int gRepair_last_time;
 tU32 gLast_repair_time;
 
 
-// FUNCTION: CARMA2_HW 0x00456950
-void C2_HOOK_FASTCALL SetSoundDetailLevel(int pLevel) {
+void (C2_HOOK_FASTCALL * RichardsSphere_original)(int pNum);
+// GLOBAL: CARMA2_HW 0x0068b8e4
+int gINT_0068b8e4;
 
-    gSound_detail_level = pLevel;
-}
+// GLOBAL: CARMA2_HW 0x0068b8e8
+int gINT_0068b8e8;
+
+// GLOBAL: CARMA2_HW 0x00659b2c
+float gMap_render_x = 80.f;
+
+// GLOBAL: CARMA2_HW 0x00659b30
+float gMap_render_y = 6.f;
+
+// GLOBAL: CARMA2_HW 0x00659b34
+float gMap_render_width = 128.f;
+
+// GLOBAL: CARMA2_HW 0x00659b38
+float gMap_render_height = 80.f;
+
+// GLOBAL: CARMA2_HW 0x0068d8d4
+int gMap_trans;
+
+// GLOBAL: CARMA2_HW 0x0074abac
+int gHeadup_map_x;
+
+// GLOBAL: CARMA2_HW 0x0074abb0
+int gHeadup_map_y;
+
+// GLOBAL: CARMA2_HW 0x0074aba8
+int gHeadup_map_w;
+
+// GLOBAL: CARMA2_HW 0x0074abb4
+int gHeadup_map_h;
+
+// GLOBAL: CARMA2_HW 0x0067c400
+char gString[84];
+
+// GLOBAL: CARMA2_HW 0x0067c3c8
+char* gAbuse_text[10];
 
 // FUNCTION: CARMA2_HW 0x00456960
 void C2_HOOK_FASTCALL ReallySetSoundDetailLevel(int pLevel) {
@@ -663,12 +691,6 @@ void C2_HOOK_FASTCALL ReallySetSoundDetailLevel(int pLevel) {
     gSound_detail_level = pLevel;
     InitSound();
     InitSoundSources();
-}
-
-// FUNCTION: CARMA2_HW 0x004569e0
-int C2_HOOK_FASTCALL GetSoundDetailLevel(void) {
-
-    return gSound_detail_level;
 }
 
 // Key: 'm'
@@ -1406,29 +1428,6 @@ void C2_HOOK_FASTCALL ChangeCameraType(void) {
 void C2_HOOK_FASTCALL ToggleCockpit(void) {
 
     NOT_IMPLEMENTED();
-}
-
-// FUNCTION: CARMA2_HW 0x00444ea0
-void C2_HOOK_FASTCALL DisposeAbuseomatic(void) {
-    int i;
-
-    for (i = 0; i < CARPOCALYPSE2_ASIZE(gAbuse_text); i++) {
-        if (gAbuse_text[i] != NULL) {
-            BrMemFree(gAbuse_text[i]);
-        }
-    }
-}
-
-// FUNCTION: CARMA2_HW 0x00443c50
-void C2_HOOK_FASTCALL CheckForCheatingGits(void) {
-    tU32* keys;
-
-    keys = KevKeyService();
-    if (keys[0] == 0x616fb8ea && keys[0] == 0x7c6100a8) {
-        ToggleSoundEnable();
-        gProgram_state.game_completed = 1;
-        DRS3StartSound(gEffects_outlet, eSoundId_FlaskGone);
-    }
 }
 
 // FUNCTION: CARMA2_HW 0x00443c90
@@ -2204,43 +2203,6 @@ void C2_HOOK_FASTCALL EnterUserMessage(void) {
     }
 }
 
-void C2_HOOK_FASTCALL MapChanged(void) {
-
-    InitMap();
-    SaveOptions();
-}
-
-// FUNCTION: CARMA2_HW 0x00497620
-void C2_HOOK_FASTCALL CheckMapMoveKeys(int pKey0) {
-
-    if (KeyIsDown(31) && pKey0) {
-        gHeadup_map_y_float -= (float)gFrame_period / 20.f;
-        if (gHeadup_map_y_float < 0.f) {
-            gHeadup_map_y_float = 0.f;
-        }
-        MapChanged();
-    } else if (KeyIsDown(32) && pKey0) {
-        gHeadup_map_y_float += (float)gFrame_period / 20.f;
-        if (gHeadup_map_y_float + gHeadup_map_h_float > (float)gBack_screen->height) {
-            gHeadup_map_y_float = (float)(gBack_screen->height - gHeadup_map_h);
-        }
-        MapChanged();
-    }
-    if (KeyIsDown(33) && pKey0) {
-        gHeadup_map_x_float -= (float)gFrame_period / 20.f;
-        if (gHeadup_map_x_float < 0.f) {
-            gHeadup_map_x_float = 0.f;
-        }
-        MapChanged();
-    } else if (KeyIsDown(34) && pKey0) {
-        gHeadup_map_x_float += (float)gFrame_period / 20.f;
-        if (gHeadup_map_x_float + gHeadup_map_w_float + 8.f > (float)gBack_screen->width) {
-            gHeadup_map_x_float = (float)(gBack_screen->width - gHeadup_map_w - 8);
-        }
-        MapChanged();
-    }
-}
-
 // FUNCTION: CARMA2_HW 0x00444270
 void C2_HOOK_FASTCALL PollCameraControls(tU32 pCamera_period) {
     int down0;
@@ -2503,7 +2465,6 @@ void C2_HOOK_FASTCALL SteelBollock(void) {
     NewTextHeadupSlot(4, 0, 2000, -4, "STEEL GONAD O' DEATH");
 }
 
-void (C2_HOOK_FASTCALL * RichardsSphere_original)(int pNum);
 void C2_HOOK_FASTCALL RichardsSphere(int pNum) {
 
     TotallyRepairACar(gCar_to_view);
@@ -2924,43 +2885,6 @@ void C2_HOOK_FASTCALL GotPowerup9(void) {
     GotPowerupN(9);
 }
 
-// FUNCTION: CARMA2_HW 0x00444d70
-void C2_HOOK_FASTCALL InitAbuseomatic(void) {
-    char path[256];
-    char s[256];
-    FILE* f;
-    int i;
-    int len;
-
-    gString[20] = '\0';
-    PDBuildAppPath(path);
-    strcat(path, "ABUSE.TXT");
-    for (i = 0; i < CARPOCALYPSE2_ASIZE(gAbuse_text); i++) {
-        gAbuse_text[i] = NULL;
-    }
-    f = PFfopen(path, "rt");
-    if (f == NULL) {
-        return;
-    }
-    for (i = 0; i < CARPOCALYPSE2_ASIZE(gAbuse_text); i++) {
-        if (PFfgets(s, CARPOCALYPSE2_ASIZE(s) - 1, f) == NULL) {
-            break;
-        }
-        len = strlen(s);
-        if (len > 63) {
-            s[63] = '\0';
-        }
-        len = strlen(s);
-        while (len != 0 && s[len - 1] < ' ') {
-            s[len - 1] = '\0';
-            len--;
-        }
-        gAbuse_text[i] = BrMemAllocate(strlen(s) + 1, kMem_abuse_text);
-        strcpy(gAbuse_text[i], s);
-    }
-    PFfclose(f);
-}
-
 // FUNCTION: CARMA2_HW 0x00441e10
 void C2_HOOK_FASTCALL LookLeft(void) {
 
@@ -3052,3 +2976,225 @@ void C2_HOOK_FASTCALL DisplayUserMessage(void) {
         0);
     the_message[len] = '\0';
 }
+#include "packfile.h"
+#include "platform.h"
+#include "carpocalypse2_macros.h"
+
+#include "c2_string.h"
+
+#include <stdio.h>
+
+// CompleteRace
+
+// AbortRace
+
+// F4Key
+
+// SetFlag
+
+// FinishRace
+
+// EnsureSpecialVolumesHidden
+
+// ShowSpecialVolumesIfRequ
+
+// DoEditModeKey
+
+// F5Key
+
+// F6Key
+
+// F7Key
+
+// F8Key
+
+// F10Key
+
+// F11Key
+
+// F12Key
+
+// NumberKey0
+
+// NumberKey1
+
+// NumberKey2
+
+// NumberKey3
+
+// NumberKey4
+
+// NumberKey5
+
+// NumberKey6
+
+// NumberKey7
+
+// NumberKey8
+
+// NumberKey9
+
+// LookLeft
+
+// LookForward
+
+// LookRight
+
+// ToggleMiniMap
+
+// CheckToggles
+
+// CarWorldOffFallenCheckThingy
+
+// HasCarFallenOffWorld
+
+// CheckForBeingOutOfThisWorld
+
+// CheckHornLocal
+
+// CheckHorn3D
+
+// CheckHorns
+
+// SetQuickRecovery
+
+// SetRecovery
+
+// RecoverCar
+
+// CheckMapRenderMove
+
+// ExplodeCar
+
+// CheckRecoveryOfCars
+
+// TradeInAPO
+
+// CheckOtherRacingKeys
+
+// CheckRecoverCost
+
+// SortOutRecover
+
+// SetFlipUpCar
+
+// AlignChildren
+
+// FlipUpCar
+
+// GetPowerup
+
+// CheckSystemKeys
+
+// FUNCTION: CARMA2_HW 0x00443c50
+void C2_HOOK_FASTCALL CheckForCheatingGits(void) {
+    tU32* keys;
+
+    keys = KevKeyService();
+    if (keys[0] == 0x616fb8ea && keys[0] == 0x7c6100a8) {
+        ToggleSoundEnable();
+        gProgram_state.game_completed = 1;
+        DRS3StartSound(gEffects_outlet, eSoundId_FlaskGone);
+    }
+}
+
+// CheckKevKeys
+
+// BrakeInstantly
+
+// PollCarControls
+
+// PollCameraControls
+
+// SetFlag2
+
+// ToggleFlying
+
+// CycleInvulnerability
+
+// ToggleTimerFreeze
+
+// EarnDosh
+
+// LoseDosh
+
+// ToggleHeadupMap
+
+// HackyMapFixForMac3dfx
+
+// ToggleMap
+
+// GetRecoverVoucherCount
+
+// AddVouchers
+
+// ResetRecoveryVouchers
+
+// CycleYonFactor
+
+// CycleSoundDetailLevel
+
+// CycleCarSimplificationLevel
+
+// ToggleAccessoryRendering
+
+// UserSendMessage
+
+// EnterUserMessage
+
+// DisplayUserMessage
+
+// FUNCTION: CARMA2_HW 0x00444d70
+void C2_HOOK_FASTCALL InitAbuseomatic(void) {
+    char path[256];
+    char s[256];
+    FILE* f;
+    int i;
+    int len;
+
+    gString[20] = '\0';
+    PDBuildAppPath(path);
+    strcat(path, "ABUSE.TXT");
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gAbuse_text); i++) {
+        gAbuse_text[i] = NULL;
+    }
+    f = PFfopen(path, "rt");
+    if (f == NULL) {
+        return;
+    }
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gAbuse_text); i++) {
+        if (PFfgets(s, CARPOCALYPSE2_ASIZE(s) - 1, f) == NULL) {
+            break;
+        }
+        // len = strlen(s);
+        if (strlen(s) > 63) {
+            s[63] = '\0';
+        }
+        len = strlen(s);
+        while (len != 0 && s[len - 1] < ' ') {
+            s[--len] = '\0';
+        }
+        gAbuse_text[i] = BrMemAllocate(strlen(s) + 1, kMem_abuse_text);
+        strcpy(gAbuse_text[i], s);
+    }
+    PFfclose(f);
+}
+
+// FUNCTION: CARMA2_HW 0x00444ea0
+void C2_HOOK_FASTCALL DisposeAbuseomatic(void) {
+    int i;
+
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gAbuse_text); i++) {
+        if (gAbuse_text[i] != NULL) {
+            BrMemFree(gAbuse_text[i]);
+        }
+    }
+}
+
+// ChangeCameraTypeInGame
+
+// SteelBollock
+
+// RichardsSphere
+
+// ToggleHeadupLevel

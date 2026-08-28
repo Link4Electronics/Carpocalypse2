@@ -2,7 +2,7 @@
 
 #include "car.h"
 #include "controls.h"
-#include "52-errors.h"
+#include "errors.h"
 #include "finteray.h"
 #include "globvars.h"
 #include "globvrkm.h"
@@ -31,8 +31,10 @@
 #define CAR_SPEC_IS_OPPONENT(CAR_SPEC) (VEHICLE_TYPE_FROM_ID((CAR_SPEC)->car_ID) == eVehicle_opponent)
 
 #define GET_CAR_SPEED_FACTOR(CAR) (CAR_SPEC_IS_ROZZER(CAR) ? gCop_speed_factor : gOpponent_speed_factor)
+#include "opponent.h"
+#include "globvars.h"
 
-
+#include <c2_hooks.h>
 // GLOBAL: CARMA2_HW 0x0069173c
 int gActive_car_list_rebuild_required;
 
@@ -68,9 +70,6 @@ br_scalar gHead_on_cos_value;
 
 // GLOBAL: CARMA2_HW 0x00691714
 int gBig_bang;
-
-// GLOBAL: CARMA2_HW 0x0065a3cc
-float gOpponent_nastyness_frigger = 1.f;
 
 // GLOBAL: CARMA2_HW 0x00691764
 br_scalar gIn_view_distance;
@@ -144,6 +143,15 @@ float gDefinite_no_cop_pursuit_speed;
 // GLOBAL: CARMA2_HW 0x00691748
 float gCop_pursuit_speed_percentage_multiplier;
 
+// GLOBAL: CARMA2_HW 0x0065a3cc
+float gOpponent_nastyness_frigger = 1.0f;
+
+// GLOBAL: CARMA2_HW 0x0074a684
+int gMinTimeOpponentRepair;
+
+// GLOBAL: CARMA2_HW 0x0074a688
+int gMaxTimeOpponentRepair;
+
 // FUNCTION: CARMA2_HW 0x004013d0
 void C2_HOOK_FASTCALL PointActorAlongThisBloodyVector(br_actor* pThe_actor, br_vector3* pThe_vector) {
     br_transform trans;
@@ -164,12 +172,6 @@ void C2_HOOK_FASTCALL PointActorAlongVectorWithUp(br_actor* pThe_actor, br_vecto
     BrVector3Copy(&trans.t.look_up.up, pUp);
     BrVector3Copy(&trans.t.look_up.t, &pThe_actor->t.t.translate.t);
     BrTransformToTransform(&pThe_actor->t, &trans);
-}
-
-// FUNCTION: CARMA2_HW 0x004aee90
-void C2_HOOK_FASTCALL InitOpponentPsyche(int pOpponent_index) {
-
-    gOpponents[pOpponent_index].psyche.grudge_against_player = 0;
 }
 
 void C2_HOOK_FASTCALL ReallocExtraPathNodes(int pCount) {
@@ -597,15 +599,6 @@ void C2_HOOK_FASTCALL RebuildActiveCarList(void) {
     }
 }
 
-// FUNCTION: CARMA2_HW 0x004a7a60
-void C2_HOOK_FASTCALL ForceRebuildActiveCarList(void) {
-
-    gActive_car_list_rebuild_required = 1;
-    if (gProgram_state.racing) {
-        RebuildActiveCarList();
-    }
-}
-
 // FUNCTION: CARMA2_HW 0x004ae5d0
 void C2_HOOK_FASTCALL DisposeOpponents(void) {
     int i;
@@ -614,32 +607,6 @@ void C2_HOOK_FASTCALL DisposeOpponents(void) {
     for (i = 0; i < gProgram_state.AI_vehicles.number_of_cops; i++) {
         DisposeCar(gProgram_state.AI_vehicles.cops[i].car_spec, (i == gBIG_APC_index) ? 99 : 98);
         BrMemFree(gProgram_state.AI_vehicles.cops[i].car_spec);
-    }
-}
-
-// FUNCTION: CARMA2_HW 0x004ae7e0
-tCar_spec* C2_HOOK_FASTCALL GetCarSpec(tVehicle_type pCategory, int pIndex) {
-
-    switch (pCategory) {
-    case eVehicle_self:
-        return &gProgram_state.current_car;
-    case eVehicle_net_player:
-        if (pIndex < gThis_net_player_index) {
-            return gNet_players[pIndex].car;
-        } else {
-            return gNet_players[pIndex + 1].car;
-        }
-    case eVehicle_opponent:
-        return gProgram_state.AI_vehicles.opponents[pIndex].car_spec;
-    case eVehicle_rozzer:
-        return gProgram_state.AI_vehicles.cops[pIndex].car_spec;
-    case eVehicle_drone:
-        PDEnterDebugger("OPPONENT.C: GetCarSpec() can't return drone car_specs");
-        return NULL;
-    case eVehicle_not_really:
-        return (tCar_spec*)gActive_non_car_list[pIndex];
-    default:
-        return NULL;
     }
 }
 
@@ -662,32 +629,6 @@ const char* C2_HOOK_FASTCALL GetDriverName(tVehicle_type pCategory, int pIndex) 
     case eVehicle_not_really:
     default:
         return NULL;
-    }
-}
-
-// FUNCTION: CARMA2_HW 0x004ae790
-int C2_HOOK_FASTCALL GetCarCount(tVehicle_type pCategory) {
-
-    switch (pCategory) {
-    case eVehicle_self:
-        return 1;
-    case eVehicle_net_player:
-        if (gNet_mode != eNet_mode_none) {
-            return gNumber_of_net_players - 1;
-        } else {
-            return 0;
-        }
-        break;
-    case eVehicle_opponent:
-        return gProgram_state.AI_vehicles.number_of_opponents;
-    case eVehicle_rozzer:
-        return gNumber_of_cops_before_faffage;
-    case eVehicle_drone:
-        return 0;
-    case eVehicle_not_really:
-        return gNum_active_non_cars;
-    default:
-        return 0;
     }
 }
 
@@ -2606,3 +2547,201 @@ float C2_HOOK_FASTCALL GetOpponentsSectionWidth(const tOpponent_spec* pOpponent_
 
     NOT_IMPLEMENTED();
 }
+// DoNotDprintf
+
+// ProcessCurrentObjective
+
+// ReallocExtraPathNodes
+
+// ReallocExtraPathSections
+
+// PointVisibleFromHere
+
+// WeightedFindNearestNodeAndSection
+
+// FindNearestGeneralSection
+
+// FindNearestPathSection
+
+// DeadStopCar
+
+// TurnOpponentPhysicsOn
+
+// TurnOpponentPhysicsOff
+
+// ApplyOppoRenderage2
+
+// NewObjective
+
+// CalcRaceRoute
+
+// TopUpRandomRoute
+
+// SearchForSection
+
+// UpdatePlayersSection
+
+// AllowForDecel
+
+// ShiftOpponentsProjectedRoute
+
+// NewCalcGetNearPlayerRoute
+
+// CalcReturnToStartPointRoute
+
+// ClearOpponentsProjectedRoute
+
+// AddToOpponentsProjectedRoute
+
+// StunTheBugger
+
+// UnStunTheBugger
+
+// ProcessCompleteRace
+
+// StartRecordingTrail
+
+// RecordNextTrailNode
+
+// FindNearestTrailSection
+
+// CalcNextTrailSection
+
+// ProcessPursueAndTwat
+
+// ProcessRunAway
+
+// ProcessWaitForSomeHaplessSod
+
+// ProcessReturnToStart
+
+// ProcessLevitate
+
+// ProcessGetNearPlayer
+
+// ProcessFrozen
+
+// HeadOnWithPlayerPossible
+
+// AlreadyPursuingCar
+
+// LastTwatteeAPlayer
+
+// LastTwatterAPlayer
+
+// ObjectiveComplete
+
+// TeleportOpponentToNearestSafeLocation
+
+// ChooseNewObjective
+
+// ProcessThisOpponent
+
+// IsNetCarActive
+
+// NoteCarsCurrentlyUsed
+
+// AddIfNotInList
+
+// RemoveAnythingStillInList
+
+// RebuildActiveCarList
+
+// STUB: CARMA2_HW 0x004a7a60
+void C2_HOOK_FASTCALL ForceRebuildActiveCarList(void) {
+#ifndef CARPOCALYPSE2_MATCHING
+    /* stub: no-op for Linux boot */
+#else
+    NOT_IMPLEMENTED();
+#endif
+}
+
+// OpponentRepairNecessary
+
+// PossiblyRepairOpponent
+
+// DisplayOpponentRecoveringHeadup
+
+// StartToCheat
+
+// OiStopCheating
+
+// TeleportCopToStart
+
+// CalcDistanceFromHome
+
+// MassageOpponentPosition
+
+// RematerialiseOpponentOnThisSection
+
+// RematerialiseOpponentOnNearestSection
+
+// RematerialiseOpponent
+
+// CalcPlayerConspicuousness
+
+// CalcOpponentConspicuousnessWithAViewToCheatingLikeFuck
+
+// NumberOfOpponentsStillRunning
+
+// ResetPredominantJobbies
+
+// LoadCopCars
+
+// LoadInOppoPaths
+
+// DisposeOpponentPaths
+
+// MungeOpponents
+
+// InitOpponents
+
+// DisposeOpponents
+
+// WakeUpOpponentsToTheFactThatTheStartHasBeenJumped
+
+// STUB: CARMA2_HW 0x004ae790
+int C2_HOOK_FASTCALL GetCarCount(tVehicle_type pCategory) {
+    NOT_IMPLEMENTED();
+}
+
+// STUB: CARMA2_HW 0x004ae7e0
+tCar_spec* C2_HOOK_FASTCALL GetCarSpec(tVehicle_type pCategory, int pIndex) {
+    NOT_IMPLEMENTED();
+}
+
+// GetDriverName
+
+// GetOpponentSpecFromCarSpec
+
+// GetCarSpecFromGlobalOppoIndex
+
+// GetOpponentsRealSection
+
+// GetOpponentsFirstSection
+
+// GetOpponentsNextSection
+
+// GetOpponentsSectionStartNodePoint
+
+// GetOpponentsSectionFinishNodePoint
+
+// GetOpponentsSectionWidth
+
+// GetOpponentsSectionMinSpeed
+
+// GetOpponentsSectionMaxSpeed
+
+// FUNCTION: CARMA2_HW 0x004aee90
+void C2_HOOK_FASTCALL InitOpponentPsyche(int pOpponent_index) {
+
+    gOpponents[pOpponent_index].psyche.grudge_against_player = 0;
+}
+
+// ClearTwattageOccurrenceVariables
+
+// TwoCarsHitEachOther
+
+// RecordOpponentTwattageOccurrence
+
+// GetOpponentMood

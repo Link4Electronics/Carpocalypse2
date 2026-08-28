@@ -22,59 +22,6 @@
 #include "c2_string.h"
 
 #include "carpocalypse2_macros.h"
-
-
-
-// GLOBAL: CARMA2_HW 0x005b39b8
-tFrontend_spec gFrontend_NETWORK = {
-    "Network",
-    0,
-    31,
-    NetworkJoinMenuInfunc,
-    NetworkJoinMenuOutfunc,
-    FRONTEND_NetworkJoinMenuHandler,
-    &gFrontend_MAIN,
-    0,
-    0,
-    0,
-    3,
-    3,
-    2,
-    {
-        { 0x98,     temp,                   NULL,                               0, 17, 18, 0, 0, 0, 0, 0, 1, },
-        { 0xa3,     temp,                   NULL,                               0, 17, 18, 0, 0, 0, 0, 0, 1, },
-        { 0x403,    NetGameTypeUp,          NULL,                               0, 17, 18, 0, 0, 0, 0, 1, 1, },
-        { 0x404,    NetSetRaceType,         NULL,                               0, 17, 18, 0, 0, 0, 0, 1, 1, },
-        { 0x404,    NetSetRaceType,         NULL,                               0, 17, 18, 0, 0, 0, 0, 1, 1, },
-        { 0x404,    NetSetRaceType,         NULL,                               0, 17, 18, 0, 0, 0, 0, 1, 1, },
-        { 0x404,    NetSetRaceType,         NULL,                               0, 17, 18, 0, 0, 0, 0, 1, 1, },
-        { 0x403,    NetGameTypeDn,          NULL,                               0, 17, 18, 0, 0, 0, 0, 1, 1, },
-        { 0xe4,     temp,                   NULL,                               0, 17, 18, 0, 0, 0, 0, 0, 1, },
-        { 0x403,    NetRaceUp,              NULL,                               0, 17, 18, 0, 0, 0, 0, 1, 1, },
-        { 0x404,    NetHostChooseThisRace,  NULL,                               0, 17, 18, 0, 0, 0, 0, 1, 1, },
-        { 0x404,    NetHostChooseThisRace,  NULL,                               0, 17, 18, 0, 0, 0, 0, 1, 1, },
-        { 0x404,    NetHostChooseThisRace,  NULL,                               0, 17, 18, 0, 0, 0, 0, 1, 1, },
-        { 0x404,    NetHostChooseThisRace,  NULL,                               0, 17, 18, 0, 0, 0, 0, 1, 1, },
-        { 0x403,    NetRaceDn,              NULL,                               0, 17, 18, 0, 0, 0, 0, 1, 1, },
-        { 0xe5,     temp,                   &gFrontend_NETWORK_OPTIONS,    0, 17, 18, 0, 0, 0, 0, 1, 1, },
-        { 0x8,      NetCancel,              &gFrontend_MAIN,               0, 17, 18, 0, 0, 0, 0, 1, 1, },
-        { 0x9a,     NetworkStartHost,       NULL,                               0, 17, 18, 0, 0, 0, 0, 1, 1, },
-        { 0x97,     temp,                   NULL,                               0, 17, 18, 0, 0, 0, 0, 0, 1, },
-        { 0x403,    temp,                   NULL,                               0, 17, 18, 0, 0, 0, 0, 1, 1, },
-        { 0x404,    NetJoinChooseThisGame,  NULL,                               0, 17, 18, 0, 0, 0, 0, 1, 1, },
-        { 0x404,    NetJoinChooseThisGame,  NULL,                               0, 17, 18, 0, 0, 0, 0, 1, 1, },
-        { 0x404,    NetJoinChooseThisGame,  NULL,                               0, 17, 18, 0, 0, 0, 0, 1, 1, },
-        { 0x404,    NetJoinChooseThisGame,  NULL,                               0, 17, 18, 0, 0, 0, 0, 1, 1, },
-        { 0x403,    temp,                   NULL,                               0, 17, 18, 0, 0, 0, 0, 1, 1, },
-        { 0xc,      temp,                   NULL,                               0, 17, 18, 0, 0, 0, 0, 0, 1, },
-        { 0x404,    NetGameToggleTyping,    NULL,                               0, 17, 18, 0, 0, 0, 0, 1, 1, },
-        { 0x402,    temp,                   NULL,                               0, 17, 18, 0, 0, 0, 0, 0, 1, },
-        { 0xf,      temp,                   &gFrontend_OPTIONS,            0, 17, 18, 0, 0, 0, 0, 1, 1, },
-        { 0x99,     NetworkStartJoin,       NULL,                               0, 17, 18, 0, 0, 0, 0, 1, 1, },
-        { 0x404,    temp,                   NULL,                               0, 17, 18, 0, 0, 0, 0, 0, 1, },
-    },
-};
-
 // GLOBAL: CARMA2_HW 0x00763920
 tNet_game_type gFrontend_game_type;
 
@@ -96,12 +43,12 @@ tNet_game_details* gGame_to_join;
 // GLOBAL: CARMA2_HW 0x007638e0
 int gFrontend_net_car_index;
 
-// GLOBAL: CARMA2_HW 0x00764ee4
-int gNet_join_host_result;
-
 // GLOBAL: CARMA2_HW 0x00763600
 char gFrontend_host_join_buffer[256];
 
+
+// GLOBAL: CARMA2_HW 0x0068703c
+int gINT_0068703c;
 
 void C2_HOOK_FASTCALL SaveSinglePlayerState(void) {
 
@@ -111,9 +58,6 @@ void C2_HOOK_FASTCALL SaveSinglePlayerState(void) {
     gValid_stashed_save_game = 1;
 }
 
-
-// GLOBAL: CARMA2_HW 0x0068703c
-int gINT_0068703c;
 
 void C2_HOOK_FASTCALL NetworkJoinSetup(void) {
     gINT_0068703c = 0;
@@ -344,17 +288,6 @@ int C2_HOOK_FASTCALL FRONTEND_NetworkJoinMenuHandler(tFrontend_spec* pFrontend) 
     } else {
         return 0;
     }
-}
-
-void C2_HOOK_FASTCALL RefreshNetRacesScroller(tFrontend_spec* pFrontend) {
-    int i;
-
-    for (i = pFrontend->scrollers[1].indexFirstScrollableItem; i <= pFrontend->scrollers[1].indexLastScrollableItem; i++) {
-
-        strcpy(pFrontend->items[i].text, gRace_list[i - pFrontend->scrollers[1].indexFirstScrollableItem + pFrontend->scrollers[1].indexTopItem - pFrontend->scrollers[1].indexFirstScrollableItem].name);
-    }
-    FuckWithWidths(pFrontend);
-    MungeButtonModels(pFrontend, 0);
 }
 
 void C2_HOOK_FASTCALL UpdateNetTrackScroller(tFrontend_spec* pFrontend) {

@@ -1,6 +1,6 @@
 #include "options.h"
 
-#include "52-errors.h"
+#include "errors.h"
 #include "globvars.h"
 #include "loading.h"
 #include "utility.h"
@@ -9,7 +9,16 @@
 
 #include "carpocalypse2_macros.h"
 #include "carpocalypse2_types.h"
-
+// (options.h contents inlined in the merged headers)
+#include "loading1.h"
+#include "packfile.h"
+#include "globvars.h"
+extern void C2_HOOK_FASTCALL LoadKeyMapping(void);
+// GLOBAL: CARMA2_HW 0x006869e0
+extern int gBackup_key_mappings[4][77];
+extern int gKey_map_index;
+extern int gKey_mapping[77];
+extern int gOrig_key_map_index;
 
 // GLOBAL: CARMA2_HW 0x00688458
 char* gKey_names[153];
@@ -19,6 +28,17 @@ int gOrig_key_map_index;
 
 // GLOBAL: CARMA2_HW 0x006869e0
 int gBackup_key_mappings[4][77];
+
+
+#include "errors.h"
+#include "globvars.h"
+#include "loading1.h"
+#include "utility.h"
+
+#include "c2_string.h"
+
+#include "carpocalypse2_macros.h"
+#include "carpocalypse2_types.h"
 
 
 // FUNCTION: CARMA2_HW 0x004b39f0

@@ -1,19 +1,115 @@
-#ifndef CARPOCALYPSE2_FINTERAY_H
+#ifndef GUARD_FINTERAY_H
+#define GUARD_FINTERAY_H
+
+#include "c2_hooks.h"
+#include "carpocalypse2_types.h"
+
+
+// BadDiv
+
+// DRVector2AccumulateScale
+
+// PickBoundsTestRay
+
+// ActorRayPick2D
+
+// DRSceneRayPick2D
+
+// DRModelPick2D
+
+// FindHighestPolyCallBack
+
+// FindHighestCallBack
+
+// ActorFindFace
+
+// EnablePlingMaterials
+
+// DisablePlingMaterials
+
+// StationarySphereSphereCollide
+
+// SphereSphereCollide
+
+// StationarySphereEdgeCollide
+
+// PointSphereCollision
+
+// SphereEdgeCollide
+
+// SpherePolyFaceCollide
+
+// SphereBoxFaceCollide
+
+// SphereFaceCollide
+
+// CheckSingleFace
+
+// MultiRayCheckSingleFace
+
+// GetNewBoundingBox
+
+// FillInBounds
+
+// ActorBoxPick
+
+// ModelPickBox
+
+// ClipToPlaneGE
+
+// ClipToPlaneLE
+
+// BoundsOverlapTest
+
+// BoundsTransformTest
+
+// LineBoxColl
+
+// SphereBoxIntersection
+
+// LineBoxCollWithSphere
+
+// LineSphereColl
+
+// LineSphereCollWithSphere
+
+// LinePolyColl
+
+// SpherePolyIntersection
+
+// LinePolyCollWithSphere
+
+// ShapeRayCast
+
+// ShapeRayCastWithSphere
+
+// CastRayDownThruFaces
+
 #define CARPOCALYPSE2_FINTERAY_H
 
 #include "c2_hooks.h"
 
 #include "carpocalypse2_types.h"
 
+
 extern int gPling_materials;
+
 extern int gTemp_group;
+
 extern int gNearest_face;
+
 extern br_model* gNearest_model;
+
 extern br_actor* gNearest_actor;
+
 extern br_scalar gNearest_T;
+
 extern int gNearest_face_group;
+
 extern br_matrix34 gPick_model_to_view__finteray;
+
 extern tFace_ref* gPling_face;
+
 extern int gActorBoxPick_StopGroovidelics;
 
 void C2_HOOK_FASTCALL EnablePlingMaterials(void);
@@ -60,4 +156,4 @@ int C2_HOOK_FASTCALL ActorBoxPick(tBounds* bnds, br_actor* ap, br_model* model, 
 
 int C2_HOOK_FASTCALL FindFacesInBox(tBounds* bnds, tFace_ref* face_list, int max_face, tWorld_callbacks* pWorld_callbacks);
 
-#endif
+#endif // GUARD_FINTERAY_H

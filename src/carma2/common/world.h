@@ -72,7 +72,7 @@ void C2_HOOK_FASTCALL SetCarSimplificationLevel(int pLevel);
 
 int C2_HOOK_FASTCALL GetCarSimplificationLevel(void);
 
-intptr_t C2_HOOK_CDECL ProcessMaterials(br_actor* pActor, material_cbfn* pCallback);
+intptr_t C2_HOOK_CDECL ProcessMaterials(br_actor* pActor, void* pContext);
 
 intptr_t C2_HOOK_CDECL SetAccessoryRenderingCB(br_actor* pActor, void* pFlag);
 
@@ -100,9 +100,9 @@ int C2_HOOK_FASTCALL IsValidFile(const char* path);
 
 int C2_HOOK_FASTCALL GetLastModificationTime(const char* path);
 
-br_pixelmap* C2_HOOK_FASTCALL LoadTiffTexture_Ex2(const char* texturePathDir, const char* textureName, br_pixelmap* pPalette, int flags, int* errorCode, int useTiffx);
+br_pixelmap* C2_HOOK_FASTCALL LoadTiffTexture_Ex2(const char* pDirectory, const char* pFile_stem, br_pixelmap* pPalette, int pFlags, int* pError_code, int pTiff_palette);
 
-br_pixelmap* C2_HOOK_FASTCALL LoadTiffTexture_Ex(const char* texturePathDir, const char* textureName, br_pixelmap* pPalette, int flags, int* errorCode);
+br_pixelmap* C2_HOOK_FASTCALL LoadTiffTexture_Ex(const char* pDirectory, const char* pFile_stem, br_pixelmap* pPalette, int pFlags, int* pError_code);
 
 br_pixelmap* C2_HOOK_FASTCALL DRLdImg(const char* texturePathDir, const char* textureName, br_pixelmap* pPalette, int flags, int* errorCode);
 
@@ -276,9 +276,9 @@ void C2_HOOK_FASTCALL ProcessModelFaceMaterials(br_model* pModel, tPMFMCB* pCall
 
 intptr_t C2_HOOK_CDECL ProcessFaceMaterials(br_actor* pActor, void* pData);
 
-int C2_HOOK_FASTCALL HasThisSuffix(char* pIdent, char* pSuffix);
+int C2_HOOK_FASTCALL HasThisSuffix(const char* pIdent, const char* pSuffix);
 
-br_material* C2_HOOK_FASTCALL UnsuffixedMaterial(char* pOld_ident, char* pSuffix);
+br_material* C2_HOOK_FASTCALL UnsuffixedMaterial(const char* pOld_ident, const char* pSuffix);
 
 br_material* C2_HOOK_FASTCALL WallLinearToPersp(br_model* pModel, tU16 pFace);
 
@@ -366,27 +366,27 @@ void C2_HOOK_FASTCALL EnableGroovidelic(br_actor *pActor, tU32 pBlock_flags);
 
 br_uint_32 C2_HOOK_CDECL ZlibFsGetAttributes(void);
 
-void* C2_HOOK_CDECL ZlibFsOpenRead(const char*, br_size_t, br_mode_test_cbfn*, int*);
+void* C2_HOOK_CDECL ZlibFsOpenRead(const char* buffer, br_size_t capacity, br_mode_test_cbfn* cbfn, int* type);
 
-void* C2_HOOK_CDECL ZlibFsOpenWrite(const char*, int);
+void* C2_HOOK_CDECL ZlibFsOpenWrite(const char* path, int type);
 
-void C2_HOOK_CDECL ZlibFsClose(void*);
+void C2_HOOK_CDECL ZlibFsClose(void* context);
 
-int C2_HOOK_CDECL ZlibFsEof(void*);
+int C2_HOOK_CDECL ZlibFsEof(void* context);
 
-int C2_HOOK_CDECL ZlibFsGetChr(void*);
+int C2_HOOK_CDECL ZlibFsGetChr(void* context);
 
-void C2_HOOK_CDECL ZlibFsPutChr(int, void*);
+void C2_HOOK_CDECL ZlibFsPutChr(int chr, void* context);
 
-br_size_t C2_HOOK_CDECL ZlibFsRead(void*, br_size_t, unsigned int, void*);
+br_size_t C2_HOOK_CDECL ZlibFsRead(void* buffer, br_size_t elem_size, unsigned int count, void* context);
 
-br_size_t C2_HOOK_CDECL ZlibFsWrite(const void*, br_size_t, unsigned int, void*);
+br_size_t C2_HOOK_CDECL ZlibFsWrite(const void* buffer, br_size_t elem_size, unsigned int count, void* context);
 
-br_size_t C2_HOOK_CDECL ZlibFsGetLine(char*, br_size_t, void*);
+br_size_t C2_HOOK_CDECL ZlibFsGetLine(char* buffer, br_size_t capacity, void* context);
 
-void C2_HOOK_CDECL ZlibFsPutLine(char*, void*);
+void C2_HOOK_CDECL ZlibFsPutLine(char* line, void* context);
 
-void C2_HOOK_CDECL ZlibFsAdvance(br_size_t, void*);
+void C2_HOOK_CDECL ZlibFsAdvance(br_size_t advance, void* context);
 
 tSpecial_volume* C2_HOOK_FASTCALL FindSpecialVolume(br_vector3* pP, tSpecial_volume* pLast_vol, int pArg3);
 

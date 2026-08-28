@@ -1,6 +1,6 @@
 #include "drmem.h"
 
-#include "52-errors.h"
+#include "errors.h"
 #include "loading.h"
 
 #include "carpocalypse2_macros.h"
@@ -10,10 +10,33 @@
 
 #include <stdio.h>
 #include "c2_stdlib.h"
+#include "drmem.h"
 
+#include "brender/brender.h"
+#include "errors.h"
+
+#include "carpocalypse2_macros.h"
+#include "carpocalypse2_types.h"
+
+#ifdef CARPOCALYPSE2_MATCHING
+#include <windows.h>
+#endif
+// GLOBAL: CARMA2_HW 0x005933e8
+extern const char* gMem_names[256];
+// GLOBAL: CARMA2_HW 0x00681fa0
+FILE* gGlobalPackedFile;
+
+// GLOBAL: CARMA2_HW 0x006815c8
+br_resource_class gStainless_classes[126];
 
 // GLOBAL: CARMA2_HW 0x005937e8
-br_allocator gAllocator = { "Death Race", DRStdlibAllocate, DRStdlibFree, DRStdlibInquire, Claim4ByteAlignment };
+br_allocator gAllocator = {
+    "Death Race",
+    DRStdlibAllocate,
+    DRStdlibFree,
+    DRStdlibInquire,
+    Claim4ByteAlignment
+};
 
 // GLOBAL: CARMA2_HW 0x00681fa4
 int gNon_fatal_allocation_errors;
@@ -278,11 +301,29 @@ const char* gMem_names[256] = {
     NULL,
 };
 
-// GLOBAL: CARMA2_HW 0x006815c8
-br_resource_class gStainless_classes[126];
+#ifdef CARPOCALYPSE2_MATCHING
+// GLOBAL: CARMA2_HW 0x00681fa8
+br_size_t gPage_size;
 
-// GLOBAL: CARMA2_HW 0x00681fa0
-FILE* gGlobalPackedFile;
+// GLOBAL: CARMA2_HW 0x0079ea80
+SYSTEM_INFO gSystem_info;
+#endif
+// FUNCTION: CARMA2_HW 0x0044c810
+int C2_HOOK_FASTCALL AllocationErrorsAreFatal(void) {
+
+    return !gNon_fatal_allocation_errors;
+}
+
+// FUNCTION: CARMA2_HW 0x0044c830
+void C2_HOOK_FASTCALL CloseGlobalPackedFile(void) {
+
+    if (gGlobalPackedFile != NULL) {
+        PFfclose(gGlobalPackedFile);
+        gGlobalPackedFile = NULL;
+    }
+}
+#ifdef CARPOCALYPSE2_MATCHING
+#endif
 
 // FUNCTION: CARMA2_HW 0x0044c7f0
 void C2_HOOK_FASTCALL SetNonFatalAllocationErrors(void) {
@@ -296,23 +337,9 @@ void C2_HOOK_FASTCALL ResetNonFatalAllocationErrors(void) {
     gNon_fatal_allocation_errors = 0;
 }
 
-// FUNCTION: CARMA2_HW 0x0044c810
-int C2_HOOK_FASTCALL AllocationErrorsAreFatal(void) {
-
-    return !gNon_fatal_allocation_errors;
-}
-
 // FUNCTION: CARMA2_HW 0x0044c820
 void C2_HOOK_FASTCALL MAMSInitMem(void) {
-}
 
-// FUNCTION: CARMA2_HW 0x0044c830
-void C2_HOOK_FASTCALL CloseGlobalPackedFile(void) {
-
-    if (gGlobalPackedFile != NULL) {
-        PFfclose(gGlobalPackedFile);
-        gGlobalPackedFile = NULL;
-    }
 }
 
 // FUNCTION: CARMA2_HW 0x0044c850
@@ -322,10 +349,33 @@ void C2_HOOK_FASTCALL PrintMemoryDump(int pFlags, char* pTitle) {
 
 // FUNCTION: CARMA2_HW 0x0044c8c0
 void* C2_HOOK_CDECL DRStdlibAllocate(br_size_t size, br_uint_8 type) {
-
     void* p;
     char s[256];
 
+#ifdef CARPOCALYPSE2_MATCHING
+    if (size != 0) {
+        p = HeapAlloc(GetProcessHeap(), 0, size);
+        if (p != NULL) {
+            br_size_t o;
+            if (gPage_size == 0) {
+                GetSystemInfo(&gSystem_info);
+                gPage_size = gSystem_info.dwPageSize;
+            }
+            for (o = gPage_size * 16; o < size; o += gPage_size) {
+                volatile br_uint_8 *ptr1 = (br_uint_8*)p + (o - 16 * gPage_size);
+                volatile br_uint_8 *ptr2 = (br_uint_8*)p + o;
+                *ptr1 = *ptr1;
+                *ptr2 = *ptr2;
+            }
+            return p;
+        }
+        if (!gNon_fatal_allocation_errors) {
+            sprintf(s, "%s/%d", gMem_names[type], size);
+            FatalError(kFatalError_OOM_S, s);
+        }
+    }
+    return NULL;
+#else
     if (size != 0) {
         p = malloc(size);
         if (p == NULL && !gNon_fatal_allocation_errors) {
@@ -335,11 +385,20 @@ void* C2_HOOK_CDECL DRStdlibAllocate(br_size_t size, br_uint_8 type) {
         return p;
     }
     return NULL;
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0044c990
 void C2_HOOK_CDECL DRStdlibFree(void* mem) {
+
+    #ifdef CARPOCALYPSE2_MATCHING
+    if (mem == NULL) {
+        FatalError(kFatalError_OOM_S, "NULL POINTER BEING FREED");
+    }
+    HeapFree(GetProcessHeap(), 0, mem);
+#else
     free(mem);
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0044c9c0
@@ -358,11 +417,15 @@ void C2_HOOK_FASTCALL InstallDRMemCalls(void) {
     BrAllocatorSet(&gAllocator);
 }
 
+// MAMSUnlock (see plaform)
+
+// MAMSLock (see plaform)
+
 // FUNCTION: CARMA2_HW 0x0044ca40
 void C2_HOOK_FASTCALL CreateStainlessClasses(void) {
     int i;
 
-    for (i = 129; i < 129 + CARPOCALYPSE2_ASIZE(gStainless_classes); i++) {
+    for (i = 129; i < 129 + (int)CARPOCALYPSE2_ASIZE(gStainless_classes); i++) {
         gStainless_classes[i - 129].res_class = i;
         if (!BrResClassAdd(&gStainless_classes[i - 129])) {
             FatalError(kFatalError_OOM_S);
@@ -372,4 +435,5 @@ void C2_HOOK_FASTCALL CreateStainlessClasses(void) {
 
 // FUNCTION: CARMA2_HW 0x0044ca80
 void C2_HOOK_FASTCALL CheckMemory(void) {
+
 }

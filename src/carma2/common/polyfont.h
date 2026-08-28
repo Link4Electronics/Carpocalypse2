@@ -15,13 +15,13 @@ extern int gRender_poly_text;
 extern int gInterface_polyfont_texture_pages;
 extern int gInterface_fonts_loaded;
 
-void C2_HOOK_FASTCALL CheckAvailabilityOfThisFont(int pIndex);
+void C2_HOOK_FASTCALL CheckAvailabilityOfThisFont(int pFont);
 
-int C2_HOOK_FASTCALL PolyFontHeight(int pIndex);
+int C2_HOOK_FASTCALL PolyFontHeight(int pFont_index);
 
-int C2_HOOK_FASTCALL CharacterWidth(int pIndex, tU8 pCharacter);
+int C2_HOOK_FASTCALL CharacterWidth(int pFont_index, tU8 pCharacter);
 
-int C2_HOOK_FASTCALL GetSpacing(int pIndex);
+int C2_HOOK_FASTCALL GetSpacing(int pFont_index);
 
 void C2_HOOK_FASTCALL SolidPolyFontTextInABox(int pFont, const char* pText, int pX, int pY, int pWidth, int pHeight, tJustification pJustification, undefined4 pParam_8);
 
@@ -53,7 +53,7 @@ int C2_HOOK_FASTCALL PolyFontTextWidth(int pFont, const char* pText);
 
 void C2_HOOK_FASTCALL RenderPolyTextLine(const char *pText, int pX, int pY, int pFont, tJustification pJust, int pRender);
 
-void C2_HOOK_FASTCALL TransparentPolyFontText(const char* pText, int pX, int pY, int pFont, tJustification pJust, int pRender, double pOpacity_factor);
+void C2_HOOK_FASTCALL TransparentPolyFontText(const char *pText, int pX, int pY, int pFont, tJustification pJust, int pRender, double pOpacity_factor);
 
 void C2_HOOK_FASTCALL PolyClipName(char *pText, int pFont, int pWidth);
 

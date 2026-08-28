@@ -1,7 +1,7 @@
 #include "flicplay.h"
 
 #include "displays.h"
-#include "52-errors.h"
+#include "errors.h"
 #include "globvars.h"
 #include "graphics.h"
 #include "input.h"
@@ -17,8 +17,10 @@
 #include "carpocalypse2_macros.h"
 
 #include "c2_string.h"
+#include "flicplay.h"
 
-
+#include "carpocalypse2_types.h"
+#include "carpocalypse2_macros.h"
 // GLOBAL: CARMA2_HW 0x00686218
 tFlic_descriptor gPanel_flic[2];
 
@@ -50,13 +52,125 @@ int gPalette_fuck_prevention;
 int gTransparency_on;
 
 // GLOBAL: CARMA2_HW 0x006861dc
-int gTranslation_count;
-
+extern int gTranslation_count;
 // GLOBAL: CARMA2_HW 0x00686210
 tTranslation_record* gTranslations;
 
 // GLOBAL: CARMA2_HW 0x006861e0
 tDR_font* gTrans_fonts[2];
+
+// GLOBAL: CARMA2_HW 0x005964d0
+extern tFlic_spec gMain_flic_list[372];
+// GLOBAL: CARMA2_HW 0x00686328
+tU32 gSound_time;
+
+// GLOBAL: CARMA2_HW 0x00686300
+int gSound_ID;
+
+// GLOBAL: CARMA2_HW 0x0068630c
+int gDark_mode;
+
+// GLOBAL: CARMA2_HW 0x00599920
+int gFlic_bunch0[29] = {
+    0, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 35, 26,
+    27, 36, 28, 29, 130, 131, 132, 42, 43, 135, 45
+};
+
+// GLOBAL: CARMA2_HW 0x00599998
+int gFlic_bunch1[31] = {
+    140, 141, 42, 43, 144, 145, 146, 147, 45, 150, 151, 42, 43, 154, 155,
+    156, 160, 161, 42, 43, 154, 170, 171, 176, 177, 172, 180, 181, 42, 43, 154
+};
+
+// GLOBAL: CARMA2_HW 0x00599a18
+int gFlic_bunch2[8] = {
+    70, 71, 72, 73, 74, 56, 57, 59
+};
+
+// GLOBAL: CARMA2_HW 0x00599a38
+int gFlic_bunch3[13] = {
+    40, 41, 42, 43, 44, 45, 50, 51, 73, 74, 56, 57, 59
+};
+
+// GLOBAL: CARMA2_HW 0x00599a70
+int gFlic_bunch4[22] = {
+    80, 81, 82, 83, 84, 85, 42, 43, 88, 45, 110, 111, 42, 43, 45, 115,
+    116, 117, 118, 119, 120, 121
+};
+
+// GLOBAL: CARMA2_HW 0x00599ac8
+int gFlic_bunch5[5] = {
+    100, 101, 42, 43, 45
+};
+
+// GLOBAL: CARMA2_HW 0x00599ae0
+int gFlic_bunch6[51] = {
+    190, 191, 192, 42, 43, 195, 200, 201, 210, 212, 213, 220, 221, 222,
+    220, 221, 225, 230, 231, 42, 43, 154, 45, 220, 221, 222, 220, 221,
+    225, 250, 251, 42, 43, 254, 255, 256, 154, 42, 43, 260, 220, 221,
+    222, 220, 221, 225, 280, 281, 42, 43, 284
+};
+
+// GLOBAL: CARMA2_HW 0x00599bb0
+int gFlic_bunch7[7] = {
+    130, 131, 132, 42, 43, 135, 45
+};
+
+// GLOBAL: CARMA2_HW 0x00599bd0
+int gFlic_bunch8[16] = {
+    290, 291, 292, 293, 294, 295, 296, 297, 42, 43, 154, 301, 42, 43, 304, 305
+};
+
+// GLOBAL: CARMA2_HW 0x00599c10
+tFlic_bunch gFlic_bunch[9] = {
+    { CARPOCALYPSE2_ASIZE(gFlic_bunch0), gFlic_bunch0 },
+    { CARPOCALYPSE2_ASIZE(gFlic_bunch1), gFlic_bunch1 },
+    { CARPOCALYPSE2_ASIZE(gFlic_bunch2), gFlic_bunch2 },
+    { CARPOCALYPSE2_ASIZE(gFlic_bunch3), gFlic_bunch3 },
+    { CARPOCALYPSE2_ASIZE(gFlic_bunch4), gFlic_bunch4 },
+    { CARPOCALYPSE2_ASIZE(gFlic_bunch5), gFlic_bunch5 },
+    { CARPOCALYPSE2_ASIZE(gFlic_bunch6), gFlic_bunch6 },
+    { CARPOCALYPSE2_ASIZE(gFlic_bunch7), gFlic_bunch7 },
+    { CARPOCALYPSE2_ASIZE(gFlic_bunch8), gFlic_bunch8 },
+};
+
+// GLOBAL: CARMA2_HW 0x006861e8
+extern tFlic_descriptor* gFirst_flic;
+// GLOBAL: CARMA2_HW 0x006862f8
+tU32 gLast_panel_frame_time[2];
+
+// GLOBAL: CARMA2_HW 0x006861f8
+tU32 gPanel_flic_data_length[2];
+
+// GLOBAL: CARMA2_HW 0x006861d0
+tU8* gPanel_flic_data[2];
+
+// GLOBAL: CARMA2_HW 0x00686314
+int gPanel_flic_disable;
+
+// GLOBAL: CARMA2_HW 0x0068620c
+int gPending_pending_flic;
+
+// GLOBAL: CARMA2_HW 0x005964c8
+int gPending_flic = -1;
+
+// GLOBAL: CARMA2_HW 0x0068b8b4
+float gFlic_sound_delay_pre_smack;
+
+// GLOBAL: CARMA2_HW 0x0068b8b8
+float gFlic_sound_delay_post_smack;
+
+// GLOBAL: CARMA2_HW 0x0068b8bc
+float gFlic_sound_delay_not_in_demo;
+
+// GLOBAL: CARMA2_HW 0x0068b8c0
+float gFlic_sound_delay_post_demo;
+
+// GLOBAL: CARMA2_HW 0x006861dc
+int gTranslation_count;
+
+// GLOBAL: CARMA2_HW 0x006861e8
+tFlic_descriptor* gFirst_flic;
 
 // GLOBAL: CARMA2_HW 0x005964d0
 tFlic_spec gMain_flic_list[372] = {
@@ -93,32 +207,32 @@ tFlic_spec gMain_flic_list[372] = {
     { "MAI2STIL.FLI", 0, 0, 0, 0, 0, 0, },
     { "MAI2COME.FLI", 0, 0, 0, 0, 0, 0, },
     { "MAI2AWAY.FLI", 0, 1, 0, 0, 0, 0, },
-    { "", 0, 0, 0, 0, 0, 0, },
-    { "", 0, 0, 0, 0, 0, 0, },
+    { "", },
+    { "", },
     { "MAINRCGY.FLI", 0, 0, 0, 0, 0, 0, },
     { "MAINARGY.FLI", 0, 0, 0, 0, 0, 0, },
-    { "", 0, 0, 0, 0, 0, 0, },
-    { "", 0, 0, 0, 0, 0, 0, },
-    { "", 0, 0, 0, 0, 0, 0, },
+    { "", },
+    { "", },
+    { "", },
     { "SVVYSTIL.FLI", 0, 0, 0, 0, 0, 0, },
     { "SVVYAWAY.FLI", 0, 1, 0, 0, 0, 0, },
     { "BGBUTTFL.FLI", 0, 0, 0, 0, 0, 0, },
     { "BGBUTTGL.FLI", 0, 0, 0, 0, 0, 0, },
     { "SVVYOKIN.FLI", 0, 0, 0, 0, 0, 0, },
     { "CANBUTIN.FLI", 0, 0, 0, 0, 0, 0, },
-    { "", 0, 0, 0, 0, 0, 0, },
-    { "", 0, 0, 0, 0, 0, 0, },
-    { "", 0, 0, 0, 0, 0, 0, },
-    { "", 0, 0, 0, 0, 0, 0, },
+    { "", },
+    { "", },
+    { "", },
+    { "", },
     { "SAVECOME.FLI", 0, 0, 0, 0, 0, 0, },
     { "SAVEAWAY.FLI", 0, 1, 0, 0, 0, 0, },
     { "SMLBUTFL.FLI", 0, 0, 0, 0, 0, 0, },
     { "SMLBUTGL.FLI", 0, 0, 0, 0, 0, 0, },
-    { "", 0, 0, 0, 0, 0, 0, },
-    { "", 0, 0, 0, 0, 0, 0, },
+    { "", },
+    { "", },
     { "SMLBUTFL.FLI", 0, 0, 0, 0, 0, 0, },
     { "SMLBUTGL.FLI", 0, 0, 0, 0, 0, 0, },
-    { "", 0, 0, 0, 0, 0, 0, },
+    { "", },
     { "SAVECAIN.FLI", 0, 0, 0, 0, 0, 0, },
     { "NRACCOME.FLI", 0, 0, 0, 0, 0, 0, },
     { "NRACAWAY.FLI", 0, 0, 0, 0, 0, 0, },
@@ -209,17 +323,17 @@ tFlic_spec gMain_flic_list[372] = {
     { "OPTNGRIN.FLI", 0, 0, 0, 0, 0, 0, },
     { "OPTNMSIN.FLI", 0, 0, 0, 0, 0, 0, },
     { "NOPT11FL.FLI", 0, 0, 0, 0, 0, 0, },
-    { "", 0, 0, 0, 0, 0, 0, },
+    { "", },
     { "SNDOCOME.FLI", 0, 0, 0, 0, 0, 0, },
     { "SNDOAWAY.FLI", 0, 1, 0, 0, 0, 0, },
-    { "", 0, 0, 0, 0, 0, 0, },
-    { "", 0, 0, 0, 0, 0, 0, },
+    { "", },
+    { "", },
     { "DNEBUTIN.FLI", 0, 0, 0, 0, 0, 0, },
     { "SNDOOLFL.FLI", 0, 0, 0, 0, 0, 0, },
     { "SNDOOLGL.FLI", 0, 0, 0, 0, 0, 0, },
-    { "", 0, 0, 0, 0, 0, 0, },
-    { "", 0, 0, 0, 0, 0, 0, },
-    { "", 0, 0, 0, 0, 0, 0, },
+    { "", },
+    { "", },
+    { "", },
     { "GRPHCOME.FLI", 0, 0, 0, 0, 0, 0, },
     { "GRPHAWAY.FLI", 0, 1, 0, 0, 0, 0, },
     { "NCHO00GL.FLI", 0, 0, 0, 0, 0, 0, },
@@ -229,7 +343,7 @@ tFlic_spec gMain_flic_list[372] = {
     { "NCHO04GL.FLI", 0, 0, 0, 0, 0, 0, },
     { "NCHO05GL.FLI", 0, 0, 0, 0, 0, 0, },
     { "NCHO06GL.FLI", 0, 0, 0, 0, 0, 0, },
-    { "", 0, 0, 0, 0, 0, 0, },
+    { "", },
     { "CNTLCOME.FLI", 0, 0, 0, 0, 0, 0, },
     { "CNTLAWAY.FLI", 0, 1, 0, 0, 0, 0, },
     { "CNTLDNIN.FLI", 0, 0, 0, 0, 0, 0, },
@@ -238,7 +352,7 @@ tFlic_spec gMain_flic_list[372] = {
     { "CNTLMRIN.FLI", 0, 0, 0, 0, 0, 0, },
     { "CNTLDNFL.FLI", 0, 0, 0, 0, 0, 0, },
     { "CNTLDNGL.FLI", 0, 0, 0, 0, 0, 0, },
-    { "", 0, 0, 0, 0, 0, 0, },
+    { "", },
     { "CNTLSTIL.FLI", 0, 0, 0, 0, 0, 0, },
     { "OTHRCOME.FLI", 0, 0, 0, 0, 0, 0, },
     { "OTHRAWAY.FLI", 0, 1, 0, 0, 0, 0, },
@@ -249,17 +363,17 @@ tFlic_spec gMain_flic_list[372] = {
     { "NCHO04FL.FLI", 0, 0, 0, 0, 0, 0, },
     { "NCHO05FL.FLI", 0, 0, 0, 0, 0, 0, },
     { "NCHO06FL.FLI", 0, 0, 0, 0, 0, 0, },
-    { "", 0, 0, 0, 0, 0, 0, },
+    { "", },
     { "STRTSTIL.FLI", 0, 0, 0, 0, 0, 0, },
     { "STRTCOME.FLI", 0, 0, 0, 0, 0, 0, },
     { "STRTAWAY.FLI", 0, 1, 0, 0, 0, 0, },
     { "CNTL00FL.FLI", 0, 0, 0, 0, 0, 0, },
     { "CNTL00GL.FLI", 0, 0, 0, 0, 0, 0, },
     { "STRTCRIN.FLI", 0, 0, 0, 0, 0, 0, },
-    { "", 0, 0, 0, 0, 0, 0, },
-    { "", 0, 0, 0, 0, 0, 0, },
-    { "", 0, 0, 0, 0, 0, 0, },
-    { "", 0, 0, 0, 0, 0, 0, },
+    { "", },
+    { "", },
+    { "", },
+    { "", },
     { "STRTPSIN.FLI", 0, 0, 0, 0, 0, 0, },
     { "STRTSRIN.FLI", 0, 0, 0, 0, 0, 0, },
     { "STRTCCIN.FLI", 0, 0, 0, 0, 0, 0, },
@@ -271,31 +385,31 @@ tFlic_spec gMain_flic_list[372] = {
     { "NTSHSTEN.FLI", 0, 0, 0, 0, 0, 0, },
     { "NTSXSTIL.FLI", 0, 0, 0, 0, 0, 0, },
     { "VWSC2IN.FLI", 0, 0, 0, 0, 0, 0, },
-    { "", 0, 0, 0, 0, 0, 0, },
+    { "", },
     { "VWIN2OPP.FLI", 0, 0, 0, 0, 0, 0, },
     { "VWOPP2SC.FLI", 0, 0, 0, 0, 0, 0, },
-    { "", 0, 0, 0, 0, 0, 0, },
-    { "", 0, 0, 0, 0, 0, 0, },
-    { "", 0, 0, 0, 0, 0, 0, },
-    { "", 0, 0, 0, 0, 0, 0, },
-    { "", 0, 0, 0, 0, 0, 0, },
-    { "", 0, 0, 0, 0, 0, 0, },
+    { "", },
+    { "", },
+    { "", },
+    { "", },
+    { "", },
+    { "", },
     { "2BUTONFL.FLI", 0, 0, 0, 0, 0, 0, },
     { "2BUTONGL.FLI", 0, 0, 0, 0, 0, 0, },
     { "VWOPUPIN.FLI", 0, 0, 0, 0, 0, 0, },
     { "VWOPDWFL.FLI", 0, 0, 0, 0, 0, 0, },
     { "VWOPDWGL.FLI", 0, 0, 0, 0, 0, 0, },
     { "VWOPDWIN.FLI", 0, 0, 0, 0, 0, 0, },
-    { "", 0, 0, 0, 0, 0, 0, },
-    { "", 0, 0, 0, 0, 0, 0, },
-    { "", 0, 0, 0, 0, 0, 0, },
-    { "", 0, 0, 0, 0, 0, 0, },
+    { "", },
+    { "", },
+    { "", },
+    { "", },
     { "CHRCCOME.FLI", 0, 0, 0, 0, 0, 0, },
     { "CHRCAWAY.FLI", 0, 1, 0, 0, 0, 0, },
-    { "", 0, 0, 0, 0, 0, 0, },
-    { "", 0, 0, 0, 0, 0, 0, },
-    { "", 0, 0, 0, 0, 0, 0, },
-    { "", 0, 0, 0, 0, 0, 0, },
+    { "", },
+    { "", },
+    { "", },
+    { "", },
     { "CHCRCOME.FLI", 0, 0, 0, 0, 0, 0, },
     { "CHCRAWAY.FLI", 0, 1, 0, 0, 0, 0, },
     { "GRPH00GL.FLI", 0, 0, 0, 0, 0, 0, },
@@ -312,14 +426,14 @@ tFlic_spec gMain_flic_list[372] = {
     { "GRPH11GL.FLI", 0, 0, 0, 0, 0, 0, },
     { "PARTCOME.FLI", 0, 0, 0, 0, 0, 0, },
     { "PARTAWAY.FLI", 0, 1, 0, 0, 0, 0, },
-    { "", 0, 0, 0, 0, 0, 0, },
+    { "", },
     { "PARTARGL.FLI", 0, 0, 0, 0, 0, 0, },
     { "PARTARIN.FLI", 0, 0, 0, 0, 0, 0, },
     { "PARTPFIN.FLI", 0, 0, 0, 0, 0, 0, },
     { "PARTOFIN.FLI", 0, 0, 0, 0, 0, 0, },
-    { "", 0, 0, 0, 0, 0, 0, },
-    { "", 0, 0, 0, 0, 0, 0, },
-    { "", 0, 0, 0, 0, 0, 0, },
+    { "", },
+    { "", },
+    { "", },
     { "PARTEXIN.FLI", 0, 0, 0, 0, 0, 0, },
     { "PARTSPIN.FLI", 0, 0, 0, 0, 0, 0, },
     { "PARTARGL.FLI", 0, 0, 0, 0, 0, 0, },
@@ -337,19 +451,19 @@ tFlic_spec gMain_flic_list[372] = {
     { "GRPH09FL.FLI", 0, 0, 0, 0, 0, 0, },
     { "GRPH10FL.FLI", 0, 0, 0, 0, 0, 0, },
     { "GRPH11FL.FLI", 0, 0, 0, 0, 0, 0, },
-    { "", 0, 0, 0, 0, 0, 0, },
-    { "", 0, 0, 0, 0, 0, 0, },
-    { "", 0, 0, 0, 0, 0, 0, },
+    { "", },
+    { "", },
+    { "", },
     { "PSRMCOME.FLI", 0, 0, 0, 0, 0, 0, },
     { "PSRMAWAY.FLI", 0, 1, 0, 0, 0, 0, },
-    { "", 0, 0, 0, 0, 0, 0, },
-    { "", 0, 0, 0, 0, 0, 0, },
+    { "", },
+    { "", },
     { "PSRMDIIN.FLI", 0, 0, 0, 0, 0, 0, },
     { "RADBUTFL.FLI", 0, 0, 0, 0, 0, 0, },
     { "RADBUTGL.FLI", 0, 0, 0, 0, 0, 0, },
     { "RADBUTOF.FLI", 0, 0, 0, 0, 0, 0, },
     { "RADBUTON.FLI", 0, 0, 0, 0, 0, 0, },
-    { "", 0, 0, 0, 0, 0, 0, },
+    { "", },
     { "GRIDSTIL.FLI", 0, 0, 0, 0, 0, 0, },
     { "GRIDAWAY.FLI", 0, 1, 0, 0, 0, 0, },
     { "GRIDLFFL.FLI", 0, 0, 0, 0, 0, 0, },
@@ -358,28 +472,28 @@ tFlic_spec gMain_flic_list[372] = {
     { "GRIDRTFL.FLI", 0, 0, 0, 0, 0, 0, },
     { "GRIDRTGL.FLI", 0, 0, 0, 0, 0, 0, },
     { "GRIDRTIN.FLI", 0, 0, 0, 0, 0, 0, },
-    { "", 0, 0, 0, 0, 0, 0, },
-    { "", 0, 0, 0, 0, 0, 0, },
-    { "", 0, 0, 0, 0, 0, 0, },
+    { "", },
+    { "", },
+    { "", },
     { "DARECOME.FLI", 0, 0, 0, 0, 0, 0, },
-    { "", 0, 0, 0, 0, 0, 0, },
-    { "", 0, 0, 0, 0, 0, 0, },
+    { "", },
+    { "", },
     { "DAREACIN.FLI", 0, 0, 0, 0, 0, 0, },
     { "DARECHIN.FLI", 0, 0, 0, 0, 0, 0, },
-    { "", 0, 0, 0, 0, 0, 0, },
-    { "", 0, 0, 0, 0, 0, 0, },
-    { "", 0, 0, 0, 0, 0, 0, },
-    { "", 0, 0, 0, 0, 0, 0, },
+    { "", },
+    { "", },
+    { "", },
+    { "", },
     { "SUM1STIL.FLI", 0, 0, 0, 0, 0, 0, },
     { "SUM1AWAY.FLI", 0, 1, 0, 0, 0, 0, },
-    { "", 0, 0, 0, 0, 0, 0, },
-    { "", 0, 0, 0, 0, 0, 0, },
-    { "", 0, 0, 0, 0, 0, 0, },
-    { "", 0, 0, 0, 0, 0, 0, },
-    { "", 0, 0, 0, 0, 0, 0, },
-    { "", 0, 0, 0, 0, 0, 0, },
-    { "", 0, 0, 0, 0, 0, 0, },
-    { "", 0, 0, 0, 0, 0, 0, },
+    { "", },
+    { "", },
+    { "", },
+    { "", },
+    { "", },
+    { "", },
+    { "", },
+    { "", },
     { "SUM2STIL.FLI", 0, 0, 0, 0, 0, 0, },
     { "BGBUT8GL.FLI", 0, 0, 0, 0, 0, 0, },
     { "BGBUT8FL.FLI", 0, 0, 0, 0, 0, 0, },
@@ -387,9 +501,9 @@ tFlic_spec gMain_flic_list[372] = {
     { "BKBUT8IN.FLI", 0, 0, 0, 0, 0, 0, },
     { "BKBUTOFF.FLI", 0, 0, 0, 0, 0, 0, },
     { "BKBUTON.FLI", 0, 0, 0, 0, 0, 0, },
-    { "", 0, 0, 0, 0, 0, 0, },
-    { "", 0, 0, 0, 0, 0, 0, },
-    { "", 0, 0, 0, 0, 0, 0, },
+    { "", },
+    { "", },
+    { "", },
     { "MAI2QTFL.FLI", 0, 0, 0, 0, 0, 0, },
     { "MAI2QTGL.FLI", 0, 0, 0, 0, 0, 0, },
     { "MAI2LDFL.FLI", 0, 0, 0, 0, 0, 0, },
@@ -400,101 +514,39 @@ tFlic_spec gMain_flic_list[372] = {
     { "MAI2NNGL.FLI", 0, 0, 0, 0, 0, 0, },
     { "MAI2OPFL.FLI", 0, 0, 0, 0, 0, 0, },
     { "MAI2OPGL.FLI", 0, 0, 0, 0, 0, 0, },
+    { 0 },
+    { 0 },
+    { 0 },
+    { 0 },
+    { 0 },
+    { 0 },
+    { 0 },
+    { 0 },
+    { 0 },
+    { 0 },
+    { 0 },
+    { 0 },
+    { 0 },
+    { 0 },
+    { 0 },
+    { 0 },
+    { 0 },
+    { 0 },
+    { 0 },
+    { 0 },
+    { 0 },
+    { 0 },
+    { 0 },
+    { 0 },
+    { 0 },
+    { 0 },
+    { 0 },
+    { 0 },
+    { 0 },
+    { 0 },
+    { 0 },
+    { 0 },
 };
-
-// GLOBAL: CARMA2_HW 0x00686328
-tU32 gSound_time;
-
-// GLOBAL: CARMA2_HW 0x00686300
-int gSound_ID;
-
-// GLOBAL: CARMA2_HW 0x0068630c
-int gDark_mode;
-
-// GLOBAL: CARMA2_HW 0x00599920
-int gFlic_bunch0[29] = {
-    0, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 35, 26,
-    27, 36, 28, 29, 130, 131, 132, 42, 43, 135, 45
-};
-
-// GLOBAL: CARMA2_HW 0x00599998
-int gFlic_bunch1[31] = {
-    140, 141, 42, 43, 144, 145, 146, 147, 45, 150, 151, 42, 43, 154, 155,
-    156, 160, 161, 42, 43, 154, 170, 171, 176, 177, 172, 180, 181, 42, 43, 154
-};
-
-// GLOBAL: CARMA2_HW 0x00599a18
-int gFlic_bunch2[8] = {
-    70, 71, 72, 73, 74, 56, 57, 59
-};
-
-// GLOBAL: CARMA2_HW 0x00599a38
-int gFlic_bunch3[13] = {
-    40, 41, 42, 43, 44, 45, 50, 51, 73, 74, 56, 57, 59
-};
-
-// GLOBAL: CARMA2_HW 0x00599a70
-int gFlic_bunch4[22] = {
-    80, 81, 82, 83, 84, 85, 42, 43, 88, 45, 110, 111, 42, 43, 45, 115,
-    116, 117, 118, 119, 120, 121
-};
-
-// GLOBAL: CARMA2_HW 0x00599ac8
-int gFlic_bunch5[5] = {
-    100, 101, 42, 43, 45
-};
-
-// GLOBAL: CARMA2_HW 0x00599ae0
-int gFlic_bunch6[51] = {
-    190, 191, 192, 42, 43, 195, 200, 201, 210, 212, 213, 220, 221, 222,
-    220, 221, 225, 230, 231, 42, 43, 154, 45, 220, 221, 222, 220, 221,
-    225, 250, 251, 42, 43, 254, 255, 256, 154, 42, 43, 260, 220, 221,
-    222, 220, 221, 225, 280, 281, 42, 43, 284
-};
-
-// GLOBAL: CARMA2_HW 0x00599bb0
-int gFlic_bunch7[7] = {
-    130, 131, 132, 42, 43, 135, 45
-};
-
-// GLOBAL: CARMA2_HW 0x00599bd0
-int gFlic_bunch8[16] = {
-    290, 291, 292, 293, 294, 295, 296, 297, 42, 43, 154, 301, 42, 43, 304, 305
-};
-
-// GLOBAL: CARMA2_HW 0x00599c10
-tFlic_bunch gFlic_bunch[9] = {
-    { CARPOCALYPSE2_ASIZE(gFlic_bunch0), gFlic_bunch0 },
-    { CARPOCALYPSE2_ASIZE(gFlic_bunch1), gFlic_bunch1 },
-    { CARPOCALYPSE2_ASIZE(gFlic_bunch2), gFlic_bunch2 },
-    { CARPOCALYPSE2_ASIZE(gFlic_bunch3), gFlic_bunch3 },
-    { CARPOCALYPSE2_ASIZE(gFlic_bunch4), gFlic_bunch4 },
-    { CARPOCALYPSE2_ASIZE(gFlic_bunch5), gFlic_bunch5 },
-    { CARPOCALYPSE2_ASIZE(gFlic_bunch6), gFlic_bunch6 },
-    { CARPOCALYPSE2_ASIZE(gFlic_bunch7), gFlic_bunch7 },
-    { CARPOCALYPSE2_ASIZE(gFlic_bunch8), gFlic_bunch8 },
-};
-
-// GLOBAL: CARMA2_HW 0x006861e8
-tFlic_descriptor* gFirst_flic;
-
-// GLOBAL: CARMA2_HW 0x006862f8
-tU32 gLast_panel_frame_time[2];
-
-// GLOBAL: CARMA2_HW 0x006861f8
-tU32 gPanel_flic_data_length[2];
-
-// GLOBAL: CARMA2_HW 0x006861d0
-tU8* gPanel_flic_data[2];
-
-// GLOBAL: CARMA2_HW 0x00686314
-int gPanel_flic_disable;
-
-// GLOBAL: CARMA2_HW 0x0068620c
-int gPending_pending_flic;
-
-// GLOBAL: CARMA2_HW 0x005964c8
-int gPending_flic = -1;
 
 // Use this function to avoid unaligned memory access.
 // Added by DethRace
@@ -527,13 +579,6 @@ void C2_HOOK_FASTCALL TurnFlicTransparencyOff(void) {
 void C2_HOOK_FASTCALL TurnFlicTransparencyOn(void) {
 
     gTransparency_on = 1;
-}
-
-// FUNCTION: CARMA2_HW 0x00461a60
-void C2_HOOK_FASTCALL FlicPaletteAllocate(void) {
-
-    gPalette_pixels = BrMemAllocate(0x400, kMem_misc);
-    gPalette = DRPixelmapAllocate(BR_PMT_RGBX_888, 1, 256, gPalette_pixels, 0);
 }
 
 // FUNCTION: CARMA2_HW 0x00461aa0
@@ -1149,29 +1194,6 @@ void C2_HOOK_FASTCALL SwapScreen(void) {
     PDScreenBufferSwap(0);
 }
 
-// FUNCTION: CARMA2_HW 0x00462a40
-void C2_HOOK_FASTCALL InitFlics(void) {
-    int i;
-
-    for (i = 0; i < CARPOCALYPSE2_ASIZE(gMain_flic_list); i++) {
-        gMain_flic_list[i].data_ptr = NULL;
-    }
-}
-
-// FUNCTION: CARMA2_HW 0x00462a60
-int C2_HOOK_FASTCALL LoadFlic(int pIndex) {
-
-    return 0;
-}
-
-// FUNCTION: CARMA2_HW 0x00462a70
-void C2_HOOK_FASTCALL UnlockFlic(int pIndex) {
-
-    if (pIndex >= 0 && gMain_flic_list[pIndex].data_ptr != NULL) {
-        MAMSUnlock((void **) &gMain_flic_list[pIndex].data_ptr);
-    }
-}
-
 // FUNCTION: CARMA2_HW 0x00462a90
 int C2_HOOK_FASTCALL LoadFlicData(char* pName, tU8** pData, tU32* pData_length) {
     FILE* f;
@@ -1257,12 +1279,6 @@ void C2_HOOK_FASTCALL FlushAllFlics(int pBunch_index) {
     }
 }
 
-// FUNCTION: CARMA2_HW 0x00462cc0
-void C2_HOOK_FASTCALL InitFlicQueue(void) {
-
-    gFirst_flic = NULL;
-}
-
 // FUNCTION: CARMA2_HW 0x00462cd0
 int C2_HOOK_FASTCALL FlicQueueFinished(void) {
     tFlic_descriptor* the_flic;
@@ -1314,17 +1330,6 @@ void C2_HOOK_FASTCALL ProcessFlicQueue(tU32 pInterval) {
     }
     TurnFlicTransparencyOff();
     LetFlicFuckWithPalettes();
-}
-
-// FUNCTION: CARMA2_HW 0x00462dc0
-void C2_HOOK_FASTCALL FlushFlicQueue(void) {
-
-    while (!FlicQueueFinished()) {
-        RemoveTransientBitmaps(1);
-        ProcessFlicQueue(gFrame_period);
-        DoMouseCursor();
-        PDScreenBufferSwap(0);
-    }
 }
 
 // FUNCTION: CARMA2_HW 0x00462f00
@@ -1499,81 +1504,6 @@ br_pixelmap* C2_HOOK_FASTCALL GetPanelPixelmap(int pIndex) {
     return gPanel_buffer[pIndex];
 }
 
-// FUNCTION: CARMA2_HW 0x00463340
-void C2_HOOK_FASTCALL LoadInterfaceStrings(void) {
-    FILE* f;
-    char s[256];
-    char s2[256];
-    char* str;
-    char ch;
-    tPath_name the_path;
-    int i;
-    int j;
-
-    gTranslation_count = 0;
-    PathCat(the_path, gApplication_path, "TRNSLATE.TXT");
-    f = PFfopen(the_path, "rt");
-    if (f == NULL) {
-        return;
-    }
-    while (!PFfeof(f)) {
-        GetALineAndDontArgue(f, s);
-        gTranslation_count++;
-    }
-    PFrewind(f);
-    gTranslations = BrMemAllocate(gTranslation_count * sizeof(tTranslation_record), kMem_misc);
-    for (i = 0; i < gTranslation_count; i++) {
-        GetALineAndDontArgue(f, s);
-        str = strtok(s, "\t ,/");
-        strcpy(s2, str);
-        strtok(s2, ".");
-        strcat(s2, ".FLI");
-        gTranslations[i].flic_index = -1;
-        for (j = 0; j < CARPOCALYPSE2_ASIZE(gMain_flic_list); j++) {
-            if (strcmp(gMain_flic_list[j].file_name, s2) == 0) {
-                gTranslations[i].flic_index = j;
-                break;
-            }
-        }
-        if (gTranslations[i].flic_index < 0) {
-            FatalError(kFatalError_CannotFindFlicReferencedTranslation_S, s2);
-        }
-        str[strlen(str)] = ',';
-        strtok(s, "\t ,/");
-        str = strtok(NULL, "\t ,/");
-        sscanf(str, "%d", &gTranslations[i].x);
-        str = strtok(NULL, "\t ,/");
-        sscanf(str, "%d", &gTranslations[i].y);
-        str = strtok(NULL, "\t ,/");
-        sscanf(str, "%d", &gTranslations[i].font_index);
-        str = strtok(NULL, "\t ,/");
-        sscanf(str, "%c", &ch);
-        switch (ch) {
-            case 'C':
-            case 'c':
-                gTranslations[i].justification = eJust_centre;
-                break;
-            case 'L':
-            case 'l':
-                gTranslations[i].justification = eJust_left;
-                break;
-            case 'R':
-            case 'r':
-                gTranslations[i].justification = eJust_right;
-                break;
-        }
-        str += strlen(str) + 1;
-        gTranslations[i].text = BrMemAllocate(strlen(str) + 1, kMem_misc);
-        strcpy(gTranslations[i].text, str);
-    }
-    LoadFont(1);
-    LoadFont(2);
-    gTrans_fonts[0] = &gFonts[1];
-    gTrans_fonts[1] = &gFonts[2];
-
-    PFfclose(f);
-}
-
 // FUNCTION: CARMA2_HW 0x00463700
 void C2_HOOK_FASTCALL SuspendPendingFlic(void) {
 
@@ -1585,12 +1515,6 @@ void C2_HOOK_FASTCALL SuspendPendingFlic(void) {
 void C2_HOOK_FASTCALL ResumePendingFlic(void) {
 
     gPending_flic = gPending_pending_flic;
-}
-
-// FUNCTION: CARMA2_HW 0x00461990
-int C2_HOOK_FASTCALL TranslationMode(void) {
-
-    return gTranslation_count;
 }
 
 // FUNCTION: CARMA2_HW 0x00461a00
@@ -1616,3 +1540,117 @@ void C2_HOOK_FASTCALL TurnOnPanelFlics(void) {
 
     gPanel_flic_disable = 0;
 }
+// FUNCTION: CARMA2_HW 0x00461990
+int C2_HOOK_FASTCALL TranslationMode(void) {
+
+    return gTranslation_count;
+}
+
+// DontLetFlicFuckWithPalettes
+
+// LetFlicFuckWithPalettes
+
+// TurnFlicTransparencyOn
+
+// TurnFlicTransparencyOff
+
+// PlayFlicsFromDisk
+
+// TurnOffPanelFlics
+
+// TurnOnPanelFlics
+
+// STUB: CARMA2_HW 0x00461a60
+void C2_HOOK_FASTCALL FlicPaletteAllocate(void) {
+#ifndef CARPOCALYPSE2_MATCHING
+    /* stub: no-op for Linux boot */
+#else
+    NOT_IMPLEMENTED();
+#endif
+}
+
+// AssertFlicPixelmap
+
+// StartFlic
+
+// EndFlic
+
+// DoColourMap
+
+// DoDifferenceX
+
+// DoDifferenceTrans
+
+// DoColour256
+
+// DoDeltaTrans
+
+// DoBlack
+
+// DoRunLengthTrans
+
+// DoUncompressed
+
+// DoUncompressedTrans
+
+// DoMini
+
+// DrawTranslations
+
+// PlayNextFlicFrame
+
+// FUNCTION: CARMA2_HW 0x00462a40
+void C2_HOOK_FASTCALL InitFlics(void) {
+    int i;
+
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gMain_flic_list); i++) {
+        gMain_flic_list[i].data_ptr = NULL;
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x00462a60
+int C2_HOOK_FASTCALL LoadFlic(int pIndex) {
+
+    return 0;
+}
+
+// STUB: CARMA2_HW 0x00462a70
+void C2_HOOK_FASTCALL UnlockFlic(int pIndex) {
+#ifndef CARPOCALYPSE2_MATCHING
+    /* stub: no-op for Linux boot */
+#else
+    NOT_IMPLEMENTED();
+#endif
+}
+
+// LoadFlicData
+
+// FUNCTION: CARMA2_HW 0x00462cc0
+void C2_HOOK_FASTCALL InitFlicQueue(void) {
+
+    gFirst_flic = NULL;
+}
+
+// FlicQueueFinished
+
+// ProcessFlicQueue
+
+// STUB: CARMA2_HW 0x00462dc0
+void C2_HOOK_FASTCALL FlushFlicQueue(void) {
+#ifndef CARPOCALYPSE2_MATCHING
+    /* stub: no-op for Linux boot */
+#else
+    NOT_IMPLEMENTED();
+#endif
+}
+
+// STUB: CARMA2_HW 0x00463340
+void C2_HOOK_FASTCALL LoadInterfaceStrings(void) {
+#ifndef CARPOCALYPSE2_MATCHING
+    /* stub: no-op for Linux boot */
+#else
+    NOT_IMPLEMENTED();
+#endif
+}
+
+// SuspendPendingFlic

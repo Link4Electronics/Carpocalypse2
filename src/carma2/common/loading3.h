@@ -1,0 +1,42 @@
+#ifndef GUARD_LOADING3_H
+#define GUARD_LOADING3_H
+
+#include "c2_hooks.h"
+#include "brender/brender.h"
+#include "carpocalypse2_types.h"
+
+extern int C2_HOOK_FASTCALL LoadBunchOfPixies(const char* pathRoot, const char* textureName, br_pixelmap** textureBuffer, size_t bufferCapacity);
+
+extern br_pixelmap* C2_HOOK_FASTCALL DRLdImg(const char* texturePathDir, const char* textureName, br_pixelmap* pPalette, int flags, int* errorCode);
+
+extern br_pixelmap* C2_HOOK_FASTCALL RealLoadPixelmap(const char* pPath_name);
+
+extern br_pixelmap* C2_HOOK_FASTCALL LoadPixelmap(const char* pPath_name);
+
+extern br_pixelmap* C2_HOOK_FASTCALL LoadShadeTable(const char* pName);
+
+extern br_material* C2_HOOK_FASTCALL LoadMaterial(const char* pThe_path);
+
+extern br_model* C2_HOOK_FASTCALL LoadModel(const char* pName);
+
+extern br_actor* C2_HOOK_FASTCALL LoadActor(const char* pName);
+
+extern void C2_HOOK_FASTCALL DRLoadPalette(const char* pPath_name);
+
+extern void C2_HOOK_FASTCALL DRLoadShadeTable(const char* pPath_name);
+
+extern void C2_HOOK_FASTCALL DRLoadMaterials(const char* pPath_name);
+
+extern void C2_HOOK_FASTCALL DRLoadModels(const char* pPath_name);
+
+extern void C2_HOOK_FASTCALL DRLoadActors(const char* pPath_name);
+
+extern void C2_HOOK_FASTCALL DRLoadLights(const char* pPath_name);
+
+extern void C2_HOOK_FASTCALL LoadInFiles(const char* pThe_path, const char* pArchive_name, tPDForEveryFileRecurse_cbfn pAction_routine);
+
+extern int C2_HOOK_FASTCALL TestForOriginalCarmaCDinDrive(void);
+
+extern void C2_HOOK_FASTCALL SetDefaultPixelmapFolderName(void);
+
+#endif // GUARD_LOADING3_H

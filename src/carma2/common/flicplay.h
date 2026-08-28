@@ -1,9 +1,90 @@
-#ifndef CARPOCALYPSE2_FLICPLAY_H
+#ifndef GUARD_FLICPLAY_H
+#define GUARD_FLICPLAY_H
+
+#include "carpocalypse2_types.h"
+
+
+#include "c2_hooks.h"
+
+extern float gFlic_sound_delay_pre_smack;
+extern float gFlic_sound_delay_post_smack;
+extern float gFlic_sound_delay_not_in_demo;
+extern float gFlic_sound_delay_post_demo;
+
+extern int C2_HOOK_FASTCALL TranslationMode(void);
+
+// DontLetFlicFuckWithPalettes
+
+// LetFlicFuckWithPalettes
+
+// TurnFlicTransparencyOn
+
+// TurnFlicTransparencyOff
+
+// PlayFlicsFromDisk
+
+// TurnOffPanelFlics
+
+// TurnOnPanelFlics
+
+extern void C2_HOOK_FASTCALL FlicPaletteAllocate(void);
+
+// AssertFlicPixelmap
+
+// StartFlic
+
+// EndFlic
+
+// DoColourMap
+
+// DoDifferenceX
+
+// DoDifferenceTrans
+
+// DoColour256
+
+// DoDeltaTrans
+
+// DoBlack
+
+// DoRunLengthTrans
+
+// DoUncompressed
+
+// DoUncompressedTrans
+
+// DoMini
+
+// DrawTranslations
+
+// PlayNextFlicFrame
+
+extern void C2_HOOK_FASTCALL InitFlics(void);
+
+extern int C2_HOOK_FASTCALL LoadFlic(int pIndex);
+
+extern void C2_HOOK_FASTCALL UnlockFlic(int pIndex);
+
+// LoadFlicData
+
+extern void C2_HOOK_FASTCALL InitFlicQueue(void);
+
+// FlicQueueFinished
+
+// ProcessFlicQueue
+
+extern void C2_HOOK_FASTCALL FlushFlicQueue(void);
+
+extern void C2_HOOK_FASTCALL LoadInterfaceStrings(void);
+
+// SuspendPendingFlic
+
 #define CARPOCALYPSE2_FLICPLAY_H
 
 #include "c2_hooks.h"
 
 #include "carpocalypse2_types.h"
+
 
 int C2_HOOK_FASTCALL GetPanelFlicFrameIndex(int pIndex);
 
@@ -14,8 +95,6 @@ void C2_HOOK_FASTCALL LetFlicFuckWithPalettes(void);
 void C2_HOOK_FASTCALL TurnFlicTransparencyOff(void);
 
 void C2_HOOK_FASTCALL TurnFlicTransparencyOn(void);
-
-void C2_HOOK_FASTCALL FlicPaletteAllocate(void);
 
 void C2_HOOK_FASTCALL AssertFlicPixelmap(tFlic_descriptor_ptr pFlic_info, br_pixelmap* pDest_pixelmap);
 
@@ -55,12 +134,6 @@ int C2_HOOK_FASTCALL PlayFlic(int pIndex, tU32 pSize, tS8* pData_ptr, br_pixelma
 
 void C2_HOOK_FASTCALL SwapScreen(void);
 
-void C2_HOOK_FASTCALL InitFlics(void);
-
-int C2_HOOK_FASTCALL LoadFlic(int pIndex);
-
-void C2_HOOK_FASTCALL UnlockFlic(int pIndex);
-
 int C2_HOOK_FASTCALL LoadFlicData(char* pName, tU8** pData, tU32* pData_length);
 
 void C2_HOOK_FASTCALL FreeFlic(int pIndex);
@@ -75,13 +148,9 @@ void C2_HOOK_FASTCALL UnlockBunchOfFlics(int pBunch_index);
 
 void C2_HOOK_FASTCALL FlushAllFlics(int pBunch_index);
 
-void C2_HOOK_FASTCALL InitFlicQueue(void);
-
 int C2_HOOK_FASTCALL FlicQueueFinished(void);
 
 void C2_HOOK_FASTCALL ProcessFlicQueue(tU32 pInterval);
-
-void C2_HOOK_FASTCALL FlushFlicQueue(void);
 
 void C2_HOOK_FASTCALL AddToFlicQueue(int pIndex, int pX, int pY, int pMust_finish);
 
@@ -95,13 +164,9 @@ void C2_HOOK_FASTCALL ChangePanelFlic(int pIndex, tU8* pData, tU32 pData_length)
 
 br_pixelmap* C2_HOOK_FASTCALL GetPanelPixelmap(int pIndex);
 
-void C2_HOOK_FASTCALL LoadInterfaceStrings(void);
-
 void C2_HOOK_FASTCALL SuspendPendingFlic(void);
 
 void C2_HOOK_FASTCALL ResumePendingFlic(void);
-
-int C2_HOOK_FASTCALL TranslationMode(void);
 
 void C2_HOOK_FASTCALL PlayFlicsFromDisk(void);
 
@@ -111,4 +176,4 @@ void C2_HOOK_FASTCALL TurnOffPanelFlics(void);
 
 void C2_HOOK_FASTCALL TurnOnPanelFlics(void);
 
-#endif
+#endif // GUARD_FLICPLAY_H

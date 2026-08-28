@@ -1,7 +1,7 @@
 #include "piping.h"
 
 #include "compress.h"
-#include "52-errors.h"
+#include "errors.h"
 #include "globvars.h"
 #include "opponent.h"
 #include "physics.h"
@@ -17,8 +17,10 @@
 #include "c2_string.h"
 
 #include <stdarg.h>
+#include "piping.h"
 
-
+#define CRUSH_SPACE_SIZE 0x4000
+#define SIZE_OFFSET_PIPING(T, M) ((int)sizeof(((T*)NULL)->M)), ((int)offsetof(T, M))
 // GLOBAL: CARMA2_HW 0x00694104
 undefined4* gCrush_space;
 
@@ -33,9 +35,6 @@ tU8* gPipe_record_ptr = NULL;
 
 // GLOBAL: CARMA2_HW 0x006768ac
 tU8* gPipe_buffer_oldest = NULL;
-
-// GLOBAL: CARMA2_HW 0x00676900
-float gReplay_rate = 0.f;
 
 // GLOBAL: CARMA2_HW 0x00694108
 tU32 gYoungest_time;
@@ -97,8 +96,8 @@ int gPipe_count_callbacks = 0;
 // GLOBAL: CARMA2_HW 0x006768ec
 tU32 gPipe_buffer_size = 0;
 
-#define CRUSH_SPACE_SIZE 0x4000
-#define SIZE_OFFSET_PIPING(T, M) ((int)sizeof(((T*)NULL)->M)), ((int)offsetof(T, M))
+// GLOBAL: CARMA2_HW 0x00676900
+float gReplay_rate = 0.f;
 
 // FUNCTION: CARMA2_HW 0x00403d60
 int C2_HOOK_FASTCALL ARToggleReplay(tTurn_on_AR_callback* pTurn_on_AR_cb, tTurn_off_AR_callback* pTurn_off_AR_cb, tAfter_AR_callback* pAfter_AR_cb, tZappy_AR_callback* pZappy_AR_cb, tPreprocess_AR_callback* pPreprocess_cb, tPostProcess_AR_callback* pPostProcess_cb, int* pArg7, int* pArg8) {
@@ -153,16 +152,6 @@ int C2_HOOK_FASTCALL ARIsActionReplayAvailable(void) {
 void C2_HOOK_FASTCALL DisposePiping(void) {
 
     NOT_IMPLEMENTED();
-}
-
-// FUNCTION: CARMA2_HW 0x004c6c60
-void C2_HOOK_FASTCALL DisposeActionReplay(void) {
-
-    DisposePiping();
-    if (gCrush_space != NULL) {
-        BrMemFree(gCrush_space);
-        gCrush_space = NULL;
-    }
 }
 
 void C2_HOOK_FASTCALL StartPipingSession2(tPipe_chunk_type pType, int pMunge_reentrancy) {
@@ -659,30 +648,6 @@ void C2_HOOK_FASTCALL PipeSingleOilSpill(int pIndex, br_matrix34* pMat, br_scala
     NOT_IMPLEMENTED();
 }
 
-// FUNCTION: CARMA2_HW 0x004c84a0
-void C2_HOOK_FASTCALL PipeSingleSound(tS3_outlet* pOutlet, int pSound, tS3_volume pL_volume, tS3_volume pR_volume, int pPitch, const br_vector3* pPosition) {
-
-    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPipe_shunk_single_sound, pitch, 0x0);
-    C2_HOOK_STATIC_ASSERT_STRUCT_MEMBER_SIZE(tPipe_shunk_single_sound, pitch, 0x4);
-    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPipe_shunk_single_sound, position, 0x4);
-    C2_HOOK_STATIC_ASSERT_STRUCT_MEMBER_SIZE(tPipe_shunk_single_sound, position, 0xc);
-    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPipe_shunk_single_sound, outlet, 0x10);
-    C2_HOOK_STATIC_ASSERT_STRUCT_MEMBER_SIZE(tPipe_shunk_single_sound, outlet, 0x2);
-    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPipe_shunk_single_sound, volume, 0x12);
-    C2_HOOK_STATIC_ASSERT_STRUCT_MEMBER_SIZE(tPipe_shunk_single_sound, volume, 0x2);
-
-    if (!gAction_replay_mode && gProgram_state.racing) {
-        if (pPosition == NULL) {
-            pPosition = &gZero_vector__smash;
-        }
-        ARDoSingleVariedSession(ePipe_chunk_single_sound, pSound, 4,
-            SIZE_OFFSET_PIPING(tPipe_shunk_single_sound, pitch),           pPitch,
-            SIZE_OFFSET_PIPING(tPipe_shunk_single_sound, position),        pPosition,
-            SIZE_OFFSET_PIPING(tPipe_shunk_single_sound, outlet),          (tS16)GetIndexFromOutlet(pOutlet),
-            SIZE_OFFSET_PIPING(tPipe_shunk_single_sound, volume),          (tS16)((pR_volume << 8) + (pL_volume)));
-    }
-}
-
 // FUNCTION: CARMA2_HW 0x004c8b30
 void C2_HOOK_FASTCALL PipeSinglePedMove(tPedestrian* pPed, tS16 pArg2, tS16 pOriginal_move_id, tS16 pMove_id, undefined4 pArg5,undefined4 pArg6, int pArg7, undefined4 pArg8, br_vector3* pOriginal_pos, br_vector3* pPos, int pOriginal_action, int pAction, br_matrix34* pArg13) {
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPipe_ped_move_data, move_id, 0x0);
@@ -1142,3 +1107,513 @@ void C2_HOOK_FASTCALL PipeSingleEndShitMine(br_actor* pActor) {
     ARDoSingleVariedSession(ePipe_chunk_end_shit_mine, (uintptr_t)pActor, 1,
         SIZE_OFFSET_PIPING(tPipe_chunk_end_shit_mine, m), &pActor->t.t.mat);
 }
+// ARReplayForwards
+
+// ARReplayIsReallyPaused
+
+// ARReplayPauseState
+
+// FUNCTION: CARMA2_HW 0x00402390
+float C2_HOOK_FASTCALL ARGetReplayRate(void) {
+    return gReplay_rate;
+}
+
+// ARSetReplayRate
+
+// ARGetReplayDirection
+
+// ARSetReplayDirection
+
+// ARResetPiping
+
+// ARInitialise
+
+// ARDispose
+
+// LengthOfChunk
+
+// LengthOfSession
+
+// ARAdvanceChunkPtr
+
+// PipingFrameReset
+
+// ARPipeSearchForwards
+
+// ARIsActionReplayAvailable
+
+// ARSomeReplayLeft
+
+// DisablePipedSounds
+
+// EnablePipedSounds
+
+// StartPipingSession2
+
+// ARStartPipingSession
+
+// EndPipingSession2
+
+// AREndPipingSession
+
+// ARAddDataToSession
+
+// ARAddVariedDataToSession
+
+// ARDoSingleSession
+
+// ARDoSingleVariedSession
+
+// ARResetPipePlayToEnd
+
+// ARGetPipePlayPtr
+
+// ARSetPipePlayPtr
+
+// ApplyPipedSession
+
+// MoveSessionPointerBackOne
+
+// MoveSessionPointerForwardOne
+
+// FindPreviousChunk
+
+// UndoPipedSession
+
+// ARScanBuffer
+
+// CheckSound
+
+// SoundTimeout
+
+// ScanAndPlaySoundsToBe
+
+// ARGetStartTime
+
+// ARDisableAdvance
+
+// AREnableAdvance
+
+// FindNextChunk
+
+// MoveReplayBuffer
+
+// ARMoveToEndOfReplay
+
+// ARMoveToStartOfReplay
+
+// ARDoActionReplay
+
+// ReverseSound
+
+// ARGoBackwards
+
+// ARGoForwards
+
+// ARService
+
+// ARMainLoopStart
+
+// ARToggleReplay
+
+// GetReducedPos
+
+// SaveReducedPos
+
+// InitLastDamageArrayEtc
+
+// PipeObjectPosition
+
+// PipeCarPositions
+
+// DoSmudge
+
+// DoOilSpillAR
+
+// CheckCar
+
+// CarTimeout
+
+// ScanCarsPositions
+
+// InitialiseActionReplay
+
+// STUB: CARMA2_HW 0x004c6c60
+void C2_HOOK_FASTCALL DisposeActionReplay(void) {
+#ifndef CARPOCALYPSE2_MATCHING
+    /* stub: no-op for Linux boot */
+#else
+    NOT_IMPLEMENTED();
+#endif
+}
+
+// CheckIncident
+
+// GetNextIncident
+
+// AddCrushToPipingSession
+
+// AddSmudgeToPipingSession
+
+// AddSparkToPipingSession
+
+// AddShrapnelToPipingSession
+
+// AddNonCarToPipingSession
+
+// AddSmokeToPipingSession
+
+// AddSmokeColumnToPipingSession
+
+// AddFlameToPipingSession
+
+// AddSplashToPipingSession
+
+// AddExtendedSplashToPipingSession
+
+// AddCarToPipingSession
+
+// AddDamageToPipingSession
+
+// AddProxRayToPipingSession
+
+// AddFlapToPipingSession
+
+// AddModelMashToPipingSession
+
+// AddRepulseRayToPipingSession
+
+// AddNapalmBoltToPipingSession
+
+// PipeSingleCrush
+
+// PipeSingleScreenWobble
+
+// PipeSingleGrooveStop
+
+// PipeSingleNonCar
+
+// PipeSingleOilSpill
+
+// PipeSingleFrameFinish
+
+// PipeSingleGraphicalWheelStuff
+
+// STUB: CARMA2_HW 0x004c84a0
+void C2_HOOK_FASTCALL PipeSingleSound(tS3_outlet* pOutlet, int pSound, tS3_volume pL_volume, tS3_volume pR_volume, int pPitch, const br_vector3* pPosition) {
+#ifndef CARPOCALYPSE2_MATCHING
+    /* stub: no-op for Linux boot */
+#else
+    NOT_IMPLEMENTED();
+#endif
+}
+
+// PipeSingleSpecial
+
+// PipeSingleCarIncident
+
+// PipeSinglePedIncident
+
+// PipeSingleWallIncident
+
+// PipeSingleSkidAdjustment
+
+// PipeSingleFlap
+
+// PipeSingleRelink
+
+// PipeSingleIdentity
+
+// PipeSingleSplitWeld
+
+// PipeSingleShrapnelShower
+
+// PipeSingleExplosion
+
+// PipeSingleNonCarCreation
+
+// PipeSingleSmashModelChange
+
+// PipeSingleSmashRemoveFaces
+
+// PipeSingleSmashDecal
+
+// PipeSingleSmashTextureChange
+
+// PipeSinglePedStatus
+
+// PipeSinglePedDir
+
+// PipeSinglePedMove
+
+// PipeSinglePedPhysics
+
+// PipeSinglePedDismember
+
+// PipeSinglePedFPChange
+
+// PipeSinglePedPos
+
+// PipeSinglePedModelChange
+
+// PipeSinglePHILObject
+
+// PipeSingleGibShower
+
+// PipeSingleBloodSpurt
+
+// PipeSingleGrooveOnOff
+
+// PipeSinglePowerupGot
+
+// PipeSinglePowerupLose
+
+// PipeSingleFunkEnable
+
+// PipeSingleVanishedDismembered
+
+// PipeSingleDSModel
+
+// PipeSingleVector3
+
+// PipeSingleDroneRender
+
+// PipeSingleDroneCornerPos
+
+// PipeSingleDroneStraightPos
+
+// PipeSinglePowerupRespawn
+
+// PipeSingleShitMine
+
+// PipeSingleEndShitMine
+
+// PipeSingleTransformType
+
+// PipeSingleOppoRenderage
+
+// ApplyCrush
+
+// ApplySmudge
+
+// ApplySpark
+
+// ApplyShrapnel
+
+// ApplyScreenWobble
+
+// ApplyGrooveStop
+
+// ApplyNonCar
+
+// ApplySmoke
+
+// ApplySmokeColumn
+
+// ApplyFlame
+
+// ApplySplash
+
+// ApplyExtendedSplash
+
+// ApplyOilSpill
+
+// ApplyFrameBoundary
+
+// ApplySound
+
+// ApplyCar
+
+// ApplyGWS
+
+// ApplyDamage
+
+// ApplySpecial
+
+// ApplyProxRay
+
+// ApplySkidAdjustment
+
+// ApplyFlap
+
+// ApplyModelMash
+
+// ApplyRelink
+
+// ApplyIdentity
+
+// ApplySplitWeld
+
+// ApplyBend
+
+// ApplyUnBend
+
+// ApplyEndMyBend
+
+// ApplyShrapnelShower
+
+// ApplyExplosion
+
+// ApplyNonCarCreation
+
+// ApplySmashModelChange
+
+// ApplySmashRemoveFaces
+
+// ApplySmashDecal
+
+// ApplySmashTextureChange
+
+// ApplyRepulseRay
+
+// ApplyActorTrans
+
+// ApplyPedStatus
+
+// ApplyPedDir
+
+// ApplyPedMove
+
+// ApplyPedPhysics
+
+// ApplyPedDismember
+
+// ApplyPedFPChange
+
+// ApplyPedPos
+
+// ApplyPedModelChange
+
+// ApplyPHILObject
+
+// ApplyGibShower
+
+// ApplyBloodSpurt
+
+// ApplyGrooveOnOff
+
+// ApplyPowerupGot
+
+// ApplyPowerupLose
+
+// ApplyFunkEnable
+
+// ApplyVanishDismembered
+
+// ApplyDSModel
+
+// ApplyPedDiagnostics
+
+// ApplyVector3
+
+// ApplyDroneRender
+
+// ApplyDroneCornerPos
+
+// ApplyDroneStraightPos
+
+// ApplyDroneUnused
+
+// ApplyNapalmBolt
+
+// ApplyPowerupRespawn
+
+// ApplyShitMine
+
+// ApplyEndShitMine
+
+// ApplyTransformType
+
+// ApplyOppoRenderage
+
+// UndoCrush
+
+// UndoSmudge
+
+// UndoDamage
+
+// UndoSpecial
+
+// UndoScreenWobble
+
+// UndoSplash
+
+// UndoExtendedSplash
+
+// UndoSkidAdjustment
+
+// UndoFlap
+
+// UndoModelMash
+
+// UndoRelink
+
+// UndoSplitWeld
+
+// UndoBend
+
+// UndoUnBend
+
+// UndoShrapnelShower
+
+// UndoNonCarCreation
+
+// UndoSmashModelChange
+
+// UndoSmashRemoveFaces
+
+// UndoSmashDecal
+
+// UndoSmashTextureChange
+
+// UndoActorTrans
+
+// UndoPedStatus
+
+// UndoPedMove
+
+// UndoPedDismember
+
+// UndoPedFPChange
+
+// UndoPedPos
+
+// UndoPedModelChange
+
+// UndoGibShower
+
+// UndoBloodSpurt
+
+// UndoGrooveOnOff
+
+// UndoPowerupGot
+
+// UndoPowerupLose
+
+// UndoFunkEnable
+
+// UndoVanishDismembered
+
+// UndoVector3
+
+// UndoNapalmBolt
+
+// UndoPowerupRespawn
+
+// UndoShitMine
+
+// UndoEndShitMine
+
+// UndoTransformType
+
+// CalcCrushLength
+
+// CalcShrapnelLength
+
+// CalcSmudgeLength
+
+// CalcModelMashLength
+
+// CalcEndMyBendLength
+
+// CalcRemoveFacesLength

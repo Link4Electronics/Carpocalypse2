@@ -6,7 +6,7 @@
 
 #include "controls.h"
 #include "drmem.h"
-#include "52-errors.h"
+#include "errors.h"
 #include "globvars.h"
 #include "globvrpb.h"
 #include "graphics.h"
@@ -30,10 +30,59 @@
 
 #include "c2_stdlib.h"
 #include "c2_string.h"
+#include "main.h"
 
+#include "globvars.h"
+#include "globvrpb.h"
+#include "platform.h"
+#include "carpocalypse2_types.h"
+#include "network.h"
+#include "loading1.h"
+#include "utility.h"
+#include "errors.h"
+#include "sound.h"
+#include "init.h"
+#include "structur.h"
+#include "loading2.h"
+#include "loadsave.h"
+#include "movie.h"
+#include "phil.h"
+#include "world3.h"
+#include "world1.h"
+#include "graphics2.h"
+
+#include <string.h>
+// FUNCTION: CARMA2_HW 0x00492050
+void C2_HOOK_FASTCALL ServiceTheGame(int pRacing) {
+
+    CheckMemory();
+    if (!pRacing) {
+        CyclePollKeys();
+    }
+    PollKeys();
+    rand();
+    if (PDServiceSystem(gFrame_period)) {
+        QuitGame();
+    }
+    if (!pRacing) {
+        CheckSystemKeys(0);
+    }
+    if (!pRacing && gSound_enabled) {
+        SoundService();
+    }
+    NetService(pRacing);
+}
+
+// FUNCTION: CARMA2_HW 0x004922a0
+void C2_HOOK_FASTCALL ServiceGameInRace(void) {
+
+    Timers_Push(TIMER_SER);
+    ServiceTheGame(1);
+    CheckKevKeys();
+    Timers_Pop(TIMER_SER);
+}
 // FUNCTION: CARMA2_HW 0x00491f70
 C2_NORETURN void C2_HOOK_FASTCALL QuitGame(void) {
-
     SaveOptions();
     if (gSave_game_out_of_sync) {
         DoSaveGame();
@@ -68,6 +117,19 @@ C2_NORETURN void C2_HOOK_FASTCALL QuitGame(void) {
     exit(0);
 }
 
+// ServiceTheGame
+
+// STUB: CARMA2_HW 0x00492180
+void C2_HOOK_FASTCALL ServiceGame(void) {
+#ifndef CARPOCALYPSE2_MATCHING
+    /* stub: no-op for Linux boot */
+#else
+    NOT_IMPLEMENTED();
+#endif
+}
+
+// ServiceGameInRace
+
 // FUNCTION: CARMA2_HW 0x004924a0
 void C2_HOOK_FASTCALL GameMain(int pArgc, const char** pArgv) {
     tPath_name location;
@@ -79,7 +141,7 @@ void C2_HOOK_FASTCALL GameMain(int pArgc, const char** pArgv) {
     strcat(gApplication_path, "DATA");
     UsePathFileToDetermineIfFullInstallation();
     if (!gCD_fully_installed) {
-        if (PDReadSourceLocation(location)) {
+        if (GetRegisterSourceLocation(location)) {
             if (!PDCheckDriveExists(location)) {
                 PDInitialiseSystem();
                 PDFatalError("Can't find the Carmageddon CD\n");
@@ -89,40 +151,4 @@ void C2_HOOK_FASTCALL GameMain(int pArgc, const char** pArgv) {
     InitialiseDeathRace(pArgc, pArgv);
     DoProgram();
     QuitGame();
-}
-
-// FUNCTION: CARMA2_HW 0x00492180
-void C2_HOOK_FASTCALL ServiceGame(void) {
-
-    ServiceTheGame(0);
-}
-
-// FUNCTION: CARMA2_HW 0x00492050
-void C2_HOOK_FASTCALL ServiceTheGame(int pRacing) {
-
-    CheckMemory();
-    if (!pRacing) {
-        CyclePollKeys();
-    }
-    PollKeys();
-    rand();
-    if (PDServiceSystem(gFrame_period)) {
-        QuitGame();
-    }
-    if (!pRacing) {
-        CheckSystemKeys(0);
-    }
-    if (!pRacing && gSound_enabled) {
-        SoundService();
-    }
-    NetService(pRacing);
-}
-
-// FUNCTION: CARMA2_HW 0x004922a0
-void C2_HOOK_FASTCALL ServiceGameInRace(void) {
-
-    Timers_Push(TIMER_SER);
-    ServiceTheGame(1);
-    CheckKevKeys();
-    Timers_Pop(TIMER_SER);
 }

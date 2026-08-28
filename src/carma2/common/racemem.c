@@ -3,8 +3,6 @@
 #include "carpocalypse2_macros.h"
 
 #include "c2_string.h"
-
-
 // GLOBAL: CARMA2_HW 0x006ba640
 tU8 gRace_memory[1000];
 

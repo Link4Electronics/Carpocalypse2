@@ -3,12 +3,12 @@
 #include "win32.h"
 #include "win32_windows.h"
 
-#include "52-errors.h"
+#include "errors.h"
 #include "globvars.h"
-#include "02-init.h"
-#include "42-input.h"
+#include "init.h"
+#include "input.h"
 #include "joystick.h"
-#include "41-utility.h"
+#include "utility.h"
 
 #include "carpocalypse2_macros.h"
 

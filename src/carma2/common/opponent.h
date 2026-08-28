@@ -1,4 +1,199 @@
-#ifndef CARPOCALYPSE2_OPPONENT_H
+#ifndef GUARD_OPPONENT_H
+#define GUARD_OPPONENT_H
+
+#include "c2_hooks.h"
+#include "c2_stdio.h"
+#include <brender/brender.h>
+
+
+#include "carpocalypse2_types.h"
+
+extern float gOpponent_nastyness_frigger;
+extern int gMinTimeOpponentRepair;
+extern int gMaxTimeOpponentRepair;
+
+// DoNotDprintf
+
+// ProcessCurrentObjective
+
+// ReallocExtraPathNodes
+
+// ReallocExtraPathSections
+
+// PointVisibleFromHere
+
+// WeightedFindNearestNodeAndSection
+
+// FindNearestGeneralSection
+
+// FindNearestPathSection
+
+// DeadStopCar
+
+// TurnOpponentPhysicsOn
+
+// TurnOpponentPhysicsOff
+
+// ApplyOppoRenderage2
+
+// NewObjective
+
+// CalcRaceRoute
+
+// TopUpRandomRoute
+
+// SearchForSection
+
+// UpdatePlayersSection
+
+// AllowForDecel
+
+// ShiftOpponentsProjectedRoute
+
+// NewCalcGetNearPlayerRoute
+
+// CalcReturnToStartPointRoute
+
+// ClearOpponentsProjectedRoute
+
+// AddToOpponentsProjectedRoute
+
+// StunTheBugger
+
+// UnStunTheBugger
+
+// ProcessCompleteRace
+
+// StartRecordingTrail
+
+// RecordNextTrailNode
+
+// FindNearestTrailSection
+
+// CalcNextTrailSection
+
+// ProcessPursueAndTwat
+
+// ProcessRunAway
+
+// ProcessWaitForSomeHaplessSod
+
+// ProcessReturnToStart
+
+// ProcessLevitate
+
+// ProcessGetNearPlayer
+
+// ProcessFrozen
+
+// HeadOnWithPlayerPossible
+
+// AlreadyPursuingCar
+
+// LastTwatteeAPlayer
+
+// LastTwatterAPlayer
+
+// ObjectiveComplete
+
+// TeleportOpponentToNearestSafeLocation
+
+// ChooseNewObjective
+
+// ProcessThisOpponent
+
+// IsNetCarActive
+
+// NoteCarsCurrentlyUsed
+
+// AddIfNotInList
+
+// RemoveAnythingStillInList
+
+// RebuildActiveCarList
+
+extern void C2_HOOK_FASTCALL ForceRebuildActiveCarList(void);
+
+// OpponentRepairNecessary
+
+// PossiblyRepairOpponent
+
+// DisplayOpponentRecoveringHeadup
+
+// StartToCheat
+
+// OiStopCheating
+
+// TeleportCopToStart
+
+// CalcDistanceFromHome
+
+// MassageOpponentPosition
+
+// RematerialiseOpponentOnThisSection
+
+// RematerialiseOpponentOnNearestSection
+
+// RematerialiseOpponent
+
+// CalcPlayerConspicuousness
+
+// CalcOpponentConspicuousnessWithAViewToCheatingLikeFuck
+
+// NumberOfOpponentsStillRunning
+
+// ResetPredominantJobbies
+
+// LoadCopCars
+
+// LoadInOppoPaths
+
+// DisposeOpponentPaths
+
+// MungeOpponents
+
+// InitOpponents
+
+// DisposeOpponents
+
+// WakeUpOpponentsToTheFactThatTheStartHasBeenJumped
+
+extern int C2_HOOK_FASTCALL GetCarCount(tVehicle_type pCategory);
+
+extern tCar_spec* C2_HOOK_FASTCALL GetCarSpec(tVehicle_type pCategory, int pIndex);
+
+// GetDriverName
+
+// GetOpponentSpecFromCarSpec
+
+// GetCarSpecFromGlobalOppoIndex
+
+// GetOpponentsRealSection
+
+// GetOpponentsFirstSection
+
+// GetOpponentsNextSection
+
+// GetOpponentsSectionStartNodePoint
+
+// GetOpponentsSectionFinishNodePoint
+
+// GetOpponentsSectionWidth
+
+// GetOpponentsSectionMinSpeed
+
+// GetOpponentsSectionMaxSpeed
+
+extern void C2_HOOK_FASTCALL InitOpponentPsyche(int pOpponent_index);
+
+// ClearTwattageOccurrenceVariables
+
+// TwoCarsHitEachOther
+
+// RecordOpponentTwattageOccurrence
+
+// GetOpponentMood
+
 #define CARPOCALYPSE2_OPPONENT_H
 
 #include <brender/brender.h>
@@ -8,49 +203,82 @@
 
 #include "c2_hooks.h"
 
+
 extern int gActive_car_list_rebuild_required;
+
 extern int gBIG_APC_index;
+
 extern int gNumber_of_cops_before_faffage;
+
 extern tU32 gNext_grudge_reduction;
+
 extern int gFirst_frame;
+
 extern int gGrudge_reduction_per_period;
+
 extern int gAcknowledged_start;
+
 extern int gStart_jumped;
+
 extern br_scalar gMinimum_yness_before_knackerisation;
+
 extern tU32 gAcme_frame_count;
+
 extern br_scalar gHead_on_cos_value;
+
 extern int gBig_bang;
-extern float gOpponent_nastyness_frigger;
+
 extern br_scalar gIn_view_distance;
+
 extern int gChallenger_index__opponent;
+
 extern tU8* gBit_per_node;
+
 extern br_material* gMat_dk_yel;
+
 extern br_material* gMat_md_yel;
+
 extern br_material* gMat_lt_yel;
+
 extern br_material* gMat_dk_red;
+
 extern br_material* gMat_md_red;
+
 extern br_material* gMat_lt_red;
+
 extern br_material* gMat_dk_grn;
+
 extern br_material* gMat_md_grn;
+
 extern br_material* gMat_lt_grn;
+
 extern br_material* gMat_dk_blu;
+
 extern br_material* gMat_lt_blu;
+
 extern br_material* gMat_dk_turq;
+
 extern br_material* gMat_lt_turq;
+
 extern br_material* gMat_dk_gry;
+
 extern br_material* gMat_md_gry;
+
 extern br_material* gMat_lt_gry;
+
 extern int gNum_of_opponents_pursuing;
+
 extern int gNum_of_opponents_getting_near;
+
 extern int gNum_of_opponents_completing_race;
+
 extern float gDefinite_no_cop_pursuit_speed;
+
 extern float gCop_pursuit_speed_percentage_multiplier;
 
 void C2_HOOK_FASTCALL PointActorAlongThisBloodyVector(br_actor* pThe_actor, br_vector3* pThe_vector);
 
 void C2_HOOK_FASTCALL PointActorAlongVectorWithUp(br_actor* pThe_actor, br_vector3* pLook, br_vector3* pUp);
-
-void C2_HOOK_FASTCALL InitOpponentPsyche(int pOpponent_index);
 
 void C2_HOOK_FASTCALL LoadInOppoPaths(FILE* pF);
 
@@ -72,15 +300,9 @@ int C2_HOOK_FASTCALL IsNetCarActive(const br_vector3* pPoint);
 
 void C2_HOOK_FASTCALL RebuildActiveCarList(void);
 
-void C2_HOOK_FASTCALL ForceRebuildActiveCarList(void);
-
 void C2_HOOK_FASTCALL DisposeOpponents(void);
 
-tCar_spec* C2_HOOK_FASTCALL GetCarSpec(tVehicle_type pCategory, int pIndex);
-
 const char* C2_HOOK_FASTCALL GetDriverName(tVehicle_type pCategory, int pIndex);
-
-int C2_HOOK_FASTCALL GetCarCount(tVehicle_type pCategory);
 
 void C2_HOOK_FASTCALL StunTheBugger(tOpponent_spec* pOpponent_spec, int pMilliseconds);
 
@@ -216,4 +438,4 @@ int C2_HOOK_FASTCALL RematerialiseOpponentOnThisSection(tOpponent_spec* pOpponen
 
 float C2_HOOK_FASTCALL GetOpponentsSectionWidth(const tOpponent_spec* pOpponent_spec, tS16 pSection);
 
-#endif //CARPOCALYPSE2_OPPONENT_H
+#endif // GUARD_OPPONENT_H

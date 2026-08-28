@@ -10,6 +10,6 @@ extern tFrontend_spec gFrontend_START_GAME;
 
 int C2_HOOK_FASTCALL StartGameInfunc(tFrontend_spec* pFrontend);
 
-int C2_HOOK_FASTCALL FRONTEND_StartGameMenuHandler(tFrontend_spec *pFrontend);
+int C2_HOOK_FASTCALL FRONTEND_StartGameMenuHandler(tFrontend_spec* pFrontend);
 
 #endif /* FRONTEND_STARTGAME_H */

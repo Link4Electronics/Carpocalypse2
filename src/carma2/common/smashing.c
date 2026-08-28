@@ -19,8 +19,6 @@
 #include "c2_string.h"
 
 #include "carpocalypse2_macros.h"
-
-
 // GLOBAL: CARMA2_HW 0x006b78e0
 tSmash_vertex gSmash_glass_fragments[200];
 
@@ -113,13 +111,6 @@ void C2_HOOK_FASTCALL InitDecals(void) {
         smash_quad->actor->render_style = BR_RSTYLE_FACES;
         smash_quad->time = 0;
     }
-}
-
-// FUNCTION: CARMA2_HW 0x004efe00
-void C2_HOOK_FASTCALL InitSmashing(void) {
-
-    InitGlassFragments();
-    InitDecals();
 }
 
 // FUNCTION: CARMA2_HW 0x004ee550
@@ -233,12 +224,6 @@ void C2_HOOK_FASTCALL MungeSmashMaterialNames(void) {
                 i);
         }
     }
-}
-
-// FUNCTION: CARMA2_HW 0x004f02b0
-void C2_HOOK_FASTCALL CleanUpSmashStuff(void) {
-
-    NOT_IMPLEMENTED();
 }
 
 // FUNCTION: CARMA2_HW 0x004f00ca

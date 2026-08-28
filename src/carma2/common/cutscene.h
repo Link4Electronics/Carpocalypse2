@@ -1,7 +1,27 @@
-#ifndef CARPOCALYPSE2_CUTSCENE_H
+#ifndef GUARD_CUTSCENE_H
+#define GUARD_CUTSCENE_H
+
+#include "c2_hooks.h"
+
+
+// DoSCILogo
+
+// DoStainlessLogo
+
+// PlaySmackerFile
+
+// DoOpeningAnimation
+
+// DoEndRaceAnimation
+
+// DoGameCompletedAnimation
+
+// StartLoadingScreen
+
 #define CARPOCALYPSE2_CUTSCENE_H
 
 #include "c2_hooks.h"
+
 
 void C2_HOOK_FASTCALL DoSCILogo(void);
 
@@ -23,4 +43,4 @@ void C2_HOOK_FASTCALL DoGameCompletedAnimation(void);
 
 void C2_HOOK_FASTCALL StartLoadingScreen(void);
 
-#endif // CARPOCALYPSE2_CUTSCENE_H
+#endif // GUARD_CUTSCENE_H

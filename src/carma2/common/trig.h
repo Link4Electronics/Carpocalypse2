@@ -1,9 +1,54 @@
-#ifndef CARPOCALYPSE2_TRIG_H
+#ifndef GUARD_TRIG_H
+#define GUARD_TRIG_H
+
+#include "c2_hooks.h"
+#include <brender/brender.h>
+
+
+// FastFloatSin
+
+// FastFloatCos
+
+// FastScalarSin
+
+// FastScalarCos
+
+// FastScalarSinAngle
+
+// FastScalarCosAngle
+
+// FastFloatArcTan2
+
+// FastScalarArcTan2
+
+// FastFloatArcTan2Angle
+
+// FastScalarArcTan2Angle
+
+// DRMatrix34RotateX
+
+// DRMatrix34RotateY
+
+// DRMatrix34RotateZ
+
+// DRMatrix34PostRotateX
+
+// DRMatrix34PostRotateY
+
+// DRMatrix34PreRotateZ
+
+// DRMatrix34PostRotateZ
+
+// DRMatrix23Rotate
+
+// DRMatrix23PostRotate
+
 #define CARPOCALYPSE2_TRIG_H
 
 #include "c2_hooks.h"
 
 #include <brender/brender.h>
+
 
 float C2_HOOK_FASTCALL FastFloatSin(int pAngle_in_degrees);
 
@@ -71,4 +116,4 @@ void C2_HOOK_FASTCALL DRMatrix23PostRotate(br_matrix23* mat, br_angle rz);
 
 void C2_HOOK_FASTCALL DRMatrix34RotateCos(br_matrix34* pDest, const br_vector3* pAxis, float pCosA);
 
-#endif //CARPOCALYPSE2_TRIG_H
+#endif // GUARD_TRIG_H

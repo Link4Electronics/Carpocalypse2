@@ -10,8 +10,18 @@
 #include "carpocalypse2_macros.h"
 
 #include "c2_math.h"
+/*
+ * Face-intersection raycasting (ported from finteray.c — real implementation).
+ */
+#include "finteray.h"
 
-
+#include "brucetrk.h"
+#include "world3.h"
+#include "globvars.h"
+#include "spark.h"
+int C2_HOOK_FASTCALL BadDiv__finteray(br_scalar a, br_scalar b);
+extern void C2_HOOK_FASTCALL XZToColumnXZ(tU8* pColumn_x, tU8* pColumn_z, br_scalar pX, br_scalar pZ, tTrack_spec* pTrack_spec);
+extern br_material* gBlack_material;
 // GLOBAL: CARMA2_HW 0x005964c0
 int gPling_materials = 1;
 
@@ -41,6 +51,16 @@ tFace_ref* gPling_face;
 
 // GLOBAL: CARMA2_HW 0x005964c4
 int gActorBoxPick_StopGroovidelics = 1;
+
+#include "world2.h"
+#include "structur.h"
+
+#include <brender/brender.h>
+
+#include "carpocalypse2_macros.h"
+
+#include "c2_math.h"
+
 
 // FUNCTION: CARMA2_HW 0x0045d5c0
 void C2_HOOK_FASTCALL EnablePlingMaterials(void) {

@@ -12,31 +12,22 @@
 #include "carpocalypse2_types.h"
 
 #include "c2_string.h"
+#include "joystick.h"
 
-
-// GLOBAL: CARMA2_HW 0x00655e58
-float gForce_feedback_upper_limit = 2.7f;
-
-// GLOBAL: CARMA2_HW 0x00655e5c
-float Force_feedback_lower_limit = 1.5f;
-
+#include "loading1.h"
+#include "utility.h"
+#include "platform.h"
+#include "globvars.h"
+#include "packfile.h"
+#include "input.h"
+#include "carpocalypse2_macros.h"
+#include "carpocalypse2_types.h"
+#include "c2_string.h"
+#include <string.h>
+extern void C2_HOOK_FASTCALL ChangeHeadupFont(int pHeadup_index, int pFont);
+extern void C2_HOOK_FASTCALL ChangeHeadupText(int pHeadup_index, char* pText);
 // GLOBAL: CARMA2_HW 0x00595f88
 int gJoystick_index = -1;
-
-// GLOBAL: CARMA2_HW 0x00688704
-float gOriginal_joystick_x;
-
-// GLOBAL: CARMA2_HW 0x00688708
-float gOriginal_joystick_y;
-
-// GLOBAL: CARMA2_HW 0x0068870c
-int gOriginal_joystick_fbb;
-
-// GLOBAL: CARMA2_HW 0x00688710
-int gOriginal_joystick_dpad;
-
-// GLOBAL: CARMA2_HW 0x00688700
-int gOrig_joystick_index;
 
 // GLOBAL: CARMA2_HW 0x00595f90
 float gJoystick_x_steering = 1.f;
@@ -44,13 +35,34 @@ float gJoystick_x_steering = 1.f;
 // GLOBAL: CARMA2_HW 0x00595f94
 float gJoystick_y_throttle = 1.f;
 
-// GLOBAL: CARMA2_HW 0x00596308
-int gINT_00596308 = -1;
 
+// GLOBAL: CARMA2_HW 0x00655e5c
+float Force_feedback_lower_limit = 1.5f;
 // GLOBAL: CARMA2_HW 0x0079d8a0
 tHeadup_text_buffer gJoystick_headup_buffer_0079d8a0;
+// GLOBAL: CARMA2_HW 0x00688700
+int gOrig_joystick_index;
 
+extern int gINT_0068b8e4;
+extern int gINT_0068b8e8;
+extern int gRace_head_ups[22];
 
+float gForce_feedback_upper_limit = 2.7f;
+float gOriginal_joystick_x;
+float gOriginal_joystick_y;
+int gOriginal_joystick_fbb;
+int gOriginal_joystick_dpad;
+int gOrig_joystick_index;
+int gINT_00596308 = -1;
+
+// STUB: CARMA2_HW 0x0045c0b0
+int C2_HOOK_FASTCALL LoadJoystickPreferences(void) {
+
+    NOT_IMPLEMENTED();
+    return 0;
+}
+
+/* ported from common/joystick.c */
 void C2_HOOK_FASTCALL SetupFFBValues(void) {
     tPath_name path;
     FILE *f;
@@ -65,7 +77,6 @@ void C2_HOOK_FASTCALL SetupFFBValues(void) {
     PFfclose(f);
 }
 
-// FUNCTION: CARMA2_HW 0x0045c6b0
 int C2_HOOK_FASTCALL PlayExclusiveFFBEffect(const char* pEffect_name, int pArg2) {
 
     NOT_IMPLEMENTED();
@@ -77,43 +88,36 @@ void C2_HOOK_FASTCALL InitJoysticks(void) {
     PDInitJoysticks();
 }
 
-// FUNCTION: CARMA2_HW 0x0045c8d0
 float C2_HOOK_FASTCALL GetJoystickX(void) {
 
     NOT_IMPLEMENTED();
 }
 
-// FUNCTION: CARMA2_HW 0x0045c8f0
 float C2_HOOK_FASTCALL GetJoystickY(void) {
 
     NOT_IMPLEMENTED();
 }
 
-// FUNCTION: CARMA2_HW 0x0045c7f0
 int C2_HOOK_FASTCALL GetJoystickFBBGain(void) {
 
     NOT_IMPLEMENTED();
 }
 
-// FUNCTION: CARMA2_HW 0x0045c810
 void C2_HOOK_FASTCALL SetJoystickX(float pValue) {
 
     NOT_IMPLEMENTED();
 }
 
-// FUNCTION: CARMA2_HW 0x0045c870
 void C2_HOOK_FASTCALL SetJoystickY(float pValue) {
 
     NOT_IMPLEMENTED();
 }
 
-// FUNCTION: CARMA2_HW 0x0045c7b0
 void C2_HOOK_FASTCALL SetJoystickFFBGain(int pValue) {
 
     NOT_IMPLEMENTED();
 }
 
-// FUNCTION: CARMA2_HW 0x0045c570
 void C2_HOOK_FASTCALL SetJoystickDPadEnabled(int pEnabled) {
 
     NOT_IMPLEMENTED();
@@ -129,19 +133,16 @@ void C2_HOOK_FASTCALL Joystick_BackupSettings(void) {
     gJoystick_index = gOrig_joystick_index;
 }
 
-// FUNCTION: CARMA2_HW 0x0045bd50
 void C2_HOOK_FASTCALL EnableJoysticks(void) {
 
     NOT_IMPLEMENTED();
 }
 
-// FUNCTION: CARMA2_HW 0x0045bd70
 void C2_HOOK_FASTCALL DisableJoysticks(void) {
 
     NOT_IMPLEMENTED();
 }
 
-// FUNCTION: CARMA2_HW 0x0045b0a0
 void C2_HOOK_FASTCALL FUN_0045b0a0(tHeadup_text_buffer* pText_buffer) {
 
     NOT_IMPLEMENTED();
@@ -184,7 +185,6 @@ int C2_HOOK_FASTCALL FUN_CheckJoystickHeadupButtons(tButtonJoystickInfo** pJoyst
     return 1;
 }
 
-// FUNCTION: CARMA2_HW 0x0045b3b0
 void C2_HOOK_FASTCALL MungeJoystickHeadups(void) {
     tButtonJoystickInfo* joystick_info;
     tHeadup_text* headup_text;
@@ -334,7 +334,6 @@ void C2_HOOK_FASTCALL MungeJoystickHeadups(void) {
     }
 }
 
-// FUNCTION: CARMA2_HW 0x0045a0f0
 int C2_HOOK_FASTCALL HasCurrentJoystick(void) {
 
     return gJoystick_index != -1;

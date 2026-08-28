@@ -7,10 +7,16 @@ add_library(c2_common STATIC
     ../include/carpocalypse2_macros.h
     ../include/carpocalypse2_types.h
 
+    aiworld.c
+    aiworld.h
     animation.c
     animation.h
+    apo.c
+    apo.h
     brucetrk.c
     brucetrk.h
+    camera.c
+    camera.h
     car.c
     car.h
     compress.c
@@ -19,18 +25,22 @@ add_library(c2_common STATIC
     controls.h
     crush.c
     crush.h
+    crush1.c
+    crush1.h
+    crush2.c
+    crush2.h
     cutscene.c
     cutscene.h
     demo.c
     demo.h
     depth.c
     depth.h
+    displays.c
+    displays.h
     drfile.c
     drfile.h
     drmem.c
     drmem.h
-    displays.c
-    displays.h
     drone.c
     drone.h
     errors.c
@@ -43,6 +53,8 @@ add_library(c2_common STATIC
     flap.h
     flicplay.c
     flicplay.h
+    fog.c
+    fog.h
     font.c
     font.h
     frontend.c
@@ -55,10 +67,10 @@ add_library(c2_common STATIC
     frontend_credits.h
     frontend_graphics.c
     frontend_graphics.h
-    frontend_main.c
-    frontend_main.h
     frontend_loadgame.c
     frontend_loadgame.h
+    frontend_main.c
+    frontend_main.h
     frontend_netsync.c
     frontend_netsync.h
     frontend_network.c
@@ -79,6 +91,8 @@ add_library(c2_common STATIC
     frontend_wrecks.h
     funk.c
     funk.h
+    funks.c
+    funks.h
     globvars.c
     globvars.h
     globvrbm.c
@@ -93,27 +107,80 @@ add_library(c2_common STATIC
     grafdata.h
     graphics.c
     graphics.h
+    graphics1.c
+    graphics1.h
+    graphics2.c
+    graphics2.h
+    graphics3.c
+    graphics3.h
+    hull.c
+    hull.h
     init.c
     init.h
-    intrface.c
-    intrface.h
     input.c
     input.h
+    interface.c
+    interface.h
+    interface-changecar.c
+    interface-changecar.h
+    interface-graphics.c
+    interface-graphics.h
+    interface-main.c
+    interface-main.h
+    interface-netsync.c
+    interface-netsync.h
+    interface-network.c
+    interface-network.h
+    interface-network_options.c
+    interface-network_options.h
+    interface-networksummary.c
+    interface-networksummary.h
+    interface-newgame.c
+    interface-newgame.h
+    interface-options.c
+    interface-options.h
+    interface-quit.c
+    interface-quit.h
+    interface-scrollers.c
+    interface-startgame.c
+    interface-startgame.h
+    interface-wrecks.c
+    interface-wrecks.h
+    intrface.c
+    intrface.h
+    istring.c
+    istring.h
     joystick.c
     joystick.h
+    lighting.c
+    lighting.h
     loading.c
     loading.h
+    loading1.c
+    loading1.h
+    loading2.c
+    loading2.h
+    loading3.c
+    loading3.h
     loadsave.c
     loadsave.h
+    loadtif.c
+    loadtif.h
+    loadtif_zlib.c
+    loadtif_zlib.h
     main.c
     main.h
     mainloop.c
     mainloop.h
     mainmenu.c
     mainmenu.h
+    menuoptions.c
+    menuoptions.h
+    movie.c
+    movie.h
     netgame.c
     netgame.h
-    common_stubs.c
+    network.c
     network.h
     newgame.c
     newgame.h
@@ -125,56 +192,84 @@ add_library(c2_common STATIC
     oppoproc.h
     options.c
     options.h
+    packfile.c
+    packfile.h
     pedestrn.c
     pedestrn.h
+    phil.c
+    phil.h
+    physics.c
+    physics.h
     piping.c
     piping.h
     polyfont.c
     polyfont.h
+    powerup.c
+    powerup.h
+    powerups.c
+    powerups.h
     pratcam.c
     pratcam.h
-    physics.c
-    physics.h
-    powerups.h
-    powerups.c
     racemem.c
     racemem.h
     racestrt.c
     racestrt.h
     racesumm.c
     racesumm.h
+    radhelp.c
+    radhelp.h
     raycast.c
     raycast.h
     replay.c
     replay.h
     replay_callbacks.c
     replay_callbacks.h
+    runtime.c
+    runtime.h
     shrapnel.c
     shrapnel.h
+    skidmark.c
+    skidmark.h
+    smash.c
+    smash.h
     smashing.c
     smashing.h
-    # sound.c  # struct field mismatches — skip for now
+    sound.c
     sound.h
     spark.c
     spark.h
-    skidmark.c
-    skidmark.h
     structur.c
     structur.h
     temp.c
     temp.h
+    timer.c
+    timer.h
     timers.c
     timers.h
     tinted.c
     tinted.h
+    tintedpoly.c
+    tintedpoly.h
     trig.c
     trig.h
     utility.c
     utility.h
     video.c
     video.h
+    volume.c
+    volume.h
+    win95net.c
+    win95net.h
+    win95sys.c
+    win95sys.h
     world.c
     world.h
+    world1.c
+    world1.h
+    world2.c
+    world2.h
+    world3.c
+    world3.h
 )
 target_include_directories(c2_common
     PUBLIC
@@ -184,7 +279,6 @@ target_link_libraries(c2_common
     PUBLIC
         carpocalypse2_headers
         BRender::Headers
-    PRIVATE
         c2_hooks
         c2_platform
         S3::S3

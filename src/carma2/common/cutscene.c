@@ -1,6 +1,6 @@
 #include "cutscene.h"
 
-#include "52-errors.h"
+#include "errors.h"
 #include "globvars.h"
 #include "globvrbm.h"
 #include "graphics.h"
@@ -17,8 +17,23 @@
 
 #include "c2_string.h"
 #include "smack.h"
+#include "cutscene.h"
 
+// DoSCILogo
 
+// DoStainlessLogo
+
+// PlaySmackerFile
+
+// DoOpeningAnimation
+
+// DoEndRaceAnimation
+
+// DoGameCompletedAnimation
+
+// StartLoadingScreen
+#define SMACKER_INTERPOLATE
+#define SMACKER_ANTIALIASING
 // GLOBAL: CARMA2_HW 0x0079eca4
 br_actor* gSmackerActor;
 
@@ -40,9 +55,6 @@ br_material* gSmackMaterials[15];
 
 // GLOBAL: CARMA2_HW 0x0067c3b0
 void* gSmackerBuffer;
-#define SMACKER_INTERPOLATE
-#define SMACKER_ANTIALIASING
-
 // FUNCTION: CARMA2_HW 0x0043e750
 void C2_HOOK_FASTCALL DoSCILogo(void) {
 }

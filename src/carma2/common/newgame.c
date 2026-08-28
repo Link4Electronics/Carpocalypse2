@@ -11,11 +11,15 @@
 
 #include "carpocalypse2_macros.h"
 #include <stdio.h>
+#include "newgame.h"
 
+#include "loading1.h"
+#include "loading2.h"
+#include "utility.h"
+#include "packfile.h"
+#include "globvars.h"
 
-// GLOBAL: CARMA2_HW 0x00763960
-tNet_game_options gNet_settings[9];
-
+#include "carpocalypse2_macros.h"
 // GLOBAL: CARMA2_HW 0x0059c7e8
 int gNet_grid_starts[10] = {
     1, 0, 0, 0, 1, 1, 1, 0, 0, 0,
@@ -30,26 +34,8 @@ int gLast_graph_sel;
 // GLOBAL: CARMA2_HW 0x00688718
 tJoinable_game gGames_to_join[6];
 
-// FUNCTION: CARMA2_HW 0x004663e0
-void C2_HOOK_FASTCALL DefaultNetSettings(void) {
-    FILE* file;
-    tNet_game_options* pOptions;
-    tPath_name the_path;
-    int i;
-
-    PathCat(the_path, gApplication_path, "NETDFLT.TXT");
-    file = DRfopen(the_path, "rt");
-    if (file == NULL) {
-        return;
-    }
-    ReadNetworkSettings(file, &gNet_settings[0]);
-    PFrewind(file);
-    for (i = 1; i < CARPOCALYPSE2_ASIZE(gNet_settings); i++) {
-        pOptions = &gNet_settings[i];
-        ReadNetworkSettings(file, pOptions);
-    }
-    PFfclose(file);
-}
+// GLOBAL: CARMA2_HW 0x00763960
+tNet_game_options gNet_settings[9];
 
 // FUNCTION: CARMA2_HW 0x00468140
 void C2_HOOK_FASTCALL SetOptions(tNet_game_type pGame_type, tNet_game_options* pGame_options) {
@@ -125,3 +111,45 @@ void C2_HOOK_FASTCALL InitGamesToJoin(void) {
         gGames_to_join[i].game = NULL;
     }
 }
+// SetGameTarget
+
+// SetOptions
+
+// ReadNetGameChoices
+
+// PickARandomCar
+
+// RequestCarDetails
+
+// SetNetAvailability
+
+// FUNCTION: CARMA2_HW 0x004663e0
+void C2_HOOK_FASTCALL DefaultNetSettings(void) {
+    FILE* file;
+    tNet_game_options* pOptions;
+    tPath_name the_path;
+    int i;
+
+    PathCat(the_path, gApplication_path, "NETDEFLT.TXT");
+    file = DRfopen(the_path, "rt");
+    if (file == NULL) {
+        return;
+    }
+    ReadNetworkSettings(file, &gNet_settings[0]);
+    PFrewind(file);
+    for (i = 1; i < (int)CARPOCALYPSE2_ASIZE(gNet_settings); i++) {
+        pOptions = &gNet_settings[i];
+        ReadNetworkSettings(file, pOptions);
+    }
+    PFfclose(file);
+}
+
+// DisposeJoinableGame
+
+// InitGamesToJoin
+
+// DisposeJoinList
+
+// AddToJoinList
+
+// FillInRaceDescription
