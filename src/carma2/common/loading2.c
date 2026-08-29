@@ -1,6 +1,13 @@
 #include "loading2.h"
 extern void C2_HOOK_FASTCALL PossibleService(void);
 extern void C2_HOOK_FASTCALL InitFunkGrooveFlags(void);
+extern tHeadup_info gHeadup_image_info[45];
+extern br_pixelmap* gHeadup_images[45];
+extern tNet_mode gNet_mode;
+extern char* gRaces_file_names[9];
+extern int gCurrent_race_file_index;
+extern int gCountRaceGroups;
+extern tRace_group_spec* gRace_groups;
 
 
 #define DECODE_OFFSET 50
@@ -564,24 +571,212 @@ void C2_HOOK_FASTCALL InitInterfaceLoadState(void) {
 
 // LoadCar
 
-// STUB: CARMA2_HW 0x0048c150
+// FUNCTION: CARMA2_HW 0x0048c150
 void C2_HOOK_FASTCALL LoadHeadupImages(void) {
-#ifndef CARPOCALYPSE2_MATCHING
-    /* stub: no-op for Linux boot */
-#else
-    NOT_IMPLEMENTED();
-#endif
+    int i;
+
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gHeadup_image_info); i++) {
+        PossibleService();
+        if ((gHeadup_image_info[i].avail == eNet_or_otherwise) ||
+            ((gHeadup_image_info[i].avail == eNot_net) && (gNet_mode == 0)) ||
+            ((gHeadup_image_info[i].avail == eNet_only) && (gNet_mode != 0))) {
+            gHeadup_images[i] = LoadPixelmap(gHeadup_image_info[i].name);
+            BRPM_convert(gHeadup_images[i], gBack_screen->type);
+        } else {
+            gHeadup_images[i] = NULL;
+        }
+    }
 }
 
 // OpenRaceFile
 
-// STUB: CARMA2_HW 0x0048c1c0
+// FUNCTION: CARMA2_HW 0x0048c1c0
 void C2_HOOK_FASTCALL LoadRaces(tRace_list_spec* pRace_list, int* pCount, int pRace_type_index) {
-#ifndef CARPOCALYPSE2_MATCHING
-    /* stub: no-op for Linux boot */
-#else
-    NOT_IMPLEMENTED();
-#endif
+    FILE* f;
+    tPath_name the_path;
+    char s[256];
+    char* str;
+    tRace_list_spec* race;
+    tRace_group_spec* group;
+    tTWTVFS twt_file;
+    int i;
+    int count;
+    int j;
+    int val;
+    int powerup_exclusions[96];
+    float low_count;
+    float low_nastiness;
+    float x_offset;
+    float y_offset;
+    float high_nastiness;
+    float x_span;
+    float high_count;
+    float y_span;
+    float v;
+    float r;
+
+    if (!gApplicationDataTwtMounted) {
+        twt_file = OpenPackFileAndSetTiffLoading(gApplication_path);
+    }
+    gCurrent_race_file_index = pRace_type_index + 1;
+    PathCat(the_path, gApplication_path, gRaces_file_names[gCurrent_race_file_index]);
+    f = DRfopen(the_path, "rt");
+    if (f == NULL) {
+        FatalError(kFatalError_CannotOpenRacesFile);
+    }
+
+    GetAnInt(f);
+    gDev_initial_race = 0;
+    low_count = GetAScalar(f);
+    high_count = GetAScalar(f);
+    GetPairOfFloats(f, &y_offset, &x_offset);
+    GetPairOfFloats(f, &x_span, &y_span);
+    low_nastiness = GetAScalar(f);
+    high_nastiness = GetAScalar(f);
+    gCountRaceGroups = 0;
+
+    race = pRace_list;
+    i = 0;
+    for (;;) {
+        GetALineAndDontArgue(f, race->name);
+        if (strcmp(race->name, "END") == 0) {
+            break;
+        }
+        GetAString(f, race->file_name);
+        GetAString(f, race->interface_name);
+        race->count_opponents = GetAnInt(f);
+        race->count_explicit_opponents = GetAnInt(f);
+        for (j = 0; j < race->count_explicit_opponents; j++) {
+            race->explicit_opponents[j] = GetAnInt(f);
+        }
+        race->opponent_nastiness_level = GetAScalar(f);
+
+        /* Powerup exclusions list, terminated by a negative entry */
+        GetALineAndDontArgue(f, s);
+        str = strtok(s, "\t ,/");
+        count = 0;
+        while (str != NULL) {
+            sscanf(str, "%d", &powerup_exclusions[count]);
+            if (powerup_exclusions[count] < 0) {
+                break;
+            }
+            count++;
+            str = strtok(NULL, "\t ,/");
+        }
+        race->count_powerup_exclusions = count;
+        if (count > 0) {
+            race->powerup_exclusions = BrMemAllocate(count * sizeof(int), kMem_misc);
+            memcpy(race->powerup_exclusions, powerup_exclusions, count * sizeof(int));
+        }
+
+        race->no_time_awards = GetAnInt(f);
+        race->is_boundary = GetAnInt(f);
+        if (race->is_boundary) {
+            gCountRaceGroups++;
+        }
+        race->race_type = GetAnInt(f);
+        GetThreeInts(f, &race->initial_timer[0], &race->initial_timer[1], &race->initial_timer[2]);
+        switch (race->race_type) {
+            case kRaceType_Carma1:
+            case kRaceType_Checkpoints:
+                race->count_laps = GetAnInt(f);
+                break;
+            case kRaceType_Cars:
+                race->options.cars.count_opponents = GetAnInt(f);
+                for (j = 0; j < race->options.cars.count_opponents; j++) {
+                    race->options.cars.opponents[j] = GetAnInt(f);
+                }
+                break;
+            case kRaceType_Peds:
+                race->options.peds.count_ped_groups = GetAnInt(f);
+                for (j = 0; j < race->options.peds.count_ped_groups; j++) {
+                    race->options.peds.ped_groups[j] = GetAnInt(f);
+                }
+                break;
+            case kRaceType_Smash:
+                race->options.smash.var_smash_number = GetAnInt(f);
+                race->options.smash.var_smash_target = GetAnInt(f);
+                break;
+            case kRaceType_SmashNPed:
+                race->options.smash_and_peds.var_smash_number = GetAnInt(f);
+                race->options.smash_and_peds.var_smash_target = GetAnInt(f);
+                race->options.smash_and_peds.ped_group_index = GetAnInt(f);
+                break;
+            default:
+                break;
+        }
+        GetThreeInts(f, &race->completion_bonus[0], &race->completion_bonus[1], &race->completion_bonus[2]);
+        if (race->race_type == kRaceType_Carma1) {
+            GetThreeInts(f, &race->completion_bonus_peds[0], &race->completion_bonus_peds[1], &race->completion_bonus_peds[2]);
+            GetThreeInts(f, &race->completion_bonus_opponents[0], &race->completion_bonus_opponents[1], &race->completion_bonus_opponents[2]);
+        }
+        GetALineAndDontArgue(f, race->description);
+        if (DRStricmp(race->description, "none") == 0) {
+            race->description[0] = 0;
+        }
+        race->expansion = GetAnInt(f) & 1;
+
+        if ((pRace_type_index < 0) || (race->race_type == kRaceType_Carma1)) {
+            race++;
+            i++;
+        }
+    }
+
+    *pCount = i;
+    PFfclose(f);
+    if (gRace_groups != NULL) {
+        BrMemFree(gRace_groups);
+    }
+    gRace_groups = BrMemAllocate(sizeof(tRace_group_spec) * ((gCountRaceGroups > 0) ? gCountRaceGroups : 1), kMem_misc);
+    gRace_groups[0].count_races = 0;
+    gRace_groups[0].races = pRace_list;
+
+    race = pRace_list;
+    group = gRace_groups;
+    for (i = 0; i < *pCount; i++) {
+        if (race->opponent_nastiness_level <= 0.0f) {
+            race->opponent_nastiness_level = low_nastiness + (high_nastiness - low_nastiness) * ((float)i / (*pCount - 1));
+        }
+        if (race->count_opponents < 0) {
+            count = (int)(low_count + (high_count - low_count) * ((float)i / (*pCount - 1)));
+        } else {
+            count = race->count_opponents;
+        }
+        race->count_opponents = 0;
+        if (count > race->count_explicit_opponents) {
+            v = x_offset + (x_span - x_offset) * ((float)i / (*pCount - 1));
+            r = y_offset + (y_span - y_offset) * ((float)i / (*pCount - 1));
+            for (j = race->count_explicit_opponents; j < count; j++) {
+                val = (int)(v + (r - v) * ((float)(j - race->count_explicit_opponents) / (race->count_explicit_opponents - 1)));
+                if (val < 1) {
+                    val = -1;
+                } else if (val > 5) {
+                    val = -5;
+                } else {
+                    val = -val;
+                }
+                race->explicit_opponents[j] = val;
+            }
+        }
+        race->count_explicit_opponents = count;
+        race->group = group;
+        if (race->is_boundary) {
+            group->mission = race;
+            group++;
+            if ((group - gRace_groups) < gCountRaceGroups) {
+                group->count_races = 0;
+                group->races = &race[1];
+            }
+        } else {
+            group->count_races++;
+        }
+        race++;
+    }
+
+    gCurrent_race_group = gRace_groups;
+    if (!gApplicationDataTwtMounted) {
+        ClosePackFileAndSetTiffLoading(twt_file);
+    }
 }
 
 // LoadRaceInfo
