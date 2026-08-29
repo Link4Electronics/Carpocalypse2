@@ -1766,11 +1766,39 @@ void C2_HOOK_FASTCALL PositionCarMountedCamera(tCar_spec* pCar, tU32 pTime) {
     NOT_IMPLEMENTED();
 }
 
+typedef struct {
+    int meter;
+    undefined4 field_0x04[12];
+    tCar_spec* car;
+    undefined4 field_0x38[39];
+} tRace_board_entry;
+
+// GLOBAL: CARMA2_HW 0x0074bd54
+tRace_board_entry gRace_board[8];
+
 // FUNCTION: CARMA2_HW 0x0040f4a0
 tCar_spec* C2_HOOK_FASTCALL GetRaceLeader(void) {
+    int i;
+    int best;
+    tCar_spec* leader;
 
-    NOT_IMPLEMENTED();
-    return NULL;
+    leader = gRace_board[0].car;
+    best = gRace_board[0].meter;
+    if (gCurrent_net_game->type == eNet_game_type_foxy) {
+        i = gIt_or_fox;
+        if (i >= 0 && i < gNumber_of_net_players) {
+            return gRace_board[i].car;
+        }
+    }
+    if (gNumber_of_net_players > 1) {
+        for (i = 1; i < gNumber_of_net_players; i++) {
+            if (gRace_board[i].meter < best) {
+                best = gRace_board[i].meter;
+                leader = gRace_board[i].car;
+            }
+        }
+    }
+    return leader;
 }
 
 void C2_HOOK_FASTCALL CheckCameraHither(void) {

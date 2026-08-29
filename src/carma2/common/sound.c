@@ -1143,8 +1143,17 @@ void C2_HOOK_FASTCALL SetDefaultSoundFolderName(void) {
 }
 
 
-// FUNCTION: CARMA2_HW 0x0047c650 (StartMusicTrack)
+// FUNCTION: CARMA2_HW 0x00456840 (StartMusicTrack)
 void C2_HOOK_FASTCALL StartMusicTrack(int pMusic_track) {
 
-    NOT_IMPLEMENTED();
+    if (gCD_fully_installed && gMusic_available && gINT_00684568 != 0) {
+        S3StopSound(gINT_00684568);
+        gINT_00684554 = 0;
+        gINT_00684568 = 0;
+    }
+    if (!gINT_00595c44 || gProgram_state.music_volume >= 128) {
+        gNext_track_finished_check = PDGetTotalTime() + 10000;
+        dr_dprintf("CDINFO: StartMusicTrack(): New gNext_track_finished_check %d", gNext_track_finished_check);
+        gINT_00684568 = DRS3StartCDA(pMusic_track);
+    }
 }

@@ -1018,7 +1018,7 @@ void C2_HOOK_FASTCALL ProcessNonTrackActors(br_pixelmap* pRender_buffer, br_pixe
 }
 
 // FUNCTION: CARMA2_HW 0x004e5680
-void C2_HOOK_FASTCALL DoARenderPass(br_matrix34* pMat34, br_actor* pCamera, br_pixelmap* pColour, br_pixelmap* pDepth, float pYon_factor, int pShadows, int pEffects) {
+void C2_HOOK_FASTCALL DoARenderPass(br_matrix34* pMat34, br_actor* pCamera, br_pixelmap* pColour, br_pixelmap* pDepth, float pYon_factor, int pShadows, int pEffects, int pEffects_extra) {
     br_camera* camera_data = (br_camera*)pCamera->type_data;
     br_scalar original_yon = camera_data->yon_z;
     int i;
@@ -1080,19 +1080,19 @@ void C2_HOOK_FASTCALL DoACompleteRenderPass(int pMirror, br_matrix34* pCamera_to
             gRear_pixelmap->origin_x = extra_render->material->colour_map->width / 2;
             gRear_pixelmap->origin_y = extra_render->material->colour_map->height / 2;
             gRear_pixelmap->width = extra_render->material->colour_map->width;
-            gRear_pixelmap->height = extra_render->material->colour_map->width;
-            if (gRear_pixelmap->width == gRear_pixelmap->row_bytes) {
-                gRear_pixelmap->flags |= BR_PMF_ROW_WHOLEPIXELS;
-            } else {
+            gRear_pixelmap->height = extra_render->material->colour_map->height;
+            if (gRear_pixelmap->width != gRear_pixelmap->row_bytes) {
                 gRear_pixelmap->flags &= ~BR_PMF_ROW_WHOLEPIXELS;
+            } else {
+                gRear_pixelmap->flags |= BR_PMF_ROW_WHOLEPIXELS;
             }
             BrActorToActorMatrix34(&mat, extra_render->actor, gUniverse_actor);
-            DoARenderPass(&mat, extra_render->actor, gRear_pixelmap, gDepth_buffer, 1.f, 0, 0);
+            DoARenderPass(&mat, extra_render->actor, gRear_pixelmap, gDepth_buffer, 1.f, 0, 0, 0);
             DRPixelmapCopyMapBlack(extra_render->material->colour_map, gRear_pixelmap);
             BrMaterialUpdate(extra_render->material, BR_MATU_COLOURMAP);
         }
     }
-    DoARenderPass(pCamera_to_world, pCamera, pScreen, pDepth, 1.f, !pMirror, !pMirror);
+    DoARenderPass(pCamera_to_world, pCamera, pScreen, pDepth, 1.f, !pMirror, !pMirror, !pMirror);
     gRendering_mirror = 0;
 }
 
@@ -1536,38 +1536,34 @@ void C2_HOOK_FASTCALL DRPixelmapRotatedAndFeatheredCopy(br_matrix23* pMat, br_pi
     }
 }
 
-void C2_HOOK_FASTCALL DRPixelmapCopyMapBlack8Bit(br_pixelmap* pDest, br_pixelmap* pSrc) {
-    tU16 dest_row_bytes = pDest->row_bytes;
-    tU16 src_row_bytes = pSrc->row_bytes;
-    tU8 *dest_pixels = pDest->pixels;
-    tU16 dest_width = pDest->width;
-    tU16 src_width = pSrc->width;
-    tU8 *src_pixels = pSrc->pixels;
-    tU32 src_width_dwords = src_width / sizeof(tU32);
-    tU32 dwords_remaining;
-    int y;
-
-    for (y = 0; y < (int)pSrc->height; y++) {
-
-        for (dwords_remaining = src_width_dwords; dwords_remaining != 0; dwords_remaining--, src_pixels+=4, dest_pixels+=4) {
-            tU8 p0 = src_pixels[0];
-            tU8 p1 = src_pixels[1];
-            tU8 p2 = src_pixels[2];
-            tU8 p3 = src_pixels[3];
-            dest_pixels[0] = p0 != 0 ? p0 : 0xf0;
-            dest_pixels[1] = p1 != 0 ? p1 : 0xf0;
-            dest_pixels[2] = p2 != 0 ? p2 : 0xf0;
-            dest_pixels[3] = p3 != 0 ? p3 : 0xf0;
-        }
-        src_pixels += src_row_bytes - src_width;
-        dest_pixels += dest_row_bytes - dest_width;
-    }
-}
-
 // FUNCTION: CARMA2_HW 0x0047d5b0
 void C2_HOOK_FASTCALL DRPixelmapCopyMapBlack(br_pixelmap* pDest, br_pixelmap* pSrc) {
     if (pDest->type == BR_PMT_INDEX_8) {
-        DRPixelmapCopyMapBlack8Bit(pDest, pSrc);
+        tU16 dest_row_bytes = pDest->row_bytes;
+        tU16 src_row_bytes = pSrc->row_bytes;
+        tU8 *dest_pixels = pDest->pixels;
+        tU16 dest_width = pDest->width;
+        tU16 src_width = pSrc->width;
+        tU8 *src_pixels = pSrc->pixels;
+        tU32 src_width_dwords = src_width / sizeof(tU32);
+        tU32 dwords_remaining;
+        int y;
+
+        for (y = 0; y < (int)pSrc->height; y++) {
+
+            for (dwords_remaining = src_width_dwords; dwords_remaining != 0; dwords_remaining--, src_pixels+=4, dest_pixels+=4) {
+                tU8 p0 = src_pixels[0];
+                tU8 p1 = src_pixels[1];
+                tU8 p2 = src_pixels[2];
+                tU8 p3 = src_pixels[3];
+                dest_pixels[0] = p0 != 0 ? p0 : 0xf0;
+                dest_pixels[1] = p1 != 0 ? p1 : 0xf0;
+                dest_pixels[2] = p2 != 0 ? p2 : 0xf0;
+                dest_pixels[3] = p3 != 0 ? p3 : 0xf0;
+            }
+            src_pixels += src_row_bytes - src_width;
+            dest_pixels += dest_row_bytes - dest_width;
+        }
     } else {
         BrPixelmapCopy(pDest, pSrc);
     }

@@ -118,6 +118,7 @@ int C2_HOOK_FASTCALL FRONTEND_NewGameMenuHandler(tFrontend_spec* pFrontend) {
             ToggleTyping(pFrontend);
             if (!gTyping && strlen(pFrontend->items[gFrontend_selected_item_index].text) != 0) {
                 strcpy(gProgram_state.player_name, pFrontend->items[gFrontend_selected_item_index].text);
+                SaveOptions();
             }
             SaveOptions();
         }
@@ -233,7 +234,7 @@ int C2_HOOK_FASTCALL FRONTEND_NewGameMenuHandler(tFrontend_spec* pFrontend) {
                 }
                 for (i = 0; i < gCurrent_frontend_spec->count_scrollers; i++) {
 
-                    gCurrent_frontend_spec->scrollers[i].indexOfItemAtTop = gCurrent_frontend_spec->scrollers[i].indexTopItem;
+                    gCurrent_frontend_spec->scrollers[i].indexTopItem = gCurrent_frontend_spec->scrollers[i].indexOfItemAtTop;
                 }
                 UpdateScrollPositions(gCurrent_frontend_spec);
             }
