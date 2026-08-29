@@ -115,7 +115,10 @@ int C2_HOOK_FASTCALL FRONTEND_NewGameMenuHandler(tFrontend_spec* pFrontend) {
         input = ProcessInputString();
         FuckWithWidths(pFrontend);
         if (input < 0) {
-            NewGameToggleTyping(pFrontend);
+            ToggleTyping(pFrontend);
+            if (!gTyping && strlen(pFrontend->items[gFrontend_selected_item_index].text) != 0) {
+                strcpy(gProgram_state.player_name, pFrontend->items[gFrontend_selected_item_index].text);
+            }
             SaveOptions();
         }
     } else {
