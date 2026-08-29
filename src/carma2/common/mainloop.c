@@ -158,7 +158,7 @@ void C2_HOOK_FASTCALL CalculateCameraStuff(tU32 pCamera_period) {
     camera = gCamera->type_data;
     gYon_squared = gYon_multiplier * gYon_multiplier * camera->yon_z * camera->yon_z;
     BrVector3Sub(&delta_camera, (br_vector3*)gCamera_to_world.m[3], &gPrev_camera_position);
-    if (BrVector3LengthSquared(&delta_camera) > 400.f) {
+    if (BrVector3LengthSquared(&delta_camera) > 400.0) {
         ResetPedNearness();
     }
     BrVector3Copy(&gPrev_camera_position, (br_vector3*)gCamera_to_world.m[3]);
@@ -750,8 +750,12 @@ tRace_result C2_HOOK_FASTCALL MainGameLoop(void) {
 tRace_result C2_HOOK_FASTCALL DoRace(void) {
     tRace_result result;
 
-    StartMusicTrack(PercentageChance(50) ? 9998 : 9997);
-    gRace_start = GetTotalTime();
+    if (PercentageChance(50)) {
+        StartMusicTrack(9998);
+    } else {
+        StartMusicTrack(9997);
+    }
+    gRace_start = PDGetTotalTime();
     result = MainGameLoop();
     return result;
 }
@@ -770,11 +774,7 @@ void C2_HOOK_FASTCALL UpdateFramePeriod(tU32* pCamera_period) {
         gFrame_period = abs((int)(gLast_replay_frame_time - last_tick_count));
         new_camera_tick_count = PDGetTotalTime();
         new_tick_count = GetTotalTime();
-        if (gOld_camera_time != 0) {
-            *pCamera_period = new_camera_tick_count - gOld_camera_time;
-        } else {
-            *pCamera_period = 0;
-        }
+        *pCamera_period = (gOld_camera_time != 0) ? (new_camera_tick_count - gOld_camera_time) : 0;
         gOld_camera_time = new_camera_tick_count;
         if (gFrame_period != 0) {
             *pCamera_period = gFrame_period;
