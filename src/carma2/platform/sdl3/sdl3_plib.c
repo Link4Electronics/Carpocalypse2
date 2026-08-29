@@ -701,9 +701,9 @@ static void C2_HOOK_CDECL sdlTriangleRender(brp_block* block, brp_vertex* v0, br
             u_step = l1_step * (v1->comp_f[C_U] - v0->comp_f[C_U]) + l2_step * (v2->comp_f[C_U] - v0->comp_f[C_U]);
             v_step = l1_step * (v1->comp_f[C_V] - v0->comp_f[C_V]) + l2_step * (v2->comp_f[C_V] - v0->comp_f[C_V]);
             if (smooth) {
-                r_step = l1_step * (v1->comp_f[C_R] - v0->comp_f[C_R]) + l2_step * (v2->comp_f[C_R] - v0->comp_f[C_R]);
-                g_step = l1_step * (v1->comp_f[C_G] - v0->comp_f[C_G]) + l2_step * (v2->comp_f[C_G] - v0->comp_f[C_G]);
-                b_step = l1_step * (v1->comp_f[C_B] - v0->comp_f[C_B]) + l2_step * (v2->comp_f[C_B] - v0->comp_f[C_B]);
+                r_step = l1_step * (v1->comp_i[C_R] - v0->comp_i[C_R]) + l2_step * (v2->comp_i[C_R] - v0->comp_i[C_R]);
+                g_step = l1_step * (v1->comp_i[C_G] - v0->comp_i[C_G]) + l2_step * (v2->comp_i[C_G] - v0->comp_i[C_G]);
+                b_step = l1_step * (v1->comp_i[C_B] - v0->comp_i[C_B]) + l2_step * (v2->comp_i[C_B] - v0->comp_i[C_B]);
             } else {
                 r_step = g_step = b_step = 0.f;
             }
@@ -711,9 +711,9 @@ static void C2_HOOK_CDECL sdlTriangleRender(brp_block* block, brp_vertex* v0, br
             u_l = l0 * v0->comp_f[C_U] + l1 * v1->comp_f[C_U] + l2 * v2->comp_f[C_U];
             v_l = l0 * v0->comp_f[C_V] + l1 * v1->comp_f[C_V] + l2 * v2->comp_f[C_V];
             if (smooth) {
-                r_l = l0 * v0->comp_f[C_R] + l1 * v1->comp_f[C_R] + l2 * v2->comp_f[C_R];
-                g_l = l0 * v0->comp_f[C_G] + l1 * v1->comp_f[C_G] + l2 * v2->comp_f[C_G];
-                b_l = l0 * v0->comp_f[C_B] + l1 * v1->comp_f[C_B] + l2 * v2->comp_f[C_B];
+                r_l = l0 * v0->comp_i[C_R] + l1 * v1->comp_i[C_R] + l2 * v2->comp_i[C_R];
+                g_l = l0 * v0->comp_i[C_G] + l1 * v1->comp_i[C_G] + l2 * v2->comp_i[C_G];
+                b_l = l0 * v0->comp_i[C_B] + l1 * v1->comp_i[C_B] + l2 * v2->comp_i[C_B];
             } else {
                 r_l = g_l = b_l = 255.f;
             }
@@ -822,9 +822,9 @@ static void C2_HOOK_CDECL sdlTriangleRender(brp_block* block, brp_vertex* v0, br
             } else {
                 /* flat: colour comes from the constant components
                  * (material->colour filled by softrend's surface fns) */
-                unsigned r = (unsigned)v0->comp_f[C_R];
-                unsigned g = (unsigned)v0->comp_f[C_G];
-                unsigned b = (unsigned)v0->comp_f[C_B];
+                unsigned r = (unsigned)(v0->comp_i[C_R] & 0xff);
+                unsigned g = (unsigned)(v0->comp_i[C_G] & 0xff);
+                unsigned b = (unsigned)(v0->comp_i[C_B] & 0xff);
                 if (prim_flags & PRIMF_BLEND) {
                     unsigned short d = crow[x];
                     float sa = alpha_val;
