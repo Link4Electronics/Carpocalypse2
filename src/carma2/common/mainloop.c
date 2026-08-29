@@ -359,7 +359,229 @@ tRace_result C2_HOOK_FASTCALL MainGameLoop(void) {
         CalculateFrameRate();
         CameraBugFix(&gProgram_state.current_car, gCamera_period);
         if (!gAction_replay_mode) {
-            MungeHeadups();
+            /* MungeHeadups() inlined to match retail codegen */
+            {
+            char the_text[256];
+            int net_credits;
+            int effective_timer;
+            int bonus;
+            tU32 the_time;
+            // GLOBAL: CARMA2_HW 0x0068c818
+            static tU32 last_rattle_time;
+
+            ClearHeadupSlot(3);
+            MungeJoystickHeadups();
+            net_credits = gProgram_state.credits;
+            if (fabsf((float)gProgram_state.credits - (float)gLast_credit_headup__mainloop) / (float)gFrame_rate > 1.2f) {
+                if (gProgram_state.credits - gLast_credit_headup__mainloop > 0) {
+                    net_credits = (int)((float)gLast_credit_headup__mainloop + ((float)gProgram_state.credits - (float)gLast_credit_headup__mainloop + 1000.f) * (float)gFrame_period * 1.2f / 1000.f);
+                } else {
+                    net_credits = (int)((float)gLast_credit_headup__mainloop - ((float)gLast_credit_headup__mainloop - (float)gProgram_state.credits + 1000.f) * (float)gFrame_period * 1.2f / 1000.f);
+                }
+            }
+
+            if (gNet_mode != eNet_mode_none
+                    && gCountdown == 0
+                    && gNet_auto_increase_credits_dt[gCurrent_net_game->type] != 0
+                    && net_credits < gRecovery_cost.initial_network[gCurrent_net_game->type]
+                    && PDGetTotalTime() - gLast_net_auto_increase_credits >= gNet_auto_increase_credits_dt[gCurrent_net_game->type]) {
+
+                gLast_net_auto_increase_credits = PDGetTotalTime();
+                gProgram_state.credits += 50;
+
+        #define GET_RECOVERY_COST() ((gNet_mode == eNet_mode_none) ? \
+            gRecovery_cost.initial[gProgram_state.skill_level] : \
+            gRecovery_cost.initial_network[gCurrent_net_game->type])
+
+                if (net_credits + 50 > GET_RECOVERY_COST()) {
+                    gProgram_state.credits += (int)(GET_RECOVERY_COST() - net_credits - 50.f);
+                    net_credits = (int)GET_RECOVERY_COST();
+                } else {
+                    net_credits += 50;
+                }
+            }
+            gLast_credit_headup__mainloop = net_credits;
+
+            if (gCountdown != 0) {
+                int new_countdown;
+
+                new_countdown = (int)(7.5 - GetRaceTime() / 1000.0);
+                if (new_countdown < 0) {
+                    new_countdown = 0;
+                }
+                if (gCountdown != new_countdown && new_countdown <= 5) {
+                    gCountdown = new_countdown;
+                    NewImageHeadupSlot(5, 0, 800, 4 + new_countdown);
+                    DRS3StartSound(gPedestrians_outlet, eSoundId_Countdown_Start + gCountdown);
+                    if (new_countdown == 0) {
+                        MakeFlagWavingBastardWaveHisFlagWhichIsTheProbablyTheLastThingHeWillEverDo();
+                    }
+                }
+            }
+            if (fabsf((float)gTimer - (float)gLast_time_headup) / (float)gFrame_period <= 10.0) {
+                effective_timer = gTimer;
+            } else if ((int)gTimer < gLast_time_headup) {
+                effective_timer = gTimer;
+            } else {
+                effective_timer = (int)((float)gLast_time_headup + 10.f * (float)gFrame_period);
+            }
+            gLast_time_headup = effective_timer;
+
+            if (gNet_mode == eNet_mode_none) {
+                if (net_credits < 0) {
+                    sprintf(the_text, "\xf8%d\xfa %s", -net_credits, GetMiscString(eMiscString_credits_lost));
+                    ChangeHeadupText(gCredits_won_headup, the_text);
+                } else {
+                    sprintf(the_text, "\xf8%d\xfa %s", net_credits, GetMiscString(net_credits >= 100000 ? eMiscString_credits_abbrev : eMiscString_credits_gained));
+                    ChangeHeadupText(gCredits_won_headup, the_text);
+                }
+                if (gCurrent_race.race_spec->race_type == kRaceType_Carma1) {
+                    sprintf(the_text, "\xf8%d\xfa/\xf8%d\xfa %s", gCount_killed_peds, gPed_count, GetMiscString(eMiscString_kills));
+                    ChangeHeadupText(gPed_kill_count_headup, the_text);
+                } else if (gCurrent_race.race_spec->race_type == kRaceType_Peds) {
+                    sprintf(the_text, "\xf8%d\xfa/\xf8%d\xfa %s", gCount_killed_peds, gTotal_count_smash_peds, GetMiscString(eMiscString_kills));
+                    ChangeHeadupText(gPed_kill_count_headup, the_text);
+                }
+                if (gCurrent_race.race_spec->race_type == kRaceType_Carma1
+                        || gCurrent_race.race_spec->race_type == kRaceType_Cars) {
+
+                    if (gQueued_wasted_messages_count != 0 && GetTotalTime() > gLast_wasted_message_start + 5000) {
+                        LoseOldestWastedMessage();
+                    }
+
+                    if (gQueued_wasted_messages_count == 0) {
+                        int count_oppos;
+
+                        if (gCurrent_race.race_spec->race_type == kRaceType_Carma1) {
+                            count_oppos = GetCarCount(eVehicle_opponent);
+                        } else {
+                            count_oppos = gCount_opponents;
+                        }
+                        sprintf(the_text, "%s \xf8%d\xfa/\xf8%d",
+                            GetMiscString(eMiscString_wasted),
+                            count_oppos - NumberOfOpponentsLeft(),
+                            count_oppos);
+                    } else {
+                        if (Flash(150, &gWasted_last_flash, &gWasted_flash_state)) {
+                            sprintf(the_text, "\xf9%s %s",
+                                gOpponents[gQueued_wasted_messages[0]].abbrev_name,
+                                GetMiscString(eMiscString_wasted));
+                        } else {
+                            sprintf(the_text, " ");
+                        }
+                    }
+                    ChangeHeadupText(gCar_kill_count_headup, the_text);
+                }
+
+                TimerString(effective_timer, the_text, 1, 0, 0);
+                ChangeHeadupText(gTimer_headup, the_text);
+
+                if (gHeadup_detail_level == 1 || gHeadup_detail_level == 4) {
+                    sprintf(gHeadup_oppo_ped_text, "%i  %i  %i",
+                        GetCarCount(eVehicle_opponent) - NumberOfOpponentsLeft(),
+                        net_credits,
+                        gCount_killed_peds);
+                }
+                if (gCurrent_race.race_spec->race_type == kRaceType_Carma1
+                        || gCurrent_race.race_spec->race_type == kRaceType_Checkpoints) {
+
+                    sprintf(the_text, "%s \xf8%d\xfa/\xf8%d \xfa%s \xf8%d\xfa/\xf8%d",
+                        GetMiscString(eMiscString_cp), gCheckpoint, gCheckpoint_count,
+                        GetMiscString(eMiscString_lap), gLap,gTotal_laps);
+                    ChangeHeadupText(gLaps_headup, the_text);
+                }
+                if (gCurrent_race.race_spec->race_type > 3) { /* kRaceType_Smash or kRaceType_SmashNPed */
+                    sprintf(the_text, "%s \xf8%d\xfa/\xf8%d",
+                        GetMiscString(eMiscString_targets),
+                        GetRuntimeVariable(gCurrent_race.race_spec->options.smash.var_smash_number),
+                        gCurrent_race.race_spec->options.smash.var_smash_target);
+                    ChangeHeadupText(gLaps_headup, the_text);
+                }
+
+                the_time = GetTotalTime() - gTime_bonus_state;
+
+                switch (gTime_bonus_state) {
+                case eTime_bonus_initial_pause:
+                    if (the_time >= 500) {
+                        bonus = gCompletion_bonus_post_race;
+                        sprintf(the_text, "%s %d", GetMiscString(eMiscString_completion_bonus_colon), bonus);
+                        DRS3StartSound(gPedestrians_outlet, eSoundId_Clap);
+                        ChangeHeadupText(gRace_bonus_headup, the_text);
+                        gProgram_state.credits += bonus;
+                        gTime_bonus_state = eTime_bonus_race_bonus;
+                        gTime_bonus_start = GetTotalTime();
+                    }
+                    gRace_finished = 10000;
+                    break;
+                case eTime_bonus_race_bonus:
+                    if (the_time >= 2000) {
+                        gTime_bonus_state = eTime_bonus_tb_up;
+                        gTime_bonus_start = GetTotalTime();
+                        last_rattle_time = 0;
+                    }
+                    gRace_finished = 10000;
+                    break;
+                case eTime_bonus_tb_up:
+                    if (gTimer != 0) {
+                        if (the_time - last_rattle_time > 15) {
+                            int previous_gtimer;
+
+                            previous_gtimer = gTimer;
+                            gTimer -= 1000 * ((the_time - last_rattle_time) / 15);
+                            if (gTimer < 0) {
+                                gTimer = 0;
+                            }
+                            gTime_bonus += (previous_gtimer - gTimer) / 1000 * gCredits_per_second_time_bonus[gProgram_state.skill_level];
+                            last_rattle_time += 15 * ((the_time - last_rattle_time) / 15);
+                        }
+                        sprintf(the_text, "%s %d", GetMiscString(eMiscString_time_bonus_colon), gTime_bonus);
+                        ChangeHeadupText(gTime_bonus_headup, the_text);
+                    } else {
+                        gTime_bonus_state = eTime_bonus_tb_pause;
+                        gTime_bonus_start = GetTotalTime();
+                        last_rattle_time = 0;
+                    }
+                    gRace_finished = 10000;
+                    break;
+                case eTime_bonus_tb_pause:
+                    if (the_time >= 1000) {
+                        gTime_bonus_state = eTime_bonus_tb_down;
+                        gTime_bonus_start = GetTotalTime();
+                        last_rattle_time = 0;
+                    }
+                    gRace_finished = 10000;
+                    break;
+                case eTime_bonus_tb_down:
+                    if (gTime_bonus != 0) {
+                        if (the_time - last_rattle_time > 15) {
+                            bonus = gTime_bonus;
+                            gTime_bonus -= (the_time - last_rattle_time) * gCredits_per_second_time_bonus[gProgram_state.skill_level] / 15;
+                            if (gTime_bonus < 0) {
+                                gTime_bonus = 0;
+                            }
+                            gProgram_state.credits += bonus - gTime_bonus;
+                            last_rattle_time += 15 * ((the_time - last_rattle_time) / 15);
+                        }
+                        sprintf(the_text, "%s %d", GetMiscString(eMiscString_time_bonus_colon), gTime_bonus);
+                        ChangeHeadupText(gTime_bonus_headup, the_text);
+                    } else {
+                        gTime_bonus_state = eTime_bonus_end_pause;
+                        gTime_bonus_start = GetTotalTime();
+                    }
+                    gRace_finished = 10000;
+                    break;
+                case eTime_bonus_end_pause:
+                    if (the_time >= 2000 && gRace_finished > 1) {
+                        gRace_finished = 1;
+                    }
+                    break;
+                default:
+                    break;
+                }
+            } else {
+                DoNetworkHeadups(net_credits);
+            }
+        }
             ProcessOilSpills(gFrame_period);
             MungeSmashEdgeTriggers(GetTotalTime());
         }
@@ -599,228 +821,6 @@ void C2_HOOK_FASTCALL UpdateFramePeriod(tU32* pCamera_period) {
     }
 }
 
-void C2_HOOK_FASTCALL MungeHeadups(void) {
-    char the_text[256];
-    int net_credits;
-    int effective_timer;
-    int bonus;
-    tU32 the_time;
-    // GLOBAL: CARMA2_HW 0x0068c818
-    static tU32 last_rattle_time;
-
-    ClearHeadupSlot(3);
-    MungeJoystickHeadups();
-    net_credits = gProgram_state.credits;
-    if (fabsf((float)gProgram_state.credits - (float)gLast_credit_headup__mainloop) / (float)gFrame_rate > 1.2f) {
-        if (gProgram_state.credits - gLast_credit_headup__mainloop > 0) {
-            net_credits = (int)((float)gLast_credit_headup__mainloop + ((float)gProgram_state.credits - (float)gLast_credit_headup__mainloop + 1000.f) * (float)gFrame_period * 1.2f / 1000.f);
-        } else {
-            net_credits = (int)((float)gLast_credit_headup__mainloop - ((float)gLast_credit_headup__mainloop - (float)gProgram_state.credits + 1000.f) * (float)gFrame_period * 1.2f / 1000.f);
-        }
-    }
-
-    if (gNet_mode != eNet_mode_none
-            && gCountdown == 0
-            && gNet_auto_increase_credits_dt[gCurrent_net_game->type] != 0
-            && net_credits < gRecovery_cost.initial_network[gCurrent_net_game->type]
-            && PDGetTotalTime() - gLast_net_auto_increase_credits >= gNet_auto_increase_credits_dt[gCurrent_net_game->type]) {
-
-        gLast_net_auto_increase_credits = PDGetTotalTime();
-        gProgram_state.credits += 50;
-
-#define GET_RECOVERY_COST() ((gNet_mode == eNet_mode_none) ? \
-    gRecovery_cost.initial[gProgram_state.skill_level] : \
-    gRecovery_cost.initial_network[gCurrent_net_game->type])
-
-        if (net_credits + 50 > GET_RECOVERY_COST()) {
-            gProgram_state.credits += (int)(GET_RECOVERY_COST() - net_credits - 50.f);
-            net_credits = (int)GET_RECOVERY_COST();
-        } else {
-            net_credits += 50;
-        }
-    }
-    gLast_credit_headup__mainloop = net_credits;
-
-    if (gCountdown != 0) {
-        int new_countdown;
-
-        new_countdown = (int)(7.5f - (float)GetRaceTime() / 1000.f);
-        if (new_countdown < 0) {
-            new_countdown = 0;
-        }
-        if (gCountdown != new_countdown && new_countdown <= 5) {
-            gCountdown = new_countdown;
-            NewImageHeadupSlot(5, 0, 800, 4 + new_countdown);
-            DRS3StartSound(gPedestrians_outlet, eSoundId_Countdown_Start + gCountdown);
-            if (new_countdown == 0) {
-                MakeFlagWavingBastardWaveHisFlagWhichIsTheProbablyTheLastThingHeWillEverDo();
-            }
-        }
-    }
-    if (fabsf((float)gTimer - (float)gLast_time_headup) / (float)gFrame_period <= 10.0) {
-        effective_timer = gTimer;
-    } else if ((int)gTimer < gLast_time_headup) {
-        effective_timer = gTimer;
-    } else {
-        effective_timer = (int)((float)gLast_time_headup + 10.f * (float)gFrame_period);
-    }
-    gLast_time_headup = effective_timer;
-
-    if (gNet_mode == eNet_mode_none) {
-        if (net_credits < 0) {
-            sprintf(the_text, "\xf8%d\xfa %s", -net_credits, GetMiscString(eMiscString_credits_lost));
-            ChangeHeadupText(gCredits_won_headup, the_text);
-        } else {
-            sprintf(the_text, "\xf8%d\xfa %s", net_credits, GetMiscString(net_credits >= 100000 ? eMiscString_credits_abbrev : eMiscString_credits_gained));
-            ChangeHeadupText(gCredits_won_headup, the_text);
-        }
-        if (gCurrent_race.race_spec->race_type == kRaceType_Carma1) {
-            sprintf(the_text, "\xf8%d\xfa/\xf8%d\xfa %s", gCount_killed_peds, gPed_count, GetMiscString(eMiscString_kills));
-            ChangeHeadupText(gPed_kill_count_headup, the_text);
-        } else if (gCurrent_race.race_spec->race_type == kRaceType_Peds) {
-            sprintf(the_text, "\xf8%d\xfa/\xf8%d\xfa %s", gCount_killed_peds, gTotal_count_smash_peds, GetMiscString(eMiscString_kills));
-            ChangeHeadupText(gPed_kill_count_headup, the_text);
-        }
-        if (gCurrent_race.race_spec->race_type == kRaceType_Carma1
-                || gCurrent_race.race_spec->race_type == kRaceType_Cars) {
-
-            if (gQueued_wasted_messages_count != 0 && GetTotalTime() > gLast_wasted_message_start + 5000) {
-                LoseOldestWastedMessage();
-            }
-
-            if (gQueued_wasted_messages_count == 0) {
-                int count_oppos;
-
-                if (gCurrent_race.race_spec->race_type == kRaceType_Carma1) {
-                    count_oppos = GetCarCount(eVehicle_opponent);
-                } else {
-                    count_oppos = gCount_opponents;
-                }
-                sprintf(the_text, "%s \xf8%d\xfa/\xf8%d",
-                    GetMiscString(eMiscString_wasted),
-                    count_oppos - NumberOfOpponentsLeft(),
-                    count_oppos);
-            } else {
-                if (Flash(150, &gWasted_last_flash, &gWasted_flash_state)) {
-                    sprintf(the_text, "\xf9%s %s",
-                        gOpponents[gQueued_wasted_messages[0]].abbrev_name,
-                        GetMiscString(eMiscString_wasted));
-                } else {
-                    sprintf(the_text, " ");
-                }
-            }
-            ChangeHeadupText(gCar_kill_count_headup, the_text);
-        }
-
-        TimerString(effective_timer, the_text, 1, 0, 0);
-        ChangeHeadupText(gTimer_headup, the_text);
-
-        if (gHeadup_detail_level == 1 || gHeadup_detail_level == 4) {
-            sprintf(gHeadup_oppo_ped_text, "%i  %i  %i",
-                GetCarCount(eVehicle_opponent) - NumberOfOpponentsLeft(),
-                net_credits,
-                gCount_killed_peds);
-        }
-        if (gCurrent_race.race_spec->race_type == kRaceType_Carma1
-                || gCurrent_race.race_spec->race_type == kRaceType_Checkpoints) {
-
-            sprintf(the_text, "%s \xf8%d\xfa/\xf8%d \xfa%s \xf8%d\xfa/\xf8%d",
-                GetMiscString(eMiscString_cp), gCheckpoint, gCheckpoint_count,
-                GetMiscString(eMiscString_lap), gLap,gTotal_laps);
-            ChangeHeadupText(gLaps_headup, the_text);
-        }
-        if (gCurrent_race.race_spec->race_type > 3) { /* kRaceType_Smash or kRaceType_SmashNPed */
-            sprintf(the_text, "%s \xf8%d\xfa/\xf8%d",
-                GetMiscString(eMiscString_targets),
-                GetRuntimeVariable(gCurrent_race.race_spec->options.smash.var_smash_number),
-                gCurrent_race.race_spec->options.smash.var_smash_target);
-            ChangeHeadupText(gLaps_headup, the_text);
-        }
-
-        the_time = GetTotalTime() - gTime_bonus_state;
-
-        switch (gTime_bonus_state) {
-        case eTime_bonus_initial_pause:
-            if (the_time >= 500) {
-                bonus = gCompletion_bonus_post_race;
-                sprintf(the_text, "%s %d", GetMiscString(eMiscString_completion_bonus_colon), bonus);
-                DRS3StartSound(gPedestrians_outlet, eSoundId_Clap);
-                ChangeHeadupText(gRace_bonus_headup, the_text);
-                gProgram_state.credits += bonus;
-                gTime_bonus_state = eTime_bonus_race_bonus;
-                gTime_bonus_start = GetTotalTime();
-            }
-            gRace_finished = 10000;
-            break;
-        case eTime_bonus_race_bonus:
-            if (the_time >= 2000) {
-                gTime_bonus_state = eTime_bonus_tb_up;
-                gTime_bonus_start = GetTotalTime();
-                last_rattle_time = 0;
-            }
-            gRace_finished = 10000;
-            break;
-        case eTime_bonus_tb_up:
-            if (gTimer != 0) {
-                if (the_time - last_rattle_time > 15) {
-                    int previous_gtimer;
-
-                    previous_gtimer = gTimer;
-                    gTimer -= 1000 * ((the_time - last_rattle_time) / 15);
-                    if (gTimer < 0) {
-                        gTimer = 0;
-                    }
-                    gTime_bonus += (previous_gtimer - gTimer) / 1000 * gCredits_per_second_time_bonus[gProgram_state.skill_level];
-                    last_rattle_time += 15 * ((the_time - last_rattle_time) / 15);
-                }
-                sprintf(the_text, "%s %d", GetMiscString(eMiscString_time_bonus_colon), gTime_bonus);
-                ChangeHeadupText(gTime_bonus_headup, the_text);
-            } else {
-                gTime_bonus_state = eTime_bonus_tb_pause;
-                gTime_bonus_start = GetTotalTime();
-                last_rattle_time = 0;
-            }
-            gRace_finished = 10000;
-            break;
-        case eTime_bonus_tb_pause:
-            if (the_time >= 1000) {
-                gTime_bonus_state = eTime_bonus_tb_down;
-                gTime_bonus_start = GetTotalTime();
-                last_rattle_time = 0;
-            }
-            gRace_finished = 10000;
-            break;
-        case eTime_bonus_tb_down:
-            if (gTime_bonus != 0) {
-                if (the_time - last_rattle_time > 15) {
-                    bonus = gTime_bonus;
-                    gTime_bonus -= (the_time - last_rattle_time) * gCredits_per_second_time_bonus[gProgram_state.skill_level] / 15;
-                    if (gTime_bonus < 0) {
-                        gTime_bonus = 0;
-                    }
-                    gProgram_state.credits += bonus - gTime_bonus;
-                    last_rattle_time += 15 * ((the_time - last_rattle_time) / 15);
-                }
-                sprintf(the_text, "%s %d", GetMiscString(eMiscString_time_bonus_colon), gTime_bonus);
-                ChangeHeadupText(gTime_bonus_headup, the_text);
-            } else {
-                gTime_bonus_state = eTime_bonus_end_pause;
-                gTime_bonus_start = GetTotalTime();
-            }
-            gRace_finished = 10000;
-            break;
-        case eTime_bonus_end_pause:
-            if (the_time >= 2000 && gRace_finished > 1) {
-                gRace_finished = 1;
-            }
-            break;
-        default:
-            break;
-        }
-    } else {
-        DoNetworkHeadups(net_credits);
-    }
-}
 
 void C2_HOOK_FASTCALL CheckTimer(void) {
     tS32 time_in_seconds;

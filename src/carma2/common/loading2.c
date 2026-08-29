@@ -727,7 +727,7 @@ void C2_HOOK_FASTCALL LoadRaces(tRace_list_spec* pRace_list, int* pCount, int pR
     if (gRace_groups != NULL) {
         BrMemFree(gRace_groups);
     }
-    gRace_groups = BrMemAllocate(sizeof(tRace_group_spec) * ((gCountRaceGroups > 0) ? gCountRaceGroups : 1), kMem_misc);
+    gRace_groups = BrMemAllocate(sizeof(tRace_group_spec) * (gCountRaceGroups ? gCountRaceGroups : 1), kMem_misc);
     gRace_groups[0].count_races = 0;
     gRace_groups[0].races = pRace_list;
 
