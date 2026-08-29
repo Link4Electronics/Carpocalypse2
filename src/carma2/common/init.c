@@ -451,7 +451,7 @@ void C2_HOOK_FASTCALL ReinitialiseRearviewCamera(void) {
 
     camera_ptr = gRearview_camera->type_data;
     camera_ptr->field_of_view = BrDegreeToAngle(gProgram_state.current_car.rearview_camera_angle);
-    camera_ptr->aspect = (gProgram_state.current_car.mirror_right - gProgram_state.current_car.mirror_left) / (float)(gProgram_state.current_car.mirror_bottom - gProgram_state.current_car.mirror_top);
+    camera_ptr->aspect = (float)((double)(gProgram_state.current_car.mirror_right - gProgram_state.current_car.mirror_left) / (double)(gProgram_state.current_car.mirror_bottom - gProgram_state.current_car.mirror_top));
     BrVector3Set(&gRearview_camera->t.t.translate.t,
         gProgram_state.current_car.mirror_x_offset,
         gProgram_state.current_car.mirror_y_offset,

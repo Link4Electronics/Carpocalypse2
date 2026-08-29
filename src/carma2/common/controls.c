@@ -1417,12 +1417,6 @@ void C2_HOOK_FASTCALL ChangeCameraTypeInGame(void) {
     }
 }
 
-// FUNCTION: CARMA2_HW 0x0040e7f0
-void C2_HOOK_FASTCALL ChangeCameraType(void) {
-
-    NOT_IMPLEMENTED();
-}
-
 // Key: 'c'
 // FUNCTION: CARMA2_HW 0x0040e900
 void C2_HOOK_FASTCALL ToggleCockpit(void) {

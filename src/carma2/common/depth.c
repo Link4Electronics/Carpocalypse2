@@ -491,7 +491,7 @@ void C2_HOOK_FASTCALL DoWobbleCamera(br_actor* pCamera) {
     // GLOBAL: CARMA2_HW 0x005911cc
     static float period22 = 3900.f;
 
-    f_time = (float)PDGetTotalTime();
+    f_time = (float)GetTotalTime();
     pCamera->t.t.mat.m[0][0] += FastScalarSin((int)fmod(f_time / period00 * 360.f, 360.f)) * mag00;
     pCamera->t.t.mat.m[0][1] += FastScalarSin((int)fmod(f_time / period01 * 360.f, 360.f)) * mag01;
     pCamera->t.t.mat.m[0][2] += FastScalarSin((int)fmod(f_time / period02 * 360.f, 360.f)) * mag02;

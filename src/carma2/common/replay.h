@@ -60,6 +60,9 @@ extern tActionReplayCameraMode gAction_replay_camera_mode;
 
 extern int gAction_replay_manual_camera_target_type;
 
+extern tU8 gCamera_type_allowed_replay[9];
+extern tU8 gCamera_type_allowed_gameplay[9];
+
 extern tU32 gLast_synch_time;
 
 extern int gSingle_frame_mode;

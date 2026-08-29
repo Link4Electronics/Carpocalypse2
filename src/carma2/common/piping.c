@@ -547,6 +547,32 @@ int C2_HOOK_FASTCALL ARReplayForwards(void) {
     }
 }
 
+// FUNCTION: CARMA2_HW 0x00402540
+int C2_HOOK_FASTCALL ARReplayPlaying(void) {
+
+    if (gPipe_play_ptr == gPipe_record_ptr) {
+        return 0;
+    }
+    if (gPipe_play_ptr == gPipe_buffer_oldest) {
+        return 1;
+    }
+    if (gReplay_rate == 0.f) {
+        return ARGetReplayDirection() > 0;
+    }
+    if (gReplay_rate > 0.f) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x004c6c90
+int C2_HOOK_FASTCALL GetPipeCarStateAtTime(tS32 pOffset, tS32* pMode, br_scalar* pTowards, undefined4* pData, tS32* pTime) {
+
+    NOT_IMPLEMENTED();
+    return 0;
+}
+
 // FUNCTION: CARMA2_HW 0x004c6bc0
 int C2_HOOK_FASTCALL CarTimeout(tU32 pTime) {
 

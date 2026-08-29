@@ -1736,6 +1736,33 @@ int C2_HOOK_FASTCALL RestorePixelmap(br_material* pMaterial) {
     return 0;
 }
 
+// FUNCTION: CARMA2_HW 0x0040e700
+void C2_HOOK_FASTCALL MungeCarMaterials(tCar_spec* pCar, int pInternal_cam) {
+    int i;
+    tCarCockpitMaterial* cockpit_material;
+
+    for (i = 0, cockpit_material = &pCar->window_materials[0]; i < pCar->count_window_materials; i++, cockpit_material++) {
+        int two_sided_material = pInternal_cam;
+
+        if (pInternal_cam) {
+            int j;
+
+            for (j = 0; j < cockpit_material->count_maps; j++) {
+                if (cockpit_material->material->colour_map == cockpit_material->maps[j]) {
+                    two_sided_material = 0;
+                }
+            }
+        }
+        if (two_sided_material) {
+            cockpit_material->material->flags &= ~BR_MATF_TWO_SIDED;
+        }
+        if (!two_sided_material) {
+            cockpit_material->material->flags |= BR_MATF_TWO_SIDED;
+        }
+        BrMaterialUpdate(cockpit_material->material, BR_MATU_RENDERING);
+    }
+}
+
 // FUNCTION: CARMA2_HW 0x0040f510
 void C2_HOOK_FASTCALL CheckDisablePlingMaterials(tCar_spec* pCar) {
     br_matrix34* mat;
@@ -1743,9 +1770,7 @@ void C2_HOOK_FASTCALL CheckDisablePlingMaterials(tCar_spec* pCar) {
     int i;
 
     height = 0.f;
-    if (pCar->collision_info->water_d == 10000.f) {
-        DisablePlingMaterials();
-    } else {
+    if (pCar->collision_info->water_d != 10000.f) {
         mat = &pCar->car_master_actor->t.t.mat;
         for (i = 0; i < 3; i++) {
             if (mat->m[i][1] > 0.f) {
@@ -1757,6 +1782,8 @@ void C2_HOOK_FASTCALL CheckDisablePlingMaterials(tCar_spec* pCar) {
         if (mat->m[3][1] / WORLD_SCALE + height < pCar->collision_info->water_d) {
             DisablePlingMaterials();
         }
+    } else {
+        DisablePlingMaterials();
     }
 }
 
@@ -2297,9 +2324,9 @@ void C2_HOOK_FASTCALL SwingCamera(br_matrix34* pM1, br_matrix34* pM2, br_vector3
 }
 
 // FUNCTION: CARMA2_HW 0x00413570
-void C2_HOOK_FASTCALL CollideCameraWithOtherCars(br_vector3* pPos, br_vector3* pCamera_pos) {
+int C2_HOOK_FASTCALL CollideCameraWithOtherCars(br_vector3* pPos, br_vector3* pCamera_pos) {
 
-    // empty
+    return 0;
 }
 
 // FUNCTION: CARMA2_HW 0x00411fc0

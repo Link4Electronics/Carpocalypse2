@@ -3,6 +3,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+// Annotations for CRT/library functions the recompiled binary pulls from its own
+// runtime but that exist in the retail binary at a different address. reccmp
+// matches these to the recompiled PDB symbols by name, so calls line up in the
+// assembly diff.
+
+// LIBRARY: CARMA2_HW 0x00575b80
+// __ftol
+
+// LIBRARY: CARMA2_HW 0x00576bca
+// __CIfmod
+
 #ifdef _WIN32
 #include <windows.h>
 #endif

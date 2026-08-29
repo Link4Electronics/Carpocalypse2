@@ -594,6 +594,12 @@ int C2_HOOK_FASTCALL ARGetReplayDirection(void);
 
 int C2_HOOK_FASTCALL ARReplayForwards(void);
 
+// FUNCTION: CARMA2_HW 0x00402540
+int C2_HOOK_FASTCALL ARReplayPlaying(void);
+
+// FUNCTION: CARMA2_HW 0x004c6c90
+int C2_HOOK_FASTCALL GetPipeCarStateAtTime(tS32 pOffset, tS32* pMode, br_scalar* pTowards, undefined4* pData, tS32* pTime);
+
 int C2_HOOK_FASTCALL CarTimeout(tU32 pTime);
 
 int C2_HOOK_FASTCALL CheckCar(tPipe_chunk* pChunk_ptr, int pChunk_count, tU32 pTime);

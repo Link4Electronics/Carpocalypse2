@@ -269,6 +269,9 @@ void C2_HOOK_FASTCALL PanningExternalCamera(tCar_spec* c, tU32 pTime);
 
 int C2_HOOK_FASTCALL IncidentCam(tCar_spec* c, tU32 pTime);
 
+// FUNCTION: CARMA2_HW 0x004121b0
+void C2_HOOK_FASTCALL PangToCamera(br_vector3* pPos, br_matrix34* pMat);
+
 void C2_HOOK_FASTCALL ResetCarSpecialVolume(tPhysics_object* pCollision_info);
 
 void C2_HOOK_FAKE_THISCALL FlyCar(tCar_spec* c, undefined4 pArg2, br_scalar dt);
@@ -379,7 +382,7 @@ void C2_HOOK_FASTCALL PositionPedCam(tPed_character_instance* pPed_character, tU
 
 void C2_HOOK_FASTCALL PositionDroneCam(tU32 pTime_difference);
 
-void C2_HOOK_FASTCALL CollideCameraWithOtherCars(br_vector3* pPos, br_vector3* pCamera_pos);
+int C2_HOOK_FASTCALL CollideCameraWithOtherCars(br_vector3* pPos, br_vector3* pCamera_pos);
 
 void C2_HOOK_FASTCALL PointCameraAtCar(br_vector3* pPos, br_matrix34* pMat, float pFov_factor);
 

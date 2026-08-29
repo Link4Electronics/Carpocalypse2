@@ -47,33 +47,6 @@ int gKey_down;
 // GLOBAL: CARMA2_HW 0x0058f620
 int gAR_camera_type = 2;
 
-// FUNCTION: CARMA2_HW 0x0040e700
-void C2_HOOK_FASTCALL MungeCarMaterials(tCar_spec* pCar, int pInternal_cam) {
-    int i;
-
-    for (i = 0; i < pCar->count_window_materials; i++) {
-        tCarCockpitMaterial* cockpit_material;
-
-        int two_sided_material = pInternal_cam;
-        cockpit_material = &pCar->window_materials[i];
-        if (pInternal_cam) {
-            int j;
-
-            for (j = 0; j < cockpit_material->count_maps; j++) {
-                if (cockpit_material->material->colour_map == cockpit_material->maps[j]) {
-                    two_sided_material = 0;
-                }
-            }
-        }
-        if (two_sided_material) {
-            cockpit_material->material->flags |= BR_MATF_TWO_SIDED;
-        } else {
-            cockpit_material->material->flags &= ~BR_MATF_TWO_SIDED;
-        }
-        BrMaterialUpdate(cockpit_material->material, BR_MATU_RENDERING);
-    }
-}
-
 // FUNCTION: CARMA2_HW 0x0040e790
 void C2_HOOK_FASTCALL SetCameraType(tActionReplayCameraMode pCamPos) {
 
