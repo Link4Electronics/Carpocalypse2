@@ -407,7 +407,7 @@ static void C2_HOOK_STDCALL AddReplicateConstant(br_geometry_v1_model_soft* self
 
     if (rend.block->constant_mask == (1 << C_I)) {
         PrimBlockAddBoth(renderer, (brp_render_fn*)OpTriangleReplicateConstantI);
-#if 1
+#if 0
     /* VERIFYME: this is different from Carmageddon II and BRender sources */
     } else if (rend.block->constant_mask == ((1 << C_R) | (1 << C_G) | (1 << C_B))) {
 #else
@@ -431,15 +431,19 @@ static void C2_HOOK_STDCALL V1Faces_GeometryFnsUpdate(br_geometry_v1_model_soft*
         GeometryFunctionOnScreenAdd(renderer, (geometry_fn*)Vertex_ClearFlags);
     }
 
-    if (renderer->state.cull.type == BRT_ONE_SIDED) {
+    switch (renderer->state.cull.type) {
+    case BRT_ONE_SIDED:
         GeometryFunctionAdd(renderer, (geometry_fn*)V1Face_CullOneSided);
         GeometryFunctionOnScreenAdd(renderer, (geometry_fn*)V1Face_OS_CullOneSided);
-    } else if (renderer->state.cull.type == BRT_TWO_SIDED) {
+        break;
+    case BRT_TWO_SIDED:
         GeometryFunctionAdd(renderer, (geometry_fn*)V1Face_CullTwoSided);
         GeometryFunctionOnScreenAdd(renderer, (geometry_fn*)V1Face_OS_CullTwoSided);
-    } else {
+        break;
+    default:
         GeometryFunctionAdd(renderer, (geometry_fn*)V1Face_CullNone);
         GeometryFunctionOnScreenAdd(renderer, (geometry_fn*)V1Face_OS_CullNone);
+        break;
     }
 
     VertexGeometryFns(renderer, (geometry_fn*)V1Face_Outcode);
@@ -631,7 +635,7 @@ br_error C2_HOOK_STDCALL V1Model_Render(br_geometry_v1_model_soft* self, br_soft
             renderer->state.hidden.order_table != NULL &&
             renderer->state.hidden.heap != NULL;
 
-        divert = z_sort || z_sort_blended;
+        z_sort |= z_sort_blended;
 
         scache.colour = renderer->state.surface.colour & 0xffffff;
         scache.colour |= ((int)(renderer->state.surface.opacity * 256.f)) << 24;
@@ -642,7 +646,7 @@ br_error C2_HOOK_STDCALL V1Model_Render(br_geometry_v1_model_soft* self, br_soft
         if (rend.block_changed || rend.range_changed || !renderer->state.cache.valid) {
             CacheUpdate(renderer);
 
-            V1Faces_GeometryFnsUpdate(self, renderer, divert);
+            V1Faces_GeometryFnsUpdate(self, renderer, z_sort);
 
             renderer->state.cache.valid = 1;
         }
