@@ -1599,17 +1599,33 @@ void C2_HOOK_FASTCALL DoHeadups(tU32 pThe_time) {
         DoNetScores();
     }
     if (gQueued_headup_count && PDGetTotalTime() - gLast_centre_headup >= 1000) {
-        NewTextHeadupSlot(4,
+        NewTextHeadupSlot2(4,
             gQueued_headups[0].flash_rate,
             gQueued_headups[0].lifetime,
             gQueued_headups[0].font_index,
-            gQueued_headups[0].text);
-        KillOldestQueuedHeadup();
+            gQueued_headups[0].text,
+            1);
+        if (gQueued_headup_count) {
+            gQueued_headup_count -= 1;
+            memmove(&gQueued_headups[0], &gQueued_headups[1], gQueued_headup_count * sizeof(tQueued_headup));
+        }
     }
     if (gHeadup_detail_level == 0 || gHeadup_detail_level == 3) {
-        MoveHeadupTo(gTimer_headup, 634, 2);
+        if (gTimer_headup >= 0) {
+            the_headup = &gHeadups[gTimer_headup];
+            x_offset = the_headup->x - the_headup->original_x;
+            the_headup->original_x = 634;
+            the_headup->y = 2;
+            the_headup->x = x_offset + 634;
+        }
     } else {
-        MoveHeadupTo(gTimer_headup, 389, 13);
+        if (gTimer_headup >= 0) {
+            the_headup = &gHeadups[gTimer_headup];
+            x_offset = the_headup->x - the_headup->original_x;
+            the_headup->original_x = 389;
+            the_headup->y = 13;
+            the_headup->x = x_offset + 389;
+        }
     }
 
     for (i = 0; i < CARPOCALYPSE2_ASIZE(gHeadups); i++) {
@@ -1663,7 +1679,7 @@ void C2_HOOK_FASTCALL DoHeadups(tU32 pThe_time) {
                                     x_offset = 0;
                                 }
                                 DRPixelmapCleverText(
-                                        gBack_screen,
+                                        gRender_screen,
                                         x_offset + the_headup->x,
                                         y_offset + the_headup->y,
                                         the_headup->data.coloured_text_info.coloured_font,
@@ -1681,7 +1697,7 @@ void C2_HOOK_FASTCALL DoHeadups(tU32 pThe_time) {
                                     x_offset = 0;
                                 }
                                 DRPixelmapText(
-                                        gBack_screen,
+                                        gRender_screen,
                                         x_offset + the_headup->x,
                                         y_offset + the_headup->y,
                                         the_headup->data.coloured_text_info.coloured_font,
@@ -1707,7 +1723,7 @@ void C2_HOOK_FASTCALL DoHeadups(tU32 pThe_time) {
                                 the_headup->data.fancy_info.start_time = GetTotalTime();
                             }
                             PolyFontText(the_headup->data.fancy_info.text,
-                                the_headup->data.fancy_info.offset,
+                                the_headup->original_x + the_headup->data.fancy_info.offset,
                                 the_headup->y,
                                 the_headup->data.fancy_info.font_index,
                                 eJust_centre,
@@ -1719,7 +1735,7 @@ void C2_HOOK_FASTCALL DoHeadups(tU32 pThe_time) {
                                 the_headup->data.fancy_info.start_time = GetTotalTime();
                             }
                             PolyFontText(the_headup->data.fancy_info.text,
-                                the_headup->data.fancy_info.offset,
+                                the_headup->original_x,
                                 the_headup->y,
                                 the_headup->data.fancy_info.font_index,
                                 eJust_centre,
@@ -1731,7 +1747,7 @@ void C2_HOOK_FASTCALL DoHeadups(tU32 pThe_time) {
                                 ClearHeadup(i);
                             } else {
                                 PolyFontText(the_headup->data.fancy_info.text,
-                                    the_headup->data.fancy_info.offset,
+                                    the_headup->original_x + the_headup->data.fancy_info.offset,
                                     the_headup->y,
                                     the_headup->data.fancy_info.font_index,
                                     eJust_centre,
@@ -1759,7 +1775,7 @@ void C2_HOOK_FASTCALL DoHeadups(tU32 pThe_time) {
                             the_headup->data.coloured_text_info.text,
                             gRender_screen,
                             gRender_screen->width / 10,
-                            x_offset + the_headup->y,
+                            y_offset + the_headup->y,
                             9 * gRender_screen->width / 10,
                             y_offset + the_headup->y + 60,
                             1);

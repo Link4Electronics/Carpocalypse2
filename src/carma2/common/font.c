@@ -1459,6 +1459,7 @@ void C2_HOOK_FASTCALL LoadFont(int pFont_ID) {
         int tif_err;
 
         strcpy(base_path, the_path);
+        the_path[strlen(the_path) - (int)strlen(gFont_names[pFont_ID]) - 1] = '\0';
         PathCat(tif_path, the_path, "tiffrgb");
         PathCat(tif_path, tif_path, gFont_names[pFont_ID]);
         strcat(tif_path, ".tif");
