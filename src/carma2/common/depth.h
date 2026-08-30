@@ -188,10 +188,6 @@ void C2_HOOK_FASTCALL DepthEffectSky(br_pixelmap* pRender_buffer, br_pixelmap* p
 
 void C2_HOOK_FASTCALL DoWobbleCamera(br_actor* pCamera);
 
-void C2_HOOK_FASTCALL DoDrugWobbleCamera(br_actor* pCamera);
-
-int C2_HOOK_FASTCALL DoSubAquaCam(void);
-
 void C2_HOOK_FASTCALL DoSpecialCameraEffect(br_actor* pCamera, br_matrix34* pCamera_to_world);
 
 #endif // GUARD_DEPTH_H

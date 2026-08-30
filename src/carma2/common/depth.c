@@ -294,7 +294,7 @@ void C2_HOOK_FASTCALL MungeSkyModel(br_actor* pCamera, br_model* pModel) {
     br_angle angle;
 
     camera_data = pCamera->type_data;
-    tan_half_fov = Tan((float)camera_data->field_of_view / 2);
+    tan_half_fov = Tan((float)(camera_data->field_of_view / 2));
     sky_distance = camera_data->yon_z - 1.f;
     horizon_half_width = sky_distance * tan_half_fov;
     horizon_half_height = horizon_half_width * camera_data->aspect;
@@ -498,7 +498,8 @@ void C2_HOOK_FASTCALL DoWobbleCamera(br_actor* pCamera) {
     pCamera->t.t.mat.m[2][2] += FastScalarSin((int)fmod(f_time / period22 * 360.f, 360.f)) * mag22;
 }
 
-void C2_HOOK_FASTCALL DoDrugWobbleCamera(br_actor* pCamera) {
+// FUNCTION: CARMA2_HW 0x00446340
+void C2_HOOK_FASTCALL DoSpecialCameraEffect(br_actor* pCamera, br_matrix34* pCamera_to_world) {
     float f_time;
     // GLOBAL: CARMA2_HW 0x005911d0
     static float mag00 = 0.03f;
@@ -537,36 +538,19 @@ void C2_HOOK_FASTCALL DoDrugWobbleCamera(br_actor* pCamera) {
     // GLOBAL: CARMA2_HW 0x00591214
     static float period22 = 300.f;
 
-    f_time = (float)PDGetTotalTime();
-    pCamera->t.t.mat.m[0][0] += FastScalarSin((int)fmod(f_time / period00 * 360.f, 360.f)) * mag00;
-    pCamera->t.t.mat.m[0][1] += FastScalarSin((int)fmod(f_time / period01 * 360.f, 360.f)) * mag01;
-    pCamera->t.t.mat.m[0][2] += FastScalarSin((int)fmod(f_time / period02 * 360.f, 360.f)) * mag02;
-    pCamera->t.t.mat.m[1][0] += FastScalarSin((int)fmod(f_time / period10 * 360.f, 360.f)) * mag10;
-    pCamera->t.t.mat.m[1][1] += FastScalarSin((int)fmod(f_time / period11 * 360.f, 360.f)) * mag11;
-    pCamera->t.t.mat.m[1][2] += FastScalarSin((int)fmod(f_time / period12 * 360.f, 360.f)) * mag12;
-    pCamera->t.t.mat.m[2][0] += FastScalarSin((int)fmod(f_time / period20 * 360.f, 360.f)) * mag20;
-    pCamera->t.t.mat.m[2][1] += FastScalarSin((int)fmod(f_time / period21 * 360.f, 360.f)) * mag21;
-    pCamera->t.t.mat.m[2][2] += FastScalarSin((int)fmod(f_time / period22 * 360.f, 360.f)) * mag22;
-}
-
-int C2_HOOK_FASTCALL DoSubAquaCam(void) {
-
-    if (InWater(gHud_tinted1)) {
-        TurnTintedPolyOn(gHud_tinted1);
-        return 1;
-    } else {
-        TurnTintedPolyOff(gHud_tinted1);
-        return 0;
-    }
-}
-
-// FUNCTION: CARMA2_HW 0x00446340
-void C2_HOOK_FASTCALL DoSpecialCameraEffect(br_actor* pCamera, br_matrix34* pCamera_to_world) {
-
     UpdateTintedPolys();
-    if (gOn_drugs || !gAction_replay_mode) {
+    if (gOn_drugs && !gAction_replay_mode) {
         TurnTintedPolyOn(gHud_tinted2);
-        DoDrugWobbleCamera(pCamera);
+        f_time = (float)(tS32)PDGetTotalTime();
+        pCamera->t.t.mat.m[0][0] += FastScalarSin((int)fmod(f_time / period00 * 360.f, 360.f)) * mag00;
+        pCamera->t.t.mat.m[0][1] += FastScalarSin((int)fmod(f_time / period01 * 360.f, 360.f)) * mag01;
+        pCamera->t.t.mat.m[0][2] += FastScalarSin((int)fmod(f_time / period02 * 360.f, 360.f)) * mag02;
+        pCamera->t.t.mat.m[1][0] += FastScalarSin((int)fmod(f_time / period10 * 360.f, 360.f)) * mag10;
+        pCamera->t.t.mat.m[1][1] += FastScalarSin((int)fmod(f_time / period11 * 360.f, 360.f)) * mag11;
+        pCamera->t.t.mat.m[1][2] += FastScalarSin((int)fmod(f_time / period12 * 360.f, 360.f)) * mag12;
+        pCamera->t.t.mat.m[2][0] += FastScalarSin((int)fmod(f_time / period20 * 360.f, 360.f)) * mag20;
+        pCamera->t.t.mat.m[2][1] += FastScalarSin((int)fmod(f_time / period21 * 360.f, 360.f)) * mag21;
+        pCamera->t.t.mat.m[2][2] += FastScalarSin((int)fmod(f_time / period22 * 360.f, 360.f)) * mag22;
     } else {
         TurnTintedPolyOff(gHud_tinted2);
         gLast_camera_special_volume = FindSpecialVolume((br_vector3*)pCamera_to_world->m[3], gLast_camera_special_volume, 0);
@@ -581,9 +565,12 @@ void C2_HOOK_FASTCALL DoSpecialCameraEffect(br_actor* pCamera, br_matrix34* pCam
             }
         }
     }
-    SetTintedPolyRefMaterial(gHud_tinted1, (br_vector3*)pCamera_to_world->m[3]);
-    if (DoSubAquaCam()) {
+    SetTintedFromSpecialVolume(gHud_tinted1, (br_vector3*)pCamera_to_world->m[3]);
+    if (InWater(gHud_tinted1)) {
+        TurnTintedPolyOn(gHud_tinted1);
         DoWobbleCamera(pCamera);
+    } else {
+        TurnTintedPolyOff(gHud_tinted1);
     }
 }
 // Log2
