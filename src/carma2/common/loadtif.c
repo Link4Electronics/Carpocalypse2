@@ -609,7 +609,7 @@ int C2_HOOK_FASTCALL DRstrrcasestr(int* pOffset, const char* pHaystack, int pLen
         return 0;
     } else {
         pos_haystack = pLength_haystack - len_needle;
-        while (pos_haystack >= 0 && PDmemicmp(&pHaystack[pos_haystack], pNeedle, len_needle) != 0) {
+        while (pos_haystack >= 0 && DRmemicmp(&pHaystack[pos_haystack], pNeedle, len_needle) != 0) {
             pos_haystack -= 1;
         }
         if (pos_haystack < 0) {
