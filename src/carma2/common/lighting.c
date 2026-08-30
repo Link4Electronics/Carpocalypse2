@@ -43,13 +43,13 @@ void C2_HOOK_FASTCALL SmoothificatePowerupMaterial(br_material* pMaterial) {
     int need_update = 0;
     pMaterial->user = (void*)(uintptr_t)0x5ba0;
 
-    if (pMaterial->ka <= 0.999f) {
+    if (pMaterial->ka <= 0.999) {
         need_update = 1;
     }
     pMaterial->ka = 1.f;
 
     /* ka is tested twice, but kd is set the 2nd time */
-    if (pMaterial->ka < 0.999f) {
+    if (pMaterial->ka < 0.999) {
         need_update = 1;
     }
     pMaterial->kd = 1.f;
