@@ -247,7 +247,7 @@ void C2_HOOK_FASTCALL PolyFontTextInABox(int pFont, const char* pText, int pLeft
     y = pTop;
 
     while (pText[in_pos] != '\0') {
-        int chr;
+        tS8 chr;
 
         chr = pText[in_pos];
         newline = chr == '\r';
@@ -337,7 +337,7 @@ void C2_HOOK_FASTCALL TransparentPolyFontTextInABox(int pFont, const char* pText
     y = pTop;
 
     while (pText[in_pos] != '\0') {
-        int chr;
+        tS8 chr;
 
         chr = pText[in_pos];
         newline = chr == '\r';
