@@ -1121,7 +1121,12 @@ void C2_HOOK_FASTCALL PipeSingleGibShower(uintptr_t pId, undefined4 pArg2, undef
 // FUNCTION: CARMA2_HW 0x004c8d40
 void C2_HOOK_FASTCALL PipeSingleBloodSpurt(uintptr_t pId, undefined4 pArg2, undefined4 pArg3, br_vector3* pArg4, br_vector3* pArg5, br_vector3* pArg6) {
 
-    NOT_IMPLEMENTED();
+    ARDoSingleVariedSession(ePipe_chunk_blood_spurt, pId, 5,
+        SIZE_OFFSET_PIPING(tPipe_blood_spurt_data, field_0x4), pArg2,
+        SIZE_OFFSET_PIPING(tPipe_blood_spurt_data, field_0x0), pArg3,
+        SIZE_OFFSET_PIPING(tPipe_blood_spurt_data, field_0x8), pArg4,
+        SIZE_OFFSET_PIPING(tPipe_blood_spurt_data, field_0x14), pArg5,
+        SIZE_OFFSET_PIPING(tPipe_blood_spurt_data, field_0x20), pArg6);
 }
 
 // FUNCTION: CARMA2_HW 0x004c8fd0

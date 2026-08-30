@@ -480,6 +480,7 @@ typedef enum {
     ePipe_chunk_single_ped_pos = 46,
     ePipe_chunk_single_ped_model_change = 47,
     ePipe_chunk_phil_object = 48,
+    ePipe_chunk_blood_spurt = 50,
     ePipe_single_groove_on_off = 51,
     ePipe_funk_enable = 54,
     ePipe_chunk_single_vanished_dismembered = 55,
@@ -510,6 +511,23 @@ typedef struct tPipe_chunk {
     tU32 count;
     char data[];
 } tPipe_chunk;
+
+typedef struct {
+    undefined4 field_0x0;
+    undefined4 field_0x4;
+    br_vector3 field_0x8;
+    br_vector3 field_0x14;
+    br_vector3 field_0x20;
+} tPipe_blood_spurt_data;
+
+typedef struct {
+    uintptr_t pOwner;
+    undefined4 field_0x4;
+    int field_0x8;
+    br_vector3 field_0xc;
+    br_vector3 field_0x18;
+    br_vector3 field_0x24;
+} tPipe_chunk_blood_spurt;
 
 typedef struct {
     tCar_spec* car_spec;

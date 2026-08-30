@@ -3286,6 +3286,18 @@ void C2_HOOK_FASTCALL CBDisposePersonality(undefined4* pArg1) {
     NOT_IMPLEMENTED();
 }
 
+// STUB: CARMA2_HW 0x004cccc0
+void C2_HOOK_FASTCALL DoBloodSpurt(uintptr_t pArg1, int pArg2, int pArg3, br_vector3* pArg4, br_vector3* pArg5, br_vector3* pArg6) {
+
+    NOT_IMPLEMENTED();
+}
+
+// STUB: CARMA2_HW 0x004ccd70
+void C2_HOOK_FASTCALL DoBloodSpurtUndo(int pArg1, uintptr_t pArg2, int pArg3, undefined4 pArg4, br_vector3* pArg5, br_vector3* pArg6, br_vector3* pArg7) {
+
+    NOT_IMPLEMENTED();
+}
+
 // FUNCTION: CARMA2_HW 0x004cbbb0
 FILE* C2_HOOK_FASTCALL BonerOpenRemaps(const char* pFile_name) {
     tPath_name path;

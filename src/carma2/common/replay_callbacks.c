@@ -1,6 +1,7 @@
 #include "replay_callbacks.h"
 
 #include "spark.h"
+#include "pedestrn.h"
 // GLOBAL: CARMA2_HW 0x0065d0c8
 const tReplay_callback gReplay_callbacks[70] = {
     {
@@ -1082,14 +1083,20 @@ void C2_HOOK_FASTCALL UndoGibShower(tPipe_chunk** pChunk, tPipe_chunk* pPrev_chu
 
 // FUNCTION: CARMA2_HW 0x004c9bc0
 void C2_HOOK_FASTCALL ApplyBloodSpurt(tPipe_chunk** pChunk) {
+    tPipe_chunk_blood_spurt* chunk = (tPipe_chunk_blood_spurt*)*pChunk;
 
-    NOT_IMPLEMENTED();
+    DoBloodSpurt(chunk->pOwner, chunk->field_0x8, chunk->field_0x4, &chunk->field_0xc, &chunk->field_0x18, &chunk->field_0x24);
 }
 
 // FUNCTION: CARMA2_HW 0x004ca2a0
 void C2_HOOK_FASTCALL UndoBloodSpurt(tPipe_chunk** pChunk, tPipe_chunk* pPrev_chunk) {
 
-    NOT_IMPLEMENTED();
+    if (pPrev_chunk != NULL) {
+        tPipe_chunk_blood_spurt* chunk = (tPipe_chunk_blood_spurt*)*pChunk;
+        tPipe_chunk_blood_spurt* prev = (tPipe_chunk_blood_spurt*)pPrev_chunk;
+
+        DoBloodSpurtUndo(chunk->field_0x8, prev->pOwner, prev->field_0x8, prev->field_0x4, &prev->field_0xc, &prev->field_0x18, &prev->field_0x24);
+    }
 }
 
 // FUNCTION: CARMA2_HW 0x004c9be0
