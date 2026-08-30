@@ -187,6 +187,8 @@ extern void C2_HOOK_FASTCALL ResetInterfaceTimeout(void);
 
 extern int C2_HOOK_FASTCALL FRONTEND_Main(tFrontendMenuType pFrontendType);
 
+extern int C2_HOOK_FASTCALL FrontEndProcessMenus(int pMenu_type);
+
 // ProcessInputString
 
 extern int C2_HOOK_FASTCALL StopGettingInputString(void);

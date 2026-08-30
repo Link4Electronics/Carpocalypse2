@@ -2383,6 +2383,16 @@ int C2_HOOK_FASTCALL FRONTEND_Redraw(void) {
     return 0;
 }
 
+// FUNCTION: CARMA2_HW 0x0046d8e0
+int C2_HOOK_FASTCALL FrontEndProcessMenus(int pMenu_type) {
+#ifdef CARPOCALYPSE2_MATCHING
+    NOT_IMPLEMENTED();
+    return 0;
+#else
+    return 0;
+#endif
+}
+
 // FUNCTION: CARMA2_HW 0x0046f630
 
 int C2_HOOK_FASTCALL FRONTEND_Main(tFrontendMenuType pFrontendType) {

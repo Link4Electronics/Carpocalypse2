@@ -46,12 +46,26 @@ int C2_HOOK_FASTCALL DoVerifyQuit(int pReplace_background) {
     return 1;
 }
 
+#ifdef CARPOCALYPSE2_MATCHING
 // FUNCTION: CARMA2_HW 0x00494540
 int C2_HOOK_FASTCALL DoMainScreen(void) {
-#ifdef CARPOCALYPSE2_MATCHING
-    NOT_IMPLEMENTED();
-    return 0;
+    int result;
+
+    StartMusicTrack(0x270e);
+
+    result = FrontEndProcessMenus(kFrontend_menu_main);
+
+    switch (result) {
+    case 0:
+        gProgram_state.prog_status = eProg_quit;
+        break;
+    case 1:
+        gProgram_state.prog_status = eProg_game_starting;
+        break;
+    }
+}
 #else
+int C2_HOOK_FASTCALL DoMainScreen(void) {
     int result;
 
     result = FRONTEND_Main(kFrontend_menu_main);
@@ -64,7 +78,7 @@ int C2_HOOK_FASTCALL DoMainScreen(void) {
         gProgram_state.prog_status = eProg_game_starting;
     }
     return 1;
-#endif
 }
+#endif
 
 // DoOptionsMenu
