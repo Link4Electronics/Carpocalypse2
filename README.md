@@ -1,7 +1,7 @@
-# Carmageddon 2 decompilation
+# Carpocalypse 2
 
 
-This repo attempts to document 1998's Carmageddon 2 by writing equivalent C code.
+Decompilation of 1998's Carmageddon 2.
 
 ## Status
 
