@@ -3916,6 +3916,6 @@ void C2_HOOK_FASTCALL ProcessTrack(br_actor* pWorld, tTrack_spec* pTrack_spec, b
 
     RenderTrack(pWorld, pTrack_spec, pCamera, pCamera_to_world_transform);
     if (gAdditional_actors) {
-        BrZbSceneRenderAdd(gAdditional_actors);
+        BrZbsSceneRenderAdd(gAdditional_actors);
     }
 }

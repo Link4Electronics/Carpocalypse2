@@ -87,7 +87,6 @@ void C2_HOOK_FASTCALL InitTreeSurgery(void) {
 
 // GetFaceFlag
 
-// FUNCTION: CARMA2_HW 0x00504bf0
 void C2_HOOK_FASTCALL MungeTrackModel(br_model* pModel) {
     int* vertex_index_buffer;
     int (* face_index_buffer)[3];
