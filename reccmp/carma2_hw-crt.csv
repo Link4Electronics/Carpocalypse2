@@ -1,0 +1,12 @@
+address,type,name
+0x575bb0,function,__chkstk
+0x575bf0,function,_strchr
+0x575cb0,function,_sscanf
+0x575d00,function,_strtok
+0x575de0,function,_sprintf
+0x5767d0,function,_strstr
+0x576860,function,_tolower
+0x576970,function,_rand
+0x5771a0,function,_toupper
+0x577640,function,_fclose
+0x5784e0,function,_exit

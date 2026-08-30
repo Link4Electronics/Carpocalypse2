@@ -151,7 +151,7 @@ int C2_HOOK_FASTCALL AddSmoothModels(tBrender_storage* pStorage, const char* pPa
         }
         switch (AddModelToStorage(pStorage, temp_array[i])) {
         case eStorage_not_enough_room:
-            FatalError(kFatalError_InsufficientMaterialSlots);
+            FatalError(kFatalError_InsufficientModelSlots);
             break;
         case eStorage_duplicate:
             BrModelFree(temp_array[i]);
