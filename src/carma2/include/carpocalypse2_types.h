@@ -812,19 +812,19 @@ typedef struct {
     br_model* model;
     br_material* material;
     int used;
-    br_uint_32 index;
-    br_uint_32 glyph_width;
+    int index;
+    int glyph_width;
     br_vector2 texCoord;
 } tPolyFontGlyph;
 
 typedef struct tPolyFont {
     char name[68];
-    br_uint_32 numberOfCharacters;
-    br_uint_32 interCharacterSpacing;
-    br_uint_32 asciiOffset;
-    br_uint_32 fontCharacterHeight;
-    br_uint_32 widthOfBlank;
-    br_uint_32 fontSize;
+    int numberOfCharacters;
+    int interCharacterSpacing;
+    int asciiOffset;
+    int fontCharacterHeight;
+    int widthOfBlank;
+    int fontSize;
     br_uint_32 unknown_0x5c;
     int available;
     tPolyFontGlyph glyphs[256]; /* unsure about offset */

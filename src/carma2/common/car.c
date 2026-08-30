@@ -188,6 +188,30 @@ tU32 gLast_cunning_stunt;
 // GLOBAL: CARMA2_HW 0x006792b4
 br_actor* gPed_actor;
 
+// GLOBAL: CARMA2_HW 0x0058f5e8
+int gCamera_incident_flag;
+
+// GLOBAL: CARMA2_HW 0x0058f630
+int gCamera_incident_mode;
+
+// GLOBAL: CARMA2_HW 0x0058f634
+int gCamera_incident_direction;
+
+// GLOBAL: CARMA2_HW 0x006792a0
+tU32 gIncident_car_data[4];
+
+// GLOBAL: CARMA2_HW 0x006792b0
+br_scalar gIncident_towards;
+
+// GLOBAL: CARMA2_HW 0x0067932c
+tS32 gIncident_time;
+
+// GLOBAL: CARMA2_HW 0x00679330
+tS32 gIncident_camera_stack;
+
+// GLOBAL: CARMA2_HW 0x006792c0
+tU32 gSwitch_time;
+
 // GLOBAL: CARMA2_HW 0x0058f6b0
 const float gCar_simplification_factor[2][5] = {
     { 20.0f, 3.0f, 1.5f, 0.75f, 0.0f },
@@ -228,10 +252,103 @@ tFloat_bunch_info gCar_car_damage_multiplier;
 // GLOBAL: CARMA2_HW 0x0068b8d0
 br_vector3 gZero_v__car;  // FIXME: make const?
 
+static int CheckForWall(br_vector3* start, br_vector3* end) {
+    br_vector3 dir;
+    br_material* material;
+    br_vector3 normal;
+    br_scalar d;
+
+    BrVector3Sub(&dir, end, start);
+    FindFace(start, &dir, &normal, &d, &material);
+    return d <= 1.f;
+}
+
 // FUNCTION: CARMA2_HW 0x004105f0
 void C2_HOOK_FASTCALL SetUpPanningCamera(tCar_spec* c) {
+    br_vector3 pos;
+    br_vector3 perp;
+    br_vector3 dir;
+    br_vector3 normal;
+    br_scalar d;
+    br_material* material;
+    br_vector3 tv;
+    br_vector3 tv2;
+    br_vector3 left;
+    br_vector3 right;
+    br_vector3 car_centre;
+    br_scalar ts;
+    tU32 time;
+    tU32 time_step;
+    tU32 t;
+    tU32 t2;
+    br_matrix34* m1;
 
-    NOT_IMPLEMENTED();
+    m1 = &c->car_master_actor->t.t.mat;
+    gCamera_incident_flag = 0;
+    ScanCarsPositions(c, &c->pos, 411.678222f, -1, 5000, &pos, &time);
+    BrVector3Sub(&dir, &pos, &c->pos);
+    if (GetTotalTime() < time) {
+        time_step = time - GetTotalTime();
+    } else {
+        time_step = GetTotalTime() - time;
+    }
+    time_step *= SRandomBetween(0.8f, 1.5f);
+    if (BrVector3LengthSquared(&dir) < 0.01 || time == 0) {
+        BrVector3Negate(&dir, (br_vector3*)&m1->m[2][0]);
+        BrVector3Copy(&car_centre, &c->pos);
+        time_step = 0;
+    } else {
+        ScanCarsPositions(c, &c->pos, 102.919556f, -1, time_step / 2, &car_centre, &t);
+        if (t == 0) {
+            BrVector3Copy(&car_centre, &c->pos);
+        }
+    }
+    BrVector3SetFloat(&tv, 0.f, 1.f, 0.f);
+    BrVector3Cross(&perp, &tv, &dir);
+    ts = BrVector3Length(&perp);
+    if (ts < 10.f) {
+        return;
+    }
+    ts = 2.f / ts;
+    ts *= SRandomBetween(0.33333334f, 1.f);
+    BrVector3Scale(&perp, &perp, ts);
+    ts = SRandomBetween(0.33333334f, 1.f) * 2.f;
+    BrVector3Set(&tv, 0.f, ts, 0.f);
+    BrVector3Add(&tv, &car_centre, &tv);
+    BrVector3Add(&left, &tv, &perp);
+    BrVector3Sub(&right, &tv, &perp);
+    CollideCamera2(&car_centre, &left, NULL, 1, NULL);
+    CollideCamera2(&car_centre, &right, NULL, 1, NULL);
+    BrVector3Sub(&tv, &left, &car_centre);
+    BrVector3Sub(&tv2, &right, &car_centre);
+    if (BrVector3LengthSquared(&tv) + SRandomPosNeg(.01f) > BrVector3LengthSquared(&tv2)) {
+        BrVector3Copy(&gCamera->t.t.translate.t, &left);
+    } else {
+        BrVector3Copy(&gCamera->t.t.translate.t, &right);
+    }
+    if (time != 0) {
+        if (CheckForWall(&c->pos, &gCamera->t.t.translate.t)) {
+            ScanCarsPositions(c, &c->pos, 10000.f, -1, 1000, &tv, &t2);
+            CollideCamera2(&tv, &gCamera->t.t.translate.t, NULL, 1, NULL);
+        }
+    }
+    if (time != 0) {
+        if (CheckForWall(&pos, &gCamera->t.t.translate.t)) {
+            time_step = time_step / 16;
+            BrVector3Copy(&tv, &car_centre);
+            do {
+                ScanCarsPositions(c, &tv, 10000.f, abs((tS32)t - (tS32)GetTotalTime()), time_step, &tv2, &t2);
+                t += (tS32)(ARGetReplayDirection() ? 1 : -1) * time_step;
+                BrVector3Copy(&tv, &tv2);
+            } while (!CheckForWall(&tv, &gCamera->t.t.translate.t) && t < GetTotalTime() + 5000);
+            gSwitch_time = t;
+            return;
+        }
+    }
+    if (time == 0) {
+        time = 5000;
+    }
+    gSwitch_time = time;
 }
 
 // FUNCTION: CARMA2_HW 0x004122b0
@@ -598,11 +715,278 @@ void C2_HOOK_FASTCALL PanningExternalCamera(tCar_spec* c, tU32 pTime) {
     NOT_IMPLEMENTED();
 }
 
+void C2_HOOK_FASTCALL PangToCamera(br_vector3* pPos, br_matrix34* pMat)
+{
+    br_camera* camera;
+    br_scalar dx, dz, d, nx, nz;
+    br_angle pitch;
+
+    camera = (br_camera*)gCamera->type_data;
+
+    dx = pPos->v[0] - pMat->m[3][0];
+    dz = pPos->v[2] - pMat->m[3][2];
+    d = sqrt(dx * dx + dz * dz);
+
+    if (d >= BR_SCALAR_EPSILON * 2)
+    {
+        nx = dx / d;
+        nz = dz / d;
+    }
+    else
+    {
+        nx = 1.0f;
+        nz = 0.0f;
+    }
+
+    pMat->m[0][0] = -nz;
+    pMat->m[0][1] = 0.0f;
+    pMat->m[0][2] = -nx;
+    pMat->m[1][0] = 0.0f;
+    pMat->m[1][1] = 1.0f;
+    pMat->m[1][2] = 0.0f;
+    pMat->m[2][0] = -nx;
+    pMat->m[2][1] = 0.0f;
+    pMat->m[2][2] = -nz;
+
+    pitch = BR_ATAN2(pMat->m[3][1] - pPos->v[1],
+        sqrt((pMat->m[3][0] - pPos->v[2]) * (pMat->m[3][0] - pPos->v[2]) +
+             (pMat->m[3][2] - pPos->v[0]) * (pMat->m[3][2] - pPos->v[0])));
+
+    BrMatrix34PostRotateY(pMat, (br_angle)(camera->field_of_view / 5) - pitch);
+}
+
 // FUNCTION: CARMA2_HW 0x0040f790
 int C2_HOOK_FASTCALL IncidentCam(tCar_spec* c, tU32 pTime) {
+    br_matrix34* m2;
+    br_vector3 old_cam_pos;
+    br_vector3 cam1;
+    br_vector3 camP;
+    br_vector3 tv;
+    br_vector3 perp;
+    br_vector3 vertical;
+    br_vector3 scan_pos;
+    br_vector3 left;
+    br_vector3 right;
+    br_vector3 scaled;
+    br_vector3 dir;
+    br_vector3 nor;
+    br_material* material;
+    br_scalar d;
+    br_scalar ts;
+    tU32 time_returned;
+    tU32 scan_data[4];
+    tS32 mode2;
+    br_scalar towards2;
+    tS32 time2;
+    int scan_index = 0;
+    tS32 scan_time;
+    tCar_spec* car2;
+    br_actor* ped_actor;
+    br_actor* murderer;
+    tU8 col_x;
+    tU8 col_z;
+    int removed = 0;
 
-    NOT_IMPLEMENTED();
-    return 0;
+    m2 = &gCamera->t.t.mat;
+    gPed_actor = NULL;
+    if (gCamera_incident_mode == 3) {
+        if (!GetPipeCarStateAtTime(-1, &gCamera_incident_mode, &gIncident_towards, gIncident_car_data, &gIncident_time)) {
+            gCamera_incident_mode = 3;
+        } else {
+            if (gIncident_time < 0 && ARGetReplayDirection() >= 0) {
+                gCamera_incident_mode = 3;
+            } else {
+                scan_time = abs(gIncident_time);
+                if (scan_time > 2500) {
+                    gCamera_incident_mode = 3;
+                } else {
+                    if (GetPipeCarStateAtTime(scan_time, &mode2, &towards2, scan_data, &time2)) {
+                        do {
+                            scan_index++;
+                            if (scan_index > 10) {
+                                break;
+                            }
+                            if (abs(time2) > 3500) {
+                                break;
+                            }
+                            if (mode2 < gCamera_incident_mode
+                                || (mode2 == gCamera_incident_mode && gIncident_towards <= towards2)) {
+                                gCamera_incident_mode = mode2;
+                                gIncident_car_data[0] = scan_data[0];
+                                gIncident_car_data[1] = scan_data[1];
+                                gIncident_car_data[2] = scan_data[2];
+                                gIncident_car_data[3] = scan_data[3];
+                                gIncident_towards = towards2;
+                                gIncident_time = time2;
+                            }
+                        } while (GetPipeCarStateAtTime(abs(time2), &mode2, &towards2, scan_data, &time2));
+                    }
+                    if (abs(gIncident_time) > 2500) {
+                        gCamera_incident_mode = 3;
+                    } else if (gCamera_incident_mode == 2 && gIncident_towards < 0.1f) {
+                        gCamera_incident_mode = 3;
+                    } else {
+                        if (gCamera_incident_mode == 2) {
+                            ScanCarsPositions(c, &c->pos, 100000.f, -1, abs(time2), &scan_pos, &time_returned);
+                            if (time_returned != 0 && Vector3DistanceSquared(&scan_pos, &c->pos) <= 102.91955471539592) {
+                                BrVector3Sub(&tv, &scan_pos, (br_vector3*)gIncident_car_data);
+                                tv.v[1] = scan_pos.v[1] + 2.f - ((br_vector3*)gIncident_car_data)->v[1];
+                                BrVector3Normalise(&tv, &tv);
+                                BrVector3Scale(&tv, &tv, 2.f);
+                                BrVector3Set(&vertical, 0.f, 1.f, 0.f);
+                                BrVector3Cross(&perp, &vertical, &tv);
+                                BrVector3Add(&left, &scan_pos, &tv);
+                                BrVector3Add(&left, &left, &perp);
+                                left.v[1] += 2.f;
+                                BrVector3Add(&right, &scan_pos, &tv);
+                                BrVector3Sub(&right, &right, &perp);
+                                right.v[1] += 2.f;
+                                CollideCamera2(&scan_pos, &left, NULL, 1, NULL);
+                                CollideCamera2(&scan_pos, &right, NULL, 1, NULL);
+                                if (Vector3DistanceSquared(&left, &scan_pos) > Vector3DistanceSquared(&right, &scan_pos)) {
+                                    BrVector3Copy(&gCamera->t.t.translate.t, &left);
+                                } else {
+                                    BrVector3Copy(&gCamera->t.t.translate.t, &right);
+                                }
+                            } else {
+                                gCamera_incident_mode = 3;
+                            }
+                        }
+                        gIncident_time += (tS32)GetTotalTime();
+                    }
+                }
+            }
+        }
+    } else {
+        gCamera_incident_flag = 1;
+    }
+    switch (gCamera_incident_mode) {
+        case 0:
+            BrVector3Copy(&old_cam_pos, &gCamera->t.t.translate.t);
+            ped_actor = (br_actor*)gIncident_car_data[0];
+            murderer = (br_actor*)gIncident_car_data[1];
+            gPed_actor = ped_actor;
+            XZToColumnXZ(&col_x, &col_z, murderer->t.t.translate.t.v[0], murderer->t.t.translate.t.v[2], &gProgram_state.track_spec);
+            if (gProgram_state.track_spec.columns[col_z][col_x].actor_0x0 == murderer->parent) {
+                BrActorRemove(murderer);
+                removed = 1;
+            }
+            BrVector3Copy(&cam1, &ped_actor->t.t.translate.t);
+            gIncident_car_data[1] = (tU32)c->car_master_actor;
+            if (c->car_master_actor != NULL) {
+                BrVector3Copy(&camP, &c->pos);
+            } else if (c->car_master_actor->model != NULL) {
+                BrVector3Sub(&scaled, &c->car_master_actor->model->bounds.max, &c->car_master_actor->model->bounds.min);
+                BrVector3Scale(&scaled, &scaled, 0.5f);
+                BrMatrix34ApplyP(&camP, &scaled, &c->car_master_actor->t.t.mat);
+            } else {
+                BrVector3Copy(&camP, &c->car_master_actor->t.t.translate.t);
+            }
+            if ((tU32)GetTotalTime() < (tU32)gIncident_time || ARGetReplayDirection() != 1) {
+                BrVector3Sub(&tv, &cam1, &camP);
+                tv.v[1] = 0.f;
+                BrVector3Normalise(&tv, &tv);
+                BrVector3Set(&vertical, 0.f, 0.4f, 0.f);
+                BrVector3Cross(&perp, &tv, &vertical);
+                if (gCamera_incident_direction) {
+                    BrVector3Negate(&perp, &perp);
+                }
+                if (ARReplayPlaying()) {
+                    BrVector3Accumulate(&perp, &tv);
+                }
+                BrVector3Add(&gCamera->t.t.translate.t, &cam1, &perp);
+                gCamera->t.t.translate.t.v[1] += 0.25f;
+                CollideCamera2(&cam1, &gCamera->t.t.translate.t, NULL, 1, NULL);
+            }
+            PangToCamera(&cam1, m2);
+            ts = Vector3DistanceSquared(&gCamera->t.t.translate.t, &((br_actor*)gIncident_car_data[1])->t.t.translate.t);
+            if (abs((tS32)GetTotalTime() - gIncident_time) > 2500) {
+                gCamera_incident_mode = 3;
+            }
+            if (ARReplayPlaying() ? (tU32)(gIncident_time + 300) < GetTotalTime() : (tU32)GetTotalTime() < (tU32)(gIncident_time - 600)) {
+                if (ts > 25.f) {
+                    gCamera_incident_mode = 3;
+                } else {
+                    BrVector3Sub(&dir, &gCamera->t.t.translate.t, &((br_actor*)gIncident_car_data[1])->t.t.translate.t);
+                    FindFace(&((br_actor*)gIncident_car_data[1])->t.t.translate.t, &dir, &nor, &d, &material);
+                    if (d <= 1.f) {
+                        gCamera_incident_mode = 3;
+                    }
+                }
+            }
+            if (removed) {
+                XZToColumnXZ(&col_x, &col_z, ((br_actor*)gIncident_car_data[1])->t.t.translate.t.v[0], ((br_actor*)gIncident_car_data[1])->t.t.translate.t.v[2], &gProgram_state.track_spec);
+                BrActorAdd(&gProgram_state.track_spec.columns[col_z][col_x].actor_0x0, (br_actor*)gIncident_car_data[1]);
+            }
+            BrVector3Sub(&tv, &cam1, &gCamera->t.t.translate.t);
+            if (tv.v[0] * tv.v[0] + tv.v[2] * tv.v[2] < 0.0225) {
+                BrVector3Copy(&gCamera->t.t.translate.t, &old_cam_pos);
+                gPed_actor = NULL;
+                return 0;
+            }
+            break;
+        case 1:
+            car2 = (tCar_spec*)gIncident_car_data[0];
+            BrVector3Sub(&tv, &car2->pos, &c->pos);
+            tv.v[1] = 0.f;
+            BrVector3Normalise(&tv, &tv);
+            BrVector3Scale(&tv, &tv, 2.f);
+            BrVector3Add(&gCamera->t.t.translate.t, &car2->pos, &tv);
+            gCamera->t.t.translate.t.v[1] += 1.f;
+            CollideCamera2(&car2->pos, &gCamera->t.t.translate.t, NULL, 1, NULL);
+            PangToCamera(&car2->pos, m2);
+            ts = Vector3DistanceSquared(&gCamera->t.t.translate.t, &c->pos);
+            if (fabsf((float)((tS32)GetTotalTime() - gIncident_time)) > 2500.f) {
+                gCamera_incident_mode = 3;
+            }
+            if (ARReplayPlaying() ? (tU32)gIncident_time < GetTotalTime() : GetTotalTime() < (tU32)gIncident_time) {
+                if (ts > 25.f) {
+                    gCamera_incident_mode = 3;
+                } else {
+                    BrVector3Sub(&dir, &gCamera->t.t.translate.t, &c->pos);
+                    FindFace(&c->pos, &dir, &nor, &d, &material);
+                    if (d <= 1.f) {
+                        gCamera_incident_mode = 3;
+                    }
+                }
+            }
+            break;
+        case 2:
+            PangToCamera(&c->pos, m2);
+            ts = Vector3DistanceSquared(&gCamera->t.t.translate.t, &c->pos);
+            if (fabsf((float)((tS32)GetTotalTime() - gIncident_time)) > 2500.f) {
+                gCamera_incident_mode = 3;
+            }
+            if (ARReplayPlaying() ? (tU32)gIncident_time < GetTotalTime() : GetTotalTime() < (tU32)gIncident_time) {
+                if (ts > 25.f) {
+                    gCamera_incident_mode = 3;
+                } else {
+                    BrVector3Sub(&dir, &gCamera->t.t.translate.t, &c->pos);
+                    FindFace(&c->pos, &dir, &nor, &d, &material);
+                    if (d <= 1.f) {
+                        gCamera_incident_mode = 3;
+                    }
+                }
+            }
+            break;
+        default:
+            gCamera_incident_mode = 3;
+            break;
+        }
+        if (gCamera_incident_mode != 3) {
+            return 1;
+        }
+        if (gIncident_camera_stack > 1) {
+            SetUpPanningCamera(c);
+            return 0;
+        }
+        gIncident_camera_stack++;
+        if (IncidentCam(c, pTime)) {
+            gIncident_camera_stack--;
+            return 1;
+        }
+        gIncident_camera_stack--;
+        return 0;
 }
 
 // FUNCTION: CARMA2_HW 0x004ff530
