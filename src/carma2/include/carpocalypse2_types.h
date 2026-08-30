@@ -536,6 +536,65 @@ typedef struct {
     br_pixelmap* texture2;
 } tPipe_smash_texture_change;
 
+typedef struct {
+    uintptr_t pOwner;
+    tU8 type_from;
+    tU8 type_to;
+} tPipe_chunk_transform_type;
+
+typedef struct {
+    br_vector3* p_vector;
+    br_vector3 delta;
+} tPipe_chunk_vector3;
+
+typedef struct {
+    uintptr_t pOwner;
+    float v[4];
+} tPipe_chunk_splash;
+
+typedef struct {
+    undefined4 field_0x0;
+    uintptr_t field_0x4;
+    br_vector3 delta;
+} tPipe_chunk_actor_trans;
+
+typedef struct {
+    tU8 pad[0x244];
+    br_scalar x;
+    br_scalar y;
+    br_scalar z;
+    br_scalar size;
+} tReplay_splash_effect;
+
+typedef struct {
+    tU8 pad[0x50];
+    br_scalar x;
+    br_scalar y;
+    br_scalar z;
+} tReplay_actor_trans_effect;
+
+typedef struct {
+    undefined4 field_0x0;
+    tPipe_smudge_data smudge;
+} tPipe_chunk_smudge;
+
+typedef struct {
+    undefined4 field_0x0;
+    undefined4 field_0x4;
+    tU32 count;
+} tPipe_chunk_remove_faces;
+
+typedef struct {
+    undefined4 field_0x0;
+    tU32 length;
+} tPipe_chunk_end_my_bend;
+
+typedef struct {
+    undefined4 field_0x0;
+    undefined4 field_0x4;
+    undefined4 field_0x8;
+} tPipe_chunk_vanish;
+
 typedef void C2_HOOK_FASTCALL tDrone_state_function(tDrone_spec*, tDroneStateFuncState);
 
 typedef int tJoy_array[8];

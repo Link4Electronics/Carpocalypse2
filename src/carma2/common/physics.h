@@ -575,6 +575,10 @@ void C2_HOOK_FASTCALL ProcessDrag2(tPHIL_queued_header* pObject_info, tPhysics_o
 
 void C2_HOOK_FASTCALL ProcessDrag(tPHIL_queued_header* pObject_info, tPhysics_object* pObject, float pDrag);
 
+void C2_HOOK_FASTCALL PhysicsObjectSetImpulse(tPhysics_object* pObject, br_vector3* pImpulse);
+
+void C2_HOOK_FASTCALL PhysicsObjectMoveVelocity(tPhysics_object* pObject);
+
 void C2_HOOK_FASTCALL LevelOutOnSurface(tPhysics_object *pObject);
 
 void C2_HOOK_FASTCALL MarkObjectAndChildrenAsPassive(tPhysics_object* pObject);

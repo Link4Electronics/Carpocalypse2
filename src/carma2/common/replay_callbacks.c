@@ -580,9 +580,8 @@ void C2_HOOK_FASTCALL ApplySound(tPipe_chunk** pChunk) {
 
 // FUNCTION: CARMA2_HW 0x004ca3f0
 int C2_HOOK_FASTCALL CalcCrushLength(tPipe_chunk* pChunk) {
-
-    NOT_IMPLEMENTED();
-    return 0;
+    br_model* model = *(br_model**)((tU8*)pChunk + 4);
+    return 0xa + 2 * model->nvertices;
 }
 
 // FUNCTION: CARMA2_HW 0x004c9040
@@ -653,8 +652,7 @@ void C2_HOOK_FASTCALL ApplyShrapnel(tPipe_chunk** pChunk) {
 
 // FUNCTION: CARMA2_HW 0x004ca400
 int C2_HOOK_FASTCALL CalcShrapnelLength(tPipe_chunk* pChunk) {
-
-    NOT_IMPLEMENTED();
+    return (*(tU32*)pChunk & 0x8000) ? 0x14 : 0xc;
 }
 
 // FUNCTION: CARMA2_HW 0x004e4e30
@@ -719,9 +717,8 @@ void C2_HOOK_FASTCALL ApplyFlame(tPipe_chunk** pChunk) {
 
 // FUNCTION: CARMA2_HW 0x004ca420
 int C2_HOOK_FASTCALL CalcSmudgeLength(tPipe_chunk* pChunk) {
-
-    NOT_IMPLEMENTED();
-    return 0;
+    tU16 vertex_count = ((tPipe_chunk_smudge*)pChunk)->smudge.vertex_count;
+    return 8 + vertex_count * 4;
 }
 
 // FUNCTION: CARMA2_HW 0x004c9060
@@ -738,8 +735,10 @@ void C2_HOOK_FASTCALL UndoSmudge(tPipe_chunk** pChunk, tPipe_chunk* pPrev_chunk)
 
 // FUNCTION: CARMA2_HW 0x004c92d0
 void C2_HOOK_FASTCALL ApplySplash(tPipe_chunk** pChunk) {
-
-    NOT_IMPLEMENTED();
+    ((tReplay_splash_effect*)((tPipe_chunk_splash*)*pChunk)->pOwner)->size = ((tPipe_chunk_splash*)*pChunk)->v[0];
+    ((tReplay_splash_effect*)((tPipe_chunk_splash*)*pChunk)->pOwner)->x = ((tPipe_chunk_splash*)*pChunk)->v[1];
+    ((tReplay_splash_effect*)((tPipe_chunk_splash*)*pChunk)->pOwner)->y = ((tPipe_chunk_splash*)*pChunk)->v[2];
+    ((tReplay_splash_effect*)((tPipe_chunk_splash*)*pChunk)->pOwner)->z = ((tPipe_chunk_splash*)*pChunk)->v[3];
 }
 
 // FUNCTION: CARMA2_HW 0x004c9e80
@@ -786,9 +785,8 @@ void C2_HOOK_FASTCALL UndoFlap(tPipe_chunk** pChunk, tPipe_chunk* pPrev_chunk) {
 
 // FUNCTION: CARMA2_HW 0x004ca430
 int C2_HOOK_FASTCALL CalcModelMashLength(tPipe_chunk* pChunk) {
-
-    NOT_IMPLEMENTED();
-    return 0;
+    br_model* model = *(br_model**)((tU8*)pChunk + 4);
+    return 4 + 6 * model->nvertices;
 }
 
 // FUNCTION: CARMA2_HW 0x004c9840
@@ -817,8 +815,7 @@ void C2_HOOK_FASTCALL UndoRelink(tPipe_chunk** pChunk, tPipe_chunk* pPrev_chunk)
 
 // FUNCTION: CARMA2_HW 0x004c9890
 void C2_HOOK_FASTCALL ApplyIdentity(tPipe_chunk** pChunk) {
-
-    NOT_IMPLEMENTED();
+    BrMatrix34Identity((br_matrix34*)((tU8*)((tPipe_chunk_actor_trans*)*pChunk)->field_0x4 + 0x2c));
 }
 
 // FUNCTION: CARMA2_HW 0x004c98b0
@@ -835,26 +832,18 @@ void C2_HOOK_FASTCALL UndoSplitWeld(tPipe_chunk** pChunk, tPipe_chunk* pPrev_chu
 
 // FUNCTION: CARMA2_HW 0x004c9930
 void C2_HOOK_FASTCALL ApplyBend(tPipe_chunk** pChunk) {
-
-    NOT_IMPLEMENTED();
 }
 
 // FUNCTION: CARMA2_HW 0x004ca050
 void C2_HOOK_FASTCALL UndoBend(tPipe_chunk** pChunk, tPipe_chunk* pPrev_chunk) {
-
-    NOT_IMPLEMENTED();
 }
 
 // FUNCTION: CARMA2_HW 0x004c9940
 void C2_HOOK_FASTCALL ApplyUnBend(tPipe_chunk** pChunk) {
-
-    NOT_IMPLEMENTED();
 }
 
 // FUNCTION: CARMA2_HW 0x004ca060
 void C2_HOOK_FASTCALL UndoUnBend(tPipe_chunk** pChunk, tPipe_chunk* pPrev_chunk) {
-
-    NOT_IMPLEMENTED();
 }
 
 // FUNCTION: CARMA2_HW 0x004c9960
@@ -902,8 +891,7 @@ void C2_HOOK_FASTCALL UndoSmashModelChange(tPipe_chunk** pChunk, tPipe_chunk* pP
 // FUNCTION: CARMA2_HW 0x004ca460
 int C2_HOOK_FASTCALL CalcRemoveFacesLength(tPipe_chunk* pChunk) {
 
-    NOT_IMPLEMENTED();
-    return 0;
+    return 8 + 8 * ((tPipe_chunk_remove_faces*)pChunk)->count;
 }
 
 // FUNCTION: CARMA2_HW 0x004c9a10
@@ -957,26 +945,25 @@ void C2_HOOK_FASTCALL ApplyRepulseRay(tPipe_chunk** pChunk) {
 // FUNCTION: CARMA2_HW 0x004ca450
 int C2_HOOK_FASTCALL CalcEndMyBendLength(tPipe_chunk* pChunk) {
 
-    NOT_IMPLEMENTED();
-    return 0;
+    return ((tPipe_chunk_end_my_bend*)pChunk)->length;
 }
 
 // FUNCTION: CARMA2_HW 0x004c9950
 void C2_HOOK_FASTCALL ApplyEndMyBend(tPipe_chunk** pChunk) {
-
-    NOT_IMPLEMENTED();
 }
 
 // FUNCTION: CARMA2_HW 0x004c9a70
 void C2_HOOK_FASTCALL ApplyActorTrans(tPipe_chunk** pChunk) {
-
-    NOT_IMPLEMENTED();
+    ((tReplay_actor_trans_effect*)((tPipe_chunk_actor_trans*)*pChunk)->field_0x4)->x += ((tPipe_chunk_actor_trans*)*pChunk)->delta.v[0];
+    ((tReplay_actor_trans_effect*)((tPipe_chunk_actor_trans*)*pChunk)->field_0x4)->y += ((tPipe_chunk_actor_trans*)*pChunk)->delta.v[1];
+    ((tReplay_actor_trans_effect*)((tPipe_chunk_actor_trans*)*pChunk)->field_0x4)->z += ((tPipe_chunk_actor_trans*)*pChunk)->delta.v[2];
 }
 
 // FUNCTION: CARMA2_HW 0x004ca180
 void C2_HOOK_FASTCALL UndoActorTrans(tPipe_chunk** pChunk, tPipe_chunk* pPrev_chunk) {
-
-    NOT_IMPLEMENTED();
+    ((tReplay_actor_trans_effect*)((tPipe_chunk_actor_trans*)*pChunk)->field_0x4)->x -= ((tPipe_chunk_actor_trans*)*pChunk)->delta.v[0];
+    ((tReplay_actor_trans_effect*)((tPipe_chunk_actor_trans*)*pChunk)->field_0x4)->y -= ((tPipe_chunk_actor_trans*)*pChunk)->delta.v[1];
+    ((tReplay_actor_trans_effect*)((tPipe_chunk_actor_trans*)*pChunk)->field_0x4)->z -= ((tPipe_chunk_actor_trans*)*pChunk)->delta.v[2];
 }
 
 // FUNCTION: CARMA2_HW 0x004c9aa0
@@ -1149,14 +1136,16 @@ void C2_HOOK_FASTCALL UndoFunkEnable(tPipe_chunk** pChunk, tPipe_chunk* pPrev_ch
 
 // FUNCTION: CARMA2_HW 0x004c9c30
 void C2_HOOK_FASTCALL ApplyVanishDismembered(tPipe_chunk** pChunk) {
+    tPipe_chunk_vanish* chunk = (tPipe_chunk_vanish*)*pChunk;
 
-    NOT_IMPLEMENTED();
+    return DoVanishDismembered(chunk->field_0x0, chunk->field_0x8);
 }
 
 // FUNCTION: CARMA2_HW 0x004ca330
 void C2_HOOK_FASTCALL UndoVanishDismembered(tPipe_chunk** pChunk, tPipe_chunk* pPrev_chunk) {
+    tPipe_chunk_vanish* chunk = (tPipe_chunk_vanish*)*pChunk;
 
-    NOT_IMPLEMENTED();
+    return DoVanishDismembered(chunk->field_0x0, chunk->field_0x4);
 }
 
 // FUNCTION: CARMA2_HW 0x004c9c40
@@ -1173,14 +1162,16 @@ void C2_HOOK_FASTCALL ApplyPedDiagnostics(tPipe_chunk** pChunk) {
 
 // FUNCTION: CARMA2_HW 0x004c9c90
 void C2_HOOK_FASTCALL ApplyVector3(tPipe_chunk** pChunk) {
-
-    NOT_IMPLEMENTED();
+    ((tPipe_chunk_vector3*)*pChunk)->p_vector->v[0] += ((tPipe_chunk_vector3*)*pChunk)->delta.v[0];
+    ((tPipe_chunk_vector3*)*pChunk)->p_vector->v[1] += ((tPipe_chunk_vector3*)*pChunk)->delta.v[1];
+    ((tPipe_chunk_vector3*)*pChunk)->p_vector->v[2] += ((tPipe_chunk_vector3*)*pChunk)->delta.v[2];
 }
 
 // FUNCTION: CARMA2_HW 0x004ca360
 void C2_HOOK_FASTCALL UndoVector3(tPipe_chunk** pChunk, tPipe_chunk* pPrev_chunk) {
-
-    NOT_IMPLEMENTED();
+    ((tPipe_chunk_vector3*)*pChunk)->p_vector->v[0] -= ((tPipe_chunk_vector3*)*pChunk)->delta.v[0];
+    ((tPipe_chunk_vector3*)*pChunk)->p_vector->v[1] -= ((tPipe_chunk_vector3*)*pChunk)->delta.v[1];
+    ((tPipe_chunk_vector3*)*pChunk)->p_vector->v[2] -= ((tPipe_chunk_vector3*)*pChunk)->delta.v[2];
 }
 
 // FUNCTION: CARMA2_HW 0x004c9310
@@ -1215,8 +1206,6 @@ void C2_HOOK_FASTCALL ApplyDroneStraightPos(tPipe_chunk** pChunk) {
 
 // FUNCTION: CARMA2_HW 0x004c9d10
 void C2_HOOK_FASTCALL ApplyDroneUnused(tPipe_chunk** pChunk) {
-
-    NOT_IMPLEMENTED();
 }
 
 // FUNCTION: CARMA2_HW 0x004d5b10
@@ -1275,14 +1264,12 @@ void C2_HOOK_FASTCALL UndoEndShitMine(tPipe_chunk** pChunk, tPipe_chunk* pPrev_c
 
 // FUNCTION: CARMA2_HW 0x004c9d70
 void C2_HOOK_FASTCALL ApplyTransformType(tPipe_chunk** pChunk) {
-
-    NOT_IMPLEMENTED();
+    ((br_actor*)((tPipe_chunk_transform_type*)*pChunk)->pOwner)->t.type = ((tPipe_chunk_transform_type*)*pChunk)->type_to;
 }
 
 // FUNCTION: CARMA2_HW 0x004ca3e0
 void C2_HOOK_FASTCALL UndoTransformType(tPipe_chunk** pChunk, tPipe_chunk* pPrev_chunk) {
-
-    NOT_IMPLEMENTED();
+    ((br_actor*)((tPipe_chunk_transform_type*)*pChunk)->pOwner)->t.type = ((tPipe_chunk_transform_type*)*pChunk)->type_from;
 }
 
 // FUNCTION: CARMA2_HW 0x004c9d80

@@ -3292,6 +3292,11 @@ void C2_HOOK_FASTCALL DoBloodSpurt(uintptr_t pArg1, int pArg2, int pArg3, br_vec
     NOT_IMPLEMENTED();
 }
 
+// FUNCTION: CARMA2_HW 0x004ca890
+void C2_HOOK_FASTCALL DoVanishDismembered(uintptr_t pOwner, tS32 value) {
+    *((tS32*)(*(undefined4**)pOwner) + 4) = value;
+}
+
 // STUB: CARMA2_HW 0x004ccd70
 void C2_HOOK_FASTCALL DoBloodSpurtUndo(int pArg1, uintptr_t pArg2, int pArg3, undefined4 pArg4, br_vector3* pArg5, br_vector3* pArg6, br_vector3* pArg7) {
 

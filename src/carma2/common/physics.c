@@ -2,6 +2,7 @@
 
 #include "car.h"
 #include "errors.h"
+#include "globvars.h"
 #include "globvrpb.h"
 #include "loading.h"
 #include "netgame.h"
@@ -2083,14 +2084,88 @@ void C2_HOOK_FASTCALL MungeSpecialVolume(tPhysics_object* pObject) {
 
 // FUNCTION: CARMA2_HW 0x004b6ec0
 void C2_HOOK_FASTCALL ProcessGravity(tPHIL_queued_header* pObject_info, tPhysics_object* pObject, float pGravity) {
+    br_vector3 gravity;
+    tSpecial_volume* pSpecial_volume;
 
-    NOT_IMPLEMENTED();
+    pSpecial_volume = NULL;
+    if (pObject_info->field_0x4 & 0x8) {
+        pSpecial_volume = pObject->last_special_volume;
+    }
+    if (pSpecial_volume != NULL) {
+        if (pObject_info->field_0x14 == 0.0f || pSpecial_volume->viscosity_multiplier <= 2.0) {
+            gravity.v[0] = 0.0f;
+            gravity.v[2] = 0.0f;
+            gravity.v[1] = pSpecial_volume->gravity_multiplier * pObject->water_depth_factor * pGravity * gGravity_multiplier * -0.05681159420289855;
+        } else {
+            gravity.v[0] = 0.0f;
+            gravity.v[1] = ((1.0f - pSpecial_volume->gravity_multiplier) * pObject->water_depth_factor * pObject_info->field_0x14 - gGravity_multiplier * 1.4202898550724639 * pGravity) * 0.04;
+            gravity.v[2] = 0.0f;
+        }
+    } else {
+        gravity.v[0] = 0.0f;
+        gravity.v[2] = 0.0f;
+        gravity.v[1] = pGravity * gGravity_multiplier * -0.05681159420289855;
+    }
+    PhysicsObjectSetImpulse(pObject, &gravity);
+    PhysicsObjectMoveVelocity(pObject);
+}
+
+// FUNCTION: CARMA2_HW 0x004c2c90
+void C2_HOOK_FASTCALL ApplyWaterOmegaBrake(tPhysics_object* pObject, const br_vector3* pV) {
+    br_scalar om0 = pObject->omega.v[0];
+    br_scalar om1 = pObject->omega.v[1];
+    br_scalar om2 = pObject->omega.v[2];
+
+    pObject->omega.v[0] = om0 - pObject->I.v[0] / (pV->v[0] * 0.0210039914f);
+    if (om0 * pObject->omega.v[0] <= 0.0f) {
+        pObject->omega.v[0] = 0.0f;
+    }
+    pObject->omega.v[1] = om1 - (pV->v[1] * 0.0210039914f) / pObject->I.v[1];
+    if (om1 * pObject->omega.v[1] <= 0.0f) {
+        pObject->omega.v[1] = 0.0f;
+    }
+    pObject->omega.v[2] = om2 - pObject->I.v[2] / (pV->v[2] * 0.0210039914f);
+    if (om2 * pObject->omega.v[2] <= 0.0f) {
+        pObject->omega.v[2] = 0.0f;
+    }
 }
 
 // FUNCTION: CARMA2_HW 0x004b6ce0
 void C2_HOOK_FASTCALL ProcessDrag2(tPHIL_queued_header* pObject_info, tPhysics_object* pObject, float pDrag, int pObject_info_flags, tSpecial_volume* pSpecial_volume) {
+    br_scalar drag;
+    br_scalar s;
+    tSpecial_volume* sp;
+    br_vector3 v;
 
-    NOT_IMPLEMENTED();
+    drag = pDrag * 2e-05;
+    sp = NULL;
+    if (pObject_info_flags & 8) {
+        sp = pSpecial_volume;
+    }
+    if (sp != NULL) {
+        if (pObject_info->field_0x14 == 0.0f || sp->viscosity_multiplier <= 2.0) {
+            drag = sp->viscosity_multiplier * pObject->water_depth_factor * drag;
+        } else {
+            drag = pObject->water_depth_factor * sp->viscosity_multiplier * drag * 0.5;
+        }
+    }
+
+    s = sqrtf(pObject->v.v[0] * pObject->v.v[0] + pObject->v.v[1] * pObject->v.v[1]);
+    v.v[0] = pObject->v.v[0] * (6.9 * s);
+    v.v[1] = drag * 6.9 * s * s;
+    v.v[2] = pObject->v.v[2] * (6.9 * s);
+    DRVector3Diminish(&pObject->v, &v);
+
+    s = sqrtf(pObject->omega.v[0] * pObject->omega.v[0] + pObject->omega.v[1] * pObject->omega.v[1]);
+    v.v[0] = pObject->omega.v[0] * (s * s + pObject->omega.v[1] * pObject->omega.v[1] + pObject->omega.v[2] * pObject->omega.v[2]);
+    v.v[1] = drag * s * (s * s + pObject->omega.v[1] * pObject->omega.v[1] + pObject->omega.v[2] * pObject->omega.v[2]);
+    v.v[2] = pObject->omega.v[2] * (s * s + pObject->omega.v[1] * pObject->omega.v[1] + pObject->omega.v[2] * pObject->omega.v[2]);
+
+    ApplyWaterOmegaBrake(pObject, &v);
+
+    for (pObject = pObject->child; pObject != NULL; pObject = pObject->next) {
+        ProcessDrag2(pObject_info, pObject, v.v[0], pObject_info_flags, pSpecial_volume);
+    }
 }
 
 void C2_HOOK_FASTCALL ProcessDrag(tPHIL_queued_header* pObject_info, tPhysics_object* pObject, float pDrag) {
@@ -2100,8 +2175,54 @@ void C2_HOOK_FASTCALL ProcessDrag(tPHIL_queued_header* pObject_info, tPhysics_ob
 
 // FUNCTION: CARMA2_HW 0x004b6fb0
 void C2_HOOK_FASTCALL LevelOutOnSurface(tPhysics_object *pObject) {
+    br_scalar v0;
+    br_scalar v1;
+    br_scalar v2;
+    br_scalar dot;
+    br_scalar p1;
+    br_scalar tv;
+    br_scalar px;
+    br_scalar py;
+    br_scalar pz;
+    br_vector3 n;
+    br_vector3 u;
 
-    NOT_IMPLEMENTED();
+    if (pObject->I.v[0] > pObject->I.v[1] && pObject->I.v[0] > pObject->I.v[2]) {
+        v0 = pObject->actor->t.t.mat.m[0][0];
+        v1 = pObject->actor->t.t.mat.m[0][1];
+        v2 = pObject->actor->t.t.mat.m[0][2];
+    } else if (pObject->I.v[1] > pObject->I.v[2] && pObject->I.v[1] > pObject->I.v[0]) {
+        v0 = pObject->actor->t.t.mat.m[1][0];
+        v1 = pObject->actor->t.t.mat.m[1][1];
+        v2 = pObject->actor->t.t.mat.m[1][2];
+    } else {
+        v0 = pObject->actor->t.t.mat.m[2][0];
+        v1 = pObject->actor->t.t.mat.m[2][1];
+        v2 = pObject->actor->t.t.mat.m[2][2];
+    }
+
+    n.v[0] = -1.0f * v0;
+    n.v[1] = -1.0f * v1;
+    n.v[2] = -1.0f * v2;
+
+    dot = n.v[0] * pObject->water_normal.v[0] + n.v[1] * pObject->water_normal.v[1] + n.v[2] * pObject->water_normal.v[2];
+
+    if (dot > -0.99) {
+        px = n.v[1] * pObject->water_normal.v[2] - n.v[2] * pObject->water_normal.v[1];
+        py = n.v[2] * pObject->water_normal.v[0] - n.v[0] * pObject->water_normal.v[2];
+        pz = n.v[0] * pObject->water_normal.v[1] - n.v[1] * pObject->water_normal.v[0];
+        p1 = dot + 1.0f;
+        tv = sqrtf(px * px + py * py + pz * pz);
+        u.v[0] = px * (tv / p1);
+        tv = sqrtf(pz * pz + py * py + u.v[0] * u.v[0]);
+        u.v[1] = py * (tv / p1);
+        tv = sqrtf(u.v[1] * u.v[1] + pz * pz + u.v[0] * u.v[0]);
+        u.v[2] = pz * (tv / px);
+        BrMatrix34TApplyV(&n, &u, &pObject->actor->t.t.mat);
+        pObject->omega.v[0] += n.v[0];
+        pObject->omega.v[1] += n.v[1];
+        pObject->omega.v[2] += n.v[2];
+    }
 }
 
 // FUNCTION: CARMA2_HW 0x004b6e90
