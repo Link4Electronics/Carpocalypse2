@@ -6,6 +6,7 @@
 #include "errors.h"
 #include "globvars.h"
 #include "loading1.h"
+#include "loading.h"
 #include "main.h"
 #include "pedestrn.h"
 
@@ -56,11 +57,11 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
                 } else if (strcmp(currentArgument, "-D3D") == 0) {
                     gRenderer = "D3D";
                 } else if (strcmp(currentArgument, "-ZOMBIE") == 0) {
-                    SetZombiePedFolderNames();
+                    ConfigurePedZombiePaths();
                 } else if (strcmp(currentArgument, "-BLOOD") == 0) {
-                    SetBloodPedFolderNames();
+                    ConfigurePedBloodPaths();
                 } else if (strcmp(currentArgument, "-ALIEN") == 0) {
-                    SetAlienPedFolderNames();
+                    ConfigurePedAlienPaths();
                 } else if (strcmp(currentArgument, "-AFE") == 0) {
                     gAFE = 1;
                 } else if (strcmp(currentArgument, "-SCALEMOUSE") == 0) {
