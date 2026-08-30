@@ -4331,8 +4331,36 @@ br_vector3* C2_HOOK_FASTCALL GetPedPos(tPedestrian* pPed) {
 
 // FUNCTION: CARMA2_HW 0x004cce70
 void C2_HOOK_FASTCALL KillPedestrian(tPedestrian* pPed, tPhysics_object* pCollision_info) {
+    tPed_character_instance* character;
+    int head_bone;
 
-    NOT_IMPLEMENTED();
+    if (GET_PED_COLLISION_OBJECT(pPed)->last_special_volume == NULL
+            || GET_PED_COLLISION_OBJECT(pPed)->last_special_volume->gravity_multiplier >= 1.f) {
+        if (gGoreLevel > 0) {
+            character = pPed->character;
+            if (character->field_0x4 >= 0) {
+                PipeSinglePedModelChange(character->ped, -1, 0, -1, GetCharacterModelSet(character), 1);
+                SetCharacterAllBonesModel(character, 0, 1);
+            }
+            head_bone = character->personality->form->index_head_bone;
+            if (character->field_0x4 >= 0) {
+                if (head_bone < 0) {
+                    PipeSinglePedModelChange(character->ped, head_bone, 0, -1, GetCharacterModelSet(character), 1);
+                    SetCharacterAllBonesModel(character, 2, 1);
+                } else {
+                    PipeSinglePedModelChange(character->ped, head_bone,
+                        GetCharacterBoneModel(character, head_bone), 2, GetCharacterModelSet(character), 1);
+                    SetCharacterBoneModel(character, head_bone, 2, 1);
+                }
+            }
+            if (pPed->field_0x0c != NULL) {
+                pPed->field_0x0c->field_0x1c = 0;
+            }
+            DoGiblets(pPed, GET_PED_COLLISION_OBJECT(pPed), pCollision_info, 0.4f, &pPed->pos, 1);
+        }
+    }
+    OneLessPed(pPed);
+    ScoreForKilledPedestrian(pPed CARPOCALYPSE2_THISCALL_EDX, 0);
 }
 
 // FUNCTION: CARMA2_HW 0x004cc6e0
