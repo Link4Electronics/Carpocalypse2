@@ -411,19 +411,20 @@ void C2_HOOK_FASTCALL ChangeDepthEffect(void) {
     gProgram_state.current_depth_effect.end = gProgram_state.default_depth_effect.end;
 }
 
-void C2_HOOK_FASTCALL DoHorizon(br_pixelmap* pRender_buffer, br_pixelmap* pDepth_buffer, br_actor* pCamera, br_matrix34* pCamera_to_world) {
+// FUNCTION: CARMA2_HW 0x00445cb0
+void C2_HOOK_FASTCALL DepthEffectSky(br_pixelmap* pRender_buffer, br_pixelmap* pDepth_buffer, br_actor* pCamera, br_matrix34* pCamera_to_world) {
     br_angle yaw;
     br_actor* actor;
 
     yaw = BrRadianToAngle(atan2(pCamera_to_world->m[2][0], pCamera_to_world->m[2][2]));
-    if (gProgram_state.cockpit_on || (gAction_replay_mode && gAction_replay_camera_mode != kActionReplayCameraMode_Standard)
+    if (gProgram_state.cockpit_on || (gAction_replay_camera_mode * gAction_replay_mode)
             || gAction_replay_camera_mode == kActionReplayCameraMode_Internal || gAdapt_sky_model_for_cockpit) {
 
         if (gRendering_mirror) {
             actor = gRearview_sky_actor;
         } else {
             actor = gForward_sky_actor;
-            if (ACTOR_CAMERA(gCamera)->field_of_view != gOld_fov || ACTOR_CAMERA(gCamera)->yon_z != gOld_yon) {
+            if (gOld_fov != ACTOR_CAMERA(gCamera)->field_of_view || gOld_yon != ACTOR_CAMERA(gCamera)->yon_z) {
                 gOld_fov = ACTOR_CAMERA(gCamera)->field_of_view;
                 gOld_yon = ACTOR_CAMERA(gCamera)->yon_z;
                 MungeSkyModel(gCamera, gForward_sky_model);
@@ -439,15 +440,9 @@ void C2_HOOK_FASTCALL DoHorizon(br_pixelmap* pRender_buffer, br_pixelmap* pDepth
         gHorizon_material->map_transform.m[2][1] = 0.f;
         BrMaterialUpdate(gHorizon_material, BR_MATU_ALL);
         actor->render_style = BR_RSTYLE_FACES;
-        BrZbSceneRenderAdd(actor);
+        BrZbsSceneRenderAdd(actor);
         actor->render_style = BR_RSTYLE_NONE;
     }
-}
-
-// FUNCTION: CARMA2_HW 0x00445cb0
-void C2_HOOK_FASTCALL DepthEffectSky(br_pixelmap* pRender_buffer, br_pixelmap* pDepth_buffer, br_actor* pCamera, br_matrix34* pCamera_to_world) {
-
-    DoHorizon(pRender_buffer, pDepth_buffer, pCamera, pCamera_to_world);
 }
 
 // FUNCTION: CARMA2_HW 0x00446680

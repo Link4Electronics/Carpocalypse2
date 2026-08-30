@@ -920,118 +920,102 @@ void C2_HOOK_FASTCALL MapStuffBeforeRender(void) {
     }
 }
 
-void C2_HOOK_FASTCALL FoxyStuff(br_matrix34* pMat34, br_actor* pCamera, br_pixelmap* pColour, br_pixelmap* pDepth) {
-    int count;
-    int i;
-    int j;
-    tCar_spec* fox_car;
-
-    count = 0;
-    if (gNet_mode != eNet_mode_none && (gCurrent_net_game->type == eNet_game_type_6 || gCurrent_net_game->type == eNet_game_type_foxy)) {
-        BrZbsSceneRenderBegin(gUniverse_actor, pCamera, pColour, pDepth);
-        for (i = 0; i < gNumber_of_net_players; i++) {
-            tNet_game_player_info* net_player = &gNet_players[i];
-            if ((net_player->field_0x80 || i == gIt_or_fox) && !IsCarCloaked(net_player->car)) {
-                fox_car = net_player->car;
-
-                if (fox_car->car_master_actor->render_style != BR_RSTYLE_NONE) {
-                    br_actor **wheel_actors;
-
-                    count += 1;
-                    wheel_actors = fox_car->wheel_actors;
-                    for (j = 0; j < CARPOCALYPSE2_ASIZE(fox_car->wheel_actors); j++) {
-                        if (wheel_actors[j] != NULL) {
-                            wheel_actors[j]->render_style = BR_RSTYLE_NONE;
-                        }
-                    }
-                    BrZbsSceneRenderAdd(fox_car->car_master_actor);
-                }
-            }
-        }
-        BrZbsSceneRenderEnd();
-        if (count != 0) {
-            if (gHud_tinted4 == -1) {
-                gHud_tinted4 = CreateTintedPoly(0, 0, 640, 480, 3, 2, 0, 0);
-            }
-            TurnTintedPolyOn(gHud_tinted4);
-            ProcessTintedPoly(gHud_tinted4);
-            RenderTintedPolys();
-            TurnTintedPolyOff(gHud_tinted4);
-            BrZbsSceneRenderBegin(gUniverse_actor, pCamera, pColour, pDepth);
-            for (i = 0; i < gNumber_of_net_players; i++) {
-                tNet_game_player_info* net_player = &gNet_players[i];
-                if ((net_player->field_0x80 || i == gIt_or_fox)) {
-                    fox_car = net_player->car;
-
-                    if (fox_car->car_master_actor->render_style != BR_RSTYLE_NONE) {
-                        br_actor **wheel_actors;
-
-                        wheel_actors = fox_car->wheel_actors;
-                        for (j = 0; j < CARPOCALYPSE2_ASIZE(fox_car->wheel_actors); j++) {
-                            if (wheel_actors[j] != NULL) {
-                                wheel_actors[j]->render_style = BR_RSTYLE_DEFAULT;
-                                BrZbsSceneRenderAdd(wheel_actors[j]);
-                            }
-                        }
-                    }
-                }
-            }
-            BrZbsSceneRenderEnd();
-            fox_car->car_master_actor->render_style = BR_RSTYLE_NONE;
-        }
-    }
-}
-
-int C2_HOOK_FASTCALL ConditionallyFillWithSky(br_pixelmap* pPixelmap) {
-    int bgnd_col;
-
-    if (gProgram_state.current_depth_effect.sky_texture != NULL && ((gLast_camera_special_volume == NULL) || gLast_camera_special_volume->sky_col <= -1)) {
-        return 0;
-    }
-    if (gProgram_state.current_depth_effect.type == eDepth_effect_fog || gSwap_depth_effect_type == eDepth_effect_fog) {
-        bgnd_col = 0xff;
-    } else if (gProgram_state.current_depth_effect.type == eDepth_effect_darkness || gSwap_depth_effect_type == eDepth_effect_darkness) {
-        bgnd_col = 0x00;
-    } else if (gLast_camera_special_volume != NULL && gLast_camera_special_volume->sky_col >= 0) {
-        bgnd_col = gLast_camera_special_volume->sky_col;
-    } else {
-        bgnd_col = 0x00;
-    }
-
-    if (gNet_mode != eNet_mode_none && (gCurrent_net_game->type == eNet_game_type_6 || gCurrent_net_game->type == eNet_game_type_foxy)) {
-        SetSkyColour(((tU32*)gRender_palette->pixels)[bgnd_col]);
-        return 0;
-    } else {
-
-        if (pPixelmap->type != BR_PMT_INDEX_8) {
-            bgnd_col = PaletteEntry16Bit(gRender_palette, bgnd_col);
-            bgnd_col = (bgnd_col << 16) | bgnd_col;
-        }
-        BrPixelmapFill(pPixelmap, bgnd_col);
-        return 1;
-    }
-}
-
-void C2_HOOK_FASTCALL ProcessNonTrackActors(br_pixelmap* pRender_buffer, br_pixelmap* pDepth_buffer, br_actor* pCamera, br_matrix34* pCamera_to_world) {
-
-    BrZbSceneRenderAdd(gNon_track_actor);
-}
-
 // FUNCTION: CARMA2_HW 0x004e5680
 void C2_HOOK_FASTCALL DoARenderPass(br_matrix34* pMat34, br_actor* pCamera, br_pixelmap* pColour, br_pixelmap* pDepth, float pYon_factor, int pShadows, int pEffects, int pEffects_extra) {
     br_camera* camera_data = (br_camera*)pCamera->type_data;
     br_scalar original_yon = camera_data->yon_z;
+    int count;
     int i;
+    int j;
+    tCar_spec* fox_car;
+    br_pixelmap* sky_pixelmap;
+    int bgnd_col;
 
     camera_data->yon_z *= pYon_factor;
     BrPixelmapFill(pDepth, 0xffffffff);
     if (!gAFE) {
-        FoxyStuff(pMat34, pCamera, pColour, pDepth);
+        count = 0;
+        if (gNet_mode != eNet_mode_none && (gCurrent_net_game->type == eNet_game_type_6 || gCurrent_net_game->type == eNet_game_type_foxy)) {
+            BrZbsSceneRenderBegin(gUniverse_actor, pCamera, pColour, pDepth);
+            for (i = 0; i < gNumber_of_net_players; i++) {
+                tNet_game_player_info* net_player = &gNet_players[i];
+                if ((net_player->field_0x80 || i == gIt_or_fox) && !IsCarCloaked(net_player->car)) {
+                    fox_car = net_player->car;
+
+                    if (fox_car->car_master_actor->render_style != BR_RSTYLE_NONE) {
+                        br_actor** wheel_actors;
+
+                        count += 1;
+                        wheel_actors = fox_car->wheel_actors;
+                        for (j = 0; j < CARPOCALYPSE2_ASIZE(fox_car->wheel_actors); j++) {
+                            if (wheel_actors[j] != NULL) {
+                                wheel_actors[j]->render_style = BR_RSTYLE_NONE;
+                            }
+                        }
+                        BrZbsSceneRenderAdd(fox_car->car_master_actor);
+                    }
+                }
+            }
+            BrZbsSceneRenderEnd();
+            if (count != 0) {
+                if (gHud_tinted4 == -1) {
+                    gHud_tinted4 = CreateTintedPoly(0, 0, 640, 480, 3, 2, 0, 0);
+                }
+                TurnTintedPolyOn(gHud_tinted4);
+                ProcessTintedPoly(gHud_tinted4);
+                RenderTintedPolys();
+                TurnTintedPolyOff(gHud_tinted4);
+                BrZbsSceneRenderBegin(gUniverse_actor, pCamera, pColour, pDepth);
+                for (i = 0; i < gNumber_of_net_players; i++) {
+                    tNet_game_player_info* net_player = &gNet_players[i];
+                    if ((net_player->field_0x80 || i == gIt_or_fox)) {
+                        fox_car = net_player->car;
+
+                        if (fox_car->car_master_actor->render_style != BR_RSTYLE_NONE) {
+                            br_actor** wheel_actors;
+
+                            wheel_actors = fox_car->wheel_actors;
+                            for (j = 0; j < CARPOCALYPSE2_ASIZE(fox_car->wheel_actors); j++) {
+                                if (wheel_actors[j] != NULL) {
+                                    wheel_actors[j]->render_style = BR_RSTYLE_DEFAULT;
+                                    BrZbsSceneRenderAdd(wheel_actors[j]);
+                                }
+                            }
+                        }
+                    }
+                }
+                BrZbsSceneRenderEnd();
+                fox_car->car_master_actor->render_style = BR_RSTYLE_NONE;
+            }
+        }
     }
-    if (!ConditionallyFillWithSky(pColour->width == gBack_screen->width ? gBack_screen : pColour)) {
+    sky_pixelmap = (pColour->width == gBack_screen->width) ? gBack_screen : pColour;
+    if (gProgram_state.current_depth_effect.sky_texture != NULL && (gLast_camera_special_volume == NULL || gLast_camera_special_volume->sky_col <= -1)) {
         BrZbsSceneRenderBegin(gUniverse_actor, pCamera, pColour, pDepth);
         DepthEffectSky(pColour, pDepth, pCamera, pMat34);
         BrZbsSceneRenderEnd();
+    } else {
+        if (gProgram_state.current_depth_effect.type == eDepth_effect_fog || gSwap_depth_effect_type == eDepth_effect_fog) {
+            bgnd_col = 0xff;
+        } else if (gProgram_state.current_depth_effect.type == eDepth_effect_darkness || gSwap_depth_effect_type == eDepth_effect_darkness) {
+            bgnd_col = 0x00;
+        } else if (gLast_camera_special_volume != NULL && gLast_camera_special_volume->sky_col >= 0) {
+            bgnd_col = gLast_camera_special_volume->sky_col;
+        } else {
+            bgnd_col = 0x00;
+        }
+        if (gNet_mode != eNet_mode_none && (gCurrent_net_game->type == eNet_game_type_6 || gCurrent_net_game->type == eNet_game_type_foxy)) {
+            SetSkyColour(((tU32*)gRender_palette->pixels)[bgnd_col]);
+            BrZbsSceneRenderBegin(gUniverse_actor, pCamera, pColour, pDepth);
+            DepthEffectSky(pColour, pDepth, pCamera, pMat34);
+            BrZbsSceneRenderEnd();
+        } else {
+            if (sky_pixelmap->type != BR_PMT_INDEX_8) {
+                bgnd_col = PaletteEntry16Bit(gRender_palette, bgnd_col);
+                bgnd_col = (bgnd_col << 16) | bgnd_col;
+            }
+            BrPixelmapFill(sky_pixelmap, bgnd_col);
+        }
     }
     DoSpecialCameraEffect(pCamera, pMat34);
     if (pShadows) {
@@ -1047,7 +1031,7 @@ void C2_HOOK_FASTCALL DoARenderPass(br_matrix34* pMat34, br_actor* pCamera, br_p
     }
     BrSetScreenZOffset(0);
     ProcessTrack(gUniverse_actor, &gProgram_state.track_spec, pCamera, pMat34);
-    ProcessNonTrackActors(pColour, pDepth, pCamera, pMat34);
+    BrZbsSceneRenderAdd(gNon_track_actor);
     RenderLimbs();
     RenderLollipops(pColour, pDepth, pCamera, pMat34);
     /* FIXME: DepthEffect(pColour, pDepth) in software render mode? */
