@@ -1,5 +1,7 @@
 #include "world3.h"
 
+#include <ctype.h>
+
 #include "loading1.h"
 #include "utility.h"
 #include "fog.h"
@@ -9,6 +11,7 @@
 #include "packfile.h"
 #include "globvars.h"
 #include "globvrpb.h"
+#include "drmem.h"
 #ifdef CARPOCALYPSE2_MATCHING
 #include "c2_hooks.h"
 #endif
@@ -43,6 +46,22 @@ br_model* gDuplicate_model;
 
 // GLOBAL: CARMA2_HW 0x00660cb8
 tRendererShadingType gMaterial_shading_for_callback = kRendererShadingType_Undefined;
+
+typedef struct {
+    undefined data_field_0x0[8];
+    int count;
+    undefined data_field_0xc[0xeb8];
+    float col_vol_direction_x;
+    float col_vol_direction_y;
+    float col_vol_direction_z;
+    float col_vol_direction_w;
+} tTrack_loading_data;
+
+tTrack_loading_data gTrack_loading_data;
+
+extern void C2_HOOK_FASTCALL ReadGlobalLightingInfo(FILE* pF);
+extern int gTrack_version;
+extern tMaterial_exception* gMaterial_exceptions;
 
 // FUNCTION: CARMA2_HW 0x00504b30
 void C2_HOOK_FASTCALL InitTreeSurgery(void) {
@@ -167,12 +186,25 @@ void C2_HOOK_FASTCALL MungeTrackModel(br_model* pModel) {
 
 // FUNCTION: CARMA2_HW 0x00504bf0
 void C2_HOOK_FASTCALL LoadTrack(const char* pFile_name, tTrack_spec* pTrack_spec, tRace_info* pRace_info) {
-    int i;
-    char local_directory[256];
+    char s2[256];
+    char track_file[256];
+    char s[256];
+    char exceptions_path[256];
     char local_name[256];
+    char local_directory[256];
     char local_race_path[256];
     char actor_path[256];
+    char lighting_file[256];
+    FILE* f;
+    char delimiter[4];
+    int version;
+    float temp_float;
+    char* str;
+    tMaterial_exception* matexc;
+    tTrack_loading_data* data;
+    int i;
 
+    PrintMemoryDump(0, "AT THE START OF LOAD TRACK");
     strcpy(gCurrent_load_directory, "RACES");
     strcpy(gCurrent_load_name, pFile_name);
     gCurrent_load_name[strlen(gCurrent_load_name) - 4] = '\0';
@@ -183,9 +215,93 @@ void C2_HOOK_FASTCALL LoadTrack(const char* pFile_name, tTrack_spec* pTrack_spec
     PathCat(gRace_path, gApplication_path, local_directory);
     strcpy(local_race_path, gRace_path);
 
+    sprintf(exceptions_path, "%s%s%s%s", local_race_path, gDir_separator, gRenderer_fixup_basename, gRenderer_fixup_extension);
+
+    strcpy(delimiter, "\t ,");
+    f = DRfopen(exceptions_path, "rt");
+    if (f) {
+        GetALineAndDontArgue(f, s);
+        str = strtok(s, delimiter);
+        if (DRStricmp(str, "VERSION")) {
+            FatalError(kFatalError_FileMustStartWith_SS, exceptions_path, "VERSION");
+        }
+        str = strtok(NULL, delimiter);
+        if (sscanf(str, "%d", &version) == 0 || version != 1) {
+            FatalError(kFatalError_CantCopeWithVersionFor_SS, str, exceptions_path);
+        }
+        while (1) {
+            GetALineAndDontArgue(f, s);
+            str = strtok(s, delimiter);
+            if (DRStricmp(str, "end") == 0) {
+                break;
+            }
+            matexc = BrMemAllocate(sizeof(tMaterial_exception), kMem_exception);
+            matexc->texture_name = BrMemAllocate(strlen(str) + 1, kMem_misc_string);
+            strcpy(matexc->texture_name, str);
+            matexc->flags = 0;
+            while (1) {
+                str = strtok(NULL, delimiter);
+                if (str == NULL || !isalnum(str[0])) {
+                    break;
+                }
+                if (DRStricmp(str, "nobilinear") == 0) {
+                    matexc->flags |= eMaterial_exception_nobilinear;
+                } else if (DRStricmp(str, "wrap") == 0) {
+                    matexc->flags |= eMaterial_exception_wrap;
+                } else {
+                    FatalError(kFatalError_Mysterious_SS, str, exceptions_path);
+                }
+            }
+            matexc->next = gMaterial_exceptions;
+            gMaterial_exceptions = matexc;
+        }
+        PFfclose(f);
+    }
+
     PathCat(gRace_path, gRace_path, local_name);
 
     OpenPackFileAndSetTiffLoading(gRace_path);
+
+    PathCat(lighting_file, gRace_path, "LIGHTING.TXT");
+    PathCat(track_file, gRace_path, pFile_name);
+
+    f = DRfopen(track_file, "rt");
+    if (!f) {
+        FatalError(kFatalError_CannotOpenRacesFile);
+    }
+
+    GetALineAndDontArgue(f, s2);
+    str = strtok(s2, "\t ,/");
+    if (strcmp(s2, "VERSION") == 0) {
+        str = strtok(NULL, "\t ,/");
+        sscanf(str, "%d", &gTrack_version);
+    } else {
+        gTrack_version = 0;
+    }
+    if (gTrack_version == 8) {
+        gTrack_version = 0;
+    }
+    if (gTrack_version > 0) {
+        ReadGlobalLightingInfo(f);
+    }
+
+    data = &gTrack_loading_data;
+    GetALineAndDontArgue(f, s2);
+    str = strtok(s2, "\t ,/");
+    sscanf(str, "%f", &temp_float);
+    data->col_vol_direction_x = temp_float;
+    str = strtok(NULL, "\t ,/");
+    sscanf(str, "%f", &temp_float);
+    data->col_vol_direction_y = temp_float;
+    str = strtok(NULL, "\t ,/");
+    sscanf(str, "%f", &temp_float);
+    data->col_vol_direction_z = temp_float;
+    PossibleService();
+    GetALineAndDontArgue(f, s2);
+    str = strtok(s2, "\t ,/");
+    sscanf(str, "%f", &temp_float);
+    data->col_vol_direction_w = temp_float;
+    data->count = GetAnInt(f);
 
     LoadAllImagesInDirectory(&gTrack_storage_space, gRace_path);
     LoadAllShadeTablesInDirectory(&gTrack_storage_space, gRace_path);

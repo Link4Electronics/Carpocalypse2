@@ -3504,7 +3504,7 @@ typedef struct tMaterial_exception {
 
 typedef enum {
     eMaterial_exception_nobilinear = 0x1,
-    eMaterial_exception_wrap = 0x2,
+    eMaterial_exception_wrap = 0x8,
 } tMaterial_exception_flags;
 
 typedef struct {
