@@ -48,9 +48,21 @@ br_model* gDuplicate_model;
 tRendererShadingType gMaterial_shading_for_callback = kRendererShadingType_Undefined;
 
 typedef struct {
+    int field_0x0;                   /* 0x21c */
+    int field_0x4;                   /* 0x220 */
+    int field_0x8;                   /* 0x224 */
+    int quad_count;                  /* 0x228 */
+    br_vector3 quad_corners[4][4];   /* 0x22c */
+    br_vector3 acc;                  /* 0x31c */
+    undefined pad_0x10c[8];          /* 0x328 */
+} tTrack_col_vol_section;
+
+typedef struct {
     undefined data_field_0x0[8];
-    int count;
-    undefined data_field_0xc[0xeb8];
+    int count;                       /* 0x8 */
+    undefined data_field_0xc[0x210]; /* 0xc */
+    tTrack_col_vol_section sections[1]; /* 0x21c, stride 0x114 */
+    undefined data_field_after[0xec4 - (0x21c + 0x114)];
     float col_vol_direction_x;
     float col_vol_direction_y;
     float col_vol_direction_z;
@@ -191,6 +203,7 @@ void C2_HOOK_FASTCALL LoadTrack(const char* pFile_name, tTrack_spec* pTrack_spec
     char s[256];
     char exceptions_path[256];
     char local_name[256];
+    char collision_path[256];
     char local_directory[256];
     char local_race_path[256];
     char actor_path[256];
@@ -301,7 +314,43 @@ void C2_HOOK_FASTCALL LoadTrack(const char* pFile_name, tTrack_spec* pTrack_spec
     str = strtok(s2, "\t ,/");
     sscanf(str, "%f", &temp_float);
     data->col_vol_direction_w = temp_float;
+    PossibleService();
     data->count = GetAnInt(f);
+
+    for (i = 0; i < data->count; i++) {
+        br_vector3 a;
+        br_vector3 b;
+        int j;
+
+        PossibleService();
+        GetThreeInts(f, &data->sections[i].field_0x0, &data->sections[i].field_0x4, &data->sections[i].field_0x8);
+        data->sections[i].acc.v[0] = 0.0f;
+        data->sections[i].acc.v[1] = 0.0f;
+        data->sections[i].acc.v[2] = 0.0f;
+        data->sections[i].quad_count = GetAnInt(f);
+
+        for (j = 0; j < data->sections[i].quad_count; j++) {
+            int k;
+
+            for (k = 0; k < 4; k++) {
+                GetThreeScalars(f, &data->sections[i].quad_corners[j][k].v[0],
+                                &data->sections[i].quad_corners[j][k].v[1],
+                                &data->sections[i].quad_corners[j][k].v[2]);
+                data->sections[i].acc.v[0] += data->sections[i].quad_corners[j][k].v[0];
+                data->sections[i].acc.v[1] += data->sections[i].quad_corners[j][k].v[1];
+                data->sections[i].acc.v[2] += data->sections[i].quad_corners[j][k].v[2];
+            }
+
+            BrVector3Sub(&a, &data->sections[i].quad_corners[j][1], &data->sections[i].quad_corners[j][0]);
+            BrVector3Sub(&b, &data->sections[i].quad_corners[j][2], &data->sections[i].quad_corners[j][0]);
+            BrVector3Cross(&a, &a, &b);
+            ((br_vector3*)pRace_info)[0x3f + i + j] = a;
+        }
+
+        data->sections[i].acc.v[0] /= data->sections[i].quad_count;
+        data->sections[i].acc.v[1] /= data->sections[i].quad_count;
+        data->sections[i].acc.v[2] /= data->sections[i].quad_count;
+    }
 
     LoadAllImagesInDirectory(&gTrack_storage_space, gRace_path);
     LoadAllShadeTablesInDirectory(&gTrack_storage_space, gRace_path);
