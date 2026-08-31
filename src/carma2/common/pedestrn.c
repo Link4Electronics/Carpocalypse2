@@ -3172,7 +3172,23 @@ void C2_HOOK_FASTCALL MakeFlagWavingBastardWaveHisFlagWhichIsTheProbablyTheLastT
 // FUNCTION: CARMA2_HW 0x004d6c70
 void C2_HOOK_FASTCALL FlushAllPedCaches(void) {
 
-    NOT_IMPLEMENTED();
+    int i;
+    int count;
+    tPedestrian *base;
+    tPed_cache_006944c0 *cache;
+
+    count = gPed_count;
+    base = gPedestrian_array;
+    if (count <= 0) {
+        return;
+    }
+    for (i = 0; i < count; i++) {
+        cache = base[i].field_0x0c;
+        if (cache != NULL && cache->field_0xb0 != NULL) {
+            cache->field_0xb0->field_0x14 = NULL;
+            cache->field_0xb0 = NULL;
+        }
+    }
 }
 
 // FUNCTION: CARMA2_HW 0x004cdc00
