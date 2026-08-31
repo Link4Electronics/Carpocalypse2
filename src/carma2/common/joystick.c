@@ -185,6 +185,7 @@ int C2_HOOK_FASTCALL FUN_CheckJoystickHeadupButtons(tButtonJoystickInfo** pJoyst
     return 1;
 }
 
+// FUNCTION: CARMA2_HW 0x0045b3b0
 void C2_HOOK_FASTCALL MungeJoystickHeadups(void) {
     tButtonJoystickInfo* joystick_info;
     tHeadup_text* headup_text;

@@ -270,12 +270,12 @@ void C2_HOOK_STDCALL sceneRenderWorld(br_actor* world) {
 
 // FUNCTION: CARMA2_HW 0x00521fe0
 void C2_HOOK_STDCALL sceneRenderAdd(br_actor* tree) {
+    br_int_32 t;
+    void* render_data;
+    br_actor* a;
     br_material* material;
     br_model* model;
-    void* render_data;
     br_uint_8 style;
-    br_actor* a;
-    br_int_32 t;
     br_matrix34 m;
 
     material = NULL;
