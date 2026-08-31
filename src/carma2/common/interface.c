@@ -4210,7 +4210,7 @@ void C2_HOOK_FASTCALL ChangeKeyMapIndex(int pKey_map_index) {
 void C2_HOOK_FASTCALL CyclePollKeys(void) {
     int i;
 
-    for (i = 0; i < CARPOCALYPSE2_ASIZE(gKey_array); i++) {
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gKey_array); i++) {
         if (gKey_array[i] > gKey_poll_counter) {
             gKey_array[i] = 0;
             if (i > 143) {
