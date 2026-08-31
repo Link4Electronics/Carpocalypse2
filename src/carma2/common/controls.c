@@ -2440,26 +2440,25 @@ void C2_HOOK_FASTCALL FUN_0045acf0(void) {
 void C2_HOOK_FASTCALL BuyPSPowerup(int pIndex) {
     char text[256];
     char price_text[256];
-    int price;
 
     if (gRace_finished || gProgram_state.current_car.knackered || gWait_for_it) {
         return;
     }
 
     if (gProgram_state.current_car.power_up_levels[pIndex] < gProgram_state.current_car.power_up_slots[pIndex]) {
-        price = (gNet_mode == eNet_mode_none)
-            ? gCost_APO.initial[gProgram_state.skill_level]
-            : gCost_APO.initial_network[gCurrent_net_game->type];
-        if (gProgram_state.credits < price) {
+        if (gProgram_state.credits < (gNet_mode != eNet_mode_none
+                ? gCost_APO.initial_network[gCurrent_net_game->type]
+                : gCost_APO.initial[gProgram_state.skill_level])) {
             strcpy(text, GetMiscString(0xb3));
-            price = (gNet_mode == eNet_mode_none)
-                ? gCost_APO.initial[gProgram_state.skill_level]
-                : gCost_APO.initial_network[gCurrent_net_game->type];
-            sprintf(price_text, "%d", price);
+            sprintf(price_text, "%d", (gNet_mode != eNet_mode_none
+                ? gCost_APO.initial_network[gCurrent_net_game->type]
+                : gCost_APO.initial[gProgram_state.skill_level]));
             SubsStringJob(text, price_text);
             NewTextHeadupSlot(4, 0, 3000, -4, text);
         } else {
-            SpendCredits(price);
+            SpendCredits(gNet_mode != eNet_mode_none
+                ? gCost_APO.initial_network[gCurrent_net_game->type]
+                : gCost_APO.initial[gProgram_state.skill_level]);
             gProgram_state.current_car.power_up_levels[pIndex]++;
             NewTextHeadupSlot(4, 0, 3000, -4, GetMiscString(pIndex + 0xaf));
         }
