@@ -706,28 +706,34 @@ void C2_HOOK_FASTCALL DRVector3SafeCross(br_vector3* pDest, const br_vector3* pA
 
 // FUNCTION: CARMA2_HW 0x00404290
 void C2_HOOK_FAKE_THISCALL ScaleModelXYZ(br_model* pModel, int pArg2, float pX, float pY, float pZ) {
+    br_vertex *v;
     int i;
 
     CARPOCALYPSE2_THISCALL_UNUSED(pArg2);
 
+    v = pModel->vertices;
     for (i = 0; i < pModel->nvertices; i++) {
-        pModel->vertices[i].p.v[0] *= pX;
-        pModel->vertices[i].p.v[1] *= pY;
-        pModel->vertices[i].p.v[2] *= pZ;
+        v->p.v[0] *= pX;
+        v->p.v[1] *= pY;
+        v->p.v[2] *= pZ;
+        v = (br_vertex*)((char*)v + 0x28);
     }
     BrModelUpdate(pModel, BR_MODU_VERTEX_POSITIONS);
 }
 
 // FUNCTION: CARMA2_HW 0x004042f0
 void C2_HOOK_FAKE_THISCALL ScaleModel(br_model* pModel, int pArg2, float pScale) {
+    br_vertex *v;
     int i;
 
     CARPOCALYPSE2_THISCALL_UNUSED(pArg2);
 
+    v = pModel->vertices;
     for (i = 0; i < pModel->nvertices; i++) {
-        pModel->vertices[i].p.v[0] *= pScale;
-        pModel->vertices[i].p.v[1] *= pScale;
-        pModel->vertices[i].p.v[2] *= pScale;
+        v->p.v[0] *= pScale;
+        v->p.v[1] *= pScale;
+        v->p.v[2] *= pScale;
+        v = (br_vertex*)((char*)v + 0x28);
     }
     BrModelUpdate(pModel, BR_MODU_VERTEX_POSITIONS);
 }
