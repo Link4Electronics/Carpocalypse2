@@ -440,23 +440,17 @@ void C2_HOOK_CDECL BrZbSceneRender(br_actor* world, br_actor* camera, br_pixelma
     v1db.render_root = world;
     v1db.colour_buffer = colour_buffer;
 
-    {
-        br_scalar half_w = (br_scalar)(colour_buffer->width / 2);
-        br_scalar half_h = (br_scalar)(colour_buffer->height / 2);
-        br_scalar ox = (br_scalar)colour_buffer->origin_x;
-        br_scalar base_x = (br_scalar)colour_buffer->base_x;
-
-        v1db.vp_ox = (ox - half_w) / half_w;
-        v1db.vp_oy = 0.0f;
-        v1db.vp_width = base_x + half_w + 0.5f;
-        *(br_scalar*)((char*)&v1db.vp_height + 4) = half_w + 0.5f;
-        v1db.vp_height = half_h + 0.5f;
-        *(br_scalar*)((char*)&v1db.vp_height + 8) = -half_h;
-    }
+    v1db.origin.v[0] = (br_scalar)(colour_buffer->origin_x - colour_buffer->width / 2) / (br_scalar)(colour_buffer->width / 2);
+    v1db.origin.v[1] = -(br_scalar)(colour_buffer->origin_y - colour_buffer->height / 2) / (br_scalar)(colour_buffer->height / 2);
+    v1db.vp_ox = (br_scalar)(colour_buffer->base_x + colour_buffer->width / 2) + 0.5f;
+    v1db.vp_width = (br_scalar)(colour_buffer->width / 2);
+    v1db.vp_oy = (br_scalar)(colour_buffer->height / 2) + 0.5f;
+    v1db.vp_height = -(br_scalar)(colour_buffer->height / 2);
 
     v1db.renderer->dispatch->_partSet(v1db.renderer, BRT_OUTPUT, 0, BRT_COLOUR_BUFFER_O, (uintptr_t)colour_buffer);
     v1db.renderer->dispatch->_partSet(v1db.renderer, BRT_OUTPUT, 0, BRT_DEPTH_BUFFER_O, (uintptr_t)depth_buffer);
     v1db.renderer->dispatch->_partSet(v1db.renderer, BRT_HIDDEN_SURFACE, 0, BRT_TYPE_T, 1);
+    v1db.default_render_data = NULL;
 
     BrDbSceneRenderBegin(world, camera);
 
@@ -541,13 +535,54 @@ void C2_HOOK_CDECL BrZsSceneRenderEnd(void) {
 
 // FUNCTION: CARMA2_HW 0x00522b70
 void C2_HOOK_CDECL BrZsSceneRender(br_actor* world, br_actor* camera, br_pixelmap* colour_buffer) {
+    br_actor* child;
+    br_model* model;
+    br_material* material;
+    void* render_data;
+    br_uint_8 style;
+    br_uint_16 ttype;
 
     if (v1db.renderer == NULL) {
         return;
     }
     BrZsSceneRenderBegin(world, camera, colour_buffer);
-    sceneRenderWorld(world);
-    BrZsSceneRenderEnd();
+
+    model = v1db.default_model;
+    if (world->model) {
+        model = world->model;
+    }
+    material = v1db.default_material;
+    if (world->material) {
+        material = world->material;
+    }
+    render_data = v1db.default_render_data;
+    if (world->render_data) {
+        render_data = world->render_data;
+    }
+    style = 0;
+    if (world->render_style) {
+        style = world->render_style;
+    }
+    ttype = v1db.ttype;
+
+    child = world->children;
+    while (child) {
+        actorRender(child, model, material, render_data, style, ttype);
+        child = child->next;
+    }
+
+    v1db.renderer->dispatch->_partSet(v1db.renderer, BRT_OUTPUT, 0, BRT_COLOUR_BUFFER_O, (uintptr_t)v1db.colour_buffer);
+    if (v1db.format_buckets == NULL) {
+        BrFailure("Renderer does not support buckets");
+    }
+    if (v1db.primary_order_table != NULL) {
+        RenderPrimaryOrderTable();
+    } else {
+        RenderOrderTableList();
+    }
+    v1db.renderer->dispatch->_flush(v1db.renderer, 0);
+    v1db.rendering = 0;
+    v1db.render_root = NULL;
 }
 
 // FUNCTION: CARMA2_HW 0x00522c70
@@ -610,13 +645,54 @@ void C2_HOOK_CDECL BrZbsSceneRenderEnd(void) {
 
 // FUNCTION: CARMA2_HW 0x00522f30
 void C2_HOOK_CDECL BrZbsSceneRender(br_actor* world, br_actor* camera, br_pixelmap* colour_buffer, br_pixelmap* depth_buffer) {
+    br_actor* child;
+    br_model* model;
+    br_material* material;
+    void* render_data;
+    br_uint_8 style;
+    br_uint_16 ttype;
 
     if (v1db.renderer == NULL) {
         return;
     }
     BrZbsSceneRenderBegin(world, camera, colour_buffer, depth_buffer);
-    sceneRenderWorld(world);
-    BrZbsSceneRenderEnd();
+
+    model = v1db.default_model;
+    if (world->model) {
+        model = world->model;
+    }
+    material = v1db.default_material;
+    if (world->material) {
+        material = world->material;
+    }
+    render_data = v1db.default_render_data;
+    if (world->render_data) {
+        render_data = world->render_data;
+    }
+    style = 0;
+    if (world->render_style) {
+        style = world->render_style;
+    }
+    ttype = v1db.ttype;
+
+    child = world->children;
+    while (child) {
+        actorRender(child, model, material, render_data, style, ttype);
+        child = child->next;
+    }
+
+    v1db.renderer->dispatch->_partSet(v1db.renderer, BRT_OUTPUT, 0, BRT_COLOUR_BUFFER_O, (uintptr_t)v1db.colour_buffer);
+    if (v1db.format_buckets == NULL) {
+        BrFailure("Renderer does not support buckets");
+    }
+    if (v1db.primary_order_table != NULL) {
+        RenderPrimaryOrderTable();
+    } else {
+        RenderOrderTableList();
+    }
+    v1db.renderer->dispatch->_flush(v1db.renderer, 0);
+    v1db.rendering = 0;
+    v1db.render_root = NULL;
 }
 
 // FUNCTION: CARMA2_HW 0x00523040
