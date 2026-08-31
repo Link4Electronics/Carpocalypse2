@@ -2858,44 +2858,6 @@ void C2_HOOK_FASTCALL SaveSpecialVolumes(void) {
     PFfclose(f);
 }
 
-int C2_HOOK_FASTCALL FindSpecVolIndex(br_actor* pActor) {
-    int i;
-
-    if (pActor == NULL) {
-        return -1;
-    }
-    for (i = 0; i < gProgram_state.special_volume_count; i++) {
-
-        if (gSpec_vol_actors[i] == pActor) {
-            return i;
-        }
-    }
-    return -1;
-}
-
-void C2_HOOK_FASTCALL SetSpecVolMatSize(br_actor* pActor) {
-    br_model* model;
-
-    model = pActor->model;
-    MungeMaterialSV(&pActor->t.t.mat, model->faces[ 5].material, model->faces[17].material, 0, 1);
-    MungeMaterialSV(&pActor->t.t.mat, model->faces[11].material, model->faces[23].material, 1, 2);
-    MungeMaterialSV(&pActor->t.t.mat, model->faces[ 7].material, model->faces[19].material, 0, 2);
-}
-
-void C2_HOOK_FASTCALL UpdateSpecVol(void) {
-    int index;
-
-    index = FindSpecVolIndex(gLast_actor);
-    if (index >= 0) {
-        tSpecial_volume* v;
-
-        v = &gProgram_state.special_volumes[index];
-        BrMatrix34Copy(&v->boundary.box.mat, &gLast_actor->t.t.mat);
-        FindInverseAndWorldBox(v);
-        SetSpecVolMatSize(gLast_actor);
-    }
-}
-
 void C2_HOOK_FASTCALL DoSaveAdditionalStuff(void) {
 
     if (gSpec_vol_mode == 0) {
