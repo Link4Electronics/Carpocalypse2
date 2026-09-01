@@ -276,7 +276,8 @@ void C2_HOOK_FASTCALL LoadTrack(const char* pFile_name, tTrack_spec* pTrack_spec
     OpenPackFileAndSetTiffLoading(gRace_path);
 
     PathCat(lighting_file, gRace_path, "LIGHTING.TXT");
-    PathCat(track_file, gRace_path, pFile_name);
+    PathCat(track_file, gRace_path, local_name);
+    strcat(track_file, ".txt");
 
     f = DRfopen(track_file, "rt");
     if (!f) {

@@ -292,6 +292,8 @@ extern tSmoke gSmoke[25];
 
 extern int gSmoke_flags;
 
+extern int gN_smoke;
+
 void C2_HOOK_FASTCALL GenerateSmokeShades(void);
 
 void C2_HOOK_FASTCALL GetSmokeShadeTables(FILE* f);

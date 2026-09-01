@@ -110,6 +110,9 @@ tSmoke gSmoke[25];
 // GLOBAL: CARMA2_HW 0x006aa590
 int gSmoke_flags;
 
+// GLOBAL: CARMA2_HW 0x006aa594
+int gN_smoke;
+
 void (C2_HOOK_FASTCALL * StopCarBeingIt_original)(tCar_spec* pCar);
 // GLOBAL: CARMA2_HW 0x006b7880
 br_material* gBlack_material;
@@ -885,8 +888,43 @@ void C2_HOOK_FASTCALL GenerateContinuousSmoke(tCar_spec* pCar, int pWheel, tU32 
 
 // FUNCTION: CARMA2_HW 0x004fb330
 void C2_HOOK_FASTCALL CreatePuffOfSmoke(br_vector3* pPos, br_vector3* pV, float pStrength, float pDecay_factor, int pType) {
+    br_vector3 d;
+    int i;
 
-    NOT_IMPLEMENTED();
+    if (gSmoke_on == 0) {
+        return;
+    }
+
+    d.v[0] = pPos->v[0] - gCamera_to_world.m[3][0];
+    d.v[1] = pPos->v[1] - gCamera_to_world.m[3][1];
+    d.v[2] = pPos->v[2] - gCamera_to_world.m[3][2];
+    if (BrVector3LengthSquared(&d) <= 625.f) {
+        return;
+    }
+
+    i = gN_smoke;
+    gSmoke[i].v.v[0] = pV->v[0] * 0.1449275f;
+    gSmoke[i].v.v[1] = pV->v[1] * 0.1449275f - 2948170.25f;
+    gSmoke[i].v.v[2] = pV->v[2] * 0.1449275f;
+    gSmoke[i].pos = *pPos;
+    if ((pType & 0xf) == 7) {
+        gSmoke[i].radius = 0.1f;
+    } else {
+        gSmoke[i].radius = 0.05f;
+        gSmoke[i].pos.v[1] += 0.04f;
+    }
+    gSmoke[i].strength = (pStrength < 1.f) ? 1.f : pStrength;
+    gSmoke[i].pos.v[1] += 0.04f;
+    gSmoke[i].time_sync = gPHIL_mechanics_time_sync;
+    gSmoke[i].decay_factor = pDecay_factor;
+    gSmoke[i].type = pType;
+    gSmoke[i].pipe_me = 1;
+    gSmoke_flags |= 1 << i;
+
+    gN_smoke = i + 1;
+    if (gN_smoke == CARPOCALYPSE2_ASIZE(gSmoke)) {
+        gN_smoke = 0;
+    }
 }
 
 // FUNCTION: CARMA2_HW 0x004fee70
