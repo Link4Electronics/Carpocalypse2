@@ -841,6 +841,18 @@ int C2_HOOK_FASTCALL FindPrevActiveItem(tFrontend_spec* pFrontend, int pStart_in
 // RaceIndex
 
 
+extern int C2_HOOK_CDECL sub_576c00(int pValue, int pDivisor);
+
+static __inline void C2_HOOK_FASTCALL FuckingMakeTheFuckingRaceAndGroupsDisplayHaveTheRightCuntingStuffInIt(tFrontend_spec* pFrontend) {
+
+    if (gIs_boundary_race || gProgram_state.game_completed) {
+        pFrontend->items[7].enabled = 1;
+    } else {
+        pFrontend->items[7].enabled = -1;
+    }
+    sub_576c00(gProgram_state.current_race_index, 4);
+}
+
 // FUNCTION: CARMA2_HW 0x00467b30
 void C2_HOOK_FASTCALL RefreshRacesScroller(tFrontend_spec* pFrontend) {
     char group_text[12];

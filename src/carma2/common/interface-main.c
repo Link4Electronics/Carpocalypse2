@@ -154,15 +154,6 @@ int gFrontend_car_image_outdated;
 // GLOBAL: CARMA2_HW 0x0074c6b4
 int gFrontend_net_initialized;
 
-void C2_HOOK_FASTCALL FuckingMakeTheFuckingRaceAndGroupsDisplayHaveTheRightCuntingStuffInIt(tFrontend_spec* pFrontend) {
-
-    if (gIs_boundary_race || gProgram_state.game_completed) {
-        pFrontend->items[7].enabled = 1;
-    } else {
-        pFrontend->items[7].enabled = -1;
-    }
-}
-
 // FUNCTION: CARMA2_HW 0x00576c00
 int C2_HOOK_CDECL sub_576c00(int pValue, int pDivisor) {
     int quotient;
