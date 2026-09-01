@@ -846,23 +846,19 @@ int C2_HOOK_FASTCALL FindPrevActiveItem(tFrontend_spec* pFrontend, int pStart_in
 void C2_HOOK_FASTCALL RefreshRacesScroller(tFrontend_spec* pFrontend) {
     char group_text[12];
     int group;
+    int race_i;
     int i;
 
     group = (gCurrent_race_group - gRace_groups) % 10;
     sprintf(group_text, "%s %d", IString_Get(78), group + 1);
     strcpy(pFrontend->items[2].text, group_text);
 
-    for (i = pFrontend->scrollers[0].indexFirstScrollableItem; i <= pFrontend->scrollers[0].indexLastScrollableItem; i++) {
+    race_i = 4 * group;
+    for (i = pFrontend->scrollers[0].indexFirstScrollableItem; i <= pFrontend->scrollers[0].indexLastScrollableItem; i++, race_i += 1) {
         tFrontend_item_spec* item = &pFrontend->items[i];
-        int race_i = 4 * group + i;
 
         strcpy(item->text, gRace_list[race_i].name);
-        if (race_i == gProgram_state.current_race_index) {
-            item->radioButton_selected = 1;
-        } else {
-            item->radioButton_selected = 0;
-
-        }
+        item->radioButton_selected = race_i == gProgram_state.current_race_index;
         if (gRace_list[race_i].is_boundary) {
             item->unlitFont = 2;
             item->highFont = 3;

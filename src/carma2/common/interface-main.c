@@ -144,7 +144,7 @@ tFrontend_spec gFrontend_MAIN = {
     },
     1,
     {
-        { 1, 8, 6, 12, 12, 12, 19 },
+        { 1, 8, 6, 12, 12, 19 },
     },
 };
 
@@ -220,7 +220,10 @@ int C2_HOOK_FASTCALL MainMenuInfunc(tFrontend_spec* pFrontend) {
         pFrontend->items[7].enabled = -1;
     }
     sub_576c00(gProgram_state.current_race_index, 4);
-    FillInRaceDescription(pFrontend->items[22].text, gProgram_state.current_race_index);
+    strcpy(pFrontend->items[22].text, gRace_list[gProgram_state.current_race_index].description);
+    MungeMetaCharactersChar(pFrontend->items[22].text, 'R', '\r');
+    MungeMetaCharactersNum(pFrontend->items[22].text, 'O', gRace_list[gProgram_state.current_race_index].count_explicit_opponents);
+    MungeMetaCharactersNum(pFrontend->items[22].text, 'L', gRace_list[gProgram_state.current_race_index].count_laps);
     strcpy(pFrontend->items[18].text, gProgram_state.player_name);
     strcpy(pFrontend->items[20].text, gOpponents[gProgram_state.current_car_index].car_name);
     strcpy(pFrontend->items[23].text, MungeCommas(gProgram_state.credits));
@@ -230,7 +233,7 @@ int C2_HOOK_FASTCALL MainMenuInfunc(tFrontend_spec* pFrontend) {
     gFrontend_menu_camera = BrActorAllocate(BR_ACTOR_CAMERA, NULL);
     camera = gFrontend_menu_camera->type_data;
     camera->type = BR_CAMERA_PARALLEL;
-    camera->field_of_view = BrDegreeToAngle(90);
+    camera->field_of_view = BR_ANGLE_DEG(90);
     camera->hither_z = 1.f;
     camera->yon_z = 3.f;
     camera->width = 640.f;
