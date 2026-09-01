@@ -1748,10 +1748,10 @@ int C2_HOOK_FASTCALL DRTextCleverWidth(const tDR_font* pFont, const char* pText)
     len = (int)strlen(pText);
 
     for (i = 0; i < len; i++) {
-        tU8 c;
+        tS8 c;
         c = pText[i];
-        if ((tS8)c < 0) {
-            polyfont = gDRFont_to_polyfont_mapping[gFonts[-(int)c].id];
+        if (c < 0) {
+            polyfont = gDRFont_to_polyfont_mapping[gFonts[-c].id];
         } else {
             int inter;
             inter = 0;
