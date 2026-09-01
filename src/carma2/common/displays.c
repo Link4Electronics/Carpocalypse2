@@ -781,8 +781,8 @@ void C2_HOOK_FASTCALL DoOpponentStatusHeadup(void) {
     DRPixelmapText(gBack_screen, gCurrent_graf_data->field_0x4f0, gCurrent_graf_data->field_0x4f4, &gFonts[23],
         text, gBack_screen->width);
 
-    BrMatrix34Translate(&gCar_icons_model_actor->t.t.translate.t,
-        (br_scalar)(float)gCurrent_graf_data->field_0x4f8, -(br_scalar)(float)gCurrent_graf_data->field_0x4fc, 0.0f);
+    BrMatrix34Translate(&gCar_icons_model_actor->t.t.mat,
+        (br_scalar)(float)gCurrent_graf_data->field_0x4f8, (br_scalar)(float)-gCurrent_graf_data->field_0x4fc, 0.0f);
     gCar_icons_model_actor->material->colour_map =
         gTexture_maps[gCar_icons[gTarget_lock_car_2->index].index];
     BrMaterialUpdate(gCar_icons_model_actor->material, BR_MATU_COLOURMAP);
@@ -860,14 +860,14 @@ void C2_HOOK_FASTCALL DoOpponentStatusHeadup(void) {
     p = LookForChar(text, '%');
     while (p != NULL) {
         strcpy(copy, p + 1);
-        strcpy(p, GetMiscString(is_girl ? 0x101 : 0x100));
+        strcpy(p, GetMiscString(0x100 + (is_girl & 1)));
         strcat(text, copy);
         p = LookForChar(text, '%');
     }
     p = LookForChar(text, '&');
     while (p != NULL) {
         strcpy(copy, p + 1);
-        strcpy(p, GetMiscString(is_girl ? 0x103 : 0x102));
+        strcpy(p, GetMiscString(0x102 + (is_girl & 1)));
         strcat(text, copy);
         p = LookForChar(text, '&');
     }
