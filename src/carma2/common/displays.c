@@ -617,7 +617,6 @@ void C2_HOOK_FASTCALL BuildOppoBar(int pX, int pY) {
 int C2_HOOK_FASTCALL GetOpponentDamageScore(tCar_spec* pCar) {
     int dmg;
     int avg;
-    int avg2;
     int pos0;
     int pos1;
     int pos2;
@@ -653,11 +652,229 @@ int C2_HOOK_FASTCALL GetOpponentDamageScore(tCar_spec* pCar) {
     return 25;
 }
 
+// FUNCTION: CARMA2_HW 0x004af640
+tOpponent_Status C2_HOOK_FASTCALL GetOpponentStatus(tCar_spec* pCar) {
+    tOpponent_spec* opponent;
+    tOpponent_spec* op;
+    int i;
+    int count;
+
+    opponent = NULL;
+    if ((pCar->car_ID & 0xff00) == 0x200) {
+        count = gProgram_state.AI_vehicles.number_of_opponents;
+        op = gProgram_state.AI_vehicles.opponents;
+        for (i = 0; i < count; i++, op++) {
+            if (op->car_spec == pCar) {
+                opponent = op;
+                break;
+            }
+        }
+    } else if ((pCar->car_ID & 0xff00) == 0x300) {
+        count = gNumber_of_cops_before_faffage;
+        op = gProgram_state.AI_vehicles.cops;
+        for (i = 0; i < count; i++, op++) {
+            if (op->car_spec == pCar) {
+                opponent = op;
+                break;
+            }
+        }
+    }
+
+    if (*(int*)((char*)pCar + 0x1d4) != 0) {
+        return eOpponent_status_Wasted;
+    }
+    if (gCountdown != 0) {
+        return eOpponent_status_On_grid;
+    }
+    if (gTime_stamp_for_this_munging < opponent->stun_time_ends) {
+        return eOpponent_status_Stunned;
+    }
+    if (*(int*)((char*)opponent + 0xbc) != 0 && opponent->current_objective != eOOT_get_near_player) {
+        return eOpponent_status_Confused;
+    }
+    switch (opponent->current_objective) {
+        case eOOT_complete_race:
+            return eOpponent_status_Racing;
+        case eOOT_pursue_and_twat:
+            return eOpponent_status_Trying_to_kill_you;
+        case eOOT_run_away:
+            return eOpponent_status_Running_away;
+        case eOOT_get_near_player:
+            return eOpponent_status_Frozen;
+        default:
+            return eOpponent_status_Trying_to_get_to_you;
+    }
+}
+
+#pragma auto_inline(off)
+// FUNCTION: CARMA2_HW 0x00575bf0
+char* C2_HOOK_CDECL LookForChar(const char* pString, int pChar) {
+    while (*pString != '\0') {
+        if (*pString == (char)pChar) {
+            return (char*)pString;
+        }
+        pString++;
+    }
+    return NULL;
+}
+#pragma auto_inline(on)
+
+// GLOBAL: CARMA2_HW 0x0068d900
+tU32 gOppo_stat_flash_change_1;
+// GLOBAL: CARMA2_HW 0x0068d904
+tU32 gOppo_stat_flash_change_2;
+// GLOBAL: CARMA2_HW 0x0068d908
+int gOppo_stat_flash_state_1;
+// GLOBAL: CARMA2_HW 0x0068d90c
+int gOppo_stat_flash_state_2;
+// GLOBAL: CARMA2_HW 0x00659b24
+int gOppo_stat_message_index;
+
+extern int C2_HOOK_CDECL sub_576c00(int pValue, int pDivisor);
+
 // FUNCTION: CARMA2_HW 0x00494900
 void C2_HOOK_FASTCALL DoOpponentStatusHeadup(void) {
+    int damage;
+    int status;
+    int choice;
+    int is_girl;
+    char* p;
+    char text[0x100];
+    char copy[0x100];
 
-    NOT_IMPLEMENTED();
+    br_pixelmap* pm = gLit_op_stat;
+    if (pm == NULL) {
+        pm = LoadPixelmap("litopstat.tif");
+        gLit_op_stat = pm;
+    }
+    BRPM_convert(pm, gBack_screen->type);
+
+    Flash(250, &gOppo_stat_flash_change_1, &gOppo_stat_flash_state_1);
+
+    if (gTarget_lock_enabled && Flash(500, &gOppo_stat_flash_change_2, &gOppo_stat_flash_state_2)) {
+        DRPixelmapText(gBack_screen, gCurrent_graf_data->field_0x4d8, gCurrent_graf_data->field_0x4dc, &gFonts[23],
+            GetMiscString(0xfd), gBack_screen->width);
+    } else {
+        DRPixelmapText(gBack_screen, gCurrent_graf_data->field_0x4d8, gCurrent_graf_data->field_0x4dc, &gFonts[23],
+            GetMiscString((gTarget_lock_car_2 == NULL || gTarget_lock_car_2->driver == eDriver_oppo) ? 0xf6 : 0xf7),
+            gBack_screen->width);
+    }
+
+    DRPixelmapText(gBack_screen, gCurrent_graf_data->field_0x4e0, gCurrent_graf_data->field_0x4e4, &gFonts[23],
+        GetMiscString(0xf8), gBack_screen->width);
+
+    if (gNet_mode == eNet_mode_none) {
+        DRPixelmapText(gBack_screen, gCurrent_graf_data->field_0x4e8, gCurrent_graf_data->field_0x4ec, &gFonts[23],
+            GetMiscString(0xf9), gBack_screen->width);
+    }
+
+    if (gTarget_lock_car_2 == NULL) {
+        return;
+    }
+
+    if (gNet_mode == eNet_mode_none) {
+        tU16 cid = gTarget_lock_car_2->car_ID;
+        strcpy(text, GetDriverName(cid >> 8, cid & 0xff));
+    } else {
+        strcpy(text, NetPlayerFromCar(gTarget_lock_car_2)->player_name);
+    }
+    DRPixelmapText(gBack_screen, gCurrent_graf_data->field_0x4f0, gCurrent_graf_data->field_0x4f4, &gFonts[23],
+        text, gBack_screen->width);
+
+    BrMatrix34Translate(&gCar_icons_model_actor->t.t.translate.t,
+        (br_scalar)(float)gCurrent_graf_data->field_0x4f8, -(br_scalar)(float)gCurrent_graf_data->field_0x4fc, 0.0f);
+    gCar_icons_model_actor->material->colour_map =
+        gTexture_maps[gCar_icons[gTarget_lock_car_2->index].index];
+    BrMaterialUpdate(gCar_icons_model_actor->material, BR_MATU_COLOURMAP);
+    gCar_icons_model_actor->model = gCar_icons[gTarget_lock_car_2->index].model;
+    RenderThisHeadup(gCar_icons_model_actor);
+
+    if (gTarget_lock_car_2 == NULL) {
+        return;
+    }
+
+    damage = GetOpponentDamageScore(gTarget_lock_car_2);
+    sprintf(text, "%d%%", damage);
+    DRPixelmapText(gBack_screen, gCurrent_graf_data->field_0x500, gCurrent_graf_data->field_0x504, &gFonts[23],
+        text, gBack_screen->width);
+    sub_576c00(damage, 10);
+
+    if (gLit_op_stat_actor == NULL) {
+        BuildOppoBar(gCurrent_graf_data->field_0x508, gCurrent_graf_data->field_0x50c + 2);
+    }
+
+    if (damage > 0) {
+        br_model* model;
+        if (damage > 100) {
+            damage = 100;
+        }
+        model = gLit_op_stat_actor->model;
+        model->vertices[1].p.v[0] = model->vertices[0].p.v[0] + (br_scalar)damage;
+        model->vertices[3].p.v[0] = model->vertices[2].p.v[0] + (br_scalar)damage;
+        {
+            int rgb = (int)(damage * 255 / 100);
+            model->vertices[1].grn = (br_uint_8)rgb;
+            model->vertices[1].red = (br_uint_8)(0xff - rgb);
+            model->vertices[1].blu = 0;
+            model->vertices[3].grn = (br_uint_8)rgb;
+            model->vertices[3].red = (br_uint_8)(0xff - rgb);
+            model->vertices[3].blu = 0;
+        }
+        BrModelUpdate(model, BR_MODU_VERTICES);
+        RenderThisHeadup(gLit_op_stat_actor);
+    }
+
+    if (gTarget_lock_car_2 == NULL) {
+        return;
+    }
+    if (gTarget_lock_car_2->driver != eDriver_oppo) {
+        return;
+    }
+
+    status = GetOpponentStatus(gTarget_lock_car_2);
+    if (gTarget_lock_car_1 == gTarget_lock_car_2 && gPrevious_opponent_status == status) {
+        choice = gOppo_stat_message_index;
+    } else {
+        choice = IRandomBetween(0, gOppo_status_messages[status].count - 1);
+    }
+    if (status == eOpponent_status_Wasted && gTarget_lock_car_1 == gTarget_lock_car_2) {
+        if (gPrevious_opponent_status != status) {
+            gTime_oppobar_target_wasted = PDGetTotalTime();
+        }
+    } else {
+        gTime_oppobar_target_wasted = PDGetTotalTime();
+    }
+    gOppo_stat_message_index = choice;
+    gPrevious_opponent_status = (tOpponent_Status)status;
+    gTarget_lock_car_1 = gTarget_lock_car_2;
+
+    if (status == eOpponent_status_Wasted && gOppo_stat_flash_state_1 == 0) {
+        return;
+    }
+    if (gNet_mode != eNet_mode_none) {
+        return;
+    }
+
+    is_girl = gTarget_lock_car_2->is_girl;
+    strcpy(text, gOppo_status_messages[status].messages[choice]);
+    p = LookForChar(text, '%');
+    while (p != NULL) {
+        strcpy(copy, p + 1);
+        strcpy(p, GetMiscString(is_girl ? 0x101 : 0x100));
+        strcat(text, copy);
+        p = LookForChar(text, '%');
+    }
+    p = LookForChar(text, '&');
+    while (p != NULL) {
+        strcpy(copy, p + 1);
+        strcpy(p, GetMiscString(is_girl ? 0x103 : 0x102));
+        strcat(text, copy);
+        p = LookForChar(text, '&');
+    }
+    DRPixelmapText(gBack_screen, gCurrent_graf_data->field_0x510, gCurrent_graf_data->field_0x514, &gFonts[23],
+        text, gBack_screen->width);
 }
+#pragma auto_inline(on)
 
 // FUNCTION: CARMA2_HW 0x00496b10
 void C2_HOOK_FASTCALL CheckpointLine(br_pixelmap* pMap, int pCheckpoint, tU32 pTime, int pTarget) {
