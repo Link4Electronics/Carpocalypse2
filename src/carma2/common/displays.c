@@ -613,6 +613,46 @@ void C2_HOOK_FASTCALL BuildOppoBar(int pX, int pY) {
     }
 }
 
+// FUNCTION: CARMA2_HW 0x00441350
+int C2_HOOK_FASTCALL GetOpponentDamageScore(tCar_spec* pCar) {
+    int dmg;
+    int avg;
+    int avg2;
+    int pos0;
+    int pos1;
+    int pos2;
+    int result;
+
+    if (*(int*)((char*)pCar + 0x1d4) != 0) {
+        return 0;
+    }
+    dmg = *(int*)((char*)pCar + 0x698);
+    dmg += *(int*)((char*)pCar + 0x6c4);
+    dmg += *(int*)((char*)pCar + 0x640);
+    dmg += *(int*)((char*)pCar + 0x66c);
+    pos0 = *(int*)((char*)pCar + 0x4e0);
+    pos1 = *(int*)((char*)pCar + 0x50c);
+    pos2 = *(int*)((char*)pCar + 0x538);
+    avg = dmg / 4;
+    if (pos0 > 75 || pos1 > 75 || pos2 > 75 || avg > 75) {
+        if (pos0 > pos1 && pos0 > pos2 && pos0 > avg) {
+            return 100 - pos0;
+        }
+        if (pos1 > pos2 && pos1 > avg) {
+            return 100 - pos1;
+        }
+        if (pos2 > avg) {
+            return 100 - pos2;
+        }
+        return 100 - avg;
+    }
+    result = 100 - (avg + pos2 + pos1 + pos0) / 4;
+    if (result >= 25) {
+        return result;
+    }
+    return 25;
+}
+
 // FUNCTION: CARMA2_HW 0x00494900
 void C2_HOOK_FASTCALL DoOpponentStatusHeadup(void) {
 
