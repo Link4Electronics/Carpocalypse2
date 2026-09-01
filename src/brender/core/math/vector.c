@@ -242,13 +242,13 @@ void C2_HOOK_CDECL BrVector4Copy(br_vector4* v1, const br_vector4* v2) {
 }
 
 // FUNCTION: CARMA2_HW 0x00534900
-br_scalar C2_HOOK_CDECL BrFVector2Dot(const br_fvector2* v1, const br_vector2* v2) {
+br_scalar C2_HOOK_STDCALL BrFVector2Dot(const br_fvector2* v1, const br_vector2* v2) {
 
     return BR_MAC2(v1->v[0], v2->v[0], v1->v[1], v2->v[1]);
 }
 
 // FUNCTION: CARMA2_HW 0x00534920
-void C2_HOOK_CDECL BrFVector3Copy(br_fvector3* v1, const br_vector3* v2) {
+void C2_HOOK_STDCALL BrFVector3Copy(br_fvector3* v1, const br_vector3* v2) {
 
     v1->v[0] = v2->v[0];
     v1->v[1] = v2->v[1];
@@ -256,17 +256,18 @@ void C2_HOOK_CDECL BrFVector3Copy(br_fvector3* v1, const br_vector3* v2) {
 }
 
 // FUNCTION: CARMA2_HW 0x00534940
-void C2_HOOK_CDECL BrVector3ScaleF(br_vector3* v1, const br_fvector3* v2, br_scalar s) {
+void C2_HOOK_STDCALL BrVector3ScaleF(br_vector3* v1, const br_fvector3* v2, br_scalar s) {
 
-    v1->v[0] = v2->v[0] * s;
+    v1->v[0] = s * v2->v[0];
     v1->v[1] = v2->v[1] * s;
     v1->v[2] = v2->v[2] * s;
 }
 
 // FUNCTION: CARMA2_HW 0x00534970
-br_scalar C2_HOOK_CDECL BrFVector3Dot(const br_fvector3* v1, const br_vector3* v2) {
+br_scalar C2_HOOK_STDCALL BrFVector3Dot(const br_fvector3* v1, const br_vector3* v2) {
+    const br_fvector3* p1 = v1;
 
-    return BR_MAC3(v1->v[0], v2->v[0], v1->v[1], v2->v[1], v1->v[2], v2->v[2]);
+    return BR_MAC3(p1->v[0], v2->v[0], p1->v[1], v2->v[1], p1->v[2], v2->v[2]);
 }
 
 // FUNCTION: CARMA2_HW 0x005349a0

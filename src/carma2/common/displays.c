@@ -755,9 +755,10 @@ void C2_HOOK_FASTCALL DoOpponentStatusHeadup(void) {
         DRPixelmapText(gBack_screen, gCurrent_graf_data->field_0x4d8, gCurrent_graf_data->field_0x4dc, &gFonts[23],
             GetMiscString(0xfd), gBack_screen->width);
     } else {
+        const char* stat_text =
+            GetMiscString((gTarget_lock_car_2 == NULL || gTarget_lock_car_2->driver == eDriver_oppo) ? 0xf6 : 0xf7);
         DRPixelmapText(gBack_screen, gCurrent_graf_data->field_0x4d8, gCurrent_graf_data->field_0x4dc, &gFonts[23],
-            GetMiscString((gTarget_lock_car_2 == NULL || gTarget_lock_car_2->driver == eDriver_oppo) ? 0xf6 : 0xf7),
-            gBack_screen->width);
+            stat_text, gBack_screen->width);
     }
 
     DRPixelmapText(gBack_screen, gCurrent_graf_data->field_0x4e0, gCurrent_graf_data->field_0x4e4, &gFonts[23],
@@ -772,11 +773,11 @@ void C2_HOOK_FASTCALL DoOpponentStatusHeadup(void) {
         return;
     }
 
-    if (gNet_mode == eNet_mode_none) {
-        tU16 cid = gTarget_lock_car_2->car_ID;
-        strcpy(text, GetDriverName(cid >> 8, cid & 0xff));
-    } else {
+    if (gNet_mode != eNet_mode_none) {
         strcpy(text, NetPlayerFromCar(gTarget_lock_car_2)->player_name);
+    } else {
+        unsigned int cid = gTarget_lock_car_2->car_ID;
+        strcpy(text, GetDriverName(cid >> 8, cid & 0xff));
     }
     DRPixelmapText(gBack_screen, gCurrent_graf_data->field_0x4f0, gCurrent_graf_data->field_0x4f4, &gFonts[23],
         text, gBack_screen->width);
@@ -813,11 +814,11 @@ void C2_HOOK_FASTCALL DoOpponentStatusHeadup(void) {
         model->vertices[3].p.v[0] = model->vertices[2].p.v[0] + (br_scalar)damage;
         {
             int rgb = (int)(damage * 255 / 100);
-            model->vertices[1].grn = (br_uint_8)rgb;
             model->vertices[1].red = (br_uint_8)(0xff - rgb);
+            model->vertices[1].grn = (br_uint_8)rgb;
             model->vertices[1].blu = 0;
-            model->vertices[3].grn = (br_uint_8)rgb;
             model->vertices[3].red = (br_uint_8)(0xff - rgb);
+            model->vertices[3].grn = (br_uint_8)rgb;
             model->vertices[3].blu = 0;
         }
         BrModelUpdate(model, BR_MODU_VERTICES);
@@ -837,11 +838,9 @@ void C2_HOOK_FASTCALL DoOpponentStatusHeadup(void) {
     } else {
         choice = IRandomBetween(0, gOppo_status_messages[status].count - 1);
     }
-    if (status == eOpponent_status_Wasted && gTarget_lock_car_1 == gTarget_lock_car_2) {
-        if (gPrevious_opponent_status != status) {
-            gTime_oppobar_target_wasted = PDGetTotalTime();
-        }
-    } else {
+    if (status == eOpponent_status_Wasted && gTarget_lock_car_1 != gTarget_lock_car_2) {
+        gTime_oppobar_target_wasted = PDGetTotalTime();
+    } else if (gPrevious_opponent_status != status) {
         gTime_oppobar_target_wasted = PDGetTotalTime();
     }
     gOppo_stat_message_index = choice;
@@ -859,15 +858,25 @@ void C2_HOOK_FASTCALL DoOpponentStatusHeadup(void) {
     strcpy(text, gOppo_status_messages[status].messages[choice]);
     p = LookForChar(text, '%');
     while (p != NULL) {
+        int index;
         strcpy(copy, p + 1);
-        strcpy(p, GetMiscString(0x100 + (is_girl & 1)));
+        index = 0x100;
+        if (is_girl) {
+            index = 0x101;
+        }
+        strcpy(p, GetMiscString(index));
         strcat(text, copy);
         p = LookForChar(text, '%');
     }
     p = LookForChar(text, '&');
     while (p != NULL) {
+        int index;
         strcpy(copy, p + 1);
-        strcpy(p, GetMiscString(0x102 + (is_girl & 1)));
+        index = 0x102;
+        if (is_girl) {
+            index = 0x103;
+        }
+        strcpy(p, GetMiscString(index));
         strcat(text, copy);
         p = LookForChar(text, '&');
     }
