@@ -236,18 +236,17 @@ void C2_HOOK_FASTCALL PolyFontTextInABox(int pFont, const char* pText, int pLeft
     int text_x;
     int max_width;
 
-    CheckAvailabilityOfThisFont(pFont);
-
+    y = pTop;
     in_start_put = 0;
     text_x = 0;
+    CheckAvailabilityOfThisFont(pFont);
     max_width = pRight - pLeft;
     in_pos = 0;
     s_len = 0;
     s[s_len] = '\0';
-    y = pTop;
 
     while (pText[in_pos] != '\0') {
-        tS8 chr;
+        tU8 chr;
 
         chr = pText[in_pos];
         newline = chr == '\r';
@@ -270,11 +269,9 @@ void C2_HOOK_FASTCALL PolyFontTextInABox(int pFont, const char* pText, int pLeft
         if (text_x > max_width || newline) {
             int len_put;
 
-            /* Avoid breaking words in parts ... */
             while (in_end_put > in_start_put && pText[in_end_put] != ' ') {
                 in_end_put -= 1;
             }
-            /* ... but break when the word is too long */
             if (in_end_put == in_start_put) {
                 in_end_put = in_pos;
             }
@@ -284,20 +281,20 @@ void C2_HOOK_FASTCALL PolyFontTextInABox(int pFont, const char* pText, int pLeft
                 in_end_put += 1;
             }
             s[len_put] = '\0';
+            in_pos = in_end_put;
             if (pJust == eJust_centre) {
                 x = (pRight + pLeft) / 2;
             } else {
                 x = pLeft;
             }
             PolyFontText(s, x, y, pFont, pJust, gRender_poly_text);
-            while (pText[in_end_put] == '\r' || pText[in_end_put] == ' ') {
-                in_end_put++;
+            while (pText[in_pos] == '\r' || pText[in_pos] == ' ') {
+                in_pos++;
             }
             y += PolyFontHeight(pFont);
             text_x = 0;
-            in_start_put = in_end_put;
+            in_start_put = in_pos;
             s_len = 0;
-            in_pos = in_end_put;
         } else {
             s_len++;
             in_pos++;
@@ -344,7 +341,7 @@ void C2_HOOK_FASTCALL TransparentPolyFontTextInABox(int pFont, const char* pText
     y = pTop;
 
     while (pText[in_pos] != '\0') {
-        tS8 chr;
+        tU8 chr;
 
         chr = pText[in_pos];
         newline = chr == '\r';
@@ -381,20 +378,20 @@ void C2_HOOK_FASTCALL TransparentPolyFontTextInABox(int pFont, const char* pText
                 in_end_put += 1;
             }
             s[len_put] = '\0';
+            in_pos = in_end_put;
             if (pJust == eJust_centre) {
                 x = (pRight + pLeft) / 2;
             } else {
                 x = pLeft;
             }
             TransparentPolyFontText(s, x, y, pFont, pJust, gRender_poly_text, pBlend);
-            while (pText[in_end_put] == '\r' || pText[in_end_put] == ' ') {
-                in_end_put++;
+            while (pText[in_pos] == '\r' || pText[in_pos] == ' ') {
+                in_pos++;
             }
             y += PolyFontHeight(pFont);
             text_x = 0;
-            in_start_put = in_end_put;
+            in_start_put = in_pos;
             s_len = 0;
-            in_pos = in_start_put;
         } else {
             s_len++;
             in_pos++;
@@ -1771,12 +1768,42 @@ int C2_HOOK_FASTCALL DRTextCleverWidth(const tDR_font* pFont, const char* pText)
     return result;
 }
 
+static __inline int IntLineWidth(const tDR_font* pFont, const char* pText);
+
 // FUNCTION: CARMA2_HW 0x00465f10
 void C2_HOOK_FASTCALL DRPixelmapCentredText(br_pixelmap* pPixelmap, int pX, int pY, const tDR_font* pFont, const char* pText) {
     int width_over_2;
 
-    width_over_2 = DRTextWidth(pFont, pText) / 2;
+    width_over_2 = IntLineWidth(pFont, pText) / 2;
     DRPixelmapText(pPixelmap, pX - width_over_2, pY, pFont, pText, width_over_2 + pX);
+}
+
+static __inline int IntLineWidth(const tDR_font* pFont, const char* pText) {
+    int polyfont;
+    int len;
+    int i;
+    int result;
+    tU8 c;
+
+    polyfont = gDRFont_to_polyfont_mapping[pFont->id];
+    CheckAvailabilityOfThisFont(polyfont);
+    len = (int)strlen(pText);
+    result = 0;
+    for (i = 0; i < len; i++) {
+        c = pText[i];
+        if (c >= 'a' && c <= 'z') {
+            c = c - 'a' + 'A';
+        }
+        if (gPoly_fonts[polyfont].glyphs[c].used) {
+            result += gPoly_fonts[polyfont].glyphs[c].glyph_width;
+        } else {
+            result += gPoly_fonts[polyfont].widthOfBlank;
+        }
+    }
+    if (len > 1) {
+        result += (len - 1) * gPoly_fonts[polyfont].interCharacterSpacing;
+    }
+    return result;
 }
 
 // FUNCTION: CARMA2_HW 0x00466000
