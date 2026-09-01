@@ -1065,8 +1065,7 @@ void C2_HOOK_FASTCALL DoPSPowerHeadup(int pLevel, const char* pAPO_str) {
     int delta;
     int delta_x = 2;
 
-    switch (pAPO_str[0]) {
-    case 'A':
+    if (pAPO_str[0] == 'A') {
         dest_pm = gArmour_colour_map;
         icon = gIcon_armour;
         count_slots = gProgram_state.current_car.power_up_slots[0];
@@ -1079,8 +1078,7 @@ void C2_HOOK_FASTCALL DoPSPowerHeadup(int pLevel, const char* pAPO_str) {
         gPrev_ps_drawn_levels[0] = gProgram_state.current_car.power_up_slots[0];
         gPrev_ps_apo_levels[0] = pLevel;
         changed = gPS_apo_level_changed[0];
-        break;
-    case 'P':
+    } else if (pAPO_str[0] == 'P') {
         dest_pm = gPower_colour_map;
         icon = gIcon_power;
         count_slots = gProgram_state.current_car.power_up_slots[1];
@@ -1093,8 +1091,7 @@ void C2_HOOK_FASTCALL DoPSPowerHeadup(int pLevel, const char* pAPO_str) {
         gPrev_ps_drawn_levels[1] = gProgram_state.current_car.power_up_slots[1];
         gPrev_ps_apo_levels[1] = pLevel;
         changed = gPS_apo_level_changed[1];
-        break;
-    case 'O':
+    } else if (pAPO_str[0] == 'O') {
         dest_pm = gOffensive_colour_map;
         icon = gIcon_offense;
         count_slots = gProgram_state.current_car.power_up_slots[2];
@@ -1107,7 +1104,6 @@ void C2_HOOK_FASTCALL DoPSPowerHeadup(int pLevel, const char* pAPO_str) {
         gPrev_ps_drawn_levels[2] = gProgram_state.current_car.power_up_slots[2];
         gPrev_ps_apo_levels[2] = pLevel;
         changed = gPS_apo_level_changed[2];
-        break;
     }
     if (changed) {
         DRPixelmapCopy(dest_pm, gPowerbar);
