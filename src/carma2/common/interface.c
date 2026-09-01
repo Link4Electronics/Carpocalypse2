@@ -2785,6 +2785,7 @@ tConnected_items* C2_HOOK_FASTCALL GetScrollSet(int pItem) {
                 return scrollset;
             }
         }
+        scrollset = scrollset->next;
     }
     return NULL;
 }
