@@ -102,6 +102,9 @@ int gTarget_lock_enabled;
 // GLOBAL: CARMA2_HW 0x0068d8e0
 br_pixelmap* gLit_op_stat;
 
+// GLOBAL: CARMA2_HW 0x0068d8c0
+br_actor* gLit_op_stat_actor;
+
 
 // GLOBAL: CARMA2_HW 0x0058fdcc
 extern int gCursor_tinted_bottom;

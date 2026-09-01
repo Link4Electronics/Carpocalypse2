@@ -69,6 +69,7 @@ extern int gSaved_table_count;
 extern br_pixelmap* gCurrent_splash;
 extern int gTarget_lock_enabled;
 extern br_pixelmap* gLit_op_stat;
+extern br_actor* gLit_op_stat_actor;
 
 extern int gCursor_tinted_top;
 extern int gCursor_tinted_left;
