@@ -75,7 +75,6 @@ extern tFrontend_slider* C2_HOOK_FASTCALL GetAnyActiveSlider(void);
 extern tFrontend_slider* C2_HOOK_FASTCALL GetActiveSlider(void);
 extern tConnected_items* C2_HOOK_FASTCALL GetScrollSet(int pItem);
 extern int C2_HOOK_FASTCALL TranslateSliderItem(tFrontend_slider* pScroller, int pIndex);
-extern void C2_HOOK_FASTCALL PrepareSliders(tFrontend_spec* pFrontend);
 extern void C2_HOOK_FASTCALL Generic_EventEffect(void);
 extern int C2_HOOK_FASTCALL FindNextActiveItem(tFrontend_spec* pFrontend, int pStart_index);
 extern int C2_HOOK_FASTCALL Frontend_FindNextVisibleItem(tFrontend_spec* pFrontend, int pIndex);
@@ -3060,7 +3059,7 @@ int C2_HOOK_FASTCALL TranslateSliderItem(tFrontend_slider* pScroller, int pIndex
 }
 
 
-void C2_HOOK_FASTCALL PrepareSliders(tFrontend_spec* pFrontend) {
+static __inline void PrepareSliders(tFrontend_spec* pFrontend) {
     tFrontend_slider* slider;
 
     for (slider = gCurrent_frontend_scrollbars; slider != NULL; slider = slider->next) {

@@ -138,7 +138,7 @@ int C2_HOOK_FASTCALL Generic_FindPrevActiveItem(tFrontend_spec* pFrontend, int p
 
 int C2_HOOK_FASTCALL TranslateSliderItem(tFrontend_slider* pScroller, int pIndex);
 
-void C2_HOOK_FASTCALL PrepareSliders(tFrontend_spec* pFrontend);
+// PrepareSliders defined static in interface.c
 
 tFrontend_slider* C2_HOOK_FASTCALL GetActiveSlider(void);
 

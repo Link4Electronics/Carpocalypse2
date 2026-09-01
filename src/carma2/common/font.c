@@ -616,7 +616,7 @@ void C2_HOOK_FASTCALL KillThePixies(void) {
 }
 
 // FUNCTION: CARMA2_HW 0x004640d0
-void C2_HOOK_FASTCALL CheckAvailabilityOfThisFont(int pFont) {
+__inline void C2_HOOK_FASTCALL CheckAvailabilityOfThisFont(int pFont) {
 
     if (!gPoly_fonts[pFont].available) {
         LoadInterfaceFonts();
