@@ -257,7 +257,14 @@ void C2_HOOK_FASTCALL PolyFontTextInABox(int pFont, const char* pText, int pLeft
         }
         s[s_len + 1] = '\0';
         if (!newline) {
-            text_x += CharacterWidth(pFont, (tU8)chr);
+            if (chr >= 'a' && chr <= 'z') {
+                chr -= 0x20;
+            }
+            if (gPoly_fonts[pFont].glyphs[(tU8)chr].used) {
+                text_x += gPoly_fonts[pFont].glyphs[(tU8)chr].glyph_width;
+            } else {
+                text_x += gPoly_fonts[pFont].widthOfBlank;
+            }
         }
         in_end_put = in_pos;
         if (text_x > max_width || newline) {
@@ -347,7 +354,14 @@ void C2_HOOK_FASTCALL TransparentPolyFontTextInABox(int pFont, const char* pText
         }
         s[s_len + 1] = '\0';
         if (!newline) {
-            text_x += CharacterWidth(pFont, (tU8)chr);
+            if (chr >= 'a' && chr <= 'z') {
+                chr -= 0x20;
+            }
+            if (gPoly_fonts[pFont].glyphs[(tU8)chr].used) {
+                text_x += gPoly_fonts[pFont].glyphs[(tU8)chr].glyph_width;
+            } else {
+                text_x += gPoly_fonts[pFont].widthOfBlank;
+            }
         }
         in_end_put = in_pos;
         if (text_x > max_width || newline) {
@@ -1097,6 +1111,7 @@ br_material* C2_HOOK_FASTCALL GetPolyFontMaterial(int pFont_index, char pChar) {
     br_material* material;
     br_scalar factor;
     tU8 uchar;
+    int fontchar;
 
     // GLOBAL: CARMA2 0x00686480
     static int poly_font_material_index;
@@ -1108,9 +1123,10 @@ br_material* C2_HOOK_FASTCALL GetPolyFontMaterial(int pFont_index, char pChar) {
     C2_HOOK_BUG_ON(sizeof(tPolyFontGlyph) != 0x1c);
 
     uchar = pChar;
+    fontchar = (pFont_index << 8) | uchar;
     material = gPoly_fonts[pFont_index].glyphs[uchar].material;
-    if (material != NULL && POLYFONT_MATERIAL_GET_FONT_CHARACTER(material) == POLYFONT_FONT_CHARACTER(pFont_index, uchar)) {
-        material->user = (void*)(uintptr_t)(POLYFONT_FONT_CHARACTER(pFont_index, uchar) + (poly_font_material_generation << 16));
+    if (material != NULL && (((uintptr_t)material->user) & 0xffff) == fontchar) {
+        material->user = (void*)(uintptr_t)(fontchar + (poly_font_material_generation << 16));
         return material;
     }
     // Find "oldest" material, and re-use
@@ -1121,13 +1137,13 @@ br_material* C2_HOOK_FASTCALL GetPolyFontMaterial(int pFont_index, char pChar) {
             poly_font_material_index = 0;
         }
         material = gPoly_font_materials[poly_font_material_index];
-        if ((poly_font_material_generation - POLYFONT_MATERIAL_GET_GENERATION(material)) >= (int)CARPOCALYPSE2_ASIZE(gPoly_font_materials)) {
+        if ((poly_font_material_generation - ((((uintptr_t)material->user) >> 16) & 0xffff)) >= (int)CARPOCALYPSE2_ASIZE(gPoly_font_materials)) {
             break;
         }
     }
     gPoly_fonts[pFont_index].glyphs[uchar].material = material;
     material->colour_map = gTexture_maps[gPoly_fonts[pFont_index].glyphs[uchar].index];
-    material->user = (void*)(uintptr_t)(POLYFONT_FONT_CHARACTER(pFont_index, uchar) + (poly_font_material_generation << 16));
+    material->user = (void*)(uintptr_t)(fontchar + (poly_font_material_generation << 16));
     factor = (br_scalar)gPoly_fonts[pFont_index].fontSize / 64.0f;
     BrMatrix23Scale(&material->map_transform, factor, factor);
     material->map_transform.m[2][0] = gPoly_fonts[pFont_index].glyphs[uchar].texCoord.v[0];
@@ -1669,7 +1685,9 @@ int C2_HOOK_FASTCALL PolyFontTextWidth(int pFont, const char* pText) {
     int result;
     tU8 c;
 
-    CheckAvailabilityOfThisFont(pFont);
+    if (!gPoly_fonts[pFont].available) {
+        LoadInterfaceFonts();
+    }
     len = (int)strlen(pText);
     result = 0;
     for (i = 0; i < len; i++) {
@@ -1691,8 +1709,31 @@ int C2_HOOK_FASTCALL PolyFontTextWidth(int pFont, const char* pText) {
 
 // FUNCTION: CARMA2_HW 0x00465d50
 int C2_HOOK_FASTCALL DRTextWidth(const tDR_font* pFont, const char* pText) {
+    int polyfont;
+    int len;
+    int i;
+    int result;
+    tU8 c;
 
-    return PolyFontTextWidth(gDRFont_to_polyfont_mapping[pFont->id], pText);
+    polyfont = gDRFont_to_polyfont_mapping[pFont->id];
+    CheckAvailabilityOfThisFont(polyfont);
+    len = (int)strlen(pText);
+    result = 0;
+    for (i = 0; i < len; i++) {
+        c = pText[i];
+        if (c >= 'a' && c <= 'z') {
+            c = c - 'a' + 'A';
+        }
+        if (gPoly_fonts[polyfont].glyphs[c].used) {
+            result += gPoly_fonts[polyfont].glyphs[c].glyph_width;
+        } else {
+            result += gPoly_fonts[polyfont].widthOfBlank;
+        }
+    }
+    if (len > 1) {
+        result += (len - 1) * gPoly_fonts[polyfont].interCharacterSpacing;
+    }
+    return result;
 }
 
 // FUNCTION: CARMA2_HW 0x00465e10
