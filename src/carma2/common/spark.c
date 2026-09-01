@@ -1117,8 +1117,43 @@ void C2_HOOK_FASTCALL DrMatrix34Rotate(br_matrix34* mat, br_angle r, br_vector3*
 
 // FUNCTION: CARMA2_HW 0x004fc0e0
 void C2_HOOK_FASTCALL DoSmokeColumn(int i, tU32 pTime, br_vector3* pRet_car_pos) {
+    tSmoke_column* column;
+    static const br_scalar upright_tilt_threshold = 0.1f;
+    static const br_scalar descent_tilt_threshold = -0.1f;
 
-    NOT_IMPLEMENTED();
+    column = &gSmoke_column[i];
+    if (column->core.field_0x0 == 1) {
+        if (column->core.car->car_master_actor->t.t.mat.m[1][1] > upright_tilt_threshold) {
+            column->upright = 1;
+        }
+        if (column->core.car->car_master_actor->t.t.mat.m[1][1] < descent_tilt_threshold) {
+            column->upright = 0;
+        }
+        pRet_car_pos->v[0] = column->core.car->car_actor->model->prepared->groups->vertices[column->vertex_index].p.v[0]
+            + column->core.car->car_actor->t.t.mat.m[3][0];
+        pRet_car_pos->v[1] = column->core.car->car_actor->model->prepared->groups->vertices[column->vertex_index].p.v[1]
+            + column->core.car->car_actor->t.t.mat.m[3][1];
+        pRet_car_pos->v[2] = column->core.car->car_actor->model->prepared->groups->vertices[column->vertex_index].p.v[2]
+            + column->core.car->car_actor->t.t.mat.m[3][2];
+    } else {
+        column->upright = 1;
+        pRet_car_pos->v[0] = column->core.car_actor->model->prepared->groups->vertices[column->vertex_index].p.v[0];
+        pRet_car_pos->v[1] = column->core.car_actor->model->prepared->groups->vertices[column->vertex_index].p.v[1];
+        pRet_car_pos->v[2] = column->core.car_actor->model->prepared->groups->vertices[column->vertex_index].p.v[2];
+    }
+    if (column->core.field_0x0 == 1 && gProgram_state.cockpit_on && column->core.car != NULL
+            && column->core.car->driver == eDriver_local_human
+            && *(float*)((char*)column->core.car + 0x484) > pRet_car_pos->v[2]) {
+        BrMatrix34ApplyP(pRet_car_pos, &column->core.car_actor->model->prepared->groups->vertices[column->vertex_index].p,
+            &column->core.car_actor->t.t.mat);
+    } else {
+        pRet_car_pos->v[1] -= 0.0f;
+    }
+    if (column->upright == 0) {
+        pRet_car_pos->v[1] = column->core.car->collision_info->shape->common.bb.min.v[1] * 0.14492754f;
+    }
+    BrMatrix34ApplyP(&column->pos, pRet_car_pos, &column->core.car_actor->t.t.mat);
+    column->pos.v[1] -= 0.03f;
 }
 
 // FUNCTION: CARMA2_HW 0x004fbdd0

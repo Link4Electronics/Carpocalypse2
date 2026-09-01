@@ -280,12 +280,12 @@ void C2_HOOK_FASTCALL MungeGlassFragments2(int pEnd_race) {
 
     the_time = GetTotalTime();
     if (prev_glass_munge != 0) {
-        f_prev_glass_munge = (float)prev_glass_munge;
+        f_prev_glass_munge = (float)the_time - prev_glass_munge;
         for (i = 0; i < CARPOCALYPSE2_ASIZE(gSmash_glass_fragments); i++) {
             fragment = &gSmash_glass_fragments[i];
             if (fragment->end_time != 0) {
                 if (!pEnd_race && (the_time < fragment->end_time || (gAction_replay_mode && ARGetReplayRate() <= 0.f)) && the_time >= fragment->field_0xc) {
-                    DoFragMovement(fragment, the_time, (float)the_time - f_prev_glass_munge);
+                    DoFragMovement(fragment, the_time, f_prev_glass_munge);
                     if (fragment->field_0x34) {
                         fragment->field_0x34 = 0;
                     }
@@ -305,7 +305,7 @@ void C2_HOOK_FASTCALL MungeGlassFragments2(int pEnd_race) {
                     for (j = 0; j < CARPOCALYPSE2_ASIZE(gSmash_glass_fragments); j++) {
                         if (gSmash_glass_fragments[j].end_time != 0 &&
                                 gSmash_glass_fragments[j].field_0x18 == field_0x18) {
-                            KillFragment(fragment);
+                            KillFragment(&gSmash_glass_fragments[j]);
                         }
                     }
                 }
