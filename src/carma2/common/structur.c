@@ -956,9 +956,7 @@ void C2_HOOK_FASTCALL carpocalypse2_RaceSkeleton(void) {
         BrPixelmapFill(gBack_screen, gGraf_specs[gGraf_spec_index].black_value);
         BrPixelmapFill(gDepth_buffer, 0xffffffff);
         BrZbsSceneRender(gUniverse_actor, gCamera, gBack_screen, gDepth_buffer);
-        if (gFonts[1].images != NULL) {
-            DRPixelmapText(gBack_screen, 16, 16, &gFonts[1], "HUD TEST", 0);
-        }
+
         PDScreenBufferSwap(0);
     }
 
