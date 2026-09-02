@@ -104,6 +104,81 @@ void C2_HOOK_FASTCALL PFfclose(FILE* pFile) {
     }
 }
 
+#ifdef CARPOCALYPSE2_FIX_BUGS
+#include <dirent.h>
+
+// Case-insensitive filesystem fallback helper. The retail game assumed a
+// case-insensitive filesystem (Windows) and hard-codes paths such as
+// ".../CARS/64X48X8/EAGLE3.TXT" while the data ships with lower-case names
+// (".../CARS/64x48x8/eagle3.txt"). When an exact open fails on a case-sensitive
+// host, resolve the path by matching every component case-insensitively.
+static FILE* CI_FopenCaseInsensitive(const char* pPath, const char* mode) {
+    char resolved[256];
+    char comp[256];
+    const char* p;
+    size_t len;
+    size_t comp_len;
+
+    if (pPath == NULL || mode == NULL || pPath[0] == '\0') {
+        return NULL;
+    }
+
+    resolved[0] = '\0';
+
+    // Split the path into components and resolve them one directory at a time,
+    // matching each component case-insensitively against the parent directory.
+    p = pPath;
+    while (p[0] == '/') {
+        p++;
+    }
+
+    for (;;) {
+        comp_len = strcspn(p, "/");
+        if (comp_len >= sizeof(comp)) {
+            return NULL;
+        }
+        memcpy(comp, p, comp_len);
+        comp[comp_len] = '\0';
+
+        {
+            DIR* d = opendir(resolved[0] == '\0' ? "/" : resolved);
+            struct dirent* e;
+            int found = 0;
+            if (d == NULL) {
+                return NULL;
+            }
+            while ((e = readdir(d)) != NULL) {
+                if (DRStricmp(e->d_name, comp) == 0) {
+                    len = strlen(resolved);
+                    if (len > 0 && resolved[len - 1] != '/') {
+                        strcat(resolved, "/");
+                    } else if (len == 0) {
+                        strcat(resolved, "/");
+                    }
+                    strcat(resolved, e->d_name);
+                    found = 1;
+                    break;
+                }
+            }
+            closedir(d);
+            if (!found) {
+                return NULL;
+            }
+        }
+
+        p += comp_len;
+        if (p[0] == '\0' || p[1] == '\0') {
+            break;
+        }
+        if (p[0] == '/') {
+            p++;
+        }
+    }
+
+    return fopen(resolved, mode);
+}
+#endif
+
 // FUNCTION: CARMA2_HW 0x004b4780
 FILE* C2_HOOK_FASTCALL PFfopen(const char* pPath, const char* mode) {
     int twt;
@@ -132,7 +207,17 @@ FILE* C2_HOOK_FASTCALL PFfopen(const char* pPath, const char* mode) {
             }
         }
     }
-    return fopen(pPath, mode);
+    {
+        FILE* disk = fopen(pPath, mode);
+        if (disk != NULL) {
+            return disk;
+        }
+#ifdef CARPOCALYPSE2_FIX_BUGS
+        return CI_FopenCaseInsensitive(pPath, mode);
+#else
+        return NULL;
+#endif
+    }
 }
 
 // FUNCTION: CARMA2_HW 0x004b4880

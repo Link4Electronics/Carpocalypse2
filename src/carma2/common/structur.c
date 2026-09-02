@@ -948,14 +948,35 @@ void C2_HOOK_FASTCALL carpocalypse2_RaceSkeleton(void) {
 
     LoadFont(1);
 
+    gCar_to_view = &gProgram_state.current_car;
+    gProgram_state.which_view = eView_forward;
+    AboutToLoadFirstCar();
+    LoadCar(gOpponents[0].car_file_name,
+        eDriver_local_human,
+        &gProgram_state.current_car,
+        0,
+        gProgram_state.player_name,
+        &gOur_car_storage_space);
+    SetCarStorageTexturingLevel(&gOur_car_storage_space, GetCarTexturingLevel(), eCTL_full);
+
     while (!carpocalypse2_MenuQuitRequested()) {
         PollKeys();
         if (PDAnyKeyDown() == 63) {
             break;
         }
+        StartRenderingHeadups();
+        gRender_screen->pixels = gBack_screen->pixels;
         BrPixelmapFill(gBack_screen, gGraf_specs[gGraf_spec_index].black_value);
         BrPixelmapFill(gDepth_buffer, 0xffffffff);
         BrZbsSceneRender(gUniverse_actor, gCamera, gBack_screen, gDepth_buffer);
+        RenderTintedPolys();
+        DimAFewBits();
+        DoDamageScreen(GetTotalTime());
+        DoHeadups(GetTotalTime());
+        DoInstruments(GetTotalTime());
+        DoTestHeadup();
+        DoPSPowerupHeadups();
+        StopRenderingHeadups();
 
         PDScreenBufferSwap(0);
     }

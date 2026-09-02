@@ -747,10 +747,45 @@ void C2_HOOK_FASTCALL InstantDepthChange(tDepth_effect_type pType, br_pixelmap* 
 
 // LoadDepthTable
 
-// STUB: CARMA2_HW 0x00445620
+// FUNCTION: CARMA2_HW 0x00445620
 void C2_HOOK_FASTCALL InitDepthEffects(void) {
-#ifndef CARPOCALYPSE2_MATCHING
-    /* stub: no-op for Linux boot */
+#ifdef CARPOCALYPSE2_FIX_BUGS
+    /* The original function was stubbed out ("no-op for Linux boot"), which left
+     * gForward_sky_model, gHorizon_material and the sky actors all NULL. Downstream
+     * code (MungeSkyModel via LoadCar->AdjustRenderScreenSize->MungeForwardSky,
+     * InstantDepthChange, DepthEffectSky) dereferences these unconditionally, so
+     * the game would crash on the first race. Build the horizon geometry, material
+     * and sky actors for real. Shade tables are loaded from DATA/SHADETAB. */
+    br_material* horizon_material;
+    br_actor* forward_actor;
+    br_actor* rearview_actor;
+
+    LoadDepthTable("DEPTHCUE.TAB", &gDepth_shade_table, &gDepth_shade_table_power);
+    LoadDepthTable("FOG.TAB", &gFog_shade_table, &gFog_shade_table_power);
+    LoadDepthTable("ACIDFOG.TAB", &gAcid_shade_table, &gAcid_shade_table_power);
+
+    horizon_material = BrMaterialAllocate("Horizon");
+    horizon_material->flags |= BR_MATF_MAP_INTERPOLATION;
+    horizon_material->colour = 0;
+    BrMaterialAdd(horizon_material);
+    gHorizon_material = horizon_material;
+
+    gForward_sky_model = CreateHorizonModel(gCamera);
+    BrModelAdd(gForward_sky_model);
+
+    forward_actor = BrActorAllocate(BR_ACTOR_MODEL, NULL);
+    forward_actor->model = gForward_sky_model;
+    forward_actor->material = horizon_material;
+    gForward_sky_actor = forward_actor;
+
+    rearview_actor = BrActorAllocate(BR_ACTOR_MODEL, NULL);
+    rearview_actor->model = gForward_sky_model;
+    rearview_actor->material = horizon_material;
+    gRearview_sky_actor = rearview_actor;
+
+    gSky_image_width = BR_ANGLE_DEG(360);
+    gSky_image_height = BR_ANGLE_DEG(90);
+    gSky_image_underground = BR_ANGLE_DEG(90);
 #else
     NOT_IMPLEMENTED();
 #endif

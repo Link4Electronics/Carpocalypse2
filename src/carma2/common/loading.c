@@ -1024,6 +1024,48 @@ void C2_HOOK_FASTCALL LoadTacho(FILE* pF, int pIndex, tCar_spec* pCar_spec) {
     char the_char1;
 
     /* tacho type, x, y, filename, x-pitch */
+#ifdef CARPOCALYPSE2_FIX_BUGS
+    /* LoadPixelmap may call strtok internally, which resets glibc's static
+     * parse state and would break the strtok(NULL) calls that follow it in the
+     * analogue branch. Resolve the image after finishing the token extraction. */
+    {
+        const char* image_name;
+        GetALineAndDontArgue(pF, s);
+        str = strtok(s, "\t ,/");
+        sscanf(str, "%c", &the_char1);
+        if (the_char1 == 'd') {
+            pCar_spec->tacho_radius_2[pIndex] = -1;
+            str = strtok(NULL, "\t ,/");
+            sscanf(str, "%d", &pCar_spec->tacho_x[pIndex]);
+            str = strtok(NULL, "\t ,/");
+            sscanf(str, "%d", &pCar_spec->tacho_y[pIndex]);
+            str = strtok(NULL, "\t ,/");
+            pCar_spec->tacho_image[pIndex] = LoadPixelmap(str);
+        } else {
+            str = strtok(NULL, "\t ,/");
+            sscanf(str, "%d", &pCar_spec->tacho_x[pIndex]);
+            str = strtok(NULL, "\t ,/");
+            sscanf(str, "%d", &pCar_spec->tacho_y[pIndex]);
+            str = strtok(NULL, "\t ,/");
+            image_name = str;
+            str = strtok(NULL, "\t ,/");
+            sscanf(str, "%d", &pCar_spec->tacho_centre_x[pIndex]);
+            str = strtok(NULL, "\t ,/");
+            sscanf(str, "%d", &pCar_spec->tacho_centre_y[pIndex]);
+            str = strtok(NULL, "\t ,/");
+            sscanf(str, "%d", &pCar_spec->tacho_radius_1[pIndex]);
+            str = strtok(NULL, "\t ,/");
+            sscanf(str, "%d", &pCar_spec->tacho_radius_2[pIndex]);
+            str = strtok(NULL, "\t ,/");
+            sscanf(str, "%d", &pCar_spec->tacho_start_angle[pIndex]);
+            str = strtok(NULL, "\t ,/");
+            sscanf(str, "%d", &pCar_spec->tacho_end_angle[pIndex]);
+            str = strtok(NULL, "\t ,/");
+            sscanf(str, "%d", &pCar_spec->tacho_needle_colour[pIndex]);
+            pCar_spec->tacho_image[pIndex] = LoadPixelmap(image_name);
+        }
+    }
+#else
     GetALineAndDontArgue(pF, s);
     str = strtok(s, "\t ,/");
     sscanf(str, "%c", &the_char1);
@@ -1057,6 +1099,7 @@ void C2_HOOK_FASTCALL LoadTacho(FILE* pF, int pIndex, tCar_spec* pCar_spec) {
         str = strtok(NULL, "\t ,/");
         sscanf(str, "%d", &pCar_spec->tacho_needle_colour[pIndex]);
     }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0048b560
@@ -1065,6 +1108,61 @@ void C2_HOOK_FASTCALL LoadSpeedo(FILE* pF, int pIndex, tCar_spec* pCar_spec) {
     char* str;
     char the_char1;
 
+#ifdef CARPOCALYPSE2_FIX_BUGS
+    /* LoadPixelmap may itself call strtok (e.g. when resolving image paths),
+     * which resets glibc's static strtok state and breaks any later strtok(NULL)
+     * calls in the same line. Extract every token first and load the image
+     * afterwards so the parse state cannot be clobbered mid-line. */
+    {
+        int xpitch = 0;
+        const char* image_name;
+        GetALineAndDontArgue(pF, s);
+        str = strtok(s, "\t ,/");
+        sscanf(str, "%c", &the_char1);
+        if (the_char1 == 'd') {
+            /* Speedo type, x, y, filename, x-pitch */
+            pCar_spec->speedo_radius_2[pIndex] = -1;
+            str = strtok(NULL, "\t ,/");
+            sscanf(str, "%d", &pCar_spec->speedo_x[pIndex]);
+            str = strtok(NULL, "\t ,/");
+            sscanf(str, "%d", &pCar_spec->speedo_y[pIndex]);
+            str = strtok(NULL, "\t ,/");
+            image_name = str;
+            str = strtok(NULL, "\t ,/");
+            sscanf(str, "%d", &xpitch);
+            pCar_spec->speedo_image[pIndex] = LoadPixelmap(image_name);
+            if (pCar_spec->speedo_image[pIndex] == NULL) {
+                FatalError(kFatalError_CannotLoadSpeedoImage);
+            }
+            pCar_spec->speedo_y_pitch[pIndex] = pCar_spec->speedo_image[pIndex]->height / 10;
+            pCar_spec->speedo_x_pitch[pIndex] = xpitch;
+        } else {
+            str = strtok(NULL, "\t ,/");
+            sscanf(str, "%d", &pCar_spec->speedo_x[pIndex]);
+            str = strtok(NULL, "\t ,/");
+            sscanf(str, "%d", &pCar_spec->speedo_y[pIndex]);
+            str = strtok(NULL, "\t ,/");
+            image_name = str;
+            str = strtok(NULL, "\t ,/");
+            sscanf(str, "%d", &pCar_spec->speedo_centre_x[pIndex]);
+            str = strtok(NULL, "\t ,/");
+            sscanf(str, "%d", &pCar_spec->speedo_centre_y[pIndex]);
+            str = strtok(NULL, "\t ,/");
+            sscanf(str, "%d", &pCar_spec->speedo_radius_1[pIndex]);
+            str = strtok(NULL, "\t ,/");
+            sscanf(str, "%d", &pCar_spec->speedo_radius_2[pIndex]);
+            str = strtok(NULL, "\t ,/");
+            sscanf(str, "%d", &pCar_spec->speedo_start_angle[pIndex]);
+            str = strtok(NULL, "\t ,/");
+            sscanf(str, "%d", &pCar_spec->speedo_end_angle[pIndex]);
+            str = strtok(NULL, "\t ,/");
+            sscanf(str, "%d", &pCar_spec->speedo_needle_colour[pIndex]);
+            str = strtok(NULL, "\t ,/");
+            sscanf(str, "%d", &pCar_spec->max_speed);
+            pCar_spec->speedo_image[pIndex] = LoadPixelmap(image_name);
+        }
+    }
+#else
     GetALineAndDontArgue(pF, s);
     str = strtok(s, "\t ,/");
     sscanf(str, "%c", &the_char1);
@@ -1107,6 +1205,7 @@ void C2_HOOK_FASTCALL LoadSpeedo(FILE* pF, int pIndex, tCar_spec* pCar_spec) {
         str = strtok(NULL, "\t ,/");
         sscanf(str, "%d", &pCar_spec->max_speed);
     }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0048bca0
@@ -1434,6 +1533,27 @@ void C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, tCar_spec*
              * [5] Rightish hands frame
              * [6] Right-most hands frame */
             GetALineAndDontArgue(g, s);
+#ifdef CARPOCALYPSE2_FIX_BUGS
+            /* LoadPixelmap may clobber glibc's static strtok state, so finish
+             * token extraction for the whole line before loading the image. */
+            {
+                int rhands_x = 0, rhands_y = 0;
+                const char* image_name;
+                str = strtok(s, "\t ,/");
+                sscanf(str, "%d", &pCar_spec->lhands_x[i]);
+                str = strtok(NULL, "\t ,/");
+                sscanf(str, "%d", &pCar_spec->lhands_y[i]);
+                str = strtok(NULL, "\t ,/");
+                image_name = str;
+                str = strtok(NULL, "\t ,/");
+                sscanf(str, "%d", &rhands_x);
+                str = strtok(NULL, "\t ,/");
+                sscanf(str, "%d", &rhands_y);
+                pCar_spec->lhands_images[i] = LoadPixelmap(image_name);
+                pCar_spec->rhands_x[i] = rhands_x;
+                pCar_spec->rhands_y[i] = rhands_y;
+            }
+#else
             str = strtok(s, "\t ,/");
             sscanf(str, "%d", &pCar_spec->lhands_x[i]);
             str = strtok(NULL, "\t ,/");
@@ -1445,6 +1565,7 @@ void C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, tCar_spec*
             str = strtok(NULL, "\t ,/");
             sscanf(str, "%d", &pCar_spec->rhands_y[i]);
             str = strtok(NULL, "\t ,/");
+#endif
             PossibleService();
         }
         pCar_spec->red_line = 8000;
@@ -1513,6 +1634,29 @@ void C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, tCar_spec*
         /* Pratcam border names (left, top, right, bottom) */
         GetALineAndDontArgue(f, s);
         PossibleService();
+#ifdef CARPOCALYPSE2_FIX_BUGS
+        /* Each LoadPixelmap may clobber glibc's static strtok state, which would
+         * break the strtok(NULL) calls that fetch the following border names.
+         * Extract all four names first, then load the images. */
+        {
+            const char* cam_left;
+            const char* cam_top;
+            const char* cam_right;
+            const char* cam_bottom;
+            str = strtok(s, "\t ,/");
+            cam_left = str;
+            str = strtok(NULL, "\t ,/");
+            cam_top = str;
+            str = strtok(NULL, "\t ,/");
+            cam_right = str;
+            str = strtok(NULL, "\t ,/");
+            cam_bottom = str;
+            pCar_spec->prat_cam_left = LoadPixelmap(cam_left);
+            pCar_spec->prat_cam_top = LoadPixelmap(cam_top);
+            pCar_spec->prat_cam_right = LoadPixelmap(cam_right);
+            pCar_spec->prat_cam_bottom = LoadPixelmap(cam_bottom);
+        }
+#else
         str = strtok(s, "\t ,/");
         pCar_spec->prat_cam_left = LoadPixelmap(str);
         str = strtok(NULL, "\t ,/");
@@ -1521,6 +1665,7 @@ void C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, tCar_spec*
         pCar_spec->prat_cam_right = LoadPixelmap(str);
         str = strtok(NULL, "\t ,/");
         pCar_spec->prat_cam_bottom = LoadPixelmap(str);
+#endif
         PossibleService();
 
         for (i = 0; i < CARPOCALYPSE2_ASIZE(pCar_spec->damage_units); i++) {
