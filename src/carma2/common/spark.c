@@ -817,6 +817,47 @@ void C2_HOOK_FASTCALL StopObjectSmokingInstantly(tPhysics_object* pObject) {
     }
 }
 
+// FUNCTION: CARMA2_HW 0x004fcab0
+void C2_HOOK_FASTCALL ConditionalSmokeColumn(tCar_spec* pCar, int fire_point, int level) {
+    int i;
+    int j;
+    int flags;
+    tU16 fire_value;
+
+    if (level == 0 && (pCar == NULL || pCar->driver < 7)) {
+        level = 1;
+    }
+    flags = gColumn_flags;
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gSmoke_column); i++) {
+        if ((flags & (1 << i)) && gSmoke_column[i].core.car == pCar) {
+            for (j = 0; j < CARPOCALYPSE2_ASIZE(gSmoke_column); j++) {
+                if (gSmoke_column[j].core.car != pCar) {
+                    continue;
+                }
+                if (!(flags & (1 << j)) || gSmoke_column[j].colour > level) {
+                    gSmoke_column[j].lifetime = 0x7d0;
+                } else if (gSmoke_column[j].lifetime != 0) {
+                    return;
+                } else {
+                    gSmoke_column[j].lifetime = 0x7d0;
+                }
+            }
+            break;
+        }
+    }
+    fire_value = pCar->fire_vertex[fire_point];
+    if (pCar->collision_info != NULL && pCar->collision_info->last_special_volume != NULL) {
+        if (pCar->collision_info->last_special_volume->gravity_multiplier < 1.0f) {
+            return;
+        }
+    }
+    SmudgeCar(pCar, fire_value);
+    if (pCar->car_crush_spec != NULL) {
+        SmudgeCar(pCar, pCar->fire_vertex[IRandomBetween(0, 0xb)]);
+    }
+    CreateSmokeColumn2(1, pCar->car_master_actor, pCar, NULL, level, fire_value, 0x989680);
+}
+
 // FUNCTION: CARMA2_HW 0x004fa5b0
 void C2_HOOK_FASTCALL GenerateContinuousSmoke(tCar_spec* pCar, int pWheel, tU32 pTime) {
     br_vector3 pos;
@@ -1935,7 +1976,17 @@ void C2_HOOK_FASTCALL UnBlendifyCar(tCar_spec* pCar_spec) {
 #endif
 }
 
-// IsCarSmoking
+// FUNCTION: CARMA2_HW 0x004fed90
+int C2_HOOK_FASTCALL IsCarSmoking(tCar_spec* pCar) {
+    int i;
+
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gSmoke_column); i++) {
+        if ((gColumn_flags & (1 << i)) && gSmoke_column[i].core.car == pCar) {
+            return 1;
+        }
+    }
+    return 0;
+}
 
 // ClearSplashReplay
 

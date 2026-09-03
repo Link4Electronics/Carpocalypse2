@@ -2016,10 +2016,49 @@ int C2_HOOK_FASTCALL DoCrashEarnings(tCar_spec* pCar1, tCar_spec* pCar2) {
     return 0;
 }
 
+// GLOBAL: CARMA2_HW 0x00590068
+unsigned char gSmoke_part_table[12] = {
+    0x14, 0x14, 0x00,
+    0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10
+};
+
 // FUNCTION: CARMA2_HW 0x00440230
 void C2_HOOK_FASTCALL SortOutSmoke(tCar_spec* pCar) {
+    int i;
+    int flag;
 
-    NOT_IMPLEMENTED();
+    if (pCar == NULL || pCar->driver <= 5) {
+        return;
+    }
+
+    flag = 0;
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(pCar->damage_units); i++) {
+        int mult;
+        int level;
+
+        mult = gSmoke_part_table[i];
+        if (mult == 0) {
+            continue;
+        }
+        level = (99 - pCar->damage_units[i].damage_level) / mult;
+        if (level <= 2) {
+            flag = 1;
+        }
+        if (pCar->damage_units[i].damage_level != pCar->damage_units[i].smoke_last_level
+            && pCar->damage_units[i].damage_level > pCar->damage_units[i].smoke_last_level
+            && ((99 - pCar->damage_units[i].smoke_last_level) / mult) != level
+            && level <= 2) {
+            ConditionalSmokeColumn(pCar, i, level);
+        }
+    }
+
+    if (!flag && IsCarSmoking(pCar)) {
+        StopCarSmoking(pCar);
+    }
+
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(pCar->damage_units); i++) {
+        pCar->damage_units[i].smoke_last_level = pCar->damage_units[i].damage_level;
+    }
 }
 
 // FUNCTION: CARMA2_HW 0x00440640

@@ -160,7 +160,7 @@ extern int C2_HOOK_FASTCALL GetSmokeOn(void);
 
 // StopObjectSmokingInstantly
 
-// ConditionalSmokeColumn
+void C2_HOOK_FASTCALL ConditionalSmokeColumn(tCar_spec* pCar, int fire_point, int level);
 
 // SingleSplash
 
@@ -208,7 +208,7 @@ extern void C2_HOOK_FASTCALL BlendifyCar(tCar_spec* pCar);
 
 void C2_HOOK_FASTCALL UnBlendifyCar(tCar_spec* pCar_spec);
 
-// IsCarSmoking
+int C2_HOOK_FASTCALL IsCarSmoking(tCar_spec* pCar);
 
 // ClearSplashReplay
 

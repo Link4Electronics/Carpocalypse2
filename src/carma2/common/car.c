@@ -2069,8 +2069,84 @@ void C2_HOOK_FAKE_THISCALL ControlCar3(tCar_spec* c, undefined4 arg2, br_scalar 
 
 // FUNCTION: CARMA2_HW 0x00417a20
 void C2_HOOK_FAKE_THISCALL ControlCar5(tCar_spec* c, undefined4 arg2, br_scalar dt) {
+    unsigned int input;
+    br_scalar mag;
 
-    NOT_IMPLEMENTED();
+    CARPOCALYPSE2_THISCALL_UNUSED(arg2);
+
+    input = *(unsigned int*)&c->keys;
+    c->acc_force = 0.0f;
+
+    if (c->keys.acc) {
+        c->acc_force = c->collision_info->M * 7.0f;
+    }
+    if (c->keys.dec) {
+        c->acc_force = -(c->collision_info->M * 7.0f);
+    }
+
+    if (c->keys.left) {
+        if (c->turn_speed < 0.0f) {
+            c->turn_speed = 0.0f;
+        }
+        if (c->curvature < 0.0f) {
+            c->turn_speed += dt * 0.0625;
+        } else {
+            mag = sqrtf(c->collision_info->v.v[0] * c->collision_info->v.v[0]
+                      + c->collision_info->v.v[1] * c->collision_info->v.v[1]
+                      + c->collision_info->v.v[2] * c->collision_info->v.v[2]);
+            c->turn_speed += 25.0f * dt * (0.05f / (mag + 5.0f)) * 0.25f;
+        }
+    }
+
+    if (c->keys.right) {
+        if (c->turn_speed > 0.0f) {
+            c->turn_speed = 0.0f;
+        }
+        if (c->curvature > 0.0f) {
+            c->turn_speed -= dt * 0.0625;
+        } else {
+            mag = sqrtf(c->collision_info->v.v[0] * c->collision_info->v.v[0]
+                      + c->collision_info->v.v[1] * c->collision_info->v.v[1]
+                      + c->collision_info->v.v[2] * c->collision_info->v.v[2]);
+            c->turn_speed -= 25.0f * dt * (0.05f / (mag + 5.0f)) * 0.25f;
+        }
+    }
+
+    if (!c->keys.left && !c->keys.right) {
+        c->turn_speed = 0.0f;
+        if (c->curvature < 0.0f) {
+            if (!c->keys.holdw) {
+                mag = sqrtf(c->collision_info->v.v[0] * c->collision_info->v.v[0]
+                          + c->collision_info->v.v[1] * c->collision_info->v.v[1]
+                          + c->collision_info->v.v[2] * c->collision_info->v.v[2]);
+                c->curvature += 25.0f * dt * (0.05f / (mag + 5.0f)) * 2.0f;
+                if (c->curvature > 0.0f) {
+                    c->curvature = 0.0f;
+                }
+            }
+        } else {
+            if (!c->keys.holdw) {
+                mag = sqrtf(c->collision_info->v.v[0] * c->collision_info->v.v[0]
+                          + c->collision_info->v.v[1] * c->collision_info->v.v[1]
+                          + c->collision_info->v.v[2] * c->collision_info->v.v[2]);
+                c->curvature -= 25.0f * dt * (0.05f / (mag + 5.0f)) * 2.0f;
+                if (c->curvature < 0.0f) {
+                    c->curvature = 0.0f;
+                }
+            }
+        }
+    }
+
+    c->curvature += c->turn_speed;
+    if (c->curvature > c->maxcurve) {
+        c->curvature = c->maxcurve;
+    }
+    if (c->curvature < -c->maxcurve) {
+        c->curvature = -c->maxcurve;
+    }
+
+    input |= 0x10000;
+    *(unsigned int*)&c->keys = input;
 }
 
 void C2_HOOK_FASTCALL DrVector3RotateY(br_vector3* v, br_angle t) {
