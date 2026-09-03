@@ -2066,8 +2066,29 @@ int C2_HOOK_FASTCALL TimeToSendData(void) {
 
 // FUNCTION: CARMA2_HW 0x004b71b0
 void C2_HOOK_FASTCALL PHILActivatePassive(tPhysics_object* pObject) {
+    tCollision_info_owner* owner;
 
-    NOT_IMPLEMENTED();
+    owner = pObject->field_0x240;
+    if (owner == NULL) {
+        pObject->flags |= 0x1000;
+        return;
+    }
+    if (owner->field_0x08 != 1) {
+        pObject->flags |= 0x1000;
+        return;
+    }
+
+    if (gPHIL_original_activate_passive != NULL) {
+        gPHIL_original_activate_passive(pObject);
+    }
+
+    if (gPHIL_callbacks->passive_activated != NULL) {
+        if (gPHIL_callbacks->passive_activated(pObject)) {
+            PHILMakeObjectActive(pObject, NULL, NULL, 1);
+        }
+    } else {
+        PHILMakeObjectActive(pObject, NULL, NULL, 1);
+    }
 }
 
 // FUNCTION: CARMA2_HW 0x004ff5d0
@@ -2243,8 +2264,27 @@ void C2_HOOK_FASTCALL DoCollisions(tPhysics_object** pObject_list, tWorld_callba
 
 // FUNCTION: CARMA2_HW 0x004b61a0
 int C2_HOOK_FASTCALL PHILSetPassiveObjectsMatrix(tPhysics_object* pObject, br_matrix34* pMatrix) {
+    tCollision_info_owner* owner;
 
-    NOT_IMPLEMENTED();
+    if (gPHIL_enabled) {
+        return 0;
+    }
+
+    owner = pObject->field_0x240;
+    if (pObject->field_0x239 == 2) {
+        memcpy((char*)owner + 0x30, pMatrix, sizeof(br_matrix34));
+        ((char*)owner)[0x60] |= 0x4;
+        return 0;
+    }
+
+    if (owner == NULL) {
+        return 3;
+    }
+    if (owner->field_0x08 != 1) {
+        return 4;
+    }
+
+    memcpy((char*)(*(void**)&owner->field_0x00) + 0x2c, pMatrix, sizeof(br_matrix34));
     return 0;
 }
 
@@ -2256,8 +2296,69 @@ void C2_HOOK_FAKE_THISCALL InterpolateSingleObject(tPhysics_object* pObject, und
 
 // FUNCTION: CARMA2_HW 0x004b6be0
 void C2_HOOK_FASTCALL ChangedObjectsCallbacks(tPhysics_object* pObjects, tPhysics_callbacks* pCallbacks, tU32 pPeriod) {
+    tPhysics_object* pObject;
 
-    NOT_IMPLEMENTED();
+    if (pObjects == NULL) {
+        return;
+    }
+
+    for (pObject = pObjects; pObject != NULL; pObject = pObject->next) {
+        tU32 val;
+        tCollision_info_owner* owner;
+        tPhysics_object* child;
+
+        if (gPHIL_enabled) {
+            val = 0;
+        } else if (pObject->field_0x239 == 2) {
+            val = ((tCollision_info_owner*)pObject->field_0x240)->field_0x08;
+        } else {
+            owner = pObject->field_0x240;
+            val = owner != NULL ? owner->field_0x08 : 0;
+        }
+
+        if (val != 2) {
+            continue;
+        }
+
+        if (pObject->disable_move_rotate) {
+            owner = pObject->field_0x240;
+            if (owner == NULL) {
+                continue;
+            }
+            if (!(owner->field_0x04 & 0x2)) {
+                continue;
+            }
+            if (pCallbacks->active_halted != NULL && !pCallbacks->active_halted(pObject)) {
+                continue;
+            }
+            if (gPHIL_enabled) {
+                continue;
+            }
+            if (pObject->field_0x239 == 2) {
+                ((tCollision_info_owner*)pObject->field_0x240)->field_0x08 = 1;
+            } else {
+                if (owner == NULL) {
+                    continue;
+                }
+                owner->field_0x08 = 1;
+                pObject->flags |= 0x20;
+            }
+        } else {
+            if (pCallbacks->changed_objects != NULL) {
+                pCallbacks->changed_objects(pObject, pPeriod);
+            }
+            owner = pObject->field_0x240;
+            if (owner == NULL) {
+                continue;
+            }
+            if (!(owner->field_0x04 & 0x4)) {
+                continue;
+            }
+            for (child = pObject->child; child != NULL; child = child->next) {
+                PipeSinglePHILObject(child);
+            }
+        }
+    }
 }
 
 static void ResetObjectAndChildren(tPhysics_object* pObject) {
