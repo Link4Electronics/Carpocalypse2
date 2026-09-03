@@ -357,10 +357,20 @@ void C2_HOOK_FASTCALL DisposeNetHeadups(void) {
 
 // NetSendEnvironmentChanges
 
-// STUB: CARMA2_HW 0x0049b9a0
+// FUNCTION: CARMA2_HW 0x0049b9a0
 void C2_HOOK_FASTCALL CheckForNeedyEnvironmentRecipients(void) {
 #ifndef CARPOCALYPSE2_MATCHING
-    /* stub: no-op for Linux boot */
+    int i;
+
+    if (gNet_mode != eNet_mode_host) {
+        return;
+    }
+    for (i = 0; i < gNumber_of_net_players; i++) {
+        if (i != gThis_net_player_index && gNet_players[i].player_status >= ePlayer_status_ready
+                && gNet_players[i].player_status < ePlayer_status_racing) {
+            SendCarData(PDGetTotalTime() + 1000);
+        }
+    }
 #else
     NOT_IMPLEMENTED();
 #endif

@@ -3308,10 +3308,15 @@ void C2_HOOK_FASTCALL CBDisposePersonality(undefined4* pArg1) {
     NOT_IMPLEMENTED();
 }
 
-// STUB: CARMA2_HW 0x004cccc0
+// FUNCTION: CARMA2_HW 0x004cccc0
 void C2_HOOK_FASTCALL DoBloodSpurt(uintptr_t pArg1, int pArg2, int pArg3, br_vector3* pArg4, br_vector3* pArg5, br_vector3* pArg6) {
-
+#ifndef CARPOCALYPSE2_MATCHING
+    if (pArg4 != NULL && pArg5 != NULL && pArg6 != NULL) {
+        /* Underlying DoSpurt particle system is not implemented. */
+    }
+#else
     NOT_IMPLEMENTED();
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004ca890
@@ -4716,10 +4721,14 @@ int C2_HOOK_FASTCALL CalmDownAllPeds(void) {
 
 // InitNapalmNolts
 
-// STUB: CARMA2_HW 0x004cadc0
+// FUNCTION: CARMA2_HW 0x004cadc0
 void C2_HOOK_FASTCALL InitPolyPedSystem(void) {
 #ifndef CARPOCALYPSE2_MATCHING
-    /* stub: no-op for Linux boot */
+    InitFaceCaches();
+    InitOtherPedStuff();
+    InitNapalmNolts();
+    gPeds_already_munged = 0;
+    gPed_last_munging = 0;
 #else
     NOT_IMPLEMENTED();
 #endif
@@ -4729,10 +4738,57 @@ void C2_HOOK_FASTCALL InitPolyPedSystem(void) {
 
 // DisposeCharacterInstances
 
-// STUB: CARMA2_HW 0x004cb8d0
+// FUNCTION: CARMA2_HW 0x004cb8d0
 void C2_HOOK_FASTCALL DisposePedStuff(void) {
+#ifndef CARPOCALYPSE2_MATCHING
+    int i;
+    int j;
 
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gPed_face_cache_heads); i++) {
+        if (gPed_face_cache_heads[i] != NULL) {
+            for (j = 0; j < gPed_cache_sizes_1[i]; j++) {
+                if (gPed_face_cache_heads[i][j].field_0x0 != NULL) {
+                    BrMemFree(gPed_face_cache_heads[i][j].field_0x0);
+                    gPed_face_cache_heads[i][j].field_0x0 = NULL;
+                }
+            }
+            BrMemFree(gPed_face_cache_heads[i]);
+            gPed_face_cache_heads[i] = NULL;
+        }
+    }
+    if (gPed_face_cache != NULL) {
+        BrMemFree(gPed_face_cache);
+        gPed_face_cache = NULL;
+    }
+    if (gProx_ray_shade_table != NULL) {
+        BrPixelmapFree(gProx_ray_shade_table);
+        gProx_ray_shade_table = NULL;
+    }
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gNapalm_bolts); i++) {
+        for (j = 0; j < CARPOCALYPSE2_ASIZE(gBurning_ped_materials); j++) {
+            if (gNapalm_bolts[i].actors[j] != NULL) {
+                BrActorRemove(gNapalm_bolts[i].actors[j]);
+                BrActorFree(gNapalm_bolts[i].actors[j]);
+                gNapalm_bolts[i].actors[j] = NULL;
+            }
+        }
+        gNapalm_bolts[i].ped = NULL;
+    }
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gBurning_ped_models); i++) {
+        if (gBurning_ped_models[i] != NULL) {
+            BrModelRemove(gBurning_ped_models[i]);
+            BrModelFree(gBurning_ped_models[i]);
+            gBurning_ped_models[i] = NULL;
+        }
+        if (gBurning_ped_materials[i] != NULL) {
+            BrMaterialRemove(gBurning_ped_materials[i]);
+            BrMaterialFree(gBurning_ped_materials[i]);
+            gBurning_ped_materials[i] = NULL;
+        }
+    }
+#else
     NOT_IMPLEMENTED();
+#endif
 }
 
 // BonerOpenCharacterForm

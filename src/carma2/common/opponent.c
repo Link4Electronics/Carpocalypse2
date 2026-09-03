@@ -2700,14 +2700,48 @@ void C2_HOOK_FASTCALL ForceRebuildActiveCarList(void) {
 
 // WakeUpOpponentsToTheFactThatTheStartHasBeenJumped
 
-// STUB: CARMA2_HW 0x004ae790
+// FUNCTION: CARMA2_HW 0x004ae790
 int C2_HOOK_FASTCALL GetCarCount(tVehicle_type pCategory) {
+#ifndef CARPOCALYPSE2_MATCHING
+    switch (pCategory) {
+    case eVehicle_self:
+        return 1;
+    case eVehicle_net_player:
+        return gNumber_of_net_players;
+    case eVehicle_opponent:
+        return gProgram_state.AI_vehicles.number_of_opponents;
+    case eVehicle_rozzer:
+        return gProgram_state.AI_vehicles.number_of_cops;
+    case eVehicle_drone:
+    case eVehicle_not_really:
+    default:
+        return 0;
+    }
+#else
     NOT_IMPLEMENTED();
+#endif
 }
 
-// STUB: CARMA2_HW 0x004ae7e0
+// FUNCTION: CARMA2_HW 0x004ae7e0
 tCar_spec* C2_HOOK_FASTCALL GetCarSpec(tVehicle_type pCategory, int pIndex) {
+#ifndef CARPOCALYPSE2_MATCHING
+    switch (pCategory) {
+    case eVehicle_self:
+        return &gProgram_state.current_car;
+    case eVehicle_net_player:
+        return gNet_players[pIndex].car;
+    case eVehicle_opponent:
+        return gProgram_state.AI_vehicles.opponents[pIndex].car_spec;
+    case eVehicle_rozzer:
+        return gProgram_state.AI_vehicles.cops[pIndex].car_spec;
+    case eVehicle_drone:
+    case eVehicle_not_really:
+    default:
+        return NULL;
+    }
+#else
     NOT_IMPLEMENTED();
+#endif
 }
 
 // GetDriverName

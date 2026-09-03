@@ -33,6 +33,10 @@
 #define MAX_MESSAGES_CAPACITY 200
 
 #define MESSAGE_MAGIC_NUMBER 0x763a5059
+
+#define MAX_GUARANTEED_MESSAGES 200
+#define NET_MSG_STATUS 0x05
+#define NET_MSG_LEAVE 0x0b
 // GLOBAL: CARMA2_HW 0x0068d96c
 extern int gNet_initialised;
 // GLOBAL: CARMA2_HW 0x00690c48
@@ -454,7 +458,7 @@ void C2_HOOK_FASTCALL DisposeCurrentJoinPollGame(void) {
     }
 }
 
-// STUB: CARMA2_HW 0x0049ec70
+// FUNCTION: CARMA2_HW 0x0049ec70
 void C2_HOOK_FASTCALL DoNextJoinPoll(void) {
 
     if (gTime_for_next_one) {
@@ -517,10 +521,28 @@ void C2_HOOK_FASTCALL NetLeaveGameLowLevel(void) {
     }
 }
 
-// STUB: CARMA2_HW 0x0049dc90
+// FUNCTION: CARMA2_HW 0x0049dc90
 void C2_HOOK_FASTCALL NetLeaveGame(tNet_game_details* pNet_game) {
 #ifndef CARPOCALYPSE2_MATCHING
-    /* stub: no-op for Linux boot */
+    tNet_message* message;
+    int i;
+
+    if (gNet_mode != eNet_mode_none) {
+        for (i = 0; i < gNumber_of_net_players; i++) {
+            if (i != gThis_net_player_index) {
+                message = NetBuildMessage(NET_MSG_LEAVE, 0);
+                NetReallySendMessageToPlayer(gCurrent_net_game, message, gNet_players[i].ID);
+            }
+        }
+        NetLeaveGameLowLevel();
+    }
+    gNet_mode = eNet_mode_none;
+    gNet_mode_of_last_game = eNet_mode_none;
+    gNumber_of_net_players = 0;
+    gThis_net_player_index = 0;
+    DisposeNetStorageSpace();
+    NetDisposeGameDetails(pNet_game);
+    gCurrent_net_game = NULL;
 #else
     NOT_IMPLEMENTED();
 #endif
@@ -583,10 +605,20 @@ int C2_HOOK_FASTCALL NetSendMessageToAddress(tNet_game_details* pDetails, tNet_m
 
 // NetGetMessageSize
 
-// STUB: CARMA2_HW 0x0049f650
+// FUNCTION: CARMA2_HW 0x0049f650
 tNet_message* C2_HOOK_FASTCALL NetBuildMessage(undefined pArg1, undefined4 pArg2) {
+#ifndef CARPOCALYPSE2_MATCHING
+    tNet_message* message;
+
+    message = NetAllocateMessage(sizeof(tNet_message_header) + 1);
+    message->contents.raw.header.type = pArg1;
+    message->header.field_0x14 = 0;
+    message->header.field_0x16 = sizeof(tNet_message_header) + 1;
+    return message;
+#else
     NOT_IMPLEMENTED();
     return NULL;
+#endif
 }
 
 // NetBuildGuaranteedMessage
@@ -601,19 +633,62 @@ tNet_message* C2_HOOK_FASTCALL NetBuildMessage(undefined pArg1, undefined4 pArg2
 
 // NetBroadcastContents
 
-// STUB: CARMA2_HW 0x0049fcf0
+// FUNCTION: CARMA2_HW 0x0049fcf0
 void C2_HOOK_FASTCALL NetSendMessageStacks(void) {
 #ifndef CARPOCALYPSE2_MATCHING
-    /* stub: no-op for Linux boot */
+    int i;
+
+    if (gNet_mode == eNet_mode_none) {
+        return;
+    }
+    for (i = 0; i < gNumber_of_net_players; i++) {
+        if (i != gThis_net_player_index && gNet_players[i].field_0xcc != NULL) {
+            NetReallySendMessageToPlayer(gCurrent_net_game, gNet_players[i].field_0xcc, gNet_players[i].ID);
+            gNet_players[i].field_0xcc = NULL;
+        }
+    }
 #else
     NOT_IMPLEMENTED();
 #endif
 }
 
-// STUB: CARMA2_HW 0x0049fdb0
+// FUNCTION: CARMA2_HW 0x0049fdb0
 tNet_message* C2_HOOK_FASTCALL NetAllocateMessage(int pSize) {
+#ifndef CARPOCALYPSE2_MATCHING
+    tNet_message* message;
+    tNet_message_memory* memory;
+    int i;
+
+    if (pSize <= sizeof(tMin_message)) {
+        for (i = 0; i < MIN_MESSAGES_CAPACITY; i++) {
+            message = (tNet_message*)((br_uint_8*)&gMin_messages[i] + gMessage_header_size);
+            if (message->contents.raw.header.type == eNetMsg_none) {
+                return message;
+            }
+        }
+    } else if (pSize <= sizeof(tMid_message)) {
+        for (i = 0; i < MID_MESSAGES_CAPACITY; i++) {
+            message = (tNet_message*)((br_uint_8*)&gMid_messages[i] + gMessage_header_size);
+            if (message->contents.raw.header.type == eNetMsg_none) {
+                return message;
+            }
+        }
+    } else if (pSize <= sizeof(tMax_message)) {
+        for (i = 0; i < MAX_MESSAGES_CAPACITY; i++) {
+            message = (tNet_message*)((br_uint_8*)&gMax_messages[i] + gMessage_header_size);
+            if (message->contents.raw.header.type == eNetMsg_none) {
+                return message;
+            }
+        }
+    }
+    memory = BrMemAllocate(sizeof(tNet_message_memory), kMem_dynamic_message);
+    memory->next = gDynamic_messages;
+    gDynamic_messages = memory;
+    return &memory->message;
+#else
     NOT_IMPLEMENTED();
     return NULL;
+#endif
 }
 
 void C2_HOOK_FASTCALL NetFreeExcessMemory(void) {
@@ -714,43 +789,82 @@ int C2_HOOK_FASTCALL NetDisposeMessage(tNet_game_details* pDetails, tNet_message
 
 // ReceivedMessage
 
-// STUB: CARMA2_HW 0x004a4a40
+// FUNCTION: CARMA2_HW 0x004a4a40
 void C2_HOOK_FASTCALL NetReceiveAndProcessMessages(void) {
 #ifndef CARPOCALYPSE2_MATCHING
-    /* stub: no-op for Linux boot */
+    tNet_message* message;
+    void* sender_address;
+
+    while ((message = NetGetNextMessage(gCurrent_net_game, &sender_address)) != NULL) {
+        ReceivedMessage(message, sender_address, PDGetTotalTime());
+    }
 #else
     NOT_IMPLEMENTED();
 #endif
 }
 
-// STUB: CARMA2_HW 0x004a4ac0
+// FUNCTION: CARMA2_HW 0x004a4ac0
 void C2_HOOK_FASTCALL BroadcastStatus(void) {
 #ifndef CARPOCALYPSE2_MATCHING
-    /* stub: no-op for Linux boot */
+    tNet_message* message;
+    tNet_game_player_info* player;
+    int i;
+
+    if (gNet_mode == eNet_mode_none) {
+        return;
+    }
+    player = &gNet_players[gThis_net_player_index];
+    for (i = 0; i < gNumber_of_net_players; i++) {
+        if (i == gThis_net_player_index) {
+            continue;
+        }
+        message = NetBuildMessage(NET_MSG_STATUS, 0);
+        message->contents.raw.data[0] = (tU8)player->player_status;
+        NetReallySendMessageToPlayer(gCurrent_net_game, message, gNet_players[i].ID);
+    }
 #else
     NOT_IMPLEMENTED();
 #endif
 }
 
-// STUB: CARMA2_HW 0x004a4da0
+// FUNCTION: CARMA2_HW 0x004a4da0
 void C2_HOOK_FASTCALL CheckForDisappearees(void) {
 #ifndef CARPOCALYPSE2_MATCHING
-    /* stub: no-op for Linux boot */
+    tU32 now;
+    int i;
+
+    now = PDGetTotalTime();
+    for (i = 0; i < gNumber_of_net_players; i++) {
+        if (i != gThis_net_player_index && now - gNet_players[i].last_heard_from_him > 60000) {
+            gNet_players[i].player_status = ePlayer_status_not_responding;
+        }
+    }
 #else
     NOT_IMPLEMENTED();
 #endif
 }
 
-// STUB: CARMA2_HW 0x004a5240
+// FUNCTION: CARMA2_HW 0x004a5240
 void C2_HOOK_FASTCALL CheckForPendingStartRace(void) {
 #ifndef CARPOCALYPSE2_MATCHING
-    /* stub: no-op for Linux boot */
+    int i;
+
+    if (gNet_mode != eNet_mode_host || gStart_race_sent || gPending_race == 0) {
+        return;
+    }
+    for (i = 0; i < gNumber_of_net_players; i++) {
+        if (gNet_players[i].player_status != ePlayer_status_ready) {
+            return;
+        }
+    }
+    SignalToStartRace();
+    gStart_race_sent = 1;
 #else
     NOT_IMPLEMENTED();
 #endif
 }
 
-// STUB: CARMA2_HW 0x004a5280
+// FUNCTION: CARMA2_HW 0x004a5280
 void C2_HOOK_FASTCALL NetService(int pIn_race) {
     tU32 time;
 
@@ -791,10 +905,17 @@ void C2_HOOK_FASTCALL NetService(int pIn_race) {
 
 // NetFinishRace
 
-// STUB: CARMA2_HW 0x004a57e0
+// FUNCTION: CARMA2_HW 0x004a57e0
 void C2_HOOK_FASTCALL NetPlayerStatusChanged(tPlayer_status pNew_status) {
 #ifndef CARPOCALYPSE2_MATCHING
-    /* stub: no-op for Linux boot */
+    if (gNet_mode == eNet_mode_none) {
+        return;
+    }
+    if (gNet_players[gThis_net_player_index].player_status == pNew_status) {
+        return;
+    }
+    gNet_players[gThis_net_player_index].player_status = pNew_status;
+    BroadcastStatus();
 #else
     NOT_IMPLEMENTED();
 #endif
@@ -814,10 +935,20 @@ void C2_HOOK_FASTCALL NetPlayerStatusChanged(tPlayer_status pNew_status) {
 
 // NetGuaranteedSendMessageToAddress
 
-// STUB: CARMA2_HW 0x004a6080
+// FUNCTION: CARMA2_HW 0x004a6080
 void C2_HOOK_FASTCALL ResendGuaranteedMessages(void) {
 #ifndef CARPOCALYPSE2_MATCHING
-    /* stub: no-op for Linux boot */
+    tU32 time;
+    int i;
+
+    time = PDGetTotalTime();
+    for (i = 0; i < MAX_GUARANTEED_MESSAGES; i++) {
+        if (gGuarantee_list[i].message != NULL && gGuarantee_list[i].recieved == 0 && time >= gGuarantee_list[i].next_resend_time) {
+            gGuarantee_list[i].send_time = time;
+            gGuarantee_list[i].next_resend_time = time + gGuarantee_list[i].resend_period;
+            PDNetSendMessageToAddress(gCurrent_net_game, gGuarantee_list[i].message, &gGuarantee_list[i].pd_address);
+        }
+    }
 #else
     NOT_IMPLEMENTED();
 #endif

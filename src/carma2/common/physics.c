@@ -2398,10 +2398,14 @@ void C2_HOOK_FASTCALL FreePhysicsJoint(tPhysics_joint* pJoint) {
 
 // ResetMan
 
-// STUB: CARMA2_HW 0x004b5ca0
+// FUNCTION: CARMA2_HW 0x004b5ca0
 void C2_HOOK_FASTCALL InitPhysics(void) {
 #ifndef CARPOCALYPSE2_MATCHING
-    /* stub: no-op for Linux boot */
+    static tU8 physics_workspace[3 * PHYSICS_BUFFER_PART_SIZE + PHYSICS_BUFFER_OTHER_SIZE];
+
+    InitPhysicsWorkspace(physics_workspace, (int)sizeof(physics_workspace));
+    gCollision_info_uid_counter = 0;
+    gFace_num__car = 1;
 #else
     NOT_IMPLEMENTED();
 #endif

@@ -1269,10 +1269,20 @@ float C2_HOOK_FASTCALL ARGetReplayRate(void) {
 
 // InitialiseActionReplay
 
-// STUB: CARMA2_HW 0x004c6c60
+// FUNCTION: CARMA2_HW 0x004c6c60
 void C2_HOOK_FASTCALL DisposeActionReplay(void) {
 #ifndef CARPOCALYPSE2_MATCHING
-    /* stub: no-op for Linux boot */
+    if (gLocal_buffer != NULL) {
+        BrMemFree(gLocal_buffer);
+        gLocal_buffer = NULL;
+    }
+    PDDisposeActionReplayBuffer();
+    gPipe_buffer_start = NULL;
+    gPipe_buffer_phys_end = NULL;
+    gPipe_buffer_working_end = NULL;
+    gPipe_buffer_oldest = NULL;
+    gPipe_record_ptr = NULL;
+    gPipe_buffer_size = 0;
 #else
     NOT_IMPLEMENTED();
 #endif

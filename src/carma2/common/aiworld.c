@@ -1,13 +1,19 @@
 #include "aiworld.h"
 
+#include "drone.h"
+#include "opponent.h"
+
 // MakeVertexAndOffsetIt
 
 // MakeFaceAndTextureIt
 
-// STUB: CARMA2_HW 0x00401000
+// FUNCTION: CARMA2_HW 0x00401000
 void C2_HOOK_FASTCALL InitPanGameAIWorld(void) {
 #ifndef CARPOCALYPSE2_MATCHING
-    /* stub: no-op for Linux boot */
+    gCount_drones = 0;
+    gNum_of_opponents_pursuing = 0;
+    gNum_of_opponents_getting_near = 0;
+    gNum_of_opponents_completing_race = 0;
 #else
     NOT_IMPLEMENTED();
 #endif
@@ -19,10 +25,14 @@ void C2_HOOK_FASTCALL InitPanGameAIWorld(void) {
 
 // InitialiseAIWorldForRace
 
-// STUB: CARMA2_HW 0x00401160
+// FUNCTION: CARMA2_HW 0x00401160
 void C2_HOOK_FASTCALL DisposeAIWorldRaceStuff(void) {
-
+#ifndef CARPOCALYPSE2_MATCHING
+    DisposeDronesRaceStuff();
+    DisposeOpponents();
+#else
     NOT_IMPLEMENTED();
+#endif
 }
 
 // MungeAIWorld
