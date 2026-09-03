@@ -1,6 +1,7 @@
 #include "loading2.h"
 extern void C2_HOOK_FASTCALL PossibleService(void);
 extern void C2_HOOK_FASTCALL InitFunkGrooveFlags(void);
+extern void C2_HOOK_FASTCALL FinishLoadGeneralParameters(void);
 extern tHeadup_info gHeadup_image_info[45];
 extern br_pixelmap* gHeadup_images[45];
 extern tNet_mode gNet_mode;
@@ -481,7 +482,7 @@ void C2_HOOK_FASTCALL LoadGeneralParameters(void) {
 // STUB: CARMA2_HW 0x00487dc0
 void C2_HOOK_FASTCALL FinishLoadingGeneral(void) {
 #ifndef CARPOCALYPSE2_MATCHING
-    /* stub: no-op for Linux boot */
+    FinishLoadGeneralParameters();
 #else
     NOT_IMPLEMENTED();
 #endif

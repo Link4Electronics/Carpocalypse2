@@ -21,6 +21,7 @@
 #ifdef SDL_PLATFORM_WINDOWS
 #include <windows.h>
 #else
+#include <dirent.h>
 #include <libgen.h>
 #include <sys/stat.h>
 #endif
@@ -466,12 +467,82 @@ int PDFileUnlock(const char *pThe_path) {
 #endif
 }
 
+#ifdef CARPOCALYPSE2_FIX_BUGS
+/* Case-insensitive path resolver for directory enumeration. The retail game
+ * hard-codes directory names such as ".../COMMON/BOOM" and path segments that
+ * differ in case from what ships on disk (".../COMMON/boom", "DATA" vs "data"),
+ * which makes case-sensitive hosts (Linux) enumerate zero files. Resolve each
+ * component case-insensitively. Handles redundant separators. */
+static int CI_ResolveDirCaseInsensitive(const char* pPath, char* out, size_t out_size) {
+    char resolved[256];
+    char comp[256];
+    const char* p;
+    size_t comp_len;
+
+    if (pPath == NULL || pPath[0] == '\0') {
+        return -1;
+    }
+    resolved[0] = '\0';
+    p = pPath;
+    for (;;) {
+        while (p[0] == '/') {
+            p++;
+        }
+        if (p[0] == '\0') {
+            break;
+        }
+        comp_len = strcspn(p, "/");
+        if (comp_len >= sizeof(comp)) {
+            return -1;
+        }
+        memcpy(comp, p, comp_len);
+        comp[comp_len] = '\0';
+        {
+            DIR* d = opendir(resolved[0] == '\0' ? "/" : resolved);
+            struct dirent* e;
+            int found = 0;
+            if (d == NULL) {
+                break;
+            }
+            while ((e = readdir(d)) != NULL) {
+                if (DRStricmp(e->d_name, comp) == 0) {
+                    size_t len = strlen(resolved);
+                    if (len == 0) {
+                        strcat(resolved, "/");
+                    } else if (resolved[len - 1] != '/') {
+                        strcat(resolved, "/");
+                    }
+                    strcat(resolved, e->d_name);
+                    found = 1;
+                    break;
+                }
+            }
+            closedir(d);
+            if (!found) {
+                break;
+            }
+        }
+        p += comp_len;
+    }
+    strncpy(out, resolved, out_size - 1);
+    out[out_size - 1] = '\0';
+    return 0;
+}
+#endif
+
 void PDEnumPath(const char* path, tEnumPathCallback pCallback, void* data) {
     int count;
     int i;
     char **files;
-
+#ifdef CARPOCALYPSE2_FIX_BUGS
+    char resolved_path[256];
+    strncpy(resolved_path, path, sizeof(resolved_path) - 1);
+    resolved_path[sizeof(resolved_path) - 1] = '\0';
+    CI_ResolveDirCaseInsensitive(path, resolved_path, sizeof(resolved_path));
+    files = SDL_GlobDirectory(resolved_path, "*.*", 0, &count);
+#else
     files = SDL_GlobDirectory(path, "*.*", 0, &count);
+#endif
     for (i = 0; i < count; i++) {
         tPath_name found_path;
         SDL_PathInfo info;
@@ -479,7 +550,11 @@ void PDEnumPath(const char* path, tEnumPathCallback pCallback, void* data) {
         if (l >= 4 && SDL_strcasecmp(files[i] + l - 4, ".lnk") == 0) {
             continue;
         }
+#ifdef CARPOCALYPSE2_FIX_BUGS
+        PathCat(found_path, resolved_path, files[i]);
+#else
         PathCat(found_path, path, files[i]);
+#endif
         if (!SDL_GetPathInfo(found_path, &info)) {
             continue;
         }

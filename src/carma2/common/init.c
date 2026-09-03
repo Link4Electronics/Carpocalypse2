@@ -1185,6 +1185,7 @@ void C2_HOOK_FASTCALL Init2DStuff(void) {
         PDInitTimer(); \
         InitWobbleStuff(); \
         InitialiseStorageSpace(0, &gMisc_storage_space, 1000, 5, 1000, 1000, 10); \
+        InitialiseStorageSpace(0, &gTrack_storage_space, 1000, 50, 1000, 1000, 50); \
         LoadGeneralParameters(); \
         FinishLoadGeneralParameters(); \
         PrintMemoryDump(0, "AFTER LOADING GENERAL PARAMETERS"); \
@@ -1271,7 +1272,6 @@ void C2_HOOK_FASTCALL Init2DStuff(void) {
         InitialiseStorageSpace(0, &gTheir_cars_storage_space, 1500, 50, 1500, 1500, 50); \
         InitialiseStorageSpace(0, &gDroneStorage, 500, 50, 500, 228, 10); \
         InitialiseStorageSpace(0, &gPedStorage, 200, 10, 100, 500, 200); \
-        InitialiseStorageSpace(0, &gTrack_storage_space, 1000, 50, 1000, 1000, 50); \
         PrintMemoryDump(0, "AFTER FINISHING LOADING GENERAL"); \
         InitOilSpills(); \
         for (;;) { \

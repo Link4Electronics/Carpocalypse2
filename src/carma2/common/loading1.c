@@ -639,6 +639,9 @@ char * C2_HOOK_FASTCALL GetALineWithNoPossibleService(FILE* pF, char* pS) {
              && *result != '('
              && *result != '\''
              && *result != '\"'
+#ifndef CARPOCALYPSE2_MATCHING
+             && *result != '@'
+#endif
              && (unsigned char)*result < 0x80);
 
     if (result != NULL) {
@@ -651,6 +654,13 @@ char * C2_HOOK_FASTCALL GetALineWithNoPossibleService(FILE* pF, char* pS) {
             result[len - 1] = '\0';
             len--;
         }
+#ifndef CARPOCALYPSE2_MATCHING
+        if (gDecode_thing == '@' && result[0] == '@') {
+            memmove(result, result + 1, len);
+            DecodeLine2(result);
+            len = strlen(result);
+        }
+#endif
         memcpy(pS, result, len + 1);
 #ifdef CARPOCALYPSE2_FIX_BUGS
         return pS;

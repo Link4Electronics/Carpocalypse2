@@ -195,7 +195,11 @@ br_pixelmap* C2_HOOK_FASTCALL LoadTiffTexture_Ex2(const char* pDirectory, const 
         if (pPalette == NULL) {
             pal = LoadDefaultPalette(pDirectory, pFlags, pError_code);
             if (pal == NULL) {
-                return NULL;
+                pm = LoadTiff16bit(tif_path, pFlags, pError_code);
+                if (pm != NULL) {
+                    *pError_code = 0;
+                }
+                return pm;
             }
         }
         pm = LoadTiffUsingPalette(tif_path, pal, pFlags, pError_code);
