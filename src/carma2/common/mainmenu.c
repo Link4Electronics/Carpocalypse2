@@ -33,7 +33,7 @@ void C2_HOOK_FASTCALL DoOptionsMenu(void) {
         player_status = gNet_players[gThis_net_player_index].player_status;
         NetPlayerStatusChanged(ePlayer_status_main_menu);
     }
-    if (FRONTEND_Main(kFrontend_menu_options) == 0) {
+    if (FrontEndProcessMenus(kFrontend_menu_options) == 0) {
         gProgram_state.prog_status = eProg_quit;
     }
     if (gNet_mode != eNet_mode_none && gNet_players[gThis_net_player_index].player_status == ePlayer_status_main_menu) {

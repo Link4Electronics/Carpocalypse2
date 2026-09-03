@@ -126,8 +126,6 @@ void C2_HOOK_FASTCALL DoUncompressedTrans(tFlic_descriptor* pFlic_info, tU32 chu
 
 void C2_HOOK_FASTCALL DrawTranslations(tFlic_descriptor* pFlic_info);
 
-int C2_HOOK_FASTCALL PlayNextFlicFrame2(tFlic_descriptor* pFlic_info, int pPanel_flic);
-
 int C2_HOOK_FASTCALL PlayNextFlicFrame(tFlic_descriptor* pFlic_info);
 
 int C2_HOOK_FASTCALL PlayFlic(int pIndex, tU32 pSize, tS8* pData_ptr, br_pixelmap* pDest_pixelmap, int pX_offset, int pY_offset, tPlayFlic_DoPerFrame DoPerFrame, int pInterruptable, int pFrame_rate);

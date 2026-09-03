@@ -1184,7 +1184,9 @@ void C2_HOOK_FASTCALL Init2DStuff(void) {
         InitFogificateMaterials(); \
         PDInitTimer(); \
         InitWobbleStuff(); \
+        InitialiseStorageSpace(0, &gMisc_storage_space, 1000, 5, 1000, 1000, 10); \
         LoadGeneralParameters(); \
+        FinishLoadGeneralParameters(); \
         PrintMemoryDump(0, "AFTER LOADING GENERAL PARAMETERS"); \
         DefaultNetName(); \
         strcpy(gProgram_state.player_name, "MAX DAMAGE"); \
@@ -1209,7 +1211,6 @@ void C2_HOOK_FASTCALL Init2DStuff(void) {
         PrintMemoryDump(0, "AFTER INITIALISING EXPLOSIONS"); \
         LoadMiscStrings(); \
         PrintMemoryDump(0, "AFTER LOADING MISC STRING"); \
-        InitialiseStorageSpace(0, &gMisc_storage_space, 1000, 5, 1000, 1000, 10); \
         LoadInRegistees(); \
         InitMap(); \
         PrintMemoryDump(0, "AFTER INITIALISING GENERAL STORAGE AND LOADING IN REG"); \
@@ -1271,7 +1272,6 @@ void C2_HOOK_FASTCALL Init2DStuff(void) {
         InitialiseStorageSpace(0, &gDroneStorage, 500, 50, 500, 228, 10); \
         InitialiseStorageSpace(0, &gPedStorage, 200, 10, 100, 500, 200); \
         InitialiseStorageSpace(0, &gTrack_storage_space, 1000, 50, 1000, 1000, 50); \
-        FinishLoadingGeneral(); \
         PrintMemoryDump(0, "AFTER FINISHING LOADING GENERAL"); \
         InitOilSpills(); \
         for (;;) { \

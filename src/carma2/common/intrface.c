@@ -209,7 +209,7 @@ int C2_HOOK_FASTCALL DoInterfaceScreen(const tInterface_spec* pSpec, int pOption
                 if (gCurrent_choice > pSpec->move_left_max[gCurrent_mode]) {
                     gCurrent_choice = pSpec->move_left_min[gCurrent_mode];
                 }
-                DRS3StartSound(gEffects_outlet, eSoundId_LeftButton);
+                DRS3StartSound(gIndexed_outlets[0], eSoundId_LeftButton);
             }
             if (pSpec->move_left_proc[gCurrent_mode] != NULL) {
                 defeat_mode_change = pSpec->move_left_proc[gCurrent_mode](&gCurrent_choice, &gCurrent_mode);
@@ -229,7 +229,7 @@ int C2_HOOK_FASTCALL DoInterfaceScreen(const tInterface_spec* pSpec, int pOption
                 if (gCurrent_choice > pSpec->move_right_max[gCurrent_mode]) {
                     gCurrent_choice = pSpec->move_right_min[gCurrent_mode];
                 }
-                DRS3StartSound(gEffects_outlet, eSoundId_LeftButton);
+                DRS3StartSound(gIndexed_outlets[0], eSoundId_LeftButton);
             }
             if (pSpec->move_right_proc[gCurrent_mode] != NULL) {
                 defeat_mode_change = pSpec->move_right_proc[gCurrent_mode](&gCurrent_choice, &gCurrent_mode);
@@ -249,7 +249,7 @@ int C2_HOOK_FASTCALL DoInterfaceScreen(const tInterface_spec* pSpec, int pOption
                 if (gCurrent_choice > pSpec->move_up_max[gCurrent_mode]) {
                     gCurrent_choice = pSpec->move_up_min[gCurrent_mode];
                 }
-                DRS3StartSound(gEffects_outlet, eSoundId_LeftButton);
+                DRS3StartSound(gIndexed_outlets[0], eSoundId_LeftButton);
             }
             if (pSpec->move_up_proc[gCurrent_mode] != NULL) {
                 defeat_mode_change = pSpec->move_up_proc[gCurrent_mode](&gCurrent_choice, &gCurrent_mode);
@@ -269,7 +269,7 @@ int C2_HOOK_FASTCALL DoInterfaceScreen(const tInterface_spec* pSpec, int pOption
                 if (gCurrent_choice > pSpec->move_down_max[gCurrent_mode]) {
                     gCurrent_choice = pSpec->move_down_min[gCurrent_mode];
                 }
-                DRS3StartSound(gEffects_outlet, eSoundId_LeftButton);
+                DRS3StartSound(gIndexed_outlets[0], eSoundId_LeftButton);
             }
             if (pSpec->move_down_proc[gCurrent_mode] != NULL) {
                 defeat_mode_change = pSpec->move_down_proc[gCurrent_mode](&gCurrent_choice, &gCurrent_mode);
@@ -294,7 +294,7 @@ int C2_HOOK_FASTCALL DoInterfaceScreen(const tInterface_spec* pSpec, int pOption
             go_ahead = pSpec->go_ahead_proc[gCurrent_mode](&gCurrent_choice, &gCurrent_mode);
         }
         if (PDKeyDown(63)) {
-            DRS3StartSound(gEffects_outlet, eSoundId_EscEsc);
+            DRS3StartSound(gIndexed_outlets[0], eSoundId_EscEsc);
             escaped = pSpec->escape_allowed[gCurrent_mode];
             if (pSpec->escape_proc[gCurrent_mode] != NULL) {
                 escaped = pSpec->escape_proc[gCurrent_mode](&gCurrent_choice, &gCurrent_mode);
