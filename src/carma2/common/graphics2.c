@@ -349,10 +349,10 @@ void C2_HOOK_FASTCALL DRDrawLine(br_pixelmap* pDestn, int pX1, int pY1, int pX2,
     BrPixelmapLine(pDestn, pX1, pY1, pX2, pY2, pColour);
 }
 
-// STUB: CARMA2_HW 0x0047b880
+// FUNCTION: CARMA2_HW 0x0047b880
 void C2_HOOK_FASTCALL ClearEntireScreen(void) {
 #ifndef CARPOCALYPSE2_MATCHING
-    /* stub: no-op for Linux boot */
+    BrPixelmapFill(gBack_screen, gGraf_specs[gGraf_spec_index].black_value);
 #else
     NOT_IMPLEMENTED();
 #endif

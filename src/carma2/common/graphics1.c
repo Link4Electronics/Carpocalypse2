@@ -89,10 +89,49 @@ tShadow_level C2_HOOK_FASTCALL GetShadowLevel(void) {
 
 // ToggleShadow
 
-// STUB: CARMA2_HW 0x004e99d0
+// GLOBAL: CARMA2_HW 0x006a2444
+extern br_actor* gShadow_actor;
+
+// GLOBAL: CARMA2_HW 0x006a27e4
+extern br_model* gShadow_model;
+
+// GLOBAL: CARMA2_HW 0x006a27e0
+extern br_material* gShadow_material;
+
+// GLOBAL: CARMA2_HW 0x006a27ec
+extern br_vector3 gShadow_light_ray;
+
+// GLOBAL: CARMA2_HW 0x006a27d8
+extern br_vector3 gShadow_light_x;
+
+// GLOBAL: CARMA2_HW 0x006a27e8
+extern br_vector3 gShadow_light_z;
+
+// GLOBAL: CARMA2_HW 0x006a0840
+extern tClip_details gShadow_clip_planes[8];
+
+// FUNCTION: CARMA2_HW 0x004e99d0
 void C2_HOOK_FASTCALL InitShadow(void) {
 #ifndef CARPOCALYPSE2_MATCHING
-    /* stub: no-op for Linux boot */
+    int i;
+
+    gShadow_actor = BrActorAllocate(BR_ACTOR_MODEL, NULL);
+    gShadow_model = BrModelAllocate(NULL, 48, 16);
+    gShadow_actor->model = gShadow_model;
+    gShadow_actor->render_style = BR_RSTYLE_NONE;
+
+    gShadow_material = BrMaterialAllocate(NULL);
+    gShadow_material->flags &= ~BR_MATF_LIGHT;
+    gShadow_material->flags |= BR_MATF_ALWAYS_VISIBLE;
+    BrMaterialAdd(gShadow_material);
+
+    BrVector3Set(&gShadow_light_ray, 0.f, -1.f, 0.f);
+    BrVector3Set(&gShadow_light_x, 1.f, 0.f, 0.f);
+    BrVector3Set(&gShadow_light_z, 0.f, 0.f, 1.f);
+
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gShadow_clip_planes); i++) {
+        gShadow_clip_planes[i].clip = BrActorAllocate(BR_ACTOR_CLIP_PLANE, NULL);
+    }
 #else
     NOT_IMPLEMENTED();
 #endif
@@ -102,10 +141,24 @@ void C2_HOOK_FASTCALL InitShadow(void) {
 
 // SaveShadeTables
 
-// STUB: CARMA2_HW 0x004e9b60
+// GLOBAL: CARMA2_HW 0x006a2810
+extern tSaved_table gSaved_shade_tables[100];
+
+// GLOBAL: CARMA2_HW 0x006a26d8
+extern int gSaved_table_count;
+
+// FUNCTION: CARMA2_HW 0x004e9b60
 void C2_HOOK_FASTCALL DisposeSavedShadeTables(void) {
 #ifndef CARPOCALYPSE2_MATCHING
-    /* stub: no-op for Linux boot */
+    int i;
+
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gSaved_shade_tables); i++) {
+        if (gSaved_shade_tables[i].copy != NULL) {
+            BrMemFree(gSaved_shade_tables[i].copy);
+            gSaved_shade_tables[i].copy = NULL;
+        }
+    }
+    gSaved_table_count = 0;
 #else
     NOT_IMPLEMENTED();
 #endif

@@ -1,4 +1,6 @@
 #include "smash.h"
+#include "smashing.h"
+#include "world.h"
 
 #include "utility.h"
 #include "globvars.h"
@@ -201,10 +203,12 @@ void C2_HOOK_FASTCALL InitExplosions(void) {
 
 // ReadPowerupSmash
 
-// STUB: CARMA2_HW 0x004efe00
+// FUNCTION: CARMA2_HW 0x004efe00
 void C2_HOOK_FASTCALL InitSmashing(void) {
 #ifndef CARPOCALYPSE2_MATCHING
-    /* stub: no-op for Linux boot */
+    InitGlassFragments();
+    InitDecals();
+    InitSmashQueue();
 #else
     NOT_IMPLEMENTED();
 #endif
@@ -222,10 +226,24 @@ void C2_HOOK_FASTCALL InitSmashing(void) {
 
 // KillAllGlassFragments
 
-// STUB: CARMA2_HW 0x004f02b0
+// FUNCTION: CARMA2_HW 0x004f02b0
 void C2_HOOK_FASTCALL CleanUpSmashStuff(void) {
 #ifndef CARPOCALYPSE2_MATCHING
-    /* stub: no-op for Linux boot */
+    int i;
+
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gSmash_glass_fragments) != 200);
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gSmash_glass_fragments); i++) {
+        if (gSmash_glass_fragments[i].end_time != 0) {
+            BrActorRemove(gSmash_glass_fragments[i].actor);
+            gSmash_glass_fragments[i].end_time = 0;
+        }
+    }
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gDecals); i++) {
+        if (gDecals[i].actor != NULL && gDecals[i].actor->parent != NULL) {
+            BrActorRemove(gDecals[i].actor);
+        }
+        gDecals[i].time = 0;
+    }
 #else
     NOT_IMPLEMENTED();
 #endif

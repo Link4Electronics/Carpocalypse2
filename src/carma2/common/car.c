@@ -3064,10 +3064,11 @@ void C2_HOOK_FASTCALL MakeLiftGoUp(tNon_car_spec* pNon_car) {
 
 // SwitchCarModel
 
-// STUB: CARMA2_HW 0x00413f40
+// FUNCTION: CARMA2_HW 0x00413f40
 void C2_HOOK_FASTCALL SwitchCarModels(tCar_spec* pCar, int pIndex) {
 #ifndef CARPOCALYPSE2_MATCHING
-    /* stub: no-op for Linux boot */
+    DRActorEnumRecurse(pCar->car_model_actor, SwitchCarModel, &pIndex);
+    pCar->field_0xe18 = pIndex;
 #else
     NOT_IMPLEMENTED();
 #endif

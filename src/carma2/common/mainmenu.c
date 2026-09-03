@@ -21,7 +21,6 @@
 
 // QuitVerifyDone
 
-// STUB: CARMA2_HW 0x00494450
 // FUNCTION: CARMA2_HW 0x00494570
 void C2_HOOK_FASTCALL DoOptionsMenu(void) {
     tPlayer_status player_status;

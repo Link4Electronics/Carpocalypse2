@@ -1,7 +1,15 @@
 #include "crush1.h"
+#include "crush.h"
+#include "physics.h"
+#include "globvars.h"
+#include "compress.h"
+#include "utility.h"
+#include "carpocalypse2_macros.h"
 
 #include "loading1.h"
 #include "platform.h"
+
+#include <brender/brender.h>
 
 #include "c2_string.h"
 // GLOBAL: CARMA2_HW 0x00679698
@@ -133,10 +141,17 @@ void C2_HOOK_FASTCALL ReadCrushSettings(FILE* pF) {
 
 // RemoveCarFromCrushLists
 
-// STUB: CARMA2_HW 0x00429fa0
+// FUNCTION: CARMA2_HW 0x00429fa0
 void C2_HOOK_FASTCALL InitCrushSystems(void) {
 #ifndef CARPOCALYPSE2_MATCHING
-    /* stub: no-op for Linux boot */
+    int i;
+
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gTrack_crush_joints) != 32);
+
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gTrack_crush_joints); i++) {
+        gTrack_crush_joints[i] = AllocatePhysicsJoint(1, kMem_physics_joint);
+        gTrack_crush_joints[i]->type = eJoint_none;
+    }
 #else
     NOT_IMPLEMENTED();
 #endif
@@ -218,10 +233,42 @@ void C2_HOOK_FASTCALL InitCrushSystems(void) {
 
 // InitPhysModCrushData
 
-// STUB: CARMA2_HW 0x0042c420
+// FUNCTION: CARMA2_HW 0x0042c420
 void C2_HOOK_FASTCALL DisposeMasterCrushData(tCar_crush_spec* pCar_crush, tCar_spec* pCar) {
 #ifndef CARPOCALYPSE2_MATCHING
-    /* stub: no-op for Linux boot */
+    int i;
+
+    if (pCar_crush->field_0x4 != NULL) {
+        for (i = 0; i < pCar_crush->count_shapes; i++) {
+            tCar_crush_shape_info* shape_info = &pCar_crush->field_0x4[i];
+
+            if (shape_info->field_0x0 != NULL) {
+                BrMemFree(shape_info->field_0x0);
+            }
+            if (shape_info->field_0x4 != NULL) {
+                BrMemFree(shape_info->field_0x4);
+            }
+            if (shape_info->field_0x18 != NULL) {
+                BrMemFree(shape_info->field_0x18);
+            }
+        }
+        BrMemFree(pCar_crush->field_0x4);
+        pCar_crush->field_0x4 = NULL;
+    }
+    if (pCar_crush->field_0x1cc != NULL) {
+        BrMemFree(pCar_crush->field_0x1cc);
+        pCar_crush->field_0x1cc = NULL;
+    }
+    for (i = 0; i < 4; i++) {
+        if (pCar_crush->field_0x564[i] != NULL) {
+            BrMemFree(pCar_crush->field_0x564[i]);
+            pCar_crush->field_0x564[i] = NULL;
+        }
+    }
+    if (pCar_crush->network_stuff != NULL) {
+        BrMemFree(pCar_crush->network_stuff);
+        pCar_crush->network_stuff = NULL;
+    }
 #else
     NOT_IMPLEMENTED();
 #endif
@@ -527,10 +574,38 @@ void C2_HOOK_FASTCALL DisposeMasterCrushData(tCar_crush_spec* pCar_crush, tCar_s
 
 // SendReAttachAllBits
 
-// STUB: CARMA2_HW 0x00439510
+intptr_t C2_HOOK_CDECL TotallyRepairCarCB(br_actor* pActor, void* data) {
+    tCar_spec* pCar_spec = data;
+    tUser_crush_data* user_crush_data;
+    int i;
+
+    user_crush_data = pActor->user;
+    if (user_crush_data == NULL || user_crush_data->crush_data == NULL) {
+        return 0;
+    }
+    for (i = 0; i < pCar_spec->count_detail_levels; i++) {
+        br_model* model = user_crush_data->models[i];
+        if (model != NULL && model->user != NULL && model->nvertices != 0) {
+            tUser_detail_level_model* model_user_data = model->user;
+            if (model_user_data->field_0x4 != NULL) {
+                int j;
+                for (j = 0; j < model->nvertices; j++) {
+                    ExpandVector3(&model->vertices[j].p, &model_user_data->field_0x4[j].p, -10.f, 10.f);
+                    model_user_data->field_0x4[j].flags = 0;
+                }
+            }
+        }
+    }
+    return 0;
+}
+
+// FUNCTION: CARMA2_HW 0x00439510
 void C2_HOOK_FASTCALL TotallyRepairACar(tCar_spec* pCar_spec) {
 #ifndef CARPOCALYPSE2_MATCHING
-    /* stub: no-op for Linux boot */
+    if (pCar_spec->car_crush_spec == NULL) {
+        return;
+    }
+    DRActorEnumRecurse(pCar_spec->car_model_actor, TotallyRepairCarCB, pCar_spec);
 #else
     NOT_IMPLEMENTED();
 #endif

@@ -13,6 +13,13 @@ extern tRace_group_spec* gRace_groups;
 #define DECODE_OFFSET 50
 extern void C2_HOOK_FASTCALL PDSetPalette(br_pixelmap* pPalette);
 extern int gKey_map_index;
+extern int gGoreLevel;
+extern int gAnimalsOn;
+extern int gFlameThrowerOn;
+extern int gExplosives_on;
+extern int gTraffic_disabled;
+extern tNet_game_player_info gNet_players[12];
+extern int gThis_net_player_index;
 const char* gNet_avail_names[4] = {
     "never",
     "human",
@@ -929,9 +936,76 @@ void C2_HOOK_FASTCALL ReadNetworkSettings(FILE* pF, tNet_game_options* pOptions)
 
 // PrintNetOptions
 
-// STUB: CARMA2_HW 0x0048d190
+// FUNCTION: CARMA2_HW 0x0048d190
 int C2_HOOK_FASTCALL SaveOptions(void) {
+    tPath_name the_path;
+    FILE* f;
+    int i;
+
+#ifndef CARPOCALYPSE2_MATCHING
+    PathCat(the_path, gApplication_path, "OPTIONS.TXT");
+    f = DRfopen(the_path, "wt");
+    if (f == NULL) {
+        return 0;
+    }
+
+    fprintf(f, "YonFactor %f\n", GetYonFactor());
+    fprintf(f, "SkyTextureOn %d\n", GetSkyTextureOn());
+    fprintf(f, "CarTexturingLevel %d\n", GetCarTexturingLevel());
+    fprintf(f, "RoadTexturingLevel %d\n", GetRoadTexturingLevel());
+    fprintf(f, "WallTexturingLevel %d\n", GetWallTexturingLevel());
+    fprintf(f, "ShadowLevel %d\n", GetShadowLevel());
+    fprintf(f, "DepthCueingOn %d\n", GetDepthCueingOn());
+    fprintf(f, "Yon %f\n", GetYon());
+    fprintf(f, "CarSimplificationLevel %d\n", GetCarSimplificationLevel());
+    fprintf(f, "AccessoryRendering %d\n", GetAccessoryRendering());
+    fprintf(f, "SmokeOn %d\n", GetSmokeOn());
+    fprintf(f, "SoundDetailLevel %d\n", GetSoundDetailLevel());
+    fprintf(f, "ScreenSize %d\n", GetScreenSize());
+    fprintf(f, "MapRenderX %f\n", gMap_render_x);
+    fprintf(f, "MapRenderY %f\n", gMap_render_y);
+    fprintf(f, "MapRenderWidth %f\n", gMap_render_width);
+    fprintf(f, "MapRenderHeight %f\n", gMap_render_height);
+    fprintf(f, "MapMode %d\n", gMap_view);
+    fprintf(f, "MapTrans %d\n", gMap_trans);
+    fprintf(f, "HeadupMapX %d\n", gHeadup_map_x);
+    fprintf(f, "HeadupMapY %d\n", gHeadup_map_y);
+    fprintf(f, "HeadupMapW %d\n", gHeadup_map_w);
+    fprintf(f, "HeadupMapH %d\n", gHeadup_map_h);
+    fprintf(f, "PlayerName\n%s\n", gProgram_state.player_name);
+    fprintf(f, "EVolume %d\n", gProgram_state.effects_volume);
+    fprintf(f, "MVolume %d\n", gProgram_state.music_volume);
+    fprintf(f, "KeyMapIndex %d\n", gKey_map_index);
+    fprintf(f, "CameraType %d\n", gCamera_type);
+    fprintf(f, "ARCameraType %d\n", gAR_camera_type);
+    fprintf(f, "GoreLevel %d\n", 2 - gGoreLevel);
+    fprintf(f, "AnimalsOn %d\n", gAnimalsOn);
+    fprintf(f, "FlameThrowerOn %d\n", gFlameThrowerOn);
+    fprintf(f, "MinesOn %d\n", gExplosives_on);
+    fprintf(f, "DronesOn %d\n", !gTraffic_disabled);
+    fprintf(f, "MiniMapVisible %d\n", gMini_map_visible);
+    fprintf(f, "SkillLevel %d\n", gProgram_state.skill_level);
+    fprintf(f, "AmbientSound %d\n", gAmbient_sound);
+    fprintf(f, "AutoLoad %d\n", gAuto_load);
+    fprintf(f, "RussellsFannies %d\n", gRussels_fannies);
+    fprintf(f, "QuickTimeQuality\n%s\n", gQuick_time_quality);
+    fprintf(f, "QuickTimeCompressor\n%s\n", gQuick_time_compressor);
+    fprintf(f, "QuickTimeBanner %d\n%s\n", gQuick_time_banner_number, gQuick_time_banner_texture_name);
+    fprintf(f, "QuickTimeTempPath\n%s\n", gQuick_time_temp_path);
+    fprintf(f, "QuickTimeMoviePathStub\n%s\n", gQuick_time_movie_path_stub);
+    fprintf(f, "NetName\n%s\n", gNet_players[gThis_net_player_index].player_name);
+    fprintf(f, "NETGAMETYPE %d\n", gNet_last_game_type);
+    for (i = 0; i < 9; i++) {
+        PrintNetOptions(f, i);
+    }
+    fprintf(f, "HeadupDetailLevel %d\n", gHeadup_detail_level);
+
+    PFfclose(f);
+    return 1;
+#else
     NOT_IMPLEMENTED();
+    return 0;
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0048d8f0

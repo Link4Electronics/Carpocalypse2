@@ -129,10 +129,34 @@ void C2_HOOK_FASTCALL Encryptificate(tSave_game* pSave_games, int pCount) {
 
 // MakeSavedGame
 
-// STUB: CARMA2_HW 0x00491ac0
+// FUNCTION: CARMA2_HW 0x00491ac0
 void C2_HOOK_FASTCALL DoSaveGame(void) {
 #ifndef CARPOCALYPSE2_MATCHING
-    /* stub: no-op for Linux boot */
+    tPath_name the_path;
+    tSave_game save_game;
+    FILE* f;
+
+    C2_HOOK_BUG_ON(sizeof(save_game) != 0x328);
+
+    if (gNet_mode == eNet_mode_none) {
+        PathCat(the_path, gApplication_path, "SAVEDGAMES.ARS");
+        PDFileUnlock(the_path);
+        f = DRfopen(the_path, "ab+");
+        if (f != NULL) {
+            PFfseek(f, 0, SEEK_END);
+            gCurrent_APO_potential_levels[0] = gProgram_state.current_car.power_up_slots[0];
+            gCurrent_APO_potential_levels[1] = gProgram_state.current_car.power_up_slots[1];
+            gCurrent_APO_potential_levels[2] = gProgram_state.current_car.power_up_slots[2];
+            gCurrent_APO_levels[0] = gProgram_state.current_car.power_up_levels[0];
+            gCurrent_APO_levels[1] = gProgram_state.current_car.power_up_levels[1];
+            gCurrent_APO_levels[2] = gProgram_state.current_car.power_up_levels[2];
+            MakeSavedGame(&save_game);
+            Encryptificate(&save_game, 1);
+            PFfwrite(&save_game, 1, sizeof(save_game), f);
+            PFfclose(f);
+            gSave_game_out_of_sync = 0;
+        }
+    }
 #else
     NOT_IMPLEMENTED();
 #endif
@@ -184,9 +208,17 @@ tSave_game* C2_HOOK_FASTCALL GetNthSavedGame(int pN) {
 
 // DoLoadGame2
 
-// STUB: CARMA2_HW 0x00491e20
+// FUNCTION: CARMA2_HW 0x00491e20
 int C2_HOOK_FASTCALL DoLoadGame(int pIndex) {
+#ifndef CARPOCALYPSE2_MATCHING
+    if (gSaved_games != NULL && pIndex >= 0 && pIndex < gCount_saved_games) {
+        return DoLoadGame2(&gSaved_games[gCount_saved_games - pIndex - 1]);
+    }
+    return 0;
+#else
     NOT_IMPLEMENTED();
+    return 0;
+#endif
 }
 
 // DoLoadMostRecentGame

@@ -830,9 +830,17 @@ void C2_HOOK_FASTCALL DisposePhysicsObject(tPhysics_object* pObject) {
     BrMemFree(pObject);
 }
 
-// STUB: CARMA2_HW 0x0044be80
+// FUNCTION: CARMA2_HW 0x0044be80
 intptr_t C2_HOOK_CDECL DisposeCarActModDataCB(br_actor* pActor, void* pContext) {
+#ifndef CARPOCALYPSE2_MATCHING
+    if (pActor->type_data != NULL) {
+        BrMemFree(pActor->type_data);
+        pActor->type_data = NULL;
+    }
+    return 0;
+#else
     NOT_IMPLEMENTED();
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0044bbe0

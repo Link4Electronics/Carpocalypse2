@@ -2,6 +2,7 @@
 
 #include "utility.h"
 #include "globvars.h"
+#include "video.h"
 
 #include <QTML.h>
 #include <Movies.h>
@@ -83,10 +84,11 @@ void C2_HOOK_FASTCALL SetQuickTimeDefaults(void) {
 
 // MovieRecordButtonPressed
 
-// STUB: CARMA2_HW 0x004e1a20
+// FUNCTION: CARMA2_HW 0x004e1a20
 void C2_HOOK_FASTCALL MovieStopRecordingIfNecessary(void) {
 #ifndef CARPOCALYPSE2_MATCHING
-    /* stub: no-op for Linux boot */
+    MovieStopRecordingAndSave();
+    KillStatusMessage();
 #else
     NOT_IMPLEMENTED();
 #endif

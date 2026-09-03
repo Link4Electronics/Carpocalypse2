@@ -1560,10 +1560,11 @@ int C2_HOOK_FASTCALL TranslationMode(void) {
 
 // TurnOnPanelFlics
 
-// STUB: CARMA2_HW 0x00461a60
+// FUNCTION: CARMA2_HW 0x00461a60
 void C2_HOOK_FASTCALL FlicPaletteAllocate(void) {
 #ifndef CARPOCALYPSE2_MATCHING
-    /* stub: no-op for Linux boot */
+    gPalette_pixels = BrMemAllocate(256 * sizeof(br_uint_32), kMem_misc);
+    gPalette = DRPixelmapAllocate(BR_PMT_RGBX_888, 1, 256, gPalette_pixels, 0);
 #else
     NOT_IMPLEMENTED();
 #endif
@@ -1614,10 +1615,12 @@ int C2_HOOK_FASTCALL LoadFlic(int pIndex) {
     return 0;
 }
 
-// STUB: CARMA2_HW 0x00462a70
+// FUNCTION: CARMA2_HW 0x00462a70
 void C2_HOOK_FASTCALL UnlockFlic(int pIndex) {
 #ifndef CARPOCALYPSE2_MATCHING
-    /* stub: no-op for Linux boot */
+    if (pIndex >= 0 && gMain_flic_list[pIndex].data_ptr != NULL) {
+        MAMSUnlock((void**)&gMain_flic_list[pIndex].data_ptr);
+    }
 #else
     NOT_IMPLEMENTED();
 #endif
@@ -1635,19 +1638,94 @@ void C2_HOOK_FASTCALL InitFlicQueue(void) {
 
 // ProcessFlicQueue
 
-// STUB: CARMA2_HW 0x00462dc0
+// FUNCTION: CARMA2_HW 0x00462dc0
 void C2_HOOK_FASTCALL FlushFlicQueue(void) {
 #ifndef CARPOCALYPSE2_MATCHING
-    /* stub: no-op for Linux boot */
+    while (!FlicQueueFinished()) {
+        RemoveTransientBitmaps(1);
+        ProcessFlicQueue(gFrame_period);
+        DoMouseCursor();
+        PDScreenBufferSwap(0);
+    }
 #else
     NOT_IMPLEMENTED();
 #endif
 }
 
-// STUB: CARMA2_HW 0x00463340
+// FUNCTION: CARMA2_HW 0x00463340
 void C2_HOOK_FASTCALL LoadInterfaceStrings(void) {
 #ifndef CARPOCALYPSE2_MATCHING
-    /* stub: no-op for Linux boot */
+    FILE* f;
+    char s[256];
+    char s2[256];
+    char* str;
+    char ch;
+    tPath_name the_path;
+    int i;
+    int j;
+
+    gTranslation_count = 0;
+    PathCat(the_path, gApplication_path, "TRNSLATE.TXT");
+    f = PFfopen(the_path, "rt");
+    if (f == NULL) {
+        return;
+    }
+    while (!PFfeof(f)) {
+        GetALineAndDontArgue(f, s);
+        gTranslation_count++;
+    }
+    PFrewind(f);
+    gTranslations = BrMemAllocate(gTranslation_count * sizeof(tTranslation_record), kMem_misc);
+    for (i = 0; i < gTranslation_count; i++) {
+        GetALineAndDontArgue(f, s);
+        str = strtok(s, "\t ,/");
+        strcpy(s2, str);
+        strtok(s2, ".");
+        strcat(s2, ".FLI");
+        gTranslations[i].flic_index = -1;
+        for (j = 0; j < CARPOCALYPSE2_ASIZE(gMain_flic_list); j++) {
+            if (strcmp(gMain_flic_list[j].file_name, s2) == 0) {
+                gTranslations[i].flic_index = j;
+                break;
+            }
+        }
+        if (gTranslations[i].flic_index < 0) {
+            FatalError(kFatalError_CannotFindFlicReferencedTranslation_S, s2);
+        }
+        str[strlen(str)] = ',';
+        strtok(s, "\t ,/");
+        str = strtok(NULL, "\t ,/");
+        sscanf(str, "%d", &gTranslations[i].x);
+        str = strtok(NULL, "\t ,/");
+        sscanf(str, "%d", &gTranslations[i].y);
+        str = strtok(NULL, "\t ,/");
+        sscanf(str, "%d", &gTranslations[i].font_index);
+        str = strtok(NULL, "\t ,/");
+        sscanf(str, "%c", &ch);
+        switch (ch) {
+            case 'C':
+            case 'c':
+                gTranslations[i].justification = eJust_centre;
+                break;
+            case 'L':
+            case 'l':
+                gTranslations[i].justification = eJust_left;
+                break;
+            case 'R':
+            case 'r':
+                gTranslations[i].justification = eJust_right;
+                break;
+        }
+        str += strlen(str) + 1;
+        gTranslations[i].text = BrMemAllocate(strlen(str) + 1, kMem_misc);
+        strcpy(gTranslations[i].text, str);
+    }
+    LoadFont(1);
+    LoadFont(2);
+    gTrans_fonts[0] = &gFonts[1];
+    gTrans_fonts[1] = &gFonts[2];
+
+    PFfclose(f);
 #else
     NOT_IMPLEMENTED();
 #endif

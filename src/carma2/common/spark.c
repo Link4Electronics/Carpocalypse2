@@ -665,12 +665,9 @@ intptr_t C2_HOOK_CDECL ForEveryActorMaterialNoGrooves(br_actor* pActor, void* pC
 
 // FUNCTION: CARMA2_HW 0x004fe640
 void C2_HOOK_FASTCALL ForEveryCarMaterial(tCar_spec* pCar_spec, tMaterialMaybeUpdate_cbfn* pCallback, int pGrooves) {
-#if 0
     int i;
-#endif
 
     tUser_crush_data* user_crush_data = pCar_spec->car_model_actor->user;
-    NOT_IMPLEMENTED();
 
     if (pCar_spec->car_master_actor->material != NULL) {
         pCallback(pCar_spec->car_master_actor->material);
@@ -682,15 +679,12 @@ void C2_HOOK_FASTCALL ForEveryCarMaterial(tCar_spec* pCar_spec, tMaterialMaybeUp
     } else {
         DRActorEnumRecurse(pCar_spec->car_model_actor, ForEveryActorMaterialNoGrooves, pCallback);
     }
-#if 0
-    /* FIXME: incomplete */
     for (i = 0; i < pCar_spec->car_crush_spec->field_0x270; i++) {
-        ForEveryModelMaterial(pCar_spec->car_crush_spec->field_0x274[i].actor->model, pCallback);
+        ForEveryModelMaterial(pCar_spec->car_crush_spec->field_0x274[i].field_0x0->model, pCallback);
     }
     for (i = 0; i < pCar_spec->car_crush_spec->field_0x2b0; i++) {
-        ForEveryModelMaterial(pCar_spec->car_crush_spec->field_0x2b4[i].actor->model, pCallback);
+        ForEveryModelMaterial(pCar_spec->car_crush_spec->field_0x2b4[i].field_0x0->model, pCallback);
     }
-#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004fed50
@@ -1692,10 +1686,10 @@ void C2_HOOK_FASTCALL MasterEnableCarFunks(tCar_spec* pCar) {
 
 // SetPixelmap
 
-// STUB: CARMA2_HW 0x004f8f30
+// FUNCTION: CARMA2_HW 0x004f8f30
 void C2_HOOK_FASTCALL DoCamouflageThing(tCar_spec* pCar) {
 #ifndef CARPOCALYPSE2_MATCHING
-    /* stub: no-op for Linux boot */
+    BlendifyCar(pCar);
 #else
     NOT_IMPLEMENTED();
 #endif
@@ -1719,10 +1713,10 @@ void C2_HOOK_FASTCALL DoCamouflageThing(tCar_spec* pCar) {
 
 // RestorePixelmap
 
-// STUB: CARMA2_HW 0x004f9620
+// FUNCTION: CARMA2_HW 0x004f9620
 void C2_HOOK_FASTCALL RestoreCarPixelmaps(tCar_spec* pCar_spec) {
 #ifndef CARPOCALYPSE2_MATCHING
-    /* stub: no-op for Linux boot */
+    UnBlendifyCar(pCar_spec);
 #else
     NOT_IMPLEMENTED();
 #endif
@@ -1734,10 +1728,57 @@ void C2_HOOK_FASTCALL RestoreCarPixelmaps(tCar_spec* pCar_spec) {
 
 // CmpSmokeZ
 
-// STUB: CARMA2_HW 0x004f9fc0
+// FUNCTION: CARMA2_HW 0x004f9fc0
 void C2_HOOK_FASTCALL InitSmokeStuff(void) {
 #ifndef CARPOCALYPSE2_MATCHING
-    /* stub: no-op for Linux boot */
+    int i;
+
+    gBlend_model = BrModelAllocate("BlendModel", 4, 2);
+    gBlend_model->flags |= BR_MODF_UPDATEABLE;
+    BrVector3SetFloat(&gBlend_model->vertices[0].p, -0.5f, 0.f, 0.f);
+    BrVector3SetFloat(&gBlend_model->vertices[1].p, 0.5f, 0.f, 0.f);
+    BrVector3SetFloat(&gBlend_model->vertices[2].p, 0.5f, 1.f, 0.f);
+    BrVector3SetFloat(&gBlend_model->vertices[3].p, -0.5f, 1.f, 0.f);
+    BrVector2Set(&gBlend_model->vertices[0].map, 0.f, 1.f);
+    BrVector2Set(&gBlend_model->vertices[1].map, 1.f, 1.f);
+    BrVector2Set(&gBlend_model->vertices[2].map, 1.f, 0.f);
+    BrVector2Set(&gBlend_model->vertices[3].map, 0.f, 0.f);
+    gBlend_model->faces[0].vertices[0] = 0;
+    gBlend_model->faces[0].vertices[1] = 1;
+    gBlend_model->faces[0].vertices[2] = 2;
+    gBlend_model->faces[1].vertices[0] = 0;
+    gBlend_model->faces[1].vertices[1] = 2;
+    gBlend_model->faces[1].vertices[2] = 3;
+    BrModelAdd(gBlend_model);
+
+    gBlend_model2 = BrModelAllocate("BlendModel2", 4, 2);
+    gBlend_model2->flags |= BR_MODF_UPDATEABLE;
+    BrVector3SetFloat(&gBlend_model2->vertices[0].p, -0.5f, 0.f, 0.f);
+    BrVector3SetFloat(&gBlend_model2->vertices[1].p, 0.5f, 0.f, 0.f);
+    BrVector3SetFloat(&gBlend_model2->vertices[2].p, 0.5f, 1.f, 0.f);
+    BrVector3SetFloat(&gBlend_model2->vertices[3].p, -0.5f, 1.f, 0.f);
+    BrVector2Set(&gBlend_model2->vertices[0].map, 0.f, 1.f);
+    BrVector2Set(&gBlend_model2->vertices[1].map, 1.f, 1.f);
+    BrVector2Set(&gBlend_model2->vertices[2].map, 1.f, 0.f);
+    BrVector2Set(&gBlend_model2->vertices[3].map, 0.f, 0.f);
+    gBlend_model2->faces[0].vertices[0] = 0;
+    gBlend_model2->faces[0].vertices[1] = 1;
+    gBlend_model2->faces[0].vertices[2] = 2;
+    gBlend_model2->faces[1].vertices[0] = 0;
+    gBlend_model2->faces[1].vertices[1] = 2;
+    gBlend_model2->faces[1].vertices[2] = 3;
+    BrModelAdd(gBlend_model2);
+
+    gBlend_actor = BrActorAllocate(BR_ACTOR_MODEL, NULL);
+    gBlend_actor->render_style = BR_RSTYLE_FACES;
+    gBlend_actor->model = gBlend_model;
+
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gBR_smoke_structs); i++) {
+        gBR_smoke_structs[i].material = BrMaterialAllocate(NULL);
+        gBR_smoke_structs[i].material->flags &= ~BR_MATF_LIGHT;
+        gBR_smoke_structs[i].material->flags |= BR_MATF_ALWAYS_VISIBLE;
+        BrMaterialAdd(gBR_smoke_structs[i].material);
+    }
 #else
     NOT_IMPLEMENTED();
 #endif
@@ -1771,10 +1812,18 @@ void C2_HOOK_FASTCALL InitSmokeStuff(void) {
 
 // GenerateSmokeShades
 
-// STUB: CARMA2_HW 0x004fb9c0
+// FUNCTION: CARMA2_HW 0x004fb9c0
 void C2_HOOK_FASTCALL GenerateItFoxShadeTable(void) {
 #ifndef CARPOCALYPSE2_MATCHING
-    /* stub: no-op for Linux boot */
+    int i;
+    br_pixelmap* pm;
+
+    pm = BrPixelmapAllocate(BR_PMT_INDEX_8, 64, 1, NULL, 0);
+    for (i = 0; i < 64; i++) {
+        ((tU8*)pm->pixels)[i] = (tU8)(i * 4);
+    }
+    gIt_shade_table = pm;
+    BrTableAdd(pm);
 #else
     NOT_IMPLEMENTED();
 #endif
@@ -1866,10 +1915,10 @@ int C2_HOOK_FASTCALL GetSmokeOn(void) {
 
 // BlendifyMaterialCB
 
-// STUB: CARMA2_HW 0x004fecf0
+// FUNCTION: CARMA2_HW 0x004fecf0
 void C2_HOOK_FASTCALL BlendifyCar(tCar_spec* pCar) {
 #ifndef CARPOCALYPSE2_MATCHING
-    /* stub: no-op for Linux boot */
+    ForEveryCarMaterial(pCar, BlendifyMaterialCB, 1);
 #else
     NOT_IMPLEMENTED();
 #endif
@@ -1877,10 +1926,10 @@ void C2_HOOK_FASTCALL BlendifyCar(tCar_spec* pCar) {
 
 // UnBlendifyMaterialCB
 
-// STUB: CARMA2_HW 0x004fed40
+// FUNCTION: CARMA2_HW 0x004fed40
 void C2_HOOK_FASTCALL UnBlendifyCar(tCar_spec* pCar_spec) {
 #ifndef CARPOCALYPSE2_MATCHING
-    /* stub: no-op for Linux boot */
+    ForEveryCarMaterial(pCar_spec, UnBlendifyMaterialCB, 1);
 #else
     NOT_IMPLEMENTED();
 #endif
