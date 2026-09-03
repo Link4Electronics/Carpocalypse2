@@ -87,14 +87,7 @@ tPowerup* gPowerup_array;
 // DRMapFindMeAPixie
 
 
-// STUB: CARMA2_HW 0x004d96c0
-void C2_HOOK_FASTCALL LoadPowerups(void) {
-#ifndef CARPOCALYPSE2_MATCHING
-    /* stub: no-op for Linux boot */
-#else
-    NOT_IMPLEMENTED();
-#endif
-}
+// LoadPowerups (implemented in powerups.c)
 
 // InitRepulseEffects
 
@@ -108,14 +101,7 @@ void C2_HOOK_FASTCALL LoadPowerups(void) {
 
 // InitMineShit
 
-// STUB: CARMA2_HW 0x004d9ea0
-void C2_HOOK_FASTCALL InitPowerups(void) {
-#ifndef CARPOCALYPSE2_MATCHING
-    /* stub: no-op for Linux boot */
-#else
-    NOT_IMPLEMENTED();
-#endif
-}
+// InitPowerups (implemented in powerups.c)
 
 // RemoveRepulseEffect
 
@@ -125,14 +111,7 @@ void C2_HOOK_FASTCALL InitPowerups(void) {
 
 // ResetPowerups
 
-// STUB: CARMA2_HW 0x004da730
-void C2_HOOK_FASTCALL CloseDownPowerUps(void) {
-#ifndef CARPOCALYPSE2_MATCHING
-    /* stub: no-op for Linux boot */
-#else
-    NOT_IMPLEMENTED();
-#endif
-}
+// CloseDownPowerUps (implemented in powerups.c)
 
 // NewRepulseRay
 
@@ -436,14 +415,7 @@ void C2_HOOK_FASTCALL CloseDownPowerUps(void) {
 
 // CutOffTail
 
-// STUB: CARMA2_HW 0x004e06a0
-void C2_HOOK_FASTCALL RemoveTail(void) {
-#ifndef CARPOCALYPSE2_MATCHING
-    /* stub: no-op for Linux boot */
-#else
-    NOT_IMPLEMENTED();
-#endif
-}
+// RemoveTail (implemented in powerups.c)
 
 // DoInitialTail
 

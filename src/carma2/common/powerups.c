@@ -549,6 +549,247 @@ static br_pixelmap* DRMapFindMeAPixie(const char* name) {
     return NULL;
 }
 
+// FUNCTION: CARMA2_HW 0x004d96c0
+void C2_HOOK_FASTCALL LoadPowerups(void) {
+    FILE* f;
+    tPath_name the_path;
+    tTWTVFS twtvfs;
+    int action_index;
+    int first;
+    int i, j, k;
+    int time;
+    int count_index_groups;
+    int index_range;
+    char s[256];
+    tPowerup* the_powerup;
+
+    C2_HOOK_BUG_ON(sizeof(tPowerup) != 172);
+
+    if (gPowerup_txt_path == NULL) {
+        SetDefaultPowerupFilename();
+    }
+    PathCat(the_path, gApplication_path, gGraf_specs[gGraf_spec_index].data_dir_name);
+    PathCat(the_path, the_path, "POWERUPS");
+    twtvfs = OpenPackFileAndSetTiffLoading(the_path);
+    LoadAllImagesInDirectory(&gMisc_storage_space, the_path);
+    ClosePackFileAndSetTiffLoading(twtvfs);
+
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gFizzle_in); i++) {
+        gFizzle_in[i] = DRMapFindMeAPixie(gFizzle_names[i]);
+    }
+    gFizzle_height = gFizzle_in[0]->height / 4;
+
+    PathCat(the_path, gApplication_path, gPowerup_txt_path);
+    f = DRfopen(the_path, "rt");
+    if (f == NULL) {
+        FatalError(kFatalError_CannotLoadCarResolutionIndependentFile);
+    }
+    /* Number of powerups */
+    gNumber_of_powerups = GetAnInt(f);
+    gPowerup_array = BrMemAllocate(sizeof(tPowerup) * gNumber_of_powerups, kMem_powerup_array);
+    for (i = 0; i < gNumber_of_powerups; i++) {
+        the_powerup = &gPowerup_array[i];
+
+        GetALineAndDontArgue(f, the_powerup->message);
+        if (strcmp(the_powerup->message, "dummy") == 0) {
+            the_powerup->type = ePowerup_dummy;
+        } else {
+            if (strcmp(the_powerup->message, "n/a") == 0) {
+                the_powerup->message[0] = '\0';
+            }
+            GetAString(f, s);
+            the_powerup->icon = DRMapFindMeAPixie(s);
+            if (the_powerup->icon != NULL) {
+                BrMapAdd(the_powerup->icon);
+                BRPM_convert(the_powerup->icon, gBack_screen->type);
+            }
+            if (the_powerup->icon != NULL) {
+                the_powerup->icon_actor = CreateBillBoard(the_powerup->icon);
+                the_powerup->icon_actor->material->extra_prim = the_powerup->material_prims;
+            }
+
+            /* Fizzle type */
+            the_powerup->fizzle_type = GetAnInt(f);
+            /* Time limit (-1 instantaneous, 0 whole race, x seconds) */
+            time = 1000 * GetAnInt(f);
+            the_powerup->duration = time;
+            if (time < 0) {
+                the_powerup->type = ePowerup_instantaneous;
+            } else if (time == 0) {
+                the_powerup->type = ePowerup_whole_race;
+            } else {
+                the_powerup->type = ePowerup_timed;
+            }
+            /* Initial value for keyboard operable powerups
+             * (zero if not key operable,
+             *  positive if time in seconds,
+             *  negative if number of uses)
+             */
+            the_powerup->initial_value = GetAnInt(f);
+            if (the_powerup->initial_value > 0) {
+                the_powerup->initial_value *= 1000;
+            }
+            /* Action index */
+            action_index = GetAnInt(f);
+            if (action_index >= 0) {
+                the_powerup->got_proc = gGot_procs[action_index];
+                the_powerup->lose_proc = gLose_procs[action_index];
+                the_powerup->periodic_proc = gPeriodic_procs[action_index];
+            } else {
+                the_powerup->lose_proc = NULL;
+                the_powerup->periodic_proc = NULL;
+                the_powerup->got_proc = NULL;
+            }
+            /*  Number of floating point params */
+            the_powerup->number_of_float_params = GetAnInt(f);
+            the_powerup->float_params = BrMemAllocate(sizeof(float) * the_powerup->number_of_float_params, kMem_powerup_parms);
+            for (j = 0; j < the_powerup->number_of_float_params; j++) {
+                the_powerup->float_params[j] = GetAFloat(f);
+            }
+            /* Number of integer params */
+            the_powerup->number_of_integer_params = GetAnInt(f);
+            the_powerup->integer_params = BrMemAllocate(sizeof(int) * the_powerup->number_of_integer_params, kMem_powerup_parms);
+            for (j = 0; j < the_powerup->number_of_integer_params; j++) {
+                the_powerup->integer_params[j] = GetAnInt(f);
+            }
+            /* Group inclusion */
+            the_powerup->group_inclusion = GetAnInt(f);
+            /* Pratcam sequence */
+            the_powerup->prat_cam_event = GetAnInt(f);
+            /* Flags (1 = net_global, 2 = net_inappropriate, 4 = off_before_snapweld) */
+            the_powerup->net_type = GetAnInt(f);
+        }
+    }
+
+    /* RESPAWN SPECS */
+
+    /* Number of respawn specs */
+    gNumber_of_powerup_respawn_specs = GetAnInt(f);
+    gPowerup_respawn_specs = BrMemAllocate(gNumber_of_powerup_respawn_specs * sizeof(tPowerup_respawn_spec), kMem_powerup_array);
+    for (i = 0; i < gNumber_of_powerup_respawn_specs; i++) {
+        gPowerup_respawn_specs[i].bools = BrMemAllocate(gNumber_of_powerups * sizeof(tU8), kMem_powerup_array);
+        /* Number of index groups */
+        count_index_groups = GetAnInt(f);
+        for (j = 0; j < count_index_groups; j++) {
+            index_range = GetAnInt(f);
+            if (index_range >= 0) {
+                /* index_range is index */
+                gPowerup_respawn_specs[i].bools[index_range] = 1;
+            } else {
+                /* index_range is range */
+                first = GetAnInt(f);
+                for (k = first; k < first - index_range; k++) {
+                    gPowerup_respawn_specs[i].bools[k] = 1;
+                }
+            }
+        }
+    }
+    gRace_powerup_respawn_bools = gPowerup_respawn_specs[0].bools;
+
+    /* NETWORK AUTO-GOODIES */
+
+    /* Min,max times between Auto-goodies */
+    GetPairOfInts(f, &gNet_powerup_time_between_goodies_min, &gNet_powerup_time_between_goodies_max);
+    gNet_powerup_time_between_goodies_min *= 1000;
+    gNet_powerup_time_between_goodies_max *= 1000;
+    /* Number of goodies to choose from */
+    gNet_count_powerup_goodies = GetAnInt(f);
+    gNet_powerup_goodies = BrMemAllocate(gNet_count_powerup_goodies * sizeof(int), kMem_powerup_array);
+    for (i = 0; i < gNet_count_powerup_goodies; i++) {
+        gNet_powerup_goodies[i] = GetAnInt(f);
+    }
+    PFfclose(f);
+}
+
+// FUNCTION: CARMA2_HW 0x004d9ea0
+void C2_HOOK_FASTCALL InitPowerups(void) {
+
+    InitRepulseEffects();
+    InitTail();
+    InitMineShit();
+}
+
+static void C2_HOOK_FASTCALL RemoveTailPhysicsUnlinkChild(tPhysics_object* pObject) {
+    tPhysics_object* node;
+
+    node = pObject->parent->child;
+    if (node == pObject) {
+        pObject->parent->child = pObject->next;
+    } else {
+        while (node->next != pObject) {
+            node = node->next;
+        }
+        node->next = pObject->next;
+    }
+    pObject->parent = NULL;
+    pObject->next = NULL;
+}
+
+// FUNCTION: CARMA2_HW 0x004e06a0
+void C2_HOOK_FASTCALL RemoveTail(void) {
+    tPhysics_object* node;
+
+    if (gMutant_tail_state == 0) {
+        return;
+    }
+    node = gMutant_tail_first_collision_info;
+    while (node != NULL) {
+        BrActorRemove(node->actor);
+        node = node->child;
+    }
+    if (gMutant_tail_state == 2) {
+        RemoveTailPhysicsUnlinkChild(gMutant_tail_first_collision_info);
+    } else {
+        PHILRemoveObject(gMutant_tail_first_collision_info);
+    }
+    gMutant_tail_first_collision_info->physics_joint1 = gMutant_tail_first_joint;
+    gMutant_tail_state = 0;
+}
+
+// FUNCTION: CARMA2_HW 0x004da730
+void C2_HOOK_FASTCALL CloseDownPowerUps(void) {
+    int i;
+    int j;
+    int found_index;
+    tPowerup* powerup;
+
+    C2_HOOK_BUG_ON(sizeof(tPowerup) != 172);
+
+    for (i = 0, powerup = gPowerup_array; i < gNumber_of_powerups; i++, powerup++) {
+        if (powerup->got_time == 0) {
+            continue;
+        }
+        if (powerup->lose_proc != NULL) {
+            powerup->lose_proc(powerup, powerup->car);
+        }
+        /* NOTE: The retail binary additionally, for each active powerup,
+         *   - when (net_type & 0x80), records an action-replay "powerup lost" event
+         *     (ARDoSingleVariedSession, pipe chunk 0x35) and
+         *   - when (gNet_mode != eNet_mode_none), broadcasts a guaranteed "powerup
+         *     lost" net message (NetBuildGuaranteedMessage(0x16, 0) filled with
+         *     gLocal_net_ID and the powerup index, then
+         *     NetGuaranteedSendMessageToAllPlayers) and clears an undocumented
+         *     per-powerup net-state array at 0x75d33c.
+         * Those depend on undecoded receiver-side message/replay encodings and are
+         * therefore omitted here, keeping only the decoded deterministic core. */
+        if (powerup->initial_value == 0) {
+            found_index = -1;
+            for (j = 0; j < gNumber_of_icons; j++) {
+                if (gPickedup_powerups[j].powerup == powerup) {
+                    found_index = j;
+                    break;
+                }
+            }
+            if (found_index >= 0) {
+                gPickedup_powerups[found_index].fizzle_stage = 3;
+                gPickedup_powerups[found_index].fizzle_direction = -1;
+                gPickedup_powerups[found_index].fizzle_start = GetTotalTime();
+            }
+        }
+        powerup->got_time = 0;
+    }
+}
+
 static void C2_HOOK_FASTCALL ReadPowerupSmashable(FILE* pF, tSmashable_item_spec* pSmashable_spec) {
     int i;
     int d1, d2;
