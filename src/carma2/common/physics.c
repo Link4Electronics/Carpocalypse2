@@ -2260,10 +2260,37 @@ void C2_HOOK_FASTCALL ChangedObjectsCallbacks(tPhysics_object* pObjects, tPhysic
     NOT_IMPLEMENTED();
 }
 
+static void ResetObjectAndChildren(tPhysics_object* pObject) {
+    tPhysics_object* child;
+
+    if (pObject->field_0xf0 == 1) {
+        BrMatrix34Copy(&pObject->actor->t.t.mat, (const br_matrix34*)&pObject->field_0xbc);
+    } else {
+        BrMatrix34LPNormalise(&pObject->actor->t.t.mat, &pObject->transform_matrix);
+    }
+    for (child = pObject->child; child != NULL; child = child->next) {
+        ResetObjectAndChildren(child);
+    }
+}
+
 // FUNCTION: CARMA2_HW 0x004c2600
 void C2_HOOK_FASTCALL ResetObjectList(tPhysics_object* pObjects) {
+    tPhysics_object* pObject;
 
-    NOT_IMPLEMENTED();
+    pObject = pObjects;
+    while (pObject != NULL) {
+        tPhysics_object* child;
+
+        if (pObject->field_0xf0 == 1) {
+            BrMatrix34Copy(&pObject->actor->t.t.mat, (const br_matrix34*)&pObject->field_0xbc);
+        } else {
+            BrMatrix34LPNormalise(&pObject->actor->t.t.mat, &pObject->transform_matrix);
+        }
+        for (child = pObject->child; child != NULL; child = child->next) {
+            ResetObjectAndChildren(child);
+        }
+        pObject = pObject->next;
+    }
 }
 
 // FUNCTION: CARMA2_HW 0x004c64b0

@@ -192,15 +192,15 @@ FILE* C2_HOOK_FASTCALL PFfopen(const char* pPath, const char* mode) {
             for (i = 0; i < gTwatVfsMountPoints[twt].header->nbFiles; i++) {
                 if (DRStricmp(gTwatVfsMountPoints[twt].header->fileHeaders[i].filename, &pPath[twt_path_len + 1]) == 0) {
                     tU8* data = gTwatVfsMountPoints[twt].data + gTwatVfsMountPoints[twt].header->fileHeaders[i].data_offset;
-                    for (file_index = 0; file_index < (int)CARPOCALYPSE2_ASIZE(gTwatVfsFiles) - 1; file_index++) {
+                    for (file_index = 1; file_index < (int)CARPOCALYPSE2_ASIZE(gTwatVfsFiles); file_index++) {
                         if (gTwatVfsFiles[file_index].start != NULL) {
                             continue;
                         }
-                        gTwatVfsFiles[file_index + 1].start = data;
-                        gTwatVfsFiles[file_index + 1].pos = data;
-                        gTwatVfsFiles[file_index + 1].end = data + gTwatVfsMountPoints[twt].header->fileHeaders[i].fileSize;
-                        gTwatVfsFiles[file_index + 1].error = 0;
-                        return (FILE*)(file_index + 1);
+                        gTwatVfsFiles[file_index].start = data;
+                        gTwatVfsFiles[file_index].pos = data;
+                        gTwatVfsFiles[file_index].end = data + gTwatVfsMountPoints[twt].header->fileHeaders[i].fileSize;
+                        gTwatVfsFiles[file_index].error = 0;
+                        return (FILE*)(file_index);
                     }
                     return NULL;
                 }
