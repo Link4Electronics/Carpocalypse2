@@ -916,7 +916,24 @@ void C2_HOOK_FASTCALL LoseOldestWastedMessage(void) {
 
 // LoseOldestWastedMassage
 
-// QueueWastedMassage
+// FUNCTION: CARMA2_HW 0x00492620
+void C2_HOOK_FASTCALL QueueWastedMessage(int pIndex) {
+
+    if (gQueued_wasted_messages_count == CARPOCALYPSE2_ASIZE(gQueued_wasted_messages)) {
+        int i;
+
+        for (i = 1; i < gQueued_wasted_messages_count; i++) {
+            gQueued_wasted_messages[i - 1] = gQueued_wasted_messages[i];
+        }
+        gQueued_wasted_messages_count = CARPOCALYPSE2_ASIZE(gQueued_wasted_messages) - 1;
+        gLast_wasted_message_start = GetTotalTime();
+    }
+    if (gQueued_wasted_messages_count == 0) {
+        gLast_wasted_message_start = GetTotalTime();
+    }
+    gQueued_wasted_messages[gQueued_wasted_messages_count] = pIndex;
+    gQueued_wasted_messages_count++;
+}
 
 // MungeHeadups
 

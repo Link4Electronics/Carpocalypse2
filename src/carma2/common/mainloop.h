@@ -13,7 +13,7 @@ extern char gHeadup_oppo_ped_text[64];
 
 // LoseOldestWastedMassage
 
-// QueueWastedMassage
+void C2_HOOK_FASTCALL QueueWastedMessage(int pIndex);
 
 // MungeHeadups
 

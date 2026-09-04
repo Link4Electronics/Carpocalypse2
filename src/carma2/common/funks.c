@@ -106,9 +106,40 @@ void C2_HOOK_FASTCALL DisposeGroovidelics(int pOwner) {
 
 // AddGroovidelics
 
-// KillGroovadelic
+// FUNCTION: CARMA2_HW 0x00477160
+void C2_HOOK_FASTCALL KillGroovadelic(int pOwner) {
+    int i;
 
-// KillFunkotronic
+    for (i = 0; i < gGroovidelics_array_size; i++) {
+        tGroovidelic_spec* the_groove = &gGroovidelics_array[i];
+        if (the_groove->owner == pOwner
+            && the_groove->path_mode != eMove_controlled
+            && the_groove->path_mode != eMove_absolute
+            && the_groove->object_mode != eMove_controlled
+            && the_groove->object_mode != eMove_absolute) {
+            the_groove->owner = -999;
+        }
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x004771c0
+void C2_HOOK_FASTCALL KillFunkotronic(int pOwner) {
+    int i;
+
+    for (i = 0; i < gFunkotronics_array_size; i++) {
+        tFunkotronic_spec* the_funk = &gFunkotronics_array[i];
+        if (the_funk->owner == pOwner
+            && the_funk->matrix_mode != eMove_controlled
+            && the_funk->matrix_mode != eMove_absolute
+            && the_funk->lighting_animation_type != eMove_controlled
+            && the_funk->lighting_animation_type != eMove_absolute
+            && (the_funk->texture_animation_data.frames_info.mode != eMove_controlled
+                && the_funk->texture_animation_data.frames_info.mode != eMove_texturebits
+                || the_funk->texture_animation_type != 0)) {
+            the_funk->owner = -999;
+        }
+    }
+}
 
 // NormaliseDegreeAngle
 

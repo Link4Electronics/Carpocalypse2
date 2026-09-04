@@ -118,7 +118,7 @@ extern void C2_HOOK_FASTCALL InitSmokeStuff(void);
 
 // CreateSmokeColumn2
 
-// CreateSmokeColumn
+void C2_HOOK_FASTCALL CreateSmokeColumn(tCar_spec* pCar, int pType, int pRandom, int pLifetime);
 
 // GenerateSmokeShades
 

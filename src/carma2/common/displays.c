@@ -161,6 +161,9 @@ tU32 gLast_fancy_time;
 // GLOBAL: CARMA2_HW 0x0067fcc4
 tU32 gLast_time_earn_time;
 
+// GLOBAL: CARMA2_HW 0x0067f880
+int gLast_time_credit_amount;
+
 // GLOBAL: CARMA2_HW 0x0079eac0
 int gOld_times[10];
 
@@ -349,6 +352,36 @@ int C2_HOOK_FASTCALL SpendCredits(int pAmount) {
     }
     return gProgram_state.credits;
 }
+
+// FUNCTION: CARMA2_HW 0x0044b490
+void C2_HOOK_FASTCALL AwardTime(tU32 pTime) {
+    char s[256];
+    tU32 original_amount;
+    tU32 the_time;
+    int i;
+
+    if (gRace_finished || gFreeze_timer || gNet_mode != eNet_mode_none || gCurrent_graf_data->field_0x18c) {
+        return;
+    }
+    the_time = GetTotalTime();
+    if (pTime != 0) {
+        for (i = 9; i > 0; i--) {
+            gOld_times[i] = gOld_times[i - 1];
+        }
+        gOld_times[0] = pTime;
+        original_amount = pTime;
+        if (gLast_time_credit_headup >= 0 && (the_time - gLast_time_earn_time) < 2000) {
+            pTime += gLast_time_credit_amount;
+        }
+        gLast_time_credit_amount = pTime;
+        gTimer += original_amount * 1000;
+        s[0] = '+';
+        TimerString(1000 * pTime, &s[1], 0, 0, 0);
+        gLast_time_credit_headup = NewTextHeadupSlot2(0xb, 0, 2000, -2, s, 1);
+        gLast_time_earn_time = the_time;
+    }
+}
+
 // FUNCTION: CARMA2_HW 0x0044b170
 void C2_HOOK_FASTCALL ChangingView(void) {
     tU32 the_time;

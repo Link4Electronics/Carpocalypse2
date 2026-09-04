@@ -203,6 +203,8 @@ void C2_HOOK_FASTCALL EarnCredits(int pAmount);
 
 int C2_HOOK_FASTCALL SpendCredits(int pAmount);
 
+void C2_HOOK_FASTCALL AwardTime(tU32 pTime);
+
 void C2_HOOK_FASTCALL ChangingView(void);
 
 br_uint_32 C2_HOOK_FASTCALL CarArrowColour(tCar_spec *pCar,tVehicle_type pCategory);

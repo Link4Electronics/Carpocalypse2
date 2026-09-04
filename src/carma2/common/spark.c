@@ -1849,7 +1849,19 @@ void C2_HOOK_FASTCALL InitSmokeStuff(void) {
 
 // CreateSmokeColumn2
 
-// CreateSmokeColumn
+// FUNCTION: CARMA2_HW 0x004fb890
+void C2_HOOK_FASTCALL CreateSmokeColumn(tCar_spec* pCar, int pType, int pRandom, int pLifetime) {
+
+    if (pCar->collision_info->last_special_volume != NULL
+        && pCar->collision_info->last_special_volume->gravity_multiplier < 1.0f) {
+        return;
+    }
+    SmudgeCar(pCar, pRandom);
+    if (pCar->knackered) {
+        SmudgeCar(pCar, pCar->fire_vertex[IRandomBetween(0, 0xb)]);
+    }
+    CreateSmokeColumn2(1, pCar->car_master_actor, pCar, NULL, pType, pRandom, pLifetime);
+}
 
 // GenerateSmokeShades
 

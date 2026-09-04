@@ -1,6 +1,9 @@
 #ifndef GUARD_CRUSH2_H
 #define GUARD_CRUSH2_H
 
+#include "c2_hooks.h"
+#include "carpocalypse2_types.h"
+
 extern int gCredits_wasting_car[3];
 extern float gCredits_per_unit_car_damage[3];
 extern int gTime_rolling_car[3];
@@ -15,7 +18,7 @@ extern int gTime_per_ped_kill[3];
 
 // ExplodeMeCarUpMeOldMatey
 
-// SetKnackeredFlag
+int C2_HOOK_FASTCALL SetKnackeredFlag(tCar_spec* pCar);
 
 // DamageUnit2
 

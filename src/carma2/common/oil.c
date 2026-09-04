@@ -44,6 +44,109 @@ void C2_HOOK_FASTCALL ResetOilSpills(void) {
     }
 }
 
+// FUNCTION: CARMA2_HW 0x004a6c80
+void C2_HOOK_FASTCALL QueueOilSpill2(
+    tCar_spec* pCar,
+    br_actor* pActor,
+    br_model* pModel,
+    int pSpill_time_offset,
+    float pFull_size_min,
+    float pFull_size_max,
+    float pGrow_size_min,
+    float pGrow_size_max,
+    float pSize,
+    float pField_0x48,
+    float pField_0x4c,
+    float pField_0x40,
+    float pField_0x44,
+    br_material* pMaterial,
+    int pField_0x50) {
+    int i;
+    int slot;
+    int oldest;
+    tU32 time_low;
+    tU32 time_high;
+    tU32 smallest_spill_time;
+
+    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tOil_spill_info, car, 0xc);
+    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tOil_spill_info, spill_time, 0x10);
+    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tOil_spill_info, current_size, 0x1c);
+    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tOil_spill_info, field_0x20, 0x20);
+    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tOil_spill_info, grow_rate, 0x24);
+    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tOil_spill_info, field_0x40, 0x40);
+    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tOil_spill_info, field_0x44, 0x44);
+    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tOil_spill_info, field_0x48, 0x48);
+    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tOil_spill_info, field_0x4c, 0x4c);
+    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tOil_spill_info, field_0x50, 0x50);
+    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(br_actor, material, 0x1c);
+    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(br_actor, render_style, 0x20);
+
+    time_low = GetTotalTime();
+    time_high = GetTotalTime();
+
+    if (pCar != NULL) {
+        for (i = 0; i < CARPOCALYPSE2_ASIZE(gOily_spills); i++) {
+            if (gOily_spills[i].car_actor == pActor
+                    && time_low < gOily_spills[i].spill_time + 5000) {
+                return;
+            }
+        }
+    }
+
+    slot = -1;
+    oldest = 0;
+    smallest_spill_time = time_high;
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gOily_spills); i++) {
+        if (gOily_spills[i].car_actor == NULL) {
+            slot = i;
+            break;
+        }
+        if (gOily_spills[i].spill_time < smallest_spill_time) {
+            smallest_spill_time = gOily_spills[i].spill_time;
+            oldest = i;
+        }
+    }
+    if (slot < 0) {
+        slot = oldest;
+    }
+
+    gOily_spills[slot].actor->material = pMaterial;
+    gOily_spills[slot].car = pCar;
+    gOily_spills[slot].car_actor = pActor;
+    gOily_spills[slot].car_model = pModel;
+    gOily_spills[slot].spill_time = time_low + pSpill_time_offset;
+    gOily_spills[slot].field_0x20 = pSize;
+    gOily_spills[slot].full_size = SRandomBetween(pFull_size_min, pFull_size_max);
+    gOily_spills[slot].grow_rate = SRandomBetween(pGrow_size_min, pGrow_size_max);
+    gOily_spills[slot].current_size = pSize;
+    gOily_spills[slot].field_0x40 = pField_0x40;
+    gOily_spills[slot].field_0x44 = pField_0x44;
+    gOily_spills[slot].field_0x48 = pField_0x48;
+    gOily_spills[slot].field_0x4c = pField_0x4c;
+    gOily_spills[slot].field_0x50 = pField_0x50;
+    gOily_spills[slot].actor->render_style = BR_RSTYLE_FACES;
+}
+
+// FUNCTION: CARMA2_HW 0x004a6dd0
+void C2_HOOK_FASTCALL QueueOilSpill(tCar_spec* pCar) {
+    QueueOilSpill2(
+        pCar,
+        pCar->car_master_actor,
+        pCar->car_actor->model,
+        500,
+        0.35f,
+        0.6f,
+        3.0e-5f,
+        0.0001f,
+        0.1f,
+        1.5f,
+        2.5f,
+        0.01f,
+        0.15f,
+        oily_material,
+        0);
+}
+
 // FUNCTION: CARMA2_HW 0x004a7460
 void C2_HOOK_FASTCALL  SetInitialOilStuff(tOil_spill_info* pOil, br_model* pModel) {
 
