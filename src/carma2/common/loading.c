@@ -305,6 +305,7 @@ const char* gFunk_speed_control_names[2] = {
 
 /* FIXME: this might be a struct */
 
+#pragma auto_inline(off)
 // FUNCTION: CARMA2_HW 0x00457590
 void C2_HOOK_FASTCALL ConfigureZombiePedSoundPath(void) {
     gPed_sound_path = "ZOMSOUND";
@@ -382,6 +383,7 @@ void C2_HOOK_FASTCALL ConfigureAlienPedTextTxtPath(void) {
 void C2_HOOK_FASTCALL ConfigureAlienPedTexturePath(void) {
     gPedTexturePath = "ALPIXELMAP";
 }
+#pragma auto_inline(on)
 
 // FUNCTION: CARMA2_HW 0x004d6f70
 void C2_HOOK_FASTCALL ConfigurePedAlienPaths(void) {

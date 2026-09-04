@@ -9,10 +9,12 @@
 #endif
 #define C2_NORETURN_FUNCPTR
 #define C2_NAKED __declspec(naked)
+#define C2_HOOK_NOINLINE __declspec(noinline)
 #else
 #define C2_NORETURN __attribute__ ((__noreturn__))
 #define C2_NORETURN_FUNCPTR C2_NORETURN
 #define C2_NAKED __attribute__((__naked__))
+#define C2_HOOK_NOINLINE __attribute__((__noinline__))
 #endif
 
 #if defined(_MSC_VER) && _MSC_VER < 1300

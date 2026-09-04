@@ -2,6 +2,7 @@
 
 #include "spark.h"
 #include "pedestrn.h"
+#include "graphics1.h"
 // GLOBAL: CARMA2_HW 0x0065d0c8
 const tReplay_callback gReplay_callbacks[70] = {
     {
@@ -657,8 +658,8 @@ int C2_HOOK_FASTCALL CalcShrapnelLength(tPipe_chunk* pChunk) {
 
 // FUNCTION: CARMA2_HW 0x004e4e30
 void C2_HOOK_FASTCALL ResetScreenWobble(void) {
-
-    NOT_IMPLEMENTED();
+    gScreen_wobble_x = 0;
+    gScreen_wobble_y = 0;
 }
 
 // FUNCTION: CARMA2_HW 0x004c9180
@@ -1138,14 +1139,14 @@ void C2_HOOK_FASTCALL UndoFunkEnable(tPipe_chunk** pChunk, tPipe_chunk* pPrev_ch
 void C2_HOOK_FASTCALL ApplyVanishDismembered(tPipe_chunk** pChunk) {
     tPipe_chunk_vanish* chunk = (tPipe_chunk_vanish*)*pChunk;
 
-    return DoVanishDismembered(chunk->field_0x0, chunk->field_0x8);
+    DoVanishDismembered(chunk->field_0x0, chunk->field_0x8);
 }
 
 // FUNCTION: CARMA2_HW 0x004ca330
 void C2_HOOK_FASTCALL UndoVanishDismembered(tPipe_chunk** pChunk, tPipe_chunk* pPrev_chunk) {
     tPipe_chunk_vanish* chunk = (tPipe_chunk_vanish*)*pChunk;
 
-    return DoVanishDismembered(chunk->field_0x0, chunk->field_0x4);
+    DoVanishDismembered(chunk->field_0x0, chunk->field_0x4);
 }
 
 // FUNCTION: CARMA2_HW 0x004c9c40

@@ -482,6 +482,7 @@ void C2_HOOK_FASTCALL SetUpTestObjects(void) {
 
 }
 
+#pragma auto_inline(off)
 // FUNCTION: CARMA2_HW 0x004c61f0
 void C2_HOOK_FASTCALL PhysicsSetErrorHandler(tPhysicsError_cbfn *pError_cbfn) {
 
@@ -510,6 +511,7 @@ void C2_HOOK_FASTCALL InitPhysicsWorkspace(tU8* pBuffer, int pSize) {
     gPhysics_other_buffer_capacity = pSize - 3 * PHYSICS_BUFFER_PART_SIZE;
     gPhysics_other_buffer = pBuffer + 3 * PHYSICS_BUFFER_PART_SIZE;
 }
+#pragma auto_inline(on)
 
 // FUNCTION: CARMA2_HW 0x004b5cc0
 int C2_HOOK_FASTCALL PHILInit(void) {
@@ -2528,15 +2530,8 @@ void C2_HOOK_FASTCALL FreePhysicsJoint(tPhysics_joint* pJoint) {
 
 // FUNCTION: CARMA2_HW 0x004b5ca0
 void C2_HOOK_FASTCALL InitPhysics(void) {
-#ifndef CARPOCALYPSE2_MATCHING
-    static tU8 physics_workspace[3 * PHYSICS_BUFFER_PART_SIZE + PHYSICS_BUFFER_OTHER_SIZE];
-
-    InitPhysicsWorkspace(physics_workspace, (int)sizeof(physics_workspace));
-    gCollision_info_uid_counter = 0;
-    gFace_num__car = 1;
-#else
-    NOT_IMPLEMENTED();
-#endif
+    PhysicsSetErrorHandler(DoPhysicsError);
+    InitPhysicsWorkspace(gTemporary_physics_render_buffer, (int)sizeof(gTemporary_physics_render_buffer));
 }
 
 // PointOutOfSightNotAR

@@ -30,6 +30,8 @@ const char* gNet_avail_names[4] = {
 
 int gGroove_funk_offset;
 
+extern int gFunk_groove_flags[30];
+
 // GLOBAL: CARMA2_HW 0x0068c6ec
 FILE* gTempFile;
 
@@ -875,7 +877,7 @@ void C2_HOOK_FASTCALL LoadOpponents(void) {
 // FUNCTION: CARMA2_HW 0x0048cd80
 void C2_HOOK_FASTCALL AboutToLoadFirstCar(void) {
 
-    InitFunkGrooveFlags();
+    memset(&gFunk_groove_flags[1], 0, (CARPOCALYPSE2_ASIZE(gFunk_groove_flags) - 1) * sizeof(int));
     gGroove_funk_offset = 0;
 }
 
