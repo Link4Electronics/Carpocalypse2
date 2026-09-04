@@ -2692,7 +2692,7 @@ typedef struct tCar_spec {
     unsigned int big_bang : 1;                 // @0x13c  // 0x2
     unsigned int scary_bang : 1;               // @0x13c  // 0x4
     undefined4 field_0x1540;
-    undefined4 field_0x1544;
+    tU32 last_collision_time;
     tU32 field_0x1548;
     tU32 end_steering_damage_effect;
     tU32 end_trans_damage_effect;
