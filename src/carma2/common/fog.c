@@ -1,4 +1,8 @@
 #include "fog.h"
+
+// GLOBAL: CARMA2_HW 0x006a3340
+extern br_material* gMaterials_to_adapt[200];
+
 // GLOBAL: CARMA2_HW 0x006a6d38
 int gMaterials_to_adapt_count;
 
@@ -24,11 +28,13 @@ void C2_HOOK_FASTCALL DisableAutoFogification(void) {
     gAllow_material_adapt = 0;
 }
 
-// STUB: CARMA2_HW 0x004ea860
+// FUNCTION: CARMA2_HW 0x004ea860
 void C2_HOOK_FASTCALL RemoveMaterialFromFogification(br_material* pMaterial) {
-#ifndef CARPOCALYPSE2_MATCHING
-    /* stub: no-op for Linux boot */
-#else
-    NOT_IMPLEMENTED();
-#endif
+    int i;
+
+    for (i = 0; i < gMaterials_to_adapt_count; i++) {
+        if (gMaterials_to_adapt[i] == pMaterial) {
+            gMaterials_to_adapt[i] = NULL;
+        }
+    }
 }
