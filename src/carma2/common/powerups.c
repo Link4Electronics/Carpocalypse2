@@ -1512,8 +1512,13 @@ int C2_HOOK_FASTCALL SetBouncey(tPowerup* powerup, tCar_spec* car) {
 // FUNCTION: CARMA2_HW 0x004dce80
 int C2_HOOK_FASTCALL SetSuspension(tPowerup* powerup, tCar_spec* car) {
 
-    NOT_IMPLEMENTED();
-    return 0;
+    SetCarSuspGiveAndHeight(car, car,
+                            powerup->float_params[0],
+                            powerup->float_params[1],
+                            powerup->float_params[4],
+                            powerup->float_params[2],
+                            powerup->float_params[3]);
+    return powerup - gPowerup_array;
 }
 
 // FUNCTION: CARMA2_HW 0x004dced0
@@ -1593,8 +1598,14 @@ int C2_HOOK_FASTCALL HitMine(tPowerup* powerup, tCar_spec* car) {
 // FUNCTION: CARMA2_HW 0x004dec60
 int C2_HOOK_FASTCALL SetElectroBastard(tPowerup* powerup, tCar_spec* car) {
 
-    NOT_IMPLEMENTED();
-    return 0;
+    car->proxy_ray_distance = powerup->float_params[0] * powerup->float_params[0];
+    return powerup - gPowerup_array;
+}
+
+// FUNCTION: CARMA2_HW 0x004dec90
+void C2_HOOK_FASTCALL ResetElectroBastard(tPowerup* powerup, tCar_spec* car) {
+
+    car->proxy_ray_distance = 0.0f;
 }
 
 // FUNCTION: CARMA2_HW 0x004dc7a0
@@ -1854,7 +1865,7 @@ void C2_HOOK_FASTCALL ResetBouncey(tPowerup* powerup, tCar_spec* car) {
 // FUNCTION: CARMA2_HW 0x004de760
 void C2_HOOK_FASTCALL ResetSuspension(tPowerup* powerup, tCar_spec* car) {
 
-    NOT_IMPLEMENTED();
+    SetCarSuspGiveAndHeight(car, car, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f);
 }
 
 // FUNCTION: CARMA2_HW 0x004de790
@@ -1890,7 +1901,10 @@ void C2_HOOK_FASTCALL ResetSuicidalPeds(tPowerup* powerup, tCar_spec* car) {
 // FUNCTION: CARMA2_HW 0x004debf0
 void C2_HOOK_FASTCALL ResetMassMultiplier(tPowerup* powerup, tCar_spec* car) {
 
-    NOT_IMPLEMENTED();
+    car->field_0x4c8 = 1.0f;
+    if (gNet_mode) {
+        RestoreCarPixelmaps(car);
+    }
 }
 
 // FUNCTION: CARMA2_HW 0x004de850
@@ -1907,12 +1921,6 @@ void C2_HOOK_FASTCALL HidePedestrians(tPowerup* powerup, tCar_spec* car) {
     if (car && car->driver == eDriver_local_human) {
         gShow_peds_on_map = 0;
     }
-}
-
-// FUNCTION: CARMA2_HW 0x004dec90
-void C2_HOOK_FASTCALL ResetElectroBastard(tPowerup* powerup, tCar_spec* car) {
-
-    NOT_IMPLEMENTED();
 }
 
 // FUNCTION: CARMA2_HW 0x004dca00

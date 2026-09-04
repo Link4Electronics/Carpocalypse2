@@ -210,15 +210,10 @@ tSave_game* C2_HOOK_FASTCALL GetNthSavedGame(int pN) {
 
 // FUNCTION: CARMA2_HW 0x00491e20
 int C2_HOOK_FASTCALL DoLoadGame(int pIndex) {
-#ifndef CARPOCALYPSE2_MATCHING
     if (gSaved_games != NULL && pIndex >= 0 && pIndex < gCount_saved_games) {
         return DoLoadGame2(&gSaved_games[gCount_saved_games - pIndex - 1]);
     }
     return 0;
-#else
-    NOT_IMPLEMENTED();
-    return 0;
-#endif
 }
 
 // DoLoadMostRecentGame

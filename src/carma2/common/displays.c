@@ -345,12 +345,16 @@ void C2_HOOK_FASTCALL EarnCredits(int pAmount) {
 
 // FUNCTION: CARMA2_HW 0x0044b470
 int C2_HOOK_FASTCALL SpendCredits(int pAmount) {
+    int result;
 
-    gProgram_state.credits -= pAmount;
-    if (gProgram_state.credits < 0) {
+    result = gProgram_state.credits - pAmount;
+    gProgram_state.credits = result;
+    if (result < 0) {
         gProgram_state.credits = 0;
+    } else {
+        return 0;
     }
-    return gProgram_state.credits;
+    return result;
 }
 
 // FUNCTION: CARMA2_HW 0x0044b490

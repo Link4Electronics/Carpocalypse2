@@ -448,16 +448,11 @@ int C2_HOOK_FASTCALL EitherMouseButtonDown(void) {
 int C2_HOOK_FASTCALL PDKeyDown(int pKey_index) {
     tKey_down_result result;
 
-#ifndef CARPOCALYPSE2_MATCHING
     result = EdgeTriggeryKey(pKey_index, 0);
     if (!gEdge_trigger_mode || pKey_index <= 10) {
         return result != tKey_down_no;
     }
     return result == tKey_down_yes || result == tKey_down_repeat;
-#else
-    NOT_IMPLEMENTED();
-    return 0;
-#endif
 }
 
 // PDKeyDown3
@@ -479,13 +474,8 @@ int C2_HOOK_FASTCALL PDAnyKeyDown(void) {
 int C2_HOOK_FASTCALL AnyKeyDown(void) {
     int the_key;
 
-#ifndef CARPOCALYPSE2_MATCHING
     the_key = PDAnyKeyDown();
     return (the_key != -1 && the_key != 4) || EitherMouseButtonDown();
-#else
-    NOT_IMPLEMENTED();
-    return 0;
-#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00482f10
@@ -549,7 +539,6 @@ tU32* C2_HOOK_FASTCALL KevKeyService(void) {
 int C2_HOOK_FASTCALL KeyIsDown(int pKey_index) {
     int i;
 
-#ifndef CARPOCALYPSE2_MATCHING
     CheckKeysForMouldiness();
     switch (pKey_index) {
     case -2:
@@ -564,24 +553,16 @@ int C2_HOOK_FASTCALL KeyIsDown(int pKey_index) {
     default:
         return gKey_array[gKey_mapping[pKey_index]];
     }
-#else
-    NOT_IMPLEMENTED();
-    return 0;
-#endif
 }
 
 // KeyIsDownNoMouldiness
 
 // FUNCTION: CARMA2_HW 0x004833b0
 void C2_HOOK_FASTCALL WaitForNoKeys(void) {
-#ifndef CARPOCALYPSE2_MATCHING
     while (AnyKeyDown() || EitherMouseButtonDown()) {
         CheckQuit();
     }
     CheckQuit();
-#else
-    NOT_IMPLEMENTED();
-#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00483c10
@@ -609,20 +590,12 @@ void C2_HOOK_FASTCALL GetMousePosition(int *pX, int *pY) {
 void C2_HOOK_FASTCALL InitRollingLetters(void) {
     int i;
 
-#ifndef CARPOCALYPSE2_MATCHING
-    C2_HOOK_BUG_ON(sizeof(tRolling_letter) != 0x38);
-    C2_HOOK_BUG_ON(NBR_ROLLING_LETTERS != 500);
-    C2_HOOK_BUG_ON(NBR_ROLLING_LETTERS * sizeof(tRolling_letter) != 28000);
-
     gLast_roll = 0;
     gCurrent_cursor = -1;
     gRolling_letters = BrMemAllocate(NBR_ROLLING_LETTERS * sizeof(tRolling_letter), kMem_misc);
     for (i = 0; i < NBR_ROLLING_LETTERS; i++) {
         gRolling_letters[i].number_of_letters = -1;
     }
-#else
-    NOT_IMPLEMENTED();
-#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00483ce0
@@ -638,13 +611,9 @@ void C2_HOOK_FASTCALL EndRollingLetters(void) {
 void C2_HOOK_FASTCALL RevertTyping(int pSlot_index, char* pRevert_str) {
     unsigned i;
 
-#ifndef CARPOCALYPSE2_MATCHING
     for (i = 0; (int)i < gThe_length; i++) {
         ChangeCharTo(pSlot_index, i, i >= strlen(pRevert_str) ? ' ' : pRevert_str[i]);
     }
-#else
-    NOT_IMPLEMENTED();
-#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00484600
