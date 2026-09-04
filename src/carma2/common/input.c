@@ -627,11 +627,7 @@ void C2_HOOK_FASTCALL InitRollingLetters(void) {
 
 // FUNCTION: CARMA2_HW 0x00483ce0
 void C2_HOOK_FASTCALL EndRollingLetters(void) {
-#ifndef CARPOCALYPSE2_MATCHING
     BrMemFree(gRolling_letters);
-#else
-    NOT_IMPLEMENTED();
-#endif
 }
 
 // AddRollingLetter

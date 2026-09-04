@@ -187,7 +187,7 @@ void C2_HOOK_FASTCALL TurnOffActionReplay(void) {
 // FUNCTION: CARMA2_HW 0x004e72d0
 void C2_HOOK_FASTCALL AfterActionReplay(void) {
 
-    NOT_IMPLEMENTED();
+    ForceRebuildActiveCarList();
 }
 
 // FUNCTION: CARMA2_HW 0x004e6900
