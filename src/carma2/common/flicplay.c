@@ -1676,12 +1676,8 @@ int C2_HOOK_FASTCALL TranslationMode(void) {
 
 // FUNCTION: CARMA2_HW 0x00461a60
 void C2_HOOK_FASTCALL FlicPaletteAllocate(void) {
-#ifndef CARPOCALYPSE2_MATCHING
     gPalette_pixels = BrMemAllocate(256 * sizeof(br_uint_32), kMem_misc);
     gPalette = DRPixelmapAllocate(BR_PMT_RGBX_888, 1, 256, gPalette_pixels, 0);
-#else
-    NOT_IMPLEMENTED();
-#endif
 }
 
 // AssertFlicPixelmap
@@ -1731,13 +1727,9 @@ int C2_HOOK_FASTCALL LoadFlic(int pIndex) {
 
 // FUNCTION: CARMA2_HW 0x00462a70
 void C2_HOOK_FASTCALL UnlockFlic(int pIndex) {
-#ifndef CARPOCALYPSE2_MATCHING
     if (pIndex >= 0 && gMain_flic_list[pIndex].data_ptr != NULL) {
         MAMSUnlock((void**)&gMain_flic_list[pIndex].data_ptr);
     }
-#else
-    NOT_IMPLEMENTED();
-#endif
 }
 
 // LoadFlicData

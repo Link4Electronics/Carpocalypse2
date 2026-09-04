@@ -1508,7 +1508,19 @@ void C2_HOOK_FASTCALL CheckToggles(int pRacing) {
 // FUNCTION: CARMA2_HW 0x00443ba0
 void C2_HOOK_FASTCALL CheckHorn3D(tCar_spec* pCar) {
 
-    NOT_IMPLEMENTED();
+    if (pCar->keys.horn && pCar->horn_sound_tag == 0) {
+        pCar->horn_sound_tag = DRS3StartSound3D(gIndexed_outlets[0], eSoundId_Horn,
+                                                &pCar->car_master_actor->t.t.translate.t, &pCar->vel,
+                                                0, 0xff, ((pCar->car_ID & 0x7) + 0xc) << 12, 0x10000);
+    } else if (!pCar->keys.horn && pCar->horn_sound_tag != 0) {
+        while (S3SoundStillPlaying(pCar->horn_sound_tag) != 0) {
+            DRS3StopSound(pCar->horn_sound_tag);
+            DRS3StopOutletSound(gIndexed_outlets[0]);
+        }
+        if (!S3SoundStillPlaying(pCar->horn_sound_tag)) {
+            pCar->horn_sound_tag = 0;
+        }
+    }
 }
 
 // FUNCTION: CARMA2_HW 0x00442140
