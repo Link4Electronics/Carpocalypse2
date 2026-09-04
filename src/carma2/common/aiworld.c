@@ -27,12 +27,8 @@ void C2_HOOK_FASTCALL InitPanGameAIWorld(void) {
 
 // FUNCTION: CARMA2_HW 0x00401160
 void C2_HOOK_FASTCALL DisposeAIWorldRaceStuff(void) {
-#ifndef CARPOCALYPSE2_MATCHING
-    DisposeDronesRaceStuff();
     DisposeOpponents();
-#else
-    NOT_IMPLEMENTED();
-#endif
+    DisposeDronesRaceStuff();
 }
 
 // MungeAIWorld

@@ -38,7 +38,7 @@
 
 br_fixed_ls C2_HOOK_CDECL BrFixedAbs(br_fixed_ls a);
 
-br_fixed_ls C2_HOOK_FASTCALL BrFixedMul(br_fixed_ls a, br_fixed_ls b);
+br_fixed_ls C2_HOOK_CDECL BrFixedMul(br_fixed_ls a, br_fixed_ls b);
 
 br_fixed_ls C2_HOOK_CDECL BrFixedMac2(br_fixed_ls a, br_fixed_ls b, br_fixed_ls c, br_fixed_ls d);
 
