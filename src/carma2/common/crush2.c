@@ -63,9 +63,9 @@ int C2_HOOK_FASTCALL SetKnackeredFlag(tCar_spec* pCar) {
     Explode(&gExplosion_pix_animation_groups, pCar->car_master_actor, &pCar->car_actor->model->bounds, NULL);
 
     if (pCar != NULL && pCar->driver == eDriver_local_human) {
-        DRS3StartSound(gCar_outlet, gExplosion_sound_id);
+        DRS3StartSound(gIndexed_outlets[0], gExplosion_sound_id);
     } else {
-        DRS3StartSound3D(gCar_outlet, gExplosion_sound_id, &pCar->pos, &gZero_v__car, 1, 255, 0x10000, 0x10000);
+        DRS3StartSound3D(gIndexed_outlets[0], gExplosion_sound_id, &pCar->pos, &gZero_v__car, 1, 255, 0x10000, 0x10000);
     }
 
     if (!pCar->invulnerable_no_wastage && gNet_mode != eNet_mode_client) {
@@ -77,10 +77,10 @@ int C2_HOOK_FASTCALL SetKnackeredFlag(tCar_spec* pCar) {
 
         if (gNet_mode == eNet_mode_none) {
             if (GetCarCount(eVehicle_opponent) != 0 && NumberOfOpponentsLeft() == 0) {
-                if (gCurrent_graf_data->field_0x210 == 0) {
-                    NewTextHeadupSlot(4, 0, 5000, 0xfffffffc, GetMiscString(0xa));
-                    RaceCompleted(eRace_over_2);
-                } else if (gCurrent_graf_data->field_0x210 == 1) {
+                if (gCurrent_race.race_spec->race_type == kRaceType_Carma1 || gCurrent_race.race_spec->race_type == kRaceType_Cars) {
+                    if (gCurrent_race.race_spec->race_type == kRaceType_Carma1) {
+                        NewTextHeadupSlot(4, 0, 5000, 0xfffffffc, GetMiscString(0xa));
+                    }
                     RaceCompleted(eRace_over_2);
                 }
             }
