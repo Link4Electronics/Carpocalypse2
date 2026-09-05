@@ -27,11 +27,11 @@ void C2_HOOK_FASTCALL ResetExplosions(void) {
     C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gSmash_explosions) != 20);
     C2_HOOK_BUG_ON(sizeof(gSmash_explosions[0]) != 0xc8);
 
-    for (i = 0; i < CARPOCALYPSE2_ASIZE(gExplosions); i++) {
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gExplosions); i++) {
         gExplosions[i].start = 0;
         gExplosions[i].finished = 0;
     }
-    for (i = 0; i < CARPOCALYPSE2_ASIZE(gSmash_explosions); i++) {
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gSmash_explosions); i++) {
         gSmash_explosions[i].active = 0;
     }
 }

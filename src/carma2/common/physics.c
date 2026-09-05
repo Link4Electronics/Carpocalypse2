@@ -520,7 +520,7 @@ int C2_HOOK_FASTCALL PHILInit(void) {
     C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gPhil_queued_objects.headers) != 100);
     C2_HOOK_BUG_ON(sizeof(gPhil_queued_objects.headers[0]) != 0x18);
 
-    for (i = 0; i < CARPOCALYPSE2_ASIZE(gPhil_queued_objects.headers); i++) {
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gPhil_queued_objects.headers); i++) {
         gPhil_queued_objects.headers[i].collision_info = NULL;
     }
     gPHIL_count_list_collision_infos = 0;

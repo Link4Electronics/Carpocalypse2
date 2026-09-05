@@ -1042,7 +1042,7 @@ void C2_HOOK_FASTCALL TurnOpponentPhysicsOff(tOpponent_spec* pOpponent_spec) {
     car->revs = 0.f;
     BrVector3Set(&car->collision_info->omega, 0.f, 0.f, 0.f);
     BrVector3Set(&car->collision_info->v, 0.f, 0.f, 0.f);
-    if (!pOpponent_spec->physics_me) {
+    if (pOpponent_spec->physics_me) {
         pOpponent_spec->physics_me = 0;
         pOpponent_spec->car_spec->car_master_actor->render_style = BR_RSTYLE_NONE;
         PipeSingleOppoRenderage(pOpponent_spec, 0);

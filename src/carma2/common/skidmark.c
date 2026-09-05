@@ -53,7 +53,7 @@ void C2_HOOK_FASTCALL HideSkid(int pSkid_num) {
 void C2_HOOK_FASTCALL HideSkids(void) {
     int skid;
 
-    for (skid = 0; skid < CARPOCALYPSE2_ASIZE(gSkids); skid++) {
+    for (skid = 0; skid < (int)CARPOCALYPSE2_ASIZE(gSkids); skid++) {
         HideSkid(skid);
     }
 }

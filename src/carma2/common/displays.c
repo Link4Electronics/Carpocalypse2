@@ -1359,7 +1359,7 @@ void C2_HOOK_FASTCALL ClearHeadups(void) {
     C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gHeadups) != 37);
     C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gOld_times) != 10);
 
-    for (i = 0; i < CARPOCALYPSE2_ASIZE(gHeadups); i++) {
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gHeadups); i++) {
         if (gHeadups[i].type != eHeadup_unused) {
             ClearHeadup(i);
         }
@@ -1368,7 +1368,7 @@ void C2_HOOK_FASTCALL ClearHeadups(void) {
     gLast_credit_headup__displays = -1;
     gLast_time_credit_headup = -1;
     gLast_earn_time = 0;
-    for (i = 0; i < CARPOCALYPSE2_ASIZE(gOld_times); i++) {
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gOld_times); i++) {
         gOld_times[i] = 0;
     }
     gLast_fancy_time = 0;
@@ -1636,6 +1636,7 @@ void C2_HOOK_FASTCALL DoDamageScreen(tU32 pThe_time) {
     int the_step;
     int the_wobble_x;
     int the_wobble_y;
+    int the_num_damage_units;
     br_pixelmap* the_image;
     tDamage_unit* the_damage;
 
@@ -1655,7 +1656,9 @@ void C2_HOOK_FASTCALL DoDamageScreen(tU32 pThe_time) {
 
     DRPixelmapCopy(gDamage_hud, gGrey_top5);
 
-    for (i = 0; i < CARPOCALYPSE2_ASIZE(gProgram_state.current_car.damage_units); i++) {
+    the_num_damage_units = CARPOCALYPSE2_ASIZE(gProgram_state.current_car.damage_units);
+
+    for (i = 0; i < the_num_damage_units; i++) {
         the_damage = &gProgram_state.current_car.damage_units[i];
         if (i != eDamage_driver) {
             the_image = the_damage->images;

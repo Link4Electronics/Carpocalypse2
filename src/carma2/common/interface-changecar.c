@@ -24,6 +24,7 @@ int C2_HOOK_FASTCALL CarClickNext(tFrontend_spec* pFrontend);
 int C2_HOOK_FASTCALL ChangeCarOK(tFrontend_spec* pFrontend);
 int C2_HOOK_FASTCALL ChangeCarCancel(tFrontend_spec* pFrontend);
 void C2_HOOK_FASTCALL UpdateCarInfo(tFrontend_spec* pFrontend);
+extern tS3_outlet* gIndexed_outlets[6];
 extern int C2_HOOK_FASTCALL PDGetTotalTime(void);
 extern void C2_HOOK_FASTCALL PollKeys(void);
 extern void C2_HOOK_FASTCALL GetMousePosition(int* pX, int* pY);
@@ -220,7 +221,7 @@ int C2_HOOK_FASTCALL CarClickPrev(tFrontend_spec* pFrontend) {
         }
         gFrontend_opponent_profile_pic_needs_update = 1;
         gFrontend_car_image_outdated = 1;
-        DRS3StartSound(gEffects_outlet, eSoundId_LeftButton);
+        DRS3StartSound(gIndexed_outlets[0], eSoundId_LeftButton);
         UpdateCarInfo(pFrontend);
         gFrontend_scroll_time_left += gFrontend_scroll_time_increment;
     }
@@ -237,7 +238,7 @@ int C2_HOOK_FASTCALL CarClickNext(tFrontend_spec* pFrontend) {
         }
         gFrontend_opponent_profile_pic_needs_update = 1;
         gFrontend_car_image_outdated = 1;
-        DRS3StartSound(gEffects_outlet, eSoundId_LeftButton);
+        DRS3StartSound(gIndexed_outlets[0], eSoundId_LeftButton);
         UpdateCarInfo(pFrontend);
         gFrontend_scroll_time_left += gFrontend_scroll_time_increment;
     }

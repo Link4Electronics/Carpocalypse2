@@ -306,17 +306,17 @@ void C2_HOOK_FASTCALL MungeEnvironmentalSound(void) {
     if (gAmbient_sound) {
         int i;
 
-        for (i = 0; i < CARPOCALYPSE2_ASIZE(gEnvironment_sound_sources); i++) {
+        for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gEnvironment_sound_sources); i++) {
             gEnvironment_sound_sources[i].field_0x18 = 0;
         }
         if (!gFaded_palette) {
             FindSpecialVolume((br_vector3*)gCamera_to_world.m[3], 0, 1);
             MungeSoundGenerators();
         }
-        for (i = 0; i < CARPOCALYPSE2_ASIZE(gEnvironment_sound_sources); i++) {
+        for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gEnvironment_sound_sources); i++) {
 
             if (gEnvironment_sound_sources[i].field_0x18 == 0 && gEnvironment_sound_sources[i].field_0x10 != NULL) {
-                S3UpdateSoundSource(gXXX_outlet, -1, gEnvironment_sound_sources[i].source, -1.f, -1, -1, 0, -1, -1);
+                S3UpdateSoundSource(gIndexed_outlets[0], -1, gEnvironment_sound_sources[i].source, -1.f, -1, -1, 0, -1, -1);
                 gEnvironment_sound_sources[i].field_0x10 = NULL;
             }
         }
@@ -500,7 +500,7 @@ int C2_HOOK_FASTCALL DRS3StartSoundNoPiping(tS3_outlet* pOutlet, tS3_sound_id pS
 int C2_HOOK_FASTCALL DRS3StartSound2(tS3_outlet *pOutlet, tS3_sound_id pSound, int pRepeats, int pLeft_volume, int pRight_volume, int pLeft_pitch, int pRight_pitch) {
 
     if (gSound_enabled) {
-        if (pOutlet != gMusic_outlet
+        if (pOutlet != gIndexed_outlets[0]
                 && pSound != 1000
                 && !(pSound >= 3000 && pSound <= 3007)
                 && !(pSound >= 5300 && pSound <= 5320)
@@ -673,9 +673,9 @@ void C2_HOOK_FASTCALL InitSoundSources(void) {
 
                 if ((car != NULL && car->driver == eDriver_local_human) || gSound_detail_level >= 3 || cat == eVehicle_rozzer) {
 
-                    car->sound_source = S3CreateSoundSourceBR(&car->pos, &car->vel, gEngine_outlet);
+                    car->sound_source = S3CreateSoundSourceBR(&car->pos, &car->vel, gIndexed_outlets[0]);
                     if (car->sound_source != NULL) {
-                        S3BindAmbientSoundToOutlet(gEngine_outlet, cat == eVehicle_rozzer ? eSoundId_Cop_Siren : car->engine_noises[0], car->sound_source, 250.0f, 0, 0, 0, BR_FIXED_INT(1), BR_FIXED_INT(1));
+                        S3BindAmbientSoundToOutlet(gIndexed_outlets[0], cat == eVehicle_rozzer ? eSoundId_Cop_Siren : car->engine_noises[0], car->sound_source, 250.0f, 0, 0, 0, BR_FIXED_INT(1), BR_FIXED_INT(1));
                     }
                 }
             }
@@ -686,9 +686,9 @@ void C2_HOOK_FASTCALL InitSoundSources(void) {
             env_src = &gEnvironment_sound_sources[i];
             env_src->field_0x10 = NULL;
             if (env_src->source == NULL) {
-                env_src->source = S3CreateSoundSourceBR(&env_src->position, &gZero_v__car, gXXX_outlet);
+                env_src->source = S3CreateSoundSourceBR(&env_src->position, &gZero_v__car, gIndexed_outlets[0]);
                 if (env_src->source != NULL) {
-                    S3BindAmbientSoundToOutlet(gXXX_outlet, eSoundId_Cop_Siren, env_src->source, 100.f, 0, 0, 0, BR_FIXED_INT(1), BR_FIXED_INT(1));
+                    S3BindAmbientSoundToOutlet(gIndexed_outlets[0], eSoundId_Cop_Siren, env_src->source, 100.f, 0, 0, 0, BR_FIXED_INT(1), BR_FIXED_INT(1));
                 }
             }
         }
@@ -719,7 +719,7 @@ void C2_HOOK_FASTCALL DisposeSoundSources(void) {
             ToggleSoundEnable();
         }
         if (gSound_sources_inited) {
-            DRS3StopOutletSound(gEngine_outlet);
+            DRS3StopOutletSound(gIndexed_outlets[0]);
             S3Service(gProgram_state.cockpit_on && gProgram_state.cockpit_image_index >= 0, 0);
 
             for (cat = eVehicle_rozzer; cat >= eVehicle_self; cat--) {
@@ -736,7 +736,7 @@ void C2_HOOK_FASTCALL DisposeSoundSources(void) {
                     }
                     if ((the_car != NULL && the_car->driver == eDriver_local_human) || gSound_detail_level == 3 || cat == eVehicle_rozzer) {
                         if (the_car->sound_source != NULL) {
-                            S3UpdateSoundSource(gEngine_outlet, -1, the_car->sound_source, 0.0f, 0, 0, 0, 0x10000, 0x10000);
+                            S3UpdateSoundSource(gIndexed_outlets[0], -1, the_car->sound_source, 0.0f, 0, 0, 0, 0x10000, 0x10000);
                             S3ReleaseSoundSource(the_car->sound_source);
                         }
                         the_car->sound_source = NULL;
@@ -745,7 +745,7 @@ void C2_HOOK_FASTCALL DisposeSoundSources(void) {
                 // FIXME: move outside of car category loop?
                 for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gEnvironment_sound_sources); i++) {
                     if (gEnvironment_sound_sources[i].source != NULL) {
-                        S3BindAmbientSoundToOutlet(gXXX_outlet, -1, gEnvironment_sound_sources[i].source, 100.0f, 0, 0, 0, BR_FIXED_INT(1), BR_FIXED_INT(1));
+                        S3BindAmbientSoundToOutlet(gIndexed_outlets[0], -1, gEnvironment_sound_sources[i].source, 100.0f, 0, 0, 0, BR_FIXED_INT(1), BR_FIXED_INT(1));
                     }
                 }
             }
@@ -858,7 +858,7 @@ void C2_HOOK_FASTCALL MungeEngineNoise(void) {
                 if (the_car->field_0x4d4 > 1.0) {
                     vol = (float)(vol * (1.0 + (the_car->field_0x4d4 - 1.0f) / 12.0f));
                 }
-                S3UpdateSoundSource(gEngine_outlet, -1, the_car->sound_source, (float)(gAction_replay_mode ? 300 : 250), 0, 0, (int)vol, (int)pitch, BR_FIXED_INT(1));
+                S3UpdateSoundSource(gIndexed_outlets[0], -1, the_car->sound_source, (float)(gAction_replay_mode ? 300 : 250), 0, 0, (int)vol, (int)pitch, BR_FIXED_INT(1));
             }
         }
     }
@@ -921,7 +921,7 @@ int C2_HOOK_FASTCALL DRS3StartCDA(int pSound) {
     if (!gCD_is_disabled && gMusic_available && !gINT_00684554 && !gINT_00684568 && S3IsCDAEnabled()) {
         dr_dprintf("CDINFO: DRS3StartCDA(): Requested track id %d", pSound);
         gCDA_started_playing = 1;
-        S3StopOutletSound(gMusic_outlet);
+        S3StopOutletSound(gIndexed_outlets[0]);
         if (gSound_enabled) {
             S3Service(gProgram_state.cockpit_on != 0 && gProgram_state.cockpit_image_index >= 0, 0);
             /* Random CDA track */
@@ -940,7 +940,7 @@ int C2_HOOK_FASTCALL DRS3StartCDA(int pSound) {
                 } while (pSound == gLast_tune);
             }
             gLast_tune = pSound;
-            gINT_00684554 = DRS3StartSoundNoPiping(gMusic_outlet, pSound);
+            gINT_00684554 = DRS3StartSoundNoPiping(gIndexed_outlets[0], pSound);
             gINT_00684568 = gINT_00684554;
             if (!gINT_00684554) {
                 dr_dprintf("CDINFO: DRS3StartCDA(): Chosen actual CD track %d", pSound);

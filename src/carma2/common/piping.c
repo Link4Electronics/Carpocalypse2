@@ -1055,7 +1055,7 @@ void C2_HOOK_FASTCALL PipeSinglePedIncident(tPedestrian* pPed, br_actor* pActor)
 // FUNCTION: CARMA2_HW 0x004c7e70
 void C2_HOOK_FASTCALL AddBurningPedToSession(int pIndex, tPedestrian* pPed, br_vector3* pPositions) {
 
-    ARDoSingleVariedSession(ePipe_chunk_burning_ped, pIndex, 2,
+    ARAddVariedDataToSession(ePipe_chunk_burning_ped, pIndex, 2,
         SIZE_OFFSET_PIPING(tPipe_burning_ped, ped), pPed,
         SIZE_OFFSET_PIPING(tPipe_burning_ped, positions), pPositions);
 }
@@ -1119,7 +1119,7 @@ void C2_HOOK_FASTCALL AddRepulseRayToPipingSession(int pIndex, br_vector3* pOrig
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPipe_chunk_repulse_ray, time, 0x8);
     C2_HOOK_STATIC_ASSERT_STRUCT_MEMBER_SIZE(tPipe_chunk_repulse_ray, time, 0x4);
 
-    ARDoSingleVariedSession(ePipe_chunk_repulse_ray, (uintptr_t)pIndex, 3,
+    ARAddVariedDataToSession(ePipe_chunk_repulse_ray, (uintptr_t)pIndex, 3,
         SIZE_OFFSET_PIPING(tPipe_chunk_repulse_ray, origin), pOrigin,
         SIZE_OFFSET_PIPING(tPipe_chunk_repulse_ray, victim), pVictim,
         SIZE_OFFSET_PIPING(tPipe_chunk_repulse_ray, time), pTime);
@@ -1155,7 +1155,7 @@ void C2_HOOK_FASTCALL AddSparkToPipingSession(int pSpark_index, const br_vector3
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPipe_chunk_spark, v, 0xc);
     C2_HOOK_STATIC_ASSERT_STRUCT_MEMBER_SIZE(tPipe_chunk_spark, v, 0xc);
 
-    ARDoSingleVariedSession(ePipe_chunk_spark, pSpark_index, 2,
+    ARAddVariedDataToSession(ePipe_chunk_spark, pSpark_index, 2,
         SIZE_OFFSET_PIPING(tPipe_chunk_spark, p), pPos,
         SIZE_OFFSET_PIPING(tPipe_chunk_spark, v), pV);
 }
@@ -1183,7 +1183,7 @@ void C2_HOOK_FASTCALL AddSmokeToPipingSession(int pIndex, tU8 pType, br_vector3*
     C2_HOOK_STATIC_ASSERT_STRUCT_MEMBER_SIZE(tPipe_chunk_smoke, type, 0x1);
 
     SaveReducedPos(&reduced_pos, pPos);
-    ARDoSingleVariedSession(ePipe_chunk_smoke, pIndex, 4,
+    ARAddVariedDataToSession(ePipe_chunk_smoke, pIndex, 4,
         SIZE_OFFSET_PIPING(tPipe_chunk_smoke, pos), &reduced_pos,
         SIZE_OFFSET_PIPING(tPipe_chunk_smoke, radius), (int)(1024.f * pRadius),
         SIZE_OFFSET_PIPING(tPipe_chunk_smoke, strength), (int)(pStrength * 255.f),
@@ -1200,7 +1200,7 @@ void C2_HOOK_FASTCALL AddProxRayToPipingSession(int pRay_index, tCar_spec* pCar,
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPipe_chunk_prox_ray, time, 0x4);
     C2_HOOK_STATIC_ASSERT_STRUCT_MEMBER_SIZE(tPipe_chunk_prox_ray, time, 0x4);
 
-    ARDoSingleVariedSession(ePipe_chunk_prox_ray, pRay_index, 3,
+    ARAddVariedDataToSession(ePipe_chunk_prox_ray, pRay_index, 3,
         SIZE_OFFSET_PIPING(tPipe_chunk_prox_ray, ped_index), (tU16)pPed_index,
         SIZE_OFFSET_PIPING(tPipe_chunk_prox_ray, car_ID), (tU16)pCar->car_ID,
         SIZE_OFFSET_PIPING(tPipe_chunk_prox_ray, time), pTime);

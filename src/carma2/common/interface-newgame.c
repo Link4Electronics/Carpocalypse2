@@ -57,7 +57,7 @@ int C2_HOOK_FASTCALL NewGameInfunc(tFrontend_spec* pFrontend) {
     EdgeTriggerModeOff();
     WaitForNoKeys();
     EdgeTriggerModeOn();
-    DRS3StartSound(gEffects_outlet, eSoundId_Swingin);
+    DRS3StartSound(gIndexed_outlets[0], eSoundId_Swingin);
     switch (gProgram_state.skill_level) {
     case 0:
         pFrontend->items[2].enabled = 1;
@@ -97,7 +97,7 @@ int C2_HOOK_FASTCALL NewGameOutfunc(tFrontend_spec* pFrontend) {
 
     SaveOptions();
     InitGameAccordingToSkillLevel();
-    DRS3StartSound(gEffects_outlet, eSoundId_Swingout);
+    DRS3StartSound(gIndexed_outlets[0], eSoundId_Swingout);
     return 0;
 }
 
@@ -197,7 +197,7 @@ int C2_HOOK_FASTCALL FRONTEND_NewGameMenuHandler(tFrontend_spec* pFrontend) {
                 gCurrent_frontend_spec->scrollers[i].indexTopItem = gCurrent_frontend_spec->scrollers[i].indexOfItemAtTop;
             }
             UpdateScrollPositions(gCurrent_frontend_spec);
-            DRS3StartSound(gEffects_outlet, eSoundId_EscEsc);
+            DRS3StartSound(gIndexed_outlets[0], eSoundId_EscEsc);
             return 0;
         }
 
@@ -238,7 +238,7 @@ int C2_HOOK_FASTCALL FRONTEND_NewGameMenuHandler(tFrontend_spec* pFrontend) {
                 }
                 UpdateScrollPositions(gCurrent_frontend_spec);
             }
-            DRS3StartSound(gEffects_outlet, eSoundId_Done);
+            DRS3StartSound(gIndexed_outlets[0], eSoundId_Done);
             return pFrontend->items[orig_selected_item].field_0xc;
         }
     }

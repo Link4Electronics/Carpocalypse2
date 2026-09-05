@@ -174,7 +174,7 @@ void C2_HOOK_FASTCALL InitSmashTargets(void) {
 void C2_HOOK_FASTCALL AddSmashableRaceTarget(br_model* pModel, br_actor* pActor, int pUnknown) {
 
     C2_HOOK_BUG_ON(sizeof(tSmashable_race_target) != 12);
-    if (gCount_smashable_race_targets < CARPOCALYPSE2_ASIZE(gSmashable_race_targets)) {
+    if (gCount_smashable_race_targets < (int)CARPOCALYPSE2_ASIZE(gSmashable_race_targets)) {
         gSmashable_race_targets[gCount_smashable_race_targets].model = pModel;
         gSmashable_race_targets[gCount_smashable_race_targets].actor = pActor;
         gSmashable_race_targets[gCount_smashable_race_targets].field_0x8 = pUnknown;
@@ -550,7 +550,7 @@ void C2_HOOK_FASTCALL ActuallyRepairSmash(tCar_spec* pCar_spec, tCar_crush_smash
         EnableFunkotronic(pSmashable->funk);
     }
     if (pCar_spec != NULL && pCar_spec->driver == eDriver_local_human && gProgram_state.racing) {
-        DRS3StartSound(gCar_outlet,  eSoundId_SmashRepair);
+        DRS3StartSound(gIndexed_outlets[0], eSoundId_SmashRepair);
     }
 }
 

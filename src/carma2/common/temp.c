@@ -30,7 +30,7 @@ br_material* C2_HOOK_FASTCALL LoadTemporaryMaterial(const char* pName) {
 // FUNCTION: CARMA2_HW 0x004ea820
 void C2_HOOK_FASTCALL TemporaryMaterialStore(br_material* pMaterial) {
 
-    if (gMaterials_to_adapt_count < CARPOCALYPSE2_ASIZE(gMaterials_to_adapt)) {
+    if (gMaterials_to_adapt_count < (int)CARPOCALYPSE2_ASIZE(gMaterials_to_adapt)) {
         gMaterials_to_adapt[gMaterials_to_adapt_count] = pMaterial;
         gMaterials_to_adapt_count += 1;
     }

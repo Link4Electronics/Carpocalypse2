@@ -3141,6 +3141,7 @@ tFunk_groove_speed_control GetSpeedControlFromString(const char* pS) {
 // FUNCTION: CARMA2_HW 0x00450680
 void C2_HOOK_FASTCALL LoadFunksAndGrooves(tDrone_spec* pDrone, FILE* pF) {
 
+    char the_spare[256];
     C2_HOOK_BUG_ON(sizeof(tFunk_grooves) != 0xa4);
     C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(pDrone->funk_grooves->items) != 10);
 
@@ -3155,7 +3156,7 @@ void C2_HOOK_FASTCALL LoadFunksAndGrooves(tDrone_spec* pDrone, FILE* pF) {
     }
     for (;;) {
         tFunk_groove* funk_groove;
-        char s[256];
+        char s[512];
         int axis;
         int reverseness;
         int speed_control;

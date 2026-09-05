@@ -1877,7 +1877,7 @@ void C2_HOOK_FASTCALL CheckOtherRacingKeys(void) {
             total_difference %= 100;
             cost = 10 * (cost / 10);
             if (((total_repair_cost == 0 && cost != 0) || bodywork_repair_amount != 0.0f) && sound_tag == 0) {
-                sound_tag = DRS3StartSound(gCar_outlet, eSoundId_DamageRepair);
+                sound_tag = DRS3StartSound(gIndexed_outlets[0], eSoundId_DamageRepair);
             }
             StopCarSmoking(&gProgram_state.current_car);
             if (cost == 0 && bodywork_repair_amount == 0.0) {
@@ -2688,7 +2688,7 @@ void C2_HOOK_FASTCALL FUN_00447340(void) {
 
 // FUNCTION: CARMA2_HW 0x00444420
 void C2_HOOK_FASTCALL CycleInvulnerability(void) {
-    char message[128];
+    char message[256];
 
     gInvulnerability = (gInvulnerability + 1) % 8;
     gCar_to_view->invulnerable_no_damage = gInvulnerability & 1;

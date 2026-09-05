@@ -1284,7 +1284,7 @@ int C2_HOOK_FASTCALL PlayFlic(int pIndex, tU32 pSize, tS8* pData_ptr, br_pixelma
         frame_period = new_time - last_frame;
 
         if (gSound_time != 0 && new_time >= gSound_time) {
-            DRS3StartSound(gEffects_outlet, gSound_ID);
+            DRS3StartSound(gIndexed_outlets[0], gSound_ID);
             gSound_time = finished_playing;
         }
         if (frame_period >= the_flic.frame_period) {
@@ -1388,7 +1388,7 @@ void C2_HOOK_FASTCALL UnlockBunchOfFlics(int pBunch_index) {
 void C2_HOOK_FASTCALL FlushAllFlics(int pBunch_index) {
     int i;
 
-    for (i = 0; i < CARPOCALYPSE2_ASIZE(gFlic_bunch); i++) {
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gFlic_bunch); i++) {
         FreeFlic(i);
     }
 }
@@ -1548,7 +1548,7 @@ void C2_HOOK_FASTCALL ServicePanelFlics(int pCopy_to_buffer) {
     DontLetFlicFuckWithPalettes();
     TurnFlicTransparencyOn();
 
-    for (i = 0; i < CARPOCALYPSE2_ASIZE(gPanel_flic); i++) {
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gPanel_flic); i++) {
         old_last_time[i] = gLast_panel_frame_time[i];
         if (gPanel_buffer[i] != NULL && gPanel_flic[i].data != NULL) {
             if (old_last_time[i] != 0) {
@@ -1714,7 +1714,7 @@ void C2_HOOK_FASTCALL FlicPaletteAllocate(void) {
 void C2_HOOK_FASTCALL InitFlics(void) {
     int i;
 
-    for (i = 0; i < CARPOCALYPSE2_ASIZE(gMain_flic_list); i++) {
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gMain_flic_list); i++) {
         gMain_flic_list[i].data_ptr = NULL;
     }
 }

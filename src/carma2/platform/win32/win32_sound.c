@@ -224,7 +224,7 @@ void C2_HOOK_FASTCALL PDS3CheckCDAMedia(tS3_channel* pChannel) {
         gPDS3_cda_track = 0;
         gPDS3_cda_status_parms.dwItem = MCI_STATUS_NUMBER_OF_TRACKS;
         mciSendCommandA(gPDS3_mci_open_parms.wDeviceID, MCI_STATUS, MCI_STATUS_ITEM | MCI_WAIT, (DWORD_PTR)&gPDS3_cda_status_parms);
-        gPDS3_Number_of_tracks = MIN(gPDS3_cda_status_parms.dwReturn, 99);
+        gPDS3_Number_of_tracks = MIN((int)gPDS3_cda_status_parms.dwReturn, 99);
     } else if (gPDS3_cda_media_present && !gPDS3_cda_status_parms.dwReturn) {
         gPDS3_cda_media_present = 0;
         gPDS3_cda_paused = 0;

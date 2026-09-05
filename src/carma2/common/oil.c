@@ -36,7 +36,7 @@ int gNext_oil_pixie;
 void C2_HOOK_FASTCALL ResetOilSpills(void) {
     int i;
 
-    for (i = 0; i < CARPOCALYPSE2_ASIZE(gOily_spills); i++) {
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gOily_spills); i++) {
         gOily_spills[i].actor->render_style = BR_RSTYLE_NONE;
         gOily_spills[i].car = NULL;
         gOily_spills[i].car_actor = NULL;
@@ -86,7 +86,7 @@ void C2_HOOK_FASTCALL QueueOilSpill2(
     time_high = GetTotalTime();
 
     if (pCar != NULL) {
-        for (i = 0; i < CARPOCALYPSE2_ASIZE(gOily_spills); i++) {
+for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gOily_spills); i++) {
             if (gOily_spills[i].car_actor == pActor
                     && time_low < gOily_spills[i].spill_time + 5000) {
                 return;
