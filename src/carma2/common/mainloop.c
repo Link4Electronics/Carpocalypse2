@@ -836,7 +836,7 @@ void C2_HOOK_FASTCALL CheckTimer(void) {
             time_left = gTimer + 500;
             time_in_seconds = time_left / 1000;
             if (time_in_seconds != last_time_in_seconds && time_in_seconds <= 10) {
-                DRS3StartSound(gPedestrians_outlet, eSoundId_warning_buzzer_noise);
+                DRS3StartSound(gIndexed_outlets[0], eSoundId_warning_buzzer_noise);
             }
             last_time_in_seconds = time_in_seconds;
         } else {

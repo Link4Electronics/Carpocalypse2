@@ -36,21 +36,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-// GLOBAL: CARMA2_HW 0x006845fc
-extern tS3_outlet* gIndexed_outlets[6];
-// GLOBAL: CARMA2_HW 0x00684604
-extern tS3_outlet* gIndexed_outlets[6];
-// GLOBAL: CARMA2_HW 0x00684608
-extern tS3_outlet* gIndexed_outlets[6];
-// GLOBAL: CARMA2_HW 0x00684610
-extern tS3_outlet* gIndexed_outlets[6];
-// GLOBAL: CARMA2_HW 0x00684600
-extern tS3_outlet* gIndexed_outlets[6];
-// GLOBAL: CARMA2_HW 0x0068460c
-extern tS3_outlet* gIndexed_outlets[6];
-// GLOBAL: CARMA2_HW 0x00684614
-extern tS3_outlet* gIndexed_outlets[6];
-// GLOBAL: CARMA2_HW 0x0079e160
 extern tS3_outlet* gIndexed_outlets[6];
 // GLOBAL: CARMA2_HW 0x00595c28
 extern const char* gSound_periodicity_choices[3];
@@ -316,7 +301,7 @@ void C2_HOOK_FASTCALL MungeEnvironmentalSound(void) {
         for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gEnvironment_sound_sources); i++) {
 
             if (gEnvironment_sound_sources[i].field_0x18 == 0 && gEnvironment_sound_sources[i].field_0x10 != NULL) {
-                S3UpdateSoundSource(gIndexed_outlets[0], -1, gEnvironment_sound_sources[i].source, -1.f, -1, -1, 0, -1, -1);
+                S3UpdateSoundSource(gXXX_outlet, -1, gEnvironment_sound_sources[i].source, -1.f, -1, -1, 0, -1, -1);
                 gEnvironment_sound_sources[i].field_0x10 = NULL;
             }
         }

@@ -282,3 +282,7 @@ address,type,name
 0x7635b8,global,gRaceGroups2
 0x763b10,global,gRace_index
 0x79ecb0,global,gMouse_last_pos
+0x657488,global,gRaces_file_names
+0x656998,global,gIdentity34
+0x6b7820,global,gMaterials_to_adapt
+0x68d6f4,global,gINT_0068d6f4
