@@ -4,16 +4,20 @@
 #include "car.h"
 #include "compress.h"
 #include "controls.h"
+#include "crush2.h"
 #include "depth.h"
+#include "displays.h"
 #include "errors.h"
 #include "flap.h"
 #include "globvars.h"
 #include "globvrpb.h"
 #include "loading.h"
 #include "network.h"
+#include "opponent.h"
 #include "piping.h"
 #include "platform.h"
 #include "powerups.h"
+#include "pratcam.h"
 #include "physics.h"
 #include "replay.h"
 #include "shrapnel.h"
@@ -2009,10 +2013,488 @@ void C2_HOOK_FASTCALL DoDamage(tCar_spec *pCar, tDamage_type pDamage_type, int p
     NOT_IMPLEMENTED();
 }
 
+// GLOBAL: CARMA2_HW 0x0075bba0
+int gCurrent_credit_car_index = 0;
+
+// GLOBAL: CARMA2_HW 0x0067c3b4
+int gLast_credit_award_time = 0;
+
+#define DO_CRASH_EARNINGS_I(pCar, pOffset)   (*(int*)((char*)(pCar) + (pOffset)))
+#define DO_CRASH_EARNINGS_F(pCar, pOffset)   (*(float*)((char*)(pCar) + (pOffset)))
+
 // FUNCTION: CARMA2_HW 0x00440660
 int C2_HOOK_FASTCALL DoCrashEarnings(tCar_spec* pCar1, tCar_spec* pCar2) {
+    tCar_spec* pVictim;
+    tCar_spec* pAttacker;
+    tCar_spec* pCar2next;
+    tU32 time;
+    int i;
+    tCar_spec* pCar1next;
+    int flag;
+    int classification1;
+    int classification2;
+    int flag34;
+    int pass;
+    int flag3c;
+    int multiplier;
+    int flag44;
+    int qualify1b;
+    int qualify2b;
+    int l50;
+    int qualify1;
+    int qualify2;
+    int damage;
+    int limit;
+    int face1;
+    int face2;
+    int credit;
+    float fpa;
+    float fpb;
+    float fpc;
+    float dot;
 
-    NOT_IMPLEMENTED();
+    pCar2next = pCar2;
+    pCar1next = pCar1;
+    pVictim = NULL;
+    pAttacker = NULL;
+    flag3c = 0;
+    i = 1;
+    qualify1b = 0;
+    qualify2b = 0;
+    flag34 = 0;
+    time = PDGetTotalTime();
+    flag = 0;
+
+    if (pCar1 != NULL && pCar1->driver > 5) {
+        l50 = (int)pCar1->damage_magnitude_accumulator;
+    } else {
+        l50 = (int)0.0f;
+    }
+
+    flag44 = 0;
+    if (pCar2 != NULL) {
+        if (pCar2->driver > 5) {
+            fpa = pCar2->damage_magnitude_accumulator;
+        } else {
+            fpa = 0.0f;
+        }
+        if (fpa != 0.0f) {
+            flag44 = 1;
+        }
+    }
+
+    if (pCar1 == NULL || pCar1->driver <= 5) {
+        if (pCar2 == NULL || pCar2->driver <= 5) {
+            return 0;
+        }
+
+        if (pCar1 != NULL && pCar1->driver != 0
+            && (pCar1->driver == 4 || pCar1->driver == 2 || pCar1->driver == 3)
+            && pCar1->field_0xc8 != NULL
+            && ((tCar_spec*)pCar1->field_0xc8)->driver > 5
+            && (tCar_spec*)pCar1->field_0xc8 != pCar2) {
+            pCar2->time_last_hit = time;
+            pCar2->last_hit_by = (tCar_spec*)pCar1->field_0xc8;
+        }
+
+        pCar1next = pCar2;
+        pCar2next = NULL;
+    } else if (pCar2 != NULL && pCar2->driver <= 5) {
+        if (pCar2->driver != 0
+            && (pCar2->driver == 4 || pCar2->driver == 2 || pCar2->driver == 3)
+            && pCar2->field_0xc8 != NULL
+            && ((tCar_spec*)pCar2->field_0xc8)->driver > 5
+            && (tCar_spec*)pCar2->field_0xc8 != pCar1) {
+            pCar1->time_last_hit = time;
+            pCar1->last_hit_by = (tCar_spec*)pCar2->field_0xc8;
+        }
+        pCar2next = NULL;
+    }
+
+    pCar1 = pCar1next;
+    pCar2 = pCar2next;
+
+    if (DO_CRASH_EARNINGS_I(pCar1, 0x1d8) != 0) {
+        goto return_check;
+    }
+    if (pCar2 != NULL) {
+        if (DO_CRASH_EARNINGS_I(pCar2, 0x1d8) != 0) {
+            goto return_check;
+        }
+        if (pCar2->damage_magnitude_accumulator > 0.00005f) {
+            goto sequence;
+        }
+        if (pCar1->damage_magnitude_accumulator <= 0.00005f) {
+            goto return_check;
+        }
+    }
+sequence:
+
+    classification1 = DO_CRASH_EARNINGS_I(pCar1, 0x6f4);
+    if (classification1 == 2 || classification1 == 3 || classification1 == 0 || classification1 == 1) {
+        if (pCar1->field_0x13e0 < 0.25) {
+            classification1 = 4;
+        } else if (pCar1->field_0x13e0 > 0.75) {
+            classification1 = 5;
+        }
+    }
+
+    fpa = fabsf(pCar1->pre_car_col_velocity_car_space.v[0]);
+    fpb = fabsf(pCar1->pre_car_col_velocity_car_space.v[1]);
+    fpc = fabsf(pCar1->pre_car_col_velocity_car_space.v[2]);
+    if (fpa > fpb && fpa > fpc) {
+        face1 = pCar1->pre_car_col_velocity_car_space.v[0] < 0.0f ? 2 : 3;
+    } else if (fpb > fpa && fpb > fpc) {
+        face1 = pCar1->pre_car_col_velocity_car_space.v[1] < 0.0f ? 1 : 0;
+    } else {
+        face1 = pCar1->pre_car_col_velocity_car_space.v[2] < 0.0f ? 4 : 5;
+    }
+    qualify1 = (classification1 == face1);
+
+    if (pCar2 == NULL) {
+        qualify2 = l50;
+        goto one_car_only;
+    }
+
+    classification2 = DO_CRASH_EARNINGS_I(pCar2, 0x6f4);
+    if (classification2 == 2 || classification2 == 3 || classification2 == 0 || classification2 == 1) {
+        if (pCar2->field_0x13e0 < 0.25) {
+            classification2 = 4;
+        } else if (pCar2->field_0x13e0 > 0.75) {
+            classification2 = 5;
+        }
+    }
+
+    fpa = fabsf(pCar2->pre_car_col_velocity_car_space.v[0]);
+    fpb = fabsf(pCar2->pre_car_col_velocity_car_space.v[1]);
+    fpc = fabsf(pCar2->pre_car_col_velocity_car_space.v[2]);
+    if (fpa > fpb && fpa > fpc) {
+        face2 = pCar2->pre_car_col_velocity_car_space.v[0] < 0.0f ? 2 : 3;
+    } else if (fpb > fpa && fpb > fpc) {
+        face2 = pCar2->pre_car_col_velocity_car_space.v[1] < 0.0f ? 1 : 0;
+    } else {
+        face2 = pCar2->pre_car_col_velocity_car_space.v[2] < 0.0f ? 4 : 5;
+    }
+    qualify2 = (classification2 == face2);
+
+    if (pCar1 == NULL || pCar1->driver < 7) {
+        goto record_opponent;
+    }
+
+    if (pCar2 == NULL) {
+        goto one_car_only;
+    }
+
+    if (qualify1
+        && pCar1->pre_car_col_velocity_car_space.v[2] != 0.0f
+        && ((DO_CRASH_EARNINGS_I(pCar1, 0x135c) > 0) ^ (pCar1->pre_car_col_velocity_car_space.v[2] > 0.0f))
+        && (DO_CRASH_EARNINGS_I(pCar1, 0x12d0) & 0x40000 || DO_CRASH_EARNINGS_I(pCar1, 0x12dc) > 0x8000)) {
+        pCar2->last_hit_by = pCar1;
+        pCar2->time_last_hit = time;
+    }
+    goto after_record;
+
+record_opponent:
+    if (pCar2 == NULL) {
+        goto one_car_only;
+    }
+    if (pCar2->driver < 7) {
+        goto after_record;
+    }
+    if (qualify2
+        && pCar2->pre_car_col_velocity_car_space.v[2] != 0.0f
+        && ((DO_CRASH_EARNINGS_I(pCar2, 0x135c) > 0) ^ (pCar2->pre_car_col_velocity_car_space.v[2] > 0.0f))
+        && (DO_CRASH_EARNINGS_I(pCar2, 0x12d0) & 0x40000 || DO_CRASH_EARNINGS_I(pCar2, 0x12dc) > 0x8000)) {
+        pCar1->last_hit_by = pCar2;
+        pCar1->time_last_hit = time;
+    }
+
+after_record:
+    if (pCar2 != NULL) {
+        goto followed_cars;
+    }
+
+one_car_only:
+    if ((int)(time - pCar1->time_last_hit) >= 5000) {
+        return 1;
+    }
+    pVictim = pCar1->last_hit_by;
+    pAttacker = pCar1;
+    i = 1;
+    flag = 1;
+    goto crash_sequence;
+
+followed_cars:
+    if (qualify1
+        && pCar1->pre_car_col_speed * 5.0f > pCar2->pre_car_col_speed
+        && pCar1->pre_car_col_speed > 0.0005f
+        && (pCar1 == NULL || pCar1->driver < 7
+            || (pCar1->pre_car_col_velocity_car_space.v[2] != 0.0f
+                && ((DO_CRASH_EARNINGS_I(pCar1, 0x135c) > 0) ^ (pCar1->pre_car_col_velocity_car_space.v[2] > 0.0f))
+                && (DO_CRASH_EARNINGS_I(pCar1, 0x12d0) & 0x40000 || DO_CRASH_EARNINGS_I(pCar1, 0x12dc) > 0x8000)))) {
+        qualify1b = 1;
+    } else {
+        qualify1b = 0;
+    }
+
+    if (qualify2
+        && pCar2->pre_car_col_speed * 5.0f > pCar1->pre_car_col_speed
+        && pCar2->pre_car_col_speed > 0.0005f
+        && (pCar2->pre_car_col_velocity_car_space.v[2] != 0.0f
+            && ((DO_CRASH_EARNINGS_I(pCar2, 0x135c) > 0) ^ (pCar2->pre_car_col_velocity_car_space.v[2] > 0.0f))
+            && (DO_CRASH_EARNINGS_I(pCar2, 0x12d0) & 0x40000 || DO_CRASH_EARNINGS_I(pCar2, 0x12dc) > 0x8000))) {
+        qualify2b = 1;
+    } else {
+        qualify2b = 0;
+    }
+
+    if (gNet_mode == eNet_mode_none || qualify1b == 0 || qualify2b == 0) {
+        if (qualify2b == 0 || pCar2->driver != 8) {
+            goto dot_check;
+        }
+        qualify1b = 0;
+        goto dot_check;
+    }
+    flag34 = 1;
+    goto crash_sequence;
+
+dot_check:
+    if (qualify1b != 0) {
+        pVictim = pCar1;
+        pAttacker = pCar2;
+    } else if (qualify2b != 0) {
+        pVictim = pCar2;
+        pAttacker = pCar1;
+    } else {
+        goto crash_sequence;
+    }
+
+    dot = pCar2->pre_car_col_direction.v[0] * pCar1->pre_car_col_direction.v[0]
+        + pCar2->pre_car_col_direction.v[1] * pCar1->pre_car_col_direction.v[1]
+        + pCar2->pre_car_col_direction.v[2] * pCar1->pre_car_col_direction.v[2];
+
+    if (classification1 == 4
+        && classification2 == 4
+        && pCar1->pre_car_col_speed > 0.001f
+        && pCar2->pre_car_col_speed > 0.001f
+        && dot < -0.7f) {
+        flag3c = 1;
+        i = 2;
+    } else {
+        i = 1;
+    }
+
+crash_sequence:
+    if (flag34 == 0) {
+        if (pAttacker != NULL && pVictim != NULL && pVictim->driver >= 7) {
+            goto record_twattage;
+        }
+        if (pCar2 != NULL) {
+            if (pCar2->field_0x13f0 == (void*)pCar1
+                && (int)(time - pCar2->time_last_victim) < 750) {
+                pVictim = pCar1;
+                pAttacker = pCar2;
+                flag = 1;
+                goto record_twattage;
+            }
+            if (pCar1->field_0x13f0 == (void*)pCar2) {
+                if ((int)(time - pCar1->time_last_victim) < 750) {
+                    pVictim = pCar2;
+                    pAttacker = pCar1;
+                    flag = 1;
+                    goto record_twattage;
+                }
+                goto record_twattage;
+            }
+        }
+        if ((int)(time - pCar1->time_last_victim) < 750) {
+            pVictim = (tCar_spec*)pCar1->field_0x13f0;
+            pAttacker = pCar1;
+            flag = 1;
+        }
+    }
+
+record_twattage:
+    if (pVictim == NULL || pAttacker == NULL) {
+        goto credits_loop_setup;
+    }
+
+    RecordOpponentTwattageOccurrence(pVictim, pAttacker);
+
+    damage = 0;
+    {
+        int u;
+
+        for (u = 0; u < 12; u++) {
+            int new_level;
+
+            if (pAttacker->damage_units[u].last_level < pAttacker->damage_units[u].damage_level) {
+                new_level = (int)((double)pAttacker->damage_units[u].last_level
+                    - (double)(pAttacker->damage_units[u].damage_level - pAttacker->damage_units[u].last_level) * -2.0);
+                if (new_level > 99) {
+                    new_level = 99;
+                }
+                pAttacker->damage_units[u].damage_level = new_level;
+                damage += new_level - pAttacker->damage_units[u].last_level;
+            }
+
+            if (pVictim->damage_units[u].last_level < pVictim->damage_units[u].damage_level) {
+                new_level = (int)((double)pVictim->damage_units[u].last_level
+                    - (double)(pVictim->damage_units[u].damage_level - pVictim->damage_units[u].last_level) * -0.1);
+                if (new_level < 0) {
+                    new_level = 0;
+                }
+                pVictim->damage_units[u].damage_level = new_level;
+            }
+        }
+    }
+
+credits_loop_setup:
+    limit = flag34 != 0 ? 2 : 1;
+    pass = 0;
+    goto credits_loop_test;
+
+credits_pass_loop:
+    if (flag34 != 0) {
+        if (pass != 0) {
+            pVictim = pCar1;
+            pAttacker = pCar2;
+        } else {
+            pVictim = pCar2;
+            pAttacker = pCar1;
+        }
+    }
+
+    if (pVictim == NULL) {
+        goto credits_pass_next;
+    }
+    if (pVictim->driver != 8 && gNet_mode == eNet_mode_none) {
+        goto credits_pass_next;
+    }
+    if (pAttacker == NULL) {
+        goto credits_pass_next;
+    }
+
+    SetKnackeredFlag(pAttacker);
+
+    if (DO_CRASH_EARNINGS_I(pAttacker, 0x1d4) != 0 && DO_CRASH_EARNINGS_I(pAttacker, 0x1d8) == 0) {
+        tNet_message* pMsg;
+
+        DO_CRASH_EARNINGS_I(pAttacker, 0x1d8) = 1;
+
+        if (gNet_mode == eNet_mode_none) {
+            PratcamEvent(0x20);
+            DoFancyHeadup(0x14);
+            EarnCredits((int)((sqr(0.7 / (double)DO_CRASH_EARNINGS_F(pAttacker, 0x18d0))
+                * (double)gCredits_wasting_car[gCurrent_credit_car_index] + 50.0) * 0.01) * 100);
+            AwardTime(gTime_wasting_car[gCurrent_credit_car_index]);
+        } else {
+            pMsg = NetBuildGuaranteedMessage(0, 0x19);
+            DO_CRASH_EARNINGS_I(pMsg, 0x1c) = DO_CRASH_EARNINGS_I(NetPlayerFromCar(pAttacker), 0x24);
+            if (NetPlayerFromCar(pVictim) != NULL) {
+                DO_CRASH_EARNINGS_I(pMsg, 0x20) = DO_CRASH_EARNINGS_I(NetPlayerFromCar(pVictim), 0x24);
+            } else {
+                DO_CRASH_EARNINGS_I(pMsg, 0x20) = 0xfffffffe;
+            }
+            NetGuaranteedSendMessageToEverybody(gCurrent_net_game, pMsg, 0);
+        }
+    }
+
+    pAttacker->time_last_hit = time;
+    pAttacker->last_hit_by = pVictim;
+
+    if (flag == 0) {
+        pAttacker->time_last_victim = time;
+        pAttacker->field_0x13f0 = (void*)pVictim;
+    }
+
+    if (fabsf(pAttacker->collision_info->omega.v[0]) > 4.0f
+        || fabsf(pAttacker->collision_info->omega.v[1]) > 6.0f
+        || fabsf(pAttacker->collision_info->omega.v[2]) > 4.0f) {
+        i += i;
+    }
+
+    if (DO_CRASH_EARNINGS_I(pCar1, 0x12e8) == 0) {
+        br_vector3 point;
+
+        BrMatrix34ApplyP(&point, &pCar1->collision_info->cmpos, &pCar1->collision_info->transform_matrix);
+        point.v[0] -= -0.15f;
+    }
+    if (pCar2 != NULL && DO_CRASH_EARNINGS_I(pCar2, 0x12e8) == 0) {
+        br_vector3 point;
+
+        BrMatrix34ApplyP(&point, &pCar2->collision_info->cmpos, &pCar2->collision_info->transform_matrix);
+        point.v[0] -= -0.15f;
+    }
+
+    damage = (int)((0.7 / (double)DO_CRASH_EARNINGS_F(pAttacker, 0x18d0)) * damage);
+
+    if (DO_CRASH_EARNINGS_I(pAttacker, 0x1cc) != 0) {
+        goto credits_damage_shift;
+    }
+    if (gNet_mode != eNet_mode_none) {
+        goto credits_damage_shift;
+    }
+
+    multiplier = i <= 8 ? i : 8;
+    credit = (int)(((gCredits_per_unit_car_damage[gCurrent_credit_car_index] * (float)damage) * multiplier + 50.0f) * 0.01f) * 100;
+    if (credit == 0 && DO_CRASH_EARNINGS_I(pAttacker, 0x1d4) == 0) {
+        goto credits_damage_shift;
+    }
+    if (DO_CRASH_EARNINGS_I(pAttacker, 0x1d4) != 0) {
+        goto credits_damage_shift;
+    }
+
+    if (credit > 2000) {
+        credit = 2000;
+    }
+    EarnCredits(credit);
+    gLast_credit_award_time = time;
+
+    credit = (int)((gSeconds_per_unit_car_damage[gCurrent_credit_car_index] * (float)damage + 2.5) * 0.2);
+    credit *= 5;
+    if (credit > 90) {
+        credit = 90;
+    }
+    AwardTime((tU32)credit);
+
+    if (pCar2 != NULL) {
+        if (flag3c != 0) {
+            DoFancyHeadup(0x13);
+        } else if (i > 2) {
+            DoFancyHeadup(3);
+        } else if (i > 1) {
+            DoFancyHeadup(2);
+        }
+    }
+
+credits_damage_shift:
+    {
+        int u;
+
+        for (u = 0; u < 12; u++) {
+            pAttacker->damage_units[u].last_level = pAttacker->damage_units[u].damage_level;
+        }
+    }
+
+credits_pass_next:
+    pass++;
+    goto credits_loop_test;
+
+credits_loop_test:
+    if (pass < limit) {
+        goto credits_pass_loop;
+    }
+
+    pCar1->damage_magnitude_accumulator = 0.0f;
+    if (pCar2 != NULL) {
+        pCar2->damage_magnitude_accumulator = 0.0f;
+    }
+
+return_check:
+    if (l50 != 0 || (pCar2 != NULL && flag44 != 0)) {
+        return 1;
+    }
     return 0;
 }
 
@@ -2027,12 +2509,13 @@ void C2_HOOK_FASTCALL SortOutSmoke(tCar_spec* pCar) {
     int i;
     int flag;
 
+    flag = 0;
+
     if (pCar == NULL || pCar->driver <= 5) {
         return;
     }
 
-    flag = 0;
-    for (i = 0; i < CARPOCALYPSE2_ASIZE(pCar->damage_units); i++) {
+    for (i = 0; i < 12; i++) {
         int mult;
         int level;
 
@@ -2045,7 +2528,9 @@ void C2_HOOK_FASTCALL SortOutSmoke(tCar_spec* pCar) {
             flag = 1;
         }
         if (pCar->damage_units[i].damage_level != pCar->damage_units[i].smoke_last_level
+            && mult
             && pCar->damage_units[i].damage_level > pCar->damage_units[i].smoke_last_level
+            && mult > 0
             && ((99 - pCar->damage_units[i].smoke_last_level) / mult) != level
             && level <= 2) {
             ConditionalSmokeColumn(pCar, i, level);
