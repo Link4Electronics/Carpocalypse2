@@ -2688,7 +2688,7 @@ void C2_HOOK_FASTCALL FUN_00447340(void) {
 
 // FUNCTION: CARMA2_HW 0x00444420
 void C2_HOOK_FASTCALL CycleInvulnerability(void) {
-    char message[128];
+    char message[256];
 
     gInvulnerability = (gInvulnerability + 1) % 8;
     gCar_to_view->invulnerable_no_damage = gInvulnerability & 1;

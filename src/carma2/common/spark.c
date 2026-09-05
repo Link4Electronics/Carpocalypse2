@@ -713,7 +713,7 @@ intptr_t C2_HOOK_FASTCALL BlendifyMaterialCB(br_material* pMaterial) {
 void C2_HOOK_FASTCALL StopCarSmokingInstantly(tCar_spec* pCar_spec) {
     int i;
 
-    for (i = 0; i < CARPOCALYPSE2_ASIZE(gSmoke_column); i++) {
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gSmoke_column); i++) {
         if (gSmoke_column[i].core.car == pCar_spec) {
             gSmoke_column[i].lifetime = 0;
         }
@@ -798,7 +798,7 @@ void C2_HOOK_FASTCALL PipeInstantUnSmudge(tCar_spec* pCar_spec) {
 void C2_HOOK_FASTCALL StopCarSmoking(tCar_spec* pCar) {
     int i;
 
-    for (i = 0; i < CARPOCALYPSE2_ASIZE(gSmoke_column); i++) {
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gSmoke_column); i++) {
         if (gSmoke_column[i].core.car == pCar && gSmoke_column[i].lifetime > 2000) {
             gSmoke_column[i].lifetime = 2000;
         }
@@ -807,9 +807,9 @@ void C2_HOOK_FASTCALL StopCarSmoking(tCar_spec* pCar) {
 
 // FUNCTION: CARMA2_HW 0x004fca90
 void C2_HOOK_FASTCALL StopObjectSmokingInstantly(tPhysics_object* pObject) {
-    size_t i;
+    int i;
 
-    for (i = 0; i < CARPOCALYPSE2_ASIZE(gSmoke_column); i++) {
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gSmoke_column); i++) {
 
         if (gSmoke_column[i].core.collision_info == pObject) {
             gSmoke_column[i].lifetime = 0;
@@ -1504,7 +1504,7 @@ void C2_HOOK_FASTCALL DrawTheGlow(br_pixelmap* pRender_screen, br_pixelmap* pDep
     if (gColumn_flags != 0) {
         seed = rand();
         srand(GetTotalTime());
-        for (i = 0; i < CARPOCALYPSE2_ASIZE(gSmoke_column); i++) {
+for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gSmoke_column); i++) {
             if (((1u << i) & gColumn_flags) != 0 && gSmoke_column[i].colour <= 1) {
                 strength = 0.5f;
                 if (gSmoke_column[i].lifetime < 4000) {
@@ -1992,7 +1992,7 @@ void C2_HOOK_FASTCALL UnBlendifyCar(tCar_spec* pCar_spec) {
 int C2_HOOK_FASTCALL IsCarSmoking(tCar_spec* pCar) {
     int i;
 
-    for (i = 0; i < CARPOCALYPSE2_ASIZE(gSmoke_column); i++) {
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gSmoke_column); i++) {
         if ((gColumn_flags & (1 << i)) && gSmoke_column[i].core.car == pCar) {
             return 1;
         }

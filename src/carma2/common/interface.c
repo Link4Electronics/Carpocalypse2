@@ -4006,7 +4006,7 @@ int C2_HOOK_FASTCALL Controls_Outfunc(tFrontend_spec* pFrontend) {
     int i;
 
     Generic_Outfunc(pFrontend);
-    for (i = 0; i < CARPOCALYPSE2_ASIZE(gKey_names); i++) {
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gKey_names); i++) {
         BrMemFree(gKey_names[i]);
     }
     SaveKeyMapping();

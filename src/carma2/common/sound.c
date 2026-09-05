@@ -306,14 +306,14 @@ void C2_HOOK_FASTCALL MungeEnvironmentalSound(void) {
     if (gAmbient_sound) {
         int i;
 
-        for (i = 0; i < CARPOCALYPSE2_ASIZE(gEnvironment_sound_sources); i++) {
+        for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gEnvironment_sound_sources); i++) {
             gEnvironment_sound_sources[i].field_0x18 = 0;
         }
         if (!gFaded_palette) {
             FindSpecialVolume((br_vector3*)gCamera_to_world.m[3], 0, 1);
             MungeSoundGenerators();
         }
-        for (i = 0; i < CARPOCALYPSE2_ASIZE(gEnvironment_sound_sources); i++) {
+        for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gEnvironment_sound_sources); i++) {
 
             if (gEnvironment_sound_sources[i].field_0x18 == 0 && gEnvironment_sound_sources[i].field_0x10 != NULL) {
                 S3UpdateSoundSource(gXXX_outlet, -1, gEnvironment_sound_sources[i].source, -1.f, -1, -1, 0, -1, -1);

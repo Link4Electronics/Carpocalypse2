@@ -379,7 +379,7 @@ void C2_HOOK_FASTCALL AssertYons(void) {
     br_camera* camera_ptr;
     int i;
 
-    for (i = 0; i < CARPOCALYPSE2_ASIZE(gCamera_list); i++) {
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gCamera_list); i++) {
         camera_ptr = gCamera_list[i]->type_data;
         camera_ptr->yon_z = gYon_multiplier * gCamera_yon;
     }

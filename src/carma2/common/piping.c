@@ -1183,7 +1183,7 @@ void C2_HOOK_FASTCALL AddSmokeToPipingSession(int pIndex, tU8 pType, br_vector3*
     C2_HOOK_STATIC_ASSERT_STRUCT_MEMBER_SIZE(tPipe_chunk_smoke, type, 0x1);
 
     SaveReducedPos(&reduced_pos, pPos);
-    ARDoSingleVariedSession(ePipe_chunk_smoke, pIndex, 4,
+    ARAddVariedDataToSession(ePipe_chunk_smoke, pIndex, 4,
         SIZE_OFFSET_PIPING(tPipe_chunk_smoke, pos), &reduced_pos,
         SIZE_OFFSET_PIPING(tPipe_chunk_smoke, radius), (int)(1024.f * pRadius),
         SIZE_OFFSET_PIPING(tPipe_chunk_smoke, strength), (int)(pStrength * 255.f),

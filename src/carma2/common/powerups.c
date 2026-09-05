@@ -862,7 +862,7 @@ void C2_HOOK_FASTCALL InitMineShit(void) {
 
     C2_HOOK_BUG_ON(sizeof(tShit_mine) != 56);
     C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gShit_mines) != 20);
-    for (i = 0; i < CARPOCALYPSE2_ASIZE(gShit_mines); i++) {
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gShit_mines); i++) {
         gShit_mines[i].flags = 4;
         gShit_mines[i].field_0x35 = 0;
         gShit_mines[i].collision_info = MungeSphereObject(BrModelFind("SHITMINE.ACT") CARPOCALYPSE2_THISCALL_EDX, gMass_mine);
@@ -1020,7 +1020,7 @@ void C2_HOOK_FASTCALL CheckRespawnQueue(tU32 pTime) {
 
     for (i = 0; i < CARPOCALYPSE2_ASIZE(gRespawn_powerups); i++) {
         tRespawn_powerup *respawn_powerup = &gRespawn_powerups[i];
-        if (respawn_powerup->actor == NULL || pTime < respawn_powerup->respawn_time) {
+        if (respawn_powerup->actor == NULL || (int)pTime < (int)respawn_powerup->respawn_time) {
             continue;
         }
         if (respawn_powerup->actor->render_style != BR_RSTYLE_FACES) {
@@ -2229,7 +2229,7 @@ void C2_HOOK_FASTCALL MayQueuePowerupRespawn(int pPowerup_index, br_actor* actor
     int i;
 
     if (actor != NULL && gRace_powerup_respawn_bools[pPowerup_index] && (gNet_mode == eNet_mode_none || gCurrent_net_game->options.powerup_respawn)) {
-        for (i = 0; i < CARPOCALYPSE2_ASIZE(gRespawn_powerups); i++) {
+for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gRespawn_powerups); i++) {
             if (gRespawn_powerups[i].actor != NULL) {
                 gRespawn_powerups[i].actor = actor;
                 gRespawn_powerups[i].index = pPowerup_index;;

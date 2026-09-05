@@ -2004,7 +2004,7 @@ void C2_HOOK_FASTCALL InitRepairAnimations(void) {
     C2_HOOK_BUG_ON(sizeof(tRepair_animation) != 0xc);
     C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gRepair_animations) != 25);
 
-    for (i = 0; i < CARPOCALYPSE2_ASIZE(gRepair_animations); i++) {
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gRepair_animations); i++) {
         gRepair_animations[i].field_0x0 = 0;
     }
 }
@@ -2289,13 +2289,13 @@ void C2_HOOK_FASTCALL ReinitSmashing(void) {
     C2_HOOK_BUG_ON(sizeof(gQueued_net_smashes[0]) != 0x38);
     C2_HOOK_BUG_ON(sizeof(tStored_smash) != 0x38);
 
-    for (i = 0; i < CARPOCALYPSE2_ASIZE(gSmash_glass_fragments); i++) {
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gSmash_glass_fragments); i++) {
         gSmash_glass_fragments[i].end_time = 0;
     }
-    for (i = 0; i < CARPOCALYPSE2_ASIZE(gDecals); i++) {
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gDecals); i++) {
         gDecals[i].time = 0;
     }
-    for (i = 0; i < CARPOCALYPSE2_ASIZE(gQueued_net_smashes); i++) {
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gQueued_net_smashes); i++) {
         gQueued_net_smashes[i].field_0x4 = 0;
     }
     gSize_powerup_queue = 0;
