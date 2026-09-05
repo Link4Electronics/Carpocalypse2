@@ -590,7 +590,7 @@ void C2_HOOK_FASTCALL FinishLoadGeneralParameters(void) {
 // FUNCTION: CARMA2_HW 0x0048d7d0
 int C2_HOOK_FASTCALL PrintNetOptions(FILE* pF, int pIndex) {
 
-    fprintf(pF, "NETSETTINGS %d\n", pIndex);
+    fprintf(pF, "NETSETTINGS %d\n\n", pIndex);
     fprintf(pF, "%d // Allow the sending of Abuse-o-Matic(tm) text messages\n", gNet_settings[pIndex].enable_text_messages);
     fprintf(pF, "%d // Show cars on map\n", gNet_settings[pIndex].show_players_on_map);
     fprintf(pF, "%d // Show pickups on map\n", gNet_settings[pIndex].show_powerups_on_map);
