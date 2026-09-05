@@ -72,7 +72,6 @@ br_pixelmap* gCurrent_splash;
 
 // GLOBAL: CARMA2_HW 0x0074cf04
 // GLOBAL: CARMA2_HW 0x006923c0
-// FUNCTION: CARMA2_HW 0x0043dff0
 void C2_HOOK_FASTCALL DeallocateAllTransientBitmaps(void) {
     int i;
 

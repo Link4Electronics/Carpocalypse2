@@ -6,13 +6,17 @@ address,type,name
 0x54e742,function,TIFFClose
 0x54e880,function,TIFFReadScanline
 0x54e920,function,TIFFSeek
+0x54ed98,function,TIFFFillStrip
+0x54f602,function,TIFFStartStrip
 0x54f7bb,function,TIFFCheckRead
 0x54f920,function,TIFFClose
 0x54fcd5,function,TIFFScanlineSize
 0x54fd90,function,TIFFVGetFieldDefaulted
+0x5503cd,function,TIFFDefaultRefBlackWhite
 0x550564,function,TIFFGetFieldDefaulted
 0x5507bf,function,TIFFGetField
 0x5507eb,function,TIFFVGetField
+0x552b14,function,TIFFClientOpen
 0x5532b1,function,TIFFError
 0x55e000,function,gzread
 0x55e210,function,gzwrite

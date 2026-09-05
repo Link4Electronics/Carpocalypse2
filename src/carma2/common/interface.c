@@ -2299,8 +2299,6 @@ static void C2_HOOK_FASTCALL LoadMenuModels(void) {
 #endif
 }
 
-// FUNCTION: CARMA2_HW 0x0046abf0
-
 void C2_HOOK_FASTCALL FRONTEND_Setup(tFrontendMenuType pType) {
 
     PrintMemoryDump(0, "START OF FRONTEND_Setup");
@@ -2400,8 +2398,6 @@ int C2_HOOK_FASTCALL FrontEndProcessMenus(int pMenu_type) {
     return 0;
 #endif
 }
-
-// FUNCTION: CARMA2_HW 0x0046f630
 
 int C2_HOOK_FASTCALL FRONTEND_Main(tFrontendMenuType pFrontendType) {
     // GLOBAL: CARMA2_HW 0x0076370c
@@ -2563,8 +2559,6 @@ int C2_HOOK_FASTCALL FindNextActiveItem(tFrontend_spec* pFrontend, int pStart_in
     }
     return 0;
 }
-
-// FUNCTION: CARMA2_HW 0x00467a30
 
 int C2_HOOK_FASTCALL Frontend_FindNextVisibleItem(tFrontend_spec* pFrontend, int pIndex) {
     int i;
@@ -3918,8 +3912,6 @@ int C2_HOOK_FASTCALL LoadGameInFunc(tFrontend_spec* pFrontend) {
     DRS3StartSound(gEffects_outlet, eSoundId_Swingin);
     return 0;
 }
-
-// FUNCTION: CARMA2_HW 0x0046fa60
 
 int C2_HOOK_FASTCALL LoadGameScrollDown(tFrontend_spec* pFrontend) {
 
