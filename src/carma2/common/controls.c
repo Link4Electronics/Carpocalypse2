@@ -15,6 +15,9 @@
 #include "init.h"
 #include "input.h"
 #include "joystick.h"
+#ifdef _WIN32
+#include "win32/win32_dinput.h"
+#endif
 #include "loading.h"
 #include "netgame.h"
 #include "network.h"
@@ -2628,8 +2631,19 @@ void C2_HOOK_FASTCALL CycleSoundDetailLevel(void) {
 
 // FUNCTION: CARMA2_HW 0x004599f0
 void C2_HOOK_FASTCALL ShowCurrentJoystickName(void) {
+#ifdef _WIN32
+    char buffer[256];
 
-    NOT_IMPLEMENTED();
+    if (gJoystick_index == -1 || gDirectInputJoystickDevices[gJoystick_index] == NULL) {
+        return;
+    }
+    sprintf(buffer, "Joystick %d: %s %d", gJoystick_index,
+            gDirectInputJoystickInfos[gJoystick_index].productName,
+            (gJoystickFFB & (1 << gJoystick_index)) != 0);
+    NewTextHeadupSlot(4, 0, 3000, -1, buffer);
+#else
+    (void)0;
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00511240

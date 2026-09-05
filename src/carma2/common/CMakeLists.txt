@@ -287,6 +287,9 @@ target_link_libraries(c2_common
         QuickTime::Dummy
         Smackw32::Smackw32
 )
+if(CARPOCALYPSE2_PLATFORM_WIN32)
+    target_link_libraries(c2_common PUBLIC DirectX::dinput)
+endif()
 
 if(NOT MSVC)
     target_compile_options(c2_common PRIVATE -fpermissive -w)

@@ -243,21 +243,26 @@ br_pixelmap* C2_HOOK_FASTCALL LoadTiffTexture_Ex2(const char* pDirectory, const 
 br_pixelmap* C2_HOOK_FASTCALL LoadTiffTexture_Ex(const char* pDirectory, const char* pFile_stem, br_pixelmap* pPalette, int pFlags, int* pError_code) {
     br_pixelmap* texture;
 
-    texture = NULL;
-    if ((pFlags & kLoadTextureFlags_16bbp) != kLoadTextureFlags_16bbp) {
-        texture = LoadTiffTexture_Ex2(pDirectory, pFile_stem, pPalette, pFlags, pError_code, 1);
+    if ((pFlags & kLoadTextureFlags_16bbp) == kLoadTextureFlags_16bbp) {
+        goto load_palette;
     }
-    if (texture == NULL) {
-        texture = LoadTiffTexture_Ex2(pDirectory, pFile_stem, pPalette, pFlags, pError_code, 0);
-    }
+    texture = LoadTiffTexture_Ex2(pDirectory, pFile_stem, pPalette, pFlags, pError_code, 1);
     if (texture != NULL) {
-        texture->identifier = BrResStrDup(texture, pFile_stem);
-        if (texture->identifier == NULL) {
-            BrPixelmapFree(texture);
-            *pError_code = 2;
-            return NULL;
-        }
+        goto identifier;
     }
+load_palette:
+    texture = LoadTiffTexture_Ex2(pDirectory, pFile_stem, pPalette, pFlags, pError_code, 0);
+    if (texture == NULL) {
+        goto return_texture;
+    }
+identifier:
+    texture->identifier = BrResStrDup(texture, pFile_stem);
+    if (texture->identifier == NULL) {
+        BrPixelmapFree(texture);
+        *pError_code = 2;
+        return NULL;
+    }
+return_texture:
     return texture;
 }
 

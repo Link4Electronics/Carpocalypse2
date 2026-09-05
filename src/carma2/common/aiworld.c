@@ -1,6 +1,8 @@
 #include "aiworld.h"
 
+#include "drmem.h"
 #include "drone.h"
+#include "loading.h"
 #include "opponent.h"
 
 // MakeVertexAndOffsetIt
@@ -15,7 +17,11 @@ void C2_HOOK_FASTCALL InitPanGameAIWorld(void) {
     gNum_of_opponents_getting_near = 0;
     gNum_of_opponents_completing_race = 0;
 #else
-    NOT_IMPLEMENTED();
+    PrintMemoryDump(0, "BEFORE LoadOpponents()");
+    LoadOpponents();
+    PrintMemoryDump(0, "AFTER LoadOpponents(), BEFORE LoadPanGameDroneInfo()");
+    LoadPanGameDroneInfo();
+    PrintMemoryDump(0, "AFTER LoadPanGameDroneInfo()");
 #endif
 }
 

@@ -2798,13 +2798,12 @@ float C2_HOOK_FASTCALL GetOpponentsSectionWidth(const tOpponent_spec* pOpponent_
 
 // RebuildActiveCarList
 
-// STUB: CARMA2_HW 0x004a7a60
+// FUNCTION: CARMA2_HW 0x004a7a60
 void C2_HOOK_FASTCALL ForceRebuildActiveCarList(void) {
-#ifndef CARPOCALYPSE2_MATCHING
-    /* stub: no-op for Linux boot */
-#else
-    NOT_IMPLEMENTED();
-#endif
+    gActive_car_list_rebuild_required = 1;
+    if (gProgram_state.racing) {
+        RebuildActiveCarList();
+    }
 }
 
 // OpponentRepairNecessary

@@ -148,10 +148,19 @@ int C2_HOOK_FASTCALL ARIsActionReplayAvailable(void) {
     return gPipe_buffer_start != NULL;
 }
 
+void C2_HOOK_FASTCALL FUN_DisposeReplayBuffer(void* pBuffer);
+
 // FUNCTION: CARMA2_HW 0x004024a0
 void C2_HOOK_FASTCALL DisposePiping(void) {
 
-    NOT_IMPLEMENTED();
+    if (gPipe_buffer_start != NULL) {
+        FUN_DisposeReplayBuffer(gPipe_buffer_start);
+    }
+    gPipe_buffer_start = NULL;
+    if (gLocal_buffer != NULL) {
+        BrMemFree(gLocal_buffer);
+        gLocal_buffer = NULL;
+    }
 }
 
 void C2_HOOK_FASTCALL StartPipingSession2(tPipe_chunk_type pType, int pMunge_reentrancy) {
@@ -186,14 +195,104 @@ void C2_HOOK_FASTCALL AREndPipingSession(void) {
 
 // FUNCTION: CARMA2_HW 0x004030f0
 tPipe_chunk_data* C2_HOOK_FASTCALL FindNextChunk(tPipe_chunk_type pType, uintptr_t pOwner) {
+    tPipe_chunk* cur;
+    tU32 i;
 
-    NOT_IMPLEMENTED();
+    cur = (tPipe_chunk*)gPipe_play_ptr;
+    if (cur == (tPipe_chunk*)gPipe_record_ptr) {
+        return NULL;
+    }
+    for (;;) {
+        if (cur->type == pType) {
+            tPipe_chunk_data* the_chunk;
+
+            the_chunk = (tPipe_chunk_data*)((tU8*)cur + sizeof(tPipe_chunk));
+            for (i = 0; i < cur->count; i++) {
+                    if (the_chunk->count == (tU32)pOwner) {
+                        return the_chunk;
+                    } else {
+                        tPipe_chunk_type chunk_type;
+                        tU32 length;
+                        tU32 size;
+
+                        chunk_type = pType;
+                        if (gPipe_callbacks[chunk_type].calc_length != NULL) {
+                            length = gPipe_callbacks[chunk_type].calc_length((tPipe_chunk*)the_chunk);
+                            size = length + gPipe_callbacks[chunk_type].length + sizeof(void*);
+                        } else {
+                            size = gPipe_callbacks[chunk_type].length + sizeof(void*);
+                        }
+                        the_chunk = (tPipe_chunk_data*)((tU8*)the_chunk + size);
+                    }
+                }
+        }
+        {
+            tPipe_chunk* cur_session;
+            tU32 total;
+
+            total = 0;
+            cur_session = cur;
+            for (i = 0; i < cur_session->count; i++) {
+                tPipe_chunk_type chunk_type;
+                tPipe_chunk* the_chunk;
+                tU32 length;
+                tU32 size;
+
+                chunk_type = cur_session->type;
+                the_chunk = (tPipe_chunk*)((tU8*)cur_session + sizeof(tPipe_chunk) + total);
+                if (gPipe_callbacks[chunk_type].calc_length != NULL) {
+                    length = gPipe_callbacks[chunk_type].calc_length(the_chunk);
+                    size = length + gPipe_callbacks[chunk_type].length + sizeof(void*);
+                } else {
+                    size = gPipe_callbacks[chunk_type].length + sizeof(void*);
+                }
+                total += size;
+            }
+            total += 10;
+            if ((total & 1) != 0) {
+                FatalError(0x62);
+            }
+            cur = (tPipe_chunk*)((tU8*)cur + total);
+        }
+        if ((tU8*)cur >= gPipe_buffer_working_end) {
+            if (cur == (tPipe_chunk*)gPipe_record_ptr) {
+                return NULL;
+            }
+            cur = (tPipe_chunk*)gPipe_buffer_start;
+        }
+        if (cur == (tPipe_chunk*)gPipe_record_ptr) {
+            return NULL;
+        }
+    }
 }
 
 // FUNCTION: CARMA2_HW 0x00403750
 tU32 C2_HOOK_FASTCALL LengthOfSession(tPipe_chunk* pSession) {
+    tU32 i;
+    tU32 total;
+    tU32 size;
+    tPipe_chunk* the_chunk;
 
-    NOT_IMPLEMENTED();
+    total = 0;
+    for (i = 0; i < pSession->count; i++) {
+        tPipe_chunk_type chunk_type;
+        tU32 length;
+
+        chunk_type = pSession->type;
+        the_chunk = (tPipe_chunk*)((tU8*)pSession + sizeof(tPipe_chunk) + total);
+        if (gPipe_callbacks[chunk_type].calc_length != NULL) {
+            length = gPipe_callbacks[chunk_type].calc_length(the_chunk);
+            size = length + gPipe_callbacks[chunk_type].length + sizeof(void*);
+        } else {
+            size = gPipe_callbacks[chunk_type].length + sizeof(void*);
+        }
+        total += size;
+    }
+    total += 10;
+    if ((total & 1) != 0) {
+        FatalError(0x62);
+    }
+    return total;
 }
 
 // FUNCTION: CARMA2_HW 0x00402660

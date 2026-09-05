@@ -10,6 +10,9 @@ extern int gASCII_table[151];
 extern int gASCII_shift_table[151];
 extern int gScan_code[256];
 extern int gJoystick_deadzone;
+extern int gJoystickFFB;
+extern IDirectInputDevice2A* gDirectInputJoystickDevices[];
+extern tDirectInputJoystickInfo gDirectInputJoystickInfos[];
 
 extern void C2_HOOK_FASTCALL KeyBegin(void);
 
