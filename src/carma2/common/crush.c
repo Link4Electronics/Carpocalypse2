@@ -2233,8 +2233,6 @@ followed_cars:
                 && ((DO_CRASH_EARNINGS_I(pCar1, 0x135c) > 0) ^ (pCar1->pre_car_col_velocity_car_space.v[2] > 0.0f))
                 && (DO_CRASH_EARNINGS_I(pCar1, 0x12d0) & 0x40000 || DO_CRASH_EARNINGS_I(pCar1, 0x12dc) > 0x8000)))) {
         qualify1b = 1;
-    } else {
-        qualify1b = 0;
     }
 
     if (qualify2
@@ -2244,8 +2242,6 @@ followed_cars:
             && ((DO_CRASH_EARNINGS_I(pCar2, 0x135c) > 0) ^ (pCar2->pre_car_col_velocity_car_space.v[2] > 0.0f))
             && (DO_CRASH_EARNINGS_I(pCar2, 0x12d0) & 0x40000 || DO_CRASH_EARNINGS_I(pCar2, 0x12dc) > 0x8000))) {
         qualify2b = 1;
-    } else {
-        qualify2b = 0;
     }
 
     if (gNet_mode == eNet_mode_none || qualify1b == 0 || qualify2b == 0) {
@@ -2427,7 +2423,7 @@ credits_pass_loop:
         point.v[0] -= -0.15f;
     }
 
-    damage = (int)((0.7 / (double)DO_CRASH_EARNINGS_F(pAttacker, 0x18d0)) * damage);
+    damage = (int)((float)(0.7 / (double)DO_CRASH_EARNINGS_F(pAttacker, 0x18d0)) * damage);
 
     if (DO_CRASH_EARNINGS_I(pAttacker, 0x1cc) != 0) {
         goto credits_damage_shift;
@@ -2445,7 +2441,7 @@ credits_pass_loop:
         goto credits_damage_shift;
     }
 
-    if (credit > 2000) {
+    if (credit >= 2000) {
         credit = 2000;
     }
     EarnCredits(credit);
@@ -2453,7 +2449,7 @@ credits_pass_loop:
 
     credit = (int)((gSeconds_per_unit_car_damage[gCurrent_credit_car_index] * (float)damage + 2.5) * 0.2);
     credit *= 5;
-    if (credit > 90) {
+    if (credit >= 90) {
         credit = 90;
     }
     AwardTime((tU32)credit);
