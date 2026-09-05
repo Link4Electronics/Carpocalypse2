@@ -1051,15 +1051,9 @@ void C2_HOOK_FASTCALL DoEditModeKey(int pIndex) {
 
     if (gI_am_cheating == 0xa11ee75d || (gI_am_cheating == 0x564e78b9 && gNet_mode == eNet_mode_none)) {
         modifiers = 0;
-        if (PDKeyDown(0)) {
-            modifiers |= 4;
-        }
-        if (PDKeyDown(1)) {
-            modifiers |= 2;
-        }
-        if (PDKeyDown(2)) {
-            modifiers |= 1;
-        }
+        modifiers |= PDKeyDown(0) ? 4 : 0;
+        modifiers |= PDKeyDown(1) ? 2 : 0;
+        modifiers |= PDKeyDown(2) ? 1 : 0;
         if (gEdit_funcs[gWhich_edit_mode][pIndex][modifiers] != NULL) {
             gEdit_funcs[gWhich_edit_mode][pIndex][modifiers]();
         }
