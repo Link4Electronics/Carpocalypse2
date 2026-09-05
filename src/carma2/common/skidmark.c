@@ -278,6 +278,7 @@ void C2_HOOK_FASTCALL SkidsPerFrame(void) {
         }
     }
 }
+// FUNCTION: CARMA2_HW 0x004e9c40
 void C2_HOOK_FASTCALL InitSkids(void) {
 #ifndef CARPOCALYPSE2_MATCHING
     /* stub: no-op for Linux boot */

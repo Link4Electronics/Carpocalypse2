@@ -328,6 +328,7 @@ int C2_HOOK_FASTCALL GetMessageTypeFromMessage(char* pMessage_str) {
     return 999;
 }
 
+// FUNCTION: CARMA2_HW 0x0051dec4
 int C2_HOOK_FASTCALL ReceiveHostResponses(void) {
     char str[256];
     int i;

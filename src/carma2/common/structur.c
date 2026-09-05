@@ -986,6 +986,7 @@ void C2_HOOK_FASTCALL carpocalypse2_RaceSkeleton(void) {
     BrResFree(gTrack_actor);
 }
 
+// FUNCTION: CARMA2_HW 0x00503c50
 void C2_HOOK_FASTCALL DoProgram(void) {
 #ifdef CARPOCALYPSE2_MATCHING
     NOT_IMPLEMENTED();

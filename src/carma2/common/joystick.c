@@ -88,26 +88,31 @@ void C2_HOOK_FASTCALL InitJoysticks(void) {
     PDInitJoysticks();
 }
 
+// FUNCTION: CARMA2_HW 0x0045c8d0
 float C2_HOOK_FASTCALL GetJoystickX(void) {
 
     NOT_IMPLEMENTED();
 }
 
+// FUNCTION: CARMA2_HW 0x0045c8f0
 float C2_HOOK_FASTCALL GetJoystickY(void) {
 
     NOT_IMPLEMENTED();
 }
 
+// FUNCTION: CARMA2_HW 0x0045c7f0
 int C2_HOOK_FASTCALL GetJoystickFBBGain(void) {
 
     NOT_IMPLEMENTED();
 }
 
+// FUNCTION: CARMA2_HW 0x0045c810
 void C2_HOOK_FASTCALL SetJoystickX(float pValue) {
 
     NOT_IMPLEMENTED();
 }
 
+// FUNCTION: CARMA2_HW 0x0045c870
 void C2_HOOK_FASTCALL SetJoystickY(float pValue) {
 
     NOT_IMPLEMENTED();
@@ -118,6 +123,7 @@ void C2_HOOK_FASTCALL SetJoystickFFBGain(int pValue) {
     NOT_IMPLEMENTED();
 }
 
+// FUNCTION: CARMA2_HW 0x0045c570
 void C2_HOOK_FASTCALL SetJoystickDPadEnabled(int pEnabled) {
 
     NOT_IMPLEMENTED();
@@ -133,11 +139,13 @@ void C2_HOOK_FASTCALL Joystick_BackupSettings(void) {
     gJoystick_index = gOrig_joystick_index;
 }
 
+// FUNCTION: CARMA2_HW 0x0045bd50
 void C2_HOOK_FASTCALL EnableJoysticks(void) {
 
     NOT_IMPLEMENTED();
 }
 
+// FUNCTION: CARMA2_HW 0x0045bd70
 void C2_HOOK_FASTCALL DisableJoysticks(void) {
 
     NOT_IMPLEMENTED();
@@ -335,6 +343,7 @@ void C2_HOOK_FASTCALL MungeJoystickHeadups(void) {
     }
 }
 
+// FUNCTION: CARMA2_HW 0x0045a0f0
 int C2_HOOK_FASTCALL HasCurrentJoystick(void) {
 
     return gJoystick_index != -1;

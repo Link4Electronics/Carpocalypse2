@@ -2362,6 +2362,7 @@ void C2_HOOK_FASTCALL FRONTEND_Setup(tFrontendMenuType pType) {
 }
 
 
+// FUNCTION: CARMA2_HW 0x005191b0
 int C2_HOOK_FASTCALL FRONTEND_Redraw(void) {
     int i;
 
@@ -2712,8 +2713,7 @@ int C2_HOOK_FASTCALL FRONTEND_GenericMenuHandler(tFrontend_spec* pFrontend) {
     return gFrontend_leave_current_menu != 0;
 }
 
-// FUNCTION: CARMA2_HW 0x00466450
-
+// FUNCTION: CARMA2_HW 0x00471ba0
 int C2_HOOK_FASTCALL Ians_GetItemAtMousePos(tFrontend_spec* pFrontend, int pX, int pY) {
     int i;
     tFrontend_slider* slider;
@@ -2813,9 +2813,8 @@ void C2_HOOK_FASTCALL ScrollSet_DisplayEntry(tConnected_items* pScroll_set, int 
     }
 }
 
-// FUNCTION: CARMA2_HW 0x004720e0
-
 #pragma auto_inline(off)
+// FUNCTION: CARMA2_HW 0x004720e0
 void C2_HOOK_FASTCALL RefreshScrollSet(tFrontend_spec* pFrontend) {
     int i;
 
@@ -2842,7 +2841,6 @@ int C2_HOOK_FASTCALL DetermineKeyArrayIndex(void) {
 }
 
 // FUNCTION: CARMA2_HW 0x00471dd0
-
 int C2_HOOK_FASTCALL Generic_FindNextActiveItem(tFrontend_spec* pFrontend, int pItem) {
     int start_item_group;
     tConnected_items* connected;

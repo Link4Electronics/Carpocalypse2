@@ -201,6 +201,7 @@ void C2_HOOK_FASTCALL NetDisposeGameDetails(tNet_game_details* pDetails) {
     }
 }
 
+// FUNCTION: CARMA2_HW 0x0049dc80
 void C2_HOOK_FASTCALL StopAllThatJoinyStuffThisInstant(void) {
 
     NetEndJoinList();

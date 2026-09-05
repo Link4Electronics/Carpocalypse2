@@ -40,6 +40,7 @@ void C2_HOOK_FASTCALL DoOptionsMenu(void) {
         NetPlayerStatusChanged(player_status);
     }
 }
+// FUNCTION: CARMA2_HW 0x00494450
 int C2_HOOK_FASTCALL DoVerifyQuit(int pReplace_background) {
     NOT_IMPLEMENTED();
     return 1;

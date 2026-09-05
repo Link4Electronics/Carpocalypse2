@@ -1997,6 +1997,7 @@ void C2_HOOK_FASTCALL ReadGlobalLightingInfo(FILE* pF) {
     GetPairOfScalars(pF, &gLighting_data.ambient_else, &gLighting_data.diffuse_else);
 }
 
+// FUNCTION: CARMA2_HW 0x004f0430
 void C2_HOOK_FASTCALL InitRepairAnimations(void) {
     int i;
 

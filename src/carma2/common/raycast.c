@@ -477,6 +477,7 @@ void C2_HOOK_FASTCALL DrMatrix34ApplyLPInverse(br_vector3* pDest, const br_vecto
     BrVector3Sub(&tv, pOrigin, (br_vector3*)pMatrix->m[3]);
     BrMatrix34TApplyV(pDest, &tv, pMatrix);
 }
+// FUNCTION: CARMA2_HW 0x004e3660
 void C2_HOOK_FASTCALL InitRayCasting(void) {
 #ifndef CARPOCALYPSE2_MATCHING
     /* stub: no-op for Linux boot */

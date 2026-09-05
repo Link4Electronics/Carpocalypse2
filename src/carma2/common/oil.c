@@ -60,7 +60,8 @@ void C2_HOOK_FASTCALL QueueOilSpill2(
     float pField_0x40,
     float pField_0x44,
     br_material* pMaterial,
-    int pField_0x50) {
+    int pField_0x50)
+{
     int i;
     int slot;
     int oldest;
@@ -388,6 +389,7 @@ void C2_HOOK_FASTCALL MungeIndexedOilsHeightAboveGround(int pIndex) {
 
     MungeOilsHeightAboveGround(&gOily_spills[pIndex]);
 }
+// FUNCTION: CARMA2_HW 0x004a6a10
 void C2_HOOK_FASTCALL InitOilSpills(void) {
 #ifndef CARPOCALYPSE2_MATCHING
     /* stub: no-op for Linux boot */

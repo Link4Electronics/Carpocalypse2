@@ -2013,8 +2013,7 @@ void C2_HOOK_FASTCALL DoDamage(tCar_spec *pCar, tDamage_type pDamage_type, int p
     NOT_IMPLEMENTED();
 }
 
-// GLOBAL: CARMA2_HW 0x0075bba0
-int gCurrent_credit_car_index = 0;
+#define gCurrent_credit_car_index (*(int*)((char*)&gProgram_state + 0x20))
 
 // GLOBAL: CARMA2_HW 0x0067c3b4
 int gLast_credit_award_time = 0;

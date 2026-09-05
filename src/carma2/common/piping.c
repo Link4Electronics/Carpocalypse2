@@ -188,6 +188,7 @@ void C2_HOOK_FASTCALL ARStartPipingSession(tPipe_chunk_type pType) {
     StartPipingSession2(pType, 1);
 }
 
+// FUNCTION: CARMA2_HW 0x00402890
 void C2_HOOK_FASTCALL AREndPipingSession(void) {
 
     EndPipingSession2(1);

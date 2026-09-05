@@ -650,6 +650,7 @@ void C2_HOOK_FAKE_THISCALL FlyCar(tCar_spec* c, undefined4 pArg2, br_scalar dt) 
     NOT_IMPLEMENTED();
 }
 
+// FUNCTION: CARMA2_HW 0x0041fbe0
 float C2_HOOK_FASTCALL GetCarOverallBoundsMinY(tCar_spec* pCar) {
     float rear_min;
     float front_min;
@@ -715,6 +716,7 @@ void C2_HOOK_FASTCALL PanningExternalCamera(tCar_spec* c, tU32 pTime) {
     NOT_IMPLEMENTED();
 }
 
+// FUNCTION: CARMA2_HW 0x004121b0
 void C2_HOOK_FASTCALL PangToCamera(br_vector3* pPos, br_matrix34* pMat)
 {
     br_camera* camera;

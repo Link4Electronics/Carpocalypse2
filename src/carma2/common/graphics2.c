@@ -121,6 +121,7 @@ void C2_HOOK_FASTCALL Darken(tU8* pPtr, unsigned int pDarken_amount) {
     *pPtr = (pDarken_amount * *pPtr) / 256;
 }
 
+// FUNCTION: CARMA2_HW 0x004b5390
 void C2_HOOK_FASTCALL SetFadedPalette(int pDegree) {
     int j;
 

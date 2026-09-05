@@ -2363,6 +2363,7 @@ void C2_HOOK_FASTCALL ChangedObjectsCallbacks(tPhysics_object* pObjects, tPhysic
     }
 }
 
+// FUNCTION: CARMA2_HW 0x004c25a0
 static void ResetObjectAndChildren(tPhysics_object* pObject) {
     tPhysics_object* child;
 
