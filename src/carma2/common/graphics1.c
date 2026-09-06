@@ -98,17 +98,23 @@ extern br_model* gShadow_model;
 // GLOBAL: CARMA2_HW 0x006a27e0
 extern br_material* gShadow_material;
 
-// GLOBAL: CARMA2_HW 0x006a27ec
+// GLOBAL: CARMA2_HW 0x006a27d0
 extern br_vector3 gShadow_light_ray;
 
-// GLOBAL: CARMA2_HW 0x006a27d8
+// GLOBAL: CARMA2_HW 0x006a27b0
 extern br_vector3 gShadow_light_x;
 
-// GLOBAL: CARMA2_HW 0x006a27e8
+// GLOBAL: CARMA2_HW 0x006a27c0
 extern br_vector3 gShadow_light_z;
 
-// GLOBAL: CARMA2_HW 0x006a0840
+// GLOBAL: CARMA2_HW 0x006a2448
 extern tClip_details gShadow_clip_planes[8];
+
+// GLOBAL: CARMA2_HW 0x006a2488
+extern tSaved_table gSaved_shade_tables[100];
+
+// GLOBAL: CARMA2_HW 0x006a23d8
+extern int gFancy_shadow;
 
 // FUNCTION: CARMA2_HW 0x004e99d0
 void C2_HOOK_FASTCALL InitShadow(void) {
@@ -135,23 +141,24 @@ void C2_HOOK_FASTCALL InitShadow(void) {
 #else
     int i;
 
-    gShadow_actor = BrActorAllocate(BR_ACTOR_MODEL, NULL);
-    gShadow_model = BrModelAllocate(NULL, 48, 16);
-    gShadow_actor->model = gShadow_model;
-    gShadow_actor->render_style = BR_RSTYLE_NONE;
-
-    gShadow_material = BrMaterialAllocate(NULL);
-    gShadow_material->flags &= ~BR_MATF_LIGHT;
-    gShadow_material->flags |= BR_MATF_ALWAYS_VISIBLE;
-    BrMaterialAdd(gShadow_material);
-
-    BrVector3Set(&gShadow_light_ray, 0.f, -1.f, 0.f);
-    BrVector3Set(&gShadow_light_x, 1.f, 0.f, 0.f);
-    BrVector3Set(&gShadow_light_z, 0.f, 0.f, 1.f);
-
-    for (i = 0; i < CARPOCALYPSE2_ASIZE(gShadow_clip_planes); i++) {
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gShadow_clip_planes); i++) {
         gShadow_clip_planes[i].clip = BrActorAllocate(BR_ACTOR_CLIP_PLANE, NULL);
+        BrActorAdd(gUniverse_actor, gShadow_clip_planes[i].clip);
+        BrClipPlaneDisable(gShadow_clip_planes[i].clip);
+        BrMatrix34Identity(&gShadow_clip_planes[i].clip->t.t.mat);
     }
+
+    gFancy_shadow = 1;
+    gShadow_material = BrMaterialFind("SHADOW.MAT");
+    BrVector3Set(&gShadow_light_ray, 0.f, -1.f, 0.f);
+    BrVector3Set(&gShadow_light_z, 0.f, 0.f, -1.f);
+    BrVector3Set(&gShadow_light_x, 1.f, 0.f, 0.f);
+
+    gShadow_model = BrModelAllocate("", 0, 0);
+    gShadow_model->flags = 6;
+    gShadow_actor = BrActorAllocate(BR_ACTOR_MODEL, NULL);
+    gShadow_actor->model = gShadow_model;
+    BrActorAdd(gUniverse_actor, gShadow_actor);
 #endif
 }
 
@@ -159,10 +166,7 @@ void C2_HOOK_FASTCALL InitShadow(void) {
 
 // SaveShadeTables
 
-// GLOBAL: CARMA2_HW 0x006a2810
-extern tSaved_table gSaved_shade_tables[100];
-
-// GLOBAL: CARMA2_HW 0x006a26d8
+// GLOBAL: CARMA2_HW 0x006a27a8
 extern int gSaved_table_count;
 
 // FUNCTION: CARMA2_HW 0x004e9b60
@@ -178,7 +182,11 @@ void C2_HOOK_FASTCALL DisposeSavedShadeTables(void) {
     }
     gSaved_table_count = 0;
 #else
-    NOT_IMPLEMENTED();
+    int i;
+
+    for (i = 0; i < gSaved_table_count; i++) {
+        BrMemFree(gSaved_shade_tables[i].copy);
+    }
 #endif
 }
 

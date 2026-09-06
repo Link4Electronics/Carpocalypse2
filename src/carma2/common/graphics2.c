@@ -42,7 +42,8 @@ int gSaved_table_count;
 int gPalette_munged;
 tU32 gLast_palette_change;
 int gPalette_index;
-tSaved_table gSaved_shade_tables[100];
+// GLOBAL: CARMA2_HW 0x006a2488
+extern tSaved_table gSaved_shade_tables[100];
 int gPalette_changed;
 // GLOBAL: CARMA2_HW 0x0074a674
 br_pixelmap* gRender_palette;

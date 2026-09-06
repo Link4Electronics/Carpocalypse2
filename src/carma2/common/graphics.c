@@ -75,6 +75,9 @@ int gMap_render_height_i;
 // GLOBAL: CARMA2_HW 0x006a2448
 tClip_details gShadow_clip_planes[8];
 
+// GLOBAL: CARMA2_HW 0x006a2488
+tSaved_table gSaved_shade_tables[100];
+
 // GLOBAL: CARMA2_HW 0x006a23d8
 int gFancy_shadow;
 
@@ -210,8 +213,8 @@ void C2_HOOK_FASTCALL FadePaletteDown(void) {
 // FUNCTION: CARMA2_HW 0x004e9960
 void C2_HOOK_FASTCALL ToggleShadow(void) {
 
-    gShadow_level += 1;
-    if (gShadow_level > eShadow_everyone) {
+    gShadow_level = gShadow_level + 1;
+    if (gShadow_level == eShadow_everyone + 1) {
         gShadow_level = eShadow_none;
     }
     switch (gShadow_level) {
@@ -569,7 +572,7 @@ void C2_HOOK_FASTCALL MungeClipPlane(br_vector3* pLight, tCar_spec* pCar, br_vec
     BrMatrix34ApplyP(&v2, p2, &pCar->car_master_actor->t.t.mat);
     BrVector3Sub(&v3, p2, p1);
     BrVector3Cross(&v4, &v3, pLight);
-    if (fabsf(v4.v[0]) >= 0.01f || fabsf(v4.v[1]) >= 0.01f || fabsf(v4.v[2]) >= 0.01f) {
+    if (fabsf(v4.v[0]) >= 0.01 || fabsf(v4.v[1]) >= 0.01 || fabsf(v4.v[2]) >= 0.01) {
         BrVector3Sub(&v3, p1, pOffset);
         if (BrVector3Dot(&v3, &v4) > 0.f) {
             BrVector3Negate(&v4, &v4);
