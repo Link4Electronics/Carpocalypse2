@@ -75,7 +75,12 @@ tPowerup* gPowerup_array;
 
 // ExcludedPowerup
 
-// GotPowerupX
+// FUNCTION: CARMA2_HW 0x004d9150
+int C2_HOOK_FASTCALL GotPowerupX(tCar_spec* pCar, int pIndex, int pArg3, int pMessage, tU32 pTime) {
+
+    NOT_IMPLEMENTED();
+    return 0;
+}
 
 // GotPowerupXX
 

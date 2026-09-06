@@ -83,6 +83,8 @@ int gNumber_of_powerups;
 
 // GLOBAL: CARMA2_HW 0x006a0a54
 extern tPowerup* gPowerup_array;
+// GLOBAL: CARMA2_HW 0x0074d1a4
+extern int gNet_powerup_time_replacement;
 // GLOBAL: CARMA2_HW 0x006a0948
 int gNumber_of_powerup_respawn_specs;
 
@@ -1362,9 +1364,16 @@ int C2_HOOK_FASTCALL GotPowerup(tCar_spec* pCar, int pIndex) {
 
 // FUNCTION: CARMA2_HW 0x004dc170
 int C2_HOOK_FASTCALL GotCredits(tPowerup* powerup, tCar_spec* car) {
+    int credits;
+    char str[256];
 
-    NOT_IMPLEMENTED();
-    return 0;
+    if (car != NULL && car->driver == eDriver_local_human) {
+        credits = (IRandomBetween(powerup->integer_params[0], powerup->integer_params[1]) / 100) * 100;
+        strcpy(str, powerup->message);
+        strcat(str, " ");
+        EarnCredits2(credits, str);
+    }
+    return powerup - gPowerup_array;
 }
 
 // FUNCTION: CARMA2_HW 0x004dc720
@@ -1451,8 +1460,13 @@ int C2_HOOK_FASTCALL SetUnderwater(tPowerup* powerup, tCar_spec* car) {
 // FUNCTION: CARMA2_HW 0x004dc470
 int C2_HOOK_FASTCALL GotTimeOrPower(tPowerup* powerup, tCar_spec* car) {
 
-    NOT_IMPLEMENTED();
-    return 0;
+    if (gNet_mode) {
+        return GotPowerupX(car, gNet_powerup_time_replacement, 1, 1, 0);
+    }
+    if (car != NULL && car->driver == eDriver_local_human) {
+        AwardTime(IRandomBetween(powerup->integer_params[0], powerup->integer_params[1]));
+    }
+    return powerup - gPowerup_array;
 }
 
 // FUNCTION: CARMA2_HW 0x004dcae0
@@ -2024,13 +2038,6 @@ void C2_HOOK_FASTCALL LosePowerupX(tPowerup* pPowerup, undefined4 pArg2) {
 void C2_HOOK_FASTCALL KeyboardPowerupFinished(tPowerup* pPowerup, int pSelect_new) {
 
     NOT_IMPLEMENTED();
-}
-
-// FUNCTION: CARMA2_HW 0x004d9150
-int C2_HOOK_FASTCALL GotPowerupX(tCar_spec* pCar, int pIndex, int pArg3, int pMessage, tU32 pTime) {
-
-    NOT_IMPLEMENTED();
-    return 0;
 }
 
 // FUNCTION: CARMA2_HW 0x004daff0

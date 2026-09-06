@@ -352,11 +352,14 @@ void C2_HOOK_FASTCALL DRDrawLine(br_pixelmap* pDestn, int pX1, int pY1, int pX2,
 
 // FUNCTION: CARMA2_HW 0x0047b880
 void C2_HOOK_FASTCALL ClearEntireScreen(void) {
-#ifndef CARPOCALYPSE2_MATCHING
+
+    if (gScreen != NULL) {
+        BrPixelmapFill(gScreen, gGraf_specs[gGraf_spec_index].black_value);
+    }
     BrPixelmapFill(gBack_screen, gGraf_specs[gGraf_spec_index].black_value);
-#else
-    NOT_IMPLEMENTED();
-#endif
+    BrPixelmapFill(gDepth_buffer, 0xffffffff);
+    PDScreenBufferSwap(0);
+    BrPixelmapFill(gBack_screen, gGraf_specs[gGraf_spec_index].black_value);
 }
 
 // DistanceFromPlane

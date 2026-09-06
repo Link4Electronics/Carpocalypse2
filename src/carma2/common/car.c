@@ -1936,8 +1936,17 @@ void C2_HOOK_FASTCALL DoComplexCarModels(void) {
 
 // FUNCTION: CARMA2_HW 0x0041f300
 void C2_HOOK_FASTCALL ResetCarScreens(void) {
+    int i;
+    int j;
 
-    NOT_IMPLEMENTED();
+    for (i = 0; i <= 3; i++) {
+        int count = (i == 0) ? 1 : GetCarCount(i);
+        for (j = 0; j < count; j++) {
+            tCar_spec* spec = (i == 0) ? &gProgram_state.current_car : GetCarSpec(i, j);
+            spec->collision_info->last_special_volume = NULL;
+        }
+    }
+    MungeCarGraphics(gFrame_period);
 }
 
 // FUNCTION: CARMA2_HW 0x0040f760

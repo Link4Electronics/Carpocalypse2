@@ -2,11 +2,15 @@
 
 #include "crush.h"
 #include "flap.h"
+#include "globvars.h"
+#include "powerups.h"
 #include "replay.h"
 #include "spark.h"
 #include "pedestrn.h"
 #include "graphics1.h"
 #include "utility.h"
+
+#include "carpocalypse2_macros.h"
 // GLOBAL: CARMA2_HW 0x0065d0c8
 const tReplay_callback gReplay_callbacks[70] = {
     {
@@ -937,8 +941,16 @@ void C2_HOOK_FASTCALL UndoSmashTextureChange(tPipe_chunk** pChunk, tPipe_chunk* 
 
 // FUNCTION: CARMA2_HW 0x004da990
 void C2_HOOK_FASTCALL ResetRepulseRay(void) {
+    int i = 0;
 
-    NOT_IMPLEMENTED();
+    do {
+        tRepulse_link* link = &gRepulse_links[i];
+        if (link->actor->parent == gNon_track_actor) {
+            BrActorRemove(link->actor);
+        }
+        link->time = 0;
+        i++;
+    } while ((int)&gRepulse_links[i].actor < (int)&gINT_006a0a5c);
 }
 
 // FUNCTION: CARMA2_HW 0x004c9a50

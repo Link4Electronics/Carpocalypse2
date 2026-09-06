@@ -364,7 +364,7 @@ void C2_HOOK_FASTCALL AwardTime(tU32 pTime) {
     tU32 the_time;
     int i;
 
-    if (gRace_finished || gFreeze_timer || gNet_mode != eNet_mode_none || gCurrent_graf_data->field_0x18c) {
+    if (gRace_finished || gFreeze_timer || gNet_mode != eNet_mode_none || (*(tGraf_data**)((char*)&gCurrent_race + 0x98))->field_0x18c) {
         return;
     }
     the_time = GetTotalTime();
