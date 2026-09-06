@@ -1234,11 +1234,81 @@ void C2_HOOK_FASTCALL SetLineModelCols(tU8 pCol) {
     BrModelUpdate(gLine_model, BR_MODU_ALL);
 }
 
+// FUNCTION: CARMA2_HW 0x004f6de0
+int C2_HOOK_FASTCALL DrawLine3DThroughBRender(br_vector3* start, br_vector3* end, br_pixelmap* pScreen, br_pixelmap* pDepth_buffer, float scale, br_pixelmap* shade_table);
+
 // FUNCTION: CARMA2_HW 0x004f6b80
 int C2_HOOK_FASTCALL DrawLine3D(br_vector3* start, br_vector3* end, br_pixelmap* pScreen, br_pixelmap* pDepth_buffer, br_pixelmap* shade_table) {
+    br_vector3 lStart, lEnd;
+    br_vector4 projStart, projEnd;
+
+    if (gNo_2d_effects) {
+        gLine_model->vertices[0].p.v[0] = start->v[0];
+        gLine_model->vertices[0].p.v[1] = start->v[1];
+        gLine_model->vertices[0].p.v[2] = start->v[2];
+        gLine_model->vertices[1].p.v[0] = end->v[0];
+        gLine_model->vertices[1].p.v[1] = end->v[1];
+        gLine_model->vertices[1].p.v[2] = end->v[2];
+        BrModelUpdate(gLine_model, BR_MODU_VERTEX_POSITIONS);
+        BrZbsSceneRenderAdd(gLine_actor);
+        return 0x3e7;
+    }
+
+    lStart.v[0] = start->v[0];
+    lStart.v[1] = start->v[1];
+    lStart.v[2] = start->v[2];
+    lEnd.v[0] = end->v[0];
+    lEnd.v[1] = end->v[1];
+    lEnd.v[2] = end->v[2];
+
+    {
+        float clip = -gSpark_cam->hither_z;
+
+        if (lStart.v[2] > clip) goto common_1;
+        if (lEnd.v[2] <= clip) goto project;
+    common_1:
+        if (lStart.v[2] <= clip || lEnd.v[2] <= clip) goto clip_line;
+        return 0;
+
+    clip_line:
+        {
+            float ratio = (lEnd.v[2] + gSpark_cam->hither_z) / (lEnd.v[2] - lStart.v[2]);
+            if (lStart.v[2] > clip) {
+                lStart.v[0] = lEnd.v[0] - (lEnd.v[0] - lStart.v[0]) * ratio;
+                lStart.v[1] = lEnd.v[1] - (lEnd.v[1] - lStart.v[1]) * ratio;
+                lStart.v[2] = -gSpark_cam->hither_z;
+            }
+            if (lEnd.v[2] > -gSpark_cam->hither_z) {
+                lEnd.v[0] = lEnd.v[0] - (lEnd.v[0] - lStart.v[0]) * ratio;
+                lEnd.v[1] = lEnd.v[1] - (lEnd.v[1] - lStart.v[1]) * ratio;
+                lEnd.v[2] = -gSpark_cam->hither_z;
+            }
+        }
+    }
+project:
+
+    BrMatrix4ApplyP(&projStart, &lStart, &gCameraToScreen);
+    BrMatrix4ApplyP(&projEnd, &lEnd, &gCameraToScreen);
+
+    lStart.v[0] = projStart.v[0] / projStart.v[3];
+    lStart.v[1] = projStart.v[1] / projStart.v[3];
+    lStart.v[2] = projStart.v[2] / projStart.v[3];
+    lEnd.v[0] = projEnd.v[0] / projEnd.v[3];
+    lEnd.v[1] = projEnd.v[1] / projEnd.v[3];
+    lEnd.v[2] = projEnd.v[2] / projEnd.v[3];
+
+    return DrawLine3DThroughBRender(
+        &lStart, &lEnd,
+        pScreen, pDepth_buffer, 1.0f, shade_table);
+}
+
+// FUNCTION: CARMA2_HW 0x004f6de0
+#pragma auto_inline(off)
+int C2_HOOK_FASTCALL DrawLine3DThroughBRender(br_vector3* start, br_vector3* end, br_pixelmap* pScreen, br_pixelmap* pDepth_buffer, float scale, br_pixelmap* shade_table) {
 
     NOT_IMPLEMENTED();
 }
+#pragma auto_inline(on)
 
 void C2_HOOK_FASTCALL SetWorldToScreen(br_pixelmap* pScreen) {
     br_matrix4 mat;
