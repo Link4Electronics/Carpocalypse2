@@ -1303,12 +1303,179 @@ project:
 }
 
 // FUNCTION: CARMA2_HW 0x004f6de0
-#pragma auto_inline(off)
 int C2_HOOK_FASTCALL DrawLine3DThroughBRender(br_vector3* start, br_vector3* end, br_pixelmap* pScreen, br_pixelmap* pDepth_buffer, float scale, br_pixelmap* shade_table) {
+    int xe;
+    int ye;
+    br_uint_8* screen_ptr;
+    char* shade_tbl;
+    int two_dy;
+    int bres_error;
+    int two_dx;
+    int xs;
+    int ys;
+    int x_direction;
+    int y_direction;
+    br_scalar z, z_inc;
+    int shade_inc;
+    int shade_scale;
+    br_uint_16* z_ptr;
+    int shade_count;
+    br_uint_16* zp;
 
-    NOT_IMPLEMENTED();
+    screen_ptr = (br_uint_8*)pScreen->pixels + pScreen->base_y * pScreen->row_bytes + pScreen->base_x;
+
+    xs = (int)start->v[0] + pScreen->width / 2;
+    xe = (int)end->v[0] + pScreen->width / 2;
+
+    ys = pScreen->height / 2 - (int)start->v[1];
+    ye = pScreen->height / 2 - (int)end->v[1];
+
+    if (scale < 0.001f || scale > 1.0f) return 0;
+
+    if (xs < 0 || xe < 0) {
+        if (xs < 0) {
+            int t;
+            if (xe < 0) return 0;
+            t = xe - xs;
+            start->v[2] = end->v[2] - (end->v[2] - start->v[2]) * xe / t;
+            ys = ye - (ye - ys) * xe / t;
+            xs = 0;
+        } else {
+            int t = xs - xe;
+            end->v[2] = start->v[2] - (start->v[2] - end->v[2]) * xs / t;
+            ye = ys - (ys - ye) * xs / t;
+            xe = 0;
+        }
+    }
+    if (xs >= pScreen->width || xe >= pScreen->width) {
+        if (xs >= pScreen->width) {
+            int t;
+            int n;
+            if (xe >= pScreen->width) return 0;
+            t = xe - xs;
+            n = xe - pScreen->width + 1;
+            start->v[2] = end->v[2] - (end->v[2] - start->v[2]) * n / t;
+            ys = ye - (ye - ys) * n / t;
+            xs = pScreen->width - 1;
+        } else {
+            int t = xs - xe;
+            int n = xs - pScreen->width + 1;
+            end->v[2] = start->v[2] - (start->v[2] - end->v[2]) * n / t;
+            ye = ys - (ys - ye) * n / t;
+            xe = pScreen->width - 1;
+        }
+    }
+
+    if (ys < 0 || ye < 0) {
+        if (ys < 0) {
+            int t;
+            if (ye < 0) return 0;
+            t = ye - ys;
+            start->v[2] = end->v[2] - (end->v[2] - start->v[2]) * ye / t;
+            xs = xe - (xe - xs) * ye / t;
+            ys = 0;
+        } else {
+            int t = ys - ye;
+            end->v[2] = start->v[2] - (start->v[2] - end->v[2]) * ys / t;
+            xe = xs - (xs - xe) * ys / t;
+            ye = 0;
+        }
+    }
+    if (ys >= pScreen->height || ye >= pScreen->height) {
+        if (ys >= pScreen->height) {
+            int t;
+            int n;
+            if (ye >= pScreen->height) return 0;
+            t = ye - ys;
+            n = ye - pScreen->height + 1;
+            start->v[2] = end->v[2] - (end->v[2] - start->v[2]) * n / t;
+            xs = xe - (xe - xs) * n / t;
+            ys = pScreen->height - 1;
+        } else {
+            int t = ys - ye;
+            int n = ys - pScreen->height + 1;
+            end->v[2] = start->v[2] - (start->v[2] - end->v[2]) * n / t;
+            xe = xs - (xs - xe) * n / t;
+            ye = pScreen->height - 1;
+        }
+    }
+
+    z = start->v[2];
+    zp = (br_uint_16*)pDepth_buffer->pixels;
+    shade_tbl = (char*)shade_table->pixels + shade_table->base_y * shade_table->row_bytes;
+    two_dx = 2 * abs(xe - xs);
+    two_dy = 2 * abs(ye - ys);
+    x_direction = xe - xs < 0 ? -1 : 1;
+    y_direction = ye - ys < 0 ? -1 : 1;
+
+    screen_ptr += ys * pScreen->row_bytes + xs;
+    z_ptr = zp + (pDepth_buffer->row_bytes / 2) * ys + xs;
+    shade_scale = (int)((scale - 0.001f) * shade_table->height);
+
+    if (two_dx > two_dy) {
+        shade_inc = 500 * two_dx / shade_scale;
+        z_inc = 2.0f * (end->v[2] - start->v[2]) / two_dx;
+        bres_error = two_dy - two_dx / 2;
+        shade_count = shade_inc;
+
+        for (;;) {
+            if ((1.0f - z) * 32768.0f < (float)*z_ptr) {
+                *z_ptr = (br_uint_16)((1.0f - z) * 32768.0f);
+                *screen_ptr = shade_tbl[*screen_ptr];
+            }
+            if (xs == xe) break;
+            if (bres_error >= 0) {
+                screen_ptr += y_direction * pScreen->row_bytes;
+                z_ptr += (pDepth_buffer->row_bytes / 2) * y_direction;
+                bres_error -= two_dx;
+            }
+            xs += x_direction;
+            screen_ptr += x_direction;
+            bres_error += two_dy;
+            z_ptr += x_direction;
+            z += z_inc;
+            shade_count -= 1000;
+            if (shade_count <= 0) {
+                do {
+                    shade_tbl += shade_table->row_bytes;
+                    shade_count += shade_inc;
+                } while (shade_count <= 0);
+            }
+        }
+    } else {
+        shade_inc = 500 * two_dy / shade_scale;
+        z_inc = 2.0f * (end->v[2] - start->v[2]) / two_dy;
+        bres_error = two_dx - two_dy / 2;
+        shade_count = shade_inc;
+
+        for (;;) {
+            if ((1.0f - z) * 32768.0f < (float)*z_ptr) {
+                *z_ptr = (br_uint_16)((1.0f - z) * 32768.0f);
+                *screen_ptr = shade_tbl[*screen_ptr];
+            }
+            if (ys == ye) break;
+            if (bres_error >= 0) {
+                screen_ptr += x_direction;
+                z_ptr += x_direction;
+                bres_error -= two_dy;
+            }
+            ys += y_direction;
+            screen_ptr += y_direction * pScreen->row_bytes;
+            bres_error += two_dx;
+            z_ptr += (pDepth_buffer->row_bytes / 2) * y_direction;
+            z += z_inc;
+            shade_count -= 1000;
+            if (shade_count <= 0) {
+                do {
+                    shade_tbl += shade_table->row_bytes;
+                    shade_count += shade_inc;
+                } while (shade_count <= 0);
+            }
+        }
+    }
+
+    return 1;
 }
-#pragma auto_inline(on)
 
 void C2_HOOK_FASTCALL SetWorldToScreen(br_pixelmap* pScreen) {
     br_matrix4 mat;
