@@ -1390,9 +1390,13 @@ int C2_HOOK_FASTCALL SetPedExplode(tPowerup* powerup, tCar_spec* car) {
 
 // FUNCTION: CARMA2_HW 0x004de7a0
 int C2_HOOK_FASTCALL PickAtRandom(tPowerup* powerup, tCar_spec* car) {
+    int idx;
+    int pIndex;
 
-    NOT_IMPLEMENTED();
-    return 0;
+    idx = IRandomBetween(0, powerup->number_of_integer_params - 1);
+    pIndex = powerup->integer_params[idx];
+    GotPowerupEarwig(car, pIndex, 1, 1);
+    return -1;
 }
 
 // FUNCTION: CARMA2_HW 0x004dc830
@@ -2007,12 +2011,6 @@ void C2_HOOK_FASTCALL SendMines(tU32 pNext_frame_time) {
     if (gNet_mode != eNet_mode_host) {
         return;
     }
-    NOT_IMPLEMENTED();
-}
-
-// FUNCTION: CARMA2_HW 0x004d8d40
-void C2_HOOK_FASTCALL GotPowerupEarwig(tCar_spec* pCar, int pIndex, int pMessage, int pSelect_inventory) {
-
     NOT_IMPLEMENTED();
 }
 

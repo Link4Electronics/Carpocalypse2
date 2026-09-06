@@ -554,8 +554,8 @@ static void mem_write_u16(void* memory, tU16 u16) {
 
     memcpy(memory, &u16, sizeof(tU16));
 }
-
 // FUNCTION: CARMA2_HW 0x00461a40
+
 int C2_HOOK_FASTCALL GetPanelFlicFrameIndex(int pIndex) {
 
     return gPanel_flic[pIndex].current_frame;
@@ -1754,7 +1754,12 @@ void C2_HOOK_FASTCALL FlushFlicQueue(void) {
         PDScreenBufferSwap(0);
     }
 #else
-    NOT_IMPLEMENTED();
+    while (!FlicQueueFinished()) {
+        RemoveTransientBitmaps(1);
+        ProcessFlicQueue(gFrame_period);
+        DoMouseCursor();
+        PDScreenBufferSwap(0);
+    }
 #endif
 }
 

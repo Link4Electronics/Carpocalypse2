@@ -8,8 +8,8 @@
 #include "carpocalypse2_macros.h"
 // GLOBAL: CARMA2_HW 0x006a55c8
 tExplosion gExplosions[50];
-
 // FUNCTION: CARMA2_HW 0x004ea880
+
 void C2_HOOK_FASTCALL InitExplosions(void) {
     int i;
     int capacity;
@@ -210,7 +210,9 @@ void C2_HOOK_FASTCALL InitSmashing(void) {
     InitDecals();
     InitSmashQueue();
 #else
-    NOT_IMPLEMENTED();
+    InitGlassFragments();
+    InitDecals();
+    InitSmashQueue();
 #endif
 }
 
@@ -228,25 +230,25 @@ void C2_HOOK_FASTCALL InitSmashing(void) {
 
 // FUNCTION: CARMA2_HW 0x004f02b0
 void C2_HOOK_FASTCALL CleanUpSmashStuff(void) {
-#ifndef CARPOCALYPSE2_MATCHING
     int i;
 
-    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gSmash_glass_fragments) != 200);
-    for (i = 0; i < CARPOCALYPSE2_ASIZE(gSmash_glass_fragments); i++) {
-        if (gSmash_glass_fragments[i].end_time != 0) {
-            BrActorRemove(gSmash_glass_fragments[i].actor);
-            gSmash_glass_fragments[i].end_time = 0;
+    MungeGlassFragments2(1);
+    i = CARPOCALYPSE2_ASIZE(gDecals);
+    do {
+        tDecal* decal = &gDecals[CARPOCALYPSE2_ASIZE(gDecals) - i];
+        if (decal->time != 0) {
+            BrActorRemove(decal->actor);
         }
-    }
-    for (i = 0; i < CARPOCALYPSE2_ASIZE(gDecals); i++) {
-        if (gDecals[i].actor != NULL && gDecals[i].actor->parent != NULL) {
-            BrActorRemove(gDecals[i].actor);
+        decal->time = 0;
+        i--;
+    } while (i != 0);
+    i = CARPOCALYPSE2_ASIZE(gExplosions);
+    do {
+        if (gExplosions[CARPOCALYPSE2_ASIZE(gExplosions) - i].actor->parent != NULL) {
+            BrActorRemove(gExplosions[CARPOCALYPSE2_ASIZE(gExplosions) - i].actor);
         }
-        gDecals[i].time = 0;
-    }
-#else
-    NOT_IMPLEMENTED();
-#endif
+        i--;
+    } while (i != 0);
 }
 
 // DisposeSmashData

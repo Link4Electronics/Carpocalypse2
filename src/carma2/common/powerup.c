@@ -3,6 +3,7 @@
 #include "graphics1.h"
 #include "spark.h"
 #include "globvrpb.h"
+#include "powerups.h"
 #include "carpocalypse2_macros.h"
 
 #include "c2_string.h"
@@ -79,6 +80,12 @@ tPowerup* gPowerup_array;
 // GotPowerupXX
 
 // GotPowerupEarwig
+
+// FUNCTION: CARMA2_HW 0x004d8d40
+void C2_HOOK_FASTCALL GotPowerupEarwig(tCar_spec* pCar, int pIndex, int pMessage, int pSelect_inventory) {
+
+    NOT_IMPLEMENTED();
+}
 
 // AutoGoody
 

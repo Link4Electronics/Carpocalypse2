@@ -518,6 +518,14 @@ extern tU8* gPipe_record_ptr;
 
 extern tU8* gPipe_buffer_oldest;
 
+extern tU8* gLocal_buffer;
+
+extern tU8* gPipe_buffer_start;
+
+extern tU8* gPipe_buffer_phys_end;
+
+extern tU8* gPipe_buffer_working_end;
+
 extern float gReplay_rate;
 
 extern tU32 gYoungest_time;

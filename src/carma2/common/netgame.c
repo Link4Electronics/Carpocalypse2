@@ -40,8 +40,8 @@ int gINT_0068d920;
 
 // GLOBAL: CARMA2_HW 0x0075b8f8
 br_pixelmap* gDigits_pix;
-
 // FUNCTION: CARMA2_HW 0x00499260
+
 void C2_HOOK_FASTCALL DisableCar(tCar_spec* pCar) {
 
     if (pCar->driver_name[0] != '\0') {
@@ -297,12 +297,6 @@ void C2_HOOK_FASTCALL SendCarData(tU32 pNext_frame_time) {
 
 // DrawScoreBoxes
 
-// FUNCTION: CARMA2_HW 0x00499a00
-void C2_HOOK_FASTCALL DoNetScores2(int pOnly_sort_scores) {
-
-    NOT_IMPLEMENTED();
-}
-
 // FUNCTION: CARMA2_HW 0x004999f0
 void C2_HOOK_FASTCALL DoNetScores(void) {
 
@@ -372,7 +366,17 @@ void C2_HOOK_FASTCALL CheckForNeedyEnvironmentRecipients(void) {
         }
     }
 #else
-    NOT_IMPLEMENTED();
+    int i;
+
+    if (gNet_mode != eNet_mode_host) {
+        return;
+    }
+    for (i = 0; i < gNumber_of_net_players; i++) {
+        if (i != gThis_net_player_index && gNet_players[i].player_status >= ePlayer_status_ready
+                && gNet_players[i].player_status < ePlayer_status_racing) {
+            SendCarData(PDGetTotalTime() + 1000);
+        }
+    }
 #endif
 }
 

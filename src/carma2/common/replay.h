@@ -6,6 +6,7 @@
 
 
 extern int gAR_camera_type;
+extern tU32 gTime_of_last_zappy_headups;
 
 // ActualActionReplayHeadups
 
@@ -87,7 +88,7 @@ void C2_HOOK_FASTCALL TurnOffActionReplay(void);
 
 void C2_HOOK_FASTCALL AfterActionReplay(void);
 
-void C2_HOOK_FASTCALL DoZappyActionReplayHeadups(void);
+void C2_HOOK_FASTCALL DoZappyActionReplayHeadups(int pFrame_number);
 
 void C2_HOOK_FASTCALL PreProcess(int pFrame_period);
 

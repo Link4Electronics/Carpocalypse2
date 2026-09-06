@@ -1,8 +1,12 @@
 #include "replay_callbacks.h"
 
+#include "crush.h"
+#include "flap.h"
+#include "replay.h"
 #include "spark.h"
 #include "pedestrn.h"
 #include "graphics1.h"
+#include "utility.h"
 // GLOBAL: CARMA2_HW 0x0065d0c8
 const tReplay_callback gReplay_callbacks[70] = {
     {
@@ -1151,8 +1155,13 @@ void C2_HOOK_FASTCALL UndoVanishDismembered(tPipe_chunk** pChunk, tPipe_chunk* p
 
 // FUNCTION: CARMA2_HW 0x004c9c40
 void C2_HOOK_FASTCALL ApplyDSModel(tPipe_chunk** pChunk) {
+    tPipe_chunk* chunk = *pChunk;
 
-    NOT_IMPLEMENTED();
+    if (*(tS16*)((tU8*)chunk + 4) != 0) {
+        MakeModelMaterialsDoubleSided((br_model*)*(void**)chunk);
+    } else {
+        DRActorEnumRecurse(((tCar_spec*)*(void**)chunk)->car_model_actor, (br_actor_enum_cbfn*)MakeCarModelsMaterialsSingleSided, *(void**)chunk);
+    }
 }
 
 // FUNCTION: CARMA2_HW 0x004c9c70
@@ -1275,6 +1284,11 @@ void C2_HOOK_FASTCALL UndoTransformType(tPipe_chunk** pChunk, tPipe_chunk* pPrev
 
 // FUNCTION: CARMA2_HW 0x004c9d80
 void C2_HOOK_FASTCALL ApplyOppoRenderage(tPipe_chunk** pChunk) {
+
+    NOT_IMPLEMENTED();
+}
+// FUNCTION: CARMA2_HW 0x004e6280
+void C2_HOOK_FASTCALL ActualActionReplayHeadups(int pSpecial_zappy_bastard) {
 
     NOT_IMPLEMENTED();
 }

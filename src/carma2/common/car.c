@@ -3148,7 +3148,8 @@ void C2_HOOK_FASTCALL SwitchCarModels(tCar_spec* pCar, int pIndex) {
     DRActorEnumRecurse(pCar->car_model_actor, SwitchCarModel, &pIndex);
     pCar->field_0xe18 = pIndex;
 #else
-    NOT_IMPLEMENTED();
+    DRActorEnumRecurse(pCar->car_model_actor, SwitchCarModel, &pIndex);
+    pCar->field_0xe18 = pIndex;
 #endif
 }
 

@@ -72,8 +72,8 @@ int gHeadup_detail_level = 5;
 // ProcessShadow
 
 // RenderShadows
-
 // FUNCTION: CARMA2_HW 0x004e9940
+
 void C2_HOOK_FASTCALL SetShadowLevel(tShadow_level pLevel) {
 
     gShadow_level = pLevel;
@@ -133,7 +133,25 @@ void C2_HOOK_FASTCALL InitShadow(void) {
         gShadow_clip_planes[i].clip = BrActorAllocate(BR_ACTOR_CLIP_PLANE, NULL);
     }
 #else
-    NOT_IMPLEMENTED();
+    int i;
+
+    gShadow_actor = BrActorAllocate(BR_ACTOR_MODEL, NULL);
+    gShadow_model = BrModelAllocate(NULL, 48, 16);
+    gShadow_actor->model = gShadow_model;
+    gShadow_actor->render_style = BR_RSTYLE_NONE;
+
+    gShadow_material = BrMaterialAllocate(NULL);
+    gShadow_material->flags &= ~BR_MATF_LIGHT;
+    gShadow_material->flags |= BR_MATF_ALWAYS_VISIBLE;
+    BrMaterialAdd(gShadow_material);
+
+    BrVector3Set(&gShadow_light_ray, 0.f, -1.f, 0.f);
+    BrVector3Set(&gShadow_light_x, 1.f, 0.f, 0.f);
+    BrVector3Set(&gShadow_light_z, 0.f, 0.f, 1.f);
+
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gShadow_clip_planes); i++) {
+        gShadow_clip_planes[i].clip = BrActorAllocate(BR_ACTOR_CLIP_PLANE, NULL);
+    }
 #endif
 }
 

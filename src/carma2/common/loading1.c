@@ -849,7 +849,11 @@ intptr_t C2_HOOK_CDECL DisposeCarActModDataCB(br_actor* pActor, void* pContext) 
     }
     return 0;
 #else
-    NOT_IMPLEMENTED();
+    if (pActor->type_data != NULL) {
+        BrMemFree(pActor->type_data);
+        pActor->type_data = NULL;
+    }
+    return 0;
 #endif
 }
 

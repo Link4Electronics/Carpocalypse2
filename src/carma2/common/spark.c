@@ -1878,7 +1878,15 @@ void C2_HOOK_FASTCALL GenerateItFoxShadeTable(void) {
     gIt_shade_table = pm;
     BrTableAdd(pm);
 #else
-    NOT_IMPLEMENTED();
+    int i;
+    br_pixelmap* pm;
+
+    pm = BrPixelmapAllocate(BR_PMT_INDEX_8, 64, 1, NULL, 0);
+    for (i = 0; i < 64; i++) {
+        ((tU8*)pm->pixels)[i] = (tU8)(i * 4);
+    }
+    gIt_shade_table = pm;
+    BrTableAdd(pm);
 #endif
 }
 

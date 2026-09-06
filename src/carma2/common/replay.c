@@ -44,6 +44,9 @@ tU32 gLast_synch_time;
 // GLOBAL: CARMA2_HW 0x006a2374
 int gKey_down;
 
+// GLOBAL: CARMA2_HW 0x006a2380
+tU32 gTime_of_last_zappy_headups;
+
 // GLOBAL: CARMA2_HW 0x0058f620
 int gAR_camera_type = 2;
 
@@ -191,9 +194,17 @@ void C2_HOOK_FASTCALL AfterActionReplay(void) {
 }
 
 // FUNCTION: CARMA2_HW 0x004e6900
-void C2_HOOK_FASTCALL DoZappyActionReplayHeadups(void) {
+void C2_HOOK_FASTCALL DoZappyActionReplayHeadups(int pFrame_number) {
 
-    NOT_IMPLEMENTED();
+    tU32 time = PDGetTotalTime();
+
+    if (abs(pFrame_number) > 0x2710 &&
+        time - gTime_of_last_zappy_headups > 0x32) {
+        ActualActionReplayHeadups(pFrame_number);
+        gTime_of_last_zappy_headups = time;
+        PDScreenBufferSwap(0);
+        RemoveTransientBitmaps(1);
+    }
 }
 
 // FUNCTION: CARMA2_HW 0x004e6950
@@ -235,6 +246,29 @@ void C2_HOOK_FASTCALL InitialiseActionReplay(void) {
     gSmudge_space = (tPipe_smudge_data*)gCrush_space;
 }
 
+// FUNCTION: CARMA2_HW 0x004c6c60
+void C2_HOOK_FASTCALL DisposeActionReplay(void) {
+#ifndef CARPOCALYPSE2_MATCHING
+    if (gLocal_buffer != NULL) {
+        BrMemFree(gLocal_buffer);
+        gLocal_buffer = NULL;
+    }
+    PDDisposeActionReplayBuffer();
+    gPipe_buffer_start = NULL;
+    gPipe_buffer_phys_end = NULL;
+    gPipe_buffer_working_end = NULL;
+    gPipe_buffer_oldest = NULL;
+    gPipe_record_ptr = NULL;
+    gPipe_buffer_size = 0;
+#else
+    DisposePiping();
+    if (gCrush_space != NULL) {
+        BrMemFree(gCrush_space);
+        gCrush_space = NULL;
+    }
+#endif
+}
+
 // FUNCTION: CARMA2_HW 0x004e6ff0
 void C2_HOOK_FASTCALL CheckReplayTurnOn(void) {
 
@@ -271,11 +305,7 @@ void C2_HOOK_FASTCALL PipeSingleGrooveStop(int pGroove_index, br_matrix34* pMatr
     NOT_IMPLEMENTED();
 }
 
-// FUNCTION: CARMA2_HW 0x004e6280
-void C2_HOOK_FASTCALL ActualActionReplayHeadups(int pSpecial_zappy_bastard) {
-
-    NOT_IMPLEMENTED();
-}
+// ActualActionReplayHeadups
 
 // FUNCTION: CARMA2_HW 0x004e6277
 void C2_HOOK_FASTCALL DoActionReplayHeadups(void) {

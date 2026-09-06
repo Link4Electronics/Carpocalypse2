@@ -71,8 +71,8 @@ br_scalar gChance_of_inverse_buckle;
 
 // GLOBAL: CARMA2_HW 0x0067be78
 br_vector3 gBatty_gravity;
-
 // FUNCTION: CARMA2_HW 0x00429bb0
+
 void C2_HOOK_FASTCALL ReadCrushSettings(FILE* pF) {
     char s[256];
     char *result;
@@ -153,7 +153,14 @@ void C2_HOOK_FASTCALL InitCrushSystems(void) {
         gTrack_crush_joints[i]->type = eJoint_none;
     }
 #else
-    NOT_IMPLEMENTED();
+    int i;
+
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gTrack_crush_joints) != 32);
+
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gTrack_crush_joints); i++) {
+        gTrack_crush_joints[i] = AllocatePhysicsJoint(1, kMem_physics_joint);
+        gTrack_crush_joints[i]->type = eJoint_none;
+    }
 #endif
 }
 
