@@ -604,7 +604,7 @@ void C2_HOOK_FASTCALL ToggleSelection(tFrontend_spec* pFrontend) {
         }
         if (pFrontend->items[gFrontend_selected_item_index].selectable != kFrontendSelectableButton) {
             pFrontend->items[gFrontend_selected_item_index].radioButton_selected = !pFrontend->items[gFrontend_selected_item_index].radioButton_selected;
-            DRS3StartSound(gIndexed_outlets[0], eSoundId_Done);
+            DRS3StartSound(gEffects_outlet, eSoundId_Done);
         }
     } else {
         if (pFrontend->items[gFrontend_selected_item_index].idLevelBar != 0) {
@@ -1537,7 +1537,7 @@ int C2_HOOK_FASTCALL LoadGameOutFunc(tFrontend_spec* pFrontend) {
     BrActorFree(gFrontend_menu_camera);
     gFrontend_menu_camera = NULL;
     EndSavedGamesList();
-    DRS3StartSound(gIndexed_outlets[0], eSoundId_Swingout);
+    DRS3StartSound(gEffects_outlet, eSoundId_Swingout);
     return 0;
 }
 
@@ -1546,7 +1546,7 @@ int C2_HOOK_FASTCALL LoadGameScrollUp(tFrontend_spec* pFrontend) {
 
     if (gFrontend_load_game_index_top > 0 && gFrontend_scroll_time_left == 0) {
         gFrontend_load_game_index_top -= 1;
-        DRS3StartSound(gIndexed_outlets[0], eSoundId_LeftButton);
+        DRS3StartSound(gEffects_outlet, eSoundId_LeftButton);
         gFrontend_scroll_time_left += gFrontend_scroll_time_increment;
     }
     return 0;
@@ -1557,7 +1557,7 @@ int C2_HOOK_FASTCALL LoadGameScrollDownLoadGameScrollDown(tFrontend_spec* pFront
 
     if (gFrontend_load_game_index_top + 8 < gFrontend_count_saved_games && gFrontend_scroll_time_left == 0) {
         gFrontend_load_game_index_top += 1;
-        DRS3StartSound(gIndexed_outlets[0], eSoundId_LeftButton);
+        DRS3StartSound(gEffects_outlet, eSoundId_LeftButton);
         gFrontend_scroll_time_left += gFrontend_scroll_time_increment;
     }
     return 0;
@@ -1616,12 +1616,12 @@ int C2_HOOK_FASTCALL LoadSlot8(tFrontend_spec* pFrontend) {
 int C2_HOOK_FASTCALL TryToLoadGame(int pN) {
 
     if (!DoLoadGame(gFrontend_load_game_index_top + pN)) {
-        DRS3StartSound(gIndexed_outlets[0], eSoundId_CantAffordPart);
+        DRS3StartSound(gEffects_outlet, eSoundId_CantAffordPart);
         return 0;
     } else {
         gAbandon_game = 1;
         gNo_credits_APO_restore = 1;
-        DRS3StartSound(gIndexed_outlets[0], eSoundId_Done);
+        DRS3StartSound(gEffects_outlet, eSoundId_Done);
         return 1;
     }
 }
@@ -1771,7 +1771,7 @@ int C2_HOOK_FASTCALL LoadGameUpdateFunc(tFrontend_spec* pFrontend) {
         }
         if (pFrontend->items[gFrontend_selected_item_index].action != NULL) {
             if (next == NULL && pFrontend->items[gFrontend_selected_item_index].action != temp) {
-                DRS3StartSound(gIndexed_outlets[0], eSoundId_Done);
+                DRS3StartSound(gEffects_outlet, eSoundId_Done);
             }
             pFrontend->items[gFrontend_selected_item_index].action(pFrontend);
         }
@@ -4091,7 +4091,7 @@ int C2_HOOK_FASTCALL Controls_SlotActivated(tFrontend_spec* pFrontend) {
                         }
                     }
                     if (match < 0) {
-                        DRS3StartSound(gIndexed_outlets[0], eSoundId_CantAffordPart);
+                        DRS3StartSound(gEffects_outlet, eSoundId_CantAffordPart);
                         key = -1;
                         break;
                     }
@@ -4103,7 +4103,7 @@ int C2_HOOK_FASTCALL Controls_SlotActivated(tFrontend_spec* pFrontend) {
         ServiceGame();
         if (key != -1 || EitherMouseButtonDown()) {
             pFrontend->items[0].visible = 0;
-            DRS3StartSound(gIndexed_outlets[0], eSoundId_Done);
+            DRS3StartSound(gEffects_outlet, eSoundId_Done);
             WaitForNoKeys();
             if (key != 63 && key != -1) {
                 gKey_mapping[gControls_frontend_to_key_mapping_lut[key_array_index]] = key;

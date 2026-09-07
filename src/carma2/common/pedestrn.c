@@ -2284,7 +2284,7 @@ void C2_HOOK_FASTCALL MungeNapalm(void) {
                     bolt->ped->field_0x0c->field_0x2e |= 0x20;
                     ScarePedestrian(bolt->ped, the_time, 1, 1);
                     CreateSmokeColumn2(2, character_actor, NULL, bolt->ped->character->personality->form->simple_physicing[bolt->ped->character->field_0x5].collision_info, 0, IRandomBetween(0, character_actor->model->prepared->groups->nvertices), 25000);
-                    DRS3StartSound3D(gIndexed_outlets[0], eSoundId_NapalmHitCrackls,
+                    DRS3StartSound3D(gPedestrians_outlet, eSoundId_NapalmHitCrackls,
                         &bolt->ped->pos, &gZero_v__car, 1, 255, BR_FIXED_INT(1), BR_FIXED_INT(1));
                     if (bolt->ped->hit_points > 0 && bolt->field_0x68 != NULL && bolt->field_0x68->driver == eDriver_local_human) {
                         PipeSinglePedIncident(bolt->ped, bolt->field_0x68->collision_info->actor);

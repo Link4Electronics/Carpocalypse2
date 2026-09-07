@@ -914,7 +914,7 @@ int C2_HOOK_FASTCALL MineExplode(tShit_mine *pMine) {
     pMine->next_think_time = GetTotalTime() + 1600;
     BrVector3Negate(&offset, &gExplosion_pix_animation_groups.groups[0].offset);
     Explode(&gExplosion_pix_animation_groups, pMine->collision_info->actor, &pMine->collision_info->actor->model->bounds, &offset);
-    DRS3StartSound3D(gIndexed_outlets[0], eSoundId_Explosion, &pMine->collision_info->actor->t.t.translate.t, &gZero_v__car, 1, 255, BR_FIXED_INT(1), BR_FIXED_INT(1));
+    DRS3StartSound3D(gCar_outlet, eSoundId_Explosion, &pMine->collision_info->actor->t.t.translate.t, &gZero_v__car, 1, 255, BR_FIXED_INT(1), BR_FIXED_INT(1));
     PipeSingleEndShitMine(pMine->collision_info->actor);
     if (pMine->collision_info->actor->parent != NULL) {
         BrActorRemove(pMine->collision_info->actor);
@@ -1760,7 +1760,7 @@ int C2_HOOK_FASTCALL PedValium(tPowerup* powerup, tCar_spec* car) {
     }
 
     NewTextHeadupSlot(4,0, 3000, -4, GetMiscString(eMiscString_pedestrians_are_calm_now));
-    DRS3StartSound2(gIndexed_outlets[0], eSoundId_PedValium, 1, 0xff, 0xff, -1, -1);
+    DRS3StartSound2(gCar_outlet, eSoundId_PedValium, 1, 0xff, 0xff, -1, -1);
     return powerup - gPowerup_array;
 }
 

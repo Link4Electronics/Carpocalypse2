@@ -419,7 +419,7 @@ void C2_HOOK_FASTCALL RaceCompleted(tRace_over_reason pReason) {
     case eRace_over_3:
         ChangeAmbientPratcam(34);
         DoFancyHeadup(gCurrent_race.race_spec->is_boundary ? 34 : 23);
-        DRS3StartSound(gIndexed_outlets[0], eSoundId_RaceComplete);
+        DRS3StartSound(gPedestrians_outlet, eSoundId_RaceComplete);
         break;
     case eRace_over_abandoned:
         if (gNet_mode == eNet_mode_client) {
@@ -430,7 +430,7 @@ void C2_HOOK_FASTCALL RaceCompleted(tRace_over_reason pReason) {
     case eRace_over_out_of_time:
         ChangeAmbientPratcam(35);
         DoFancyHeadup(gCurrent_race.race_spec->is_boundary ? 33 : 22);
-        DRS3StartSound(gIndexed_outlets[0], eSoundId_OutOfTime2);
+        DRS3StartSound(gPedestrians_outlet, eSoundId_OutOfTime2);
         break;
     case eRace_over_6:
         ChangeAmbientPratcam(36);
@@ -464,7 +464,7 @@ void C2_HOOK_FASTCALL Checkpoint(int pCheckpoint_index, int pDo_sound) {
     PratcamEvent(33);
     DoFancyHeadup(21);
     if (pDo_sound) {
-        DRS3StartSound(gIndexed_outlets[0], eSoundId_Checkpoint);
+        DRS3StartSound(gPedestrians_outlet, eSoundId_Checkpoint);
     }
 }
 
@@ -489,7 +489,7 @@ void C2_HOOK_FASTCALL IncrementCheckpoint(void) {
             if (gLap == gTotal_laps) {
                 PratcamEvent(33);
                 NewTextHeadupSlot(4, 0, 1000, -4, GetMiscString(eMiscString_final_lap));
-                DRS3StartSound(gIndexed_outlets[0], eSoundId_FinalLap);
+                DRS3StartSound(gPedestrians_outlet, eSoundId_FinalLap);
                 done_voice = 1;
             }
         } else {
@@ -502,7 +502,7 @@ void C2_HOOK_FASTCALL IncrementCheckpoint(void) {
         PratcamEvent(33);
         DoFancyHeadup(21);
         if (!done_voice) {
-            DRS3StartSound(gIndexed_outlets[0], eSoundId_Checkpoint);
+            DRS3StartSound(gPedestrians_outlet, eSoundId_Checkpoint);
         }
         if (gCredits_checkpoint[gProgram_state.skill_level] != 0) {
             EarnCredits(gCredits_checkpoint[gProgram_state.skill_level]);
@@ -547,7 +547,7 @@ void C2_HOOK_FASTCALL WrongCheckpoint(int pCheckpoint_index) {
         }
     }
     NewTextHeadupSlot(4, 0, 1000, -4, GetMiscString(eMiscString_wrong_checkpoint));
-    DRS3StartSound(gIndexed_outlets[0], eSoundId_WrongCheckpoint);
+    DRS3StartSound(gPedestrians_outlet, eSoundId_WrongCheckpoint);
     gLast_checkpoint_time = GetTotalTime();
     gLast_wrong_checkpoint = pCheckpoint_index;
 }
@@ -704,8 +704,8 @@ void C2_HOOK_FASTCALL JumpTheStart(void) {
     if (gNet_mode == eNet_mode_none || gProgram_state.credits >= gJump_start_fine[gProgram_state.skill_level]) {
         WakeUpOpponentsToTheFactThatTheStartHasBeenJumped(gCountdown);
         gCountdown = 0;
-        DRS3StopOutletSound(gIndexed_outlets[0]);
-        DRS3StartSound(gIndexed_outlets[0], eSoundId_HeyYou);
+        DRS3StopOutletSound(gPedestrians_outlet);
+        DRS3StartSound(gPedestrians_outlet, eSoundId_HeyYou);
         SpendCredits(gJump_start_fine[gProgram_state.skill_level]);
         sprintf(s, "%s %d %s",
             GetMiscString(eMiscString_bad_boy),

@@ -6,6 +6,8 @@
 
 extern br_actor* gAdditional_actors;
 
+extern tRendererShadingType gMaterial_shading_for_callback;
+
 extern char gCurrent_load_directory[256];
 extern char gCurrent_load_name[256];
 

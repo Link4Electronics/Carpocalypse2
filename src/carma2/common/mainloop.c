@@ -412,7 +412,7 @@ tRace_result C2_HOOK_FASTCALL MainGameLoop(void) {
                 if (gCountdown != new_countdown && new_countdown <= 5) {
                     gCountdown = new_countdown;
                     NewImageHeadupSlot(5, 0, 800, 4 + new_countdown);
-                    DRS3StartSound(gIndexed_outlets[0], eSoundId_Countdown_Start + gCountdown);
+                    DRS3StartSound(gPedestrians_outlet, eSoundId_Countdown_Start + gCountdown);
                     if (new_countdown == 0) {
                         MakeFlagWavingBastardWaveHisFlagWhichIsTheProbablyTheLastThingHeWillEverDo();
                     }
@@ -505,7 +505,7 @@ tRace_result C2_HOOK_FASTCALL MainGameLoop(void) {
                     if (the_time >= 500) {
                         bonus = gCompletion_bonus_post_race;
                         sprintf(the_text, "%s %d", GetMiscString(eMiscString_completion_bonus_colon), bonus);
-                        DRS3StartSound(gIndexed_outlets[0], eSoundId_Clap);
+                        DRS3StartSound(gPedestrians_outlet, eSoundId_Clap);
                         ChangeHeadupText(gRace_bonus_headup, the_text);
                         gProgram_state.credits += bonus;
                         gTime_bonus_state = eTime_bonus_race_bonus;

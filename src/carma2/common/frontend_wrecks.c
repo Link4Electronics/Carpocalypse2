@@ -65,7 +65,7 @@ int C2_HOOK_FASTCALL WrecksInFunc(tFrontend_spec* pFrontend) {
     C2_HOOK_BUG_ON(sizeof(tWreck_gallery_sell_info) != 0x8);
 
     gCurrent_frontend_spec = pFrontend;
-    DRS3StartSound(gIndexed_outlets[0], eSoundId_Swingin);
+    DRS3StartSound(gEffects_outlet, eSoundId_Swingin);
     if (!pFrontend->loaded) {
         LoadMenuSettings(pFrontend);
     }
@@ -153,7 +153,7 @@ void C2_HOOK_FASTCALL DisposeWrecksGallery(void) {
 int C2_HOOK_FASTCALL WrecksOutFunc(tFrontend_spec* pFrontend) {
 
     DisposeWrecksGallery();
-    DRS3StartSound(gIndexed_outlets[0], eSoundId_Swingout);
+    DRS3StartSound(gEffects_outlet, eSoundId_Swingout);
     return 1;
 }
 
@@ -331,7 +331,7 @@ int C2_HOOK_FASTCALL WrecksUpdateFunc(tFrontend_spec* pFrontend) {
                         gFrontend_wrecks_rotate_prev_y = mouse_y;
                     }
                 } else if (!gPrev_frontend_mouse_down) {
-                    DRS3StartSound(gIndexed_outlets[0], eSoundId_LeftButton);
+                    DRS3StartSound(gEffects_outlet, eSoundId_LeftButton);
 
                     if (gFrontend_wrecks_current == KeepInRange(selected_car + 2, gFrontend_wrecks_car_count) && gFrontend_wrecks_car_count >= 2) {
                         gFrontend_wrecks_pending_hscroll += 60;
@@ -450,7 +450,7 @@ int C2_HOOK_FASTCALL ScrollToPrevCar(tFrontend_spec* pFrontend) {
             && (gFrontend_wrecks_rotate_prev_x == -1 || gFrontend_wrecks_rotate_prev_y == -1)) {
 
         gFrontend_wrecks_pending_hscroll = 30;
-        DRS3StartSound(gIndexed_outlets[0], eSoundId_LeftButton);
+        DRS3StartSound(gEffects_outlet, eSoundId_LeftButton);
         gFrontend_opponent_profile_pic_needs_update = 1;
     }
     return 0;
@@ -464,7 +464,7 @@ int C2_HOOK_FASTCALL ScrollToNextCar(tFrontend_spec* pFrontend) {
             && (gFrontend_wrecks_rotate_prev_x == -1 || gFrontend_wrecks_rotate_prev_y == -1)) {
 
         gFrontend_wrecks_pending_hscroll = -30;
-        DRS3StartSound(gIndexed_outlets[0], eSoundId_LeftButton);
+        DRS3StartSound(gEffects_outlet, eSoundId_LeftButton);
         gFrontend_opponent_profile_pic_needs_update = 1;
     }
     return 0;
@@ -485,7 +485,7 @@ int C2_HOOK_FASTCALL BuyCurrentCar(tFrontend_spec* pFrontend) {
         gProgram_state.current_car_index = car->index;
         gProgram_state.credits -= gOpponents[opponent->index].price;
         gFrontend_wreck_bought_car_dz = 0.001f;
-        DRS3StartSound(gIndexed_outlets[0], eSoundId_Done);
+        DRS3StartSound(gEffects_outlet, eSoundId_Done);
     }
     return 0;
 }

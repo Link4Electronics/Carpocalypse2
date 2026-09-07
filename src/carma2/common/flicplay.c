@@ -1284,7 +1284,7 @@ int C2_HOOK_FASTCALL PlayFlic(int pIndex, tU32 pSize, tS8* pData_ptr, br_pixelma
         frame_period = new_time - last_frame;
 
         if (gSound_time != 0 && new_time >= gSound_time) {
-            DRS3StartSound(gIndexed_outlets[0], gSound_ID);
+            DRS3StartSound(gEffects_outlet, gSound_ID);
             gSound_time = finished_playing;
         }
         if (frame_period >= the_flic.frame_period) {

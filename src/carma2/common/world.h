@@ -9,7 +9,8 @@
 
 extern int gSize_powerup_queue;
 extern br_scalar gSight_distance_squared;
-extern tBrender_storage* gStorage_for_callbacks;
+extern br_material* gMaterials_to_adapt[200];
+#define gStorage_for_callbacks (*(tBrender_storage**)&gMaterials_to_adapt[0])
 extern int gGroovidelics_array_size;
 extern tGroovidelic_spec* gGroovidelics_array;
 extern const char* gSmashable_track_environment_path;

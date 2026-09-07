@@ -1,5 +1,6 @@
 #include "lighting.h"
 
+#include "world.h"
 #include "world3.h"
 #include "utility.h"
 #include "errors.h"
@@ -12,8 +13,6 @@
 
 #include <string.h>
 extern int gNbPixelBits;
-
-extern tBrender_storage* gStorage_for_callbacks;
 
 // LoadTrackModels
 
@@ -128,7 +127,10 @@ void C2_HOOK_FASTCALL SmoothlySetWorldMaterialFlags(tBrender_storage* pStorage) 
 // FUNCTION: CARMA2_HW 0x004f6640
 void C2_HOOK_FASTCALL LoadTrackMaterials(tBrender_storage* pStorage, const char* pPath) {
 
-    LoadAllMaterialsInDirectory(pStorage, pPath, kRendererShadingType_Default);
+    gMaterial_shading_for_callback = kRendererShadingType_Default;
+    gStorage_for_callbacks = pStorage;
+    PFForEveryFile(pPath, LoadIfItsAMaterial);
+    gMaterial_shading_for_callback = kRendererShadingType_Undefined;
     SmoothlySetWorldMaterialFlags(pStorage);
 }
 

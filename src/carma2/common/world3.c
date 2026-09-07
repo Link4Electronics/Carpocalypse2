@@ -1,4 +1,5 @@
 #include "world3.h"
+#include "world.h"
 
 #include <ctype.h>
 
@@ -28,9 +29,6 @@ char gCurrent_load_name[256];
 
 // GLOBAL: CARMA2_HW 0x006b75c0
 br_actor* gAdditional_actors;
-
-// GLOBAL: CARMA2_HW 0x006b7820
-tBrender_storage* gStorage_for_callbacks;
 
 // GLOBAL: CARMA2_HW 0x006aaa2c
 int gDisallow_duplicates;

@@ -221,7 +221,7 @@ int C2_HOOK_FASTCALL CarClickPrev(tFrontend_spec* pFrontend) {
         }
         gFrontend_opponent_profile_pic_needs_update = 1;
         gFrontend_car_image_outdated = 1;
-        DRS3StartSound(gIndexed_outlets[0], eSoundId_LeftButton);
+        DRS3StartSound(gEffects_outlet, eSoundId_LeftButton);
         UpdateCarInfo(pFrontend);
         gFrontend_scroll_time_left += gFrontend_scroll_time_increment;
     }
@@ -238,7 +238,7 @@ int C2_HOOK_FASTCALL CarClickNext(tFrontend_spec* pFrontend) {
         }
         gFrontend_opponent_profile_pic_needs_update = 1;
         gFrontend_car_image_outdated = 1;
-        DRS3StartSound(gIndexed_outlets[0], eSoundId_LeftButton);
+        DRS3StartSound(gEffects_outlet, eSoundId_LeftButton);
         UpdateCarInfo(pFrontend);
         gFrontend_scroll_time_left += gFrontend_scroll_time_increment;
     }

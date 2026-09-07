@@ -79,7 +79,7 @@ void C2_HOOK_FASTCALL Slider_EffectsProc(tFrontend_slider* pSlider) {
 
     gProgram_state.effects_volume = (int)(255.0 * pSlider->value);
     SetSoundVolumes(0);
-    DRS3StartSound(gIndexed_outlets[0], eSoundId_LeftButton);
+    DRS3StartSound(gEffects_outlet, eSoundId_LeftButton);
 }
 
 void C2_HOOK_FASTCALL DisplayVolumeSettings(tFrontend_spec* pFrontend) {

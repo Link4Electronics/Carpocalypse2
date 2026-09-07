@@ -690,7 +690,29 @@ char* gAbuse_text[10];
 // FUNCTION: CARMA2_HW 0x00456960
 void C2_HOOK_FASTCALL ReallySetSoundDetailLevel(int pLevel) {
 
-    DRS3StopAllOutletSoundsExceptCDA();
+    if (gSound_enabled) {
+        tS3_outlet* pOutlet;
+        pOutlet = gCar_outlet;
+        if (gSound_enabled) {
+            S3StopOutletSound(pOutlet);
+        }
+        pOutlet = gEngine_outlet;
+        if (gSound_enabled) {
+            S3StopOutletSound(pOutlet);
+        }
+        pOutlet = gXXX_outlet;
+        if (gSound_enabled) {
+            S3StopOutletSound(pOutlet);
+        }
+        pOutlet = gEffects_outlet;
+        if (gSound_enabled) {
+            S3StopOutletSound(pOutlet);
+        }
+        pOutlet = gPedestrians_outlet;
+        if (gSound_enabled) {
+            S3StopOutletSound(pOutlet);
+        }
+    }
     DisposeSoundSources();
     gSound_detail_level = pLevel;
     InitSound();
@@ -1506,13 +1528,13 @@ void C2_HOOK_FASTCALL CheckToggles(int pRacing) {
 void C2_HOOK_FASTCALL CheckHorn3D(tCar_spec* pCar) {
 
     if (pCar->keys.horn && pCar->horn_sound_tag == 0) {
-        pCar->horn_sound_tag = DRS3StartSound3D(gIndexed_outlets[0], eSoundId_Horn,
+        pCar->horn_sound_tag = DRS3StartSound3D(gEffects_outlet, eSoundId_Horn,
                                                 &pCar->car_master_actor->t.t.translate.t, &pCar->vel,
                                                 0, 0xff, ((pCar->car_ID & 0x7) + 0xc) << 12, 0x10000);
     } else if (!pCar->keys.horn && pCar->horn_sound_tag != 0) {
         while (S3SoundStillPlaying(pCar->horn_sound_tag) != 0) {
             DRS3StopSound(pCar->horn_sound_tag);
-            DRS3StopOutletSound(gIndexed_outlets[0]);
+            DRS3StopOutletSound(gEffects_outlet);
         }
         if (!S3SoundStillPlaying(pCar->horn_sound_tag)) {
             pCar->horn_sound_tag = 0;
@@ -1877,7 +1899,7 @@ void C2_HOOK_FASTCALL CheckOtherRacingKeys(void) {
             total_difference %= 100;
             cost = 10 * (cost / 10);
             if (((total_repair_cost == 0 && cost != 0) || bodywork_repair_amount != 0.0f) && sound_tag == 0) {
-                sound_tag = DRS3StartSound(gIndexed_outlets[0], eSoundId_DamageRepair);
+                sound_tag = DRS3StartSound(gCar_outlet, eSoundId_DamageRepair);
             }
             StopCarSmoking(&gProgram_state.current_car);
             if (cost == 0 && bodywork_repair_amount == 0.0) {
