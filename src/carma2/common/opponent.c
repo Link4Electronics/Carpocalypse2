@@ -143,6 +143,9 @@ float gDefinite_no_cop_pursuit_speed;
 // GLOBAL: CARMA2_HW 0x00691748
 float gCop_pursuit_speed_percentage_multiplier;
 
+// GLOBAL: CARMA2_HW 0x0058a478
+float gOppo_render_zero = 0.0f;
+
 // GLOBAL: CARMA2_HW 0x0065a3cc
 float gOpponent_nastyness_frigger = 1.0f;
 
@@ -151,6 +154,14 @@ int gMinTimeOpponentRepair;
 
 // GLOBAL: CARMA2_HW 0x0074a688
 int gMaxTimeOpponentRepair;
+
+// FUNCTION: CARMA2_HW 0x004a7a20
+void C2_HOOK_FASTCALL SetOppoRender(tOpponent_spec* pOpponent_spec, int pRender) {
+    if (gAction_replay_mode && ARGetReplayRate() < gOppo_render_zero) {
+        pRender = (pRender == 0);
+    }
+    pOpponent_spec->car_spec->car_master_actor->render_style = (pRender == 0) ? BR_RSTYLE_NONE : BR_RSTYLE_DEFAULT;
+}
 
 // FUNCTION: CARMA2_HW 0x004013d0
 void C2_HOOK_FASTCALL PointActorAlongThisBloodyVector(br_actor* pThe_actor, br_vector3* pThe_vector) {

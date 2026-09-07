@@ -307,7 +307,7 @@ void C2_HOOK_FASTCALL PipeSingleGrooveStop(int pGroove_index, br_matrix34* pMatr
 
 // ActualActionReplayHeadups
 
-// FUNCTION: CARMA2_HW 0x004e6277
+// FUNCTION: CARMA2_HW 0x004e6270
 void C2_HOOK_FASTCALL DoActionReplayHeadups(void) {
 
     ActualActionReplayHeadups(0);

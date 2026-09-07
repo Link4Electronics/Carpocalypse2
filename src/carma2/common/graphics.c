@@ -384,17 +384,17 @@ void C2_HOOK_FASTCALL CalculateWobblitude(tU32 pThe_time) {
             if (time_going > 1000) {
                 gWobble_array[i].time_started = 0;
             } else {
-                mod_angle = fmodf(time_going / gWobble_array[i].period, TAU_F);
-                if (mod_angle > 1.5f * PI_F) {
-                    cosine_over_angle = gCosine_array[(unsigned int)((TAU_F - mod_angle) / PI_F * 128.f)];
-                } else if (mod_angle > PI_F) {
-                    cosine_over_angle = -gCosine_array[(unsigned int)((mod_angle - PI_F) / PI_F * 128.f)];
-                } else if (mod_angle > .5f * PI_F) {
-                    cosine_over_angle = -gCosine_array[(unsigned int)((PI_F - mod_angle) / PI_F * 128.f)];
+                mod_angle = fmod((double)time_going / gWobble_array[i].period, TAU);
+                if (mod_angle > 1.5 * PI) {
+                    cosine_over_angle = gCosine_array[(unsigned int)((TAU - mod_angle) / PI * 128.)];
+                } else if (mod_angle > PI) {
+                    cosine_over_angle = -gCosine_array[(unsigned int)((mod_angle - PI) / PI * 128.)];
+                } else if (mod_angle > .5 * PI) {
+                    cosine_over_angle = -gCosine_array[(unsigned int)((PI - mod_angle) / PI * 128.)];
                 } else {
-                    cosine_over_angle = gCosine_array[(unsigned int)(mod_angle / PI_F * 128.f)];
+                    cosine_over_angle = gCosine_array[(unsigned int)(mod_angle / PI * 128.)];
                 }
-                angle = cosine_over_angle / (1.f + time_going * .0035f);
+                angle = cosine_over_angle / (1. + (double)time_going * .0035);
                 gScreen_wobble_x += (int)(gWobble_array[i].amplitude_x * angle);
                 gScreen_wobble_y += (int)(gWobble_array[i].amplitude_y * angle);
             }
@@ -430,22 +430,68 @@ void C2_HOOK_FASTCALL RenderAFrame(int pDepth_mask_on) {
     cockpit_on = gProgram_state.cockpit_on && gProgram_state.cockpit_image_index >= 0 && gMap_view != 2;
     gMirror_on__graphics = gProgram_state.mirror_on && cockpit_on && gProgram_state.which_view == eView_forward;
 
-    StartRenderingHeadups();
+    for (i = 0; i < gCount_polyfont_glyph_actors; i++) {
+        br_actor* actor = gPolyfont_glyph_actors[i];
+        if (actor->parent != NULL) {
+            BrActorRemove(actor);
+        }
+    }
+    gCount_polyfont_glyph_actors = 0;
+    gHud_actor_storage_size = 0;
+    gRender_poly_text = 0;
     MapStuffBeforeRender();
-    if (!gAction_replay_mode) {
-        CalculateWobblitude(the_time);
+    if (!gAction_replay_mode && gProgram_state.new_view == eView_undefined) {
+        int j;
+        tU32 time_going;
+        double mod_angle;
+        double cosine_over_angle;
+
+        gScreen_wobble_x = 0;
+        gScreen_wobble_y = 0;
+        for (j = 0; j < CARPOCALYPSE2_ASIZE(gWobble_array); j++) {
+            if (gWobble_array[j].time_started != 0) {
+                time_going = the_time - gWobble_array[j].time_started;
+                if (time_going > 1000) {
+                    gWobble_array[j].time_started = 0;
+                } else {
+                    mod_angle = fmod((double)time_going / gWobble_array[j].period, TAU);
+                    if (mod_angle > 1.5 * PI) {
+                        cosine_over_angle = gCosine_array[(unsigned int)((TAU - mod_angle) / PI * 128.)];
+                    } else if (mod_angle > PI) {
+                        cosine_over_angle = -gCosine_array[(unsigned int)((mod_angle - PI) / PI * 128.)];
+                    } else if (mod_angle > .5 * PI) {
+                        cosine_over_angle = -gCosine_array[(unsigned int)((PI - mod_angle) / PI * 128.)];
+                    } else {
+                        cosine_over_angle = gCosine_array[(unsigned int)(mod_angle / PI * 128.)];
+                    }
+                    gScreen_wobble_x = (int)((double)gScreen_wobble_x + (double)gWobble_array[j].amplitude_x * cosine_over_angle / (1. + (double)time_going * .0035));
+                    gScreen_wobble_y = (int)((double)gScreen_wobble_y + (double)gWobble_array[j].amplitude_y * cosine_over_angle / (1. + (double)time_going * .0035));
+                }
+            }
+        }
+        if (gScreen_wobble_x > gCurrent_graf_data->cock_margin_x) {
+            gScreen_wobble_x = gCurrent_graf_data->cock_margin_x;
+        } else if (gScreen_wobble_x < -gCurrent_graf_data->cock_margin_x) {
+            gScreen_wobble_x = -gCurrent_graf_data->cock_margin_x;
+        }
+        if (gScreen_wobble_y > gCurrent_graf_data->cock_margin_y) {
+            gScreen_wobble_y = gCurrent_graf_data->cock_margin_y;
+        } else if (gScreen_wobble_y < -gCurrent_graf_data->cock_margin_y) {
+            gScreen_wobble_y = -gCurrent_graf_data->cock_margin_y;
+        }
+        PipeSingleScreenWobble(gScreen_wobble_x, gScreen_wobble_y);
     }
     if (cockpit_on) {
         if (-gScreen_wobble_x > gX_offset) {
             x_shift = -gX_offset;
-        } else if (gScreen_wobble_x + gX_offset + gRender_screen->width > gBack_screen->width) {
+        } else if (gBack_screen->width < gX_offset + gScreen_wobble_x + gRender_screen->width) {
             x_shift = gBack_screen->width - gRender_screen->width - gX_offset;
         } else {
             x_shift = gScreen_wobble_x;
         }
         if (-gScreen_wobble_y > gY_offset) {
             y_shift = -gY_offset;
-        } else if (gScreen_wobble_y + gY_offset + gRender_screen->height > gBack_screen->height) {
+        } else if (gBack_screen->height < gY_offset + gScreen_wobble_y + gRender_screen->height) {
             y_shift = gBack_screen->height - gRender_screen->height - gY_offset;
         } else {
             y_shift = gScreen_wobble_y;
@@ -454,16 +500,16 @@ void C2_HOOK_FASTCALL RenderAFrame(int pDepth_mask_on) {
         x_shift = 0;
         y_shift = 0;
     }
-    BrMatrix34Copy(&old_camera_matrix, &gCamera->t.t.mat);
+    old_camera_matrix = gCamera->t.t.mat;
     if (gMirror_on__graphics) {
-        BrMatrix34Copy(&old_mirror_cam_matrix, &gRearview_camera->t.t.mat);
+        old_mirror_cam_matrix = gRearview_camera->t.t.mat;
     }
     if (cockpit_on) {
         gSheer_mat.m[2][1] = y_shift / (float)gRender_screen->height;
-        gSheer_mat.m[2][0] = -x_shift / (float)gRender_screen->width;
+        gSheer_mat.m[2][0] = (float)-x_shift / (float)gRender_screen->width;
         BrMatrix34Pre(&gCamera->t.t.mat, &gSheer_mat);
         gCamera->t.t.translate.t.v[0] -= gScreen_wobble_x * 1.5f / gRender_screen->width / WORLD_SCALE;
-        gCamera->t.t.translate.t.v[1] += gScreen_wobble_y * 1.5f / gRender_screen->width / WORLD_SCALE;
+        gCamera->t.t.translate.t.v[1] = gScreen_wobble_y * 1.5f / gRender_screen->width / WORLD_SCALE + gCamera->t.t.translate.t.v[1];
     }
     gRender_screen->pixels = (char*)gRender_screen->pixels + x_shift + y_shift * gRender_screen->row_bytes;
     if (gRender_indent && gMap_view != 2) {
@@ -865,14 +911,14 @@ void C2_HOOK_FASTCALL InitNearestCar(void) {
     if (gNet_mode != eNet_mode_none && gCurrent_net_game->type == eNet_game_type_foxy) {
         gTarget_lock_car_2 = NULL;
     } else if (gPrevious_opponent_status == eOpponent_status_Wasted && gTarget_lock_car_1 != NULL) {
-        if (PDGetTotalTime() - gTime_oppobar_target_wasted > 2500) {
+        if (PDGetTotalTime() - gTime_oppobar_target_wasted <= 2500) {
+            gFLOAT_0074ab90 = 0.f;
+        } else {
             gTarget_lock_car_2 = NULL;
             gTarget_lock_car_1 = NULL;
             if (gTarget_lock_enabled) {
                 gTarget_lock_enabled = 0;
             }
-        } else {
-            gFLOAT_0074ab90 = 0.f;
         }
     } else if (gTarget_lock_enabled) {
         gFLOAT_0074ab90 = 0.f;
@@ -896,17 +942,17 @@ void C2_HOOK_FASTCALL StartMap(void) {
 void C2_HOOK_FASTCALL CopyMapToScreen(void) {
 
     if (gCurrent_race.map_image != NULL) {
-        if (gGraf_data_index == 0) {
-            DRPixelmapCopy(gBack_screen, gCurrent_race.map_image);
-        } else {
+        if (gGraf_data_index != 0) {
             PossibleUnlock(1);
-            DRPixelmapRectangleCopy(gBack_screen,
+            FRONTEND_Redraw(gBack_screen,
                 -gBack_screen->origin_x,
                 -gBack_screen->origin_y,
                 gCurrent_race.map_image,
                 gCurrent_race.map_image->origin_x,
                 gCurrent_race.map_image->origin_y,
                 640, 480);
+        } else {
+            DRPixelmapCopy(gBack_screen, gCurrent_race.map_image);
         }
     }
     DimRectangleClipped(gBack_screen,
@@ -917,6 +963,7 @@ void C2_HOOK_FASTCALL CopyMapToScreen(void) {
         1);
 }
 
+#pragma auto_inline(off)
 // FUNCTION: CARMA2_HW 0x00496be0
 void C2_HOOK_FASTCALL MapStuffBeforeRender(void) {
     InitNearestCar();
@@ -925,6 +972,7 @@ void C2_HOOK_FASTCALL MapStuffBeforeRender(void) {
         CopyMapToScreen();
     }
 }
+#pragma auto_inline(on)
 
 // FUNCTION: CARMA2_HW 0x004e5680
 void C2_HOOK_FASTCALL DoARenderPass(br_matrix34* pMat34, br_actor* pCamera, br_pixelmap* pColour, br_pixelmap* pDepth, float pYon_factor, int pShadows, int pEffects, int pEffects_extra) {
@@ -1071,7 +1119,7 @@ void C2_HOOK_FASTCALL DoACompleteRenderPass(int pMirror, br_matrix34* pCamera_to
             gRear_pixelmap->origin_y = extra_render->material->colour_map->height / 2;
             gRear_pixelmap->width = extra_render->material->colour_map->width;
             gRear_pixelmap->height = extra_render->material->colour_map->height;
-            if (gRear_pixelmap->width != gRear_pixelmap->row_bytes) {
+            if (gRear_pixelmap->row_bytes != gRear_pixelmap->width) {
                 gRear_pixelmap->flags &= ~BR_PMF_ROW_WHOLEPIXELS;
             } else {
                 gRear_pixelmap->flags |= BR_PMF_ROW_WHOLEPIXELS;
@@ -1428,66 +1476,88 @@ void C2_HOOK_FASTCALL FancyDrawLine(br_pixelmap *pMap, int pX1, int pY1, int pX2
 
 // FUNCTION: CARMA2_HW 0x0047d0d0
 void C2_HOOK_FASTCALL DR16BitPixelmapRotatedAndFeatheredCopy(br_matrix23* pMat, br_pixelmap* pDest, tS16 pDest_x, tS16 pDest_y, br_pixelmap* pSrc, tS16 pSrc_x, tS16 pSrc_y, tS16 pSrc_width, tS16 pSrc_height) {
+    float base_x;
+    float src_x0;
+    float base_y;
+    float height_half;
+    float src_y0;
     int width_div_2;
     int height_div_2;
     int dy;
+    int dx;
     tU16 *ptr_write;
     float src_f_x;
     float src_f_y;
-    int width;
 
     width_div_2 = pSrc_width / 2;
     height_div_2 = pSrc_height / 2;
-    for (dy = -height_div_2; dy < height_div_2; dy++, pDest_y++) {
-        src_f_x = (float)pSrc_x - (pMat->m[0][0] * (float)width_div_2 + pMat->m[0][1] * (float)dy);
-        src_f_y = (float)pSrc_y + (pMat->m[1][0] * (float)width_div_2 + pMat->m[1][1] * (float)dy) + (float)pSrc_height / 2.f;
-        if (-width_div_2 < width_div_2) {
-            width = 2 * width_div_2;
-            ptr_write = (tU16*)((tU8*)pDest->pixels + pDest_y * pDest->row_bytes) + pDest_x;
-            for (; width != 0; width--) {
-                *ptr_write++ = *((tU16*)((tU8*)pSrc->pixels + ((int)src_f_y * pSrc->row_bytes)) + width_div_2 + (int)src_f_x);
-                src_f_x += pMat->m[0][0];
-                src_f_y -= pMat->m[1][0];
-            }
+    src_x0 = (float)pSrc_x;
+    src_y0 = (float)pSrc_y;
+    height_half = (float)pSrc_height * 0.5;
+    base_x = -(pMat->m[0][0] * (float)width_div_2);
+    base_y = -(pMat->m[1][0] * (float)width_div_2);
+    for (dy = -height_div_2; dy < height_div_2; dy++) {
+        float dyf = (float)dy;
+        src_f_x = base_x - pMat->m[0][1] * dyf + src_x0;
+        ptr_write = (tU16*)((tU8*)pDest->pixels + (pDest_y + dy + height_div_2) * pDest->row_bytes) + pDest_x;
+        src_f_y = pMat->m[1][1] * dyf - base_y + height_half + src_y0;
+        for (dx = -width_div_2; dx < width_div_2; dx++, ptr_write++) {
+            *ptr_write = *((tU16*)((tU8*)pSrc->pixels + ((int)src_f_y * pSrc->row_bytes)) + width_div_2 + (int)src_f_x);
+            src_f_x += pMat->m[0][0];
+            src_f_y -= pMat->m[1][0];
         }
     }
 }
 
 // FUNCTION: CARMA2_HW 0x0047cd40
 void C2_HOOK_FASTCALL DRPixelmapRotatedAndFeatheredCopy(br_matrix23* pMat, br_pixelmap* pDest, tS16 pDest_x, tS16 pDest_y, br_pixelmap* pSrc, tS16 pSrc_x, tS16 pSrc_y, tS16 pSrc_width, tS16 pSrc_height, int pTrans) {
-    if (pDest->type == BR_PMT_INDEX_8) {
-        int width_div_2;
-        int width_near1;
-        int width_near2;
-        int width_near3;
-        int height_div_2;
-        int height_near1;
-        int height_near2;
-        int height_near3;
-        float src_f_x;
-        float src_f_y;
-        int src_x;
-        int src_y;
-        int dy;
-        int dx;
-        int dx_bit0;
-        int dy_bit1;
-        tU8 src_pix;
-        tU8* ptr_write;
+    int width_div_2;
+    int height_div_2;
+    int width_near1;
+    int width_near2;
+    int width_near3;
+    int height_near1;
+    int height_near2;
+    int height_near3;
+    int src_y;
+    int src_x;
+    int dx_bit0;
+    int dy_bit1;
+    tU8 src_pix;
+    float src_f_x;
+    float src_f_y;
+    tU8* ptr_write;
+    int dy;
+    int dx;
 
-        width_div_2 = pSrc_width / 2;
-        width_near1 = width_div_2 - pSrc_width / 24;
-        width_near2 = width_div_2 - pSrc_width / 12;
-        width_near3 = width_div_2 - pSrc_width * 3 / 24;
-        height_div_2 = pSrc_height / 2;
-        height_near1 = height_div_2 - pSrc_height / 24;
-        height_near2 = height_div_2 - pSrc_height / 12;
-        height_near3 = height_div_2 - pSrc_height * 3 / 24;
-        for (dy = -height_div_2; dy < height_div_2; dy++, pDest_y++) {
-            src_f_x = (float)pSrc_x - (pMat->m[0][0] * (float)width_div_2 + pMat->m[0][1] * (float)dy);
-            src_f_y = (float)pSrc_y + (pMat->m[1][0] * (float)width_div_2 + pMat->m[1][1] * (float)dy) + (float)pSrc_height / 2.f;
-            ptr_write = (tU8*)pDest->pixels + pDest_y * pDest->row_bytes + pDest_x;
-            for (dx = -width_div_2; dx < width_div_2; dx++) {
+    if (pDest->type == BR_PMT_INDEX_8) {
+        int width_full = pSrc_width;
+        int height_full = pSrc_height;
+        float height_half;
+        float f_src_x;
+        float f_src_y;
+        float xbase;
+        float ybase;
+
+        width_div_2 = width_full / 2;
+        height_div_2 = height_full / 2;
+        width_near1 = width_div_2 - width_full / 24;
+        width_near2 = width_div_2 - width_full / 12;
+        width_near3 = width_div_2 - width_full * 3 / 24;
+        height_near1 = height_div_2 - height_full / 24;
+        height_near2 = height_div_2 - height_full / 12;
+        height_near3 = height_div_2 - height_full * 3 / 24;
+        f_src_x = (float)pSrc_x;
+        f_src_y = (float)pSrc_y;
+        height_half = (float)height_full * 0.5f;
+        xbase = -(pMat->m[0][0] * (float)width_div_2);
+        ybase = -(pMat->m[1][0] * (float)width_div_2);
+
+        for (dy = -height_div_2; dy < height_div_2; dy++) {
+            ptr_write = (tU8*)pDest->pixels + (pDest_y + dy + height_div_2) * pDest->row_bytes + pDest_x;
+            src_f_x = xbase - pMat->m[0][1] * (float)dy + f_src_x;
+            src_f_y = pMat->m[1][1] * (float)dy - ybase + height_half + f_src_y;
+            for (dx = -width_div_2; dx < width_div_2; dx++, ptr_write++) {
                 src_y = (int)src_f_y;
                 src_x = (int)src_f_x;
                 src_f_x += pMat->m[0][0];
@@ -1501,17 +1571,21 @@ void C2_HOOK_FASTCALL DRPixelmapRotatedAndFeatheredCopy(br_matrix23* pMat, br_pi
 
                     if (-width_div_2 <= dx_bit0 && dx_bit0 <= width_div_2
                             && -height_div_2 <= dy_bit1 && dy_bit1 <= height_div_2) {
-                        if (!(-width_near1 <= dx_bit0 && dx_bit0 <= width_near1
-                                && -height_near1 <= dy_bit1 && dy_bit1 <= height_near1)) {
-                            *ptr_write = ((tU8*)gPalette_0074a604->pixels)[*ptr_write + 256 * src_pix];
-                        } else if (!(-width_near2 <= dx_bit0 && dx_bit0 <= width_near2
-                                && -height_near2 <= dy_bit1 && dy_bit1 <= height_near2)) {
-                            *ptr_write = ((tU8*)gPalette_0074a600->pixels)[*ptr_write + 256 * src_pix];
-                        } else if (!(-width_near3 <= dx_bit0 && dx_bit0 <= width_near3
-                                && -height_near3 <= dy_bit1 && dy_bit1 <= height_near3)) {
-                            *ptr_write = ((tU8*)gPalette_0074a5fc->pixels)[*ptr_write + 256 * src_pix];
+                        if (-width_near1 <= dx_bit0 && dx_bit0 <= width_near1
+                                && -height_near1 <= dy_bit1 && dy_bit1 <= height_near1) {
+                            if (-width_near2 <= dx_bit0 && dx_bit0 <= width_near2
+                                    && -height_near2 <= dy_bit1 && dy_bit1 <= height_near2) {
+                                if (-width_near3 <= dx_bit0 && dx_bit0 <= width_near3
+                                        && -height_near3 <= dy_bit1 && dy_bit1 <= height_near3) {
+                                    *ptr_write = src_pix;
+                                } else {
+                                    *ptr_write = ((tU8*)gPalette_0074a5fc->pixels)[*ptr_write + 256 * src_pix];
+                                }
+                            } else {
+                                *ptr_write = ((tU8*)gPalette_0074a600->pixels)[*ptr_write + 256 * src_pix];
+                            }
                         } else {
-                            *ptr_write = src_pix;
+                            *ptr_write = ((tU8*)gPalette_0074a604->pixels)[*ptr_write + 256 * src_pix];
                         }
                     }
                 }

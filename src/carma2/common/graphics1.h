@@ -56,6 +56,8 @@ extern void C2_HOOK_FASTCALL InitWobbleStuff(void);
 
 // SetScreenWobble
 
+extern void C2_HOOK_FASTCALL SetScreenWobble(int pWobble_x, int pWobble_y);
+
 // ResetScreenWobble
 
 // CalculateWobblitude

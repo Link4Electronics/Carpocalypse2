@@ -126,6 +126,20 @@ int gSelected_drone_path_index = -1;
 // GLOBAL: CARMA2_HW 0x00684518
 int gTraffic_disabled;
 
+// GLOBAL: CARMA2_HW 0x00589dc4
+float gDrone_render_zero = 0.0f;
+
+// FUNCTION: CARMA2_HW 0x00452810
+void C2_HOOK_FASTCALL SetDroneRender(int pIndex, int pRender) {
+    if (gAction_replay_mode && ARGetReplayRate() < gDrone_render_zero) {
+        pRender = (pRender == 0);
+        DoNotDprintf("B DRONERENDER");
+    } else {
+        DoNotDprintf("F DRONERENDER");
+    }
+    gDrone_specs[pIndex].actor->render_style = (pRender == 0) ? BR_RSTYLE_NONE : BR_RSTYLE_FACES;
+}
+
 // FUNCTION: CARMA2_HW 0x0044cfc0
 void C2_HOOK_CDECL DoNotDprintf(const char* format, ...) {
 // Disabled because too noisy

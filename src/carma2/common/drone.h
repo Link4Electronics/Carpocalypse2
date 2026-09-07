@@ -168,6 +168,8 @@ extern void C2_HOOK_FASTCALL SetTrafficOn(int pTraffic_on);
 
 // ApplyDroneRender2
 
+void C2_HOOK_FASTCALL SetDroneRender(int pIndex, int pRender);
+
 // ApplyDroneStraightPos2
 
 // ApplyDroneCornerPos2

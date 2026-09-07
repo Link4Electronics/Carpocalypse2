@@ -63,6 +63,19 @@ undefined4 gUNK_0069410c;
 // GLOBAL: CARMA2_HW 0x00676908
 tU8* gPipe_buffer_start = NULL;
 
+// GLOBAL: CARMA2_HW 0x0067690c
+int gPipe_undo_enabled = 0;
+
+// FUNCTION: CARMA2_HW 0x004030d0
+void C2_HOOK_FASTCALL SetPipeUndoFlag(void) {
+    gPipe_undo_enabled = 1;
+}
+
+// FUNCTION: CARMA2_HW 0x004030e0
+void C2_HOOK_FASTCALL ClearPipeUndoFlag(void) {
+    gPipe_undo_enabled = 0;
+}
+
 // GLOBAL: CARMA2_HW 0x006768e4
 int gReentrancy_count = 0;
 

@@ -56,6 +56,12 @@ int gScreen_wobble_x;
 // GLOBAL: CARMA2_HW 0x00705184
 int gScreen_wobble_y;
 
+// FUNCTION: CARMA2_HW 0x004e4e20
+void C2_HOOK_FASTCALL SetScreenWobble(int pWobble_x, int pWobble_y) {
+    gScreen_wobble_x = pWobble_x;
+    gScreen_wobble_y = pWobble_y;
+}
+
 // GLOBAL: CARMA2_HW 0x00703e28
 int gHud_actor_storage_size;
 

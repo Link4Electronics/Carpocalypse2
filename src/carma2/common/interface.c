@@ -2361,7 +2361,12 @@ void C2_HOOK_FASTCALL FRONTEND_Setup(tFrontendMenuType pType) {
 
 
 // FUNCTION: CARMA2_HW 0x005191b0
-int C2_HOOK_FASTCALL FRONTEND_Redraw(void) {
+int C2_HOOK_FASTCALL FRONTEND_Redraw(br_pixelmap* dst, br_int_16 dx, br_int_16 dy, br_pixelmap* src, br_int_16 sx, br_int_16 sy, br_int_16 w, br_int_16 h) {
+
+    BrPixelmapRectangleCopy(dst, dx, dy, src, sx, sy, w, h);
+}
+
+void C2_HOOK_FASTCALL FrontendRedrawMenu(void) {
     int i;
 
     gBack_screen->origin_x = 0;
@@ -4066,7 +4071,7 @@ int C2_HOOK_FASTCALL Controls_SlotActivated(tFrontend_spec* pFrontend) {
     for (;;) {
         int key;
 
-        FRONTEND_Redraw();
+        FrontendRedrawMenu();
 
         key = PDAnyKeyDown();
         if (key != -1 && key != 63) {

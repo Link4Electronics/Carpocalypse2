@@ -177,7 +177,7 @@ extern void C2_HOOK_FASTCALL FRONTEND_PingPongFlash(void);
 
 // FRONTEND_Setup
 
-// FRONTEND_Redraw
+void C2_HOOK_FASTCALL FrontendRedrawMenu(void);
 
 extern void C2_HOOK_FASTCALL MaybeDoMouseCursor(void);
 

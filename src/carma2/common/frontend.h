@@ -70,7 +70,7 @@ int C2_HOOK_FASTCALL FRONTEND_CreateMenu(tFrontend_spec* pFrontend_spec);
 
 void C2_HOOK_FASTCALL FRONTEND_Setup(tFrontendMenuType pType);
 
-int C2_HOOK_FASTCALL FRONTEND_Redraw(void);
+int C2_HOOK_FASTCALL FRONTEND_Redraw(br_pixelmap* dst, br_int_16 dx, br_int_16 dy, br_pixelmap* src, br_int_16 sx, br_int_16 sy, br_int_16 w, br_int_16 h);
 
 void C2_HOOK_FASTCALL ScrollCredits(void);
 

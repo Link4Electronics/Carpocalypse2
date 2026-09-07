@@ -673,13 +673,21 @@ void C2_HOOK_FASTCALL ResetScreenWobble(void) {
 // FUNCTION: CARMA2_HW 0x004c9180
 void C2_HOOK_FASTCALL ApplyScreenWobble(tPipe_chunk** pChunk) {
 
-    NOT_IMPLEMENTED();
+    SetScreenWobble(((tPipe_chunk_screen_wobble*)((tU8*)*pChunk + 4))->wobble_x,
+                    ((tPipe_chunk_screen_wobble*)((tU8*)*pChunk + 4))->wobble_y);
 }
 
 // FUNCTION: CARMA2_HW 0x004c9e50
 void C2_HOOK_FASTCALL UndoScreenWobble(tPipe_chunk** pChunk, tPipe_chunk* pPrev_chunk) {
 
-    NOT_IMPLEMENTED();
+    SetPipeUndoFlag();
+    if (pPrev_chunk != NULL) {
+        tPipe_chunk_screen_wobble* wobble = (tPipe_chunk_screen_wobble*)((tU8*)pPrev_chunk + 4);
+        SetScreenWobble(wobble->wobble_x, wobble->wobble_y);
+    } else {
+        SetScreenWobble(0, 0);
+    }
+    ClearPipeUndoFlag();
 }
 
 // FUNCTION: CARMA2_HW 0x004c9190
@@ -1210,8 +1218,7 @@ void C2_HOOK_FASTCALL UndoExtendedSplash(tPipe_chunk** pChunk, tPipe_chunk* pPre
 
 // FUNCTION: CARMA2_HW 0x004c9cc0
 void C2_HOOK_FASTCALL ApplyDroneRender(tPipe_chunk** pChunk) {
-
-    NOT_IMPLEMENTED();
+    SetDroneRender(*(tU32*)*pChunk, *(tU16*)((tU8*)*pChunk + 4));
 }
 
 // FUNCTION: CARMA2_HW 0x004c9cd0
@@ -1296,8 +1303,7 @@ void C2_HOOK_FASTCALL UndoTransformType(tPipe_chunk** pChunk, tPipe_chunk* pPrev
 
 // FUNCTION: CARMA2_HW 0x004c9d80
 void C2_HOOK_FASTCALL ApplyOppoRenderage(tPipe_chunk** pChunk) {
-
-    NOT_IMPLEMENTED();
+    SetOppoRender((tOpponent_spec*)*(tU32*)*pChunk, *(tU16*)((tU8*)*pChunk + 4));
 }
 // FUNCTION: CARMA2_HW 0x004e6280
 void C2_HOOK_FASTCALL ActualActionReplayHeadups(int pSpecial_zappy_bastard) {

@@ -342,6 +342,8 @@ void C2_HOOK_FASTCALL MungeOpponents(void);
 
 void C2_HOOK_FASTCALL UnStunTheBugger(tOpponent_spec* pOpponent_spec);
 
+void C2_HOOK_FASTCALL SetOppoRender(tOpponent_spec* pOpponent_spec, int pRender);
+
 void C2_HOOK_FASTCALL WakeUpOpponentsToTheFactThatTheStartHasBeenJumped(int pWhat_the_countdown_was);
 
 tS16 C2_HOOK_FASTCALL FindNearestPathSection(br_vector3* pActor_coords, br_vector3* pPath_direction, br_vector3* pIntersect, br_scalar* pDistance);

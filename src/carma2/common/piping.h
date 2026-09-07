@@ -522,6 +522,12 @@ extern tU8* gLocal_buffer;
 
 extern tU8* gPipe_buffer_start;
 
+extern int gPipe_undo_enabled;
+
+void C2_HOOK_FASTCALL SetPipeUndoFlag(void);
+
+void C2_HOOK_FASTCALL ClearPipeUndoFlag(void);
+
 extern tU8* gPipe_buffer_phys_end;
 
 extern tU8* gPipe_buffer_working_end;
