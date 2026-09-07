@@ -572,10 +572,10 @@ void C2_HOOK_FASTCALL RenderTrack(br_actor* pWorld, tTrack_spec* pTrack_spec, br
     tU8 z;
 //    br_actor* result;
 
+    camera = (br_camera*)pCamera->type_data;
     if (pTrack_spec->columns == NULL) {
         BrZbSceneRenderAdd(pWorld);
     } else {
-        camera = (br_camera*)pCamera->type_data;
         XZToColumnXZ(&column_x, &column_z, pCamera_to_world->m[3][0], pCamera_to_world->m[3][2], pTrack_spec);
         min_x = column_x;
         max_x = column_x;

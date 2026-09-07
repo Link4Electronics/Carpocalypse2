@@ -448,7 +448,7 @@ void C2_HOOK_FASTCALL RenderAFrame(int pDepth_mask_on) {
 
         gScreen_wobble_x = 0;
         gScreen_wobble_y = 0;
-        for (j = 0; j < CARPOCALYPSE2_ASIZE(gWobble_array); j++) {
+        for (j = 0; j < (int)CARPOCALYPSE2_ASIZE(gWobble_array); j++) {
             if (gWobble_array[j].time_started != 0) {
                 time_going = the_time - gWobble_array[j].time_started;
                 if (time_going > 1000) {
