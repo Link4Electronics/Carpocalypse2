@@ -687,6 +687,7 @@ char gString[84];
 // GLOBAL: CARMA2_HW 0x0067c3c8
 char* gAbuse_text[10];
 
+#pragma auto_inline(off)
 // FUNCTION: CARMA2_HW 0x00456960
 void C2_HOOK_FASTCALL ReallySetSoundDetailLevel(int pLevel) {
 
@@ -718,6 +719,7 @@ void C2_HOOK_FASTCALL ReallySetSoundDetailLevel(int pLevel) {
     InitSound();
     InitSoundSources();
 }
+#pragma auto_inline(on)
 
 // Key: 'm'
 // FUNCTION: CARMA2_HW 0x004420e0
@@ -2636,12 +2638,18 @@ void C2_HOOK_FASTCALL CycleSoundDetailLevel(void) {
     new_level = (gSound_detail_level + 1) % 3;
     ReallySetSoundDetailLevel(new_level);
     SetSoundDetailLevel(new_level);
-    if (gSound_detail_level == 0) {
-        NewTextHeadupSlot(4, 0, 2000, -4, GetMiscString(eMiscString_fewest_sounds));
-    } else if (gSound_detail_level == 1) {
-        NewTextHeadupSlot(4, 0, 2000, -4, GetMiscString(eMiscString_partial_sound));
-    } else if (gSound_detail_level == 2) {
-        NewTextHeadupSlot(4, 0, 2000, -4, GetMiscString(eMiscString_all_sounds));
+    switch (gSound_detail_level) {
+        case 0:
+            NewTextHeadupSlot(4, 0, 2000, -4, GetMiscString(eMiscString_fewest_sounds));
+            break;
+        case 1:
+            NewTextHeadupSlot(4, 0, 2000, -4, GetMiscString(eMiscString_partial_sound));
+            break;
+        case 2:
+            NewTextHeadupSlot(4, 0, 2000, -4, GetMiscString(eMiscString_all_sounds));
+            break;
+        default:
+            break;
     }
 }
 

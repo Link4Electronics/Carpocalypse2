@@ -112,7 +112,7 @@ int gCheckpoint_digit_height;
 int gCheckpoint_digit_center_x;
 
 // GLOBAL: CARMA2_HW 0x0068c85c
-tU32 gCheckpoint_digit_center_y;
+int gCheckpoint_digit_center_y;
 
 // GLOBAL: CARMA2_HW 0x0068d6f8
 tOppo_status_messages gOppo_status_messages[9];
@@ -181,7 +181,7 @@ tOppo_status_messages gOppo_status_messages[9];
 
 // MapStuffAfterRender
 
-void C2_HOOK_FASTCALL ReadMoodMessages(void) {
+static __inline void C2_HOOK_FASTCALL ReadMoodMessages(void) {
     tPath_name path;
     FILE *f;
     int mood;

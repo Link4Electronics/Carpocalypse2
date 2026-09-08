@@ -106,7 +106,7 @@ extern br_pixelmap* gSmashy_dot;
 extern br_pixelmap* gAlt_meter;
 extern int gCheckpoint_digit_height;
 extern int gCheckpoint_digit_center_x;
-extern tU32 gCheckpoint_digit_center_y;
+extern int gCheckpoint_digit_center_y;
 extern int gCheckpoint_digit_height;
 extern int gMini_map_x;
 extern int gMini_map_y;

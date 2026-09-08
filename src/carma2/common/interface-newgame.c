@@ -238,7 +238,6 @@ int C2_HOOK_FASTCALL FRONTEND_NewGameMenuHandler(tFrontend_spec* pFrontend) {
                 }
                 UpdateScrollPositions(gCurrent_frontend_spec);
             }
-            DRS3StartSound(gEffects_outlet, eSoundId_Done);
             return pFrontend->items[orig_selected_item].field_0xc;
         }
     }

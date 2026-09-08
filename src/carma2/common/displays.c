@@ -948,7 +948,7 @@ void C2_HOOK_FASTCALL DrawOffsetCheckpoint(br_pixelmap* pMap, int pCheckpoint, t
     // GLOBAL: CARMA2_HW 0x0068d8f4
     static int flash_state;
 
-    if ((pCheckpoint >= 0 && pCheckpoint < gCurrent_race.check_point_count && gTrack_version >= 1 && !pTarget)
+    if ((pCheckpoint >= 0 && pCheckpoint < gCurrent_race.check_point_count && gTrack_version > 0 && !pTarget)
             || Flash(300, &last_flash, &flash_state)) {
 
         if (gCurrent_race.checkpoints[pCheckpoint].map_position.v[0] >= 0.f
@@ -1071,14 +1071,14 @@ void C2_HOOK_FASTCALL MapOverlay(void) {
     BrMatrix34ApplyP(&gOrigin_map, &gPlayer_car_master_actor->t.t.translate.t,  &gCurrent_race.map_transformation);
     gOrigin_headup_map.v[0] = gOrigin_map.v[0] - (float)(gINT_0074ab94 / 2);
     gOrigin_headup_map.v[1] = gOrigin_map.v[1] - (float)(gINT_0074abec / 2);
-    gINT_0068c878 = (int)(gOrigin_headup_map.v[0] + .5f);
-    gINT_0068c874 = (int)(gOrigin_headup_map.v[1] + .5f);
+    gINT_0068c878 = (int)(gOrigin_headup_map.v[0] + .5);
+    gINT_0068c874 = (int)(gOrigin_headup_map.v[1] + .5);
     if (gINT_0068c878 < 0 || gINT_0068c874 < 0
-            || gCurrent_race.map_image->width < gINT_0068c878
-            || gCurrent_race.map_image->height < gINT_0068c874) {
+            || gINT_0068c878 > gCurrent_race.map_image->width
+            || gINT_0068c874 > gCurrent_race.map_image->height) {
         BrPixelmapFill(gMap_overlay, 0);
     }
-    if (gINT_0074abec < gINT_0074ab94) {
+    if (gINT_0074ab94 > gINT_0074abec) {
         gINT_0068c858 = (gINT_0074ab94 - gINT_0074abec) / 2;
         gINT_0068d890 = 0;
         BrPixelmapRectangleCopy(gMap_overlay,
