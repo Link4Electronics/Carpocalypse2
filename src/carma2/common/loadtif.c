@@ -4,6 +4,7 @@
 #include "utility.h"
 #include "packfile.h"
 #include "globvars.h"
+#include "world.h"
 
 #ifndef _WIN32
 extern const char* carpocalypse2_fix_path_case(const char* pPath);
@@ -67,7 +68,7 @@ br_pixelmap* C2_HOOK_FASTCALL CreatePalettePixelmapFromRGBChannels(br_uint_16* p
     return pm;
 }
 
-br_pixelmap* C2_HOOK_FASTCALL LoadDefaultPalette(const char* pData_dir_path, int pFlags, int *pError_code) {
+static br_pixelmap* C2_HOOK_FASTCALL LoadDefaultPalette(const char* pData_dir_path, int pFlags, int *pError_code) {
     int i;
     tPath_name path;
     br_uint_8 buffer[256 * 3];
@@ -77,19 +78,14 @@ br_pixelmap* C2_HOOK_FASTCALL LoadDefaultPalette(const char* pData_dir_path, int
     sprintf(path, "%s%s%s%s%s", pData_dir_path, gDir_separator, "PALETTE", gDir_separator, "DEFAULT.ACT");
     f = DRfopen(path, "rb");
     if (f == NULL) {
-        *pError_code = 5;
-        return NULL;
+        goto error;
     }
     if (fread(buffer, CARPOCALYPSE2_ASIZE(buffer), 1, f) == 0) {
-#ifdef CARPOCALYPSE2_FIX_BUGS
-        fclose(f);
-#endif
-        *pError_code = 5;
-        return NULL;
+        goto error;
     }
     fclose(f);
     if (pFlags & kLoadTextureFlags_PalatteRGB555) {
-        br_uint_32* pixel;
+        br_uint_16* pixel;
 
         pm = BrPixelmapAllocate(BR_PMT_RGB_565, 1, 256, NULL, 0);
         if (pm == NULL) {
@@ -98,7 +94,7 @@ br_pixelmap* C2_HOOK_FASTCALL LoadDefaultPalette(const char* pData_dir_path, int
         }
         pixel = pm->pixels;
         for (i = 0; i < 256; i++) {
-            pixel[i] = ((buffer[3 * i + 0] >> 3) << 11) | ((buffer[3 * i + 1] >> 2) << 5) | ((buffer[3 * i + 2] >> 3) << 0);
+            pixel[i] = (br_uint_16)(((buffer[3 * i + 0] >> 3) << 11) | ((buffer[3 * i + 1] >> 2) << 5) | ((buffer[3 * i + 2] >> 3) << 0));
         }
     } else {
         br_uint_8* pixel;
@@ -130,6 +126,10 @@ br_pixelmap* C2_HOOK_FASTCALL LoadDefaultPalette(const char* pData_dir_path, int
         return NULL;
     }
     return pm;
+
+error:
+    *pError_code = 5;
+    return NULL;
 }
 
 int C2_HOOK_FASTCALL CheckPixOutdated(const char* pDirectory, const char* pStem, const char* pPix_path) {
@@ -137,7 +137,7 @@ int C2_HOOK_FASTCALL CheckPixOutdated(const char* pDirectory, const char* pStem,
 
     sprintf(tif_path, "%s%s%s%s%s%s", pDirectory, gDir_separator, "TIFFRGB", gDir_separator, pStem, ".TIF");
     ReadFileLink(tif_path,tif_path);
-    if (PDFileExists(tif_path) && PDGetLastModificationTime(pPix_path) < PDGetLastModificationTime(tif_path)) {
+    if (IsValidFile(tif_path) && (br_uint_32)GetLastModificationTime(tif_path) > (br_uint_32)GetLastModificationTime(pPix_path)) {
         return 1;
     } else {
         return 0;
@@ -164,15 +164,15 @@ br_pixelmap* C2_HOOK_FASTCALL LoadTiffTexture_Ex2(const char* pDirectory, const 
     sprintf(pix_path, "%s%s%s%s%s%s", pDirectory, gDir_separator, (pFlags & kLoadTextureFlags_16bbp) ? "PIX16" : "PIX8", gDir_separator, pFile_stem, ".PIX");
     tif_path_is_link = ReadFileLink(tif_path, tif_path);
     pix_path_is_link = ReadFileLink(pix_path_target, pix_path);
-    tif_exists = PDFileExists(tif_path);
-    pix_exists = PDFileExists(pix_path_is_link ? pix_path_target : pix_path);
+    tif_exists = IsValidFile(tif_path);
+    pix_exists = IsValidFile(pix_path_is_link ? pix_path_target : pix_path);
 
     if (pTiff_palette && pix_exists && !tif_exists) {
         if (CheckPixOutdated(pDirectory, pFile_stem, pix_path_is_link ? pix_path_target : pix_path)) {
             return 0;
         }
     }
-    if (!tif_exists || (((pFlags & kLoadTextureFlags_16bbp) || pTiff_palette) && !(pFlags & kLoadTextureFlags_ForceTiff) && pix_exists && PDGetLastModificationTime(pix_path_is_link ? pix_path_target : pix_path) >= PDGetLastModificationTime(tif_path))) {
+    if (!tif_exists || (((pFlags & kLoadTextureFlags_16bbp) || pTiff_palette) && !(pFlags & kLoadTextureFlags_ForceTiff) && pix_exists && (br_uint_32)GetLastModificationTime(pix_path_is_link ? pix_path_target : pix_path) >= (br_uint_32)GetLastModificationTime(tif_path))) {
 
         if (pix_exists && ((pFlags & kLoadTextureFlags_16bbp) || pTiff_palette)) {
             original_filesystem = BrFilesystemSet(&gZlib_filesystem);
@@ -346,29 +346,6 @@ int C2_HOOK_FASTCALL WriteFileLink(const char* pLink_dest, const char* pLink_sou
     } else {
         return 1;
     }
-}
-
-// FUNCTION: CARMA2_HW 0x00486be0
-int C2_HOOK_FASTCALL PDGetLastModificationTime(const char* pPath) {
-    struct stat statbuf;
-
-    if (stat(pPath, &statbuf) == -1) {
-        return 0;
-    }
-    return (int)statbuf.st_mtime;
-}
-
-// FUNCTION: CARMA2_HW 0x00486c00
-int C2_HOOK_FASTCALL PDFileExists(const char *pPath) {
-    struct stat statbuf;
-#ifndef _WIN32
-    /* Linux is case-sensitive; game data is not. */
-    {
-        extern const char* carpocalypse2_fix_path_case(const char* pPath);
-        pPath = carpocalypse2_fix_path_case(pPath);
-    }
-#endif
-    return stat(pPath, &statbuf) == 0;
 }
 
 // PDmkdir

@@ -400,17 +400,31 @@ tWall_texturing_level C2_HOOK_FASTCALL GetWallTexturingLevel(void) {
 
 // FUNCTION: CARMA2_HW 0x00486c00
 int C2_HOOK_FASTCALL IsValidFile(const char* path) {
-    struct_c2_stat32 s;
+    struct stat s;
 
-    return c2_stat32(path, &s) == 0;
+#ifndef _WIN32
+    /* Linux is case-sensitive; the retail game's data is not. */
+    {
+        extern const char* carpocalypse2_fix_path_case(const char* pPath);
+        path = carpocalypse2_fix_path_case(path);
+    }
+#endif
+    return stat(path, &s) == 0;
 }
 
 // FUNCTION: CARMA2_HW 0x00486be0
 int C2_HOOK_FASTCALL GetLastModificationTime(const char* path) {
-    struct_c2_stat32 s;
+    struct stat s;
     int res;
 
-    res = c2_stat32(path, &s);
+#ifndef _WIN32
+    /* Linux is case-sensitive; the retail game's data is not. */
+    {
+        extern const char* carpocalypse2_fix_path_case(const char* pPath);
+        path = carpocalypse2_fix_path_case(path);
+    }
+#endif
+    res = stat(path, &s);
     if (res == -1) {
         return 0;
     }

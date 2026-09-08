@@ -173,7 +173,7 @@ void C2_HOOK_CDECL BrVector3InvScale(br_vector3* v1, const br_vector3* v2, br_sc
 // FUNCTION: CARMA2_HW 0x005346c0
 br_scalar C2_HOOK_CDECL BrVector3Dot(br_vector3* v1, const br_vector3* v2) {
 
-    return BR_MAC3(v1->v[0], v2->v[0], v1->v[1], v2->v[1], v1->v[2], v2->v[2]);
+    return BR_MAC3(v2->v[1], v1->v[1], v2->v[2], v1->v[2], v2->v[0], v1->v[0]);
 }
 
 // FUNCTION: CARMA2_HW 0x005346f0
@@ -218,7 +218,7 @@ void C2_HOOK_CDECL BrVector3Normalise(br_vector3* v1, const br_vector3* v2) {
 void C2_HOOK_CDECL BrVector3NormaliseLP(br_vector3* v1, const br_vector3* v2) {
     br_scalar scale;
 
-    scale = 1.f / (br_scalar)sqrt(BR_MAC3(v2->v[0], v2->v[0], v2->v[1], v2->v[1], v2->v[2], v2->v[2]));
+    scale = 1.0 / sqrt(BR_MAC3(v2->v[0], v2->v[0], v2->v[1], v2->v[1], v2->v[2], v2->v[2]));
     if (scale != 0.f) {
         v1->v[0] = v2->v[0] * scale;
         v1->v[1] = v2->v[1] * scale;
@@ -295,9 +295,9 @@ void C2_HOOK_CDECL BrFVector3NormaliseLP(br_fvector3* v1, const br_vector3* v2) 
     br_scalar scale;
 
     scale = 1.f / (br_scalar)sqrt(BR_MAC3(v2->v[0], v2->v[0], v2->v[1], v2->v[1], v2->v[2], v2->v[2]));
-    v1->v[0] = v2->v[0] * scale;
-    v1->v[1] = v2->v[1] * scale;
-    v1->v[2] = v2->v[2] * scale;
+v1->v[0] = v2->v[0] * scale;
+        v1->v[1] = v2->v[1] * scale;
+        v1->v[2] = v2->v[2] * scale;
 }
 
 // FUNCTION: CARMA2_HW 0x00534a80

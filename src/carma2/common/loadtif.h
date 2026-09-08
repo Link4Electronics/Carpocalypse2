@@ -5,8 +5,6 @@
 
 extern br_pixelmap* C2_HOOK_FASTCALL CreatePalettePixelmapFromRGBChannels(br_uint_16* pRed_channel, br_uint_16* pGrn_channel, br_uint_16* pBlu_channel, int pRGB555);
 
-extern br_pixelmap* C2_HOOK_FASTCALL LoadDefaultPalette(const char* pData_dir_path, int pFlags, int *pError_code);
-
 br_pixelmap* C2_HOOK_FASTCALL LoadTiffTexture_Ex2(const char* pDirectory, const char* pFile_stem, br_pixelmap* pPalette, int pFlags, int* pError_code, int pTiff_palette);
 
 br_pixelmap* C2_HOOK_FASTCALL LoadTiffTexture_Ex(const char* pDirectory, const char* pFile_stem, br_pixelmap* pPalette, int pFlags, int* pError_code);
@@ -14,10 +12,6 @@ br_pixelmap* C2_HOOK_FASTCALL LoadTiffTexture_Ex(const char* pDirectory, const c
 extern int C2_HOOK_FASTCALL WriteFileLink(const char* pLink_dest, const char* pLink_source);
 
 extern int C2_HOOK_FASTCALL ReadFileLink(char* pDest, const char* pPath);
-
-extern int C2_HOOK_FASTCALL PDGetLastModificationTime(const char* pPath);
-
-extern int C2_HOOK_FASTCALL PDFileExists(const char *pPath);
 
 extern int C2_HOOK_FASTCALL PDmkdir(const char *pPath);
 
