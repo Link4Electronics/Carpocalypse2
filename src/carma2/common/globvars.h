@@ -260,3 +260,5 @@ extern char gQuick_time_temp_path[256];
 extern char gQuick_time_movie_path_stub[256];
 
 #endif // CARPOCALYPSE2_GLOBVARS_H
+
+extern int gINT_0075bba8;

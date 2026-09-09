@@ -224,6 +224,7 @@ add_library(c2_common STATIC
     replay.h
     replay_callbacks.c
     replay_callbacks.h
+    replay_workers.c
     runtime.c
     runtime.h
     shrapnel.c

@@ -1455,13 +1455,24 @@ float C2_HOOK_FASTCALL ARGetReplayRate(void) {
 
 // PipeSingleGraphicalWheelStuff
 
-// STUB: CARMA2_HW 0x004c84a0
+// FUNCTION: CARMA2_HW 0x004c84a0
 void C2_HOOK_FASTCALL PipeSingleSound(tS3_outlet* pOutlet, int pSound, tS3_volume pL_volume, tS3_volume pR_volume, int pPitch, const br_vector3* pPosition) {
-#ifndef CARPOCALYPSE2_MATCHING
-    /* stub: no-op for Linux boot */
-#else
-    NOT_IMPLEMENTED();
-#endif
+
+    if (gAction_replay_mode) {
+        return;
+    }
+    if (gINT_0075bba8 == 0) {
+        return;
+    }
+    {
+        const br_vector3* pos = pPosition != NULL ? pPosition : &gZero_vector__smash;
+
+        ARDoSingleVariedSession(ePipe_chunk_single_sound, pSound, 4,
+            4, 0x0, pPitch,
+            0xc, 0x4, (uintptr_t)pos,
+            2, 0x10, (uint32_t)GetIndexFromOutlet(pOutlet),
+            2, 0x12, (uint32_t)((pR_volume << 8) + pL_volume));
+    }
 }
 
 // PipeSingleSpecial

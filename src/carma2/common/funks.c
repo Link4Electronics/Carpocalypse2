@@ -155,25 +155,36 @@ void C2_HOOK_FASTCALL DisposeGroovidelics(int pOwner) {
 // FUNCTION: CARMA2_HW 0x00477160
 void C2_HOOK_FASTCALL KillGroovadelic(int pOwner) {
     int i;
+    tGroovidelic_spec* the_groove;
 
-    for (i = 0; i < gGroovidelics_array_size; i++) {
-        tGroovidelic_spec* the_groove = &gGroovidelics_array[i];
-        if (the_groove->owner == pOwner
-            && the_groove->path_mode != eMove_controlled
-            && the_groove->path_mode != eMove_absolute
-            && the_groove->object_mode != eMove_controlled
-            && the_groove->object_mode != eMove_absolute) {
-            the_groove->owner = -999;
+    if (gGroovidelics_array == NULL) {
+        return;
+    }
+    the_groove = gGroovidelics_array;
+    for (i = 0; i < gGroovidelics_array_size; i++, the_groove++) {
+        if (the_groove->owner != pOwner) {
+            continue;
         }
+        if (the_groove->path_mode == eMove_controlled || the_groove->path_mode == eMove_absolute) {
+            continue;
+        }
+        if (the_groove->object_mode == eMove_controlled || the_groove->object_mode == eMove_absolute) {
+            continue;
+        }
+        the_groove->owner = -999;
     }
 }
 
 // FUNCTION: CARMA2_HW 0x004771c0
 void C2_HOOK_FASTCALL KillFunkotronic(int pOwner) {
     int i;
+    tFunkotronic_spec* the_funk;
 
-    for (i = 0; i < gFunkotronics_array_size; i++) {
-        tFunkotronic_spec* the_funk = &gFunkotronics_array[i];
+    if (gFunkotronics_array == NULL) {
+        return;
+    }
+    the_funk = gFunkotronics_array;
+    for (i = 0; i < gFunkotronics_array_size; i++, the_funk++) {
         if (the_funk->owner == pOwner
             && the_funk->matrix_mode != eMove_controlled
             && the_funk->matrix_mode != eMove_absolute

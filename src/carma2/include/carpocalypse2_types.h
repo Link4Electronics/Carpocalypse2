@@ -394,6 +394,19 @@ typedef struct {
 } tPipe_chunk_non_car;
 
 typedef struct {
+    int skid_num;
+    br_matrix34 matrix;
+    br_material* material;
+} tPipe_chunk_skid_adjust;
+
+typedef struct {
+    undefined4 field_0x0;
+    br_actor* actor;
+    undefined4 field_0x8;
+    br_actor* field_0xc;
+} tPipe_chunk_relink;
+
+typedef struct {
     br_matrix34 matrix;
 } tPipe_phil_object;
 
@@ -416,6 +429,7 @@ typedef struct {
     br_vector3 *origin;
     br_vector3 *victim;
     tU32 time;
+    tU32 field_0xc;
 } tPipe_chunk_repulse_ray;
 
 typedef struct {
@@ -452,6 +466,248 @@ typedef struct {
 typedef struct {
     br_matrix34 m;
 } tPipe_chunk_end_shit_mine;
+
+typedef struct {
+    int field_0x0;
+    br_vector3 field_0x4;
+} tPipe_chunk_shit_mine;
+
+typedef struct {
+    int field_0x0;
+    int field_0x4;
+} tPipe_chunk_powerup;
+
+typedef struct {
+    int field_0x0;
+    int field_0x4;
+    tU32 field_0x8;
+} tPipe_chunk_groove_on_off;
+
+typedef struct {
+    int field_0x0;
+    tU16 field_0x4;
+} tPipe_chunk_funk_enable;
+
+typedef struct {
+    int field_0x0;
+    int field_0x4;
+    int field_0x8;
+    int field_0xc;
+    br_vector3 field_0x10;
+} tPipe_chunk_ped_pos;
+
+typedef struct {
+    int field_0x0;
+    int field_0x4;
+    br_vector3 field_0x8;
+} tPipe_chunk_napalm_bolt;
+
+typedef struct {
+    int field_0x0;
+    br_vector3 field_0x4;
+} tPipe_chunk_ped_dir;
+
+typedef struct {
+    int field_0x0;
+    br_matrix34 field_0x4;
+} tPipe_chunk_ped_physics;
+
+typedef struct {
+    int field_0x0;
+    tU32 field_0x4;
+} tPipe_chunk_frame_bound;
+
+typedef struct {
+    int field_0x0;
+    tU16 field_0x4;
+    tU16 field_0x6;
+    tU16 field_0x8;
+    tU16 field_0xa;
+} tPipe_chunk_drone_corner_pos;
+
+typedef struct {
+    int field_0x0;
+    int field_0x4;
+    tS16 field_0x8;
+} tPipe_chunk_flap;
+
+typedef struct {
+    int field_0x0;
+    int field_0x4;
+    tU8 field_0x8[4];
+} tPipe_chunk_model_mash;
+
+typedef struct {
+    int field_0x0;
+    br_vector3 field_0x4;
+} tPipe_chunk_explosion;
+
+typedef struct {
+    int field_0x0;
+} tPipe_chunk_non_car_creation;
+
+typedef struct {
+    int field_0x0;
+} tPipe_chunk_smash_decal;
+
+typedef struct {
+    int field_0x0;
+    br_matrix34 field_0x4;
+} tPipe_chunk_phil_object;
+
+typedef struct {
+    int field_0x0;
+    int field_0x4;
+    br_vector3 field_0x8;
+} tPipe_chunk_non_car_replay;
+
+typedef struct {
+    tU32 field_0x0;
+    tU8 pad[0x10];
+    tU16 field_0x14;
+} tPipe_chunk_smoke_column_replay;
+
+typedef struct {
+    int field_0x0;
+    int field_0x4;
+    int field_0x8;
+    int field_0xc;
+    int field_0x10;
+} tPipe_chunk_smash_texture_change_replay;
+
+typedef struct {
+    int field_0x0;
+    int field_0x4;
+    int field_0x8;
+    int field_0xc;
+} tPipe_chunk_remove_faces_replay;
+
+typedef struct {
+    int field_0x0;
+    tU8 field_0x4;
+    int field_0x8;
+    br_vector3 field_0xc;
+    br_vector3 field_0x18;
+} tPipe_chunk_extended_splash;
+
+typedef struct {
+    int field_0x0;
+    int field_0x4;
+} tPipe_chunk_damage;
+
+typedef struct {
+    int field_0x0;
+    tS16 field_0x4;
+    tU8 field_0x6;
+    tS8 field_0x7;
+} tPipe_chunk_ped_dismember;
+
+typedef struct {
+    int field_0x0;
+    int field_0x4;
+    int field_0x8;
+} tPipe_chunk_ped_fp_change;
+
+typedef struct {
+    int field_0x0;
+    tS16 field_0x4;
+    tS16 field_0x6;
+    tS16 field_0x8;
+    tS16 field_0xa;
+    int field_0xc;
+} tPipe_chunk_ped_model_change;
+
+typedef struct {
+    int field_0x0;
+    int field_0x4;
+    tU16 field_0x8;
+    tU16 field_0xa;
+} tPipe_chunk_drone_straight_pos;
+
+typedef struct {
+    int field_0x0;
+    int field_0x4;
+    int field_0x8;
+} tPipe_chunk_smash_model_change;
+
+typedef struct {
+    tU32 value;
+} tPipe_stack_word;
+
+typedef struct {
+    int field_0x0;
+    int field_0x4;
+    tU8 field_0x8[0x10];
+} tPipe_chunk_crush;
+
+typedef struct {
+    int field_0x0;
+    tU8 field_0x4[0x10];
+} tPipe_chunk_spark_replay;
+
+typedef struct {
+    int field_0x0;
+    tU8 field_0x4[0xc];
+    tU16 field_0x10;
+    int field_0x14;
+} tPipe_chunk_shrapnel_replay;
+
+typedef struct {
+    int field_0x0;
+    tU16 field_0x4;
+    tU16 field_0x6;
+    int field_0x8;
+} tPipe_chunk_prox_ray_replay;
+
+typedef struct {
+    int field_0x0;
+    int field_0x4;
+    int field_0x8;
+    int field_0xc;
+    int field_0x10;
+    br_vector3 field_0x14;
+} tPipe_chunk_groove_stop;
+
+typedef struct {
+    int field_0x0;
+    br_vector3 field_0x4;
+    tU8 field_0x10[0x24];
+    int field_0x34;
+    int field_0x38;
+    int field_0x3c;
+    tU8 field_0x40[4];
+    int field_0x44;
+    br_vector3 field_0x48;
+    int field_0x54;
+} tPipe_chunk_oil_spill;
+
+typedef struct {
+    int field_0x0;
+    int field_0x4;
+    int field_0x8;
+    int field_0xc;
+    int field_0x10;
+    br_vector3 field_0x14;
+    br_vector3 field_0x20;
+    br_vector3 field_0x2c;
+} tPipe_chunk_gib_shower;
+
+typedef struct {
+    int field_0x0;
+    tS16 field_0x4;
+    tS16 field_0x6;
+    tU8 field_0x8;
+    tU8 field_0x9;
+    tS16 field_0xa;
+    int field_0xc;
+    int field_0x10;
+    int field_0x14;
+    br_vector3 field_0x18;
+    br_vector3 field_0x24;
+    int field_0x30;
+    int field_0x34;
+    br_vector3 field_0x38;
+} tPipe_chunk_ped_move;
 
 typedef enum {
     ePipe_chunk_frame_finish = 0,

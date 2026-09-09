@@ -1340,15 +1340,12 @@ void C2_HOOK_FASTCALL ClearHeadup(int pIndex) {
 // FUNCTION: CARMA2_HW 0x00449650
 void C2_HOOK_FASTCALL ClearHeadupSlot(int pSlot_index) {
     int i;
-    tHeadup* the_headup;
 
     for (i = 0; i < CARPOCALYPSE2_ASIZE(gHeadups); i++) {
-        the_headup = &gHeadups[i];
-        if (the_headup->type != eHeadup_unused && the_headup->slot_index == pSlot_index) {
-            ClearHeadup(i);
+        if (gHeadups[i].type != eHeadup_unused && gHeadups[i].slot_index == pSlot_index) {
+            gHeadups[i].type = eHeadup_unused;
             return;
         }
-        the_headup++;
     }
 }
 
