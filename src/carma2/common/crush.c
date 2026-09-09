@@ -164,6 +164,9 @@ int gCount_queued_drone_crushes;
 // GLOBAL: CARMA2_HW 0x0067bad0
 int gCount_crush_detach_list;
 
+// GLOBAL: CARMA2_HW 0x0067be84
+tU32 gINT_0067be84;
+
 // GLOBAL: CARMA2_HW 0x0067bdfc
 int gINT_0067bdfc;
 

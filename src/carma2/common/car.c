@@ -2174,20 +2174,35 @@ void C2_HOOK_FASTCALL DrVector3RotateY(br_vector3* v, br_angle t) {
 
 // FUNCTION: CARMA2_HW 0x004f8dc0
 intptr_t C2_HOOK_CDECL ActorFunks(br_actor* pActor, void* pContext) {
-    tFunk_index_cbfn* funk_index_callback = pContext;
-    tUser_crush_data *user_crush_data = pActor->user;
+    tFunk_index_cbfn* funk_index_callback;
+    tUser_crush_data* user_crush_data;
+    tCar_crush_buffer_entry* crush_data;
     int i;
+    int funk_index;
 
-    if (user_crush_data == NULL || user_crush_data->crush_data == NULL || user_crush_data->crush_data->smashables == NULL) {
-        return 0;
-    }
-    for (i = 0; i < user_crush_data->crush_data->count_smashables; i++) {
-        int funk_index = user_crush_data->crush_data->smashables[i].funk;
-        if (funk_index >= 0) {
-            funk_index_callback(funk_index);
+    user_crush_data = pActor->user;
+    funk_index_callback = pContext;
+
+    if (user_crush_data != NULL) {
+        crush_data = user_crush_data->crush_data;
+        if (crush_data != NULL) {
+            if (crush_data->smashables != NULL) {
+                for (i = 0; i < crush_data->count_smashables; i++) {
+                    funk_index = crush_data->smashables[i].funk;
+                    if (funk_index >= 0) {
+                        funk_index_callback(funk_index);
+                    }
+                }
+            }
         }
     }
     return 0;
+}
+
+// FUNCTION: CARMA2_HW 0x0047b2b0
+void C2_HOOK_FASTCALL MasterDisableFunkotronic(int pFunk_index) {
+
+    gFunkotronics_array[pFunk_index].flags |= 0x2;
 }
 
 // FUNCTION: CARMA2_HW 0x0047b2e0

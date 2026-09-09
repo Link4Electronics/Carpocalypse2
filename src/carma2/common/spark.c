@@ -23,6 +23,32 @@
 #define CHARS2_TO_INT(A, B)         (10 * CHARS1_TO_INT(A) + CHARS1_TO_INT(B))
 #define CHARS3_TO_INT(A, B, C)      (10 * CHARS2_TO_INT(A, B) + CHARS1_TO_INT(C))
 #define CHARS4_TO_INT(A, B, C, D)   (10 * CHARS3_TO_INT(A, B, C) + CHARS1_TO_INT(D))
+
+typedef struct tFunk_record {           // stride 0x7c
+    tU8 field_0x0[0x40];
+    int funk_index;                     // 0x40
+    tU8 field_0x44[0x7c - 0x44];
+} tFunk_record;
+
+typedef struct tFunk_list {
+    tU8 field_0x0[0x38];
+    tU16 funk_count;                    // 0x38
+    tU16 field_0x3a;
+    tFunk_record* funk_records;         // 0x3c
+} tFunk_list;
+
+typedef struct tFunk_container {        /* br_actor->user of a funk-car burp with bit specs */
+    tU8 field_0x0[0x8];
+    tFunk_list* funk_list;              // 0x8
+} tFunk_container;
+
+typedef struct tCarFunks_master {       // assumed layout from FUNK data in car specs
+    tU8 field_0x0[0x270];
+    int count_0x270;
+    tCar_bit_spec bit_0x274[3];
+    int count_0x2b0;
+    tCar_bit_spec bit_0x2b4[3];
+} tCarFunks_master;
 // GLOBAL: CARMA2_HW 0x006b7840
 int gShade_list[16];
 
@@ -1944,12 +1970,61 @@ void C2_HOOK_FASTCALL RenderSmoke(br_pixelmap* pRender_screen, br_pixelmap* pDep
 
 // ActorFunks
 
+// FUNCTION: CARMA2_HW 0x004f8dc0
+intptr_t C2_HOOK_CDECL ActorFunks(br_actor* pActor, void* pCallback);
+void C2_HOOK_FASTCALL MasterDisableFunkotronic(int pFunk_index);
+void C2_HOOK_FASTCALL MasterEnableFunkotronic(int pFunk_index);
+
 // STUB: CARMA2_HW 0x004f8ca0
 void C2_HOOK_FASTCALL MasterDisableCarFunks(tCar_spec* pCar) {
 #ifndef CARPOCALYPSE2_MATCHING
     /* stub: no-op for Linux boot */
 #else
-    NOT_IMPLEMENTED();
+    int i;
+    int j;
+    int funk_index;
+    tCarFunks_master* funks = (tCarFunks_master*)*(void**)((char*)pCar + 0x18d4);
+    br_actor* hierarchy_root = *(br_actor**)((char*)pCar + 0xe0c);
+
+    DRActorEnumRecurse(hierarchy_root, (br_actor_enum_cbfn*)ActorFunks, (void*)MasterDisableFunkotronic);
+
+    for (i = 0; i < funks->count_0x270; i++) {
+        br_actor* bit_actor = funks->bit_0x274[i].field_0x0;
+
+        if (bit_actor->user != NULL) {
+            tFunk_list* funk_list = ((tFunk_container*)bit_actor->user)->funk_list;
+
+            if (funk_list != NULL) {
+                if (funk_list->funk_records != NULL) {
+                    for (j = 0; j < funk_list->funk_count; j++) {
+                        funk_index = funk_list->funk_records[j].funk_index;
+                        if (funk_index >= 0) {
+                            MasterDisableFunkotronic(funk_index);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    for (i = 0; i < funks->count_0x2b0; i++) {
+        br_actor* bit_actor = funks->bit_0x2b4[i].field_0x0;
+
+        if (bit_actor->user != NULL) {
+            tFunk_list* funk_list = ((tFunk_container*)bit_actor->user)->funk_list;
+
+            if (funk_list != NULL) {
+                if (funk_list->funk_records != NULL) {
+                    for (j = 0; j < funk_list->funk_count; j++) {
+                        funk_index = funk_list->funk_records[j].funk_index;
+                        if (funk_index >= 0) {
+                            MasterDisableFunkotronic(funk_index);
+                        }
+                    }
+                }
+            }
+        }
+    }
 #endif
 }
 
@@ -1958,7 +2033,51 @@ void C2_HOOK_FASTCALL MasterEnableCarFunks(tCar_spec* pCar) {
 #ifndef CARPOCALYPSE2_MATCHING
     /* stub: no-op for Linux boot */
 #else
-    NOT_IMPLEMENTED();
+    int i;
+    int j;
+    int funk_index;
+    tCarFunks_master* funks = (tCarFunks_master*)*(void**)((char*)pCar + 0x18d4);
+    br_actor* hierarchy_root = *(br_actor**)((char*)pCar + 0xe0c);
+
+    DRActorEnumRecurse(hierarchy_root, (br_actor_enum_cbfn*)ActorFunks, (void*)MasterEnableFunkotronic);
+
+    for (i = 0; i < funks->count_0x270; i++) {
+        br_actor* bit_actor = funks->bit_0x274[i].field_0x0;
+
+        if (bit_actor->user != NULL) {
+            tFunk_list* funk_list = ((tFunk_container*)bit_actor->user)->funk_list;
+
+            if (funk_list != NULL) {
+                if (funk_list->funk_records != NULL) {
+                    for (j = 0; j < funk_list->funk_count; j++) {
+                        funk_index = funk_list->funk_records[j].funk_index;
+                        if (funk_index >= 0) {
+                            MasterEnableFunkotronic(funk_index);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    for (i = 0; i < funks->count_0x2b0; i++) {
+        br_actor* bit_actor = funks->bit_0x2b4[i].field_0x0;
+
+        if (bit_actor->user != NULL) {
+            tFunk_list* funk_list = ((tFunk_container*)bit_actor->user)->funk_list;
+
+            if (funk_list != NULL) {
+                if (funk_list->funk_records != NULL) {
+                    for (j = 0; j < funk_list->funk_count; j++) {
+                        funk_index = funk_list->funk_records[j].funk_index;
+                        if (funk_index >= 0) {
+                            MasterEnableFunkotronic(funk_index);
+                        }
+                    }
+                }
+            }
+        }
+    }
 #endif
 }
 

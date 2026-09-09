@@ -14,6 +14,7 @@
 
 #include "c2_stdlib.h"
 #include "c2_math.h"
+#include "carpocalypse2_macros.h"
 // FUNCTION: CARMA2_HW 0x00433350
 tPhysics_object* C2_HOOK_FASTCALL DetachBit(tCar_spec* pCar, br_actor* pActor, br_bounds3* pBounds) {
 
@@ -30,15 +31,96 @@ tPhysics_object* C2_HOOK_FASTCALL SemiDetachBit(tCar_spec* pCar, br_actor* pActo
 
 // FUNCTION: CARMA2_HW 0x0042dbd0
 int C2_HOOK_FASTCALL GetSDBJointPosAndBounds(br_vector3* pP1, br_vector3* pP2, br_vector3* pP33, br_bounds3* pBounds, br_actor* pActor) {
+    tUser_crush_data* user;
+    br_model* model;
+    tCar_crush_buffer_entry* crush_data;
+    tCar_crush_detach_data* detach_data;
+    tCar_crush_flap_data* flap_data;
 
-    NOT_IMPLEMENTED();
+    user = pActor->user;
+    if (user == NULL) {
+        return 1;
+    }
+    model = user->models[0];
+    if (model == NULL) {
+        return 1;
+    }
+    crush_data = user->crush_data;
+    if (crush_data == NULL) {
+        return 1;
+    }
+    detach_data = crush_data->detach_data;
+    if (detach_data == NULL) {
+        return 1;
+    }
+    DRBoundsCopy(pBounds, &model->bounds);
+    flap_data = crush_data->flap_data;
+    if (flap_data != NULL) {
+        pP1->v[0] = model->vertices[flap_data->hinge0].p.v[0];
+        pP1->v[1] = model->vertices[flap_data->hinge0].p.v[1];
+        pP1->v[2] = model->vertices[flap_data->hinge0].p.v[2];
+        pP2->v[0] = model->vertices[flap_data->hinge1].p.v[0];
+        pP2->v[1] = model->vertices[flap_data->hinge1].p.v[1];
+        pP2->v[2] = model->vertices[flap_data->hinge1].p.v[2];
+        pP33->v[0] = model->vertices[flap_data->hinge2].p.v[0];
+        pP33->v[1] = model->vertices[flap_data->hinge2].p.v[1];
+        pP33->v[2] = model->vertices[flap_data->hinge2].p.v[2];
+    } else {
+        pP1->v[0] = model->vertices[detach_data->field_0x30].p.v[0];
+        pP1->v[1] = model->vertices[detach_data->field_0x30].p.v[1];
+        pP1->v[2] = model->vertices[detach_data->field_0x30].p.v[2];
+        pP2->v[0] = 0.f;
+        pP2->v[1] = 0.f;
+        pP2->v[2] = 0.f;
+        pP33->v[0] = 0.f;
+        pP33->v[1] = 0.f;
+        pP33->v[2] = 0.f;
+    }
     return 0;
 }
 
+typedef struct tNet_message_chunk_semi_detach_bit {
+    int ID;
+    tU8 field_0x4;
+    undefined field_0x5[3];
+    tU32 field_0x8;
+    tCompressed_vector3 field_0xc;
+    tCompressed_vector3 field_0x12;
+    tCompressed_vector3 field_0x18;
+    tCompressed_vector3 field_0x1e;
+    tCompressed_vector3 field_0x24;
+    tU16 field_0x2a;
+} tNet_message_chunk_semi_detach_bit;
+
 // FUNCTION: CARMA2_HW 0x0042dab0
 void C2_HOOK_FASTCALL SendSemiDetachBit(tCar_spec* pCar, br_actor* pActor, float pArg3, undefined4* pArg4) {
+    tNet_message* message;
+    br_vector3 p1;
+    br_vector3 p2;
+    br_vector3 p3;
+    br_bounds3 bnds;
+    tNet_message_chunk_semi_detach_bit* semi;
+    tUser_crush_data* user;
 
-    NOT_IMPLEMENTED();
+    message = NetBuildGuaranteedMessage(0x24, 0);
+    semi = (tNet_message_chunk_semi_detach_bit*)&message->guaranteed.contents.detach_bit;
+    semi->ID = NetPlayerFromCar(pCar)->ID;
+    user = pActor->user;
+    semi->field_0x4 = user->crush_data->id;
+    semi->field_0x8 = gPHIL_last_physics_tick + 120;
+    if (!GetSDBJointPosAndBounds(&p1, &p2, &p3, &bnds, pActor)) {
+        CompressVector3(&semi->field_0xc, &p1, -10.f, 10.f);
+        CompressVector3(&semi->field_0x12, &p2, -10.f, 10.f);
+        CompressVector3(&semi->field_0x18, &p3, -10.f, 10.f);
+        CompressVector3(&semi->field_0x1e, &bnds.min, -10.f, 10.f);
+        CompressVector3(&semi->field_0x24, &bnds.max, -10.f, 10.f);
+        semi->field_0x2a = DRScalarToU16(pArg3, 0.f, 40.f);
+        if (pArg4) {
+            SendGuaranteedMessageToPlayer(gCurrent_net_game, message, pArg4[0x9], 0);
+        } else {
+            NetGuaranteedSendMessageToEverybody(gCurrent_net_game, message, 0);
+        }
+    }
 }
 
 int C2_HOOK_FASTCALL BitIsInBentPartOfCar(br_actor* pActor, float pArg2, float pArg3) {
@@ -166,8 +248,56 @@ void C2_HOOK_FASTCALL DoDetaching(void) {
 
 // FUNCTION: CARMA2_HW 0x0042d7e0
 void C2_HOOK_FASTCALL SetBitForDetachment(br_actor* pActor, tCar_spec* pCar, float pArg3, int pArg4) {
+    int i;
+    tUser_crush_data* user;
+    tCar_crush_buffer_entry* crush_data;
+    tCar_crush_detach_data* detach_data;
+    tCar_crush_spec* car_crush_spec;
 
-    NOT_IMPLEMENTED();
+    if (gCount_crush_detach_list == CARPOCALYPSE2_ASIZE(gCrush_detach_list)) {
+        return;
+    }
+    if (gNet_mode == eNet_mode_none || gNet_mode == eNet_mode_host) {
+        if (pActor == NULL) {
+            return;
+        }
+        user = pActor->user;
+        if (user == NULL) {
+            return;
+        }
+        crush_data = user->crush_data;
+        if (crush_data == NULL) {
+            return;
+        }
+        detach_data = crush_data->detach_data;
+        if (detach_data == NULL) {
+            return;
+        }
+        for (i = 0; i < gCount_crush_detach_list; i++) {
+            if (gCrush_detach_list[i].actor == pActor) {
+                return;
+            }
+        }
+        car_crush_spec = pCar->car_crush_spec;
+        for (i = 0; i < car_crush_spec->field_0x270; i++) {
+            if (car_crush_spec->field_0x274[i].field_0x0 == pActor) {
+                return;
+            }
+        }
+        gCrush_detach_list[gCount_crush_detach_list].actor = pActor;
+        gCrush_detach_list[gCount_crush_detach_list].car = pCar;
+        gCrush_detach_list[gCount_crush_detach_list].field_0x8 = pArg3;
+        if (pArg4) {
+            gCrush_detach_list[gCount_crush_detach_list].time = gPHIL_last_physics_tick;
+        } else {
+            gCrush_detach_list[gCount_crush_detach_list].time = gPHIL_last_physics_tick > gINT_0067be84 + 0x3e8 ? gPHIL_last_physics_tick : gINT_0067be84 + 0x3e8;
+        }
+        if (gCrush_detach_list[gCount_crush_detach_list].time > gINT_0067be84) {
+            gINT_0067be84 = gCrush_detach_list[gCount_crush_detach_list].time;
+        }
+        gCrush_detach_list[gCount_crush_detach_list].field_0x10 = (detach_data->type == eDetachType_fully_detachable);
+        gCount_crush_detach_list = gCount_crush_detach_list + 1;
+    }
 }
 
 // FUNCTION: CARMA2_HW 0x0042d950

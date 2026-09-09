@@ -34,6 +34,7 @@ extern tCrush_net_reattach_bit_list_item gNet_crush_reattach_bit_list[8];
 extern tCrush_detach_list_item gCrush_detach_list[16];
 extern tCar_damge_crush_list_item gCar_damage_crush_list[8];
 extern int gCount_crush_detach_list;
+extern tU32 gINT_0067be84;
 extern int gCount_net_crush_detach_list;
 extern int gCount_net_crush_semi_detach_bit_list;
 extern int gCount_net_crush_full_detach_bit_list;

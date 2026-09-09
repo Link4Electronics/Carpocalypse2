@@ -368,6 +368,13 @@ int C2_HOOK_FASTCALL NetGuaranteedSendMessageToEverybody(tNet_game_details* pNet
     NOT_IMPLEMENTED();
     return 0;
 }
+
+// FUNCTION: CARMA2_HW 0x004a5e20
+int C2_HOOK_FASTCALL SendGuaranteedMessageToPlayer(tNet_game_details* pNet_game, tNet_message* pMessage, undefined4 pPlayer, undefined4 pArg4) {
+
+    NOT_IMPLEMENTED();
+    return 0;
+}
 // FUNCTION: CARMA2_HW 0x0049d210
 int C2_HOOK_FASTCALL NetInitialise(void) {
     int i;
