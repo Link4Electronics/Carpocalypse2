@@ -530,7 +530,7 @@ tPhysics_joint* C2_HOOK_FASTCALL ClonePhysicsJoint(const tPhysics_joint* pJoint,
 // FIXME: unsure about these helpers' real names; addressed by CARMA2_HW offset.
 void C2_HOOK_FASTCALL PHILRemoveFromParentChain(tPhysics_object* pObject);
 void C2_HOOK_FASTCALL PHILDetachObjectState(tPhysics_object* pObject);
-void C2_HOOK_FASTCALL PHILQueueDetachBit(void* pBit, int pA, int pB, int pC);
+int C2_HOOK_FASTCALL PHILQueueDetachBit(tPhysics_object* pObject, void* pA, const br_vector3* pB, const br_vector3* pC);
 void C2_HOOK_FASTCALL PHILSendDetachBit(int pFlags, void* pBit);
 
 void C2_HOOK_FASTCALL PhysicsAddObject(tPhysics_object* pParent, tPhysics_object* pChild);

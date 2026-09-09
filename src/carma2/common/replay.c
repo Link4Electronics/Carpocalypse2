@@ -302,7 +302,13 @@ int C2_HOOK_FASTCALL ARReplayIsReallyPaused(void) {
 // FUNCTION: CARMA2_HW 0x004c80b0
 void C2_HOOK_FASTCALL PipeSingleGrooveStop(int pGroove_index, br_matrix34* pMatrix, int pPath_interrupt, int pObject_interrupt, float pPath_resumption, float pObject_resumption) {
 
-    NOT_IMPLEMENTED();
+    gUNK_0069410c = *(tU32*)&pPath_resumption;
+    ARDoSingleVariedSession(0xd, pGroove_index, 5,
+        4, 0, pObject_interrupt,
+        4, 4, pObject_interrupt,
+        4, 8, *(tU32*)&pPath_resumption,
+        4, 0xc, *(tU32*)&pPath_resumption,
+        0x30, 0x10, pMatrix);
 }
 
 // ActualActionReplayHeadups

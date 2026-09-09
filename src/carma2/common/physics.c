@@ -7,6 +7,7 @@
 #include "loading.h"
 #include "netgame.h"
 #include "opponent.h"
+#include "piping.h"
 #include "platform.h"
 #include "powerups.h"
 #include "utility.h"
@@ -443,6 +444,9 @@ tPhysics_object** gReduced_object_list;
 // GLOBAL: CARMA2_HW 0x006940ac
 int gINT_006940ac;
 
+// GLOBAL: CARMA2_HW 0x00692dc8
+int gINT_00692dc8;
+
 // GLOBAL: CARMA2_HW 0x006923ec
 tPhysics_object* gPHIL_queued_objects_for_removal[1];
 
@@ -474,19 +478,51 @@ void C2_HOOK_FASTCALL PHILRemoveFromParentChain(tPhysics_object* pObject) {
 // FUNCTION: CARMA2_HW 0x004b9750
 void C2_HOOK_FASTCALL PHILDetachObjectState(tPhysics_object* pObject) {
 
-    NOT_IMPLEMENTED();
+    pObject->field_0x218 = 0;
+    ((void (C2_HOOK_FASTCALL *)(tPhysics_object*, float))MoveJointedObject)(pObject, 0.f);
+    gINT_00692dc8 = 1;
 }
 
 // FUNCTION: CARMA2_HW 0x004b62e0
-void C2_HOOK_FASTCALL PHILQueueDetachBit(void* pBit, int pA, int pB, int pC) {
+int C2_HOOK_FASTCALL PHILQueueDetachBit(tPhysics_object* pObject, void* pA, const br_vector3* pB, const br_vector3* pC) {
+    tQueued_object_info* object_info;
+    int result;
 
-    NOT_IMPLEMENTED();
+    if (gPHIL_enabled) {
+        return 0;
+    }
+    if (gPHIL_munging_objects) {
+        gPHIL_object_added = 1;
+    }
+    result = PHILAddObject(pObject);
+    if (result == 0) {
+        if (pA != NULL && !gPHIL_enabled) {
+            if (pObject->field_0x239 == 2) {
+                tQueued_object_info* info = pObject->field_0x240;
+                memcpy(&info->field_0x30, pA, sizeof(br_matrix34));
+                info->flags |= 0x4;
+            } else if (pObject->field_0x240 != NULL) {
+                object_info = pObject->field_0x240;
+                if (object_info->field_0x8 != 1) {
+                    gPHIL_object_added = 0;
+                    return 4;
+                }
+                memcpy((char*)object_info->object->actor + 0x2c, pA, sizeof(br_matrix34));
+            } else {
+                gPHIL_object_added = 0;
+                return 3;
+            }
+        }
+        result = PHILMakeObjectActive(pObject, pB, pC, 0);
+    }
+    gPHIL_object_added = 0;
+    return result;
 }
 
 // FUNCTION: CARMA2_HW 0x004c80f0
 void C2_HOOK_FASTCALL PHILSendDetachBit(int pFlags, void* pBit) {
 
-    NOT_IMPLEMENTED();
+    ARDoSingleVariedSession(0xe, pFlags, 2, 4, 0, (uintptr_t)pBit, 0x30, 4, (uintptr_t)((tU8*)pBit + 0x2c));
 }
 
 
