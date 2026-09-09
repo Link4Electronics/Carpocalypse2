@@ -22,6 +22,7 @@
 #include "netgame.h"
 #include "network.h"
 #include "opponent.h"
+#include "pedestrn.h"
 #include "physics.h"
 #include "piping.h"
 #include "polyfont.h"
@@ -2746,22 +2747,85 @@ void C2_HOOK_FASTCALL ResetMan(void) {
     NOT_IMPLEMENTED();
 }
 
+#pragma optimize("y", off)
 // FUNCTION: CARMA2_HW 0x004d6240
 void C2_HOOK_FASTCALL NextPedCam(void) {
+    int count = gPed_count;
+    int start;
+    int i;
 
-    NOT_IMPLEMENTED();
+    if (count == 0) {
+        return;
+    }
+    i = gSelected_ped;
+    start = i;
+    do {
+        i += 1;
+        gSelected_ped = i;
+        if (i >= count) {
+            i = i - i;
+            gSelected_ped = i;
+        }
+    } while (!(gPedestrian_array[i].flags & 1) && start != i);
 }
+#pragma optimize("", on)
 
 // FUNCTION: CARMA2_HW 0x004d6290
 void C2_HOOK_FASTCALL PrevPedCam(void) {
+    int count;
+    int i;
+    int start;
 
-    NOT_IMPLEMENTED();
+    count = gPed_count;
+    if (count == 0) {
+        return;
+    }
+    i = gSelected_ped;
+    start = i;
+    do {
+        i -= 1;
+        gSelected_ped = i;
+        if (i < 0) {
+            i = count - 1;
+            gSelected_ped = i;
+        }
+    } while (!(gPedestrian_array[i].flags & 1) && start != i);
 }
+
+// GLOBAL: CARMA2_HW 0x0075bc78
+br_vector3 gPredist_point;
 
 // FUNCTION: CARMA2_HW 0x004d62e0
 void C2_HOOK_FASTCALL FindNearestPed(void) {
+    int count;
+    int i;
+    int best;
+    float predist;
+    float dist;
+    tPedestrian* p;
 
-    NOT_IMPLEMENTED();
+    count = gPed_count;
+    if (count == 0) {
+        return;
+    }
+    i = 0;
+    predist = 10000000.0f;
+    if (i < count) {
+        best = *(int*)&predist;
+        do {
+            p = &gPedestrian_array[i];
+            dist = (p->pos.v[0] - gPredist_point.v[0]) * (p->pos.v[0] - gPredist_point.v[0])
+                 + (p->pos.v[1] - gPredist_point.v[1]) * (p->pos.v[1] - gPredist_point.v[1])
+                 + (p->pos.v[2] - gPredist_point.v[2]) * (p->pos.v[2] - gPredist_point.v[2]);
+            if (dist < predist) {
+                predist = dist;
+                best = i;
+            }
+            i += 1;
+        } while (i < count);
+    }
+    gSelected_ped = best;
+    gPed_nearness = 1;
 }
 
 // FUNCTION: CARMA2_HW 0x00444590

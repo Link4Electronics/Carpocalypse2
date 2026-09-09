@@ -420,14 +420,76 @@ int C2_HOOK_FASTCALL BitObjectIsSufficientlyOutsideCarObjectToDetach(tPhysics_ob
 
 // FUNCTION: CARMA2_HW 0x0042f4e0
 void C2_HOOK_FASTCALL FullyDetachBit(tCar_spec* pCar, tPhysics_object* pObject) {
+    void* bit;
+    void* b2;
+    void* b3;
+    void* state;
 
-    NOT_IMPLEMENTED();
+    bit = pObject->actor;
+    if (bit == NULL) {
+        return;
+    }
+    b2 = *(void**)((tU8*)bit + 0x60);
+    if (b2 == NULL) {
+        return;
+    }
+    b3 = *(void**)((tU8*)b2 + 0x8);
+    if (b3 == NULL) {
+        return;
+    }
+    state = *(void**)((tU8*)b3 + 0x34);
+    if (state == NULL) {
+        return;
+    }
+    if (*(int*)((tU8*)state + 0x28) != 1) {
+        return;
+    }
+
+    PHILRemoveFromParentChain(pObject);
+    if (pObject->physics_joint1 != NULL) {
+        *(int*)pObject->physics_joint1 = 0;
+        pObject->physics_joint1 = NULL;
+    }
+    if (gPHIL_doing_physics != 0) {
+        PHILDetachObjectState(pCar->collision_info);
+    }
+    pObject->flags |= 0x100;
+
+    b2 = *(void**)((tU8*)bit + 0x5c);
+    if (gNum_active_non_cars != 0x63) {
+        *(int*)((tU8*)b2 + 0xc) = gDetached_bit_driver;
+        gActive_non_car_list[gNum_active_non_cars] = (tNon_car_spec*)b2;
+        gNum_active_non_cars += 1;
+        PHILQueueDetachBit(*(void**)((tU8*)b2 + 0x8), 0, 0, 0);
+    }
+    PHILSendDetachBit(*(tU16*)((tU8*)b2 + 0x80), bit);
+    *(tU8*)((tU8*)(*(void**)((tU8*)bit + 0x14)) + 0x3) = 0x21;
+    *(int*)((tU8*)state + 0x28) = 2;
+    pCar->use_shell_model = 0;
 }
 
 // FUNCTION: CARMA2_HW 0x004314b0
 void C2_HOOK_FASTCALL SendFullyDetachBit(tCar_spec* pCar, tPhysics_object* pObject) {
+    tNet_message* message;
+    br_vector3 p1;
+    br_vector3 p2;
+    br_vector3 p3;
+    br_bounds3 bnds;
+    tNet_message_chunk_semi_detach_bit* chunk;
 
-    NOT_IMPLEMENTED();
+    message = NetBuildGuaranteedMessage(0x25, 0);
+    chunk = (tNet_message_chunk_semi_detach_bit*)&message->guaranteed.contents.detach_bit;
+    chunk->ID = NetPlayerFromCar(pCar)->ID;
+    chunk->field_0x4 = pObject->uid;
+    chunk->field_0x8 = gPHIL_last_physics_tick + 120;
+    if (!GetSDBJointPosAndBounds(&p1, &p2, &p3, &bnds, pObject->actor)) {
+        CompressVector3(&chunk->field_0xc, &p1, -10.f, 10.f);
+        CompressVector3(&chunk->field_0x12, &p2, -10.f, 10.f);
+        CompressVector3(&chunk->field_0x18, &p3, -10.f, 10.f);
+        CompressVector3(&chunk->field_0x1e, &bnds.min, -10.f, 10.f);
+        CompressVector3(&chunk->field_0x24, &bnds.max, -10.f, 10.f);
+        NetGuaranteedSendMessageToEverybody(gCurrent_net_game, message, 0);
+    }
 }
 
 // FUNCTION: CARMA2_HW 0x0042f3d0

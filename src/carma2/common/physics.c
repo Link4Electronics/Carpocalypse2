@@ -452,6 +452,43 @@ tWorld_callback_active_passive_cbfn* gPHIL_original_activate_passive;
 // GLOBAL: CARMA2_HW 0x006923e8
 tPhysics_callbacks* gPHIL_callbacks;
 
+// FUNCTION: CARMA2_HW 0x004c6410
+void C2_HOOK_FASTCALL PHILRemoveFromParentChain(tPhysics_object* pObject) {
+    tPhysics_object* parent;
+    tPhysics_object* walk;
+
+    parent = pObject->parent;
+    walk = parent->child;
+    if (walk == pObject) {
+        parent->child = pObject->next;
+    } else {
+        while (walk->next != pObject) {
+            walk = walk->next;
+        }
+        walk->next = pObject->next;
+    }
+    pObject->parent = NULL;
+    pObject->next = NULL;
+}
+
+// FUNCTION: CARMA2_HW 0x004b9750
+void C2_HOOK_FASTCALL PHILDetachObjectState(tPhysics_object* pObject) {
+
+    NOT_IMPLEMENTED();
+}
+
+// FUNCTION: CARMA2_HW 0x004b62e0
+void C2_HOOK_FASTCALL PHILQueueDetachBit(void* pBit, int pA, int pB, int pC) {
+
+    NOT_IMPLEMENTED();
+}
+
+// FUNCTION: CARMA2_HW 0x004c80f0
+void C2_HOOK_FASTCALL PHILSendDetachBit(int pFlags, void* pBit) {
+
+    NOT_IMPLEMENTED();
+}
+
 
 // FUNCTION: CARMA2_HW 0x004b5990
 void C2_HOOK_FASTCALL DoPhysicsError(tPhysicsError pError, const char* pMessage) {

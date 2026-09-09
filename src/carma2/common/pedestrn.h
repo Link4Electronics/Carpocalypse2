@@ -558,6 +558,8 @@ extern int gPed_count;
 
 extern int gPed_nearness;
 
+extern int gSelected_ped;
+
 extern int gCount_killed_peds;
 
 extern int gTotal_count_smash_peds;
