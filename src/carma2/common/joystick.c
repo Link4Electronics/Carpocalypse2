@@ -26,14 +26,24 @@
 #include <string.h>
 extern void C2_HOOK_FASTCALL ChangeHeadupFont(int pHeadup_index, int pFont);
 extern void C2_HOOK_FASTCALL ChangeHeadupText(int pHeadup_index, char* pText);
+extern void C2_HOOK_FASTCALL FUN_0045a0c0(void);
 // GLOBAL: CARMA2_HW 0x00595f88
 int gJoystick_index = -1;
+
+// GLOBAL: CARMA2_HW 0x00595f8c
+int gUNK_00595f8c;
+
+// GLOBAL: CARMA2_HW 0x00596310
+int gUNK_00596310;
 
 // GLOBAL: CARMA2_HW 0x00595f90
 float gJoystick_x_steering = 1.f;
 
 // GLOBAL: CARMA2_HW 0x00595f94
 float gJoystick_y_throttle = 1.f;
+
+// GLOBAL: CARMA2_HW 0x00595f9c
+int gUNK_00595f9c;
 
 
 // GLOBAL: CARMA2_HW 0x00655e5c
@@ -91,42 +101,100 @@ void C2_HOOK_FASTCALL InitJoysticks(void) {
 // FUNCTION: CARMA2_HW 0x0045c8d0
 float C2_HOOK_FASTCALL GetJoystickX(void) {
 
-    NOT_IMPLEMENTED();
+    tButtonJoystickInfo* joystick_info;
+
+    joystick_info = PDGetCurrentJoystickData();
+    if (joystick_info != NULL) {
+        return joystick_info->field_0xd8;
+    }
+    return gJoystick_x_steering;
 }
 
 // FUNCTION: CARMA2_HW 0x0045c8f0
 float C2_HOOK_FASTCALL GetJoystickY(void) {
 
-    NOT_IMPLEMENTED();
+    tButtonJoystickInfo* joystick_info;
+
+    joystick_info = PDGetCurrentJoystickData();
+    if (joystick_info != NULL) {
+        return joystick_info->field_0xdc;
+    }
+    return gJoystick_y_throttle;
 }
 
 // FUNCTION: CARMA2_HW 0x0045c7f0
 int C2_HOOK_FASTCALL GetJoystickFBBGain(void) {
 
-    NOT_IMPLEMENTED();
+    tButtonJoystickInfo* joystick_info;
+
+    joystick_info = PDGetCurrentJoystickData();
+    if (joystick_info != NULL) {
+        return joystick_info->field_0xe4;
+    }
+    return gUNK_00596310;
 }
 
 // FUNCTION: CARMA2_HW 0x0045c810
 void C2_HOOK_FASTCALL SetJoystickX(float pValue) {
+    tButtonJoystickInfo* joystick;
 
-    NOT_IMPLEMENTED();
+    joystick = PDGetCurrentJoystickData();
+    if (joystick != NULL) {
+        joystick->field_0xd8 = pValue;
+        if (joystick->field_0xd8 > 2.0) {
+            joystick->field_0xd8 = 2.0f;
+        }
+        if (joystick->field_0xd8 < 0.0) {
+            joystick->field_0xd8 = 0.0f;
+        }
+        gJoystick_x_steering = joystick->field_0xd8;
+    }
 }
 
 // FUNCTION: CARMA2_HW 0x0045c870
 void C2_HOOK_FASTCALL SetJoystickY(float pValue) {
+    tButtonJoystickInfo* joystick;
 
-    NOT_IMPLEMENTED();
+    joystick = PDGetCurrentJoystickData();
+    if (joystick != NULL) {
+        joystick->field_0xdc = pValue;
+        if (joystick->field_0xdc > 2.0) {
+            joystick->field_0xdc = 2.0f;
+        }
+        if (joystick->field_0xdc < 0.0) {
+            joystick->field_0xdc = 0.0f;
+        }
+        gJoystick_y_throttle = joystick->field_0xdc;
+    }
 }
 
+// FUNCTION: CARMA2_HW 0x0045c7b0
 void C2_HOOK_FASTCALL SetJoystickFFBGain(int pValue) {
 
-    NOT_IMPLEMENTED();
+    tButtonJoystickInfo* data;
+
+    data = PDGetCurrentJoystickData();
+    if (data != NULL) {
+        if (pValue < 0) {
+            pValue = 0;
+        }
+        if (pValue > 100) {
+            pValue = 100;
+        }
+        data->field_0xe4 = pValue;
+        gUNK_00596310 = pValue;
+        SetAllFFBEffectsGain(pValue);
+    }
 }
 
 // FUNCTION: CARMA2_HW 0x0045c570
 void C2_HOOK_FASTCALL SetJoystickDPadEnabled(int pEnabled) {
+    tButtonJoystickInfo* joystick_info;
 
-    NOT_IMPLEMENTED();
+    joystick_info = PDGetCurrentJoystickData();
+    if (joystick_info != NULL) {
+        joystick_info->field_0xe0 = pEnabled;
+    }
 }
 
 void C2_HOOK_FASTCALL Joystick_BackupSettings(void) {
@@ -147,8 +215,13 @@ void C2_HOOK_FASTCALL EnableJoysticks(void) {
 
 // FUNCTION: CARMA2_HW 0x0045bd70
 void C2_HOOK_FASTCALL DisableJoysticks(void) {
+    tButtonJoystickInfo* joystick_info;
 
-    NOT_IMPLEMENTED();
+    joystick_info = PDGetCurrentJoystickData();
+    if (joystick_info != NULL) {
+        joystick_info->field_0xe8 = 0;
+    }
+    FUN_0045a0c0();
 }
 
 void C2_HOOK_FASTCALL FUN_0045b0a0(tHeadup_text_buffer* pText_buffer) {

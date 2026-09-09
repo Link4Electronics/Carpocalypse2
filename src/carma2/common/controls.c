@@ -2679,14 +2679,28 @@ void C2_HOOK_FASTCALL ToggleJoystickHeadup(void) {
 
 // FUNCTION: CARMA2_HW 0x00511280
 void C2_HOOK_FASTCALL ToggleJoystickYAxis(void) {
+    char buffer[256];
 
-    NOT_IMPLEMENTED();
+    if (ToggleJoystickYInvert()) {
+        sprintf(buffer, "Y Axis Enabled");
+    } else {
+        sprintf(buffer, "Y Axis Disabled");
+    }
+    NewTextHeadupSlot(4, 0, 3000, -4, buffer);
 }
 
 // FUNCTION: CARMA2_HW 0x00511330
 void C2_HOOK_FASTCALL ToggleJoystickDPad(void) {
+    char buffer[256];
 
-    NOT_IMPLEMENTED();
+    if (PDIsJoystickDPadEnabled()) {
+        SetJoystickDPadEnabled(0);
+        sprintf(buffer, "D-Pad Mode Disabled");
+    } else {
+        SetJoystickDPadEnabled(1);
+        sprintf(buffer, "D-Pad Mode Enabled");
+    }
+    NewTextHeadupSlot(4, 0, 3000, -4, buffer);
 }
 
 // FUNCTION: CARMA2_HW 0x00511270
@@ -2697,14 +2711,24 @@ void C2_HOOK_FASTCALL CycleJoystick(void) {
 
 // FUNCTION: CARMA2_HW 0x005112d0
 void C2_HOOK_FASTCALL ToggleJoystickEnable(void) {
+    char buffer[256];
 
-    NOT_IMPLEMENTED();
+    if (HasCurrentJoystick()) {
+        FUN_0045a0c0();
+        sprintf(buffer, "Joystick Disabled");
+    } else {
+        FUN_0045a070();
+        sprintf(buffer, "Joystick Enabled");
+    }
+    NewTextHeadupSlot(4, 0, 3000, -4, buffer);
 }
 
 // FUNCTION: CARMA2_HW 0x00511390
 void C2_HOOK_FASTCALL IncreaseJoystickFFB(void) {
+    char buffer[256];
 
-    NOT_IMPLEMENTED();
+    sprintf(buffer, "FFB Gain Set to %d%%", IncreaseJoystickFFBGain());
+    NewTextHeadupSlot(4, 0, 3000, -4, buffer);
 }
 
 // FUNCTION: CARMA2_HW 0x00447330

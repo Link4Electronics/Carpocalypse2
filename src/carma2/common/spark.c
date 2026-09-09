@@ -716,23 +716,23 @@ void C2_HOOK_FASTCALL ForEveryCarMaterial(tCar_spec* pCar_spec, tMaterialMaybeUp
 // FUNCTION: CARMA2_HW 0x004fed50
 intptr_t C2_HOOK_FASTCALL UnBlendifyMaterialCB(br_material* pMaterial) {
 
-    if (GetBlendificatiousnessOfMaterial(pMaterial) == 100) {
-        return 0;
+    if (GetBlendificatiousnessOfMaterial(pMaterial) != 100) {
+        BlendifyMaterial(pMaterial, 100);
+        BrMaterialUpdate(pMaterial, BR_MATU_ALL);
+        return 1;
     }
-    BlendifyMaterial(pMaterial, 100);
-    BrMaterialUpdate(pMaterial, BR_MATU_ALL);
-    return 1;
+    return 0;
 }
 
 // FUNCTION: CARMA2_HW 0x004fed00
 intptr_t C2_HOOK_FASTCALL BlendifyMaterialCB(br_material* pMaterial) {
 
-    if (GetBlendificatiousnessOfMaterial(pMaterial) == 25) {
-        return 0;
+    if (GetBlendificatiousnessOfMaterial(pMaterial) != 25) {
+        BlendifyMaterial(pMaterial, 25);
+        BrMaterialUpdate(pMaterial, BR_MATU_ALL);
+        return 1;
     }
-    BlendifyMaterial(pMaterial, 25);
-    BrMaterialUpdate(pMaterial, BR_MATU_ALL);
-    return 1;
+    return 0;
 }
 
 // FUNCTION: CARMA2_HW 0x004fca70
@@ -2334,22 +2334,16 @@ int C2_HOOK_FASTCALL GetSmokeOn(void) {
 
 // FUNCTION: CARMA2_HW 0x004fecf0
 void C2_HOOK_FASTCALL BlendifyCar(tCar_spec* pCar) {
-#ifndef CARPOCALYPSE2_MATCHING
+
     ForEveryCarMaterial(pCar, BlendifyMaterialCB, 1);
-#else
-    NOT_IMPLEMENTED();
-#endif
 }
 
 // UnBlendifyMaterialCB
 
 // FUNCTION: CARMA2_HW 0x004fed40
 void C2_HOOK_FASTCALL UnBlendifyCar(tCar_spec* pCar_spec) {
-#ifndef CARPOCALYPSE2_MATCHING
+
     ForEveryCarMaterial(pCar_spec, UnBlendifyMaterialCB, 1);
-#else
-    NOT_IMPLEMENTED();
-#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004fed90

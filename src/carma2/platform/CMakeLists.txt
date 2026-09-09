@@ -18,6 +18,7 @@ if(CARPOCALYPSE2_PLATFORM_WIN32)
         win32/win32_sound.h
         win32/win32_dinput.c
         win32/win32_dinput.h
+        win32/win32_pdinput.c
         win32/win32_windows.c
         win32/win32_windows.h
         win32/win32.c
@@ -134,6 +135,7 @@ if(CARPOCALYPSE2_MATCHING)
     # No optimizations for win32/win32_sound.c
     set_property(SOURCE
         "${CMAKE_CURRENT_SOURCE_DIR}/win32/win32_dinput.c"
+        "${CMAKE_CURRENT_SOURCE_DIR}/win32/win32_pdinput.c"
         "${CMAKE_CURRENT_SOURCE_DIR}/win32/win32_ssdx.c"
         "${CMAKE_CURRENT_SOURCE_DIR}/win32/win32.c"
         "${CMAKE_CURRENT_SOURCE_DIR}/win32/win32net.c"

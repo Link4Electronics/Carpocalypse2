@@ -187,7 +187,7 @@ void C2_HOOK_FASTCALL ShadowMode(void);
 
 void C2_HOOK_FASTCALL Darken(tU8* pPtr, unsigned int pDarken_amount);
 
-void C2_HOOK_FASTCALL SetFadedPalette(int pDegree);
+void C2_HOOK_FASTCALL SetFadedPalette(unsigned int pDegree);
 
 void C2_HOOK_FASTCALL FadePaletteUp(void);
 

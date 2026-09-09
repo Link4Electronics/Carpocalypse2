@@ -548,7 +548,7 @@ extern tCar_spec* gCar_ptr;
 
 extern tU32 gTrigger_time;
 
-extern undefined4 gUNK_0069410c;
+extern volatile undefined4 gUNK_0069410c;
 
 extern tPipe_smudge_data* gSmudge_space;
 

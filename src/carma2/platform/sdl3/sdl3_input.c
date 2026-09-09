@@ -361,11 +361,28 @@ int C2_HOOK_FASTCALL PDGetJoy2Y(void) {
 void C2_HOOK_FASTCALL PDInitJoysticks(void) {
 }
 
+void C2_HOOK_FASTCALL FUN_0045a0c0(void) {
+}
+
 void C2_HOOK_FASTCALL PDPlayFFBEffect(const char* effectName) {
 }
 
 int C2_HOOK_FASTCALL PDIsJoystickDPadEnabled(void) {
     return 0;
+}
+
+int C2_HOOK_FASTCALL ToggleJoystickYInvert(void) {
+    return 0;
+}
+
+void C2_HOOK_FASTCALL SetAllFFBEffectsGain(int pGain) {
+}
+
+int C2_HOOK_FASTCALL IncreaseJoystickFFBGain(void) {
+    return 0;
+}
+
+void C2_HOOK_FASTCALL FUN_0045a070(void) {
 }
 
 tButtonJoystickInfo* C2_HOOK_FASTCALL PDGetCurrentJoystickData(void) {

@@ -381,14 +381,6 @@ size_t C2_HOOK_FASTCALL GetCurrentJoystickCountButtons(void) {
     return gDirectInputJoystickInfos[gJoystick_index].count_buttons;
 }
 
-// FUNCTION: CARMA2_HW 0x00459f80
-tButtonJoystickInfo* C2_HOOK_FASTCALL PDGetCurrentJoystickData(void) {
-    if (gJoystick_index == -1) {
-        return NULL;
-    }
-    return gDirectInputJoystickInfos[gJoystick_index].data;
-}
-
 // FUNCTION: CARMA2_HW 0x0045c370
 void C2_HOOK_FASTCALL CollectJoystickButtonInfo(tButtonJoystickInfo* pInfo) {
     unsigned int i;
@@ -419,11 +411,51 @@ void C2_HOOK_FASTCALL CollectJoystickButtonInfos(void) {
     AttachJoystickButtonInfos(sizeof(tButtonJoystickInfo), (void(C2_HOOK_FASTCALL*)(void*))CollectJoystickButtonInfo);
 }
 
-// FUNCTION: CARMA2_HW 0x00458040
-void C2_HOOK_FASTCALL UnloadDinputFFBEffectAtIndex(int index) {
-    IDirectInputEffect* effect = gDirectInputEffects[index];
-    if (effect != NULL) {
-        IDirectInputEffect_Unload(effect);
+// FUNCTION: CARMA2_HW 0x00457b70
+void C2_HOOK_FASTCALL SetAllFFBEffectsGain(int pGain) {
+    DIPROPDWORD dipdw;
+    int i;
+
+    dipdw.diph.dwSize = sizeof(DIPROPDWORD);
+    dipdw.diph.dwHeaderSize = sizeof(DIPROPHEADER);
+    dipdw.diph.dwObj = 0;
+    dipdw.diph.dwHow = DIPH_DEVICE;
+    if (gForceFeedbackAvailable && gJoystick_index != -1) {
+        if (pGain > 100) {
+            dipdw.dwData = 10000;
+        } else if (pGain < 0) {
+            dipdw.dwData = 0;
+        } else {
+            dipdw.dwData = pGain * 100;
+        }
+        for (i = 0; i < gCount_joystick_effects; i++) {
+            UnloadDinputFFBEffectAtIndex(i);
+        }
+        IDirectInputDevice_SetProperty((IDirectInputDeviceA *)gDirectInputJoystickDevices[gJoystick_index], DIPROP_FFGAIN, &dipdw.diph);
+        for (i = 0; i < gCount_joystick_effects; i++) {
+            DownloadDinputFFBEffectAtIndex(i);
+        }
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x0045c780
+int C2_HOOK_FASTCALL IncreaseJoystickFFBGain(void) {
+    gUNK_00596310 += 25;
+    if (gUNK_00596310 > 100) {
+        gUNK_00596310 = 0;
+    }
+    SetAllFFBEffectsGain(gUNK_00596310);
+    return gUNK_00596310;
+}
+
+// FUNCTION: CARMA2_HW 0x0045a070
+void C2_HOOK_FASTCALL FUN_0045a070(void) {
+
+    if (gCountEnumeratedJoystickDinputDevices != 0) {
+        gJoystick_index = (gUNK_00595f8c == -1) ? 0 : gUNK_00595f8c;
+    }
+    if (gDirectInputJoystickDevices[gJoystick_index] != NULL && (gJoystickFFB & (1 << gJoystick_index))) {
+        gForceFeedbackAvailable = 1;
     }
 }
 
@@ -1339,6 +1371,17 @@ void C2_HOOK_FASTCALL PDInitJoysticks(void) {
     ResetForceFeedback();
 }
 
+// FUNCTION: CARMA2_HW 0x0045a0c0
+void C2_HOOK_FASTCALL FUN_0045a0c0(void) {
+    int old_index;
+
+    old_index = gJoystick_index;
+    gJoystick_index = -1;
+    gUNK_00595f8c = old_index;
+    *(volatile int*)&gCountEnumeratedJoystickDinputDevices;
+    gForceFeedbackAvailable = 0;
+}
+
 void C2_HOOK_FASTCALL PDPlayFFBEffectIndex(int index) {
     IDirectInputEffect* effect;
 
@@ -1379,8 +1422,57 @@ int C2_HOOK_FASTCALL PDIsJoystickDPadEnabled(void) {
     tButtonJoystickInfo* joystick_info;
 
     joystick_info = PDGetCurrentJoystickData();
-    if (joystick_info == NULL) {
-        return 0;
+    if (joystick_info != NULL) {
+        return joystick_info->field_0xe0;
     }
-    return joystick_info->field_0xe0;
+    return 0;
+}
+
+// FUNCTION: CARMA2_HW 0x0045c460
+int C2_HOOK_FASTCALL ToggleJoystickYInvert(void) {
+
+    tButtonJoystickInfo* data;
+
+    data = PDGetCurrentJoystickData();
+    if (data != NULL) {
+        data->field_0xd4 = (data->field_0xd4 == 0);
+        return (gUNK_00595f9c = data->field_0xd4);
+    }
+    return 0;
+}
+
+// FUNCTION: CARMA2_HW 0x0045c490
+void C2_HOOK_FASTCALL SetJoystickXAxis(float pValue) {
+
+    tButtonJoystickInfo* joystick;
+
+    joystick = PDGetCurrentJoystickData();
+    if (joystick != NULL) {
+        joystick->field_0xd8 = pValue;
+        if (joystick->field_0xd8 > 2.0) {
+            joystick->field_0xd8 = 2.0f;
+        }
+        if (joystick->field_0xd8 < 0.0) {
+            joystick->field_0xd8 = 0.0f;
+        }
+        gJoystick_x_steering = joystick->field_0xd8;
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x0045c4f0
+void C2_HOOK_FASTCALL SetJoystickYAxis(float pValue) {
+
+    tButtonJoystickInfo* joystick;
+
+    joystick = PDGetCurrentJoystickData();
+    if (joystick != NULL) {
+        joystick->field_0xdc = pValue;
+        if (joystick->field_0xdc > 2.0) {
+            joystick->field_0xdc = 2.0f;
+        }
+        if (joystick->field_0xdc < 0.0) {
+            joystick->field_0xdc = 0.0f;
+        }
+        gJoystick_y_throttle = joystick->field_0xdc;
+    }
 }

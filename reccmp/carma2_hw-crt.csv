@@ -262,7 +262,7 @@ address,type,name
 0x661938,global,gFunk_type_names
 0x6619b4,global,broadcast
 0x67be98,global,gTransient_bitmaps
-0x67c348,global,gOrig_render_palette
+0x6923ac,global,gOrig_render_palette
 0x67c34c,global,gNoTransients
 0x67c358,global,gDim_amount
 0x67c3f0,global,gInventory_cycling

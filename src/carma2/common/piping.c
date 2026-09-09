@@ -58,7 +58,8 @@ tCar_spec* gCar_ptr;
 tU32 gTrigger_time;
 
 // GLOBAL: CARMA2_HW 0x0069410c
-undefined4 gUNK_0069410c;
+volatile undefined4 gUNK_0069410c;
+
 
 // GLOBAL: CARMA2_HW 0x00676908
 tU8* gPipe_buffer_start = NULL;
@@ -361,17 +362,16 @@ void C2_HOOK_FASTCALL ARAddDataToSession(int pType, uintptr_t pOwner, void *pDat
         return;
     }
     new_size = gLocal_buffer_size + pSize + sizeof(void*);
-    if (new_size <= 15000) {
-        return;
+    if ((unsigned int)new_size < 15000U) {
+        ((tPipe_chunk*)gLocal_buffer)->count += 1;
+        *((uintptr_t*)gMr_chunky) = pOwner;
+        gMr_chunky += sizeof(uintptr_t);
+        if (pSize != 0) {
+            memcpy(gMr_chunky, pData, pSize);
+        }
+        gMr_chunky += pSize;
+        gLocal_buffer_size = new_size;
     }
-    ((tPipe_chunk*)gLocal_buffer)->count += 1;
-    *((uintptr_t*)gMr_chunky) = pOwner;
-    gMr_chunky += sizeof(uintptr_t);
-    if (pSize != 0) {
-        memcpy(gMr_chunky, pData, pSize);
-    }
-    gMr_chunky += pSize;
-    gLocal_buffer_size = new_size;
 }
 
 int C2_HOOK_FASTCALL LengthOfChunk(void* pChunk, int pType) {
@@ -503,7 +503,9 @@ void C2_HOOK_FASTCALL InitLastDamageArrayEtc(void) {
 // FUNCTION: CARMA2_HW 0x004c8600
 void C2_HOOK_FASTCALL PipeSingleSkidAdjustment(int pSkid_num, br_matrix34* pMatrix, br_material* pMaterial) {
 
-    NOT_IMPLEMENTED();
+    ARDoSingleVariedSession(0x16, pSkid_num, 2,
+        0x30, 0, pMatrix,
+        4, 0x30, pMaterial);
 }
 
 void C2_HOOK_FASTCALL AddNonCarToPipingSession(tPhysics_object* pObject, br_actor* pActor) {
@@ -1237,7 +1239,15 @@ void C2_HOOK_FASTCALL PipeSingleShrapnelShower(uintptr_t pId, undefined4 pArg2, 
 // FUNCTION: CARMA2_HW 0x004c8ce0
 void C2_HOOK_FASTCALL PipeSingleGibShower(uintptr_t pId, undefined4 pArg2, undefined4 pArg3, undefined4 pArg4, undefined4 pArg5, br_vector3* pArg6, br_vector3* pArg7, br_vector3* pArg8) {
 
-    NOT_IMPLEMENTED();
+    gUNK_0069410c = pArg4;
+    ARDoSingleVariedSession(0x31, pId, 7,
+        4, 8, pArg2,
+        4, 4, pArg3,
+        4, 0xc, gUNK_0069410c,
+        4, 0, pArg5,
+        0xc, 0x10, pArg6,
+        0xc, 0x1c, pArg7,
+        0xc, 0x28, pArg8);
 }
 
 // FUNCTION: CARMA2_HW 0x004c8d40

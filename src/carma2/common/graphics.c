@@ -352,9 +352,17 @@ void C2_HOOK_FASTCALL SetIntegerMapRenders(void) {
 
 // FUNCTION: CARMA2_HW 0x004b5330
 void C2_HOOK_FASTCALL ResetPalette(void) {
+    br_pixelmap* pal = gRender_palette;
 
-    InitPaletteAnimate();
-    DRSetPalette(gRender_palette);
+    gLast_palette_change = 0;
+    gPalette_index = 0;
+    ((br_int_32*)pal->pixels)[0] = 0;
+    memcpy(gCurrent_palette_pixels, pal->pixels, 4 * 256);
+    gPalette_changed = 0;
+    if (!gFaded_palette) {
+        PDSetPalette(pal);
+    }
+    gPalette_munged |= (pal != gRender_palette);
 }
 
 // FUNCTION: CARMA2_HW 0x004b5770
@@ -600,9 +608,16 @@ void C2_HOOK_FASTCALL ResetLollipopQueue(void) {
 
 // FUNCTION: CARMA2_HW 0x004b52b0
 void C2_HOOK_FASTCALL RevertPalette(void) {
+    br_pixelmap* pal;
 
-    memcpy(gRender_palette->pixels, gOrig_render_palette->pixels, 256 * sizeof(br_colour));
-    DRSetPalette3(gRender_palette, 1);
+    memcpy(gRender_palette->pixels, gOrig_render_palette->pixels, 4 * 256);
+    pal = gRender_palette;
+    memcpy(gCurrent_palette_pixels, pal->pixels, 4 * 256);
+    gPalette_changed = 0;
+    if (!gFaded_palette) {
+        PDSetPalette(pal);
+    }
+    gPalette_munged |= (pal != gRender_palette);
 }
 
 // FUNCTION: CARMA2_HW 0x004e9680

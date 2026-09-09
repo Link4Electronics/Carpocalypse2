@@ -6,8 +6,11 @@
 #include "carpocalypse2_types.h"
 
 extern int gJoystick_index;
+extern int gUNK_00595f8c;
+extern int gUNK_00596310;
 extern float gJoystick_x_steering;
 extern float gJoystick_y_throttle;
+extern int gUNK_00595f9c;
 
 
 extern int C2_HOOK_FASTCALL LoadJoystickPreferences(void);
@@ -49,6 +52,14 @@ void C2_HOOK_FASTCALL SetJoystickY(float pValue);
 void C2_HOOK_FASTCALL SetJoystickFFBGain(int pValue);
 
 void C2_HOOK_FASTCALL SetJoystickDPadEnabled(int pEnabled);
+
+int C2_HOOK_FASTCALL ToggleJoystickYInvert(void);
+
+void C2_HOOK_FASTCALL SetAllFFBEffectsGain(int pGain);
+
+int C2_HOOK_FASTCALL IncreaseJoystickFFBGain(void);
+
+void C2_HOOK_FASTCALL FUN_0045a070(void);
 
 void C2_HOOK_FASTCALL Joystick_BackupSettings(void);
 

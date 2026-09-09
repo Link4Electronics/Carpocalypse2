@@ -21,6 +21,7 @@ extern void C2_HOOK_FASTCALL ProcessTintedPoly(int pIndex);
 extern void C2_HOOK_FASTCALL RenderTintedPolys(void);
 extern tU32 C2_HOOK_FASTCALL PDGetTotalTime(void);
 extern br_pixelmap* C2_HOOK_FASTCALL LoadPixelmap(const char* pPath_name);
+extern void C2_HOOK_FASTCALL SetFadedPalette(unsigned int pDegree);
 extern br_pixelmap* gBack_screen;
 extern int gMouse_in_use;
 extern tTintedPoly gTintedPolys[10];
@@ -39,14 +40,19 @@ int gNoTransients;
 char* gCurrent_palette_pixels;
 // GLOBAL: CARMA2_HW 0x006a27a8
 int gSaved_table_count;
+// GLOBAL: CARMA2_HW 0x006923c0
 int gPalette_munged;
+// GLOBAL: CARMA2_HW 0x006923a4
 tU32 gLast_palette_change;
+// GLOBAL: CARMA2_HW 0x006923b4
 int gPalette_index;
 // GLOBAL: CARMA2_HW 0x006a2488
 extern tSaved_table gSaved_shade_tables[100];
+// GLOBAL: CARMA2_HW 0x0074cf04
 int gPalette_changed;
 // GLOBAL: CARMA2_HW 0x0074a674
 br_pixelmap* gRender_palette;
+// GLOBAL: CARMA2_HW 0x006923ac
 br_pixelmap* gOrig_render_palette;
 br_pixelmap* gFlic_palette;
 // GLOBAL: CARMA2_HW 0x0074a678
@@ -59,8 +65,6 @@ br_pixelmap* gScratch_palette;
 int gFaded_palette;
 // GLOBAL: CARMA2_HW 0x0079ec14
 int gDim_amount;
-// GLOBAL: CARMA2_HW 0x006923b4
-int gPalette_index;
 tTransient_bm gTransient_bitmaps[50];
 int gCursor_tinted_top = -1;
 int gCursor_tinted_left = -1;
@@ -71,8 +75,6 @@ int gCursor_tinted_center = -1;
 // GLOBAL: CARMA2_HW 0x0068be20
 br_pixelmap* gCurrent_splash;
 
-// GLOBAL: CARMA2_HW 0x0074cf04
-// GLOBAL: CARMA2_HW 0x006923c0
 void C2_HOOK_FASTCALL DeallocateAllTransientBitmaps(void) {
     int i;
 
@@ -115,30 +117,42 @@ void C2_HOOK_FASTCALL RemoveTransientBitmaps(int pGraphically_remove_them) {
 #include "carpocalypse2_types.h"
 
 
-// FUNCTION: CARMA2_HW 0x004b55f0
-void C2_HOOK_FASTCALL Darken(tU8* pPtr, unsigned int pDarken_amount) {
+static void C2_HOOK_FASTCALL DarkenPaletteByte(tU8* pPtr, unsigned int pDarken_amount) {
+    *pPtr = (*pPtr * pDarken_amount) / 256;
+}
 
-    *pPtr = (pDarken_amount * *pPtr) / 256;
+void C2_HOOK_FASTCALL DRSetPalette2(br_pixelmap* pThe_palette, int pSet_current_palette) {
+    ((br_int_32*)pThe_palette->pixels)[0] = 0;
+    if (pSet_current_palette) {
+        memcpy(gCurrent_palette_pixels, pThe_palette->pixels, 256 * sizeof(br_colour));
+    }
+    gPalette_changed = 0;
+    if (!gFaded_palette) {
+        PDSetPalette(pThe_palette);
+    }
+    gPalette_munged |= (pThe_palette != gRender_palette);
 }
 
 // FUNCTION: CARMA2_HW 0x004b5390
-void C2_HOOK_FASTCALL SetFadedPalette(int pDegree) {
+void C2_HOOK_FASTCALL SetFadedPalette(unsigned int pDegree) {
     int j;
 
     memcpy(gScratch_pixels, gCurrent_palette->pixels, 4 * 256);
-    for (j = 0; j < 256; j++) {
-        Darken((tU8*)&gScratch_pixels[4 * j + 0], pDegree);
-        Darken((tU8*)&gScratch_pixels[4 * j + 1], pDegree);
-        Darken((tU8*)&gScratch_pixels[4 * j + 2], pDegree);
-        Darken((tU8*)&gScratch_pixels[4 * j + 3], pDegree);
+    for (j = 0; j < 4 * 256; j += 4) {
+        DarkenPaletteByte((tU8*)gScratch_pixels + j, pDegree);
+        DarkenPaletteByte((tU8*)gScratch_pixels + j + 1, pDegree);
+        DarkenPaletteByte((tU8*)gScratch_pixels + j + 2, pDegree);
+        DarkenPaletteByte((tU8*)gScratch_pixels + j + 3, pDegree);
     }
     DRSetPalette2(gScratch_palette, 0);
 }
-// FUNCTION: CARMA2_HW 0x004b5470
-void C2_HOOK_FASTCALL FadePaletteUp(void) {
+
+// FUNCTION: CARMA2_HW 0x004b55f0
+void C2_HOOK_FASTCALL Darken(void) {
     int i;
     int start_time;
     int the_time;
+    br_pixelmap* pal;
 
     if (gFaded_palette) {
         gFaded_palette = 0;
@@ -151,7 +165,43 @@ void C2_HOOK_FASTCALL FadePaletteUp(void) {
             i = (the_time * 256) / 500;
             SetFadedPalette(i);
         }
-        DRSetPalette(gCurrent_palette);
+        pal = gCurrent_palette;
+        *((br_int_32*)pal->pixels) = 0;
+        memcpy(gCurrent_palette_pixels, pal->pixels, 4 * 256);
+        gPalette_changed = 0;
+        if (!gFaded_palette) {
+            PDSetPalette(pal);
+        }
+        gPalette_munged |= (pal != gRender_palette);
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x004b5470
+void C2_HOOK_FASTCALL FadePaletteUp(void) {
+    int i;
+    int start_time;
+    int the_time;
+    br_pixelmap* pal;
+
+    if (gFaded_palette) {
+        gFaded_palette = 0;
+        start_time = PDGetTotalTime();
+        while (1) {
+            the_time = PDGetTotalTime() - start_time;
+            if (the_time >= 500) {
+                break;
+            }
+            i = (the_time * 256) / 500;
+            SetFadedPalette(i);
+        }
+        pal = gCurrent_palette;
+        *((br_int_32*)pal->pixels) = 0;
+        memcpy(gCurrent_palette_pixels, pal->pixels, 4 * 256);
+        gPalette_changed = 0;
+        if (!gFaded_palette) {
+            PDSetPalette(pal);
+        }
+        gPalette_munged |= (pal != gRender_palette);
     }
 }
 
@@ -546,29 +596,19 @@ void C2_HOOK_FASTCALL DRSetPalette3(br_pixelmap* pThe_palette, int pSet_current_
     if (!gFaded_palette) {
         PDSetPalette(pThe_palette);
     }
-    if (pThe_palette != gRender_palette) {
-        gPalette_munged |= 0x1;
-    }
-}
-
-void C2_HOOK_FASTCALL DRSetPalette2(br_pixelmap* pThe_palette, int pSet_current_palette) {
-    ((br_int_32*)pThe_palette->pixels)[0] = 0;
-    if (pSet_current_palette) {
-        memcpy(gCurrent_palette_pixels, pThe_palette->pixels, 256 * sizeof(br_colour));
-    }
-    gPalette_changed = 0;
-    if (!gFaded_palette) {
-        PDSetPalette(pThe_palette);
-    }
-    if (pThe_palette != gRender_palette) {
-        gPalette_munged |= 0x1;
-    }
+    gPalette_munged |= (pThe_palette != gRender_palette);
 }
 
 // FUNCTION: CARMA2_HW 0x004b5030
 void C2_HOOK_FASTCALL DRSetPalette(br_pixelmap* pThe_palette) {
 
-    DRSetPalette2(pThe_palette, 1);
+    ((br_int_32*)pThe_palette->pixels)[0] = 0;
+    memcpy(gCurrent_palette_pixels, pThe_palette->pixels, 4 * 256);
+    gPalette_changed = 0;
+    if (!gFaded_palette) {
+        PDSetPalette(pThe_palette);
+    }
+    gPalette_munged |= (pThe_palette != gRender_palette);
 }
 
 
