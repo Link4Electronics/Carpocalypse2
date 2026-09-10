@@ -747,8 +747,16 @@ void C2_HOOK_FASTCALL GoingBackToRaceFromInterface(void) {
 
 // FUNCTION: CARMA2_HW 0x0049bcb0
 void C2_HOOK_FASTCALL SendGameplayToHost(tNet_gameplay_mess pMess, int pParam_1, int pParam_2, int pParam_3, int pParam_4) {
+    if (gNet_mode == 3) {
+        tNet_message* message = NetBuildGuaranteedMessage(0x1b, 0);
 
-    NOT_IMPLEMENTED();
+        *(int *)((tU8 *)message + 0x24) = pParam_2;
+        *(int *)((tU8 *)message + 0x1c) = pMess;
+        *(int *)((tU8 *)message + 0x20) = pParam_1;
+        *(int *)((tU8 *)message + 0x28) = pParam_3;
+        *(int *)((tU8 *)message + 0x2c) = pParam_4;
+        NetGuaranteedSendMessageToHost(gCurrent_net_game, message, 0);
+    }
 }
 // NumberOfOpponentsLeft
 

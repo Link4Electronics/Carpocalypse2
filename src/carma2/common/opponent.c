@@ -50,6 +50,9 @@ tU32 gNext_grudge_reduction;
 // GLOBAL: CARMA2_HW 0x00691738
 int gFirst_frame;
 
+// GLOBAL: CARMA2_HW 0x00761a44
+tU32 gOppo_junction_table;
+
 // GLOBAL: CARMA2_HW 0x00691724
 int gGrudge_reduction_per_period;
 
@@ -2686,15 +2689,47 @@ int C2_HOOK_FASTCALL GetOpponentsFirstSection(const tOpponent_spec* pOpponent_sp
 
 // FUNCTION: CARMA2_HW 0x004aedf0
 tS16 C2_HOOK_FASTCALL GetOpponentsSectionMaxSpeed(tOpponent_spec* pOpponent_spec, tS16 pSection, int pTowards_finish) {
-
-    NOT_IMPLEMENTED();
+    if (pSection >= 20000) {
+        int sections = pOpponent_spec->nnext_sections;
+        int s = pSection - 20000;
+        if (sections > s) {
+            tS16 idx = *(tS16 *)((tU8 *)pOpponent_spec + (tS32)pSection * 4 - 0x13800);
+            tU8 rt_dir = *(tU8 *)((tU8 *)pOpponent_spec + (tS32)pSection * 4 - 0x137fe);
+            tU8* tab = (tU8 *)gOppo_junction_table + (idx * 5 * 4) + 6 + (rt_dir == pTowards_finish);
+            return *tab;
+        }
+    }
+    if (pSection >= 15000) {
+        return 0xff;
+    }
+    if (pSection == 10000) {
+        return *(tU8 *)((tU8 *)pOpponent_spec + 0x172 + pTowards_finish);
+    }
+    DoNotDprintf_opponent("WARNING - GetOpponentsSectionMaxSpeed() - section not found in next_section array for opponent %s", (tU8 *)pOpponent_spec->car_spec + 0xec);
+    PDEnterDebugger("WARNING - GetOpponentsSectionMaxSpeed()");
     return 0;
 }
 
 // FUNCTION: CARMA2_HW 0x004aed50
 tS16 C2_HOOK_FASTCALL GetOpponentsSectionMinSpeed(tOpponent_spec* pOpponent_spec, tS16 pSection, int pTowards_finish) {
-
-    NOT_IMPLEMENTED();
+    if (pSection >= 20000) {
+        int sections = pOpponent_spec->nnext_sections;
+        int s = pSection - 20000;
+        if (sections > s) {
+            tS16 idx = *(tS16 *)((tU8 *)pOpponent_spec + (tS32)pSection * 4 - 0x13800);
+            tU8 rt_dir = *(tU8 *)((tU8 *)pOpponent_spec + (tS32)pSection * 4 - 0x137fe);
+            tU8* tab = (tU8 *)gOppo_junction_table + (idx * 5 * 4) + 4 + (rt_dir == pTowards_finish);
+            return *tab;
+        }
+    }
+    if (pSection >= 15000) {
+        return 0;
+    }
+    if (pSection == 10000) {
+        return *(tU8 *)((tU8 *)pOpponent_spec + 0x170 + pTowards_finish);
+    }
+    DoNotDprintf_opponent("WARNING - GetOpponentsSectionMinSpeed() - section not found in next_section array for opponent %s", (tU8 *)pOpponent_spec->car_spec + 0xec);
+    PDEnterDebugger("WARNING - GetOpponentsSectionMinSpeed()");
     return 0;
 }
 
@@ -2706,8 +2741,21 @@ int C2_HOOK_FASTCALL RematerialiseOpponentOnThisSection(tOpponent_spec* pOpponen
 
 // FUNCTION: CARMA2_HW 0x004aece0
 float C2_HOOK_FASTCALL GetOpponentsSectionWidth(const tOpponent_spec* pOpponent_spec, tS16 pSection) {
-
-    NOT_IMPLEMENTED();
+    if (pSection >= 20000) {
+        int sections = pOpponent_spec->nnext_sections;
+        int s = pSection - 20000;
+        if (sections > s) {
+            tS16 idx = *(tS16 *)((tU8 *)pOpponent_spec + (tS32)pSection * 4 - 0x13800);
+            return ((float *)gOppo_junction_table)[idx * 5 + 2];
+        }
+    }
+    if (pSection >= 15000) {
+        return 0.5f;
+    }
+    if (pSection == 10000) {
+        return *(float *)((tU8 *)pOpponent_spec + 0x174);
+    }
+    return ((float *)gOppo_junction_table)[(tS32)pSection * 5 + 2];
 }
 // DoNotDprintf
 

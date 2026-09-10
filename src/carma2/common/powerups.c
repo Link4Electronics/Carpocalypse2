@@ -16,6 +16,7 @@
 #include "input.h"
 #include "loading.h"
 #include "network.h"
+#include "opponent.h"
 #include "pedestrn.h"
 #include "physics.h"
 #include "piping.h"
@@ -1805,8 +1806,13 @@ void C2_HOOK_FASTCALL ResetPedExplode(tPowerup* powerup, tCar_spec* car) {
 
 // FUNCTION: CARMA2_HW 0x004dc860
 void C2_HOOK_FASTCALL ResetInvulnerability(tPowerup* powerup, tCar_spec* car) {
-
-    NOT_IMPLEMENTED();
+    if (gNet_mode) {
+        if (NetPlayerFromCar(car)->field_0x80 != 0) {
+            return;
+        }
+    }
+    *(int *)((tU8 *)car + 0x1b4) = 0;
+    *(int *)((tU8 *)car + 0x1b8) = 0;
 }
 
 // FUNCTION: CARMA2_HW 0x004dc8d0
@@ -1825,10 +1831,16 @@ void C2_HOOK_FASTCALL UnfreezeTimer(tPowerup* powerup, tCar_spec* car) {
     }
 }
 
+void C2_HOOK_FASTCALL FUN_0045c760(void);
+
 // FUNCTION: CARMA2_HW 0x004de5d0
 void C2_HOOK_FASTCALL ResetEngineFactor(tPowerup* powerup, tCar_spec* car) {
+    float f = 1.0f;
 
-    NOT_IMPLEMENTED();
+    FUN_0045c760();
+    car->field_0x4d4 = f;
+    car->grip_multiplier = f;
+    ((void (C2_HOOK_FAKE_THISCALL *)(tCar_spec*, float, float, float, float, float))SetCarSuspGiveAndHeight)(car, f, f, f, 0.0f, 0.0f);
 }
 
 // FUNCTION: CARMA2_HW 0x004de600
@@ -1843,10 +1855,32 @@ void C2_HOOK_FASTCALL PukeDrugsBackUp(tPowerup* powerup, tCar_spec* car) {
     NOT_IMPLEMENTED();
 }
 
+// GLOBAL: CARMA2_HW 0x00762430
+int gOpponent_specs_used;
+
+// GLOBAL: CARMA2_HW 0x00763084
+tOpponent_selector_entry gOpponent_selector_entries[16];
+
 // FUNCTION: CARMA2_HW 0x004de6b0
 void C2_HOOK_FASTCALL ResetOpponentsSpeed(tPowerup* powerup, tCar_spec* car) {
+    int count = gOpponent_specs_used;
+    int i;
 
-    NOT_IMPLEMENTED();
+    for (i = 0; i < count; i++) {
+        if (gOpponent_selector_entries[i].type == 0x1d) {
+            break;
+        }
+    }
+    if (i < count) {
+        tCar_spec* opp_car = gOpponent_selector_entries[i].car_spec;
+        float f = 1.0f;
+
+        FUN_0045c760();
+        opp_car->field_0x4d4 = f;
+        opp_car->grip_multiplier = f;
+        SetCarSuspGiveAndHeight(opp_car, opp_car, f, f, f, 0.0f, 0.0f);
+    }
+    gOpponent_speed_factor = 1.0f;
 }
 
 // FUNCTION: CARMA2_HW 0x004de710

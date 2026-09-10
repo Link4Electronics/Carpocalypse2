@@ -3295,6 +3295,13 @@ typedef struct {
 } tOpponent_spec;
 
 typedef struct {
+    int type;
+    undefined4 field_0x4;
+    undefined4 field_0x8;
+    tCar_spec* car_spec;
+} tOpponent_selector_entry;
+
+typedef struct {
     int number_of_opponents;
     int number_of_cops;
     int number_of_path_nodes;

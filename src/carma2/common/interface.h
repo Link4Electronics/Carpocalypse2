@@ -89,7 +89,7 @@ extern int C2_HOOK_FASTCALL ToggleTyping(tFrontend_spec* pFrontend);
 
 // NetworkJoinMenuInfunc
 
-// StopAllThatJoinyStuffThisInstant
+// NetDisposeGameDetails
 
 // NetworkJoinMenuOutfunc
 

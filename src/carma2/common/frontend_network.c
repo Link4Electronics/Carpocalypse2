@@ -101,8 +101,18 @@ int C2_HOOK_FASTCALL NetworkJoinMenuInfunc(tFrontend_spec* pFrontend) {
 
 // FUNCTION: CARMA2_HW 0x00468260
 int C2_HOOK_FASTCALL NetworkJoinMenuOutfunc(tFrontend_spec* pFrontend) {
+    int i;
+    int bound;
+    (void)pFrontend;
 
-    StopAllThatJoinyStuffThisInstant();
+    NetEndJoinList();
+    bound = gLast_graph_sel;
+    for (i = 0; i < bound; i++) {
+        if (gGames_to_join[i].game != NULL) {
+            NetDisposeGameDetails(gGames_to_join[i].game);
+            gGames_to_join[i].game = NULL;
+        }
+    }
     return 0;
 }
 
@@ -413,8 +423,17 @@ int C2_HOOK_FASTCALL NetRaceDn(tFrontend_spec* pFrontend) {
 
 // FUNCTION: CARMA2_HW 0x00469280
 int C2_HOOK_FASTCALL NetCancel(tFrontend_spec* pFrontend) {
+    int i;
 
-    StopAllThatJoinyStuffThisInstant();
+    NetEndJoinList();
+    for (i = 0; i < gLast_graph_sel; i++) {
+        tNet_game_details* game = gGames_to_join[i].game;
+
+        if (game != NULL) {
+            NetDisposeGameDetails(game);
+            gGames_to_join[i].game = NULL;
+        }
+    }
     ShutdownNetIfRequired();
     gNet_mode = eNet_mode_none;
     LoadRaces(gRace_list, &gNumber_of_races, -1);
@@ -477,12 +496,20 @@ int C2_HOOK_FASTCALL DoMultiplayerStartStuff(tNet_mode pNet_mode) {
 }
 
 int C2_HOOK_FASTCALL NetworkJoinGoAhead(tFrontend_spec* pFrontend) {
+    int i;
 
     ClearAlwaysTyping();
     if (gLast_graph_sel < 0) {
         return 0;
     }
-    StopAllThatJoinyStuffThisInstant();
+    for (i = 0; i < gLast_graph_sel; i++) {
+        tNet_game_details* game = gGames_to_join[i].game;
+
+        if (game != NULL) {
+            NetDisposeGameDetails(game);
+            gGames_to_join[i].game = NULL;
+        }
+    }
     SaveOptions();
     gGame_to_join = gGames_to_join[gLast_graph_sel].game;
     if (DoMultiplayerStartStuff(gFrontend_net_mode) != 0) {

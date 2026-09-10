@@ -317,8 +317,6 @@ extern void C2_HOOK_FASTCALL NetEndJoinList(void);
 
 extern void C2_HOOK_FASTCALL NetDisposeGameDetails(tNet_game_details* pDetails);
 
-extern void C2_HOOK_FASTCALL StopAllThatJoinyStuffThisInstant(void);
-
 extern tNet_game_details* C2_HOOK_FASTCALL NetHostGame(tNet_game_type pNet_type, tNet_game_options* pOptions, int pRace_index, const char* pHost_name, int pCar_index);
 
 extern int C2_HOOK_FASTCALL NetJoinGame(tNet_game_details *pGame_details,char *pPlayer_name,int pCar_index);

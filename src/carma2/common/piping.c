@@ -101,6 +101,9 @@ tU8* gPipe_buffer_phys_end = NULL;
 // GLOBAL: CARMA2_HW 0x006768c4
 tU8* gPipe_buffer_working_end = NULL;
 
+// GLOBAL: CARMA2_HW 0x006768c8
+tU8* gPipe_buffer_end_marker = NULL;
+
 // GLOBAL: CARMA2_HW 0x006940d4
 tPipe_smudge_data* gSmudge_space;
 
@@ -752,9 +755,92 @@ int C2_HOOK_FASTCALL CheckCar(tPipe_chunk* pChunk_ptr, int pChunk_count, tU32 pT
 }
 
 // FUNCTION: CARMA2_HW 0x00402e10
-void C2_HOOK_FASTCALL ARScanBuffer(tU8** pPtr, tPipe_chunk_type pType, tU32 pDefault_time, tARScanBuffer_callback* pCallback, tARScanBuffer_time_check* pTime_check) {
+int C2_HOOK_FASTCALL ARScanBuffer(tU8** pPtr, tPipe_chunk_type pType, tU32 pDefault_time, tARScanBuffer_callback* pCallback, tARScanBuffer_time_check* pTime_check) {
+    tPipe_chunk* chunk;
+    tU8* cur;
+    int direction;
+    int total;
+    int len;
+    int i;
 
-    NOT_IMPLEMENTED();
+    for (;;) {
+        if (gPipe_play_ptr == gPipe_record_ptr) {
+            direction = 0;
+        } else if (gPipe_play_ptr == gPipe_buffer_oldest) {
+            direction = 1;
+        } else if (gReplay_rate < 0.0f) {
+            direction = (gPlay_direction > 0);
+        } else if (gReplay_rate == 0.0f) {
+            direction = 1;
+        } else {
+            direction = 0;
+        }
+
+        if (direction) {
+            cur = *pPtr;
+            chunk = (tPipe_chunk*)cur;
+            total = 0;
+            for (i = 0; i < chunk->count; i++) {
+                if (gPipe_callbacks[chunk->type].calc_length) {
+                    len = gPipe_callbacks[chunk->type].calc_length((tPipe_chunk*)&chunk->data[total]) + gPipe_callbacks[chunk->type].length + 4;
+                } else {
+                    len = gPipe_callbacks[chunk->type].length + 4;
+                }
+                total += len;
+            }
+            total += 10;
+            if (total & 1) {
+                FatalError(98);
+            }
+            *pPtr = cur + total;
+            if (!(*pPtr < gPipe_buffer_working_end) && *pPtr != gPipe_record_ptr) {
+                *pPtr = gPipe_buffer_start;
+            }
+            if (*pPtr == gPipe_record_ptr) {
+                return 0;
+            }
+        } else {
+            if (*pPtr == gPipe_buffer_oldest && *pPtr != gPipe_record_ptr) {
+                return 0;
+            }
+            if (*pPtr == gPipe_buffer_start) {
+                *pPtr = gPipe_buffer_working_end;
+            }
+            cur = *pPtr - 2;
+            *pPtr = cur - *(tU16*)cur;
+        }
+
+        cur = *pPtr;
+        chunk = (tPipe_chunk*)cur;
+        total = 0;
+        for (i = 0; i < chunk->count; i++) {
+            if (gPipe_callbacks[chunk->type].calc_length) {
+                len = gPipe_callbacks[chunk->type].calc_length((tPipe_chunk*)&chunk->data[total]) + gPipe_callbacks[chunk->type].length + 4;
+            } else {
+                len = gPipe_callbacks[chunk->type].length + 4;
+            }
+            total += len;
+        }
+        total += 10;
+        if (total & 1) {
+            FatalError(98);
+        }
+        gPipe_buffer_end_marker = cur + total - 2;
+
+        if (chunk->type == 0) {
+            pDefault_time = *(tU32*)(cur + 0xc);
+        } else if (chunk->type == pType) {
+            int result;
+            if ((result = pCallback((tPipe_chunk*)&chunk->data[0], chunk->count, pDefault_time))) {
+                return result;
+            }
+        }
+
+        if (pTime_check != NULL && pTime_check(pDefault_time)) {
+            continue;
+        }
+        return 0;
+    }
 }
 
 // FUNCTION: CARMA2_HW 0x004c6920

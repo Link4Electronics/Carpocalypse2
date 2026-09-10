@@ -352,6 +352,7 @@ float gPinball_factor;
 
 // GLOBAL: CARMA2_HW 0x007620f0
 float gOpponent_speed_factor;
+
 // GLOBAL: CARMA2_HW 0x007634b0
 br_vector3* gOur_pos;
 // GLOBAL: CARMA2_HW 0x00761f00

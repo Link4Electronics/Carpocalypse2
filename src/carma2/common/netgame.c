@@ -143,14 +143,26 @@ void C2_HOOK_FASTCALL DeclareWinner(int pWinner_index) {
 
 // FUNCTION: CARMA2_HW 0x0049bc20
 void C2_HOOK_FASTCALL SendGameplay(tPlayer_ID pPlayer, tNet_gameplay_mess pMess, int pParam_1, int pParam_2, int pParam_3, int pParam_4) {
+    tNet_message* message = NetBuildGuaranteedMessage(0x1b, 0);
 
-    NOT_IMPLEMENTED();
+    *(int *)((tU8 *)message + 0x20) = pParam_1;
+    *(int *)((tU8 *)message + 0x24) = pParam_2;
+    *(int *)((tU8 *)message + 0x1c) = pMess;
+    *(int *)((tU8 *)message + 0x28) = pParam_3;
+    *(int *)((tU8 *)message + 0x2c) = pParam_4;
+    SendGuaranteedMessageToPlayer(gCurrent_net_game, message, pPlayer, 0);
 }
 
 // FUNCTION: CARMA2_HW 0x0049bc70
 void C2_HOOK_FASTCALL SendGameplayToAllPlayers(tNet_gameplay_mess pMess, int pParam_1, int pParam_2, int pParam_3, int pParam_4) {
+    tNet_message* message = NetBuildGuaranteedMessage(0x1b, 0);
 
-    NOT_IMPLEMENTED();
+    *(int *)((tU8 *)message + 0x24) = pParam_2;
+    *(int *)((tU8 *)message + 0x1c) = pMess;
+    *(int *)((tU8 *)message + 0x20) = pParam_1;
+    *(int *)((tU8 *)message + 0x28) = pParam_3;
+    *(int *)((tU8 *)message + 0x2c) = pParam_4;
+    NetGuaranteedSendMessageToAllPlayers(gCurrent_net_game, message, 0);
 }
 
 // FUNCTION: CARMA2_HW 0x0049abf0

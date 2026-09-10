@@ -12,9 +12,12 @@
 #include "input.h"
 #include "loading.h"
 #include "main.h"
+#include "mainloop.h"
+#include "oil.h"
 #include "pedestrn.h"
 #include "piping.h"
 #include "platform.h"
+#include "powerups.h"
 #include "replay_callbacks.h"
 #include "utility.h"
 
@@ -209,14 +212,19 @@ void C2_HOOK_FASTCALL DoZappyActionReplayHeadups(int pFrame_number) {
 
 // FUNCTION: CARMA2_HW 0x004e6950
 void C2_HOOK_FASTCALL PreProcess(int pFrame_period) {
-
-    NOT_IMPLEMENTED();
+    UpdateFramePeriod(&gCamera_period);
+    if (ARGetReplayRate() < 0.0f) {
+        ((void (C2_HOOK_FASTCALL *)(int))MungePedestrians)(pFrame_period);
+    }
 }
 
 // FUNCTION: CARMA2_HW 0x004e6980
 void C2_HOOK_FASTCALL PostProcess(int pFrame_period) {
-
-    NOT_IMPLEMENTED();
+    ProcessOilSpills((tU32)pFrame_period);
+    if (ARGetReplayRate() >= 0.0f) {
+        ((void (C2_HOOK_FASTCALL *)(int))MungePedestrians)(pFrame_period);
+    }
+    MungePowerupStuff(pFrame_period);
 }
 
 // FUNCTION: CARMA2_HW 0x004e72e0

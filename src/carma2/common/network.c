@@ -193,19 +193,12 @@ void C2_HOOK_FASTCALL NetEndJoinList(void) {
     }
 }
 
-// FUNCTION: CARMA2_HW 0x00688718
+// FUNCTION: CARMA2_HW 0x0049dc80
 void C2_HOOK_FASTCALL NetDisposeGameDetails(tNet_game_details* pDetails) {
 
     if (pDetails != NULL) {
         BrMemFree(pDetails);
     }
-}
-
-// FUNCTION: CARMA2_HW 0x0049dc80
-void C2_HOOK_FASTCALL StopAllThatJoinyStuffThisInstant(void) {
-
-    NetEndJoinList();
-    DisposeJoinList(gLast_graph_sel);
 }
 
 // FUNCTION: CARMA2_HW 0x0049e210

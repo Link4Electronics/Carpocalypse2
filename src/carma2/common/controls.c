@@ -2470,6 +2470,12 @@ void C2_HOOK_FASTCALL FUN_0045acf0(void) {
     NOT_IMPLEMENTED();
 }
 
+// FUNCTION: CARMA2_HW 0x0045c760
+void C2_HOOK_FASTCALL FUN_0045c760(void) {
+
+    NOT_IMPLEMENTED();
+}
+
 // FUNCTION: CARMA2_HW 0x00502e70
 void C2_HOOK_FASTCALL BuyPSPowerup(int pIndex) {
     char text[256];
