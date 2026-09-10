@@ -592,8 +592,27 @@ typedef struct {
 
 typedef struct {
     int field_0x0;
-    int field_0x4;
+    tS8 field_0x4[12];
 } tPipe_chunk_damage;
+
+typedef struct {
+    int field_0x0;
+    tS16 field_0x4;
+    tS8 field_0x6;
+    tS8 field_0x7;
+    tS8 field_0x8;
+    tS8 field_0x9;
+} tPipe_chunk_graphpical_wheel_stuff;
+
+typedef struct {
+    int field_0x0;
+    tS32 field_0x4;
+    float field_0x8;
+    float field_0xc;
+    float field_0x10;
+    tU16 field_0x14;
+    tU16 field_0x16;
+} tPipe_chunk_sound;
 
 typedef struct {
     int field_0x0;
@@ -653,6 +672,34 @@ typedef struct {
 } tPipe_chunk_shrapnel_replay;
 
 typedef struct {
+    tU32 field_0x0;
+    br_vector3 field_0x4;
+    tU8 field_0x10[4];
+    tU32 field_0x14;
+} tPipe_chunk_split_weld;
+
+typedef struct {
+    tU32 field_0x0;
+    tU32 field_0x4;
+    br_vector3 field_0x8;
+    br_vector3 field_0x14;
+    br_vector3 field_0x20;
+    br_vector3 field_0x2c;
+    br_vector3 field_0x38;
+    tU32 field_0x44;
+    tU32 field_0x48;
+    tU32 field_0x4c;
+    tU32 field_0x50;
+    br_vector3 field_0x54;
+    tU8 field_0x60[0x24];
+    tU32 field_0x84;
+    br_vector3 field_0x88;
+    tU8 field_0x94[0xc];
+    tU32 field_0xa0;
+    br_matrix34 field_0xa4;
+} tPipe_chunk_shrapnel_shower;
+
+typedef struct {
     int field_0x0;
     tU16 field_0x4;
     tU16 field_0x6;
@@ -708,6 +755,14 @@ typedef struct {
     int field_0x34;
     br_vector3 field_0x38;
 } tPipe_chunk_ped_move;
+
+typedef struct {
+    int field_0x0;
+    tU8 field_0x4[8];
+    br_vector3 field_0xc;
+    br_vector3 field_0x18;
+    br_vector3 field_0x24;
+} tPipe_chunk_ped_status;
 
 typedef enum {
     ePipe_chunk_frame_finish = 0,

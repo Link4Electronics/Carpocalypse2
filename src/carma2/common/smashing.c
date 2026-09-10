@@ -570,6 +570,66 @@ void C2_HOOK_FASTCALL TotallyRepairSmash(tCar_spec *pCar_Spec, tCar_crush_buffer
 
 // FUNCTION: CARMA2_HW 0x004eb180
 void C2_HOOK_FASTCALL ApplyInitialMovement(undefined4* pArg1, br_vector3* pArg2, br_vector3* pArg3, br_vector3* pArg4, float pArg5, br_vector3* pArg6, br_vector3* pArg7, br_vector3* pArg8) {
+    float* f = (float*)pArg1;
+    br_vector3 unit;
+    float w = pArg5;
+    float len;
+    int i;
 
-    NOT_IMPLEMENTED();
+    pArg3->v[0] = f[2] * pArg2->v[0];
+    pArg3->v[1] = f[2] * pArg2->v[1];
+    pArg3->v[2] = f[2] * pArg2->v[2];
+
+    if (pArg7 != NULL && pArg8 != NULL) {
+        if (!f[0] && !f[4]) {
+            w = (float)sqrt((pArg7->v[0] - pArg8->v[0]) * (pArg7->v[0] - pArg8->v[0]) + (pArg7->v[1] - pArg8->v[1]) * (pArg7->v[1] - pArg8->v[1]) + (pArg7->v[2] - pArg8->v[2]) * (pArg7->v[2] - pArg8->v[2]));
+            unit.v[0] = FRandomBetween(f[0], f[4]) / f[4] * unit.v[0];
+            unit.v[1] = FRandomBetween(f[0], f[4]) / f[4] * unit.v[1];
+            unit.v[2] = FRandomBetween(f[0], f[4]) / f[4] * unit.v[2];
+            pArg3->v[0] += unit.v[0];
+            pArg3->v[1] += unit.v[1];
+            pArg3->v[2] += unit.v[2];
+        }
+    }
+
+    for (i = 0; i < 3; i++) {
+        pArg3->v[i] = (FRandomPosNeg(f[0xc]) + pArg3->v[i]) * w;
+        pArg4->v[i] = FRandomBetween(0.0f, 1.0f);
+    }
+
+    pArg3->v[1] += FRandomBetween(0.0f, f[0x10]);
+
+    len = (float)sqrt(pArg6->v[0] * pArg6->v[0] + pArg6->v[1] * pArg6->v[1] + pArg6->v[2] * pArg6->v[2]);
+    if (len > 2.3841858e-07f) {
+        float inv = (float)(1.0 / (double)len);
+        unit.v[0] = pArg6->v[0] * inv;
+        unit.v[1] = pArg6->v[1] * inv;
+        unit.v[2] = pArg6->v[2] * inv;
+    } else {
+        unit.v[0] = 1.0f;
+        unit.v[1] = 0.0f;
+        unit.v[2] = 0.0f;
+    }
+    unit.v[0] = FRandomBetween(0.0f, f[0x14]) * unit.v[0];
+    unit.v[1] = FRandomBetween(0.0f, f[0x14]) * unit.v[1];
+    unit.v[2] = FRandomBetween(0.0f, f[0x14]) * unit.v[2];
+    pArg3->v[0] += unit.v[0];
+    pArg3->v[1] += unit.v[1];
+    pArg3->v[2] += unit.v[2];
+
+    len = (float)sqrt(pArg4->v[0] * pArg4->v[0] + pArg4->v[1] * pArg4->v[1] + pArg4->v[2] * pArg4->v[2]);
+    if (len > 2.3841858e-07f) {
+        float inv = (float)(1.0 / (double)len);
+        pArg4->v[0] = pArg4->v[0] * inv;
+        pArg4->v[1] = pArg4->v[1] * inv;
+        pArg4->v[2] = pArg4->v[2] * inv;
+    } else {
+        pArg4->v[0] = 1.0f;
+        pArg4->v[1] = 0.0f;
+        pArg4->v[2] = 0.0f;
+    }
+
+    pArg4->v[0] *= FRandomPosNeg(w * f[0x18]);
+    pArg4->v[1] *= FRandomPosNeg(w * f[0x18]);
+    pArg4->v[2] *= FRandomPosNeg(w * f[0x18]);
 }
