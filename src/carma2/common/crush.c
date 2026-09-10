@@ -2344,9 +2344,18 @@ void C2_HOOK_FASTCALL InitialiseSpamCrush(tCar_spec* pCar, void* pContext) {
 
 // FUNCTION: CARMA2_HW 0x00435dd0
 int C2_HOOK_FASTCALL DRActorRecurseWithPredicate(br_actor* pActor, void* pPredicate, tCar_spec* pCar) {
+    void* pChild = *(void**)((tU8*)pActor + 8);
+    int(C2_HOOK_CDECL* pred)(void*, void*) = (int(C2_HOOK_CDECL*)(void*, void*))pPredicate;
 
-    NOT_IMPLEMENTED();
-    return 0;
+    while (pChild != NULL) {
+        void* pNext = *(void**)pChild;
+        int sub = DRActorRecurseWithPredicate(pChild, pred, pCar);
+        if (sub) {
+            return sub;
+        }
+        pChild = pNext;
+    }
+    return pred(pActor, pCar);
 }
 
 // FUNCTION: CARMA2_HW 0x00435e10
