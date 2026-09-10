@@ -50,6 +50,9 @@ tU32 gNext_grudge_reduction;
 // GLOBAL: CARMA2_HW 0x00691738
 int gFirst_frame;
 
+// GLOBAL: CARMA2_HW 0x00761a40
+tPath_node* gOppo_path_nodes;
+
 // GLOBAL: CARMA2_HW 0x00761a44
 tU32 gOppo_junction_table;
 
@@ -167,6 +170,7 @@ void C2_HOOK_FASTCALL SetOppoRender(tOpponent_spec* pOpponent_spec, int pRender)
 }
 
 // FUNCTION: CARMA2_HW 0x004013d0
+#pragma auto_inline(off)
 void C2_HOOK_FASTCALL PointActorAlongThisBloodyVector(br_actor* pThe_actor, br_vector3* pThe_vector) {
     br_transform trans;
 
@@ -176,6 +180,7 @@ void C2_HOOK_FASTCALL PointActorAlongThisBloodyVector(br_actor* pThe_actor, br_v
     BrVector3Copy(&trans.t.look_up.t, &pThe_actor->t.t.translate.t);
     BrTransformToTransform(&pThe_actor->t, &trans);
 }
+#pragma auto_inline(on)
 
 // FUNCTION: CARMA2_HW 0x00401430
 void C2_HOOK_FASTCALL PointActorAlongVectorWithUp(br_actor* pThe_actor, br_vector3* pLook, br_vector3* pUp) {
@@ -2258,12 +2263,14 @@ void C2_HOOK_FASTCALL ProcessLevitate(tOpponent_spec* pOpponent_spec, tProcess_o
     NOT_IMPLEMENTED();
 }
 
+#pragma auto_inline(off)
 // FUNCTION: CARMA2_HW 0x004a87a0
 int C2_HOOK_FASTCALL RematerialiseOpponent(tOpponent_spec* pOpponent_spec, br_scalar pSpeed) {
 
     NOT_IMPLEMENTED();
     return 0;
 }
+#pragma auto_inline(on)
 
 // FUNCTION: CARMA2_HW 0x004a8170
 int C2_HOOK_FASTCALL RematerialiseOpponentOnNearestSection(tOpponent_spec* pOpponent_spec, br_scalar pSpeed) {
@@ -2735,9 +2742,65 @@ tS16 C2_HOOK_FASTCALL GetOpponentsSectionMinSpeed(tOpponent_spec* pOpponent_spec
 
 // FUNCTION: CARMA2_HW 0x004a7f20
 int C2_HOOK_FASTCALL RematerialiseOpponentOnThisSection(tOpponent_spec* pOpponent_spec, tS16 pSection_no, float pSpeed) {
+    const br_vector3* start;
+    const br_vector3* finish;
+    br_vector3 a;
+    br_vector3 p;
+    br_vector3 section_v;
+    br_scalar t;
+    br_scalar length;
 
-    NOT_IMPLEMENTED();
-}
+    if (pOpponent_spec->physics_me) {
+        DoNotDprintf_opponent("%s: Actually, we're already materialised", pOpponent_spec->car_spec->driver_name);
+        return 1;
+    }
+
+    if (pSection_no >= 20000 && pOpponent_spec->nnext_sections > pSection_no - 20000) {
+        tS16 section_no = pOpponent_spec->next_sections[pSection_no - 20000].section_no;
+        tU8 direction = pOpponent_spec->next_sections[pSection_no - 20000].direction;
+        tS16 node_no = ((tS16*)gOppo_junction_table)[section_no * 10 + (tS32)(direction == 0)];
+        start = &gOppo_path_nodes[node_no].pos;
+    } else if (pSection_no >= 15000) {
+        start = (br_vector3*)((tU8*)pOpponent_spec->pursue_car_data.pursuee + (pSection_no - 0x38ee) * 12);
+    } else if (pSection_no == 10000) {
+        start = &pOpponent_spec->pursue_car_data.direct_line_nodes[0].pos;
+    } else {
+        DoNotDprintf_opponent("BIG ERROR - GetOpponentsSectionStartNodePoint() - section not found in next_section array for opponent %s", pOpponent_spec->car_spec->driver_name);
+        PDEnterDebugger("BIG ERROR - GetOpponentsSectionStartNodePoint()");
+        start = NULL;
+    }
+
+    finish = GetOpponentsSectionFinishNodePoint(pOpponent_spec, pSection_no);
+
+    a.v[0] = finish->v[0] - start->v[0];
+    a.v[1] = finish->v[1] - start->v[1];
+    a.v[2] = finish->v[2] - start->v[2];
+    length = sqrtf(a.v[0] * a.v[0] + a.v[1] * a.v[1] + a.v[2] * a.v[2]);
+    if (length != gOppo_render_zero) {
+        p.v[0] = pOpponent_spec->car_spec->car_master_actor->t.t.translate.t.v[0] - start->v[0];
+        p.v[1] = pOpponent_spec->car_spec->car_master_actor->t.t.translate.t.v[1] - start->v[1];
+        p.v[2] = pOpponent_spec->car_spec->car_master_actor->t.t.translate.t.v[2] - start->v[2];
+        t = (a.v[0] * p.v[0] + a.v[1] * p.v[1] + a.v[2] * p.v[2]) / (a.v[0] * a.v[0] + a.v[1] * a.v[1] + a.v[2] * a.v[2]);
+        if (t < gOppo_render_zero) {
+            pOpponent_spec->car_spec->car_master_actor->t.t.translate.t.v[0] = start->v[0];
+            pOpponent_spec->car_spec->car_master_actor->t.t.translate.t.v[1] = start->v[1];
+            pOpponent_spec->car_spec->car_master_actor->t.t.translate.t.v[2] = start->v[2];
+        } else if (t > 1.f) {
+            pOpponent_spec->car_spec->car_master_actor->t.t.translate.t.v[0] = finish->v[0];
+            pOpponent_spec->car_spec->car_master_actor->t.t.translate.t.v[1] = finish->v[1];
+            pOpponent_spec->car_spec->car_master_actor->t.t.translate.t.v[2] = finish->v[2];
+        } else {
+            pOpponent_spec->car_spec->car_master_actor->t.t.translate.t.v[0] = start->v[0] + a.v[0] * t;
+            pOpponent_spec->car_spec->car_master_actor->t.t.translate.t.v[1] = start->v[1] + a.v[1] * t;
+            pOpponent_spec->car_spec->car_master_actor->t.t.translate.t.v[2] = start->v[2] + a.v[2] * t;
+        }
+section_v.v[0] = finish->v[0] - start->v[0];
+            section_v.v[1] = finish->v[1] - start->v[1];
+            section_v.v[2] = finish->v[2] - start->v[2];
+            PointActorAlongThisBloodyVector(pOpponent_spec->car_spec->car_master_actor, &section_v);
+        }
+        return RematerialiseOpponent(pOpponent_spec, pSpeed);
+    }
 
 // FUNCTION: CARMA2_HW 0x004aece0
 float C2_HOOK_FASTCALL GetOpponentsSectionWidth(const tOpponent_spec* pOpponent_spec, tS16 pSection) {

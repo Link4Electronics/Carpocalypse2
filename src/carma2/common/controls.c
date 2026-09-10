@@ -1,10 +1,12 @@
 #include "controls.h"
 
 #include "brucetrk.h"
+#include "camera.h"
 #include "car.h"
 #include "crush.h"
 #include "depth.h"
 #include "displays.h"
+#include "drone.h"
 #include "errors.h"
 #include "finteray.h"
 #include "globvars.h"
@@ -1441,10 +1443,51 @@ void C2_HOOK_FASTCALL ChangeCameraTypeInGame(void) {
 }
 
 // Key: 'c'
+// GLOBAL: CARMA2_HW 0x00679324
+tActionReplayCameraMode gCameraTypeBeforeCockpit;
+
 // FUNCTION: CARMA2_HW 0x0040e900
 void C2_HOOK_FASTCALL ToggleCockpit(void) {
+    tActionReplayCameraMode mode;
 
-    NOT_IMPLEMENTED();
+    if (gCar_to_view != (tCar_spec*)0x75bc2c && *(const int*)0x75bbcc == 0) {
+        return;
+    }
+    if (gMap_view == 2) {
+        return;
+    }
+    mode = gAction_replay_camera_mode;
+    if (mode == kActionReplayCameraMode_Internal) {
+        mode = gCameraTypeBeforeCockpit;
+        if ((gAction_replay_mode != 0 && gCamera_type_allowed_replay[mode] == 0) ||
+            (gAction_replay_mode == 0 && gCamera_type_allowed_gameplay[mode] == 0) ||
+            mode >= 9 ||
+            (mode == 6 && !OKToViewDrones()) ||
+            (mode == 5 && gPed_count == 0)) {
+            gAction_replay_camera_mode = kActionReplayCameraMode_Standard;
+            InitialiseExternalCamera();
+        } else {
+            gAction_replay_camera_mode = mode;
+            switch (gAction_replay_camera_mode) {
+            case kActionReplayCameraMode_Standard:
+            case kActionReplayCameraMode_Rigid:
+            case kActionReplayCameraMode_Reversing:
+                gAction_replay_camera_mode = kActionReplayCameraMode_Standard;
+                InitialiseExternalCamera();
+                break;
+            case kActionReplayCameraMode_Manual:
+                gAction_replay_manual_camera_target_type = 0;
+                break;
+            default:
+                break;
+            }
+        }
+        MungeCarMaterials((tCar_spec*)0x75bc2c, gAction_replay_camera_mode == kActionReplayCameraMode_Internal);
+    } else {
+        gCameraTypeBeforeCockpit = mode;
+        gAction_replay_camera_mode = kActionReplayCameraMode_Internal;
+        MungeCarMaterials((tCar_spec*)0x75bc2c, 1);
+    }
 }
 
 // FUNCTION: CARMA2_HW 0x00443c90

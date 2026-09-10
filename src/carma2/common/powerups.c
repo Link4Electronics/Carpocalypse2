@@ -963,7 +963,7 @@ void C2_HOOK_FASTCALL ProcessShitMines(tU32 pTime) {
                 mine->flags &= ~0x80;
                 car_vulnerable = CarVulnerableByMine(car);
                 if (car_vulnerable) {
-                    TotallySpamTheModel(car CARPOCALYPSE2_THISCALL_EDX, 0.1f * mine->max_damage);
+                    TotallySpamTheModel(car, 0.1f * mine->max_damage);
                 }
                 if (car_vulnerable && (gNet_mode == eNet_mode_none || gNet_mode == eNet_mode_host)) {
                     car->collision_info->v.v[1] += FRandomBetween(mine->field3_0xc, mine->initial_y_speed_factor) / (car->collision_info->M * WORLD_SCALE);
@@ -1473,8 +1473,13 @@ int C2_HOOK_FASTCALL GotTimeOrPower(tPowerup* powerup, tCar_spec* car) {
 // FUNCTION: CARMA2_HW 0x004dcae0
 int C2_HOOK_FASTCALL TrashBodywork(tPowerup* powerup, tCar_spec* car) {
 
-    NOT_IMPLEMENTED();
-    return 0;
+    TotallySpamTheModel(car, (float)(*(float*)((unsigned char*)car + 0x18d0) * 0.1f * (10.0 / 7.0)));
+    if (car != NULL && car->driver == eDriver_local_human) {
+        DRS3StartSound2(gCar_outlet, 0x1388, 1, 0xff, 0xff, -1, -1);
+        DRS3StartSound2(gCar_outlet, 0x1389, 1, 0xff, 0xff, -1, -1);
+        DRS3StartSound2(gCar_outlet, 0x138a, 1, 0xff, 0xff, -1, -1);
+    }
+    return powerup - gPowerup_array;
 }
 
 // FUNCTION: CARMA2_HW 0x004dcb90

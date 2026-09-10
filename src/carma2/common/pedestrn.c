@@ -28,6 +28,9 @@
 
 #include "carpocalypse2_macros.h"
 #include "carpocalypse2_types.h"
+#include "displays.h"
+#include "racemem.h"
+#include "structur.h"
 #include "c2_math.h"
 
 #define GET_PED_COLLISION_OBJECT(PED) ( ((PED)->character->field_0x14 & 1) ? (PED)->character->personality->form->simple_physicing[(PED)->character->field_0x5].collision_info : GetRootObject((PED)->character))
@@ -323,6 +326,18 @@ float gFLOAT_00677230;
 
 // GLOBAL: CARMA2_HW 0x00676978
 int gPed_overall_movement_disabled = 0;
+
+// GLOBAL: CARMA2_HW 0x00676914
+int gPed_676914;
+
+// GLOBAL: CARMA2_HW 0x0067697c
+typedef struct {
+    undefined4 field_0x0;
+    undefined4 field_0x4;
+    undefined4 field_0x8;
+    void(C2_HOOK_FASTCALL * field_0xc)(tPed_character_instance* pPed);
+} tPed_system_vtable;
+tPed_system_vtable* gPed_67697c;
 
 // GLOBAL: CARMA2_HW 0x00677234
 int gPed_retain_root_mode;
@@ -1249,11 +1264,13 @@ void C2_HOOK_CDECL TurnLimbsOnAndOff(br_actor* actor, br_model* model, br_materi
     NOT_IMPLEMENTED();
 }
 
+#pragma auto_inline(off)
 // FUNCTION: CARMA2_HW 0x004097b0
 int C2_HOOK_FASTCALL MorphCharacterBonePositions(tPed_character_instance* pPed, tU32 pArg2) {
 
     NOT_IMPLEMENTED();
 }
+#pragma auto_inline(on)
 
 // FUNCTION: CARMA2_HW 0x00407e70
 void C2_HOOK_FASTCALL SetBoner(tPed_character_instance* pPed, br_matrix34* pMat, br_matrix34* pParent_mat, br_matrix34* pArg4, tU8 pAngle_x, tU8 pAngle_y, tU8 pAngle_z, br_vector3* pArg8, br_vector3* pParg9) {
@@ -2386,7 +2403,35 @@ undefined4 C2_HOOK_FASTCALL CharacterNoLongerRenderable(tPed_character_instance*
 // FUNCTION: CARMA2_HW 0x004cd160
 void C2_HOOK_FASTCALL OneLessPed(tPedestrian* pPed) {
 
-    NOT_IMPLEMENTED();
+    if (pPed->flags & 0x100) {
+        return;
+    }
+    pPed->flags |= 0x100;
+    if (gCurrent_race.race_spec->race_type == kRaceType_Carma1) {
+        gCount_killed_peds++;
+        if (gCount_killed_peds >= gPed_count) {
+            NewTextHeadupSlot(4, 0, 0x1388, -4, GetMiscString(0x1a));
+            RaceCompleted(eRace_over_1);
+            return;
+        }
+    }
+    if (gCurrent_race.race_spec->race_type == kRaceType_Peds) {
+        if (pPed->flags & 0x200) {
+            gCount_killed_peds++;
+            if (gCount_killed_peds >= gTotal_count_smash_peds) {
+                RaceCompleted(eRace_over_1);
+                return;
+            }
+        }
+    }
+    if (gCurrent_race.race_spec->race_type == kRaceType_SmashNPed) {
+        if (pPed->flags & 0x200) {
+            SetRuntimeVariable(gCurrent_race.race_spec->options.smash_and_peds.var_smash_number, 1);
+            if (GetRuntimeVariable(gCurrent_race.race_spec->options.smash_and_peds.var_smash_number) >= gCurrent_race.race_spec->options.smash_and_peds.var_smash_target) {
+                RaceCompleted(eRace_over_3);
+            }
+        }
+    }
 }
 
 // FUNCTION: CARMA2_HW 0x004cd260
@@ -4495,8 +4540,151 @@ void C2_HOOK_FASTCALL PedScanForObjects(tPedestrian* pPed, tU32 pTime) {
 
 // FUNCTION: CARMA2_HW 0x00409ca0
 void C2_HOOK_FASTCALL MungeCharacterAnimation(tPed_character_instance* pCharacter, tU32 pTime, undefined4 pArg3) {
+    tPed_personality* personality;
+    tPed_form* form;
+    tPed_move* model;
+    br_matrix34* work;
+    float kx;
+    float ky;
+    float kz;
+    double t;
+    tS32 loop_count = 0;
+    tU32 frame_or_time;
+    int i;
 
-    NOT_IMPLEMENTED();
+    if (pCharacter->field_0x7 < 0) {
+        return;
+    }
+    if ((pCharacter->field_0x14 & 0x4) && (pCharacter->field_0x14 & 0x2) && pCharacter->field_0xe8 == NULL) {
+        return;
+    }
+
+    if (pCharacter->field_0xbc != NULL) {
+        if (MorphCharacterBonePositions(pCharacter, pTime - pCharacter->field_0x24)) {
+            pCharacter->field_0x24 = pTime;
+            return;
+        }
+        pCharacter->field_0x24 = pTime - pCharacter->field_0x1e;
+    }
+
+    personality = pCharacter->personality;
+    form = personality->form;
+    model = form->moves[pCharacter->field_0x7].move;
+
+    if (pCharacter->field_0x4 < 0) {
+        work = &pCharacter->field_0x2c;
+    } else if (pCharacter->field_0xe8 != NULL) {
+        work = pCharacter->field_0xe8;
+    } else {
+        work = &form->actor_sets[pCharacter->field_0x4].actors[0]->t.t.mat;
+    }
+    kx = work->m[3][0];
+    ky = work->m[3][1];
+    kz = work->m[3][2];
+
+    frame_or_time = pTime;
+
+    if (pCharacter->field_0x1e != 0) {
+        if (pCharacter->field_0x24 == 0) {
+            SetCharacterBonePositions(pCharacter, 0, 0);
+        } else {
+tS32 delta;
+            float rate;
+
+            delta = (tS32)(pTime - pCharacter->field_0x24);
+            rate = (float)delta / (tS32)(tS16)pCharacter->field_0x1e;
+            if (rate > 10.0f) {
+                rate = 10.0f;
+            } else if (rate < -10.0f) {
+                rate = -10.0f;
+            }
+            frame_or_time = (tU32)(tS32)(tS16)pCharacter->field_0x1c;
+            t = rate + (double)*(float*)&pCharacter->field_0x18 + frame_or_time;
+            *(float*)&pCharacter->field_0x18 = (float)(t - floor(t));
+            loop_count = (tS32)(floor(t) - (double)(tS32)frame_or_time);
+
+            if (loop_count > 0) {
+                for (i = 0; i < loop_count; i++) {
+                    pCharacter->field_0x1c++;
+                    if ((tS32)(tS16)pCharacter->field_0x1c >= model->count_frames) {
+                        if (gPed_676914 == 0) {
+                            pCharacter->field_0x1c = (tS16)(model->count_frames - 1);
+                            if (pCharacter->field_0x9 & 0x2) {
+                                pCharacter->field_0x9 &= (tU8)~0x2;
+                                gPed_67697c->field_0xc(pCharacter);
+                            }
+                            if ((tS32)(tS8)pCharacter->field_0x8 >= 0) {
+                                SetCharacterMove(pCharacter,
+                                    (tS32)(tS8)pCharacter->field_0x8,
+                                    (float)(tS32)(tS16)pCharacter->field_0x20,
+                                    0,
+                                    (pCharacter->field_0x9 & 0x4) >> 2,
+                                    frame_or_time);
+                                SetCharacterBonePositions(pCharacter, 0, 0);
+                                break;
+                            }
+                            pCharacter->field_0x1c = 0;
+                        } else if (model->move_flags & 0x1) {
+                            pCharacter->field_0x1c--;
+                            i = loop_count - 1;
+                        } else {
+                            pCharacter->field_0x1c = 0;
+                        }
+                    }
+                    SetCharacterBonePositions(pCharacter, i != loop_count - 1 ? 2 : 0, 1);
+                }
+            }
+
+            if (loop_count == 0) {
+                if (pCharacter->field_0x14 & 0x4 || gPed_676914 != 0) {
+                    SetCharacterBonePositions(pCharacter, 0, 0);
+                }
+            }
+
+            if (loop_count < 0) {
+                for (i = loop_count; i < 0; i++) {
+                    SetCharacterBonePositions(pCharacter, i < -1 ? 2 : 0, 1);
+                    pCharacter->field_0x1c--;
+                    if ((tS32)(tS16)pCharacter->field_0x1c < 0) {
+                        if (model->move_flags & 0x1) {
+                            pCharacter->field_0x1c++;
+                            SetCharacterBonePositions(pCharacter, 3, 1);
+                            i = 0;
+                        } else {
+                            pCharacter->field_0x1c = (tS16)(model->count_frames - 1);
+                        }
+                    }
+                }
+            }
+
+            pCharacter->field_0x24 = frame_or_time;
+
+            if (loop_count != 0) {
+                float dx;
+                float dy;
+                float dz;
+                double x;
+
+                dx = work->m[3][0] - kx;
+                dy = work->m[3][1] - ky;
+                dz = work->m[3][2] - kz;
+                x = (double)dx * (double)loop_count * 0.001;
+                pCharacter->field_0xd8.v[0] = (float)((double)dy * (double)dy / x);
+                pCharacter->field_0xd8.v[1] = dz;
+                pCharacter->field_0xd8.v[2] = dy;
+            }
+        }
+    }
+
+    pCharacter->field_0x24 = frame_or_time;
+
+    if (loop_count == 0) {
+        if (pCharacter->field_0x1e == 0) {
+            pCharacter->field_0xd8.v[0] = 0.0f;
+            pCharacter->field_0xd8.v[1] = 0.0f;
+            pCharacter->field_0xd8.v[2] = 0.0f;
+        }
+    }
 }
 
 // FUNCTION: CARMA2_HW 0x004cfa30

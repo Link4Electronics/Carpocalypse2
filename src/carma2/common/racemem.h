@@ -11,4 +11,6 @@ void C2_HOOK_FASTCALL ClearAllRuntimeVariables(void);
 
 int C2_HOOK_FASTCALL GetRuntimeVariable(int pAddress);
 
+int C2_HOOK_FASTCALL SetRuntimeVariable(int pAddress, int pValue);
+
 #endif /* C2_RACEMEM_H */

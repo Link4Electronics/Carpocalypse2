@@ -20,3 +20,18 @@ int C2_HOOK_FASTCALL GetRuntimeVariable(int pAddress) {
     }
     return 0;
 }
+
+// FUNCTION: CARMA2_HW 0x004e7460
+int C2_HOOK_FASTCALL SetRuntimeVariable(int pAddress, int pValue) {
+
+    if (pAddress >= 0 && pAddress < CARPOCALYPSE2_ASIZE(gRace_memory)) {
+        tS8 value;
+        tS8 delta;
+
+        value = (tS8)gRace_memory[pAddress];
+        delta = (tS8)pValue;
+        value = (tS8)(value + delta);
+        gRace_memory[pAddress] = (tU8)value;
+        return value;
+    }
+}

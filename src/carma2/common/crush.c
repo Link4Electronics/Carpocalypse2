@@ -46,6 +46,12 @@ extern br_scalar gMax_crush_force;
 extern br_scalar gForce_to_movement_factor;
 // GLOBAL: CARMA2_HW 0x0067bacc
 extern br_scalar gMax_crush_dist_sq;
+// GLOBAL: CARMA2_HW 0x00589a40
+br_scalar gCrushZero = 0.0f;
+// GLOBAL: CARMA2_HW 0x00589adc
+br_scalar gCrushEps = 9.999999747378752e-06f;
+// GLOBAL: CARMA2_HW 0x00589a74
+br_scalar gCrushSqrtHalf = 0.7071070075035095f;
 // GLOBAL: CARMA2_HW 0x0067bac8
 extern br_scalar gMin_force_to_split_XZ_per_tonne;
 // GLOBAL: CARMA2_HW 0x0067bd5c
@@ -1124,6 +1130,7 @@ intptr_t C2_HOOK_FASTCALL DRActorEnumRecurseWithTranslation(br_actor* pActor, br
 }
 
 // FUNCTION: CARMA2_HW 0x005148c0
+#pragma auto_inline(off)
 intptr_t C2_HOOK_FASTCALL DRActorEnumRecurseWithSnart(br_actor* pActor, const br_matrix34 *pMat, tDRActorEnumRecurseWithSnart_cbfn* pCallback, void* pContext) {
     br_actor* child;
     br_matrix34 mat;
@@ -1147,6 +1154,7 @@ intptr_t C2_HOOK_FASTCALL DRActorEnumRecurseWithSnart(br_actor* pActor, const br
     }
     return 0;
 }
+#pragma auto_inline(on)
 
 float C2_HOOK_FASTCALL SoftnessOfNearestPoint(tCar_spec* pCar_spec, br_vector3* pPoint) {
     tSoftnessOfNearestPointCB_Context softcb_data;
@@ -2004,11 +2012,376 @@ void C2_HOOK_FASTCALL ReAttachBit(tCar_spec* pCar_spec, br_actor* pActor_arg2, b
     NOT_IMPLEMENTED();
 }
 
+// GLOBAL: CARMA2_HW 0x0067baa0
+int gCrush_panel_ids[10];
+
+// GLOBAL: CARMA2_HW 0x0067b7cc
+extern int gCount_car_damage_crush_list;
+
+// GLOBAL: CARMA2_HW 0x0068b85c
+int gCrush_spam_gate;
+
+// GLOBAL: CARMA2_HW 0x0068b918
+int gReseed_crush_rng;
+
+// GLOBAL: CARMA2_HW 0x0074a5ec
+int gCrush_pain_timer;
+
+// GLOBAL: CARMA2_HW 0x0074a5f8
+int gCrush_deferred;
+
+int C2_HOOK_FASTCALL GetAverageCrushLevel(tCar_spec* pCar);
+void C2_HOOK_FASTCALL DeleteFarCrushes(tCar_spec* pCar);
+int C2_HOOK_FASTCALL DRActorRecurseWithPredicate(br_actor* pActor, void* pPredicate, tCar_spec* pCar);
+int C2_HOOK_FASTCALL PredicateSpamPanel(tCar_spec* pCar);
+void* C2_HOOK_FASTCALL GetCrushedPanelActor(tCar_spec* pCar, br_actor* pActor, tU32 pFlags);
+void C2_HOOK_FASTCALL InitialiseSpamCrush(tCar_spec* pCar, void* pContext);
+void C2_HOOK_FASTCALL CrushPanelWithForce(tCar_spec* pCar, tU32 pFlag_a, tU32 pFlag_b, tU32 pFlag_c, br_vector3* pVec, tU32 pFlag_d, tU32 pFlag_e);
+void BrMatrix34Multiply(br_matrix34* pDst, const br_matrix34* pA, const br_matrix34* pB);
+intptr_t C2_HOOK_FASTCALL CrushCarActorCbfn(br_actor* pActor, br_matrix34* pMat, void* pContext);
+intptr_t C2_HOOK_FASTCALL CrushCarModelCbfn(br_actor* pActor, br_matrix34* pMat, void* pContext);
+
 // FUNCTION: CARMA2_HW 0x00431610
-void C2_HOOK_FAKE_THISCALL TotallySpamTheModel(tCar_spec* pCar_spec, undefined4 pArg2, float pDamage) {
+void C2_HOOK_FASTCALL TotallySpamTheModel(tCar_spec* pCar_spec, float pDamage) {
+    tCar_crush_spec* spec;
+    br_actor* model_actor;
+    br_actor* panel_actor;
+    void* pMorph_data;
+    float damage2;
+    volatile float rate;
+    float vdim[6];
+    float vlow[3];
+    float vhigh[3];
+    br_matrix34 mat_a;
+    br_matrix34 mat_b;
+    br_vector3 vec_dir;
+    struct {
+        int count;
+        br_vector3 v;
+    } spam_arg;
+    struct {
+        tCar_spec* car;
+        float* p_rate;
+    } context;
+    int pCount;
+    int i;
+    int j;
+    int rnd;
+    int flip;
+    int axis;
+    int found;
+    int count;
+
+    if (gCrush_spam_gate) {
+        return;
+    }
+    if (gCrush_deferred) {
+        count = gCount_car_damage_crush_list;
+        if (count == 8) {
+            return;
+        }
+        for (i = 0; i < count; i++) {
+            if (gCar_damage_crush_list[i].car == pCar_spec) {
+                if (pDamage > gCar_damage_crush_list[i].damage) {
+                    gCar_damage_crush_list[i].damage = pDamage;
+                }
+                return;
+            }
+        }
+        gCar_damage_crush_list[count].car = pCar_spec;
+        gCar_damage_crush_list[count].damage = pDamage;
+        gCount_car_damage_crush_list = count + 1;
+        return;
+    }
+
+    spec = pCar_spec->car_crush_spec;
+    if (spec == NULL) {
+        return;
+    }
+    if (*(int*)((tU8*)pCar_spec + 0x1b4) != 0) {
+        return;
+    }
+    if (spec->field_0x4b8 != 0) {
+        return;
+    }
+    if (*(tU8*)&spec->field_0x144 != 0) {
+        return;
+    }
+    if (gReseed_crush_rng) {
+        srand(spec->field_0x574);
+        spec->field_0x574 = rand();
+    }
+    for (i = 0; i < 10; i++) {
+        gCrush_panel_ids[i] = IRandomBetween(1, spec->nb_entries);
+    }
+
+    model_actor = pCar_spec->car_model_actor;
+    {
+        br_actor* pNode = *(br_actor**)((tU8*)model_actor + 0x8);
+        while (pNode != NULL) {
+            if (DRActorRecurseWithPredicate(pNode, (void*)PredicateSpamPanel, pCar_spec)) {
+                goto paint;
+            }
+            pNode = *(br_actor**)pNode;
+        }
+    }
+
+    if (*(void**)((tU8*)model_actor + 0x60) != NULL) {
+        br_actor* pShell = *(br_actor**)((tU8*)model_actor + 0x60);
+        pShell = *(br_actor**)((tU8*)pShell + 0x8);
+        if (pShell != NULL) {
+            if (*(void**)((tU8*)pShell + 0x34) != NULL) {
+                rnd = *(tU8*)((tU8*)pShell + 0x20);
+                found = 0;
+                for (i = 0; i < 10; i++) {
+                    if (gCrush_panel_ids[i] == rnd) {
+                        found = 1;
+                        break;
+                    }
+                }
+                if (found != 0) {
+                    panel_actor = GetCrushedPanelActor(pCar_spec, model_actor, 0);
+                    if (panel_actor != NULL) {
+                        pMorph_data = *(void**)((tU8*)pCar_spec + 0x8);
+                        BrMatrix34Multiply(&mat_a, (br_matrix34*)((tU8*)pMorph_data + 0x14), (br_matrix34*)(*(tU32*)pMorph_data + 0x2c));
+                        BrMatrix34Multiply(&mat_b, (br_matrix34*)((tU8*)panel_actor + 0x14), (br_matrix34*)(*(tU32*)panel_actor + 0x2c));
+                        {
+                            float* pPanel_pos = (float*)((tU8*)panel_actor + 0x68);
+                            float* pMorph_pos = (float*)((tU8*)pMorph_data + 0x68);
+                            float xd;
+                            float yd;
+                            float zd;
+                            float len = (float)sqrt((double)(
+                                (mat_b.m[1][0] - mat_a.m[1][0]) * (mat_b.m[1][0] - mat_a.m[1][0]) +
+                                (mat_b.m[1][1] - mat_a.m[1][1]) * (mat_b.m[1][1] - mat_a.m[1][1]) +
+                                (mat_b.m[1][2] - mat_a.m[1][2]) * (mat_b.m[1][2] - mat_a.m[1][2])));
+                            if (len > 2.38419e-07f) {
+                                float rd = (float)(1.0 / len);
+                                xd = (mat_b.m[1][0] - mat_a.m[1][0]) * rd;
+                                yd = (mat_b.m[1][1] - mat_a.m[1][1]) * rd;
+                                zd = (mat_b.m[1][2] - mat_a.m[1][2]) * rd;
+                            } else {
+                                xd = 1.0f;
+                                yd = gCrushZero;
+                                zd = gCrushZero;
+                            }
+                            pPanel_pos[0] = pMorph_pos[0] + pPanel_pos[0] + xd * 1.15942f;
+                            pPanel_pos[1] = pMorph_pos[1] + pPanel_pos[1] + yd * 1.15942f;
+                            pPanel_pos[2] = pMorph_pos[2] + pPanel_pos[2] + xd * 1.15942f;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+paint:
+    damage2 = pDamage * 1.5f;
+    pMorph_data = *(void**)((tU8*)pCar_spec + 0x8);
+    pCount = 1;
+    {
+        float* pBBox = (float*)((tU8*)pMorph_data + 0x24);
+        vdim[0] = pBBox[0] - 0.0289855f;
+        vdim[1] = pBBox[1] - 0.0289855f;
+        vdim[2] = pBBox[2] - 0.0289855f;
+        vdim[3] = pBBox[3] - (-0.0289855f);
+        vdim[4] = pBBox[4] - (-0.0289855f);
+        vdim[5] = pBBox[5] - (-0.0289855f);
+    }
+
+    i = 10;
+    while (i != 0) {
+        rnd = IRandomBetween(0, 5);
+        axis = rnd >> 1;
+        flip = rnd & 1;
+        vlow[axis] = flip ? vdim[3 + axis] : vdim[axis];
+        vhigh[axis] = flip ? vdim[axis] : vdim[3 + axis];
+        j = (axis + 1) % 3;
+        vlow[j] = SRandomBetween(vdim[3 + j], vdim[j]);
+        vhigh[j] = SRandomBetween(vdim[3 + j], vdim[j]);
+        j = (j + 1) % 3;
+        vlow[j] = SRandomBetween(vdim[3 + j], vdim[j]);
+        vhigh[j] = SRandomBetween(vdim[3 + j], vdim[j]);
+
+        vhigh[0] = vhigh[0] - vlow[0];
+        vhigh[1] = vhigh[1] - vlow[1];
+        vhigh[2] = vhigh[2] - vlow[2];
+        {
+            float len = (float)sqrt((double)(vhigh[0] * vhigh[0] + vhigh[1] * vhigh[1] + vhigh[2] * vhigh[2]));
+            if (len > 2.38419e-07f) {
+                float scale = (float)(1.0 / len);
+                vhigh[0] = vhigh[0] * scale;
+                vhigh[1] = vhigh[1] * scale;
+                vhigh[2] = vhigh[2] * scale;
+            } else {
+                vhigh[0] = 1.0f;
+                vhigh[1] = 0.0f;
+                vhigh[2] = 0.0f;
+            }
+        }
+        memcpy(&vec_dir, &vlow, sizeof(vec_dir));
+
+        spec = pCar_spec->car_crush_spec;
+        if (spec != NULL) {
+            if (*(int*)((tU8*)pCar_spec + 0x1b4) == 0) {
+                if (spec->field_0x4b8 == 0) {
+                    float x = damage2;
+                    if (x > gMax_crush_force) {
+                        x = gMax_crush_force;
+                    }
+                    context.car = pCar_spec;
+                    context.p_rate = (float*)&pCount;
+                    rate = (float)(x / (double)pCount);
+                    if (*(tU8*)&spec->field_0x144 != 0) {
+                        ARStartPipingSession(3);
+                        DRActorEnumRecurseWithSnart(pCar_spec->car_model_actor, NULL, CrushCarModelCbfn, &context);
+                        AREndPipingSession();
+                    } else {
+                        InitialiseSpamCrush(pCar_spec, &context);
+                        ARStartPipingSession(3);
+                        DRActorEnumRecurseWithSnart(pCar_spec->car_master_actor, NULL, CrushCarActorCbfn, &context);
+                        AREndPipingSession();
+                        pCar_spec->use_shell_model = 0;
+                    }
+                }
+            }
+        }
+        i--;
+    }
+
+    if (*(tU8*)&pCar_spec->car_crush_spec->field_0x144 != 0) {
+        return;
+    }
+    if (GetAverageCrushLevel(pCar_spec) >= 0x4b) {
+        return;
+    }
+    if (PercentageChance((int)(*(float*)((tU8*)pCar_spec->car_crush_spec + 0x4bc) * 25.0f))) {
+        DeleteFarCrushes(pCar_spec);
+        return;
+    }
+    if (*(float*)((tU8*)pCar_spec->car_crush_spec + 0x148) == gCrushZero) {
+        return;
+    }
+    rnd = IRandomBetween(1, 8) - 1;
+    if ((tU32)rnd > 7) {
+        return;
+    }
+    switch (rnd) {
+    case 0:
+    {
+        tCar_crush_spec* pSpec_a = pCar_spec->car_crush_spec;
+        void* pMorph_a = *(void**)((tU8*)pCar_spec + 0x8);
+        spam_arg.count = 0;
+        spam_arg.v.v[1] = *(float*)((tU8*)pMorph_a + 0x34);
+        spam_arg.v.v[2] = *(float*)((tU8*)pSpec_a + 0x14c);
+        CrushPanelWithForce(pCar_spec, 0xe002, 0, 0, &spam_arg.v, *(tU32*)((tU8*)pMorph_a + 0x38), 0);
+        return;
+    }
+
+    case 1:
+    {
+        tCar_crush_spec* pSpec_b = pCar_spec->car_crush_spec;
+        void* pMorph_b = *(void**)((tU8*)pCar_spec + 0x8);
+        spam_arg.count = 0;
+        spam_arg.v.v[1] = *(float*)((tU8*)pMorph_b + 0x28);
+        spam_arg.v.v[2] = *(float*)((tU8*)pSpec_b + 0x14c);
+        CrushPanelWithForce(pCar_spec, 0x1ffe, 0, 0, &spam_arg.v, *(tU32*)((tU8*)pMorph_b + 0x38), 0);
+        return;
+    }
+
+    case 2:
+    {
+        tCar_crush_spec* pSpec_c = pCar_spec->car_crush_spec;
+        void* pMorph_c = *(void**)((tU8*)pCar_spec + 0x8);
+        spam_arg.v.v[0] = *(float*)((tU8*)pMorph_c + 0x24);
+        spam_arg.v.v[1] = 0.0f;
+        spam_arg.v.v[2] = *(float*)((tU8*)pSpec_c + 0x14c);
+        CrushPanelWithForce(pCar_spec, 0, 0xe002, 0, &spam_arg.v, *(tU32*)((tU8*)pMorph_c + 0x38), 0);
+        return;
+    }
+
+    case 3:
+    {
+        tCar_crush_spec* pSpec_d = pCar_spec->car_crush_spec;
+        void* pMorph_d = *(void**)((tU8*)pCar_spec + 0x8);
+        spam_arg.v.v[0] = *(float*)((tU8*)pMorph_d + 0x30);
+        spam_arg.v.v[1] = 0.0f;
+        spam_arg.v.v[2] = *(float*)((tU8*)pSpec_d + 0x14c);
+        CrushPanelWithForce(pCar_spec, 0, 0x1ffe, 0, &spam_arg.v, *(tU32*)((tU8*)pMorph_d + 0x38), 0);
+        return;
+    }
+
+    case 4:
+    case 5:
+    case 6:
+    case 7:
+    {
+        tCar_crush_spec* pSpec_e = pCar_spec->car_crush_spec;
+        void* pMorph_e = *(void**)((tU8*)pCar_spec + 0x8);
+        spam_arg.v.v[0] = (*(float*)((tU8*)pMorph_e + 0x24) + *(float*)((tU8*)pMorph_e + 0x30)) * 0.5f;
+        spam_arg.v.v[1] = (*(float*)((tU8*)pMorph_e + 0x28) + *(float*)((tU8*)pMorph_e + 0x34)) * 0.5f;
+        spam_arg.v.v[2] = *(float*)((tU8*)pSpec_e + 0x150);
+        CrushPanelWithForce(pCar_spec, 0, 0x1ffe, 0, &spam_arg.v, *(tU32*)((tU8*)pMorph_e + 0x2c), 0);
+        return;
+    }
+    }
+}
+
+#pragma auto_inline(off)
+
+// FUNCTION: CARMA2_HW 0x00443350
+void* C2_HOOK_FASTCALL GetCrushedPanelActor(tCar_spec* pCar, br_actor* pActor, tU32 pFlags) {
+
+    NOT_IMPLEMENTED();
+    return NULL;
+}
+
+// FUNCTION: CARMA2_HW 0x00432e70
+void C2_HOOK_FASTCALL InitialiseSpamCrush(tCar_spec* pCar, void* pContext) {
 
     NOT_IMPLEMENTED();
 }
+
+// FUNCTION: CARMA2_HW 0x00435dd0
+int C2_HOOK_FASTCALL DRActorRecurseWithPredicate(br_actor* pActor, void* pPredicate, tCar_spec* pCar) {
+
+    NOT_IMPLEMENTED();
+    return 0;
+}
+
+// FUNCTION: CARMA2_HW 0x00435e10
+int C2_HOOK_FASTCALL PredicateSpamPanel(tCar_spec* pCar) {
+
+    NOT_IMPLEMENTED();
+    return 0;
+}
+
+// FUNCTION: CARMA2_HW 0x00435d40
+void C2_HOOK_FASTCALL DeleteFarCrushes(tCar_spec* pCar) {
+
+    NOT_IMPLEMENTED();
+}
+
+// FUNCTION: CARMA2_HW 0x00441350
+int C2_HOOK_FASTCALL GetAverageCrushLevel(tCar_spec* pCar) {
+
+    NOT_IMPLEMENTED();
+    return 0;
+}
+
+// FUNCTION: CARMA2_HW 0x00433c70
+void C2_HOOK_FASTCALL CrushPanelWithForce(tCar_spec* pCar, tU32 pFlag_a, tU32 pFlag_b, tU32 pFlag_c, br_vector3* pVec, tU32 pFlag_d, tU32 pFlag_e) {
+
+    NOT_IMPLEMENTED();
+}
+
+// FUNCTION: CARMA2_HW 0x005334a0
+void BrMatrix34Multiply(br_matrix34* pDst, const br_matrix34* pA, const br_matrix34* pB) {
+
+    NOT_IMPLEMENTED();
+}
+
+#pragma auto_inline(on)
 
 // FUNCTION: CARMA2_HW 0x0043f930
 void C2_HOOK_FASTCALL DoDamage(tCar_spec *pCar, tDamage_type pDamage_type, int pMagnitude) {
@@ -2639,17 +3012,189 @@ void C2_HOOK_FASTCALL DoWheelDamage(tU32 pFrame_period) {
     }
 }
 
-// FUNCTION: CARMA2_HW 0x004363f0
-void C2_HOOK_FASTCALL CrushCar(tCar_spec* pCar, br_actor* pActor, tCar_crush* pCrush) {
+// FUNCTION: CARMA2_HW 0x00431e20
+#pragma auto_inline(off)
+intptr_t C2_HOOK_FASTCALL CrushCarActorCbfn(br_actor* pActor, br_matrix34* pMat, void* pContext) {
 
     NOT_IMPLEMENTED();
+    return 0;
+}
+
+// FUNCTION: CARMA2_HW 0x00433260
+intptr_t C2_HOOK_FASTCALL CrushCarModelCbfn(br_actor* pActor, br_matrix34* pMat, void* pContext) {
+
+    NOT_IMPLEMENTED();
+    return 0;
+}
+
+// FUNCTION: CARMA2_HW 0x00436850
+float C2_HOOK_FASTCALL CrushShapeBendFactor(br_vector3* pVertexPos, int pCount, br_vector3* pVectors, br_scalar pMaxDistSq) {
+
+    NOT_IMPLEMENTED();
+    return 0.0f;
+}
+
+// FUNCTION: CARMA2_HW 0x00436890
+int C2_HOOK_FASTCALL CrushShapeFindAxis(br_vector3* pDirection) {
+
+    NOT_IMPLEMENTED();
+    return 0;
+}
+
+// FUNCTION: CARMA2_HW 0x004367a0
+void C2_HOOK_FASTCALL CrushShapeMorphVertex(float* pOut, int pAxis, float pVertexComponent, float pDirectionComponent, tU32 pFlags, tCar_crush_limits* pLimits, int pFound) {
+
+    NOT_IMPLEMENTED();
+}
+
+// FUNCTION: CARMA2_HW 0x004368d0
+void C2_HOOK_FASTCALL CrushShapeFinishVertex(br_vector3* pVertexPos, tU16 pFlags, tCar_crush_limits* pLimits) {
+
+    NOT_IMPLEMENTED();
+}
+#pragma auto_inline(on)
+
+// FUNCTION: CARMA2_HW 0x004363f0
+void C2_HOOK_FASTCALL CrushCar(tCar_spec* pCar, br_actor* pActor, tCar_crush* pCrush) {
+    tCar_crush_spec* spec;
+    tCar_crush_limits* crush_limits;
+    struct {
+        tCar_spec* car;
+        tCar_crush* crush;
+    } context;
+    float rate;
+    float crush_len;
+    br_vector3 crush;
+    int axis;
+    int flip;
+    int limit_count;
+    int found;
+    int shape_index;
+    int vertex_count;
+    float val;
+    float bend;
+    float aux;
+    int new_axis;
+    int k;
+
+    spec = pCar->car_crush_spec;
+    if (spec == NULL) {
+        return;
+    }
+    if (*(int*)((tU8*)pCar + 0x1b4) != 0) {
+        return;
+    }
+    if (spec->field_0x4b8 != 0) {
+        return;
+    }
+
+    context.car = pCar;
+    context.crush = pCrush;
+
+    {
+        float x = pCrush->field_0x40;
+        if (x > gMax_crush_force) {
+            x = gMax_crush_force;
+        }
+        rate = (float)(x / (double)pCrush->count);
+    }
+
+    if (spec->field_0x144 != 0) {
+        ARStartPipingSession(3);
+        DRActorEnumRecurseWithSnart(pCar->car_model_actor, NULL, CrushCarModelCbfn, &context);
+        AREndPipingSession();
+        return;
+    }
+
+    if (pActor != pCar->car_master_actor) {
+        goto tail;
+    }
+
+    crush.v[0] = pCrush->field_0x44.v[0] * rate;
+    crush.v[1] = pCrush->field_0x44.v[1] * rate;
+    if (crush.v[1] > gCrushZero) {
+        crush.v[1] = 0.0f;
+    }
+    crush.v[2] = pCrush->field_0x44.v[2] * rate;
+    crush.v[0] = gCrushZero;
+    crush_len = (float)sqrt((double)(crush.v[1] * crush.v[1] + crush.v[2] * crush.v[2]));
+    if (crush_len < gCrushEps) {
+        goto tail;
+    }
+
+    crush.v[0] = gCrushZero / crush_len;
+    crush.v[1] = crush.v[1] / crush_len;
+    crush.v[2] = crush.v[2] / crush_len;
+
+    if (fabsf(crush.v[0]) > gCrushSqrtHalf) {
+        axis = 0;
+    } else {
+        axis = 1;
+        if (fabsf(crush.v[1]) > gCrushSqrtHalf) {
+            axis = 2;
+        }
+    }
+
+    flip = (crush.v[axis] > gCrushZero) ? 1 : 0;
+    limit_count = spec->field_0xa4.counts[axis][flip];
+    crush_limits = &spec->field_0xbc;
+    found = 0;
+    for (k = 0; k < limit_count; k++) {
+        if (flip != 0) {
+            if (crush_limits->limits[axis][1].values[k] > pCrush->field_0x34.v[axis]) {
+                found = k;
+                break;
+            }
+        } else {
+            if (crush_limits->limits[axis][0].values[k] < pCrush->field_0x34.v[axis]) {
+                found = k;
+                break;
+            }
+        }
+    }
+
+    for (shape_index = 0; shape_index < spec->count_shapes; shape_index++) {
+        tCar_crush_shape_info* shape = &spec->field_0x4[shape_index];
+        if (shape->field_0x8 != 0 || shape->count_points <= 0) {
+            continue;
+        }
+
+        for (vertex_count = 0; vertex_count < shape->count_points; vertex_count++) {
+            tCar_crush_reordered_shape_info* vertex_info = &shape->field_0x18[vertex_count];
+
+            val = vertex_info->field_0x24 * crush_len;
+            bend = CrushShapeBendFactor(&vertex_info->field_0x18, pCrush->count, pCrush->vectors, gMax_crush_dist_sq);
+            if (bend == gCrushZero) {
+                aux = gForce_to_movement_factor * val * bend;
+                new_axis = CrushShapeFindAxis(&crush);
+                CrushShapeMorphVertex(&aux, new_axis, vertex_info->field_0x18.v[new_axis], crush.v[new_axis + 1], (tU32)vertex_info->field_0x28, crush_limits, found);
+                if (aux == gCrushZero) {
+                    vertex_info->field_0x18.v[1] += crush.v[1] * aux;
+                    vertex_info->field_0x18.v[2] += crush.v[2] * aux;
+                    vertex_info->field_0x18.v[0] += crush.v[0] * aux;
+                }
+            }
+
+            if (DRVector3TestForNan(&vertex_info->field_0x18)) {
+                PDEnterDebugger("NaN");
+            }
+            CrushShapeFinishVertex(&vertex_info->field_0x18, vertex_info->field_0x28, crush_limits);
+        }
+    }
+    spec->expand_bounding_box = 7;
+
+tail:
+    ARStartPipingSession(3);
+    DRActorEnumRecurseWithSnart(pActor, NULL, CrushCarActorCbfn, &context);
+    AREndPipingSession();
+    pCar->use_shell_model = 0;
 }
 
 void C2_HOOK_FASTCALL DoSpams(void) {
     int i;
 
     for (i = 0; i < gCount_car_damage_crush_list; i++) {
-        TotallySpamTheModel(gCar_damage_crush_list[i].car CARPOCALYPSE2_THISCALL_EDX, gCar_damage_crush_list[i].damage);
+        TotallySpamTheModel(gCar_damage_crush_list[i].car, gCar_damage_crush_list[i].damage);
     }
     gCount_car_damage_crush_list = 0;
 }
