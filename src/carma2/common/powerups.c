@@ -84,8 +84,20 @@ int gNumber_of_powerups;
 
 // GLOBAL: CARMA2_HW 0x006a0a54
 extern tPowerup* gPowerup_array;
+
+extern tNet_mode gNet_mode;
+extern int gReseed_crush_rng;
+extern int gRecovery_voucher_count;
+
+void C2_HOOK_FASTCALL AddVouchers(int amount);
+void C2_HOOK_FASTCALL RecalculateCarMassMomentOfInertia(tCar_spec* car);
 // GLOBAL: CARMA2_HW 0x0074d1a4
 extern int gNet_powerup_time_replacement;
+
+void C2_HOOK_FASTCALL ScalePeds(br_vector3* scale);
+void C2_HOOK_STDCALL ScalePedHeads(float head_scale);
+void C2_HOOK_FASTCALL MakePedsEthereal(void);
+void C2_HOOK_FASTCALL MakePedsNotEthereal(void);
 // GLOBAL: CARMA2_HW 0x006a0948
 int gNumber_of_powerup_respawn_specs;
 
@@ -1386,9 +1398,11 @@ int C2_HOOK_FASTCALL SetPedSpeed(tPowerup* powerup, tCar_spec* car) {
 
 // FUNCTION: CARMA2_HW 0x004dc750
 int C2_HOOK_FASTCALL SetPedSize(tPowerup* powerup, tCar_spec* car) {
+    br_vector3 scale;
 
-    NOT_IMPLEMENTED();
-    return 0;
+    BrVector3Set(&scale, powerup->float_params[0], powerup->float_params[1], powerup->float_params[2]);
+    ScalePeds(&scale);
+    return powerup - gPowerup_array;
 }
 
 // FUNCTION: CARMA2_HW 0x004dc7d0
@@ -1583,15 +1597,20 @@ int C2_HOOK_FASTCALL SetSuicidalPedestrians(tPowerup* powerup, tCar_spec* car) {
 // FUNCTION: CARMA2_HW 0x004de7d0
 int C2_HOOK_FASTCALL GotVouchers(tPowerup* powerup, tCar_spec* car) {
 
-    NOT_IMPLEMENTED();
-    return 0;
+    if (car && car->driver == eDriver_local_human) {
+        AddVouchers(*powerup->integer_params);
+    }
+    return powerup - gPowerup_array;
 }
 
 // FUNCTION: CARMA2_HW 0x004debb0
 int C2_HOOK_FASTCALL SetMassMultiplier(tPowerup* powerup, tCar_spec* car) {
 
-    NOT_IMPLEMENTED();
-    return 0;
+    car->field_0x4c8 = powerup->float_params[0];
+    if (gReseed_crush_rng) {
+        RecalculateCarMassMomentOfInertia(car);
+    }
+    return powerup - gPowerup_array;
 }
 
 // FUNCTION: CARMA2_HW 0x004de820
@@ -1634,9 +1653,11 @@ void C2_HOOK_FASTCALL ResetElectroBastard(tPowerup* powerup, tCar_spec* car) {
 
 // FUNCTION: CARMA2_HW 0x004dc7a0
 int C2_HOOK_FASTCALL SetPedHeadSize(tPowerup* powerup, tCar_spec* car) {
+    br_scalar head_scale;
 
-    NOT_IMPLEMENTED();
-    return 0;
+    head_scale = powerup->float_params[0];
+    ScalePedHeads(head_scale);
+    return powerup - gPowerup_array;
 }
 
 // FUNCTION: CARMA2_HW 0x004deca0
@@ -1691,8 +1712,8 @@ int C2_HOOK_FASTCALL SetPedBrittle(tPowerup* powerup, tCar_spec* car) {
 // FUNCTION: CARMA2_HW 0x004de930
 int C2_HOOK_FASTCALL SetGhostPeds(tPowerup* powerup, tCar_spec* car) {
 
-    NOT_IMPLEMENTED();
-    return 0;
+    MakePedsEthereal();
+    return powerup - gPowerup_array;
 }
 
 // FUNCTION: CARMA2_HW 0x004de870
@@ -1799,8 +1820,9 @@ void C2_HOOK_FASTCALL ResetPedSpeed(tPowerup* powerup, tCar_spec* car) {
 
 // FUNCTION: CARMA2_HW 0x004dc9d0
 void C2_HOOK_FASTCALL ResetPedSize(tPowerup* powerup, tCar_spec* car) {
+    br_vector3 scale = { 1.0f, 1.0f, 1.0f };
 
-    NOT_IMPLEMENTED();
+    ScalePeds(&scale);
 }
 
 // FUNCTION: CARMA2_HW 0x004dca10
@@ -1959,7 +1981,7 @@ void C2_HOOK_FASTCALL ResetSuicidalPeds(tPowerup* powerup, tCar_spec* car) {
 void C2_HOOK_FASTCALL ResetMassMultiplier(tPowerup* powerup, tCar_spec* car) {
 
     car->field_0x4c8 = 1.0f;
-    if (gNet_mode) {
+    if (gReseed_crush_rng) {
         RestoreCarPixelmaps(car);
     }
 }
@@ -2001,7 +2023,7 @@ void C2_HOOK_FASTCALL ResetPedBrittle(tPowerup* powerup, tCar_spec* car) {
 // FUNCTION: CARMA2_HW 0x004de9a0
 void C2_HOOK_FASTCALL ResetGhostPeds(tPowerup* powerup, tCar_spec* car) {
 
-    NOT_IMPLEMENTED();
+    MakePedsNotEthereal();
 }
 
 // FUNCTION: CARMA2_HW 0x004de960

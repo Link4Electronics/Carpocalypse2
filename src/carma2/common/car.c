@@ -2199,6 +2199,12 @@ intptr_t C2_HOOK_CDECL ActorFunks(br_actor* pActor, void* pContext) {
     return 0;
 }
 
+// FUNCTION: CARMA2_HW 0x004f9020
+void C2_HOOK_FASTCALL RecalculateCarMassMomentOfInertia(tCar_spec* car) {
+
+    NOT_IMPLEMENTED();
+}
+
 // FUNCTION: CARMA2_HW 0x0047b2b0
 void C2_HOOK_FASTCALL MasterDisableFunkotronic(int pFunk_index) {
 

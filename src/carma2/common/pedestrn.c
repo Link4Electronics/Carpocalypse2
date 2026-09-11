@@ -29,8 +29,13 @@
 #include "carpocalypse2_macros.h"
 #include "carpocalypse2_types.h"
 
-void C2_HOOK_FASTCALL MakeCharacterPhysicsSetup(tPhysics_object* obj, void* frame, int bone_pos_null, br_vector3* bone_vec, br_vector3* bone_ptr);
+void C2_HOOK_FASTCALL MakeCharacterPhysicsSetup(tPhysics_object* obj, br_bounds3* frame, int bone_pos_null, br_vector3* bone_vec, br_vector3* bone_ptr);
 int C2_HOOK_FASTCALL PHILAddObjectWithFlag(tPhysics_object* pObject);
+void C2_HOOK_FASTCALL ScaleAllPeds(int pMorph_or_personality, br_scalar* pScale, int pMode);
+void C2_HOOK_FASTCALL ApplyToPedMaterialsBr(void (C2_HOOK_FASTCALL* pCallback)(void*));
+void C2_HOOK_FASTCALL ApplyToPedMaterialsBone(void (C2_HOOK_FASTCALL* pCallback)(void*));
+void C2_HOOK_FASTCALL ApplyToPedMaterialsFade(void (C2_HOOK_FASTCALL* pCallback)(void*));
+void C2_HOOK_CDECL BrModelUpdate(br_model* pModel, br_uint_16 pFlags);
 #include "displays.h"
 #include "racemem.h"
 #include "structur.h"
@@ -398,6 +403,12 @@ float gPedestrian_speed_factor;
 
 // GLOBAL: CARMA2_HW 0x007447c0
 br_vector3 gPed_scale;
+
+// GLOBAL: CARMA2_HW 0x0058a988
+float gConst_replay_rate_zero;
+
+// GLOBAL: CARMA2_HW 0x0058aba0
+float gConst_average_ped_scale_factor;
 
 // GLOBAL: CARMA2_HW 0x0069bc24
 float gAverage_ped_scale;
@@ -2170,6 +2181,132 @@ void C2_HOOK_FASTCALL RenderElectroBastardRays(br_pixelmap* pRender_screen, br_p
 void C2_HOOK_FASTCALL ResetPedNearness(void) {
 
     gPed_nearness = 1;
+}
+
+// FUNCTION: CARMA2_HW 0x004d69b0
+void C2_HOOK_FASTCALL ScalePeds(br_vector3* scale) {
+    br_scalar s[3];
+    int i;
+
+    s[0] = scale->v[0] / gPed_scale.v[0];
+    s[1] = scale->v[1] / gPed_scale.v[1];
+    s[2] = scale->v[2] / gPed_scale.v[2];
+    if (s[0] == 1.0 && s[1] == 1.0 && s[2] == 1.0) {
+        return;
+    }
+    (void)ScaleAllPeds(-1, s, 1);
+    gPed_scale = *scale;
+    gAverage_ped_scale = (gPed_scale.v[0] + gPed_scale.v[1] + gPed_scale.v[2]) * gConst_average_ped_scale_factor;
+    if (gPed_676914) {
+        if (ARGetReplayRate() > gConst_replay_rate_zero) {
+            for (i = 0; i < gPed_count; i++) {
+                if (gPedestrian_array[i].flags & 1) {
+                    SetCharacterBonePositions(gPedestrian_array[i].character, 3, 0);
+                }
+            }
+        }
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x004d6ab0
+void C2_HOOK_STDCALL ScalePedHeads(float head_scale) {
+    br_scalar s[3];
+    int i;
+
+    s[0] = head_scale / gPed_head_scale;
+    s[1] = s[0];
+    s[2] = s[0];
+    (void)ScaleAllPeds(-2, s, 0);
+    gPed_head_scale = head_scale;
+    if (gPed_676914) {
+        if (ARGetReplayRate() > gConst_replay_rate_zero) {
+            for (i = 0; i < gPed_count; i++) {
+                if (gPedestrian_array[i].flags & 1) {
+                    SetCharacterBonePositions(gPedestrian_array[i].character, 3, 0);
+                }
+            }
+        }
+    }
+}
+
+#pragma auto_inline(off)
+// FUNCTION: CARMA2_HW 0x0040c420
+void C2_HOOK_FASTCALL ScaleAllPeds(int pMorph_or_personality, br_scalar* pScale, int pMode) {
+
+    (void)pMorph_or_personality;
+    (void)pScale;
+    (void)pMode;
+    NOT_IMPLEMENTED();
+}
+
+// FUNCTION: CARMA2_HW 0x004d6b70
+void C2_HOOK_FASTCALL EtherealiseMaterial1(void* pMaterial) {
+    BlendifyMaterial((br_material*)pMaterial, 0x19);
+    BrMaterialUpdate((br_material*)pMaterial, 0x7fff);
+}
+
+// FUNCTION: CARMA2_HW 0x004d6b90
+void C2_HOOK_FASTCALL EtherealiseCharacter1(void* pCharacter) {
+
+    *(tU32*)((char*)pCharacter + 0x19c) |= 4;
+}
+
+// FUNCTION: CARMA2_HW 0x004d6ba0
+void C2_HOOK_FASTCALL EtherealiseMaterial2(void* pMaterial) {
+    BrModelUpdate((br_model*)pMaterial, 0x10);
+}
+
+// FUNCTION: CARMA2_HW 0x004d6be0
+void C2_HOOK_FASTCALL DeetherealiseMaterial1(void* pMaterial) {
+    BlendifyMaterial((br_material*)pMaterial, 0x64);
+    BrMaterialUpdate((br_material*)pMaterial, 0x7fff);
+}
+
+// FUNCTION: CARMA2_HW 0x004d6c00
+void C2_HOOK_FASTCALL DeetherealiseCharacter1(void* pCharacter) {
+
+    *(tU32*)((char*)pCharacter + 0x19c) &= ~4;
+}
+
+// FUNCTION: CARMA2_HW 0x0040c490
+void C2_HOOK_FASTCALL ApplyToPedMaterialsBr(void (C2_HOOK_FASTCALL* pCallback)(void*)) {
+
+    (void)pCallback;
+    NOT_IMPLEMENTED();
+}
+
+// FUNCTION: CARMA2_HW 0x0040c4e0
+void C2_HOOK_FASTCALL ApplyToPedMaterialsBone(void (C2_HOOK_FASTCALL* pCallback)(void*)) {
+
+    (void)pCallback;
+    NOT_IMPLEMENTED();
+}
+
+// FUNCTION: CARMA2_HW 0x0040c560
+void C2_HOOK_FASTCALL ApplyToPedMaterialsFade(void (C2_HOOK_FASTCALL* pCallback)(void*)) {
+
+    (void)pCallback;
+    NOT_IMPLEMENTED();
+}
+
+#pragma auto_inline(on)
+
+// FUNCTION: CARMA2_HW 0x004d6b40
+void C2_HOOK_FASTCALL MakePedsEthereal(void) {
+
+    ApplyToPedMaterialsBr(EtherealiseMaterial1);
+    ApplyToPedMaterialsBone(EtherealiseCharacter1);
+    ApplyToPedMaterialsFade(EtherealiseMaterial2);
+    gEthereal_pedestrians = 1;
+}
+
+// FUNCTION: CARMA2_HW 0x004d6bb0
+void C2_HOOK_FASTCALL MakePedsNotEthereal(void) {
+
+    ApplyToPedMaterialsBr(DeetherealiseMaterial1);
+    ApplyToPedMaterialsBone(DeetherealiseCharacter1);
+    ApplyToPedMaterialsFade(EtherealiseMaterial2);
+    gEthereal_pedestrians = 0;
 }
 
 void C2_HOOK_FASTCALL PossiblePedSmear(tPedestrian* pPed) {
@@ -4537,10 +4674,121 @@ int C2_HOOK_FASTCALL MakeCharacterPhysics(tPed_character_instance* pCharacter, t
 }
 
 #pragma auto_inline(off)
-// FUNCTION: CARMA2_HW 0x004087b0
-void C2_HOOK_FASTCALL MakeCharacterPhysicsSetup(tPhysics_object* obj, void* frame, int bone_pos_null, br_vector3* bone_vec, br_vector3* bone_ptr) {
+typedef struct {
+    br_vector3 v0;
+    br_vector3 v1;
+} tPed_physics_shape_bone;
 
-    NOT_IMPLEMENTED();
+#define MAKECHARACTERPHYSICSSETUP_BONE (*(tPed_physics_shape_bone**)((tU8*)obj->shape + 0x40))
+
+// FUNCTION: CARMA2_HW 0x004087b0
+void C2_HOOK_FASTCALL MakeCharacterPhysicsSetup(tPhysics_object* obj, br_bounds3* frame, int bone_pos_null, br_vector3* bone_vec, br_vector3* bone_ptr) {
+    br_scalar d[3];
+    br_scalar dmax[3];
+    br_scalar P[3];
+    br_scalar Q[3];
+    br_scalar a;
+    br_scalar b;
+    br_scalar maxcomp;
+    br_scalar Vx;
+    br_scalar Vy;
+    br_scalar Vz;
+    int index;
+    int r1;
+    int r2;
+    int i;
+
+    if (frame != NULL) {
+        d[0] = frame->max.v[0] - frame->min.v[0];
+        d[1] = frame->max.v[1] - frame->min.v[1];
+        d[2] = frame->max.v[2] - frame->min.v[2];
+        dmax[0] = d[0];
+        dmax[1] = d[1];
+        dmax[2] = d[2];
+    }
+
+    switch (obj->shape->common.type) {
+    case kCollisionShapeType_Box:
+        obj->shape->common.bb = *frame;
+        break;
+    case kCollisionShapeType_Wireframe:
+        if (bone_vec != NULL && bone_ptr != NULL) {
+            MAKECHARACTERPHYSICSSETUP_BONE->v0.v[0] = bone_vec->v[0];
+            MAKECHARACTERPHYSICSSETUP_BONE->v0.v[1] = bone_vec->v[1];
+            MAKECHARACTERPHYSICSSETUP_BONE->v0.v[2] = bone_vec->v[2];
+            MAKECHARACTERPHYSICSSETUP_BONE->v1.v[0] = bone_ptr->v[0];
+            MAKECHARACTERPHYSICSSETUP_BONE->v1.v[1] = bone_ptr->v[1];
+            MAKECHARACTERPHYSICSSETUP_BONE->v1.v[2] = bone_ptr->v[2];
+        } else {
+            maxcomp = -1.0f;
+            index = -1;
+            for (i = 0; i < 3; i++) {
+                if (dmax[i] > maxcomp) {
+                    maxcomp = dmax[i];
+                    index = i;
+                }
+            }
+            r1 = (index + 1) % 3;
+            r2 = (index + 2) % 3;
+            P[index] = frame->min.v[index];
+            Q[index] = frame->max.v[index];
+            P[r1] = (frame->min.v[r1] + frame->max.v[r1]) * 0.5f;
+            Q[r1] = P[r1];
+            P[r2] = (frame->min.v[r2] + frame->max.v[r2]) * 0.5f;
+            Q[r2] = P[r2];
+            if (bone_vec != NULL) {
+                Vx = bone_vec->v[0];
+                Vy = bone_vec->v[1];
+                Vz = bone_vec->v[2];
+            } else {
+                Vx = bone_ptr->v[0];
+                Vy = bone_ptr->v[1];
+                Vz = bone_ptr->v[2];
+            }
+            a = Vx * Vx + (Vx - P[0] - Q[0]) * (Vy - P[1]);
+            b = (Vy - P[1]) * (Vy - P[1]) + (Vy - Q[1]) * (Vy - Q[1]) + (Vz - P[2]) * (Vz - P[2]);
+            if (b < a) {
+                MAKECHARACTERPHYSICSSETUP_BONE->v0.v[0] = P[0];
+                MAKECHARACTERPHYSICSSETUP_BONE->v0.v[1] = P[1];
+                MAKECHARACTERPHYSICSSETUP_BONE->v0.v[2] = P[2];
+            } else {
+                MAKECHARACTERPHYSICSSETUP_BONE->v0.v[0] = Q[0];
+                MAKECHARACTERPHYSICSSETUP_BONE->v0.v[1] = Q[1];
+                MAKECHARACTERPHYSICSSETUP_BONE->v0.v[2] = Q[2];
+            }
+            MAKECHARACTERPHYSICSSETUP_BONE->v1.v[0] = Vx;
+            MAKECHARACTERPHYSICSSETUP_BONE->v1.v[1] = Vy;
+            MAKECHARACTERPHYSICSSETUP_BONE->v1.v[2] = Vz;
+        }
+        break;
+    case kCollisionShapeType_Sphere:
+        ((br_scalar*)((tU8*)obj->shape + 0x38))[0] = (1.0f / 6.0f) * (d[0] + d[1] + d[2]);
+        ((br_scalar*)((tU8*)obj->shape + 0x38))[4] = ((br_scalar*)((tU8*)obj->shape + 0x38))[0] * ((br_scalar*)((tU8*)obj->shape + 0x38))[0];
+        ((br_scalar*)((tU8*)obj->shape + 0x38))[1] = frame->min.v[0] - (-0.5f * d[0]);
+        ((br_scalar*)((tU8*)obj->shape + 0x38))[2] = frame->min.v[1] - (-0.5f * d[2]);
+        ((br_scalar*)((tU8*)obj->shape + 0x38))[3] = frame->min.v[2] - (-0.5f * d[1]);
+        break;
+    }
+
+    FillInShape(obj->shape);
+    UpdateCollisionObject(obj);
+
+    if (frame == NULL) {
+        frame = &obj->shape->common.bb;
+        d[0] = frame->max.v[0] - frame->min.v[0];
+        d[1] = frame->max.v[1] - frame->min.v[1];
+        d[2] = frame->max.v[2] - frame->min.v[2];
+    }
+
+    obj->I.v[0] = obj->M * (d[1] * d[1] + d[2] * d[2]);
+    obj->I.v[1] = obj->M * (d[0] * d[0] + d[2] * d[2]);
+    obj->I.v[2] = obj->M * (d[0] * d[0] + d[1] * d[1]);
+
+    if (bone_pos_null != 0) {
+        obj->cmpos.v[0] = frame->min.v[0] - (-0.5f * d[0]);
+        obj->cmpos.v[1] = frame->min.v[1] - (-0.5f * d[1]);
+        obj->cmpos.v[2] = frame->min.v[2] - (-0.5f * d[2]);
+    }
 }
 #pragma auto_inline(on)
 
