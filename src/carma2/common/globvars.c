@@ -240,6 +240,9 @@ br_model* gBlend_model2;
 // GLOBAL: CARMA2_HW 0x0074caac
 br_actor* gBlend_actor;
 
+// GLOBAL: CARMA2_HW 0x00660148
+br_token_value* gDAT_00660148;
+
 // GLOBAL: CARMA2_HW 0x006a87f0
 tBRender_smoke gBR_smoke_structs[35];
 

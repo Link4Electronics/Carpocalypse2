@@ -482,7 +482,25 @@ void C2_HOOK_FASTCALL InitRayCasting(void) {
 #ifndef CARPOCALYPSE2_MATCHING
     /* stub: no-op for Linux boot */
 #else
-    NOT_IMPLEMENTED();
+    br_camera* cam;
+
+    gY_picking_camera = BrActorAllocate(BR_ACTOR_CAMERA, NULL);
+    cam = gY_picking_camera->type_data;
+    cam->type = BR_CAMERA_PERSPECTIVE_FOV;
+    cam->field_of_view = BrDegreeToAngle(70);
+    cam->hither_z = 0.001f;
+    cam->yon_z = 1000.0f;
+    cam->aspect = 1.0f;
+
+    gY_picking_camera->t.t.mat.m[0][0] = 1.0f;
+    gY_picking_camera->t.t.mat.m[0][1] = 0.0f;
+    gY_picking_camera->t.t.mat.m[0][2] = 0.0f;
+    gY_picking_camera->t.t.mat.m[1][0] = 0.0f;
+    gY_picking_camera->t.t.mat.m[1][1] = 0.0f;
+    gY_picking_camera->t.t.mat.m[1][2] = -1.0f;
+    gY_picking_camera->t.t.mat.m[2][0] = 0.0f;
+    gY_picking_camera->t.t.mat.m[2][1] = 1.0f;
+    gY_picking_camera->t.t.mat.m[2][2] = 0.0f;
 #endif
 }
 

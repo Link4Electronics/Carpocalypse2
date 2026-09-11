@@ -1,5 +1,6 @@
 #include "spark.h"
 
+#include "car.h"
 #include "depth.h"
 #include "errors.h"
 #include "globvars.h"
@@ -2115,7 +2116,55 @@ void C2_HOOK_FASTCALL RestoreCarPixelmaps(tCar_spec* pCar_spec) {
 #ifndef CARPOCALYPSE2_MATCHING
     UnBlendifyCar(pCar_spec);
 #else
-    NOT_IMPLEMENTED();
+    tCarFunks_master* funks;
+    int i;
+    int j;
+    int funk_index;
+
+    funks = (tCarFunks_master*)*(void**)((char*)pCar_spec + 0x18d4);
+
+    DRActorEnumRecurse(pCar_spec->car_model_actor, ActorFunks, (void*)MasterEnableFunkotronic);
+
+    for (i = 0; i < funks->count_0x270; i++) {
+        br_actor* bit_actor = funks->bit_0x274[i].field_0x0;
+
+        if (bit_actor->user != NULL) {
+            tFunk_list* funk_list = ((tFunk_container*)bit_actor->user)->funk_list;
+
+            if (funk_list != NULL) {
+                if (funk_list->funk_records != NULL) {
+                    for (j = 0; j < funk_list->funk_count; j++) {
+                        funk_index = funk_list->funk_records[j].funk_index;
+                        if (funk_index >= 0) {
+                            MasterEnableFunkotronic(funk_index);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    for (i = 0; i < funks->count_0x2b0; i++) {
+        br_actor* bit_actor = funks->bit_0x2b4[i].field_0x0;
+
+        if (bit_actor->user != NULL) {
+            tFunk_list* funk_list = ((tFunk_container*)bit_actor->user)->funk_list;
+
+            if (funk_list != NULL) {
+                if (funk_list->funk_records != NULL) {
+                    for (j = 0; j < funk_list->funk_count; j++) {
+                        funk_index = funk_list->funk_records[j].funk_index;
+                        if (funk_index >= 0) {
+                            MasterEnableFunkotronic(funk_index);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    ForEveryCarMaterial(pCar_spec, RestorePixelmap, 1);
+    pCar_spec->field_0x1960 = NULL;
 #endif
 }
 
@@ -2177,7 +2226,124 @@ void C2_HOOK_FASTCALL InitSmokeStuff(void) {
         BrMaterialAdd(gBR_smoke_structs[i].material);
     }
 #else
-    NOT_IMPLEMENTED();
+    br_pixelmap* pm;
+    tPath_name path;
+    int i;
+
+    gBlend_model = BrModelAllocate("gBlend_model", 4, 2);
+    gBlend_model2 = BrModelAllocate("gBlend_model2", 6, 4);
+    gBlend_actor = BrActorAllocate(BR_ACTOR_MODEL, NULL);
+
+    for (i = 0; i < 35; i++) {
+        gBR_smoke_structs[i].material = BrMaterialAllocate("some smoke");
+        if (gBR_smoke_structs[i].material == NULL) {
+            break;
+        }
+    }
+
+    if (gBlend_model == NULL || i != 35 || gBlend_actor == NULL) {
+        FatalError(kFatalError_OOM_S);
+    }
+
+    gBlend_actor->identifier = "gBlend_actor";
+    gBlend_actor->model = gBlend_model;
+
+    gBlend_model->faces[0].vertices[0] = 0;
+    gBlend_model->faces[0].vertices[1] = 1;
+    gBlend_model->faces[0].vertices[2] = 2;
+    gBlend_model->faces[1].vertices[0] = 2;
+    gBlend_model->faces[1].vertices[1] = 3;
+    gBlend_model->faces[1].vertices[2] = 0;
+
+    gBlend_model2->faces[0].vertices[0] = 0;
+    gBlend_model2->faces[0].vertices[1] = 1;
+    gBlend_model2->faces[0].vertices[2] = 2;
+    gBlend_model2->faces[1].vertices[0] = 2;
+    gBlend_model2->faces[1].vertices[1] = 3;
+    gBlend_model2->faces[1].vertices[2] = 0;
+    gBlend_model2->faces[2].vertices[0] = 1;
+    gBlend_model2->faces[2].vertices[1] = 5;
+    gBlend_model2->faces[2].vertices[2] = 2;
+    gBlend_model2->faces[3].vertices[0] = 1;
+    gBlend_model2->faces[3].vertices[1] = 4;
+    gBlend_model2->faces[3].vertices[2] = 5;
+
+    gBlend_model->vertices[0].p.v[0] = -1.0f;
+    gBlend_model->vertices[0].p.v[1] = 1.0f;
+    gBlend_model->vertices[0].p.v[2] = 0.0f;
+    gBlend_model->vertices[1].p.v[0] = -1.0f;
+    gBlend_model->vertices[1].p.v[1] = -1.0f;
+    gBlend_model->vertices[1].p.v[2] = 0.0f;
+    gBlend_model->vertices[2].p.v[0] = 1.0f;
+    gBlend_model->vertices[2].p.v[1] = -1.0f;
+    gBlend_model->vertices[2].p.v[2] = 0.0f;
+    gBlend_model->vertices[3].p.v[0] = 1.0f;
+    gBlend_model->vertices[3].p.v[1] = 1.0f;
+    gBlend_model->vertices[3].p.v[2] = 0.0f;
+
+    gBlend_model2->vertices[0].p.v[0] = -1.0f;
+    gBlend_model2->vertices[0].p.v[1] = 1.0f;
+    gBlend_model2->vertices[0].p.v[2] = 0.0f;
+    gBlend_model2->vertices[1].p.v[0] = -1.0f;
+    gBlend_model2->vertices[1].p.v[1] = 0.0f;
+    gBlend_model2->vertices[1].p.v[2] = 0.0f;
+    gBlend_model2->vertices[2].p.v[0] = 1.0f;
+    gBlend_model2->vertices[2].p.v[1] = 0.0f;
+    gBlend_model2->vertices[2].p.v[2] = 0.0f;
+    gBlend_model2->vertices[3].p.v[0] = 1.0f;
+    gBlend_model2->vertices[3].p.v[1] = 1.0f;
+    gBlend_model2->vertices[3].p.v[2] = 0.0f;
+    gBlend_model2->vertices[4].p.v[0] = -1.0f;
+    gBlend_model2->vertices[4].p.v[1] = -0.25f;
+    gBlend_model2->vertices[4].p.v[2] = 0.0f;
+    gBlend_model2->vertices[5].p.v[0] = 1.0f;
+    gBlend_model2->vertices[5].p.v[1] = -0.25f;
+    gBlend_model2->vertices[5].p.v[2] = 0.0f;
+
+    gBlend_model->flags |= BR_MODF_KEEP_ORIGINAL;
+    gBlend_model2->flags |= BR_MODF_KEEP_ORIGINAL;
+
+    memcpy(path, "SMOKE.PIX", sizeof("SMOKE.PIX"));
+    pm = LoadPixelmap(path);
+    if (pm == NULL) {
+        FatalError(kFatalError_CantLoadPixelmapFile_S, path);
+    }
+
+    pm->map = gRender_palette;
+    BrMapAdd(pm);
+
+    for (i = 0; i < 35; i++) {
+        gBR_smoke_structs[i].material->flags = BR_MATF_LIGHT | BR_MATF_PRELIT | BR_MATF_SMOOTH | BR_MATF_PERSPECTIVE;
+        gBR_smoke_structs[i].material->extra_prim = (br_token_value*)&gDAT_00660148;
+        gBR_smoke_structs[i].material->colour_map = pm;
+        BrMaterialAdd(gBR_smoke_structs[i].material);
+    }
+
+    gBlend_model->vertices[0].map.v[0] = 0.0f;
+    gBlend_model->vertices[0].map.v[1] = 100.0f - 100.0f / (br_scalar)pm->height;
+    gBlend_model->vertices[1].map.v[0] = 0.0f;
+    gBlend_model->vertices[1].map.v[1] = 0.0f;
+    gBlend_model->vertices[2].map.v[0] = 100.0f - 100.0f / (br_scalar)pm->width;
+    gBlend_model->vertices[2].map.v[1] = 0.0f;
+    gBlend_model->vertices[3].map.v[0] = 100.0f - 100.0f / (br_scalar)pm->width;
+    gBlend_model->vertices[3].map.v[1] = 100.0f - 100.0f / (br_scalar)pm->height;
+
+    gBlend_model2->vertices[0].map.v[0] = 0.0f;
+    gBlend_model2->vertices[0].map.v[1] = 100.0f - 100.0f / (br_scalar)pm->height;
+    gBlend_model2->vertices[1].map.v[0] = 0.0f;
+    gBlend_model2->vertices[1].map.v[1] = 0.5f;
+    gBlend_model2->vertices[2].map.v[0] = 100.0f - 100.0f / (br_scalar)pm->width;
+    gBlend_model2->vertices[2].map.v[1] = 0.5f;
+    gBlend_model2->vertices[3].map.v[0] = 100.0f - 100.0f / (br_scalar)pm->width;
+    gBlend_model2->vertices[3].map.v[1] = 100.0f - 100.0f / (br_scalar)pm->height;
+    gBlend_model2->vertices[4].map.v[0] = 0.0f;
+    gBlend_model2->vertices[4].map.v[1] = 0.0f;
+    gBlend_model2->vertices[5].map.v[0] = 100.0f - 100.0f / (br_scalar)pm->width;
+    gBlend_model2->vertices[5].map.v[1] = 0.0f;
+
+    BrModelAdd(gBlend_model);
+    BrModelAdd(gBlend_model2);
+    BrActorAdd(gDont_render_actor, gBlend_actor);
 #endif
 }
 

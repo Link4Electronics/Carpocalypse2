@@ -295,6 +295,7 @@ address,type,name
 0x68c1e0,global,return_val
 0x68d6f4,global,gINT_0068d6f4
 0x6923ac,global,gOrig_render_palette
+0x6a20d0,global,gY_picking_camera
 0x6a2354,global,gFancy_shadow
 0x6a2488,global,gSaved_shade_tables
 0x6a32e0,global,gCurrent_skid

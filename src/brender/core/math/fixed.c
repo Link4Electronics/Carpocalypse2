@@ -228,9 +228,22 @@ br_fixed_ls C2_HOOK_CDECL BrFixedAbs(br_fixed_ls a) {
 }
 
 // FUNCTION: CARMA2_HW 0x00537120
-br_fixed_ls C2_HOOK_CDECL BrFixedMul(br_fixed_ls a, br_fixed_ls b) {
-
+br_fixed_ls C2_NAKED C2_HOOK_CDECL BrFixedMul(br_fixed_ls a, br_fixed_ls b) {
+#ifndef CARPOCALYPSE2_MATCHING
     return ((br_int_64)a * (br_int_64)b) >> 16;
+#else
+    __asm {
+        push ebp
+        mov ebp, esp
+        push edx
+        mov eax, dword ptr [ebp + 8]
+        imul dword ptr [ebp + 0xc]
+        shrd eax, edx, 16
+        pop edx
+        leave
+        ret 0
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00537131

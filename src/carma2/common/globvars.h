@@ -82,6 +82,9 @@ extern br_material* gLine_material;
 extern br_model* gBlend_model;
 extern br_model* gBlend_model2;
 extern br_actor* gBlend_actor;
+
+extern br_token_value* gDAT_00660148;
+
 extern tBRender_smoke gBR_smoke_structs[35];
 
 extern int gNo_current_game;
