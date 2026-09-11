@@ -1820,6 +1820,23 @@ int C2_HOOK_FASTCALL PHILAddActiveObject(tPhysics_object* pInfo, undefined4* pAr
     return PHILMakeObjectActive(pInfo, pArg3, pArg4, 0);
 }
 
+#pragma auto_inline(off)
+// FUNCTION: CARMA2_HW 0x004b62b0
+int C2_HOOK_FASTCALL PHILAddObjectWithFlag(tPhysics_object* pObject) {
+    int result;
+
+    if (gPHIL_enabled) {
+        return 0;
+    }
+    if (gPHIL_munging_objects) {
+        gPHIL_object_added = 1;
+    }
+    result = PHILAddObject(pObject);
+    gPHIL_object_added = 0;
+    return result;
+}
+#pragma auto_inline(on)
+
 void C2_HOOK_FASTCALL SwapPair(tPhysics_object* pObj1, tPhysics_object* pObj2) {
     tPhysics_object* obj1_prev;
     tPhysics_object* obj2_next;

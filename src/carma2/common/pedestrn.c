@@ -28,6 +28,9 @@
 
 #include "carpocalypse2_macros.h"
 #include "carpocalypse2_types.h"
+
+void C2_HOOK_FASTCALL MakeCharacterPhysicsSetup(tPhysics_object* obj, void* frame, int bone_pos_null, br_vector3* bone_vec, br_vector3* bone_ptr);
+int C2_HOOK_FASTCALL PHILAddObjectWithFlag(tPhysics_object* pObject);
 #include "displays.h"
 #include "racemem.h"
 #include "structur.h"
@@ -2441,9 +2444,79 @@ void C2_HOOK_FAKE_THISCALL ScoreForKilledPedestrian(tPedestrian* pPed, undefined
 }
 
 // FUNCTION: CARMA2_HW 0x00409570
-int C2_HOOK_FASTCALL SetCharacterPhysicsLevel(tPed_character_instance* pCharacter, int pLevel) {
+int C2_HOOK_CDECL SetCharacterPhysicsLevel(tPed_character_instance* pCharacter, int pLevel, tU32 pArg3) {
+    tPhysics_object* obj;
+    tPed_form* form;
+    int result = 0;
+    int mcc2_result;
+    int i;
 
-    NOT_IMPLEMENTED();
+    if (pLevel < 5) {
+        if (pCharacter->field_0x14 & 4) {
+            ((void(C2_HOOK_FASTCALL*)(tPed_character_instance*, int))0x409400)(pCharacter, 1);
+        } else {
+            result = 0x1f;
+        }
+    }
+    if (pLevel < 1) {
+        ((void(C2_HOOK_FASTCALL*)(tPed_character_instance*))0x409090)(pCharacter);
+    }
+    if (pLevel == 0) {
+        return result;
+    }
+
+    mcc2_result = MakeCharacterCollideworthy2(pCharacter, pLevel & 2, pArg3, -1);
+    if (mcc2_result == 0x17) {
+        mcc2_result = 0;
+    }
+    if (!(pLevel & 4) || mcc2_result != 0) {
+        return mcc2_result;
+    }
+
+    if (pCharacter->field_0x14 & 4) {
+        return 0;
+    }
+    if (pCharacter->field_0x14 == 0) {
+        return 0x15;
+    }
+
+    form = pCharacter->personality->form;
+    if (pCharacter->field_0x14 & 1) {
+        obj = form->simple_physicing[(tS8)pCharacter->field_0x5].collision_info;
+    } else {
+        tPhysics_object** list_objs = form->boned_physicing[(tS8)pCharacter->field_0x5].collision_infos;
+        obj = NULL;
+        for (i = 0; i < form->count_bones; i++) {
+            if (list_objs[i]->shape) {
+                obj = list_objs[i];
+                break;
+            }
+        }
+    }
+
+    obj->disable_move_rotate = 0;
+    {
+        br_vector3* field_0xd8 = &pCharacter->field_0xd8;
+        if (field_0xd8 != NULL) {
+            obj->v = *field_0xd8;
+            {
+                tPhysics_object* child = obj->child;
+                while (child != NULL) {
+                    ((void(C2_HOOK_FASTCALL*)(tPhysics_object*, br_vector3*))0x409300)(child, field_0xd8);
+                    child = child->next;
+                }
+            }
+        }
+    }
+
+    PHILMakeObjectActive(obj, NULL, NULL, 1);
+    obj->field_0xed = 1;
+    PHILSetObjectProperty(obj, 0, 1.0);
+    PHILSetObjectProperty(obj, 3, 0);
+    PHILSetObjectProperty(obj, 4, 0);
+    PHILSetObjectProperty(obj, 5, 0);
+    pCharacter->field_0x14 |= 4;
+    return 0;
 }
 
 void C2_HOOK_FASTCALL MakePedVanish(tPedestrian* pPed) {
@@ -2983,7 +3056,7 @@ void C2_HOOK_FASTCALL MungePedestrians(void) {
                     PedFallingForever(ped);
                 }
                 prev_field_0x10 = ped->character->field_0x10;
-                SetCharacterPhysicsLevel(ped->character, 0);
+                SetCharacterPhysicsLevelAR(ped->character, 0);
                 CharacterNoLongerRenderable(ped->character);
                 if (ped->character->field_0x10 != prev_field_0x10) {
                     PipeSingleVanishedDismembered(ped, prev_field_0x10, ped->character->field_0x10);
@@ -4393,11 +4466,13 @@ tPed_character_instance* C2_HOOK_FASTCALL GetTestPed(void) {
     return gPedestrian_array[gSelected_ped].character;
 }
 
+#pragma auto_inline(off)
 // FUNCTION: CARMA2_HW 0x00408200
 undefined4 C2_HOOK_FASTCALL MakeCharacterRenderable2(tPed_character_instance* pCharacter, int pIndex) {
 
     NOT_IMPLEMENTED();
 }
+#pragma auto_inline(on)
 
 // FUNCTION: CARMA2_HW 0x004083b0
 undefined4 C2_HOOK_FASTCALL MakeCharacterRenderable(tPed_character_instance* pCharacter) {
@@ -4417,10 +4492,223 @@ undefined4 C2_HOOK_FASTCALL MakeCharacterRenderable(tPed_character_instance* pCh
     return MakeCharacterRenderable2(pCharacter, i);
 }
 
-// FUNCTION: CARMA2_HW 0x00408c30
-int C2_HOOK_FASTCALL MakeCharacterCollideworthy2(tPed_character_instance* pCharacter, int pArg2, undefined4 pArg3, int pArg4) {
+// FUNCTION: CARMA2_HW 0x004085f0
+int C2_HOOK_FASTCALL MakeCharacterPhysics(tPed_character_instance* pCharacter, tPhysics_object* obj, br_actor* actor, void* frame, br_vector3* bone_pos, int kind, undefined4 pArg3, int flag, int bone_index, br_vector3* bone_vec, br_vector3* bone_ptr) {
+
+    BrMatrix34Copy(&obj->transform_matrix, &actor->t.t.mat);
+    obj->actor = actor;
+    MakeCharacterPhysicsSetup(obj, frame, bone_pos == NULL, bone_vec, bone_ptr);
+    obj->owner = pCharacter;
+    obj->flags_0x238 = (tU8)kind + 2;
+    if (bone_pos != NULL) {
+        *(br_vector3*)(void*)&obj->cmpos = *bone_pos;
+    }
+    obj->disable_move_rotate = 1;
+    obj->field_0xed = 1;
+    BrVector3SetFloat(&obj->v, 0.f, 0.f, 0.f);
+    BrVector3SetFloat(&obj->omega, 0.f, 0.f, 0.f);
+    BrVector3SetFloat(&obj->rotate_omega, 0.f, 0.f, 0.f);
+    BrVector3SetFloat(&obj->velocity_car_space, 0.f, 0.f, 0.f);
+    obj->uid = (tU8)bone_index;
+    obj->M = 1.f;
+    *(int*)((tU8*)obj + 0x258) = 0;
+    *(int*)((tU8*)obj + 0x25c) = 0;
+    if (kind == 1 || kind == 2) {
+        obj->flags |= kind;
+    }
+    if (flag != 0) {
+        if (PHILAddObjectWithFlag(obj) != 0) {
+            return 0;
+        }
+        PHILSetObjectProperty(obj, 0, 1.0);
+        PHILSetObjectProperty(obj, 3, pArg3 == 0);
+        PHILSetObjectProperty(obj, 4, 1);
+        PHILSetObjectProperty(obj, 5, 1);
+        PHILSetObjectProperty(obj, 7, 1);
+        PHILSetObjectProperty(obj, 8, (double)gPed_buoyancy_factor);
+        if (kind == 3) {
+            PHILSetObjectProperty(obj, 6, 1);
+        }
+    }
+    if (gPed_vtable->fill_in_object != NULL) {
+        gPed_vtable->fill_in_object((undefined4*)obj, kind + 2);
+    }
+    return 1;
+}
+
+#pragma auto_inline(off)
+// FUNCTION: CARMA2_HW 0x004087b0
+void C2_HOOK_FASTCALL MakeCharacterPhysicsSetup(tPhysics_object* obj, void* frame, int bone_pos_null, br_vector3* bone_vec, br_vector3* bone_ptr) {
 
     NOT_IMPLEMENTED();
+}
+#pragma auto_inline(on)
+
+// FUNCTION: CARMA2_HW 0x00408c30
+int C2_HOOK_FASTCALL MakeCharacterCollideworthy2(tPed_character_instance* pCharacter, int pArg2, undefined4 pArg3, int pArg4) {
+    tPed_personality* personality;
+    tPed_form* form;
+    tPed_form_boned_phys* bphys;
+    tPed_form_simple_phys* sphys;
+    tPhysics_object* cobj;
+    tPhysics_object** cinfos;
+    br_actor* actor;
+    br_actor** actors;
+    void* frame;
+    br_vector3* bone_ptr;
+    br_vector3* bone_vec;
+    int slot;
+    int count;
+    int i;
+    int j;
+    int used;
+    int result;
+    int flag;
+    int flag2;
+    float joint_len;
+
+    if ((pCharacter->field_0x14 & 1) && pArg2 == 0) {
+        return 0x17;
+    }
+    if ((pCharacter->field_0x14 & 2) && pArg2 != 0) {
+        return 0x17;
+    }
+
+    if (pCharacter->field_0x4 < 0) {
+        form = pCharacter->personality->form;
+        count = form->max_rendering_at_once;
+        for (used = 0; used < count; used++) {
+            if (form->actor_sets[used].field_0x0 == 0) {
+                break;
+            }
+        }
+        if (used == count) {
+            result = 1;
+        } else {
+            result = MakeCharacterRenderable2(pCharacter, used);
+        }
+        if (result == 1) {
+            return 0x15;
+        }
+    }
+
+    personality = pCharacter->personality;
+    form = personality->form;
+    if (pArg2 != 0) {
+        count = form->max_boned_physicing_at_once;
+        if (pArg4 < 0) {
+            slot = 0;
+            while (slot < count && form->boned_physicing[slot].field_0x0 != 0) {
+                slot++;
+            }
+            bphys = &form->boned_physicing[slot];
+        } else {
+            slot = pArg4;
+            bphys = &form->boned_physicing[pArg4];
+        }
+
+        if (slot != count) {
+            flag = 1;
+            flag2 = 0;
+            joint_len = 0.f;
+            bone_ptr = NULL;
+
+            pCharacter->field_0x14 = 2;
+            pCharacter->field_0x5 = (tU8)slot;
+            bphys->field_0x0 = 1;
+
+            if (form->count_bones != 0) {
+                for (i = 0; i < form->count_bones; i++) {
+                    cobj = bphys->collision_infos[i];
+                    if (cobj->shape != NULL) {
+                        cinfos = bphys->collision_infos;
+
+                        cobj->flags &= ~0x400;
+                        if (personality->bones[i].hinge != NULL) {
+                            cinfos[i]->physics_joint1 = ClonePhysicsJoint(personality->bones[i].hinge, kMem_physics_joint);
+                        } else {
+                            cinfos[i]->physics_joint1 = NULL;
+                        }
+                        for (j = 0; j < form->count_bones; j++) {
+                            if (form->bones[j].indices[0] == i) {
+                                bone_ptr = &personality->bones[j].field_0x2c;
+                                break;
+                            }
+                        }
+                        actor = form->actor_sets[(tS8)pCharacter->field_0x4].actors[i];
+                        frame = (actor->model != NULL) ? ((tU8*)actor->model + 0x34) : NULL;
+                        bone_vec = (form->bones[i].indices[0] >= 0) ? &personality->bones[i].field_0x20 : NULL;
+                        MakeCharacterPhysics(pCharacter, cobj, actor, frame, NULL, (i > 1) ? 2 : 1, pArg3, flag, i, bone_vec, bone_ptr);
+                        flag = 0;
+                        if (flag2 != 0) {
+                            if (cobj->physics_joint1 != NULL) {
+                                cobj->physics_joint1->friction = joint_len;
+                            }
+                        } else {
+                            flag2 = 1;
+                            joint_len = cobj->I.v[0] * 25.0f;
+                        }
+                    }
+                }
+            }
+            PHILSetObjectProperty(bphys->collision_infos[0], 1, 1);
+            return 0;
+        }
+    }
+
+    slot = pArg4;
+    if (pArg4 < 0) {
+        count = form->max_simple_physicing_at_once;
+        slot = 0;
+        while (slot < count && *((tU8*)&form->simple_physicing[slot].type) != 0) {
+            slot++;
+        }
+        if (slot == count) {
+            return 0x15;
+        }
+    }
+    sphys = &form->simple_physicing[slot];
+
+    actors = form->actor_sets[(tS8)pCharacter->field_0x4].actors;
+    if (MakeCharacterPhysics(pCharacter, sphys->collision_info, actors[0], &personality->bb, &personality->centre_of_mass, 0, pArg3, 1, 0, NULL, NULL) == 0) {
+        return 0x15;
+    }
+    pCharacter->field_0x14 = 1;
+    pCharacter->field_0x5 = (tU8)slot;
+    *((tU8*)&sphys->type) = 1;
+    if (pCharacter->field_0xc != 0) {
+        if ((tS8)pCharacter->field_0x6 < 0) {
+            count = form->max_boned_physicing_at_once;
+            used = 0;
+            while (used < count && form->boned_physicing[used].field_0x0 != 0) {
+                used++;
+            }
+            if (used != count) {
+                pCharacter->field_0x6 = (tU8)used;
+                form->boned_physicing[used].field_0x0 = 1;
+            } else {
+                return 0;
+            }
+        }
+        if (form->count_bones > 1) {
+            for (i = 1; i < form->count_bones; i++) {
+                if ((pCharacter->field_0xc & gPow2_array[i]) != 0 && (pCharacter->field_0x10 & gPow2_array[i]) == 0) {
+                    cobj = form->boned_physicing[(tS8)pCharacter->field_0x6].collision_infos[i];
+                    actor = form->actor_sets[(tS8)pCharacter->field_0x4].actors[i];
+                    frame = (actor->model != NULL) ? ((tU8*)actor->model + 0x34) : NULL;
+                    if (MakeCharacterPhysics(pCharacter, cobj, actor, frame, NULL, 3, pArg3, 1, 0, NULL, NULL) != 0) {
+                        cobj->v.v[0] = 0;
+                        cobj->v.v[1] = 0;
+                        cobj->v.v[2] = 0;
+                        cobj->omega.v[0] = 0;
+                        cobj->omega.v[1] = 0;
+                        cobj->omega.v[2] = 0;
+                    }
+                }
+            }
+        }
+    }
+    return 0;
 }
 
 // FUNCTION: CARMA2_HW 0x00409030

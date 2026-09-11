@@ -551,8 +551,79 @@ void C2_HOOK_FASTCALL ProcessNearbyActors(tTrack_spec* pTrack, br_vector3* pPos,
 
 // FUNCTION: CARMA2_HW 0x0040e290
 intptr_t C2_HOOK_CDECL FoundAnActor(br_actor* pActor, void* pContext) {
+    tFoundAnActor_context* c = pContext;
+    br_vector3* pos = c->pos;
 
-    NOT_IMPLEMENTED();
+    if (fabsf(pActor->t.t.translate.t.v[0] - pos->v[0]) > c->max_dist_axis) {
+        goto fail;
+    }
+    if (fabsf(pActor->t.t.translate.t.v[1] - pos->v[1]) > c->max_dist_axis) {
+        goto fail;
+    }
+    if (fabsf(pActor->t.t.translate.t.v[2] - pos->v[2]) > c->max_dist_axis) {
+        goto fail;
+    }
+
+    {
+        char actor_type = (char)*(tU8*)((tU8*)pActor + 0x12);
+        char* name = *(char**)((tU8*)pActor + 0x14);
+
+        if (actor_type != 1 && (c->match_flags & 0x10) == 0) {
+            if (name != NULL && *name == 0x26) {
+                if ((c->match_flags & 3) == 0) {
+                    goto fail;
+                }
+            } else {
+                if ((c->match_flags & 4) == 0) {
+                    goto fail;
+                }
+            }
+        }
+
+        if (c->match_type == 1) {
+            char* s;
+            if (actor_type != 1) {
+                goto fail;
+            }
+            s = *(char**)(*(char**)((tU8*)pActor + 0x18) + 4);
+            if (s == NULL) {
+                goto fail;
+            }
+            if (c->identifier_index >= 0) {
+                if (s[c->identifier_index] != c->identifier_value) {
+                    goto fail;
+                }
+            } else {
+                if (s[strlen(s) + c->identifier_index] != c->identifier_value) {
+                    goto fail;
+                }
+            }
+        }
+        if (c->match_type == 2) {
+            if (name == NULL) {
+                goto fail;
+            }
+            if (c->identifier_index >= 0) {
+                if (name[c->identifier_index] != c->identifier_value) {
+                    goto fail;
+                }
+            } else {
+                if (name[strlen(name) + c->identifier_index] != c->identifier_value) {
+                    goto fail;
+                }
+            }
+        }
+    }
+
+    {
+        float x0 = pos->v[0] - pActor->t.t.translate.t.v[0];
+        float y0 = pos->v[1] - pActor->t.t.translate.t.v[1];
+        float z0 = pos->v[2] - pActor->t.t.translate.t.v[2];
+        if (x0 * x0 + y0 * y0 + z0 * z0 < c->max_dist_squared) {
+            return c->callback(pActor, c->callback_context);
+        }
+    }
+fail:
     return 0;
 }
 
