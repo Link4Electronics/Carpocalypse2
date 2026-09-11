@@ -5035,6 +5035,28 @@ void C2_HOOK_FASTCALL SetCharacterMoveAR(tPed_character_instance* pCharacter, in
     NOT_IMPLEMENTED();
 }
 
+#pragma auto_inline(off)
+// FUNCTION: CARMA2_HW 0x004ce030
+int C2_HOOK_FASTCALL FindPedestrianNearCar(tCar_spec* car, br_scalar radius) {
+
+    NOT_IMPLEMENTED();
+    return 0;
+}
+
+// FUNCTION: CARMA2_HW 0x004ce560
+int C2_HOOK_FASTCALL NapalmPedestrianNearCar(tCar_spec* car) {
+
+    NOT_IMPLEMENTED();
+    return 0;
+}
+
+// FUNCTION: CARMA2_HW 0x0045c6b0
+void C2_HOOK_FASTCALL TriggerPedestrianReaction(void* pData, int pArg2) {
+
+    NOT_IMPLEMENTED();
+}
+#pragma auto_inline(on)
+
 // FUNCTION: CARMA2_HW 0x004d1d70
 tPed_face_cache_0x34* C2_HOOK_FASTCALL RecacheAndSetFace(tPedestrian* pPed, int* pArg2, int* pArg3, br_vector3* pArg4, int pArg5, tU32 pTime) {
 

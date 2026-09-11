@@ -98,11 +98,32 @@ void C2_HOOK_FASTCALL ScalePeds(br_vector3* scale);
 void C2_HOOK_STDCALL ScalePedHeads(float head_scale);
 void C2_HOOK_FASTCALL MakePedsEthereal(void);
 void C2_HOOK_FASTCALL MakePedsNotEthereal(void);
+int C2_HOOK_FASTCALL FindPedestrianNearCar(tCar_spec* car, br_scalar radius);
+int C2_HOOK_FASTCALL NapalmPedestrianNearCar(tCar_spec* car);
+void C2_HOOK_FASTCALL TriggerPedestrianReaction(void* pData, int pArg2);
 // GLOBAL: CARMA2_HW 0x006a0948
 int gNumber_of_powerup_respawn_specs;
 
 // GLOBAL: CARMA2_HW 0x006a0a64
 tPowerup_respawn_spec* gPowerup_respawn_specs;
+
+// GLOBAL: CARMA2_HW 0x006a0ad8
+void* gDrug_trip_data;
+
+// GLOBAL: CARMA2_HW 0x006a0a68
+int gPissed_next_time;
+
+// GLOBAL: CARMA2_HW 0x00705c14
+float gPissed_flicker_frames[2];
+
+// GLOBAL: CARMA2_HW 0x00705c20
+float gPissed_flicker_limit;
+
+// GLOBAL: CARMA2_HW 0x00705c74
+float gPissed_hold_time;
+
+// GLOBAL: CARMA2_HW 0x0058ac90
+double gConst_kangeroo_force_factor = 0.14492753623188406;
 
 // GLOBAL: CARMA2_HW 0x006a0a50
 tU8* gRace_powerup_respawn_bools;
@@ -1498,9 +1519,14 @@ int C2_HOOK_FASTCALL TrashBodywork(tPowerup* powerup, tCar_spec* car) {
 
 // FUNCTION: CARMA2_HW 0x004dcb90
 int C2_HOOK_FASTCALL TakeDrugs(tPowerup* powerup, tCar_spec* car) {
-
-    NOT_IMPLEMENTED();
-    return 0;
+    if (car != NULL && car->driver == eDriver_local_human) {
+        if (gDrug_trip_data == NULL) {
+            gDrug_trip_data = BrMemAllocate(0x400, 0xfd);
+            memcpy(gDrug_trip_data, gRender_palette->pixels, 0x400);
+        }
+        gOn_drugs = 1;
+    }
+    return powerup - gPowerup_array;
 }
 
 // FUNCTION: CARMA2_HW 0x004dcca0
@@ -1684,15 +1710,29 @@ int C2_HOOK_FASTCALL PissOutOil(tPowerup* powerup, tCar_spec* car) {
 // FUNCTION: CARMA2_HW 0x004de0c0
 int C2_HOOK_FASTCALL KangerooJump(tPowerup* powerup, tCar_spec* car) {
 
-    NOT_IMPLEMENTED();
-    return 0;
+    TriggerPedestrianReaction("Kangeroo", 0);
+    PratcamEvent(0x2a);
+    *(float*)((tU8*)car->collision_info + 0x6c) = powerup->float_params[0] * gConst_kangeroo_force_factor + *(float*)((tU8*)car->collision_info + 0x6c);
+    if (car != NULL && car->driver == eDriver_local_human) {
+        DRS3StartSound(gCar_outlet, 0x2332);
+    }
+    *((tU8*)car->collision_info + 0xec) = 0;
+    return powerup - gPowerup_array;
 }
 
 // FUNCTION: CARMA2_HW 0x004de140
 int C2_HOOK_FASTCALL AnnihilatePeds(tPowerup* powerup, tCar_spec* car) {
+    int result;
 
-    NOT_IMPLEMENTED();
-    return 0;
+    if (FindPedestrianNearCar(car, powerup->float_params[0]) != 0) {
+        result = powerup - gPowerup_array;
+    } else {
+        result = -1;
+    }
+    if (result != -1) {
+        TriggerPedestrianReaction("Ped_Ray", 0);
+    }
+    return result;
 }
 
 // FUNCTION: CARMA2_HW 0x004de1e0
@@ -1767,16 +1807,46 @@ int C2_HOOK_FASTCALL GainAPOPotential(tPowerup* powerup, tCar_spec* car) {
 
 // FUNCTION: CARMA2_HW 0x004df220
 int C2_HOOK_FASTCALL SetPissed(tPowerup* powerup, tCar_spec* car) {
+    if (car != NULL && car->driver == eDriver_local_human) {
+        float* pOut;
+        int k;
 
-    NOT_IMPLEMENTED();
-    return 0;
+        DRS3StartSound2(gCar_outlet, 0xe11, 1, 0xff, 0xff, -1, -1);
+        gPissed_next_time = GetTotalTime() + IRandomBetween(0x5dc, 0xbb8);
+        gCredit_multiplier = *powerup->integer_params;
+        gPissed_hold_time = powerup->float_params[3];
+
+        pOut = gPissed_flicker_frames;
+        do {
+            float* p = pOut;
+            for (k = 1; k; k--) {
+                float tmp;
+
+                p[-12] = powerup->float_params[0];
+                tmp = FRandomBetween(powerup->float_params[1], powerup->float_params[2]);
+                p[0] = tmp;
+                p[12] = FRandomBetween(0.0f, tmp);
+                p += 1;
+            }
+            pOut += 3;
+        } while ((int)pOut < (int)&gPissed_flicker_limit);
+    }
+    return powerup - gPowerup_array;
 }
 
 // FUNCTION: CARMA2_HW 0x004de190
 int C2_HOOK_FASTCALL NapalmPeds(tPowerup* powerup, tCar_spec* car) {
+    int result;
 
-    NOT_IMPLEMENTED();
-    return 0;
+    if (NapalmPedestrianNearCar(car) != 0) {
+        result = powerup - gPowerup_array;
+    } else {
+        result = -1;
+    }
+    if (result != -1) {
+        TriggerPedestrianReaction("Flamer", 0);
+    }
+    return result;
 }
 
 // FUNCTION: CARMA2_HW 0x004dfec0
