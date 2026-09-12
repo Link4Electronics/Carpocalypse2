@@ -9,6 +9,8 @@
 
 #include "stb/stb_vorbis.c"
 
+#include <s3/internal/audio.h>
+
 static const int gS3_audio_max_volume = 255;
 
 int PDS3StopSampleChannel(tS3_channel* pChannel);
@@ -266,9 +268,6 @@ int PDS3IsSamplePlaying(tS3_channel* pChannel) {
     if (SDL_GetTicks() < voice->end_time) {
         return 1;
     }
-    if (SDL_GetAudioStreamQueued(voice->stream) > 0 || SDL_GetAudioStreamAvailable(voice->stream) > 0) {
-        return 1;
-    }
     PDS3StopSampleChannel(pChannel);
     return 0;
 }
@@ -439,8 +438,17 @@ tS3_error_codes PDS3PlayCDAChannel(tS3_channel* pChannel) {
 }
 
 void PDS3ServiceCDA(int pDelta_time) {
+    tS3_outlet* o;
+    tS3_channel* c;
+
     (void)pDelta_time;
     PDS3IsCDAPlaying();
+
+    for (o = gS3_state.outlets; o != NULL; o = o->next) {
+        for (c = o->channel_list; c != NULL; c = c->next) {
+            S3ServiceChannel(c);
+        }
+    }
 }
 
 void PDS3UpdateCDAVolume(tS3_channel* pChannel, int pVolume) {
