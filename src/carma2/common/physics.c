@@ -10,7 +10,10 @@
 #include "piping.h"
 #include "platform.h"
 #include "powerups.h"
+#include "sound.h"
+#include "spark.h"
 #include "utility.h"
+#include "world.h"
 
 #include <brender/brender.h>
 
@@ -1807,15 +1810,31 @@ void C2_HOOK_FASTCALL CheckForObjectHierachyTouchingObjectList(tPhysics_object* 
 
 // FUNCTION: CARMA2_HW 0x004b6210
 int C2_HOOK_FASTCALL PHILAddActiveObject(tPhysics_object* pInfo, undefined4* pArg2, const br_vector3* pArg3, const br_vector3* pArg4) {
+    int result;
 
     if (gPHIL_enabled) {
         return 0;
     }
-    if (PHILAddObject(pInfo) != 0) {
-        return 0;
+    result = PHILAddObject(pInfo);
+    if (result != 0) {
+        return result;
     }
     if (pArg2 != NULL && !gPHIL_enabled) {
-        NOT_IMPLEMENTED();
+        if (pInfo->field_0x239 == 2) {
+            tQueued_object_info* object_info = pInfo->field_0x240;
+            object_info->field_0x30 = *(br_matrix34*)pArg2;
+            object_info->flags |= 0x4;
+        } else {
+            tQueued_object_info* object_info = pInfo->field_0x240;
+            if (object_info != NULL) {
+                if (object_info->field_0x8 != 1) {
+                    return 4;
+                }
+                *(br_matrix34*)((char*)object_info->object->actor + 0x2c) = *(br_matrix34*)pArg2;
+            } else {
+                return 3;
+            }
+        }
     }
     return PHILMakeObjectActive(pInfo, pArg3, pArg4, 0);
 }
@@ -2191,8 +2210,49 @@ void C2_HOOK_FASTCALL TestAutoSpecialVolume(tPhysics_object* pObject) {
 
 // FUNCTION: CARMA2_HW 0x004ff410
 void C2_HOOK_FASTCALL MungeSpecialVolume(tPhysics_object* pObject) {
+    tSpecial_volume* new_vol;
+    tCar_spec* sv;
 
-    NOT_IMPLEMENTED();
+    new_vol = FindSpecialVolume(&pObject->pos, pObject->last_special_volume, 0);
+
+    sv = NULL;
+    if (pObject != NULL && pObject->owner != NULL && pObject->flags_0x238 == 1) {
+        sv = (tCar_spec*)pObject->owner;
+    } else {
+        sv = NULL;
+    }
+
+    if (pObject->auto_special_volume != NULL) {
+        if (new_vol == NULL || new_vol->gravity_multiplier == 1.0f) {
+            if (pObject->water_d == 10000.0f && pObject->water_depth_factor != 1.0f) {
+                pObject->auto_special_volume = NULL;
+            } else {
+                new_vol = pObject->auto_special_volume;
+            }
+        }
+    }
+
+    if (new_vol != pObject->last_special_volume && sv != NULL && sv->driver == eDriver_local_human) {
+        if (pObject->last_special_volume != NULL && pObject->last_special_volume->exit_noise >= 0
+                && (new_vol == NULL || new_vol->exit_noise != pObject->last_special_volume->exit_noise)) {
+            DRS3StartSound(gXXX_outlet, pObject->last_special_volume->exit_noise);
+        }
+        if (new_vol != NULL && new_vol->entry_noise >= 0
+                && (pObject->last_special_volume == NULL || pObject->last_special_volume->entry_noise != new_vol->entry_noise)) {
+            DRS3StartSound(gXXX_outlet, new_vol->entry_noise);
+        }
+    }
+
+    pObject->last_special_volume = new_vol;
+
+    if (sv != NULL && new_vol != NULL) {
+        br_scalar gravity_multiplier = new_vol->gravity_multiplier;
+        if (gravity_multiplier < 1.0f) {
+            if (IsCarSmoking(sv) != 0) {
+                StopCarSmoking(sv);
+            }
+        }
+    }
 }
 
 // FUNCTION: CARMA2_HW 0x004b6ec0

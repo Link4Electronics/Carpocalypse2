@@ -44,6 +44,15 @@
 
 #include "c2_math.h"
 #include "car.h"
+extern int gReseed_crush_rng;
+extern int gCrush_pain_timer;
+
+// GLOBAL: CARMA2_HW 0x005895f0
+double gZero;
+
+// GLOBAL: CARMA2_HW 0x005896a8
+float gF1000 = 1000.0f;
+
 typedef void (C2_HOOK_FAKE_THISCALL * tControl_car_fn)(tCar_spec* pCar_spec, undefined4 pArg2, float pT);
 
 // GLOBAL: CARMA2_HW 0x0074a5f4
@@ -2055,9 +2064,13 @@ tNon_car_spec* C2_HOOK_FASTCALL PullActorFromWorld(br_actor* actor) {
 
 // FUNCTION: CARMA2_HW 0x004b5970
 float C2_HOOK_FASTCALL GetFrictionFromFace(void *arg1) {
-
-    NOT_IMPLEMENTED();
-    return 0.f;
+    void *ptr = *(void **)arg1;
+    char code = *(char *)*(void **)((char *)ptr + 4);
+    int idx = code - 0x2f;
+    if (idx < 0 || idx >= 11) {
+        idx = 0;
+    }
+    return gFriction_materials[idx].car_wall_friction;
 }
 
 // FUNCTION: CARMA2_HW 0x00417de0
@@ -3134,8 +3147,91 @@ void C2_HOOK_FASTCALL APTCPreCollision(void) {
 
 // FUNCTION: CARMA2_HW 0x00416070
 void C2_HOOK_FASTCALL APTCPostCollision(void) {
+    void** wp;
+    tCar_spec* car;
+    int i;
 
-    NOT_IMPLEMENTED();
+    if (gCar_flying) {
+        tCar_spec* c = gCar_to_view;
+        c->collision_info->transform_matrix.m[3][1] -= gF1000;
+
+        BrMatrix34Copy((br_matrix34*)(*(char**)((char*)c + 0x10) + 0x2c),
+                       &c->collision_info->transform_matrix);
+        PositionChildren(c->collision_info);
+        SetCollisionInfoChildsDoNothing(c->collision_info, 0);
+    }
+
+    i = 0;
+    if (i < gNum_active_cars) {
+        wp = (void**)gActive_car_list;
+        do {
+            float x;
+            float fac;
+            float f;
+
+            car = (tCar_spec*)*wp;
+            if (car->field_0x4c8 != gZero) {
+                x = car->field_0x4c8;
+                fac = (float)(gZero / x);
+                f = car->collision_info->M; f *= fac; car->collision_info->M = f;
+                f = car->collision_info->I.v[0]; f *= fac; car->collision_info->I.v[0] = f;
+                f = car->collision_info->I.v[1]; f *= fac; car->collision_info->I.v[1] = f;
+                f = car->collision_info->I.v[2]; f *= fac; car->collision_info->I.v[2] = f;
+            }
+            if (((tCar_spec*)*wp)->number_of_wheels_on_ground != 0) {
+                SetCollisionInfoChildsDoNothing(((tCar_spec*)*wp)->collision_info, 0);
+            }
+            i++;
+            wp++;
+        } while (i < gNum_active_cars);
+    }
+
+    i = 0;
+    if (i < gNum_cars_and_non_cars) {
+        wp = (void**)gActive_car_list;
+        do {
+            car = (tCar_spec*)*wp;
+            car->frame_collision_flag |= (int)(signed char)car->collision_info->collision_flag;
+            i++;
+            wp++;
+        } while (i < gNum_cars_and_non_cars);
+    }
+
+    UpdateCrushTimers();
+    if (gReseed_crush_rng) {
+        UpdateCrushPainList();
+    }
+    APTCPostCollisionTree(gPHIL_list_collision_infos);
+}
+
+// FUNCTION: CARMA2_HW 0x004161a0
+void C2_HOOK_FASTCALL APTCPostCollisionTree(tPhysics_object* node) {
+    tPhysics_object* child;
+    void* owner;
+    void* unk;
+
+    while (node != NULL) {
+        if (gReseed_crush_rng == 2) {
+            int need = ((node->collision_flag & 2) != 0) || ((node->flags & 0x1000) != 0);
+
+            for (child = node->child; child != NULL; child = child->next) {
+                need |= child->collision_flag & 2;
+            }
+            if (need) {
+                node->field_0x49c = gCrush_pain_timer + 0x28;
+                owner = node->owner;
+                if (owner != NULL && node->flags_0x238 == 1 && *(int*)((char*)owner + 0xc) > 5) {
+                    unk = *(void**)((char*)owner + 0x18d4);
+                    if (unk != NULL) {
+                        DeallocateTransientBitmap(*(int*)((char*)unk + 0x20));
+                    }
+                }
+            }
+        }
+        node->disable_move_rotate &= 0xfd;
+        APTCPostCollisionTree(node->child);
+        node = node->next;
+    }
 }
 
 // FUNCTION: CARMA2_HW 0x00416300

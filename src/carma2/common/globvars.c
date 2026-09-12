@@ -262,6 +262,9 @@ int gGame_to_load = -1;
 // GLOBAL: CARMA2_HW 0x007623a0
 tRace_info gCurrent_race;
 
+// GLOBAL: CARMA2_HW 0x007632a8
+tMaterial_modifiers gFriction_materials[11];
+
 // GLOBAL: CARMA2_HW 0x0068be3c
 int gGame_initialized;
 

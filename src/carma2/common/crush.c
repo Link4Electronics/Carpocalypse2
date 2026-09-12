@@ -2030,6 +2030,18 @@ int gCrush_pain_timer;
 // GLOBAL: CARMA2_HW 0x0074a5f8
 int gCrush_deferred;
 
+// FUNCTION: CARMA2_HW 0x0043ceb0
+void C2_HOOK_FASTCALL UpdateCrushPainList(void) {
+
+    NOT_IMPLEMENTED();
+}
+
+// FUNCTION: CARMA2_HW 0x004f62e0
+void C2_HOOK_FASTCALL UpdateCrushTimers(void) {
+
+    NOT_IMPLEMENTED();
+}
+
 int C2_HOOK_FASTCALL GetAverageCrushLevel(tCar_spec* pCar);
 void C2_HOOK_FASTCALL DeleteFarCrushes(tCar_spec* pCar);
 int C2_HOOK_FASTCALL DRActorRecurseWithPredicate(br_actor* pActor, void* pPredicate, tCar_spec* pCar);

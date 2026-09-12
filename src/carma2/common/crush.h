@@ -229,6 +229,10 @@ float C2_HOOK_FASTCALL BashObject(tPhysics_object* pObject, br_actor* pActor, fl
 
 float C2_HOOK_FASTCALL SmashEnvironment(tPhysics_object* pObject, undefined4* pArg2, float pArg3, br_vector3* pArg4, br_vector3* pArg5, br_vector3* pArg6, int pArg7, int pArg8);
 
+void C2_HOOK_FASTCALL UpdateCrushPainList(void);
+
+void C2_HOOK_FASTCALL UpdateCrushTimers(void);
+
 void C2_HOOK_FASTCALL SphericizeModel(br_model* pModel, const br_vector3* pCenter, br_scalar pRadius);
 
 void C2_HOOK_FASTCALL SphericizePhysics(tCar_spec* pCar, const br_vector3* pCenter, br_scalar pRadius);

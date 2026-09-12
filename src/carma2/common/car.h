@@ -412,6 +412,8 @@ void C2_HOOK_FASTCALL APTCPreCollision(void);
 
 void C2_HOOK_FASTCALL APTCPostCollision(void);
 
+void C2_HOOK_FASTCALL APTCPostCollisionTree(tPhysics_object* pNode);
+
 void C2_HOOK_FASTCALL APTCChangedObjects(tPhysics_object* pArg1, undefined4 pArg2);
 
 int C2_HOOK_FASTCALL APTCActiveHalted(tPhysics_object* pArg1);

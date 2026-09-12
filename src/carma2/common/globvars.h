@@ -92,6 +92,7 @@ extern int gWaiting_for_unpause;
 extern tU32 gWait_for_it;
 extern int gGame_to_load;
 extern tRace_info gCurrent_race;
+extern tMaterial_modifiers gFriction_materials[11];
 extern int gGame_initialized;
 extern int gNo_races_yet;
 extern tNet_mode gNet_mode_of_last_game;
