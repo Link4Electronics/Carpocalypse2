@@ -1949,6 +1949,7 @@ typedef struct {
     br_fixed_ls max_deviation; // fixedpoint integer? (* 16 / 100)
     tS16 sound_alternatives[5];
     tS16 unknown3;
+    undefined pad[6];
 } tSpecial_volume_soundfx_data;
 
 typedef enum {

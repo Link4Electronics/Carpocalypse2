@@ -3201,7 +3201,7 @@ void C2_HOOK_FASTCALL APTCPostCollision(void) {
     if (gReseed_crush_rng) {
         UpdateCrushPainList();
     }
-    APTCPostCollisionTree(gPHIL_list_collision_infos);
+    APTCPostCollisionTree(gList_collision_infos);
 }
 
 // FUNCTION: CARMA2_HW 0x004161a0

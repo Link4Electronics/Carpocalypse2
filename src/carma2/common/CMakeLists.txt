@@ -200,6 +200,7 @@ add_library(c2_common STATIC
     phil.h
     physics.c
     physics.h
+    physics_collision.c
     piping.c
     piping.h
     polyfont.c

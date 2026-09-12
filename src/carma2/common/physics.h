@@ -509,9 +509,9 @@ int C2_HOOK_CDECL PHILSetObjectProperty(tPhysics_object *pCollision_info, int pP
 
 float C2_HOOK_FASTCALL PHILGetObjectProperty(tPhysics_object *pCollision_info, int pParam);
 
-void C2_HOOK_FASTCALL SetCollisionInfoDoNothing(tPhysics_object *pCollision_info, tU8 pDisable);
+void C2_HOOK_FASTCALL SetCollisionInfoDoNothing(tPhysics_object *pCollision_info, tU32 pDisable);
 
-void C2_HOOK_FASTCALL SetCollisionInfoChildsDoNothing(tPhysics_object *pCollision_info, tU8 pDisable);
+void C2_HOOK_FASTCALL SetCollisionInfoChildsDoNothing(tPhysics_object *pCollision_info, tU32 pDisable);
 
 int C2_HOOK_FASTCALL PHILRemoveObject(tPhysics_object* pObject);
 
