@@ -13,6 +13,10 @@ br_material* gMaterials_to_adapt[200];
 
 // GLOBAL: CARMA2_HW 0x006a8298
 extern int gAllow_material_adapt;
+#ifndef CARPOCALYPSE2_MATCHING
+extern tBrender_storage gTrack_storage_space;
+extern tBrender_storage gMisc_storage_space;
+#endif
 br_material* C2_HOOK_FASTCALL LoadTemporaryMaterial(const char* pName) {
     br_material* material;
 
@@ -55,6 +59,11 @@ void C2_HOOK_FASTCALL AdaptCachedMaterials(tRendererShadingType pShading_type) {
         if (material == NULL) {
             continue;
         }
+#ifndef CARPOCALYPSE2_MATCHING
+        if (material == (br_material*)&gTrack_storage_space || material == (br_material*)&gMisc_storage_space) {
+            continue;
+        }
+#endif
         GlorifyMaterial(&material, 1, pShading_type);
         FogAccordingToGPSCDE(material);
     }
@@ -70,6 +79,11 @@ void C2_HOOK_FASTCALL FogificateMaterials(tRendererShadingType pShading_type) {
 
         mat = gMaterials_to_adapt[i];
         if (mat != NULL) {
+#ifndef CARPOCALYPSE2_MATCHING
+            if (mat == (br_material*)&gTrack_storage_space || mat == (br_material*)&gMisc_storage_space) {
+                continue;
+            }
+#endif
             GlorifyMaterial(&mat, 1, pShading_type);
             FogAccordingToGPSCDE(mat);
         }

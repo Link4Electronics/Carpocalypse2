@@ -4,6 +4,7 @@
 #include "globvars.h"
 #include "graphics.h"
 #include "loading.h"
+#include "loading3.h"
 #include "piping.h"
 #include "temp.h"
 
@@ -281,7 +282,49 @@ void C2_HOOK_FASTCALL SkidsPerFrame(void) {
 // FUNCTION: CARMA2_HW 0x004e9c40
 void C2_HOOK_FASTCALL InitSkids(void) {
 #ifndef CARPOCALYPSE2_MATCHING
-    /* stub: no-op for Linux boot */
+    int i;
+    gCurrent_skid = 0;
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gMaterial_names); i++) {
+        br_material* material = BrMaterialFind(gMaterial_names[i]);
+        if (material == NULL) {
+            material = LoadMaterial(gMaterial_names[i]);
+            if (material != NULL) {
+                material->flags &= ~BR_MATF_LIGHT;
+                BrMaterialAdd(material);
+            }
+        }
+        gMaterial[i] = material;
+    }
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gSkids); i++) {
+        br_actor* actor = BrActorAllocate(BR_ACTOR_MODEL, NULL);
+        br_model* model;
+        br_vertex* v;
+        br_face* f;
+        gSkids[i].actor = actor;
+        if (actor == NULL) {
+            continue;
+        }
+        model = BrModelAllocate(NULL, 4, 2);
+        if (model == NULL) {
+            continue;
+        }
+        actor->model = model;
+        actor->render_style = BR_RSTYLE_DEFAULT;
+        v = model->vertices;
+        v[0].p.v[0] = -1.0f; v[0].p.v[1] = 0.0f; v[0].p.v[2] = -1.0f;
+        v[0].map.v[0] = 0.0f; v[0].map.v[1] = 0.0f;
+        v[1].p.v[0] = -1.0f; v[1].p.v[1] = 0.0f; v[1].p.v[2] = 0.5f;
+        v[1].map.v[0] = 0.0f; v[1].map.v[1] = 1.0f;
+        v[2].p.v[0] = 0.5f; v[2].p.v[1] = 0.0f; v[2].p.v[2] = 0.5f;
+        v[2].map.v[0] = 1.0f; v[2].map.v[1] = 1.0f;
+        v[3].p.v[0] = 0.5f; v[3].p.v[1] = 0.0f; v[3].p.v[2] = -1.0f;
+        v[3].map.v[0] = 1.0f; v[3].map.v[1] = 0.0f;
+        f = model->faces;
+        f[0].vertices[0] = 0; f[0].vertices[1] = 1; f[0].vertices[2] = 2; f[0].smoothing = 1;
+        f[1].vertices[0] = 0; f[1].vertices[1] = 2; f[1].vertices[2] = 3; f[1].smoothing = 1;
+        model->flags |= BR_MODF_KEEP_ORIGINAL;
+        BrModelAdd(model);
+    }
 #else
     NOT_IMPLEMENTED();
 #endif

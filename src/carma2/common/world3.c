@@ -10,6 +10,7 @@
 #include "loading3.h"
 #include "sound.h"
 #include "packfile.h"
+#include "brucetrk.h"
 #include "globvars.h"
 #include "globvrpb.h"
 #include "drmem.h"
@@ -367,6 +368,8 @@ void C2_HOOK_FASTCALL LoadTrack(const char* pFile_name, tTrack_spec* pTrack_spec
     gTrack_actor = pTrack_spec->the_actor;
 
     BrActorAdd(gUniverse_actor, pTrack_spec->the_actor);
+
+    ExtractColumns(pTrack_spec);
 }
 
 // RemoveBounds

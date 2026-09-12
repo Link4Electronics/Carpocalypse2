@@ -1477,6 +1477,9 @@ void C2_HOOK_FASTCALL AllocateCamera(void) {
     if (gRearview_camera == NULL) {
         FatalError(kFatalError_CannotAllocateCamera);
     }
+#ifndef CARPOCALYPSE2_MATCHING
+    BrActorAdd(gUniverse_actor, gRearview_camera);
+#endif
 
     gRearview_camera->t.t.mat.m[2][2] = -1.0f;
     camera_ptr = (br_camera*)gRearview_camera->type_data;

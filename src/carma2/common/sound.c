@@ -212,8 +212,32 @@ int C2_HOOK_FASTCALL DRS3SetVolume(int pVolume) {
 
 // FUNCTION: CARMA2_HW 0x00457260
 intptr_t C2_HOOK_FASTCALL FoundSoundSource(br_actor* pActor, void* pContext) {
+    tEnvironment_sound_generator_vector* ctx = (tEnvironment_sound_generator_vector*)pContext;
+    tEnvironment_sound_generator_info* entry;
+    char* s;
+    char* source;
+    int index;
+    tTrackSoundGenerator* generator;
 
-    NOT_IMPLEMENTED();
+    if (ctx->count >= 0x14) {
+        return 0;
+    }
+    entry = &ctx->sources[ctx->count];
+    ctx->count += 1;
+    entry->actor = pActor;
+
+    s = pActor->model->identifier;
+    index = (int)*(tS8*)(s + 1) * 0xa + (int)*(tS8*)(s + 2) - 0x210;
+    generator = &gProgram_state.track_sound_generators[index];
+    entry->generator = generator;
+
+    source = (char*)((tU8*)generator + 0x4);
+    if (generator->type == kSoundGeneratorType_noncar && pActor->identifier[3] == '!') {
+        source = (char*)((tU8*)generator + 0x4c);
+    }
+    memcpy(&entry->soundfx, source, sizeof(entry->soundfx));
+    entry->pos = pActor->t.t.translate.t;
+    return 0;
 }
 
 // FUNCTION: CARMA2_HW 0x00456ea0
@@ -227,6 +251,7 @@ void C2_HOOK_FASTCALL MungeSoundGenerators(void) {
 
             gNext_sound_generator_munging += 200;
             found_sources.sources = gEnvironmental_sound_sources_buffer[gEnvironmental_sound_sources_buffer_index ^ 1];
+            found_sources.count = 0;
             ProcessNearbyActors(&gProgram_state.track_spec, (br_vector3*)gCamera_to_world.m[3], 10.f, 1, ')', 0, 0x1003, FoundSoundSource, &found_sources);
             for (i = 0; i < gProgram_state.count_track_sound_generators; i++) {
                 tTrackSoundGenerator* generator = &gProgram_state.track_sound_generators[i];

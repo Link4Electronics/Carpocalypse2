@@ -129,6 +129,7 @@ void C2_HOOK_FASTCALL InitShadow(void) {
 
     gShadow_actor = BrActorAllocate(BR_ACTOR_MODEL, NULL);
     gShadow_model = BrModelAllocate(NULL, 48, 16);
+    gShadow_model->flags = 6;
     gShadow_actor->model = gShadow_model;
     gShadow_actor->render_style = BR_RSTYLE_NONE;
 

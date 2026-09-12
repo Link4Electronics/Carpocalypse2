@@ -105,6 +105,10 @@ static int ioctlsocket(int handle, long cmd, void* argp) {
 void NetNowIPXLocalTarget2String(char *pString, struct sockaddr_in *pSock_addr_ipx) {
     char portbuf[10];
 
+    if (pSock_addr_ipx == NULL) {
+        strcpy(pString, "");
+        return;
+    }
     inet_ntop(AF_INET, &pSock_addr_ipx->sin_addr, pString, 32);
     sprintf(portbuf, ":%d", ntohs(pSock_addr_ipx->sin_port));
     strcat(pString, portbuf);
@@ -346,6 +350,10 @@ tNet_message *PDNetGetNextMessage(tNet_game_details *pDetails, void **pSender_ad
     int res;
     tNet_message* msg;
     char* receive_buffer;
+
+    if (gPtr_listen_address == NULL) {
+        return NULL;
+    }
 
     sa_len = sizeof(gListen_address); /* FIXME: gListen_address -> gRemote_address */
     msg = NetAllocateMessage(512);

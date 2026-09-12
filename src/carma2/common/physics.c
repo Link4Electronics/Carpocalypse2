@@ -1538,21 +1538,8 @@ float C2_HOOK_FASTCALL PHILGetObjectProperty(tPhysics_object *pCollision_info, i
     }
 }
 
-// FUNCTION: CARMA2_HW 0x004b9eb0
-void C2_HOOK_FASTCALL SetCollisionInfoDoNothing(tPhysics_object *pCollision_info, tU8 pDisable) {
-
-    while (pCollision_info != NULL) {
-        pCollision_info->disable_move_rotate = pDisable;
-        pCollision_info->field_0x1df = 0;
-        if (pCollision_info->child != NULL) {
-            SetCollisionInfoDoNothing(pCollision_info->child, pDisable);
-        }
-        pCollision_info = pCollision_info->next;
-    }
-}
-
 // FUNCTION: CARMA2_HW 0x004b9ef0
-void C2_HOOK_FASTCALL SetCollisionInfoChildsDoNothing(tPhysics_object *pCollision_info, tU8 pDisable) {
+void C2_HOOK_FASTCALL SetCollisionInfoChildsDoNothing(tPhysics_object *pCollision_info, tU32 pDisable) {
     tPhysics_object *child;
 
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPhysics_object, field_0x1df, 0x1df);
@@ -1563,10 +1550,12 @@ void C2_HOOK_FASTCALL SetCollisionInfoChildsDoNothing(tPhysics_object *pCollisio
         child->disable_move_rotate = pDisable;
         child->field_0x1df = 0;
         if (child->child != NULL) {
-            SetCollisionInfoDoNothing(child->child,pDisable);
+            SetCollisionInfoDoNothing(child->child, pDisable);
         }
     }
 }
+
+// SetCollisionInfoDoNothing
 
 // FUNCTION: CARMA2_HW 0x004c63d0
 void C2_HOOK_FASTCALL AddCollisionInfoChild(tPhysics_object* pParent, tPhysics_object* pChild) {

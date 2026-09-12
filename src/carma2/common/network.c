@@ -688,23 +688,39 @@ tNet_message* C2_HOOK_FASTCALL NetAllocateMessage(int pSize) {
     tNet_message_memory* memory;
     int i;
 
+    if (gMin_messages == NULL) {
+        gMessage_header_size = PDNetGetHeaderSize();
+        gMin_messages = BrMemAllocate(MIN_MESSAGES_CAPACITY * (gMessage_header_size + (int)sizeof(tMin_message)), kMem_net_min_messages);
+        gMid_messages = BrMemAllocate(MID_MESSAGES_CAPACITY * (gMessage_header_size + (int)sizeof(tMid_message)), kMem_net_mid_messages);
+        gMax_messages = BrMemAllocate(MAX_MESSAGES_CAPACITY * (gMessage_header_size + (int)sizeof(tMax_message)), kMem_net_max_messages);
+        for (i = 0; i < MIN_MESSAGES_CAPACITY; i++) {
+            ((tNet_message*)((br_uint_8*)gMin_messages + i * (gMessage_header_size + (int)sizeof(tMin_message)) + gMessage_header_size))->contents.raw.header.type = eNetMsg_none;
+        }
+        for (i = 0; i < MID_MESSAGES_CAPACITY; i++) {
+            ((tNet_message*)((br_uint_8*)gMid_messages + i * (gMessage_header_size + (int)sizeof(tMid_message)) + gMessage_header_size))->contents.raw.header.type = eNetMsg_none;
+        }
+        for (i = 0; i < MAX_MESSAGES_CAPACITY; i++) {
+            ((tNet_message*)((br_uint_8*)gMax_messages + i * (gMessage_header_size + (int)sizeof(tMax_message)) + gMessage_header_size))->contents.raw.header.type = eNetMsg_none;
+        }
+    }
+
     if (pSize <= sizeof(tMin_message)) {
         for (i = 0; i < MIN_MESSAGES_CAPACITY; i++) {
-            message = (tNet_message*)((br_uint_8*)&gMin_messages[i] + gMessage_header_size);
+            message = (tNet_message*)((br_uint_8*)gMin_messages + i * (gMessage_header_size + (int)sizeof(tMin_message)) + gMessage_header_size);
             if (message->contents.raw.header.type == eNetMsg_none) {
                 return message;
             }
         }
     } else if (pSize <= sizeof(tMid_message)) {
         for (i = 0; i < MID_MESSAGES_CAPACITY; i++) {
-            message = (tNet_message*)((br_uint_8*)&gMid_messages[i] + gMessage_header_size);
+            message = (tNet_message*)((br_uint_8*)gMid_messages + i * (gMessage_header_size + (int)sizeof(tMid_message)) + gMessage_header_size);
             if (message->contents.raw.header.type == eNetMsg_none) {
                 return message;
             }
         }
     } else if (pSize <= sizeof(tMax_message)) {
         for (i = 0; i < MAX_MESSAGES_CAPACITY; i++) {
-            message = (tNet_message*)((br_uint_8*)&gMax_messages[i] + gMessage_header_size);
+            message = (tNet_message*)((br_uint_8*)gMax_messages + i * (gMessage_header_size + (int)sizeof(tMax_message)) + gMessage_header_size);
             if (message->contents.raw.header.type == eNetMsg_none) {
                 return message;
             }

@@ -1083,11 +1083,7 @@ void C2_HOOK_FASTCALL DoProgram(void) {
             break;
 
         case eProg_game_starting:
-            SplashScreenWith("LOADSCRN.PIX");
-            extern void carpocalypse2_LoadingScreenHold(int pMilliseconds);
-            carpocalypse2_LoadingScreenHold(2000);
-            carpocalypse2_RaceSkeleton();
-            gProgram_state.prog_status = eProg_quit;
+            DoGame();
             break;
 
         default:
