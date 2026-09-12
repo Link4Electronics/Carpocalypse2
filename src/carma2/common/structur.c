@@ -46,6 +46,15 @@
 
 #ifdef CARPOCALYPSE2_MATCHING
 #include "c2_hooks.h"
+
+// The retail compiler inlined these single-call-site helpers into DoProgram.
+#if defined(_MSC_VER)
+#define C2_MATCHING_INLINE __inline
+#else
+#define C2_MATCHING_INLINE inline
+#endif
+#else
+#define C2_MATCHING_INLINE
 #endif
 #include "font.h"
 #include "graphics2.h"
@@ -153,7 +162,7 @@ void C2_HOOK_FASTCALL DoProgOpeningAnimation(void) {
     DRS3StopOutletSound(gEffects_outlet);
 }
 
-void C2_HOOK_FASTCALL SwapNetCarsLoad(void) {
+C2_MATCHING_INLINE void C2_HOOK_FASTCALL SwapNetCarsLoad(void) {
     int i;
 
     DisableNetService();
@@ -171,7 +180,7 @@ void C2_HOOK_FASTCALL SwapNetCarsLoad(void) {
     ReenableNetService();
 }
 
-void C2_HOOK_FASTCALL SwapNetCarsDispose(void) {
+C2_MATCHING_INLINE void C2_HOOK_FASTCALL SwapNetCarsDispose(void) {
     int i;
 
     C2_HOOK_BUG_ON(sizeof(tCar_detail_info) != 20);
@@ -188,7 +197,7 @@ void C2_HOOK_FASTCALL SwapNetCarsDispose(void) {
     ReenableNetService();
 }
 
-void C2_HOOK_FASTCALL DoGame(void) {
+C2_MATCHING_INLINE void C2_HOOK_FASTCALL DoGame(void) {
     tSO_result options_result;
     tRace_result race_result;
     int i;
@@ -997,7 +1006,41 @@ void C2_HOOK_FASTCALL carpocalypse2_RaceSkeleton(void) {
 // FUNCTION: CARMA2_HW 0x00503c50
 void C2_HOOK_FASTCALL DoProgram(void) {
 #ifdef CARPOCALYPSE2_MATCHING
-    NOT_IMPLEMENTED();
+    InitialiseProgramState();
+
+    while (gProgram_state.prog_status != eProg_quit) {
+        switch (gProgram_state.prog_status) {
+        case eProg_intro:
+            DisposeGameIfNecessary();
+            DoLogos();
+            break;
+        case eProg_opening:
+            DisposeGameIfNecessary();
+            DoProgOpeningAnimation();
+            break;
+        case eProg_idling:
+            DisposeGameIfNecessary();
+            if (gNo_current_game) {
+                LoadRaces(gRace_list, &gNumber_of_races, -1);
+                InitGame(gDev_initial_race);
+                MaybeRestoreSavedGame();
+            }
+            if (gAuto_load && gLoad_last_save_game) {
+                DoLoadMostRecentGame();
+                gLoad_last_save_game = 0;
+            }
+            DoMainScreen();
+            break;
+        case eProg_demo:
+            DoProgramDemo();
+            break;
+        case eProg_game_starting:
+            DoGame();
+            break;
+        default:
+            break;
+        }
+    }
 #else
     extern int DoMainScreen(void);
 

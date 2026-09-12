@@ -219,15 +219,15 @@ static uint16_t fast_rsqrt_table[192] = {
 };
 
 // FUNCTION: CARMA2_HW 0x00537110
+#pragma optimize( "y", off )
 br_fixed_ls C2_HOOK_CDECL BrFixedAbs(br_fixed_ls a) {
-    br_fixed_ls t[1];
 
-    t[0] = a;
-    if (t[0] < 0) {
-        t[0] = -t[0];
+    if (a < 0) {
+        a = -a;
     }
-    return t[0];
+    return a;
 }
+#pragma optimize( "", on )
 
 // FUNCTION: CARMA2_HW 0x00537120
 br_fixed_ls C2_NAKED C2_HOOK_CDECL BrFixedMul(br_fixed_ls a, br_fixed_ls b) {
