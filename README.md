@@ -5,6 +5,10 @@ Decompilation of 1998's Carmageddon 2.
 
 ## Status
 
+Screenshot progress
+
+<img src="https://raw.githubusercontent.com/Link4Electronics/Carpocalypse2/refs/heads/main/reccmp-report/image.webp" width="640" />
+
 <img width="50%" src="reccmp-report/progress.svg">
 
 ## Requirements
