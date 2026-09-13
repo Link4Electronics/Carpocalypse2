@@ -424,4 +424,16 @@ float C2_HOOK_STDCALL frac(float pN);
 
 void C2_HOOK_FASTCALL MakeLiftGoUp(tNon_car_spec* pNon_car);
 
+void C2_HOOK_FASTCALL SetCollisionFlagsAndStuff(tCar_spec* pCar);
+
+void C2_HOOK_FASTCALL AddDrag(tCar_spec* pCar, tPhysics_object* pObject, br_scalar pDt);
+
+void C2_HOOK_FASTCALL DragChildren(tCar_spec* pCar, tPhysics_object* pChild);
+
+void C2_HOOK_FASTCALL MoveAndCollideCar(tCar_spec* pCar, br_scalar pDt);
+
+void C2_HOOK_FASTCALL MoveAndCollideNonCar(tNon_car_spec* pNon_car, br_scalar pDt);
+
+void C2_HOOK_FASTCALL GetFacesInBox(tPhysics_object* pCollision, tWorld_callbacks* pWorld_callbacks);
+
 #endif // GUARD_CAR_H

@@ -274,7 +274,11 @@ void C2_HOOK_FASTCALL GotPowerupEarwig(tCar_spec* pCar, int pIndex, int pMessage
 
 // SendMines
 
-// MinePreCollisionStuff
+// STUB: CARMA2_HW 0x004dd1b0
+void C2_HOOK_FASTCALL MinePreCollisionStuff(void) {
+
+    NOT_IMPLEMENTED();
+}
 
 // ActivateMine
 

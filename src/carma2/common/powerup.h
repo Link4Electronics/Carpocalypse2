@@ -221,7 +221,7 @@ extern void C2_HOOK_FASTCALL CloseDownPowerUps(void);
 
 // SendMines
 
-// MinePreCollisionStuff
+extern void C2_HOOK_FASTCALL MinePreCollisionStuff(void);
 
 // ActivateMine
 

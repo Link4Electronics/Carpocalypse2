@@ -5786,7 +5786,11 @@ void C2_HOOK_FASTCALL DisposePedStuff(void) {
 
 // ResetPedNearness
 
-// PedPreCollisionStuff
+// STUB: CARMA2_HW 0x004d6880
+void C2_HOOK_FASTCALL PedPreCollisionStuff(void) {
+
+    NOT_IMPLEMENTED();
+}
 
 // UpdateIfBackwardsAR
 

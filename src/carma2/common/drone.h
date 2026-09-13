@@ -148,7 +148,7 @@ extern void C2_HOOK_FASTCALL SetTrafficOn(int pTraffic_on);
 
 // LoadInDronePaths
 
-// DronePreCollisionStuff
+void C2_HOOK_FASTCALL DronePreCollisionStuff(void);
 
 // DoDronePerGameFrameStuff
 

@@ -300,7 +300,7 @@ extern void C2_HOOK_FASTCALL DisposePedStuff(void);
 
 // ResetPedNearness
 
-// PedPreCollisionStuff
+void C2_HOOK_FASTCALL PedPreCollisionStuff(void);
 
 // UpdateIfBackwardsAR
 

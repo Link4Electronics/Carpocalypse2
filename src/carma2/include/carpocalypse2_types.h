@@ -4648,7 +4648,9 @@ typedef struct tPhysics_object {
     undefined field_0x261;
     undefined field_0x262[6];
     tU32 message_time; // 0x268
-    undefined field_0x26c[560];
+    undefined field_0x26c[12];
+    tS16 field_0x278;
+    undefined field_0x27a[546];
     undefined4 field_0x49c; /* tU32 last_car_car_collision: */
     undefined field_0x4a0[52];
     tU8 drivable_on;
@@ -5049,7 +5051,9 @@ typedef struct tNon_car_spec {
     tS16 car_ID;
     undefined field_0x82[2];
     br_material* shrapnel_materials[3];
-    undefined field_0x90[60];
+    undefined field_0x90[52];
+    float dt;
+    undefined field_0xc8[4];
     float free_mass;
     float attached_mass;
     float min_torque_squared;
@@ -5059,7 +5063,7 @@ typedef struct tNon_car_spec {
     br_vector3 I_over_M;
     tPhysics_joint* field_0xf0;
     tJoint_translation_params* translation_parameters;
-    tU8 field_0xf8[4];
+    tU32 field_0xf8;
     tU8 field_0xfc;
     tU8 number_of_pushes;
     tU32 flags;
