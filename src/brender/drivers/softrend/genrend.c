@@ -25,6 +25,7 @@ void C2_HOOK_CDECL Vertex_TransformProjectOutcodeBounds(br_geometry* self, br_so
         C2_HOOK_BUG_ON((OUTCODE_YON | OUTCODE_N_YON) != 0x200020);
         C2_HOOK_BUG_ON((OUTCODE_USER | OUTCODE_N_USER) != 0x400040);
 
+        tvp->comp[C_W] = BR_SCALAR(1.0);
         TRANSFORM_VERTEX((br_vector4*)(tvp->comp + C_X), &rend.vertices[v].p, &scache.model_to_screen);
         OUTCODE_POINT(tvp->flags, (br_vector4 *)(tvp->comp + C_X));
 
@@ -47,6 +48,7 @@ void C2_HOOK_CDECL Vertex_TransformProjectOutcode(br_geometry *self, br_soft_ren
             continue;
         }
 
+        tvp->comp[C_W] = BR_SCALAR(1.0);
         TRANSFORM_VERTEX((br_vector4*)(tvp->comp + C_X), &rend.vertices[v].p, &scache.model_to_screen);
         OUTCODE_POINT(tvp->flags, (br_vector4*)(tvp->comp + C_X));
 
@@ -68,6 +70,7 @@ void C2_HOOK_CDECL Vertex_OS_TransformProjectBounds(br_geometry* self, br_soft_r
             continue;
         }
 
+        tvp->comp[C_W] = BR_SCALAR(1.0);
         TRANSFORM_VERTEX((br_vector4*)(tvp->comp + C_X), &rend.vertices[v].p, &scache.model_to_screen);
         PROJECT_VERTEX(tvp,tvp->comp[C_X], tvp->comp[C_Y], tvp->comp[C_Z], tvp->comp[C_W]);
         UPDATE_BOUNDS(tvp);
@@ -86,6 +89,7 @@ void C2_HOOK_CDECL Vertex_OS_TransformProject(br_geometry* self, br_soft_rendere
             continue;
         }
 
+        tvp->comp[C_W] = BR_SCALAR(1.0);
         TRANSFORM_VERTEX((br_vector4*)(tvp->comp + C_X), &rend.vertices[v].p, &scache.model_to_screen);
         PROJECT_VERTEX(tvp, tvp->comp[C_X], tvp->comp[C_Y], tvp->comp[C_Z], tvp->comp[C_W]);
     }
@@ -131,6 +135,7 @@ void C2_HOOK_CDECL Vertex_OS_TransformProjectSurf(br_geometry* self, br_soft_ren
             continue;
         }
 
+        tvp->comp[C_W] = BR_SCALAR(1.0);
         TRANSFORM_VERTEX((br_vector4*)(tvp->comp + C_X), &vp->p, &scache.model_to_screen);
         PROJECT_VERTEX(tvp, tvp->comp[C_X], tvp->comp[C_Y], tvp->comp[C_Z], tvp->comp[C_W]);
 
@@ -155,6 +160,7 @@ void C2_HOOK_CDECL Vertex_OS_TransformProjectBoundsGeom(br_geometry* self, br_so
             continue;
         }
 
+        tvp->comp[C_W] = BR_SCALAR(1.0);
         TRANSFORM_VERTEX((br_vector4*)(tvp->comp + C_X), &vp->p, &scache.model_to_screen);
         PROJECT_VERTEX(tvp, tvp->comp[C_X], tvp->comp[C_Y], tvp->comp[C_Z], tvp->comp[C_W]);
         UPDATE_BOUNDS(tvp);
@@ -180,6 +186,7 @@ void C2_HOOK_CDECL Vertex_OS_TransformProjectGeom(br_geometry* self, br_soft_ren
             continue;
         }
 
+        tvp->comp[C_W] = BR_SCALAR(1.0);
         TRANSFORM_VERTEX((br_vector4*)(tvp->comp + C_X), &vp->p, &scache.model_to_screen);
         PROJECT_VERTEX(tvp, tvp->comp[C_X], tvp->comp[C_Y], tvp->comp[C_Z], tvp->comp[C_W]);
 
@@ -203,6 +210,9 @@ void C2_HOOK_CDECL Vertex_SurfaceComponentsSurf(br_geometry* self, br_soft_rende
         if (rend.vertex_counts[v] == 0) {
             continue;
         }
+
+        tvp->comp[C_W] = BR_SCALAR(1.0);
+        TRANSFORM_VERTEX((br_vector4*)(tvp->comp + C_X), &vp->p, &scache.model_to_screen);
 
         for (i = 0; i < renderer->state.cache.nvertex_fns; i++) {
             renderer->state.cache.vertex_fns[i]((br_renderer*)renderer, &vp->p, &vp->map, &vp->n, scache.colour, tvp->comp);
@@ -256,6 +266,9 @@ void C2_HOOK_CDECL Vertex_SurfaceComponentsGeom(br_geometry* self, br_soft_rende
         if (rend.vertex_counts[v] == 0) {
             continue;
         }
+
+        tvp->comp[C_W] = BR_SCALAR(1.0);
+        TRANSFORM_VERTEX((br_vector4*)(tvp->comp + C_X), &vp->p, &scache.model_to_screen);
 
         for (i = 0; i < renderer->state.cache.nvertex_fns; i++) {
             renderer->state.cache.vertex_fns[i]((br_renderer*)renderer, &vp->p, &vp->map, &vp->n, rend.vertex_colours[v], tvp->comp);

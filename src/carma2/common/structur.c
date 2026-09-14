@@ -1061,7 +1061,11 @@ void C2_HOOK_FASTCALL DoProgram(void) {
     gProgram_state.dont_load = 0;
     gProgram_state.mirror_on = 1;
     gProgram_state.prat_cam_on = 1;
+#ifndef CARPOCALYPSE2_MATCHING
+    gProgram_state.cockpit_on = 0;
+#else
     gProgram_state.cockpit_on = 1;
+#endif
     gProgram_state.frank_or_anniness = eFrankie;
 
     do {

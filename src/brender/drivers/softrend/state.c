@@ -446,7 +446,7 @@ void C2_HOOK_STDCALL TemplateActions(soft_state_all *state, br_token part, br_in
 
     C2_HOOK_BUG_ON(TM_CLEAR_V2S_HINT != 0x100);
     if (mask & TM_CLEAR_V2S_HINT) {
-        state->matrix.view_to_screen_hint = BRT_NONE;
+        state->matrix.view_to_screen_hint = BRT_PERSPECTIVE;
     }
 
     C2_HOOK_BUG_ON(TM_INVALID_PS != 0x1000);

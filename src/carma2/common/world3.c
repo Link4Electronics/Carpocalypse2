@@ -1,8 +1,6 @@
 #include "world3.h"
 #include "world.h"
-
 #include <ctype.h>
-
 #include "loading1.h"
 #include "utility.h"
 #include "fog.h"

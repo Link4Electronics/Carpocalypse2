@@ -1462,7 +1462,7 @@ tActionReplayCameraMode gCameraTypeBeforeCockpit;
 void C2_HOOK_FASTCALL ToggleCockpit(void) {
     tActionReplayCameraMode mode;
 
-    if (gCar_to_view != (tCar_spec*)0x75bc2c && *(const int*)0x75bbcc == 0) {
+    if (gCar_to_view != &gProgram_state.current_car && gProgram_state.cockpit_on == 0) {
         return;
     }
     if (gMap_view == 2) {
@@ -1494,11 +1494,11 @@ void C2_HOOK_FASTCALL ToggleCockpit(void) {
                 break;
             }
         }
-        MungeCarMaterials((tCar_spec*)0x75bc2c, gAction_replay_camera_mode == kActionReplayCameraMode_Internal);
+        MungeCarMaterials(&gProgram_state.current_car, gAction_replay_camera_mode == kActionReplayCameraMode_Internal);
     } else {
         gCameraTypeBeforeCockpit = mode;
         gAction_replay_camera_mode = kActionReplayCameraMode_Internal;
-        MungeCarMaterials((tCar_spec*)0x75bc2c, 1);
+        MungeCarMaterials(&gProgram_state.current_car, 1);
     }
 }
 

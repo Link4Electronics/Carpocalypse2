@@ -25,7 +25,6 @@
 
 #include "c2_string.h"
 #include <math.h>
-#include <stdio.h>
 #include <string.h>
 
 
@@ -55,6 +54,7 @@ static br_uint_32 sdlplib_timestamp;
 #define CM_SZ   (1u << 7)
 #define CM_U    (1u << 8)
 #define CM_V    (1u << 9)
+#define CM_W    (1u << 4)
 #define CM_A    (1u << 10)
 #define CM_R    (1u << 11)
 #define CM_G    (1u << 12)
@@ -84,6 +84,8 @@ typedef struct br_primitive_state_sdl {
         br_token colour_type;
         br_float alpha_val;
         br_token map_interpolation;
+        br_token map_width_limit;
+        br_token map_height_limit;
         br_uint_32 timestamp;
         br_uint_32 timestamp_major;
     } prim;
@@ -96,10 +98,36 @@ typedef struct br_primitive_state_sdl {
     } out;
 
     struct {
+        br_token type;
+        br_token space;
+        br_uint_32 timestamp;
+    } cull;
+    struct {
+        br_colour colour;
+        br_scalar opacity;
+        br_scalar ka;
+        br_scalar kd;
+        br_scalar ks;
+        br_scalar power;
+        br_boolean lighting;
+        br_boolean prelighting;
+        br_boolean force_front;
+        br_boolean force_back;
+        br_scalar depth_bias;
+        br_token colour_source;
+        br_token opacity_source;
+        br_token mapping_source;
+        br_matrix23 map_transform;
+        br_uint_32 timestamp;
+        br_uint_32 timestamp_transform;
+    } surface;
+    struct {
         void* last_block;
         br_token last_type;
         br_uint_32 timestamp_prim;
         br_uint_32 timestamp_out;
+        /* Material map_transform (2x3 matrix: scale/translate UVs) */
+        float map_transform[3][2];
     } cache;
 } br_primitive_state_sdl;
 
@@ -296,6 +324,18 @@ static br_tv_template_entry primitiveSdlTemplateEntries[] = {
     { BRT_OPACITY_X,            0, offsetof(br_primitive_state_sdl, prim.alpha_val),          0x7, 0xe,  },
     { BRT_OPACITY_F,            0, offsetof(br_primitive_state_sdl, prim.alpha_val),          0x7, 0x3,  },
     { BRT_MAP_INTERPOLATION_T,  0, offsetof(br_primitive_state_sdl, prim.map_interpolation),  0x7, 0x3,  },
+    { BRT_MAP_WIDTH_LIMIT_T,    0, offsetof(br_primitive_state_sdl, prim.map_width_limit),    0x7, 0x3,  },
+    { BRT_MAP_HEIGHT_LIMIT_T,   0, offsetof(br_primitive_state_sdl, prim.map_height_limit),   0x7, 0x3,  },
+};
+
+static br_tv_template_entry cullSdlTemplateEntries[] = {
+    { BRT_TYPE_T,   0, offsetof(br_primitive_state_sdl, cull.type),   0x7, 0x3,  },
+    { BRT_SPACE_T,  0, offsetof(br_primitive_state_sdl, cull.space),  0x7, 0x3,  },
+};
+
+static br_tv_template cullSdlTemplate = {
+    BR_ASIZE(cullSdlTemplateEntries),
+    cullSdlTemplateEntries,
 };
 
 static br_tv_template primitiveSdlTemplate = {
@@ -319,6 +359,8 @@ static br_tv_template* C2_HOOK_CDECL state_findTemplate(br_token part) {
         return &primitiveSdlTemplate;
     case BRT_OUTPUT:
         return &outputSdlTemplate;
+    case BRT_CULL:
+        return &cullSdlTemplate;
     default:
         break;
     }
@@ -414,6 +456,16 @@ static br_error C2_HOOK_CDECL state_partSet(br_primitive_state_sdl* self, br_tok
         return r;
     }
     switch (part) {
+    case BR_STATE_SURFACE:
+        /* Update cached surface state (including map_transform) */
+        self->cache.map_transform[0][0] = self->surface.map_transform.m[0][0];
+        self->cache.map_transform[0][1] = self->surface.map_transform.m[0][1];
+        self->cache.map_transform[1][0] = self->surface.map_transform.m[1][0];
+        self->cache.map_transform[1][1] = self->surface.map_transform.m[1][1];
+        self->cache.map_transform[2][0] = self->surface.map_transform.m[2][0];
+        self->cache.map_transform[2][1] = self->surface.map_transform.m[2][1];
+        self->surface.timestamp = Timestamp();
+        break;
     case BRT_PRIMITIVE:
         self->prim.timestamp = Timestamp();
         if (m != 0) {
@@ -425,6 +477,9 @@ static br_error C2_HOOK_CDECL state_partSet(br_primitive_state_sdl* self, br_tok
         if (m != 0) {
             self->out.timestamp_major = Timestamp();
         }
+        break;
+    case BRT_CULL:
+        self->cull.timestamp = Timestamp();
         break;
     default:
         break;
@@ -450,6 +505,16 @@ static br_error C2_HOOK_CDECL state_partSetMany(br_primitive_state_sdl* self, br
         *pcount = c;
     }
     switch (part) {
+    case BR_STATE_SURFACE:
+        /* Update cached surface state (including map_transform) */
+        self->cache.map_transform[0][0] = self->surface.map_transform.m[0][0];
+        self->cache.map_transform[0][1] = self->surface.map_transform.m[0][1];
+        self->cache.map_transform[1][0] = self->surface.map_transform.m[1][0];
+        self->cache.map_transform[1][1] = self->surface.map_transform.m[1][1];
+        self->cache.map_transform[2][0] = self->surface.map_transform.m[2][0];
+        self->cache.map_transform[2][1] = self->surface.map_transform.m[2][1];
+        self->surface.timestamp = Timestamp();
+        break;
     case BRT_PRIMITIVE:
         self->prim.timestamp = Timestamp();
         if (m != 0) {
@@ -461,6 +526,9 @@ static br_error C2_HOOK_CDECL state_partSetMany(br_primitive_state_sdl* self, br
         if (m != 0) {
             self->out.timestamp_major = Timestamp();
         }
+        break;
+    case BRT_CULL:
+        self->cull.timestamp = Timestamp();
         break;
     default:
         break;
@@ -543,6 +611,10 @@ static br_error C2_HOOK_CDECL state_stateDefault(br_primitive_state_sdl* self, b
     self->prim.alpha_val = 1.f;
     self->prim.colour_type = BRT_DEFAULT;
     self->prim.map_interpolation = BRT_NONE;
+    self->prim.map_width_limit = BRT_WRAP;
+    self->prim.map_height_limit = BRT_WRAP;
+    self->cull.type = BRT_NONE;
+    self->cull.space = BRT_MODEL;
     return 0;
 }
 
@@ -558,6 +630,12 @@ static br_error C2_HOOK_CDECL state_stateCopy(br_primitive_state_sdl* self, br_p
         self->prim.colour_type = src->prim.colour_type;
         self->prim.alpha_val = src->prim.alpha_val;
         self->prim.map_interpolation = src->prim.map_interpolation;
+        self->prim.map_width_limit = src->prim.map_width_limit;
+        self->prim.map_height_limit = src->prim.map_height_limit;
+    }
+    if ((mask & 0x00000040u) && src != NULL) {
+        self->cull.type = src->cull.type;
+        self->cull.space = src->cull.space;
     }
     return 0;
 }
@@ -591,6 +669,10 @@ static void C2_HOOK_CDECL sdlTriangleRender(brp_block* block, brp_vertex* v0, br
     float alpha_val;
     br_uint_32 prim_flags;
     int smooth;
+    int is_2d_ui;
+    /* Perspective-correct UV interpolation */
+    float u_over_z_l, v_over_z_l, inv_z_l;
+    float u_over_z_step, v_over_z_step, inv_z_step;
 
     colour_pm = state->out.pixelmap;
     depth_pm = state->out.depth;
@@ -598,7 +680,8 @@ static void C2_HOOK_CDECL sdlTriangleRender(brp_block* block, brp_vertex* v0, br
         return;
     }
 
-    tex = (br_buffer_stored_sdl*)state->prim.colour_map;
+    tex = (br_buffer_stored_sdl*)state->prim.colour_map;    
+
     prim_flags = state->prim.flags;
     alpha_val = state->prim.alpha_val;
     /* retail passes opacity on a 0..256 scale */
@@ -620,6 +703,12 @@ static void C2_HOOK_CDECL sdlTriangleRender(brp_block* block, brp_vertex* v0, br
         depth_base = NULL;
         db_row = 0;
     }
+
+    /* 2D UI elements (orthographic, W==1) never participate in the depth buffer */
+    is_2d_ui = (fabsf(v0->comp_f[C_W] - 1.f) < 1e-3f &&
+                fabsf(v1->comp_f[C_W] - 1.f) < 1e-3f &&
+                fabsf(v2->comp_f[C_W] - 1.f) < 1e-3f);
+    depth_base = is_2d_ui ? NULL : depth_base;
 
     x0 = v0->comp_f[C_SX]; y0 = v0->comp_f[C_SY];
     x1 = v1->comp_f[C_SX]; y1 = v1->comp_f[C_SY];
@@ -648,7 +737,6 @@ static void C2_HOOK_CDECL sdlTriangleRender(brp_block* block, brp_vertex* v0, br
 
         /* Horizontal span: intersect triangle edges with the scanline */
         {
-            float xi_a = 1e9f, xi_b = -1e9f;
             int have = 0;
             int ei;
             for (ei = 0; ei < 3; ei++) {
@@ -691,15 +779,53 @@ static void C2_HOOK_CDECL sdlTriangleRender(brp_block* block, brp_vertex* v0, br
 
         /* Barycentric weights at the first pixel centre; per-pixel steps */
         {
-            float px = xa + 0.5f;
+            float px = x_start + 0.5f;
+            l0 = ((px - x2) * (y1 - y2) - (py - y2) * (x1 - x2)) / den;
             l1 = ((y2 - y0) * (px - x2) + (x0 - x2) * (py - y2)) / den;
-            l2 = ((y0 - y1) * (px - x2) + (x1 - x2) * (py - y2)) / den;
-            l0 = 1.f - l1 - l2;
+            l2 = 1.f - l0 - l1;
             l1_step = (y2 - y0) / den;
             l2_step = (y0 - y1) / den;
             z_step = l1_step * (v1->comp_f[C_SZ] - v0->comp_f[C_SZ]) + l2_step * (v2->comp_f[C_SZ] - v0->comp_f[C_SZ]);
-            u_step = l1_step * (v1->comp_f[C_U] - v0->comp_f[C_U]) + l2_step * (v2->comp_f[C_U] - v0->comp_f[C_U]);
-            v_step = l1_step * (v1->comp_f[C_V] - v0->comp_f[C_V]) + l2_step * (v2->comp_f[C_V] - v0->comp_f[C_V]);
+            /* Perspective-correct UV: use C_W (clip W) for rhw = 1/W */
+            /* Vertex UVs are already transformed by softrend geometry pipeline (map_transform applied in mapping.c) */
+            float u0 = v0->comp_f[C_U];
+            float u1 = v1->comp_f[C_U];
+            float u2 = v2->comp_f[C_U];
+            float v0v = v0->comp_f[C_V];
+            float v1v = v1->comp_f[C_V];
+            float v2v = v2->comp_f[C_V];
+            float w0 = v0->comp_f[C_W], w1 = v1->comp_f[C_W], w2 = v2->comp_f[C_W];
+            float rhw0 = 1.f / w0, rhw1 = 1.f / w1, rhw2 = 1.f / w2;
+            int is_2d = (fabsf(w0 - 1.0f) < 1e-3f && fabsf(w1 - 1.0f) < 1e-3f && fabsf(w2 - 1.0f) < 1e-3f);
+            int use_perspective = !is_2d && (w0 > 1e-4f) && (w1 > 1e-4f) && (w2 > 1e-4f) && 
+                                 (fabsf(w0 - w1) > 1e-4f || fabsf(w1 - w2) > 1e-4f);
+
+
+            /* Always compute affine steps (used for affine fallback) */
+            u_step = l1_step * (u1 - u0) + l2_step * (u2 - u0);
+            v_step = l1_step * (v1v - v0v) + l2_step * (v2v - v0v);
+
+            if (use_perspective) {
+                /* Interpolate u/W, v/W, 1/W then divide per pixel */
+                float u_over_w0 = u0 * rhw0, u_over_w1 = u1 * rhw1, u_over_w2 = u2 * rhw2;
+                float v_over_w0 = v0v * rhw0, v_over_w1 = v1v * rhw1, v_over_w2 = v2v * rhw2;
+                u_over_z_step = l1_step * (u_over_w1 - u_over_w0) + l2_step * (u_over_w2 - u_over_w0);
+                v_over_z_step = l1_step * (v_over_w1 - v_over_w0) + l2_step * (v_over_w2 - v_over_w0);
+                inv_z_step = l1_step * (rhw1 - rhw0) + l2_step * (rhw2 - rhw0);
+                z_l = l0 * v0->comp_f[C_SZ] + l1 * v1->comp_f[C_SZ] + l2 * v2->comp_f[C_SZ];
+                u_over_z_l = l0 * u_over_w0 + l1 * u_over_w1 + l2 * u_over_w2;
+                v_over_z_l = l0 * v_over_w0 + l1 * v_over_w1 + l2 * v_over_w2;
+                inv_z_l = l0 * rhw0 + l1 * rhw1 + l2 * rhw2;
+                u_l = u_over_z_l / inv_z_l;
+                v_l = v_over_z_l / inv_z_l;
+            } else {
+                /* Affine fallback for flat/constant-W triangles */
+                u_over_z_step = v_over_z_step = inv_z_step = 0.f;
+                u_over_z_l = v_over_z_l = inv_z_l = 0.f;
+                z_l = l0 * v0->comp_f[C_SZ] + l1 * v1->comp_f[C_SZ] + l2 * v2->comp_f[C_SZ];
+                u_l = l0 * u0 + l1 * u1 + l2 * u2;
+                v_l = l0 * v0v + l1 * v1v + l2 * v2v;
+            }
             if (smooth) {
                 r_step = l1_step * (v1->comp_i[C_R] - v0->comp_i[C_R]) + l2_step * (v2->comp_i[C_R] - v0->comp_i[C_R]);
                 g_step = l1_step * (v1->comp_i[C_G] - v0->comp_i[C_G]) + l2_step * (v2->comp_i[C_G] - v0->comp_i[C_G]);
@@ -707,9 +833,6 @@ static void C2_HOOK_CDECL sdlTriangleRender(brp_block* block, brp_vertex* v0, br
             } else {
                 r_step = g_step = b_step = 0.f;
             }
-            z_l = l0 * v0->comp_f[C_SZ] + l1 * v1->comp_f[C_SZ] + l2 * v2->comp_f[C_SZ];
-            u_l = l0 * v0->comp_f[C_U] + l1 * v1->comp_f[C_U] + l2 * v2->comp_f[C_U];
-            v_l = l0 * v0->comp_f[C_V] + l1 * v1->comp_f[C_V] + l2 * v2->comp_f[C_V];
             if (smooth) {
                 r_l = l0 * v0->comp_i[C_R] + l1 * v1->comp_i[C_R] + l2 * v2->comp_i[C_R];
                 g_l = l0 * v0->comp_i[C_G] + l1 * v1->comp_i[C_G] + l2 * v2->comp_i[C_G];
@@ -722,19 +845,41 @@ static void C2_HOOK_CDECL sdlTriangleRender(brp_block* block, brp_vertex* v0, br
         drow = depth_base ? depth_base + y * db_row : NULL;
         crow = colour_base + y * cb_row;
 
+        float u_over_z = u_over_z_l;
+        float v_over_z = v_over_z_l;
+        float inv_z = inv_z_l;
+        int persp = (inv_z_l != 0.f);
+
         for (x = x_start; x <= x_end; x++) {
             unsigned short dest;
             unsigned short dval;
             float rr = r_l, gg = g_l, bb = b_l;
 
+            /* Perspective-correct UV per pixel */
+            if (persp) {
+                float z = inv_z;
+                if (z != 0.f) {
+                    u_l = u_over_z / z;
+                    v_l = v_over_z / z;
+                }
+            }
+
             if (drow != NULL) {
-                dval = (unsigned short)(z_l * 65535.f);
+                /* C_SZ is already in depth-buffer units (0..65534): clamp and store cleanly. */
+                if (z_l < 0.f) {
+                    dval = 0;
+                } else if (z_l > 65534.f) {
+                    dval = 65534;
+                } else {
+                    dval = (unsigned short)z_l;
+                }
                 if (dval >= drow[x]) {
                     goto next;
                 }
             } else {
                 dval = 0;
             }
+
 
             if (tex != NULL && tex->pm != NULL) {
                 br_device_pixelmap* tpm = tex->pm;
@@ -748,10 +893,34 @@ static void C2_HOOK_CDECL sdlTriangleRender(brp_block* block, brp_vertex* v0, br
                 }
                 tu = (int)(u_l * tw);
                 tv = (int)(v_l * th);
-                tu = tu % tw;
-                tv = tv % th;
-                if (tu < 0) tu += tw;
-                if (tv < 0) tv += th;
+                /* Apply texture wrap mode from material (BRT_WRAP, BRT_CLAMP, BRT_MIRROR) */
+                br_token wrap_u = state->prim.map_width_limit;
+                br_token wrap_v = state->prim.map_height_limit;
+                if (wrap_u == BRT_WRAP) {
+                    tu = tu % tw;
+                    if (tu < 0) tu += tw;
+                } else if (wrap_u == BRT_MIRROR) {
+                    int period = tw * 2;
+                    tu = tu % period;
+                    if (tu < 0) tu += period;
+                    if (tu >= tw) tu = period - 1 - tu;
+                } else {
+                    /* BRT_CLAMP or default */
+                    if (tu < 0) tu = 0;
+                    else if (tu >= tw) tu = tw - 1;
+                }
+                if (wrap_v == BRT_WRAP) {
+                    tv = tv % th;
+                    if (tv < 0) tv += th;
+                } else if (wrap_v == BRT_MIRROR) {
+                    int period = th * 2;
+                    tv = tv % period;
+                    if (tv < 0) tv += period;
+                    if (tv >= th) tv = period - 1 - tv;
+                } else {
+                    if (tv < 0) tv = 0;
+                    else if (tv >= th) tv = th - 1;
+                }
                 t = tpix[tv * (tpm->pm_row_bytes / 2) + tu];
 
                 if (tpm->pm_type == (br_uint_8)BR_PMT_RGBA_4444) {
@@ -841,13 +1010,21 @@ static void C2_HOOK_CDECL sdlTriangleRender(brp_block* block, brp_vertex* v0, br
             }
 
             crow[x] = dest;
-            if (drow != NULL) {
+            if (drow != NULL && !is_2d_ui) {
                 drow[x] = dval;
             }
         next:
+            if (persp) {
+                u_over_z += u_over_z_step;
+                v_over_z += v_over_z_step;
+                inv_z += inv_z_step;
+                u_l = u_over_z / inv_z;
+                v_l = v_over_z / inv_z;
+            } else {
+                u_l += u_step;
+                v_l += v_step;
+            }
             z_l += z_step;
-            u_l += u_step;
-            v_l += v_step;
             r_l += r_step;
             g_l += g_step;
             b_l += b_step;
@@ -862,20 +1039,30 @@ static br_error C2_HOOK_CDECL state_renderBegin(br_primitive_state_sdl* self, br
     (void)subdivide_tolerance;
     *ranges_changed = 1;
 
-    if (self->cache.last_type == BRT_TRIANGLE) {
-        lb = (local_block_sdl*)self->cache.last_block;
-        *blocks = &lb->p;
-        *block_changed = 0;
-        (void)no_render;
-        return 0;
-    }
-
     flags = self->prim.flags;
     if (self->prim.colour_map != NULL) {
         flags |= PRIMF_TEXTURE_BUFFER;
     }
     if (self->out.depth != NULL) {
         flags |= PRIMF_DEPTH_BUFFER;
+    }
+
+    /* map_transform is now applied by softrend geometry pipeline (mapping.c), not here.
+     * Keep cache as identity for any legacy debug code. */
+    self->cache.map_transform[0][0] = 1.0f; self->cache.map_transform[0][1] = 0.0f;
+    self->cache.map_transform[1][0] = 0.0f; self->cache.map_transform[1][1] = 1.0f;
+    self->cache.map_transform[2][0] = 0.0f; self->cache.map_transform[2][1] = 0.0f;
+
+    /* Invalidate cached block if texture or flags changed */
+    if (self->cache.last_type == BRT_TRIANGLE) {
+        lb = (local_block_sdl*)self->cache.last_block;
+        if (lb->sig == flags) {
+            *blocks = &lb->p;
+            *block_changed = 0;
+            (void)no_render;
+            return 0;
+        }
+        /* Texture/flags changed - fall through to create new block */
     }
 
     lb = BrResAllocate(self, sizeof(*lb), BR_MEMORY_OBJECT);
@@ -892,14 +1079,14 @@ static br_error C2_HOOK_CDECL state_renderBegin(br_primitive_state_sdl* self, br
     }
     if (flags & PRIMF_SMOOTH) {
         lb->p.constant_components = 0;
-        lb->p.vertex_components = CM_SX | CM_SY | CM_SZ | CM_U | CM_V | CM_R | CM_G | CM_B;
-        lb->p.convert_mask_f = CM_SX | CM_SY | CM_SZ | CM_U | CM_V;
+        lb->p.vertex_components = CM_SX | CM_SY | CM_SZ | CM_U | CM_V | CM_W | CM_R | CM_G | CM_B;
+        lb->p.convert_mask_f = CM_SX | CM_SY | CM_SZ | CM_U | CM_V | CM_W;
         lb->p.convert_mask_i = CM_R | CM_G | CM_B;
         lb->p.constant_mask = 0;
     } else {
         lb->p.constant_components = CM_R | CM_G | CM_B;
-        lb->p.vertex_components = CM_SX | CM_SY | CM_SZ | CM_U | CM_V;
-        lb->p.convert_mask_f = CM_SX | CM_SY | CM_SZ | CM_U | CM_V;
+        lb->p.vertex_components = CM_SX | CM_SY | CM_SZ | CM_U | CM_V | CM_W;
+        lb->p.convert_mask_f = CM_SX | CM_SY | CM_SZ | CM_U | CM_V | CM_W;
         lb->p.convert_mask_i = 0;
         lb->p.constant_mask = CM_R | CM_G | CM_B;
     }
@@ -951,8 +1138,11 @@ static br_error C2_HOOK_CDECL state_rangesQueryF(br_primitive_state_sdl* self, b
         src[C_SY] = -h;
     }
     if (size > C_SZ) {
-        dest[C_SZ] = 0.f;
-        src[C_SZ] = 1.f;
+        /* Match retail BRender depth convention: comp_f[C_SZ] = 32767 - 32767*(z/w) + gScreenZOffset,
+         * so C_SZ lands directly in 16-bit depth-buffer units (near=0, far=65534).
+         * gScreenZOffset is then a tiny depth-buffer-unit bias instead of an NDC shift. */
+        dest[C_SZ] = 32767.f;
+        src[C_SZ] = -32767.f;
     }
     if (size > C_U) {
         dest[C_U] = 0.f;

@@ -898,68 +898,15 @@ void carpocalypse2_RequestQuit(void) {
 
 void carpocalypse2_PresentFrame(void) {
     SDL_Surface* surface;
-    static int frame_dumped;
-    static int frame_count;
 
     /* The Win95 message pump ran continuously; on SDL3 the event pump must be
      * driven every frame or the window stops responding and mouse position
      * never updates */
     SDL3ServiceMessages();
 
-#ifndef CARPOCALYPSE2_MATCHING
-    {
-        static int frames;
-        if (++frames % 100 == 0) dr_dprintf("PresentFrame #%d", frames);
-        if (getenv("CARPOCALYPSE2_DUMP_SEQ") != NULL && frames >= 200 && frames <= 212) {
-            SDL_Surface* dump = SDL_CreateSurface(gBack_screen->width, gBack_screen->height, SDL_PIXELFORMAT_RGB24);
-            if (dump != NULL) {
-                int x, y;
-                char name[64];
-                for (y = 0; y < gBack_screen->height; y++) {
-                    Uint8* drow = (Uint8*)dump->pixels + y * dump->pitch;
-                    br_uint_16* srow = (br_uint_16*)((char*)gBack_screen->pixels + y * gBack_screen->row_bytes);
-                    for (x = 0; x < gBack_screen->width; x++) {
-                        unsigned short px = srow[x];
-                        drow[x * 3 + 0] = (Uint8)(((px >> 11) & 0x1F) << 3);
-                        drow[x * 3 + 1] = (Uint8)(((px >> 5) & 0x3F) << 2);
-                        drow[x * 3 + 2] = (Uint8)((px & 0x1F) << 3);
-                    }
-                }
-                snprintf(name, sizeof(name), "seq_%03d.bmp", frames);
-                SDL_SaveBMP(dump, name);
-                SDL_DestroySurface(dump);
-            }
-        }
-    }
-#endif
-
-
     if (g_SDL_Window == NULL || gBack_screen == NULL || gBack_screen->pixels == NULL) {
         SDL_Delay(16);
         return;
-    }
-
-    frame_count++;
-    if (!frame_dumped && getenv("CARPOCALYPSE2_DUMP_FRAME") != NULL && frame_count >= 100) {
-        frame_dumped = 1;
-        {
-            SDL_Surface* dump = SDL_CreateSurface(gBack_screen->width, gBack_screen->height, SDL_PIXELFORMAT_RGB24);
-            if (dump != NULL) {
-                int x, y;
-                for (y = 0; y < gBack_screen->height; y++) {
-                    Uint8* drow = (Uint8*)dump->pixels + y * dump->pitch;
-                    br_uint_16* srow = (br_uint_16*)((char*)gBack_screen->pixels + y * gBack_screen->row_bytes);
-                    for (x = 0; x < gBack_screen->width; x++) {
-                        unsigned short px = srow[x];
-                        drow[x * 3 + 0] = (Uint8)(((px >> 11) & 0x1F) << 3);
-                        drow[x * 3 + 1] = (Uint8)(((px >> 5) & 0x3F) << 2);
-                        drow[x * 3 + 2] = (Uint8)((px & 0x1F) << 3);
-                    }
-                }
-                SDL_SaveBMP(dump, "frame_dump.bmp");
-                SDL_DestroySurface(dump);
-            }
-        }
     }
 
     surface = SDL_GetWindowSurface(g_SDL_Window);

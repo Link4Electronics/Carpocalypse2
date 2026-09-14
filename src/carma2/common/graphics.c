@@ -37,7 +37,7 @@
 
 #include "brender/brender.h"
 #include "brender/br_types.h"
-
+#include "../../brender/core/v1db/dbsetup.h"
 #include "carpocalypse2_macros.h"
 #include "carpocalypse2_types.h"
 
@@ -999,6 +999,18 @@ void C2_HOOK_FASTCALL DoARenderPass(br_matrix34* pMat34, br_actor* pCamera, br_p
     tCar_spec* fox_car;
     br_pixelmap* sky_pixelmap;
     int bgnd_col;
+    br_matrix4 persp_mat;
+    br_matrix4 scale_mat;
+    br_matrix4 view_to_screen;
+    br_token hint;
+
+    /* Set up perspective projection matrix for the renderer */
+    BrMatrix4Perspective(&persp_mat, camera_data->field_of_view, camera_data->aspect, -camera_data->hither_z, -camera_data->yon_z);
+    BrMatrix4Scale(&view_to_screen, (float)(gRender_screen->width / 2), (float)(gRender_screen->height / 2), 1.0f);
+    BrMatrix4Mul(&persp_mat, &view_to_screen, &view_to_screen);
+    v1db.renderer->dispatch->_partSet(v1db.renderer, BRT_OUTPUT, 0, BRT_VIEW_TO_SCREEN_M4_F, (uintptr_t)&view_to_screen);
+    hint = BRT_PERSPECTIVE;
+    v1db.renderer->dispatch->_partSet(v1db.renderer, BRT_OUTPUT, 0, BRT_VIEW_TO_SCREEN_HINT_T, (uintptr_t)&hint);
 
     camera_data->yon_z *= pYon_factor;
     BrPixelmapFill(pDepth, 0xffffffff);
