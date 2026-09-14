@@ -52,19 +52,21 @@ int C2_HOOK_FASTCALL LoadBunchOfPixies(const char* pathRoot, const char* texture
 br_pixelmap* C2_HOOK_FASTCALL DRLdImg(const char* texturePathDir, const char* textureName, br_pixelmap* pPalette, int flags, int* errorCode) {
     br_pixelmap* textures[1000];
     int nb;
+    br_pixelmap* pm_result;
 
     if (gDisableTiffConversion) {
         nb = LoadBunchOfPixies(texturePathDir, textureName, textures, CARPOCALYPSE2_ASIZE(textures));
         if (nb != 0) {
             *errorCode = 0;
-            return textures[0];
+            pm_result = textures[0];
         } else {
             *errorCode = 1;
-            return NULL;
+            pm_result = NULL;
         }
     } else {
-        return LoadTiffTexture_Ex(texturePathDir, textureName, pPalette, flags | kLoadTextureFlags_SaveTextureCompressed, errorCode);
+        pm_result = LoadTiffTexture_Ex(texturePathDir, textureName, pPalette, flags | kLoadTextureFlags_SaveTextureCompressed, errorCode);
     }
+    return pm_result;
 }
 
 // FUNCTION: CARMA2_HW 0x0048ec20

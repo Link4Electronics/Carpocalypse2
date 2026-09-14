@@ -813,6 +813,22 @@ int C2_HOOK_STDCALL FopRead_PIXELMAP_REF(br_datafile* df, br_uint_32 id, br_uint
     } else {
         pm = BrMapFind(name);
     }
+#ifndef CARPOCALYPSE2_MATCHING
+    if (pm == NULL && MaterialMaps[i].table == 0) {
+        /* Data packs reference map/texture names with a trailing ".PIX"
+         * (e.g. "ROAD1.PIX"), while the loaded pixelmaps are registered under
+         * their bare stem ("ROAD1"). Retry once with the extension stripped. */
+        size_t ln = strlen(name);
+        if (ln > 4 &&
+            (name[ln - 4] == '.' && (name[ln - 3] | 0x20) == 'p' &&
+             (name[ln - 2] | 0x20) == 'i' && (name[ln - 1] | 0x20) == 'x')) {
+            char trimmed[256];
+            memcpy(trimmed, name, ln - 4);
+            trimmed[ln - 4] = '\0';
+            pm = BrMapFind(trimmed);
+        }
+    }
+#endif
     *(intptr_t*)(mp + MaterialMaps[i].offset) = (intptr_t)pm;
     return 0;
 }

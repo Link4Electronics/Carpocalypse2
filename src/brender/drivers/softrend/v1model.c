@@ -432,18 +432,18 @@ static void C2_HOOK_STDCALL V1Faces_GeometryFnsUpdate(br_geometry_v1_model_soft*
     }
 
     switch (renderer->state.cull.type) {
-    case BRT_ONE_SIDED:
-        GeometryFunctionAdd(renderer, (geometry_fn*)V1Face_CullOneSided);
-        GeometryFunctionOnScreenAdd(renderer, (geometry_fn*)V1Face_OS_CullOneSided);
-        break;
-    case BRT_TWO_SIDED:
-        GeometryFunctionAdd(renderer, (geometry_fn*)V1Face_CullTwoSided);
-        GeometryFunctionOnScreenAdd(renderer, (geometry_fn*)V1Face_OS_CullTwoSided);
-        break;
-    default:
-        GeometryFunctionAdd(renderer, (geometry_fn*)V1Face_CullNone);
-        GeometryFunctionOnScreenAdd(renderer, (geometry_fn*)V1Face_OS_CullNone);
-        break;
+        case BRT_ONE_SIDED:
+            GeometryFunctionAdd(renderer, (geometry_fn*)V1Face_CullOneSided);
+            GeometryFunctionOnScreenAdd(renderer, (geometry_fn*)V1Face_OS_CullOneSided);
+            break;
+        case BRT_TWO_SIDED:
+            GeometryFunctionAdd(renderer, (geometry_fn*)V1Face_CullTwoSided);
+            GeometryFunctionOnScreenAdd(renderer, (geometry_fn*)V1Face_OS_CullTwoSided);
+            break;
+        default:
+            GeometryFunctionAdd(renderer, (geometry_fn*)V1Face_CullNone);
+            GeometryFunctionOnScreenAdd(renderer, (geometry_fn*)V1Face_OS_CullNone);
+            break;
     }
 
     VertexGeometryFns(renderer, (geometry_fn*)V1Face_Outcode);
@@ -613,10 +613,15 @@ br_error C2_HOOK_STDCALL V1Model_Render(br_geometry_v1_model_soft* self, br_soft
         rend.nvertices = model->groups[g].nvertices;
         rend.nedges = model->groups[g].nedges;
 
-        state = model->groups[g].stored ? model->groups[g].stored : default_state;
+        /* First restore material's stored state FULLY (including cull from material flags) */
+        if (default_state != NULL) {
+            renderer->dispatch->_stateRestore((br_renderer*)renderer, (br_renderer_state_stored*)default_state, BR_STATE_ALL);
+        }
 
+        /* Then restore model group's stored state WITHOUT cull (don't override material's cull) */
+        state = model->groups[g].stored;
         if (state != NULL) {
-            renderer->dispatch->_stateRestore((br_renderer*)renderer, (br_renderer_state_stored*)state, BR_STATE_ALL);
+            renderer->dispatch->_stateRestore((br_renderer*)renderer, (br_renderer_state_stored*)state, BR_STATE_ALL & ~BR_STATE_CULL);
         }
 
         z_sort = renderer->state.hidden.type == BRT_BUCKET_SORT &&

@@ -2,6 +2,7 @@
 #include "carpocalypse2_types.h"
 #include "world.h"
 #include "opponent.h"
+#include "globvars.h"
 
 // Replay pipe worker helpers (no orig PDB symbols; the Apply/Undo wrappers in
 // replay_callbacks.c forward onto them). Kept in their own TU so MSVC does not
@@ -321,7 +322,7 @@ void C2_HOOK_FASTCALL WorkerSmudge(tPipe_chunk** pChunk, int pScale) {
     int i;
 
     code = *(unsigned int*)*pChunk;
-    if ((code & 0xffffff00u) == 0) car = (tCar_spec*)0x75bc2c; else car = GetCarSpec(code >> 8, code & 0xffu);
+    if ((code & 0xffffff00u) == 0) car = &gProgram_state.current_car; else car = GetCarSpec(code >> 8, code & 0xffu);
     a = *(tU8**)((tU8*)car + 0xe10);
     i = 0;
     if (*(tU16*)((tU8*)*pChunk + 4) <= 0) return;

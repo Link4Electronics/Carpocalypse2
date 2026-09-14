@@ -731,7 +731,7 @@ void C2_HOOK_FASTCALL ApplyCar(tPipe_chunk** pChunk) {
     br_vector4 out4;
 
     if ((code & 0xffffff00u) == 0) {
-        car = (tCar_spec*)0x75bc2c;
+        car = &gProgram_state.current_car;
     } else {
         car = GetCarSpec(code >> 8, code & 0xffu);
     }
@@ -785,7 +785,7 @@ void C2_HOOK_FASTCALL ApplyGWS(tPipe_chunk** pChunk) {
     tU32 code = ((tPipe_chunk_graphpical_wheel_stuff*)*pChunk)->field_0x0;
 
     if ((code & 0xffffff00u) == 0) {
-        car = (tCar_spec*)0x75bc2c;
+        car = &gProgram_state.current_car;
     } else {
         car = GetCarSpec(code >> 8, code & 0xffu);
     }
@@ -805,7 +805,7 @@ void C2_HOOK_FASTCALL ApplyDamage(tPipe_chunk** pChunk) {
     int i;
 
     if ((code & 0xffffff00u) == 0) {
-        car = (tCar_spec*)0x75bc2c;
+        car = &gProgram_state.current_car;
     } else {
         car = GetCarSpec(code >> 8, code & 0xffu);
     }
@@ -826,7 +826,7 @@ void C2_HOOK_FASTCALL UndoDamage(tPipe_chunk** pChunk, tPipe_chunk* pPrev_chunk)
     int i;
 
     if ((code & 0xffffff00u) == 0) {
-        car = (tCar_spec*)0x75bc2c;
+        car = &gProgram_state.current_car;
     } else {
         car = GetCarSpec(code >> 8, code & 0xffu);
     }
@@ -1153,14 +1153,14 @@ void C2_HOOK_FASTCALL ApplySplitWeld(tPipe_chunk** pChunk) {
 
     if ((*(tPipe_chunk_split_weld**)*pChunk)->field_0x14) {
         if ((fn & 0xffffff00u) == 0) {
-            return WorkerSplitWeldApply((void*)0x75bc2c, &swGetChunk(pChunk)->field_0x4);
+            return WorkerSplitWeldApply(&gProgram_state.current_car, &swGetChunk(pChunk)->field_0x4);
         }
 
         return WorkerSplitWeldApply(GetCarSpec(fn >> 8, fn & 0xffu), &swGetChunk(pChunk)->field_0x4);
     }
 
     if ((fn & 0xffffff00u) == 0) {
-        return WorkerSplitWeldUndo((void*)0x75bc2c);
+        return WorkerSplitWeldUndo(&gProgram_state.current_car);
     }
 
     return WorkerSplitWeldUndo(GetCarSpec(fn >> 8, fn & 0xffu));
@@ -1172,14 +1172,14 @@ void C2_HOOK_FASTCALL UndoSplitWeld(tPipe_chunk** pChunk, tPipe_chunk* pPrev_chu
 
     if ((*(tPipe_chunk_split_weld**)*pChunk)->field_0x14) {
         if ((fn & 0xffffff00u) == 0) {
-            return WorkerSplitWeldUndo((void*)0x75bc2c);
+            return WorkerSplitWeldUndo(&gProgram_state.current_car);
         }
 
         return WorkerSplitWeldUndo(GetCarSpec(fn >> 8, fn & 0xffu));
     }
 
     if ((fn & 0xffffff00u) == 0) {
-        return WorkerSplitWeldApply((void*)0x75bc2c, &swGetChunk(pChunk)->field_0x4);
+        return WorkerSplitWeldApply(&gProgram_state.current_car, &swGetChunk(pChunk)->field_0x4);
     }
 
     return WorkerSplitWeldApply(GetCarSpec(fn >> 8, fn & 0xffu), &swGetChunk(pChunk)->field_0x4);
