@@ -414,11 +414,11 @@ void C2_HOOK_FASTCALL APTCPostCollision(void);
 
 void C2_HOOK_FASTCALL APTCPostCollisionTree(tPhysics_object* pNode);
 
-void C2_HOOK_FASTCALL APTCChangedObjects(tPhysics_object* pArg1, undefined4 pArg2);
+void C2_HOOK_FASTCALL APTCChangedObjects(tPhysics_object* pObject, undefined4 pArg2);
 
-int C2_HOOK_FASTCALL APTCActiveHalted(tPhysics_object* pArg1);
+int C2_HOOK_FASTCALL APTCActiveHalted(tPhysics_object* pObject);
 
-int C2_HOOK_FASTCALL APTCPassiveActivated(tPhysics_object* pArg1);
+int C2_HOOK_FASTCALL APTCPassiveActivated(tPhysics_object* pObject, undefined4 pArg2);
 
 float C2_HOOK_STDCALL frac(float pN);
 

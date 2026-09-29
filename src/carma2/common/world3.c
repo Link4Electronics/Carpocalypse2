@@ -350,10 +350,29 @@ void C2_HOOK_FASTCALL LoadTrack(const char* pFile_name, tTrack_spec* pTrack_spec
         data->sections[i].acc.v[2] /= data->sections[i].quad_count;
     }
 
+    PossibleService();
+    {
+        char county_pack_path[256];
+        char county_stem[256];
+        tTWTVFS twt;
+
+        strcpy(county_stem, local_name);
+        county_stem[4] = '\0';
+        PathCat(county_pack_path, gApplication_path, "RACES");
+        PathCat(county_pack_path, county_pack_path, county_stem);
+        twt = OpenPackFile(county_pack_path);
+        LoadAllImagesInDirectory(&gTrack_storage_space, county_pack_path);
+        ClosePackFile(twt);
+    }
+    PossibleService();
     LoadAllImagesInDirectory(&gTrack_storage_space, gRace_path);
+    PossibleService();
     LoadAllShadeTablesInDirectory(&gTrack_storage_space, gRace_path);
+    PossibleService();
     LoadTrackMaterials(&gTrack_storage_space, gRace_path);
+    PossibleService();
     LoadTrackModels(&gTrack_storage_space, gRace_path);
+    PossibleService();
 
     for (i = 0; i < gTrack_storage_space.models_count; i++) {
         MungeTrackModel(gTrack_storage_space.models[i]);

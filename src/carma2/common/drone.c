@@ -1162,6 +1162,15 @@ br_vector3* C2_HOOK_FASTCALL GetCurrentViewDroneDirection(void) {
         return &gDefault_drone_direction;
     }
 }
+
+// FUNCTION: CARMA2_HW 0x00452410
+void C2_HOOK_FASTCALL MoveMyDroneBaby(tPhysics_object* pObject, undefined4 pArg2) {
+    tDrone_spec* pDrone;
+
+    pDrone = (tDrone_spec*)pObject->owner;
+    DoNotDprintf("MoveMyDroneBaby(): Drone %d, State %d", pDrone->id, pDrone->current_state);
+}
+
 // DoNotDprintf
 
 // CrappyLittleVector3DPrintf
@@ -1318,9 +1327,43 @@ void C2_HOOK_FASTCALL SetTrafficOn(int pTraffic_on) {
 
 // DoDronePerGameFrameStuff
 
-// MyDroneHathCollideth
+// FUNCTION: CARMA2_HW 0x00452230
+int C2_HOOK_FASTCALL MyDroneHathCollideth(tPhysics_object* pObject, tPhysics_object* pOther) {
+    tDrone_spec* pDrone;
 
-// MyDroneHathHalteth
+    DoNotDprintf("MyDroneHathCollideth(): PHIL called a bloody callback. Rejoice!");
+    pDrone = (tDrone_spec*)pObject->owner;
+    pObject->disable_move_rotate = 0;
+    pObject->field_0xed = 1;
+    pObject->field_0x1a0 = 0x200000;
+    pObject->v.v[0] = pDrone->field_0x18.v[0];
+    pObject->v.v[1] = pDrone->field_0x18.v[1];
+    pObject->v.v[2] = pDrone->field_0x18.v[2];
+    PHILMakeObjectActive(pObject, NULL, NULL, 1);
+    PHILSetObjectProperty(pObject, 3, 0);
+    if ((pOther != NULL && pOther->owner != NULL && pOther->flags_0x238 == 1)
+            || (pOther->flags_0x238 == 0x20
+                && (gMutant_tail_state == 2 || GetTotalTime() - gINT_00705b70 < 0x1d4c))) {
+        ((tDrone_spec*)pObject->owner)->field_0x5d4 = (undefined4)pOther->owner;
+    } else if (pOther != NULL && pOther->flags_0x238 == 0x40) {
+        ((tDrone_spec*)pObject->owner)->field_0x5d4 = ((tDrone_spec*)pOther->owner)->time_last_munge;
+    }
+    NewDroneState((tDrone_spec*)pObject->owner, 3);
+    return 0;
+}
+
+// FUNCTION: CARMA2_HW 0x00452360
+int C2_HOOK_FASTCALL MyDroneHathHalteth(tPhysics_object* pObject) {
+    tDrone_spec* pDrone;
+
+    pDrone = (tDrone_spec*)pObject->owner;
+    DoNotDprintf("MyDroneHathHalteth(): PHIL called a bloody callback. Rejoice!");
+    pDrone->collision_info.field_0x1a0 = 0x100000;
+    PHILSetObjectProperty(&pDrone->collision_info, 3, 1);
+    pDrone->field_0x5d4 = 0;
+    NewDroneState((tDrone_spec*)pObject->owner, 4);
+    return 1;
+}
 
 // MoveMyDroneBaby
 

@@ -347,4 +347,10 @@ void C2_HOOK_FASTCALL StartRenderingThisDrone(tDrone_spec* pDrone);
 
 br_vector3* C2_HOOK_FASTCALL GetCurrentViewDroneDirection(void);
 
+void C2_HOOK_FASTCALL MoveMyDroneBaby(tPhysics_object* pObject, undefined4 pArg2);
+
+int C2_HOOK_FASTCALL MyDroneHathCollideth(tPhysics_object* pObject, tPhysics_object* pOther);
+
+int C2_HOOK_FASTCALL MyDroneHathHalteth(tPhysics_object* pObject);
+
 #endif // GUARD_DRONE_H

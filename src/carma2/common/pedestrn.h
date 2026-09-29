@@ -858,4 +858,14 @@ void C2_HOOK_FASTCALL RenderLollipops(br_pixelmap* pRender_buffer, br_pixelmap* 
 
 int C2_HOOK_FASTCALL CalmDownAllPeds(void);
 
+void C2_HOOK_FASTCALL SetObjectV(tPhysics_object* pObject, br_vector3* pV);
+
+int C2_HOOK_FASTCALL BonerActiveHalted2(tPed_character_instance* pCharacter, undefined4 pArg2);
+
+int C2_HOOK_FASTCALL BonerActiveHalted(tPed_character_instance* pCharacter);
+
+int C2_HOOK_FASTCALL BonerPassiveCollision(tPed_character_instance* pCharacter, undefined4 pArg2);
+
+void C2_HOOK_FASTCALL BonerPedMovedByPhysics(tPed_character_instance* pCharacter, undefined4 pArg2);
+
 #endif // GUARD_PEDESTRN_H

@@ -37,6 +37,9 @@ int gPickup_respawn_max_extra_time_ms;
 // GLOBAL: CARMA2_HW 0x007059c0
 int gCount_mutant_tail_parts;
 
+// GLOBAL: CARMA2_HW 0x00705b70
+tU32 gINT_00705b70;
+
 // GLOBAL: CARMA2_HW 0x00705b78
 float gMass_mutant_tail_link;
 

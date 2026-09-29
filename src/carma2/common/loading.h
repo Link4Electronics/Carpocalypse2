@@ -71,8 +71,10 @@ extern tSlot_info gInitial_APO_potential[3];
 extern tSlot_info gMax_APO[3];
 
 extern int gCount_mutant_tail_parts;
+extern tU32 gINT_00705b70;
 extern float gMass_mutant_tail_link;
 extern float gMass_mutant_tail_ball;
+extern int gMutant_tail_state;
 extern float gMass_mine;
 extern char gUnderwater_screen_name[32];
 extern int gWasted_explosion_chance;

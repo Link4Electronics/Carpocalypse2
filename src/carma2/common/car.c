@@ -3235,23 +3235,38 @@ void C2_HOOK_FASTCALL APTCPostCollisionTree(tPhysics_object* node) {
 }
 
 // FUNCTION: CARMA2_HW 0x00416300
-void C2_HOOK_FASTCALL APTCChangedObjects(tPhysics_object* pArg1, undefined4 pArg2) {
+void C2_HOOK_FASTCALL APTCChangedObjects(tPhysics_object* pObject, undefined4 pArg2) {
 
-    NOT_IMPLEMENTED();
+    if (pObject != NULL && pObject->owner != NULL && pObject->flags_0x238 == 2) {
+        BonerPedMovedByPhysics((tPed_character_instance*)pObject->owner, pArg2);
+    }
+    if (pObject != NULL && pObject->flags_0x238 == 0x10) {
+        MoveMyDroneBaby(pObject, pArg2);
+    }
 }
 
 // FUNCTION: CARMA2_HW 0x00416270
-int C2_HOOK_FASTCALL APTCActiveHalted(tPhysics_object* pArg1) {
+int C2_HOOK_FASTCALL APTCActiveHalted(tPhysics_object* pObject) {
 
-    NOT_IMPLEMENTED();
-    return 0;
+    if (pObject != NULL && pObject->owner != NULL && pObject->flags_0x238 >= 2 && pObject->flags_0x238 <= 4) {
+        return BonerActiveHalted((tPed_character_instance*)pObject->owner);
+    }
+    if (pObject != NULL && pObject->flags_0x238 == 0x10) {
+        return MyDroneHathHalteth(pObject);
+    }
+    return 1;
 }
 
 // FUNCTION: CARMA2_HW 0x004162b0
-int C2_HOOK_FASTCALL APTCPassiveActivated(tPhysics_object* pArg1) {
+int C2_HOOK_FASTCALL APTCPassiveActivated(tPhysics_object* pObject, undefined4 pArg2) {
 
-    NOT_IMPLEMENTED();
-    return 0;
+    if (pObject != NULL && pObject->owner != NULL && pObject->flags_0x238 >= 2 && pObject->flags_0x238 <= 4) {
+        return BonerPassiveCollision((tPed_character_instance*)pObject->owner, pArg2);
+    }
+    if (pObject != NULL && pObject->flags_0x238 == 0x10) {
+        return MyDroneHathCollideth(pObject, (tPhysics_object*)pArg2);
+    }
+    return 1;
 }
 
 // FUNCTION: CARMA2_HW 0x00418230

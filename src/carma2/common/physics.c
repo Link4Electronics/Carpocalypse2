@@ -2097,7 +2097,7 @@ void C2_HOOK_FASTCALL PHILInterpolateObjects(tPhysics_object* pObjects, tU32 pTi
 
         object_info = object->field_0x240;
         if (object_info != NULL && object_info->field_0x8 == 2) {
-            InterpolateSingleObject(object CARPOCALYPSE2_THISCALL_EDX, -dt);
+            InterpolateSingleObject(object, -dt);
         }
     }
 }
@@ -2430,9 +2430,53 @@ int C2_HOOK_FASTCALL PHILSetPassiveObjectsMatrix(tPhysics_object* pObject, br_ma
 }
 
 // FUNCTION: CARMA2_HW 0x004c2830
-void C2_HOOK_FAKE_THISCALL InterpolateSingleObject(tPhysics_object* pObject, undefined4 arg2, float pDt) {
+void C2_HOOK_FAKE_THISCALL RepositionObjectGroup(tPhysics_object* pObject, float pDt) {
+    tPhysics_object* pChild;
+    float t0;
+    float t1;
+    float t2;
 
-    NOT_IMPLEMENTED();
+    t0 = pDt * pObject->v.v[0];
+    t1 = pDt * pObject->v.v[1];
+    t2 = pDt * pObject->v.v[2];
+    pObject->actor->t.t.mat.m[3][0] += t0;
+    pObject->actor->t.t.mat.m[3][1] += t1;
+    pObject->actor->t.t.mat.m[3][2] += t2;
+    InterpolateSingleObject(pObject, pDt);
+    for (pChild = pObject->child; pChild != NULL; pChild = pChild->next) {
+        RepositionObjectGroup(pChild, pDt);
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x004c2670
+void C2_HOOK_FAKE_THISCALL InterpolateSingleObject(tPhysics_object* pObject, float pDt) {
+    br_vector3 temp;
+    br_vector3 axis;
+    float len;
+    float angle;
+
+    if (pObject->disable_move_rotate) {
+        return;
+    }
+
+    len = BrVector3Length(&pObject->rotate_omega);
+    axis.v[0] = pObject->rotate_omega.v[0] / len;
+    axis.v[1] = pObject->rotate_omega.v[1] / len;
+    axis.v[2] = pObject->rotate_omega.v[2] / len;
+    angle = len * pDt;
+    if (fabs(angle) < 0.0001) {
+        return;
+    }
+
+    BrMatrix34ApplyV(&temp, &pObject->cmpos, &pObject->actor->t.t.mat);
+    pObject->actor->t.t.mat.m[3][0] += temp.v[0];
+    pObject->actor->t.t.mat.m[3][1] += temp.v[1];
+    pObject->actor->t.t.mat.m[3][2] += temp.v[2];
+    BrMatrix34PreRotate(&pObject->actor->t.t.mat, BrRadianToAngle(angle), &axis);
+    BrMatrix34ApplyV(&temp, &pObject->cmpos, &pObject->actor->t.t.mat);
+    pObject->actor->t.t.mat.m[3][0] -= temp.v[0];
+    pObject->actor->t.t.mat.m[3][1] -= temp.v[1];
+    pObject->actor->t.t.mat.m[3][2] -= temp.v[2];
 }
 
 // FUNCTION: CARMA2_HW 0x004b6be0
