@@ -597,7 +597,21 @@ void C2_HOOK_FASTCALL LevelOutOnSurface(tPhysics_object *pObject);
 
 void C2_HOOK_FASTCALL MarkObjectAndChildrenAsPassive(tPhysics_object* pObject);
 
-void C2_HOOK_FASTCALL DoCollisions(tPhysics_object** pObject_list, tWorld_callbacks* pWorld_callbacks);
+void C2_HOOK_FASTCALL DoCollisions(tPhysics_object** pObject_list, tWorld_callbacks* volatile pWorld_callbacks);
+
+void C2_HOOK_FASTCALL ClearPhysicsScratchSpace(void);
+
+void C2_HOOK_FASTCALL PhysicsWarning(const char* pMessage);
+
+void C2_HOOK_FASTCALL AddDoubleTorqueToMatrix(tPhysics_object* pObject);
+
+void C2_HOOK_FASTCALL DRMatrix33Inverse(tPhysics_object* pObject, int pFlag);
+
+int C2_HOOK_FASTCALL SetUpQuickHingeData(tPhysics_object** pObject_list, tPhysics_object* pObject, void* pBuffer1, void* pBuffer2, int pArg, tWorld_callbacks* pWorld_callbacks);
+
+void C2_HOOK_FASTCALL RotateObjectFirstOrder(void* pContact, tWorld_callbacks* pWorld_callbacks);
+
+void C2_HOOK_FASTCALL TranslateObject(tPhysics_object* pObject);
 
 int C2_HOOK_FASTCALL PHILSetPassiveObjectsMatrix(tPhysics_object* pObject, br_matrix34* pMatrix);
 

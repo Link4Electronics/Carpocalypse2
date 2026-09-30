@@ -439,6 +439,28 @@ int gPHIL_mechanics_time_sync;
 // GLOBAL: CARMA2_HW 0x00692dcc
 int gPrepared_objects;
 
+// GLOBAL: CARMA2_HW 0x006940a0
+int gINT_006940a0;
+
+// GLOBAL: CARMA2_HW 0x006940a4
+int gINT_006940a4;
+
+// GLOBAL: CARMA2_HW 0x00692dd0
+br_scalar gFLOAT_00692dd0;
+
+// GLOBAL: CARMA2_HW 0x00692dd4
+br_scalar gFLOAT_00692dd4;
+
+// GLOBAL: CARMA2_HW 0x00692ddc
+int gINT_00692ddc;
+
+typedef struct tCollision_contact {
+    undefined data[0x60];
+} tCollision_contact;
+
+// GLOBAL: CARMA2_HW 0x00692de0
+tCollision_contact gCollision_contacts[50];
+
 // GLOBAL: CARMA2_HW 0x006940a8
 tPhysics_object** gReduced_object_list;
 
@@ -1674,11 +1696,13 @@ tPhysics_object* C2_HOOK_FASTCALL PHILGetNextObject(tPhysics_object* pCollision_
     return pCollision_info->next;
 }
 
+#pragma auto_inline(off)
 // FUNCTION: CARMA2_HW 0x004b99e0
 void C2_HOOK_FASTCALL InternalPrepareObject(tPhysics_object* pObject) {
 
     NOT_IMPLEMENTED();
 }
+#pragma auto_inline(on)
 
 // FUNCTION: CARMA2_HW 0x004b7510
 void C2_HOOK_FAKE_THISCALL MoveJointedObject(tPhysics_object* pObject, undefined4 pArg2, float pDelta_time) {
@@ -2482,10 +2506,206 @@ void C2_HOOK_FASTCALL MarkObjectAndChildrenAsPassive(tPhysics_object* pObject) {
     }
 }
 
-// FUNCTION: CARMA2_HW 0x004ba6b0
-void C2_HOOK_FASTCALL DoCollisions(tPhysics_object** pObject_list, tWorld_callbacks* pWorld_callbacks) {
+#pragma auto_inline(off)
+// STUB: CARMA2_HW 0x004c5d00
+void C2_HOOK_FASTCALL ClearPhysicsScratchSpace(void) {
 
     NOT_IMPLEMENTED();
+}
+
+// STUB: CARMA2_HW 0x004c61e0
+void C2_HOOK_FASTCALL PhysicsWarning(const char* pMessage) {
+
+    NOT_IMPLEMENTED();
+}
+
+// STUB: CARMA2_HW 0x004baa00
+void C2_HOOK_FASTCALL AddDoubleTorqueToMatrix(tPhysics_object* pObject) {
+
+    NOT_IMPLEMENTED();
+}
+
+// STUB: CARMA2_HW 0x004bae80
+void C2_HOOK_FASTCALL DRMatrix33Inverse(tPhysics_object* pObject, int pFlag) {
+
+    NOT_IMPLEMENTED();
+}
+
+// STUB: CARMA2_HW 0x004baec0
+int C2_HOOK_FASTCALL SetUpQuickHingeData(tPhysics_object** pObject_list, tPhysics_object* pObject, void* pBuffer1, void* pBuffer2, int pArg, tWorld_callbacks* pWorld_callbacks) {
+
+    NOT_IMPLEMENTED();
+    return 0;
+}
+
+// STUB: CARMA2_HW 0x004c0ac0
+void C2_HOOK_FASTCALL RotateObjectFirstOrder(void* pContact, tWorld_callbacks* pWorld_callbacks) {
+
+    NOT_IMPLEMENTED();
+}
+
+// STUB: CARMA2_HW 0x004c18d0
+void C2_HOOK_FASTCALL TranslateObject(tPhysics_object* pObject) {
+
+    NOT_IMPLEMENTED();
+}
+#pragma auto_inline(on)
+
+// FUNCTION: CARMA2_HW 0x004ba6b0
+void C2_HOOK_FASTCALL DoCollisions(tPhysics_object** pObject_list, tWorld_callbacks* pWorld_callbacks) {
+    char* pBuf1;
+    char* pBuf2;
+    char* tmp;
+    tPhysics_object* obj;
+    tPhysics_object* head;
+    tPhysics_object* tail;
+    tPhysics_object* cur;
+    tPhysics_object* next;
+    tPhysics_object* pos;
+    tPhysics_object* sibling;
+    tPhysics_object* node;
+    tCollision_contact* contact;
+    tU32 marker;
+    int mask;
+    int loops;
+    int i;
+    int r;
+    char bufB[0xF00];
+    char bufA[0xF00];
+
+    pBuf1 = bufA;
+    pBuf2 = bufB;
+
+    ClearPhysicsScratchSpace();
+
+    gINT_006940a0 = 1;
+    gINT_00692ddc = 0;
+    gFLOAT_00692dd0 = 0.f;
+    gFLOAT_00692dd4 = 0.f;
+
+    for (obj = *pObject_list; obj != NULL; obj = obj->next) {
+        InternalPrepareObject(obj);
+    }
+
+    head = *pObject_list;
+    head->prev = NULL;
+    tail = head;
+    cur = head->next;
+    while (cur != NULL) {
+        pos = tail;
+        while (pos != NULL && cur->transform_matrix.m[3][0] < pos->transform_matrix.m[3][0]) {
+            pos = pos->prev;
+        }
+        if (pos == tail) {
+            tail->next = cur;
+            cur->prev = tail;
+            tail = cur;
+            cur = cur->next;
+        } else if (pos != NULL) {
+            next = cur->next;
+            cur->next = pos->next;
+            pos->next->prev = cur;
+            pos->next = cur;
+            cur->prev = pos;
+            cur = next;
+        } else {
+            head->prev = cur;
+            next = cur->next;
+            cur->next = head;
+            head = cur;
+            cur->prev = NULL;
+            cur = next;
+        }
+    }
+    tail->next = NULL;
+    *pObject_list = head;
+
+    do {
+        gPrepared_objects = 0;
+        for (obj = *pObject_list; obj != NULL; obj = obj->next) {
+            if (obj->field_0x1dc != 0) {
+                continue;
+            }
+            if (obj->disable_move_rotate != 0) {
+                continue;
+            }
+            if (obj->child != NULL && obj->child->physics_joint1 != NULL && obj->child->physics_joint1->type != 0) {
+                marker = gINT_006940a0;
+                obj->field_0x1dc = (tU8)marker;
+                for (sibling = obj->child; sibling != NULL; sibling = sibling->next) {
+                    if (sibling->physics_joint1 != NULL && sibling->physics_joint1->type != 0) {
+                        DRMatrix33Inverse(sibling, marker);
+                    }
+                }
+                gINT_006940a0++;
+            }
+            loops = 0;
+            gINT_006940a4 = 0;
+            r = SetUpQuickHingeData(pObject_list, obj, pBuf1, pBuf2, 0, pWorld_callbacks);
+            while (r != 0) {
+                loops++;
+                tmp = pBuf1;
+                pBuf1 = pBuf2;
+                pBuf2 = tmp;
+                if (loops >= 0x1e) {
+                    break;
+                }
+                if (gINT_006940a4 >= 3) {
+                    break;
+                }
+                r = SetUpQuickHingeData(pObject_list, obj, pBuf1, pBuf2, r, pWorld_callbacks);
+            }
+            if (loops >= 0x1e) {
+                PhysicsWarning("Too many loops in DoCollisions");
+            }
+        }
+    } while (gPrepared_objects != 0);
+
+    for (i = 0, contact = gCollision_contacts; i < gINT_00692ddc; i++, contact++) {
+        RotateObjectFirstOrder(contact, pWorld_callbacks);
+    }
+
+    AddDoubleTorqueToMatrix(*pObject_list);
+
+    for (obj = *pObject_list; obj != NULL; obj = obj->next) {
+        if (obj->disable_move_rotate != 0) {
+            continue;
+        }
+        if (!(obj->field_0x1df & 0x2)) {
+            continue;
+        }
+        mask = 0x2;
+        for (node = obj->field183_0x1d8; node != obj; node = node->field183_0x1d8) {
+            mask &= node->field_0x1df;
+        }
+        if (!(mask & 0x2)) {
+            continue;
+        }
+        obj->disable_move_rotate = 1;
+        for (cur = obj;; cur = cur->field183_0x1d8) {
+            sibling = cur->child;
+            cur->disable_move_rotate = 1;
+            cur->field_0x1df = 0;
+            if (sibling != NULL) {
+                for (sibling = cur->child; sibling != NULL; sibling = sibling->next) {
+                    sibling->disable_move_rotate = 1;
+                    sibling->field_0x1df = 0;
+                    if (sibling->child != NULL) {
+                        SetCollisionInfoDoNothing(sibling->child, 1);
+                    }
+                }
+            }
+            if (cur->field183_0x1d8 == NULL || cur->field183_0x1d8 == obj) {
+                break;
+            }
+        }
+    }
+
+    for (obj = *pObject_list; obj != NULL; obj = obj->next) {
+        if (obj->disable_move_rotate == 0) {
+            TranslateObject(obj);
+        }
+    }
 }
 
 // FUNCTION: CARMA2_HW 0x004b61a0

@@ -3381,10 +3381,122 @@ void C2_HOOK_FASTCALL MoveAndCollideNonCar(tNon_car_spec* pNon_car, br_scalar pD
     NOT_IMPLEMENTED();
 }
 
-// STUB: CARMA2_HW 0x004c2060
+// FUNCTION: CARMA2_HW 0x004c2060
 void C2_HOOK_FASTCALL GetFacesInBox(tPhysics_object* pCollision, tWorld_callbacks* pWorld_callbacks) {
+    tBounds bnds;
+    br_bounds xformed_bounds;
+    br_bounds tmp_bounds;
+    br_vector3 vel;
+    br_matrix34 mat1;
+    br_matrix34 mat2;
+    br_matrix34 mat3;
+    br_matrix34 mat4;
+    int i;
+    int flags;
 
-    NOT_IMPLEMENTED();
+    if (pCollision->flags & 0x40) {
+        pCollision->box_face_start = pCollision->box_face_end;
+        return;
+    }
+    if ((pCollision->flags & 0x2) && pCollision->parent != NULL) {
+        pCollision->box_face_start = pCollision->parent->box_face_start;
+        pCollision->box_face_end = pCollision->parent->box_face_end;
+        pCollision->box_face_ref = pCollision->parent->box_face_ref;
+        return;
+    }
+    if (pCollision->flags & 0x1) {
+        if (pCollision->box_face_ref == gFace_num__car
+                || (pCollision->box_face_ref == gFace_num__car - 1
+                    && pCollision->box_face_start > gFace_count)) {
+            if (pCollision->field_0x10c.min.v[0] > pCollision->field_0x124.min.v[0]
+                    && pCollision->field_0x10c.min.v[1] > pCollision->field_0x124.min.v[1]
+                    && pCollision->field_0x10c.min.v[2] > pCollision->field_0x124.min.v[2]
+                    && pCollision->field_0x10c.max.v[0] < pCollision->field_0x124.max.v[0]
+                    && pCollision->field_0x10c.max.v[1] < pCollision->field_0x124.max.v[1]
+                    && pCollision->field_0x10c.max.v[2] < pCollision->field_0x124.max.v[2]) {
+                return;
+            }
+        }
+        BrVector3Scale(&vel, &pCollision->v, 0.12f);
+        for (i = 0; i < 3; i++) {
+            bnds.original_bounds.min.v[i] = pCollision->field_0x10c.min.v[i] - 0.15;
+            bnds.original_bounds.max.v[i] = pCollision->field_0x10c.max.v[i] + 0.15;
+            if (vel.v[i] < 0.f) {
+                bnds.original_bounds.min.v[i] += vel.v[i];
+            } else {
+                bnds.original_bounds.max.v[i] += vel.v[i];
+            }
+            pCollision->field_0x124.min.v[i] = bnds.original_bounds.min.v[i] + 0.005;
+            pCollision->field_0x124.max.v[i] = bnds.original_bounds.max.v[i] - 0.005;
+        }
+        bnds.mat = &mat3;
+        BrMatrix34Identity(&mat3);
+    } else {
+        br_matrix34* actor_mat = &pCollision->actor->t.t.mat;
+        br_matrix34* trans_mat = &pCollision->transform_matrix;
+
+        if (pCollision->box_face_ref == gFace_num__car
+                || (pCollision->box_face_ref == gFace_num__car - 1
+                    && pCollision->box_face_start > gFace_count)) {
+            BrMatrix34Mul(&mat1, actor_mat, &pCollision->field_0x144);
+            GetNewBoundingBox(&xformed_bounds, &pCollision->bb2, &mat1);
+            if (xformed_bounds.max.v[0] < pCollision->field_0x124.max.v[0]
+                    && xformed_bounds.max.v[1] < pCollision->field_0x124.max.v[1]
+                    && xformed_bounds.max.v[2] < pCollision->field_0x124.max.v[2]
+                    && xformed_bounds.min.v[0] > pCollision->field_0x124.min.v[0]
+                    && xformed_bounds.min.v[1] > pCollision->field_0x124.min.v[1]
+                    && xformed_bounds.min.v[2] > pCollision->field_0x124.min.v[2]) {
+                return;
+            }
+        }
+        BrMatrix34LPInverse(&mat3, actor_mat);
+        BrMatrix34Mul(&mat2, trans_mat, &mat3);
+        GetNewBoundingBox(&bnds.original_bounds, &pCollision->bb2, &mat2);
+        for (i = 0; i < 3; i++) {
+            bnds.original_bounds.min.v[i] = bnds.original_bounds.min.v[i] < pCollision->bb2.min.v[i]
+                ? bnds.original_bounds.min.v[i] : pCollision->bb2.min.v[i];
+            bnds.original_bounds.max.v[i] = bnds.original_bounds.max.v[i] > pCollision->bb2.max.v[i]
+                ? bnds.original_bounds.max.v[i] : pCollision->bb2.max.v[i];
+            bnds.original_bounds.min.v[i] -= 0.0025f;
+            bnds.original_bounds.max.v[i] += 0.0025f;
+        }
+        BrMatrix34Mul(&mat1, &mat2, &mat2);
+        BrMatrix34Mul(&mat4, &mat1, &mat2);
+        BrMatrix34LPInverse(&mat1, &mat4);
+        GetNewBoundingBox(&tmp_bounds, &pCollision->bb2, &mat1);
+        for (i = 0; i < 3; i++) {
+            bnds.original_bounds.min.v[i] = bnds.original_bounds.min.v[i] < tmp_bounds.min.v[i]
+                ? bnds.original_bounds.min.v[i] : tmp_bounds.min.v[i];
+            bnds.original_bounds.max.v[i] = bnds.original_bounds.max.v[i] > tmp_bounds.max.v[i]
+                ? bnds.original_bounds.max.v[i] : tmp_bounds.max.v[i];
+            bnds.original_bounds.min.v[i] -= 0.02f;
+            bnds.original_bounds.max.v[i] += 0.02f;
+        }
+        pCollision->field_0x124 = bnds.original_bounds;
+        BrMatrix34Copy(&pCollision->field_0x144, &mat3);
+        bnds.mat = actor_mat;
+    }
+    pCollision->box_face_start = gFace_count;
+    gPling_face = NULL;
+    flags = pCollision->flags;
+    gActorBoxPick_StopGroovidelics = (tU8)(~flags) >> 7;
+    if (pWorld_callbacks != NULL && pWorld_callbacks->find_faces_in_box != NULL) {
+        gFace_count += pWorld_callbacks->find_faces_in_box(&bnds, &gFace_list__car[gFace_count], 300 - gFace_count, pWorld_callbacks);
+        if (gFace_count >= 300) {
+            pCollision->box_face_start = 0;
+            gFace_count = pWorld_callbacks->find_faces_in_box(&bnds, gFace_list__car, 300, pWorld_callbacks);
+            gFace_num__car++;
+        }
+    }
+    pCollision->box_face_end = gFace_count;
+    pCollision->box_face_ref = gFace_num__car;
+    gActorBoxPick_StopGroovidelics = 1;
+    if (pWorld_callbacks != NULL && pWorld_callbacks->new_face_list != NULL) {
+        pWorld_callbacks->new_face_list(pCollision, gPling_face);
+    }
+    if (pCollision->flags & 0x80) {
+        pCollision->box_face_end = pCollision->box_face_start;
+    }
 }
 
 #pragma auto_inline(on)
