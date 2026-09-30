@@ -40,8 +40,6 @@
 
 // RayCastThruFaceList2
 
-// RayCastInBox
-
 // FaceOffCount2
 
 // FaceOffCount
@@ -1660,36 +1658,6 @@ void C2_HOOK_FASTCALL PhysicsAddObject(tPhysics_object* pParent, tPhysics_object
     pChild->parent = pParent;
 }
 
-void C2_HOOK_FASTCALL GetNonCars(void) {
-    int i;
-    int j;
-
-    gNum_cars_and_non_cars = gNum_active_non_cars + gNum_active_cars;
-    for (i = gNum_active_cars, j = 0; i < gNum_cars_and_non_cars; i++, j++) {
-        gActive_car_list[i] = (tCar_spec*)gActive_non_car_list[j];
-    }
-}
-
-// FUNCTION: CARMA2_HW 0x00416340
-void C2_HOOK_FASTCALL ApplyPhysicsToCars(tU32 pLast_tick_time, tU32 pFrame_period) {
-
-    if (gFreeze_mechanics) {
-        return;
-    }
-    if (gNet_mode == eNet_mode_client) {
-        ForceRebuildActiveCarList();
-    }
-    GetNonCars();
-    PrepareCars(pLast_tick_time);
-    PHILDoPhysics(&gCar_physics_callbacks, pLast_tick_time, pFrame_period);
-    if (TimeToSendData()) {
-        SendCarData(gPHIL_last_physics_tick);
-        SendMines(gPHIL_last_physics_tick);
-    }
-    FinishCars(pLast_tick_time + pFrame_period, pFrame_period);
-    CheckForDeAttachmentOfNonCars(pFrame_period);
-}
-
 // FUNCTION: CARMA2_HW 0x004b5fd0
 tPhysics_object* C2_HOOK_FASTCALL PHILGetFirstObject(void) {
     if (!gPHIL_enabled) {
@@ -2191,10 +2159,127 @@ void C2_HOOK_FASTCALL PHILActivatePassive(tPhysics_object* pObject) {
     }
 }
 
+// GLOBAL: CARMA2_HW 0x006793d0
+int gUNK_006793d0;
+
+/* Local declarations: physics.c does not include finteray.h so that header can
+ * stay untouched. Note CheckSingleFace takes normal before rt (differs from
+ * finteray.h). */
+void C2_HOOK_FASTCALL CheckSingleFace(tFace_ref* pFace, br_vector3* ray_pos, br_vector3* ray_dir, br_vector3* normal, br_scalar* rt, br_vector3* coll_pos);
+void C2_HOOK_FASTCALL EnablePlingMaterials(void);
+void C2_HOOK_FASTCALL DisablePlingMaterials(void);
+
+#pragma auto_inline(off)
+
+// FUNCTION: CARMA2_HW 0x0041e480
+int C2_HOOK_FASTCALL RayCastInBox(br_vector3* pRay_pos, br_vector3* pRay_dir, br_vector3* pHit_pos, br_scalar* pT, tPhysics_object* pObject) {
+    br_vector3 normal;
+    br_vector3 coll_pos;
+    br_scalar t;
+    int i;
+    int best;
+
+    *pT = 2.f;
+    for (i = pObject->box_face_start; i < pObject->box_face_end; i++) {
+        if (gUNK_006793d0 != 0 && (gFace_list__car[i].flags & 0x80) != 0) {
+            continue;
+        }
+        CheckSingleFace(&gFace_list__car[i], pRay_pos, pRay_dir, &normal, &t, &coll_pos);
+        if (t < *pT) {
+            *pT = t;
+            best = i;
+            *pHit_pos = normal;
+        }
+    }
+    if (*pT < 2.f) {
+        int c;
+
+        c = gFace_list__car[best].material->identifier[0] - '/';
+        if (c >= 0 && c < 11) {
+            return c;
+        }
+    }
+    return 0;
+}
+
+#pragma auto_inline(on)
+
 // FUNCTION: CARMA2_HW 0x004ff5d0
 void C2_HOOK_FASTCALL TestAutoSpecialVolume(tPhysics_object* pObject) {
+    br_scalar d;
+    br_scalar d_neg;
+    br_scalar d_pos;
+    br_scalar t1;
+    br_scalar t2;
+    tSpecial_volume* def_vol;
+    br_vector3 hit;
+    br_vector3 world_min;
+    br_vector3 q;
+    br_vector3 dir;
+    int k;
 
-    NOT_IMPLEMENTED();
+    d = 0.f;
+    for (k = 0; k < 3; k++) {
+        d += BR_MAC3(pObject->transform_matrix.m[k][0], pObject->water_normal.v[0],
+                     pObject->transform_matrix.m[k][1], pObject->water_normal.v[1],
+                     pObject->transform_matrix.m[k][2], pObject->water_normal.v[2])
+             * pObject->bb2.min.v[k];
+    }
+    d += BR_MAC3(pObject->transform_matrix.m[3][0], pObject->water_normal.v[0],
+                 pObject->transform_matrix.m[3][1], pObject->water_normal.v[1],
+                 pObject->transform_matrix.m[3][2], pObject->water_normal.v[2]);
+    d_pos = d;
+    d_neg = d;
+    for (k = 0; k < 3; k++) {
+        t1 = BR_MAC3(pObject->transform_matrix.m[k][0], pObject->water_normal.v[0],
+                     pObject->transform_matrix.m[k][1], pObject->water_normal.v[1],
+                     pObject->transform_matrix.m[k][2], pObject->water_normal.v[2])
+             * (pObject->bb2.max.v[k] - pObject->bb2.min.v[k]);
+        if (t1 < 0.f) {
+            d_neg += t1;
+        } else {
+            d_pos += t1;
+        }
+    }
+    if (d_neg >= pObject->water_d) {
+        pObject->auto_special_volume = NULL;
+        pObject->water_depth_factor = 1.f;
+        return;
+    }
+    if (pObject->water_d >= d_pos - 0.001) {
+        pObject->water_depth_factor = 1.f;
+    } else {
+        pObject->water_depth_factor = (pObject->water_d - d_neg) / (d_pos - d_neg);
+    }
+    if (pObject->auto_special_volume != NULL) {
+        return;
+    }
+    def_vol = gDefault_water_spec_vol_real;
+    if (def_vol != NULL) {
+        BrMatrix34ApplyP(&world_min, &pObject->bb2.min, &pObject->transform_matrix);
+        BrVector3Copy(&q, &world_min);
+        for (k = 0; k < 3; k++) {
+            hit.v[0] = (pObject->bb2.max.v[k] - pObject->bb2.min.v[k]) * pObject->transform_matrix.m[k][0];
+            hit.v[1] = (pObject->bb2.max.v[k] - pObject->bb2.min.v[k]) * pObject->transform_matrix.m[k][1];
+            hit.v[2] = (pObject->bb2.max.v[k] - pObject->bb2.min.v[k]) * pObject->transform_matrix.m[k][2];
+            if (BrVector3Dot(&pObject->water_normal, &hit) > 0.f) {
+                BrVector3Add(&q, &q, &hit);
+            } else {
+                BrVector3Add(&world_min, &world_min, &hit);
+            }
+        }
+        BrVector3Sub(&dir, &world_min, &q);
+        DisablePlingMaterials();
+        RayCastInBox(&q, &dir, &hit, &t1, pObject);
+        EnablePlingMaterials();
+        RayCastInBox(&q, &dir, &hit, &t2, pObject);
+        if (t1 < t2) {
+            pObject->auto_special_volume = def_vol;
+            return;
+        }
+    }
+    pObject->water_depth_factor = 1.f;
+    pObject->auto_special_volume = NULL;
 }
 
 // FUNCTION: CARMA2_HW 0x004ff410

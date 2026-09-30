@@ -1509,9 +1509,17 @@ float C2_HOOK_FASTCALL ARGetReplayRate(void) {
 
 // AddFlameToPipingSession
 
-// AddSplashToPipingSession
+// STUB: CARMA2_HW 0x004c7130
+void C2_HOOK_FASTCALL AddSplashToPipingSession(tPhysics_object* pCollision) {
 
-// AddExtendedSplashToPipingSession
+    NOT_IMPLEMENTED();
+}
+
+// STUB: CARMA2_HW 0x004c7160
+void C2_HOOK_FASTCALL AddExtendedSplashToPipingSession(tPhysics_object* pCollision, void* pArg2) {
+
+    NOT_IMPLEMENTED();
+}
 
 // AddCarToPipingSession
 
@@ -1870,3 +1878,8 @@ void C2_HOOK_FASTCALL PipeSingleSound(tS3_outlet* pOutlet, int pSound, tS3_volum
 // CalcEndMyBendLength
 
 // CalcRemoveFacesLength
+// STUB: CARMA2_HW 0x004d6880
+void C2_HOOK_FASTCALL PedPreCollisionStuff(void) {
+
+    NOT_IMPLEMENTED();
+}

@@ -45,8 +45,6 @@
 
 #include "c2_math.h"
 #include "car.h"
-extern int gReseed_crush_rng;
-extern int gCrush_pain_timer;
 
 // GLOBAL: CARMA2_HW 0x005895f0
 double gZero;
@@ -76,6 +74,9 @@ int gNum_cars_and_non_cars;
 
 // GLOBAL: CARMA2_HW 0x0074c9ec
 int gNum_active_cars;
+
+// GLOBAL: CARMA2_HW 0x006793f4
+static tU32 last_frame_start;
 
 // GLOBAL: CARMA2_HW 0x006793a0
 int gFreeze_mechanics;
@@ -173,6 +174,9 @@ br_angle gOld_zoom;
 
 // GLOBAL: CARMA2_HW 0x00679364
 int gInTheSea;
+
+// GLOBAL: CARMA2_HW 0x006793d4
+int gDouble_pling_water;
 
 // GLOBAL: CARMA2_HW 0x006793a8
 tU32 gWild_start;
@@ -1918,7 +1922,7 @@ void C2_HOOK_FASTCALL DoLODCarModels(void) {
     for (i = 0; i < gNum_active_cars; i++) {
         car = gActive_car_list[i];
 
-        if (car != NULL && car->driver >= eDriver_oppo && car->car_master_actor->render_style != BR_RSTYLE_NONE) {
+        if (car != NULL && car->driver > 5 && car->car_master_actor->render_style != BR_RSTYLE_NONE) {
             BrVector3Sub(&tv, &car->car_master_actor->t.t.translate.t, (br_vector3*)gCamera_to_world.m[3]);
             level = gCar_simplification_factor[gGraf_spec_index][gCar_simplification_level] >= 0.001f ? BrVector3LengthSquared(&tv) / gCar_simplification_factor[gGraf_spec_index][gCar_simplification_level] : BR_SCALAR_MAX;
 
@@ -1947,7 +1951,7 @@ void C2_HOOK_FASTCALL DoComplexCarModels(void) {
 
     for (i = 0; i < gNum_active_cars; i++) {
         car = gActive_car_list[i];
-        if (car != NULL && car->driver >= eDriver_oppo) {
+        if (car != NULL && car->driver > 5) {
             SwitchCarModels(car, 0);
         }
     }
@@ -2050,10 +2054,101 @@ int C2_HOOK_FASTCALL ProcessJointForcesCallback(undefined4 param_1, undefined4 p
     return 0;
 }
 
-// FUNCTION: CARMA2_HW 0x00414910
-void C2_HOOK_FASTCALL NewFacesListCallback(tPhysics_object* pCollision, undefined4 *arg2) {
+static br_scalar Dot3(const br_vector3* a, const br_vector3* b) {
+    return a->v[0] * b->v[0] + a->v[1] * b->v[1] + a->v[2] * b->v[2];
+}
 
-    NOT_IMPLEMENTED();
+/* declared locally so the shared headers stay unmodified (codegen stability) */
+void C2_HOOK_FASTCALL FreezeCamera(void);
+void C2_HOOK_FASTCALL AddSplashToPipingSession(tPhysics_object* pCollision);
+void C2_HOOK_FASTCALL AddExtendedSplashToPipingSession(tPhysics_object* pCollision, void* pArg2);
+void C2_HOOK_FASTCALL PedPreCollisionStuff(void);
+#define ePipe_chunk_splash 20
+#define ePipe_chunk_extended_splash 59
+
+// FUNCTION: CARMA2_HW 0x00414910
+void C2_HOOK_FASTCALL NewFacesListCallback(tPhysics_object* pCollision, undefined4* arg2) {
+    tFace_ref* pFace;
+    br_bounds3 current_bounds;
+    br_scalar old_d;
+    float prop7;
+
+    pFace = (tFace_ref*)arg2;
+    old_d = pCollision->water_d;
+    if (pCollision->owner == NULL) {
+        return;
+    }
+    prop7 = PHILGetObjectProperty(pCollision, 7);
+    if (pCollision->flags_0x238 != 1 && prop7 == 0.f) {
+        return;
+    }
+    if (pCollision != NULL
+        && pCollision->owner != NULL
+        && pCollision->flags_0x238 == 1
+        && ((tCar_spec*)pCollision->owner)->driver == eDriver_local_human
+        && pCollision->water_d != 10000.f
+        && gDouble_pling_water
+        && BrVector3Dot(&pCollision->water_normal, &pCollision->field_0xf4.max) - pCollision->water_d <= 0.f) {
+        gInTheSea = 1;
+        FreezeCamera();
+    }
+    if (pFace != NULL && fabsf(pFace->normal.v[1]) > 0.9f) {
+        BrVector3Copy(&pCollision->water_normal, &pFace->normal);
+        if (pCollision->water_normal.v[1] < 0.f) {
+            BrVector3Negate(&pCollision->water_normal, &pCollision->water_normal);
+        }
+        pCollision->water_d = (((pFace->v[0].v[2]) * (pCollision->water_normal.v[2])) + ((pFace->v[0].v[1]) * (pCollision->water_normal.v[1]))) + ((pFace->v[0].v[0]) * (pCollision->water_normal.v[0]));
+        if (pCollision != NULL
+            && pCollision->owner != NULL
+            && pCollision->flags_0x238 == 1
+            && ((tCar_spec*)pCollision->owner)->driver == eDriver_local_human) {
+            if (pFace->material->identifier[1] == '!') {
+                if (BrVector3Dot(&pCollision->field_0xf4.min, &pCollision->water_normal) - pCollision->water_d < 0.f) {
+                    GetNewBoundingBox(&current_bounds, &pCollision->bb1, &pCollision->actor->t.t.mat);
+                    if ((((pCollision->water_normal.v[0]) * (current_bounds.min.v[0])) + ((pCollision->water_normal.v[1]) * (current_bounds.min.v[1]))) + ((pCollision->water_normal.v[2]) * (current_bounds.min.v[2])) - pCollision->water_d < 0.f) {
+                        gInTheSea = 1;
+                        FreezeCamera();
+                    }
+                }
+                gDouble_pling_water = 1;
+            } else {
+                gDouble_pling_water = 0;
+            }
+        }
+    } else {
+        pCollision->water_d = 10000.f;
+        if (pCollision != NULL
+            && pCollision->owner != NULL
+            && pCollision->flags_0x238 == 1
+            && ((tCar_spec*)pCollision->owner)->driver == eDriver_local_human) {
+            gInTheSea = gInTheSea == 1 ? 2 : 0;
+        }
+    }
+    if (fabs(old_d - pCollision->water_d) > 1e-05) {
+        if (PHILGetObjectProperty(pCollision, 6) != 0.f) {
+            ARStartPipingSession(ePipe_chunk_extended_splash);
+            AddExtendedSplashToPipingSession(pCollision, pCollision);
+            AREndPipingSession();
+        }
+        if (pCollision != NULL && pCollision->owner != NULL && pCollision->flags_0x238 == 1) {
+            tCar_spec* owner = (tCar_spec*)pCollision->owner;
+            if (owner != NULL && owner->driver > 5) {
+                ARStartPipingSession(ePipe_chunk_splash);
+                AddSplashToPipingSession(pCollision);
+                AREndPipingSession();
+                return;
+            }
+            ARStartPipingSession(ePipe_chunk_extended_splash);
+            AddExtendedSplashToPipingSession(pCollision, pCollision->actor);
+            AREndPipingSession();
+            return;
+        }
+        if (pCollision != NULL && pCollision->owner != NULL && pCollision->flags_0x238 >= 2 && pCollision->flags_0x238 <= 4) {
+            ARStartPipingSession(ePipe_chunk_extended_splash);
+            AddExtendedSplashToPipingSession(pCollision, pCollision->owner);
+            AREndPipingSession();
+        }
+    }
 }
 
 // FUNCTION: CARMA2_HW 0x0041ff20
@@ -2953,7 +3048,7 @@ void C2_HOOK_FASTCALL FinishCars(tU32 pLast_frame_time, tU32 pTime) {
             BrVector3SetFloat(&minus_k, 0.f, 0.f, ts);
             BrMatrix34ApplyV(&car->direction, &minus_k, &car->car_master_actor->t.t.mat);
         }
-        if (car != NULL && car->driver >= eDriver_oppo) {
+        if (car != NULL && car->driver > 5) {
             int wheel;
 
             car->speedo_speed = BrVector3Dot(&minus_k, &car->collision_info->v) / 1000.f;
@@ -3101,45 +3196,8 @@ void C2_HOOK_FASTCALL CheckForDeAttachmentOfNonCars(tU32 pTime) {
     }
 }
 
-void C2_HOOK_FASTCALL PrepareCars(tU32 pFrame_start_time) {
-    int i;
-    // GLOBAL: CARMA2_HW 0x006793f4
-    static tU32 last_frame_start;
 
-    (void)last_frame_start;
-
-    last_frame_start = pFrame_start_time;
-    for (i = 0; i < gNum_cars_and_non_cars; i++) {
-        tCar_spec* car;
-
-        car = gActive_car_list[i];
-        car->frame_collision_flag = gOver_shoot && car->collision_info->collision_flag;
-        if (car != NULL && car->driver >= eDriver_oppo) {
-            RecordLastDamage(car);
-            if (car->driver == eDriver_oppo && gStop_opponents_moving) {
-                car->acc_force = 0.f;
-                car->brake_force = 0.f;
-                car->keys.acc = 0;
-                car->keys.dec = 0;
-                car->joystick.acc = -1;
-                car->joystick.dec = -1;
-            }
-            if (!car->wheel_slip) {
-                StopSkid(car);
-            }
-            if (car->driver == eDriver_net_human && pFrame_start_time - 1000 > car->collision_info->message_time) {
-                car->keys.acc = 0;
-                car->keys.dec = 0;
-                car->joystick.acc = -1;
-                car->joystick.dec = -1;
-                car->keys.horn = 0;
-            }
-            SetSmokeLastDamageLevel(car);
-        }
-    }
-}
-
-void C2_HOOK_FASTCALL StopSkid(tCar_spec* pC) {
+__inline void C2_HOOK_FASTCALL StopSkid(tCar_spec* pC) {
 
     if (gLast_car_to_skid[0] == pC) {
         DRS3StopSound(gSkid_tag[0]);
@@ -3157,6 +3215,8 @@ void C2_HOOK_FASTCALL APTCPreCollision(void) {
     tPhysics_object* node;
     void** wp;
     int i;
+    float x;
+    float f;
 
     gDrivable_on_count = 0;
     for (obj = gList_collision_infos; obj != NULL && gDrivable_on_count < 50; obj = obj->next) {
@@ -3174,16 +3234,16 @@ void C2_HOOK_FASTCALL APTCPreCollision(void) {
     if (i < gNum_active_cars) {
         wp = (void**)gActive_car_list;
         do {
-            car = (tCar_spec*)*wp;
-            if (car != NULL && car->driver > 5) {
+            if (*wp != NULL && ((tCar_spec*)*wp)->driver > 5) {
+                car = (tCar_spec*)*wp;
                 BrMatrix34Copy((br_matrix34*)(*(char**)((char*)car + 0x10) + 0x2c),
                                &car->collision_info->transform_matrix);
                 if (car->collision_info->field_0x261 == 0x10
-                        && car->collision_info->message_time == gCrush_pain_timer) {
+                        && car->collision_info->message_time == gPHIL_last_physics_tick) {
                     if (car == NULL || car->driver != eDriver_local_human) {
                         car->curvature = (float)car->collision_info->field_0x278 * car->maxcurve * 0.000030518509f;
                     }
-                    if (gReseed_crush_rng == 2) {
+                    if (gNet_mode == eNet_mode_host) {
                         car->collision_info->field_0xf0 = 1;
                     }
                     SetCollisionFlagsAndStuff(car);
@@ -3225,7 +3285,7 @@ void C2_HOOK_FASTCALL APTCPreCollision(void) {
         do {
             non_car = (tNon_car_spec*)*wp;
             if (non_car->collision_info->field_0x261 != 0
-                    && non_car->collision_info->message_time == gCrush_pain_timer) {
+                    && non_car->collision_info->message_time == gPHIL_last_physics_tick) {
                 SetCollisionFlagsAndStuff((tCar_spec*)non_car);
             }
             if (non_car->flags & 0x10000) {
@@ -3256,9 +3316,6 @@ void C2_HOOK_FASTCALL APTCPreCollision(void) {
     if (i < gNum_active_cars) {
         wp = (void**)gActive_car_list;
         do {
-            float x;
-            float f;
-
             car = (tCar_spec*)*wp;
             if (car->field_0x4c8 != gZero) {
                 x = car->field_0x4c8;
@@ -3385,7 +3442,7 @@ void C2_HOOK_FASTCALL APTCPostCollision(void) {
     }
 
     UpdateCrushTimers();
-    if (gReseed_crush_rng) {
+    if (gNet_mode) {
         UpdateCrushPainList();
     }
     APTCPostCollisionTree(gList_collision_infos);
@@ -3398,14 +3455,14 @@ void C2_HOOK_FASTCALL APTCPostCollisionTree(tPhysics_object* node) {
     void* unk;
 
     while (node != NULL) {
-        if (gReseed_crush_rng == 2) {
+        if (gNet_mode == eNet_mode_host) {
             int need = ((node->collision_flag & 2) != 0) || ((node->flags & 0x1000) != 0);
 
             for (child = node->child; child != NULL; child = child->next) {
                 need |= child->collision_flag & 2;
             }
             if (need) {
-                node->field_0x49c = gCrush_pain_timer + 0x28;
+                node->field_0x49c = gPHIL_last_physics_tick + 0x28;
                 owner = node->owner;
                 if (owner != NULL && node->flags_0x238 == 1 && *(int*)((char*)owner + 0xc) > 5) {
                     unk = *(void**)((char*)owner + 0x18d4);
@@ -3454,6 +3511,66 @@ int C2_HOOK_FASTCALL APTCPassiveActivated(tPhysics_object* pObject, undefined4 p
         return MyDroneHathCollideth(pObject, (tPhysics_object*)pArg2);
     }
     return 1;
+}
+
+void C2_HOOK_FASTCALL GetNonCars(void) {
+    int i;
+    int j;
+
+    gNum_cars_and_non_cars = gNum_active_non_cars + gNum_active_cars;
+    for (i = gNum_active_cars, j = 0; i < gNum_cars_and_non_cars; i++, j++) {
+        gActive_car_list[i] = (tCar_spec*)gActive_non_car_list[j];
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x00416340
+void C2_HOOK_FASTCALL ApplyPhysicsToCars(tU32 pLast_tick_time, tU32 pFrame_period) {
+    int i;
+
+    if (gFreeze_mechanics) {
+        return;
+    }
+    if (gNet_mode == eNet_mode_client) {
+        ForceRebuildActiveCarList();
+    }
+    GetNonCars();
+
+    last_frame_start = pLast_tick_time;
+    for (i = 0; i < gNum_cars_and_non_cars; i++) {
+        tCar_spec* car;
+
+        car = gActive_car_list[i];
+        car->frame_collision_flag = gOver_shoot && car->collision_info->collision_flag;
+        if (car != NULL && car->driver > 5) {
+            RecordLastDamage(car);
+            if (car->driver == eDriver_oppo && gStop_opponents_moving) {
+                car->acc_force = 0.f;
+                car->brake_force = 0.f;
+                car->keys.acc = 0;
+                car->keys.dec = 0;
+                car->joystick.acc = -1;
+                car->joystick.dec = -1;
+            }
+            if (!car->wheel_slip) {
+                StopSkid(car);
+            }
+            if (car->driver == eDriver_net_human && car->collision_info->message_time < pLast_tick_time - 1000) {
+                car->keys.acc = 0;
+                car->keys.dec = 0;
+                car->joystick.acc = -1;
+                car->joystick.dec = -1;
+                car->keys.horn = 0;
+            }
+            SetSmokeLastDamageLevel(car);
+        }
+    }
+    PHILDoPhysics(&gCar_physics_callbacks, pLast_tick_time, pFrame_period);
+    if (TimeToSendData()) {
+        SendCarData(gPHIL_last_physics_tick);
+        SendMines(gPHIL_last_physics_tick);
+    }
+    FinishCars(pLast_tick_time + pFrame_period, pFrame_period);
+    CheckForDeAttachmentOfNonCars(pFrame_period);
 }
 
 // FUNCTION: CARMA2_HW 0x00418230

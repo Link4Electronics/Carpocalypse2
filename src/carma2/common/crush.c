@@ -2015,17 +2015,10 @@ void C2_HOOK_FASTCALL ReAttachBit(tCar_spec* pCar_spec, br_actor* pActor_arg2, b
 // GLOBAL: CARMA2_HW 0x0067baa0
 int gCrush_panel_ids[10];
 
-// GLOBAL: CARMA2_HW 0x0067b7cc
 extern int gCount_car_damage_crush_list;
 
 // GLOBAL: CARMA2_HW 0x0068b85c
 int gCrush_spam_gate;
-
-// GLOBAL: CARMA2_HW 0x0068b918
-int gReseed_crush_rng;
-
-// GLOBAL: CARMA2_HW 0x0074a5ec
-int gCrush_pain_timer;
 
 // GLOBAL: CARMA2_HW 0x0074a5f8
 int gCrush_deferred;
@@ -2119,7 +2112,7 @@ void C2_HOOK_FASTCALL TotallySpamTheModel(tCar_spec* pCar_spec, float pDamage) {
     if (*(tU8*)&spec->field_0x144 != 0) {
         return;
     }
-    if (gReseed_crush_rng) {
+    if (gNet_mode) {
         srand(spec->field_0x574);
         spec->field_0x574 = rand();
     }
@@ -2959,7 +2952,7 @@ void C2_HOOK_FASTCALL DoWheelDamage(tU32 pFrame_period) {
         tCar_spec* car;
 
         car = gActive_car_list[i];
-        if ((car != NULL && car->driver >= eDriver_oppo) && !(car->car_crush_spec != NULL && car->car_crush_spec->field_0x144)) {
+        if ((car != NULL && car->driver > 5) && !(car->car_crush_spec != NULL && car->car_crush_spec->field_0x144)) {
             int j;
 
             for (j = 0; j < CARPOCALYPSE2_ASIZE(car->wheel_dam_offset); j++) {

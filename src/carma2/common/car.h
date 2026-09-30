@@ -404,9 +404,11 @@ void C2_HOOK_FASTCALL PipeNonCars(void);
 
 void C2_HOOK_FASTCALL CheckForDeAttachmentOfNonCars(tU32 pTime);
 
-void C2_HOOK_FASTCALL PrepareCars(tU32 pFrame_start_time);
-
 void C2_HOOK_FASTCALL StopSkid(tCar_spec* pC);
+
+void C2_HOOK_FASTCALL GetNonCars(void);
+
+void C2_HOOK_FASTCALL ApplyPhysicsToCars(tU32 pLast_tick_time, tU32 pFrame_period);
 
 void C2_HOOK_FASTCALL APTCPreCollision(void);
 

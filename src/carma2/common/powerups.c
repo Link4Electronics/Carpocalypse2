@@ -86,7 +86,6 @@ int gNumber_of_powerups;
 extern tPowerup* gPowerup_array;
 
 extern tNet_mode gNet_mode;
-extern int gReseed_crush_rng;
 extern int gRecovery_voucher_count;
 
 void C2_HOOK_FASTCALL AddVouchers(int amount);
@@ -1633,7 +1632,7 @@ int C2_HOOK_FASTCALL GotVouchers(tPowerup* powerup, tCar_spec* car) {
 int C2_HOOK_FASTCALL SetMassMultiplier(tPowerup* powerup, tCar_spec* car) {
 
     car->field_0x4c8 = powerup->float_params[0];
-    if (gReseed_crush_rng) {
+    if (gNet_mode) {
         RecalculateCarMassMomentOfInertia(car);
     }
     return powerup - gPowerup_array;
@@ -2051,7 +2050,7 @@ void C2_HOOK_FASTCALL ResetSuicidalPeds(tPowerup* powerup, tCar_spec* car) {
 void C2_HOOK_FASTCALL ResetMassMultiplier(tPowerup* powerup, tCar_spec* car) {
 
     car->field_0x4c8 = 1.0f;
-    if (gReseed_crush_rng) {
+    if (gNet_mode) {
         RestoreCarPixelmaps(car);
     }
 }

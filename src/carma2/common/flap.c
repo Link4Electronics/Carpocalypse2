@@ -394,7 +394,7 @@ void C2_HOOK_FASTCALL DoFlapping(void) {
         tCar_spec* car;
 
         car = gActive_car_list[i];
-        if (car != NULL && car->driver >= eDriver_oppo) {
+        if (car != NULL && car->driver > 5) {
             FlapBits(car);
         }
     }
@@ -545,7 +545,7 @@ void C2_HOOK_FASTCALL DoFullyDetaching(void) {
             tCar_spec* car;
 
             car = gActive_car_list[i];
-            if (car != NULL && car->driver >= eDriver_oppo && car->car_crush_spec != NULL) {
+            if (car != NULL && car->driver > 5 && car->car_crush_spec != NULL) {
                 tCar_crush_spec* car_crush;
                 int j;
 

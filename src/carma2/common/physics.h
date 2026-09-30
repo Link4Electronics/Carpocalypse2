@@ -535,10 +535,6 @@ void C2_HOOK_FASTCALL PHILSendDetachBit(int pFlags, void* pBit);
 
 void C2_HOOK_FASTCALL PhysicsAddObject(tPhysics_object* pParent, tPhysics_object* pChild);
 
-void C2_HOOK_FASTCALL GetNonCars(void);
-
-void C2_HOOK_FASTCALL ApplyPhysicsToCars(tU32 pLast_tick_time, tU32 pFrame_period);
-
 tPhysics_object* C2_HOOK_FASTCALL PHILGetFirstObject(void);
 
 tPhysics_object* C2_HOOK_FASTCALL PHILGetNextObject(tPhysics_object* pCollision_info);

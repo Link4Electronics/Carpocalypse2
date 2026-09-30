@@ -139,7 +139,11 @@ void C2_HOOK_FASTCALL ChangeCameraType(void) {
 
 // InitialiseExternalCamera
 
-// FreezeCamera
+// FUNCTION: CARMA2_HW 0x00413770
+void C2_HOOK_FASTCALL FreezeCamera(void) {
+
+    gCamera_frozen = 1;
+}
 
 // GetAverageGridPosition
 

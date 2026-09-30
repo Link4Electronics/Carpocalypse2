@@ -5478,7 +5478,8 @@ int C2_HOOK_FASTCALL CalmDownAllPeds(void) {
 
 // PedApplyPedModelChange
 
-// DismemberCharacterAR
+// DismemberCharacter
+// (test)AR
 
 // PedApplyDismember
 
@@ -5786,11 +5787,7 @@ void C2_HOOK_FASTCALL DisposePedStuff(void) {
 
 // ResetPedNearness
 
-// STUB: CARMA2_HW 0x004d6880
-void C2_HOOK_FASTCALL PedPreCollisionStuff(void) {
-
-    NOT_IMPLEMENTED();
-}
+// PedPreCollisionStuff
 
 // UpdateIfBackwardsAR
 
@@ -6133,12 +6130,12 @@ int C2_HOOK_FASTCALL BonerPassiveCollision(tPed_character_instance* pCharacter, 
             tPed_form_boned_phys* bp = &pCharacter->personality->form->boned_physicing[(tS8)pCharacter->field_0x5];
             int i;
 
+            obj = NULL;
             for (i = 0; i < pCharacter->personality->form->count_bones; i++) {
-                obj = bp->collision_infos[i];
-                if (obj->shape != NULL) {
+                if (bp->collision_infos[i]->shape != NULL) {
+                    obj = bp->collision_infos[i];
                     break;
                 }
-                obj = NULL;
             }
         }
 

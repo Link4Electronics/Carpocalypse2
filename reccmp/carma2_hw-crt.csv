@@ -294,7 +294,7 @@ address,type,name
 0x67c3f0,global,gInventory_cycling
 0x684600,global,gXXX_outlet
 0x68b85c,global,gCrush_spam_gate
-0x68b918,global,gReseed_crush_rng
+0x68b918,global,gNet_mode
 0x68c1e0,global,return_val
 0x68d6f4,global,gINT_0068d6f4
 0x6923ac,global,gOrig_render_palette
@@ -306,7 +306,7 @@ address,type,name
 0x6b2e70,global,___lc_handle
 0x6b7820,global,gMaterials_to_adapt
 0x7059c8,global,gModel_powerup_offence
-0x74a5ec,global,gCrush_pain_timer
+0x74a5ec,global,gPHIL_last_physics_tick
 0x74a5f8,global,gCrush_deferred
 0x74b714,global,gCamera_angle
 0x74d098,global,gBack_screen

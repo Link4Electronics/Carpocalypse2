@@ -2160,7 +2160,7 @@ void C2_HOOK_FASTCALL DoInstruments(tU32 pThe_time) {
     double cos_angle;
     double speed_mph;
 
-    if (gCar_to_view != NULL && gCar_to_view->driver >= eDriver_oppo) {
+    if (gCar_to_view != NULL && gCar_to_view->driver > 5) {
         speed_mph = gCar_to_view->speedo_speed * WORLD_SCALE / 1600.0f * 1000.f * 3600.0f;
         if (speed_mph < 0.0f) {
             speed_mph = 0.0f;
