@@ -431,7 +431,7 @@ extern int gPHIL_enabled;
 
 extern int gFace_num__car;
 
-extern int gPHIL_doing_physics;
+extern int gCrush_deferred;
 
 extern int gPHIL_object_added;
 
@@ -445,7 +445,7 @@ extern tPhysics_callbacks* gPHIL_callbacks;
 
 extern int gPHIL_count_list_collision_infos;
 
-extern tPhysics_object* gPHIL_list_collision_infos;
+extern tPhysics_object* gList_collision_infos;
 
 extern int gPHIL_munging_objects;
 
@@ -565,11 +565,8 @@ void C2_HOOK_FASTCALL PrepareObject(tPhysics_object* pObject, tPhysics_object** 
 
 int C2_HOOK_FASTCALL PHILAddObject(tPhysics_object* pObject);
 
-void C2_HOOK_FASTCALL PHILMungeObjects(tPhysics_object* pObjects);
 
-void C2_HOOK_FASTCALL FlushQueuedAddsAndRemoves(void);
 
-void C2_HOOK_FASTCALL PHILInterpolateObjects(tPhysics_object* pObjects, tU32 pTime);
 
 void C2_HOOK_FASTCALL PHILDoPhysics(tPhysics_callbacks* pCallbacks, tU32 pLast_tick_time, tU32 pFrame_period);
 

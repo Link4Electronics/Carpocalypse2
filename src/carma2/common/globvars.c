@@ -667,5 +667,4 @@ int gNoCutscenes;
 //int gNumber_of_races;
 //char gDir_separator[3] = "";
 
-// GLOBAL: CARMA2_HW 0x0075bba8
 int gINT_0075bba8;

@@ -2020,9 +2020,6 @@ extern int gCount_car_damage_crush_list;
 // GLOBAL: CARMA2_HW 0x0068b85c
 int gCrush_spam_gate;
 
-// GLOBAL: CARMA2_HW 0x0074a5f8
-int gCrush_deferred;
-
 // FUNCTION: CARMA2_HW 0x0043ceb0
 void C2_HOOK_FASTCALL UpdateCrushPainList(void) {
 

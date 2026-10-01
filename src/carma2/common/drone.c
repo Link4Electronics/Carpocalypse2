@@ -41,9 +41,6 @@ tDrone_state_function* gDrone_state_functions[6] = {
     NULL,
 };
 
-// GLOBAL: CARMA2_HW 0x0074a5f0
-tPhysics_object* gList_collision_infos;
-
 // GLOBAL: CARMA2_HW 0x006820b8
 int gDrones_unmodified;
 

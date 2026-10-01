@@ -450,7 +450,7 @@ void C2_HOOK_FASTCALL FullyDetachBit(tCar_spec* pCar, tPhysics_object* pObject) 
         *(int*)pObject->physics_joint1 = 0;
         pObject->physics_joint1 = NULL;
     }
-    if (gPHIL_doing_physics != 0) {
+    if (gCrush_deferred != 0) {
         PHILDetachObjectState(pCar->collision_info);
     }
     pObject->flags |= 0x100;

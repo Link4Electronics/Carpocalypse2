@@ -16,15 +16,22 @@
 #include "carpocalypse2_types.h"
 #include "carpocalypse2_macros.h"
 #include "platform.h"
+// GLOBAL: CARMA2_HW 0x006571f8
+tMouse_coord gCurrent_mouse_position = {-1, -1};
+
 // GLOBAL: CARMA2_HW 0x00657200
 int gGo_ahead_keys[3] = { 51, 52, 106 };
+
+// GLOBAL: CARMA2_HW 0x0065720c
+int gLast_key_down = -1000;
+
+// GLOBAL: CARMA2_HW 0x0068c1d0
+tU32 gLast_key_down_time;
 
 // GLOBAL: CARMA2_HW 0x0068c1c4
 extern int gEdge_trigger_mode;
 // GLOBAL: CARMA2_HW 0x0068bed4
 extern int gKey_poll_counter;
-// GLOBAL: CARMA2_HW 0x006571f8
-tMouse_coord gCurrent_mouse_position = {-1, -1};
 
 // GLOBAL: CARMA2_HW 0x0068c144
 tU32 gLast_roll;
@@ -73,12 +80,6 @@ int gJoy2_x;
 
 // GLOBAL: CARMA2_HW 0x0068becc
 int gJoy2_y;
-
-// GLOBAL: CARMA2_HW 0x0065720c
-int gLast_key_down = -1000;
-
-// GLOBAL: CARMA2_HW 0x0068c1d0
-tU32 gLast_key_down_time;
 
 // GLOBAL: CARMA2_HW 0x0068bed8
 int gModifiers_down;
@@ -164,31 +165,6 @@ tKey_down_result C2_HOOK_FASTCALL EdgeTriggeryKey(int pKey_index, int pReset) {
     gLast_key_down_time = now;
     gModifiers_down = AnyModifiersDown();
     return tKey_down_yes;
-}
-
-// FUNCTION: CARMA2_HW 0x004821a0
-void C2_HOOK_FASTCALL ResetPollKeys(void) {
-    int i;
-
-    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gKey_array) != 151);
-    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gJoy_array) != 8);
-
-    for (i = 0; i < CARPOCALYPSE2_ASIZE(gKey_array); i++) {
-        gKey_array[i] = 0;
-    }
-    for (i = 0; i < CARPOCALYPSE2_ASIZE(gJoy_array); i++) {
-        gJoy_array[i] = -1;
-    }
-}
-
-// FUNCTION: CARMA2_HW 0x004821c0
-void C2_HOOK_FASTCALL CheckKeysForMouldiness(void) {
-
-    if (PDGetTotalTime() - gLast_poll_keys > 500) {
-        ResetPollKeys();
-        CyclePollKeys();
-        PollKeys();
-    }
 }
 
 // FUNCTION: CARMA2_HW 0x004833a0
@@ -290,7 +266,7 @@ int C2_HOOK_FASTCALL ChangeCharTo(int pSlot_index, int pChar_index, char pNew_ch
 }
 
 // FUNCTION: CARMA2_HW 0x00482770
-void C2_HOOK_FASTCALL SetJoystickArrays(int* pKeys, int pMark) {
+__inline void C2_HOOK_FASTCALL SetJoystickArrays(int* pKeys, int pMark) {
     int i;
 
     for (i = 0; i < 44; i++) {
@@ -410,13 +386,50 @@ void C2_HOOK_FASTCALL PollKeys(void) {
 
     gKey_poll_counter += 1;
     PDSetKeyArray(gKey_array, gKey_poll_counter);
+    SetJoystickArrays(gKey_array, gKey_poll_counter);
+    PDSetKeysFromJoystick(gKey_array);
+    gLast_poll_keys = PDGetTotalTime();
 }
 
-// CyclePollKeys
+// FUNCTION: CARMA2_HW 0x00482160
+void C2_HOOK_FASTCALL CyclePollKeys(void) {
+    int i;
 
-// ResetPollKeys
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gKey_array); i++) {
+        if (gKey_array[i] > gKey_poll_counter) {
+            gKey_array[i] = 0;
+            if (i > 143) {
+                gJoy_array[i - 143] = -1; // yes this is a little weird I know...
+            }
+        }
+    }
+    gKey_poll_counter = 0;
+}
 
-// CheckKeysForMouldiness
+// FUNCTION: CARMA2_HW 0x004821a0
+void C2_HOOK_FASTCALL ResetPollKeys(void) {
+    int i;
+
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gKey_array) != 151);
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gJoy_array) != 8);
+
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gKey_array); i++) {
+        gKey_array[i] = 0;
+    }
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gJoy_array); i++) {
+        gJoy_array[i] = -1;
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x004821c0
+void C2_HOOK_FASTCALL CheckKeysForMouldiness(void) {
+
+    if (PDGetTotalTime() - gLast_poll_keys > 500) {
+        ResetPollKeys();
+        CyclePollKeys();
+        PollKeys();
+    }
+}
 
 // FUNCTION: CARMA2_HW 0x004824c0
 int C2_HOOK_FASTCALL EitherMouseButtonDown(void) {
@@ -540,17 +553,16 @@ int C2_HOOK_FASTCALL KeyIsDown(int pKey_index) {
     int i;
 
     CheckKeysForMouldiness();
-    switch (pKey_index) {
-    case -2:
+    if (pKey_index == -2) {
         return 1;
-    case -1:
+    } else if (pKey_index == -1) {
         for (i = 0; i < CARPOCALYPSE2_ASIZE(gGo_ahead_keys); i++) {
             if (gKey_array[gGo_ahead_keys[i]]) {
                 return 1;
             }
         }
         return 0;
-    default:
+    } else {
         return gKey_array[gKey_mapping[pKey_index]];
     }
 }

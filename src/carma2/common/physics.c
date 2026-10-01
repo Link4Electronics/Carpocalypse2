@@ -419,13 +419,13 @@ int gPHIL_count_queued_objects;
 int gPHIL_count_queued_objects_for_removal;
 
 // GLOBAL: CARMA2_HW 0x0074a5f0
-tPhysics_object* gPHIL_list_collision_infos;
+tPhysics_object* gList_collision_infos;
 
 // GLOBAL: CARMA2_HW 0x0074a5e8
 int gPHIL_munging_objects;
 
 // GLOBAL: CARMA2_HW 0x0074a5f8
-int gPHIL_doing_physics;
+int gCrush_deferred;
 
 // GLOBAL: CARMA2_HW 0x006923e4
 int gPHIL_object_added;
@@ -622,9 +622,9 @@ int C2_HOOK_FASTCALL PHILInit(void) {
     gPHIL_count_list_collision_infos = 0;
     gPHIL_count_queued_objects = 0;
     gPHIL_count_queued_objects_for_removal = 0;
-    gPHIL_list_collision_infos = NULL;
+    gList_collision_infos = NULL;
     gPHIL_munging_objects = 0;
-    gPHIL_doing_physics = 0;
+    gCrush_deferred = 0;
     gPHIL_object_added = 0;
     gPHIL_last_physics_tick = 0;
     gPHIL_mechanics_time_sync = 1;
@@ -1408,11 +1408,13 @@ tPhysics_object* C2_HOOK_FAKE_THISCALL MungeSphereObject(br_model* pModel, undef
     return collision_info;
 }
 
+#pragma auto_inline(off)
 // FUNCTION: CARMA2_HW 0x004c2b10
 void C2_HOOK_FASTCALL PositionChildren(tPhysics_object *pCollision_info) {
 
     InternalPositionChildren(pCollision_info, pCollision_info);
 }
+#pragma auto_inline(on)
 
 // FUNCTION: CARMA2_HW 0x004c2b20
 void C2_HOOK_FASTCALL InternalPositionChildren(tPhysics_object *pParent, tPhysics_object *pRoot) {
@@ -1685,7 +1687,7 @@ tPhysics_object* C2_HOOK_FASTCALL PHILGetFirstObject(void) {
     if (!gPHIL_enabled) {
         return NULL;
     }
-    return gPHIL_list_collision_infos;
+    return gList_collision_infos;
 }
 
 // FUNCTION: CARMA2_HW 0x004b5ff0
@@ -1953,25 +1955,25 @@ int C2_HOOK_FASTCALL PHILAddObject(tPhysics_object* pObject) {
     pObject->flags |= 0x20;
     pObject->field_0x239 = 1;
     gPHIL_count_list_collision_infos += 1;
-    if (gPHIL_list_collision_infos != NULL) {
-        pObject->next = gPHIL_list_collision_infos->next;
-        gPHIL_list_collision_infos->next = pObject;
-        pObject->prev = gPHIL_list_collision_infos;
+    if (gList_collision_infos != NULL) {
+        pObject->next = gList_collision_infos->next;
+        gList_collision_infos->next = pObject;
+        pObject->prev = gList_collision_infos;
         if (pObject->next != NULL) {
             pObject->next->prev = pObject;
         }
     } else {
-        gPHIL_list_collision_infos = pObject;
+        gList_collision_infos = pObject;
         pObject->next = NULL;
         pObject->prev = NULL;
     }
-    if (gPHIL_doing_physics) {
-        PrepareObject(pObject, &gPHIL_list_collision_infos);
+    if (gCrush_deferred) {
+        PrepareObject(pObject, &gList_collision_infos);
     }
     return 0;
 }
 
-void C2_HOOK_FASTCALL PHILMungeObjects(tPhysics_object* pObjects) {
+__inline void C2_HOOK_FASTCALL PHILMungeObjects(tPhysics_object* pObjects) {
     tPhysics_object* object;
 
     for (object = pObjects; object != NULL; object = object->next) {
@@ -1996,21 +1998,21 @@ void C2_HOOK_FASTCALL PHILMungeObjects(tPhysics_object* pObjects) {
             if (object_info->field_0x10 != 0.f || (object->last_special_volume != NULL && (object_info->field_0x4 & 0x8))) {
                 float gravity;
 
-                gravity = object_info->field_0x10 != 0.f ? object_info->field_0x10 != 0.f : 1.f;
+                gravity = object_info->field_0x10 != 0.f ? object_info->field_0x10 : 1.0;
                 ProcessGravity(object_info, object, gravity);
             }
             if (object_info->field_0xc != 0.f || (object->last_special_volume != NULL && (object_info->field_0x4 & 0x8))) {
                 float drag;
 
-                drag = object_info->field_0xc == 0.f ? 1.f : object_info->field_0xc;
+                drag = object_info->field_0xc == 0.f ? 1.0 : object_info->field_0xc;
                 ProcessDrag(object_info, object, drag);
             }
             if (object_info->field_0x4 & 0x8) {
-                if (!(object->last_special_volume != NULL && object->last_special_volume->viscosity_multiplier > 2.f && object->water_depth_factor == 1.f)
-                        || (original_last_special_volume != NULL && original_last_special_volume->viscosity_multiplier > 2.f && original_water_depth_factor >= 1.f)) {
+                if (!(object->last_special_volume != NULL && object->last_special_volume->viscosity_multiplier > 2.0 && object->water_depth_factor == 1.0)
+                        || (original_last_special_volume != NULL && original_last_special_volume->viscosity_multiplier > 2.0 && original_water_depth_factor >= 1.0)) {
 
-                    if (!(object->last_special_volume != NULL && object->last_special_volume->viscosity_multiplier > 2.f)
-                            && (original_last_special_volume != NULL && original_last_special_volume->viscosity_multiplier > 2.f)) {
+                    if (!(object->last_special_volume != NULL && object->last_special_volume->viscosity_multiplier > 2.0)
+                            && (original_last_special_volume != NULL && original_last_special_volume->viscosity_multiplier > 2.0)) {
                         ProcessDrag(object_info, object, 1.f);
                     }
                 }
@@ -2019,8 +2021,8 @@ void C2_HOOK_FASTCALL PHILMungeObjects(tPhysics_object* pObjects) {
                 }
                 if (object_info->field_0x14 != 0.f
                         && object->last_special_volume != NULL
-                        && object->last_special_volume->viscosity_multiplier > 2.f
-                        && object->water_depth_factor < 1.0f) {
+                        && object->last_special_volume->viscosity_multiplier > 2.0
+                        && object->water_depth_factor < 1.0) {
                     LevelOutOnSurface(object);
                 }
             }
@@ -2033,7 +2035,7 @@ void C2_HOOK_FASTCALL PHILMungeObjects(tPhysics_object* pObjects) {
     }
 }
 
-void C2_HOOK_FASTCALL FlushQueuedAddsAndRemoves(void) {
+__inline void C2_HOOK_FASTCALL FlushQueuedAddsAndRemoves(void) {
     int i;
 
     for (i = 0; i < gPHIL_count_queued_objects; i++) {
@@ -2075,12 +2077,12 @@ void C2_HOOK_FASTCALL FlushQueuedAddsAndRemoves(void) {
     }
 }
 
-void C2_HOOK_FASTCALL PHILInterpolateObjects(tPhysics_object* pObjects, tU32 pTime) {
+__inline void C2_HOOK_FASTCALL PHILInterpolateObjects(tPhysics_object* pObjects, tU32 pTime) {
     tPhysics_object *object;
     float dt;
 
-    dt = (gPHIL_last_physics_tick - pTime) / 1000.f;
-    if (!(dt >= .0f && dt <= .4f)) {
+    dt = (gPHIL_last_physics_tick - pTime) * 0.001;
+    if (!(dt >= .0f && dt <= .04)) {
         dt = .0f;
     }
     gOver_shoot = dt > .0f;
@@ -2089,7 +2091,7 @@ void C2_HOOK_FASTCALL PHILInterpolateObjects(tPhysics_object* pObjects, tU32 pTi
 
         object_info = object->field_0x240;
         if (object_info != NULL && object_info->field_0x8 == 2) {
-            InterpolateSingleObject(object, -dt);
+            RepositionObjectGroup(object, -dt);
         }
     }
 }
@@ -2111,7 +2113,7 @@ void C2_HOOK_FASTCALL PHILDoPhysics(tPhysics_callbacks* pCallbacks, tU32 pLast_t
         gPHIL_last_physics_tick = 40 * (pLast_tick_time / 40);
     }
     if (now > gPHIL_last_physics_tick) {
-        gPHIL_doing_physics = 1;
+        gCrush_deferred = 1;
         gPHIL_mechanics_time_sync = now - gPHIL_last_physics_tick;
         while (now > gPHIL_last_physics_tick && iteration < 5) {
 
@@ -2119,10 +2121,10 @@ void C2_HOOK_FASTCALL PHILDoPhysics(tPhysics_callbacks* pCallbacks, tU32 pLast_t
             if (pCallbacks->pre_collision != NULL) {
                 pCallbacks->pre_collision();
             }
-            PHILMungeObjects(gPHIL_list_collision_infos);
+            PHILMungeObjects(gList_collision_infos);
             gPHIL_munging_objects = 1;
-            if (gPHIL_list_collision_infos != NULL) {
-                DoCollisions(&gPHIL_list_collision_infos, pCallbacks->world_callbacks);
+            if (gList_collision_infos != NULL) {
+                DoCollisions(&gList_collision_infos, pCallbacks->world_callbacks);
             }
             gPHIL_munging_objects = 1;
             if (pCallbacks->post_collision != NULL) {
@@ -2133,13 +2135,13 @@ void C2_HOOK_FASTCALL PHILDoPhysics(tPhysics_callbacks* pCallbacks, tU32 pLast_t
             gPHIL_mechanics_time_sync -= 40;
             pLast_tick_time = gPHIL_mechanics_time_sync;
         }
-        PHILInterpolateObjects(gPHIL_list_collision_infos, now);
-        ChangedObjectsCallbacks(gPHIL_list_collision_infos, pCallbacks, pFrame_period);
+        PHILInterpolateObjects(gList_collision_infos, now);
+        ChangedObjectsCallbacks(gList_collision_infos, pCallbacks, pFrame_period);
         gPHIL_mechanics_time_sync = 1;
-        gPHIL_doing_physics = 0;
+        gCrush_deferred = 0;
     } else {
-        ResetObjectList(gPHIL_list_collision_infos);
-        PHILInterpolateObjects(gPHIL_list_collision_infos, now);
+        ResetObjectList(gList_collision_infos);
+        PHILInterpolateObjects(gList_collision_infos, now);
     }
     pCallbacks->world_callbacks->activate_passive = gPHIL_original_activate_passive;
 }
@@ -2734,6 +2736,7 @@ int C2_HOOK_FASTCALL PHILSetPassiveObjectsMatrix(tPhysics_object* pObject, br_ma
     return 0;
 }
 
+#pragma auto_inline(off)
 // FUNCTION: CARMA2_HW 0x004c2830
 void C2_HOOK_FAKE_THISCALL RepositionObjectGroup(tPhysics_object* pObject, float pDt) {
     tPhysics_object* pChild;
@@ -2752,6 +2755,7 @@ void C2_HOOK_FAKE_THISCALL RepositionObjectGroup(tPhysics_object* pObject, float
         RepositionObjectGroup(pChild, pDt);
     }
 }
+#pragma auto_inline(on)
 
 // FUNCTION: CARMA2_HW 0x004c2670
 void C2_HOOK_FAKE_THISCALL InterpolateSingleObject(tPhysics_object* pObject, float pDt) {
@@ -2865,6 +2869,7 @@ static void ResetObjectAndChildren(tPhysics_object* pObject) {
     }
 }
 
+#pragma auto_inline(off)
 // FUNCTION: CARMA2_HW 0x004c2600
 void C2_HOOK_FASTCALL ResetObjectList(tPhysics_object* pObjects) {
     tPhysics_object* pObject;
@@ -2884,6 +2889,7 @@ void C2_HOOK_FASTCALL ResetObjectList(tPhysics_object* pObjects) {
         pObject = pObject->next;
     }
 }
+#pragma auto_inline(on)
 
 // FUNCTION: CARMA2_HW 0x004c64b0
 int C2_HOOK_FASTCALL PhysicsObjectRecurseChildren(tPhysics_object* pObject, tEnumCollision_cbfn* pCallback, void* pContext) {

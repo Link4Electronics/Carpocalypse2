@@ -79,8 +79,8 @@ int C2_HOOK_FASTCALL PHILRemoveObject(tPhysics_object* pObject) {
     pObject->flags &= ~0x20;
     pObject->field_0x239 = 0;
 
-    if (gPHIL_list_collision_infos == pObject) {
-        gPHIL_list_collision_infos = pObject->next;
+    if (gList_collision_infos == pObject) {
+        gList_collision_infos = pObject->next;
     }
     if (pObject->prev != NULL) {
         pObject->prev->next = pObject->next;

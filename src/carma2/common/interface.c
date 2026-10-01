@@ -4213,18 +4213,3 @@ void C2_HOOK_FASTCALL ChangeKeyMapIndex(int pKey_map_index) {
     gKey_map_index = pKey_map_index;
     LoadKeyMapping();
 }
-
-// FUNCTION: CARMA2_HW 0x00482160
-void C2_HOOK_FASTCALL CyclePollKeys(void) {
-    int i;
-
-    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gKey_array); i++) {
-        if (gKey_array[i] > gKey_poll_counter) {
-            gKey_array[i] = 0;
-            if (i > 143) {
-                gJoy_array[i - 143] = -1; // yes this is a little weird I know...
-            }
-        }
-    }
-    gKey_poll_counter = 0;
-}

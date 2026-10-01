@@ -1555,7 +1555,7 @@ void C2_HOOK_FASTCALL PipeSingleSound(tS3_outlet* pOutlet, int pSound, tS3_volum
     if (gAction_replay_mode) {
         return;
     }
-    if (gINT_0075bba8 == 0) {
+    if (gProgram_state.racing == 0) {
         return;
     }
     {

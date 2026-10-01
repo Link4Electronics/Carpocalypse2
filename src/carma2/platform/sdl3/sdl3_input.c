@@ -3,6 +3,7 @@
 #include "sdl3.h"
 
 #include "globvars.h"
+#include "joystick.h"
 
 #include <SDL3/SDL.h>
 
@@ -387,4 +388,26 @@ void C2_HOOK_FASTCALL FUN_0045a070(void) {
 
 tButtonJoystickInfo* C2_HOOK_FASTCALL PDGetCurrentJoystickData(void) {
     return NULL;
+}
+
+tU32 C2_HOOK_FASTCALL PDGetJoystickButtonStates(void) {
+    if (gJoystick_index < 0 || gJoystick_index >= g_Count_Joystick_infos) {
+        return 0;
+    }
+    return (tU32)g_Joystick_infos[gJoystick_index].buttons;
+}
+
+void C2_HOOK_FASTCALL PDSetKeysFromJoystick(int* keys) {
+    if (gJoystick_index != 1) {
+        tU32 button_mask;
+
+        button_mask = PDGetJoystickButtonStates();
+        if (PDGetCurrentJoystickData() != NULL) {
+            int i;
+
+            for (i = 0; i < 32; i++) {
+                keys[107 + i] = !!(button_mask & (i << i));
+            }
+        }
+    }
 }

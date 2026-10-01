@@ -2877,7 +2877,6 @@ void C2_HOOK_FASTCALL PrevPedCam(void) {
     } while (!(gPedestrian_array[i].flags & 1) && start != i);
 }
 
-// GLOBAL: CARMA2_HW 0x0075bc78
 br_vector3 gPredist_point;
 
 // FUNCTION: CARMA2_HW 0x004d62e0
@@ -2899,9 +2898,9 @@ void C2_HOOK_FASTCALL FindNearestPed(void) {
         best = *(int*)&predist;
         do {
             p = &gPedestrian_array[i];
-            dist = (p->pos.v[0] - gPredist_point.v[0]) * (p->pos.v[0] - gPredist_point.v[0])
-                 + (p->pos.v[1] - gPredist_point.v[1]) * (p->pos.v[1] - gPredist_point.v[1])
-                 + (p->pos.v[2] - gPredist_point.v[2]) * (p->pos.v[2] - gPredist_point.v[2]);
+            dist = (p->pos.v[0] - gProgram_state.current_car.pos.v[0]) * (p->pos.v[0] - gProgram_state.current_car.pos.v[0])
+                 + (p->pos.v[1] - gProgram_state.current_car.pos.v[1]) * (p->pos.v[1] - gProgram_state.current_car.pos.v[1])
+                 + (p->pos.v[2] - gProgram_state.current_car.pos.v[2]) * (p->pos.v[2] - gProgram_state.current_car.pos.v[2]);
             if (dist < predist) {
                 predist = dist;
                 best = i;

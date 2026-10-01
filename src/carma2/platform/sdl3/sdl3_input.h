@@ -16,6 +16,10 @@ extern void PDSetKeyArray(int *pKeys, int pMark);
 
 extern void PDReadJoysticks(void);
 
+extern tU32 PDGetJoystickButtonStates(void);
+
+extern void PDSetKeysFromJoystick(int *keys);
+
 extern int GetDirectInputJoy1X(void);
 
 extern int GetDirectInputJoy1Y(void);
