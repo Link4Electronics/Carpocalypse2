@@ -575,7 +575,7 @@ void C2_HOOK_FASTCALL PipeCarPositions(void) {
                 &car->collision_info->v,
                 car->speedo_speed,
                 car->revs,
-                (int)car->gear,
+                car->gear,
                 car->frame_collision_flag,
                 car->field_0x18cc);
         }

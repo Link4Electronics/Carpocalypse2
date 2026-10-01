@@ -1057,7 +1057,7 @@ void C2_HOOK_FASTCALL TurnOpponentPhysicsOff(tOpponent_spec* pOpponent_spec) {
     car->acc_force = 0.f;
     car->brake_force = 0.f;
     car->curvature = 0.f;
-    car->gear = 0.f;
+    car->gear = 0;
     car->revs = 0.f;
     BrVector3Set(&car->collision_info->omega, 0.f, 0.f, 0.f);
     BrVector3Set(&car->collision_info->v, 0.f, 0.f, 0.f);

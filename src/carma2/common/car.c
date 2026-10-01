@@ -1055,7 +1055,7 @@ void C2_HOOK_FAKE_THISCALL ControlCar4(tCar_spec* c, undefined4 pArg2, br_scalar
         }
         if (c->collision_info->velocity_car_space.v[2] > 0.f) {
             c->turn_speed += .25 * dt;
-        } else if ((c->curvature >= 0.f && c->collision_info->omega.v[1] < -.001) || c->turn_speed != 0.f) {
+        } else if ((c->curvature >= 0.f && c->collision_info->omega.v[1] >= -.001) || c->turn_speed != 0.f) {
             c->turn_speed += 25.f * dt * (0.05 / (5. + WORLD_SCALE * BrVector3Length(&c->collision_info->v) )) * .25;
         } else {
             c->turn_speed = 25.f * dt * (.05 / (5. + WORLD_SCALE * BrVector3Length(&c->collision_info->v)));
@@ -1070,7 +1070,7 @@ void C2_HOOK_FAKE_THISCALL ControlCar4(tCar_spec* c, undefined4 pArg2, br_scalar
         }
         if (c->collision_info->velocity_car_space.v[2] > 0.f) {
             c->turn_speed -= .25 * dt;
-        } else if ((c->curvature <= 0.f && c->collision_info->omega.v[1] > .001) || c->turn_speed != 0.f) {
+        } else if ((c->curvature <= 0.f && c->collision_info->omega.v[1] <= .001) || c->turn_speed != 0.f) {
             c->turn_speed -= 25.f * dt * (.05 / (5. + WORLD_SCALE * BrVector3Length(&c->collision_info->v))) * .25;
         } else {
             c->turn_speed = -25.f * dt * (.05 / (5. + WORLD_SCALE * BrVector3Length(&c->collision_info->v)));
@@ -1157,37 +1157,39 @@ void C2_HOOK_FASTCALL ControlOurCar(tU32 pTime_difference) {
     tCar_spec* car;
     tU32 time;
     br_vector3 minus_k;
+    br_vector3 tmp;
+    br_vector3 delta_omega;
 
     car = &gProgram_state.current_car;
 
-    if (!car->keys.change_down) {
-        last_key_down = 0;
-    } else if (!last_key_down) {
-        last_key_down = 1;
+    if (car->keys.change_down) {
+        if (!last_key_down) {
+            last_key_down = 1;
 
-        C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tCar_spec, number_of_wheels_on_ground, 0x12e8);
-        C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tCar_spec, oldd, 0x1264);
-        C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tCar_spec, susp_height, 0x1218);
-        C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tCar_spec, frame_collision_flag, 0x64);
-        C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPhysics_object, disable_move_rotate, 0xec);
-        C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPhysics_object, omega, 0x74);
+            C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tCar_spec, number_of_wheels_on_ground, 0x12e8);
+            C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tCar_spec, oldd, 0x1264);
+            C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tCar_spec, susp_height, 0x1218);
+            C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tCar_spec, frame_collision_flag, 0x64);
+            C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPhysics_object, disable_move_rotate, 0xec);
+            C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPhysics_object, omega, 0x74);
 
-        if (car->number_of_wheels_on_ground <= 2
-                && BrVector3LengthSquared(&car->collision_info->v) < .04
-                && car->oldd[0] == car->susp_height[0]
-                && car->oldd[1] == car->susp_height[1]
-                && (car->frame_collision_flag || car->collision_info->disable_move_rotate)) {
-            br_vector3 tmp;
-            br_vector3 delta_omega;
+            if (car->number_of_wheels_on_ground <= 2
+                    && BrVector3LengthSquared(&car->collision_info->v) < .04
+                    && car->oldd[0] == car->susp_height[0]
+                    && car->oldd[1] == car->susp_height[1]
+                    && (car->frame_collision_flag || car->collision_info->disable_move_rotate)) {
 
-            tmp.v[0] = -car->collision_info->transform_matrix.m[1][2];
-            tmp.v[1] = 0.f;
-            tmp.v[2] = car->collision_info->transform_matrix.m[1][0];
-            BrVector3Normalise(&tmp, &tmp);
-            BrMatrix34TApplyV(&delta_omega, &tmp, &car->collision_info->transform_matrix);
-            BrVector3Accumulate(&car->collision_info->omega, &delta_omega);
-            car->collision_info->disable_move_rotate = 0;
+                tmp.v[0] = -car->collision_info->transform_matrix.m[1][2];
+                tmp.v[1] = 0.f;
+                tmp.v[2] = car->collision_info->transform_matrix.m[1][0];
+                BrVector3Normalise(&tmp, &tmp);
+                BrMatrix34TApplyV(&delta_omega, &tmp, &car->collision_info->transform_matrix);
+                BrVector3Accumulate(&car->collision_info->omega, &delta_omega);
+                car->collision_info->disable_move_rotate = 0;
+            }
         }
+    } else {
+        last_key_down = 0;
     }
     if (gNet_mode != eNet_mode_none) {
         int i;
@@ -1209,7 +1211,7 @@ void C2_HOOK_FASTCALL ControlOurCar(tU32 pTime_difference) {
     time = GetTotalTime();
     if (car->damage_units[eDamage_steering].damage_level > 40) {
         if (car->end_steering_damage_effect != 0) {
-            if (time < car->end_steering_damage_effect || car->damage_units[eDamage_steering].damage_level == 99) {
+            if (car->end_steering_damage_effect > time || car->damage_units[eDamage_steering].damage_level == 99) {
                 car->keys.left = car->false_key_left;
                 car->keys.right = car->false_key_right;
             } else {
@@ -1237,8 +1239,8 @@ void C2_HOOK_FASTCALL ControlOurCar(tU32 pTime_difference) {
     }
     if (car->damage_units[eDamage_transmission].damage_level > 40) {
         if (car->end_trans_damage_effect != 0) {
-            if (time < car->end_trans_damage_effect || car->damage_units[eDamage_transmission].damage_level == 99) {
-                car->gear = 0.f;
+            if (car->end_trans_damage_effect > time || car->damage_units[eDamage_transmission].damage_level == 99) {
+                car->gear = 0;
                 car->just_changed_gear = 1;
             } else {
                 car->end_trans_damage_effect = 0;
@@ -1410,7 +1412,7 @@ void C2_HOOK_FASTCALL InitialiseCar2(tCar_spec* pCar, int pClear_disabled_flag) 
     for (j = 0; j < CARPOCALYPSE2_ASIZE(pCar->oldd); j++) {
         pCar->oldd[j] = pCar->ride_height;
     }
-    pCar->gear = 0.f;
+    pCar->gear = 0;
     pCar->revs = 0.f;
     pCar->traction_control = 1;
     BrVector3Negate(&pCar->direction, (br_vector3*)car_actor->t.t.mat.m[2]);
@@ -1806,7 +1808,7 @@ void C2_HOOK_FASTCALL MungeCarGraphics(tU32 pFrame_period) {
                 ControlBoundFunkGroovePlus(the_car->non_driven_wheels_spin_ref_3 CARPOCALYPSE2_THISCALL_EDX, wheel_speed);
                 ControlBoundFunkGroovePlus(the_car->non_driven_wheels_spin_ref_4 CARPOCALYPSE2_THISCALL_EDX, wheel_speed);
                 if (the_car->driver >= eDriver_net_human) {
-                    if (the_car->gear != 0.f) {
+                    if (the_car->gear != 0) {
                         wheel_speed = -(the_car->revs
                                         * the_car->speed_revs_ratio
                                         * (float)the_car->gear
@@ -1994,7 +1996,7 @@ void C2_HOOK_FASTCALL SetTextureBits(tCar_spec* pCar) {
     if (pCar->keys.brake || (pCar->brake_force != 0.f && fabsf(pCar->collision_info->velocity_car_space.v[2]) > 7.2463765e-05f)) {
         pCar->field_0x18cc |= 0x4;
     }
-    if (pCar->gear < 4 || (!(pCar != NULL && pCar->driver == eDriver_local_human) && pCar->collision_info->velocity_car_space.v[2] > 0.f)) {
+    if (pCar->gear < 0 || (!(pCar != NULL && pCar->driver == eDriver_local_human) && pCar->collision_info->velocity_car_space.v[2] > 0.f)) {
         pCar->field_0x18cc |= 0x8;
     }
 }
@@ -2185,19 +2187,16 @@ float C2_HOOK_FASTCALL GetFrictionFromFace(void *arg1) {
 
 // FUNCTION: CARMA2_HW 0x00417de0
 void C2_HOOK_FAKE_THISCALL ControlCar1(tCar_spec* c, undefined4 arg2, br_scalar dt) {
-
     NOT_IMPLEMENTED();
 }
 
 // FUNCTION: CARMA2_HW 0x00417180
 void C2_HOOK_FAKE_THISCALL ControlCar2(tCar_spec* c, undefined4 arg2, br_scalar dt) {
-
     NOT_IMPLEMENTED();
 }
 
 // FUNCTION: CARMA2_HW 0x004173b0
 void C2_HOOK_FAKE_THISCALL ControlCar3(tCar_spec* c, undefined4 arg2, br_scalar dt) {
-
     NOT_IMPLEMENTED();
 }
 

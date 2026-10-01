@@ -53,6 +53,19 @@
 #include "sound.h"
 #include "loading1.h"
 #include "input.h"
+
+#ifdef CARPOCALYPSE2_MATCHING
+#include "c2_hooks.h"
+
+/* The retail compiler inlined this single-call-site helper into PollCarControls. */
+#if defined(_MSC_VER)
+#define C2_MATCHING_INLINE __inline
+#else
+#define C2_MATCHING_INLINE inline
+#endif
+#else
+#define C2_MATCHING_INLINE
+#endif
 extern tU32* C2_HOOK_FASTCALL KevKeyService(void);
 // GLOBAL: CARMA2_HW 0x0067c474
 int gEntering_message;
@@ -2136,7 +2149,7 @@ void C2_HOOK_FASTCALL FlipUpCar(tCar_spec* pCar_spec) {
         pCar_spec->oldd[i] = pCar_spec->ride_height;
     }
     pCar_spec->revs = 0.f;
-    pCar_spec->gear = 0.f;
+    pCar_spec->gear = 0;
     pCar_spec->collision_info->auto_special_volume = NULL;
     if (pCar_spec != NULL && pCar_spec->driver == eDriver_local_human) {
         InitialiseExternalCamera();
@@ -2368,7 +2381,7 @@ void C2_HOOK_FASTCALL CheckRecoveryOfCars(tU32 pEndFrameTime) {
     }
 }
 
-void C2_HOOK_FASTCALL BrakeInstantly(void) {
+C2_MATCHING_INLINE void C2_HOOK_FASTCALL BrakeInstantly(void) {
     int i;
     br_scalar speed_squared;
 
@@ -2393,120 +2406,126 @@ void C2_HOOK_FASTCALL PollCarControls(tU32 pTime_difference) {
     tCar_spec* c;
 
     c = &gProgram_state.current_car;
-    CheckKeysForMouldiness();
     memset(&keys, 0, sizeof(tCar_controls));
     joystick.left = -1;
     joystick.right = -1;
     joystick.acc = -1;
     joystick.dec = -1;
-    if (!gEntering_message) {
-
-        if (gKey_mapping[47] < 143 && gKey_mapping[48] < 143) {
-            if (KeyIsDownNoMouldiness(47)) {
+    CheckKeysForMouldiness();
+    if (gEntering_message) {
+        c->keys = keys;
+        c->joystick = joystick;
+        return;
+    }
+    if (gKey_mapping[47] < 143 && gKey_mapping[48] < 143) {
+        if (KeyIsDownNoMouldiness(47)) {
+            keys.left = 1;
+        }
+        if (KeyIsDownNoMouldiness(48)) {
+            keys.right = 1;
+        }
+    }
+    if (!(keys.left || keys.right)) {
+        if (PDIsJoystickDPadEnabled()) {
+            if (gJoy_array[0] > 10) {
                 keys.left = 1;
             }
-            if (KeyIsDownNoMouldiness(48)) {
+            if (gJoy_array[1] > 10) {
                 keys.right = 1;
             }
-        }
-        if (!(keys.left || keys.right)) {
-            if (PDIsJoystickDPadEnabled()) {
-                if (gJoy_array[0] > 10) {
-                    keys.left = 1;
-                }
-                if (gJoy_array[1] > 10) {
-                    keys.right = 1;
-                }
-            } else {
-                joystick.left = gJoy_array[0];
-                joystick.right = gJoy_array[1];
-                if (gJoy_array[0] < 0 && gJoy_array[1] < 0) {
-                    joystick.left = 0;
-                }
+        } else {
+            joystick.left = gJoy_array[0];
+            joystick.right = gJoy_array[1];
+            if (gJoy_array[0] < 0 && gJoy_array[1] < 0) {
+                joystick.left = 0;
             }
         }
-        if (KeyIsDownNoMouldiness(13)) {
-            keys.holdw = 1;
+    }
+    if (KeyIsDownNoMouldiness(13)) {
+        keys.holdw = 1;
+    }
+    if (KeyIsDownNoMouldiness(54) || gRace_finished) {
+        if (gInstant_handbrake && !gRace_finished) {
+            BrakeInstantly();
+        } else {
+            keys.brake = 1;
         }
-        if (KeyIsDownNoMouldiness(54) || gRace_finished) {
-            if (gInstant_handbrake && !gRace_finished) {
-                BrakeInstantly();
-            } else {
-                keys.brake = 1;
+    }
+    if (KeyIsDownNoMouldiness(49) && !gRace_finished && !c->knackered && !gWait_for_it) {
+        keys.acc = 1;
+    }
+    if (!keys.acc) {
+        if (PDIsJoystickDPadEnabled()) {
+            if (gJoy_array[2] > 10) {
+                keys.acc = 1;
+            }
+        } else {
+            if (HasCurrentJoystick()) {
+                joystick.acc = gJoy_array[2];
             }
         }
-        if (KeyIsDownNoMouldiness(49) && !gRace_finished && !c->knackered && !gWait_for_it) {
-            keys.acc = 1;
-        }
-        if (!keys.acc) {
-            if (PDIsJoystickDPadEnabled()) {
-                if (gJoy_array[2] > 10) {
-                    keys.acc = 1;
-                }
-            } else {
-                if (HasCurrentJoystick()) {
-                    joystick.acc = gJoy_array[2];
-                }
+    }
+    if (KeyIsDownNoMouldiness(50) && !gRace_finished && !c->knackered && !gWait_for_it) {
+        keys.dec = 1;
+    }
+    if (!keys.dec) {
+        if (PDIsJoystickDPadEnabled()) {
+            if (gJoy_array[3] > 10) {
+                keys.dec = 1;
+            }
+        } else {
+            if (HasCurrentJoystick()) {
+                joystick.dec = gJoy_array[3];
             }
         }
-        if (KeyIsDownNoMouldiness(50) && !gRace_finished && !c->knackered && !gWait_for_it) {
-            keys.dec = 1;
-        }
-        if (!keys.dec) {
-            if (PDIsJoystickDPadEnabled()) {
-                if (gJoy_array[3] > 10) {
-                    keys.dec = 1;
-                }
-            } else {
-                if (HasCurrentJoystick()) {
-                    joystick.dec = gJoy_array[3];
-                }
-            }
-        }
+    }
 
-        if (gCredit_multiplier) {
-            int temp;
+    if (gCredit_multiplier) {
 
-            temp = keys.acc;
-            keys.acc = keys.dec;
-            keys.dec = temp;
+        int temp;
 
-            temp = keys.left;
-            keys.left = keys.right;
-            keys.right = temp;
+        temp = joystick.left;
+        joystick.left = joystick.right;
+        joystick.right = temp;
 
-            temp = joystick.left;
-            joystick.left = joystick.right;
-            joystick.right = temp;
+        temp = keys.acc;
+        keys.acc = keys.dec;
+        keys.dec = temp;
 
-            temp = joystick.acc;
-            joystick.acc = joystick.dec;
-            joystick.dec = temp;
+        temp = keys.left;
+        keys.left = keys.right;
+        keys.right = temp;
+
+        temp = joystick.acc;
+        joystick.acc = joystick.dec;
+        joystick.dec = temp;
+
+
+
+    }
+    if (KeyIsDownNoMouldiness(56) && c->gear >= 0) {
+        keys.change_down = 1;
+        c->just_changed_gear = 1;
+        if (keys.acc || joystick.acc > 32000) {
+            c->traction_control = 0;
+        } else if (c->gear > 1) {
+            c->gear -= !c->keys.change_down;
         }
-        if (KeyIsDownNoMouldiness(56) && c->gear >= 0) {
-            keys.change_down = 1;
-            c->just_changed_gear = 1;
-            if (keys.acc || joystick.acc > 32000) {
-                c->traction_control = 0;
-            } else if (c->gear > 1 && !c->keys.change_down) {
-                c->gear -= 1;
-            }
-            if (gCountdown != 0 && !c->keys.change_down) {
-                JumpTheStart();
-            }
+        if (gCountdown != 0 && !c->keys.change_down) {
+            JumpTheStart();
         }
-        if (gCar_flying) {
-            if (KeyIsDownNoMouldiness(14)) {
-                keys.up = 1;
-            }
-            if (KeyIsDownNoMouldiness(12)) {
-                keys.down = 1;
-            }
+    }
+    if (gCar_flying) {
+        if (KeyIsDownNoMouldiness(14)) {
+            keys.up = 1;
         }
-        if (KeyIsDownNoMouldiness(59)) {
-            if (!gEntering_message) {
-                keys.horn = 1;
-            }
+        if (KeyIsDownNoMouldiness(12)) {
+            keys.down = 1;
+        }
+    }
+    if (KeyIsDownNoMouldiness(59)) {
+        if (!gEntering_message) {
+            keys.horn = 1;
         }
     }
     c->keys = keys;

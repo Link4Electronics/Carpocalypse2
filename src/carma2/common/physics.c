@@ -18,6 +18,16 @@
 #include <brender/brender.h>
 
 #include <stdarg.h>
+
+#ifdef CARPOCALYPSE2_MATCHING
+#if defined(_MSC_VER)
+#define C2_MATCHING_INLINE __inline
+#else
+#define C2_MATCHING_INLINE inline
+#endif
+#else
+#define C2_MATCHING_INLINE
+#endif
 #include "c2_stdlib.h"
 #include "c2_string.h"
 
@@ -444,6 +454,12 @@ int gINT_006940a0;
 
 // GLOBAL: CARMA2_HW 0x006940a4
 int gINT_006940a4;
+
+// GLOBAL: CARMA2_HW 0x0065d008
+br_scalar gFLOAT_0065d008 = 1.f;
+
+// GLOBAL: CARMA2_HW 0x0065d00c
+br_scalar gFLOAT_0065d00c = 1.f;
 
 // GLOBAL: CARMA2_HW 0x00692dd0
 br_scalar gFLOAT_00692dd0;
@@ -1684,7 +1700,7 @@ void C2_HOOK_FASTCALL PhysicsAddObject(tPhysics_object* pParent, tPhysics_object
 
 // FUNCTION: CARMA2_HW 0x004b5fd0
 tPhysics_object* C2_HOOK_FASTCALL PHILGetFirstObject(void) {
-    if (!gPHIL_enabled) {
+    if (gPHIL_enabled) {
         return NULL;
     }
     return gList_collision_infos;
@@ -1692,7 +1708,7 @@ tPhysics_object* C2_HOOK_FASTCALL PHILGetFirstObject(void) {
 
 // FUNCTION: CARMA2_HW 0x004b5ff0
 tPhysics_object* C2_HOOK_FASTCALL PHILGetNextObject(tPhysics_object* pCollision_info) {
-    if (!gPHIL_enabled) {
+    if (gPHIL_enabled) {
         return NULL;
     }
     return pCollision_info->next;
@@ -1973,7 +1989,7 @@ int C2_HOOK_FASTCALL PHILAddObject(tPhysics_object* pObject) {
     return 0;
 }
 
-__inline void C2_HOOK_FASTCALL PHILMungeObjects(tPhysics_object* pObjects) {
+C2_MATCHING_INLINE void C2_HOOK_FASTCALL PHILMungeObjects(tPhysics_object* pObjects) {
     tPhysics_object* object;
 
     for (object = pObjects; object != NULL; object = object->next) {
@@ -2004,7 +2020,7 @@ __inline void C2_HOOK_FASTCALL PHILMungeObjects(tPhysics_object* pObjects) {
             if (object_info->field_0xc != 0.f || (object->last_special_volume != NULL && (object_info->field_0x4 & 0x8))) {
                 float drag;
 
-                drag = object_info->field_0xc == 0.f ? 1.0 : object_info->field_0xc;
+                drag = object_info->field_0xc != 0.f ? object_info->field_0xc : 1.0;
                 ProcessDrag(object_info, object, drag);
             }
             if (object_info->field_0x4 & 0x8) {
@@ -2013,11 +2029,11 @@ __inline void C2_HOOK_FASTCALL PHILMungeObjects(tPhysics_object* pObjects) {
 
                     if (!(object->last_special_volume != NULL && object->last_special_volume->viscosity_multiplier > 2.0)
                             && (original_last_special_volume != NULL && original_last_special_volume->viscosity_multiplier > 2.0)) {
-                        ProcessDrag(object_info, object, 1.f);
+                        ProcessDrag(object_info, object, gFLOAT_0065d00c);
                     }
                 }
                 else {
-                    ProcessDrag(object_info, object, 1.f);
+                    ProcessDrag(object_info, object, gFLOAT_0065d008);
                 }
                 if (object_info->field_0x14 != 0.f
                         && object->last_special_volume != NULL
@@ -2035,7 +2051,7 @@ __inline void C2_HOOK_FASTCALL PHILMungeObjects(tPhysics_object* pObjects) {
     }
 }
 
-__inline void C2_HOOK_FASTCALL FlushQueuedAddsAndRemoves(void) {
+C2_MATCHING_INLINE void C2_HOOK_FASTCALL FlushQueuedAddsAndRemoves(void) {
     int i;
 
     for (i = 0; i < gPHIL_count_queued_objects; i++) {
@@ -2077,12 +2093,12 @@ __inline void C2_HOOK_FASTCALL FlushQueuedAddsAndRemoves(void) {
     }
 }
 
-__inline void C2_HOOK_FASTCALL PHILInterpolateObjects(tPhysics_object* pObjects, tU32 pTime) {
+C2_MATCHING_INLINE void C2_HOOK_FASTCALL PHILInterpolateObjects(tPhysics_object* pObjects, tU32 pTime) {
     tPhysics_object *object;
     float dt;
 
     dt = (gPHIL_last_physics_tick - pTime) * 0.001;
-    if (!(dt >= .0f && dt <= .04)) {
+    if (!(dt <= .04 && dt >= .0f)) {
         dt = .0f;
     }
     gOver_shoot = dt > .0f;
@@ -2101,21 +2117,24 @@ void C2_HOOK_FASTCALL PHILDoPhysics(tPhysics_callbacks* pCallbacks, tU32 pLast_t
     tU32 now;
     int iteration;
 
-    if (!gPHIL_enabled) {
+    iteration = 0;
+    if (gPHIL_enabled) {
         return;
     }
-    iteration = 0;
     now = pLast_tick_time + pFrame_period;
     gPHIL_original_activate_passive = pCallbacks->world_callbacks->activate_passive;
     pCallbacks->world_callbacks->activate_passive = PHILActivatePassive;
     gPHIL_callbacks = pCallbacks;
-    if (pLast_tick_time > gPHIL_last_physics_tick) {
+    if (gPHIL_last_physics_tick < pLast_tick_time) {
         gPHIL_last_physics_tick = 40 * (pLast_tick_time / 40);
     }
-    if (now > gPHIL_last_physics_tick) {
+    if (now <= gPHIL_last_physics_tick) {
+        ResetObjectList(gList_collision_infos);
+        PHILInterpolateObjects(gList_collision_infos, now);
+    } else {
         gCrush_deferred = 1;
         gPHIL_mechanics_time_sync = now - gPHIL_last_physics_tick;
-        while (now > gPHIL_last_physics_tick && iteration < 5) {
+        while (gPHIL_last_physics_tick < now && iteration < 5) {
 
             iteration += 1;
             if (pCallbacks->pre_collision != NULL) {
@@ -2126,7 +2145,7 @@ void C2_HOOK_FASTCALL PHILDoPhysics(tPhysics_callbacks* pCallbacks, tU32 pLast_t
             if (gList_collision_infos != NULL) {
                 DoCollisions(&gList_collision_infos, pCallbacks->world_callbacks);
             }
-            gPHIL_munging_objects = 1;
+            gPHIL_munging_objects = 0;
             if (pCallbacks->post_collision != NULL) {
                 pCallbacks->post_collision();
             }
@@ -2135,13 +2154,27 @@ void C2_HOOK_FASTCALL PHILDoPhysics(tPhysics_callbacks* pCallbacks, tU32 pLast_t
             gPHIL_mechanics_time_sync -= 40;
             pLast_tick_time = gPHIL_mechanics_time_sync;
         }
-        PHILInterpolateObjects(gList_collision_infos, now);
+        {
+            tPhysics_object* object;
+            float dt;
+
+            dt = (gPHIL_last_physics_tick - now) * 0.001;
+            if (!(dt <= .04 && dt >= .0f)) {
+                dt = .0f;
+            }
+            gOver_shoot = dt > .0f;
+            for (object = gList_collision_infos; object != NULL; object = object->next) {
+                tPHIL_queued_object_info* object_info;
+
+                object_info = object->field_0x240;
+                if (object_info != NULL && object_info->field_0x8 == 2) {
+                    RepositionObjectGroup(object, -dt);
+                }
+            }
+        }
         ChangedObjectsCallbacks(gList_collision_infos, pCallbacks, pFrame_period);
         gPHIL_mechanics_time_sync = 1;
         gCrush_deferred = 0;
-    } else {
-        ResetObjectList(gList_collision_infos);
-        PHILInterpolateObjects(gList_collision_infos, now);
     }
     pCallbacks->world_callbacks->activate_passive = gPHIL_original_activate_passive;
 }

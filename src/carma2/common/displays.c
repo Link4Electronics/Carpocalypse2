@@ -2201,7 +2201,7 @@ void C2_HOOK_FASTCALL DoInstruments(tU32 pThe_time) {
             }
             if (!gProgram_state.cockpit_on || gProgram_state.cockpit_image_index < 0 || gProgram_state.which_view == eView_forward) {
 
-                gear = (int)gCar_to_view->gear;
+                gear = gCar_to_view->gear;
                 if (gear < 0) {
                     gear = -1;
                 }
