@@ -4318,7 +4318,11 @@ typedef struct tCar_crush_spec {
     float field_0x174;
     undefined field_0x178[0x180 - 0x178];
     float field_0x180;
-    undefined field_0x184[0x1cc - 0x184];
+    undefined field_0x184[0x190 - 0x184];
+    tU16 field_0x190;
+    tU16 field_0x192;
+    tU16 field_0x194;
+    undefined field_0x196[0x1cc - 0x196];
     tCar_crush_vertex_data* field_0x1cc;
     undefined field_0x1d0[28];
     br_vector3 field_0x1ec[6];
@@ -4648,9 +4652,25 @@ typedef struct tPhysics_object {
     undefined field_0x261;
     undefined field_0x262[6];
     tU32 message_time; // 0x268
-    undefined field_0x26c[12];
+    tU8 field_0x26c[8];
+    tU32 field_0x274;
     tS16 field_0x278;
-    undefined field_0x27a[546];
+    tU16 field_0x27a;
+    tU32 field_0x27c;
+    tU8 field_0x280[12];
+    undefined field_0x28c[4];
+    tU16 field_0x290;
+    tU8 field_0x292;
+    undefined field_0x293;
+    undefined4 field_0x294;
+    undefined field_0x298[0x2fc - 0x298];
+    undefined4 field_0x2fc;
+    undefined field_0x300[0x481 - 0x300];
+    tU8 field_0x481;
+    tU16 field_0x482;
+    tCompressed_vector3 field_0x484;
+    tU16 field_0x48a;
+    float field_0x48c[4];
     undefined4 field_0x49c; /* tU32 last_car_car_collision: */
     undefined field_0x4a0[52];
     tU8 drivable_on;
@@ -5045,7 +5065,10 @@ typedef struct tNon_car_spec {
     br_actor* actor;
     undefined field_0x14[4];
     br_scalar break_off_radians_squared;
-    undefined field_0x1c[80];
+    undefined field_0x1c[48];
+    br_vector3 pos;
+    br_vector3 centre_of_mass_world_scale;
+    undefined field_0x64[8];
     int count_shrapnel_materials;
     undefined field_0x70[16];
     tS16 car_ID;

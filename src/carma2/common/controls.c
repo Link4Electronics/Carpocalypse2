@@ -2484,25 +2484,29 @@ void C2_HOOK_FASTCALL PollCarControls(tU32 pTime_difference) {
 
         int temp;
 
-        temp = joystick.left;
-        joystick.left = joystick.right;
-        joystick.right = temp;
-
-        temp = keys.acc;
-        keys.acc = keys.dec;
-        keys.dec = temp;
-
-        temp = keys.left;
-        keys.left = keys.right;
-        keys.right = temp;
-
         temp = joystick.acc;
         joystick.acc = joystick.dec;
         joystick.dec = temp;
 
+        temp = joystick.left;
+        joystick.left = joystick.right;
+        joystick.right = temp;
 
+        {
+            int acc = keys.acc;
+            int dec = keys.dec;
+            keys.dec = acc;
+            keys.acc = dec;
+        }
 
+        {
+            int l = keys.left;
+            int r = keys.right;
+            keys.left = r;
+            keys.right = l;
+        }
     }
+
     if (KeyIsDownNoMouldiness(56) && c->gear >= 0) {
         keys.change_down = 1;
         c->just_changed_gear = 1;

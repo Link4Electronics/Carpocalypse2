@@ -44,6 +44,8 @@ extern void C2_HOOK_FASTCALL SwitchCarModels(tCar_spec* pCar, int pIndex);
 
 // CalcEngineForce
 
+void C2_HOOK_FASTCALL CalcEngineForce(tCar_spec* pCar, br_scalar pDt);
+
 // PrepareCars
 
 // CalcGraphicalWheelStuff
@@ -121,6 +123,8 @@ extern void C2_HOOK_FASTCALL SwitchCarModels(tCar_spec* pCar, int pIndex);
 // NudgeObject
 
 // CalcForce
+
+void C2_HOOK_FASTCALL CalcForce(tCar_spec* pCar, br_scalar pDt);
 
 // DoRevs
 
@@ -427,6 +431,12 @@ float C2_HOOK_STDCALL frac(float pN);
 void C2_HOOK_FASTCALL MakeLiftGoUp(tNon_car_spec* pNon_car);
 
 void C2_HOOK_FASTCALL SetCollisionFlagsAndStuff(tCar_spec* pCar);
+float C2_HOOK_FASTCALL ComputeCarImpact(tCar_spec* pCar, int pDelta, float* pOut);
+void C2_HOOK_FASTCALL SelectCrushNetwork(undefined4* pField, tPhysics_object* pObj, int pMode);
+void C2_HOOK_FASTCALL CrushCarByNetwork(tCar_spec* pCar);
+void C2_HOOK_FASTCALL WeldCarByNetwork(tCar_spec* pCar);
+void C2_HOOK_FASTCALL WeldCarPartial(tCar_spec* pCar);
+void C2_HOOK_FASTCALL UpdateCrushVertices(tCar_spec* pCar, tU8* pField);
 
 void C2_HOOK_FASTCALL AddDrag(tCar_spec* pCar, tPhysics_object* pObject, br_scalar pDt);
 
