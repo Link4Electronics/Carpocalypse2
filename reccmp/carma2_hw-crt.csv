@@ -13,6 +13,7 @@ address,type,name
 0x436850,function,CrushShapeBendFactor
 0x436890,function,CrushShapeFindAxis
 0x4368d0,function,CrushShapeFinishVertex
+0x439c30,stub,DoCrushNetwork
 0x441350,function,GetAverageCrushLevel
 0x4c61c0,function,PhysicsError
 0x4f6de0,function,DrawLine3DThroughBRender

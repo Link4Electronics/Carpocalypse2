@@ -3609,11 +3609,212 @@ void C2_HOOK_FASTCALL SetSmokeLastDamageLevel(tCar_spec* pCar) {
     }
 }
 
-// FUNCTION: CARMA2_HW 0x004f52f0
-float C2_HOOK_FASTCALL BashObject(tPhysics_object* pObject, br_actor* pActor, float pArg3, br_vector3 *pArg4, br_vector3* pArg5, br_vector3* pArg6, int pArg7, int pArg8) {
+#pragma auto_inline(off)
+
+// FUNCTION: CARMA2_HW 0x0043ace0
+float C2_HOOK_FASTCALL ComputeCarImpact(tCar_spec* pCar, int pDelta, float* pOut) {
 
     NOT_IMPLEMENTED();
     return 0.f;
+}
+
+// FUNCTION: CARMA2_HW 0x0049cd90
+void C2_HOOK_FASTCALL SelectCrushNetwork(undefined4* pField, tPhysics_object* pObj, int pMode) {
+
+    NOT_IMPLEMENTED();
+}
+
+float C2_HOOK_FASTCALL DoCrushNetwork(tCar_spec* pCar, int pAmount, float* pOut) {
+
+    NOT_IMPLEMENTED();
+    return 0.f;
+}
+
+// FUNCTION: CARMA2_HW 0x00439c10
+void C2_HOOK_FASTCALL CrushCarByNetwork(tCar_spec* pCar) {
+    float temp;
+
+    DoCrushNetwork(pCar, 0x7d0, &temp);
+}
+
+// FUNCTION: CARMA2_HW 0x0043dce0
+void C2_HOOK_FASTCALL WeldCarByNetwork(tCar_spec* pCar) {
+    tPhysics_object* info;
+    tCar_crush_spec* spec;
+    float temp;
+    tU8 f;
+    int flag;
+    tU32 id_a;
+    tU32 id_b;
+    tU32 id_c;
+    br_vector3 v;
+
+    spec = pCar->car_crush_spec;
+    if (spec->field_0x144 != 0) {
+        tPhysics_object* binfo;
+
+        binfo = pCar->collision_info;
+        f = binfo->field_0x481;
+        {
+            int c1;
+            int c2;
+            if (f & 1) {
+                c1 = (spec->field_0x174 == spec->bend_z_min);
+            } else {
+                c1 = (spec->field_0x174 == spec->bend_z_max);
+            }
+            c2 = ((f & 2) != 0 && spec->field_0x190 == binfo->field_0x482)
+                    || ((f & 4) != 0 && spec->field_0x192 == binfo->field_0x482)
+                    || ((f & 8) != 0 && spec->field_0x194 == binfo->field_0x482);
+            if (c1 & c2) {
+                return;
+            }
+        }
+        DoCrushNetwork(pCar, 0x7d0, &temp);
+    }
+
+    info = pCar->collision_info;
+    id_a = 0;
+    id_b = 0;
+    id_c = 0;
+    v.v[0] = 0.f;
+    v.v[1] = 0.f;
+    v.v[2] = 0.f;
+    if ((info->field_0x481 & 1) != 0) {
+        v.v[2] = spec->bend_z_min;
+        temp = info->bb1.max.v[2];
+        flag = 1;
+    } else {
+        v.v[2] = spec->bend_z_max;
+        temp = info->bb1.min.v[2];
+        flag = 0;
+    }
+    switch (info->field_0x481 >> 1) {
+    case 1:
+        id_a = info->field_0x482;
+        if ((id_a < 0x7ff8 && flag) || (id_a > 0x7ff8 && !flag)) {
+            v.v[1] = info->bb1.min.v[1];
+        } else {
+            v.v[1] = info->bb1.max.v[1];
+        }
+        break;
+    case 2:
+        id_b = info->field_0x482;
+        if ((id_b > 0x7ff8 && flag) || (id_b < 0x7ff8 && !flag)) {
+            v.v[0] = info->bb1.min.v[0];
+        } else {
+            v.v[0] = info->bb1.max.v[0];
+        }
+        break;
+    case 4:
+        id_c = info->field_0x482;
+        v.v[0] = (info->bb1.max.v[0] + info->bb1.min.v[0]) * 0.5f;
+        v.v[1] = (info->bb1.min.v[1] + info->bb1.max.v[1]) * 0.5f;
+        break;
+    }
+    CrushPanelWithForce(pCar, id_a, id_b, id_c, &v, *(tU32*)&temp, 0);
+}
+
+// FUNCTION: CARMA2_HW 0x0043df10
+void C2_HOOK_FASTCALL WeldCarPartial(tCar_spec* pCar) {
+
+    NOT_IMPLEMENTED();
+}
+
+// FUNCTION: CARMA2_HW 0x0043db00
+void C2_HOOK_FASTCALL UpdateCrushVertices(tCar_spec* pCar, tU8* pField) {
+    int i;
+    int j;
+
+    if (pCar->car_crush_spec->field_0x4b8 != 0) {
+        tPhysics_shape* shape;
+        int count;
+
+        shape = pCar->collision_info->shape;
+        count = *pField++;
+        while (shape != NULL && count > 0) {
+            if (shape->common.type == kCollisionShapeType_Polyhedron
+                    || shape->common.type == kCollisionShapeType_Wireframe_Polyhedron) {
+
+                shape->polyhedron.polyhedron.count_points = *pField++;
+                for (i = 0; i < shape->polyhedron.polyhedron.count_points; i++) {
+                    ExpandVector3(&shape->polyhedron.polyhedron.points[i],
+                            (const tCompressed_vector3*)pField, -2.5f, 2.5f);
+                    pField += 6;
+                }
+                count--;
+            }
+            shape = shape->common.next;
+        }
+    } else {
+        pField++;
+        for (i = 0; i < pCar->car_crush_spec->count_shapes; i++) {
+            tCar_crush_shape_info* elem = &pCar->car_crush_spec->field_0x4[i];
+
+            for (j = 0; j < elem->count_points; j++) {
+
+                ExpandVector3(&elem->field_0x18[j].field_0x18, (const tCompressed_vector3*)pField, -2.5f, 2.5f);
+                pField += 6;
+                BrVector3Copy(&elem->field_0x18[j].field_0xc, &elem->field_0x18[j].field_0x18);
+                BrVector3Copy(&elem->field_0x0->polyhedron.points[j], &elem->field_0x18[j].field_0xc);
+            }
+            FillInShape((tPhysics_shape*)elem->field_0x0);
+        }
+    }
+
+    UpdateCollisionObject(pCar->collision_info);
+    pCar->collision_info->bb2.min.v[1] = GetCarOverallBoundsMinY(pCar);
+    pCar->car_crush_spec->field_0x26 = pCar->collision_info->field_0x290;
+    pCar->car_crush_spec->field_0x24 = pCar->car_crush_spec->field_0x26;
+    pCar->car_crush_spec->expand_bounding_box = 0;
+}
+
+// FUNCTION: CARMA2_HW 0x004f4e20
+float C2_HOOK_FASTCALL ApplySmashTriggerEffect(tSmashable_item_spec* pSpec, tPhysics_object* pObject, br_actor* pActor, float pArg3, br_vector3* pArg4, br_vector3* pArg5, br_vector3* pArg6, int* pFlag, int pArg8) {
+
+    NOT_IMPLEMENTED();
+    return 0.f;
+}
+
+// FUNCTION: CARMA2_HW 0x004f5110
+void C2_HOOK_FASTCALL ApplySmashTriggerNumber(tPhysics_object* pObject, undefined4 pArg2, br_scalar pArg3, br_vector3* pArg4, br_vector3* pArg5, br_vector3* pArg6, int pArg7) {
+
+    NOT_IMPLEMENTED();
+}
+
+#pragma auto_inline(on)
+
+// FUNCTION: CARMA2_HW 0x004f52f0
+float C2_HOOK_FASTCALL BashObject(tPhysics_object* pObject, br_actor* pActor, float pArg3, br_vector3 *pArg4, br_vector3* pArg5, br_vector3* pArg6, int pArg7, int pArg8) {
+    float result = -1.f;
+    int flag = 0;
+    char* identifier;
+    tSmashable_item_spec* trigger;
+
+    if (pActor != NULL) {
+        identifier = pActor->identifier;
+        if (identifier != NULL && identifier[0] == '&') {
+            trigger = gSmashable_track_indexable_triggers[10 * (identifier[1] - '0') + (identifier[2] - '0')];
+            if (trigger != NULL) {
+                if ((pArg7 == 0 && (trigger->trigger_object.number.field_0x1 & 1) && identifier[3] != '!')
+                        || (pArg7 == 0 && (trigger->trigger_object.number.field_0x1 & 4) && identifier[3] == '!')
+                        || (pArg7 != 0 && (trigger->trigger_object.number.field_0x1 & 2))) {
+                    gINT_006a3334 = 0;
+                    result = ApplySmashTriggerEffect(trigger, pObject, pActor, pArg3, pArg4, pArg5, pArg6, &flag, pArg8);
+                    if (flag != 0 && pArg8 == 0) {
+                        ApplySmashTriggerNumber(pObject, 0, pArg3, pArg4, pArg5, pArg6, 1);
+                    }
+                }
+            }
+        }
+    }
+    return result;
+}
+
+// FUNCTION: CARMA2_HW 0x004f53e0
+void C2_HOOK_FASTCALL PushObject(tPhysics_object* pObject, br_vector3* pPos, br_vector3* pV, br_vector3* pUp) {
+
+    BashObject(pObject, pObject->actor, BrVector3Length(pUp), pPos, pV, pUp, 1, 0);
 }
 
 // FUNCTION: CARMA2_HW 0x004f1140

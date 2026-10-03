@@ -546,7 +546,7 @@ int C2_HOOK_FASTCALL PHILQueueDetachBit(tPhysics_object* pObject, void* pA, cons
                     gPHIL_object_added = 0;
                     return 4;
                 }
-                memcpy((char*)object_info->object->actor + 0x2c, pA, sizeof(br_matrix34));
+                memcpy(&object_info->object->actor->t.t.mat, pA, sizeof(br_matrix34));
             } else {
                 gPHIL_object_added = 0;
                 return 3;
@@ -1829,7 +1829,7 @@ int C2_HOOK_FASTCALL PHILAddActiveObject(tPhysics_object* pInfo, undefined4* pAr
                 if (object_info->field_0x8 != 1) {
                     return 4;
                 }
-                *(br_matrix34*)((char*)object_info->object->actor + 0x2c) = *(br_matrix34*)pArg2;
+                object_info->object->actor->t.t.mat = *(br_matrix34*)pArg2;
             } else {
                 return 3;
             }
