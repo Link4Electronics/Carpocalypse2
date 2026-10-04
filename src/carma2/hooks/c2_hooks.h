@@ -8,12 +8,30 @@
 #define C2_NORETURN __declspec(noreturn)
 #endif
 #define C2_NORETURN_FUNCPTR
+#ifdef CARPOCALYPSE2_MATCHING
 #define C2_NAKED __declspec(naked)
+#else
+/* x64 MSVC rejects __declspec(naked) (error C2485); only matching builds
+ * (x86 Visual C++ 5) need it, and their asm bodies sit behind
+ * CARPOCALYPSE2_MATCHING anyway. */
+#define C2_NAKED
+#endif
 #define C2_HOOK_NOINLINE __declspec(noinline)
 #else
 #define C2_NORETURN __attribute__ ((__noreturn__))
 #define C2_NORETURN_FUNCPTR C2_NORETURN
+// clang rejects a non-asm body in a naked function outright ("non-ASM
+// statement in naked function is not supported"), with no flag to downgrade
+// it, and every C2_NAKED body a non-MSVC build sees is plain C: the asm
+// bodies sit behind CARPOCALYPSE2_MATCHING, which only Visual C++ 5 reaches.
+// gcc tolerates a C body there, so it keeps the attribute and clang drops it
+// -- the only cost is a normal prologue on functions no non-matching build is
+// reproducing byte for byte anyway.
+#if defined(__clang__)
+#define C2_NAKED
+#else
 #define C2_NAKED __attribute__((__naked__))
+#endif
 #define C2_HOOK_NOINLINE __attribute__((__noinline__))
 #endif
 

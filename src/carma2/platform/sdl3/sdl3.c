@@ -19,6 +19,7 @@
 
 #include "carpocalypse2_macros.h"
 #ifdef SDL_PLATFORM_WINDOWS
+#include <direct.h>
 #include <windows.h>
 #else
 #include <dirent.h>
@@ -467,12 +468,14 @@ int PDFileUnlock(const char *pThe_path) {
 #endif
 }
 
-#ifdef CARPOCALYPSE2_FIX_BUGS
+#if defined(CARPOCALYPSE2_FIX_BUGS) && !defined(SDL_PLATFORM_WINDOWS)
 /* Case-insensitive path resolver for directory enumeration. The retail game
  * hard-codes directory names such as ".../COMMON/BOOM" and path segments that
  * differ in case from what ships on disk (".../COMMON/boom", "DATA" vs "data"),
- * which makes case-sensitive hosts (Linux) enumerate zero files. Resolve each
- * component case-insensitively. Handles redundant separators. */
+ * which makes case-sensitive hosts (Linux) enumerate zero files. Windows gets
+ * neither this resolver nor the dirent.h it is built on: its filesystem is
+ * case-insensitive. Resolve each component case-insensitively. Handles
+ * redundant separators. */
 static int CI_ResolveDirCaseInsensitive(const char* pPath, char* out, size_t out_size) {
     char resolved[256];
     char comp[256];
@@ -534,7 +537,7 @@ void PDEnumPath(const char* path, tEnumPathCallback pCallback, void* data) {
     int count;
     int i;
     char **files;
-#ifdef CARPOCALYPSE2_FIX_BUGS
+#if defined(CARPOCALYPSE2_FIX_BUGS) && !defined(SDL_PLATFORM_WINDOWS)
     char resolved_path[256];
     strncpy(resolved_path, path, sizeof(resolved_path) - 1);
     resolved_path[sizeof(resolved_path) - 1] = '\0';
@@ -550,7 +553,7 @@ void PDEnumPath(const char* path, tEnumPathCallback pCallback, void* data) {
         if (l >= 4 && SDL_strcasecmp(files[i] + l - 4, ".lnk") == 0) {
             continue;
         }
-#ifdef CARPOCALYPSE2_FIX_BUGS
+#if defined(CARPOCALYPSE2_FIX_BUGS) && !defined(SDL_PLATFORM_WINDOWS)
         PathCat(found_path, resolved_path, files[i]);
 #else
         PathCat(found_path, path, files[i]);
@@ -569,7 +572,11 @@ void PDEnumPath(const char* path, tEnumPathCallback pCallback, void* data) {
 }
 
 int PDmkdir(const char *path) {
+#ifdef SDL_PLATFORM_WINDOWS
+    return _mkdir(path);
+#else
     return mkdir(path, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
+#endif
 }
 
 void MAMSUnlock(void **pPtr) {

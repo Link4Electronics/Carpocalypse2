@@ -20,6 +20,10 @@
 #include <string.h>
 #include <time.h>
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
 #include "smacker.h"
 
 #define SMACK_MAX_HANDLES 4
@@ -37,10 +41,19 @@ static struct _SMACK gSmacks[SMACK_MAX_HANDLES];
 static smack_internal gSmackInternals[SMACK_MAX_HANDLES];
 
 static unsigned long smack_ticks(void) {
+#ifdef _WIN32
+    /* The UCRT has no clock_gettime/CLOCK_MONOTONIC; GetTickCount() is the
+     * Win32 equivalent (32-bit, wraps after ~49.7 days of uptime, like the
+     * original smackw32.dll). All tick arithmetic below is mod 2^32 anyway,
+     * so start/due/now wrap consistently as long as a video is shorter than
+     * the wrap period. */
+    return (unsigned long)GetTickCount();
+#else
     struct timespec ts;
 
     clock_gettime(CLOCK_MONOTONIC, &ts);
     return (unsigned long)((unsigned long)ts.tv_sec * 1000ul + (unsigned long)ts.tv_nsec / 1000000ul);
+#endif
 }
 
 static smack_internal* smack_internal_from_handle(HSMACK handle) {

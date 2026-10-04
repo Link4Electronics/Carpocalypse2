@@ -1,0 +1,451 @@
+#!/usr/bin/env bash
+# Bundle a built Android native library into a signed APK.
+#
+#
+# Bundle the SDL3 sources (they carry org.libsdl.app.*, the Java side of the
+# port) with the native libraries, rename the game library to libmain.so --
+# SDLActivity.getLibraries() loads {"SDL3", "main"} by default -- and sign.
+#
+# Signing. Android identifies an app by package name AND signing certificate,
+# so two APKs signed with different keys are two different apps: installing
+# one over the other is refused with INSTALL_FAILED_UPDATE_INCOMPATIBLE, and
+# the only way past it is an uninstall, which erases the app's private
+# storage (including anything the game wrote under DATA/).
+#
+# Pass a keystore (flags below, or CARPOCALYPSE2_ANDROID_KEYSTORE /
+# _KEYSTORE_PASS / _KEY_ALIAS / _KEY_PASS in the environment) and every
+# release signed with it updates in place. With none, this falls back to the
+# local debug keystore, generating one if the machine has none -- fine for a
+# build you install yourself, wrong for anything a player is handed, because
+# a fresh CI runner generates a fresh key on every run.
+#
+# --expect-cert is the SHA-256 the finished APK's certificate must have
+# (CARPOCALYPSE2_ANDROID_EXPECT_CERT in the environment). Signing succeeds
+# with whatever key it is handed, so without this a wrong keystore, a wrong
+# alias or a truncated secret all produce a perfectly valid APK that no
+# existing install will accept -- a failure only visible to the player on the
+# day they try to update.
+#
+# Requires the Android SDK (platforms/android-35, build-tools) at SDK_ROOT and
+# a JDK (javac, keytool) on PATH.
+#
+# Usage:
+#   bundle-android.sh --lib <path/to/libcarpocalypse2.so> \
+#                     --version <version-string> \
+#                     --version-code <integer> \
+#                     --arch <arm64-v8a> \
+#                     --build-dir <cmake-build-dir> \
+#                     --sdk-root <android-sdk> \
+#                     --sdl3-java-src <path-to-sdl3-source-checkout> \
+#                     --output-dir <where-to-drop-the-apk> \
+#                     [--sdl3-lib <path/to/libSDL3.so>] \
+#                     [--cxx-shared-lib <path/to/libc++_shared.so>] \
+#                     [--keystore <file> --keystore-pass <pass> \
+#                      --key-alias <alias> [--key-pass <pass>]] \
+#                     [--expect-cert <sha256>]
+#
+#   bundle-android.sh --help
+#
+# Produces: <output-dir>/carpocalypse2-<version>-android-<arch>.apk
+set -euo pipefail
+
+LIB_PATH=""
+VERSION=""
+VERSION_CODE=""
+ARCH="arm64-v8a"
+BUILD_DIR=""
+SDK_ROOT=""
+SDL3_JAVA_SRC=""
+SDL3_LIB=""
+CXX_SHARED_LIB=""
+OUTPUT_DIR=""
+KEYSTORE="${CARPOCALYPSE2_ANDROID_KEYSTORE:-}"
+KEYSTORE_PASS="${CARPOCALYPSE2_ANDROID_KEYSTORE_PASS:-}"
+KEY_ALIAS="${CARPOCALYPSE2_ANDROID_KEY_ALIAS:-}"
+KEY_PASS="${CARPOCALYPSE2_ANDROID_KEY_PASS:-}"
+EXPECT_CERT="${CARPOCALYPSE2_ANDROID_EXPECT_CERT:-}"
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --lib) LIB_PATH="$2"; shift 2 ;;
+        --version) VERSION="$2"; shift 2 ;;
+        --version-code) VERSION_CODE="$2"; shift 2 ;;
+        --arch) ARCH="$2"; shift 2 ;;
+        --build-dir) BUILD_DIR="$2"; shift 2 ;;
+        --sdk-root) SDK_ROOT="$2"; shift 2 ;;
+        --sdl3-java-src) SDL3_JAVA_SRC="$2"; shift 2 ;;
+        --sdl3-lib) SDL3_LIB="$2"; shift 2 ;;
+        --cxx-shared-lib) CXX_SHARED_LIB="$2"; shift 2 ;;
+        --output-dir) OUTPUT_DIR="$2"; shift 2 ;;
+        --keystore) KEYSTORE="$2"; shift 2 ;;
+        --keystore-pass) KEYSTORE_PASS="$2"; shift 2 ;;
+        --key-alias) KEY_ALIAS="$2"; shift 2 ;;
+        --key-pass) KEY_PASS="$2"; shift 2 ;;
+        --expect-cert) EXPECT_CERT="$2"; shift 2 ;;
+        -h|--help)
+            sed -n '/^# Usage:/,/^set -e/p' "$0" | sed 's/^# \?//' | head -n -1
+            exit 0
+            ;;
+        *) echo "Unknown argument: $1" >&2; exit 2 ;;
+    esac
+done
+
+for var in LIB_PATH VERSION VERSION_CODE BUILD_DIR SDK_ROOT OUTPUT_DIR; do
+    if [[ -z "${!var}" ]]; then
+        echo "bundle-android.sh: missing required arg: ${var,,}" >&2
+        exit 2
+    fi
+done
+
+if [[ -z "$SDL3_JAVA_SRC" ]]; then
+    echo "bundle-android.sh: missing required arg: sdl3-java-src" >&2
+    exit 2
+fi
+
+if [[ ! -f "$LIB_PATH" ]]; then
+    echo "bundle-android.sh: native lib not found at $LIB_PATH" >&2
+    exit 1
+fi
+
+if [[ ! "$VERSION_CODE" =~ ^[0-9]+$ ]] || [[ "$VERSION_CODE" -le 0 ]]; then
+    echo "bundle-android: --version-code must be a positive integer, got '$VERSION_CODE'" >&2
+    echo "  (the CI job passes the commit count: git rev-list --count HEAD)" >&2
+    exit 2
+fi
+
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+PACKAGE="com.carpocalypse2.game"
+LIB_NAME="libmain.so"
+ARTIFACT_NAME="carpocalypse2-${VERSION}-android-${ARCH}"
+ARTIFACT_APK="${OUTPUT_DIR}/${ARTIFACT_NAME}.apk"
+
+# Nothing may leave an APK behind from a run that failed anywhere along the
+# way: a stale file in the output directory would upload as if the current
+# build had produced it. The EXIT trap covers every exit path, explicit ones
+# included.
+cleanup_on_failure() {
+    rc=$?
+    if [ "$rc" -ne 0 ] && [ -f "$ARTIFACT_APK" ]; then
+        echo "[bundle-android] removing $ARTIFACT_APK (this run failed)" >&2
+        rm -f "$ARTIFACT_APK" || true
+    fi
+}
+trap cleanup_on_failure EXIT
+
+echo "[bundle-android] lib:        $LIB_PATH"
+echo "[bundle-android] version:    $VERSION (versionCode $VERSION_CODE)"
+echo "[bundle-android] arch:       $ARCH"
+echo "[bundle-android] artifact:   $ARTIFACT_APK"
+
+# Locate Android SDK tools
+BUILD_TOOLS=$(find "$SDK_ROOT/build-tools" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | sort -V | tail -1 || true)
+if [[ -z "$BUILD_TOOLS" ]]; then
+    echo "bundle-android: no build-tools found under $SDK_ROOT/build-tools/" >&2
+    echo "  install one with: sdkmanager \"build-tools;35.0.0\"" >&2
+    exit 1
+fi
+AAPT="$BUILD_TOOLS/aapt"
+ZIPALIGN="$BUILD_TOOLS/zipalign"
+APKSIGNER="$BUILD_TOOLS/apksigner"
+
+for tool in "$AAPT" "$ZIPALIGN" "$APKSIGNER"; do
+    if [[ ! -x "$tool" ]]; then
+        echo "bundle-android: required tool not found: $tool" >&2
+        exit 1
+    fi
+done
+
+# android.jar for javac/d8/aapt. Default to the platform the CI job installs;
+# ANDROID_JAR overrides it (a newer platform compiles the same sources, the
+# manifest's uses-sdk still decides what the device is asked to run).
+ANDROID_JAR="${ANDROID_JAR:-$SDK_ROOT/platforms/android-35/android.jar}"
+if [[ ! -f "$ANDROID_JAR" ]]; then
+    echo "bundle-android: android.jar not found at $ANDROID_JAR" >&2
+    echo "  install one with: sdkmanager \"platforms;android-35\"" >&2
+    exit 1
+fi
+
+# Fresh staging directory
+STAGING="${OUTPUT_DIR}/apk-staging"
+rm -rf "$STAGING"
+mkdir -p "$STAGING/lib/$ARCH"
+mkdir -p "$STAGING/res/values"
+
+# 1. Place native libraries
+cp "$LIB_PATH" "$STAGING/lib/$ARCH/$LIB_NAME"
+# Bundle every shared library SDL3 installed (libSDL3.so plus any companion
+# the build produced): SDLActivity loads "SDL3" before "main", and an APK
+# missing it installs cleanly and then dies at load time.
+if [[ -n "$SDL3_LIB" ]]; then
+    SDL3_LIBDIR="$(dirname "$SDL3_LIB")"
+    if [[ -d "$SDL3_LIBDIR" ]]; then
+        for lib in "$SDL3_LIBDIR"/*.so; do
+            [[ -f "$lib" ]] && cp "$lib" "$STAGING/lib/$ARCH/"
+        done
+    fi
+fi
+# Bundle the C++ runtime -- auto-discovered from the NDK via CMakeCache.txt,
+# falling back to the explicit --cxx-shared-lib flag if provided. The game is
+# C, but ANDROID_STL=c++_shared is what SDL3 and the NDK default against, and
+# either of them can leave a DT_NEEDED on it.
+if [[ -n "$CXX_SHARED_LIB" && -f "$CXX_SHARED_LIB" ]]; then
+    cp "$CXX_SHARED_LIB" "$STAGING/lib/$ARCH/"
+elif [[ -f "$BUILD_DIR/CMakeCache.txt" ]]; then
+    # A cache configured through the NDK toolchain file carries no
+    # CMAKE_ANDROID_NDK, and a grep miss under `set -e` would end the run right
+    # here with no output at all. Let it through: emptiness is handled below,
+    # and the toolchain paths still name the NDK when that variable does not.
+    NDK_ROOT=$(grep -m1 '^CMAKE_ANDROID_NDK:' "$BUILD_DIR/CMakeCache.txt" 2>/dev/null | cut -d= -f2- || true)
+    ABI=$(grep -m1 '^ANDROID_ABI:' "$BUILD_DIR/CMakeCache.txt" 2>/dev/null | cut -d= -f2- || true)
+    if [[ -z "$NDK_ROOT" ]]; then
+        NDK_AR=$(grep -m1 '^CMAKE_AR:' "$BUILD_DIR/CMakeCache.txt" 2>/dev/null | cut -d= -f2- || true)
+        [[ "$NDK_AR" == */toolchains/* ]] && NDK_ROOT="${NDK_AR%%/toolchains/*}"
+    fi
+    ABI="${ABI:-$ARCH}"
+    if [[ -n "$NDK_ROOT" && -n "$ABI" ]]; then
+        case "$ABI" in
+            arm64-v8a)   NDK_TARGET="aarch64-linux-android" ;;
+            armeabi-v7a) NDK_TARGET="arm-linux-androideabi" ;;
+            x86_64)      NDK_TARGET="x86_64-linux-android" ;;
+            x86)         NDK_TARGET="i686-linux-android" ;;
+            *)           NDK_TARGET="" ;;
+        esac
+        case "$(uname -s)" in
+            Linux)  HOST_TAG="linux-x86_64" ;;
+            Darwin) HOST_TAG="darwin-x86_64" ;;
+            *)      HOST_TAG="" ;;
+        esac
+        if [[ -n "$NDK_TARGET" && -n "$HOST_TAG" ]]; then
+            CXX_SHARED_LIB="${NDK_ROOT}/toolchains/llvm/prebuilt/${HOST_TAG}/sysroot/usr/lib/${NDK_TARGET}/libc++_shared.so"
+            if [[ -f "$CXX_SHARED_LIB" ]]; then
+                echo "[bundle-android] bundling: $CXX_SHARED_LIB"
+                cp "$CXX_SHARED_LIB" "$STAGING/lib/$ARCH/"
+            fi
+        fi
+    fi
+fi
+
+# An APK missing a library the native code links against installs cleanly and
+# then dies at load time, which is a worse failure than not building at all.
+if grep -aq 'libc++_shared\.so' "$LIB_PATH" 2>/dev/null \
+   && [[ ! -f "$STAGING/lib/$ARCH/libc++_shared.so" ]]; then
+    echo "bundle-android: $LIB_PATH links against libc++_shared.so, which could" >&2
+    echo "  not be located from the build directory. Pass it explicitly with" >&2
+    echo "  --cxx-shared-lib <path to libc++_shared.so>." >&2
+    exit 1
+fi
+
+# The NDK compiles with -g by default, so a Release build still carries debug
+# info: most of every library's size, and not what a crash report needs -- the
+# symbol table stays, which is what names the frames in a tombstone.
+STRIP_TOOL=$(grep -m1 '^CMAKE_STRIP:' "$BUILD_DIR/CMakeCache.txt" 2>/dev/null | cut -d= -f2- || true)
+if [[ -z "$STRIP_TOOL" || ! -x "$STRIP_TOOL" ]]; then
+    echo "bundle-android: no strip tool in $BUILD_DIR/CMakeCache.txt (CMAKE_STRIP)," >&2
+    echo "  so the libraries would ship with their debug info." >&2
+    exit 1
+fi
+for lib in "$STAGING/lib/$ARCH"/*.so; do
+    before=$(wc -c < "$lib" | tr -d ' ')
+    "$STRIP_TOOL" --strip-debug "$lib"
+    echo "[bundle-android] stripped debug info: $(basename "$lib") $before -> $(wc -c < "$lib" | tr -d ' ') bytes"
+done
+
+# 1b. App icon -- resolvable as @mipmap/ic_launcher in the manifest
+ICON_SRC="$REPO_ROOT/packaging/android/ic_launcher.png"
+if [[ ! -f "$ICON_SRC" ]]; then
+    echo "bundle-android: missing $ICON_SRC (the committed app icon; regenerate it from packaging/icon_source.png)" >&2
+    exit 1
+fi
+mkdir -p "$STAGING/res/mipmap-xxxhdpi"
+cp "$ICON_SRC" "$STAGING/res/mipmap-xxxhdpi/ic_launcher.png"
+
+# 2. AndroidManifest.xml -- resolve @string references from the manifest
+PRODUCT_NAME="${CARPOCALYPSE2_PRODUCT_NAME:-Carpocalypse2}"
+cat > "$STAGING/res/values/strings.xml" <<EOF
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">${PRODUCT_NAME}</string>
+    <string name="version_name">${VERSION}</string>
+</resources>
+EOF
+
+cp "$REPO_ROOT/packaging/android/AndroidManifest.xml" "$STAGING/AndroidManifest.xml"
+
+# The manifest keeps a literal versionCode so it stays a valid manifest to read
+# and to build by hand; the real value is substituted here. Checked rather than
+# assumed: a manifest edit that renamed or reformatted the attribute would
+# otherwise ship every build as version 1 again, silently.
+# [0-9][0-9]* rather than [0-9]\+: the latter is a GNU extension to basic
+# regular expressions, so on a BSD userland it matches a literal + and this
+# substitution quietly leaves the manifest saying 1.
+if ! grep -q 'android:versionCode="[0-9][0-9]*"' "$STAGING/AndroidManifest.xml"; then
+    echo "bundle-android: no android:versionCode to substitute in the manifest" >&2
+    exit 1
+fi
+sed -i.bak "s/android:versionCode=\"[0-9][0-9]*\"/android:versionCode=\"${VERSION_CODE}\"/" \
+    "$STAGING/AndroidManifest.xml"
+rm -f "$STAGING/AndroidManifest.xml.bak"
+# The grep above says an attribute was there to replace, not that the replacing
+# happened. Those are different failures and only this one is silent.
+if ! grep -q "android:versionCode=\"${VERSION_CODE}\"" "$STAGING/AndroidManifest.xml"; then
+    echo "bundle-android: the versionCode substitution did not take" >&2
+    exit 1
+fi
+if ! grep -q "package=\"${PACKAGE}\"" "$STAGING/AndroidManifest.xml"; then
+    echo "bundle-android: manifest package is not ${PACKAGE}" >&2
+    exit 1
+fi
+
+# 3. Compile SDL Java sources (plus helpers from packaging/android/java/, if
+# the tree ever grows any) into classes.dex
+echo "[bundle-android] compiling Java to DEX..."
+SDL_JAVA_DIR="${SDL3_JAVA_SRC}/android-project/app/src/main/java"
+REPO_JAVA_DIR="$REPO_ROOT/packaging/android/java"
+D8="$BUILD_TOOLS/d8"
+if ! command -v javac >/dev/null 2>&1; then
+    echo "bundle-android: javac not on PATH (install a JDK, e.g. setup-java 17)" >&2
+    exit 1
+fi
+# Gather SDL sources and repo-local helpers. An array rather than a
+# space-joined string: javac wants one argument per file either way, and a
+# path with a space in it must not be split into two nonexistent files.
+JAVA_SEARCH=()
+if [[ -d "$SDL_JAVA_DIR" ]]; then JAVA_SEARCH+=("$SDL_JAVA_DIR"); fi
+if [[ -d "$REPO_JAVA_DIR" ]]; then JAVA_SEARCH+=("$REPO_JAVA_DIR"); fi
+JAVA_FILES=()
+if [[ ${#JAVA_SEARCH[@]} -gt 0 ]]; then
+    mapfile -t JAVA_FILES < <(find "${JAVA_SEARCH[@]}" -name '*.java' 2>/dev/null)
+fi
+if [[ ${#JAVA_FILES[@]} -eq 0 ]]; then
+    echo "bundle-android: no Java sources under $SDL_JAVA_DIR" >&2
+    echo "  --sdl3-java-src must point at an SDL3 source checkout" >&2
+    echo "  (android-project/app/src/main/java lives there; it is not installed" >&2
+    echo "  by cmake --install)." >&2
+    exit 1
+fi
+if [[ ! -x "$D8" ]]; then
+    echo "bundle-android: d8 not found at $D8" >&2
+    exit 1
+fi
+mkdir -p "$STAGING/obj"
+# --release 17: pin the class file version instead of inheriting whatever
+# JDK is installed. d8 accepts class files up to a version it knows and
+# fails on newer ones, so a JDK bump (or a local build with JDK 21+) would
+# otherwise turn into an opaque dex error; on the CI's setup-java 17 this
+# is a no-op.
+javac --release 17 -d "$STAGING/obj" \
+    -classpath "$ANDROID_JAR" \
+    "${JAVA_FILES[@]}" 2>&1
+mapfile -t CLASS_FILES < <(find "$STAGING/obj" -name '*.class')
+"$D8" --lib "$ANDROID_JAR" \
+    --output "$STAGING" "${CLASS_FILES[@]}" 2>&1
+rm -rf "$STAGING/obj"
+
+# 4. Build APK with aapt
+echo "[bundle-android] packaging APK..."
+"$AAPT" package -f -M "$STAGING/AndroidManifest.xml" \
+    -S "$STAGING/res" \
+    -I "$ANDROID_JAR" \
+    -F "$STAGING/unsigned.apk" 2>&1
+
+# 5. Add classes.dex and the native libs to the APK (store .so uncompressed:
+# android:extractNativeLibs="false" in the manifest requires it, and it is
+# also what makes 16 KB page alignment possible)
+echo "[bundle-android] adding native lib and DEX..."
+cd "$STAGING"
+if [[ -f classes.dex ]]; then
+    "$AAPT" add "unsigned.apk" "classes.dex" 2>&1
+fi
+for lib in "lib/$ARCH/"*.so; do
+    [[ -f "$lib" ]] && "$AAPT" add -0 '' "unsigned.apk" "$lib" 2>&1
+done
+cd "$REPO_ROOT"
+
+# 6. Zipalign (-P 16: align uncompressed .so to 16 KB pages, what Android 15+
+# devices with 16 KB pages require of every loadable ELF)
+echo "[bundle-android] aligning..."
+"$ZIPALIGN" -f -P 16 4 "$STAGING/unsigned.apk" "$STAGING/aligned.apk"
+
+# 7. Sign -- see the header for why the identity of the key matters
+if [[ -n "$KEYSTORE" ]]; then
+    if [[ ! -f "$KEYSTORE" ]]; then
+        echo "bundle-android: keystore not found at $KEYSTORE" >&2
+        exit 1
+    fi
+    if [[ -z "$KEYSTORE_PASS" || -z "$KEY_ALIAS" ]]; then
+        echo "bundle-android: --keystore needs --keystore-pass and --key-alias" >&2
+        exit 1
+    fi
+    # A key with no separate password uses the store's, which is how a keystore
+    # holding one key is usually made.
+    KEY_PASS="${KEY_PASS:-$KEYSTORE_PASS}"
+    echo "[bundle-android] signing with the release key ($KEY_ALIAS)"
+else
+    KEYSTORE="${HOME}/.android/debug.keystore"
+    KEYSTORE_PASS="android"
+    KEY_ALIAS="androiddebugkey"
+    KEY_PASS="android"
+    if [[ ! -f "$KEYSTORE" ]]; then
+        echo "[bundle-android] generating debug keystore..."
+        mkdir -p "${HOME}/.android"
+        keytool -genkey -v -keystore "$KEYSTORE" \
+            -alias "$KEY_ALIAS" -storepass "$KEYSTORE_PASS" -keypass "$KEY_PASS" \
+            -keyalg RSA -keysize 2048 -validity 10000 \
+            -dname "CN=Android Debug,O=Android,C=US" 2>&1
+    fi
+    echo "[bundle-android] signing with the local debug key."
+    echo "[bundle-android] NOTE: this APK can only update another one signed by"
+    echo "[bundle-android]       the same machine's debug key. Do not publish it."
+fi
+
+# pass: puts the password in the argument list, and on Linux that is world
+# readable through /proc/<pid>/cmdline for as long as the process runs. env: is
+# the same string somewhere only this user can read it.
+export CARPA_APKSIGNER_STORE_PASS="$KEYSTORE_PASS"
+export CARPA_APKSIGNER_KEY_PASS="$KEY_PASS"
+"$APKSIGNER" sign --ks "$KEYSTORE" \
+    --ks-pass env:CARPA_APKSIGNER_STORE_PASS \
+    --ks-key-alias "$KEY_ALIAS" \
+    --key-pass env:CARPA_APKSIGNER_KEY_PASS \
+    --out "$ARTIFACT_APK" "$STAGING/aligned.apk"
+unset CARPA_APKSIGNER_STORE_PASS CARPA_APKSIGNER_KEY_PASS
+
+# 8. Verify, and check which key it was signed with.
+#
+# The digest is the app's identity as far as Android is concerned, so a build
+# log that carries it is how anyone can check afterwards that two builds can
+# really update each other -- which is exactly the question nobody could
+# answer about APKs signed by throwaway keys.
+echo "[bundle-android] verifying..."
+"$APKSIGNER" verify "$ARTIFACT_APK" 2>&1
+
+CERT_OUT=$("$APKSIGNER" verify --print-certs "$ARTIFACT_APK" 2>&1)
+CERT_SHA=$(printf '%s\n' "$CERT_OUT" | sed -n 's/.*[Cc]ertificate SHA-256 digest: *//p' |
+    sed -n '1p' | tr '[:upper:]' '[:lower:]')
+if [[ -z "$CERT_SHA" ]]; then
+    echo "bundle-android: signed, but the certificate could not be read back" >&2
+    exit 1
+fi
+echo "[bundle-android] certificate SHA-256: $CERT_SHA"
+
+# Signing is happy with any key it is handed, so the only thing separating the
+# release key from a wrong one is this comparison.
+if [[ -n "$EXPECT_CERT" ]]; then
+    WANT=$(printf '%s' "$EXPECT_CERT" | tr -d ': ' | tr '[:upper:]' '[:lower:]')
+    if [[ "$CERT_SHA" != "$WANT" ]]; then
+        echo "bundle-android: this APK carries a certificate nobody expected." >&2
+        echo "  expected $WANT" >&2
+        echo "  got      $CERT_SHA" >&2
+        echo "  Published, it would tell every existing player that the package" >&2
+        echo "  conflicts with the one they have, and the only way past that is an" >&2
+        echo "  uninstall, which erases their saves. Check the keystore and alias." >&2
+        exit 1
+    fi
+    echo "[bundle-android] certificate is the expected release key."
+fi
+
+# 9. Cleanup
+rm -rf "$STAGING"
+
+APK_SIZE=$(du -h "$ARTIFACT_APK" | cut -f1)
+echo "[bundle-android] done: $ARTIFACT_APK ($APK_SIZE)"

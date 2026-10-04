@@ -83,6 +83,13 @@ foreach(choice IN LISTS CARPOCALYPSE2_PLATFORM_CHOICES)
         set(CARPOCALYPSE2_PLATFORM_${choice} FALSE)
     endif()
 endforeach()
+if(CARPOCALYPSE2_PLATFORM_WIN32)
+    # Also expose the platform choice to the code: common code (controls.c)
+    # must tell the win32 platform apart from a Windows build of the SDL3
+    # platform, because only the former compiles win32/win32_dinput.c and
+    # its DirectInput joystick globals.
+    add_compile_definitions(CARPOCALYPSE2_PLATFORM_WIN32)
+endif()
 
 option(KEEP_ACTIVE_IN_BACKGROUND "Keep the game active when alt-tabbing to another application" OFF)
 cmake_dependent_option(CARPOCALYPSE2_VENDORED "Use vendored dependencies" ON "NOT CARPOCALYPSE2_MATCHING" ON)
@@ -145,6 +152,29 @@ if(CARPOCALYPSE2_WERROR)
     endif()
 endif()
 
+# clang 15/16 made these errors by default rather than warnings, which means
+# the tree does not compile with clang at all today -- with or without
+# CARPOCALYPSE2_WERROR -- and that is the whole toolchain behind the macOS and
+# Android CI legs. Downgrade them to warnings so those legs build and still
+# report the sites: an implicit declaration of a not-yet-recovered function,
+# callback signatures that disagree on a 64-bit return type, pointer types at
+# car.c call sites, a pointer passed where an unsigned int was declared, and a
+# `return 0;` in a void function the original compiler accepted and the
+# matching build must keep (deleting it would change codegen). gcc already
+# treats all of these as warnings, so its leg keeps CARPOCALYPSE2_WERROR
+# meaningful. Remove entries as the sites are fixed; `-Wno-error` on its own
+# does not downgrade a diagnostic clang makes an error by default, each
+# category has to be named.
+if(CMAKE_C_COMPILER_ID MATCHES "Clang")
+    add_compile_options(
+        -Wno-error=implicit-function-declaration
+        -Wno-error=incompatible-function-pointer-types
+        -Wno-error=incompatible-pointer-types
+        -Wno-error=return-mismatch
+        -Wno-error=int-conversion
+    )
+endif()
+
 if(KEEP_ACTIVE_IN_BACKGROUND)
     add_compile_definitions(KEEP_ACTIVE_IN_BACKGROUND)
 endif()
@@ -162,7 +192,8 @@ add_subdirectory(src/brender)
 add_subdirectory(src/carma2)
 # The launcher is plain Win32 code (windows.h, DirectInput); it cannot be built
 # natively on Linux. The MinGW toolchain builds it because WIN32 is defined there.
-if(WIN32)
+# 64-bit Windows skips it: it links the vendored dxsdk x86 import libraries.
+if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
     add_subdirectory(src/launcher)
 endif()
 

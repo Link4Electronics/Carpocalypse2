@@ -1,36 +1,76 @@
 name: CI
 
-# Runs on PRs and manual dispatch only; pushes to main are covered by the
-# reccmp-report workflow.
+# Runs on PRs, version tags, and manual dispatch. Version tags are bare
+# numbers (0.58, 1.0, ...); the v* pattern is kept so a prefixed tag builds
+# too instead of silently doing nothing. (Pushes to main trigger nothing
+# here: reccmp-report used to cover them but is currently disabled.) The
+# tags add the release legs: zip packaging inside the build job (Windows and
+# macOS), the AppImage job, and APK packaging inside the Android job -- all
+# of which build only on tags and dispatch -- and the release job attaches
+# what they produced to the GitHub Release for the tag.
 on:
+  push:
+    tags:
+      - '[0-9]*'
+      - 'v*'
   pull_request:
   workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref || github.run_id }}
+  cancel-in-progress: true
 
 jobs:
   build:
     name: "CI ${{ matrix.platform.name }}"
     runs-on: "${{ matrix.platform.os }}"
+    timeout-minutes: 45
     strategy:
       fail-fast: false
       matrix:
         platform:
+          # The two portability legs: the SDL3 port, each on the runner's
+          # own toolchain. SDL3 itself comes from ./.github/actions/setup-sdl3
+          # -- pinned by .github/sdl3-version.txt, cached across runs, built
+          # from source only on a miss.
+          #
+          # What is deliberately NOT here any more:
+          #  - MSVC5 matching build: an exact duplicate of the reccmp-report
+          #    workflow, which owns reccmp and the report. That workflow is
+          #    where the matching build lives (re-enable it there rather than
+          #    adding a second copy back).
+          #  - MinGW and MSVC x86 (original Win32 target, werror on): both
+          #    tripped warnings-as-errors the tree still emits -- MinGW on
+          #    the known gcc list, MSVC on C4244 double -> br_scalar in
+          #    s3/3d.c. The Win32 target still gets compiled by reccmp-
+          #    report's matching build; a second, warning-fatal copy of it
+          #    here was red more often than green.
+          #  - the plain Linux matrix leg: packaging/make-appimage.sh in the
+          #    appimage job below is the Linux build.
+          #
+          # werror stays off on purpose: the tree still trips warnings (gcc
+          # reports seven -- pointer-to-int casts in brender's loader, a
+          # #pragma optimize gcc ignores, a parenthesised comparison, an
+          # unused variable, strncpy truncation in sdl3.c -- and clang made
+          # five more categories hard errors plus a naked function body it
+          # rejected outright; see the Clang block in CMakeLists.txt and
+          # C2_NAKED in c2_hooks.h, which downgrade those so a clang build
+          # exists at all). Turning a leg's werror on is the last step of
+          # clearing its list, not the first.
           - {
-              name: "MinGW",
-              os: ubuntu-latest,
-              werror: true,
-              cmake-args: '-DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/mingw32.cmake',
+              name: "macOS",
+              os: macos-latest,
+              sdl3: true,
+              werror: false,
+              cmake-args: '-DCARPOCALYPSE2_PLATFORM=SDL3 -DCMAKE_BUILD_TYPE=Release',
             }
           - {
-              name: "MSVC",
+              name: "Windows SDL3",
               os: windows-latest,
-              werror: true,
-            }
-          - {
-              name: "MSVC5",
-              os: windows-2025-vs2026,
-              msvc5: true,
-              # Matching build: original compiler, original flags.
-              cmake-args: '-DCARPOCALYPSE2_MATCHING=TRUE -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_C_COMPILER=cl -DCMAKE_CXX_COMPILER=cl',
+              sdl3: true,
+              msvc-arch: x64,
+              werror: false,
+              cmake-args: '-DCARPOCALYPSE2_PLATFORM=SDL3 -DCMAKE_BUILD_TYPE=Release',
             }
     defaults:
       run:
@@ -39,49 +79,29 @@ jobs:
       - name: Fetch carpocalypse2 sources
         uses: actions/checkout@v6
 
-      # -- MSVC5 (Visual C++ 97 SP3): the original matching toolchain ------
-      - name: Fetch MSVC5 (Visual C++ 97 SP3)
-        if: ${{ !!matrix.platform.msvc5 }}
-        uses: actions/checkout@v6
-        with:
-          repository: archaic-msvc/msvc500sp3
-          path: msvc500
-
-      - name: Setup MSVC5 (Visual C++ 97 SP3)
-        if: ${{ !!matrix.platform.msvc5 }}
-        shell: cmd
-        run: |
-          echo INCLUDE=%GITHUB_WORKSPACE%\msvc500\include;%GITHUB_WORKSPACE%\msvc500\atl\include;%GITHUB_WORKSPACE%\msvc500\mfc\include>>%GITHUB_ENV%
-          echo LIB=%GITHUB_WORKSPACE%\msvc500\lib;%GITHUB_WORKSPACE%\msvc500\mfc\lib>>%GITHUB_ENV%
-          echo %GITHUB_WORKSPACE%\msvc500\bin>>%GITHUB_PATH%
-          echo %GITHUB_WORKSPACE%\msvc500\redist>>%GITHUB_PATH%
-
       # -- Toolchain plumbing ----------------------------------------------
       - name: Set up Ninja
         uses: ./.github/actions/setup-ninja
 
-      - name: Setup modern MSVC (x86)
-        if: ${{ matrix.platform.name == 'MSVC' }}
+      # Before SDL3 on the Windows SDL3 leg: that action compiles SDL3 with
+      # cl, so the developer environment has to exist by then.
+      - name: Setup modern MSVC
+        if: ${{ !!matrix.platform.msvc-arch }}
         uses: TheMrMilchmann/setup-msvc-dev@v4
         with:
-          arch: x86
+          arch: ${{ matrix.platform.msvc-arch }}
 
-      - name: Install MinGW (i686 cross)
-        if: ${{ matrix.platform.name == 'MinGW' }}
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y gcc-mingw-w64-i686 g++-mingw-w64-i686
-
-      - name: Set up Python (reccmp)
-        uses: actions/setup-python@v5
-        with:
-          python-version: 3.x
+      - name: Install SDL3
+        if: ${{ !!matrix.platform.sdl3 }}
+        id: sdl
+        uses: ./.github/actions/setup-sdl3
 
       # -- Build -------------------------------------------------------------
       - name: Configure (CMake)
         run: |
           cmake -S . -B build -GNinja \
             ${{ matrix.platform.cmake-args }} \
+            -DCMAKE_PREFIX_PATH="${{ steps.sdl.outputs.prefix }}" \
             -DCARPOCALYPSE2_VENDORED=ON \
             -DCARPOCALYPSE2_WERROR=${{ (matrix.platform.werror && 'ON') || 'OFF' }}
 
@@ -89,34 +109,428 @@ jobs:
         run: |
           cmake --build build
 
-      # -- reccmp (MSVC5 leg only) -------------------------------------------
-      - name: Install reccmp
-        if: ${{ matrix.platform.msvc5 }}
+      # -- Zip packaging: tags and manual dispatch only -----------------------
+      # Both legs link SDL3 shared (setup-sdl3 builds nothing else), so each
+      # zip carries the runtime next to the binary: SDL3.dll plus the
+      # redistributable VC runtime on Windows, the install-name-rewritten
+      # libSDL3 on macOS. Like every other package here, nothing from the
+      # original game goes inside; the README says where DATA/ belongs.
+      - name: Bundle Windows zip
+        if: ${{ (startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch') && runner.os == 'Windows' }}
+        shell: pwsh
         run: |
-          python -m pip -q install reccmp
+          $ErrorActionPreference = 'Stop'
+          $stage = 'dist/carpocalypse2-windows-x86_64'
+          New-Item -ItemType Directory -Force $stage | Out-Null
+          Copy-Item build/carpocalypse2.exe $stage/
+          Copy-Item '${{ steps.sdl.outputs.prefix }}\bin\SDL3.dll' $stage/
 
-      - name: Download original binary
-        if: ${{ matrix.platform.msvc5 }}
+          # The /MD build needs the VC runtime on a machine without Visual
+          # Studio. The redist tree is what exists to be copied from; the
+          # Tools tree next to it is not redistributable.
+          $crt = Get-Item 'C:\Program Files\Microsoft Visual Studio\*\*\VC\Redist\MSVC\*\x64\Microsoft.VC*.CRT' -ErrorAction SilentlyContinue |
+            Select-Object -First 1
+          if (-not $crt) {
+            throw 'no VC CRT redist directory found on this runner'
+          }
+          Copy-Item (Join-Path $crt.FullName '*.dll') $stage/
+
+          Copy-Item LICENSE $stage/
+          @(
+            'Carpocalypse2 - Windows x64 (SDL3)'
+            ''
+            'This archive ships no original Carmageddon II data (see the'
+            'project README, Legal section). Extract it, copy the DATA/'
+            'directory from a legally obtained Carmageddon II install next'
+            'to carpocalypse2.exe, and start the game. MUSIC/ with'
+            'Track02.ogg ... Track08.ogg is optional. File names are'
+            'matched without regard to letter case.'
+            ''
+            'The binary is unsigned: SmartScreen may ask for More info ->'
+            'Run anyway.'
+          ) | Set-Content -Encoding Ascii (Join-Path $stage 'README.txt')
+          Compress-Archive -Force -Path $stage -DestinationPath 'dist/carpocalypse2-windows-x86_64.zip'
+
+      - name: Bundle macOS zip
+        if: ${{ (startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch') && runner.os == 'macOS' }}
+        id: pkg
         run: |
-          mkdir originals
-          # Only the CARMA2_HW target is compared, which needs just
-          # CARMA2_HW.EXE. Fetched from a public archive.org item; the sha256
-          # must match reccmp-project.yml.
-          curl -fLSs -o originals/CARMA2_HW.EXE \
-            "https://archive.org/download/carma-2-hw/CARMA2_HW.EXE"
-          echo "9b896c2cbb170c01b3e9f904ce5e1808db29fe5b51184a5d55a6d19b1799b58d  originals/CARMA2_HW.EXE" | sha256sum -c -
+          set -eu
+          arch="$(uname -m)"
+          echo "arch=${arch}" >> "$GITHUB_OUTPUT"
+          stage="dist/carpocalypse2-macos-${arch}"
+          mkdir -p "${stage}"
+          cp build/carpocalypse2 "${stage}/"
+          # Every libSDL3 the shared build installed, symlinks kept, so the
+          # name the executable loads and the versioned file behind it
+          # arrive together.
+          cp -RP "${{ steps.sdl.outputs.prefix }}/lib"/libSDL3* "${stage}/"
+          # The executable still points at the runner's temp prefix.
+          # Repoint every SDL3 reference at the copy next to it so the zip
+          # runs anywhere; install_name_tool re-signs the arm64 binary
+          # ad hoc as it goes.
+          otool -L "${stage}/carpocalypse2" | awk 'NR > 1 { print $1 }' |
+            while IFS= read -r ref; do
+              case "${ref}" in
+                *libSDL3*)
+                  install_name_tool -change "${ref}" "@executable_path/$(basename "${ref}")" "${stage}/carpocalypse2" ;;
+              esac
+            done
+          # Nothing may still reference the build prefix.
+          if otool -L "${stage}/carpocalypse2" "${stage}"/libSDL3*.dylib | grep -F "${RUNNER_TEMP}"; then
+            echo "unbundled SDL3 reference remains in the staged files" >&2
+            exit 1
+          fi
+          cp LICENSE "${stage}/"
+          cat > "${stage}/README.txt" <<'EOF'
+          Carpocalypse2 - macOS (SDL3)
 
-      - name: Detect originals
-        if: ${{ matrix.platform.msvc5 }}
-        run: |
-          reccmp-project detect --what original --search-path originals
+          This archive ships no original Carmageddon II data (see the
+          project README, Legal section). Extract it, copy the DATA/
+          directory from a legally obtained Carmageddon II install next
+          to the carpocalypse2 executable, and start the game. MUSIC/
+          with Track02.ogg ... Track08.ogg is optional. File names are
+          matched without regard to letter case.
 
-      - name: Run reccmp
-        if: ${{ matrix.platform.msvc5 }}
-        working-directory: build
+          The binary is unsigned: if macOS refuses to open it, right-click
+          carpocalypse2 and choose Open.
+          EOF
+          (cd dist && zip -qry "carpocalypse2-macos-${arch}.zip" "carpocalypse2-macos-${arch}")
+
+      - name: Upload Windows artifact
+        if: ${{ (startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch') && runner.os == 'Windows' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: Windows-x86_64
+          path: dist/*.zip
+          if-no-files-found: error
+
+      - name: Upload macOS artifact
+        if: ${{ (startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch') && runner.os == 'macOS' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: macOS-${{ steps.pkg.outputs.arch }}
+          path: dist/*.zip
+          if-no-files-found: error
+
+  # Android, in its own job rather than the matrix: it is a cross-build
+  # against a different libc (Bionic), a different clang and a 32-bit as well
+  # as a 64-bit ABI, none of which the desktop legs see, so it brings its own
+  # toolchain resolution (.github/actions/setup-sdl3-android) instead of the
+  # host SDL3 the matrix legs share.
+  #
+  # The native build gates every PR -- it is the part that can break on a
+  # change to the game or BRender sources. On version tags and manual
+  # dispatch the job goes on to package an APK (packaging/
+  # bundle-android.sh; no Gradle: aapt, javac/d8, zipalign and apksigner
+  # straight from the SDK) and upload it as the Android-<abi> artifact, which
+  # the release job attaches to the GitHub Release. The game links as a
+  # shared library on Android (see src/carma2/platform/CMakeLists.txt); SDL3
+  # is built per ABI with the same 16 KB page-size flags the APK's libraries
+  # must carry.
+  android:
+    name: "CI Android ${{ matrix.abi }}"
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    defaults:
+      run:
         shell: sh
+    strategy:
+      fail-fast: false
+      matrix:
+        # Both ABIs. armeabi-v7a is the only 32-bit build left in this
+        # workflow: a pointer-size or alignment assumption written for the
+        # original x86 game passes the desktop legs and still fails here.
+        include:
+          - { abi: "arm64-v8a" }
+          - { abi: "armeabi-v7a" }
+    steps:
+      - name: Fetch carpocalypse2 sources
+        uses: actions/checkout@v6
+
+      - name: Set up Ninja
+        uses: ./.github/actions/setup-ninja
+
+      - name: Install NDK and SDL3
+        id: sdl
+        uses: ./.github/actions/setup-sdl3-android
+        with:
+          abi: ${{ matrix.abi }}
+
+      - name: Configure (CMake)
         run: |
-          reccmp-reccmp --no-color --target CARMA2_HW \
-            --json reccmp-report.json --json-diet \
-            -T 5162 \
-            -S reccmp-progress.svg
+          cmake -S . -B build -GNinja \
+            -DCMAKE_TOOLCHAIN_FILE="${{ steps.sdl.outputs.ndk }}/build/cmake/android.toolchain.cmake" \
+            -DANDROID_ABI=${{ matrix.abi }} \
+            -DANDROID_PLATFORM=${{ steps.sdl.outputs.api-level }} \
+            -DANDROID_STL=c++_shared \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCARPOCALYPSE2_PLATFORM=SDL3 \
+            -DCARPOCALYPSE2_VENDORED=ON \
+            -DSDL3_DIR="${{ steps.sdl.outputs.sdl3-dir }}" \
+            -DCMAKE_SHARED_LINKER_FLAGS="-Wl,-z,max-page-size=16384 -Wl,-z,common-page-size=16384"
+
+      - name: Build (CMake)
+        run: |
+          cmake --build build
+
+      # -- APK packaging: tags and manual dispatch only -----------------------
+      # javac and keytool come with the JDK; aapt, d8, zipalign and apksigner
+      # come from the SDK's build-tools, and android.jar from platforms. The
+      # NDK step above has already guaranteed the command-line tools (it
+      # installs them when the runner has none), so sdkmanager is there.
+      - name: Set up Java (APK)
+        if: ${{ startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch' }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      # Retried and bounded like every other fetch in this workflow: a stalled
+      # Google endpoint returns no error for a retry count to catch and no
+      # wall clock of its own, so without both it goes quiet until the job
+      # timeout cancels the leg with nothing in the log.
+      - name: Install Android SDK packaging tools
+        if: ${{ startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          SDK="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-/usr/local/lib/android/sdk}}"
+          SDKMANAGER="$(command -v sdkmanager || true)"
+          if [ -z "${SDKMANAGER}" ]; then
+            SDKMANAGER="${SDK}/cmdline-tools/latest/bin/sdkmanager"
+          fi
+          if [ ! -x "${SDKMANAGER}" ]; then
+            echo "no sdkmanager at ${SDKMANAGER}; the NDK step should have installed it" >&2
+            exit 1
+          fi
+          yes | "${SDKMANAGER}" --licenses > /dev/null 2>&1 || true
+          for attempt in 1 2 3; do
+            if timeout -k 30 600 "${SDKMANAGER}" --install \
+                "platforms;android-35" "build-tools;35.0.0" > /dev/null 2>&1; then
+              exit 0
+            fi
+            if [ "${attempt}" = 3 ]; then
+              echo "sdkmanager install failed after 3 attempts" >&2
+              exit 1
+            fi
+            echo "sdkmanager attempt ${attempt} failed; retrying in 10s"
+            sleep 10
+          done
+
+      - name: Bundle APK
+        if: ${{ startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch' }}
+        shell: bash
+        env:
+          # The certificate every published APK has to carry. Absent is a
+          # normal outcome (nobody has generated a key for this project yet),
+          # and the bundler then debug-signs and says so loudly -- that APK
+          # can update nothing and nothing can update it. Add the four
+          # ANDROID_KEYSTORE* secrets and, once the first release key exists,
+          # the ANDROID_EXPECT_CERT variable, to make releases update in
+          # place.
+          CARPOCALYPSE2_ANDROID_KEYSTORE_PASS: ${{ secrets.ANDROID_KEYSTORE_PASS }}
+          CARPOCALYPSE2_ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          CARPOCALYPSE2_ANDROID_KEY_PASS: ${{ secrets.ANDROID_KEY_PASS }}
+          CARPOCALYPSE2_ANDROID_EXPECT_CERT: ${{ vars.ANDROID_EXPECT_CERT }}
+          CARPOCALYPSE2_ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        run: |
+          set -euo pipefail
+          SDK="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-/usr/local/lib/android/sdk}}"
+          SRC="${{ steps.sdl.outputs.src }}"
+          SDL3_VERSION="$(tr -d '[:space:]' < .github/sdl3-version.txt)"
+
+          # The cache covers SDL3's install prefix, not its source tree, and
+          # the Java side of SDL (android-project/) exists only in the source.
+          # A cold build already cloned it; a cache hit has to, because
+          # without those files there is nothing for javac to compile.
+          if [ ! -d "${SRC}/android-project" ]; then
+            rm -rf "${SRC}"
+            for attempt in 1 2 3; do
+              if timeout -k 30 300 git clone --depth 1 --branch "${SDL3_VERSION}" \
+                  https://github.com/libsdl-org/SDL.git "${SRC}"; then
+                break
+              fi
+              echo "SDL3 source clone attempt ${attempt} failed; retrying in 5s"
+              rm -rf "${SRC}"
+              sleep 5
+            done
+            test -d "${SRC}"
+          fi
+
+          # The checkout is shallow (depth 1), so `git rev-list --count` would
+          # answer 1 for every release and Android would see every APK as the
+          # same build. Unshallow on the tag run: the repository is small and
+          # this only happens where an APK is being produced.
+          if git rev-parse --is-shallow-repository | grep -q true; then
+            git fetch --unshallow --tags || git fetch --tags
+          fi
+          # versionName: the tag on a release build, the short hash otherwise.
+          # versionCode: the commit count -- monotonic, unique per build, and
+          # identical for both ABI legs of one run, which is exactly what
+          # Android orders installs by (see bundle-android.sh).
+          VERSION="$(git describe --tags --always)"
+          VERSION_CODE="$(git rev-list --count HEAD)"
+          mkdir -p dist
+
+          # Release key, when the repository has one: the secret is the
+          # base64 of the .jks, decoded here because the bundler takes a
+          # path. Without it the bundler debug-signs and says so.
+          if [ -n "${CARPOCALYPSE2_ANDROID_KEYSTORE_BASE64:-}" ]; then
+            printf '%s' "${CARPOCALYPSE2_ANDROID_KEYSTORE_BASE64}" | base64 -d > "${RUNNER_TEMP}/release.jks"
+            export CARPOCALYPSE2_ANDROID_KEYSTORE="${RUNNER_TEMP}/release.jks"
+          fi
+
+          bash packaging/bundle-android.sh \
+            --lib build/libcarpocalypse2.so \
+            --version "${VERSION}" \
+            --version-code "${VERSION_CODE}" \
+            --arch "${{ matrix.abi }}" \
+            --build-dir build \
+            --sdk-root "${SDK}" \
+            --sdl3-java-src "${SRC}" \
+            --sdl3-lib "${{ steps.sdl.outputs.prefix }}/lib/libSDL3.so" \
+            --output-dir dist
+
+      - name: Upload APK artifact
+        if: ${{ startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: Android-${{ matrix.abi }}
+          path: dist/*.apk
+          if-no-files-found: error
+
+  # The Linux release, as an AppImage only -- the shape dethrace ships: an
+  # Arch container for a fixed userspace, pkgforge's anylinux toolchain
+  # (quick-sharun bundles the libraries, its appimagetool writes the image
+  # and the .zsync), and a monolithic packaging/make-appimage.sh that
+  # installs the distro SDL3, builds, and stages the AppDir. Nothing from the
+  # original game goes inside (this repository ships no game data; the
+  # AppRun hook stages a per-user data directory and tells the player what
+  # to copy there).
+  #
+  # This is the only Linux build in the workflow -- the plain Linux matrix
+  # leg was removed in its favour -- and it runs on tags and manual dispatch
+  # only: a dispatch run is how you rehearse it without a tag, its artifacts
+  # come out as AppImage-<arch> either way, and the release job below turns
+  # the tag's artifacts into a GitHub Release while a dispatch stops at the
+  # artifacts.
+  appimage:
+    name: "AppImage ${{ matrix.arch }}"
+    if: ${{ startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch' }}
+    runs-on: "${{ matrix.runs-on }}"
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { runs-on: ubuntu-latest, arch: x86_64 }
+          - { runs-on: ubuntu-24.04-arm, arch: aarch64 }
+    container: ghcr.io/pkgforge-dev/archlinux:latest
+    defaults:
+      run:
+        shell: sh
+    steps:
+      # Before checkout: actions/checkout needs git in PATH for its work, and
+      # the bare Arch container does not carry it. (This repository has no
+      # git submodules -- .gitmodules is a leftover and the vendored trees
+      # are committed directly -- so no submodules: input is needed.)
+      - uses: pkgforge-dev/anylinux-setup-action@v2
+
+      - name: Fetch carpocalypse2 sources
+        uses: actions/checkout@v6
+
+      # The checkout was made by the runner, so inside the container its
+      # files are owned by a different uid, which git reports as dubious
+      # ownership. make-appimage.sh runs `git rev-parse` for the version.
+      - name: Mark workspace as safe for git
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
+      # The script pulls from Arch mirrors and downloads appimagetool from a
+      # GitHub release; both have failed a leg outright when upstream
+      # returned 5xx. Retry the whole script rather than any one fetch:
+      # pacman and the CMake build are both incremental, so a second attempt
+      # costs seconds, and appimagetool's own retries are already exhausted
+      # by then.
+      - name: Make AppImage
+        run: |
+          for attempt in 1 2 3; do
+            # Start each attempt from a clean AppDir: a run that died inside
+            # quick-sharun leaves a half-populated tree behind, and the next
+            # attempt would then fail on that rather than on the real cause.
+            rm -rf ./AppDir ./dist
+            if /bin/sh ./packaging/make-appimage.sh; then
+              exit 0
+            fi
+            echo "AppImage build attempt ${attempt} failed; retrying in 15s"
+            sleep 15
+          done
+          echo "AppImage build failed after 3 attempts" >&2
+          exit 1
+
+      - name: Upload AppImage artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: AppImage-${{ matrix.arch }}
+          path: dist
+          if-no-files-found: error
+
+  # Attach what the release legs produced to the GitHub Release for the tag.
+  # Tag-only, like every other gate here: a dispatch run of this workflow
+  # builds and uploads AppImage-*, Android-*, Windows-* and macOS-*
+  # workflow artifacts, but a release object must never be created from a
+  # branch ref (it would name the branch as the tag). softprops is idempotent
+  # -- creates the release if absent, attaches or replaces the assets if
+  # present -- so re-running a failed tag run lands on the same release
+  # instead of fighting it.
+  release:
+    name: Attach to GitHub Release
+    needs: [build, android, appimage]
+    if: ${{ startsWith(github.ref, 'refs/tags/') }}
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Download AppImage artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: AppImage-*
+          path: artifacts/appimage
+          merge-multiple: true
+
+      - name: Download Android artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: Android-*
+          path: artifacts/android
+          merge-multiple: true
+
+      - name: Download Windows artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: Windows-*
+          path: artifacts/windows
+          merge-multiple: true
+
+      - name: Download macOS artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: macOS-*
+          path: artifacts/macos
+          merge-multiple: true
+
+      # Only the packages: the AppImage artifacts also carry VERSION.txt,
+      # which has no business on a release page (the release is named after
+      # the tag, not after the hash inside).
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            artifacts/appimage/**/*.AppImage
+            artifacts/appimage/**/*.zsync
+            artifacts/android/**/*.apk
+            artifacts/windows/**/*.zip
+            artifacts/macos/**/*.zip
+          tag_name: ${{ github.ref_name }}
+          generate_release_notes: true

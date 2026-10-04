@@ -17,7 +17,7 @@
 #include "init.h"
 #include "input.h"
 #include "joystick.h"
-#ifdef _WIN32
+#ifdef CARPOCALYPSE2_PLATFORM_WIN32
 #include "win32/win32_dinput.h"
 #endif
 #include "loading.h"
@@ -2740,7 +2740,10 @@ void C2_HOOK_FASTCALL CycleSoundDetailLevel(void) {
 
 // FUNCTION: CARMA2_HW 0x004599f0
 void C2_HOOK_FASTCALL ShowCurrentJoystickName(void) {
-#ifdef _WIN32
+/* DirectInput joystick names exist only on the win32 platform: the
+ * gDirectInput* globals live in win32/win32_dinput.c, which a Windows build
+ * of the SDL3 platform does not compile. */
+#ifdef CARPOCALYPSE2_PLATFORM_WIN32
     char buffer[256];
 
     if (gJoystick_index == -1 || gDirectInputJoystickDevices[gJoystick_index] == NULL) {

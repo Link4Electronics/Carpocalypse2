@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Android app identity and entry point for the APK that
+  packaging/bundle-android.sh assembles (no Gradle: the bundler drives
+  aapt/d8/zipalign/apksigner directly, see that script's header).
+
+  package="com.carpocalypse2.game" is permanent: Android treats a changed
+  package name plus an unchanged signing certificate as a different app, so
+  changing it after a release would strand every install.
+
+  versionName/versionCode are substituted by the bundler (versionCode) and
+  resolved from res/values/strings.xml (versionName), which it generates; the
+  literals here keep the manifest valid to read and to build by hand.
+
+  The activity is SDL's stock org.libsdl.app.SDLActivity. It dlopens
+  libmain.so (the bundler renames libcarpocalypse2.so to that) and calls
+  the SDL_main that src/carma2/platform/sdl3/main.c exports. No subclass is
+  needed because nothing has to be overridden (SDLActivity.getArguments()
+  already returns no arguments, which is what main()'s argument parser
+  expects: it rejects anything it does not know).
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.carpocalypse2.game"
+    android:versionCode="1"
+    android:versionName="@string/version_name"
+    android:installLocation="auto">
+
+    <uses-sdk android:minSdkVersion="24" android:targetSdkVersion="34" />
+
+    <!-- No storage permission: the game data lives in the app's own external
+         files directory (see the Android block in
+         src/carma2/platform/sdl3/main.c), which needs none. -->
+    <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
+    <uses-feature android:name="android.hardware.gamepad" android:required="false" />
+    <uses-feature android:name="android.hardware.bluetooth" android:required="false" />
+
+    <application android:label="@string/app_name"
+        android:icon="@mipmap/ic_launcher"
+        android:allowBackup="true"
+        android:hasCode="true"
+        android:theme="@android:style/Theme.DeviceDefault.NoActionBar.Fullscreen"
+        android:extractNativeLibs="false">
+
+        <!-- sensorLandscape, not portrait or unlocked: the game renders one
+             4:3 landscape screen (640x480 at startup) and has no portrait
+             layout. configChanges keeps SDLActivity alive across the
+             rotations it does handle itself. -->
+        <activity android:name="org.libsdl.app.SDLActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|smallestScreenSize|density|uiMode"
+            android:screenOrientation="sensorLandscape"
+            android:launchMode="singleTask"
+            android:alwaysRetainTaskState="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>

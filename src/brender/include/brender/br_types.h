@@ -1039,7 +1039,10 @@ typedef struct br_rectangle {
     br_int_32 h;
 } br_rectangle;
 
-#pragma pack(push, 1)
+/* No packing: on ILP32 this is already the retail 24-byte layout (every
+ * member is naturally aligned), while packing shifts the three pointers to
+ * offsets 12/20/28 on LP64, which arm64 macOS rejects at link time as
+ * unaligned pointer relocations. */
 typedef struct br_font {
     br_uint_32 flags;
     br_uint_16 glyph_x;
@@ -1050,7 +1053,6 @@ typedef struct br_font {
     br_uint_16* encoding;
     br_uint_8* glyphs;
 } br_font;
-#pragma pack(pop)
 
 enum {
     BR_FONTF_VARIABLE_WIDTH = 0x1,

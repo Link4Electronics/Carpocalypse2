@@ -3,8 +3,6 @@
 
 #include "carpocalypse2_types.h"
 
-#include <sys/socket.h>
-
 extern void PDNetObtainSystemUserName(char *pName, int pMax_length);
 
 extern int PDNetInitialise(void);

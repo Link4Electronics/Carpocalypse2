@@ -1,0 +1,49 @@
+# Sourced by the AppImage AppRun at startup: sharun sources every
+# AppDir/bin/*.hook before handing control to the game.
+#
+# The engine resolves DATA/ and MUSIC/ relative to the working directory --
+# PDBuildAppPath() is SDL_GetCurrentDirectory() + "DATA" (sdl3.c), and
+# DATA/OPTIONS.TXT, DATA/SAVEDGAMES.ARS and DIAGNOST.TXT are written back into
+# that same tree -- so the game has to start somewhere the player owns. The
+# AppImage itself is mounted read-only, hence this hook: start in the per-user
+# data directory and say what belongs there.
+dir="${DATADIR}/carpocalypse2"
+mkdir -p "${dir}"
+
+if [ ! -f "${dir}/README.txt" ]; then
+    cat > "${dir}/README.txt" <<'EOM'
+Carpocalypse2 reads and writes everything in this directory.
+
+Copy the data from a legally obtained Carmageddon II install here:
+
+    DATA/     the game data directory (required; any letter case: data/ works)
+    DATA.TWT  the packed game data; next to DATA/ or inside it, either works
+    MUSIC/    CD audio as Track02.ogg ... Track08.ogg (optional; music/ works)
+
+Without a data directory the game starts and then reports that it cannot
+find its files. File names are matched without regard to letter case.
+Read the Legal section of the project README first: this project ships no
+original game code or assets.
+EOM
+fi
+
+# The game asks for DATA/ in upper case but resolves it case-insensitively
+# on this platform, so a lower-case data/ counts as present here too.
+found_data=
+for d in "${dir}"/*; do
+    [ -d "$d" ] || continue
+    case "${d##*/}" in
+        [Dd][Aa][Tt][Aa]) found_data=1; break ;;
+    esac
+done
+if [ ! -d "${dir}/DATA" ] && [ -z "${found_data}" ]; then
+    echo "carpocalypse2: no DATA/ (in any letter case) in ${dir} yet." >&2
+    echo "  Copy the Carmageddon II game data there first" >&2
+    echo "  (see ${dir}/README.txt)." >&2
+fi
+
+if ! cd "${dir}"; then
+    echo "carpocalypse2: cannot enter ${dir}; not starting there" >&2
+    echo "  (mkdir -p should have made it; check that HOME is writable)" >&2
+    exit 1
+fi
