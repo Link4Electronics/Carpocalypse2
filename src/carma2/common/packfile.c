@@ -55,6 +55,18 @@ tTWTVFS C2_HOOK_FASTCALL OpenPackFile(const char* path) {
     strcat(twatFilePath, ".TWT");
 
     f = fopen(twatFilePath, "rb");
+#if defined(CARPOCALYPSE2_FIX_BUGS)
+    if (f == NULL) {
+        /* retail expects "<path>.TWT" (e.g. <root>/DATA.TWT); also accept
+         * the pack inside its own directory (<root>/DATA/DATA.TWT). */
+        const char* base = strrchr(path, '/');
+
+        if (base != NULL && base[1] != '\0') {
+            snprintf(twatFilePath, sizeof(twatFilePath), "%s/%s.TWT", path, base + 1);
+            f = fopen(twatFilePath, "rb");
+        }
+    }
+#endif
     if (f != NULL) {
         for (twt = 0; ; twt++) {
             if (twt >= (int)CARPOCALYPSE2_ASIZE(gTwatVfsMountPoints)) {
@@ -104,7 +116,10 @@ void C2_HOOK_FASTCALL PFfclose(FILE* pFile) {
     }
 }
 
-#ifdef CARPOCALYPSE2_FIX_BUGS
+// Windows gets neither this fallback nor the dirent.h it is built on: MSVC
+// has no dirent.h, and its filesystem is case-insensitive, so the exact-name
+// fopen below already succeeds on retail case.
+#if defined(CARPOCALYPSE2_FIX_BUGS) && !defined(_WIN32)
 #include <dirent.h>
 
 // Case-insensitive filesystem fallback helper. The retail game assumed a
@@ -212,7 +227,7 @@ FILE* C2_HOOK_FASTCALL PFfopen(const char* pPath, const char* mode) {
         if (disk != NULL) {
             return disk;
         }
-#ifdef CARPOCALYPSE2_FIX_BUGS
+#if defined(CARPOCALYPSE2_FIX_BUGS) && !defined(_WIN32)
         return CI_FopenCaseInsensitive(pPath, mode);
 #else
         return NULL;

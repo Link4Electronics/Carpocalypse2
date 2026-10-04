@@ -69,10 +69,15 @@ elseif(CARPOCALYPSE2_PLATFORM_SDL3)
         sdl3/sdl3_ssdx.h
     )
     target_link_libraries(c2_platform PRIVATE SDL3::SDL3)
+    if(WIN32)
+        target_link_libraries(c2_platform PRIVATE ws2_32)
+    endif()
     # sdl3_rend.c uses BRender DDI internals (core headers)
     target_link_libraries(c2_platform PRIVATE BRender::ddi)
-    if(UNIX AND NOT APPLE)
+    if(UNIX)
         # Case-insensitive file name resolution (see sdl3/sdl3_casefix.c).
+        # macOS gets the resolver too: its case-sensitive volumes need it even
+        # though Apple's linker cannot interpose fopen()/open().
         target_sources(c2_platform PRIVATE sdl3/sdl3_casefix.c)
     endif()
 else()
@@ -103,10 +108,32 @@ target_link_libraries(c2_platform_brender
         c2_hooks
 )
 
-add_executable(carpocalypse2 WIN32
-    $<TARGET_OBJECTS:c2_common>
-    $<TARGET_OBJECTS:c2_platform>
-)
+if(ANDROID)
+    # Android has no exec() entry point for this binary: an activity is
+    # launched from Java by SDL's SDLActivity, which dlopens a shared library
+    # and calls the SDL_main that SDL_main.h exports here. An executable would
+    # not link (no main) and could not be loaded even if it did, so the game
+    # is the library in this configuration.
+    #
+    # scripts/packaging/bundle-android.sh renames the result to libmain.so --
+    # SDLActivity.getLibraries() loads {"SDL3", "main"} -- and assembles the
+    # APK from packaging/android/AndroidManifest.xml plus SDL's Java sources.
+    # The output directory matches where CMAKE_RUNTIME_OUTPUT_DIRECTORY puts
+    # the executables (the build root), so the bundler finds
+    # build/libcarpocalypse2.so without searching the tree for it.
+    add_library(carpocalypse2 SHARED
+        $<TARGET_OBJECTS:c2_common>
+        $<TARGET_OBJECTS:c2_platform>
+    )
+    set_target_properties(carpocalypse2 PROPERTIES
+        LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}"
+    )
+else()
+    add_executable(carpocalypse2 WIN32
+        $<TARGET_OBJECTS:c2_common>
+        $<TARGET_OBJECTS:c2_platform>
+    )
+endif()
 target_link_libraries(carpocalypse2 PRIVATE
     BRender::BRender
     c2_common
@@ -117,7 +144,10 @@ if(MSVC)
 endif()
 if(CARPOCALYPSE2_PLATFORM_SDL3 AND UNIX AND NOT APPLE)
     # Interpose fopen() with a case-insensitive resolver; the game requests its
-    # data files in Windows-style casing (see sdl3/sdl3_casefix.c).
+    # data files in Windows-style casing (see sdl3/sdl3_casefix.c). That file
+    # compiles its __wrap_* half only where CARPOCALYPSE2_CASEFIX_WRAP is set,
+    # since Apple's linker has no --wrap (macOS gets the resolver only).
+    target_compile_definitions(c2_platform PRIVATE CARPOCALYPSE2_CASEFIX_WRAP)
     target_link_options(carpocalypse2 PRIVATE "-Wl,--wrap=fopen")
     # The S3 sound layer opens data files with open()/open64() rather than
     # fopen(), so route those through the same case-insensitive resolver too.

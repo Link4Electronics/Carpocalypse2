@@ -1,3 +1,14 @@
+#ifdef _WIN32
+/* GetComputerNameExA (sysinfoapi.h) and inet_ntop (ws2tcpip.h) are declared
+ * only when the target Windows version is at least this new. */
+#ifndef _WIN32_WINNT
+#define _WIN32_WINNT 0x0A00
+#endif
+#ifndef WINVER
+#define WINVER 0x0A00
+#endif
+#endif
+
 #include "sdl3_net.h"
 
 #include "sdl3.h"
@@ -9,6 +20,8 @@
 #include <SDL3/SDL.h>
 
 #ifdef SDL_PLATFORM_WINDOWS
+#include <winsock2.h>
+#include <ws2tcpip.h>
 #include <windows.h>
 #else
 #include <arpa/inet.h>
@@ -24,6 +37,9 @@ typedef struct {} WSADATA;
 #endif
 #ifndef SOCKET_ERROR
 #define SOCKET_ERROR -1
+#endif
+#ifndef AF_IPX
+#define AF_IPX 4
 #endif
 
 #define BROADCAST_HEADER "CAR2MSG"
@@ -54,10 +70,11 @@ void PDNetObtainSystemUserName(char *pName, int pMax_length) {
     DWORD size;
 
     size = SDL_arraysize(buffer);
-    if (!GetComputerNameExAComputerNameDnsHostname, buffer, &size)) {
+    if (GetComputerNameExA(ComputerNameDnsHostname, buffer, &size)) {
+        SDL_strlcpy(pName, buffer, pMax_length);
+    } else {
         SDL_strlcpy(pName, "<unknown>", pMax_length);
     }
-    SDL_strlcpy(pName, buffer, pMax_length);
 #else
     if (gethostname(pName, pMax_length) != 0) {
         SDL_strlcpy(pName, "<unknown>", pMax_length);

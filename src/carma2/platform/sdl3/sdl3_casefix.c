@@ -1,5 +1,5 @@
 /*
- * Case-insensitive path resolution for Linux.
+ * Case-insensitive path resolution for case-sensitive filesystems.
  *
  * The retail game was built for Windows where file names are case-insensitive,
  * and it requests data files in their original upper-case spelling ("DATA",
@@ -7,10 +7,12 @@
  * names. This module resolves each path component against the real directory
  * contents, accepting any letter casing.
  *
- * `__wrap_fopen` intercepts every fopen() call in the binary (see the
- * `-Wl,--wrap=fopen` link option): the plain open is attempted first so
- * correct-case paths behave exactly as before, and only on failure do we walk
- * the directory chain looking for a case-insensitive match.
+ * Where the build adds `-Wl,--wrap=fopen` (Linux and Android; guarded by
+ * CARPOCALYPSE2_CASEFIX_WRAP, since Apple's linker has no --wrap), the
+ * __wrap_fopen entry point below intercepts every fopen() call in the binary:
+ * the plain open is attempted first so correct-case paths behave exactly as
+ * before, and only on failure do we walk the directory chain looking for a
+ * case-insensitive match.
  */
 
 #include <stdio.h>
@@ -79,6 +81,7 @@ const char* carpocalypse2_fix_path_case(const char* pPath) {
     return fixed;
 }
 
+#ifdef CARPOCALYPSE2_CASEFIX_WRAP
 extern FILE* __real_fopen(const char* pPath, const char* pMode);
 
 FILE* __wrap_fopen(const char* pPath, const char* pMode) {
@@ -140,3 +143,4 @@ int __wrap_open64(const char* pPath, int pFlags, ...) {
     }
     return case_fix_open(pPath, pFlags, mode);
 }
+#endif

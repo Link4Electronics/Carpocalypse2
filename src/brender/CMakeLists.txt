@@ -299,7 +299,9 @@ set_property(TARGET brender-brcore1-imp PROPERTY IMPORTED_IMPLIB "${CMAKE_CURREN
 set_property(TARGET brender-brpmap1-imp PROPERTY IMPORTED_IMPLIB "${CMAKE_CURRENT_SOURCE_DIR}/dll/${arch_dir}/brpmap1.lib")
 set_property(TARGET brender-brhost1-imp PROPERTY IMPORTED_IMPLIB "${CMAKE_CURRENT_SOURCE_DIR}/dll/${arch_dir}/brhost1.lib")
 
-if(WIN32)
+# The DX7-era d3d driver links the vendored x86 d3dim.lib and includes d3d.h,
+# so only 32-bit Windows builds it (matching, MinGW, x86 MSVC).
+if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
     add_subdirectory(drivers/d3d)
 endif()
 

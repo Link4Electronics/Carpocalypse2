@@ -5,7 +5,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
 
 #include "stb/stb_vorbis.c"
 
@@ -393,6 +392,8 @@ tS3_error_codes PDS3PlayCDAChannel(tS3_channel* pChannel) {
     int sample_count;
     short* decoded;
     SDL_AudioSpec spec;
+    SDL_PathInfo path_info;
+    const char* resolved_path;
 
     if (pChannel == NULL || pChannel->descriptor == NULL || pChannel->descriptor->path == NULL) {
         return eS3_error_start_cda;
@@ -402,12 +403,23 @@ tS3_error_codes PDS3PlayCDAChannel(tS3_channel* pChannel) {
         return eS3_error_start_cda;
     }
     snprintf(path, sizeof(path), "MUSIC/Track%02d.ogg", track);
-    if (access(path, F_OK) != 0) {
+#ifndef _WIN32
+    /* SDL_GetPathInfo runs inside libSDL3, which the fopen/open --wrap cannot
+     * reach, so resolve the file name against the real directory contents
+     * here (Windows has no resolver to consult; its file system folds case). */
+    {
+        extern const char* carpocalypse2_fix_path_case(const char* pPath);
+        resolved_path = carpocalypse2_fix_path_case(path);
+    }
+#else
+    resolved_path = path;
+#endif
+    if (!SDL_GetPathInfo(resolved_path, &path_info) || path_info.type != SDL_PATHTYPE_FILE) {
         return eS3_error_start_cda;
     }
 
     decoded = NULL;
-    sample_count = stb_vorbis_decode_filename(path, &channels, &sample_rate, &decoded);
+    sample_count = stb_vorbis_decode_filename(resolved_path, &channels, &sample_rate, &decoded);
     if (sample_count <= 0 || decoded == NULL || channels <= 0 || sample_rate <= 0) {
         if (decoded != NULL) {
             free(decoded);

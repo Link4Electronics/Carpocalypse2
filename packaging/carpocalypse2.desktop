@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Carpocalypse2
+Comment=Reverse engineering research project for the 1997 game "Carmageddon II: Carpocalypse Now"
+Exec=carpocalypse2
+Icon=carpocalypse2
+Terminal=false
+# Registered freedesktop categories only; desktop-file-validate fails the rest.
+Categories=Game;ActionGame;
+Keywords=Carmageddon;CarmageddonII;C2;carpocalypse;disassembly;
+StartupWMClass=carpocalypse2

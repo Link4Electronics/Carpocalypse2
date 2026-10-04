@@ -344,7 +344,12 @@ void C2_HOOK_FASTCALL UsePathFileToDetermineIfFullInstallation(void) {
     char line1[80];
     char line2[80];
     char line3[80];
+#if defined(CARPOCALYPSE2_FIX_BUGS)
+    /* retail's 80 bytes cannot hold a long install path plus PATHS.TXT */
+    char path_file[sizeof(tPath_name) + 16];
+#else
     char path_file[80];
+#endif
     FILE* fp;
 
     strcpy(path_file, gApplication_path);
