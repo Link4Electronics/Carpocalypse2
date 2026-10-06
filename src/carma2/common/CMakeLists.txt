@@ -24,7 +24,6 @@ add_library(c2_common STATIC
     controls.c
     controls.h
     crush.c
-    stubs.c
     crush.h
     crush1.c
     crush1.h

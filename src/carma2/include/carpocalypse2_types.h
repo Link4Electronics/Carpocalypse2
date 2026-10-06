@@ -2976,7 +2976,7 @@ typedef struct tCar_spec {
     float damage_magnitude_accumulator;
     float revs;
     float target_revs;
-    undefined field_0x1348[12];
+    br_vector3 road_normal;
     float max_force_front;
     float max_force_rear;
     int gear;

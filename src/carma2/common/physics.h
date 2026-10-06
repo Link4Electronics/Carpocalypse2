@@ -4,6 +4,8 @@
 #include "c2_hooks.h"
 #include "carpocalypse2_types.h"
 
+extern int gUNK_006793d0;
+
 // count
 
 // DrMatrix34ApplyLPInverse
