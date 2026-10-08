@@ -10,6 +10,10 @@
 extern int gSize_powerup_queue;
 extern br_scalar gSight_distance_squared;
 extern br_material* gMaterials_to_adapt[200];
+/* The retail symbol table has no gStorage_for_callbacks: code that "uses" it
+ * stores to 0x6b7820, which retail calls gMaterials_to_adapt (see
+ * reccmp/carma2_hw-crt.csv). A separate real global makes those stores land on
+ * a different address than retail and costs every world3.c loader its match. */
 #define gStorage_for_callbacks (*(tBrender_storage**)&gMaterials_to_adapt[0])
 extern int gGroovidelics_array_size;
 extern tGroovidelic_spec* gGroovidelics_array;

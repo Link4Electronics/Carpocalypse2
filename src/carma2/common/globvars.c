@@ -263,7 +263,7 @@ int gGame_to_load = -1;
 tRace_info gCurrent_race;
 
 // GLOBAL: CARMA2_HW 0x007632a8
-tMaterial_modifiers gFriction_materials[11];
+// tMaterial_modifiers gFriction_materials[11];  -- alias of gCurrent_race.material_modifiers
 
 // GLOBAL: CARMA2_HW 0x0068be3c
 int gGame_initialized;
@@ -363,6 +363,9 @@ float gOpponent_speed_factor;
 br_vector3* gOur_pos;
 // GLOBAL: CARMA2_HW 0x00761f00
 tBrender_storage gNet_cars_storage_space;
+// GLOBAL: CARMA2_HW 0x0074cf98
+int gUNK_0074cf98;
+
 // GLOBAL: CARMA2_HW 0x0074d1a8
 float gGravity_multiplier;
 // GLOBAL: CARMA2_HW 0x00761d00

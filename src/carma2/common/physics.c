@@ -1715,17 +1715,156 @@ tPhysics_object* C2_HOOK_FASTCALL PHILGetNextObject(tPhysics_object* pCollision_
 }
 
 #pragma auto_inline(off)
+#ifndef CARPOCALYPSE2_MATCHING
+/* Non-matching body of MoveJointedObject (0x4b7510).
+ * Retail entry does `xor edx, edx` immediately, so pArg2 is unused.
+ * The leaf path (0x4b7743) does actor->t.t.mat.m[3] += v * pDt then calls the
+ * omega integrator at 0x4c1be0; objects with children go through 0x4b8ee0,
+ * which we approximate by applying the same integration to the whole subtree. */
+static void C2_HOOK_FASTCALL MoveJointedObjectSubtree(tPhysics_object* pObject, float pDelta_time) {
+    tPhysics_object* pChild;
+
+    if (pDelta_time != 0.f) {
+        pObject->actor->t.t.mat.m[3][0] += pObject->v.v[0] * pDelta_time;
+        pObject->actor->t.t.mat.m[3][1] += pObject->v.v[1] * pDelta_time;
+        pObject->actor->t.t.mat.m[3][2] += pObject->v.v[2] * pDelta_time;
+
+        /* 0x4c1be0: rotate about the centre of mass by omega * pDt */
+        {
+            br_matrix34 rot;
+            br_vector3 axis;
+            br_scalar len2;
+
+            len2 = pObject->omega.v[0] * pObject->omega.v[0]
+                 + pObject->omega.v[1] * pObject->omega.v[1]
+                 + pObject->omega.v[2] * pObject->omega.v[2];
+            if (len2 > 1.e-7f) {
+                br_scalar len;
+
+                len = sqrtf(len2);
+                axis.v[0] = pObject->omega.v[0] / len;
+                axis.v[1] = pObject->omega.v[1] / len;
+                axis.v[2] = pObject->omega.v[2] / len;
+                BrMatrix34Rotate(&rot, BR_ANGLE_RAD(len * pDelta_time), &axis);
+                BrMatrix34PreTranslate(&rot,
+                    -pObject->cmpos.v[0], -pObject->cmpos.v[1], -pObject->cmpos.v[2]);
+                BrMatrix34PostTranslate(&rot,
+                    pObject->cmpos.v[0], pObject->cmpos.v[1], pObject->cmpos.v[2]);
+                BrMatrix34Pre(&pObject->actor->t.t.mat, &rot);
+            }
+        }
+    }
+    for (pChild = pObject->child; pChild != NULL; pChild = pChild->next) {
+        MoveJointedObjectSubtree(pChild, pDelta_time);
+    }
+}
+#endif
+
 // FUNCTION: CARMA2_HW 0x004b99e0
 void C2_HOOK_FASTCALL InternalPrepareObject(tPhysics_object* pObject) {
+#ifndef CARPOCALYPSE2_MATCHING
+    tPhysics_object* child;
+    int i;
+    int j;
+    int differ;
 
+    if (pObject->M <= 0.f) {
+        pObject->M = 0.01f;
+        BrVector3SetFloat(&pObject->I, 0.01f, 0.01f, 0.01f);
+    }
+    pObject->flags &= ~0x1200;
+    pObject->field_0x1e0[0] = pObject->disable_move_rotate;
+    pObject->field_0x1de = 0;
+    pObject->collision_flag = 0;
+    pObject->field_0x1dc = 0;
+    memset(&pObject->field_0x1e0[4], 0, 4);
+    pObject->field_0x21c = 1.f;
+    pObject->field183_0x1d8 = pObject;
+    pObject->field_0x218 = 0;
+
+    BrMatrix34TApplyV(&pObject->velocity_car_space, &pObject->v, &pObject->transform_matrix);
+    memcpy(&pObject->field_0x1b4, &pObject->v, sizeof(br_vector3));
+    memcpy(&pObject->field_0x1cc, &pObject->omega, sizeof(br_vector3));
+
+    if (pObject->parent != NULL) {
+        pObject->disable_move_rotate = pObject->parent->disable_move_rotate;
+    }
+    if (pObject->disable_move_rotate == 0 && pObject->field_0x1df != 0) {
+        pObject->I.v[0] *= 50.f;
+        pObject->I.v[1] *= 50.f;
+        pObject->I.v[2] *= 50.f;
+        pObject->field_0x21c *= 50.f;
+    }
+
+    if (pObject->disable_move_rotate != 0 && pObject->field_0xf0 != 2) {
+        BrMatrix34Copy(&pObject->actor->t.t.mat, &pObject->transform_matrix);
+        for (child = pObject->child; child != NULL; child = child->next) {
+            InternalPrepareObject(child);
+        }
+        if (pObject->parent == NULL) {
+            /* TODO: 0x4b9ce0 merges bb1 transformed by tm and by the actor
+             * matrix into field_0xf4/field_0x10c (feeds contact broad phase). */
+        }
+        return;
+    }
+
+    if (pObject->field_0xf0 == 2) {
+        float dx;
+        float dy;
+        float dz;
+        float d2;
+
+        pObject->field_0x230 = pObject->parent;
+        dx = pObject->actor->t.t.mat.m[3][0] - pObject->transform_matrix.m[3][0];
+        dy = pObject->actor->t.t.mat.m[3][1] - pObject->transform_matrix.m[3][1];
+        dz = pObject->actor->t.t.mat.m[3][2] - pObject->transform_matrix.m[3][2];
+        d2 = dx * dx + dy * dy + dz * dz;
+        if (d2 > 1.f) {
+            PhysicsWarning("Stupid trial position");
+            BrMatrix34Copy(&pObject->transform_matrix, &pObject->actor->t.t.mat);
+        }
+        differ = 0;
+        for (j = 3; j >= 1 && !differ; j--) {
+            for (i = 0; i < 3; i++) {
+                if (pObject->transform_matrix.m[j][i] != pObject->actor->t.t.mat.m[j][i]) {
+                    pObject->disable_move_rotate = 0;
+                    differ = 1;
+                    break;
+                }
+            }
+        }
+        for (child = pObject->child; child != NULL; child = child->next) {
+            InternalPrepareObject(child);
+        }
+        return;
+    }
+
+    if (pObject->field_0xf0 == 1) {
+        BrMatrix34Copy((br_matrix34*)pObject->field_0xbc, &pObject->actor->t.t.mat);
+    } else {
+        BrMatrix34LPNormalise(&pObject->actor->t.t.mat, &pObject->transform_matrix);
+    }
+    for (child = pObject->child; child != NULL; child = child->next) {
+        InternalPrepareObject(child);
+    }
+    if (pObject->parent != NULL) {
+        return;
+    }
+    MoveJointedObject(pObject, 0, 0.04f);
+#else
     NOT_IMPLEMENTED();
+#endif
 }
 #pragma auto_inline(on)
 
 // FUNCTION: CARMA2_HW 0x004b7510
 void C2_HOOK_FAKE_THISCALL MoveJointedObject(tPhysics_object* pObject, undefined4 pArg2, float pDelta_time) {
-
+#ifndef CARPOCALYPSE2_MATCHING
+    (void)pArg2;
+    MoveJointedObjectSubtree(pObject, pDelta_time);
+#else
     NOT_IMPLEMENTED();
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004b9f40
@@ -2416,22 +2555,35 @@ void C2_HOOK_FASTCALL ProcessGravity(tPHIL_queued_header* pObject_info, tPhysics
     PhysicsObjectMoveVelocity(pObject);
 }
 
+// FUNCTION: CARMA2_HW 0x004c2c30
+void C2_HOOK_FASTCALL PhysicsObjectApplyTorque(tPhysics_object* pObject, const br_vector3* pTorque) {
+    pObject->omega.v[0] += (pTorque->v[0] * 0.0210039914f) / pObject->I.v[0];
+    pObject->omega.v[1] += (pTorque->v[1] * 0.0210039914f) / pObject->I.v[1];
+    pObject->omega.v[2] += (pTorque->v[2] * 0.0210039914f) / pObject->I.v[2];
+}
+
 // FUNCTION: CARMA2_HW 0x004c2c90
 void C2_HOOK_FASTCALL ApplyWaterOmegaBrake(tPhysics_object* pObject, const br_vector3* pV) {
-    br_scalar om0 = pObject->omega.v[0];
-    br_scalar om1 = pObject->omega.v[1];
-    br_scalar om2 = pObject->omega.v[2];
+    br_scalar b0;
+    br_scalar b1;
+    br_scalar b2;
+    br_vector3 om = pObject->omega;
 
-    pObject->omega.v[0] = om0 - pObject->I.v[0] / (pV->v[0] * 0.0210039914f);
-    if (om0 * pObject->omega.v[0] <= 0.0f) {
+    b0 = (pV->v[0] * 0.0210039914f) / pObject->I.v[0];
+    b1 = (pV->v[1] * 0.0210039914f) / pObject->I.v[1];
+    b2 = (pV->v[2] * 0.0210039914f) / pObject->I.v[2];
+
+    pObject->omega.v[0] -= b0;
+    pObject->omega.v[1] -= b1;
+    pObject->omega.v[2] -= b2;
+
+    if (om.v[0] * pObject->omega.v[0] <= 0.0f) {
         pObject->omega.v[0] = 0.0f;
     }
-    pObject->omega.v[1] = om1 - (pV->v[1] * 0.0210039914f) / pObject->I.v[1];
-    if (om1 * pObject->omega.v[1] <= 0.0f) {
+    if (om.v[1] * pObject->omega.v[1] <= 0.0f) {
         pObject->omega.v[1] = 0.0f;
     }
-    pObject->omega.v[2] = om2 - pObject->I.v[2] / (pV->v[2] * 0.0210039914f);
-    if (om2 * pObject->omega.v[2] <= 0.0f) {
+    if (om.v[2] * pObject->omega.v[2] <= 0.0f) {
         pObject->omega.v[2] = 0.0f;
     }
 }
@@ -2554,23 +2706,79 @@ void C2_HOOK_FASTCALL PhysicsWarning(const char* pMessage) {
     NOT_IMPLEMENTED();
 }
 
-// STUB: CARMA2_HW 0x004baa00
-void C2_HOOK_FASTCALL AddDoubleTorqueToMatrix(tPhysics_object* pObject) {
+#ifndef CARPOCALYPSE2_MATCHING
+/* Non-matching body of AddDoubleTorqueToMatrix (0x4baa00).
+ * Walks the `next` chain, recursing into `child`, and for every object writes
+ *   transform_matrix = actor->t.t.mat            (0x4baded)
+ *   pos              = ApplyP(cmpos, tm)         (0x4bae12)
+ * which is what lets transform_matrix accumulate the v * 40ms integration that
+ * MoveJointedObject applied to the actor.
+ * Retail's torque/energy dynamics (0x4baaad..0x4bad93) and the v/omega zeroing
+ * (0x4badb8) are skipped for now: they need the contact response which is still
+ * stubbed (RotateObjectFirstOrder / SetUpQuickHingeData). */
+static int C2_HOOK_FASTCALL AddDoubleTorqueToMatrixList(tPhysics_object* pObject) {
+    tPhysics_object* obj;
+    int acc;
+    int child_acc;
 
+    if (pObject == NULL) {
+        return 1;
+    }
+    acc = 1;
+    for (obj = pObject; obj != NULL; obj = obj->next) {
+
+        if (obj->field_0x21c != 1.f) {
+            obj->I.v[0] /= obj->field_0x21c;
+            obj->I.v[1] /= obj->field_0x21c;
+            obj->I.v[2] /= obj->field_0x21c;
+        }
+        if (obj->field_0xf0 != 0) {
+            obj->field_0xf0 = 0;
+            obj->disable_move_rotate = (tU8)((obj->flags >> 5) & 1);
+        }
+        obj->flags = (obj->flags & ~0x100) | ((obj->flags >> 1) & 0x100);
+
+        BrMatrix34Copy(&obj->transform_matrix, &obj->actor->t.t.mat);
+        obj->field_0x1df = 0;
+        BrMatrix34ApplyP(&obj->pos, &obj->cmpos, &obj->transform_matrix);
+
+        if (obj->child != NULL) {
+            child_acc = AddDoubleTorqueToMatrixList(obj->child);
+            if (obj->field_0x1df != 0) {
+                obj->field_0x1df = (tU8)((child_acc << 1) + obj->field_0x1df);
+            }
+        } else {
+            obj->field_0x1df = (tU8)((obj->field_0x1df * 3) & 0xff);
+        }
+        acc &= (obj->field_0x1df >> 1) & 1;
+    }
+    return acc;
+}
+#endif
+
+// FUNCTION: CARMA2_HW 0x004baa00
+void C2_HOOK_FASTCALL AddDoubleTorqueToMatrix(tPhysics_object* pObject) {
+#ifndef CARPOCALYPSE2_MATCHING
+    AddDoubleTorqueToMatrixList(pObject);
+#else
     NOT_IMPLEMENTED();
+#endif
 }
 
-// STUB: CARMA2_HW 0x004bae80
+// FUNCTION: CARMA2_HW 0x004bae80
 void C2_HOOK_FASTCALL DRMatrix33Inverse(tPhysics_object* pObject, int pFlag) {
+    tPhysics_object* sibling;
 
-    NOT_IMPLEMENTED();
+    pObject->field_0x1dc = (tU8)pFlag;
+    for (sibling = pObject->child; sibling != NULL; sibling = sibling->next) {
+        if (sibling->physics_joint1 != NULL && sibling->physics_joint1->type != 0) {
+            DRMatrix33Inverse(sibling, pFlag);
+        }
+    }
 }
 
 // STUB: CARMA2_HW 0x004baec0
 int C2_HOOK_FASTCALL SetUpQuickHingeData(tPhysics_object** pObject_list, tPhysics_object* pObject, void* pBuffer1, void* pBuffer2, int pArg, tWorld_callbacks* pWorld_callbacks) {
-
-    NOT_IMPLEMENTED();
-    return 0;
 }
 
 // STUB: CARMA2_HW 0x004c0ac0

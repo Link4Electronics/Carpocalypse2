@@ -227,6 +227,28 @@ void C2_HOOK_FASTCALL DRVector2AccumulateScale_raycast(br_vector2* a, br_vector2
     a->v[1] = b->v[1] * s + a->v[1];
 }
 
+#ifdef CARPOCALYPSE2_FIX_BUGS
+/* v11group.face_colours normally points at a br_colour array; game code stores
+ * the group's material through *face_colours.materials once the model has been
+ * prepared. Only trust the slot when it agrees with the group's real face
+ * material, otherwise fall back like the retail (32-bit) read does. */
+static br_material* DrGroupMaterial(br_model* model, v11group* group, br_material* fallback) {
+    br_material* face_material;
+
+    if (model == NULL || model->faces == NULL || group->face_user == NULL) {
+        return fallback;
+    }
+    face_material = model->faces[group->face_user[0]].material;
+    if (face_material == NULL) {
+        return fallback;
+    }
+    if (*group->face_colours.materials == face_material) {
+        return face_material;
+    }
+    return fallback;
+}
+#endif
+
 // FUNCTION: CARMA2_HW 0x004e3d90
 int C2_HOOK_FASTCALL DRModelPick2D_raycast(br_model* model, br_material* material, br_vector3* ray_pos, br_vector3* ray_dir, br_scalar t_near, br_scalar t_far, dr_modelpick2d_raycast_cbfn* callback, void* arg) {
     int f;
@@ -268,11 +290,15 @@ int C2_HOOK_FASTCALL DRModelPick2D_raycast(br_model* model, br_material* materia
         for (f = 0; f < v11g->nfaces; f++) {
             v11f = &v11g->faces[f];
             eqn = &v11f->eqn;
+#ifdef CARPOCALYPSE2_FIX_BUGS
+            this_material = DrGroupMaterial(model, v11g, material);
+#else
             if (v11g->face_colours.materials[0] != NULL) {
                 this_material = v11g->face_colours.materials[0];
             } else {
                 this_material = material;
             }
+#endif
             d = BrVector3Dot(eqn, ray_dir);
             if ((fabsf(d) >= 2.3841858e-7f && this_material != NULL && (this_material->flags & (BR_MATF_TWO_SIDED | BR_MATF_ALWAYS_VISIBLE)) != 0) || d <= 0.0) {
                 numerator = BrVector3Dot(eqn, ray_pos) - eqn->v[3];

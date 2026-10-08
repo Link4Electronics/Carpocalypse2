@@ -384,6 +384,15 @@ void C2_HOOK_FASTCALL GetOilSpillDetails(int pIndex, br_actor** pActor, br_scala
     }
 }
 
+// FUNCTION: CARMA2_HW 0x004a7530
+void C2_HOOK_FASTCALL GetOilFrictionFactors(tCar_spec* pCar, br_scalar* pFl, br_scalar* pFr, br_scalar* pRl, br_scalar* pRr) {
+    /* TODO: real implementation */
+    *pFl = 1.f;
+    *pFr = 1.f;
+    *pRl = 1.f;
+    *pRr = 1.f;
+}
+
 // FUNCTION: CARMA2_HW 0x004a6e20
 void C2_HOOK_FASTCALL MungeIndexedOilsHeightAboveGround(int pIndex) {
 

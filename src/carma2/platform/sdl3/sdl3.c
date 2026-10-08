@@ -591,18 +591,32 @@ void MAMSUnlock(void **pPtr) {
 void MAMSLock(void **pPtr) {
 }
 
+static const char* PDResolvePathCase(const char* pThe_path) {
+#ifndef _WIN32
+    extern const char* carpocalypse2_fix_path_case(const char* pPath);
+    static char resolved[256];
+
+    strcpy(resolved, carpocalypse2_fix_path_case(pThe_path));
+    return resolved;
+#else
+    return pThe_path;
+#endif
+}
+
 void C2_HOOK_FASTCALL PDForEveryFileRecurse(const char *pThe_path, tPDForEveryFileRecurse_cbfn pAction_routine) {
     char **files;
     int count;
     int i;
+    const char* dir;
 
     dr_dprintf("*PDForEveryFileRecurse() - NEW DIRECTORY '%s'", pThe_path);
-    files = SDL_GlobDirectory(pThe_path, "*", 0, &count);
+    dir = PDResolvePathCase(pThe_path);
+    files = SDL_GlobDirectory(dir, "*", 0, &count);
     for (i = 0; i < count; i++) {
         SDL_PathInfo info;
         tPath_name found_path;
 
-        PathCat(found_path, pThe_path, files[i]);
+        PathCat(found_path, dir, files[i]);
         if (!SDL_GetPathInfo(found_path, &info)) {
             continue;
         }
@@ -620,12 +634,14 @@ void C2_HOOK_FASTCALL PDForEveryFile(const char *pThe_path, tPDForEveryFile_cbfn
     char **files;
     int count;
     int i;
+    const char* dir;
 
-    files = SDL_GlobDirectory(pThe_path, "*.???", 0, &count);
+    dir = PDResolvePathCase(pThe_path);
+    files = SDL_GlobDirectory(dir, "*.???", 0, &count);
     for (i = 0; i < count; i++) {
         tPath_name found_path;
 
-        PathCat(found_path, pThe_path, files[i]);
+        PathCat(found_path, dir, files[i]);
         pAction_routine(found_path);
     }
     SDL_free(files);

@@ -120,6 +120,8 @@ void C2_HOOK_FASTCALL CalcEngineForce(tCar_spec* pCar, br_scalar pDt);
 
 // ConditionallyNoteSkid
 
+void C2_HOOK_FASTCALL ConditionallyNoteSkid(tCar_spec* pCar, tFace_ref** faces, int pIndex);
+
 // NudgeObject
 
 // CalcForce
@@ -131,6 +133,8 @@ void C2_HOOK_FASTCALL CalcForce(tCar_spec* pCar, br_scalar pDt);
 // ScrapeNoise
 
 // SkidNoise
+
+void C2_HOOK_FASTCALL SkidNoise(tCar_spec* pCar, int pSide, br_scalar pV, int pMaterial_index);
 
 // StopSkid
 

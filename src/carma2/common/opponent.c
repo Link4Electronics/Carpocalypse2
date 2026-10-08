@@ -1874,6 +1874,11 @@ int C2_HOOK_FASTCALL NearestSectionInStraight(const br_vector2* pPos2d, const br
         smaller = 0;
         prev_section = pSection_no;
         pSection_no = GetOpponentsNextSection(pOpponent_spec, prev_section);
+#ifndef CARPOCALYPSE2_MATCHING
+        if (pSection_no < 0) {
+            return prev_section;
+        }
+#endif
         if (pSection_no != pEnd_section) {
             cumLength += SectionLength2D(pOpponent_spec, prev_section);
             if (cumLength < unknown) {

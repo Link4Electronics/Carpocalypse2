@@ -92,7 +92,8 @@ extern int gWaiting_for_unpause;
 extern tU32 gWait_for_it;
 extern int gGame_to_load;
 extern tRace_info gCurrent_race;
-extern tMaterial_modifiers gFriction_materials[11];
+/* GLOBAL: CARMA2_HW 0x007632a8 == &gCurrent_race.material_modifiers */
+#define gFriction_materials (gCurrent_race.material_modifiers)
 extern int gGame_initialized;
 extern int gNo_races_yet;
 extern tNet_mode gNet_mode_of_last_game;
@@ -167,6 +168,7 @@ extern tBrender_storage gNet_cars_storage_space;
 //extern float gCar_crush_limit_deviant;
 //extern float gNet_offensive[7];
 //extern float gCar_crush_split_chance;
+extern int gUNK_0074cf98;
 extern float gGravity_multiplier;
 extern tFloat_bunch_info gRepair_cost;
 extern tFloat_bunch_info gRecovery_cost;

@@ -79,6 +79,28 @@ int C2_HOOK_FASTCALL BadDiv__finteray(br_scalar a, br_scalar b) {
     return fabsf(b) < 1.0f && fabsf(b) * BR_SCALAR_MAX < fabsf(a);
 }
 
+#ifdef CARPOCALYPSE2_FIX_BUGS
+/* v11group.face_colours normally points at a br_colour array; game code stores
+ * the group's material through *face_colours.materials once the model has been
+ * prepared. Only trust the slot when it agrees with the group's real face
+ * material, otherwise fall back like the retail (32-bit) read does. */
+static br_material* DrGroupMaterial(br_model* model, v11group* group, br_material* fallback) {
+    br_material* face_material;
+
+    if (model == NULL || model->faces == NULL || group->face_user == NULL) {
+        return fallback;
+    }
+    face_material = model->faces[group->face_user[0]].material;
+    if (face_material == NULL) {
+        return fallback;
+    }
+    if (*group->face_colours.materials == face_material) {
+        return face_material;
+    }
+    return fallback;
+}
+#endif
+
 // FUNCTION: CARMA2_HW 0x0045f0d0
 void C2_HOOK_FASTCALL MultiRayCheckSingleFace(int pNum_rays, tFace_ref* pFace, br_vector3* ray_pos, br_vector3* ray_dir, br_vector3* normal, br_scalar* rt) {
     int i;
@@ -90,12 +112,12 @@ void C2_HOOK_FASTCALL MultiRayCheckSingleFace(int pNum_rays, tFace_ref* pFace, b
     int axis_m;
     int axis_0;
     int axis_1;
-    double u0[4];
-    double u1;
-    double u2;
-    double v0[4];
-    double v1;
-    double v2;
+    br_scalar u0[4];
+    br_scalar u1;
+    br_scalar u2;
+    br_scalar v0[4];
+    br_scalar v1;
+    br_scalar v2;
     br_scalar v0i1;
     br_scalar v0i2;
     br_material* this_material;
@@ -118,11 +140,11 @@ void C2_HOOK_FASTCALL MultiRayCheckSingleFace(int pNum_rays, tFace_ref* pFace, b
                 return;
             }
             if (d > 0.0f) {
-                if (-numerator < -0.001f || -numerator > d + 0.003f) {
+                if (-numerator < -0.001 || -numerator > d + 0.003) {
                     t[i] = 100.0f;
                     continue;
                 }
-            } else if (numerator < -0.001f || 0.003f - d < numerator) {
+            } else if (numerator < -0.001 || 0.003 - d < numerator) {
                 t[i] = 100.0f;
                 continue;
             }
@@ -161,14 +183,14 @@ void C2_HOOK_FASTCALL MultiRayCheckSingleFace(int pNum_rays, tFace_ref* pFace, b
                 v0[i] = p[i].v[axis_1] - v0i2;
                 s1 = (br_scalar)(u1 * v0[i] - v1 * u0[i]);
                 s2 = (br_scalar)(v2 * u1 - v1 * u2);
-                if (fabsf(s1) <= 1.0001f * fabsf(s2) && s2 != 0.f) {
+                if (fabsf(s1) <= 1.0001 * fabsf(s2) && s2 != 0.f) {
                     s1 = s1 / s2;
-                    if (s1 >= -0.0001f) {
+                    if (s1 >= -0.0001) {
                         s3 = (br_scalar)(u2 * v0[i] - v2 * u0[i]);
                         s4 = -s2;
-                        if (fabsf(s3) <= 1.0001f * fabsf(s4) && s4 != 0.f) {
+                        if (fabsf(s3) <= 1.0001 * fabsf(s4) && s4 != 0.f) {
                             s3 = s3 / s4;
-                            if (s3 >= -0.0001f && s1 + s3 <= 1.0001f) {
+                            if (s3 >= -0.0001 && s1 + s3 <= 1.0001) {
                                 rt[i] = t[i];
                                 *normal = pFace->normal;
                                 if (d > 0.f) {
@@ -187,6 +209,7 @@ void C2_HOOK_FASTCALL MultiRayCheckSingleFace(int pNum_rays, tFace_ref* pFace, b
 void C2_HOOK_FASTCALL GetNewBoundingBox(br_bounds* b2, br_bounds* b1, br_matrix34* m) {
     br_vector3 a;
     br_vector3 c[3];
+    int i;
     int j;
 
     BrMatrix34ApplyP(&b2->min, &b1->min, m);
@@ -196,14 +219,13 @@ void C2_HOOK_FASTCALL GetNewBoundingBox(br_bounds* b2, br_bounds* b1, br_matrix3
         BrVector3Scale(&c[j], (br_vector3*)m->m[j], a.v[j]);
     }
     for (j = 0; j < 3; ++j) {
-        b2->min.v[j] = (float)(c[2].v[j] < 0.f) * c[2].v[j]
-                       + (float)(c[1].v[j] < 0.f) * c[1].v[j]
-                       + (float)(c[0].v[j] < 0.f) * c[0].v[j]
-                       + b2->min.v[j];
-        b2->max.v[j] = (float)(c[0].v[j] > 0.f) * c[0].v[j]
-                       + (float)(c[2].v[j] > 0.f) * c[2].v[j]
-                       + (float)(c[1].v[j] > 0.f) * c[1].v[j]
-                       + b2->max.v[j];
+        for (i = 0; i < 3; ++i) {
+            if (c[i].v[j] < 0.f) {
+                b2->min.v[j] += c[i].v[j];
+            } else {
+                b2->max.v[j] += c[i].v[j];
+            }
+        }
     }
 }
 
@@ -299,11 +321,15 @@ int C2_HOOK_FASTCALL DRModelPick2D__finteray(br_model* model, br_material* mater
     for (group = 0; group < V11MODEL(model)->ngroups; group++) {
         for (f = 0; f < V11MODEL(model)->groups[group].nfaces; f++) {
             fp = &V11MODEL(model)->groups[group].faces[f];
+#ifdef CARPOCALYPSE2_FIX_BUGS
+            this_material = DrGroupMaterial(model, &V11MODEL(model)->groups[group], material);
+#else
             if (V11MODEL(model)->groups[group].face_colours.materials != NULL) {
                 this_material = *V11MODEL(model)->groups[group].face_colours.materials;
             } else {
                 this_material = material;
             }
+#endif
             d = BrVector3Dot(&fp->eqn, ray_dir);
             if (fabsf(d) < 2.3841858e-7f) {
                 continue;
@@ -512,7 +538,11 @@ void C2_HOOK_FASTCALL ActorFindFace(br_vector3* pPosition, br_vector3* pDir, br_
     if (gNearest_T < 100.0f) {
         group = gNearest_face_group;
         BrVector3Copy(nor, &V11MODEL(gNearest_model)->groups[group].faces[gNearest_face].eqn);
+#ifdef CARPOCALYPSE2_FIX_BUGS
+        *material = DrGroupMaterial(gNearest_model, &V11MODEL(gNearest_model)->groups[group], NULL);
+#else
         *material = *V11MODEL(gNearest_model)->groups[group].face_colours.materials;
+#endif
         if (actor != NULL) {
             *actor = gNearest_actor;
         }
@@ -640,46 +670,38 @@ void C2_HOOK_FASTCALL FillInBounds(tBounds* bnds) {
         c[i].v[2] = bnds->mat->m[i][2] * b.v[i];
     }
     for (i = 0; i < 3; ++i) {
-        bnds->real_bounds.min.v[i] += MIN(c[0].v[i], 0.f)
-            + MIN(c[1].v[i], 0.f)
-            + MIN(c[2].v[i], 0.f);
-        bnds->real_bounds.max.v[i] += MAX(c[0].v[i], 0.f)
-            + MAX(c[1].v[i], 0.f)
-            + MAX(c[2].v[i], 0.f);
+        bnds->real_bounds.min.v[i] += (float)(c[2].v[i] < 0.f) * c[2].v[i]
+            + (float)(c[1].v[i] < 0.f) * c[1].v[i]
+            + (float)(c[0].v[i] < 0.f) * c[0].v[i];
+        bnds->real_bounds.max.v[i] += (float)(c[0].v[i] > 0.f) * c[0].v[i]
+            + (float)(c[2].v[i] > 0.f) * c[2].v[i]
+            + (float)(c[1].v[i] > 0.f) * c[1].v[i];
     }
 }
 
 // FUNCTION: CARMA2_HW 0x00425ba0
 int C2_HOOK_FASTCALL BoundsOverlapTest__finteray(br_bounds* b1, br_bounds* b2) {
     int i;
-    if (b1->min.v[0] > b2->max.v[0]
-           || b2->min.v[0] > b1->max.v[0]
+    if (b1->min.v[2] > b2->max.v[2]
+           || b2->min.v[2] > b1->max.v[2]
            || b1->min.v[1] > b2->max.v[1]
            || b2->min.v[1] > b1->max.v[1]
-           || b1->min.v[2] > b2->max.v[2]
-           || b2->min.v[2] > b1->max.v[2]) {
+           || b1->min.v[0] > b2->max.v[0]
+           || b2->min.v[0] > b1->max.v[0]) {
 
         return 0;
     }
 
     for (i = 0; i < 3; i++) {
-        if (!isfinite(b1->min.v[i])) {
-            return 0;
-        }
-        if (!isfinite(b1->max.v[i])) {
-            return 0;
-        }
-        if (!isfinite(b2->min.v[i])) {
-            return 0;
-        }
-        if (!isfinite(b2->max.v[i])) {
+        if (!isfinite(b1->min.v[i]) || !isfinite(b1->max.v[i])
+                || !isfinite(b2->min.v[i]) || !isfinite(b2->max.v[i])) {
             return 0;
         }
     }
     return 1;
 }
 
-void C2_HOOK_FASTCALL ClipToPlaneGE(br_scalar limit, br_vector3* p, int* nv, int i) {
+static void C2_HOOK_FASTCALL ClipToPlaneGE(br_scalar limit, br_vector3* p, int* nv, int i) {
     int last_vertex;
     int j;
     int vertex;
@@ -712,7 +734,7 @@ void C2_HOOK_FASTCALL ClipToPlaneGE(br_scalar limit, br_vector3* p, int* nv, int
     }
 }
 
-void C2_HOOK_FASTCALL ClipToPlaneLE(br_scalar limit, br_vector3* p, int* nv, int i) {
+static void C2_HOOK_FASTCALL ClipToPlaneLE(br_scalar limit, br_vector3* p, int* nv, int i) {
     int last_vertex;
     int j;
     int vertex;
@@ -847,11 +869,15 @@ int C2_HOOK_FASTCALL ModelPickBox(br_actor* actor, tBounds* bnds, br_model* mode
                     BrVector3Copy(&face_list->v[2], &v11g->vertices[v3].p);
                     BrVector3Copy(&face_list->normal, &v11f->eqn);
                 }
+#ifdef CARPOCALYPSE2_FIX_BUGS
+                face_list->material = DrGroupMaterial(model, v11g, model_material);
+#else
                 if (*v11g->face_colours.materials != NULL) {
                     face_list->material = *v11g->face_colours.materials;
                 } else {
                     face_list->material = model_material;
                 }
+#endif
                 if (pMat != NULL) {
                     face_list->d = BrVector3Dot(&face_list->v[0], &face_list->normal);
                 } else {
@@ -904,7 +930,7 @@ int C2_HOOK_FASTCALL ModelPickBox(br_actor* actor, tBounds* bnds, br_model* mode
     return max_face;
 }
 
-int C2_HOOK_FASTCALL BoundsTransformTest(br_bounds* b1, br_bounds* b2, br_matrix34* M) {
+static int C2_HOOK_FASTCALL BoundsTransformTest(br_bounds* b1, br_bounds* b2, br_matrix34* M) {
     br_scalar val;
     br_vector3 o;
 
@@ -1075,14 +1101,15 @@ int C2_HOOK_FASTCALL FindFacesInBox(tBounds* bnds, tFace_ref* face_list, int max
     tU8 cz_max;
     tTrack_spec* track_spec;
 
+    j = 0;
     track_spec = &gProgram_state.track_spec;
     FillInBounds(bnds);
     XZToColumnXZ(&cx_min, &cz_min, bnds->real_bounds.min.v[0], bnds->real_bounds.min.v[2], track_spec);
     XZToColumnXZ(&cx_max, &cz_max, bnds->real_bounds.max.v[0], bnds->real_bounds.max.v[2], track_spec);
-    if (cx_min != 0) {
+    if (cx_min > 0) {
         cx_min -= 1;
     }
-    if (cz_min != 0) {
+    if (cz_min > 0) {
         cz_min -= 1;
     }
     if (cx_max + 1 < track_spec->ncolumns_x) {
@@ -1091,7 +1118,6 @@ int C2_HOOK_FASTCALL FindFacesInBox(tBounds* bnds, tFace_ref* face_list, int max
     if (cz_max + 1 < track_spec->ncolumns_z) {
         cz_max += 1;
     }
-    j = 0;
     for (x = cx_min; x <= cx_max; x++) {
         for (z = cz_min; z <= cz_max; z++) {
             if (track_spec->columns[z][x].actor_0x0 != NULL) {

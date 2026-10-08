@@ -16,6 +16,7 @@ void C2_HOOK_FASTCALL InitPanGameAIWorld(void) {
     gNum_of_opponents_pursuing = 0;
     gNum_of_opponents_getting_near = 0;
     gNum_of_opponents_completing_race = 0;
+    LoadPanGameDroneInfo();
 #else
     PrintMemoryDump(0, "BEFORE LoadOpponents()");
     LoadOpponents();

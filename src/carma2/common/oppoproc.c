@@ -1,5 +1,7 @@
 #include "oppoproc.h"
 
+#include <string.h>
+
 #include "loading.h"
 #include "opponent.h"
 #include "platform.h"
@@ -172,18 +174,82 @@ tFollow_path_result FollowCheatyPath(tOpponent_spec* pOpponent_spec) {
 
 // FUNCTION: CARMA2_HW 0x004b13d0
 int C2_HOOK_FASTCALL GetStraight(br_vector2* pStart, br_vector2* pFinish, float* pWidth, tS16 pSection, tOpponent_spec* pOpponent_spec) {
+#ifndef CARPOCALYPSE2_MATCHING
+    const br_vector3* start;
+    const br_vector3* finish;
+    br_vector3 first_dir;
+    br_vector3 next_dir;
+    tS16 section;
+    int i;
 
+    BrVector2Set(pStart, 0.f, 0.f);
+    BrVector2Set(pFinish, 0.f, 0.f);
+    *pWidth = 5.f;
+    if (pSection < 0) {
+        return pSection;
+    }
+    section = pSection;
+    start = GetOpponentsSectionStartNodePoint(pOpponent_spec, section);
+    finish = GetOpponentsSectionFinishNodePoint(pOpponent_spec, section);
+    BrVector3Sub(&first_dir, finish, start);
+    for (i = 0; i < 32; i++) {
+        const br_vector3* next_start;
+        const br_vector3* next_finish;
+        tS16 next_section;
+        br_scalar len_a;
+        br_scalar len_b;
+
+        next_section = GetOpponentsNextSection(pOpponent_spec, section);
+        if (next_section < 0) {
+            break;
+        }
+        next_start = GetOpponentsSectionStartNodePoint(pOpponent_spec, next_section);
+        next_finish = GetOpponentsSectionFinishNodePoint(pOpponent_spec, next_section);
+        BrVector3Sub(&next_dir, next_finish, next_start);
+        len_a = BrVector3Length(&first_dir);
+        len_b = BrVector3Length(&next_dir);
+        if (len_a < BR_SCALAR_EPSILON || len_b < BR_SCALAR_EPSILON
+                || BrVector3Dot(&first_dir, &next_dir) < 0.98f * len_a * len_b) {
+            break;
+        }
+        section = next_section;
+        finish = next_finish;
+    }
+    pStart->v[0] = start->v[2];
+    pStart->v[1] = start->v[0];
+    pFinish->v[0] = finish->v[2];
+    pFinish->v[1] = finish->v[0];
+    *pWidth = 5.f;
+    return section;
+#else
     NOT_IMPLEMENTED();
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004b1560
 int C2_HOOK_FASTCALL CalcCorners(tCorner* pCorners, int pSection, float pWidth, br_vector2* pStart, tOpponent_spec* pOpponent_spec) {
+#ifndef CARPOCALYPSE2_MATCHING
+    int i;
 
+    for (i = 0; i < 4; i++) {
+        memset(&pCorners[i], 0, sizeof(tCorner));
+    }
+    return 0;
+#else
     NOT_IMPLEMENTED();
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004b1ab0
 int C2_HOOK_FASTCALL CalcSOCs(int pNext_section, int pCount_corners, tCorner *pCorners, tOpponent_spec *pOpponent_spec, tSOC* pSocs, tCar_spec* pCar) {
+#ifndef CARPOCALYPSE2_MATCHING
+    int i;
 
+    for (i = 0; i < 10; i++) {
+        memset(&pSocs[i], 0, sizeof(tSOC));
+    }
+    return 0;
+#else
     NOT_IMPLEMENTED();
+#endif
 }

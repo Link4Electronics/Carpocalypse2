@@ -565,8 +565,8 @@ intptr_t C2_HOOK_CDECL FoundAnActor(br_actor* pActor, void* pContext) {
     }
 
     {
-        char actor_type = (char)*(tU8*)((tU8*)pActor + 0x12);
-        char* name = *(char**)((tU8*)pActor + 0x14);
+        char actor_type = (char)pActor->type;
+        char* name = pActor->identifier;
 
         if (actor_type != 1 && (c->match_flags & 0x10) == 0) {
             if (name != NULL && *name == 0x26) {
@@ -585,7 +585,7 @@ intptr_t C2_HOOK_CDECL FoundAnActor(br_actor* pActor, void* pContext) {
             if (actor_type != 1) {
                 goto fail;
             }
-            s = *(char**)(*(char**)((tU8*)pActor + 0x18) + 4);
+            s = pActor->model->identifier;
             if (s == NULL) {
                 goto fail;
             }

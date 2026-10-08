@@ -2,6 +2,7 @@
 #include "world.h"
 #include <ctype.h>
 #include "loading1.h"
+#include "loading.h"
 #include "utility.h"
 #include "fog.h"
 #include "errors.h"
@@ -12,6 +13,12 @@
 #include "globvars.h"
 #include "globvrpb.h"
 #include "drmem.h"
+#include "depth.h"
+#include "flicplay.h"
+#include "pedestrn.h"
+#include "smashing.h"
+#include "spark.h"
+#include "platform.h"
 #ifdef CARPOCALYPSE2_MATCHING
 #include "c2_hooks.h"
 #endif
@@ -20,6 +27,35 @@
 #include <string.h>
 extern void C2_HOOK_FASTCALL LoadTrackMaterials(tBrender_storage* pStorage, const char* pPath);
 extern void C2_HOOK_FASTCALL LoadTrackModels(tBrender_storage* pStorage, const char* pPath);
+
+/* GLOBAL: CARMA2_HW 0x006b6400 */
+extern char gAdditional_model_path[256];
+/* GLOBAL: CARMA2_HW 0x006b6500 */
+extern char gAdditional_actor_path[256];
+/* GLOBAL: CARMA2_HW 0x006b6620 */
+extern br_model* gAdditional_models[1000];
+/* GLOBAL: CARMA2_HW 0x006ab948 */
+extern int gNumber_of_additional_models;
+/* GLOBAL: CARMA2_HW 0x006b6600 */
+extern br_actor* gLast_actor;
+/* GLOBAL: CARMA2_HW 0x006aaf40 */
+extern tU8* gTrack_flic_buffer;
+/* GLOBAL: CARMA2_HW 0x006aaf48 */
+extern tU32 gTrack_flic_buffer_size;
+/* GLOBAL: CARMA2_HW 0x006aaf50 */
+extern tFlic_descriptor gTrack_flic_descriptor;
+/* GLOBAL: CARMA2_HW 0x0074caa8 */
+extern int gTrack_depth_colour_red;
+/* GLOBAL: CARMA2_HW 0x0074cf2c */
+extern int gTrack_depth_colour_green;
+/* GLOBAL: CARMA2_HW 0x0074cad0 */
+extern int gTrack_depth_colour_blue;
+/* GLOBAL: CARMA2_HW 0x00660e90 */
+extern const char* gDepth_effect_names[3];
+/* GLOBAL: CARMA2_HW 0x0079ef40 */
+extern tU8 gNon_car_spec_indices[100];
+/* GLOBAL: CARMA2_HW 0x00591368 */
+extern int gRendering_accessories;
 // GLOBAL: CARMA2_HW 0x00762180
 char gCurrent_load_directory[256];
 
@@ -205,7 +241,9 @@ void C2_HOOK_FASTCALL LoadTrack(const char* pFile_name, tTrack_spec* pTrack_spec
     char local_race_path[256];
     char actor_path[256];
     char lighting_file[256];
+    char non_cars_path[256];
     FILE* f;
+    FILE* g;
     char delimiter[4];
     int version;
     float temp_float;
@@ -213,6 +251,15 @@ void C2_HOOK_FASTCALL LoadTrack(const char* pFile_name, tTrack_spec* pTrack_spec
     tMaterial_exception* matexc;
     tTrack_loading_data* data;
     int i;
+    int j;
+    tTWTVFS twt;
+    tTWTVFS county_twt;
+    br_pixelmap* sky;
+    br_angle sky_pixels_high;
+    int killed_sky;
+    int count_material_modifiers;
+    int count_noncar_objects;
+    int rstyle;
 
     PrintMemoryDump(0, "AT THE START OF LOAD TRACK");
     strcpy(gCurrent_load_directory, "RACES");
@@ -270,7 +317,7 @@ void C2_HOOK_FASTCALL LoadTrack(const char* pFile_name, tTrack_spec* pTrack_spec
 
     PathCat(gRace_path, gRace_path, local_name);
 
-    OpenPackFileAndSetTiffLoading(gRace_path);
+    twt = OpenPackFileAndSetTiffLoading(gRace_path);
 
     PathCat(lighting_file, gRace_path, "LIGHTING.TXT");
     PathCat(track_file, gRace_path, local_name);
@@ -300,22 +347,22 @@ void C2_HOOK_FASTCALL LoadTrack(const char* pFile_name, tTrack_spec* pTrack_spec
     GetALineAndDontArgue(f, s2);
     str = strtok(s2, "\t ,/");
     sscanf(str, "%f", &temp_float);
-    data->col_vol_direction_x = temp_float;
+    pRace_info->initial_position.v[0] = temp_float;
     str = strtok(NULL, "\t ,/");
     sscanf(str, "%f", &temp_float);
-    data->col_vol_direction_y = temp_float;
+    pRace_info->initial_position.v[1] = temp_float;
     str = strtok(NULL, "\t ,/");
     sscanf(str, "%f", &temp_float);
-    data->col_vol_direction_z = temp_float;
+    pRace_info->initial_position.v[2] = temp_float;
     PossibleService();
     GetALineAndDontArgue(f, s2);
     str = strtok(s2, "\t ,/");
     sscanf(str, "%f", &temp_float);
-    data->col_vol_direction_w = temp_float;
+    pRace_info->initial_yaw = temp_float;
     PossibleService();
-    data->count = GetAnInt(f);
+    pRace_info->check_point_count = GetAnInt(f);
 
-    for (i = 0; i < data->count; i++) {
+    for (i = 0; i < pRace_info->check_point_count; i++) {
         br_vector3 a;
         br_vector3 b;
         int j;
@@ -354,15 +401,14 @@ void C2_HOOK_FASTCALL LoadTrack(const char* pFile_name, tTrack_spec* pTrack_spec
     {
         char county_pack_path[256];
         char county_stem[256];
-        tTWTVFS twt;
 
         strcpy(county_stem, local_name);
         county_stem[4] = '\0';
         PathCat(county_pack_path, gApplication_path, "RACES");
         PathCat(county_pack_path, county_pack_path, county_stem);
-        twt = OpenPackFile(county_pack_path);
+        county_twt = OpenPackFile(county_pack_path);
         LoadAllImagesInDirectory(&gTrack_storage_space, county_pack_path);
-        ClosePackFile(twt);
+        ClosePackFile(county_twt);
     }
     PossibleService();
     LoadAllImagesInDirectory(&gTrack_storage_space, gRace_path);
@@ -372,21 +418,389 @@ void C2_HOOK_FASTCALL LoadTrack(const char* pFile_name, tTrack_spec* pTrack_spec
     LoadTrackMaterials(&gTrack_storage_space, gRace_path);
     PossibleService();
     LoadTrackModels(&gTrack_storage_space, gRace_path);
-    PossibleService();
 
     for (i = 0; i < gTrack_storage_space.models_count; i++) {
+        PossibleService();
         MungeTrackModel(gTrack_storage_space.models[i]);
     }
+    PrintMemoryDump(0, "JUST LOADED IN TEXTURES/MATS/MODELS FOR TRACK");
 
     PathCat(actor_path, gRace_path, local_name);
     strcat(actor_path, ".ACT");
     pTrack_spec->the_actor = BrActorLoad(actor_path);
+    PrintMemoryDump(0, "AFTER LOADING TRACK ACTORS");
+    PossibleService();
+
+    /* Smashable environment specs */
+    ReadSmashableEnvironment(f, gRace_path);
+    PrintMemoryDump(0, "AFTER LOADING SMASHABLE ENVIRONMENT");
+
+    /* Ped specs */
+    ReadPedSpecs(f);
+    PossibleService();
+
+    PackFileRevertTiffLoading();
+    ExtractColumns(pTrack_spec);
+    PackFileRerevertTiffLoading();
+
+    FinishUpLoadingPeds();
+    PrintMemoryDump(0, "JUST EXTRACTED COLUMNS AND LOADED IN PEDS");
 
     gTrack_actor = pTrack_spec->the_actor;
-
+    if (!gRendering_accessories && gNet_mode == eNet_mode_none) {
+        rstyle = BR_RSTYLE_NONE;
+        PossibleService();
+        DRActorEnumRecurse(gTrack_actor, SetAccessoryRenderingCB, &rstyle);
+    }
     BrActorAdd(gUniverse_actor, pTrack_spec->the_actor);
 
-    ExtractColumns(pTrack_spec);
+    /* Additional actor */
+    GetALineAndDontArgue(f, s);
+    str = strtok(strtok(s, "\t ,/"), ".");
+    strcat(str, ".DAT");
+    PathCat(gAdditional_model_path, gApplication_path, "MODELS");
+    PathCat(gAdditional_model_path, gAdditional_model_path, str);
+    PossibleService();
+    gNumber_of_additional_models = BrModelLoadMany(gAdditional_model_path, gAdditional_models, CARPOCALYPSE2_ASIZE(gAdditional_models));
+    for (i = 0; i < gNumber_of_additional_models; i++) {
+        gAdditional_models[i]->flags = BR_MODF_UPDATEABLE;
+    }
+    BrModelAddMany(gAdditional_models, gNumber_of_additional_models);
+    PossibleService();
+
+    str = strtok(strtok(s, "\t ,/"), ".");
+    strcat(str, ".ACT");
+    PathCat(gAdditional_actor_path, gApplication_path, "ACTORS");
+    PathCat(gAdditional_actor_path, gAdditional_actor_path, str);
+    gAdditional_actors = BrActorLoad(gAdditional_actor_path);
+    if (gAdditional_actors == NULL) {
+        gAdditional_actors = BrActorAllocate(BR_ACTOR_NONE, NULL);
+    }
+    BrActorAdd(gUniverse_actor, gAdditional_actors);
+    gLast_actor = NULL;
+
+    /* Name of sky texture pixelmap (or "none") */
+    GetAString(f, s);
+    if (!gAusterity_mode && strcmp(&s[strlen(s) - 4], ".FLI") == 0) {
+        void* flic_pixels;
+
+        gTrack_flic_buffer = NULL;
+        if (!LoadFlicData(s, &gTrack_flic_buffer, &gTrack_flic_buffer_size)) {
+            FatalError(kFatalError_CantFindFile_S, s);
+        }
+        StartFlic(s, -1, &gTrack_flic_descriptor, gTrack_flic_buffer_size, (tS8*)gTrack_flic_buffer, NULL, 0, 0, 0);
+        flic_pixels = BrMemAllocate(((gTrack_flic_descriptor.width + 3) & ~3) * gTrack_flic_descriptor.height, kMem_video_pixels);
+        sky = DRPixelmapAllocate(gScreen->type, gTrack_flic_descriptor.width, gTrack_flic_descriptor.height, flic_pixels, 0);
+        BrMapAdd(sky);
+        AssertFlicPixelmap(&gTrack_flic_descriptor, sky);
+    } else {
+        gTrack_flic_buffer = NULL;
+        sky = BrMapFind(s);
+    }
+    killed_sky = 0;
+    if (gAusterity_mode && sky != NULL) {
+        for (i = 0; i < gTrack_storage_space.pixelmaps_count; i++) {
+            if (gTrack_storage_space.pixelmaps[i] == sky) {
+                BrMapRemove(gTrack_storage_space.pixelmaps[i]);
+                BrPixelmapFree(gTrack_storage_space.pixelmaps[i]);
+                gTrack_storage_space.pixelmaps[i] = gTrack_storage_space.pixelmaps[gTrack_storage_space.pixelmaps_count - 1];
+                gTrack_storage_space.pixelmaps_count--;
+                break;
+            }
+        }
+        sky = NULL;
+        killed_sky = 1;
+    }
+    gProgram_state.default_depth_effect.sky_texture = sky;
+    if (sky != NULL) {
+        sky_pixels_high = sky->height;
+    } else {
+        sky_pixels_high = 100;
+    }
+    PossibleService();
+
+    /* Horizontal repetitions of sky texture */
+    gSky_image_width = BrDegreeToAngle(360.0 / GetAnInt(f));
+
+    /* Vertical size of sky texture (degrees) */
+    gSky_image_height = BrDegreeToAngle(GetAScalar(f));
+
+    /* Position of horizon (pixels below top) */
+    gSky_image_underground = gSky_image_height * (sky_pixels_high - GetAnInt(f)) / sky_pixels_high;
+
+    MungeForwardSky();
+    MungeRearviewSky();
+    PossibleService();
+
+    /* Depth cue mode ("none", "dark" or "fog") */
+    gProgram_state.default_depth_effect.type = GetALineAndInterpretCommand(f, (const char**)gDepth_effect_names, CARPOCALYPSE2_ASIZE(gDepth_effect_names));
+
+    /* Degree of fog/darkness */
+    GetPairOfInts(f, &gProgram_state.default_depth_effect.start, &gProgram_state.default_depth_effect.end);
+
+    /* Depth cue colour (red, green, blue) */
+    GetThreeInts(f, &gProgram_state.default_depth_effect.colour.red, &gProgram_state.default_depth_effect.colour.green, &gProgram_state.default_depth_effect.colour.blue);
+    gTrack_depth_colour_red = gProgram_state.default_depth_effect.colour.red;
+    gTrack_depth_colour_green = gProgram_state.default_depth_effect.colour.green;
+    gTrack_depth_colour_blue = gProgram_state.default_depth_effect.colour.blue;
+    ChangeDepthEffect();
+
+    if (killed_sky && gProgram_state.default_depth_effect.type != eDepth_effect_fog) {
+        gProgram_state.default_depth_effect.type = eDepth_effect_fog;
+        gProgram_state.default_depth_effect.start = 7;
+        gProgram_state.default_depth_effect.end = 0;
+        gProgram_state.default_depth_effect.colour.red = 0xf8;
+        gProgram_state.default_depth_effect.colour.green = 0xf8;
+        gProgram_state.default_depth_effect.colour.blue = 0xf8;
+    }
+    PossibleService();
+    ReadSpecialVolumes(f);
+    ReadSoundGenerators(pTrack_spec, f);
+
+    /* Material to use for default screens */
+    GetAString(f, s);
+    gProgram_state.standard_screen = BrMapFind(s);
+
+    /* Material to use for default screens during darkness */
+    GetAString(f, s);
+    gProgram_state.standard_screen_dark = BrMapFind(s);
+
+    /* Material to use for default screens during fog */
+    GetAString(f, s);
+    gProgram_state.standard_screen_fog = BrMapFind(s);
+
+    gProgram_state.special_screens_count = GetAnInt(f);
+    if (gProgram_state.special_screens_count != 0) {
+        gProgram_state.special_screens = BrMemAllocate(sizeof(tSpecial_screen) * gProgram_state.special_screens_count, kMem_special_screen);
+        for (i = 0; i < gProgram_state.special_screens_count; i++) {
+            GetFourScalars(f,
+                &gProgram_state.special_screens[i].min_x,
+                &gProgram_state.special_screens[i].min_z,
+                &gProgram_state.special_screens[i].max_x,
+                &gProgram_state.special_screens[i].max_z);
+            GetAString(f, s);
+            gProgram_state.special_screens[i].material = BrMaterialFind(s);
+        }
+    }
+
+    PossibleService();
+
+    /* Map pixelmap name */
+    GetAString(f, s);
+    pRace_info->map_image = BrMapFind(s);
+    if (pRace_info->map_image == NULL) {
+        strtok(s, ".");
+        pRace_info->map_image = BrMapFind(s);
+        if (pRace_info->map_image == NULL) {
+            Uppercaseificate(s, s);
+            pRace_info->map_image = BrMapFind(s);
+        }
+    }
+    BRPM_convert(pRace_info->map_image, gBack_screen->type);
+    PrintMemoryDump(0, "JUST LOADING SKY/SPEC VOLS/SCREENS/MAP");
+
+    /* World->map transformation matrix */
+    for (i = 0; i < 4; ++i) {
+        GetThreeScalars(f,
+            &pRace_info->map_transformation.m[i][0],
+            &pRace_info->map_transformation.m[i][1],
+            &pRace_info->map_transformation.m[i][2]);
+    }
+    if (gGraf_specs[gGraf_spec_index].total_width != 640 || gGraf_specs[gGraf_spec_index].total_height != 480) {
+        pRace_info->map_transformation.m[3][0] -= 320.f;
+        pRace_info->map_transformation.m[3][1] -= 240.f;
+        BrMatrix34PostRotateX(&pRace_info->map_transformation, BrDegreeToAngle(90));
+        BrMatrix34PostScale(&pRace_info->map_transformation,
+            (float)gGraf_specs[gGraf_spec_index].total_width / (float)640,
+            0.f,
+            (float)gGraf_specs[gGraf_spec_index].total_height / (float)480);
+        BrMatrix34PostRotateX(&pRace_info->map_transformation, BrDegreeToAngle(270));
+        pRace_info->map_transformation.m[3][0] += (float)gGraf_specs[gGraf_spec_index].total_width / 2;
+        pRace_info->map_transformation.m[3][1] += (float)gGraf_specs[gGraf_spec_index].total_height / 2;
+    }
+
+    /* START OF FUNK */
+    GetALineAndDontArgue(f, s);
+    AddFunkotronics(f, -2, 30 * GROOVE_FUNK_MAX_PER_CAR, NULL);
+
+    /* START OF GROOVE */
+    GetALineAndDontArgue(f, s);
+    AddGroovidelics(f, -2, gUniverse_actor, 30 * GROOVE_FUNK_MAX_PER_CAR, 0);
+
+    PossibleService();
+    PrintMemoryDump(0, "JUST LOADING IN FUNKS AND GROOVES");
+
+    for (i = 0; i < gTrack_storage_space.models_count; i++) {
+        br_model* model;
+
+        PossibleService();
+        model = gTrack_storage_space.models[i];
+        PossibleTreeSurgery(model);
+        if (model != NULL && (model->flags & (BR_MODF_KEEP_ORIGINAL | BR_MODF_UPDATEABLE))) {
+            if (model->identifier != NULL && model->identifier[0] != '-') {
+                model->flags &= ~(BR_MODF_KEEP_ORIGINAL | BR_MODF_UPDATEABLE);
+            }
+            for (j = 0; j < V11MODEL(model)->ngroups; j++) {
+                v11group* v11_group = &V11MODEL(model)->groups[j];
+
+                br_material* material = model->faces[*v11_group->face_user].material;
+
+                *v11_group->face_colours.materials = material;
+                if (material != NULL) {
+                    SmoothificateWorldMaterial(material);
+                    if (material->index_shade == NULL) {
+                        material->index_shade = BrTableFind("DRRENDER.TAB");
+                        BrMaterialUpdate(material, BR_MATU_ALL);
+                    }
+                }
+            }
+            if (model->flags & BR_MODF_UPDATEABLE) {
+                BrModelUpdate(model, BR_MODU_ALL);
+            } else {
+                DodgyModelUpdate(model);
+            }
+        }
+    }
+    PossibleService();
+
+    PrintMemoryDump(0, "JUST ABOUT TO LOAD IN AI WORLD");
+    LoadAIWorldTrackInfo(f);
+    PrintMemoryDump(0, "JUST LOADED IN AI WORLD");
+    MungeSmashMaterialNames();
+    PackFileRevertTiffLoading();
+
+    /* number of material modifiers */
+    count_material_modifiers = GetAnInt(f);
+
+    for (i = 0; i < count_material_modifiers; i++) {
+        tMaterial_modifiers* modifier = &pRace_info->material_modifiers[i];
+
+        modifier->car_wall_friction = GetAFloat(f);
+        modifier->tyre_road_friction = GetAFloat(f);
+        modifier->down_force = GetAFloat(f);
+        modifier->bumpiness = GetAFloat(f);
+        modifier->tyre_noise_index = GetAnInt(f);
+        modifier->crash_noise_index = GetAnInt(f);
+        modifier->scrape_noise_index = GetAnInt(f);
+        modifier->sparkiness = GetAFloat(f);
+        modifier->smoke_type = GetAnInt(f);
+        GetAString(f, s);
+        str = strtok(s, ".");
+        if (strcmp(str, "none") == 0 || strcmp(str, "NONE") == 0 ||
+            strcmp(str, "0") == 0 || strcmp(str, "1") == 0) {
+            modifier->skid_mark_material = NULL;
+        } else {
+            strcat(str, ".PIX");
+            LoadSinglePixelmap(&gTrack_storage_space, str);
+            str[strlen(str) - 4] = '\0';
+            strcat(str, ".MAT");
+            modifier->skid_mark_material = LoadSingleMaterial(&gTrack_storage_space, str);
+        }
+    }
+    PackFileRerevertTiffLoading();
+
+    for (i = count_material_modifiers; i < CARPOCALYPSE2_ASIZE(pRace_info->material_modifiers) - 1; i++) {
+        tMaterial_modifiers* modifier = &pRace_info->material_modifiers[i];
+
+        modifier->car_wall_friction = 1.f;
+        modifier->tyre_road_friction = 1.f;
+        modifier->down_force = 1.f;
+        modifier->bumpiness = 0.f;
+        modifier->tyre_noise_index = 0;
+        modifier->crash_noise_index = 0;
+        modifier->scrape_noise_index = 0;
+        modifier->sparkiness = 1.f;
+        modifier->smoke_type = 1;
+        modifier->skid_mark_material = NULL;
+    }
+    pRace_info->material_modifiers[CARPOCALYPSE2_ASIZE(pRace_info->material_modifiers) - 1].car_wall_friction = 1.f;
+    pRace_info->material_modifiers[CARPOCALYPSE2_ASIZE(pRace_info->material_modifiers) - 1].tyre_road_friction = 1.f;
+    pRace_info->material_modifiers[CARPOCALYPSE2_ASIZE(pRace_info->material_modifiers) - 1].down_force = 0.f;
+    pRace_info->material_modifiers[CARPOCALYPSE2_ASIZE(pRace_info->material_modifiers) - 1].bumpiness = 0.f;
+    pRace_info->material_modifiers[CARPOCALYPSE2_ASIZE(pRace_info->material_modifiers) - 1].tyre_noise_index = -1;
+    pRace_info->material_modifiers[CARPOCALYPSE2_ASIZE(pRace_info->material_modifiers) - 1].crash_noise_index = 0;
+    pRace_info->material_modifiers[CARPOCALYPSE2_ASIZE(pRace_info->material_modifiers) - 1].scrape_noise_index = 0;
+    pRace_info->material_modifiers[CARPOCALYPSE2_ASIZE(pRace_info->material_modifiers) - 1].sparkiness = 0.f;
+    pRace_info->material_modifiers[CARPOCALYPSE2_ASIZE(pRace_info->material_modifiers) - 1].smoke_type = 1;
+    pRace_info->material_modifiers[CARPOCALYPSE2_ASIZE(pRace_info->material_modifiers) - 1].skid_mark_material = NULL;
+
+    gDefault_water_spec_vol_real->material_modifier_index = 10;
+
+    /* Non CarObjects */
+    count_noncar_objects = GetAnInt(f);
+    if (count_noncar_objects > 40) {
+        PDFatalError("Too many non-car types");
+    }
+    gProgram_state.num_non_car_spaces = count_noncar_objects + gCount_smashable_noncars + 40;
+    gProgram_state.non_cars = BrMemCalloc(gProgram_state.num_non_car_spaces, sizeof(tNon_car_spec), kMem_non_car_spec);
+    if (gProgram_state.non_cars == NULL && count_noncar_objects != 0) {
+        FatalError(kFatalError_CannotOpenRacesFile);
+    }
+    memset(gNon_car_spec_indices, 0, sizeof(gNon_car_spec_indices));
+    for (i = 0; i < 40; i++) {
+        tPhysics_object* collision_info;
+        tNon_car_spec* non_car;
+
+        non_car = &gProgram_state.non_cars[i];
+        non_car->driver = eDriver_non_car_unused_slot;
+        collision_info = BrMemAllocate(sizeof(tPhysics_object), kMem_collision_object);
+        non_car->collision_info = collision_info;
+        collision_info->owner = non_car;
+        collision_info->flags_0x238 = 1;
+        collision_info->field_0x1a0 = 0xffff;
+        collision_info->field_0x1a4 = 0;
+    }
+    for (i = 0; i < count_noncar_objects + gCount_smashable_noncars; i++) {
+        tPhysics_object* collision_info;
+        tNon_car_spec* non_car;
+
+        PossibleService();
+        non_car = &gProgram_state.non_cars[40 + i];
+        collision_info = BrMemAllocate(sizeof(tPhysics_object), kMem_collision_object);
+        non_car->collision_info = collision_info;
+        collision_info->owner = non_car;
+        collision_info->flags_0x238 = 1;
+        collision_info->field_0x1a0 = 0xffff;
+        collision_info->field_0x1a4 = 0;
+
+        if (i < count_noncar_objects) {
+            GetAString(f, s);
+        } else {
+            strcpy(s, gSmashable_noncars[i - count_noncar_objects]);
+        }
+        PathCat(non_cars_path, gApplication_path, "NONCARS");
+        PathCat(non_cars_path, non_cars_path, s);
+        g = DRfopen(non_cars_path, "rt");
+        if (g == NULL) {
+            FatalError(kFatalError_CantOpen_S, non_cars_path);
+        }
+        ReadNonCarMechanicsData(g, non_car);
+        PossibleService();
+        gNon_car_spec_indices[non_car->index] = i + 1;
+        PFfclose(g);
+    }
+    DisposeSmashEnvNonCars();
+    CheckNonCarModelBounds();
+    GetSmokeShadeTables(f);
+    pRace_info->count_network_start_points = GetAnInt(f);
+    for (i = 0; i < pRace_info->count_network_start_points; i++) {
+        GetThreeScalars(f,
+            &pRace_info->net_starts[i].pos.v[0],
+            &pRace_info->net_starts[i].pos.v[1],
+            &pRace_info->net_starts[i].pos.v[2]);
+        pRace_info->net_starts[i].yaw = GetAFloat(f);
+    }
+    LoadInKevStuff(f);
+    gYon_multiplier = GetAFloat(f);
+    GetAString(f, s);
+    if (DRStricmp(s, pFile_name) != 0) {
+        FatalError(kFatalError_FileIsCorrupted_S, pFile_name);
+    }
+    PFfclose(f);
+    FreeExceptions();
+    PrintMemoryDump(0, "FINISHED LOADING TRACK");
+    LoadStaticLightingForRace(lighting_file);
+    ClosePackFileAndSetTiffLoading(twt);
 }
 
 // RemoveBounds
@@ -864,12 +1278,20 @@ int C2_HOOK_FASTCALL AddMaterials(tBrender_storage* pStorage_space, const char* 
 // FUNCTION: CARMA2_HW 0x00502210
 void C2_HOOK_FASTCALL DodgyModelUpdate(br_model* pM) {
 
+#ifndef CARPOCALYPSE2_MATCHING
+    /* Retail drops faces/vertices once the model is prepared to save memory.
+     * Readers (ProcessModelFaceMaterials2, the raycasts) need them though:
+     * the v11group face_colours union is a 4-byte br_colour array, which
+     * cannot hold a material pointer on 64-bit. */
+    return;
+#else
     BrResFree(pM->faces);
     BrResFree(pM->vertices);
     pM->nfaces = 0;
     pM->nvertices = 0;
     pM->faces = NULL;
     pM->vertices = NULL;
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x005024b0

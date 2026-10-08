@@ -5502,6 +5502,15 @@ int C2_HOOK_FASTCALL CalmDownAllPeds(void) {
 // FUNCTION: CARMA2_HW 0x004cadc0
 void C2_HOOK_FASTCALL InitPolyPedSystem(void) {
 #ifndef CARPOCALYPSE2_MATCHING
+    if (gPedsFolder == NULL) {
+        gPedsFolder = "PEDS";
+        SetDefaultSoundFolderName();
+        SetDefaultPowerupFilename();
+        SetDefaultTextFileName();
+        SetDefaultPixelmapFolderName();
+    }
+    InitBoner(&gPed_forms_vtable);
+    ReadSettingsFile();
     InitFaceCaches();
     InitOtherPedStuff();
     InitNapalmNolts();
