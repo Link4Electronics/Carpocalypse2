@@ -64,6 +64,7 @@
 #define TEXT_TO_NUMBER_4(S) (10 * TEXT_TO_NUMBER_3(S) + TEXT_TO_NUMBER_1((S)+3))
 
 #define VEHICLE_TYPE_FROM_ID(id) ((tVehicle_type)(id >> 8))
+#define VEHICLE_INDEX_FROM_ID(id) ((id) & 0x00ff)
 
 #define RGB565_TO_BACKSCREEN_COLOUR(R5, G6, B5) (gBack_screen->type == BR_PMT_RGB_565 ? (((R5) << 11) | ((G6) << 5) | (B5)) : (((R5) << 10) | (((G6) >> 1) << 5) | (B5)))
 

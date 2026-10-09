@@ -1,0 +1,3 @@
+address,type,name,size
+0x679408,global,last_skid_vol,8
+0x7623a0,global,gCurrent_race,0x10c0

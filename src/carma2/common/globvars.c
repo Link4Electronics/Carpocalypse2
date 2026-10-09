@@ -94,6 +94,9 @@ tBrender_storage gTheir_cars_storage_space;
 // GLOBAL: CARMA2_HW 0x00762340
 tBrender_storage gDroneStorage;
 
+// GLOBAL: CARMA2_HW 0x006b7820
+tBrender_storage* gStorage_for_callbacks;
+
 // GLOBAL: CARMA2_HW 0x0074d5a0
 tBrender_storage gPedStorage;
 
@@ -262,8 +265,7 @@ int gGame_to_load = -1;
 // GLOBAL: CARMA2_HW 0x007623a0
 tRace_info gCurrent_race;
 
-// GLOBAL: CARMA2_HW 0x007632a8
-// tMaterial_modifiers gFriction_materials[11];  -- alias of gCurrent_race.material_modifiers
+// In CARMA2_HW.EXE, address 0x007632a8 is an alias of gCurrent_race.material_modifiers
 
 // GLOBAL: CARMA2_HW 0x0068be3c
 int gGame_initialized;

@@ -226,12 +226,6 @@ void C2_HOOK_FASTCALL AddVouchers(int amount) {
     gRecovery_voucher_count += amount;
 }
 
-// FUNCTION: CARMA2_HW 0x00444710
-void C2_HOOK_FASTCALL ResetVouchers(void) {
-
-    gRecovery_voucher_count = 0;
-}
-
 // GLOBAL: CARMA2_HW 0x0079ec54
 int gAuto_repair;
 

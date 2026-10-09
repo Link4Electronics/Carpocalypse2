@@ -49,6 +49,7 @@
 
 #include "c2_math.h"
 #include "car.h"
+#include "joystick.h"
 
 // GLOBAL: CARMA2_HW 0x005895f0
 double gZero = 1.0;
@@ -695,7 +696,7 @@ float C2_HOOK_FASTCALL GetCarOverallBoundsMinY(tCar_spec* pCar) {
 }
 
 // FUNCTION: CARMA2_HW 0x0041fc60
-void C2_HOOK_FAKE_THISCALL SetCarSuspGiveAndHeight(tCar_spec* pCar, undefined4 pArg2, float pFront_give_factor, float pRear_give_factor, float pDamping_factor, float pExtra_front_height, float pExtra_rear_height) {
+void C2_HOOK_FAKE_THISCALL SetCarSuspGiveAndHeight(tCar_spec* pCar, float pFront_give_factor, float pRear_give_factor, float pDamping_factor, float pExtra_front_height, float pExtra_rear_height) {
     float ratio;
     float front_give;
     float rear_give;
@@ -1373,7 +1374,6 @@ void C2_HOOK_FASTCALL SetInitialPosition(tRace_info* pThe_race, int pCar_index, 
 void C2_HOOK_FASTCALL InitialiseCar2(tCar_spec* pCar, int pClear_disabled_flag) {
     int index;
     int j;
-    br_actor* car_actor;
     br_matrix34 safe_position;
     tNet_game_player_info* net_player;
 
@@ -1392,7 +1392,6 @@ void C2_HOOK_FASTCALL InitialiseCar2(tCar_spec* pCar, int pClear_disabled_flag) 
             }
         }
     }
-    car_actor = pCar->car_master_actor;
     InitCarSkidStuff(pCar);
     pCar->car_model_actor->render_style = BR_RSTYLE_DEFAULT;
     SwitchCarModels(pCar, 0);
@@ -1406,7 +1405,7 @@ void C2_HOOK_FASTCALL InitialiseCar2(tCar_spec* pCar, int pClear_disabled_flag) 
     BrVector3SetFloat(&pCar->collision_info->omega, 0.f, 0.f, 0.f);
     pCar->curvature = 0.f;
     pCar->field_0x1260 = 0.f;
-    BrMatrix34Copy(&safe_position, &car_actor->t.t.mat);
+    BrMatrix34Copy(&safe_position, &pCar->car_master_actor->t.t.mat);
     if (safe_position.m[3][0] > 500.0f) {
         BrVector3Sub((br_vector3*)safe_position.m[3], (br_vector3*)safe_position.m[3], &gInitial_position);
     }
@@ -1419,7 +1418,7 @@ void C2_HOOK_FASTCALL InitialiseCar2(tCar_spec* pCar, int pClear_disabled_flag) 
     pCar->gear = 0;
     pCar->revs = 0.f;
     pCar->traction_control = 1;
-    BrVector3Negate(&pCar->direction, (br_vector3*)car_actor->t.t.mat.m[2]);
+    BrVector3Negate(&pCar->direction, (br_vector3*)pCar->car_master_actor->t.t.mat.m[2]);
     for (j = 0; j < CARPOCALYPSE2_ASIZE(pCar->last_safe_positions); j++) {
         BrMatrix34Copy(&pCar->last_safe_positions[j], &safe_position);
     }
@@ -1437,7 +1436,7 @@ void C2_HOOK_FASTCALL InitialiseCar2(tCar_spec* pCar, int pClear_disabled_flag) 
         for (j = 0; j < gCurrent_race.number_of_racers; j++) {
             if (gCurrent_race.opponent_list[j].car_spec != NULL
                     && gCurrent_race.opponent_list[j].car_spec->driver == eDriver_oppo) {
-                if (gCurrent_race.opponent_list[j].car_spec == pCar) {
+                if (pCar == gCurrent_race.opponent_list[j].car_spec) {
                     pCar->car_ID = 0x200 + index;
                 }
                 index++;
@@ -1449,7 +1448,7 @@ void C2_HOOK_FASTCALL InitialiseCar2(tCar_spec* pCar, int pClear_disabled_flag) 
         for (j = 0; j < gCurrent_race.number_of_racers; j++) {
             if (gCurrent_race.opponent_list[j].car_spec != NULL
                     && gCurrent_race.opponent_list[j].car_spec->driver == eDriver_net_human) {
-                if (gCurrent_race.opponent_list[j].car_spec == pCar) {
+                if (pCar == gCurrent_race.opponent_list[j].car_spec) {
                     pCar->car_ID = 0x100 + index;
                 }
                 index++;
@@ -1460,7 +1459,6 @@ void C2_HOOK_FASTCALL InitialiseCar2(tCar_spec* pCar, int pClear_disabled_flag) 
         pCar->car_ID = 0;
         break;
     default:
-        abort();
         break;
     }
     PossibleService();
@@ -1503,26 +1501,26 @@ void C2_HOOK_FASTCALL InitialiseCar2(tCar_spec* pCar, int pClear_disabled_flag) 
     pCar->collision_info->auto_special_volume = NULL;
     RemoveFromCloakingList(pCar);
     TurnOffCloaking(NULL, pCar);
-    if (pCar != NULL && pCar->driver != eDriver_local_human) {
+    if (pCar == NULL || pCar->driver != eDriver_local_human) {
         pCar->joystick.left = -1;
         pCar->joystick.right = -1;
     }
     TotallyRepairACar(pCar);
-    SetCarSuspGiveAndHeight(pCar CARPOCALYPSE2_THISCALL_EDX, 1.f, 1.f, 1.f, 0.f, 0.f);
+    SetCarSuspGiveAndHeight(pCar, 1.f, 1.f, 1.f, 0.f, 0.f);
     for (j = 0; j < CARPOCALYPSE2_ASIZE(pCar->powerups); j++) {
         pCar->powerups[j] = 0;
     }
     if (gNet_mode != eNet_mode_none && (net_player == NULL || !net_player->field_0x80)) {
-        for (j = 0; j < CARPOCALYPSE2_ASIZE(pCar->power_up_levels); j++) {
-            if (gNet_mode == eNet_mode_none) {
+        for (j = 0; j < (int)CARPOCALYPSE2_ASIZE(pCar->power_up_levels); j++) {
+            if (gNet_mode != eNet_mode_none) {
+                pCar->power_up_levels[j] = gInitial_APO[j].initial_network[gCurrent_net_game->type];
+            } else {
                 pCar->power_up_levels[j] = gInitial_APO[j].initial[gProgram_state.skill_level];
-            } else {
-                pCar->power_up_levels[j] = gInitial_APO[j].initial_network[gProgram_state.skill_level];
             }
-            if (gNet_mode == eNet_mode_none) {
-                pCar->power_up_slots[j] = gInitial_APO_potential[j].initial[gProgram_state.skill_level];
+            if (gNet_mode != eNet_mode_none) {
+                pCar->power_up_slots[j] = gInitial_APO_potential[j].initial_network[gCurrent_net_game->type];
             } else {
-                pCar->power_up_slots[j] = gInitial_APO_potential[j].initial_network[gProgram_state.skill_level];
+                pCar->power_up_slots[j] = gInitial_APO_potential[j].initial[gProgram_state.skill_level];
             }
         }
     }
@@ -3119,8 +3117,12 @@ int C2_HOOK_FASTCALL IsCarInTheSea(void) {
 // FUNCTION: CARMA2_HW 0x0043b840
 float C2_HOOK_FASTCALL RepairCar(tU16 pCar_ID, tU32 pFrame_period, br_scalar* pTotal_deflection) {
 
-    NOT_IMPLEMENTED();
-    return 0.f;
+    return ComputeCarImpact(
+        VEHICLE_TYPE_FROM_ID(pCar_ID) == eVehicle_self
+            ? &gProgram_state.current_car
+            : GetCarSpec(VEHICLE_TYPE_FROM_ID(pCar_ID), VEHICLE_INDEX_FROM_ID(pCar_ID)),
+        pFrame_period,
+        pTotal_deflection);
 }
 
 // FUNCTION: CARMA2_HW 0x0041e580
@@ -4421,6 +4423,7 @@ void C2_HOOK_FASTCALL CalcForce(tCar_spec* pCar, br_scalar pDt) {
     int vol_mod;
     int count;
     int best_index;
+    int ffb_force;
     br_scalar force[4];
     br_scalar d[4];
     tFace_ref* collected[4];
@@ -4488,10 +4491,10 @@ void C2_HOOK_FASTCALL CalcForce(tCar_spec* pCar, br_scalar pDt) {
     static br_scalar stop_timer;
     static br_scalar slide_dist;
 
-    pCar->curvature = pCar->curvature + pCar->field_0x1260;
     B.v[0] = 0.f;
     B.v[1] = 0.f;
     B.v[2] = 0.f;
+    pCar->curvature = pCar->curvature + pCar->field_0x1260;
     pCar->field_0x195c = 0;
     vol = pCar->collision_info->last_special_volume;
     wheelratio = (pCar->wpos[2].v[2] - pCar->centre_of_mass_world_scale.v[2])
@@ -4522,7 +4525,7 @@ void C2_HOOK_FASTCALL CalcForce(tCar_spec* pCar, br_scalar pDt) {
     for (i = 0; i < 4; i++) {
         BrMatrix34ApplyP(&wheel_pos[i], &pCar->wpos[i], mat);
     }
-    k = (pCar->susp_height[0] > pCar->susp_height[1] ? pCar->susp_height[0] : pCar->susp_height[1]) - (-0.5);
+    k = (pCar->susp_height[0] < pCar->susp_height[1] ? pCar->susp_height[0] : pCar->susp_height[1]) - (-0.5);
     d[0] = 2.f;
     d[1] = 2.f;
     BrVector3Scale(&tmp, &b, k);
@@ -4623,18 +4626,11 @@ void C2_HOOK_FASTCALL CalcForce(tCar_spec* pCar, br_scalar pDt) {
         }
         BrMatrix34TApplyV(&norm[i], &pCar->nor[i], mat);
         if (mat_list[pCar->material_index[i]].bumpiness != 0.f) {
-            BrVector3Scale(&tv, &pCar->nor[i], *pd);
-            BrVector3Accumulate(&tv, &wheel_pos[i]);
+            br_scalar tv0 = pCar->nor[i].v[0] * *pd;
+            br_scalar tv2 = pCar->nor[i].v[2] * *pd;
             {
-                int x = (int)(512.f * tv.v[0]);
-                int y = (int)(512.f * tv.v[2]);
-
-                if (x < 0) {
-                    x = -x;
-                }
-                if (y < 0) {
-                    y = -y;
-                }
+                int x = abs((int)(512.f * (tv0 + wheel_pos[i].v[0])));
+                int y = abs((int)(512.f * (wheel_pos[i].v[2] + tv2)));
                 x = x % 2048;
                 y = y % 2048;
                 if (x > 1024) {
@@ -4723,7 +4719,7 @@ void C2_HOOK_FASTCALL CalcForce(tCar_spec* pCar, br_scalar pDt) {
         goto steer_centre;
     }
     if (pCar->collision_info->disable_move_rotate != 0) {
-        /* TODO: sub_4b9e40(collision_info, 0) */
+        SetCollisionInfoDoNothingChain(pCar->collision_info, 0);
     }
     if (pCar == NULL || pCar->driver <= 5 || pCar->wall_climber_mode == 0
             || (pCar->road_normal.v[0] == 0.f && pCar->road_normal.v[1] == 0.f && pCar->road_normal.v[2] == 0.f)) {
@@ -4772,9 +4768,13 @@ steer_centre:
                     pCar->curvature = 0.f;
                 }
             }
-            /* TODO: RegisterJoystickFFBForces((int)(ts * 0.99f)); */
+            ffb_force = (int)(ts * 240000.f);
+        } else {
+            ffb_force = 0;
         }
-        /* TODO: if (pCar->driver == 8) RegisterJoystickFFBForces(...); */
+        if (pCar->driver == eDriver_local_human) {
+            SetJoystickFFBSteeringForce(ffb_force - (int)((dd[2] - dd[3]) * -30000.f));
+        }
     }
     if (normnum != 0) {
         count = 0;
@@ -4837,12 +4837,41 @@ steer_centre:
             if (pCar->collision_info->M * 10.0 < friction_number) {
                 friction_number = pCar->collision_info->M * 10.0;
             }
+            if (pCar->number_of_wheels_on_ground == 4
+                && pCar->oldd[2] == pCar->susp_height[1]
+                && pCar->oldd[3] == pCar->susp_height[1]) {
+                br_vector3 pos;
+                br_vector3 delta;
+                br_material* material;
+
+                pos.v[0] = (mat->m[3][0] + mat->m[2][0] * pCar->wpos[2].v[2]) * (1.f / WORLD_SCALE);
+                pos.v[1] = (mat->m[3][1] + mat->m[2][1] * pCar->wpos[2].v[2]) * (1.f / WORLD_SCALE);
+                pos.v[2] = (mat->m[3][2] + mat->m[2][2] * pCar->wpos[2].v[2]) * (1.f / WORLD_SCALE);
+                delta.v[0] = b.v[0] * (pCar->wpos[0].v[2] - pCar->wpos[2].v[2]) * (1.f / WORLD_SCALE);
+                delta.v[1] = b.v[1] * (pCar->wpos[0].v[2] - pCar->wpos[2].v[2]) * (1.f / WORLD_SCALE);
+                delta.v[2] = b.v[2] * (pCar->wpos[0].v[2] - pCar->wpos[2].v[2]) * (1.f / WORLD_SCALE);
+                ActorFindFace(&pos, &delta, gTrack_actor, &nor2, &ts, &material, NULL);
+                if (ts > 1.f) {
+                    pCar->field_0x12a8 = 1;
+                }
+            }
+            if (pCar->field_0x12a8 != 0
+                && (pCar->oldd[2] < pCar->susp_height[1] || pCar->oldd[3] < pCar->susp_height[1])) {
+                pCar->field_0x12a8 = 0;
+            }
+            if (pCar->field_0x12a8 != 0) {
+                friction_number = friction_number
+                    * ((pCar->wpos[2].v[2] - pCar->centre_of_mass_world_scale.v[2])
+                        / (pCar->wpos[2].v[2] - pCar->wpos[0].v[2]));
+                f.v[0] = f.v[0]
+                    + (pCar->wpos[0].v[2] - pCar->centre_of_mass_world_scale.v[2]) * friction_number;
+            }
             B.v[1] = B.v[1] - friction_number;
         }
-        vplane.v[0] = BrVector3Dot(&pCar->collision_info->velocity_car_space, &pCar->road_normal) * pCar->road_normal.v[0];
-        vplane.v[1] = BrVector3Dot(&pCar->collision_info->velocity_car_space, &pCar->road_normal) * pCar->road_normal.v[1];
-        vplane.v[2] = BrVector3Dot(&pCar->collision_info->velocity_car_space, &pCar->road_normal) * pCar->road_normal.v[2];
-        BrVector3Sub(&vplane, &pCar->collision_info->velocity_car_space, &vplane);
+        ts2 = BrVector3Dot(&pCar->collision_info->velocity_car_space, &pCar->road_normal);
+        vplane.v[0] = pCar->collision_info->velocity_car_space.v[0] - ts2 * pCar->road_normal.v[0];
+        vplane.v[1] = pCar->collision_info->velocity_car_space.v[1] - ts2 * pCar->road_normal.v[1];
+        vplane.v[2] = pCar->collision_info->velocity_car_space.v[2] - ts2 * pCar->road_normal.v[2];
         if (vplane.v[2] < 0.f) {
             ts = 1.f;
         } else {
@@ -5075,11 +5104,13 @@ steer_centre:
         }
         maxfl = sqrt(force[2]) * pCar->mu.v[1] * (fl_oil_factor * v116) * mat_list[pCar->material_index[2]].tyre_road_friction;
         maxfr = sqrt(force[3]) * pCar->mu.v[1] * (fr_oil_factor * v116) * mat_list[pCar->material_index[3]].tyre_road_friction;
+        if (pCar != NULL && pCar->driver == eDriver_local_human) {
+            SetJoystickFFBForce((int)(225.0f * (maxfl * force[2] + maxfr * force[3]) / (1.0f + 750.0f * pCar->speed)));
+        }
         pCar->max_force_front = maxfr + maxfl;
         force[2] = v135;
         force[3] = v135;
-        v106 = (v135 > maxfl) + 2 * (v135 > maxfr);
-        switch ((int)v106) {
+        switch ((v135 > maxfl) + 2 * (v135 > maxfr)) {
         case 1:
             force[2] = pCar->friction_slipping_reduction * maxfl;
             force[3] = v135 - force[2] + force[3];
@@ -5171,7 +5202,12 @@ steer_centre:
     } else {
         pCar->max_force_front = 0.f;
         pCar->max_force_rear = 0.f;
-        StopSkid(pCar);
+        if (gLast_car_to_skid[0] == pCar) {
+            DRS3StopSound(gSkid_tag[0]);
+        }
+        if (gLast_car_to_skid[1] == pCar) {
+            DRS3StopSound(gSkid_tag[1]);
+        }
     }
     pCar->number_of_wheels_on_ground = normnum;
     BrMatrix34ApplyV(&b, &B, mat);
@@ -5225,7 +5261,54 @@ steer_centre:
 
 // FUNCTION: CARMA2_HW 0x0041bed0
 void C2_HOOK_FASTCALL SkidNoise(tCar_spec* pCar, int pSide, br_scalar pV, int pMaterial_index) {
-    NOT_IMPLEMENTED();
+    br_vector3 pos;
+    br_vector3 wv;
+    br_vector3 world_pos;
+    br_vector3 wvw;
+    br_vector3 tv;
+    br_scalar ts;
+    static tS3_volume last_skid_vol[2];
+    int i;
+
+    i = IRandomBetween(0, 1);
+    if (pV < 5.0f) {
+        return;
+    }
+    if (gCurrent_race.material_modifiers[pMaterial_index].tyre_noise_index == -1) {
+        return;
+    }
+    if (IRandomBetween(0, 4) != 0) {
+        return;
+    }
+
+    last_skid_vol[i] = pV * 10.0f;
+    pos.v[0] = pCar->wpos[pSide].v[0];
+    pos.v[1] = pCar->wpos[pSide].v[1] - pCar->oldd[pSide];
+    pos.v[2] = pCar->wpos[pSide].v[2];
+    BrMatrix34ApplyP(&world_pos, &pos, &pCar->car_master_actor->t.t.mat);
+    BrVector3InvScale(&world_pos, &world_pos, WORLD_SCALE);
+    if (!DRS3SoundStillPlaying(gSkid_tag[i])
+            || (pCar != NULL && pCar->driver == eDriver_local_human && gLast_car_to_skid[i] != pCar)) {
+        gSkid_tag[i] = DRS3StartSound3D(gXXX_outlet,
+            IRandomBetween(0, 4) + 9000,
+            &world_pos,
+            &pCar->vel,
+            1,
+            last_skid_vol[i],
+            IRandomBetween(49152, 81920),
+            0x10000);
+        gLast_car_to_skid[i] = pCar;
+    }
+    if (gCurrent_race.material_modifiers[pMaterial_index].smoke_type == 1) {
+        BrVector3Cross(&wv, &pCar->collision_info->omega, &pos);
+        BrVector3Scale(&tv, &pCar->collision_info->velocity_car_space, WORLD_SCALE);
+        BrVector3Add(&wv, &wv, &tv);
+        ts = -(BrVector3Dot(&wv, &pCar->road_normal));
+        BrVector3Scale(&wvw, &pCar->road_normal, ts);
+        BrVector3Accumulate(&wv, &wvw);
+        BrMatrix34ApplyV(&wvw, &wv, &pCar->car_master_actor->t.t.mat);
+        CreatePuffOfSmoke(&world_pos, &wvw, pV / 25.0f, 1.0f, 4);
+    }
 }
 
 // StopSkid

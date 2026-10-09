@@ -10,11 +10,12 @@
 extern int gSize_powerup_queue;
 extern br_scalar gSight_distance_squared;
 extern br_material* gMaterials_to_adapt[200];
-/* The retail symbol table has no gStorage_for_callbacks: code that "uses" it
- * stores to 0x6b7820, which retail calls gMaterials_to_adapt (see
- * reccmp/carma2_hw-crt.csv). A separate real global makes those stores land on
- * a different address than retail and costs every world3.c loader its match. */
-#define gStorage_for_callbacks (*(tBrender_storage**)&gMaterials_to_adapt[0])
+/* Retail's FogificateMaterials iterates gMaterials_to_adapt at 0x6a3340 (see
+ * fog.c), so 0x6b7820 -- which the loaders store to -- is a distinct global.
+ * The reccmp CSV mislabels it gMaterials_to_adapt; aliasing the two made
+ * gStorage_for_callbacks = &gDroneStorage clobber the adapt queue. */
+// GLOBAL: CARMA2_HW 0x006b7820
+extern tBrender_storage* gStorage_for_callbacks;
 extern int gGroovidelics_array_size;
 extern tGroovidelic_spec* gGroovidelics_array;
 extern const char* gSmashable_track_environment_path;

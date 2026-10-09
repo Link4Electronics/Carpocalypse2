@@ -455,6 +455,8 @@ extern int gPHIL_count_queued_objects_for_removal;
 
 extern tPhysics_object* gPHIL_queued_objects_for_removal[];
 
+extern tPHIL_queued_objects gPhil_queued_objects;
+
 
 #define NET_OBJECT_HIERARCHY_DEFAULT_SIZE 72
 
@@ -510,6 +512,8 @@ void C2_HOOK_FASTCALL InternalPositionChildren(tPhysics_object *pParent, tPhysic
 int C2_HOOK_CDECL PHILSetObjectProperty(tPhysics_object *pCollision_info, int pParam, ...);
 
 float C2_HOOK_FASTCALL PHILGetObjectProperty(tPhysics_object *pCollision_info, int pParam);
+
+void C2_HOOK_FASTCALL SetCollisionInfoDoNothingChain(tPhysics_object *pCollision_info, tU32 pDisable);
 
 void C2_HOOK_FASTCALL SetCollisionInfoDoNothing(tPhysics_object *pCollision_info, tU32 pDisable);
 
@@ -611,6 +615,10 @@ void C2_HOOK_FASTCALL AddDoubleTorqueToMatrix(tPhysics_object* pObject);
 void C2_HOOK_FASTCALL DRMatrix33Inverse(tPhysics_object* pObject, int pFlag);
 
 int C2_HOOK_FASTCALL SetUpQuickHingeData(tPhysics_object** pObject_list, tPhysics_object* pObject, void* pBuffer1, void* pBuffer2, int pArg, tWorld_callbacks* pWorld_callbacks);
+
+void C2_HOOK_FASTCALL SetFieldF0Tree(tPhysics_object* pObject, int pValue);
+
+void C2_HOOK_FASTCALL ResetOmegaTree(tPhysics_object* pObject);
 
 void C2_HOOK_FASTCALL RotateObjectFirstOrder(void* pContact, tWorld_callbacks* pWorld_callbacks);
 

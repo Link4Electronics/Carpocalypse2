@@ -631,7 +631,7 @@ void C2_HOOK_FASTCALL InitRace(void) {
     gShow_peds_on_map = 0;
 
     PossibleService();
-    SetCarSuspGiveAndHeight(&gProgram_state.current_car CARPOCALYPSE2_THISCALL_EDX, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f);
+    SetCarSuspGiveAndHeight(&gProgram_state.current_car, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f);
     ResetPowerups();
     PossibleService();
     ResetSparks();

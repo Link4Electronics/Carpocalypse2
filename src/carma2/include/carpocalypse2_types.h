@@ -2952,10 +2952,7 @@ typedef struct tCar_spec {
     br_vector3 mu;
     float traction_multiplier;
     float downforce_to_weight;
-    undefined field_0x12a8;
-    undefined field_0x12a9;
-    undefined field_0x12aa;
-    undefined field_0x12ab;
+    int field_0x12a8;
     float initial_brake;
     float brake_increase;
     float friction_slipping_reduction;
@@ -3969,7 +3966,11 @@ typedef struct {
 } tPed_form_move;
 
 typedef struct {
-    undefined field_0x0[0x30];
+    /* While the block is stored away, offset 0 doubles as the in-use flag of
+       the whole block (0.f = free, 1.f = taken). Bone 0's matrix is never
+       stored here, so the remaining bytes are that bone's matrix. */
+    float in_use;
+    undefined field_0x4[0x30 - 0x4];
 } tPed_form_dismembered_character;
 
 typedef struct {
@@ -4545,7 +4546,7 @@ typedef struct {
 } tUser_crush_data;
 
 typedef struct {
-    undefined field_0x00[4];
+    void* field_0x00;
     tU16 field_0x04;
     undefined2 field_0x06;
     undefined4 field_0x08;
@@ -4993,7 +4994,7 @@ typedef struct {
     undefined2 field_0x20;
     undefined field_0x22[0x2];
     undefined4 field_0x24;
-    undefined4 field_0x28;
+    tPed_form_dismembered_character* field_0x28;
     br_matrix34 field_0x2c;
     br_matrix34 field_0x5c;
     br_matrix34 field_0x8c;
@@ -6046,6 +6047,7 @@ enum {
     kFatalError_CantOpenKeyNamesFile = 0x61,
     kFatalError_CantOpen_S = 0x6b,
     kFatalError_CannotLoadAGeneratedShadeTable = 0x6d,
+    kFatalError_NetworkCodeSelfCheck = 0x6e,
     kFatalError_RanOutOfFunkGrooveSlotBunches = 0x71,
     kFatalError_FileIsCorrupted_S = 0x73,
     kFatalError_CantFindFile_S = 0x75,

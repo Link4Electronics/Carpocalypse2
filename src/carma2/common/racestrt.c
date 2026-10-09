@@ -47,7 +47,7 @@ int C2_HOOK_FASTCALL SortOpponents(void) {
     gOur_starting_position = IRandomBetween(0, gCurrent_race.number_of_racers - 1);
 
 
-    for (i = gCurrent_race.number_of_racers; i >= gOur_starting_position; i--) {
+    for (i = gCurrent_race.number_of_racers; i > gOur_starting_position; i--) {
         gCurrent_race.opponent_list[i] = gCurrent_race.opponent_list[i - 1];
     }
     gCurrent_race.opponent_list[gOur_starting_position].index = -1;

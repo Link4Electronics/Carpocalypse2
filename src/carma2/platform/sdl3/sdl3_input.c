@@ -379,6 +379,14 @@ int C2_HOOK_FASTCALL ToggleJoystickYInvert(void) {
 void C2_HOOK_FASTCALL SetAllFFBEffectsGain(int pGain) {
 }
 
+int C2_HOOK_FASTCALL SetJoystickFFBForce(int pMagnitude) {
+    return 0;
+}
+
+int C2_HOOK_FASTCALL SetJoystickFFBSteeringForce(int pMagnitude) {
+    return 0;
+}
+
 int C2_HOOK_FASTCALL IncreaseJoystickFFBGain(void) {
     return 0;
 }

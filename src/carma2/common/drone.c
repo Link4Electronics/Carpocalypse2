@@ -925,16 +925,139 @@ void C2_HOOK_FASTCALL DroneStateFuncReset(tDrone_spec* pDrone, tDroneStateFuncSt
     }
 }
 
+// FUNCTION: CARMA2_HW 0x0044e410
+static int C2_HOOK_FASTCALL AdvanceDroneSection(tDrone_spec* pDrone) {
+    tDrone_path_node* node;
+    tDrone_path_node_section* section;
+    int pick;
+
+    if (pDrone->field_0xc < 0) {
+        node = &gDrone_path_nodes[pDrone->field_0xa_pathnode_id];
+        if (node->count_sections != 0) {
+            pick = IRandomBetween(0, node->count_sections - 1);
+            pDrone->field_0x10 = &node->sections[pick];
+        } else {
+            pDrone->field_0x14 = 0;
+            pDrone->field_0x10 = 0;
+            pDrone->field_0xc = -1;
+            pDrone->field_0xa_pathnode_id = -1;
+        }
+    } else {
+        pDrone->field_0xa_pathnode_id = pDrone->field_0xc;
+        pDrone->field_0x10 = pDrone->field_0x14;
+    }
+
+    section = pDrone->field_0x10;
+    if (section != NULL) {
+        pDrone->field_0xc = section->node1;
+    } else {
+        pDrone->field_0xc = -1;
+    }
+    if (pDrone->field_0xc < 0) {
+        return 0;
+    }
+
+    node = &gDrone_path_nodes[pDrone->field_0xc];
+    if (node->count_sections != 0) {
+        pick = IRandomBetween(0, node->count_sections - 1);
+        pDrone->field_0x14 = &node->sections[pick];
+        pDrone->field_0xe = pDrone->field_0x14->node1;
+        return 1;
+    }
+    pDrone->field_0x14 = 0;
+    pDrone->field_0xe = -1;
+    return 1;
+}
+
+// FUNCTION: CARMA2_HW 0x0044dac0
+static void C2_HOOK_FASTCALL CalculateDrivingInfo(tDrone_spec* pDrone) {
+    tDrone_form* form;
+
+    form = pDrone->form;
+    pDrone->field_0xe0 = 0.f;
+    pDrone->field_0x74 = 0.f;
+    if (pDrone->field_0x14 == 0 || (form->flags & 1) == 0) {
+        pDrone->field_0x68 = 400.f;
+        pDrone->field_0x6c = 0;
+    } else {
+        /* TODO: arc radius through (previous node, centre node, next node) */
+        pDrone->field_0x68 = 400.f;
+        pDrone->field_0x6c = 0;
+    }
+
+    if (form->speed >= 0.f) {
+        pDrone->field_0x50 = form->speed;
+    } else {
+        pDrone->field_0x50 = pDrone->field_0x68 * 0.5f;
+        if (pDrone->field_0x50 < form->min_speed) {
+            pDrone->field_0x50 = form->min_speed;
+        }
+        if (pDrone->field_0x50 > form->max_speed) {
+            pDrone->field_0x50 = form->max_speed;
+        }
+    }
+    DoNotDprintf("CalculateDrivingInfo called - centre node %d, radius %f, section after corner %p",
+        pDrone->field_0xc, pDrone->field_0x68, (void*)pDrone->field_0x10);
+}
+
 // FUNCTION: CARMA2_HW 0x0044d2a0
 void C2_HOOK_FASTCALL MoveThisDronePlane(tDrone_spec* pDrone) {
 
-    NOT_IMPLEMENTED();
+    DoNotDprintf("MoveThisDronePlane()");
+    if (gDrone_delta_time <= gDrone_render_zero) {
+        return;
+    }
+    for (;;) {
+        switch (pDrone->field_0xdc) {
+        case 0:
+            DoNotDprintf("eDDS_straight_start");
+            if (!AdvanceDroneSection(pDrone)) {
+                NewDroneState(pDrone, 4);
+                return;
+            }
+            CalculateDrivingInfo(pDrone);
+            PointActorAlongThisBloodyVector(pDrone->actor,
+                &pDrone->field_0x10->field_0x04);
+            pDrone->field_0xdc = 1;
+            break;
+        default:
+            /* TODO: eDDS_straight_driving / corner traversal not yet decompiled */
+            return;
+        }
+    }
 }
 
 // FUNCTION: CARMA2_HW 0x0044e540
 void C2_HOOK_FASTCALL MoveThisDroneCar(tDrone_spec* pDrone) {
 
-    NOT_IMPLEMENTED();
+    DoNotDprintf("MoveThisDroneCar()");
+    if (gDrone_delta_time <= gDrone_render_zero) {
+        return;
+    }
+    for (;;) {
+        switch (pDrone->field_0xdc) {
+        case 0: {
+            br_vector3 dir;
+
+            DoNotDprintf("eDDS_straight_start");
+            if (!AdvanceDroneSection(pDrone)) {
+                NewDroneState(pDrone, 4);
+                return;
+            }
+            CalculateDrivingInfo(pDrone);
+            dir = pDrone->field_0x10->field_0x04;
+            if ((pDrone->form->flags & 0x10) != 0) {
+                dir.v[1] = 0.f;
+            }
+            PointActorAlongThisBloodyVector(pDrone->actor, &dir);
+            pDrone->field_0xdc = 1;
+            break;
+        }
+        default:
+            /* TODO: eDDS_straight_driving / corner traversal not yet decompiled */
+            return;
+        }
+    }
 }
 
 void C2_HOOK_FASTCALL InitDroneDrivingInfo(tDrone_spec* pDrone) {
@@ -950,7 +1073,7 @@ void C2_HOOK_FASTCALL PossiblyPipeDroneMovement(tDrone_spec* pDrone) {
     switch (pDrone->field_0xdc) {
     case 1:
         PipeSingleDroneStraightPos(pDrone,
-            pDrone->field_0x10,
+            (undefined4)(uintptr_t)pDrone->field_0x10,
             DRScalarToU16(pDrone->field_0x48, -500.f, 500.f),
             DRScalarToU16(pDrone->field_0x4c, 0.f, 255.f));
         break;

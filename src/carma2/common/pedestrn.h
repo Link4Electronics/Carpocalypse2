@@ -788,6 +788,16 @@ tPed_personality* C2_HOOK_FASTCALL ReadPersonality(const char* pName);
 
 tPed_character_instance* C2_HOOK_FASTCALL GetTestPed(void);
 
+void C2_HOOK_FASTCALL MakeActorRenderable(br_actor* pActor, int pIndex, tPed_character_instance* pCharacter);
+
+void C2_HOOK_FASTCALL StopActorBeingRenderable(br_actor* pActor);
+
+int C2_HOOK_FASTCALL IsActorRenderworthy(br_actor* pActor);
+
+undefined4 C2_HOOK_FASTCALL CharacterNoLongerRenderable(tPed_character_instance* pCharacter);
+
+undefined4 C2_HOOK_FASTCALL CharacterNoLongerCollideworthy(tPed_character_instance* pCharacter);
+
 undefined4 C2_HOOK_FASTCALL MakeCharacterRenderable2(tPed_character_instance* pCharacter, int pIndex);
 
 undefined4 C2_HOOK_FASTCALL MakeCharacterRenderable(tPed_character_instance* pCharacter);

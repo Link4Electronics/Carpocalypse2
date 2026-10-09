@@ -215,8 +215,6 @@ extern tU32 gNext_grudge_reduction;
 extern int gFirst_frame;
 extern tPath_node* gOppo_path_nodes;
 extern tU32 gOppo_junction_table;
-extern int gOpponent_specs_used;
-extern tOpponent_selector_entry gOpponent_selector_entries[];
 
 extern int gGrudge_reduction_per_period;
 

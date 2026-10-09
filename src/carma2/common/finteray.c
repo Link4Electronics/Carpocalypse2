@@ -693,8 +693,8 @@ int C2_HOOK_FASTCALL BoundsOverlapTest__finteray(br_bounds* b1, br_bounds* b2) {
     }
 
     for (i = 0; i < 3; i++) {
-        if (!isfinite(b1->min.v[i]) || !isfinite(b1->max.v[i])
-                || !isfinite(b2->min.v[i]) || !isfinite(b2->max.v[i])) {
+        if (notfinite(b1->min.v[i]) || notfinite(b1->max.v[i])
+                || notfinite(b2->min.v[i]) || notfinite(b2->max.v[i])) {
             return 0;
         }
     }

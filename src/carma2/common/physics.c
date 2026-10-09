@@ -2781,6 +2781,33 @@ void C2_HOOK_FASTCALL DRMatrix33Inverse(tPhysics_object* pObject, int pFlag) {
 int C2_HOOK_FASTCALL SetUpQuickHingeData(tPhysics_object** pObject_list, tPhysics_object* pObject, void* pBuffer1, void* pBuffer2, int pArg, tWorld_callbacks* pWorld_callbacks) {
 }
 
+// FUNCTION: CARMA2_HW 0x004bd9b0
+void C2_HOOK_FASTCALL SetFieldF0Tree(tPhysics_object* pObject, int pValue) {
+    tPhysics_object* child;
+
+    pObject->field_0xf0 = pValue;
+    for (child = pObject->child; child != NULL; child = child->next) {
+        SetFieldF0Tree(child, pValue);
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x004c03f0
+void C2_HOOK_FASTCALL ResetOmegaTree(tPhysics_object* pObject) {
+    tPhysics_object* obj;
+
+    obj = pObject;
+    while (pObject != NULL) {
+        pObject->omega.v[0] = pObject->rotate_omega.v[0];
+        pObject->omega.v[1] = pObject->rotate_omega.v[1];
+        pObject->omega.v[2] = pObject->rotate_omega.v[2];
+        if (obj->child != NULL) {
+            ResetOmegaTree(obj->child);
+        }
+        pObject = pObject->next;
+        obj = pObject;
+    }
+}
+
 // STUB: CARMA2_HW 0x004c0ac0
 void C2_HOOK_FASTCALL RotateObjectFirstOrder(void* pContact, tWorld_callbacks* pWorld_callbacks) {
 

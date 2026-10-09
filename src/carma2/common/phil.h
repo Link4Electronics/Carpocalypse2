@@ -52,7 +52,7 @@ extern int C2_HOOK_FASTCALL PHILRemoveObject(tPhysics_object* pObject);
 
 // PHILGetNextObject
 
-// PHILReturnObjectStatus
+extern tU32 C2_HOOK_FASTCALL PHILReturnObjectStatus(tPhysics_object* pObject);
 
 // PHILMakeObjectPassive
 

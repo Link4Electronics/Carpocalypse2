@@ -24,6 +24,17 @@
 #define isnan(V) _isnan(V)
 #define ldexpf(V,E) (float)ldexp(V,E)
 #define isfinite(V) !!((~*(unsigned int*)(&(V))) & 0x7f800000)
+#define notfinite(V) (&(V) != 0 ? ((~*(unsigned int*)(&(V))) & 0x7f800000) == 0 : 0)
+
+#elif defined(_MSC_VER)
+
+#include <float.h>
+
+#define notfinite(V) (!_finite((double)(V)))
+
+#else
+
+#define notfinite(V) (!isfinite(V))
 
 #endif
 

@@ -1575,12 +1575,12 @@ int C2_HOOK_FASTCALL SetBouncey(tPowerup* powerup, tCar_spec* car) {
 // FUNCTION: CARMA2_HW 0x004dce80
 int C2_HOOK_FASTCALL SetSuspension(tPowerup* powerup, tCar_spec* car) {
 
-    SetCarSuspGiveAndHeight(car, car,
-                            powerup->float_params[0],
-                            powerup->float_params[1],
-                            powerup->float_params[4],
-                            powerup->float_params[2],
-                            powerup->float_params[3]);
+    SetCarSuspGiveAndHeight(car,
+                            ((volatile float*)powerup->float_params)[0],
+                            ((volatile float*)powerup->float_params)[1],
+                            ((volatile float*)powerup->float_params)[4],
+                            ((volatile float*)powerup->float_params)[2],
+                            ((volatile float*)powerup->float_params)[3]);
     return powerup - gPowerup_array;
 }
 
@@ -1951,30 +1951,24 @@ void C2_HOOK_FASTCALL PukeDrugsBackUp(tPowerup* powerup, tCar_spec* car) {
     NOT_IMPLEMENTED();
 }
 
-// GLOBAL: CARMA2_HW 0x00762430
-int gOpponent_specs_used;
-
-// GLOBAL: CARMA2_HW 0x00763084
-tOpponent_selector_entry gOpponent_selector_entries[16];
-
 // FUNCTION: CARMA2_HW 0x004de6b0
 void C2_HOOK_FASTCALL ResetOpponentsSpeed(tPowerup* powerup, tCar_spec* car) {
-    int count = gOpponent_specs_used;
+    int count = gCurrent_race.number_of_racers;
     int i;
 
     for (i = 0; i < count; i++) {
-        if (gOpponent_selector_entries[i].type == 0x1d) {
+        if (gCurrent_race.opponent_list[i].index == 0x1d) {
             break;
         }
     }
     if (i < count) {
-        tCar_spec* opp_car = gOpponent_selector_entries[i].car_spec;
+        tCar_spec* opp_car = gCurrent_race.opponent_list[i].car_spec;
         float f = 1.0f;
 
         FUN_0045c760();
         opp_car->field_0x4d4 = f;
         opp_car->grip_multiplier = f;
-        SetCarSuspGiveAndHeight(opp_car, opp_car, f, f, f, 0.0f, 0.0f);
+        SetCarSuspGiveAndHeight(opp_car, f, f, f, 0.0f, 0.0f);
     }
     gOpponent_speed_factor = 1.0f;
 }
@@ -2013,7 +2007,7 @@ void C2_HOOK_FASTCALL ResetBouncey(tPowerup* powerup, tCar_spec* car) {
 // FUNCTION: CARMA2_HW 0x004de760
 void C2_HOOK_FASTCALL ResetSuspension(tPowerup* powerup, tCar_spec* car) {
 
-    SetCarSuspGiveAndHeight(car, car, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f);
+    SetCarSuspGiveAndHeight(car, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f);
 }
 
 // FUNCTION: CARMA2_HW 0x004de790

@@ -305,7 +305,7 @@ address,type,name
 0x6a32e0,global,gCurrent_skid
 0x6a80f4,global,gGroove_by_proxy_actor
 0x6b2e70,global,___lc_handle
-0x6b7820,global,gMaterials_to_adapt
+0x6b7820,global,gStorage_for_callbacks
 0x7059c8,global,gModel_powerup_offence
 0x74a5ec,global,gPHIL_last_physics_tick
 0x74a5f8,global,gCrush_deferred
@@ -317,7 +317,6 @@ address,type,name
 0x761a44,global,gOppo_junction_table
 0x761c8c,global,gMass_mutant_tail_ball
 0x76213c,global,gDAT_0074c6d0
-0x7632a8,global,gFriction_materials
 0x7635b8,global,gRaceGroups2
 0x763b10,global,gRace_index
 0x79ecb0,global,gMouse_last_pos

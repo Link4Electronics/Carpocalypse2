@@ -714,6 +714,84 @@ void C2_HOOK_FASTCALL RegisterJoystickFFBForces(void) {
     gCollision_force_joystick_effect_index = CreateDinputEffect(gJoystick_index, &description, "Collision Force");
 }
 
+// FUNCTION: CARMA2_HW 0x00457eb0
+void C2_HOOK_FASTCALL StartDinputEffect(int pIndex) {
+    IDirectInputEffect* effect;
+
+    effect = gDirectInputEffects[pIndex];
+    if (effect != NULL) {
+        IDirectInputEffect_Start(effect, 1, 0);
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x00457ed0
+void C2_HOOK_FASTCALL StopDinputEffect(int pIndex) {
+    IDirectInputEffect* effect;
+
+    effect = gDirectInputEffects[pIndex];
+    if (effect != NULL) {
+        IDirectInputEffect_Stop(effect);
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x00458610
+int C2_HOOK_FASTCALL SetDinputEffectGain(int pIndex, int pGain) {
+    IDirectInputEffect* effect;
+
+    if (!gForceFeedbackAvailable) {
+        return 0;
+    }
+    if (gJoystick_effects[pIndex].di_effect.dwGain != pGain) {
+        gJoystick_effects[pIndex].di_effect.dwGain = pGain;
+    }
+    effect = gDirectInputEffects[pIndex];
+    if (effect != NULL) {
+        IDirectInputEffect_SetParameters(effect, &gJoystick_effects[pIndex].di_effect, DIEP_GAIN);
+    }
+    return 1;
+}
+
+// FUNCTION: CARMA2_HW 0x00458660
+int C2_HOOK_FASTCALL SetJoystickFFBForce(int pMagnitude) {
+    if (!gForceFeedbackAvailable) {
+        return 0;
+    }
+    if (pMagnitude < 1) {
+        StopDinputEffect(gBasic_friction_joystick_effect_index);
+        return 1;
+    }
+    if (pMagnitude > 10000) {
+        pMagnitude = 10000;
+    }
+    SetDinputEffectGain(gBasic_friction_joystick_effect_index, pMagnitude);
+    StartDinputEffect(gBasic_friction_joystick_effect_index);
+    return 1;
+}
+
+// FUNCTION: CARMA2_HW 0x004586b0
+int C2_HOOK_FASTCALL SetJoystickFFBSteeringForce(int pMagnitude) {
+    IDirectInputEffect* effect;
+    int index;
+
+    if (!gForceFeedbackAvailable) {
+        return 0;
+    }
+    if (pMagnitude > 10000) {
+        pMagnitude = 10000;
+    }
+    index = gBasic_force_joystick_effect_index;
+    if (*(LONG*)&gJoystick_effects[index].type_specific_params == pMagnitude) {
+        return 0;
+    }
+    *(LONG*)&gJoystick_effects[index].type_specific_params = pMagnitude;
+    effect = gDirectInputEffects[index];
+    if (effect != NULL) {
+        IDirectInputEffect_SetParameters(effect, &gJoystick_effects[index].di_effect, DIEP_TYPESPECIFICPARAMS);
+    }
+    StartDinputEffect(gBasic_force_joystick_effect_index);
+    return 1;
+}
+
 // FUNCTION: CARMA2_HW 0x00458860
 int C2_HOOK_FASTCALL JoystickDInputBegin(void) {
     int i;
