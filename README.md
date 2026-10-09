@@ -75,7 +75,6 @@ make
 
 - Exact same behavior as the original
 - Matching binary
-- Every single commit should compile and work: this enables `git-bisect` to search for regressions
 
 ## Legal
 
