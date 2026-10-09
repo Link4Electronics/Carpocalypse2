@@ -75,7 +75,11 @@ make
 
 - Exact same behavior as the original
 - Matching binary
-- Every single commit should compile and work: this enables `git-bisect` to search for regressions
+
+## Contributing
+
+Yes this was used AI, so vibecoded PRs are welcome too, with a small rule:
+- Like said above game must behave as original, any quality of life, fixes or modification should come optionally, maybe an ON/OFF toggle or like an optional mod, reason is some people would like to still play the vanilla game
 
 ## Legal
 
