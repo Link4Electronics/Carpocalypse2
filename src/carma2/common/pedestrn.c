@@ -309,8 +309,14 @@ int gCount_killed_peds;
 // GLOBAL: CARMA2_HW 0x00676928
 tPed_form* gPed_forms[20] = { 0 };
 
+// GLOBAL: CARMA2_HW 0x00676978
+int gPed_overall_movement_disabled = 0;
+
 // GLOBAL: CARMA2_HW 0x00677260
-tPed_personality* gPed_personalities[50];
+tPed_personality* gPed_personalities[50] = { 0 };
+
+// GLOBAL: CARMA2_HW 0x00677328
+float gPed_sin_table[256] = { 0 };
 
 // GLOBAL: CARMA2_HW 0x00676980
 tPed_move* gPed_moves[250] = { 0 };
@@ -321,9 +327,6 @@ tPed_remap* gPed_remaps[10];
 // GLOBAL: CARMA2_HW 0x00677730
 tPed_morph gPed_morphs[20];
 
-// GLOBAL: CARMA2_HW 0x00677328
-float gPed_sin_table[256];
-
 // GLOBAL: CARMA2_HW 0x00676e30
 float gPed_cos_table[256];
 
@@ -332,9 +335,6 @@ undefined4 gDAT_00677728;
 
 // GLOBAL: CARMA2_HW 0x00677230
 float gFLOAT_00677230;
-
-// GLOBAL: CARMA2_HW 0x00676978
-int gPed_overall_movement_disabled = 0;
 
 // GLOBAL: CARMA2_HW 0x00676914
 int gPed_676914;
@@ -2237,13 +2237,295 @@ void C2_HOOK_STDCALL ScalePedHeads(float head_scale) {
 }
 
 #pragma auto_inline(off)
+// FUNCTION: CARMA2_HW 0x0040bb20
+void C2_HOOK_FASTCALL ScalePedPersonality(tPed_personality* pPersonality, int pIndex, br_scalar* pScale, int pMode) {
+    br_scalar s[3];
+    int i;
+    int start;
+    int count;
+
+    count = (pIndex == -1) ? pPersonality->form->count_bones : pIndex + 1;
+    start = (pIndex == -1) ? 0 : pIndex;
+
+    for (i = start; i < count; i++) {
+        int k;
+
+        if (pPersonality->form->bones[i].remapped_bone != NULL) {
+            for (k = 0; k < 3; k++) {
+                int axis = pPersonality->form->bones[i].remapped_bone->powerup_axis[k];
+                s[axis % 3] = pScale[k];
+                if (axis >= 3) {
+                    s[k] = -s[k];
+                }
+            }
+        }
+
+        {
+            int a;
+            int j;
+
+            for (a = 0; a < 2; a++) {
+                for (j = 0; j < 4; j++) {
+                    br_model* model = pPersonality->bones[i].models[j].models[a];
+
+                    if (model != NULL) {
+                        br_vertex* v;
+                        int n;
+
+                        v = model->vertices;
+                        for (n = 0; n < model->nvertices; n++) {
+                            v->p.v[0] *= s[0];
+                            v->p.v[1] *= s[1];
+                            v->p.v[2] *= s[2];
+                            v = (br_vertex*)((char*)v + 0x28);
+                        }
+                        BrModelUpdate(model, BR_MODU_VERTEX_POSITIONS);
+                    }
+                }
+            }
+
+            pPersonality->bones[i].field_0x20.v[0] *= s[0];
+            pPersonality->bones[i].field_0x20.v[1] *= s[1];
+            pPersonality->bones[i].field_0x20.v[2] *= s[2];
+
+            if (pIndex == -1) {
+                tS8 head_index = pPersonality->form->bones[i].indices[0];
+
+                if (head_index >= 0) {
+                    tPed_remap_bone* remap = pPersonality->form->bones[head_index].remapped_bone;
+
+                    if (remap != NULL) {
+                        for (k = 0; k < 3; k++) {
+                            int axis = remap->powerup_axis[k];
+                            s[axis % 3] = pScale[k];
+                            if (axis >= 3) {
+                                s[k] = -s[k];
+                            }
+                        }
+                    }
+                    pPersonality->bones[i].field_0x2c.v[0] *= s[0];
+                    pPersonality->bones[i].field_0x2c.v[1] *= s[1];
+                    pPersonality->bones[i].field_0x2c.v[2] *= s[2];
+                }
+            } else {
+                for (j = 0; j < pPersonality->form->count_bones; j++) {
+                    if (pPersonality->form->bones[j].indices[0] == pIndex) {
+                        tPed_remap_bone* remap = pPersonality->form->bones[pIndex].remapped_bone;
+
+                        if (remap != NULL) {
+                            for (k = 0; k < 3; k++) {
+                                int axis = remap->powerup_axis[k];
+                                s[axis % 3] = pScale[k];
+                                if (axis >= 3) {
+                                    s[k] = -s[k];
+                                }
+                            }
+                        }
+                        pPersonality->bones[j].field_0x2c.v[0] *= s[0];
+                        pPersonality->bones[j].field_0x2c.v[1] *= s[1];
+                        pPersonality->bones[j].field_0x2c.v[2] *= s[2];
+                    }
+                }
+            }
+        }
+    }
+
+    if (pMode != 0) {
+        int m;
+
+        for (m = 0; m < pPersonality->form->count_moves; m++) {
+            pPersonality->moves[m].grounding_offset *= pScale[0];
+        }
+        pPersonality->bb.min.v[0] *= pScale[0];
+        pPersonality->bb.min.v[1] *= pScale[1];
+        pPersonality->bb.min.v[2] *= pScale[2];
+        pPersonality->bb.max.v[0] *= pScale[0];
+        pPersonality->bb.max.v[1] *= pScale[1];
+        pPersonality->bb.max.v[2] *= pScale[2];
+        pPersonality->M *= pScale[0] * pScale[1] * pScale[2];
+        pPersonality->radius = (pScale[0] + pScale[1] + pScale[2]) * pPersonality->radius * (1.f / 3.f);
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x0040bee0
+void C2_HOOK_FASTCALL ScalePedForm(tPed_form* pForm, int pIndex, br_scalar* pScale, int pMode) {
+    br_scalar s[3];
+    int i, j, k;
+    int start;
+    int count;
+
+    if (pIndex == -1) {
+        start = 0;
+        count = pForm->count_bones;
+    } else {
+        start = pIndex;
+        count = pIndex + 1;
+    }
+
+    for (i = start; i < count; i++) {
+        tPhysics_joint* hinge = pForm->bones[i].hinge;
+
+        if (hinge != NULL) {
+            if (pForm->bones[i].remapped_bone != NULL) {
+                for (k = 0; k < 3; k++) {
+                    int axis = pForm->bones[i].remapped_bone->powerup_axis[k];
+                    s[axis % 3] = pScale[k];
+                    if (axis >= 3) {
+                        s[k] = -s[k];
+                    }
+                }
+            }
+            hinge->field_0x08.v[0] *= s[0];
+            hinge->field_0x08.v[1] *= s[1];
+            hinge->field_0x08.v[2] *= s[2];
+        }
+
+        if (pIndex == -1) {
+            if (hinge != NULL) {
+                tS8 linked_index = pForm->bones[i].indices[0];
+
+                if (linked_index >= 0) {
+                    tPed_remap_bone* remap = pForm->bones[linked_index].remapped_bone;
+
+                    if (remap != NULL) {
+                        for (k = 0; k < 3; k++) {
+                            int axis = remap->powerup_axis[k];
+                            s[axis % 3] = pScale[k];
+                            if (axis >= 3) {
+                                s[k] = -s[k];
+                            }
+                        }
+                    }
+                    hinge->field_0x14.v[0] *= s[0];
+                    hinge->field_0x14.v[1] *= s[1];
+                    hinge->field_0x14.v[2] *= s[2];
+                }
+            }
+        } else {
+            for (j = 0; j < pForm->count_bones; j++) {
+                if (pForm->bones[j].indices[0] == pIndex) {
+                    tPhysics_joint* other_hinge = pForm->bones[j].hinge;
+
+                    if (other_hinge != NULL) {
+                        tPed_remap_bone* remap = pForm->bones[pIndex].remapped_bone;
+
+                        if (remap != NULL) {
+                            for (k = 0; k < 3; k++) {
+                                int axis = remap->powerup_axis[k];
+                                s[axis % 3] = pScale[k];
+                                if (axis >= 3) {
+                                    s[k] = -s[k];
+                                }
+                            }
+                        }
+                        other_hinge->field_0x14.v[0] *= s[0];
+                        other_hinge->field_0x14.v[1] *= s[1];
+                        other_hinge->field_0x14.v[2] *= s[2];
+                    }
+                }
+            }
+        }
+    }
+
+    if (pMode != 0) {
+        int n;
+
+        for (n = 0; n < pForm->max_boned_physicing_at_once; n++) {
+            tPhysics_object* obj = pForm->boned_physicing[n].collision_infos[i];
+
+            if (obj->owner != NULL) {
+                if (pForm->bones[0].remapped_bone != NULL) {
+                    for (k = 0; k < 3; k++) {
+                        int axis = pForm->bones[0].remapped_bone->powerup_axis[k];
+                        s[axis % 3] = pScale[k];
+                        if (axis >= 3) {
+                            s[k] = -s[k];
+                        }
+                    }
+                }
+                obj->M *= s[0] * s[1] * s[2];
+                obj->I.v[0] *= s[0];
+                obj->I.v[1] *= s[1];
+                obj->I.v[2] *= s[2];
+                MakeCharacterPhysicsSetup(obj, (br_bounds3*)&((tPed_character_instance*)obj->owner)->personality->bb, 0, NULL, NULL);
+            } else {
+                obj->M *= pScale[0] * pScale[1] * pScale[2];
+            }
+        }
+
+        for (n = 0; n < pForm->max_simple_physicing_at_once; n++) {
+            tPhysics_object* obj = pForm->simple_physicing[n].collision_info;
+
+            if (obj->owner != NULL) {
+                if (pForm->bones[0].remapped_bone != NULL) {
+                    for (k = 0; k < 3; k++) {
+                        int axis = pForm->bones[0].remapped_bone->powerup_axis[k];
+                        s[axis % 3] = pScale[k];
+                        if (axis >= 3) {
+                            s[k] = -s[k];
+                        }
+                    }
+                }
+                obj->M *= s[0] * s[1] * s[2];
+                obj->I.v[0] *= s[0];
+                obj->I.v[1] *= s[1];
+                obj->I.v[2] *= s[2];
+                MakeCharacterPhysicsSetup(obj, (br_bounds3*)&((tPed_character_instance*)obj->owner)->personality->bb, 0, NULL, NULL);
+            } else {
+                obj->M *= pScale[0] * pScale[1] * pScale[2];
+            }
+        }
+
+        for (n = 0; n < pForm->max_rendering_at_once; n++) {
+            br_actor** actors;
+
+            if (!pForm->actor_sets[n].field_0x0) {
+                continue;
+            }
+            actors = pForm->actor_sets[n].actors;
+            for (j = 0; j < pForm->count_bones; j++) {
+                br_actor* actor = actors[j];
+                br_scalar ground_y;
+
+                ground_y = FindYVerticallyBelow2(&actor->t.t.translate.t);
+                if (ground_y > -100.f) {
+                    actor->t.t.translate.t.v[1] = (actor->t.t.translate.t.v[1] - ground_y) * pScale[0] + ground_y;
+                }
+            }
+        }
+    }
+}
+
 // FUNCTION: CARMA2_HW 0x0040c420
 void C2_HOOK_FASTCALL ScaleAllPeds(int pMorph_or_personality, br_scalar* pScale, int pMode) {
+    int i;
 
-    (void)pMorph_or_personality;
-    (void)pScale;
-    (void)pMode;
-    NOT_IMPLEMENTED();
+    for (i = 0; i < 50; i++) {
+        int index;
+
+        if (gPed_personalities[i] == NULL) {
+            continue;
+        }
+        if (pMorph_or_personality != -2) {
+            index = pMorph_or_personality;
+        } else {
+            index = gPed_personalities[i]->form->index_head_bone;
+        }
+        ScalePedPersonality(gPed_personalities[i], index, pScale, pMode);
+    }
+    for (i = 0; i < 20; i++) {
+        int index;
+
+        if (gPed_forms[i] == NULL) {
+            continue;
+        }
+        if (pMorph_or_personality != -2) {
+            index = pMorph_or_personality;
+        } else {
+            index = gPed_forms[i]->index_head_bone;
+        }
+        ScalePedForm(gPed_forms[i], index, pScale, pMode);
+    }
 }
 
 // FUNCTION: CARMA2_HW 0x004d6b70
