@@ -788,6 +788,7 @@ typedef enum {
     ePipe_chunk_ped_dir = 41,
     ePipe_chunk_ped_move = 42,
     ePipe_chunk_ped_physics = 43,
+    ePipe_chunk_ped_move_status = 45,
     ePipe_chunk_single_ped_pos = 46,
     ePipe_chunk_single_ped_model_change = 47,
     ePipe_chunk_phil_object = 48,
@@ -4983,7 +4984,7 @@ typedef struct {
     tS8 field_0x7;
     tS8 field_0x8;
     tU8 field_0x9;
-    undefined field_0xa;
+    tS8 field_0xa;
     undefined field_0xb;
     undefined4 field_0xc;
     undefined4 field_0x10;
