@@ -230,7 +230,7 @@ void C2_HOOK_FASTCALL PostProcess(int pFrame_period) {
 // FUNCTION: CARMA2_HW 0x004e72e0
 void C2_HOOK_FASTCALL ToggleReplay(int* pArg1, int* pArg2) {
 
-    if (gAction_replay_mode) {
+    if (gPed_676914) {
         RenderAFrame(1);
         RenderAFrame(1);
     }
@@ -248,10 +248,10 @@ void C2_HOOK_FASTCALL InitialiseActionReplay(void) {
     ARInitialise(!gAusterity_mode && gNet_mode == eNet_mode_none, CARPOCALYPSE2_ASIZE(gReplay_callbacks), gReplay_callbacks);
     if (!gAusterity_mode && gNet_mode == eNet_mode_none) {
         gCrush_space = BrMemAllocate(0x4000, kMem_pipe_model_geometry);
-    } else {
-        gCrush_space = NULL;
+        gSmudge_space = (tPipe_smudge_data*)gCrush_space;
+        return;
     }
-    gSmudge_space = (tPipe_smudge_data*)gCrush_space;
+    gCrush_space = NULL;
 }
 
 // FUNCTION: CARMA2_HW 0x004c6c60

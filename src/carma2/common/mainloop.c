@@ -271,7 +271,7 @@ tRace_result C2_HOOK_FASTCALL MainGameLoop(void) {
 
         Timers_StartFrame();
         EdgeTriggerModeOff();
-        if (!gAction_replay_mode) {
+        if (!gPed_676914) {
             UpdateFramePeriod(&gCamera_period);
         }
         frame_start_time = GetTotalTime();
@@ -309,12 +309,12 @@ tRace_result C2_HOOK_FASTCALL MainGameLoop(void) {
         }
         gWindow_inactive = window_inactive;
 
-        if (!gAction_replay_mode) {
+        if (!gPed_676914) {
             MungeAIWorld(gFrame_period);
             PollCarControls(gFrame_period);
         }
 
-        if (!gAction_replay_mode) {
+        if (!gPed_676914) {
             CheckActiveCarList();
 
             Timers_Push(TIMER_PED);
@@ -344,10 +344,10 @@ tRace_result C2_HOOK_FASTCALL MainGameLoop(void) {
         MungeEngineNoise();
         CalculateCameraStuff(gCamera_period);
         MungeNapalm();
-        if (!gAction_replay_mode) {
+        if (!gPed_676914) {
             DoPowerupPeriodics(gFrame_period);
         }
-        if (!gAction_replay_mode) {
+        if (!gPed_676914) {
             CheckCheckpoints();
             MungeEnvironmentalSound();
         }
@@ -358,7 +358,7 @@ tRace_result C2_HOOK_FASTCALL MainGameLoop(void) {
         DoWheelDamage(gFrame_period);
         CalculateFrameRate();
         CameraBugFix(&gProgram_state.current_car, gCamera_period);
-        if (!gAction_replay_mode) {
+        if (!gPed_676914) {
             /* MungeHeadups() inlined to match retail codegen */
             {
             char the_text[256];
@@ -587,7 +587,7 @@ tRace_result C2_HOOK_FASTCALL MainGameLoop(void) {
         }
         MungeDelayedSideEffects();
         MungeShrapnel(gFrame_period);
-        if (!gAction_replay_mode) {
+        if (!gPed_676914) {
             MungePowerupStuff(gFrame_period);
         }
         ChangeDepthEffect();
@@ -618,7 +618,7 @@ tRace_result C2_HOOK_FASTCALL MainGameLoop(void) {
                 && gProgram_state.prog_status == eProg_game_ongoing
                 && gPalette_fade_time == 0
                 && (gNet_mode == eNet_mode_none
-                        || !gAction_replay_mode
+                        || !gPed_676914
                         || gProgram_state.current_car.car_master_actor->t.t.translate.t.v[0] < 500.f)) {
 
             EnsureRenderPalette();
@@ -628,7 +628,7 @@ tRace_result C2_HOOK_FASTCALL MainGameLoop(void) {
         if (KeyIsDown(0) && !gEntering_message) {
 
             WaitForNoKeys();
-            if (!gAction_replay_mode) {
+            if (!gPed_676914) {
                 tU32 start_menu_time;
 
                 if (gMap_view == 2) {
@@ -645,12 +645,12 @@ tRace_result C2_HOOK_FASTCALL MainGameLoop(void) {
                 ToggleReplay(NULL, NULL);
             }
         }
-        if (!gAction_replay_mode) {
+        if (!gPed_676914) {
             CheckTimer();
         } else {
             PollActionReplayControls(&gFrame_period, &gAverage_frame_period);
         }
-        if (!gAction_replay_mode && gKnobbled_frame_period != 0) {
+        if (!gPed_676914 && gKnobbled_frame_period != 0) {
             while (GetTotalTime() - frame_start_time < gKnobbled_frame_period) {
                 /* brr */
                 /* FIXME: replace with udelay */
@@ -702,7 +702,7 @@ tRace_result C2_HOOK_FASTCALL MainGameLoop(void) {
     if (gAbandon_game && gNet_mode == eNet_mode_host && gRace_over_reason < 8 ) { /* FIXME: 8 == eRace_over_count */
         NetFinishRace(gCurrent_net_game, eRace_over_abandoned);
     }
-    if (gAction_replay_mode) {
+    if (gPed_676914) {
         ToggleReplay(NULL, NULL);
     }
     if (gHost_abandon_game || gProgram_state.prog_status != eProg_game_ongoing) {
@@ -766,7 +766,7 @@ void C2_HOOK_FASTCALL UpdateFramePeriod(tU32* pCamera_period) {
     tU32 new_camera_tick_count;
     int error;
 
-    if (gAction_replay_mode) {
+    if (gPed_676914) {
         tU32 last_tick_count;
 
         last_tick_count = gLast_tick_count;

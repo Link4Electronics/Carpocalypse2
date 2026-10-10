@@ -710,8 +710,8 @@ tCollision_shape_wireframe* C2_HOOK_FASTCALL AllocateWireFrameCollisionShape(int
     result->wireframe.points = (br_vector3*)raw_memory;
     raw_memory += pCount_points * sizeof(br_vector3);
 
-    result->wireframe.count_lines = pCount_lines;
     result->wireframe.lines = (tPolyhedron_edge_indexes*)raw_memory;
+    result->wireframe.count_lines = pCount_lines;
     result->wireframe.count_points = pCount_points;
     result->common.type = kCollisionShapeType_Wireframe;
     return result;

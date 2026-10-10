@@ -1170,7 +1170,7 @@ void C2_HOOK_FASTCALL MapStuffAfterRender(void) {
         FinishMap();
     }
     else if (gMap_view == 1) {
-      if (!gAction_replay_mode
+      if (!gPed_676914
                 && !(gNet_mode != eNet_mode_none && gCurrent_net_game->type == eNet_game_type_foxy && gThis_net_player_index == gIt_or_fox)) {
 
             MapOverlay();

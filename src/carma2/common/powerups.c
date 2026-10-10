@@ -931,6 +931,7 @@ void C2_HOOK_FASTCALL FillInMine(tNet_message_chunk* pChunk, tShit_mine* pMine, 
 int C2_HOOK_FASTCALL MineExplode(tShit_mine *pMine) {
     tNet_message* message;
     br_vector3 offset;
+    int hierarchy_size;
 
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tNet_message, contents, 0x18);
 
@@ -939,7 +940,8 @@ int C2_HOOK_FASTCALL MineExplode(tShit_mine *pMine) {
     }
     pMine->flags |= 0x2;
     if (gNet_mode == eNet_mode_host) {
-        message = NetBuildGuaranteedMessage(49, GetHierarchyNetworkSize(pMine->collision_info));
+        hierarchy_size = GetHierarchyNetworkSize(pMine->collision_info);
+        message = NetBuildGuaranteedMessage(49, hierarchy_size + 12);
         FillInMine(&message->contents, pMine, -1);
         NetGuaranteedSendMessageToAllPlayers(gCurrent_net_game, message, 0);
     }
@@ -947,7 +949,7 @@ int C2_HOOK_FASTCALL MineExplode(tShit_mine *pMine) {
     pMine->next_think_time = GetTotalTime() + 1600;
     BrVector3Negate(&offset, &gExplosion_pix_animation_groups.groups[0].offset);
     Explode(&gExplosion_pix_animation_groups, pMine->collision_info->actor, &pMine->collision_info->actor->model->bounds, &offset);
-    DRS3StartSound3D(gCar_outlet, eSoundId_Explosion, &pMine->collision_info->actor->t.t.translate.t, &gZero_v__car, 1, 255, BR_FIXED_INT(1), BR_FIXED_INT(1));
+    DRS3StartSound3D(gXXX_outlet, eSoundId_Explosion, &pMine->collision_info->actor->t.t.translate.t, &gZero_v__car, 1, 255, BR_FIXED_INT(1), BR_FIXED_INT(1));
     PipeSingleEndShitMine(pMine->collision_info->actor);
     if (pMine->collision_info->actor->parent != NULL) {
         BrActorRemove(pMine->collision_info->actor);
@@ -1509,9 +1511,9 @@ int C2_HOOK_FASTCALL TrashBodywork(tPowerup* powerup, tCar_spec* car) {
 
     TotallySpamTheModel(car, (float)(*(float*)((unsigned char*)car + 0x18d0) * 0.1f * (10.0 / 7.0)));
     if (car != NULL && car->driver == eDriver_local_human) {
-        DRS3StartSound2(gCar_outlet, 0x1388, 1, 0xff, 0xff, -1, -1);
-        DRS3StartSound2(gCar_outlet, 0x1389, 1, 0xff, 0xff, -1, -1);
-        DRS3StartSound2(gCar_outlet, 0x138a, 1, 0xff, 0xff, -1, -1);
+        DRS3StartSound2(gXXX_outlet, 0x1388, 1, 0xff, 0xff, -1, -1);
+        DRS3StartSound2(gXXX_outlet, 0x1389, 1, 0xff, 0xff, -1, -1);
+        DRS3StartSound2(gXXX_outlet, 0x138a, 1, 0xff, 0xff, -1, -1);
     }
     return powerup - gPowerup_array;
 }
@@ -1713,7 +1715,7 @@ int C2_HOOK_FASTCALL KangerooJump(tPowerup* powerup, tCar_spec* car) {
     PratcamEvent(0x2a);
     *(float*)((tU8*)car->collision_info + 0x6c) = powerup->float_params[0] * gConst_kangeroo_force_factor + *(float*)((tU8*)car->collision_info + 0x6c);
     if (car != NULL && car->driver == eDriver_local_human) {
-        DRS3StartSound(gCar_outlet, 0x2332);
+        DRS3StartSound(gXXX_outlet, 0x2332);
     }
     *((tU8*)car->collision_info + 0xec) = 0;
     return powerup - gPowerup_array;
@@ -1810,7 +1812,7 @@ int C2_HOOK_FASTCALL SetPissed(tPowerup* powerup, tCar_spec* car) {
         float* pOut;
         int k;
 
-        DRS3StartSound2(gCar_outlet, 0xe11, 1, 0xff, 0xff, -1, -1);
+        DRS3StartSound2(gXXX_outlet, 0xe11, 1, 0xff, 0xff, -1, -1);
         gPissed_next_time = GetTotalTime() + IRandomBetween(0x5dc, 0xbb8);
         gCredit_multiplier = *powerup->integer_params;
         gPissed_hold_time = powerup->float_params[3];
@@ -1851,13 +1853,12 @@ int C2_HOOK_FASTCALL NapalmPeds(tPowerup* powerup, tCar_spec* car) {
 // FUNCTION: CARMA2_HW 0x004dfec0
 int C2_HOOK_FASTCALL PedValium(tPowerup* powerup, tCar_spec* car) {
 
-    if (!CalmDownAllPeds()) {
-        return -1;
+    if (CalmDownAllPeds() != 0) {
+        NewTextHeadupSlot(4,0, 3000, -4, GetMiscString(eMiscString_pedestrians_are_calm_now));
+        DRS3StartSound2(gXXX_outlet, eSoundId_PedValium, 1, 0xff, 0xff, -1, -1);
+        return powerup - gPowerup_array;
     }
-
-    NewTextHeadupSlot(4,0, 3000, -4, GetMiscString(eMiscString_pedestrians_are_calm_now));
-    DRS3StartSound2(gCar_outlet, eSoundId_PedValium, 1, 0xff, 0xff, -1, -1);
-    return powerup - gPowerup_array;
+    return -1;
 }
 
 // FUNCTION: CARMA2_HW 0x004dff30

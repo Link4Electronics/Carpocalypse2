@@ -62,14 +62,14 @@ void C2_HOOK_FASTCALL ChangeCameraType(void) {
         }
     }
     mode = gAction_replay_camera_mode;
-    if ((gAction_replay_mode != 0 && gCamera_type_allowed_replay[mode] == 0) ||
-        (gAction_replay_mode == 0 && gCamera_type_allowed_gameplay[mode] == 0) ||
+    if ((gPed_676914 != 0 && gCamera_type_allowed_replay[mode] == 0) ||
+        (gPed_676914 == 0 && gCamera_type_allowed_gameplay[mode] == 0) ||
         mode >= 9 ||
         (mode == 6 && !OKToViewDrones()) ||
         (mode == 5 && gPed_count == 0)) {
         ChangeCameraType();
     }
-    if (gAction_replay_mode != 0) {
+    if (gPed_676914 != 0) {
         gAR_camera_type = gAction_replay_camera_mode;
     } else {
         gCamera_type = gAction_replay_camera_mode;

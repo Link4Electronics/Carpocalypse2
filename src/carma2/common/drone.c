@@ -7,6 +7,7 @@
 #include "globvrpb.h"
 #include "loading.h"
 #include "opponent.h"
+#include "pedestrn.h"
 #include "physics.h"
 #include "piping.h"
 #include "platform.h"
@@ -128,7 +129,7 @@ float gDrone_render_zero = 0.0f;
 
 // FUNCTION: CARMA2_HW 0x00452810
 void C2_HOOK_FASTCALL SetDroneRender(int pIndex, int pRender) {
-    if (gAction_replay_mode && ARGetReplayRate() < gDrone_render_zero) {
+    if (gPed_676914 && ARGetReplayRate() < gDrone_render_zero) {
         pRender = (pRender == 0);
         DoNotDprintf("B DRONERENDER");
     } else {
