@@ -176,12 +176,6 @@ const char* gPed_form_joint_limit_type_names[2] = {
     "UNIVERSAL",
 };
 
-// GLOBAL: CARMA2_HW 0x00676d68
-br_material* gPedestrian_character_cloned_materials[50];
-
-// GLOBAL: CARMA2_HW 0x0067772c
-int gCount_pedestrian_personality_cloned_materials;
-
 // GLOBAL: CARMA2_HW 0x0058f288
 const char* gPed_personality_grounding_type_names[1] = {
     "GROUND",
@@ -312,29 +306,35 @@ tPed_form* gPed_forms[20] = { 0 };
 // GLOBAL: CARMA2_HW 0x00676978
 int gPed_overall_movement_disabled = 0;
 
+// GLOBAL: CARMA2_HW 0x00676980
+tPed_move* gPed_moves[250] = { 0 };
+
+// GLOBAL: CARMA2_HW 0x00676d68
+br_material* gPedestrian_character_cloned_materials[50] = { 0 };
+
+// GLOBAL: CARMA2_HW 0x00676e30
+float gPed_cos_table[256] = { 0 };
+
+// GLOBAL: CARMA2_HW 0x00677230
+float gFLOAT_00677230 = 0.f;
+
+// GLOBAL: CARMA2_HW 0x00677238
+tPed_remap* gPed_remaps[10] = { 0 };
+
 // GLOBAL: CARMA2_HW 0x00677260
 tPed_personality* gPed_personalities[50] = { 0 };
 
 // GLOBAL: CARMA2_HW 0x00677328
 float gPed_sin_table[256] = { 0 };
 
-// GLOBAL: CARMA2_HW 0x00676980
-tPed_move* gPed_moves[250] = { 0 };
+// GLOBAL: CARMA2_HW 0x00677728
+undefined4 gDAT_00677728 = 0;
 
-// GLOBAL: CARMA2_HW 0x00677238
-tPed_remap* gPed_remaps[10];
+// GLOBAL: CARMA2_HW 0x0067772c
+int gCount_pedestrian_personality_cloned_materials = 0;
 
 // GLOBAL: CARMA2_HW 0x00677730
-tPed_morph gPed_morphs[20];
-
-// GLOBAL: CARMA2_HW 0x00676e30
-float gPed_cos_table[256];
-
-// GLOBAL: CARMA2_HW 0x00677728
-undefined4 gDAT_00677728;
-
-// GLOBAL: CARMA2_HW 0x00677230
-float gFLOAT_00677230;
+tPed_morph gPed_morphs[20] = { 0 };
 
 // GLOBAL: CARMA2_HW 0x00676914
 int gPed_676914;
@@ -1100,8 +1100,49 @@ void C2_HOOK_FASTCALL InitNapalmNolts(void) {
 
 // FUNCTION: CARMA2_HW 0x004ce140
 int C2_HOOK_FASTCALL DoToPeds(tCar_spec* pCar_spec, int pOnly_alive, float pMax_distance, int pParam_4, void* pData, tForEachPedestrian_cbfn* pCallback) {
+    tPedestrian* ped;
+    tU32 now;
+    br_vector3* pos;
+    br_scalar dist_sq;
+    float t;
+    int result = 0;
 
-    NOT_IMPLEMENTED();
+    if (gEthereal_pedestrians) {
+        return 0;
+    }
+    pos = &pCar_spec->pos;
+    now = GetTotalTime();
+
+    for (ped = gPedestrians_in_sight; ped != NULL; ped = ped->next) {
+        dist_sq = (pos->v[0] - ped->pos.v[0]) * (pos->v[0] - ped->pos.v[0])
+                + (pos->v[1] - ped->pos.v[1]) * (pos->v[1] - ped->pos.v[1])
+                + (pos->v[2] - ped->pos.v[2]) * (pos->v[2] - ped->pos.v[2]);
+
+        if (pOnly_alive != 0 && ped->hit_points <= 0) {
+            continue;
+        }
+        if (pMax_distance != gConst_replay_rate_zero && dist_sq >= pMax_distance) {
+            continue;
+        }
+        if (pParam_4 != 0) {
+            br_material* material;
+            br_vector3 nor;
+            br_vector3 dir;
+
+            dir.v[0] = ped->pos.v[0] - pos->v[0];
+            dir.v[1] = ped->pos.v[1] - pos->v[1];
+            dir.v[2] = ped->pos.v[2] - pos->v[2];
+            FindFace(pos, &dir, &nor, &t, &material);
+        } else {
+            t = 100.f;
+        }
+        if (t < 1.0) {
+            continue;
+        }
+        pCallback(ped, pCar_spec, dist_sq, now, pData);
+        result = 1;
+    }
+    return result;
 }
 
 // FUNCTION: CARMA2_HW 0x004ca9f0
@@ -2855,11 +2896,6 @@ void C2_HOOK_FASTCALL StopCharacterMorphing(tPed_character_instance* pCharacter)
     }
 }
 
-// FUNCTION: CARMA2_HW 0x004cc860
-void C2_HOOK_CDECL SetCharacterPhysicsLevelAR(tPed_character_instance* pCharacter, tU32 pLevel) {
-
-    NOT_IMPLEMENTED();
-}
 
 // FUNCTION: CARMA2_HW 0x00408400
 undefined4 C2_HOOK_FASTCALL CharacterNoLongerRenderable(tPed_character_instance* pCharacter) {
@@ -3027,7 +3063,7 @@ void C2_HOOK_FASTCALL MakePedVanish(tPedestrian* pPed) {
     PipeSinglePedPos(pPed, &pPed->pos, &gZero_v__car);
     pPed->flags |= 0x80;
     gPipe_halted_ped_status = 1;
-    SetCharacterPhysicsLevelAR(pPed->character, 0);
+    SetCharacterPhysicsLevelAR(pPed->character, 0, 0);
     CharacterNoLongerRenderable(pPed->character);
     gPipe_halted_ped_status = 0;
     OneLessPed(pPed);
@@ -3181,7 +3217,7 @@ void C2_HOOK_FASTCALL StopSmoothTurning(tPedestrian* pPed) {
 void C2_HOOK_FASTCALL SetThisPedPhysicing(tPedestrian* pPed) {
 
     StopSmoothTurning(pPed);
-    SetCharacterPhysicsLevelAR(pPed->character, 5);
+    SetCharacterPhysicsLevelAR(pPed->character, 5, 0);
 }
 
 int C2_HOOK_FASTCALL PedAnimCausesMovement(tPedestrian* pPed) {
@@ -3559,7 +3595,7 @@ void C2_HOOK_FASTCALL MungePedestrians(void) {
                     PedFallingForever(ped);
                 }
                 prev_field_0x10 = ped->character->field_0x10;
-                SetCharacterPhysicsLevelAR(ped->character, 0);
+                SetCharacterPhysicsLevelAR(ped->character, 0, 0);
                 CharacterNoLongerRenderable(ped->character);
                 if (ped->character->field_0x10 != prev_field_0x10) {
                     PipeSingleVanishedDismembered(ped, prev_field_0x10, ped->character->field_0x10);
@@ -3853,10 +3889,21 @@ undefined4 C2_HOOK_FASTCALL CBPassiveCollision(undefined4* pArg1, undefined4 pAr
     NOT_IMPLEMENTED();
 }
 
+extern br_error C2_HOOK_CDECL HostRegistersGet(void* regs);
+
 // FUNCTION: CARMA2_HW 0x004d1020
 int C2_HOOK_FASTCALL CBActiveHalted(undefined4* pArg1, undefined4* pArg2) {
+    return ((int (C2_HOOK_STDCALL *)(void*))HostRegistersGet)(NULL);
+}
 
-    NOT_IMPLEMENTED();
+// FUNCTION: CARMA2_HW 0x0040c620
+void C2_HOOK_FASTCALL SetPedRetainRootMode(void) {
+    gPed_retain_root_mode = 1;
+}
+
+// FUNCTION: CARMA2_HW 0x0040c630
+void C2_HOOK_FASTCALL ClearPedRetainRootMode(void) {
+    gPed_retain_root_mode = 0;
 }
 
 // FUNCTION: CARMA2_HW 0x004d2930
@@ -3871,11 +3918,7 @@ int C2_HOOK_FASTCALL CBMoveCompleted(undefined4* pArg1) {
     NOT_IMPLEMENTED();
 }
 
-// FUNCTION: CARMA2_HW 0x004ccab0
-void C2_HOOK_FASTCALL CBFillInObject(undefined4* pArg1, undefined4 pArg2) {
-
-    NOT_IMPLEMENTED();
-}
+// CBFillInObject
 
 // FUNCTION: CARMA2_HW 0x004cc900
 void C2_HOOK_FASTCALL CBLoadForm(tPed_form* pPed_form, FILE* pF) {
@@ -3901,8 +3944,6 @@ void C2_HOOK_FASTCALL CBLoadForm(tPed_form* pPed_form, FILE* pF) {
 
 // FUNCTION: CARMA2_HW 0x004cc940
 void C2_HOOK_FASTCALL CBDisposeForm(undefined4* pArg1) {
-
-    NOT_IMPLEMENTED();
 }
 
 // FUNCTION: CARMA2_HW 0x004cc950
@@ -3953,9 +3994,8 @@ void C2_HOOK_FASTCALL CBLoadPersonality(tPed_personality* pPersonality, FILE* pF
 }
 
 // FUNCTION: CARMA2_HW 0x004ccaa0
-void C2_HOOK_FASTCALL CBDisposePersonality(undefined4* pArg1) {
-
-    NOT_IMPLEMENTED();
+void C2_HOOK_FASTCALL CBDisposePersonality(tPed_personality* pPersonality) {
+    BrMemFree(pPersonality->sounds);
 }
 
 // FUNCTION: CARMA2_HW 0x004cccc0
@@ -5386,11 +5426,13 @@ void C2_HOOK_FASTCALL EnableOverallMovement(void) {
     gPed_overall_movement_disabled = 0;
 }
 
+#pragma auto_inline(off)
 // FUNCTION: CARMA2_HW 0x004cadb0
 br_vector3* C2_HOOK_FASTCALL GetPedPos(tPedestrian* pPed) {
 
     return (br_vector3*)GetCharacterMatrixPtr(pPed->character)->m[3];
 }
+#pragma auto_inline(on)
 
 // FUNCTION: CARMA2_HW 0x004cce70
 void C2_HOOK_FASTCALL KillPedestrian(tPedestrian* pPed, tPhysics_object* pCollision_info) {
@@ -5771,7 +5813,7 @@ br_model* C2_HOOK_FASTCALL GetCharacterBoneModel(tPed_character_instance* pChara
 // FUNCTION: CARMA2_HW 0x0040b590
 int C2_HOOK_FASTCALL GetCharacterModelSet(tPed_character_instance* pCharacter) {
 
-    return pCharacter->field_0xa;
+    return (signed char)pCharacter->field_0xa;
 }
 
 // FUNCTION: CARMA2_HW 0x0040b420
@@ -5831,7 +5873,7 @@ void C2_HOOK_FASTCALL SetPedStartRun(tPedestrian* pPed) {
 // FUNCTION: CARMA2_HW 0x004cc660
 void C2_HOOK_FASTCALL StartPedRunning(tPedestrian* pPed, tU32 pTime, int pArg3) {
 
-    if (!(pPed->character->field_0xc & 0x8) && !(pPed->character->field_0xc & 0x20) && pPed->field_0x0c != NULL) {
+    if ((!(pPed->character->field_0xc & gPow2_array[3])) && (!(gPow2_array[5] & pPed->character->field_0xc)) && pPed->field_0x0c != NULL) {
 
         SetPedStartRun(pPed);
         SetPedMove(pPed, pArg3 ? 40 : 41, pPed->field_0x0c->field_0x80, 0, 0, pTime, ePed_action_running);
@@ -5991,7 +6033,196 @@ void C2_HOOK_FASTCALL InitPolyPedSystem(void) {
 
 // DisposePedSpawnSpec
 
-// DisposeCharacterInstances
+#pragma auto_inline(off)
+// FUNCTION: CARMA2_HW 0x00406a30
+void C2_HOOK_FASTCALL DisposeCharacterInstance(tPed_character_instance* pCharacter) {
+
+    if (pCharacter != NULL) {
+        BrMemFree(pCharacter);
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x004067e0
+void C2_HOOK_FASTCALL DisposePedForm(tPed_form* pForm) {
+    int i;
+    int j;
+
+    if (gPed_vtable->dispose_form != NULL) {
+        gPed_vtable->dispose_form(pForm);
+    }
+    for (i = 0; i < pForm->max_rendering_at_once; i++) {
+        for (j = 0; j < pForm->count_bones; j++) {
+            if (IsActorRenderworthy(pForm->actor_sets[i].actors[j])) {
+                StopActorBeingRenderable(pForm->actor_sets[i].actors[j]);
+            }
+            BrActorFree(pForm->actor_sets[i].actors[j]);
+        }
+        if (pForm->actor_sets[i].actors != NULL) {
+            BrMemFree(pForm->actor_sets[i].actors);
+        }
+    }
+    {
+        int bone_offset = 0;
+        int ci_offset = 0;
+        int idx = 0;
+        for (idx = 0; idx < pForm->count_bones; idx++) {
+            if (*(tPhysics_object**)((char*)pForm->boned_physicing[0].collision_infos + ci_offset) != NULL) {
+                tPhysics_joint* hinge = *(tPhysics_joint**)((char*)pForm->bones + bone_offset + 0x30);
+                if (hinge != NULL) {
+                    FreePhysicsJoint(hinge);
+                }
+                for (j = 0; j < pForm->max_boned_physicing_at_once; j++) {
+                    tPhysics_object** slot = (tPhysics_object**)((char*)pForm->boned_physicing[j].collision_infos + ci_offset);
+                    if ((*slot)->shape != NULL) {
+                        FreeThingForm((*slot)->shape);
+                    }
+                    slot = (tPhysics_object**)((char*)pForm->boned_physicing[j].collision_infos + ci_offset);
+                    if (*slot != NULL) {
+                        BrMemFree(*slot);
+                    }
+                }
+            }
+            bone_offset += 0x34;
+            ci_offset += 4;
+        }
+    }
+    for (i = 0; i < pForm->max_boned_physicing_at_once; i++) {
+        if (pForm->boned_physicing[i].collision_infos != NULL) {
+            BrMemFree(pForm->boned_physicing[i].collision_infos);
+        }
+    }
+    for (i = 0; i < pForm->max_simple_physicing_at_once; i++) {
+        FreeThingForm(pForm->simple_physicing[i].collision_info->shape);
+        if (pForm->simple_physicing[i].collision_info != NULL) {
+            BrMemFree(pForm->simple_physicing[i].collision_info);
+        }
+    }
+    for (i = 0; i < pForm->max_stored_dismembered_characters; i++) {
+        if (pForm->stored_dismembered_characters[i] != NULL) {
+            BrMemFree(pForm->stored_dismembered_characters[i]);
+        }
+    }
+    if (pForm->stored_dismembered_characters != NULL) {
+        BrMemFree(pForm->stored_dismembered_characters);
+    }
+    if (pForm->moves != NULL) {
+        BrMemFree(pForm->moves);
+    }
+    if (pForm->actor_sets != NULL) {
+        BrMemFree(pForm->actor_sets);
+    }
+    if (pForm->simple_physicing != NULL) {
+        BrMemFree(pForm->simple_physicing);
+    }
+    if (pForm->boned_physicing != NULL) {
+        BrMemFree(pForm->boned_physicing);
+    }
+    if (pForm->bones != NULL) {
+        BrMemFree(pForm->bones);
+    }
+    if (pForm != NULL) {
+        BrMemFree(pForm);
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x004077f0
+void C2_HOOK_FASTCALL DisposePedPersonality(tPed_personality* pPersonality) {
+    int i;
+    int j;
+    int k;
+
+    if (gPed_vtable->dispose_personality != NULL) {
+        gPed_vtable->dispose_personality(pPersonality);
+    }
+    if (pPersonality->moves != NULL) {
+        BrMemFree(pPersonality->moves);
+    }
+    for (i = 0; i < pPersonality->form->count_bones; i++) {
+        int models_offset = 0;
+        int peep_idx = 0;
+        do {
+            if (pPersonality->bones[i].models[peep_idx].models[0] != NULL) {
+                int k_offset = models_offset;
+                int k_count = 2;
+                do {
+                    BrModelRemove(*(br_model**)((char*)pPersonality->bones[i].models + k_offset));
+                    BrModelFree(*(br_model**)((char*)pPersonality->bones[i].models + k_offset));
+                    k_offset += 4;
+                    k_count--;
+                } while (k_count != 0);
+            }
+            models_offset += 8;
+            peep_idx++;
+        } while (peep_idx < 4);
+        if (pPersonality->bones[i].hinge != NULL) {
+            FreePhysicsJoint(pPersonality->bones[i].hinge);
+        }
+    }
+    if (pPersonality->bones != NULL) {
+        BrMemFree(pPersonality->bones);
+    }
+    if (pPersonality != NULL) {
+        BrMemFree(pPersonality);
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x0040b2e0
+void C2_HOOK_FASTCALL DisposeCharacterInstances(void) {
+    int i;
+    int j;
+
+    for (i = 0; i < 10; i++) {
+        tPed_remap* remap = gPed_remaps[i];
+        if (remap != NULL) {
+            if (remap->bones != NULL) {
+                BrMemFree(remap->bones);
+            }
+            BrMemFree(remap);
+            gPed_remaps[i] = NULL;
+        }
+    }
+    for (i = 0; i < 50; i++) {
+        tPed_personality* personality = gPed_personalities[i];
+        if (personality != NULL) {
+            DisposePedPersonality(personality);
+            gPed_personalities[i] = NULL;
+        }
+    }
+    for (i = 0; i < 250; i++) {
+        tPed_move* move = gPed_moves[i];
+        if (move != NULL) {
+            for (j = 0; j < move->count_frames; j++) {
+                if (move->frames[j].axis != NULL) {
+                    BrMemFree(move->frames[j].axis);
+                }
+            }
+            if (move->frames != NULL) {
+                BrMemFree(move->frames);
+            }
+            if (move != NULL) {
+                BrMemFree(move);
+            }
+            gPed_moves[i] = NULL;
+        }
+    }
+    for (i = 0; i < 20; i++) {
+        tPed_form* form = gPed_forms[i];
+        if (form != NULL) {
+            DisposePedForm(form);
+            gPed_forms[i] = NULL;
+        }
+    }
+    for (i = 0; i < 20; i++) {
+        gPed_morphs[i].field_0x4 = 0.f;
+    }
+    for (i = 0; i < gCount_pedestrian_personality_cloned_materials; i++) {
+        BrMaterialRemove(gPedestrian_character_cloned_materials[i]);
+        BrMaterialFree(gPedestrian_character_cloned_materials[i]);
+    }
+    gCount_pedestrian_personality_cloned_materials = 0;
+    gPed_overall_movement_disabled = 0;
+}
+#pragma auto_inline(on)
 
 // FUNCTION: CARMA2_HW 0x004cb8d0
 void C2_HOOK_FASTCALL DisposePedStuff(void) {
@@ -6042,7 +6273,28 @@ void C2_HOOK_FASTCALL DisposePedStuff(void) {
         }
     }
 #else
-    NOT_IMPLEMENTED();
+    int i;
+
+    DisposeCharacterInstances();
+
+    for (i = 0; i < gPed_count; i++) {
+        DisposeCharacterInstance(gPedestrian_array[i].character);
+    }
+    ClearOutStorageSpace(&gPedStorage);
+    if (gPedestrian_array != NULL) {
+        BrMemFree(gPedestrian_array);
+    }
+    for (i = 0; i < gCount_race_pedestrian_specs; i++) {
+        if (gRace_pedestrian_specs[i].exclusion.exclusion_materials != NULL) {
+            BrMemFree(gRace_pedestrian_specs[i].exclusion.exclusion_materials);
+        }
+        if (gRace_pedestrian_specs[i].exclusion.exception_materials != NULL) {
+            BrMemFree(gRace_pedestrian_specs[i].exclusion.exception_materials);
+        }
+    }
+    if (gRace_pedestrian_specs != NULL) {
+        BrMemFree(gRace_pedestrian_specs);
+    }
 #endif
 }
 
@@ -6118,11 +6370,7 @@ int C2_HOOK_FASTCALL IsActorRenderworthy(br_actor* pActor) {
 
 // CBLoadForm
 
-// CBDisposeForm
-
 // CBLoadPersonality
-
-// CBDisposePersonality
 
 // CBFillInObject
 
@@ -6500,59 +6748,60 @@ void C2_HOOK_FASTCALL SetGoreLevel(int pNewLevel) {
 
 // FUNCTION: CARMA2_HW 0x00409090
 undefined4 C2_HOOK_FASTCALL CharacterNoLongerCollideworthy(tPed_character_instance* pCharacter) {
-    tPed_form* form;
 
     if (pCharacter->field_0x14 == 0) {
         return 0x1f;
     }
-    form = pCharacter->personality->form;
+    {
+        tPed_form* form = pCharacter->personality->form;
 
-    if ((pCharacter->field_0x14 & 1) != 0) {
-        tPhysics_object* cinfo;
-        tPed_form_boned_phys* bphys;
-        int i;
+        if ((pCharacter->field_0x14 & 1) != 0) {
+            tPhysics_object* cinfo;
+            tPed_form_boned_phys* bphys;
+            int i;
 
-        cinfo = form->simple_physicing[(tS8)pCharacter->field_0x5].collision_info;
-        PHILRemoveObject(cinfo);
-        cinfo->field183_0x1d8 = NULL;
-        cinfo->owner = NULL;
-        *((tU8*)&form->simple_physicing[(tS8)pCharacter->field_0x5].type) = 0;
+            cinfo = form->simple_physicing[(tS8)pCharacter->field_0x5].collision_info;
+            PHILRemoveObject(cinfo);
+            cinfo->field183_0x1d8 = NULL;
+            cinfo->owner = NULL;
+            *((tU8*)&form->simple_physicing[(tS8)pCharacter->field_0x5].type) = 0;
 
-        if (pCharacter->field_0xc != 0 && (tS8)pCharacter->field_0x6 >= 0) {
-            bphys = &form->boned_physicing[(tS8)pCharacter->field_0x6];
-            for (i = 1; i < form->count_bones; i++) {
-                if ((gPow2_array[i] & pCharacter->field_0xc) != 0) {
-                    if (PHILReturnObjectStatus(bphys->collision_infos[i]) == 2) {
-                        pCharacter->field_0x10 |= gPow2_array[i];
+            if (pCharacter->field_0xc != 0 && (tS8)pCharacter->field_0x6 >= 0) {
+                bphys = &form->boned_physicing[(tS8)pCharacter->field_0x6];
+                for (i = 1; i < form->count_bones; i++) {
+                    if ((gPow2_array[i] & pCharacter->field_0xc) != 0) {
+                        if (PHILReturnObjectStatus(bphys->collision_infos[i]) == 2) {
+                            pCharacter->field_0x10 |= gPow2_array[i];
+                        }
+                        PHILRemoveObject(bphys->collision_infos[i]);
+                        bphys->collision_infos[i]->field183_0x1d8 = NULL;
+                        bphys->collision_infos[i]->owner = NULL;
                     }
-                    PHILRemoveObject(bphys->collision_infos[i]);
-                    bphys->collision_infos[i]->field183_0x1d8 = NULL;
-                    bphys->collision_infos[i]->owner = NULL;
+                }
+                pCharacter->field_0x6 = -1;
+                bphys->field_0x0 = 0;
+            }
+            pCharacter->field_0x14 = 0;
+            return 0;
+        } else {
+            tPhysics_object** cinfos;
+            tPhysics_object* cobj;
+            int i;
+
+            cinfos = form->boned_physicing[(tS8)pCharacter->field_0x5].collision_infos;
+            for (i = 0; i < form->count_bones; i++) {
+                if (cinfos[i]->shape != NULL) {
+                    break;
                 }
             }
-            pCharacter->field_0x6 = -1;
-            bphys->field_0x0 = 0;
+            cobj = (i < form->count_bones) ? cinfos[i] : NULL;
+            PHILRemoveObject(cobj);
+            cobj->field183_0x1d8 = NULL;
+            form->boned_physicing[(tS8)pCharacter->field_0x5].field_0x0 = 0;
         }
         pCharacter->field_0x14 = 0;
         return 0;
-    } else {
-        tPhysics_object** cinfos;
-        tPhysics_object* cobj;
-        int i;
-
-        cinfos = form->boned_physicing[(tS8)pCharacter->field_0x5].collision_infos;
-        for (i = 0; i < form->count_bones; i++) {
-            if (cinfos[i]->shape != NULL) {
-                break;
-            }
-        }
-        cobj = (i < form->count_bones) ? cinfos[i] : NULL;
-        PHILRemoveObject(cobj);
-        cobj->field183_0x1d8 = NULL;
-        form->boned_physicing[(tS8)pCharacter->field_0x5].field_0x0 = 0;
     }
-    pCharacter->field_0x14 = 0;
-    return 0;
 }
 
 #pragma auto_inline(off)
@@ -6755,7 +7004,10 @@ void C2_HOOK_FASTCALL BonerPedMovedByPhysics(tPed_character_instance* pCharacter
     pCharacter->field_0x8c.m[3][2] = 0.f;
     SetCharacterBonePositions(pCharacter, 3, 0);
 
-    obj = pCharacter->personality->form->simple_physicing[(tS8)pCharacter->field_0x5].collision_info;
+    {
+        tS8 simple_phys_index = (tS8)pCharacter->field_0x5;
+        obj = pCharacter->personality->form->simple_physicing[simple_phys_index].collision_info;
+    }
     pCharacter->field_0xd8.v[0] = obj->v.v[0];
     pCharacter->field_0xd8.v[1] = obj->v.v[1];
     pCharacter->field_0xd8.v[2] = obj->v.v[2];
@@ -6767,6 +7019,53 @@ void C2_HOOK_FASTCALL BonerPedMovedByPhysics(tPed_character_instance* pCharacter
         if (callback != NULL) {
             callback(pCharacter, obj, pArg2);
         }
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x004ccab0
+void C2_HOOK_FASTCALL CBFillInObject(undefined4* pArg1, undefined4 pArg2) {
+    char* base = (char*)pArg1;
+    if (pArg2 == 5) {
+        *(int*)(base + 0x1a0) = 0x40000;
+        *(int*)(base + 0x1a4) = 0x50000;
+    } else {
+        *(int*)(base + 0x1a0) = 0x10000;
+        *(int*)(base + 0x1a4) = 0x50000;
+    }
+}
+// FUNCTION: CARMA2_HW 0x004cc860
+void C2_HOOK_CDECL SetCharacterPhysicsLevelAR(tPed_character_instance* pCharacter, tU32 pLevel, undefined4 pArg3) {
+    tU32 old_flags;
+    tS8 field_4;
+    tU8 field_5;
+    int old_bone_bit;
+
+    old_flags = pCharacter->field_0x14;
+    field_4 = pCharacter->field_0x4;
+    field_5 = pCharacter->field_0x5;
+    old_bone_bit = (old_flags >> 2) & 1;
+
+    if (pLevel == 1) {
+        SetCharacterPhysicsLevel(pCharacter, pLevel, pArg3);
+    } else {
+        ((int (C2_HOOK_CDECL *)(tPed_character_instance*, int))SetCharacterPhysicsLevel)(pCharacter, pLevel);
+    }
+
+    if ((((pLevel >> 2) & 1) ^ old_bone_bit) != 0) {
+        PipeSinglePedStatus(
+            pCharacter->ped,
+            pArg3 | 0xff,
+            -1,
+            old_flags,
+            pLevel,
+            field_4,
+            field_4,
+            pArg3,
+            field_5,
+            &pCharacter->field_0xc0,
+            &pCharacter->field_0xcc,
+            &pCharacter->field_0x8c);
+        pCharacter->ped->field_0x06++;
     }
 }
 

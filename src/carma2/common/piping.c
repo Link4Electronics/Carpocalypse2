@@ -947,6 +947,15 @@ void C2_HOOK_FASTCALL PipeSinglePedDir(int pId, const br_vector3* pDir) {
         SIZE_OFFSET_PIPING(tPipe_ped_dir_data, direction),       pDir);
 }
 
+// FUNCTION: CARMA2_HW 0x004c8c30
+void C2_HOOK_FASTCALL PipeSinglePedMoveStatus(tPedestrian* pPed, float pValue, int pTime) {
+
+    gUNK_0069410c = *(tU32*)&pValue;
+    ARDoSingleVariedSession(ePipe_chunk_ped_move_status, (uintptr_t)pPed, 2,
+        4, 0,  *(tU32*)&pValue,
+        4, 4,  *(tU32*)&pValue);
+}
+
 // FUNCTION: CARMA2_HW 0x004c8ea0
 void C2_HOOK_FASTCALL PipeSingleDroneRender(tDrone_spec* pDrone_spec, int pRender) {
 

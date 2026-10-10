@@ -616,6 +616,10 @@ tPed_character_instance* C2_HOOK_FASTCALL BuildCharacterInstance(const char* pGr
 
 br_matrix34* C2_HOOK_FASTCALL GetCharacterMatrixPtr(tPed_character_instance *pCharacter);
 
+void C2_HOOK_FASTCALL SetPedRetainRootMode(void);
+
+void C2_HOOK_FASTCALL ClearPedRetainRootMode(void);
+
 void C2_HOOK_CDECL TurnLimbsOnAndOff(br_actor* actor, br_model* model, br_material* material, void* render_data, br_uint_8 style, int on_screen);
 
 int C2_HOOK_FASTCALL MorphCharacterBonePositions(tPed_character_instance* pPed, tU32 pArg2);
@@ -674,7 +678,7 @@ void C2_HOOK_FASTCALL MungeNapalm(void);
 
 void C2_HOOK_FASTCALL StopCharacterMorphing(tPed_character_instance* pCharacter);
 
-void C2_HOOK_CDECL SetCharacterPhysicsLevelAR(tPed_character_instance* pCharacter, tU32 pLevel);
+void C2_HOOK_CDECL SetCharacterPhysicsLevelAR(tPed_character_instance* pCharacter, tU32 pLevel, undefined4 pArg3);
 
 undefined4 C2_HOOK_FASTCALL CharacterNoLongerRenderable(tPed_character_instance* pCharacter);
 
@@ -746,7 +750,7 @@ void C2_HOOK_FASTCALL CBDisposeForm(undefined4* pArg1);
 
 void C2_HOOK_FASTCALL CBLoadPersonality(tPed_personality* pPersonality, FILE* pF);
 
-void C2_HOOK_FASTCALL CBDisposePersonality(undefined4* pArg1);
+void C2_HOOK_FASTCALL CBDisposePersonality(tPed_personality* pPersonality);
 
 FILE* C2_HOOK_FASTCALL BonerOpenRemaps(const char* pFile_name);
 
