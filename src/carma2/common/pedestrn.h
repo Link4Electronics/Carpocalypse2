@@ -556,6 +556,8 @@ extern tPedestrian* gPedestrian_array;
 
 extern int gPed_count;
 
+extern int gPed_676914;
+
 extern int gPed_nearness;
 
 extern int gSelected_ped;
@@ -734,13 +736,19 @@ void C2_HOOK_FASTCALL MakeFlagWavingBastardWaveHisFlagWhichIsTheProbablyTheLastT
 
 void C2_HOOK_FASTCALL FlushAllPedCaches(void);
 
-undefined4 C2_HOOK_FASTCALL CBPassiveCollision(undefined4* pArg1, undefined4 pArg2, undefined4* pArg3);
+undefined4 C2_HOOK_FASTCALL CBPassiveCollision(tPed_character_instance* pCharacter, tPhysics_object* pObject, tPhysics_object* pCollision_info);
 
-int C2_HOOK_FASTCALL CBActiveHalted(undefined4* pArg1, undefined4* pArg2);
+int C2_HOOK_FASTCALL CBActiveHalted(tPed_character_instance* pCharacter, tPhysics_object* pPhysics);
 
-void C2_HOOK_FASTCALL CBMovedByPhysics(undefined4* pArg1, undefined4* pArg2, undefined4 pArg3);
+int C2_HOOK_FASTCALL CBActiveHaltedInternal(tPed_character_instance* pCharacter, tPhysics_object* pPhysics, int pMode);
 
-int C2_HOOK_FASTCALL CBMoveCompleted(undefined4* pArg1);
+void C2_HOOK_FASTCALL CBMovedByPhysics(tPed_character_instance* pCharacter, tPhysics_object* pPhysics, undefined4 pArg3);
+
+int C2_HOOK_FASTCALL CBMoveCompleted(tPed_character_instance* pCharacter);
+
+void C2_HOOK_FASTCALL PedProcessContact(tPedestrian* pPed, tPhysics_object* pCollision_info);
+
+void C2_HOOK_FASTCALL SetPedFall(tPedestrian* pPed, int pSpeed, int pMove1, int pMove2, tPhysics_object* pCollision_info);
 
 void C2_HOOK_FASTCALL CBFillInObject(undefined4* pArg1, undefined4 pArg2);
 

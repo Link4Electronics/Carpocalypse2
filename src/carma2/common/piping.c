@@ -4,6 +4,7 @@
 #include "errors.h"
 #include "globvars.h"
 #include "opponent.h"
+#include "pedestrn.h"
 #include "physics.h"
 #include "platform.h"
 #include "smashing.h"
@@ -182,7 +183,7 @@ void C2_HOOK_FASTCALL DisposePiping(void) {
 
 void C2_HOOK_FASTCALL StartPipingSession2(tPipe_chunk_type pType, int pMunge_reentrancy) {
 
-    if (gPipe_buffer_start == NULL || gAction_replay_mode || !gProgram_state.racing) {
+    if (gPipe_buffer_start == NULL || gPed_676914 || !gProgram_state.racing) {
         return;
     }
     /* Header of gLocal_buffer is { int chunk_type, int chunk_data_size } */
@@ -316,7 +317,7 @@ tU32 C2_HOOK_FASTCALL LengthOfSession(tPipe_chunk* pSession) {
 // FUNCTION: CARMA2_HW 0x00402660
 void C2_HOOK_FASTCALL EndPipingSession2(int pMunge_reentrancy) {
 
-    if (gPipe_buffer_start == NULL || gAction_replay_mode || !gProgram_state.racing) {
+    if (gPipe_buffer_start == NULL || gPed_676914 || !gProgram_state.racing) {
         return;
     }
     /* End session with buffer size */
@@ -361,7 +362,7 @@ void C2_HOOK_FASTCALL EndPipingSession2(int pMunge_reentrancy) {
 void C2_HOOK_FASTCALL ARAddDataToSession(int pType, uintptr_t pOwner, void *pData, int pSize) {
     int new_size;
 
-    if (gPipe_buffer_start == NULL || gAction_replay_mode || !gProgram_state.racing) {
+    if (gPipe_buffer_start == NULL || gPed_676914 || !gProgram_state.racing) {
         return;
     }
     new_size = gLocal_buffer_size + pSize + sizeof(void*);
@@ -392,7 +393,7 @@ void C2_HOOK_CDECL ARDoSingleVariedSession(int pType, uintptr_t pOwner, int pCou
     char buffer[5000];
 
     ARStartPipingSession(pType);
-    if (gPipe_buffer_start != NULL && !gAction_replay_mode && gProgram_state.racing) {
+    if (gPipe_buffer_start != NULL && !gPed_676914 && gProgram_state.racing) {
         int i;
         va_list ap;
 
@@ -434,7 +435,7 @@ void C2_HOOK_CDECL ARDoSingleVariedSession(int pType, uintptr_t pOwner, int pCou
 void C2_HOOK_CDECL ARAddVariedDataToSession(int pType, uintptr_t pOwner, int pCount, ...) {
     char buffer[5000];
 
-    if (gPipe_buffer_start != NULL && !gAction_replay_mode && gProgram_state.racing) {
+    if (gPipe_buffer_start != NULL && !gPed_676914 && gProgram_state.racing) {
         int i;
         va_list ap;
 
@@ -1145,8 +1146,8 @@ void C2_HOOK_FASTCALL PipeSinglePedModelChange(tPedestrian* pPed, undefined4 pAr
         SIZE_OFFSET_PIPING(tPipe_single_ped_model_change, field_0x0), pArg2,
         SIZE_OFFSET_PIPING(tPipe_single_ped_model_change, model), pModel,
         SIZE_OFFSET_PIPING(tPipe_single_ped_model_change, field_0x2), pArg4,
-        SIZE_OFFSET_PIPING(tPipe_single_ped_model_change, field_0x4), pArg5,
-        SIZE_OFFSET_PIPING(tPipe_single_ped_model_change, field_0x6), pArg6);
+        SIZE_OFFSET_PIPING(tPipe_single_ped_model_change, field_0x6), pArg5,
+        SIZE_OFFSET_PIPING(tPipe_single_ped_model_change, field_0x4), pArg6);
 }
 
 // FUNCTION: CARMA2_HW 0x004c83f0
@@ -1561,7 +1562,7 @@ void C2_HOOK_FASTCALL AddExtendedSplashToPipingSession(tPhysics_object* pCollisi
 // FUNCTION: CARMA2_HW 0x004c84a0
 void C2_HOOK_FASTCALL PipeSingleSound(tS3_outlet* pOutlet, int pSound, tS3_volume pL_volume, tS3_volume pR_volume, int pPitch, const br_vector3* pPosition) {
 
-    if (gAction_replay_mode) {
+    if (gPed_676914) {
         return;
     }
     if (gProgram_state.racing == 0) {

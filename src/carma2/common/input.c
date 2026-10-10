@@ -399,7 +399,7 @@ void C2_HOOK_FASTCALL CyclePollKeys(void) {
         if (gKey_array[i] > gKey_poll_counter) {
             gKey_array[i] = 0;
             if (i > 143) {
-                gJoy_array[i - 143] = -1; // yes this is a little weird I know...
+                gJoy_array[i - 143] = -1;
             }
         }
     }

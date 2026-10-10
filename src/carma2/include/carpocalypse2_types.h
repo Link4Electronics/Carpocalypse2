@@ -55,6 +55,7 @@ typedef struct tPipe_chunk_data tPipe_chunk_data;
 typedef struct tNet_stored_smash tNet_stored_smash;
 typedef struct tPhysics_joint tPhysics_joint;
 typedef struct tPed_personality tPed_personality;
+typedef struct tPed_character_instance tPed_character_instance;
 typedef struct tCar_crush_vertex_data tCar_crush_vertex_data;
 typedef struct tPed_face_cache_0x34 tPed_face_cache_0x34;
 typedef struct tPed_anim_seq tPed_anim_seq;
@@ -4008,10 +4009,10 @@ typedef struct {
 } tPed_morph;
 
 typedef struct {
-    undefined4 (C2_HOOK_FASTCALL * passive_collision)(undefined4*, undefined4, undefined4*);
-    int (C2_HOOK_FASTCALL * active_halted)(undefined4*, undefined4*);
-    void (C2_HOOK_FASTCALL * moved_by_physics)(undefined4*, undefined4*, undefined4);
-    int (C2_HOOK_FASTCALL * move_completed)(undefined4*);
+    undefined4 (C2_HOOK_FASTCALL * passive_collision)(tPed_character_instance*, tPhysics_object*, tPhysics_object*);
+    int (C2_HOOK_FASTCALL * active_halted)(tPed_character_instance*, tPhysics_object*);
+    void (C2_HOOK_FASTCALL * moved_by_physics)(tPed_character_instance*, tPhysics_object*, undefined4);
+    int (C2_HOOK_FASTCALL * move_completed)(tPed_character_instance*);
     void (C2_HOOK_FASTCALL * fill_in_object)(undefined4*, undefined4);
     void (C2_HOOK_FASTCALL * load_form)(tPed_form* pPed_form, FILE* pF);
     void (C2_HOOK_FASTCALL * dispose_form)(undefined4*);
@@ -4809,11 +4810,11 @@ typedef struct {
     br_vector3 field_0x00;
     br_vector3 field_0x0c;
     undefined field_0x18;
-    undefined field_0x19;
+    tU8 field_0x19;
     undefined field_0x1a;
     undefined field_0x1b[0x1b-0x1a];
     const tPed_anim_seq* field_0x1c;
-    undefined field_0x20[1];
+    tU8 field_0x20;
     undefined field_0x21;
     undefined field_0x22[1];
     undefined field_0x23[10];
@@ -4976,10 +4977,10 @@ typedef struct tPed_personality {
     tPed_personality_sounds* sounds;
 } tPed_personality;
 
-typedef struct {
+typedef struct tPed_character_instance {
     tPed_personality* personality;
     tS8 field_0x4;
-    undefined field_0x5;
+    tS8 field_0x5;
     undefined field_0x6;
     tS8 field_0x7;
     tS8 field_0x8;
@@ -5021,7 +5022,7 @@ typedef struct tPedestrian {
     tPed_character_instance* character;
     tS8 hit_points;
     undefined field_0x05;
-    undefined2 field_0x06;
+    tS16 field_0x06;
     tU16 flags;
     undefined field_0x0a;
     undefined field_0x0b;
