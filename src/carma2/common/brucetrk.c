@@ -324,7 +324,7 @@ void C2_HOOK_FASTCALL AllocateActorMatrix(tTrack_spec* pTrack_spec, tTrack_squar
         (*pDst)[z] = BrMemAllocate(pTrack_spec->ncolumns_x * sizeof(tTrack_square), kMem_columns_x);
         C2_HOOK_BUG_ON(sizeof(tTrack_square) != 12);
 
-        memset((*pDst)[z], 0, sizeof(br_actor**) * pTrack_spec->ncolumns_x);
+        memset((*pDst)[z], 0, sizeof(tTrack_square) * pTrack_spec->ncolumns_x);
     }
 }
 
@@ -420,7 +420,7 @@ void C2_HOOK_FASTCALL DisposeRuntimeBuiltModels(tTrack_spec* pTrack_spec) {
         for (x = 0; x < pTrack_spec->ncolumns_x; x++) {
             br_actor* a;
 
-            a = pTrack_spec->columns[z][z].actor_0x8;
+            a = pTrack_spec->columns[z][x].actor_0x8;
             if (a != NULL && a->model != NULL) {
                 BrModelRemove(a->model);
                 BrModelFree(a->model);

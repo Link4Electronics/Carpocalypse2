@@ -22,6 +22,9 @@
 
 #define CRUSH_SPACE_SIZE 0x4000
 #define SIZE_OFFSET_PIPING(T, M) ((int)sizeof(((T*)NULL)->M)), ((int)offsetof(T, M))
+
+void C2_HOOK_FASTCALL ARAdvanceChunkPtr(tPipe_chunk** pChunk_ptr, tPipe_chunk_type pType);
+
 // GLOBAL: CARMA2_HW 0x00694104
 undefined4* gCrush_space;
 
@@ -710,14 +713,14 @@ int C2_HOOK_FASTCALL CarTimeout(tU32 pTime) {
 // FUNCTION: CARMA2_HW 0x004c6a30
 int C2_HOOK_FASTCALL CheckCar(tPipe_chunk* pChunk_ptr, int pChunk_count, tU32 pTime) {
 
-    NOT_IMPLEMENTED();
-#if 0
     int i;
     tCar_spec* car;
     br_vector3 com_offset_c;
     br_vector3 com_offset_w;
     br_vector3 difference;
     tPipe_chunk* temp_ptr;
+    tU32 subject_index;
+    br_matrix34* transformation;
 
     temp_ptr = pChunk_ptr;
     if (ARReplayForwards()) {
@@ -730,29 +733,29 @@ int C2_HOOK_FASTCALL CheckCar(tPipe_chunk* pChunk_ptr, int pChunk_count, tU32 pT
         }
     }
     for (i = 0; i < pChunk_count; i++) {
-        if ((temp_ptr->subject_index & 0xffffff00) == 0) {
+        subject_index = *(tU32*)((tU8*)temp_ptr);
+        transformation = (br_matrix34*)((tU8*)temp_ptr + sizeof(tU32));
+        if ((subject_index & 0xffffff00) == 0) {
             car = &gProgram_state.current_car;
         } else {
-            car = GetCarSpec(temp_ptr->subject_index >> 8, temp_ptr->subject_index & 0xff);
+            car = GetCarSpec(subject_index >> 8, subject_index & 0xff);
         }
         if (car == gCar_ptr) {
-            BrVector3Copy(&gCar_pos, (br_vector3*)temp_ptr->chunk_data.car_data.transformation.m[3]);
-            BrVector3InvScale(&com_offset_c, &car->centre_of_mass_world_scale, WORLD_SCALE);
-            BrMatrix34ApplyV(&com_offset_w, &com_offset_c, &temp_ptr->chunk_data.car_data.transformation);
+            BrVector3Copy(&gCar_pos, (br_vector3*)&transformation->m[3][0]);
+            BrVector3InvScale(&com_offset_c, &car->pos, WORLD_SCALE);
+            BrMatrix34ApplyV(&com_offset_w, &com_offset_c, transformation);
             BrVector3Accumulate(&gCar_pos, &com_offset_w);
             BrVector3Sub(&difference, &gCar_pos, &gReference_pos);
+            gTrigger_time = pTime;
             if (BrVector3LengthSquared(&difference) <= gMax_distance) {
-                gTrigger_time = pTime;
                 return 0;
             } else {
-                gTrigger_time = pTime;
                 return 1;
             }
         }
         ARAdvanceChunkPtr(&temp_ptr, ePipe_chunk_car);
     }
     return 0;
-#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00402e10
@@ -1393,7 +1396,28 @@ float C2_HOOK_FASTCALL ARGetReplayRate(void) {
 
 // LengthOfSession
 
-// ARAdvanceChunkPtr
+// FUNCTION: CARMA2_HW 0x004024e0
+void C2_HOOK_FASTCALL ARAdvanceChunkPtr(tPipe_chunk** pChunk_ptr, tPipe_chunk_type pType) {
+    tU8* cur;
+    tU8* next;
+    tU32 size;
+
+    if (gPipe_undo_enabled != 0) {
+        return;
+    }
+    cur = (tU8*)*pChunk_ptr;
+    size = sizeof(void*);
+    if (gPipe_callbacks[pType].calc_length != NULL) {
+        size += gPipe_callbacks[pType].calc_length((tPipe_chunk*)cur) + gPipe_callbacks[pType].length;
+    } else {
+        size += gPipe_callbacks[pType].length;
+    }
+    next = cur + size;
+    *pChunk_ptr = (tPipe_chunk*)next;
+    if (gPipe_buffer_end_marker == next || (intptr_t)next <= (intptr_t)gPipe_buffer_end_marker) {
+        *pChunk_ptr = (tPipe_chunk*)cur;
+    }
+}
 
 // PipingFrameReset
 

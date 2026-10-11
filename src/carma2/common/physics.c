@@ -14,6 +14,7 @@
 #include "spark.h"
 #include "utility.h"
 #include "world.h"
+#include "finteray.h"
 
 #include <brender/brender.h>
 
@@ -471,7 +472,18 @@ br_scalar gFLOAT_00692dd4;
 int gINT_00692ddc;
 
 typedef struct tCollision_contact {
-    undefined data[0x60];
+    float impulse;              /* 0x00: impulse magnitude */
+    tPhysics_object* object1;   /* 0x04: first object */
+    tPhysics_object* object2;   /* 0x08: second object (can be NULL) */
+    float field_0xc;            /* 0x0c: some float */
+    float field_0x10;           /* 0x10: some float */
+    br_vector3 r1;              /* 0x14: contact point relative to object1 */
+    br_vector3 r2;              /* 0x20: contact point relative to object2 */
+    br_vector3 normal;          /* 0x2c: contact normal */
+    br_vector3 field_0x38;      /* 0x38: another vector */
+    br_vector3 impulse1;        /* 0x44: impulse applied to object1 */
+    br_vector3 impulse2;        /* 0x50: impulse applied to object2 */
+    int type;                   /* 0x5c: contact type (0xe = skip) */
 } tCollision_contact;
 
 // GLOBAL: CARMA2_HW 0x00692de0
@@ -658,8 +670,9 @@ tCollision_shape_box* C2_HOOK_FASTCALL AllocateBoxCollisionShape(br_uint_8 pType
     return result;
 }
 
+#pragma auto_inline(off)
 // FUNCTION: CARMA2_HW 0x004c5d10
-tCollision_shape_sphere* C2_HOOK_FASTCALL AllocateShapeSphere(br_uint_8 pType) {
+tCollision_shape_sphere* C2_HOOK_FASTCALL AllocateShapeSphere(int pType) {
     tCollision_shape_sphere* result;
 
     C2_HOOK_BUG_ON(sizeof(tCollision_shape_sphere) != 76);
@@ -667,6 +680,7 @@ tCollision_shape_sphere* C2_HOOK_FASTCALL AllocateShapeSphere(br_uint_8 pType) {
     result->common.type = kCollisionShapeType_Sphere;
     return result;
 }
+#pragma auto_inline(on)
 
 // FUNCTION: CARMA2_HW 0x004c5d70
 tCollision_shape_polyhedron* C2_HOOK_FASTCALL AllocateShapePolyhedron(int pCount_points, br_uint_8 pType) {
@@ -1715,15 +1729,15 @@ tPhysics_object* C2_HOOK_FASTCALL PHILGetNextObject(tPhysics_object* pCollision_
 }
 
 #pragma auto_inline(off)
-#ifndef CARPOCALYPSE2_MATCHING
 /* Non-matching body of MoveJointedObject (0x4b7510).
  * Retail entry does `xor edx, edx` immediately, so pArg2 is unused.
  * The leaf path (0x4b7743) does actor->t.t.mat.m[3] += v * pDt then calls the
  * omega integrator at 0x4c1be0; objects with children go through 0x4b8ee0,
  * which we approximate by applying the same integration to the whole subtree. */
-static void C2_HOOK_FASTCALL MoveJointedObjectSubtree(tPhysics_object* pObject, float pDelta_time) {
+void C2_HOOK_FAKE_THISCALL MoveJointedObject(tPhysics_object* pObject, undefined4 pArg2, float pDelta_time) {
     tPhysics_object* pChild;
 
+    (void)pArg2;
     if (pDelta_time != 0.f) {
         pObject->actor->t.t.mat.m[3][0] += pObject->v.v[0] * pDelta_time;
         pObject->actor->t.t.mat.m[3][1] += pObject->v.v[1] * pDelta_time;
@@ -1755,20 +1769,19 @@ static void C2_HOOK_FASTCALL MoveJointedObjectSubtree(tPhysics_object* pObject, 
         }
     }
     for (pChild = pObject->child; pChild != NULL; pChild = pChild->next) {
-        MoveJointedObjectSubtree(pChild, pDelta_time);
+        MoveJointedObject(pChild, 0, pDelta_time);
     }
 }
-#endif
 
 // FUNCTION: CARMA2_HW 0x004b99e0
 void C2_HOOK_FASTCALL InternalPrepareObject(tPhysics_object* pObject) {
-#ifndef CARPOCALYPSE2_MATCHING
     tPhysics_object* child;
+    tPhysics_object* parent;
     int i;
     int j;
     int differ;
 
-    if (pObject->M <= 0.f) {
+    if (pObject->M == 0.f) {
         pObject->M = 0.01f;
         BrVector3SetFloat(&pObject->I, 0.01f, 0.01f, 0.01f);
     }
@@ -1783,11 +1796,16 @@ void C2_HOOK_FASTCALL InternalPrepareObject(tPhysics_object* pObject) {
     pObject->field_0x218 = 0;
 
     BrMatrix34TApplyV(&pObject->velocity_car_space, &pObject->v, &pObject->transform_matrix);
-    memcpy(&pObject->field_0x1b4, &pObject->v, sizeof(br_vector3));
-    memcpy(&pObject->field_0x1cc, &pObject->omega, sizeof(br_vector3));
+    pObject->field_0x1b4.v[0] = pObject->v.v[0];
+    pObject->field_0x1b4.v[1] = pObject->v.v[1];
+    pObject->field_0x1b4.v[2] = pObject->v.v[2];
+    parent = pObject->parent;
+    pObject->field_0x1cc.v[0] = pObject->omega.v[0];
+    pObject->field_0x1cc.v[1] = pObject->omega.v[1];
+    pObject->field_0x1cc.v[2] = pObject->omega.v[2];
 
-    if (pObject->parent != NULL) {
-        pObject->disable_move_rotate = pObject->parent->disable_move_rotate;
+    if (parent != NULL) {
+        pObject->disable_move_rotate = parent->disable_move_rotate;
     }
     if (pObject->disable_move_rotate == 0 && pObject->field_0x1df != 0) {
         pObject->I.v[0] *= 50.f;
@@ -1851,20 +1869,46 @@ void C2_HOOK_FASTCALL InternalPrepareObject(tPhysics_object* pObject) {
         return;
     }
     MoveJointedObject(pObject, 0, 0.04f);
-#else
-    NOT_IMPLEMENTED();
-#endif
+    MergeBoundsIntoParent(pObject, NULL);
 }
-#pragma auto_inline(on)
 
-// FUNCTION: CARMA2_HW 0x004b7510
-void C2_HOOK_FAKE_THISCALL MoveJointedObject(tPhysics_object* pObject, undefined4 pArg2, float pDelta_time) {
-#ifndef CARPOCALYPSE2_MATCHING
-    (void)pArg2;
-    MoveJointedObjectSubtree(pObject, pDelta_time);
-#else
-    NOT_IMPLEMENTED();
-#endif
+/* 0x4b9ce0: transform bb1 by the object's actor matrix into field_0xf4, then
+ * merge (grow) the world-space field_0xf4 box of this object and every child
+ * into the box rooted at pParent (grown outward by the object's radius). When
+ * pParent is NULL the merge target is the object's own field_0x10c box. */
+void C2_HOOK_FASTCALL MergeBoundsIntoParent(tPhysics_object* pObject, tPhysics_object* pParent) {
+    tPhysics_object* child;
+    br_bounds3 local_box;
+    int i;
+
+    GetNewBoundingBox(&pObject->field_0xf4, &pObject->bb1, &pObject->actor->t.t.mat);
+
+    GetNewBoundingBox(&local_box, &pObject->bb1, &pObject->transform_matrix);
+    for (i = 0; i < 3; i++) {
+        if (pObject->field_0xf4.min.v[i] > local_box.min.v[i]) {
+            pObject->field_0xf4.min.v[i] = local_box.min.v[i];
+        }
+        if (pObject->field_0xf4.max.v[i] < local_box.max.v[i]) {
+            pObject->field_0xf4.max.v[i] = local_box.max.v[i];
+        }
+    }
+
+    pObject->field_0x10c = pObject->field_0xf4;
+
+    for (child = pObject->child; child != NULL; child = child->next) {
+        MergeBoundsIntoParent(child, &pObject->field_0x10c);
+    }
+
+    if (pParent != NULL) {
+        for (i = 0; i < 3; i++) {
+            if (pObject->field_0x10c.min.v[i] - pObject->radius < pParent->field_0xf4.min.v[i]) {
+                pParent->field_0xf4.min.v[i] = pObject->field_0x10c.min.v[i] - pObject->radius;
+            }
+            if (pObject->field_0x10c.max.v[i] + pObject->radius > pParent->field_0xf4.max.v[i]) {
+                pParent->field_0xf4.max.v[i] = pObject->field_0x10c.max.v[i] + pObject->radius;
+            }
+        }
+    }
 }
 
 // FUNCTION: CARMA2_HW 0x004b9f40
@@ -2666,16 +2710,16 @@ void C2_HOOK_FASTCALL LevelOutOnSurface(tPhysics_object *pObject) {
     dot = n.v[0] * pObject->water_normal.v[0] + n.v[1] * pObject->water_normal.v[1] + n.v[2] * pObject->water_normal.v[2];
 
     if (dot > -0.99) {
-        px = n.v[1] * pObject->water_normal.v[2] - n.v[2] * pObject->water_normal.v[1];
-        py = n.v[2] * pObject->water_normal.v[0] - n.v[0] * pObject->water_normal.v[2];
-        pz = n.v[0] * pObject->water_normal.v[1] - n.v[1] * pObject->water_normal.v[0];
+        px = pObject->water_normal.v[1] * n.v[2] - pObject->water_normal.v[2] * n.v[1];
+        py = pObject->water_normal.v[2] * n.v[0] - pObject->water_normal.v[0] * n.v[2];
+        pz = pObject->water_normal.v[0] * n.v[1] - pObject->water_normal.v[1] * n.v[0];
         p1 = dot + 1.0f;
         tv = sqrtf(px * px + py * py + pz * pz);
-        u.v[0] = px * (tv / p1);
+        u.v[0] = px * (p1 / tv);
         tv = sqrtf(pz * pz + py * py + u.v[0] * u.v[0]);
-        u.v[1] = py * (tv / p1);
+        u.v[1] = py * (p1 / tv);
         tv = sqrtf(u.v[1] * u.v[1] + pz * pz + u.v[0] * u.v[0]);
-        u.v[2] = pz * (tv / px);
+        u.v[2] = pz * (p1 / tv);
         BrMatrix34TApplyV(&n, &u, &pObject->actor->t.t.mat);
         pObject->omega.v[0] += n.v[0];
         pObject->omega.v[1] += n.v[1];
@@ -2700,10 +2744,8 @@ void C2_HOOK_FASTCALL ClearPhysicsScratchSpace(void) {
     NOT_IMPLEMENTED();
 }
 
-// STUB: CARMA2_HW 0x004c61e0
 void C2_HOOK_FASTCALL PhysicsWarning(const char* pMessage) {
-
-    NOT_IMPLEMENTED();
+    (void)pMessage;
 }
 
 #ifndef CARPOCALYPSE2_MATCHING
@@ -2808,17 +2850,241 @@ void C2_HOOK_FASTCALL ResetOmegaTree(tPhysics_object* pObject) {
     }
 }
 
-// STUB: CARMA2_HW 0x004c0ac0
+#pragma auto_inline(off)
+// FUNCTION: CARMA2_HW 0x004c0ac0
 void C2_HOOK_FASTCALL RotateObjectFirstOrder(void* pContact, tWorld_callbacks* pWorld_callbacks) {
+    tCollision_contact* contact;
+    tPhysics_object* obj1;
+    tPhysics_object* obj2;
+    br_vector3 v1;
+    br_vector3 v2;
+    br_vector3 rel_vel;
+    br_vector3 normal_world;
+    br_vector3 tangent;
+    br_vector3 impulse;
+    br_scalar relative_speed;
+    br_scalar impulse_magnitude;
+    br_scalar denominator;
+    br_scalar max_impulse;
+    br_scalar mass1_inv;
+    br_scalar mass2_inv;
+    int i;
 
-    NOT_IMPLEMENTED();
+    contact = (tCollision_contact*)pContact;
+    obj1 = contact->object1;
+    obj2 = contact->object2;
+
+    /* Two-object case */
+    if (obj2 != NULL && contact->type != 0xe) {
+        obj1->collision_flag |= 2;
+        obj2->collision_flag |= 2;
+
+        /* Compute velocity at contact point for object1: omega1 × r1 */
+        v1.v[0] = obj1->omega.v[1] * contact->r1.v[2] - obj1->omega.v[2] * contact->r1.v[1];
+        v1.v[1] = obj1->omega.v[2] * contact->r1.v[0] - obj1->omega.v[0] * contact->r1.v[2];
+        v1.v[2] = obj1->omega.v[0] * contact->r1.v[1] - obj1->omega.v[1] * contact->r1.v[0];
+
+        /* Compute velocity at contact point for object2: omega2 × r2 */
+        v2.v[0] = obj2->omega.v[1] * contact->r2.v[2] - obj2->omega.v[2] * contact->r2.v[1];
+        v2.v[1] = obj2->omega.v[2] * contact->r2.v[0] - obj2->omega.v[0] * contact->r2.v[2];
+        v2.v[2] = obj2->omega.v[0] * contact->r2.v[1] - obj2->omega.v[1] * contact->r2.v[0];
+
+        /* Transform to world space */
+        BrMatrix34ApplyV(&v1, &v1, (br_matrix34*)&obj1->actor->t.t.mat);
+        BrMatrix34TApplyV(&v2, &v2, (br_matrix34*)&obj2->actor->t.t.mat);
+
+        /* Relative velocity */
+        rel_vel.v[0] = v1.v[0] - v2.v[0];
+        rel_vel.v[1] = v1.v[1] - v2.v[1];
+        rel_vel.v[2] = v1.v[2] - v2.v[2];
+
+        /* Project onto normal */
+        relative_speed = rel_vel.v[0] * contact->normal.v[0]
+                       + rel_vel.v[1] * contact->normal.v[1]
+                       + rel_vel.v[2] * contact->normal.v[2];
+
+        /* Remove normal component to get tangent */
+        tangent.v[0] = rel_vel.v[0] - contact->normal.v[0] * relative_speed;
+        tangent.v[1] = rel_vel.v[1] - contact->normal.v[1] * relative_speed;
+        tangent.v[2] = rel_vel.v[2] - contact->normal.v[2] * relative_speed;
+
+        relative_speed = sqrtf(tangent.v[0] * tangent.v[0] + tangent.v[1] * tangent.v[1] + tangent.v[2] * tangent.v[2]);
+
+        /* Compute max impulse from masses */
+        max_impulse = (obj1->M + obj2->M) * contact->impulse * 0.35f;
+
+        if (relative_speed >= 0.001f) {
+            /* Normalize tangent */
+            impulse.v[0] = -tangent.v[0] / relative_speed;
+            impulse.v[1] = -tangent.v[1] / relative_speed;
+            impulse.v[2] = -tangent.v[2] / relative_speed;
+
+            /* Transform to local space */
+            BrMatrix34TApplyV(&impulse, &impulse, (br_matrix34*)&obj1->actor->t.t.mat);
+            BrMatrix34ApplyV(&normal_world, &impulse, (br_matrix34*)&obj2->actor->t.t.mat);
+
+            /* Compute effective mass */
+            mass1_inv = 1.0f / obj1->M;
+            mass2_inv = 1.0f / obj2->M;
+
+            /* Torque contribution from r1 × impulse */
+            denominator = (contact->r1.v[1] * impulse.v[2] - contact->r1.v[2] * impulse.v[1]) * impulse.v[0]
+                        + (contact->r1.v[2] * impulse.v[0] - contact->r1.v[0] * impulse.v[2]) * impulse.v[1]
+                        + (contact->r1.v[0] * impulse.v[1] - contact->r1.v[1] * impulse.v[0]) * impulse.v[2]
+                        + mass1_inv + mass2_inv;
+
+            /* Compute impulse magnitude */
+            if (fabsf(denominator) > 0.0001f) {
+                impulse_magnitude = relative_speed / denominator;
+                if (impulse_magnitude > max_impulse) {
+                    impulse_magnitude = max_impulse;
+                }
+
+                /* Scale impulses */
+                impulse.v[0] *= impulse_magnitude * mass1_inv;
+                impulse.v[1] *= impulse_magnitude * mass1_inv;
+                impulse.v[2] *= impulse_magnitude * mass1_inv;
+                normal_world.v[0] *= -impulse_magnitude * mass2_inv;
+                normal_world.v[1] *= -impulse_magnitude * mass2_inv;
+                normal_world.v[2] *= -impulse_magnitude * mass2_inv;
+
+                /* Store impulses */
+                contact->impulse1.v[0] = obj1->M * impulse.v[0];
+                contact->impulse1.v[1] = obj1->M * impulse.v[1];
+                contact->impulse1.v[2] = obj1->M * impulse.v[2];
+                contact->impulse2.v[0] = obj2->M * normal_world.v[0];
+                contact->impulse2.v[1] = obj2->M * normal_world.v[1];
+                contact->impulse2.v[2] = obj2->M * normal_world.v[2];
+                contact->type |= 0x100;
+
+                /* Apply angular impulses */
+                obj1->omega.v[0] += impulse_magnitude * contact->normal.v[0] * mass1_inv;
+                obj1->omega.v[1] += impulse_magnitude * contact->normal.v[1] * mass1_inv;
+                obj1->omega.v[2] += impulse_magnitude * contact->normal.v[2] * mass1_inv;
+                obj2->omega.v[0] -= impulse_magnitude * normal_world.v[0] * mass2_inv;
+                obj2->omega.v[1] -= impulse_magnitude * normal_world.v[1] * mass2_inv;
+                obj2->omega.v[2] -= impulse_magnitude * normal_world.v[2] * mass2_inv;
+
+                /* Transform and accumulate torque */
+                BrMatrix34ApplyV(&impulse, &impulse, (br_matrix34*)&obj1->actor->t.t.mat);
+                obj1->rotate_omega.v[0] += impulse.v[0];
+                obj1->rotate_omega.v[1] += impulse.v[1];
+                obj1->rotate_omega.v[2] += impulse.v[2];
+                obj1->rotate_omega.v[0] += impulse.v[0];
+                obj1->rotate_omega.v[1] += impulse.v[1];
+                obj1->rotate_omega.v[2] += impulse.v[2];
+
+                BrMatrix34ApplyV(&impulse, &normal_world, (br_matrix34*)&obj2->actor->t.t.mat);
+                obj2->rotate_omega.v[0] += impulse.v[0];
+                obj2->rotate_omega.v[1] += impulse.v[1];
+                obj2->rotate_omega.v[2] += impulse.v[2];
+                obj2->rotate_omega.v[0] += impulse.v[0];
+                obj2->rotate_omega.v[1] += impulse.v[1];
+                obj2->rotate_omega.v[2] += impulse.v[2];
+            }
+        }
+    }
 }
+#pragma auto_inline(on)
 
-// STUB: CARMA2_HW 0x004c18d0
+#pragma auto_inline(off)
+// FUNCTION: CARMA2_HW 0x004c18d0
 void C2_HOOK_FASTCALL TranslateObject(tPhysics_object* pObject) {
+    tPhysics_joint* joint;
+    tPhysics_object* parent;
+    tPhysics_object* child;
+    br_vector3 joint_axis_world;
+    br_vector3 omega_parent;
+    br_vector3 impulse;
+    br_scalar friction;
+    br_scalar friction_sq;
+    br_scalar sum_sq;
+    br_scalar scale;
+    br_scalar denominator;
+    int i;
 
-    NOT_IMPLEMENTED();
+    /* Process joint1 constraints */
+    joint = pObject->physics_joint1;
+    if (joint != NULL && joint->friction != 0.0f) {
+        parent = pObject->field_0x230;
+        if (parent != NULL) {
+            friction = joint->friction * 2.38418579e-07f;
+            friction_sq = friction * friction;
+            sum_sq = 0.0f;
+            BrMatrix34TApplyV(&joint_axis_world, &joint->field_0x14, &parent->transform_matrix);
+
+            /* For each axis component */
+            for (i = 0; i < 3; i++) {
+                /* Get parent omega */
+                omega_parent.v[0] = parent->omega.v[0];
+                omega_parent.v[1] = parent->omega.v[1];
+                omega_parent.v[2] = parent->omega.v[2];
+
+                /* Compute impulse component */
+                impulse.v[i] = (omega_parent.v[0] * joint_axis_world.v[0]
+                              + omega_parent.v[1] * joint_axis_world.v[1]
+                              + omega_parent.v[2] * joint_axis_world.v[2]
+                              - pObject->rotate_omega.v[i])
+                             / (1.875f / pObject->I.v[i]
+                              + joint_axis_world.v[0] * joint_axis_world.v[0]
+                              + joint_axis_world.v[1] * joint_axis_world.v[1]
+                              + joint_axis_world.v[2] * joint_axis_world.v[2]);
+
+                sum_sq += impulse.v[i] * impulse.v[i];
+            }
+
+            /* Scale if needed */
+            if (friction_sq < sum_sq) {
+                scale = sqrtf(friction_sq / sum_sq);
+                impulse.v[0] *= scale;
+                impulse.v[1] *= scale;
+                impulse.v[2] *= scale;
+            }
+
+            /* Apply impulse to omega */
+            for (i = 0; i < 3; i++) {
+                pObject->omega.v[i] += impulse.v[i] / pObject->I.v[i];
+                /* Apply opposite to parent */
+                parent->omega.v[i] -= impulse.v[i] * friction;
+            }
+        }
+    }
+
+    /* Process joint2 constraints */
+    joint = pObject->physics_joint2;
+    if (joint != NULL && joint->friction != 0.0f) {
+        friction = joint->friction * 2.38418579e-07f;
+        friction_sq = friction * friction;
+        sum_sq = 0.0f;
+
+        /* Compute omega × I */
+        for (i = 0; i < 3; i++) {
+            impulse.v[i] = pObject->omega.v[i] * pObject->I.v[i];
+            sum_sq += impulse.v[i] * impulse.v[i];
+        }
+
+        /* Scale if needed */
+        if (friction_sq < sum_sq) {
+            scale = sqrtf(friction_sq / sum_sq);
+            impulse.v[0] *= scale;
+            impulse.v[1] *= scale;
+            impulse.v[2] *= scale;
+        }
+
+        /* Apply impulse */
+        for (i = 0; i < 3; i++) {
+            pObject->omega.v[i] -= impulse.v[i] / pObject->I.v[i];
+        }
+    }
+
+    /* Recursively process children */
+    for (child = pObject->child; child != NULL; child = child->next) {
+        if (child->disable_move_rotate == 0) {
+            TranslateObject(child);
+        }
+    }
 }
+#pragma auto_inline(on)
 #pragma auto_inline(on)
 
 // FUNCTION: CARMA2_HW 0x004ba6b0

@@ -32,6 +32,7 @@ extern float C2_HOOK_FASTCALL ARGetReplayRate(void);
 // LengthOfSession
 
 // ARAdvanceChunkPtr
+void C2_HOOK_FASTCALL ARAdvanceChunkPtr(tPipe_chunk** pChunk_ptr, tPipe_chunk_type pType);
 
 // PipingFrameReset
 

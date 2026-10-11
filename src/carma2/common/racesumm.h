@@ -28,6 +28,8 @@
 #include "carpocalypse2_types.h"
 
 
+extern int gPlayer_lookup_racesumm[14];
+
 void C2_HOOK_FASTCALL DoEndRaceSummary(tRace_result pRace_result, int pGame_completed);
 
 #endif // GUARD_RACESUMM_H

@@ -16,6 +16,8 @@ int PDS3StopSampleChannel(tS3_channel* pChannel);
 int PDS3UpdateChannelVolume(tS3_channel* pChannel);
 int PDS3UpdateChannelFrequency(tS3_channel* pChannel);
 int PDS3IsCDAPlaying(void);
+int PDS3InitCDA(void);
+void PDS3UpdateCDAVolume(tS3_channel* pChannel, int pVolume);
 
 typedef struct {
     Uint8* data;
@@ -104,6 +106,7 @@ int PDS3Init(void) {
     strcpy(gS3_path_separator, "/");
     strcpy(gS3_sound_folder_name, "SOUND");
     S3Enable();
+    PDS3InitCDA();
     return 1;
 }
 
@@ -112,7 +115,23 @@ void PDS3Stop(void) {
     SDL_QuitSubSystem(SDL_INIT_AUDIO);
 }
 
-void PDS3InitCDA(void) {
+int PDS3InitCDA(void) {
+    SDL_PathInfo path_info;
+    const char* resolved_path;
+#ifndef _WIN32
+    /* SDL_GetPathInfo runs inside libSDL3, which the fopen/open --wrap cannot
+     * reach, so resolve the file name against the real directory contents
+     * here (Windows has no resolver to consult; its file system folds case). */
+    extern const char* carpocalypse2_fix_path_case(const char* pPath);
+    resolved_path = carpocalypse2_fix_path_case("MUSIC/Track02.ogg");
+#else
+    resolved_path = "MUSIC/Track02.ogg";
+#endif
+    if (!SDL_GetPathInfo(resolved_path, &path_info) || path_info.type != SDL_PATHTYPE_FILE) {
+        return 0;
+    }
+    S3EnableCDA();
+    return 1;
 }
 
 const char* PDS3GetWorkingDirectory(void) {
@@ -302,6 +321,12 @@ int PDS3UpdateChannelVolume(tS3_channel* pChannel) {
     if (pChannel == NULL) {
         return 1;
     }
+    if (pChannel->type == 2) {
+        if (pChannel->owner_outlet != NULL) {
+            PDS3UpdateCDAVolume(pChannel, pChannel->owner_outlet->volume);
+        }
+        return 1;
+    }
     if (pChannel->type != 0) {
         return 1;
     }
@@ -394,6 +419,7 @@ tS3_error_codes PDS3PlayCDAChannel(tS3_channel* pChannel) {
     SDL_AudioSpec spec;
     SDL_PathInfo path_info;
     const char* resolved_path;
+    float volume;
 
     if (pChannel == NULL || pChannel->descriptor == NULL || pChannel->descriptor->path == NULL) {
         return eS3_error_start_cda;
@@ -446,6 +472,16 @@ tS3_error_codes PDS3PlayCDAChannel(tS3_channel* pChannel) {
     }
     SDL_ResumeAudioStreamDevice(gS3_cda.stream);
     gS3_cda.playing = 1;
+    if (pChannel->owner_outlet != NULL) {
+        volume = pChannel->owner_outlet->volume / 255.0f;
+        if (volume < 0.f) {
+            volume = 0.f;
+        }
+        if (volume > 1.f) {
+            volume = 1.f;
+        }
+        SDL_SetAudioStreamGain(gS3_cda.stream, volume);
+    }
     return eS3_error_none;
 }
 
@@ -475,16 +511,13 @@ void PDS3UpdateCDAVolume(tS3_channel* pChannel, int pVolume) {
 }
 
 int PDS3IsCDAPlaying(void) {
-    int queued;
 
     if (gS3_cda.stream == NULL || !gS3_cda.playing) {
         return 0;
     }
-    if (gS3_cda.data != NULL && gS3_cda.data_len > 0) {
-        queued = SDL_GetAudioStreamQueued(gS3_cda.stream);
-        if (queued < (int)gS3_cda.data_len / 2) {
-            SDL_PutAudioStreamData(gS3_cda.stream, gS3_cda.data, (int)gS3_cda.data_len);
-        }
+    if (SDL_GetAudioStreamQueued(gS3_cda.stream) == 0) {
+        gS3_cda.playing = 0;
+        return 0;
     }
     return 1;
 }

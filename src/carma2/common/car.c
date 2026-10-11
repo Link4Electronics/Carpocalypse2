@@ -2526,8 +2526,44 @@ void C2_HOOK_FASTCALL CheckDisablePlingMaterials(tCar_spec* pCar) {
 
 // FUNCTION: CARMA2_HW 0x0040f590
 void C2_HOOK_FASTCALL PositionCarMountedCamera(tCar_spec* pCar, tU32 pTime) {
+    // GLOBAL: CARMA2_HW 0x00679300
+    static float swing_rate;
+    // GLOBAL: CARMA2_HW 0x0058f624
+    static float swing_frac = 1.f;
+    br_vector3 offset;
+    float weight;
 
-    NOT_IMPLEMENTED();
+    if (gCamera_key_flags.field_0x0_bit1 && !gCamera_key_flags.field_0x0_bit0 && swing_rate >= 0.f) {
+        swing_rate = -0.0002f;
+    } else if (gCamera_key_flags.field_0x0_bit2 && !gCamera_key_flags.field_0x0_bit0 && swing_rate <= 0.f) {
+        swing_rate = 0.0002f;
+    }
+
+    swing_frac += (double)pTime * swing_rate;
+    if (swing_frac > 1.f) {
+        swing_rate = 0.f;
+        swing_frac = 1.f;
+    } else if (swing_frac < 0.f) {
+        swing_rate = 0.f;
+        swing_frac = 0.f;
+    }
+
+    weight = 1.f - swing_frac;
+    offset.v[0] = pCar->camera_bumper_position.v[0] * weight + pCar->camera_cockpit_position.v[0] * swing_frac;
+    offset.v[1] = pCar->camera_bumper_position.v[1] * weight + pCar->camera_cockpit_position.v[1] * swing_frac;
+    offset.v[2] = pCar->camera_bumper_position.v[2] * weight + pCar->camera_cockpit_position.v[2] * swing_frac;
+
+    BrMatrix34Copy(&gCamera->t.t.mat, &pCar->car_master_actor->t.t.mat);
+    BrMatrix34PreTranslate(&gCamera->t.t.mat, offset.v[0], offset.v[1], offset.v[2]);
+
+    if (swing_rate < 0.f) {
+        swing_rate -= 0.0001;
+    }
+    if (swing_rate > 0.f) {
+        swing_rate += 0.0001;
+    }
+
+    CollideCamera2(&pCar->pos, &gCamera->t.t.translate.t, NULL, 0, NULL);
 }
 
 typedef struct {
@@ -2663,7 +2699,7 @@ void C2_HOOK_FASTCALL DoCameraControls(tCamera_key_flags *pCamera_controls, tU32
         last_swirl_mode = swirl_mode;
     }
     if (gMap_view != 2 && !gProgram_state.cockpit_on && (!gAction_replay_mode || gAction_replay_camera_mode < kActionReplayCameraMode_Panning)) {
-        if (pCamera_controls->field_0x0_bit2 || (up_and_down_mode && going_down)) {
+        if (pCamera_controls->field_0x0_bit2 || (up_and_down_mode && !going_down)) {
             gCamera_zoom += (float)pTime_difference * 5.f / 10000.f / (float)(2 * swirl_mode + 1);
             if (gCamera_zoom > 2.f) {
                 gCamera_zoom = 2.f;
@@ -2672,7 +2708,7 @@ void C2_HOOK_FASTCALL DoCameraControls(tCamera_key_flags *pCamera_controls, tU32
                 gCamera_zoom = 1.f;
             }
         }
-        if (pCamera_controls->field_0x0_bit1 || (up_and_down_mode && !going_down)) {
+        if (pCamera_controls->field_0x0_bit1 || (up_and_down_mode && going_down)) {
             float zoom;
 
             gCamera_zoom -= (float)pTime_difference * 5.f / 10000.f / (float)(2 * swirl_mode + 1);
@@ -2683,11 +2719,9 @@ void C2_HOOK_FASTCALL DoCameraControls(tCamera_key_flags *pCamera_controls, tU32
             }
             if (gCamera_zoom < zoom) {
                 gCamera_zoom = zoom;
-                if (up_and_down_mode) {
-                    if (gCamera_zoom < 1.0f) {
-                        gCamera_zoom = 1.0f;
-                    }
-                }
+            }
+            if (up_and_down_mode && gCamera_zoom < 1.0f) {
+                gCamera_zoom = 1.0f;
             }
         }
         if (swirl_mode && gProgram_state.current_car.speedo_speed < 0.001449275362318841) {
@@ -2701,7 +2735,7 @@ void C2_HOOK_FASTCALL DoCameraControls(tCamera_key_flags *pCamera_controls, tU32
             }
             flag = 1;
         }
-        if (gCamera_sign ? pCamera_controls->field_0x0_bit3 : pCamera_controls->field_0x0_bit4) {
+        if (gCamera_sign ? pCamera_controls->field_0x0_bit4 : pCamera_controls->field_0x0_bit3) {
             if (!gCamera_reset) {
                 gCamera_yaw -= BrDegreeToAngle((float)pTime_difference * 0.05f);
             }

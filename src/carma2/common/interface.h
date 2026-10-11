@@ -183,9 +183,7 @@ extern void C2_HOOK_FASTCALL MaybeDoMouseCursor(void);
 
 extern void C2_HOOK_FASTCALL ResetInterfaceTimeout(void);
 
-extern int C2_HOOK_FASTCALL FRONTEND_Main(tFrontendMenuType pFrontendType);
-
-extern int C2_HOOK_FASTCALL FrontEndProcessMenus(int pMenu_type);
+extern int C2_HOOK_FASTCALL FrontEndProcessMenus(tFrontendMenuType pFrontendType);
 
 // ProcessInputString
 

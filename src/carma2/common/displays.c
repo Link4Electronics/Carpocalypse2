@@ -515,6 +515,7 @@ void C2_HOOK_FASTCALL DoMapOverlays(br_pixelmap* pScreen) {
     int powerup_count;
     tNet_game_player_info* net_player;
     int i;
+    int category_index;
     br_vector3 ped_position;
     br_vector3* smash_position;
     br_actor* actor;
@@ -549,7 +550,8 @@ void C2_HOOK_FASTCALL DoMapOverlays(br_pixelmap* pScreen) {
             DrawMapSmallBlip(pScreen, the_time, &ped_position, 4);
         }
     }
-    for (category = gShow_opponents ? eVehicle_opponent : eVehicle_self; category >= (gMap_view == 1 ? eVehicle_net_player : eVehicle_self); category -= 1) {
+    for (category_index = gShow_opponents ? eVehicle_opponent : eVehicle_self; category_index >= (gMap_view == 1 ? eVehicle_net_player : eVehicle_self); category_index -= 1) {
+        category = (tVehicle_type)category_index;
         if (category == eVehicle_self) {
             car_count = 1;
         } else {

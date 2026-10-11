@@ -2086,7 +2086,7 @@ void C2_HOOK_FASTCALL ResetPedFaceCache(void) {
         gPed_face_caches[i] = gPed_face_cache_heads[i];
         for (j = 0; j < gPed_cache_sizes_1[i]; j++) {
             gPed_face_cache_heads[i][j].field_0x14 = 0;
-            if (j != gPed_cache_sizes_1[CARPOCALYPSE2_ASIZE(gPed_cache_sizes_1) - 1]) {
+            if (j != gPed_cache_sizes_1[i] - 1) {
                 gPed_face_cache_heads[i][j].next = &gPed_face_cache_heads[i][j + 1];
                 gPed_face_cache_heads[i][j + 1].prev = &gPed_face_cache_heads[i][j];
             } else {
@@ -6336,28 +6336,26 @@ void C2_HOOK_FASTCALL DisposePedForm(tPed_form* pForm) {
         }
     }
     {
-        int bone_offset = 0;
-        int ci_offset = 0;
-        int idx = 0;
+        int idx;
+
         for (idx = 0; idx < pForm->count_bones; idx++) {
-            if (*(tPhysics_object**)((char*)pForm->boned_physicing[0].collision_infos + ci_offset) != NULL) {
-                tPhysics_joint* hinge = *(tPhysics_joint**)((char*)pForm->bones + bone_offset + 0x30);
+            if (pForm->boned_physicing[0].collision_infos[idx] != NULL) {
+                tPhysics_joint* hinge = pForm->bones[idx].hinge;
+
                 if (hinge != NULL) {
                     FreePhysicsJoint(hinge);
                 }
                 for (j = 0; j < pForm->max_boned_physicing_at_once; j++) {
-                    tPhysics_object** slot = (tPhysics_object**)((char*)pForm->boned_physicing[j].collision_infos + ci_offset);
-                    if ((*slot)->shape != NULL) {
-                        FreeThingForm((*slot)->shape);
+                    tPhysics_object* slot = pForm->boned_physicing[j].collision_infos[idx];
+
+                    if (slot->shape != NULL) {
+                        FreeThingForm(slot->shape);
                     }
-                    slot = (tPhysics_object**)((char*)pForm->boned_physicing[j].collision_infos + ci_offset);
-                    if (*slot != NULL) {
-                        BrMemFree(*slot);
+                    if (slot != NULL) {
+                        BrMemFree(slot);
                     }
                 }
             }
-            bone_offset += 0x34;
-            ci_offset += 4;
         }
     }
     for (i = 0; i < pForm->max_boned_physicing_at_once; i++) {
@@ -6412,22 +6410,14 @@ void C2_HOOK_FASTCALL DisposePedPersonality(tPed_personality* pPersonality) {
         BrMemFree(pPersonality->moves);
     }
     for (i = 0; i < pPersonality->form->count_bones; i++) {
-        int models_offset = 0;
-        int peep_idx = 0;
-        do {
+        int peep_idx;
+
+        for (peep_idx = 0; peep_idx < 4; peep_idx++) {
             if (pPersonality->bones[i].models[peep_idx].models[0] != NULL) {
-                int k_offset = models_offset;
-                int k_count = 2;
-                do {
-                    BrModelRemove(*(br_model**)((char*)pPersonality->bones[i].models + k_offset));
-                    BrModelFree(*(br_model**)((char*)pPersonality->bones[i].models + k_offset));
-                    k_offset += 4;
-                    k_count--;
-                } while (k_count != 0);
+                BrModelRemove(pPersonality->bones[i].models[peep_idx].models[1]);
+                BrModelFree(pPersonality->bones[i].models[peep_idx].models[1]);
             }
-            models_offset += 8;
-            peep_idx++;
-        } while (peep_idx < 4);
+        }
         if (pPersonality->bones[i].hinge != NULL) {
             FreePhysicsJoint(pPersonality->bones[i].hinge);
         }
@@ -6500,53 +6490,6 @@ void C2_HOOK_FASTCALL DisposeCharacterInstances(void) {
 
 // FUNCTION: CARMA2_HW 0x004cb8d0
 void C2_HOOK_FASTCALL DisposePedStuff(void) {
-#ifndef CARPOCALYPSE2_MATCHING
-    int i;
-    int j;
-
-    for (i = 0; i < CARPOCALYPSE2_ASIZE(gPed_face_cache_heads); i++) {
-        if (gPed_face_cache_heads[i] != NULL) {
-            for (j = 0; j < gPed_cache_sizes_1[i]; j++) {
-                if (gPed_face_cache_heads[i][j].field_0x0 != NULL) {
-                    BrMemFree(gPed_face_cache_heads[i][j].field_0x0);
-                    gPed_face_cache_heads[i][j].field_0x0 = NULL;
-                }
-            }
-            BrMemFree(gPed_face_cache_heads[i]);
-            gPed_face_cache_heads[i] = NULL;
-        }
-    }
-    if (gPed_face_cache != NULL) {
-        BrMemFree(gPed_face_cache);
-        gPed_face_cache = NULL;
-    }
-    if (gProx_ray_shade_table != NULL) {
-        BrPixelmapFree(gProx_ray_shade_table);
-        gProx_ray_shade_table = NULL;
-    }
-    for (i = 0; i < CARPOCALYPSE2_ASIZE(gNapalm_bolts); i++) {
-        for (j = 0; j < CARPOCALYPSE2_ASIZE(gBurning_ped_materials); j++) {
-            if (gNapalm_bolts[i].actors[j] != NULL) {
-                BrActorRemove(gNapalm_bolts[i].actors[j]);
-                BrActorFree(gNapalm_bolts[i].actors[j]);
-                gNapalm_bolts[i].actors[j] = NULL;
-            }
-        }
-        gNapalm_bolts[i].ped = NULL;
-    }
-    for (i = 0; i < CARPOCALYPSE2_ASIZE(gBurning_ped_models); i++) {
-        if (gBurning_ped_models[i] != NULL) {
-            BrModelRemove(gBurning_ped_models[i]);
-            BrModelFree(gBurning_ped_models[i]);
-            gBurning_ped_models[i] = NULL;
-        }
-        if (gBurning_ped_materials[i] != NULL) {
-            BrMaterialRemove(gBurning_ped_materials[i]);
-            BrMaterialFree(gBurning_ped_materials[i]);
-            gBurning_ped_materials[i] = NULL;
-        }
-    }
-#else
     int i;
 
     DisposeCharacterInstances();
@@ -6569,7 +6512,6 @@ void C2_HOOK_FASTCALL DisposePedStuff(void) {
     if (gRace_pedestrian_specs != NULL) {
         BrMemFree(gRace_pedestrian_specs);
     }
-#endif
 }
 
 // BonerOpenCharacterForm

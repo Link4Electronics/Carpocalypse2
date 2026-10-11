@@ -936,7 +936,7 @@ int C2_HOOK_FASTCALL DRS3StartCDA(int pSound) {
     if (!gCD_is_disabled && gMusic_available && !gINT_00684554 && !gINT_00684568 && S3IsCDAEnabled()) {
         dr_dprintf("CDINFO: DRS3StartCDA(): Requested track id %d", pSound);
         gCDA_started_playing = 1;
-        S3StopOutletSound(gIndexed_outlets[0]);
+        S3StopOutletSound(gMusic_outlet);
         if (gSound_enabled) {
             S3Service(gProgram_state.cockpit_on != 0 && gProgram_state.cockpit_image_index >= 0, 0);
             /* Random CDA track */
@@ -955,7 +955,7 @@ int C2_HOOK_FASTCALL DRS3StartCDA(int pSound) {
                 } while (pSound == gLast_tune);
             }
             gLast_tune = pSound;
-            gINT_00684554 = DRS3StartSoundNoPiping(gIndexed_outlets[0], pSound);
+            gINT_00684554 = S3StartSound(gMusic_outlet, pSound);
             gINT_00684568 = gINT_00684554;
             if (!gINT_00684554) {
                 dr_dprintf("CDINFO: DRS3StartCDA(): Chosen actual CD track %d", pSound);

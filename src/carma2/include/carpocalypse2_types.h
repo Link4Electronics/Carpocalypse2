@@ -4619,19 +4619,19 @@ typedef struct tPhysics_object {
     tPhysics_joint* physics_joint2;
     tU8 uid;
     undefined field_0x191[11];
-    int flags;
-    int field_0x1a0;
-    undefined4 field_0x1a4;
-    br_vector3 velocity_car_space;
-    undefined field_0x1b4[12];
-    br_vector3 rotate_omega;
-    undefined field_0x1cc[12];
+    int flags;                  /* 0x19c */
+    int field_0x1a0;            /* 0x1a0 */
+    undefined4 field_0x1a4;     /* 0x1a4 */
+    br_vector3 velocity_car_space; /* 0x1a8 */
+    br_vector3 field_0x1b4;     /* 0x1b4: unused/alignment */
+    br_vector3 rotate_omega;    /* 0x1c0: angular impulse accumulator */
+    br_vector3 field_0x1cc;     /* 0x1cc: unused/alignment */
     tPhysics_object* field183_0x1d8;
-    undefined field_0x1dc;
-    undefined collision_flag;
-    undefined field_0x1de;
-    undefined field_0x1df;
-    undefined field_0x1e0[8];
+    tU8 field_0x1dc;
+    tU8 collision_flag;
+    tU8 field_0x1de;
+    tU8 field_0x1df;
+    tU8 field_0x1e0[8];
     br_matrix34 field_0x1e8;
     undefined4 field_0x218;
     float field_0x21c;
