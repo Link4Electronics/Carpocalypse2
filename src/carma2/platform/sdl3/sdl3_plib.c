@@ -663,6 +663,7 @@ static void C2_HOOK_CDECL sdlTriangleRender(brp_block* block, brp_vertex* v0, br
     br_uint_16* depth_base;
     int cb_row, db_row;
     int cw, ch;
+    int bx, by;
     float x0, y0, x1, y1, x2, y2;
     float den;
     int y_start, y_end, y;
@@ -696,6 +697,8 @@ static void C2_HOOK_CDECL sdlTriangleRender(brp_block* block, brp_vertex* v0, br
     cb_row = colour_pm->pm_row_bytes / 2;
     cw = colour_pm->pm_width;
     ch = colour_pm->pm_height;
+    bx = colour_pm->pm_base_x;
+    by = colour_pm->pm_base_y;
     if (depth_pm != NULL && depth_pm->pm_pixels != NULL) {
         depth_base = (br_uint_16*)depth_pm->pm_pixels;
         db_row = depth_pm->pm_row_bytes / 2;
@@ -721,8 +724,8 @@ static void C2_HOOK_CDECL sdlTriangleRender(brp_block* block, brp_vertex* v0, br
 
     y_start = (int)ceilf(fminf(y0, fminf(y1, y2)));
     y_end = (int)floorf(fmaxf(y0, fmaxf(y1, y2)));
-    if (y_start < 0) y_start = 0;
-    if (y_end > ch - 1) y_end = ch - 1;
+    if (y_start < by) y_start = by;
+    if (y_end > by + ch - 1) y_end = by + ch - 1;
 
     for (y = y_start; y <= y_end; y++) {
         float py = y + 0.5f;
@@ -771,8 +774,8 @@ static void C2_HOOK_CDECL sdlTriangleRender(brp_block* block, brp_vertex* v0, br
 
         x_start = (int)ceilf(xa - 0.5f);
         x_end = (int)floorf(xb - 0.5f);
-        if (x_start < 0) x_start = 0;
-        if (x_end > cw - 1) x_end = cw - 1;
+        if (x_start < bx) x_start = bx;
+        if (x_end > bx + cw - 1) x_end = bx + cw - 1;
         if (x_start > x_end) {
             continue;
         }

@@ -68,7 +68,7 @@ int C2_HOOK_FASTCALL DoMainScreen(void) {
 int C2_HOOK_FASTCALL DoMainScreen(void) {
     int result;
 
-    result = FRONTEND_Main(kFrontend_menu_main);
+    result = FrontEndProcessMenus(kFrontend_menu_main);
 
     if (result < 0) {
         gProgram_state.prog_status = eProg_quit;

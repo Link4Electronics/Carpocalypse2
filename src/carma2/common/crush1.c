@@ -245,39 +245,55 @@ void C2_HOOK_FASTCALL DisposeMasterCrushData(tCar_crush_spec* pCar_crush, tCar_s
 #ifndef CARPOCALYPSE2_MATCHING
     int i;
 
-    if (pCar_crush->field_0x4 != NULL) {
-        for (i = 0; i < pCar_crush->count_shapes; i++) {
-            tCar_crush_shape_info* shape_info = &pCar_crush->field_0x4[i];
-
-            if (shape_info->field_0x0 != NULL) {
-                BrMemFree(shape_info->field_0x0);
-            }
-            if (shape_info->field_0x4 != NULL) {
-                BrMemFree(shape_info->field_0x4);
-            }
-            if (shape_info->field_0x18 != NULL) {
-                BrMemFree(shape_info->field_0x18);
-            }
-        }
-        BrMemFree(pCar_crush->field_0x4);
-        pCar_crush->field_0x4 = NULL;
+    if (pCar_crush == NULL) {
+        return;
+    }
+    if (pCar_crush->actor != NULL) {
+        BrActorFree(pCar_crush->actor);
     }
     if (pCar_crush->field_0x1cc != NULL) {
         BrMemFree(pCar_crush->field_0x1cc);
-        pCar_crush->field_0x1cc = NULL;
     }
-    for (i = 0; i < 4; i++) {
-        if (pCar_crush->field_0x564[i] != NULL) {
-            BrMemFree(pCar_crush->field_0x564[i]);
-            pCar_crush->field_0x564[i] = NULL;
-        }
+    for (i = 0; i < pCar_crush->count_shapes; i++) {
+        BrMemFree(pCar_crush->field_0x4[i].field_0x18);
+        BrMemFree(pCar_crush->field_0x4[i].field_0x0);
+        BrMemFree(pCar_crush->field_0x4[i].field_0x4);
+    }
+    BrMemFree(pCar_crush->field_0x4);
+    if (pCar->collision_info != NULL) {
+        pCar->collision_info->shape = pCar_crush->field_0xc;
     }
     if (pCar_crush->network_stuff != NULL) {
         BrMemFree(pCar_crush->network_stuff);
-        pCar_crush->network_stuff = NULL;
     }
+    for (i = 0; i < 4; i++) {
+        BrMemFree(pCar_crush->field_0x564[i]);
+    }
+    BrMemFree(pCar_crush);
 #else
-    NOT_IMPLEMENTED();
+    int i;
+
+    if (pCar_crush == NULL) {
+        return;
+    }
+    BrActorFree(pCar_crush->actor);
+    if (pCar_crush->field_0x1cc != NULL) {
+        BrMemFree(pCar_crush->field_0x1cc);
+    }
+    for (i = 0; i < pCar_crush->count_shapes; i++) {
+        BrMemFree(pCar_crush->field_0x4[i].field_0x18);
+        BrMemFree(pCar_crush->field_0x4[i].field_0x0);
+        BrMemFree(pCar_crush->field_0x4[i].field_0x4);
+    }
+    BrMemFree(pCar_crush->field_0x4);
+    pCar->collision_info->shape = pCar_crush->field_0xc;
+    if (pCar_crush->network_stuff != NULL) {
+        BrMemFree(pCar_crush->network_stuff);
+    }
+    for (i = 0; i < 4; i++) {
+        BrMemFree(pCar_crush->field_0x564[i]);
+    }
+    BrMemFree(pCar_crush);
 #endif
 }
 

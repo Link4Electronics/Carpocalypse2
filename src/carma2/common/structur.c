@@ -240,7 +240,7 @@ C2_MATCHING_INLINE void C2_HOOK_FASTCALL DoGame(void) {
         DoGridPosition();
         SetInitialPositions(&gCurrent_race);
     } else {
-        FRONTEND_Main(kFrontend_menu_netsync);
+        FrontEndProcessMenus(kFrontend_menu_netsync);
         dr_dprintf("Returned from NetSync screen");
         SwitchToLoresMode();
     }

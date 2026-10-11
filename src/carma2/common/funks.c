@@ -3,6 +3,8 @@
 #include "carpocalypse2_macros.h"
 #include "carpocalypse2_types.h"
 #include "c2_string.h"
+#include "flicplay.h"
+#include "utility.h"
 #include "world.h"
 // GLOBAL: CARMA2_HW 0x0068b840
 br_scalar gSight_distance_squared;
@@ -29,61 +31,48 @@ void C2_HOOK_STDCALL SetSightDistance(br_scalar pYon) {
 
 // FUNCTION: CARMA2_HW 0x00474950
 void C2_HOOK_FASTCALL DisposeFunkotronics(int pOwner) {
-#ifndef CARPOCALYPSE2_MATCHING
     int i;
     tFunkotronic_spec* the_funk;
 
-    for (i = 0; i < gFunkotronics_array_size; i++) {
-        the_funk = &gFunkotronics_array[i];
+    if (gFunkotronics_array == NULL || gFunkotronics_array_size <= 0) {
+        return;
+    }
+    the_funk = gFunkotronics_array;
+    for (i = 0; i < gFunkotronics_array_size; i++, the_funk++) {
+        PossibleService();
         if (the_funk->owner != pOwner) {
             continue;
         }
+        the_funk->owner = -999;
         if (the_funk->proximity_array != NULL) {
             BrMemFree(the_funk->proximity_array);
         }
-        if (the_funk->matrix_mod_data.texture_info.data != NULL) {
-            BrMemFree(the_funk->matrix_mod_data.texture_info.data);
+        if (the_funk->texture_animation_type == eTexture_animation_frames) {
+            if (the_funk->texture_animation_data.frames_info.mode == eMove_texturebits) {
+                BrMemFree(the_funk->texture_animation_data.frames_info.texture_info.data);
+            }
         }
-        if (the_funk->lighting_animation_data.texture_info.data != NULL) {
-            BrMemFree(the_funk->lighting_animation_data.texture_info.data);
-        }
-        if (the_funk->texture_animation_data.frames_info.texture_info.data != NULL) {
-            BrMemFree(the_funk->texture_animation_data.frames_info.texture_info.data);
-        }
-        if (the_funk->texture_animation_data.flic_info.flic_data != NULL) {
+        if (the_funk->texture_animation_type == eTexture_animation_flic) {
             BrMemFree(the_funk->texture_animation_data.flic_info.flic_data);
-        }
-        memset(the_funk, 0, sizeof(tFunkotronic_spec));
-        the_funk->owner = -999;
-    }
-#else
-    int i;
-    tFunkotronic_spec* the_funk;
+            EndFlic(&the_funk->texture_animation_data.flic_info.flic_descriptor);
+            BrMemFree(the_funk->material->colour_map->pixels);
+            the_funk->material->colour_map->pixels = NULL;
+            BrPixelmapFree(the_funk->material->colour_map);
+            the_funk->material->colour_map = NULL;
+        } else if (the_funk->texture_animation_type == eTexture_animation_camera) {
+            int j;
 
-    for (i = 0; i < gFunkotronics_array_size; i++) {
-        the_funk = &gFunkotronics_array[i];
-        if (the_funk->owner != pOwner) {
-            continue;
+            for (j = 0; j < the_funk->texture_animation_data.camera_info.count; j++) {
+                BrActorRemove(the_funk->texture_animation_data.camera_info.actors[j]);
+                BrActorFree(the_funk->texture_animation_data.camera_info.actors[j]);
+            }
+        } else if (the_funk->texture_animation_type == eTexture_animation_mirror) {
+            if (the_funk->texture_animation_data.mirror_info.actor != NULL) {
+                BrActorRemove(the_funk->texture_animation_data.mirror_info.actor);
+                BrActorFree(the_funk->texture_animation_data.mirror_info.actor);
+            }
         }
-        if (the_funk->proximity_array != NULL) {
-            BrMemFree(the_funk->proximity_array);
-        }
-        if (the_funk->matrix_mod_data.texture_info.data != NULL) {
-            BrMemFree(the_funk->matrix_mod_data.texture_info.data);
-        }
-        if (the_funk->lighting_animation_data.texture_info.data != NULL) {
-            BrMemFree(the_funk->lighting_animation_data.texture_info.data);
-        }
-        if (the_funk->texture_animation_data.frames_info.texture_info.data != NULL) {
-            BrMemFree(the_funk->texture_animation_data.frames_info.texture_info.data);
-        }
-        if (the_funk->texture_animation_data.flic_info.flic_data != NULL) {
-            BrMemFree(the_funk->texture_animation_data.flic_info.flic_data);
-        }
-        memset(the_funk, 0, sizeof(tFunkotronic_spec));
-        the_funk->owner = -999;
     }
-#endif
 }
 
 // CalcProximities
@@ -97,55 +86,19 @@ void C2_HOOK_FASTCALL DisposeFunkotronics(int pOwner) {
 
 // FUNCTION: CARMA2_HW 0x00476430
 void C2_HOOK_FASTCALL DisposeGroovidelics(int pOwner) {
-#ifndef CARPOCALYPSE2_MATCHING
     int i;
     tGroovidelic_spec* the_groove;
 
-    for (i = 0; i < gGroovidelics_array_size; i++) {
-        the_groove = &gGroovidelics_array[i];
-        if (the_groove->owner != pOwner) {
-            continue;
-        }
-        if (the_groove->path_data.straight_info.texture_info.data != NULL) {
-            BrMemFree(the_groove->path_data.straight_info.texture_info.data);
-        }
-        if (the_groove->path_data.circular_info.texture_info.data != NULL) {
-            BrMemFree(the_groove->path_data.circular_info.texture_info.data);
-        }
-        if (the_groove->object_data.spin_info.texture_info.data != NULL) {
-            BrMemFree(the_groove->object_data.spin_info.texture_info.data);
-        }
-        if (the_groove->object_data.rock_info.texture_info.data != NULL) {
-            BrMemFree(the_groove->object_data.rock_info.texture_info.data);
-        }
-        memset(the_groove, 0, sizeof(tGroovidelic_spec));
-        the_groove->owner = -999;
+    if (gGroovidelics_array == NULL || gGroovidelics_array_size <= 0) {
+        return;
     }
-#else
-    int i;
-    tGroovidelic_spec* the_groove;
-
-    for (i = 0; i < gGroovidelics_array_size; i++) {
-        the_groove = &gGroovidelics_array[i];
-        if (the_groove->owner != pOwner) {
-            continue;
+    the_groove = gGroovidelics_array;
+    for (i = 0; i < gGroovidelics_array_size; i++, the_groove++) {
+        PossibleService();
+        if (the_groove->owner == pOwner) {
+            the_groove->owner = -999;
         }
-        if (the_groove->path_data.straight_info.texture_info.data != NULL) {
-            BrMemFree(the_groove->path_data.straight_info.texture_info.data);
-        }
-        if (the_groove->path_data.circular_info.texture_info.data != NULL) {
-            BrMemFree(the_groove->path_data.circular_info.texture_info.data);
-        }
-        if (the_groove->object_data.spin_info.texture_info.data != NULL) {
-            BrMemFree(the_groove->object_data.spin_info.texture_info.data);
-        }
-        if (the_groove->object_data.rock_info.texture_info.data != NULL) {
-            BrMemFree(the_groove->object_data.rock_info.texture_info.data);
-        }
-        memset(the_groove, 0, sizeof(tGroovidelic_spec));
-        the_groove->owner = -999;
     }
-#endif
 }
 
 // AddNewGroovidelic

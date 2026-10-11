@@ -84,7 +84,7 @@ void C2_HOOK_FASTCALL BuildAPO(int pCurrent, int pPotential, int pActor_index, i
 
 void C2_HOOK_FASTCALL PrepareAPO(int pActor_index);
 
-int C2_HOOK_FASTCALL FRONTEND_Main(tFrontendMenuType pFrontendType);
+int C2_HOOK_FASTCALL FrontEndProcessMenus(tFrontendMenuType pFrontendType);
 
 void C2_HOOK_FASTCALL PrintAPO(int pX, int pY, int pIndex, int pTex_index);
 

@@ -475,7 +475,7 @@ void C2_HOOK_FASTCALL PHILDisable(void);
 
 tCollision_shape_box* C2_HOOK_FASTCALL AllocateBoxCollisionShape(br_uint_8 pType);
 
-tCollision_shape_sphere* C2_HOOK_FASTCALL AllocateShapeSphere(br_uint_8 pType);
+tCollision_shape_sphere* C2_HOOK_FASTCALL AllocateShapeSphere(int pType);
 
 tCollision_shape_polyhedron* C2_HOOK_FASTCALL AllocateShapePolyhedron(int pCount_points, br_uint_8 pType);
 
@@ -548,6 +548,8 @@ tPhysics_object* C2_HOOK_FASTCALL PHILGetNextObject(tPhysics_object* pCollision_
 void C2_HOOK_FASTCALL InternalPrepareObject(tPhysics_object* pObject);
 
 void C2_HOOK_FAKE_THISCALL MoveJointedObject(tPhysics_object* pObject, undefined4 pArg2, float pDelta_time);
+
+void C2_HOOK_FASTCALL MergeBoundsIntoParent(tPhysics_object* pObject, tPhysics_object* pParent);
 
 void C2_HOOK_FASTCALL MakeObjectListDoSomething(tPhysics_object* pObject);
 

@@ -44,6 +44,7 @@ extern void C2_HOOK_FASTCALL CheckForCheatingGits(void);
 
 /* ==== forward declarations for the frontend flow ==== */
 extern void C2_HOOK_FASTCALL FRONTEND_DrawMenu(tFrontend_spec* pFrontend);
+extern int C2_HOOK_FASTCALL FRONTEND_Redraw(br_pixelmap* dst, br_int_16 dx, br_int_16 dy, br_pixelmap* src, br_int_16 sx, br_int_16 sy, br_int_16 w, br_int_16 h);
 extern int C2_HOOK_FASTCALL FRONTEND_GenericMenuHandler(tFrontend_spec* pFrontend);
 extern int C2_HOOK_FASTCALL Generic_MenuHandler(tFrontend_spec* pFrontend);
 extern int C2_HOOK_FASTCALL Generic_Infunc(tFrontend_spec* pFrontend);
@@ -344,6 +345,8 @@ extern char* gInterface_strings[300];
 int gFrontend_stuff_not_loaded = 1;
 // GLOBAL: CARMA2_HW 0x00686f10
 br_material* gFrontend_backdrop_materials[3];
+// GLOBAL: CARMA2_HW 0x00687030
+br_actor* gFrontend_backdrop_actors[3];
 // GLOBAL: CARMA2_HW 0x0075b8fc
 extern int gTyping_slot;
 // GLOBAL: CARMA2_HW 0x00688aec
@@ -1284,8 +1287,6 @@ void C2_HOOK_FASTCALL FRONTEND_PingPongFlash(void) {
 // FRONTEND_Setup2D
 
 // FRONTEND_Setup
-
-// FRONTEND_Redraw
 
 // FUNCTION: CARMA2_HW 0x0046d8b0
 void C2_HOOK_FASTCALL MaybeDoMouseCursor(void) {
@@ -2299,6 +2300,7 @@ static void C2_HOOK_FASTCALL LoadMenuModels(void) {
 #endif
 }
 
+// FUNCTION: CARMA2_HW 0x0046d1c0
 void C2_HOOK_FASTCALL FRONTEND_Setup(tFrontendMenuType pType) {
 
     PrintMemoryDump(0, "START OF FRONTEND_Setup");
@@ -2359,13 +2361,6 @@ void C2_HOOK_FASTCALL FRONTEND_Setup(tFrontendMenuType pType) {
     PrintMemoryDump(0, "END OF FRONTEND_Setup");
 }
 
-
-// FUNCTION: CARMA2_HW 0x005191b0
-int C2_HOOK_FASTCALL FRONTEND_Redraw(br_pixelmap* dst, br_int_16 dx, br_int_16 dy, br_pixelmap* src, br_int_16 sx, br_int_16 sy, br_int_16 w, br_int_16 h) {
-
-    BrPixelmapRectangleCopy(dst, dx, dy, src, sx, sy, w, h);
-}
-
 void C2_HOOK_FASTCALL FrontendRedrawMenu(void) {
     int i;
 
@@ -2395,16 +2390,7 @@ void C2_HOOK_FASTCALL FrontendRedrawMenu(void) {
 }
 
 // FUNCTION: CARMA2_HW 0x0046d8e0
-int C2_HOOK_FASTCALL FrontEndProcessMenus(int pMenu_type) {
-#ifdef CARPOCALYPSE2_MATCHING
-    NOT_IMPLEMENTED();
-    return 0;
-#else
-    return 0;
-#endif
-}
-
-int C2_HOOK_FASTCALL FRONTEND_Main(tFrontendMenuType pFrontendType) {
+int C2_HOOK_FASTCALL FrontEndProcessMenus(tFrontendMenuType pFrontendType) {
     // GLOBAL: CARMA2_HW 0x0076370c
     static int back_screen_base_x;
     // GLOBAL: CARMA2_HW 0x00763710
@@ -2435,7 +2421,7 @@ int C2_HOOK_FASTCALL FRONTEND_Main(tFrontendMenuType pFrontendType) {
         gBack_screen->origin_x = 0;
         gBack_screen->origin_y = 0;
         if (gFrontend_backdrop != NULL) {
-            DRPixelmapRectangleCopy(gBack_screen, 0, 0,
+            FRONTEND_Redraw(gBack_screen, 0, 0,
                 gFrontend_backdrop, 0, 0, gFrontend_backdrop->width, gFrontend_backdrop->height);
         }
         if (gCurrent_frontend_spec != &gFrontend_LOAD_GAME &&
@@ -2490,9 +2476,7 @@ int C2_HOOK_FASTCALL FRONTEND_Main(tFrontendMenuType pFrontendType) {
                 gCurrent_frontend_spec->unknownLastInt = FRONTEND_GenericMenuHandler(gCurrent_frontend_spec);
             }
         }
-        if (gFrontend_interpolate_steps_left != 0) {
-            gFrontend_interpolate_steps_left -= 1;
-        } else {
+        if (gFrontend_interpolate_steps_left == 0) {
             if (gCurrent_frontend_spec == &gFrontend_WRECKS && gFrontend_wrecks_actor != NULL) {
                 back_screen_base_x = gBack_screen->base_x;
                 back_screen_base_y = gBack_screen->base_y;
@@ -2525,6 +2509,8 @@ int C2_HOOK_FASTCALL FRONTEND_Main(tFrontendMenuType pFrontendType) {
             if (gCurrent_frontend_spec->unknownLastInt == 0) {
                 MaybeDoMouseCursor();
             }
+        } else {
+            gFrontend_interpolate_steps_left -= 1;
         }
         PDScreenBufferSwap(0);
         if (gCurrent_frontend_spec->unknownLastInt == 1 && gCurrent_frontend_spec != &gFrontend_START_GAME) {
