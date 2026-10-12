@@ -2252,8 +2252,52 @@ int C2_HOOK_FASTCALL AddToOpponentsProjectedRoute(tOpponent_spec* pOpponent_spec
 
 // FUNCTION: CARMA2_HW 0x004a93c0
 void C2_HOOK_FASTCALL TopUpRandomRoute(tOpponent_spec* pOpponent_spec, int pSections_to_add) {
+    tS16 section_no;
+    tS16 node_no;
+    tS16 temp_section_array[8];
+    int i;
+    int target;
+    int num_of_temp_sections;
+    int direction;
 
-    NOT_IMPLEMENTED();
+    if (!pSections_to_add) {
+        PDEnterDebugger("TopUpRandomRoute() called with no seed (woof, bark, etc.)");
+    }
+    if (pSections_to_add < 0) {
+        target = CARPOCALYPSE2_ASIZE(pOpponent_spec->next_sections);
+    } else {
+        target = MIN(pSections_to_add + pOpponent_spec->nnext_sections, (int)CARPOCALYPSE2_ASIZE(pOpponent_spec->next_sections));
+    }
+    while (pOpponent_spec->nnext_sections < target) {
+        node_no = gProgram_state.AI_vehicles.path_sections[pOpponent_spec->next_sections[pOpponent_spec->nnext_sections - 1].section_no].node_indices[pOpponent_spec->next_sections[pOpponent_spec->nnext_sections - 1].direction];
+        if (gProgram_state.AI_vehicles.path_nodes[node_no].number_of_sections > 1) {
+            num_of_temp_sections = 0;
+            for (i = 0; i < gProgram_state.AI_vehicles.path_nodes[node_no].number_of_sections; i++) {
+                section_no = gProgram_state.AI_vehicles.path_nodes[node_no].sections[i];
+                if (pOpponent_spec->next_sections[pOpponent_spec->nnext_sections - 1].section_no != section_no
+                    && (!gProgram_state.AI_vehicles.path_sections[section_no].one_way || gProgram_state.AI_vehicles.path_sections[section_no].node_indices[1] != node_no)
+                    && (pOpponent_spec->cheating || gProgram_state.AI_vehicles.path_sections[section_no].type != ePST_cheat_only)) {
+                    temp_section_array[num_of_temp_sections] = section_no;
+                    num_of_temp_sections++;
+                }
+            }
+
+            if (num_of_temp_sections > 1) {
+                section_no = temp_section_array[IRandomBetween(0, num_of_temp_sections - 1)];
+                direction = gProgram_state.AI_vehicles.path_sections[section_no].node_indices[1] != node_no;
+            } else if (num_of_temp_sections == 1) {
+                section_no = temp_section_array[0];
+                direction = gProgram_state.AI_vehicles.path_sections[section_no].node_indices[1] != node_no;
+            } else {
+                section_no = pOpponent_spec->next_sections[pOpponent_spec->nnext_sections - 1].section_no;
+                direction = pOpponent_spec->next_sections[pOpponent_spec->nnext_sections - 1].direction == 0;
+            }
+        } else {
+            section_no = pOpponent_spec->next_sections[pOpponent_spec->nnext_sections - 1].section_no;
+            direction = pOpponent_spec->next_sections[pOpponent_spec->nnext_sections - 1].direction == 0;
+        }
+        AddToOpponentsProjectedRoute(pOpponent_spec, section_no, direction);
+    }
 }
 
 // FUNCTION: CARMA2_HW 0x004ac890
@@ -2264,8 +2308,55 @@ void C2_HOOK_FASTCALL ProcessGetNearPlayer(tOpponent_spec* pOpponent_spec, tProc
 
 // FUNCTION: CARMA2_HW 0x004ac540
 void C2_HOOK_FASTCALL ProcessLevitate(tOpponent_spec* pOpponent_spec, tProcess_objective_command pCommand) {
+    float t;
+    float terminal_time;
+    float y;
 
-    NOT_IMPLEMENTED();
+    switch (pCommand) {
+    case ePOC_start:
+        DoNotDprintf_opponent("%s: ProcessLevitate() - new objective started", pOpponent_spec->car_spec->driver_name);
+        pOpponent_spec->levitate_data.waiting_to_levitate = 1;
+        pOpponent_spec->car_spec->brake_force = 15.f * pOpponent_spec->car_spec->collision_info->M;
+        pOpponent_spec->car_spec->acc_force = 0.f;
+        pOpponent_spec->levitate_data.time_started = gTime_stamp_for_this_munging;
+        break;
+
+    case ePOC_run:
+        if (pOpponent_spec->levitate_data.waiting_to_levitate) {
+            if ((BrVector3Length(&pOpponent_spec->car_spec->collision_info->v) < .01f && BrVector3Length(&pOpponent_spec->car_spec->collision_info->omega) < 1.f) || gTime_stamp_for_this_munging - pOpponent_spec->levitate_data.time_started > 4000) {
+                pOpponent_spec->levitate_data.waiting_to_levitate = 0;
+                pOpponent_spec->levitate_data.time_started = gTime_stamp_for_this_munging;
+                pOpponent_spec->levitate_data.initial_y = pOpponent_spec->car_spec->car_master_actor->t.t.translate.t.v[1];
+                if (pOpponent_spec->car_spec->has_been_stolen) {
+                    NewTextHeadupSlot(4, 250, 5000, -4, GetMiscString(170));
+                }
+            } else {
+                pOpponent_spec->car_spec->brake_force = 15.f * pOpponent_spec->car_spec->collision_info->M;
+                pOpponent_spec->car_spec->acc_force = 0.f;
+                BrVector3InvScale(&pOpponent_spec->car_spec->collision_info->omega, &pOpponent_spec->car_spec->collision_info->omega,
+                    pow(2.f, gFrame_period_for_this_munging / 1000.0));
+            }
+        }
+        if (!pOpponent_spec->levitate_data.waiting_to_levitate) {
+            TurnOpponentPhysicsOff(pOpponent_spec);
+            t = (gTime_stamp_for_this_munging - pOpponent_spec->levitate_data.time_started) / 1000.0;
+            terminal_time = 20.f;
+            if (t < terminal_time) {
+                y = t * t * .5f / 2.f;
+            } else {
+                y = terminal_time * terminal_time * 0.5 / 2.0 + (t - terminal_time) * 10.0;
+            }
+            pOpponent_spec->car_spec->car_master_actor->t.t.translate.t.v[1] = pOpponent_spec->levitate_data.initial_y + y;
+            if (y > 200.f) {
+                pOpponent_spec->finished_for_this_race = 1;
+            }
+        }
+        break;
+    case ePOC_die:
+        return;
+    default:
+        break;
+    }
 }
 
 #pragma auto_inline(off)
@@ -2571,8 +2662,39 @@ void C2_HOOK_FASTCALL ProcessCurrentObjective(tOpponent_spec* pOpponent_spec, tP
 
 // FUNCTION: CARMA2_HW 0x004a9180
 void C2_HOOK_FASTCALL TeleportOpponentToNearestSafeLocation(tOpponent_spec* pOpponent_spec) {
+    tS16 section_no;
+    tU8 section_direction;
+    br_scalar distance;
+    br_vector3 direction_v;
+    br_vector3 intersect;
+    int section_counter;
+    int found_safe_place;
 
-    NOT_IMPLEMENTED();
+    found_safe_place = 0;
+    section_no = FindNearestGeneralSection(NULL, &pOpponent_spec->car_spec->car_master_actor->t.t.translate.t, &direction_v, &intersect, &distance);
+    if (section_no < 0) {
+        return;
+    }
+    pOpponent_spec->last_in_view = 0;
+    TurnOpponentPhysicsOff(pOpponent_spec);
+    section_direction = BrVector3Dot(&pOpponent_spec->car_spec->direction, &direction_v) < 0.0f;
+    ClearOpponentsProjectedRoute(pOpponent_spec);
+    AddToOpponentsProjectedRoute(pOpponent_spec, section_no, section_direction);
+    TopUpRandomRoute(pOpponent_spec, -1);
+    section_counter = 1;
+    while (!found_safe_place) {
+        BrVector3Copy(&pOpponent_spec->car_spec->car_master_actor->t.t.translate.t, &gProgram_state.AI_vehicles.path_nodes[gProgram_state.AI_vehicles.path_sections[pOpponent_spec->next_sections[section_counter].section_no].node_indices[pOpponent_spec->next_sections[section_counter].direction]].pos);
+        CalcOpponentConspicuousnessWithAViewToCheatingLikeFuck(pOpponent_spec);
+        if (pOpponent_spec->player_to_oppo_d > gIn_view_distance) {
+            found_safe_place = 1;
+        }
+        section_counter++;
+        if (pOpponent_spec->nnext_sections <= section_counter) {
+            ShiftOpponentsProjectedRoute(pOpponent_spec, section_counter - 1);
+            section_counter = 0;
+            TopUpRandomRoute(pOpponent_spec, -1);
+        }
+    }
 }
 
 // FUNCTION: CARMA2_HW 0x004aad70

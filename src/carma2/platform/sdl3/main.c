@@ -10,6 +10,7 @@
 
 #include "errors.h"
 #include "globvars.h"
+#include "loading.h"
 #include "main.h"
 #include "pedestrn.h"
 
@@ -89,11 +90,11 @@ int main(int argc, char *argv[]) {
         if (SDL_strcmp(argv[i], "-NOCUTSCENE") == 0 || SDL_strcmp(argv[i], "-NOCUTSCENES") == 0) {
             gNoCutscenes = 1;
         } else if (SDL_strcmp(argv[i], "-ZOMBIE") == 0) {
-            SetZombiePedFolderNames();
+            ConfigurePedZombiePaths();
         } else if (SDL_strcmp(argv[i], "-BLOOD") == 0) {
-            SetBloodPedFolderNames();
+            ConfigurePedBloodPaths();
         } else if (SDL_strcmp(argv[i], "-ALIEN") == 0) {
-            SetAlienPedFolderNames();
+            ConfigurePedAlienPaths();
         } else if (SDL_strcmp(argv[i], "-AFE") == 0) {
             gAFE = 1;
 //        } else if (SDL_strcmp(argv[i], "-SCALEMOUSE") == 0) {

@@ -5761,11 +5761,70 @@ void C2_HOOK_FASTCALL SetCharacterMoveAR(tPed_character_instance* pCharacter, in
 #pragma auto_inline(on)
 
 #pragma auto_inline(off)
+// FUNCTION: CARMA2_HW 0x004ce050
+void C2_HOOK_FASTCALL DoPedAnnihilator(tPedestrian* pPed, tCar_spec* pCar, float pDist_sq, tU32 pNow, void* pData) {
+
+    (void)pDist_sq;
+    (void)pNow;
+    (void)pData;
+    pPed->field_0x0c->field_0xc0 = pCar;
+    if (pCar != NULL && pCar->driver == eDriver_local_human) {
+        PipeSinglePedIncident(pPed, pCar->collision_info->actor);
+    }
+    if (!gImmortal_peds) {
+        KillPedestrian(pPed, pCar->collision_info);
+    }
+    /* TODO: SetPedMove(113/113?), sounds, 0x694148 incident array */
+}
+#pragma auto_inline(on)
+
+#pragma auto_inline(off)
+// FUNCTION: CARMA2_HW 0x004ce330
+void C2_HOOK_FASTCALL RepulseIt(tPedestrian* pPed, tCar_spec* pCar, float pDist_sq, tU32 pNow, void* pData) {
+    int speed;
+
+    (void)pDist_sq;
+    (void)pNow;
+    (void)pData;
+    speed = IRandomBetween(0x4b, 0xc8);
+    SetPedFall(pPed, speed, 0x5b, 0x5b, NULL);
+    /* TODO: velocity push from pData (car-pos delta normalized, force params) + random omega, like RepulseOpponents2 */
+}
+#pragma auto_inline(on)
+
+#pragma auto_inline(off)
+// FUNCTION: CARMA2_HW 0x004ce280
+int C2_HOOK_FASTCALL DoPedestrianRepulsifictor(tCar_spec* pCar, float pF0, float pF1, float pF2, float pF3) {
+    struct {
+        float f0;
+        float f1;
+        float f2;
+        float f3;
+    } data;
+    int res;
+
+    data.f0 = pF0;
+    data.f1 = pF1;
+    data.f2 = pF2;
+    data.f3 = pF3;
+    res = DoToPeds(pCar, 1, pF0, 1, &data, (tForEachPedestrian_cbfn*)RepulseIt);
+    if (res == 0) {
+        return 0;
+    }
+    if (pCar != NULL && pCar->driver == eDriver_local_human) {
+        DRS3StartSound(gXXX_outlet, 0x1324);
+    } else {
+        DRS3StartSound3D(gXXX_outlet, 0x1324, &pCar->pos, &gZero_v__car, 1, 0xff, 0x10000, 0x10000);
+    }
+    return 1;
+}
+#pragma auto_inline(on)
+
+#pragma auto_inline(off)
 // FUNCTION: CARMA2_HW 0x004ce030
 int C2_HOOK_FASTCALL FindPedestrianNearCar(tCar_spec* car, br_scalar radius) {
 
-    NOT_IMPLEMENTED();
-    return 0;
+    return DoToPeds(car, 1, radius, 1, NULL, (tForEachPedestrian_cbfn*)DoPedAnnihilator);
 }
 
 // FUNCTION: CARMA2_HW 0x004ce560
@@ -6285,7 +6344,6 @@ int C2_HOOK_FASTCALL CalmDownAllPeds(void) {
 
 // FUNCTION: CARMA2_HW 0x004cadc0
 void C2_HOOK_FASTCALL InitPolyPedSystem(void) {
-#ifndef CARPOCALYPSE2_MATCHING
     if (gPedsFolder == NULL) {
         gPedsFolder = "PEDS";
         SetDefaultSoundFolderName();
@@ -6300,9 +6358,6 @@ void C2_HOOK_FASTCALL InitPolyPedSystem(void) {
     InitNapalmNolts();
     gPeds_already_munged = 0;
     gPed_last_munging = 0;
-#else
-    NOT_IMPLEMENTED();
-#endif
 }
 
 // DisposePedSpawnSpec
@@ -6791,33 +6846,6 @@ void C2_HOOK_FASTCALL SetDefaultPedFolderNames(void) {
     SetDefaultPowerupFilename();
     SetDefaultTextFileName();
     SetDefaultPixelmapFolderName();
-}
-
-// STUB: CARMA2_HW 0x004d6f50
-void C2_HOOK_FASTCALL SetZombiePedFolderNames(void) {
-#ifndef CARPOCALYPSE2_MATCHING
-    /* stub: no-op for Linux boot */
-#else
-    NOT_IMPLEMENTED();
-#endif
-}
-
-// STUB: CARMA2_HW 0x004d6f30
-void C2_HOOK_FASTCALL SetBloodPedFolderNames(void) {
-#ifndef CARPOCALYPSE2_MATCHING
-    /* stub: no-op for Linux boot */
-#else
-    NOT_IMPLEMENTED();
-#endif
-}
-
-// STUB: CARMA2_HW 0x004d6f70
-void C2_HOOK_FASTCALL SetAlienPedFolderNames(void) {
-#ifndef CARPOCALYPSE2_MATCHING
-    /* stub: no-op for Linux boot */
-#else
-    NOT_IMPLEMENTED();
-#endif
 }
 
 // AddChangedPoint

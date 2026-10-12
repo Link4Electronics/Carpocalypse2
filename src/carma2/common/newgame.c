@@ -93,8 +93,33 @@ int C2_HOOK_FASTCALL ChooseNetCar(tNet_game_details* pNet_game, tNet_game_option
 
 // FUNCTION: CARMA2_HW 0x004681d0
 void C2_HOOK_FASTCALL AddToJoinList(tNet_game_details* pGame) {
+    int i;
+    int slot_to_use;
+    tU32 this_game_ID;
 
-    NOT_IMPLEMENTED();
+    slot_to_use = -1;
+    this_game_ID = NetExtractGameID(pGame);
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gGames_to_join); i++) {
+        if (gGames_to_join[i].game != NULL) {
+            if (NetExtractGameID(gGames_to_join[i].game) == this_game_ID) {
+                DisposeJoinableGame(i);
+                slot_to_use = i;
+                break;
+            }
+        }
+    }
+    if (slot_to_use < 0) {
+        for (i = 0; i < CARPOCALYPSE2_ASIZE(gGames_to_join); i++) {
+            if (gGames_to_join[i].game == NULL) {
+                slot_to_use = i;
+                break;
+            }
+        }
+    }
+    if (slot_to_use >= 0) {
+        gGames_to_join[slot_to_use].game = pGame;
+        gGames_to_join[slot_to_use].time = PDGetTotalTime();
+    }
 }
 
 void C2_HOOK_FASTCALL SetUpOtherNetThings(tNet_game_details* pGame_details) {

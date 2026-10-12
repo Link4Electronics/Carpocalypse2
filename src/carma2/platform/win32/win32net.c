@@ -456,6 +456,17 @@ void C2_HOOK_FASTCALL PDNetLeaveGame(void) {
     dr_dprintf("PDNetLeaveGame()");
 }
 
+tU32 C2_HOOK_FASTCALL PDNetExtractGameID(tNet_game_details* pDetails) {
+
+    return pDetails->host_ID;
+}
+
+tPlayer_ID C2_HOOK_FASTCALL PDNetExtractPlayerID(tNet_game_details* pDetails) {
+
+    (void)pDetails;
+    return gLocal_net_ID;
+}
+
 // FUNCTION: CARMA2_HW 0x0051a380
 tNet_message* C2_HOOK_FASTCALL PDNetGetNextMessage(tNet_game_details* pDetails, void** pSender_address) {
     char addr_str[32];

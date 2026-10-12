@@ -128,8 +128,125 @@ void C2_HOOK_FASTCALL MungeExplosions(void) {
     }
 }
 
+// GLOBAL: CARMA2_HW 0x006a82a0
+int gNext_explosion_slot;
+
+// FUNCTION: CARMA2_HW 0x004c8920
+br_actor* C2_HOOK_FASTCALL CreateExplosionBillboard(int pArg) {
+    (void)pArg;
+    NOT_IMPLEMENTED();
+    return NULL;
+}
+
 // FUNCTION: CARMA2_HW 0x004ead00
 void C2_HOOK_FASTCALL Explode(tExplosion_animation* pExplosion_animation, br_actor* pActor, br_bounds3* pBounds, br_vector3* pPos) {
+    int i;
+    int j;
+    int k;
+    int count;
+    tU32 now;
+    tExplosion_animation_group* group;
+    float sx;
+    float sy;
+    float sz;
+    float rx;
+    float ry;
+    float rz;
+    float px;
+    float py;
+    float pz;
+    float scaling;
+    int frametime;
+    int start_delay;
+    int angle;
+    tExplosion* slot;
+    int slot_idx;
 
-    NOT_IMPLEMENTED();
+    now = GetTotalTime();
+    if (pActor == NULL) {
+        return;
+    }
+    for (i = 0; i < pExplosion_animation->count_groups; i++) {
+        group = &pExplosion_animation->groups[i];
+        count = IRandomBetween(group->min_count, group->max_count);
+        sx = FRandomBetween(group->min_xyz_factor.v[0] * pBounds->min.v[0], group->max_xyz_factor.v[0] * pBounds->max.v[0]);
+        sy = FRandomBetween(group->min_xyz_factor.v[1] * pBounds->min.v[1], group->max_xyz_factor.v[1] * pBounds->max.v[1]);
+        sz = FRandomBetween(group->min_xyz_factor.v[2] * pBounds->min.v[2], group->max_xyz_factor.v[2] * pBounds->max.v[2]);
+        if (count <= 0) {
+            continue;
+        }
+        for (j = 0; j < count; j++) {
+            rx = FRandomBetween(sx, sx);
+            if (!PercentageChance(50)) {
+                rx = -rx;
+            }
+            ry = FRandomBetween(sy, sy);
+            if (!PercentageChance(50)) {
+                ry = -ry;
+            }
+            rz = FRandomBetween(sz, sz);
+            if (!PercentageChance(50)) {
+                rz = -rz;
+            }
+            if (pPos != NULL) {
+                px = rx + pPos->v[0];
+                py = ry + pPos->v[1];
+                pz = rz + pPos->v[2];
+            } else {
+                px = rx;
+                py = ry;
+                pz = rz;
+            }
+            px += group->offset.v[0];
+            py += group->offset.v[1];
+            pz += group->offset.v[2];
+            if (group->rotate_modus != kExplosionRotateModus_NoRotate) {
+                angle = IRandomBetween(0, 0xffff);
+            } else {
+                angle = 0;
+            }
+            scaling = FRandomBetween(group->min_scaling_factor, group->max_scaling_factor);
+            frametime = IRandomBetween(group->min_frametime_ms, group->max_frametime_ms);
+            start_delay = IRandomBetween(group->min_start_delay_ms, group->max_start_delay_ms);
+            slot = NULL;
+            for (k = 0; k < (int)CARPOCALYPSE2_ASIZE(gExplosions); k++) {
+                if (gExplosions[k].start == 0) {
+                    slot = &gExplosions[k];
+                    slot_idx = 1;
+                    break;
+                }
+            }
+            if (slot == NULL) {
+                for (k = 0; k < (int)CARPOCALYPSE2_ASIZE(gExplosions); k++) {
+                    gNext_explosion_slot++;
+                    if (gNext_explosion_slot >= (int)CARPOCALYPSE2_ASIZE(gExplosions)) {
+                        gNext_explosion_slot = 0;
+                    }
+                    slot = &gExplosions[gNext_explosion_slot];
+                    if (slot->finished == 0) {
+                        break;
+                    }
+                }
+                if (k >= (int)CARPOCALYPSE2_ASIZE(gExplosions)) {
+                    continue;
+                }
+            }
+            slot->start = now + start_delay;
+            slot->period = frametime;
+            slot->count_frames = group->count_frames;
+            slot->finished = 0;
+            slot->collision_actor = pActor;
+            slot->field_0x14 = scaling * (1.0 / WORLD_SCALE);
+            slot->field_0x8 = 0xff;
+            slot->angle = angle;
+            slot->field_0x1c.v[0] = px;
+            slot->field_0x1c.v[1] = py;
+            slot->field_0x1c.v[2] = pz;
+            for (k = 0; k < group->count_frames; k++) {
+                slot->frames[k].map = group->frames[k].map;
+                slot->frames[k].opacity = group->frames[k].opacity;
+            }
+            CreateExplosionBillboard(frametime);
+        }
+    }
 }

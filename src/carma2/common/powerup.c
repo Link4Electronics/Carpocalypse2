@@ -1,9 +1,14 @@
 #include "powerup.h"
 
+#include "displays.h"
+#include "globvars.h"
 #include "graphics1.h"
+#include "pedestrn.h"
+#include "pratcam.h"
 #include "spark.h"
 #include "globvrpb.h"
 #include "powerups.h"
+#include "utility.h"
 #include "carpocalypse2_macros.h"
 
 #include "c2_string.h"
@@ -75,14 +80,110 @@ tPowerup* gPowerup_array;
 // KeyboardPowerupFinished
 
 // LoseAllSimilarPowerups
+extern int gNumber_of_powerups;
+
+void C2_HOOK_FASTCALL LoseAllSimilarPowerups(tPowerup* pThe_powerup) {
+    int i;
+    tPowerup* the_powerup;
+
+    for (i = 0, the_powerup = gPowerup_array; i < gNumber_of_powerups; i++, the_powerup++) {
+        if (the_powerup != pThe_powerup && the_powerup->got_time != 0
+            && (pThe_powerup->group_inclusion & the_powerup->group_inclusion) != 0) {
+            LosePowerup(the_powerup);
+        }
+    }
+}
 
 // ExcludedPowerup
 
 // FUNCTION: CARMA2_HW 0x004d9150
 int C2_HOOK_FASTCALL GotPowerupX(tCar_spec* pCar, int pIndex, int pArg3, int pMessage, tU32 pTime) {
+    tPowerup* the_powerup;
+    int i;
+    int ps_power;
+    char s[256];
+    char* s2;
 
-    NOT_IMPLEMENTED();
-    return 0;
+    if (pIndex >= gNumber_of_powerups || pIndex < 0) {
+        return -1;
+    }
+    the_powerup = &gPowerup_array[pIndex];
+    if (the_powerup->type == ePowerup_dummy) {
+        return -1;
+    }
+    if (the_powerup->got_proc == NULL) {
+        return -1;
+    }
+    while (((gProgram_state.sausage_eater_mode || gCount_active_peds < 2)
+            && (strstr(the_powerup->message, "Ped") != NULL
+                || strstr(the_powerup->message, "ped") != NULL
+                || strstr(the_powerup->message, "corpses") != NULL))
+        || (gNet_mode != eNet_mode_none && the_powerup->net_type == eNet_powerup_inappropriate)) {
+        pIndex = 0;
+        the_powerup = &gPowerup_array[pIndex];
+    }
+    the_powerup->current_value = -1;
+    LoseAllSimilarPowerups(the_powerup);
+    ps_power = gNet_mode != eNet_mode_none && the_powerup->got_proc == GotTimeOrPower;
+    if (the_powerup->message[0] != '\0' && pMessage && !ps_power) {
+        s2 = s;
+        strcpy(s2, the_powerup->message);
+        if (the_powerup->got_proc == FreezeTimer) {
+            s2 = strtok(s, "/");
+            if (gFreeze_timer) {
+                s2 = strtok(NULL, "/");
+            }
+        }
+        NewTextHeadupSlot(4, 0, 3000, -4, s2);
+    }
+    the_powerup->car = pCar;
+    if (the_powerup->got_proc != NULL) {
+        pIndex = the_powerup->got_proc(the_powerup, pCar);
+    }
+    if (pCar->driver <= 5) {
+        return pIndex;
+    }
+    switch (the_powerup->type) {
+    case ePowerup_instantaneous:
+        break;
+    case ePowerup_timed:
+        the_powerup->got_time = GetTotalTime();
+        if (pArg3) {
+            the_powerup->lose_time = the_powerup->got_time + the_powerup->duration;
+        } else {
+            the_powerup->lose_time = the_powerup->got_time + pTime;
+        }
+        gProgram_state.current_car.powerups[pIndex] = the_powerup->lose_time;
+        break;
+    case ePowerup_whole_race:
+        the_powerup->got_time = GetTotalTime();
+        gProgram_state.current_car.powerups[pIndex] = -1;
+        break;
+    default:
+        break;
+    }
+    if (the_powerup->prat_cam_event >= 0) {
+        PratcamEvent(the_powerup->prat_cam_event);
+    }
+    /* NOTE: retail also broadcasts a guaranteed "powerup gained" net message
+     * here; omitted like the rest of the netcode (cf. CloseDownPowerUps). */
+    if (the_powerup->type != ePowerup_instantaneous && the_powerup->icon != NULL) {
+        for (i = 0; i < gNumber_of_icons; i++) {
+            if (gPickedup_powerups[i].powerup == the_powerup) {
+                gPickedup_powerups[i].fizzle_stage = 4;
+                return pIndex;
+            }
+        }
+        if (gNumber_of_icons == CARPOCALYPSE2_ASIZE(gPickedup_powerups)) {
+            return pIndex;
+        }
+        gPickedup_powerups[gNumber_of_icons].powerup = the_powerup;
+        gPickedup_powerups[gNumber_of_icons].fizzle_stage = 0;
+        gPickedup_powerups[gNumber_of_icons].fizzle_direction = 1;
+        gPickedup_powerups[gNumber_of_icons].fizzle_start = GetTotalTime();
+        gNumber_of_icons++;
+    }
+    return pIndex;
 }
 
 // GotPowerupXX
@@ -91,8 +192,20 @@ int C2_HOOK_FASTCALL GotPowerupX(tCar_spec* pCar, int pIndex, int pArg3, int pMe
 
 // FUNCTION: CARMA2_HW 0x004d8d40
 void C2_HOOK_FASTCALL GotPowerupEarwig(tCar_spec* pCar, int pIndex, int pMessage, int pSelect_inventory) {
+    int i;
 
-    NOT_IMPLEMENTED();
+    GotPowerupX(pCar, pIndex, 0, pMessage, 0);
+    if (pSelect_inventory) {
+        for (i = 0; i < CARPOCALYPSE2_ASIZE(gInventory); i++) {
+            if (gInventory[i] < 0) {
+                break;
+            }
+        }
+        if (i < CARPOCALYPSE2_ASIZE(gInventory)) {
+            gInventory[i] = pIndex;
+            gInventory_selected = i;
+        }
+    }
 }
 
 // AutoGoody
@@ -275,9 +388,36 @@ void C2_HOOK_FASTCALL GotPowerupEarwig(tCar_spec* pCar, int pIndex, int pMessage
 // SendMines
 
 // STUB: CARMA2_HW 0x004dd1b0
-void C2_HOOK_FASTCALL MinePreCollisionStuff(void) {
+extern tCar_spec* gActive_car_list[139];
+extern int gNum_active_cars;
 
-    NOT_IMPLEMENTED();
+void C2_HOOK_FASTCALL MinePreCollisionStuff(void) {
+    int i;
+    int j;
+
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gShit_mines); i++) {
+        tShit_mine* mine = &gShit_mines[i];
+        br_vector3* mine_pos;
+
+        if (!(mine->flags & 0x1) || (mine->flags & 0x80)) {
+            continue;
+        }
+        mine_pos = &mine->collision_info->actor->t.t.translate.t;
+        for (j = 0; j < gNum_active_cars; j++) {
+            tCar_spec* car = gActive_car_list[j];
+            br_vector3 delta;
+
+            if (car == NULL || car->car_master_actor == NULL) {
+                continue;
+            }
+            BrVector3Sub(&delta, (br_vector3*)car->car_master_actor->t.t.mat.m[3], mine_pos);
+            if (delta.v[0] * delta.v[0] + delta.v[1] * delta.v[1] + delta.v[2] * delta.v[2] < 4.0f) {
+                mine->flags |= 0x80;
+                mine->car = car;
+                break;
+            }
+        }
+    }
 }
 
 // ActivateMine

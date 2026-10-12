@@ -686,8 +686,8 @@ float C2_HOOK_FASTCALL GetCarOverallBoundsMinY(tCar_spec* pCar) {
     float front_min;
     float min_value;
 
-    rear_min = (pCar->wpos[0].v[1] - pCar->susp_height[0]) / WORLD_SCALE;
-    front_min = (pCar->wpos[2].v[1] - pCar->susp_height[1]) / WORLD_SCALE;
+    rear_min = (pCar->wpos[0].v[1] - pCar->susp_height[0]) * (1.0f / WORLD_SCALE);
+    front_min = (pCar->wpos[2].v[1] - pCar->susp_height[1]) * (1.0f / WORLD_SCALE);
     min_value = pCar->collision_info->bb1.min.v[1];
 
     min_value = MIN(min_value, rear_min);
@@ -701,6 +701,9 @@ void C2_HOOK_FAKE_THISCALL SetCarSuspGiveAndHeight(tCar_spec* pCar, float pFront
     float front_give;
     float rear_give;
     float damping;
+    float rear_min;
+    float front_min;
+    float min_value;
 
 #define UNK_SUSPENION_FACTOR 5.0f
 
@@ -719,7 +722,12 @@ void C2_HOOK_FAKE_THISCALL SetCarSuspGiveAndHeight(tCar_spec* pCar, float pFront
     pCar->susp_height[0] = pCar->ride_height + rear_give + pExtra_rear_height;
     pCar->susp_height[1] = pCar->ride_height + front_give + pExtra_front_height;
 
-    pCar->collision_info->bb2.min.v[1] = GetCarOverallBoundsMinY(pCar);
+    rear_min = (pCar->wpos[0].v[1] - pCar->susp_height[0]) / WORLD_SCALE;
+    front_min = (pCar->wpos[2].v[1] - pCar->susp_height[1]) / WORLD_SCALE;
+    min_value = pCar->collision_info->bb1.min.v[1];
+    min_value = MIN(min_value, rear_min);
+    min_value = MIN(min_value, front_min);
+    pCar->collision_info->bb2.min.v[1] = min_value;
 
 #undef UNK_SUSPENION_FACTOR
 }
@@ -2444,10 +2452,81 @@ intptr_t C2_HOOK_CDECL ActorFunks(br_actor* pActor, void* pContext) {
     return 0;
 }
 
+// GLOBAL: CARMA2_HW 0x006a82a8
+tCar_spec* gRecalc_mass_car;
+
+void C2_HOOK_FASTCALL MasterDisableFunkotronic(int pFunk_index);
+
+static int C2_HOOK_FASTCALL SetCarMaterialToSolidGreenCB(br_material* pMaterial) {
+    tCar_spec* car = gRecalc_mass_car;
+    br_pixelmap* pix = car->field_0x1960;
+
+    if (pMaterial->colour_map != pix) {
+        pMaterial->colour_map = pix;
+        BrMaterialUpdate(pMaterial, BR_MATU_ALL);
+        return 1;
+    }
+    return 0;
+}
+
 // FUNCTION: CARMA2_HW 0x004f9020
 void C2_HOOK_FASTCALL RecalculateCarMassMomentOfInertia(tCar_spec* car) {
+    int i;
+    int j;
+    tCar_crush_spec* spec;
+    br_actor* actor;
+    tUser_crush_data* user;
+    tCar_crush_buffer_entry* crush;
+    br_material* solid_mat;
 
-    NOT_IMPLEMENTED();
+    DRActorEnumRecurse(car->car_model_actor, ActorFunks, (void*)MasterDisableFunkotronic);
+    spec = car->car_crush_spec;
+    for (i = 0; i < spec->field_0x270; i++) {
+        actor = spec->field_0x274[i].field_0x0;
+        user = (tUser_crush_data*)actor->user;
+        if (user == NULL) {
+            continue;
+        }
+        crush = user->crush_data;
+        if (crush == NULL) {
+            continue;
+        }
+        if (crush->smashables == NULL) {
+            continue;
+        }
+        for (j = 0; j < crush->count_smashables; j++) {
+            int funk_index = crush->smashables[j].funk;
+            if (funk_index >= 0) {
+                gFunkotronics_array[funk_index].flags |= 0x2;
+            }
+        }
+    }
+    for (i = 0; i < spec->field_0x2b0; i++) {
+        actor = spec->field_0x2b4[i].field_0x0;
+        user = (tUser_crush_data*)actor->user;
+        if (user == NULL) {
+            continue;
+        }
+        crush = user->crush_data;
+        if (crush == NULL) {
+            continue;
+        }
+        if (crush->smashables == NULL) {
+            continue;
+        }
+        for (j = 0; j < crush->count_smashables; j++) {
+            int funk_index = crush->smashables[j].funk;
+            if (funk_index >= 0) {
+                gFunkotronics_array[funk_index].flags |= 0x2;
+            }
+        }
+    }
+    solid_mat = BrMaterialFind("solidgrn");
+    if (solid_mat != NULL && solid_mat->colour_map != NULL) {
+        gRecalc_mass_car = car;
+        car->field_0x1960 = solid_mat->colour_map;
+        ForEveryCarMaterial(car, SetCarMaterialToSolidGreenCB, 1);
+    }
 }
 
 // FUNCTION: CARMA2_HW 0x0047b2b0
