@@ -372,6 +372,9 @@ void C2_HOOK_FASTCALL StopRenderingHeadups(void) {
     gHud_actor_storage_size = 0;
     CleanPolyFontDangler();
     gRender_poly_text = 1;
+#ifndef CARPOCALYPSE2_MATCHING
+    RedrawHeadupTexts(GetTotalTime());
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004e5c70

@@ -84,6 +84,8 @@ extern int C2_HOOK_FASTCALL NetSendMessageToAddress(tNet_game_details* pDetails,
 
 // NetGetContentsSize
 
+extern int C2_HOOK_FASTCALL NetGetContentsSize(tU8 pType, int pOption);
+
 // NetGetMessageSize
 
 extern tNet_message* C2_HOOK_FASTCALL NetBuildMessage(undefined pArg1, undefined4 pArg2);
@@ -204,9 +206,13 @@ extern void C2_HOOK_FASTCALL NetPlayerStatusChanged(tPlayer_status pNew_status);
 
 // AddToGuaranteeList
 
+extern void C2_HOOK_FASTCALL AddToGuaranteeList(tNet_message* pMessage, void* pAddress, tPlayer_ID pPlayer, void* pNotifyFail);
+
 // NetGuaranteedSendMessageToPlayer
 
 // NetGuaranteedSendMessageToAddress
+
+extern int C2_HOOK_FASTCALL NetGuaranteedSendMessageToAddress(tNet_game_details* pDetails, tNet_message* pMessage, void* pAddress, void* pNotifyFail);
 
 extern void C2_HOOK_FASTCALL ResendGuaranteedMessages(void);
 
@@ -305,7 +311,7 @@ extern void C2_HOOK_FASTCALL DisableNetService(void);
 
 extern void C2_HOOK_FASTCALL ReenableNetService(void);
 
-extern tNet_message_chunk* C2_HOOK_FASTCALL NetAllocateMessageChunk(int pType, int pOption);
+extern tNet_message_chunk* C2_HOOK_FASTCALL NetAllocateMessageChunk(tU8 pType, int pOption);
 
 extern tNet_game_player_info* C2_HOOK_FASTCALL NetPlayerFromCar(tCar_spec *pCar);
 

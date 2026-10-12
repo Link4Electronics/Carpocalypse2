@@ -282,7 +282,7 @@ extern void C2_HOOK_FASTCALL CleanUpSmashStuff(void);
 
 // ChangeSmashTexture
 
-// DoNetSmash
+void C2_HOOK_FASTCALL DoNetSmash(tQueued_net_smash* pSmash);
 
 // ReceivedSmashEnvironment
 

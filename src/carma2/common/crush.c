@@ -9,10 +9,12 @@
 #include "displays.h"
 #include "errors.h"
 #include "flap.h"
+#include "funks.h"
 #include "globvars.h"
 #include "globvrpb.h"
 #include "loading.h"
 #include "network.h"
+#include "oil.h"
 #include "opponent.h"
 #include "piping.h"
 #include "platform.h"
@@ -22,8 +24,10 @@
 #include "replay.h"
 #include "shrapnel.h"
 #include "skidmark.h"
+#include "smash.h"
 #include "smashing.h"
 #include "spark.h"
+#include "structur.h"
 #include "utility.h"
 #include "world.h"
 
@@ -778,30 +782,26 @@ intptr_t C2_HOOK_CDECL AccumulateSquashVertices(br_actor* actor, void* pData) {
 
 // FUNCTION: CARMA2_HW 0x0042acb0
 int C2_HOOK_CDECL IncreasingCompare(const void* pValue1, const void* pValue2) {
-    float v1 = *(const float*)pValue1;
-    float v2 = *(const float*)pValue2;
 
-    if (v1 < v2) {
+    if (*(const float*)pValue1 < *(const float*)pValue2) {
         return -1;
-    } else if (v1 == v2) {
-        return 0;
-    } else {
-        return 1;
     }
+    if (*(const float*)pValue1 == *(const float*)pValue2) {
+        return 0;
+    }
+    return 1;
 }
 
 // FUNCTION: CARMA2_HW 0x0042ace0
 int C2_HOOK_CDECL DecreasingCompare(const void* pValue1, const void* pValue2) {
-    float v1 = *(const float*)pValue1;
-    float v2 = *(const float*)pValue2;
 
-    if (v2 < v1) {
+    if (*(const float*)pValue1 > *(const float*)pValue2) {
         return -1;
-    } else if (v2 == v1) {
-        return 0;
-    } else {
-        return 1;
     }
+    if (*(const float*)pValue1 == *(const float*)pValue2) {
+        return 0;
+    }
+    return 1;
 }
 
 // FUNCTION: CARMA2_HW 0x0042b4c0
@@ -1993,10 +1993,11 @@ void C2_HOOK_FASTCALL DoCompletelyUnBentThings(tCar_spec* pCar_spec) {
     DRActorEnumRecurse(pCar_spec->car_model_actor, EnableGroovers, NULL);
 }
 
+extern int gCrush_spam_gate;
 // FUNCTION: CARMA2_HW 0x00439bf0
 void C2_HOOK_FASTCALL TotallyRepairCar(void) {
 
-    if (!gArrow_mode) {
+    if (!gCrush_spam_gate) {
         TotallyRepairACar(&gProgram_state.current_car);
     }
 }
@@ -2029,18 +2030,30 @@ void C2_HOOK_FASTCALL UpdateCrushPainList(void) {
 
 // FUNCTION: CARMA2_HW 0x004f62e0
 void C2_HOOK_FASTCALL UpdateCrushTimers(void) {
+    tQueued_net_smash* pSmash;
+    int count;
 
-    NOT_IMPLEMENTED();
+    if (gNet_mode == eNet_mode_none) {
+        return;
+    }
+    pSmash = gQueued_net_smashes;
+    count = CARPOCALYPSE2_ASIZE(gQueued_net_smashes);
+    while (count-- != 0) {
+        if (pSmash->field_0x4 != 0 && gPHIL_last_physics_tick >= pSmash->field_0x4) {
+            pSmash->field_0x4 = 0;
+            DoNetSmash(pSmash);
+        }
+        pSmash++;
+    }
 }
 
 int C2_HOOK_FASTCALL GetAverageCrushLevel(tCar_spec* pCar);
 void C2_HOOK_FASTCALL DeleteFarCrushes(tCar_spec* pCar);
 int C2_HOOK_FASTCALL DRActorRecurseWithPredicate(br_actor* pActor, void* pPredicate, tCar_spec* pCar);
-int C2_HOOK_FASTCALL PredicateSpamPanel(tCar_spec* pCar);
+int C2_HOOK_CDECL PredicateSpamPanel(br_actor* pActor, tCar_spec* pCar);
 void* C2_HOOK_FASTCALL GetCrushedPanelActor(tCar_spec* pCar, br_actor* pActor, tU32 pFlags);
 void C2_HOOK_FASTCALL InitialiseSpamCrush(tCar_spec* pCar, void* pContext);
 void C2_HOOK_FASTCALL CrushPanelWithForce(tCar_spec* pCar, tU32 pFlag_a, tU32 pFlag_b, tU32 pFlag_c, br_vector3* pVec, tU32 pFlag_d, tU32 pFlag_e);
-void BrMatrix34Multiply(br_matrix34* pDst, const br_matrix34* pA, const br_matrix34* pB);
 intptr_t C2_HOOK_FASTCALL CrushCarActorCbfn(br_actor* pActor, br_matrix34* pMat, void* pContext);
 intptr_t C2_HOOK_FASTCALL CrushCarModelCbfn(br_actor* pActor, br_matrix34* pMat, void* pContext);
 
@@ -2146,8 +2159,8 @@ void C2_HOOK_FASTCALL TotallySpamTheModel(tCar_spec* pCar_spec, float pDamage) {
                     panel_actor = GetCrushedPanelActor(pCar_spec, model_actor, 0);
                     if (panel_actor != NULL) {
                         pMorph_data = *(void**)((tU8*)pCar_spec + 0x8);
-                        BrMatrix34Multiply(&mat_a, (br_matrix34*)((tU8*)pMorph_data + 0x14), (br_matrix34*)(*(tU32*)pMorph_data + 0x2c));
-                        BrMatrix34Multiply(&mat_b, (br_matrix34*)((tU8*)panel_actor + 0x14), (br_matrix34*)(*(tU32*)panel_actor + 0x2c));
+                        BrMatrix34Mul(&mat_a, (br_matrix34*)((tU8*)pMorph_data + 0x14), (br_matrix34*)(*(tU32*)pMorph_data + 0x2c));
+                        BrMatrix34Mul(&mat_b, (br_matrix34*)((tU8*)panel_actor + 0x14), (br_matrix34*)(*(tU32*)panel_actor + 0x2c));
                         {
                             float* pPanel_pos = (float*)((tU8*)panel_actor + 0x68);
                             float* pMorph_pos = (float*)((tU8*)pMorph_data + 0x68);
@@ -2362,10 +2375,72 @@ int C2_HOOK_FASTCALL DRActorRecurseWithPredicate(br_actor* pActor, void* pPredic
 }
 
 // FUNCTION: CARMA2_HW 0x00435e10
-int C2_HOOK_FASTCALL PredicateSpamPanel(tCar_spec* pCar) {
+int C2_HOOK_CDECL PredicateSpamPanel(br_actor* pActor, tCar_spec* pCar) {
+    tUser_crush_data* user;
+    tCar_crush_buffer_entry* crush_data;
+    int* pPanel_id;
+    tPhysics_object* detached;
+    br_vector3 tmp1;
+    br_vector3 tmp2;
+    double dx;
+    double dy;
+    double dz;
+    double len;
+    double inv_len;
 
-    NOT_IMPLEMENTED();
+    user = pActor->user;
+    if (user == NULL) {
+        goto fail;
+    }
+    crush_data = user->crush_data;
+    if (crush_data == NULL) {
+        goto fail;
+    }
+    if (crush_data->detach_data == NULL) {
+        goto fail;
+    }
+    pPanel_id = gCrush_panel_ids;
+    while (pPanel_id < &gCrush_panel_ids[CARPOCALYPSE2_ASIZE(gCrush_panel_ids)]) {
+        if (*pPanel_id == crush_data->id) {
+            break;
+        }
+        pPanel_id++;
+    }
+    if (pPanel_id >= &gCrush_panel_ids[CARPOCALYPSE2_ASIZE(gCrush_panel_ids)]) {
+        goto fail;
+    }
+    detached = DetachBit(pCar, pActor, NULL);
+    if (detached == NULL) {
+        goto fail;
+    }
+    BrMatrix34ApplyP(&tmp1, &pCar->collision_info->cmpos, (br_matrix34*)((tU8*)pCar->collision_info->actor + 0x2c));
+    BrMatrix34ApplyP(&tmp2, &detached->cmpos, (br_matrix34*)((tU8*)detached->actor + 0x2c));
+    dx = tmp1.v[0] - tmp2.v[0];
+    dy = tmp1.v[1] - tmp2.v[1];
+    dz = tmp1.v[2] - tmp2.v[2];
+    len = sqrt(dx * dx + dy * dy + dz * dz);
+    if (len > 2.38419e-07f) {
+        inv_len = 1.0 / len;
+        detached->v.v[0] = pCar->collision_info->v.v[0] + (float)(dx * inv_len * 1.15942f);
+        detached->v.v[1] = pCar->collision_info->v.v[1] + (float)(dy * inv_len * 1.15942f);
+        detached->v.v[2] = pCar->collision_info->v.v[2] + (float)(dz * inv_len * 1.15942f);
+    } else {
+        detached->v.v[0] = pCar->collision_info->v.v[0] + 1.15942f;
+        detached->v.v[1] = pCar->collision_info->v.v[1];
+        detached->v.v[2] = pCar->collision_info->v.v[2];
+    }
+#ifdef CARPOCALYPSE2_MATCHING
+    /* Original falls through with whatever value happens to be in eax
+     * (non-zero in practice); no explicit return to reproduce its codegen. */
+    goto done;
+fail:
     return 0;
+done:;
+#else
+    return 1;
+fail:
+    return 0;
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00435d40
@@ -2376,9 +2451,41 @@ void C2_HOOK_FASTCALL DeleteFarCrushes(tCar_spec* pCar) {
 
 // FUNCTION: CARMA2_HW 0x00441350
 int C2_HOOK_FASTCALL GetAverageCrushLevel(tCar_spec* pCar) {
+    int wheels_avg;
+    int engine;
+    int trans;
+    int driver;
+    int avg;
+    int result;
 
-    NOT_IMPLEMENTED();
-    return 0;
+    if (pCar->knackered) {
+        return 0;
+    }
+    wheels_avg = (pCar->damage_units[eDamage_lr_wheel].damage_level
+        + pCar->damage_units[eDamage_rr_wheel].damage_level
+        + pCar->damage_units[eDamage_lf_wheel].damage_level
+        + pCar->damage_units[eDamage_rf_wheel].damage_level) / 4;
+    engine = pCar->damage_units[eDamage_engine].damage_level;
+    trans = pCar->damage_units[eDamage_transmission].damage_level;
+    driver = pCar->damage_units[eDamage_driver].damage_level;
+    if (engine > 75 || trans > 75 || driver > 75 || wheels_avg > 75) {
+        if (engine > trans && engine > driver && engine > wheels_avg) {
+            return 100 - engine;
+        }
+        if (trans > driver && trans > wheels_avg) {
+            return 100 - trans;
+        }
+        if (driver > wheels_avg) {
+            return 100 - driver;
+        }
+        return 100 - wheels_avg;
+    }
+    avg = (wheels_avg + driver + trans + engine) / 4;
+    result = 100 - avg;
+    if (result < 25) {
+        return 25;
+    }
+    return result;
 }
 
 // FUNCTION: CARMA2_HW 0x00433c70
@@ -2387,18 +2494,45 @@ void C2_HOOK_FASTCALL CrushPanelWithForce(tCar_spec* pCar, tU32 pFlag_a, tU32 pF
     NOT_IMPLEMENTED();
 }
 
-// FUNCTION: CARMA2_HW 0x005334a0
-void BrMatrix34Multiply(br_matrix34* pDst, const br_matrix34* pA, const br_matrix34* pB) {
-
-    NOT_IMPLEMENTED();
-}
-
 #pragma auto_inline(on)
 
 // FUNCTION: CARMA2_HW 0x0043f930
 void C2_HOOK_FASTCALL DoDamage(tCar_spec *pCar, tDamage_type pDamage_type, int pMagnitude) {
+    tDamage_unit* damage_unit;
+    int old_level;
+    int new_level;
 
-    NOT_IMPLEMENTED();
+    if (pCar != NULL && pCar->driver >= eDriver_net_human && pDamage_type == eDamage_driver) {
+        return;
+    }
+    if (pCar->invulnerable_no_damage || pMagnitude < 5) {
+        return;
+    }
+    damage_unit = &pCar->damage_units[pDamage_type];
+    old_level = damage_unit->damage_level;
+    new_level = pMagnitude + old_level;
+    damage_unit->damage_level = new_level;
+    if (new_level >= 99) {
+        if (pMagnitude < 10) {
+            damage_unit->damage_level = old_level;
+        } else {
+            damage_unit->damage_level = 99;
+        }
+    }
+    if (SetKnackeredFlag(pCar)) {
+        return;
+    }
+    if (pCar == NULL || pCar->driver != eDriver_oppo) {
+        if (gNet_mode == eNet_mode_none
+            && ((pCar->damage_units[eDamage_engine].damage_level >= 99
+                    && pCar->damage_units[eDamage_engine].last_level < 99
+                    && pCar->damage_units[eDamage_transmission].last_level < 99)
+                || (pCar->damage_units[eDamage_transmission].damage_level >= 99
+                    && pCar->damage_units[eDamage_engine].last_level < 99
+                    && pCar->damage_units[eDamage_transmission].last_level < 99))) {
+            QueueOilSpill(pCar);
+        }
+    }
 }
 
 #define gCurrent_credit_car_index (*(int*)((char*)&gProgram_state + 0x20))
@@ -3039,30 +3173,70 @@ intptr_t C2_HOOK_FASTCALL CrushCarModelCbfn(br_actor* pActor, br_matrix34* pMat,
     return 0;
 }
 
-// FUNCTION: CARMA2_HW 0x00436850
-float C2_HOOK_FASTCALL CrushShapeBendFactor(br_vector3* pVertexPos, int pCount, br_vector3* pVectors, br_scalar pMaxDistSq) {
+// FUNCTION: CARMA2_HW 0x0042c8b0
+float C2_HOOK_FASTCALL CrushShapeDistSq(br_vector3* pPoint, int pCount, br_vector3* pVectors) {
 
     NOT_IMPLEMENTED();
     return 0.0f;
 }
 
+// FUNCTION: CARMA2_HW 0x00436850
+float C2_HOOK_FASTCALL CrushShapeBendFactor(br_vector3* pVertexPos, int pCount, br_vector3* pVectors, br_scalar pMaxDistSq) {
+    float dist_sq;
+
+    dist_sq = CrushShapeDistSq(pVertexPos, pCount, pVectors);
+    if (dist_sq > gMax_crush_dist_sq) {
+        return gCrushZero;
+    }
+    return 1.0f - (float)sqrt(dist_sq / pMaxDistSq);
+}
+
 // FUNCTION: CARMA2_HW 0x00436890
 int C2_HOOK_FASTCALL CrushShapeFindAxis(br_vector3* pDirection) {
 
-    NOT_IMPLEMENTED();
-    return 0;
+    if (fabsf(pDirection->v[0]) > gCrushSqrtHalf) {
+        return 0;
+    }
+    if (fabsf(pDirection->v[1]) > gCrushSqrtHalf) {
+        return 1;
+    }
+    return 2;
 }
 
 // FUNCTION: CARMA2_HW 0x004367a0
 void C2_HOOK_FASTCALL CrushShapeMorphVertex(float* pOut, int pAxis, float pVertexComponent, float pDirectionComponent, tU32 pFlags, tCar_crush_limits* pLimits, int pFound) {
+    int index;
+    float t;
 
-    NOT_IMPLEMENTED();
+    index = ((pFlags & 0xffff) >> ((pAxis * 2 + (pDirectionComponent > gCrushZero)) * 2)) & 3;
+    if (index > pFound) {
+        *pOut = 0.0f;
+        return;
+    }
+    t = (pLimits->limits[pAxis][pDirectionComponent > gCrushZero].values[index] - pVertexComponent) / pDirectionComponent;
+    if (t < gCrushZero) {
+        *pOut = 0.0f;
+    } else if (t < *pOut) {
+        *pOut = t;
+    }
 }
 
 // FUNCTION: CARMA2_HW 0x004368d0
 void C2_HOOK_FASTCALL CrushShapeFinishVertex(br_vector3* pVertexPos, tU16 pFlags, tCar_crush_limits* pLimits) {
+    int i;
 
-    NOT_IMPLEMENTED();
+    for (i = 0; i < 3; i++) {
+        if (pVertexPos->v[i] < pLimits->limits[i][0].values[pFlags & 3]) {
+            pVertexPos->v[i] = pLimits->limits[i][0].values[pFlags & 3];
+            pFlags >>= 4;
+        } else {
+            pFlags >>= 2;
+            if (pVertexPos->v[i] > pLimits->limits[i][1].values[pFlags & 3]) {
+                pVertexPos->v[i] = pLimits->limits[i][1].values[pFlags & 3];
+            }
+            pFlags >>= 2;
+        }
+    }
 }
 #pragma auto_inline(on)
 
@@ -3581,7 +3755,33 @@ int C2_HOOK_FASTCALL ShapeRayCast(const br_vector3* p1, const br_vector3* p2, co
 // FUNCTION: CARMA2_HW 0x0043f5f0
 void C2_HOOK_FASTCALL KnackerThisCar(tCar_spec* pCar) {
 
-    NOT_IMPLEMENTED();
+    if (pCar->invulnerable_no_wastage) {
+        return;
+    }
+    if (gNet_mode == eNet_mode_client) {
+        return;
+    }
+    if (gNet_mode == eNet_mode_none && pCar != NULL && pCar->driver == eDriver_local_human) {
+        RaceCompleted(eRace_over_6);
+    }
+    pCar->knackered = 1;
+    QueueWastedMessage(pCar->index);
+    if (gNet_mode == eNet_mode_none) {
+        if (GetCarCount(eVehicle_opponent) != 0 && NumberOfOpponentsLeft() == 0) {
+            if (gCurrent_race.race_spec->race_type == kRaceType_Carma1
+                || gCurrent_race.race_spec->race_type == kRaceType_Cars) {
+                if (gCurrent_race.race_spec->race_type == kRaceType_Carma1) {
+                    NewTextHeadupSlot(4, 0, 5000, -4, GetMiscString(eMiscString_every_opponent_wasted));
+                }
+                RaceCompleted(eRace_over_2);
+            }
+        }
+    }
+    QueueOilSpill(pCar);
+    if (gNet_mode == eNet_mode_none) {
+        KillGroovadelic(pCar->index);
+        KillFunkotronic(pCar->index);
+    }
 }
 
 // FUNCTION: CARMA2_HW 0x0043f9f0

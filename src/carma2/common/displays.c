@@ -1549,6 +1549,52 @@ void C2_HOOK_FASTCALL DimRectangle(br_pixelmap* pPixelmap, int pLeft, int pTop, 
     int line_skip;
     int width;
 
+#ifndef CARPOCALYPSE2_MATCHING
+    /* SDL/hi-color builds have no blending rasterizer, so the devious 3D
+     * dim quad would render opaque and cover the HUD. Darken the RGB565
+     * pixels directly instead (halving matches the quad's designed 0x80
+     * opacity). Matching builds are unaffected. */
+    if (pPixelmap->type == BR_PMT_RGB_565) {
+        br_uint_16* row;
+        int stride;
+        int r, g, b;
+
+        if (pLeft < 0) {
+            pLeft = 0;
+        }
+        if (pTop < 0) {
+            pTop = 0;
+        }
+        if (pRight > pPixelmap->width) {
+            pRight = pPixelmap->width;
+        }
+        if (pBottom > pPixelmap->height) {
+            pBottom = pPixelmap->height;
+        }
+        if (pLeft >= pRight || pTop >= pBottom) {
+            return;
+        }
+        stride = pPixelmap->row_bytes / 2;
+        for (y = pTop; y < pBottom; y++) {
+            int x0 = pLeft;
+            int x1 = pRight;
+            if (pKnock_out_corners && (y == pTop || y == pBottom - 1)) {
+                x0++;
+                x1--;
+            }
+            row = ((br_uint_16*)pPixelmap->pixels) + y * stride;
+            for (x = x0; x < x1; x++) {
+                br_uint_16 pixel = row[x];
+                r = (pixel >> 11) & 31;
+                g = (pixel >> 5) & 63;
+                b = pixel & 31;
+                row[x] = (br_uint_16)((r >> 1) << 11 | (g >> 1) << 5 | (b >> 1));
+            }
+        }
+        return;
+    }
+#endif
+
     if (gDevious_2d) {
         DeviouslyDimRectangle(pPixelmap, pLeft, pTop, pRight, pBottom, pKnock_out_corners);
         return;
@@ -1674,6 +1720,15 @@ void C2_HOOK_FASTCALL DoDamageScreen(tU32 pThe_time) {
                 y_pitch);
         }
     }
+#ifndef CARPOCALYPSE2_MATCHING
+    /* The soft rasterizer caches prepared textures, so flag the damage bar
+     * map dirty after repainting it every frame (same as the APO bars);
+     * otherwise the quad keeps showing its stale initial contents.
+     * Matching builds are unaffected. */
+    BrMapUpdate(gDamage_hud, BR_MAPU_ALL);
+    gStatbarHUD5_material->colour_map = gDamage_hud;
+    BrMaterialUpdate(gStatbarHUD5_material, BR_MATU_COLOURMAP);
+#endif
 }
 
 int C2_HOOK_FASTCALL IsHeadupTextClever(char* pText) {
@@ -2147,6 +2202,100 @@ void C2_HOOK_FASTCALL DoHeadups(tU32 pThe_time) {
         }
     }
 }
+
+#ifndef CARPOCALYPSE2_MATCHING
+/* Port builds draw coloured/plain HUD text straight into pixels (see the
+ * software DRPixelmapText), which has no depth buffer, so the opaque HUD
+ * quads rendered by StopRenderingHeadups cover it wherever they overlap
+ * (notably the timer digits under the timer panels). The original routed
+ * this text through glyph actors that depth-test nearer than the quads.
+ * Redraw the stateless pixel-text slots once more after the HUD pass so
+ * they end up on top, matching the original look. Matching builds are
+ * unaffected. Image/fancy/box slots are skipped here: image glyphs were
+ * already rendered inside the pass, and fancy/box carry per-frame state. */
+void C2_HOOK_FASTCALL RedrawHeadupTexts(tU32 pThe_time) {
+    int i;
+    int x_offset;
+    int y_offset;
+    tHeadup* the_headup;
+
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gHeadups); i++) {
+        the_headup = &gHeadups[i];
+        if ((the_headup->type == eHeadup_text || the_headup->type == eHeadup_coloured_text)
+                && (gProgram_state.which_view == eView_forward || !the_headup->cockpit_anchored)
+                && the_headup->data.text_info.text[0] != '\0') {
+            if (the_headup->type == eHeadup_fancy || the_headup->end_time == 0 || pThe_time < the_headup->end_time) {
+                if (the_headup->flash_period == 0
+                        || Flash(the_headup->flash_period, &the_headup->last_flash, &the_headup->flash_state)) {
+                    if (the_headup->type == eHeadup_text) {
+                        if (the_headup->cockpit_anchored) {
+                            y_offset = gScreen_wobble_y;
+                        } else {
+                            y_offset = 0;
+                        }
+                        if (the_headup->cockpit_anchored) {
+                            x_offset = gScreen_wobble_x;
+                        } else {
+                            x_offset = 0;
+                        }
+                        BrPixelmapText(
+                            gRender_screen,
+                            x_offset + the_headup->x,
+                            y_offset + the_headup->y,
+                            the_headup->data.text_info.colour,
+                            the_headup->data.text_info.font,
+                            the_headup->data.text_info.text);
+                    } else {
+                        if (gHeadup_detail_level == 2 || gHeadup_detail_level == 5
+                                || (i != gCredits_won_headup
+                                    && i != gPed_kill_count_headup
+                                    && i != gCar_kill_count_headup
+                                    && i != gLaps_headup)) {
+                            if (the_headup->clever) {
+                                if (the_headup->cockpit_anchored) {
+                                    y_offset = gScreen_wobble_y;
+                                } else {
+                                    y_offset = 0;
+                                }
+                                if (the_headup->cockpit_anchored) {
+                                    x_offset = gScreen_wobble_x;
+                                } else {
+                                    x_offset = 0;
+                                }
+                                DRPixelmapCleverText(
+                                        gRender_screen,
+                                        x_offset + the_headup->x,
+                                        y_offset + the_headup->y,
+                                        the_headup->data.coloured_text_info.coloured_font,
+                                        the_headup->data.coloured_text_info.text,
+                                        the_headup->right_edge);
+                            } else {
+                                if (the_headup->cockpit_anchored) {
+                                    y_offset = gScreen_wobble_y;
+                                } else {
+                                    y_offset = 0;
+                                }
+                                if (the_headup->cockpit_anchored) {
+                                    x_offset = gScreen_wobble_x;
+                                } else {
+                                    x_offset = 0;
+                                }
+                                DRPixelmapText(
+                                        gRender_screen,
+                                        x_offset + the_headup->x,
+                                        y_offset + the_headup->y,
+                                        the_headup->data.coloured_text_info.coloured_font,
+                                        the_headup->data.coloured_text_info.text,
+                                        the_headup->right_edge);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+#endif
 
 // FUNCTION: CARMA2_HW 0x0044aad0
 void C2_HOOK_FASTCALL DoInstruments(tU32 pThe_time) {

@@ -4,7 +4,10 @@
 #include "crush.h"
 #include "explosions.h"
 #include "globvars.h"
+#include "graphics.h"
 #include "loading.h"
+#include "oil.h"
+#include "pedestrn.h"
 #include "physics.h"
 #include "piping.h"
 #include "platform.h"
@@ -324,16 +327,44 @@ void C2_HOOK_FASTCALL MungeAnimationRepairs(void) {
     for (i = 0; i < CARPOCALYPSE2_ASIZE(gRepair_animations); i++) {
         animation = &gRepair_animations[i];
         if (animation->field_0x0 != NULL && the_time - animation->field_0x4 >= 150) {
-            NOT_IMPLEMENTED();
+            tCar_crush_smashable_part* smashable = (tCar_crush_smashable_part*)animation->field_0x0;
+            if (smashable->field_0x4c != 0) {
+                ActuallyRepairSmash((tCar_spec*)animation->field_0x8, smashable, smashable->field_0x4c - 1);
+                animation->field_0x4 += 150;
+            }
+            if (smashable->field_0x4c == 0) {
+                animation->field_0x0 = NULL;
+            }
         }
     }
 }
 
 // FUNCTION: CARMA2_HW 0x004f00f0
 void C2_HOOK_FASTCALL MungeGlassFragments(void) {
+#ifdef CARPOCALYPSE2_MATCHING
+    tU32 the_time;
+    tRepair_animation* animation;
+    int i;
 
     MungeGlassFragments2(0);
+    the_time = GetTotalTime();
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gRepair_animations); i++) {
+        animation = &gRepair_animations[i];
+        if (animation->field_0x0 != NULL && the_time - animation->field_0x4 >= 150) {
+            tCar_crush_smashable_part* smashable = (tCar_crush_smashable_part*)animation->field_0x0;
+            if (smashable->field_0x4c != 0) {
+                ActuallyRepairSmash((tCar_spec*)animation->field_0x8, smashable, smashable->field_0x4c - 1);
+                animation->field_0x4 += 150;
+            }
+            if (smashable->field_0x4c == 0) {
+                animation->field_0x0 = NULL;
+            }
+        }
+    }
+#else
+    MungeGlassFragments2(0);
     MungeAnimationRepairs();
+#endif
 }
 
 void C2_HOOK_FASTCALL FlushPowerupQueue(void) {
@@ -496,10 +527,85 @@ void C2_HOOK_FASTCALL MungeDelayedSideEffects(void) {
     }
 }
 
+// GLOBAL: CARMA2_HW 0x006a7cf8
+int gPowerup_respawn_sound_count;
+
+// GLOBAL: CARMA2_HW 0x006a7cfc
+int gPowerup_respawn_sound_ids[16];
+
+// GLOBAL: CARMA2_HW 0x006a7f1c
+tExplosion_animation gPowerup_respawn_explosion;
+
+// GLOBAL: CARMA2_HW 0x006a7f24
+int gPowerup_respawn_spill_time_offset;
+
+// GLOBAL: CARMA2_HW 0x006a7f28
+br_scalar gPowerup_respawn_full_size_min;
+
+// GLOBAL: CARMA2_HW 0x006a7f2c
+br_scalar gPowerup_respawn_full_size_max;
+
+// GLOBAL: CARMA2_HW 0x006a7f30
+br_scalar gPowerup_respawn_grow_size_min;
+
+// GLOBAL: CARMA2_HW 0x006a7f34
+br_scalar gPowerup_respawn_grow_size_max;
+
+// GLOBAL: CARMA2_HW 0x006a7f38
+br_scalar gPowerup_respawn_size;
+
+// GLOBAL: CARMA2_HW 0x006a7f3c
+br_scalar gPowerup_respawn_field_0x48;
+
+// GLOBAL: CARMA2_HW 0x006a7f40
+br_scalar gPowerup_respawn_field_0x4c;
+
+// GLOBAL: CARMA2_HW 0x006a7f44
+br_scalar gPowerup_respawn_field_0x40;
+
+// GLOBAL: CARMA2_HW 0x006a7f48
+br_scalar gPowerup_respawn_field_0x44;
+
+// GLOBAL: CARMA2_HW 0x006a7f4c
+br_material* gPowerup_respawn_material;
+
+// GLOBAL: CARMA2_HW 0x006a7f50
+int gPowerup_respawn_field_0x50;
+
 // FUNCTION: CARMA2_HW 0x004ecea0
 void C2_HOOK_FASTCALL DoPowerupRespawnSmash(br_actor *pActor) {
+    br_bounds3* pBounds;
 
-    NOT_IMPLEMENTED();
+    if (gPowerup_respawn_sound_count != 0) {
+        DRS3StartSound3D(gXXX_outlet, gPowerup_respawn_sound_ids[IRandomBetween(0, gPowerup_respawn_sound_count - 1)],
+            (br_vector3*)((tU8*)pActor + 0x50), &gZero_v__car,
+            1, 0xff, IRandomBetween(0xe000, 0x12000), 0x10000);
+    }
+    pBounds = &pActor->model->bounds;
+    if (gPed_676914 == 0) {
+        if (PointOutOfSight((br_vector3*)((tU8*)pActor + 0x50), *(undefined4*)&gYon_squared, gYon_squared) != 0) {
+            goto check_spill;
+        }
+    }
+    if (*(int*)&gPowerup_respawn_explosion != 0) {
+        Explode(&gPowerup_respawn_explosion, pActor, pBounds, NULL);
+    }
+check_spill:
+    if (gPowerup_respawn_material != NULL) {
+        QueueOilSpill2(NULL, pActor, pActor->model,
+            gPowerup_respawn_spill_time_offset,
+            gPowerup_respawn_full_size_min,
+            gPowerup_respawn_full_size_max,
+            gPowerup_respawn_grow_size_min,
+            gPowerup_respawn_grow_size_max,
+            gPowerup_respawn_size,
+            gPowerup_respawn_field_0x48,
+            gPowerup_respawn_field_0x4c,
+            gPowerup_respawn_field_0x40,
+            gPowerup_respawn_field_0x44,
+            gPowerup_respawn_material,
+            gPowerup_respawn_field_0x50);
+    }
 }
 
 // FUNCTION: CARMA2_HW 0x004f64d0

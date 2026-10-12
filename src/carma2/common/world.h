@@ -7,6 +7,8 @@
 
 #include "carpocalypse2_types.h"
 
+// GLOBAL: CARMA2_HW 0x006a3940
+extern tQueued_net_smash gQueued_net_smashes[50];
 extern int gSize_powerup_queue;
 extern br_scalar gSight_distance_squared;
 extern br_material* gMaterials_to_adapt[200];

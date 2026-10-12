@@ -1561,7 +1561,13 @@ void C2_HOOK_FASTCALL AddExtendedSplashToPipingSession(tPhysics_object* pCollisi
 
 // AddProxRayToPipingSession
 
-// AddFlapToPipingSession
+// FUNCTION: CARMA2_HW 0x004c7520
+void C2_HOOK_FASTCALL AddFlapToPipingSession(uintptr_t pOwner, int pDelta) {
+
+    ARAddVariedDataToSession(ePipe_chunk_flap_bits, pOwner, 2,
+        SIZE_OFFSET_PIPING(tPipe_chunk_flap, field_0x0), (int)pOwner,
+        2, 4, (tU16)pDelta);
+}
 
 // AddModelMashToPipingSession
 
