@@ -2460,6 +2460,16 @@ int C2_HOOK_FASTCALL GetSmokeOn(void) {
 
 // SingleSplash
 
+// FUNCTION: CARMA2_HW 0x004fd530
+/* Provisional attribution: ~30B + shared tail with AddShrapnel region;
+ * records an ePipe_chunk_non_car-style single splash drop. Signature
+ * arity (8 DWORD params) verified from GeneralCreateSplash call sites;
+ * full body + exact name TBD. */
+void C2_HOOK_FASTCALL SingleSplash(int pArg1, int pArg2, int pArg3, int pArg4, int pArg5, int pArg6, int pArg7, int pArg8) {
+
+    NOT_IMPLEMENTED();
+}
+
 // GeneralCreateSplash
 
 // CreateSplash

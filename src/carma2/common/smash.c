@@ -205,15 +205,40 @@ void C2_HOOK_FASTCALL InitExplosions(void) {
 
 // FUNCTION: CARMA2_HW 0x004efe00
 void C2_HOOK_FASTCALL InitSmashing(void) {
-#ifndef CARPOCALYPSE2_MATCHING
-    InitGlassFragments();
-    InitDecals();
-    InitSmashQueue();
-#else
-    InitGlassFragments();
-    InitDecals();
-    InitSmashQueue();
-#endif
+    int i;
+
+    for (i = 0; i < 200; i++) {
+        tSmash_vertex* smash_vertex;
+
+        smash_vertex = &gSmash_glass_fragments[i];
+        smash_vertex->actor = BrActorAllocate(BR_ACTOR_MODEL, NULL);
+        smash_vertex->actor->model = BrModelAllocate(NULL, 3, 1);
+        smash_vertex->actor->model->faces[0].vertices[0] = 0;
+        smash_vertex->actor->model->faces[0].vertices[1] = 1;
+        smash_vertex->actor->model->faces[0].vertices[2] = 2;
+        smash_vertex->actor->model->flags |= BR_MODF_UPDATEABLE;
+        BrModelAdd(smash_vertex->actor->model);
+        smash_vertex->model = smash_vertex->actor->model;
+        smash_vertex->actor->render_style = BR_RSTYLE_FACES;
+        smash_vertex->end_time = 0;
+    }
+    for (i = 0; i < 50; i++) {
+        tDecal* smash_quad;
+
+        smash_quad = &gDecals[i];
+        smash_quad->actor = BrActorAllocate(BR_ACTOR_MODEL, NULL);
+        smash_quad->actor->model = BrModelAllocate(NULL, 4, 2);
+        smash_quad->actor->model->faces[0].vertices[0] = 0;
+        smash_quad->actor->model->faces[0].vertices[1] = 1;
+        smash_quad->actor->model->faces[0].vertices[2] = 3;
+        smash_quad->actor->model->faces[1].vertices[0] = 0;
+        smash_quad->actor->model->faces[1].vertices[1] = 3;
+        smash_quad->actor->model->faces[1].vertices[2] = 2;
+        smash_quad->actor->model->flags |= BR_MODF_UPDATEABLE;
+        BrModelAdd(smash_quad->actor->model);
+        smash_quad->actor->render_style = BR_RSTYLE_FACES;
+        smash_quad->time = 0;
+    }
 }
 
 // VerySimpleRotate
@@ -359,7 +384,11 @@ void C2_HOOK_FASTCALL CleanUpSmashStuff(void) {
 
 // ChangeSmashTexture
 
-// DoNetSmash
+// FUNCTION: CARMA2_HW 0x004f6130
+void C2_HOOK_FASTCALL DoNetSmash(tQueued_net_smash* pSmash) {
+
+    NOT_IMPLEMENTED();
+}
 
 // ReceivedSmashEnvironment
 

@@ -12,6 +12,9 @@ tNet_game_player_info gNet_players[12];
 // GLOBAL: CARMA2_HW 0x0074b7d0
 int gThis_net_player_index;
 
+// GLOBAL: CARMA2_HW 0x0074c6d4
+int gINT_0074c6d4;
+
 // GLOBAL: CARMA2_HW 0x0074c6d8
 int gPending_race;
 

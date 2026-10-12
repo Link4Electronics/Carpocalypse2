@@ -1482,9 +1482,14 @@ int C2_HOOK_FASTCALL FreezeTimer(tPowerup* powerup, tCar_spec* car) {
 
 // FUNCTION: CARMA2_HW 0x004dca30
 int C2_HOOK_FASTCALL SetEngineFactor(tPowerup* powerup, tCar_spec* car) {
-
-    NOT_IMPLEMENTED();
-    return 0;
+    if (powerup->initial_value > 0) {
+        TriggerPedestrianReaction("Afterburner", 1);
+    }
+    car->field_0x4d4 = powerup->float_params[0];
+    car->grip_multiplier = powerup->float_params[1];
+    SetCarSuspGiveAndHeight(car, powerup->float_params[2], powerup->float_params[3],
+        powerup->float_params[6], powerup->float_params[4], powerup->float_params[5]);
+    return powerup - gPowerup_array;
 }
 
 // FUNCTION: CARMA2_HW 0x004dcab0
@@ -2128,8 +2133,19 @@ void C2_HOOK_FASTCALL TheEffectsOfDrugs(tPowerup* powerup, tU32 time) {
 
 // FUNCTION: CARMA2_HW 0x004de9b0
 void C2_HOOK_FASTCALL DoBouncey(tPowerup* powerup, tU32 time) {
+    double elapsed;
 
-    NOT_IMPLEMENTED();
+    elapsed = (double)(GetTotalTime() - gProgram_state.current_car.last_bounce);
+    if (elapsed < gProgram_state.current_car.bounce_rate
+        || gProgram_state.current_car.number_of_wheels_on_ground <= 2) {
+        return;
+    }
+    PratcamEvent(0x2a);
+    gProgram_state.current_car.last_bounce = GetTotalTime();
+    gProgram_state.current_car.collision_info->v.v[1] =
+        gProgram_state.current_car.collision_info->v.v[1] + gProgram_state.current_car.bounce_amount * 0.144928;
+    DRS3StartSound(gXXX_outlet, 0x2332);
+    gProgram_state.current_car.collision_info->disable_move_rotate = 0;
 }
 
 // FUNCTION: CARMA2_HW 0x004de810

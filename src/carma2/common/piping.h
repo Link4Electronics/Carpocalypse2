@@ -168,7 +168,7 @@ extern void C2_HOOK_FASTCALL DisposeActionReplay(void);
 
 // AddProxRayToPipingSession
 
-// AddFlapToPipingSession
+void C2_HOOK_FASTCALL AddFlapToPipingSession(uintptr_t pOwner, int pDelta);
 
 // AddModelMashToPipingSession
 

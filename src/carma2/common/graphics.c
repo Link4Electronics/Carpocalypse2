@@ -633,7 +633,7 @@ void C2_HOOK_FASTCALL MungeClipPlane(br_vector3* pLight, tCar_spec* pCar, br_vec
     BrMatrix34ApplyP(&v2, p2, &pCar->car_master_actor->t.t.mat);
     BrVector3Sub(&v3, p2, p1);
     BrVector3Cross(&v4, &v3, pLight);
-    if (fabsf(v4.v[0]) >= 0.01 || fabsf(v4.v[1]) >= 0.01 || fabsf(v4.v[2]) >= 0.01) {
+    if (fabs(v4.v[0]) >= 0.01 || fabs(v4.v[1]) >= 0.01 || fabs(v4.v[2]) >= 0.01) {
         BrVector3Sub(&v3, p1, pOffset);
         if (BrVector3Dot(&v3, &v4) > 0.f) {
             BrVector3Negate(&v4, &v4);
@@ -646,7 +646,7 @@ void C2_HOOK_FASTCALL MungeClipPlane(br_vector3* pLight, tCar_spec* pCar, br_vec
         ((br_vector4*)new_clip->type_data)->v[1] = v4.v[1];
         ((br_vector4*)new_clip->type_data)->v[2] = v4.v[2];
         ((br_vector4*)new_clip->type_data)->v[3] = -BrVector3Dot(&v1, &v4);
-        length = CARPOCALYPSE2_SQR(v1.v[2] - v2.v[2]) + CARPOCALYPSE2_SQR(v1.v[0] - v2.v[0]);
+        length = (v1.v[2] - v2.v[2]) * (v1.v[2] - v2.v[2]) + (v1.v[0] - v2.v[0]) * (v1.v[0] - v2.v[0]);
         gShadow_clip_planes[gShadow_clip_plane_count].length = length;
         gShadow_clip_plane_count += 1;
     }
@@ -1645,8 +1645,8 @@ void C2_HOOK_FASTCALL DRPixelmapCopyMapBlack(br_pixelmap* pDest, br_pixelmap* pS
 
 // FUNCTION: CARMA2_HW 0x004e74d0
 void C2_HOOK_FASTCALL RenderShadows(br_actor* pWorld, tTrack_spec* pTrack_spec, br_actor* pCamera, br_matrix34* pCamera_to_world_transform) {
-    int i;
     int cat;
+    int i;
     int car_count;
     tCar_spec* the_car;
     br_vector3 camera_to_car;
@@ -1656,14 +1656,14 @@ void C2_HOOK_FASTCALL RenderShadows(br_actor* pWorld, tTrack_spec* pTrack_spec, 
         return;
     }
     for (cat = eVehicle_self;; ++cat) {
+        int max;
         if (gShadow_level == eShadow_everyone) {
-            if (cat >= eVehicle_not_really) {
-                break;
-            }
+            max = eVehicle_drone;
         } else {
-            if (cat > (gShadow_level == eShadow_us_and_opponents ? eVehicle_rozzer : eVehicle_self)) {
-                break;
-            }
+            max = (gShadow_level == eShadow_us_and_opponents ? eVehicle_rozzer : eVehicle_self);
+        }
+        if (cat > max) {
+            break;
         }
 
         if (cat == eVehicle_self) {

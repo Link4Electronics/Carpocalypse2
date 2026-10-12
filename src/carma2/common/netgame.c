@@ -1,8 +1,10 @@
 #include "netgame.h"
 
+#include "displays.h"
 #include "globvars.h"
 #include "globvrpb.h"
 #include "network.h"
+#include "structur.h"
 #include "opponent.h"
 #include "physics.h"
 #include "platform.h"
@@ -292,14 +294,133 @@ void C2_HOOK_FASTCALL SetUpNetCarPositions(void) {
 
 // FUNCTION: CARMA2_HW 0x00498e70
 void C2_HOOK_FASTCALL SignalToStartRace(void) {
+    tNet_message* message;
+    tU8* dst;
+    int i;
+    int j;
+    int inactive;
+    tCar_spec* car;
+    int player_idx;
+    int next_car;
 
-    NOT_IMPLEMENTED();
+    gCurrent_net_game->no_races_yet = 0;
+    gINT_0074c6d4 = 0;
+    gINT_0074b780 = 1;
+    message = NetBuildGuaranteedMessage(0xc, 0);
+    ((tU8*)message)[0x1b] = (tU8)gProgram_state.racing;
+    ((tU8*)message)[0x1a] = (tU8)gCurrent_race.number_of_racers;
+    dst = (tU8*)message + 0x1e;
+    for (i = 0; i < gCurrent_race.number_of_racers; i++) {
+        car = gCurrent_race.opponent_list[i].car_spec;
+        CompressMatrix34((tCompressed_matrix3*)(dst + 2), &inactive, &car->car_master_actor->t.t.mat);
+        for (j = 0; j < gNumber_of_net_players; j++) {
+            if (gNet_players[j].car == car) {
+                break;
+            }
+        }
+        if (j < gNumber_of_net_players) {
+            dst[0] = (tU8)j;
+            if (inactive) {
+                dst[0] |= 0x80;
+            }
+        }
+        player_idx = dst[0] & 0x7f;
+        if (gCurrent_net_game->options.car_choice == 2 || gCurrent_net_game->options.car_choice == 1) {
+            next_car = gNet_players[player_idx].next_car_index;
+            if (next_car < 0) {
+                next_car = 0;
+                gNet_players[player_idx].next_car_index = next_car;
+            }
+            gCar_details[next_car].ownership = 1;
+            dst[1] = (tU8)gNet_players[player_idx].next_car_index;
+        } else {
+            dst[1] = (tU8)gNet_players[player_idx].next_car_index;
+        }
+        dst += 0x14;
+    }
+    if (gPending_race < 0) {
+        gPending_race = PickNetRace(gProgram_state.current_race_index, gCurrent_net_game->options.race_sequence_type);
+    }
+    ((tU8*)message)[0x1c] = (tU8)gPending_race;
+    NetGuaranteedSendMessageToAllPlayers(gCurrent_net_game, message, NULL);
 }
 
 // FUNCTION: CARMA2_HW 0x00499360
 void C2_HOOK_FASTCALL DoNetworkHeadups(int pCredits) {
+    char s[256];
+    char s2[256];
+    static tU32 last_flash;
+    static int flash_state;
 
-    NOT_IMPLEMENTED();
+    if (gNot_shown_race_type_headup) {
+        gNot_shown_race_type_headup = 0;
+        NewTextHeadupSlot(4, 0, 2000, -4, GetMiscString(gCurrent_net_game->type + 59));
+    }
+    if (gTime_for_punishment != 0 && PDGetTotalTime() >= gTime_for_punishment) {
+        gTime_for_punishment = 0;
+        switch (gCurrent_net_game->type) {
+        case 2:
+            NewTextHeadupSlot(4, 0, 2000, -4, GetMiscString(219));
+            break;
+        case 3:
+            NewTextHeadupSlot(4, 0, 2000, -4, GetMiscString(220));
+            break;
+        case 4:
+            NewTextHeadupSlot(4, 0, 2000, -4, GetMiscString(221));
+            break;
+        case 7:
+            NewTextHeadupSlot(4, 0, 2000, -4, GetMiscString(222));
+            break;
+        default:
+            break;
+        }
+    }
+    if (gNet_mode == eNet_mode_none
+        || (float)gProgram_state.credits >= gRecovery_cost.initial_network[gCurrent_net_game->type]
+        || Flash(200, &last_flash, &flash_state)) {
+        sprintf(s, "\xf8%d\xfa %s", pCredits, GetMiscString(94));
+        ChangeHeadupText(gNet_cash_headup, s);
+    } else {
+        ChangeHeadupText(gNet_cash_headup, "");
+    }
+    switch (gCurrent_net_game->type) {
+    case 1:
+        sprintf(s, "\xf8%d\xfa %s", gCurrent_net_game->options.starting_target, GetMiscString(241));
+        break;
+    case 2:
+        sprintf(s, "%s \xf8%d\xfa", GetMiscString(180), gINT_0068d920);
+        break;
+    case 5:
+        sprintf(s, "%s \xf8%d\xfa", GetMiscString(181), gCurrent_net_game->options.starting_target);
+        break;
+    case 7:
+        TimerString(gCurrent_net_game->options.starting_target, s2, 1, 1, 0);
+        sprintf(s, "%s \xf8%s\xfa", GetMiscString(182), s2);
+        break;
+    default:
+        s[0] = '\0';
+        break;
+    }
+    ChangeHeadupText(gNet_ped_headup, s);
+    switch (gHeadup_detail_level) {
+    case 0:
+    case 3:
+        MoveHeadupTo(gNet_cash_headup, 0x50, 0x19);
+        MoveHeadupTo(gNet_ped_headup, 0x50, 0);
+        break;
+    case 1:
+    case 4:
+        MoveHeadupTo(gNet_cash_headup, 0x1e0, 0x19);
+        MoveHeadupTo(gNet_ped_headup, 0x1e0, 0);
+        break;
+    case 2:
+    case 5:
+        MoveHeadupTo(gNet_cash_headup, 0x1ae, 0x3c);
+        MoveHeadupTo(gNet_ped_headup, 0x1ae, 0x14);
+        break;
+    default:
+        break;
+    }
 }
 
 // FUNCTION: CARMA2_HW 0x00497900

@@ -3440,11 +3440,179 @@ int C2_HOOK_FASTCALL PhysicsObjectRecurseChildren(tPhysics_object* pObject, tEnu
     return 0;
 }
 
+// FUNCTION: CARMA2_HW 0x0049c5e0
+int C2_HOOK_STDCALL QuantizeFloatToInt(float pVal, float pMin, float pMax) {
+
+    if (pVal > pMax) {
+        pVal = pMax;
+    }
+    if (pVal < pMin) {
+        pVal = pMin;
+    }
+    return (int)((pVal - pMin) / (pMax - pMin) * 65534.f - 0.5f);
+}
+
 // FUNCTION: CARMA2_HW 0x0049c0d0
 int C2_HOOK_FASTCALL GetObjectNetworkStuff(tPhysics_object* pObject, tU8* pBuffer, int pSize) {
+    tPhysics_joint* joint;
+    br_quat quat;
 
-    NOT_IMPLEMENTED();
-    return 0;
+    joint = pObject->physics_joint1;
+    if (joint == NULL) {
+        goto check_big;
+    }
+    switch (joint->type) {
+    case 1:
+    case 4:
+        if ((tU32)pSize < 0xc) {
+            return -1;
+        }
+        pBuffer[0] = (tU8)joint->type;
+        pBuffer[1] = pObject->uid;
+        *(float*)&pSize = pObject->omega.v[0] * joint->hinge_axis.v[0]
+            + pObject->omega.v[1] * joint->hinge_axis.v[1]
+            + pObject->omega.v[2] * joint->hinge_axis.v[2];
+        if (*(float*)&pSize > 39.2699f) {
+            *(float*)&pSize = 39.2699f;
+        }
+        if (*(float*)&pSize < -39.2699f) {
+            *(float*)&pSize = -39.2699f;
+        }
+        ((tU16*)pBuffer)[1] = (tU16)((*(float*)&pSize + 39.2699f) * 0.0127324f * 65534.f - 0.5f);
+        pObject = (tPhysics_object*)((tU8*)pObject + 0x8c);
+        BrMatrix34ToQuat(&quat, (br_matrix34*)pObject);
+        {
+            float q = quat.z;
+            if (q > 1.0f) {
+                q = 1.0f;
+            }
+            if (q < -1.0f) {
+                q = -1.0f;
+            }
+            ((tU16*)pBuffer)[2] = (tU16)((q + 1.0f) * 0.5f * 65534.f - 0.5f);
+        }
+        {
+            float q = quat.y;
+            if (q > 1.0f) {
+                q = 1.0f;
+            }
+            if (q < -1.0f) {
+                q = -1.0f;
+            }
+            ((tU16*)pBuffer)[3] = (tU16)((q + 1.0f) * 0.5f * 65534.f - 0.5f);
+        }
+        ((tU16*)pBuffer)[4] = QuantizeFloatToInt(quat.z, -1.0f, 1.0f);
+        ((tU16*)pBuffer)[5] = QuantizeFloatToInt(quat.w, -1.0f, 1.0f);
+        return 0xc;
+    case 2:
+    case 3:
+        if ((tU32)pSize < 0x10) {
+            return -1;
+        }
+        pBuffer[0] = (tU8)joint->type;
+        pBuffer[1] = pObject->uid;
+        {
+            int k;
+            br_vector3* v = (br_vector3*)((tU8*)pObject + 0x74);
+            tU16* out = (tU16*)&pBuffer[2];
+            for (k = 0; k < 3; k++) {
+                float c = v->v[0];
+                if (c > 39.2699f) {
+                    c = 39.2699f;
+                }
+                if (c < -39.2699f) {
+                    c = -39.2699f;
+                }
+                *out++ = (tU16)((c + 39.2699f) * 0.0127324f * 65534.f - 0.5f);
+                v = (br_vector3*)((tU8*)v + 4);
+            }
+        }
+        pObject = (tPhysics_object*)((tU8*)pObject + 0x8c);
+        BrMatrix34ToQuat(&quat, (br_matrix34*)pObject);
+        {
+            float q = quat.z;
+            if (q > 1.0f) {
+                q = 1.0f;
+            }
+            if (q < -1.0f) {
+                q = -1.0f;
+            }
+            ((tU16*)pBuffer)[4] = (tU16)((q + 1.0f) * 0.5f * 65534.f - 0.5f);
+        }
+        {
+            float q = quat.y;
+            if (q > 1.0f) {
+                q = 1.0f;
+            }
+            if (q < -1.0f) {
+                q = -1.0f;
+            }
+            ((tU16*)pBuffer)[5] = (tU16)((q + 1.0f) * 0.5f * 65534.f - 0.5f);
+        }
+        ((tU16*)pBuffer)[6] = QuantizeFloatToInt(quat.z, -1.0f, 1.0f);
+        ((tU16*)pBuffer)[7] = QuantizeFloatToInt(quat.w, -1.0f, 1.0f);
+        return 0x10;
+    default:
+        PhysicsError((tPhysicsError)9, "netphys got messed up");
+        /* fall through */
+    case 0:
+check_big:
+        if ((tU32)pSize < 0x28) {
+            return -1;
+        }
+        pBuffer[0] = 0;
+        pBuffer[1] = pObject->uid;
+        {
+            int k;
+            br_vector3* v = (br_vector3*)((tU8*)pObject + 0x74);
+            tU16* out = (tU16*)&pBuffer[2];
+            for (k = 0; k < 3; k++) {
+                float c = v->v[0];
+                if (c > 39.2699f) {
+                    c = 39.2699f;
+                }
+                if (c < -39.2699f) {
+                    c = -39.2699f;
+                }
+                *out++ = (tU16)((c + 39.2699f) * 0.0127324f * 65534.f - 0.5f);
+                v = (br_vector3*)((tU8*)v + 4);
+            }
+        }
+        {
+            tU32 vx = *(tU32*)((tU8*)pObject + 0x68);
+            pObject = (tPhysics_object*)((tU8*)pObject + 0x8c);
+            ((tU32*)pBuffer)[2] = vx;
+            ((tU32*)pBuffer)[3] = *(tU32*)((tU8*)pObject - 0x20);
+            ((tU32*)pBuffer)[4] = *(tU32*)((tU8*)pObject - 0x1c);
+        }
+        BrMatrix34ToQuat(&quat, (br_matrix34*)pObject);
+        {
+            float q = quat.z;
+            if (q > 1.0f) {
+                q = 1.0f;
+            }
+            if (q < -1.0f) {
+                q = -1.0f;
+            }
+            ((tU16*)pBuffer)[10] = (tU16)((q + 1.0f) * 0.5f * 65534.f - 0.5f);
+        }
+        {
+            float q = quat.y;
+            if (q > 1.0f) {
+                q = 1.0f;
+            }
+            if (q < -1.0f) {
+                q = -1.0f;
+            }
+            ((tU16*)pBuffer)[11] = (tU16)((q + 1.0f) * 0.5f * 65534.f - 0.5f);
+        }
+        ((tU16*)pBuffer)[12] = QuantizeFloatToInt(quat.z, -1.0f, 1.0f);
+        ((tU16*)pBuffer)[13] = QuantizeFloatToInt(quat.w, -1.0f, 1.0f);
+        ((tU32*)pBuffer)[7] = *(tU32*)((tU8*)pObject + 0x24);
+        ((tU32*)pBuffer)[8] = *(tU32*)((tU8*)pObject + 0x28);
+        ((tU32*)pBuffer)[9] = *(tU32*)((tU8*)pObject + 0x2c);
+        return 0x28;
+    }
 }
 
 // FUNCTION: CARMA2_HW 0x0049cd00
