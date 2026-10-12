@@ -392,9 +392,14 @@ void C2_HOOK_FASTCALL LoadTrack(const char* pFile_name, tTrack_spec* pTrack_spec
             ((br_vector3*)pRace_info)[0x3f + i + j] = a;
         }
 
-        data->sections[i].acc.v[0] /= data->sections[i].quad_count;
-        data->sections[i].acc.v[1] /= data->sections[i].quad_count;
-        data->sections[i].acc.v[2] /= data->sections[i].quad_count;
+        data->sections[i].acc.v[0] /= (data->sections[i].quad_count * 4);
+        data->sections[i].acc.v[1] /= (data->sections[i].quad_count * 4);
+        data->sections[i].acc.v[2] /= (data->sections[i].quad_count * 4);
+        /* Checkpoint map marks (CalcMapCheckpoint) and checkpoint lines are
+           derived from checkpoints[i].pos, so publish the averaged centre
+           here. (pos is only read by map code; quads/normals/count intentionally
+           untouched.) */
+        BrVector3Copy(&pRace_info->checkpoints[i].pos, &data->sections[i].acc);
     }
 
     PossibleService();
