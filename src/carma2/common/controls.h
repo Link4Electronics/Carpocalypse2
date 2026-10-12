@@ -146,7 +146,7 @@ extern int gHeadup_map_h;
 
 // ToggleMap
 
-// GetRecoverVoucherCount
+int C2_HOOK_FASTCALL GetRecoverVoucherCount(void);
 
 // AddVouchers
 

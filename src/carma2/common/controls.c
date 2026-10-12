@@ -11,6 +11,7 @@
 #include "finteray.h"
 #include "globvars.h"
 #include "globvrkm.h"
+#include "globvrme.h"
 #include "globvrpb.h"
 #include "grafdata.h"
 #include "graphics.h"
@@ -1300,7 +1301,24 @@ void C2_HOOK_FASTCALL BuyOffense(void) {
 // FUNCTION: CARMA2_HW 0x0040e430
 void C2_HOOK_FASTCALL ViewNetPlayer(void) {
 
-    NOT_IMPLEMENTED();
+    if (!gOpponent_viewing_mode) {
+    } else {
+        if (gProgram_state.cockpit_on) {
+            ToggleCockpit();
+        }
+        gNet_player_to_view_index++;
+        if (gNumber_of_net_players <= gNet_player_to_view_index) {
+            gNet_player_to_view_index = -1;
+        }
+        if (gNet_player_to_view_index >= 0) {
+            gCar_to_view = gNet_players[gNet_player_to_view_index].car;
+        } else {
+            gCar_to_view = GetRaceLeader();
+        }
+        gCamera_yaw = 0;
+        InitialiseExternalCamera();
+        PositionExternalCamera(gCar_to_view, 200u);
+    }
 }
 
 // Key: '`'
@@ -1439,15 +1457,127 @@ void C2_HOOK_FASTCALL ToggleInventory(void) {
 // Key: '['
 // FUNCTION: CARMA2_HW 0x004dab80
 void C2_HOOK_FASTCALL LeftInventory(void) {
+    int old_index;
+    int new_index;
+    tPowerup* powerup;
+    tNet_message* msg;
+    int i;
 
-    NOT_IMPLEMENTED();
+    gInventory_timeout = GetTotalTime() + 3000;
+    old_index = gInventory_selected;
+    gInventory_cycling = 1;
+    if (old_index < 0) {
+        return;
+    }
+    new_index = old_index;
+    for (;;) {
+        new_index++;
+        if (new_index >= (int)CARPOCALYPSE2_ASIZE(gInventory)) {
+            new_index = 0;
+        }
+        if (gInventory[new_index] < 0) {
+            if (new_index == old_index) {
+                return;
+            }
+            continue;
+        }
+        powerup = &gPowerup_array[gInventory[old_index]];
+        if (powerup->initial_value >= 0 && gINT_006a0a6c == 0) {
+            goto select_new;
+        }
+        if (powerup->got_time != 0 && powerup->lose_proc != NULL) {
+            powerup->lose_proc(powerup, powerup->car);
+        }
+        if (powerup->net_type & 0x80) {
+            ARPowerupLose(powerup, powerup->car);
+        }
+        if (gNet_mode != eNet_mode_none) {
+            msg = NetBuildGuaranteedMessage(0x16, 0);
+            *(int*)((tU8*)msg + 0x28) = 2;
+            *(tPlayer_ID*)((tU8*)msg + 0x1c) = gLocal_net_ID;
+            *(int*)((tU8*)msg + 0x20) = powerup - gPowerup_array;
+            NetGuaranteedSendMessageToAllPlayers(gCurrent_net_game, msg, NULL);
+        }
+        gPowerup_net_state[powerup - gPowerup_array] = 0;
+        if (powerup->initial_value == 0) {
+            for (i = 0; i < gNumber_of_icons; i++) {
+                if (gPickedup_powerups[i].powerup == powerup) {
+                    gPickedup_powerups[i].fizzle_stage = 3;
+                    gPickedup_powerups[i].fizzle_direction = -1;
+                    gPickedup_powerups[i].fizzle_start = GetTotalTime();
+                    break;
+                }
+            }
+        }
+        powerup->got_time = 0;
+select_new:
+        gINT_006a0a5c = 1;
+        gInventory_selected = new_index;
+        return;
+    }
 }
 
 // Key: ']'
 // FUNCTION: CARMA2_HW 0x004daa00
 void C2_HOOK_FASTCALL RightInventory(void) {
+    int old_index;
+    int new_index;
+    tPowerup* powerup;
+    tNet_message* msg;
+    int i;
 
-    NOT_IMPLEMENTED();
+    gInventory_timeout = GetTotalTime() + 3000;
+    old_index = gInventory_selected;
+    gInventory_cycling = 1;
+    if (old_index < 0) {
+        return;
+    }
+    new_index = old_index;
+    for (;;) {
+        new_index--;
+        if (new_index < 0) {
+            new_index = (int)CARPOCALYPSE2_ASIZE(gInventory) - 1;
+        }
+        if (gInventory[new_index] < 0) {
+            if (new_index == old_index) {
+                return;
+            }
+            continue;
+        }
+        powerup = &gPowerup_array[gInventory[old_index]];
+        if (powerup->initial_value >= 0 && gINT_006a0a6c == 0) {
+            goto select_new;
+        }
+        if (powerup->got_time != 0 && powerup->lose_proc != NULL) {
+            powerup->lose_proc(powerup, powerup->car);
+        }
+        if (powerup->net_type & 0x80) {
+            ARPowerupLose(powerup, powerup->car);
+        }
+        if (gNet_mode != eNet_mode_none) {
+            msg = NetBuildGuaranteedMessage(0x16, 0);
+            *(int*)((tU8*)msg + 0x28) = 2;
+            *(tPlayer_ID*)((tU8*)msg + 0x1c) = gLocal_net_ID;
+            *(int*)((tU8*)msg + 0x20) = powerup - gPowerup_array;
+            NetGuaranteedSendMessageToAllPlayers(gCurrent_net_game, msg, NULL);
+        }
+        gPowerup_net_state[powerup - gPowerup_array] = 0;
+        if (powerup->initial_value == 0) {
+            for (i = 0; i < gNumber_of_icons; i++) {
+                if (gPickedup_powerups[i].powerup == powerup) {
+                    gPickedup_powerups[i].fizzle_stage = 3;
+                    gPickedup_powerups[i].fizzle_direction = -1;
+                    gPickedup_powerups[i].fizzle_start = GetTotalTime();
+                    break;
+                }
+            }
+        }
+        powerup->got_time = 0;
+select_new:
+        gINT_006a0a5c = 1;
+        gInventory_selected = new_index;
+        return;
+    }
 }
 
 // Key: '*' (keypad)
@@ -3363,6 +3493,10 @@ void C2_HOOK_FASTCALL CheckForCheatingGits(void) {
 // ToggleMap
 
 // GetRecoverVoucherCount
+int C2_HOOK_FASTCALL GetRecoverVoucherCount(void) {
+
+    return gRecovery_voucher_count;
+}
 
 // AddVouchers
 

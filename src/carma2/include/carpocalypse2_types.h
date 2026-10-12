@@ -3246,6 +3246,12 @@ typedef struct {
 } tPursue_car_data;
 
 typedef struct {
+    float initial_y;
+    tU32 time_started;
+    unsigned int waiting_to_levitate : 1;
+} tLevitate_data;
+
+typedef struct {
     int index;
     tOpponent_objective_type current_objective;
     tCar_spec* car_spec;
@@ -3288,7 +3294,7 @@ typedef struct {
     tComplete_race_data complete_race_data;
     tFollow_path_data follow_path_data;
     tPursue_car_data pursue_car_data;
-    undefined field_0x184[12];
+    tLevitate_data levitate_data;
     tRun_away_data run_away_data;
     tReturn_to_start_data return_to_start_data;
 } tOpponent_spec;
@@ -5324,7 +5330,7 @@ typedef struct {
     struct br_matrix34 initial_position;
     struct tCar_spec * car;
     tNet_message* field_0xcc;
-    undefined field_0xd0[4];
+    tPlayer_ID field_0xd0;
 } tNet_game_player_info;
 
 typedef enum {

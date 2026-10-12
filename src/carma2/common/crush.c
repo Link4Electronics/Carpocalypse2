@@ -3813,10 +3813,99 @@ void C2_HOOK_FASTCALL SetSmokeLastDamageLevel(tCar_spec* pCar) {
 #pragma auto_inline(off)
 
 // FUNCTION: CARMA2_HW 0x0043ace0
-float C2_HOOK_FASTCALL ComputeCarImpact(tCar_spec* pCar, int pDelta, float* pOut) {
+typedef struct {
+    tCar_spec* car_spec;
+    float step;
+    float repaired;
+    float deflection;
+} tRepairCarContext;
 
-    NOT_IMPLEMENTED();
-    return 0.f;
+static intptr_t C2_HOOK_CDECL RepairCarCB(br_actor* pActor, void* pData) {
+    tRepairCarContext* ctx = pData;
+    tUser_crush_data* user_crush_data;
+    int i;
+
+    user_crush_data = pActor->user;
+    if (user_crush_data == NULL || user_crush_data->crush_data == NULL) {
+        return 0;
+    }
+    for (i = 0; i < ctx->car_spec->count_detail_levels; i++) {
+        br_model* model = user_crush_data->models[i];
+        int j;
+
+        if (model == NULL || model->user == NULL || model->user == (void*)(uintptr_t)1 || model->nvertices == 0) {
+            continue;
+        }
+        /* tUser_detail_level_model with original (undamaged) vertices in field_0x4. */
+        {
+            tModel_detail_vertex_data* vertex_data = ((tUser_detail_level_model*)model->user)->field_0x4;
+            int touched;
+
+            if (vertex_data == NULL) {
+                continue;
+            }
+            touched = 0;
+            for (j = 0; j < model->nvertices; j++) {
+                br_vector3 undamaged;
+                int k;
+
+                ExpandVector3(&undamaged, &vertex_data[j].p, -10.f, 10.f);
+                for (k = 0; k < 3; k++) {
+                    float deviation = fabsf(undamaged.v[k] - model->vertices[j].p.v[k]);
+                    float before;
+
+                    ctx->deflection += deviation;
+                    if (undamaged.v[k] == model->vertices[j].p.v[k]) {
+                        continue;
+                    }
+                    before = model->vertices[j].p.v[k];
+                    if (undamaged.v[k] < model->vertices[j].p.v[k]) {
+                        model->vertices[j].p.v[k] -= ctx->step;
+                        if (model->vertices[j].p.v[k] < undamaged.v[k]) {
+                            model->vertices[j].p.v[k] = undamaged.v[k];
+                        }
+                        ctx->repaired += before - model->vertices[j].p.v[k];
+                    } else {
+                        model->vertices[j].p.v[k] += ctx->step;
+                        if (model->vertices[j].p.v[k] > undamaged.v[k]) {
+                            model->vertices[j].p.v[k] = undamaged.v[k];
+                        }
+                        ctx->repaired += model->vertices[j].p.v[k] - before;
+                    }
+                    touched = 1;
+                }
+                if (model->vertices[j].p.v[0] == undamaged.v[0]
+                    && model->vertices[j].p.v[1] == undamaged.v[1]
+                    && model->vertices[j].p.v[2] == undamaged.v[2]) {
+                    vertex_data[j].flags &= ~0x4;
+                }
+            }
+            if (touched) {
+                SetModelForUpdate(model);
+            }
+        }
+    }
+    return 0;
+}
+
+float C2_HOOK_FASTCALL ComputeCarImpact(tCar_spec* pCar, int pDelta, float* pOut) {
+    tRepairCarContext ctx;
+
+    if (pCar == NULL || pCar->car_model_actor == NULL) {
+        if (pOut != NULL) {
+            *pOut = 0.f;
+        }
+        return 0.f;
+    }
+    ctx.car_spec = pCar;
+    ctx.step = (float)pDelta * 0.00005f;
+    ctx.repaired = 0.f;
+    ctx.deflection = 0.f;
+    DRActorEnumRecurse(pCar->car_model_actor, RepairCarCB, &ctx);
+    if (pOut != NULL) {
+        *pOut = ctx.deflection;
+    }
+    return ctx.repaired;
 }
 
 // FUNCTION: CARMA2_HW 0x0049cd90

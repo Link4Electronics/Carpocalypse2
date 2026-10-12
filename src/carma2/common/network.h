@@ -68,9 +68,9 @@ extern int C2_HOOK_FASTCALL NetJoinGameLowLevel(tNet_game_details* pGame_details
 
 extern void C2_HOOK_FASTCALL NetObtainSystemUserName(char* pName, int pMax_length);
 
-// NetExtractGameID
+extern tU32 C2_HOOK_FASTCALL NetExtractGameID(tNet_game_details* pDetails);
 
-// NetExtractPlayerID
+extern tPlayer_ID C2_HOOK_FASTCALL NetExtractPlayerID(tNet_game_details* pDetails);
 
 extern int C2_HOOK_FASTCALL NetSendMessageToAddress(tNet_game_details* pDetails, tNet_message* pMessage, void* pAddress);
 
@@ -95,6 +95,7 @@ extern tNet_message* C2_HOOK_FASTCALL NetBuildMessage(undefined pArg1, undefined
 // NetGetToPlayerContentsSize
 
 // NetGetToPlayerContents
+extern tNet_message_chunk* C2_HOOK_FASTCALL NetGetToPlayerContents(tU8 pType, int pSize_decider, tPlayer_ID pPlayer_id);
 
 // NetGetToHostContents
 

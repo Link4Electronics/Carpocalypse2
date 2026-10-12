@@ -23,6 +23,10 @@ void C2_HOOK_FASTCALL PDNetHostFinishGame(void);
 
 void C2_HOOK_FASTCALL PDNetLeaveGame(void);
 
+tU32 C2_HOOK_FASTCALL PDNetExtractGameID(tNet_game_details* pDetails);
+
+tPlayer_ID C2_HOOK_FASTCALL PDNetExtractPlayerID(tNet_game_details* pDetails);
+
 tNet_message* C2_HOOK_FASTCALL PDNetGetNextMessage(tNet_game_details* pDetails, void** gRemote_addr);
 
 int C2_HOOK_FASTCALL PDNetSendMessageToAddress(tNet_game_details* pDetails, tNet_message* pMessage, void* pAddress);

@@ -336,12 +336,6 @@ extern void C2_HOOK_FASTCALL DisposePedStuff(void);
 
 extern void C2_HOOK_FASTCALL SetDefaultPedFolderNames(void);
 
-extern void C2_HOOK_FASTCALL SetZombiePedFolderNames(void);
-
-extern void C2_HOOK_FASTCALL SetBloodPedFolderNames(void);
-
-extern void C2_HOOK_FASTCALL SetAlienPedFolderNames(void);
-
 // AddChangedPoint
 
 // GetHowMuchBloodAndSnotToSmearAbout

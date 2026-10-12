@@ -252,6 +252,10 @@ extern void C2_HOOK_FASTCALL PipeSingleSound(tS3_outlet* pOutlet, int pSound, tS
 
 // PipeSinglePowerupLose
 
+void C2_HOOK_FASTCALL ARPowerupGot(tPowerup* pPowerup, tCar_spec* pCar);
+
+void C2_HOOK_FASTCALL ARPowerupLose(tPowerup* pPowerup, tCar_spec* pCar);
+
 // PipeSingleFunkEnable
 
 // PipeSingleVanishedDismembered

@@ -664,16 +664,28 @@ static void C2_HOOK_CDECL sdlTriangleRender(brp_block* block, brp_vertex* v0, br
     int cb_row, db_row;
     int cw, ch;
     int bx, by;
-    float x0, y0, x1, y1, x2, y2;
-    float den;
+    /* Screen-space positions and the edge-function denominator are kept in
+     * double precision: for thin grazing-angle triangles (road running to the
+     * horizon, edge-on car fins) the area term is the difference of two large
+     * nearly-equal products, and float32 rounding turns it (and every
+     * barycentric weight derived from it) into garbage. Garbage UVs then hit
+     * magenta chroma-key texels and get discarded, leaving angle-dependent
+     * holes. */
+    double x0, y0, x1, y1, x2, y2;
+    double den;
     int y_start, y_end, y;
     float alpha_val;
     br_uint_32 prim_flags;
     int smooth;
     int is_2d_ui;
     /* Perspective-correct UV interpolation */
-    float u_over_z_l, v_over_z_l, inv_z_l;
-    float u_over_z_step, v_over_z_step, inv_z_step;
+    double u_over_z_l, v_over_z_l, inv_z_l;
+    double u_over_z_step, v_over_z_step, inv_z_step;
+    /* Perspective-correct depth interpolation (SZ/W and 1/W intermediates;
+     * assigned per scanline in the setup block below). */
+    double sz_over_w_l, inv_w_l, sz_over_w_step, inv_w_step;
+    double sz0, sz1, sz2;
+    int have_w;
 
     colour_pm = state->out.pixelmap;
     depth_pm = state->out.depth;
@@ -718,23 +730,23 @@ static void C2_HOOK_CDECL sdlTriangleRender(brp_block* block, brp_vertex* v0, br
     x2 = v2->comp_f[C_SX]; y2 = v2->comp_f[C_SY];
 
     den = (y1 - y2) * (x0 - x2) + (x2 - x1) * (y0 - y2);
-    if (fabsf(den) < 0.0001f) {
+    if (fabs(den) < 0.0001) {
         return;
     }
 
-    y_start = (int)ceilf(fminf(y0, fminf(y1, y2)));
-    y_end = (int)floorf(fmaxf(y0, fmaxf(y1, y2)));
+    y_start = (int)ceil(fmin(y0, fmin(y1, y2)));
+    y_end = (int)floor(fmax(y0, fmax(y1, y2)));
     if (y_start < by) y_start = by;
     if (y_end > by + ch - 1) y_end = by + ch - 1;
 
     for (y = y_start; y <= y_end; y++) {
-        float py = y + 0.5f;
-        float xa, xb;
+        double py = y + 0.5;
+        double xa, xb;
         int x_start, x_end, x;
-        float l0, l1, l2;
-        float l1_step, l2_step;
-        float z_l, u_l, v_l, r_l, g_l, b_l;
-        float z_step, u_step, v_step, r_step, g_step, b_step;
+        double l0, l1, l2;
+        double l1_step, l2_step;
+        double z_l, u_l, v_l, r_l, g_l, b_l;
+        double u_step, v_step, r_step, g_step, b_step;
         br_uint_16* drow;
         br_uint_16* crow;
 
@@ -743,22 +755,22 @@ static void C2_HOOK_CDECL sdlTriangleRender(brp_block* block, brp_vertex* v0, br
             int have = 0;
             int ei;
             for (ei = 0; ei < 3; ei++) {
-                float ex0, ey0, ex1, ey1;
+                double ex0, ey0, ex1, ey1;
                 if (ei == 0) { ex0 = x0; ey0 = y0; ex1 = x1; ey1 = y1; }
                 else if (ei == 1) { ex0 = x1; ey0 = y1; ex1 = x2; ey1 = y2; }
                 else { ex0 = x2; ey0 = y2; ex1 = x0; ey1 = y0; }
                 if ((ey0 <= py && ey1 >= py) || (ey1 <= py && ey0 >= py)) {
                     if (ey0 == ey1) {
-                        float e0 = ex0 < ex1 ? ex0 : ex1;
-                        float e1 = ex0 < ex1 ? ex1 : ex0;
+                        double e0 = ex0 < ex1 ? ex0 : ex1;
+                        double e1 = ex0 < ex1 ? ex1 : ex0;
                         if (!have) { xa = e0; xb = e1; have = 1; }
                         else {
                             if (e0 < xa) xa = e0;
                             if (e1 > xb) xb = e1;
                         }
                     } else {
-                        float t = (py - ey0) / (ey1 - ey0);
-                        float xi = ex0 + (ex1 - ex0) * t;
+                        double t = (py - ey0) / (ey1 - ey0);
+                        double xi = ex0 + (ex1 - ex0) * t;
                         if (!have) { xa = xi; xb = xi; have = 1; }
                         else {
                             if (xi < xa) xa = xi;
@@ -772,8 +784,8 @@ static void C2_HOOK_CDECL sdlTriangleRender(brp_block* block, brp_vertex* v0, br
             }
         }
 
-        x_start = (int)ceilf(xa - 0.5f);
-        x_end = (int)floorf(xb - 0.5f);
+        x_start = (int)ceil(xa - 0.5);
+        x_end = (int)floor(xb - 0.5);
         if (x_start < bx) x_start = bx;
         if (x_end > bx + cw - 1) x_end = bx + cw - 1;
         if (x_start > x_end) {
@@ -782,26 +794,49 @@ static void C2_HOOK_CDECL sdlTriangleRender(brp_block* block, brp_vertex* v0, br
 
         /* Barycentric weights at the first pixel centre; per-pixel steps */
         {
-            float px = x_start + 0.5f;
+            double px = x_start + 0.5;
             l0 = ((px - x2) * (y1 - y2) - (py - y2) * (x1 - x2)) / den;
             l1 = ((y2 - y0) * (px - x2) + (x0 - x2) * (py - y2)) / den;
-            l2 = 1.f - l0 - l1;
+            l2 = 1.0 - l0 - l1;
             l1_step = (y2 - y0) / den;
             l2_step = (y0 - y1) / den;
-            z_step = l1_step * (v1->comp_f[C_SZ] - v0->comp_f[C_SZ]) + l2_step * (v2->comp_f[C_SZ] - v0->comp_f[C_SZ]);
+            /* Depth MUST be interpolated perspective-correctly (like UVs
+             * below): C_SZ is a function of z/w, which varies hyperbolically
+             * across screen space. Affine interpolation is off by thousands
+             * of depth units on long grazing triangles (road strips to the
+             * horizon), so coplanar layers (road/ground/skids/shadow) fight
+             * and punch angle-dependent holes. Interpolate SZ/W and 1/W and
+             * divide per pixel; with constant W this reduces exactly to the
+             * old affine result, so 2D/UI is unaffected. */
+            sz0 = v0->comp_f[C_SZ];
+            sz1 = v1->comp_f[C_SZ];
+            sz2 = v2->comp_f[C_SZ];
             /* Perspective-correct UV: use C_W (clip W) for rhw = 1/W */
             /* Vertex UVs are already transformed by softrend geometry pipeline (map_transform applied in mapping.c) */
-            float u0 = v0->comp_f[C_U];
-            float u1 = v1->comp_f[C_U];
-            float u2 = v2->comp_f[C_U];
-            float v0v = v0->comp_f[C_V];
-            float v1v = v1->comp_f[C_V];
-            float v2v = v2->comp_f[C_V];
-            float w0 = v0->comp_f[C_W], w1 = v1->comp_f[C_W], w2 = v2->comp_f[C_W];
-            float rhw0 = 1.f / w0, rhw1 = 1.f / w1, rhw2 = 1.f / w2;
-            int is_2d = (fabsf(w0 - 1.0f) < 1e-3f && fabsf(w1 - 1.0f) < 1e-3f && fabsf(w2 - 1.0f) < 1e-3f);
-            int use_perspective = !is_2d && (w0 > 1e-4f) && (w1 > 1e-4f) && (w2 > 1e-4f) && 
-                                 (fabsf(w0 - w1) > 1e-4f || fabsf(w1 - w2) > 1e-4f);
+            double u0 = v0->comp_f[C_U];
+            double u1 = v1->comp_f[C_U];
+            double u2 = v2->comp_f[C_U];
+            double v0v = v0->comp_f[C_V];
+            double v1v = v1->comp_f[C_V];
+            double v2v = v2->comp_f[C_V];
+            double w0 = v0->comp_f[C_W], w1 = v1->comp_f[C_W], w2 = v2->comp_f[C_W];
+            double rhw0 = (w0 > 1e-6) ? 1.0 / w0 : 0.0;
+            double rhw1 = (w1 > 1e-6) ? 1.0 / w1 : 0.0;
+            double rhw2 = (w2 > 1e-6) ? 1.0 / w2 : 0.0;
+            /* SZ/W intermediates for perspective-correct depth. */
+            double sz_over_w0 = sz0 * rhw0, sz_over_w1 = sz1 * rhw1, sz_over_w2 = sz2 * rhw2;
+            sz_over_w_step = l1_step * (sz_over_w1 - sz_over_w0) + l2_step * (sz_over_w2 - sz_over_w0);
+            inv_w_step = l1_step * (rhw1 - rhw0) + l2_step * (rhw2 - rhw0);
+            sz_over_w_l = l0 * sz_over_w0 + l1 * sz_over_w1 + l2 * sz_over_w2;
+            inv_w_l = l0 * rhw0 + l1 * rhw1 + l2 * rhw2;
+            have_w = (rhw0 != 0.0 && rhw1 != 0.0 && rhw2 != 0.0 && inv_w_l != 0.0);
+            if (have_w)
+                z_l = sz_over_w_l / inv_w_l;
+            else
+                z_l = l0 * sz0 + l1 * sz1 + l2 * sz2;
+            int is_2d = (fabs(w0 - 1.0) < 1e-3 && fabs(w1 - 1.0) < 1e-3 && fabs(w2 - 1.0) < 1e-3);
+            int use_perspective = !is_2d && (w0 > 1e-4) && (w1 > 1e-4) && (w2 > 1e-4) &&
+                                 (fabs(w0 - w1) > 1e-4 || fabs(w1 - w2) > 1e-4);
 
 
             /* Always compute affine steps (used for affine fallback) */
@@ -810,8 +845,8 @@ static void C2_HOOK_CDECL sdlTriangleRender(brp_block* block, brp_vertex* v0, br
 
             if (use_perspective) {
                 /* Interpolate u/W, v/W, 1/W then divide per pixel */
-                float u_over_w0 = u0 * rhw0, u_over_w1 = u1 * rhw1, u_over_w2 = u2 * rhw2;
-                float v_over_w0 = v0v * rhw0, v_over_w1 = v1v * rhw1, v_over_w2 = v2v * rhw2;
+                double u_over_w0 = u0 * rhw0, u_over_w1 = u1 * rhw1, u_over_w2 = u2 * rhw2;
+                double v_over_w0 = v0v * rhw0, v_over_w1 = v1v * rhw1, v_over_w2 = v2v * rhw2;
                 u_over_z_step = l1_step * (u_over_w1 - u_over_w0) + l2_step * (u_over_w2 - u_over_w0);
                 v_over_z_step = l1_step * (v_over_w1 - v_over_w0) + l2_step * (v_over_w2 - v_over_w0);
                 inv_z_step = l1_step * (rhw1 - rhw0) + l2_step * (rhw2 - rhw0);
@@ -823,8 +858,8 @@ static void C2_HOOK_CDECL sdlTriangleRender(brp_block* block, brp_vertex* v0, br
                 v_l = v_over_z_l / inv_z_l;
             } else {
                 /* Affine fallback for flat/constant-W triangles */
-                u_over_z_step = v_over_z_step = inv_z_step = 0.f;
-                u_over_z_l = v_over_z_l = inv_z_l = 0.f;
+                u_over_z_step = v_over_z_step = inv_z_step = 0.0;
+                u_over_z_l = v_over_z_l = inv_z_l = 0.0;
                 z_l = l0 * v0->comp_f[C_SZ] + l1 * v1->comp_f[C_SZ] + l2 * v2->comp_f[C_SZ];
                 u_l = l0 * u0 + l1 * u1 + l2 * u2;
                 v_l = l0 * v0v + l1 * v1v + l2 * v2v;
@@ -848,20 +883,28 @@ static void C2_HOOK_CDECL sdlTriangleRender(brp_block* block, brp_vertex* v0, br
         drow = depth_base ? depth_base + y * db_row : NULL;
         crow = colour_base + y * cb_row;
 
-        float u_over_z = u_over_z_l;
-        float v_over_z = v_over_z_l;
-        float inv_z = inv_z_l;
-        int persp = (inv_z_l != 0.f);
+        double u_over_z = u_over_z_l;
+        double v_over_z = v_over_z_l;
+        double inv_z = inv_z_l;
+        int persp = (inv_z_l != 0.0);
+        /* Perspective-correct depth accumulators (copied out of the setup
+         * block like the UV ones above). */
+        double sz_over_w = sz_over_w_l;
+        double inv_w = inv_w_l;
+        double szw_step = sz_over_w_step;
+        double invw_step = inv_w_step;
+        int pok = have_w;
+        double aff_step = l1_step * (sz1 - sz0) + l2_step * (sz2 - sz0);
 
         for (x = x_start; x <= x_end; x++) {
             unsigned short dest;
             unsigned short dval;
-            float rr = r_l, gg = g_l, bb = b_l;
+            double rr = r_l, gg = g_l, bb = b_l;
 
             /* Perspective-correct UV per pixel */
             if (persp) {
-                float z = inv_z;
-                if (z != 0.f) {
+                double z = inv_z;
+                if (z != 0.0) {
                     u_l = u_over_z / z;
                     v_l = v_over_z / z;
                 }
@@ -869,9 +912,9 @@ static void C2_HOOK_CDECL sdlTriangleRender(brp_block* block, brp_vertex* v0, br
 
             if (drow != NULL) {
                 /* C_SZ is already in depth-buffer units (0..65534): clamp and store cleanly. */
-                if (z_l < 0.f) {
+                if (z_l < 0.0) {
                     dval = 0;
-                } else if (z_l > 65534.f) {
+                } else if (z_l > 65534.0) {
                     dval = 65534;
                 } else {
                     dval = (unsigned short)z_l;
@@ -993,10 +1036,26 @@ static void C2_HOOK_CDECL sdlTriangleRender(brp_block* block, brp_vertex* v0, br
                 }
             } else {
                 /* flat: colour comes from the constant components
-                 * (material->colour filled by softrend's surface fns) */
-                unsigned r = (unsigned)(v0->comp_i[C_R] & 0xff);
-                unsigned g = (unsigned)(v0->comp_i[C_G] & 0xff);
-                unsigned b = (unsigned)(v0->comp_i[C_B] & 0xff);
+                 * (material->colour filled by softrend's surface fns).
+                 * Non-smooth blocks carry the constant as FLOAT comps
+                 * (SurfaceColourUnlit/Lit write comp_f in 0..255); only
+                 * smooth blocks have int-converted vertex comps. Reading
+                 * comp_i for a float constant yields int-bits garbage that
+                 * changes as scratch is recycled: flashing polys. */
+                unsigned r, g, b;
+                if (smooth) {
+                    r = (unsigned)(v0->comp_i[C_R] & 0xff);
+                    g = (unsigned)(v0->comp_i[C_G] & 0xff);
+                    b = (unsigned)(v0->comp_i[C_B] & 0xff);
+                } else {
+                    float fr = v0->comp_f[C_R], fg = v0->comp_f[C_G], fb = v0->comp_f[C_B];
+                    if (fr < 0.f) fr = 0.f; else if (fr > 255.f) fr = 255.f;
+                    if (fg < 0.f) fg = 0.f; else if (fg > 255.f) fg = 255.f;
+                    if (fb < 0.f) fb = 0.f; else if (fb > 255.f) fb = 255.f;
+                    r = (unsigned)fr;
+                    g = (unsigned)fg;
+                    b = (unsigned)fb;
+                }
                 if (prim_flags & PRIMF_BLEND) {
                     unsigned short d = crow[x];
                     float sa = alpha_val;
@@ -1027,7 +1086,14 @@ static void C2_HOOK_CDECL sdlTriangleRender(brp_block* block, brp_vertex* v0, br
                 u_l += u_step;
                 v_l += v_step;
             }
-            z_l += z_step;
+            if (pok) {
+                sz_over_w += szw_step;
+                inv_w += invw_step;
+                if (inv_w != 0.0)
+                    z_l = sz_over_w / inv_w;
+            } else {
+                z_l += aff_step;
+            }
             r_l += r_step;
             g_l += g_step;
             b_l += b_step;
@@ -1061,7 +1127,16 @@ static br_error C2_HOOK_CDECL state_renderBegin(br_primitive_state_sdl* self, br
         lb = (local_block_sdl*)self->cache.last_block;
         if (lb->sig == flags) {
             *blocks = &lb->p;
-            *block_changed = 0;
+            /* MUST still report changed: softrend gates its per-group
+             * scratch allocation (temp faces/vertices/counters, sized for
+             * the current group, plus the vertex_heap_pointers memset used
+             * by bucket sharing) on block_changed. Reporting 0 reuses a
+             * previous group's scratch: out-of-bounds temp writes when the
+             * group is bigger (memory corruption, holes that move with the
+             * camera) and stale shared heap vertices (stretched triangles,
+             * wrong colours). Reusing the block object itself is still fine
+             * (no leak); only the refresh signal matters. */
+            *block_changed = 1;
             (void)no_render;
             return 0;
         }

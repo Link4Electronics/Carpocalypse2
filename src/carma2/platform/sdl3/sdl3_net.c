@@ -215,6 +215,17 @@ void PDNetLeaveGame(void) {
     dr_dprintf("PDNetLeaveGame()");
 }
 
+tU32 PDNetExtractGameID(tNet_game_details* pDetails) {
+
+    return pDetails->host_ID;
+}
+
+tPlayer_ID PDNetExtractPlayerID(tNet_game_details* pDetails) {
+
+    (void)pDetails;
+    return gLocal_net_ID;
+}
+
 void MakeMessageToSend(int pMessage_type) {
     sprintf(gSend_buffer, "XXXX%s%.1d", BROADCAST_HEADER, pMessage_type);
 }

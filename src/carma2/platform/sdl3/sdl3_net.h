@@ -15,6 +15,10 @@ extern void PDNetHostFinishGame(void);
 
 extern void PDNetLeaveGame(void);
 
+extern tU32 PDNetExtractGameID(tNet_game_details* pDetails);
+
+extern tPlayer_ID PDNetExtractPlayerID(tNet_game_details* pDetails);
+
 extern void MakeMessageToSend(int pMessage_type);
 
 extern int ReceiveHostResponses(void);

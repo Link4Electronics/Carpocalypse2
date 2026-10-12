@@ -1025,8 +1025,16 @@ void C2_HOOK_FASTCALL NetObtainSystemUserName(char* pName, int pMax_length) {
 }
 
 // NetExtractGameID
+tU32 C2_HOOK_FASTCALL NetExtractGameID(tNet_game_details* pDetails) {
+
+    return PDNetExtractGameID(pDetails);
+}
 
 // NetExtractPlayerID
+tPlayer_ID C2_HOOK_FASTCALL NetExtractPlayerID(tNet_game_details* pDetails) {
+
+    return PDNetExtractPlayerID(pDetails);
+}
 
 // FUNCTION: CARMA2_HW 0x0049ee50
 int C2_HOOK_FASTCALL NetSendMessageToAddress(tNet_game_details* pDetails, tNet_message* pMessage, void* pAddress) {
@@ -1207,7 +1215,67 @@ tNet_message* C2_HOOK_FASTCALL NetBuildMessage(undefined pArg1, undefined4 pArg2
 
 // NetGetToPlayerContentsSize
 
-// NetGetToPlayerContents
+// FUNCTION: CARMA2_HW 0x0049f6f0
+tNet_message_chunk* C2_HOOK_FASTCALL NetGetToPlayerContents(tU8 pType, int pSize_decider, tPlayer_ID pPlayer_id) {
+    int i;
+    int chunk_size;
+    int offset;
+    tNet_message* message;
+    tNet_message_chunk* chunk;
+    tNet_game_player_info* player;
+
+    chunk_size = NetGetContentsSize(pType, pSize_decider);
+    i = 0;
+    if (gNumber_of_net_players <= 0) {
+        return NULL;
+    }
+    for (; i < gNumber_of_net_players; i++) {
+        if (gNet_players[i].ID == pPlayer_id) {
+            goto found_player;
+        }
+    }
+    return NULL;
+
+found_player:
+    player = &gNet_players[i];
+    if (player == &gNet_players[gThis_net_player_index]) {
+        PDFatalError("Trying to send network message to self");
+    }
+    message = player->field_0xcc;
+    if (message != NULL && message->header.field_0x16 + chunk_size > 0x200) {
+        tPlayer_ID player_id = player->ID;
+        tNet_game_details* game = gCurrent_net_game;
+
+        if (gNet_mode != eNet_mode_none) {
+            message->header.field_0x8 = gLocal_net_ID;
+            message->header.field_0x10 = PDGetTotalTime();
+            for (i = 0; i < gNumber_of_net_players; i++) {
+                if (gNet_players[i].ID == player_id) {
+                    goto send_message;
+                }
+            }
+            goto clear_message;
+
+send_message:
+            PDNetSendMessageToAddress(game, message, &gNet_players[i]);
+        }
+clear_message:
+        player->field_0xcc = message = NULL;
+    }
+    if (message == NULL) {
+        message = NetAllocateMessage(0x200);
+        player->field_0xcc = message;
+        message->header.field_0x16 = (tU16)sizeof(tNet_message_header);
+        message->header.field_0x14 = 0;
+    }
+    offset = message->header.field_0x16;
+    chunk = (tNet_message_chunk*)((tU8*)message + offset);
+    message->header.field_0x16 += (tU16)chunk_size;
+    message->header.field_0x14 += 1;
+    chunk->raw.header.type = pType;
+    chunk->raw.header.size = (tU8)chunk_size;
+    return chunk;
+}
 
 // NetGetToHostContents
 
