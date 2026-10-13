@@ -124,7 +124,7 @@ extern int gUNK_006793d0;
 
 // LimitOmega
 
-// CapOmega
+void C2_HOOK_FASTCALL CapOmega(tPhysics_object* pObject);
 
 // ListLimitOmega
 
@@ -194,7 +194,7 @@ extern int gUNK_006793d0;
 
 // FillInTrialWorkspace
 
-// FlagsAreGo
+int C2_HOOK_FASTCALL FlagsAreGo(tPhysics_object* pObj1, tPhysics_object* pObj2);
 
 // CollideObjectWithReducedObjectList
 
@@ -415,6 +415,8 @@ extern void C2_HOOK_FASTCALL InitPhysics(void);
 
 extern tPhysicsError_cbfn* gPhysics_error_cb;
 
+extern void* gPhysics_scratch_ptr;
+
 extern void* gPhysics_buffer1_ptr;
 
 extern void* gPhysics_buffer2_ptr;
@@ -473,7 +475,7 @@ int C2_HOOK_FASTCALL PHILInit(void);
 
 void C2_HOOK_FASTCALL PHILDisable(void);
 
-tCollision_shape_box* C2_HOOK_FASTCALL AllocateBoxCollisionShape(br_uint_8 pType);
+tCollision_shape_box* C2_HOOK_FASTCALL AllocateBoxCollisionShape(int pType);
 
 tCollision_shape_sphere* C2_HOOK_FASTCALL AllocateShapeSphere(int pType);
 
@@ -526,6 +528,14 @@ void C2_HOOK_FASTCALL AddCollisionInfoChild(tPhysics_object* pParent, tPhysics_o
 int C2_HOOK_FASTCALL PhysicsObjectRecurse(tPhysics_object* pCollision_info, tEnumCollision_cbfn* pCallback, void* pUser_data);
 
 int C2_HOOK_FASTCALL TestForObjectInSensiblePlace(tPhysics_object* pCollision_info_1, tPhysics_object* pCollision_info_2, br_vector3* pVec3, tWorld_callbacks* pCar_callbacks);
+
+int C2_HOOK_FASTCALL TestShapeOverlap(tPhysics_object* pObjA, tPhysics_object* pObjB, tPhysics_shape* pShapeA, tPhysics_shape* pShapeB);
+
+int C2_HOOK_FASTCALL TestPairOverlap(tPhysics_object* pObj1, tPhysics_object* pObj2);
+
+int C2_HOOK_FASTCALL CullPlacementFaces(tPhysics_object* pObject, tPhysics_shape* pShape, br_matrix34* pMat);
+
+int C2_HOOK_FASTCALL CollectPlacementFaces(tPhysics_object* pObject, tPlacement_face_buf* pBuf, int pFlags);
 
 tPhysics_object* C2_HOOK_FAKE_THISCALL MungeBoxObject(br_model* pModel, undefined4 pArg2, float pMass);
 
@@ -612,7 +622,7 @@ void C2_HOOK_FASTCALL ClearPhysicsScratchSpace(void);
 
 void C2_HOOK_FASTCALL PhysicsWarning(const char* pMessage);
 
-void C2_HOOK_FASTCALL AddDoubleTorqueToMatrix(tPhysics_object* pObject);
+int C2_HOOK_FASTCALL AddDoubleTorqueToMatrix(tPhysics_object* pObject);
 
 void C2_HOOK_FASTCALL DRMatrix33Inverse(tPhysics_object* pObject, int pFlag);
 

@@ -76,6 +76,21 @@ typedef void C2_HOOK_FASTCALL tPeriodic_proc(tPowerup*, tU32);
 typedef void C2_HOOK_FASTCALL tForEachPedestrian_cbfn(tPedestrian*, tCar_spec*, float, tU32, tPedestrian_distances*);
 typedef void C2_HOOK_FASTCALL material_cbfn(br_material*);
 typedef int C2_HOOK_FASTCALL tMaterialMaybeUpdate_cbfn(br_material*);
+typedef int C2_HOOK_FASTCALL tModelUpdate_cbfn(br_model*);
+
+/* Scratch layout used by the sensible-place face collector: seed normal at
+   +0x2c, further normals at +0x8c in 0x60 strides (matches CARMA2_HW). */
+typedef struct {
+    br_vector3 normal;
+    undefined field_0xc[0x54];
+} tPlacement_face_record;
+
+typedef struct {
+    undefined field_0x0[0x2c];
+    br_vector3 seed;
+    undefined field_0x38[0x54];
+    tPlacement_face_record records[];
+} tPlacement_face_buf;
 typedef int C2_HOOK_FASTCALL tEnumCollision_cbfn(tPhysics_object* pCollision_info, void* pUser_data);
 typedef void C2_HOOK_FASTCALL tAddToJoinListProc(tNet_game_details*);
 typedef int C2_HOOK_FASTCALL tARScanBuffer_callback(tPipe_chunk*, int, tU32);

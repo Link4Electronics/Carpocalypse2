@@ -357,8 +357,34 @@ void C2_HOOK_FASTCALL NewDroneState(tDrone_spec* pDrone_spec, int pNew_state) {
 
 // FUNCTION: CARMA2_HW 0x00428d40
 int C2_HOOK_FASTCALL TestObjectOverlap(tPhysics_object* pCollision_1, tPhysics_object* pCollision_2) {
+    tPhysics_shape* shape1;
+    tPhysics_shape* shape2;
 
-    NOT_IMPLEMENTED();
+    shape1 = pCollision_1->shape;
+    shape2 = pCollision_2->shape;
+    if (!FlagsAreGo(pCollision_1, pCollision_2)) {
+        return 0;
+    }
+    if (!BoundsOverlapTest__finteray(&pCollision_2->field_0xf4, &pCollision_1->field_0xf4)) {
+        return 0;
+    }
+    if (shape1 == NULL) {
+        return 0;
+    }
+    /* NOTE: the original only ever exercises the first shape1 here (it never
+       reloads shape2 after advancing shape1); shape chains are single-element
+       in practice, where this nested form is identical. */
+    for (; shape1 != NULL; shape1 = shape1->common.next) {
+        for (; shape2 != NULL; shape2 = shape2->common.next) {
+            if (TestShapeOverlap(pCollision_1, pCollision_2, shape1, shape2)) {
+                return 1;
+            }
+            if (TestShapeOverlap(pCollision_2, pCollision_1, shape2, shape1)) {
+                return 1;
+            }
+        }
+    }
+    return 0;
 }
 
 int C2_HOOK_FASTCALL DroneHasCollided(tDrone_spec* pDrone_spec) {

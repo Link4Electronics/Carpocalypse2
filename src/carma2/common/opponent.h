@@ -42,7 +42,7 @@ extern int gMaxTimeOpponentRepair;
 
 // TopUpRandomRoute
 
-// SearchForSection
+int C2_HOOK_FASTCALL SearchForSection(tRoute_section* pTemp_store, tRoute_section* pPerm_store, int* pNum_of_perm_store_sections, tS16 pTarget_section, int pDepth, br_scalar pDistance_so_far, tOpponent_spec* pOpponent_spec);
 
 // UpdatePlayersSection
 

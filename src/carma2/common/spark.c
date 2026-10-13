@@ -20,6 +20,10 @@
 #include "c2_string.h"
 #include "spark.h"
 
+#include "funks.h"
+
+extern tCar_spec* gRecalc_mass_car;
+
 #define CHARS1_TO_INT(A)            ((A) - '0')
 #define CHARS2_TO_INT(A, B)         (10 * CHARS1_TO_INT(A) + CHARS1_TO_INT(B))
 #define CHARS3_TO_INT(A, B, C)      (10 * CHARS2_TO_INT(A, B) + CHARS1_TO_INT(C))
@@ -406,10 +410,238 @@ void C2_HOOK_FASTCALL LoadInKevStuff(FILE* pF) {
     PackFileRerevertTiffLoading();
 }
 
+// UNLABELED: CARMA2_HW 0x004fc2e0
+void C2_HOOK_FASTCALL DisposeFlames(void) {
+    int i;
+    int j;
+    br_actor* child;
+
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gFlame_map); i++) {
+        BrMapRemove(gFlame_map[i]);
+        BrPixelmapFree(gFlame_map[i]);
+    }
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gSmoke_column); i++) {
+        if ((gColumn_flags & (1 << i)) != 0 && gSmoke_column[i].colour == 0) {
+            BrActorRemove(gSmoke_column[i].flame_actor);
+        }
+        child = gSmoke_column[i].flame_actor->children;
+        for (j = 0; j < 3; j++) {
+            BrMaterialRemove(child->material);
+            BrMaterialFree(child->material);
+            child = child->next;
+        }
+        BrActorFree(gSmoke_column[i].flame_actor);
+    }
+    BrModelRemove(gLollipop_model);
+    BrModelFree(gLollipop_model);
+}
+
 // FUNCTION: CARMA2_HW 0x004fe180
 void C2_HOOK_FASTCALL DisposeKevStuff(void) {
+    int i;
 
-    NOT_IMPLEMENTED();
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gShrapnel); i++) {
+        if ((gShrapnel_flags & (1 << i)) != 0 && gShrapnel[i].actor->parent != NULL) {
+            BrActorRemove(gShrapnel[i].actor);
+        }
+        BrActorFree(gShrapnel[i].actor);
+    }
+    BrModelRemove(gShrapnel_model[0]);
+    BrModelRemove(gShrapnel_model[1]);
+    BrModelFree(gShrapnel_model[0]);
+    BrModelFree(gShrapnel_model[1]);
+    DisposeFlames();
+    for (i = 0; i < gNum_splash_types; i++) {
+        BrMapRemove(gSplash_material[i]->colour_map);
+        BrPixelmapFree(gSplash_material[i]->colour_map);
+        BrMaterialRemove(gSplash_material[i]);
+        BrMaterialFree(gSplash_material[i]);
+    }
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gSplash); i++) {
+        if ((gSplash_flags & (1 << i)) != 0 && gSplash[i].actor->parent != NULL) {
+            BrActorRemove(gSplash[i].actor);
+        }
+        BrActorFree(gSplash[i].actor);
+    }
+    BrModelRemove(gSplash_model);
+    BrModelFree(gSplash_model);
+}
+
+// UNLABELED: CARMA2_HW 0x004f9180
+void C2_HOOK_CDECL AFEModelUpdate(br_actor* pActor, br_model* pModel, br_material* pMaterial, void* pOrder_table, br_uint_8 pStyle, int pOn_screen) {
+    int i;
+    int j;
+    int time;
+    int fade;
+    v11model* prepared;
+    v11group* group;
+    br_vertex* vertex;
+
+    if (gAFE_color_cycle) {
+        time = (int)GetTotalTime() >> 1;
+        if (pModel != NULL) {
+            prepared = pModel->prepared;
+            if (prepared->ngroups != 0) {
+                for (i = 0; i < prepared->ngroups; i++) {
+                    group = &prepared->groups[i];
+                    for (j = 0; j < group->nvertices; j++) {
+                        vertex = &pModel->vertices[group->vertex_user[j]];
+                        if (vertex == NULL) {
+                            continue;
+                        }
+                        fade = time & 0x3fff;
+                        if (fade >= 0x100) {
+                            fade = 0x3ff - fade;
+                        }
+                        vertex->red = (br_uint_8)fade;
+                        fade = (time + 0x100) & 0x3ff;
+                        if (fade >= 0x100) {
+                            fade = 0x3ff - fade;
+                        }
+                        vertex->grn = (br_uint_8)fade;
+                        fade = (time - 0x200) & 0x3ff;
+                        if (fade >= 0x100) {
+                            fade = 0x3ff - fade;
+                        }
+                        vertex->blu = (br_uint_8)fade;
+                    }
+                }
+            }
+            if (pModel->flags & BR_MODF_UPDATEABLE) {
+                BrModelUpdate(pModel, BR_MODU_VERTICES);
+            }
+        }
+    }
+    BrZsModelRender(pActor, pModel, pMaterial, pOrder_table, pStyle, BrOnScreenCheck(&pModel->bounds), 0);
+}
+
+// UNLABELED: CARMA2_HW 0x004f95e0
+int C2_HOOK_FASTCALL SetModelAFEUpdateCB(br_model* pModel) {
+
+    pModel->flags |= BR_MODF_CUSTOM;
+    pModel->custom = AFEModelUpdate;
+    return 1;
+}
+
+// UNLABELED: CARMA2_HW 0x004f9600
+int C2_HOOK_FASTCALL SetMaterialPrelitCB(br_material* pMaterial) {
+
+    if (pMaterial->flags & BR_MATF_PRELIT) {
+        return 0;
+    }
+    pMaterial->flags |= BR_MATF_PRELIT;
+    BrMaterialUpdate(pMaterial, BR_MATU_RENDERING | BR_MATU_LIGHTING);
+    return 1;
+}
+
+// UNLABELED: CARMA2_HW 0x004fec30
+intptr_t C2_HOOK_CDECL ForEveryActorModelNoGrooves(br_actor* pActor, void* pContext) {
+    tUser_crush_data* user_crush_data;
+    tModelUpdate_cbfn* callback;
+
+    callback = pContext;
+    if (pActor->type != BR_ACTOR_MODEL) {
+        return 0;
+    }
+    if (pActor->model == NULL) {
+        return 0;
+    }
+    user_crush_data = pActor->user;
+    if (user_crush_data == NULL) {
+        return 0;
+    }
+    if (user_crush_data->groove != NULL) {
+        return 0;
+    }
+    callback(pActor->model);
+    return 0;
+}
+
+// FUNCTION: CARMA2_HW 0x004fe360
+void C2_HOOK_FASTCALL DisposeKevStuffCar(tCar_spec* pCar) {
+    int i;
+    int j;
+    tCar_crush_spec* spec;
+    br_actor* actor;
+    br_model* model;
+    tUser_crush_data* user;
+    tCar_crush_buffer_entry* crush;
+    br_material* solid_mat;
+
+    if (!gAFE) {
+        return;
+    }
+    spec = pCar->car_crush_spec;
+    DRActorEnumRecurse(pCar->car_model_actor, ActorFunks, (void*)MasterDisableFunkotronic);
+    for (i = 0; i < spec->field_0x270; i++) {
+        actor = spec->field_0x274[i].field_0x0;
+        user = (tUser_crush_data*)actor->user;
+        if (user == NULL) {
+            continue;
+        }
+        crush = user->crush_data;
+        if (crush == NULL) {
+            continue;
+        }
+        if (crush->smashables == NULL) {
+            continue;
+        }
+        for (j = 0; j < crush->count_smashables; j++) {
+            int funk_index = crush->smashables[j].funk;
+            if (funk_index >= 0) {
+                MasterDisableFunkotronic(funk_index);
+            }
+        }
+    }
+    for (i = 0; i < spec->field_0x2b0; i++) {
+        actor = spec->field_0x2b4[i].field_0x0;
+        user = (tUser_crush_data*)actor->user;
+        if (user == NULL) {
+            continue;
+        }
+        crush = user->crush_data;
+        if (crush == NULL) {
+            continue;
+        }
+        if (crush->smashables == NULL) {
+            continue;
+        }
+        for (j = 0; j < crush->count_smashables; j++) {
+            int funk_index = crush->smashables[j].funk;
+            if (funk_index >= 0) {
+                MasterDisableFunkotronic(funk_index);
+            }
+        }
+    }
+    solid_mat = BrMaterialFind("solidgrn");
+    if (solid_mat == NULL) {
+        return;
+    }
+    if (solid_mat->colour_map == NULL) {
+        return;
+    }
+    gRecalc_mass_car = pCar;
+    pCar->field_0x1960 = solid_mat->colour_map;
+    ForEveryCarMaterial(pCar, SetMaterialPrelitCB, 1);
+    pCar->shell_model->custom = AFEModelUpdate;
+    pCar->shell_model->flags |= BR_MODF_CUSTOM;
+    user = (tUser_crush_data*)pCar->car_model_actor->user;
+    model = user->models[1];
+    if (model != NULL) {
+        model->flags |= BR_MODF_CUSTOM;
+        model->custom = AFEModelUpdate;
+    }
+    DRActorEnumRecurse(pCar->car_model_actor, ForEveryActorModelNoGrooves, (void*)SetModelAFEUpdateCB);
+    for (i = 0; i < spec->field_0x270; i++) {
+        model = spec->field_0x274[i].field_0x0->model;
+        model->flags |= BR_MODF_CUSTOM;
+        model->custom = AFEModelUpdate;
+    }
+    for (i = 0; i < spec->field_0x2b0; i++) {
+        model = spec->field_0x2b4[i].field_0x0->model;
+        model->flags |= BR_MODF_CUSTOM;
+        model->custom = AFEModelUpdate;
+    }
 }
 
 // FUNCTION: CARMA2_HW 0x004fe570
@@ -1973,109 +2205,114 @@ void C2_HOOK_FASTCALL RenderSmoke(br_pixelmap* pRender_screen, br_pixelmap* pDep
 
 // FUNCTION: CARMA2_HW 0x004f8dc0
 intptr_t C2_HOOK_CDECL ActorFunks(br_actor* pActor, void* pCallback);
-void C2_HOOK_FASTCALL MasterDisableFunkotronic(int pFunk_index);
-void C2_HOOK_FASTCALL MasterEnableFunkotronic(int pFunk_index);
 
-// STUB: CARMA2_HW 0x004f8ca0
+// FUNCTION: CARMA2_HW 0x004f8ca0
 void C2_HOOK_FASTCALL MasterDisableCarFunks(tCar_spec* pCar) {
 #ifndef CARPOCALYPSE2_MATCHING
     /* stub: no-op for Linux boot */
 #else
     int i;
     int j;
-    int funk_index;
-    tCarFunks_master* funks = (tCarFunks_master*)*(void**)((char*)pCar + 0x18d4);
-    br_actor* hierarchy_root = *(br_actor**)((char*)pCar + 0xe0c);
+    tCar_crush_spec* spec = pCar->car_crush_spec;
+    br_actor* actor;
+    tUser_crush_data* user;
+    tCar_crush_buffer_entry* crush;
 
-    DRActorEnumRecurse(hierarchy_root, (br_actor_enum_cbfn*)ActorFunks, (void*)MasterDisableFunkotronic);
-
-    for (i = 0; i < funks->count_0x270; i++) {
-        br_actor* bit_actor = funks->bit_0x274[i].field_0x0;
-
-        if (bit_actor->user != NULL) {
-            tFunk_list* funk_list = ((tFunk_container*)bit_actor->user)->funk_list;
-
-            if (funk_list != NULL) {
-                if (funk_list->funk_records != NULL) {
-                    for (j = 0; j < funk_list->funk_count; j++) {
-                        funk_index = funk_list->funk_records[j].funk_index;
-                        if (funk_index >= 0) {
-                            MasterDisableFunkotronic(funk_index);
-                        }
-                    }
-                }
+    DRActorEnumRecurse(pCar->car_model_actor, ActorFunks, (void*)MasterDisableFunkotronic);
+    for (i = 0; i < spec->field_0x270; i++) {
+        actor = spec->field_0x274[i].field_0x0;
+        user = (tUser_crush_data*)actor->user;
+        if (user == NULL) {
+            continue;
+        }
+        crush = user->crush_data;
+        if (crush == NULL) {
+            continue;
+        }
+        if (crush->smashables == NULL) {
+            continue;
+        }
+        for (j = 0; j < crush->count_smashables; j++) {
+            int funk_index = crush->smashables[j].funk;
+            if (funk_index >= 0) {
+                MasterDisableFunkotronic(funk_index);
             }
         }
     }
-
-    for (i = 0; i < funks->count_0x2b0; i++) {
-        br_actor* bit_actor = funks->bit_0x2b4[i].field_0x0;
-
-        if (bit_actor->user != NULL) {
-            tFunk_list* funk_list = ((tFunk_container*)bit_actor->user)->funk_list;
-
-            if (funk_list != NULL) {
-                if (funk_list->funk_records != NULL) {
-                    for (j = 0; j < funk_list->funk_count; j++) {
-                        funk_index = funk_list->funk_records[j].funk_index;
-                        if (funk_index >= 0) {
-                            MasterDisableFunkotronic(funk_index);
-                        }
-                    }
-                }
+    for (i = 0; i < spec->field_0x2b0; i++) {
+        actor = spec->field_0x2b4[i].field_0x0;
+        user = (tUser_crush_data*)actor->user;
+        if (user == NULL) {
+            continue;
+        }
+        crush = user->crush_data;
+        if (crush == NULL) {
+            continue;
+        }
+        if (crush->smashables == NULL) {
+            continue;
+        }
+        for (j = 0; j < crush->count_smashables; j++) {
+            int funk_index = crush->smashables[j].funk;
+            if (funk_index >= 0) {
+                MasterDisableFunkotronic(funk_index);
             }
         }
     }
 #endif
 }
 
-// STUB: CARMA2_HW 0x004f8e10
+// FUNCTION: CARMA2_HW 0x004f8e10
 void C2_HOOK_FASTCALL MasterEnableCarFunks(tCar_spec* pCar) {
 #ifndef CARPOCALYPSE2_MATCHING
     /* stub: no-op for Linux boot */
 #else
     int i;
     int j;
-    int funk_index;
-    tCarFunks_master* funks = (tCarFunks_master*)*(void**)((char*)pCar + 0x18d4);
-    br_actor* hierarchy_root = *(br_actor**)((char*)pCar + 0xe0c);
+    tCar_crush_spec* spec = pCar->car_crush_spec;
+    br_actor* actor;
+    tUser_crush_data* user;
+    tCar_crush_buffer_entry* crush;
 
-    DRActorEnumRecurse(hierarchy_root, (br_actor_enum_cbfn*)ActorFunks, (void*)MasterEnableFunkotronic);
-
-    for (i = 0; i < funks->count_0x270; i++) {
-        br_actor* bit_actor = funks->bit_0x274[i].field_0x0;
-
-        if (bit_actor->user != NULL) {
-            tFunk_list* funk_list = ((tFunk_container*)bit_actor->user)->funk_list;
-
-            if (funk_list != NULL) {
-                if (funk_list->funk_records != NULL) {
-                    for (j = 0; j < funk_list->funk_count; j++) {
-                        funk_index = funk_list->funk_records[j].funk_index;
-                        if (funk_index >= 0) {
-                            MasterEnableFunkotronic(funk_index);
-                        }
-                    }
-                }
+    DRActorEnumRecurse(pCar->car_model_actor, ActorFunks, (void*)MasterEnableFunkotronic);
+    for (i = 0; i < spec->field_0x270; i++) {
+        actor = spec->field_0x274[i].field_0x0;
+        user = (tUser_crush_data*)actor->user;
+        if (user == NULL) {
+            continue;
+        }
+        crush = user->crush_data;
+        if (crush == NULL) {
+            continue;
+        }
+        if (crush->smashables == NULL) {
+            continue;
+        }
+        for (j = 0; j < crush->count_smashables; j++) {
+            int funk_index = crush->smashables[j].funk;
+            if (funk_index >= 0) {
+                MasterEnableFunkotronic(funk_index);
             }
         }
     }
 
-    for (i = 0; i < funks->count_0x2b0; i++) {
-        br_actor* bit_actor = funks->bit_0x2b4[i].field_0x0;
-
-        if (bit_actor->user != NULL) {
-            tFunk_list* funk_list = ((tFunk_container*)bit_actor->user)->funk_list;
-
-            if (funk_list != NULL) {
-                if (funk_list->funk_records != NULL) {
-                    for (j = 0; j < funk_list->funk_count; j++) {
-                        funk_index = funk_list->funk_records[j].funk_index;
-                        if (funk_index >= 0) {
-                            MasterEnableFunkotronic(funk_index);
-                        }
-                    }
-                }
+    for (i = 0; i < spec->field_0x2b0; i++) {
+        actor = spec->field_0x2b4[i].field_0x0;
+        user = (tUser_crush_data*)actor->user;
+        if (user == NULL) {
+            continue;
+        }
+        crush = user->crush_data;
+        if (crush == NULL) {
+            continue;
+        }
+        if (crush->smashables == NULL) {
+            continue;
+        }
+        for (j = 0; j < crush->count_smashables; j++) {
+            int funk_index = crush->smashables[j].funk;
+            if (funk_index >= 0) {
+                MasterEnableFunkotronic(funk_index);
             }
         }
     }

@@ -1059,10 +1059,15 @@ void C2_HOOK_FASTCALL ResetCarSpecialVolume(tPhysics_object* pCollision_info) {
 
 // FUNCTION: CARMA2_HW 0x004175e0
 void C2_HOOK_FAKE_THISCALL ControlCar4(tCar_spec* c, undefined4 pArg2, br_scalar dt) {
+    unsigned int input;
+    int left;
+    int right;
 
     CARPOCALYPSE2_THISCALL_UNUSED(pArg2);
 
-    if (c->keys.left) {
+    input = *(unsigned int*)&c->keys;
+    left = input & 0x10000;
+    if (left) {
         if (c->turn_speed < 0.f) {
             c->turn_speed = 0.f;
         }
@@ -1077,7 +1082,8 @@ void C2_HOOK_FAKE_THISCALL ControlCar4(tCar_spec* c, undefined4 pArg2, br_scalar
             }
         }
     }
-    if (c->keys.right) {
+    right = input & 0x20000;
+    if (right) {
         if (c->turn_speed > 0.f) {
             c->turn_speed = 0.f;
         }
@@ -1092,7 +1098,7 @@ void C2_HOOK_FAKE_THISCALL ControlCar4(tCar_spec* c, undefined4 pArg2, br_scalar
             }
         }
     }
-    if (!c->keys.left && !c->keys.right) {
+    if (!left && !right) {
         c->turn_speed = 0.f;
     } else if (fabsf(c->turn_speed) < fabsf(2.f * dt * c->curvature) && c->curvature * c->turn_speed < 0.f) {
         c->turn_speed = -(2.f * dt * c->curvature);
@@ -2334,68 +2340,81 @@ void C2_HOOK_FAKE_THISCALL ControlCar3(tCar_spec* c, undefined4 arg2, br_scalar 
 // FUNCTION: CARMA2_HW 0x00417a20
 void C2_HOOK_FAKE_THISCALL ControlCar5(tCar_spec* c, undefined4 arg2, br_scalar dt) {
     unsigned int input;
-    br_scalar mag;
+    int left;
+    int right;
 
     CARPOCALYPSE2_THISCALL_UNUSED(arg2);
 
     input = *(unsigned int*)&c->keys;
     c->acc_force = 0.0f;
 
-    if (c->keys.acc) {
+    if (input & 0x40000) {
         c->acc_force = c->collision_info->M * 7.0f;
     }
-    if (c->keys.dec) {
+    if (input & 0x80000) {
         c->acc_force = -(c->collision_info->M * 7.0f);
     }
 
-    if (c->keys.left) {
-        if (c->turn_speed < 0.0f) {
+    left = input & 0x10000;
+    if (left) {
+        if (!(c->turn_speed >= 0.0f)) {
             c->turn_speed = 0.0f;
         }
         if (c->curvature < 0.0f) {
-            c->turn_speed += dt * 0.0625;
+            c->turn_speed -= dt * -0.0625;
         } else {
+            float mag;
+            float q = dt * 25.0f;
             mag = sqrtf(c->collision_info->v.v[0] * c->collision_info->v.v[0]
                       + c->collision_info->v.v[1] * c->collision_info->v.v[1]
                       + c->collision_info->v.v[2] * c->collision_info->v.v[2]);
-            c->turn_speed += 25.0f * dt * (0.05f / (mag + 5.0f)) * 0.25f;
+            c->turn_speed -= q * (0.05f / (mag + 5.0f)) * -0.5f * 0.5;
         }
     }
 
-    if (c->keys.right) {
+    right = input & 0x20000;
+    if (right) {
         if (c->turn_speed > 0.0f) {
             c->turn_speed = 0.0f;
         }
         if (c->curvature > 0.0f) {
             c->turn_speed -= dt * 0.0625;
         } else {
+            float mag;
+            float q = dt * 25.0f;
             mag = sqrtf(c->collision_info->v.v[0] * c->collision_info->v.v[0]
                       + c->collision_info->v.v[1] * c->collision_info->v.v[1]
                       + c->collision_info->v.v[2] * c->collision_info->v.v[2]);
-            c->turn_speed -= 25.0f * dt * (0.05f / (mag + 5.0f)) * 0.25f;
+            c->turn_speed -= q * (0.05f / (mag + 5.0f)) * 0.5f * 0.5;
         }
     }
 
-    if (!c->keys.left && !c->keys.right) {
+    if (!left && !right) {
         c->turn_speed = 0.0f;
         if (c->curvature < 0.0f) {
-            if (!c->keys.holdw) {
+            if (!(input & 0x800000)) {
+                float mag;
+                float q = dt * 25.0f;
                 mag = sqrtf(c->collision_info->v.v[0] * c->collision_info->v.v[0]
                           + c->collision_info->v.v[1] * c->collision_info->v.v[1]
                           + c->collision_info->v.v[2] * c->collision_info->v.v[2]);
-                c->curvature += 25.0f * dt * (0.05f / (mag + 5.0f)) * 2.0f;
+                c->curvature -= q * (0.05f / (mag + 5.0f)) * -0.5f * 4.0;
                 if (c->curvature > 0.0f) {
                     c->curvature = 0.0f;
                 }
             }
         } else {
-            if (!c->keys.holdw) {
-                mag = sqrtf(c->collision_info->v.v[0] * c->collision_info->v.v[0]
-                          + c->collision_info->v.v[1] * c->collision_info->v.v[1]
-                          + c->collision_info->v.v[2] * c->collision_info->v.v[2]);
-                c->curvature -= 25.0f * dt * (0.05f / (mag + 5.0f)) * 2.0f;
-                if (c->curvature < 0.0f) {
-                    c->curvature = 0.0f;
+            if (c->curvature > 0.0f) {
+                if (!(input & 0x800000)) {
+                    float mag;
+                    float q = dt * 25.0f;
+                    mag = sqrtf(c->collision_info->v.v[0] * c->collision_info->v.v[0]
+                              + c->collision_info->v.v[1] * c->collision_info->v.v[1]
+                              + c->collision_info->v.v[2] * c->collision_info->v.v[2]);
+                    c->curvature -= q * (0.05f / (mag + 5.0f)) * 0.5f * 4.0;
+                    if (!(c->curvature >= 0.0f)) {
+                        c->curvature = 0.0f;
+                    }
                 }
             }
         }
@@ -2497,7 +2516,7 @@ void C2_HOOK_FASTCALL RecalculateCarMassMomentOfInertia(tCar_spec* car) {
         for (j = 0; j < crush->count_smashables; j++) {
             int funk_index = crush->smashables[j].funk;
             if (funk_index >= 0) {
-                gFunkotronics_array[funk_index].flags |= 0x2;
+                MasterDisableFunkotronic(funk_index);
             }
         }
     }
@@ -2517,7 +2536,7 @@ void C2_HOOK_FASTCALL RecalculateCarMassMomentOfInertia(tCar_spec* car) {
         for (j = 0; j < crush->count_smashables; j++) {
             int funk_index = crush->smashables[j].funk;
             if (funk_index >= 0) {
-                gFunkotronics_array[funk_index].flags |= 0x2;
+                MasterDisableFunkotronic(funk_index);
             }
         }
     }
@@ -2529,6 +2548,7 @@ void C2_HOOK_FASTCALL RecalculateCarMassMomentOfInertia(tCar_spec* car) {
     }
 }
 
+#pragma auto_inline(off)
 // FUNCTION: CARMA2_HW 0x0047b2b0
 void C2_HOOK_FASTCALL MasterDisableFunkotronic(int pFunk_index) {
 
@@ -2540,6 +2560,7 @@ void C2_HOOK_FASTCALL MasterEnableFunkotronic(int pFunk_index) {
 
     gFunkotronics_array[pFunk_index].flags &= ~0x2;
 }
+#pragma auto_inline(on)
 
 // FUNCTION: CARMA2_HW 0x004f9760
 int C2_HOOK_FASTCALL RestorePixelmap(br_material* pMaterial) {
