@@ -27,6 +27,8 @@
 #include <stdarg.h>
 #include "c2_math.h"
 
+#include <float.h>
+
 #define CAR_SPEC_IS_ROZZER(CAR_SPEC) (VEHICLE_TYPE_FROM_ID((CAR_SPEC)->car_ID) == eVehicle_rozzer)
 #define CAR_SPEC_IS_OPPONENT(CAR_SPEC) (VEHICLE_TYPE_FROM_ID((CAR_SPEC)->car_ID) == eVehicle_opponent)
 
@@ -85,6 +87,27 @@ int gChallenger_index__opponent = -1;
 
 // GLOBAL: CARMA2_HW 0x0069175c
 tU8* gBit_per_node;
+
+// GLOBAL: CARMA2_HW 0x0069171c
+static float sfs_shortest_dist;
+
+// GLOBAL: CARMA2_HW 0x0069172c
+static int sfs_routes_found;
+
+// GLOBAL: CARMA2_HW 0x0069174c
+int gWanky_arse_tit_fuck;
+
+// GLOBAL: CARMA2_HW 0x00691770
+int gSFS_count;
+
+// GLOBAL: CARMA2_HW 0x0069176c
+int gSFS_cycles_this_time;
+
+// GLOBAL: CARMA2_HW 0x00691774
+int gSFS_total_cycles;
+
+// GLOBAL: CARMA2_HW 0x00691778
+int gSFS_max_cycles;
 
 // GLOBAL: CARMA2_HW 0x00676858
 br_material* gMat_dk_yel = NULL;
@@ -2418,8 +2441,64 @@ void C2_HOOK_FASTCALL ProcessWaitForSomeHaplessSod(tOpponent_spec* pOpponent_spe
 
 // FUNCTION: CARMA2_HW 0x004abf60
 void C2_HOOK_FASTCALL CalcReturnToStartPointRoute(tOpponent_spec* pOpponent_spec) {
+    int num_of_perm_store_sections;
+    int sections_to_copy;
+    tS16 section_no;
+    br_vector3 intersect;
+    br_vector3 section_v;
+    br_scalar distance;
+    tRoute_section temp_store[10];
+    tRoute_section perm_store[10];
 
-    NOT_IMPLEMENTED();
+    pOpponent_spec->nnext_sections = 0;
+    section_no = FindNearestGeneralSection(NULL, &pOpponent_spec->car_spec->car_master_actor->t.t.translate.t, &section_v, &intersect, &distance);
+    {
+        br_scalar len = (br_scalar)sqrt(section_v.v[0] * section_v.v[0] + section_v.v[1] * section_v.v[1] + section_v.v[2] * section_v.v[2]);
+        if (len > BR_SCALAR_EPSILON * 2) {
+            len = 1.0 / len;
+            section_v.v[0] *= len;
+            section_v.v[1] *= len;
+            section_v.v[2] *= len;
+        } else {
+            section_v.v[0] = 1.0f;
+            section_v.v[1] = 0.0f;
+            section_v.v[2] = 0.0f;
+        }
+    }
+    if (BrVector3Dot(&pOpponent_spec->car_spec->direction, &section_v) > 0.0f) {
+        if (pOpponent_spec->nnext_sections < (int)CARPOCALYPSE2_ASIZE(pOpponent_spec->next_sections)) {
+            pOpponent_spec->next_sections[pOpponent_spec->nnext_sections].section_no = section_no;
+            pOpponent_spec->next_sections[pOpponent_spec->nnext_sections].direction = 1;
+            pOpponent_spec->nnext_sections++;
+        }
+    } else {
+        if (pOpponent_spec->nnext_sections < (int)CARPOCALYPSE2_ASIZE(pOpponent_spec->next_sections)) {
+            pOpponent_spec->next_sections[pOpponent_spec->nnext_sections].section_no = section_no;
+            pOpponent_spec->next_sections[pOpponent_spec->nnext_sections].direction = 0;
+            pOpponent_spec->nnext_sections++;
+        }
+    }
+    temp_store[0].section_no = pOpponent_spec->next_sections[pOpponent_spec->nnext_sections - 1].section_no;
+    temp_store[0].direction = pOpponent_spec->next_sections[pOpponent_spec->nnext_sections - 1].direction;
+    gSFS_count++;
+    gSFS_cycles_this_time = 0;
+    SearchForSection(temp_store, perm_store, &num_of_perm_store_sections, pOpponent_spec->return_to_start_data.section_no, 1, 0.0f, pOpponent_spec);
+    gSFS_total_cycles += gSFS_cycles_this_time;
+    if (gSFS_cycles_this_time > gSFS_max_cycles) {
+        gSFS_max_cycles = gSFS_cycles_this_time;
+    }
+    DoNotDprintf_opponent(">>>SearchForSection() - max %d, avg %.1f", gSFS_max_cycles, (double)gSFS_total_cycles / gSFS_count);
+    if (num_of_perm_store_sections > 1) {
+        sections_to_copy = MIN(num_of_perm_store_sections - 1, (int)CARPOCALYPSE2_ASIZE(pOpponent_spec->next_sections) - pOpponent_spec->nnext_sections);
+        memcpy(&pOpponent_spec->next_sections[pOpponent_spec->nnext_sections], &perm_store[1], sections_to_copy * sizeof(tRoute_section));
+        pOpponent_spec->nnext_sections += sections_to_copy;
+        TopUpRandomRoute(pOpponent_spec, 2);
+    } else {
+        DoNotDprintf_opponent("%s: CalcReturnToStartPointRoute() - SearchForSection() produced bugger all", pOpponent_spec->car_spec->driver_name);
+        if (pOpponent_spec->nnext_sections <= (int)CARPOCALYPSE2_ASIZE(pOpponent_spec->next_sections)) {
+            TopUpRandomRoute(pOpponent_spec, 14 - pOpponent_spec->nnext_sections);
+        }
+    }
 }
 
 int C2_HOOK_FASTCALL TeleportCopToStart(tOpponent_spec* pOpponent_spec) {
@@ -2977,7 +3056,74 @@ float C2_HOOK_FASTCALL GetOpponentsSectionWidth(const tOpponent_spec* pOpponent_
 
 // TopUpRandomRoute
 
-// SearchForSection
+// FUNCTION: CARMA2_HW 0x004ac180
+int C2_HOOK_FASTCALL SearchForSection(tRoute_section* pTemp_store, tRoute_section* pPerm_store, int* pNum_of_perm_store_sections, tS16 pTarget_section, int pDepth, br_scalar pDistance_so_far, tOpponent_spec* pOpponent_spec) {
+    char depth_indent[32];
+    int direction;
+    tPath_node* node_ptr;
+    tS16 node_no;
+    tS16 section_no;
+    tS16 section_no_index;
+    br_scalar distance_so_far;
+
+    DoNotDprintf_opponent("%sSearchForSection() - START: depth %d", depth_indent, pDepth);
+    gSFS_cycles_this_time++;
+    if (pDepth == 1) {
+        DoNotDprintf_opponent("%sSearchForSection() - First time called", depth_indent);
+        memset(gBit_per_node, 0, (gProgram_state.AI_vehicles.number_of_path_nodes + 7) / 8);
+        sfs_shortest_dist = FLT_MAX;
+        sfs_routes_found = 0;
+        *pNum_of_perm_store_sections = 0;
+    }
+    if (pDepth >= 10) {
+        DoNotDprintf_opponent("%sSearchForSection() - *** Reached max depth ***", depth_indent);
+        return 0;
+    }
+    node_no = gProgram_state.AI_vehicles.path_sections[pTemp_store[pDepth - 1].section_no].node_indices[pTemp_store[pDepth - 1].direction];
+    node_ptr = &gProgram_state.AI_vehicles.path_nodes[node_no];
+    gBit_per_node[node_no / 8] |= 1 << (node_no % 8);
+    DoNotDprintf_opponent("%sSearchForSection() - node #%d has %d sections", depth_indent, node_no, node_ptr->number_of_sections);
+    for (section_no_index = 0; section_no_index < node_ptr->number_of_sections; section_no_index++) {
+        section_no = node_ptr->sections[section_no_index];
+        direction = gProgram_state.AI_vehicles.path_sections[section_no].node_indices[1] != node_no;
+        DoNotDprintf_opponent("%sSearchForSection() - node's section #%d is #%d", depth_indent, section_no_index, section_no);
+        if ((gBit_per_node[gProgram_state.AI_vehicles.path_sections[section_no].node_indices[direction] / 8] & (1 << (gProgram_state.AI_vehicles.path_sections[section_no].node_indices[direction] % 8))) != 0) {
+            DoNotDprintf_opponent("%sSearchForSection() - *** node #%d already visited ***", depth_indent, gProgram_state.AI_vehicles.path_sections[section_no].node_indices[direction]);
+            continue;
+        }
+        if (gProgram_state.AI_vehicles.path_sections[section_no].one_way && gProgram_state.AI_vehicles.path_sections[section_no].node_indices[1] == node_no) {
+            DoNotDprintf_opponent("%sSearchForSection() - *** no entry ***", depth_indent);
+            continue;
+        }
+        if (!pOpponent_spec->cheating && gProgram_state.AI_vehicles.path_sections[section_no].type == ePST_cheat_only) {
+            continue;
+        }
+        DoNotDprintf_opponent("%sSearchForSection() - adding section #%d to list", depth_indent, section_no);
+        pTemp_store[pDepth].section_no = section_no;
+        pTemp_store[pDepth].direction = direction;
+        distance_so_far = gProgram_state.AI_vehicles.path_sections[section_no].length + pDistance_so_far;
+        if (pTarget_section == section_no && distance_so_far < sfs_shortest_dist) {
+            sfs_shortest_dist = distance_so_far;
+            *pNum_of_perm_store_sections = pDepth + 1;
+            memcpy(pPerm_store, pTemp_store, (pDepth + 1) * sizeof(tRoute_section));
+            gWanky_arse_tit_fuck = sfs_routes_found + 1;
+            sfs_routes_found++;
+            if (sfs_routes_found >= 2) {
+                DoNotDprintf_opponent("%sSearchForSection() - Found final target", depth_indent);
+                return 1;
+            } else {
+                gBit_per_node[node_no / 8] &= ~(1 << (node_no % 8));
+                return 0;
+            }
+        }
+        if (pDepth < 9 && SearchForSection(pTemp_store, pPerm_store, pNum_of_perm_store_sections, pTarget_section, pDepth + 1, distance_so_far, pOpponent_spec)) {
+            return 1;
+        }
+    }
+    gBit_per_node[node_no / 8] &= ~(1 << (node_no % 8));
+    DoNotDprintf_opponent("%sSearchForSection() - Returning to depth %d", depth_indent, pDepth - 1);
+    return 0;
+}
 
 // UpdatePlayersSection
 

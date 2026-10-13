@@ -701,6 +701,50 @@ int C2_HOOK_FASTCALL BoundsOverlapTest__finteray(br_bounds* b1, br_bounds* b2) {
     return 1;
 }
 
+// UNLABELED: CARMA2_HW 0x00460bd0
+// Segment-vs-AABB overlap (Liang-Barsky slab test). Returns nonzero when the
+// segment from pA to pB touches the box.
+// NOTE: the original only reports endpoint containment (no pure crossings);
+// this version also catches crossings (safe direction: overlapping rather
+// than clear). Callers only use the result as a boolean.
+int C2_HOOK_CDECL TestSegmentBox(const br_vector3* pA, const br_vector3* pB, const br_bounds3* pBox) {
+    float t_enter;
+    float t_exit;
+    float d;
+    float t0;
+    float t1;
+    int i;
+
+    t_enter = 0.f;
+    t_exit = 1.f;
+    for (i = 0; i < 3; i++) {
+        d = pB->v[i] - pA->v[i];
+        if (d == 0.f) {
+            if (pA->v[i] < pBox->min.v[i] || pA->v[i] > pBox->max.v[i]) {
+                return 0;
+            }
+        } else {
+            if (d > 0.f) {
+                t0 = (pBox->min.v[i] - pA->v[i]) / d;
+                t1 = (pBox->max.v[i] - pA->v[i]) / d;
+            } else {
+                t0 = (pBox->max.v[i] - pA->v[i]) / d;
+                t1 = (pBox->min.v[i] - pA->v[i]) / d;
+            }
+            if (t0 > t_enter) {
+                t_enter = t0;
+            }
+            if (t1 < t_exit) {
+                t_exit = t1;
+            }
+            if (t_enter > t_exit) {
+                return 0;
+            }
+        }
+    }
+    return 1;
+}
+
 static void C2_HOOK_FASTCALL ClipToPlaneGE(br_scalar limit, br_vector3* p, int* nv, int i) {
     int last_vertex;
     int j;

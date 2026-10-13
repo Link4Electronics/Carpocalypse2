@@ -252,6 +252,7 @@ void C2_HOOK_FASTCALL InitialiseActionReplay(void) {
         return;
     }
     gCrush_space = NULL;
+    gSmudge_space = NULL;
 }
 
 // FUNCTION: CARMA2_HW 0x004c6c60

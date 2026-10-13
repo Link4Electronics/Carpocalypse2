@@ -180,7 +180,7 @@ void C2_HOOK_FASTCALL ConditionalSmokeColumn(tCar_spec* pCar, int fire_point, in
 
 // DisposeKevStuff
 
-// DisposeKevStuffCar
+void C2_HOOK_FASTCALL DisposeKevStuffCar(tCar_spec* pCar);
 
 // MakeCarIt
 
@@ -331,6 +331,16 @@ intptr_t C2_HOOK_CDECL ForEveryActorMaterial(br_actor* pActor, void* pContext);
 intptr_t C2_HOOK_CDECL ForEveryActorMaterialNoGrooves(br_actor* pActor, void* pContext);
 
 void C2_HOOK_FASTCALL ForEveryCarMaterial(tCar_spec* pCar_spec, tMaterialMaybeUpdate_cbfn* pCallback, int pGrooves);
+
+void C2_HOOK_CDECL AFEModelUpdate(br_actor* pActor, br_model* pModel, br_material* pMaterial, void* pOrder_table, br_uint_8 pStyle, int pOn_screen);
+
+int C2_HOOK_FASTCALL SetModelAFEUpdateCB(br_model* pModel);
+
+int C2_HOOK_FASTCALL SetMaterialPrelitCB(br_material* pMaterial);
+
+intptr_t C2_HOOK_CDECL ForEveryActorModelNoGrooves(br_actor* pActor, void* pContext);
+
+void C2_HOOK_FASTCALL DisposeFlames(void);
 
 intptr_t C2_HOOK_FASTCALL UnBlendifyMaterialCB(br_material* pMaterial);
 
