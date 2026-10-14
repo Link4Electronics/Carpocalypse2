@@ -508,7 +508,7 @@ void C2_HOOK_FASTCALL DrawSmashBlip(br_pixelmap* pScreen, tU32 pTime, const br_v
 // FUNCTION: CARMA2_HW 0x00495e10
 void C2_HOOK_FASTCALL DoMapOverlays(br_pixelmap* pScreen) {
     tU32 the_time;
-    tVehicle_type category;
+    int category;
     int car_count;
     tCar_spec* car;
     int ped_count;

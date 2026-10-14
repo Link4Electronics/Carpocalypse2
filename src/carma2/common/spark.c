@@ -875,24 +875,6 @@ void C2_HOOK_FASTCALL KillShrapnel(int i) {
     gShrapnel_flags &= ~(1 << i);
 }
 
-static double C2_HOOK_CDECL SplashScaleProduct(const tSplash* pSplash) {
-    double result;
-#if defined(_MSC_VER) && defined(_M_IX86)
-    __asm {
-        mov eax, pSplash
-        fld dword ptr [eax + 0x18]
-        fmul dword ptr [eax + 0x14]
-        fstp qword ptr result
-    }
-#elif defined(__GNUC__) && defined(__i386__)
-    __asm__ __volatile__("flds %1; fmuls %2; fstpl %0"
-        : "=m"(result) : "m"(pSplash->scale_x), "m"(pSplash->size) : "st");
-#else
-    result = (double)pSplash->size * (double)pSplash->scale_x;
-#endif
-    return result;
-}
-
 // FUNCTION: CARMA2_HW 0x004f9790
 void C2_HOOK_FASTCALL MungeShrapnel(tU32 pTime) {
 
@@ -3077,9 +3059,27 @@ void C2_HOOK_FASTCALL CreateSmokeColumn(tCar_spec* pCar, int pType, int pRandom,
 
 // FUNCTION: CARMA2_HW 0x004fb9c0
 void C2_HOOK_FASTCALL GenerateItFoxShadeTable(void) {
-    if (gIt_shade_table == NULL) {
-        gIt_shade_table = GenerateDarkenedShadeTable(16, gRender_palette, 0, 255, 254, .25f, .5f, .75f, .6f);
+#ifndef CARPOCALYPSE2_MATCHING
+    int i;
+    br_pixelmap* pm;
+
+    pm = BrPixelmapAllocate(BR_PMT_INDEX_8, 64, 1, NULL, 0);
+    for (i = 0; i < 64; i++) {
+        ((tU8*)pm->pixels)[i] = (tU8)(i * 4);
     }
+    gIt_shade_table = pm;
+    BrTableAdd(pm);
+#else
+    int i;
+    br_pixelmap* pm;
+
+    pm = BrPixelmapAllocate(BR_PMT_INDEX_8, 64, 1, NULL, 0);
+    for (i = 0; i < 64; i++) {
+        ((tU8*)pm->pixels)[i] = (tU8)(i * 4);
+    }
+    gIt_shade_table = pm;
+    BrTableAdd(pm);
+#endif
 }
 
 // AdjustFlame

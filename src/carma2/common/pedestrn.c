@@ -3972,6 +3972,12 @@ undefined4 C2_HOOK_FASTCALL CBPassiveCollision(tPed_character_instance* pCharact
 #pragma auto_inline(off)
 // FUNCTION: CARMA2_HW 0x004cdeb0
 void C2_HOOK_FASTCALL PedProcessContact(tPedestrian* pPed, tPhysics_object* pCollision_info) {
+    if (pCollision_info == NULL) {
+        return;
+    }
+    if (pPed->field_0x0c == NULL) {
+        return;
+    }
     NOT_IMPLEMENTED();
 }
 #pragma auto_inline(on)

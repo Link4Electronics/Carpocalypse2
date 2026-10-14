@@ -888,10 +888,12 @@ tU16 C2_HOOK_FASTCALL FindNearestVertex(br_vector3* pPoint, const br_model* pMod
 
     for (i = 0; i < pModel->nvertices; i++) {
         br_scalar d = Vector3DistanceSquared(pPoint, &pModel->vertices[i].p);
-        if (d < closest_dist) {
-            closest_dist = d;
-            closest_vertex = i;
+        if (d >= closest_dist) {
+            goto next_vertex;
         }
+        closest_dist = d;
+        closest_vertex = i;
+next_vertex:;
     }
     return closest_vertex;
 }
