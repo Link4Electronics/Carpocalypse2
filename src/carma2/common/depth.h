@@ -58,9 +58,9 @@ extern void C2_HOOK_FASTCALL InitDepthEffects(void);
 
 // AssertYons
 
-// IncreaseYon
+extern void C2_HOOK_FASTCALL IncreaseYon(void);
 
-// DecreaseYon
+extern void C2_HOOK_FASTCALL DecreaseYon(void);
 
 extern void C2_HOOK_STDCALL SetYon(br_scalar pYon);
 

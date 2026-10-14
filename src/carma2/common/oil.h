@@ -80,6 +80,8 @@ void C2_HOOK_FASTCALL GetOilSpillDetails(int pIndex, br_actor** pActor, br_scala
 
 void C2_HOOK_FASTCALL GetOilFrictionFactors(tCar_spec* pCar, br_scalar* pFl, br_scalar* pFr, br_scalar* pRl, br_scalar* pRr);
 
+int C2_HOOK_FASTCALL PointInSpill(br_vector3* pPoint, int pIndex);
+
 void C2_HOOK_FASTCALL MungeIndexedOilsHeightAboveGround(int pIndex);
 
 #endif // GUARD_OIL_H

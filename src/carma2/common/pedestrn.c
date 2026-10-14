@@ -2973,7 +2973,7 @@ void C2_HOOK_FASTCALL OneLessPed(tPedestrian* pPed) {
     }
     if (gCurrent_race.race_spec->race_type == kRaceType_SmashNPed) {
         if (pPed->flags & 0x200) {
-            SetRuntimeVariable(gCurrent_race.race_spec->options.smash_and_peds.var_smash_number, 1);
+            AccumulateRuntimeVariable(gCurrent_race.race_spec->options.smash_and_peds.var_smash_number, 1);
             if (GetRuntimeVariable(gCurrent_race.race_spec->options.smash_and_peds.var_smash_number) >= gCurrent_race.race_spec->options.smash_and_peds.var_smash_target) {
                 RaceCompleted(eRace_over_3);
             }

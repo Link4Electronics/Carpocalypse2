@@ -102,7 +102,7 @@ extern void C2_HOOK_FASTCALL ChangeHeadupText(int pHeadup_index, char* pNew_text
 
 extern void C2_HOOK_FASTCALL ChangeHeadupFont(int pHeadup_index, int pFont);
 
-extern void C2_HOOK_FASTCALL DimRectangle(br_pixelmap* pPixelmap, int pLeft, int pTop, int pRight, int pBottom, int pKnock_out_corners);
+extern void C2_HOOK_CDECL DimRectangle(br_pixelmap* pPixelmap, int pLeft, int pTop, int pRight, int pBottom, int pKnock_out_corners);
 
 extern void C2_HOOK_FASTCALL DimRectangleClipped(br_pixelmap* pPixelmap, int pLeft, int pTop, int pRight, int pBottom, int pKnock_out_corners);
 

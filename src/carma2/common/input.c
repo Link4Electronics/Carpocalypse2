@@ -178,45 +178,36 @@ int C2_HOOK_FASTCALL AddRollingLetter(char pChar, int pX, int pY, tRolling_type 
     tRolling_letter* let;
     int i;
 
-    for (i = 0; i < NBR_ROLLING_LETTERS; i++) {
-        let = &gRolling_letters[i];
+    for (let = gRolling_letters, i = 0; i < NBR_ROLLING_LETTERS; i++, let++) {
         if (let->number_of_letters < 0) {
-            break;
+            goto letter_found;
         }
     }
-    if (i == NBR_ROLLING_LETTERS) {
-        return -1;
-    }
+    return -1;
+
+letter_found:
+    let->rolling_type = rolling_type;
     let->x_coord = pX;
     let->y_coord = pY;
-    let->rolling_type = rolling_type;
-    switch (rolling_type) {
-    case eRT_looping_random:
+    if (rolling_type == eRT_looping_random) {
         let->number_of_letters = 9;
-        break;
-    case eRT_looping_single:
+    } else if (rolling_type == eRT_looping_single) {
         let->number_of_letters = 2;
-        break;
-    default:
+    } else {
         let->number_of_letters = IRandomBetween(3, 9);
-        break;
     }
-
     let->current_offset = (float)(let->number_of_letters * gCurrent_graf_data->save_slot_letter_height);
-    for (i = (rolling_type != eRT_looping_random ? 1 : 0); i < let->number_of_letters; i++) {
-        if (rolling_type == eRT_numeric) {
-            /* The (tU8) cast makes sure extended ASCII is positive. */
-            let->letters[i] = (tU8)pChar;
-        } else {
+    for (i = let->number_of_letters - 1; i > (rolling_type != eRT_looping_random ? 0 : -1); i--) {
+        if (rolling_type != eRT_numeric) {
             let->letters[i] = IRandomBetween('A', 'Z' + 1);
+        } else {
+            let->letters[i] = (tS8)pChar;
         }
     }
     if (rolling_type != eRT_looping_random) {
-        /* The (tU8) cast makes sure extended ASCII is positive. */
-        let->letters[0] = (tU8)pChar;
+        let->letters[0] = (tS8)pChar;
     }
-
-    return 0;
+    return i;
 }
 
 // FUNCTION: CARMA2_HW 0x00484000
@@ -235,7 +226,6 @@ int C2_HOOK_FASTCALL ChangeCharTo(int pSlot_index, int pChar_index, char pNew_ch
     }
     y_coord = gLetter_y_coords[pSlot_index];
     x_coord = gLetter_x_coords[pSlot_index] + pChar_index * gCurrent_graf_data->rolling_letter_x_pitch;
-
     if (pNew_char == ROLLING_LETTER_LOOP_RANDOM) {
         new_type = eRT_looping_random;
     } else if (pNew_char >= '0' && pNew_char <= '9') {
@@ -243,25 +233,22 @@ int C2_HOOK_FASTCALL ChangeCharTo(int pSlot_index, int pChar_index, char pNew_ch
     } else {
         new_type = eRT_alpha;
     }
-
-    for (i = 0; i < NBR_ROLLING_LETTERS; i++) {
-        let = &gRolling_letters[i];
+    for (let = gRolling_letters, i = 0; i < NBR_ROLLING_LETTERS; i++, let++) {
         if (let->number_of_letters >= 0 && x_coord == let->x_coord && y_coord == let->y_coord) {
-            break;
+            goto letter_found;
         }
     }
-    if (i >= NBR_ROLLING_LETTERS) {
-        return AddRollingLetter(pNew_char, x_coord, y_coord, new_type);
-    }
+    return AddRollingLetter(pNew_char, x_coord, y_coord, new_type);
+
+letter_found:
     if (pNew_char != ROLLING_LETTER_LOOP_RANDOM) {
-        /* The (tU8) cast makes sure extended ASCII is positive. */
-        let->letters[0] = (tU8)pNew_char;
+        let->letters[0] = (tS8)pNew_char;
     }
     if (pNew_char == ' ') {
         let->letters[0] = ' ';
     }
-    let->rolling_type = new_type;
     let->current_offset = (float)(gCurrent_graf_data->save_slot_letter_height * let->number_of_letters);
+    let->rolling_type = new_type;
     return i;
 }
 
@@ -474,11 +461,24 @@ int C2_HOOK_FASTCALL PDKeyDown(int pKey_index) {
 int C2_HOOK_FASTCALL PDAnyKeyDown(void) {
     int i;
 
-    PollKeys();
-    for (i = CARPOCALYPSE2_ASIZE(gKey_array) - 1; i >= 0; i--) {
-        if (gKey_array[i] != 0) {
-            return i;
+    CheckKeysForMouldiness();
+    for (i = 142; i >= 0; --i) {
+        if (gKey_array[i] && i != 4) {
+            if (!gEdge_trigger_mode) {
+                return i;
+            }
+            switch (EdgeTriggeryKey(i, 0)) {
+                case tKey_down_no:
+                case tKey_down_still:
+                    return -1;
+                case tKey_down_yes:
+                case tKey_down_repeat:
+                    return i;
+            }
         }
+    }
+    if (gEdge_trigger_mode) {
+        EdgeTriggeryKey(0, 1);
     }
     return -1;
 }
@@ -493,58 +493,55 @@ int C2_HOOK_FASTCALL AnyKeyDown(void) {
 
 // FUNCTION: CARMA2_HW 0x00482f10
 tU32* C2_HOOK_FASTCALL KevKeyService(void) {
-    static tU32 sum = 0;
-    static tU32 code = 0;
-    static tU32 code2 = 0;
+    // GLOBAL: CARMA2_HW 0x0068c1d4
+    static tU32 sum;
+    // GLOBAL: CARMA2_HW 0x0068c1d8
+    static tU32 code;
+    // GLOBAL: CARMA2_HW 0x0068c1dc
+    static tU32 code2;
+    // GLOBAL: CARMA2_HW 0x00657210
     static int last_key = -1;
+    // GLOBAL: CARMA2_HW 0x00657214
     static int last_single_key = -1;
-    static tU32 last_time = 0;
+    // GLOBAL: CARMA2_HW 0x0068be8c
+    static tU32 last_time;
+    // GLOBAL: CARMA2_HW 0x0068c1e0
     static tU32 return_val[2];
     tU32 keys;
 
+    keys = gKeys_pressed;
     return_val[0] = 0;
     return_val[1] = 0;
-    keys = gKeys_pressed;
-
-    if (keys < 0x6B) {
-        last_single_key = gKeys_pressed;
+    if (keys < 0x6b) {
+        last_single_key = (int)keys;
     } else {
-        if (keys > 0x6b00) {
+        if (keys > 0x6b00
+            || ((keys & 0xff) != (tU32)last_single_key && (keys >> 8) != (tU32)last_single_key)) {
             sum = 0;
             code = 0;
             return return_val;
         }
-        if ((keys & 0xff) != last_single_key && keys >> 8 != last_single_key) {
-            sum = 0;
-            code = 0;
-            return return_val;
+        // Keep the newly pressed member of a two-key chord.
+        if ((keys & 0xff) == (tU32)last_single_key) {
+            keys >>= 8;
+        } else {
+            keys &= 0xff;
         }
-        if (keys >> 8 != last_single_key) {
-            sum = 0;
-            code = 0;
-            return return_val;
-        }
-        if ((keys & 0xff) == last_single_key) {
-            keys = keys >> 8;
-        }
-        keys = keys & 0xff;
     }
-
-    if (keys != 0 && keys != last_key) {
+    if (keys != 0 && keys != (tU32)last_key) {
         sum += keys;
         code += keys << 11;
         code = (code >> 17) + (code << 4);
         code2 = (code2 >> 29) + keys * keys + (code2 << 3);
         last_time = PDGetTotalTime();
-    } else if ((tU32)PDGetTotalTime() > last_time + 1000) {
+    } else if (PDGetTotalTime() > last_time + 1000u) {
         return_val[0] = (code >> 11) + (sum << 21);
         return_val[1] = code2;
-        // printf("final value: code=%lx, code2=%lx\n", return_val[0], return_val[1]);
         code = 0;
         code2 = 0;
         sum = 0;
     }
-    last_key = keys;
+    last_key = (int)keys;
     return return_val;
 }
 
@@ -571,9 +568,10 @@ int C2_HOOK_FASTCALL KeyIsDown(int pKey_index) {
 
 // FUNCTION: CARMA2_HW 0x004833b0
 void C2_HOOK_FASTCALL WaitForNoKeys(void) {
-    while (AnyKeyDown() || EitherMouseButtonDown()) {
+
+    do {
         CheckQuit();
-    }
+    } while (AnyKeyDown() || EitherMouseButtonDown());
     CheckQuit();
 }
 
@@ -588,14 +586,11 @@ void C2_HOOK_FASTCALL GetMousePosition(int *pX, int *pY) {
     }
     if (*pY < 0) {
         *pY = 0;
-        gLast_mouse_x_coord = *pX;
-        gLast_mouse_y_coord = *pY;
-        return;
     } else if (*pY > gGraf_specs[gGraf_spec_index].total_height) {
         *pY = gGraf_specs[gGraf_spec_index].total_height;
     }
-    gLast_mouse_x_coord = *pX;
-    gLast_mouse_y_coord = *pY;
+    gCurrent_mouse_position.x = *pX;
+    gCurrent_mouse_position.y = *pY;
 }
 
 // FUNCTION: CARMA2_HW 0x00483c90
@@ -621,10 +616,10 @@ void C2_HOOK_FASTCALL EndRollingLetters(void) {
 
 // FUNCTION: CARMA2_HW 0x00484120
 void C2_HOOK_FASTCALL RevertTyping(int pSlot_index, char* pRevert_str) {
-    unsigned i;
+    int i;
 
-    for (i = 0; (int)i < gThe_length; i++) {
-        ChangeCharTo(pSlot_index, i, i >= strlen(pRevert_str) ? ' ' : pRevert_str[i]);
+    for (i = 0; i < gThe_length; i++) {
+        ChangeCharTo(pSlot_index, i, (char)((size_t)i < strlen(pRevert_str) ? pRevert_str[i] : ' '));
     }
 }
 

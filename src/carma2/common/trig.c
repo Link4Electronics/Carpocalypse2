@@ -150,10 +150,10 @@ br_matrix23 mat23tmp2;
 // FUNCTION: CARMA2_HW 0x005113d0
 float C2_HOOK_FASTCALL FastFloatSin(int pAngle_in_degrees) {
 
-    if (pAngle_in_degrees >= 0) {
-        pAngle_in_degrees = pAngle_in_degrees % 360;
-    } else {
+    if (pAngle_in_degrees < 0) {
         pAngle_in_degrees = 360 - -pAngle_in_degrees % 360;
+    } else {
+        pAngle_in_degrees = pAngle_in_degrees % 360;
     }
     if (pAngle_in_degrees > 270) {
         return -gFloat_sine_table[360 - pAngle_in_degrees];
@@ -170,10 +170,10 @@ float C2_HOOK_FASTCALL FastFloatSin(int pAngle_in_degrees) {
 // FUNCTION: CARMA2_HW 0x00511440
 float C2_HOOK_FASTCALL FastFloatCos(int pAngle_in_degrees) {
 
-    if (pAngle_in_degrees >= 0) {
-        pAngle_in_degrees = pAngle_in_degrees % 360;
-    } else {
+    if (pAngle_in_degrees < 0) {
         pAngle_in_degrees = 360 - -pAngle_in_degrees % 360;
+    } else {
+        pAngle_in_degrees = pAngle_in_degrees % 360;
     }
 
     if (pAngle_in_degrees > 270) {
@@ -215,13 +215,13 @@ br_scalar C2_HOOK_FASTCALL FastScalarTan(int pAngle_in_degrees) {
 // FUNCTION: CARMA2_HW 0x00511780
 br_scalar C2_HOOK_FASTCALL FastScalarSinAngle(br_angle pBR_angle) {
 
-    return FastScalarSin((int)BrAngleToDegrees(pBR_angle));
+    return FastScalarSin((int)((double)pBR_angle * (360.0 / 65536.0)));
 }
 
 // FUNCTION: CARMA2_HW 0x00511810
 br_scalar C2_HOOK_FASTCALL FastScalarCosAngle(br_angle pBR_angle) {
 
-    return FastScalarCos((int)BrAngleToDegrees(pBR_angle));
+    return FastScalarCos((int)((double)pBR_angle * (360.0 / 65536.0)));
 }
 
 // FUNCTION: CARMA2_HW 0x005118a0

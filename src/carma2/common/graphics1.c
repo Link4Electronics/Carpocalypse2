@@ -400,11 +400,13 @@ void C2_HOOK_FASTCALL DoTestHeadup(void) {
         BrMapUpdate(gCurrent_rev, BR_MAPU_ALL);
         gStatbarHUD1_material->colour_map = gCurrent_rev;
         BrMaterialUpdate(gStatbarHUD1_material, BR_MATU_COLOURMAP);
-    } else {
+    }
+    if (!do_headup_material) {
         BrMapUpdate(gDamage_hud, BR_MAPU_ALL);
         gStatbarHUD5_material->colour_map = gDamage_hud;
         BrMaterialUpdate(gStatbarHUD5_material, BR_MATU_COLOURMAP);
     }
+
     if (gNet_mode == eNet_mode_none) {
         BrMatrix34Translate(&gArmour_actor->t.t.mat, 0.f, 0.f, 0.f);
         BrMatrix34Translate(&gPower_actor->t.t.mat, 0.f, 0.f, 0.f);
@@ -428,15 +430,12 @@ void C2_HOOK_FASTCALL DoTestHeadup(void) {
                 PolyFontText(gHeadup_oppo_ped_text, 335, 50, kPolyfont_ingame_medium_blue, eJust_centre, 0);
             }
         }
-        if (gHeadup_detail_level >= 1) {
-            RenderThisHeadup(gHeadup_actor);
-        }
     } else {
-        if (gHeadup_detail_level % 3 >= 1) {
+        if (gHeadup_detail_level % 3 > 0) {
             BrMatrix34Translate(&gStatbarHUD5_actor->t.t.mat, -448.f, 0.f, 0.f);
             RenderThisHeadup(gStatbarHUD5_actor);
             RenderThisHeadup(gStatbarHUD1_actor);
-            if (gHeadup_detail_level % 3 >= 2) {
+            if (gHeadup_detail_level % 3 > 1) {
                 BrMatrix34Translate(&gArmour_actor->t.t.mat, 48.f, 35.f, 0.f);
                 BrMatrix34Translate(&gPower_actor->t.t.mat, -102.f, 5.f, 0.f);
                 BrMatrix34Translate(&gOffense_actor->t.t.mat, -252.f, -25.f, 0.f);
@@ -445,8 +444,8 @@ void C2_HOOK_FASTCALL DoTestHeadup(void) {
                 RenderThisHeadup(gOffense_actor);
             }
         }
-        if (gHeadup_detail_level >= 3) {
-            RenderThisHeadup(gHeadup_actor);
-        }
+    }
+    if (gHeadup_detail_level > 2) {
+        RenderThisHeadup(gHeadup_actor);
     }
 }

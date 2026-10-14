@@ -1,8 +1,11 @@
 #include "crush1.h"
 #include "crush.h"
+#include "errors.h"
 #include "physics.h"
 #include "globvars.h"
 #include "compress.h"
+#include "piping.h"
+#include "spark.h"
 #include "utility.h"
 #include "carpocalypse2_macros.h"
 
@@ -143,25 +146,48 @@ void C2_HOOK_FASTCALL ReadCrushSettings(FILE* pF) {
 
 // FUNCTION: CARMA2_HW 0x00429fa0
 void C2_HOOK_FASTCALL InitCrushSystems(void) {
-#ifndef CARPOCALYPSE2_MATCHING
     int i;
 
-    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gTrack_crush_joints) != 32);
-
-    for (i = 0; i < CARPOCALYPSE2_ASIZE(gTrack_crush_joints); i++) {
-        gTrack_crush_joints[i] = AllocatePhysicsJoint(1, kMem_physics_joint);
-        gTrack_crush_joints[i]->type = eJoint_none;
+    memset(gCrush_array_0067a190, 0, sizeof(gCrush_array_0067a190));
+    gDAT_00679440 = 0;
+    gDetached_bit_crush_info_buffer.capacity = 16;
+    gDetached_bit_crush_info_buffer.crush_infos = BrMemAllocate(gDetached_bit_crush_info_buffer.capacity * sizeof(tCrush_info), kMem_crush_data);
+    gDetached_bit_collision_infos = BrMemAllocate(gDetached_bit_crush_info_buffer.capacity * sizeof(tPhysics_object), kMem_crush_data);
+    for (i = 0; i < gDetached_bit_crush_info_buffer.capacity; i++) {
+        gDetached_bit_crush_info_buffer.crush_infos[i].field_0xdc = 1.f;
+        gDetached_bit_crush_info_buffer.crush_infos[i].field_0xe0 = 0.28985506f;
+        gDetached_bit_crush_info_buffer.crush_infos[i].collision_object = &gDetached_bit_collision_infos[i];
+        gDetached_bit_collision_infos[i].shape = (tPhysics_shape*)AllocateShapePolyhedron(16, kMem_crush_data);
     }
-#else
-    int i;
-
-    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gTrack_crush_joints) != 32);
-
-    for (i = 0; i < CARPOCALYPSE2_ASIZE(gTrack_crush_joints); i++) {
-        gTrack_crush_joints[i] = AllocatePhysicsJoint(1, kMem_physics_joint);
-        gTrack_crush_joints[i]->type = eJoint_none;
+    gDetached_bit_driver = eDriver_detached_bit;
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gTrack_crush_joints); i++) {
+        gTrack_crush_joints[i] = AllocatePhysicsJoint(3, kMem_crush_data);
     }
-#endif
+    gSplit_car_crush_info_buffer.capacity = 3;
+    gSplit_car_crush_info_buffer.crush_infos = BrMemAllocate(gSplit_car_crush_info_buffer.capacity * sizeof(tCrush_info), kMem_crush_data);
+    gSplit_car_collision_infos = BrMemAllocate(gSplit_car_crush_info_buffer.capacity * sizeof(tPhysics_object), kMem_crush_data);
+    for (i = 0; i < gSplit_car_crush_info_buffer.capacity; i++) {
+        int j;
+        tPhysics_shape* shape = NULL;
+
+        gSplit_car_crush_info_buffer.crush_infos[i].field_0xdc = 0.f;
+        gSplit_car_crush_info_buffer.crush_infos[i].collision_object = &gSplit_car_collision_infos[i];
+        for (j = 0; j < 4; j++) {
+            tPhysics_shape* polyhedron = (tPhysics_shape*)AllocateShapePolyhedron(16, kMem_crush_data);
+
+            if (shape != NULL) {
+                shape->common.next = polyhedron;
+            } else {
+                gSplit_car_collision_infos[i].shape = polyhedron;
+            }
+            shape = polyhedron;
+        }
+        if (shape != NULL) {
+            shape->common.next = NULL;
+        }
+    }
+    gSplit_car_driver = eDriver_split_car;
+    gGonad_sphere_collision_shape = (tPhysics_shape*)AllocateShapeSphere(kMem_crush_data);
 }
 
 // ResetCrushSystems
@@ -624,14 +650,57 @@ intptr_t C2_HOOK_CDECL TotallyRepairCarCB(br_actor* pActor, void* data) {
 
 // FUNCTION: CARMA2_HW 0x00439510
 void C2_HOOK_FASTCALL TotallyRepairACar(tCar_spec* pCar_spec) {
-#ifndef CARPOCALYPSE2_MATCHING
-    if (pCar_spec->car_crush_spec == NULL) {
+    int i;
+    tCar_crush_spec* car_crush;
+
+    StopCarSmokingInstantly(pCar_spec);
+    if (ARIsActionReplayAvailable()) {
+        PipeInstantUnSmudge(pCar_spec);
+    }
+    pCar_spec->repair_time += 100000;
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(pCar_spec->damage_units); i++) {
+        pCar_spec->damage_units[i].damage_level = 0;
+        pCar_spec->damage_units[i].last_level = 0;
+        pCar_spec->damage_units[i].smoke_last_level = 0;
+    }
+    if (pCar_spec->use_shell_model) {
         return;
     }
-    DRActorEnumRecurse(pCar_spec->car_model_actor, TotallyRepairCarCB, pCar_spec);
-#else
-    NOT_IMPLEMENTED();
-#endif
+    car_crush = pCar_spec->car_crush_spec;
+    if (car_crush == NULL) {
+        return;
+    }
+    if (car_crush->field_0x4b8 != 0) {
+        WeldCar(pCar_spec);
+    }
+    for (i = 0; i < car_crush->field_0x2b0; i++) {
+        ReAttachBit(pCar_spec, car_crush->field_0x2b4[i].field_0x4, car_crush->field_0x2b4[i].field_0x0, NULL);
+    }
+    for (i = 0; i < car_crush->field_0x270; i++) {
+        ReAttachBit(pCar_spec, car_crush->field_0x274[i].field_0x4, car_crush->field_0x274[i].field_0x0, car_crush->field_0x274[i].field_0x8);
+    }
+    car_crush->field_0x270 = 0;
+    DRActorEnumRecurse(pCar_spec->car_model_actor, MakeCarModelsMaterialsSingleSided, pCar_spec);
+    PipeSingleDSModel(0, pCar_spec);
+    if (car_crush->field_0x144) {
+        DoCompletelyUnBentThings(pCar_spec);
+    }
+    ARStartPipingSession(24);
+    PhysicsObjectRecurse(pCar_spec->collision_info, TotallyRepairObject, pCar_spec);
+    AREndPipingSession();
+    dr_dprintf("TotallyRepairACar() - Point 7");
+    TotallyRepairCarCollisionShapes(pCar_spec);
+    dr_dprintf("TotallyRepairACar() - Point 8");
+    PhysicsObjectRecurse(pCar_spec->collision_info, BattenDownTheObjects, pCar_spec);
+    dr_dprintf("TotallyRepairACar() - Point 19");
+    if (gProgram_state.prog_status != eProg_idling) {
+        dr_dprintf("TotallyRepairACar() - Point 10");
+        SwapShapesIfPossible(pCar_spec);
+    }
+    dr_dprintf("TotallyRepairACar() - Point 11");
+    pCar_spec->use_shell_model = 1;
+    RemoveCarFromCrushLists(pCar_spec);
+    dr_dprintf("TotallyRepairACar() - Point 12");
 }
 
 // TotallyRepairCar

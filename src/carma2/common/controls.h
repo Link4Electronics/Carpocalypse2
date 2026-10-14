@@ -417,10 +417,6 @@ void C2_HOOK_FASTCALL CycleYonFactor(void);
 
 void C2_HOOK_FASTCALL ToggleAccessoryRendering(void);
 
-void C2_HOOK_FASTCALL DecreaseYon(void);
-
-void C2_HOOK_FASTCALL IncreaseYon(void);
-
 void C2_HOOK_FASTCALL CycleSoundDetailLevel(void);
 
 void C2_HOOK_FASTCALL ShowCurrentJoystickName(void);

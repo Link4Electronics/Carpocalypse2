@@ -255,7 +255,7 @@ void C2_HOOK_FASTCALL EncodeFile(char* pThe_path);
 
 float C2_HOOK_STDCALL tandeg(float pAngle);
 
-int C2_HOOK_CDECL DumpVisibleActorsCB(br_actor* pActor, void* pData);
+intptr_t C2_HOOK_CDECL DumpVisibleActorsCB(br_actor* pActor, void* pData);
 
 void C2_HOOK_FASTCALL DumpActorTree(br_actor* pActor, const char* pMsg);
 
