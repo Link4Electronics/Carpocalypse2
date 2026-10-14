@@ -1169,10 +1169,10 @@ int C2_HOOK_FASTCALL PolyhedronCollisionShape_AddPoint(tCollision_shape_polyhedr
 
 // FUNCTION: CARMA2_HW 0x00420d60
 br_scalar C2_HOOK_FASTCALL SignedTwiceAreaOf3DTriangle(const br_vector3* pV1, const br_vector3* pV2) {
-    br_vector3 cross;
 
-    BrVector3Cross(&cross, pV1, pV2);
-    return BrVector3Dot(&cross, &gPhysics_reference_normal_comparison);
+    return (pV1->v[1] * pV2->v[2] - pV1->v[2] * pV2->v[1]) * gPhysics_reference_normal_comparison.v[0]
+        + (pV1->v[2] * pV2->v[0] - pV1->v[0] * pV2->v[2]) * gPhysics_reference_normal_comparison.v[1]
+        + (pV1->v[0] * pV2->v[1] - pV1->v[1] * pV2->v[0]) * gPhysics_reference_normal_comparison.v[2];
 }
 
 // FUNCTION: CARMA2_HW 0x00420dc0
@@ -1435,28 +1435,25 @@ void C2_HOOK_FASTCALL FillInShape(tPhysics_shape* pShape) {
 // FUNCTION: CARMA2_HW 0x004da400
 tPhysics_object* C2_HOOK_FAKE_THISCALL MungeSphereObject(br_model* pModel, undefined4 pArg2, float pWeight) {
     tPhysics_object* collision_info;
-    tPhysics_shape* shape;
-    br_vector3 tv;
 
     CARPOCALYPSE2_THISCALL_UNUSED(pArg2);
 
     C2_HOOK_BUG_ON(sizeof(tPhysics_object) != 1240);
 
     collision_info = BrMemAllocate(sizeof(tPhysics_object), kMem_collision_object);
-    collision_info->shape = shape = (tPhysics_shape*)AllocateShapeSphere(kMem_collision_shape);
+    collision_info->shape = (tPhysics_shape*)AllocateShapeSphere(kMem_collision_shape);
     BrVector3Set(&collision_info->shape->sphere.sphere.center, 0.f, 0.f, 0.f);
-    BrVector3Sub(&tv, &pModel->bounds.max, &pModel->bounds.min);
-    shape->sphere.sphere.radius = (tv.v[0] + tv.v[1] + tv.v[2]) / 6.f;
-    FillInShape(shape);
+    collision_info->shape->sphere.sphere.radius = (pModel->bounds.max.v[0] - pModel->bounds.min.v[0] + pModel->bounds.max.v[1] - pModel->bounds.min.v[1] + pModel->bounds.max.v[2] - pModel->bounds.min.v[2]) / 6.f;
+    FillInShape(collision_info->shape);
     collision_info->uid = gCollision_info_uid_counter;
     gCollision_info_uid_counter++;
     UpdateCollisionObject(collision_info);
     collision_info->M = pWeight;
     BrVector3Set(&collision_info->I,
-        CARPOCALYPSE2_SQR(shape->sphere.sphere.radius) * pWeight / 6.f,
-        CARPOCALYPSE2_SQR(shape->sphere.sphere.radius) * pWeight / 6.f,
-        CARPOCALYPSE2_SQR(shape->sphere.sphere.radius) * pWeight / 6.f);
-    BrVector3SetFloat(&collision_info->field_0x54, 0.f, -0.05797102f, 0.f);
+        CARPOCALYPSE2_SQR(collision_info->shape->sphere.sphere.radius) * pWeight / 6.f,
+        CARPOCALYPSE2_SQR(collision_info->shape->sphere.sphere.radius) * pWeight / 6.f,
+        CARPOCALYPSE2_SQR(collision_info->shape->sphere.sphere.radius) * pWeight / 6.f);
+    BrVector3SetFloat(&collision_info->field_0x54, 0.f, 1/-17.25f, 0.f);
     collision_info->actor = BrActorAllocate(BR_ACTOR_MODEL, NULL);
     BrMatrix34Copy(&collision_info->actor->t.t.mat, &collision_info->transform_matrix);
     collision_info->actor->model = pModel;
@@ -2065,14 +2062,14 @@ int C2_HOOK_FASTCALL TestForObjectInSensiblePlace(tPhysics_object* pCollision_in
 #pragma inline_depth()
 #pragma auto_inline(on)
 
+#pragma inline_depth(0)
 // FUNCTION: CARMA2_HW 0x004da290
 tPhysics_object* C2_HOOK_FAKE_THISCALL MungeBoxObject(br_model* pModel, undefined4 pArg2, float pMass) {
     tPhysics_object* box;
-    br_vector3 tv1;
 
     C2_HOOK_BUG_ON(sizeof(tPhysics_object) != 0x4d8);
 
-    box = BrMemAllocate(sizeof(tPhysics_object), kMem_collision_shape);
+    box = BrMemAllocate(sizeof(tPhysics_object), kMem_collision_object);
     box->shape = (tPhysics_shape*)AllocateBoxCollisionShape(kMem_collision_shape);
     box->shape->box.common.bb = pModel->bounds;
     FillInShape(box->shape);
@@ -2080,12 +2077,10 @@ tPhysics_object* C2_HOOK_FAKE_THISCALL MungeBoxObject(br_model* pModel, undefine
     gCollision_info_uid_counter += 1;
     UpdateCollisionObject(box);
     box->M = pMass;
-    BrVector3Sub(&tv1, &pModel->bounds.max, &pModel->bounds.min);
-    BrVector3Scale(&tv1, &tv1, .5f);
     BrVector3Set(&box->I,
-        (CARPOCALYPSE2_SQR(tv1.v[1]) + CARPOCALYPSE2_SQR(tv1.v[2])) * pMass / 12.f,
-        (CARPOCALYPSE2_SQR(tv1.v[0]) + CARPOCALYPSE2_SQR(tv1.v[2])) * pMass / 12.f,
-        (CARPOCALYPSE2_SQR(tv1.v[0]) + CARPOCALYPSE2_SQR(tv1.v[1])) * pMass / 12.f);
+        (CARPOCALYPSE2_SQR((pModel->bounds.max.v[1] - pModel->bounds.min.v[1]) * .5f) + CARPOCALYPSE2_SQR((pModel->bounds.max.v[2] - pModel->bounds.min.v[2]) * .5f)) * pMass * (1.f / 12.f),
+        (CARPOCALYPSE2_SQR((pModel->bounds.max.v[0] - pModel->bounds.min.v[0]) * .5f) + CARPOCALYPSE2_SQR((pModel->bounds.max.v[2] - pModel->bounds.min.v[2]) * .5f)) * pMass * (1.f / 12.f),
+        (CARPOCALYPSE2_SQR((pModel->bounds.max.v[0] - pModel->bounds.min.v[0]) * .5f) + CARPOCALYPSE2_SQR((pModel->bounds.max.v[1] - pModel->bounds.min.v[1]) * .5f)) * pMass * (1.f / 12.f));
     BrVector3SetFloat(&box->field_0x54, 0.f, 1/-17.25f, 0.f);
     box->actor = BrActorAllocate(BR_ACTOR_MODEL, NULL);
     BrMatrix34Copy(&box->actor->t.t.mat, &box->transform_matrix);
@@ -2093,6 +2088,7 @@ tPhysics_object* C2_HOOK_FAKE_THISCALL MungeBoxObject(br_model* pModel, undefine
     box->box_face_ref = gFace_num__car - 2;
     return box;
 }
+#pragma inline_depth()
 
 // FUNCTION: CARMA2_HW 0x004c5e20
 tPhysics_joint* C2_HOOK_FASTCALL AllocatePhysicsJoint(int pCount_limits, int pType) {
