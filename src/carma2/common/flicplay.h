@@ -54,6 +54,7 @@ extern void C2_HOOK_FASTCALL FlicPaletteAllocate(void);
 // DoUncompressedTrans
 
 // DoMini
+void C2_HOOK_FASTCALL DoMini(tFlic_descriptor* pFlic_info, tU32 chunk_length);
 
 // DrawTranslations
 

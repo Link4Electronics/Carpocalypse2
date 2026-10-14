@@ -37,6 +37,77 @@
 #include "globvars.h"
 
 #include <c2_hooks.h>
+
+/* PC53 operations retain the original x87 rounding and NaN operand selection. */
+static double C2_HOOK_CDECL OpponentFloatDifference(const float* pA, const float* pB) {
+    double result;
+#if defined(_MSC_VER) && defined(_M_IX86)
+    __asm {
+        mov eax, pA
+        mov edx, pB
+        fld dword ptr [eax]
+        fsub dword ptr [edx]
+        fstp qword ptr [result]
+    }
+#elif defined(__GNUC__) && defined(__i386__)
+    __asm__ volatile ("flds %1; fsubs %2; fstpl %0" : "=m"(result) : "m"(*pA), "m"(*pB) : "st");
+#else
+    result = (double)*pA - (double)*pB;
+#endif
+    return result;
+}
+
+static double C2_HOOK_CDECL OpponentAdd(double pA, double pB) {
+    volatile double result = pA + pB;
+    return result;
+}
+
+static double C2_HOOK_CDECL OpponentSubtract(double pA, double pB) {
+    volatile double result = pA - pB;
+    return result;
+}
+
+static double C2_HOOK_CDECL OpponentMultiply(double pA, double pB) {
+    volatile double result = pA * pB;
+    return result;
+}
+
+static double C2_HOOK_CDECL OpponentDivide(double pA, double pB) {
+    volatile double result = pA / pB;
+    return result;
+}
+
+static double C2_HOOK_CDECL OpponentSqrt(double pA) {
+    double result;
+#if defined(_MSC_VER) && defined(_M_IX86)
+    __asm {
+        fld qword ptr [pA]
+        fsqrt
+        fstp qword ptr [result]
+    }
+#elif defined(__GNUC__) && defined(__i386__)
+    __asm__ volatile ("fldl %1; fsqrt; fstpl %0" : "=m"(result) : "m"(pA) : "st");
+#else
+    result = sqrt(pA);
+#endif
+    return result;
+}
+
+static float C2_HOOK_CDECL OpponentScalarRound(double pA) {
+    volatile union { float scalar; tU32 bits; } stored;
+    union { float scalar; tU32 bits; } result;
+
+    stored.scalar = (float)pA;
+    result.bits = stored.bits;
+    return result.scalar;
+}
+
+static double C2_HOOK_CDECL OpponentHybridLengthSquared(double pX, double pY, double pZ) {
+    float x = OpponentScalarRound(pX);
+    float y = OpponentScalarRound(pY);
+    return OpponentAdd(OpponentAdd(OpponentMultiply(pX, x), OpponentMultiply(pY, y)), OpponentMultiply(pZ, pZ));
+}
+
 // GLOBAL: CARMA2_HW 0x0069173c
 int gActive_car_list_rebuild_required;
 
@@ -1507,7 +1578,7 @@ void C2_HOOK_FASTCALL WeightedFindNearestNodeAndSection(tCar_spec* pCar, br_vect
 }
 
 // FUNCTION: CARMA2_HW 0x004a82d0
-tS16 C2_HOOK_FASTCALL FindNearestGeneralSection(tCar_spec* pCar, br_vector3* pActor_coords, br_vector3* pPath_direction, br_vector3* pIntersect, br_scalar* pDistance) {
+tS16 C2_HOOK_FASTCALL FindNearestGeneralSection(tCar_spec* pCar, const br_vector3* pActor_coords, br_vector3* pPath_direction, br_vector3* pIntersect, br_scalar* pDistance) {
     tS16 nearest_node_section_no;
     tS16 nearest_node;
     float t;

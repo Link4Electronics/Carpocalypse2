@@ -36,6 +36,15 @@ extern int gNbPixelBits;
 
 // SmoothificateCarMaterial
 
+void C2_HOOK_FASTCALL SmoothificateCarMaterial(br_material* pMaterial) {
+    if (gNbPixelBits == 16) {
+        pMaterial->ka = 0.6f;
+        pMaterial->flags = (pMaterial->flags & ~BR_MATF_PRELIT) | BR_MATF_LIGHT | BR_MATF_SMOOTH;
+        pMaterial->kd = 0.2f;
+        BrMaterialUpdate(pMaterial, BR_MATU_ALL);
+    }
+}
+
 // MungeLightingEffects
 
 void C2_HOOK_FASTCALL SmoothificatePowerupMaterial(br_material* pMaterial) {

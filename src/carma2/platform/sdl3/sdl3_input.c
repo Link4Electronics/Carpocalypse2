@@ -391,7 +391,8 @@ int C2_HOOK_FASTCALL IncreaseJoystickFFBGain(void) {
     return 0;
 }
 
-void C2_HOOK_FASTCALL FUN_0045a070(void) {
+int C2_HOOK_FASTCALL PDEnableJoysticks(void) {
+    return 0;
 }
 
 tButtonJoystickInfo* C2_HOOK_FASTCALL PDGetCurrentJoystickData(void) {

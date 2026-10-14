@@ -1755,31 +1755,75 @@ int C2_HOOK_FASTCALL NetGuaranteedSendMessageToAddress(tNet_game_details* pDetai
 
 // FUNCTION: CARMA2_HW 0x004a6080
 void C2_HOOK_FASTCALL ResendGuaranteedMessages(void) {
-#ifndef CARPOCALYPSE2_MATCHING
-    tU32 time;
     int i;
+    int j;
+    tU32 time;
 
+    C2_HOOK_BUG_ON(sizeof(tGuaranteed_message) != 0x34);
+
+    i = 0;
     time = PDGetTotalTime();
-    for (i = 0; i < MAX_GUARANTEED_MESSAGES; i++) {
-        if (gGuarantee_list[i].message != NULL && gGuarantee_list[i].recieved == 0 && time >= gGuarantee_list[i].next_resend_time) {
-            gGuarantee_list[i].send_time = time;
-            gGuarantee_list[i].next_resend_time = time + gGuarantee_list[i].resend_period;
-            PDNetSendMessageToAddress(gCurrent_net_game, gGuarantee_list[i].message, &gGuarantee_list[i].pd_address);
+    for (j = 0; j < gNext_guarantee; j++) {
+        if (i != j) {
+            memcpy(&gGuarantee_list[i], &gGuarantee_list[j], sizeof(tGuaranteed_message));
+        }
+        if (!gGuarantee_list[i].recieved) {
+            if (gGuarantee_list[i].message->header.field_0x14 != 0xff) {
+                PDFatalError("Dodgy message in guarantee list");
+            }
+            if (gGuarantee_list[i].NotifyFail != NULL) {
+                gGuarantee_list[i].recieved |= gGuarantee_list[i].NotifyFail(time - gGuarantee_list[i].send_time, gGuarantee_list[i].message);
+            } else {
+                if (time - gGuarantee_list[i].send_time > 10000) {
+                    gGuarantee_list[i].recieved = 1;
+                }
+            }
+        }
+        if (!gGuarantee_list[j].recieved) {
+            if (time > gGuarantee_list[i].next_resend_time) {
+                /* guarantee number is appended to message (and not part of the header) */
+                *(tU16*)(&gGuarantee_list[j].message->contents.raw.data[gGuarantee_list[j].message->contents.raw.header.size]) = gGuarantee_list[i].field_0x2c;
+                if (gGuarantee_list[i].field_0x30 == 1) {
+                    GetCheckSum(gGuarantee_list[i].message);
+                    PDNetSendMessageToAddress(gCurrent_net_game, gGuarantee_list[i].message, &gGuarantee_list[i].pd_address);
+                } else if (!gGuarantee_list[i].field_0x30) {
+                    int k;
+
+                    for (k = 0; i < gNumber_of_net_players; k++) {
+                        if (gNet_players[k].ID == gGuarantee_list[i].local_id) {
+                            break;
+                        }
+                    }
+                    if (k != gNumber_of_net_players) {
+                        int guarantee_size = 0;
+                        void* message_data;
+                        tNet_message_chunk* message_chunk;
+
+                        message_chunk = &gGuarantee_list[i].message->contents;
+                        for (k = 0; k < 2; k++) {
+                            guarantee_size += message_chunk->raw.header.size;
+                            message_chunk = (tNet_message_chunk*)((tU8*)message_chunk + message_chunk->raw.header.size);
+                        }
+                        message_data = NetGetToPlayerContentsSize(&gNet_players[k], guarantee_size);
+                        memcpy(message_data, &gGuarantee_list[i].message->contents, guarantee_size);
+                    } else {
+                        i++;
+                        continue;
+                    }
+                } else {
+                    PDFatalError("oops - guaranteed messages");
+                }
+                gGuarantee_list[i].resend_period = (tU32)(gGuarantee_list[i].resend_period * 1.2f);
+                gGuarantee_list[i].next_resend_time += gGuarantee_list[i].resend_period;
+                i++;
+            }
+        } else if ((i <= 0 || gGuarantee_list[i - 1].message != gGuarantee_list[i].message)
+                   && (gNext_guarantee <= i + 1 || gGuarantee_list[j + 1].message != gGuarantee_list[i].message)) {
+            gGuarantee_list[i].message->header.field_0x14 = 0;
+            NetDisposeMessage(gCurrent_net_game, gGuarantee_list[j].message);
         }
     }
-#else
-    tU32 time;
-    int i;
-
-    time = PDGetTotalTime();
-    for (i = 0; i < MAX_GUARANTEED_MESSAGES; i++) {
-        if (gGuarantee_list[i].message != NULL && gGuarantee_list[i].recieved == 0 && time >= gGuarantee_list[i].next_resend_time) {
-            gGuarantee_list[i].send_time = time;
-            gGuarantee_list[i].next_resend_time = time + gGuarantee_list[i].resend_period;
-            PDNetSendMessageToAddress(gCurrent_net_game, gGuarantee_list[i].message, &gGuarantee_list[i].pd_address);
-        }
-    }
-#endif
+    gNext_guarantee = j;
 }
 
 // NetWaitForGuaranteeReplies

@@ -175,6 +175,7 @@ extern void C2_HOOK_FASTCALL InitSmashing(void);
 extern void C2_HOOK_FASTCALL CleanUpSmashStuff(void);
 
 // DisposeSmashData
+void C2_HOOK_FASTCALL DisposeSmashData(tCar_crush_buffer_entry* pCrush_data);
 
 // DoBackwardShrapnel
 

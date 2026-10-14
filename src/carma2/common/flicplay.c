@@ -1169,10 +1169,11 @@ void C2_HOOK_FASTCALL DrawTranslations(tFlic_descriptor* pFlic_info) {
 int C2_HOOK_FASTCALL PlayNextFlicFrame(tFlic_descriptor* pFlic_info) {
     tU32 frame_length;
     tU32 chunk_length;
+    int magic_bytes;
     int chunk_count;
     int chunk_counter;
     int chunk_type;
-    int magic_bytes;
+    int finished;
     int data_knocked_off;
     int read_amount;
 
@@ -1180,7 +1181,6 @@ int C2_HOOK_FASTCALL PlayNextFlicFrame(tFlic_descriptor* pFlic_info) {
     frame_length = MemReadU32(&pFlic_info->data);
     magic_bytes = MemReadU16(&pFlic_info->data);
     chunk_count = MemReadU16(&pFlic_info->data);
-
     MemSkipBytes(&pFlic_info->data, 8);
     if (magic_bytes == 0xf1fa) {
         for (chunk_counter = 0; chunk_counter < chunk_count; chunk_counter++) {
@@ -1224,43 +1224,44 @@ int C2_HOOK_FASTCALL PlayNextFlicFrame(tFlic_descriptor* pFlic_info) {
                         DoUncompressed(pFlic_info, chunk_length);
                     }
                     break;
+                case 18:
+                    DoMini(pFlic_info, chunk_length);
+                    break;
                 default:
-                    // LOG_WARN("unrecognized chunk type");
-                    MemSkipBytes(&pFlic_info->data, chunk_length - 6);
+                    MemSkipBytes(&pFlic_info->data, (int)(chunk_length - 6));
                     break;
             }
-            // Align on even byte
-            pFlic_info->data = (char*)((uintptr_t)(pFlic_info->data + 1) & (~(uintptr_t)1));
+            /* Advance to the next two-byte chunk boundary. */
+            pFlic_info->data = (char*)(((uintptr_t)pFlic_info->data + 1) & ~(uintptr_t)1);
         }
     } else {
-        // LOG_WARN("not frame header");
-        MemSkipBytes(&pFlic_info->data, frame_length - 16);
+        MemSkipBytes(&pFlic_info->data, (int)(frame_length - 16));
         pFlic_info->frames_left++;
         pFlic_info->current_frame--;
     }
     pFlic_info->current_frame++;
     pFlic_info->frames_left--;
-    if (pFlic_info->frames_left != 0 && gTranslation_count != 0) {
+    finished = pFlic_info->frames_left == 0;
+    if (finished && gTranslation_count != 0) {
         DrawTranslations(pFlic_info);
     }
-    if (pFlic_info->f != NULL && pFlic_info->bytes_still_to_be_read) {
-        data_knocked_off = pFlic_info->data - pFlic_info->data_start;
+    if (pFlic_info->f != NULL && pFlic_info->bytes_still_to_be_read != 0) {
+        data_knocked_off = (int)(pFlic_info->data - pFlic_info->data_start);
         memmove(pFlic_info->data_start, pFlic_info->data, pFlic_info->bytes_in_buffer - data_knocked_off);
         pFlic_info->data = pFlic_info->data_start;
         pFlic_info->bytes_in_buffer -= data_knocked_off;
-
-        if (pFlic_info->bytes_still_to_be_read > data_knocked_off) {
+        if (data_knocked_off < pFlic_info->bytes_still_to_be_read) {
             read_amount = data_knocked_off;
         } else {
             read_amount = pFlic_info->bytes_still_to_be_read;
         }
         if (read_amount != 0) {
-            PFfread(&pFlic_info->data_start[pFlic_info->bytes_in_buffer], 1, read_amount, pFlic_info->f);
+            PFfread(pFlic_info->data_start + pFlic_info->bytes_in_buffer, 1, read_amount, pFlic_info->f);
         }
         pFlic_info->bytes_in_buffer += read_amount;
         pFlic_info->bytes_still_to_be_read -= read_amount;
     }
-    return pFlic_info->frames_left == 0;
+    return finished;
 }
 
 // FUNCTION: CARMA2_HW 0x00462930
@@ -1705,6 +1706,9 @@ void C2_HOOK_FASTCALL FlicPaletteAllocate(void) {
 // DoUncompressedTrans
 
 // DoMini
+void C2_HOOK_FASTCALL DoMini(tFlic_descriptor* pFlic_info, tU32 chunk_length) {
+    MemSkipBytes(&pFlic_info->data, (int)(chunk_length - 6));
+}
 
 // DrawTranslations
 
@@ -1746,21 +1750,24 @@ void C2_HOOK_FASTCALL InitFlicQueue(void) {
 
 // FUNCTION: CARMA2_HW 0x00462dc0
 void C2_HOOK_FASTCALL FlushFlicQueue(void) {
-#ifndef CARPOCALYPSE2_MATCHING
+    tFlic_descriptor* the_flic;
+    tFlic_descriptor* doomed_flic;
+
     while (!FlicQueueFinished()) {
         RemoveTransientBitmaps(1);
         ProcessFlicQueue(gFrame_period);
         DoMouseCursor();
         PDScreenBufferSwap(0);
     }
-#else
-    while (!FlicQueueFinished()) {
-        RemoveTransientBitmaps(1);
-        ProcessFlicQueue(gFrame_period);
-        DoMouseCursor();
-        PDScreenBufferSwap(0);
+    /* Optional animations can remain after all required ones have finished. */
+    the_flic = gFirst_flic;
+    while (the_flic != NULL) {
+        EndFlic(the_flic);
+        doomed_flic = the_flic;
+        the_flic = the_flic->next;
+        BrMemFree(doomed_flic);
     }
-#endif
+    gFirst_flic = NULL;
 }
 
 // FUNCTION: CARMA2_HW 0x00463340

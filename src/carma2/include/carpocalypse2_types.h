@@ -5447,6 +5447,7 @@ typedef struct {
     union {
         br_actor* actor;
         tPedestrian* ped;
+        tPed_character_instance* character;
         tPhysics_object* phil_object;
     } object;
     undefined4 type;

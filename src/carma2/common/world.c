@@ -3730,14 +3730,20 @@ void C2_HOOK_FASTCALL EnableFunkotronic(int pIndex) {
 }
 
 // FUNCTION: CARMA2_HW 0x0047b0e0
-void C2_HOOK_FASTCALL StopGroovidelic(br_actor* actor) {
+void C2_HOOK_FASTCALL StopGroovidelic(br_actor* pActor) {
+    tGroovidelic_spec* the_groove;
+    int count;
     int i;
 
-    for (i = 0; i < gGroovidelics_array_size; i++) {
-        tGroovidelic_spec* groove = &gGroovidelics_array[i];
-        if (groove->path_interrupt_status == eInterrupt_none &&
-                groove->object_interrupt_status == eInterrupt_none) {
-            GrooveThisDelic(groove, gPrevious_groove_times[i], 1);
+    the_groove = gGroovidelics_array;
+    count = gGroovidelics_array_size;
+    for (i = 0; i < count; i++, the_groove++) {
+        if (the_groove->actor == pActor) {
+            if (the_groove->path_interrupt_status == eInterrupt_none
+                && the_groove->object_interrupt_status == eInterrupt_none) {
+                GrooveThisDelic(the_groove, gPrevious_groove_times[1], 1);
+            }
+            return;
         }
     }
 }
@@ -3757,14 +3763,15 @@ tGroovidelic_spec* C2_HOOK_FASTCALL ActorsGroove(br_actor* pActor) {
 }
 
 // FUNCTION: CARMA2_HW 0x0047b160
-void C2_HOOK_FASTCALL EnableGroovidelic(br_actor *pActor, tU32 pBlock_flags) {
+void C2_HOOK_FASTCALL EnableGroovidelic(br_actor* pActor, tU32 pBlock_flags) {
+    tGroovidelic_spec* the_groove;
     int i;
 
-    for (i = 0; i < gGroovidelics_array_size; i++) {
-        tGroovidelic_spec* groove = &gGroovidelics_array[i];
-
-        if (groove->actor == pActor) {
-            groove->block_flags &= ~pBlock_flags;
+    the_groove = gGroovidelics_array;
+    for (i = 0; i < gGroovidelics_array_size; i++, the_groove++) {
+        if (the_groove->actor == pActor) {
+            the_groove->block_flags &= ~pBlock_flags;
+            return;
         }
     }
 }

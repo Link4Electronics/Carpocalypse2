@@ -340,29 +340,186 @@ void C2_HOOK_FASTCALL DisposeMasterCrushData(tCar_crush_spec* pCar_crush, tCar_s
 #endif
 }
 
-// DisposeCrushData
+// FUNCTION: CARMA2_HW 0x0042c4f0
+void C2_HOOK_FASTCALL DisposeCrushData(tCar_crush_buffer_entry* pCrush_data) {
+    if (pCrush_data != NULL) {
+        if (pCrush_data->flap_data != NULL) {
+            BrMemFree(pCrush_data->flap_data);
+        }
+        if (pCrush_data->detach_data != NULL) {
+            BrMemFree(pCrush_data->detach_data);
+        }
+        DisposeSmashData(pCrush_data);
+        BrMemFree(pCrush_data);
+    }
+}
 
-// DisposeVertexData
+// FUNCTION: CARMA2_HW 0x0042c530
+void C2_HOOK_FASTCALL DisposeVertexData(tModel_detail_vertex_data* pVertex_data) {
+    if (pVertex_data != NULL) {
+        BrMemFree(pVertex_data);
+    }
+}
 
 // BuckleTheBugger
 
-// OutsideEdgeLine
+// FUNCTION: CARMA2_HW 0x0042c8b0
+float C2_HOOK_FASTCALL DistSq(const br_vector3* pP, int pCount, const br_vector3* pVertices) {
+    switch (pCount) {
+    case 0:
+        return 0.0f;
+    case 1:
+        return Vector3DistanceSquared(pP, &pVertices[0]);
+    case 2:
+        return PointEdgeDistSq(pP, &pVertices[0], &pVertices[1]);
+    case 3:
+        return PointTriangleDistSq(pP, &pVertices[0], &pVertices[1], &pVertices[2]);
+    case 4:
+        return PointRectDistSq(pP, &pVertices[0], &pVertices[1], &pVertices[2]);
+    default:
+        return PointSimplexDistSq(pP, pCount, pVertices);
+    }
+}
 
-// PointTriangleDistSq
+// FUNCTION: CARMA2_HW 0x0042ca30
+float C2_HOOK_FASTCALL PointTriangleDistSq(const br_vector3* pP, const br_vector3* pA, const br_vector3* pB, const br_vector3* pC) {
+    br_vector3 ab;
+    br_vector3 bc;
+    br_vector3 ca;
+    br_vector3 normal;
+    br_vector3 offset;
+    br_vector3 projected;
+    float distance;
 
-// PointRectDistSq
+    BrVector3Sub(&ab, pB, pA);
+    BrVector3Sub(&bc, pC, pB);
+    BrVector3Sub(&ca, pA, pC);
+    BrVector3Cross(&normal, &ab, &bc);
+    BrVector3Normalise(&normal, &normal);
+    BrVector3Sub(&offset, pP, pA);
+    distance = BrVector3Dot(&offset, &normal);
+    BrVector3Scale(&projected, &normal, distance);
+    BrVector3Sub(&projected, pP, &projected);
+    if (OutsideEdgeLine(&projected, pA, &ab, pC)) {
+        return PointEdgeDistSq(pP, pA, pB);
+    }
+    if (OutsideEdgeLine(&projected, pB, &bc, pA)) {
+        return PointEdgeDistSq(pP, pB, pC);
+    }
+    if (OutsideEdgeLine(&projected, pA, &ca, pB)) {
+        return PointEdgeDistSq(pP, pA, pC);
+    }
+    return distance * distance;
+}
 
-// PointSimplexDistSq
+// FUNCTION: CARMA2_HW 0x0042cc40
+int C2_HOOK_FASTCALL OutsideEdgeLine(const br_vector3* pPoint, const br_vector3* pA, const br_vector3* pDirection, const br_vector3* pInside) {
+    br_vector3 direction;
+    br_vector3 offset;
+    br_vector3 inside_offset;
 
-// DistSq
+    BrVector3Normalise(&direction, pDirection);
+    BrVector3Sub(&offset, pPoint, pA);
+    /* Each new component changes the dot product used for the next one. */
+    direction.v[0] *= BrVector3Dot(&offset, &direction);
+    direction.v[1] *= BrVector3Dot(&offset, &direction);
+    direction.v[2] *= BrVector3Dot(&offset, &direction);
+    BrVector3Sub(&offset, &offset, &direction);
+    BrVector3Sub(&inside_offset, pInside, pA);
+    return !(BrVector3Dot(&offset, &inside_offset) >= 0.0f);
+}
+
+// FUNCTION: CARMA2_HW 0x0042ce00
+float C2_HOOK_FASTCALL PointRectDistSq(const br_vector3* pP, const br_vector3* pA, const br_vector3* pB, const br_vector3* pC) {
+    const br_vector3* origin = pA;
+    br_vector3 u;
+    br_vector3 v;
+    br_vector3 offset;
+    br_vector3 projected;
+    br_vector3 residual;
+    float u_scale;
+    float v_scale;
+
+    BrVector3Sub(&u, pC, pA);
+    BrVector3Sub(&v, pB, pA);
+    if (fabs(BrVector3Dot(&u, &v)) > 0.001f) {
+        origin = pB;
+        BrVector3Sub(&u, pC, pB);
+        BrVector3Sub(&v, pA, pB);
+        if (fabs(BrVector3Dot(&u, &v)) > 0.001f) {
+            origin = pC;
+            BrVector3Sub(&u, pB, pC);
+            BrVector3Sub(&v, pA, pC);
+        }
+    }
+    BrVector3Sub(&offset, pP, origin);
+    v_scale = BrVector3Dot(&offset, &v) / BrVector3LengthSquared(&v);
+    u_scale = BrVector3Dot(&offset, &u) / BrVector3LengthSquared(&u);
+    if (!(v_scale >= 0.0f)) {
+        v_scale = 0.0f;
+    } else if (v_scale > 1.0f) {
+        v_scale = 1.0f;
+    }
+    if (!(u_scale >= 0.0f)) {
+        u_scale = 0.0f;
+    } else if (u_scale > 1.0f) {
+        u_scale = 1.0f;
+    }
+    projected.v[0] = u_scale * u.v[0] + v_scale * v.v[0] + origin->v[0];
+    projected.v[1] = u_scale * u.v[1] + v_scale * v.v[1] + origin->v[1];
+    projected.v[2] = u_scale * u.v[2] + v_scale * v.v[2] + origin->v[2];
+    BrVector3Sub(&residual, &projected, pP);
+    return BrVector3LengthSquared(&residual);
+}
+
+float C2_HOOK_FASTCALL PointSimplexDistSq(const br_vector3* pP, int pCount, const br_vector3* pVertices) {
+    float closest_distance = BR_SCALAR_MAX;
+    int i;
+
+    for (i = 0; i < pCount; i++) {
+        int j;
+
+        for (j = i + 1; j < pCount; j++) {
+            int k;
+
+            for (k = j + 1; k < pCount; k++) {
+                float distance = PointTriangleDistSq(pP, &pVertices[i], &pVertices[j], &pVertices[k]);
+
+                if (!(distance >= closest_distance)) {
+                    closest_distance = distance;
+                }
+            }
+        }
+    }
+    return closest_distance;
+}
 
 // LimitImpactScale
 
 // GetImpactScale
 
-// TooFarToCrush
+// FUNCTION: CARMA2_HW 0x0042d0e0
+int C2_HOOK_FASTCALL TooFarToCrush(const br_model* pModel, int pCount, const br_vector3* pVertices, float pMax_dist_sq) {
+    br_vector3 diagonal;
+    float threshold;
 
-// NearestAxis
+    BrVector3Sub(&diagonal, &pModel->bounds.max, &pModel->bounds.min);
+    threshold = BrVector3LengthSquared(&diagonal) + pMax_dist_sq;
+    if (DistSq(&pModel->bounds.min, pCount, pVertices) > threshold) {
+        return 1;
+    }
+    return DistSq(&pModel->bounds.max, pCount, pVertices) > threshold;
+}
+
+int C2_HOOK_FASTCALL NearestAxis(const br_vector3* pVector) {
+    if (fabs(pVector->v[0]) > 0.707107f) {
+        return 0;
+    }
+    if (fabs(pVector->v[1]) > 0.707107f) {
+        return 1;
+    }
+    return 2;
+}
 
 // CrushModel
 
@@ -388,7 +545,29 @@ void C2_HOOK_FASTCALL DisposeMasterCrushData(tCar_crush_spec* pCar_crush, tCar_s
 
 // ExpandCrush
 
-// RemoveDuplicatePoints
+void C2_HOOK_FASTCALL RemoveDuplicatePoints(int* pCount_out, br_vector3* pPoints_out, int pCount_in, const br_vector3* pPoints_in) {
+    int i;
+
+    BrVector3Copy(&pPoints_out[0], &pPoints_in[0]);
+    *pCount_out = 1;
+    for (i = 1; i < pCount_in; i++) {
+        int j;
+        int duplicate = 0;
+
+        for (j = 0; j < *pCount_out; j++) {
+            if (!(fabs(pPoints_out[j].v[0] - pPoints_in[i].v[0]) >= 0.005f)
+                && !(fabs(pPoints_out[j].v[1] - pPoints_in[i].v[1]) >= 0.005f)
+                && !(fabs(pPoints_out[j].v[2] - pPoints_in[i].v[2]) >= 0.005f)) {
+                duplicate = 1;
+                break;
+            }
+        }
+        if (!duplicate) {
+            BrVector3Copy(&pPoints_out[*pCount_out], &pPoints_in[i]);
+            *pCount_out += 1;
+        }
+    }
+}
 
 // SimpleCrushModel
 
@@ -744,9 +923,21 @@ void C2_HOOK_FASTCALL TotallyRepairACar(tCar_spec* pCar_spec) {
 
 // UnBendOtherThings
 
-// NormalizedAngle
+// FUNCTION: CARMA2_HW 0x0043ac90
+br_scalar C2_HOOK_FASTCALL NormalizedAngle(br_angle pAngle) {
+    if (pAngle >= BR_ANGLE_DEG(180)) {
+        pAngle = (br_angle)-pAngle;
+    }
+    return BrFixedToScalar(pAngle);
+}
 
-// CalculateAmountRepairedFraction
+br_scalar C2_HOOK_FASTCALL CalculateAmountRepairedFraction(br_angle pOriginal_x, br_angle pOriginal_y, br_angle pOriginal_z, br_angle pRepair_x, br_angle pRepair_y, br_angle pRepair_z, br_scalar* pOriginal_amount) {
+    br_scalar original_amount = NormalizedAngle(pOriginal_x) + NormalizedAngle(pOriginal_y) + NormalizedAngle(pOriginal_z);
+    br_scalar repaired_amount = NormalizedAngle(pRepair_x) + NormalizedAngle(pRepair_y) + NormalizedAngle(pRepair_z);
+
+    *pOriginal_amount = 2.0f * original_amount;
+    return repaired_amount;
+}
 
 // UnBendCar
 

@@ -471,7 +471,7 @@ int C2_HOOK_FASTCALL ActorRayPick2D(br_actor* ap, br_vector3* pPosition, br_vect
         if (this_model != NULL) {
             if (PickBoundsTestRay__finteray(&this_model->bounds, pPosition, pDir, t_near, t_far, &t_near, &t_far)) {
                 t_near = 0.f;
-                t_far = MIN(1.f, gNearest_T);
+                t_far = gNearest_T > 1.f ? 1.f : gNearest_T;
                 r = callback(ap, this_model, this_material, pPosition, pDir, t_near, t_far, arg);
                 if (r) {
                     return r;

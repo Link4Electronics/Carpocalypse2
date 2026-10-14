@@ -2895,7 +2895,7 @@ void C2_HOOK_FASTCALL ToggleJoystickEnable(void) {
         FUN_0045a0c0();
         sprintf(buffer, "Joystick Disabled");
     } else {
-        FUN_0045a070();
+        PDEnableJoysticks();
         sprintf(buffer, "Joystick Enabled");
     }
     NewTextHeadupSlot(4, 0, 3000, -4, buffer);

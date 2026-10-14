@@ -63,7 +63,7 @@ int C2_HOOK_FASTCALL SetJoystickFFBSteeringForce(int pMagnitude);
 
 int C2_HOOK_FASTCALL IncreaseJoystickFFBGain(void);
 
-void C2_HOOK_FASTCALL FUN_0045a070(void);
+int C2_HOOK_FASTCALL PDEnableJoysticks(void);
 
 void C2_HOOK_FASTCALL Joystick_BackupSettings(void);
 

@@ -31,7 +31,7 @@ void C2_HOOK_FASTCALL FreeTintedPolyActor(int pTintedIndex);
 
 void C2_HOOK_FASTCALL FreeAllTintedPolyActors(void);
 
-void C2_HOOK_FASTCALL UpdateTintedPolyActor(int pTintedIndex);
+void C2_HOOK_FASTCALL UpdateTintedPolyByMaterial(int pTintedIndex);
 
 void C2_HOOK_FASTCALL TurnTintedPolyOn(int pTintedIndex);
 
