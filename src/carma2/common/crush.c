@@ -2403,11 +2403,11 @@ void C2_HOOK_FASTCALL InitialiseSpamCrush(tCar_spec* pCar, void* pContext) {
 
 // FUNCTION: CARMA2_HW 0x00435dd0
 int C2_HOOK_FASTCALL DRActorRecurseWithPredicate(br_actor* pActor, void* pPredicate, tCar_spec* pCar) {
-    void* pChild = *(void**)((tU8*)pActor + 8);
+    br_actor* pChild = pActor->children;
     int(C2_HOOK_CDECL* pred)(void*, void*) = (int(C2_HOOK_CDECL*)(void*, void*))pPredicate;
 
     while (pChild != NULL) {
-        void* pNext = *(void**)pChild;
+        br_actor* pNext = pChild->next;
         int sub = DRActorRecurseWithPredicate(pChild, pred, pCar);
         if (sub) {
             return sub;
@@ -3227,7 +3227,7 @@ float C2_HOOK_FASTCALL CrushShapeDistSq(br_vector3* pPoint, int pCount, br_vecto
 float C2_HOOK_FASTCALL CrushShapeBendFactor(br_vector3* pVertexPos, int pCount, br_vector3* pVectors, br_scalar pMaxDistSq) {
     float dist_sq;
 
-    dist_sq = CrushShapeDistSq(pVertexPos, pCount, pVectors);
+    dist_sq = DistSq(pVertexPos, pCount, pVectors);
     if (dist_sq > gMax_crush_dist_sq) {
         return gCrushZero;
     }

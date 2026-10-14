@@ -367,7 +367,7 @@ void C2_HOOK_FASTCALL DisposeVertexData(tModel_detail_vertex_data* pVertex_data)
 float C2_HOOK_FASTCALL DistSq(const br_vector3* pP, int pCount, const br_vector3* pVertices) {
     switch (pCount) {
     case 0:
-        return 0.0f;
+        return gCrushZero;
     case 1:
         return Vector3DistanceSquared(pP, &pVertices[0]);
     case 2:
@@ -926,9 +926,12 @@ void C2_HOOK_FASTCALL TotallyRepairACar(tCar_spec* pCar_spec) {
 // FUNCTION: CARMA2_HW 0x0043ac90
 br_scalar C2_HOOK_FASTCALL NormalizedAngle(br_angle pAngle) {
     if (pAngle >= BR_ANGLE_DEG(180)) {
-        pAngle = (br_angle)-pAngle;
+        goto negate;
     }
-    return BrFixedToScalar(pAngle);
+    return (br_scalar)(pAngle / 65536.0);
+negate:
+    pAngle = (br_angle)-pAngle;
+    return (br_scalar)(pAngle / 65536.0);
 }
 
 br_scalar C2_HOOK_FASTCALL CalculateAmountRepairedFraction(br_angle pOriginal_x, br_angle pOriginal_y, br_angle pOriginal_z, br_angle pRepair_x, br_angle pRepair_y, br_angle pRepair_z, br_scalar* pOriginal_amount) {

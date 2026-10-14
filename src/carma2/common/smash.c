@@ -276,7 +276,7 @@ void C2_HOOK_FASTCALL CleanUpSmashStuff(void) {
     } while (i != 0);
 }
 
-// DisposeSmashData
+// FUNCTION: CARMA2_HW 0x004f0310
 void C2_HOOK_FASTCALL DisposeSmashData(tCar_crush_buffer_entry* pCrush_data) {
     int i;
 

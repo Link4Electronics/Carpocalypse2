@@ -852,8 +852,7 @@ void C2_HOOK_FASTCALL UpdateCollisionObject(tPhysics_object* pCollision_info) {
     }
     pCollision_info->bb2 = pCollision_info->bb1;
 
-    pCollision_info->radius_squared = 0.f
-            + MAX(CARPOCALYPSE2_SQR(pCollision_info->bb2.min.v[0]), CARPOCALYPSE2_SQR(pCollision_info->bb2.max.v[0]))
+    pCollision_info->radius_squared = MAX(CARPOCALYPSE2_SQR(pCollision_info->bb2.min.v[0]), CARPOCALYPSE2_SQR(pCollision_info->bb2.max.v[0]))
             + MAX(CARPOCALYPSE2_SQR(pCollision_info->bb2.min.v[1]), CARPOCALYPSE2_SQR(pCollision_info->bb2.max.v[1]))
             + MAX(CARPOCALYPSE2_SQR(pCollision_info->bb2.min.v[2]), CARPOCALYPSE2_SQR(pCollision_info->bb2.max.v[2]));
     pCollision_info->radius = sqrtf(pCollision_info->radius_squared);
@@ -861,33 +860,35 @@ void C2_HOOK_FASTCALL UpdateCollisionObject(tPhysics_object* pCollision_info) {
 
 // FUNCTION: CARMA2_HW 0x00420ef0
 int C2_HOOK_FASTCALL Collinear(const br_vector3* pV1, const br_vector3* pV2, const br_vector3* pV3) {
-    br_scalar dx21;
+    br_scalar dz31;
+    br_scalar dy31;
     br_scalar dy21;
     br_scalar dz21;
+    br_scalar dx21;
     br_scalar dx31;
-    br_scalar dy31;
-    br_scalar dz31;
     br_scalar cross;
 
+    dz31 = pV3->v[2] - pV1->v[2];
+    dy31 = pV3->v[1] - pV1->v[1];
     dy21 = pV2->v[1] - pV1->v[1];
     dz21 = pV2->v[2] - pV1->v[2];
-    dy31 = pV3->v[1] - pV1->v[1];
-    dz31 = pV3->v[2] - pV1->v[2];
     cross = dz31 * dy21 - dy31 * dz21;
-    if (cross >= 1.0e-6f || cross <= -1.0e-6f) {
-        return 0;
+    if (fabsf(cross) >= 1.0e-6f) {
+        goto not_collinear;
     }
     dx21 = pV2->v[0] - pV1->v[0];
     dx31 = pV3->v[0] - pV1->v[0];
     cross = dx31 * dz21 - dx21 * dz31;
-    if (cross >= 1.0e-6f || cross <= -1.0e-6f) {
-        return 0;
+    if (fabsf(cross) >= 1.0e-6f) {
+        goto not_collinear;
     }
     cross = dx21 * dy31 - dx31 * dy21;
-    if (cross >= 1.0e-6f || cross <= -1.0e-6f) {
-        return 0;
+    if (fabsf(cross) >= 1.0e-6f) {
+        goto not_collinear;
     }
     return 1;
+not_collinear:
+    return 0;
 }
 
 static br_scalar C2_HOOK_FASTCALL PlaneValue(const br_vector4* pPlane, const br_vector3* pP) {
@@ -1471,12 +1472,13 @@ void C2_HOOK_FASTCALL PositionChildren(tPhysics_object *pCollision_info) {
 
 // FUNCTION: CARMA2_HW 0x004c2b20
 void C2_HOOK_FASTCALL InternalPositionChildren(tPhysics_object *pParent, tPhysics_object *pRoot) {
-    tPhysics_object *child;
+    int flags = pParent->flags;
+    tPhysics_object *child = pParent->child;
 
-    if (!(pParent->flags & 0x400)) {
+    if (!(flags & 0x400)) {
         pRoot = pParent;
     }
-    for (child = pParent->child; child != NULL; child = child->next) {
+    for (; child != NULL; child = child->next) {
         if (!(pParent->flags & 0x400)) {
             br_vector3 tv1;
             br_vector3 tv2;
@@ -3693,10 +3695,11 @@ void C2_HOOK_FASTCALL CapOmega(tPhysics_object* pObject) {
     br_scalar t;
 
     t = (pObject->omega.v[0] * pObject->omega.v[0] + pObject->omega.v[1] * pObject->omega.v[1] + pObject->omega.v[2] * pObject->omega.v[2]) * 0.0016f;
-    if (t < 2.4649f) {
+    if (!(t >= 2.4649f)) {
         return;
     }
     t = sqrtf(t) * 0.6369f;
+    t += t;
     pObject->omega.v[0] /= t;
     pObject->omega.v[1] /= t;
     pObject->omega.v[2] /= t;
@@ -3733,11 +3736,19 @@ void C2_HOOK_FASTCALL TranslateObject(tPhysics_object* pObject) {
             friction_sq = friction * friction;
             do {
                 float t;
+                float* tp = &tmpPtr->v[0];
+                float* ap = &axis.v[0];
+                float* ip = &pObject->field_0x230->I.v[0];
+                int n = 3;
                 BrMatrix34TApplyV(&axis, src, &pObject->field_0x230->transform_matrix);
                 num = pObject->field_0x230->omega.v[0] * axis.v[0] + pObject->field_0x230->omega.v[2] * axis.v[2] + pObject->field_0x230->omega.v[1] * axis.v[1] - *oPtr;
-                for (j = 0; j < 3; j++) {
-                    tmpPtr->v[j] = axis.v[j] / pObject->field_0x230->I.v[j];
-                }
+                do {
+                    *tp = *ap / *ip;
+                    tp++;
+                    ap++;
+                    ip++;
+                    n--;
+                } while (n != 0);
                 denom = 1.0 / *iPtr + (tmpPtr->v[0] * axis.v[0] + tmpPtr->v[1] * axis.v[1] + tmpPtr->v[2] * axis.v[2]);
                 t = num / denom;
                 sum_sq += t * t;
@@ -3985,9 +3996,9 @@ void C2_HOOK_FAKE_THISCALL RepositionObjectGroup(tPhysics_object* pObject, float
     float t1;
     float t2;
 
-    t0 = pDt * pObject->v.v[0];
-    t1 = pDt * pObject->v.v[1];
-    t2 = pDt * pObject->v.v[2];
+    t0 = pObject->v.v[0] * pDt;
+    t1 = pObject->v.v[1] * pDt;
+    t2 = pObject->v.v[2] * pDt;
     pObject->actor->t.t.mat.m[3][0] += t0;
     pObject->actor->t.t.mat.m[3][1] += t1;
     pObject->actor->t.t.mat.m[3][2] += t2;
