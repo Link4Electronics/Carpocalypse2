@@ -653,21 +653,20 @@ void C2_HOOK_FASTCALL CheckSingleFace(tFace_ref* pFace, br_vector3* ray_pos, br_
 // FUNCTION: CARMA2_HW 0x0045f690
 void C2_HOOK_FASTCALL FillInBounds(tBounds* bnds) {
     br_vector3 a;
-    br_vector3 b;
     br_vector3 c[3];
     int i;
 
     BrVector3Add(&a, &bnds->original_bounds.min, &bnds->original_bounds.max);
     BrVector3Scale(&a, &a, 0.5f);
     BrMatrix34ApplyP(&bnds->box_centre, &a, bnds->mat);
-    BrVector3Sub(&b, &bnds->original_bounds.max, &bnds->original_bounds.min);
-    bnds->radius = BrVector3Length(&b) / 2.f;
+    BrVector3Sub(&a, &bnds->original_bounds.max, &bnds->original_bounds.min);
+    bnds->radius = BrVector3Length(&a) / 2.f;
     BrMatrix34ApplyP(&bnds->real_bounds.min, &bnds->original_bounds.min, bnds->mat);
     BrVector3Copy(&bnds->real_bounds.max, &bnds->real_bounds.min);
     for (i = 0; i < 3; ++i) {
-        c[i].v[0] = bnds->mat->m[i][0] * b.v[i];
-        c[i].v[1] = bnds->mat->m[i][1] * b.v[i];
-        c[i].v[2] = bnds->mat->m[i][2] * b.v[i];
+        c[i].v[0] = bnds->mat->m[i][0] * a.v[i];
+        c[i].v[1] = bnds->mat->m[i][1] * a.v[i];
+        c[i].v[2] = bnds->mat->m[i][2] * a.v[i];
     }
     for (i = 0; i < 3; ++i) {
         bnds->real_bounds.min.v[i] += (float)(c[2].v[i] < 0.f) * c[2].v[i]
