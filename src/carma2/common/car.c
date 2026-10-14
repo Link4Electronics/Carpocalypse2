@@ -3340,8 +3340,21 @@ void C2_HOOK_FASTCALL FinishCars(tU32 pLast_frame_time, tU32 pTime) {
 
 // FUNCTION: CARMA2_HW 0x004207a0
 int C2_HOOK_FASTCALL PipeNonCarObject(tPhysics_object* pCollision_info, void* pUser_data) {
+    br_actor* actor;
+    tNon_car_spec* non_car;
 
-    NOT_IMPLEMENTED();
+    CARPOCALYPSE2_THISCALL_UNUSED(pUser_data);
+
+    if (pCollision_info->disable_move_rotate == 0) {
+        actor = pCollision_info->actor;
+        if (actor != NULL) {
+            non_car = (tNon_car_spec*)actor->type_data;
+            if (non_car != NULL) {
+                SendNonCarDetachBit((tU16)non_car->car_ID, actor);
+            }
+        }
+    }
+    ((tU8*)pCollision_info->owner)[0xfc] = pCollision_info->disable_move_rotate;
     return 0;
 }
 

@@ -526,6 +526,12 @@ void C2_HOOK_FASTCALL AddNonCarToPipingSession(tPhysics_object* pObject, br_acto
         SIZE_OFFSET_PIPING(tPipe_chunk_non_car, matrix), &pActor->t.t.mat);
 }
 
+// UNLABELED: CARMA2_HW 0x004c6ff0
+void C2_HOOK_FASTCALL SendNonCarDetachBit(int pCar_ID, void* pActor) {
+
+    ARDoSingleVariedSession(0xe, pCar_ID, 2, 4, 0, (uintptr_t)pActor, 0x30, 4, (uintptr_t)((tU8*)pActor + 0x2c));
+}
+
 // FUNCTION: CARMA2_HW 0x004c68a0
 int C2_HOOK_FASTCALL PipeObjectPosition(tPhysics_object* pObject, void* pContext) {
     if (pObject != NULL && pObject->owner != NULL && pObject->flags_0x238 == 1) {
@@ -1548,16 +1554,28 @@ void C2_HOOK_FASTCALL AddFlameToPipingSession(int pIndex, int pFrame, br_scalar 
         2, 0, pFrame, 4, 4, bits, 4, 8, bits, 4, 12, bits, 4, 16, bits);
 }
 
-// STUB: CARMA2_HW 0x004c7130
+// FUNCTION: CARMA2_HW 0x004c7130
 void C2_HOOK_FASTCALL AddSplashToPipingSession(tPhysics_object* pCollision) {
 
-    NOT_IMPLEMENTED();
+    *(volatile float*)&gUNK_0069410c = pCollision->water_d;
+    ARAddVariedDataToSession(0x14, (uintptr_t)pCollision, 2, 4, 0, (uintptr_t)gUNK_0069410c, 0xc, 4, (uintptr_t)&pCollision->water_normal);
 }
 
-// STUB: CARMA2_HW 0x004c7160
+// FUNCTION: CARMA2_HW 0x004c7160
 void C2_HOOK_FASTCALL AddExtendedSplashToPipingSession(tPhysics_object* pCollision, void* pArg2) {
+    tU8 flag;
 
-    NOT_IMPLEMENTED();
+    if (PHILGetObjectProperty(pCollision, 6) != 0.0f) {
+        flag = 0xff;
+    } else {
+        flag = pCollision->flags_0x238;
+    }
+    *(volatile float*)&gUNK_0069410c = pCollision->water_d;
+    ARAddVariedDataToSession(0x3b, (uintptr_t)pArg2, 4,
+        1, 0, (*(int*)&flag) & 0xff,
+        4, 4, gUNK_0069410c,
+        0xc, 8, &pCollision->water_normal,
+        0x18, 0x14, &pCollision->bb2);
 }
 
 // AddCarToPipingSession
