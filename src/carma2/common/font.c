@@ -1390,12 +1390,73 @@ void C2_HOOK_FASTCALL LoadFont(int pFont_ID) {
     PathCat(the_path, gApplication_path, gGraf_specs[gGraf_spec_index].data_dir_name);
     PathCat(the_path, the_path, "FONTS");
     PathCat(the_path, the_path, gFont_names[pFont_ID]);
+
+#ifndef CARPOCALYPSE2_MATCHING
+    /* Load font from TWT archive: mount <name>.TWT then load PIXIES.P16 */
+    {
+        tPath_name pix_path;
+        tTWTVFS twt;
+        extern tTWTVFS C2_HOOK_FASTCALL OpenPackFileAndSetTiffLoading(const char* path);
+        extern void C2_HOOK_FASTCALL ClosePackFileAndSetTiffLoading(tTWTVFS twt);
+        br_pixelmap* maps[100];
+        int count;
+        int biggest = -1;
+        int bigsz = 0;
+
+        twt = OpenPackFileAndSetTiffLoading(the_path);
+        if (twt >= 0) {
+            PathCat(pix_path, the_path, "PIXIES.P16");
+            count = BrPixelmapLoadMany(pix_path, maps, 100);
+            ClosePackFileAndSetTiffLoading(twt);
+
+            for (i = 0; i < count; i++) {
+                if (maps[i] != NULL && maps[i]->width * maps[i]->height > bigsz) {
+                    bigsz = maps[i]->width * maps[i]->height;
+                    biggest = i;
+                }
+            }
+            if (biggest >= 0) {
+                gFonts[pFont_ID].images = maps[biggest];
+            }
+        }
+    }
+    if (gFonts[pFont_ID].images == NULL) {
+        /* Try TIFF from FONTS/tiffrgb/ */
+        tPath_name tif_path;
+        tPath_name base_path;
+        int tif_err;
+
+        strcpy(base_path, the_path);
+        the_path[strlen(the_path) - (int)strlen(gFont_names[pFont_ID]) - 1] = '\0';
+        PathCat(tif_path, the_path, "tiffrgb");
+        PathCat(tif_path, tif_path, gFont_names[pFont_ID]);
+        strcat(tif_path, ".tif");
+        gFonts[pFont_ID].images = LoadTiff16bit(tif_path, 0, &tif_err);
+        if (gFonts[pFont_ID].images != NULL) {
+            strcpy(the_path, base_path);
+            strcat(the_path, ".PIX");
+        }
+    }
+    if (gFonts[pFont_ID].images == NULL) {
+        /* Fallback: try direct .PIX load */
+        strcat(the_path, ".PIX");
+        gFonts[pFont_ID].images = BrPixelmapLoad(the_path);
+    }
+#else
     strcat(the_path, ".PIX");
+    gFonts[pFont_ID].images = BrPixelmapLoad(the_path);
+#endif
+
+    if (gFonts[pFont_ID].images == NULL) {
+        FatalError(kFatalError_CannotLoadFontImage_S, gFont_names[pFont_ID]);
+    }
+    gFonts[pFont_ID].images->row_bytes = (gFonts[pFont_ID].images->row_bytes + 3) & ~3;
+
     if (gFonts[pFont_ID].file_read_once) {
         return;
     }
-    the_path[strlen(the_path) - 3] = '\0';
-    strcat(the_path, "TXT");
+    the_path[strlen(the_path) - 4] = '\0';
+    strcat(the_path, ".TXT");
     file = DRfopen(the_path, "rt");
     if (file == NULL) {
         FatalError(kFatalError_CannotLoadFontWidthTable_S, gFont_names[pFont_ID]);

@@ -127,7 +127,7 @@ int gFirst_frame;
 tPath_node* gOppo_path_nodes;
 
 // GLOBAL: CARMA2_HW 0x00761a44
-tU32 gOppo_junction_table;
+tPath_section* gOppo_junction_table;
 
 // GLOBAL: CARMA2_HW 0x00691724
 int gGrudge_reduction_per_period;
@@ -362,6 +362,8 @@ void C2_HOOK_FASTCALL LoadInOppoPaths(FILE* pF) {
     gProgram_state.AI_vehicles.number_of_path_sections = 0;
     gProgram_state.AI_vehicles.path_nodes = NULL;
     gProgram_state.AI_vehicles.path_sections = NULL;
+    gOppo_path_nodes = NULL;
+    gOppo_junction_table = NULL;
     gBit_per_node = NULL;
     gBIG_APC_index = -1;
 
@@ -488,6 +490,8 @@ void C2_HOOK_FASTCALL LoadInOppoPaths(FILE* pF) {
     } else {
         gBit_per_node = NULL;
     }
+    gOppo_path_nodes = gProgram_state.AI_vehicles.path_nodes;
+    gOppo_junction_table = gProgram_state.AI_vehicles.path_sections;
     DoNotDprintf_opponent("End of LoadInOppoPaths(), totals:");
     DoNotDprintf_opponent("Nodes: %d", gProgram_state.AI_vehicles.number_of_path_nodes);
     DoNotDprintf_opponent("Sections: %d", gProgram_state.AI_vehicles.number_of_path_sections);
@@ -552,12 +556,14 @@ void C2_HOOK_FASTCALL DisposeOpponentPaths(void) {
     }
     gProgram_state.AI_vehicles.number_of_path_nodes = 0;
     gProgram_state.AI_vehicles.path_nodes = NULL;
+    gOppo_path_nodes = NULL;
 
     if (gProgram_state.AI_vehicles.path_sections != NULL) {
         BrMemFree(gProgram_state.AI_vehicles.path_sections);
     }
     gProgram_state.AI_vehicles.number_of_path_sections = 0;
     gProgram_state.AI_vehicles.path_sections = NULL;
+    gOppo_junction_table = NULL;
 
     if (gBit_per_node != NULL) {
         BrMemFree(gBit_per_node);
@@ -3025,21 +3031,22 @@ tS16 C2_HOOK_FASTCALL GetOpponentsSectionMaxSpeed(tOpponent_spec* pOpponent_spec
         int sections = pOpponent_spec->nnext_sections;
         int s = pSection - 20000;
         if (sections > s) {
-            tS16 idx = *(tS16 *)((tU8 *)pOpponent_spec + (tS32)pSection * 4 - 0x13800);
-            tU8 rt_dir = *(tU8 *)((tU8 *)pOpponent_spec + (tS32)pSection * 4 - 0x137fe);
-            tU8* tab = (tU8 *)gOppo_junction_table + (idx * 5 * 4) + 6 + (rt_dir == pTowards_finish);
-            return *tab;
+            tS16 idx = pOpponent_spec->next_sections[pSection - 20000].section_no;
+            tU8 rt_dir = pOpponent_spec->next_sections[pSection - 20000].direction;
+            tU8* tab = (tU8*)gOppo_junction_table + (rt_dir == pTowards_finish);
+            return tab[idx * 5 * 4 + 6];
         }
     }
     if (pSection >= 15000) {
-        return 0xff;
+        goto warn;
     }
     if (pSection == 10000) {
-        return *(tU8 *)((tU8 *)pOpponent_spec + 0x172 + pTowards_finish);
+        return pOpponent_spec->pursue_car_data.direct_line_section.max_speed[pTowards_finish];
     }
-    DoNotDprintf_opponent("WARNING - GetOpponentsSectionMaxSpeed() - section not found in next_section array for opponent %s", (tU8 *)pOpponent_spec->car_spec + 0xec);
+warn:
+    DoNotDprintf_opponent("WARNING - GetOpponentsSectionMaxSpeed() - section not found in next_section array for opponent %s", pOpponent_spec->car_spec->driver_name);
     PDEnterDebugger("WARNING - GetOpponentsSectionMaxSpeed()");
-    return 0;
+    return 0xff;
 }
 
 // FUNCTION: CARMA2_HW 0x004aed50
@@ -3048,19 +3055,18 @@ tS16 C2_HOOK_FASTCALL GetOpponentsSectionMinSpeed(tOpponent_spec* pOpponent_spec
         int sections = pOpponent_spec->nnext_sections;
         int s = pSection - 20000;
         if (sections > s) {
-            tS16 idx = *(tS16 *)((tU8 *)pOpponent_spec + (tS32)pSection * 4 - 0x13800);
-            tU8 rt_dir = *(tU8 *)((tU8 *)pOpponent_spec + (tS32)pSection * 4 - 0x137fe);
-            tU8* tab = (tU8 *)gOppo_junction_table + (idx * 5 * 4) + 4 + (rt_dir == pTowards_finish);
-            return *tab;
+            tS16 idx = pOpponent_spec->next_sections[pSection - 20000].section_no;
+            tU8 rt_dir = pOpponent_spec->next_sections[pSection - 20000].direction;
+            return gOppo_junction_table[idx].min_speed[rt_dir == pTowards_finish];
         }
     }
     if (pSection >= 15000) {
         return 0;
     }
     if (pSection == 10000) {
-        return *(tU8 *)((tU8 *)pOpponent_spec + 0x170 + pTowards_finish);
+        return pOpponent_spec->pursue_car_data.direct_line_section.min_speed[pTowards_finish];
     }
-    DoNotDprintf_opponent("WARNING - GetOpponentsSectionMinSpeed() - section not found in next_section array for opponent %s", (tU8 *)pOpponent_spec->car_spec + 0xec);
+    DoNotDprintf_opponent("WARNING - GetOpponentsSectionMinSpeed() - section not found in next_section array for opponent %s", pOpponent_spec->car_spec->driver_name);
     PDEnterDebugger("WARNING - GetOpponentsSectionMinSpeed()");
     return 0;
 }
@@ -3083,10 +3089,10 @@ int C2_HOOK_FASTCALL RematerialiseOpponentOnThisSection(tOpponent_spec* pOpponen
     if (pSection_no >= 20000 && pOpponent_spec->nnext_sections > pSection_no - 20000) {
         tS16 section_no = pOpponent_spec->next_sections[pSection_no - 20000].section_no;
         tU8 direction = pOpponent_spec->next_sections[pSection_no - 20000].direction;
-        tS16 node_no = ((tS16*)gOppo_junction_table)[section_no * 10 + (tS32)(direction == 0)];
+        tS16 node_no = gOppo_junction_table[section_no].node_indices[direction == 0];
         start = &gOppo_path_nodes[node_no].pos;
     } else if (pSection_no >= 15000) {
-        start = (br_vector3*)((tU8*)pOpponent_spec->pursue_car_data.pursuee + (pSection_no - 0x38ee) * 12);
+        start = &pOpponent_spec->pursue_car_data.pursuee->my_trail.trail_nodes[pSection_no - 15000];
     } else if (pSection_no == 10000) {
         start = &pOpponent_spec->pursue_car_data.direct_line_nodes[0].pos;
     } else {
@@ -3133,17 +3139,17 @@ float C2_HOOK_FASTCALL GetOpponentsSectionWidth(const tOpponent_spec* pOpponent_
         int sections = pOpponent_spec->nnext_sections;
         int s = pSection - 20000;
         if (sections > s) {
-            tS16 idx = *(tS16 *)((tU8 *)pOpponent_spec + (tS32)pSection * 4 - 0x13800);
-            return ((float *)gOppo_junction_table)[idx * 5 + 2];
+            tS16 idx = pOpponent_spec->next_sections[pSection - 20000].section_no;
+            return gOppo_junction_table[idx].width;
         }
     }
     if (pSection >= 15000) {
         return 0.5f;
     }
     if (pSection == 10000) {
-        return *(float *)((tU8 *)pOpponent_spec + 0x174);
+        return pOpponent_spec->pursue_car_data.direct_line_section.width;
     }
-    return ((float *)gOppo_junction_table)[(tS32)pSection * 5 + 2];
+    return gOppo_junction_table[(tS32)pSection].width;
 }
 // DoNotDprintf
 
