@@ -2168,10 +2168,11 @@ void C2_HOOK_FASTCALL RenderElectroBastardRays(br_pixelmap* pRender_screen, br_p
     br_scalar distance;
     br_scalar t;
     int model_updated = 0;
+    br_uint_8 b = 0xff;
 
     the_time = GetTotalTime();
     ARStartPipingSession(ePipe_chunk_prox_ray);
-    for (i = 0; i < CARPOCALYPSE2_ASIZE(gProximity_rays); i++) {
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gProximity_rays); i++) {
 
         if (gProximity_rays[i].start_time == 0) {
             continue;
@@ -2185,10 +2186,10 @@ void C2_HOOK_FASTCALL RenderElectroBastardRays(br_pixelmap* pRender_screen, br_p
             BrActorAdd(gCamera, gLine_actor);
             gLine_model->vertices[0].red = 0x80;
             gLine_model->vertices[0].grn = 0x80;
-            gLine_model->vertices[0].blu = 0x80;
-            gLine_model->vertices[1].red = 0xff;
-            gLine_model->vertices[1].grn = 0xff;
-            gLine_model->vertices[1].blu = 0xff;
+            gLine_model->vertices[0].blu = b;
+            gLine_model->vertices[1].red = b;
+            gLine_model->vertices[1].grn = b;
+            gLine_model->vertices[1].blu = b;
             BrModelUpdate(gLine_model, BR_MODU_ALL);
             model_updated = 1;
         }
@@ -2206,10 +2207,10 @@ void C2_HOOK_FASTCALL RenderElectroBastardRays(br_pixelmap* pRender_screen, br_p
         distance = BrVector3Length(&r1);
         BrVector3Normalise(&r1, &r1);
 
-        BrVector3Copy(&from_pos, &car_pos_cam);
+        from_pos = car_pos_cam;
 
         seed = ped_pos.v[0] + ped_pos.v[1] + ped_pos.v[2] + car_pos.v[0] + car_pos.v[1] + car_pos.v[2];
-        srand(the_time + (int)seed);
+        srand(the_time + *(int*)&seed);
 
         for (t = 0.f; t < distance; t += .05f) {
             BrVector3Scale(&ray, &r1, t);
@@ -2218,7 +2219,7 @@ void C2_HOOK_FASTCALL RenderElectroBastardRays(br_pixelmap* pRender_screen, br_p
             to_pos.v[1] += SRandomPosNeg(.1f);
             to_pos.v[2] += SRandomPosNeg(.1f);
             DrawLine3D(&to_pos, &from_pos, pRender_screen, pDepth_buffer, gProx_ray_shade_table);
-            BrVector3Copy(&from_pos, &to_pos);
+            from_pos = to_pos;
             t += .05f;
         }
         DrawLine3D(&ped_pos_cam, &from_pos, pRender_screen, pDepth_buffer, gProx_ray_shade_table);

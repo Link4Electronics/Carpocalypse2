@@ -1419,7 +1419,7 @@ void C2_HOOK_FASTCALL SetChangingPowerup(br_actor* pActor) {
 // FUNCTION: CARMA2_HW 0x004d8d30
 int C2_HOOK_FASTCALL GotPowerup(tCar_spec* pCar, int pIndex) {
 
-    return GotPowerupX(pCar, pIndex, 1, 1, 0);
+    GotPowerupEarwig(pCar, pIndex, 1, 1);
 }
 
 // FUNCTION: CARMA2_HW 0x004dc170
