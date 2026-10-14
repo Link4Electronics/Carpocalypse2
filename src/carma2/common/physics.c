@@ -846,8 +846,10 @@ void C2_HOOK_FASTCALL UpdateCollisionObject(tPhysics_object* pCollision_info) {
 
         for (i = 0; i < 3; i++) {
 
-            pCollision_info->bb1.min.v[i] = MIN(pCollision_info->bb1.min.v[i], current->common.bb.min.v[i]);
-            pCollision_info->bb1.max.v[i] = MAX(pCollision_info->bb1.max.v[i], current->common.bb.max.v[i]);
+            pCollision_info->bb1.min.v[i] = (pCollision_info->bb1.min.v[i] >= current->common.bb.min.v[i])
+                ? current->common.bb.min.v[i] : pCollision_info->bb1.min.v[i];
+            pCollision_info->bb1.max.v[i] = (pCollision_info->bb1.max.v[i] < current->common.bb.max.v[i])
+                ? current->common.bb.max.v[i] : pCollision_info->bb1.max.v[i];
         }
     }
     pCollision_info->bb2 = pCollision_info->bb1;
@@ -862,32 +864,28 @@ void C2_HOOK_FASTCALL UpdateCollisionObject(tPhysics_object* pCollision_info) {
 int C2_HOOK_FASTCALL Collinear(const br_vector3* pV1, const br_vector3* pV2, const br_vector3* pV3) {
     br_scalar dz31;
     br_scalar dy31;
-    br_scalar dy21;
     br_scalar dz21;
-    br_scalar dx21;
+    br_scalar dy21;
     br_scalar dx31;
+    br_scalar dx21;
     br_scalar cross;
 
-    dz31 = pV3->v[2] - pV1->v[2];
-    dy31 = pV3->v[1] - pV1->v[1];
-    dy21 = pV2->v[1] - pV1->v[1];
+    dz31 = CARPOCALYPSE2_FORCE_FIRST(pV3->v[2]) - pV1->v[2];
+    dy31 = CARPOCALYPSE2_FORCE_FIRST(pV3->v[1]) - pV1->v[1];
     dz21 = pV2->v[2] - pV1->v[2];
+    dy21 = pV2->v[1] - pV1->v[1];
     cross = dz31 * dy21 - dy31 * dz21;
-    if (fabsf(cross) >= 1.0e-6f) {
-        goto not_collinear;
+    if (fabsf(cross) < 1.0e-6f) {
+        dx31 = pV3->v[0] - pV1->v[0];
+        dx21 = pV2->v[0] - pV1->v[0];
+        cross = dx31 * dz21 - dx21 * dz31;
+        if (fabsf(cross) < 1.0e-6f) {
+            cross = dx21 * dy31 - dx31 * dy21;
+            if (fabsf(cross) < 1.0e-6f) {
+                return 1;
+            }
+        }
     }
-    dx21 = pV2->v[0] - pV1->v[0];
-    dx31 = pV3->v[0] - pV1->v[0];
-    cross = dx31 * dz21 - dx21 * dz31;
-    if (fabsf(cross) >= 1.0e-6f) {
-        goto not_collinear;
-    }
-    cross = dx21 * dy31 - dx31 * dy21;
-    if (fabsf(cross) >= 1.0e-6f) {
-        goto not_collinear;
-    }
-    return 1;
-not_collinear:
     return 0;
 }
 
@@ -1182,14 +1180,15 @@ br_scalar C2_HOOK_FASTCALL SignedTwiceAreaOf3DTriangle(const br_vector3* pV1, co
 int C2_HOOK_CDECL CompareAngle(const void* pIndex1, const void* pIndex2) {
     const int* index1 = pIndex1;
     const int* index2 = pIndex2;
+    tCollision_shape_polyhedron_data* poly = gPolyhedron_to_sort;
     br_vector3 edge1;
     br_vector3 edge2;
     br_scalar area;
     br_scalar length1;
     br_scalar length2;
 
-    BrVector3Sub(&edge1, &gPolyhedron_to_sort->points[*index1], &gPolyhedron_to_sort->points[0]);
-    BrVector3Sub(&edge2, &gPolyhedron_to_sort->points[*index2], &gPolyhedron_to_sort->points[0]);
+    BrVector3Sub(&edge1, &poly->points[*index1], &poly->points[0]);
+    BrVector3Sub(&edge2, &poly->points[*index2], &poly->points[0]);
     area = SignedTwiceAreaOf3DTriangle(&edge1, &edge2);
     if (area > 1.0e-6f) {
         return -1;
@@ -1390,12 +1389,14 @@ void C2_HOOK_FASTCALL FillInShape(tPhysics_shape* pShape) {
     case kCollisionShapeType_Wireframe:
         if (pShape->wireframe.wireframe.count_points == 0) {
             PhysicsError(ePhysicsError_WireFrameHasNoPoints, NULL);
+            return;
         }
         GetBoundsFromPointList(pShape->wireframe.wireframe.points, pShape->wireframe.wireframe.count_points, &pShape->common.bb);
-        break;
+        return;
     case kCollisionShapeType_Polyhedron:
         if (pShape->polyhedron.polyhedron.count_points < 4) {
             PhysicsError(ePhysicsError_PolyhedronHasNoPoints, NULL);
+            return;
         }
         error = ConvexHull3D(&pShape->polyhedron.polyhedron);
         if (error != ePhysicsError_Ok) {
@@ -1405,14 +1406,15 @@ void C2_HOOK_FASTCALL FillInShape(tPhysics_shape* pShape) {
             pShape->common.type = kCollisionShapeType_Wireframe_Polyhedron;
         }
         GetBoundsFromPointList(pShape->polyhedron.polyhedron.points, pShape->polyhedron.polyhedron.count_points, &pShape->common.bb);
-        break;
+        return;
     case kCollisionShapeType_Wireframe_Polyhedron:
         if (pShape->polyhedron.polyhedron.count_points < 3) {
             PhysicsError(4, NULL);
+            return;
         }
         AddPolyhedronCollisionShapePlanes(&pShape->polyhedron.polyhedron);
         GetBoundsFromPointList(pShape->polyhedron.polyhedron.points, pShape->polyhedron.polyhedron.count_points, &pShape->common.bb);
-        break;
+        return;
     case kCollisionShapeType_Sphere:
         BrVector3Copy(&pShape->common.bb.min, &pShape->sphere.sphere.center);
         BrVector3Copy(&pShape->common.bb.max, &pShape->sphere.sphere.center);
@@ -1421,12 +1423,12 @@ void C2_HOOK_FASTCALL FillInShape(tPhysics_shape* pShape) {
             pShape->common.bb.max.v[i] += pShape->sphere.sphere.radius;
         }
         pShape->sphere.sphere.radius_squared = CARPOCALYPSE2_SQR(pShape->sphere.sphere.radius);
-        break;
+        return;
     case kCollisionShapeType_Box:
-        break;
+        return;
     default:
         PhysicsError(ePhysicsError_UnknownShapeType, NULL);
-        break;
+        return;
     }
 }
 
@@ -2338,6 +2340,7 @@ int C2_HOOK_FASTCALL CheckForObjectHierachyTouchingAnotherObject(tPhysics_object
     tPhysics_object* obj;
     tPhysics_object* item;
     tPhysics_object* child;
+    int face;
 
     if (pObject->field_0xf4.min.v[0] - pList->field_0xf4.max.v[0] > 0.01
         || pObject->field_0xf4.min.v[1] - pList->field_0xf4.max.v[1] > 0.01
@@ -2360,8 +2363,9 @@ int C2_HOOK_FASTCALL CheckForObjectHierachyTouchingAnotherObject(tPhysics_object
         }
         obj = obj->parent;
     }
+    face = gFace_num__car - 2;
     obj->disable_move_rotate = 0;
-    obj->box_face_ref = gFace_num__car - 2;
+    obj->box_face_ref = face;
     if (obj->child != NULL || obj->physics_joint1 != NULL || obj->physics_joint2 != NULL) {
         if (obj->field_0x218 == 0) {
             MoveJointedObject(obj CARPOCALYPSE2_THISCALL_EDX, 0.f);
@@ -3461,6 +3465,7 @@ void C2_HOOK_FASTCALL ResetOmegaTree(tPhysics_object* pObject) {
 }
 
 #pragma auto_inline(off)
+#pragma inline_depth(0)
 // FUNCTION: CARMA2_HW 0x004c0ac0
 void C2_HOOK_FASTCALL RotateObjectFirstOrder(void* pContact, tWorld_callbacks* pWorld_callbacks) {
     tCollision_contact* contact;
@@ -3688,6 +3693,7 @@ void C2_HOOK_FASTCALL RotateObjectFirstOrder(void* pContact, tWorld_callbacks* p
         CapOmega(obj1);
     }
 }
+#pragma inline_depth()
 #pragma auto_inline(on)
 
 // FUNCTION: CARMA2_HW 0x004c1840
@@ -3777,13 +3783,17 @@ void C2_HOOK_FASTCALL TranslateObject(tPhysics_object* pObject) {
 
     joint = pObject->physics_joint2;
     if (joint != NULL && joint->friction != 0.0f) {
+        float* iPtr2 = &pObject->I.v[0];
+        float* oPtr2 = &pObject->omega.v[0];
         friction = joint->friction * 0.04f;
         friction_sq = friction * friction;
         sum_sq = 0.0f;
         for (i = 0; i < 3; i++) {
-            float u = pObject->omega.v[i] * pObject->I.v[i];
+            float u = *iPtr2 * *oPtr2;
             sum_sq += u * u;
             imp[i] = u;
+            iPtr2++;
+            oPtr2++;
         }
         if (friction_sq < sum_sq) {
             scale = sqrtf(friction_sq / sum_sq);

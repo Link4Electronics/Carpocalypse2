@@ -385,19 +385,16 @@ float C2_HOOK_FASTCALL DistSq(const br_vector3* pP, int pCount, const br_vector3
 float C2_HOOK_FASTCALL PointTriangleDistSq(const br_vector3* pP, const br_vector3* pA, const br_vector3* pB, const br_vector3* pC) {
     br_vector3 ab;
     br_vector3 bc;
-    br_vector3 ca;
     br_vector3 normal;
-    br_vector3 offset;
     br_vector3 projected;
+    br_vector3 ca;
     float distance;
 
     BrVector3Sub(&ab, pB, pA);
     BrVector3Sub(&bc, pC, pB);
-    BrVector3Sub(&ca, pA, pC);
     BrVector3Cross(&normal, &ab, &bc);
     BrVector3Normalise(&normal, &normal);
-    BrVector3Sub(&offset, pP, pA);
-    distance = BrVector3Dot(&offset, &normal);
+    distance = (pP->v[0] - pA->v[0]) * normal.v[0] + (pP->v[1] - pA->v[1]) * normal.v[1] + (pP->v[2] - pA->v[2]) * normal.v[2];
     BrVector3Scale(&projected, &normal, distance);
     BrVector3Sub(&projected, pP, &projected);
     if (OutsideEdgeLine(&projected, pA, &ab, pC)) {
@@ -406,6 +403,7 @@ float C2_HOOK_FASTCALL PointTriangleDistSq(const br_vector3* pP, const br_vector
     if (OutsideEdgeLine(&projected, pB, &bc, pA)) {
         return PointEdgeDistSq(pP, pB, pC);
     }
+    BrVector3Sub(&ca, pA, pC);
     if (OutsideEdgeLine(&projected, pA, &ca, pB)) {
         return PointEdgeDistSq(pP, pA, pC);
     }
@@ -506,9 +504,14 @@ int C2_HOOK_FASTCALL TooFarToCrush(const br_model* pModel, int pCount, const br_
     BrVector3Sub(&diagonal, &pModel->bounds.max, &pModel->bounds.min);
     threshold = BrVector3LengthSquared(&diagonal) + pMax_dist_sq;
     if (DistSq(&pModel->bounds.min, pCount, pVertices) > threshold) {
-        return 1;
+        goto too_far;
     }
-    return DistSq(&pModel->bounds.max, pCount, pVertices) > threshold;
+    if (DistSq(&pModel->bounds.max, pCount, pVertices) > threshold) {
+        goto too_far;
+    }
+    return 0;
+too_far:
+    return 1;
 }
 
 int C2_HOOK_FASTCALL NearestAxis(const br_vector3* pVector) {
@@ -925,11 +928,9 @@ void C2_HOOK_FASTCALL TotallyRepairACar(tCar_spec* pCar_spec) {
 
 // FUNCTION: CARMA2_HW 0x0043ac90
 br_scalar C2_HOOK_FASTCALL NormalizedAngle(br_angle pAngle) {
-    if (pAngle >= BR_ANGLE_DEG(180)) {
-        goto negate;
+    if (pAngle < BR_ANGLE_DEG(180)) {
+        return (br_scalar)(pAngle / 65536.0);
     }
-    return (br_scalar)(pAngle / 65536.0);
-negate:
     pAngle = (br_angle)-pAngle;
     return (br_scalar)(pAngle / 65536.0);
 }
