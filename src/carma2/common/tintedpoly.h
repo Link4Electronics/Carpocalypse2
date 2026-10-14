@@ -34,8 +34,10 @@ extern int C2_HOOK_FASTCALL CreateTintedPoly(int x0, int y0, int width, int heig
 // GetUniqueFileName
 
 // UpdateFirePoly
+void C2_HOOK_FASTCALL UpdateFirePoly(int pIndex);
 
 // UpdatePulsePoly
+void C2_HOOK_FASTCALL UpdatePulsePoly(int pIndex);
 
 // ProcessTintedPoly
 
@@ -44,5 +46,7 @@ extern int C2_HOOK_FASTCALL CreateTintedPoly(int x0, int y0, int width, int heig
 // SetTintedPolySize
 
 // TintedPolyIsOn
+
+void C2_HOOK_FASTCALL UpdateTintedPolyByMaterial(int pTintedIndex);
 
 #endif // GUARD_TINTEDPOLY_H

@@ -6344,20 +6344,16 @@ int C2_HOOK_FASTCALL CalmDownAllPeds(void) {
 
 // FUNCTION: CARMA2_HW 0x004cadc0
 void C2_HOOK_FASTCALL InitPolyPedSystem(void) {
+
     if (gPedsFolder == NULL) {
-        gPedsFolder = "PEDS";
-        SetDefaultSoundFolderName();
-        SetDefaultPowerupFilename();
-        SetDefaultTextFileName();
-        SetDefaultPixelmapFolderName();
+        SetDefaultPedFolderNames();
     }
+
     InitBoner(&gPed_forms_vtable);
     ReadSettingsFile();
     InitFaceCaches();
-    InitOtherPedStuff();
     InitNapalmNolts();
-    gPeds_already_munged = 0;
-    gPed_last_munging = 0;
+    InitOtherPedStuff();
 }
 
 // DisposePedSpawnSpec

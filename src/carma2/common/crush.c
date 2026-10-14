@@ -1,4 +1,5 @@
 #include "crush.h"
+#include "crush1.h"
 
 #include "animation.h"
 #include "car.h"
@@ -859,39 +860,35 @@ void C2_HOOK_FASTCALL InitModelMasterCrushData(tCar_spec* pCar_spec) {
 }
 
 void C2_HOOK_FASTCALL CheckHingePointOrder(tCar_crush_flap_data* pHinge, br_model* pModel, br_vector3* pPos) {
-    br_vector3 tv1, tv2, tv3;
+    const br_vertex* vertices = pModel->vertices;
+    br_vector3 hinge01;
+    br_vector3 hinge02;
+    br_vector3 normal;
+    br_vector3 center_offset;
 
-    BrVector3Sub(&tv1, &pModel->vertices[pHinge->hinge1].p, &pModel->vertices[pHinge->hinge0].p);
-    BrVector3Sub(&tv2, &pModel->vertices[pHinge->hinge2].p, &pModel->vertices[pHinge->hinge0].p);
-    BrVector3Cross(&tv3, &tv2, &tv1);
-    Vector3Average(&tv1, &pModel->bounds.min, &pModel->bounds.max);
-    BrVector3Sub(&tv1, &tv1, pPos);
-    if (BrVector3Dot(&tv1, &tv3) > 0.f) {
-        tU16 tmp;
+    BrVector3Sub(&hinge01, &vertices[pHinge->hinge1].p, &vertices[pHinge->hinge0].p);
+    BrVector3Sub(&hinge02, &vertices[pHinge->hinge2].p, &vertices[pHinge->hinge0].p);
+    BrVector3Cross(&normal, &hinge02, &hinge01);
+    Vector3Average(&center_offset, &pModel->bounds.min, &pModel->bounds.max);
+    BrVector3Sub(&center_offset, &center_offset, pPos);
+    if (BrVector3Dot(&center_offset, &normal) > 0.0f) {
+        tU16 hinge1 = pHinge->hinge1;
 
-        tmp = pHinge->hinge0;
-        pHinge->hinge0 = pHinge->hinge1;
-        pHinge->hinge1 = tmp;
+        pHinge->hinge1 = pHinge->hinge0;
+        pHinge->hinge0 = hinge1;
     }
 }
+
 
 // FUNCTION: CARMA2_HW 0x0042bb00
 tU16 C2_HOOK_FASTCALL FindNearestVertex(br_vector3* pPoint, const br_model* pModel) {
     tU16 closest_vertex = 0;
     br_scalar closest_dist = BR_SCALAR_MAX;
-    tU16 count;
-    const br_vertex* vertices;
     tU16 i;
-    br_scalar d;
 
-    count = pModel->nvertices;
-    if (count == 0) {
-        return closest_vertex;
-    }
-    vertices = pModel->vertices;
-    for (i = 0; i < count; i++) {
-        d = Vector3DistanceSquared(pPoint, &vertices[i].p);
-        if (!(d >= closest_dist)) {
+    for (i = 0; i < pModel->nvertices; i++) {
+        br_scalar d = Vector3DistanceSquared(pPoint, &pModel->vertices[i].p);
+        if (d < closest_dist) {
             closest_dist = d;
             closest_vertex = i;
         }
@@ -900,13 +897,22 @@ tU16 C2_HOOK_FASTCALL FindNearestVertex(br_vector3* pPoint, const br_model* pMod
 }
 
 tU16 C2_HOOK_FASTCALL FindNearestParentVertex(br_actor* pActor, br_vector3* pPos) {
-    br_vector3 p;
+    br_actor* parent = pActor->parent;
+    tUser_crush_data* parent_user;
+    br_model* parent_model = NULL;
+    br_vector3 point;
 
-    if (pActor->parent == NULL || pActor->parent->user == NULL || ((tUser_crush_data*)pActor->parent->user)->models[0] == NULL) {
+    if (parent != NULL) {
+        parent_user = parent->user;
+        if (parent_user != NULL) {
+            parent_model = parent_user->models[0];
+        }
+    }
+    if (parent_model == NULL) {
         PDFatalError("I can't cope flapping bit doesn't have a valid parent");
     }
-    BrMatrix34ApplyP(&p, pPos, &pActor->t.t.mat);
-    return FindNearestVertex(&p,  ((tUser_crush_data*)pActor->parent->user)->models[0]);
+    BrMatrix34ApplyP(&point, pPos, &pActor->t.t.mat);
+    return FindNearestVertex(&point, parent_model);
 }
 
 // FUNCTION: CARMA2_HW 0x0042bb90
@@ -986,53 +992,65 @@ void C2_HOOK_FASTCALL SetUpSemiDetachJointStuff(tCar_crush_detach_data* pDetach_
 
 // FUNCTION: CARMA2_HW 0x0042b7f0
 intptr_t C2_HOOK_CDECL InitPhysCrushDataCB(br_actor* actor, void* data) {
-    tInitPhysCrushDataCB_Data* context;
+    tInitPhysCrushDataCB_Data* context = data;
     tUser_crush_data* user_crush_data;
     tCar_crush_buffer_entry* crush_data;
     br_model* model;
     tCar_crush_flap_data* flap_data;
+    tCar_crush_detach_data* detach_data;
+    double volume;
 
-    context = data;
     user_crush_data = actor->user;
     if (user_crush_data == NULL) {
         return 0;
     }
     crush_data = user_crush_data->crush_data;
-    model = user_crush_data->models[0];
-    if (crush_data == NULL || model == NULL) {
+    if (crush_data == NULL) {
         return 0;
     }
-    crush_data->field_0x24 = (
-            (model->bounds.max.v[2] - model->bounds.min.v[2])
-          * (model->bounds.max.v[1] - model->bounds.min.v[1])
-          * (model->bounds.max.v[0] - model->bounds.min.v[0])) * context->value;
-    if (crush_data->field_0x24 < 0.01f) {
+    model = user_crush_data->models[0];
+    if (model == NULL) {
+        return 0;
+    }
+    volume = ((double)model->bounds.max.v[0] - model->bounds.min.v[0])
+           * ((double)model->bounds.max.v[1] - model->bounds.min.v[1])
+           * ((double)model->bounds.max.v[2] - model->bounds.min.v[2])
+           * context->value;
+    crush_data->field_0x24 = (float)volume;
+    if (!(volume >= 0.01f)) {
         crush_data->field_0x24 = 0.01f;
     }
     flap_data = crush_data->flap_data;
     if (flap_data != NULL) {
         br_vector3 tv;
+        const br_vertex* vertices;
+        tCar_crush_flap_data* current_flap;
+        tU16 parent_vertex;
+
         if ((flap_data->kev_o_flap & 0x2) == 0) {
             CheckHingePointOrder(flap_data, model, &context->car->collision_info->cmpos);
         }
-        flap_data->field_0xc = FindNearestParentVertex(actor, &model->vertices[flap_data->hinge0].p);
-        flap_data->field_0x12 = FindNearestParentVertex(actor, &model->vertices[flap_data->hinge2].p);
-        BrVector3Sub(&tv, &model->vertices[flap_data->hinge2].p, &model->vertices[flap_data->hinge1].p);
-        flap_data->field_0x1c = BrVector3Length(&tv) / 2.f;
+        parent_vertex = FindNearestParentVertex(actor, &model->vertices[crush_data->flap_data->hinge0].p);
+        crush_data->flap_data->field_0xc = parent_vertex;
+        parent_vertex = FindNearestParentVertex(actor, &model->vertices[crush_data->flap_data->hinge2].p);
+        crush_data->flap_data->field_0x12 = parent_vertex;
+        vertices = model->vertices;
+        BrVector3Sub(&tv, &vertices[flap_data->hinge2].p, &vertices[flap_data->hinge1].p);
+        current_flap = crush_data->flap_data;
+        current_flap->field_0x1c = BrVector3Length(&tv) * 0.5f;
     }
-    if (crush_data->detach_data != NULL) {
-        crush_data->detach_data->field_0x2c = context->car;
-
-        SetUpSemiDetachJointStuff(crush_data->detach_data, model, &context->car->collision_info->bb1);
+    detach_data = crush_data->detach_data;
+    if (detach_data != NULL) {
+        detach_data->field_0x2c = context->car;
+        SetUpSemiDetachJointStuff(detach_data, model, &context->car->collision_info->bb1);
     }
     return 0;
 }
 
 void C2_HOOK_FASTCALL InitPhysCrushData(tCar_spec* pCar_spec) {
-    tPhysics_object* collision_info;
+    tPhysics_object* collision_info = pCar_spec->collision_info;
     tInitPhysCrushDataCB_Data data;
 
-    collision_info = pCar_spec->collision_info;
     data.car = pCar_spec;
     data.value = collision_info->M /
                  ((collision_info->bb2.max.v[0] - collision_info->bb2.min.v[0]) *
@@ -1046,29 +1064,28 @@ void C2_HOOK_FASTCALL CalculateReferencePoints(br_model* pModel, br_model* pPare
     float d_min, d_max;
     br_vector3 min_v, max_v;
 
-    if (pModel == NULL || pParent_model == NULL) {
+    if (pModel == NULL && pParent_model == NULL) {
         return;
     }
     d_max = d_min = BR_SCALAR_MAX;
     BrMatrix34ApplyP(&min_v, &pModel->bounds.min, &pActor->t.t.mat);
     BrMatrix34ApplyP(&max_v, &pModel->bounds.max, &pActor->t.t.mat);
-
     for (i = 0; i < pParent_model->nvertices; i++) {
         float d;
 
-        d = Vector3Distance(&min_v, &pParent_model->vertices[i].p);
-        if (d < d_min) {
-            pDetach_data->min_vertex = i;
+        d = Vector3DistanceSquared(&min_v, &pParent_model->vertices[i].p);
+        if (!(d >= d_min)) {
             d_min = d;
+            pDetach_data->min_vertex = (tU16)i;
         }
-
-        d = Vector3Distance(&max_v, &pParent_model->vertices[i].p);
-        if (d < d_max) {
-            pDetach_data->max_vertex = i;
+        d = Vector3DistanceSquared(&max_v, &pParent_model->vertices[i].p);
+        if (!(d >= d_max)) {
             d_max = d;
+            pDetach_data->max_vertex = (tU16)i;
         }
     }
 }
+
 
 // FUNCTION: CARMA2_HW 0x0042b590
 intptr_t C2_HOOK_FASTCALL SoftnessOfNearestPointCB(br_actor* pActor, br_vector3* pPoint, void* pData) {
@@ -1183,6 +1200,7 @@ float C2_HOOK_FASTCALL SoftnessOfNearestPoint(tCar_spec* pCar_spec, br_vector3* 
 // FUNCTION: CARMA2_HW 0x0042b0e0
 void C2_HOOK_FASTCALL SetUpShapeLimitingStuff(tCar_crush_spec* pCar_crush, tCar_spec* pCar_spec) {
     br_bounds3 wheel_all_bounds;
+    const double inverse_world_scale = 1.0 / 6.9;
     int i;
 
     BrVector3Copy(&wheel_all_bounds.min, &pCar_spec->wpos[0]);
@@ -1191,16 +1209,18 @@ void C2_HOOK_FASTCALL SetUpShapeLimitingStuff(tCar_crush_spec* pCar_crush, tCar_
         int j;
 
         for (j = 0; j < 3; j++) {
-            if (pCar_spec->wpos[i].v[j] < wheel_all_bounds.min.v[j]) {
+            if (!(pCar_spec->wpos[i].v[j] >= wheel_all_bounds.min.v[j])) {
                 wheel_all_bounds.min.v[j] = pCar_spec->wpos[i].v[j];
             } else if (pCar_spec->wpos[i].v[j] > wheel_all_bounds.max.v[j]) {
                 wheel_all_bounds.max.v[j] = pCar_spec->wpos[i].v[j];
             }
         }
     }
-    BrVector3InvScale(&wheel_all_bounds.min, &wheel_all_bounds.min, WORLD_SCALE);
-    BrVector3InvScale(&wheel_all_bounds.max, &wheel_all_bounds.max, WORLD_SCALE);
-    for (i = 0; i < CARPOCALYPSE2_ASIZE(pCar_spec->wheel_actors); i++) {
+    for (i = 0; i < 3; i++) {
+        wheel_all_bounds.min.v[i] = (float)(wheel_all_bounds.min.v[i] * inverse_world_scale);
+        wheel_all_bounds.max.v[i] = (float)(wheel_all_bounds.max.v[i] * inverse_world_scale);
+    }
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(pCar_spec->wheel_actors); i++) {
         br_actor* wheel_actor = pCar_spec->wheel_actors[i];
         tUser_crush_data* user_crush_data;
         br_model* wheel_model;
@@ -1220,11 +1240,12 @@ void C2_HOOK_FASTCALL SetUpShapeLimitingStuff(tCar_crush_spec* pCar_crush, tCar_
             continue;
         }
         BrActorToActorMatrix34(&wheel_to_car, wheel_actor, pCar_spec->car_model_actor);
-        BrVector3Add(&wheel_bounds.min, &wheel_model->bounds.min, (br_vector3*)wheel_to_car.m[3]);
-        BrVector3Add(&wheel_bounds.max, &wheel_model->bounds.max, (br_vector3*)wheel_to_car.m[3]);
         for (j = 0; j < 3; j++) {
-
-            if (wheel_bounds.min.v[j] < wheel_all_bounds.min.v[j]) {
+            wheel_bounds.min.v[j] = wheel_model->bounds.min.v[j] + wheel_to_car.m[3][j];
+            wheel_bounds.max.v[j] = wheel_model->bounds.max.v[j] + wheel_to_car.m[3][j];
+        }
+        for (j = 0; j < 3; j++) {
+            if (!(wheel_bounds.min.v[j] >= wheel_all_bounds.min.v[j])) {
                 wheel_all_bounds.min.v[j] = wheel_bounds.min.v[j];
             } else if (wheel_bounds.max.v[j] > wheel_all_bounds.max.v[j]) {
                 wheel_all_bounds.max.v[j] = wheel_bounds.max.v[j];
@@ -1237,14 +1258,13 @@ void C2_HOOK_FASTCALL SetUpShapeLimitingStuff(tCar_crush_spec* pCar_crush, tCar_
         for (j = 0; j < pCar_crush->count_limits.counts[i][0]; j++) {
             pCar_crush->field_0xbc.limits[i][0].values[j] = pCar_crush->limits.limits[i][0].values[j];
         }
-        pCar_crush->field_0xbc.limits[i][0].values[pCar_crush->count_limits.counts[i][0]] = wheel_all_bounds.max.v[i];
-        pCar_crush->field_0xa4.counts[i][0] += 1;
-
+        pCar_crush->field_0xbc.limits[i][0].values[j] = wheel_all_bounds.max.v[i];
+        pCar_crush->field_0xa4.counts[i][0] = j + 1;
         for (j = 0; j < pCar_crush->count_limits.counts[i][1]; j++) {
             pCar_crush->field_0xbc.limits[i][1].values[j] = pCar_crush->limits.limits[i][1].values[j];
         }
-        pCar_crush->field_0xbc.limits[i][1].values[pCar_crush->count_limits.counts[i][1]] = wheel_all_bounds.min.v[i];
-        pCar_crush->field_0xa4.counts[i][1] += 1;
+        pCar_crush->field_0xbc.limits[i][1].values[j] = wheel_all_bounds.min.v[i];
+        pCar_crush->field_0xa4.counts[i][1] = j + 1;
     }
     for (i = 0; i < 3; i++) {
         qsort(pCar_crush->field_0xbc.limits[i][0].values, pCar_crush->field_0xa4.counts[i][0], sizeof(float), DecreasingCompare);
@@ -1256,15 +1276,16 @@ void C2_HOOK_FASTCALL SetUpShapeLimitingStuff(tCar_crush_spec* pCar_crush, tCar_
 
         for (j = 0; j < shape_info->count_points; j++) {
             int failed;
+            tU16 number;
+            float softness;
 
-            shape_info->field_0x18[j].field_0x28 = CrushLimitNumber(
-                &shape_info->field_0x18[j].field_0x18,
-                &pCar_crush->field_0xbc, &pCar_crush->field_0xa4,
-                &failed);
+            number = CrushLimitNumber(&shape_info->field_0x18[j].field_0x0, &pCar_crush->field_0xbc, &pCar_crush->field_0xa4, &failed);
+            shape_info->field_0x18[j].field_0x28 = number;
             if (failed == 0) {
-                shape_info->field_0x18[j].field_0x24 = SoftnessOfNearestPoint(pCar_spec, &shape_info->field_0x18[j].field_0x18);
+                softness = SoftnessOfNearestPoint(pCar_spec, &shape_info->field_0x18[j].field_0x0);
+                shape_info->field_0x18[j].field_0x24 = softness;
             } else {
-                shape_info->field_0x18[j].field_0x24 = 0.f;
+                shape_info->field_0x18[j].field_0x24 = 0.0f;
             }
         }
     }
@@ -1286,6 +1307,9 @@ intptr_t C2_HOOK_CDECL InitModelCrushDataCB(br_actor* actor, void* data) {
     }
     return 0;
 }
+
+// InitModelCrushData
+
 
 void C2_HOOK_FASTCALL InitModelCrushData(tCar_spec* pCar_spec) {
     DRActorEnumRecurse(pCar_spec->car_model_actor, InitModelCrushDataCB, pCar_spec);
@@ -1460,12 +1484,13 @@ void C2_HOOK_FASTCALL InitModelVertexData(tModel_detail_vertex_data* pVertex_dat
 
     for (i = 0; i < pModel->nvertices; i++) {
         int invalid;
+        tU16 number;
 
-        CompressVector3(&pVertex_data[i].p, &pModel->vertices[i].p, -10.f, 10.f);
-        pVertex_data[i].limit_number = CrushLimitNumber(&pModel->vertices[i].p, &pCar_crush_spec->limits, &pCar_crush_spec->count_limits, &invalid);
+        CompressVector3(&pVertex_data[i].p, &pModel->vertices[i].p, -10.0f, 10.0f);
+        number = CrushLimitNumber(&pModel->vertices[i].p, &pCar_crush_spec->limits, &pCar_crush_spec->count_limits, &invalid);
+        pVertex_data[i].limit_number = (tS16)number;
     }
     if (pDetail_level == 0 && pCrush_data != NULL && pCrush_data->flap_data != NULL) {
-
         SetFlapCheckVertices(pCrush_data->flap_data, pModel, pVertex_data);
     }
 }
@@ -3191,7 +3216,7 @@ intptr_t C2_HOOK_FASTCALL CrushCarModelCbfn(br_actor* pActor, br_matrix34* pMat,
     return 0;
 }
 
-// FUNCTION: CARMA2_HW 0x0042c8b0
+// CrushShapeDistSq
 float C2_HOOK_FASTCALL CrushShapeDistSq(br_vector3* pPoint, int pCount, br_vector3* pVectors) {
 
     NOT_IMPLEMENTED();

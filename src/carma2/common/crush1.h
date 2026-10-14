@@ -94,28 +94,30 @@ float C2_HOOK_FASTCALL DistanceToBounds(const br_vector3* pPoint, const br_bound
 extern void C2_HOOK_FASTCALL DisposeMasterCrushData(tCar_crush_spec* pCar_crush, tCar_spec* pCar);
 
 // DisposeCrushData
+void C2_HOOK_FASTCALL DisposeCrushData(tCar_crush_buffer_entry* pCrush_data);
 
 // DisposeVertexData
+void C2_HOOK_FASTCALL DisposeVertexData(tModel_detail_vertex_data* pVertex_data);
 
 // BuckleTheBugger
 
-// OutsideEdgeLine
+float C2_HOOK_FASTCALL DistSq(const br_vector3* pP, int pCount, const br_vector3* pVertices);
 
-// PointTriangleDistSq
+float C2_HOOK_FASTCALL PointTriangleDistSq(const br_vector3* pP, const br_vector3* pA, const br_vector3* pB, const br_vector3* pC);
 
-// PointRectDistSq
+int C2_HOOK_FASTCALL OutsideEdgeLine(const br_vector3* pPoint, const br_vector3* pA, const br_vector3* pDirection, const br_vector3* pInside);
 
-// PointSimplexDistSq
+float C2_HOOK_FASTCALL PointRectDistSq(const br_vector3* pP, const br_vector3* pA, const br_vector3* pB, const br_vector3* pC);
 
-// DistSq
+float C2_HOOK_FASTCALL PointSimplexDistSq(const br_vector3* pP, int pCount, const br_vector3* pVertices);
 
 // LimitImpactScale
 
 // GetImpactScale
 
-// TooFarToCrush
+int C2_HOOK_FASTCALL TooFarToCrush(const br_model* pModel, int pCount, const br_vector3* pVertices, float pMax_dist_sq);
 
-// NearestAxis
+int C2_HOOK_FASTCALL NearestAxis(const br_vector3* pVector);
 
 // CrushModel
 
@@ -141,7 +143,7 @@ extern void C2_HOOK_FASTCALL DisposeMasterCrushData(tCar_crush_spec* pCar_crush,
 
 // ExpandCrush
 
-// RemoveDuplicatePoints
+void C2_HOOK_FASTCALL RemoveDuplicatePoints(int* pCount_out, br_vector3* pPoints_out, int pCount_in, const br_vector3* pPoints_in);
 
 // SimpleCrushModel
 
@@ -420,8 +422,9 @@ extern void C2_HOOK_FASTCALL TotallyRepairACar(tCar_spec* pCar_spec);
 // UnBendOtherThings
 
 // NormalizedAngle
+br_scalar C2_HOOK_FASTCALL NormalizedAngle(br_angle pAngle);
 
-// CalculateAmountRepairedFraction
+br_scalar C2_HOOK_FASTCALL CalculateAmountRepairedFraction(br_angle pOriginal_x, br_angle pOriginal_y, br_angle pOriginal_z, br_angle pRepair_x, br_angle pRepair_y, br_angle pRepair_z, br_scalar* pOriginal_amount);
 
 // UnBendCar
 

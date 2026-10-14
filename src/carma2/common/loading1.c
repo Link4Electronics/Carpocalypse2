@@ -799,13 +799,15 @@ FILE* C2_HOOK_FASTCALL DRfopen(const char* pFilename, const char* pMode) {
     FILE *result;
 
     result = OldDRfopen(pFilename, pMode);
+
     if (result == NULL && !gAllow_open_to_fail) {
         char buffer[256];
+        int buffer_size = sizeof(buffer) - 1;
 
-        if (GetRegisterSourceLocation(buffer)) {
+        if (PDGetRegisterSourceLocation(buffer, &buffer_size)) {
             if (!PDCheckDriveExists(buffer)) {
                 if (gMisc_strings[0] != NULL) {
-                    PDFatalError(GetMiscString(eMiscString_could_not_find_carmageddon_cd));
+                    PDFatalError(GetMiscString(243));
                 } else {
                     PDFatalError("Could not find the Carmageddon CD");
                 }
@@ -842,19 +844,34 @@ void C2_HOOK_FASTCALL DisposePhysicsObject(tPhysics_object* pObject) {
 
 // FUNCTION: CARMA2_HW 0x0044be80
 intptr_t C2_HOOK_CDECL DisposeCarActModDataCB(br_actor* pActor, void* pContext) {
-#ifndef CARPOCALYPSE2_MATCHING
-    if (pActor->type_data != NULL) {
-        BrMemFree(pActor->type_data);
-        pActor->type_data = NULL;
+    tUser_crush_data* crush_data = pActor->user;
+    tCar_spec* car = pContext;
+    int i;
+
+    if (crush_data == NULL) {
+        return 0;
     }
-    return 0;
-#else
-    if (pActor->type_data != NULL) {
-        BrMemFree(pActor->type_data);
-        pActor->type_data = NULL;
+    for (i = 0; i < car->count_detail_levels; i++) {
+        br_model* model = crush_data->models[i];
+
+        if (model != NULL && model->user != NULL) {
+            tUser_detail_level_model* model_data = model->user;
+
+            if (model_data->field_0x4 != NULL) {
+                DisposeVertexData(model_data->field_0x4);
+                model_data->field_0x4 = NULL;
+            }
+            BrMemFree(model_data);
+            model->user = NULL;
+        }
     }
+    if (crush_data->crush_data != NULL) {
+        DisposeCrushData(crush_data->crush_data);
+        crush_data->crush_data = NULL;
+    }
+    BrMemFree(crush_data);
+    pActor->user = NULL;
     return 0;
-#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0044bbe0

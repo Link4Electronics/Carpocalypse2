@@ -209,8 +209,13 @@ void C2_HOOK_FASTCALL Joystick_BackupSettings(void) {
 
 // FUNCTION: CARMA2_HW 0x0045bd50
 void C2_HOOK_FASTCALL EnableJoysticks(void) {
+    tButtonJoystickInfo* info;
 
-    NOT_IMPLEMENTED();
+    PDEnableJoysticks();
+    info = PDGetCurrentJoystickData();
+    if (info != NULL) {
+        info->field_0xe8 = 1;
+    }
 }
 
 // FUNCTION: CARMA2_HW 0x0045bd70

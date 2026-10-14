@@ -3,6 +3,8 @@
 
 #include "c2_hooks.h"
 
+#include <brender/brender.h>
+
 // LoadTrackModels
 
 // SmoothlyLoadIfItsAModel
@@ -24,6 +26,7 @@
 // SmoothificateWorldMaterial
 
 // SmoothificateCarMaterial
+void C2_HOOK_FASTCALL SmoothificateCarMaterial(br_material* pMaterial);
 
 // MungeLightingEffects
 

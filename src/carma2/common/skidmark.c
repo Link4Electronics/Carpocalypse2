@@ -285,12 +285,11 @@ int C2_HOOK_FASTCALL SkidSection(tS16* pSkid_id, br_vector3* pSkid_start, br_vec
 
 // FUNCTION: CARMA2_HW 0x004ea700
 void C2_HOOK_FASTCALL InitCarSkidStuff(tCar_spec* pCar) {
-
     pCar->old_skidding = 0;
-    pCar->oil_remaining[0] = 0.f;
-    pCar->oil_remaining[1] = 0.f;
-    pCar->oil_remaining[2] = 0.f;
-    pCar->oil_remaining[3] = 0.f;
+    pCar->oil_remaining[0] = 0.0f;
+    pCar->oil_remaining[1] = 0.0f;
+    pCar->oil_remaining[2] = 0.0f;
+    pCar->oil_remaining[3] = 0.0f;
 }
 
 // FUNCTION: CARMA2_HW 0x004ea720

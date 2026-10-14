@@ -449,14 +449,18 @@ int C2_HOOK_FASTCALL IncreaseJoystickFFBGain(void) {
 }
 
 // FUNCTION: CARMA2_HW 0x0045a070
-void C2_HOOK_FASTCALL FUN_0045a070(void) {
+int C2_HOOK_FASTCALL PDEnableJoysticks(void) {
 
-    if (gCountEnumeratedJoystickDinputDevices != 0) {
+    int count;
+
+    count = gCountEnumeratedJoystickDinputDevices;
+    if (count != 0) {
         gJoystick_index = (gUNK_00595f8c == -1) ? 0 : gUNK_00595f8c;
     }
     if (gDirectInputJoystickDevices[gJoystick_index] != NULL && (gJoystickFFB & (1 << gJoystick_index))) {
         gForceFeedbackAvailable = 1;
     }
+    return count;
 }
 
 // FUNCTION: CARMA2_HW 0x00457c20
@@ -803,7 +807,6 @@ int C2_HOOK_FASTCALL JoystickDInputBegin(void) {
         if (gCountEnumeratedJoystickDinputDevices == 0) {
             IDirectInput_EnumDevices(gDirectInputJoystickHandle, DIDEVTYPE_JOYSTICK, Win32DInputJoystickEnum, gDirectInputJoystickHandle, DIEDFL_ATTACHEDONLY);
         }
-        if (gCountEnumeratedJoystickDinputDevices != 0) {
             for (i = 0; i < CARPOCALYPSE2_ASIZE(gDirectInputJoystickDevices); i++) {
                 JoystickDInputGetInfo(i, NULL, NULL);
                 if (gDirectInputJoystickDevices[i] != NULL) {
@@ -811,7 +814,6 @@ int C2_HOOK_FASTCALL JoystickDInputBegin(void) {
                 }
             }
             gJoystick_index = 0;
-        }
         if (gJoystick_index < 0) {
             return 0;
         }

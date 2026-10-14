@@ -1285,18 +1285,14 @@ void C2_HOOK_FASTCALL GetDamageProgram(FILE* pF, tCar_spec* pCar_spec, tImpact_l
 }
 
 // FUNCTION: CARMA2_HW 0x004f67a0
-void C2_HOOK_FASTCALL UpdateMaterialsForCar(tBrender_storage* pStorage, tCar_spec* pCar_spec) {
+void C2_HOOK_FASTCALL SmoothlySetCarMaterialFlags(tBrender_storage* pStorage, tCar_spec* pCar_spec) {
     int i;
     br_material* material;
 
     for (i = pCar_spec->old_material_count; i < pCar_spec->new_material_count; i++) {
         material = pStorage->materials[i];
-        if (gNbPixelBits == 16) {
-            material->ka = 0.6f;
-            material->kd = 0.2f;
-            material->flags &= ~BR_MATF_PRELIT;
-            material->flags |= BR_MATF_LIGHT | BR_MATF_SMOOTH;
-        }
+        SmoothificateCarMaterial(material);
+        material->user = material->colour_map;
     }
 }
 
@@ -1306,7 +1302,7 @@ void C2_HOOK_FASTCALL LoadCarMaterials(tBrender_storage* pStorage, const char* p
     pCar_spec->old_material_count = pStorage->materials_count;
     LoadAllMaterialsInDirectory(pStorage, pPath, kRendererShadingType_Specular);
     pCar_spec->new_material_count = pStorage->materials_count;
-    UpdateMaterialsForCar(pStorage, pCar_spec);
+    SmoothlySetCarMaterialFlags(pStorage, pCar_spec);
 }
 
 // FUNCTION: CARMA2_HW 0x00488f00

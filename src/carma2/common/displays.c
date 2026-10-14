@@ -1393,12 +1393,13 @@ void C2_HOOK_FASTCALL ClearHeadupSlot(int pSlot_index) {
     int i;
     tHeadup* the_headup;
 
-    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gHeadups); i++) {
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gHeadups); i++) {
         the_headup = &gHeadups[i];
         if (the_headup->type != eHeadup_unused && the_headup->slot_index == pSlot_index) {
             ClearHeadup(i);
             return;
         }
+        the_headup++;
     }
 }
 
