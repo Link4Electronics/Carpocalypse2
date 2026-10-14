@@ -809,29 +809,33 @@ tU16 C2_HOOK_FASTCALL CrushLimitNumber(const br_vector3* pPoint, const tCar_crus
     tU16 number;
     int i;
 
-    *pInvalid = 0;
+    *pInvalid = 1;
     number = 0;
     for (i = 2; i >= 0; i--) {
         int j;
+        int count;
         tU16 mi = 0;
         tU16 ma = 0;
 
-        for (j = 0; j < pCount_limits->counts[i][0] - 1; j++) {
-            if (pPoint->v[i] > pLimits->limits[i][0].values[j]) {
-                *pInvalid = 0;
-                break;
-            }
-            mi += 1;
-        }
-
-        for (j = 0; j < pCount_limits->counts[i][1] - 1; j++) {
-            if (pPoint->v[i] < pLimits->limits[i][1].values[j]) {
+        count = pCount_limits->counts[i][1] - 1;
+        for (j = 0; j < count; j++) {
+            if (!(pPoint->v[i] >= pLimits->limits[i][1].values[j])) {
                 *pInvalid = 0;
                 break;
             }
             ma += 1;
         }
-        number = (number << 4) | (mi << 2) | (ma << 0);
+        number = (tU16)((number << 2) | ma);
+
+        count = pCount_limits->counts[i][0] - 1;
+        for (j = 0; j < count; j++) {
+            if (!(pLimits->limits[i][0].values[j] >= pPoint->v[i])) {
+                *pInvalid = 0;
+                break;
+            }
+            mi += 1;
+        }
+        number = (tU16)((number << 2) | mi);
     }
     return number;
 }
@@ -875,11 +879,19 @@ void C2_HOOK_FASTCALL CheckHingePointOrder(tCar_crush_flap_data* pHinge, br_mode
 tU16 C2_HOOK_FASTCALL FindNearestVertex(br_vector3* pPoint, const br_model* pModel) {
     tU16 closest_vertex = 0;
     br_scalar closest_dist = BR_SCALAR_MAX;
+    tU16 count;
+    const br_vertex* vertices;
     tU16 i;
+    br_scalar d;
 
-    for (i = 0; i < pModel->nvertices; i++) {
-        br_scalar d = Vector3DistanceSquared(pPoint, &pModel->vertices[i].p);
-        if (d < closest_dist) {
+    count = pModel->nvertices;
+    if (count == 0) {
+        return closest_vertex;
+    }
+    vertices = pModel->vertices;
+    for (i = 0; i < count; i++) {
+        d = Vector3DistanceSquared(pPoint, &vertices[i].p);
+        if (!(d >= closest_dist)) {
             closest_dist = d;
             closest_vertex = i;
         }
@@ -899,12 +911,15 @@ tU16 C2_HOOK_FASTCALL FindNearestParentVertex(br_actor* pActor, br_vector3* pPos
 
 // FUNCTION: CARMA2_HW 0x0042bb90
 void C2_HOOK_FASTCALL SetUpSemiDetachJointStuff(tCar_crush_detach_data* pDetach_data, const br_model* pModel, const br_bounds3* pBounds) {
+    const br_vector3* model_bounds[2];
+    int closest_corner_index = 0;
 
+    model_bounds[0] = &pModel->bounds.min;
+    model_bounds[1] = &pModel->bounds.max;
     if (pDetach_data->type == eDetachType_joint_index) {
         float closest_corner_distance = BR_SCALAR_MAX;
         br_vector3 vp;
         int i;
-        const br_vector3* bounds_points = &pBounds->min;
 
         BrVector3Copy(&vp, &pModel->vertices[pDetach_data->field_0x30].p);
         for (i = 0; i < 8; i++) {
@@ -912,69 +927,60 @@ void C2_HOOK_FASTCALL SetUpSemiDetachJointStuff(tCar_crush_detach_data* pDetach_
             float dist_bb;
 
             BrVector3Set(&corner,
-                bounds_points[!!(i & 0x1)].v[0],
-                bounds_points[!!(i & 0x2)].v[1],
-                bounds_points[!!(i & 0x4)].v[2]);
+                model_bounds[i & 1]->v[0],
+                model_bounds[(i >> 1) & 1]->v[1],
+                model_bounds[(i >> 2) & 1]->v[2]);
             dist_bb = Vector3DistanceSquared(&corner, &vp);
-            if (dist_bb < closest_corner_distance) {
-                pDetach_data->field_0x32 = i;
+            if (!(dist_bb >= closest_corner_distance)) {
                 closest_corner_distance = dist_bb;
+                closest_corner_index = i;
             }
         }
     } else {
         float closest_distance = BR_SCALAR_MAX;
-        int i;
-        const br_vector3* bounds_points = &pBounds->min;
         br_vector3 closest_corner;
-#ifdef CARPOCALYPSE2_FIX_BUGS
-        BrVector3Copy(&closest_corner, &bounds_points[0]);
-#endif
+        int i;
 
+        BrVector3Copy(&closest_corner, &pModel->bounds.min);
         for (i = 0; i < 8; i++) {
             br_vector3 corner;
-            int j;
-            float dist_closest_side = BR_SCALAR_MAX;
+            float dist_closest_side;
 
             BrVector3Set(&corner,
-                bounds_points[!!(i & 0x1)].v[0],
-                bounds_points[!!(i & 0x2)].v[1],
-                bounds_points[!!(i & 0x4)].v[2]);
-            for (j = 0; j < 3; j++) {
-                float ds;
-
-                ds = fabsf(corner.v[j] - pBounds->min.v[j]);
-                if (ds < dist_closest_side) {
-                    dist_closest_side = ds;
-                }
-                ds = fabsf(corner.v[j] - pBounds->max.v[j]);
-                if (ds < dist_closest_side) {
-                    dist_closest_side = ds;
-                }
-            }
-            if (dist_closest_side < closest_distance) {
-                pDetach_data->field_0x32 = i;
+                model_bounds[i & 1]->v[0],
+                model_bounds[(i >> 1) & 1]->v[1],
+                model_bounds[(i >> 2) & 1]->v[2]);
+            dist_closest_side = DistanceToBounds(&corner, pBounds);
+            if (!(dist_closest_side >= closest_distance)) {
                 closest_distance = dist_closest_side;
                 BrVector3Copy(&closest_corner, &corner);
+                closest_corner_index = i;
             }
         }
         pDetach_data->field_0x30 = FindNearestVertex(&closest_corner, pModel);
     }
+    pDetach_data->field_0x32 = (tU8)closest_corner_index;
     {
         br_vector3 center;
-        int i;
-        const br_vector3* bounds_points = &pBounds->min;
+        const br_vector3* bounds_points[2];
         float closest = BR_SCALAR_MAX;
+        int closest_side = 0;
+        double d;
+        int i;
 
-        Vector3Average(&center, &pBounds->min, &pBounds->max);
+        bounds_points[0] = &pBounds->min;
+        bounds_points[1] = &pBounds->max;
+        Vector3Average(&center, &pModel->bounds.min, &pModel->bounds.max);
         for (i = 0; i < 6; i++) {
             if (i != 2) {
-                float d = fabsf(center.v[i / 2] - bounds_points[!!(i & 0x1)].v[i / 2]);
-                if (d < closest) {
-                    pDetach_data->field_0x33 = i;
-                    closest = d;
+                d = fabs((double)center.v[i / 2] - bounds_points[i & 1]->v[i / 2]);
+                if (!(d >= closest)) {
+                    closest = (float)d;
+                    closest_side = i;
                 }
             }
         }
+        pDetach_data->field_0x33 = (tU8)closest_side;
     }
 }
 
@@ -1069,10 +1075,12 @@ intptr_t C2_HOOK_FASTCALL SoftnessOfNearestPointCB(br_actor* pActor, br_vector3*
     tUser_crush_data* user_crush_data = pActor->user;
     tCar_crush_buffer_entry* crush_data;
     br_model* model;
-    tSoftnessOfNearestPointCB_Context* context = pData;
+    tSoftnessOfNearestPointCB_Context* context;
+    const br_vector3* point;
     br_vector3 delta_point;
     float dist_bb_min;
     float dist_bb_max;
+    float dist_bb_diagonal;
     float dist_p;
     int i;
 
@@ -1087,15 +1095,19 @@ intptr_t C2_HOOK_FASTCALL SoftnessOfNearestPointCB(br_actor* pActor, br_vector3*
     if (model == NULL) {
         return 0;
     }
-    BrVector3Sub(&delta_point, context->point, pPoint);
+    context = pData;
+    point = context->point;
+    BrVector3Sub(&delta_point, point, pPoint);
+    dist_bb_diagonal = Vector3DistanceSquared(&model->bounds.max, &model->bounds.min);
     dist_bb_min = Vector3DistanceSquared(&delta_point, &model->bounds.min);
     dist_bb_max = Vector3DistanceSquared(&delta_point, &model->bounds.max);
-    dist_p = MAX(dist_bb_min, dist_bb_max);
-    if (dist_p - Vector3DistanceSquared(&model->bounds.max, &model->bounds.min) <= context->distance) {
+    dist_p = dist_bb_min > dist_bb_max ? dist_bb_min : dist_bb_max;
+    if (!((double)dist_p - dist_bb_diagonal > context->distance)) {
         for (i = 0; i < model->nvertices; i++) {
             float d;
+
             d = Vector3DistanceSquared(&model->vertices[i].p, &delta_point);
-            if (d < context->distance) {
+            if (!(d >= context->distance)) {
                 context->distance = d;
                 context->softness_factor = crush_data->softness_factor;
             }
@@ -1111,16 +1123,17 @@ intptr_t C2_HOOK_FASTCALL DRActorEnumRecurseWithTranslation(br_actor* pActor, br
     br_actor* a;
 
     if (pDelta == NULL) {
-        BrVector3Set(&delta, 0.f, 0.f, 0.f);
+        BrVector3Set(&delta, 0.0f, 0.0f, 0.0f);
     } else {
-        BrVector3Add(&delta, (br_vector3*)pActor->t.t.mat.m[3], pDelta);
+        delta.v[0] = pActor->t.t.mat.m[3][0] + pDelta->v[0];
+        delta.v[1] = pActor->t.t.mat.m[3][1] + pDelta->v[1];
+        delta.v[2] = pActor->t.t.mat.m[3][2] + pDelta->v[2];
     }
-
     result = cbfn(pActor, &delta, pContext);
     if (result != 0) {
         return result;
     }
-    for(a = pActor->children; a != NULL; a = a->next) {
+    for (a = pActor->children; a != NULL; a = a->next) {
         result = DRActorEnumRecurseWithTranslation(a, &delta, cbfn, pContext);
         if (result != 0) {
             return result;
@@ -1400,36 +1413,41 @@ float C2_HOOK_FASTCALL PointEdgeDistSq(const br_vector3* pP, const br_vector3* p
     BrVector3Sub(&pAB, pB, pA);
     BrVector3Sub(&pAP, pP, pA);
     proj = BrVector3Dot(&pAP, &pAB) / BrVector3Dot(&pAB, &pAB);
-    if (proj < 0.f) {
-        proj = 0.f;
-    } else if (proj > 1.f) {
-        proj = 1.f;
+    if (!(proj >= 0.0f)) {
+        proj = 0.0f;
+    } else if (proj > 1.0f) {
+        proj = 1.0f;
     }
     BrVector3Scale(&pProj, &pAB, proj);
-    BrVector3Sub(&pProj, &pAP, &pProj);
+    BrVector3Add(&pProj, &pProj, pA);
+    BrVector3Sub(&pProj, pP, &pProj);
     return BrVector3LengthSquared(&pProj);
 }
 
 // FUNCTION: CARMA2_HW 0x0042c0e0
-void C2_HOOK_FASTCALL SetFlapCheckVertices(tCar_crush_flap_data *pFlap_data, const br_model* pModel, tModel_detail_vertex_data* pVertex_data) {
+void C2_HOOK_FASTCALL SetFlapCheckVertices(tCar_crush_flap_data* pFlap_data, const br_model* pModel, tModel_detail_vertex_data* pVertex_data) {
     const br_vector3 *p0, *p1, *p2;
     br_vector3 hinge01;
     br_vector3 hinge02;
     br_vector3 hinge_normal;
+    br_scalar hinge_dot;
+    br_scalar distance;
+    br_scalar plane;
     int i;
 
     p0 = &pModel->vertices[pFlap_data->hinge0].p;
     p1 = &pModel->vertices[pFlap_data->hinge1].p;
     p2 = &pModel->vertices[pFlap_data->hinge2].p;
-
     BrVector3Sub(&hinge02, p2, p0);
     BrVector3Sub(&hinge01, p1, p0);
     BrVector3Cross(&hinge_normal, &hinge01, &hinge02);
     BrVector3Normalise(&hinge_normal, &hinge_normal);
+    hinge_dot = BrVector3Dot(&hinge_normal, p0);
 
     for (i = 0; i < pModel->nvertices; i++) {
-
-        if (PointEdgeDistSq(&pModel->vertices[i].p, p0, p1) > 0.00021004f && BrVector3Dot(&hinge_normal, &pModel->vertices[i].p) - BrVector3Dot(&hinge_normal, p0) > -0.001449275f) {
+        distance = PointEdgeDistSq(&pModel->vertices[i].p, &pModel->vertices[pFlap_data->hinge0].p, &pModel->vertices[pFlap_data->hinge1].p);
+        plane = BrVector3Dot(&hinge_normal, &pModel->vertices[i].p) - hinge_dot;
+        if (distance > 0.00021003991f && plane > -0.0014492754f) {
             pVertex_data[i].flags |= 0x2;
         } else {
             pVertex_data[i].flags &= ~0x2;

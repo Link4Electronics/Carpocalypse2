@@ -156,7 +156,7 @@ extern void C2_HOOK_FASTCALL DisposeActionReplay(void);
 
 // AddSmokeColumnToPipingSession
 
-// AddFlameToPipingSession
+void C2_HOOK_FASTCALL AddFlameToPipingSession(int pIndex, int pFrame, br_scalar pScale_x, br_scalar pScale_y, br_scalar pOffset_x, br_scalar pOffset_z);
 
 // AddSplashToPipingSession
 

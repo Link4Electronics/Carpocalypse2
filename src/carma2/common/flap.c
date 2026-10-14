@@ -325,7 +325,7 @@ intptr_t C2_HOOK_FASTCALL FlapBit(br_actor* pActor, br_matrix34* pMat, void* pCo
     return 0;
 }
 
-void C2_HOOK_FASTCALL StartFlapping(br_actor* pActor, tCar_spec* pCar, tU8 pBits, float pArg4) {
+static __inline void C2_HOOK_FASTCALL StartFlapping(br_actor* pActor, tCar_spec* pCar, tU8 pBits, float pArg4) {
     tUser_crush_data* user_crush;
 
     user_crush = pActor->user;
@@ -355,7 +355,7 @@ void C2_HOOK_FASTCALL FlapBits(tCar_spec* pCar) {
             br_vector3 force;
             tFlapBit_arg flapbit_arg;
 
-            dt = (float)(gPHIL_last_physics_tick - last_flap_bits) / 1000.f;
+            dt = (float)(gPHIL_last_physics_tick - last_flap_bits) * 0.001f;
             BrVector3Sub(&force, &pCar->collision_info->v, &car_crush_spec->field_0x138);
             BrVector3InvScale(&force, &force, dt);
             BrVector3Add(&force, &gBatty_gravity, &force);
@@ -365,7 +365,7 @@ void C2_HOOK_FASTCALL FlapBits(tCar_spec* pCar) {
             DRActorEnumRecurseWithSnart(pCar->car_model_actor, NULL, FlapBit, &flapbit_arg);
             AREndPipingSession();
         }
-        BrVector3Copy(&car_crush_spec->field_0x138,  &pCar->collision_info->v);
+        car_crush_spec->field_0x138 = pCar->collision_info->v;
         last_flap_bits = gPHIL_last_physics_tick;
     }
 }
@@ -394,7 +394,7 @@ void C2_HOOK_FASTCALL DoFlapping(void) {
         tCar_spec* car;
 
         car = gActive_car_list[i];
-        if (car != NULL && car->driver > 5) {
+        if (car != NULL && car->driver >= eDriver_oppo) {
             FlapBits(car);
         }
     }
@@ -402,16 +402,15 @@ void C2_HOOK_FASTCALL DoFlapping(void) {
 
 // FUNCTION: CARMA2_HW 0x00434910
 int C2_HOOK_FASTCALL BitObjectIsSufficientlyOutsideCarObjectToDetach(tPhysics_object* pObject) {
-    tPhysics_joint* joint = pObject->physics_joint1;
     int i;
 
-    for (i = 0; i < joint->count_limits; i++) {
+    for (i = 0; i < pObject->physics_joint1->count_limits; i++) {
         br_vector3 tv;
         br_vector3 tv2;
 
-        BrMatrix34ApplyV(&tv, &joint->limits[i].child, &pObject->actor->t.t.mat);
+        BrMatrix34ApplyV(&tv, &pObject->physics_joint1->limits[i].child, &pObject->actor->t.t.mat);
         BrMatrix34TApplyV(&tv2, &tv, &pObject->parent->actor->t.t.mat);
-        if (BrVector3Dot(&joint->limits[i].parent, &tv2) > sqrtf(.5f)) {
+        if (BrVector3Dot(&pObject->physics_joint1->limits[i].parent, &tv2) > gCrushSqrtHalf) {
             return 1;
         }
     }

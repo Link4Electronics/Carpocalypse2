@@ -12,6 +12,7 @@
 #include "loading1.h"
 #include "platform.h"
 
+#include <math.h>
 #include <brender/brender.h>
 
 #include "c2_string.h"
@@ -236,7 +237,23 @@ void C2_HOOK_FASTCALL InitCrushSystems(void) {
 
 // FindNearestVertex
 
-// DistanceToBounds
+float C2_HOOK_FASTCALL DistanceToBounds(const br_vector3* pPoint, const br_bounds3* pBounds) {
+    float closest_distance = BR_SCALAR_MAX;
+    double ds;
+    int i;
+
+    for (i = 0; i < 3; i++) {
+        ds = fabs((double)pPoint->v[i] - pBounds->min.v[i]);
+        if (!(ds >= closest_distance)) {
+            closest_distance = (float)ds;
+        }
+        ds = fabs((double)pPoint->v[i] - pBounds->max.v[i]);
+        if (!(ds >= closest_distance)) {
+            closest_distance = (float)ds;
+        }
+    }
+    return closest_distance;
+}
 
 // FindNearestParentVertex
 

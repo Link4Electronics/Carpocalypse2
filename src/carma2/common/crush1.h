@@ -61,6 +61,7 @@ extern void C2_HOOK_FASTCALL InitCrushSystems(void);
 // FindNearestVertex
 
 // DistanceToBounds
+float C2_HOOK_FASTCALL DistanceToBounds(const br_vector3* pPoint, const br_bounds3* pBounds);
 
 // FindNearestParentVertex
 

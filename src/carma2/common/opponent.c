@@ -1840,9 +1840,57 @@ void C2_HOOK_FASTCALL CalcRaceRoute(tOpponent_spec *pOpponent_spec) {
 }
 
 // FUNCTION: CARMA2_HW 0x004b18b0
-void C2_HOOK_FASTCALL SetMaxSpeedFromSOCs(tSOC* socs, int count_socs, float* pDesired_speed, float pSpeed, const br_vector2* pPos2d, tCorner* pCorner, tOpponent_spec* pOpponent_spec) {
+void C2_HOOK_FASTCALL SetMaxSpeedFromSOCs(tSOC* pSocs, int pCount_socs, float* pDesired_speed, float pSpeed, const br_vector2* pPos2d, tCorner* pCorners, tOpponent_spec* pOpponent_spec) {
+    br_vector2 previous;
+    br_vector2 position;
+    const br_vector3* point;
+    int i;
+    int speed;
+    int previous_corner = 0;
+    float previous_extent;
+    float distance = 0.f;
+    float speed_squared;
+    float stopping_distance;
+    double x, y, length, offset, threshold;
 
-    NOT_IMPLEMENTED();
+    speed_squared = NavigationScalarRound(NavigationMultiply(pSpeed, pSpeed));
+    memcpy(&previous, pPos2d, sizeof(previous));
+    threshold = NavigationSubtract(NavigationMultiply(speed_squared, 0.0625f), NavigationMultiply(NavigationMultiply((double)gFrame_period_for_this_munging, pSpeed), -0.001f));
+    stopping_distance = NavigationScalarRound(NavigationMultiply(threshold, 0.14492753148078918f));
+    for (i = 0; i < pCount_socs; i++) {
+        if (!NavigationLessOrUnordered(distance, stopping_distance)) {
+            return;
+        }
+        if (previous_corner) {
+            distance = NavigationScalarRound(NavigationSubtract(distance, previous_extent));
+        }
+        previous_corner = !pSocs[i].field_0x0;
+        offset = distance;
+        if (previous_corner) {
+            point = GetOpponentsSectionStartNodePoint(pOpponent_spec, (tS16)pCorners[pSocs[i].field_0x4].section);
+            speed = (int)pCorners[pSocs[i].field_0x4].field_0x18;
+            memcpy(&previous_extent, &pCorners[pSocs[i].field_0x4].field_0x0c, 4);
+            offset = NavigationSubtract(distance, previous_extent);
+        } else {
+            point = GetOpponentsSectionFinishNodePoint(pOpponent_spec, (tS16)pSocs[i].field_0x4);
+            speed = GetOpponentsSectionMaxSpeed(pOpponent_spec, (tS16)pSocs[i].field_0x4, 1);
+        }
+        memcpy(&position.v[0], &point->v[2], 4);
+        memcpy(&position.v[1], &point->v[0], 4);
+        x = NavigationFloatDifference(&previous.v[0], &position.v[0]);
+        y = NavigationFloatDifference(&previous.v[1], &position.v[1]);
+        length = NavigationSqrt(NavigationAdd(NavigationMultiply(x, NavigationScalarRound(x)), NavigationMultiply(y, y)));
+        distance = NavigationScalarRound(NavigationAdd(length, offset));
+        if (NavigationLessOrUnordered(distance, 0.f)) {
+            distance = 0.f;
+        }
+        threshold = NavigationMultiply(NavigationSubtract(speed_squared, NavigationMultiply((double)speed, (double)speed)), 0.0625f);
+        threshold = NavigationSubtract(threshold, NavigationMultiply(NavigationMultiply((double)gFrame_period_for_this_munging, pSpeed), -0.001f));
+        if (NavigationOrderedGreater(threshold, NavigationMultiply(distance, 6.9f)) && NavigationLessOrUnordered((double)speed, *pDesired_speed)) {
+            *pDesired_speed = NavigationScalarRound((double)speed);
+        }
+        memcpy(&previous, &position, sizeof(previous));
+    }
 }
 
 int C2_HOOK_FASTCALL TimeToBeBrakingWhenStruggling(tOpponent_spec* pOpponent_spec) {

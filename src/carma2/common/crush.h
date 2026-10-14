@@ -8,6 +8,7 @@
 #include "carpocalypse2_types.h"
 
 extern br_vector3 gBatty_gravity;
+extern br_scalar gCrushSqrtHalf;
 extern tU8 gCrush_data_entry_counter;
 extern const char* gSoftness_names[6];
 extern const char* gCrush_type_names[3];

@@ -1765,7 +1765,6 @@ void C2_HOOK_FASTCALL FlushFlicQueue(void) {
 
 // FUNCTION: CARMA2_HW 0x00463340
 void C2_HOOK_FASTCALL LoadInterfaceStrings(void) {
-#ifndef CARPOCALYPSE2_MATCHING
     FILE* f;
     char s[256];
     char s2[256];
@@ -1794,7 +1793,7 @@ void C2_HOOK_FASTCALL LoadInterfaceStrings(void) {
         strtok(s2, ".");
         strcat(s2, ".FLI");
         gTranslations[i].flic_index = -1;
-        for (j = 0; j < CARPOCALYPSE2_ASIZE(gMain_flic_list); j++) {
+        for (j = 0; j < (int)CARPOCALYPSE2_ASIZE(gMain_flic_list); j++) {
             if (strcmp(gMain_flic_list[j].file_name, s2) == 0) {
                 gTranslations[i].flic_index = j;
                 break;
@@ -1814,10 +1813,6 @@ void C2_HOOK_FASTCALL LoadInterfaceStrings(void) {
         str = strtok(NULL, "\t ,/");
         sscanf(str, "%c", &ch);
         switch (ch) {
-            case 'C':
-            case 'c':
-                gTranslations[i].justification = eJust_centre;
-                break;
             case 'L':
             case 'l':
                 gTranslations[i].justification = eJust_left;
@@ -1825,6 +1820,10 @@ void C2_HOOK_FASTCALL LoadInterfaceStrings(void) {
             case 'R':
             case 'r':
                 gTranslations[i].justification = eJust_right;
+                break;
+            case 'C':
+            case 'c':
+                gTranslations[i].justification = eJust_centre;
                 break;
         }
         str += strlen(str) + 1;
@@ -1836,10 +1835,6 @@ void C2_HOOK_FASTCALL LoadInterfaceStrings(void) {
     gTrans_fonts[0] = &gFonts[1];
     gTrans_fonts[1] = &gFonts[2];
 
-    PFfclose(f);
-#else
-    NOT_IMPLEMENTED();
-#endif
 }
 
 // SuspendPendingFlic
