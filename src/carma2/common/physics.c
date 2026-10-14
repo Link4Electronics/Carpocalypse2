@@ -860,24 +860,31 @@ void C2_HOOK_FASTCALL UpdateCollisionObject(tPhysics_object* pCollision_info) {
 }
 
 // FUNCTION: CARMA2_HW 0x00420ef0
-int C2_HOOK_FASTCALL ArePointsColinear(const br_vector3* pV1, const br_vector3* pV2, const br_vector3* pV3) {
-    br_scalar dx31, dx21;
-    br_scalar dy31, dy21;
-    br_scalar dz31, dz21;
+int C2_HOOK_FASTCALL Collinear(const br_vector3* pV1, const br_vector3* pV2, const br_vector3* pV3) {
+    br_scalar dx21;
+    br_scalar dy21;
+    br_scalar dz21;
+    br_scalar dx31;
+    br_scalar dy31;
+    br_scalar dz31;
+    br_scalar cross;
 
     dy21 = pV2->v[1] - pV1->v[1];
     dz21 = pV2->v[2] - pV1->v[2];
     dy31 = pV3->v[1] - pV1->v[1];
     dz31 = pV3->v[2] - pV1->v[2];
-    if (fabsf(dz31 * dy21 - dy31 - dz21) >= 1e-6f) {
+    cross = dz31 * dy21 - dy31 * dz21;
+    if (cross >= 1.0e-6f || cross <= -1.0e-6f) {
         return 0;
     }
     dx21 = pV2->v[0] - pV1->v[0];
     dx31 = pV3->v[0] - pV1->v[0];
-    if (fabsf(dx31 * dz21 - dx21 * dz31) >= 1e-6f) {
+    cross = dx31 * dz21 - dx21 * dz31;
+    if (cross >= 1.0e-6f || cross <= -1.0e-6f) {
         return 0;
     }
-    if (fabsf(dx21 * dy31 - dx31 * dy21) >= 1e-6f) {
+    cross = dx21 * dy31 - dx31 * dy21;
+    if (cross >= 1.0e-6f || cross <= -1.0e-6f) {
         return 0;
     }
     return 1;
@@ -896,7 +903,7 @@ tPhysicsError C2_HOOK_FASTCALL ProcessTetrahedronPolyhedronCollisionShape(tColli
     br_vector3 tv1;
 
     first_non_colinear = 0;
-    while (ArePointsColinear(&pPolyhedron->points[first_non_colinear + 0], &pPolyhedron->points[first_non_colinear + 1], &pPolyhedron->points[first_non_colinear + 2])) {
+    while (Collinear(&pPolyhedron->points[first_non_colinear + 0], &pPolyhedron->points[first_non_colinear + 1], &pPolyhedron->points[first_non_colinear + 2])) {
         first_non_colinear++;
         if (first_non_colinear == pPolyhedron->count_points - 3) {
             return ePhysicsError_UnknownShapeType;
@@ -1163,34 +1170,38 @@ int C2_HOOK_FASTCALL PolyhedronCollisionShape_AddPoint(tCollision_shape_polyhedr
 }
 
 // FUNCTION: CARMA2_HW 0x00420d60
-br_scalar C2_HOOK_FASTCALL ComparePolyhedronPlaneToNormal(const br_vector3* pV1, const br_vector3* pV2) {
-    br_vector3 tv;
+br_scalar C2_HOOK_FASTCALL SignedTwiceAreaOf3DTriangle(const br_vector3* pV1, const br_vector3* pV2) {
+    br_vector3 cross;
 
-    BrVector3Cross(&tv, pV1, pV2);
-    return BrVector3Dot(&tv, &gPhysics_reference_normal_comparison);
+    BrVector3Cross(&cross, pV1, pV2);
+    return BrVector3Dot(&cross, &gPhysics_reference_normal_comparison);
 }
 
 // FUNCTION: CARMA2_HW 0x00420dc0
-int C2_HOOK_CDECL ComparePolyhedronPointIndicesToNormal(const int* pIndex1, const int* pIndex2) {
-    br_vector3 tv1, tv2;
-    br_scalar s;
-    br_scalar s1, s2;
+int C2_HOOK_CDECL CompareAngle(const void* pIndex1, const void* pIndex2) {
+    const int* index1 = pIndex1;
+    const int* index2 = pIndex2;
+    br_vector3 edge1;
+    br_vector3 edge2;
+    br_scalar area;
+    br_scalar length1;
+    br_scalar length2;
 
-    BrVector3Sub(&tv1, &gPolyhedron_to_sort->points[*pIndex1], &gPolyhedron_to_sort->points[0]);
-    BrVector3Sub(&tv2, &gPolyhedron_to_sort->points[*pIndex2], &gPolyhedron_to_sort->points[0]);
-    /* Calculate norm2 of normal on vectors v1/v2 with orthonormal */
-    s = ComparePolyhedronPlaneToNormal(&tv1, &tv2);
-    if (s > 1e-6f) {
+    BrVector3Sub(&edge1, &gPolyhedron_to_sort->points[*index1], &gPolyhedron_to_sort->points[0]);
+    BrVector3Sub(&edge2, &gPolyhedron_to_sort->points[*index2], &gPolyhedron_to_sort->points[0]);
+    area = SignedTwiceAreaOf3DTriangle(&edge1, &edge2);
+    if (area > 1.0e-6f) {
         return -1;
     }
-    if (s < -1e-6f) {
+    if (!(area >= -1.0e-6f)) {
         return 1;
     }
-    s1 = BrVector3LengthSquared(&tv1);
-    s2 = BrVector3LengthSquared(&tv2);
-    if (s1 < s2) {
+    length1 = BrVector3Length(&edge1);
+    length2 = BrVector3Length(&edge2);
+    if (!(length1 >= length2)) {
         return -1;
-    } else if (s2 > s1) {
+    }
+    if (length1 > length2) {
         return 1;
     }
     return 0;
@@ -1210,7 +1221,7 @@ tPhysicsError C2_HOOK_FASTCALL AddPolyhedronCollisionShapePlanes(tCollision_shap
     int read_idx;
     int write_idx;
 
-    for (first_vertex = 0; ArePointsColinear(&pPolyhedron->points[first_vertex + 0], &pPolyhedron->points[first_vertex + 1], &pPolyhedron->points[first_vertex + 2]); first_vertex++) {
+    for (first_vertex = 0; Collinear(&pPolyhedron->points[first_vertex + 0], &pPolyhedron->points[first_vertex + 1], &pPolyhedron->points[first_vertex + 2]); first_vertex++) {
         if (first_vertex == pPolyhedron->count_points - 3) {
             return ePhysicsError_UnknownShapeType;
         }
@@ -1239,7 +1250,7 @@ tPhysicsError C2_HOOK_FASTCALL AddPolyhedronCollisionShapePlanes(tCollision_shap
         indices_buffer[i + 1] = i;
     }
     gPolyhedron_to_sort = pPolyhedron;
-    qsort(&indices_buffer[2], pPolyhedron->count_points - 1, sizeof(indices_buffer[1]), (int(C2_HOOK_CDECL*)(const void*, const void*))ComparePolyhedronPointIndicesToNormal);
+    qsort(&indices_buffer[2], pPolyhedron->count_points - 1, sizeof(indices_buffer[1]), (int(C2_HOOK_CDECL*)(const void*, const void*))CompareAngle);
     indices_buffer[0] = indices_buffer[pPolyhedron->count_points];
     indices_buffer[1] = 0;
 
@@ -1250,7 +1261,7 @@ tPhysicsError C2_HOOK_FASTCALL AddPolyhedronCollisionShapePlanes(tCollision_shap
         BrVector3Sub(&tv1, &pPolyhedron->points[indices_buffer[write_idx]], &pPolyhedron->points[indices_buffer[write_idx - 1]]);
         BrVector3Sub(&tv2, &pPolyhedron->points[indices_buffer[read_idx]], &pPolyhedron->points[indices_buffer[write_idx]]);
 
-        if (ComparePolyhedronPlaneToNormal(&tv1, &tv2) <= 1e-6f) {
+        if (SignedTwiceAreaOf3DTriangle(&tv1, &tv2) <= 1e-6f) {
             new_count_points -= 1;
             write_idx -= 1;
         } else {
