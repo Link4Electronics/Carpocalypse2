@@ -515,7 +515,6 @@ void C2_HOOK_FASTCALL DoMapOverlays(br_pixelmap* pScreen) {
     int powerup_count;
     tNet_game_player_info* net_player;
     int i;
-    int category_index;
     br_vector3 ped_position;
     br_vector3* smash_position;
     br_actor* actor;
@@ -550,8 +549,7 @@ void C2_HOOK_FASTCALL DoMapOverlays(br_pixelmap* pScreen) {
             DrawMapSmallBlip(pScreen, the_time, &ped_position, 4);
         }
     }
-    for (category_index = gShow_opponents ? eVehicle_opponent : eVehicle_self; category_index >= (gMap_view == 1 ? eVehicle_net_player : eVehicle_self); category_index -= 1) {
-        category = (tVehicle_type)category_index;
+    for (category = gShow_opponents ? eVehicle_opponent : eVehicle_self; category >= (gMap_view == 1 ? eVehicle_net_player : eVehicle_self); category -= 1) {
         if (category == eVehicle_self) {
             car_count = 1;
         } else {
@@ -1237,7 +1235,7 @@ void C2_HOOK_FASTCALL InitHeadups(void) {
     int i;
 
     C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gHeadups) != 37);
-    for (i = 0; i < CARPOCALYPSE2_ASIZE(gHeadups); i++) {
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gHeadups); i++) {
         gHeadups[i].type = eHeadup_unused;
     }
 
@@ -1300,7 +1298,7 @@ void C2_HOOK_FASTCALL InitHeadups(void) {
     BrMaterialUpdate(gTimerLeftHUD_material, BR_MATU_COLOURMAP);
     gTimerLeftHUD_model->vertices[1].p.v[0] = (float)gTimerLeftHUD_dim_x;
     gTimerLeftHUD_model->vertices[0].p.v[0] = gTimerLeftHUD_model->vertices[1].p.v[0];
-    gTimerLeftHUD_model->vertices[3].p.v[1] = (float)-gTimerLeftHUD_dim_y;
+    gTimerLeftHUD_model->vertices[3].p.v[1] = -(float)gTimerLeftHUD_dim_y;
     gTimerLeftHUD_model->vertices[0].p.v[1] = gTimerLeftHUD_model->vertices[3].p.v[1];
     gTimerLeftHUD_model->vertices[3].p.v[0] = (float)gTimerLeftHUD_dim_w + gTimerLeftHUD_model->vertices[1].p.v[0];
     gTimerLeftHUD_model->vertices[2].p.v[0] = gTimerLeftHUD_model->vertices[3].p.v[0];
@@ -1315,7 +1313,7 @@ void C2_HOOK_FASTCALL InitHeadups(void) {
 
     gTimerRightHUD_model->vertices[1].p.v[0] = (float)gTimerRightHUD_dim_x;
     gTimerRightHUD_model->vertices[0].p.v[0] = gTimerRightHUD_model->vertices[1].p.v[0];
-    gTimerRightHUD_model->vertices[3].p.v[1] = (float)-gTimerRightHUD_dim_y;
+    gTimerRightHUD_model->vertices[3].p.v[1] = -(float)gTimerRightHUD_dim_y;
     gTimerRightHUD_model->vertices[0].p.v[1] = gTimerRightHUD_model->vertices[3].p.v[1];
     gTimerRightHUD_model->vertices[3].p.v[0] = (float)gTimerRightHUD_dim_w + gTimerRightHUD_model->vertices[1].p.v[0];
     gTimerRightHUD_model->vertices[2].p.v[0] = gTimerRightHUD_model->vertices[3].p.v[0];
@@ -1330,7 +1328,58 @@ void C2_HOOK_FASTCALL InitHeadups(void) {
     gIcon_litBloc1 = LoadPixelmap("litbloc1.tif");
     gIcon_grnBlock1 = LoadPixelmap("grnblock1.tif");
 
-    LoadHeadupMessageFile();
+    {
+        FILE* f;
+        tPath_name path;
+        int i;
+        int count;
+
+        PathCat(path, gApplication_path, "SCROLLERS.TXT");
+        f = DRfopen(path, "rt");
+        if (f == NULL) {
+            BrFailure("Couldn't open ", path);
+        }
+        /*
+         * # of Headup scrolly messages
+         * Format:  Font index, Message string
+         * N.B use underscore "_" where you want a space in the string
+         **/
+        count = GetAnInt(f);
+
+        C2_HOOK_BUG_ON(sizeof(tHud_message) != 0x88);
+        C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gHud_messages) != 46);
+
+        if (count > (int)CARPOCALYPSE2_ASIZE(gHud_messages)) {
+            BrFailure("Error - Too many Headup messages ", path);
+        }
+        for (i = 0; i < count; i++) {
+            char s[256];
+            char *str;
+            tHud_message *hud_message;
+            int len;
+            int j;
+
+            hud_message = &gHud_messages[i];
+            GetALineAndDontArgue(f, s);
+
+            str = strtok(s, "\t ,/");
+            sscanf(str, "%d", &hud_message->font1);
+
+            str = strtok(NULL, "\t ,/");
+            sscanf(str, "%d", &hud_message->font2);
+
+            str = strtok(NULL, "\t ,/");
+            strcpy(hud_message->message, str);
+
+            len = strlen(hud_message->message);
+            for (j = 0; j < len; j++) {
+                if (hud_message->message[j] == '_') {
+                    hud_message->message[j] = ' ';
+                }
+            }
+        }
+        PFfclose(f);
+    }
 }
 
 // FUNCTION: CARMA2_HW 0x00449630
@@ -1342,10 +1391,12 @@ void C2_HOOK_FASTCALL ClearHeadup(int pIndex) {
 // FUNCTION: CARMA2_HW 0x00449650
 void C2_HOOK_FASTCALL ClearHeadupSlot(int pSlot_index) {
     int i;
+    tHeadup* the_headup;
 
-    for (i = 0; i < CARPOCALYPSE2_ASIZE(gHeadups); i++) {
-        if (gHeadups[i].type != eHeadup_unused && gHeadups[i].slot_index == pSlot_index) {
-            gHeadups[i].type = eHeadup_unused;
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gHeadups); i++) {
+        the_headup = &gHeadups[i];
+        if (the_headup->type != eHeadup_unused && the_headup->slot_index == pSlot_index) {
+            ClearHeadup(i);
             return;
         }
     }
@@ -1354,9 +1405,6 @@ void C2_HOOK_FASTCALL ClearHeadupSlot(int pSlot_index) {
 // FUNCTION: CARMA2_HW 0x00449690
 void C2_HOOK_FASTCALL ClearHeadups(void) {
     int i;
-
-    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gHeadups) != 37);
-    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gOld_times) != 10);
 
     for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gHeadups); i++) {
         if (gHeadups[i].type != eHeadup_unused) {
@@ -1383,7 +1431,7 @@ int C2_HOOK_FASTCALL FindAHeadupHoleWoofBarkSoundsABitRude(int pSlot_index) {
     tHeadup* the_headup;
 
     empty_one = -1;
-    for (i = 0; i < CARPOCALYPSE2_ASIZE(gHeadups); i++) {
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gHeadups); i++) {
         the_headup = &gHeadups[i];
         if (pSlot_index >= 0 && the_headup->slot_index == pSlot_index) {
             return i;
@@ -1412,85 +1460,79 @@ void C2_HOOK_FASTCALL ClearQueuedHeadups(void) {
 }
 
 // FUNCTION: CARMA2_HW 0x00449830
-void C2_HOOK_FASTCALL DoPSPowerHeadup(int pLevel, const char* pAPO_str) {
+void C2_HOOK_FASTCALL DoTestPowerHeadup(int pLevel, const char* pAPO_str) {
     int changed;
-    br_pixelmap *dest_pm;
-    br_pixelmap *icon;
+    br_pixelmap* dest_pm;
+    br_pixelmap* icon;
+    br_pixelmap* block;
     int count_slots;
     int level;
     int i;
     int j;
-    int delta;
     int delta_x = 2;
 
-    if (pAPO_str[0] == 'A') {
+    switch (pAPO_str[0]) {
+    case 'A':
         dest_pm = gArmour_colour_map;
         icon = gIcon_armour;
         count_slots = gProgram_state.current_car.power_up_slots[0];
-        if (pLevel != gPrev_ps_apo_levels[0]
-                || gProgram_state.current_car.power_up_slots[0] != gPrev_ps_drawn_levels[0]) {
-            gPS_apo_level_changed[0] = 1;
-        } else {
-            gPS_apo_level_changed[0] = 1;
-        }
-        gPrev_ps_drawn_levels[0] = gProgram_state.current_car.power_up_slots[0];
+        changed = pLevel != gPrev_ps_apo_levels[0] || count_slots != gPrev_ps_drawn_levels[0];
+        gPS_apo_level_changed[0] = changed;
         gPrev_ps_apo_levels[0] = pLevel;
-        changed = gPS_apo_level_changed[0];
-    } else if (pAPO_str[0] == 'P') {
+        gPrev_ps_drawn_levels[0] = count_slots;
+        break;
+    case 'P':
         dest_pm = gPower_colour_map;
         icon = gIcon_power;
         count_slots = gProgram_state.current_car.power_up_slots[1];
-        if (pLevel != gPrev_ps_apo_levels[1]
-                || gProgram_state.current_car.power_up_slots[1] != gPrev_ps_drawn_levels[1]) {
-            gPS_apo_level_changed[1] = 1;
-        } else {
-            gPS_apo_level_changed[1] = 1;
-        }
-        gPrev_ps_drawn_levels[1] = gProgram_state.current_car.power_up_slots[1];
+        changed = pLevel != gPrev_ps_apo_levels[1] || count_slots != gPrev_ps_drawn_levels[1];
+        gPS_apo_level_changed[1] = changed;
         gPrev_ps_apo_levels[1] = pLevel;
-        changed = gPS_apo_level_changed[1];
-    } else if (pAPO_str[0] == 'O') {
+        gPrev_ps_drawn_levels[1] = count_slots;
+        break;
+    case 'O':
         dest_pm = gOffensive_colour_map;
         icon = gIcon_offense;
         count_slots = gProgram_state.current_car.power_up_slots[2];
-        if (pLevel != gPrev_ps_apo_levels[2]
-                || gProgram_state.current_car.power_up_slots[2] != gPrev_ps_drawn_levels[2]) {
-            gPS_apo_level_changed[2] = 1;
-        } else {
-            gPS_apo_level_changed[2] = 1;
-        }
-        gPrev_ps_drawn_levels[2] = gProgram_state.current_car.power_up_slots[2];
+        /* Offense redraws use the cached power slot count. */
+        changed = pLevel != gPrev_ps_apo_levels[2] || count_slots != gPrev_ps_drawn_levels[1];
+        gPS_apo_level_changed[2] = changed;
+        gPrev_ps_drawn_levels[2] = count_slots;
         gPrev_ps_apo_levels[2] = pLevel;
-        changed = gPS_apo_level_changed[2];
+        break;
+    default:
+        return;
     }
+
     if (changed) {
         DRPixelmapCopy(dest_pm, gPowerbar);
-        DRPixelmapRectangleMaskedCopy(dest_pm, delta_x, 0, icon, 0, 0, icon->width, icon->height);
-        count_slots = count_slots - pLevel;
+        DRPixelmapRectangleMaskedCopy(dest_pm, (br_int_16)delta_x, 0, icon, 0, 0,
+            (br_int_16)icon->width, (br_int_16)icon->height);
+        count_slots -= pLevel;
         level = pLevel;
-
-        /* Draw staggered APO levels */
         for (i = 0; i < 15; i += 5) {
-            for (j = 0; j < 10; j++) {
-                delta = delta_x;
+            for (j = 0; j < 10; ++j) {
                 if (level > 0) {
-                    DRPixelmapRectangleMaskedCopy(dest_pm,
-                        j * gIcon_litBloc1->width + delta + icon->width + 2, i,
-                        gIcon_litBloc1, 0, 0, gIcon_litBloc1->width, gIcon_litBloc1->height);
-                    level -= 1;
+                    block = gIcon_litBloc1;
                 } else if (count_slots > 0) {
-                    DRPixelmapRectangleMaskedCopy(dest_pm,
-                        j * gIcon_grnBlock1->width + delta + icon->width + 2, i,
-                        gIcon_grnBlock1, 0, 0, gIcon_grnBlock1->width, gIcon_grnBlock1->height);
-                    count_slots -= 1;
+                    block = gIcon_grnBlock1;
                 } else {
-                    DRPixelmapRectangleMaskedCopy(dest_pm,
-                      j * gIcon_greyBloc1->width + delta + icon->width + 2, i,
-                      gIcon_greyBloc1, 0, 0, gIcon_greyBloc1->width, gIcon_greyBloc1->height);
+                    block = gIcon_greyBloc1;
+                }
+                DRPixelmapRectangleMaskedCopy(
+                    dest_pm,
+                    (br_int_16)(j * block->width + delta_x + icon->width + 2),
+                    (br_int_16)i,
+                    block, 0, 0, (br_int_16)block->width, (br_int_16)block->height);
+                if (level > 0) {
+                    --level;
+                } else if (count_slots > 0) {
+                    --count_slots;
                 }
             }
-            delta -= 2;
+            delta_x -= 2;
         }
+
         switch (pAPO_str[0]) {
         case 'A':
             BrMapUpdate(gArmour_colour_map, BR_MAPU_ALL);
@@ -1516,10 +1558,9 @@ void C2_HOOK_FASTCALL DoPSPowerHeadup(int pLevel, const char* pAPO_str) {
 
 // FUNCTION: CARMA2_HW 0x00449800
 void C2_HOOK_FASTCALL DoPSPowerupHeadups(void) {
-
-    DoPSPowerHeadup(gProgram_state.current_car.power_up_levels[0], "A");
-    DoPSPowerHeadup(gProgram_state.current_car.power_up_levels[1], "P");
-    DoPSPowerHeadup(gProgram_state.current_car.power_up_levels[2], "O");
+    DoTestPowerHeadup(gProgram_state.current_car.power_up_levels[0], "A");
+    DoTestPowerHeadup(gProgram_state.current_car.power_up_levels[1], "P");
+    DoTestPowerHeadup(gProgram_state.current_car.power_up_levels[2], "O");
 }
 
 // FUNCTION: CARMA2_HW 0x004496f0
@@ -1540,91 +1581,41 @@ void C2_HOOK_FASTCALL DimAFewBits(void) {
 }
 
 // FUNCTION: CARMA2_HW 0x0047cbd0
-void C2_HOOK_FASTCALL DimRectangle(br_pixelmap* pPixelmap, int pLeft, int pTop, int pRight, int pBottom, int pKnock_out_corners) {
+void C2_HOOK_CDECL DimRectangle(br_pixelmap* pPixelmap, int pLeft, int pTop, int pRight, int pBottom, int pKnock_out_corners) {
     tU8* ptr;
     tU8* depth_table_ptr;
     tU8* right_ptr;
-    int x;
     int y;
     int line_skip;
     int width;
-
-#ifndef CARPOCALYPSE2_MATCHING
-    /* SDL/hi-color builds have no blending rasterizer, so the devious 3D
-     * dim quad would render opaque and cover the HUD. Darken the RGB565
-     * pixels directly instead (halving matches the quad's designed 0x80
-     * opacity). Matching builds are unaffected. */
-    if (pPixelmap->type == BR_PMT_RGB_565) {
-        br_uint_16* row;
-        int stride;
-        int r, g, b;
-
-        if (pLeft < 0) {
-            pLeft = 0;
-        }
-        if (pTop < 0) {
-            pTop = 0;
-        }
-        if (pRight > pPixelmap->width) {
-            pRight = pPixelmap->width;
-        }
-        if (pBottom > pPixelmap->height) {
-            pBottom = pPixelmap->height;
-        }
-        if (pLeft >= pRight || pTop >= pBottom) {
-            return;
-        }
-        stride = pPixelmap->row_bytes / 2;
-        for (y = pTop; y < pBottom; y++) {
-            int x0 = pLeft;
-            int x1 = pRight;
-            if (pKnock_out_corners && (y == pTop || y == pBottom - 1)) {
-                x0++;
-                x1--;
-            }
-            row = ((br_uint_16*)pPixelmap->pixels) + y * stride;
-            for (x = x0; x < x1; x++) {
-                br_uint_16 pixel = row[x];
-                r = (pixel >> 11) & 31;
-                g = (pixel >> 5) & 63;
-                b = pixel & 31;
-                row[x] = (br_uint_16)((r >> 1) << 11 | (g >> 1) << 5 | (b >> 1));
-            }
-        }
-        return;
-    }
-#endif
 
     if (gDevious_2d) {
         DeviouslyDimRectangle(pPixelmap, pLeft, pTop, pRight, pBottom, pKnock_out_corners);
         return;
     }
-
     ptr = (tU8*)pPixelmap->pixels + pLeft + pPixelmap->row_bytes * pTop;
     line_skip = pPixelmap->row_bytes - pRight + pLeft;
-    depth_table_ptr = gDepth_shade_table->pixels;
-    x = gDepth_shade_table->row_bytes * gDim_amount;
+    depth_table_ptr = (tU8*)gDepth_shade_table->pixels + gDepth_shade_table->row_bytes * gDim_amount;
     width = pRight - pLeft;
-
     if (pKnock_out_corners) {
         ptr++;
         for (right_ptr = ptr + width - 2; ptr < right_ptr; ptr++) {
-            *ptr = depth_table_ptr[*ptr + x];
+            *ptr = depth_table_ptr[*ptr];
         }
         ptr += line_skip + 1;
-        for (y = pTop + 1; y < (pBottom - 1); y++, ptr += line_skip) {
+        for (y = pTop + 1; y < pBottom - 1; y++, ptr += line_skip) {
             for (right_ptr = ptr + width; ptr < right_ptr; ptr++) {
-                *ptr = depth_table_ptr[*ptr + x];
+                *ptr = depth_table_ptr[*ptr];
             }
         }
         ptr++;
         for (right_ptr = ptr + width - 2; ptr < right_ptr; ptr++) {
-            *ptr = depth_table_ptr[*ptr + x];
+            *ptr = depth_table_ptr[*ptr];
         }
     } else {
         for (y = pTop; y < pBottom; y++) {
             for (right_ptr = ptr + width; ptr < right_ptr; ptr++) {
-                *ptr = depth_table_ptr[*ptr + x];
+                *ptr = depth_table_ptr[*ptr];
             }
             ptr += line_skip;
         }
@@ -1746,45 +1737,29 @@ int C2_HOOK_FASTCALL IsHeadupTextClever(char* pText) {
 int C2_HOOK_FASTCALL MungeHeadupWidth(tHeadup* pHeadup) {
     int width;
 
-    C2_HOOK_BUG_ON(sizeof(tHeadup) != 356);
-
-#ifndef CARPOCALYPSE2_MATCHING
-    C2_HOOK_BUG_ON((int)&((tHeadup*)0)->data.text_info.text != 0x4c);
-    C2_HOOK_BUG_ON((int)&((tHeadup*)0)->data.coloured_text_info.coloured_font != 0x148);
-#endif
-
     width = 0;
     if (pHeadup->type == eHeadup_box_text) {
         return 0;
     } else if (pHeadup->type == eHeadup_coloured_text) {
-
         pHeadup->clever = IsHeadupTextClever(pHeadup->data.text_info.text);
         if (pHeadup->justification == eJust_left) {
             pHeadup->x = pHeadup->original_x;
         } else if (pHeadup->justification == eJust_right) {
             if (pHeadup->clever) {
-                width = DRTextCleverWidth(
-                    pHeadup->data.coloured_text_info.coloured_font,
-                    pHeadup->data.text_info.text);
+                width = DRTextCleverWidth(pHeadup->data.coloured_text_info.coloured_font, pHeadup->data.text_info.text);
             } else {
-                width = DRTextWidth(
-                    pHeadup->data.coloured_text_info.coloured_font,
-                    pHeadup->data.text_info.text);
+                width = DRTextWidth(pHeadup->data.coloured_text_info.coloured_font, pHeadup->data.text_info.text);
             }
             pHeadup->x = pHeadup->original_x - width;
         } else if (pHeadup->justification == eJust_centre) {
             if (pHeadup->clever) {
-                width = DRTextCleverWidth(
-                    pHeadup->data.coloured_text_info.coloured_font,
-                    pHeadup->data.text_info.text);
+                width = DRTextCleverWidth(pHeadup->data.coloured_text_info.coloured_font, pHeadup->data.text_info.text);
             } else {
-                width = DRTextWidth(
-                    pHeadup->data.coloured_text_info.coloured_font,
-                    pHeadup->data.text_info.text);
+                width = DRTextWidth(pHeadup->data.coloured_text_info.coloured_font, pHeadup->data.text_info.text);
             }
             pHeadup->x = pHeadup->original_x - width / 2;
         }
-    } else if (pHeadup->type ==eHeadup_fancy) {
+    } else if (pHeadup->type == eHeadup_fancy) {
         return 0;
     } else {
         pHeadup->clever = 0;
@@ -1877,12 +1852,12 @@ int C2_HOOK_FASTCALL NewTextHeadupSlot(int pSlot_index, int pFlash_rate, int pLi
 // FUNCTION: CARMA2_HW 0x0044a3a0
 int C2_HOOK_FASTCALL NewImageHeadupSlot(int pSlot_index, int pFlash_rate, int pLifetime, int pImage_index) {
     int index;
+    int width;
+    tHeadup* the_headup;
+    tHeadup_slot* headup_slot;
 
     index = FindAHeadupHoleWoofBarkSoundsABitRude(pSlot_index);
     if (index >= 0) {
-        tHeadup* the_headup;
-        tHeadup_slot* headup_slot;
-
         headup_slot = &gProgram_state.current_car.headup_slots[gProgram_state.cockpit_on][pSlot_index];
         the_headup = &gHeadups[index];
         the_headup->type = eHeadup_image;
@@ -1905,10 +1880,12 @@ int C2_HOOK_FASTCALL NewImageHeadupSlot(int pSlot_index, int pFlash_rate, int pL
             the_headup->x = the_headup->original_x;
             break;
         case eJust_right:
-            the_headup->x = the_headup->original_x + DRTextWidth(&gFonts[gHud_messages[pImage_index].font1], gHud_messages[pImage_index].message);
+            width = DRTextWidth(&gFonts[gHud_messages[pImage_index].font1], gHud_messages[pImage_index].message);
+            the_headup->x = the_headup->original_x + width;
             break;
         case eJust_centre:
-            the_headup->x = the_headup->original_x + DRTextWidth(&gFonts[gHud_messages[pImage_index].font1], gHud_messages[pImage_index].message) / 2;
+            width = DRTextWidth(&gFonts[gHud_messages[pImage_index].font1], gHud_messages[pImage_index].message);
+            the_headup->x = the_headup->original_x + width / 2;
             break;
         }
         the_headup->y = headup_slot->y;
@@ -1924,21 +1901,25 @@ int C2_HOOK_FASTCALL NewImageHeadupSlot(int pSlot_index, int pFlash_rate, int pL
         } else {
             the_headup->end_time = 0;
         }
-        strcpy(the_headup->data.image_info.text , gHud_messages[pImage_index].message);
+        strcpy(the_headup->data.image_info.text, gHud_messages[pImage_index].message);
         the_headup->data.image_info.font_index = gHud_messages[pImage_index].font2;
         the_headup->data.image_info.font = &gFonts[gHud_messages[pImage_index].font1];
         switch (the_headup->justification) {
         case eJust_left:
             the_headup->data.image_info.field_0x104 = 0;
-            the_headup->data.image_info.field_0x10c = -DRTextWidth(the_headup->data.image_info.font, the_headup->data.image_info.text);
+            width = DRTextWidth(the_headup->data.image_info.font, the_headup->data.image_info.text);
+            the_headup->data.image_info.field_0x10c = -width;
             break;
         case eJust_right:
-            the_headup->data.image_info.field_0x104 = DRTextWidth(the_headup->data.image_info.font, the_headup->data.image_info.text);
+            width = DRTextWidth(the_headup->data.image_info.font, the_headup->data.image_info.text);
+            the_headup->data.image_info.field_0x104 = width;
             the_headup->data.image_info.field_0x10c = 0;
             break;
         case eJust_centre:
-            the_headup->data.image_info.field_0x104 =  DRTextWidth(the_headup->data.image_info.font, the_headup->data.image_info.text) / 2;
-            the_headup->data.image_info.field_0x10c = -DRTextWidth(the_headup->data.image_info.font, the_headup->data.image_info.text) / 2;
+            width = DRTextWidth(the_headup->data.image_info.font, the_headup->data.image_info.text);
+            the_headup->data.image_info.field_0x104 = width / 2;
+            width = DRTextWidth(the_headup->data.image_info.font, the_headup->data.image_info.text);
+            the_headup->data.image_info.field_0x10c = -(width / 2);
             break;
         }
     }
@@ -1950,6 +1931,8 @@ void C2_HOOK_FASTCALL DoFancyHeadup(int pIndex) {
     tU32 the_time;
     int temp_ref;
     int center;
+    int width;
+    tHeadup* the_headup;
 
     center = gCurrent_graf_data->width / 2;
     the_time = GetTotalTime();
@@ -1961,28 +1944,30 @@ void C2_HOOK_FASTCALL DoFancyHeadup(int pIndex) {
     }
     temp_ref = NewImageHeadupSlot(6, 0, 2000, pIndex + 10);
     if (temp_ref >= 0) {
-        tHeadup* the_headup;
-
-        gLast_fancy_headup = temp_ref;
         gLast_fancy_index = pIndex;
+        gLast_fancy_headup = temp_ref;
         gLast_fancy_time = the_time;
 
         the_headup = &gHeadups[temp_ref];
         the_headup->type = eHeadup_fancy;
-        the_headup->data.fancy_info.field_0x108 = 0;
         the_headup->data.fancy_info.fancy_stage = 0;
+        the_headup->data.fancy_info.field_0x108 = 0;
         switch (the_headup->justification) {
         case eJust_left:
             the_headup->data.fancy_info.offset = center;
-            the_headup->data.fancy_info.end_offset = -DRTextWidth(the_headup->data.fancy_info.font, the_headup->data.fancy_info.text);
+            width = DRTextWidth(the_headup->data.fancy_info.font, the_headup->data.fancy_info.text);
+            the_headup->data.fancy_info.end_offset = -width;
             break;
         case eJust_right:
-            the_headup->data.fancy_info.offset = center + DRTextWidth(the_headup->data.fancy_info.font, the_headup->data.fancy_info.text) / 2;
+            width = DRTextWidth(the_headup->data.fancy_info.font, the_headup->data.fancy_info.text);
             the_headup->data.fancy_info.end_offset = center;
+            the_headup->data.fancy_info.offset = center + width;
             break;
         case eJust_centre:
-            the_headup->data.fancy_info.offset =  center + DRTextWidth(the_headup->data.fancy_info.font, the_headup->data.fancy_info.text) / 2;
-            the_headup->data.fancy_info.end_offset = -center - DRTextWidth(the_headup->data.fancy_info.font, the_headup->data.fancy_info.text) / 2;
+            width = DRTextWidth(the_headup->data.fancy_info.font, the_headup->data.fancy_info.text);
+            the_headup->data.fancy_info.offset = center + width / 2;
+            width = DRTextWidth(the_headup->data.fancy_info.font, the_headup->data.fancy_info.text);
+            the_headup->data.fancy_info.end_offset = -center - width / 2;
             break;
         }
     }
@@ -2439,25 +2424,25 @@ void C2_HOOK_FASTCALL DoInstruments(tU32 pThe_time) {
 }
 
 // FUNCTION: CARMA2_HW 0x0047c740
-void C2_HOOK_FASTCALL PoshDrawLine(br_pixelmap* pDestn, int pX1, float pAngle, int pY1, int pX2, int pY2, int pColour) {
+void C2_HOOK_FASTCALL PoshDrawLine(br_pixelmap* pDest, int pX1, br_scalar pAngle, int pY1, int pX2, int pY2, int pColour) {
 
-    // FIXME: order of arguments is non-sensical (pX1 and pAngle should be switched)
     if (pColour < 0) {
+        /* NEG and coordinate offsets wrap as original 32-bit integer operations. */
         if (pAngle >= 0.785 && pAngle <= 5.498 && (pAngle <= 2.356 || pAngle >= 3.926)) {
             if ((pAngle <= 0.785 || pAngle >= 1.57) && (pAngle <= 3.926 || pAngle >= 4.712)) {
-                DRDrawLine(pDestn, pX1 - 1, pY1, pX2 - 1, pY2, -pColour - 1);
-                DRDrawLine(pDestn, pX1 + 1, pY1, pX2 + 1, pY2, 1 - pColour);
+                DRDrawLine(pDest, (int)((tU32)pX1 - 1u), pY1, (int)((tU32)pX2 - 1u), pY2, (int)(0u - (tU32)pColour - 1u));
+                DRDrawLine(pDest, (int)((tU32)pX1 + 1u), pY1, (int)((tU32)pX2 + 1u), pY2, (int)(1u - (tU32)pColour));
             } else {
-                DRDrawLine(pDestn, pX1 - 1, pY1, pX2 - 1, pY2, 1 - pColour);
-                DRDrawLine(pDestn, pX1 + 1, pY1, pX2 + 1, pY2, -pColour - 1);
+                DRDrawLine(pDest, (int)((tU32)pX1 - 1u), pY1, (int)((tU32)pX2 - 1u), pY2, (int)(1u - (tU32)pColour));
+                DRDrawLine(pDest, (int)((tU32)pX1 + 1u), pY1, (int)((tU32)pX2 + 1u), pY2, (int)(0u - (tU32)pColour - 1u));
             }
         } else {
-            DRDrawLine(pDestn, pX1, pY1 + 1, pX2, pY2 + 1, -pColour - 1);
-            DRDrawLine(pDestn, pX1, pY1 - 1, pX2, pY2 - 1, 1 - pColour);
+            DRDrawLine(pDest, pX1, (int)((tU32)pY1 + 1u), pX2, (int)((tU32)pY2 + 1u), (int)(0u - (tU32)pColour - 1u));
+            DRDrawLine(pDest, pX1, (int)((tU32)pY1 - 1u), pX2, (int)((tU32)pY2 - 1u), (int)(1u - (tU32)pColour));
         }
-        DRDrawLine(pDestn, pX1, pY1, pX2, pY2, -pColour);
+        DRDrawLine(pDest, pX1, pY1, pX2, pY2, (int)(0u - (tU32)pColour));
     } else {
-        DRDrawLine(pDestn, pX1, pY1, pX2, pY2, pColour);
+        DRDrawLine(pDest, pX1, pY1, pX2, pY2, pColour);
     }
 }
 

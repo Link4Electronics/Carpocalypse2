@@ -54,7 +54,7 @@ char gDefault_quick_time_compressor[] = "animation";
 void C2_HOOK_CDECL InitQuickTimeStuff(void) {
 
     gQuickTime_initialized = 0;
-    if (InitializeQTML(0) == noErr && EnterMovies() == noErr) {//
+    if (InitializeQTML(0) == noErr && EnterMovies() == noErr) {
         gQuickTime_initialized = 1;
     }
     gQuick_time_temp_path[0] = '\0';
@@ -86,12 +86,9 @@ void C2_HOOK_FASTCALL SetQuickTimeDefaults(void) {
 
 // FUNCTION: CARMA2_HW 0x004e1a20
 void C2_HOOK_FASTCALL MovieStopRecordingIfNecessary(void) {
-#ifndef CARPOCALYPSE2_MATCHING
+
     MovieStopRecordingAndSave();
     KillStatusMessage();
-#else
-    NOT_IMPLEMENTED();
-#endif
 }
 
 // GenerateOneMovieFrame

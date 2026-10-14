@@ -631,18 +631,20 @@ void C2_HOOK_FASTCALL PhysicsError(tPhysicsError pError, const char* pMessage) {
     exit(pError);
 }
 
+#pragma auto_inline(off)
 // FUNCTION: CARMA2_HW 0x004c6510
 void C2_HOOK_FASTCALL InitPhysicsWorkspace(tU8* pBuffer, int pSize) {
 
-    gPhysics_buffer1_ptr = pBuffer + 0 * PHYSICS_BUFFER_PART_SIZE;
-    gPhysics_buffer2_ptr = pBuffer + 1 * PHYSICS_BUFFER_PART_SIZE;
+    gPhysics_buffer1_ptr = pBuffer;
+    pSize -= 3 * PHYSICS_BUFFER_PART_SIZE;
+    gPhysics_buffer2_ptr = pBuffer + PHYSICS_BUFFER_PART_SIZE;
     gPhysics_buffer3_ptr = pBuffer + 2 * PHYSICS_BUFFER_PART_SIZE;
-
-    if (pSize - 3 * PHYSICS_BUFFER_PART_SIZE < PHYSICS_BUFFER_OTHER_SIZE) {
-        PhysicsError(ePhysicsError_InsufficientSizedBuffer, NULL);
+    pBuffer += 3 * PHYSICS_BUFFER_PART_SIZE;
+    if (pSize < PHYSICS_BUFFER_OTHER_SIZE) {
+        PhysicsError(ePhysicsError_InsufficientSizedBuffer, "Physics workspace too small");
     }
-    gPhysics_other_buffer_capacity = pSize - 3 * PHYSICS_BUFFER_PART_SIZE;
-    gPhysics_other_buffer = pBuffer + 3 * PHYSICS_BUFFER_PART_SIZE;
+    gPhysics_other_buffer_capacity = pSize;
+    gPhysics_other_buffer = pBuffer;
 }
 #pragma auto_inline(on)
 
@@ -692,22 +694,23 @@ tCollision_shape_sphere* C2_HOOK_FASTCALL AllocateShapeSphere(int pType) {
 #pragma auto_inline(on)
 
 // FUNCTION: CARMA2_HW 0x004c5d70
-tCollision_shape_polyhedron* C2_HOOK_FASTCALL AllocateShapePolyhedron(int pCount_points, br_uint_8 pType) {
+tCollision_shape_polyhedron* C2_HOOK_FASTCALL AllocateShapePolyhedron(int pCount_points, int pType) {
     tCollision_shape_polyhedron* result;
     tU8* raw_memory;
+    int count_edges;
 
     C2_HOOK_BUG_ON(sizeof(tCollision_shape_polyhedron) != 80);
     C2_HOOK_BUG_ON(sizeof(tPolyhedron_edge_indexes) != 2);
-    result = BrMemAllocate(sizeof(tCollision_shape_polyhedron) * pCount_points * sizeof(br_vector3) + (pCount_points + -2) * 38, pType); /* FIXME: 38? */
-    raw_memory = (tU8*)result;
-
-    raw_memory += sizeof(tCollision_shape_polyhedron);
+    count_edges = (pCount_points - 2) * 3;
+    result = BrMemAllocate(sizeof(tCollision_shape_polyhedron) + pCount_points * sizeof(br_vector3)
+        + count_edges * sizeof(tPolyhedron_edge_indexes) + (pCount_points - 2) * 2 * sizeof(br_vector4), (br_uint_8)pType);
+    raw_memory = (tU8*)result + sizeof(tCollision_shape_polyhedron);
 
     result->polyhedron.points = (br_vector3*)raw_memory;
     raw_memory += pCount_points * sizeof(br_vector3);
 
     result->polyhedron.edges = (tPolyhedron_edge_indexes*)raw_memory;
-    raw_memory += (pCount_points - 2) * 3 * sizeof(tPolyhedron_edge_indexes);
+    raw_memory += count_edges * sizeof(tPolyhedron_edge_indexes);
 
     result->polyhedron.planes = (br_vector4*)raw_memory;
 
@@ -1372,7 +1375,11 @@ void C2_HOOK_FASTCALL FillInShape(tPhysics_shape* pShape) {
     tPhysicsError error;
 
     switch (pShape->common.type) {
-    case kCollisionShapeType_Box:
+    case kCollisionShapeType_Wireframe:
+        if (pShape->wireframe.wireframe.count_points == 0) {
+            PhysicsError(ePhysicsError_WireFrameHasNoPoints, NULL);
+        }
+        GetBoundsFromPointList(pShape->wireframe.wireframe.points, pShape->wireframe.wireframe.count_points, &pShape->common.bb);
         break;
     case kCollisionShapeType_Polyhedron:
         if (pShape->polyhedron.polyhedron.count_points < 4) {
@@ -1380,18 +1387,12 @@ void C2_HOOK_FASTCALL FillInShape(tPhysics_shape* pShape) {
         }
         error = ConvexHull3D(&pShape->polyhedron.polyhedron);
         if (error != ePhysicsError_Ok) {
-            if (error == ePhysicsError_WireFrameHasNoPoints) {
+            if (error != ePhysicsError_WireFrameHasNoPoints) {
                 PDFatalError("This polyhedron is too wierd for me");
             }
             pShape->common.type = kCollisionShapeType_Wireframe_Polyhedron;
         }
         GetBoundsFromPointList(pShape->polyhedron.polyhedron.points, pShape->polyhedron.polyhedron.count_points, &pShape->common.bb);
-        break;
-    case kCollisionShapeType_Wireframe:
-        if (pShape->wireframe.wireframe.count_points == 0) {
-            PhysicsError(ePhysicsError_WireFrameHasNoPoints, NULL);
-        }
-        GetBoundsFromPointList(pShape->wireframe.wireframe.points, pShape->wireframe.wireframe.count_points, &pShape->common.bb);
         break;
     case kCollisionShapeType_Wireframe_Polyhedron:
         if (pShape->polyhedron.polyhedron.count_points < 3) {
@@ -1408,6 +1409,8 @@ void C2_HOOK_FASTCALL FillInShape(tPhysics_shape* pShape) {
             pShape->common.bb.max.v[i] += pShape->sphere.sphere.radius;
         }
         pShape->sphere.sphere.radius_squared = CARPOCALYPSE2_SQR(pShape->sphere.sphere.radius);
+        break;
+    case kCollisionShapeType_Box:
         break;
     default:
         PhysicsError(ePhysicsError_UnknownShapeType, NULL);

@@ -2807,39 +2807,6 @@ void C2_HOOK_FASTCALL ToggleAccessoryRendering(void) {
     }
 }
 
-// FUNCTION: CARMA2_HW 0x00446ad0
-void C2_HOOK_FASTCALL DecreaseYon(void) {
-    char text[256];
-    br_camera* camera;
-    int i;
-
-    gCamera_yon -= 5.f;
-    if (gCamera_yon < 5.0f) {
-        gCamera_yon = 5.0f;
-    }
-    for (i = 0; i < CARPOCALYPSE2_ASIZE(gCamera_list); i++) {
-        camera = gCamera_list[i]->type_data;
-        camera->yon_z = gYon_multiplier * gCamera_yon;
-    }
-    sprintf(text, GetMiscString(eMiscString_yon_decreased_to_D), (int)camera->yon_z);
-    NewTextHeadupSlot(4, 0, 2000, -4, text);
-}
-
-// FUNCTION: CARMA2_HW 0x00446a40
-void C2_HOOK_FASTCALL IncreaseYon(void) {
-    char text[256];
-    br_camera* camera;
-    int i;
-
-    gCamera_yon += 5.f;
-    for (i = 0; i < CARPOCALYPSE2_ASIZE(gCamera_list); i++) {
-        camera = gCamera_list[i]->type_data;
-        camera->yon_z = gYon_multiplier * gCamera_yon;
-    }
-    sprintf(text, GetMiscString(eMiscString_yon_increased_to_D), (int)camera->yon_z);
-    NewTextHeadupSlot(4, 0, 2000, -4, text);
-}
-
 // FUNCTION: CARMA2_HW 0x004447c0
 void C2_HOOK_FASTCALL CycleSoundDetailLevel(void) {
     int new_level;

@@ -25,17 +25,20 @@
 
 // Reflex2D
 
-// STUB: CARMA2_HW 0x004e9c40
 // GLOBAL: CARMA2_HW 0x0065fe08
+static char gBoring_material_name_0[] = "OILSMEAR.MAT";
+static char gBoring_material_name_1[] = "ROBSMEAR.MAT";
+static char gMaterial_name_0[] = "OILSMEAR.MAT";
+static char gMaterial_name_1[] = "GIBSMEAR.MAT";
 char* gBoring_material_names[2] = {
-    "OILSMEAR.MAT",
-    "ROBSMEAR.MAT",
+    gBoring_material_name_0,
+    gBoring_material_name_1,
 };
 
 // GLOBAL: CARMA2_HW 0x0065fe10
 char* gMaterial_names[2] = {
-    "OILSMEAR.MAT",
-    "GIBSMEAR.MAT",
+    gMaterial_name_0,
+    gMaterial_name_1,
 };
 
 // GLOBAL: CARMA2_HW 0x006a27f0
@@ -95,8 +98,8 @@ void C2_HOOK_FASTCALL ReadSpillData(FILE* pF, tSlick_spec* pSlick_spec) {
 // FUNCTION: CARMA2_HW 0x004e9be0
 void C2_HOOK_FASTCALL AdjustSkid(int pSkid_num, br_matrix34* pMatrix, br_material* pMaterial) {
 
-    BrMatrix34Copy(&gSkids[pSkid_num].actor->t.t.mat, pMatrix);
-    BrVector3Copy(&gSkids[pSkid_num].pos, (br_vector3*)pMatrix->m[3]);
+    gSkids[pSkid_num].actor->t.t.mat = *pMatrix;
+    gSkids[pSkid_num].pos = *(br_vector3*)pMatrix->m[3];
     gSkids[pSkid_num].actor->material = pMaterial;
     gSkids[pSkid_num].actor->render_style = BR_RSTYLE_DEFAULT;
 }
@@ -281,53 +284,74 @@ void C2_HOOK_FASTCALL SkidsPerFrame(void) {
 }
 // FUNCTION: CARMA2_HW 0x004e9c40
 void C2_HOOK_FASTCALL InitSkids(void) {
-#ifndef CARPOCALYPSE2_MATCHING
-    int i;
-    gCurrent_skid = 0;
-    for (i = 0; i < CARPOCALYPSE2_ASIZE(gMaterial_names); i++) {
-        br_material* material = BrMaterialFind(gMaterial_names[i]);
-        if (material == NULL) {
-            material = LoadMaterial(gMaterial_names[i]);
-            if (material != NULL) {
-                material->flags &= ~BR_MATF_LIGHT;
-                BrMaterialAdd(material);
+    int skid;
+    int mat;
+    int sl;
+    br_model* square;
+    br_pixelmap* pm;
+    char* str;
+
+    for (mat = 0; mat < (int)CARPOCALYPSE2_ASIZE(gMaterial_names); mat++) {
+        if (gProgram_state.sausage_eater_mode) {
+            str = gBoring_material_names[mat];
+        } else {
+            str = gMaterial_names[mat];
+        }
+        gMaterial[mat] = BrMaterialFind(str);
+        if (gMaterial[mat] == NULL) {
+            if (gProgram_state.sausage_eater_mode) {
+                str = gBoring_material_names[mat];
+            } else {
+                str = gMaterial_names[mat];
             }
+
+            str = strtok(str, ".");
+            sl = strlen(str);
+            strcat(str, ".PIX");
+            pm = LoadPixelmap(str);
+            if (pm == NULL) {
+                FatalError(kFatalError_CantLoadPixelmapFile_S, str);
+            }
+            BrMapAdd(pm);
+            str[sl] = '\0';
+            strcat(str, ".MAT");
+            gMaterial[mat] = LoadMaterial(str);
+            if (gMaterial[mat] == NULL) {
+                BrFatal("C:\\Carma2\\Source\\Common\\Skidmark.c", 215, "Couldn't find %s", gMaterial_names[mat]);
+            } else {
+                GlorifyMaterial(&gMaterial[mat], 1, kRendererShadingType_AmbientOnly);
+            }
+            BrMaterialAdd(gMaterial[mat]);
         }
-        gMaterial[i] = material;
     }
-    for (i = 0; i < CARPOCALYPSE2_ASIZE(gSkids); i++) {
-        br_actor* actor = BrActorAllocate(BR_ACTOR_MODEL, NULL);
-        br_model* model;
-        br_vertex* v;
-        br_face* f;
-        gSkids[i].actor = actor;
-        if (actor == NULL) {
-            continue;
-        }
-        model = BrModelAllocate(NULL, 4, 2);
-        if (model == NULL) {
-            continue;
-        }
-        actor->model = model;
-        actor->render_style = BR_RSTYLE_DEFAULT;
-        v = model->vertices;
-        v[0].p.v[0] = -1.0f; v[0].p.v[1] = 0.0f; v[0].p.v[2] = -1.0f;
-        v[0].map.v[0] = 0.0f; v[0].map.v[1] = 0.0f;
-        v[1].p.v[0] = -1.0f; v[1].p.v[1] = 0.0f; v[1].p.v[2] = 0.5f;
-        v[1].map.v[0] = 0.0f; v[1].map.v[1] = 1.0f;
-        v[2].p.v[0] = 0.5f; v[2].p.v[1] = 0.0f; v[2].p.v[2] = 0.5f;
-        v[2].map.v[0] = 1.0f; v[2].map.v[1] = 1.0f;
-        v[3].p.v[0] = 0.5f; v[3].p.v[1] = 0.0f; v[3].p.v[2] = -1.0f;
-        v[3].map.v[0] = 1.0f; v[3].map.v[1] = 0.0f;
-        f = model->faces;
-        f[0].vertices[0] = 0; f[0].vertices[1] = 1; f[0].vertices[2] = 2; f[0].smoothing = 1;
-        f[1].vertices[0] = 0; f[1].vertices[1] = 2; f[1].vertices[2] = 3; f[1].smoothing = 1;
-        model->flags |= BR_MODF_KEEP_ORIGINAL;
-        BrModelAdd(model);
+
+    C2_HOOK_BUG_ON(sizeof(tSkid) != 28);
+
+    for (skid = 0; skid < (int)CARPOCALYPSE2_ASIZE(gSkids); skid++) {
+        gSkids[skid].actor = BrActorAllocate(BR_ACTOR_MODEL, NULL);
+        BrActorAdd(gOther_selfs[3], gSkids[skid].actor);
+        gSkids[skid].actor->render_style = BR_RSTYLE_NONE;
+        square = BrModelAllocate(NULL, 4, 2);
+        BrVector3Set(&square->vertices[0].p, -0.5f, 0.0f, -0.5f);
+        BrVector3Set(&square->vertices[1].p, -0.5f, 0.0f, 0.5f);
+        BrVector3Set(&square->vertices[2].p, 0.5f, 0.0f, 0.5f);
+        BrVector3Set(&square->vertices[3].p, 0.5f, 0.0f, -0.5f);
+        BrVector2Set(&square->vertices[0].map, 0.0f, 0.0f);
+        BrVector2Set(&square->vertices[1].map, 0.0f, 1.0f);
+        BrVector2Set(&square->vertices[2].map, 1.0f, 1.0f);
+        BrVector2Set(&square->vertices[3].map, 1.0f, 0.0f);
+        square->faces[0].vertices[0] = 0;
+        square->faces[0].vertices[1] = 1;
+        square->faces[0].vertices[2] = 2;
+        square->faces[0].smoothing = 1;
+        square->faces[1].vertices[0] = 0;
+        square->faces[1].vertices[1] = 2;
+        square->faces[1].vertices[2] = 3;
+        square->faces[1].smoothing = 1;
+        square->flags |= BR_MODF_KEEP_ORIGINAL;
+        BrModelAdd(square);
+        gSkids[skid].actor->model = square;
     }
-#else
-    NOT_IMPLEMENTED();
-#endif
 }
 
 // HideSkid

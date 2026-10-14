@@ -650,6 +650,7 @@ int C2_HOOK_FASTCALL ARGetReplayDirection(void) {
     return gPlay_direction;
 }
 
+#pragma auto_inline(off)
 // FUNCTION: CARMA2_HW 0x00402300
 int C2_HOOK_FASTCALL ARReplayForwards(void) {
 
@@ -668,6 +669,7 @@ int C2_HOOK_FASTCALL ARReplayForwards(void) {
         return 0;
     }
 }
+#pragma auto_inline(on)
 
 // FUNCTION: CARMA2_HW 0x00402540
 int C2_HOOK_FASTCALL ARReplayPlaying(void) {
@@ -1193,22 +1195,16 @@ void C2_HOOK_FASTCALL PipeSinglePHILObject(tPhysics_object* pObject) {
 }
 
 // FUNCTION: CARMA2_HW 0x004c6f40
-void C2_HOOK_FASTCALL AddShrapnelToPipingSession(int pShrapnel_index, br_vector3* pPos, tU16 pAge, br_material* pMaterial) {
-    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPipe_chunk_shrapnel, pos, 0x0);
-    C2_HOOK_STATIC_ASSERT_STRUCT_MEMBER_SIZE(tPipe_chunk_shrapnel, pos, 0xc);
-    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPipe_chunk_shrapnel, age, 0xc);
-    C2_HOOK_STATIC_ASSERT_STRUCT_MEMBER_SIZE(tPipe_chunk_shrapnel, age, 0x2);
-    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPipe_chunk_shrapnel, material, 0x10);
-    C2_HOOK_STATIC_ASSERT_STRUCT_MEMBER_SIZE(tPipe_chunk_shrapnel, material, 0x4);
+void C2_HOOK_FASTCALL AddShrapnelToPipingSession(int pShrapnel_index, const br_vector3* pPos, tU16 pAge, br_material* pMaterial) {
 
     if (pShrapnel_index & 0x8000) {
         ARAddVariedDataToSession(ePipe_chunk_shrapnel, pShrapnel_index, 3,
-            SIZE_OFFSET_PIPING(tPipe_chunk_shrapnel, pos), &pPos,
-            SIZE_OFFSET_PIPING(tPipe_chunk_shrapnel, age), pAge,
-            SIZE_OFFSET_PIPING(tPipe_chunk_shrapnel, material), &pMaterial);
+            SIZE_OFFSET_PIPING(tPipe_chunk_shrapnel, pos), pPos,
+            SIZE_OFFSET_PIPING(tPipe_chunk_shrapnel, age), (int)pAge,
+            SIZE_OFFSET_PIPING(tPipe_chunk_shrapnel, material), pMaterial);
     } else {
         ARAddVariedDataToSession(ePipe_chunk_shrapnel, pShrapnel_index, 1,
-            SIZE_OFFSET_PIPING(tPipe_chunk_shrapnel, pos), &pPos);
+            SIZE_OFFSET_PIPING(tPipe_chunk_shrapnel, pos), pPos);
     }
 }
 
