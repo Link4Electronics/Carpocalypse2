@@ -1142,7 +1142,26 @@ void C2_HOOK_FASTCALL DroneStateFuncControlledMovement(tDrone_spec* pDrone, tDro
 // FUNCTION: CARMA2_HW 0x0044eb70
 void C2_HOOK_FASTCALL DroneStateFuncPhysicsActive(tDrone_spec* pDrone, tDroneStateFuncState state) {
 
-    NOT_IMPLEMENTED();
+    if (state != eDrone_state_RUN) {
+        return;
+    }
+    DoNotDprintf("DroneStateFuncPhysicsActive() RUN");
+    if (pDrone->field_0x44) {
+        if (!(pDrone->form->flags & 0x4)) {
+            return;
+        }
+        if (pDrone->field_0x45) {
+            return;
+        }
+    }
+    if (!(pDrone->form->flags & 0x2)) {
+        return;
+    }
+    PHILRemoveObject(&pDrone->collision_info);
+    pDrone->collision_info.field_0x1a0 = 0x100000;
+    PHILSetObjectProperty(&pDrone->collision_info, 3, 1);
+    pDrone->field_0x5d4 = 0;
+    NewDroneState(pDrone, 1);
 }
 
 // FUNCTION: CARMA2_HW 0x0044ec50
@@ -1303,7 +1322,7 @@ void C2_HOOK_FASTCALL StartRenderingThisDrone(tDrone_spec* pDrone) {
 br_vector3* C2_HOOK_FASTCALL GetCurrentViewDroneDirection(void) {
 
     StartRenderingThisDrone(&gDrone_specs[gCurrent_selected_drone]);
-    if (BrVector3LengthSquared(&gDrone_specs[gCurrent_selected_drone].field_0x18) > 0.f) {
+    if (BrVector3LengthSquared(&gDrone_specs[gCurrent_selected_drone].field_0x18) > gDrone_render_zero) {
         return &gDrone_specs[gCurrent_selected_drone].field_0x18;
     } else {
         return &gDefault_drone_direction;

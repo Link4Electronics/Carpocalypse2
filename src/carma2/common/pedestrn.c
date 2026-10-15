@@ -4046,6 +4046,18 @@ void C2_HOOK_FASTCALL FlushAllPedCaches(void) {
     }
 }
 
+// UNLABELED: CARMA2_HW 0x004d6da0
+void C2_HOOK_FASTCALL FUN_004d6da0(void) {
+
+    NOT_IMPLEMENTED();
+}
+
+// UNLABELED: CARMA2_HW 0x004d6d90
+void C2_HOOK_FASTCALL FUN_004d6d90(void) {
+
+    NOT_IMPLEMENTED();
+}
+
 // FUNCTION: CARMA2_HW 0x004cdc00
 undefined4 C2_HOOK_FASTCALL CBPassiveCollision(tPed_character_instance* pCharacter, tPhysics_object* pObject, tPhysics_object* pCollision_info) {
     tPedestrian* ped;

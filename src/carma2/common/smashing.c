@@ -823,5 +823,10 @@ float C2_HOOK_FASTCALL PositionFragment(br_actor* pActor, tSmashable_initial_pos
 
 // FUNCTION: CARMA2_HW 0x004eb120
 void C2_HOOK_FASTCALL InitFragmentSpeed(tSmash_vertex* pFragment, tSmashable_initial_speed_spec* pSpeed, br_vector3* pArg3, float pArg4, int* pArg5, int pArg6, br_vector3* pArg7, int pArg8, int pArg9) {
-    NOT_IMPLEMENTED();
+
+    ApplyInitialMovement((undefined4*)pSpeed, pArg3, &pFragment->v, &pFragment->omega, pArg4, pArg7, (br_vector3*)(uintptr_t)pArg8, (br_vector3*)(uintptr_t)pArg9);
+    pFragment->field_0xc = pArg6;
+    pFragment->time_last_move = pArg6;
+    pFragment->end_time = pArg6 + pArg5[1];
+    pFragment->field_0x10 = IRandomBetween(pArg5[0], pArg5[1]) + pArg6;
 }
