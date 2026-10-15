@@ -13,6 +13,7 @@
 #include "loading.h"
 #include "main.h"
 #include "mainloop.h"
+#include "netgame.h"
 #include "oil.h"
 #include "pedestrn.h"
 #include "piping.h"
@@ -46,6 +47,21 @@ tU32 gLast_synch_time;
 
 // GLOBAL: CARMA2_HW 0x006a2374
 int gKey_down;
+
+// GLOBAL: CARMA2_HW 0x006a2360
+tU32 gUnk_006a2360;
+
+// GLOBAL: CARMA2_HW 0x006a2364
+tU32 gUnk_006a2364;
+
+// GLOBAL: CARMA2_HW 0x006a2378
+int gUnk_006a2378;
+
+// GLOBAL: CARMA2_HW 0x006a237c
+tU32 gUnk_006a237c;
+
+// GLOBAL: CARMA2_HW 0x006a23c8
+tU32 gUnk_006a23c8;
 
 // GLOBAL: CARMA2_HW 0x006a2380
 tU32 gTime_of_last_zappy_headups;
@@ -180,14 +196,49 @@ void C2_HOOK_FASTCALL ARService(void) {
 
 // FUNCTION: CARMA2_HW 0x004e71c0
 void C2_HOOK_FASTCALL TurnOnActionReplay(void) {
+#pragma inline_depth(0)
 
-    NOT_IMPLEMENTED();
+    FUN_004d6d90();
+    if (gMap_view == 2) {
+        ToggleMap();
+    }
+    if (gNet_mode == eNet_mode_host) {
+        SendGameplayToAllPlayers(eNet_gameplay_host_paused, 0, 0, 0, 0);
+    }
+    gUnk_006a237c = PDGetTotalTime();
+    gUnk_006a2360 = ARGetStartTime();
+    LoadInterfaceStuff(1);
+    StartMouseCursor();
+    gKey_down = 0x34;
+    gUnk_006a2378 = 0;
+    gUnk_006a23c8 = PDGetTotalTime();
+    gUnk_006a2364 = GetTotalTime();
+    if (gRace_finished == 0) {
+        SaveCameraPosition(0);
+    }
+    gCamera_type = gAction_replay_camera_mode;
+    SetCameraType(gAR_camera_type);
+    FUN_004ff030();
+#pragma inline_depth()
 }
 
 // FUNCTION: CARMA2_HW 0x004e7270
 void C2_HOOK_FASTCALL TurnOffActionReplay(void) {
+#pragma inline_depth(0)
 
-    NOT_IMPLEMENTED();
+    UnlockInterfaceStuff();
+    AssertThisTimeAsCurrentTime();
+    if (gRace_finished == 0) {
+        RestoreCameraPosition(0);
+    }
+    if (gNet_mode == eNet_mode_host) {
+        SendGameplayToAllPlayers(eNet_gameplay_host_unpaused, 0, 0, 0, 0);
+    }
+    gAR_camera_type = gAction_replay_camera_mode;
+    SetCameraType(gCamera_type);
+    FUN_004d6da0();
+    EndMouseCursor();
+#pragma inline_depth()
 }
 
 // FUNCTION: CARMA2_HW 0x004e72d0

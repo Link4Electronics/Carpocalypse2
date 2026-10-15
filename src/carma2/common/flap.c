@@ -552,11 +552,14 @@ void C2_HOOK_FASTCALL DoFullyDetaching(void) {
                 for (j = 0; j < car_crush->field_0x270; j++) {
                     int detach;
                     tCar_bit_spec* bit_car = &car_crush->field_0x274[j];
-                    tU32 dt;
+                    int dt;
 
-                    NOT_IMPLEMENTED();
-                    /* FIXME: What (enum) type does field_0xc have? */
+                    /* field_0xc type unresolved; index 9 matches jump table (cases 0,1,2,4) */
                     switch (bit_car->field_0xc[9]) {
+                    case 2:
+                    case 4:
+                        detach = 1;
+                        break;
                     case 0:
                     case 1:
                         detach = BitObjectIsSufficientlyOutsideCarObjectToDetach(bit_car->field_0x8);
@@ -565,18 +568,12 @@ void C2_HOOK_FASTCALL DoFullyDetaching(void) {
                             detach &= PercentageChance((int)((float)(100 * dt) / (float)gMax_detach_time_ms));
                         }
                         break;
-                    case 2:
-                    case 4:
-                        detach = 1;
-                        break;
                     default:
                         detach = 0;
                         break;
                     }
                     if (detach) {
-                        if (gNet_mode == eNet_mode_none) {
-                            FullyDetachBit(car, bit_car->field_0x8);
-                        } else {
+                        if (gNet_mode != eNet_mode_none) {
                             int bit_synced;
                             int k;
 
@@ -590,6 +587,8 @@ void C2_HOOK_FASTCALL DoFullyDetaching(void) {
                             if (!bit_synced) {
                                 SendFullyDetachBit(car, bit_car->field_0x8);
                             }
+                        } else {
+                            FullyDetachBit(car, bit_car->field_0x8);
                         }
                     }
                 }

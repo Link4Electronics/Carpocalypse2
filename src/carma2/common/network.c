@@ -1498,21 +1498,33 @@ int C2_HOOK_FASTCALL NetDisposeMessage(tNet_game_details* pDetails, tNet_message
 
 // FUNCTION: CARMA2_HW 0x004a4a40
 void C2_HOOK_FASTCALL NetReceiveAndProcessMessages(void) {
-#ifndef CARPOCALYPSE2_MATCHING
-    tNet_message* message;
-    void* sender_address;
+#pragma inline_depth(0)
+    int old_net_service;
 
-    while ((message = NetGetNextMessage(gCurrent_net_game, &sender_address)) != NULL) {
-        ReceivedMessage(message, sender_address, PDGetTotalTime());
-    }
-#else
-    tNet_message* message;
-    void* sender_address;
+    if (gNet_mode != eNet_mode_none || gJoin_list_mode) {
+        old_net_service = gIn_net_service;
+        gIn_net_service = 1;
+        for (;;) {
+            tNet_message* message;
+            void* sender_address;
 
-    while ((message = NetGetNextMessage(gCurrent_net_game, &sender_address)) != NULL) {
-        ReceivedMessage(message, sender_address, PDGetTotalTime());
+            message = NetGetNextMessage(gCurrent_net_game, &sender_address);
+            if (message == NULL) {
+                break;
+            }
+            if (message->header.field_0x14 != 0) {
+                tU32 receive_time;
+
+                receive_time = GetRaceTime();
+                if (message->header.field_0x4 == 0x763a5059) {
+                    ReceivedMessage(message, sender_address, receive_time);
+                }
+                ((tU8*)message)[0x19] = 0xff;
+            }
+        }
+        gIn_net_service = old_net_service;
     }
-#endif
+#pragma inline_depth()
 }
 
 // FUNCTION: CARMA2_HW 0x004a4ac0

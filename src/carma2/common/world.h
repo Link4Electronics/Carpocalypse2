@@ -216,6 +216,8 @@ void C2_HOOK_FASTCALL AddGroovidelics(FILE* pF, int pOwner, br_actor* pParent_ac
 
 void C2_HOOK_FASTCALL DisposeGroovidelics(int pOwner);
 
+void C2_HOOK_FASTCALL FUN_004ff030(void);
+
 tSpecial_volume* C2_HOOK_FASTCALL GetDefaultSpecialVolumeForWater(void);
 
 void C2_HOOK_FASTCALL ReadGlobalLightingInfo(FILE* pF);

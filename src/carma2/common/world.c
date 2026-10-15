@@ -1990,6 +1990,12 @@ void C2_HOOK_FASTCALL AddGroovidelics(FILE* pF, int pOwner, br_actor* pParent_ac
     }
 }
 
+// UNLABELED: CARMA2_HW 0x004ff030
+void C2_HOOK_FASTCALL FUN_004ff030(void) {
+
+    NOT_IMPLEMENTED();
+}
+
 // FUNCTION: CARMA2_HW 0x004ff110
 tSpecial_volume* C2_HOOK_FASTCALL GetDefaultSpecialVolumeForWater(void) {
 
