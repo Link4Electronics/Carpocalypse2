@@ -14,9 +14,9 @@ extern void C2_HOOK_FASTCALL ShutdownNetIfRequired(void);
 
 // ReenableNetService
 
-// PermitNetServiceReentrancy
+extern int C2_HOOK_FASTCALL PermitNetServiceReentrancy(void);
 
-// HaltNetServiceReentrancy
+extern void C2_HOOK_FASTCALL HaltNetServiceReentrancy(void);
 
 // NetSendHeadupToAllPlayers
 

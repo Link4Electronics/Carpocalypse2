@@ -50,7 +50,11 @@ extern void C2_HOOK_FASTCALL EndRollingLetters(void);
 
 // ChangeCharTo
 
+extern void C2_HOOK_FASTCALL BlankSlot(int pIndex, int pName_length, int pVisible_length);
+
 extern void C2_HOOK_FASTCALL RevertTyping(int pSlot_index, char* pRevert_str);
+
+extern void C2_HOOK_FASTCALL StartTyping(int pSlot_index, char* pText, int pVisible_length);
 
 extern void C2_HOOK_FASTCALL EdgeTriggerModeOn(void);
 
@@ -86,6 +90,10 @@ extern int gVisible_length;
 extern int gLetter_y_coords[15];
 
 extern int gThe_length;
+
+extern char gCurrent_typing[110];
+
+extern int gCurrent_position;
 
 extern tU32 gLast_poll_keys;
 

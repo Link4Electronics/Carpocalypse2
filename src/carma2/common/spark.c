@@ -3033,11 +3033,45 @@ void C2_HOOK_FASTCALL InitSmokeStuff(void) {
 
 // ResetSmoke
 
-// AdjustSmoke
+// FUNCTION: CARMA2_HW 0x004fb520
+void C2_HOOK_FASTCALL AdjustSmoke(int pIndex, tU8 pType, br_vector3* pPos, br_scalar pRadius, br_scalar pStrength) {
+    gSmoke[pIndex].type = pType;
+    memcpy(&gSmoke[pIndex].radius, &pRadius, sizeof(pRadius));
+    memcpy(&gSmoke[pIndex].strength, &pStrength, sizeof(pStrength));
+    memcpy(&gSmoke[pIndex].pos.v[0], &pPos->v[0], sizeof(br_scalar));
+    memcpy(&gSmoke[pIndex].pos.v[1], &pPos->v[1], sizeof(br_scalar));
+    memcpy(&gSmoke[pIndex].pos.v[2], &pPos->v[2], sizeof(br_scalar));
+    gSmoke_flags |= 1u << pIndex;
+}
 
 // ActorError
 
-// AdjustSmokeColumn
+// FUNCTION: CARMA2_HW 0x004fb580
+void C2_HOOK_FASTCALL AdjustSmokeColumn(int pIndex, const tSmoke_column_core* pCore, int pVertex, int pColour) {
+    tSmoke_column* column;
+    tU32 bit;
+
+    bit = 1u << (pIndex & 31);
+    gColumn_flags ^= bit;
+    column = &gSmoke_column[pIndex];
+    /* Four separate MOVs preserve the original forward overlap ordering. */
+    column->core.field_0x0 = pCore->field_0x0;
+    column->core.car = pCore->car;
+    column->core.collision_info = pCore->collision_info;
+    column->core.car_actor = pCore->car_actor;
+    column->vertex_index = pVertex;
+    column->colour = pColour;
+    column->frame_count[0] = 100;
+    column->frame_count[1] = 100;
+    column->frame_count[2] = 100;
+    if (pColour == 0) {
+        if ((gColumn_flags & bit) != 0) {
+            BrActorAdd(gNon_track_actor, column->flame_actor);
+        } else if (column->flame_actor->depth != 0) {
+            BrActorRemove(column->flame_actor);
+        }
+    }
+}
 
 // CreateSmokeColumn2
 
@@ -3082,7 +3116,33 @@ void C2_HOOK_FASTCALL GenerateItFoxShadeTable(void) {
 #endif
 }
 
-// AdjustFlame
+// FUNCTION: CARMA2_HW 0x004fba00
+void C2_HOOK_FASTCALL AdjustFlame(int pIndex, int pFrame, br_scalar pScale_x, br_scalar pScale_y, br_scalar pOffset_x, br_scalar pOffset_z) {
+    tSmoke_column* column;
+    int flame;
+    int i;
+    tU32 bits[4];
+    br_scalar* dest[4];
+
+    column = &gSmoke_column[pIndex >> 4];
+    flame = pIndex & 15;
+    column->frame_count[flame] = pFrame;
+    memcpy(&bits[0], &pScale_x, 4);
+    memcpy(&bits[1], &pScale_y, 4);
+    memcpy(&bits[2], &pOffset_x, 4);
+    memcpy(&bits[3], &pOffset_z, 4);
+    dest[0] = &column->scale_x[flame];
+    dest[1] = &column->scale_y[flame];
+    dest[2] = &column->offset_x[flame];
+    dest[3] = &column->offset_z[flame];
+    for (i = 0; i < 4; i++) {
+        /* Original FLD/FSTP stores quiet sNaNs, preserving sign and payload. */
+        if ((bits[i] & 0x7fc00000u) == 0x7f800000u && (bits[i] & 0x003fffffu) != 0) {
+            bits[i] |= 0x00400000u;
+        }
+        memcpy(dest[i], &bits[i], 4);
+    }
+}
 
 // ReplayFlame
 
@@ -3094,7 +3154,31 @@ void C2_HOOK_FASTCALL GenerateItFoxShadeTable(void) {
 
 // MungeSmokeColumn
 
-// DisposeFlame
+// FUNCTION: CARMA2_HW 0x004fc2e0
+void C2_HOOK_FASTCALL DisposeFlame(void) {
+    int i;
+    int j;
+    br_actor* child;
+
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gFlame_map); i++) {
+        BrMapRemove(gFlame_map[i]);
+        BrPixelmapFree(gFlame_map[i]);
+    }
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gSmoke_column); i++) {
+        if ((gColumn_flags & (1u << i)) != 0 && gSmoke_column[i].colour == 0) {
+            BrActorRemove(gSmoke_column[i].flame_actor);
+        }
+        child = gSmoke_column[i].flame_actor->children;
+        for (j = 0; j < 3; j++) {
+            BrMaterialRemove(child->material);
+            BrMaterialFree(child->material);
+            child = child->next;
+        }
+        BrActorFree(gSmoke_column[i].flame_actor);
+    }
+    BrModelRemove(gLollipop_model);
+    BrModelFree(gLollipop_model);
+}
 
 // InitFlame
 

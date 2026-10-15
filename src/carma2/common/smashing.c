@@ -739,3 +739,89 @@ void C2_HOOK_FASTCALL ApplyInitialMovement(undefined4* pArg1, br_vector3* pArg2,
     pArg4->v[1] *= FRandomPosNeg(w * f[0x18]);
     pArg4->v[2] *= FRandomPosNeg(w * f[0x18]);
 }
+
+// FUNCTION: CARMA2_HW 0x004eb070
+tSmash_vertex* C2_HOOK_FASTCALL AllocateFragment(br_model* pModel, int pArg2, int pArg3) {
+    tSmash_vertex* best;
+    int best_val;
+    int i;
+    int found;
+
+    best_val = 10000;
+    found = -1;
+    best = NULL;
+    for (i = 0; i < 200; i++) {
+        tSmash_vertex* frag = &gSmash_glass_fragments[i];
+
+        if (frag->end_time == 0) {
+            found = -1;
+            break;
+        }
+        if ((int)frag->field_0x35[0] < best_val) {
+            best_val = frag->field_0x35[0];
+            best = frag;
+        }
+    }
+    if (found < 0) {
+        goto CHECK_MODEL;
+    }
+    if (best_val >= pArg3) {
+        return NULL;
+    }
+    best->field_0x35[0] = (tU8)pArg3;
+CHECK_MODEL:
+    return best;
+}
+
+// UNLABELED: CARMA2_HW 0x004eb6a0
+void C2_HOOK_FASTCALL FUN_004eb6a0(br_matrix34* pMat) {
+    NOT_IMPLEMENTED();
+}
+
+// FUNCTION: CARMA2_HW 0x004eb4a0
+float C2_HOOK_FASTCALL PositionFragment(br_actor* pActor, tSmashable_initial_position_spec* pPosition, int pArg3, int pArg4, int pArg5, br_vector3* pArg6, br_vector3* pArg7, int pArg8) {
+    br_matrix34 tmp;
+    br_vector3 dir;
+    br_vector3 pos;
+    float scale;
+    int i;
+
+    scale = 1.0f;
+    switch (pPosition->type) {
+        case 0: {
+            br_vector3 cross;
+            br_vector3 n;
+
+            FUN_004eb6a0(&tmp);
+            BrVector3Set(&pos, FRandomPosNeg(1.f), FRandomPosNeg(1.f), FRandomPosNeg(1.f));
+            cross.v[0] = tmp.m[0][1] * pos.v[2] - tmp.m[0][2] * pos.v[1];
+            cross.v[1] = tmp.m[0][2] * pos.v[0] - tmp.m[0][0] * pos.v[2];
+            cross.v[2] = tmp.m[0][0] * pos.v[1] - tmp.m[0][1] * pos.v[0];
+            BrVector3Normalise(&n, &cross);
+            scale = BrVector3Length(&n);
+            return scale;
+        }
+        case 1: {
+            BrMatrix34Post(&pActor->t.t.mat, pPosition);
+            dir.v[0] = (float)FRandomBetween((int)pArg6->v[0], (int)pArg6->v[1]);
+            for (i = 0; i < 3; i++) {
+                pActor->t.t.mat.m[3][i] += dir.v[i] * pArg6->v[2];
+            }
+            return 1.0f;
+        }
+        case 2:
+            if (pArg8 != 0) {
+                memcpy(pActor->t.t.mat.m[0], pArg7, sizeof(br_matrix34));
+            } else {
+                memcpy(pActor->t.t.mat.m[0], pArg6, sizeof(br_matrix34));
+            }
+            return 1.0f;
+        default:
+            return scale;
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x004eb120
+void C2_HOOK_FASTCALL InitFragmentSpeed(tSmash_vertex* pFragment, tSmashable_initial_speed_spec* pSpeed, br_vector3* pArg3, float pArg4, int* pArg5, int pArg6, br_vector3* pArg7, int pArg8, int pArg9) {
+    NOT_IMPLEMENTED();
+}

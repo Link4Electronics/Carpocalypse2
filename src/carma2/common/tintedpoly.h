@@ -15,7 +15,7 @@ extern int C2_HOOK_FASTCALL CreateTintedPoly(int x0, int y0, int width, int heig
 
 // UpdateTintedPolyByMaterial
 
-// UpdatePolyVertexColours
+extern void C2_HOOK_FASTCALL UpdatePolyVertexColours(int pTintedIndex);
 
 // TurnTintedPolyOn
 

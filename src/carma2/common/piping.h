@@ -11,7 +11,7 @@
 
 // ARReplayIsReallyPaused
 
-// ARReplayPauseState
+extern int C2_HOOK_FASTCALL ARReplayPauseState(void);
 
 extern float C2_HOOK_FASTCALL ARGetReplayRate(void);
 
@@ -19,7 +19,7 @@ extern float C2_HOOK_FASTCALL ARGetReplayRate(void);
 
 // ARGetReplayDirection
 
-// ARSetReplayDirection
+extern void C2_HOOK_FASTCALL ARSetReplayDirection(float pDirection);
 
 // ARResetPiping
 
@@ -40,7 +40,7 @@ void C2_HOOK_FASTCALL ARAdvanceChunkPtr(tPipe_chunk** pChunk_ptr, tPipe_chunk_ty
 
 // ARIsActionReplayAvailable
 
-// ARSomeReplayLeft
+extern int C2_HOOK_FASTCALL ARSomeReplayLeft(void);
 
 // DisablePipedSounds
 
@@ -66,11 +66,11 @@ void C2_HOOK_FASTCALL ARAdvanceChunkPtr(tPipe_chunk** pChunk_ptr, tPipe_chunk_ty
 
 // ARGetPipePlayPtr
 
-// ARSetPipePlayPtr
+extern void C2_HOOK_FASTCALL ARSetPipePlayPtr(tU8* pPtr);
 
 // ApplyPipedSession
 
-// MoveSessionPointerBackOne
+extern int C2_HOOK_FASTCALL MoveSessionPointerBackOne(tU8** pSession);
 
 // MoveSessionPointerForwardOne
 
@@ -82,11 +82,11 @@ void C2_HOOK_FASTCALL ARAdvanceChunkPtr(tPipe_chunk** pChunk_ptr, tPipe_chunk_ty
 
 // CheckSound
 
-// SoundTimeout
+extern int C2_HOOK_FASTCALL SoundTimeout(tU32 pTime);
 
 // ScanAndPlaySoundsToBe
 
-// ARGetStartTime
+extern tU32 C2_HOOK_FASTCALL ARGetStartTime(void);
 
 // ARDisableAdvance
 
@@ -202,11 +202,11 @@ extern void C2_HOOK_FASTCALL PipeSingleSound(tS3_outlet* pOutlet, int pSound, tS
 
 // PipeSingleSkidAdjustment
 
-// PipeSingleFlap
+extern void C2_HOOK_FASTCALL PipeSingleFlap(br_actor* pActor, br_angle pAngle);
 
 // PipeSingleRelink
 
-// PipeSingleIdentity
+extern void C2_HOOK_FASTCALL PipeSingleIdentity(br_actor* pActor);
 
 // PipeSingleSplitWeld
 
@@ -527,6 +527,8 @@ extern tU8* gLocal_buffer;
 
 extern tU8* gPipe_buffer_start;
 
+extern int gReplay_pause_state;
+
 extern int gPipe_undo_enabled;
 
 void C2_HOOK_FASTCALL SetPipeUndoFlag(void);
@@ -538,6 +540,14 @@ extern tU8* gPipe_buffer_phys_end;
 extern tU8* gPipe_buffer_working_end;
 
 extern float gReplay_rate;
+
+extern tU32 gPipe_sound_time;
+
+extern tU32 gPipe_sound_start_time;
+
+extern tU32 gPipe_sound_time_window;
+
+extern int gDisable_piped_sounds;
 
 extern tU32 gYoungest_time;
 

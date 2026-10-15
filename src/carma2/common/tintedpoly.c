@@ -17,6 +17,7 @@
 
 #include "c2_string.h"
 
+extern br_pixelmap* gRender_palette;
 
 /* forward declarations */
 br_model* C2_HOOK_FASTCALL BuildTintedPolyModel(int x0, int y0, int width, int height, int class, int arg1);
@@ -33,11 +34,13 @@ void C2_HOOK_FASTCALL UpdateFirePoly(int pIndex);
 void C2_HOOK_FASTCALL GetRangeOfValuesFromPixelmap(br_pixelmap* pPixelmap, br_uint_32* pMin, br_uint_32* pMax);
 void C2_HOOK_FASTCALL UpdateTintedPolyByMaterial(int pTintedIndex);
 void C2_HOOK_FASTCALL TurnTintedPolyOn(int pTintedIndex);
-void C2_HOOK_CDECL UpdatePolyVertexColours(br_model* pModel, int pRed, int pGrn, int pBlu);
+// (removed unused mismatched fwd-decl; real impl below)
 extern void C2_HOOK_FASTCALL LoadAllImagesInDirectory(tBrender_storage* pStorage_space, const char* path);
 extern void C2_HOOK_FASTCALL FindFace(br_vector3* pPosition, br_vector3* pDir, br_vector3* pNorm, br_scalar* pDistance, br_material** pMaterial);
 // GLOBAL: CARMA2_HW 0x00705c80
 tTintedPoly gTintedPolys[10];
+
+br_colour* gTinted_poly_palette = NULL;
 
 // GLOBAL: CARMA2_HW 0x006a0430
 br_actor* gTintedPolyCamera;
@@ -762,6 +765,45 @@ void C2_HOOK_FASTCALL ProcessTintedPoly(int pIndex) {
             }
             gTintedPolys[pIndex].material->colour = BR_COLOUR_RGB(red, grn, blu);
             BrMaterialUpdate(gTintedPolys[pIndex].material, BR_MATU_LIGHTING);
+        }
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x004d8050
+void C2_HOOK_FASTCALL UpdatePolyVertexColours(int pTintedIndex) {
+    br_uint_32 maximum;
+    double scale;
+    double tint_red;
+    double tint_grn;
+    double tint_blu;
+    int i;
+
+    if (gTinted_poly_palette == NULL || pTintedIndex == -1) {
+        return;
+    }
+    maximum = (br_int_32)gTintedPolys[pTintedIndex].color_red > (br_int_32)gTintedPolys[pTintedIndex].color_grn
+        ? gTintedPolys[pTintedIndex].color_red : gTintedPolys[pTintedIndex].color_grn;
+    if (maximum <= gTintedPolys[pTintedIndex].color_blu) {
+        maximum = gTintedPolys[pTintedIndex].color_blu;
+    }
+    scale = 50.0 / maximum;
+    tint_red = 0.5 - ((br_int_32)gTintedPolys[pTintedIndex].color_red * scale) * -0.01;
+    tint_grn = 0.5 - ((br_int_32)gTintedPolys[pTintedIndex].color_grn * scale) * -0.01;
+    tint_blu = 0.5 - ((br_int_32)gTintedPolys[pTintedIndex].color_blu * scale) * -0.01;
+    for (i = 1; i < 256; i++) {
+        br_colour colour = gTinted_poly_palette[i];
+        br_uint_32 red = CARPOCALYPSE2_RGB888_R(colour);
+        br_uint_32 grn = CARPOCALYPSE2_RGB888_G(colour);
+        br_uint_32 blu = CARPOCALYPSE2_RGB888_B(colour);
+        br_uint_32 half_brightness = ((red + grn + blu) / 3) >> 1;
+
+        if (2 * half_brightness != 0) {
+            double amount = (100.0 / (2 * half_brightness)) * half_brightness * 0.01;
+            br_uint_32 new_grn = (br_uint_32)(br_int_64)((half_brightness + grn) * tint_grn * amount) & 0xff;
+            br_uint_32 new_red = (br_uint_32)(br_int_64)((half_brightness + red) * tint_red * amount) & 0xff;
+            br_uint_32 new_blu = (br_uint_32)(br_int_64)((half_brightness + blu) * tint_blu * amount) & 0xff;
+
+            ((br_colour*)gRender_palette->pixels)[i] = BR_COLOUR_RGB(new_red, new_grn, new_blu);
         }
     }
 }

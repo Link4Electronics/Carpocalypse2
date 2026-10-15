@@ -126,7 +126,7 @@ extern void C2_HOOK_FASTCALL DoTestHeadup(void);
 
 // EarnCredits
 
-// EarnCredits100
+extern void C2_HOOK_FASTCALL EarnCredits100(int pAmount);
 
 // SpendCredits
 

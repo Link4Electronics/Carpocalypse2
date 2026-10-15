@@ -8,9 +8,9 @@
 
 // FractionToScalar
 
-// GetOrientationFromMatrix
+extern void C2_HOOK_FASTCALL GetOrientationFromMatrix(tU16* pOrientation, const br_matrix34* pMatrix);
 
-// GetMatrixFromOrientation
+extern void C2_HOOK_FASTCALL GetMatrixFromOrientation(br_matrix34* pMatrix, const tU16* pOrientation);
 
 // OmegaCompScalarTo16
 
@@ -54,7 +54,7 @@ extern int C2_HOOK_FASTCALL PHILRemoveObject(tPhysics_object* pObject);
 
 extern tU32 C2_HOOK_FASTCALL PHILReturnObjectStatus(tPhysics_object* pObject);
 
-// PHILMakeObjectPassive
+extern int C2_HOOK_FASTCALL PHILMakeObjectPassive(tPhysics_object* pObject);
 
 // PHILMakeObjectActive
 

@@ -561,21 +561,25 @@ int C2_HOOK_FASTCALL GetPanelFlicFrameIndex(int pIndex) {
     return gPanel_flic[pIndex].current_frame;
 }
 
+// FUNCTION: CARMA2_HW 0x004619a0
 void C2_HOOK_FASTCALL DontLetFlicFuckWithPalettes(void) {
 
     gPalette_fuck_prevention = 1;
 }
 
+// FUNCTION: CARMA2_HW 0x004619b0
 void C2_HOOK_FASTCALL LetFlicFuckWithPalettes(void) {
 
     gPalette_fuck_prevention = 0;
 }
 
+// FUNCTION: CARMA2_HW 0x004619f0
 void C2_HOOK_FASTCALL TurnFlicTransparencyOff(void) {
 
     gTransparency_on = 0;
 }
 
+// FUNCTION: CARMA2_HW 0x004619e0
 void C2_HOOK_FASTCALL TurnFlicTransparencyOn(void) {
 
     gTransparency_on = 1;

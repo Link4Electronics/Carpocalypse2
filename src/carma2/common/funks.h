@@ -3,6 +3,7 @@
 
 #include "c2_hooks.h"
 #include "brender/brender.h"
+#include "carpocalypse2_types.h"
 
 // CalculateTextureBitsValue
 
@@ -56,11 +57,11 @@ extern void C2_HOOK_FASTCALL KillFunkotronic(int pOwner);
 
 // StopGroovidelic
 
-// DisableGroovidelic
+extern void C2_HOOK_FASTCALL DisableGroovidelic(br_actor* pActor, tU32 pBlock_flags);
 
 // EnableGroovidelic
 
-// SetGrooveInterrupt
+extern void C2_HOOK_FASTCALL SetGrooveInterrupt(int pIndex, const br_matrix34* pMatrix, tInterrupt_status pPath_interrupt_status, tInterrupt_status pObject_interrupt_status, float pPath_resumption_value, float pObject_resumption_value);
 
 // ResetGrooveFlags
 
@@ -74,7 +75,7 @@ void C2_HOOK_FASTCALL MasterDisableFunkotronic(int pFunk_index);
 // FUNCTION: CARMA2_HW 0x0047b2e0
 void C2_HOOK_FASTCALL MasterEnableFunkotronic(int pFunk_index);
 
-// AdjustFunkEnable
+extern void C2_HOOK_FASTCALL AdjustFunkEnable(int pIndex, tS16 pFlags);
 
 // ActorsGroove
 

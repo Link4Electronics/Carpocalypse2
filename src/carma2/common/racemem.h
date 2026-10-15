@@ -13,4 +13,6 @@ int C2_HOOK_FASTCALL GetRuntimeVariable(int pAddress);
 
 int C2_HOOK_FASTCALL AccumulateRuntimeVariable(int pAddress, int pAmount);
 
+int C2_HOOK_FASTCALL ToggleRuntimeVariable(int pAddress);
+
 #endif /* C2_RACEMEM_H */

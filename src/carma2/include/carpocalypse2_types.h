@@ -4864,7 +4864,7 @@ typedef struct {
     tPed_face_cache_0x34* field_0xb0;
     tPedestrian* field_0xb4;
     float field_0xb8;
-    undefined field_0xbc[0x4];
+    float field_0xbc;
     tCar_spec* field_0xc0;
     int field_0xc4;
     tS16 field_0xc8;
@@ -4881,9 +4881,48 @@ typedef struct {
     float field_0x128;
 } tPed_cache_006944c0;
 
+typedef struct tPed_face_adjacency tPed_face_adjacency;
+
 typedef struct {
-    undefined field_0x0[0x50];
+    br_material* material;
+    br_vector3 normal1;
+    br_vector3 normal2;
+    br_vector3 normal3;
+    undefined field_0x28[12];
+    br_vector3 plane;
+    undefined field_0x40[4];
+    float d;
+    tPed_face_adjacency* field_0x48;
+    tS16 field_0x4c;
+    tU16 field_0x4e;
 } tPed_face_cache_0x50;
+
+struct tPed_face_adjacency {
+    undefined field_0x0[8];
+    tU16 field_0x8;
+    undefined field_0xa[2];
+    tU16 (*field_0x0c)[4];
+    undefined field_0x10[2];
+    tU16 field_0x12;
+    undefined field_0x14[4];
+    struct tPed_face_adjacency* field_0x18;
+    undefined field_0x1c[0x30];
+    struct tPed_face_adjacency* field_0x4c;
+};
+
+typedef struct {
+    void* key0;
+    int key1;
+    tU16 flags[512];
+} tPed_flag_cell;
+
+typedef struct {
+    undefined field_0x0[4];
+    int* field_0x4;
+    undefined field_0x8[0x14];
+    tU16 field_0x1c;
+    undefined field_0x1e[6];
+} tMeshRow;
 
 typedef struct tPed_face_cache_0x34 {
     tPed_face_cache_0x50* field_0x0;
@@ -5053,7 +5092,9 @@ typedef struct tPedestrian {
     tRace_ped_exclusion_spec* exclusion_spec;
     br_vector3 pos;
     tU32 field_0x28;
-    undefined field_0x2c[0x4c - 0x2c];
+    undefined field_0x2c[4];
+    tU32 death_time;
+    undefined field_0x34[0x4c - 0x34];
     float speed_factor;
     tPedestrian* next;
 } tPedestrian;

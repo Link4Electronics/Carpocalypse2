@@ -360,7 +360,9 @@ extern void C2_HOOK_FASTCALL FreePhysicsJoint(tPhysics_joint* pJoint);
 
 // UpdateCollisionObject
 
-// PhysicsError
+extern void C2_HOOK_FASTCALL PhysicsError(tPhysicsError pError, const char* pMessage);
+
+extern char gPhysics_empty_message;
 
 // PhysicsWarning
 

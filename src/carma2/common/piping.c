@@ -68,6 +68,9 @@ volatile undefined4 gUNK_0069410c;
 // GLOBAL: CARMA2_HW 0x00676908
 tU8* gPipe_buffer_start = NULL;
 
+// GLOBAL: CARMA2_HW 0x006768fc
+int gReplay_pause_state = 0;
+
 // GLOBAL: CARMA2_HW 0x0067690c
 int gPipe_undo_enabled = 0;
 
@@ -120,6 +123,18 @@ tU32 gPipe_buffer_size = 0;
 // GLOBAL: CARMA2_HW 0x00676900
 float gReplay_rate = 0.f;
 
+// GLOBAL: CARMA2_HW 0x006768b0
+tU32 gPipe_sound_time = 0;
+
+// GLOBAL: CARMA2_HW 0x00676904
+tU32 gPipe_sound_start_time = 0;
+
+// GLOBAL: CARMA2_HW 0x006768a8
+tU32 gPipe_sound_time_window = 0;
+
+// GLOBAL: CARMA2_HW 0x00676918
+int gDisable_piped_sounds = 0;
+
 // FUNCTION: CARMA2_HW 0x00403d60
 int C2_HOOK_FASTCALL ARToggleReplay(tTurn_on_AR_callback* pTurn_on_AR_cb, tTurn_off_AR_callback* pTurn_off_AR_cb, tAfter_AR_callback* pAfter_AR_cb, tZappy_AR_callback* pZappy_AR_cb, tPreprocess_AR_callback* pPreprocess_cb, tPostProcess_AR_callback* pPostProcess_cb, int* pArg7, int* pArg8) {
 
@@ -150,15 +165,17 @@ void C2_HOOK_FASTCALL PDAllocateActionReplayBuffer(tU8** buffer, tU32* size) {
 // FUNCTION: CARMA2_HW 0x00402410
 void C2_HOOK_FASTCALL ARInitialise(int pEnable, int pCount_callbacks, const tReplay_callback* pCallbacks) {
 
-    if (pEnable) {
-        gPipe_callbacks = pCallbacks;
-        gPipe_count_callbacks = pCount_callbacks;
-        PDAllocateActionReplayBuffer(&gPipe_buffer_start, &gPipe_buffer_size);
-        gPipe_buffer_phys_end = gPipe_buffer_start + gPipe_buffer_size;
-        gLocal_buffer = BrMemAllocate(15000, kMem_pipe_model_geometry);
-    } else {
+    if (pEnable == 0) {
         gPipe_buffer_start = NULL;
         gLocal_buffer = NULL;
+    } else {
+        gPipe_count_callbacks = pCount_callbacks;
+        gPipe_callbacks = pCallbacks;
+#pragma inline_depth(0)
+        PDAllocateActionReplayBuffer(&gPipe_buffer_start, &gPipe_buffer_size);
+#pragma inline_depth()
+        gPipe_buffer_phys_end = gPipe_buffer_start + gPipe_buffer_size;
+        gLocal_buffer = BrMemAllocate(15000, kMem_pipe_model_geometry);
     }
     ARResetPiping();
 }
@@ -381,14 +398,13 @@ void C2_HOOK_FASTCALL ARAddDataToSession(int pType, uintptr_t pOwner, void *pDat
     }
 }
 
+// FUNCTION: CARMA2_HW 0x00403720
 int C2_HOOK_FASTCALL LengthOfChunk(void* pChunk, int pType) {
-    int length;
-
-    length = gPipe_callbacks[pType].length + sizeof(void*);
     if (gPipe_callbacks[pType].calc_length != NULL) {
-        length += gPipe_callbacks[pType].calc_length(pChunk);
+        return gPipe_callbacks[pType].calc_length(pChunk) + gPipe_callbacks[pType].length + sizeof(void*);
+    } else {
+        return gPipe_callbacks[pType].length + sizeof(void*);
     }
-    return length;
 }
 
 // FUNCTION: CARMA2_HW 0x00402bd0
@@ -666,13 +682,14 @@ int C2_HOOK_FASTCALL ARReplayForwards(void) {
     if (gPipe_play_ptr == gPipe_buffer_oldest) {
         return 1;
     }
-    if (gReplay_rate == 0.f) {
-        return ARGetReplayDirection() > 0;
-    }
-    if (gReplay_rate > 0.f) {
-        return 1;
+    if (gReplay_rate != 0.f) {
+        if (gReplay_rate > 0.f) {
+            return 1;
+        } else {
+            return 0;
+        }
     } else {
-        return 0;
+        return gPlay_direction > 0;
     }
 }
 #pragma auto_inline(on)
@@ -686,13 +703,14 @@ int C2_HOOK_FASTCALL ARReplayPlaying(void) {
     if (gPipe_play_ptr == gPipe_buffer_oldest) {
         return 1;
     }
-    if (gReplay_rate == 0.f) {
-        return ARGetReplayDirection() > 0;
-    }
-    if (gReplay_rate > 0.f) {
-        return 1;
+    if (gReplay_rate != 0.f) {
+        if (gReplay_rate > 0.f) {
+            return 1;
+        } else {
+            return 0;
+        }
     } else {
-        return 0;
+        return gPlay_direction > 0;
     }
 }
 
@@ -720,6 +738,7 @@ int C2_HOOK_FASTCALL CarTimeout(tU32 pTime) {
 
 // FUNCTION: CARMA2_HW 0x004c6a30
 int C2_HOOK_FASTCALL CheckCar(tPipe_chunk* pChunk_ptr, int pChunk_count, tU32 pTime) {
+#pragma inline_depth(0)
 
     int i;
     tCar_spec* car;
@@ -764,6 +783,7 @@ int C2_HOOK_FASTCALL CheckCar(tPipe_chunk* pChunk_ptr, int pChunk_count, tU32 pT
         ARAdvanceChunkPtr(&temp_ptr, ePipe_chunk_car);
     }
     return 0;
+#pragma inline_depth()
 }
 
 // FUNCTION: CARMA2_HW 0x00402e10
@@ -780,12 +800,14 @@ int C2_HOOK_FASTCALL ARScanBuffer(tU8** pPtr, tPipe_chunk_type pType, tU32 pDefa
             direction = 0;
         } else if (gPipe_play_ptr == gPipe_buffer_oldest) {
             direction = 1;
-        } else if (gReplay_rate < 0.0f) {
-            direction = (gPlay_direction > 0);
-        } else if (gReplay_rate == 0.0f) {
-            direction = 1;
+        } else if (gReplay_rate != 0.0f) {
+            if (gReplay_rate > 0.0f) {
+                direction = 1;
+            } else {
+                direction = 0;
+            }
         } else {
-            direction = 0;
+            direction = (gPlay_direction > 0);
         }
 
         if (direction) {
@@ -1219,7 +1241,7 @@ void C2_HOOK_FASTCALL AddSmokeColumnToPipingSession(int pIndex, tSmoke_column* p
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPipe_chunk_smoke_column, vertex, 0x10);
     C2_HOOK_STATIC_ASSERT_STRUCT_MEMBER_SIZE(tPipe_chunk_smoke_column, vertex, 0x2);
 
-    ARAddVariedDataToSession(ePipe_chunk_smoke_column, pColour << 14 | pIndex, 2,
+    ARAddVariedDataToSession(ePipe_chunk_smoke_column, (pColour << 14) + pIndex, 2,
         SIZE_OFFSET_PIPING(tPipe_chunk_smoke_column, core), &pSmoke_column->core,
         SIZE_OFFSET_PIPING(tPipe_chunk_smoke_column, vertex), pVertex);
 }
@@ -1373,7 +1395,10 @@ void C2_HOOK_FASTCALL PipeSingleEndShitMine(br_actor* pActor) {
 
 // ARReplayIsReallyPaused
 
-// ARReplayPauseState
+// FUNCTION: CARMA2_HW 0x00402380
+int C2_HOOK_FASTCALL ARReplayPauseState(void) {
+    return gReplay_pause_state;
+}
 
 // FUNCTION: CARMA2_HW 0x00402390
 float C2_HOOK_FASTCALL ARGetReplayRate(void) {
@@ -1384,7 +1409,10 @@ float C2_HOOK_FASTCALL ARGetReplayRate(void) {
 
 // ARGetReplayDirection
 
-// ARSetReplayDirection
+// FUNCTION: CARMA2_HW 0x004023c0
+void C2_HOOK_FASTCALL ARSetReplayDirection(float pDirection) {
+    gPlay_direction = (int)pDirection;
+}
 
 // ARResetPiping
 
@@ -1402,19 +1430,19 @@ void C2_HOOK_FASTCALL ARAdvanceChunkPtr(tPipe_chunk** pChunk_ptr, tPipe_chunk_ty
     tU8* next;
     tU32 size;
 
+    cur = (tU8*)*pChunk_ptr;
     if (gPipe_undo_enabled != 0) {
         return;
     }
-    cur = (tU8*)*pChunk_ptr;
     size = sizeof(void*);
     if (gPipe_callbacks[pType].calc_length != NULL) {
         size += gPipe_callbacks[pType].calc_length((tPipe_chunk*)cur) + gPipe_callbacks[pType].length;
     } else {
         size += gPipe_callbacks[pType].length;
     }
-    next = cur + size;
+    next = (tU8*)*pChunk_ptr + size;
     *pChunk_ptr = (tPipe_chunk*)next;
-    if (gPipe_buffer_end_marker == next || (intptr_t)next <= (intptr_t)gPipe_buffer_end_marker) {
+    if (gPipe_buffer_end_marker == next || (intptr_t)next > (intptr_t)gPipe_buffer_end_marker) {
         *pChunk_ptr = (tPipe_chunk*)cur;
     }
 }
@@ -1425,7 +1453,11 @@ void C2_HOOK_FASTCALL ARAdvanceChunkPtr(tPipe_chunk** pChunk_ptr, tPipe_chunk_ty
 
 // ARIsActionReplayAvailable
 
-// ARSomeReplayLeft
+// FUNCTION: CARMA2_HW 0x004025b0
+int C2_HOOK_FASTCALL ARSomeReplayLeft(void) {
+    return (gPlay_direction > 0 && gPipe_play_ptr != gPipe_record_ptr)
+        || (gPlay_direction < 0 && gPipe_play_ptr != gPipe_buffer_oldest);
+}
 
 // DisablePipedSounds
 
@@ -1451,11 +1483,30 @@ void C2_HOOK_FASTCALL ARAdvanceChunkPtr(tPipe_chunk** pChunk_ptr, tPipe_chunk_ty
 
 // ARGetPipePlayPtr
 
-// ARSetPipePlayPtr
+// FUNCTION: CARMA2_HW 0x00402e00
+void C2_HOOK_FASTCALL ARSetPipePlayPtr(tU8* pPtr) {
+    gPipe_play_ptr = pPtr;
+}
 
 // ApplyPipedSession
 
-// MoveSessionPointerBackOne
+// FUNCTION: CARMA2_HW 0x004037c0
+int C2_HOOK_FASTCALL MoveSessionPointerBackOne(tU8** pSession) {
+    tU8* footer;
+    tU16 length;
+
+    if (*pSession == gPipe_buffer_oldest && *pSession != gPipe_record_ptr) {
+        return 1;
+    }
+    if (*pSession == gPipe_buffer_start) {
+        *pSession = gPipe_buffer_working_end;
+    }
+    footer = *pSession - 2;
+    *pSession = footer;
+    memcpy(&length, footer, sizeof(length));
+    *pSession = footer - length;
+    return 0;
+}
 
 // MoveSessionPointerForwardOne
 
@@ -1467,11 +1518,32 @@ void C2_HOOK_FASTCALL ARAdvanceChunkPtr(tPipe_chunk** pChunk_ptr, tPipe_chunk_ty
 
 // CheckSound
 
-// SoundTimeout
+// FUNCTION: CARMA2_HW 0x00403c50
+int C2_HOOK_FASTCALL SoundTimeout(tU32 pTime) {
+    return gPipe_sound_start_time < pTime
+        || gPipe_sound_start_time - pTime < gPipe_sound_time_window;
+}
 
 // ScanAndPlaySoundsToBe
 
-// ARGetStartTime
+// FUNCTION: CARMA2_HW 0x00403020
+tU32 C2_HOOK_FASTCALL ARGetStartTime(void) {
+    tU8* session;
+
+    session = gPipe_buffer_oldest;
+    for (;;) {
+        session = (tU8*)((uintptr_t)session + LengthOfSession((tPipe_chunk*)session));
+        if ((uintptr_t)session >= (uintptr_t)gPipe_buffer_working_end && session != gPipe_record_ptr) {
+            session = gPipe_buffer_start;
+        }
+        if (session == gPipe_record_ptr) {
+            return 0;
+        }
+        if (((tPipe_chunk*)session)->type == 0) {
+            return *(tU32*)(session + 12);
+        }
+    }
+}
 
 // ARDisableAdvance
 
@@ -1642,11 +1714,19 @@ void C2_HOOK_FASTCALL PipeSingleSound(tS3_outlet* pOutlet, int pSound, tS3_volum
 
 // PipeSingleSkidAdjustment
 
-// PipeSingleFlap
+// FUNCTION: CARMA2_HW 0x004c8620
+void C2_HOOK_FASTCALL PipeSingleFlap(br_actor* pActor, br_angle pAngle) {
+    ARDoSingleVariedSession(ePipe_chunk_flap_bits, (uintptr_t)pActor, 2,
+        4, 0, (uintptr_t)pActor,
+        2, 4, (uintptr_t)pAngle);
+}
 
 // PipeSingleRelink
 
-// PipeSingleIdentity
+// FUNCTION: CARMA2_HW 0x004c86d0
+void C2_HOOK_FASTCALL PipeSingleIdentity(br_actor* pActor) {
+    ARDoSingleVariedSession(26, (uintptr_t)pActor, 1, 4, 0, (uintptr_t)pActor);
+}
 
 // PipeSingleSplitWeld
 

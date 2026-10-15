@@ -50,7 +50,7 @@ int C2_HOOK_FASTCALL SearchForSection(tRoute_section* pTemp_store, tRoute_sectio
 
 // ShiftOpponentsProjectedRoute
 
-// NewCalcGetNearPlayerRoute
+extern void C2_HOOK_FASTCALL NewCalcGetNearPlayerRoute(tOpponent_spec* pOpponent_spec, tCar_spec* pPursuee, int pForce);
 
 // CalcReturnToStartPointRoute
 

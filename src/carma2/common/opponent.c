@@ -3256,7 +3256,123 @@ int C2_HOOK_FASTCALL SearchForSection(tRoute_section* pTemp_store, tRoute_sectio
 
 // ShiftOpponentsProjectedRoute
 
-// NewCalcGetNearPlayerRoute
+// FUNCTION: CARMA2_HW 0x004ac9e0
+void C2_HOOK_FASTCALL NewCalcGetNearPlayerRoute(tOpponent_spec* pOpponent_spec, tCar_spec* pPursuee, int pForce) {
+    br_vector3 direction;
+    br_vector3 intersect;
+    br_vector3 player_direction;
+    br_vector3 player_intersect;
+    br_scalar distance;
+    tRoute_section route[10];
+    tRoute_section best[10];
+    int best_count;
+    int i;
+    int index;
+    int count;
+    int failed = 0;
+    tS16 section;
+    tS16 node;
+    tU32 now;
+    double x;
+    double y;
+    double z;
+    double stopping;
+    double length;
+    const br_vector3* point;
+    const br_matrix34* transform;
+    int add;
+
+    if (pOpponent_spec->nnext_sections >= 12) {
+        return;
+    }
+    now = gTime_stamp_for_this_munging;
+    if (pPursuee->field_0x155c < 0 || now > pPursuee->field_0x1540) {
+        add = IRandomBetween(-100, 100);
+        pPursuee->field_0x1540 = gTime_stamp_for_this_munging + (tU32)add + 1000u;
+        pPursuee->field_0x155c = FindNearestGeneralSection(NULL, &pPursuee->car_master_actor->t.t.translate.t, &player_direction, &player_intersect, &distance);
+    }
+    if (pPursuee->field_0x155c < 0) {
+        PDEnterDebugger("No path section near player. THIS CAN'T HAPPEN!");
+        return;
+    }
+    if (pOpponent_spec->nnext_sections == 0) {
+        pForce = 1;
+    }
+    if (pForce || pPursuee->field_0x155c != pOpponent_spec->players_section_when_last_calced_full_path) {
+        section = FindNearestGeneralSection(NULL, &pOpponent_spec->car_spec->car_master_actor->t.t.translate.t, &direction, &intersect, &distance);
+        if (section < 0) {
+            PDEnterDebugger("No path section near us. THIS CAN'T HAPPEN!");
+            return;
+        }
+        index = -1;
+        for (i = 0; i < pOpponent_spec->nnext_sections; i++) {
+            /* The original writes before testing section against zero. */
+            pOpponent_spec->next_sections[i].section_no = section;
+            if (section != 0) {
+                index = i;
+                break;
+            }
+        }
+        if (index >= 0) {
+            const br_vector3* velocity = &pOpponent_spec->car_spec->collision_info->v;
+
+            length = OpponentAdd(OpponentAdd(OpponentMultiply(velocity->v[0], velocity->v[0]), OpponentMultiply(velocity->v[1], velocity->v[1])), OpponentMultiply(velocity->v[2], velocity->v[2]));
+            stopping = OpponentMultiply(OpponentMultiply(OpponentSubtract(100.f, length), -0.0625f), 0.14492753623188406);
+            if (stopping > 0.f) {
+                /* This first lookup uses the route ordinal, not section_no. */
+                node = (tS16)gProgram_state.AI_vehicles.path_sections[index].node_indices[pOpponent_spec->next_sections[index].direction];
+                point = &gProgram_state.AI_vehicles.path_nodes[node].pos;
+                x = OpponentFloatDifference(&point->v[0], &intersect.v[0]);
+                y = OpponentFloatDifference(&point->v[1], &intersect.v[1]);
+                z = OpponentFloatDifference(&point->v[2], &intersect.v[2]);
+                length = OpponentSqrt(OpponentHybridLengthSquared(x, y, z));
+                while (index < pOpponent_spec->nnext_sections - 1 && (length < stopping || length != length || stopping != stopping)) {
+                    stopping = OpponentSubtract(stopping, length);
+                    index++;
+                    length = (double)gProgram_state.AI_vehicles.path_sections[pOpponent_spec->next_sections[index].section_no].length;
+                }
+            }
+            ShiftOpponentsProjectedRoute(pOpponent_spec, index);
+        } else {
+            pOpponent_spec->nnext_sections = 0;
+            transform = &pOpponent_spec->car_spec->car_master_actor->t.t.mat;
+            x = OpponentFloatDifference(&intersect.v[0], &transform->m[3][0]);
+            y = OpponentFloatDifference(&intersect.v[1], &transform->m[3][1]);
+            z = OpponentFloatDifference(&intersect.v[2], &transform->m[3][2]);
+            length = OpponentAdd(OpponentAdd(OpponentMultiply(z, transform->m[2][2]), OpponentMultiply(x, transform->m[2][0])), OpponentMultiply(y, transform->m[2][1]));
+            AddToOpponentsProjectedRoute(pOpponent_spec, section, length >= 0.f);
+        }
+    }
+    while (pOpponent_spec->nnext_sections < 12 && !failed) {
+        route[0].section_no = pOpponent_spec->next_sections[pOpponent_spec->nnext_sections - 1].section_no;
+        route[0].direction = pOpponent_spec->next_sections[pOpponent_spec->nnext_sections - 1].direction;
+        gSFS_cycles_this_time = 0;
+        gSFS_count = (int)((unsigned int)gSFS_count + 1u);
+        SearchForSection(route, best, &best_count, pPursuee->field_0x155c, 1, 0.f, pOpponent_spec);
+        gSFS_total_cycles = (int)((unsigned int)gSFS_total_cycles + (unsigned int)gSFS_cycles_this_time);
+        if (gSFS_cycles_this_time > gSFS_max_cycles) {
+            gSFS_max_cycles = gSFS_cycles_this_time;
+        }
+        if (best_count > 1) {
+            count = best_count - 1;
+            if (count >= 12 - pOpponent_spec->nnext_sections) {
+                count = 12 - pOpponent_spec->nnext_sections;
+            }
+            memcpy(&pOpponent_spec->next_sections[pOpponent_spec->nnext_sections], &best[1], (size_t)count * sizeof(tRoute_section));
+            pOpponent_spec->nnext_sections += count;
+            if (pOpponent_spec->next_sections[pOpponent_spec->nnext_sections].section_no == pPursuee->field_0x155c) {
+                add = gOpponents[pOpponent_spec->index].strength_rating >= 5 ? 1 : IRandomBetween(1, 2);
+                TopUpRandomRoute(pOpponent_spec, add);
+            }
+        } else {
+            failed = 1;
+            if (pOpponent_spec->nnext_sections < 12) {
+                TopUpRandomRoute(pOpponent_spec, gOpponents[pOpponent_spec->index].strength_rating >= 5 ? 2 : 4);
+            }
+        }
+    }
+    pOpponent_spec->players_section_when_last_calced_full_path = pPursuee->field_0x155c;
+}
 
 // CalcReturnToStartPointRoute
 

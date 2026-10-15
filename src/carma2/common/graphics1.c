@@ -14,6 +14,8 @@
 #include "platform.h"
 #include "carpocalypse2_types.h"
 #include "carpocalypse2_macros.h"
+
+#include <limits.h>
 // GLOBAL: CARMA2_HW 0x00703e24
 int gWidth;
 
@@ -205,7 +207,17 @@ void C2_HOOK_FASTCALL DisposeSavedShadeTables(void) {
 
 // RenderLollipops
 
-// SetupDepthBuffer
+// FUNCTION: CARMA2_HW 0x004e4940
+void C2_HOOK_FASTCALL SetupDepthBuffer(void) {
+    if (gDepth_buffer != NULL) {
+        BrPixelmapFree(gDepth_buffer);
+        gDepth_buffer = NULL;
+    }
+    gDepth_buffer = BrPixelmapMatch(gBack_screen, BR_PMMATCH_DEPTH_16);
+    if (gDepth_buffer == NULL) {
+        FatalError(kFatalError_AllocateZBuffer);
+    }
+}
 
 // FUNCTION: CARMA2_HW 0x004e4980
 void C2_HOOK_FASTCALL SetBRenderScreenAndBuffers(int pX_offset, int pY_offset, int pWidth, int pHeight) {
@@ -278,7 +290,27 @@ void C2_HOOK_FASTCALL InitWobbleStuff(void) {
     gEvalu = LoadPixelmap("Evalu01.PIX");
 }
 
-// NewScreenWobble
+// FUNCTION: CARMA2_HW 0x004e4db0
+void C2_HOOK_FASTCALL NewScreenWobble(double pAmplitude_x, double pAmplitude_y, double pPeriod) {
+    int i;
+    int index = -1;
+    int oldest_time = INT_MAX;
+
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gWobble_array); ++i) {
+        if (gWobble_array[i].time_started == 0) {
+            index = i;
+            break;
+        }
+        if (gWobble_array[i].time_started < oldest_time) {
+            oldest_time = gWobble_array[i].time_started;
+            index = i;
+        }
+    }
+    gWobble_array[index].time_started = (int)GetTotalTime();
+    gWobble_array[index].amplitude_x = (float)pAmplitude_x;
+    gWobble_array[index].amplitude_y = (float)pAmplitude_y;
+    gWobble_array[index].period = (float)pPeriod;
+}
 
 // SetScreenWobble
 

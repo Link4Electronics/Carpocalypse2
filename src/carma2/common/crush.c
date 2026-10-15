@@ -1585,6 +1585,7 @@ void C2_HOOK_FASTCALL InitPhysModCrushData(tCar_spec* pCar_spec) {
     }
 }
 
+// FUNCTION: CARMA2_HW 0x0042d9b0
 void C2_HOOK_CDECL MakeModelMaterialsSingleSided(br_model *pModel) {
     if (pModel != NULL) {
         int g;

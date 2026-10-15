@@ -11,6 +11,7 @@
 #include "mainloop.h"
 #include "oil.h"
 #include "opponent.h"
+#include "pratcam.h"
 #include "sound.h"
 #include "spark.h"
 #include "structur.h"
@@ -114,7 +115,35 @@ int C2_HOOK_FASTCALL SetKnackeredFlag(tCar_spec* pCar) {
 
 // CalcModifiedLocation
 
-// DoPratcamHit
+// FUNCTION: CARMA2_HW 0x0043faa0
+void C2_HOOK_FASTCALL DoPratcamHit(br_vector3* pVelocity) {
+    br_scalar magnitude_squared;
+    int offset;
+
+    magnitude_squared = (pVelocity->v[1] * pVelocity->v[1]
+        + pVelocity->v[2] * pVelocity->v[2])
+        + pVelocity->v[0] * pVelocity->v[0];
+    offset = 0;
+    if (magnitude_squared > 0.2f) {
+        offset = 8;
+    } else if (magnitude_squared > 0.015f) {
+        offset = 4;
+    } else if (!(magnitude_squared >= 0.001f)) {
+        return;
+    }
+
+    if (fabs(pVelocity->v[0]) <= fabs(pVelocity->v[2])) {
+        if (!(pVelocity->v[2] >= 0.f)) {
+            PratcamEvent(offset + 13);
+        } else {
+            PratcamEvent(offset + 14);
+        }
+    } else if (!(pVelocity->v[0] >= 0.f)) {
+        PratcamEvent(offset + 16);
+    } else {
+        PratcamEvent(offset + 15);
+    }
+}
 
 // DamageSystems
 

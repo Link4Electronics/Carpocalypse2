@@ -65,7 +65,21 @@ void C2_HOOK_FASTCALL InitExplosions(void) {
 
 // Explode
 
-// RemoveExplosions
+// FUNCTION: CARMA2_HW 0x004eb020
+void C2_HOOK_FASTCALL RemoveExplosions(tCar_spec* pCar_spec) {
+    int i;
+    tExplosion* explosion;
+
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gExplosions); i++) {
+        explosion = &gExplosions[i];
+        if (explosion->start != 0 && explosion->collision_actor == pCar_spec->collision_info->actor) {
+            if (explosion->actor->parent != NULL) {
+                BrActorRemove(explosion->actor);
+            }
+            explosion->finished = 1;
+        }
+    }
+}
 
 // CalcRandomPointBetween
 
@@ -189,9 +203,44 @@ void C2_HOOK_FASTCALL InitExplosions(void) {
 
 // KillFragment
 
-// AddRepairAnimationToQueue
+void C2_HOOK_FASTCALL AddRepairAnimationToQueue(tCar_spec* pCar_spec, tCar_crush_smashable_part* pSmashable) {
+    int i;
+    int index = -1;
+    int count = (int)CARPOCALYPSE2_ASIZE(gRepair_animations);
 
-// RepairSmash
+    for (i = 0; i < count; i++) {
+        if (gRepair_animations[i].field_0x0 == pSmashable) {
+            index = i;
+            break;
+        }
+    }
+    if (index < 0) {
+        for (i = 0; i < count; i++) {
+            if (gRepair_animations[i].field_0x0 == NULL) {
+                index = i;
+                break;
+            }
+        }
+    }
+    if (index >= 0) {
+        gRepair_animations[index].field_0x0 = pSmashable;
+        gRepair_animations[index].field_0x4 = GetTotalTime();
+        gRepair_animations[index].field_0x8 = pCar_spec;
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x004ef910
+void C2_HOOK_FASTCALL RepairSmash(tCar_spec* pCar_spec, tCar_crush_buffer_entry* pSmash_data) {
+    tCar_crush_smashable_part* smashable = pSmash_data->smashables;
+    int i;
+
+    for (i = 0; i < pSmash_data->count_smashables; i++, smashable++) {
+        if (smashable->field_0x4c != 0) {
+            ActuallyRepairSmash(pCar_spec, smashable, smashable->field_0x4c - 1);
+            AddRepairAnimationToQueue(pCar_spec, smashable);
+        }
+    }
+}
 
 // TotallyRepairSmash
 
@@ -372,9 +421,25 @@ void C2_HOOK_FASTCALL DisposeSmashData(tCar_crush_buffer_entry* pCrush_data) {
 
 // LinkSmashies
 
-// RepairModels
+// FUNCTION: CARMA2_HW 0x004f5a10
+static intptr_t C2_HOOK_CDECL RepairModels(br_actor* pActor, void* pUser) {
+    tUser_crush_data* user_crush = pActor->user;
+    tCar_crush_buffer_entry* crush_data;
 
-// RepairAllSmashes
+    if (user_crush == NULL) {
+        return 0;
+    }
+    crush_data = user_crush->crush_data;
+    if (crush_data != NULL) {
+        TotallyRepairSmash(pUser, crush_data);
+    }
+    return 0;
+}
+
+// FUNCTION: CARMA2_HW 0x004f5a00
+intptr_t C2_HOOK_FASTCALL RepairAllSmashes(tCar_spec* pCar_spec) {
+    return DRActorEnumRecurse(pCar_spec->car_master_actor, RepairModels, pCar_spec);
+}
 
 // SmashEverythingCB
 

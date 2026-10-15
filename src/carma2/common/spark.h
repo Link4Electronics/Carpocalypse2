@@ -110,11 +110,11 @@ extern void C2_HOOK_FASTCALL InitSmokeStuff(void);
 
 // ResetSmoke
 
-// AdjustSmoke
+extern void C2_HOOK_FASTCALL AdjustSmoke(int pIndex, tU8 pType, br_vector3* pPos, br_scalar pRadius, br_scalar pStrength);
 
 // ActorError
 
-// AdjustSmokeColumn
+extern void C2_HOOK_FASTCALL AdjustSmokeColumn(int pIndex, const tSmoke_column_core* pCore, int pVertex, int pColour);
 
 // CreateSmokeColumn2
 
@@ -124,7 +124,7 @@ void C2_HOOK_FASTCALL CreateSmokeColumn(tCar_spec* pCar, int pType, int pRandom,
 
 extern void C2_HOOK_FASTCALL GenerateItFoxShadeTable(void);
 
-// AdjustFlame
+extern void C2_HOOK_FASTCALL AdjustFlame(int pIndex, int pFrame, br_scalar pScale_x, br_scalar pScale_y, br_scalar pOffset_x, br_scalar pOffset_z);
 
 // ReplayFlame
 
@@ -136,7 +136,7 @@ extern void C2_HOOK_FASTCALL GenerateItFoxShadeTable(void);
 
 // MungeSmokeColumn
 
-// DisposeFlame
+extern void C2_HOOK_FASTCALL DisposeFlame(void);
 
 // InitFlame
 

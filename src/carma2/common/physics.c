@@ -390,6 +390,9 @@ typedef int C2_HOOK_FASTCALL tPhysicsObject_cbfn(tPhysics_object* pObject, void*
 // GLOBAL: CARMA2_HW 0x006940bc
 void* gPhysics_scratch_ptr;
 
+// GLOBAL: CARMA2_HW 0x00676920
+char gPhysics_empty_message;
+
 // GLOBAL: CARMA2_HW 0x006940c0
 tPhysicsError_cbfn* gPhysics_error_cb;
 
