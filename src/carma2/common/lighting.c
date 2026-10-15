@@ -47,6 +47,7 @@ void C2_HOOK_FASTCALL SmoothificateCarMaterial(br_material* pMaterial) {
 
 // MungeLightingEffects
 
+// FUNCTION: CARMA2_HW 0x004f6a20
 void C2_HOOK_FASTCALL SmoothificatePowerupMaterial(br_material* pMaterial) {
     int need_update = 0;
     pMaterial->user = (void*)(uintptr_t)0x5ba0;
@@ -124,6 +125,7 @@ void C2_HOOK_FASTCALL SmoothificateWorldMaterial(br_material* pMaterial) {
     }
 }
 
+// FUNCTION: CARMA2_HW 0x004f6820
 void C2_HOOK_FASTCALL SmoothlySetWorldMaterialFlags(tBrender_storage* pStorage) {
     int i;
     for (i = 0; i < pStorage->materials_count; i++) {

@@ -267,7 +267,7 @@ void C2_HOOK_FASTCALL RemoveDuplicatePoints(int* pCount_out, br_vector3* pPoints
 
 // SplitCarCollisionShapes
 
-// QuantizeWithinBounds
+extern int C2_HOOK_FASTCALL QuantizeWithinBounds(br_scalar pQuant, br_scalar pMin, br_scalar pMax, br_scalar* pValue);
 
 // SaveVitalBitsOfObject
 
@@ -283,11 +283,11 @@ void C2_HOOK_FASTCALL RemoveDuplicatePoints(int* pCount_out, br_vector3* pPoints
 
 // SplitCar
 
-// QuantizePlane
+extern void C2_HOOK_FASTCALL QuantizePlane(br_vector4* pPlane);
 
-// WithinBounds
+extern int C2_HOOK_FASTCALL WithinBounds(br_scalar pValue, br_scalar pMin, br_scalar pMax);
 
-// SplitCheck
+extern int C2_HOOK_FASTCALL SplitCheck(tCar_spec* pCar, int pMode, const br_vector3* pLine, br_scalar pHeight, br_vector4* pPlane);
 
 // FindForceEdge
 
@@ -518,9 +518,9 @@ br_scalar C2_HOOK_FASTCALL CalculateAmountRepairedFraction(br_angle pOriginal_x,
 
 // Vector4Equal
 
-// CompressPlane
+extern void C2_HOOK_FASTCALL CompressPlane(tU16 pDest[4], const br_vector4* pSrc);
 
-// ExpandPlane
+extern void C2_HOOK_FASTCALL ExpandPlane(br_vector4* pDest, const tU16 pSrc[4]);
 
 // CopySplitInMessage
 

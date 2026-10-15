@@ -12,6 +12,7 @@
 #include "phil.h"
 #include "piping.h"
 #include "platform.h"
+#include "pratcam.h"
 #include "raycast.h"
 #include "replay.h"
 #include "skidmark.h"
@@ -70,6 +71,15 @@ tPed_face_cache_0x34* gPed_face_caches[4];
 
 // GLOBAL: CARMA2_HW 0x0069bc54
 tPed_face_cache_0x50* gPed_face_cache;
+
+// GLOBAL: CARMA2_HW 0x0065e5d8
+const tU16 gPow2_word_array[16] = {
+    0x1, 0x2, 0x4, 0x8, 0x10, 0x20, 0x40, 0x80,
+    0x100, 0x200, 0x400, 0x800, 0x1000, 0x2000, 0x4000, 0x8000,
+};
+
+// GLOBAL: CARMA2_HW 0x0069bd08
+tPed_flag_cell gPed_flag_cells[16];
 
 // GLOBAL: CARMA2_HW 0x007447f0
 int gSelected_ped;
@@ -134,6 +144,9 @@ int gGiblet_size_count;
 
 // GLOBAL: CARMA2_HW 0x00694274
 tPed_giblet_size_spec* gGiblet_sizes;
+
+// GLOBAL: CARMA2_HW 0x0065d79c
+int gGib_shower_id = -1;
 
 // GLOBAL: CARMA2_HW 0x0058f2a8
 const br_vector3 g_Ped_x_unit_vector = { { 1.f, 0.f, 0.f}};
@@ -366,6 +379,12 @@ int gPed_score_multiplier;
 
 // GLOBAL: CARMA2_HW 0x0069bc30
 int gPed_recent_points;
+
+// GLOBAL: CARMA2_HW 0x006a0418
+tU32 gPed_last_score_time;
+
+// GLOBAL: CARMA2_HW 0x00694120
+tPedestrian* gPed_recent_ped;
 
 // GLOBAL: CARMA2_HW 0x006a0410
 int gPipe_halted_ped_status;
@@ -1903,14 +1922,17 @@ void C2_HOOK_FASTCALL BuildPedestrian(tPedestrian* pPed, const char* pGroup_name
 
     BrMatrix34Identity(&mat);
     BrVector3Copy((br_vector3*)mat.m[3], pPos);
+#pragma inline_depth(0)
     pPed->character = BuildCharacterInstance(pGroup_name, &mat);
+#pragma inline_depth()
     SetModelCallbacks(pPed->character);
     sprintf(texture_name, "%sB", pGroup_name);
     texture = BrMapFind(texture_name);
     if (texture == NULL) {
         FatalError(kFatalError_CantFindPedTexture_S, texture_name);
     }
-    sprintf(material_name, "%s%d.MAT", pGroup_name, 1);
+    strcpy(material_name, pGroup_name);
+    sprintf(material_name + strlen(material_name), "%d.MAT", 1);
     material = BrMaterialFind(material_name);
     if (material != NULL) {
         material->colour_map = texture;
@@ -2984,8 +3006,143 @@ void C2_HOOK_FASTCALL OneLessPed(tPedestrian* pPed) {
 
 // FUNCTION: CARMA2_HW 0x004cd260
 void C2_HOOK_FAKE_THISCALL ScoreForKilledPedestrian(tPedestrian* pPed, undefined4 pArg2, float pHeight) {
+    tU32 now;
+    int action;
+    tCar_spec* car;
+    int points;
+    /* NB: single struct (not two locals) so VC5 packs rel at [esp+0x14]
+       and out at [esp+0x20] as in the original. */
+    struct {
+        br_vector3 rel;
+        br_vector3 out;
+    } vecs;
+    tPhysics_object* obj;
+    br_actor* actor;
+    tU16 flags;
 
-    NOT_IMPLEMENTED();
+    now = GetTotalTime();
+    action = pPed->action;
+    pPed->hit_points = 0;
+    if (action != ePed_action_dead) {
+        PipeSinglePedMove(pPed, -1, -1, -1, 0, 0, 0, 0, NULL, NULL, action, ePed_action_dead, NULL);
+        pPed->action = ePed_action_dead;
+    }
+    pPed->death_time = now;
+    if (pPed->field_0x0c == NULL) {
+        return;
+    }
+    car = pPed->field_0x0c->field_0xc0;
+    if (car == NULL) {
+        return;
+    }
+    if (car->driver != eDriver_local_human) {
+        return;
+    }
+    if (now - gPed_last_score_time <= 1000) {
+        if (gPed_score_multiplier < 10) {
+            gPed_score_multiplier++;
+        }
+    } else {
+        gPed_score_multiplier = 1;
+    }
+    gPed_last_score_time = now;
+    points = gPed_points[gProgram_state.skill_level];
+    points *= gPed_score_multiplier;
+    vecs.rel.v[0] = pPed->pos.v[0] - car->pos.v[0];
+    obj = pPed->character->personality->form->simple_physicing[pPed->character->field_0x5].collision_info;
+    vecs.rel.v[1] = pPed->pos.v[1] - car->pos.v[1];
+    vecs.rel.v[2] = pPed->pos.v[2] - car->pos.v[2];
+    BrMatrix34TApplyV(&vecs.out, &vecs.rel, &car->collision_info->actor->t.t.mat);
+    flags = pPed->field_0x0c->field_0x2e;
+    if (flags & 0x10) {
+        points *= 20;
+        PratcamEvent(0x1e);
+        DoFancyHeadup(0x20);
+    } else if (flags & 8) {
+        points *= 5;
+        PratcamEvent(0x1e);
+        DoFancyHeadup(0x1f);
+    } else if (flags & 0x40) {
+        points *= 2;
+        PratcamEvent(0x1e);
+        DoFancyHeadup(2);
+    } else if (flags & 1) {
+        points *= 4;
+        PratcamEvent(0x1e);
+        DoFancyHeadup(0x11);
+    } else if (flags & 0x20) {
+        points *= 2;
+        PratcamEvent(0x1e);
+        DoFancyHeadup(0x1e);
+    } else if ((pHeight == gConst_replay_rate_zero
+            && (fabsf(car->collision_info->omega.v[0]) > 5.0f
+                || fabsf(car->collision_info->omega.v[2]) > 5.0f
+                || (actor = car->collision_info->actor, actor->t.t.mat.m[1][1] < 0.1f)
+                || actor->t.t.mat.m[3][1] - pPed->pos.v[1] > 0.05f))
+        || pPed->field_0x0c->field_0x98 > 0) {
+        points *= 4;
+        PratcamEvent(0x1e);
+        DoFancyHeadup(3);
+    } else if (pHeight > 1.0) {
+        points *= 2;
+        DoFancyHeadup(6);
+        PratcamEvent(0x1e);
+    } else if (obj == NULL
+        || (BrVector3LengthSquared(&obj->v) < 2.0
+            && BrVector3LengthSquared(&obj->field_0x1b4) < 2.0)) {
+        if (pHeight != gConst_replay_rate_zero) {
+            if (gPed_score_multiplier > 1) {
+                DoFancyHeadup(gPed_score_multiplier + 6);
+                PratcamEvent(0x1e);
+            } else if (flags & 2) {
+                points *= 2;
+                DoFancyHeadup(0);
+                PratcamEvent(0x1e);
+            }
+        } else if (fabsf(vecs.out.v[0]) / fabsf(vecs.out.v[2]) < 0.5) {
+            if (vecs.out.v[2] <= gConst_replay_rate_zero || car->collision_info->velocity_car_space.v[2] <= gConst_replay_rate_zero) {
+                if (gPed_score_multiplier > 1) {
+                    DoFancyHeadup(gPed_score_multiplier + 6);
+                    PratcamEvent(0x1e);
+                } else if (flags & 2) {
+                    points *= 2;
+                    DoFancyHeadup(0);
+                    PratcamEvent(0x1e);
+                }
+            } else {
+                points *= 2;
+                DoFancyHeadup(2);
+            }
+        } else if (fabsf(car->collision_info->velocity_car_space.v[2]) < fabsf(car->collision_info->velocity_car_space.v[0])) {
+            points *= 2;
+            DoFancyHeadup(2);
+        } else if (fabsf(car->collision_info->omega.v[1] / car->collision_info->velocity_car_space.v[2]) > 600.0f) {
+            points *= 2;
+            DoFancyHeadup(2);
+        } else {
+            if (vecs.out.v[2] <= gConst_replay_rate_zero || car->collision_info->velocity_car_space.v[2] <= gConst_replay_rate_zero) {
+                if (gPed_score_multiplier > 1) {
+                    DoFancyHeadup(gPed_score_multiplier + 6);
+                    PratcamEvent(0x1e);
+                } else if (flags & 2) {
+                    points *= 2;
+                    DoFancyHeadup(0);
+                    PratcamEvent(0x1e);
+                }
+            } else {
+                points *= 2;
+                DoFancyHeadup(2);
+            }
+        }
+    } else {
+        points *= 4;
+        DoFancyHeadup(5);
+        PratcamEvent(0x1e);
+    }
+    EarnCredits(points);
+    gPed_recent_points = points;
+    gPed_recent_ped = pPed;
+    AwardTime(gPed_times[gProgram_state.skill_level]);
 }
 
 // FUNCTION: CARMA2_HW 0x00409570
@@ -3984,9 +4141,152 @@ void C2_HOOK_FASTCALL PedProcessContact(tPedestrian* pPed, tPhysics_object* pCol
 #pragma auto_inline(on)
 
 #pragma auto_inline(off)
-// FUNCTION: CARMA2_HW 0x004cd640
-void C2_HOOK_FASTCALL SetPedFall(tPedestrian* pPed, int pSpeed, int pMove1, int pMove2, tPhysics_object* pCollision_info) {
+// UNLABELED: CARMA2_HW 0x004cd9e0
+int C2_HOOK_FASTCALL PedTryDismember(tPedestrian* pPed, int pBone) {
     NOT_IMPLEMENTED();
+}
+
+// FUNCTION: CARMA2_HW 0x004cd640
+int C2_HOOK_FASTCALL SetPedFall(tPedestrian* pPed, int pSpeed, int pMove1, int pMove2, tPhysics_object* pCollision_info) {
+    tPed_character_instance* character;
+    tPed_personality* personality;
+    tPed_form* form;
+    tPhysics_object* phys;
+    float mass;
+    double a;
+    int move_time;
+    int count;
+    tU8 head_flag;
+
+    character = pPed->character;
+    count = 0;
+    personality = character->personality;
+    form = personality->form;
+    phys = form->simple_physicing[(int)character->field_0x5].collision_info;
+    mass = phys->M;
+    a = 0.068 / mass;
+    move_time = (int)(a * a * pSpeed);
+    if (form->non_humanoid == 0) {
+        goto SKIP_CLAMP;
+    }
+    if (gPed_dismemberfest == 0) {
+        if (gExploding_pedestrians == 0) {
+            goto SKIP_CLAMP;
+        }
+    }
+    if (move_time >= 100) {
+        goto SKIP_CLAMP;
+    }
+    move_time = 100;
+SKIP_CLAMP:
+    *(float*)&move_time = (float)move_time;
+    if (pCollision_info == NULL) {
+        goto CHECK_COUNT;
+    }
+    if (gImmortal_peds != 0) {
+        goto CHECK_COUNT;
+    }
+    if (gGoreLevel < 2) {
+        goto CHECK_COUNT;
+    }
+    while (1) {
+        int limit;
+        float diff;
+
+        if (gPed_dismemberfest != 0) {
+            limit = 5;
+        } else {
+            limit = gPed_severing_damage;
+        }
+        diff = *(float*)&move_time - limit;
+        if (diff < 0.0f) {
+            goto CHECK_COUNT;
+        }
+        if (count >= 5) {
+            goto CHECK_COUNT;
+        }
+        if (gExploding_pedestrians == 0) {
+            if (gPed_dismemberfest == 0) {
+                if (!PercentageChance(gPed_severing_chance)) {
+                    continue;
+                }
+            }
+        }
+        {
+            int n_bones;
+            int r;
+
+            n_bones = form->count_bones;
+            r = IRandomBetween(1, n_bones - 1);
+            count += PedTryDismember(pPed, r);
+        }
+    }
+CHECK_COUNT:
+    if (count > 4) {
+        ((tU8*)&pPed->field_0x0c->field_0x2e)[0] |= 2;
+    }
+    if (pPed->hit_points > 0) {
+        goto ALIVE;
+    }
+    if (move_time <= 2) {
+        goto DEAD_RET1;
+    }
+    MakePedNoise(pPed, 5, 0, pCollision_info);
+    return 1;
+ALIVE:
+    head_flag = form->non_humanoid;
+    if (head_flag != 0) {
+        if (pPed->character->field_0xc == 0) {
+            goto CHECK_HEAD_BIT;
+        }
+        pPed->hit_points = 0;
+        move_time = 0;
+    }
+CHECK_HEAD_BIT:
+    {
+        int head_idx;
+        int bit;
+
+        head_idx = form->index_head_bone;
+        bit = gPow2_array[head_idx];
+        if ((pPed->character->field_0xc & bit) == 0) {
+            goto CHECK_TIME;
+        }
+        if (move_time < 100) {
+            pPed->hit_points = 0;
+        } else {
+            pPed->hit_points -= (tS8)move_time;
+        }
+    }
+CHECK_TIME:
+        if (gImmortal_peds == 0) {
+            goto CHECK_HP;
+        }
+        if (pPed->hit_points > 0) {
+            goto CHECK_HP;
+        }
+        pPed->hit_points = 1;
+    CHECK_HP:
+        if (pPed->hit_points <= 0) {
+            goto DEAD;
+        }
+        if (pMove1 < 0) {
+            goto DEAD_NO_MOVE1;
+        }
+        SetPedMove(pPed, pMove1, -1, 0, 1, GetTotalTime(), 5);
+    DEAD_NO_MOVE1:
+        MakePedNoise(pPed, 4, 0, pCollision_info);
+        return 0;
+    DEAD:
+        if (pMove2 < 0) {
+            goto DEAD_NO_MOVE2;
+        }
+        SetPedMove(pPed, pMove2, -1, 0, 1, GetTotalTime(), 5);
+    DEAD_NO_MOVE2:
+        MakePedNoise(pPed, 1, 0, pCollision_info);
+        KillPedestrian(pPed, pCollision_info);
+    DEAD_RET1:
+        return 1;
 }
 #pragma auto_inline(on)
 
@@ -4279,13 +4579,24 @@ void C2_HOOK_FASTCALL CBDisposePersonality(tPed_personality* pPersonality) {
 
 // FUNCTION: CARMA2_HW 0x004cccc0
 void C2_HOOK_FASTCALL DoBloodSpurt(uintptr_t pArg1, int pArg2, int pArg3, br_vector3* pArg4, br_vector3* pArg5, br_vector3* pArg6) {
-#ifndef CARPOCALYPSE2_MATCHING
-    if (pArg4 != NULL && pArg5 != NULL && pArg6 != NULL) {
-        /* Underlying DoSpurt particle system is not implemented. */
+    int old_rand;
+    int i;
+    br_vector3* saved_pArg4;
+
+    old_rand = rand();
+    srand(pArg3);
+    for (i = 0; i < gPed_spurty_lumps_count; i++) {
+        tSmash_vertex* fragment;
+
+        fragment = AllocateFragment(gPed_spurt_model, pArg1, 1);
+        if (fragment != NULL) {
+            float v;
+
+            v = PositionFragment(fragment->actor, &gPed_spurt_initial_position, 0, 0, 0, pArg4, pArg4, 0);
+            InitFragmentSpeed(fragment, &gPed_spurt_initial_speed, pArg5, v, gPed_spurt_min_max_time, pArg2, pArg6, 0, 0);
+        }
     }
-#else
-    NOT_IMPLEMENTED();
-#endif
+    srand(old_rand);
 }
 
 // FUNCTION: CARMA2_HW 0x004ca890
@@ -4293,10 +4604,25 @@ void C2_HOOK_FASTCALL DoVanishDismembered(uintptr_t pOwner, tS32 value) {
     *((tS32*)(*(undefined4**)pOwner) + 4) = value;
 }
 
-// STUB: CARMA2_HW 0x004ccd70
+// FUNCTION: CARMA2_HW 0x004ccd70
 void C2_HOOK_FASTCALL DoBloodSpurtUndo(int pArg1, uintptr_t pArg2, int pArg3, undefined4 pArg4, br_vector3* pArg5, br_vector3* pArg6, br_vector3* pArg7) {
+    int old_rand;
+    int i;
 
-    NOT_IMPLEMENTED();
+    old_rand = rand();
+    srand((int)pArg4);
+    for (i = 0; i < gPed_spurty_lumps_count; i++) {
+        tSmash_vertex* fragment;
+
+        fragment = AllocateFragment(gPed_spurt_model, pArg2, 1);
+        if (fragment != NULL) {
+            float v;
+
+            v = PositionFragment(fragment->actor, &gPed_spurt_initial_position, 0, 0, 0, pArg5, pArg5, 0);
+            InitFragmentSpeed(fragment, &gPed_spurt_initial_speed, pArg6, v, gPed_spurt_min_max_time, (int)pArg4, pArg7, 0, 0);
+        }
+    }
+    srand(old_rand);
 }
 
 // FUNCTION: CARMA2_HW 0x004cbbb0
@@ -5749,8 +6075,14 @@ void C2_HOOK_FASTCALL KillPedestrian(tPedestrian* pPed, tPhysics_object* pCollis
 
 // FUNCTION: CARMA2_HW 0x004cc6e0
 void C2_HOOK_FASTCALL DoPostElectricution(tPedestrian* pPed, tU32 pTime, float pF1, float pF2) {
-
-    NOT_IMPLEMENTED();
+    (void)pF1;
+    (void)pF2;
+    if (pPed->hit_points > 0) {
+        SetPedMove(pPed, 0x5d, -1, 0, 0, pTime, 5);
+    } else {
+        SetPedMove(pPed, 0x5e, -1, 0, 0, pTime, 5);
+    }
+    return;
 }
 
 // FUNCTION: CARMA2_HW 0x004cd880
@@ -5760,10 +6092,46 @@ void C2_HOOK_FASTCALL MakePedNoise(tPedestrian* pPed, int pArg2, int pArg3, tPhy
 }
 
 #pragma auto_inline(off)
+// UNLABELED: CARMA2_HW 0x004c8c30
+void C2_HOOK_FASTCALL FUN_004c8c30(tPedestrian* pPed, float pSpeed, float pX) {
+    NOT_IMPLEMENTED();
+}
+
 // FUNCTION: CARMA2_HW 0x004d1c60
 void C2_HOOK_FASTCALL SetCharacterMoveAR(tPed_character_instance* pCharacter, int pMove_action, float pSpeed, undefined4 pArg4, undefined4 pArg5, tU32 pTime) {
+    br_matrix34* mat;
+    br_vector3 trans;
+    float speed;
+    int move_id;
+    int f1c;
+    int f1e;
 
-    NOT_IMPLEMENTED();
+    if (gPed_676914 != 0) {
+        if (gBOOL_00744804 == 0) {
+            return;
+        }
+    }
+    speed = pSpeed;
+    if (speed != 0.0f) {
+        goto SKIP_ZERO;
+    }
+    speed = 0.0f;
+SKIP_ZERO:
+    mat = GetCharacterMatrixPtr(pCharacter);
+    trans.v[0] = mat->m[3][0];
+    trans.v[1] = mat->m[3][1];
+    trans.v[2] = mat->m[3][2];
+    move_id = pCharacter->personality->form->moves[(int)pCharacter->field_0x7].id;
+    f1c = (tS16)pCharacter->field_0x1c;
+    f1e = (tS16)pCharacter->field_0x1e;
+    SetCharacterMove(pCharacter, pMove_action, speed, pArg4, pArg5, pTime);
+    if (pMove_action != -1) {
+        goto SECOND_PATH;
+    }
+    FUN_004c8c30(pCharacter->ped, speed, (float)(int)pArg4);
+    return;
+SECOND_PATH:
+    PipeSinglePedMove(pCharacter->ped, 0, 0, 0, 0, 0, 0, 0, NULL, NULL, 0, 0, NULL);
 }
 #pragma auto_inline(on)
 
@@ -5938,8 +6306,548 @@ void C2_HOOK_FASTCALL SetPedXZDirection(tPedestrian* pPed, br_vector3* pDir, flo
 
 // FUNCTION: CARMA2_HW 0x004cfab0
 float C2_HOOK_FASTCALL RescanPedProximity(tPedestrian* pPed, br_vector3* pArg2) {
+    tPed_cache_006944c0* cache;
+    tPed_face_cache_0x34* head;
+    tFace_ref* face;
+    br_vector3 dir;
+    float best;
+    float result;
+    float len;
+    float nx;
+    float nz;
+    br_matrix34* mat;
+    br_vector3* pMatVec;
+    tPed_face_cache_0x50* entry;
+    int i;
+    int matched;
+    int use_cache;
+    br_vector3 cross;
+    br_vector3 norm;
+    br_vector3 neg;
+    br_vector3 plane;
+    float pd;
+    br_vector3 v;
+    float dot1;
+    br_vector3 dirCopy;
+    float d0;
+    br_vector3 negN;
+    float d1;
+    float dot2;
+    int r;
+    tPed_face_adjacency* adj;
+    int idx;
+    tPed_face_adjacency* adj2;
+    void* key0;
+    int key1;
+    int idx0;
+    int idx1;
+    int idx2;
+    int cell_count;
+    tPed_flag_cell* cell;
+    union {
+        double d;
+        int i;
+    } u;
+    int flag;
+    int is_running;
 
-    NOT_IMPLEMENTED();
+    cache = pPed->field_0x0c;
+    head = cache->field_0xb0;
+    if (head == NULL) {
+        return 10000.0f;
+    }
+    face = head->field_0x30;
+    if (face == NULL) {
+        return 10000.0f;
+    }
+    cache->field_0x00.v[0] = face->normal.v[0];
+    cache->field_0x00.v[1] = face->normal.v[1];
+    cache->field_0x00.v[2] = face->normal.v[2];
+    if (pArg2 != NULL) {
+        BrVector3Normalise(&dir, pArg2);
+    } else {
+        BrVector3Normalise(&dir, &pPed->character->field_0xc0);
+    }
+    best = 10000.0f;
+    cache->field_0x0c = dir;
+    len = sqrtf(dir.v[2] * dir.v[2] + dir.v[0] * dir.v[0]);
+    nz = dir.v[2] / len;
+    nx = dir.v[0] / len;
+    is_running = (pPed->action == ePed_action_running);
+    cache->field_0x18 &= ~0xb;
+    mat = GetCharacterMatrixPtr(pPed->character);
+    entry = head->field_0x0;
+    pMatVec = (br_vector3*)mat->m[3];
+    cell_count = 0;
+    u.i = 0;
+    if (head->field_0x4 == 0) {
+        return best;
+    }
+    for (i = 0; i < head->field_0x4; i++, entry++) {
+        matched = 0;
+        if (entry->plane.v[1] > gPed_cos_max_slope) {
+            int j;
+            int n;
+            tRace_ped_exclusion_spec* spec;
+
+            if (gPeds_suicidal) {
+                continue;
+            }
+            spec = pPed->exclusion_spec;
+            if (spec == NULL) {
+                continue;
+            }
+            if (is_running && spec->exclusions_ok_when_scared) {
+                continue;
+            }
+            n = spec->count_exclusion_materials;
+            for (j = 0; j < n; j++) {
+                if (spec->exclusion_materials[j].material == entry->material
+                    && (!is_running || spec->exclusion_materials[j].flags == 0)) {
+                    matched = 1;
+                    break;
+                }
+            }
+            if (j == n) {
+                continue;
+            }
+        } else {
+            int j;
+            int n;
+            tRace_ped_exclusion_spec* spec;
+
+            spec = pPed->exclusion_spec;
+            if (spec != NULL) {
+                n = spec->count_exception_materials;
+                for (j = 0; j < n; j++) {
+                    if (spec->exception_materials[j] == entry->material) {
+                        break;
+                    }
+                }
+                if (j != n) {
+                    continue;
+                }
+            }
+        }
+        if (!matched) {
+            float denom;
+
+            denom = BrVector3Dot(&dir, &entry->plane);
+            if (fabsf(denom) < 0.001) {
+                result = 20.0f;
+            } else {
+                result = (entry->d - BrVector3Dot(pMatVec, &entry->plane)) / denom;
+            }
+            if (result < gConst_replay_rate_zero || result > 20.0f || result > best) {
+                continue;
+            }
+        }
+        if (!u.i) {
+            face = head->field_0x30;
+            DRVector3SafeCross(&cross, &y_unit_vector, &dir);
+            plane = face->normal;
+            pd = face->d;
+            BrVector3Normalise(&norm, &cross);
+            neg.v[0] = -norm.v[0];
+            neg.v[1] = -norm.v[1];
+            neg.v[2] = -norm.v[2];
+            u.d = (double)pPed->character->personality->bb.max.v[0] * 1.3;
+            v.v[0] = neg.v[0] * u.d + pMatVec->v[0];
+            v.v[1] = neg.v[1] * u.d + pMatVec->v[1];
+            v.v[2] = neg.v[2] * u.d + pMatVec->v[2];
+            dot1 = BrVector3Dot(&v, &norm);
+            dirCopy = dir;
+            d0 = BrVector3Dot(pMatVec, &dir);
+            negN.v[0] = -face->normal.v[0];
+            negN.v[1] = -face->normal.v[1];
+            negN.v[2] = -face->normal.v[2];
+            dot2 = BrVector3Dot(&v, &neg);
+            d1 = BrVector3Dot(pMatVec, &negN);
+            u.i = 1;
+        }
+            adj = entry->field_0x48;
+            idx = entry->field_0x4c;
+            adj2 = adj->field_0x18;
+            key1 = idx;
+            key0 = adj2;
+            if (idx < 0) {
+                tU16 id;
+                tU16 *rec;
+
+                id = entry->field_0x4e;
+                if (id >= adj2->field_0x12) {
+                    continue;
+                }
+                rec = adj2->field_0x0c[(id & 0xffff) * 5];
+                idx0 = rec[0];
+                idx1 = rec[1];
+                idx2 = rec[2];
+            } else {
+                tPed_face_adjacency* level;
+                tU16 id;
+                tMeshRow* rows;
+                tMeshRow* row;
+                tU16 *rec;
+
+                level = adj2->field_0x4c;
+                if (idx >= level->field_0x8) {
+                    continue;
+                }
+                rows = (tMeshRow*)level->field_0x18;
+                id = entry->field_0x4e;
+                row = &rows[idx];
+                if (id >= row->field_0x1c) {
+                    continue;
+                }
+                rec = (tU16*)&row->field_0x4[(id & 0xffff) * 7];
+                idx0 = rec[0];
+                idx1 = rec[1];
+                idx2 = rec[2];
+            }
+            cell = NULL;
+            if (cell_count > 0) {
+                int ci;
+
+                for (ci = 0; ci < cell_count; ci++) {
+                    if (gPed_flag_cells[ci].key0 == key0 && gPed_flag_cells[ci].key1 == key1) {
+                        cell = &gPed_flag_cells[ci];
+                        break;
+                    }
+                }
+            }
+            if (cell == NULL && cell_count < 0x10) {
+                cell = &gPed_flag_cells[cell_count];
+                cell_count++;
+                memset(&cell->flags[0], 0, sizeof(cell->flags));
+                cell->key0 = key0;
+                cell->key1 = key1;
+            }
+            use_cache = (cell != NULL && idx0 < 0x200);
+            if (use_cache && (cell->flags[idx0] & gPow2_word_array[3])) {
+                r = cell->flags[idx0] & gPow2_word_array[11];
+            } else {
+                r = NormalSideOfPlane((br_vector3*)&dirCopy.v[1], &entry->normal1, d0);
+                if (use_cache) {
+                    cell->flags[idx0] |= gPow2_word_array[3];
+                    if (r) {
+                        cell->flags[idx0] |= gPow2_word_array[11];
+                    }
+                }
+            }
+            if (r) {
+                goto PHASE_B;
+            }
+            use_cache = (cell != NULL && idx1 < 0x200);
+            if (use_cache && (cell->flags[idx1] & gPow2_word_array[3])) {
+                r = cell->flags[idx1] & gPow2_word_array[11];
+            } else {
+                r = NormalSideOfPlane((br_vector3*)&dirCopy.v[1], &entry->normal2, d0);
+                if (use_cache) {
+                    cell->flags[idx1] |= gPow2_word_array[3];
+                    if (r) {
+                        cell->flags[idx1] |= gPow2_word_array[11];
+                    }
+                }
+            }
+            if (r) {
+                goto PHASE_B;
+            }
+            use_cache = (cell != NULL && idx2 < 0x200);
+            if (use_cache && (cell->flags[idx2] & gPow2_word_array[3])) {
+                r = cell->flags[idx2] & gPow2_word_array[11];
+            } else {
+                r = NormalSideOfPlane((br_vector3*)&dirCopy.v[1], &entry->normal3, d0);
+                if (use_cache) {
+                    cell->flags[idx2] |= gPow2_word_array[3];
+                    if (r) {
+                        cell->flags[idx2] |= gPow2_word_array[11];
+                    }
+                }
+            }
+            if (!r) {
+                continue;
+            }
+        PHASE_B:
+            use_cache = (cell != NULL && idx0 < 0x200);
+            if (use_cache && (cell->flags[idx0] & gPow2_word_array[1])) {
+                r = cell->flags[idx0] & gPow2_word_array[9];
+            } else {
+                r = NormalSideOfPlane((br_vector3*)&norm.v[1], &entry->normal1, dot1);
+                if (use_cache) {
+                    cell->flags[idx0] |= gPow2_word_array[1];
+                    if (r) {
+                        cell->flags[idx0] |= gPow2_word_array[9];
+                    }
+                }
+            }
+            if (r) {
+                goto PHASE_C;
+            }
+            use_cache = (cell != NULL && idx1 < 0x200);
+            if (use_cache && (cell->flags[idx1] & gPow2_word_array[1])) {
+                r = cell->flags[idx1] & gPow2_word_array[9];
+            } else {
+                r = NormalSideOfPlane((br_vector3*)&norm.v[1], &entry->normal2, dot1);
+                if (use_cache) {
+                    cell->flags[idx1] |= gPow2_word_array[1];
+                    if (r) {
+                        cell->flags[idx1] |= gPow2_word_array[9];
+                    }
+                }
+            }
+            if (r) {
+                goto PHASE_C;
+            }
+            use_cache = (cell != NULL && idx2 < 0x200);
+            if (use_cache && (cell->flags[idx2] & gPow2_word_array[1])) {
+                r = cell->flags[idx2] & gPow2_word_array[9];
+            } else {
+                r = NormalSideOfPlane((br_vector3*)&norm.v[1], &entry->normal3, dot1);
+                if (use_cache) {
+                    cell->flags[idx2] |= gPow2_word_array[1];
+                    if (r) {
+                        cell->flags[idx2] |= gPow2_word_array[9];
+                    }
+                }
+            }
+            if (!r) {
+                continue;
+            }
+        PHASE_C:
+            use_cache = (cell != NULL && idx0 < 0x200);
+            if (use_cache && (cell->flags[idx0] & gPow2_word_array[2])) {
+                r = cell->flags[idx0] & gPow2_word_array[10];
+            } else {
+                r = NormalSideOfPlane((br_vector3*)&neg.v[1], &entry->normal1, dot2);
+                if (use_cache) {
+                    cell->flags[idx0] |= gPow2_word_array[2];
+                    if (r) {
+                        cell->flags[idx0] |= gPow2_word_array[10];
+                    }
+                }
+            }
+            if (r) {
+                goto PHASE_FINAL;
+            }
+            use_cache = (cell != NULL && idx1 < 0x200);
+            if (use_cache && (cell->flags[idx1] & gPow2_word_array[2])) {
+                r = cell->flags[idx1] & gPow2_word_array[10];
+            } else {
+                r = NormalSideOfPlane((br_vector3*)&neg.v[1], &entry->normal2, dot2);
+                if (use_cache) {
+                    cell->flags[idx1] |= gPow2_word_array[2];
+                    if (r) {
+                        cell->flags[idx1] |= gPow2_word_array[10];
+                    }
+                }
+            }
+            if (r) {
+                goto PHASE_FINAL;
+            }
+            use_cache = (cell != NULL && idx2 < 0x200);
+            if (use_cache && (cell->flags[idx2] & gPow2_word_array[2])) {
+                r = cell->flags[idx2] & gPow2_word_array[10];
+            } else {
+                r = NormalSideOfPlane((br_vector3*)&neg.v[1], &entry->normal3, dot2);
+                if (use_cache) {
+                    cell->flags[idx2] |= gPow2_word_array[2];
+                    if (r) {
+                        cell->flags[idx2] |= gPow2_word_array[10];
+                    }
+                }
+            }
+        PHASE_FINAL:
+            if (r == 0) {
+                continue;
+            }
+            if (matched == 0) {
+                goto PHASE_D;
+            }
+            {
+                tPed_face_adjacency* tri_level;
+                int* tri_base;
+                int tri_block;
+                br_vector3* vv0;
+                br_vector3* vv1;
+                br_vector3* vv2;
+                float e1x;
+                float e1z;
+                float cross1;
+                float t1;
+                float e2x;
+                float e2z;
+                float cross2;
+                float t2;
+                float e3x;
+                float e3z;
+                float cross3;
+                float t3;
+
+                tri_level = ((tPed_face_adjacency*)key0)->field_0x4c;
+                tri_base = (int*)tri_level->field_0x18;
+                tri_block = tri_base[key1 * 9 + 4];
+                vv1 = (br_vector3*)(tri_block + idx1 * 32);
+                vv0 = (br_vector3*)(tri_block + idx0 * 32);
+                vv2 = (br_vector3*)(tri_block + idx2 * 32);
+                e1x = vv1->v[0] - vv0->v[0];
+                e1z = vv1->v[2] - vv0->v[2];
+                cross1 = e1z * nz - e1x * nx;
+                if (fabsf(cross1) <= 0.0001) {
+                    t1 = 3.402823466e+38f;
+                } else {
+                    float rx;
+                    float rz;
+
+                    rx = vv0->v[0] - pMatVec->v[0];
+                    rz = vv0->v[2] - pMatVec->v[2];
+                    t1 = (rx * e1z - rz * e1x) / cross1;
+                    if (t1 < 0.0f) {
+                        t1 = 3.402823466e+38f;
+                    }
+                }
+                e2x = vv2->v[0] - vv0->v[0];
+                e2z = vv2->v[2] - vv0->v[2];
+                cross2 = e2z * nz - e2x * nx;
+                if (fabsf(cross2) <= 0.0001) {
+                    t2 = 3.402823466e+38f;
+                } else {
+                    float rx;
+                    float rz;
+
+                    rx = vv0->v[0] - pMatVec->v[0];
+                    rz = vv0->v[2] - pMatVec->v[2];
+                    t2 = (rx * e2z - rz * e2x) / cross2;
+                    if (t2 < 0.0f) {
+                        t2 = 3.402823466e+38f;
+                    }
+                }
+                e3x = vv2->v[0] - vv1->v[0];
+                e3z = vv2->v[2] - vv1->v[2];
+                cross3 = e3z * nz - e3x * nx;
+                if (fabsf(cross3) <= 0.0001) {
+                    t3 = 3.402823466e+38f;
+                } else {
+                    float rx;
+                    float rz;
+
+                    rx = vv1->v[0] - pMatVec->v[0];
+                    rz = vv1->v[2] - pMatVec->v[2];
+                    t3 = (rx * e3z - rz * e3x) / cross3;
+                    if (t3 < 0.0f) {
+                        t3 = 3.402823466e+38f;
+                    }
+                }
+                {
+                    float edge_x;
+                    float edge_z;
+                    int found;
+
+                    found = 0;
+                    if (t1 < t2 && t1 < t3 && t1 < best) {
+                        best = t1;
+                        edge_x = e1x;
+                        edge_z = e1z;
+                        found = 1;
+                    } else if (t2 < t3 && t2 < best) {
+                        best = t2;
+                        edge_x = e2x;
+                        edge_z = e2z;
+                        found = 1;
+                    } else if (t3 < best) {
+                        best = t3;
+                        edge_x = e3x;
+                        edge_z = e3z;
+                        found = 1;
+                    }
+                    if (!found) {
+                        continue;
+                    }
+                    cache->field_0xa4.v[0] = edge_x;
+                    cache->field_0xa4.v[1] = 0.0f;
+                    cache->field_0xa4.v[2] = -edge_z;
+                    cache->field_0x30.v[0] = 0.0f;
+                    cache->field_0x30.v[1] = 0.0f;
+                    cache->field_0x30.v[2] = 0.0f;
+                    BrVector3Normalise(&cache->field_0xa4, &cache->field_0xa4);
+                    cache->field_0x18 |= 8;
+                }
+                continue;
+            }
+        PHASE_D:
+            {
+                float dot;
+
+                dot = entry->plane.v[1] * dir.v[1] + entry->plane.v[0] * dir.v[0] + entry->plane.v[2] * dir.v[2];
+                if (dot > 0.0f) {
+                    if (((unsigned char*)&entry->material->flags)[1] & 0x10) {
+                        entry->plane.v[0] *= -1.0f;
+                        entry->plane.v[1] *= -1.0f;
+                        entry->plane.v[2] *= -1.0f;
+                        entry->d = -entry->d;
+                    }
+                }
+            }
+            use_cache = (cell != NULL && idx0 < 0x200);
+            if (use_cache && (cell->flags[idx0] & gPow2_word_array[4])) {
+                r = cell->flags[idx0] & gPow2_word_array[12];
+            } else {
+                r = NormalSideOfPlane((br_vector3*)&negN.v[1], &entry->normal1, d1);
+                if (use_cache) {
+                    cell->flags[idx0] |= gPow2_word_array[4];
+                    if (r) {
+                        cell->flags[idx0] |= gPow2_word_array[12];
+                    }
+                }
+            }
+            if (r) {
+                goto PHASE_E;
+            }
+            use_cache = (cell != NULL && idx1 < 0x200);
+            if (use_cache && (cell->flags[idx1] & gPow2_word_array[4])) {
+                r = cell->flags[idx1] & gPow2_word_array[12];
+            } else {
+                r = NormalSideOfPlane((br_vector3*)&negN.v[1], &entry->normal2, d1);
+                if (use_cache) {
+                    cell->flags[idx1] |= gPow2_word_array[4];
+                    if (r) {
+                        cell->flags[idx1] |= gPow2_word_array[12];
+                    }
+                }
+            }
+            if (r) {
+                goto PHASE_E;
+            }
+            use_cache = (cell != NULL && idx2 < 0x200);
+            if (use_cache && (cell->flags[idx2] & gPow2_word_array[4])) {
+                r = cell->flags[idx2] & gPow2_word_array[12];
+            } else {
+                r = NormalSideOfPlane((br_vector3*)&negN.v[1], &entry->normal3, d1);
+                if (use_cache) {
+                    cell->flags[idx2] |= gPow2_word_array[4];
+                    if (r) {
+                        cell->flags[idx2] |= gPow2_word_array[12];
+                    }
+                }
+            }
+            if (!r) {
+                continue;
+            }
+        PHASE_E:
+            if (cache->field_0x18 == 0) {
+                continue;
+            }
+            best = result;
+            cache->field_0xbc = result * result;
+            cache->field_0x30.v[0] = 0.0f;
+            cache->field_0x30.v[1] = 0.0f;
+            cache->field_0x30.v[2] = 0.0f;
+            cache->field_0x3c.v[0] = pMatVec->v[0] + result * dir.v[0];
+            cache->field_0x3c.v[1] = pMatVec->v[1] + result * dir.v[1];
+            cache->field_0x3c.v[2] = pMatVec->v[2] + result * dir.v[2];
+            cache->field_0xa4 = entry->plane;
+            continue;
+    }
+    return best;
 }
 
 // FUNCTION: CARMA2_HW 0x004cef80
@@ -6132,16 +7040,109 @@ br_matrix34* C2_HOOK_FASTCALL GetBoneMatrixPtr(tPed_character_instance* pCharact
     return &pCharacter->personality->form->actor_sets[pCharacter->field_0x4].actors[pBone_index]->t.t.mat;
 }
 
+// UNLABELED: CARMA2_HW 0x004ccb10
+void C2_HOOK_FASTCALL DoGibShower(int pId, int pTime, int pSeed, float pForce, int pSize_index, br_vector3* pArg6, br_vector3* pArg7, br_vector3* pArg8) {
+    int old_rand;
+    int i;
+    int j;
+    int max_instances;
+    tPed_giblet_size_spec* spec;
+
+    old_rand = rand();
+    srand(pSeed);
+    spec = &gGiblet_sizes[pSize_index];
+    for (i = pSize_index; i < gGiblet_size_count; i++, spec++) {
+        if (pForce < spec->min_force) {
+            continue;
+        }
+        max_instances = (int)((pForce - spec->min_force) / spec->instance_force + 1.0f);
+        if (max_instances > spec->max_count) {
+            max_instances = spec->max_count;
+        }
+        for (j = 0; j < max_instances; j++) {
+            tSmash_vertex* fragment;
+
+            fragment = AllocateFragment(spec->models[IRandomBetween(0, spec->model_count - 1)], pId, 2);
+            if (fragment != NULL) {
+                float v;
+
+                v = PositionFragment(fragment->actor, &gGiblet_initial_position, 0, 0, 0, pArg6, pArg7, 0);
+                InitFragmentSpeed(fragment, &gGiblet_initial_speed, pArg8, v, gGiblet_min_max_time, pTime, &gZero_vector__smash, 0, 0);
+            }
+        }
+    }
+    srand(old_rand);
+}
+
+#pragma auto_inline(off)
+#pragma inline_depth(0)
 // FUNCTION: CARMA2_HW 0x004ccff0
 void C2_HOOK_FASTCALL DoGiblets(tPedestrian* pPed, tPhysics_object* pObject, tPhysics_object* pOpt_speed_object, float pArg4, br_vector3* pArg5, int pArg6) {
+    tU32 time;
+    int seed;
+    br_vector3 vec;
 
-    NOT_IMPLEMENTED();
+    if (gGoreLevel <= 0) {
+        return;
+    }
+    time = GetTotalTime();
+    if (pArg4 > 0.5) {
+        Explode(&gPed_large_blood_cloud, GetCharacterActorPtr(pPed->character), &pPed->character->personality->bb, &pObject->cmpos);
+    } else if (pArg4 > 0.25) {
+        Explode(&gPed_medium_blood_cloud, GetCharacterActorPtr(pPed->character), &pPed->character->personality->bb, &pObject->cmpos);
+    } else if (pArg4 > 0.05) {
+        Explode(&gPed_explosion_small_blood_cloud, GetCharacterActorPtr(pPed->character), &pPed->character->personality->bb, &pObject->cmpos);
+    }
+    seed = (int)pArg5->v[2] ^ (int)pArg5->v[1] ^ time ^ (int)pOpt_speed_object ^ (int)pPed ^ (int)pArg5->v[0];
+    if (pOpt_speed_object == NULL) {
+        pOpt_speed_object = pObject;
+    }
+    vec.v[0] = pOpt_speed_object->v.v[0] * 6.9;
+    vec.v[1] = pOpt_speed_object->v.v[1] * 6.9;
+    vec.v[2] = pOpt_speed_object->v.v[2] * 6.9;
+    DoGibShower(gGib_shower_id, time, seed, pArg4, pArg6, &pPed->pos, pArg5, &vec);
+    PipeSingleGibShower(gGib_shower_id, time, seed, *(int*)&pArg4, pArg6, &pPed->pos, pArg5, &vec);
+    gGib_shower_id--;
 }
+#pragma inline_depth()
+#pragma auto_inline(on)
 
 // FUNCTION: CARMA2_HW 0x004d5820
 void C2_HOOK_FASTCALL DoSpurt(br_matrix34* pArg1, br_vector3* pArg2, br_vector3* pArg3, br_vector3* pArg4) {
+    tU32 time;
+    br_vector3 tmp;
+    br_vector3 scaled;
+    int s0;
+    int s1;
+    int s2;
+    int seed;
+    int old_rand;
+    int i;
 
-    NOT_IMPLEMENTED();
+    time = GetTotalTime();
+    BrMatrix34ApplyP(&tmp, pArg2, pArg1);
+    BrMatrix34ApplyV(&tmp, pArg3, pArg1);
+    scaled.v[0] = pArg4->v[0] * 6.9f;
+    scaled.v[1] = pArg4->v[1] * 6.9f;
+    scaled.v[2] = pArg4->v[2] * 6.9f;
+    s0 = (int)tmp.v[0];
+    s1 = (int)tmp.v[1];
+    s2 = (int)tmp.v[2];
+    seed = s0 ^ s1 ^ s2 ^ (int)time;
+    old_rand = rand();
+    srand(seed);
+    for (i = 0; i < gPed_spurty_lumps_count; i++) {
+        tSmash_vertex* fragment;
+
+        fragment = AllocateFragment(gPed_spurt_model, seed, 1);
+        if (fragment != NULL) {
+            float v;
+
+            v = PositionFragment(fragment->actor, &gPed_spurt_initial_position, 0, 0, 0, pArg3, pArg3, 0);
+            InitFragmentSpeed(fragment, &gPed_spurt_initial_speed, pArg3, v, gPed_spurt_min_max_time, time, pArg3, 0, 0);
+        }
+    }
+    srand(old_rand);
 }
 
 // FUNCTION: CARMA2_HW 0x0040b570
@@ -6648,13 +7649,9 @@ int C2_HOOK_FASTCALL IsActorRenderworthy(br_actor* pActor) {
 
 // CBFillInObject
 
-// DoGibShower
-
 // PedApplyGibShower
 
 // PedUndoGibShower
-
-// DoGiblets
 
 // DoBloodSpurt
 
@@ -6665,8 +7662,6 @@ int C2_HOOK_FASTCALL IsActorRenderworthy(br_actor* pActor) {
 // PedUndoBloodSpurt
 
 // OneLessPed
-
-// ScoreForKilledPedestrian
 
 // KillPedestrian
 
@@ -6788,7 +7783,21 @@ int C2_HOOK_FASTCALL IsActorRenderworthy(br_actor* pActor) {
 
 // ARResetNapalmBolts
 
-// AdjustNapalmBolt
+// FUNCTION: CARMA2_HW 0x004d5b40
+void C2_HOOK_FASTCALL AdjustNapalmBolt(int pIndex, tPedestrian* pPed, br_vector3* pPositions) {
+    int i;
+
+    gNapalm_bolts[pIndex].ped = pPed;
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gNapalm_bolts[pIndex].actors); i++) {
+        if (pPositions[i].v[0] == 0.f && pPositions[i].v[1] == 0.f && pPositions[i].v[2] == 0.f) {
+            break;
+        }
+        gNapalm_bolts[pIndex].actors[i]->t.t.translate.t.v[0] = pPositions[i].v[0];
+        gNapalm_bolts[pIndex].actors[i]->t.t.translate.t.v[1] = pPositions[i].v[1];
+        gNapalm_bolts[pIndex].actors[i]->t.t.translate.t.v[2] = pPositions[i].v[2];
+        gNapalm_bolts[pIndex].actors[i]->render_style = BR_RSTYLE_FACES;
+    }
+}
 
 // InitPedsForRace
 

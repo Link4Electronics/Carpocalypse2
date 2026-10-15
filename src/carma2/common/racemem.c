@@ -33,4 +33,18 @@ int C2_HOOK_FASTCALL AccumulateRuntimeVariable(int pAddress, int pAmount) {
         gRace_memory[pAddress] = (tU8)value;
         return value;
     }
+    return 0;
+}
+
+// FUNCTION: CARMA2_HW 0x004e7480
+int C2_HOOK_FASTCALL ToggleRuntimeVariable(int pAddress) {
+    int value;
+
+    if (pAddress < 0 || pAddress >= 1000) {
+        return 0;
+    }
+
+    value = !gRace_memory[pAddress];
+    gRace_memory[pAddress] = (tU8)(tS8)value;
+    return value;
 }

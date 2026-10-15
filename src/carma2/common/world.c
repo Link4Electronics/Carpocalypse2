@@ -2552,6 +2552,7 @@ void C2_HOOK_FASTCALL FreeExceptions(void) {
     gMaterial_exceptions = NULL;
 }
 
+// FUNCTION: CARMA2_HW 0x00486db0
 void C2_HOOK_FASTCALL LoadStaticLightingForRace(const char* race_lighting_path) {
 
 }

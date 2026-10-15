@@ -20,7 +20,7 @@ extern void C2_HOOK_FASTCALL InitExplosions(void);
 
 // Explode
 
-// RemoveExplosions
+extern void C2_HOOK_FASTCALL RemoveExplosions(tCar_spec* pCar_spec);
 
 // CalcRandomPointBetween
 
@@ -144,9 +144,9 @@ extern void C2_HOOK_FASTCALL InitExplosions(void);
 
 // KillFragment
 
-// AddRepairAnimationToQueue
+extern void C2_HOOK_FASTCALL AddRepairAnimationToQueue(tCar_spec* pCar_spec, tCar_crush_smashable_part* pSmashable);
 
-// RepairSmash
+extern void C2_HOOK_FASTCALL RepairSmash(tCar_spec* pCar_spec, tCar_crush_buffer_entry* pSmash_data);
 
 // TotallyRepairSmash
 
@@ -253,9 +253,10 @@ void C2_HOOK_FASTCALL DisposeSmashData(tCar_crush_buffer_entry* pCrush_data);
 
 // LinkSmashies
 
-// RepairModels
+// RepairModels (static in smash.c)
 
-// RepairAllSmashes
+// FUNCTION: CARMA2_HW 0x004f5a00
+extern intptr_t C2_HOOK_FASTCALL RepairAllSmashes(tCar_spec* pCar_spec);
 
 // SmashEverythingCB
 

@@ -140,13 +140,9 @@ extern void C2_HOOK_FASTCALL DisposePedStuff(void);
 
 // CBFillInObject
 
-// DoGibShower
-
 // PedApplyGibShower
 
 // PedUndoGibShower
-
-// DoGiblets
 
 // DoBloodSpurt
 
@@ -157,8 +153,6 @@ extern void C2_HOOK_FASTCALL DisposePedStuff(void);
 // PedUndoBloodSpurt
 
 // OneLessPed
-
-// ScoreForKilledPedestrian
 
 // KillPedestrian
 
@@ -280,7 +274,7 @@ extern void C2_HOOK_FASTCALL DisposePedStuff(void);
 
 // ARResetNapalmBolts
 
-// AdjustNapalmBolt
+extern void C2_HOOK_FASTCALL AdjustNapalmBolt(int pIndex, tPedestrian* pPed, br_vector3* pPositions);
 
 // InitPedsForRace
 
@@ -742,7 +736,7 @@ int C2_HOOK_FASTCALL CBMoveCompleted(tPed_character_instance* pCharacter);
 
 void C2_HOOK_FASTCALL PedProcessContact(tPedestrian* pPed, tPhysics_object* pCollision_info);
 
-void C2_HOOK_FASTCALL SetPedFall(tPedestrian* pPed, int pSpeed, int pMove1, int pMove2, tPhysics_object* pCollision_info);
+int C2_HOOK_FASTCALL SetPedFall(tPedestrian* pPed, int pSpeed, int pMove1, int pMove2, tPhysics_object* pCollision_info);
 
 void C2_HOOK_FASTCALL CBFillInObject(undefined4* pArg1, undefined4 pArg2);
 
@@ -845,6 +839,9 @@ void C2_HOOK_FASTCALL SetCharacterBoneModelAR(tPed_character_instance* pCharacte
 br_matrix34* C2_HOOK_FASTCALL GetBoneMatrixPtr(tPed_character_instance* pCharacter, int pBone_index);
 
 void C2_HOOK_FASTCALL DoGiblets(tPedestrian* pPed, tPhysics_object* pObject, tPhysics_object* pOpt_speed_object, float pArg4, br_vector3* pArg5, int pArg6);
+
+// UNLABELED: CARMA2_HW 0x004ccb10
+void C2_HOOK_FASTCALL DoGibShower(int pId, int pTime, int pSeed, float pForce, int pSize_index, br_vector3* pArg6, br_vector3* pArg7, br_vector3* pArg8);
 
 void C2_HOOK_FASTCALL DoBloodSpurt(uintptr_t pArg1, int pArg2, int pArg3, br_vector3* pArg4, br_vector3* pArg5, br_vector3* pArg6);
 
