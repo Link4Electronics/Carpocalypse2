@@ -604,9 +604,8 @@ void C2_HOOK_FASTCALL DoPhysicsError(tPhysicsError pError, const char* pMessage)
         break;
     case ePhysicsError_UnknownHingeType:
         strcpy(s, "Unknown hinge type");
-        break;
     default:
-        sprintf(s, "%d", pError);
+        sprintf(s, "%d ", pError);
         break;
     }
     FatalError(1000 + pError, s);
@@ -625,6 +624,7 @@ void C2_HOOK_FASTCALL PhysicsSetErrorHandler(tPhysicsError_cbfn *pError_cbfn) {
 }
 #pragma auto_inline(on)
 
+// FUNCTION: CARMA2_HW 0x004c61c0
 void C2_HOOK_FASTCALL PhysicsError(tPhysicsError pError, const char* pMessage) {
 
     if (gPhysics_error_cb != NULL) {
@@ -3178,9 +3178,9 @@ void C2_HOOK_FASTCALL ProcessGravity(tPHIL_queued_header* pObject_info, tPhysics
     }
     if (pSpecial_volume != NULL) {
         if (pObject_info->field_0x14 == 0.0f || pSpecial_volume->viscosity_multiplier <= 2.0) {
+            gravity.v[1] = pSpecial_volume->gravity_multiplier * pObject->water_depth_factor * pGravity * gGravity_multiplier * -0.05681159420289855;
             gravity.v[0] = 0.0f;
             gravity.v[2] = 0.0f;
-            gravity.v[1] = pSpecial_volume->gravity_multiplier * pObject->water_depth_factor * pGravity * gGravity_multiplier * -0.05681159420289855;
         } else {
             gravity.v[0] = 0.0f;
             gravity.v[1] = ((1.0f - pSpecial_volume->gravity_multiplier) * pObject->water_depth_factor * pObject_info->field_0x14 - gGravity_multiplier * 1.4202898550724639 * pGravity) * 0.04;
@@ -3348,6 +3348,7 @@ void C2_HOOK_FASTCALL ClearPhysicsScratchSpace(void) {
     gPhysics_scratch_ptr = gPhysics_other_buffer;
 }
 
+// FUNCTION: CARMA2_HW 0x004c61e0
 void C2_HOOK_FASTCALL PhysicsWarning(const char* pMessage) {
     (void)pMessage;
 }
@@ -4299,6 +4300,7 @@ int C2_HOOK_STDCALL QuantizeFloatToInt(float pVal, float pMin, float pMax) {
 }
 
 // FUNCTION: CARMA2_HW 0x0049c0d0
+#pragma inline_depth(0)
 int C2_HOOK_FASTCALL GetObjectNetworkStuff(tPhysics_object* pObject, tU8* pBuffer, int pSize) {
     tPhysics_joint* joint;
     br_quat quat;
@@ -4460,6 +4462,7 @@ check_big:
         return 0x28;
     }
 }
+#pragma inline_depth()
 
 // FUNCTION: CARMA2_HW 0x0049cd00
 int C2_HOOK_FASTCALL GetHierarchyNetworkStuff(tPhysics_object* pObject, tU8* pNet_data, int pRemaining) {
@@ -4467,15 +4470,15 @@ int C2_HOOK_FASTCALL GetHierarchyNetworkStuff(tPhysics_object* pObject, tU8* pNe
     int total_size;
     tPhysics_object* child;
 
-    size = GetObjectNetworkStuff(pObject, pNet_data, pRemaining);
-    if (size < 0) {
+    total_size = GetObjectNetworkStuff(pObject, pNet_data, pRemaining);
+    if (total_size < 0) {
         return -1;
     }
-    total_size = size;
-    pRemaining -= size;
-    if (pObject->child != NULL) {
+    child = pObject->child;
+    pRemaining -= total_size;
+    if (child != NULL) {
         *pNet_data |= 0x80; // Mark parent node
-        for (child = pObject->child; child != NULL; child = child->next) {
+        for (; child != NULL; child = child->next) {
             size = GetHierarchyNetworkStuff(child, &pNet_data[total_size], pRemaining);
             if (size < 0) {
                 return -1;
@@ -4489,6 +4492,7 @@ int C2_HOOK_FASTCALL GetHierarchyNetworkStuff(tPhysics_object* pObject, tU8* pNe
     return total_size;
 }
 
+#pragma inline_depth(0)
 int C2_HOOK_FASTCALL SizeOfObjectNetworkStuff(tPhysics_joint_type pType) {
     switch (pType & 0xf) {
     case eJoint_none:
@@ -4504,6 +4508,7 @@ int C2_HOOK_FASTCALL SizeOfObjectNetworkStuff(tPhysics_joint_type pType) {
         return 0;
     }
 }
+#pragma inline_depth()
 
 // FUNCTION: CARMA2_HW 0x0049ce60
 int C2_HOOK_FASTCALL GetHierarchyNetworkSize(tPhysics_object* pObject) {

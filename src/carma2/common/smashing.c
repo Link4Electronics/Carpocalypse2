@@ -153,7 +153,7 @@ void C2_HOOK_FASTCALL ReadSmashableInitialSpeed(FILE* pFile, tSmashable_initial_
     /* Random normal velocity (max) */
     pInitial_speed->random_normal_velocity_max = GetAScalar(pFile);
     /* Random spin rate (max) */
-    pInitial_speed->random_spin_rate_max = GetAScalar(pFile);
+    pInitial_speed->random_spin_rate_max = GetAScalar(pFile) * 0.1f;
 }
 
 // FUNCTION: CARMA2_HW 0x004ee5a0
@@ -163,8 +163,8 @@ void C2_HOOK_FASTCALL ReadMinMaxTimeInMilliseconds(FILE* pFile, int* pTimes) {
 
     /* Min time, Max time */
     GetPairOfFloats(pFile, &f1, &f2);
-    pTimes[0] = (int)(1000.f * f1);
-    pTimes[1] = (int)(1000.f * f2);
+    pTimes[0] = (int)(1000.0 * f1);
+    pTimes[1] = (int)(1000.0 * f2);
 }
 
 // FUNCTION: CARMA2_HW 0x004977e0
@@ -348,7 +348,7 @@ void C2_HOOK_FASTCALL MungeGlassFragments(void) {
 
     MungeGlassFragments2(0);
     the_time = GetTotalTime();
-    for (i = 0; i < CARPOCALYPSE2_ASIZE(gRepair_animations); i++) {
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gRepair_animations); i++) {
         animation = &gRepair_animations[i];
         if (animation->field_0x0 != NULL && the_time - animation->field_0x4 >= 150) {
             tCar_crush_smashable_part* smashable = (tCar_crush_smashable_part*)animation->field_0x0;
@@ -771,10 +771,65 @@ CHECK_MODEL:
     return best;
 }
 
-// UNLABELED: CARMA2_HW 0x004eb6a0
+#pragma inline_depth(0)
+// FUNCTION: CARMA2_HW 0x004eb6a0
 void C2_HOOK_FASTCALL FUN_004eb6a0(br_matrix34* pMat) {
-    NOT_IMPLEMENTED();
+    float len;
+    float inv;
+    float x0;
+    float y0;
+    float z0;
+
+    pMat->m[3][0] = 0;
+    pMat->m[3][1] = 0;
+    pMat->m[3][2] = 0;
+    pMat->m[1][0] = FRandomPosNeg(1.0f);
+    pMat->m[1][1] = FRandomPosNeg(1.0f);
+    pMat->m[1][2] = FRandomPosNeg(1.0f);
+    pMat->m[2][0] = FRandomPosNeg(1.0f);
+    pMat->m[2][1] = FRandomPosNeg(1.0f);
+    z0 = FRandomPosNeg(1.0f);
+    len = sqrtf(pMat->m[2][0] * pMat->m[2][0] + pMat->m[2][1] * pMat->m[2][1] + z0 * z0);
+    pMat->m[2][2] = z0;
+    if (len > 2.3841858e-7f) {
+        inv = 1.0 / len;
+        pMat->m[2][0] = pMat->m[2][0] * inv;
+        pMat->m[2][1] = pMat->m[2][1] * inv;
+        pMat->m[2][2] = z0 * inv;
+    } else {
+        pMat->m[2][0] = 1.0f;
+        pMat->m[2][1] = 0;
+        pMat->m[2][2] = 0;
+    }
+    x0 = pMat->m[1][1] * pMat->m[2][2] - pMat->m[2][1] * pMat->m[1][2];
+    y0 = pMat->m[1][2] * pMat->m[2][0] - pMat->m[1][0] * pMat->m[2][2];
+    z0 = pMat->m[1][0] * pMat->m[2][1] - pMat->m[2][0] * pMat->m[1][1];
+    pMat->m[0][0] = x0;
+    pMat->m[0][1] = y0;
+    pMat->m[0][2] = z0;
+    len = sqrtf(x0 * x0 + y0 * y0 + z0 * z0);
+    if (len > 2.3841858e-7f) {
+        inv = 1.0 / len;
+        pMat->m[0][0] = x0 * inv;
+        pMat->m[0][1] = y0 * inv;
+        pMat->m[0][2] = z0 * inv;
+    } else {
+        pMat->m[0][0] = 1.0f;
+        pMat->m[0][1] = 0;
+        pMat->m[0][2] = 0;
+    }
+    x0 = pMat->m[2][1] * pMat->m[0][2] - pMat->m[2][2] * pMat->m[0][1];
+    y0 = pMat->m[2][2] * pMat->m[0][0] - pMat->m[2][0] * pMat->m[0][2];
+    z0 = pMat->m[2][0] * pMat->m[0][1] - pMat->m[2][1] * pMat->m[0][0];
+    pMat->m[1][0] = x0;
+    pMat->m[1][1] = y0;
+    pMat->m[1][2] = z0;
+    len = x0 * x0 + y0 * y0 + z0 * z0;
+    if (len < 0.9) {
+        BrMatrix34Identity(pMat);
+    }
 }
+#pragma inline_depth()
 
 // FUNCTION: CARMA2_HW 0x004eb4a0
 float C2_HOOK_FASTCALL PositionFragment(br_actor* pActor, tSmashable_initial_position_spec* pPosition, int pArg3, int pArg4, int pArg5, br_vector3* pArg6, br_vector3* pArg7, int pArg8) {
