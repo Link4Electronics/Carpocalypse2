@@ -673,11 +673,11 @@ void C2_HOOK_FASTCALL CheckSingleFace(tFace_ref* pFace, br_vector3* ray_pos, br_
     }
 
     if (d > 0.f) {
-        if (-numerator < 0.f || -numerator > 0.003f + d) {
+        if (-numerator < 0.f || -numerator > 0.003 + d) {
             return;
         }
     } else {
-        if ( numerator < 0.f ||  numerator > 0.003f - d) {
+        if ( numerator < 0.f ||  numerator > 0.003 - d) {
             return;
         }
     }
@@ -687,22 +687,31 @@ void C2_HOOK_FASTCALL CheckSingleFace(tFace_ref* pFace, br_vector3* ray_pos, br_
     }
     BrVector3Scale(coll_pos, ray_dir, t);
     BrVector3Accumulate(coll_pos, ray_pos);
-    axis_m = fabs(pFace->normal.v[0]) >= fabs(pFace->normal.v[1]) ? 0 : 1;
+    axis_m = 0;
+    if (fabs(pFace->normal.v[0]) < fabs(pFace->normal.v[1])) {
+        axis_m = 1;
+    }
     if (fabsf(pFace->normal.v[2]) > fabs(pFace->normal.v[axis_m])) {
         axis_m = 2;
     }
-    if (axis_m == 0) {
+    switch (axis_m) {
+    case 0:
         axis_0 = 1;
         axis_1 = 2;
-    } else if (axis_m == 1) {
+        break;
+    case 1:
         axis_0 = 0;
         axis_1 = 2;
-    } else if (axis_m == 2) {
+        break;
+    case 2:
         axis_0 = 0;
         axis_1 = 1;
+        break;
+    default:
+        return;
     }
-    v0i1 = pFace->v[0].v[axis_0];
     v0i2 = pFace->v[0].v[axis_1];
+    v0i1 = pFace->v[0].v[axis_0];
     u0 = pFace->v[1].v[axis_0] - v0i1;
     u1 = pFace->v[1].v[axis_1] - v0i2;
     v0 = pFace->v[2].v[axis_0] - v0i1;
@@ -712,11 +721,11 @@ void C2_HOOK_FASTCALL CheckSingleFace(tFace_ref* pFace, br_vector3* ray_pos, br_
 
     f_d = u0 * v1 - u1 * v0;
     alpha = u0 * v2 - u1 * u2;
-    if (fabsf(alpha) > 1.0001f * fabsf(f_d) || f_d == 0.f || alpha / f_d < -0.0001f) {
+    if (fabsf(alpha) > 1.0001 * fabsf(f_d) || f_d == 0.f || alpha / f_d < -0.0001) {
         return;
     }
     beta = v0 * v2 - v1 * u2;
-    if (fabsf(beta) > 1.0001f * fabsf(f_d) || f_d == 0.f || beta / f_d >= -0.0001f || alpha / f_d - beta / f_d > 1.0001f) {
+    if (fabsf(beta) > 1.0001 * fabsf(f_d) || f_d == 0.f || beta / f_d >= -0.0001 || alpha / f_d - beta / f_d > 1.0001) {
         return;
     }
     *rt = t;

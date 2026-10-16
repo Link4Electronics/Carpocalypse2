@@ -603,6 +603,8 @@ int C2_HOOK_FASTCALL LengthOfChunk(void* pChunk, int pType);
 
 void C2_HOOK_CDECL ARDoSingleVariedSession(int pType, uintptr_t pOwner, int pCount, ...);
 
+void C2_HOOK_FASTCALL ARDoSingleSession(int pType, uintptr_t pOwner, void* pData, tU32 pSize);
+
 void C2_HOOK_CDECL ARAddVariedDataToSession(int pType, uintptr_t pOwner, int pCount, ...);
 
 void C2_HOOK_FASTCALL InitLastDamageArrayEtc(void);

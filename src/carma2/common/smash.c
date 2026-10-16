@@ -204,19 +204,22 @@ void C2_HOOK_FASTCALL RemoveExplosions(tCar_spec* pCar_spec) {
 // KillFragment
 
 void C2_HOOK_FASTCALL AddRepairAnimationToQueue(tCar_spec* pCar_spec, tCar_crush_smashable_part* pSmashable) {
+    tRepair_animation* p;
     int i;
-    int index = -1;
-    int count = (int)CARPOCALYPSE2_ASIZE(gRepair_animations);
+    int index;
 
-    for (i = 0; i < count; i++) {
-        if (gRepair_animations[i].field_0x0 == pSmashable) {
+    index = -1;
+    i = 0;
+    for (p = gRepair_animations; p < &gRepair_animations[CARPOCALYPSE2_ASIZE(gRepair_animations)]; p++, i++) {
+        if (p->field_0x0 == pSmashable) {
             index = i;
             break;
         }
     }
     if (index < 0) {
-        for (i = 0; i < count; i++) {
-            if (gRepair_animations[i].field_0x0 == NULL) {
+        i = 0;
+        for (p = gRepair_animations; p < &gRepair_animations[CARPOCALYPSE2_ASIZE(gRepair_animations)]; p++, i++) {
+            if (p->field_0x0 == NULL) {
                 index = i;
                 break;
             }
@@ -325,6 +328,18 @@ void C2_HOOK_FASTCALL CleanUpSmashStuff(void) {
     } while (i != 0);
 }
 
+// FUNCTION: CARMA2_HW 0x004f6020
+void C2_HOOK_FASTCALL TurnOnSmashDecal(int pIndex) {
+
+    BrActorAdd(gOther_selfs[0], gDecals[pIndex].actor);
+}
+
+// FUNCTION: CARMA2_HW 0x004f6040
+void C2_HOOK_FASTCALL TurnOffSmashDecal(int pIndex) {
+
+    BrActorRemove(gDecals[pIndex].actor);
+}
+
 // FUNCTION: CARMA2_HW 0x004f0310
 void C2_HOOK_FASTCALL DisposeSmashData(tCar_crush_buffer_entry* pCrush_data) {
     int i;
@@ -425,14 +440,28 @@ void C2_HOOK_FASTCALL DisposeSmashData(tCar_crush_buffer_entry* pCrush_data) {
 static intptr_t C2_HOOK_CDECL RepairModels(br_actor* pActor, void* pUser) {
     tUser_crush_data* user_crush = pActor->user;
     tCar_crush_buffer_entry* crush_data;
+    tCar_crush_smashable_part* smashable;
+    int i;
 
     if (user_crush == NULL) {
         return 0;
     }
     crush_data = user_crush->crush_data;
-    if (crush_data != NULL) {
-        TotallyRepairSmash(pUser, crush_data);
+    if (crush_data == NULL) {
+        return 0;
     }
+    smashable = crush_data->smashables;
+    i = 0;
+    if (crush_data->count_smashables <= i) {
+        return 0;
+    }
+    do {
+        if (smashable->field_0x4c != 0) {
+            ActuallyRepairSmash(pUser, smashable, 0);
+        }
+        i++;
+        smashable++;
+    } while (i < crush_data->count_smashables);
     return 0;
 }
 

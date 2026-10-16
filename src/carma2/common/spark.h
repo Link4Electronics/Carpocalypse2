@@ -212,6 +212,8 @@ int C2_HOOK_FASTCALL IsCarSmoking(tCar_spec* pCar);
 
 // ClearSplashReplay
 
+void C2_HOOK_FASTCALL ClearSplashReplay(uintptr_t pObject);
+
 // GetSplashIndex
 
 // ClearSplashes

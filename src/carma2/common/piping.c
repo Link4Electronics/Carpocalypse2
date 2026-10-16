@@ -407,6 +407,17 @@ int C2_HOOK_FASTCALL LengthOfChunk(void* pChunk, int pType) {
     }
 }
 
+// FUNCTION: CARMA2_HW 0x00402ab0
+void C2_HOOK_FASTCALL ARDoSingleSession(int pType, uintptr_t pOwner, void* pData, tU32 pSize) {
+
+    if (gPipe_buffer_start == NULL || gPed_676914 || !gProgram_state.racing) {
+        return;
+    }
+    ARStartPipingSession((tPipe_chunk_type)pType);
+    ARAddDataToSession(pType, pOwner, pData, pSize);
+    EndPipingSession2(1);
+}
+
 // FUNCTION: CARMA2_HW 0x00402bd0
 void C2_HOOK_CDECL ARDoSingleVariedSession(int pType, uintptr_t pOwner, int pCount, ...) {
     char buffer[5000];
@@ -1107,6 +1118,30 @@ void C2_HOOK_FASTCALL PipeSingleSmashTextureChange(tCar_spec* pCar_spec, br_mate
         SIZE_OFFSET_PIPING(tPipe_smash_texture_change, car_spec), pCar_spec,
         SIZE_OFFSET_PIPING(tPipe_smash_texture_change, texture1), pMaterial->colour_map,
         SIZE_OFFSET_PIPING(tPipe_smash_texture_change, texture2), pTexture);
+}
+
+// FUNCTION: CARMA2_HW 0x004c8980
+void C2_HOOK_FASTCALL PipeSingleSmashRemoveFaces(br_model* pModel, int pCount, const void* pFaces, br_material* pMaterial) {
+#pragma inline_depth(0)
+    tU8* crush_space;
+    br_model* model;
+    tU32 size;
+
+    crush_space = (tU8*)gCrush_space;
+    if (crush_space == NULL) {
+        return;
+    }
+    model = pModel;
+    size = (tU32)pCount * 8u;
+    *(int*)(crush_space + 4) = pCount;
+    *(br_material**)crush_space = pMaterial;
+    memcpy(crush_space + 8, pFaces, size);
+    size += 8;
+    if (size > CRUSH_SPACE_SIZE) {
+        FatalError(kFatalError_ChunkIsTooLargeToPipe);
+    }
+    ARDoSingleSession(34, (uintptr_t)model, crush_space, size);
+#pragma inline_depth()
 }
 
 // FUNCTION: CARMA2_HW 0x004c8de0
