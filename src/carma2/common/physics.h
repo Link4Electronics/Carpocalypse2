@@ -561,7 +561,7 @@ void C2_HOOK_FASTCALL InternalPrepareObject(tPhysics_object* pObject);
 
 void C2_HOOK_FAKE_THISCALL MoveJointedObject(tPhysics_object* pObject, undefined4 pArg2, float pDelta_time);
 
-void C2_HOOK_FASTCALL MergeBoundsIntoParent(tPhysics_object* pObject, tPhysics_object* pParent);
+void C2_HOOK_FASTCALL MergeBoundsIntoParent(tPhysics_object* pObject, br_bounds3* pBox);
 
 void C2_HOOK_FASTCALL MakeObjectListDoSomething(tPhysics_object* pObject);
 

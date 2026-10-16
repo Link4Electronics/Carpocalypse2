@@ -282,6 +282,10 @@ extern intptr_t C2_HOOK_FASTCALL RepairAllSmashes(tCar_spec* pCar_spec);
 
 // TurnOffSmashDecal
 
+void C2_HOOK_FASTCALL TurnOnSmashDecal(int pIndex);
+
+void C2_HOOK_FASTCALL TurnOffSmashDecal(int pIndex);
+
 // ChangeSmashTexture
 
 void C2_HOOK_FASTCALL DoNetSmash(tQueued_net_smash* pSmash);

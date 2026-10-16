@@ -1890,15 +1890,18 @@ int C2_HOOK_FASTCALL CollectPlacementFaces(tPhysics_object* pObject, tPlacement_
     return count;
 }
 
+#pragma auto_inline(off)
+#pragma inline_depth(0)
 // Pair overlap test used by the sensible-place machinery: rejects trivially
 // disjoint pairs (self, parent links, flags, bounds), runs the shape worker
 // both directions, then recurses over p2's children. Returns 1 on overlap.
+// FUNCTION: CARMA2_HW 0x004293c0
 int C2_HOOK_FASTCALL TestPairOverlap(tPhysics_object* pObj1, tPhysics_object* pObj2) {
     tPhysics_shape* shape1;
     tPhysics_shape* shape2;
     tPhysics_object* child;
 
-    if (pObj1 == pObj2) {
+    if (pObj2 == pObj1) {
         return 0;
     }
     if (pObj1->parent == pObj2) {
@@ -1912,7 +1915,7 @@ int C2_HOOK_FASTCALL TestPairOverlap(tPhysics_object* pObj1, tPhysics_object* pO
     if (!FlagsAreGo(pObj1, pObj2)) {
         return 0;
     }
-    if (!BoundsOverlapTest__finteray(&pObj2->field_0xf4, &pObj1->field_0xf4)) {
+    if (!BoundsOverlapTest__finteray(&pObj1->field_0xf4, &pObj2->field_0xf4)) {
         return 0;
     }
     if (shape1 == NULL) {
@@ -1936,6 +1939,7 @@ int C2_HOOK_FASTCALL TestPairOverlap(tPhysics_object* pObj1, tPhysics_object* pO
     }
     return 0;
 }
+#pragma inline_depth()
 
 #pragma auto_inline(off)
 #pragma inline_depth(0)
@@ -1943,6 +1947,7 @@ int C2_HOOK_FASTCALL TestPairOverlap(tPhysics_object* pObj1, tPhysics_object* pO
 int C2_HOOK_FASTCALL TestForObjectInSensiblePlace(tPhysics_object* pCollision_info_1, tPhysics_object* pCollision_info_2, br_vector3* pVec3, tWorld_callbacks* pCar_callbacks) {
     tU8 buf[0x300];
     tPlacement_face_buf* faces;
+    tPhysics_object* p1;
     tPhysics_object* p2;
     tPhysics_object* child;
     tPhysics_shape* shape1;
@@ -1956,6 +1961,8 @@ int C2_HOOK_FASTCALL TestForObjectInSensiblePlace(tPhysics_object* pCollision_in
     int found;
 
     gSensible_place_blocker = NULL;
+    p1 = pCollision_info_1;
+    p2 = pCollision_info_2;
     faces = (tPlacement_face_buf*)buf;
     GetNewBoundingBox(&pCollision_info_1->field_0xf4, &pCollision_info_1->bb1, &pCollision_info_1->transform_matrix);
     GetFacesInBox(pCollision_info_1, pCar_callbacks);
@@ -1976,15 +1983,15 @@ int C2_HOOK_FASTCALL TestForObjectInSensiblePlace(tPhysics_object* pCollision_in
                 i++;
             } while (--count != 0);
             len = sqrtf(x * x + y * y + z * z);
-            if (len <= 0.f) {
-                x = 1.f;
-                y = 0.f;
-                z = 0.f;
-            } else {
+            if (len != 0.f) {
                 len = 1.0 / len;
                 x = x * len * pVec3->v[0];
                 y = y * len * pVec3->v[1];
                 z = z * len * pVec3->v[2];
+            } else {
+                x = 1.f;
+                y = 0.f;
+                z = 0.f;
             }
         }
         dir.v[0] = x;
@@ -1993,11 +2000,9 @@ int C2_HOOK_FASTCALL TestForObjectInSensiblePlace(tPhysics_object* pCollision_in
         BrMatrix34ApplyV(pVec3, &dir, &pCollision_info_1->transform_matrix);
         return 0;
     }
-    p2 = pCollision_info_2;
     if (p2 == NULL) {
         return -1;
     } {
-        tPhysics_object* p1 = pCollision_info_1;
         do {
             if (p2 == p1) {
                 continue;
@@ -2011,23 +2016,22 @@ int C2_HOOK_FASTCALL TestForObjectInSensiblePlace(tPhysics_object* pCollision_in
             if (!FlagsAreGo(p1, p2)) {
                 continue;
             }
-            if (!BoundsOverlapTest__finteray(&p2->field_0xf4, &p1->field_0xf4)) {
+            if (!BoundsOverlapTest__finteray(&p1->field_0xf4, &p2->field_0xf4)) {
                 continue;
             }
             shape1 = p1->shape;
             shape2 = p2->shape;
             found = 0;
-            if (shape1 != NULL) {
-                /* NOTE: same degenerate chain walk as TestObjectOverlap (see
-                   above): only the first shape1 is exercised. */
-                for (s2 = shape2; s2 != NULL; s2 = s2->common.next) {
-                    if (TestShapeOverlap(p1, p2, shape1, s2)
-                        || TestShapeOverlap(p2, p1, s2, shape1)) {
+            for (s2 = shape2; s2 != NULL; s2 = s2->common.next) {
+                for (s1 = shape1; s1 != NULL; s1 = s1->common.next) {
+                    if (TestShapeOverlap(p1, p2, s1, s2)
+                        || TestShapeOverlap(p2, p1, s2, s1)) {
                         found = 1;
                         break;
                     }
                 }
-                for (s1 = shape1->common.next; s1 != NULL; s1 = s1->common.next) {
+                if (found) {
+                    break;
                 }
             }
             if (!found) {
@@ -2045,16 +2049,19 @@ int C2_HOOK_FASTCALL TestForObjectInSensiblePlace(tPhysics_object* pCollision_in
             pVec3->v[1] = p1->field_0x10c.max.v[1] + p1->field_0x10c.min.v[1];
             pVec3->v[2] = p1->field_0x10c.max.v[2] + p1->field_0x10c.min.v[2];
             pVec3->v[0] -= p2->field_0x10c.min.v[0];
-            pVec3->v[0] -= p2->field_0x10c.max.v[0];
             pVec3->v[1] -= p2->field_0x10c.min.v[1];
-            pVec3->v[1] -= p2->field_0x10c.max.v[1];
             pVec3->v[2] -= p2->field_0x10c.min.v[2];
+            pVec3->v[0] -= p2->field_0x10c.max.v[0];
+            pVec3->v[1] -= p2->field_0x10c.max.v[1];
             pVec3->v[2] -= p2->field_0x10c.max.v[2];
             len = sqrtf(BrVector3Dot(pVec3, pVec3));
-            if (len <= 0.f) {
-                BrVector3Set(pVec3, 1.f, 0.f, 0.f);
+            if (len != 0.f) {
+                float inv = 1.0 / len;
+                pVec3->v[0] *= inv;
+                pVec3->v[1] *= inv;
+                pVec3->v[2] *= inv;
             } else {
-                BrVector3InvScale(pVec3, pVec3, len);
+                BrVector3Set(pVec3, 1.f, 0.f, 0.f);
             }
             gSensible_place_blocker = p2;
             return 0;
@@ -2193,27 +2200,30 @@ void C2_HOOK_FASTCALL InternalPrepareObject(tPhysics_object* pObject) {
     tPhysics_object* parent;
     int i;
     int j;
-    int differ;
 
     if (pObject->M == 0.f) {
         pObject->M = 0.01f;
         BrVector3SetFloat(&pObject->I, 0.01f, 0.01f, 0.01f);
     }
-    pObject->flags &= ~0x1200;
+    {
+        int f = pObject->flags;
+        f &= ~0x1200;
+        pObject->flags = f;
+    }
     pObject->field_0x1e0[0] = pObject->disable_move_rotate;
     pObject->field_0x1de = 0;
     pObject->collision_flag = 0;
     pObject->field_0x1dc = 0;
-    memset(&pObject->field_0x1e0[4], 0, 4);
+    *(int*)&pObject->field_0x1e0[4] = 0;
     pObject->field_0x21c = 1.f;
     pObject->field183_0x1d8 = pObject;
     pObject->field_0x218 = 0;
 
     BrMatrix34TApplyV(&pObject->velocity_car_space, &pObject->v, &pObject->transform_matrix);
+    parent = pObject->parent;
     pObject->field_0x1b4.v[0] = pObject->v.v[0];
     pObject->field_0x1b4.v[1] = pObject->v.v[1];
     pObject->field_0x1b4.v[2] = pObject->v.v[2];
-    parent = pObject->parent;
     pObject->field_0x1cc.v[0] = pObject->omega.v[0];
     pObject->field_0x1cc.v[1] = pObject->omega.v[1];
     pObject->field_0x1cc.v[2] = pObject->omega.v[2];
@@ -2221,21 +2231,22 @@ void C2_HOOK_FASTCALL InternalPrepareObject(tPhysics_object* pObject) {
     if (parent != NULL) {
         pObject->disable_move_rotate = parent->disable_move_rotate;
     }
-    if (pObject->disable_move_rotate == 0 && pObject->field_0x1df != 0) {
-        pObject->I.v[0] *= 50.f;
-        pObject->I.v[1] *= 50.f;
-        pObject->I.v[2] *= 50.f;
-        pObject->field_0x21c *= 50.f;
+    if (pObject->disable_move_rotate == 0) {
+        if (pObject->field_0x1df != 0) {
+            pObject->I.v[0] *= 50.f;
+            pObject->I.v[1] *= 50.f;
+            pObject->I.v[2] *= 50.f;
+            pObject->field_0x21c *= 50.f;
+        }
     }
 
-    if (pObject->disable_move_rotate != 0 && pObject->field_0xf0 != 2) {
+    if (pObject->disable_move_rotate & (tU8)(pObject->field_0xf0 != 2)) {
         BrMatrix34Copy(&pObject->actor->t.t.mat, &pObject->transform_matrix);
         for (child = pObject->child; child != NULL; child = child->next) {
             InternalPrepareObject(child);
         }
         if (pObject->parent == NULL) {
-            /* TODO: 0x4b9ce0 merges bb1 transformed by tm and by the actor
-             * matrix into field_0xf4/field_0x10c (feeds contact broad phase). */
+            MergeBoundsIntoParent(pObject, NULL);
         }
         return;
     }
@@ -2251,23 +2262,25 @@ void C2_HOOK_FASTCALL InternalPrepareObject(tPhysics_object* pObject) {
         dy = pObject->actor->t.t.mat.m[3][1] - pObject->transform_matrix.m[3][1];
         dz = pObject->actor->t.t.mat.m[3][2] - pObject->transform_matrix.m[3][2];
         d2 = dx * dx + dy * dy + dz * dz;
-        if (d2 > 1.f) {
+        if (d2 > 1.0) {
             PhysicsWarning("Stupid trial position");
             BrMatrix34Copy(&pObject->transform_matrix, &pObject->actor->t.t.mat);
         }
-        differ = 0;
-        for (j = 3; j >= 1 && !differ; j--) {
+        for (j = 3; j >= 0; j--) {
             for (i = 0; i < 3; i++) {
                 if (pObject->transform_matrix.m[j][i] != pObject->actor->t.t.mat.m[j][i]) {
-                    pObject->disable_move_rotate = 0;
-                    differ = 1;
-                    break;
+                    goto differ_found;
                 }
             }
         }
+        goto differ_done;
+differ_found:
+        pObject->disable_move_rotate = 0;
+differ_done:
         for (child = pObject->child; child != NULL; child = child->next) {
             InternalPrepareObject(child);
         }
+        MergeBoundsIntoParent(pObject, NULL);
         return;
     }
 
@@ -2286,18 +2299,19 @@ void C2_HOOK_FASTCALL InternalPrepareObject(tPhysics_object* pObject) {
     MergeBoundsIntoParent(pObject, NULL);
 }
 
-/* 0x4b9ce0: transform bb1 by the object's actor matrix into field_0xf4, then
- * merge (grow) the world-space field_0xf4 box of this object and every child
- * into the box rooted at pParent (grown outward by the object's radius). When
- * pParent is NULL the merge target is the object's own field_0x10c box. */
-void C2_HOOK_FASTCALL MergeBoundsIntoParent(tPhysics_object* pObject, tPhysics_object* pParent) {
+/* 0x4b9ce0: transform bb1 by the object's transform matrix into field_0xf4,
+ * then merge (grow) the actor-matrix box into it (padding by 0.0025); copy the
+ * result to field_0x10c, recurse into children with the 0x10c box, and either
+ * merge into the parent box or track the global x extents. */
+// FUNCTION: CARMA2_HW 0x004b9ce0
+void C2_HOOK_FASTCALL MergeBoundsIntoParent(tPhysics_object* pObject, br_bounds3* pBox) {
     tPhysics_object* child;
     br_bounds3 local_box;
     int i;
 
-    GetNewBoundingBox(&pObject->field_0xf4, &pObject->bb1, &pObject->actor->t.t.mat);
+    GetNewBoundingBox(&pObject->field_0xf4, &pObject->bb1, &pObject->transform_matrix);
 
-    GetNewBoundingBox(&local_box, &pObject->bb1, &pObject->transform_matrix);
+    GetNewBoundingBox(&local_box, &pObject->bb1, &pObject->actor->t.t.mat);
     for (i = 0; i < 3; i++) {
         if (pObject->field_0xf4.min.v[i] > local_box.min.v[i]) {
             pObject->field_0xf4.min.v[i] = local_box.min.v[i];
@@ -2305,6 +2319,8 @@ void C2_HOOK_FASTCALL MergeBoundsIntoParent(tPhysics_object* pObject, tPhysics_o
         if (pObject->field_0xf4.max.v[i] < local_box.max.v[i]) {
             pObject->field_0xf4.max.v[i] = local_box.max.v[i];
         }
+        pObject->field_0xf4.min.v[i] -= 0.0025;
+        pObject->field_0xf4.max.v[i] += 0.0025;
     }
 
     pObject->field_0x10c = pObject->field_0xf4;
@@ -2313,14 +2329,21 @@ void C2_HOOK_FASTCALL MergeBoundsIntoParent(tPhysics_object* pObject, tPhysics_o
         MergeBoundsIntoParent(child, &pObject->field_0x10c);
     }
 
-    if (pParent != NULL) {
+    if (pBox != NULL) {
         for (i = 0; i < 3; i++) {
-            if (pObject->field_0x10c.min.v[i] - pObject->radius < pParent->field_0xf4.min.v[i]) {
-                pParent->field_0xf4.min.v[i] = pObject->field_0x10c.min.v[i] - pObject->radius;
+            if (pObject->field_0x10c.min.v[i] < pBox->min.v[i]) {
+                pBox->min.v[i] = pObject->field_0x10c.min.v[i];
             }
-            if (pObject->field_0x10c.max.v[i] + pObject->radius > pParent->field_0xf4.max.v[i]) {
-                pParent->field_0xf4.max.v[i] = pObject->field_0x10c.max.v[i] + pObject->radius;
+            if (pObject->field_0x10c.max.v[i] > pBox->max.v[i]) {
+                pBox->max.v[i] = pObject->field_0x10c.max.v[i];
             }
+        }
+    } else {
+        if (gFLOAT_00692dd0 <= pObject->field_0x10c.max.v[0] - pObject->transform_matrix.m[3][0]) {
+            gFLOAT_00692dd0 = pObject->field_0x10c.max.v[0] - pObject->transform_matrix.m[3][0];
+        }
+        if (gFLOAT_00692dd4 >= pObject->field_0x10c.min.v[0] - pObject->transform_matrix.m[3][0]) {
+            gFLOAT_00692dd4 = pObject->field_0x10c.min.v[0] - pObject->transform_matrix.m[3][0];
         }
     }
 }
@@ -3194,9 +3217,9 @@ void C2_HOOK_FASTCALL ApplyWaterOmegaBrake(tPhysics_object* pObject, const br_ve
     br_vector3 om;
 
     b0 = (pV->v[0] * 0.0210039914f) / pObject->I.v[0];
+    om = pObject->omega;
     b1 = (pV->v[1] * 0.0210039914f) / pObject->I.v[1];
     b2 = (pV->v[2] * 0.0210039914f) / pObject->I.v[2];
-    om = pObject->omega;
 
     pObject->omega.v[0] -= b0;
     pObject->omega.v[1] -= b1;
@@ -3357,11 +3380,10 @@ int C2_HOOK_FASTCALL AddDoubleTorqueToMatrix(tPhysics_object* pObject) {
     int i;
     int new1df;
 
-    acc = 1;
     obj = pObject;
+    acc = 1;
     if (obj != NULL) {
     for (; obj != NULL; obj = obj->next) {
-        new1df = 0;
         if (obj->field_0x21c != 1.0f) {
             obj->I.v[0] /= obj->field_0x21c;
             obj->I.v[1] /= obj->field_0x21c;
@@ -3373,11 +3395,10 @@ int C2_HOOK_FASTCALL AddDoubleTorqueToMatrix(tPhysics_object* pObject) {
         }
         {
             int f = obj->flags;
-            int g = f;
-            g = (int)(((tU32)g >> 1) & 0x100);
-            f = (f & ~0x100) | g;
+            f = (f & ~0x100) | ((f >> 1) & 0x100);
             obj->flags = f;
         }
+        new1df = 0;
         if (obj->disable_move_rotate == 0) {
             if (obj->field_0x1df != 0 && obj->field183_0x1d8 == obj) {
                 obj->field_0x1df = 0;
@@ -3400,9 +3421,9 @@ int C2_HOOK_FASTCALL AddDoubleTorqueToMatrix(tPhysics_object* pObject) {
                 d2 = -(obj->field_0x1b4.v[0] * nx + obj->field_0x1b4.v[1] * ny + obj->field_0x1b4.v[2] * nz);
                 if (obj->field_0x1df == 0) {
                     if (d1 < 0.012f && (d1 - d2) > 0.9f * len) {
-                        bx = obj->cmpos.v[2] * obj->omega.v[1] - obj->cmpos.v[1] * obj->omega.v[2] + obj->velocity_car_space.v[0];
-                        by = obj->cmpos.v[0] * obj->omega.v[2] - obj->cmpos.v[2] * obj->omega.v[0] + obj->velocity_car_space.v[1];
-                        bz = obj->cmpos.v[1] * obj->omega.v[0] - obj->cmpos.v[0] * obj->omega.v[1] + obj->velocity_car_space.v[2];
+                        bx = obj->omega.v[1] * obj->cmpos.v[2] - obj->omega.v[2] * obj->cmpos.v[1] + obj->velocity_car_space.v[0];
+                        by = obj->omega.v[2] * obj->cmpos.v[0] - obj->omega.v[0] * obj->cmpos.v[2] + obj->velocity_car_space.v[1];
+                        bz = obj->omega.v[0] * obj->cmpos.v[1] - obj->omega.v[1] * obj->cmpos.v[0] + obj->velocity_car_space.v[2];
                         for (i = 0; i < 8; i++) {
                             cx = (i & 2) ? obj->bb1.min.v[0] : obj->bb1.max.v[0];
                             cy = (i & 1) ? obj->bb1.min.v[1] : obj->bb1.max.v[1];
@@ -3419,10 +3440,10 @@ int C2_HOOK_FASTCALL AddDoubleTorqueToMatrix(tPhysics_object* pObject) {
                     }
                 }
                 if (obj->physics_joint2 == NULL || obj->collision_flag != 0 || obj->transform_matrix.m[1][1] > 0.999) {
+                    new1df = 1;
                     BrVector3SetFloat(&obj->v, 0.0f, 0.0f, 0.0f);
                     BrVector3SetFloat(&obj->omega, 0.0f, 0.0f, 0.0f);
                     BrVector3SetFloat(&obj->rotate_omega, 0.0f, 0.0f, 0.0f);
-                    new1df = 1;
                 }
             }
         }
@@ -3597,8 +3618,8 @@ void C2_HOOK_FASTCALL RotateObjectFirstOrder(void* pContact, tWorld_callbacks* p
     obj2 = contact->object2;
     if (obj2 != NULL && contact->type != 0xe) {
         br_scalar         imp0 = contact->impulse;
-        obj2->collision_flag |= 2;
         obj1->collision_flag |= 2;
+        obj2->collision_flag |= 2;
         t1.v[0] = (obj1->omega.v[1] * contact->r1.v[2] - obj1->omega.v[2] * contact->r1.v[1]) + obj1->velocity_car_space.v[0];
         t1.v[1] = (obj1->omega.v[2] * contact->r1.v[0] - obj1->omega.v[0] * contact->r1.v[2]) + obj1->velocity_car_space.v[1];
         t1.v[2] = (obj1->omega.v[0] * contact->r1.v[1] - obj1->omega.v[1] * contact->r1.v[0]) + obj1->velocity_car_space.v[2];
@@ -3800,7 +3821,7 @@ void C2_HOOK_FASTCALL CapOmega(tPhysics_object* pObject) {
     br_scalar t;
 
     t = (pObject->omega.v[0] * pObject->omega.v[0] + pObject->omega.v[1] * pObject->omega.v[1] + pObject->omega.v[2] * pObject->omega.v[2]) * 0.0016f;
-    if (!(t >= 2.4649f)) {
+    if (!(t > 2.4649f)) {
         return;
     }
     t = sqrtf(t) * 0.6369f;
@@ -3854,7 +3875,7 @@ void C2_HOOK_FASTCALL TranslateObject(tPhysics_object* pObject) {
                     ip++;
                     n--;
                 } while (n != 0);
-                denom = 1.0 / *iPtr + (tmpPtr->v[0] * axis.v[0] + tmpPtr->v[1] * axis.v[1] + tmpPtr->v[2] * axis.v[2]);
+                denom = 1.0 / *iPtr + (tmpPtr->v[0] * axis.v[0] + tmpPtr->v[2] * axis.v[2] + tmpPtr->v[1] * axis.v[1]);
                 t = num / denom;
                 sum_sq += t * t;
                 *impPtr = t;
@@ -3882,17 +3903,15 @@ void C2_HOOK_FASTCALL TranslateObject(tPhysics_object* pObject) {
 
     joint = pObject->physics_joint2;
     if (joint != NULL && joint->friction != 0.0f) {
-        float* iPtr2 = &pObject->I.v[0];
-        float* oPtr2 = &pObject->omega.v[0];
+        float* b = &pObject->I.v[0];
         friction = joint->friction * 0.04f;
         friction_sq = friction * friction;
         sum_sq = 0.0f;
         for (i = 0; i < 3; i++) {
-            float u = *iPtr2 * *oPtr2;
+            float u = b[0] * b[27];
             sum_sq += u * u;
             imp[i] = u;
-            iPtr2++;
-            oPtr2++;
+            b++;
         }
         if (sum_sq > friction_sq) {
             scale = sqrtf(friction_sq / sum_sq);

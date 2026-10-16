@@ -662,13 +662,11 @@ void C2_HOOK_FASTCALL ActuallyRepairSmash(tCar_spec* pCar_spec, tCar_crush_smash
 
 // FUNCTION: CARMA2_HW 0x004ef9c0
 void C2_HOOK_FASTCALL TotallyRepairSmash(tCar_spec *pCar_Spec, tCar_crush_buffer_entry *pSmash_data) {
+    tCar_crush_smashable_part* smashable = pSmash_data->smashables;
     int i;
 
-    for (i = 0; i < pSmash_data->count_smashables; i++) {
-        tCar_crush_smashable_part* smashable;
-
-        smashable = &pSmash_data->smashables[i];
-        if (smashable->field_0x4c) {
+    for (i = 0; i < pSmash_data->count_smashables; i++, smashable++) {
+        if (smashable->field_0x4c != 0) {
             ActuallyRepairSmash(pCar_Spec, smashable, 0);
         }
     }

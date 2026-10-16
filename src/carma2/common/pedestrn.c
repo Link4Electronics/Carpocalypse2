@@ -743,7 +743,7 @@ void C2_HOOK_FASTCALL InitBoner(tPedForms_vtable* pTable) {
 void C2_HOOK_FASTCALL DRVector3SafeCross(br_vector3* pDest, const br_vector3* pA, const br_vector3* pB) {
 
     BrVector3Cross(pDest, pA, pB);
-    if (fabsf(pDest->v[0]) < PED_SCALAR_EPSILON && fabsf(pDest->v[0]) < PED_SCALAR_EPSILON && fabsf(pDest->v[2]) < PED_SCALAR_EPSILON) {
+    if (fabsf(pDest->v[0]) < PED_SCALAR_EPSILON && fabsf(pDest->v[1]) < PED_SCALAR_EPSILON && fabsf(pDest->v[2]) < PED_SCALAR_EPSILON) {
         if (fabsf(pA->v[0]) <= fabsf(pA->v[1]) && fabsf(pA->v[0]) <= fabsf(pA->v[2])) {
             BrVector3Cross(pDest, pA, &g_Ped_x_unit_vector);
         } else if (fabsf(pA->v[1]) <= fabsf(pA->v[0]) && fabsf(pA->v[1]) <= fabsf(pA->v[2])) {

@@ -192,8 +192,8 @@ void C2_HOOK_FASTCALL GetModelTextureArea(br_model* pModel, int* pArea_1, int* p
                     max_y = v11g->vertices[vertex_i].map.v[1];
                 }
             }
-            dy = (int)(max_y - min_y + 0.9f);
-            dx = (int)(max_x - min_x + 0.9f);
+            dy = (int)(max_y - min_y + 0.9);
+            dx = (int)(max_x - min_x + 0.9);
             *pArea_1 += dx * dy;
             *pArea_2 += dx * dy;
         }

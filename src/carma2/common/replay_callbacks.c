@@ -6,6 +6,7 @@
 #include "piping.h"
 #include "powerups.h"
 #include "replay.h"
+#include "smash.h"
 #include "sound.h"
 #include "spark.h"
 #include "pedestrn.h"
@@ -879,23 +880,17 @@ void C2_HOOK_FASTCALL ApplySpark(tPipe_chunk** pChunk) {
 
 // FUNCTION: CARMA2_HW 0x004f87b0
 void C2_HOOK_FASTCALL ResetShrapnel(void) {
-    tShrapnel* rec;
-    tU32 i = 0;
+    int i;
 
-    if (gShrapnel_flags != 0) {
-        rec = gShrapnel;
-        do {
-            if ((1 << i) & gShrapnel_flags) {
-                br_actor* elem = rec->actor;
-                if (*(void**)((tU8*)elem + 0xc) != 0) {
-                    BrActorRemove(elem);
-                }
-            }
-            rec++;
-            i++;
-        } while ((tS32)(tU32)(tU8*)rec < (tS32)(tU32)(tU8*)gSmoke_column);
-        gShrapnel_flags = 0;
+    if (gShrapnel_flags == 0) {
+        return;
     }
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gShrapnel); i++) {
+        if (((1 << i) & gShrapnel_flags) != 0 && gShrapnel[i].actor->parent != NULL) {
+            BrActorRemove(gShrapnel[i].actor);
+        }
+    }
+    gShrapnel_flags = 0;
 }
 
 // FUNCTION: CARMA2_HW 0x004c9160
@@ -1291,16 +1286,14 @@ void C2_HOOK_FASTCALL UndoSmashRemoveFaces(tPipe_chunk** pChunk, tPipe_chunk* pP
 
 // FUNCTION: CARMA2_HW 0x004c9a20
 void C2_HOOK_FASTCALL ApplySmashDecal(tPipe_chunk** pChunk) {
-    tPipe_chunk_smash_decal* chunk = (tPipe_chunk_smash_decal*)*pChunk;
 
-    return WorkerSmashDecal(chunk->field_0x0);
+    TurnOnSmashDecal(*(int*)*pChunk);
 }
 
 // FUNCTION: CARMA2_HW 0x004ca150
 void C2_HOOK_FASTCALL UndoSmashDecal(tPipe_chunk** pChunk, tPipe_chunk* pPrev_chunk) {
-    tPipe_chunk_smash_decal* chunk = (tPipe_chunk_smash_decal*)*pChunk;
 
-    return WorkerSmashDecalUndo(chunk->field_0x0);
+    TurnOffSmashDecal(*(int*)*pChunk);
 }
 
 // FUNCTION: CARMA2_HW 0x004c9a30
