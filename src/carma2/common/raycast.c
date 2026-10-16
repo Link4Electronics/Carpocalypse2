@@ -421,7 +421,7 @@ br_scalar C2_HOOK_FASTCALL FindYVerticallyBelow(br_vector3* pPosition) {
     track_spec = &gProgram_state.track_spec;
     XZToColumnXZ(&cx, &cz, pPosition->v[0], pPosition->v[2], track_spec);
     gHighest_y_below = BR_SCALAR_MIN;
-    BrVector3Copy(&gY_picking_camera->t.t.translate.t, pPosition);
+    gY_picking_camera->t.t.translate.t = *pPosition;
     for (x = MAX(cx - 1, 0); x < MIN(cx + 2, track_spec->ncolumns_x); x++) {
         for (z = MAX(cz - 1, 0); z < MIN(cz + 2, track_spec->ncolumns_z); z++) {
             if (track_spec->columns[z][x].actor_0x0 != NULL) {
@@ -438,14 +438,12 @@ br_scalar C2_HOOK_FASTCALL FindYVerticallyBelow2(br_vector3* pCast_point) {
     int number_of_attempts;
     br_vector3 cast_point;
 
+    number_of_attempts = 0;
     BrVector3Copy(&cast_point, pCast_point);
-    for (number_of_attempts = 0; number_of_attempts <= 10; number_of_attempts += 1) {
+    do {
         result = FindYVerticallyBelow(&cast_point);
         cast_point.v[1] += .2f;
-        if (result >= -100.f) {
-            return result;
-        }
-    }
+    } while (result < -100.f && number_of_attempts++ < 10);
     return result;
 }
 
@@ -485,7 +483,7 @@ void C2_HOOK_FASTCALL FindBestY(br_vector3* pPosition, br_actor* pWorld, br_scal
     gLowest_y_above = 30000.0;
     gHighest_y_below = -30000.0;
     gCurrent_y = pPosition->v[1] + 1.192093e-5f;
-    BrVector3Copy(&gY_picking_camera->t.t.translate.t, pPosition);
+    gY_picking_camera->t.t.translate.t = *pPosition;
     gY_picking_camera->t.t.mat.m[3][1] += pStarting_height;
     DRScenePick2D(pWorld, gY_picking_camera, FindHighestCallBack__raycast, 0);
     *pNearest_y_above = gLowest_y_above;

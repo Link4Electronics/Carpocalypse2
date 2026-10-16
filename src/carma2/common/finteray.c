@@ -312,26 +312,7 @@ int C2_HOOK_FASTCALL PickBoundsTestRay__finteray(br_bounds* b, br_vector3* rp, b
     float t;
 
     for (i = 0; i < 3; i++) {
-        if (rd->v[i] >= -2.3841858e-7f) {
-            if (rd->v[i] <= 2.3841858e-7f) {
-                if (b->max.v[i] < rp->v[i] || rp->v[i] < b->min.v[i]) {
-                    return 0;
-                }
-            } else {
-                s = (-1.0f / (rd->v[i] * 1.0f)) * (rp->v[i] - b->max.v[i]);
-                if (s < BR_SCALAR_MIN) {
-                    t_far = BR_SCALAR_MIN;
-                } else if (s < t_far) {
-                    t_far = s;
-                }
-                t = (-1.0f / (rd->v[i] * 1.0f)) * (rp->v[i] - b->min.v[i]);
-                if (t > BR_SCALAR_MAX) {
-                    t_near = BR_SCALAR_MAX;
-                } else if (t > t_near) {
-                    t_near = t;
-                }
-            }
-        } else {
+        if (rd->v[i] < -2.3841858e-7f) {
             s = (-1.0f / (rd->v[i] * 1.0f)) * (rp->v[i] - b->max.v[i]);
             if (s > BR_SCALAR_MAX) {
                 t_near = BR_SCALAR_MAX;
@@ -344,14 +325,29 @@ int C2_HOOK_FASTCALL PickBoundsTestRay__finteray(br_bounds* b, br_vector3* rp, b
             } else if (t < t_far) {
                 t_far = t;
             }
+        } else if (rd->v[i] > 2.3841858e-7f) {
+            s = (-1.0f / (rd->v[i] * 1.0f)) * (rp->v[i] - b->max.v[i]);
+            if (s < BR_SCALAR_MIN) {
+                t_far = BR_SCALAR_MIN;
+            } else if (s < t_far) {
+                t_far = s;
+            }
+            t = (-1.0f / (rd->v[i] * 1.0f)) * (rp->v[i] - b->min.v[i]);
+            if (t > BR_SCALAR_MAX) {
+                t_near = BR_SCALAR_MAX;
+            } else if (t > t_near) {
+                t_near = t;
+            }
+        } else if (rp->v[i] > b->max.v[i] || rp->v[i] < b->min.v[i]) {
+            return 0;
         }
     }
-    if (t_far < t_near) {
-        return 0;
+    if (t_near <= t_far) {
+        *new_t_near = t_near;
+        *new_t_far = t_far;
+        return 1;
     }
-    *new_t_near = t_near;
-    *new_t_far = t_far;
-    return 1;
+    return 0;
 }
 
 void C2_HOOK_FASTCALL DRVector2AccumulateScale__finteray(br_vector2* a, const br_vector2* b, br_scalar s) {
