@@ -1535,21 +1535,21 @@ void C2_HOOK_FASTCALL SphereFaceCollide(tFace_ref* pFace, br_vector3* pStart, br
 // FUNCTION: CARMA2_HW  0x00460da0
 int C2_HOOK_FASTCALL SphereBoxIntersection(br_bounds* pBounds, br_vector3* pPoint, br_scalar pRadius_squared, br_vector3* pClosest) {
     int axis;
-    double closest;
-    double difference;
-    double distance = 0.0;
+    br_scalar closest;
+    br_scalar difference;
+    br_scalar distance = 0.0f;
 
     for (axis = 0; axis < 3; axis++) {
         if (!(pPoint->v[axis] > pBounds->min.v[axis])) {
             closest = pBounds->min.v[axis];
-        } else if (!(pPoint->v[axis] >= pBounds->max.v[axis])) {
-            closest = pPoint->v[axis];
-        } else {
+        } else if (pPoint->v[axis] >= pBounds->max.v[axis]) {
             closest = pBounds->max.v[axis];
+        } else {
+            closest = pPoint->v[axis];
         }
-        pClosest->v[axis] = FinterayScalar(closest);
-        difference = (double)pPoint->v[axis] - closest;
-        distance = distance + difference * difference;
+        pClosest->v[axis] = (br_scalar)closest;
+        difference = pPoint->v[axis] - closest;
+        distance += difference * difference;
     }
     return !(distance > pRadius_squared);
 }
@@ -1559,11 +1559,11 @@ int C2_HOOK_FASTCALL SphereBoxIntersection(br_bounds* pBounds, br_vector3* pPoin
 int C2_HOOK_FASTCALL LineBoxCollWithSphere(br_vector3* pStart, br_vector3* pEnd, br_bounds* pBounds, br_vector3* pPoint, br_vector3* pNormal, br_scalar* pT) {
     int result;
     int axis;
-    double length;
-    double scale;
-    double x;
-    double y;
-    double z;
+    br_scalar length;
+    br_scalar scale;
+    br_scalar x;
+    br_scalar y;
+    br_scalar z;
 
     result = LineBoxColl(pStart, pEnd, pBounds, pPoint, pT);
     if (result != 0) {
@@ -1581,9 +1581,9 @@ int C2_HOOK_FASTCALL LineBoxCollWithSphere(br_vector3* pStart, br_vector3* pEnd,
     pNormal->v[1] = 0.0f;
     pNormal->v[2] = 0.0f;
     for (axis = 0; axis < 3; axis++) {
-        if (pPoint->v[axis] == pBounds->max.v[axis] || FinterayBoxNaN(pPoint->v[axis]) || FinterayBoxNaN(pBounds->max.v[axis])) {
+        if (pPoint->v[axis] == pBounds->max.v[axis]) {
             pNormal->v[axis] = -1.0f;
-        } else if (pPoint->v[axis] == pBounds->min.v[axis] || FinterayBoxNaN(pPoint->v[axis]) || FinterayBoxNaN(pBounds->min.v[axis])) {
+        } else if (pPoint->v[axis] == pBounds->min.v[axis]) {
             pNormal->v[axis] = 1.0f;
         }
     }
@@ -1593,9 +1593,9 @@ int C2_HOOK_FASTCALL LineBoxCollWithSphere(br_vector3* pStart, br_vector3* pEnd,
     length = sqrt((y * y + z * z) + x * x);
     if (length > 2.3841858e-7f) {
         scale = 1.0 / length;
-        pNormal->v[0] = FinterayScalar(scale * pNormal->v[0]);
-        pNormal->v[1] = FinterayScalar(y * scale);
-        pNormal->v[2] = FinterayScalar(z * scale);
+        pNormal->v[0] = scale * pNormal->v[0];
+        pNormal->v[1] = y * scale;
+        pNormal->v[2] = z * scale;
     } else {
         pNormal->v[0] = 1.0f;
         pNormal->v[1] = 0.0f;

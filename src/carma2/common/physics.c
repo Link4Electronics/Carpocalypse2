@@ -1619,16 +1619,14 @@ float C2_HOOK_FASTCALL PHILGetObjectProperty(tPhysics_object *pCollision_info, i
 
 // FUNCTION: CARMA2_HW 0x004b9ef0
 void C2_HOOK_FASTCALL SetCollisionInfoChildsDoNothing(tPhysics_object *pCollision_info, tU32 pDisable) {
-    tPhysics_object *child;
     tPhysics_object *sibling;
 
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPhysics_object, field_0x1df, 0x1df);
 
     pCollision_info->disable_move_rotate = pDisable;
     pCollision_info->field_0x1df = 0;
-    child = pCollision_info->child;
-    if (child != NULL) {
-        sibling = child;
+    if (pCollision_info->child != NULL) {
+        sibling = pCollision_info->child;
         while (sibling != NULL) {
             sibling->disable_move_rotate = pDisable;
             sibling->field_0x1df = 0;
@@ -3256,21 +3254,20 @@ void C2_HOOK_FASTCALL ProcessDrag2(tPHIL_queued_header* pObject_info, tPhysics_o
         }
     }
 
-    s = sqrtf(pObject->v.v[0] * pObject->v.v[0] + pObject->v.v[1] * pObject->v.v[1]);
-    v.v[0] = pObject->v.v[0] * (6.9 * s);
-    v.v[1] = drag * 6.9 * s * s;
-    v.v[2] = pObject->v.v[2] * (6.9 * s);
+    s = BrVector3Length(&pObject->v);
+    v.v[0] = pObject->v.v[0] * (s * drag * 6.9 / pObject->M);
+    v.v[1] = pObject->v.v[1] * (s * drag * 6.9 / pObject->M);
+    v.v[2] = pObject->v.v[2] * (s * drag * 6.9 / pObject->M);
     DRVector3Diminish(&pObject->v, &v);
 
-    s = sqrtf(pObject->omega.v[0] * pObject->omega.v[0] + pObject->omega.v[1] * pObject->omega.v[1]);
-    v.v[0] = pObject->omega.v[0] * (s * s + pObject->omega.v[1] * pObject->omega.v[1] + pObject->omega.v[2] * pObject->omega.v[2]);
-    v.v[1] = drag * s * (s * s + pObject->omega.v[1] * pObject->omega.v[1] + pObject->omega.v[2] * pObject->omega.v[2]);
-    v.v[2] = pObject->omega.v[2] * (s * s + pObject->omega.v[1] * pObject->omega.v[1] + pObject->omega.v[2] * pObject->omega.v[2]);
-
+    s = BrVector3Length(&pObject->omega);
+    v.v[0] = pObject->omega.v[0] * (s * drag);
+    v.v[1] = pObject->omega.v[1] * (s * drag);
+    v.v[2] = pObject->omega.v[2] * (s * drag);
     ApplyWaterOmegaBrake(pObject, &v);
 
     for (pObject = pObject->child; pObject != NULL; pObject = pObject->next) {
-        ProcessDrag2(pObject_info, pObject, v.v[0], pObject_info_flags, pSpecial_volume);
+        ProcessDrag2(pObject_info, pObject, pDrag, pObject_info_flags, pSpecial_volume);
     }
 }
 
@@ -3311,7 +3308,7 @@ void C2_HOOK_FASTCALL LevelOutOnSurface(tPhysics_object *pObject) {
     n.v[1] = -1.0f * v1;
     n.v[2] = -1.0f * v2;
 
-    dot = n.v[0] * pObject->water_normal.v[0] + n.v[1] * pObject->water_normal.v[1] + n.v[2] * pObject->water_normal.v[2];
+    dot = n.v[2] * pObject->water_normal.v[2] + n.v[0] * pObject->water_normal.v[0] + n.v[1] * pObject->water_normal.v[1];
 
     if (dot > -0.99) {
         px = pObject->water_normal.v[1] * n.v[2] - pObject->water_normal.v[2] * n.v[1];

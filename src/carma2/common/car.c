@@ -3729,7 +3729,8 @@ void C2_HOOK_FASTCALL AddDrag(tCar_spec* pCar, tPhysics_object* pObject, br_scal
         if (pCar->underwater_ability != 0) {
             k *= 0.6;
         }
-        drag = k * drag * pObject->water_depth_factor;
+        drag *= k;
+        drag *= pObject->water_depth_factor;
     }
 
     k = BrVector3Length(&pObject->v) * drag * 6.9 / pObject->M;
@@ -3738,10 +3739,10 @@ void C2_HOOK_FASTCALL AddDrag(tCar_spec* pCar, tPhysics_object* pObject, br_scal
     v.v[2] = pObject->v.v[2] * k;
     DRVector3Diminish(&pObject->v, &v);
 
-    k = BrVector3Length(&pObject->omega);
-    v.v[0] = pObject->omega.v[0] * (k * drag);
-    v.v[1] = pObject->omega.v[1] * (k * drag);
-    v.v[2] = pObject->omega.v[2] * (k * drag);
+    k = BrVector3Length(&pObject->omega) * drag;
+    v.v[0] = pObject->omega.v[0] * k;
+    v.v[1] = pObject->omega.v[1] * k;
+    v.v[2] = pObject->omega.v[2] * k;
     ApplyWaterOmegaBrake(pObject, &v);
 }
 
@@ -3790,8 +3791,11 @@ void C2_HOOK_FASTCALL MoveAndCollideCar(tCar_spec* pCar, br_scalar pDt) {
             k = pDt * 10.f;
             if (pCar->collision_info->last_special_volume != NULL) {
                 k *= pCar->collision_info->last_special_volume->gravity_multiplier;
+                pCar->collision_info->v.v[1] = pCar->collision_info->v.v[1] - k;
+            } else {
+                k *= (1.0 / 6.9);
+                pCar->collision_info->v.v[1] = pCar->collision_info->v.v[1] - k;
             }
-            pCar->collision_info->v.v[1] = pCar->collision_info->v.v[1] - k * (1.0 / 6.9);
         }
         if (pCar->field_0x18c8 == 2) {
             BrMatrix34TApplyV(&v, (br_vector3*)&gCamera->t.t.mat,
@@ -3856,13 +3860,8 @@ void C2_HOOK_FASTCALL MoveAndCollideCar(tCar_spec* pCar, br_scalar pDt) {
         }
         CalcForce(pCar, pDt);
 
-        ts = -BrVector3Dot((br_vector3*)&pCar->car_master_actor->t.t.mat.m[2],
-            &pCar->collision_info->v) * 6.9;
-        if (pCar->gear == 0) {
-            pCar->target_revs = 0.f;
-        } else {
-            pCar->target_revs = ts / pCar->speed_revs_ratio / (double)pCar->gear;
-        }
+        ts = -BrVector3Dot(&pCar->collision_info->v, (br_vector3*)&pCar->car_master_actor->t.t.mat.m[2]) * 6.9;
+        pCar->target_revs = (pCar->gear == 0) ? 0.f : (float)(ts / pCar->speed_revs_ratio / (double)pCar->gear);
         if (pCar->target_revs < 0.f) {
             pCar->target_revs = 0.f;
             pCar->gear = 0;

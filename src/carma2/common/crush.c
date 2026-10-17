@@ -3858,7 +3858,6 @@ void C2_HOOK_FASTCALL SetSmokeLastDamageLevel(tCar_spec* pCar) {
 
 #pragma auto_inline(off)
 
-// FUNCTION: CARMA2_HW 0x0043ace0
 typedef struct {
     tCar_spec* car_spec;
     float step;
@@ -3934,6 +3933,7 @@ static intptr_t C2_HOOK_CDECL RepairCarCB(br_actor* pActor, void* pData) {
     return 0;
 }
 
+// FUNCTION: CARMA2_HW 0x0043ace0
 float C2_HOOK_FASTCALL ComputeCarImpact(tCar_spec* pCar, int pDelta, float* pOut) {
     tRepairCarContext ctx;
 

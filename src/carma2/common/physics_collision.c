@@ -12,6 +12,9 @@
 
 // SetCollisionInfoChildsDoNothing
 
+/* MSVC5 has no __declspec(noinline); keep the SetCollisionInfoDoNothing call out-of-line. */
+#pragma inline_depth(0)
+
 // FUNCTION: CARMA2_HW 0x004b9e40
 void C2_HOOK_FASTCALL SetCollisionInfoDoNothingChain(tPhysics_object *pCollision_info, tU32 pDisable) {
     tPhysics_object *cur;
@@ -20,10 +23,10 @@ void C2_HOOK_FASTCALL SetCollisionInfoDoNothingChain(tPhysics_object *pCollision
     pCollision_info->disable_move_rotate = pDisable;
     cur = pCollision_info;
     do {
-        sibling = cur->child;
         cur->disable_move_rotate = pDisable;
         cur->field_0x1df = 0;
-        if (sibling != NULL) {
+        if (cur->child != NULL) {
+            sibling = cur->child;
             while (sibling != NULL) {
                 sibling->disable_move_rotate = pDisable;
                 sibling->field_0x1df = 0;
@@ -36,6 +39,8 @@ void C2_HOOK_FASTCALL SetCollisionInfoDoNothingChain(tPhysics_object *pCollision
         cur = cur->field183_0x1d8;
     } while (cur != NULL && cur != pCollision_info);
 }
+
+#pragma inline_depth(1)
 
 // FUNCTION: CARMA2_HW 0x004b9eb0
 void C2_HOOK_FASTCALL SetCollisionInfoDoNothing(tPhysics_object *pCollision_info, tU32 pDisable) {
