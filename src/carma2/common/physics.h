@@ -6,6 +6,21 @@
 
 extern int gUNK_006793d0;
 
+typedef struct tCollision_contact {
+    float impulse;              /* 0x00: impulse magnitude */
+    tPhysics_object* object1;   /* 0x04: first object */
+    tPhysics_object* object2;   /* 0x08: second object (can be NULL) */
+    void* field_0xc;            /* 0x0c: face/callback arg */
+    float field_0x10;           /* 0x10: saved impulse */
+    br_vector3 r1;              /* 0x14: contact point relative to object1 */
+    br_vector3 r2;              /* 0x20: contact point relative to object2 */
+    br_vector3 normal;          /* 0x2c: contact normal */
+    br_vector3 field_0x38;      /* 0x38: another vector */
+    br_vector3 impulse1;        /* 0x44: impulse applied to object1 */
+    br_vector3 impulse2;        /* 0x50: impulse applied to object2 */
+    int type;                   /* 0x5c: contact type (0xe = skip) */
+} tCollision_contact;
+
 // count
 
 // DrMatrix34ApplyLPInverse
@@ -195,6 +210,9 @@ void C2_HOOK_FASTCALL CapOmega(tPhysics_object* pObject);
 // FillInTrialWorkspace
 
 int C2_HOOK_FASTCALL FlagsAreGo(tPhysics_object* pObj1, tPhysics_object* pObj2);
+
+// FUNCTION: CARMA2_HW 0x004ba550
+int C2_HOOK_FASTCALL ScaleCollisionImpulses(tCollision_contact* pContacts, float* pImpulses, int pCount, int* pIndices, int pNum_impacts, float pThreshold);
 
 // CollideObjectWithReducedObjectList
 
