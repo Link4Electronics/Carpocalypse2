@@ -482,21 +482,6 @@ br_scalar gFLOAT_00692dd4;
 // GLOBAL: CARMA2_HW 0x00692ddc
 int gINT_00692ddc;
 
-typedef struct tCollision_contact {
-    float impulse;              /* 0x00: impulse magnitude */
-    tPhysics_object* object1;   /* 0x04: first object */
-    tPhysics_object* object2;   /* 0x08: second object (can be NULL) */
-    void* field_0xc;            /* 0x0c: face/callback arg */
-    float field_0x10;           /* 0x10: saved impulse */
-    br_vector3 r1;              /* 0x14: contact point relative to object1 */
-    br_vector3 r2;              /* 0x20: contact point relative to object2 */
-    br_vector3 normal;          /* 0x2c: contact normal */
-    br_vector3 field_0x38;      /* 0x38: another vector */
-    br_vector3 impulse1;        /* 0x44: impulse applied to object1 */
-    br_vector3 impulse2;        /* 0x50: impulse applied to object2 */
-    int type;                   /* 0x5c: contact type (0xe = skip) */
-} tCollision_contact;
-
 // GLOBAL: CARMA2_HW 0x00692de0
 tCollision_contact gCollision_contacts[50];
 
@@ -1688,6 +1673,54 @@ int C2_HOOK_FASTCALL FlagsAreGo(tPhysics_object* pObj1, tPhysics_object* pObj2) 
     }
     if (pObj2->flags & 4) {
         return 0;
+    }
+    return 1;
+}
+
+// FUNCTION: CARMA2_HW 0x004ba550
+int C2_HOOK_FASTCALL ScaleCollisionImpulses(tCollision_contact* pContacts, float* pImpulses, int pCount, int* pIndices, int pNum_impacts, float pThreshold) {
+    int i;
+    float total;
+    float scale;
+    float f;
+
+    total = 0.f;
+    for (i = 0; i < pNum_impacts; i++) {
+        total += pImpulses[pIndices[i]];
+    }
+    if (total <= pThreshold) {
+        return 0;
+    }
+    scale = pThreshold / total;
+    gINT_00692dc8 = 1;
+    for (i = 0; i < pCount; i++) {
+        pImpulses[i] = -pImpulses[i];
+    }
+    for (i = 0; i < pNum_impacts; i++) {
+        f = pImpulses[pIndices[i]];
+        pImpulses[pIndices[i]] = f * (0.f - scale);
+        if (pContacts[pIndices[i]].type & 0x100) {
+            f = pContacts[pIndices[i]].impulse1.v[0];
+            pContacts[pIndices[i]].impulse1.v[0] = f * scale;
+            f = pContacts[pIndices[i]].impulse1.v[1];
+            pContacts[pIndices[i]].impulse1.v[1] = f * scale;
+            f = pContacts[pIndices[i]].impulse1.v[2];
+            pContacts[pIndices[i]].impulse1.v[2] = f * scale;
+            if (pContacts[pIndices[i]].object2 != NULL) {
+                f = pContacts[pIndices[i]].impulse1.v[0];
+                pContacts[pIndices[i]].impulse1.v[0] = f * scale;
+                f = pContacts[pIndices[i]].impulse1.v[1];
+                pContacts[pIndices[i]].impulse1.v[1] = f * scale;
+                f = pContacts[pIndices[i]].impulse1.v[2];
+                pContacts[pIndices[i]].impulse1.v[2] = f * scale;
+            }
+        }
+    }
+    for (i = 0; i < pCount; i++) {
+        if (pImpulses[i] < 0.f) {
+            pImpulses[i] = 0.f;
+        }
+        pContacts[i].type = 9;
     }
     return 1;
 }
@@ -3475,11 +3508,489 @@ void C2_HOOK_FASTCALL DRMatrix33Inverse(tPhysics_object* pObject, int pFlag) {
     }
 }
 
-// UNLABELED: CARMA2_HW 0x004bd830
-static void C2_HOOK_FASTCALL QuickHingeCollect(tPhysics_object* pObject, tPhysics_object* pHead, void** pOut) {
+// UNLABELED DATA: CARMA2_HW 0x00692dd8
+int gINT_00692dd8 = 0;
+
+// Pending joint-limit record emitted by 0x4bca10 and consumed by
+// SetUpQuickHingeData's second phase (0x4bb22b). Stride 0x60.
+typedef struct {
+    float depth;                 // 0x00
+    tPhysics_object* object1;    // 0x04
+    tPhysics_object* object2;    // 0x08
+    float field_0x0c;            // 0x0c
+    float field_0x10;            // 0x10
+    br_vector3 field_0x14;       // 0x14
+    br_vector3 field_0x20;       // 0x20
+    br_vector3 field_0x2c;       // 0x2c
+    br_vector3 field_0x38;       // 0x38
+    tU8 field_0x44[0x18];        // 0x44
+    int type;                    // 0x5c
+} tQuickHinge_record;
+
+// UNLABELED: CARMA2_HW 0x004bd4f0
+// Universal-joint axis builder. FASTCALL: ecx = mA, edx = mB, stack args
+// (c0, p0, c1, p1, outA, outB), ret 0x18. Computes
+// outB = BrVector3Normalise(mB^T*(mA*c0) + p0), falling back to (1,0,0)
+// when |v| <= 2.3841858e-07f, then outA = mB^T*(mA*c1) reflected against
+// outB and against p0.
+extern void C2_HOOK_FASTCALL BuildUniversalJointAxes(br_matrix34* pMatA, br_matrix34* pMatB, br_vector3* pChild0, br_vector3* pParent0, br_vector3* pChild1, br_vector3* pParent1, br_vector3* pAxis, br_vector3* pNormal) {
+    br_vector3 v;
+    br_vector3 t;
+    float d;
+
+    BrMatrix34ApplyV(&v, pChild0, pMatA);
+    BrMatrix34TApplyV(&t, &v, pMatB);
+    pNormal->v[0] = t.v[0] + pParent0->v[0];
+    pNormal->v[1] = t.v[1] + pParent0->v[1];
+    pNormal->v[2] = t.v[2] + pParent0->v[2];
+    d = sqrtf(pNormal->v[0] * pNormal->v[0] + pNormal->v[2] * pNormal->v[2] + pNormal->v[1] * pNormal->v[1]);
+    if (d <= 2.3841858e-07f) {
+        pNormal->v[0] = 1.0f;
+        pNormal->v[1] = 0.0f;
+        pNormal->v[2] = 0.0f;
+    } else {
+        d = 1.0f / d;
+        pNormal->v[0] = pNormal->v[0] * d;
+        pNormal->v[1] = pNormal->v[1] * d;
+        pNormal->v[2] = pNormal->v[2] * d;
+    }
+    BrMatrix34ApplyV(&v, pChild1, pMatA);
+    BrMatrix34TApplyV(pAxis, &v, pMatB);
+    d = pAxis->v[1] * pNormal->v[1] + pNormal->v[2] * pAxis->v[2] + pNormal->v[0] * pAxis->v[0];
+    d = d + d;
+    t.v[1] = pAxis->v[1] - pNormal->v[1] * d;
+    t.v[2] = pAxis->v[2] - pNormal->v[2] * d;
+    pAxis->v[0] = pAxis->v[0] - d * pNormal->v[0];
+    pAxis->v[1] = t.v[1];
+    pAxis->v[2] = t.v[2];
+    d = pParent0->v[2] * pAxis->v[2] + pParent0->v[1] * pAxis->v[1] + pAxis->v[0] * pParent0->v[0];
+    d = d + d;
+    pAxis->v[0] = pAxis->v[0] - d * pParent0->v[0];
+    pAxis->v[1] = pAxis->v[1] - pParent0->v[1] * d;
+    pAxis->v[2] = pAxis->v[2] - pParent0->v[2] * d;
+}
+
+// UNLABELED: CARMA2_HW 0x004bca10
+// Joint-limit record emitter of the QuickHinge cluster. Signature:
+// FASTCALL(pObject, pRecords) + stack (count, maxRecords), ret 8; the
+// "0x28" passed by SetUpQuickHingeData is maxRecords (40), the record
+// stride is 0x60. Walks both joints of pObject, emitting constraint
+// records consumed by SetUpQuickHingeData's second phase (0x4bb22b):
+//   pObject->physics_joint1 (0x188), limit types 0 (plane) and 1
+//     (universal): emit record type 0xb with depth = dot1 - dot2 vs
+//     limit value/thresholds; objB = pObject->field_0x230. Universal
+//     limits consume two limit records and use 0x4bd4f0.
+//   pObject->physics_joint2 (0x18c), limit types 0, 10 and 11:
+//     type 0 (plane): objB = NULL, does not increment count (quirk);
+//       type 10 (weld): only when pObject->field_0x1e0[0] != 0, sets
+//       gINT_00692dd8 = 1 and rewrites/erases matching pending records
+//       (type 0xe marking); type 11: record type 2 with normal
+//       ±joint2->hinge_axis and interpolated ratio.
+// Record layout (0x60 bytes): +0 depth/ratio, +4 objA, +8 objB,
+//   +0x14/+0x20 joint->field_0x08 and joint->field_0x14 copies,
+//   +0x2c vector, +0x38 normal, +0x5c type (0xb/2/0xe).
+// Constants: 0.0f @0x58a768, 0.001 @0x58a7a0, 1e-6 @0x58a810,
+//   0.002 @0x58a818, 1.0 @0x58a808, 2.3841858e-7f @0x58a7fc.
+extern int C2_HOOK_FASTCALL CollectJointLimitsIntoBuffer(tPhysics_object* pObject, tQuickHinge_record* pRecords, int pCount, int pMaxRecords) {
+    tPhysics_joint* joint;
+    tPhysics_object* base;
+    tQuickHinge_record* rec;
+    br_vector3 vec;
+    br_vector3 vec2;
+    br_vector3 cross;
+    br_vector3 outA1;
+    br_vector3 outA2;
+    br_vector3 outB1;
+    float dot;
+    float dot2;
+    float len;
+    int i;
+
+    joint = pObject->physics_joint1;
+    if (joint != NULL) {
+        base = pObject->field_0x230;
+        if (base == NULL) {
+            PhysicsError((tPhysicsError)0xb, "");
+        }
+        if (joint->count_limits > 0) {
+            i = 0;
+            do {
+                if (pMaxRecords <= pCount) {
+                    break;
+                }
+                rec = &pRecords[pCount];
+                switch (joint->limits[i].type) {
+                case eJoint_limit_plane: {
+                    BrMatrix34ApplyV(&vec, &joint->limits[i].child, &pObject->actor->t.t.mat);
+                    BrMatrix34TApplyV(&vec2, &vec, &base->actor->t.t.mat);
+                    dot = vec2.v[0] * joint->limits[i].parent.v[0] + vec2.v[1] * joint->limits[i].parent.v[1] + vec2.v[2] * joint->limits[i].parent.v[2];
+                    if (dot < 0.001) {
+                        BrMatrix34ApplyV(&vec, &joint->limits[i].child, &pObject->transform_matrix);
+                        BrMatrix34TApplyV(&vec2, &vec, &base->transform_matrix);
+                        dot2 = vec2.v[0] * joint->limits[i].parent.v[0] + vec2.v[1] * joint->limits[i].parent.v[1] + vec2.v[2] * joint->limits[i].parent.v[2];
+                        if (0.0f <= dot2 && (0.001 <= dot2 || pObject->field_0xf0 != 0)) {
+                            rec->depth = dot - dot2;
+                            rec->type = 0xb;
+                            rec->object1 = pObject;
+                            rec->object2 = base;
+                            cross.v[0] = vec2.v[1] * joint->limits[i].parent.v[2] - vec2.v[2] * joint->limits[i].parent.v[1];
+                            cross.v[1] = vec2.v[2] * joint->limits[i].parent.v[0] - vec2.v[0] * joint->limits[i].parent.v[2];
+                            cross.v[2] = vec2.v[0] * joint->limits[i].parent.v[1] - vec2.v[1] * joint->limits[i].parent.v[0];
+                            len = sqrtf(cross.v[0] * cross.v[0] + cross.v[1] * cross.v[1] + cross.v[2] * cross.v[2]);
+                            if (len <= 1e-6) {
+                                BrMatrix34ApplyV(&vec, &pObject->omega, &pObject->transform_matrix);
+                                BrMatrix34TApplyV(&rec->field_0x38, &vec, &base->transform_matrix);
+                                rec->field_0x38.v[0] = rec->field_0x38.v[0] - base->omega.v[0];
+                                rec->field_0x38.v[1] = rec->field_0x38.v[1] - base->omega.v[1];
+                                rec->field_0x38.v[2] = rec->field_0x38.v[2] - base->omega.v[2];
+                                len = sqrtf(rec->field_0x38.v[0] * rec->field_0x38.v[0] + rec->field_0x38.v[1] * rec->field_0x38.v[1] + rec->field_0x38.v[2] * rec->field_0x38.v[2]);
+                                if (len <= 2.3841858e-07f) {
+                                    rec->field_0x38.v[0] = 1.0f;
+                                    rec->field_0x38.v[1] = 0.0f;
+                                    rec->field_0x38.v[2] = 0.0f;
+                                } else {
+                                    len = 1.0 / len;
+                                    rec->field_0x38.v[0] = rec->field_0x38.v[0] * len;
+                                    rec->field_0x38.v[1] = rec->field_0x38.v[1] * len;
+                                    rec->field_0x38.v[2] = rec->field_0x38.v[2] * len;
+                                }
+                            } else {
+                                rec->field_0x38.v[0] = cross.v[0] / len;
+                                rec->field_0x38.v[1] = cross.v[1] / len;
+                                rec->field_0x38.v[2] = cross.v[2] / len;
+                            }
+                            BrMatrix34ApplyV(&vec, &rec->field_0x38, &base->transform_matrix);
+                            BrMatrix34TApplyV(&rec->field_0x2c, &vec, &pObject->transform_matrix);
+                            rec->field_0x14 = joint->field_0x08;
+                            rec->field_0x20 = joint->field_0x14;
+                            pCount++;
+                        }
+                    }
+                    break;
+                }
+                case eJoint_limit_universal: {
+                    BuildUniversalJointAxes(&pObject->actor->t.t.mat, &base->actor->t.t.mat,
+                                            &joint->limits[i].child, &joint->limits[i].parent,
+                                            &joint->limits[i + 1].child, &joint->limits[i + 1].parent,
+                                            &outA1, &outB1);
+                    dot = outA1.v[0] * joint->limits[i + 1].parent.v[0] + outA1.v[1] * joint->limits[i + 1].parent.v[1] + outA1.v[2] * joint->limits[i + 1].parent.v[2];
+                    if (dot < joint->limits[i].value - 1.0) {
+                        BuildUniversalJointAxes(&pObject->transform_matrix, &base->transform_matrix,
+                                                &joint->limits[i].child, &joint->limits[i].parent,
+                                                &joint->limits[i + 1].child, &joint->limits[i + 1].parent,
+                                                &outA2, &rec->field_0x38);
+                        dot2 = outA2.v[0] * joint->limits[i + 1].parent.v[0] + outA2.v[1] * joint->limits[i + 1].parent.v[1] + outA2.v[2] * joint->limits[i + 1].parent.v[2];
+                        if (joint->limits[i].value < dot2) {
+                            cross.v[0] = outA1.v[1] * outA2.v[2] - outA1.v[2] * outA2.v[1];
+                            cross.v[1] = outA1.v[2] * outA2.v[0] - outA1.v[0] * outA2.v[2];
+                            cross.v[2] = outA1.v[0] * outA2.v[1] - outA1.v[1] * outA2.v[0];
+                            if (rec->field_0x38.v[0] * cross.v[0] + rec->field_0x38.v[1] * cross.v[1] + rec->field_0x38.v[2] * cross.v[2] < 0.0f) {
+                                rec->field_0x38.v[0] = -rec->field_0x38.v[0];
+                                rec->field_0x38.v[1] = -rec->field_0x38.v[1];
+                                rec->field_0x38.v[2] = -rec->field_0x38.v[2];
+                            }
+                            BrMatrix34ApplyV(&vec, &rec->field_0x38, &base->transform_matrix);
+                            BrMatrix34TApplyV(&rec->field_0x2c, &vec, &pObject->transform_matrix);
+                            rec->depth = dot - dot2;
+                            rec->type = 0xb;
+                            rec->object1 = pObject;
+                            rec->object2 = base;
+                            pCount++;
+                        }
+                    }
+                    i++;
+                    break;
+                }
+                default:
+                    PhysicsError((tPhysicsError)8, "");
+                    break;
+                }
+                i++;
+            } while (i < joint->count_limits);
+        }
+    }
+    joint = pObject->physics_joint2;
+    if (joint == NULL || joint->count_limits < 1) {
+        return pCount;
+    }
+    for (i = 0; i < joint->count_limits; i++) {
+        switch (joint->limits[i].type) {
+        case eJoint_limit_plane: {
+            BrMatrix34ApplyV(&vec, &joint->limits[i].child, &pObject->actor->t.t.mat);
+            dot = joint->limits[i].parent.v[0] * vec.v[0] + joint->limits[i].parent.v[1] * vec.v[1] + joint->limits[i].parent.v[2] * vec.v[2];
+            if (dot < 0.001) {
+                if (pCount == pMaxRecords) {
+                    return pCount;
+                }
+                pRecords[pCount].depth = dot;
+                pRecords[pCount].type = 0xb;
+                pRecords[pCount].object1 = pObject;
+                pRecords[pCount].object2 = NULL;
+                cross.v[0] = joint->limits[i].parent.v[2] * vec.v[1] - joint->limits[i].parent.v[1] * vec.v[2];
+                cross.v[1] = joint->limits[i].parent.v[0] * vec.v[2] - joint->limits[i].parent.v[2] * vec.v[0];
+                cross.v[2] = joint->limits[i].parent.v[1] * vec.v[0] - joint->limits[i].parent.v[0] * vec.v[1];
+                len = sqrtf(cross.v[0] * cross.v[0] + cross.v[1] * cross.v[1] + cross.v[2] * cross.v[2]);
+                if (len > 1e-6) {
+                    pRecords[pCount].field_0x38.v[0] = cross.v[0] / len;
+                    pRecords[pCount].field_0x38.v[1] = cross.v[1] / len;
+                    pRecords[pCount].field_0x38.v[2] = cross.v[2] / len;
+                }
+            }
+            break;
+        }
+        case eJoint_limit_10: {
+            if (pObject->field_0x1e0[0] != 0) {
+                int scan;
+                int count;
+                int n;
+                tQuickHinge_record* r;
+                tQuickHinge_record* d;
+                gINT_00692dd8 = 1;
+                scan = 0;
+                count = pCount;
+                r = pRecords;
+                if (pCount > 0) {
+                    do {
+                        if (r->object1 == pObject) {
+                            if (r->object2 == NULL) {
+                                if (scan < count) {
+                                    n = count - scan;
+                                    d = r;
+                                    do {
+                                        *d = *(d + 1);
+                                        d++;
+                                        n--;
+                                    } while (n != 0);
+                                }
+                                count--;
+                                scan--;
+                                r--;
+                            } else {
+                                float x;
+                                float y;
+                                float z;
+                                x = r->field_0x2c.v[0];
+                                y = r->field_0x2c.v[1];
+                                z = r->field_0x2c.v[2];
+                                r->field_0x2c.v[0] = -r->field_0x38.v[0];
+                                r->field_0x2c.v[1] = -r->field_0x38.v[1];
+                                r->field_0x2c.v[2] = -r->field_0x38.v[2];
+                                r->field_0x38.v[0] = -x;
+                                r->field_0x38.v[1] = -y;
+                                r->field_0x38.v[2] = -z;
+                                vec = r->field_0x14;
+                                r->field_0x14 = r->field_0x20;
+                                r->field_0x20 = vec;
+                                r->object1 = r->object2;
+                                r->object2 = pObject;
+                                r->type = 0xe;
+                            }
+                        } else if (r->object2 == pObject) {
+                            r->type = 0xe;
+                        }
+                        scan++;
+                        r++;
+                    } while (scan < count);
+                }
+                pCount = count;
+            }
+            break;
+        }
+        case eJoint_limit_11: {
+            float proj_cm;
+            float limit_plane;
+            float actor_pos;
+            float obj_pos;
+            BrMatrix34ApplyV(&vec, &joint->hinge_axis, &pObject->transform_matrix);
+            proj_cm = pObject->field_0x17c.v[0] * vec.v[0] + pObject->field_0x17c.v[1] * vec.v[1] + pObject->field_0x17c.v[2] * vec.v[2];
+            limit_plane = joint->limits[i].value + proj_cm;
+            actor_pos = pObject->actor->t.t.mat.m[3][0] * vec.v[0] + pObject->actor->t.t.mat.m[3][1] * vec.v[1] + pObject->actor->t.t.mat.m[3][2] * vec.v[2];
+            obj_pos = pObject->transform_matrix.m[3][0] * vec.v[0] + pObject->transform_matrix.m[3][1] * vec.v[1] + pObject->transform_matrix.m[3][2] * vec.v[2];
+            if (actor_pos <= limit_plane || limit_plane - 1.0 <= obj_pos) {
+                if (actor_pos < proj_cm - 0.001 && proj_cm - 0.002 < obj_pos) {
+                    if (pCount == pMaxRecords) {
+                        return pCount;
+                    }
+                    rec = &pRecords[pCount];
+                    rec->depth = (proj_cm - obj_pos) / (actor_pos - obj_pos);
+                    rec->field_0x0c = 0.0f;
+                    rec->type = 2;
+                    rec->object1 = pObject;
+                    rec->object2 = NULL;
+                    rec->field_0x2c = joint->hinge_axis;
+                    BrVector3SetFloat(&rec->field_0x14, 0, 0, 0);
+                    pCount++;
+                }
+            } else {
+                if (pCount == pMaxRecords) {
+                    return pCount;
+                }
+                rec = &pRecords[pCount];
+                rec->depth = (limit_plane - obj_pos) / (actor_pos - obj_pos);
+                rec->field_0x0c = 0.0f;
+                rec->type = 2;
+                rec->object1 = pObject;
+                rec->object2 = NULL;
+                rec->field_0x2c.v[0] = -joint->hinge_axis.v[0];
+                rec->field_0x2c.v[1] = -joint->hinge_axis.v[1];
+                rec->field_0x2c.v[2] = -joint->hinge_axis.v[2];
+                BrVector3SetFloat(&rec->field_0x14, 0, 0, 0);
+                pCount++;
+            }
+            break;
+        }
+        default:
+            PhysicsError((tPhysicsError)8, "");
+            break;
+        }
+    }
+    return pCount;
+}
+
+// UNLABELED: CARMA2_HW 0x004bc8e0
+// Spin-damping application, FASTCALL(pObject, float factor) ret 4:
+// scales pObject->I and pObject->field_0x21c by factor, and the same
+// fields of the object linked through pObject->field_0x1e4 (+4). Then
+// calls 0x4b8cf0(pObject) (unnamed, ~0x1f0, itself calling 0x4b8c20,
+// 0x4b8e10, 0x4be350, 0x4b77b0, 0x4b7960, BrMatrix34ApplyV ...), then
+// walks parents (0x228) up to the first object whose field_0x218 != 0,
+// takes group = that field and, when non-NULL, builds an array of
+// `group[0].count` pointers (base group[4], stride 0x60) and calls
+// 0x4bf490(group[0x18], array, count) and 0x4c5b50(group[0x18],
+// group[0x14], count). Only reached at extreme spin (see ClampObjectSpin).
+// Body still to be ported.
+extern void C2_HOOK_FASTCALL ApplySpinDampingFactor(tPhysics_object* pObject, float pFactor) {
     (void)pObject;
-    (void)pHead;
-    (void)pOut;
+    (void)pFactor;
+}
+
+// UNLABELED: CARMA2_HW 0x004bd6d0
+// Runs CollectJointLimitsIntoBuffer over pObject and its following siblings,
+// recursing into the child chains first, and returns the accumulated record
+// count.
+extern int C2_HOOK_FASTCALL CollectJointLimitsOfTree(tPhysics_object* pObject, void* pBuf, int pCount, int pStride) {
+    if (pObject == NULL) {
+        return pCount;
+    }
+    do {
+        pCount = CollectJointLimitsIntoBuffer(pObject, pBuf, pCount, pStride);
+        if (pObject->child != NULL) {
+            pCount = CollectJointLimitsOfTree(pObject->child, pBuf, pCount, pStride);
+        }
+        pObject = pObject->next;
+    } while (pObject != NULL);
+    return pCount;
+}
+
+// UNLABELED: CARMA2_HW 0x004bd720
+// Clamps runaway angular velocity: once omega^2 * 0.0016 exceeds 2.4649 the
+// spin (also of the object linked through field_0x1e4) is scaled by 1/(2*a),
+// a = 1.27388525*sqrt(omega^2*0.0016), and the damping is reported through
+// ApplySpinDampingFactor plus the field_0x198 callback. Returns 1 when
+// clamped, 0 when the spin was already small.
+extern int C2_HOOK_FASTCALL ClampObjectSpin(tPhysics_object* pObject) {
+    void* holder;
+    tPhysics_object* partner;
+    float spin2;
+    float a;
+
+    spin2 = pObject->omega.v[0] * pObject->omega.v[0]
+        + pObject->omega.v[1] * pObject->omega.v[1]
+        + pObject->omega.v[2] * pObject->omega.v[2];
+    if (!(spin2 * 0.0016f > 2.4649f)) {
+        return 0;
+    }
+    a = 1.27388525f * sqrtf(spin2 * 0.0016f);
+    pObject->omega.v[0] /= 2.0f * a;
+    pObject->omega.v[1] /= 2.0f * a;
+    pObject->omega.v[2] /= 2.0f * a;
+    holder = *(void**)&pObject->field_0x1e0[4];
+    if (holder != NULL) {
+        partner = *(tPhysics_object**)((tU8*)holder + 4);
+        partner->omega.v[0] /= 2.0f * a;
+        partner->omega.v[1] /= 2.0f * a;
+        partner->omega.v[2] /= 2.0f * a;
+    }
+    ApplySpinDampingFactor(pObject, a * a);
+    if (*(int*)&pObject->field_0x191[7] != 0) {
+        ((void (C2_HOOK_FASTCALL *)(tPhysics_object*))*(int*)&pObject->field_0x191[7])(pObject);
+    }
+    return 1;
+}
+
+// UNLABELED: CARMA2_HW 0x004bd7f0
+// Runs ClampObjectSpin over pObject, its following siblings and the whole
+// child chains, returning the number of objects clamped.
+extern int C2_HOOK_FASTCALL ClampObjectSpinTree(tPhysics_object* pObject) {
+    int count;
+
+    count = 0;
+    for (; pObject != NULL; pObject = pObject->next) {
+        count += ClampObjectSpin(pObject);
+        if (pObject->child != NULL) {
+            count += ClampObjectSpinTree(pObject->child);
+        }
+    }
+    return count;
+}
+
+// UNLABELED: CARMA2_HW 0x004bd830
+static void** C2_HOOK_FASTCALL QuickHingeCollect(tPhysics_object* pObject, tPhysics_object* pHead, void** pOut) {
+    tPhysics_object* obj;
+    void** tail;
+    void** p;
+    float x_min;
+    float x_max;
+    void* local;
+
+    tail = pOut;
+    if (pHead->parent != NULL) {
+        for (obj = pHead; obj != NULL; obj = obj->next) {
+            if ((obj == pObject && (pObject->flags & 8) == 0) || BoundsOverlapTest__finteray(&pObject->field_0x10c, &obj->field_0x10c)) {
+                *tail = obj;
+                tail = &obj->field_0x234;
+            }
+        }
+    } else {
+        x_min = pObject->field_0x10c.min.v[0] - gFLOAT_00692dd0;
+        for (obj = pObject->prev; obj != NULL; obj = obj->prev) {
+            if (obj->transform_matrix.m[3][0] < x_min) {
+                break;
+            }
+            if (BoundsOverlapTest__finteray(&pObject->field_0x10c, &obj->field_0x10c)) {
+                *tail = obj;
+                tail = &obj->field_0x234;
+            }
+        }
+        x_max = pObject->field_0x10c.max.v[0] - gFLOAT_00692dd4;
+        for (obj = pObject->next; obj != NULL; obj = obj->next) {
+            if (obj->transform_matrix.m[3][0] > x_max) {
+                break;
+            }
+            if (BoundsOverlapTest__finteray(&pObject->field_0x10c, &obj->field_0x10c)) {
+                *tail = obj;
+                tail = &obj->field_0x234;
+            }
+        }
+        if ((pObject->flags & 8) == 0) {
+            *tail = pObject;
+            tail = &pObject->field_0x234;
+        }
+    }
+    *tail = NULL;
+    local = NULL;
+    p = &local;
+    for (obj = *pOut; obj != NULL; obj = (tPhysics_object*)obj->field_0x234) {
+        if (obj->child != NULL) {
+            p = QuickHingeCollect(pObject, obj->child, p);
+        }
+    }
+    if (local != NULL) {
+        *p = NULL;
+        *tail = local;
+        return p;
+    }
+    return tail;
 }
 
 // UNLABELED: CARMA2_HW 0x004bd9e0
@@ -3509,7 +4020,6 @@ int C2_HOOK_FASTCALL SetUpQuickHingeData(tPhysics_object** pObject_list, tPhysic
     float dz;
     float lv;
     float ld;
-    unsigned char _frame[0xa80];
 
     (void)pBuffer2;
     (void)pArg;
@@ -3519,7 +4029,7 @@ int C2_HOOK_FASTCALL SetUpQuickHingeData(tPhysics_object** pObject_list, tPhysic
         next = cur->field183_0x1d8;
         prev = cnt;
         QuickHingeCollect(cur, head, &out);
-        cnt = QuickHingeGen(cur, _frame, pBuffer1, prev, pWorld_callbacks, head);
+        cnt = QuickHingeGen(cur, &out, pBuffer1, prev, pWorld_callbacks, head);
         if (gNet_mode == eNet_mode_host && cur->field_0xf0 == 1 && cnt > prev) {
             dx = cur->transform_matrix.m[3][0] - ((br_matrix34*)cur->field_0xbc)->m[3][0];
             dy = cur->transform_matrix.m[3][1] - ((br_matrix34*)cur->field_0xbc)->m[3][1];

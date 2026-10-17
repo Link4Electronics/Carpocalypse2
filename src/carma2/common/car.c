@@ -201,6 +201,9 @@ tU32 gWoz_upside_down_at_all;
 // GLOBAL: CARMA2_HW 0x00676854
 int gStop_opponents_moving = 0;
 
+// GLOBAL: CARMA2_HW 0x0058f680
+int gMetal_crunch_sound_id[5] = { 5000, 5001, 5002, 5003, 5004 };
+
 // GLOBAL: CARMA2_HW 0x006793c0
 int gSkid_tag[2];
 
@@ -3791,10 +3794,9 @@ void C2_HOOK_FASTCALL MoveAndCollideCar(tCar_spec* pCar, br_scalar pDt) {
             k = pDt * 10.f;
             if (pCar->collision_info->last_special_volume != NULL) {
                 k *= pCar->collision_info->last_special_volume->gravity_multiplier;
-                pCar->collision_info->v.v[1] = pCar->collision_info->v.v[1] - k;
+                pCar->collision_info->v.v[1] = pCar->collision_info->v.v[1] - k * (1.0 / 6.9);
             } else {
-                k *= (1.0 / 6.9);
-                pCar->collision_info->v.v[1] = pCar->collision_info->v.v[1] - k;
+                pCar->collision_info->v.v[1] = pCar->collision_info->v.v[1] - k * (1.0 / 6.9);
             }
         }
         if (pCar->field_0x18c8 == 2) {
@@ -3826,9 +3828,12 @@ void C2_HOOK_FASTCALL MoveAndCollideCar(tCar_spec* pCar, br_scalar pDt) {
                 pCar->collision_info->velocity_car_space.v[2]);
             if (scale > BR_SCALAR_EPSILON * 2) {
                 scale = gZero / scale;
-                v.v[0] = pCar->collision_info->velocity_car_space.v[0] * scale;
-                v.v[1] = pCar->collision_info->velocity_car_space.v[1] * scale;
-                v.v[2] = pCar->collision_info->velocity_car_space.v[2] * scale;
+                ts = pCar->collision_info->velocity_car_space.v[0];
+                v.v[0] = ts * scale;
+                ts = pCar->collision_info->velocity_car_space.v[1];
+                v.v[1] = ts * scale;
+                ts = pCar->collision_info->velocity_car_space.v[2];
+                v.v[2] = ts * scale;
             } else {
                 v.v[0] = 1.f;
                 v.v[1] = 0.f;
@@ -3871,7 +3876,7 @@ void C2_HOOK_FASTCALL MoveAndCollideCar(tCar_spec* pCar, br_scalar pDt) {
                 wheel_spin_force = pCar->torque * pCar->force_torque_ratio;
             } else {
                 wheel_spin_force = pCar->torque * pCar->force_torque_ratio
-                    - (double)pCar->gear * pCar->acc_force;
+                    - pCar->gear * pCar->acc_force;
             }
             if (pCar->gear == 0) {
                 if (pCar->revs > gF1000 && !pCar->keys.brake
@@ -5459,7 +5464,32 @@ void C2_HOOK_FASTCALL SkidNoise(tCar_spec* pCar, int pSide, br_scalar pV, int pM
 
 // StopSkid
 
-// CrashNoise
+// FUNCTION: CARMA2_HW 0x0041ddc0
+void C2_HOOK_FASTCALL CrashNoise(br_vector3* pForce, br_vector3* pPosition, int pMaterial) {
+    // GLOBAL: CARMA2_HW 0x00679410
+    static tS3_sound_tag crunch_tag;
+    // GLOBAL: CARMA2_HW 0x0067935c
+    static tS3_volume last_crunch_vol;
+    tS3_volume vol;
+    br_vector3 velocity;
+
+    vol = 60.0 * BrVector3Length(pForce);
+    if (gCurrent_race.material_modifiers[pMaterial].crash_noise_index == -1) {
+    } else {
+        if (vol > 255) {
+            vol = 255;
+        }
+        if (crunch_tag == 0 || !DRS3SoundStillPlaying(crunch_tag)) {
+            if (vol > 30) {
+                last_crunch_vol = vol;
+                BrVector3Set(&velocity, 0.f, 0.f, 0.f);
+                crunch_tag = DRS3StartSound3D(gXXX_outlet,
+                    gMetal_crunch_sound_id[IRandomBetween(0, CARPOCALYPSE2_ASIZE(gMetal_crunch_sound_id) - 1)],
+                    pPosition, &velocity, 1, vol, IRandomBetween(49152, 81920), 0x10000);
+            }
+        }
+    }
+}
 
 // CrushAndDamageCar
 

@@ -138,7 +138,7 @@ void C2_HOOK_FASTCALL SkidNoise(tCar_spec* pCar, int pSide, br_scalar pV, int pM
 
 // StopSkid
 
-// CrashNoise
+void C2_HOOK_FASTCALL CrashNoise(br_vector3* pForce, br_vector3* pPosition, int pMaterial);
 
 // CrushAndDamageCar
 
@@ -256,6 +256,8 @@ extern int gNet_player_to_view_index;
 extern int gInTheSea;
 
 extern int gStop_opponents_moving;
+
+extern int gMetal_crunch_sound_id[5];
 
 extern int gSkid_tag[2];
 
