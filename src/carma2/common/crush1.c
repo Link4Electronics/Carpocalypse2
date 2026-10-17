@@ -483,9 +483,10 @@ float C2_HOOK_FASTCALL PointSimplexDistSq(const br_vector3* pP, int pCount, cons
             for (k = j + 1; k < pCount; k++) {
                 float distance = PointTriangleDistSq(pP, &pVertices[i], &pVertices[j], &pVertices[k]);
 
-                if (!(distance >= closest_distance)) {
+                if (distance < closest_distance) {
                     closest_distance = distance;
                 }
+
             }
         }
     }
@@ -503,14 +504,10 @@ int C2_HOOK_FASTCALL TooFarToCrush(const br_model* pModel, int pCount, const br_
 
     BrVector3Sub(&diagonal, &pModel->bounds.max, &pModel->bounds.min);
     threshold = BrVector3LengthSquared(&diagonal) + pMax_dist_sq;
-    if (DistSq(&pModel->bounds.min, pCount, pVertices) > threshold) {
-        goto too_far;
+    if (DistSq(&pModel->bounds.min, pCount, pVertices) <= threshold
+            && DistSq(&pModel->bounds.max, pCount, pVertices) <= threshold) {
+        return 0;
     }
-    if (DistSq(&pModel->bounds.max, pCount, pVertices) > threshold) {
-        goto too_far;
-    }
-    return 0;
-too_far:
     return 1;
 }
 
