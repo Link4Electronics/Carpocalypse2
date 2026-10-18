@@ -117,12 +117,12 @@ int C2_HOOK_FASTCALL SetKnackeredFlag(tCar_spec* pCar) {
 
 // FUNCTION: CARMA2_HW 0x0043faa0
 void C2_HOOK_FASTCALL DoPratcamHit(br_vector3* pVelocity) {
+    br_scalar abs_x;
+    br_scalar abs_z;
     br_scalar magnitude_squared;
     int offset;
 
-    magnitude_squared = (pVelocity->v[1] * pVelocity->v[1]
-        + pVelocity->v[2] * pVelocity->v[2])
-        + pVelocity->v[0] * pVelocity->v[0];
+    magnitude_squared = BrVector3LengthSquared(pVelocity);
     offset = 0;
     if (magnitude_squared > 0.2f) {
         offset = 8;
@@ -132,16 +132,18 @@ void C2_HOOK_FASTCALL DoPratcamHit(br_vector3* pVelocity) {
         return;
     }
 
-    if (fabs(pVelocity->v[0]) <= fabs(pVelocity->v[2])) {
-        if (!(pVelocity->v[2] >= 0.f)) {
-            PratcamEvent(offset + 13);
+    abs_z = fabs(pVelocity->v[2]);
+    abs_x = fabs(pVelocity->v[0]);
+    if (abs_x > abs_z) {
+        if (pVelocity->v[0] < 0.f) {
+            PratcamEvent(offset + 16);
         } else {
-            PratcamEvent(offset + 14);
+            PratcamEvent(offset + 15);
         }
-    } else if (!(pVelocity->v[0] >= 0.f)) {
-        PratcamEvent(offset + 16);
+    } else if (pVelocity->v[2] < 0.f) {
+        PratcamEvent(offset + 13);
     } else {
-        PratcamEvent(offset + 15);
+        PratcamEvent(offset + 14);
     }
 }
 

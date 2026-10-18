@@ -579,7 +579,11 @@ void C2_HOOK_FASTCALL RemoveDuplicatePoints(int* pCount_out, br_vector3* pPoints
 
 // AddDroneCrush
 
-// QueueDroneCrush
+// FUNCTION: CARMA2_HW 0x0042d1e0
+void C2_HOOK_FASTCALL QueueDroneCrush(tPhysics_object* pObject1, int pChain_count, br_vector3* pChain, br_vector3* pForce) {
+
+    NOT_IMPLEMENTED();
+}
 
 // DoCrushing
 

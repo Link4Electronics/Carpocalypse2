@@ -491,6 +491,50 @@ void C2_HOOK_FASTCALL SendFullyDetachBit(tCar_spec* pCar, tPhysics_object* pObje
     }
 }
 
+// FUNCTION: CARMA2_HW 0x00431310
+int C2_HOOK_FASTCALL FullyDetachSnappedBits(tCollision_contact* pContacts, float* pImpulses, int pCount) {
+    tPhysics_object* object1;
+    tPhysics_object* parent;
+    tCar_spec* car;
+    tUser_crush_data* user;
+    float snap_torque;
+    int index;
+    int i;
+
+    for (i = 0; i < pCount; i++) {
+        if (pContacts[i].type == 0xb
+                && (object1 = pContacts[i].object1) != NULL
+                && object1->owner != NULL
+                && object1->flags_0x238 == 1
+                && (parent = object1->parent) != NULL
+                && parent->owner != NULL
+                && parent->flags_0x238 == 1
+                && (car = (tCar_spec*)parent->owner) != NULL
+                && car->driver > 5
+                && car->invulnerable_no_crushage == 0
+                && (user = object1->actor->user) != NULL
+                && user->crush_data != NULL
+                && user->crush_data->flap_data != NULL
+                && user->crush_data->flap_data->kev_o_flap != 0) {
+            snap_torque = object1->M * gTorque_to_snap_per_tonne;
+            if (pImpulses[i] > snap_torque) {
+                if (BrVector3Dot(&pContacts[i].normal, &object1->physics_joint1->hinge_axis) < gCrushZero) {
+                    if (gNet_mode == 0) {
+                        index = i;
+                        ScaleCollisionImpulses(pContacts, pImpulses, pCount, &index, 1, snap_torque);
+                        FullyDetachBit(car, object1);
+                        MungeDetachLists(car->car_crush_spec);
+                        return 1;
+                    } else if (gNet_mode == 2) {
+                        SendFullyDetachBit(car, object1);
+                    }
+                }
+            }
+        }
+    }
+    return 0;
+}
+
 // FUNCTION: CARMA2_HW 0x0042f3d0
 void C2_HOOK_FASTCALL MungeDetachLists(tCar_crush_spec* pCar_crush) {
     int i;

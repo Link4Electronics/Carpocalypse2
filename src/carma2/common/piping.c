@@ -1231,6 +1231,20 @@ void C2_HOOK_FASTCALL PipeSingleGraphicalWheelStuff(tCar_spec* pCar) {
 
 }
 
+// FUNCTION: CARMA2_HW 0x004c8540
+void C2_HOOK_FASTCALL PipeSingleCarIncident(tCar_spec* pCar, br_vector3* pPosition, float pForce) {
+
+    gUNK_0069410c = *(tU32*)&pForce;
+    ARDoSingleVariedSession(ePipe_chunk_ped_incident, 1, 3,
+        4, 0, *(tU32*)&pForce,
+        2, 4, (tU16)pCar->car_ID,
+        0xc, 8, pPosition);
+}
+
+// FUNCTION: CARMA2_HW 0x004c85b0
+void C2_HOOK_FASTCALL PipeSingleLocalCarIncident(br_vector3* pPosition, float pForce) {
+}
+
 // FUNCTION: CARMA2_HW 0x004c8580
 void C2_HOOK_FASTCALL PipeSinglePedIncident(tPedestrian* pPed, br_actor* pActor) {
 

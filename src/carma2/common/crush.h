@@ -10,6 +10,7 @@
 extern br_vector3 gBatty_gravity;
 extern br_scalar gCrushSqrtHalf;
 extern br_scalar gCrushZero;
+extern br_scalar gTorque_to_snap_per_tonne;
 extern tU8 gCrush_data_entry_counter;
 extern const char* gSoftness_names[6];
 extern const char* gCrush_type_names[3];

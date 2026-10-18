@@ -1001,6 +1001,12 @@ int C2_HOOK_FASTCALL CarVulnerableByMine(tCar_spec* pCar) {
     return 1;
 }
 
+// UNLABELED: CARMA2_HW 0x004ddc20
+void C2_HOOK_FASTCALL FUN_004ddc20(tPhysics_object* pObject1, tPhysics_object* pObject2, float pImpulse) {
+
+    NOT_IMPLEMENTED();
+}
+
 // FUNCTION: CARMA2_HW 0x004dde20
 void C2_HOOK_FASTCALL ProcessShitMines(tU32 pTime) {
     int i;

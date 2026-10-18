@@ -555,7 +555,7 @@ int C2_HOOK_FASTCALL TestPairOverlap(tPhysics_object* pObj1, tPhysics_object* pO
 
 int C2_HOOK_FASTCALL CullPlacementFaces(tPhysics_object* pObject, tPhysics_shape* pShape, br_matrix34* pMat);
 
-int C2_HOOK_FASTCALL CollectPlacementFaces(tPhysics_object* pObject, tPlacement_face_buf* pBuf, int pFlags);
+int C2_HOOK_FASTCALL CollectPlacementFaces(tPhysics_object* pObject, tCollision_contact* pContacts, int pCount);
 
 tPhysics_object* C2_HOOK_FAKE_THISCALL MungeBoxObject(br_model* pModel, undefined4 pArg2, float pMass);
 
