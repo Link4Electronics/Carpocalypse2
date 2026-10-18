@@ -1867,58 +1867,85 @@ int C2_HOOK_FASTCALL CullPlacementFaces(tPhysics_object* pObject, tPhysics_shape
 }
 
 // UNLABELED: CARMA2_HW 0x004228b0
-// Collects track-face normals around the placement: refreshes/culls faces,
-// transforms the object's box corners to world space and records the normals
-// of unmarked track faces in range into the caller buffer (seed normal at
-// +0x2c, rest at +0x90 in 0x60 strides). Returns the recorded count.
-// NOTE: when gSensible_place_collect_active is set the original selects a
-// scratch matrix whose setup was not recoverable; the actor-relative product
-// below matches the determined branch.
-int C2_HOOK_FASTCALL CollectPlacementFaces(tPhysics_object* pObject, tPlacement_face_buf* pBuf, int pFlags) {
-    br_matrix34 inv_actor;
-    br_matrix34 rel;
+// Object-vs-track-face contact generator. The retail function (0x4228b0) walks
+// the shape chain and dispatches to per-shape helpers (0x4236a0/0x423ed0/
+// 0x424140, and the type-4 face scan via 0x423c00) which append
+// tCollision_contact records at pContacts + pCount and return how many were
+// added. We reproduce the outer contract and record layout (contact plane test
+// against gFace_list__car over [box_face_start, box_face_end), normal and r1 in
+// transform_matrix space) with a single-box corner approximation:
+//  - box_face_start == box_face_end -> 0,
+//  - pCount > 0x24 -> 0, appends stop at 0x28 contacts (matches 0x422900/
+//    0x422cec `0x28-count` limits),
+//  - field_0xed receives the accumulated per-shape flags byte (0 here),
+//  - omega is reloaded from rotate_omega when contacts were appended
+//    (0x422fa1), impulsive response is left to the PFC callback.
+int C2_HOOK_FASTCALL CollectPlacementFaces(tPhysics_object* pObject, tCollision_contact* pContacts, int pCount) {
+    br_matrix34 inv_transform;
     br_vector3 corners[8];
-    br_vector3 world;
+    br_vector3 local;
+    br_vector3 point;
+    br_vector3 rel;
     tFace_ref* face;
-    int count;
+    tCollision_contact* contact;
+    float d;
+    float deepest;
     int i;
     int j;
+    int added;
 
-    (void)pFlags;
-    BrMatrix34LPInverse(&inv_actor, &pObject->actor->t.t.mat);
-    BrMatrix34Mul(&rel, &inv_actor, &pObject->transform_matrix);
-    CullPlacementFaces(pObject, pObject->shape, &rel);
-    for (i = 0; i < 8; i++) {
-        world.v[0] = (i & 4) ? pObject->field_0xf4.max.v[0] : pObject->field_0xf4.min.v[0];
-        world.v[1] = (i & 2) ? pObject->field_0xf4.max.v[1] : pObject->field_0xf4.min.v[1];
-        world.v[2] = (i & 1) ? pObject->field_0xf4.max.v[2] : pObject->field_0xf4.min.v[2];
-        BrMatrix34ApplyP(&corners[i], &world, &pObject->transform_matrix);
+    if (pObject->box_face_start == pObject->box_face_end) {
+        return 0;
     }
-    count = 0;
-    for (i = pObject->box_face_start; i < pObject->box_face_end; i++) {
+    if (pCount > 0x24) {
+        return 0;
+    }
+    BrMatrix34LPInverse(&inv_transform, &pObject->transform_matrix);
+    for (i = 0; i < 8; i++) {
+        local.v[0] = (i & 4) ? pObject->bb1.max.v[0] : pObject->bb1.min.v[0];
+        local.v[1] = (i & 2) ? pObject->bb1.max.v[1] : pObject->bb1.min.v[1];
+        local.v[2] = (i & 1) ? pObject->bb1.max.v[2] : pObject->bb1.min.v[2];
+        BrMatrix34ApplyP(&corners[i], &local, &pObject->transform_matrix);
+    }
+    added = 0;
+    for (i = pObject->box_face_start; i < pObject->box_face_end && pCount + added < 0x28; i++) {
         face = &gFace_list__car[i];
         if ((face->flags & 0x80) != 0) {
             continue;
         }
+        deepest = 1.e30f;
         for (j = 0; j < 8; j++) {
-            if (fabsf(BrVector3Dot(&face->normal, &corners[j]) - face->d) < 0.5f) {
-                break;
+            d = BrVector3Dot(&face->normal, &corners[j]) - face->d;
+            if (d < deepest) {
+                deepest = d;
+                BrVector3Copy(&point, &corners[j]);
             }
         }
-        if (j >= 8) {
+        if (deepest > 0.02f) {
             continue;
         }
-        if (count >= 8) {
-            break;
-        }
-        if (count == 0) {
-            BrVector3Copy(&pBuf->seed, &face->normal);
-        } else {
-            BrVector3Copy(&pBuf->records[count - 1].normal, &face->normal);
-        }
-        count++;
+        contact = &pContacts[pCount + added];
+        contact->impulse = 0.f;
+        contact->object1 = pObject;
+        contact->object2 = NULL;
+        contact->field_0xc = face;
+        contact->field_0x10 = 0.f;
+        BrMatrix34ApplyP(&rel, &point, &inv_transform);
+        BrVector3Copy(&contact->r1, &rel);
+        BrVector3SetFloat(&contact->r2, 0.f, 0.f, 0.f);
+        BrMatrix34TApplyV(&contact->normal, &face->normal, &pObject->transform_matrix);
+        BrVector3SetFloat(&contact->field_0x38, 0.f, 0.f, 0.f);
+        BrVector3SetFloat(&contact->impulse1, 0.f, 0.f, 0.f);
+        BrVector3SetFloat(&contact->impulse2, 0.f, 0.f, 0.f);
+        contact->type = 0;
+        added++;
     }
-    return count;
+    pObject->field_0xed = 0;
+    if (added == 0) {
+        return 0;
+    }
+    BrVector3Copy(&pObject->omega, &pObject->rotate_omega);
+    return added;
 }
 
 #pragma auto_inline(off)
@@ -1976,8 +2003,7 @@ int C2_HOOK_FASTCALL TestPairOverlap(tPhysics_object* pObj1, tPhysics_object* pO
 #pragma inline_depth(0)
 // FUNCTION: CARMA2_HW 0x00429070
 int C2_HOOK_FASTCALL TestForObjectInSensiblePlace(tPhysics_object* pCollision_info_1, tPhysics_object* pCollision_info_2, br_vector3* pVec3, tWorld_callbacks* pCar_callbacks) {
-    tU8 buf[0x300];
-    tPlacement_face_buf* faces;
+    tCollision_contact contacts[0x28];
     tPhysics_object* p1;
     tPhysics_object* p2;
     tPhysics_object* child;
@@ -1994,25 +2020,23 @@ int C2_HOOK_FASTCALL TestForObjectInSensiblePlace(tPhysics_object* pCollision_in
     gSensible_place_blocker = NULL;
     p1 = pCollision_info_1;
     p2 = pCollision_info_2;
-    faces = (tPlacement_face_buf*)buf;
     GetNewBoundingBox(&pCollision_info_1->field_0xf4, &pCollision_info_1->bb1, &pCollision_info_1->transform_matrix);
     GetFacesInBox(pCollision_info_1, pCar_callbacks);
     gSensible_place_collect_active = 1;
-    count = CollectPlacementFaces(pCollision_info_1, faces, 0);
+    count = CollectPlacementFaces(pCollision_info_1, contacts, 0);
     gSensible_place_collect_active = 0;
     if (count != 0) {
-        float x = faces->seed.v[0];
-        float y = faces->seed.v[1];
-        float z = faces->seed.v[2];
+        float x = contacts[0].normal.v[0];
+        float y = contacts[0].normal.v[1];
+        float z = contacts[0].normal.v[2];
         if (count > 1) {
-            i = 0;
-            count--;
+            i = 1;
             do {
-                x += faces->records[i].normal.v[0];
-                y += faces->records[i].normal.v[1];
-                z += faces->records[i].normal.v[2];
+                x += contacts[i].normal.v[0];
+                y += contacts[i].normal.v[1];
+                z += contacts[i].normal.v[2];
                 i++;
-            } while (--count != 0);
+            } while (i < count);
             len = sqrtf(x * x + y * y + z * z);
             if (len != 0.f) {
                 len = 1.0 / len;
@@ -3994,17 +4018,144 @@ static void** C2_HOOK_FASTCALL QuickHingeCollect(tPhysics_object* pObject, tPhys
 }
 
 // UNLABELED: CARMA2_HW 0x004bd9e0
-static int C2_HOOK_FASTCALL QuickHingeGen(tPhysics_object* pObject, void* pTmp, void* pBuffer1, int pArg, tWorld_callbacks* pCallbacks, tPhysics_object* pHead) {
-    (void)pObject;
-    (void)pTmp;
-    (void)pBuffer1;
-    (void)pArg;
-    (void)pCallbacks;
-    (void)pHead;
-    return 0;
+// Contact-generation glue for one object: refreshes the faces in its box,
+// appends track-face contacts (0x4228b0), then walks the overlap list built by
+// QuickHingeCollect, appending object-object contacts (0x425ca0) and waking the
+// jointed owner of either object on new contacts. Children with an active joint
+// (0x188) recurse over the subset of the list overlapping their 0x10c box.
+// gReduced_object_list/gINT_006940ac (0x6940a8/0x6940ac) are only live around
+// GetFacesInBox. Returns the running contact count.
+static void WakeObjectOwner(tPhysics_object* pObject, tWorld_callbacks* pCallbacks) {
+    tPhysics_object* owner;
+    tPhysics_object* child;
+
+    owner = pObject;
+    while (owner->parent != NULL && owner->physics_joint1 != NULL && owner->physics_joint1->type != eJoint_none) {
+        owner = owner->parent;
+    }
+    owner->field_0xf0 = 0;
+    for (child = owner->child; child != NULL; child = child->next) {
+        SetFieldF0Tree(child, 0);
+    }
+    if (pCallbacks != NULL && pCallbacks->activate_passive != NULL) {
+        pCallbacks->activate_passive(owner);
+    }
+    if ((owner->child != NULL || owner->physics_joint2 != NULL) && owner->field_0x218 == 0) {
+        MoveJointedObject(owner, 0, 0.f);
+    }
+}
+
+static int C2_HOOK_FASTCALL QuickHingeGen(tPhysics_object* pObject, tPhysics_object** ppPartner_list, tCollision_contact* pContacts, int pCount, tWorld_callbacks* pCallbacks, tPhysics_object* pHead) {
+    tPhysics_object* partner;
+    tPhysics_object* child;
+    tPhysics_object* node;
+    tPhysics_object** slot;
+    tPhysics_object* moved;
+    tPhysics_object** moved_tail;
+    int added;
+
+    gReduced_object_list = ppPartner_list;
+    gINT_006940ac = (pObject->field_0x1b4.v[0] * pObject->field_0x1b4.v[0]
+        + pObject->field_0x1b4.v[1] * pObject->field_0x1b4.v[1]
+        + pObject->field_0x1b4.v[2] * pObject->field_0x1b4.v[2]) != 0.f;
+    GetFacesInBox(pObject, pCallbacks);
+    gReduced_object_list = NULL;
+    gINT_006940ac = 0;
+    added = CollectPlacementFaces(pObject, pContacts, pCount);
+    if (added != 0) {
+        if (pObject->field_0xf0 == 2) {
+            WakeObjectOwner(pObject, pCallbacks);
+        }
+        pCount += added;
+    }
+    for (partner = *ppPartner_list; partner != NULL; partner = (tPhysics_object*)partner->field_0x234) {
+        if (partner == pObject) {
+            continue;
+        }
+        if (pObject->field_0x1dc != 0 && partner->field_0x1dc == pObject->field_0x1dc && (tU32)partner <= (tU32)pObject) {
+            continue;
+        }
+        if (pObject->parent == partner || partner->parent == pObject) {
+            continue;
+        }
+        if ((partner->field_0x1a4 & pObject->field_0x1a0) != 0
+            || (partner->field_0x1a0 & pObject->field_0x1a4) != 0
+            || (pObject->flags & 4) != 0
+            || (partner->flags & 4) != 0) {
+            continue;
+        }
+        /* NOT_IMPLEMENTED: CARMA2_HW 0x00425ca0 object-vs-object contact
+         * generator, originally called as
+         *   added = GenerateObjectObjectContacts(pObject, partner, pContacts, pCount);
+         * `added` stays 0 until it is reconstructed, so the wake/activation body
+         * below (faithful translation of the original `if (added != 0)` block)
+         * is currently unreachable. */
+        added = 0;
+        if (added != 0) {
+            if (pObject->field_0xf0 == 2) {
+                WakeObjectOwner(pObject, pCallbacks);
+            }
+            if (partner->field_0xf0 == 2) {
+                WakeObjectOwner(partner, pCallbacks);
+            }
+            /* NOT_IMPLEMENTED: CARMA2_HW 0x004be0e0: if (partner->field_0xec != 0)
+             *   WakeAttachedObject(partner, pHead); */
+            /* NOT_IMPLEMENTED: CARMA2_HW 0x004bddd0:
+             *   RegisterCollisionPair(pObject, partner); */
+            pCount += added;
+        }
+    }
+    for (child = pObject->child; child != NULL; child = child->next) {
+        if (child->physics_joint1 == NULL || child->physics_joint1->type == eJoint_none) {
+            continue;
+        }
+        moved = NULL;
+        moved_tail = &moved;
+        slot = ppPartner_list;
+        for (node = *slot; node != NULL; node = *slot) {
+            if (node == child || BoundsOverlapTest__finteray(&child->field_0x10c, &node->field_0x10c)) {
+                *slot = (tPhysics_object*)node->field_0x234;
+                *moved_tail = node;
+                moved_tail = (tPhysics_object**)&node->field_0x234;
+            } else {
+                slot = (tPhysics_object**)&node->field_0x234;
+            }
+        }
+        *moved_tail = NULL;
+        *slot = moved;
+        pCount = QuickHingeGen(child, slot, pContacts, pCount, pCallbacks, pHead);
+    }
+    return pCount;
 }
 
 static void ResetObjectAndChildren(tPhysics_object* pObject);
+
+// APPROXIMATION: stands in for the impulse array produced by the retail
+// 0x4bf490/0x4c3b60 joint+impulse solver pass that SetUpQuickHingeData phase 2
+// consumes (0x4bbdaf/0x4bbe08). Normal (approach-speed) impulse of one contact:
+// the closing speed along the world-space contact normal times the effective
+// mass (object mass for track contacts, reduced mass for pairs).
+static float ComputeContactImpulse(tCollision_contact* pContact) {
+    tPhysics_object* obj1;
+    tPhysics_object* obj2;
+    br_vector3 normal;
+    float vn;
+
+    obj1 = pContact->object1;
+    obj2 = pContact->object2;
+    BrMatrix34ApplyV(&normal, &pContact->normal, &obj1->transform_matrix);
+    vn = normal.v[0] * obj1->v.v[0] + normal.v[1] * obj1->v.v[1] + normal.v[2] * obj1->v.v[2];
+    if (obj2 != NULL) {
+        vn -= normal.v[0] * obj2->v.v[0] + normal.v[1] * obj2->v.v[1] + normal.v[2] * obj2->v.v[2];
+    }
+    if (!(vn < 0.f)) {
+        return 0.f;
+    }
+    if (obj2 != NULL && obj1->M != 0.f && obj2->M != 0.f) {
+        return -vn / (1.f / obj1->M + 1.f / obj2->M);
+    }
+    return -vn * obj1->M;
+}
 
 // FUNCTION: CARMA2_HW 0x004baec0
 int C2_HOOK_FASTCALL SetUpQuickHingeData(tPhysics_object** pObject_list, tPhysics_object* pObject, void* pBuffer1, void* pBuffer2, int pArg, tWorld_callbacks* pWorld_callbacks) {
@@ -4012,7 +4163,7 @@ int C2_HOOK_FASTCALL SetUpQuickHingeData(tPhysics_object** pObject_list, tPhysic
     tPhysics_object* cur;
     tPhysics_object* next;
     tPhysics_object* child;
-    void* out;
+    tPhysics_object* out;
     int cnt;
     int prev;
     float dx;
@@ -4028,8 +4179,8 @@ int C2_HOOK_FASTCALL SetUpQuickHingeData(tPhysics_object** pObject_list, tPhysic
     for (cur = pObject; ; cur = next) {
         next = cur->field183_0x1d8;
         prev = cnt;
-        QuickHingeCollect(cur, head, &out);
-        cnt = QuickHingeGen(cur, &out, pBuffer1, prev, pWorld_callbacks, head);
+        QuickHingeCollect(cur, head, (void**)&out);
+        cnt = QuickHingeGen(cur, &out, (tCollision_contact*)pBuffer1, prev, pWorld_callbacks, head);
         if (gNet_mode == eNet_mode_host && cur->field_0xf0 == 1 && cnt > prev) {
             dx = cur->transform_matrix.m[3][0] - ((br_matrix34*)cur->field_0xbc)->m[3][0];
             dy = cur->transform_matrix.m[3][1] - ((br_matrix34*)cur->field_0xbc)->m[3][1];
@@ -4060,6 +4211,62 @@ int C2_HOOK_FASTCALL SetUpQuickHingeData(tPhysics_object** pObject_list, tPhysic
         }
         if (next == pObject) {
             break;
+        }
+    }
+    if (cnt > 0) {
+        tCollision_contact* contacts;
+        tCollision_contact* dest;
+        tPhysics_object* obj1;
+        float impulses[0x28];
+        int i;
+
+        contacts = (tCollision_contact*)pBuffer1;
+        for (i = 0; i < cnt; i++) {
+            impulses[i] = ComputeContactImpulse(&contacts[i]);
+        }
+        // 0x4bbe08: contacts the solver left unimpulsed are marked type 9.
+        for (i = 0; i < cnt; i++) {
+            if (impulses[i] == 0.f) {
+                contacts[i].type = 9;
+            }
+        }
+        gINT_00692dc8 = 0;
+        // 0x4bbe34: car force callback (ecx = contacts, edx = impulses, push count).
+        if (pWorld_callbacks->process_forces != NULL) {
+            pWorld_callbacks->process_forces(contacts, impulses, cnt);
+        }
+        // NOT_IMPLEMENTED: 0x4bbe60 process_joint_forces + 0x4b7960/0x4bc190
+        // joint post-processing (needs the 0x4bca10/0x4bf490/0x4c3b60 joint and
+        // impulse solver passes, not reconstructed yet).
+        // 0x4bbe9a: impulse-carrying contacts are appended to gCollision_contacts.
+        for (i = 0; i < cnt; i++) {
+            if (impulses[i] == 0.f) {
+                continue;
+            }
+            if (contacts[i].type == 9) {
+                continue;
+            }
+            // NOT_IMPLEMENTED: 0x4b7960(contact, impulse) per-contact pre-pass.
+            if (contacts[i].type == 0xb) {
+                continue;
+            }
+            obj1 = contacts[i].object1;
+            if (contacts[i].object2 != NULL) {
+                if ((obj1->collision_flag & 2) != 0 && (contacts[i].object2->collision_flag & 2) != 0) {
+                    continue;
+                }
+            } else {
+                if ((obj1->collision_flag & 1) != 0) {
+                    continue;
+                }
+            }
+            if (gINT_00692ddc >= 0x32) {
+                continue;
+            }
+            dest = &gCollision_contacts[gINT_00692ddc];
+            memcpy(dest, &contacts[i], sizeof(tCollision_contact));
+            dest->impulse = impulses[i];
+            gINT_00692ddc++;
         }
     }
     return 0;

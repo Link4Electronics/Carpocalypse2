@@ -4,6 +4,7 @@
 #include "c2_hooks.h"
 
 #include "carpocalypse2_types.h"
+#include "physics.h"
 
 tPhysics_object* C2_HOOK_FASTCALL DetachBit(tCar_spec* pCar, br_actor* pActor, br_bounds3* pBounds);
 
@@ -36,6 +37,8 @@ void C2_HOOK_FASTCALL MungeDetachLists(tCar_crush_spec* pCar_crush);
 void C2_HOOK_FASTCALL FullyDetachBit(tCar_spec *pCar, tPhysics_object* pObject);
 
 void C2_HOOK_FASTCALL DoFullyDetaching(void);
+
+int C2_HOOK_FASTCALL FullyDetachSnappedBits(tCollision_contact* pContacts, float* pImpulses, int pCount);
 
 void C2_HOOK_FASTCALL BendCar(tCar_spec* pCar, br_angle pAngle_x, br_angle pAngle_y, br_angle pAngle_z, const br_vector3* pArg5, float pArg6, int pArg7);
 

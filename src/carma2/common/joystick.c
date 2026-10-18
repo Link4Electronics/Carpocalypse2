@@ -122,6 +122,12 @@ float C2_HOOK_FASTCALL GetJoystickY(void) {
     return gJoystick_y_throttle;
 }
 
+// UNLABELED: CARMA2_HW 0x0045c910
+void C2_HOOK_FASTCALL FUN_0045c910(tCar_spec* pCar, br_vector3* pPoint, br_vector3* pForce, float pImpulse) {
+
+    NOT_IMPLEMENTED();
+}
+
 // FUNCTION: CARMA2_HW 0x0045c7f0
 int C2_HOOK_FASTCALL GetJoystickFBBGain(void) {
 
