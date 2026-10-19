@@ -2085,8 +2085,17 @@ void C2_HOOK_FASTCALL ARPowerupLose(tPowerup* pPowerup, tCar_spec* pCar) {
 // CalcEndMyBendLength
 
 // CalcRemoveFacesLength
-// STUB: CARMA2_HW 0x004d6880
+// FUNCTION: CARMA2_HW 0x004d6880
 void C2_HOOK_FASTCALL PedPreCollisionStuff(void) {
+    tPhysics_object* pObject;
+    br_vector3 v;
 
-    NOT_IMPLEMENTED();
+    for (pObject = PHILGetFirstObject(); pObject != NULL; pObject = PHILGetNextObject(pObject)) {
+        if (pObject->owner != NULL && pObject->flags_0x238 == 5) {
+            v.v[0] = pObject->omega.v[0] * (BrVector3Length(&pObject->omega) * 4e-06);
+            v.v[1] = pObject->omega.v[1] * (BrVector3Length(&pObject->omega) * 4e-06);
+            v.v[2] = pObject->omega.v[2] * (float)(BrVector3Length(&pObject->omega) * 4e-06);
+            ApplyWaterOmegaBrake(pObject, &v);
+        }
+    }
 }

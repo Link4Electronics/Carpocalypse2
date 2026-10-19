@@ -1,9 +1,11 @@
 #include "powerup.h"
 
+#include "car.h"
 #include "displays.h"
 #include "globvars.h"
 #include "graphics1.h"
 #include "pedestrn.h"
+#include "physics.h"
 #include "pratcam.h"
 #include "spark.h"
 #include "globvrpb.h"
@@ -387,36 +389,26 @@ void C2_HOOK_FASTCALL GotPowerupEarwig(tCar_spec* pCar, int pIndex, int pMessage
 
 // SendMines
 
-// STUB: CARMA2_HW 0x004dd1b0
 extern tCar_spec* gActive_car_list[139];
 extern int gNum_active_cars;
 
+// FUNCTION: CARMA2_HW 0x004dd1b0
 void C2_HOOK_FASTCALL MinePreCollisionStuff(void) {
     int i;
-    int j;
 
-    for (i = 0; i < CARPOCALYPSE2_ASIZE(gShit_mines); i++) {
-        tShit_mine* mine = &gShit_mines[i];
-        br_vector3* mine_pos;
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gShit_mines); i++) {
+        tPhysics_object* obj;
 
-        if (!(mine->flags & 0x1) || (mine->flags & 0x80)) {
+        if (!(gShit_mines[i].flags & 0x1)) {
             continue;
         }
-        mine_pos = &mine->collision_info->actor->t.t.translate.t;
-        for (j = 0; j < gNum_active_cars; j++) {
-            tCar_spec* car = gActive_car_list[j];
-            br_vector3 delta;
-
-            if (car == NULL || car->car_master_actor == NULL) {
-                continue;
-            }
-            BrVector3Sub(&delta, (br_vector3*)car->car_master_actor->t.t.mat.m[3], mine_pos);
-            if (delta.v[0] * delta.v[0] + delta.v[1] * delta.v[1] + delta.v[2] * delta.v[2] < 4.0f) {
-                mine->flags |= 0x80;
-                mine->car = car;
-                break;
-            }
+        obj = gShit_mines[i].collision_info;
+        if (obj->field_0x261 != 0x31 || obj->message_time != gPHIL_last_physics_tick) {
+            continue;
         }
+        obj->field_0xf0 = 1;
+        SelectCrushNetwork(&obj->field_0x294, obj, 2);
+        obj->field_0x261 = 0;
     }
 }
 

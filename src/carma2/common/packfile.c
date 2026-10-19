@@ -331,7 +331,7 @@ br_size_t C2_HOOK_FASTCALL PFfread(void* buf, br_size_t size, unsigned int n, vo
     return n;
 }
 
-// STUB: CARMA2_HW 0x004b4a80
+// FUNCTION: CARMA2_HW 0x004b4a80
 int C2_HOOK_FASTCALL PFfwrite(const void* buf, br_size_t size, unsigned int n, void* f) {
 
     if ((uintptr_t)f >= CARPOCALYPSE2_ASIZE(gTwatVfsFiles)) {
@@ -460,7 +460,7 @@ tTWTVFS C2_HOOK_FASTCALL OpenPackFileAndSetTiffLoading(const char* path) {
     return res;
 }
 
-// STUB: CARMA2_HW 0x004b4e20
+// FUNCTION: CARMA2_HW 0x004b4e20
 void C2_HOOK_FASTCALL ClosePackFileAndSetTiffLoading(tTWTVFS twt) {
 
     if (twt >= 0) {

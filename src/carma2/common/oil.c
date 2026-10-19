@@ -14,7 +14,6 @@
 #include "carpocalypse2_macros.h"
 #include "oil.h"
 
-// STUB: CARMA2_HW 0x004a6a10
 // GLOBAL: CARMA2_HW 0x0065a398
 const char* gOil_pixie_names[1] = {
     "OIL.PIX",
@@ -26,11 +25,11 @@ br_pixelmap* gOil_pixies[1];
 // GLOBAL: CARMA2_HW 0x00690c90
 tOil_spill_info gOily_spills[32];
 
-// GLOBAL: CARMA2_HW 0x0074a68c
-br_material* oily_material;
-
 // GLOBAL: CARMA2_HW 0x00691710
 int gNext_oil_pixie;
+
+// GLOBAL: CARMA2_HW 0x0074a68c
+br_material* oily_material = NULL;
 
 // FUNCTION: CARMA2_HW 0x004a6c50
 void C2_HOOK_FASTCALL ResetOilSpills(void) {

@@ -11,7 +11,6 @@
 
 // DRActorToRoot
 
-// STUB: CARMA2_HW 0x004e3660
 // GLOBAL: CARMA2_HW 0x006a20d0
 br_actor* gY_picking_camera;
 
