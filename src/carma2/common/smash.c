@@ -480,13 +480,27 @@ intptr_t C2_HOOK_FASTCALL RepairAllSmashes(tCar_spec* pCar_spec) {
 
 // LoadWastedExplosion
 
-// ChangeSmashModel
+// FUNCTION: CARMA2_HW 0x004f5f60
+void C2_HOOK_FASTCALL ChangeSmashModel(br_actor* pActor, br_model* pOld_model, br_model* pNew_model) {
+    (void)pOld_model;
+    pActor->model = pNew_model;
+}
 
-// TurnOnSmashModel
+// FUNCTION: CARMA2_HW 0x004f5f70
+void C2_HOOK_FASTCALL TurnOnSmashModel(br_actor* pActor) {
+    pActor->render_style = BR_RSTYLE_FACES;
+}
 
-// TurnOffSmashModel
+// FUNCTION: CARMA2_HW 0x004f5f80
+void C2_HOOK_FASTCALL TurnOffSmashModel(br_actor* pActor) {
+    pActor->render_style = BR_RSTYLE_NONE;
+}
 
-// SmashRemoveSomeFaces
+// FUNCTION: CARMA2_HW 0x004f5f90
+void C2_HOOK_FASTCALL SmashRemoveSomeFaces(br_model* pModel, tS16 pCount) {
+    pModel->nfaces -= pCount;
+    DRModelUpdateAndKevificateMaterials(pModel, BR_MODU_ALL);
+}
 
 // SmashRestoreSomeFaces
 
