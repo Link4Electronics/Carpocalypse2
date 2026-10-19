@@ -46,9 +46,9 @@ extern tU32 gTime_of_last_zappy_headups;
 
 // DisplayMovieStatusPanel
 
-// ApplyTime
+extern void C2_HOOK_FASTCALL ApplyTime(tU32 pTime);
 
-// ARSetPause
+extern void C2_HOOK_FASTCALL ARSetPause(int pPause);
 
 #define CARPOCALYPSE2_REPLAY_H
 

@@ -440,6 +440,12 @@ void C2_HOOK_FASTCALL DoActionReplayPostSwap(void) {
 
 // DisplayMovieStatusPanel
 
-// ApplyTime
+// FUNCTION: CARMA2_HW 0x004022e0
+void C2_HOOK_FASTCALL ApplyTime(tU32 pTime) {
+    gLast_replay_frame_time = pTime;
+}
 
-// ARSetPause
+// FUNCTION: CARMA2_HW 0x004022f0
+void C2_HOOK_FASTCALL ARSetPause(int pPause) {
+    gReplay_pause_state = pPause;
+}

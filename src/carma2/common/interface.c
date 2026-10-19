@@ -846,14 +846,18 @@ int C2_HOOK_FASTCALL FindPrevActiveItem(tFrontend_spec* pFrontend, int pStart_in
 
 extern int C2_HOOK_CDECL sub_576c00(int pValue, int pDivisor);
 
-static __inline void C2_HOOK_FASTCALL FuckingMakeTheFuckingRaceAndGroupsDisplayHaveTheRightCuntingStuffInIt(tFrontend_spec* pFrontend) {
+// FUNCTION: CARMA2_HW 0x00466bb0
+int C2_HOOK_FASTCALL FuckingMakeTheFuckingRaceAndGroupsDisplayHaveTheRightCuntingStuffInIt(tFrontend_spec* pFrontend) {
+    int race_index;
 
-    if (gIs_boundary_race || gProgram_state.game_completed) {
-        pFrontend->items[7].enabled = 1;
-    } else {
+    race_index = gProgram_state.current_race_index;
+    if (!gIs_boundary_race && !gProgram_state.game_completed) {
         pFrontend->items[7].enabled = -1;
+    } else {
+        pFrontend->items[7].enabled = 1;
     }
-    sub_576c00(gProgram_state.current_race_index, 4);
+    sub_576c00(race_index, 4);
+    return 0;
 }
 
 // FUNCTION: CARMA2_HW 0x00467b30
@@ -1553,16 +1557,6 @@ int C2_HOOK_FASTCALL LoadGameScrollUp(tFrontend_spec* pFrontend) {
     return 0;
 }
 
-// FUNCTION: CARMA2_HW 0x0046fb80
-int C2_HOOK_FASTCALL LoadGameScrollDownLoadGameScrollDown(tFrontend_spec* pFrontend) {
-
-    if (gFrontend_load_game_index_top + 8 < gFrontend_count_saved_games && gFrontend_scroll_time_left == 0) {
-        gFrontend_load_game_index_top += 1;
-        DRS3StartSound(gEffects_outlet, eSoundId_LeftButton);
-        gFrontend_scroll_time_left += gFrontend_scroll_time_increment;
-    }
-    return 0;
-}
 // FUNCTION: CARMA2_HW 0x0046fbd0
 int C2_HOOK_FASTCALL LoadSlot1(tFrontend_spec* pFrontend) {
 
@@ -3773,10 +3767,13 @@ void C2_HOOK_FASTCALL ScrollDn(tFrontend_spec* pFrontend, int pScroller) {
 }
 
 
+// FUNCTION: CARMA2_HW 0x0046bd60
 int C2_HOOK_FASTCALL CreditsScreenInfunc(tFrontend_spec* pFrontend) {
     tPath_name interface_path;
     tPath_name credits_path;
     FILE* f;
+    char s[100];
+    char small_buf[11];
     int i;
 
     if (!pFrontend->loaded) {
@@ -3787,7 +3784,7 @@ int C2_HOOK_FASTCALL CreditsScreenInfunc(tFrontend_spec* pFrontend) {
     PathCat(credits_path, interface_path, "creditslist.txt");
     f = DRfopen(credits_path, "rt");
     if (f == NULL) {
-        FatalError(kFatalError_Mysterious_SS, interface_path, interface_path);
+        FatalError(kFatalError_Mysterious_SS);
     }
 
     /* Number of lines */
@@ -3802,11 +3799,9 @@ int C2_HOOK_FASTCALL CreditsScreenInfunc(tFrontend_spec* pFrontend) {
     gCredits_fonts[0] = kPolyfont_hand_red_15pt_lit;
     gCredits_heights[0] = 0;
     gCredits_total_height = 0;
-    for (i = 0; i < gCredits_line_count; i++) {
-        char s[256];
-        char small_buf[11];
-
-        GetALineAndDontArgue(f, s);
+    i = 0;
+    GetALineAndDontArgue(f, s);
+    while (i < gCredits_line_count) {
         if (strncmp(s, "FONT", 4) == 0) {
             strncpy(small_buf, &s[5], sizeof(small_buf) - 1);
 #ifdef CARPOCALYPSE2_FIX_BUGS
@@ -3814,13 +3809,11 @@ int C2_HOOK_FASTCALL CreditsScreenInfunc(tFrontend_spec* pFrontend) {
 #endif
             gCredits_fonts[i] = atoi(small_buf);
         } else if (strncmp(s, "SPACE", 5) == 0) {
-            double space_height;
             strncpy(small_buf, &s[6], sizeof(small_buf) - 1);
 #ifdef CARPOCALYPSE2_FIX_BUGS
             small_buf[sizeof(small_buf) - 1] = '\0';
 #endif
-            space_height = (double)PolyFontHeight(gCredits_fonts[i]) * atof(small_buf);
-            gCredits_heights[i] += (int)space_height;
+            gCredits_heights[i] += (int)((double)PolyFontHeight(gCredits_fonts[i]) * atof(small_buf));
         } else if (strncmp(s, "THROB", 5) == 0) {
             strncpy(small_buf, &s[6], sizeof(small_buf) - 1);
 #ifdef CARPOCALYPSE2_FIX_BUGS
@@ -3836,12 +3829,14 @@ int C2_HOOK_FASTCALL CreditsScreenInfunc(tFrontend_spec* pFrontend) {
             strcpy(gCredits_texts[i], s);
             gCredits_heights[i] += PolyFontHeight(gCredits_fonts[i]);
             gCredits_total_height += gCredits_heights[i];
+            i++;
+            if (i < gCredits_line_count) {
+                gCredits_fonts[i] = gCredits_fonts[i - 1];
+                gCredits_throbs[i] = gCredits_throbs[i - 1];
+                gCredits_heights[i] = 0;
+            }
         }
-        if (i + 1 < gCredits_line_count) {
-            gCredits_fonts[i + 1] = gCredits_fonts[i];
-            gCredits_throbs[i + 1] = gCredits_throbs[i];
-            gCredits_heights[i + 1] = 0;
-        }
+        GetALineAndDontArgue(f, s);
     }
 #ifdef CARPOCALYPSE2_FIX_BUGS
     PFfclose(f);
@@ -3865,6 +3860,7 @@ int C2_HOOK_FASTCALL CreditsScreenOutfunc(tFrontend_spec* pFrontend) {
     return 1;
 }
 
+// FUNCTION: CARMA2_HW 0x0046f750
 int C2_HOOK_FASTCALL LoadGameInFunc(tFrontend_spec* pFrontend) {
     br_camera* camera;
     int i;
@@ -3882,13 +3878,13 @@ int C2_HOOK_FASTCALL LoadGameInFunc(tFrontend_spec* pFrontend) {
     gFrontend_menu_camera = BrActorAllocate(BR_ACTOR_CAMERA, NULL);
     camera = gFrontend_menu_camera->type_data;
     camera->type = BR_CAMERA_PARALLEL;
-    camera->field_of_view = BrDegreeToAngle(90);
+    camera->field_of_view = BR_ANGLE_DEG(90);
     camera->hither_z = 1.f;
     camera->yon_z = 3.f;
     camera->width = 640.f;
     camera->height = 480.f;
 
-    for (i = 0; i < CARPOCALYPSE2_ASIZE(gFrontend_billboard_actors); i++) {
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gFrontend_billboard_actors); i++) {
         gFrontend_billboard_actors[i] = CreateAPOactor();
     }
     gFrontend_APO_Colour_1 = FudgeBRenderIntoTheNinetiesWithSomeProperFuckingColourSupport(
@@ -3904,6 +3900,7 @@ int C2_HOOK_FASTCALL LoadGameInFunc(tFrontend_spec* pFrontend) {
     return 0;
 }
 
+// FUNCTION: CARMA2_HW 0x0046fb80
 int C2_HOOK_FASTCALL LoadGameScrollDown(tFrontend_spec* pFrontend) {
 
     if (gFrontend_load_game_index_top + 8 < gFrontend_count_saved_games && gFrontend_scroll_time_left == 0) {
