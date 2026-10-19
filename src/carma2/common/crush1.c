@@ -743,7 +743,31 @@ int C2_HOOK_FASTCALL QuantizeWithinBounds(br_scalar pQuant, br_scalar pMin, br_s
 
 // SaveVitalBitsOfObject
 
-// MakeCarModelsMaterialsDoubleSided
+// FUNCTION: CARMA2_HW 0x00430730
+intptr_t C2_HOOK_CDECL MakeCarModelsMaterialsDoubleSided(br_actor* pActor, void* pArg) {
+    tUser_crush_data* user_crush = (tUser_crush_data*)pActor->user;
+    tCar_spec* car_spec = (tCar_spec*)pArg;
+    int i;
+
+    if (user_crush != NULL) {
+        for (i = 0; i < car_spec->count_detail_levels; i++) {
+            br_model* model = user_crush->models[i];
+            if (model != NULL) {
+                int g;
+                for (g = 0; g < model->prepared->ngroups; g++) {
+                    br_material* material;
+
+                    material = model->faces[*model->prepared->groups[g].face_user].material;
+                    if (material != NULL && !(material->flags & BR_MATF_TWO_SIDED)) {
+                        material->flags |= BR_MATF_TWO_SIDED;
+                        BrMaterialUpdate(material, BR_MATU_RENDERING);
+                    }
+                }
+            }
+        }
+    }
+    return 0;
+}
 
 // SwapCarShapes
 

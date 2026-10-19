@@ -276,6 +276,14 @@ extern intptr_t C2_HOOK_FASTCALL RepairAllSmashes(tCar_spec* pCar_spec);
 
 // SmashRemoveSomeFaces
 
+extern void C2_HOOK_FASTCALL ChangeSmashModel(br_actor* pActor, br_model* pOld_model, br_model* pNew_model);
+
+extern void C2_HOOK_FASTCALL TurnOnSmashModel(br_actor* pActor);
+
+extern void C2_HOOK_FASTCALL TurnOffSmashModel(br_actor* pActor);
+
+extern void C2_HOOK_FASTCALL SmashRemoveSomeFaces(br_model* pModel, tS16 pCount);
+
 // SmashRestoreSomeFaces
 
 // TurnOnSmashDecal

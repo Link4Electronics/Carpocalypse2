@@ -372,6 +372,10 @@ extern void C2_HOOK_FASTCALL FreeShapeList(tPhysics_shape *pShape);
 
 extern void C2_HOOK_FASTCALL FreePhysicsJoint(tPhysics_joint* pJoint);
 
+extern void C2_HOOK_FASTCALL CreateJointForce(tPhysics_object* pObject, tPhysics_object* pPartner, tPhysics_joint_force* pForce, const br_vector3* pDirection);
+
+extern void C2_HOOK_FASTCALL CreateJointTorque(tPhysics_object* pObject, tPhysics_object* pPartner, tPhysics_joint_force* pForce, const br_vector3* pDirection);
+
 // GetBoundsFromPointList
 
 // FillInShape
