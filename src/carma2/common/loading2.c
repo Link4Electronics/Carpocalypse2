@@ -481,7 +481,6 @@ void C2_HOOK_FASTCALL LoadGeneralParameters(void) {
     gMass_mine = GetAFloat(gTempFile);
 }
 
-// STUB: CARMA2_HW 0x00487dc0
 void C2_HOOK_FASTCALL FinishLoadingGeneral(void) {
 #ifndef CARPOCALYPSE2_MATCHING
     FinishLoadGeneralParameters();

@@ -500,7 +500,6 @@ br_pixelmap* C2_HOOK_FASTCALL DRPixelmapAllocateSub(br_pixelmap* pPm, br_uint_16
     return the_map;
 }
 
-// STUB: CARMA2_HW 0x00513870
 // FUNCTION: CARMA2_HW 0x00513870
 br_pixelmap* C2_HOOK_FASTCALL DRImageLoad(const char* path) {
     int errorFlags;
@@ -513,8 +512,10 @@ br_pixelmap* C2_HOOK_FASTCALL DRImageLoad(const char* path) {
 
     strcpy(pathBuffer, path);
     pathLen = strlen(pathBuffer);
-    for (fileStart = pathLen - 1; fileStart != 0; fileStart--) {
-        if (pathBuffer[fileStart] == *gDir_separator) {
+    fileStart = 0;
+    for (i = pathLen - 1; i != 0; i--) {
+        if (pathBuffer[i] == *gDir_separator) {
+            fileStart = i;
             break;
         }
     }
@@ -523,10 +524,10 @@ br_pixelmap* C2_HOOK_FASTCALL DRImageLoad(const char* path) {
     if (pathDir[0] != '\0') {
         fileStart += 1;
     }
-    for (i = 0; i < pathLen - fileStart; i++) {
+    for (i = 0; pathBuffer[fileStart + i] != '.' && fileStart + i != pathLen; i++) {
         textureName[i] = pathBuffer[fileStart + i];
     }
-    textureName[pathLen - fileStart] = '\0';
+    textureName[i] = '\0';
     return DRLdImg(pathDir, textureName, gRender_palette, gPixelFlags, &errorFlags);
 }
 

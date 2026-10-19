@@ -6104,7 +6104,23 @@ void C2_HOOK_FASTCALL CrushAndDamageCar(tCar_spec* pCar1, br_vector3* pPoint, br
 
 // CheckForDeAttachmentOfNonCars
 
-// AdjustNonCar
+// FUNCTION: CARMA2_HW 0x004207e0
+void C2_HOOK_FASTCALL AdjustNonCar(br_actor* pActor, const br_matrix34* pMatrix) {
+    tU8 column_x;
+    tU8 column_z;
+    br_actor* parent;
+
+    BrMatrix34Copy(&pActor->t.t.mat, pMatrix);
+    if (pActor->parent == gNon_track_actor) {
+        return;
+    }
+    XZToColumnXZ(&column_x, &column_z, pActor->t.t.mat.m[3][0], pActor->t.t.mat.m[3][2], &gProgram_state.track_spec);
+    parent = gProgram_state.track_spec.columns[column_z][column_x].actor_0x0;
+    if (parent != pActor->parent && parent != NULL) {
+        BrActorRemove(pActor);
+        BrActorAdd(gProgram_state.track_spec.columns[column_z][column_x].actor_0x0, pActor);
+    }
+}
 
 // GetPrecalculatedFacesUnderCar
 

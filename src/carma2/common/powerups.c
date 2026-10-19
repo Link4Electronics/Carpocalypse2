@@ -382,7 +382,7 @@ int gINT_006a0a5c;
 tRespawn_powerup gRespawn_powerups[100];
 
 // GLOBAL: CARMA2_HW 0x006a0a58
-int gInventory_selected;
+int gInventory_selected = 0;
 
 // GLOBAL: CARMA2_HW 0x006a0944
 int gNumber_of_icons;
@@ -764,9 +764,131 @@ void C2_HOOK_FASTCALL LoadPowerups(void) {
 
 // FUNCTION: CARMA2_HW 0x004d9ea0
 void C2_HOOK_FASTCALL InitPowerups(void) {
+    br_pixelmap* repulse;
+    int i;
+    int j;
 
-    InitRepulseEffects();
-    InitTail();
+    repulse = LoadPixelmap("REPULSE.PIX");
+    if (repulse == 0) {
+        FatalError(kFatalError_CantFindFile_S, "REPULSE.PIX");
+    }
+    BrMapAdd(repulse);
+
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gRepulse_links) != 6);
+    C2_HOOK_BUG_ON(sizeof(tRepulse_link) != 0x28);
+
+    for (i = 0; i < 6; i++) {
+        tRepulse_link *link = &gRepulse_links[i];
+        br_model *model;
+        br_material *material;
+        br_face *face;
+        br_vertex *vertex;
+
+        link->actor = BrActorAllocate(BR_ACTOR_MODEL, 0);
+        model = BrModelAllocate(0, 102, 100);
+        model->flags |= BR_MODF_UPDATEABLE;
+        material = BrMaterialAllocate(&gPhysics_empty_message);
+        material->colour_map = repulse;
+        material->flags &= ~BR_MATF_LIGHT;
+        material->flags |= BR_MATF_TWO_SIDED;
+        BrMaterialAdd(material);
+        BlendifyMaterial(material, 100);
+        BrMaterialUpdate(material, BR_MATU_ALL);
+        face = model->faces;
+        for (j = 0; j < model->nfaces / 2; j++) {
+            face->material = material;
+            face->vertices[0] = j + 0;
+            face->vertices[1] = j + 1;
+            face->vertices[2] = j + 1 + model->nvertices / 2;
+            face++;
+        }
+        for (j = model->nfaces / 2; j < model->nfaces; j++) {
+            face->material = material;
+            face->vertices[0] = j + 1;
+            face->vertices[1] = j + 2;
+            face->vertices[2] = j + 1 - model->nvertices / 2;
+            face++;
+        }
+        vertex = model->vertices;
+        for (j = 0; j < model->nvertices / 2; j++) {
+            vertex->map.v[0] = (float) (j & 1);
+            vertex->map.v[1] = 0.f;
+            vertex++;
+        }
+        for (j = model->nvertices / 2; j < model->nvertices; j++) {
+            vertex->map.v[0] = (float) (j & 1);
+            vertex->map.v[1] = 1.f;
+            vertex++;
+        }
+        link->actor->model = model;
+        link->actor->render_style = BR_RSTYLE_FACES;
+        link->material = material;
+        BrModelAdd(model);
+    }
+
+    {
+        int i;
+        tPhysics_object* parent_collision_info;
+        tPath_name the_path;
+        tTWTVFS twt;
+
+        parent_collision_info = NULL;
+        PathCat(the_path, gApplication_path, "TAIL");
+        twt = OpenPackFileAndSetTiffLoading(the_path);
+        LoadAllStuffInDirectory(&gMisc_storage_space, the_path, kRendererShadingType_Specular);
+        ClosePackFileAndSetTiffLoading(twt);
+        for (i = 0; i < gCount_mutant_tail_parts; i++) {
+            int is_last;
+            tPhysics_object *collision_info;
+            br_model *model;
+
+            is_last = i == gCount_mutant_tail_parts - 1;
+            if (is_last) {
+                model = BrModelFind("TAILBALL");
+                collision_info = MungeSphereObject(model CARPOCALYPSE2_THISCALL_EDX, gMass_mutant_tail_ball);
+            } else {
+                model = BrModelFind("TAILLINK");
+                collision_info = MungeBoxObject(model CARPOCALYPSE2_THISCALL_EDX, gMass_mutant_tail_link);
+            }
+
+            C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPhysics_object, physics_joint1, 0x188);
+
+            collision_info->flags_0x238 = 0x20;
+            collision_info->physics_joint1 = AllocatePhysicsJoint(1, kMem_physics_joint);
+            collision_info->physics_joint1->type = eJoint_ball_n_socket;
+            BrVector3SetFloat(&collision_info->physics_joint1->field_0x08,
+                              0.f, 0.f, model->bounds.min.v[2] * (is_last ? 0.45 : 0.99));
+            if (i != 0) {
+                BrVector3SetFloat(&collision_info->physics_joint1->field_0x14,
+                                  0.f, 0.f, model->bounds.max.v[2] * (is_last ? 0.45 : 0.99));
+                PhysicsAddObject(parent_collision_info, collision_info);
+            } else {
+                gMutant_tail_first_collision_info = collision_info;
+                gMutant_tail_first_joint = collision_info->physics_joint1;
+
+                C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPhysics_joint, type, 0x00);
+                C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPhysics_joint, friction, 0x04);
+                C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPhysics_joint, field_0x08, 0x08);
+                C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPhysics_joint, hinge_axis2, 0x20);
+                C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPhysics_joint, hinge_axis3, 0x2c);
+                C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPhysics_joint, hinge_axis, 0x38);
+                C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPhysics_joint, count_limits, 0x50);
+                C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPhysics_joint, limits, 0x54);
+
+                collision_info->physics_joint1->count_limits = 1;
+                BrVector3SetFloat(&collision_info->physics_joint1->limits[0].child, 0.f, 0.f, 1.f);
+                BrVector3SetFloat(&collision_info->physics_joint1->limits[0].parent, 0.f, 0.f, 1.f);
+            }
+            BrVector3SetFloat(&collision_info->physics_joint1->hinge_axis2, 0.f, 0.f, 1.f);
+            BrVector3SetFloat(&collision_info->physics_joint1->hinge_axis3, 0.f, 1.f, 0.f);
+            BrVector3SetFloat(&collision_info->physics_joint1->hinge_axis, 1.f, 0.f, 0.f);
+            BrMatrix34Translate(&collision_info->transform_matrix, 0.f, 0.f, 0.f);
+            BrMatrix34Translate(&collision_info->actor->t.t.mat, 0.f, 0.f, 0.f);
+            parent_collision_info = collision_info;
+        }
+        gMutant_tail_state = 0;
+    }
+
     InitMineShit();
 }
 
