@@ -2105,6 +2105,7 @@ int C2_HOOK_FASTCALL ProcessForcesCallback(void* arg1, float* arg2, int arg3) {
     int pCount;
     int i;
     int num_impacts;
+    int* smash_index;
     union {
         int smash_indices[20];
         unsigned char flags[80];
@@ -2144,8 +2145,8 @@ int C2_HOOK_FASTCALL ProcessForcesCallback(void* arg1, float* arg2, int arg3) {
     // GLOBAL: CARMA2_HW 0x00679404
     static tS3_volume last_scrape_vol;
 
-    pContacts = (tCollision_contact*)arg1;
     pImpulses = arg2;
+    pContacts = (tCollision_contact*)arg1;
     pCount = arg3;
 
     max_impulse = -1.f;
@@ -2154,6 +2155,7 @@ int C2_HOOK_FASTCALL ProcessForcesCallback(void* arg1, float* arg2, int arg3) {
     if (pCount <= 0) {
         goto tail;
     }
+    smash_index = smash_buffer.smash_indices;
     for (; i < pCount; i++) {
         if (pImpulses[i] <= 0.02f) {
             continue;
@@ -2324,7 +2326,14 @@ pair_path:
         world_normal.v[1] *= 6.9;
         world_normal.v[2] *= 6.9;
         result = BashObject(object, object->actor, pImpulses[i], &point, &world_velocity, &world_normal, 0, 0);
-        goto smash_result;
+        if (result != -1.f && max_impulse == -1.f) {
+            max_impulse = result;
+        }
+        if (max_impulse != -1.f && num_impacts < 20) {
+            *smash_index++ = i;
+            num_impacts++;
+        }
+        continue;
 
 smash_path:
         velocity.v[0] = object->omega.v[1] * contact_offset.v[2] - object->omega.v[2] * contact_offset.v[1];
@@ -2334,13 +2343,11 @@ smash_path:
         BrMatrix34ApplyV(&world_velocity, &velocity, &object->transform_matrix);
         BrMatrix34ApplyV(&world_normal, &scaled_normal, &object->transform_matrix);
         result = SmashEnvironment(object, (undefined4*)face, pImpulses[i], &point, &world_velocity, &world_normal, 1, 0);
-
-smash_result:
         if (result != -1.f && max_impulse == -1.f) {
             max_impulse = result;
         }
         if (max_impulse != -1.f && num_impacts < 20) {
-            smash_buffer.smash_indices[num_impacts] = i;
+            *smash_index++ = i;
             num_impacts++;
         }
         continue;
@@ -2488,9 +2495,9 @@ merge_done:
                 CrushAndDamageCar((tCar_spec*)object2->owner, &point2, &force2, (tCar_spec*)object1->owner, chain_count, chain2, object2->actor);
                 CrashEarnings((tCar_spec*)object1->owner, (tCar_spec*)object2->owner);
                 if (BrVector3Dot(&object1->v, &object1->v) > 0.0009 || BrVector3Dot(&object2->v, &object2->v) > 0.0009) {
-                    BrMatrix34ApplyV(&world_force, &force1, &object1->transform_matrix);
                     BrVector3Scale(&world_velocity, &object2->v, 2.f);
                     BrVector3Scale(&world_velocity, &world_velocity, 0.5f);
+                    BrMatrix34ApplyV(&world_force, &force1, &object1->transform_matrix);
                     BrMatrix34ApplyP(&world_point, &point1, &object1->transform_matrix);
                     world_force.v[0] *= 6.9;
                     world_force.v[1] *= 6.9;
@@ -2554,7 +2561,8 @@ merge_done:
                     BrMatrix34ApplyP(&world_point, &point1, &object1->transform_matrix);
                     FUN_004d2320(object1, object2, (tFace_ref*)pContacts[i].field_0xc, pImpulses[i], &world_point);
                 }
-            } else if (object2 != NULL && object2->owner != NULL && object2->flags_0x238 >= 2
+            }
+            if (object2 != NULL && object2->owner != NULL && object2->flags_0x238 >= 2
                     && object2->flags_0x238 <= 4) {
                 if (object1 == NULL || object1->owner == NULL || object1->flags_0x238 < 2
                         || object1->flags_0x238 > 4) {
