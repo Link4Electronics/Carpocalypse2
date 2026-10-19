@@ -248,10 +248,9 @@ const char* gError_messages[184] = {
 //    PDNonFatalError(temp_str);
 //}
 
-// This function is stripped from the retail binary, we've guessed at the implementation
-// Renamed from dprintf to avoid collisions to stdio
-// This function is stripped from the retail binary, we've guessed at the implementation
-// STUB: CARMA2_HW 0x0044c230
+extern char* C2_HOOK_CDECL LookForChar(const char* pString, int pChar);
+
+// FUNCTION: CARMA2_HW 0x0044c230
 void C2_NORETURN C2_HOOK_CDECL FatalError(int pStr_index, ...) {
     char the_str[1024];
     char* sub_str;
@@ -270,7 +269,7 @@ void C2_NORETURN C2_HOOK_CDECL FatalError(int pStr_index, ...) {
     }
 
     va_start(ap, pStr_index);
-    while ((sub_pt = strchr(the_str, '%')) != NULL) {
+    while ((sub_pt = LookForChar(the_str, '%')) != NULL) {
         sub_str = va_arg(ap, char*);
         StripCRNL(sub_str);
         strcpy(temp_str, sub_pt + 1);
@@ -281,7 +280,7 @@ void C2_NORETURN C2_HOOK_CDECL FatalError(int pStr_index, ...) {
 #ifdef CARPOCALYPSE2_FIX_BUGS
     sub_str = int_str;
 #endif
-    while ((sub_pt = strchr(the_str, '@')) != NULL) {
+    while ((sub_pt = LookForChar(the_str, '@')) != NULL) {
         sub_int = va_arg(ap, int);
         sprintf(sub_str, "%d", sub_int);
         StripCRNL(sub_str);

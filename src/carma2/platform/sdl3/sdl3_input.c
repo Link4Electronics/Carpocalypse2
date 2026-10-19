@@ -399,6 +399,10 @@ tButtonJoystickInfo* C2_HOOK_FASTCALL PDGetCurrentJoystickData(void) {
     return NULL;
 }
 
+const char* C2_HOOK_FASTCALL GetCurrentJoystickName(void) {
+    return "";
+}
+
 tU32 C2_HOOK_FASTCALL PDGetJoystickButtonStates(void) {
     if (gJoystick_index < 0 || gJoystick_index >= g_Count_Joystick_infos) {
         return 0;

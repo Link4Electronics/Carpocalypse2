@@ -75,7 +75,7 @@ int C2_HOOK_FASTCALL WrecksInFunc(tFrontend_spec* pFrontend) {
 
     camera = gFrontend_wrecks_camera->type_data;
     camera->aspect = 1.6346154f;
-    camera->field_of_view = BrDegreeToAngle(55);
+    camera->field_of_view = BR_ANGLE_DEG(55);
     camera->hither_z = 1.f;
     camera->yon_z = 100.f;
     camera->type = BR_CAMERA_PERSPECTIVE_FOV;
@@ -87,7 +87,7 @@ int C2_HOOK_FASTCALL WrecksInFunc(tFrontend_spec* pFrontend) {
     gFrontend_wrecks_pixelmap->origin_x = 255;
     gFrontend_wrecks_pixelmap->origin_y = 120;
 
-    BrMatrix34RotateY(&gFrontend_wrecks_camera->t.t.mat, BrDegreeToAngle(180));
+    BrMatrix34RotateY(&gFrontend_wrecks_camera->t.t.mat, BR_ANGLE_DEG(180));
     BrMatrix34PostTranslate(&gFrontend_wrecks_camera->t.t.mat, 0.f, 0.f, -3.f);
 
     car_count = GetCarCount(eVehicle_opponent);

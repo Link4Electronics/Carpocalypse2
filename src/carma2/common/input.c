@@ -112,11 +112,10 @@ int gLast_mouse_x_coord;
 // GLOBAL: CARMA2_HW 0x006571fc
 int gLast_mouse_y_coord;
 
-// STUB: CARMA2_HW 0x0045c0b0
 int C2_HOOK_FASTCALL AnyModifiersDown(void) {
     int i;
 
-    for (i = 0; i < 11; i++) {
+    for (i = 0; i <= 10; i++) {
         if (gKey_array[i] != 0) {
             return 1;
         }

@@ -5,6 +5,9 @@
 
 #include "carpocalypse2_types.h"
 
+#include <stdio.h>
+
+extern int gINT_00595f84;
 extern int gJoystick_index;
 extern int gUNK_00595f8c;
 extern int gUNK_00596310;
@@ -12,8 +15,22 @@ extern float gJoystick_x_steering;
 extern float gJoystick_y_throttle;
 extern int gUNK_00595f9c;
 
+extern int gJoystick_preferences_backup_valid;
+extern tButtonJoystickInfo gJoystick_preferences_backup;
+
+extern int C2_HOOK_FASTCALL FindJoystickPreferences(FILE* pF, const char* pJoystick_name);
+
+extern int C2_HOOK_FASTCALL WriteJoystickPreferences(FILE* pF, const tButtonJoystickInfo* pInfo);
+
+extern int C2_HOOK_FASTCALL ReadJoystickPreferences(FILE* pF, tButtonJoystickInfo* pInfo);
+
+extern int C2_HOOK_FASTCALL CountJoystickPreferences(FILE* pF);
 
 extern int C2_HOOK_FASTCALL LoadJoystickPreferences(void);
+
+extern void C2_HOOK_FASTCALL BackupJoystickPreferences(void);
+
+extern void C2_HOOK_FASTCALL RestoreJoystickPreferences(void);
 
 extern float gForce_feedback_upper_limit;
 
@@ -72,8 +89,6 @@ void C2_HOOK_FASTCALL EnableJoysticks(void);
 void C2_HOOK_FASTCALL DisableJoysticks(void);
 
 void C2_HOOK_FASTCALL FUN_0045b0a0(tHeadup_text_buffer* pText_buffer);
-
-int C2_HOOK_FASTCALL FUN_CheckJoystickHeadupButtons(tButtonJoystickInfo** pJoystick_info);
 
 void C2_HOOK_FASTCALL MungeJoystickHeadups(void);
 
