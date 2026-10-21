@@ -1037,31 +1037,29 @@ int C2_HOOK_FASTCALL IncidentCam(tCar_spec* c, tU32 pTime) {
 }
 
 // FUNCTION: CARMA2_HW 0x004ff530
-void C2_HOOK_FASTCALL ResetCarSpecialVolume(tPhysics_object* pCollision_info) {
-    br_vector3 cast_v;
-    br_vector3 norm;
-    br_scalar t;
-    int id_len;
-    char* mat_id;
-    tSpecial_volume* new_special_volume;
+void C2_HOOK_FASTCALL ResetCarSpecialVolume(tPhysics_object* pObject) {
+    br_vector3 direction;
+    br_vector3 normal;
+    br_scalar distance;
     br_material* material;
+    tSpecial_volume* volume;
+    char* mat_id;
 
-    new_special_volume = NULL;
-    BrVector3Set(&cast_v, 0.f, 200.f, 0.f);
+    volume = NULL;
+    BrVector3Set(&direction, 0.f, 200.f, 0.f);
     DisablePlingMaterials();
-    FindFace(&pCollision_info->actor->t.t.translate.t, &cast_v, &norm, &t, &material);
+    FindFace(&pObject->actor->t.t.translate.t, &direction, &normal, &distance, &material);
     EnablePlingMaterials();
-    if (t < 100.0f && material != NULL) {
+    if (distance < 100.f && material != NULL) {
         mat_id = material->identifier;
         if (mat_id != NULL) {
-            id_len = strlen(mat_id);
-            if (id_len != 0 && (mat_id[0] == '!' || mat_id[0] == '#')) {
-                new_special_volume = GetDefaultSpecialVolumeForWater();
+            if (strlen(mat_id) != 0 && (mat_id[0] == '!' || mat_id[0] == '#')) {
+                volume = gDefault_water_spec_vol_real;
             }
         }
     }
-    pCollision_info->auto_special_volume = new_special_volume;
-    pCollision_info->water_depth_factor = 1.0f;
+    pObject->auto_special_volume = volume;
+    pObject->water_depth_factor = 1.f;
 }
 
 // FUNCTION: CARMA2_HW 0x004175e0

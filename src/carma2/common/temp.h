@@ -16,7 +16,7 @@ void C2_HOOK_FASTCALL EnableAutoFogification(void);
 
 void C2_HOOK_FASTCALL DisableAutoFogification(void);
 
-void C2_HOOK_FASTCALL AdaptCachedMaterials(tRendererShadingType pShading_type);
+void C2_HOOK_FASTCALL AutoFogificateMaterials(tRendererShadingType pShading_type);
 
 void C2_HOOK_FASTCALL FogificateMaterials(tRendererShadingType pShading_type);
 

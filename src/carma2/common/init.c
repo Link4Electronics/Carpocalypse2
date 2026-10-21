@@ -1176,7 +1176,6 @@ void C2_HOOK_FASTCALL Init2DStuff(void) {
         BrV1dbBeginWrapper_Float(); \
         CreateStainlessClasses(); \
         PDInstallErrorHandlers(); \
-        InstallFindFailedHooks(); \
         InstallDRMemCalls(); \
         InstallDRFileCalls(); \
         twt = OpenPackFileAndSetTiffLoading(gApplication_path); \
@@ -1184,16 +1183,12 @@ void C2_HOOK_FASTCALL Init2DStuff(void) {
         InitFogificateMaterials(); \
         PDInitTimer(); \
         InitWobbleStuff(); \
-        InitialiseStorageSpace(0, &gMisc_storage_space, 1000, 5, 1000, 1000, 10); \
-        InitialiseStorageSpace(0, &gTrack_storage_space, 1000, 50, 1000, 1000, 50); \
         LoadGeneralParameters(); \
-        FinishLoadGeneralParameters(); \
         PrintMemoryDump(0, "AFTER LOADING GENERAL PARAMETERS"); \
         DefaultNetName(); \
         strcpy(gProgram_state.player_name, "MAX DAMAGE"); \
         RestoreOptions(); \
         LoadKeyMapping(); \
-        LoadOpponents(); \
         if (!PDInitScreenVars(pArgc, pArgv)) { \
             FatalError(0); \
         } \
@@ -1212,11 +1207,11 @@ void C2_HOOK_FASTCALL Init2DStuff(void) {
         PrintMemoryDump(0, "AFTER INITIALISING EXPLOSIONS"); \
         LoadMiscStrings(); \
         PrintMemoryDump(0, "AFTER LOADING MISC STRING"); \
+        InitialiseStorageSpace(0, &gMisc_storage_space, 1000, 5, 1000, 1000, 10); \
         LoadInRegistees(); \
         InitMap(); \
         PrintMemoryDump(0, "AFTER INITIALISING GENERAL STORAGE AND LOADING IN REG"); \
         Init2DStuffForPolyFonts(); \
-        InitPolyFonts(); \
         InitLineStuff(); \
         InitSmokeStuff(); \
         PrintMemoryDump(0, "AFTER INITING LINE AND SMOKE STUFF"); \
@@ -1272,6 +1267,8 @@ void C2_HOOK_FASTCALL Init2DStuff(void) {
         InitialiseStorageSpace(0, &gTheir_cars_storage_space, 1500, 50, 1500, 1500, 50); \
         InitialiseStorageSpace(0, &gDroneStorage, 500, 50, 500, 228, 10); \
         InitialiseStorageSpace(0, &gPedStorage, 200, 10, 100, 500, 200); \
+        InitialiseStorageSpace(0, &gTrack_storage_space, 1000, 50, 1000, 1000, 50); \
+        FinishLoadingGeneral(); \
         PrintMemoryDump(0, "AFTER FINISHING LOADING GENERAL"); \
         InitOilSpills(); \
         for (;;) { \
@@ -1303,14 +1300,15 @@ void C2_HOOK_FASTCALL DoDevelopmentThings(void) {
 
 }
 
+#pragma inline_depth(0)
 // FUNCTION: CARMA2_HW 0x0047dd20
 void C2_HOOK_FASTCALL InitialiseDeathRace(int pArgc, const char** pArgv) {
 
     PDInitialiseSystem();
-    DoDevelopmentThings();
     InitialiseApplication(pArgc, pArgv);
     gInitialisation_finished = 1;
 }
+#pragma inline_depth()
 
 // FUNCTION: CARMA2_HW 0x00481620
 void C2_HOOK_FASTCALL InitGameAccordingToSkillLevel(void) {

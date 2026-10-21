@@ -345,8 +345,6 @@ int gRecover_car;
 
 // GLOBAL: CARMA2_HW 0x0068b874
 int gDisallow_abandon_race;
-// GLOBAL: CARMA2_HW 0x00676914
-int gAction_replay_mode = 0;
 // GLOBAL: CARMA2_HW 0x0068b890
 int gInterface_within_race_mode;
 // GLOBAL: CARMA2_HW 0x0068b8a8

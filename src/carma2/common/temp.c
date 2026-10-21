@@ -46,46 +46,33 @@ void C2_HOOK_FASTCALL EnableAutoFogification(void) {
 }
 
 // FUNCTION: CARMA2_HW 0x004ea7c0
-void C2_HOOK_FASTCALL AdaptCachedMaterials(tRendererShadingType pShading_type) {
+void C2_HOOK_FASTCALL AutoFogificateMaterials(tRendererShadingType pShading_type) {
     int i;
 
-    if (!gAllow_material_adapt) {
-        return;
-    }
-    for (i = 0; i < gMaterials_to_adapt_count; i++) {
-        br_material* material;
-
-        material = gMaterials_to_adapt[i];
-        if (material == NULL) {
-            continue;
+    if (gAllow_material_adapt) {
+        for (i = 0; i < gMaterials_to_adapt_count; i++) {
+            if (gMaterials_to_adapt[i] != NULL) {
+                GlorifyMaterial(&gMaterials_to_adapt[i], 1, pShading_type);
+                FogAccordingToGPSCDE(gMaterials_to_adapt[i]);
+            }
         }
-#ifndef CARPOCALYPSE2_MATCHING
-        if (material == (br_material*)&gTrack_storage_space || material == (br_material*)&gMisc_storage_space) {
-            continue;
-        }
-#endif
-        GlorifyMaterial(&material, 1, pShading_type);
-        FogAccordingToGPSCDE(material);
+        gMaterials_to_adapt_count = 0;
     }
-    gMaterials_to_adapt_count = 0;
 }
 
 // FUNCTION: CARMA2_HW 0x004ea770
 void C2_HOOK_FASTCALL FogificateMaterials(tRendererShadingType pShading_type) {
     int i;
-    br_material* mat;
 
     for (i = 0; i < gMaterials_to_adapt_count; i++) {
-
-        mat = gMaterials_to_adapt[i];
-        if (mat != NULL) {
+        if (gMaterials_to_adapt[i] != NULL) {
 #ifndef CARPOCALYPSE2_MATCHING
-            if (mat == (br_material*)&gTrack_storage_space || mat == (br_material*)&gMisc_storage_space) {
+            if (gMaterials_to_adapt[i] == (br_material*)&gTrack_storage_space || gMaterials_to_adapt[i] == (br_material*)&gMisc_storage_space) {
                 continue;
             }
 #endif
-            GlorifyMaterial(&mat, 1, pShading_type);
-            FogAccordingToGPSCDE(mat);
+            GlorifyMaterial(&gMaterials_to_adapt[i], 1, pShading_type);
+            FogAccordingToGPSCDE(gMaterials_to_adapt[i]);
         }
     }
     gMaterials_to_adapt_count = 0;

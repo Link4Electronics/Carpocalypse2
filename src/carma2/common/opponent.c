@@ -1172,10 +1172,14 @@ void C2_HOOK_FASTCALL TurnOpponentPhysicsOff(tOpponent_spec* pOpponent_spec) {
 // FUNCTION: CARMA2_HW 0x004af8d0
 int C2_HOOK_FASTCALL TimeToStopStruggling(tOpponent_spec* pOpponent_spec) {
 
-    return gTime_stamp_for_this_munging >
+    if (gTime_stamp_for_this_munging >
         (float)(750 * (pOpponent_spec->follow_path_data.number_of_struggles - 1))
-            + 30.f * pOpponent_spec->car_spec->collision_info->M
-            + (float)(pOpponent_spec->follow_path_data.struggle_time + 2750);
+            - pOpponent_spec->car_spec->collision_info->M * -30.f
+            + (float)(pOpponent_spec->follow_path_data.struggle_time + 2750)) {
+        return 1;
+    } else {
+        return 0;
+    }
 }
 
 void C2_HOOK_FASTCALL DisplayOpponentRecoveringHeadup(tOpponent_spec* pOpponent_spec) {
@@ -3012,15 +3016,12 @@ const br_vector3* C2_HOOK_FASTCALL GetOpponentsSectionFinishNodePoint(const tOpp
 
 // FUNCTION: CARMA2_HW 0x004aea00
 int C2_HOOK_FASTCALL GetOpponentsFirstSection(const tOpponent_spec* pOpponent_spec) {
-
-    if (pOpponent_spec->current_objective != eOOT_pursue_and_twat) {
-        return 20000;
-    }
-    if (pOpponent_spec->pursue_car_data.state == ePCS_following_trail) {
-        return pOpponent_spec->follow_path_data.section_no;
-    }
-    if (pOpponent_spec->pursue_car_data.state == ePCS_following_line_of_sight) {
-        return 10000;
+    if (pOpponent_spec->current_objective == eOOT_pursue_and_twat) {
+        if (pOpponent_spec->pursue_car_data.state == ePCS_following_trail) {
+            return pOpponent_spec->follow_path_data.section_no;
+        } else if (pOpponent_spec->pursue_car_data.state == ePCS_following_line_of_sight) {
+            return 10000;
+        }
     }
     return 20000;
 }
@@ -3488,37 +3489,25 @@ void C2_HOOK_FASTCALL ForceRebuildActiveCarList(void) {
 
 // FUNCTION: CARMA2_HW 0x004ae790
 int C2_HOOK_FASTCALL GetCarCount(tVehicle_type pCategory) {
-#ifndef CARPOCALYPSE2_MATCHING
     switch (pCategory) {
     case eVehicle_self:
         return 1;
-    case eVehicle_net_player:
-        return gNumber_of_net_players;
     case eVehicle_opponent:
         return gProgram_state.AI_vehicles.number_of_opponents;
-    case eVehicle_rozzer:
-        return gProgram_state.AI_vehicles.number_of_cops;
-    case eVehicle_drone:
-    case eVehicle_not_really:
-    default:
-        return 0;
-    }
-#else
-    switch (pCategory) {
-    case eVehicle_self:
-        return 1;
     case eVehicle_net_player:
-        return gNumber_of_net_players;
-    case eVehicle_opponent:
-        return gProgram_state.AI_vehicles.number_of_opponents;
+        if (gNet_mode != eNet_mode_none) {
+            return gNumber_of_net_players - 1;
+        } else {
+            return 0;
+        }
     case eVehicle_rozzer:
-        return gProgram_state.AI_vehicles.number_of_cops;
+        return gNumber_of_cops_before_faffage;
     case eVehicle_drone:
-    case eVehicle_not_really:
-    default:
         return 0;
+    case eVehicle_not_really:
+        return gNum_active_non_cars;
     }
-#endif
+    return 0;
 }
 
 // FUNCTION: CARMA2_HW 0x004ae7e0

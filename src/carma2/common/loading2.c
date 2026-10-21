@@ -845,17 +845,15 @@ void C2_HOOK_FASTCALL LoadOpponents(void) {
         gOpponents[i].text_chunk_count = 0;
         gOpponents[i].text_chunks = BrMemAllocate(sizeof(tText_chunk) * gOpponents[i].text_chunk_count, kMem_oppo_text_chunk);
 
-        for (j = 0; j < gOpponents[i].text_chunk_count; j++) {
-            the_chunk = &gOpponents[i].text_chunks[j];
+        for (j = 0, the_chunk = gOpponents[i].text_chunks; j < gOpponents[i].text_chunk_count; j++, the_chunk++) {
             PossibleService();
             GetPairOfInts(f, &the_chunk->x_coord, &the_chunk->y_coord);
             GetPairOfInts(f, &the_chunk->frame_cue, &the_chunk->frame_end);
             the_chunk->line_count = GetAnInt(f);
-            while (the_chunk->line_count > CARPOCALYPSE2_ASIZE(the_chunk->text)) {
+            while (the_chunk->line_count > (int)CARPOCALYPSE2_ASIZE(the_chunk->text)) {
                 the_chunk->line_count--;
                 GetALineAndDontArgue(f, s);
             }
-
             for (k = 0; k < the_chunk->line_count; k++) {
                 GetALineAndDontArgue(f, s);
                 the_chunk->text[k] = BrMemAllocate(strlen(s) + 1, kMem_oppo_text_str);
@@ -1191,15 +1189,15 @@ void C2_HOOK_FASTCALL InitializePalettes(void) {
     gOrig_render_palette->pixels = BrMemAllocate(256 * sizeof(br_uint_32), kMem_misc);
     memcpy(gOrig_render_palette->pixels, gRender_palette->pixels, 256 * sizeof(br_uint_32));
     gFlic_palette = BrTableFind("DRACEFLC.PAL");
-    render_palette = gRender_palette;
     if (gFlic_palette == NULL) {
         FatalError(kFatalError_unableToFindRequiredPalette);
     }
-    ((br_uint_32*)gRender_palette->pixels)[0] = 0;
-    memcpy(gCurrent_palette_pixels, gRender_palette->pixels, 256 * sizeof(br_uint_32));
+    render_palette = gRender_palette;
+    ((br_uint_32*)render_palette->pixels)[0] = 0;
+    memcpy(gCurrent_palette_pixels, render_palette->pixels, 256 * sizeof(br_uint_32));
     gPalette_changed = 0;
     if (!gFaded_palette) {
-        PDSetPalette(gRender_palette);
+        PDSetPalette(render_palette);
     }
     gPalette_munged |= render_palette != gRender_palette;
     gScratch_pixels = BrMemAllocate(256 * sizeof(br_uint_32), kMem_misc);

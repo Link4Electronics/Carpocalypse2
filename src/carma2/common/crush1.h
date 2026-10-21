@@ -524,6 +524,6 @@ extern void C2_HOOK_FASTCALL ExpandPlane(br_vector4* pDest, const tU16 pSrc[4]);
 
 // CopySplitInMessage
 
-// SetAllShapeStatusFlags
+extern void C2_HOOK_FASTCALL SetAllShapeStatusFlags(tCar_crush_network_shapes* pShapes);
 
 #endif // GUARD_CRUSH1_H

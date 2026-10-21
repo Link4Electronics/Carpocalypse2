@@ -711,9 +711,9 @@ br_pixelmap* C2_HOOK_FASTCALL DRPixelmapLoad(char* pFile_name) {
 
     the_map = BrPixelmapLoad(pFile_name);
     if (the_map != NULL) {
+        the_map->row_bytes = (br_int_16)((the_map->row_bytes + sizeof(tS32) - 1) & ~(sizeof(tS32) - 1));
         the_map->origin_x = 0;
         the_map->origin_y = 0;
-        the_map->row_bytes = (the_map->row_bytes + sizeof(int32_t) - 1) & ~(sizeof(int32_t) - 1);
     }
     return the_map;
 }
@@ -939,10 +939,10 @@ void C2_HOOK_FASTCALL LoadRaceInfo(int pRace_index, tRace_info* pRace_info) {
     pRace_info->index = pRace_index;
     pRace_info->race_spec = &gRace_list[pRace_index];
     if (gNet_mode == eNet_mode_none) {
-        pRace_info->number_of_racers = gRace_list[pRace_index].count_explicit_opponents;
+        pRace_info->number_of_racers = pRace_info->race_spec->count_explicit_opponents;
     }
-    pRace_info->total_laps = gRace_list[pRace_index].count_laps;
-    for (i = 0; i < 3; i++) {
+    pRace_info->total_laps = pRace_info->race_spec->count_laps;
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(pRace_info->initial_timer); i++) {
         pRace_info->initial_timer[i] = pRace_info->race_spec->initial_timer[i];
         pRace_info->completion_bonus[i] = pRace_info->race_spec->completion_bonus[i];
         pRace_info->completion_bonus_peds[i] = pRace_info->race_spec->completion_bonus_peds[i];
@@ -1291,7 +1291,13 @@ void C2_HOOK_FASTCALL SmoothlySetCarMaterialFlags(tBrender_storage* pStorage, tC
 
     for (i = pCar_spec->old_material_count; i < pCar_spec->new_material_count; i++) {
         material = pStorage->materials[i];
-        SmoothificateCarMaterial(material);
+        if (gNbPixelBits == 16) {
+            material->ka = 0.6f;
+            material->flags &= ~BR_MATF_PRELIT;
+            material->flags |= BR_MATF_SMOOTH | BR_MATF_LIGHT;
+            material->kd = 0.2f;
+            BrMaterialUpdate(material, BR_MATU_ALL);
+        }
         material->user = material->colour_map;
     }
 }
@@ -2168,7 +2174,7 @@ void C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, tCar_spec*
     }
     BrMaterialAdd(car_material);
     pCar_spec->car_master_actor->material = car_material;
-    AdaptCachedMaterials(kRendererShadingType_Specular);
+    AutoFogificateMaterials(kRendererShadingType_Specular);
     for (i = pCar_spec->old_material_count; i < pCar_spec->new_material_count; i++) {
         br_material* material;
 
@@ -2577,7 +2583,7 @@ br_material* C2_HOOK_FASTCALL GetSimpleMaterial(char* pName, tRendererShadingTyp
     }
     gSimple_materials[i] = BrMaterialAllocate("Simple");
     gSimple_materials[i]->colour = colour;
-    gSimple_materials[i]->index_base = FindBestMatchingPaletteIndex(colour);
+    gSimple_materials[i]->index_base = FindBestColourMatch(colour);
     gSimple_materials[i]->index_range = 0;
     GlorifyMaterial(&gSimple_materials[i], 1, pShading_type);
     BrMaterialAdd(gSimple_materials[i]);

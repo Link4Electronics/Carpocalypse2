@@ -59,7 +59,10 @@ void C2_HOOK_FASTCALL InitExplosions(void) {
 
 // MungeExplosions
 
-// CopyExplosionData
+// FUNCTION: CARMA2_HW 0x004eace0
+void C2_HOOK_FASTCALL CopyExplosionData(int pIndex, tExplosion* pExplosion) {
+    gExplosions[pIndex] = *pExplosion;
+}
 
 // DoExplosionette
 

@@ -443,14 +443,31 @@ void C2_HOOK_FASTCALL DisposeActorMatrix(tTrack_spec* pTrack_spec, tTrack_square
 
 // FUNCTION: CARMA2_HW 0x0040ca90
 void C2_HOOK_FASTCALL DisposeColumns(tTrack_spec* pTrack_spec) {
+    int z;
+    int x;
+    tTrack_square** columns;
+    tU16 row;
+    int i;
 
-    DisposeRuntimeBuiltModels(pTrack_spec);
-    DisposeActorMatrix(pTrack_spec, pTrack_spec->columns);
+    for (z = 0; z != pTrack_spec->ncolumns_z; z++) {
+        for (x = 0; x != pTrack_spec->ncolumns_x; x++) {
+            br_actor* actor = pTrack_spec->columns[z][x].actor_0x8;
+
+            if (actor != NULL && actor->model != NULL) {
+                BrModelRemove(actor->model);
+                BrModelFree(actor->model);
+            }
+        }
+    }
+    columns = pTrack_spec->columns;
+    if (columns != NULL) {
+        for (row = 0; row != pTrack_spec->ncolumns_z; row++) {
+            BrMemFree(columns[row]);
+        }
+        BrMemFree(columns);
+    }
     if (pTrack_spec->non_car_list != NULL) {
-        int i;
-
         for (i = gCount_track_non_cars; i < pTrack_spec->count_non_cars; i++) {
-
             if (pTrack_spec->non_car_list[i] != NULL && pTrack_spec->non_car_list[i]->parent != gNon_track_actor) {
                 BrActorRemove(pTrack_spec->non_car_list[i]);
                 BrActorFree(pTrack_spec->non_car_list[i]);
@@ -771,9 +788,11 @@ void C2_HOOK_FASTCALL RenderTrack(br_actor* pWorld, tTrack_spec* pTrack_spec, br
 void C2_HOOK_FASTCALL XZToColumnXZ(tU8* pColumn_x, tU8* pColumn_z, br_scalar pX, br_scalar pZ, tTrack_spec* pTrack_spec) {
     br_scalar x;
     br_scalar z;
+    br_scalar size_x = pTrack_spec->column_size_x;
+    br_scalar size_z = pTrack_spec->column_size_z;
 
-    x = (pX - pTrack_spec->origin_x) / pTrack_spec->column_size_x;
-    z = (pZ - pTrack_spec->origin_z) / pTrack_spec->column_size_z;
+    x = (pX - pTrack_spec->origin_x) / size_x;
+    z = (pZ - pTrack_spec->origin_z) / size_z;
     if (x < 0.0f) {
         x = 0.0f;
     }

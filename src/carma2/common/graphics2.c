@@ -655,7 +655,6 @@ void C2_HOOK_FASTCALL InitPaletteAnimate(void) {
 }
 
 
-// FUNCTION: CARMA2_HW 0x0043dfd0
 void C2_HOOK_FASTCALL DeallocateTransientBitmap(int pIndex) {
 
     if (gTransient_bitmaps[pIndex].pixmap != NULL) {

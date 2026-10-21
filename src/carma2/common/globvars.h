@@ -128,7 +128,8 @@ extern int gDisallow_abandon_race;
 //extern int gPipe_reg_snap_before_new_game;
 //extern int gPipe_reg_snap_before_our_car;
 //extern int gPipe_reg_snap_after_our_car;
-extern int gAction_replay_mode;
+extern int gPed_676914;
+#define gAction_replay_mode gPed_676914
 //extern int gDefault_engine_noise_index;
 //extern int gSausage_override;
 //extern int gAustere_override;

@@ -251,31 +251,6 @@ void C2_HOOK_FASTCALL MungePalette(void) {
 
 }
 
-// FUNCTION: CARMA2_HW 0x005184c0
-int C2_HOOK_FASTCALL FindBestMatchingPaletteIndex(br_colour pColour) {
-    double min_error = DBL_MAX;
-    int i;
-    int pal_index;
-    br_colour* pal_colours;
-
-    pal_index = 127;
-    pal_colours = gRender_palette->pixels;
-    for (i = 0; i < 256; i++) {
-        int dr, dg, db;
-        double error;
-
-        dr = ((pal_colours[i] >> 16) & 0xff) - ((pColour >> 16) & 0xff);
-        dg = ((pal_colours[i] >>  8) & 0xff) - ((pColour >>  8) & 0xff);
-        db = ((pal_colours[i] >>  0) & 0xff) - ((pColour >>  0) & 0xff);
-        error = (double)(dr * dr + dg * dg + db * db);
-        if (error < min_error) {
-            pal_index = i;
-            min_error = error;
-        }
-    }
-    return pal_index;
-}
-
 // FUNCTION: CARMA2_HW 0x0047d6a0
 void C2_HOOK_FASTCALL DisableLights(void) {
     int i;
@@ -1461,8 +1436,14 @@ void C2_HOOK_FASTCALL DrawMapBlip(br_pixelmap* pScreen, tCar_spec* pCar, tU32 pT
 
 // FUNCTION: CARMA2_HW 0x0047d260
 void C2_HOOK_FASTCALL DRPixelmapBlendedLine(br_pixelmap* pMap, int pX1, int pY1, int pX2, int pY2, br_uint_32 pColour, br_pixelmap* pPalette) {
+    br_uint_32 colour;
 
-    DRDrawLine(pMap, pX1, pY1, pX2, pY2, pColour);
+    (void)pPalette;
+    colour = pColour;
+    if (gBack_screen->type != BR_PMT_INDEX_8) {
+        colour = PaletteEntry16Bit(gRender_palette, colour);
+    }
+    BrPixelmapLine(pMap, pX1, pY1, pX2, pY2, colour);
 }
 
 void C2_HOOK_FASTCALL DR8BitFancyDrawLine(br_pixelmap* pMap, int pX1, int pY1, int pX2, int pY2, br_uint_32 pColour, tU32 pTime_period) {
