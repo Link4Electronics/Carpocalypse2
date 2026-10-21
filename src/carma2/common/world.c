@@ -2710,9 +2710,8 @@ br_uint_32 C2_HOOK_FASTCALL ApplyTransToModels(br_actor* pActor, br_matrix34* pM
     }
     if (pActor->model != NULL) {
         for (i = 0; i < pActor->model->nvertices; i++) {
-            br_vector3 p;
+            br_vector3 p = pActor->model->vertices[i].p;
 
-            BrVector3Copy(&p, &pActor->model->vertices[i].p);
             BrMatrix34ApplyP(&pActor->model->vertices[i].p, &p, pMat);
         }
         BrModelUpdate(pActor->model, BR_MODU_ALL);
@@ -3716,10 +3715,7 @@ void C2_HOOK_FASTCALL ResetGrooveFlags(void) {
     int i;
 
     for (i = 0; i < gGroovidelics_array_size; i++) {
-        tGroovidelic_spec* the_groove;
-
-        the_groove = &gGroovidelics_array[i];
-        the_groove->done_this_frame = 0;
+        gGroovidelics_array[i].done_this_frame = 0;
     }
 }
 

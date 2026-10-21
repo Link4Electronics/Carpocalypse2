@@ -2098,10 +2098,7 @@ tSmashable_item_spec* gSmashable_triggers_by_identifier[100];
 #pragma inline_depth(0)
 
 // FUNCTION: CARMA2_HW 0x0041c1b0
-int C2_HOOK_FASTCALL ProcessForcesCallback(void* arg1, float* arg2, int arg3) {
-    tCollision_contact* pContacts;
-    float* pImpulses;
-    int pCount;
+int C2_HOOK_FASTCALL ProcessForcesCallback(tCollision_contact* pContacts, float* pImpulses, int pCount) {
     int i;
     int k;
     int num_impacts;
@@ -2118,6 +2115,10 @@ int C2_HOOK_FASTCALL ProcessForcesCallback(void* arg1, float* arg2, int arg3) {
     br_actor* actor;
     br_vector3 scaled_normal;
     br_vector3 contact_offset;
+    br_vector3 pair_point;
+    br_vector3 pair_world_velocity;
+    br_scalar pair_impulse;
+    br_scalar pair_result;
     br_vector3 point;
     br_vector3 world_normal;
     br_scalar result;
@@ -2144,10 +2145,6 @@ int C2_HOOK_FASTCALL ProcessForcesCallback(void* arg1, float* arg2, int arg3) {
     static tS3_sound_tag scrape_tag;
     // GLOBAL: CARMA2_HW 0x00679404
     static tS3_volume last_scrape_vol;
-
-    pContacts = (tCollision_contact*)arg1;
-    pImpulses = arg2;
-    pCount = arg3;
 
     num_impacts = 0;
     max_impulse = -1.f;
@@ -2196,7 +2193,10 @@ track_path:
             br_scalar d;
 
             d = DistanceFromFaceND(&point, &face->normal, face->d);
-            if (fabs(d) <= 0.5) {
+            if (fabs(d) > 0.5) {
+                goto nearest_vertex;
+            }
+            {
                 br_vector3 projection;
                 int dominant;
                 int axis_a;
@@ -2235,18 +2235,18 @@ track_path:
                 e2l = face->v[2].v[axis_b] - face->v[0].v[axis_b];
                 ps = projection.v[axis_a] - face->v[0].v[axis_a];
                 pl = projection.v[axis_b] - face->v[0].v[axis_b];
-                if (fabsf(e1s) <= 2.384185791015625e-07) {
-                    bary_b = ps / e2s;
-                    bary_a = (pl - bary_b * e2l) / e1l;
+                if (fabsf(e1l) <= 2.384185791015625e-07) {
+                    bary_b = pl / e2l;
+                    bary_a = (ps - bary_b * e2s) / e1s;
                 } else {
                     br_scalar det;
 
-                    det = e2l * e1s - e1l * e2s;
+                    det = e2s * e1l - e1s * e2l;
                     if (det == 0.0f) {
                         goto nearest_vertex;
                     }
                     bary_b = (pl * e1s - ps * e1l) / det;
-                    bary_a = (ps - bary_b * e2s) / e1s;
+                    bary_a = (pl - bary_b * e2l) / e1l;
                 }
                 if (bary_a >= 0.0001 && bary_b >= 0.0001 && bary_a + bary_b <= 0.999) {
                     object = object1;
@@ -2317,19 +2317,20 @@ pair_path:
         if (object == NULL) {
             continue;
         }
+        pair_impulse = pImpulses[i];
         velocity.v[0] = object->omega.v[1] * contact_offset.v[2] - object->omega.v[2] * contact_offset.v[1];
-        velocity.v[1] = object->omega.v[2] * point.v[0] - object->omega.v[0] * point.v[2];
-        velocity.v[2] = object->omega.v[0] * point.v[1] - object->omega.v[1] * point.v[0];
+        velocity.v[1] = object->omega.v[2] * contact_offset.v[0] - object->omega.v[0] * contact_offset.v[2];
+        velocity.v[2] = object->omega.v[0] * contact_offset.v[1] - object->omega.v[1] * contact_offset.v[0];
         BrVector3Add(&velocity, &velocity, &object->velocity_car_space);
-        BrMatrix34ApplyV(&world_velocity, &velocity, &object->transform_matrix);
+        BrMatrix34ApplyV(&pair_world_velocity, &velocity, &object->transform_matrix);
         BrMatrix34ApplyV(&world_normal, &scaled_normal, &object->transform_matrix);
-        BrMatrix34ApplyP(&point, &contact_offset, &object->transform_matrix);
+        BrMatrix34ApplyP(&pair_point, &contact_offset, &object->transform_matrix);
         world_normal.v[0] *= 6.9;
         world_normal.v[1] *= 6.9;
         world_normal.v[2] *= 6.9;
-        result = BashObject(object, object->actor, pImpulses[i], &point, &world_velocity, &world_normal, 0, 0);
-        if (result != -1.f && max_impulse == -1.f) {
-            max_impulse = result;
+        pair_result = BashObject(object, object->actor, pair_impulse, &pair_point, &pair_world_velocity, &world_normal, 0, 0);
+        if (pair_result != -1.f && max_impulse == -1.f) {
+            max_impulse = pair_result;
         }
         if (max_impulse != -1.f && num_impacts < 20) {
             *smash_index++ = i;
@@ -2575,10 +2576,10 @@ merge_done:
                 QueueDroneCrush(object2, chain_count, chain2, &force2);
                 BrMatrix34ApplyV(&world_force, &force2, &object2->transform_matrix);
                 BrMatrix34ApplyP(&world_point, &point2, &object2->transform_matrix);
-                world_force.v[0] *= 6.9;
-                world_force.v[1] *= 6.9;
-                world_force.v[2] *= 6.9;
                 effects = 1;
+                world_force.v[2] *= 6.9;
+                world_force.v[1] *= 6.9;
+                world_force.v[0] *= 6.9;
                 CrashNoise(&world_force, &world_point, 0);
             }
         }
@@ -6122,6 +6123,12 @@ void C2_HOOK_FASTCALL AdjustNonCar(br_actor* pActor, const br_matrix34* pMatrix)
 
 // GetPrecalculatedFacesUnderCar
 
-// TurnOnNonCar
+// FUNCTION: CARMA2_HW 0x004208f0
+void C2_HOOK_FASTCALL TurnOnNonCar(int pIndex) {
+    gProgram_state.track_spec.non_car_list[pIndex]->render_style = BR_RSTYLE_FACES;
+}
 
-// TurnOffNonCar
+// FUNCTION: CARMA2_HW 0x00420900
+void C2_HOOK_FASTCALL TurnOffNonCar(int pIndex) {
+    gProgram_state.track_spec.non_car_list[pIndex]->render_style = BR_RSTYLE_NONE;
+}

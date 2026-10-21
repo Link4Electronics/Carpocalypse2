@@ -5,6 +5,7 @@
 
 
 #include "carpocalypse2_types.h"
+#include "physics.h"
 
 extern int gCunning_stunt_bonus[3];
 extern float gArmour_starting_value[100];
@@ -332,7 +333,7 @@ void C2_HOOK_FASTCALL GetAverageGridPosition(tRace_info* pThe_race);
 
 int C2_HOOK_FASTCALL GetPrecalculatedFacesUnderCar(tCar_spec* pCar, tFace_ref** pFace_refs);
 
-int C2_HOOK_FASTCALL ProcessForcesCallback(void* arg1, float* arg2, int arg3);
+int C2_HOOK_FASTCALL ProcessForcesCallback(tCollision_contact* pContacts, float* pImpulses, int pCount);
 
 int C2_HOOK_FASTCALL ProcessJointForcesCallback(undefined4 param_1,undefined4 param_2,undefined4 param_3);
 
