@@ -1086,7 +1086,7 @@ void C2_HOOK_FASTCALL PipeSingleTransformType(br_actor* pActor, tS16 pTransform_
 
 // FUNCTION: CARMA2_HW 0x0043bf30
 void C2_HOOK_FASTCALL ARCompressModelMash(tCompressed_vector3 *pDest, br_model* pModel, br_vector3* pSrc) {
-    int i;
+    br_uint_16 i;
 
     for (i = 0; i < pModel->nvertices; i++) {
         CompressVector3(&pDest[i], &pSrc[i], -10.f, 10.f);

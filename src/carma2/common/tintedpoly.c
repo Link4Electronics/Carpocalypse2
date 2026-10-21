@@ -410,7 +410,24 @@ void C2_HOOK_FASTCALL FreeAllTintedPolyActor(void) {
     int i;
 
     for (i = 0; i < CARPOCALYPSE2_ASIZE(gTintedPolys); i++) {
-        FreeTintedPolyActor(i);
+        if (!gTintedPolys[i].used) {
+            continue;
+        }
+        if (gTintedPolys[i].material != NULL) {
+            BrMaterialFree(gTintedPolys[i].material);
+        }
+        if (gTintedPolys[i].model != NULL) {
+            BrModelFree(gTintedPolys[i].model);
+        }
+        if (gTintedPolys[i].actor != NULL) {
+            BrActorRemove(gTintedPolys[i].actor);
+            BrActorFree(gTintedPolys[i].actor);
+            gTintedPolys[i].actor = NULL;
+        }
+        gTintedPolys[i].class = 0;
+        gTintedPolys[i].material2 = NULL;
+        gTintedPolys[i].visible = 0;
+        gTintedPolys[i].used = 0;
     }
 }
 

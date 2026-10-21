@@ -514,19 +514,17 @@ void C2_HOOK_FASTCALL InitOilSpills(void) {
 
 // FUNCTION: CARMA2_HW 0x004a7860
 void C2_HOOK_FASTCALL AdjustOilSpill(int pIndex, br_matrix34* pMat, br_scalar pFull_size, br_scalar pGrow_rate, tU32 pSpill_time, tU32 pStop_time, tCar_spec* pCar, br_vector3* pOriginal_pos, br_pixelmap* pPixelmap) {
-    tOil_spill_info* oil;
 
     (void)pStop_time;
     (void)pPixelmap;
-    oil = &gOily_spills[pIndex];
-    BrMatrix34Copy(&oil->actor->t.t.mat, pMat);
-    oil->full_size = pFull_size;
-    oil->grow_rate = pGrow_rate;
-    oil->spill_time = pSpill_time;
-    oil->stop_time = 0;
-    oil->car = pCar;
-    BrVector3Copy(&oil->original_pos, pOriginal_pos);
-    oil->actor->render_style = BR_RSTYLE_NONE;
+    BrMatrix34Copy(&gOily_spills[pIndex].actor->t.t.mat, pMat);
+    gOily_spills[pIndex].full_size = pFull_size;
+    gOily_spills[pIndex].grow_rate = pGrow_rate;
+    gOily_spills[pIndex].spill_time = pSpill_time;
+    gOily_spills[pIndex].stop_time = 0;
+    gOily_spills[pIndex].car = pCar;
+    BrVector3Copy(&gOily_spills[pIndex].original_pos, pOriginal_pos);
+    gOily_spills[pIndex].actor->render_style = BR_RSTYLE_NONE;
 }
 
 // ReceivedOilSpill

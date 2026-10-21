@@ -1234,6 +1234,7 @@ br_scalar C2_HOOK_FASTCALL SignedTwiceAreaOf3DTriangle(const br_vector3* pV1, co
         + (pV1->v[0] * pV2->v[1] - pV1->v[1] * pV2->v[0]) * gPhysics_reference_normal_comparison.v[2];
 }
 
+#pragma inline_depth(0)
 // FUNCTION: CARMA2_HW 0x00420dc0
 int C2_HOOK_CDECL CompareAngle(const void* pIndex1, const void* pIndex2) {
     const int* index1 = pIndex1;
@@ -1264,6 +1265,7 @@ int C2_HOOK_CDECL CompareAngle(const void* pIndex1, const void* pIndex2) {
     }
     return 0;
 }
+#pragma inline_depth()
 
 // FUNCTION: CARMA2_HW 0x00420910
 tPhysicsError C2_HOOK_FASTCALL AddPolyhedronCollisionShapePlanes(tCollision_shape_polyhedron_data* pPolyhedron) {
