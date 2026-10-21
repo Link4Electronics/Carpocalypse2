@@ -368,6 +368,10 @@ void C2_HOOK_FASTCALL FUN_0045a0c0(void) {
 void C2_HOOK_FASTCALL PDPlayFFBEffect(const char* effectName) {
 }
 
+int C2_HOOK_FASTCALL PDIsJoystickAvailable(int pIndex) {
+    return pIndex >= 0 && pIndex < g_Count_Joystick_infos;
+}
+
 int C2_HOOK_FASTCALL PDIsJoystickDPadEnabled(void) {
     return 0;
 }

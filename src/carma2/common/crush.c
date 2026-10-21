@@ -1586,16 +1586,18 @@ void C2_HOOK_FASTCALL InitPhysModCrushData(tCar_spec* pCar_spec) {
 }
 
 // FUNCTION: CARMA2_HW 0x0042d9b0
-void C2_HOOK_CDECL MakeModelMaterialsSingleSided(br_model *pModel) {
-    if (pModel != NULL) {
-        int g;
+void C2_HOOK_FASTCALL MakeModelMaterialsSingleSided(br_model* pModel) {
+    int g;
 
-        for (g = 0; g < pModel->prepared->ngroups; g++) {
-            br_material *mat = pModel->faces[*pModel->prepared->groups[g].face_user].material;
-            if (mat != NULL && (mat->flags & BR_MATF_TWO_SIDED) && mat->identifier != NULL && mat->identifier[0] == 'S') {
-                mat->flags &= ~BR_MATF_TWO_SIDED;
-                BrMaterialUpdate(mat, BR_MATU_RENDERING);
-            }
+    if (pModel == NULL) {
+        return;
+    }
+    for (g = 0; g < pModel->prepared->ngroups; g++) {
+        br_material* mat = pModel->faces[*pModel->prepared->groups[g].face_user].material;
+
+        if (mat != NULL && (mat->flags & BR_MATF_TWO_SIDED) && mat->identifier != NULL && mat->identifier[0] == 'S') {
+            mat->flags &= ~BR_MATF_TWO_SIDED;
+            BrMaterialUpdate(mat, BR_MATU_RENDERING);
         }
     }
 }
@@ -1626,9 +1628,11 @@ void C2_HOOK_CDECL JitModelUpdate(br_actor* pActor, br_model* pModel, br_materia
 
 // FUNCTION: CARMA2_HW 0x004315e0
 void C2_HOOK_FASTCALL SetModelForUpdate(br_model* pModel) {
+    tUser_detail_level_model* user_detail_model;
 
-    if ((pModel->flags & BR_MODF_CUSTOM) && pModel->user) {
-        pModel->user = (void*)(uintptr_t)1;
+    if ((pModel->flags & BR_MODF_CUSTOM) != 0 && pModel->user != NULL) {
+        user_detail_model = pModel->user;
+        *(int*)user_detail_model->field_0x0 = 1;
     } else {
         pModel->custom = JitModelUpdate;
         pModel->flags |= BR_MODF_CUSTOM;

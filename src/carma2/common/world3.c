@@ -1327,7 +1327,7 @@ int C2_HOOK_FASTCALL GetAdditionalFileName(const char* path, tName_list* pList) 
     tPath_name dir_path;
     tPath_name stem_path;
     int alreadyInList;
-    size_t i;
+    int i;
 
     strcpy(pathCopy, path);
     Uppercaseificate(upperPath, pathCopy);
@@ -1340,8 +1340,7 @@ int C2_HOOK_FASTCALL GetAdditionalFileName(const char* path, tName_list* pList) 
     }
     SepDirAndFilename(upperPath, dir_path, stem_path);
 
-    alreadyInList = 0;
-    for (i = 0; i < pList->size; i++) {
+    for (i = 0, alreadyInList = 0; i < pList->size; i++) {
         if (strcmp(pList->items[i], stem_path) == 0) {
             alreadyInList = 1;
             break;
@@ -1349,7 +1348,7 @@ int C2_HOOK_FASTCALL GetAdditionalFileName(const char* path, tName_list* pList) 
     }
     if (!alreadyInList) {
         strcpy(pList->items[pList->size], stem_path);
-        if (pList->size < CARPOCALYPSE2_ASIZE(pList->items)) {
+        if (pList->size < (int)CARPOCALYPSE2_ASIZE(pList->items)) {
             pList->size += 1;
         }
     }

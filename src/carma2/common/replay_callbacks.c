@@ -1249,9 +1249,9 @@ void C2_HOOK_FASTCALL ApplySmashModelChange(tPipe_chunk** pChunk) {
     tPipe_chunk_smash_model_change* chunk = (tPipe_chunk_smash_model_change*)*pChunk;
 
     if (chunk->field_0x8) {
-        return WorkerSmashModelChangeApply(chunk->field_0x0, chunk->field_0x4, chunk->field_0x8);
+        return ChangeSmashModel((br_actor*)chunk->field_0x0, (br_model*)chunk->field_0x4, (br_model*)chunk->field_0x8);
     }
-    return WorkerSmashModelChangeB(chunk->field_0x0);
+    return TurnOffSmashModel((br_actor*)chunk->field_0x0);
 }
 
 // FUNCTION: CARMA2_HW 0x004ca110
@@ -1259,9 +1259,9 @@ void C2_HOOK_FASTCALL UndoSmashModelChange(tPipe_chunk** pChunk, tPipe_chunk* pP
     tPipe_chunk_smash_model_change* chunk = (tPipe_chunk_smash_model_change*)*pChunk;
 
     if (chunk->field_0x8) {
-        return WorkerSmashModelChangeApply(chunk->field_0x0, chunk->field_0x8, chunk->field_0x4);
+        return ChangeSmashModel((br_actor*)chunk->field_0x0, (br_model*)chunk->field_0x8, (br_model*)chunk->field_0x4);
     }
-    return WorkerSmashModelChangeBUndo(chunk->field_0x0);
+    return TurnOnSmashModel((br_actor*)chunk->field_0x0);
 }
 
 // FUNCTION: CARMA2_HW 0x004ca460

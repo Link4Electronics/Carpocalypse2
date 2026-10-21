@@ -463,7 +463,9 @@ void C2_HOOK_FASTCALL SendCarData(tU32 pNext_frame_time) {
 
 // ReceivedMechanics
 
-// ReceivedCopInfo
+// FUNCTION: CARMA2_HW 0x00498bb0
+void C2_HOOK_FASTCALL ReceivedCopInfo(void) {
+}
 
 // SendAllNonCarPositions
 
@@ -593,8 +595,6 @@ void C2_HOOK_FASTCALL CheckForNeedyEnvironmentRecipients(void) {
 // FUNCTION: CARMA2_HW 0x0049bd10
 void C2_HOOK_FASTCALL DefaultNetName(void) {
 
-    /* FIXME: 32 overflows the player_name field */
-    C2_HOOK_ASSERT((uintptr_t)&gProgram_state.player_name == 0x0075d590);
     NetObtainSystemUserName(gProgram_state.player_name, 32);
 }
 

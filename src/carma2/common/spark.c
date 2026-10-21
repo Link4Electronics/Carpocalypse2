@@ -235,37 +235,43 @@ static void C2_HOOK_CDECL SparkClipDepth(br_vector3* pPoint, const br_vector3* p
 
 // FUNCTION: CARMA2_HW 0x004fb910
 void C2_HOOK_FASTCALL GenerateSmokeShades(void) {
-    static int rb = 0x00;
-    static int gb = 0x00;
-    static int bb = 0x00;
-
+    // GLOBAL: CARMA2_HW 0x006aa5b4
+    static int rb = 0;
+    // GLOBAL: CARMA2_HW 0x006aa5b8
+    static int gb = 0;
+    // GLOBAL: CARMA2_HW 0x006aa5bc
+    static int bb = 0;
+    // GLOBAL: CARMA2_HW 0x00660160
     static int rl = 0x40;
+    // GLOBAL: CARMA2_HW 0x00660164
     static int gl = 0x40;
+    // GLOBAL: CARMA2_HW 0x00660168
     static int bl = 0x40;
-
+    // GLOBAL: CARMA2_HW 0x00660178
     static int rs = 0xc8;
+    // GLOBAL: CARMA2_HW 0x0066017c
     static int gs = 0xc8;
+    // GLOBAL: CARMA2_HW 0x00660180
     static int bs = 0xc8;
-
+    // GLOBAL: CARMA2_HW 0x0066016c
     static int rm = 0x80;
+    // GLOBAL: CARMA2_HW 0x00660170
     static int gm = 0x80;
+    // GLOBAL: CARMA2_HW 0x00660174
     static int bm = 0x80;
-
+    // GLOBAL: CARMA2_HW 0x00660184
     static int rd = 0xfe;
+    // GLOBAL: CARMA2_HW 0x00660188
     static int gd = 0xdf;
+    // GLOBAL: CARMA2_HW 0x0066018c
     static int bd = 0x43;
 
-#define RGB(R, G, B) (((R) << 16) | ((G) << 8) | ((B) << 0))
-
-    gShade_list[0] = RGB(rb, gb, bb);
-    gShade_list[1] = RGB(rl, gl, bl);
-    gShade_list[3] = RGB(rs, gs, bs);
+    gShade_list[0] = BR_COLOUR_RGB(rb, gb, bb);
+    gShade_list[1] = BR_COLOUR_RGB(rl, gl, bl);
+    gShade_list[2] = BR_COLOUR_RGB(rm, gm, bm);
+    gShade_list[3] = BR_COLOUR_RGB(rs, gs, bs);
     gShade_list[4] = gShade_list[3];
-    gShade_list[2] = RGB(rm, gm, bm);
-    gShade_list[7] = RGB(rd, gd, bd);
-
-#undef RGB
-
+    gShade_list[7] = BR_COLOUR_RGB(rd, gd, bd);
 }
 
 // FUNCTION: CARMA2_HW 0x004fdb70
@@ -2465,31 +2471,31 @@ void C2_HOOK_FASTCALL RenderRecordedSmokeCircles(void) {
     int i;
     int j;
     tBRender_smoke* smoke;
+    br_model* model;
     tU8 red;
     tU8 grn;
     tU8 blu;
 
-    BrQsort(gBR_smoke_pointers, gN_BR_smoke_structs, sizeof(void*), CmpSmokeZ);
-
-    for (i = 0; i < gN_BR_smoke_structs; i++) {
-        smoke = gBR_smoke_pointers[gN_BR_smoke_structs - 1 - i];
+    BrQsort(gBR_smoke_pointers, gN_BR_smoke_structs, sizeof(gBR_smoke_pointers[0]), CmpSmokeZ);
+    for (i = gN_BR_smoke_structs - 1; i >= 0; i--) {
+        smoke = gBR_smoke_pointers[i];
         BrVector3Copy(&gBlend_actor->t.t.translate.t, &smoke->pos);
         gBlend_actor->t.t.mat.m[0][0] = smoke->r;
         gBlend_actor->t.t.mat.m[1][1] = smoke->r / smoke->aspect;
         gBlend_actor->material = smoke->material;
-        gBlend_actor->material->extra_prim[1].v.x = BrFloatToFixed(smoke->strength * 150.f);
-        BrMaterialUpdate(gBlend_actor->material, BR_MATU_EXTRA_PRIM);
-
+        smoke->material->extra_prim[1].v.x = BrFloatToFixed(smoke->strength * 150.f);
+        BrMaterialUpdate(smoke->material, BR_MATU_EXTRA_PRIM);
         red = BR_RED(smoke->col);
         grn = BR_GRN(smoke->col);
         blu = BR_BLU(smoke->col);
-        for (j = 0; j < smoke->model->nvertices; j++) {
-            smoke->model->vertices[j].red = red;
-            smoke->model->vertices[j].grn = grn;
-            smoke->model->vertices[j].blu = blu;
+        model = gBR_smoke_pointers[i]->model;
+        for (j = 0; j < model->nvertices; j++) {
+            model->vertices[j].red = red;
+            model->vertices[j].grn = grn;
+            model->vertices[j].blu = blu;
         }
-        BrModelUpdate(smoke->model, BR_MODU_VERTEX_COLOURS);
-        gBlend_actor->model = smoke->model;
+        BrModelUpdate(model, BR_MODU_VERTEX_COLOURS);
+        gBlend_actor->model = model;
         BrZbsSceneRenderAdd(gBlend_actor);
     }
 }
@@ -3191,27 +3197,9 @@ void C2_HOOK_FASTCALL CreateSmokeColumn(tCar_spec* pCar, int pType, int pRandom,
 
 // FUNCTION: CARMA2_HW 0x004fb9c0
 void C2_HOOK_FASTCALL GenerateItFoxShadeTable(void) {
-#ifndef CARPOCALYPSE2_MATCHING
-    int i;
-    br_pixelmap* pm;
-
-    pm = BrPixelmapAllocate(BR_PMT_INDEX_8, 64, 1, NULL, 0);
-    for (i = 0; i < 64; i++) {
-        ((tU8*)pm->pixels)[i] = (tU8)(i * 4);
+    if (gIt_shade_table == NULL) {
+        gIt_shade_table = GenerateDarkenedShadeTable(16, gRender_palette, 0, 255, 254, .25f, .5f, .75f, .6f);
     }
-    gIt_shade_table = pm;
-    BrTableAdd(pm);
-#else
-    int i;
-    br_pixelmap* pm;
-
-    pm = BrPixelmapAllocate(BR_PMT_INDEX_8, 64, 1, NULL, 0);
-    for (i = 0; i < 64; i++) {
-        ((tU8*)pm->pixels)[i] = (tU8)(i * 4);
-    }
-    gIt_shade_table = pm;
-    BrTableAdd(pm);
-#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004fba00

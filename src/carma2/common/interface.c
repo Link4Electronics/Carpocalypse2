@@ -2694,26 +2694,28 @@ int C2_HOOK_FASTCALL FRONTEND_GenericMenuHandler(tFrontend_spec* pFrontend) {
 
 // FUNCTION: CARMA2_HW 0x00471ba0
 int C2_HOOK_FASTCALL Ians_GetItemAtMousePos(tFrontend_spec* pFrontend, int pX, int pY) {
-    int i;
     tFrontend_slider* slider;
+    br_vertex* vertices;
+    tFrontend_item_spec* item;
+    tFrontend_brender_item* brender_item;
+    int i;
 
-    for (i = 0; i < pFrontend->count_items; i++) {
-        tFrontend_item_spec* item = &pFrontend->items[i];
-        br_model* model = gFrontend_brender_items[i].model;
-        if (pX >= model->vertices[1].p.v[0] && pX <= model->vertices[3].p.v[0]
-                && pY >= -model->vertices[0].p.v[1] && pY <= -model->vertices[1].p.v[1]
+    item = gCurrent_frontend_spec->items;
+    brender_item = gFrontend_brender_items;
+    for (i = 0; i < pFrontend->count_items; i++, brender_item++, item++) {
+        vertices = brender_item->model->vertices;
+        if (pX >= vertices[1].p.v[0] && pX <= vertices[3].p.v[0]
+                && pY >= -vertices[0].p.v[1] && pY <= -vertices[1].p.v[1]
                 && item->visible
-                && item->enabled > 0) {
-
+                && item->enabled >= 1) {
             return i;
         }
     }
     for (slider = gCurrent_frontend_scrollbars; slider != NULL; slider = slider->next) {
         for (i = 0; i < 3; i++) {
-            br_model* model = gFrontend_brender_items[slider->itemid_start + i].model;
-            if (pX >= model->vertices[1].p.v[0] && pX <= model->vertices[3].p.v[0]
-                    && pY >= -model->vertices[0].p.v[1] && pY <= -model->vertices[1].p.v[1]) {
-
+            vertices = gFrontend_brender_items[slider->itemid_start + i].model->vertices;
+            if (pX >= vertices[1].p.v[0] && pX <= vertices[3].p.v[0]
+                    && pY >= -vertices[0].p.v[1] && pY <= -vertices[1].p.v[1]) {
                 return slider->itemid_start + i;
             }
         }
@@ -2727,13 +2729,12 @@ tFrontend_slider* C2_HOOK_FASTCALL GetAnyActiveSlider(void) {
     tFrontend_slider* slider;
 
     for (slider = gCurrent_frontend_scrollbars; slider != NULL; slider = slider->next) {
-
-        if (gFrontend_selected_item_index >= slider->itemid_left_reference && gFrontend_selected_item_index <= slider->itemid_left_reference + 2) {
-
+        if (gFrontend_selected_item_index >= slider->itemid_left_reference
+                && gFrontend_selected_item_index < slider->itemid_left_reference + 3) {
             return slider;
         }
-        if (gFrontend_selected_item_index >= slider->itemid_start && gFrontend_selected_item_index <= slider->itemid_start + 2) {
-
+        if (gFrontend_selected_item_index >= slider->itemid_start
+                && gFrontend_selected_item_index < slider->itemid_start + 3) {
             return slider;
         }
     }
@@ -2799,11 +2800,20 @@ void C2_HOOK_FASTCALL RefreshScrollSet(tFrontend_spec* pFrontend) {
 
     for (i = 0; i < gControls_scroller.range_length; i++) {
 
-        strcpy(pFrontend->items[43 + i].text, GetMiscString(140 + gControls_scroller.field_0x8 + i));
+        strcpy(pFrontend->items[43 + i].text, GetMiscString(i + 140 + gControls_scroller.field_0x8));
         strcpy(pFrontend->items[53 + i].text, gKey_names[gKey_mapping[gControls_frontend_to_key_mapping_lut[i + gControls_scroller.field_0x8]] + 2]);
     }
-    pFrontend->items[63].visible = gControls_scroller.field_0x8 != 0;
-    pFrontend->items[64].visible = gControls_scroller.field_0x8 != gControls_scroller.field_0x0 - gControls_scroller.range_length;
+    if (gControls_scroller.field_0x8) {
+        pFrontend->items[63].visible = 1;
+    } else {
+        pFrontend->items[63].visible = 0;
+    }
+    if (gControls_scroller.field_0x8 == gControls_scroller.field_0x0 - gControls_scroller.range_length) {
+        pFrontend->items[64].visible = 0;
+    } else {
+        pFrontend->items[64].visible = 1;
+    }
+
     FuckWithWidths(pFrontend);
 }
 #pragma auto_inline(on)
@@ -3684,7 +3694,7 @@ void C2_HOOK_FASTCALL MenuSetDriverImage(int pOpponent_index, int pFrontend_inde
 int C2_HOOK_FASTCALL ProcessInputString(void) {
     int len;
     int key;
-    int int_ch;
+    int ch;
 
     if (gFrontend_current_input == NULL) {
         return 0;
@@ -3713,20 +3723,18 @@ int C2_HOOK_FASTCALL ProcessInputString(void) {
         }
         return -1;
     }
-    int_ch = PDGetKeyboardCharacter();
-    if (int_ch != 0) {
-        char ch;
-
-        dr_dprintf("FRONTEND: Got char %d", int_ch);
-        ch = PDConvertToASCIILessThan128((char)int_ch);
+    ch = PDGetKeyboardCharacter();
+    if (ch != 0) {
+        dr_dprintf("FRONTEND: Got char %d", ch);
+        ch = (tU8)PDConvertToASCIILessThan128(ch);
         dr_dprintf("FRONTEND: Char converted to %d", ch);
-        if (ch >= 0x20 && ch != 0x7f) {
+        if (ch > 0x1f && ch != 0x7f) {
             gFrontend_current_input[len + 0] = ch;
             gFrontend_current_input[len + 1] = '\0';
-            dr_dprintf("FRONTEND: Adding char %d to string. String now '%s'", int_ch, gFrontend_current_input);
+            dr_dprintf("FRONTEND: Adding char %d to string. String now '%s'", ch, gFrontend_current_input);
             return 1;
         }
-        dr_dprintf("FRONTEND: Invalid Char", int_ch);
+        dr_dprintf("FRONTEND: Invalid Char", ch);
     }
     return 0;
 }
@@ -4014,12 +4022,6 @@ int C2_HOOK_FASTCALL Controls_JoystickDpadToggle(tFrontend_spec* pFrontend) {
     return 0;
 }
 
-// FUNCTION: CARMA2_HW 0x0045bd90
-
-void C2_HOOK_FASTCALL SaveAllJoystickData(void) {
-
-    NOT_IMPLEMENTED();
-}
 
 // FUNCTION: CARMA2_HW 0x00472440
 

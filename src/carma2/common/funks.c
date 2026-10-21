@@ -210,9 +210,11 @@ void C2_HOOK_FASTCALL SetGrooveInterrupt(int pIndex, const br_matrix34* pMatrix,
 // FUNCTION: CARMA2_HW 0x0047b310
 void C2_HOOK_FASTCALL AdjustFunkEnable(int pIndex, tS16 pFlags) {
     if (pFlags != 0) {
-        EnableFunkotronic(pIndex);
+        gFunkotronics_array[pIndex].flags &= ~0x1;
+        PipeSingleFunkEnable(pIndex, 1);
     } else {
-        DisableFunkotronic(pIndex);
+        gFunkotronics_array[pIndex].flags |= 0x1;
+        PipeSingleFunkEnable(pIndex, 0);
     }
 }
 

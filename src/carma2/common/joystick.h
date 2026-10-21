@@ -28,6 +28,8 @@ extern int C2_HOOK_FASTCALL CountJoystickPreferences(FILE* pF);
 
 extern int C2_HOOK_FASTCALL LoadJoystickPreferences(void);
 
+int C2_HOOK_FASTCALL SaveAllJoystickData(void);
+
 extern void C2_HOOK_FASTCALL BackupJoystickPreferences(void);
 
 extern void C2_HOOK_FASTCALL RestoreJoystickPreferences(void);

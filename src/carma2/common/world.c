@@ -990,19 +990,20 @@ br_pixelmap* C2_HOOK_FASTCALL SwapPixelmapInStorage(br_pixelmap* pNew, br_pixelm
 
 // FUNCTION: CARMA2_HW 0x004761e0
 br_uint_32 C2_HOOK_FASTCALL CalcProximities(br_actor* pActor, br_material* pMat, void* pData) {
+    tFunkotronic_spec* the_funk;
+    br_face* the_face;
     int i;
-    tFunkotronic_spec* the_funk = pData;
+
+    (void)pMat;
+    the_funk = pData;
 
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tFunkotronic_spec, material, 0x8);
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tFunkotronic_spec, proximity_count, 0x150);
 
     if (pActor->model != NULL) {
-        for (i = 0; i < pActor->model->nfaces; i++) {
-            br_face* the_face;
-
-            the_face = &pActor->model->faces[i];
+        for (i = 0, the_face = pActor->model->faces; i < pActor->model->nfaces; i++, the_face++) {
             if (the_face->material == the_funk->material) {
-                the_funk->proximity_count += 1;
+                the_funk->proximity_count++;
             }
         }
     }
@@ -3757,11 +3758,13 @@ void C2_HOOK_FASTCALL StopGroovidelic(br_actor* pActor) {
 
 // FUNCTION: CARMA2_HW 0x0047b360
 tGroovidelic_spec* C2_HOOK_FASTCALL ActorsGroove(br_actor* pActor) {
+    tGroovidelic_spec* groove;
+    int count;
     int i;
 
-    for (i = 0; i < gGroovidelics_array_size; i++) {
-        tGroovidelic_spec* groove = &gGroovidelics_array[i];
-
+    groove = gGroovidelics_array;
+    count = gGroovidelics_array_size;
+    for (i = 0; i < count; i++, groove++) {
         if (groove->actor == pActor) {
             return groove;
         }
@@ -3879,7 +3882,7 @@ void C2_HOOK_FAKE_THISCALL ControlBoundFunkGroove(int pSlot_number, undefined4 p
     if (pSlot_number < 0) {
         return;
     }
-    if (pSlot_number >= CARPOCALYPSE2_ASIZE(gGroove_funk_bindings)) {
+    if (pSlot_number >= (int)CARPOCALYPSE2_ASIZE(gGroove_funk_bindings)) {
         FatalError(kFatalError_UsedRefNumOfControlledGroovidelicFunkotronicIsOutOfRange);
     }
     if (!gGroove_funk_bindings[pSlot_number].field_0x4) {
@@ -3893,7 +3896,7 @@ float C2_HOOK_FAKE_THISCALL ControlBoundFunkGroovePlus(int pSlot_number, undefin
     if (pSlot_number < 0) {
         return 0.f;
     }
-    if (pSlot_number >= CARPOCALYPSE2_ASIZE(gGroove_funk_bindings)) {
+    if (pSlot_number >= (int)CARPOCALYPSE2_ASIZE(gGroove_funk_bindings)) {
         FatalError(kFatalError_UsedRefNumOfControlledGroovidelicFunkotronicIsOutOfRange);
     }
     if (!gGroove_funk_bindings[pSlot_number].field_0x4) {

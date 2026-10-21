@@ -533,23 +533,22 @@ void C2_HOOK_FASTCALL RenderTintedPolys(void) {
 
 // FUNCTION: CARMA2_HW 0x004d82b0
 void C2_HOOK_FASTCALL SetTintedPolyColour(int pTintedIndex, int pRed, int pGreen, int pBlue) {
-    int red_differs;
-    int grn_differs;
-    int blu_differs;
+    int changed;
 
-    red_differs = gTintedPolys[pTintedIndex].color_red != pRed;
-    if (red_differs) {
+    changed = 0;
+    if (gTintedPolys[pTintedIndex].color_red != (br_uint_32)pRed) {
         gTintedPolys[pTintedIndex].color_red = pRed;
+        changed = 1;
     }
-    grn_differs = gTintedPolys[pTintedIndex].color_grn != pGreen;
-    if (grn_differs) {
+    if (gTintedPolys[pTintedIndex].color_grn != (br_uint_32)pGreen) {
         gTintedPolys[pTintedIndex].color_grn = pGreen;
+        changed = 1;
     }
-    blu_differs = gTintedPolys[pTintedIndex].color_blu != pBlue;
-    if (blu_differs) {
+    if (gTintedPolys[pTintedIndex].color_blu != (br_uint_32)pBlue) {
         gTintedPolys[pTintedIndex].color_blu = pBlue;
+        changed = 1;
     }
-    if (red_differs || (grn_differs || blu_differs)) {
+    if (changed) {
         (gTintedPolys[pTintedIndex].material)->colour = BR_COLOUR_RGB(gTintedPolys[pTintedIndex].color_red, gTintedPolys[pTintedIndex].color_grn, gTintedPolys[pTintedIndex].color_blu);
         BrMaterialUpdate(gTintedPolys[pTintedIndex].material ,BR_MATU_LIGHTING);
     }
@@ -587,10 +586,10 @@ void C2_HOOK_FASTCALL SetTintedPolyRefMaterial(int pTintedIndex, br_vector3* pPo
 // FUNCTION: CARMA2_HW 0x004d8470
 br_material* C2_HOOK_FASTCALL InWater(int pTintedIndex) {
 
-    if (gTintedPolys[pTintedIndex].field_0x28 != '#') {
-        return NULL;
+    if (gTintedPolys[pTintedIndex].field_0x28 == '#') {
+        return gTintedPolys[pTintedIndex].material2;
     }
-    return gTintedPolys[pTintedIndex].material2;
+    return NULL;
 }
 
 // FUNCTION: CARMA2_HW 0x004d8a20

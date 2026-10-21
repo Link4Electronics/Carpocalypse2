@@ -1247,4 +1247,16 @@ void C2_HOOK_FASTCALL ExpandPlane(br_vector4* pDest, const tU16 pSrc[4]) {
 
 // CopySplitInMessage
 
-// SetAllShapeStatusFlags
+// FUNCTION: CARMA2_HW 0x0043dfd0
+void C2_HOOK_FASTCALL SetAllShapeStatusFlags(tCar_crush_network_shapes* pShapes) {
+    int i;
+
+    if (pShapes == NULL) {
+        return;
+    }
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(pShapes->items); i++) {
+        if (pShapes->items[i].network_id != 0) {
+            pShapes->items[i].field_0x4 = 1;
+        }
+    }
+}

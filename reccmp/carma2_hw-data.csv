@@ -1,3 +1,4 @@
 address,type,name,size
 0x679408,global,last_skid_vol,8
+0x75bb80,global,gProgram_state,0x5ed0
 0x7623a0,global,gCurrent_race,0x10c0
