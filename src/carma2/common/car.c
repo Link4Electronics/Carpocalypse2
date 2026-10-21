@@ -389,6 +389,7 @@ void C2_HOOK_FASTCALL SetUpPanningCamera(tCar_spec* c) {
 // FUNCTION: CARMA2_HW 0x004122b0
 int C2_HOOK_FASTCALL CollideCamera2(br_vector3* car_pos, br_vector3* cam_pos, br_vector3* old_camera_pos, int manual_move, tPhysics_object *collision_info) {
     int i;
+    int k;
     br_vector3 cam_hither_pos;
     br_vector3 car_coll_pos;
     br_vector3 dir;
@@ -2102,6 +2103,7 @@ int C2_HOOK_FASTCALL ProcessForcesCallback(void* arg1, float* arg2, int arg3) {
     float* pImpulses;
     int pCount;
     int i;
+    int k;
     int num_impacts;
     int* smash_index;
     union {
@@ -2130,9 +2132,9 @@ int C2_HOOK_FASTCALL ProcessForcesCallback(void* arg1, float* arg2, int arg3) {
     br_vector3 zero_velocity;
     br_vector3 recoil;
     float impulse;
+    int j;
     br_scalar sparkiness;
     int chain_count;
-    int j;
     int effects;
     int material;
     int volume;
@@ -2143,18 +2145,14 @@ int C2_HOOK_FASTCALL ProcessForcesCallback(void* arg1, float* arg2, int arg3) {
     // GLOBAL: CARMA2_HW 0x00679404
     static tS3_volume last_scrape_vol;
 
-    pImpulses = arg2;
     pContacts = (tCollision_contact*)arg1;
+    pImpulses = arg2;
     pCount = arg3;
 
-    max_impulse = -1.f;
     num_impacts = 0;
-    i = 0;
-    if (pCount <= 0) {
-        goto tail;
-    }
+    max_impulse = -1.f;
     smash_index = smash_buffer.smash_indices;
-    for (; i < pCount; i++) {
+    for (i = 0; i < pCount; i++) {
         if (pImpulses[i] <= 0.02f) {
             continue;
         }
@@ -2205,14 +2203,20 @@ track_path:
                 int axis_b;
                 br_scalar e1s, e1l, e2s, e2l, ps, pl;
                 br_scalar bary_a, bary_b;
+                br_vector3 abs_normal;
+                br_vector3 normal;
 
-                BrVector3Scale(&projection, &face->normal, -d);
+                normal = face->normal;
+                abs_normal.v[0] = fabsf(normal.v[0]);
+                abs_normal.v[1] = fabsf(normal.v[1]);
+                abs_normal.v[2] = fabsf(normal.v[2]);
+                BrVector3Scale(&projection, &normal, -d);
                 BrVector3Add(&projection, &projection, &point);
                 dominant = 0;
-                if (fabsf(face->normal.v[0]) < fabsf(face->normal.v[1])) {
+                if (abs_normal.v[0] < abs_normal.v[1]) {
                     dominant = 1;
                 }
-                if (fabsf(face->normal.v[dominant]) < fabsf(face->normal.v[2])) {
+                if (abs_normal.v[dominant] < abs_normal.v[2]) {
                     dominant = 2;
                 }
                 if (dominant == 0) {
@@ -2258,11 +2262,11 @@ nearest_vertex:
                 int other2;
 
                 BrVector3Sub(&delta, &point, &face->v[0]);
-                dist[0] = BrVector3Dot(&delta, &delta);
+                dist[0] = BrVector3LengthSquared(&delta);
                 BrVector3Sub(&delta, &point, &face->v[1]);
-                dist[1] = BrVector3Dot(&delta, &delta);
+                dist[1] = BrVector3LengthSquared(&delta);
                 BrVector3Sub(&delta, &point, &face->v[2]);
-                dist[2] = BrVector3Dot(&delta, &delta);
+                dist[2] = BrVector3LengthSquared(&delta);
                 if (dist[0] < dist[1] && dist[0] < dist[2]) {
                     closest = 0;
                     other1 = 1;
@@ -2362,36 +2366,28 @@ tail:
     if (FullyDetachSnappedBits(pContacts, pImpulses, pCount) != 0) {
         return 0;
     }
-    for (i = 0; i < pCount; i++) {
-        smash_buffer.flags[i] = 0;
+    for (k = 0; k < pCount; k++) {
+        smash_buffer.flags[k] = 0;
     }
-    for (i = 0; i < pCount; i++) {
-        if (smash_buffer.flags[i] != 0) {
+    for (k = 0; k < pCount; k++) {
+        if (smash_buffer.flags[k] != 0) {
             continue;
         }
         effects = 0;
-        point1.v[0] = pContacts[i].r1.v[0] * pImpulses[i];
-        point1.v[1] = pContacts[i].r1.v[1] * pImpulses[i];
-        point1.v[2] = pContacts[i].r1.v[2] * pImpulses[i];
-        force1.v[0] = pContacts[i].normal.v[0] * pImpulses[i];
-        force1.v[1] = pContacts[i].normal.v[1] * pImpulses[i];
-        force1.v[2] = pContacts[i].normal.v[2] * pImpulses[i];
-        object1 = pContacts[i].object1;
-        object2 = pContacts[i].object2;
-        BrVector3Add(&chain1[0], &object1->cmpos, &pContacts[i].r1);
+        BrVector3Scale(&point1, &pContacts[k].r1, pImpulses[k]);
+        BrVector3Scale(&force1, &pContacts[k].normal, pImpulses[k]);
+        object1 = pContacts[k].object1;
+        object2 = pContacts[k].object2;
+        BrVector3Add(&chain1[0], &object1->cmpos, &pContacts[k].r1);
         if (object2 != NULL) {
-            point2.v[0] = pContacts[i].r2.v[0] * pImpulses[i];
-            point2.v[1] = pContacts[i].r2.v[1] * pImpulses[i];
-            point2.v[2] = pContacts[i].r2.v[2] * pImpulses[i];
-            force2.v[0] = pContacts[i].field_0x38.v[0] * -pImpulses[i];
-            force2.v[1] = pContacts[i].field_0x38.v[1] * -pImpulses[i];
-            force2.v[2] = pContacts[i].field_0x38.v[2] * -pImpulses[i];
-            BrVector3Add(&chain2[0], &object2->cmpos, &pContacts[i].r2);
+            BrVector3Scale(&point2, &pContacts[k].r2, pImpulses[k]);
+            BrVector3Scale(&force2, &pContacts[k].field_0x38, -pImpulses[k]);
+            BrVector3Add(&chain2[0], &object2->cmpos, &pContacts[k].r2);
         }
-        smash_buffer.flags[i] = 1;
-        impulse = pImpulses[i];
+        smash_buffer.flags[k] = 1;
+        impulse = pImpulses[k];
         chain_count = 1;
-        j = i + 1;
+        j = k + 1;
         if (j >= pCount) {
             goto merge_done;
         }
@@ -2400,7 +2396,7 @@ tail:
                 goto next_j;
             }
             if (pContacts[j].object1 == object1 && pContacts[j].object2 == object2) {
-                if (BrVector3Dot(&pContacts[j].normal, &pContacts[i].normal) > 0.707107f) {
+                if (BrVector3Dot(&pContacts[j].normal, &pContacts[k].normal) > 0.707107f) {
                     if (pImpulses[j] != 0.f) {
                         point1.v[0] += pContacts[j].r1.v[0] * pImpulses[j];
                         point1.v[1] += pContacts[j].r1.v[1] * pImpulses[j];
@@ -2410,9 +2406,7 @@ tail:
                         force1.v[2] += pContacts[j].normal.v[2] * pImpulses[j];
                         impulse += pImpulses[j];
                     }
-                    chain1[chain_count].v[0] = pContacts[j].object1->cmpos.v[0] + pContacts[j].r1.v[0];
-                    chain1[chain_count].v[1] = pContacts[j].object1->cmpos.v[1] + pContacts[j].r1.v[1];
-                    chain1[chain_count].v[2] = pContacts[j].object1->cmpos.v[2] + pContacts[j].r1.v[2];
+                    BrVector3Add(&chain1[chain_count], &pContacts[j].object1->cmpos, &pContacts[j].r1);
                     if (pContacts[j].object2 != NULL) {
                         if (pImpulses[j] != 0.f) {
                             point2.v[0] += pContacts[j].r2.v[0] * pImpulses[j];
@@ -2422,17 +2416,15 @@ tail:
                             force2.v[1] += pContacts[j].field_0x38.v[1] * -pImpulses[j];
                             force2.v[2] += pContacts[j].field_0x38.v[2] * -pImpulses[j];
                         }
-                        chain2[chain_count].v[0] = pContacts[j].object2->cmpos.v[0] + pContacts[j].r2.v[0];
-                        chain2[chain_count].v[1] = pContacts[j].object2->cmpos.v[1] + pContacts[j].r2.v[1];
-                        chain2[chain_count].v[2] = pContacts[j].object2->cmpos.v[2] + pContacts[j].r2.v[2];
+                        BrVector3Add(&chain2[chain_count], &pContacts[j].object2->cmpos, &pContacts[j].r2);
                     }
                     chain_count++;
                     smash_buffer.flags[j] = 1;
                 }
             } else if (pContacts[j].object2 == object1 && pContacts[j].object1 == object2) {
-                if ((pContacts[j].field_0x38.v[2] * pContacts[i].normal.v[2]
-                        + pContacts[j].field_0x38.v[0] * pContacts[i].normal.v[0])
-                        + pContacts[j].field_0x38.v[1] * pContacts[i].normal.v[1] < -0.707107f) {
+                if ((pContacts[j].field_0x38.v[2] * pContacts[k].normal.v[2]
+                        + pContacts[j].field_0x38.v[0] * pContacts[k].normal.v[0])
+                        + pContacts[j].field_0x38.v[1] * pContacts[k].normal.v[1] < -0.707107f) {
                     if (pImpulses[j] != 0.f) {
                         point1.v[0] += pContacts[j].r2.v[0] * pImpulses[j];
                         point1.v[1] += pContacts[j].r2.v[1] * pImpulses[j];
@@ -2492,7 +2484,7 @@ merge_done:
                 CrushAndDamageCar((tCar_spec*)object1->owner, &point1, &force1, (tCar_spec*)object2->owner, chain_count, chain1, object1->actor);
                 CrushAndDamageCar((tCar_spec*)object2->owner, &point2, &force2, (tCar_spec*)object1->owner, chain_count, chain2, object2->actor);
                 CrashEarnings((tCar_spec*)object1->owner, (tCar_spec*)object2->owner);
-                if (BrVector3Dot(&object1->v, &object1->v) > 0.0009 || BrVector3Dot(&object2->v, &object2->v) > 0.0009) {
+                if (BrVector3LengthSquared(&object1->v) > 0.0009 || BrVector3LengthSquared(&object2->v) > 0.0009) {
                     BrVector3Scale(&world_velocity, &object2->v, 2.f);
                     BrVector3Scale(&world_velocity, &world_velocity, 0.5f);
                     BrMatrix34ApplyV(&world_force, &force1, &object1->transform_matrix);
@@ -2506,14 +2498,14 @@ merge_done:
                 }
             } else {
                 CrushAndDamageCar((tCar_spec*)object1->owner, &point1, &force1, NULL, chain_count, chain1, object1->actor);
-                if (pContacts[i].object2 == NULL && pContacts[i].field_0xc != NULL) {
+                if (pContacts[k].object2 == NULL && pContacts[k].field_0xc != NULL) {
                     if (object1->v.v[1] < -2.89855f) {
                         force1.v[0] *= 2.f;
                         force1.v[1] *= 2.f;
                         force1.v[2] *= 2.f;
                     }
                     CrashEarnings((tCar_spec*)object1->owner, NULL);
-                    if (BrVector3Dot(&object1->v, &object1->v) > 0.0009) {
+                    if (BrVector3LengthSquared(&object1->v) > 0.0009) {
                         BrVector3Cross(&velocity, &object1->omega, &point1);
                         BrVector3Accumulate(&velocity, &object1->velocity_car_space);
                         BrMatrix34ApplyV(&world_velocity, &velocity, &object1->transform_matrix);
@@ -2522,7 +2514,7 @@ merge_done:
                         world_force.v[0] *= 6.9;
                         world_force.v[1] *= 6.9;
                         world_force.v[2] *= 6.9;
-                        material = (signed char)((tFace_ref*)pContacts[i].field_0xc)->material->identifier[0] - 0x2f;
+                        material = (signed char)((tFace_ref*)pContacts[k].field_0xc)->material->identifier[0] - 0x2f;
                         if (material < 0 || material > 9) {
                             material = 0;
                         }
@@ -2557,7 +2549,7 @@ merge_done:
                 if (object2 == NULL || object2->owner == NULL || object2->flags_0x238 < 2
                         || object2->flags_0x238 > 4) {
                     BrMatrix34ApplyP(&world_point, &point1, &object1->transform_matrix);
-                    FUN_004d2320(object1, object2, (tFace_ref*)pContacts[i].field_0xc, pImpulses[i], &world_point);
+                    FUN_004d2320(object1, object2, (tFace_ref*)pContacts[k].field_0xc, pImpulses[k], &world_point);
                 }
             }
             if (object2 != NULL && object2->owner != NULL && object2->flags_0x238 >= 2
@@ -2565,7 +2557,7 @@ merge_done:
                 if (object1 == NULL || object1->owner == NULL || object1->flags_0x238 < 2
                         || object1->flags_0x238 > 4) {
                     BrMatrix34ApplyP(&world_point, &point2, &object2->transform_matrix);
-                    FUN_004d2320(object2, object1, (tFace_ref*)pContacts[i].field_0xc, pImpulses[i], &world_point);
+                    FUN_004d2320(object2, object1, (tFace_ref*)pContacts[k].field_0xc, pImpulses[k], &world_point);
                 }
             }
         }
@@ -2596,7 +2588,7 @@ merge_done:
                 FUN_004ddc20(object1, object2, impulse);
             }
         }
-        if (gPinball_factor != 0.f && pContacts[i].object2 == NULL && impulse > 0.0002f) {
+        if (gPinball_factor != 0.f && pContacts[k].object2 == NULL && impulse > 0.0002f) {
             if (!effects) {
                 BrMatrix34ApplyV(&world_force, &force1, &object1->transform_matrix);
                 world_force.v[0] *= 6.9;
@@ -2607,7 +2599,7 @@ merge_done:
             recoil.v[1] = world_force.v[1] * gPinball_factor / object1->M * 0.2f;
             recoil.v[2] = world_force.v[2] * gPinball_factor / object1->M * 0.2f;
             {
-                br_scalar recoil_dot = BrVector3Dot(&recoil, &recoil);
+                br_scalar recoil_dot = BrVector3LengthSquared(&recoil);
 
                 if (recoil_dot > 500.f) {
                     BrVector3Scale(&recoil, &recoil, 500.f / recoil_dot);
