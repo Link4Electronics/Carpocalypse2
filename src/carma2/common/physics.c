@@ -4118,6 +4118,146 @@ static void WakeObjectOwner(tPhysics_object* pObject, tWorld_callbacks* pCallbac
     }
 }
 
+// APPROXIMATION: stands in for the object-vs-object contact generator at
+// 0x425ca0 (the retail AddObjectObjectForce dispatch over the sphere/edge/
+// corner helpers GetSphereSphereForceInfo / GetNonSphereNonSphereForceInfo /
+// ...). Oriented-box SAT over the two objects' bb1 bounds; emits at most one
+// contact on the minimum-overlap axis with the partner support point towards
+// pObject as the contact position. `normal`/`field_0x38` are the same world
+// direction (partner -> pObject) expressed in each object's transform space.
+static int C2_HOOK_FASTCALL GenerateObjectObjectContacts(tPhysics_object* pObject, tPhysics_object* pPartner, tCollision_contact* pContacts, int pCount) {
+    br_matrix34 inv1;
+    br_matrix34 inv2;
+    br_matrix34 to1;
+    br_vector3 row2[3];
+    br_vector3 e1;
+    br_vector3 center1;
+    br_vector3 center2;
+    br_vector3 delta;
+    br_vector3 normal;
+    br_vector3 axis;
+    br_vector3 world_normal;
+    br_vector3 dir2;
+    br_vector3 point1;
+    br_vector3 point2;
+    tCollision_contact* contact;
+    float ext1[3];
+    float ext2[3];
+    float distance;
+    float radius;
+    float overlap;
+    float best;
+    float len;
+    int i;
+    int j;
+    int a;
+    int b;
+
+    if (pCount > 0x24) {
+        return 0;
+    }
+    if (!BoundsOverlapTest__finteray(&pObject->field_0xf4, &pPartner->field_0xf4)) {
+        return 0;
+    }
+    for (i = 0; i < 3; i++) {
+        ext1[i] = (pObject->bb1.max.v[i] - pObject->bb1.min.v[i]) * 0.5f;
+        ext2[i] = (pPartner->bb1.max.v[i] - pPartner->bb1.min.v[i]) * 0.5f;
+        center1.v[i] = (pObject->bb1.max.v[i] + pObject->bb1.min.v[i]) * 0.5f;
+        center2.v[i] = (pPartner->bb1.max.v[i] + pPartner->bb1.min.v[i]) * 0.5f;
+        if (ext1[i] <= 0.f || ext2[i] <= 0.f) {
+            return 0;
+        }
+    }
+    BrMatrix34LPInverse(&inv1, &pObject->transform_matrix);
+    BrMatrix34LPInverse(&inv2, &pPartner->transform_matrix);
+    /* BRender is row-vector: local1 = local2 * M2 * inv(M1); basis images are
+       the matrix ROWS. */
+    BrMatrix34Mul(&to1, &pPartner->transform_matrix, &inv1);
+    BrMatrix34ApplyP(&delta, &center2, &to1);
+    BrVector3Sub(&delta, &delta, &center1);
+    for (i = 0; i < 3; i++) {
+        row2[i].v[0] = to1.m[i][0];
+        row2[i].v[1] = to1.m[i][1];
+        row2[i].v[2] = to1.m[i][2];
+    }
+    best = 1.e30f;
+    BrVector3SetFloat(&normal, 1.f, 0.f, 0.f);
+    for (i = 0; i < 15; i++) {
+        if (i < 3) {
+            BrVector3SetFloat(&axis, 0.f, 0.f, 0.f);
+            axis.v[i] = 1.f;
+        } else if (i < 6) {
+            BrVector3Copy(&axis, &row2[i - 3]);
+        } else {
+            a = (i - 6) / 3;
+            b = (i - 6) % 3;
+            BrVector3SetFloat(&e1, 0.f, 0.f, 0.f);
+            e1.v[a] = 1.f;
+            BrVector3Cross(&axis, &e1, &row2[b]);
+        }
+        len = axis.v[0] * axis.v[0] + axis.v[1] * axis.v[1] + axis.v[2] * axis.v[2];
+        if (len < 1.e-12f) {
+            continue;
+        }
+        len = 1.0f / sqrtf(len);
+        axis.v[0] *= len;
+        axis.v[1] *= len;
+        axis.v[2] *= len;
+        distance = axis.v[0] * delta.v[0] + axis.v[1] * delta.v[1] + axis.v[2] * delta.v[2];
+        if (distance < 0.f) {
+            distance = -distance;
+        }
+        radius = ext1[0] * fabsf(axis.v[0]) + ext1[1] * fabsf(axis.v[1]) + ext1[2] * fabsf(axis.v[2]);
+        for (j = 0; j < 3; j++) {
+            radius += ext2[j] * fabsf(axis.v[0] * row2[j].v[0] + axis.v[1] * row2[j].v[1] + axis.v[2] * row2[j].v[2]);
+        }
+        overlap = radius - distance;
+        if (overlap < 0.f) {
+            return 0;
+        }
+        if (overlap < best) {
+            best = overlap;
+            BrVector3Copy(&normal, &axis);
+        }
+    }
+    if (best == 1.e30f) {
+        return 0;
+    }
+    if (0.f < normal.v[0] * delta.v[0] + normal.v[1] * delta.v[1] + normal.v[2] * delta.v[2]) {
+        BrVector3Negate(&normal, &normal);
+    }
+    BrMatrix34ApplyV(&world_normal, &normal, &pObject->transform_matrix);
+    len = world_normal.v[0] * world_normal.v[0] + world_normal.v[1] * world_normal.v[1] + world_normal.v[2] * world_normal.v[2];
+    if (len < 1.e-12f) {
+        return 0;
+    }
+    len = 1.0f / sqrtf(len);
+    world_normal.v[0] *= len;
+    world_normal.v[1] *= len;
+    world_normal.v[2] *= len;
+    BrMatrix34ApplyV(&dir2, &world_normal, &inv2);
+    for (i = 0; i < 3; i++) {
+        point2.v[i] = center2.v[i] + (dir2.v[i] >= 0.f ? ext2[i] : -ext2[i]);
+    }
+    BrMatrix34ApplyP(&point1, &point2, &to1);
+    contact = &pContacts[pCount];
+    contact->impulse = 0.f;
+    contact->object1 = pObject;
+    contact->object2 = pPartner;
+    contact->field_0xc = NULL;
+    contact->field_0x10 = 0.f;
+    BrVector3Sub(&contact->r1, &point1, &pObject->cmpos);
+    BrVector3Sub(&contact->r2, &point2, &pPartner->cmpos);
+    BrVector3Copy(&contact->normal, &normal);
+    BrVector3Copy(&contact->field_0x38, &dir2);
+    BrVector3SetFloat(&contact->impulse1, 0.f, 0.f, 0.f);
+    BrVector3SetFloat(&contact->impulse2, 0.f, 0.f, 0.f);
+    contact->type = 0;
+    BrVector3Copy(&pObject->omega, &pObject->rotate_omega);
+    BrVector3Copy(&pPartner->omega, &pPartner->rotate_omega);
+    return 1;
+}
+
 static int C2_HOOK_FASTCALL QuickHingeGen(tPhysics_object* pObject, tPhysics_object** ppPartner_list, tCollision_contact* pContacts, int pCount, tWorld_callbacks* pCallbacks, tPhysics_object* pHead) {
     tPhysics_object* partner;
     tPhysics_object* child;
@@ -4157,13 +4297,9 @@ static int C2_HOOK_FASTCALL QuickHingeGen(tPhysics_object* pObject, tPhysics_obj
             || (partner->flags & 4) != 0) {
             continue;
         }
-        /* NOT_IMPLEMENTED: CARMA2_HW 0x00425ca0 object-vs-object contact
-         * generator, originally called as
-         *   added = GenerateObjectObjectContacts(pObject, partner, pContacts, pCount);
-         * `added` stays 0 until it is reconstructed, so the wake/activation body
-         * below (faithful translation of the original `if (added != 0)` block)
-         * is currently unreachable. */
-        added = 0;
+        /* APPROXIMATION: stands in for the 0x425ca0 object-vs-object contact
+         * generator (retail AddObjectObjectForce dispatch). */
+        added = GenerateObjectObjectContacts(pObject, partner, pContacts, pCount);
         if (added != 0) {
             if (pObject->field_0xf0 == 2) {
                 WakeObjectOwner(pObject, pCallbacks);
@@ -4228,6 +4364,67 @@ static float ComputeContactImpulse(tCollision_contact* pContact) {
         return -vn / (1.f / obj1->M + 1.f / obj2->M);
     }
     return -vn * obj1->M;
+}
+
+// APPROXIMATION: applies one normal contact impulse to the involved objects.
+// The retail impulse solver (0x4bf490/0x4c3b60) folds this into its velocity
+// solve; nothing else in the reconstruction applies the normal component
+// (RotateObjectFirstOrder is friction-only), which let cars sink through track
+// faces and opponents. World push along the contact normal plus the COM torque
+// from the lever arms, mirroring RotateObjectFirstOrder's frame conventions.
+static void C2_HOOK_FASTCALL ApplyContactNormalImpulse(tCollision_contact* pContact, float pImpulse) {
+    tPhysics_object* obj1;
+    tPhysics_object* obj2;
+    br_vector3 world_normal;
+    float inv_m;
+
+    obj1 = pContact->object1;
+    obj2 = pContact->object2;
+    BrMatrix34ApplyV(&world_normal, &pContact->normal, &obj1->transform_matrix);
+    if (obj1->M != 0.f) {
+        inv_m = pImpulse / obj1->M;
+        obj1->v.v[0] += world_normal.v[0] * inv_m;
+        obj1->v.v[1] += world_normal.v[1] * inv_m;
+        obj1->v.v[2] += world_normal.v[2] * inv_m;
+        obj1->velocity_car_space.v[0] += world_normal.v[0] * inv_m;
+        obj1->velocity_car_space.v[1] += world_normal.v[1] * inv_m;
+        obj1->velocity_car_space.v[2] += world_normal.v[2] * inv_m;
+        if ((obj1->flags & 0x800) == 0) {
+            obj1->omega.v[0] += pImpulse * (pContact->r1.v[1] * pContact->normal.v[2] - pContact->r1.v[2] * pContact->normal.v[1]) / obj1->I.v[0];
+            obj1->omega.v[1] += pImpulse * (pContact->r1.v[2] * pContact->normal.v[0] - pContact->r1.v[0] * pContact->normal.v[2]) / obj1->I.v[1];
+            obj1->omega.v[2] += pImpulse * (pContact->r1.v[0] * pContact->normal.v[1] - pContact->r1.v[1] * pContact->normal.v[0]) / obj1->I.v[2];
+        }
+    }
+    if (obj2 != NULL && obj2->M != 0.f) {
+        inv_m = pImpulse / obj2->M;
+        obj2->v.v[0] -= world_normal.v[0] * inv_m;
+        obj2->v.v[1] -= world_normal.v[1] * inv_m;
+        obj2->v.v[2] -= world_normal.v[2] * inv_m;
+        obj2->velocity_car_space.v[0] -= world_normal.v[0] * inv_m;
+        obj2->velocity_car_space.v[1] -= world_normal.v[1] * inv_m;
+        obj2->velocity_car_space.v[2] -= world_normal.v[2] * inv_m;
+        if ((obj2->flags & 0x800) == 0) {
+            obj2->omega.v[0] -= pImpulse * (pContact->r2.v[1] * pContact->field_0x38.v[2] - pContact->r2.v[2] * pContact->field_0x38.v[1]) / obj2->I.v[0];
+            obj2->omega.v[1] -= pImpulse * (pContact->r2.v[2] * pContact->field_0x38.v[0] - pContact->r2.v[0] * pContact->field_0x38.v[2]) / obj2->I.v[1];
+            obj2->omega.v[2] -= pImpulse * (pContact->r2.v[0] * pContact->field_0x38.v[1] - pContact->r2.v[1] * pContact->field_0x38.v[0]) / obj2->I.v[2];
+        }
+    }
+}
+
+// APPROXIMATION: sequential normal-impulse application over a contact range.
+// Stands in for the retail 0x4bf490/0x4c3b60 solver passes; called from
+// DoCollisions before the RotateObjectFirstOrder friction pass.
+static void C2_HOOK_FASTCALL ApplyContactImpulses(tCollision_contact* pContacts, int pCount) {
+    int i;
+
+    for (i = 0; i < pCount; i++) {
+        float impulse;
+
+        impulse = ComputeContactImpulse(&pContacts[i]);
+        if (impulse != 0.f) {
+            ApplyContactNormalImpulse(&pContacts[i], impulse);
+        }
+    }
 }
 
 // FUNCTION: CARMA2_HW 0x004baec0
@@ -4740,8 +4937,8 @@ void C2_HOOK_FASTCALL DoCollisions(tPhysics_object** pObject_list, tWorld_callba
     int loops;
     int i;
     int r;
-    char bufB[0xF00];
-    char bufA[0xF00];
+    char bufB[0x28 * sizeof(tCollision_contact)];
+    char bufA[0x28 * sizeof(tCollision_contact)];
 
     pBuf1 = bufA;
     pBuf2 = bufB;
@@ -4830,6 +5027,11 @@ void C2_HOOK_FASTCALL DoCollisions(tPhysics_object** pObject_list, tWorld_callba
             }
         }
     } while (gPrepared_objects != 0);
+
+    /* APPROXIMATION: retail applies the solved contact impulses to the
+     * velocities inside the 0x4bf490/0x4c3b60 solver passes; nothing else
+     * applies the normal component, so do it here before friction. */
+    ApplyContactImpulses(gCollision_contacts, gINT_00692ddc);
 
     for (i = 0, contact = gCollision_contacts; i < gINT_00692ddc; i++, contact++) {
         RotateObjectFirstOrder(contact, pWorld_callbacks);

@@ -3657,8 +3657,17 @@ typedef struct {
     undefined4 field_0x8[12];
 } tQueued_net_smash;
 
-typedef struct { /* FIXME: maybe equal to tQueued_net_smash */
-    undefined4 field_0x0[14];
+typedef struct {
+    tU8 size;
+    tU8 type;
+    undefined field_0x2[2];
+    tU32 field_0x4;
+    int player;
+    float field_0xc;
+    br_vector3 field_0x10;
+    br_vector3 field_0x1c;
+    br_vector3 field_0x28;
+    int field_0x34;
 } tStored_smash;
 
 typedef struct {
@@ -4196,7 +4205,8 @@ typedef struct  {
     float field_0x18;
     float field_0x1c;
     tU8 kev_o_flap;
-    undefined field_0x21[7];
+    undefined field_0x21[3];
+    tPhysics_object* field_0x24;
     tU8 is_door;
     undefined field_0x29[3];
 } tCar_crush_flap_data;
@@ -5655,6 +5665,16 @@ typedef struct {
 } tNet_message_chunk_detach_bit;
 
 typedef struct {
+    tU32 field_0x0;
+    int player;
+    float field_0x8;
+    br_vector3 field_0xc;
+    br_vector3 field_0x18;
+    br_vector3 field_0x24;
+    int field_0x30;
+} tNet_message_chunk_smash;
+
+typedef struct {
     tNet_message_chunk_header header;
     int general_score;
     int scores[12];
@@ -5760,6 +5780,7 @@ typedef union {
     tNet_message_chunk_scores scores; /* type = 0x18 */
     tNet_message_chunk_oil_spill oil_spill; /* type = 0x1f*/
     tNet_message_car_crush car_crush; /* type = 0x20 */
+    tNet_message_chunk_smash smash; /* type = 0x21 */
     tNet_message_chunk_toggle_doors toggle_doors; /* type = 0x2c */
     tNet_message_chunk_mine_explode mine_explode; /* type = 0x31 */
     tNet_message_chunk_detach_bit detach_bit; /* type = 0x33 */

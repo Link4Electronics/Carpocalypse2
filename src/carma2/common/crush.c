@@ -9,6 +9,7 @@
 #include "depth.h"
 #include "displays.h"
 #include "errors.h"
+#include "finteray.h"
 #include "flap.h"
 #include "funks.h"
 #include "globvars.h"
@@ -27,6 +28,7 @@
 #include "skidmark.h"
 #include "smash.h"
 #include "smashing.h"
+#include "sound.h"
 #include "spark.h"
 #include "structur.h"
 #include "utility.h"
@@ -902,7 +904,7 @@ tU16 C2_HOOK_FASTCALL FindNearestParentVertex(br_actor* pActor, br_vector3* pPos
     br_actor* parent = pActor->parent;
     tUser_crush_data* parent_user;
     br_model* parent_model = NULL;
-    br_vector3 point;
+    volatile br_vector3 point;
 
     if (parent != NULL) {
         parent_user = parent->user;
@@ -2982,13 +2984,13 @@ credits_pass_loop:
     }
 
     if (DO_CRASH_EARNINGS_I(pCar1, 0x12e8) == 0) {
-        br_vector3 point;
+        volatile br_vector3 point;
 
         BrMatrix34ApplyP(&point, &pCar1->collision_info->cmpos, &pCar1->collision_info->transform_matrix);
         point.v[0] -= -0.15f;
     }
     if (pCar2 != NULL && DO_CRASH_EARNINGS_I(pCar2, 0x12e8) == 0) {
-        br_vector3 point;
+        volatile br_vector3 point;
 
         BrMatrix34ApplyP(&point, &pCar2->collision_info->cmpos, &pCar2->collision_info->transform_matrix);
         point.v[0] -= -0.15f;
@@ -3578,11 +3580,55 @@ void C2_HOOK_FASTCALL CrushBendFlapRend(void) {
     ClearCrushLists();
 }
 
+#pragma inline_depth(0)
 // FUNCTION: CARMA2_HW 0x004387d0
 void C2_HOOK_FASTCALL StopFlapping(br_actor* pActor, tCar_spec* pCar_spec) {
+    tUser_crush_data* user;
+    tCar_crush_buffer_entry* crush_data;
+    tCar_crush_flap_data* flap_data;
 
-    NOT_IMPLEMENTED();
+    user = pActor->user;
+    if (user == NULL) {
+        return;
+    }
+    crush_data = user->crush_data;
+    if (crush_data == NULL) {
+        return;
+    }
+    flap_data = crush_data->flap_data;
+    if (flap_data == NULL) {
+        return;
+    }
+    if (flap_data->kev_o_flap) {
+        if (gNet_mode != eNet_mode_none) {
+            if (gNet_mode == eNet_mode_host) {
+                tPhysics_object* object;
+                tNet_message* message;
+
+                object = flap_data->field_0x24;
+                message = NetBuildGuaranteedMessage(0x26, 0);
+                message->guaranteed.contents.detach_bit.ID = NetPlayerFromCar(pCar_spec)->ID;
+                message->guaranteed.contents.detach_bit.field_0x4 = object->uid;
+                message->guaranteed.contents.detach_bit.field_0x8 = gPHIL_last_physics_tick + 120;
+                NetGuaranteedSendMessageToEverybody(gCurrent_net_game, message, 0);
+            }
+        } else {
+            ReAttachBit(pCar_spec, pCar_spec->car_model_actor, pActor, flap_data->field_0x24);
+            MungeDetachLists(pCar_spec->car_crush_spec);
+        }
+    } else {
+        pCar_spec->car_crush_spec->field_0x134 -= 1;
+        BrMatrix34Identity(&pActor->t.t.mat);
+        PipeSingleFlap(pActor, -flap_data->field_0x4);
+        flap_data->field_0x4 = 0;
+        flap_data->field_0x2 = 0;
+        flap_data->field_0x6 = 0x3ffc;
+        flap_data->field_0x8 = 0x3ffc;
+        flap_data->field_0x0 = 0;
+    }
+    DRS3StartSound3D(gXXX_outlet, 0x1482, &pCar_spec->car_master_actor->t.t.translate.t, &gZero_v__car, 1, 255, IRandomBetween(0xe000, 0x12000), 0x10000);
 }
+#pragma inline_depth()
 
 // FUNCTION: CARMA2_HW 0x004f55d0
 intptr_t C2_HOOK_CDECL MungeMaterialCB(br_actor* pActor, void* data) {
@@ -3797,9 +3843,37 @@ void C2_HOOK_FASTCALL RemoveCarFromCrushLists(tCar_spec* pCar_spec) {
 
 // FUNCTION: CARMA2_HW 0x00461740
 int C2_HOOK_FASTCALL ShapeRayCast(const br_vector3* p1, const br_vector3* p2, const tPhysics_shape* pShape, br_vector3* pPos, float* pFactor, br_vector3* pNormal) {
+    int index;
+    int result;
 
-    NOT_IMPLEMENTED();
-    return 0;
+    switch (pShape->common.type) {
+    case kCollisionShapeType_Box:
+        result = LineBoxColl((br_vector3*)p1, (br_vector3*)p2, (br_bounds*)&pShape->box.common.bb, pPos, pFactor);
+        if (pNormal != NULL && result > 0) {
+            index = (result - 1) & 3;
+            pNormal->v[0] = 0.0f;
+            pNormal->v[1] = 0.0f;
+            pNormal->v[2] = 0.0f;
+            pNormal->v[index] = (result & 4) ? 1.0f : -1.0f;
+        }
+        return result;
+    case kCollisionShapeType_Polyhedron:
+    case kCollisionShapeType_Wireframe_Polyhedron:
+        result = LinePolyColl((br_vector3*)p1, (br_vector3*)p2, (tCollision_shape_polyhedron_data*)&pShape->polyhedron.polyhedron, pPos, 0, pFactor);
+        if (pNormal != NULL && result > 0) {
+            index = (result & 0x3f) - 1;
+            pNormal->v[0] = pShape->polyhedron.polyhedron.planes[index].v[0];
+            pNormal->v[1] = pShape->polyhedron.polyhedron.planes[index].v[1];
+            pNormal->v[2] = pShape->polyhedron.polyhedron.planes[index].v[2];
+        }
+        return result;
+    case kCollisionShapeType_Sphere:
+        return LineSphereColl((br_vector3*)p1, (br_vector3*)p2, (tCollision_shape_sphere_data*)&pShape->sphere.sphere, pPos, pNormal, pFactor);
+    default:
+        PhysicsError(ePhysicsError_UnknownShapeType, &gPhysics_empty_message);
+    case kCollisionShapeType_Wireframe:
+        return 0;
+    }
 }
 
 // FUNCTION: CARMA2_HW 0x0043f5f0
@@ -4117,9 +4191,69 @@ float C2_HOOK_FASTCALL ApplySmashTriggerEffect(tSmashable_item_spec* pSpec, tPhy
 }
 
 // FUNCTION: CARMA2_HW 0x004f5110
-void C2_HOOK_FASTCALL ApplySmashTriggerNumber(tPhysics_object* pObject, undefined4 pArg2, br_scalar pArg3, br_vector3* pArg4, br_vector3* pArg5, br_vector3* pArg6, int pArg7) {
+void C2_HOOK_FASTCALL ApplySmashTriggerNumber(tPhysics_object* pObject, tFace_ref* pFace, br_scalar pSpeed, br_vector3* pPoint, br_vector3* pVelocity, br_vector3* pNormal, int pArg7) {
+    tCar_spec* car;
+    void* owner;
+    int driver;
+    tNet_message* message;
+    tStored_smash* chunk;
+    tStored_smash* stored;
+    br_vector3 point;
+    float d;
+    int id;
 
-    NOT_IMPLEMENTED();
+    if (gNet_mode == eNet_mode_none) {
+        return;
+    }
+    if (pObject != NULL && pObject->owner != NULL && pObject->flags_0x238 == 1) {
+        owner = pObject->owner;
+        driver = *(int*)((char*)owner + 0xc);
+        if (driver > 5) {
+            if (owner == NULL || driver != eDriver_local_human) {
+                return;
+            }
+        }
+    }
+    if (pFace != NULL) {
+        d = DistanceFromFace(pPoint, pFace);
+        BrVector3Scale(&point, &pFace->normal, -d);
+        BrVector3Add(&point, &point, pPoint);
+    } else {
+        BrVector3Copy(&point, pPoint);
+    }
+    message = NetBuildGuaranteedMessage(0x21, 0);
+    chunk = (tStored_smash*)&message->guaranteed;
+    chunk->field_0x4 = gPHIL_last_physics_tick + 40;
+    if (pObject != NULL && pObject->owner != NULL && pObject->flags_0x238 == 1) {
+        car = (tCar_spec*)pObject->owner;
+        if (car != NULL && car->driver > 5) {
+            if (gNet_mode != eNet_mode_none) {
+                id = NetPlayerFromCar(car) - gNet_players;
+            } else {
+                id = *(tU16*)((tU8*)car + 0x80);
+            }
+        } else {
+            id = -1;
+        }
+    } else {
+        id = -1;
+    }
+    chunk->player = id;
+    chunk->field_0xc = pSpeed;
+    BrVector3Copy(&chunk->field_0x10, &point);
+    chunk->field_0x1c = *pVelocity;
+    chunk->field_0x28 = *pNormal;
+    if (pArg7 != 0) {
+        chunk->field_0x34 = 2;
+    } else {
+        chunk->field_0x34 = 0;
+    }
+    NetGuaranteedSendMessageToAllPlayers(gCurrent_net_game, message, 0);
+    if (gNet_mode == eNet_mode_host && gCount_host_smashes < 1000) {
+        stored = &gNet_host_smashes[gCount_host_smashes];
+        gCount_host_smashes++;
+        *stored = *chunk;
+    }
 }
 
 #pragma auto_inline(on)

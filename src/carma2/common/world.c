@@ -375,7 +375,7 @@ const char* gGroove_object_names[4] = {
 };
 
 // GLOBAL: CARMA2_HW 0x006a55c0
-tNet_stored_smash* gNet_host_smashes;
+tStored_smash* gNet_host_smashes;
 
 // GLOBAL: CARMA2_HW 0x006ab7a8
 int gDelete_count;
