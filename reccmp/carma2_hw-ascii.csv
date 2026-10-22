@@ -4523,6 +4523,5 @@ address,type,x-text
 0x673d18,string,"]"
 0x676478,string,"PST"
 0x6764b8,string,"PDT"
-0x676920,string,""
 0x7a2100,string,"winmm.dll"
 0x7a210d,string,"mciSendCommandA"

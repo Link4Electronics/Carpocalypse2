@@ -2180,12 +2180,11 @@ int C2_HOOK_FASTCALL ProcessForcesCallback(tCollision_contact* pContacts, float*
         goto pair_path;
 
 track_path:
-        object1 = pContacts[i].object1;
         BrVector3Scale(&scaled_normal, &pContacts[i].normal, pImpulses[i]);
-        BrVector3Add(&contact_offset, &object1->cmpos, &pContacts[i].r1);
+        BrVector3Add(&contact_offset, &pContacts[i].object1->cmpos, &pContacts[i].r1);
         if (pContacts[i].type != 0) {
-            BrMatrix34ApplyP(&point, &contact_offset, &object1->transform_matrix);
-            object = object1;
+            BrMatrix34ApplyP(&point, &contact_offset, &pContacts[i].object1->transform_matrix);
+            object = pContacts[i].object1;
             goto smash_path;
         }
         BrVector3Copy(&point, &pContacts[i].r2);
@@ -2423,9 +2422,7 @@ tail:
                     smash_buffer.flags[j] = 1;
                 }
             } else if (pContacts[j].object2 == object1 && pContacts[j].object1 == object2) {
-                if ((pContacts[j].field_0x38.v[2] * pContacts[k].normal.v[2]
-                        + pContacts[j].field_0x38.v[0] * pContacts[k].normal.v[0])
-                        + pContacts[j].field_0x38.v[1] * pContacts[k].normal.v[1] < -0.707107f) {
+                if (BrVector3Dot(&pContacts[j].field_0x38, &pContacts[k].normal) < -0.707107f) {
                     if (pImpulses[j] != 0.f) {
                         point1.v[0] += pContacts[j].r2.v[0] * pImpulses[j];
                         point1.v[1] += pContacts[j].r2.v[1] * pImpulses[j];
@@ -2545,20 +2542,20 @@ merge_done:
             }
         }
         if (impulse > 0.0005f) {
-            if (object1 != NULL && object1->owner != NULL && object1->flags_0x238 >= 2
-                    && object1->flags_0x238 <= 4) {
-                if (object2 == NULL || object2->owner == NULL || object2->flags_0x238 < 2
-                        || object2->flags_0x238 > 4) {
-                    BrMatrix34ApplyP(&world_point, &point1, &object1->transform_matrix);
-                    FUN_004d2320(object1, object2, (tFace_ref*)pContacts[k].field_0xc, pImpulses[k], &world_point);
+            if (pContacts[k].object1 != NULL && pContacts[k].object1->owner != NULL && pContacts[k].object1->flags_0x238 >= 2
+                    && pContacts[k].object1->flags_0x238 <= 4) {
+                if (pContacts[k].object2 == NULL || pContacts[k].object2->owner == NULL || pContacts[k].object2->flags_0x238 < 2
+                        || pContacts[k].object2->flags_0x238 > 4) {
+                    BrMatrix34ApplyP(&world_point, &point1, &pContacts[k].object1->transform_matrix);
+                    FUN_004d2320(pContacts[k].object1, pContacts[k].object2, (tFace_ref*)pContacts[k].field_0xc, pImpulses[k], &world_point);
                 }
             }
-            if (object2 != NULL && object2->owner != NULL && object2->flags_0x238 >= 2
-                    && object2->flags_0x238 <= 4) {
-                if (object1 == NULL || object1->owner == NULL || object1->flags_0x238 < 2
-                        || object1->flags_0x238 > 4) {
-                    BrMatrix34ApplyP(&world_point, &point2, &object2->transform_matrix);
-                    FUN_004d2320(object2, object1, (tFace_ref*)pContacts[k].field_0xc, pImpulses[k], &world_point);
+            if (pContacts[k].object2 != NULL && pContacts[k].object2->owner != NULL && pContacts[k].object2->flags_0x238 >= 2
+                    && pContacts[k].object2->flags_0x238 <= 4) {
+                if (pContacts[k].object1 == NULL || pContacts[k].object1->owner == NULL || pContacts[k].object1->flags_0x238 < 2
+                        || pContacts[k].object1->flags_0x238 > 4) {
+                    BrMatrix34ApplyP(&world_point, &point2, &pContacts[k].object2->transform_matrix);
+                    FUN_004d2320(pContacts[k].object2, pContacts[k].object1, (tFace_ref*)pContacts[k].field_0xc, pImpulses[k], &world_point);
                 }
             }
         }
@@ -2745,8 +2742,8 @@ tNon_car_spec* C2_HOOK_FASTCALL PullActorFromWorld(br_actor* actor) {
 
 // FUNCTION: CARMA2_HW 0x004b5970
 float C2_HOOK_FASTCALL GetFrictionFromFace(void *arg1) {
-    void *ptr = *(void **)arg1;
-    char code = *(char *)*(void **)((char *)ptr + 4);
+    tFace_ref* face = (tFace_ref*)arg1;
+    char code = face->material->identifier[0];
     int idx = code - 0x2f;
     if (idx < 0 || idx >= 11) {
         idx = 0;
