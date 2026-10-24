@@ -54,6 +54,21 @@ tU32 gUnk_006a2360;
 // GLOBAL: CARMA2_HW 0x006a2364
 tU32 gUnk_006a2364;
 
+// GLOBAL: CARMA2_HW 0x006a2368
+int gReplay_show_controls;
+
+// GLOBAL: CARMA2_HW 0x0065fbe0
+int gReplay_timeline_x1[2] = {240, 443};
+
+// GLOBAL: CARMA2_HW 0x0065fbe8
+int gReplay_timeline_x2[2] = {306, 612};
+
+// GLOBAL: CARMA2_HW 0x0065fbf0
+int gReplay_timeline_y[2] = {184, 446};
+
+// GLOBAL: CARMA2_HW 0x006a2388
+tReplay_headup_graphics gReplay_headup_graphics;
+
 // GLOBAL: CARMA2_HW 0x006a2378
 int gUnk_006a2378;
 

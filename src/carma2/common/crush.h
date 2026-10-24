@@ -174,6 +174,8 @@ void C2_HOOK_FASTCALL DoCompletelyUnBentThings(tCar_spec* pCar_spec);
 
 void C2_HOOK_FASTCALL TotallyRepairACar(tCar_spec* pCar_spec);
 
+int C2_HOOK_FASTCALL GetAverageCrushLevel(tCar_spec* pCar);
+
 void C2_HOOK_FASTCALL TotallyRepairCar(void);
 
 void C2_HOOK_FASTCALL WeldCar(tCar_spec* pCar_spec);
@@ -232,6 +234,7 @@ float C2_HOOK_FASTCALL ApplySmashTriggerEffect(tSmashable_item_spec* pSpec, tPhy
 void C2_HOOK_FASTCALL ApplySmashTriggerNumber(tPhysics_object* pObject, tFace_ref* pFace, br_scalar pSpeed, br_vector3* pPoint, br_vector3* pVelocity, br_vector3* pNormal, int pArg7);
 
 float C2_HOOK_FASTCALL BashObject(tPhysics_object* pObject, br_actor* pActor, float pArg3, br_vector3 *pArg4, br_vector3* pArg5, br_vector3* pArg6, int pArg7, int pArg8);
+void C2_HOOK_FASTCALL PushObject(tPhysics_object* pObject, br_vector3* pPos, br_vector3* pV, br_vector3* pUp);
 
 float C2_HOOK_FASTCALL SmashEnvironment(tPhysics_object* pObject, undefined4* pArg2, float pArg3, br_vector3* pArg4, br_vector3* pArg5, br_vector3* pArg6, int pArg7, int pArg8);
 

@@ -5282,6 +5282,20 @@ typedef enum {
     kActionReplayCameraMode_Internal = 8,
 } tActionReplayCameraMode;
 
+typedef struct {
+    br_pixelmap* field_0x00;
+    br_pixelmap* field_0x04;
+    br_pixelmap* field_0x08;
+    br_pixelmap* field_0x0c;
+    br_pixelmap* field_0x10;
+    br_pixelmap* field_0x14;
+    br_pixelmap* field_0x18;
+    br_pixelmap* field_0x1c;
+    br_pixelmap* field_0x20;
+    br_pixelmap* field_0x24;
+    br_pixelmap* field_0x28;
+} tReplay_headup_graphics;
+
 typedef enum {
     ePlayer_status_unknown = 0,
     ePlayer_status_ready = 1,
@@ -5342,6 +5356,13 @@ typedef enum {
     eNet_game_type_6 = 6, /* FIXME */
     eNet_game_type_foxy = 7
 } tNet_game_type;
+
+typedef struct {
+    int meter;
+    undefined4 field_0x04[12];
+    struct tCar_spec* car;
+    undefined4 field_0x38[39];
+} tRace_board_entry;
 
 typedef struct {
     char addr[16]; /* struct sockaddr addr; */
@@ -5408,7 +5429,7 @@ typedef struct {
     int field_0x88;
     int next_car_index;
     int score;
-    undefined field_0x94[4];
+    int field_0x94;
     struct br_matrix34 initial_position;
     struct tCar_spec * car;
     tNet_message* field_0xcc;

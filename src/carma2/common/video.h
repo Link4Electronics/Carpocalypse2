@@ -9,6 +9,13 @@ extern int gRecording_paused;
 extern tU32 gRecording_time;
 extern int gRecording_mouse_disabled;
 
+extern int gShow_status_message;
+extern int gStatus_message_1;
+extern int gStatus_message_2;
+extern undefined4 gNext_replay_record_state;
+
+int C2_HOOK_FASTCALL GetNextReplayRecordState(void);
+
 void C2_HOOK_CDECL InitQuickTimeStuff(void);
 
 void C2_HOOK_FASTCALL KillStatusMessage(void);
@@ -21,7 +28,6 @@ void C2_HOOK_FASTCALL TidyMovieARDisplay(void);
 
 void C2_HOOK_FASTCALL FreeOffQTshite(void);
 
-int C2_HOOK_FASTCALL MovieStopRecordingAndSave(void);
 
 void C2_HOOK_FASTCALL MovieStopRecordingIfNecessary(void);
 
@@ -29,7 +35,7 @@ int C2_HOOK_FASTCALL GetMovieWidth(void);
 
 int C2_HOOK_FASTCALL GetMovieHeight(void);
 
-int C2_HOOK_FASTCALL InitMovie(void);
+short C2_HOOK_FASTCALL InitMovie(void);
 
 int C2_HOOK_FASTCALL CreateMovie(void);
 

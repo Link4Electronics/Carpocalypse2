@@ -25,12 +25,28 @@ struct {
 #endif
 
 
+#ifdef CARPOCALYPSE2_MATCHING
 // FUNCTION: CARMA2_HW 0x00540086
+__declspec(naked) br_error C2_HOOK_CDECL HostSelectorReal(br_uint_16 *selp) {
+
+    __asm {
+        push    ebp
+        mov     ebp, esp
+        mov     eax, dword ptr [ebp + 8]
+        mov     dx, word ptr [_RealSelector]
+        mov     word ptr [eax], dx
+        xor     eax, eax
+        leave
+        ret
+    }
+}
+#else
 br_error C2_HOOK_CDECL HostSelectorReal(br_uint_16 *selp) {
 
     *selp = _RealSelector;
     return 0;
 }
+#endif
 
 #ifdef CARPOCALYPSE2_MATCHING
 // FUNCTION: CARMA2_HW 0x0053ff34

@@ -2103,7 +2103,6 @@ int C2_HOOK_FASTCALL GetAverageCrushLevel(tCar_spec* pCar);
 void C2_HOOK_FASTCALL DeleteFarCrushes(tCar_spec* pCar);
 int C2_HOOK_FASTCALL DRActorRecurseWithPredicate(br_actor* pActor, void* pPredicate, tCar_spec* pCar);
 int C2_HOOK_CDECL PredicateSpamPanel(br_actor* pActor, tCar_spec* pCar);
-void* C2_HOOK_FASTCALL GetCrushedPanelActor(tCar_spec* pCar, br_actor* pActor, tU32 pFlags);
 void C2_HOOK_FASTCALL InitialiseSpamCrush(tCar_spec* pCar, void* pContext);
 void C2_HOOK_FASTCALL CrushPanelWithForce(tCar_spec* pCar, tU32 pFlag_a, tU32 pFlag_b, tU32 pFlag_c, br_vector3* pVec, tU32 pFlag_d, tU32 pFlag_e);
 intptr_t C2_HOOK_FASTCALL CrushCarActorCbfn(br_actor* pActor, br_matrix34* pMat, void* pContext);
@@ -2113,15 +2112,13 @@ intptr_t C2_HOOK_FASTCALL CrushCarModelCbfn(br_actor* pActor, br_matrix34* pMat,
 void C2_HOOK_FASTCALL TotallySpamTheModel(tCar_spec* pCar_spec, float pDamage) {
     tCar_crush_spec* spec;
     br_actor* model_actor;
-    br_actor* panel_actor;
+    tPhysics_object* panel_actor;
     void* pMorph_data;
     float damage2;
     volatile float rate;
     float vdim[6];
     float vlow[3];
     float vhigh[3];
-    br_matrix34 mat_a;
-    br_matrix34 mat_b;
     br_vector3 vec_dir;
     struct {
         int count;
@@ -2208,34 +2205,31 @@ void C2_HOOK_FASTCALL TotallySpamTheModel(tCar_spec* pCar_spec, float pDamage) {
                     }
                 }
                 if (found != 0) {
-                    panel_actor = GetCrushedPanelActor(pCar_spec, model_actor, 0);
+                    panel_actor = DetachBit(pCar_spec, model_actor, NULL);
                     if (panel_actor != NULL) {
-                        pMorph_data = *(void**)((tU8*)pCar_spec + 0x8);
-                        BrMatrix34Mul(&mat_a, (br_matrix34*)((tU8*)pMorph_data + 0x14), (br_matrix34*)(*(tU32*)pMorph_data + 0x2c));
-                        BrMatrix34Mul(&mat_b, (br_matrix34*)((tU8*)panel_actor + 0x14), (br_matrix34*)(*(tU32*)panel_actor + 0x2c));
-                        {
-                            float* pPanel_pos = (float*)((tU8*)panel_actor + 0x68);
-                            float* pMorph_pos = (float*)((tU8*)pMorph_data + 0x68);
-                            float xd;
-                            float yd;
-                            float zd;
-                            float len = (float)sqrt((double)(
-                                (mat_b.m[1][0] - mat_a.m[1][0]) * (mat_b.m[1][0] - mat_a.m[1][0]) +
-                                (mat_b.m[1][1] - mat_a.m[1][1]) * (mat_b.m[1][1] - mat_a.m[1][1]) +
-                                (mat_b.m[1][2] - mat_a.m[1][2]) * (mat_b.m[1][2] - mat_a.m[1][2])));
-                            if (len > 2.38419e-07f) {
-                                float rd = (float)(1.0 / len);
-                                xd = (mat_b.m[1][0] - mat_a.m[1][0]) * rd;
-                                yd = (mat_b.m[1][1] - mat_a.m[1][1]) * rd;
-                                zd = (mat_b.m[1][2] - mat_a.m[1][2]) * rd;
-                            } else {
-                                xd = 1.0f;
-                                yd = gCrushZero;
-                                zd = gCrushZero;
-                            }
-                            pPanel_pos[0] = pMorph_pos[0] + pPanel_pos[0] + xd * 1.15942f;
-                            pPanel_pos[1] = pMorph_pos[1] + pPanel_pos[1] + yd * 1.15942f;
-                            pPanel_pos[2] = pMorph_pos[2] + pPanel_pos[2] + xd * 1.15942f;
+                        br_vector3 tmp1;
+                        br_vector3 tmp2;
+                        double dx;
+                        double dy;
+                        double dz;
+                        double len;
+                        double inv_len;
+
+                        BrMatrix34ApplyP(&tmp1, &pCar_spec->collision_info->cmpos, (br_matrix34*)((tU8*)pCar_spec->collision_info->actor + 0x2c));
+                        BrMatrix34ApplyP(&tmp2, &panel_actor->cmpos, (br_matrix34*)((tU8*)panel_actor->actor + 0x2c));
+                        dx = tmp2.v[0] - tmp1.v[0];
+                        dy = tmp2.v[1] - tmp1.v[1];
+                        dz = tmp2.v[2] - tmp1.v[2];
+                        len = sqrt(dx * dx + dy * dy + dz * dz);
+                        if (len > 2.38419e-07f) {
+                            inv_len = 1.0 / len;
+                            panel_actor->v.v[0] = pCar_spec->collision_info->v.v[0] + (float)(dx * inv_len * 1.15942f);
+                            panel_actor->v.v[1] = pCar_spec->collision_info->v.v[1] + (float)(dy * inv_len * 1.15942f);
+                            panel_actor->v.v[2] = pCar_spec->collision_info->v.v[2] + (float)(dz * inv_len * 1.15942f);
+                        } else {
+                            panel_actor->v.v[0] = pCar_spec->collision_info->v.v[0] + 1.15942f;
+                            panel_actor->v.v[1] = pCar_spec->collision_info->v.v[1];
+                            panel_actor->v.v[2] = pCar_spec->collision_info->v.v[2];
                         }
                     }
                 }
@@ -2397,13 +2391,6 @@ paint:
 
 #pragma auto_inline(off)
 
-// FUNCTION: CARMA2_HW 0x00443350
-void* C2_HOOK_FASTCALL GetCrushedPanelActor(tCar_spec* pCar, br_actor* pActor, tU32 pFlags) {
-
-    NOT_IMPLEMENTED();
-    return NULL;
-}
-
 // FUNCTION: CARMA2_HW 0x00432e70
 void C2_HOOK_FASTCALL InitialiseSpamCrush(tCar_spec* pCar, void* pContext) {
 
@@ -2473,14 +2460,15 @@ int C2_HOOK_CDECL PredicateSpamPanel(br_actor* pActor, tCar_spec* pCar) {
     len = sqrt(dx * dx + dy * dy + dz * dz);
     if (len > 2.38419e-07f) {
         inv_len = 1.0 / len;
-        detached->v.v[0] = pCar->collision_info->v.v[0] + (float)(dx * inv_len * 1.15942f);
-        detached->v.v[1] = pCar->collision_info->v.v[1] + (float)(dy * inv_len * 1.15942f);
-        detached->v.v[2] = pCar->collision_info->v.v[2] + (float)(dz * inv_len * 1.15942f);
+        detached->v.v[0] += (float)(dx * inv_len * 1.15942f);
+        detached->v.v[1] += (float)(dy * inv_len * 1.15942f);
+        detached->v.v[2] += (float)(dz * inv_len * 1.15942f);
     } else {
-        detached->v.v[0] = pCar->collision_info->v.v[0] + 1.15942f;
-        detached->v.v[1] = pCar->collision_info->v.v[1];
-        detached->v.v[2] = pCar->collision_info->v.v[2];
+        detached->v.v[0] += 1.15942f;
     }
+    detached->v.v[0] += pCar->collision_info->v.v[0];
+    detached->v.v[1] += pCar->collision_info->v.v[1];
+    detached->v.v[2] += pCar->collision_info->v.v[2];
 #ifdef CARPOCALYPSE2_MATCHING
     /* Original falls through with whatever value happens to be in eax
      * (non-zero in practice); no explicit return to reproduce its codegen. */

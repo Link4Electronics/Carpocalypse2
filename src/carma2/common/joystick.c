@@ -68,6 +68,32 @@ typedef struct tJoystick_preference_node {
 float Force_feedback_lower_limit = 1.5f;
 // GLOBAL: CARMA2_HW 0x0079d8a0
 tHeadup_text_buffer gJoystick_headup_buffer_0079d8a0;
+
+// GLOBAL: CARMA2_HW 0x00596250
+tJoystick_headup_text gJoystick_headup_texts[21] = {
+    { "Recover", 60 },
+    { "Reapir", 45 },
+    { "Hand Brake", 54 },
+    { "Use Powerup", 61 },
+    { "Next Powerup", 64 },
+    { "Prev Powerup", 63 },
+    { "Wheel Spin", 56 },
+    { "Map", 57 },
+    { "Cockpit View", 46 },
+    { "Buy Armour", 67 },
+    { "Buy Power", 68 },
+    { "Buy Offensive", 69 },
+    { "Target Lock", 72 },
+    { "Cycle Target", 73 },
+    { "Camera Mode", 75 },
+    { "Doors", 74 },
+    { "Horn", 59 },
+    { "Accelerate", 49 },
+    { "Brake", 50 },
+    { "Left", 47 },
+    { "Right", 48 },
+};
+
 // GLOBAL: CARMA2_HW 0x00688700
 int gOrig_joystick_index;
 
@@ -408,7 +434,6 @@ int C2_HOOK_FASTCALL PlayExclusiveFFBEffect(const char* pEffect_name, int pArg2)
     NOT_IMPLEMENTED();
 }
 
-// FUNCTION: CARMA2_HW 0x004575b0
 void C2_HOOK_FASTCALL InitJoysticks(void) {
 
     PDInitJoysticks();
@@ -597,6 +622,60 @@ void C2_HOOK_FASTCALL FUN_0045b0a0(tHeadup_text_buffer* pText_buffer) {
         }
         pText_buffer->field_0x4 = pText_buffer->text_last_add;
     }
+}
+
+// UNLABELED: CARMA2_HW 0x0045a920
+int C2_HOOK_FASTCALL FUN_0045a920(tHeadup_text_buffer* pText_buffer, tHeadup_text* pText, int pSorted) {
+    tHeadup_text* node;
+    tHeadup_text* previous;
+    int index;
+
+    node = pText_buffer->texts;
+    index = 0;
+    if (node == NULL) {
+        pText_buffer->texts = pText;
+        pText->next = NULL;
+        pText_buffer->count = 1;
+        pText_buffer->pos_last_add = 0;
+        pText_buffer->text_last_add = pText;
+        return 0;
+    }
+    if (!pSorted) {
+        while (node->next != NULL) {
+            node = node->next;
+            index++;
+        }
+        pText->next = NULL;
+        node->next = pText;
+        pText_buffer->count++;
+        pText_buffer->pos_last_add = index;
+        pText_buffer->text_last_add = node;
+        return index;
+    }
+    previous = NULL;
+    while (node != NULL) {
+        if (strcmp(node->text, pText->text) > 0) {
+            break;
+        }
+        previous = node;
+        node = node->next;
+        index++;
+    }
+    pText->next = node;
+    if (previous == NULL) {
+        pText_buffer->texts = pText;
+    } else {
+        previous->next = pText;
+    }
+    pText_buffer->count++;
+    if (node != NULL) {
+        pText_buffer->pos_last_add = index;
+        pText_buffer->text_last_add = previous != NULL ? previous : node;
+    } else {
+        pText_buffer->pos_last_add = index - 1;
+        pText_buffer->text_last_add = previous;
+    }
+    return pText_buffer->pos_last_add;
 }
 
 // FUNCTION: CARMA2_HW 0x0045b3b0

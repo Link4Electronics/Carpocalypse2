@@ -14,6 +14,8 @@
 #include "globvars.h"
 #include "globvrpb.h"
 #include "joystick.h"
+
+#include "platform.h"
 extern int C2_HOOK_FASTCALL Generic_MenuHandler(tFrontend_spec* pFrontend);
 extern int C2_HOOK_FASTCALL Options_Infunc(tFrontend_spec* pFrontend);
 extern int C2_HOOK_FASTCALL Options_Outfunc(tFrontend_spec* pFrontend);
@@ -203,7 +205,7 @@ int C2_HOOK_FASTCALL Options_Ok(tFrontend_spec* pFrontend) {
 // FUNCTION: CARMA2_HW 0x004747d0
 int C2_HOOK_FASTCALL Options_Quit(tFrontend_spec* pFrontend) {
 
-    InitJoysticks();
+    PDInitJoysticks();
     QuitGame();
     return 2;
 }

@@ -70,6 +70,16 @@ extern int gSingle_frame_mode;
 
 extern int gKey_down;
 
+extern tU32 gUnk_006a2360;
+extern tU32 gUnk_006a2364;
+extern tU32 gUnk_006a23c8;
+
+extern int gReplay_show_controls;
+extern int gReplay_timeline_x1[2];
+extern int gReplay_timeline_x2[2];
+extern int gReplay_timeline_y[2];
+extern tReplay_headup_graphics gReplay_headup_graphics;
+
 void C2_HOOK_FASTCALL SetQuickTimeDefaults(void);
 
 void C2_HOOK_FASTCALL MungeCarMaterials(tCar_spec* pCar, int pInternal_cam);

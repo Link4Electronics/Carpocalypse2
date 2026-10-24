@@ -524,6 +524,12 @@ void C2_HOOK_FASTCALL DRPixelmapRectangleMaskedCopy(br_pixelmap* pDest, br_int_1
     }
 }
 
+// FUNCTION: CARMA2_HW 0x0047bc40
+void C2_HOOK_FASTCALL DRPixelmapBlit(br_int_16 pX, br_int_16 pY, const br_pixelmap* pSource) {
+
+    DRPixelmapRectangleMaskedCopy(gBack_screen, pX, pY, pSource, 0, 0, pSource->width, pSource->height);
+}
+
 // DRMaskedStamp
 
 // SwitchToHiresMode

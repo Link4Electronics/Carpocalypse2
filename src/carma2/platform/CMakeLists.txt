@@ -34,14 +34,14 @@ if(CARPOCALYPSE2_PLATFORM_WIN32)
     )
     find_library(DSOUND_LIBRARY NAMES dsound)
     find_library(WINMM_LIBRARY NAMES winmm)
-    find_library(WS2_32_LIBRARY NAMES ws2_32)
+    find_library(WS2_32_LIBRARY NAMES wsock32)
     option(SOUND_ENABLED "Enable sound with DirectSound" ON)
     target_link_libraries(c2_platform
         PRIVATE
             DirectX::dinput
             DirectX::dxguid
             winmm
-            ws2_32
+            wsock32
             IForce2::IForce2
     )
     if(SOUND_ENABLED)
