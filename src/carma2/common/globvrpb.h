@@ -9,6 +9,7 @@
 extern tNet_mode gNet_mode;
 extern int gNumber_of_net_players;
 extern tNet_game_player_info gNet_players[12];
+extern tRace_board_entry gRace_board[8];
 extern int gThis_net_player_index;
 extern int gINT_0074c6d4;
 extern int gPending_race;

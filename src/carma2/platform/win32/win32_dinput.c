@@ -3,6 +3,7 @@
 #include "win32.h"
 #include "win32_windows.h"
 
+#include "displays.h"
 #include "errors.h"
 #include "globvars.h"
 #include "init.h"
@@ -44,8 +45,14 @@ int gJoystick_deadzone;
 // GLOBAL: CARMA2_HW 0x00686158
 IDirectInputA* gDirectInputJoystickHandle;
 
+// GLOBAL: CARMA2_HW 0x0079d9c0
+tDirectInputJoystickInfo gDirectInputJoystickInfos[MAX_COUNT_JOYSTICKS];
+
 // GLOBAL: CARMA2_HW 0x0079e060
 IDirectInputDevice2A* gDirectInputJoystickDevices[MAX_COUNT_JOYSTICKS];
+
+// GLOBAL: CARMA2_HW 0x0079e0a0
+IDirectInputEffect* gDirectInputEffects[MAX_COUNT_EFFECTS];
 
 // GLOBAL: CARMA2_HW 0x0068615c
 int gJoystickFFB;
@@ -53,14 +60,8 @@ int gJoystickFFB;
 // GLOBAL: CARMA2_HW 0x00686160
 int gCountEnumeratedJoystickDinputDevices;
 
-// GLOBAL: CARMA2_HW 0x0079e0a0
-IDirectInputEffect* gDirectInputEffects[MAX_COUNT_EFFECTS];
-
 // GLOBAL: CARMA2_HW 0x00686170
 int gDirectInputJoystickEnumerated;
-
-// GLOBAL: CARMA2_HW 0x0079d9c0
-tDirectInputJoystickInfo gDirectInputJoystickInfos[MAX_COUNT_JOYSTICKS];
 
 // GLOBAL: CARMA2_HW 0x00684628
 tJoystick_force_effect gJoystick_effects[30];
@@ -128,8 +129,8 @@ static int InitDirectInput(void) {
     int i;
 
     if (gDirectInputJoystickHandle == NULL) {
-        memset(gDirectInputJoystickDevices, 0, sizeof(IDirectInputDeviceA *));
-        for (i = 0; i < CARPOCALYPSE2_ASIZE(gDirectInputJoystickInfos); i++) {
+        memset(gDirectInputJoystickDevices, 0, sizeof(gDirectInputJoystickDevices));
+        for (i = 0; i < MAX_COUNT_JOYSTICKS; i++) {
             gDirectInputJoystickInfos[i].buttonMask = 0;
             gDirectInputJoystickInfos[i].axisMask = 0;
             gDirectInputJoystickInfos[i].devSubType = 0;
@@ -164,25 +165,29 @@ void C2_HOOK_FASTCALL CloseDirectInput(void) {
 
 static int AcquireDInputJoystickDevice(int pIndex) {
     IDirectInputDevice2A *device;
+    HRESULT result;
 
-    device = gDirectInputJoystickDevices[pIndex];
-    if (gDirectInputJoystickHandle == NULL || device == NULL) {
+    if (gDirectInputJoystickHandle == NULL) {
         return -1;
     }
-    switch (IDirectInputDevice2_Acquire(device)) {
-    case DI_OK:
+    device = gDirectInputJoystickDevices[pIndex];
+    if (device == NULL) {
+        return -1;
+    }
+    result = IDirectInputDevice2_Acquire(device);
+    if (result == DI_OK) {
         dr_dprintf("Joystick #%d acquired\n", pIndex);
         return 1;
-    case DI_NOEFFECT:
+    } else if (result == DI_NOEFFECT) {
         dr_dprintf("Joystick #%d already acquired\n", pIndex);
         return 1;
-    case DIERR_INVALIDPARAM:
+    } else if (result == DIERR_INVALIDPARAM) {
         dr_dprintf("Joystick %d DIERR_INVALIDPARAM\n", pIndex);
         return 0;
-    case DIERR_OTHERAPPHASPRIO:
+    } else if (result == DIERR_OTHERAPPHASPRIO) {
         dr_dprintf("Joystick %d DIERR_OTHERAPPHASPRIO\n", pIndex);
         return 0;
-    default:
+    } else {
         dr_dprintf("Unknown Error acquiring joystick %d\n", pIndex);
         return 0;
     }
@@ -374,6 +379,41 @@ void C2_HOOK_FASTCALL AttachJoystickButtonInfos(size_t pSize, tWin32_void_voidpt
 // FUNCTION: CARMA2_HW 0x004599d0
 const char* C2_HOOK_FASTCALL GetCurrentJoystickName(void) {
     return gDirectInputJoystickInfos[gJoystick_index].productName;
+}
+
+// UNLABELED: CARMA2_HW 0x00459a70
+void C2_HOOK_FASTCALL FUN_00459a70(void) {
+    char buffer[256];
+
+    if (gJoystick_index != -1 && gDirectInputJoystickDevices[gJoystick_index] != NULL) {
+        if (gJoystickFFB & (1 << gJoystick_index)) {
+            ResetDInputJoystickFFB(gJoystick_index);
+        }
+        gJoystick_index++;
+        if (gJoystick_index > gCountEnumeratedJoystickDinputDevices - 1 || gJoystick_index > MAX_COUNT_JOYSTICKS - 1) {
+            gJoystick_index = 0;
+        }
+        JoystickDInputGetInfo(gJoystick_index, NULL, NULL);
+        if (gJoystick_index != -1 && gDirectInputJoystickDevices[gJoystick_index] != NULL) {
+            sprintf(buffer, "Joystick %d: %s %d", gJoystick_index,
+                    gDirectInputJoystickInfos[gJoystick_index].productName,
+                    (gJoystickFFB & (1 << gJoystick_index)) != 0);
+            NewTextHeadupSlot(4, 0, 3000, -1, buffer);
+        }
+    }
+}
+
+// UNLABELED: CARMA2_HW 0x0045c420
+void C2_HOOK_FASTCALL FUN_0045c420(void) {
+    tButtonJoystickInfo* info;
+
+    FUN_00459a70();
+    info = PDGetCurrentJoystickData();
+    if (info != NULL) {
+        gJoystick_x_steering = info->field_0xd8;
+        gJoystick_y_throttle = info->field_0xdc;
+        gUNK_00595f9c = info->field_0xd4;
+    }
 }
 
 // FUNCTION: CARMA2_HW 0x00459fb0
@@ -617,11 +657,11 @@ int C2_HOOK_FASTCALL UnloadDinputFFBEfectwithName(const char *name) {
 
 int C2_HOOK_FASTCALL ResetForceFeedback(void) {
 	int result;
+    int i;
 
     result = 0;
     if (gJoystickFFB != 0) {
-        int i;
-        for (i = 0; i < CARPOCALYPSE2_ASIZE(gDirectInputJoystickDevices); i++) {
+        for (i = 0; i < MAX_COUNT_JOYSTICKS; i++) {
             IDirectInputDevice2A *device = gDirectInputJoystickDevices[i];
             if (device != NULL && (gJoystickFFB & (1 << i))) {
                 IDirectInputDevice2_SendForceFeedbackCommand(device, DISFFC_RESET);
@@ -671,6 +711,10 @@ int C2_HOOK_FASTCALL InitForceFeedback(void) {
     return gForceFeedbackAvailable;
 }
 
+#if defined(CARPOCALYPSE2_MATCHING) && defined(_MSC_VER)
+#pragma auto_inline(off)
+#endif
+
 // FUNCTION: CARMA2_HW 0x00457ff0
 void C2_HOOK_FASTCALL ResetDInputJoystickFFB(int pIndex) {
     IDirectInputDevice2A *device;
@@ -680,6 +724,10 @@ void C2_HOOK_FASTCALL ResetDInputJoystickFFB(int pIndex) {
         IDirectInputDevice2_SendForceFeedbackCommand(device, DISFFC_STOPALL);
     }
 }
+
+#if defined(CARPOCALYPSE2_MATCHING) && defined(_MSC_VER)
+#pragma auto_inline(on)
+#endif
 
 // FUNCTION: CARMA2_HW 0x00458520
 void C2_HOOK_FASTCALL RegisterJoystickFFBForces(void) {
@@ -812,13 +860,13 @@ int C2_HOOK_FASTCALL JoystickDInputBegin(void) {
         if (gCountEnumeratedJoystickDinputDevices == 0) {
             IDirectInput_EnumDevices(gDirectInputJoystickHandle, DIDEVTYPE_JOYSTICK, Win32DInputJoystickEnum, gDirectInputJoystickHandle, DIEDFL_ATTACHEDONLY);
         }
-            for (i = 0; i < CARPOCALYPSE2_ASIZE(gDirectInputJoystickDevices); i++) {
+        if (gCountEnumeratedJoystickDinputDevices != 0) {
+            for (i = 0; i < MAX_COUNT_JOYSTICKS; i++) {
                 JoystickDInputGetInfo(i, NULL, NULL);
-                if (gDirectInputJoystickDevices[i] != NULL) {
-                    AcquireDInputJoystickDevice(i);
-                }
+                AcquireDInputJoystickDevice(i);
             }
             gJoystick_index = 0;
+        }
         if (gJoystick_index < 0) {
             return 0;
         }
@@ -1447,6 +1495,7 @@ int C2_HOOK_FASTCALL PDGetJoy2Y(void) {
     return -1;
 }
 
+// FUNCTION: CARMA2_HW 0x004575b0
 void C2_HOOK_FASTCALL PDInitJoysticks(void) {
 
     if (gCountEnumeratedJoystickDinputDevices == 0) {

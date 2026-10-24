@@ -1991,6 +1991,17 @@ void C2_HOOK_FASTCALL MoveHeadupTo(int pHeadup_index, int pX, int pY) {
     }
 }
 
+// UNLABELED: CARMA2_HW 0x0044a8a0
+void C2_HOOK_FASTCALL FUN_0044a8a0(int pHeadup_index, int pX, int pY) {
+
+    if (pHeadup_index >= 0) {
+        gHeadups[pHeadup_index].justification = eJust_left;
+        gHeadups[pHeadup_index].original_x = pX;
+        gHeadups[pHeadup_index].x = pX;
+        gHeadups[pHeadup_index].y = pY;
+    }
+}
+
 // FUNCTION: CARMA2_HW 0x00449b10
 void C2_HOOK_FASTCALL DoHeadups(tU32 pThe_time) {
     int i;

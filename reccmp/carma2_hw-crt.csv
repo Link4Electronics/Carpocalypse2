@@ -320,3 +320,5 @@ address,type,name
 0x7635b8,global,gRaceGroups2
 0x763b10,global,gRace_index
 0x79ecb0,global,gMouse_last_pos
+0x673ec4,global,__OP_EXPjmptab
+0x57df45,global,__ctrandisp1

@@ -94,6 +94,8 @@ extern void C2_HOOK_FASTCALL DoFancyHeadup(int pIndex);
 
 extern void C2_HOOK_FASTCALL MoveHeadupTo(int pHeadup_index, int pX, int pY);
 
+extern void C2_HOOK_FASTCALL FUN_0044a8a0(int pHeadup_index, int pX, int pY);
+
 // IsHeadupTextClever
 
 // MungeHeadupWidth

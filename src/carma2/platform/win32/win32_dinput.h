@@ -82,6 +82,10 @@ extern int C2_HOOK_FASTCALL PDGetJoy2Y(void);
 
 extern void C2_HOOK_FASTCALL PDInitJoysticks(void);
 
+extern void C2_HOOK_FASTCALL FUN_00459a70(void);
+
+extern void C2_HOOK_FASTCALL FUN_0045c420(void);
+
 extern void C2_HOOK_FASTCALL PDPlayFFBEffectIndex(int index);
 
 extern int C2_HOOK_FASTCALL PDFindJoystickEffect(const char* effectName);

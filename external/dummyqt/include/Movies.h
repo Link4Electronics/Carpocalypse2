@@ -1,6 +1,7 @@
 #ifndef __MOVIES__
 #define __MOVIES__
 
+#include "c2_hooks.h"
 #include "Files.h"
 #include "MacTypes.h"
 
@@ -17,17 +18,17 @@ enum {
     createMovieFileDeleteCurFile  = 1L << 31,
 };
 
-extern OSErr EnterMovies(void);
+extern OSErr C2_HOOK_CDECL EnterMovies(void);
 
-extern OSErr CloseMovieFile(short resRefNum);
+extern OSErr C2_HOOK_CDECL CloseMovieFile(short resRefNum);
 
-extern void DisposeMovie(Movie theMovie);
+extern void C2_HOOK_CDECL DisposeMovie(Movie theMovie);
 
-extern OSErr EndMediaEdits(Media theMedia);
+extern OSErr C2_HOOK_CDECL EndMediaEdits(Media theMedia);
 
-extern TimeValue GetMediaDuration(Media theMedia);
+extern TimeValue C2_HOOK_CDECL GetMediaDuration(Media theMedia);
 
-extern OSErr InsertMediaIntoTrack(
+extern OSErr C2_HOOK_CDECL InsertMediaIntoTrack(
     Track       theTrack,
     TimeValue   trackStart,
     TimeValue   mediaTime,
@@ -35,7 +36,7 @@ extern OSErr InsertMediaIntoTrack(
     Fixed       mediaRate);
 
 
-extern Movie  FlattenMovieData(
+extern Movie  C2_HOOK_CDECL FlattenMovieData(
     Movie           theMovie,
     long            movieFlattenFlags,
     const FSSpec *  theFile,
@@ -43,7 +44,7 @@ extern Movie  FlattenMovieData(
     ScriptCode      scriptTag,
     long            createMovieFileFlags);
 
-extern OSErr CreateMovieFile(
+extern OSErr C2_HOOK_CDECL CreateMovieFile(
     const FSSpec *  fileSpec,
     OSType          creator,
     ScriptCode      scriptTag,

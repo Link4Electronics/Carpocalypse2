@@ -119,8 +119,7 @@ void C2_HOOK_FASTCALL MakeSavedGame(tSave_game* pSave_game) {
 }
 #include "carpocalypse2_types.h"
 
-// FUNCTION: CARMA2_HW 0x00500090
-void C2_HOOK_FASTCALL Encryptificate(tSave_game* pSave_games, int pCount) {
+static __inline void C2_HOOK_FASTCALL Encryptificate(tSave_game* pSave_games, int pCount) {
 
     C2_HOOK_BUG_ON(sizeof(tSave_game) != 0x328);
     SplungeSomeData(pSave_games, pCount * sizeof(tSave_game));

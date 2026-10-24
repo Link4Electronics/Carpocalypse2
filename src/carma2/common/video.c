@@ -71,16 +71,16 @@ tU32 gRecording_time;
 int gRecording_mouse_disabled;
 
 
+// FUNCTION: CARMA2_HW 0x004e2100
+int C2_HOOK_FASTCALL GetNextReplayRecordState(void) {
+
+    return gNext_replay_record_state;
+}
+
 // FUNCTION: CARMA2_HW 0x004e2110
 void C2_HOOK_FASTCALL KillStatusMessage(void) {
 
     gShow_status_message = 0;
-}
-
-// FUNCTION: CARMA2_HW 0x004e1250
-void C2_HOOK_FASTCALL WriteBannerFrame(void) {
-
-    NOT_IMPLEMENTED();
 }
 
 void C2_HOOK_FASTCALL ShowStatusMessage(int msg1, int msg2) {
@@ -124,7 +124,7 @@ void C2_HOOK_FASTCALL FreeOffQTshite(void) {
     }
 }
 
-int C2_HOOK_FASTCALL MovieStopRecordingAndSave(void) {
+static int C2_HOOK_FASTCALL MovieStopRecordingAndSave(void) {
 
     if (gNext_replay_record_state == 4) {
         struct FSSpec fs_spec;
@@ -157,6 +157,13 @@ int C2_HOOK_FASTCALL MovieStopRecordingAndSave(void) {
     return 1;
 }
 
+// FUNCTION: CARMA2_HW 0x004e1a20
+void C2_HOOK_FASTCALL MovieStopRecordingIfNecessary(void) {
+
+    MovieStopRecordingAndSave();
+    KillStatusMessage();
+}
+
 // FUNCTION: CARMA2_HW 0x004e2140
 int C2_HOOK_FASTCALL GetMovieWidth(void) {
 
@@ -178,21 +185,17 @@ int C2_HOOK_FASTCALL GetMovieHeight(void) {
 }
 
 // FUNCTION: CARMA2_HW 0x004e0f20
-int C2_HOOK_FASTCALL InitMovie(void) {
+OSErr C2_HOOK_FASTCALL InitMovie(void) {
 
     gQuicktime_rect.top = 0;
     gQuicktime_rect.left = 0;
     gQuicktime_rect.right = GetMovieWidth();
     gQuicktime_rect.bottom = GetMovieHeight();
-    if (CreateMovieFile(&gQt_file_spec, sigMoviePlayer, smCurrentScript, createMovieFileDeleteCurFile, &gQuicktime_movie_file, &gQuicktime_movie) == noErr) {
-        return 0;
+    if (CreateMovieFile(&gQt_file_spec, sigMoviePlayer, smCurrentScript, createMovieFileDeleteCurFile, &gQuicktime_movie_file, &gQuicktime_movie) != noErr) {
+        PathCat(gQuick_time_temp_path, gApplication_path, "QTTMP");
+        PathCat(gQuick_time_movie_path_stub, gApplication_path, "MOVIE");
+        return CreateMovieFile(&gQt_file_spec, sigMoviePlayer, smCurrentScript, createMovieFileDeleteCurFile, &gQuicktime_movie_file, &gQuicktime_movie);
     }
-    PathCat(gQuick_time_temp_path, gApplication_path, "QTTMP");
-    PathCat(gQuick_time_movie_path_stub, gApplication_path, "MOVIE");
-    if (!CreateMovieFile(&gQt_file_spec, sigMoviePlayer, smCurrentScript, createMovieFileDeleteCurFile, &gQuicktime_movie_file, &gQuicktime_movie) == noErr) {
-        return 0;
-    }
-    return 1;
 }
 
 // FUNCTION: CARMA2_HW 0x004e0fe0

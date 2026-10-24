@@ -1,18 +1,26 @@
 #include "replay_callbacks.h"
 
+#include "camera.h"
 #include "crush.h"
+#include "displays.h"
 #include "flap.h"
+#include "font.h"
 #include "globvars.h"
+#include "grafdata.h"
+#include "graphics1.h"
+#include "graphics.h"
+#include "graphics2.h"
+#include "input.h"
 #include "piping.h"
+#include "platform.h"
 #include "powerups.h"
 #include "replay.h"
 #include "smash.h"
 #include "sound.h"
 #include "spark.h"
 #include "pedestrn.h"
-#include "graphics1.h"
-#include "graphics.h"
 #include "utility.h"
+#include "video.h"
 
 #include "carpocalypse2_macros.h"
 #include "world.h"
@@ -1742,8 +1750,155 @@ void C2_HOOK_FASTCALL ApplyOppoRenderage(tPipe_chunk** pChunk) {
 }
 // FUNCTION: CARMA2_HW 0x004e6280
 void C2_HOOK_FASTCALL ActualActionReplayHeadups(int pSpecial_zappy_bastard) {
+    tU16 colour1;
+    tU16 colour2;
+    tU16 colour3;
+    tU16 colour4;
+    tU32 time;
+    int elapsed;
+    int total;
+    int pos;
+    int i;
+    int showed_camera;
+    int x;
+    int text_y;
 
-    NOT_IMPLEMENTED();
+    colour3 = 4;
+    colour2 = 2;
+    colour4 = 0x52;
+    colour1 = 0x51;
+    if (gBack_screen->type != 3) {
+        colour3 = PaletteEntry16Bit(gRender_palette, 4);
+        colour2 = PaletteEntry16Bit(gRender_palette, 2);
+        colour4 = PaletteEntry16Bit(gRender_palette, 0x52);
+        colour1 = PaletteEntry16Bit(gRender_palette, 0x51);
+    }
+    time = PDGetTotalTime();
+    if (PDKeyDown(0)) {
+        return;
+    }
+    PossibleLock(1);
+    DRPixelmapBlit(gCurrent_graf_data->field_0x300, gCurrent_graf_data->field_0x304,
+        gReplay_headup_graphics.field_0x04);
+    if (GetNextReplayRecordState()) {
+        DRPixelmapBlit(gCurrent_graf_data->field_0x300 + gCurrent_graf_data->field_0x358,
+            gCurrent_graf_data->field_0x304 + gCurrent_graf_data->field_0x35c,
+            gReplay_headup_graphics.field_0x28);
+    }
+    if (pSpecial_zappy_bastard < 0) {
+        DRPixelmapBlit(gCurrent_graf_data->field_0x310 + gCurrent_graf_data->field_0x300,
+            gCurrent_graf_data->field_0x314 + gCurrent_graf_data->field_0x304,
+            gReplay_headup_graphics.field_0x08);
+    } else if (pSpecial_zappy_bastard > 0) {
+        DRPixelmapBlit(gCurrent_graf_data->field_0x300 + gCurrent_graf_data->field_0x340,
+            gCurrent_graf_data->field_0x304 + gCurrent_graf_data->field_0x344,
+            gReplay_headup_graphics.field_0x20);
+    } else if (ARGetReplayRate() < -1.0f) {
+        DRPixelmapBlit(gCurrent_graf_data->field_0x318 + gCurrent_graf_data->field_0x300,
+            gCurrent_graf_data->field_0x31c + gCurrent_graf_data->field_0x304,
+            gReplay_headup_graphics.field_0x0c);
+    } else if (ARGetReplayRate() > 1.0f) {
+        DRPixelmapBlit(gCurrent_graf_data->field_0x300 + gCurrent_graf_data->field_0x338,
+            gCurrent_graf_data->field_0x304 + gCurrent_graf_data->field_0x33c,
+            gReplay_headup_graphics.field_0x1c);
+    } else if (ARGetReplayRate() == 1.0f) {
+        DRPixelmapBlit(gCurrent_graf_data->field_0x300 + gCurrent_graf_data->field_0x330,
+            gCurrent_graf_data->field_0x304 + gCurrent_graf_data->field_0x334,
+            gReplay_headup_graphics.field_0x18);
+    } else if (ARGetReplayRate() == -1.0f) {
+        DRPixelmapBlit(gCurrent_graf_data->field_0x300 + gCurrent_graf_data->field_0x320,
+            gCurrent_graf_data->field_0x304 + gCurrent_graf_data->field_0x324,
+            gReplay_headup_graphics.field_0x10);
+    } else {
+        DRPixelmapBlit(gCurrent_graf_data->field_0x300 + gCurrent_graf_data->field_0x328,
+            gCurrent_graf_data->field_0x304 + gCurrent_graf_data->field_0x32c,
+            gReplay_headup_graphics.field_0x14);
+    }
+    elapsed = gLast_replay_frame_time - gUnk_006a2360;
+    total = gUnk_006a2364 - gUnk_006a2360;
+    pos = (int)((float)elapsed / (float)total
+        * (gReplay_timeline_x2[gReal_graf_data_index] - gReplay_timeline_x1[gReal_graf_data_index]))
+        + gReplay_timeline_x1[gReal_graf_data_index];
+    if (pos > gReplay_timeline_x1[gReal_graf_data_index]) {
+        BrPixelmapLine(gBack_screen, gReplay_timeline_x1[gReal_graf_data_index],
+            gReplay_timeline_y[gReal_graf_data_index], pos - 1,
+            gReplay_timeline_y[gReal_graf_data_index], colour2);
+        for (i = 1; i < 6; i++) {
+            BrPixelmapLine(gBack_screen, gReplay_timeline_x1[gReal_graf_data_index],
+                gReplay_timeline_y[gReal_graf_data_index] + i, pos - 1,
+                gReplay_timeline_y[gReal_graf_data_index] + i, colour3);
+        }
+        BrPixelmapLine(gBack_screen, gReplay_timeline_x1[gReal_graf_data_index],
+            gReplay_timeline_y[gReal_graf_data_index] + 6, pos - 1,
+            gReplay_timeline_y[gReal_graf_data_index] + 6, colour2);
+    }
+    if (pos < gReplay_timeline_x2[gReal_graf_data_index]) {
+        BrPixelmapLine(gBack_screen, pos, gReplay_timeline_y[gReal_graf_data_index],
+            gReplay_timeline_x2[gReal_graf_data_index] - 1,
+            gReplay_timeline_y[gReal_graf_data_index], colour1);
+        for (i = 1; i < 6; i++) {
+            BrPixelmapLine(gBack_screen, pos, gReplay_timeline_y[gReal_graf_data_index] + i,
+                gReplay_timeline_x2[gReal_graf_data_index] - 1,
+                gReplay_timeline_y[gReal_graf_data_index] + i, colour4);
+        }
+        BrPixelmapLine(gBack_screen, pos, gReplay_timeline_y[gReal_graf_data_index] + 6,
+            gReplay_timeline_x2[gReal_graf_data_index] - 1,
+            gReplay_timeline_y[gReal_graf_data_index] + 6, colour1);
+    }
+    BrPixelmapLine(gBack_screen, gReplay_timeline_x1[gReal_graf_data_index] - 1,
+        gReplay_timeline_y[gReal_graf_data_index],
+        gReplay_timeline_x1[gReal_graf_data_index] - 1,
+        gReplay_timeline_y[gReal_graf_data_index] + 6, colour2);
+    BrPixelmapLine(gBack_screen, gReplay_timeline_x2[gReal_graf_data_index],
+        gReplay_timeline_y[gReal_graf_data_index],
+        gReplay_timeline_x2[gReal_graf_data_index],
+        gReplay_timeline_y[gReal_graf_data_index] + 6, colour1);
+    if (gReplay_show_controls) {
+        DRPixelmapBlit(gCurrent_graf_data->field_0x300 + gCurrent_graf_data->field_0x348,
+            gCurrent_graf_data->field_0x304 + gCurrent_graf_data->field_0x34c,
+            gReplay_headup_graphics.field_0x24);
+    }
+    PossibleUnlock(1);
+    showed_camera = 0;
+    if (time - gUnk_006a23c8 < 0x7d0) {
+        showed_camera = 1;
+        DRPixelmapText(gBack_screen, gCurrent_graf_data->field_0x350,
+            gCurrent_graf_data->field_0x354, &gFonts[1],
+            GetMiscString(eMiscString_standard_cam + gAction_replay_camera_mode),
+            gCurrent_graf_data->field_0x350 * 2);
+    }
+    if (GetNextReplayRecordState()) {
+        if (gShow_status_message) {
+            if (gNext_replay_record_state == 4) {
+                x = gCurrent_graf_data->field_0x350;
+                text_y = gCurrent_graf_data->field_0x354;
+                if (!showed_camera) {
+                    DRPixelmapText(gBack_screen, x, text_y, &gFonts[1],
+                        GetMiscString(gStatus_message_1), gBack_screen->width);
+                }
+            } else {
+                x = gCurrent_graf_data->width / 2;
+                text_y = gCurrent_graf_data->height / 2;
+                DRPixelmapCentredText(gBack_screen, x, text_y - 0x40, &gFonts[4],
+                    GetMiscString(gStatus_message_1));
+                if (gStatus_message_2) {
+                    DRPixelmapCentredText(gBack_screen, x, text_y - 0x20, &gFonts[6],
+                        GetMiscString(gStatus_message_2));
+                }
+            }
+        }
+    } else if (((time / 400) & 1) != 0) {
+        PossibleLock(1);
+        DRPixelmapBlit(gCurrent_graf_data->field_0x2f8,
+            gCurrent_graf_data->field_0x2fc,
+            gReplay_headup_graphics.field_0x00);
+        PossibleUnlock(1);
+    }
+    if (!gRecording_mouse_disabled && !GetNextReplayRecordState()) {
+        PossibleLock(1);
+        DoMouseCursor();
+        PossibleUnlock(1);
+    }
 }
 
 // Replay pipe worker helpers live in replay_workers.c so they are not inlined

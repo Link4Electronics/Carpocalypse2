@@ -45,6 +45,7 @@
 #include "brender/brender.h"
 
 #include "c2_string.h"
+#include "c2_stdlib.h"
 
 #include "carpocalypse2_macros.h"
 #include "controls.h"
@@ -2849,10 +2850,57 @@ void C2_HOOK_FASTCALL ShowCurrentJoystickName(void) {
 #endif
 }
 
+// UNLABELED: CARMA2_HW 0x0045c240
+void C2_HOOK_FASTCALL FUN_0045c240(void) {
+    tHeadup_text* text;
+    int i;
+
+    if (gINT_0068b8e8) {
+        gINT_0068b8e8 = 0;
+        if (gAcc_poly_actor != NULL && gRender_acc_poly_actor != 0) {
+            BrActorRemove(gAcc_poly_actor);
+            gRender_acc_poly_actor = 0;
+        }
+    } else {
+        gINT_0068b8e8 = 1;
+        FUN_0044a8a0(gProgram_state.frame_rate_headup, 10, 350);
+        for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gRace_head_ups); i++) {
+            FUN_0044a8a0(gRace_head_ups[i], 10, 120 + i * 10);
+            ChangeHeadupFont(gRace_head_ups[i], -2);
+        }
+        CreateAccentPolyActor(8.0f, 118.0f, 130.0f, 224.0f);
+        if (gJoystick_headup_buffer_0079d8a0.count == 0) {
+            if (gJoystick_headup_buffer_0079d8a0.field_0x14 < 5) {
+                gJoystick_headup_buffer_0079d8a0.field_0x14 = 10;
+            }
+            gJoystick_headup_buffer_0079d8a0.texts = NULL;
+            gJoystick_headup_buffer_0079d8a0.count = 0;
+            gJoystick_headup_buffer_0079d8a0.pos_last_add = 0;
+            gJoystick_headup_buffer_0079d8a0.text_last_add = NULL;
+            gJoystick_headup_buffer_0079d8a0.field_0x4 = NULL;
+            gJoystick_headup_buffer_0079d8a0.field_0x10 = 22;
+            for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gJoystick_headup_texts); i++) {
+                text = malloc(sizeof(tHeadup_text));
+                if (text != NULL) {
+                    text->next = NULL;
+                    strncpy(text->text, gJoystick_headup_texts[i].text, 0x28);
+                    FUN_0045a920(&gJoystick_headup_buffer_0079d8a0, text, 0);
+                }
+            }
+        }
+    }
+}
+
 // FUNCTION: CARMA2_HW 0x00511240
 void C2_HOOK_FASTCALL ToggleJoystickHeadup(void) {
 
-    NOT_IMPLEMENTED();
+    if (gINT_0068b8e8) {
+        SaveAllJoystickData();
+    }
+    FUN_0045c240();
+    if (!gINT_0068b8e8) {
+        LoadJoystickPreferences();
+    }
 }
 
 // FUNCTION: CARMA2_HW 0x00511280
@@ -2883,8 +2931,13 @@ void C2_HOOK_FASTCALL ToggleJoystickDPad(void) {
 
 // FUNCTION: CARMA2_HW 0x00511270
 void C2_HOOK_FASTCALL CycleJoystick(void) {
-
+#ifdef CARPOCALYPSE2_PLATFORM_WIN32
+    SaveAllJoystickData();
+    FUN_0045c420();
+    LoadJoystickPreferences();
+#else
     NOT_IMPLEMENTED();
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x005112d0
@@ -2941,12 +2994,6 @@ void C2_HOOK_FASTCALL CycleInvulnerability(void) {
         strcat(message, " NO WASTAGE");
     }
     NewTextHeadupSlot(4, 0, 1000, -4, message);
-}
-
-// FUNCTION: CARMA2_HW 0x004b5ab0
-void C2_HOOK_FASTCALL ResetMan(void) {
-
-    NOT_IMPLEMENTED();
 }
 
 #pragma optimize("y", off)

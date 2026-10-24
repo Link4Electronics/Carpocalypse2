@@ -49,8 +49,6 @@ void C2_HOOK_FASTCALL DoLoadMostRecentGame(void);
 
 void C2_HOOK_FASTCALL SplungeSomeData(void* pData, br_size_t size);
 
-void C2_HOOK_FASTCALL Encryptificate(tSave_game* pSave_games, int pCount);
-
 int C2_HOOK_FASTCALL StartSavedGamesList(void);
 
 void C2_HOOK_FASTCALL MakeSavedGame(tSave_game* pSave_game);

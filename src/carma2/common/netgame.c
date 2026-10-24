@@ -11,6 +11,13 @@
 #include "utility.h"
 #include "car.h"
 #include "racestrt.h"
+#include "controls.h"
+#include "crush.h"
+#include "crush2.h"
+#include "powerups.h"
+#include "spark.h"
+#include "racemem.h"
+#include "smashing.h"
 #include "errors.h"
 #include "carpocalypse2_macros.h"
 #include "c2_stdlib.h"
@@ -172,8 +179,372 @@ void C2_HOOK_FASTCALL SendGameplayToAllPlayers(tNet_gameplay_mess pMess, int pPa
     NetGuaranteedSendMessageToAllPlayers(gCurrent_net_game, message, 0);
 }
 
+void C2_HOOK_FASTCALL PlayerIsItTag(tNet_game_player_info* pPlayer);
+
+void C2_HOOK_FASTCALL LoseAllLocalPowerups(tCar_spec* pCar);
+
+void C2_HOOK_FASTCALL SendCurrentPowerups(void);
+
+void C2_HOOK_FASTCALL NetSendHeadupToPlayer(const char* pMessage, tPlayer_ID pPlayer) {
+
+    NOT_IMPLEMENTED();
+}
+
+// UNLABELED: CARMA2_HW 0x0049a9e0
+void C2_HOOK_FASTCALL PlayerIsIt(tNet_game_player_info* pPlayer) {
+    int i;
+    char s[256];
+
+    if (pPlayer - gNet_players == gIt_or_fox) {
+        return;
+    }
+    for (i = 0; i < gNumber_of_net_players; i++) {
+        StopCarBeingIt(gNet_players[i].car);
+    }
+    if (gCurrent_net_game->type == eNet_game_type_foxy) {
+        pPlayer->car->power_up_levels[1] = 0;
+    }
+    DisposeKevStuffCar(pPlayer->car);
+    gIt_or_fox = pPlayer - gNet_players;
+    sprintf(s, "%s", GetMiscString(0xbc));
+    NetSendHeadupToPlayer(s, pPlayer->ID);
+    for (i = 0; i < gNumber_of_net_players; i++) {
+        if (&gNet_players[i] != pPlayer) {
+            sprintf(s, "%s %s", pPlayer->player_name, GetMiscString(0xbb));
+            NetSendHeadupToPlayer(s, gNet_players[i].ID);
+        }
+    }
+}
+
 // FUNCTION: CARMA2_HW 0x0049abf0
 void C2_HOOK_FASTCALL CalcPlayerScores(void) {
+    int i;
+    int j;
+    int knock_out_bit;
+    int cars_left;
+    int car_left;
+    int flags;
+    int score;
+    int highest;
+    int next_highest;
+    int lowest_score;
+    tNet_game_player_info* lowest_score_player;
+    int player_left;
+    tCar_spec* car;
+    tNet_message* message;
+    tS32 time;
+    char s[256];
+
+    time = GetTotalTime();
+
+    switch (gCurrent_net_game->type) {
+    case eNet_game_type_2:
+        highest = 0;
+        next_highest = 0;
+        for (i = 0; i < gNumber_of_net_players; i++) {
+            if (gNet_players[i].score2 > highest) {
+                next_highest = highest;
+                highest = gNet_players[i].score2;
+            } else if (gNet_players[i].score2 > next_highest) {
+                next_highest = gNet_players[i].score2;
+            }
+        }
+        gINT_0068d920 = (next_highest + highest + gCount_smashable_race_targets - GetRuntimeVariable(1)) / 2 + 1;
+        if (gINT_0068d920 > gCurrent_net_game->options.starting_target) {
+            gINT_0068d920 = gCurrent_net_game->options.starting_target;
+        }
+        break;
+    case eNet_game_type_foxy:
+        if (gIt_or_fox < 0) {
+            gLast_lepper = NULL;
+            for (i = 0; i < gNumber_of_net_players; i++) {
+                if (i != -1 && gRace_board[i].meter == gNumber_of_net_players - 1) {
+                    goto select_initial_it;
+                }
+            }
+            do {
+                i = IRandomBetween(0, gNumber_of_net_players - 1);
+            } while (i == -1 && !gRace_board[i].car->knackered);
+select_initial_it:
+            PlayerIsIt(&gNet_players[i]);
+        }
+        if (gLast_lepper != NULL && gIt_or_fox >= 0) {
+            br_vector3 difference;
+
+            BrVector3Sub(&difference, &gLast_lepper->car->pos, &gRace_board[gIt_or_fox].car->pos);
+            if (BrVector3LengthSquared(&difference) >= 4.0f) {
+                gLast_lepper = NULL;
+            }
+        }
+        break;
+    default:
+        break;
+    }
+
+    lowest_score = 9999;
+    lowest_score_player = NULL;
+    cars_left = 0;
+    for (i = 0; i < gNumber_of_net_players; i++) {
+        car = gRace_board[i].car;
+        if (gNet_players[i].reposition_time != 0
+                && time >= (int)gNet_players[i].reposition_time
+                && (!gRace_finished || gRace_over_reason == eRace_not_over_yet)) {
+            gNet_players[i].wasted = 0;
+            gNet_players[i].reposition_time = 0;
+            if (gCurrent_net_game->type == eNet_game_type_2
+                    || gCurrent_net_game->type == eNet_game_type_checkpoint
+                    || gCurrent_net_game->type == eNet_game_type_4) {
+                BrMatrix34Copy(&car->car_master_actor->t.t.mat, (br_matrix34*)gRace_board[i].field_0x04);
+            } else {
+                SetInitialPosition(&gCurrent_race, gNet_players[i].opponent_list_index, gNet_players[i].grid_index);
+            }
+            StopCarSmokingInstantly(car);
+            LoseAllLocalPowerups(car);
+            InitialiseCar(car);
+            TotallyRepairACar(car);
+            if (car->driver == eDriver_local_human) {
+                gTime_for_punishment = PDGetTotalTime() + 2000;
+                EmptyInventory();
+            }
+            SetFlipUpCar(car);
+            car->collision_info->field_0x49c = GetRaceTime() + 100;
+            gINT_0074c6d4 = 0;
+            gINT_0074b780 = 1;
+            message = NetBuildGuaranteedMessage(0x32, 0);
+            *(int *)((tU8 *)message + 0x1c) = gProgram_state.racing;
+            gNet_players[i].last_waste_message = 0;
+            gNet_players[i].wasteage_attributed = 0;
+            ((tU8 *)message)[0x24] = (tU8)i;
+            CompressMatrix34((tCompressed_matrix3 *)((tU8 *)message + 0x26), (int *)((tU8 *)message + 0x20),
+                &gCurrent_race.opponent_list[gNet_players[i].opponent_list_index].car_spec->car_master_actor->t.t.mat);
+            NetGuaranteedSendMessageToAllPlayers(gCurrent_net_game, message, 0);
+            if (gProgram_state.racing) {
+                SendCurrentPowerups();
+            }
+        }
+        if (gNet_players[i].last_waste_message != 0
+                && !gNet_players[i].wasteage_attributed
+                && time - gNet_players[i].last_waste_message > 500) {
+            sprintf(s, "%s %s", gNet_players[i].player_name, GetMiscString(0xac));
+            gNet_players[i].last_waste_message = 0;
+            gNet_players[i].wasteage_attributed = 0;
+            if (gCurrent_net_game->type == eNet_game_type_1) {
+                gNet_players[i].score2--;
+            }
+            NetSendHeadupToEverybody(s);
+        }
+        SetKnackeredFlag(car);
+        if (car->knackered && !gNet_players[i].wasted) {
+            gNet_players[i].wasted = 1;
+            message = NetBuildGuaranteedMessage(0x19, 0);
+            *(int *)((tU8 *)message + 0x20) = -1;
+            *(int *)((tU8 *)message + 0x1c) = gNet_players[i].ID;
+            NetGuaranteedSendMessageToEverybody(gCurrent_net_game, message, 0);
+            switch (gCurrent_net_game->type) {
+            case eNet_game_type_fight_to_death:
+                cars_left = 0;
+                for (j = 0; j < gNumber_of_net_players; j++) {
+                    if (!gNet_players[j].wasted) {
+                        cars_left++;
+                        car_left = j;
+                    }
+                }
+                gNet_players[i].score += (&gScore_winner)[-cars_left];
+                if (cars_left == 1) {
+                    DeclareWinner(car_left);
+                } else if (cars_left <= 0) {
+                    for (j = 0; j < gNumber_of_net_players; j++) {
+                        gNet_players[j].field_0x7c++;
+                        message = NetBuildGuaranteedMessage(0xa, 0);
+                        *(int *)((tU8 *)message + 0x1c) = 9;
+                        SendGuaranteedMessageToPlayer(gCurrent_net_game, message, gNet_players[j].ID, 0);
+                    }
+                }
+                break;
+            case eNet_game_type_1:
+            case eNet_game_type_4:
+            case eNet_game_type_5:
+                gNet_players[i].reposition_time = GetTotalTime() + 5000;
+                break;
+            case eNet_game_type_2:
+                gNet_players[i].reposition_time = GetTotalTime() + 5000;
+                gNet_players[i].score2 /= 2;
+                break;
+            case eNet_game_type_checkpoint:
+                if ((gNet_players[i].score2 >> 16) != gCurrent_race.check_point_count) {
+                    knock_out_bit = IRandomBetween(0, gCurrent_race.check_point_count - 1);
+                    while ((gNet_players[i].score2 & (1 << knock_out_bit)) != 0) {
+                        knock_out_bit++;
+                        if (knock_out_bit >= gCurrent_race.check_point_count) {
+                            knock_out_bit = 0;
+                        }
+                    }
+                    gNet_players[i].score2 |= 1 << knock_out_bit;
+                }
+                gNet_players[i].reposition_time = GetTotalTime() + 5000;
+                break;
+            case eNet_game_type_6:
+                gNet_players[i].reposition_time = GetTotalTime() + 5000;
+                if (gNet_players[i].field_0x80 == 0) {
+                    PlayerIsItTag(&gNet_players[i]);
+                }
+                break;
+            case eNet_game_type_foxy:
+                gNet_players[i].reposition_time = GetTotalTime() + 5000;
+                gNet_players[i].score2 /= 2;
+                if (gNumber_of_net_players > 1 && gIt_or_fox == i) {
+                    gLast_lepper = NULL;
+                    for (j = 0; j < gNumber_of_net_players; j++) {
+                        if (j != i && gRace_board[j].meter == gNumber_of_net_players - 1) {
+                            goto select_wasted_it;
+                        }
+                    }
+                    do {
+                        j = IRandomBetween(0, gNumber_of_net_players - 1);
+                    } while (j == i && !gRace_board[j].car->knackered);
+select_wasted_it:
+                    PlayerIsIt(&gNet_players[j]);
+                }
+                break;
+            }
+        }
+        switch (gCurrent_net_game->type) {
+        case eNet_game_type_fight_to_death:
+            if (car->knackered) {
+                gNet_players[i].score2 = -1000000;
+            } else {
+                gNet_players[i].score2 = GetAverageCrushLevel(car);
+            }
+            break;
+        case eNet_game_type_2:
+            if (gNet_players[i].score2 >= gINT_0068d920 && !gRace_finished) {
+                DeclareWinner(i);
+            }
+            break;
+        case eNet_game_type_checkpoint:
+            score = 0;
+            gNet_players[i].score2 = gNet_players[i].score2 & 0xffff;
+            flags = gNet_players[i].score2;
+            for (j = 0; j < gCurrent_race.check_point_count; j++) {
+                if ((flags & 1) != 0) {
+                    score++;
+                }
+                flags >>= 1;
+            }
+            gNet_players[i].score2 |= score << 16;
+            if (!score && !gRace_finished) {
+                DeclareWinner(i);
+            }
+            break;
+        case eNet_game_type_4:
+            if (gNet_players[i].score2 >= 0) {
+                if (gNet_players[i].score2 < lowest_score) {
+                    lowest_score = gNet_players[i].score2;
+                    lowest_score_player = &gNet_players[i];
+                } else if (gNet_players[i].score2 == lowest_score) {
+                    lowest_score_player = NULL;
+                }
+            }
+            break;
+        case eNet_game_type_foxy:
+            if (i == gIt_or_fox && !gCountdown && !gRace_finished) {
+                gNet_players[i].score2 += gFrame_period;
+                if (gNet_players[i].score2 >= gCurrent_net_game->options.starting_target) {
+                    DeclareWinner(i);
+                }
+            }
+            break;
+        }
+    }
+    if (gCurrent_net_game->type == eNet_game_type_4
+            && lowest_score_player != NULL
+            && lowest_score_player->score2 >= 0) {
+        player_left = -1;
+        cars_left = 0;
+        for (i = 0; i < gNumber_of_net_players; i++) {
+            if (gNet_players[i].score2 >= 0 && &gNet_players[i] != lowest_score_player) {
+                cars_left++;
+                if (player_left == -1) {
+                    player_left = i;
+                } else {
+                    player_left = -2;
+                }
+            }
+        }
+        if (cars_left) {
+            lowest_score_player->car->knackered = 1;
+            lowest_score_player->wasted = 1;
+            lowest_score_player->score2 += (&gScore_winner)[-cars_left];
+            lowest_score_player->score2 = -1;
+            if (player_left == -1) {
+                for (i = 0; i < gNumber_of_net_players; i++) {
+                    gNet_players[i].field_0x7c++;
+                    message = NetBuildGuaranteedMessage(0xa, 0);
+                    *(int *)((tU8 *)message + 0x1c) = 9;
+                    SendGuaranteedMessageToPlayer(gCurrent_net_game, message, gNet_players[i].ID, 0);
+                }
+            } else if (player_left >= 0) {
+                DeclareWinner(player_left);
+            } else {
+                SendGameplay(lowest_score_player->ID, (tNet_gameplay_mess)2, 0, 0, 0, 0);
+                sprintf(s, "%s %s", lowest_score_player->player_name, GetMiscString(0xb8));
+                NetSendHeadupToEverybody(s);
+            }
+        }
+    }
+}
+
+// UNLABELED: CARMA2_HW 0x0049b540
+void C2_HOOK_FASTCALL PlayerIsItTag(tNet_game_player_info* pPlayer) {
+    tCar_spec* car;
+    int i;
+    int count;
+    int winner;
+    char s[256];
+
+    if (pPlayer->field_0x80 != 0) {
+        return;
+    }
+    car = pPlayer->car;
+    DisposeKevStuffCar(car);
+    car->invulnerable_no_crushage = 1;
+    car->invulnerable_no_damage = 1;
+    car->invulnerable_no_wastage = 1;
+    pPlayer->field_0x80 = 1;
+    car->power_up_levels[0] = car->power_up_slots[0];
+    car->power_up_levels[1] = car->power_up_slots[1];
+    if (gNet_mode == eNet_mode_host) {
+        sprintf(s, "%s", GetMiscString(0xba));
+        NetSendHeadupToPlayer(s, pPlayer->ID);
+        for (i = 0; i < gNumber_of_net_players; i++) {
+            if (&gNet_players[i] != pPlayer) {
+                sprintf(s, "%s %s", pPlayer->player_name, GetMiscString(0xb9));
+                NetSendHeadupToPlayer(s, gNet_players[i].ID);
+            }
+        }
+    }
+    pPlayer->score2 = -1 - GetTotalTime();
+    if (gProgram_state.racing && gNet_mode == eNet_mode_host) {
+        count = 0;
+        winner = 0;
+        for (i = 0; i < gNumber_of_net_players; i++) {
+            if (gNet_players[i].field_0x80 == 0) {
+                count++;
+                winner = i;
+            }
+        }
+        if (count <= 1) {
+            DeclareWinner(winner);
+        }
+    }
+}
+
+void C2_HOOK_FASTCALL LoseAllLocalPowerups(tCar_spec* pCar) {
+
+    NOT_IMPLEMENTED();
+}
+
+void C2_HOOK_FASTCALL SendCurrentPowerups(void) {
 
     NOT_IMPLEMENTED();
 }
@@ -314,7 +685,7 @@ void C2_HOOK_FASTCALL SignalToStartRace(void) {
         car = gCurrent_race.opponent_list[i].car_spec;
         CompressMatrix34((tCompressed_matrix3*)(dst + 2), &inactive, &car->car_master_actor->t.t.mat);
         for (j = 0; j < gNumber_of_net_players; j++) {
-            if (gNet_players[j].car == car) {
+            if (gRace_board[j].car == car) {
                 break;
             }
         }

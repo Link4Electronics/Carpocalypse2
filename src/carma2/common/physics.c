@@ -5565,6 +5565,44 @@ void C2_HOOK_FASTCALL FreePhysicsJoint(tPhysics_joint* pJoint) {
 
 // ResetMan
 
+// GLOBAL: CARMA2_HW 0x006923d8
+tPhysics_object* gReset_man;
+
+void C2_HOOK_FASTCALL ResetMan2(tPhysics_object* pObject);
+
+// FUNCTION: CARMA2_HW 0x004b5ab0
+void C2_HOOK_FASTCALL ResetMan(void) {
+
+    if (gReset_man == NULL) {
+        return;
+    }
+    BrMatrix34Translate(&gReset_man->transform_matrix, -54.0f, 7.1325f, -155.0f);
+    gReset_man->disable_move_rotate = 1;
+    BrVector3SetFloat(&gReset_man->v, 0.f, 0.f, 0.f);
+    BrVector3SetFloat(&gReset_man->omega, 0.f, 0.f, 0.f);
+    BrVector3SetFloat(&gReset_man->rotate_omega, 0.f, 0.f, 0.f);
+    BrVector3SetFloat(&gReset_man->velocity_car_space, 0.f, 0.f, 0.f);
+    ResetMan2(gReset_man->child);
+    PositionChildren(gReset_man);
+}
+
+// UNLABELED: CARMA2_HW 0x004b5c00
+void C2_HOOK_FASTCALL ResetMan2(tPhysics_object* pObject) {
+
+    while (pObject != NULL) {
+        BrMatrix34Translate(&pObject->transform_matrix, 0.f, 0.f, 0.f);
+        BrVector3SetFloat(&pObject->v, 0.f, 0.f, 0.f);
+        BrVector3SetFloat(&pObject->omega, 0.f, 0.f, 0.f);
+        BrVector3SetFloat(&pObject->rotate_omega, 0.f, 0.f, 0.f);
+        BrVector3SetFloat(&pObject->velocity_car_space, 0.f, 0.f, 0.f);
+        pObject->disable_move_rotate = 1;
+        if (pObject->child != NULL) {
+            ResetMan2(pObject->child);
+        }
+        pObject = pObject->next;
+    }
+}
+
 // FUNCTION: CARMA2_HW 0x004b5ca0
 void C2_HOOK_FASTCALL InitPhysics(void) {
     PhysicsSetErrorHandler(DoPhysicsError);

@@ -52,6 +52,13 @@ extern int gINT_00596308;
 
 extern tHeadup_text_buffer gJoystick_headup_buffer_0079d8a0;
 
+typedef struct tJoystick_headup_text {
+    const char* text;
+    int key;
+} tJoystick_headup_text;
+
+extern tJoystick_headup_text gJoystick_headup_texts[21];
+
 void C2_HOOK_FASTCALL SetupFFBValues(void);
 
 int C2_HOOK_FASTCALL PlayExclusiveFFBEffect(const char* pEffect_name, int pArg2);
@@ -91,6 +98,8 @@ void C2_HOOK_FASTCALL EnableJoysticks(void);
 void C2_HOOK_FASTCALL DisableJoysticks(void);
 
 void C2_HOOK_FASTCALL FUN_0045b0a0(tHeadup_text_buffer* pText_buffer);
+
+int C2_HOOK_FASTCALL FUN_0045a920(tHeadup_text_buffer* pText_buffer, tHeadup_text* pText, int pSorted);
 
 void C2_HOOK_FASTCALL MungeJoystickHeadups(void);
 
