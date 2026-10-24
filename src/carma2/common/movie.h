@@ -27,9 +27,9 @@ extern char gQuick_time_banner_texture_name[256];
 
 // MovieStartNewMovie
 
-// MovieStopRecordingAndSave
+extern int C2_HOOK_FASTCALL MovieStopRecordingAndSave(void);
 
-// FreeOffQTshite
+// extern void C2_HOOK_FASTCALL FreeOffQTshite(void);
 
 extern void C2_HOOK_CDECL InitQuickTimeStuff(void);
 
@@ -37,7 +37,7 @@ extern void C2_HOOK_FASTCALL SetQuickTimeDefaults(void);
 
 // MovieRecordButtonPressed
 
-extern void C2_HOOK_FASTCALL MovieStopRecordingIfNecessary(void);
+extern int C2_HOOK_FASTCALL MovieStopRecordingIfNecessary(void);
 
 // GenerateOneMovieFrame
 

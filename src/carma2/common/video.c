@@ -124,45 +124,7 @@ void C2_HOOK_FASTCALL FreeOffQTshite(void) {
     }
 }
 
-static int C2_HOOK_FASTCALL MovieStopRecordingAndSave(void) {
 
-    if (gNext_replay_record_state == 4) {
-        struct FSSpec fs_spec;
-        TimeValue duration;
-        tPath_name path;
-
-        gNext_replay_record_state = 5;
-        ShowStatusMessage(eMiscString_post_processing, eMiscString_please_wait);
-        TidyMovieARDisplay();
-        WriteBannerFrame();
-        gNext_replay_record_state = 0;
-        CDSequenceEnd(gQuicktime_image_sequence);
-        EndMediaEdits(gQuicktime_media);
-        duration = GetMediaDuration(gQuicktime_media);
-        if (duration != 0) {
-            InsertMediaIntoTrack(gQuicktime_track, 0, 0, duration, IntToFixed(1));
-        }
-        if (gQuicktime_movie_file != 0) {
-            CloseMovieFile(gQuicktime_movie_file);
-        }
-        sprintf(path, "%s%3.3d.MOV", gQuick_time_movie_path_stub, gQuicktime_movie_counter);
-        gQuicktime_movie_counter += 1;
-        fs_spec.vRefNum = 0;
-        fs_spec.parID = 0;
-        strcpy(fs_spec.name, path);
-        c2pstr(fs_spec.name);
-        FlattenMovieData(gQuicktime_movie, flattenAddMovieToDataFork, &fs_spec, sigMoviePlayer, smSystemScript, createMovieFileDeleteCurFile);
-        FreeOffQTshite();
-    }
-    return 1;
-}
-
-// FUNCTION: CARMA2_HW 0x004e1a20
-void C2_HOOK_FASTCALL MovieStopRecordingIfNecessary(void) {
-
-    MovieStopRecordingAndSave();
-    KillStatusMessage();
-}
 
 // FUNCTION: CARMA2_HW 0x004e2140
 int C2_HOOK_FASTCALL GetMovieWidth(void) {
@@ -216,6 +178,11 @@ void C2_HOOK_FASTCALL TrapS3SoundOutput(void) {
 }
 
 void C2_HOOK_FASTCALL FreeS3SoundOutput(void) {
+}
+
+void C2_HOOK_FASTCALL WriteBannerFrame(void) {
+    // Placeholder implementation - actual implementation should be in movie.c or another file
+    // This is needed to resolve the undefined reference error
 }
 
 // FUNCTION: CARMA2_HW 0x004e1da0

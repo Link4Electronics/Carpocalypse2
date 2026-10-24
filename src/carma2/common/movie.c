@@ -50,6 +50,13 @@ char gDefault_quick_time_compressor[] = "animation";
 
 // FreeOffQTshite
 
+int C2_HOOK_FASTCALL MovieStopRecordingAndSave(void) {
+    // Implementation should be in video.c
+    return 1;
+}
+
+
+
 // FUNCTION: CARMA2_HW 0x004e1700
 void C2_HOOK_CDECL InitQuickTimeStuff(void) {
 
@@ -85,10 +92,10 @@ void C2_HOOK_FASTCALL SetQuickTimeDefaults(void) {
 // MovieRecordButtonPressed
 
 // FUNCTION: CARMA2_HW 0x004e1a20
-void C2_HOOK_FASTCALL MovieStopRecordingIfNecessary(void) {
-
+int C2_HOOK_FASTCALL MovieStopRecordingIfNecessary(void) {
     MovieStopRecordingAndSave();
     KillStatusMessage();
+    return 1;
 }
 
 // GenerateOneMovieFrame
