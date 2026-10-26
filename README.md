@@ -1,7 +1,7 @@
 # Carpocalypse 2
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/Link4Electronics/Carpocalypse2/refs/heads/main/packaging/icon_source.png" width="256" />
+  <img src="packaging/icon_source.png" width="256" />
 </p>
 
 Decompilation of 1998's Carmageddon 2.
@@ -78,8 +78,22 @@ make
 
 ## Contributing
 
-Yes this was used AI, so vibecoded PRs are welcome too, with a small rule:
+Yes this was used AI (free, non-paid agent models), so vibecoded PRs are welcome too, with a small rule:
 - Like said above game must behave as original, any quality of life, fixes or modification should come optionally, maybe an ON/OFF toggle or like an optional mod, reason is some people would like to still play the vanilla game
+
+Todo:
+
+- Touch overlay for android
+- ImGUI menu like [dethrace](https://github.com/Link4Electronics/dethrace)
+- 3DFX path for hardware rendering (sdl3gpu and opengl)
+- Relax opengl requirement to opengl/es2.0 for low-end android devices
+- Dreamcast port
+- PSvita port
+- PSP/PS2 port (expect struggle perf)
+- 3DS port
+- Big-endian support (devkitPPC/retro macs/linux)
+- FreeBSD
+- Haiku port (maybe)
 
 ## Legal
 
