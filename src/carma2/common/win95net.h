@@ -16,7 +16,7 @@
 
 // CreateNBPAddress
 
-// PDNetHostGame
+extern int C2_HOOK_FASTCALL PDNetHostGame(tNet_game_details* pDetails, char* pHost_name, void** pHost_address);
 
 // PDNetJoinGame
 
@@ -36,7 +36,7 @@ tPlayer_ID C2_HOOK_FASTCALL PDNetExtractPlayerID(tNet_game_details* pDetails);
 
 // SetForRecieve
 
-// PDNetSetPlayerSystemInfo
+extern void C2_HOOK_FASTCALL PDNetSetPlayerSystemInfo(tNet_game_player_info* pPlayer, void* pSender_address);
 
 // PDNetGetHeaderSize
 

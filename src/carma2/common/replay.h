@@ -6,6 +6,7 @@
 
 
 extern int gAR_camera_type;
+extern int gCar_car_collisions;
 extern tU32 gTime_of_last_zappy_headups;
 
 // ActualActionReplayHeadups

@@ -42,6 +42,11 @@ tU8 gCamera_type_allowed_gameplay[9] = {
 // GLOBAL: CARMA2_HW 0x006a23c4
 int gSingle_frame_mode;
 
+extern int gDisable_sound;
+
+// GLOBAL: CARMA2_HW 0x00589330
+const br_scalar gFLOAT_00589330 = 0.0f;
+
 // GLOBAL: CARMA2_HW 0x006a23d4
 tU32 gLast_synch_time;
 
@@ -81,27 +86,31 @@ tU32 gUnk_006a23c8;
 // GLOBAL: CARMA2_HW 0x006a2380
 tU32 gTime_of_last_zappy_headups;
 
+// GLOBAL: CARMA2_HW 0x006a2388
+br_pixelmap* gReplay_pixelmaps[11];
+
+// GLOBAL: CARMA2_HW 0x0065fbb0
+const char* gReplay_pixie_names[11] = {
+    "REPLAY.PIX",
+    "RBUTTONS.PIX",
+    "REWSTART.PIX",
+    "REW.PIX",
+    "REVPLAY.PIX",
+    "PAUSE.PIX",
+    "PLAY.PIX",
+    "FFWD.PIX",
+    "FWDEND.PIX",
+    "CAMERA.PIX",
+    "RECORD.PIX",
+};
+
 // GLOBAL: CARMA2_HW 0x0058f620
 int gAR_camera_type = 2;
 
-// FUNCTION: CARMA2_HW 0x0040e790
-void C2_HOOK_FASTCALL SetCameraType(tActionReplayCameraMode pCamPos) {
+// GLOBAL: CARMA2_HW 0x0058f6a4
+int gCar_car_collisions = 1;
 
-    gAction_replay_camera_mode = pCamPos;
-    switch (pCamPos) {
-    case kActionReplayCameraMode_Standard:
-    case kActionReplayCameraMode_Rigid:
-    case kActionReplayCameraMode_Reversing:
-        InitialiseExternalCamera();
-        break;
-    case kActionReplayCameraMode_Manual:
-        gAction_replay_manual_camera_target_type = 0;
-        break;
-    default:
-        break;
-    }
-    MungeCarMaterials(&gProgram_state.current_car, gAction_replay_camera_mode == kActionReplayCameraMode_Internal);
-}
+// SetCameraType
 
 int C2_HOOK_FASTCALL IsCameraTypeAllowed(tActionReplayCameraMode pCamera_type) {
 
@@ -463,4 +472,47 @@ void C2_HOOK_FASTCALL ApplyTime(tU32 pTime) {
 // FUNCTION: CARMA2_HW 0x004022f0
 void C2_HOOK_FASTCALL ARSetPause(int pPause) {
     gReplay_pause_state = pPause;
+}
+
+// FUNCTION: CARMA2_HW 0x004e7090
+void C2_HOOK_FASTCALL InitializeActionReplayPix(void) {
+    int i;
+
+    for (i = 0; i < 11; i++) {
+        gReplay_pixelmaps[i] = LoadPixelmap(gReplay_pixie_names[i]);
+        BRPM_convert(gReplay_pixelmaps[i], gBack_screen->type);
+        BrMapAdd(gReplay_pixelmaps[i]);
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x004e70d0
+void C2_HOOK_FASTCALL DisposeReplayPixelmaps(void) {
+    int i;
+
+    for (i = 0; i < 11; i++) {
+        if (gReplay_pixelmaps[i] != NULL) {
+            BrMapRemove(gReplay_pixelmaps[i]);
+            BrPixelmapFree(gReplay_pixelmaps[i]);
+            gReplay_pixelmaps[i] = NULL;
+        }
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x00403cc0
+void C2_HOOK_FASTCALL FUN_00403cc0(int pUnused, tARDoActionReplay_step_callback* pStep_callback, tARDoActionReplay_frame_callback* pFrame_start_callback, tARDoActionReplay_frame_callback* pFrame_end_callback) {
+    if (gReplay_rate != gFLOAT_00589330) {
+        ARDoActionReplay((int)gReplay_rate, pStep_callback, pFrame_start_callback, pFrame_end_callback);
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x00403c70
+void C2_HOOK_FASTCALL FUN_00403c70(tARDoActionReplay_step_callback* pStep_callback, tARDoActionReplay_frame_callback* pFrame_start_callback, tARDoActionReplay_frame_callback* pFrame_end_callback) {
+    float saved_replay_rate;
+
+    saved_replay_rate = gReplay_rate;
+    gDisable_sound = 1;
+    gReplay_rate = -100.0f;
+    ARDoActionReplay(-2147483647, pStep_callback, pFrame_start_callback, pFrame_end_callback);
+    gDisable_sound = 0;
+    gReplay_rate = saved_replay_rate;
 }

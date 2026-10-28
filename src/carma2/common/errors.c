@@ -248,7 +248,27 @@ const char* gError_messages[184] = {
 //    PDNonFatalError(temp_str);
 //}
 
-extern char* C2_HOOK_CDECL LookForChar(const char* pString, int pChar);
+
+// FUNCTION: CARMA2_HW 0x0044c460
+void C2_HOOK_CDECL NonFatalError(int pStr_index, ...) {
+    char the_str[256];
+    char* sub_str;
+    char temp_str[256];
+    char* sub_pt;
+    va_list ap;
+
+    strcpy(the_str, gError_messages[pStr_index]);
+    va_start(ap, pStr_index);
+    while ((sub_pt = strchr(the_str, '%')) != NULL) {
+        sub_str = va_arg(ap, char*);
+        StripCRNL(sub_str);
+        strcpy(temp_str, sub_pt + 1);
+        strcpy(sub_pt, sub_str);
+        strcat(the_str, temp_str);
+    }
+    va_end(ap);
+    PDNonFatalError(the_str);
+}
 
 // FUNCTION: CARMA2_HW 0x0044c230
 void C2_NORETURN C2_HOOK_CDECL FatalError(int pStr_index, ...) {
@@ -269,7 +289,7 @@ void C2_NORETURN C2_HOOK_CDECL FatalError(int pStr_index, ...) {
     }
 
     va_start(ap, pStr_index);
-    while ((sub_pt = LookForChar(the_str, '%')) != NULL) {
+    while ((sub_pt = strchr(the_str, '%')) != NULL) {
         sub_str = va_arg(ap, char*);
         StripCRNL(sub_str);
         strcpy(temp_str, sub_pt + 1);
@@ -280,7 +300,7 @@ void C2_NORETURN C2_HOOK_CDECL FatalError(int pStr_index, ...) {
 #ifdef CARPOCALYPSE2_FIX_BUGS
     sub_str = int_str;
 #endif
-    while ((sub_pt = LookForChar(the_str, '@')) != NULL) {
+    while ((sub_pt = strchr(the_str, '@')) != NULL) {
         sub_int = va_arg(ap, int);
         sprintf(sub_str, "%d", sub_int);
         StripCRNL(sub_str);
@@ -336,4 +356,11 @@ void C2_HOOK_CDECL dr_dprintf(const char* fmt_string, ...) {
 
     fflush(gDiagnostic_file);
 #endif
+}
+
+// FUNCTION: CARMA2_HW 0x0044c5a0
+void C2_HOOK_FASTCALL DumpVector3Diagnostic(const char* pName, const br_vector3* pVec) {
+
+    dr_dprintf(pName);
+    dr_dprintf("(%8.3f, %8.3f, %8.3f)", pVec->v[0], pVec->v[1], pVec->v[2]);
 }

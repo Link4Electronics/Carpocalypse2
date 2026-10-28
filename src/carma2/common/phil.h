@@ -39,6 +39,7 @@ extern void C2_HOOK_FASTCALL GetMatrixFromOrientation(br_matrix34* pMatrix, cons
 // GetNetworkDataSize
 
 // GetSingleMatrixFromNetworkData
+extern int C2_HOOK_FASTCALL GetSingleMatrixFromNetworkData(tU8* pNet_data, br_matrix34* pMatrix);
 
 // PHILInit
 

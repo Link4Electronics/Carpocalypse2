@@ -144,6 +144,8 @@ extern void C2_HOOK_FASTCALL SetTrafficOn(int pTraffic_on);
 
 // GetDroneCrushData
 
+tDrone_crush_data* C2_HOOK_FASTCALL GetDroneCrushData(tPhysics_object* pObject);
+
 // AllocateAndInitDrones
 
 // LoadInDronePaths
@@ -183,6 +185,11 @@ void C2_HOOK_FASTCALL SetDroneRender(int pIndex, int pRender);
 // UpdateEditModels
 
 // WriteOutDronePaths
+void C2_HOOK_FASTCALL WriteOutDronePaths(void);
+
+extern void C2_HOOK_FASTCALL SelectNextDrone(void);
+extern void C2_HOOK_FASTCALL SelectNearestDrone(void);
+extern void C2_HOOK_FASTCALL DronePhysicsWarning(tPhysics_object* pObject);
 
 #define CARPOCALYPSE2_DRONE_H
 
@@ -204,6 +211,8 @@ extern tPhysics_object* gList_collision_infos;
 extern int gDrones_unmodified;
 
 extern int gCount_rendered_drones;
+
+extern float gDrone_render_zero;
 
 extern int gCurrent_selected_drone;
 
@@ -242,6 +251,8 @@ extern int gSelected_drone_path_node_index;
 extern int gSelected_edit_drone_path;
 
 extern tU32 gNext_drone_edit_path_munge;
+
+extern tDrone_crush_data gDrone_crush_data;
 
 extern int gSelected_drone_path_index;
 

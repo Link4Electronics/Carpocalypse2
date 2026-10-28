@@ -65,6 +65,12 @@ extern tAdd_to_storage_result C2_HOOK_FASTCALL AddModelToStorage(tBrender_storag
 
 extern tAdd_to_storage_result C2_HOOK_FASTCALL AddSoundToStorage(tBrender_storage* pStorage_space, int pSound_id);
 
+extern int C2_HOOK_FASTCALL LoadPixelmapsFromListFile(tBrender_storage* pStorage_space, FILE* pFile, int pCount);
+
+extern int C2_HOOK_FASTCALL LoadShadeTablesFromListFile(tBrender_storage* pStorage_space, FILE* pFile, int pCount);
+
+extern int C2_HOOK_FASTCALL LoadModelsFromListFile(tBrender_storage* pStorage_space, FILE* pFile, int pCount);
+
 extern int C2_HOOK_FASTCALL AddPixelmaps(tBrender_storage* pStorage_space, const char* path);
 
 extern br_pixelmap* C2_HOOK_FASTCALL LoadSinglePixelmap(tBrender_storage* pStorage, const char* pName);

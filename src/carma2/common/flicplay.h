@@ -17,6 +17,8 @@ extern int C2_HOOK_FASTCALL TranslationMode(void);
 
 // LetFlicFuckWithPalettes
 
+void C2_HOOK_STDCALL PlayFlicsInDarkness(void);
+
 // TurnFlicTransparencyOn
 
 // TurnFlicTransparencyOff

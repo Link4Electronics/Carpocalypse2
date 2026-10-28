@@ -9,6 +9,9 @@
 extern br_quat* C2_HOOK_CDECL BrQuatNormalise(br_quat* q, const br_quat* qq);
 extern br_matrix34* C2_HOOK_CDECL BrQuatToMatrix34(br_matrix34* mat, const br_quat* q);
 
+extern const br_scalar gFLOAT_0058a3f8;
+extern const br_scalar gFLOAT_0058a40c;
+
 // GLOBAL: CARMA2_HW 0x0065d004
 int gPHIL_enabled = 1;
 
@@ -30,22 +33,49 @@ static double C2_HOOK_CDECL PhilOrientationScalar(double value) {
 // FUNCTION: CARMA2_HW 0x0049be90
 void C2_HOOK_FASTCALL GetOrientationFromMatrix(tU16* pOrientation, const br_matrix34* pMatrix) {
     br_quat quaternion;
-    double value;
-    int i;
+    br_scalar value;
 
     BrMatrix34ToQuat(&quaternion, pMatrix);
-    for (i = 0; i < 4; i++) {
-        value = (&quaternion.x)[i];
-        if (value > 1.0) {
-            value = 1.0;
-        }
-        /* Original C0 test replaces unordered values with the lower bound. */
-        if (!(value >= -1.0)) {
-            value = -1.0;
-        }
-        value = ((value - -1.0) * 0.5) * 65534.0 - -0.5;
-        pOrientation[i] = (tU16)(br_int_64)value;
+    value = quaternion.x;
+    if (value > 1.f) {
+        value = 1.f;
     }
+    if (value < -1.f) {
+        value = -1.f;
+    }
+    value = (value + 1.f) * .5f;
+    value *= 65534.f;
+    pOrientation[0] = (tU16)(value + .5f);
+    value = quaternion.y;
+    if (value > 1.f) {
+        value = 1.f;
+    }
+    if (value < -1.f) {
+        value = -1.f;
+    }
+    value = (value + 1.f) * .5f;
+    value *= 65534.f;
+    pOrientation[1] = (tU16)(value + .5f);
+    value = quaternion.z;
+    if (value > 1.f) {
+        value = 1.f;
+    }
+    if (value < -1.f) {
+        value = -1.f;
+    }
+    value = (value + 1.f) * .5f;
+    value *= 65534.f;
+    pOrientation[2] = (tU16)(value + .5f);
+    value = quaternion.w;
+    if (value > 1.f) {
+        value = 1.f;
+    }
+    if (value < -1.f) {
+        value = -1.f;
+    }
+    value = (value + 1.f) * .5f;
+    value *= 65534.f;
+    pOrientation[3] = (tU16)(value + .5f);
 }
 
 // FUNCTION: CARMA2_HW 0x0049c000
@@ -94,7 +124,55 @@ void C2_HOOK_FASTCALL GetMatrixFromOrientation(br_matrix34* pMatrix, const tU16*
 
 // GetNetworkDataSize
 
-// GetSingleMatrixFromNetworkData
+// FUNCTION: CARMA2_HW 0x0049cf50
+int C2_HOOK_FASTCALL GetSingleMatrixFromNetworkData(tU8* pNet_data, br_matrix34* pMatrix) {
+    br_quat quaternion;
+
+    switch (pNet_data[0] & 0xF) {
+    case 0:
+        quaternion.x = (br_scalar)((const tU16*)(pNet_data + 0x14))[0] * gFLOAT_0058a40c;
+        quaternion.x = quaternion.x + quaternion.x - gFLOAT_0058a3f8;
+        quaternion.y = (br_scalar)((const tU16*)(pNet_data + 0x14))[1] * gFLOAT_0058a40c;
+        quaternion.y = quaternion.y + quaternion.y - gFLOAT_0058a3f8;
+        quaternion.z = (br_scalar)((const tU16*)(pNet_data + 0x14))[2] * gFLOAT_0058a40c;
+        quaternion.z = quaternion.z + quaternion.z - gFLOAT_0058a3f8;
+        quaternion.w = (br_scalar)((const tU16*)(pNet_data + 0x14))[3] * gFLOAT_0058a40c;
+        quaternion.w = quaternion.w + quaternion.w - gFLOAT_0058a3f8;
+        BrQuatNormalise(&quaternion, &quaternion);
+        BrQuatToMatrix34(pMatrix, &quaternion);
+        memcpy(pMatrix->m[3], pNet_data + 0x1C, sizeof(pMatrix->m[3]));
+        return 0x28;
+    case 1:
+    case 4:
+        quaternion.x = (br_scalar)((const tU16*)(pNet_data + 4))[0] * gFLOAT_0058a40c;
+        quaternion.x = quaternion.x + quaternion.x - gFLOAT_0058a3f8;
+        quaternion.y = (br_scalar)((const tU16*)(pNet_data + 4))[1] * gFLOAT_0058a40c;
+        quaternion.y = quaternion.y + quaternion.y - gFLOAT_0058a3f8;
+        quaternion.z = (br_scalar)((const tU16*)(pNet_data + 4))[2] * gFLOAT_0058a40c;
+        quaternion.z = quaternion.z + quaternion.z - gFLOAT_0058a3f8;
+        quaternion.w = (br_scalar)((const tU16*)(pNet_data + 4))[3] * gFLOAT_0058a40c;
+        quaternion.w = quaternion.w + quaternion.w - gFLOAT_0058a3f8;
+        BrQuatNormalise(&quaternion, &quaternion);
+        BrQuatToMatrix34(pMatrix, &quaternion);
+        return 0xC;
+    case 2:
+    case 3:
+        quaternion.x = (br_scalar)((const tU16*)(pNet_data + 8))[0] * gFLOAT_0058a40c;
+        quaternion.x = quaternion.x + quaternion.x - gFLOAT_0058a3f8;
+        quaternion.y = (br_scalar)((const tU16*)(pNet_data + 8))[1] * gFLOAT_0058a40c;
+        quaternion.y = quaternion.y + quaternion.y - gFLOAT_0058a3f8;
+        quaternion.z = (br_scalar)((const tU16*)(pNet_data + 8))[2] * gFLOAT_0058a40c;
+        quaternion.z = quaternion.z + quaternion.z - gFLOAT_0058a3f8;
+        quaternion.w = (br_scalar)((const tU16*)(pNet_data + 8))[3] * gFLOAT_0058a40c;
+        quaternion.w = quaternion.w + quaternion.w - gFLOAT_0058a3f8;
+        BrQuatNormalise(&quaternion, &quaternion);
+        BrQuatToMatrix34(pMatrix, &quaternion);
+        return 0x10;
+    default:
+        PhysicsError((tPhysicsError)9, "netphys got messed up");
+        return -1;
+    }
+}
 
 // PHILInit
 
@@ -152,11 +230,12 @@ int C2_HOOK_FASTCALL PHILRemoveObject(tPhysics_object* pObject) {
             break;
         }
     }
-    if (i < (int)CARPOCALYPSE2_ASIZE(gPhil_queued_objects.headers)) {
-        gPhil_queued_objects.headers[i].collision_info->next = pObject->next;
-        if (pObject->next != NULL) {
-            pObject->next->prev = gPhil_queued_objects.headers[i].collision_info;
-        }
+    if (i >= (int)CARPOCALYPSE2_ASIZE(gPhil_queued_objects.headers)) {
+        return 0;
+    }
+    gPhil_queued_objects.headers[i].collision_info->next = pObject->next;
+    if (pObject->next != NULL) {
+        pObject->next->prev = gPhil_queued_objects.headers[i].collision_info;
     }
     return 0;
 }
@@ -190,17 +269,19 @@ int C2_HOOK_FASTCALL PHILMakeObjectPassive(tPhysics_object* pObject) {
     if (gPHIL_enabled) {
         return 0;
     }
-    info = pObject->field_0x240;
     if (pObject->field_0x239 == 2) {
+        info = pObject->field_0x240;
         info->field_0x8 = 1;
         return 0;
     }
-    if (info == NULL) {
+    info = pObject->field_0x240;
+    if (info != NULL) {
+        info->field_0x8 = 1;
+        pObject->flags |= 0x20;
+        return 0;
+    } else {
         return 3;
     }
-    info->field_0x8 = 1;
-    pObject->flags |= 0x20;
-    return 0;
 }
 
 // PHILMakeObjectActive

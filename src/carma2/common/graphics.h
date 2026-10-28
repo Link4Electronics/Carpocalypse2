@@ -225,7 +225,6 @@ void C2_HOOK_FASTCALL PossibleLock(int pValue);
 
 int C2_HOOK_FASTCALL PossibleUnlock(int pValue);
 
-tMaterial_exception* C2_HOOK_FASTCALL FindExceptionInList(const char* pIdentifier, tMaterial_exception* pList);
 
 void C2_HOOK_FASTCALL GlorifyMaterial(br_material** pMaterials, int pCount, tRendererShadingType pShading);
 

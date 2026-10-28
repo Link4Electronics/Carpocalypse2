@@ -453,6 +453,8 @@ void C2_HOOK_FASTCALL EarnDosh(void);
 
 void C2_HOOK_FASTCALL LoseDosh(void);
 
+void C2_HOOK_FASTCALL FUN_0040e530(br_actor* pActor);
+
 void C2_HOOK_FASTCALL ViewOpponent(void);
 
 void C2_HOOK_FASTCALL MungeRepulseRays(tU32 pTime);

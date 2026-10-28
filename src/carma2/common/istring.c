@@ -44,7 +44,6 @@ void C2_HOOK_FASTCALL IString_Load(void) {
     PFfclose(f);
 }
 
-// FUNCTION: CARMA2_HW 0x004850d0
 void C2_HOOK_FASTCALL IString_Free(void) {
     int i;
 

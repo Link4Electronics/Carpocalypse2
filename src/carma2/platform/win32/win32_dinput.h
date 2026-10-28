@@ -11,6 +11,7 @@ extern int gASCII_shift_table[151];
 extern int gScan_code[256];
 extern int gJoystick_deadzone;
 extern int gJoystickFFB;
+extern int gForceFeedbackAvailable;
 extern IDirectInputDevice2A* gDirectInputJoystickDevices[];
 extern tDirectInputJoystickInfo gDirectInputJoystickInfos[];
 
@@ -41,6 +42,16 @@ extern int C2_HOOK_FASTCALL SetDinputEffectGain(int pIndex, int pGain);
 extern int C2_HOOK_FASTCALL SetJoystickFFBForce(int pMagnitude);
 
 extern int C2_HOOK_FASTCALL SetJoystickFFBSteeringForce(int pMagnitude);
+
+extern int C2_HOOK_FASTCALL SetJoystickFFBCollisionForce(LONG pMagnitude, LONG pDirection);
+
+extern void C2_HOOK_FASTCALL SelectNextDInputJoystick(void);
+
+extern tButtonJoystickInfo* C2_HOOK_FASTCALL AllocateCurrentJoystickButtonInfos(size_t pSize);
+
+extern void C2_HOOK_FASTCALL FreeCurrentJoystickButtonInfos(void);
+
+extern int C2_HOOK_FASTCALL CreateDinputEffectFromSpec(int pJoystickIndex, const tJoystick_effect_spec* pEffectSpec, const char* pName);
 
 extern void C2_HOOK_FASTCALL Win32InitInputDevice(void);
 
@@ -82,8 +93,6 @@ extern int C2_HOOK_FASTCALL PDGetJoy2Y(void);
 
 extern void C2_HOOK_FASTCALL PDInitJoysticks(void);
 
-extern void C2_HOOK_FASTCALL FUN_00459a70(void);
-
 extern void C2_HOOK_FASTCALL FUN_0045c420(void);
 
 extern void C2_HOOK_FASTCALL PDPlayFFBEffectIndex(int index);
@@ -92,9 +101,13 @@ extern int C2_HOOK_FASTCALL PDFindJoystickEffect(const char* effectName);
 
 extern void C2_HOOK_FASTCALL PDPlayFFBEffect(const char* effectName);
 
+extern void C2_HOOK_FASTCALL PDStopFFBEffect(const char* effectName);
+
 extern int C2_HOOK_FASTCALL PDIsJoystickDPadEnabled(void);
 
 extern void C2_HOOK_FASTCALL UnloadDinputFFBEffectAtIndex(int index);
+
+extern tJoystick_force_effect* C2_HOOK_FASTCALL GetJoystickEffect(int pIndex);
 
 extern void C2_HOOK_FASTCALL DownloadDinputFFBEffectAtIndex(int index);
 

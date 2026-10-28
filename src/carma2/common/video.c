@@ -1,5 +1,6 @@
 #include "video.h"
 
+#include "font.h"
 #include "globvars.h"
 #include "grafdata.h"
 #include "graphics.h"
@@ -90,6 +91,7 @@ void C2_HOOK_FASTCALL ShowStatusMessage(int msg1, int msg2) {
     gStatus_message_2 = msg2;
 }
 
+// FUNCTION: CARMA2_HW 0x004e2190
 void C2_HOOK_FASTCALL TidyMovieARDisplay(void) {
     undefined4 state;
 
@@ -238,4 +240,27 @@ int C2_HOOK_FASTCALL MovieRecordFrame(br_pixelmap *pScreen, int pFrame_period) {
         return 0;
     }
     return 0;
+}
+
+// FUNCTION: CARMA2_HW 0x004e7350
+void C2_HOOK_FASTCALL DrawStatusMessage(int pReplay_only) {
+    int x;
+    int y;
+
+    if (gShow_status_message != 0) {
+        if (gNext_replay_record_state == 4) {
+            x = gCurrent_graf_data->field_0x350;
+            y = gCurrent_graf_data->field_0x354;
+            if (pReplay_only == 0) {
+                DRPixelmapText(gBack_screen, x, y, &gFonts[1], GetMiscString(gStatus_message_1), gBack_screen->width);
+            }
+        } else {
+            x = gCurrent_graf_data->width / 2;
+            y = gCurrent_graf_data->height / 2;
+            DRPixelmapCentredText(gBack_screen, x, y - 0x40, &gFonts[4], GetMiscString(gStatus_message_1));
+            if (gStatus_message_2 != 0) {
+                DRPixelmapCentredText(gBack_screen, x, y - 0x20, &gFonts[6], GetMiscString(gStatus_message_2));
+            }
+        }
+    }
 }

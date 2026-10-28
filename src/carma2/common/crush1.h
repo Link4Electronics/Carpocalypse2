@@ -153,7 +153,7 @@ void C2_HOOK_FASTCALL RemoveDuplicatePoints(int* pCount_out, br_vector3* pPoints
 
 // DoDroneCrushing
 
-// AddDroneCrush
+extern void C2_HOOK_FASTCALL AddDroneCrush(tQueued_drone_crush_item* pCrush, const br_vector3* pVector, float pScale, int pCount, const br_vector3* pPoints);
 
 // QueueDroneCrush
 
@@ -453,14 +453,19 @@ br_scalar C2_HOOK_FASTCALL CalculateAmountRepairedFraction(br_angle pOriginal_x,
 // ARCompressModelMash
 
 // ARApplyModelMash
+void C2_HOOK_FASTCALL ARApplyModelMash(br_model* pModel, tCompressed_vector3* pSrc);
 
 // ARUndoModelMash
+void C2_HOOK_FASTCALL ARUndoModelMash(br_model* pModel, tCompressed_vector3* pSrc);
 
 // ARApplyFlap
+void C2_HOOK_FASTCALL ARApplyFlap(br_actor* pActor, tS16 pAngle);
 
 // ARApplySplitWeld
+void C2_HOOK_FASTCALL ARApplySplitWeld(tCar_spec* pCar_spec, br_vector3* pVector);
 
 // ARUndoSplitWeld
+void C2_HOOK_FASTCALL ARUndoSplitWeld(tCar_spec* pCar_spec);
 
 // ReceivedCrush
 
@@ -510,7 +515,7 @@ br_scalar C2_HOOK_FASTCALL CalculateAmountRepairedFraction(br_angle pOriginal_x,
 
 // GetNetShapeDataLengthFromData
 
-// EncodeNetShapeData
+extern void C2_HOOK_FASTCALL EncodeNetShapeData(tU8* pData, tCar_spec* pCar);
 
 // DecodeNetShapeData
 

@@ -17,6 +17,7 @@
 #include <brender/brender.h>
 
 #include <stdio.h>
+#include <math.h>
 #include "c2_string.h"
 
 #include "carpocalypse2_macros.h"
@@ -118,8 +119,26 @@ int gSelected_edit_drone_path = -1;
 // GLOBAL: CARMA2_HW 0x006820cc
 tU32 gNext_drone_edit_path_munge;
 
+// GLOBAL: CARMA2_HW 0x006820d8
+tDrone_crush_data gDrone_crush_data;
+
 // GLOBAL: CARMA2_HW 0x005947b8
 int gSelected_drone_path_index = -1;
+
+// GLOBAL: CARMA2_HW 0x005947bc
+int gSelected_drone_form_index = -1;
+
+// GLOBAL: CARMA2_HW 0x00589dd4
+const float gDrone_select_max_distance_squared = 2.0f;
+
+// GLOBAL: CARMA2_HW 0x00684378
+char gDrone_selection_buffer[256];
+
+// GLOBAL: CARMA2_HW 0x00684534
+int gDrone_path_output_ready;
+
+// GLOBAL: CARMA2_HW 0x00681fb8
+tPath_name gDrone_path_output_name;
 
 // GLOBAL: CARMA2_HW 0x00684518
 int gTraffic_disabled;
@@ -1560,4 +1579,153 @@ int C2_HOOK_FASTCALL MyDroneHathHalteth(tPhysics_object* pObject) {
 
 // UpdateEditModels
 
-// WriteOutDronePaths
+// FUNCTION: CARMA2_HW 0x004525d0
+void C2_HOOK_FASTCALL SelectNextDrone(void) {
+    char text[64];
+
+    gCurrent_selected_drone++;
+    if (gCurrent_selected_drone >= gCount_drones) {
+        gCurrent_selected_drone = 0;
+    }
+    sprintf(text, "Drone %d", gCurrent_selected_drone);
+    NewTextHeadupSlot(4, 0, 3000, -1, text);
+}
+
+// FUNCTION: CARMA2_HW 0x004532e0
+void C2_HOOK_FASTCALL SelectNearestDrone(void) {
+    float closest_distance;
+    int nearest_index;
+    int i;
+
+    closest_distance = 3.4028235e+38f;
+    nearest_index = 0;
+    if (gCount_drones > 0) {
+        br_vector3* car_position = &gProgram_state.current_car.car_master_actor->t.t.translate.t;
+
+        for (i = 0; i < gCount_drones; i++) {
+            br_vector3* drone_position = &gDrone_specs[i].actor->t.t.translate.t;
+            float delta[3];
+            float distance;
+
+            delta[0] = car_position->v[0] - drone_position->v[0];
+            delta[1] = car_position->v[1] - drone_position->v[1];
+            delta[2] = car_position->v[2] - drone_position->v[2];
+            distance = delta[1] * delta[1] + delta[0] * delta[0] + delta[2] * delta[2];
+            if (distance < closest_distance) {
+                nearest_index = i;
+                closest_distance = distance;
+            }
+        }
+    }
+    if (closest_distance < gDrone_select_max_distance_squared) {
+        if (gSelected_drone_path_index >= 0) {
+            gDrone_specs[gSelected_drone_path_index].actor->render_style = BR_RSTYLE_FACES;
+        }
+        gSelected_drone_path_index = nearest_index;
+        sprintf(gDrone_selection_buffer, "Selected drone #%d", nearest_index);
+        NewTextHeadupSlot(4, 0, 3000, -1, gDrone_selection_buffer);
+        for (i = 0; i < gCount_drone_forms; i++) {
+            if (gDrone_specs[gSelected_drone_path_index].form == &gDrone_forms[i]) {
+                gSelected_drone_form_index = i;
+                return;
+            }
+        }
+    } else {
+        NewTextHeadupSlot(4, 0, 3000, -1, "No drones close enough");
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x00452430
+void C2_HOOK_FASTCALL DronePhysicsWarning(tPhysics_object* pObject) {
+    volatile br_actor* actor;
+    tDrone_spec* pDrone;
+    volatile br_vector3 matrix_to_actor;
+    volatile br_vector3 alleged_current_v;
+
+    pDrone = (tDrone_spec*)pObject->owner;
+    matrix_to_actor.v[0] = pObject->actor->t.t.mat.m[3][0] - pObject->transform_matrix.m[3][0];
+    matrix_to_actor.v[1] = pObject->actor->t.t.mat.m[3][1] - pObject->transform_matrix.m[3][1];
+    matrix_to_actor.v[2] = pObject->actor->t.t.mat.m[3][2] - pObject->transform_matrix.m[3][2];
+
+    DoNotDprintf("************");
+    DoNotDprintf("%d: DRONE PHYSICS WARNING - Drone index %d", gFrame, pDrone->id);
+    DoNotDprintf("guilty length %f", sqrt(matrix_to_actor.v[0] * matrix_to_actor.v[0]
+        + matrix_to_actor.v[1] * matrix_to_actor.v[1]
+        + matrix_to_actor.v[2] * matrix_to_actor.v[2]));
+    DoNotDprintf("State %d, last state %d, last last state %d", pDrone->current_state, pDrone->prev_states[0], pDrone->prev_states[1]);
+    if (pObject->actor == pDrone->actor) {
+        DoNotDprintf("Object and drone actors are the same thing. OK.");
+    } else {
+        DoNotDprintf("FUCKING HELL! Object and drone actors differ!");
+    }
+    actor = pObject->actor;
+    alleged_current_v.v[0] = actor->t.t.mat.m[3][0] - ((volatile tDrone_spec*)pDrone)->pos.v[0];
+    alleged_current_v.v[1] = actor->t.t.mat.m[3][1] - ((volatile tDrone_spec*)pDrone)->pos.v[1];
+    alleged_current_v.v[2] = actor->t.t.mat.m[3][2] - ((volatile tDrone_spec*)pDrone)->pos.v[2];
+    DoNotDprintf("%d: %s: %3.3f, %3.3f, %3.3f", gFrame, "Object matrix-to-actor v",
+        matrix_to_actor.v[0], matrix_to_actor.v[1], matrix_to_actor.v[2]);
+    DoNotDprintf("%d: %s: %3.3f, %3.3f, %3.3f", gFrame, "Alleged current_v",
+        alleged_current_v.v[0], alleged_current_v.v[1], alleged_current_v.v[2]);
+    DoNotDprintf("%d: %s: %3.3f, %3.3f, %3.3f", gFrame, "Drone spec current_v",
+        pDrone->field_0x18.v[0], pDrone->field_0x18.v[1], pDrone->field_0x18.v[2]);
+}
+
+// FUNCTION: CARMA2_HW 0x00453050
+void C2_HOOK_FASTCALL WriteOutDronePaths(void) {
+    volatile int node_index;
+    int section_index;
+    int path_index;
+    char filename[16];
+    char path[256];
+    FILE* file;
+
+    if (!gDrone_path_output_ready) {
+        path_index = 0;
+        sprintf(filename, "DPATH%0.3d.TXT", path_index);
+        PathCat(path, gApplication_path, filename);
+        file = DRfopen(path, "r+");
+        while (file != NULL) {
+            PFfclose(file);
+            path_index++;
+            sprintf(filename, "DPATH%0.3d.TXT", path_index);
+            PathCat(path, gApplication_path, filename);
+            file = DRfopen(path, "r+");
+        }
+        gDrone_path_output_ready = 1;
+        strcpy(gDrone_path_output_name, path);
+    }
+
+    file = DRfopen(gDrone_path_output_name, "wt");
+    if (file != NULL) {
+        fprintf(file, "%s\n", "START OF DRONE PATHS");
+        fprintf(file, "\n%-3d   // version\n", 2);
+        fprintf(file, "%-3d   // n_nodes\n", gCount_drone_path_nodes);
+        for (node_index = 0; node_index < gCount_drone_path_nodes; node_index++) {
+            tDrone_path_node* node;
+
+            node = &gDrone_path_nodes[node_index];
+            fprintf(file, "\t\n// %d:\n", node_index);
+            fprintf(file, "\t%.3f, %.3f, %.3f\n",
+                (double)node->position.v[0],
+                (double)node->position.v[1],
+                (double)node->position.v[2]);
+            fprintf(file, "\t%s\n", node->type >= 0 ? gDrone_forms[node->type].name : "NONE");
+            fprintf(file, "\t%d\n", node->field_0x12e);
+            fprintf(file, "\t%d\n", node->count_sections);
+            for (section_index = 0; section_index < node->count_sections; section_index++) {
+                tDrone_path_node_section* section;
+
+                section = &node->sections[section_index];
+                fprintf(file, "\t\t%d, %d, %d, %d\n",
+                    section->node1,
+                    (tU16)section->node2,
+                    section->type,
+                    section->field_0x21);
+            }
+        }
+        fprintf(file, "\n%s\n", "END OF DRONE PATHS");
+        PFfclose(file);
+    } else {
+        PDFatalError("Unable to open drone path output file");
+    }
+}

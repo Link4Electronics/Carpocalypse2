@@ -1,6 +1,7 @@
 #include "displays.h"
 
 #include "controls.h"
+#include "crush.h"
 #include "depth.h"
 #include "font.h"
 #include "globvars.h"
@@ -14,6 +15,7 @@
 #include "network.h"
 #include "opponent.h"
 #include "pedestrn.h"
+#include "physics.h"
 #include "polyfont.h"
 #include "powerups.h"
 #include "smashing.h"
@@ -108,7 +110,10 @@ int gINT_0068c878;
 br_vector2 gOrigin_headup_map;
 
 // GLOBAL: CARMA2_HW 0x0067c500
-tHeadup gHeadups[37];
+tHeadup gHeadups[37] = { 0 };
+
+// GLOBAL: CARMA2_HW 0x0067f874
+tU32 gLast_earn_time = 0;
 
 // GLOBAL: CARMA2_HW 0x0067f890
 tQueued_headup gQueued_headups[4];
@@ -127,6 +132,15 @@ int gPed_kill_count_headup;
 
 // GLOBAL: CARMA2_HW 0x0079eaf8
 int gCar_kill_count_headup;
+
+// GLOBAL: CARMA2_HW 0x00589d78
+float gFLOAT_00589d78 = 0.1f;
+
+// GLOBAL: CARMA2_HW 0x00589d7c
+float gFLOAT_00589d7c = 1.0f;
+
+// GLOBAL: CARMA2_HW 0x00589d80
+double gDOUBLE_00589d80 = 0.5;
 
 // GLOBAL: CARMA2_HW 0x0079eaec
 int gTimer_headup;
@@ -151,9 +165,6 @@ int gLast_credit_headup__displays = -1;
 
 // GLOBAL: CARMA2_HW 0x005913dc
 int gLast_time_credit_headup = -1;
-
-// GLOBAL: CARMA2_HW 0x0067f874
-tU32 gLast_earn_time;
 
 // GLOBAL: CARMA2_HW 0x0067fd34
 tU32 gLast_fancy_time;
@@ -339,13 +350,12 @@ void C2_HOOK_FASTCALL EarnCredits2(int pAmount, const char* pPrefix_text) {
 
 // FUNCTION: CARMA2_HW 0x0044b440
 void C2_HOOK_FASTCALL EarnCredits(int pAmount) {
-
     EarnCredits2(pAmount, "");
 }
 
 // FUNCTION: CARMA2_HW 0x0044b450
 void C2_HOOK_FASTCALL EarnCredits100(int pAmount) {
-    EarnCredits((pAmount + 50) / 100 * 100);
+    EarnCredits2((pAmount + 50) - (pAmount + 50) % 100, "");
 }
 
 // FUNCTION: CARMA2_HW 0x0044b470
@@ -391,6 +401,37 @@ void C2_HOOK_FASTCALL AwardTime(tU32 pTime) {
     }
 }
 
+// FUNCTION: CARMA2_HW 0x0044b590
+void C2_HOOK_FASTCALL AwardTime5(tU32 pTime) {
+    char s[256];
+    tU32 original_amount;
+    tU32 the_time;
+    int i;
+    tU32 rounded_time;
+
+    rounded_time = pTime - (pTime + 2) % 5 + 2;
+    if (gRace_finished || gFreeze_timer || gNet_mode != eNet_mode_none || (*(tGraf_data**)((char*)&gCurrent_race + 0x98))->field_0x18c) {
+        return;
+    }
+    the_time = GetTotalTime();
+    if (rounded_time != 0) {
+        for (i = 9; i > 0; i--) {
+            gOld_times[i] = gOld_times[i - 1];
+        }
+        gOld_times[0] = rounded_time;
+        original_amount = rounded_time;
+        if (gLast_time_credit_headup >= 0 && (the_time - gLast_time_earn_time) < 2000) {
+            rounded_time += gLast_time_credit_amount;
+        }
+        gLast_time_credit_amount = rounded_time;
+        gTimer += original_amount * 1000;
+        s[0] = '+';
+        TimerString(1000 * rounded_time, &s[1], 0, 0, 0);
+        gLast_time_credit_headup = NewTextHeadupSlot2(0xb, 0, 2000, -2, s, 1);
+        gLast_time_earn_time = the_time;
+    }
+}
+
 // FUNCTION: CARMA2_HW 0x0044b170
 void C2_HOOK_FASTCALL ChangingView(void) {
     tU32 the_time;
@@ -402,50 +443,49 @@ void C2_HOOK_FASTCALL ChangingView(void) {
     gScreen_wobble_x = 0;
     gScreen_wobble_y = 0;
     if (the_time > 175 && gProgram_state.which_view == gProgram_state.new_view) {
-        switch (gProgram_state.pending_view) {
-        case eView_undefined:
-            gProgram_state.new_view = eView_undefined;
-            break;
-        case eView_left:
-            LookLeft();
-            break;
-        case eView_forward:
-            LookForward();
-            break;
-        case eView_right:
-            LookRight();
-            break;
-        }
-    } else {
-        if (the_time < 88) {
-            if (gProgram_state.old_view < gProgram_state.new_view) {
-                gScreen_wobble_x = (int)((double)the_time * (double)gCurrent_graf_data->cock_margin_x * -2. / 175.);
-            } else {
-                gScreen_wobble_x = (int)((double)the_time * (double)gCurrent_graf_data->cock_margin_x * 2. / 175.);
-            }
-        } else {
-            gProgram_state.which_view = gProgram_state.new_view;
-            switch (gProgram_state.new_view) {
-#ifdef CARPOCALYPSE2_FIX_BUGS
-            default:
-                abort();
-#endif
+        if (gProgram_state.pending_view != eView_undefined) {
+            switch (gProgram_state.pending_view) {
             case eView_left:
-                gProgram_state.cockpit_image_index = 1;
+                LookLeft();
                 break;
             case eView_forward:
-                gProgram_state.cockpit_image_index = 0;
+                LookForward();
                 break;
             case eView_right:
-                gProgram_state.cockpit_image_index = 2;
+                LookRight();
+                break;
+            default:
                 break;
             }
-            AdjustRenderScreenSize();
-            if (gProgram_state.new_view <= gProgram_state.old_view) {
-                gScreen_wobble_x = (int)((double)(175 - the_time) * (double)gCurrent_graf_data->cock_margin_x * -2. / 175.);
-            } else {
-                gScreen_wobble_x = (int)((double)(175 - the_time) * (double)gCurrent_graf_data->cock_margin_x * 2. / 175.);
-            }
+        } else {
+            gProgram_state.new_view = eView_undefined;
+        }
+    } else if (the_time > 87) {
+        gProgram_state.which_view = gProgram_state.new_view;
+        switch (gProgram_state.new_view) {
+        case eView_left:
+            gProgram_state.cockpit_image_index = 1;
+            break;
+        case eView_forward:
+            gProgram_state.cockpit_image_index = 0;
+            break;
+        case eView_right:
+            gProgram_state.cockpit_image_index = 2;
+            break;
+        default:
+            break;
+        }
+        AdjustRenderScreenSize();
+        if (gProgram_state.old_view < gProgram_state.new_view) {
+            gScreen_wobble_x = (int)((double)(175 - the_time) * (double)gCurrent_graf_data->cock_margin_x * (2. / 175.));
+        } else {
+            gScreen_wobble_x = (int)((double)(175 - the_time) * (double)gCurrent_graf_data->cock_margin_x * (-2. / 175.));
+        }
+    } else {
+        if (gProgram_state.old_view < gProgram_state.new_view) {
+            gScreen_wobble_x = (int)((double)the_time * (double)gCurrent_graf_data->cock_margin_x * (-2. / 175.));
+        } else {
+            gScreen_wobble_x = (int)((double)the_time * (double)gCurrent_graf_data->cock_margin_x * (2. / 175.));
         }
     }
 }
@@ -612,7 +652,7 @@ void C2_HOOK_FASTCALL BuildOppoBar(int pX, int pY) {
     if (material == NULL) {
         return;
     }
-    material->flags = BR_MATF_PRELIT | BR_MATF_SMOOTH | BR_MATF_I_FROM_U;
+    material->flags = BR_MATF_PRELIT | BR_MATF_SMOOTH | BR_MATF_ALWAYS_VISIBLE;
     model = BrModelAllocate("OppoBar Model", 4, 2);
     if (model == NULL) {
         return;
@@ -651,47 +691,8 @@ void C2_HOOK_FASTCALL BuildOppoBar(int pX, int pY) {
     gLit_op_stat_actor = actor;
     if (actor != NULL) {
         actor->material = material;
-        actor->model = model;
+        gLit_op_stat_actor->model = model;
     }
-}
-
-// FUNCTION: CARMA2_HW 0x00441350
-int C2_HOOK_FASTCALL GetOpponentDamageScore(tCar_spec* pCar) {
-    int dmg;
-    int avg;
-    int pos0;
-    int pos1;
-    int pos2;
-    int result;
-
-    if (*(int*)((char*)pCar + 0x1d4) != 0) {
-        return 0;
-    }
-    dmg = *(int*)((char*)pCar + 0x698);
-    dmg += *(int*)((char*)pCar + 0x6c4);
-    dmg += *(int*)((char*)pCar + 0x640);
-    dmg += *(int*)((char*)pCar + 0x66c);
-    pos0 = *(int*)((char*)pCar + 0x4e0);
-    pos1 = *(int*)((char*)pCar + 0x50c);
-    pos2 = *(int*)((char*)pCar + 0x538);
-    avg = dmg / 4;
-    if (pos0 > 75 || pos1 > 75 || pos2 > 75 || avg > 75) {
-        if (pos0 > pos1 && pos0 > pos2 && pos0 > avg) {
-            return 100 - pos0;
-        }
-        if (pos1 > pos2 && pos1 > avg) {
-            return 100 - pos1;
-        }
-        if (pos2 > avg) {
-            return 100 - pos2;
-        }
-        return 100 - avg;
-    }
-    result = 100 - (avg + pos2 + pos1 + pos0) / 4;
-    if (result >= 25) {
-        return result;
-    }
-    return 25;
 }
 
 // FUNCTION: CARMA2_HW 0x004af640
@@ -747,19 +748,6 @@ tOpponent_Status C2_HOOK_FASTCALL GetOpponentStatus(tCar_spec* pCar) {
             return eOpponent_status_Trying_to_get_to_you;
     }
 }
-
-#pragma auto_inline(off)
-// FUNCTION: CARMA2_HW 0x00575bf0
-char* C2_HOOK_CDECL LookForChar(const char* pString, int pChar) {
-    while (*pString != '\0') {
-        if (*pString == (char)pChar) {
-            return (char*)pString;
-        }
-        pString++;
-    }
-    return NULL;
-}
-#pragma auto_inline(on)
 
 // GLOBAL: CARMA2_HW 0x0068d900
 tU32 gOppo_stat_flash_change_1;
@@ -836,7 +824,7 @@ void C2_HOOK_FASTCALL DoOpponentStatusHeadup(void) {
         return;
     }
 
-    damage = GetOpponentDamageScore(gTarget_lock_car_2);
+    damage = GetAverageCrushLevel(gTarget_lock_car_2);
     sprintf(text, "%d%%", damage);
     DRPixelmapText(gBack_screen, gCurrent_graf_data->field_0x500, gCurrent_graf_data->field_0x504, &gFonts[23],
         text, gBack_screen->width);
@@ -898,7 +886,7 @@ void C2_HOOK_FASTCALL DoOpponentStatusHeadup(void) {
 
     is_girl = gTarget_lock_car_2->is_girl;
     strcpy(text, gOppo_status_messages[status].messages[choice]);
-    p = LookForChar(text, '%');
+    p = strchr(text, '%');
     while (p != NULL) {
         int index;
         strcpy(copy, p + 1);
@@ -908,9 +896,9 @@ void C2_HOOK_FASTCALL DoOpponentStatusHeadup(void) {
         }
         strcpy(p, GetMiscString(index));
         strcat(text, copy);
-        p = LookForChar(text, '%');
+        p = strchr(text, '%');
     }
-    p = LookForChar(text, '&');
+    p = strchr(text, '&');
     while (p != NULL) {
         int index;
         strcpy(copy, p + 1);
@@ -920,7 +908,7 @@ void C2_HOOK_FASTCALL DoOpponentStatusHeadup(void) {
         }
         strcpy(p, GetMiscString(index));
         strcat(text, copy);
-        p = LookForChar(text, '&');
+        p = strchr(text, '&');
     }
     DRPixelmapText(gBack_screen, gCurrent_graf_data->field_0x510, gCurrent_graf_data->field_0x514, &gFonts[23],
         text, gBack_screen->width);
@@ -931,16 +919,18 @@ void C2_HOOK_FASTCALL DoOpponentStatusHeadup(void) {
 void C2_HOOK_FASTCALL CheckpointLine(br_pixelmap* pMap, int pCheckpoint, tU32 pTime, int pTarget) {
     int p2_x;
     int p2_y;
+    tRace_checkpoint_spec* checkpoint;
 
     if (pCheckpoint >= 0 && pCheckpoint < gCurrent_race.check_point_count) {
-        if (gCurrent_race.checkpoints[pCheckpoint].map_position.v[0] < 0.f) {
+        checkpoint = &gCurrent_race.checkpoints[pCheckpoint];
+        if (checkpoint->map_position.v[0] < 0.f) {
             p2_x = 8;
-            p2_y = (int)((gCurrent_race.checkpoints[pCheckpoint].map_position.v[1] - (float)gINT_0074abd0)
-                * ((float)gINT_0074abd4 / ((float)gINT_0074abd4 - gCurrent_race.checkpoints[pCheckpoint].map_position.v[0]))
+            p2_y = (int)((checkpoint->map_position.v[1] - (float)gINT_0074abd0)
+                * ((float)gINT_0074abd4 / ((float)gINT_0074abd4 - checkpoint->map_position.v[0]))
                 + (float)gINT_0074abd0);
         } else {
-            p2_x = (int)(gCurrent_race.checkpoints[pCheckpoint].map_position.v[0] + 8.f);
-            p2_y = (int)gCurrent_race.checkpoints[pCheckpoint].map_position.v[1];
+            p2_x = (int)(checkpoint->map_position.v[0] + 8.f);
+            p2_y = (int)checkpoint->map_position.v[1];
         }
         FancyDrawLine(pMap, gINT_0074abd4 + 8, gINT_0074abd0, p2_x, p2_y, 132, 100);
     }
@@ -1398,13 +1388,12 @@ void C2_HOOK_FASTCALL ClearHeadupSlot(int pSlot_index) {
     int i;
     tHeadup* the_headup;
 
-    for (i = 0; i < CARPOCALYPSE2_ASIZE(gHeadups); i++) {
-        the_headup = &gHeadups[i];
+    the_headup = gHeadups;
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gHeadups); i++, the_headup++) {
         if (the_headup->type != eHeadup_unused && the_headup->slot_index == pSlot_index) {
             ClearHeadup(i);
             return;
         }
-        the_headup++;
     }
 }
 
@@ -1436,13 +1425,12 @@ int C2_HOOK_FASTCALL FindAHeadupHoleWoofBarkSoundsABitRude(int pSlot_index) {
     int empty_one;
     tHeadup* the_headup;
 
+    the_headup = gHeadups;
     empty_one = -1;
-    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gHeadups); i++) {
-        the_headup = &gHeadups[i];
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gHeadups); i++, the_headup++) {
         if (pSlot_index >= 0 && the_headup->slot_index == pSlot_index) {
             return i;
-        }
-        if (the_headup->type == eHeadup_unused) {
+        } else if (the_headup->type == eHeadup_unused) {
             empty_one = i;
         }
     }
@@ -1458,11 +1446,48 @@ void C2_HOOK_FASTCALL KillOldestQueuedHeadup(void) {
 }
 
 // FUNCTION: CARMA2_HW 0x004497b0
-void C2_HOOK_FASTCALL ClearQueuedHeadups(void) {
-
+void C2_NAKED C2_HOOK_FASTCALL ClearQueuedHeadups(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     while (gQueued_headup_count != 0) {
         KillOldestQueuedHeadup();
     }
+#else
+    __asm {
+        mov eax, dword ptr [gQueued_headup_count]
+        push ebx
+        mov ecx, eax
+        push esi
+        shl ecx, 5
+        add ecx, eax
+        push edi
+        lea edx, [eax + ecx*2]
+        shl edx, 2
+        test eax, eax
+        je clear_queued_done
+
+    clear_queued_loop:
+        sub edx, 0x10c
+        mov esi, offset gQueued_headups + 0x10c
+        mov ecx, edx
+        mov edi, offset gQueued_headups
+        mov ebx, ecx
+        dec eax
+        shr ecx, 2
+        rep movsd
+        mov ecx, ebx
+        and ecx, 3
+        test eax, eax
+        rep movsb
+        jne clear_queued_loop
+
+    clear_queued_done:
+        pop edi
+        pop esi
+        mov dword ptr [gQueued_headup_count], eax
+        pop ebx
+        ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00449830
@@ -1646,6 +1671,15 @@ void C2_HOOK_FASTCALL DimRectangleClipped(br_pixelmap* pPixelmap, int pLeft, int
     if (pLeft < pRight && pTop < pBottom) {
         DimRectangle(pPixelmap, pLeft, pTop, pRight, pBottom, pKnock_out_corners);
     }
+}
+
+// FUNCTION: CARMA2_HW 0x0047ca50
+void C2_HOOK_FASTCALL DrawRRectangle(br_pixelmap* pPixelmap, int pLeft, int pTop, int pRight, int pBottom, br_uint_32 pColour) {
+
+    BrPixelmapLine(pPixelmap, pLeft + 1, pTop, pRight - 1, pTop, pColour);
+    BrPixelmapLine(pPixelmap, pLeft + 1, pBottom, pRight - 1, pBottom, pColour);
+    BrPixelmapLine(pPixelmap, pLeft, pTop + 1, pLeft, pBottom - 1, pColour);
+    BrPixelmapLine(pPixelmap, pRight, pTop + 1, pRight, pBottom - 1, pColour);
 }
 
 // FUNCTION: CARMA2_HW 0x0047cad0
@@ -1981,24 +2015,28 @@ void C2_HOOK_FASTCALL DoFancyHeadup(int pIndex) {
 
 // FUNCTION: CARMA2_HW 0x0044a860
 void C2_HOOK_FASTCALL MoveHeadupTo(int pHeadup_index, int pX, int pY) {
+    tHeadup* the_headup;
     int delta_x;
 
     if (pHeadup_index >= 0) {
-        delta_x = gHeadups[pHeadup_index].x - gHeadups[pHeadup_index].original_x;
-        gHeadups[pHeadup_index].original_x = pX;
-        gHeadups[pHeadup_index].x = delta_x + pX;
-        gHeadups[pHeadup_index].y = pY;
+        the_headup = &gHeadups[pHeadup_index];
+        delta_x = the_headup->x - the_headup->original_x;
+        the_headup->original_x = pX;
+        the_headup->x = delta_x + pX;
+        the_headup->y = pY;
     }
 }
 
-// UNLABELED: CARMA2_HW 0x0044a8a0
-void C2_HOOK_FASTCALL FUN_0044a8a0(int pHeadup_index, int pX, int pY) {
+// FUNCTION: CARMA2_HW 0x0044a8a0
+void C2_HOOK_FASTCALL FUN_0044a8a0(int pHeadup_index, int pNew_x, int pNew_y) {
+    tHeadup* the_headup;
 
     if (pHeadup_index >= 0) {
-        gHeadups[pHeadup_index].justification = eJust_left;
-        gHeadups[pHeadup_index].original_x = pX;
-        gHeadups[pHeadup_index].x = pX;
-        gHeadups[pHeadup_index].y = pY;
+        the_headup = &gHeadups[pHeadup_index];
+        the_headup->justification = eJust_left;
+        the_headup->original_x = pNew_x;
+        the_headup->x = pNew_x;
+        the_headup->y = pNew_y;
     }
 }
 
@@ -2510,5 +2548,136 @@ void C2_HOOK_FASTCALL ChangeHeadupText(int pHeadup_index, char* pNew_text) {
         the_headup = &gHeadups[pHeadup_index];
         strcpy(the_headup->data.text_info.text, pNew_text);
         MungeHeadupWidth(the_headup);
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x00449070
+void C2_HOOK_FASTCALL TimerStringGlobalTimer(char* pStr, undefined4 pArg3) {
+
+    TimerString(gTimer, pStr, pArg3, 0, 0);
+}
+
+extern br_pixelmap* gHeadup_images[45];
+
+// FUNCTION: CARMA2_HW 0x0044a950
+void C2_HOOK_FASTCALL ChangeHeadupImage(int pHeadup_index, int pImage_index) {
+    tHeadup* headup;
+    br_pixelmap* image;
+    int justification;
+
+    if (pHeadup_index >= 0) {
+        image = gHeadup_images[pImage_index];
+        headup = &gHeadups[pHeadup_index];
+        justification = headup->justification;
+        *(br_pixelmap**)headup->data.image_info.text = image;
+        switch (justification) {
+        case eJust_left:
+            headup->x = headup->original_x;
+            break;
+        case eJust_right:
+            headup->x = headup->original_x - image->width;
+            return;
+        case eJust_centre:
+            headup->x = headup->original_x - (image->width >> 1);
+            return;
+        default:
+            return;
+        }
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x0047c9c0
+void C2_HOOK_FASTCALL DrawRectangleOutlineWithPalette(br_pixelmap* pMap, int pLeft, int pTop, int pRight, int pBottom, br_uint_32 pColour) {
+    if (gBack_screen->type != BR_PMT_INDEX_8) {
+        pColour = PaletteEntry16Bit(gRender_palette, pColour);
+    }
+    BrPixelmapLine(pMap, pLeft, pTop, pRight, pTop, pColour);
+    BrPixelmapLine(pMap, pLeft, pBottom, pRight, pBottom, pColour);
+    BrPixelmapLine(pMap, pLeft, pTop, pLeft, pBottom, pColour);
+    BrPixelmapLine(pMap, pRight, pTop, pRight, pBottom, pColour);
+}
+
+// FUNCTION: CARMA2_HW 0x00576850
+int C2_HOOK_CDECL FUN_00576850(int pValue) {
+
+    return pValue + 0x20;
+}
+
+// FUNCTION: CARMA2_HW 0x0044a740
+void C2_HOOK_FASTCALL UpdateHeadupPositions(void) {
+    int cockpit_on;
+    int cockpit_image_index;
+    int count;
+    tHeadup* headup;
+    tHeadup_slot* headup_slots;
+
+    cockpit_on = gProgram_state.cockpit_on;
+    cockpit_image_index = gProgram_state.cockpit_image_index;
+    headup_slots = &gProgram_state.current_car.headup_slots[0][0];
+    for (headup = &gHeadups[0], count = 37; count != 0; count--, headup++) {
+        int side_a;
+        int side_b;
+        int x_delta;
+        int y_delta;
+
+        if (headup->type == eHeadup_unused) {
+            continue;
+        }
+        if (cockpit_on != 0 && cockpit_image_index >= 0) {
+            side_a = 1;
+            side_b = 0;
+        } else {
+            side_a = 0;
+            side_b = 1;
+        }
+        x_delta = headup_slots[headup->slot_index + side_a * 20].x
+                - headup_slots[headup->slot_index + side_b * 20].x;
+        y_delta = headup_slots[headup->slot_index + side_a * 20].y
+                - headup_slots[headup->slot_index + side_b * 20].y;
+        headup->original_x += x_delta;
+        headup->x += x_delta;
+        headup->y += y_delta;
+        headup->dim_left += x_delta;
+        headup->dim_top += y_delta;
+        headup->dim_right += x_delta;
+        headup->dim_bottom += y_delta;
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x0044b050
+void C2_HOOK_FASTCALL DrawCockpitHands(void) {
+    int i;
+    br_pixelmap* image;
+
+    if (gProgram_state.current_car_index != gProgram_state.current_car.index
+            || !gProgram_state.cockpit_on
+            || gProgram_state.cockpit_image_index < 0
+            || gProgram_state.which_view != eView_forward) {
+        return;
+    }
+
+    i = (int)floor((double)(gProgram_state.current_car.number_of_hands_images
+        * (gFLOAT_00589d7c - gProgram_state.current_car.steering_angle * gFLOAT_00589d78))
+        * gDOUBLE_00589d80);
+    if (i < 0) {
+        i = 0;
+    } else if (i >= gProgram_state.current_car.number_of_hands_images) {
+        i = gProgram_state.current_car.number_of_hands_images - 1;
+    }
+
+    image = gProgram_state.current_car.lhands_images[i];
+    if (image != NULL) {
+        DRPixelmapRectangleMaskedCopy(gBack_screen,
+            (br_int_16)(gProgram_state.current_car.lhands_x[i] + gScreen_wobble_x),
+            (br_int_16)(gProgram_state.current_car.lhands_y[i] + gScreen_wobble_y),
+            image, 0, 0, image->width, image->height);
+    }
+
+    image = gProgram_state.current_car.rhands_images[i];
+    if (image != NULL) {
+        DRPixelmapRectangleMaskedCopy(gBack_screen,
+            (br_int_16)(gProgram_state.current_car.rhands_x[i] + gScreen_wobble_x),
+            (br_int_16)(gProgram_state.current_car.rhands_y[i] + gScreen_wobble_y),
+            image, 0, 0, image->width, image->height);
     }
 }

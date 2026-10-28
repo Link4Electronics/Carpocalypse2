@@ -30,10 +30,11 @@ void C2_HOOK_FASTCALL DisableAutoFogification(void) {
 
 // FUNCTION: CARMA2_HW 0x004ea860
 void C2_HOOK_FASTCALL RemoveMaterialFromFogification(br_material* pMaterial) {
+    int count = gMaterials_to_adapt_count;
     int i;
 
-    for (i = 0; i < gMaterials_to_adapt_count; i++) {
-        if (gMaterials_to_adapt[i] == pMaterial) {
+    for (i = 0; i < count; i++) {
+        if (pMaterial == gMaterials_to_adapt[i]) {
             gMaterials_to_adapt[i] = NULL;
         }
     }

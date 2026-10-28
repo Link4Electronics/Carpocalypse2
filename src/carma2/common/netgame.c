@@ -4,7 +4,9 @@
 #include "globvars.h"
 #include "globvrpb.h"
 #include "network.h"
+#include "phil.h"
 #include "structur.h"
+#include "world.h"
 #include "opponent.h"
 #include "physics.h"
 #include "platform.h"
@@ -54,6 +56,21 @@ int gINT_0068d920;
 
 // GLOBAL: CARMA2_HW 0x0075b8f8
 br_pixelmap* gDigits_pix;
+
+// GLOBAL: CARMA2_HW 0x0058a3f8
+const br_scalar gFLOAT_0058a3f8 = 1.0f;
+
+// GLOBAL: CARMA2_HW 0x0058a3e8
+const br_scalar gNon_car_pull_actor_distance_squared = 900.0f;
+
+// GLOBAL: CARMA2_HW 0x0058a40c
+const br_scalar gFLOAT_0058a40c = 0.000015259254723787308f;
+
+// GLOBAL: CARMA2_HW 0x0068d954
+int gUNK_0068d954;
+
+// GLOBAL: CARMA2_HW 0x0075bc24
+int gUNK_0075bc24;
 // FUNCTION: CARMA2_HW 0x00499260
 
 void C2_HOOK_FASTCALL DisableCar(tCar_spec* pCar) {
@@ -119,8 +136,6 @@ void C2_HOOK_FASTCALL InitialisePlayerScore(tNet_game_player_info* pPlayer) {
     case eNet_game_type_foxy:
         pPlayer->score2 = 0;
         break;
-    default:
-        abort();
     }
     pPlayer->credits = gCurrent_net_game->options.starting_credits;
     pPlayer->wasted = 0;
@@ -149,11 +164,13 @@ void C2_HOOK_FASTCALL InitNetGameplayStuff(void) {
 
 }
 
+#pragma auto_inline(off)
 // FUNCTION: CARMA2_HW 0x0049a760
 void C2_HOOK_FASTCALL DeclareWinner(int pWinner_index) {
 
     NOT_IMPLEMENTED();
 }
+#pragma auto_inline(on)
 
 // FUNCTION: CARMA2_HW 0x0049bc20
 void C2_HOOK_FASTCALL SendGameplay(tPlayer_ID pPlayer, tNet_gameplay_mess pMess, int pParam_1, int pParam_2, int pParam_3, int pParam_4) {
@@ -190,7 +207,7 @@ void C2_HOOK_FASTCALL NetSendHeadupToPlayer(const char* pMessage, tPlayer_ID pPl
     NOT_IMPLEMENTED();
 }
 
-// UNLABELED: CARMA2_HW 0x0049a9e0
+// FUNCTION: CARMA2_HW 0x0049a9e0
 void C2_HOOK_FASTCALL PlayerIsIt(tNet_game_player_info* pPlayer) {
     int i;
     char s[256];
@@ -804,9 +821,50 @@ void C2_HOOK_FASTCALL SendCarData(tU32 pNext_frame_time) {
 }
 // SendShapeNumbers
 
-// ClearShapeStatusFlag
+// FUNCTION: CARMA2_HW 0x00497ef0
+void C2_HOOK_FASTCALL ClearShapeStatusFlag(tCar_crush_network_shapes* pShapes, int pPlayer_id) {
+    int i;
 
-// SendNonCar
+    if (pShapes == NULL) {
+        return;
+    }
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(pShapes->items); i++) {
+        if (pShapes->items[i].network_id == pPlayer_id) {
+            pShapes->items[i].field_0x4 = 0;
+            return;
+        }
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x00497f10
+void C2_HOOK_FASTCALL SendNonCar(tNon_car_spec* pNon_car, tU32 pPlayer_id) {
+    tNet_message_chunk* message;
+    int hierarchy_size;
+    int written_size;
+    int raw_flags;
+
+    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tNet_message_chunk_non_car, non_car_id, 0x4);
+    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tNet_message_chunk_non_car, player_id, 0x8);
+    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tNet_message_chunk_non_car, flags, 0x10);
+    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tNet_message_chunk_non_car, object_hierarchy, 0x12);
+
+    hierarchy_size = GetHierarchyNetworkSize(pNon_car->collision_info);
+    message = NetStartBroadcastContents(eNet_message_chunk_type_non_car, hierarchy_size + 0x12);
+    if (message != NULL) {
+        message->non_car.non_car_id = (tU16)pNon_car->car_ID;
+        message->non_car.player_id = pPlayer_id;
+        raw_flags = pNon_car->flags;
+        message->non_car.flags = (tU16)(((raw_flags & 0xff00) != 0) * 8
+                | ((char)raw_flags != '\0') * 4
+                | pNon_car->collision_info->disable_move_rotate * 2
+                | (pNon_car->actor->identifier[3] == '!'));
+        written_size = GetHierarchyNetworkStuff(pNon_car->collision_info, message->non_car.object_hierarchy, 0x48);
+        if (written_size != hierarchy_size) {
+            FatalError(kFatalError_NetContentsTooBig_S, "in non_car object data");
+        }
+        NetBroadcastContents(message);
+    }
+}
 
 // HostFillInCarContents
 
@@ -814,7 +872,17 @@ void C2_HOOK_FASTCALL SendCarData(tU32 pNext_frame_time) {
 
 // DistanceBetweenCars
 
-// CarShapeNeedsSendingToPlayer
+// FUNCTION: CARMA2_HW 0x00498370
+int C2_HOOK_FASTCALL CarShapeNeedsSendingToPlayer(tCar_crush_network_shapes* pShapes, int pPlayer_id) {
+    int i;
+
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(pShapes->items); i++) {
+        if (pShapes->items[i].network_id == pPlayer_id) {
+            return (tS8)pShapes->items[i].field_0x4;
+        }
+    }
+    return 0;
+}
 
 // AddShapeStuffToMechanicsMessage
 
@@ -840,9 +908,115 @@ void C2_HOOK_FASTCALL ReceivedCopInfo(void) {
 
 // SendAllNonCarPositions
 
-// ReceivedNonCarPosition
+// FUNCTION: CARMA2_HW 0x00498bc0
+void C2_HOOK_FASTCALL ReceivedNonCarPosition(tNet_message_chunk_non_car_position* pContents) {
+    br_actor* actor;
 
-// ReceivedNonCar
+    actor = gProgram_state.track_spec.non_car_list[pContents->ID];
+    if (actor != NULL && gNet_mode != eNet_mode_host) {
+        BrMatrix34Copy(&actor->t.t.mat, &pContents->mat);
+        if (pContents->flags != 0) {
+            actor->identifier[3] = '!';
+        }
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x00498c00
+void C2_HOOK_FASTCALL ReceivedNonCar(tNet_message_chunk_non_car* pContents) {
+    br_actor* actor;
+    tNon_car_spec* non_car;
+    tNon_car_spec* candidate_non_car;
+    tTrack_square* column;
+    int non_car_index;
+    tS8 non_car_spec_index;
+    tU8 column_x;
+    tU8 column_z;
+    float dx;
+    float dy;
+    float dz;
+
+    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tNet_message_chunk_non_car, non_car_id, 0x4);
+    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tNet_message_chunk_non_car, player_id, 0x8);
+    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tNet_message_chunk_non_car, flags, 0x10);
+    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tNet_message_chunk_non_car, object_hierarchy, 0x12);
+
+    if (pContents->non_car_id >= (tU32)gProgram_state.track_spec.count_non_cars) {
+        return;
+    }
+    actor = gProgram_state.track_spec.non_car_list[pContents->non_car_id];
+    if (actor == NULL) {
+        return;
+    }
+
+    non_car = (tNon_car_spec*)actor->type_data;
+    if (non_car != NULL && (non_car->driver != eDriver_4 || (tU16)non_car->car_ID != pContents->non_car_id)) {
+        non_car = NULL;
+    }
+    if ((pContents->flags & 1) != 0) {
+        actor->identifier[3] = '!';
+    } else {
+        actor->identifier[3] = 'x';
+    }
+    if (non_car == NULL) {
+        if (actor->identifier[1] >= '0' && actor->identifier[1] <= '9') {
+            candidate_non_car = NULL;
+            non_car_index = actor->identifier[1] * 10 + actor->identifier[2] - 0x210;
+            non_car_spec_index = (tS8)gNon_car_spec_indices[non_car_index];
+            if (non_car_spec_index != 0) {
+                candidate_non_car = &gProgram_state.non_cars[non_car_spec_index + 0x27];
+            }
+            dx = gProgram_state.current_car.car_master_actor->t.t.translate.t.v[0] - actor->t.t.translate.t.v[0];
+            dy = gProgram_state.current_car.car_master_actor->t.t.translate.t.v[1] - actor->t.t.translate.t.v[1];
+            dz = gProgram_state.current_car.car_master_actor->t.t.translate.t.v[2] - actor->t.t.translate.t.v[2];
+            if ((candidate_non_car != NULL && (candidate_non_car->flags & 0x10000) != 0)
+                    || dx * dx + dy * dy + dz * dz < gNon_car_pull_actor_distance_squared) {
+                DoPullActorFromWorld(actor);
+                non_car = (tNon_car_spec*)actor->type_data;
+            }
+        }
+        if (non_car == NULL) {
+            GetSingleMatrixFromNetworkData(pContents->object_hierarchy, &actor->t.t.mat);
+            XZToColumnXZ(&column_x, &column_z,
+                    actor->t.t.translate.t.v[0], actor->t.t.translate.t.v[2], &gProgram_state.track_spec);
+            column = gProgram_state.track_spec.columns[column_z];
+            if (column[column_x].actor_0x0 == actor->parent) {
+                return;
+            }
+            if (column[column_x].actor_0x0 == NULL) {
+                return;
+            }
+            BrActorRemove(actor);
+            BrActorAdd(gProgram_state.track_spec.columns[column_z][column_x].actor_0x0, actor);
+            return;
+        }
+    }
+
+    if ((pContents->flags & 4) != 0) {
+        if ((tU8)non_car->flags == 0) {
+            non_car->flags |= 1;
+        }
+    } else {
+        non_car->flags &= ~0xff;
+    }
+    if ((pContents->flags & 8) != 0) {
+        if ((non_car->flags & 0xff00) == 0) {
+            non_car->flags |= 0x100;
+        }
+    } else {
+        non_car->flags &= ~0xff00;
+    }
+
+    if ((pContents->flags & 2) != 0) {
+        SelectCrushNetwork((undefined4*)pContents->object_hierarchy, non_car->collision_info, 2);
+        non_car->collision_info->disable_move_rotate = 1;
+    } else {
+        memcpy(&non_car->collision_info->field_0x294, pContents->object_hierarchy,
+                GetNetworkDataSize(pContents->object_hierarchy));
+        non_car->collision_info->message_time = pContents->player_id;
+        non_car->collision_info->field_0x261 = 0x11;
+        non_car->collision_info->disable_move_rotate = 0;
+    }
+}
 
 // SignalToStartRace
 
@@ -898,9 +1072,42 @@ void C2_HOOK_FASTCALL DisposeNetHeadups(void) {
 
 // DeclareWinner
 
+// FUNCTION: CARMA2_HW 0x0049a990
+void C2_HOOK_FASTCALL CarInContactWithFox(tNet_game_player_info* pPlayer) {
+
+    if ((int)(PDGetTotalTime() - gLast_it_change) > 500) {
+        if (gLast_lepper != pPlayer) {
+            gLast_it_change = PDGetTotalTime();
+            if (gIt_or_fox >= 0) {
+                gLast_lepper = &gNet_players[gIt_or_fox];
+            }
+            PlayerIsIt(pPlayer);
+        }
+    }
+}
+
 // PlayerIsIt
 
-// CheckForVampireWinner
+// FUNCTION: CARMA2_HW 0x0049a940
+void C2_HOOK_FASTCALL CheckForVampireWinner(void) {
+    int i;
+    int players_left;
+    int winner_index;
+
+    players_left = 0;
+    winner_index = 0;
+    if (gProgram_state.racing && gNet_mode == eNet_mode_host) {
+        for (i = 0; i < gNumber_of_net_players; i++) {
+            if (!gNet_players[i].field_0x80) {
+                players_left++;
+                winner_index = i;
+            }
+        }
+        if (players_left <= 1) {
+            DeclareWinner(winner_index);
+        }
+    }
+}
 
 // PlayerIsInfected
 
@@ -922,7 +1129,40 @@ void C2_HOOK_FASTCALL DisposeNetHeadups(void) {
 
 // UseGeneralScore
 
-// NetSendEnvironmentChanges
+// FUNCTION: CARMA2_HW 0x0049b8d0
+void C2_HOOK_FASTCALL NetSendEnvironmentChanges(tNet_game_player_info* pRecipient) {
+    int i;
+    char exclamation;
+    br_actor** non_car_list;
+    tNon_car_spec* non_car;
+    tNet_message_chunk* message;
+
+    exclamation = '!';
+    non_car_list = gProgram_state.track_spec.non_car_list;
+    for (i = 0; i < gProgram_state.track_spec.count_non_cars; i++, non_car_list++) {
+        if ((*non_car_list)->identifier[3] != exclamation && (*non_car_list)->identifier[3] != '&') {
+            continue;
+        }
+        non_car = (tNon_car_spec*)(*non_car_list)->type_data;
+        if (non_car != NULL
+                && non_car->driver != 0
+                && (tU16)non_car->car_ID == i
+                && (non_car->flags & 0x100000) != 0) {
+            continue;
+        }
+        message = NetGetToPlayerContents(eNet_message_chunk_type_non_car_position, 0, pRecipient->ID);
+        if (message != NULL) {
+            BrMatrix34Copy(&message->non_car_position.mat, &(*non_car_list)->t.t.mat);
+            message->non_car_position.ID = i;
+            message->non_car_position.flags = (*non_car_list)->identifier[3] == exclamation;
+        }
+    }
+    SendDetachedNonCarDataToPlayer(pRecipient);
+    FUN_0043d7d0(pRecipient);
+    FUN_0042da20((undefined4*)pRecipient);
+    FUN_004f0f80(pRecipient);
+    NetSendMessageStacks();
+}
 
 // FUNCTION: CARMA2_HW 0x0049b9a0
 void C2_HOOK_FASTCALL CheckForNeedyEnvironmentRecipients(void) {
@@ -969,6 +1209,198 @@ void C2_HOOK_FASTCALL DefaultNetName(void) {
     NetObtainSystemUserName(gProgram_state.player_name, 32);
 }
 
-// AddPlayerToShapeStatusLists
+// FUNCTION: CARMA2_HW 0x0049bde0
+void C2_HOOK_FASTCALL AddPlayerToShapeStatusLists(int pPlayer_id, int pCount, tNet_game_player_info* pPlayers) {
+    tCar_crush_network_shapes* shapes;
+    int j;
+
+    for (; pCount > 0; pCount--, pPlayers++) {
+        if (pPlayers->car != NULL && pPlayers->car->car_crush_spec != NULL) {
+            shapes = pPlayers->car->car_crush_spec->network_stuff;
+            for (j = 0; j < (int)CARPOCALYPSE2_ASIZE(shapes->items); j++) {
+                if (shapes->items[j].network_id == 0) {
+                    shapes->items[j].network_id = pPlayer_id;
+                    shapes->items[j].field_0x4 = 1;
+                    break;
+                }
+            }
+        }
+    }
+}
 
 // RemovePlayerFromShapeStatusLists
+
+// FUNCTION: CARMA2_HW 0x00498390
+void C2_HOOK_FASTCALL ReceivedRecover(tNet_message_chunk_recover* pContents) {
+    int i;
+
+    if (gNet_players[gThis_net_player_index].ID != pContents->player) {
+        for (i = 0; i < gNumber_of_net_players; i++) {
+            if (gNet_players[i].ID == pContents->player) {
+                gNet_players[i].car->time_to_recover = pContents->time;
+            }
+        }
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x004983f0
+void C2_HOOK_FASTCALL ReceivedCrushSync(tNet_message_chunk_car_crush_sync* pContents) {
+    int i;
+    int j;
+    int player_id;
+    tCar_spec* car;
+    tCar_crush_network_shapes* network_stuff;
+    tU16* pCrush_state;
+    int* network_id;
+
+    i = 0;
+    if (pContents->count > 0) {
+        pCrush_state = &pContents->players[0].crush_state;
+        do {
+            car = NetCarFromPlayerID(*((tPlayer_ID*)pCrush_state - 1));
+            if (car != NULL && *pCrush_state == car->car_crush_spec->field_0x24) {
+                network_stuff = car->car_crush_spec->network_stuff;
+                player_id = pContents->player_id;
+                if (network_stuff != NULL) {
+                    j = 0;
+                    network_id = (int*)network_stuff;
+                    while (j < 12) {
+                        if (*network_id == player_id) {
+                            goto clear_network_flag;
+                        }
+                        j++;
+                        network_id += 2;
+                    }
+                    goto next_crush_state;
+clear_network_flag:
+                    network_stuff->items[j].field_0x4 = 0;
+next_crush_state:
+                    ;
+                }
+            }
+            i++;
+            pCrush_state += 4;
+        } while (i < pContents->count);
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x00498460
+void C2_HOOK_FASTCALL CompressCarDataChunk(tU8* pChunk, int pPlayer_index) {
+    tCar_spec* car;
+    br_actor* actor;
+
+    car = gNet_players[pPlayer_index].car;
+    CompressVector3((tCompressed_vector3*)(pChunk + 8), &car->car_master_actor->t.t.translate.t, -500.0f, 500.0f);
+    actor = car->car_master_actor;
+    *(tS16*)(pChunk + 2) = (tS16)BrRadianToAngle(atan2(actor->t.t.mat.m[2][0], actor->t.t.mat.m[2][2]));
+    *(int*)(pChunk + 4) = gNet_players[pPlayer_index].ID;
+    *(int*)(pChunk + 0x10) = *(int*)((tU8*)car + 0x18a4);
+}
+
+// FUNCTION: CARMA2_HW 0x00499220
+void C2_HOOK_FASTCALL ReinitialiseCar(tCar_spec* pCar) {
+    StopCarSmokingInstantly(pCar);
+    CloseDownPowerUpsForCar(pCar);
+    InitialiseCar(pCar);
+    TotallyRepairACar(pCar);
+    if (pCar != NULL && pCar->driver == eDriver_local_human) {
+        gTime_for_punishment = PDGetTotalTime() + 2000;
+        EmptyInventory();
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x0049aaf0
+void C2_HOOK_FASTCALL FUN_0049aaf0(void) {
+
+}
+
+// FUNCTION: CARMA2_HW 0x0049bad0
+void C2_HOOK_FASTCALL FUN_0049bad0(void* pArg1, void* pArg2, int pArg3) {
+    int iVar1;
+    int iVar2;
+
+    iVar1 = *(int*)((tU8*)pArg1 + 4);
+    if (iVar1 == 4) {
+        if (gUNK_0068d954 == 0) {
+            gUNK_0068d954 = 1;
+            NetFullScreenMessage(0xe4, 1);
+            iVar1 = PermitNetServiceReentrancy();
+            do {
+                NetService(0);
+                iVar2 = CheckQuit();
+                if (iVar2 != 0) {
+                    NetFullScreenMessage(0xe4, 1);
+                }
+            } while (((gWaiting_for_unpause != 0) && (gUNK_0075bc24 != 2)) &&
+                     ((gRace_finished == 0 || (gRace_over_reason != 4))));
+            if (iVar1 != 0) {
+                HaltNetServiceReentrancy();
+            }
+            gWaiting_for_unpause = 1;
+            FadePaletteDown();
+            ClearEntireScreen();
+            FadePaletteUp();
+            gUNK_0068d954 = 0;
+            return;
+        }
+    } else {
+        if (iVar1 == 5) {
+            gWaiting_for_unpause = 0;
+            return;
+        }
+        if (iVar1 == 3) {
+            KnackerThisCar(NetCarFromPlayerID(*(tPlayer_ID*)((tU8*)pArg2 + 8)));
+            return;
+        }
+        if (*(int*)((tU8*)gCurrent_net_game + 0x74) >= 3 && *(int*)((tU8*)gCurrent_net_game + 0x74) <= 5) {
+            switch (iVar1) {
+            case 0:
+                Checkpoint(*(int*)((tU8*)pArg1 + 8), 1);
+                break;
+            case 1:
+                WrongCheckpoint(*(int*)((tU8*)pArg1 + 8));
+                return;
+            case 2:
+                DoFancyHeadup(0x1a);
+                ChangeAmbientPratcam(0x24);
+                gRace_finished = 1;
+                return;
+            }
+        }
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x0049bd20
+void C2_HOOK_FASTCALL FUN_0049bd20(int* pDst, const int* pSrc) {
+
+    pDst[0] = pSrc[0];
+    pDst[1] = pSrc[1];
+    pDst[2] = pSrc[2];
+    pDst[3] = pSrc[3];
+    pDst[4] = pSrc[4];
+    pDst[5] = pSrc[5];
+    pDst[6] = pSrc[9];
+    pDst[7] = pSrc[10];
+    pDst[8] = pSrc[11];
+}
+
+// FUNCTION: CARMA2_HW 0x0049be40
+void C2_HOOK_FASTCALL RemovePlayerFromShapeStatusLists(tPlayer_ID pPlayer_id, int pPlayer_count, tNet_game_player_info* pPlayers) {
+    int i;
+
+    for (i = 0; i < pPlayer_count; i++) {
+        tCar_spec* car = pPlayers[i].car;
+
+        if (car != NULL && car->car_crush_spec != NULL) {
+            tCar_crush_network_shapes* network_shapes = car->car_crush_spec->network_stuff;
+            int j;
+
+            for (j = 0; j < 12; j++) {
+                if ((tU32)network_shapes->items[j].network_id == pPlayer_id) {
+                    network_shapes->items[j].network_id = 0;
+                    break;
+                }
+            }
+        }
+    }
+}

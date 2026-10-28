@@ -8,9 +8,10 @@
 
 // SendShapeNumbers
 
-// ClearShapeStatusFlag
+extern void C2_HOOK_FASTCALL ClearShapeStatusFlag(tCar_crush_network_shapes* pShapes, int pPlayer_id);
 
 // SendNonCar
+void C2_HOOK_FASTCALL SendNonCar(tNon_car_spec* pNon_car, tU32 pPlayer_id);
 
 // HostFillInCarContents
 
@@ -18,7 +19,7 @@
 
 // DistanceBetweenCars
 
-// CarShapeNeedsSendingToPlayer
+extern int C2_HOOK_FASTCALL CarShapeNeedsSendingToPlayer(tCar_crush_network_shapes* pShapes, int pPlayer_id);
 
 // AddShapeStuffToMechanicsMessage
 
@@ -43,8 +44,10 @@ extern void C2_HOOK_FASTCALL ReceivedCopInfo(void);
 // SendAllNonCarPositions
 
 // ReceivedNonCarPosition
+extern void C2_HOOK_FASTCALL ReceivedNonCarPosition(tNet_message_chunk_non_car_position* pContents);
 
 // ReceivedNonCar
+extern void C2_HOOK_FASTCALL ReceivedNonCar(tNet_message_chunk_non_car* pContents);
 
 // SignalToStartRace
 
@@ -82,17 +85,17 @@ extern void C2_HOOK_FASTCALL DisposeNetHeadups(void);
 
 // EverybodysLost
 
-// DeclareWinner
+extern void C2_HOOK_FASTCALL DeclareWinner(int pWinner_index);
 
 // PlayerIsIt
 
-// CheckForVampireWinner
+extern void C2_HOOK_FASTCALL CheckForVampireWinner(void);
 
 // PlayerIsInfected
 
 // FarEnoughAway
 
-// CarInContactWithFox
+extern void C2_HOOK_FASTCALL CarInContactWithFox(tNet_game_player_info* pPlayer);
 
 // SelectRandomFox
 
@@ -109,6 +112,7 @@ extern void C2_HOOK_FASTCALL DisposeNetHeadups(void);
 // UseGeneralScore
 
 // NetSendEnvironmentChanges
+void C2_HOOK_FASTCALL NetSendEnvironmentChanges(tNet_game_player_info* pRecipient);
 
 extern void C2_HOOK_FASTCALL CheckForNeedyEnvironmentRecipients(void);
 
@@ -124,7 +128,7 @@ extern void C2_HOOK_FASTCALL CheckForNeedyEnvironmentRecipients(void);
 
 extern void C2_HOOK_FASTCALL DefaultNetName(void);
 
-// AddPlayerToShapeStatusLists
+extern void C2_HOOK_FASTCALL AddPlayerToShapeStatusLists(int pPlayer_id, int pCount, tNet_game_player_info* pPlayers);
 
 // RemovePlayerFromShapeStatusLists
 

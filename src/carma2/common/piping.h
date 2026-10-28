@@ -100,13 +100,20 @@ extern tU32 C2_HOOK_FASTCALL ARGetStartTime(void);
 
 // ARMoveToStartOfReplay
 
+typedef void C2_HOOK_FASTCALL tARDoActionReplay_step_callback(int pStep_count);
+typedef void C2_HOOK_FASTCALL tARDoActionReplay_frame_callback(tU32 pFrame_period);
+
+void C2_HOOK_FASTCALL FUN_00403210(tARDoActionReplay_step_callback* pStep_callback, tARDoActionReplay_frame_callback* pFrame_start_callback, tARDoActionReplay_frame_callback* pFrame_end_callback);
+
+void C2_HOOK_FASTCALL ARDoActionReplay(int pStep_count, tARDoActionReplay_step_callback* pStep_callback, tARDoActionReplay_frame_callback* pFrame_start_callback, tARDoActionReplay_frame_callback* pFrame_end_callback);
+
 // ARDoActionReplay
 
-// ReverseSound
+extern void C2_HOOK_FASTCALL ReverseSound(tS3_effect_tag pEffect, tS3_sound_tag pTag);
 
-// ARGoBackwards
+extern int C2_HOOK_FASTCALL ARGoBackwards(void);
 
-// ARGoForwards
+extern int C2_HOOK_FASTCALL ARGoForwards(void);
 
 // ARService
 
@@ -216,7 +223,7 @@ extern void C2_HOOK_FASTCALL PipeSingleIdentity(br_actor* pActor);
 
 // PipeSingleNonCarCreation
 
-// PipeSingleSmashModelChange
+extern void C2_HOOK_FASTCALL PipeSingleSmashModelChange(br_actor* pActor, br_model* pOld_model, br_model* pNew_model);
 
 // PipeSingleSmashRemoveFaces
 
@@ -601,6 +608,8 @@ void C2_HOOK_FASTCALL ARAddDataToSession(int pType, uintptr_t pOwner, void *pDat
 
 int C2_HOOK_FASTCALL LengthOfChunk(void* pChunk, int pType);
 
+tPipe_chunk_data* C2_HOOK_FASTCALL FUN_00403800(tPipe_chunk* pSession, tPipe_chunk_type pType, tU32 pOwner);
+
 void C2_HOOK_CDECL ARDoSingleVariedSession(int pType, uintptr_t pOwner, int pCount, ...);
 
 void C2_HOOK_FASTCALL ARDoSingleSession(int pType, uintptr_t pOwner, void* pData, tU32 pSize);
@@ -613,7 +622,10 @@ void C2_HOOK_FASTCALL PipeSingleSkidAdjustment(int pSkid_num, br_matrix34* pMatr
 
 void C2_HOOK_FASTCALL AddNonCarToPipingSession(tPhysics_object* pObject, br_actor* pActor);
 
-void C2_HOOK_FASTCALL SendNonCarDetachBit(int pCar_ID, void* pActor);
+void C2_HOOK_FASTCALL AddNonCarActorToPipingSession(int pCar_ID, br_actor* pActor);
+
+void C2_HOOK_FASTCALL FUN_0043bca0(tCompressed_vector3* pDest, tU16* pDest2, br_model* pModel, br_vector3* pSrc, const float* pScalars);
+
 
 int C2_HOOK_FASTCALL PipeObjectPosition(tPhysics_object* pObject, void* pContext);
 
@@ -651,15 +663,15 @@ void C2_HOOK_FASTCALL PipeSinglePedPhysics(int pId, br_matrix34* pMat);
 
 void C2_HOOK_FASTCALL PipeSinglePedDir(int pId, const br_vector3* pDir);
 
-void C2_HOOK_FASTCALL PipeSinglePedMoveStatus(tPedestrian* pPed, float pValue, int pTime);
+void C2_HOOK_FASTCALL PipeSinglePedMoveStatus(tPedestrian* pPed, float pValue, float pArg3);
 
 void C2_HOOK_FASTCALL PipeSingleDroneRender(tDrone_spec* pDrone_spec, int pRender);
 
-void C2_HOOK_FASTCALL PipeSingleDroneCornerPos(tDrone_spec* pDrone, tS16 pField_0x48, tS16 pField_0x74, tS16 pField_0x70, tCompressed_matrix34* pMatrix);
+void C2_HOOK_FASTCALL PipeSingleDroneCornerPos(tDrone_spec* pDrone, tU16 pField_0x48, tU16 pField_0x74, tU16 pField_0x70, tCompressed_matrix34* pMatrix);
 
 void C2_HOOK_FASTCALL AddSmudgeToPipingSession(tU16 pCar_ID, int pModel_index, int pVertex_count, tSmudged_vertex* pCoordinates);
 
-void C2_HOOK_FASTCALL PipeSingleDSModel(tU16 pArg1, void* pThing);
+void C2_HOOK_FASTCALL PipeSingleDSModel(int pArg1, void* pThing);
 
 void C2_HOOK_FASTCALL PipeSingleVector3(br_vector3* pDest, br_vector3* pValue);
 
@@ -673,7 +685,7 @@ void C2_HOOK_FASTCALL AddModelMashToPipingSession(br_model* pModel, br_vector3* 
 
 void C2_HOOK_FASTCALL PipeSingleSmashTextureChange(tCar_spec* pCar_spec, br_material* pMaterial, br_pixelmap* pTexture);
 
-void C2_HOOK_FASTCALL PipeSingleFunkEnable(int pIndex, int pFlags);
+void C2_HOOK_FASTCALL PipeSingleFunkEnable(int pIndex, tU16 pFlags);
 
 void C2_HOOK_FASTCALL PipeSingleSpecial(tSpecial_type pType);
 
@@ -728,5 +740,7 @@ void C2_HOOK_FASTCALL PipeSingleGibShower(uintptr_t pId, undefined4 pArg2, undef
 void C2_HOOK_FASTCALL PipeSingleBloodSpurt(uintptr_t pId, undefined4 pArg2, undefined4 pArg3, br_vector3* pArg4, br_vector3* pArg5, br_vector3* pArg6);
 
 void C2_HOOK_FASTCALL PipeSingleEndShitMine(br_actor* pActor);
+
+void C2_HOOK_FASTCALL ReceivedCrushDetach(tU8* pContents);
 
 #endif // GUARD_PIPING_H

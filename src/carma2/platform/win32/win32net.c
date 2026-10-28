@@ -85,7 +85,7 @@ tPD_net_game_info* gJoinable_games;
 // FUNCTION: CARMA2_HW 0x0051a190
 void C2_HOOK_FASTCALL PDNetObtainSystemUserName(char* pName, int pMax_length) {
     char buffer[16];
-    DWORD size;
+    DWORD size = sizeof(buffer);
     char *p;
 
     dr_dprintf("PDNetObtainSystemUserName()");
@@ -455,9 +455,18 @@ void C2_HOOK_FASTCALL PDNetLeaveGame(void) {
     dr_dprintf("PDNetLeaveGame()");
 }
 
+// FUNCTION: CARMA2_HW 0x0051a0d0
 tU32 C2_HOOK_FASTCALL PDNetExtractGameID(tNet_game_details* pDetails) {
-
-    return pDetails->host_ID;
+    dr_dprintf("PDNetExtractGameID()");
+    dr_dprintf("...returning %8.8x",
+        ((((tU8*)pDetails->pd_net_info.addr)[8] << 8
+          | ((tU8*)pDetails->pd_net_info.addr)[9]) << 8
+         | ((tU8*)pDetails->pd_net_info.addr)[10]) << 8
+        | ((tU8*)pDetails->pd_net_info.addr)[11]);
+    return ((((tU8*)pDetails->pd_net_info.addr)[8] << 8
+             | ((tU8*)pDetails->pd_net_info.addr)[9]) << 8
+            | ((tU8*)pDetails->pd_net_info.addr)[10]) << 8
+           | ((tU8*)pDetails->pd_net_info.addr)[11];
 }
 
 tPlayer_ID C2_HOOK_FASTCALL PDNetExtractPlayerID(tNet_game_details* pDetails) {
@@ -523,5 +532,75 @@ int C2_HOOK_FASTCALL PDNetSendMessageToAddress(tNet_game_details* pDetails, tNet
         return 1;
     }
     NetDisposeMessage(pDetails,(tNet_message *)pMessage);
+    return 0;
+}
+// FUNCTION: CARMA2_HW 0x0051a070
+void C2_HOOK_FASTCALL PDNetDisposeGameDetails(void) {
+
+    dr_dprintf("PDNetDisposeGameDetails()");
+}
+
+// FUNCTION: CARMA2_HW 0x0051a210
+int C2_HOOK_FASTCALL PDNetSendMessageToPlayer(tNet_game_details* pDetails, tNet_message* pMessage, tPlayer_ID pPlayer_id) {
+    int i;
+    char* p;
+    tPD_net_player_info* to;
+
+    i = 0;
+    if (0 < gNumber_of_net_players) {
+        p = gNet_players[0].pd_net_info.addr + 9;
+        while (i < gNumber_of_net_players) {
+            if (p[-1] == (char)(pPlayer_id >> 24) && p[0] == (char)(pPlayer_id >> 16) && p[1] == (char)(pPlayer_id >> 8) && p[2] == (char)pPlayer_id) {
+                to = &gNet_players[i].pd_net_info;
+                goto found;
+            }
+            i++;
+            p += sizeof(tNet_game_player_info);
+        }
+    }
+    to = NULL;
+found:
+    if (to != NULL && sendto(gSocket, (const char*)pMessage, pMessage->header.field_0x16, 0, (const struct sockaddr*)to, 14) == SOCKET_ERROR) {
+        dr_dprintf("PDNetSendMessageToPlayer(): Error on sendto() - WSAGetLastError=%d", WSAGetLastError());
+        NetDisposeMessage(pDetails, pMessage);
+        return 1;
+    }
+    NetDisposeMessage(pDetails, pMessage);
+    return 0;
+}
+
+// FUNCTION: CARMA2_HW 0x0051a2e0
+int C2_HOOK_FASTCALL PDNetSendMessageToAllPlayers(tNet_game_details* pDetails, tNet_message* pMessage) {
+    int i;
+
+    for (i = 0; i < gNumber_of_net_players; i++) {
+        if (i != gThis_net_player_index) {
+            if (sendto(gSocket, (const char*)pMessage, pMessage->header.field_0x16, 0, (const struct sockaddr*)&gNet_players[i].pd_net_info, 14) == SOCKET_ERROR) {
+                dr_dprintf("PDNetSendMessageToAllPlayers(): Error on sendto() - WSAGetLastError=%d", WSAGetLastError());
+                NetDisposeMessage(pDetails, pMessage);
+                return 1;
+            }
+        }
+    }
+    NetDisposeMessage(pDetails, pMessage);
+    return 0;
+}
+
+// FUNCTION: CARMA2_HW 0x0051a5d0
+void* C2_HOOK_FASTCALL FUN_0051a5d0(size_t pSize) {
+
+    return BrMemAllocate(pSize, 0x80);
+}
+
+// FUNCTION: CARMA2_HW 0x0051a620
+void C2_HOOK_FASTCALL PDNetDisposePlayer(void) {
+
+    dr_dprintf("PDNetDisposePlayer()");
+}
+
+// FUNCTION: CARMA2_HW 0x0051a690
+int C2_HOOK_FASTCALL PDNetInitClient(void) {
+
+    dr_dprintf("PDNetInitClient()");
     return 0;
 }

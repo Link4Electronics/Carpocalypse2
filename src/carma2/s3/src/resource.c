@@ -15,8 +15,15 @@ void C2_HOOK_FASTCALL S3MemFree(void* p) {
 }
 
 // FUNCTION: CARMA2_HW 0x005186f0
-FILE* C2_HOOK_FASTCALL S3_low_memory_fopen(const char* pPath, const char* pMode) {
+C2_NAKED FILE* C2_HOOK_FASTCALL S3_low_memory_fopen(const char* pPath, const char* pMode) {
+#ifndef CARPOCALYPSE2_MATCHING
     return NULL;
+#else
+    __asm {
+        xor eax, eax
+        ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00568bdc

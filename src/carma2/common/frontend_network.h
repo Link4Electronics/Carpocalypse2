@@ -62,4 +62,6 @@ int C2_HOOK_FASTCALL NetGameToggleTyping(tFrontend_spec* pFrontend);
 
 int C2_HOOK_FASTCALL NetworkStartJoin(tFrontend_spec* pFrontend);
 
+int C2_HOOK_FASTCALL NetToggleMode(tFrontend_spec* pFrontend);
+
 #endif /* FRONTEND_NETWORK_H */

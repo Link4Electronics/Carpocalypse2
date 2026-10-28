@@ -12,11 +12,13 @@ extern tNet_game_options gNet_settings[9];
 
 // ReadNetGameChoices
 
-// PickARandomCar
+extern int C2_HOOK_FASTCALL PickARandomCar(void);
+
+extern void C2_HOOK_FASTCALL PollCarDetails(tNet_game_details* pNet_game);
 
 // RequestCarDetails
 
-// SetNetAvailability
+extern void C2_HOOK_FASTCALL SetNetAvailability(tNet_game_options* pOptions);
 
 extern void C2_HOOK_FASTCALL DefaultNetSettings(void);
 

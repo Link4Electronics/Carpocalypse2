@@ -1,4 +1,12 @@
 #include "loading2.h"
+
+#include "init.h"
+#include "interface-graphics.h"
+#include "loading.h"
+#include "platform.h"
+#include "spark.h"
+#include "world.h"
+
 extern void C2_HOOK_FASTCALL PossibleService(void);
 extern void C2_HOOK_FASTCALL InitFunkGrooveFlags(void);
 extern void C2_HOOK_FASTCALL FinishLoadGeneralParameters(void);
@@ -87,13 +95,19 @@ extern br_pixelmap* gFlic_palette;
 extern int gFaded_palette;
 extern int gPalette_munged;
 extern br_pixelmap* gScratch_palette;
+// GLOBAL: CARMA2_HW 0x0074a660
 br_pixelmap* gMini_map_glowing_line_palettes[3];
+// GLOBAL: CARMA2_HW 0x0074a604
 br_pixelmap* gPalette_0074a604;
 
 extern br_colour* gScratch_pixels;
+// GLOBAL: CARMA2_HW 0x0074a600
 br_pixelmap* gPalette_0074a600;
+// GLOBAL: CARMA2_HW 0x0074a66c
 br_pixelmap* gPalette_0074a66c;
+// GLOBAL: CARMA2_HW 0x0074a5fc
 br_pixelmap* gPalette_0074a5fc;
+// GLOBAL: CARMA2_HW 0x0074a670
 br_pixelmap* gPalette_0074a670;
 
 #include "car.h"
@@ -940,72 +954,84 @@ void C2_HOOK_FASTCALL ReadNetworkSettings(FILE* pF, tNet_game_options* pOptions)
 int C2_HOOK_FASTCALL SaveOptions(void) {
     tPath_name the_path;
     FILE* f;
-    int i;
+    const char* player_name;
 
-#ifndef CARPOCALYPSE2_MATCHING
+#define BAIL_IF_NEGATIVE(VAL) \
+    if ((VAL) < 0) {          \
+        goto fail;            \
+    }
+
     PathCat(the_path, gApplication_path, "OPTIONS.TXT");
+    PDFileUnlock(the_path);
     f = DRfopen(the_path, "wt");
     if (f == NULL) {
-        return 0;
+        goto fail;
     }
 
-    fprintf(f, "YonFactor %f\n", GetYonFactor());
-    fprintf(f, "SkyTextureOn %d\n", GetSkyTextureOn());
-    fprintf(f, "CarTexturingLevel %d\n", GetCarTexturingLevel());
-    fprintf(f, "RoadTexturingLevel %d\n", GetRoadTexturingLevel());
-    fprintf(f, "WallTexturingLevel %d\n", GetWallTexturingLevel());
-    fprintf(f, "ShadowLevel %d\n", GetShadowLevel());
-    fprintf(f, "DepthCueingOn %d\n", GetDepthCueingOn());
-    fprintf(f, "Yon %f\n", GetYon());
-    fprintf(f, "CarSimplificationLevel %d\n", GetCarSimplificationLevel());
-    fprintf(f, "AccessoryRendering %d\n", GetAccessoryRendering());
-    fprintf(f, "SmokeOn %d\n", GetSmokeOn());
-    fprintf(f, "SoundDetailLevel %d\n", GetSoundDetailLevel());
-    fprintf(f, "ScreenSize %d\n", GetScreenSize());
-    fprintf(f, "MapRenderX %f\n", gMap_render_x);
-    fprintf(f, "MapRenderY %f\n", gMap_render_y);
-    fprintf(f, "MapRenderWidth %f\n", gMap_render_width);
-    fprintf(f, "MapRenderHeight %f\n", gMap_render_height);
-    fprintf(f, "MapMode %d\n", gMap_view);
-    fprintf(f, "MapTrans %d\n", gMap_trans);
-    fprintf(f, "HeadupMapX %d\n", gHeadup_map_x);
-    fprintf(f, "HeadupMapY %d\n", gHeadup_map_y);
-    fprintf(f, "HeadupMapW %d\n", gHeadup_map_w);
-    fprintf(f, "HeadupMapH %d\n", gHeadup_map_h);
-    fprintf(f, "PlayerName\n%s\n", gProgram_state.player_name);
-    fprintf(f, "EVolume %d\n", gProgram_state.effects_volume);
-    fprintf(f, "MVolume %d\n", gProgram_state.music_volume);
-    fprintf(f, "KeyMapIndex %d\n", gKey_map_index);
-    fprintf(f, "CameraType %d\n", gCamera_type);
-    fprintf(f, "ARCameraType %d\n", gAR_camera_type);
-    fprintf(f, "GoreLevel %d\n", 2 - gGoreLevel);
-    fprintf(f, "AnimalsOn %d\n", gAnimalsOn);
-    fprintf(f, "FlameThrowerOn %d\n", gFlameThrowerOn);
-    fprintf(f, "MinesOn %d\n", gExplosives_on);
-    fprintf(f, "DronesOn %d\n", !gTraffic_disabled);
-    fprintf(f, "MiniMapVisible %d\n", gMini_map_visible);
-    fprintf(f, "SkillLevel %d\n", gProgram_state.skill_level);
-    fprintf(f, "AmbientSound %d\n", gAmbient_sound);
-    fprintf(f, "AutoLoad %d\n", gAuto_load);
-    fprintf(f, "RussellsFannies %d\n", gRussels_fannies);
-    fprintf(f, "QuickTimeQuality\n%s\n", gQuick_time_quality);
-    fprintf(f, "QuickTimeCompressor\n%s\n", gQuick_time_compressor);
-    fprintf(f, "QuickTimeBanner %d\n%s\n", gQuick_time_banner_number, gQuick_time_banner_texture_name);
-    fprintf(f, "QuickTimeTempPath\n%s\n", gQuick_time_temp_path);
-    fprintf(f, "QuickTimeMoviePathStub\n%s\n", gQuick_time_movie_path_stub);
-    fprintf(f, "NetName\n%s\n", gNet_players[gThis_net_player_index].player_name);
-    fprintf(f, "NETGAMETYPE %d\n", gNet_last_game_type);
-    for (i = 0; i < 9; i++) {
-        PrintNetOptions(f, i);
-    }
-    fprintf(f, "HeadupDetailLevel %d\n", gHeadup_detail_level);
+    BAIL_IF_NEGATIVE(fprintf(f, "YonFactor %f\n", GetYonFactor()));
+    BAIL_IF_NEGATIVE(fprintf(f, "SkyTextureOn %d\n", GetSkyTextureOn()));
+    BAIL_IF_NEGATIVE(fprintf(f, "CarTexturingLevel %d\n", GetCarTexturingLevel()));
+    BAIL_IF_NEGATIVE(fprintf(f, "RoadTexturingLevel %d\n", GetRoadTexturingLevel()));
+    BAIL_IF_NEGATIVE(fprintf(f, "WallTexturingLevel %d\n", GetWallTexturingLevel()));
+    BAIL_IF_NEGATIVE(fprintf(f, "ShadowLevel %d\n", GetShadowLevel()));
+    BAIL_IF_NEGATIVE(fprintf(f, "DepthCueingOn %d\n", GetDepthCueingOn()));
+    BAIL_IF_NEGATIVE(fprintf(f, "Yon %f\n", GetYon()));
+    BAIL_IF_NEGATIVE(fprintf(f, "CarSimplificationLevel %d\n", GetCarSimplificationLevel()));
+    BAIL_IF_NEGATIVE(fprintf(f, "AccessoryRendering %d\n", GetAccessoryRendering()));
+    BAIL_IF_NEGATIVE(fprintf(f, "SmokeOn %d\n", GetSmokeOn()));
+    BAIL_IF_NEGATIVE(fprintf(f, "SoundDetailLevel %d\n", GetSoundDetailLevel()));
+    BAIL_IF_NEGATIVE(fprintf(f, "ScreenSize %d\n", GetScreenSize()));
+    BAIL_IF_NEGATIVE(fprintf(f, "MapRenderX %f\n", gMap_render_x));
+    BAIL_IF_NEGATIVE(fprintf(f, "MapRenderY %f\n", gMap_render_y));
+    BAIL_IF_NEGATIVE(fprintf(f, "MapRenderWidth %f\n", gMap_render_width));
+    BAIL_IF_NEGATIVE(fprintf(f, "MapRenderHeight %f\n", gMap_render_height));
+    BAIL_IF_NEGATIVE(fprintf(f, "MapMode %d\n", 1));
+    player_name = gProgram_state.player_name[0] != '\0' ? gProgram_state.player_name : "MAX DAMAGE";
+    BAIL_IF_NEGATIVE(fprintf(f, "PlayerName 0\n%s\n", player_name));
+    BAIL_IF_NEGATIVE(fprintf(f, "EVolume %d\n", gProgram_state.effects_volume));
+    BAIL_IF_NEGATIVE(fprintf(f, "MVolume %d\n", gProgram_state.music_volume));
+    BAIL_IF_NEGATIVE(fprintf(f, "KeyMapIndex %d\n", gKey_map_index));
+    BAIL_IF_NEGATIVE(fprintf(f, "MapTrans %d\n", gMap_trans));
+    BAIL_IF_NEGATIVE(fprintf(f, "HeadupMapX %d\n", gHeadup_map_x));
+    BAIL_IF_NEGATIVE(fprintf(f, "HeadupMapY %d\n", gHeadup_map_y));
+    BAIL_IF_NEGATIVE(fprintf(f, "HeadupMapW %d\n", gHeadup_map_w));
+    BAIL_IF_NEGATIVE(fprintf(f, "HeadupMapH %d\n", gHeadup_map_h));
+    BAIL_IF_NEGATIVE(fprintf(f, "CameraType %d\n", gCamera_type));
+    BAIL_IF_NEGATIVE(fprintf(f, "ARCameraType %d\n", gAR_camera_type));
+    BAIL_IF_NEGATIVE(fprintf(f, "GoreLevel %d\n", GetHowMuchBloodAndSnotToSmearAbout()));
+    BAIL_IF_NEGATIVE(fprintf(f, "AnimalsOn %d\n", GetAnimalsOn()));
+    BAIL_IF_NEGATIVE(fprintf(f, "FlameThrowerOn %d\n", IsItOkayToFireHorribleBallsOfNastyNapalmDeathAtPerfectlyInnocentPassersByAndByInnocentIDoMeanInTheBiblicalSense()));
+    BAIL_IF_NEGATIVE(fprintf(f, "MinesOn %d\n", IsItReallyOKThatWeDontMakeAnyEffortToProtectAnySadFuckersOutThereThatDontWishToSeeInnocentPeopleBlownToBitsByHighExplosiveMinesAndShells()));
+    BAIL_IF_NEGATIVE(fprintf(f, "DronesOn %d\n", GetDronesOn()));
+    BAIL_IF_NEGATIVE(fprintf(f, "MiniMapVisible %i\n", gMini_map_visible));
+    BAIL_IF_NEGATIVE(fprintf(f, "SkillLevel %d\n", gProgram_state.skill_level));
+    BAIL_IF_NEGATIVE(fprintf(f, "AmbientSound %i\n", gAmbient_sound));
+    BAIL_IF_NEGATIVE(fprintf(f, "AutoLoad %d\n", gAuto_load));
+    BAIL_IF_NEGATIVE(fprintf(f, "RussellsFannies %d\n", gRussels_fannies));
+    BAIL_IF_NEGATIVE(fprintf(f, "QuickTimeQuality 0\n%s\n", gQuick_time_quality));
+    BAIL_IF_NEGATIVE(fprintf(f, "QuickTimeCompressor 0\n%s\n", gQuick_time_compressor));
+    BAIL_IF_NEGATIVE(fprintf(f, "QuickTimeBanner %d\n%s\n", gQuick_time_banner_number, gQuick_time_banner_texture_name));
+    BAIL_IF_NEGATIVE(fprintf(f, "QuickTimeTempPath 0\n%s\n", gQuick_time_temp_path));
+    BAIL_IF_NEGATIVE(fprintf(f, "QuickTimeMoviePathStub 0\n%s\n", gQuick_time_movie_path_stub));
+    BAIL_IF_NEGATIVE(fprintf(f, "NETGAMETYPE %d\n", gNet_last_game_type));
+    BAIL_IF_NEGATIVE(PrintNetOptions(f, 0));
+    BAIL_IF_NEGATIVE(PrintNetOptions(f, 1));
+    BAIL_IF_NEGATIVE(PrintNetOptions(f, 2));
+    BAIL_IF_NEGATIVE(PrintNetOptions(f, 3));
+    BAIL_IF_NEGATIVE(PrintNetOptions(f, 4));
+    BAIL_IF_NEGATIVE(PrintNetOptions(f, 5));
+    BAIL_IF_NEGATIVE(PrintNetOptions(f, 6));
+    BAIL_IF_NEGATIVE(PrintNetOptions(f, 7));
+    BAIL_IF_NEGATIVE(PrintNetOptions(f, 8));
+    BAIL_IF_NEGATIVE(fprintf(f, "HeadupDetailLevel %d\n", gHeadup_detail_level));
 
-    PFfclose(f);
-    return 1;
-#else
-    NOT_IMPLEMENTED();
+#undef BAIL_IF_NEGATIVE
+
+    if (PFfclose(f) == 0) {
+        return 1;
+    }
+fail:
     return 0;
-#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0048d8f0

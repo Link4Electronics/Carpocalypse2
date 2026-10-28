@@ -126,28 +126,6 @@ extern int gFancy_shadow;
 
 // FUNCTION: CARMA2_HW 0x004e99d0
 void C2_HOOK_FASTCALL InitShadow(void) {
-#ifndef CARPOCALYPSE2_MATCHING
-    int i;
-
-    gShadow_actor = BrActorAllocate(BR_ACTOR_MODEL, NULL);
-    gShadow_model = BrModelAllocate(NULL, 48, 16);
-    gShadow_model->flags = 6;
-    gShadow_actor->model = gShadow_model;
-    gShadow_actor->render_style = BR_RSTYLE_NONE;
-
-    gShadow_material = BrMaterialAllocate(NULL);
-    gShadow_material->flags &= ~BR_MATF_LIGHT;
-    gShadow_material->flags |= BR_MATF_ALWAYS_VISIBLE;
-    BrMaterialAdd(gShadow_material);
-
-    BrVector3Set(&gShadow_light_ray, 0.f, -1.f, 0.f);
-    BrVector3Set(&gShadow_light_x, 1.f, 0.f, 0.f);
-    BrVector3Set(&gShadow_light_z, 0.f, 0.f, 1.f);
-
-    for (i = 0; i < CARPOCALYPSE2_ASIZE(gShadow_clip_planes); i++) {
-        gShadow_clip_planes[i].clip = BrActorAllocate(BR_ACTOR_CLIP_PLANE, NULL);
-    }
-#else
     int i;
 
     for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gShadow_clip_planes); i++) {
@@ -159,6 +137,17 @@ void C2_HOOK_FASTCALL InitShadow(void) {
 
     gFancy_shadow = 1;
     gShadow_material = BrMaterialFind("SHADOW.MAT");
+#ifndef CARPOCALYPSE2_MATCHING
+    if (gShadow_material == NULL) {
+        /* SHADOW.MAT is not present in the retail data set; the fancy path
+         * uses the track materials instead, but keep a material around for
+         * the solid-shadow toggle. */
+        gShadow_material = BrMaterialAllocate(NULL);
+        gShadow_material->flags &= ~BR_MATF_LIGHT;
+        gShadow_material->flags |= BR_MATF_ALWAYS_VISIBLE;
+        BrMaterialAdd(gShadow_material);
+    }
+#endif
     BrVector3Set(&gShadow_light_ray, 0.f, -1.f, 0.f);
     BrVector3Set(&gShadow_light_z, 0.f, 0.f, -1.f);
     BrVector3Set(&gShadow_light_x, 1.f, 0.f, 0.f);
@@ -168,7 +157,6 @@ void C2_HOOK_FASTCALL InitShadow(void) {
     gShadow_actor = BrActorAllocate(BR_ACTOR_MODEL, NULL);
     gShadow_actor->model = gShadow_model;
     BrActorAdd(gUniverse_actor, gShadow_actor);
-#endif
 }
 
 // SaveShadeTable
@@ -480,4 +468,54 @@ void C2_HOOK_FASTCALL DoTestHeadup(void) {
     if (gHeadup_detail_level > 2) {
         RenderThisHeadup(gHeadup_actor);
     }
+}
+
+// GLOBAL: CARMA2_HW 0x0074cf90
+br_pixelmap* gDAT_0074cf90;
+// GLOBAL: CARMA2_HW 0x0074ca08
+br_pixelmap* gDAT_0074ca08;
+// GLOBAL: CARMA2_HW 0x0074cf7c
+br_pixelmap* gDAT_0074cf7c;
+// GLOBAL: CARMA2_HW 0x0074ca2c
+br_pixelmap* gDAT_0074ca2c;
+// GLOBAL: CARMA2_HW 0x0074ca48
+br_pixelmap* gDAT_0074ca48;
+// GLOBAL: CARMA2_HW 0x0074ca74
+br_pixelmap* gDAT_0074ca74;
+
+// FUNCTION: CARMA2_HW 0x0044b980
+br_pixelmap* C2_HOOK_FASTCALL FUN_0044b980(int pIndex) {
+    switch (pIndex) {
+    case 0:
+        return gBack_screen;
+    case 1:
+        return gCurrent_rev;
+    case 3:
+        return gDAT_0074cf90;
+    case 5:
+        return gDamage_hud;
+    case 6:
+        return gDAT_0074ca08;
+    case 7:
+        return gTimer_lhs;
+    case 8:
+        return gHud_timer_rhs;
+    case 9:
+        return gDAT_0074cf7c;
+    case 10:
+        return gDAT_0074ca2c;
+    case 11:
+        return gDAT_0074ca48;
+    case 12:
+        return gDAT_0074ca74;
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x0044ba10
+void C2_HOOK_FASTCALL DisplayTimedMessage(char* pText) {
+    LoadFont(1);
+    ClearEntireScreen();
+    DRPixelmapText(gBack_screen, 20, 50, &gFonts[1], pText, 600);
+    PDScreenBufferSwap(0);
+    WaitFor(500);
 }

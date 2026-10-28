@@ -422,9 +422,28 @@ int C2_HOOK_FASTCALL PointInSpill(br_vector3* pPoint, int pIndex) {
 }
 
 // FUNCTION: CARMA2_HW 0x004a6e20
-void C2_HOOK_FASTCALL MungeIndexedOilsHeightAboveGround(int pIndex) {
-
+void C2_NAKED C2_HOOK_FASTCALL MungeIndexedOilsHeightAboveGround(int pIndex) {
+#ifndef CARPOCALYPSE2_MATCHING
     MungeOilsHeightAboveGround(&gOily_spills[pIndex]);
+#else
+    __asm {
+        mov eax, ecx
+        shl eax, 3
+        sub eax, ecx
+        lea eax, [eax + eax*2]
+        mov edx, dword ptr [eax*4 + gOily_spills]
+        lea eax, [eax*4 + gOily_spills]
+        add edx, 0x50
+        lea ecx, [eax + 0x34]
+        mov eax, dword ptr [eax + 0x34]
+        mov dword ptr [edx], eax
+        mov eax, dword ptr [ecx + 4]
+        mov dword ptr [edx + 4], eax
+        mov ecx, dword ptr [ecx + 8]
+        mov dword ptr [edx + 8], ecx
+        ret
+    }
+#endif
 }
 // FUNCTION: CARMA2_HW 0x004a6a10
 void C2_HOOK_FASTCALL InitOilSpills(void) {
@@ -527,7 +546,18 @@ void C2_HOOK_FASTCALL AdjustOilSpill(int pIndex, br_matrix34* pMat, br_scalar pF
     gOily_spills[pIndex].actor->render_style = BR_RSTYLE_NONE;
 }
 
-// ReceivedOilSpill
+// FUNCTION: CARMA2_HW 0x004a78e0
+void C2_HOOK_FASTCALL ReceivedOilSpill(tNet_message_chunk* pContents) {
+    tCar_spec* car;
+
+    car = NetCarFromPlayerID(pContents->oil_spill.player);
+    if (car == NULL) {
+        return;
+    }
+    QueueOilSpill2(car, car->car_master_actor, car->car_actor->model, 500,
+        0.35f, 0.6f, 0.00003f, 0.0001f, 0.1f, 1.5f, 2.5f, 0.01f, 0.15f,
+        oily_material, NULL);
+}
 
 // FUNCTION: CARMA2_HW 0x004a7940
 void C2_HOOK_FASTCALL RemoveCarsOilSlicks(tCar_spec* pCar) {

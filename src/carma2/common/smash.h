@@ -54,7 +54,9 @@ extern void C2_HOOK_FASTCALL RemoveExplosions(tCar_spec* pCar_spec);
 
 // DoAward
 
-// DoSpillage
+extern void C2_HOOK_FASTCALL DoSpillage(tSlick_spec* pSlick, br_actor* pActor);
+
+extern void C2_HOOK_FASTCALL FreeConnotations(tConnotations* pConnotations, int pKeep_actors);
 
 // DoSpecial
 
@@ -282,7 +284,7 @@ extern void C2_HOOK_FASTCALL TurnOnSmashModel(br_actor* pActor);
 
 extern void C2_HOOK_FASTCALL TurnOffSmashModel(br_actor* pActor);
 
-extern void C2_HOOK_FASTCALL SmashRemoveSomeFaces(br_model* pModel, tS16 pCount);
+extern void C2_HOOK_FASTCALL SmashRemoveSomeFaces(br_model* pModel, int pCount);
 
 // SmashRestoreSomeFaces
 
@@ -295,6 +297,8 @@ void C2_HOOK_FASTCALL TurnOnSmashDecal(int pIndex);
 void C2_HOOK_FASTCALL TurnOffSmashDecal(int pIndex);
 
 // ChangeSmashTexture
+
+void C2_HOOK_FASTCALL QueueNetSmash(tQueued_net_smash* pSmash);
 
 void C2_HOOK_FASTCALL DoNetSmash(tQueued_net_smash* pSmash);
 

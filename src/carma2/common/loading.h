@@ -237,7 +237,7 @@ FILE* OldDRfopen(const char* pFilename, const char* pMode);
 
 FILE* C2_HOOK_FASTCALL DRfopen(const char* pFilename, const char* pMode);
 
-void C2_HOOK_FASTCALL PFfclose(FILE* pFile);
+int C2_HOOK_FASTCALL PFfclose(FILE* pFile);
 
 br_size_t C2_HOOK_FASTCALL PFfread(void* buf, br_size_t size, unsigned int n, void* f);
 
@@ -345,6 +345,8 @@ int C2_HOOK_FASTCALL OriginalCarmaCDinDrive(void);
 
 int C2_HOOK_FASTCALL CarmaCDinDriveOrFullGameInstalled(void);
 
+void C2_HOOK_FASTCALL FUN_0048f6d0(tBrender_storage* pStorage_space, FILE* pFile);
+
 br_pixelmap* C2_HOOK_FASTCALL DRPixelmapLoad(char* pFile_name);
 
 void C2_HOOK_FASTCALL DRLoadPalette(const char* pPath_name);
@@ -410,6 +412,8 @@ void C2_HOOK_FASTCALL LoadCarShrapnelMaterials(FILE* pF, tCar_spec* pCar_spec);
 void C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, tCar_spec* pCar_spec, int pOwner, const char* pDriver_name, tBrender_storage* pStorage_space);
 
 void C2_HOOK_FASTCALL LoadOpponentsCars(tRace_info* pRace_info);
+
+void C2_HOOK_FASTCALL LoadingNoOp2(void);
 
 void C2_HOOK_FASTCALL SetModelFlags(br_model* pModel, int pOwner);
 

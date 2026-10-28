@@ -495,8 +495,6 @@ float C2_HOOK_FASTCALL PointSimplexDistSq(const br_vector3* pP, int pCount, cons
 
 // LimitImpactScale
 
-// GetImpactScale
-
 // FUNCTION: CARMA2_HW 0x0042d0e0
 int C2_HOOK_FASTCALL TooFarToCrush(const br_model* pModel, int pCount, const br_vector3* pVertices, float pMax_dist_sq) {
     br_vector3 diagonal;
@@ -512,10 +510,10 @@ int C2_HOOK_FASTCALL TooFarToCrush(const br_model* pModel, int pCount, const br_
 }
 
 int C2_HOOK_FASTCALL NearestAxis(const br_vector3* pVector) {
-    if (fabs(pVector->v[0]) > 0.707107f) {
+    if ((float)fabs(pVector->v[0]) > 0.707107f) {
         return 0;
     }
-    if (fabs(pVector->v[1]) > 0.707107f) {
+    if ((float)fabs(pVector->v[1]) > 0.707107f) {
         return 1;
     }
     return 2;
@@ -529,8 +527,6 @@ int C2_HOOK_FASTCALL NearestAxis(const br_vector3* pVector) {
 
 // CrushPoint
 
-// ClipPointToLimits
-
 // CrushCollisionShapes
 
 // SimpleCrushCarModelsCB
@@ -540,8 +536,6 @@ int C2_HOOK_FASTCALL NearestAxis(const br_vector3* pVector) {
 // CrushCar
 
 // SendCrush
-
-// CompressCrush
 
 // ExpandCrush
 
@@ -577,7 +571,25 @@ void C2_HOOK_FASTCALL RemoveDuplicatePoints(int* pCount_out, br_vector3* pPoints
 
 // DoDroneCrushing
 
-// AddDroneCrush
+// FUNCTION: CARMA2_HW 0x0042d390
+void C2_HOOK_FASTCALL AddDroneCrush(tQueued_drone_crush_item* pCrush, const br_vector3* pVector, float pScale, int pCount, const br_vector3* pPoints) {
+    int i;
+
+    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tQueued_drone_crush_item, points, 0x4);
+    C2_HOOK_STATIC_ASSERT_STRUCT_MEMBER_SIZE(tQueued_drone_crush_item, points, 0x30);
+    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tQueued_drone_crush_item, field_0x34, 0x34);
+    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tQueued_drone_crush_item, field_0x38, 0x38);
+
+    if (pCount > (int)CARPOCALYPSE2_ASIZE(pCrush->points)) {
+        pCount = CARPOCALYPSE2_ASIZE(pCrush->points);
+    }
+    BrVector3Copy(&pCrush->field_0x38, pVector);
+    pCrush->field_0x34 = pScale;
+    pCrush->count = pCount;
+    for (i = 0; i < pCrush->count; i++) {
+        BrVector3Copy(&pCrush->points[i], &pPoints[i]);
+    }
+}
 
 // FUNCTION: CARMA2_HW 0x0042d1e0
 void C2_HOOK_FASTCALL QueueDroneCrush(tPhysics_object* pObject1, int pChain_count, br_vector3* pChain, br_vector3* pForce) {
@@ -587,7 +599,19 @@ void C2_HOOK_FASTCALL QueueDroneCrush(tPhysics_object* pObject1, int pChain_coun
 
 // DoCrushing
 
-// SetCrush
+// FUNCTION: CARMA2_HW 0x0042d770
+void C2_HOOK_FASTCALL SetCrush(tCar_crush* pCrush, int pCount_vectors, br_vector3* pVectors, br_vector3* pVector1, br_vector3* pVector2, float pScalar, tU32 pValue) {
+    int i;
+
+    pCrush->count = pCount_vectors;
+    for (i = 0; i < pCount_vectors; i++) {
+        BrVector3Copy(&pCrush->vectors[i], &pVectors[i]);
+    }
+    BrVector3Copy(&pCrush->field_0x34, pVector1);
+    BrVector3Copy(&pCrush->field_0x44, pVector2);
+    pCrush->field_0x40 = pScalar;
+    pCrush->field_0x50 = pValue;
+}
 
 // QueueCarCrush
 
@@ -1163,15 +1187,116 @@ br_scalar C2_HOOK_FASTCALL CalculateAmountRepairedFraction(br_angle pOriginal_x,
 
 // ARCompressModelMash
 
-// ARApplyModelMash
+// FUNCTION: CARMA2_HW 0x0043bf80
+void C2_HOOK_FASTCALL ARApplyModelMash(br_model* pModel, tCompressed_vector3* pSrc) {
+    br_uint_16 i;
+    br_vector3 delta;
 
-// ARUndoModelMash
+    for (i = 0; i < pModel->nvertices; i++) {
+        ExpandVector3(&delta, &pSrc[i], -10.f, 10.f);
+        pModel->vertices[i].p.v[0] += delta.v[0];
+        pModel->vertices[i].p.v[1] += delta.v[1];
+        pModel->vertices[i].p.v[2] += delta.v[2];
+    }
+    if ((pModel->flags & BR_MODF_CUSTOM) != 0 && pModel->user != NULL) {
+        *(int*)((tUser_detail_level_model*)pModel->user)->field_0x0 = 1;
+    } else {
+        pModel->custom = JitModelUpdate;
+        pModel->flags |= BR_MODF_CUSTOM;
+    }
+}
 
-// ARApplyFlap
+// FUNCTION: CARMA2_HW 0x0043c030
+void C2_HOOK_FASTCALL ARUndoModelMash(br_model* pModel, tCompressed_vector3* pSrc) {
+    br_uint_16 i;
+    br_vector3 delta;
 
-// ARApplySplitWeld
+    for (i = 0; i < pModel->nvertices; i++) {
+        ExpandVector3(&delta, &pSrc[i], -10.f, 10.f);
+        pModel->vertices[i].p.v[0] -= delta.v[0];
+        pModel->vertices[i].p.v[1] -= delta.v[1];
+        pModel->vertices[i].p.v[2] -= delta.v[2];
+    }
+    if ((pModel->flags & BR_MODF_CUSTOM) != 0 && pModel->user != NULL) {
+        *(int*)((tUser_detail_level_model*)pModel->user)->field_0x0 = 1;
+    } else {
+        pModel->custom = JitModelUpdate;
+        pModel->flags |= BR_MODF_CUSTOM;
+    }
+}
 
-// ARUndoSplitWeld
+// FUNCTION: CARMA2_HW 0x0043c0e0
+void C2_HOOK_FASTCALL ARApplyFlap(br_actor* pActor, tS16 pAngle) {
+    tUser_crush_data* user_crush_data;
+    tCar_crush_flap_data* flap_data;
+    br_vertex* vertex;
+    br_vector3 axis;
+    br_scalar length;
+
+    user_crush_data = pActor->user;
+    if (user_crush_data == NULL) {
+        return;
+    }
+    if (user_crush_data->crush_data == NULL) {
+        return;
+    }
+    flap_data = user_crush_data->crush_data->flap_data;
+    if (flap_data == NULL) {
+        return;
+    }
+    flap_data->field_0x4 += pAngle;
+    vertex = &user_crush_data->models[0]->vertices[flap_data->hinge0];
+    axis.v[0] = user_crush_data->models[0]->vertices[flap_data->hinge1].p.v[0] - vertex->p.v[0];
+    axis.v[1] = user_crush_data->models[0]->vertices[flap_data->hinge1].p.v[1] - vertex->p.v[1];
+    axis.v[2] = user_crush_data->models[0]->vertices[flap_data->hinge1].p.v[2] - vertex->p.v[2];
+    length = sqrtf(axis.v[0] * axis.v[0] + axis.v[1] * axis.v[1] + axis.v[2] * axis.v[2]);
+    if (length > 2.3841858e-7f) {
+        br_scalar scale = (br_scalar)(1.0 / length);
+        axis.v[0] *= scale;
+        axis.v[1] *= scale;
+        axis.v[2] *= scale;
+    } else {
+        axis.v[0] = 1.0f;
+        axis.v[1] = 0.0f;
+        axis.v[2] = 0.0f;
+    }
+    BrMatrix34Translate(&pActor->t.t.mat, -vertex->p.v[0], -vertex->p.v[1], -vertex->p.v[2]);
+    BrMatrix34PostRotate(&pActor->t.t.mat, flap_data->field_0x4, &axis);
+    vertex = &((tUser_crush_data*)pActor->parent->user)->models[0]->vertices[flap_data->field_0xc];
+    BrMatrix34PostTranslate(&pActor->t.t.mat, vertex->p.v[0], vertex->p.v[1], vertex->p.v[2]);
+}
+
+// STUB: CARMA2_HW 0x0043c240
+void C2_HOOK_FASTCALL ARApplySplitWeld(tCar_spec* pCar_spec, br_vector3* pVector) {
+    NOT_IMPLEMENTED();
+}
+
+// FUNCTION: CARMA2_HW 0x0043c3d0
+void C2_HOOK_FASTCALL ARUndoSplitWeld(tCar_spec* pCar_spec) {
+    tCar_crush_spec* car_crush_spec;
+    br_model** car_models;
+    int i;
+    br_model** crush_models;
+
+    i = 0;
+    car_crush_spec = pCar_spec->car_crush_spec;
+    car_models = (br_model**)pCar_spec->car_model_actor->user;
+    if (pCar_spec->count_detail_levels > 0) {
+        crush_models = car_crush_spec->field_0x4c4;
+        do {
+            if (car_models[i] != NULL) {
+                BrModelFree(BrModelRemove(car_models[i]));
+                car_models[i] = *crush_models;
+            }
+            i++;
+            crush_models++;
+        } while (i < pCar_spec->count_detail_levels);
+    }
+    pCar_spec->car_model_actor->model = car_models[0];
+    BrModelFree(BrModelRemove(car_crush_spec->actor->model));
+    DRActorEnumRecurse(pCar_spec->car_model_actor, MakeCarModelsMaterialsSingleSided, pCar_spec);
+}
+
 
 // ReceivedCrush
 
@@ -1221,7 +1346,52 @@ br_scalar C2_HOOK_FASTCALL CalculateAmountRepairedFraction(br_angle pOriginal_x,
 
 // GetNetShapeDataLengthFromData
 
-// EncodeNetShapeData
+// FUNCTION: CARMA2_HW 0x0043d9c0
+void C2_HOOK_FASTCALL EncodeNetShapeData(tU8* pData, tCar_spec* pCar) {
+    int i;
+    int j;
+    int count;
+    tCar_crush_shape_info* shape_info;
+    tPhysics_shape* shape;
+    br_vector3* point;
+
+    C2_HOOK_BUG_ON(sizeof(tCompressed_vector3) != 6);
+
+    if (pCar->car_crush_spec->field_0x4b8) {
+        count = 0;
+        for (shape = pCar->collision_info->shape; shape != NULL; shape = shape->common.next) {
+            if (shape->common.type == kCollisionShapeType_Polyhedron || shape->common.type == kCollisionShapeType_Wireframe_Polyhedron) {
+                count++;
+            }
+        }
+        *pData++ = (tU8)count;
+        for (shape = pCar->collision_info->shape; shape != NULL; shape = shape->common.next) {
+            if (shape->common.type == kCollisionShapeType_Polyhedron || shape->common.type == kCollisionShapeType_Wireframe_Polyhedron) {
+                *pData = (tU8)shape->polyhedron.polyhedron.count_points;
+                pData++;
+                for (j = 0; j < shape->polyhedron.polyhedron.count_points; j++) {
+                    point = shape->polyhedron.polyhedron.points;
+                    point += j;
+                    CompressVector3((tCompressed_vector3*)pData, point, -2.5f, 2.5f);
+                    pData += sizeof(tCompressed_vector3);
+                }
+            }
+        }
+    } else {
+        count = 0;
+        for (i = 0; i < pCar->car_crush_spec->count_shapes; i++) {
+            count += pCar->car_crush_spec->field_0x4[i].count_points;
+        }
+        *pData++ = (tU8)count;
+        for (i = 0; i < pCar->car_crush_spec->count_shapes; i++) {
+            shape_info = &pCar->car_crush_spec->field_0x4[i];
+            for (j = 0; j < shape_info->count_points; j++) {
+                CompressVector3((tCompressed_vector3*)pData, &shape_info->field_0x18[j].field_0xc, -2.5f, 2.5f);
+                pData += sizeof(tCompressed_vector3);
+            }
+        }
+    }
+}
 
 // DecodeNetShapeData
 

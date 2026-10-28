@@ -316,12 +316,11 @@ int C2_HOOK_FASTCALL ChooseOpponent(int pNastiness) {
         count = 0;
         for (i = 0; i < gNumber_of_racers; i++) {
             if ((pNastiness == 0 || gOpponents[i].strength_rating == pNastiness)
-                && gProgram_state.current_car.index != i
+                && gProgram_state.current_car_index != i
                 && !gOpponents[i].picked
-                && gOpponents[i].strength_rating < 6
-                && gOpponents[i].strength_rating > 0) {
-                temp_array[count] = i;
-                count++;
+                && gOpponents[i].strength_rating <= 5
+                && gOpponents[i].strength_rating >= 1) {
+                temp_array[count++] = i;
             }
         }
         if (count != 0) {
@@ -362,25 +361,23 @@ int C2_HOOK_FASTCALL NumberOfOpponentsStillRunning(void) {
 void C2_HOOK_FASTCALL SelectOpponents(tRace_info* pRace_info) {
     int i;
 
-    if (gNet_mode != eNet_mode_none) {
-        return;
-    }
-
-    pRace_info->number_of_racers = pRace_info->race_spec->count_explicit_opponents;
-    for (i = 0; i < gNumber_of_racers; i++) {
-        gOpponents[i].picked = 0;
-    }
-    for (i = 0; i < pRace_info->race_spec->count_explicit_opponents; i++) {
-        if (pRace_info->race_spec->explicit_opponents[i] >= 0) {
-            gOpponents[i].picked = 1;
-            pRace_info->opponent_list[i].index = pRace_info->race_spec->explicit_opponents[i];
-            pRace_info->opponent_list[i].ranking = -(i + 1);
+    if (gNet_mode == eNet_mode_none) {
+        pRace_info->number_of_racers = pRace_info->race_spec->count_explicit_opponents;
+        for (i = 0; i < gNumber_of_racers; i++) {
+            gOpponents[i].picked = 0;
         }
-    }
-    for (i = 0; i < pRace_info->race_spec->count_explicit_opponents; i++) {
-        if (pRace_info->race_spec->explicit_opponents[i] < 0) {
-            pRace_info->opponent_list[i].index = ChooseOpponent(-pRace_info->race_spec->explicit_opponents[i]);
-            pRace_info->opponent_list[i].ranking = IRandomBetween(0, 99);
+        for (i = 0; i < pRace_info->race_spec->count_explicit_opponents; i++) {
+            if (pRace_info->race_spec->explicit_opponents[i] >= 0) {
+                gOpponents[pRace_info->race_spec->explicit_opponents[i]].picked = 1;
+                pRace_info->opponent_list[i].index = pRace_info->race_spec->explicit_opponents[i];
+                pRace_info->opponent_list[i].ranking = -(i + 1);
+            }
+        }
+        for (i = 0; i < pRace_info->race_spec->count_explicit_opponents; i++) {
+            if (pRace_info->race_spec->explicit_opponents[i] < 0) {
+                pRace_info->opponent_list[i].index = ChooseOpponent(-pRace_info->race_spec->explicit_opponents[i]);
+                pRace_info->opponent_list[i].ranking = IRandomBetween(0, 99);
+            }
         }
     }
 }
@@ -481,31 +478,29 @@ void C2_HOOK_FASTCALL Checkpoint(int pCheckpoint_index, int pDo_sound) {
 void C2_HOOK_FASTCALL IncrementCheckpoint(void) {
     int done_voice;
 
+    done_voice = 0;
     if (gRace_finished) {
         return;
     }
-    if (!(gCurrent_race.race_spec->race_type == kRaceType_Carma1 || gCurrent_race.race_spec->race_type == kRaceType_Checkpoints)) {
+    if (gCurrent_race.race_spec->race_type != kRaceType_Carma1
+            && gCurrent_race.race_spec->race_type != kRaceType_Checkpoints) {
         return;
     }
-    done_voice = 0;
     gLast_checkpoint_time = GetTotalTime();
-    if (gCheckpoint < gCheckpoint_count) {
-        gCheckpoint += 1;
-    } else {
+    if (gCheckpoint >= gCheckpoint_count) {
         gCheckpoint = 1;
-        if (gLap < gTotal_laps) {
-            gLap += 1;
-            if (gLap == gTotal_laps) {
-                PratcamEvent(33);
-                NewTextHeadupSlot(4, 0, 1000, -4, GetMiscString(eMiscString_final_lap));
-                DRS3StartSound(gPedestrians_outlet, eSoundId_FinalLap);
-                done_voice = 1;
-            }
-        } else {
+        if (gLap++ >= gTotal_laps) {
             gLap = gTotal_laps;
             gCheckpoint = gCheckpoint_count;
             RaceCompleted(eRace_over_0);
+        } else if (gLap == gTotal_laps) {
+            PratcamEvent(33);
+            NewTextHeadupSlot(4, 0, 1000, -4, GetMiscString(eMiscString_final_lap));
+            DRS3StartSound(gPedestrians_outlet, eSoundId_FinalLap);
+            done_voice = 1;
         }
+    } else {
+        gCheckpoint += 1;
     }
     if (!gRace_finished) {
         PratcamEvent(33);
@@ -682,10 +677,11 @@ int C2_HOOK_FASTCALL PickNetRace(int pCurrent_race, tNet_sequence_type pNet_race
     int races_to_pick_from[50];
 
     if (pNet_race_sequence == eNet_sequence_sequential) {
-        new_index = pCurrent_race + 1;
-        if (new_index >= gNumber_of_races) {
-            new_index = 0;
+        pCurrent_race++;
+        if (pCurrent_race >= gNumber_of_races) {
+            pCurrent_race = 0;
         }
+        return pCurrent_race;
     } else {
         most_seldom_seen = 10000;
         for (i = 0; i < gNumber_of_races; i++) {
@@ -695,15 +691,15 @@ int C2_HOOK_FASTCALL PickNetRace(int pCurrent_race, tNet_sequence_type pNet_race
         }
         races_count = 0;
         for (i = 0; i < gNumber_of_races; i++) {
-            if (gRace_list[i].been_there_done_that == most_seldom_seen && (i != pCurrent_race)) {
+            if (gRace_list[i].been_there_done_that == most_seldom_seen && i != pCurrent_race) {
                 races_to_pick_from[races_count] = i;
                 races_count++;
             }
         }
         new_index = races_to_pick_from[IRandomBetween(0, races_count - 1)];
-        gRace_list[new_index].been_there_done_that += 1;
+        gRace_list[new_index].been_there_done_that++;
+        return new_index;
     }
-    return new_index;
 }
 
 // FUNCTION: CARMA2_HW 0x00504170

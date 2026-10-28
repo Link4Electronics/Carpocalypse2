@@ -208,6 +208,27 @@ void C2_HOOK_FASTCALL GetModelTextureArea(br_model* pModel, int* pArea_1, int* p
     }
 }
 
+// FUNCTION: CARMA2_HW 0x004f5c70
+void C2_HOOK_FASTCALL GetGlassFragmentCounts(int* pVisible_count, int* pActive_count) {
+    tU32 now;
+    tSmash_vertex* fragment;
+    int i;
+
+    *pVisible_count = 0;
+    *pActive_count = 0;
+    now = GetTotalTime();
+    fragment = gSmash_glass_fragments;
+    for (i = 0; i < 200; i++) {
+        if (fragment->end_time != 0) {
+            *pActive_count = *pActive_count + 1;
+            if (now < fragment->field_0x10) {
+                *pVisible_count = *pVisible_count + 1;
+            }
+        }
+        fragment++;
+    }
+}
+
 // FUNCTION: CARMA2_HW 0x004f5cb0
 void C2_HOOK_FASTCALL SetSmashableModel(br_actor* pActor) {
     int i;
@@ -568,80 +589,53 @@ void C2_HOOK_FASTCALL ProcessNearbyActors(tTrack_spec* pTrack, br_vector3* pPos,
 
 // FUNCTION: CARMA2_HW 0x0040e290
 intptr_t C2_HOOK_CDECL FoundAnActor(br_actor* pActor, void* pContext) {
-    tFoundAnActor_context* c = pContext;
-    br_vector3* pos = c->pos;
+    tFoundAnActor_context* context = pContext;
+    char* identifier;
 
-    if (fabsf(pActor->t.t.translate.t.v[0] - pos->v[0]) > c->max_dist_axis) {
-        goto fail;
+    if ((float)fabs(pActor->t.t.mat.m[3][0] - context->pos->v[0]) > context->max_dist_axis
+            || (float)fabs(pActor->t.t.mat.m[3][1] - context->pos->v[1]) > context->max_dist_axis
+            || (float)fabs(pActor->t.t.mat.m[3][2] - context->pos->v[2]) > context->max_dist_axis) {
+        return 0;
     }
-    if (fabsf(pActor->t.t.translate.t.v[1] - pos->v[1]) > c->max_dist_axis) {
-        goto fail;
+    if (pActor->type != BR_ACTOR_MODEL && (context->match_flags & 0x1000)) {
+        return 0;
     }
-    if (fabsf(pActor->t.t.translate.t.v[2] - pos->v[2]) > c->max_dist_axis) {
-        goto fail;
+    identifier = pActor->identifier;
+    if (identifier == NULL && !(context->match_flags & 0x4)) {
+        return 0;
     }
-
-    {
-        char actor_type = (char)pActor->type;
-        char* name = pActor->identifier;
-
-        if (actor_type != 1 && (c->match_flags & 0x10) == 0) {
-            if (name != NULL && *name == 0x26) {
-                if ((c->match_flags & 3) == 0) {
-                    goto fail;
-                }
-            } else {
-                if ((c->match_flags & 4) == 0) {
-                    goto fail;
-                }
-            }
+    if (identifier != NULL && identifier[0] == '&' && !(context->match_flags & 0x3)) {
+        return 0;
+    }
+    if (identifier != NULL && identifier[0] != '&' && !(context->match_flags & 0x4)) {
+        return 0;
+    }
+    if (context->match_type == 1) {
+        if (pActor->type != BR_ACTOR_MODEL || pActor->model == NULL || pActor->model->identifier == NULL) {
+            return 0;
         }
-
-        if (c->match_type == 1) {
-            char* s;
-            if (actor_type != 1) {
-                goto fail;
-            }
-            s = pActor->model->identifier;
-            if (s == NULL) {
-                goto fail;
-            }
-            if (c->identifier_index >= 0) {
-                if (s[c->identifier_index] != c->identifier_value) {
-                    goto fail;
-                }
-            } else {
-                if (s[strlen(s) + c->identifier_index] != c->identifier_value) {
-                    goto fail;
-                }
-            }
+        if (context->identifier_index >= 0 && pActor->model->identifier[context->identifier_index] != context->identifier_value) {
+            return 0;
         }
-        if (c->match_type == 2) {
-            if (name == NULL) {
-                goto fail;
-            }
-            if (c->identifier_index >= 0) {
-                if (name[c->identifier_index] != c->identifier_value) {
-                    goto fail;
-                }
-            } else {
-                if (name[strlen(name) + c->identifier_index] != c->identifier_value) {
-                    goto fail;
-                }
-            }
+        if (context->identifier_index < 0 && pActor->model->identifier[strlen(pActor->model->identifier) + context->identifier_index] != context->identifier_value) {
+            return 0;
         }
     }
-
-    {
-        float x0 = pos->v[0] - pActor->t.t.translate.t.v[0];
-        float y0 = pos->v[1] - pActor->t.t.translate.t.v[1];
-        float z0 = pos->v[2] - pActor->t.t.translate.t.v[2];
-        if (x0 * x0 + y0 * y0 + z0 * z0 < c->max_dist_squared) {
-            return c->callback(pActor, c->callback_context);
+    if (context->match_type == 2) {
+        if (identifier == NULL) {
+            return 0;
+        }
+        if (context->identifier_index >= 0 && identifier[context->identifier_index] != context->identifier_value) {
+            return 0;
+        }
+        if (context->identifier_index < 0 && pActor->identifier[strlen(pActor->identifier) + context->identifier_index] != context->identifier_value) {
+            return 0;
         }
     }
-fail:
-    return 0;
+    if (Vector3DistanceSquared(context->pos, (br_vector3*)pActor->t.t.mat.m[3]) >= context->max_dist_squared) {
+        return 0;
+    }
+    return context->callback(pActor, context->callback_context);
 }
 
 // FUNCTION: CARMA2_HW 0x0040d7c0

@@ -18,6 +18,8 @@ extern int gUNK_00595f9c;
 extern int gJoystick_preferences_backup_valid;
 extern tButtonJoystickInfo gJoystick_preferences_backup;
 
+extern int C2_HOOK_FASTCALL ReadUntilCharacter(FILE* pF, char* pBuffer, int pBuffer_size, char pLimit_char);
+
 extern int C2_HOOK_FASTCALL FindJoystickPreferences(FILE* pF, const char* pJoystick_name);
 
 extern int C2_HOOK_FASTCALL WriteJoystickPreferences(FILE* pF, const tButtonJoystickInfo* pInfo);
@@ -50,6 +52,8 @@ extern int gOrig_joystick_index;
 
 extern int gINT_00596308;
 
+extern int gCurrent_ffb_effect_index;
+
 extern tHeadup_text_buffer gJoystick_headup_buffer_0079d8a0;
 
 typedef struct tJoystick_headup_text {
@@ -61,7 +65,7 @@ extern tJoystick_headup_text gJoystick_headup_texts[21];
 
 void C2_HOOK_FASTCALL SetupFFBValues(void);
 
-int C2_HOOK_FASTCALL PlayExclusiveFFBEffect(const char* pEffect_name, int pArg2);
+void C2_HOOK_FASTCALL PlayExclusiveFFBEffect(const char* pEffect_name, int pArg2);
 
 void C2_HOOK_FASTCALL InitJoysticks(void);
 

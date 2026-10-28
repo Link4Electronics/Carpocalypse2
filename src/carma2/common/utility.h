@@ -121,6 +121,8 @@ int C2_HOOK_FASTCALL PDCheckDriveExists(const char* pThe_path);
 
 extern br_actor* C2_HOOK_FASTCALL CloneActor(br_actor* pActor);
 
+extern void* C2_HOOK_FASTCALL EncodePixelmapRunLength(br_pixelmap* pPixelmap);
+
 extern void C2_HOOK_FASTCALL CalcActorGlobalPos(br_vector3* pResult, br_actor* pActor);
 
 extern float C2_HOOK_STDCALL frac(float pN);
@@ -216,6 +218,12 @@ extern void C2_HOOK_FASTCALL DrPixelmapRectangleCopyPossibleLock(br_pixelmap* ds
 extern void C2_HOOK_FASTCALL PixelmapSwapByteOrder(br_pixelmap* pMap);
 
 extern void C2_HOOK_FASTCALL EnsurePixelmapAllowed(br_pixelmap* pMap, undefined4 pArg2);
+
+extern void C2_HOOK_FASTCALL ConvertPixelmapType(br_pixelmap* pMap, int pPixel_type);
+
+extern void C2_HOOK_FASTCALL FUN_005192a0(br_uint_16* pPixel);
+
+extern void C2_HOOK_FASTCALL FUN_005192c0(tU16* pPixel);
 
 #define CARPOCALYPSE2_UTILITY_H
 

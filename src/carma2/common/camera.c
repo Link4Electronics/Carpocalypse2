@@ -5,6 +5,8 @@
 #include "car.h"
 #include "drone.h"
 #include "globvars.h"
+#include "globvrkm.h"
+#include "globvrpb.h"
 #include "graphics.h"
 #include "input.h"
 #include "pedestrn.h"
@@ -30,7 +32,23 @@ tActionReplayCameraMode gAction_replay_camera_mode;
 
 // ViewOpponent
 
-// ReallyViewOpponent
+// FUNCTION: CARMA2_HW 0x0040e680
+void C2_HOOK_FASTCALL ReallyViewOpponent(void) {
+    int i;
+
+    if (gNet_mode == eNet_mode_client) {
+        for (i = 0; i < gNumber_of_net_players; i++) {
+            if (gNet_players[i].ID == gCar_to_view_id) {
+                gCar_to_view_id = 0;
+                gCamera_yaw = 0;
+                gCar_to_view = gNet_players[i].car;
+                InitialiseExternalCamera();
+                PositionExternalCamera(gCar_to_view, 200);
+                return;
+            }
+        }
+    }
+}
 
 // CheckDisablePlingMaterials
 
@@ -40,7 +58,24 @@ tActionReplayCameraMode gAction_replay_camera_mode;
 
 // MungeCarMaterials
 
-// SetCameraType
+// FUNCTION: CARMA2_HW 0x0040e790
+void C2_HOOK_FASTCALL SetCameraType(tActionReplayCameraMode pCamPos) {
+
+    gAction_replay_camera_mode = pCamPos;
+    switch (pCamPos) {
+    case kActionReplayCameraMode_Standard:
+    case kActionReplayCameraMode_Rigid:
+    case kActionReplayCameraMode_Reversing:
+        InitialiseExternalCamera();
+        break;
+    case kActionReplayCameraMode_Manual:
+        gAction_replay_manual_camera_target_type = 0;
+        break;
+    default:
+        break;
+    }
+    MungeCarMaterials(&gProgram_state.current_car, gAction_replay_camera_mode == kActionReplayCameraMode_Internal);
+}
 
 // ChangeCameraType
 
@@ -89,7 +124,29 @@ void C2_HOOK_FASTCALL ChangeCameraType(void) {
     MungeCarMaterials(&gProgram_state.current_car, gAction_replay_camera_mode == kActionReplayCameraMode_Internal);
 }
 
-// ToggleCockpit
+// FUNCTION: CARMA2_HW 0x0040e900
+void C2_HOOK_FASTCALL ToggleCockpit(void) {
+
+    if ((gCar_to_view != &gProgram_state.current_car && !gProgram_state.cockpit_on) || gMap_view == 2) {
+        return;
+    }
+    if (gAction_replay_camera_mode == kActionReplayCameraMode_Internal) {
+        tActionReplayCameraMode old_camera_mode = gCameraTypeBeforeCockpit;
+
+        if ((gAction_replay_mode && !gCamera_type_allowed_replay[gCameraTypeBeforeCockpit])
+                || (!gAction_replay_mode && !gCamera_type_allowed_gameplay[gCameraTypeBeforeCockpit])
+                || gCameraTypeBeforeCockpit >= 9
+                || (gCameraTypeBeforeCockpit == kActionReplayCameraMode_Drone && !OKToViewDrones())
+                || (old_camera_mode == kActionReplayCameraMode_Peds && !gPed_count)) {
+            SetCameraType(kActionReplayCameraMode_Standard);
+        } else {
+            SetCameraType(gCameraTypeBeforeCockpit);
+        }
+    } else {
+        gCameraTypeBeforeCockpit = gAction_replay_camera_mode;
+        SetCameraType(kActionReplayCameraMode_Internal);
+    }
+}
 
 // PositionCarMountedCamera
 

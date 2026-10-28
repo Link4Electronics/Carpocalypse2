@@ -36,7 +36,7 @@ extern void C2_HOOK_FASTCALL DoNextJoinPoll(void);
 
 // NetEndJoinList
 
-// NetDisposePIDGameInfo
+extern void C2_HOOK_FASTCALL NetDisposePIDGameInfo(tNet_game_details* pDetails);
 
 // NetDisposeGameDetails
 
@@ -49,10 +49,12 @@ extern void C2_HOOK_FASTCALL NetLeaveGame(tNet_game_details* pNet_game);
 // NetSetPlayerSystemInfo
 
 // FillInThisPlayer
+extern void C2_HOOK_FASTCALL FillInThisPlayer(tNet_game_details* pGame, tNet_game_player_info* pPlayer, int pCar_index, int pHost);
 
 // LoadCarN
 
 // DisposeCarN
+void C2_HOOK_FASTCALL DisposeCarN(int pPlayer_index);
 
 // PlayerHasLeft
 
@@ -76,11 +78,12 @@ extern int C2_HOOK_FASTCALL NetSendMessageToAddress(tNet_game_details* pDetails,
 
 // NetReallySendMessageToPlayer
 
-// NetSendMessageToPlayer
+extern int C2_HOOK_FASTCALL NetSendMessageToPlayer(tNet_game_details* pNet_game, tNet_message* pMessage, tPlayer_ID pPlayer_id);
 
-// NetSendMessageToHost
+extern int C2_HOOK_FASTCALL NetSendMessageToHost(tNet_game_details* pDetails, tNet_message* pMessage);
 
 // NetSendMessageToAllPlayers
+extern int C2_HOOK_FASTCALL NetSendMessageToAllPlayers(tNet_game_details* pNet_game, tNet_message* pMessage);
 
 // NetGetContentsSize
 
@@ -219,9 +222,9 @@ extern void C2_HOOK_FASTCALL ResendGuaranteedMessages(void);
 
 // NetWaitForGuaranteeReplies
 
-// NetPlayerFromID
+extern tNet_game_player_info* C2_HOOK_FASTCALL NetPlayerFromID(tPlayer_ID pPlayer);
 
-// NetCarFromPlayerID
+extern tCar_spec* C2_HOOK_FASTCALL NetCarFromPlayerID(tPlayer_ID pPlayer);
 
 // NetPlayerFromCar
 

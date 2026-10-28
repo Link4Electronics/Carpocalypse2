@@ -1,9 +1,11 @@
 #include "smashing.h"
 
+#include "brucetrk.h"
 #include "car.h"
 #include "crush.h"
 #include "explosions.h"
 #include "globvars.h"
+#include "globvrpb.h"
 #include "graphics.h"
 #include "loading.h"
 #include "oil.h"
@@ -22,6 +24,28 @@
 #include "c2_string.h"
 
 #include "carpocalypse2_macros.h"
+#include <math.h>
+
+extern const br_scalar gFloat_0058aec0;
+
+// GLOBAL: CARMA2_HW 0x0058af5c
+const br_scalar gFLOAT_0058af5c = 0.001f;
+
+// GLOBAL: CARMA2_HW 0x0058af60
+const double gDOUBLE_0058af60 = 4.9;
+
+// GLOBAL: CARMA2_HW 0x0058af68
+const double gDOUBLE_0058af68 = -0.14492753623188406;
+
+// GLOBAL: CARMA2_HW 0x0058af70
+const double gDOUBLE_0058af70 = 9.8;
+
+// GLOBAL: CARMA2_HW 0x0058af78
+const double gDOUBLE_0058af78 = 0.0001;
+
+// GLOBAL: CARMA2_HW 0x0058af80
+const double gDOUBLE_0058af80 = 10430.378350470453;
+
 // GLOBAL: CARMA2_HW 0x006b78e0
 tSmash_vertex gSmash_glass_fragments[200];
 
@@ -70,51 +94,9 @@ br_vector3 gVector3_006a4688;
 // GLOBAL: CARMA2_HW 0x006a3334
 int gINT_006a3334;
 
-void C2_HOOK_FASTCALL InitGlassFragments(void) {
-    int i;
+// InitGlassFragments
 
-    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gSmash_glass_fragments) != 200);
-
-    for (i = 0; i < CARPOCALYPSE2_ASIZE(gSmash_glass_fragments); i++) {
-        tSmash_vertex *smash_vertex;
-
-        smash_vertex = &gSmash_glass_fragments[i];
-        smash_vertex->actor = BrActorAllocate(BR_ACTOR_MODEL, NULL);
-        smash_vertex->actor->model = BrModelAllocate(NULL, 3, 1);
-        smash_vertex->actor->model->faces[0].vertices[0] = 0;
-        smash_vertex->actor->model->faces[0].vertices[1] = 1;
-        smash_vertex->actor->model->faces[0].vertices[2] = 2;
-        smash_vertex->actor->model->flags |= BR_MODF_UPDATEABLE;
-        BrModelAdd(smash_vertex->actor->model);
-        smash_vertex->model = smash_vertex->actor->model;
-        smash_vertex->actor->render_style = BR_RSTYLE_FACES;
-        smash_vertex->end_time = 0;
-    }
-}
-
-void C2_HOOK_FASTCALL InitDecals(void) {
-    int i;
-
-    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gDecals) != 50);
-
-    for (i = 0; i < CARPOCALYPSE2_ASIZE(gDecals); i++) {
-        tDecal *smash_quad;
-
-        smash_quad = &gDecals[i];
-        smash_quad->actor = BrActorAllocate(BR_ACTOR_MODEL, NULL);
-        smash_quad->actor->model = BrModelAllocate(NULL, 4, 2);
-        smash_quad->actor->model->faces[0].vertices[0] = 0;
-        smash_quad->actor->model->faces[0].vertices[1] = 1;
-        smash_quad->actor->model->faces[0].vertices[2] = 3;
-        smash_quad->actor->model->faces[1].vertices[0] = 0;
-        smash_quad->actor->model->faces[1].vertices[1] = 3;
-        smash_quad->actor->model->faces[1].vertices[2] = 2;
-        smash_quad->actor->model->flags |= BR_MODF_UPDATEABLE;
-        BrModelAdd(smash_quad->actor->model);
-        smash_quad->actor->render_style = BR_RSTYLE_FACES;
-        smash_quad->time = 0;
-    }
-}
+// InitDecals
 
 // FUNCTION: CARMA2_HW 0x004ee550
 void C2_HOOK_FASTCALL ReadSmashableInitialPosition(FILE* pFile, tSmashable_initial_position_spec*  pInitial_pos) {
@@ -226,6 +208,45 @@ void C2_HOOK_FASTCALL MungeSmashMaterialNames(void) {
                 &item_spec->trigger_object.material->identifier,
                 i);
         }
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x004eff30
+void C2_HOOK_FASTCALL FUN_004eff30(tSmash_vertex* pFragment, tU32 pTime, float pDelta_time) {
+    float dt;
+    float gravity_dt;
+    float omega;
+    br_actor* actor;
+    br_vector3 axis;
+    br_vector3 pos;
+
+    dt = pDelta_time * gFLOAT_0058af5c;
+    if (dt != gFloat_0058aec0 && !pFragment->field_0x34) {
+        gravity_dt = gGravity_multiplier * dt;
+        pFragment->actor->t.t.translate.t.v[0] -= pFragment->v.v[0] * dt * (float)gDOUBLE_0058af68;
+        pFragment->actor->t.t.translate.t.v[1] -= (pFragment->v.v[1] * dt - gravity_dt * dt * (float)gDOUBLE_0058af60) * (float)gDOUBLE_0058af68;
+        pFragment->actor->t.t.translate.t.v[2] -= pFragment->v.v[2] * dt * (float)gDOUBLE_0058af68;
+        pFragment->v.v[1] -= dt * gGravity_multiplier * (float)gDOUBLE_0058af70;
+        omega = BrVector3Length(&pFragment->omega);
+        BrVector3InvScale(&axis, &pFragment->omega, omega);
+        if (gDOUBLE_0058af78 <= fabs(dt * omega)) {
+            actor = pFragment->actor;
+            pos.v[0] = actor->t.t.translate.t.v[0];
+            pos.v[1] = actor->t.t.translate.t.v[1];
+            pos.v[2] = actor->t.t.translate.t.v[2];
+            actor->t.t.translate.t.v[0] = 0.f;
+            actor->t.t.translate.t.v[1] = 0.f;
+            actor->t.t.translate.t.v[2] = 0.f;
+            BrMatrix34PostRotate(&actor->t.t.mat, (br_angle)(long)(omega * dt * gDOUBLE_0058af80), &axis);
+            actor->t.t.translate.t.v[0] = pos.v[0];
+            actor->t.t.translate.t.v[1] = pos.v[1];
+            actor->t.t.translate.t.v[2] = pos.v[2];
+        }
+    }
+    if (pTime < pFragment->field_0x10) {
+        pFragment->actor->render_style = BR_RSTYLE_FACES;
+    } else {
+        pFragment->actor->render_style = BR_RSTYLE_NONE;
     }
 }
 
@@ -376,6 +397,190 @@ void C2_HOOK_FASTCALL FlushPowerupQueue(void) {
         MayQueuePowerupRespawn(gPowerup_queue[i].powerup_index, gPowerup_queue[i].actor);
     }
     gSize_powerup_queue = 0;
+}
+
+// FUNCTION: CARMA2_HW 0x004ed860
+void C2_HOOK_FASTCALL QueueNonCarCuboidActivation(br_actor* pActor, tNon_car_cuboid_activations* pActivations, void* pContext) {
+    tU32 time;
+    br_matrix34* matrix;
+    int i;
+    tNon_car_cuboid_activation* activation;
+    tSmash_actor_search_context search;
+    br_bounds3 bounds;
+    tU32 min_column_x;
+    tU32 max_column_x;
+    tU32 min_column_z;
+    tU32 max_column_z;
+    volatile int* active;
+    tU8* active_end;
+
+    C2_HOOK_BUG_ON(sizeof(tNon_car_cuboid_activation) != 0x40);
+    C2_HOOK_BUG_ON(sizeof(tDelayed_non_car) != 0xc0);
+
+    time = GetTotalTime();
+    if (pActor == NULL || pActor->identifier == NULL || pActor->identifier[0] != '&') {
+        matrix = (br_matrix34*)((tU8*)pContext + 0x8c);
+    } else {
+        pActor = (br_actor*)((tU8*)pActor + 0x2c);
+        matrix = (br_matrix34*)pActor;
+    }
+    activation = pActivations->activations;
+    for (i = 0; i < pActivations->count_activations; i++, activation++) {
+        int column_x;
+        int column_z;
+        tDelayed_non_car delayed;
+
+        search.count = 0;
+        if (activation->field_0x4 == 1) {
+            bounds = activation->bounds;
+        } else {
+            int axis;
+
+            BrMatrix34ApplyP(&bounds.min, &activation->bounds.min, matrix);
+            BrMatrix34ApplyP(&bounds.max, &activation->bounds.max, matrix);
+            for (axis = 0; axis < 3; axis++) {
+                if (bounds.min.v[axis] > bounds.max.v[axis]) {
+                    br_scalar value = bounds.min.v[axis];
+                    bounds.min.v[axis] = bounds.max.v[axis];
+                    bounds.max.v[axis] = value;
+                }
+            }
+        }
+        search.bounds = &bounds;
+        search.field_0x4 = activation->field_0x8;
+        XZToColumnXZ((tU8*)&min_column_x, (tU8*)&min_column_z, bounds.min.v[0], bounds.min.v[2], &gProgram_state.track_spec);
+        XZToColumnXZ((tU8*)&max_column_x, (tU8*)&max_column_z, bounds.max.v[0], bounds.max.v[2], &gProgram_state.track_spec);
+        column_x = (int)(min_column_x & 0xff);
+        if (column_x <= (int)(max_column_x & 0xff)) {
+            int column_offset;
+
+            column_offset = column_x * sizeof(tTrack_square);
+            do {
+                column_z = (int)(min_column_z & 0xff);
+                if (column_z <= (int)(max_column_z & 0xff)) {
+                    do {
+                        tTrack_square* square = (tTrack_square*)((tU8*)gProgram_state.track_spec.columns[column_z] + column_offset);
+                        br_actor* column_actor = square->actor_0x0;
+
+                        if (column_actor != NULL && DRActorEnumRecurse(column_actor, FUN_004edb20, &search) != 0) {
+                            break;
+                        }
+                        column_z++;
+                    } while (column_z <= (int)(max_column_z & 0xff));
+                }
+                column_x++;
+                column_offset += sizeof(tTrack_square);
+            } while (column_x <= (int)(max_column_x & 0xff));
+        }
+        delayed.field_0x0 = *(br_vector3*)((tU8*)pContext + 0x68);
+        delayed.field_0xc = *(br_vector3*)((tU8*)matrix + 0x24);
+        delayed.field_0x18 = (undefined4*)((tU8*)activation + 0x24);
+        delayed.count_actions = search.count;
+        for (column_x = 0; column_x < delayed.count_actions; column_x++) {
+            delayed.actor_time_actions[column_x].actor = search.actors[column_x];
+            delayed.actor_time_actions[column_x].time = time + IRandomBetween((tU16)activation->field_0x0, (tU16)activation->field_0x2);
+        }
+        active = &gSmash_explosions[0].active;
+        active_end = (tU8*)gSmash_explosions + sizeof(gSmash_explosions) + sizeof(int);
+        while (*active != 0) {
+            active = (int*)((tU8*)active + sizeof(tSmash_explosion));
+            if ((tU8*)active >= active_end) {
+                break;
+            }
+        }
+        if ((tU8*)active < active_end) {
+            tSmash_explosion* queued;
+
+            queued = (tSmash_explosion*)((tU8*)active - sizeof(int));
+            queued->type = 0;
+            queued->active = (int)(intptr_t)pContext;
+            queued->what.non_car = delayed;
+        }
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x004edb20
+int C2_HOOK_CDECL FUN_004edb20(br_actor* pActor, tSmash_actor_search_context* pContext) {
+    char* identifier;
+    char first_digit;
+    br_vector3* position;
+
+    C2_HOOK_BUG_ON(sizeof(*pContext) != 0x58);
+    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tSmash_actor_search_context, actors, 0x8);
+
+    identifier = pActor->identifier;
+    if (identifier != NULL && identifier[0] == '&') {
+        position = &pActor->t.t.translate.t;
+        if (position->v[0] < pContext->bounds->min.v[0]) {
+            return 0;
+        }
+        if (position->v[1] < pContext->bounds->min.v[1]) {
+            return 0;
+        }
+        if (position->v[2] < pContext->bounds->min.v[2]) {
+            return 0;
+        }
+        if (position->v[0] > pContext->bounds->max.v[0]) {
+            return 0;
+        }
+        if (position->v[1] > pContext->bounds->max.v[1]) {
+            return 0;
+        }
+        if (position->v[2] > pContext->bounds->max.v[2]) {
+            return 0;
+        }
+        first_digit = identifier[1];
+        if (first_digit < '0' || first_digit > '9') {
+            return 0;
+        }
+        if (pContext->field_0x4 < 0 || pContext->field_0x4 == identifier[2] - 0x210 + first_digit * 10) {
+            if (pContext->count >= 20) {
+                return -1;
+            }
+            pContext->actors[pContext->count] = pActor;
+            pContext->count++;
+        }
+    }
+    return 0;
+}
+
+// FUNCTION: CARMA2_HW 0x004f1030
+void C2_HOOK_FASTCALL FUN_004f1030(tPhysics_object* pObject, int pMode, br_actor* pActor) {
+    tU8* info;
+    int type;
+
+    info = (tU8*)pObject->owner;
+    if (pMode == 0xe) {
+        if (pObject != NULL && info != NULL && pObject->flags_0x238 == 1) {
+            type = *(int*)(info + 0xc);
+            if ((type == 0 || (type != 2 && type != 3)) && gSize_powerup_queue < 0x32 && type > 5) {
+                gPowerup_queue[gSize_powerup_queue].actor = pActor;
+                gPowerup_queue[gSize_powerup_queue].car = (tCar_spec*)info;
+                gPowerup_queue[gSize_powerup_queue].powerup_index = 0xe;
+                gSize_powerup_queue = gSize_powerup_queue + 1;
+                return;
+            }
+        }
+        FUN_004d9d00(pObject, 0xe);
+        return;
+    }
+    if (pObject != NULL && info != NULL && pObject->flags_0x238 == 1) {
+        type = *(int*)(info + 0xc);
+        if ((type == 0 || (type != 2 && type != 3)) && gSize_powerup_queue < 0x32 && type == 8) {
+            goto enqueue;
+        }
+    }
+    if (pObject->flags_0x238 == 0x20) {
+        if (gMutant_tail_state == 2 || GetTotalTime() - gINT_00705b70 < 0x1d4c) {
+            goto enqueue;
+        }
+    }
+    return;
+enqueue:
+    gPowerup_queue[gSize_powerup_queue].actor = pActor;
+    gPowerup_queue[gSize_powerup_queue].car = &gProgram_state.current_car;
+    gPowerup_queue[gSize_powerup_queue].powerup_index = pMode;
+    gSize_powerup_queue = gSize_powerup_queue + 1;
 }
 
 void C2_HOOK_FASTCALL SmashItIntoVerySmallPiecesIndeed(tCar_spec* pCar, undefined4 pArg2, br_actor* pActor, undefined4 pArg4, undefined4 pArg5, void* pArg6, void* pArg7, undefined4 pArg8) {
@@ -609,21 +814,56 @@ check_spill:
 }
 
 // FUNCTION: CARMA2_HW 0x004f64d0
-void C2_HOOK_FASTCALL MungeSmashEdgeTriggers(tU32 pTime) {
-
+void C2_NAKED C2_HOOK_FASTCALL MungeSmashEdgeTriggers(tU32 pTime) {
+#ifndef CARPOCALYPSE2_MATCHING
     if (gLast_munge_smash_edge_triggers != gPHIL_last_physics_tick) {
+        tSmashable_item_spec* item;
         int i;
 
-        for (i = 0; i < gCount_track_smashable_environment_specs; i++) {
-            tSmashable_item_spec* item;
-
-            item = &gTrack_smashable_environment_specs[i];
+        item = gTrack_smashable_environment_specs;
+        for (i = 0; i < gCount_track_smashable_environment_specs; i++, item++) {
             if (item->field_0x10 != 0 && item->field_0x10 != pTime) {
-                gTrack_smashable_environment_specs[i].field_0x10 = 0;
+                item->field_0x10 = 0;
             }
         }
     }
     gLast_munge_smash_edge_triggers = gPHIL_last_physics_tick;
+#else
+    __asm {
+        mov eax, dword ptr [gLast_munge_smash_edge_triggers]
+        mov edx, dword ptr [gPHIL_last_physics_tick]
+        cmp eax, edx
+        push esi
+        je munge_smash_edge_triggers_done
+        mov eax, dword ptr [gCount_track_smashable_environment_specs]
+        xor esi, esi
+        test eax, eax
+        jle munge_smash_edge_triggers_done
+        mov edx, dword ptr [gTrack_smashable_environment_specs]
+        lea eax, [edx + 0x10]
+
+    munge_smash_edge_triggers_loop:
+        mov edx, dword ptr [eax]
+        test edx, edx
+        je munge_smash_edge_triggers_next
+        cmp edx, ecx
+        je munge_smash_edge_triggers_next
+        mov dword ptr [eax], 0
+
+    munge_smash_edge_triggers_next:
+        mov edx, dword ptr [gCount_track_smashable_environment_specs]
+        inc esi
+        add eax, 0x2e0
+        cmp esi, edx
+        jl munge_smash_edge_triggers_loop
+
+    munge_smash_edge_triggers_done:
+        mov eax, dword ptr [gPHIL_last_physics_tick]
+        pop esi
+        mov dword ptr [gLast_munge_smash_edge_triggers], eax
+        ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004ecfa0
@@ -739,36 +979,45 @@ void C2_HOOK_FASTCALL ApplyInitialMovement(undefined4* pArg1, br_vector3* pArg2,
 }
 
 // FUNCTION: CARMA2_HW 0x004eb070
-tSmash_vertex* C2_HOOK_FASTCALL AllocateFragment(br_model* pModel, int pArg2, int pArg3) {
-    tSmash_vertex* best;
-    int best_val;
+tSmash_vertex* C2_HOOK_FASTCALL FindShrapnelFragment(br_model* pModel, tU32 pId, int pPriority) {
     int i;
-    int found;
+    int lowest_priority;
+    tSmash_vertex* fragment;
+    tSmash_vertex* lowest_priority_fragment;
 
-    best_val = 10000;
-    found = -1;
-    best = NULL;
-    for (i = 0; i < 200; i++) {
-        tSmash_vertex* frag = &gSmash_glass_fragments[i];
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gSmash_glass_fragments) != 200);
 
-        if (frag->end_time == 0) {
-            found = -1;
+    lowest_priority = 10000;
+    for (i = 0, fragment = gSmash_glass_fragments; i < (int)CARPOCALYPSE2_ASIZE(gSmash_glass_fragments); i++, fragment++) {
+        if (fragment->end_time == 0) {
+            i = -1;
             break;
         }
-        if ((int)frag->field_0x35[0] < best_val) {
-            best_val = frag->field_0x35[0];
-            best = frag;
+        if (fragment->priority < lowest_priority) {
+            lowest_priority = fragment->priority;
+            lowest_priority_fragment = fragment;
         }
     }
-    if (found < 0) {
-        goto CHECK_MODEL;
+    if (i >= 0) {
+        if (lowest_priority < pPriority) {
+            fragment = lowest_priority_fragment;
+        } else {
+            return NULL;
+        }
     }
-    if (best_val >= pArg3) {
-        return NULL;
+    if (pModel != NULL) {
+        fragment->actor->model = pModel;
+    } else {
+        fragment->actor->model = fragment->model;
     }
-    best->field_0x35[0] = (tU8)pArg3;
-CHECK_MODEL:
-    return best;
+    if (fragment->actor->parent == NULL) {
+        BrActorAdd(gNon_track_actor, fragment->actor);
+    }
+    fragment->priority = (tU8)pPriority;
+    fragment->field_0x18 = pId;
+    fragment->field_0xc = GetTotalTime();
+    fragment->field_0x34 = 1;
+    return fragment;
 }
 
 #pragma inline_depth(0)
@@ -882,4 +1131,41 @@ void C2_HOOK_FASTCALL InitFragmentSpeed(tSmash_vertex* pFragment, tSmashable_ini
     pFragment->time_last_move = pArg6;
     pFragment->end_time = pArg6 + pArg5[1];
     pFragment->field_0x10 = IRandomBetween(pArg5[0], pArg5[1]) + pArg6;
+}
+
+// STUB: CARMA2_HW 0x004f0380
+void C2_HOOK_FAKE_THISCALL FUN_004f0380(tU32 pCurrent_time, int pArg2, int* pArg3, tU32 pArg4, undefined4 pArg5, undefined4 pArg6, undefined4 pArg7, undefined4 pArg8, tU32 pStart_time, tU32 pOwner, undefined4 pArg11, undefined4 pArg12, undefined* pArg13, float pArg14, undefined4 pArg15) {
+    NOT_IMPLEMENTED();
+}
+
+// FUNCTION: CARMA2_HW 0x00497860
+void C2_HOOK_FASTCALL FUN_00497860(tNet_message* pMessage, void* pSender_address) {
+    int number_of_players;
+    int i;
+    tPlayer_ID sender_id;
+    tPlayer_ID message_id;
+    tNet_game_player_info* player;
+
+    if (gNet_mode != eNet_mode_none) {
+        number_of_players = gNumber_of_net_players;
+        i = 0;
+        sender_id = *(tPlayer_ID*)((tU8*)pSender_address + 8);
+        if (number_of_players <= 0) {
+            return;
+        }
+        for (; i < number_of_players; i++) {
+            if (gNet_players[i].ID == sender_id) {
+                goto found_player;
+            }
+        }
+        return;
+
+found_player:
+        player = &gNet_players[i];
+        message_id = pMessage->header.field_0x4;
+        *(volatile tPlayer_ID*)&player->field_0xd0 = message_id;
+        if (player->ID == message_id) {
+            player->car->collision_info->field_0x49c += 0x28;
+        }
+    }
 }

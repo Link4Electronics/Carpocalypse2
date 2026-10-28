@@ -1442,21 +1442,22 @@ void C2_HOOK_FASTCALL LoadFont(int pFont_ID) {
         strcat(the_path, ".PIX");
         gFonts[pFont_ID].images = BrPixelmapLoad(the_path);
     }
-#else
-    strcat(the_path, ".PIX");
-    gFonts[pFont_ID].images = BrPixelmapLoad(the_path);
-#endif
-
     if (gFonts[pFont_ID].images == NULL) {
         FatalError(kFatalError_CannotLoadFontImage_S, gFont_names[pFont_ID]);
     }
     gFonts[pFont_ID].images->row_bytes = (gFonts[pFont_ID].images->row_bytes + 3) & ~3;
+    if (the_path[strlen(the_path) - 4] != '.') {
+        strcat(the_path, ".PIX");
+    }
+#else
+    strcat(the_path, ".PIX");
+#endif
 
     if (gFonts[pFont_ID].file_read_once) {
         return;
     }
-    the_path[strlen(the_path) - 4] = '\0';
-    strcat(the_path, ".TXT");
+    the_path[strlen(the_path) - 3] = '\0';
+    strcat(the_path, "TXT");
     file = DRfopen(the_path, "rt");
     if (file == NULL) {
         FatalError(kFatalError_CannotLoadFontWidthTable_S, gFont_names[pFont_ID]);
@@ -1789,4 +1790,38 @@ br_font* C2_HOOK_FASTCALL LoadBRFont(const char* pName) {
     PFfread(the_font->glyphs, data_size, 1u, f);
     PFfclose(f);
     return the_font;
+}
+
+// FUNCTION: CARMA2_HW 0x004661f0
+br_pixelmap* C2_HOOK_FASTCALL FUN_004661f0(void) {
+    br_pixelmap* pm;
+
+    pm = LoadPixelmap("CHRMFONT.PIX");
+    if (pm == NULL) {
+        FatalError(kFatalError_CannotLoadChromeFontImage);
+    }
+    return pm;
+}
+
+// FUNCTION: CARMA2_HW 0x00466220
+br_model* C2_HOOK_FASTCALL CloneModel(br_model* pModel) {
+    br_model* new_model;
+    br_face* face;
+    int i;
+
+    new_model = BrModelAllocate(pModel->identifier, pModel->nvertices, pModel->nfaces);
+    memcpy(new_model->vertices, pModel->vertices, pModel->nvertices * sizeof(br_vertex));
+    memcpy(new_model->faces, pModel->faces, pModel->nfaces * sizeof(br_face));
+    i = 0;
+    face = new_model->faces;
+    if (i < new_model->nfaces) {
+        do {
+            face->material = NULL;
+            i++;
+            face++;
+        } while (i < new_model->nfaces);
+    }
+    new_model->flags = pModel->flags;
+    BrModelAdd(new_model);
+    return new_model;
 }

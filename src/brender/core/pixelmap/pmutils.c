@@ -12,10 +12,10 @@ br_uint_16 C2_HOOK_CDECL GetSysQual(void) {
         ret 0;
     }
 #else
-    __asm__(
-        "mov %ds, %ax\n"
-        "ret\n"
-    );
+    br_uint_16 result;
+
+    __asm__("mov %%ds, %0" : "=a"(result));
+    return result;
 #endif
 #else
     return 0;

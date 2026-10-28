@@ -76,6 +76,8 @@
 
 extern void C2_HOOK_FASTCALL InitPolyPedSystem(void);
 
+extern int gBOOL_00744804;
+
 // DisposePedSpawnSpec
 
 // DisposeCharacterInstances
@@ -320,11 +322,11 @@ extern void C2_HOOK_FASTCALL AdjustNapalmBolt(int pIndex, tPedestrian* pPed, br_
 
 // FlushAllPedCaches
 
-// SavePedStuff
+extern void C2_HOOK_FASTCALL SavePedStuff(void);
 
-// ComparePedStuff
+extern void C2_HOOK_FASTCALL ComparePedStuff(void);
 
-// AdjustPedDiagnostics
+extern void C2_HOOK_FASTCALL AdjustPedDiagnostics(tU32 pSubject_index, void* pUnused2, void* pUnused3, void* pUnused4);
 
 // CalmDownAllPeds
 
@@ -884,5 +886,13 @@ int C2_HOOK_FASTCALL BonerActiveHalted(tPed_character_instance* pCharacter);
 int C2_HOOK_FASTCALL BonerPassiveCollision(tPed_character_instance* pCharacter, undefined4 pArg2);
 
 void C2_HOOK_FASTCALL BonerPedMovedByPhysics(tPed_character_instance* pCharacter, undefined4 pArg2);
+
+extern float gConst_replay_rate_zero;
+
+extern const int gPow2_array[32];
+
+tPhysics_object* C2_HOOK_FASTCALL MakeCharacterPhysicsForBone(tPed_character_instance* pCharacter, int pBone_index, undefined4 pArg3, undefined4 pArg4);
+
+void C2_HOOK_FASTCALL FUN_0040b500(tPed_character_instance* pCharacter, int pBone_index, br_model* pModel, tS8 pModel_set);
 
 #endif // GUARD_PEDESTRN_H

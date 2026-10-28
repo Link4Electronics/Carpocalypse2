@@ -40,6 +40,7 @@
 #define PRIMF_MODULATE          0x200
 #define PRIMF_TEXTURE_BUFFER    0x400
 #define PRIMF_DEPTH_BUFFER      0x800
+#define PRIMF_SHADE_TABLE       0x1000
 
 /* Public block flags (drivers/softrend/types.h) */
 #define BR_PRIMF_BLENDED        0x00000008
@@ -56,6 +57,8 @@ static br_uint_32 sdlplib_timestamp;
 #define CM_V    (1u << 9)
 #define CM_W    (1u << 4)
 #define CM_A    (1u << 10)
+/* Index and alpha share component 10 in BRender's vertex layout. */
+#define CM_I    (1u << 10)
 #define CM_R    (1u << 11)
 #define CM_G    (1u << 12)
 #define CM_B    (1u << 13)
@@ -81,6 +84,8 @@ typedef struct br_primitive_state_sdl {
     struct {
         br_uint_32 flags;
         br_buffer_stored* colour_map;
+        br_buffer_stored* index_shade;
+        br_buffer_stored* index_blend;
         br_token colour_type;
         br_float alpha_val;
         br_token map_interpolation;
@@ -266,6 +271,16 @@ static br_error BufferStoredSDLAllocate(br_primitive_library_sdl* plib, br_buffe
     case BRT_COLOUR_MAP_O:
         ident = "Texture";
         break;
+    case BRT_INDEX_SHADE_O:
+        ident = "Shade-Table";
+        break;
+    case BRT_INDEX_BLEND_O:
+        ident = "Blend-Table";
+        break;
+    case BRT_UNKNOWN:
+        /* BrTableUpdate() allocates table buffers through BRT_UNKNOWN. */
+        ident = "Table";
+        break;
     default:
         return SDL_PRIM_UNSUPPORTED;
     }
@@ -321,6 +336,8 @@ static br_tv_template_entry primitiveSdlTemplateEntries[] = {
     { BRT_COLOUR_B,             0, offsetof(br_primitive_state_sdl, prim.colour_type),        0x7, 0x1e, BRT_DEFAULT,        1, },
     { BRT_COLOUR_MAP_O,         0, offsetof(br_primitive_state_sdl, prim.colour_map),         0x7, 0x2, (uintptr_t)&ptr_custom, },
     { BRT_TEXTURE_O,            0, offsetof(br_primitive_state_sdl, prim.colour_map),         0x7, 0x2, (uintptr_t)&ptr_custom, },
+    { BRT_INDEX_SHADE_O,        0, offsetof(br_primitive_state_sdl, prim.index_shade),        0x7, 0x2, (uintptr_t)&ptr_custom, },
+    { BRT_INDEX_BLEND_O,        0, offsetof(br_primitive_state_sdl, prim.index_blend),        0x7, 0x2, (uintptr_t)&ptr_custom, },
     { BRT_OPACITY_X,            0, offsetof(br_primitive_state_sdl, prim.alpha_val),          0x7, 0xe,  },
     { BRT_OPACITY_F,            0, offsetof(br_primitive_state_sdl, prim.alpha_val),          0x7, 0x3,  },
     { BRT_MAP_INTERPOLATION_T,  0, offsetof(br_primitive_state_sdl, prim.map_interpolation),  0x7, 0x3,  },
@@ -608,6 +625,8 @@ static br_error C2_HOOK_CDECL state_stateDefault(br_primitive_state_sdl* self, b
     (void)mask;
     self->prim.flags = 0;
     self->prim.colour_map = NULL;
+    self->prim.index_shade = NULL;
+    self->prim.index_blend = NULL;
     self->prim.alpha_val = 1.f;
     self->prim.colour_type = BRT_DEFAULT;
     self->prim.map_interpolation = BRT_NONE;
@@ -627,6 +646,8 @@ static br_error C2_HOOK_CDECL state_stateCopy(br_primitive_state_sdl* self, br_p
     if ((mask & 0x80000000u) && src != NULL) {
         self->prim.flags = src->prim.flags;
         self->prim.colour_map = src->prim.colour_map;
+        self->prim.index_shade = src->prim.index_shade;
+        self->prim.index_blend = src->prim.index_blend;
         self->prim.colour_type = src->prim.colour_type;
         self->prim.alpha_val = src->prim.alpha_val;
         self->prim.map_interpolation = src->prim.map_interpolation;
@@ -648,6 +669,43 @@ typedef struct local_block_sdl {
     br_uint_32 sig;
 } local_block_sdl;
 
+/* Resolve a palette index for INDEX_8 textures (0 if the palette format is
+ * unsupported). Palette bytes are stored blue, green, red like BRender. */
+static int sdlPaletteLookup(br_pixelmap* pal, unsigned idx, unsigned* r, unsigned* g, unsigned* b) {
+    if (pal == NULL || pal->pixels == NULL) {
+        return 0;
+    }
+    if (idx >= (unsigned)pal->height) {
+        return 0;
+    }
+    switch (pal->type) {
+    case BR_PMT_RGB_565: {
+        br_uint_16 c = ((br_uint_16*)pal->pixels)[idx];
+        *r = (((c >> 11) & 0x1F) * 255) / 31;
+        *g = (((c >> 5) & 0x3F) * 255) / 63;
+        *b = ((c & 0x1F) * 255) / 31;
+        return 1;
+    }
+    case BR_PMT_RGB_888: {
+        br_uint_8* p = (br_uint_8*)pal->pixels + idx * 3;
+        *b = p[0];
+        *g = p[1];
+        *r = p[2];
+        return 1;
+    }
+    case BR_PMT_RGBX_888:
+    case BR_PMT_RGBA_8888: {
+        br_uint_8* p = (br_uint_8*)pal->pixels + idx * 4;
+        *b = p[0];
+        *g = p[1];
+        *r = p[2];
+        return 1;
+    }
+    default:
+        return 0;
+    }
+}
+
 /*
  * Screen-space affine triangle with texture, depth, key and blend.
  * Vertices carry comp_f: C_SX, C_SY (pixels), C_SZ (depth), C_U, C_V,
@@ -655,8 +713,8 @@ typedef struct local_block_sdl {
  */
 static void C2_HOOK_CDECL sdlTriangleRender(brp_block* block, brp_vertex* v0, brp_vertex* v1, brp_vertex* v2) {
     local_block_sdl* lb = (local_block_sdl*)block;
-    br_primitive_state_sdl* state = lb->state;
-    br_buffer_stored_sdl* tex;
+    br_primitive_state_sdl* state = lb->state;    br_buffer_stored_sdl* tex;
+    br_buffer_stored_sdl* shade;
     br_device_pixelmap* colour_pm;
     br_device_pixelmap* depth_pm;
     br_uint_16* colour_base;
@@ -686,6 +744,8 @@ static void C2_HOOK_CDECL sdlTriangleRender(brp_block* block, brp_vertex* v0, br
     double sz_over_w_l, inv_w_l, sz_over_w_step, inv_w_step;
     double sz0, sz1, sz2;
     int have_w;
+    /* Shade-table lighting index interpolation (C_I == C_A) */
+    int use_shade;
 
     colour_pm = state->out.pixelmap;
     depth_pm = state->out.depth;
@@ -694,8 +754,12 @@ static void C2_HOOK_CDECL sdlTriangleRender(brp_block* block, brp_vertex* v0, br
     }
 
     tex = (br_buffer_stored_sdl*)state->prim.colour_map;    
+    shade = (br_buffer_stored_sdl*)state->prim.index_shade;
 
     prim_flags = state->prim.flags;
+    /* Same restriction as state_renderBegin: component 10 doubles as alpha,
+     * so shade tables cannot coexist with alpha blending. */
+    use_shade = shade != NULL && shade->pm != NULL && !(prim_flags & PRIMF_BLEND);
     alpha_val = state->prim.alpha_val;
     /* retail passes opacity on a 0..256 scale */
     if (alpha_val > 1.f) {
@@ -747,6 +811,7 @@ static void C2_HOOK_CDECL sdlTriangleRender(brp_block* block, brp_vertex* v0, br
         double l1_step, l2_step;
         double z_l, u_l, v_l, r_l, g_l, b_l;
         double u_step, v_step, r_step, g_step, b_step;
+        double i_l, i_step;
         br_uint_16* drow;
         br_uint_16* crow;
 
@@ -878,6 +943,16 @@ static void C2_HOOK_CDECL sdlTriangleRender(brp_block* block, brp_vertex* v0, br
             } else {
                 r_l = g_l = b_l = 255.f;
             }
+            if (use_shade) {
+                double i0 = v0->comp_f[C_I];
+                double i1 = v1->comp_f[C_I];
+                double i2 = v2->comp_f[C_I];
+                i_step = l1_step * (i1 - i0) + l2_step * (i2 - i0);
+                i_l = l0 * i0 + l1 * i1 + l2 * i2;
+            } else {
+                i_step = 0.0;
+                i_l = 0.0;
+            }
         }
 
         drow = depth_base ? depth_base + y * db_row : NULL;
@@ -967,14 +1042,55 @@ static void C2_HOOK_CDECL sdlTriangleRender(brp_block* block, brp_vertex* v0, br
                     if (tv < 0) tv = 0;
                     else if (tv >= th) tv = th - 1;
                 }
-                t = tpix[tv * (tpm->pm_row_bytes / 2) + tu];
+                if (tpm->pm_type == (br_uint_8)BR_PMT_INDEX_8) {
+                    const br_uint_8* t8p = (const br_uint_8*)tpm->pm_pixels;
+                    unsigned char ti = t8p[tv * tpm->pm_row_bytes + tu];
+                    unsigned char oi = ti;
+                    unsigned r, g, b;
 
-                if (tpm->pm_type == (br_uint_8)BR_PMT_RGBA_4444) {
-                    unsigned r = (t >> 8) & 0xF;
-                    unsigned g = (t >> 4) & 0xF;
-                    unsigned b = t & 0xF;
-                    unsigned ta = (t >> 12) & 0xF;
+                    if (ti == 0) {
+                        /* palette index 0 is the transparent colour */
+                        goto next;
+                    }
+                    if (use_shade && shade->pm != NULL && shade->pm->pm_pixels != NULL) {
+                        br_device_pixelmap* spm = shade->pm;
+                        int li = (int)i_l;
+
+                        if (li < 0) li = 0;
+                        if (li >= spm->pm_height) li = spm->pm_height - 1;
+                        if (li >= 0 && ti < spm->pm_width) {
+                            /* retail pentprim: table[(light_index << 8) + texel],
+                             * i.e. one 256-entry row per lighting level. */
+                            oi = ((br_uint_8*)spm->pm_pixels)[li * spm->pm_row_bytes + ti];
+                        }
+                        if (oi == 0) {
+                            goto next;
+                        }
+                    }
+                    if (!sdlPaletteLookup(tpm->pm_map, oi, &r, &g, &b)) {
+                        r = g = b = oi;
+                    }
+                    if (prim_flags & PRIMF_BLEND) {
+                        unsigned short d = crow[x];
+                        float sa = alpha_val;
+                        unsigned dr5 = (d >> 11) & 0x1F;
+                        unsigned dg6 = (d >> 5) & 0x3F;
+                        unsigned db5 = d & 0x1F;
+                        unsigned or5 = (unsigned)(((r * 31) / 255) * sa + dr5 * (1.f - sa));
+                        unsigned og6 = (unsigned)(((g * 63) / 255) * sa + dg6 * (1.f - sa));
+                        unsigned ob5 = (unsigned)(((b * 31) / 255) * sa + db5 * (1.f - sa));
+                        dest = (unsigned short)((or5 << 11) | (og6 << 5) | ob5);
+                    } else {
+                        dest = (unsigned short)((((r * 31) / 255) << 11) | (((g * 63) / 255) << 5) | ((b * 31) / 255));
+                    }
+                } else if (tpm->pm_type == (br_uint_8)BR_PMT_RGBA_4444) {
+                    unsigned r, g, b, ta;
                     float sa = alpha_val;
+                    t = tpix[tv * (tpm->pm_row_bytes / 2) + tu];
+                    r = (t >> 8) & 0xF;
+                    g = (t >> 4) & 0xF;
+                    b = t & 0xF;
+                    ta = (t >> 12) & 0xF;
                     if (ta == 0) {
                         /* texel-alpha transparency: fully transparent texel */
                         goto next;
@@ -986,6 +1102,18 @@ static void C2_HOOK_CDECL sdlTriangleRender(brp_block* block, brp_vertex* v0, br
                     r = r * 17;
                     g = g * 17;
                     b = b * 17;
+                    /* Lit textures are MODULATE in BRender. This is what makes
+                     * the shadow pass (lights off, material ka darkened) show
+                     * up: the same track texture is multiplied by the dark
+                     * interpolated vertex colour. */
+                    if (smooth && (prim_flags & PRIMF_MODULATE)) {
+                        unsigned mr = (unsigned)(rr < 0.0 ? 0.0 : (rr > 255.0 ? 255.0 : rr));
+                        unsigned mg = (unsigned)(gg < 0.0 ? 0.0 : (gg > 255.0 ? 255.0 : gg));
+                        unsigned mb = (unsigned)(bb < 0.0 ? 0.0 : (bb > 255.0 ? 255.0 : bb));
+                        r = (r * mr) / 255;
+                        g = (g * mg) / 255;
+                        b = (b * mb) / 255;
+                    }
                     if (prim_flags & PRIMF_BLEND) {
                         /* retail blends with the material opacity constant */
                         sa = alpha_val;
@@ -1009,6 +1137,7 @@ static void C2_HOOK_CDECL sdlTriangleRender(brp_block* block, brp_vertex* v0, br
                         dest = (unsigned short)((((r * 31) / 255) << 11) | (((g * 63) / 255) << 5) | ((b * 31) / 255));
                     }
                 } else {
+                    t = tpix[tv * (tpm->pm_row_bytes / 2) + tu];
                     if (t == 0xF81F) {
                         goto next;
                     }
@@ -1097,6 +1226,7 @@ static void C2_HOOK_CDECL sdlTriangleRender(brp_block* block, brp_vertex* v0, br
             r_l += r_step;
             g_l += g_step;
             b_l += b_step;
+            i_l += i_step;
         }
     }
 }
@@ -1114,6 +1244,11 @@ static br_error C2_HOOK_CDECL state_renderBegin(br_primitive_state_sdl* self, br
     }
     if (self->out.depth != NULL) {
         flags |= PRIMF_DEPTH_BUFFER;
+    }
+    /* Shade tables share component 10 with alpha; only use them when the
+     * primitive is not alpha-blended (matches the retail block selection). */
+    if (self->prim.index_shade != NULL && !(flags & PRIMF_BLEND)) {
+        flags |= PRIMF_SHADE_TABLE;
     }
 
     /* map_transform is now applied by softrend geometry pipeline (mapping.c), not here.
@@ -1173,6 +1308,12 @@ static br_error C2_HOOK_CDECL state_renderBegin(br_primitive_state_sdl* self, br
         /* softrend's SurfaceAlpha fills comp[C_A] from the material opacity */
         lb->p.constant_components |= CM_A;
         lb->p.constant_mask |= CM_A;
+    }
+    if (flags & PRIMF_SHADE_TABLE) {
+        /* softrend's SurfaceIndexLit fills comp[C_I]; interpolate it and use
+         * it as the shade-table row. */
+        lb->p.vertex_components |= CM_I;
+        lb->p.convert_mask_f |= CM_I;
     }
     lb->p.subdivide_tolerance = 0;
     lb->state = self;
@@ -1243,8 +1384,18 @@ static br_error C2_HOOK_CDECL state_rangesQueryF(br_primitive_state_sdl* self, b
         src[C_B] = 255.f;
     }
     if (size > C_I) {
+        float index_scale = 255.f;
+
+        /* Match the retail primitive library: a shade table maps the
+         * interpolated lighting value onto row 0..height-1. */
+        if (self->prim.index_shade != NULL && !(self->prim.flags & PRIMF_BLEND)) {
+            br_buffer_stored_sdl* shade = (br_buffer_stored_sdl*)self->prim.index_shade;
+            if (shade->pm != NULL && shade->pm->pm_height > 0) {
+                index_scale = (float)(shade->pm->pm_height - 1);
+            }
+        }
         dest[C_I] = 0.f;
-        src[C_I] = 255.f;
+        src[C_I] = index_scale;
     }
     return 0;
 }
@@ -1407,9 +1558,13 @@ static br_error C2_HOOK_CDECL lib_stateNew(br_primitive_library_sdl* self, br_pr
     s->plib = self;
     s->prim.flags = 0;
     s->prim.colour_map = NULL;
+    s->prim.index_shade = NULL;
+    s->prim.index_blend = NULL;
     s->prim.alpha_val = 1.f;
     s->prim.colour_type = BRT_DEFAULT;
     s->prim.map_interpolation = BRT_NONE;
+    s->prim.map_width_limit = BRT_WRAP;
+    s->prim.map_height_limit = BRT_WRAP;
     s->cache.last_block = NULL;
     s->cache.last_type = BR_NULL_TOKEN;
 

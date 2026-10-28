@@ -22,6 +22,7 @@ extern float gMass_mine;
 // DoPowerupTextHeadup
 
 // QueueIconGoing
+void C2_HOOK_FASTCALL QueueIconGoing(tPowerup* pPowerup, tHeadup_icon* pHeadup_icons, int* pCount_icons);
 
 // QueueIconComing
 
@@ -243,9 +244,9 @@ extern void C2_HOOK_FASTCALL MinePreCollisionStuff(void);
 
 // MungeShatMines
 
-// ARDoShitMine
+extern void C2_HOOK_FASTCALL ARDoShitMine(br_actor* pActor, const br_vector3* pUnused);
 
-// ARUndoShitMine
+extern void C2_HOOK_FASTCALL ARUndoShitMine(br_actor* pActor, const br_vector3* pUnused);
 
 // PissOutOil
 
@@ -379,15 +380,15 @@ extern void C2_HOOK_FASTCALL MinePreCollisionStuff(void);
 
 extern void C2_HOOK_FASTCALL RemoveTail(void);
 
-// DoInitialTail
+extern void C2_HOOK_FASTCALL DoInitialTail(void);
 
-// UndoInitialTail
+extern void C2_HOOK_FASTCALL UndoInitialTail(void);
 
 // MayQueuePowerupRespawn
 
-// ARDoPowerupRespawn
+extern void C2_HOOK_FASTCALL ARDoPowerupRespawn(br_actor* pActor, int pUnused);
 
-// ARUndoPowerupRespawn
+extern void C2_HOOK_FASTCALL ARUndoPowerupRespawn(br_actor* pActor, int pUnused);
 
 extern void C2_HOOK_FASTCALL PrintPowerupIconIn3D(int pX, int pY, tHeadup_icon* pIcon, tPowerup* pPowerup, int pScale, tU32 pTime);
 

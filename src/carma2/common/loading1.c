@@ -23,11 +23,27 @@
 #include "platform.h"
 #include "globvars.h"
 #include "globvrpb.h"
+#ifdef CARPOCALYPSE2_MATCHING
+#if defined(_MSC_VER)
+#define C2_MATCHING_INLINE __inline
+#else
+#define C2_MATCHING_INLINE inline
+#endif
+#else
+#define C2_MATCHING_INLINE
+#endif
+
 // GLOBAL: CARMA2_HW 0x0068b88c
 int gKey_map_index;
 
 // GLOBAL: CARMA2_HW 0x00655e30
 int gDecode_thing = '@';
+
+// GLOBAL: CARMA2_HW 0x0058f418
+const char gSkip_lines_format[] = "%d";
+
+// GLOBAL: CARMA2_HW 0x0058f41c
+const char gSkip_lines_delimiters[] = "\t ,/";
 
 // GLOBAL: CARMA2_HW 0x00658610
 int gAllow_open_to_fail = 1;
@@ -208,6 +224,19 @@ float C2_HOOK_FASTCALL GetAFloat(FILE* pF) {
     return f;
 }
 
+// FUNCTION: CARMA2_HW 0x0048fbd0
+float C2_HOOK_FASTCALL FUN_0048fbd0(FILE* pF) {
+    char s[256];
+    char* str;
+    float f;
+
+    PossibleService();
+    GetALineWithNoPossibleService(pF, s);
+    str = strtok(s, "\t ,/");
+    sscanf(str, "%f", &f);
+    return f * 0.01f;
+}
+
 // FUNCTION: CARMA2_HW 0x0048fc20
 void C2_HOOK_FASTCALL GetPairOfFloats(FILE* pF, float* pF1, float* pF2) {
     char s[256];
@@ -250,6 +279,23 @@ void C2_HOOK_FASTCALL GetPairOfInts(FILE* pF, int* pF1, int* pF2) {
     sscanf(str, "%d", pF1);
     str = strtok(NULL, "\t ,/");
     sscanf(str, "%d", pF2);
+}
+
+// FUNCTION: CARMA2_HW 0x0048fed0
+void C2_HOOK_FASTCALL GetThreeIntsAndString(FILE* pF, int* pInt1, int* pInt2, int* pInt3, char* pStr) {
+    char s[256];
+    char* str;
+
+    PossibleService();
+    GetALineWithNoPossibleService(pF, s);
+    str = strtok(s, "\t ,/");
+    sscanf(str, "%d", pInt1);
+    str = strtok(NULL, "\t ,/");
+    sscanf(str, "%d", pInt2);
+    str = strtok(NULL, "\t ,/");
+    sscanf(str, "%d", pInt3);
+    str = strtok(NULL, "\t ,/");
+    strcpy(pStr, str);
 }
 
 // FUNCTION: CARMA2_HW 0x0048fe30
@@ -424,14 +470,14 @@ void C2_HOOK_CDECL SubsStringJob(char *pFormat, ...) {
     va_end(ap);
 }
 
-static void StripCRNLPrefix(char *line) {
+C2_MATCHING_INLINE void StripCRNLPrefix(char *line) {
 
     while (line[0] == ' ' || line[0] == '\t') {
         memmove(line, &line[1], strlen(line) - 1);
     }
 }
 
-void C2_HOOK_FASTCALL DecodeLine2(char* pS) {
+C2_MATCHING_INLINE void C2_HOOK_FASTCALL DecodeLine2(char* pS) {
     int len;
     int seed;
     int i;
@@ -471,7 +517,7 @@ void C2_HOOK_FASTCALL DecodeLine2(char* pS) {
     }
 }
 
-void C2_HOOK_FASTCALL EncodeLine2(char* pS) {
+C2_MATCHING_INLINE void C2_HOOK_FASTCALL EncodeLine2(char* pS) {
     int len;
     int seed;
     int i;
@@ -601,6 +647,28 @@ void C2_HOOK_FASTCALL EncodeFile(char* pThe_path) {
     rename(new_file, pThe_path);
 }
 
+// FUNCTION: CARMA2_HW 0x00490ec0
+void C2_HOOK_FASTCALL SkipLines(FILE* pF) {
+    char* str;
+    int count;
+    register int lines_to_skip;
+    char line[256];
+    char skipped_line[256];
+
+    PossibleService();
+    GetALineWithNoPossibleService(pF, line);
+    str = strtok(line, gSkip_lines_delimiters);
+    sscanf(str, gSkip_lines_format, &count);
+    lines_to_skip = count;
+    if (lines_to_skip > 0) {
+        do {
+            PossibleService();
+            GetALineWithNoPossibleService(pF, skipped_line);
+            lines_to_skip = lines_to_skip - 1;
+        } while (lines_to_skip != 0);
+    }
+}
+
 // FUNCTION: CARMA2_HW 0x00490f30
 char * C2_HOOK_FASTCALL GetALineWithNoPossibleService(FILE* pF, char* pS) {
     char* result;
@@ -680,7 +748,7 @@ char * C2_HOOK_FASTCALL GetALineAndDontArgue(FILE* pF, char* pS) {
     return GetALineWithNoPossibleService(pF, pS);
 }
 
-FILE* OldDRfopen(const char* pFilename, const char* pMode) {
+C2_MATCHING_INLINE FILE* OldDRfopen(const char* pFilename, const char* pMode) {
     FILE* fp;
 
     fp = PFfopen(pFilename, pMode);
@@ -694,7 +762,6 @@ FILE* OldDRfopen(const char* pFilename, const char* pMode) {
         if (g_source_exists == 1) {
             char general_file[256];
             char paths_file[256];
-            char source_check[256];
 
             strcpy(general_file, "DATA");
             strcat(general_file, gDir_separator);
@@ -802,9 +869,8 @@ FILE* C2_HOOK_FASTCALL DRfopen(const char* pFilename, const char* pMode) {
 
     if (result == NULL && !gAllow_open_to_fail) {
         char buffer[256];
-        int buffer_size = sizeof(buffer) - 1;
 
-        if (PDGetRegisterSourceLocation(buffer, &buffer_size)) {
+        if (GetRegisterSourceLocation(buffer)) {
             if (!PDCheckDriveExists(buffer)) {
                 if (gMisc_strings[0] != NULL) {
                     PDFatalError(GetMiscString(243));
@@ -1071,4 +1137,103 @@ void C2_HOOK_FASTCALL InitFunkGrooveFlags(void) {
     for (i = 1; i < CARPOCALYPSE2_ASIZE(gFunk_groove_flags); i++) {
         gFunk_groove_flags[i] = 0;
     }
+}
+
+// FUNCTION: CARMA2_HW 0x0044bf20
+void C2_HOOK_FASTCALL FUN_0044bf20(void* pOwner) {
+    br_actor** actor;
+
+    actor = (br_actor**)((char*)pOwner + 0x10);
+    BrActorRemove(*actor);
+    BrActorFree(*actor);
+}
+
+// FUNCTION: CARMA2_HW 0x0044bf40
+void C2_HOOK_FASTCALL FUN_0044bf40(void) {
+
+}
+
+// FUNCTION: CARMA2_HW 0x0044bf80
+void C2_HOOK_FASTCALL LoadingNoOp(void) {
+}
+
+// FUNCTION: CARMA2_HW 0x0048fb50
+tU32 C2_HOOK_FASTCALL DecimalDigitsToBitmask(tU32 pValue) {
+    unsigned int result;
+    unsigned int v;
+
+    result = 0;
+    for (v = pValue; v != 0; v /= 10) {
+        result = (v % 10) | (result + result);
+    }
+    return result;
+}
+
+// FUNCTION: CARMA2_HW 0x004907b0
+void C2_HOOK_FASTCALL DecodeLine(char* pS) {
+    int len;
+    int seed;
+    int i;
+
+    len = strlen(pS);
+    if (len != 0) {
+        do {
+            if (pS[len - 1] != '\r' && pS[len - 1] != '\n') {
+                break;
+            }
+            pS[len - 1] = '\0';
+            len--;
+        } while (len != 0);
+    }
+    i = 0;
+    seed = len % 16;
+    if (len > 0) {
+        do {
+            if (pS[i] == '\t') {
+                pS[i] = (char)0x9f;
+            }
+            pS[i] = ((gLong_key[seed] ^ (pS[i] - 0x20)) & 0x7f) + 0x20;
+            seed += 7;
+            seed %= 16;
+            if (pS[i] == (char)0x9f) {
+                pS[i] = '\t';
+            }
+            i++;
+        } while (i < len);
+    }
+}
+
+void C2_HOOK_FASTCALL EncodeFileWrapper(char* pThe_path);
+
+// FUNCTION: CARMA2_HW 0x00490b90
+void C2_HOOK_FASTCALL EncodeAllFilesInDirectory(char* pThe_path) {
+    char path[256];
+
+    PathCat(path, gApplication_path, pThe_path);
+    PFForEveryFile(path, (tPDForEveryFileRecurse_cbfn)EncodeFileWrapper);
+}
+
+// FUNCTION: CARMA2_HW 0x00490bc0
+void C2_HOOK_FASTCALL EncodeFileWrapper(char* pThe_path) {
+    int len;
+
+    len = strlen(pThe_path);
+    if (strcmp(&pThe_path[len - 4], ".TXT") != 0) {
+        return;
+    }
+    if (strcmp(&pThe_path[len - 12], "DKEYMAP0.TXT") == 0
+            || strcmp(&pThe_path[len - 12], "DKEYMAP1.TXT") == 0
+            || strcmp(&pThe_path[len - 12], "DKEYMAP2.TXT") == 0
+            || strcmp(&pThe_path[len - 12], "DKEYMAP3.TXT") == 0
+            || strcmp(&pThe_path[len - 12], "KEYMAP_0.TXT") == 0
+            || strcmp(&pThe_path[len - 12], "KEYMAP_1.TXT") == 0
+            || strcmp(&pThe_path[len - 12], "KEYMAP_2.TXT") == 0
+            || strcmp(&pThe_path[len - 12], "KEYMAP_3.TXT") == 0
+            || strcmp(&pThe_path[len - 11], "OPTIONS.TXT") == 0
+            || strcmp(&pThe_path[len - 12], "KEYNAMES.TXT") == 0
+            || strcmp(&pThe_path[len - 10], "KEYMAP.TXT") == 0
+            || strcmp(&pThe_path[len - 9], "PATHS.TXT") == 0) {
+        return;
+    }
+    EncodeFile(pThe_path);
 }

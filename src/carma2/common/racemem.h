@@ -5,7 +5,7 @@
 
 #include "carpocalypse2_types.h"
 
-extern tU8 gRace_memory[1000];
+extern tS8 gRace_memory[1000];
 
 void C2_HOOK_FASTCALL ClearAllRuntimeVariables(void);
 

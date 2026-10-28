@@ -27,11 +27,11 @@ typedef struct tCollision_contact {
 
 // AddObjectWallForce
 
-// AddObjectObjectForce
+extern int C2_HOOK_FASTCALL AddObjectObjectForce(tPhysics_joint_force* pForces, const br_vector3* pPoint_a, br_scalar pT, const br_vector3* pPoint_b, const br_vector3* pNormal, int pCount, tPhysics_object* pObject_a, tPhysics_object* pObject_b, int pType, void* pUnused, br_scalar pValue);
 
-// RayCastThruFaceList
+extern tFace_ref* C2_HOOK_FASTCALL RayCastThruFaceList(br_vector3* pPosition, br_vector3* pDirection, br_vector3* pNormal, br_scalar* pT, br_vector3* pCollision_position, tFace_ref* pFaces, int pCount);
 
-// RayCastThruFaceList2
+extern tFace_ref* C2_HOOK_FASTCALL RayCastThruFaceList2(br_vector3* pPosition, br_vector3* pDirection, br_vector3* pNormal, br_scalar* pT, br_vector3* pCollision_position, tFace_ref* pFaces, int pCount);
 
 // RayCastInBox
 
@@ -43,7 +43,7 @@ typedef struct tCollision_contact {
 
 // EliminateFaces
 
-// GetShapePoint
+extern void C2_HOOK_FASTCALL GetShapePoint(br_vector3* pPoint, tPhysics_shape* pShape, tU32 pIndex);
 
 // GetObjectObjectEdgeIntersections
 
@@ -320,7 +320,7 @@ int C2_HOOK_FASTCALL ScaleCollisionImpulses(tCollision_contact* pContacts, float
 
 // RQSingleExpand
 
-// RQDcmpV
+extern int C2_HOOK_FASTCALL RQDcmpV(br_scalar* matrix, int size, br_scalar* orthogonal);
 
 // MakeIdentity
 
@@ -342,13 +342,13 @@ int C2_HOOK_FASTCALL ScaleCollisionImpulses(tCollision_contact* pContacts, float
 
 // RQMatrixSolveWithNegatives
 
-// MatrixProcess
+extern int C2_HOOK_FASTCALL MatrixProcess(br_scalar* pR, br_scalar* pQ, int pDim);
 
 // RqBackSub
 
-// GetPhysicsScratchPointer
+extern void* C2_HOOK_FASTCALL GetPhysicsScratchPointer(int pSize);
 
-// IncreasePhysicsScratchPointer
+extern void C2_HOOK_FASTCALL IncreasePhysicsScratchPointer(int pSize);
 
 // ClearPhysicsScratchSpace
 
@@ -679,5 +679,11 @@ int C2_HOOK_FASTCALL GetHierarchyNetworkStuff(tPhysics_object* pObject, tU8* pNe
 int C2_HOOK_FASTCALL SizeOfObjectNetworkStuff(tPhysics_joint_type pType);
 
 int C2_HOOK_FASTCALL GetHierarchyNetworkSize(tPhysics_object* pObject);
+
+void C2_HOOK_FASTCALL FUN_004be350(float* pDestination, const float* pSource);
+
+void C2_HOOK_FASTCALL FUN_004b77b0(int* pDestination, int* pJoint_data, int pCount);
+
+int C2_HOOK_FASTCALL FUN_004b9650(tPhysics_object* pObject, tPhysics_object* pParent_context);
 
 #endif // GUARD_PHYSICS_H

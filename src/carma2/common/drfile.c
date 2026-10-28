@@ -1,6 +1,7 @@
 #include "drfile.h"
 
 #include "loading.h"
+#include "network.h"
 
 #include "carpocalypse2_types.h"
 
@@ -34,6 +35,13 @@ br_filesystem gFile_system = {
 
 // GLOBAL: CARMA2_HW 0x006815c4
 br_filesystem* gOld_file_system;
+
+// FUNCTION: CARMA2_HW 0x0044c690
+int C2_HOOK_FASTCALL FUN_0044c690(int pStr_index) {
+
+    NetFullScreenMessage(pStr_index, 0);
+    return 0;
+}
 
 // FUNCTION: CARMA2_HW 0x0044c6a0
 int C2_HOOK_CDECL DRStdioEOF(void* f) {

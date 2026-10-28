@@ -4,6 +4,7 @@
 #include "globvars.h"
 #include "graphics.h"
 #include "loading.h"
+#include "piping.h"
 #include "utility.h"
 #include "world.h"
 
@@ -132,10 +133,8 @@ void C2_HOOK_FASTCALL MungeExplosions(void) {
 int gNext_explosion_slot;
 
 // FUNCTION: CARMA2_HW 0x004c8920
-br_actor* C2_HOOK_FASTCALL CreateExplosionBillboard(int pArg) {
-    (void)pArg;
-    NOT_IMPLEMENTED();
-    return NULL;
+void C2_HOOK_FASTCALL PipeSingleExplosion(int pIndex, const tExplosion* pData) {
+    ARDoSingleVariedSession(ePipe_chunk_explosion, pIndex, 1, sizeof(tExplosion), 0, pData);
 }
 
 // FUNCTION: CARMA2_HW 0x004ead00
@@ -161,6 +160,7 @@ void C2_HOOK_FASTCALL Explode(tExplosion_animation* pExplosion_animation, br_act
     int angle;
     tExplosion* slot;
     int slot_idx;
+    int slot_index;
 
     now = GetTotalTime();
     if (pActor == NULL) {
@@ -212,6 +212,7 @@ void C2_HOOK_FASTCALL Explode(tExplosion_animation* pExplosion_animation, br_act
             for (k = 0; k < (int)CARPOCALYPSE2_ASIZE(gExplosions); k++) {
                 if (gExplosions[k].start == 0) {
                     slot = &gExplosions[k];
+                    slot_index = k;
                     slot_idx = 1;
                     break;
                 }
@@ -224,6 +225,7 @@ void C2_HOOK_FASTCALL Explode(tExplosion_animation* pExplosion_animation, br_act
                     }
                     slot = &gExplosions[gNext_explosion_slot];
                     if (slot->finished == 0) {
+                        slot_index = gNext_explosion_slot;
                         break;
                     }
                 }
@@ -246,7 +248,32 @@ void C2_HOOK_FASTCALL Explode(tExplosion_animation* pExplosion_animation, br_act
                 slot->frames[k].map = group->frames[k].map;
                 slot->frames[k].opacity = group->frames[k].opacity;
             }
-            CreateExplosionBillboard(frametime);
+            PipeSingleExplosion(slot_index, slot);
         }
     }
+}
+// FUNCTION: CARMA2_HW 0x004f5fa0
+void C2_HOOK_FASTCALL AddFacesToModel(br_model* pModel, int pFace_count, const tU16* pFace_data, br_material* pMaterial) {
+    br_face* face;
+    const tU16* face_data;
+    int i;
+
+    face = &pModel->faces[pModel->nfaces];
+    if (pFace_count > 0) {
+        face_data = pFace_data;
+        i = pFace_count;
+        do {
+            face->material = pMaterial;
+            face->vertices[0] = face_data[0];
+            face->vertices[1] = face_data[1];
+            face->vertices[2] = face_data[2];
+            face->smoothing = face_data[3];
+            face->flags = 0;
+            face++;
+            face_data += 4;
+            i--;
+        } while (i != 0);
+    }
+    pModel->nfaces += (br_int_16)pFace_count;
+    DRModelUpdateAndKevificateMaterials(pModel, BR_MODU_ALL);
 }

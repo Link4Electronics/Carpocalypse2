@@ -29,7 +29,7 @@ extern br_scalar gCamera_yon;
 #include "carpocalypse2_macros.h"
 
 #define ACTOR_CAMERA(ACTOR) ((br_camera*)((ACTOR)->type_data))
-void C2_HOOK_FASTCALL FrobFog(void);
+static void C2_HOOK_FASTCALL FrobFog(void);
 // GLOBAL: CARMA2_HW 0x0079ec44
 tSpecial_volume* gDAT_0079ec44;
 
@@ -376,6 +376,30 @@ void C2_HOOK_FASTCALL MungeForwardSky(void) {
     gHas_sky_texture = gProgram_state.default_depth_effect.sky_texture != NULL;
 }
 
+// FUNCTION: CARMA2_HW 0x00446890
+void C2_HOOK_FASTCALL ReduceDepthStart(void) {
+    char s[256];
+
+    if (gProgram_state.current_depth_effect.start > 3) {
+        gProgram_state.current_depth_effect.start--;
+    }
+    sprintf(s, "Depth start reduced to %d", gProgram_state.current_depth_effect.start);
+    NewTextHeadupSlot(4, 0, 500, -1, s);
+    gProgram_state.default_depth_effect.start = gProgram_state.current_depth_effect.start;
+}
+
+// FUNCTION: CARMA2_HW 0x004469b0
+void C2_HOOK_FASTCALL IncreaseDepthEnd(void) {
+    char s[256];
+
+    if (gProgram_state.current_depth_effect.end > 0) {
+        gProgram_state.current_depth_effect.end--;
+    }
+    sprintf(s, "Depth end increased to %d", gProgram_state.current_depth_effect.end);
+    NewTextHeadupSlot(4, 0, 500, -1, s);
+    gProgram_state.default_depth_effect.end = gProgram_state.current_depth_effect.end;
+}
+
 // FUNCTION: CARMA2_HW 0x00446a10
 void C2_HOOK_FASTCALL AssertYons(void) {
     br_camera* camera_ptr;
@@ -639,7 +663,7 @@ void C2_HOOK_FASTCALL FogCars(void) {
     }
 }
 
-void C2_HOOK_FASTCALL FrobFog(void) {
+static void C2_HOOK_FASTCALL FrobFog(void) {
     int i;
     br_material* material;
 
@@ -934,6 +958,40 @@ void C2_HOOK_STDCALL SetYon(br_scalar pYon) {
 br_scalar C2_HOOK_STDCALL GetYon(void) {
 
     return gCamera_yon;
+}
+
+// FUNCTION: CARMA2_HW 0x00446bc0
+void C2_HOOK_STDCALL IncreaseAngle(void) {
+    br_camera* camera_ptr;
+    int i;
+    char s[256];
+
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gCamera_list); i++) {
+        camera_ptr = gCamera_list[i]->type_data;
+        camera_ptr->field_of_view += BrDegreeToAngle(2.5);
+        if (camera_ptr->field_of_view > BrDegreeToAngle(170)) {
+            camera_ptr->field_of_view = BrDegreeToAngle(170);
+        }
+        sprintf(s, "Camera angle increased to %d", gProgram_state.current_depth_effect.end);
+        NewTextHeadupSlot(4, 0, 500, -1, s);
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x00446c40
+void C2_HOOK_STDCALL DecreaseAngle(void) {
+    br_camera* camera_ptr;
+    int i;
+    char s[256];
+
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gCamera_list); i++) {
+        camera_ptr = gCamera_list[i]->type_data;
+        camera_ptr->field_of_view -= BrDegreeToAngle(2.5);
+        if (camera_ptr->field_of_view < BrDegreeToAngle(10)) {
+            camera_ptr->field_of_view = BrDegreeToAngle(10);
+        }
+        sprintf(s, "Camera angle decreased to %d", gProgram_state.current_depth_effect.end);
+        NewTextHeadupSlot(4, 0, 500, -1, s);
+    }
 }
 
 // FUNCTION: CARMA2_HW 0x00446e00

@@ -2,10 +2,13 @@
 #define GUARD_AIWORLD_H
 
 #include "c2_hooks.h"
+#include "carpocalypse2_types.h"
 
 // MakeVertexAndOffsetIt
 
-// MakeFaceAndTextureIt
+extern void C2_HOOK_FASTCALL MakeFaceAndTextureIt(br_model* pModel, int pFace_num, br_uint_16 pV0, br_uint_16 pV1, br_uint_16 pV2, br_material* pMaterial);
+
+extern br_material* C2_HOOK_FASTCALL CreateSimpleMaterial(int pIndex);
 
 extern void C2_HOOK_FASTCALL InitPanGameAIWorld(void);
 

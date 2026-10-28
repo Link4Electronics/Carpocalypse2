@@ -13,7 +13,7 @@
 
 // DoEndRaceSummary
 
-// AnyBuyableCars
+extern int C2_HOOK_FASTCALL AnyBuyableCars(void);
 
 // RecordAPOAndCredits
 

@@ -10,6 +10,7 @@
 // GLOBAL: CARMA2_HW 0x006a3940
 extern tQueued_net_smash gQueued_net_smashes[50];
 extern int gSize_powerup_queue;
+extern tU8 gNon_car_spec_indices[100];
 extern br_scalar gSight_distance_squared;
 extern br_material* gMaterials_to_adapt[200];
 /* Retail's FogificateMaterials iterates gMaterials_to_adapt at 0x6a3340 (see
@@ -19,6 +20,8 @@ extern br_material* gMaterials_to_adapt[200];
 // GLOBAL: CARMA2_HW 0x006b7820
 extern tBrender_storage* gStorage_for_callbacks;
 extern int gGroovidelics_array_size;
+
+extern intptr_t C2_HOOK_CDECL DelGrooveRef(br_actor* pActor, void* pArg);
 extern tGroovidelic_spec* gGroovidelics_array;
 extern const char* gSmashable_track_environment_path;
 extern tSmashable_environment_name* gSmashable_noncars;
@@ -313,6 +316,10 @@ void C2_HOOK_FASTCALL MungeMaterialSV(br_matrix34* pMat, br_material* pMat_1, br
 
 br_uint_32 C2_HOOK_FASTCALL ApplyTransToModels(br_actor* pActor, br_matrix34* pMat, void* pData);
 
+intptr_t C2_HOOK_CDECL MoveModelVertices(br_actor* pActor, br_vector3* pOffset);
+
+void C2_HOOK_FASTCALL RecenterActorModels(br_actor* pActor, br_vector3* pOffset);
+
 br_uint_32 C2_HOOK_FASTCALL DeleteBastards(br_actor* pActor, br_matrix34* pMat, void* pData);
 
 void C2_HOOK_FASTCALL PutAdditionalNonCarsOnToAdditionalActors(void);
@@ -322,6 +329,8 @@ void C2_HOOK_FASTCALL PutAdditionalNonCarsOnToNonTrackActor(void);
 void C2_HOOK_FASTCALL DeleteAnyZeroBastards(void);
 
 void C2_HOOK_FASTCALL SaveAdditionalActors(void);
+
+void C2_HOOK_FASTCALL DropActor(int pIndex, int pPowerup);
 
 void C2_HOOK_FASTCALL SaveSpecialVolumes(void);
 
@@ -375,6 +384,8 @@ tGroovidelic_spec* C2_HOOK_FASTCALL ActorsGroove(br_actor* pActor);
 
 void C2_HOOK_FASTCALL EnableGroovidelic(br_actor *pActor, tU32 pBlock_flags);
 
+void C2_HOOK_FASTCALL FUN_0047b390(br_device_pixelmap* pPixelmap, int pWidth, int pHeight, int pMask);
+
 br_uint_32 C2_HOOK_CDECL ZlibFsGetAttributes(void);
 
 void* C2_HOOK_CDECL ZlibFsOpenRead(const char* buffer, br_size_t capacity, br_mode_test_cbfn* cbfn, int* type);
@@ -406,5 +417,7 @@ void C2_HOOK_FAKE_THISCALL ControlBoundFunkGroove(int pSlot_number, undefined4 p
 float C2_HOOK_FAKE_THISCALL ControlBoundFunkGroovePlus(int pSlot_number, undefined4 pArg2, float pValue);
 
 void C2_HOOK_FASTCALL ProcessTrack(br_actor* pWorld, tTrack_spec* pTrack_spec, br_actor* pCamera, br_matrix34* pCamera_to_world_transform);
+
+void C2_HOOK_FASTCALL FUN_004f0f80(tNet_game_player_info* pRecipient);
 
 #endif // CARPOCALYPSE2_WORLD_H

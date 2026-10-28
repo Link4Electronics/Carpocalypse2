@@ -8,4 +8,6 @@
 
 void C2_HOOK_FASTCALL ReadExplosion(FILE *pF, tExplosion_animation* pAnimation);
 
+void C2_HOOK_FASTCALL FreeExplosionAnimation(tExplosion_animation* pAnimation);
+
 #endif // CARPOCALYPSE2_ANIMATION_H

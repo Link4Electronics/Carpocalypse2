@@ -15,6 +15,18 @@
 #include "c2_stdlib.h"
 #include "c2_math.h"
 #include "carpocalypse2_macros.h"
+
+// GLOBAL: CARMA2_HW 0x00589a2c
+const br_scalar gFLOAT_00589a2c = 0.5f;
+
+// GLOBAL: CARMA2_HW 0x00589a54
+const br_scalar gFLOAT_00589a54 = 1.0f;
+
+// GLOBAL: CARMA2_HW 0x00589aa0
+const br_scalar gFLOAT_00589aa0 = 0.007246376946568489f;
+
+// GLOBAL: CARMA2_HW 0x00589aa4
+const br_scalar gFLOAT_00589aa4 = -0.007246376946568489f;
 // FUNCTION: CARMA2_HW 0x00433350
 tPhysics_object* C2_HOOK_FASTCALL DetachBit(tCar_spec* pCar, br_actor* pActor, br_bounds3* pBounds) {
 
@@ -770,5 +782,115 @@ void C2_HOOK_FASTCALL DoBending(void) {
         }
         gCrush_lists[i].car_spec = NULL;
         i = i + 1;
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x00430600
+void C2_HOOK_FASTCALL ComputeSplitEdgeIntersections(br_vector3* pPositive_intersection, br_vector3* pNegative_intersection, const br_vector3* pPositive_point, const br_vector3* pNegative_point, float pPositive_distance, float pNegative_distance) {
+    float fVar1;
+    float fVar2;
+    float fVar3;
+    float fVar4;
+    volatile float fVar5;
+    float fVar6;
+    float fVar7;
+    float fVar8;
+    fVar7 = pPositive_distance - gFLOAT_00589aa4;
+    fVar5 = -((pPositive_distance - gFLOAT_00589aa0) / (pNegative_distance - pPositive_distance));
+    fVar8 = gFLOAT_00589a54 - fVar5;
+    fVar1 = pNegative_point->v[2];
+    fVar2 = pPositive_point->v[2];
+    fVar3 = pPositive_point->v[0];
+    fVar4 = pNegative_point->v[0];
+    pPositive_intersection->v[1] = pNegative_point->v[1] * fVar5 + pPositive_point->v[1] * fVar8;
+    pPositive_intersection->v[2] = fVar1 * fVar5 + fVar2 * fVar8;
+    pPositive_intersection->v[0] = fVar5 * fVar4 + fVar3 * fVar8;
+    fVar1 = pPositive_point->v[2];
+    fVar5 = -(fVar7 / (pNegative_distance - pPositive_distance));
+    fVar6 = gFLOAT_00589a54 - fVar5;
+    fVar2 = pNegative_point->v[2];
+    fVar3 = pPositive_point->v[0];
+    fVar4 = pNegative_point->v[0];
+    pNegative_intersection->v[1] = pNegative_point->v[1] * fVar5 + pPositive_point->v[1] * fVar6;
+    pNegative_intersection->v[2] = fVar2 * fVar5 + fVar1 * fVar6;
+    pNegative_intersection->v[0] = fVar5 * fVar4 + fVar3 * fVar6;
+}
+
+// FUNCTION: CARMA2_HW 0x0042da20
+void C2_HOOK_FASTCALL FUN_0042da20(undefined4* pRecipient) {
+    int i;
+    tCar_spec** pActiveCar;
+
+    i = 0;
+    if (0 < gNum_active_cars) {
+        pActiveCar = gActive_car_list;
+        do {
+            if (*pActiveCar != NULL && (*pActiveCar)->driver > 5 && (*pActiveCar)->car_crush_spec != NULL) {
+                tCar_crush_spec* car_crush;
+                int j;
+
+                car_crush = (*pActiveCar)->car_crush_spec;
+                j = 0;
+                if (0 < car_crush->field_0x270) {
+                    do {
+                        SendSemiDetachBit(*pActiveCar, car_crush->field_0x274[j].field_0x0, 0.f, pRecipient);
+                        j = j + 1;
+                    } while (j < car_crush->field_0x270);
+                }
+            }
+            i = i + 1;
+            pActiveCar = pActiveCar + 1;
+        } while (i < gNum_active_cars);
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x00433b90
+void C2_HOOK_FASTCALL FUN_00433b90(br_model* pModel, const br_vector3* pOffset) {
+    volatile br_scalar center_x;
+    volatile br_scalar center_y;
+    volatile br_scalar center_z;
+    volatile br_vector3 offset;
+    volatile br_scalar delta_x;
+    volatile br_scalar delta_y;
+    volatile br_scalar delta_z;
+    tU16 i;
+
+    center_x = (pModel->bounds.max.v[0] + pModel->bounds.min.v[0]) * gFLOAT_00589a2c;
+    center_y = (pModel->bounds.max.v[1] + pModel->bounds.min.v[1]) * gFLOAT_00589a2c;
+    center_z = (pModel->bounds.max.v[2] + pModel->bounds.min.v[2]) * gFLOAT_00589a2c;
+    offset.v[0] = pOffset->v[0];
+    offset.v[1] = pOffset->v[1];
+    offset.v[2] = pOffset->v[2];
+    delta_x = offset.v[0] - center_x;
+    delta_y = offset.v[1] - center_y;
+    delta_z = offset.v[2] - center_z;
+    for (i = 0; i < pModel->nvertices; i++) {
+        pModel->vertices[i].p.v[0] = delta_x + pModel->vertices[i].p.v[0];
+        pModel->vertices[i].p.v[1] = delta_y + pModel->vertices[i].p.v[1];
+        pModel->vertices[i].p.v[2] = delta_z + pModel->vertices[i].p.v[2];
+    }
+    if ((pModel->flags & BR_MODF_CUSTOM) != 0 && pModel->user != NULL) {
+        *(int*)pModel->user = 1;
+        return;
+    }
+    pModel->custom = JitModelUpdate;
+    pModel->flags |= BR_MODF_CUSTOM;
+}
+
+// FUNCTION: CARMA2_HW 0x0042d8f0
+void C2_HOOK_FASTCALL AddToggledDoor(br_actor* pActor, tCar_spec* pCar, int pFlag, float pDelay) {
+    int i;
+
+    if (gCount_toggled_doors != 16) {
+        for (i = 0; i < gCount_toggled_doors; i++) {
+            if (gToggled_doors[i].actor == pActor) {
+                return;
+            }
+        }
+        gToggled_doors[gCount_toggled_doors].actor = pActor;
+        gToggled_doors[gCount_toggled_doors].car = pCar;
+        gToggled_doors[gCount_toggled_doors].field_0x8 = pFlag;
+        gToggled_doors[gCount_toggled_doors].field_0xc = pDelay;
+        gCount_toggled_doors = gCount_toggled_doors + 1;
     }
 }

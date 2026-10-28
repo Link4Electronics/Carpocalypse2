@@ -592,3 +592,16 @@ int C2_HOOK_FASTCALL NetworkStartJoin(tFrontend_spec* pFrontend) {
     gFrontend_net_mode = eNet_mode_thinking_about_it;
     return NetworkJoinGoAhead(pFrontend);
 }
+
+// FUNCTION: CARMA2_HW 0x004682a0
+int C2_HOOK_FASTCALL NetToggleMode(tFrontend_spec* pFrontend) {
+
+    (void)pFrontend;
+    if (gFrontend_net_mode == eNet_mode_thinking_about_it) {
+        gFrontend_net_mode = eNet_mode_host;
+    } else {
+        gFrontend_net_mode = eNet_mode_thinking_about_it;
+    }
+    WaitFor(6000);
+    return 0;
+}

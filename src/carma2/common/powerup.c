@@ -432,9 +432,21 @@ void C2_HOOK_FASTCALL MinePreCollisionStuff(void) {
 
 // MungeShatMines
 
-// ARDoShitMine
+// FUNCTION: CARMA2_HW 0x004de000
+void C2_HOOK_FASTCALL ARDoShitMine(br_actor* pActor, const br_vector3* pUnused) {
+    if (pActor->parent == NULL) {
+        BrActorAdd(gNon_track_actor, pActor);
+    }
+    pActor->render_style = BR_RSTYLE_FACES;
+}
 
-// ARUndoShitMine
+// FUNCTION: CARMA2_HW 0x004de020
+void C2_HOOK_FASTCALL ARUndoShitMine(br_actor* pActor, const br_vector3* pUnused) {
+    if (pActor->parent != NULL) {
+        BrActorRemove(pActor);
+    }
+    pActor->render_style = BR_RSTYLE_NONE;
+}
 
 // PissOutOil
 
@@ -568,15 +580,35 @@ void C2_HOOK_FASTCALL MinePreCollisionStuff(void) {
 
 // RemoveTail (implemented in powerups.c)
 
-// DoInitialTail
+// FUNCTION: CARMA2_HW 0x004e0710
+void C2_HOOK_FASTCALL DoInitialTail(void) {
+    tPhysics_object* collision_info;
 
-// UndoInitialTail
+    for (collision_info = gMutant_tail_first_collision_info; collision_info != NULL; collision_info = collision_info->child) {
+        collision_info->actor->render_style = BR_RSTYLE_FACES;
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x004e0730
+void C2_HOOK_FASTCALL UndoInitialTail(void) {
+    tPhysics_object* collision_info;
+
+    for (collision_info = gMutant_tail_first_collision_info; collision_info != NULL; collision_info = collision_info->child) {
+        collision_info->actor->render_style = BR_RSTYLE_NONE;
+    }
+}
 
 // MayQueuePowerupRespawn
 
-// ARDoPowerupRespawn
+// FUNCTION: CARMA2_HW 0x004e07d0
+void C2_HOOK_FASTCALL ARDoPowerupRespawn(br_actor* pActor, int pUnused) {
+    pActor->render_style = BR_RSTYLE_FACES;
+}
 
-// ARUndoPowerupRespawn
+// FUNCTION: CARMA2_HW 0x004e07e0
+void C2_HOOK_FASTCALL ARUndoPowerupRespawn(br_actor* pActor, int pUnused) {
+    pActor->render_style = BR_RSTYLE_NONE;
+}
 
 // FUNCTION: CARMA2_HW 0x004e07f0
 void C2_HOOK_FASTCALL PrintPowerupIconIn3D(int pX, int pY, tHeadup_icon* pIcon, tPowerup* pPowerup, int pScale, tU32 pTime) {
@@ -738,5 +770,52 @@ void C2_HOOK_FASTCALL PeriodicCloaking(void) {
         for (i = 0; i < gCount_cloaked_cars; i++) {
             DoCamouflageThing(gCloaked_cars[i]);
         }
+    }
+}
+// FUNCTION: CARMA2_HW 0x004df200
+void C2_HOOK_FASTCALL FUN_004df200(tPowerup* pPowerup, tCar_spec* pCar) {
+
+    if (pPowerup->got_proc != NULL) {
+        ((void (C2_HOOK_FASTCALL *)(tPowerup*, tCar_spec*))pPowerup->got_proc)(pPowerup, pCar);
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x004df210
+void C2_HOOK_FASTCALL FUN_004df210(tPowerup* pPowerup, tCar_spec* pCar) {
+    if (pPowerup->lose_proc != NULL) {
+        pPowerup->lose_proc(pPowerup, pCar);
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x004d9670
+void C2_HOOK_FASTCALL QueueIconGoing(tPowerup* pPowerup, tHeadup_icon* pHeadup_icons, int* pCount_icons) {
+    int i;
+
+    for (i = 0; i < *pCount_icons; i++) {
+        if (pHeadup_icons[i].powerup == pPowerup) {
+            pHeadup_icons[i].fizzle_stage = 3;
+            pHeadup_icons[i].fizzle_direction = -1;
+            pHeadup_icons[i].fizzle_start = GetTotalTime();
+            break;
+        }
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x004e0ba0
+void C2_HOOK_FASTCALL DisposeBillBoard(br_actor* pActor) {
+
+    if (pActor != NULL) {
+        if (pActor->material != NULL) {
+            BrMaterialRemove(pActor->material);
+            BrMaterialFree(pActor->material);
+        }
+        if (pActor->model != NULL) {
+            BrModelRemove(pActor->model);
+            BrModelFree(pActor->model);
+        }
+        if (pActor->parent != NULL) {
+            BrActorRemove(pActor);
+        }
+        BrActorFree(pActor);
     }
 }

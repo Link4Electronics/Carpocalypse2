@@ -23,7 +23,6 @@ extern int gInventory[20];
 extern int gINT_006a0a6c;
 extern int gINT_006a0a5c;
 extern tPowerup* gPowerup_array;
-extern int gPowerup_net_state[56];
 extern tRespawn_powerup gRespawn_powerups[100];
 extern int gInventory_selected;
 extern int gNumber_of_icons;
@@ -34,6 +33,12 @@ extern tCar_spec* gCloaked_cars[12];
 
 int C2_HOOK_FASTCALL GetPowerupCount(void);
 
+char* C2_HOOK_FASTCALL GetPowerupMessage(int pIndex);
+
+void C2_HOOK_FASTCALL ReceivedPowerup(tNet_message_chunk_powerup* pMessage);
+
+void C2_HOOK_FASTCALL FUN_004d9d00(tPhysics_object* pObject, int pMode);
+
 void C2_HOOK_FASTCALL GetPowerupPosition(int pIndex, br_vector3* pPosition);
 
 void C2_HOOK_FASTCALL InitRepulseEffects(void);
@@ -43,6 +48,8 @@ void C2_HOOK_FASTCALL InitTail(void);
 void C2_HOOK_FASTCALL InitPowerups(void);
 
 void C2_HOOK_FASTCALL RemoveRepulseEffect(tRepulse_link* pRepulse);
+
+void C2_HOOK_FASTCALL AddRepulseLink(tU32 pTime, tCar_spec* pCar, undefined4 pField_0x24, br_vector3* pOrigin, br_vector3* pVictim, float pField_0x18, float pField_0x1c);
 
 void C2_HOOK_FASTCALL ResetRepulseEffects(void);
 
@@ -67,6 +74,7 @@ void C2_HOOK_FASTCALL ProcessShitMines(tU32 pTime);
 void C2_HOOK_FASTCALL RemoveTail(void);
 
 void C2_HOOK_FASTCALL CloseDownPowerUps(void);
+void C2_HOOK_FASTCALL CloseDownPowerUpsForCar(tCar_spec* pCar);
 
 void C2_HOOK_FASTCALL MaxOutAPO(void);
 
@@ -81,6 +89,8 @@ void C2_HOOK_FASTCALL AutoGoody(tU32 pTime);
 void C2_HOOK_FASTCALL PeriodicCloaking(void);
 
 void C2_HOOK_FASTCALL LosePowerup(tPowerup* pPowerup);
+
+void C2_HOOK_FASTCALL LoseCarPowerups(tCar_spec* pCar);
 
 int C2_HOOK_FASTCALL GotPowerupXX(tCar_spec* pCar, int pArg2, int pArg3);
 

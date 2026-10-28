@@ -14,8 +14,11 @@ extern float gOffensive_starting_value[100];
 extern tFloat_bunch_info gCar_softness;
 extern tFloat_bunch_info gCar_car_damage_multiplier;
 extern br_vector3 gZero_v__car;
+extern tCar_spec* gRecalc_mass_car;
 
-// DamageUnit
+extern void C2_HOOK_FASTCALL DamageUnit(tCar_spec* pCar, tDamage_type pUnit_type, int pDamage_amount);
+extern void C2_HOOK_FASTCALL DamageEngine(int pDamage_amount);
+extern void C2_HOOK_FASTCALL DamageLFWheel(int pDamage_amount);
 
 // SwitchCarModel
 
@@ -200,12 +203,15 @@ void C2_HOOK_FASTCALL CrashNoise(br_vector3* pForce, br_vector3* pPosition, int 
 // CheckForDeAttachmentOfNonCars
 
 // AdjustNonCar
+extern void C2_HOOK_FASTCALL AdjustNonCar(br_actor* pActor, const br_matrix34* pMatrix);
 
 // GetPrecalculatedFacesUnderCar
 
 // TurnOnNonCar
+extern void C2_HOOK_FASTCALL TurnOnNonCar(int pIndex);
 
 // TurnOffNonCar
+extern void C2_HOOK_FASTCALL TurnOffNonCar(int pIndex);
 
 #define CARPOCALYPSE2_CAR_H
 
@@ -292,6 +298,8 @@ float C2_HOOK_FASTCALL GetCarOverallBoundsMinY(tCar_spec* pCar);
 void C2_HOOK_FAKE_THISCALL SetCarSuspGiveAndHeight(tCar_spec* pCar, float pFront_give_factor, float pRear_give_factor, float pDamping_factor, float pExtra_front_height, float pExtra_rear_height);
 
 int C2_HOOK_FASTCALL TestForCarInSensiblePlace(tCar_spec *pCar_spec, br_vector3 *pVec3);
+
+void C2_HOOK_FASTCALL RemoveNonCarFromActiveList(br_actor* pActor);
 
 void C2_HOOK_FAKE_THISCALL ControlCar4(tCar_spec* c, undefined4 pArg2, br_scalar dt);
 

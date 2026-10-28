@@ -89,7 +89,7 @@ unsigned short fixed_asin_table[257] = {
 };
 
 // GLOBAL: CARMA2_HW 0x0066d0b2
-static unsigned short fixed_acos_table[257] = {
+unsigned short fixed_acos_table[257] = {
     0x7fff, 0x7ae7, 0x78c9, 0x7729, 0x75c9, 0x7493, 0x7379, 0x7276,
     0x7184, 0x70a1, 0x6fc9, 0x6efc, 0x6e37, 0x6d7a, 0x6cc4, 0x6c13,
     0x6b68, 0x6ac2, 0x6a21, 0x6984, 0x68ea, 0x6854, 0x67c1, 0x6731,
@@ -126,7 +126,7 @@ static unsigned short fixed_acos_table[257] = {
 };
 
 // GLOBAL: CARMA2_HW 0x0066d2b4
-static unsigned short fixed_atan_table[257] = {
+unsigned short fixed_atan_table[257] = {
     0x0000, 0x0028, 0x0051, 0x007a, 0x00a2, 0x00cb, 0x00f4, 0x011d,
     0x0145, 0x016e, 0x0197, 0x01bf, 0x01e8, 0x0211, 0x0239, 0x0262,
     0x028b, 0x02b3, 0x02dc, 0x0304, 0x032d, 0x0355, 0x037e, 0x03a6,
@@ -249,147 +249,730 @@ br_fixed_ls C2_NAKED C2_HOOK_CDECL BrFixedMul(br_fixed_ls a, br_fixed_ls b) {
 }
 
 // FUNCTION: CARMA2_HW 0x00537131
-br_fixed_ls C2_HOOK_CDECL BrFixedMac2(br_fixed_ls a, br_fixed_ls b, br_fixed_ls c, br_fixed_ls d) {
-
+br_fixed_ls C2_NAKED C2_HOOK_CDECL BrFixedMac2(br_fixed_ls a, br_fixed_ls b, br_fixed_ls c, br_fixed_ls d) {
+#ifndef CARPOCALYPSE2_MATCHING
     return ((br_int_64)a * (br_int_64)b + (br_int_64)c * (br_int_64)d) >> 16;
+#else
+    __asm {
+        push ebp
+        mov ebp, esp
+        push edx
+        push ebx
+        push ecx
+        mov eax, dword ptr [ebp + 8]
+        imul dword ptr [ebp + 0xc]
+        mov ebx, eax
+        mov ecx, edx
+        mov eax, dword ptr [ebp + 0x10]
+        imul dword ptr [ebp + 0x14]
+        add eax, ebx
+        adc edx, ecx
+        shrd eax, edx, 16
+        pop ecx
+        pop ebx
+        pop edx
+        leave
+        ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00537154
-br_fixed_ls C2_HOOK_CDECL BrFixedMac3(br_fixed_ls a, br_fixed_ls b, br_fixed_ls c, br_fixed_ls d, br_fixed_ls e, br_fixed_ls f) {
-
+br_fixed_ls C2_NAKED C2_HOOK_CDECL BrFixedMac3(br_fixed_ls a, br_fixed_ls b, br_fixed_ls c, br_fixed_ls d, br_fixed_ls e, br_fixed_ls f) {
+#ifndef CARPOCALYPSE2_MATCHING
     return ((br_int_64)a * (br_int_64)b + (br_int_64)c * (br_int_64)d + (br_int_64)e * (br_int_64)f) >> 16;
+#else
+    __asm {
+        push ebp
+        mov ebp, esp
+        push edx
+        push ebx
+        push ecx
+        mov eax, dword ptr [ebp + 8]
+        imul dword ptr [ebp + 0xc]
+        mov ebx, eax
+        mov ecx, edx
+        mov eax, dword ptr [ebp + 0x10]
+        imul dword ptr [ebp + 0x14]
+        add ebx, eax
+        adc ecx, edx
+        mov eax, dword ptr [ebp + 0x18]
+        imul dword ptr [ebp + 0x1c]
+        add eax, ebx
+        adc edx, ecx
+        shrd eax, edx, 16
+        pop ecx
+        pop ebx
+        pop edx
+        leave
+        ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00537181
-br_fixed_ls C2_HOOK_CDECL BrFixedMac4(br_fixed_ls a, br_fixed_ls b, br_fixed_ls c, br_fixed_ls d, br_fixed_ls e, br_fixed_ls f, br_fixed_ls g, br_fixed_ls h) {
-
+br_fixed_ls C2_NAKED C2_HOOK_CDECL BrFixedMac4(br_fixed_ls a, br_fixed_ls b, br_fixed_ls c, br_fixed_ls d, br_fixed_ls e, br_fixed_ls f, br_fixed_ls g, br_fixed_ls h) {
+#ifndef CARPOCALYPSE2_MATCHING
     return ((br_int_64)a * (br_int_64)b + (br_int_64)c * (br_int_64)d + (br_int_64)e * (br_int_64)f + (br_int_64)g * (br_int_64)h) >> 16;
+#else
+    __asm {
+        push ebp
+        mov ebp, esp
+        push edx
+        push ebx
+        push ecx
+        mov eax, dword ptr [ebp + 8]
+        imul dword ptr [ebp + 0xc]
+        mov ebx, eax
+        mov ecx, edx
+        mov eax, dword ptr [ebp + 0x10]
+        imul dword ptr [ebp + 0x14]
+        add ebx, eax
+        adc ecx, edx
+        mov eax, dword ptr [ebp + 0x18]
+        imul dword ptr [ebp + 0x1c]
+        add ebx, eax
+        adc ecx, edx
+        mov eax, dword ptr [ebp + 0x20]
+        imul dword ptr [ebp + 0x24]
+        add eax, ebx
+        adc edx, ecx
+        shrd eax, edx, 16
+        pop ecx
+        pop ebx
+        pop edx
+        leave
+        ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x005371b8
-br_fixed_ls C2_HOOK_CDECL BrFixedLength2(br_fixed_ls a, br_fixed_ls b) {
-
+br_fixed_ls C2_NAKED C2_HOOK_CDECL BrFixedLength2(br_fixed_ls a, br_fixed_ls b) {
+#ifndef CARPOCALYPSE2_MATCHING
     return _BrISqrt64((br_int_64)a * (br_int_64)a + (br_int_64)b * (br_int_64)b);
+#else
+    __asm {
+        push ebp
+        mov ebp, esp
+        push ebx
+        push ecx
+        push edx
+        push esi
+        mov eax, dword ptr [ebp + 8]
+        imul eax
+        mov ebx, eax
+        mov ecx, edx
+        mov eax, dword ptr [ebp + 0xc]
+        imul eax
+        add ebx, eax
+        adc ecx, edx
+        call _BrISqrt64
+        pop esi
+        pop edx
+        pop ecx
+        pop ebx
+        leave
+        ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x005371dc
-br_fixed_ls C2_HOOK_CDECL BrFixedLength3(br_fixed_ls a, br_fixed_ls b, br_fixed_ls c) {
-
+br_fixed_ls C2_NAKED C2_HOOK_CDECL BrFixedLength3(br_fixed_ls a, br_fixed_ls b, br_fixed_ls c) {
+#ifndef CARPOCALYPSE2_MATCHING
     return _BrISqrt64((br_int_64)a * (br_int_64)a + (br_int_64)b * (br_int_64)b + (br_int_64)c * (br_int_64)c);
+#else
+    __asm {
+        push ebp
+        mov ebp, esp
+        push ebx
+        push ecx
+        push edx
+        push esi
+        mov eax, dword ptr [ebp + 8]
+        imul eax
+        mov ebx, eax
+        mov ecx, edx
+        mov eax, dword ptr [ebp + 0xc]
+        imul eax
+        add ebx, eax
+        adc ecx, edx
+        mov eax, dword ptr [ebp + 0x10]
+        imul eax
+        add ebx, eax
+        adc ecx, edx
+        call _BrISqrt64
+        pop esi
+        pop edx
+        pop ecx
+        pop ebx
+        leave
+        ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00537209
-br_fixed_ls C2_HOOK_CDECL BrFixedLength4(br_fixed_ls a, br_fixed_ls b, br_fixed_ls c, br_fixed_ls d) {
-
+br_fixed_ls C2_NAKED C2_HOOK_CDECL BrFixedLength4(br_fixed_ls a, br_fixed_ls b, br_fixed_ls c, br_fixed_ls d) {
+#ifndef CARPOCALYPSE2_MATCHING
     return _BrISqrt64((br_int_64)a * (br_int_64)a + (br_int_64)b * (br_int_64)b + (br_int_64)c * (br_int_64)c + (br_int_64)d * (br_int_64)d);
+#else
+    __asm {
+        push ebp
+        mov ebp, esp
+        push ebx
+        push ecx
+        push edx
+        push esi
+        mov eax, dword ptr [ebp + 8]
+        imul eax
+        mov ebx, eax
+        mov ecx, edx
+        mov eax, dword ptr [ebp + 0xc]
+        imul eax
+        add ebx, eax
+        adc ecx, edx
+        mov eax, dword ptr [ebp + 0x10]
+        imul eax
+        add ebx, eax
+        adc ecx, edx
+        mov eax, dword ptr [ebp + 0x14]
+        imul eax
+        add ebx, eax
+        adc ecx, edx
+        call _BrISqrt64
+        pop esi
+        pop edx
+        pop ecx
+        pop ebx
+        leave
+        ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0053723f
-br_fixed_ls C2_HOOK_CDECL BrFixedRLength2(br_fixed_ls a, br_fixed_ls b) {
-
+br_fixed_ls C2_NAKED C2_HOOK_CDECL BrFixedRLength2(br_fixed_ls a, br_fixed_ls b) {
+#ifndef CARPOCALYPSE2_MATCHING
     return _BrFastRSqrt64((br_int_64)a * (br_int_64)a + (br_int_64)b * (br_int_64)b);
+#else
+    __asm {
+        push ebp
+        mov ebp, esp
+        push ebx
+        push ecx
+        push edx
+        push esi
+        mov eax, dword ptr [ebp + 8]
+        imul eax
+        mov ebx, eax
+        mov ecx, edx
+        mov eax, dword ptr [ebp + 0xc]
+        imul eax
+        add ebx, eax
+        adc ecx, edx
+        call _BrFastRSqrt64
+        pop esi
+        pop edx
+        pop ecx
+        pop ebx
+        leave
+        ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00537263
-br_fixed_ls C2_HOOK_CDECL BrFixedRLength3(br_fixed_ls a, br_fixed_ls b, br_fixed_ls c) {
-
+br_fixed_ls C2_NAKED C2_HOOK_CDECL BrFixedRLength3(br_fixed_ls a, br_fixed_ls b, br_fixed_ls c) {
+#ifndef CARPOCALYPSE2_MATCHING
     return _BrFastRSqrt64((br_int_64)a * (br_int_64)a + (br_int_64)b * (br_int_64)b + (br_int_64)c * (br_int_64)c);
+#else
+    __asm {
+        push ebp
+        mov ebp, esp
+        push ebx
+        push ecx
+        push edx
+        push esi
+        mov eax, dword ptr [ebp + 8]
+        imul eax
+        mov ebx, eax
+        mov ecx, edx
+        mov eax, dword ptr [ebp + 0xc]
+        imul eax
+        add ebx, eax
+        adc ecx, edx
+        mov eax, dword ptr [ebp + 0x10]
+        imul eax
+        add ebx, eax
+        adc ecx, edx
+        call _BrFastRSqrt64
+        pop esi
+        pop edx
+        pop ecx
+        pop ebx
+        leave
+        ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00537290
-br_fixed_ls C2_HOOK_CDECL BrFixedRLength4(br_fixed_ls a, br_fixed_ls b, br_fixed_ls c, br_fixed_ls d) {
-
+br_fixed_ls C2_NAKED C2_HOOK_CDECL BrFixedRLength4(br_fixed_ls a, br_fixed_ls b, br_fixed_ls c, br_fixed_ls d) {
+#ifndef CARPOCALYPSE2_MATCHING
     return _BrFastRSqrt64((br_int_64)a * (br_int_64)a + (br_int_64)b * (br_int_64)b + (br_int_64)c * (br_int_64)c + (br_int_64)d * (br_int_64)d);
+#else
+    __asm {
+        push ebp
+        mov ebp, esp
+        push ebx
+        push ecx
+        push edx
+        push esi
+        mov eax, dword ptr [ebp + 8]
+        imul eax
+        mov ebx, eax
+        mov ecx, edx
+        mov eax, dword ptr [ebp + 0xc]
+        imul eax
+        add ebx, eax
+        adc ecx, edx
+        mov eax, dword ptr [ebp + 0x10]
+        imul eax
+        add ebx, eax
+        adc ecx, edx
+        mov eax, dword ptr [ebp + 0x14]
+        imul eax
+        add ebx, eax
+        adc ecx, edx
+        call _BrFastRSqrt64
+        pop esi
+        pop edx
+        pop ecx
+        pop ebx
+        leave
+        ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x005372c6
-br_fixed_ls C2_HOOK_CDECL BrFixedDiv(br_fixed_ls a, br_fixed_ls b) {
-
+br_fixed_ls C2_NAKED C2_HOOK_CDECL BrFixedDiv(br_fixed_ls a, br_fixed_ls b) {
+#ifndef CARPOCALYPSE2_MATCHING
     return (((br_int_64)a) << 16) / (br_int_64)b;
+#else
+    __asm {
+        push ebp
+        mov ebp, esp
+        push edx
+        mov edx, dword ptr [ebp + 8]
+        mov eax, edx
+        shl eax, 16
+        sar edx, 16
+        idiv dword ptr [ebp + 0xc]
+        pop edx
+        leave
+        ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x005372db
-br_fixed_ls C2_HOOK_CDECL BrFixedDivR(br_fixed_ls a, br_fixed_ls b) {
-
+br_fixed_ls C2_NAKED C2_HOOK_CDECL BrFixedDivR(br_fixed_ls a, br_fixed_ls b) {
+#ifndef CARPOCALYPSE2_MATCHING
     return (((br_int_64)a) << 16 | ((((uint32_t)(a)) & 0x80000000) ? 0xffff : 0x0)) / b;
+#else
+    __asm {
+        push ebp
+        mov ebp, esp
+        push edx
+        mov eax, dword ptr [ebp + 8]
+        cdq
+        xchg edx, eax
+        shrd eax, edx, 16
+        sar edx, 16
+        idiv dword ptr [ebp + 0xc]
+        pop edx
+        leave
+        ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x005372f1
-br_fixed_ls C2_HOOK_CDECL BrFixedDivF(br_fixed_ls a, br_fixed_ls b) {
-
+br_fixed_ls C2_NAKED C2_HOOK_CDECL BrFixedDivF(br_fixed_ls a, br_fixed_ls b) {
+#ifndef CARPOCALYPSE2_MATCHING
     return (((br_int_64)a) << 31) / b;
+#else
+    __asm {
+        push ebp
+        mov ebp, esp
+        push edx
+        mov edx, dword ptr [ebp + 8]
+        xor eax, eax
+        sar edx, 1
+        rcr eax, 1
+        div dword ptr [ebp + 0xc]
+        pop edx
+        leave
+        ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00537322
-br_fixed_ls C2_HOOK_CDECL BrFixedMulDiv(br_fixed_ls a, br_fixed_ls b, br_fixed_ls c) {
-
+br_fixed_ls C2_NAKED C2_HOOK_CDECL BrFixedMulDiv(br_fixed_ls a, br_fixed_ls b, br_fixed_ls c) {
+#ifndef CARPOCALYPSE2_MATCHING
     return ((br_int_64)a * (br_int_64)b) / (br_int_64)c;
+#else
+    __asm {
+        push ebp
+        mov ebp, esp
+        push edx
+        mov eax, dword ptr [ebp + 8]
+        imul dword ptr [ebp + 0xc]
+        idiv dword ptr [ebp + 0x10]
+        pop edx
+        leave
+        ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00537332
-br_fixed_ls C2_HOOK_CDECL BrFixedMac2Div(br_fixed_ls a, br_fixed_ls b, br_fixed_ls c, br_fixed_ls d, br_fixed_ls e) {
-
+br_fixed_ls C2_NAKED C2_HOOK_CDECL BrFixedMac2Div(br_fixed_ls a, br_fixed_ls b, br_fixed_ls c, br_fixed_ls d, br_fixed_ls e) {
+#ifndef CARPOCALYPSE2_MATCHING
     return ((br_int_64)a * (br_int_64)b + (br_int_64)c * (br_int_64)d) / (br_int_64)e;
+#else
+    __asm {
+        push ebp
+        mov ebp, esp
+        push edx
+        push ebx
+        push ecx
+        mov eax, dword ptr [ebp + 8]
+        imul dword ptr [ebp + 0xc]
+        mov ebx, eax
+        mov ecx, edx
+        mov eax, dword ptr [ebp + 0x10]
+        imul dword ptr [ebp + 0x14]
+        add eax, ebx
+        adc edx, ecx
+        idiv dword ptr [ebp + 0x18]
+        pop ecx
+        pop ebx
+        pop edx
+        leave
+        ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00537354
-br_fixed_ls C2_HOOK_CDECL BrFixedMac3Div(br_fixed_ls a, br_fixed_ls b, br_fixed_ls c, br_fixed_ls d, br_fixed_ls e, br_fixed_ls f, br_fixed_ls g) {
-
+br_fixed_ls C2_NAKED C2_HOOK_CDECL BrFixedMac3Div(br_fixed_ls a, br_fixed_ls b, br_fixed_ls c, br_fixed_ls d, br_fixed_ls e, br_fixed_ls f, br_fixed_ls g) {
+#ifndef CARPOCALYPSE2_MATCHING
     return ((br_int_64)a * (br_int_64)b + (br_int_64)c * (br_int_64)d + (br_int_64)e * (br_int_64)f) / (br_int_64)g;
+#else
+    __asm {
+        push ebp
+        mov ebp, esp
+        push edx
+        push ebx
+        push ecx
+        mov eax, dword ptr [ebp + 8]
+        imul dword ptr [ebp + 0xc]
+        mov ebx, eax
+        mov ecx, edx
+        mov eax, dword ptr [ebp + 0x10]
+        imul dword ptr [ebp + 0x14]
+        add ebx, eax
+        adc ecx, edx
+        mov eax, dword ptr [ebp + 0x18]
+        imul dword ptr [ebp + 0x1c]
+        add eax, ebx
+        adc edx, ecx
+        idiv dword ptr [ebp + 0x20]
+        pop ecx
+        pop ebx
+        pop edx
+        leave
+        ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00537380
-br_fixed_ls C2_HOOK_CDECL BrFixedMac4Div(br_fixed_ls a, br_fixed_ls b, br_fixed_ls c, br_fixed_ls d, br_fixed_ls e, br_fixed_ls f, br_fixed_ls g, br_fixed_ls h, br_fixed_ls i) {
-
+br_fixed_ls C2_NAKED C2_HOOK_CDECL BrFixedMac4Div(br_fixed_ls a, br_fixed_ls b, br_fixed_ls c, br_fixed_ls d, br_fixed_ls e, br_fixed_ls f, br_fixed_ls g, br_fixed_ls h, br_fixed_ls i) {
+#ifndef CARPOCALYPSE2_MATCHING
     return ((br_int_64)a * (br_int_64)b + (br_int_64)c * (br_int_64)d + (br_int_64)e * (br_int_64)f + (br_int_64)g * (br_int_64)h) / (br_int_64)i;
+#else
+    __asm {
+        push ebp
+        mov ebp, esp
+        push edx
+        push ebx
+        push ecx
+        mov eax, dword ptr [ebp + 8]
+        imul dword ptr [ebp + 0xc]
+        mov ebx, eax
+        mov ecx, edx
+        mov eax, dword ptr [ebp + 0x10]
+        imul dword ptr [ebp + 0x14]
+        add ebx, eax
+        adc ecx, edx
+        mov eax, dword ptr [ebp + 0x18]
+        imul dword ptr [ebp + 0x1c]
+        add ebx, eax
+        adc ecx, edx
+        mov eax, dword ptr [ebp + 0x20]
+        imul dword ptr [ebp + 0x24]
+        add eax, ebx
+        adc edx, ecx
+        idiv dword ptr [ebp + 0x28]
+        pop ecx
+        pop ebx
+        pop edx
+        leave
+        ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x005373b6
-br_fixed_ls C2_HOOK_CDECL BrFixedFMac2(br_fixed_lsf a, br_fixed_ls b, br_fixed_lsf c, br_fixed_ls d) {
-
+br_fixed_ls C2_NAKED C2_HOOK_CDECL BrFixedFMac2(br_fixed_lsf a, br_fixed_ls b, br_fixed_lsf c, br_fixed_ls d) {
+#ifndef CARPOCALYPSE2_MATCHING
     return ((br_int_64)a * (br_int_64)b + (br_int_64)c * (br_int_64)d) >> 15;
+#else
+    __asm {
+        push ebp
+        mov ebp, esp
+        push edx
+        push ebx
+        push ecx
+        movsx eax, word ptr [ebp + 8]
+        imul dword ptr [ebp + 0xc]
+        mov ebx, eax
+        mov ecx, edx
+        movsx eax, word ptr [ebp + 0x10]
+        imul dword ptr [ebp + 0x14]
+        add eax, ebx
+        adc edx, ecx
+        shrd eax, edx, 15
+        pop ecx
+        pop ebx
+        pop edx
+        leave
+        ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x005373db
-br_fixed_ls C2_HOOK_CDECL BrFixedFMac3(br_fixed_lsf a, br_fixed_ls b, br_fixed_lsf c, br_fixed_ls d, br_fixed_lsf e, br_fixed_ls f) {
-
+br_fixed_ls C2_NAKED C2_HOOK_CDECL BrFixedFMac3(br_fixed_lsf a, br_fixed_ls b, br_fixed_lsf c, br_fixed_ls d, br_fixed_lsf e, br_fixed_ls f) {
+#ifndef CARPOCALYPSE2_MATCHING
     return ((br_int_64)a * (br_int_64)b + (br_int_64)c * (br_int_64)d + (br_int_64)e * (br_int_64)f) >> 15;
+#else
+    __asm {
+        push ebp
+        mov ebp, esp
+        push edx
+        push ebx
+        push ecx
+        movsx eax, word ptr [ebp + 8]
+        imul dword ptr [ebp + 0xc]
+        mov ebx, eax
+        mov ecx, edx
+        movsx eax, word ptr [ebp + 0x10]
+        imul dword ptr [ebp + 0x14]
+        add ebx, eax
+        adc ecx, edx
+        movsx eax, word ptr [ebp + 0x18]
+        imul dword ptr [ebp + 0x1c]
+        add eax, ebx
+        adc edx, ecx
+        shrd eax, edx, 15
+        pop ecx
+        pop ebx
+        pop edx
+        leave
+        ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0053740b
-br_fixed_ls C2_HOOK_CDECL BrFixedFMac4(br_fixed_lsf a, br_fixed_ls b, br_fixed_lsf c, br_fixed_ls d, br_fixed_lsf e, br_fixed_ls f, br_fixed_lsf g, br_fixed_ls h) {
-
+br_fixed_ls C2_NAKED C2_HOOK_CDECL BrFixedFMac4(br_fixed_lsf a, br_fixed_ls b, br_fixed_lsf c, br_fixed_ls d, br_fixed_lsf e, br_fixed_ls f, br_fixed_lsf g, br_fixed_ls h) {
+#ifndef CARPOCALYPSE2_MATCHING
     return ((br_int_64)a * (br_int_64)b + (br_int_64)c * (br_int_64)d + (br_int_64)e * (br_int_64)f + (br_int_64)g * (br_int_64)h) >> 15;
+#else
+    __asm {
+        push ebp
+        mov ebp, esp
+        push edx
+        push ebx
+        push ecx
+        movsx eax, word ptr [ebp + 8]
+        imul dword ptr [ebp + 0xc]
+        mov ebx, eax
+        mov ecx, edx
+        movsx eax, word ptr [ebp + 0x10]
+        imul dword ptr [ebp + 0x14]
+        add ebx, eax
+        adc ecx, edx
+        movsx eax, word ptr [ebp + 0x18]
+        imul dword ptr [ebp + 0x1c]
+        add ebx, eax
+        adc ecx, edx
+        movsx eax, word ptr [ebp + 0x20]
+        imul dword ptr [ebp + 0x24]
+        add eax, ebx
+        adc edx, ecx
+        shrd eax, edx, 15
+        pop ecx
+        pop ebx
+        pop edx
+        leave
+        ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00537446
-br_fixed_ls C2_HOOK_CDECL BrFixedRcp(br_fixed_ls a) {
-
+br_fixed_ls C2_NAKED C2_HOOK_CDECL BrFixedRcp(br_fixed_ls a) {
+#ifndef CARPOCALYPSE2_MATCHING
     return (br_fixed_ls)(((br_int_64)0x100000000) / a);
+#else
+    __asm {
+        push ebp
+        mov ebp, esp
+        push edx
+        mov edx, 1
+        xor eax, eax
+        idiv dword ptr [ebp + 8]
+        pop edx
+        leave
+        ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00537457
-br_fixed_ls C2_HOOK_CDECL BrFixedSqr(br_fixed_ls a) {
-
+br_fixed_ls C2_NAKED C2_HOOK_CDECL BrFixedSqr(br_fixed_ls a) {
+#ifndef CARPOCALYPSE2_MATCHING
     return ((br_int_64)a * (br_int_64)a) >> 16;
+#else
+    __asm {
+        push ebp
+        mov ebp, esp
+        push edx
+        mov eax, dword ptr [ebp + 8]
+        imul eax
+        shrd eax, edx, 16
+        pop edx
+        leave
+        ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00537467
-br_fixed_ls C2_HOOK_CDECL BrFixedSqr2(br_fixed_ls a, br_fixed_ls b) {
-
+br_fixed_ls C2_NAKED C2_HOOK_CDECL BrFixedSqr2(br_fixed_ls a, br_fixed_ls b) {
+#ifndef CARPOCALYPSE2_MATCHING
     return ((br_int_64)a * (br_int_64)a + (br_int_64)b * (br_int_64)b) >> 16;
+#else
+    __asm {
+        push ebp
+        mov ebp, esp
+        push edx
+        push ebx
+        push ecx
+        mov eax, dword ptr [ebp + 8]
+        imul eax
+        mov ebx, eax
+        mov ecx, edx
+        mov eax, dword ptr [ebp + 0xc]
+        imul eax
+        add eax, ebx
+        adc edx, ecx
+        shrd eax, edx, 16
+        pop ecx
+        pop ebx
+        pop edx
+        leave
+        ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00537488
-br_fixed_ls C2_HOOK_CDECL BrFixedSqr3(br_fixed_ls a, br_fixed_ls b, br_fixed_ls c) {
-
+br_fixed_ls C2_NAKED C2_HOOK_CDECL BrFixedSqr3(br_fixed_ls a, br_fixed_ls b, br_fixed_ls c) {
+#ifndef CARPOCALYPSE2_MATCHING
     return ((br_int_64)a * (br_int_64)a + (br_int_64)b * (br_int_64)b + (br_int_64)c * (br_int_64)c) >> 16;
+#else
+    __asm {
+        push ebp
+        mov ebp, esp
+        push edx
+        push ebx
+        push ecx
+        mov eax, dword ptr [ebp + 8]
+        imul eax
+        mov ebx, eax
+        mov ecx, edx
+        mov eax, dword ptr [ebp + 0xc]
+        imul eax
+        add ebx, eax
+        adc ecx, edx
+        mov eax, dword ptr [ebp + 0x10]
+        imul eax
+        add eax, ebx
+        adc edx, ecx
+        shrd eax, edx, 16
+        pop ecx
+        pop ebx
+        pop edx
+        leave
+        ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x005374b2
-br_fixed_ls C2_HOOK_CDECL BrFixedSqr4(br_fixed_ls a, br_fixed_ls b, br_fixed_ls c, br_fixed_ls d) {
-
+br_fixed_ls C2_NAKED C2_HOOK_CDECL BrFixedSqr4(br_fixed_ls a, br_fixed_ls b, br_fixed_ls c, br_fixed_ls d) {
+#ifndef CARPOCALYPSE2_MATCHING
     return ((br_int_64)a * (br_int_64)a + (br_int_64)b * (br_int_64)b + (br_int_64)c * (br_int_64)c + (br_int_64)d * (br_int_64)d) >> 16;
+#else
+    __asm {
+        push ebp
+        mov ebp, esp
+        push edx
+        push ebx
+        push ecx
+        mov eax, dword ptr [ebp + 8]
+        imul eax
+        mov ebx, eax
+        mov ecx, edx
+        mov eax, dword ptr [ebp + 0xc]
+        imul eax
+        add ebx, eax
+        adc ecx, edx
+        mov eax, dword ptr [ebp + 0x10]
+        imul eax
+        add ebx, eax
+        adc ecx, edx
+        mov eax, dword ptr [ebp + 0x14]
+        imul eax
+        add eax, ebx
+        adc edx, ecx
+        shrd eax, edx, 16
+        pop ecx
+        pop ebx
+        pop edx
+        leave
+        ret
+    }
+#endif
 }
 
 static int16_t fixed_lut_interpolate(uint16_t *table, uint32_t value) {
@@ -401,33 +984,137 @@ static int16_t fixed_lut_interpolate(uint16_t *table, uint32_t value) {
 }
 
 // FUNCTION: CARMA2_HW 0x005374e5
-br_fixed_ls C2_HOOK_CDECL BrFixedSin(br_angle a) {
-
+br_fixed_ls C2_NAKED C2_HOOK_CDECL BrFixedSin(br_angle a) {
+#ifndef CARPOCALYPSE2_MATCHING
     return 2 * fixed_lut_interpolate(fixed_sin_table, a);
+#else
+    __asm {
+        push ebp
+        mov ebp, esp
+        push ebx
+        push ecx
+        push edx
+        mov ax, word ptr [ebp + 8]
+        xor ebx, ebx
+        xchg ah, bl
+        mov cx, word ptr [ebx*2 + fixed_sin_table]
+        mov dx, word ptr [ebx*2 + fixed_sin_table + 2]
+        sub edx, ecx
+        imul dx
+        mov al, ah
+        mov ah, dl
+        add eax, ecx
+        cwde
+        add eax, eax
+        pop edx
+        pop ecx
+        pop ebx
+        leave
+        ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00537516
-br_fixed_ls C2_HOOK_CDECL BrFixedCos(br_angle a) {
-
+br_fixed_ls C2_NAKED C2_HOOK_CDECL BrFixedCos(br_angle a) {
+#ifndef CARPOCALYPSE2_MATCHING
     return 2 * fixed_lut_interpolate(fixed_cos_table, a);
+#else
+    __asm {
+        push ebp
+        mov ebp, esp
+        push ebx
+        push ecx
+        push edx
+        mov ax, word ptr [ebp + 8]
+        xor ebx, ebx
+        xchg ah, bl
+        mov cx, word ptr [ebx*2 + fixed_sin_table + 128]
+        mov dx, word ptr [ebx*2 + fixed_sin_table + 130]
+        sub edx, ecx
+        imul dx
+        mov al, ah
+        mov ah, dl
+        add eax, ecx
+        cwde
+        add eax, eax
+        pop edx
+        pop ecx
+        pop ebx
+        leave
+        ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00537547
-br_angle C2_HOOK_CDECL BrFixedASin(br_fixed_ls a) {
-
+br_angle C2_NAKED C2_HOOK_CDECL BrFixedASin(br_fixed_ls a) {
+#ifndef CARPOCALYPSE2_MATCHING
     assert(a <= BrFloatToFixed(1.f) && "a must be <= BrFloatToFixed(1.f)");
     assert(a >= BrFloatToFixed(-1.f) && "a must be >= BrFloatToFixed(-1.f)");
 
     return fixed_lut_interpolate(fixed_asin_table, (a+0x10000) >> 1);
+#else
+    __asm {
+        push ebp
+        mov ebp, esp
+        push ebx
+        push ecx
+        push edx
+        mov eax, dword ptr [ebp + 8]
+        add eax, 0x10000
+        sar eax, 1
+        xor ebx, ebx
+        xchg ah, bl
+        mov cx, word ptr [ebx*2 + fixed_asin_table]
+        mov dx, word ptr [ebx*2 + fixed_asin_table + 2]
+        sub edx, ecx
+        imul dx
+        mov al, ah
+        mov ah, dl
+        add eax, ecx
+        pop edx
+        pop ecx
+        pop ebx
+        leave
+        ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0053757b
-br_angle C2_HOOK_CDECL BrFixedACos(br_fixed_ls a) {
-
+br_angle C2_NAKED C2_HOOK_CDECL BrFixedACos(br_fixed_ls a) {
+#ifndef CARPOCALYPSE2_MATCHING
     assert(a <= BrFloatToFixed(1.f) && "a must be <= BrFloatToFixed(1.f)");
     assert(a >= BrFloatToFixed(-1.f) && "a must be >= BrFloatToFixed(-1.f)");
 
     return fixed_lut_interpolate(fixed_acos_table, (a+0x10000) >> 1);
+#else
+    __asm {
+        push ebp
+        mov ebp, esp
+        push ebx
+        push ecx
+        push edx
+        mov eax, dword ptr [ebp + 8]
+        add eax, 0x10000
+        sar eax, 1
+        xor ebx, ebx
+        xchg ah, bl
+        mov cx, word ptr [ebx*2 + fixed_acos_table]
+        mov dx, word ptr [ebx*2 + fixed_acos_table + 2]
+        sub edx, ecx
+        imul dx
+        mov al, ah
+        mov ah, dl
+        add eax, ecx
+        pop edx
+        pop ecx
+        pop ebx
+        leave
+        ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x005375af
@@ -482,7 +1169,8 @@ br_angle C2_HOOK_CDECL BrFixedATan2(br_fixed_ls x, br_fixed_ls y) {
 }
 
 // FUNCTION: CARMA2_HW 0x005377b3
-br_angle C2_HOOK_CDECL BrFixedATan2Fast(br_fixed_ls x, br_fixed_ls y) {
+br_angle C2_NAKED C2_HOOK_CDECL BrFixedATan2Fast(br_fixed_ls x, br_fixed_ls y) {
+#ifndef CARPOCALYPSE2_MATCHING
     if (y > 0) {
         if (x >= 0) {
             if (x > y) {
@@ -530,6 +1218,178 @@ br_angle C2_HOOK_CDECL BrFixedATan2Fast(br_fixed_ls x, br_fixed_ls y) {
         }
     }
     return 0;
+#else
+    __asm {
+        push ebp
+        mov ebp, esp
+        push ebx
+        push ecx
+        push edx
+        mov ebx, dword ptr [ebp + 0xc]
+        mov ecx, dword ptr [ebp + 8]
+        xor eax, eax
+        cmp ecx, 0
+        jl at2f_x_neg
+        je at2f_x_zero
+        cmp ebx, 0
+        jl at2f_y_neg
+        cmp ebx, ecx
+        jl at2f_y_lt_x
+        je at2f_y_eq_x
+        mov edx, ecx
+        div ebx
+        shr eax, 19
+        pop edx
+        pop ecx
+        pop ebx
+        leave
+        ret
+
+    at2f_y_lt_x:
+        mov edx, ebx
+        div ecx
+        shr eax, 19
+        neg eax
+        add eax, 0x4000
+        pop edx
+        pop ecx
+        pop ebx
+        leave
+        ret
+
+    at2f_y_eq_x:
+        mov eax, 0x2000
+        pop edx
+        pop ecx
+        pop ebx
+        leave
+        ret
+
+    at2f_y_neg:
+        neg ebx
+        cmp ebx, ecx
+        jg at2f_y_gt_x
+        je at2f_y_eq_x2
+        mov edx, ebx
+        div ecx
+        shr eax, 19
+        add eax, 0x4000
+        pop edx
+        pop ecx
+        pop ebx
+        leave
+        ret
+
+    at2f_y_eq_x2:
+        mov eax, 0x6000
+        pop edx
+        pop ecx
+        pop ebx
+        leave
+        ret
+
+    at2f_y_gt_x:
+        mov edx, ecx
+        div ebx
+        shr eax, 19
+        neg eax
+        add eax, 0x8000
+        pop edx
+        pop ecx
+        pop ebx
+        leave
+        ret
+
+    at2f_x_neg:
+        neg ecx
+        cmp ebx, 0
+        jg at2f_y_pos
+        je at2f_y_zero
+        neg ebx
+        cmp ebx, ecx
+        jl at2f_b_lt_c
+        mov edx, ecx
+        div ebx
+        shr eax, 19
+        add eax, 0x8000
+        pop edx
+        pop ecx
+        pop ebx
+        leave
+        ret
+
+    at2f_y_zero:
+        mov eax, 0xa000
+        pop edx
+        pop ecx
+        pop ebx
+        leave
+        ret
+
+    at2f_b_lt_c:
+        mov edx, ebx
+        div ecx
+        shr eax, 19
+        neg eax
+        add eax, 0xc000
+        pop edx
+        pop ecx
+        pop ebx
+        leave
+        ret
+
+    at2f_y_pos:
+        cmp ebx, ecx
+        jg at2f_y_gt_c2
+        je at2f_y_eq_c2
+        mov edx, ebx
+        div ecx
+        shr eax, 19
+        add eax, 0xc000
+        pop edx
+        pop ecx
+        pop ebx
+        leave
+        ret
+
+    at2f_y_eq_c2:
+        mov eax, 0xe000
+        pop edx
+        pop ecx
+        pop ebx
+        leave
+        ret
+
+    at2f_y_gt_c2:
+        mov edx, ecx
+        div ebx
+        shr eax, 19
+        neg eax
+        pop edx
+        pop ecx
+        pop ebx
+        leave
+        ret
+
+    at2f_x_zero:
+        cmp ebx, 0
+        jl at2f_x_zero_neg
+        mov eax, 0
+        pop edx
+        pop ecx
+        pop ebx
+        leave
+        ret
+
+    at2f_x_zero_neg:
+        mov eax, 0x8000
+        pop edx
+        pop ecx
+        pop ebx
+        leave
+        ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x005378bb

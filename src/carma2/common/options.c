@@ -99,6 +99,17 @@ void C2_HOOK_FASTCALL DisposeKeyNames(void) {
     }
 }
 
+// FUNCTION: CARMA2_HW 0x004b4070
+void C2_HOOK_FASTCALL FUN_004b4070(void) {
+    char** p;
+
+    p = gKey_names;
+    do {
+        BrMemFree(*p);
+        p++;
+    } while ((int)p < (int)&gKey_names[CARPOCALYPSE2_ASIZE(gKey_names)]);
+}
+
 void C2_HOOK_FASTCALL BackupKeyMappings(void) {
     int i;
 

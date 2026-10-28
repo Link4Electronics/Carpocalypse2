@@ -83,6 +83,11 @@ typedef struct {
 } tJoystick_effect_description;
 
 typedef struct {
+    GUID guid;
+    const DIEFFECT* effect;
+} tJoystick_effect_spec;
+
+typedef struct {
     DIEFFECT di_effect;
     undefined type_specific_params[24];
     undefined field_0x4c[20];

@@ -24,6 +24,9 @@
 #include "carpocalypse2_types.h"
 #include "c2_string.h"
 #include "c2_stdio.h"
+#ifdef CARPOCALYPSE2_PLATFORM_WIN32
+#include "win32/win32_dinput.h"
+#endif
 #include <string.h>
 #include <stdio.h>
 extern void C2_HOOK_FASTCALL ChangeHeadupFont(int pHeadup_index, int pFont);
@@ -109,6 +112,9 @@ int gOriginal_joystick_dpad;
 int gOrig_joystick_index;
 // GLOBAL: CARMA2_HW 0x00596308
 int gINT_00596308 = -1;
+
+// GLOBAL: CARMA2_HW 0x0059630c
+int gCurrent_ffb_effect_index = -1;
 
 // FUNCTION: CARMA2_HW 0x0045b7e0
 int C2_HOOK_FASTCALL FindJoystickPreferences(FILE* pF, const char* pJoystick_name) {
@@ -429,11 +435,6 @@ void C2_HOOK_FASTCALL SetupFFBValues(void) {
     PFfclose(f);
 }
 
-int C2_HOOK_FASTCALL PlayExclusiveFFBEffect(const char* pEffect_name, int pArg2) {
-
-    NOT_IMPLEMENTED();
-}
-
 void C2_HOOK_FASTCALL InitJoysticks(void) {
 
     PDInitJoysticks();
@@ -542,6 +543,35 @@ void C2_HOOK_FASTCALL SetJoystickDPadEnabled(int pEnabled) {
     if (joystick_info != NULL) {
         joystick_info->field_0xe0 = pEnabled;
     }
+}
+
+// FUNCTION: CARMA2_HW 0x0045c6b0
+void C2_HOOK_FASTCALL PlayExclusiveFFBEffect(const char* pEffect_name, int pArg2) {
+#ifdef CARPOCALYPSE2_PLATFORM_WIN32
+    int index;
+    tJoystick_force_effect* effect;
+
+    if (!gForceFeedbackAvailable) {
+        return;
+    }
+    index = PDFindJoystickEffect(pEffect_name);
+    if (index == -1) {
+        return;
+    }
+    if (gCurrent_ffb_effect_index != -1 && gCurrent_ffb_effect_index != index) {
+        StopDinputEffect(gCurrent_ffb_effect_index);
+        UnloadDinputFFBEffectAtIndex(gCurrent_ffb_effect_index);
+        gCurrent_ffb_effect_index = -1;
+    }
+    if (gCurrent_ffb_effect_index != -1) {
+        effect = GetJoystickEffect(gCurrent_ffb_effect_index);
+        if (pArg2 == 0 && effect != NULL && effect->di_effect.dwDuration == -1) {
+            return;
+        }
+    }
+    gCurrent_ffb_effect_index = index;
+    StartDinputEffect(index);
+#endif
 }
 
 void C2_HOOK_FASTCALL Joystick_BackupSettings(void) {
@@ -824,8 +854,95 @@ munge:
     }
 }
 
+// FUNCTION: CARMA2_HW 0x0045a300
+int C2_HOOK_FASTCALL ReadUntilCharacter(FILE* pF, char* pBuffer, int pBuffer_size, char pLimit_char) {
+    int i;
+    char s[2];
+
+    strcpy(pBuffer, "");
+    s[1] = '\0';
+    for (i = 0; (s[0] = fgetc(pF)) != pLimit_char && i < pBuffer_size && !feof(pF); i++) {
+        strcat(pBuffer, s);
+    }
+    if (feof(pF)) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
 // FUNCTION: CARMA2_HW 0x0045a0f0
 int C2_HOOK_FASTCALL HasCurrentJoystick(void) {
 
     return gJoystick_index != -1;
+}
+
+// FUNCTION: CARMA2_HW 0x0045a2e0
+int C2_HOOK_FASTCALL PeekChar(FILE* pFile) {
+    char c;
+
+    c = fgetc(pFile);
+    return ungetc(c, pFile);
+}
+
+// FUNCTION: CARMA2_HW 0x0045c590
+unsigned int C2_HOOK_FASTCALL GetJoystickButtonIndexForKey(int pKey) {
+    tButtonJoystickInfo* joystick_info;
+    unsigned int i;
+
+    joystick_info = PDGetCurrentJoystickData();
+    if (joystick_info != NULL) {
+        for (i = 0; i < joystick_info->count_buttons; i++) {
+            if (gJoystick_headup_texts[joystick_info->buttons[i]].key == pKey) {
+                return i;
+            }
+        }
+    }
+    return -1;
+}
+
+// FUNCTION: CARMA2_HW 0x0045b790
+void C2_HOOK_FASTCALL FUN_0045b790(void* pThis) {
+    tJoystick_headup_text* entry;
+    tHeadup_text* dest;
+
+    entry = gJoystick_headup_texts;
+    do {
+        dest = malloc(sizeof(tHeadup_text));
+        if (dest != NULL) {
+            memset(dest, 0, sizeof(tHeadup_text));
+            strncpy(dest->text, entry->text, sizeof(dest->text));
+            FUN_0045a920((tHeadup_text_buffer*)pThis, dest, 0);
+        }
+        entry++;
+    } while ((int)entry < (int)(gJoystick_headup_texts + CARPOCALYPSE2_ASIZE(gJoystick_headup_texts)));
+}
+
+// FUNCTION: CARMA2_HW 0x0045a7f0
+int C2_HOOK_FASTCALL FUN_0045a7f0(char* pFilename, int* pArg2) {
+    char local_100[256];
+    char* substr;
+    void* this_ptr;
+    tHeadup_text* mem;
+
+    this_ptr = (void*)pArg2[0];
+    substr = (char*)pArg2[1];
+    memcpy(local_100, pFilename, strlen(pFilename) + 1);
+    DRstrlwr(local_100);
+    if (strstr(local_100, "POWERUP") == NULL && strstr(local_100, "CPOINT") == NULL && strstr(local_100, "TRACKX") == NULL) {
+        if (strstr(local_100, substr) == NULL) {
+            if (strcmp(substr, ".*") != 0) {
+                return 0;
+            }
+        }
+        mem = malloc(sizeof(tHeadup_text));
+        if (mem != NULL) {
+            memset(mem, 0, sizeof(tHeadup_text));
+            strncpy(mem->text, local_100, sizeof(mem->text));
+            StringTransformToLower(mem->text);
+            mem->text[0] = (char)toupper((int)mem->text[0]);
+            FUN_0045a920(this_ptr, mem, 1);
+        }
+    }
+    return 0;
 }

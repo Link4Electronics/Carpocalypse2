@@ -351,28 +351,33 @@ void C2_HOOK_FASTCALL DisposeGameIfNecessary(void) {
 
 // FUNCTION: CARMA2_HW 0x0047dc30
 void C2_HOOK_FASTCALL ReinitialiseRenderStuff(void) {
+    int index;
     int x_diff;
     int y_diff;
+    int width;
+    int height;
 
     if (gProgram_state.cockpit_on) {
-        gProgram_state.current_render_left = gProgram_state.current_car.render_left[gProgram_state.cockpit_image_index];
-        gProgram_state.current_render_top = gProgram_state.current_car.render_top[gProgram_state.cockpit_image_index];
-        gProgram_state.current_render_right = gProgram_state.current_car.render_right[gProgram_state.cockpit_image_index];
-        gProgram_state.current_render_bottom = gProgram_state.current_car.render_bottom[gProgram_state.cockpit_image_index];
+        index = gProgram_state.cockpit_image_index;
+        gProgram_state.current_render_left = gProgram_state.current_car.render_left[index];
+        gProgram_state.current_render_top = gProgram_state.current_car.render_top[index];
+        gProgram_state.current_render_right = gProgram_state.current_car.render_right[index];
+        gProgram_state.current_render_bottom = gProgram_state.current_car.render_bottom[index];
     } else {
+        width = gGraf_specs[gGraf_spec_index].total_width;
+        x_diff = width / 18 & ~0x3;
+        height = gGraf_specs[gGraf_spec_index].total_height;
+        y_diff = height / 18 & ~0x1;
         if (gNo_render_indent) {
-            gProgram_state.current_render_right = gGraf_specs[gGraf_spec_index].total_width;
-            gProgram_state.current_render_bottom = gGraf_specs[gGraf_spec_index].total_height;
             gProgram_state.current_render_left = 0;
             gProgram_state.current_render_top = 0;
+            gProgram_state.current_render_right = width;
+            gProgram_state.current_render_bottom = height;
         } else {
-            gProgram_state.current_render_top = (gGraf_specs[gGraf_spec_index].total_height / 18 & ~1) * gRender_indent;
-            gProgram_state.current_render_left = (gGraf_specs[gGraf_spec_index].total_width / 18 & ~3) * gRender_indent;
-            x_diff = gGraf_specs[gGraf_spec_index].total_width - gProgram_state.current_render_left;
-            y_diff = gGraf_specs[gGraf_spec_index].total_height - gProgram_state.current_render_top;
-            gProgram_state.current_render_right = x_diff;
-            gProgram_state.current_render_bottom = y_diff;
-
+            gProgram_state.current_render_left = gRender_indent * x_diff;
+            gProgram_state.current_render_right = width - gRender_indent * x_diff;
+            gProgram_state.current_render_top = gRender_indent * y_diff;
+            gProgram_state.current_render_bottom = height - gRender_indent * y_diff;
         }
     }
 }
@@ -383,42 +388,41 @@ void C2_HOOK_FASTCALL ReinitialiseForwardCamera(void) {
     float the_angle;
     float d;
     float w;
+    float height;
 
     camera_ptr = gCamera->type_data;
     if (gProgram_state.cockpit_on) {
-        the_angle = gCamera_angle / 2.f;
-
-        d = atanf(
-                tandeg(the_angle)
-                * (float)gRender_screen->height
-                / (float)(gProgram_state.current_car.render_bottom[0] - gProgram_state.current_car.render_top[0]))
-            * (br_scalar)(2 * 180. / PI);
+        the_angle = gCamera_angle / 2.0f;
+        d = (float)(atan(tandeg(the_angle) * gRender_screen->height
+            / (gProgram_state.current_car.render_bottom[0] - gProgram_state.current_car.render_top[0]))
+            * (2.0 * 180.0 / PI));
         camera_ptr->field_of_view = BrDegreeToAngle(d);
         BrMatrix34Identity(&gCamera->t.t.mat);
         BrVector3Set(&gCamera->t.t.translate.t,
             gProgram_state.current_car.driver_x_offset,
             gProgram_state.current_car.driver_y_offset,
             gProgram_state.current_car.driver_z_offset);
-        w = (float)(gRender_screen->base_y
-                    + (gRender_screen->height / 2)
-                    - (gProgram_state.current_car.render_bottom[0] + gProgram_state.current_car.render_top[0]) / 2);
-
-        gCamera->t.t.mat.m[2][1] = tandeg(d / 2.0f) * w * 2.0f / (float)gRender_screen->height;
-        camera_ptr->aspect = (float)gWidth / gHeight;
-        camera_ptr->yon_z = gYon_multiplier * gCamera_yon;
-        if (gProgram_state.which_view == eView_left) {
-            DRMatrix34PostRotateY(
-                    &gCamera->t.t.mat,
-                    BrDegreeToAngle(gProgram_state.current_car.head_left_angle));
-        } else if (gProgram_state.which_view == eView_right) {
-            DRMatrix34PostRotateY(
-                    &gCamera->t.t.mat,
-                    BrDegreeToAngle(gProgram_state.current_car.head_right_angle));
+        w = (float)(gRender_screen->base_y + gRender_screen->height / 2 - (gProgram_state.current_car.render_bottom[0] + gProgram_state.current_car.render_top[0]) / 2);
+        height = (float)gRender_screen->height;
+        gCamera->t.t.mat.m[2][1] = tandeg(d / 2.0f) * w * 2.0f / height;
+        d = (float)gWidth;
+        height = (float)gHeight;
+        camera_ptr->aspect = d / height;
+        camera_ptr->yon_z = gCamera_yon * gYon_multiplier;
+        switch (gProgram_state.which_view) {
+        case eView_left:
+            DRMatrix34PostRotateY(&gCamera->t.t.mat, BrDegreeToAngle(gProgram_state.current_car.head_left_angle));
+            break;
+        case eView_right:
+            DRMatrix34PostRotateY(&gCamera->t.t.mat, BrDegreeToAngle(gProgram_state.current_car.head_right_angle));
+            break;
+        default:
+            break;
         }
         BrVector3Set(&gCamera->t.t.translate.t,
-                     gProgram_state.current_car.driver_x_offset,
-                     gProgram_state.current_car.driver_y_offset,
-                     gProgram_state.current_car.driver_z_offset);
+            gProgram_state.current_car.driver_x_offset,
+            gProgram_state.current_car.driver_y_offset,
+            gProgram_state.current_car.driver_z_offset);
         SetSightDistance(camera_ptr->yon_z);
         MungeForwardSky();
     }
@@ -504,14 +508,17 @@ static void C2_HOOK_FASTCALL InitRaceHeadups(void) {
     }
 }
 
+// FUNCTION: CARMA2_HW 0x0047d880
 void C2_HOOK_FASTCALL Modify2DCopyPixelmaps(void) {
     int i;
+    int pixel_type;
 
-    for (i = 0; i < CARPOCALYPSE2_ASIZE(gFonts); i++) {
-        BRPM_convert(gFonts[i].images, gBack_screen->type);
+    pixel_type = gBack_screen->type;
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gFonts); i++) {
+        BRPM_convert(gFonts[i].images, pixel_type);
     }
-    BRPM_convert(gIcons_pix, gBack_screen->type);
-    BRPM_convert(gLit_op_stat, gBack_screen->type);
+    BRPM_convert(gIcons_pix, pixel_type);
+    BRPM_convert(gLit_op_stat, pixel_type);
 }
 
 // FUNCTION: CARMA2_HW 0x00481830
@@ -1268,7 +1275,7 @@ void C2_HOOK_FASTCALL Init2DStuff(void) {
         InitialiseStorageSpace(0, &gDroneStorage, 500, 50, 500, 228, 10); \
         InitialiseStorageSpace(0, &gPedStorage, 200, 10, 100, 500, 200); \
         InitialiseStorageSpace(0, &gTrack_storage_space, 1000, 50, 1000, 1000, 50); \
-        FinishLoadingGeneral(); \
+        FinishLoadGeneralParameters(); \
         PrintMemoryDump(0, "AFTER FINISHING LOADING GENERAL"); \
         InitOilSpills(); \
         for (;;) { \

@@ -123,12 +123,6 @@ tU32 gNext_grudge_reduction;
 // GLOBAL: CARMA2_HW 0x00691738
 int gFirst_frame;
 
-// GLOBAL: CARMA2_HW 0x00761a40
-tPath_node* gOppo_path_nodes;
-
-// GLOBAL: CARMA2_HW 0x00761a44
-tPath_section* gOppo_junction_table;
-
 // GLOBAL: CARMA2_HW 0x00691724
 int gGrudge_reduction_per_period;
 
@@ -264,17 +258,15 @@ void C2_HOOK_FASTCALL SetOppoRender(tOpponent_spec* pOpponent_spec, int pRender)
 }
 
 // FUNCTION: CARMA2_HW 0x004013d0
-#pragma auto_inline(off)
 void C2_HOOK_FASTCALL PointActorAlongThisBloodyVector(br_actor* pThe_actor, br_vector3* pThe_vector) {
     br_transform trans;
 
     trans.type = BR_TRANSFORM_LOOK_UP;
+    BrVector3Copy(&trans.t.look_up.t, &pThe_actor->t.t.translate.t);
     BrVector3Copy(&trans.t.look_up.look, pThe_vector);
     BrVector3Set(&trans.t.look_up.up, 0.f, 1.f, 0.f);
-    BrVector3Copy(&trans.t.look_up.t, &pThe_actor->t.t.translate.t);
     BrTransformToTransform(&pThe_actor->t, &trans);
 }
-#pragma auto_inline(on)
 
 // FUNCTION: CARMA2_HW 0x00401430
 void C2_HOOK_FASTCALL PointActorAlongVectorWithUp(br_actor* pThe_actor, br_vector3* pLook, br_vector3* pUp) {
@@ -362,8 +354,6 @@ void C2_HOOK_FASTCALL LoadInOppoPaths(FILE* pF) {
     gProgram_state.AI_vehicles.number_of_path_sections = 0;
     gProgram_state.AI_vehicles.path_nodes = NULL;
     gProgram_state.AI_vehicles.path_sections = NULL;
-    gOppo_path_nodes = NULL;
-    gOppo_junction_table = NULL;
     gBit_per_node = NULL;
     gBIG_APC_index = -1;
 
@@ -490,8 +480,6 @@ void C2_HOOK_FASTCALL LoadInOppoPaths(FILE* pF) {
     } else {
         gBit_per_node = NULL;
     }
-    gOppo_path_nodes = gProgram_state.AI_vehicles.path_nodes;
-    gOppo_junction_table = gProgram_state.AI_vehicles.path_sections;
     DoNotDprintf_opponent("End of LoadInOppoPaths(), totals:");
     DoNotDprintf_opponent("Nodes: %d", gProgram_state.AI_vehicles.number_of_path_nodes);
     DoNotDprintf_opponent("Sections: %d", gProgram_state.AI_vehicles.number_of_path_sections);
@@ -506,11 +494,15 @@ int C2_HOOK_FASTCALL PointVisibleFromHere(br_vector3* pFrom, br_vector3* pTo) {
     br_material* material;
 
     BrVector3Sub(&dir, pTo, pFrom);
-    dir.v[1] += 0.15f;
     BrVector3Copy(&from, pFrom);
     from.v[1] += 0.15f;
+    dir.v[1] += 0.15f;
     FindFace(&from, &dir, &norm, &t, &material);
-    return t > 1.0;
+    if (t > 1.0f) {
+        return 1;
+    } else {
+        return 0;
+    }
 }
 
 // FUNCTION: CARMA2_HW 0x004adae0
@@ -554,20 +546,17 @@ void C2_HOOK_FASTCALL DisposeOpponentPaths(void) {
     if (gProgram_state.AI_vehicles.path_nodes != NULL) {
         BrMemFree(gProgram_state.AI_vehicles.path_nodes);
     }
-    gProgram_state.AI_vehicles.number_of_path_nodes = 0;
-    gProgram_state.AI_vehicles.path_nodes = NULL;
-    gOppo_path_nodes = NULL;
-
     if (gProgram_state.AI_vehicles.path_sections != NULL) {
         BrMemFree(gProgram_state.AI_vehicles.path_sections);
     }
-    gProgram_state.AI_vehicles.number_of_path_sections = 0;
-    gProgram_state.AI_vehicles.path_sections = NULL;
-    gOppo_junction_table = NULL;
-
     if (gBit_per_node != NULL) {
         BrMemFree(gBit_per_node);
     }
+
+    gProgram_state.AI_vehicles.number_of_path_nodes = 0;
+    gProgram_state.AI_vehicles.number_of_path_sections = 0;
+    gProgram_state.AI_vehicles.path_nodes = NULL;
+    gProgram_state.AI_vehicles.path_sections = NULL;
     gBit_per_node = NULL;
 }
 
@@ -738,14 +727,17 @@ const char* C2_HOOK_FASTCALL GetDriverName(tVehicle_type pCategory, int pIndex) 
     case eVehicle_opponent:
         c = gProgram_state.AI_vehicles.opponents[pIndex].car_spec;
         if (c != NULL) {
-            return c->driver_name;
+            if (c->driver_name != NULL) {
+                return c->driver_name;
+            }
         }
-        return NULL;
+        return "???";
     case eVehicle_rozzer:
         return "Faceless Cop";
     case eVehicle_drone:
         return "Innocent Civilian";
     case eVehicle_not_really:
+        return NULL;
     default:
         return NULL;
     }
@@ -774,14 +766,18 @@ tCar_spec* C2_HOOK_FASTCALL GetCarSpecFromGlobalOppoIndex(int pIndex) {
 // FUNCTION: CARMA2_HW 0x004ae8e0
 tOpponent_spec* C2_HOOK_FASTCALL GetOpponentSpecFromCarSpec(tCar_spec* pCar_spec) {
     int i;
+    tU16 car_ID;
+    int car_category;
 
-    if ((pCar_spec->car_ID & 0xff00) == 0x200) {
+    car_ID = pCar_spec->car_ID;
+    car_category = car_ID & ~0xff;
+    if (car_category == eVehicle_opponent << 8) {
         for (i = 0; i < GetCarCount(eVehicle_opponent); i++) {
             if (gProgram_state.AI_vehicles.opponents[i].car_spec == pCar_spec) {
                 return &gProgram_state.AI_vehicles.opponents[i];
             }
         }
-    } else if ((pCar_spec->car_ID & 0xff00) == 0x300) {
+    } else if (car_category == eVehicle_rozzer << 8) {
         for (i = 0; i < GetCarCount(eVehicle_rozzer); i++) {
             if (gProgram_state.AI_vehicles.cops[i].car_spec == pCar_spec) {
                 return &gProgram_state.AI_vehicles.cops[i];
@@ -1633,17 +1629,20 @@ int C2_HOOK_FASTCALL GetOpponentsRealSection(tOpponent_spec* pOpponent_spec, int
 
 // FUNCTION: CARMA2_HW 0x004ab100
 int C2_HOOK_FASTCALL ShiftOpponentsProjectedRoute(tOpponent_spec* pOpponent_spec, int pPlaces) {
-    size_t i;
+    int i;
 
-    if (pOpponent_spec->nnext_sections <= pPlaces) {
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(pOpponent_spec->next_sections) != 12);
+
+    if (pOpponent_spec->nnext_sections > pPlaces) {
+        for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(pOpponent_spec->next_sections) - pPlaces; i++) {
+            pOpponent_spec->next_sections[i].section_no = pOpponent_spec->next_sections[pPlaces + i].section_no;
+            pOpponent_spec->next_sections[i].direction = pOpponent_spec->next_sections[pPlaces + i].direction;
+        }
+        pOpponent_spec->nnext_sections -= pPlaces;
+        return 1;
+    } else {
         return 0;
     }
-    for (i = 0; i < CARPOCALYPSE2_ASIZE(pOpponent_spec->next_sections) - pPlaces; i++) {
-        pOpponent_spec->next_sections[i].section_no = pOpponent_spec->next_sections[pPlaces + i].section_no;
-        pOpponent_spec->next_sections[i].direction = pOpponent_spec->next_sections[pPlaces + i].direction;
-    }
-    pOpponent_spec->nnext_sections -= pPlaces;
-    return 1;
 }
 
 int C2_HOOK_FASTCALL AlreadyPursuingCar(tOpponent_spec* pOpponent_spec, tCar_spec* pPursuee) {
@@ -2594,7 +2593,7 @@ void C2_HOOK_FASTCALL CalcReturnToStartPointRoute(tOpponent_spec* pOpponent_spec
             section_v.v[2] = 0.0f;
         }
     }
-    if (BrVector3Dot(&pOpponent_spec->car_spec->direction, &section_v) > 0.0f) {
+    if (BrVector3Dot(&pOpponent_spec->car_spec->direction, &section_v) > gOppo_render_zero) {
         if (pOpponent_spec->nnext_sections < (int)CARPOCALYPSE2_ASIZE(pOpponent_spec->next_sections)) {
             pOpponent_spec->next_sections[pOpponent_spec->nnext_sections].section_no = section_no;
             pOpponent_spec->next_sections[pOpponent_spec->nnext_sections].direction = 1;
@@ -2953,18 +2952,42 @@ tS16 C2_HOOK_FASTCALL CalcNextTrailSection(const tOpponent_spec* pOpponent_spec,
 
 // FUNCTION: CARMA2_HW 0x004aea30
 int C2_HOOK_FASTCALL GetOpponentsNextSection(const tOpponent_spec* pOpponent_spec, tS16 pCurrent_section) {
-
-    if (pCurrent_section < 20000) {
-        if (pCurrent_section < 15000) {
-            return -1;
-        } else {
-            return CalcNextTrailSection(pOpponent_spec, pCurrent_section);
+    if (pCurrent_section >= 20000) {
+        if (pOpponent_spec->nnext_sections > pCurrent_section - 19999
+                && (pOpponent_spec->cheating || gProgram_state.AI_vehicles.path_sections[pCurrent_section - 19999].type != ePST_cheat_only)) {
+            return pCurrent_section + 1;
         }
-    } else if (pCurrent_section - 19999 >= pOpponent_spec->nnext_sections || (!pOpponent_spec->cheating && gProgram_state.AI_vehicles.path_sections[pCurrent_section - 19999].type == ePST_cheat_only)) {
         return -1;
-    } else {
-        return pCurrent_section + 1;
     }
+    if (pCurrent_section >= 15000) {
+        int trail_section = pCurrent_section - 15000;
+
+        if (trail_section >= pOpponent_spec->pursue_car_data.pursuee->my_trail.number_of_nodes - 2) {
+            trail_section = -1;
+        } else {
+            trail_section += 15001;
+        }
+        return (tS16)trail_section;
+    }
+    return -1;
+}
+
+// FUNCTION: CARMA2_HW 0x004aeab0
+tU16 C2_HOOK_FASTCALL GetOpponentsSectionStartNode(const tOpponent_spec* pOpponent, tS16 pSection) {
+    int section;
+
+    if (pSection >= 20000) {
+        section = pSection - 20000;
+        if (pOpponent->nnext_sections > section) {
+            const tRoute_section* route_section = &pOpponent->next_sections[section];
+
+            return gProgram_state.AI_vehicles.path_sections[route_section->section_no]
+                .node_indices[route_section->direction == 0];
+        }
+    }
+    DoNotDprintf_opponent("BIG ERROR - GetOpponentsSectionStartNode() - section not found in next_section array for opponent %s", pOpponent->car_spec->driver_name);
+    PDEnterDebugger("BIG ERROR - GetOpponentsSectionStartNode()");
+    return 0xffff;
 }
 
 // FUNCTION: CARMA2_HW 0x004aeb90
@@ -3034,7 +3057,7 @@ tS16 C2_HOOK_FASTCALL GetOpponentsSectionMaxSpeed(tOpponent_spec* pOpponent_spec
         if (sections > s) {
             tS16 idx = pOpponent_spec->next_sections[pSection - 20000].section_no;
             tU8 rt_dir = pOpponent_spec->next_sections[pSection - 20000].direction;
-            tU8* tab = (tU8*)gOppo_junction_table + (rt_dir == pTowards_finish);
+            tU8* tab = (tU8*)gProgram_state.AI_vehicles.path_sections + (rt_dir == pTowards_finish);
             return tab[idx * 5 * 4 + 6];
         }
     }
@@ -3058,7 +3081,7 @@ tS16 C2_HOOK_FASTCALL GetOpponentsSectionMinSpeed(tOpponent_spec* pOpponent_spec
         if (sections > s) {
             tS16 idx = pOpponent_spec->next_sections[pSection - 20000].section_no;
             tU8 rt_dir = pOpponent_spec->next_sections[pSection - 20000].direction;
-            return gOppo_junction_table[idx].min_speed[rt_dir == pTowards_finish];
+            return gProgram_state.AI_vehicles.path_sections[idx].min_speed[rt_dir == pTowards_finish];
         }
     }
     if (pSection >= 15000) {
@@ -3090,8 +3113,8 @@ int C2_HOOK_FASTCALL RematerialiseOpponentOnThisSection(tOpponent_spec* pOpponen
     if (pSection_no >= 20000 && pOpponent_spec->nnext_sections > pSection_no - 20000) {
         tS16 section_no = pOpponent_spec->next_sections[pSection_no - 20000].section_no;
         tU8 direction = pOpponent_spec->next_sections[pSection_no - 20000].direction;
-        tS16 node_no = gOppo_junction_table[section_no].node_indices[direction == 0];
-        start = &gOppo_path_nodes[node_no].pos;
+        tS16 node_no = gProgram_state.AI_vehicles.path_sections[section_no].node_indices[direction == 0];
+        start = &gProgram_state.AI_vehicles.path_nodes[node_no].pos;
     } else if (pSection_no >= 15000) {
         start = &pOpponent_spec->pursue_car_data.pursuee->my_trail.trail_nodes[pSection_no - 15000];
     } else if (pSection_no == 10000) {
@@ -3141,7 +3164,7 @@ float C2_HOOK_FASTCALL GetOpponentsSectionWidth(const tOpponent_spec* pOpponent_
         int s = pSection - 20000;
         if (sections > s) {
             tS16 idx = pOpponent_spec->next_sections[pSection - 20000].section_no;
-            return gOppo_junction_table[idx].width;
+            return gProgram_state.AI_vehicles.path_sections[idx].width;
         }
     }
     if (pSection >= 15000) {
@@ -3150,7 +3173,7 @@ float C2_HOOK_FASTCALL GetOpponentsSectionWidth(const tOpponent_spec* pOpponent_
     if (pSection == 10000) {
         return pOpponent_spec->pursue_car_data.direct_line_section.width;
     }
-    return gOppo_junction_table[(tS32)pSection].width;
+    return gProgram_state.AI_vehicles.path_sections[(tS32)pSection].width;
 }
 // DoNotDprintf
 
@@ -3185,12 +3208,15 @@ float C2_HOOK_FASTCALL GetOpponentsSectionWidth(const tOpponent_spec* pOpponent_
 // FUNCTION: CARMA2_HW 0x004ac180
 int C2_HOOK_FASTCALL SearchForSection(tRoute_section* pTemp_store, tRoute_section* pPerm_store, int* pNum_of_perm_store_sections, tS16 pTarget_section, int pDepth, br_scalar pDistance_so_far, tOpponent_spec* pOpponent_spec) {
     char depth_indent[32];
+    const tPath_node* path_node;
+    tS16 node;
+    tS16 next_node;
+    tS16 section;
+    tS16 i;
     int direction;
-    tPath_node* node_ptr;
-    tS16 node_no;
-    tS16 section_no;
-    tS16 section_no_index;
-    br_scalar distance_so_far;
+    br_scalar length;
+
+    C2_HOOK_BUG_ON(sizeof(tRoute_section) != 4);
 
     DoNotDprintf_opponent("%sSearchForSection() - START: depth %d", depth_indent, pDepth);
     gSFS_cycles_this_time++;
@@ -3205,31 +3231,32 @@ int C2_HOOK_FASTCALL SearchForSection(tRoute_section* pTemp_store, tRoute_sectio
         DoNotDprintf_opponent("%sSearchForSection() - *** Reached max depth ***", depth_indent);
         return 0;
     }
-    node_no = gProgram_state.AI_vehicles.path_sections[pTemp_store[pDepth - 1].section_no].node_indices[pTemp_store[pDepth - 1].direction];
-    node_ptr = &gProgram_state.AI_vehicles.path_nodes[node_no];
-    gBit_per_node[node_no / 8] |= 1 << (node_no % 8);
-    DoNotDprintf_opponent("%sSearchForSection() - node #%d has %d sections", depth_indent, node_no, node_ptr->number_of_sections);
-    for (section_no_index = 0; section_no_index < node_ptr->number_of_sections; section_no_index++) {
-        section_no = node_ptr->sections[section_no_index];
-        direction = gProgram_state.AI_vehicles.path_sections[section_no].node_indices[1] != node_no;
-        DoNotDprintf_opponent("%sSearchForSection() - node's section #%d is #%d", depth_indent, section_no_index, section_no);
-        if ((gBit_per_node[gProgram_state.AI_vehicles.path_sections[section_no].node_indices[direction] / 8] & (1 << (gProgram_state.AI_vehicles.path_sections[section_no].node_indices[direction] % 8))) != 0) {
-            DoNotDprintf_opponent("%sSearchForSection() - *** node #%d already visited ***", depth_indent, gProgram_state.AI_vehicles.path_sections[section_no].node_indices[direction]);
+    node = (tS16)gProgram_state.AI_vehicles.path_sections[pTemp_store[pDepth - 1].section_no].node_indices[pTemp_store[pDepth - 1].direction];
+    path_node = &gProgram_state.AI_vehicles.path_nodes[node];
+    gBit_per_node[node / 8] |= 1 << (node % 8);
+    DoNotDprintf_opponent("%sSearchForSection() - node #%d has %d sections", depth_indent, node, path_node->number_of_sections);
+    for (i = 0; i < path_node->number_of_sections; i++) {
+        section = (tS16)path_node->sections[i];
+        direction = node != (tS16)gProgram_state.AI_vehicles.path_sections[section].node_indices[1];
+        DoNotDprintf_opponent("%sSearchForSection() - node's section #%d is #%d", depth_indent, i, section);
+        next_node = (tS16)gProgram_state.AI_vehicles.path_sections[section].node_indices[direction];
+        if (gBit_per_node[next_node / 8] & (1 << (next_node % 8))) {
+            DoNotDprintf_opponent("%sSearchForSection() - *** node #%d already visited ***", depth_indent, next_node);
             continue;
         }
-        if (gProgram_state.AI_vehicles.path_sections[section_no].one_way && gProgram_state.AI_vehicles.path_sections[section_no].node_indices[1] == node_no) {
+        if (gProgram_state.AI_vehicles.path_sections[section].one_way && node == (tS16)gProgram_state.AI_vehicles.path_sections[section].node_indices[1]) {
             DoNotDprintf_opponent("%sSearchForSection() - *** no entry ***", depth_indent);
             continue;
         }
-        if (!pOpponent_spec->cheating && gProgram_state.AI_vehicles.path_sections[section_no].type == ePST_cheat_only) {
+        if (!pOpponent_spec->cheating && gProgram_state.AI_vehicles.path_sections[section].type == ePST_cheat_only) {
             continue;
         }
-        DoNotDprintf_opponent("%sSearchForSection() - adding section #%d to list", depth_indent, section_no);
-        pTemp_store[pDepth].section_no = section_no;
+        DoNotDprintf_opponent("%sSearchForSection() - adding section #%d to list", depth_indent, section);
+        pTemp_store[pDepth].section_no = section;
         pTemp_store[pDepth].direction = direction;
-        distance_so_far = gProgram_state.AI_vehicles.path_sections[section_no].length + pDistance_so_far;
-        if (pTarget_section == section_no && distance_so_far < sfs_shortest_dist) {
-            sfs_shortest_dist = distance_so_far;
+        length = gProgram_state.AI_vehicles.path_sections[section].length + pDistance_so_far;
+        if (section == pTarget_section && length < sfs_shortest_dist) {
+            sfs_shortest_dist = length;
             *pNum_of_perm_store_sections = pDepth + 1;
             memcpy(pPerm_store, pTemp_store, (pDepth + 1) * sizeof(tRoute_section));
             gWanky_arse_tit_fuck = sfs_routes_found + 1;
@@ -3237,16 +3264,17 @@ int C2_HOOK_FASTCALL SearchForSection(tRoute_section* pTemp_store, tRoute_sectio
             if (sfs_routes_found >= 2) {
                 DoNotDprintf_opponent("%sSearchForSection() - Found final target", depth_indent);
                 return 1;
-            } else {
-                gBit_per_node[node_no / 8] &= ~(1 << (node_no % 8));
-                return 0;
             }
+            DoNotDprintf_opponent("%sSearchForSection() - Found a target", depth_indent);
+            DoNotDprintf_opponent("%sSearchForSection() - Returning to depth %d", depth_indent, pDepth - 1);
+            gBit_per_node[node / 8] &= ~(1 << (node % 8));
+            return 0;
         }
-        if (pDepth < 9 && SearchForSection(pTemp_store, pPerm_store, pNum_of_perm_store_sections, pTarget_section, pDepth + 1, distance_so_far, pOpponent_spec)) {
+        if (pDepth < 9 && SearchForSection(pTemp_store, pPerm_store, pNum_of_perm_store_sections, pTarget_section, pDepth + 1, length, pOpponent_spec)) {
             return 1;
         }
     }
-    gBit_per_node[node_no / 8] &= ~(1 << (node_no % 8));
+    gBit_per_node[node / 8] &= ~(1 << (node % 8));
     DoNotDprintf_opponent("%sSearchForSection() - Returning to depth %d", depth_indent, pDepth - 1);
     return 0;
 }
@@ -3455,7 +3483,13 @@ void C2_HOOK_FASTCALL ForceRebuildActiveCarList(void) {
 
 // TeleportCopToStart
 
-// CalcDistanceFromHome
+// FUNCTION: CARMA2_HW 0x004ada90
+void C2_HOOK_FASTCALL CalcDistanceFromHome(tOpponent_spec* pOpponent_spec) {
+    br_vector3 wank;
+
+    BrVector3Sub(&wank, &pOpponent_spec->car_spec->car_master_actor->t.t.translate.t, &pOpponent_spec->start_pos);
+    pOpponent_spec->distance_from_home = BrVector3Length(&wank);
+}
 
 // MassageOpponentPosition
 
@@ -3517,13 +3551,20 @@ tCar_spec* C2_HOOK_FASTCALL GetCarSpec(tVehicle_type pCategory, int pIndex) {
     case eVehicle_self:
         return &gProgram_state.current_car;
     case eVehicle_net_player:
-        return gNet_players[pIndex].car;
+        if (pIndex < gThis_net_player_index) {
+            return gRace_board[pIndex].car;
+        } else {
+            return (&gRace_board[1])[pIndex].car;
+        }
     case eVehicle_opponent:
         return gProgram_state.AI_vehicles.opponents[pIndex].car_spec;
     case eVehicle_rozzer:
         return gProgram_state.AI_vehicles.cops[pIndex].car_spec;
     case eVehicle_drone:
+        PDEnterDebugger("OPPONENT.C: GetCarSpec() can't return drone car_specs");
+        return NULL;
     case eVehicle_not_really:
+        return (tCar_spec*)gActive_non_car_list[pIndex];
     default:
         return NULL;
     }
@@ -3532,13 +3573,20 @@ tCar_spec* C2_HOOK_FASTCALL GetCarSpec(tVehicle_type pCategory, int pIndex) {
     case eVehicle_self:
         return &gProgram_state.current_car;
     case eVehicle_net_player:
-        return gNet_players[pIndex].car;
+        if (pIndex < gThis_net_player_index) {
+            return gRace_board[pIndex].car;
+        } else {
+            return (&gRace_board[1])[pIndex].car;
+        }
     case eVehicle_opponent:
         return gProgram_state.AI_vehicles.opponents[pIndex].car_spec;
     case eVehicle_rozzer:
         return gProgram_state.AI_vehicles.cops[pIndex].car_spec;
     case eVehicle_drone:
+        PDEnterDebugger("OPPONENT.C: GetCarSpec() can't return drone car_specs");
+        return NULL;
     case eVehicle_not_really:
+        return (tCar_spec*)gActive_non_car_list[pIndex];
     default:
         return NULL;
     }
@@ -3575,7 +3623,35 @@ void C2_HOOK_FASTCALL InitOpponentPsyche(int pOpponent_index) {
 
 // ClearTwattageOccurrenceVariables
 
-// TwoCarsHitEachOther
+// FUNCTION: CARMA2_HW 0x004aeeb0
+void C2_HOOK_FASTCALL TwoCarsHitEachOther(tCar_spec* pA_car, tCar_spec* pAnother_car) {
+
+    if (pA_car != NULL && pA_car->driver == eDriver_local_human) {
+        pAnother_car->field_0x1548 = gTime_stamp_for_this_munging;
+    }
+    if (pAnother_car != NULL && pAnother_car->driver == eDriver_local_human) {
+        pA_car->field_0x1548 = gTime_stamp_for_this_munging;
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x004ae750
+void C2_HOOK_FASTCALL ReportMurderToPoliceDepartment(tCar_spec* pCar_spec) {
+    int i;
+
+    if (pCar_spec == &gProgram_state.current_car) {
+        for (i = 0; i < gProgram_state.AI_vehicles.number_of_cops; i++) {
+            gProgram_state.AI_vehicles.cops[i].murder_reported = 1;
+        }
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x004a95f0
+void C2_HOOK_FASTCALL SetChallengerIndexIf(int pIndex, int pSet) {
+
+    if (pSet) {
+        gChallenger_index__opponent = pIndex;
+    }
+}
 
 // RecordOpponentTwattageOccurrence
 

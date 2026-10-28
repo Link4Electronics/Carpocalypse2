@@ -215,6 +215,15 @@ letter_found:
     return i;
 }
 
+// FUNCTION: CARMA2_HW 0x00483dd0
+void C2_HOOK_FASTCALL AddRollingString(char* pStr, int pX, int pY, tRolling_type pRolling_type) {
+    int i;
+
+    for (i = 0; (size_t)i < strlen(pStr); i++) {
+        AddRollingLetter(pStr[i], pX + gCurrent_graf_data->rolling_letter_x_pitch * i, pY, pRolling_type);
+    }
+}
+
 // FUNCTION: CARMA2_HW 0x00484000
 int C2_HOOK_FASTCALL ChangeCharTo(int pSlot_index, int pChar_index, char pNew_char) {
     int x_coord;
@@ -425,24 +434,26 @@ void C2_HOOK_FASTCALL CheckKeysForMouldiness(void) {
 
 // FUNCTION: CARMA2_HW 0x004824c0
 int C2_HOOK_FASTCALL EitherMouseButtonDown(void) {
-    int x_coord;
-    int y_coord;
-    int click_x_coord;
-    int click_y_coord;
-    int left_button_down;
-    int right_button_down;
-    int previous_x;
-    int previous_y;
+    tMouse_coord pos;
+    tMouse_coord click_pos;
+    int buttons[2];
+    int prev_x;
+    int prev_y;
 
-    previous_x = gLast_mouse_x_coord;
-    previous_y = gLast_mouse_y_coord;
-    GetMousePosition(&x_coord, &y_coord);
-    if (previous_x == x_coord && previous_y == y_coord && PDGetMouseClickPosition(&click_x_coord, &click_y_coord) != 0
-            && x_coord == click_x_coord && y_coord == click_y_coord) {
-        return 2;
+    prev_x = gCurrent_mouse_position.x;
+    prev_y = gLast_mouse_y_coord;
+    GetMousePosition(&pos.x, &pos.y);
+    if (prev_x == pos.x && prev_y == pos.y) {
+        int ok = PDGetMouseClickPosition(&click_pos.x, &click_pos.y);
+        if (ok && pos.x == click_pos.x && pos.y == click_pos.y) {
+            return 2;
+        }
     }
-    PDMouseButtons(&left_button_down, &right_button_down);
-    return (left_button_down || right_button_down) ? 1 : 0;
+    PDMouseButtons(&buttons[0], &buttons[1]);
+    if (buttons[0] || buttons[1]) {
+        return 1;
+    }
+    return 0;
 }
 
 // AnyModifiersDown
@@ -580,6 +591,7 @@ void C2_HOOK_FASTCALL WaitForNoKeys(void) {
     CheckQuit();
 }
 
+#pragma auto_inline(off)
 // FUNCTION: CARMA2_HW 0x00483c10
 void C2_HOOK_FASTCALL GetMousePosition(int *pX, int *pY) {
 
@@ -595,8 +607,9 @@ void C2_HOOK_FASTCALL GetMousePosition(int *pX, int *pY) {
         *pY = gGraf_specs[gGraf_spec_index].total_height;
     }
     gCurrent_mouse_position.x = *pX;
-    gCurrent_mouse_position.y = *pY;
+    gLast_mouse_y_coord = *pY;
 }
+#pragma auto_inline(on)
 
 // FUNCTION: CARMA2_HW 0x00483c90
 void C2_HOOK_FASTCALL InitRollingLetters(void) {
@@ -648,6 +661,31 @@ void C2_HOOK_FASTCALL StartTyping(int pSlot_index, char* pText, int pVisible_len
     gCurrent_cursor = ChangeCharTo(pSlot_index, gCurrent_position, ROLLING_LETTER_LOOP_RANDOM);
 }
 
+// FUNCTION: CARMA2_HW 0x00484510
+void C2_HOOK_FASTCALL SetSlotXY(int pSlot_index, int pX_coord, int pY_coord) {
+    gLetter_x_coords[pSlot_index] = pX_coord;
+    gLetter_y_coords[pSlot_index] = pY_coord;
+}
+
+// FUNCTION: CARMA2_HW 0x00484590
+void C2_HOOK_FASTCALL KillCursor(int pSlot_index) {
+    int x_coord;
+    int y_coord;
+    int j;
+    tRolling_letter* let;
+
+    if (gCurrent_position < gVisible_length && gCurrent_position >= 0) {
+        y_coord = gLetter_y_coords[pSlot_index];
+        x_coord = gCurrent_graf_data->rolling_letter_x_pitch * gCurrent_position + gLetter_x_coords[pSlot_index];
+        for (let = gRolling_letters, j = 0; j < NBR_ROLLING_LETTERS; j++, let++) {
+            if (let->number_of_letters >= 0 && x_coord == let->x_coord && y_coord == let->y_coord) {
+                gRolling_letters[j].number_of_letters = -1;
+                break;
+            }
+        }
+    }
+}
+
 // FUNCTION: CARMA2_HW 0x00484600
 void C2_HOOK_FASTCALL EdgeTriggerModeOn(void) {
 
@@ -659,4 +697,38 @@ void C2_HOOK_FASTCALL EdgeTriggerModeOn(void) {
 void C2_HOOK_FASTCALL EdgeTriggerModeOff(void) {
 
     gEdge_trigger_mode = 0;
+}
+
+// FUNCTION: CARMA2_HW 0x004829f0
+int C2_HOOK_FASTCALL FUN_004829f0(int pKey_index) {
+
+    return gKey_array[pKey_index];
+}
+
+// FUNCTION: CARMA2_HW 0x00483e20
+void C2_HOOK_FASTCALL AddRollingNumber(tU32 pNumber, int pWidth, int pX, int pY) {
+    char the_string[32];
+    unsigned int i;
+
+    sprintf(the_string, "%0.*d", pWidth, pNumber);
+    for (i = 0; i < strlen(the_string); i++) {
+        AddRollingLetter(the_string[i], i * gCurrent_graf_data->rolling_letter_x_pitch + pX, pY, eRT_numeric);
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x00483e90
+void C2_HOOK_FASTCALL InputNoOp(void) {
+}
+
+// FUNCTION: CARMA2_HW 0x004840d0
+void C2_HOOK_FASTCALL FUN_004840d0(int pSlot_index) {
+    unsigned i;
+
+    i = 0;
+    if (0 < gThe_length) {
+        do {
+            ChangeCharTo(pSlot_index, i, i < strlen(gCurrent_typing) ? gCurrent_typing[i] : ' ');
+            i += 1;
+        } while ((int)i < gThe_length);
+    }
 }

@@ -8,6 +8,10 @@
 
 extern int gDecode_thing;
 
+extern const char gSkip_lines_format[];
+
+extern const char gSkip_lines_delimiters[];
+
 extern tU32 C2_HOOK_FASTCALL ReadU32(FILE* pF);
 
 extern float C2_HOOK_FASTCALL ReadF32(FILE* pF);
@@ -38,6 +42,8 @@ extern int C2_HOOK_FASTCALL GetAnInt(FILE* pF);
 
 extern float C2_HOOK_FASTCALL GetAFloat(FILE* pF);
 
+float C2_HOOK_FASTCALL FUN_0048fbd0(FILE* pF);
+
 void C2_HOOK_FASTCALL GetPairOfFloats(FILE* pF, float* pF1, float* pF2);
 
 extern void C2_HOOK_FASTCALL GetThreeFloats(FILE * pF, float* pF1, float* pF2, float* pF3);
@@ -47,6 +53,8 @@ extern void C2_HOOK_FASTCALL GetAVector3(FILE* pF, br_vector3* pV);
 extern void C2_HOOK_FASTCALL GetPairOfInts(FILE* pF, int* pF1, int* pF2);
 
 extern void C2_HOOK_FASTCALL GetThreeInts(FILE* pF, int* pF1, int* pF2, int* pF3);
+
+void C2_HOOK_FASTCALL GetThreeIntsAndString(FILE* pF, int* pInt1, int* pInt2, int* pInt3, char* pStr);
 
 extern void C2_HOOK_FASTCALL GetFourInts(FILE* pF, int* pF1, int* pF2, int* pF3, int* pF4);
 
@@ -71,6 +79,8 @@ extern void C2_HOOK_FASTCALL StripCRNL(char* line);
 extern void C2_HOOK_CDECL SubsStringJob(char *pFormat, ...);
 
 extern void C2_HOOK_FASTCALL EncodeFile(char* pThe_path);
+
+void C2_HOOK_FASTCALL SkipLines(FILE* pF);
 
 char * C2_HOOK_FASTCALL GetALineWithNoPossibleService(FILE* pF, char* pS);
 

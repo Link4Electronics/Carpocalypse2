@@ -137,7 +137,13 @@ int C2_HOOK_FASTCALL KeyIsDownNoMouldiness(int pKey_index);
 
 int C2_HOOK_FASTCALL AddRollingLetter(char pChar, int pX, int pY, tRolling_type rolling_type);
 
+void C2_HOOK_FASTCALL AddRollingString(char* pStr, int pX, int pY, tRolling_type pRolling_type);
+
 int C2_HOOK_FASTCALL ChangeCharTo(int pSlot_index, int pChar_index, char pNew_char);
+
+void C2_HOOK_FASTCALL SetSlotXY(int pSlot_index, int pX_coord, int pY_coord);
+
+void C2_HOOK_FASTCALL KillCursor(int pSlot_index);
 
 void C2_HOOK_FASTCALL SetJoystickArrays(int* pKeys, int pMark);
 

@@ -138,6 +138,9 @@ br_matrix34 gIdentity34 = {
 // GLOBAL: CARMA2_HW 0x006a2440
 int gShadow_dim_amount;
 
+// GLOBAL: CARMA2_HW 0x006a2128
+void* gLollipop_queue[100];
+
 // GLOBAL: CARMA2_HW 0x006a22c4
 int gNumber_of_lollipops;
 
@@ -213,8 +216,7 @@ void C2_HOOK_FASTCALL FadePaletteDown(void) {
 // FUNCTION: CARMA2_HW 0x004e9960
 void C2_HOOK_FASTCALL ToggleShadow(void) {
 
-    gShadow_level = gShadow_level + 1;
-    if (gShadow_level == eShadow_everyone + 1) {
+    if (gShadow_level++ == eShadow_everyone) {
         gShadow_level = eShadow_none;
     }
     switch (gShadow_level) {
@@ -230,8 +232,6 @@ void C2_HOOK_FASTCALL ToggleShadow(void) {
     case eShadow_everyone:
         NewTextHeadupSlot(4, 0, 2000, -4, GetMiscString(kMiscString_ShadowEveryone));
         break;
-    default:
-        return;
     }
 }
 
@@ -264,6 +264,65 @@ void C2_HOOK_FASTCALL DisableLights(void) {
 int C2_HOOK_FASTCALL SwitchToLoresMode(void) {
 
     return 0;
+}
+
+// FUNCTION: CARMA2_HW 0x0047c670
+void C2_HOOK_FASTCALL FUN_0047c670(br_pixelmap* pDest, br_pixelmap* pSrc, int pWidth, int pHeight, int pArg5, int pDest_y) {
+    int dest_width;
+    int dest_step;
+    int src_step;
+    int src_pixels_per_row;
+    int pixels_left;
+    tU16 pixel;
+    tU8 pixel_high;
+    tU8 pixel_low;
+    tU8* dest_top;
+    tU8* dest_bottom;
+    int src_row;
+
+    dest_width = (short)pDest->row_bytes;
+    dest_step = dest_width - pWidth;
+    dest_step *= 2;
+    src_step = ((short)pSrc->row_bytes - pWidth) / 2;
+    src_row = (int)pSrc->pixels + ((pHeight * (short)pSrc->row_bytes) / 2 - src_step) * 2;
+    dest_top = (tU8*)((pDest_y - 1 + pHeight * 2) * dest_width + (int)pDest->pixels + pWidth * 2);
+    dest_bottom = dest_top - dest_width;
+    src_pixels_per_row = pWidth / 2;
+    if (pHeight > 0) {
+        pWidth = pHeight;
+        do {
+            pixels_left = src_pixels_per_row;
+            if (pixels_left > 0) {
+                do {
+                    pixel = *(tU16*)(src_row - 2);
+                    src_row = src_row - 2;
+                    pixel_high = (tU8)(pixel >> 8);
+                    dest_top--;
+                    dest_bottom--;
+                    *dest_top = pixel_high;
+                    dest_top--;
+                    *dest_bottom = pixel_high;
+                    dest_bottom--;
+                    *dest_top = pixel_high;
+                    dest_top--;
+                    *dest_bottom = pixel_high;
+                    dest_bottom--;
+                    pixel_low = (tU8)pixel;
+                    *dest_top = pixel_low;
+                    dest_top--;
+                    *dest_bottom = pixel_low;
+                    dest_bottom--;
+                    *dest_top = pixel_low;
+                    pixels_left--;
+                    *dest_bottom = pixel_low;
+                } while (pixels_left != 0);
+            }
+            dest_top -= dest_step;
+            dest_bottom -= dest_step;
+            src_row += src_step * -2;
+            pWidth--;
+        } while (pWidth != 0);
+    }
 }
 
 // FUNCTION: CARMA2_HW 0x004e4b40
@@ -872,7 +931,7 @@ void C2_HOOK_FASTCALL ProcessShadow(tCar_spec* pCar, br_actor* pWorld, tTrack_sp
                 }
             }
             BrSetScreenZOffset(0);
-            BrZbSceneRenderEnd();
+            BrZbsSceneRenderEnd();
 
             for (i = 0; i < f_num; i++) {
                 if (gFancy_shadow) {
@@ -1130,20 +1189,19 @@ void C2_HOOK_FASTCALL DoSomeThingsToCheckpoints(br_pixelmap* pMap, tU32 pTime, t
     int checkpoints[10];
     int checkpoint_flags;
 
+    C2_HOOK_ASSERT(gCurrent_race.check_point_count <= CARPOCALYPSE2_ASIZE(checkpoints));
     for (i = 0; i < gCurrent_race.check_point_count; i++) {
         checkpoints[i] = 0;
     }
-    if (gNet_mode == eNet_mode_none) {
-        pCallback(pMap, gCheckpoint - 1, pTime, 1);
-        checkpoints[gCheckpoint - 1] = 1;
-    } else {
+    if (gNet_mode != eNet_mode_none) {
         if (gCurrent_net_game->type == eNet_game_type_checkpoint) {
             checkpoint_flags = gNet_players[gThis_net_player_index].score2;
-            for (i = 0; i < gCurrent_race.check_point_count; i++, checkpoint_flags >>= 1) {
+            for (i = 0; i < gCurrent_race.check_point_count; i++) {
                 if (checkpoint_flags & 0x1) {
                     pCallback(pMap, i, pTime, 1);
                     checkpoints[i] = 1;
                 }
+                checkpoint_flags >>= 1;
             }
         } else if (gCurrent_net_game->type == eNet_game_type_5 || gCurrent_net_game->type == eNet_game_type_4) {
             if (gNet_players[gThis_net_player_index].score2 >= 0) {
@@ -1152,15 +1210,16 @@ void C2_HOOK_FASTCALL DoSomeThingsToCheckpoints(br_pixelmap* pMap, tU32 pTime, t
                 checkpoints[checkpoint] = 1;
             }
         }
+    } else {
+        pCallback(pMap, gCheckpoint - 1, pTime, 1);
+        checkpoints[gCheckpoint - 1] = 1;
     }
     if (pDraw_prev) {
         if (gNet_mode == eNet_mode_none
                 || gCurrent_net_game->type == eNet_game_type_checkpoint
                 || gCurrent_net_game->type == eNet_game_type_4
                 || gCurrent_net_game->type == eNet_game_type_5) {
-
             for (i = 0; i < gCurrent_race.check_point_count; i++) {
-
                 if (!checkpoints[i]) {
                     pCallback(pMap, i, pTime, 0);
                 }
@@ -1214,14 +1273,14 @@ void C2_HOOK_FASTCALL DrawCheckpoint(br_pixelmap* pMap, int pCheckpoint, tU32 pT
 void C2_HOOK_FASTCALL CalcMapCheckpoint2(br_pixelmap* pMap, int pCheckpoint, tU32 pTime, int pTarget) {
     br_vector3 pos_mapspace;
     br_vector2 p;
+    tRace_checkpoint_spec* checkpoint;
 
-    BrMatrix34ApplyP(&pos_mapspace, &gCurrent_race.checkpoints[pCheckpoint].pos, &gCurrent_race.map_transformation);
-    BrVector2Sub(&p, &pos_mapspace, &gOrigin_map);
-    BrVector2Add(&p, &p, &gOrigin_headup_map);
-    BrMatrix23TApplyV(&gCurrent_race.checkpoints[pCheckpoint].map_position,
-        &p, &gMatrix23_0068c880);
-    gCurrent_race.checkpoints[pCheckpoint].map_position.v[0] += (float)gINT_0074abd4;
-    gCurrent_race.checkpoints[pCheckpoint].map_position.v[1] += (float)gINT_0074abd0;
+    checkpoint = &gCurrent_race.checkpoints[pCheckpoint];
+    BrMatrix34ApplyP(&pos_mapspace, &checkpoint->pos, &gCurrent_race.map_transformation);
+    BrVector2Set(&p, pos_mapspace.v[0] - gOrigin_map.v[0] + gOrigin_headup_map.v[0], pos_mapspace.v[1] - gOrigin_map.v[1] + gOrigin_headup_map.v[1]);
+    BrMatrix23TApplyV(&checkpoint->map_position, &p, &gMatrix23_0068c880);
+    checkpoint->map_position.v[0] += (float)gINT_0074abd4;
+    checkpoint->map_position.v[1] += (float)gINT_0074abd0;
 }
 
 // FUNCTION: CARMA2_HW 0x004967c0
@@ -1278,13 +1337,24 @@ void C2_HOOK_FASTCALL DrawArrow(br_pixelmap* pScreen, br_uint_32 pArrow_index, c
     int j;
 
     if (pColour == 0xffffffff) {
-        colours[0] = 0x0;
+        colours[0] = 0;
         colours[1] = 0x84;
     } else {
         colours[0] = pColour;
-        colours[1] = OppositeColour(pColour);
+        if ((int)pColour < 0xe0) {
+            if ((int)(pColour & 0x7) < 4) {
+                colours[1] = 0xff;
+            } else {
+                colours[1] = 0;
+            }
+        } else {
+            if ((int)(pColour & 0xf) < 8) {
+                colours[1] = 0xff;
+            } else {
+                colours[1] = 0;
+            }
+        }
     }
-
     if (gBack_screen->type != BR_PMT_INDEX_8) {
         colours[0] = PaletteEntry16Bit(gRender_palette, colours[0]);
         colours[1] = PaletteEntry16Bit(gRender_palette, colours[1]);
@@ -1292,28 +1362,24 @@ void C2_HOOK_FASTCALL DrawArrow(br_pixelmap* pScreen, br_uint_32 pArrow_index, c
             colours[1] = Colour24BitTo16Bit(0xff00ff);
         }
     }
-
     for (i = 0; i < CARPOCALYPSE2_ASIZE(colours); i++) {
-        colour = colours[i];
-        point_count = gArrows[i][pArrow_index & 0x3][0];
-        arrow_ptr = &gArrows[i][pArrow_index & 0x3][1];
-        for (j = 0; j < point_count; j++, arrow_ptr += 2) {
+        arrow_ptr = &gArrows[i][pArrow_index & 0x3][0];
+        point_count = *arrow_ptr++;
+        for (j = 0; j < point_count; j++) {
+            colour = colours[i];
             if (pArrow_index & 0x8) {
-                x = -arrow_ptr[0];
-                y = -arrow_ptr[1];
+                x = -*arrow_ptr++;
+                y = -*arrow_ptr++;
             } else {
-                x = arrow_ptr[0];
-                y = arrow_ptr[1];
+                x = *arrow_ptr++;
+                y = *arrow_ptr++;
             }
             if (pArrow_index & 0x4) {
                 temp = x;
                 x = -y;
                 y = temp;
             }
-            BrPixelmapPixelSet(pScreen,
-                (int)(pPos->v[0] + x),
-                (int)(pPos->v[1] + y),
-                colour);
+            BrPixelmapPixelSet(pScreen, (int)(pPos->v[0] + x), (int)(pPos->v[1] + y), colour);
         }
     }
 }
@@ -1665,15 +1731,14 @@ void C2_HOOK_FASTCALL RenderShadows(br_actor* pWorld, tTrack_spec* pTrack_spec, 
             if (IsCarCloaked(the_car)) {
                 continue;
             }
-            if (gAction_replay_mode) {
-                continue;
+            if (!gAction_replay_mode) {
+                BrVector3Sub(&camera_to_car, (br_vector3*)gCamera_to_world.m[3], &the_car->car_master_actor->t.t.translate.t);
+                distance_factor = BrVector3LengthSquared(&camera_to_car);
+                if (distance_factor > SHADOW_MAX_RENDER_DISTANCE) {
+                    continue;
+                }
             }
-
-            BrVector3Sub(&camera_to_car, (br_vector3*)gCamera_to_world.m[3], &the_car->car_master_actor->t.t.translate.t);
-            distance_factor = BrVector3LengthSquared(&camera_to_car);
-            if (distance_factor <= SHADOW_MAX_RENDER_DISTANCE) {
-                ProcessShadow(the_car, gUniverse_actor, &gProgram_state.track_spec, gCamera, &gCamera_to_world, distance_factor);
-            }
+            ProcessShadow(the_car, gUniverse_actor, &gProgram_state.track_spec, gCamera, &gCamera_to_world, distance_factor);
         }
     }
     if (gFancy_shadow) {
@@ -1683,4 +1748,62 @@ void C2_HOOK_FASTCALL RenderShadows(br_actor* pWorld, tTrack_spec* pTrack_spec, 
             BrTableUpdate(gSaved_shade_tables[i].original, BR_TABU_ALL);
         }
     }
+}
+// FUNCTION: CARMA2_HW 0x0047d470
+void C2_HOOK_FASTCALL DrawBevelledRectangle(br_pixelmap* pMap, int pLeft, int pTop, int pWidth, int pHeight, br_uint_32 pColour) {
+    if (gBack_screen->type != BR_PMT_INDEX_8) {
+        pColour = PaletteEntry16Bit(gRender_palette, pColour);
+    }
+    BrPixelmapRectangleFill(pMap, pLeft, pTop + 1, pWidth, pHeight - 2, pColour);
+    BrPixelmapLine(pMap, pLeft, pTop, pLeft + pWidth - 1, pTop, pColour + 2);
+    BrPixelmapLine(pMap, pLeft, pTop + pHeight - 1, pLeft + pWidth - 1, pTop + pHeight - 1, pColour - 2);
+}
+
+// FUNCTION: CARMA2_HW 0x004e4910
+int C2_HOOK_FASTCALL AddToLollipopQueue(void* pItem, int pIndex) {
+
+    if (pIndex < 0) {
+        if (gNumber_of_lollipops < 100) {
+            gLollipop_queue[gNumber_of_lollipops] = pItem;
+            gNumber_of_lollipops++;
+            return gNumber_of_lollipops - 1;
+        }
+        return -1;
+    }
+    gLollipop_queue[pIndex] = pItem;
+    return pIndex;
+}
+
+// FUNCTION: CARMA2_HW 0x00518590
+br_actor* C2_HOOK_FASTCALL CreateBoundsActor(br_actor* pParent, const br_bounds* pBounds) {
+    br_actor* actor;
+
+    actor = BrActorAllocate(1, NULL);
+    actor->model = BrModelAllocate("Bounds", 3, 1);
+    actor->model->faces->vertices[0] = 0;
+    actor->model->faces->vertices[1] = 1;
+    actor->model->faces->vertices[2] = 2;
+    actor->model->vertices[0].p.v[0] = 0.f;
+    actor->model->vertices[0].p.v[1] = 0.f;
+    actor->model->vertices[0].p.v[2] = 1.f;
+    actor->model->vertices[1].p.v[0] = 0.f;
+    actor->model->vertices[1].p.v[1] = 1.f;
+    actor->model->vertices[1].p.v[2] = 1.f;
+    actor->model->vertices[2].p.v[0] = 1.f;
+    actor->model->vertices[2].p.v[1] = 0.f;
+    actor->model->vertices[2].p.v[2] = 1.f;
+    BrModelAdd(actor->model);
+    actor->model->bounds = *pBounds;
+    actor->render_style = 6;
+    BrActorAdd(pParent, actor);
+    return actor;
+}
+
+// FUNCTION: CARMA2_HW 0x00518660
+void C2_HOOK_FASTCALL DisposeActorAndModel(br_actor* pActor) {
+
+    BrModelRemove(pActor->model);
+    BrModelFree(pActor->model);
+    BrActorRemove(pActor);
+    BrActorFree(pActor);
 }

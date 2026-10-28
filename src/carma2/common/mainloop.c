@@ -38,6 +38,10 @@
 #include "utility.h"
 #include "world.h"
 
+#ifdef CARPOCALYPSE2_MATCHING
+#include <windows.h>
+#endif
+
 #include "carpocalypse2_macros.h"
 #include "mainloop.h"
 // GLOBAL: CARMA2_HW 0x0068c814
@@ -164,6 +168,36 @@ void C2_HOOK_FASTCALL CalculateCameraStuff(tU32 pCamera_period) {
     BrVector3Copy(&gPrev_camera_position, (br_vector3*)gCamera_to_world.m[3]);
 }
 
+// FUNCTION: CARMA2_HW 0x00494210
+int C2_HOOK_FAKE_THISCALL FUN_00494210(int pStatus, undefined4 pArg2, undefined4 pArg3, undefined4 pArg4, int pFlag) {
+    (void)pArg2;
+    (void)pArg3;
+    (void)pArg4;
+    if (pFlag != 0) {
+        return -1;
+    }
+    switch (pStatus) {
+    case 1:
+        PreloadBunchOfFlics(4);
+        return pStatus;
+    case 2:
+        PreloadBunchOfFlics(5);
+        return pStatus;
+    case 3:
+        PreloadBunchOfFlics(1);
+        return pStatus;
+    case 4:
+        PreloadBunchOfFlics(3);
+        return pStatus;
+    case 5:
+        PreloadBunchOfFlics(2);
+        return pStatus;
+    case 7:
+        PreloadBunchOfFlics(7);
+    }
+    return pStatus;
+}
+
 void C2_HOOK_FASTCALL CheckActiveCarList(void) {
     int i;
     int new_count = 0;
@@ -205,6 +239,27 @@ void C2_HOOK_FASTCALL CalculateFrameRate(void) {
         }
         last_time = new_time;
     }
+}
+
+// FUNCTION: CARMA2_HW 0x00492840
+void C2_HOOK_FASTCALL FUN_00492840(void* pMemory, br_size_t pSize) {
+#ifdef CARPOCALYPSE2_MATCHING
+    extern br_size_t gPage_size;
+    extern SYSTEM_INFO gSystem_info;
+    br_size_t offset;
+
+    if (gPage_size == 0) {
+        GetSystemInfo(&gSystem_info);
+        gPage_size = gSystem_info.dwOemId;
+    }
+    for (offset = gPage_size << 4; offset < pSize; offset += gPage_size) {
+        *((volatile br_uint_8*)pMemory + (offset - 16 * gPage_size)) = *((volatile br_uint_8*)pMemory + (offset - 16 * gPage_size));
+        *((volatile br_uint_8*)pMemory + offset) = *((volatile br_uint_8*)pMemory + offset);
+    }
+#else
+    (void)pMemory;
+    (void)pSize;
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00492980
@@ -746,6 +801,11 @@ tRace_result C2_HOOK_FASTCALL MainGameLoop(void) {
     return result;
 }
 
+// FUNCTION: CARMA2_HW 0x00492830
+tU32 C2_HOOK_FASTCALL GetLastTickCount(void) {
+    return gLast_tick_count;
+}
+
 // FUNCTION: CARMA2_HW 0x00492950
 tRace_result C2_HOOK_FASTCALL DoRace(void) {
     tRace_result result;
@@ -768,19 +828,26 @@ void C2_HOOK_FASTCALL UpdateFramePeriod(tU32* pCamera_period) {
 
     if (gPed_676914) {
         tU32 last_tick_count;
+        tU32 camera_period;
 
         last_tick_count = gLast_tick_count;
-        gLast_tick_count = gLast_replay_frame_time;
         gFrame_period = abs((int)(gLast_replay_frame_time - last_tick_count));
+        gLast_tick_count = gLast_replay_frame_time;
         new_camera_tick_count = PDGetTotalTime();
         new_tick_count = GetTotalTime();
-        *pCamera_period = (gOld_camera_time != 0) ? (new_camera_tick_count - gOld_camera_time) : 0;
+        if (gOld_camera_time != 0) {
+            camera_period = new_camera_tick_count - gOld_camera_time;
+        } else {
+            camera_period = 0;
+        }
+        *pCamera_period = camera_period;
         gOld_camera_time = new_camera_tick_count;
         if (gFrame_period != 0) {
             *pCamera_period = gFrame_period;
         }
     } else {
         int new_period;
+
         new_tick_count = PDGetTotalTime();
         gLast_tick_count += gFrame_period;
         error = new_tick_count - gLast_tick_count;
@@ -788,9 +855,15 @@ void C2_HOOK_FASTCALL UpdateFramePeriod(tU32* pCamera_period) {
         if (gFrame_period > 500 && new_tick_count - gRace_start > 2000) {
             gFrame_period = gAverage_frame_period / 10;
             gLast_tick_count = new_tick_count;
-            if (gNet_mode != eNet_mode_none && gNet_mode != eNet_mode_host) {
-                if (gNet_mode == eNet_mode_client) {
+            if (gNet_mode != eNet_mode_none) {
+                switch (gNet_mode) {
+                case eNet_mode_client:
                     gProgram_state.current_car.collision_info->field_0x49c = 0;
+                    break;
+                case eNet_mode_host:
+                    break;
+                default:
+                    break;
                 }
             }
         }
@@ -799,16 +872,16 @@ void C2_HOOK_FASTCALL UpdateFramePeriod(tU32* pCamera_period) {
             gFrame_period = gAverage_frame_period / 10;
         }
         new_period = gFrame_period + error;
-        if (new_period > 0) {
-            gFrame_period = new_period;
-        } else {
+        if (new_period <= 0) {
             gLast_tick_count = new_tick_count;
+        } else {
+            gFrame_period = new_period;
         }
         *pCamera_period = gFrame_period;
         gActual_last_tick_count = new_tick_count;
     }
     if (gFrame_period < 10) {
-        gLast_tick_count = 10;
+        gFrame_period = 10;
         gLast_tick_count = new_tick_count;
     } else if (gFrame_period > 1000) {
         gFrame_period = 1000;

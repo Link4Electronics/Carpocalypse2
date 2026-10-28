@@ -62,6 +62,15 @@ tU32 gLost_time;
 // GLOBAL: CARMA2_HW 0x0079efb0
 tU32 gLast_tick_count;
 
+// GLOBAL: CARMA2_HW 0x0058b280
+const float gFloatZero_0058b280 = 0.0f;
+
+// GLOBAL: CARMA2_HW 0x0058b26c
+float gFLOAT_0058b26c = 3.0517578125e-05f;
+
+// GLOBAL: CARMA2_HW 0x0058b270
+double gDOUBLE_0058b270 = 0.001;
+
 // FUNCTION: CARMA2_HW 0x00515910
 void C2_HOOK_FASTCALL StringTransformToLower(char* pStr) {
     int i;
@@ -89,31 +98,30 @@ intptr_t C2_HOOK_CDECL DumpVisibleActorsCB(br_actor* pActor, void* pData) {
 
         switch (pActor->type) {
         case BR_ACTOR_NONE:
-            str = "DUMMY ACTOR\n";
+            printf("DUMMY ACTOR\n");
             break;
         case BR_ACTOR_MODEL:
-            str = "MODEL ACTOR\n";
+            printf("MODEL ACTOR\n");
             break;
         case BR_ACTOR_LIGHT:
-            str = "LIGHT ACTOR\n";
+            printf("LIGHT ACTOR\n");
             break;
         case BR_ACTOR_CAMERA:
-            str = "CAMERA ACTOR\n";
+            printf("CAMERA ACTOR\n");
             break;
         case BR_ACTOR_BOUNDS:
-            str = "BOUNDS ACTOR\n";
+            printf("BOUNDS ACTOR\n");
             break;
         case BR_ACTOR_BOUNDS_CORRECT:
-            str = "BOUNDS-CORRECT ACTOR\n";
+            printf("BOUNDS-CORRECT ACTOR\n");
             break;
         case BR_ACTOR_CLIP_PLANE:
-            str = "CLIP-PLANE ACTOR\n";
+            printf("CLIP-PLANE ACTOR\n");
             break;
         default:
-            str = "******** UNKNOWN ********\n";
+            printf("******** UNKNOWN ********\n");
             break;
         }
-        printf(str);
         str = pActor->identifier;
         if (str == NULL) {
             str = "No Identifier";
@@ -123,24 +131,24 @@ intptr_t C2_HOOK_CDECL DumpVisibleActorsCB(br_actor* pActor, void* pData) {
         printf("\tParent:\t\t%08x\n", (unsigned int)(uintptr_t)pActor->parent);
         printf("\tDepth:\t\t%i\n", pActor->depth);
         printf("\tModelPtr:\t0x%08x", (unsigned int)(uintptr_t)pActor->model);
-        if (pActor->model == NULL) {
-            printf("\n");
-        } else {
+        if (pActor->model != NULL) {
             str = pActor->model->identifier;
             if (str == NULL) {
                 str = "No Identifier";
             }
             printf(" (\"%s\")\n", str);
+        } else {
+            printf("\n");
         }
         printf("\tMaterialPtr:\t0x%08x", (unsigned int)(uintptr_t)pActor->material);
-        if (pActor->material == NULL) {
-            printf("\n");
-        } else {
+        if (pActor->material != NULL) {
             str = pActor->material->identifier;
             if (str == NULL) {
                 str = "No Identifier";
             }
             printf(" (\"%s\")\n", str);
+        } else {
+            printf("\n");
         }
         switch (pActor->render_style) {
         case BR_RSTYLE_DEFAULT:
@@ -305,7 +313,7 @@ void C2_HOOK_FASTCALL WaitFor(tU32 pDelay) {
     tU32 start_time;
 
     start_time = PDGetTotalTime();
-    while (start_time + pDelay > PDGetTotalTime() && !AnyKeyDown()) {
+    while (PDGetTotalTime() < start_time + pDelay && !AnyKeyDown()) {
         SoundService();
     }
 }
@@ -366,20 +374,17 @@ void C2_HOOK_FASTCALL Uppercaseificate(char* dest, const char* src) {
 int C2_HOOK_FASTCALL CheckQuit(void) {
     int result;
 
-    // GLOBAL: CARMA2_HW 0x006abee0
-    static int active;
-
     result = 0;
-    if (!active) {
+    if (!gIn_check_quit) {
         if (KeyIsDown(1) && KeyIsDown(7)) {
-            active = 1;
+            gIn_check_quit = 1;
             do {
             } while (AnyKeyDown());
             result = 1;
             if (DoVerifyQuit(1)) {
                 QuitGame();
             }
-            active = 0;
+            gIn_check_quit = 0;
         }
     }
     return result;
@@ -825,8 +830,8 @@ void C2_HOOK_FASTCALL PrintScreenFile16(FILE* pF) {
 }
 
 // FUNCTION: CARMA2_HW 0x00514c30
-tU32 C2_HOOK_FASTCALL GetTotalTime(void) {
-
+tU32 C2_NAKED C2_HOOK_FASTCALL GetTotalTime(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     if (gAction_replay_mode) {
         return gLast_replay_frame_time;
     }
@@ -834,6 +839,32 @@ tU32 C2_HOOK_FASTCALL GetTotalTime(void) {
         return gLast_tick_count + gFrame_period;
     }
     return gFrame_period + gLast_tick_count - gLost_time;
+#else
+    __asm {
+        mov eax, dword ptr [gPed_676914]
+        test eax, eax
+        je get_total_time_not_replay
+        mov eax, dword ptr [gLast_replay_frame_time]
+        ret
+
+    get_total_time_not_replay:
+        mov eax, dword ptr [gNet_mode]
+        test eax, eax
+        je get_total_time_default
+        mov eax, dword ptr [gLast_tick_count]
+        mov ecx, dword ptr [gFrame_period]
+        add eax, ecx
+        ret
+
+    get_total_time_default:
+        mov edx, dword ptr [gLast_tick_count]
+        mov eax, dword ptr [gFrame_period]
+        mov ecx, dword ptr [gLost_time]
+        add eax, edx
+        sub eax, ecx
+        ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00514c70
@@ -895,67 +926,6 @@ int C2_HOOK_FASTCALL Flash(tU32 pPeriod, tU32* pLast_change, int* pCurrent_state
     return *pCurrent_state;
 }
 
-double C2_HOOK_FASTCALL RGBDifferenceSqr(tRGB_colour* pColour_1, tRGB_colour* pColour_2) {
-
-    return CARPOCALYPSE2_SQR(pColour_1->red - pColour_2->red)
-           + CARPOCALYPSE2_SQR(pColour_1->green - pColour_2->green)
-           + CARPOCALYPSE2_SQR(pColour_1->blue - pColour_2->blue);
-}
-
-int C2_HOOK_FASTCALL FindBestMatch(tRGB_colour* pRGB_colour, br_pixelmap* pPalette) {
-    int n;
-    int near_c;
-    double min_d;
-    double d;
-    tRGB_colour trial_RGB;
-    br_colour* dp;
-
-    near_c = 127;
-    min_d = DBL_MAX;
-    dp = pPalette->pixels;
-    for (n = 0; n < 256; n++) {
-        trial_RGB.red = (dp[n] >> 16) & 0xff;
-        trial_RGB.green = (dp[n] >> 8) & 0xff;
-        trial_RGB.blue = (dp[n] >> 0) & 0xff;
-        d = RGBDifferenceSqr(pRGB_colour, &trial_RGB);
-        if (d < min_d) {
-            min_d = d;
-            near_c = n;
-        }
-    }
-    return near_c;
-}
-
-void C2_HOOK_FASTCALL BuildShadeTablePath(char* pThe_path, int pR, int pG, int pB) {
-    char s[32];
-
-    s[0] = 's';
-    s[1] = 't';
-    s[2] = 'A' + ((pR >> 4) % 0x10);
-    s[3] = 'A' + ((pR >> 0) % 0x10);
-    s[4] = 'A' + ((pG >> 4) % 0x10);
-    s[5] = 'A' + ((pG >> 0) % 0x10);
-    s[6] = 'A' + ((pB >> 4) % 0x10);
-    s[7] = 'A' + ((pB >> 0) % 0x10);
-    s[8] = '\0';
-    strcat(s, ".TAB");
-    PathCat(pThe_path, gApplication_path, "SHADETAB");
-    PathCat(pThe_path, pThe_path, s);
-}
-
-br_pixelmap* C2_HOOK_FASTCALL LoadGeneratedShadeTable(int pR, int pG, int pB) {
-    char the_path[256];
-
-    BuildShadeTablePath(the_path, pR, pG, pB);
-    return BrPixelmapLoad(the_path);
-}
-
-void C2_HOOK_FASTCALL SaveGeneratedShadeTable(br_pixelmap* pThe_table, int pR, int pG, int pB) {
-    char the_path[256];
-
-    BuildShadeTablePath(the_path, pR, pG, pB);
-    BrPixelmapSave(the_path, pThe_table);
-}
 
 // FUNCTION: CARMA2_HW 0x00514e40
 br_pixelmap* C2_HOOK_FASTCALL GenerateShadeTable(int pHeight, br_pixelmap* pPalette, int pRed_mix, int pGreen_mix, int pBlue_mix, float pQuarter, float pHalf, float pThree_quarter) {
@@ -1204,7 +1174,7 @@ void C2_HOOK_FASTCALL DRPixelmapRectangleCopy(br_pixelmap* dst, br_int_16 dx, br
 // FUNCTION: CARMA2_HW 0x00515700
 int C2_HOOK_FASTCALL NormalSideOfPlane(br_vector3* pPoint, br_vector3* pNormal, br_scalar pD) {
 
-    return BrVector3Dot(pNormal, pNormal) * (BrVector3Dot(pNormal, pPoint) - pD) >= 0.f;
+    return (BrVector3Dot(pNormal, pPoint) - pD) * BrVector3Dot(pNormal, pNormal) >= 0.0f;
 }
 
 // FUNCTION: CARMA2_HW 0x00515780
@@ -1274,6 +1244,81 @@ int C2_HOOK_FASTCALL PDCheckDriveExists(const char* pThe_path) {
     return PDCheckDriveExists2(pThe_path, NULL, 0);
 }
 
+// C2PORT-NONMATCHING: best 36.23% | difftest PASS 2000 trials (spec difftest/specs/00515960_EncodePixelmapRunLength.json) | reason stack-layout and register allocation
+// FUNCTION: CARMA2_HW 0x00515960
+void* C2_HOOK_FASTCALL EncodePixelmapRunLength(br_pixelmap* pPixelmap) {
+    tU8 row_buffer[800];
+    tU8* source_row;
+    tU8* scratch;
+    tU8* result;
+    tU8* row_cursor;
+    tU8* control_byte;
+    tU8 run_value;
+    tU8 zero_run;
+    tU8 packet_count;
+    br_uint_32 output_size;
+    br_uint_32 row_size;
+    int row_index;
+    br_uint_32 pixel_index;
+    br_uint_32 run_length;
+    br_uint_32 row_width;
+
+    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(br_pixelmap, pixels, 0x8);
+    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(br_pixelmap, row_bytes, 0x28);
+    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(br_pixelmap, width, 0x34);
+    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(br_pixelmap, height, 0x36);
+
+    scratch = BrMemAllocate(pPixelmap->row_bytes * pPixelmap->height, kMem_misc);
+    *(br_uint_16*)scratch = pPixelmap->height;
+    output_size = 2;
+    source_row = pPixelmap->pixels;
+    for (row_index = 0; row_index < pPixelmap->height; row_index++) {
+        source_row = (tU8*)pPixelmap->pixels + row_index * pPixelmap->row_bytes;
+        row_width = pPixelmap->width;
+        row_cursor = row_buffer + 1;
+        packet_count = 0;
+        row_size = 2;
+        pixel_index = 0;
+        run_value = *source_row;
+        zero_run = run_value == 0;
+        while (1) {
+            control_byte = row_cursor++;
+            run_length = 0;
+            while (run_length < 0x7f
+                    && pixel_index != row_width
+                    && ((source_row[pixel_index] == 0) == zero_run)) {
+                run_value = source_row[pixel_index];
+                if (!zero_run) {
+                    *row_cursor++ = run_value;
+                    row_size++;
+                }
+                run_length++;
+                pixel_index++;
+            }
+            if (zero_run) {
+                *control_byte = run_length;
+            } else {
+                *control_byte = (tU8)(-(int)run_length);
+            }
+            packet_count++;
+            if (pixel_index == row_width) {
+                break;
+            }
+            row_size++;
+            run_value = source_row[pixel_index];
+            zero_run = run_value == 0;
+        }
+        row_buffer[0] = packet_count;
+        memcpy(scratch + output_size, row_buffer, row_size);
+        output_size += row_size;
+    }
+    result = BrMemAllocate(output_size, kMem_misc);
+    memcpy(result, scratch, output_size);
+    BrMemFree(scratch);
+    return result;
+}
+
+// FUNCTION: CARMA2_HW 0x00515b00
 br_actor* C2_HOOK_FASTCALL CloneActor(br_actor* pActor) {
     br_actor *clone;
     br_actor *child;
@@ -1511,7 +1556,7 @@ void C2_HOOK_FASTCALL DRScaleModel(br_model* pModel, float pScale) {
 // FUNCTION: CARMA2_HW 0x005162a0
 float C2_HOOK_FASTCALL DistanceFromFaceND(const br_vector3* pP, const br_vector3* pN, br_scalar pF) {
 
-    return BrVector3Dot(pN, pP) - pF;
+    return BrVector3Dot(pP, pN) - pF;
 }
 
 // FUNCTION: CARMA2_HW 0x00516350
@@ -1600,8 +1645,7 @@ void C2_HOOK_FASTCALL ExpandMatrix34(br_matrix34* pMatrix, const tCompressed_mat
     BrVector3Normalise((br_vector3*)pMatrix->m[1], (br_vector3*)pMatrix->m[1]);
     BrVector3Cross((br_vector3*)pMatrix->m[2], (br_vector3*)pMatrix->m[0], (br_vector3*)pMatrix->m[1]);
     BrVector3Normalise((br_vector3*)pMatrix->m[2], (br_vector3*)pMatrix->m[2]);
-    /* Restore the position range used when compressing the matrix. */
-    ExpandVector3((br_vector3*)pMatrix->m[3], &pCompressed->p, -300.0f, 300.0f);
+    ExpandVector3((br_vector3*)pMatrix->m[3], &pCompressed->p, 300.0f, 300.0f);
     if (pInactive) {
         BrVector3Set((br_vector3*)pMatrix->m[3],
             pMatrix->m[3][0] + 1000.0f,
@@ -1656,7 +1700,7 @@ tU16 C2_HOOK_FASTCALL PaletteEntry16Bit(br_pixelmap* pPal, int pEntry) {
 // Colour24BitTo16Bit
 
 // FUNCTION: CARMA2_HW 0x005170c0
-br_pixelmap* C2_HOOK_FASTCALL PaletteOf16Bits(br_pixelmap* pSrc) {
+__inline br_pixelmap* C2_HOOK_FASTCALL PaletteOf16Bits(br_pixelmap* pSrc) {
     tU16* dst_entry;
     int i;
 
@@ -1677,6 +1721,7 @@ br_pixelmap* C2_HOOK_FASTCALL PaletteOf16Bits(br_pixelmap* pSrc) {
     return g16bit_palette;
 }
 
+// FUNCTION: CARMA2_HW 0x005171b0
 void C2_HOOK_FASTCALL Copy8BitTo16Bit(br_pixelmap* pDst, br_pixelmap* pSrc, br_pixelmap* pPalette) {
     int x;
     int y;
@@ -1706,7 +1751,8 @@ void C2_HOOK_FASTCALL DRPixelmapCopy(br_pixelmap* dst, br_pixelmap* src) {
     }
 }
 
-tMaterial_exception* C2_HOOK_FASTCALL FindExceptionInList(const char* pIdentifier, tMaterial_exception* pList) {
+// FUNCTION: CARMA2_HW 0x00517f10
+static tMaterial_exception* C2_HOOK_FASTCALL FindExceptionInList(const char* pIdentifier, tMaterial_exception* pList) {
 
     for (; pList != NULL; pList = pList->next) {
         if (DRStricmp(pIdentifier, pList->texture_name) == 0) {
@@ -1993,9 +2039,9 @@ char* C2_HOOK_FASTCALL MungeCommas(int pValue) {
 
 // FUNCTION: CARMA2_HW 0x00518fa0
 void C2_HOOK_FASTCALL MungeMetaCharacters(char* pText, char pMeta, const char* pRepl) {
-    size_t len_text;
-    size_t len_repl;
-    size_t i;
+    int len_text;
+    int len_repl;
+    int i;
 
     len_text = strlen(pText);
     len_repl = strlen(pRepl);
@@ -2066,7 +2112,294 @@ void C2_HOOK_FASTCALL PixelmapSwapByteOrder(br_pixelmap* pMap) {
 #endif
 }
 
+// FUNCTION: CARMA2_HW 0x00519200
+void C2_HOOK_FASTCALL ConvertPixelmapType(br_pixelmap* pMap, int pPixel_type) {
+    void (C2_HOOK_FASTCALL *convert_pixel)(br_uint_16*);
+    br_uint_16* row;
+    int x;
+    br_uint_16* pixel;
+    int y;
+
+    convert_pixel = NULL;
+    if (pMap->type != BR_PMT_RGB_565) {
+        if (pMap->type == BR_PMT_RGBA_4444 && pPixel_type == BR_PMT_ARGB_1555) {
+            convert_pixel = (void (C2_HOOK_FASTCALL *)(br_uint_16*))FUN_005192c0;
+        }
+    } else {
+        if (pPixel_type == BR_PMT_RGB_555) {
+            convert_pixel = FUN_005192a0;
+        }
+    }
+    if (convert_pixel != NULL) {
+        row = (br_uint_16*)pMap->pixels;
+        y = 0;
+        if (pMap->height > 0) {
+            do {
+                x = 0;
+                pixel = row;
+                if (pMap->width > 0) {
+                    do {
+                        convert_pixel(pixel);
+                        x++;
+                        pixel++;
+                    } while (x < pMap->width);
+                }
+                row += pMap->row_bytes / 2;
+                y++;
+            } while (y < pMap->height);
+        }
+        pMap->type = (br_uint_8)pPixel_type;
+    }
+}
+
 // FUNCTION: CARMA2_HW 0x005193f0
 void C2_HOOK_FASTCALL EnsurePixelmapAllowed(br_pixelmap* pMap, undefined4 pArg2) {
 
+}
+
+// STUB: CARMA2_HW 0x00518010
+void C2_HOOK_FASTCALL Unknown_00518010(void) {
+    NOT_IMPLEMENTED();
+}
+
+// ===== Ported from bojan1986819 fork =====
+
+// FUNCTION: CARMA2_HW 0x00513720
+int C2_HOOK_FASTCALL FUN_00513720(int pChance, float pScale) {
+    int scratch = pChance;
+    int random_value = rand();
+    float chance = (float)scratch;
+
+    scratch = random_value;
+    if ((float)scratch * gFLOAT_0058b26c <= chance * pScale * gDOUBLE_0058b270) {
+        return 1;
+    }
+    return 0;
+}
+
+// FUNCTION: CARMA2_HW 0x005137c0
+int C2_HOOK_FASTCALL FUN_005137c0(int pArg) {
+    return pArg != 0;
+}
+
+// FUNCTION: CARMA2_HW 0x00514950
+float C2_HOOK_FASTCALL signf(float pValue) {
+    volatile int* pResult;
+
+    pResult = (volatile int*)&pValue;
+    if (pValue > gFloatZero_0058b280) {
+        *pResult = 1;
+        return (float)*pResult;
+    }
+
+    if (pValue < gFloatZero_0058b280) {
+        *pResult = -1;
+    } else {
+        *pResult = 0;
+    }
+    return (float)*pResult;
+}
+
+// FUNCTION: CARMA2_HW 0x00514d80
+void C2_HOOK_FASTCALL CopyMiscString(int pIndex, char* pDest) {
+
+    strcpy(pDest, gMisc_strings[pIndex]);
+}
+
+// FUNCTION: CARMA2_HW 0x00514de0
+void C2_HOOK_FASTCALL CopyBrMaterial(br_material* pDestination, const br_material* pSource) {
+    pDestination->flags = pSource->flags;
+    pDestination->ka = pSource->ka;
+    pDestination->kd = pSource->kd;
+    pDestination->ks = pSource->ks;
+    pDestination->power = pSource->power;
+    pDestination->colour = pSource->colour;
+    pDestination->index_base = pSource->index_base;
+    pDestination->index_range = pSource->index_range;
+    pDestination->index_shade = pSource->index_shade;
+    pDestination->colour_map = pSource->colour_map;
+    pDestination->map_transform = pSource->map_transform;
+    pDestination->identifier = pSource->identifier;
+}
+
+double C2_HOOK_FASTCALL RGBDifferenceSqr(tRGB_colour* pColour_1, tRGB_colour* pColour_2) {
+
+    return CARPOCALYPSE2_SQR(pColour_1->red - pColour_2->red)
+           + CARPOCALYPSE2_SQR(pColour_1->green - pColour_2->green)
+           + CARPOCALYPSE2_SQR(pColour_1->blue - pColour_2->blue);
+}
+
+int C2_HOOK_FASTCALL FindBestMatch(tRGB_colour* pRGB_colour, br_pixelmap* pPalette) {
+    int n;
+    int near_c;
+    double min_d;
+    double d;
+    tRGB_colour trial_RGB;
+    br_colour* dp;
+
+    near_c = 127;
+    min_d = DBL_MAX;
+    dp = pPalette->pixels;
+    for (n = 0; n < 256; n++) {
+        trial_RGB.red = (dp[n] >> 16) & 0xff;
+        trial_RGB.green = (dp[n] >> 8) & 0xff;
+        trial_RGB.blue = (dp[n] >> 0) & 0xff;
+        d = RGBDifferenceSqr(pRGB_colour, &trial_RGB);
+        if (d < min_d) {
+            min_d = d;
+            near_c = n;
+        }
+    }
+    return near_c;
+}
+
+void C2_HOOK_FASTCALL BuildShadeTablePath(char* pThe_path, int pR, int pG, int pB) {
+    char s[32];
+
+    s[0] = 's';
+    s[1] = 't';
+    s[2] = 'A' + ((pR >> 4) % 0x10);
+    s[3] = 'A' + ((pR >> 0) % 0x10);
+    s[4] = 'A' + ((pG >> 4) % 0x10);
+    s[5] = 'A' + ((pG >> 0) % 0x10);
+    s[6] = 'A' + ((pB >> 4) % 0x10);
+    s[7] = 'A' + ((pB >> 0) % 0x10);
+    s[8] = '\0';
+    strcat(s, ".TAB");
+    PathCat(pThe_path, gApplication_path, "SHADETAB");
+    PathCat(pThe_path, pThe_path, s);
+}
+
+br_pixelmap* C2_HOOK_FASTCALL LoadGeneratedShadeTable(int pR, int pG, int pB) {
+    char the_path[256];
+
+    BuildShadeTablePath(the_path, pR, pG, pB);
+    return BrPixelmapLoad(the_path);
+}
+
+void C2_HOOK_FASTCALL SaveGeneratedShadeTable(br_pixelmap* pThe_table, int pR, int pG, int pB) {
+    char the_path[256];
+
+    BuildShadeTablePath(the_path, pR, pG, pB);
+    BrPixelmapSave(the_path, pThe_table);
+}
+
+// FUNCTION: CARMA2_HW 0x005156d0
+void C2_HOOK_FASTCALL DRPixelmapRectangleFill(br_pixelmap* dst, br_int_16 x, br_int_16 y, br_uint_16 w, br_uint_16 h, br_uint_32 colour) {
+
+    BrPixelmapRectangleFill(dst, x, y, w, h, colour);
+}
+
+// FUNCTION: CARMA2_HW 0x00515e10
+void C2_HOOK_FASTCALL GetBlendTableName(int pPercent, char* pDest) {
+
+    sprintf(pDest, "BLEND%d.TAB", 100 - pPercent);
+}
+
+// FUNCTION: CARMA2_HW 0x00516110
+int C2_HOOK_FASTCALL DRVector2TestForNan(const br_vector2* pV) {
+
+    if (pV != NULL) {
+        return TestForNan(&pV->v[0]) || TestForNan(&pV->v[1]);
+    }
+    return 0;
+}
+
+// FUNCTION: CARMA2_HW 0x005161c0
+int C2_HOOK_FASTCALL DRVector4TestForNan(const float* pV) {
+
+    if (pV != NULL) {
+        return TestForNan(&pV[0]) || TestForNan(&pV[1]) || TestForNan(&pV[2]) || TestForNan(&pV[3]);
+    } else {
+        return 0;
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x005162d0
+void C2_HOOK_FASTCALL FUN_005162d0(br_vector4* pDst, const br_vector4* pSrc) {
+
+    pDst->v[0] = -pSrc->v[0];
+    pDst->v[1] = -pSrc->v[1];
+    pDst->v[2] = -pSrc->v[2];
+    pDst->v[3] = -pSrc->v[3];
+}
+
+// FUNCTION: CARMA2_HW 0x005192a0
+void C2_HOOK_FASTCALL FUN_005192a0(br_uint_16* pPixel) {
+
+    *pPixel = ((*pPixel >> 1) & 0x7fe0) + (*pPixel & 0x1f);
+}
+
+// FUNCTION: CARMA2_HW 0x005192c0
+void C2_HOOK_FASTCALL FUN_005192c0(tU16* pPixel) {
+    tU16 pixel;
+    tU16 converted;
+
+    pixel = *pPixel;
+    converted = ((pixel & 0xf) + ((pixel & 0xf0) + (pixel & 0xf00) * 2) * 2) * 2;
+    *pPixel = converted;
+    if ((pixel & 0xf000) != 0) {
+        *pPixel = converted + 0x8000;
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x00519400
+void C2_HOOK_FASTCALL FUN_00519400(br_pixelmap* pMap) {
+    void (C2_HOOK_FASTCALL *convert_pixel)(br_uint_16*);
+    br_uint_16* row;
+    br_uint_16* pixel;
+    int x;
+    int y;
+
+    switch (pMap->type) {
+    case 4:
+    case 0x1f:
+        break;
+    case 5:
+        convert_pixel = NULL;
+        if (pMap->type == 5) {
+            convert_pixel = FUN_005192a0;
+        }
+        if (convert_pixel != NULL) {
+            row = (br_uint_16*)pMap->pixels;
+            y = 0;
+            if (pMap->height > 0) {
+                do {
+                    x = 0;
+                    pixel = row;
+                    if (pMap->width > 0) {
+                        do {
+                            convert_pixel(pixel);
+                            x++;
+                            pixel++;
+                        } while (x < pMap->width);
+                    }
+                    y++;
+                    row += pMap->row_bytes / 2;
+                } while (y < pMap->height);
+            }
+            pMap->type = 4;
+        }
+        break;
+    default:
+        return;
+    }
+    row = (br_uint_16*)pMap->pixels;
+    y = 0;
+    if (pMap->height > 0) {
+        do {
+            x = 0;
+            pixel = row;
+            if (pMap->width > 0) {
+                do {
+                    *pixel = (br_uint_16)((((*pixel & 0x7fff) != 0) << 15) | (*pixel & 0x7fff));
+                    x++;
+                    pixel++;
+                } while (x < pMap->width);
+            }
+            y++;
+            row += pMap->row_bytes / 2;
+        } while (y < pMap->height);
+    }
+    pMap->type = 0x1f;
 }

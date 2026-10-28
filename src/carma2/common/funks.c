@@ -86,17 +86,15 @@ void C2_HOOK_FASTCALL DisposeFunkotronics(int pOwner) {
 
 // FUNCTION: CARMA2_HW 0x00476430
 void C2_HOOK_FASTCALL DisposeGroovidelics(int pOwner) {
-    int i;
     tGroovidelic_spec* the_groove;
+    int i;
 
-    if (gGroovidelics_array == NULL || gGroovidelics_array_size <= 0) {
-        return;
-    }
-    the_groove = gGroovidelics_array;
-    for (i = 0; i < gGroovidelics_array_size; i++, the_groove++) {
-        PossibleService();
-        if (the_groove->owner == pOwner) {
-            the_groove->owner = -999;
+    if (gGroovidelics_array != NULL) {
+        for (i = 0, the_groove = gGroovidelics_array; i < gGroovidelics_array_size; i++, the_groove++) {
+            PossibleService();
+            if (the_groove->owner == pOwner) {
+                the_groove->owner = -999;
+            }
         }
     }
 }
@@ -110,21 +108,16 @@ void C2_HOOK_FASTCALL KillGroovadelic(int pOwner) {
     int i;
     tGroovidelic_spec* the_groove;
 
-    if (gGroovidelics_array == NULL) {
-        return;
-    }
-    the_groove = gGroovidelics_array;
-    for (i = 0; i < gGroovidelics_array_size; i++, the_groove++) {
-        if (the_groove->owner != pOwner) {
-            continue;
+    if (gGroovidelics_array != NULL) {
+        for (i = 0, the_groove = gGroovidelics_array; i < gGroovidelics_array_size; i++) {
+            if (the_groove[i].owner == pOwner
+                && the_groove[i].path_mode != eMove_controlled
+                && the_groove[i].path_mode != eMove_absolute
+                && the_groove[i].object_mode != eMove_controlled
+                && the_groove[i].object_mode != eMove_absolute) {
+                the_groove[i].owner = -999;
+            }
         }
-        if (the_groove->path_mode == eMove_controlled || the_groove->path_mode == eMove_absolute) {
-            continue;
-        }
-        if (the_groove->object_mode == eMove_controlled || the_groove->object_mode == eMove_absolute) {
-            continue;
-        }
-        the_groove->owner = -999;
     }
 }
 
@@ -133,20 +126,18 @@ void C2_HOOK_FASTCALL KillFunkotronic(int pOwner) {
     int i;
     tFunkotronic_spec* the_funk;
 
-    if (gFunkotronics_array == NULL) {
-        return;
-    }
-    the_funk = gFunkotronics_array;
-    for (i = 0; i < gFunkotronics_array_size; i++, the_funk++) {
-        if (the_funk->owner == pOwner
-            && the_funk->matrix_mode != eMove_controlled
-            && the_funk->matrix_mode != eMove_absolute
-            && the_funk->lighting_animation_type != eMove_controlled
-            && the_funk->lighting_animation_type != eMove_absolute
-            && (the_funk->texture_animation_data.frames_info.mode != eMove_controlled
-                && the_funk->texture_animation_data.frames_info.mode != eMove_texturebits
-                || the_funk->texture_animation_type != 0)) {
-            the_funk->owner = -999;
+    if (gFunkotronics_array != NULL) {
+        for (i = 0, the_funk = gFunkotronics_array; i < gFunkotronics_array_size; i++) {
+            if (the_funk[i].owner == pOwner
+                && the_funk[i].matrix_mode != eMove_controlled
+                && the_funk[i].matrix_mode != eMove_absolute
+                && the_funk[i].lighting_animation_type != eMove_controlled
+                && the_funk[i].lighting_animation_type != eMove_absolute
+                && ((the_funk[i].texture_animation_data.frames_info.mode != eMove_controlled
+                        && the_funk[i].texture_animation_data.frames_info.mode != eMove_texturebits)
+                    || the_funk[i].texture_animation_type != eTexture_animation_frames)) {
+                the_funk[i].owner = -999;
+            }
         }
     }
 }

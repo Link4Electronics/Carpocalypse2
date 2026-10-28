@@ -21,6 +21,127 @@ extern const char* carpocalypse2_fix_path_case(const char* pPath);
 #include <sys/types.h>
 #include <sys/stat.h>
 
+// FUNCTION: CARMA2_HW 0x00485130
+br_pixelmap* C2_HOOK_FASTCALL LoadTiffPixelmap(const char* path, int flags) {
+    TIFF* tif;
+    br_pixelmap* pm;
+    br_uint_16 photometric;
+    br_uint_32 height;
+    br_uint_32 width;
+    br_uint_16 samples_per_pixel;
+    br_uint_8* scanline_buffer;
+
+    tif = TIFFOpen(path, "r");
+    if (tif == NULL) {
+        return NULL;
+    }
+    TIFFGetField(tif, TIFFTAG_PHOTOMETRIC, &photometric);
+    if (photometric == PHOTOMETRIC_RGB) {
+        br_uint_8* src;
+        br_uint_32 x;
+        br_uint_32 y;
+
+        TIFFGetField(tif, TIFFTAG_IMAGELENGTH, &height);
+        TIFFGetField(tif, TIFFTAG_IMAGEWIDTH, &width);
+        TIFFGetFieldDefaulted(tif, TIFFTAG_SAMPLESPERPIXEL, &samples_per_pixel);
+        pm = BrPixelmapAllocate((br_uint_8)(samples_per_pixel == 3 ? BR_PMT_RGB_565 : BR_PMT_RGBA_4444), width, height, NULL, 0);
+        if (pm == NULL) {
+            TIFFClose(tif);
+            return NULL;
+        }
+        scanline_buffer = _TIFFmalloc(TIFFScanlineSize(tif));
+        if (scanline_buffer == NULL) {
+            BrPixelmapFree(pm);
+            TIFFClose(tif);
+            return NULL;
+        }
+        for (y = 0; y < height; y++) {
+            if (TIFFReadScanline(tif, scanline_buffer, y, 0) <= 0) {
+                break;
+            }
+            src = scanline_buffer;
+            if (samples_per_pixel == 3) {
+                for (x = 0; x < width; x++) {
+                    ((br_uint_16*)pm->pixels)[(y * (int)pm->row_bytes >> 1) + x] = (br_uint_16)(((src[0] >> 3) << 11) | ((src[1] >> 2) << 5) | (src[2] >> 3));
+                    src += 3;
+                }
+            } else {
+                for (x = 0; x < width; x++) {
+                    ((br_uint_16*)pm->pixels)[(y * (int)pm->row_bytes >> 1) + x] = (br_uint_16)(((src[3] >> 4) << 12) | ((src[0] >> 4) << 8) | ((src[1] >> 4) << 4) | (src[2] >> 4));
+                    src += 4;
+                }
+            }
+        }
+        _TIFFfree(scanline_buffer);
+        TIFFClose(tif);
+        if (y == height) {
+            return pm;
+        }
+        BrPixelmapFree(pm);
+        return NULL;
+    }
+    if (photometric == PHOTOMETRIC_PALETTE) {
+        br_uint_8* src;
+        br_uint_32 x;
+        br_uint_32 y;
+        br_uint_16* red;
+        br_uint_16* green;
+        br_uint_16* blue;
+
+        TIFFGetField(tif, TIFFTAG_IMAGELENGTH, &height);
+        TIFFGetField(tif, TIFFTAG_IMAGEWIDTH, &width);
+        TIFFGetFieldDefaulted(tif, TIFFTAG_SAMPLESPERPIXEL, &samples_per_pixel);
+        pm = BrPixelmapAllocate(BR_PMT_INDEX_8, width, height, NULL, 0);
+        if (pm == NULL) {
+            TIFFClose(tif);
+            return NULL;
+        }
+        if (samples_per_pixel == 1) {
+            for (y = 0; y < height; y++) {
+                if (TIFFReadScanline(tif, (br_uint_8*)pm->pixels + y * pm->row_bytes, y, 0) <= 0) {
+                    break;
+                }
+            }
+        } else {
+            scanline_buffer = _TIFFmalloc(TIFFScanlineSize(tif));
+            if (scanline_buffer == NULL) {
+                BrPixelmapFree(pm);
+                TIFFClose(tif);
+                return NULL;
+            }
+            for (y = 0; y < height; y++) {
+                if (TIFFReadScanline(tif, scanline_buffer, y, 0) <= 0) {
+                    break;
+                }
+                src = scanline_buffer;
+                for (x = 0; x < width; x++) {
+                    *((br_uint_8*)pm->pixels + y * pm->row_bytes + x) = src[1] < 0x80 ? 0 : src[0];
+                    src += samples_per_pixel;
+                }
+            }
+            _TIFFfree(scanline_buffer);
+        }
+        if (y != height) {
+            BrPixelmapFree(pm);
+            TIFFClose(tif);
+            return NULL;
+        }
+        TIFFGetField(tif, TIFFTAG_COLORMAP, &red, &green, &blue);
+        pm->map = CreatePalettePixelmapFromRGBChannels(red, green, blue, flags);
+        if (pm->map == NULL) {
+            BrPixelmapFree(pm);
+            TIFFClose(tif);
+            return NULL;
+        }
+        pm->identifier = BrResStrDup(pm, "pixelmap");
+        BrResAdd(pm, pm->map);
+        TIFFClose(tif);
+        return pm;
+    }
+    TIFFClose(tif);
+    return NULL;
+}
+
 // FUNCTION: CARMA2_HW 0x00485590
 br_pixelmap* C2_HOOK_FASTCALL CreatePalettePixelmapFromRGBChannels(br_uint_16* pRed_channel, br_uint_16* pGrn_channel, br_uint_16* pBlu_channel, int pRGB555) {
     br_pixelmap* pm;
@@ -327,15 +448,14 @@ int C2_HOOK_FASTCALL WriteFileLink(const char* pLink_dest, const char* pLink_sou
 
     i = 0;
     strcpy(s, pLink_dest);
-    for (ptr = strstr(s, "DATA") + 5; *ptr != '\0'; i++, ptr++) {
+    for (ptr = strstr(s, "DATA") + 5; *ptr != '\0'; ptr++) {
 
-        if (*ptr == '\\') {
-            rel_dest[i] = *ptr;
-        } else if (*ptr < '\\' && *ptr == ':') {
+        if (*ptr == ':' || *ptr == '\\') {
             rel_dest[i] = '\\';
         } else {
             rel_dest[i] = *ptr;
         }
+        i++;
     }
     rel_dest[i] = '\0';
     f = DRfopen(pLink_source, "wt");

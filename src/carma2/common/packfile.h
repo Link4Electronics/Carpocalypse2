@@ -14,7 +14,7 @@ extern tTWTVFS C2_HOOK_FASTCALL OpenPackFile(const char* path);
 
 extern void C2_HOOK_FASTCALL ClosePackFile(tTWTVFS twt);
 
-extern void C2_HOOK_FASTCALL PFfclose(FILE* pFile);
+extern int C2_HOOK_FASTCALL PFfclose(FILE* pFile);
 
 extern FILE* C2_HOOK_FASTCALL PFfopen(const char* pPath, const char* mode);
 

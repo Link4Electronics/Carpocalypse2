@@ -21,7 +21,7 @@ extern tActionReplayCameraMode gAction_replay_camera_mode;
 
 // ViewOpponent
 
-// ReallyViewOpponent
+extern void C2_HOOK_FASTCALL ReallyViewOpponent(void);
 
 // CheckDisablePlingMaterials
 
@@ -32,7 +32,8 @@ extern tActionReplayCameraMode gAction_replay_camera_mode;
 // MungeCarMaterials
 void C2_HOOK_FASTCALL MungeCarMaterials(tCar_spec* pCar, int pInternal_cam);
 
-// SetCameraType
+extern void C2_HOOK_FASTCALL SetCameraType(tActionReplayCameraMode pCamPos);
+extern tActionReplayCameraMode gCameraTypeBeforeCockpit;
 
 // ChangeCameraType
 

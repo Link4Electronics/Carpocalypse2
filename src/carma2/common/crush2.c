@@ -44,6 +44,17 @@ int gTime_per_ped_kill[3];
 
 // ExplodeMeCarUpMeOldMatey
 
+// FUNCTION: CARMA2_HW 0x0043f6c0
+void C2_HOOK_FASTCALL ExplodeMeCarUpMeOldMatey(tCar_spec* pCar) {
+
+    Explode(&gExplosion_pix_animation_groups, pCar->car_master_actor, &pCar->car_actor->model->bounds, NULL);
+    if (pCar != NULL && pCar->driver == eDriver_local_human) {
+        DRS3StartSound(gXXX_outlet, gExplosion_sound_id);
+    } else {
+        DRS3StartSound3D(gXXX_outlet, gExplosion_sound_id, &pCar->pos, &gZero_v__car, 1, 255, 0x10000, 0x10000);
+    }
+}
+
 // FUNCTION: CARMA2_HW 0x0043f730
 int C2_HOOK_FASTCALL SetKnackeredFlag(tCar_spec* pCar) {
 

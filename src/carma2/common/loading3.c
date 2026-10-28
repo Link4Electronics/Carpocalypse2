@@ -52,21 +52,19 @@ int C2_HOOK_FASTCALL LoadBunchOfPixies(const char* pathRoot, const char* texture
 br_pixelmap* C2_HOOK_FASTCALL DRLdImg(const char* texturePathDir, const char* textureName, br_pixelmap* pPalette, int flags, int* errorCode) {
     br_pixelmap* textures[1000];
     int nb;
-    br_pixelmap* pm_result;
 
     if (gDisableTiffConversion) {
         nb = LoadBunchOfPixies(texturePathDir, textureName, textures, CARPOCALYPSE2_ASIZE(textures));
         if (nb != 0) {
             *errorCode = 0;
-            pm_result = textures[0];
+            return textures[0];
         } else {
             *errorCode = 1;
-            pm_result = NULL;
+            return NULL;
         }
     } else {
-        pm_result = LoadTiffTexture_Ex(texturePathDir, textureName, pPalette, flags | kLoadTextureFlags_SaveTextureCompressed, errorCode);
+        return LoadTiffTexture_Ex(texturePathDir, textureName, pPalette, flags | kLoadTextureFlags_SaveTextureCompressed, errorCode);
     }
-    return pm_result;
 }
 
 // FUNCTION: CARMA2_HW 0x0048ec20
@@ -107,6 +105,15 @@ br_pixelmap* C2_HOOK_FASTCALL LoadPixelmap(const char* pPath_name) {
 
     pm = RealLoadPixelmap(pPath_name);
     EnsurePixelmapAllowed(pm, 0);
+    return pm;
+}
+
+// FUNCTION: CARMA2_HW 0x0048ee00
+br_pixelmap* C2_HOOK_FASTCALL LoadPixelmapAllow(const char* pPath_name) {
+    br_pixelmap *pm;
+
+    pm = RealLoadPixelmap(pPath_name);
+    EnsurePixelmapAllowed(pm, 1);
     return pm;
 }
 
@@ -183,6 +190,21 @@ void C2_HOOK_FASTCALL DRLoadShadeTable(const char* pPath_name) {
         table_array[i]->base_y = 0;
     }
     BrTableAddMany(table_array, number_of_tables);
+}
+
+// FUNCTION: CARMA2_HW 0x0048f170
+void C2_HOOK_FASTCALL DRLoadPixelmaps(const char* pPath_name) {
+    br_pixelmap* pixelmaps[100];
+    int number_of_pixelmaps;
+    int i;
+
+    PossibleService();
+    number_of_pixelmaps = DRPixelmapLoadMany(pPath_name, pixelmaps, CARPOCALYPSE2_ASIZE(pixelmaps));
+    for (i = number_of_pixelmaps - 1; i >= 0; i--) {
+        pixelmaps[i]->origin_x = 0;
+        pixelmaps[i]->origin_y = 0;
+    }
+    BrMapAddMany(pixelmaps, number_of_pixelmaps);
 }
 
 // FUNCTION: CARMA2_HW 0x0048f1d0

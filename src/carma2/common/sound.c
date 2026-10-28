@@ -502,6 +502,7 @@ tS3_sound_tag C2_HOOK_FASTCALL DRS3StartSound(tS3_outlet* pOutlet, tS3_sound_id 
     }
 }
 
+// FUNCTION: CARMA2_HW 0x004556f0
 int C2_HOOK_FASTCALL DRS3StartSoundNoPiping(tS3_outlet* pOutlet, tS3_sound_id pSound) {
 
     if (gSound_enabled) {
@@ -555,6 +556,16 @@ void C2_HOOK_FASTCALL DRS3Service(void) {
     }
 }
 
+// FUNCTION: CARMA2_HW 0x00455860
+tS3_error_codes C2_HOOK_FASTCALL DRS3LoadSound(tS3_sound_id pThe_sound) {
+
+    if (gSound_enabled) {
+        return S3LoadSample(pThe_sound);
+    } else {
+        return eS3_error_none;
+    }
+}
+
 // FUNCTION: CARMA2_HW 0x004558f0
 int C2_HOOK_FASTCALL DRS3SoundStillPlaying(int pTag) {
 
@@ -590,6 +601,27 @@ int C2_HOOK_FASTCALL DRS3StopOutletSound(tS3_outlet* pOutlet) {
         return S3StopOutletSound(pOutlet);
     }
     return 0;
+}
+
+// FUNCTION: CARMA2_HW 0x00455990
+int C2_HOOK_FASTCALL DRS3StopAllOutletSounds(void) {
+    int result;
+
+    result = 0;
+    if (gSound_enabled) {
+        S3StopAllOutletSounds();
+        if (gSound_enabled) {
+            if (gProgram_state.cockpit_on && gProgram_state.cockpit_image_index >= 0) {
+                int inside_cockpit;
+
+                inside_cockpit = 1;
+                S3Service(inside_cockpit, inside_cockpit);
+            } else {
+                S3Service(0, 1);
+            }
+        }
+    }
+    return result;
 }
 
 // FUNCTION: CARMA2_HW 0x004559e0
@@ -889,7 +921,7 @@ void C2_HOOK_FASTCALL SetSoundVolumes(int pCD_audio) {
     if (gEffects_outlet != NULL) {
         DRS3SetOutletVolume(gEffects_outlet, gProgram_state.effects_volume);
     }
-    DRS3SetOutletVolume(gCar_outlet, gProgram_state.effects_volume);
+    DRS3SetOutletVolume(gXXX_outlet, gProgram_state.effects_volume);
     DRS3SetOutletVolume(gEngine_outlet, gProgram_state.effects_volume);
     DRS3SetOutletVolume(gDriver_outlet, gProgram_state.effects_volume);
     DRS3SetOutletVolume(gPedestrians_outlet, gProgram_state.effects_volume);
@@ -955,7 +987,7 @@ int C2_HOOK_FASTCALL DRS3StartCDA(int pSound) {
                 } while (pSound == gLast_tune);
             }
             gLast_tune = pSound;
-            gINT_00684554 = S3StartSound(gMusic_outlet, pSound);
+            gINT_00684554 = DRS3StartSoundNoPiping(gMusic_outlet, pSound);
             gINT_00684568 = gINT_00684554;
             if (!gINT_00684554) {
                 dr_dprintf("CDINFO: DRS3StartCDA(): Chosen actual CD track %d", pSound);
@@ -1170,5 +1202,31 @@ void C2_HOOK_FASTCALL StartMusicTrack(int pMusic_track) {
         gNext_track_finished_check = PDGetTotalTime() + 10000;
         dr_dprintf("CDINFO: StartMusicTrack(): New gNext_track_finished_check %d", gNext_track_finished_check);
         gINT_00684568 = DRS3StartCDA(pMusic_track);
+    }
+}
+#pragma auto_inline(off)
+// C2PORT-NONMATCHING: best 0% | trivial, returns 12 | reason original compiled without optimisation (frame pointer); our file is /O2
+// FUNCTION: CARMA2_HW 0x005648ac
+int C2_HOOK_STDCALL FUN_005648ac(int pArg) {
+    (void)pArg;
+    return 12;
+}
+#pragma auto_inline(on)
+
+// FUNCTION: CARMA2_HW 0x004557c0
+int C2_HOOK_STDCALL FUN_004557c0(int pArg) {
+    if (gSound_enabled != 0) {
+        return FUN_005648ac(pArg);
+    }
+    return 0;
+}
+
+// FUNCTION: CARMA2_HW 0x00455880
+int C2_HOOK_FASTCALL DRS3ReleaseSound(int pSound_id) {
+
+    if (gSound_enabled) {
+        return S3ReleaseSound(pSound_id);
+    } else {
+        return 0;
     }
 }

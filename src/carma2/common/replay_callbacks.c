@@ -1,24 +1,24 @@
+/* port: retain double timer arithmetic and mapped replay-rate constants. */
 #include "replay_callbacks.h"
 
-#include "camera.h"
 #include "crush.h"
-#include "displays.h"
 #include "flap.h"
+#include "funks.h"
 #include "font.h"
-#include "globvars.h"
 #include "grafdata.h"
-#include "graphics1.h"
-#include "graphics.h"
-#include "graphics2.h"
+#include "globvars.h"
 #include "input.h"
 #include "piping.h"
-#include "platform.h"
 #include "powerups.h"
 #include "replay.h"
-#include "smash.h"
+#include "smashing.h"
 #include "sound.h"
 #include "spark.h"
 #include "pedestrn.h"
+#include "platform.h"
+#include "graphics1.h"
+#include "graphics.h"
+#include "graphics2.h"
 #include "utility.h"
 #include "video.h"
 
@@ -28,69 +28,61 @@
 
 // Unmapped replay pipe worker helpers (orig PDB has no symbols for these;
 // they exist only so the wrappers can emit their call/jmp operands).
-extern void C2_HOOK_FASTCALL WorkerFrameBoundary(int field_0x4);
-extern void C2_HOOK_FASTCALL WorkerGrooveOff(br_actor* pActor, tU32 pBlock_flags);
-extern void C2_HOOK_FASTCALL WorkerFunkEnable(int field_0x0, tU16 field_0x4);
-extern void C2_HOOK_FASTCALL WorkerPowerupGot(int field_0x0, int field_0x4);
-extern void C2_HOOK_FASTCALL WorkerPowerupLose(int field_0x0, int field_0x4);
-extern void C2_HOOK_FASTCALL WorkerPowerupRespawn(int field_0x0, int field_0x4);
-extern void C2_HOOK_FASTCALL WorkerPowerupRespawnUndo(int field_0x0, int field_0x4);
-extern void C2_HOOK_FASTCALL WorkerShitMine(int field_0x0, br_vector3* pPos);
-extern void C2_HOOK_FASTCALL WorkerEndShitMine(int field_0x0, br_vector3* pPos);
-extern void C2_HOOK_FASTCALL WorkerPedPos(int field_0x0, br_vector3* pVec);
-extern void C2_HOOK_FASTCALL WorkerNapalmBolt(int field_0x0, int field_0x4, br_vector3* pVec);
-extern void C2_HOOK_FASTCALL WorkerPedDir(int field_0x0, br_vector3* pDir);
+extern void C2_HOOK_FASTCALL WorkerPedPos(tPedestrian* pPed, br_vector3* pVec);
+extern void C2_HOOK_FASTCALL WorkerNapalmBolt(int pBolt_index, tPedestrian* pPed, br_vector3* pPositions);
 extern void C2_HOOK_FASTCALL WorkerPedPhysics(int field_0x0, br_matrix34* pMatrix);
 extern void C2_HOOK_FASTCALL WorkerDroneCornerPos(int field_0x0, int field_0x4, tU16 field_0x6, tU16 field_0x8, tU16* pField_0xa);
-extern void C2_HOOK_FASTCALL WorkerFlap(int field_0x4, tS16 field_0x8);
-extern void C2_HOOK_FASTCALL WorkerModelMash(int field_0x4, tU8* pField_0x8);
-extern void C2_HOOK_FASTCALL WorkerModelMashUndo(int field_0x4, tU8* pField_0x8);
-extern void C2_HOOK_FASTCALL WorkerExplosion(int field_0x0, br_vector3* pField_0x4);
 extern void C2_HOOK_FASTCALL WorkerNonCarCreation(int field_0x0);
 extern void C2_HOOK_FASTCALL WorkerNonCarCreationUndo(int field_0x0);
-extern void C2_HOOK_FASTCALL WorkerSmashRemoveFaces(int field_0x0, int count);
-extern void C2_HOOK_FASTCALL WorkerSmashDecal(int field_0x0);
-extern void C2_HOOK_FASTCALL WorkerPHILObject(int field_0x0, br_matrix34* pField_0x4);
-extern void C2_HOOK_FASTCALL WorkerNonCar(int field_0x4, br_vector3* pField_0x8);
-extern void C2_HOOK_FASTCALL WorkerSmokeColumn(int column_flags, br_vector3* pPos, tU16 vertex, int pFlags_hi);
-extern void C2_HOOK_FASTCALL WorkerSmashTextureChange(int field_0x0, int field_0x4, int field_0xc, int field_0x10);
-extern void C2_HOOK_FASTCALL WorkerUndoSmashRemoveFaces(int field_0x0, int field_0x8, void* pField_0xc, int field_0x4);
-extern void C2_HOOK_FASTCALL WorkerSmashDecalUndo(int field_0x0);
-extern void C2_HOOK_FASTCALL WorkerExtendedSplash(int field_0x0, tU8 field_0x4, int field_0x8, br_vector3* pField_0xc, br_vector3* pField_0x18);
+extern void C2_HOOK_FASTCALL WorkerSmashTextureChange(br_material* pMaterial, tCar_spec* pCar, br_pixelmap* pOld_texture, br_pixelmap* pNew_texture);
 extern void C2_HOOK_FASTCALL WorkerPedDismember(int field_0x0, int field_0x4, int field_0x7);
-extern void C2_HOOK_FASTCALL WorkerPedDismemberUndo(int field_0x0, int field_0x4, int field_0x6);
-extern void C2_HOOK_FASTCALL WorkerPedFPChange(int field_0x0, tPipe_stack_word field_0x4);
+extern void C2_HOOK_FASTCALL WorkerPedDismemberUndo(tPedestrian* pPed, int pBone, tS8 pField_0x6);
 extern void C2_HOOK_FASTCALL WorkerPedModelChange(int field_0x0, int field_0x4, int field_0x6, int field_0x8);
 extern void C2_HOOK_FASTCALL WorkerPedModelChangeUndo(int field_0x0, int field_0x4, int field_0xc, int field_0xa);
 extern void C2_HOOK_FASTCALL WorkerDroneStraightPos(int field_0x0, int field_0x4, tU16 field_0x8, tU16 field_0xa);
 extern void C2_HOOK_FASTCALL WorkerRepulseRay(int field_0x0, int field_0x4, int field_0x8, int field_0xc);
-extern void C2_HOOK_FASTCALL WorkerSmashModelChangeApply(int field_0x0, int field_0x4, int field_0x8);
-extern void C2_HOOK_FASTCALL WorkerSmashModelChangeB(int field_0x0);
 extern void C2_HOOK_FASTCALL WorkerSmashModelChangeBUndo(int field_0x0);
 extern void C2_HOOK_FASTCALL WorkerCrush(int field_0x4, void* pField_0x8, void* pField_0xe);
-extern void C2_HOOK_FASTCALL WorkerCrushUndo(int field_0x4, void* pField_0x8, void* pField_0xe);
-extern void C2_HOOK_FASTCALL WorkerSpark(int field_0x0, void* pField_0x4, void* pField_0x10);
 extern void C2_HOOK_FASTCALL WorkerShrapnel(int field_0x0, void* pField_0x4, tU16 field_0x10, int field_0x14);
-extern void C2_HOOK_FASTCALL WorkerProxRay(int field_0x0, tU16 field_0x6, tU16 field_0x4, int field_0x8);
-extern void C2_HOOK_FASTCALL WorkerGrooveStop(int field_0x0, br_vector3* pField_0x14, int field_0x4, int field_0x8, int field_0xc, int field_0x10);
-extern void C2_HOOK_FASTCALL WorkerOilSpill(int field_0x0, br_vector3* pField_0x4, int field_0x34, int field_0x38, int field_0x3c, int zero, int field_0x44, br_vector3* pField_0x48, int field_0x54);
-extern void C2_HOOK_FASTCALL WorkerGibShower(int field_0x0, int field_0xc, int field_0x8, int field_0x10, int field_0x4, br_vector3* pField_0x14, br_vector3* pField_0x20, br_vector3* pField_0x2c);
-extern void C2_HOOK_FASTCALL WorkerPedMove(int field_0x0, int field_0x4, int field_0xc, int field_0x8_1, int field_0x14, int zero, br_vector3* pField_0x24, int field_0x34, br_vector3* pField_0x38);
-extern void C2_HOOK_FASTCALL WorkerPedMoveUndo(int field_0x0, int field_0x6, int field_0x10, int zero, int zero2, int field_0xa, br_vector3* pField_0x18, int field_0x30, br_vector3* pField_0x38);
-extern void C2_HOOK_FASTCALL WorkerSpecial(void);
-extern void C2_HOOK_FASTCALL WorkerSpecialUndo(void);
+extern void C2_HOOK_FASTCALL WorkerPedMove(tPedestrian* pPed, int pMove_id, int pSpeed_bits, int pField_0x8, int pField_0x14, int pFrame, br_vector3* pField_0x24, int pAction, br_vector3* pField_0x38);
+extern void C2_HOOK_FASTCALL WorkerPedMoveUndo(tPedestrian* pPed, int field_0x6, float field_0x10, int zero, int zero2, int field_0xa, br_vector3* pField_0x18, int field_0x30, br_vector3* pField_0x38);
 extern void C2_HOOK_FASTCALL WorkerPedStatus(int field_0x0, tU8 field_0x4, tU8 field_0x5, tU8 field_0x6, tU8 field_0x7, tU8 field_0x9, tU8 field_0xb, br_vector3* p0xc, br_vector3* p0x18, br_vector3* p0x24);
 extern void C2_HOOK_FASTCALL WorkerPedStatusUndo(int field_0x0, tU8 field_0x4, tU8 field_0x5, tU8 field_0x6, tU8 field_0x7, tU8 field_0x8, tU8 field_0xa, br_vector3* p0xc, br_vector3* p0x18, br_vector3* p0x24);
-extern void C2_HOOK_FASTCALL WorkerGibShowerUndo(int field_0xc, int prev_0x0, int prev_0xc, int prev_0x8, int prev_0x10, int prev_0x4, br_vector3* prev_0x14, br_vector3* prev_0x20, br_vector3* prev_0x2c);
-extern void C2_HOOK_FASTCALL WorkerSplitWeldApply(void* roadMachine, br_vector3* pVector);
-extern void C2_HOOK_FASTCALL WorkerSplitWeldUndo(void* roadMachine);
 extern tCar_spec* C2_HOOK_FASTCALL GetCarSpec(tVehicle_type pCategory, int pIndex);
-extern void C2_HOOK_FASTCALL WorkerShrapnelShower(tU32 field_0x4, tU32 field_0x84, tU32 field_0x84b, tU32 field_0x44, br_vector3* field_0x8, br_vector3* field_0x20, br_vector3* field_0x2c, tU32 field_0x50, tU32 field_0x48, tU32 field_0x0, br_vector3* field_0x54, br_vector3* field_0x88, br_vector3* field_0x14, tU32 field_0xa0, br_vector3* field_0x38, tU32 field_0);
-extern void C2_HOOK_FASTCALL WorkerShrapnelShowerUndo(tU32 chunk_0x48, tU32 prev_0x4, tU32 prev_0x84, tU32 prev_0x44, br_vector3* prev_0x8, br_vector3* prev_0x20, br_vector3* prev_0x2c, tU32 prev_0x50, tU32 prev_0x48, tU32 prev_0x0, br_vector3* prev_0x54, br_vector3* prev_0x88, br_vector3* prev_0x14, tU32 prev_0xa0, br_vector3* prev_0x38);
+// FUN_004ca650 ignores its (fake-this)call edx argument and the original callers do not set it.
+typedef void (C2_HOOK_FASTCALL *tPedFPChangeNoEdx)(tPedestrian* pPed, float pSpeed);
+// Real (already implemented elsewhere) functions the replay wrappers tail-call.
+extern void C2_HOOK_FASTCALL FUN_004df210(tPowerup* pPowerup, tCar_spec* pCar);
+extern void C2_HOOK_FASTCALL ARUndoPowerupRespawn(br_actor* pActor, int pUnused);
+extern void C2_HOOK_FASTCALL ARDoShitMine(br_actor* pActor, const br_vector3* pUnused);
+extern void C2_HOOK_FASTCALL ARUndoShitMine(br_actor* pActor, const br_vector3* pUnused);
+extern void C2_HOOK_FASTCALL CopyExplosionData(int pIndex, tExplosion* pExplosion);
+extern void C2_HOOK_FASTCALL SmashRemoveSomeFaces(br_model* pModel, int pCount);
+extern void C2_HOOK_FASTCALL TurnOffSmashModel(char* pArg);
+extern void C2_HOOK_FASTCALL TurnOnSmashDecal(int pIndex);
+extern void C2_HOOK_FASTCALL TurnOffSmashDecal(int pIndex);
+extern void C2_HOOK_FASTCALL PHILSetObjectMatrix(tPhysics_object* pObject, br_matrix34* pMat);
+extern void C2_HOOK_FASTCALL AdjustNonCar(br_actor* pActor, const br_matrix34* pMatrix);
+extern void C2_HOOK_FASTCALL AdjustSmokeColumn(int pIndex, const tSmoke_column_core* pCore, int pVertex_index, int pColour);
+extern void C2_HOOK_FASTCALL AddFacesToModel(br_model* pModel, int pFace_count, const tU16* pFace_data, br_material* pMaterial);
+extern void C2_HOOK_FASTCALL RecordReplaySplash(void* pObject, int pType, tU32 pWater_density, const tU32* pNormal, const tU32* pBounds);
+extern void C2_HOOK_FAKE_THISCALL ChangeSmashModel(void* pThis, undefined4 pArg2, undefined4 pValue);
+extern void C2_HOOK_FASTCALL FUN_0043be50(br_model* pModel, const tCompressed_vector3* pVectors, const tU16* pDeltas);
+extern void C2_HOOK_FASTCALL ARApplyModelMash(br_model* pModel, const tCompressed_vector3* pDeltas);
+extern void C2_HOOK_FASTCALL ARUndoModelMash(br_model* pModel, const tCompressed_vector3* pOffsets);
+extern void C2_HOOK_FAKE_THISCALL AdjustOilSpill(int pIndex, const br_matrix34* pMatrix, float pFull_size, float pGrow_rate, tU32 pSpill_time, tU32 pUnused, tCar_spec* pCar, const br_vector3* pPos, tU32 pUnused2);
+extern void C2_HOOK_FASTCALL FUN_004ccae0(tU32 pFragment_owner, tU32 pTime, tU32 pSeed, float pForce, int pStarting_size, br_vector3* pInitial_position, br_vector3* pInitial_velocity, br_vector3* pDirection);
+extern void C2_HOOK_FASTCALL FUN_004ccc40(int pCurrent_time, tU32 pOwner, int pSpurt_time, tU32 pSeed, float pForce, int pStarting_size, br_vector3* pInitial_position, br_vector3* pInitial_velocity, br_vector3* pDirection);
+extern void C2_HOOK_FASTCALL ARUndoSplitWeld(tCar_spec* pCar_spec);
+extern void C2_HOOK_FASTCALL DoInitialTail(void);
+extern void C2_HOOK_FASTCALL UndoInitialTail(void);
+extern void C2_HOOK_FASTCALL AdjustFunkEnable(int pIndex, tS16 pEnable);
+extern void C2_HOOK_FASTCALL AdjustPedDiagnostics(tU32 pSubject_index, void* pUnused2, void* pUnused3, void* pUnused4);
+extern void C2_HOOK_FASTCALL WorkerPowerupRespawn(int field_0x0, int field_0x4);
+extern void C2_HOOK_FASTCALL WorkerShrapnelShower(int pOwner, int* pShrapnel_spec, tU32 pSeed, undefined4 pArg4, undefined4 pArg5, undefined4 pArg6, undefined4 pArg7, int pTime, undefined4 pArg9, br_matrix34* pTransform, undefined4 pFragment_owner, br_vector3* pPosition, float pDistance, undefined4 pArg14, undefined4 pArg15);
 extern tNapalm_bolt gNapalm_bolts[5];
-extern void C2_HOOK_FASTCALL WorkerSmoke(int index, tU8 flag, float f1, float f2, br_vector3* pVec);
+extern int gDisable_sound;
 extern void C2_HOOK_FASTCALL WorkerFlame(int index, int flag, float f1, float f2, float f3, float f4);
-extern void C2_HOOK_FASTCALL WorkerPedDiagnostics(void* pOpponent, void* pField_0x4, void* pField_0x58, void* pField_0x144);
 extern void C2_HOOK_FASTCALL WorkerSmudge(tPipe_chunk** pChunk, int pScale);
 extern int gShrapnel_flags;
 extern int gSmoke_flags;
@@ -664,7 +656,7 @@ const tReplay_callback gReplay_callbacks[70] = {
 // FUNCTION: CARMA2_HW 0x004c9360
 void C2_HOOK_FASTCALL ApplyFrameBoundary(tPipe_chunk** pChunk) {
 
-    return WorkerFrameBoundary(((tPipe_chunk_frame_bound*)*pChunk)->field_0x4);
+    return ApplyTime(((tPipe_chunk_frame_bound*)*pChunk)->field_0x4);
 }
 
 // FUNCTION: CARMA2_HW 0x004c9370
@@ -729,7 +721,7 @@ void C2_HOOK_FASTCALL ApplyCrush(tPipe_chunk** pChunk) {
 void C2_HOOK_FASTCALL UndoCrush(tPipe_chunk** pChunk, tPipe_chunk* pPrev_chunk) {
     tPipe_chunk_crush* chunk = (tPipe_chunk_crush*)*pChunk;
 
-    return WorkerCrushUndo(chunk->field_0x4, &chunk->field_0x8[0], &chunk->field_0x8[6]);
+    return FUN_0043be50((br_model*)chunk->field_0x4, (const tCompressed_vector3*)&chunk->field_0x8[0], (const tU16*)&chunk->field_0x8[6]);
 }
 
 // FUNCTION: CARMA2_HW 0x004c9490
@@ -859,7 +851,7 @@ void C2_HOOK_FASTCALL ApplySpecial(tPipe_chunk** pChunk) {
             }
             return;
         case 1:
-            return WorkerSpecial();
+            return DoInitialTail();
     }
 }
 
@@ -875,7 +867,7 @@ void C2_HOOK_FASTCALL UndoSpecial(tPipe_chunk** pChunk, tPipe_chunk* pPrev_chunk
         if (--type) {
             return;
         }
-        return WorkerSpecialUndo();
+        return UndoInitialTail();
     }
 }
 
@@ -883,7 +875,7 @@ void C2_HOOK_FASTCALL UndoSpecial(tPipe_chunk** pChunk, tPipe_chunk* pPrev_chunk
 void C2_HOOK_FASTCALL ApplySpark(tPipe_chunk** pChunk) {
     tPipe_chunk_spark_replay* chunk = (tPipe_chunk_spark_replay*)*pChunk;
 
-    return WorkerSpark(chunk->field_0x0, &chunk->field_0x4[0], &chunk->field_0x4[0xc]);
+    return CreateSingleSpark(chunk->field_0x0, (br_vector3*)&chunk->field_0x4[0], (br_vector3*)&chunk->field_0x4[0xc]);
 }
 
 // FUNCTION: CARMA2_HW 0x004f87b0
@@ -943,14 +935,14 @@ void C2_HOOK_FASTCALL UndoScreenWobble(tPipe_chunk** pChunk, tPipe_chunk* pPrev_
 void C2_HOOK_FASTCALL ApplyGrooveStop(tPipe_chunk** pChunk) {
     tPipe_chunk_groove_stop* chunk = (tPipe_chunk_groove_stop*)*pChunk;
 
-    return WorkerGrooveStop(chunk->field_0x0, &chunk->field_0x14, chunk->field_0x4, chunk->field_0x8, chunk->field_0xc, chunk->field_0x10);
+    return SetGrooveInterrupt(chunk->field_0x0, (const br_matrix34*)&chunk->field_0x14, chunk->field_0x4, chunk->field_0x8, *(float*)&chunk->field_0xc, *(float*)&chunk->field_0x10);
 }
 
 // FUNCTION: CARMA2_HW 0x004c91b0
 void C2_HOOK_FASTCALL ApplyNonCar(tPipe_chunk** pChunk) {
     tPipe_chunk_non_car_replay* chunk = (tPipe_chunk_non_car_replay*)*pChunk;
 
-    return WorkerNonCar(chunk->field_0x4, &chunk->field_0x8);
+    return AdjustNonCar((br_actor*)chunk->field_0x4, (const br_matrix34*)&chunk->field_0x8);
 }
 
 // FUNCTION: CARMA2_HW 0x004fb510
@@ -959,34 +951,37 @@ void C2_HOOK_FASTCALL ResetSmoke(void) {
     gSmoke_flags = 0;
 }
 
+// GLOBAL: CARMA2_HW 0x0075bc3c
+tCar_spec* gCurrent_car;
+
+// C2PORT-NONMATCHING: best 100% | difftest PASS 2000 trials (spec 004c91c0_ApplySmoke.json) | reason verifies smoke fields and position arguments
 // FUNCTION: CARMA2_HW 0x004c91c0
 void C2_HOOK_FASTCALL ApplySmoke(tPipe_chunk** pChunk) {
     tU8* chunk = (tU8*)*pChunk;
-    tCar_spec* car = *(tCar_spec**)0x75bc3c;
-    float tmp[3];
+    br_vector3 tmp;
 
-    tmp[0] = (float)((double)(int)(tS16)*(tU16*)(chunk + 4) * 0.00125);
-    tmp[1] = (float)((double)(int)(tS16)*(tU16*)(chunk + 6) * 0.00125);
-    tmp[2] = (float)((double)(int)(tS16)*(tU16*)(chunk + 8) * 0.00125);
-    tmp[0] += *(float*)((tU8*)car + 0x50);
-    tmp[1] += *(float*)((tU8*)car + 0x54);
-    tmp[2] += *(float*)((tU8*)car + 0x58);
+    tmp.v[0] = (float)((double)(int)(tS16)*(tU16*)(chunk + 4) * 0.00125);
+    tmp.v[1] = (float)((double)(int)(tS16)*(tU16*)(chunk + 6) * 0.00125);
+    tmp.v[2] = (float)((double)(int)(tS16)*(tU16*)(chunk + 8) * 0.00125);
+    tmp.v[0] += *(float*)((tU8*)gCurrent_car + 0x50);
+    tmp.v[1] += *(float*)((tU8*)gCurrent_car + 0x54);
+    tmp.v[2] += *(float*)((tU8*)gCurrent_car + 0x58);
 
-    return WorkerSmoke(*(int*)(chunk + 0), *(tU8*)(chunk + 0xc), (float)*(tU16*)(chunk + 0xa) * 0.00390625f, (float)*(tU8*)(chunk + 0xc) * 0.0009765625f, tmp);
+    return AdjustSmoke(*(int*)(chunk + 0), *(tU8*)(chunk + 0xd), &tmp, (float)*(tU16*)(chunk + 0xa) * 0.0009765625f, (float)*(tU8*)(chunk + 0xc) * 0.00390625f);
 }
 
 // FUNCTION: CARMA2_HW 0x004c9330
 void C2_HOOK_FASTCALL ApplyOilSpill(tPipe_chunk** pChunk) {
     tPipe_chunk_oil_spill* chunk = (tPipe_chunk_oil_spill*)*pChunk;
 
-    return WorkerOilSpill(chunk->field_0x0, &chunk->field_0x4, chunk->field_0x34, chunk->field_0x38, chunk->field_0x3c, 0, chunk->field_0x44, &chunk->field_0x48, chunk->field_0x54);
+    return AdjustOilSpill(chunk->field_0x0, (const br_matrix34*)&chunk->field_0x4, *(float*)&chunk->field_0x34, *(float*)&chunk->field_0x38, chunk->field_0x3c, 0, (tCar_spec*)chunk->field_0x44, &chunk->field_0x48, chunk->field_0x54);
 }
 
 // FUNCTION: CARMA2_HW 0x004c9280
 void C2_HOOK_FASTCALL ApplySmokeColumn(tPipe_chunk** pChunk) {
     tPipe_chunk_smoke_column_replay* chunk = (tPipe_chunk_smoke_column_replay*)*pChunk;
 
-    return WorkerSmokeColumn(chunk->field_0x0 & 0x3fff, (br_vector3*)chunk->pad, chunk->field_0x14, chunk->field_0x0 >> 14);
+    return AdjustSmokeColumn(chunk->field_0x0 & 0x3fff, (const tSmoke_column_core*)chunk->pad, chunk->field_0x14, chunk->field_0x0 >> 14);
 }
 
 // FUNCTION: CARMA2_HW 0x004c92a0
@@ -1037,6 +1032,22 @@ void C2_HOOK_FASTCALL UndoSplash(tPipe_chunk** pChunk, tPipe_chunk* pPrev_chunk)
     ClearPipeUndoFlag();
 }
 
+#pragma auto_inline(off)
+// FUNCTION: CARMA2_HW 0x004d6180
+void C2_HOOK_FASTCALL AdjustProxRay(int pRay_index, tU16 pCar_ID, tU16 pPed_index, tU32 pTime) {
+    tCar_spec* car;
+
+    if ((pCar_ID >> 8) == 0) {
+        car = &gProgram_state.current_car;
+    } else {
+        car = GetCarSpec(pCar_ID >> 8, pCar_ID & 0xff);
+    }
+    gProximity_rays[pRay_index].car = car;
+    gProximity_rays[pRay_index].ped = &gPedestrian_array[pPed_index];
+    gProximity_rays[pRay_index].start_time = pTime;
+}
+#pragma auto_inline(on)
+
 // FUNCTION: CARMA2_HW 0x004d61f0
 void C2_HOOK_FASTCALL ResetProxRay(void) {
     tProximity_ray* ray = gProximity_rays;
@@ -1050,7 +1061,7 @@ void C2_HOOK_FASTCALL ResetProxRay(void) {
 void C2_HOOK_FASTCALL ApplyProxRay(tPipe_chunk** pChunk) {
     tPipe_chunk_prox_ray_replay* chunk = (tPipe_chunk_prox_ray_replay*)*pChunk;
 
-    return WorkerProxRay(chunk->field_0x0, chunk->field_0x6, chunk->field_0x4, chunk->field_0x8);
+    return AdjustProxRay(chunk->field_0x0, chunk->field_0x6, chunk->field_0x4, chunk->field_0x8);
 }
 
 // FUNCTION: CARMA2_HW 0x004c9810
@@ -1095,14 +1106,14 @@ int C2_HOOK_FASTCALL CalcModelMashLength(tPipe_chunk* pChunk) {
 void C2_HOOK_FASTCALL ApplyModelMash(tPipe_chunk** pChunk) {
     tPipe_chunk_model_mash* chunk = (tPipe_chunk_model_mash*)*pChunk;
 
-    return WorkerModelMash(chunk->field_0x4, chunk->field_0x8);
+    return ARApplyModelMash((br_model*)chunk->field_0x4, (const tCompressed_vector3*)chunk->field_0x8);
 }
 
 // FUNCTION: CARMA2_HW 0x004c9f80
 void C2_HOOK_FASTCALL UndoModelMash(tPipe_chunk** pChunk, tPipe_chunk* pPrev_chunk) {
     tPipe_chunk_model_mash* chunk = (tPipe_chunk_model_mash*)*pChunk;
 
-    return WorkerModelMashUndo(chunk->field_0x4, chunk->field_0x8);
+    return ARUndoModelMash((br_model*)chunk->field_0x4, (const tCompressed_vector3*)chunk->field_0x8);
 }
 
 // FUNCTION: CARMA2_HW 0x004c9850
@@ -1156,17 +1167,17 @@ void C2_HOOK_FASTCALL ApplySplitWeld(tPipe_chunk** pChunk) {
 
     if ((*(tPipe_chunk_split_weld**)*pChunk)->field_0x14) {
         if ((fn & 0xffffff00u) == 0) {
-            return WorkerSplitWeldApply(&gProgram_state.current_car, &swGetChunk(pChunk)->field_0x4);
+            return ARApplySplitWeld(&gProgram_state.current_car, (float*)&swGetChunk(pChunk)->field_0x4);
         }
 
-        return WorkerSplitWeldApply(GetCarSpec(fn >> 8, fn & 0xffu), &swGetChunk(pChunk)->field_0x4);
+        return ARApplySplitWeld(GetCarSpec(fn >> 8, fn & 0xffu), (float*)&swGetChunk(pChunk)->field_0x4);
     }
 
     if ((fn & 0xffffff00u) == 0) {
-        return WorkerSplitWeldUndo(&gProgram_state.current_car);
+        return ARUndoSplitWeld(&gProgram_state.current_car);
     }
 
-    return WorkerSplitWeldUndo(GetCarSpec(fn >> 8, fn & 0xffu));
+    return ARUndoSplitWeld(GetCarSpec(fn >> 8, fn & 0xffu));
 }
 
 // FUNCTION: CARMA2_HW 0x004c9fd0
@@ -1175,17 +1186,17 @@ void C2_HOOK_FASTCALL UndoSplitWeld(tPipe_chunk** pChunk, tPipe_chunk* pPrev_chu
 
     if ((*(tPipe_chunk_split_weld**)*pChunk)->field_0x14) {
         if ((fn & 0xffffff00u) == 0) {
-            return WorkerSplitWeldUndo(&gProgram_state.current_car);
+            return ARUndoSplitWeld(&gProgram_state.current_car);
         }
 
-        return WorkerSplitWeldUndo(GetCarSpec(fn >> 8, fn & 0xffu));
+        return ARUndoSplitWeld(GetCarSpec(fn >> 8, fn & 0xffu));
     }
 
     if ((fn & 0xffffff00u) == 0) {
-        return WorkerSplitWeldApply(&gProgram_state.current_car, &swGetChunk(pChunk)->field_0x4);
+        return ARApplySplitWeld(&gProgram_state.current_car, (float*)&swGetChunk(pChunk)->field_0x4);
     }
 
-    return WorkerSplitWeldApply(GetCarSpec(fn >> 8, fn & 0xffu), &swGetChunk(pChunk)->field_0x4);
+    return ARApplySplitWeld(GetCarSpec(fn >> 8, fn & 0xffu), (float*)&swGetChunk(pChunk)->field_0x4);
 }
 
 // FUNCTION: CARMA2_HW 0x004c9930
@@ -1212,9 +1223,9 @@ void C2_HOOK_FASTCALL ApplyShrapnelShower(tPipe_chunk** pChunk) {
         return;
     }
 
-    memcpy((void*)0x6b78a0, &chunk->field_0xa4, sizeof(chunk->field_0xa4));
+    memcpy(&gMatrix34_006b78a0, &chunk->field_0xa4, sizeof(chunk->field_0xa4));
 
-    return WorkerShrapnelShower(((tPipe_chunk_shrapnel_shower*)*pChunk)->field_0x4, ((tPipe_chunk_shrapnel_shower*)*pChunk)->field_0x84, ((tPipe_chunk_shrapnel_shower*)*pChunk)->field_0x84, ((tPipe_chunk_shrapnel_shower*)*pChunk)->field_0x44, &((tPipe_chunk_shrapnel_shower*)*pChunk)->field_0x8, &((tPipe_chunk_shrapnel_shower*)*pChunk)->field_0x20, &((tPipe_chunk_shrapnel_shower*)*pChunk)->field_0x2c, ((tPipe_chunk_shrapnel_shower*)*pChunk)->field_0x50, ((tPipe_chunk_shrapnel_shower*)*pChunk)->field_0x48, ((tPipe_chunk_shrapnel_shower*)*pChunk)->field_0x0, &((tPipe_chunk_shrapnel_shower*)*pChunk)->field_0x54, &((tPipe_chunk_shrapnel_shower*)*pChunk)->field_0x88, &((tPipe_chunk_shrapnel_shower*)*pChunk)->field_0x14, ((tPipe_chunk_shrapnel_shower*)*pChunk)->field_0xa0, &((tPipe_chunk_shrapnel_shower*)*pChunk)->field_0x38, 0);
+    return WorkerShrapnelShower(((tPipe_chunk_shrapnel_shower*)*pChunk)->field_0x4, (int*)((tPipe_chunk_shrapnel_shower*)*pChunk)->field_0x84, ((tPipe_chunk_shrapnel_shower*)*pChunk)->field_0x44, &((tPipe_chunk_shrapnel_shower*)*pChunk)->field_0x8, &((tPipe_chunk_shrapnel_shower*)*pChunk)->field_0x20, &((tPipe_chunk_shrapnel_shower*)*pChunk)->field_0x2c, ((tPipe_chunk_shrapnel_shower*)*pChunk)->field_0x50, ((tPipe_chunk_shrapnel_shower*)*pChunk)->field_0x48, ((tPipe_chunk_shrapnel_shower*)*pChunk)->field_0x0, &((tPipe_chunk_shrapnel_shower*)*pChunk)->field_0x54, &((tPipe_chunk_shrapnel_shower*)*pChunk)->field_0x88, &((tPipe_chunk_shrapnel_shower*)*pChunk)->field_0x14, *(float*)&((tPipe_chunk_shrapnel_shower*)*pChunk)->field_0xa0, &((tPipe_chunk_shrapnel_shower*)*pChunk)->field_0x38, 0);
 }
 
 // FUNCTION: CARMA2_HW 0x004ca070
@@ -1226,16 +1237,16 @@ void C2_HOOK_FASTCALL UndoShrapnelShower(tPipe_chunk** pChunk, tPipe_chunk* pPre
         return;
     }
 
-    memcpy((void*)0x6b78a0, &prev->field_0xa4, sizeof(prev->field_0xa4));
+    memcpy(&gMatrix34_006b78a0, &prev->field_0xa4, sizeof(prev->field_0xa4));
 
-    return WorkerShrapnelShowerUndo(chunk->field_0x48, prev->field_0x4, prev->field_0x84, prev->field_0x44, &prev->field_0x8, &prev->field_0x20, &prev->field_0x2c, prev->field_0x50, prev->field_0x48, prev->field_0x0, &prev->field_0x54, &prev->field_0x88, &prev->field_0x14, prev->field_0xa0, &prev->field_0x38);
+    return FUN_004f0380(chunk->field_0x48, prev->field_0x4, (int*)prev->field_0x84, prev->field_0x44, &prev->field_0x8, &prev->field_0x20, &prev->field_0x2c, prev->field_0x50, prev->field_0x48, prev->field_0x0, &prev->field_0x54, &prev->field_0x88, &prev->field_0x14, *(float*)&prev->field_0xa0, &prev->field_0x38);
 }
 
 // FUNCTION: CARMA2_HW 0x004c99d0
 void C2_HOOK_FASTCALL ApplyExplosion(tPipe_chunk** pChunk) {
     tPipe_chunk_explosion* chunk = (tPipe_chunk_explosion*)*pChunk;
 
-    return WorkerExplosion(chunk->field_0x0, &chunk->field_0x4);
+    return CopyExplosionData(chunk->field_0x0, (tExplosion*)&chunk->field_0x4);
 }
 
 // FUNCTION: CARMA2_HW 0x004c99e0
@@ -1257,9 +1268,9 @@ void C2_HOOK_FASTCALL ApplySmashModelChange(tPipe_chunk** pChunk) {
     tPipe_chunk_smash_model_change* chunk = (tPipe_chunk_smash_model_change*)*pChunk;
 
     if (chunk->field_0x8) {
-        return ChangeSmashModel((br_actor*)chunk->field_0x0, (br_model*)chunk->field_0x4, (br_model*)chunk->field_0x8);
+        return ChangeSmashModel((void*)chunk->field_0x0, chunk->field_0x4, chunk->field_0x8);
     }
-    return TurnOffSmashModel((br_actor*)chunk->field_0x0);
+    return TurnOffSmashModel((char*)chunk->field_0x0);
 }
 
 // FUNCTION: CARMA2_HW 0x004ca110
@@ -1267,9 +1278,9 @@ void C2_HOOK_FASTCALL UndoSmashModelChange(tPipe_chunk** pChunk, tPipe_chunk* pP
     tPipe_chunk_smash_model_change* chunk = (tPipe_chunk_smash_model_change*)*pChunk;
 
     if (chunk->field_0x8) {
-        return ChangeSmashModel((br_actor*)chunk->field_0x0, (br_model*)chunk->field_0x8, (br_model*)chunk->field_0x4);
+        return ChangeSmashModel((void*)chunk->field_0x0, chunk->field_0x8, chunk->field_0x4);
     }
-    return TurnOnSmashModel((br_actor*)chunk->field_0x0);
+    return WorkerSmashModelChangeBUndo(chunk->field_0x0);
 }
 
 // FUNCTION: CARMA2_HW 0x004ca460
@@ -1278,30 +1289,59 @@ int C2_HOOK_FASTCALL CalcRemoveFacesLength(tPipe_chunk* pChunk) {
     return 8 + 8 * ((tPipe_chunk_remove_faces*)pChunk)->count;
 }
 
+// FUNCTION: CARMA2_HW 0x004ca470
+int C2_HOOK_FASTCALL FUN_004ca470(tPedestrian* pPed) {
+
+    if (pPed->field_0x0c != NULL && pPed->field_0x0c->field_0xb0 != NULL) {
+        return pPed->field_0x0c->field_0xb0->field_0x4;
+    }
+    return 0;
+}
+
+#pragma auto_inline(off)
+// FUNCTION: CARMA2_HW 0x004ca4d0
+void C2_HOOK_FASTCALL FUN_004ca4d0(int pIndex, const br_vector3* pDir) {
+
+    if (!gBOOL_00744804) {
+        SetCharacterDirection(gPedestrian_array[pIndex & 0xffff].character, pDir, &y_unit_vector);
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x004ca650
+void C2_HOOK_FAKE_THISCALL FUN_004ca650(tPedestrian* pPed, undefined4 pEdx, float pSpeed) {
+
+    if (!gBOOL_00744804) {
+        SetCharacterMove(pPed->character, -1, pSpeed, 0, 0, GetTotalTime());
+    }
+}
+#pragma auto_inline(on)
+
 // FUNCTION: CARMA2_HW 0x004c9a10
 void C2_HOOK_FASTCALL ApplySmashRemoveFaces(tPipe_chunk** pChunk) {
     tPipe_chunk_remove_faces* chunk = (tPipe_chunk_remove_faces*)*pChunk;
 
-    return WorkerSmashRemoveFaces(chunk->field_0x0, (int)chunk->count);
+    return SmashRemoveSomeFaces((br_model*)chunk->field_0x0, chunk->count);
 }
 
 // FUNCTION: CARMA2_HW 0x004ca130
 void C2_HOOK_FASTCALL UndoSmashRemoveFaces(tPipe_chunk** pChunk, tPipe_chunk* pPrev_chunk) {
     tPipe_chunk_remove_faces_replay* chunk = (tPipe_chunk_remove_faces_replay*)*pChunk;
 
-    return WorkerUndoSmashRemoveFaces(chunk->field_0x0, chunk->field_0x8, &chunk->field_0xc, chunk->field_0x4);
+    return AddFacesToModel((br_model*)chunk->field_0x0, chunk->field_0x8, (const tU16*)&chunk->field_0xc, (br_material*)chunk->field_0x4);
 }
 
 // FUNCTION: CARMA2_HW 0x004c9a20
 void C2_HOOK_FASTCALL ApplySmashDecal(tPipe_chunk** pChunk) {
+    tPipe_chunk_smash_decal* chunk = (tPipe_chunk_smash_decal*)*pChunk;
 
-    TurnOnSmashDecal(*(int*)*pChunk);
+    return TurnOnSmashDecal(chunk->field_0x0);
 }
 
 // FUNCTION: CARMA2_HW 0x004ca150
 void C2_HOOK_FASTCALL UndoSmashDecal(tPipe_chunk** pChunk, tPipe_chunk* pPrev_chunk) {
+    tPipe_chunk_smash_decal* chunk = (tPipe_chunk_smash_decal*)*pChunk;
 
-    TurnOffSmashDecal(*(int*)*pChunk);
+    return TurnOffSmashDecal(chunk->field_0x0);
 }
 
 // FUNCTION: CARMA2_HW 0x004c9a30
@@ -1381,14 +1421,14 @@ void C2_HOOK_FASTCALL UndoPedStatus(tPipe_chunk** pChunk, tPipe_chunk* pPrev_chu
 void C2_HOOK_FASTCALL ApplyPedDir(tPipe_chunk** pChunk) {
     tPipe_chunk_ped_dir* chunk = (tPipe_chunk_ped_dir*)*pChunk;
 
-    return WorkerPedDir(chunk->field_0x0, &chunk->field_0x4);
+    return FUN_004ca4d0(chunk->field_0x0, &chunk->field_0x4);
 }
 
 // FUNCTION: CARMA2_HW 0x004c9ae0
 void C2_HOOK_FASTCALL ApplyPedMove(tPipe_chunk** pChunk) {
     tPipe_chunk_ped_move* chunk = (tPipe_chunk_ped_move*)*pChunk;
 
-    return WorkerPedMove(chunk->field_0x0, chunk->field_0x4, chunk->field_0xc, chunk->field_0x8 & 1, chunk->field_0x14, 0, &chunk->field_0x24, chunk->field_0x34, &chunk->field_0x38);
+    return WorkerPedMove((tPedestrian*)chunk->field_0x0, chunk->field_0x4, chunk->field_0xc, chunk->field_0x8 & 1, chunk->field_0x14, 0, &chunk->field_0x24, chunk->field_0x34, &chunk->field_0x38);
 }
 
 // FUNCTION: CARMA2_HW 0x004ca1e0
@@ -1396,7 +1436,7 @@ void C2_HOOK_FASTCALL UndoPedMove(tPipe_chunk** pChunk, tPipe_chunk* pPrev_chunk
     tPipe_chunk_ped_move* chunk = (tPipe_chunk_ped_move*)*pChunk;
 
     if (!chunk->field_0x14) {
-        return WorkerPedMoveUndo(chunk->field_0x0, chunk->field_0x6, chunk->field_0x10, 0, 0, chunk->field_0xa, &chunk->field_0x18, chunk->field_0x30, &chunk->field_0x38);
+        return WorkerPedMoveUndo((tPedestrian*)chunk->field_0x0, chunk->field_0x6, *(float*)&chunk->field_0x10, 0, 0, chunk->field_0xa, &chunk->field_0x18, chunk->field_0x30, &chunk->field_0x38);
     }
     return;
 }
@@ -1426,14 +1466,14 @@ void C2_HOOK_FASTCALL UndoPedDismember(tPipe_chunk** pChunk, tPipe_chunk* pPrev_
 void C2_HOOK_FASTCALL ApplyPedFPChange(tPipe_chunk** pChunk) {
     tPipe_chunk_ped_fp_change* chunk = (tPipe_chunk_ped_fp_change*)*pChunk;
 
-    return WorkerPedFPChange(chunk->field_0x0, *(tPipe_stack_word*)&chunk->field_0x8);
+    return ((tPedFPChangeNoEdx)FUN_004ca650)((tPedestrian*)chunk->field_0x0, *(float*)&chunk->field_0x8);
 }
 
 // FUNCTION: CARMA2_HW 0x004ca230
 void C2_HOOK_FASTCALL UndoPedFPChange(tPipe_chunk** pChunk, tPipe_chunk* pPrev_chunk) {
     tPipe_chunk_ped_fp_change* chunk = (tPipe_chunk_ped_fp_change*)*pChunk;
 
-    return WorkerPedFPChange(chunk->field_0x0, *(tPipe_stack_word*)&chunk->field_0x4);
+    return ((tPedFPChangeNoEdx)FUN_004ca650)((tPedestrian*)chunk->field_0x0, *(float*)&chunk->field_0x4);
 }
 
 // FUNCTION: CARMA2_HW 0x004c9b50
@@ -1468,14 +1508,14 @@ void C2_HOOK_FASTCALL UndoPedModelChange(tPipe_chunk** pChunk, tPipe_chunk* pPre
 void C2_HOOK_FASTCALL ApplyPHILObject(tPipe_chunk** pChunk) {
     tPipe_chunk_phil_object* chunk = (tPipe_chunk_phil_object*)*pChunk;
 
-    return WorkerPHILObject(chunk->field_0x0, &chunk->field_0x4);
+    return PHILSetObjectMatrix((tPhysics_object*)chunk->field_0x0, &chunk->field_0x4);
 }
 
 // FUNCTION: CARMA2_HW 0x004c9b90
 void C2_HOOK_FASTCALL ApplyGibShower(tPipe_chunk** pChunk) {
     tPipe_chunk_gib_shower* chunk = (tPipe_chunk_gib_shower*)*pChunk;
 
-    return WorkerGibShower(chunk->field_0x0, chunk->field_0xc, chunk->field_0x8, chunk->field_0x10, chunk->field_0x4, &chunk->field_0x14, &chunk->field_0x20, &chunk->field_0x2c);
+    return FUN_004ccae0(chunk->field_0x0, chunk->field_0xc, chunk->field_0x8, *(float*)&chunk->field_0x10, chunk->field_0x4, &chunk->field_0x14, &chunk->field_0x20, &chunk->field_0x2c);
 }
 
 // FUNCTION: CARMA2_HW 0x004ca270
@@ -1486,7 +1526,7 @@ void C2_HOOK_FASTCALL UndoGibShower(tPipe_chunk** pChunk, tPipe_chunk* pPrev_chu
         return;
     }
 
-    return WorkerGibShowerUndo(((tPipe_chunk_gib_shower*)*pChunk)->field_0xc, prev->field_0x0, prev->field_0xc, prev->field_0x8, prev->field_0x10, prev->field_0x4, &prev->field_0x14, &prev->field_0x20, &prev->field_0x2c);
+    return FUN_004ccc40(((tPipe_chunk_gib_shower*)*pChunk)->field_0xc, prev->field_0x0, prev->field_0xc, prev->field_0x8, *(float*)&prev->field_0x10, prev->field_0x4, &prev->field_0x14, &prev->field_0x20, &prev->field_0x2c);
 }
 
 // FUNCTION: CARMA2_HW 0x004c9bc0
@@ -1514,7 +1554,7 @@ void C2_HOOK_FASTCALL ApplyGrooveOnOff(tPipe_chunk** pChunk) {
     if (chunk->field_0x4 != 0) {
         return EnableGroovidelic((br_actor*)chunk->field_0x0, chunk->field_0x8);
     }
-    return WorkerGrooveOff((br_actor*)chunk->field_0x0, chunk->field_0x8);
+    return DisableGroovidelic((br_actor*)chunk->field_0x0, chunk->field_0x8);
 }
 
 // FUNCTION: CARMA2_HW 0x004ca2d0
@@ -1522,7 +1562,7 @@ void C2_HOOK_FASTCALL UndoGrooveOnOff(tPipe_chunk** pChunk, tPipe_chunk* pPrev_c
     tPipe_chunk_groove_on_off* chunk = (tPipe_chunk_groove_on_off*)*pChunk;
 
     if (chunk->field_0x4 != 0) {
-        return WorkerGrooveOff((br_actor*)chunk->field_0x0, chunk->field_0x8);
+        return DisableGroovidelic((br_actor*)chunk->field_0x0, chunk->field_0x8);
     }
     return EnableGroovidelic((br_actor*)chunk->field_0x0, chunk->field_0x8);
 }
@@ -1531,42 +1571,42 @@ void C2_HOOK_FASTCALL UndoGrooveOnOff(tPipe_chunk** pChunk, tPipe_chunk* pPrev_c
 void C2_HOOK_FASTCALL ApplyPowerupGot(tPipe_chunk** pChunk) {
     tPipe_chunk_powerup* chunk = (tPipe_chunk_powerup*)*pChunk;
 
-    return WorkerPowerupGot(chunk->field_0x0, chunk->field_0x4);
+    return FUN_004df200((tPowerup*)chunk->field_0x0, (tCar_spec*)chunk->field_0x4);
 }
 
 // FUNCTION: CARMA2_HW 0x004ca2f0
 void C2_HOOK_FASTCALL UndoPowerupGot(tPipe_chunk** pChunk, tPipe_chunk* pPrev_chunk) {
     tPipe_chunk_powerup* chunk = (tPipe_chunk_powerup*)*pChunk;
 
-    return WorkerPowerupLose(chunk->field_0x0, chunk->field_0x4);
+    return FUN_004df210((tPowerup*)chunk->field_0x0, (tCar_spec*)chunk->field_0x4);
 }
 
 // FUNCTION: CARMA2_HW 0x004c9c10
 void C2_HOOK_FASTCALL ApplyPowerupLose(tPipe_chunk** pChunk) {
     tPipe_chunk_powerup* chunk = (tPipe_chunk_powerup*)*pChunk;
 
-    return WorkerPowerupLose(chunk->field_0x0, chunk->field_0x4);
+    return FUN_004df210((tPowerup*)chunk->field_0x0, (tCar_spec*)chunk->field_0x4);
 }
 
 // FUNCTION: CARMA2_HW 0x004ca300
 void C2_HOOK_FASTCALL UndoPowerupLose(tPipe_chunk** pChunk, tPipe_chunk* pPrev_chunk) {
     tPipe_chunk_powerup* chunk = (tPipe_chunk_powerup*)*pChunk;
 
-    return WorkerPowerupGot(chunk->field_0x0, chunk->field_0x4);
+    return FUN_004df200((tPowerup*)chunk->field_0x0, (tCar_spec*)chunk->field_0x4);
 }
 
 // FUNCTION: CARMA2_HW 0x004c9c20
 void C2_HOOK_FASTCALL ApplyFunkEnable(tPipe_chunk** pChunk) {
     tPipe_chunk_funk_enable* chunk = (tPipe_chunk_funk_enable*)*pChunk;
 
-    return WorkerFunkEnable(chunk->field_0x0, chunk->field_0x4);
+    return AdjustFunkEnable(chunk->field_0x0, chunk->field_0x4);
 }
 
 // FUNCTION: CARMA2_HW 0x004ca310
 void C2_HOOK_FASTCALL UndoFunkEnable(tPipe_chunk** pChunk, tPipe_chunk* pPrev_chunk) {
     tPipe_chunk_funk_enable* chunk = (tPipe_chunk_funk_enable*)*pChunk;
 
-    return WorkerFunkEnable(chunk->field_0x0, chunk->field_0x4 == 0);
+    return AdjustFunkEnable(chunk->field_0x0, chunk->field_0x4 == 0);
 }
 
 // FUNCTION: CARMA2_HW 0x004c9c30
@@ -1581,6 +1621,17 @@ void C2_HOOK_FASTCALL UndoVanishDismembered(tPipe_chunk** pChunk, tPipe_chunk* p
     tPipe_chunk_vanish* chunk = (tPipe_chunk_vanish*)*pChunk;
 
     DoVanishDismembered(chunk->field_0x0, chunk->field_0x4);
+}
+
+// FUNCTION: CARMA2_HW 0x004ca340
+void C2_HOOK_FASTCALL FUN_004ca340(tPipe_chunk** pChunk) {
+    tPipe_chunk* chunk = *pChunk;
+
+    if (*(tS16*)((tU8*)chunk + 4) != 0) {
+        MakeModelMaterialsSingleSided((br_model*)*(void**)chunk);
+        return;
+    }
+    MakeModelMaterialsDoubleSided((br_model*)*(void**)chunk);
 }
 
 // FUNCTION: CARMA2_HW 0x004c9c40
@@ -1598,7 +1649,7 @@ void C2_HOOK_FASTCALL ApplyDSModel(tPipe_chunk** pChunk) {
 void C2_HOOK_FASTCALL ApplyPedDiagnostics(tPipe_chunk** pChunk) {
     tU8* chunk = (tU8*)*pChunk;
 
-    return WorkerPedDiagnostics(*(void**)chunk, chunk + 4, chunk + 0x58, chunk + 0x144);
+    return AdjustPedDiagnostics(*(void**)chunk, chunk + 4, chunk + 0x58, chunk + 0x144);
 }
 
 // FUNCTION: CARMA2_HW 0x004c9c90
@@ -1619,7 +1670,7 @@ void C2_HOOK_FASTCALL UndoVector3(tPipe_chunk** pChunk, tPipe_chunk* pPrev_chunk
 void C2_HOOK_FASTCALL ApplyExtendedSplash(tPipe_chunk** pChunk) {
     tPipe_chunk_extended_splash* chunk = (tPipe_chunk_extended_splash*)*pChunk;
 
-    return WorkerExtendedSplash(chunk->field_0x0, (tU8)chunk->field_0x4, chunk->field_0x8, &chunk->field_0xc, &chunk->field_0x18);
+    return RecordReplaySplash((void*)chunk->field_0x0, (tU8)chunk->field_0x4, chunk->field_0x8, (const tU32*)&chunk->field_0xc, (const tU32*)&chunk->field_0x18);
 }
 
 // FUNCTION: CARMA2_HW 0x004c9ee0
@@ -1628,9 +1679,11 @@ void C2_HOOK_FASTCALL UndoExtendedSplash(tPipe_chunk** pChunk, tPipe_chunk* pPre
     if (pPrev_chunk != NULL) {
         tPipe_chunk_extended_splash* chunk = (tPipe_chunk_extended_splash*)pPrev_chunk;
 
-        WorkerExtendedSplash(chunk->field_0x0, (tU8)chunk->field_0x4, chunk->field_0x8, &chunk->field_0xc, &chunk->field_0x18);
-        ClearPipeUndoFlag();
+        RecordReplaySplash((void*)chunk->field_0x0, (tU8)chunk->field_0x4, chunk->field_0x8, (const tU32*)&chunk->field_0xc, (const tU32*)&chunk->field_0x18);
+    } else {
+        ClearSplashReplay((void*)((tPipe_chunk_extended_splash*)*pChunk)->field_0x0);
     }
+    ClearPipeUndoFlag();
 }
 
 // FUNCTION: CARMA2_HW 0x004c9cc0
@@ -1658,18 +1711,16 @@ void C2_HOOK_FASTCALL ApplyDroneUnused(tPipe_chunk** pChunk) {
 
 // FUNCTION: CARMA2_HW 0x004d5b10
 void C2_HOOK_FASTCALL ARResetNapalmBolts(void) {
-    int field = 0x69b9f4;
     int i;
+    int j;
 
-    do {
-        *(int*)(field - 4) = 0;
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(gNapalm_bolts); i++) {
+        gNapalm_bolts[i].ped = NULL;
 
-        for (i = 0; i < 7; i++) {
-            *(tU8*)(*(int*)(field + i * 4) + 0x20) = 1;
+        for (j = 0; j < 7; j++) {
+            gNapalm_bolts[i].actors[j]->render_style = BR_RSTYLE_NONE;
         }
-
-        field += 0x6c;
-    } while (field < 0x69bc10);
+    }
 }
 
 // FUNCTION: CARMA2_HW 0x004c9d20
@@ -1696,42 +1747,42 @@ void C2_HOOK_FASTCALL UndoNapalmBolt(tPipe_chunk** pChunk, tPipe_chunk* pPrev_ch
 void C2_HOOK_FASTCALL ApplyPowerupRespawn(tPipe_chunk** pChunk) {
     tPipe_chunk_powerup* chunk = (tPipe_chunk_powerup*)*pChunk;
 
-    return WorkerPowerupRespawn(chunk->field_0x0, chunk->field_0x4);
+    return ARDoPowerupRespawn((br_actor*)chunk->field_0x0, chunk->field_0x4);
 }
 
 // FUNCTION: CARMA2_HW 0x004ca3b0
 void C2_HOOK_FASTCALL UndoPowerupRespawn(tPipe_chunk** pChunk, tPipe_chunk* pPrev_chunk) {
     tPipe_chunk_powerup* chunk = (tPipe_chunk_powerup*)*pChunk;
 
-    return WorkerPowerupRespawnUndo(chunk->field_0x0, chunk->field_0x4);
+    return ARUndoPowerupRespawn((br_actor*)chunk->field_0x0, chunk->field_0x4);
 }
 
 // FUNCTION: CARMA2_HW 0x004c9d50
 void C2_HOOK_FASTCALL ApplyShitMine(tPipe_chunk** pChunk) {
     tPipe_chunk_shit_mine* chunk = (tPipe_chunk_shit_mine*)*pChunk;
 
-    return WorkerShitMine(chunk->field_0x0, &chunk->field_0x4);
+    return ARDoShitMine((br_actor*)chunk->field_0x0, &chunk->field_0x4);
 }
 
 // FUNCTION: CARMA2_HW 0x004ca3c0
 void C2_HOOK_FASTCALL UndoShitMine(tPipe_chunk** pChunk, tPipe_chunk* pPrev_chunk) {
     tPipe_chunk_shit_mine* chunk = (tPipe_chunk_shit_mine*)*pChunk;
 
-    return WorkerEndShitMine(chunk->field_0x0, &chunk->field_0x4);
+    return ARUndoShitMine((br_actor*)chunk->field_0x0, &chunk->field_0x4);
 }
 
 // FUNCTION: CARMA2_HW 0x004c9d60
 void C2_HOOK_FASTCALL ApplyEndShitMine(tPipe_chunk** pChunk) {
     tPipe_chunk_shit_mine* chunk = (tPipe_chunk_shit_mine*)*pChunk;
 
-    return WorkerEndShitMine(chunk->field_0x0, &chunk->field_0x4);
+    return ARUndoShitMine((br_actor*)chunk->field_0x0, &chunk->field_0x4);
 }
 
 // FUNCTION: CARMA2_HW 0x004ca3d0
 void C2_HOOK_FASTCALL UndoEndShitMine(tPipe_chunk** pChunk, tPipe_chunk* pPrev_chunk) {
     tPipe_chunk_shit_mine* chunk = (tPipe_chunk_shit_mine*)*pChunk;
 
-    return WorkerShitMine(chunk->field_0x0, &chunk->field_0x4);
+    return ARDoShitMine((br_actor*)chunk->field_0x0, &chunk->field_0x4);
 }
 
 // FUNCTION: CARMA2_HW 0x004c9d70
@@ -1747,6 +1798,11 @@ void C2_HOOK_FASTCALL UndoTransformType(tPipe_chunk** pChunk, tPipe_chunk* pPrev
 // FUNCTION: CARMA2_HW 0x004c9d80
 void C2_HOOK_FASTCALL ApplyOppoRenderage(tPipe_chunk** pChunk) {
     SetOppoRender((tOpponent_spec*)*(tU32*)*pChunk, *(tU16*)((tU8*)*pChunk + 4));
+}
+
+// FUNCTION: CARMA2_HW 0x004c9dc0
+void C2_HOOK_FASTCALL ApplyReplayFrameTime(tPipe_chunk** pChunk) {
+    return ApplyTime(((tPipe_chunk_frame_bound*)*pChunk)->field_0x4);
 }
 // FUNCTION: CARMA2_HW 0x004e6280
 void C2_HOOK_FASTCALL ActualActionReplayHeadups(int pSpecial_zappy_bastard) {

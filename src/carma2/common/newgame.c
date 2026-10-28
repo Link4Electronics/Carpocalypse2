@@ -86,10 +86,22 @@ void C2_HOOK_FASTCALL DisposeJoinableGame(int pIndex) {
     gGames_to_join[pIndex].game = NULL;
 }
 
+// GLOBAL: CARMA2_HW 0x0074c6cc
+static tNet_game_options* gChosen_net_game_options;
+
 // FUNCTION: CARMA2_HW 0x00468d70
 int C2_HOOK_FASTCALL ChooseNetCar(tNet_game_details* pNet_game, tNet_game_options* pOptions, int* pCar_index, int pIm_the_host_so_fuck_off) {
 
-    NOT_IMPLEMENTED();
+    if (!pIm_the_host_so_fuck_off) {
+        return 1;
+    }
+    gChosen_net_game_options = pOptions;
+    SetNetAvailability(pOptions);
+    *pCar_index = PickARandomCar();
+    if (pIm_the_host_so_fuck_off && *pCar_index >= 0) {
+        gCar_details[*pCar_index].ownership = eCar_owner_someone;
+    }
+    return 1;
 }
 
 // FUNCTION: CARMA2_HW 0x004681d0
@@ -143,7 +155,41 @@ void C2_HOOK_FASTCALL InitGamesToJoin(void) {
 
 // ReadNetGameChoices
 
-// PickARandomCar
+// FUNCTION: CARMA2_HW 0x004662c0
+int C2_HOOK_FASTCALL PickARandomCar(void) {
+    int i;
+    int cars[2 * CARPOCALYPSE2_ASIZE(gCar_details)];
+    int array_size;
+
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(cars) != 120);
+
+    array_size = 0;
+    for (i = 0; i < gNumber_of_racers; i++) {
+        if (gCar_details[i].ownership == eCar_owner_none) {
+            cars[array_size] = i;
+            array_size++;
+            if (gOpponents[i].network_availability == eNet_avail_all) {
+                cars[array_size] = i;
+                array_size++;
+            }
+        }
+    }
+    return cars[IRandomBetween(0, array_size - 1)];
+}
+
+// FUNCTION: CARMA2_HW 0x00466330
+void C2_HOOK_FASTCALL PollCarDetails(tNet_game_details* pNet_game) {
+    tNet_message* message;
+
+    if (gReceived_car_details) {
+        gReceived_car_details = 0;
+        if (gNet_mode == eNet_mode_none) {
+            gNet_mode = eNet_mode_thinking_about_it;
+        }
+        message = NetBuildGuaranteedMessage(6, 0);
+        NetGuaranteedSendMessageToHost(pNet_game, message, NULL);
+    }
+}
 
 // RequestCarDetails
 

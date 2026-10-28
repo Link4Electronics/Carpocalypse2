@@ -682,6 +682,13 @@ br_pixelmap* C2_HOOK_FASTCALL GetThisFuckingPixelmapPleaseMrTwatter(const char* 
     }
 }
 
+// FUNCTION: CARMA2_HW 0x00466b60
+int C2_HOOK_FASTCALL GameMenuInfunc(tFrontend_spec* pFrontend) {
+
+    DefaultInfunc(pFrontend);
+    return 1;
+}
+
 // FUNCTION: CARMA2_HW 0x00466760
 void C2_HOOK_FASTCALL LoadMenuSettings(tFrontend_spec* pFrontend) {
     tPath_name path;
@@ -1307,6 +1314,7 @@ void C2_HOOK_FASTCALL ResetInterfaceTimeout(void) {
     gFrontend_time_last_input = PDGetTotalTime();
 }
 
+// FUNCTION: CARMA2_HW 0x0046cf10
 void C2_HOOK_FASTCALL FRONTEND_Setup2D(void) {
     br_camera* camera;
 
@@ -1314,7 +1322,7 @@ void C2_HOOK_FASTCALL FRONTEND_Setup2D(void) {
     gFrontend_camera = BrActorAllocate(BR_ACTOR_CAMERA, NULL);
     camera = gFrontend_camera->type_data;
     camera->type = BR_CAMERA_PARALLEL;
-    camera->field_of_view = BrDegreeToAngle(45); /* 0x1ffe */
+    camera->field_of_view = 0x1ffe;
     camera->hither_z = 1.f;
     camera->yon_z = 3.f;
     camera->width = 640.f;
@@ -2214,8 +2222,6 @@ void C2_HOOK_FASTCALL LoadMenuImages(void) {
     PFfclose(f);
 #endif
 }
-
-// FUNCTION: CARMA2_HW 0x0046cf10
 
 static void C2_HOOK_FASTCALL LoadMenuModels(void) {
     char s[256];
@@ -3938,7 +3944,7 @@ void C2_HOOK_FASTCALL Slider_YProc(tFrontend_slider* pSlider) {
 
 void C2_HOOK_FASTCALL Slider_ForceProc(tFrontend_slider* pSlider) {
 
-    SetJoystickFFBGain((int)(100.f * pSlider->value));
+    SetJoystickFFBGain((int)(pSlider->value * 100.0));
 }
 
 // FUNCTION: CARMA2_HW 0x004725f0
@@ -4197,4 +4203,32 @@ void C2_HOOK_FASTCALL ChangeKeyMapIndex(int pKey_map_index) {
     SaveKeyMapping();
     gKey_map_index = pKey_map_index;
     LoadKeyMapping();
+}
+
+// FUNCTION: CARMA2_HW 0x0046ad00
+int C2_HOOK_FASTCALL InterfaceMenuInfunc(tFrontend_spec* pFrontend) {
+    if (!pFrontend->loaded) {
+        LoadMenuSettings(pFrontend);
+        FuckWithWidths(pFrontend);
+        if (pFrontend->previous != NULL) {
+            pFrontend->previous->isPreviousSomeOtherMenu = 1;
+        }
+    }
+    gFrontend_scrollbars_updated = 0;
+    EdgeTriggerModeOff();
+    WaitForNoKeys();
+    EdgeTriggerModeOn();
+    if (gProgram_state.racing != 0) {
+        pFrontend->items[0].enabled = kFrontendItemEnabled_enabled;
+        pFrontend->items[1].enabled = kFrontendItemEnabled_enabled;
+        if (gNet_mode == eNet_mode_none) {
+            pFrontend->items[5].enabled = kFrontendItemEnabled_disabled;
+        } else {
+            pFrontend->items[5].enabled = kFrontendItemEnabled_enabled;
+        }
+        return 1;
+    }
+    pFrontend->items[0].enabled = kFrontendItemEnabled_disabled;
+    pFrontend->items[1].enabled = kFrontendItemEnabled_disabled;
+    return 1;
 }

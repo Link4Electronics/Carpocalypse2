@@ -11,6 +11,9 @@
 
 // DRActorToRoot
 
+// GLOBAL: CARMA2_HW 0x00589968
+const br_scalar gFLOAT_00589968 = 2.0f;
+
 // GLOBAL: CARMA2_HW 0x006a20d0
 br_actor* gY_picking_camera;
 
@@ -574,6 +577,42 @@ void C2_HOOK_FASTCALL InitRayCasting(void) {
 // FindHighestPolyCallBack
 
 // FindHighestCallBack
+
+// FUNCTION: CARMA2_HW 0x004226d0
+tFace_ref* C2_HOOK_FASTCALL FUN_004226d0(const br_vector3* pRay_pos, const br_vector3* pRay_dir, br_vector3* pHit_normal, br_scalar* pDistance, br_vector3* pHit_position, tFace_ref* pFaces, int pFace_count) {
+    br_scalar t;
+    br_vector3 coll_pos;
+    br_vector3 normal;
+    br_vector3* pNormal_output;
+    tFace_ref* current_face;
+    int remaining_faces;
+
+    *pDistance = 2.0f;
+    if (pFace_count > 0) {
+        current_face = pFaces;
+        remaining_faces = pFace_count;
+        pNormal_output = pHit_position;
+        do {
+            CheckSingleFace(current_face, (br_vector3*)pRay_pos, (br_vector3*)pRay_dir, &normal, &t, &coll_pos);
+            if (t < *pDistance) {
+                *pDistance = t;
+                pHit_normal->v[0] = normal.v[0];
+                pHit_normal->v[1] = normal.v[1];
+                pHit_normal->v[2] = normal.v[2];
+                pNormal_output->v[0] = coll_pos.v[0];
+                pNormal_output->v[1] = coll_pos.v[1];
+                pNormal_output->v[2] = coll_pos.v[2];
+                pHit_position = (br_vector3*)current_face;
+            }
+            current_face++;
+            remaining_faces--;
+        } while (remaining_faces != 0);
+    }
+    if (*pDistance < gFLOAT_00589968) {
+        return (tFace_ref*)pHit_position;
+    }
+    return NULL;
+}
 
 // FindBestY
 

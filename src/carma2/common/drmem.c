@@ -347,6 +347,25 @@ void C2_HOOK_FASTCALL PrintMemoryDump(int pFlags, char* pTitle) {
 
 }
 
+// FUNCTION: CARMA2_HW 0x0044c860
+void C2_HOOK_FASTCALL TouchMemoryPages(void* pMemory, br_size_t pSize) {
+#ifdef CARPOCALYPSE2_MATCHING
+    br_size_t offset;
+
+    if (gPage_size == 0) {
+        GetSystemInfo(&gSystem_info);
+        gPage_size = gSystem_info.dwOemId;
+    }
+    for (offset = gPage_size * 16; offset < pSize; offset += gPage_size) {
+        *((volatile br_uint_8*)pMemory + (offset - 16 * gPage_size)) = *((volatile br_uint_8*)pMemory + (offset - 16 * gPage_size));
+        *((volatile br_uint_8*)pMemory + offset) = *((volatile br_uint_8*)pMemory + offset);
+    }
+#else
+    (void)pMemory;
+    (void)pSize;
+#endif
+}
+
 // FUNCTION: CARMA2_HW 0x0044c8c0
 void* C2_HOOK_CDECL DRStdlibAllocate(br_size_t size, br_uint_8 type) {
     void* p;

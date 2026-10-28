@@ -55,6 +55,9 @@
 // GLOBAL: CARMA2_HW 0x005895f0
 double gZero = 1.0;
 
+// GLOBAL: CARMA2_HW 0x005895f8
+float gOne = 1.0f;
+
 // GLOBAL: CARMA2_HW 0x005896a8
 float gF1000 = 1000.0f;
 
@@ -678,6 +681,38 @@ int C2_HOOK_FASTCALL CollideCamera2(br_vector3* car_pos, br_vector3* cam_pos, br
     return loop_done;
 }
 
+// FUNCTION: CARMA2_HW 0x0041f360
+void C2_HOOK_FASTCALL ToggleCarToCarCollisions(void) {
+
+    gCar_car_collisions = !gCar_car_collisions;
+    if (gCar_car_collisions) {
+        NewTextHeadupSlot(4, 0, 3000, -4, "Car Car Collisions");
+    } else {
+        NewTextHeadupSlot(4, 0, 3000, -4, "Ghost Cars");
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x0041f3b0
+void C2_HOOK_FASTCALL SwapCar(void) {
+}
+
+// FUNCTION: CARMA2_HW 0x0041f3c0
+void C2_HOOK_FASTCALL AdjustDownForce(void) {
+    char s[100];
+    tCar_spec* c;
+
+    c = gCar_to_view;
+    c->downforce_to_weight += 50.f;
+    if (c->downforce_to_weight > 2000.f) {
+        c->downforce_to_weight = 50.f;
+    }
+    if (c->downforce_to_weight > 300.f) {
+        c->downforce_to_weight = 2000.f;
+    }
+    sprintf(s, "DownForceSpeed %f", c->downforce_to_weight);
+    NewTextHeadupSlot(4, 0, 1500, -4, s);
+}
+
 #pragma auto_inline(off)
 // FUNCTION: CARMA2_HW 0x0041f4f0
 void C2_HOOK_FAKE_THISCALL FlyCar(tCar_spec* c, undefined4 pArg2, br_scalar dt) {
@@ -756,10 +791,77 @@ int C2_HOOK_FASTCALL TestForCarInSensiblePlace(tCar_spec *pCar_spec, br_vector3 
     return r;
 }
 
+// FUNCTION: CARMA2_HW 0x0041fe90
+void C2_HOOK_FASTCALL RemoveNonCarFromActiveList(br_actor* pActor) {
+    tNon_car_spec* non_car;
+    tNon_car_spec** non_car_list;
+    int active_count;
+    int i;
+
+    non_car = pActor->type_data;
+    active_count = gNum_active_non_cars;
+    i = 0;
+    if (active_count <= 0) {
+        return;
+    }
+    non_car_list = gActive_non_car_list;
+search_for_non_car:
+    if (*non_car_list == non_car) {
+        goto found_non_car;
+    }
+    i++;
+    non_car_list++;
+    if (i < active_count) {
+        goto search_for_non_car;
+    }
+    return;
+
+found_non_car:
+    gNum_active_non_cars--;
+    PHILRemoveObject(non_car->collision_info);
+    for (; i < gNum_active_non_cars; i++) {
+        gActive_non_car_list[i] = gActive_non_car_list[i + 1];
+    }
+    non_car->driver = eDriver_non_car_unused_slot;
+    if (gCar_to_view == (tCar_spec*)non_car) {
+        FUN_0040e530(NULL);
+    }
+}
+
 // FUNCTION: CARMA2_HW 0x004104b0
 void C2_HOOK_FASTCALL PanningExternalCamera(tCar_spec* c, tU32 pTime) {
+    br_matrix34* mat;
+    br_scalar d;
 
-    NOT_IMPLEMENTED();
+    mat = &gCamera->t.t.mat;
+    d = Vector3DistanceSquared((br_vector3*)&mat->m[3][0], &c->pos);
+    if (d <= 102.91955471539592) {
+        if (gSwitch_time != 0
+            && (ARReplayPlaying() ? GetTotalTime() >= gSwitch_time : GetTotalTime() <= gSwitch_time)) {
+            goto check_camera;
+        }
+        gCamera_incident_flag = 1;
+        goto point_camera;
+    }
+check_camera:
+    if (gCamera_incident_flag == 0 && d <= 205.83910943079184) {
+        PointCameraAtCar(&c->pos, mat, 1.f);
+        return;
+    }
+    if (d > 25.f) {
+        br_vector3 dir;
+        br_vector3 normal;
+        br_scalar t;
+        br_material* material;
+
+        BrVector3Sub(&dir, &gCamera->t.t.translate.t, &c->pos);
+        FindFace(&c->pos, &dir, &normal, &t, &material);
+        if (t <= 1.f) {
+            SetUpPanningCamera(c);
+        }
+    }
+point_camera:
+    PointCameraAtCar(&c->pos, mat, 1.f);
 }
 
 // FUNCTION: CARMA2_HW 0x004121b0
@@ -2015,7 +2117,7 @@ void C2_HOOK_FASTCALL CameraBugFix(tCar_spec* c, tU32 pTime) {
 void C2_HOOK_FASTCALL SetTextureBits(tCar_spec* pCar) {
 
     pCar->field_0x18cc = 0;
-    if (pCar->keys.brake || (pCar->brake_force != 0.f && fabsf(pCar->collision_info->velocity_car_space.v[2]) > 7.2463765e-05f)) {
+    if (pCar->keys.brake || (pCar->brake_force != 0.f && fabs(pCar->collision_info->velocity_car_space.v[2]) > 7.2463765e-05)) {
         pCar->field_0x18cc |= 0x4;
     }
     if (pCar->gear < 0 || (!(pCar != NULL && pCar->driver == eDriver_local_human) && pCar->collision_info->velocity_car_space.v[2] > 0.f)) {
@@ -2039,23 +2141,23 @@ void C2_HOOK_FASTCALL MungeSomeOtherCarGraphics(void) {
 
 // FUNCTION: CARMA2_HW 0x00413780
 void C2_HOOK_FASTCALL GetAverageGridPosition(tRace_info* pThe_race) {
+    int i;
+    br_scalar total_cars;
+    tCar_spec* car;
 
+    total_cars = 0.0f;
     BrVector3SetFloat(&gAverage_grid_position, 0.0f, 0.0f, 0.0f);
     if (pThe_race->number_of_racers <= 2) {
         BrVector3Copy(&gAverage_grid_position, &gProgram_state.current_car.pos);
     } else {
-        int i;
-        br_scalar total_cars;
-
-        total_cars = 0.0f;
         for (i = 0; i < pThe_race->number_of_racers; i++) {
-            tCar_spec* car;
-
             car = pThe_race->opponent_list[i].car_spec;
             BrVector3Accumulate(&gAverage_grid_position, &car->pos);
             total_cars += 1.0f;
         }
-        BrVector3InvScale(&gAverage_grid_position, &gAverage_grid_position, total_cars);
+        gAverage_grid_position.v[0] /= total_cars;
+        gAverage_grid_position.v[1] /= total_cars;
+        gAverage_grid_position.v[2] /= total_cars;
     }
 }
 
@@ -2794,47 +2896,42 @@ void C2_HOOK_FAKE_THISCALL ControlCar1(tCar_spec* c, undefined4 arg2, br_scalar 
 
 // FUNCTION: CARMA2_HW 0x00417180
 void C2_HOOK_FAKE_THISCALL ControlCar2(tCar_spec* c, undefined4 arg2, br_scalar dt) {
-    br_scalar mag;
+    br_scalar time_steps;
 
     CARPOCALYPSE2_THISCALL_UNUSED(arg2);
 
     c->acc_force = 0.0f;
-
     if (c->keys.acc) {
-        c->acc_force = c->collision_info->M * 7.0f;
+        c->acc_force = 7.0f * c->collision_info->M;
     }
     if (c->keys.dec) {
-        c->acc_force = -(c->collision_info->M * 7.0f);
+        c->acc_force = -(7.0f * c->collision_info->M);
     }
-
     if (c->keys.left) {
         if (c->turn_speed < 0.0f) {
             c->turn_speed = 0.0f;
         }
         if (c->curvature < 0.0f) {
-            c->turn_speed -= dt * -0.125;
+            c->turn_speed = (float)(c->turn_speed + 0.01 * dt / 0.04f / 2.0);
         } else {
-            mag = BrVector3Length(&c->collision_info->v);
-            c->turn_speed -= -0.5f * (25.f * dt * (0.05f / (mag + 5.0f)));
+            time_steps = dt / 0.04f;
+            c->turn_speed += time_steps * (0.05f / (5.0f + BrVector3Length(&c->collision_info->v))) / 2.0f;
         }
     }
-
     if (c->keys.right) {
         if (c->turn_speed > 0.0f) {
             c->turn_speed = 0.0f;
         }
         if (c->curvature > 0.0f) {
-            c->turn_speed -= dt * 0.125;
+            c->turn_speed = (float)(c->turn_speed - 0.01 * dt / 0.04f / 2.0);
         } else {
-            mag = BrVector3Length(&c->collision_info->v);
-            c->turn_speed -= 0.5f * (25.f * dt * (0.05f / (mag + 5.0f)));
+            time_steps = dt / 0.04f;
+            c->turn_speed -= time_steps * (0.05f / (5.0f + BrVector3Length(&c->collision_info->v))) / 2.0f;
         }
     }
-
     if (!c->keys.left && !c->keys.right) {
         c->turn_speed = 0.0f;
     }
-
     c->curvature += c->turn_speed;
     if (c->curvature > c->maxcurve) {
         c->curvature = c->maxcurve;
@@ -2846,7 +2943,7 @@ void C2_HOOK_FAKE_THISCALL ControlCar2(tCar_spec* c, undefined4 arg2, br_scalar 
 
 // FUNCTION: CARMA2_HW 0x004173b0
 void C2_HOOK_FAKE_THISCALL ControlCar3(tCar_spec* c, undefined4 arg2, br_scalar dt) {
-    br_scalar mag;
+    br_scalar time_steps;
 
     CARPOCALYPSE2_THISCALL_UNUSED(arg2);
 
@@ -2854,30 +2951,27 @@ void C2_HOOK_FAKE_THISCALL ControlCar3(tCar_spec* c, undefined4 arg2, br_scalar 
         if (c->turn_speed < 0.0f) {
             c->turn_speed = 0.0f;
         }
-        if (c->curvature >= 0.0f && c->collision_info->omega.v[1] >= 0.0f) {
-            mag = BrVector3Length(&c->collision_info->v);
-            c->turn_speed -= 25.f * dt * (0.05f / (mag + 5.0f)) * -0.5f * 0.75;
+        if (c->curvature < 0.0f || c->collision_info->omega.v[1] < 0.0f) {
+            c->turn_speed = (float)(c->turn_speed + 0.01 * dt / 0.04f / 2.0 * 3.0);
         } else {
-            c->turn_speed -= dt * -0.375;
+            time_steps = dt / 0.04f;
+            c->turn_speed = (float)(c->turn_speed + time_steps * (0.05f / (5.0f + BrVector3Length(&c->collision_info->v))) / 2.0f * 0.75);
         }
     }
-
     if (c->keys.right) {
         if (c->turn_speed > 0.0f) {
             c->turn_speed = 0.0f;
         }
-        if (c->curvature <= 0.0f && c->collision_info->omega.v[1] <= 0.0f) {
-            mag = BrVector3Length(&c->collision_info->v);
-            c->turn_speed -= 25.f * dt * (0.05f / (mag + 5.0f)) * 0.5f * 0.75;
+        if (c->curvature > 0.0f || c->collision_info->omega.v[1] > 0.0f) {
+            c->turn_speed = (float)(c->turn_speed - 0.01 * dt / 0.04f / 2.0 * 3.0);
         } else {
-            c->turn_speed -= dt * 0.375;
+            time_steps = dt / 0.04f;
+            c->turn_speed = (float)(c->turn_speed - time_steps * (0.05f / (5.0f + BrVector3Length(&c->collision_info->v))) / 2.0f * 0.75);
         }
     }
-
     if (!c->keys.left && !c->keys.right) {
         c->turn_speed = 0.0f;
     }
-
     c->curvature += c->turn_speed;
     if (c->curvature > c->maxcurve) {
         c->curvature = c->maxcurve;
@@ -2889,87 +2983,55 @@ void C2_HOOK_FAKE_THISCALL ControlCar3(tCar_spec* c, undefined4 arg2, br_scalar 
 
 // FUNCTION: CARMA2_HW 0x00417a20
 void C2_HOOK_FAKE_THISCALL ControlCar5(tCar_spec* c, undefined4 arg2, br_scalar dt) {
-    unsigned int input;
-    int left;
-    int right;
+    br_scalar time_steps;
 
     CARPOCALYPSE2_THISCALL_UNUSED(arg2);
 
-    input = *(unsigned int*)&c->keys;
     c->acc_force = 0.0f;
-
-    if (input & 0x40000) {
-        c->acc_force = c->collision_info->M * 7.0f;
+    if (c->keys.acc) {
+        c->acc_force = 7.0f * c->collision_info->M;
     }
-    if (input & 0x80000) {
-        c->acc_force = -(c->collision_info->M * 7.0f);
+    if (c->keys.dec) {
+        c->acc_force = -(7.0f * c->collision_info->M);
     }
-
-    left = input & 0x10000;
-    if (left) {
-        if (!(c->turn_speed >= 0.0f)) {
+    if (c->keys.left) {
+        if (c->turn_speed < 0.0f) {
             c->turn_speed = 0.0f;
         }
         if (c->curvature < 0.0f) {
-            c->turn_speed -= dt * -0.0625;
+            c->turn_speed = (float)(c->turn_speed + 0.01 * dt / 0.04f / 2.0 * 0.5);
         } else {
-            float mag;
-            float q = dt * 25.0f;
-            mag = sqrtf(c->collision_info->v.v[0] * c->collision_info->v.v[0]
-                      + c->collision_info->v.v[1] * c->collision_info->v.v[1]
-                      + c->collision_info->v.v[2] * c->collision_info->v.v[2]);
-            c->turn_speed -= q * (0.05f / (mag + 5.0f)) * -0.5f * 0.5;
+            time_steps = dt / 0.04f;
+            c->turn_speed = (float)(c->turn_speed + time_steps * (0.05f / (5.0f + BrVector3Length(&c->collision_info->v))) / 2.0f * 0.5);
         }
     }
-
-    right = input & 0x20000;
-    if (right) {
+    if (c->keys.right) {
         if (c->turn_speed > 0.0f) {
             c->turn_speed = 0.0f;
         }
         if (c->curvature > 0.0f) {
-            c->turn_speed -= dt * 0.0625;
+            c->turn_speed = (float)(c->turn_speed - 0.01 * dt / 0.04f / 2.0 * 0.5);
         } else {
-            float mag;
-            float q = dt * 25.0f;
-            mag = sqrtf(c->collision_info->v.v[0] * c->collision_info->v.v[0]
-                      + c->collision_info->v.v[1] * c->collision_info->v.v[1]
-                      + c->collision_info->v.v[2] * c->collision_info->v.v[2]);
-            c->turn_speed -= q * (0.05f / (mag + 5.0f)) * 0.5f * 0.5;
+            time_steps = dt / 0.04f;
+            c->turn_speed = (float)(c->turn_speed - time_steps * (0.05f / (5.0f + BrVector3Length(&c->collision_info->v))) / 2.0f * 0.5);
         }
     }
-
-    if (!left && !right) {
+    if (!c->keys.left && !c->keys.right) {
         c->turn_speed = 0.0f;
-        if (c->curvature < 0.0f) {
-            if (!(input & 0x800000)) {
-                float mag;
-                float q = dt * 25.0f;
-                mag = sqrtf(c->collision_info->v.v[0] * c->collision_info->v.v[0]
-                          + c->collision_info->v.v[1] * c->collision_info->v.v[1]
-                          + c->collision_info->v.v[2] * c->collision_info->v.v[2]);
-                c->curvature -= q * (0.05f / (mag + 5.0f)) * -0.5f * 4.0;
-                if (c->curvature > 0.0f) {
-                    c->curvature = 0.0f;
-                }
-            }
-        } else {
+        if (c->curvature < 0.0f && !c->keys.holdw) {
+            time_steps = dt / 0.04f;
+            c->curvature = (float)(c->curvature + (0.05f / (5.0f + BrVector3Length(&c->collision_info->v))) * time_steps / 2.0f * 4.0);
             if (c->curvature > 0.0f) {
-                if (!(input & 0x800000)) {
-                    float mag;
-                    float q = dt * 25.0f;
-                    mag = sqrtf(c->collision_info->v.v[0] * c->collision_info->v.v[0]
-                              + c->collision_info->v.v[1] * c->collision_info->v.v[1]
-                              + c->collision_info->v.v[2] * c->collision_info->v.v[2]);
-                    c->curvature -= q * (0.05f / (mag + 5.0f)) * 0.5f * 4.0;
-                    if (!(c->curvature >= 0.0f)) {
-                        c->curvature = 0.0f;
-                    }
-                }
+                c->curvature = 0.0f;
+            }
+        } else if (c->curvature > 0.0f && !c->keys.holdw) {
+            time_steps = dt / 0.04f;
+            c->curvature = (float)(c->curvature - (0.05f / (5.0f + BrVector3Length(&c->collision_info->v))) * time_steps / 2.0f * 4.0);
+            if (c->curvature < 0.0f) {
+                c->curvature = 0.0f;
             }
         }
     }
-
     c->curvature += c->turn_speed;
     if (c->curvature > c->maxcurve) {
         c->curvature = c->maxcurve;
@@ -2977,9 +3039,7 @@ void C2_HOOK_FAKE_THISCALL ControlCar5(tCar_spec* c, undefined4 arg2, br_scalar 
     if (c->curvature < -c->maxcurve) {
         c->curvature = -c->maxcurve;
     }
-
-    input |= 0x10000;
-    *(unsigned int*)&c->keys = input;
+    c->keys.left = 1;
 }
 
 void C2_HOOK_FASTCALL DrVector3RotateY(br_vector3* v, br_angle t) {
@@ -3126,27 +3186,26 @@ int C2_HOOK_FASTCALL RestorePixelmap(br_material* pMaterial) {
 // FUNCTION: CARMA2_HW 0x0040e700
 void C2_HOOK_FASTCALL MungeCarMaterials(tCar_spec* pCar, int pInternal_cam) {
     int i;
-    tCarCockpitMaterial* cockpit_material;
 
-    for (i = 0, cockpit_material = &pCar->window_materials[0]; i < pCar->count_window_materials; i++, cockpit_material++) {
-        int two_sided_material = pInternal_cam;
+    for (i = 0; i < pCar->count_window_materials; i++) {
+        int internal_map_missing = pInternal_cam;
 
         if (pInternal_cam) {
             int j;
 
-            for (j = 0; j < cockpit_material->count_maps; j++) {
-                if (cockpit_material->material->colour_map == cockpit_material->maps[j]) {
-                    two_sided_material = 0;
+            for (j = 0; j < pCar->window_materials[i].count_maps; j++) {
+                if (pCar->window_materials[i].material->colour_map == pCar->window_materials[i].maps[j]) {
+                    internal_map_missing = 0;
                 }
             }
+            if (internal_map_missing) {
+                pCar->window_materials[i].material->flags &= ~BR_MATF_TWO_SIDED;
+            }
         }
-        if (two_sided_material) {
-            cockpit_material->material->flags &= ~BR_MATF_TWO_SIDED;
+        if (!internal_map_missing) {
+            pCar->window_materials[i].material->flags |= BR_MATF_TWO_SIDED;
         }
-        if (!two_sided_material) {
-            cockpit_material->material->flags |= BR_MATF_TWO_SIDED;
-        }
-        BrMaterialUpdate(cockpit_material->material, BR_MATU_RENDERING);
+        BrMaterialUpdate(pCar->window_materials[i].material, BR_MATU_RENDERING);
     }
 }
 
@@ -3815,11 +3874,11 @@ void C2_HOOK_FASTCALL CancelPendingCunningStunt(void) {
 // FUNCTION: CARMA2_HW 0x004157e0
 void C2_HOOK_FASTCALL CalcGraphicalWheelStuff(tCar_spec* pCar) {
 
-    pCar->steering_angle = BrRadianToDegree(atanf((pCar->wpos[0].v[2] - pCar->wpos[2].v[2]) * (pCar->field_0x1260 + pCar->curvature)));
-    pCar->lr_sus_position = (pCar->wpos[0].v[1] - pCar->oldd[0]) / WORLD_SCALE;
-    pCar->rr_sus_position = (pCar->wpos[1].v[1] - pCar->oldd[1]) / WORLD_SCALE;
-    pCar->lf_sus_position = (pCar->wpos[2].v[1] - pCar->oldd[2]) / WORLD_SCALE;
-    pCar->rf_sus_position = (pCar->wpos[3].v[1] - pCar->oldd[3]) / WORLD_SCALE;
+    pCar->steering_angle = (br_scalar)BrRadianToDegree(atan((pCar->wpos[0].v[2] - pCar->wpos[2].v[2]) * (pCar->field_0x1260 + pCar->curvature)));
+    pCar->lr_sus_position = (br_scalar)((pCar->wpos[0].v[1] - pCar->oldd[0]) / WORLD_SCALE_D);
+    pCar->rr_sus_position = (br_scalar)((pCar->wpos[1].v[1] - pCar->oldd[1]) / WORLD_SCALE_D);
+    pCar->lf_sus_position = (br_scalar)((pCar->wpos[2].v[1] - pCar->oldd[2]) / WORLD_SCALE_D);
+    pCar->rf_sus_position = (br_scalar)((pCar->wpos[3].v[1] - pCar->oldd[3]) / WORLD_SCALE_D);
     PipeSingleGraphicalWheelStuff(pCar);
 }
 
@@ -3893,7 +3952,7 @@ int C2_HOOK_FASTCALL PipeNonCarObject(tPhysics_object* pCollision_info, void* pU
         if (actor != NULL) {
             non_car = (tNon_car_spec*)actor->type_data;
             if (non_car != NULL) {
-                SendNonCarDetachBit((tU16)non_car->car_ID, actor);
+                PHILSendDetachBit(non_car->car_ID, actor);
             }
         }
     }
@@ -5053,7 +5112,31 @@ void C2_HOOK_FASTCALL MakeLiftGoUp(tNon_car_spec* pNon_car) {
         pNon_car->flags |= 0x1;
     }
 }
-// DamageUnit
+// FUNCTION: CARMA2_HW 0x00413cc0
+void C2_HOOK_FASTCALL DamageUnit(tCar_spec* pCar, tDamage_type pUnit_type, int pDamage_amount) {
+    tDamage_unit* the_damage;
+
+    if (pDamage_amount <= 0) {
+        return;
+    }
+    the_damage = &pCar->damage_units[pUnit_type];
+    the_damage->damage_level += pDamage_amount;
+    if (the_damage->damage_level >= 100) {
+        the_damage->damage_level = 99;
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x00413d00
+void C2_HOOK_FASTCALL DamageEngine(int pDamage_amount) {
+    DamageUnit(&gProgram_state.current_car, eDamage_engine, pDamage_amount);
+    SortOutSmoke(&gProgram_state.current_car);
+}
+
+// FUNCTION: CARMA2_HW 0x00413d90
+void C2_HOOK_FASTCALL DamageLFWheel(int pDamage_amount) {
+    DamageUnit(&gProgram_state.current_car, eDamage_lf_wheel, pDamage_amount);
+    SortOutSmoke(&gProgram_state.current_car);
+}
 
 // SwitchCarModel
 
@@ -6289,4 +6372,79 @@ void C2_HOOK_FASTCALL TurnOnNonCar(int pIndex) {
 // FUNCTION: CARMA2_HW 0x00420900
 void C2_HOOK_FASTCALL TurnOffNonCar(int pIndex) {
     gProgram_state.track_spec.non_car_list[pIndex]->render_style = BR_RSTYLE_NONE;
+}
+// FUNCTION: CARMA2_HW 0x004170c0
+void C2_HOOK_FASTCALL CycleControlCar(void) {
+    gControl__car++;
+    if (ControlCar[gControl__car] == NULL) {
+        gControl__car = 0;
+    }
+    switch (gControl__car) {
+    case 0:
+        NewTextHeadupSlot(4, 0, 500, -1, "Original Controls");
+        return;
+    case 1:
+        NewTextHeadupSlot(4, 0, 500, -1, "Accelerated steering");
+        return;
+    case 2:
+        NewTextHeadupSlot(4, 0, 500, -1, "0.75 Accelerated");
+        return;
+    case 3:
+        NewTextHeadupSlot(4, 0, 500, -1, "0.5 Accelerated");
+        return;
+    default:
+        NewTextHeadupSlot(4, 0, 500, -1, "New controls");
+        return;
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x0041e320
+int C2_HOOK_FASTCALL FUN_0041e320(void) {
+
+    return 1;
+}
+
+// FUNCTION: CARMA2_HW 0x0041f4a0
+void C2_HOOK_FASTCALL PutOpponentsInNeutral(void) {
+    gStop_opponents_moving = !gStop_opponents_moving;
+    if (gStop_opponents_moving) {
+        NewTextHeadupSlot(4, 0, 3000, -4, "Opponents in neutral");
+    } else {
+        NewTextHeadupSlot(4, 0, 3000, -4, "Back in gear");
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x00420310
+int C2_HOOK_FASTCALL FUN_00420310(tPhysics_object* pObject) {
+    pObject->field_0xed = 1;
+    pObject->field_0x194 = 0;
+    pObject->field_0x198 = 0;
+    if (*(float*)((tU8*)pObject->owner + 0xd8) < gOne) {
+        pObject->physics_joint2 = NULL;
+    }
+    pObject->field_0x218 = 0;
+    pObject->v.v[0] = 0.0f;
+    pObject->v.v[1] = 0.0f;
+    pObject->v.v[2] = 0.0f;
+    return 0;
+}
+
+// FUNCTION: CARMA2_HW 0x00420360
+int C2_HOOK_FASTCALL FUN_00420360(tPhysics_object* pObject) {
+    tNon_car_spec* non_car;
+
+    non_car = (tNon_car_spec*)pObject->owner;
+    if (*(br_scalar*)((tU8*)pObject->actor + 0x3c) < non_car->snap_off_cosine) {
+        pObject->field_0xed = 1;
+        pObject->field_0x194 = 0;
+        pObject->field_0x198 = 0;
+        if (non_car->snap_off_cosine < gOne) {
+            pObject->physics_joint2 = NULL;
+        }
+        pObject->field_0x218 = 0;
+        pObject->v.v[0] = 0.f;
+        pObject->v.v[1] = 0.f;
+        pObject->v.v[2] = 0.f;
+    }
+    return 0;
 }

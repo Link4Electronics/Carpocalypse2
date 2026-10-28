@@ -9,7 +9,9 @@
 #include "loading.h"
 #include "netgame.h"
 #include "newgame.h"
+#include "phil.h"
 #include "platform.h"
+#include "replay.h"
 #include "spark.h"
 #include "timers.h"
 #include "utility.h"
@@ -402,12 +404,12 @@ int C2_HOOK_FASTCALL NetJoinGame(tNet_game_details *pGame_details,char *pPlayer_
 // FUNCTION: CARMA2_HW 0x0049dbd0
 void C2_HOOK_FASTCALL NetStartProducingJoinList(tAddToJoinListProc *pAdd_proc) {
 
+    gAdd_proc = pAdd_proc;
     gJoin_list_mode = 1;
     gBastard_has_answered = 0;
     gTime_for_next_one = 1;
     gJoin_poll_index = 0;
     gCurrent_join_poll_game = NULL;
-    gAdd_proc = pAdd_proc;
     PDNetStartProducingJoinList();
 }
 
@@ -509,12 +511,10 @@ int C2_HOOK_FASTCALL NetReallySendMessageToPlayer(tNet_game_details* pNet_game, 
     int i;
 
     if (gNet_mode == eNet_mode_none) {
-        return -1;
+        return -3;
     }
-
     pMessage->header.field_0x8 = gLocal_net_ID;
     pMessage->header.field_0x10 = PDGetTotalTime();
-
     for (i = 0; i < gNumber_of_net_players; i++) {
         if (gNet_players[i].ID == pPlayer_id) {
             return PDNetSendMessageToAddress(pNet_game, pMessage, &gNet_players[i].pd_net_info);
@@ -939,7 +939,13 @@ void C2_HOOK_FASTCALL DoNextJoinPoll(void) {
 
 // NetEndJoinList
 
-// NetDisposePIDGameInfo
+// FUNCTION: CARMA2_HW 0x0049dc70
+void C2_HOOK_FASTCALL NetDisposePIDGameInfo(tNet_game_details* pDetails) {
+
+    if (pDetails != NULL) {
+        BrMemFree(pDetails);
+    }
+}
 
 // NetDisposeGameDetails
 
@@ -1006,7 +1012,63 @@ void C2_HOOK_FASTCALL NetLeaveGame(tNet_game_details* pNet_game) {
 
 // NetSetPlayerSystemInfo
 
-// FillInThisPlayer
+// FUNCTION: CARMA2_HW 0x0049e3a0
+void C2_HOOK_FASTCALL FillInThisPlayer(tNet_game_details* pGame, tNet_game_player_info* pPlayer, int pCar_index, int pHost) {
+    int car_choice;
+
+    pPlayer->host = pHost;
+    pPlayer->ID = PDNetExtractPlayerID(pGame);
+    strcpy(pPlayer->player_name, gProgram_state.player_name);
+    pPlayer->this_players_time_stamp = PDGetTotalTime();
+    pPlayer->car_index = pCar_index;
+    pPlayer->reposition_time = 0;
+    pPlayer->last_waste_message = 0;
+    pPlayer->wasteage_attributed = 0;
+    pPlayer->field_0x58 = 0;
+    pPlayer->name_not_clipped = 1;
+    pPlayer->field_0x7c = 0;
+    pPlayer->field_0x88 = 0;
+    pPlayer->score = 0;
+    pPlayer->field_0x80 = 0;
+    pPlayer->field_0x84 = 0;
+    pPlayer->field_0xcc = 0;
+    pPlayer->field_0xd0 = 0;
+    car_choice = pGame->options.car_choice;
+    if (car_choice == eNet_car_all || car_choice == eNet_car_novelty) {
+        pPlayer->next_car_index = -1;
+    }
+    InitialisePlayerScore(pPlayer);
+}
+
+// FUNCTION: CARMA2_HW 0x0049e100
+void C2_HOOK_FASTCALL DisposeCarN(int pPlayer_index) {
+    int i;
+    int j;
+
+    if (gNet_players[pPlayer_index].car != NULL) {
+        for (i = 0; i < gCurrent_race.number_of_racers; i++) {
+            if (gCurrent_race.opponent_list[i].car_spec == gNet_players[pPlayer_index].car) {
+                gCurrent_race.number_of_racers--;
+                for (j = i; j < gCurrent_race.number_of_racers; j++) {
+                    gCurrent_race.opponent_list[j] = gCurrent_race.opponent_list[j + 1];
+                }
+            }
+        }
+        PHILRemoveObject(gNet_players[pPlayer_index].car->collision_info);
+        if (gProgram_state.racing != 0) {
+            RemoveCarFromEffects(gNet_players[pPlayer_index].car);
+        }
+        DisposeCar(gNet_players[pPlayer_index].car, gNet_players[pPlayer_index].car_index);
+        if (pPlayer_index != gThis_net_player_index) {
+            BrMemFree(gNet_players[pPlayer_index].car);
+            gNet_players[pPlayer_index].car = NULL;
+        }
+        if (gAction_replay_mode != 0) {
+            ToggleReplay(NULL, NULL);
+        }
+        ARResetPiping();
+    }
+}
 
 // LoadCarN
 
@@ -1059,11 +1121,120 @@ int C2_HOOK_FASTCALL NetSendMessageToAddress(tNet_game_details* pDetails, tNet_m
 
 // NetReallySendMessageToPlayer
 
-// NetSendMessageToPlayer
+// FUNCTION: CARMA2_HW 0x0049ef20
+int C2_HOOK_FASTCALL NetSendMessageToPlayer(tNet_game_details* pNet_game, tNet_message* pMessage, tPlayer_ID pPlayer_id) {
+    int i;
+    int contents_size;
+    tNet_message* message;
+    tU8* destination;
 
-// NetSendMessageToHost
+    for (i = 0; i < gNumber_of_net_players; i++) {
+        if (gNet_players[i].ID != pPlayer_id) {
+            continue;
+        }
+        contents_size = pMessage->header.field_0x16 - sizeof(tNet_message_header);
+        pMessage->contents.raw.header.size = (tU8)contents_size;
+        if (&gNet_players[i] == &gNet_players[gThis_net_player_index]) {
+            PDFatalError("Trying to send network message to self");
+        }
+        message = gNet_players[i].field_0xcc;
+        if (message != NULL && message->header.field_0x16 + contents_size > 0x200) {
+            NetReallySendMessageToPlayer(pNet_game, message, gNet_players[i].ID);
+            gNet_players[i].field_0xcc = message = NULL;
+        }
+        if (message == NULL) {
+            message = NetAllocateMessage(0x200);
+            gNet_players[i].field_0xcc = message;
+            message->header.field_0x16 = (tU16)sizeof(tNet_message_header);
+            message->header.field_0x14 = 0;
+        }
+        destination = (tU8*)message + message->header.field_0x16;
+        message->header.field_0x14++;
+        message->header.field_0x16 += (tU16)contents_size;
+        memcpy(destination, (tU8*)pMessage + sizeof(tNet_message_header), contents_size);
+        if (pMessage->header.field_0x14 != 0xff) {
+            pMessage->contents.raw.header.type = 0xff;
+        }
+        return 0;
+    }
+    if (pMessage->header.field_0x14 != 0xff) {
+        pMessage->contents.raw.header.type = 0xff;
+    }
+    return -3;
+}
 
-// NetSendMessageToAllPlayers
+// FUNCTION: CARMA2_HW 0x0049f0d0
+int C2_HOOK_FASTCALL NetSendMessageToHost(tNet_game_details* pDetails, tNet_message* pMessage) {
+
+    if (gNet_mode != eNet_mode_none) {
+        pMessage->header.field_0x8 = gLocal_net_ID;
+        pMessage->header.field_0x10 = PDGetTotalTime();
+        return PDNetSendMessageToAddress(pDetails, pMessage, &pDetails->pd_net_info);
+    } else {
+        return -3;
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x0049f2c0
+int C2_HOOK_FASTCALL NetSendMessageToAllPlayers(tNet_game_details* pNet_game, tNet_message* pMessage) {
+    int i;
+    int j;
+    int contents_size;
+    tPlayer_ID player_id;
+    tNet_game_details* game;
+    tNet_game_player_info* player;
+    tNet_message* message;
+    tU8* destination;
+
+    contents_size = pMessage->header.field_0x16 - sizeof(tNet_message_header);
+    pMessage->contents.raw.header.size = (tU8)contents_size;
+    i = 0;
+    player = gNet_players;
+    if (0 < gNumber_of_net_players) {
+        do {
+            if (i != gThis_net_player_index) {
+                if (&player->field_0xcc == &gNet_players[gThis_net_player_index].field_0xcc) {
+                    PDFatalError("Trying to send network message to self");
+                }
+                message = player->field_0xcc;
+                if (message != NULL && message->header.field_0x16 + contents_size > 0x200) {
+                    player_id = player->ID;
+                    game = gCurrent_net_game;
+                    if (gNet_mode != eNet_mode_none) {
+                        message->header.field_0x8 = gLocal_net_ID;
+                        message->header.field_0x10 = PDGetTotalTime();
+                        for (j = 0; j < gNumber_of_net_players; j++) {
+                            if (gNet_players[j].ID == player_id) {
+                                PDNetSendMessageToAddress(game, message, &gNet_players[j].pd_net_info);
+                                break;
+                            }
+                        }
+                    }
+                    player->field_0xcc = NULL;
+                    message = NULL;
+                }
+                if (message == NULL) {
+                    message = NetAllocateMessage(0x200);
+                    player->field_0xcc = message;
+                    message->header.field_0x16 = sizeof(tNet_message_header);
+                    message->header.field_0x14 = 0;
+                }
+                destination = (tU8*)message + message->header.field_0x16;
+                message->header.field_0x14++;
+                message->header.field_0x16 += contents_size;
+                if (destination != NULL) {
+                    memcpy(destination, &pMessage->contents, contents_size);
+                }
+            }
+            i++;
+            player++;
+        } while (i < gNumber_of_net_players);
+    }
+    if (pMessage->header.field_0x14 != 0xff) {
+        pMessage->contents.raw.header.type = 0xff;
+    }
+    return 0;
+}
 
 #pragma auto_inline(off)
 // FUNCTION: CARMA2_HW 0x0049f440
@@ -1310,11 +1481,9 @@ void C2_HOOK_FASTCALL NetSendMessageStacks(void) {
 #else
     int i;
 
-    if (gNet_mode == eNet_mode_none) {
-        return;
-    }
+    gLast_flush_message = PDGetTotalTime();
     for (i = 0; i < gNumber_of_net_players; i++) {
-        if (i != gThis_net_player_index && gNet_players[i].field_0xcc != NULL) {
+        if (gNet_players[i].field_0xcc != NULL) {
             NetReallySendMessageToPlayer(gCurrent_net_game, gNet_players[i].field_0xcc, gNet_players[i].ID);
             gNet_players[i].field_0xcc = NULL;
         }
@@ -1850,9 +2019,29 @@ void C2_HOOK_FASTCALL ResendGuaranteedMessages(void) {
 
 // NetWaitForGuaranteeReplies
 
-// NetPlayerFromID
+// FUNCTION: CARMA2_HW 0x004a6920
+tNet_game_player_info* C2_HOOK_FASTCALL NetPlayerFromID(tPlayer_ID pPlayer) {
+    int i;
 
-// NetCarFromPlayerID
+    for (i = 0; i < gNumber_of_net_players; i++) {
+        if (gNet_players[i].ID == pPlayer) {
+            return &gNet_players[i];
+        }
+    }
+    return NULL;
+}
+
+// FUNCTION: CARMA2_HW 0x004a6960
+tCar_spec* C2_HOOK_FASTCALL NetCarFromPlayerID(tPlayer_ID pPlayer) {
+    tNet_game_player_info* player;
+
+    player = NetPlayerFromID(pPlayer);
+    if (player != NULL) {
+        return player->car;
+    } else {
+        return NULL;
+    }
+}
 
 // NetPlayerFromCar
 
@@ -1867,4 +2056,65 @@ void C2_HOOK_FASTCALL ResendGuaranteedMessages(void) {
 void C2_HOOK_FASTCALL DoNetScores2(int pOnly_sort_scores) {
 
     NOT_IMPLEMENTED();
+}
+
+#include <limits.h>
+
+typedef struct tNet_score_entry {
+    int player_index;
+    int score;
+    int out_of_game;
+} tNet_score_entry;
+
+// FUNCTION: CARMA2_HW 0x0049a330
+int C2_HOOK_CDECL SortNetScoresAscending(const void* pFirst, const void* pSecond) {
+    const tNet_score_entry* first;
+    const tNet_score_entry* second;
+
+    first = (const tNet_score_entry*)pFirst;
+    second = (const tNet_score_entry*)pSecond;
+    if (first->out_of_game != 0) {
+        if (second->out_of_game != 0) {
+            return first->out_of_game - second->out_of_game;
+        }
+        return INT_MAX;
+    }
+    if (second->out_of_game != 0) {
+        return INT_MIN + 1;
+    }
+    if (first->score != second->score) {
+        return first->score - second->score;
+    }
+    return gNet_players[first->player_index].last_score_index - gNet_players[second->player_index].last_score_index;
+}
+
+// FUNCTION: CARMA2_HW 0x0049a3a0
+int C2_HOOK_CDECL SortNetScoresDescending(const void* pFirst, const void* pSecond) {
+    const tNet_score_entry* first;
+    const tNet_score_entry* second;
+
+    first = (const tNet_score_entry*)pFirst;
+    second = (const tNet_score_entry*)pSecond;
+    if (first->out_of_game != 0) {
+        if (second->out_of_game != 0) {
+            return first->out_of_game - second->out_of_game;
+        }
+        return INT_MAX;
+    }
+    if (second->out_of_game != 0) {
+        return INT_MIN + 1;
+    }
+    if (first->score != second->score) {
+        return second->score - first->score;
+    }
+    return gNet_players[first->player_index].last_score_index - gNet_players[second->player_index].last_score_index;
+}
+
+// FUNCTION: CARMA2_HW 0x004a64b0
+int C2_HOOK_FASTCALL FUN_004a64b0(unsigned int pArg) {
+    return pArg >= 10000;
+}
+
+// FUNCTION: CARMA2_HW 0x004a69f0
+void C2_HOOK_FASTCALL NetworkNoOp(void) {
 }

@@ -62,7 +62,7 @@ extern void C2_HOOK_FASTCALL MasterDisableCarFunks(tCar_spec* pCar);
 
 void C2_HOOK_FASTCALL MasterEnableCarFunks(tCar_spec* pCar);
 
-// SetPixelmap
+extern int C2_HOOK_FASTCALL SetPixelmap(br_material* pMaterial);
 
 extern void C2_HOOK_FASTCALL DoCamouflageThing(tCar_spec* pCar);
 
@@ -72,9 +72,9 @@ extern void C2_HOOK_FASTCALL DoCamouflageThing(tCar_spec* pCar);
 
 // SetFoxModelCallback
 
-// ResetFoxModelCallback
+extern int C2_HOOK_FASTCALL ResetFoxModelCallback(br_model* pModel);
 
-// ResetFoxLighting
+extern int C2_HOOK_FASTCALL ResetFoxLighting(br_material* pMaterial);
 
 // CancelAlternateFoxEffect
 
@@ -143,6 +143,7 @@ extern void C2_HOOK_FASTCALL DisposeFlame(void);
 // InitSplash
 
 // DisposeSplash
+extern void C2_HOOK_FASTCALL DisposeSplash(void);
 
 // DrawTheGlow
 
@@ -194,6 +195,10 @@ void C2_HOOK_FASTCALL DisposeKevStuffCar(tCar_spec* pCar);
 
 // ForEveryCarMaterial
 
+extern void C2_HOOK_FASTCALL RemoveCarFromEffects(tCar_spec* pCar);
+
+extern void C2_HOOK_FASTCALL ForEveryCarVertex(tCar_spec* pCar_spec, tCar_vertex_cbfn* pCallback, int pUnknown);
+
 // ForEveryCarModelCB
 
 // ForEveryCarModel
@@ -214,7 +219,7 @@ int C2_HOOK_FASTCALL IsCarSmoking(tCar_spec* pCar);
 
 void C2_HOOK_FASTCALL ClearSplashReplay(uintptr_t pObject);
 
-// GetSplashIndex
+extern void* C2_HOOK_FASTCALL GetSplashIndex(tPhysics_object* pObject);
 
 // ClearSplashes
 

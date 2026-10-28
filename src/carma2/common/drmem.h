@@ -50,4 +50,6 @@ int C2_HOOK_FASTCALL AllocationErrorsAreFatal(void);
 
 void C2_HOOK_FASTCALL CloseGlobalPackedFile(void);
 
+void C2_HOOK_FASTCALL TouchMemoryPages(void* pMemory, br_size_t pSize);
+
 #endif // GUARD_DRMEM_H

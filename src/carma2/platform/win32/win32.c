@@ -1120,8 +1120,40 @@ void C2_HOOK_FASTCALL PDFileDelete(const char *pPath, int pIgnore_read_only) {
     DeleteFileA(pPath);
 }
 
-// FUNCTION: CARMA2_HW 0x0047d860
 int C2_HOOK_FASTCALL PDmemicmp(const char* str1, const char* str2, size_t count) {
 
     return c2_memicmp(str1, str2, count);
+}
+
+// FUNCTION: CARMA2_HW 0x0051a7d0
+int C2_HOOK_CDECL PDMissingMaterial(const char* pName) {
+
+    dr_dprintf("SOMETHING MISSING WARNING - Can't find material '%s'", pName);
+    return 0;
+}
+
+// FUNCTION: CARMA2_HW 0x0051c540
+void C2_HOOK_FASTCALL PDRectangleCopy(br_pixelmap* dst, br_int_16 dx, br_int_16 dy, br_pixelmap* src, br_int_16 sx, br_int_16 sy, br_uint_16 w, br_uint_16 h) {
+    if (src != dst) {
+        BrPixelmapRectangleCopy(dst, dx, dy, src, sx, sy, w, h);
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x0051c9f0
+void C2_HOOK_FASTCALL PDConvertMousePosition(LPPOINT pPoint, LONG* pX, LONG* pY) {
+    if (gScaleMouse && strcmp(gRenderer, "D3D") != 0) {
+        *pX = (LONG)(pPoint->x / (gScreenWidth / 640.));
+        *pY = (LONG)(pPoint->y / (gScreenHeight / 480.));
+    } else {
+        ScreenToClient(gHWnd, pPoint);
+        *pX = pPoint->x;
+        *pY = pPoint->y;
+    }
+    gPD_mouse_position.x = *pX;
+    gPD_mouse_position.y = *pY;
+}
+
+// FUNCTION: CARMA2_HW 0x0051d4a0
+void C2_HOOK_FASTCALL FUN_0051d4a0(void) {
+
 }

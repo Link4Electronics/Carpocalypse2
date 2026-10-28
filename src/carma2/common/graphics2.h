@@ -110,4 +110,6 @@ extern void C2_HOOK_FASTCALL DRPixelmapBlit(br_int_16 pX, br_int_16 pY, const br
 
 extern void C2_HOOK_FASTCALL EnableLights(void);
 
+extern void C2_HOOK_FASTCALL DRPixelmapBlend75Copy(br_pixelmap* pDest, br_int_16 pDest_x, br_int_16 pDest_y, br_pixelmap* pSource);
+
 #endif // GUARD_GRAPHICS2_H

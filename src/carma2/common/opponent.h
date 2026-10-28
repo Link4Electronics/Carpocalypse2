@@ -126,7 +126,7 @@ extern void C2_HOOK_FASTCALL ForceRebuildActiveCarList(void);
 
 // TeleportCopToStart
 
-// CalcDistanceFromHome
+extern void C2_HOOK_FASTCALL CalcDistanceFromHome(tOpponent_spec* pOpponent_spec);
 
 // MassageOpponentPosition
 
@@ -176,6 +176,8 @@ extern tCar_spec* C2_HOOK_FASTCALL GetCarSpec(tVehicle_type pCategory, int pInde
 
 // GetOpponentsSectionStartNodePoint
 
+extern tU16 C2_HOOK_FASTCALL GetOpponentsSectionStartNode(const tOpponent_spec* pOpponent, tS16 pSection);
+
 // GetOpponentsSectionFinishNodePoint
 
 // GetOpponentsSectionWidth
@@ -188,7 +190,9 @@ extern void C2_HOOK_FASTCALL InitOpponentPsyche(int pOpponent_index);
 
 // ClearTwattageOccurrenceVariables
 
-// TwoCarsHitEachOther
+extern void C2_HOOK_FASTCALL TwoCarsHitEachOther(tCar_spec* pA_car, tCar_spec* pAnother_car);
+
+extern void C2_HOOK_FASTCALL ReportMurderToPoliceDepartment(tCar_spec* pCar_spec);
 
 void C2_HOOK_FASTCALL RecordOpponentTwattageOccurrence(tCar_spec* pTwatter, tCar_spec* pTwattee);
 
@@ -213,8 +217,6 @@ extern int gNumber_of_cops_before_faffage;
 extern tU32 gNext_grudge_reduction;
 
 extern int gFirst_frame;
-extern tPath_node* gOppo_path_nodes;
-extern tPath_section* gOppo_junction_table;
 
 extern int gGrudge_reduction_per_period;
 

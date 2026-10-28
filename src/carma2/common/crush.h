@@ -7,6 +7,16 @@
 
 #include "carpocalypse2_types.h"
 
+intptr_t C2_HOOK_CDECL FUN_0043b470(br_actor* pActor, tModel_mash_context* pContext);
+int C2_HOOK_CDECL FUN_00434320(br_actor* pActor, int pArg2);
+int C2_HOOK_CDECL FindActorByCrushEntryID(br_actor* pActor, void* pArg);
+int C2_HOOK_FASTCALL GetNetworkDataSize(tU8* pNet_data);
+
+typedef struct tFind_crush_actor_arg {
+    tU8 id;
+    br_actor* actor;
+} tFind_crush_actor_arg;
+
 extern br_vector3 gBatty_gravity;
 extern br_scalar gCrushSqrtHalf;
 extern br_scalar gCrushZero;
@@ -221,6 +231,12 @@ void C2_HOOK_FASTCALL LinkSmashies(br_actor* pActor, tCar_crush_buffer_entry* pC
 int C2_HOOK_FASTCALL DRVector3TestForNan(const br_vector3* pV);
 
 void C2_HOOK_FASTCALL RemoveCarFromCrushLists(tCar_spec* pCar_spec);
+
+void C2_HOOK_FASTCALL SendDetachedNonCarDataToPlayer(tNet_game_player_info* pRecipient);
+
+void C2_HOOK_FASTCALL FUN_0043d7d0(tNet_game_player_info* pRecipient);
+
+void C2_HOOK_FASTCALL FUN_0043c940(void* pParam);
 
 int C2_HOOK_FASTCALL ShapeRayCast(const br_vector3* p1, const br_vector3* p2, const tPhysics_shape* pShape, br_vector3* pPos, float* pFactor, br_vector3* pNormal);
 

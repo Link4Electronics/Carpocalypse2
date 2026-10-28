@@ -152,7 +152,7 @@ void C2_HOOK_FASTCALL SwitchCarModels(tCar_spec* pCar, int pIndex);
 
 void C2_HOOK_FASTCALL ProcessModelFaceMaterials2(br_model* pModel, material_cbfn* pCallback);
 
-void C2_HOOK_FASTCALL FrobFog(void);
+// void C2_HOOK_FASTCALL FrobFog(void);
 
 int C2_HOOK_FASTCALL GetSkyTextureOn(void);
 

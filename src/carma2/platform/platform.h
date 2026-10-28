@@ -181,6 +181,22 @@ extern int C2_HOOK_FASTCALL PDS3StopCDAChannel(tS3_channel* pChannel);
 
 extern tS3_error_codes C2_HOOK_FASTCALL PDS3PlayCDAChannel(tS3_channel* pChannel);
 
+extern int C2_HOOK_FASTCALL PDS3PauseCDA(volatile undefined4 pUnused_arg);
+
+extern int C2_HOOK_FASTCALL PDS3ResumeCDA(tS3_channel* pChannel);
+
+extern int C2_HOOK_FASTCALL PDS3MuteMidiChannel(tS3_channel* pChannel);
+
+extern int C2_HOOK_FASTCALL PDS3UnmuteMidiChannel(tS3_channel* pChannel);
+
+extern int C2_HOOK_FASTCALL PDS3PauseMidiChannel(tS3_channel* pChannel);
+
+extern int C2_HOOK_FASTCALL PDS3ResumeMidiChannel(tS3_channel* pChannel);
+
+extern int C2_HOOK_FASTCALL PDS3UpdateMidiChannelPitch(tS3_channel* pChannel, int pPitch);
+
+extern int C2_HOOK_FASTCALL PDS3StopMidiChannelWrapper(tS3_channel* pChannel, int pArg2, int pArg3, int pArg4, int pArg5, int pArg6);
+
 extern int C2_HOOK_FASTCALL PDS3StopSampleChannel(tS3_channel* pChannel);
 
 extern int C2_HOOK_FASTCALL PDS3UpdateChannelVolume(tS3_channel* pChannel);

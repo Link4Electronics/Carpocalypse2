@@ -40,6 +40,7 @@ typedef struct {
     Uint8* data;
     Uint32 data_len;
     int playing;
+    int paused;
 } tS3_cda_state;
 
 static tS3_cda_state gS3_cda;
@@ -89,6 +90,7 @@ static void PDS3_CloseCDA(void) {
     }
     gS3_cda.data_len = 0;
     gS3_cda.playing = 0;
+    gS3_cda.paused = 0;
 }
 
 static SDL_AudioFormat S3FormatFromBits(int pBits_per_sample) {
@@ -388,8 +390,67 @@ int PDS3UpdateChannelFrequency(tS3_channel* pChannel) {
     return 1;
 }
 
-void PDS3StopMidiChannel(tS3_channel* pChannel) {
+int PDS3StopMidiChannel(tS3_channel* pChannel) {
     (void)pChannel;
+    return 0;
+}
+
+int PDS3MuteMidiChannel(tS3_channel* pChannel) {
+    (void)pChannel;
+    return 0;
+}
+
+int PDS3UnmuteMidiChannel(tS3_channel* pChannel) {
+    (void)pChannel;
+    return 0;
+}
+
+int PDS3PauseMidiChannel(tS3_channel* pChannel) {
+    (void)pChannel;
+    return 0;
+}
+
+int PDS3ResumeMidiChannel(tS3_channel* pChannel) {
+    (void)pChannel;
+    return 0;
+}
+
+int PDS3UpdateMidiChannelPitch(tS3_channel* pChannel, int pPitch) {
+    (void)pChannel;
+    (void)pPitch;
+    return 1;
+}
+
+int PDS3StopMidiChannelWrapper(tS3_channel* pChannel, int pArg2, int pArg3, int pArg4, int pArg5, int pArg6) {
+    (void)pArg2;
+    (void)pArg3;
+    (void)pArg4;
+    (void)pArg5;
+    (void)pArg6;
+    PDS3StopMidiChannel(pChannel);
+    return 0;
+}
+
+int PDS3PauseCDA(volatile undefined4 pUnused_arg) {
+    (void)pUnused_arg;
+    if (gS3_cda.stream == NULL || !gS3_cda.playing || gS3_cda.paused) {
+        return 0;
+    }
+    if (SDL_PauseAudioStreamDevice(gS3_cda.stream)) {
+        gS3_cda.paused = 1;
+    }
+    return 0;
+}
+
+int PDS3ResumeCDA(tS3_channel* pChannel) {
+    (void)pChannel;
+    if (gS3_cda.stream == NULL || !gS3_cda.playing || !gS3_cda.paused) {
+        return 0;
+    }
+    if (SDL_ResumeAudioStreamDevice(gS3_cda.stream)) {
+        gS3_cda.paused = 0;
+    }
+    return 0;
 }
 
 tS3_error_codes PDS3StartMidiChannel(tS3_channel* pChannel) {
@@ -472,6 +533,7 @@ tS3_error_codes PDS3PlayCDAChannel(tS3_channel* pChannel) {
     }
     SDL_ResumeAudioStreamDevice(gS3_cda.stream);
     gS3_cda.playing = 1;
+    gS3_cda.paused = 0;
     if (pChannel->owner_outlet != NULL) {
         volume = pChannel->owner_outlet->volume / 255.0f;
         if (volume < 0.f) {

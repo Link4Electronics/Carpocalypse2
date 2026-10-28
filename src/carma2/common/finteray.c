@@ -2,6 +2,7 @@
 
 #include "brucetrk.h"
 #include "globvars.h"
+#include "physics.h"
 #include "spark.h"
 #include "world.h"
 
@@ -51,6 +52,9 @@ tFace_ref* gPling_face;
 
 // GLOBAL: CARMA2_HW 0x005964c4
 int gActorBoxPick_StopGroovidelics = 1;
+
+// GLOBAL: CARMA2_HW 0x005896d4
+br_scalar gFloat_005896d4 = 0.14492753148078918f;
 
 #include "world2.h"
 #include "structur.h"
@@ -514,9 +518,9 @@ int C2_HOOK_FASTCALL ActorRayPick2D(br_actor* ap, br_vector3* pPosition, br_vect
     br_vector3 dir;
     void* arg;
 
+    t_near = 0.f;
+    t_far = 1.f;
     r = 0;
-    t_near = 0.0f;
-    t_far = 1.0f;
     arg = NULL;
     if (ap->model != NULL) {
         this_model = ap->model;
@@ -539,39 +543,47 @@ int C2_HOOK_FASTCALL ActorRayPick2D(br_actor* ap, br_vector3* pPosition, br_vect
         pPosition = &pos;
         pDir = &dir;
     }
-    if (ap->type == BR_ACTOR_MODEL) {
+    switch (ap->type) {
+    case BR_ACTOR_MODEL:
         if (this_model != NULL) {
             if (PickBoundsTestRay__finteray(&this_model->bounds, pPosition, pDir, t_near, t_far, &t_near, &t_far)) {
                 t_near = 0.f;
-                t_far = gNearest_T > 1.f ? 1.f : gNearest_T;
+                if (gNearest_T > 1.f) {
+                    t_far = 1.f;
+                } else {
+                    t_far = gNearest_T;
+                }
                 r = callback(ap, this_model, this_material, pPosition, pDir, t_near, t_far, arg);
                 if (r) {
-                    return r;
+                    break;
                 }
             }
             if (r) {
-                return r;
+                break;
             }
         }
-    } else if (ap->type >= BR_ACTOR_BOUNDS && ap->type <= BR_ACTOR_BOUNDS_CORRECT) {
-        if (!PickBoundsTestRay__finteray((br_bounds*)ap->type_data, pPosition, pDir, t_near, t_far, &t_near, &t_far)) {
-            return 0;
-        }
+        /* fall through */
+    default:
         for (a = ap->children; a != NULL; a = a->next) {
             r = ActorRayPick2D(a, pPosition, pDir, this_model, this_material, callback);
             if (r) {
-                return r;
+                break;
             }
         }
-        return 0;
-    }
-    for (a = ap->children; a != NULL; a = a->next) {
-        r = ActorRayPick2D(a, pPosition, pDir, this_model, this_material, callback);
-        if (r) {
-            return r;
+        break;
+    case BR_ACTOR_BOUNDS:
+    case BR_ACTOR_BOUNDS_CORRECT:
+        if (PickBoundsTestRay__finteray((br_bounds*)ap->type_data, pPosition, pDir, t_near, t_far, &t_near, &t_far)) {
+            for (a = ap->children; a != NULL; a = a->next) {
+                r = ActorRayPick2D(a, pPosition, pDir, this_model, this_material, callback);
+                if (r) {
+                    break;
+                }
+            }
         }
+        break;
     }
-    return 0;
+    return r;
 }
 
 // FUNCTION: CARMA2_HW 0x0045d570
@@ -1895,6 +1907,23 @@ int C2_HOOK_FASTCALL LinePolyCollWithSphere(br_vector3* pStart, br_vector3* pEnd
 }
 
 
+// FUNCTION: CARMA2_HW 0x004618e0
+tFace_ref* C2_HOOK_FASTCALL CastRayDownThruFaces(br_vector3* pPosition, tFace_ref* pFaces, int pCount, br_scalar pOffset, br_vector3* pCollision_position) {
+    br_vector3 direction;
+    br_vector3 position;
+    br_vector3 normal;
+    br_scalar t;
+    tFace_ref* face;
+
+    BrVector3Set(&direction, 0.f, -1.f, 0.f);
+    face = RayCastThruFaceList(pPosition, &direction, &normal, &t, pCollision_position, pFaces, pCount);
+    if (face == NULL && pOffset != 0.f) {
+        BrVector3Set(&position, pPosition->v[0], pPosition->v[1] + pOffset, pPosition->v[2]);
+        face = RayCastThruFaceList(&position, &direction, &normal, &t, pCollision_position, pFaces, pCount);
+    }
+    return face;
+}
+
 // FUNCTION: CARMA2_HW  0x00461850
 int C2_HOOK_FASTCALL ShapeRayCastWithSphere(br_vector3* pStart, br_vector3* pEnd, tPhysics_shape* pShape, br_vector3* pPoint, br_vector3* pNormal, br_scalar* pT) {
     switch (pShape->common.type) {
@@ -1906,7 +1935,7 @@ int C2_HOOK_FASTCALL ShapeRayCastWithSphere(br_vector3* pStart, br_vector3* pEnd
     case kCollisionShapeType_Sphere:
         return LineSphereCollWithSphere(pStart, pEnd, &pShape->sphere.sphere, pPoint, pNormal, pT);
     default:
-        PhysicsError(ePhysicsError_UnknownShapeType, &gPhysics_empty_message);
+        PhysicsError(ePhysicsError_UnknownShapeType, "");
     case kCollisionShapeType_Wireframe:
         return 0;
     }
@@ -1973,5 +2002,34 @@ int C2_HOOK_FASTCALL LineBoxColl(br_vector3* pStart, br_vector3* pEnd, br_bounds
     }
     FinterayBoxCopyScalar(pT, &candidate.v[selected]);
     return selected + 1 + 4 * quadrant[selected];
+}
+
+// FUNCTION: CARMA2_HW 0x0041e360
+void C2_HOOK_FASTCALL FUN_0041e360(br_vector3* pRay_pos, br_vector3* pRay_dir, br_vector3* pNor, br_scalar* pT) {
+    br_vector3 scaled_ray_pos;
+    br_vector3 scaled_ray_dir;
+    br_material* material;
+
+    scaled_ray_pos.v[1] = pRay_pos->v[1] * gFloat_005896d4;
+    scaled_ray_pos.v[2] = pRay_pos->v[2] * gFloat_005896d4;
+    scaled_ray_pos.v[0] = pRay_pos->v[0] * gFloat_005896d4;
+    scaled_ray_dir.v[0] = pRay_dir->v[0] * gFloat_005896d4;
+    scaled_ray_dir.v[1] = pRay_dir->v[1] * gFloat_005896d4;
+    scaled_ray_dir.v[2] = pRay_dir->v[2] * gFloat_005896d4;
+    ActorFindFace(&scaled_ray_pos, &scaled_ray_dir, gTrack_actor, pNor, pT, &material, NULL);
+}
+
+// FUNCTION: CARMA2_HW 0x0041e3f0
+void C2_HOOK_FASTCALL FUN_0041e3f0(br_vector3* pRay_pos, br_vector3* pRay_dir, br_vector3* pHit_pos, br_scalar* pT, void* pRay_context) {
+    br_vector3 scaled_ray_pos;
+    br_vector3 scaled_ray_dir;
+
+    scaled_ray_pos.v[0] = pRay_pos->v[0] * gFloat_005896d4;
+    scaled_ray_dir.v[0] = pRay_dir->v[0] * gFloat_005896d4;
+    scaled_ray_pos.v[1] = pRay_pos->v[1] * gFloat_005896d4;
+    scaled_ray_pos.v[2] = pRay_pos->v[2] * gFloat_005896d4;
+    scaled_ray_dir.v[1] = pRay_dir->v[1] * gFloat_005896d4;
+    scaled_ray_dir.v[2] = pRay_dir->v[2] * gFloat_005896d4;
+    RayCastInBox(&scaled_ray_pos, &scaled_ray_dir, pHit_pos, pT, *(tPhysics_object**)((tU8*)pRay_context + 8));
 }
 

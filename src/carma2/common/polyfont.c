@@ -23,7 +23,6 @@ void C2_HOOK_FASTCALL UpdateMapAndSaveOptions(void) {
     SaveOptions();
 }
 
-// FUNCTION: CARMA2_HW 0x00464e40
 void C2_HOOK_FASTCALL RenderPolyTextLine(const char *pText, int pX, int pY, int pFont, tJustification pJust, int pRender) {
     int text_len;
     int i;

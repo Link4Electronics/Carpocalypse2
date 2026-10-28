@@ -14,6 +14,7 @@
 #include "graphics.h"
 #include "init.h"
 #include "input.h"
+#include "joystick.h"
 #include "loading.h"
 #include "network.h"
 #include "oil.h"
@@ -49,6 +50,15 @@ extern int gPanicking_peds;
 extern int gDrunk_pedestrians;
 extern float gPed_gravity_multiplier;
 extern float gMutant_speed;
+// GLOBAL: CARMA2_HW 0x0058abe0
+const double gDouble_0058abe0 = 6.9;
+
+// GLOBAL: CARMA2_HW 0x0058abe8
+const double gDouble_0058abe8 = 6.283185307179586;
+
+// GLOBAL: CARMA2_HW 0x0058ac00
+const float gFLOAT_0058ac00 = 0.5f;
+
 // GLOBAL: CARMA2_HW 0x0058ac50
 const float gBounce_rate_const = 1000.0f;
 
@@ -88,6 +98,18 @@ int gNumber_of_powerups;
 // GLOBAL: CARMA2_HW 0x006a0a54
 extern tPowerup* gPowerup_array;
 
+// GLOBAL: CARMA2_HW 0x0058ac60
+const double gDOUBLE_0058ac60 = -1000.0;
+
+// GLOBAL: CARMA2_HW 0x0058ac68
+const double gDOUBLE_0058ac68 = 0.15;
+
+// GLOBAL: CARMA2_HW 0x0058ac70
+const double gDOUBLE_0058ac70 = -0.15;
+
+// GLOBAL: CARMA2_HW 0x0075d33c
+int gPowerup_net_state[56];
+
 extern tNet_mode gNet_mode;
 extern int gRecovery_voucher_count;
 extern int gIt_or_fox;
@@ -104,7 +126,6 @@ void C2_HOOK_FASTCALL MakePedsEthereal(void);
 void C2_HOOK_FASTCALL MakePedsNotEthereal(void);
 int C2_HOOK_FASTCALL FindPedestrianNearCar(tCar_spec* car, br_scalar radius);
 int C2_HOOK_FASTCALL NapalmPedestrianNearCar(tCar_spec* car);
-void C2_HOOK_FASTCALL TriggerPedestrianReaction(void* pData, int pArg2);
 int C2_HOOK_FASTCALL DoPedestrianRepulsifictor(tCar_spec* pCar, float pF0, float pF1, float pF2, float pF3);
 // GLOBAL: CARMA2_HW 0x006a0948
 int gNumber_of_powerup_respawn_specs;
@@ -114,9 +135,6 @@ tPowerup_respawn_spec* gPowerup_respawn_specs;
 
 // GLOBAL: CARMA2_HW 0x006a0ad8
 void* gDrug_trip_data;
-
-// GLOBAL: CARMA2_HW 0x0075d33c
-int gPowerup_net_state[56];
 
 static void C2_HOOK_FASTCALL PaletteFuckedUpByDrugs(br_pixelmap* pPixelmap, int pOffset) {
     int i;
@@ -787,7 +805,7 @@ void C2_HOOK_FASTCALL InitPowerups(void) {
         link->actor = BrActorAllocate(BR_ACTOR_MODEL, 0);
         model = BrModelAllocate(0, 102, 100);
         model->flags |= BR_MODF_UPDATEABLE;
-        material = BrMaterialAllocate(&gPhysics_empty_message);
+        material = BrMaterialAllocate("");
         material->colour_map = repulse;
         material->flags &= ~BR_MATF_LIGHT;
         material->flags |= BR_MATF_TWO_SIDED;
@@ -970,6 +988,59 @@ void C2_HOOK_FASTCALL CloseDownPowerUps(void) {
             }
         }
         powerup->got_time = 0;
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x004def00
+void C2_HOOK_FASTCALL CloseDownPowerUpsForCar(tCar_spec* pCar) {
+    int powerup_address;
+    int message_address;
+    tU32 total_time;
+    int* active_powerup;
+    int* picked_up_powerup;
+    int powerup_offset;
+    int i;
+    int j;
+
+    if (((pCar != NULL) && (pCar->driver == eDriver_local_human)) && (i = 0, 0 < gNumber_of_powerups)) {
+        powerup_offset = 0;
+        active_powerup = pCar->powerups;
+        do {
+            if ((*active_powerup != 0) && (powerup_address = powerup_offset + (int)gPowerup_array, (((tPowerup*)powerup_address)->net_type & 1) == 0)) {
+                if (((tPowerup*)powerup_address)->got_time != 0 && ((tPowerup*)powerup_address)->lose_proc != NULL) {
+                    ((tPowerup*)powerup_address)->lose_proc((tPowerup*)powerup_address, ((tPowerup*)powerup_address)->car);
+                }
+                if (((tPowerup*)powerup_address)->net_type & 0x80) {
+                    ARPowerupLose((tPowerup*)powerup_address, ((tPowerup*)powerup_address)->car);
+                }
+                if (gNet_mode != 0) {
+                    message_address = (int)NetBuildGuaranteedMessage(0x16, 0);
+                    *(int*)(message_address + 0x28) = 2;
+                    *(tPlayer_ID*)(message_address + 0x1c) = gLocal_net_ID;
+                    *(int*)(message_address + 0x20) = (powerup_address - (int)gPowerup_array) / 0xac;
+                    NetGuaranteedSendMessageToAllPlayers(gCurrent_net_game, (tNet_message*)message_address, 0);
+                }
+                gPowerup_net_state[(powerup_address - (int)gPowerup_array) / 0xac] = 0;
+                if (((tPowerup*)powerup_address)->initial_value == 0 && (j = 0, 0 < gNumber_of_icons)) {
+                    picked_up_powerup = (int*)&gPickedup_powerups[0].powerup;
+                    while (j < gNumber_of_icons) {
+                        if (powerup_address == *picked_up_powerup) {
+                            gPickedup_powerups[j].fizzle_stage = 3;
+                            gPickedup_powerups[j].fizzle_direction = -1;
+                            total_time = GetTotalTime();
+                            gPickedup_powerups[j].fizzle_start = total_time;
+                            break;
+                        }
+                        j++;
+                        picked_up_powerup += 5;
+                    }
+                }
+                ((tPowerup*)powerup_address)->got_time = 0;
+            }
+            i++;
+            active_powerup++;
+            powerup_offset += 0xac;
+        } while (i < gNumber_of_powerups);
     }
 }
 
@@ -1636,7 +1707,7 @@ int C2_HOOK_FASTCALL FreezeTimer(tPowerup* powerup, tCar_spec* car) {
 // FUNCTION: CARMA2_HW 0x004dca30
 int C2_HOOK_FASTCALL SetEngineFactor(tPowerup* powerup, tCar_spec* car) {
     if (powerup->initial_value > 0) {
-        TriggerPedestrianReaction("Afterburner", 1);
+        PlayExclusiveFFBEffect("Afterburner", 1);
     }
     car->field_0x4d4 = powerup->float_params[0];
     car->grip_multiplier = powerup->float_params[1];
@@ -1940,7 +2011,7 @@ int C2_HOOK_FASTCALL PissOutOil(tPowerup* powerup, tCar_spec* car) {
 // FUNCTION: CARMA2_HW 0x004de0c0
 int C2_HOOK_FASTCALL KangerooJump(tPowerup* powerup, tCar_spec* car) {
 
-    TriggerPedestrianReaction("Kangeroo", 0);
+    PlayExclusiveFFBEffect("Kangeroo", 0);
     PratcamEvent(0x2a);
     *(float*)((tU8*)car->collision_info + 0x6c) = powerup->float_params[0] * gConst_kangeroo_force_factor + *(float*)((tU8*)car->collision_info + 0x6c);
     if (car != NULL && car->driver == eDriver_local_human) {
@@ -1960,7 +2031,7 @@ int C2_HOOK_FASTCALL AnnihilatePeds(tPowerup* powerup, tCar_spec* car) {
         result = -1;
     }
     if (result != -1) {
-        TriggerPedestrianReaction("Ped_Ray", 0);
+        PlayExclusiveFFBEffect("Ped_Ray", 0);
     }
     return result;
 }
@@ -2034,7 +2105,7 @@ int C2_HOOK_FASTCALL RepulsePedestrians(tPowerup* powerup, tCar_spec* car) {
         result = -1;
     }
     if (result != -1) {
-        TriggerPedestrianReaction("Repulse", 0);
+        PlayExclusiveFFBEffect("Repulse", 0);
     }
     return result;
 }
@@ -2272,7 +2343,7 @@ int C2_HOOK_FASTCALL NapalmPeds(tPowerup* powerup, tCar_spec* car) {
         result = -1;
     }
     if (result != -1) {
-        TriggerPedestrianReaction("Flamer", 0);
+        PlayExclusiveFFBEffect("Flamer", 0);
     }
     return result;
 }
@@ -2320,7 +2391,7 @@ int C2_HOOK_FASTCALL PowerupCancel(tPowerup* powerup, tCar_spec* car) {
             *(int*)((tU8*)msg + 0x20) = p - gPowerup_array;
             NetGuaranteedSendMessageToAllPlayers(gCurrent_net_game, msg, NULL);
         }
-        gPowerup_net_state[p - gPowerup_array] = 0;
+        gProgram_state.current_car.powerups[p - gPowerup_array] = 0;
         if (p->initial_value == 0) {
             for (j = 0; j < gNumber_of_icons; j++) {
                 if (gPickedup_powerups[j].powerup == p) {
@@ -2362,7 +2433,7 @@ int C2_HOOK_FASTCALL PowerupCancel(tPowerup* powerup, tCar_spec* car) {
                 *(int*)((tU8*)msg + 0x20) = tailp - gPowerup_array;
                 NetGuaranteedSendMessageToAllPlayers(gCurrent_net_game, msg, NULL);
             }
-            gPowerup_net_state[tailp - gPowerup_array] = 0;
+            gProgram_state.current_car.powerups[tailp - gPowerup_array] = 0;
             if (tailp->initial_value == 0) {
                 for (j = 0; j < gNumber_of_icons; j++) {
                     if (gPickedup_powerups[j].powerup == tailp) {
@@ -2466,7 +2537,7 @@ int C2_HOOK_FASTCALL CutOffTail(tPowerup* powerup, tCar_spec* car) {
         *(int*)((tU8*)msg + 0x20) = tailp - gPowerup_array;
         NetGuaranteedSendMessageToAllPlayers(gCurrent_net_game, msg, NULL);
     }
-    gPowerup_net_state[tailp - gPowerup_array] = 0;
+    gProgram_state.current_car.powerups[tailp - gPowerup_array] = 0;
     if (tailp->initial_value == 0) {
         for (i = 0; i < gNumber_of_icons; i++) {
             if (gPickedup_powerups[i].powerup == tailp) {
@@ -2962,7 +3033,7 @@ void C2_HOOK_FASTCALL KeyboardPowerupFinished(tPowerup* pPowerup, int pSelect_ne
             *(int*)((tU8*)msg + 0x20) = pPowerup - gPowerup_array;
             NetGuaranteedSendMessageToAllPlayers(gCurrent_net_game, msg, NULL);
         }
-        gPowerup_net_state[pPowerup - gPowerup_array] = 0;
+        gProgram_state.current_car.powerups[pPowerup - gPowerup_array] = 0;
         if (pPowerup->initial_value == 0) {
             for (i = 0; i < gNumber_of_icons; i++) {
                 if (gPickedup_powerups[i].powerup == pPowerup) {
@@ -3192,5 +3263,306 @@ for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gRespawn_powerups); i++) {
                 break;
             }
         }
+    }
+}
+// FUNCTION: CARMA2_HW 0x004d8d10
+char* C2_HOOK_FASTCALL GetPowerupMessage(int pIndex) {
+
+    return gPowerup_array[pIndex].message;
+}
+
+// FUNCTION: CARMA2_HW 0x004dd3f0
+void C2_HOOK_FASTCALL ConfigureShitMine(tShit_mine* pMine, tPowerup* pPowerup, tCar_spec* pCar) {
+
+    pMine->flags = 5;
+    pMine->flags = 5 + (pPowerup->integer_params[0] != 0 ? 0x40 : 0);
+    pMine->next_think_time = GetTotalTime() - (tU32)(pPowerup->float_params[0] * gDOUBLE_0058ac60);
+    pMine->field3_0xc = pPowerup->float_params[1];
+    pMine->initial_y_speed_factor = pPowerup->float_params[2];
+    pMine->initial_z_omega_factor = pPowerup->float_params[3];
+    pMine->initial_x_omega_factor = pPowerup->float_params[4];
+    pMine->field_0x1c = pPowerup->float_params[5];
+    pMine->field_0x20 = pPowerup->float_params[6];
+    pMine->field_0x24 = pPowerup->float_params[7];
+    pMine->collision_info->field_0xed = 1;
+    pMine->collision_info->disable_move_rotate = 0;
+    pMine->collision_info->flags &= ~0x40;
+    if (pMine->collision_info->actor->parent == NULL) {
+        BrActorAdd(gNon_track_actor, pMine->collision_info->actor);
+    }
+    pMine->collision_info->actor->render_style = BR_RSTYLE_FACES;
+    pMine->field_0x34 = pPowerup - gPowerup_array;
+    PHILAddActiveObject(pMine->collision_info, NULL, NULL, NULL);
+    PHILSetObjectProperty(pMine->collision_info, 0, 1.0);
+    PHILSetObjectProperty(pMine->collision_info, 7, 1);
+    PHILSetObjectProperty(pMine->collision_info, 6, 1);
+    pMine->field_0x30 = pCar;
+    pMine->collision_info->last_special_volume = pCar->collision_info->last_special_volume;
+    pMine->collision_info->auto_special_volume = pCar->collision_info->auto_special_volume;
+    pMine->collision_info->water_d = pCar->collision_info->water_d;
+    pMine->collision_info->water_normal.v[0] = pCar->collision_info->water_normal.v[0];
+    pMine->collision_info->water_normal.v[1] = pCar->collision_info->water_normal.v[1];
+    pMine->collision_info->water_normal.v[2] = pCar->collision_info->water_normal.v[2];
+}
+
+// FUNCTION: CARMA2_HW 0x004ddc10
+void C2_HOOK_FASTCALL FUN_004ddc10(unsigned int* pFlags) {
+
+    *pFlags |= 0x20;
+}
+
+// FUNCTION: CARMA2_HW 0x004de5a0
+int C2_HOOK_FASTCALL ReceivedRepulseOpponents(tNet_message_chunk_powerup* pMessage) {
+
+    return RepulseOpponents2(&gPowerup_array[pMessage->powerup_index], NetCarFromPlayerID(pMessage->player_id), 0);
+}
+
+// FUNCTION: CARMA2_HW 0x004da910
+void C2_HOOK_FASTCALL RemoveRepulseLinksForCar(tCar_spec* pCar) {
+    tRepulse_link* link;
+    int i;
+
+    for (i = 0, link = gRepulse_links; i < (int)CARPOCALYPSE2_ASIZE(gRepulse_links); i++, link++) {
+        if (link->time != 0
+                && (link->car == pCar || link->field_0x24 == (undefined4)(uintptr_t)pCar)) {
+            link->time = 0;
+            if (link->actor->parent == gNon_track_actor) {
+                BrActorRemove(link->actor);
+            }
+        }
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x004ddde0
+void C2_HOOK_FASTCALL FUN_004ddde0(tCar_spec* pCar) {
+    tShit_mine* mine;
+    int i;
+
+    for (i = 0, mine = gShit_mines; i < (int)CARPOCALYPSE2_ASIZE(gShit_mines); i++, mine++) {
+        if ((mine->flags & 1) != 0) {
+            if (mine->car == pCar) {
+                mine->car = NULL;
+            }
+            if (mine->field_0x30 == pCar) {
+                mine->field_0x30 = NULL;
+                MineExplode(mine);
+            }
+        }
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x004dd590
+void C2_HOOK_FASTCALL InitializeMineMotion(tShit_mine* pMine, tCar_spec* pCar) {
+    br_matrix34 car_transform;
+    br_vector3 impulse;
+
+    if (pMine->flags & 0x40) {
+        BrMatrix34Translate(&pMine->collision_info->actor->t.t.mat,
+            0.f,
+            (pCar->collision_info->bb1.max.v[1] - pCar->collision_info->bb1.min.v[1]) * gFLOAT_0058ac00,
+            pCar->collision_info->bb1.min.v[2] - gDOUBLE_0058ac68);
+    } else {
+        BrMatrix34Translate(&pMine->collision_info->actor->t.t.mat,
+            0.f,
+            (pCar->collision_info->bb1.max.v[1] - pCar->collision_info->bb1.min.v[1]) * gFLOAT_0058ac00,
+            pCar->collision_info->bb1.max.v[2] - gDOUBLE_0058ac70);
+    }
+
+    BrMatrix34Copy(&car_transform, &pCar->collision_info->transform_matrix);
+    BrMatrix34Post(&pMine->collision_info->actor->t.t.mat, &car_transform);
+    BrMatrix34Copy(&pMine->collision_info->transform_matrix, &pMine->collision_info->actor->t.t.mat);
+
+    impulse.v[0] = 0.f;
+    impulse.v[1] = pMine->field_0x20;
+    impulse.v[2] = pMine->field_0x24;
+    BrMatrix34ApplyV(&pMine->collision_info->v, &impulse, &car_transform);
+
+    pMine->collision_info->v.v[0] = pCar->collision_info->v.v[0] + pMine->collision_info->v.v[0];
+    pMine->collision_info->v.v[1] = pCar->collision_info->v.v[1] + pMine->collision_info->v.v[1];
+    pMine->collision_info->v.v[2] = pCar->collision_info->v.v[2] + pMine->collision_info->v.v[2];
+    if (pMine->flags & 0x40) {
+        pMine->collision_info->v.v[0] = pCar->collision_info->v.v[0] + pMine->collision_info->v.v[0];
+        pMine->collision_info->v.v[1] = pCar->collision_info->v.v[1] + pMine->collision_info->v.v[1];
+        pMine->collision_info->v.v[2] = pCar->collision_info->v.v[2] + pMine->collision_info->v.v[2];
+    }
+    pMine->collision_info->omega.v[0] = 0.f;
+    pMine->collision_info->omega.v[1] = 0.f;
+    pMine->collision_info->omega.v[2] = 0.f;
+}
+
+// FUNCTION: CARMA2_HW 0x004df070
+void C2_HOOK_FASTCALL LoseCarPowerups(tCar_spec* pCar) {
+    if (pCar == NULL || pCar->driver != eDriver_local_human) {
+        return;
+    }
+    C2_HOOK_BUG_ON(sizeof(tPowerup) != 0xac);
+    {
+        int i;
+
+        i = 0;
+        if (gNumber_of_powerups > 0) {
+            int j;
+            int powerup_offset;
+            int* car_powerup;
+            tPowerup* powerup;
+            tNet_message* message;
+
+            powerup_offset = 0;
+            car_powerup = pCar->powerups;
+            do {
+                if (*car_powerup != 0) {
+                    powerup = (tPowerup*)((tU8*)gPowerup_array + powerup_offset);
+                    if (powerup->net_type & eNet_powerup_off_before_snapweld) {
+                        if (powerup->got_time != 0 && powerup->lose_proc != NULL) {
+                            powerup->lose_proc(powerup, powerup->car);
+                        }
+                        if (powerup->net_type & 0x80) {
+                            ARPowerupLose(powerup, powerup->car);
+                        }
+                        if (gNet_mode != eNet_mode_none) {
+                            message = NetBuildGuaranteedMessage(0x16, 0);
+                            *(int*)((tU8*)message + 0x28) = 2;
+                            *(tPlayer_ID*)((tU8*)message + 0x1c) = gLocal_net_ID;
+                            *(int*)((tU8*)message + 0x20) = powerup - gPowerup_array;
+                            NetGuaranteedSendMessageToAllPlayers(gCurrent_net_game, message, NULL);
+                        }
+                        gPowerup_net_state[powerup - gPowerup_array] = 0;
+                        if (powerup->initial_value == 0) {
+                            for (j = 0; j < gNumber_of_icons; j++) {
+                                if (powerup == gPickedup_powerups[j].powerup) {
+                                    gPickedup_powerups[j].fizzle_stage = 3;
+                                    gPickedup_powerups[j].fizzle_direction = -1;
+                                    gPickedup_powerups[j].fizzle_start = GetTotalTime();
+                                    break;
+                                }
+                            }
+                        }
+                        powerup->got_time = 0;
+                    }
+                }
+                i++;
+                car_powerup++;
+                powerup_offset += sizeof(tPowerup);
+            } while (i < gNumber_of_powerups);
+        }
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x004da870
+void C2_HOOK_FASTCALL AddRepulseLink(tU32 pTime, tCar_spec* pCar, undefined4 pField_0x24, br_vector3* pOrigin, br_vector3* pVictim, float pField_0x18, float pField_0x1c) {
+    tRepulse_link* link;
+    tU32 link_time;
+    tU32 min_time;
+    int index;
+    int best;
+    int i;
+
+    min_time = 0x7fffffff;
+    best = 0;
+    index = -1;
+    i = 0;
+    link = &gRepulse_links[0];
+    while ((int)link < (int)&gRepulse_links[6]) {
+        link_time = link->time;
+        if (link_time == 0) {
+            index = i;
+            break;
+        }
+        if (link_time < min_time) {
+            min_time = link_time;
+            best = i;
+        }
+        link++;
+        i++;
+    }
+    if (index < 0) {
+        index = best;
+    }
+    gRepulse_links[index].pos_origin = pOrigin;
+    gRepulse_links[index].pos_victim = pVictim;
+    gRepulse_links[index].time = pTime;
+    gRepulse_links[index].field_0x10 = 0xffffffff;
+    gRepulse_links[index].field_0x18 = pField_0x18;
+    gRepulse_links[index].field_0x1c = pField_0x1c;
+    gRepulse_links[index].car = pCar;
+    gRepulse_links[index].field_0x24 = pField_0x24;
+}
+
+// FUNCTION: CARMA2_HW 0x004dece0
+void C2_HOOK_FASTCALL ReceivedPowerup(tNet_message_chunk_powerup* pMessage) {
+    tPowerup* powerup;
+    tCar_spec* car;
+
+    if (!gProgram_state.racing || pMessage->powerup_index >= gNumber_of_powerups || pMessage->powerup_index < 0) {
+        return;
+    }
+    powerup = &gPowerup_array[pMessage->powerup_index];
+    if (pMessage->field_0x10 != 0 && pMessage->field_0x10 != 1) {
+        if ((powerup->net_type & 1) == 0 && powerup->lose_proc != NULL) {
+            car = NetCarFromPlayerID(pMessage->player_id);
+            if (car != NULL) {
+                powerup->lose_proc(powerup, car);
+                car->powerups[pMessage->powerup_index] = 0;
+            }
+        }
+        return;
+    }
+    if ((powerup->net_type & 1) != 0) {
+        GotPowerupX(&gProgram_state.current_car, pMessage->powerup_index, 0, pMessage->field_0x10 == 0, pMessage->time_remaining);
+    } else if (pMessage->player_id != gLocal_net_ID && powerup->got_proc != NULL) {
+        car = NetCarFromPlayerID(pMessage->player_id);
+        if (car != NULL) {
+            powerup->got_proc(powerup, car);
+            switch (powerup->type) {
+            case ePowerup_instantaneous:
+                break;
+            case ePowerup_timed:
+                car->powerups[pMessage->powerup_index] = GetTotalTime() + pMessage->time_remaining;
+                break;
+            case ePowerup_whole_race:
+                car->powerups[pMessage->powerup_index] = -1;
+                return;
+            }
+        }
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x004d9d00
+void C2_HOOK_FASTCALL FUN_004d9d00(tPhysics_object* pObject, int pMode) {
+    int previous_dismemberfest;
+
+    if ((pObject->field_0x1a0 & 0xf0000) != 0) {
+        if (!IsItReallyOKThatWeDontMakeAnyEffortToProtectAnySadFuckersOutThereThatDontWishToSeeInnocentPeopleBlownToBitsByHighExplosiveMinesAndShells()) {
+            return;
+        }
+        if ((((tPed_character_instance*)pObject->owner)->ped->character->field_0x14 & 4) == 0 && gCrush_deferred == 0) {
+            FUN_004d35e0(((tPed_character_instance*)pObject->owner)->ped);
+        }
+        if (pMode != 0xe) {
+            pObject->v.v[0] = 0.0f;
+            pObject->v.v[1] = 0.0f;
+            pObject->v.v[2] = 0.0f;
+        }
+        pObject->v.v[1] = (float)((double)FRandomBetween(0.7f, 1.0f) / ((double)pObject->M * gDouble_0058abe0) + pObject->v.v[1]);
+        pObject->omega.v[2] = (float)((double)FRandomPosNeg(0.5f) * gDouble_0058abe8 / pObject->M + pObject->omega.v[2]);
+        pObject->disable_move_rotate = 0;
+        pObject->omega.v[0] = (float)((double)FRandomPosNeg(0.5f) * gDouble_0058abe8 / pObject->M + pObject->omega.v[0]);
+        previous_dismemberfest = gPed_dismemberfest;
+        SetPedFall((tPedestrian*)(gPed_dismemberfest = 1, ((tPed_character_instance*)pObject->owner)->ped),
+                500, 0x61, 0x61, gProgram_state.current_car.collision_info);
+        gPed_dismemberfest = previous_dismemberfest;
+        return;
+    }
+
+    if (pObject == NULL || pObject->flags_0x238 != 0x10) {
+        pObject->v.v[1] = (float)((double)FRandomBetween(1.0f, 2.0f) / ((double)pObject->M * gDouble_0058abe0) + pObject->v.v[1]);
+        pObject->omega.v[2] = (float)((double)FRandomPosNeg(0.5f) * gDouble_0058abe8 / pObject->M + pObject->omega.v[2]);
+        pObject->disable_move_rotate = 0;
+        pObject->omega.v[0] = (float)((double)FRandomPosNeg(0.5f) * gDouble_0058abe8 / pObject->M + pObject->omega.v[0]);
+    } else {
+        pObject->v.v[1] = (float)((double)FRandomBetween(3.0f, 4.0f) / ((double)pObject->M * gDouble_0058abe0) + pObject->v.v[1]);
+        pObject->omega.v[2] = (float)((double)FRandomPosNeg(1.75f) * gDouble_0058abe8 / pObject->M + pObject->omega.v[2]);
+        pObject->disable_move_rotate = 0;
+        pObject->omega.v[0] = (float)((double)FRandomPosNeg(1.75f) * gDouble_0058abe8 / pObject->M + pObject->omega.v[0]);
     }
 }

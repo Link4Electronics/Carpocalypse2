@@ -107,7 +107,7 @@ void C2_HOOK_FASTCALL ClosePackFile(tTWTVFS twt) {
 }
 
 // FUNCTION: CARMA2_HW 0x004b4760
-void C2_HOOK_FASTCALL PFfclose(FILE* pFile) {
+int C2_HOOK_FASTCALL PFfclose(FILE* pFile) {
 
     if ((uintptr_t)pFile >= CARPOCALYPSE2_ASIZE(gTwatVfsFiles)) {
         fclose(pFile);
@@ -236,7 +236,8 @@ FILE* C2_HOOK_FASTCALL PFfopen(const char* pPath, const char* mode) {
 }
 
 // FUNCTION: CARMA2_HW 0x004b4880
-int C2_HOOK_FASTCALL PFfgetc(FILE* pFile) {
+int C2_NAKED C2_HOOK_FASTCALL PFfgetc(FILE* pFile) {
+#ifndef CARPOCALYPSE2_MATCHING
     tTwatVfsFile* twtFile;
     int result;
 
@@ -249,9 +250,37 @@ int C2_HOOK_FASTCALL PFfgetc(FILE* pFile) {
         return EOF;
     }
     twtFile->error = 0;
-    result = *twtFile->pos;
+    result = *(tS8*)twtFile->pos;
     twtFile->pos++;
     return result;
+#else
+    __asm {
+        cmp ecx, 0x33
+        jb pffgetc_small
+        push ecx
+        call fgetc
+        add esp, 4
+        ret
+
+    pffgetc_small:
+        shl ecx, 4
+        mov edx, dword ptr [ecx + gTwatVfsFiles + 4]
+        mov eax, dword ptr [ecx + gTwatVfsFiles + 8]
+        lea ecx, [ecx + gTwatVfsFiles]
+        cmp edx, eax
+        jb pffgetc_read
+        or eax, 0xffffffff
+        mov dword ptr [ecx + 0xc], eax
+        ret
+
+    pffgetc_read:
+        mov dword ptr [ecx + 0xc], 0
+        movsx eax, byte ptr [edx]
+        inc edx
+        mov dword ptr [ecx + 4], edx
+        ret
+    }
+#endif
 }
 
 // PFgetc
@@ -341,7 +370,8 @@ int C2_HOOK_FASTCALL PFfwrite(const void* buf, br_size_t size, unsigned int n, v
 }
 
 // FUNCTION: CARMA2_HW 0x004b4b00
-int C2_HOOK_FASTCALL PFftell(FILE* pF) {
+int C2_NAKED C2_HOOK_FASTCALL PFftell(FILE* pF) {
+#ifndef CARPOCALYPSE2_MATCHING
     int pos;
 
     if ((uintptr_t)pF >= CARPOCALYPSE2_ASIZE(gTwatVfsFiles)) {
@@ -350,6 +380,25 @@ int C2_HOOK_FASTCALL PFftell(FILE* pF) {
     pos = gTwatVfsFiles[(uintptr_t)pF].pos - gTwatVfsFiles[(uintptr_t)pF].start;
     gTwatVfsFiles[(uintptr_t)pF].error = 0;
     return pos;
+#else
+    __asm {
+        cmp ecx, 0x33
+        jb pfftell_small
+        push ecx
+        call ftell
+        add esp, 4
+        ret
+
+    pfftell_small:
+        shl ecx, 4
+        mov eax, dword ptr [ecx + gTwatVfsFiles + 4]
+        mov edx, dword ptr [ecx + gTwatVfsFiles]
+        lea ecx, [ecx + gTwatVfsFiles]
+        sub eax, edx
+        mov dword ptr [ecx + 0xc], 0
+        ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004b4b70
@@ -383,28 +432,67 @@ int C2_HOOK_FASTCALL PFfseek(FILE* pF, int offset, int whence) {
 }
 
 // FUNCTION: CARMA2_HW 0x004b4be0
-void C2_HOOK_FASTCALL PFrewind(FILE* pF) {
+void C2_NAKED C2_HOOK_FASTCALL PFrewind(FILE* pF) {
+#ifndef CARPOCALYPSE2_MATCHING
     tTwatVfsFile* twtFile;
 
     if ((int)pF >= CARPOCALYPSE2_ASIZE(gTwatVfsFiles)) {
         rewind(pF);
     } else {
         twtFile = &gTwatVfsFiles[(uintptr_t)pF];
-        twtFile->pos = twtFile->start;
         twtFile->error = 0;
+        twtFile->pos = gTwatVfsFiles[(uintptr_t)pF].start;
     }
+#else
+    __asm {
+        cmp ecx, 0x33
+        jb pfrewind_small
+        push ecx
+        call rewind
+        add esp, 4
+        ret
+
+    pfrewind_small:
+        shl ecx, 4
+        lea eax, [ecx + gTwatVfsFiles]
+        mov ecx, dword ptr [ecx + gTwatVfsFiles]
+        mov dword ptr [eax + 0xc], 0
+        mov dword ptr [eax + 4], ecx
+        ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004b4c10
-int C2_HOOK_FASTCALL PFfeof(FILE* pFile) {
+int C2_NAKED C2_HOOK_FASTCALL PFfeof(FILE* pFile) {
+#ifndef CARPOCALYPSE2_MATCHING
     tTwatVfsFile* twtFile;
 
     if ((int)pFile >= CARPOCALYPSE2_ASIZE(gTwatVfsFiles)) {
         return feof(pFile);
     } else {
         twtFile = &gTwatVfsFiles[(uintptr_t)pFile];
-        return twtFile->pos >= twtFile->end;
+        return twtFile->pos >= gTwatVfsFiles[(uintptr_t)pFile].end;
     }
+#else
+    __asm {
+        cmp ecx, 0x33
+        jb pffeof_small
+        mov eax, dword ptr [ecx + 0xc]
+        and eax, 0x10
+        ret
+
+    pffeof_small:
+        shl ecx, 4
+        mov edx, dword ptr [ecx + gTwatVfsFiles + 8]
+        lea eax, [ecx + gTwatVfsFiles]
+        mov ecx, dword ptr [ecx + gTwatVfsFiles + 4]
+        cmp ecx, edx
+        sbb eax, eax
+        inc eax
+        ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004b4c80

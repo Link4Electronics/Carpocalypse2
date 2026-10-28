@@ -1,9 +1,12 @@
 #include "smash.h"
-#include "smashing.h"
 #include "world.h"
+#include "oil.h"
 
 #include "utility.h"
 #include "globvars.h"
+#include "globvrpb.h"
+#include "physics.h"
+#include "smashing.h"
 #include "carpocalypse2_types.h"
 #include "carpocalypse2_macros.h"
 // GLOBAL: CARMA2_HW 0x006a55c8
@@ -73,8 +76,7 @@ void C2_HOOK_FASTCALL RemoveExplosions(tCar_spec* pCar_spec) {
     int i;
     tExplosion* explosion;
 
-    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gExplosions); i++) {
-        explosion = &gExplosions[i];
+    for (i = CARPOCALYPSE2_ASIZE(gExplosions), explosion = gExplosions; i > 0; i--, explosion++) {
         if (explosion->start != 0 && explosion->collision_actor == pCar_spec->collision_info->actor) {
             if (explosion->actor->parent != NULL) {
                 BrActorRemove(explosion->actor);
@@ -116,7 +118,13 @@ void C2_HOOK_FASTCALL RemoveExplosions(tCar_spec* pCar_spec) {
 
 // DoAward
 
-// DoSpillage
+// FUNCTION: CARMA2_HW 0x004ecc40
+void C2_HOOK_FASTCALL DoSpillage(tSlick_spec* pSlick, br_actor* pActor) {
+    QueueOilSpill2(NULL, pActor, pActor->model, pSlick->field_0x0,
+        pSlick->field_0x4, pSlick->field_0x8, pSlick->field_0xc, pSlick->field_0x10,
+        pSlick->field_0x14, pSlick->field_0x20, pSlick->field_0x24, pSlick->field_0x18,
+        pSlick->field_0x1c, pSlick->material, pSlick->material2);
+}
 
 // DoSpecial
 
@@ -250,22 +258,14 @@ void C2_HOOK_FASTCALL RepairSmash(tCar_spec* pCar_spec, tCar_crush_buffer_entry*
 
 // TotallyRepairSmash
 
-// InitGlassFragments
-
-// InitDecals
-
-// RemoveAllDecals
-
-// ReadPowerupSmash
-
-// FUNCTION: CARMA2_HW 0x004efe00
-void C2_HOOK_FASTCALL InitSmashing(void) {
+static void C2_HOOK_FASTCALL InitGlassFragments(void) {
     int i;
+    tSmash_vertex* smash_vertex;
 
-    for (i = 0; i < 200; i++) {
-        tSmash_vertex* smash_vertex;
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gSmash_glass_fragments) != 200);
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gDecals) != 50);
 
-        smash_vertex = &gSmash_glass_fragments[i];
+    for (i = CARPOCALYPSE2_ASIZE(gSmash_glass_fragments), smash_vertex = gSmash_glass_fragments; i > 0; i--, smash_vertex++) {
         smash_vertex->actor = BrActorAllocate(BR_ACTOR_MODEL, NULL);
         smash_vertex->actor->model = BrModelAllocate(NULL, 3, 1);
         smash_vertex->actor->model->faces[0].vertices[0] = 0;
@@ -277,10 +277,13 @@ void C2_HOOK_FASTCALL InitSmashing(void) {
         smash_vertex->actor->render_style = BR_RSTYLE_FACES;
         smash_vertex->end_time = 0;
     }
-    for (i = 0; i < 50; i++) {
-        tDecal* smash_quad;
+}
 
-        smash_quad = &gDecals[i];
+static void C2_HOOK_FASTCALL InitDecals(void) {
+    int i;
+    tDecal* smash_quad;
+
+    for (i = CARPOCALYPSE2_ASIZE(gDecals), smash_quad = gDecals; i > 0; i--, smash_quad++) {
         smash_quad->actor = BrActorAllocate(BR_ACTOR_MODEL, NULL);
         smash_quad->actor->model = BrModelAllocate(NULL, 4, 2);
         smash_quad->actor->model->faces[0].vertices[0] = 0;
@@ -294,6 +297,17 @@ void C2_HOOK_FASTCALL InitSmashing(void) {
         smash_quad->actor->render_style = BR_RSTYLE_FACES;
         smash_quad->time = 0;
     }
+}
+
+// RemoveAllDecals
+
+// ReadPowerupSmash
+
+// FUNCTION: CARMA2_HW 0x004efe00
+void C2_HOOK_FASTCALL InitSmashing(void) {
+
+    InitGlassFragments();
+    InitDecals();
 }
 
 // VerySimpleRotate
@@ -381,7 +395,40 @@ void C2_HOOK_FASTCALL DisposeSmashData(tCar_crush_buffer_entry* pCrush_data) {
 
 // CloneEnvSmash
 
-// FreeConnotations
+// FUNCTION: CARMA2_HW 0x004f0a80
+void C2_HOOK_FASTCALL FreeConnotations(tConnotations* pConnotations, int pKeep_actors) {
+    int i;
+    int j;
+    tExplosion_animation_group* group;
+
+    for (i = 0; i < pConnotations->count_shrapnel; i++) {
+        if (pConnotations->shrapnel[i].type == kShrapnelType_GhostParts && !pKeep_actors) {
+            for (j = 0; j < pConnotations->shrapnel[i].type_info.ghost.count_actors; j++) {
+                BrActorFree(pConnotations->shrapnel[i].type_info.ghost.actors[j]);
+            }
+            BrMemFree(pConnotations->shrapnel[i].type_info.ghost.actors);
+        } else if (pConnotations->shrapnel[i].type == kShrapnelType_NonCars && !pKeep_actors) {
+            for (j = 0; j < pConnotations->shrapnel[i].type_info.noncar.count_actors; j++) {
+                if (pConnotations->shrapnel[i].type_info.noncar.actors[j]->parent == NULL) {
+                    BrActorFree(pConnotations->shrapnel[i].type_info.noncar.actors[j]);
+                }
+            }
+            BrMemFree(pConnotations->shrapnel[i].type_info.noncar.actors);
+        }
+    }
+    if (pConnotations->special_effects.explosion_animation.count_groups != 0) {
+        for (i = 0, group = pConnotations->special_effects.explosion_animation.groups; i < pConnotations->special_effects.explosion_animation.count_groups; i++, group++) {
+            BrMemFree(group->frames);
+        }
+        BrMemFree(pConnotations->special_effects.explosion_animation.groups);
+    }
+    if (pConnotations->side_effects.activations.count_activations != 0) {
+        BrMemFree(pConnotations->side_effects.activations.activations);
+    }
+    if (pConnotations->side_effects.side_effects.count_side_effects != 0) {
+        BrMemFree(pConnotations->side_effects.side_effects.side_effects);
+    }
+}
 
 // FreeEnvSmash
 
@@ -443,28 +490,20 @@ void C2_HOOK_FASTCALL DisposeSmashData(tCar_crush_buffer_entry* pCrush_data) {
 static intptr_t C2_HOOK_CDECL RepairModels(br_actor* pActor, void* pUser) {
     tUser_crush_data* user_crush = pActor->user;
     tCar_crush_buffer_entry* crush_data;
-    tCar_crush_smashable_part* smashable;
-    int i;
 
-    if (user_crush == NULL) {
-        return 0;
-    }
-    crush_data = user_crush->crush_data;
-    if (crush_data == NULL) {
-        return 0;
-    }
-    smashable = crush_data->smashables;
-    i = 0;
-    if (crush_data->count_smashables <= i) {
-        return 0;
-    }
-    do {
-        if (smashable->field_0x4c != 0) {
-            ActuallyRepairSmash(pUser, smashable, 0);
+    if (user_crush != NULL) {
+        crush_data = user_crush->crush_data;
+        if (crush_data != NULL) {
+            tCar_crush_smashable_part* smashable = crush_data->smashables;
+            int i;
+
+            for (i = 0; i < crush_data->count_smashables; i++, smashable++) {
+                if (smashable->field_0x4c != 0) {
+                    ActuallyRepairSmash(pUser, smashable, 0);
+                }
+            }
         }
-        i++;
-        smashable++;
-    } while (i < crush_data->count_smashables);
+    }
     return 0;
 }
 
@@ -500,7 +539,7 @@ void C2_HOOK_FASTCALL TurnOffSmashModel(br_actor* pActor) {
 }
 
 // FUNCTION: CARMA2_HW 0x004f5f90
-void C2_HOOK_FASTCALL SmashRemoveSomeFaces(br_model* pModel, tS16 pCount) {
+void C2_HOOK_FASTCALL SmashRemoveSomeFaces(br_model* pModel, int pCount) {
     pModel->nfaces -= pCount;
     DRModelUpdateAndKevificateMaterials(pModel, BR_MODU_ALL);
 }
@@ -512,6 +551,40 @@ void C2_HOOK_FASTCALL SmashRemoveSomeFaces(br_model* pModel, tS16 pCount) {
 // TurnOffSmashDecal
 
 // ChangeSmashTexture
+
+// FUNCTION: CARMA2_HW 0x004f60b0
+void C2_HOOK_FASTCALL QueueNetSmash(tQueued_net_smash* pSmash) {
+    int i;
+    int is_host;
+    tQueued_net_smash* pQueued_smash;
+    tQueued_net_smash* pHost_smash;
+
+    if (gPHIL_last_physics_tick == 0 || gPHIL_last_physics_tick >= pSmash->field_0x4) {
+        DoNetSmash(pSmash);
+        return;
+    }
+
+    i = 0;
+    pQueued_smash = gQueued_net_smashes;
+    do {
+        if (pQueued_smash->field_0x4 == 0) {
+            goto queue_net_smash_found;
+        }
+        i++;
+        pQueued_smash++;
+    } while (i < 50);
+    return;
+queue_net_smash_found:
+
+    is_host = gNet_mode == eNet_mode_host;
+    *pQueued_smash = *pSmash;
+
+    if (is_host && gCount_host_smashes < 1000) {
+        pHost_smash = (tQueued_net_smash*)((tU8*)gNet_host_smashes + gCount_host_smashes * 0x38);
+        gCount_host_smashes++;
+        *pHost_smash = *pSmash;
+    }
+}
 
 // FUNCTION: CARMA2_HW 0x004f6130
 void C2_HOOK_FASTCALL DoNetSmash(tQueued_net_smash* pSmash) {

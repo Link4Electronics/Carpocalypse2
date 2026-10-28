@@ -48,4 +48,6 @@ int C2_HOOK_FASTCALL BendCarOneForce(tCar_spec* pCar, tCar_crush* pCar_crush);
 
 void C2_HOOK_FASTCALL DoBending(void);
 
+void C2_HOOK_FASTCALL FUN_0042da20(undefined4* pRecipient);
+
 #endif
