@@ -1,5 +1,6 @@
 #include "netgame.h"
 
+#include "brucetrk.h"
 #include "displays.h"
 #include "globvars.h"
 #include "globvrpb.h"
@@ -69,8 +70,6 @@ const br_scalar gFLOAT_0058a40c = 0.000015259254723787308f;
 // GLOBAL: CARMA2_HW 0x0068d954
 int gUNK_0068d954;
 
-// GLOBAL: CARMA2_HW 0x0075bc24
-int gUNK_0075bc24;
 // FUNCTION: CARMA2_HW 0x00499260
 
 void C2_HOOK_FASTCALL DisableCar(tCar_spec* pCar) {
@@ -1331,7 +1330,7 @@ void C2_HOOK_FASTCALL FUN_0049bad0(void* pArg1, void* pArg2, int pArg3) {
                 if (iVar2 != 0) {
                     NetFullScreenMessage(0xe4, 1);
                 }
-            } while (((gWaiting_for_unpause != 0) && (gUNK_0075bc24 != 2)) &&
+            } while (((gWaiting_for_unpause != 0) && (gProgram_state.prog_status != eProg_idling)) &&
                      ((gRace_finished == 0 || (gRace_over_reason != 4))));
             if (iVar1 != 0) {
                 HaltNetServiceReentrancy();

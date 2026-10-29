@@ -12,8 +12,8 @@ extern int gScan_code[256];
 extern int gJoystick_deadzone;
 extern int gJoystickFFB;
 extern int gForceFeedbackAvailable;
-extern IDirectInputDevice2A* gDirectInputJoystickDevices[];
-extern tDirectInputJoystickInfo gDirectInputJoystickInfos[];
+extern IDirectInputDevice2A* gDirectInputJoystickDevices[16];
+extern tDirectInputJoystickInfo gDirectInputJoystickInfos[16];
 
 extern void C2_HOOK_FASTCALL KeyBegin(void);
 
@@ -111,6 +111,6 @@ extern tJoystick_force_effect* C2_HOOK_FASTCALL GetJoystickEffect(int pIndex);
 
 extern void C2_HOOK_FASTCALL DownloadDinputFFBEffectAtIndex(int index);
 
-extern IDirectInputEffect* gDirectInputEffects[];
+extern IDirectInputEffect* gDirectInputEffects[30];
 
 #endif // C2_WIN32_INPUT_H

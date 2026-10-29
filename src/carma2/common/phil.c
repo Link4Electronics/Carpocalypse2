@@ -123,6 +123,36 @@ void C2_HOOK_FASTCALL GetMatrixFromOrientation(br_matrix34* pMatrix, const tU16*
 // GetHierarchyNetworkSize
 
 // GetNetworkDataSize
+// FUNCTION: CARMA2_HW 0x0049cee0
+int C2_HOOK_FASTCALL GetNetworkDataSize(tU8* pNet_data) {
+    int size;
+    tU8* next;
+    tU8 more;
+
+    switch (*pNet_data & 0xf) {
+    case 0:
+        size = 0x28;
+        break;
+    case 1:
+    case 4:
+        size = 0xc;
+        break;
+    case 2:
+    case 3:
+        size = 0x10;
+        break;
+    default:
+        PhysicsError(9, "netphys got messed up");
+        size = 0;
+    }
+    more = *pNet_data & 0x80;
+    while (more != 0) {
+        next = pNet_data + size;
+        size += GetNetworkDataSize(next);
+        more = *next & 0x40;
+    }
+    return size;
+}
 
 // FUNCTION: CARMA2_HW 0x0049cf50
 int C2_HOOK_FASTCALL GetSingleMatrixFromNetworkData(tU8* pNet_data, br_matrix34* pMatrix) {
@@ -179,6 +209,12 @@ int C2_HOOK_FASTCALL GetSingleMatrixFromNetworkData(tU8* pNet_data, br_matrix34*
 // FUNCTION: CARMA2_HW 0x004b5d20
 void C2_HOOK_FASTCALL PHILDisable(void) {
     gPHIL_enabled = 1;
+}
+
+// FUNCTION: CARMA2_HW 0x004b5d30
+int C2_HOOK_FASTCALL FUN_004b5d30(void) {
+
+    return 100 - gPHIL_count_list_collision_infos;
 }
 
 // PHILAddObject

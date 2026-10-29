@@ -1825,3 +1825,8 @@ br_model* C2_HOOK_FASTCALL CloneModel(br_model* pModel) {
     BrModelAdd(new_model);
     return new_model;
 }
+
+// FUNCTION: CARMA2_HW 0x004657b0
+void C2_HOOK_FASTCALL FUN_004657b0(void) {
+
+}

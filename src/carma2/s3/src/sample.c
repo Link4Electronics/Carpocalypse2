@@ -229,6 +229,21 @@ void* C2_HOOK_FASTCALL S3BufferWav(const char* pPath, tS3_buffer_desc* pBuffer_d
     return pd_handle;
 }
 
+// FUNCTION: CARMA2_HW 0x00564e5e
+int C2_HOOK_FASTCALL FUN_00564e5e(int pSample_id) {
+    struct {
+        tS3_descriptor* descriptor;
+        tS3_buffer_desc* buffer_description;
+    } volatile locals;
+
+    locals.descriptor = S3GetDescriptorByID(pSample_id);
+    if (locals.descriptor == NULL) {
+        return 0;
+    }
+    locals.buffer_description = locals.descriptor->buffer_description;
+    return locals.buffer_description->sample_size * 1000 / locals.buffer_description->sample_rate;
+}
+
 // FUNCTION: CARMA2_HW 0x00569865
 int C2_HOOK_FASTCALL S3PlaySample(tS3_channel* pChannel) {
 

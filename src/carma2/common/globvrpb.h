@@ -9,7 +9,8 @@
 extern tNet_mode gNet_mode;
 extern int gNumber_of_net_players;
 extern tNet_game_player_info gNet_players[12];
-extern tRace_board_entry gRace_board[8];
+/* The race board is a view over each net player starting at last_score_index. */
+#define gRace_board ((tRace_board_entry*)&gNet_players[0].last_score_index)
 extern int gThis_net_player_index;
 extern int gINT_0074c6d4;
 extern int gPending_race;

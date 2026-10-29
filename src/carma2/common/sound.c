@@ -557,12 +557,12 @@ void C2_HOOK_FASTCALL DRS3Service(void) {
 }
 
 // FUNCTION: CARMA2_HW 0x00455860
-tS3_error_codes C2_HOOK_FASTCALL DRS3LoadSound(tS3_sound_id pThe_sound) {
+int C2_HOOK_FASTCALL DRS3LoadSample(int pSample_id) {
 
     if (gSound_enabled) {
-        return S3LoadSample(pThe_sound);
+        return S3LoadSample(pSample_id);
     } else {
-        return eS3_error_none;
+        return 0;
     }
 }
 

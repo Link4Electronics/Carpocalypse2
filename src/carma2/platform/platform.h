@@ -157,6 +157,7 @@ extern tButtonJoystickInfo* C2_HOOK_FASTCALL PDGetCurrentJoystickData(void);
 
 extern int C2_HOOK_FASTCALL PDEnableJoysticks(void);
 
+extern int C2_HOOK_FASTCALL PDS3Return0_B(void);
 extern int C2_HOOK_FASTCALL PDS3Init(void);
 
 extern void C2_HOOK_FASTCALL PDExtractFilename(char* pDest, const char* pPath);

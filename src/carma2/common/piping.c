@@ -1,6 +1,7 @@
 #include "piping.h"
 
 #include "compress.h"
+
 #include "crush.h"
 #include "errors.h"
 #include "globvars.h"
@@ -135,6 +136,7 @@ tU32 gPipe_buffer_size = 0;
 
 // GLOBAL: CARMA2_HW 0x00676900
 float gReplay_rate = 0.f;
+extern const br_scalar gFLOAT_00589330;
 
 // GLOBAL: CARMA2_HW 0x006768b0
 tU32 gPipe_sound_time = 0;
@@ -712,8 +714,8 @@ int C2_HOOK_FASTCALL ARReplayForwards(void) {
     if (gPipe_play_ptr == gPipe_buffer_oldest) {
         return 1;
     }
-    if (gReplay_rate != 0.f) {
-        if (gReplay_rate > 0.f) {
+    if (gReplay_rate != gFLOAT_00589330) {
+        if (gReplay_rate > gFLOAT_00589330) {
             return 1;
         } else {
             return 0;
@@ -733,8 +735,8 @@ int C2_HOOK_FASTCALL ARReplayPlaying(void) {
     if (gPipe_play_ptr == gPipe_buffer_oldest) {
         return 1;
     }
-    if (gReplay_rate != 0.f) {
-        if (gReplay_rate > 0.f) {
+    if (gReplay_rate != gFLOAT_00589330) {
+        if (gReplay_rate > gFLOAT_00589330) {
             return 1;
         } else {
             return 0;
@@ -1455,7 +1457,7 @@ void C2_HOOK_FASTCALL AddSparkToPipingSession(int pSpark_index, const br_vector3
 void C2_HOOK_FASTCALL SaveReducedPos(tReduced_pos* p, br_vector3* v) {
     br_vector3 tv;
 
-    BrVector3Sub(&tv, v, &gProgram_state.current_car.car_master_actor->t.t.translate.t);
+    BrVector3Sub(&tv, v, (br_vector3*)((tU8*)gProgram_state.current_car.car_master_actor + 0x50));
     p->v[0] = (tS16)(tv.v[0] * 800.f);
     p->v[1] = (tS16)(tv.v[1] * 800.f);
     p->v[2] = (tS16)(tv.v[2] * 800.f);

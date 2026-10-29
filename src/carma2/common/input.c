@@ -716,6 +716,178 @@ void C2_HOOK_FASTCALL AddRollingNumber(tU32 pNumber, int pWidth, int pX, int pY)
     }
 }
 
+// FUNCTION: CARMA2_HW 0x004835d0
+void C2_HOOK_FASTCALL FUN_004835d0(void) {
+    int bVar1;
+    int iVar2;
+    int iVar3;
+    int iVar4;
+    int uVar5;
+    int* piVar6;
+    int* puVar7;
+    /* Shared stack slots in binary order, from local_30 through local_4. */
+    int localVars[12];
+
+    for (;;) {
+        CheckQuit();
+        iVar4 = PDGetTotalTime();
+        if (500 < (tU32)(iVar4 - gLast_poll_keys)) {
+            puVar7 = gKey_array;
+            for (iVar4 = 0x97; iVar4 != 0; iVar4--) {
+                *puVar7++ = 0;
+            }
+            puVar7 = gJoy_array;
+            for (iVar4 = 8; iVar4 != 0; iVar4--) {
+                *puVar7++ = -1;
+            }
+            CyclePollKeys();
+            gKey_poll_counter++;
+            PDSetKeyArray(gKey_array, gKey_poll_counter);
+            SetJoystickArrays(gKey_array, gKey_poll_counter);
+            PDSetKeysFromJoystick(gKey_array);
+            gLast_poll_keys = PDGetTotalTime();
+        }
+        iVar4 = 0x8e;
+        piVar6 = &gKey_array[0x8e];
+        do {
+            if (*piVar6 != 0 && piVar6 != &gKey_array[4]) {
+                if (gEdge_trigger_mode == 0) {
+                    goto key_found_first;
+                }
+                uVar5 = EdgeTriggeryKey(iVar4, 0);
+                switch (uVar5) {
+                case 0:
+                case 2:
+                    goto key_scan_next_first;
+                case 1:
+                case 3:
+                    goto key_found_first;
+                }
+            }
+key_scan_next_first:
+            piVar6--;
+            iVar4--;
+        } while ((tS32)piVar6 >= (tS32)gKey_array);
+        if (gEdge_trigger_mode != 0) {
+            EdgeTriggeryKey(0, 1);
+        }
+        iVar4 = -1;
+key_found_first:
+        if (iVar4 != -1 && iVar4 != 4) {
+            break;
+        }
+        iVar2 = gCurrent_mouse_position.x;
+        iVar3 = gCurrent_mouse_position.y;
+        GetMousePosition(&localVars[0], &localVars[1]);
+        if (iVar2 == localVars[0] && iVar3 == localVars[1]) {
+            iVar4 = PDGetMouseClickPosition(&localVars[4], &localVars[5]);
+            if (iVar4 != 0 && localVars[0] == localVars[4] && localVars[1] == localVars[5]) {
+                break;
+            }
+        }
+        PDMouseButtons(&localVars[6], &localVars[7]);
+        if (localVars[6] != 0 || localVars[7] != 0) {
+            break;
+        }
+        iVar2 = gCurrent_mouse_position.x;
+        iVar3 = gCurrent_mouse_position.y;
+        GetMousePosition(&localVars[2], &localVars[3]);
+        if (iVar2 == localVars[2] && iVar3 == localVars[3]) {
+            iVar4 = PDGetMouseClickPosition(&localVars[8], &localVars[9]);
+            if (iVar4 != 0 && localVars[2] == localVars[8] && localVars[3] == localVars[9]) {
+                break;
+            }
+        }
+        PDMouseButtons(&localVars[10], &localVars[11]);
+        if (localVars[10] != 0 || localVars[11] != 0) {
+            break;
+        }
+    }
+    CheckQuit();
+    do {
+        CheckQuit();
+        iVar4 = PDGetTotalTime();
+        if (500 < (tU32)(iVar4 - gLast_poll_keys)) {
+            puVar7 = gKey_array;
+            for (iVar4 = 0x97; iVar4 != 0; iVar4--) {
+                *puVar7++ = 0;
+            }
+            puVar7 = gJoy_array;
+            for (iVar4 = 8; iVar4 != 0; iVar4--) {
+                *puVar7++ = -1;
+            }
+            CyclePollKeys();
+            PollKeys();
+        }
+        iVar4 = 0x8e;
+        piVar6 = &gKey_array[0x8e];
+        do {
+            if (*piVar6 != 0 && piVar6 != &gKey_array[4]) {
+                if (gEdge_trigger_mode == 0) {
+                    goto key_found_second;
+                }
+                uVar5 = EdgeTriggeryKey(iVar4, 0);
+                switch (uVar5) {
+                case 0:
+                case 2:
+                    goto key_scan_next_second;
+                case 1:
+                case 3:
+                    goto key_found_second;
+                }
+            }
+key_scan_next_second:
+            piVar6--;
+            iVar4--;
+        } while ((tS32)piVar6 >= (tS32)gKey_array);
+        if (gEdge_trigger_mode != 0) {
+            EdgeTriggeryKey(0, 1);
+        }
+        iVar4 = -1;
+key_found_second:
+        if (iVar4 == -1 || iVar4 == 4) {
+            iVar2 = gCurrent_mouse_position.x;
+            iVar3 = gCurrent_mouse_position.y;
+            GetMousePosition(&localVars[3], &localVars[2]);
+            if (iVar2 == localVars[3] && iVar3 == localVars[2]) {
+                iVar4 = PDGetMouseClickPosition(&localVars[11], &localVars[10]);
+                if (iVar4 != 0 && localVars[3] == localVars[11] && localVars[2] == localVars[10]) {
+                    goto mouse_activity_found;
+                }
+            }
+            PDMouseButtons(&localVars[9], &localVars[8]);
+            if (localVars[9] != 0 || localVars[8] != 0) {
+                goto mouse_activity_found;
+            }
+            bVar1 = 0;
+        } else {
+mouse_activity_found:
+            bVar1 = 1;
+        }
+        if (!bVar1) {
+            iVar2 = gCurrent_mouse_position.x;
+            iVar3 = gCurrent_mouse_position.y;
+            GetMousePosition(&localVars[1], &localVars[0]);
+            if (iVar2 == localVars[1] && iVar3 == localVars[0] &&
+                    (iVar4 = PDGetMouseClickPosition(&localVars[7], &localVars[6]), iVar4 != 0 &&
+                     localVars[1] == localVars[7] && localVars[0] == localVars[6])) {
+                iVar4 = 2;
+            } else {
+                PDMouseButtons(&localVars[5], &localVars[4]);
+                if (localVars[5] == 0 && localVars[4] == 0) {
+                    iVar4 = 0;
+                } else {
+                    iVar4 = 1;
+                }
+            }
+            if (iVar4 == 0) {
+                CheckQuit();
+                return;
+            }
+        }
+    } while (1);
+}
+
 // FUNCTION: CARMA2_HW 0x00483e90
 void C2_HOOK_FASTCALL InputNoOp(void) {
 }

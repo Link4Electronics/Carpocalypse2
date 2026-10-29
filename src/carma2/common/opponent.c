@@ -3656,3 +3656,9 @@ void C2_HOOK_FASTCALL SetChallengerIndexIf(int pIndex, int pSet) {
 // RecordOpponentTwattageOccurrence
 
 // GetOpponentMood
+
+// FUNCTION: CARMA2_HW 0x004af490
+void C2_HOOK_FASTCALL FUN_004af490(void) {
+
+    // empty
+}

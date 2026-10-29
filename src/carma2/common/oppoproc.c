@@ -6,6 +6,7 @@
 #include "loading.h"
 #include "opponent.h"
 #include "platform.h"
+#include "sound.h"
 
 #include "carpocalypse2_macros.h"
 #include "oppoproc.h"
@@ -538,4 +539,22 @@ int C2_HOOK_FASTCALL CalcSOCs(int pNext_section, int pCount_corners, tCorner* pC
         }
     }
     return count;
+}
+
+// FUNCTION: CARMA2_HW 0x004b25c0
+int C2_HOOK_FASTCALL FUN_004b25c0(int* pArg1, int* pArg2) {
+    if (*pArg2 == 0) {
+        *pArg2 = 1;
+        *pArg1 = 13;
+    } else if (*pArg1 == 1) {
+        *pArg2 = 0;
+        *pArg1 = 0;
+    } else {
+        goto failed;
+    }
+    DRS3StartSound(gEffects_outlet, eSoundId_LeftButton);
+    return 1;
+
+failed:
+    return 0;
 }

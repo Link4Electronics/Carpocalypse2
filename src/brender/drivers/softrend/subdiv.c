@@ -217,3 +217,9 @@ void C2_HOOK_CDECL averageVertices(br_soft_renderer* renderer, brp_vertex* dest1
     TEST_AND_PROJECT_VERTEX(dest2);
     TEST_AND_PROJECT_VERTEX(dest3);
 }
+
+// FUNCTION: CARMA2_HW 0x00560020
+char* FUN_00560020(void) {
+
+    return "1.0.4";
+}

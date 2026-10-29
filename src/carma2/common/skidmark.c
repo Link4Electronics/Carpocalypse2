@@ -292,13 +292,11 @@ void C2_HOOK_FASTCALL InitCarSkidStuff(tCar_spec* pCar) {
 
 // FUNCTION: CARMA2_HW 0x004ea720
 void C2_HOOK_FASTCALL SkidsPerFrame(void) {
-    int i;
+    tSkid *skid;
 
-    for (i = 0; i < CARPOCALYPSE2_ASIZE(gSkids); i++) {
-        tSkid *skid = &gSkids[i];
-
+    for (skid = &gSkids[0]; (int)skid < (int)&gSkids[CARPOCALYPSE2_ASIZE(gSkids)]; skid++) {
         if (skid->actor->render_style != BR_RSTYLE_NONE) {
-            BrVector3Copy(&skid->actor->t.t.translate.t, &skid->pos);
+            skid->actor->t.t.translate.t = skid->pos;
         }
     }
 }

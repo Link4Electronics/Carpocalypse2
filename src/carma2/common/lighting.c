@@ -212,3 +212,8 @@ void C2_HOOK_FASTCALL InitLightingEffects(void) {
 // LoadStaticLightingForRace
 
 // ReadGlobalLightingInfo
+// FUNCTION: CARMA2_HW 0x00486d90
+void C2_HOOK_STDCALL FUN_00486d90(int pArg1, int pArg2) {
+
+    // empty
+}

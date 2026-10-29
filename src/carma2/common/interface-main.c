@@ -634,3 +634,7 @@ int C2_HOOK_FASTCALL StartFudge(tFrontend_spec* pFrontend) {
 int C2_HOOK_CDECL FUN_00577190(int pArg) {
     return pArg - 0x20;
 }
+// FUNCTION: CARMA2_HW 0x00576eb0
+int C2_HOOK_CDECL FUN_00576eb0(FILE* pFile) {
+    return fgetc(pFile);
+}

@@ -77,11 +77,6 @@ void C2_HOOK_FASTCALL FUN_004f3740(const int* pIndices, const float* pTransform,
     NOT_IMPLEMENTED();
 }
 
-// FUNCTION: CARMA2_HW 0x0049cee0
-int C2_HOOK_FASTCALL GetNetworkDataSize(tU8* pNet_data) {
-    NOT_IMPLEMENTED();
-    return 0;
-}
 #pragma auto_inline(on)
 
 #include <ctype.h>
