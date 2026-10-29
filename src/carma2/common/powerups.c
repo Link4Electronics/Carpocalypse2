@@ -107,8 +107,7 @@ const double gDOUBLE_0058ac68 = 0.15;
 // GLOBAL: CARMA2_HW 0x0058ac70
 const double gDOUBLE_0058ac70 = -0.15;
 
-// GLOBAL: CARMA2_HW 0x0075d33c
-int gPowerup_net_state[56];
+
 
 extern tNet_mode gNet_mode;
 extern int gRecovery_voucher_count;
@@ -1020,7 +1019,7 @@ void C2_HOOK_FASTCALL CloseDownPowerUpsForCar(tCar_spec* pCar) {
                     *(int*)(message_address + 0x20) = (powerup_address - (int)gPowerup_array) / 0xac;
                     NetGuaranteedSendMessageToAllPlayers(gCurrent_net_game, (tNet_message*)message_address, 0);
                 }
-                gPowerup_net_state[(powerup_address - (int)gPowerup_array) / 0xac] = 0;
+                gProgram_state.current_car.powerups[(powerup_address - (int)gPowerup_array) / 0xac] = 0;
                 if (((tPowerup*)powerup_address)->initial_value == 0 && (j = 0, 0 < gNumber_of_icons)) {
                     picked_up_powerup = (int*)&gPickedup_powerups[0].powerup;
                     while (j < gNumber_of_icons) {
@@ -3426,7 +3425,7 @@ void C2_HOOK_FASTCALL LoseCarPowerups(tCar_spec* pCar) {
                             *(int*)((tU8*)message + 0x20) = powerup - gPowerup_array;
                             NetGuaranteedSendMessageToAllPlayers(gCurrent_net_game, message, NULL);
                         }
-                        gPowerup_net_state[powerup - gPowerup_array] = 0;
+                        gProgram_state.current_car.powerups[powerup - gPowerup_array] = 0;
                         if (powerup->initial_value == 0) {
                             for (j = 0; j < gNumber_of_icons; j++) {
                                 if (powerup == gPickedup_powerups[j].powerup) {

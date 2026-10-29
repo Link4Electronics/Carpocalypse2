@@ -40,6 +40,8 @@ extern int C2_HOOK_FASTCALL KeyIsDown(int pKey_index);
 
 extern void C2_HOOK_FASTCALL WaitForNoKeys(void);
 
+extern void C2_HOOK_FASTCALL FUN_004835d0(void);
+
 extern void C2_HOOK_FASTCALL GetMousePosition(int *pX, int *pY);
 
 extern void C2_HOOK_FASTCALL InitRollingLetters(void);

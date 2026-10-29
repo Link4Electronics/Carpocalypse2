@@ -4232,3 +4232,7 @@ int C2_HOOK_FASTCALL InterfaceMenuInfunc(tFrontend_spec* pFrontend) {
     pFrontend->items[1].enabled = kFrontendItemEnabled_disabled;
     return 1;
 }
+// FUNCTION: CARMA2_HW 0x0046ada0
+int C2_HOOK_FASTCALL InterfaceReturnTrue(void) {
+    return 1;
+}

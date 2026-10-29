@@ -22,6 +22,7 @@
 tU32 gNet_synch_start;
 
 
+// FUNCTION: CARMA2_HW 0x00473570
 int C2_HOOK_FASTCALL NetSynchRaceStart2(tNet_synch_mode pMode) {
 
     if (pMode != eNet_synch_client) {

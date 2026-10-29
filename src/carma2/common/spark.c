@@ -61,6 +61,9 @@ typedef struct tCarFunks_master {       // assumed layout from FUNK data in car 
     int count_0x2b0;
     tCar_bit_spec bit_0x2b4[3];
 } tCarFunks_master;
+
+void C2_HOOK_FASTCALL RecordReplaySplash(void* pObject, int pType, tU32 pWater_density, const tU32* pNormal, const tU32* pBounds);
+
 // GLOBAL: CARMA2_HW 0x006b7840
 int gShade_list[16];
 
@@ -3586,6 +3589,44 @@ void C2_HOOK_FASTCALL ClearSplashes(tPhysics_object* pObject) {
 // AdjustSplashReplay
 
 // InitReplaySplashes
+// FUNCTION: CARMA2_HW 0x004ff030
+void C2_HOOK_FASTCALL InitReplaySplashes(void) {
+    tPhysics_object* object;
+
+    object = gList_collision_infos;
+    gReplay_splash_flags = 0;
+    if (object != NULL) {
+        do {
+            if (object->water_d != 10000.0f) {
+                void* replay_object;
+                tU8 splash_type;
+                tCollision_info_owner* owner;
+
+                replay_object = NULL;
+                if (PHILGetObjectProperty(object, 6) != gFLOAT_0058b008) {
+                    replay_object = object;
+                    splash_type = 0xff;
+                } else if (object != NULL) {
+                    owner = object->owner;
+                    if (owner == NULL || object->flags_0x238 != 1) {
+                        if (object != NULL && object->owner != NULL && object->flags_0x238 >= 2 && object->flags_0x238 <= 4) {
+                            replay_object = object->owner;
+                            splash_type = object->flags_0x238;
+                        }
+                    } else if (owner == NULL || *(int*)&owner->field_0x0c <= 5) {
+                        replay_object = object->actor;
+                        splash_type = 1;
+                    }
+                }
+                if (replay_object != NULL) {
+                    RecordReplaySplash(replay_object, splash_type, *(const tU32*)&object->water_d,
+                                       (const tU32*)&object->water_normal, (const tU32*)&object->bb1);
+                }
+            }
+            object = object->next;
+        } while (object != NULL);
+    }
+}
 
 // FUNCTION: CARMA2_HW 0x004fef40
 void C2_HOOK_FASTCALL RecordReplaySplash(void* pObject, int pType, tU32 pWater_density, const tU32* pNormal, const tU32* pBounds) {

@@ -226,6 +226,7 @@ extern void* C2_HOOK_FASTCALL GetSplashIndex(tPhysics_object* pObject);
 // AdjustSplashReplay
 
 // InitReplaySplashes
+extern void C2_HOOK_FASTCALL InitReplaySplashes(void);
 
 #define CARPOCALYPSE2_SPARK_H
 

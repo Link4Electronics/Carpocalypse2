@@ -42,7 +42,7 @@ void C2_HOOK_STDCALL ConvertVertex(brp_vertex* dest, brp_vertex* src) {
         }
     }
 
-    m = 0x0000ffff ^ (rend.block->convert_mask_i | rend.block->convert_mask_x | rend.block->convert_mask_f);
+    m = 0x0000ffff ^ (rend.block->convert_mask_i | rend.block->convert_mask_f | rend.block->convert_mask_x);
     if (m != 0) {
         for (c = 0; m != 0; c++, m >>= 1) {
             if (m & 0x1) {

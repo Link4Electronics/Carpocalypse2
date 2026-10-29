@@ -25,3 +25,8 @@ void C2_HOOK_FASTCALL DisposePratcam(void) {
 
     // empty
 }
+// FUNCTION: CARMA2_HW 0x004e0e70
+void C2_HOOK_FASTCALL FUN_004e0e70(void) {
+
+    // empty
+}

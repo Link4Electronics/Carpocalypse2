@@ -24,6 +24,8 @@
 
 #include <stdarg.h>
 #include "drone.h"
+
+extern void C2_HOOK_CDECL FUN_00528130(br_uint_32* pDestination, br_uint_32 pValue, int pCount);
 // GLOBAL: CARMA2_HW 0x006820d0
 int gCount_drones;
 
@@ -500,7 +502,7 @@ int C2_HOOK_FASTCALL ReallyAddDroneToPHIL(tDrone_spec* pDrone) {
     if (PHILAddObject(&pDrone->collision_info)) {
         return 0;
     }
-    PHILSetObjectProperty(&pDrone->collision_info, 0, 0, 1.875);
+    PHILSetObjectProperty(&pDrone->collision_info, 0, 1.0);
     PHILSetObjectProperty(&pDrone->collision_info, 3, 1);
     PHILSetObjectProperty(&pDrone->collision_info, 7, 1);
     PHILSetObjectProperty(&pDrone->collision_info, 6, 1);
@@ -1728,4 +1730,51 @@ void C2_HOOK_FASTCALL WriteOutDronePaths(void) {
     } else {
         PDFatalError("Unable to open drone path output file");
     }
+}
+// FUNCTION: CARMA2_HW 0x004525c0
+void C2_HOOK_FASTCALL DroneNoOp(void) {
+}
+
+// FUNCTION: CARMA2_HW 0x00452f40
+void C2_HOOK_FASTCALL FUN_00452f40(br_model* pModel, int pFace_count, int pVertex_count) {
+    br_vertex* new_vertices;
+    br_face* new_faces;
+    int vertex_size;
+    int face_size;
+    int offset;
+    int i;
+
+    vertex_size = pVertex_count * sizeof(br_vertex);
+    new_vertices = BrResAllocate(pModel, vertex_size, BR_MEMORY_VERTICES);
+    FUN_00528130((br_uint_32*)new_vertices, 0, vertex_size / sizeof(br_uint_32));
+    if (pModel->nvertices != 0) {
+        i = 0;
+        offset = 0;
+        while (i < (pModel->nvertices < pVertex_count ? pModel->nvertices : pVertex_count)) {
+            memcpy(&new_vertices[i], &pModel->vertices[i], sizeof(br_vertex));
+            i++;
+            offset += sizeof(br_vertex);
+        }
+        BrResRemove(pModel->vertices);
+        BrResFree(pModel->vertices);
+    }
+    pModel->nvertices = (br_uint_16)pVertex_count;
+    pModel->vertices = new_vertices;
+
+    face_size = pFace_count * sizeof(br_face);
+    new_faces = BrResAllocate(pModel, face_size, BR_MEMORY_FACES);
+    FUN_00528130((br_uint_32*)new_faces, 0, face_size / sizeof(br_uint_32));
+    if (pModel->nfaces != 0) {
+        i = 0;
+        offset = 0;
+        while (i < (pModel->nfaces < pFace_count ? pModel->nfaces : pFace_count)) {
+            memcpy(&new_faces[i], &pModel->faces[i], sizeof(br_face));
+            i++;
+            offset += sizeof(br_face);
+        }
+        BrResRemove(pModel->faces);
+        BrResFree(pModel->faces);
+    }
+    pModel->nfaces = (br_uint_16)pFace_count;
+    pModel->faces = new_faces;
 }

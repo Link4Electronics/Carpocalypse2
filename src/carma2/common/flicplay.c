@@ -1871,3 +1871,10 @@ void C2_HOOK_FASTCALL LoadInterfaceStrings(void) {
 }
 
 // SuspendPendingFlic
+
+// FUNCTION: CARMA2_HW 0x00461980
+void C2_HOOK_FASTCALL FUN_00461980(int pSound_ID, tU32 pSound_time) {
+
+    gSound_ID = pSound_ID;
+    gSound_time = pSound_time;
+}

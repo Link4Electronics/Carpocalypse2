@@ -1,5 +1,7 @@
 #include "../include/s3/internal/resource.h"
 
+#include "platform.h"
+
 // FUNCTION: CARMA2_HW 0x00565af7
 void* C2_HOOK_FASTCALL S3MemAllocate(br_size_t size, br_uint_8 type) {
     void *result;
@@ -38,4 +40,9 @@ int C2_HOOK_FASTCALL S3GetFileSize(FILE *pF) {
     pos.end = ftell(pF);
     fseek(pF, pos.current, SEEK_SET);
     return pos.end;
+}
+
+// FUNCTION: CARMA2_HW 0x00565aed
+void C2_HOOK_FASTCALL FUN_00565aed(void) {
+    PDS3Return0_B();
 }

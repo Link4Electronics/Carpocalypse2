@@ -30,7 +30,9 @@ extern int C2_HOOK_FASTCALL DRS3StartSound2(tS3_outlet *pOutlet, tS3_sound_id pS
 
 extern int C2_HOOK_FASTCALL DRS3ChangeVolume(int pChannel_id, int pVolume);
 
-extern tS3_error_codes C2_HOOK_FASTCALL DRS3LoadSound(tS3_sound_id pThe_sound);
+extern int C2_HOOK_FASTCALL DRS3LoadSample(int pSample_id);
+
+extern int C2_HOOK_FASTCALL DRS3ReleaseSound(int pSound_id);
 
 extern int C2_HOOK_FASTCALL DRS3StopSound(tS3_sound_tag pSound_tag);
 

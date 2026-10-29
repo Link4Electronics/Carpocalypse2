@@ -819,3 +819,9 @@ void C2_HOOK_FASTCALL DisposeBillBoard(br_actor* pActor) {
         BrActorFree(pActor);
     }
 }
+
+// FUNCTION: CARMA2_HW 0x004e0e20
+void C2_HOOK_FASTCALL FUN_004e0e20(void) {
+
+    // empty
+}

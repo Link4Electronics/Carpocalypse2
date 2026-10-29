@@ -44,6 +44,8 @@ int gSingle_frame_mode;
 
 extern int gDisable_sound;
 
+void C2_HOOK_FASTCALL FUN_00403cc0(int pUnused, tARDoActionReplay_step_callback* pStep_callback, tARDoActionReplay_frame_callback* pFrame_start_callback, tARDoActionReplay_frame_callback* pFrame_end_callback);
+
 // GLOBAL: CARMA2_HW 0x00589330
 const br_scalar gFLOAT_00589330 = 0.0f;
 
@@ -222,7 +224,7 @@ void C2_HOOK_FASTCALL ARService(void) {
 void C2_HOOK_FASTCALL TurnOnActionReplay(void) {
 #pragma inline_depth(0)
 
-    FUN_004d6d90();
+    SavePedStuff();
     if (gMap_view == 2) {
         ToggleMap();
     }
@@ -242,14 +244,12 @@ void C2_HOOK_FASTCALL TurnOnActionReplay(void) {
     }
     gCamera_type = gAction_replay_camera_mode;
     SetCameraType(gAR_camera_type);
-    FUN_004ff030();
+    InitReplaySplashes();
 #pragma inline_depth()
 }
 
 // FUNCTION: CARMA2_HW 0x004e7270
 void C2_HOOK_FASTCALL TurnOffActionReplay(void) {
-#pragma inline_depth(0)
-
     UnlockInterfaceStuff();
     AssertThisTimeAsCurrentTime();
     if (gRace_finished == 0) {
@@ -260,9 +260,8 @@ void C2_HOOK_FASTCALL TurnOffActionReplay(void) {
     }
     gAR_camera_type = gAction_replay_camera_mode;
     SetCameraType(gCamera_type);
-    FUN_004d6da0();
+    ComparePedStuff();
     EndMouseCursor();
-#pragma inline_depth()
 }
 
 // FUNCTION: CARMA2_HW 0x004e72d0
@@ -368,7 +367,8 @@ void C2_HOOK_FASTCALL CheckReplayTurnOn(void) {
 // FUNCTION: CARMA2_HW 0x004e68e0
 void C2_HOOK_FASTCALL DoActionReplay(tU32 pFrame_period) {
 
-    NOT_IMPLEMENTED();
+    gTime_of_last_zappy_headups = 0;
+    FUN_00403cc0(pFrame_period, DoZappyActionReplayHeadups, PreProcess, PostProcess);
 }
 
 // FUNCTION: CARMA2_HW 0x004e69b0
@@ -498,12 +498,14 @@ void C2_HOOK_FASTCALL DisposeReplayPixelmaps(void) {
     }
 }
 
+#pragma auto_inline(off)
 // FUNCTION: CARMA2_HW 0x00403cc0
 void C2_HOOK_FASTCALL FUN_00403cc0(int pUnused, tARDoActionReplay_step_callback* pStep_callback, tARDoActionReplay_frame_callback* pFrame_start_callback, tARDoActionReplay_frame_callback* pFrame_end_callback) {
     if (gReplay_rate != gFLOAT_00589330) {
         ARDoActionReplay((int)gReplay_rate, pStep_callback, pFrame_start_callback, pFrame_end_callback);
     }
 }
+#pragma auto_inline(on)
 
 // FUNCTION: CARMA2_HW 0x00403c70
 void C2_HOOK_FASTCALL FUN_00403c70(tARDoActionReplay_step_callback* pStep_callback, tARDoActionReplay_frame_callback* pFrame_start_callback, tARDoActionReplay_frame_callback* pFrame_end_callback) {

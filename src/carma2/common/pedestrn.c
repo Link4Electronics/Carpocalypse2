@@ -1531,9 +1531,15 @@ void C2_HOOK_FASTCALL RecalculateOrientationOfRoot(tPed_character_instance* pPed
     tPed_form* form;
     br_matrix34 mat34;
 
-    character_matrix = GetCharacterMatrixPtr(pPed);
     form = pPed->personality->form;
-    BrMatrix34LPInverse(&mat34, &form->moves[pPed->field_0x7].move->frames[pPed->field_0x1c].mat);
+    if (pPed->field_0x4 < 0) {
+        character_matrix = &pPed->field_0x2c;
+    } else if (pPed->field_0xe8 != NULL) {
+        character_matrix = pPed->field_0xe8;
+    } else {
+        character_matrix = &form->actor_sets[pPed->field_0x4].actors[0]->t.t.mat;
+    }
+    BrMatrix34LPInverse(&mat34, &form->moves[pPed->field_0x7].move->frames[(short)pPed->field_0x1c].mat);
     BrMatrix34Mul(&pPed->field_0x8c, &mat34, character_matrix);
     BrVector3Set((br_vector3*)pPed->field_0x8c.m[3], 0.f, 0.f, 0.f);
 }
@@ -4172,18 +4178,6 @@ void C2_HOOK_FASTCALL FlushAllPedCaches(void) {
             cache->field_0xb0 = NULL;
         }
     }
-}
-
-// UNLABELED: CARMA2_HW 0x004d6da0
-void C2_HOOK_FASTCALL FUN_004d6da0(void) {
-
-    /* Original is an empty function (ComparePedStuff). */
-}
-
-// UNLABELED: CARMA2_HW 0x004d6d90
-void C2_HOOK_FASTCALL FUN_004d6d90(void) {
-
-    /* Original is an empty function (SavePedStuff). */
 }
 
 // FUNCTION: CARMA2_HW 0x004cdc00

@@ -3275,9 +3275,6 @@ void C2_HOOK_FASTCALL PositionCarMountedCamera(tCar_spec* pCar, tU32 pTime) {
     CollideCamera2(&pCar->pos, &gCamera->t.t.translate.t, NULL, 0, NULL);
 }
 
-// GLOBAL: CARMA2_HW 0x0074bd54
-tRace_board_entry gRace_board[8];
-
 // FUNCTION: CARMA2_HW 0x0040f4a0
 tCar_spec* C2_HOOK_FASTCALL GetRaceLeader(void) {
     int i;

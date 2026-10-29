@@ -726,10 +726,6 @@ void C2_HOOK_FASTCALL MakeFlagWavingBastardWaveHisFlagWhichIsTheProbablyTheLastT
 
 void C2_HOOK_FASTCALL FlushAllPedCaches(void);
 
-void C2_HOOK_FASTCALL FUN_004d6da0(void);
-
-void C2_HOOK_FASTCALL FUN_004d6d90(void);
-
 undefined4 C2_HOOK_FASTCALL CBPassiveCollision(tPed_character_instance* pCharacter, tPhysics_object* pObject, tPhysics_object* pCollision_info);
 
 int C2_HOOK_FASTCALL CBActiveHalted(tPed_character_instance* pCharacter, tPhysics_object* pPhysics);

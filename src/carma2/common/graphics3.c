@@ -452,6 +452,7 @@ void C2_HOOK_FASTCALL CheckMapMoveKeys(int pKey0) {
 
 // AddSmashTarget
 
+// FUNCTION: CARMA2_HW 0x00497830
 int NearestPowerOfTwo(int pValue) {
     int power;
 

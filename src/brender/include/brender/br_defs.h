@@ -13,6 +13,11 @@
 
 #define BR_ONE_LS 	65536 /* (1<<16) */
 
+#define BR_ADD(a, b) ((a) + (b))
+#define BR_SUB(a, b) ((a) - (b))
+#define BR_MUL(a, b) ((a) * (b))
+#define BR_SQR(a) ((a) * (a))
+
 #define BR_MAC2(A, B, C, D) ((A) * (B) + (C) * (D))
 #define BR_MAC3(a, b, c, d, e, f) ((a) * (b) + (c) * (d) + (e) * (f))
 #define BR_MAC4(a, b, c, d, e, f, g, h) ((a) * (b) + (c) * (d) + (e) * (f) + (g) * (h))

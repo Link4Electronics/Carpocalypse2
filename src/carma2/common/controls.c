@@ -1944,6 +1944,7 @@ void C2_HOOK_FASTCALL SortOutRecover(tCar_spec* pCar) {
     old_time = the_time;
 }
 
+// FUNCTION: CARMA2_HW 0x00442970
 void C2_HOOK_FASTCALL SetFlipUpCar(tCar_spec* pCar) {
 
     if (gNet_mode != eNet_mode_none && pCar != NULL && pCar->driver == eDriver_local_human) {
@@ -2671,6 +2672,7 @@ void C2_HOOK_FASTCALL SteelBollock(void) {
     NewTextHeadupSlot(4, 0, 2000, -4, "STEEL GONAD O' DEATH");
 }
 
+// FUNCTION: CARMA2_HW 0x00444f10
 void C2_HOOK_FASTCALL RichardsSphere(int pNum) {
 
     TotallyRepairACar(gCar_to_view);

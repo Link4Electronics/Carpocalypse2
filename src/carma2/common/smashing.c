@@ -1169,3 +1169,9 @@ found_player:
         }
     }
 }
+
+// FUNCTION: CARMA2_HW 0x004ef830
+void C2_HOOK_FASTCALL ActuallyRepairSmashThunk(tCar_spec* pCar_spec, tCar_crush_smashable_part* pSmashable, int pUnused, int pLevel) {
+
+    ActuallyRepairSmash(pCar_spec, pSmashable, pLevel);
+}

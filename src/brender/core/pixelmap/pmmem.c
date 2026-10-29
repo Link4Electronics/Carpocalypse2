@@ -378,7 +378,7 @@ br_error C2_HOOK_CDECL _M_br_device_pixelmap_mem_copyTo(br_device_pixelmap* self
                 self->pm_pixels_qualifier,
                 (br_uint_8*)src->pm_pixels + src->pm_base_y * src->pm_row_bytes + src->pm_base_x * bytes,
                 src->pm_pixels_qualifier,
-                self->pm_width * self->pm_height,
+                self->pm_height * self->pm_width,
                 bytes);
         } else {
             pm_mem_copy_colour(
@@ -432,7 +432,7 @@ br_error C2_HOOK_CDECL _M_br_device_pixelmap_mem_copyFrom(br_device_pixelmap* se
                     dest->pm_pixels_qualifier,
                     (br_uint_8*)self->pm_pixels + self->pm_base_y * self->pm_row_bytes + self->pm_base_x * bytes,
                     self->pm_pixels_qualifier,
-                    self->pm_width * self->pm_height,
+                    self->pm_height * self->pm_width,
                     bytes);
         } else {
             pm_mem_copy_colour(

@@ -1401,17 +1401,15 @@ void C2_HOOK_FASTCALL EncodeNetShapeData(tU8* pData, tCar_spec* pCar) {
 
 // FUNCTION: CARMA2_HW 0x0043deb0
 void C2_HOOK_FASTCALL CompressPlane(tU16 pDest[4], const br_vector4* pSrc) {
-    pDest[0] = DRScalarToU16(pSrc->v[0], -1.f, 1.f);
-    pDest[1] = DRScalarToU16(pSrc->v[1], -1.f, 1.f);
-    pDest[2] = DRScalarToU16(pSrc->v[2], -1.f, 1.f);
+
+    CompressVector3((tCompressed_vector3*)pDest, (const br_vector3*)pSrc, -1.f, 1.f);
     pDest[3] = DRScalarToU16(pSrc->v[3], -2.5f, 2.5f);
 }
 
 // FUNCTION: CARMA2_HW 0x0043dee0
 void C2_HOOK_FASTCALL ExpandPlane(br_vector4* pDest, const tU16 pSrc[4]) {
-    pDest->v[0] = DRU16ToScalar(pSrc[0], -1.f, 1.f);
-    pDest->v[1] = DRU16ToScalar(pSrc[1], -1.f, 1.f);
-    pDest->v[2] = DRU16ToScalar(pSrc[2], -1.f, 1.f);
+
+    ExpandVector3((br_vector3*)pDest, (const tCompressed_vector3*)pSrc, -1.f, 1.f);
     pDest->v[3] = DRU16ToScalar(pSrc[3], -2.5f, 2.5f);
 }
 

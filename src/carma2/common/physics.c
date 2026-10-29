@@ -1893,7 +1893,7 @@ int C2_HOOK_FASTCALL ScaleCollisionImpulses(tCollision_contact* pContacts, float
     float scale;
     float f;
 
-    total = 0.f;
+    total = gFLOAT_0058a768;
     for (i = 0; i < pNum_impacts; i++) {
         total += pImpulses[pIndices[i]];
     }
@@ -1926,7 +1926,7 @@ int C2_HOOK_FASTCALL ScaleCollisionImpulses(tCollision_contact* pContacts, float
         }
     }
     for (i = 0; i < pCount; i++) {
-        if (pImpulses[i] < 0.f) {
+        if (pImpulses[i] < gFLOAT_0058a768) {
             pImpulses[i] = 0.f;
         }
         pContacts[i].type = 9;
@@ -5859,7 +5859,7 @@ float C2_HOOK_FASTCALL PhysicsObjectWeightedSquareSum(tPhysics_object* pObject) 
 
     sum = gFLOAT_0058a768;
     for (i = 0; i < 3; i++) {
-        sum = sum + pObject->M * (pObject->v.v[i] * pObject->v.v[i]) + pObject->I.v[i] * (pObject->omega.v[i] * pObject->omega.v[i]);
+        sum += BR_MUL(pObject->M, BR_SQR(pObject->v.v[i])) + BR_MUL(pObject->I.v[i], BR_SQR(pObject->omega.v[i]));
     }
     return sum;
 }

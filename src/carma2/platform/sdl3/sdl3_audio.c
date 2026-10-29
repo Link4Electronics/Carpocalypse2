@@ -117,6 +117,10 @@ void PDS3Stop(void) {
     SDL_QuitSubSystem(SDL_INIT_AUDIO);
 }
 
+int PDS3Return0_B(void) {
+    return 0;
+}
+
 int PDS3InitCDA(void) {
     SDL_PathInfo path_info;
     const char* resolved_path;

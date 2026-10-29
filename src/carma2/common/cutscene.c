@@ -1,12 +1,16 @@
 #include "cutscene.h"
 
+#include "drmem.h"
 #include "errors.h"
+#include "flicplay.h"
 #include "globvars.h"
 #include "globvrbm.h"
 #include "graphics.h"
 #include "input.h"
 #include "sound.h"
 #include "utility.h"
+
+extern void C2_HOOK_FASTCALL FUN_00461980(int pSound_ID, tU32 pSound_time);
 
 #include <brender/brender.h>
 
@@ -442,6 +446,30 @@ void C2_HOOK_FASTCALL DoGameCompletedAnimation(void) {
 
     PlaySmackerFile("TOPRANK.SMK");
     WaitForNoKeys();
+}
+
+// FUNCTION: CARMA2_HW 0x0043f3a0
+void C2_HOOK_FASTCALL DoFeatureUnavailableInDemo(void) {
+    float sound_delay;
+
+    PrintMemoryDump(0, "BEFORE DEMO-ONLY SCREEN");
+    SuspendPendingFlic();
+    FadePaletteDown();
+    sound_delay = gFlic_sound_delay_not_in_demo;
+    gProgram_state.cut_scene = 1;
+    DRS3LoadSample(0x2136);
+    FUN_00461980(0x2136, PDGetTotalTime() - (int)(sound_delay * -1000.0f));
+    SetNonFatalAllocationErrors();
+    RunFlic(7);
+    ResetNonFatalAllocationErrors();
+    FUN_004835d0();
+    FadePaletteDown();
+    ClearEntireScreen();
+    DRS3ReleaseSound(0x2136);
+    FUN_00461980(0, 0);
+    gProgram_state.cut_scene = 0;
+    FadePaletteDown();
+    PrintMemoryDump(0, "AFTER DEMO-ONLY SCREEN");
 }
 
 // FUNCTION: CARMA2_HW 0x0043f5c0

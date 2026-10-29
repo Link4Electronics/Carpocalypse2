@@ -434,7 +434,9 @@ void C2_HOOK_FASTCALL SelectNextDInputJoystick(void) {
     }
 }
 
-// UNLABELED: CARMA2_HW 0x0045c420
+#pragma auto_inline(off)
+#pragma inline_depth(0)
+// FUNCTION: CARMA2_HW 0x0045c420
 void C2_HOOK_FASTCALL FUN_0045c420(void) {
     tButtonJoystickInfo* info;
 
@@ -446,6 +448,8 @@ void C2_HOOK_FASTCALL FUN_0045c420(void) {
         gUNK_00595f9c = info->field_0xd4;
     }
 }
+#pragma inline_depth()
+#pragma auto_inline(on)
 
 // FUNCTION: CARMA2_HW 0x00459fb0
 size_t C2_HOOK_FASTCALL GetCurrentJoystickCountButtons(void) {
