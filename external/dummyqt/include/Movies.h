@@ -20,9 +20,13 @@ enum {
 
 extern OSErr C2_HOOK_CDECL EnterMovies(void);
 
+extern OSErr C2_HOOK_CDECL GetMoviesError(void);
+
 extern OSErr C2_HOOK_CDECL CloseMovieFile(short resRefNum);
 
 extern void C2_HOOK_CDECL DisposeMovie(Movie theMovie);
+
+extern OSErr C2_HOOK_CDECL BeginMediaEdits(Media theMedia);
 
 extern OSErr C2_HOOK_CDECL EndMediaEdits(Media theMedia);
 

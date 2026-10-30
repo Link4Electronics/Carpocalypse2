@@ -19,11 +19,6 @@
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
 #define CARPOCALYPSE2_SQR(A) ((A) * (A))
 
-/* "Force first" (cf. DethRace DR_FF): for asm matching it can help to force
- * one operand/sub-expression to be evaluated first. Identity for codegen
- * except for evaluation order. */
-#define CARPOCALYPSE2_FORCE_FIRST(X) ((X) * 1)
-
 #define DEG_TO_RAD(degrees) ((degrees)*3.141592653589793 / 180.0)
 
 #define CARPOCALYPSE2_RGB555_B(X) ((X) & 0x1f)
@@ -77,5 +72,7 @@
 #define MIN_MESSAGES_CAPACITY 200
 #define MID_MESSAGES_CAPACITY 200
 #define MAX_MESSAGES_CAPACITY 200
+
+#define CARPOCALYPSE2_FORCE_FIRST(X) ((X) * 1)
 
 #endif // CARPOCALYPSE2_CARPOCALYPSE2_MACROS_H

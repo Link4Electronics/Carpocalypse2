@@ -9,6 +9,7 @@
 
 // GLOBAL: CARMA2_HW 0x006a3940
 extern tQueued_net_smash gQueued_net_smashes[50];
+extern int gINT_006a8294;
 extern int gSize_powerup_queue;
 extern tU8 gNon_car_spec_indices[100];
 extern br_scalar gSight_distance_squared;
@@ -79,6 +80,10 @@ void C2_HOOK_FASTCALL SetRoadTexturingLevel(tRoad_texturing_level pLevel);
 tWall_texturing_level C2_HOOK_FASTCALL GetWallTexturingLevel(void);
 
 void C2_HOOK_FASTCALL SetWallTexturingLevel(tWall_texturing_level pLevel);
+
+br_material* C2_HOOK_FASTCALL WallPerspToLinear(br_model* pModel, tU16 pFace);
+
+br_material* C2_HOOK_FASTCALL WallPerspToUntex(br_model* pModel, tU16 pFace);
 
 void C2_HOOK_FASTCALL SetCarSimplificationLevel(int pLevel);
 
@@ -377,12 +382,16 @@ void C2_HOOK_FASTCALL DisableFunkotronic(int pIndex);
 void C2_HOOK_FASTCALL EnableFunkotronic(int pIndex);
 
 void C2_HOOK_FASTCALL StopGroovidelic(br_actor* actor);
+void C2_HOOK_FASTCALL EnableGroovidelic(br_actor *pActor, tU32 pBlock_flags);
+
 
 tGroovidelic_spec* C2_HOOK_FASTCALL ActorsGroove(br_actor* pActor);
 
-void C2_HOOK_FASTCALL EnableGroovidelic(br_actor *pActor, tU32 pBlock_flags);
 
 void C2_HOOK_FASTCALL FUN_0047b390(br_device_pixelmap* pPixelmap, int pWidth, int pHeight, int pMask);
+
+
+void C2_HOOK_FASTCALL DisableGroovidelic(br_actor *pActor, tU32 pBlock_flags);
 
 br_uint_32 C2_HOOK_CDECL ZlibFsGetAttributes(void);
 

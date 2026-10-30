@@ -42,7 +42,6 @@ extern char* gPedTexturePath;
 extern int gCurrent_race_file_index;
 extern int gCountRaceGroups;
 extern tRace_group_spec* gRace_groups;
-extern tRace_group_spec* gRaceGroups2;
 
 extern tSlot_info gInitial_APO[3];
 extern tSlot_info gInitial_APO_potential[3];
@@ -78,6 +77,7 @@ extern int gMutant_tail_state;
 extern float gMass_mine;
 extern char gUnderwater_screen_name[32];
 extern int gWasted_explosion_chance;
+extern br_pixelmap* gHeadup_images[45];
 extern int gExplosion_sound_id;
 extern tExplosion_animation gExplosion_pix_animation_groups;
 extern int gCredits_checkpoint[3];
@@ -238,6 +238,10 @@ FILE* OldDRfopen(const char* pFilename, const char* pMode);
 FILE* C2_HOOK_FASTCALL DRfopen(const char* pFilename, const char* pMode);
 
 int C2_HOOK_FASTCALL PFfclose(FILE* pFile);
+
+#ifndef CARMA2_PF_FCLOSE_DECLARED
+#define CARMA2_PF_FCLOSE_DECLARED
+#endif
 
 br_size_t C2_HOOK_FASTCALL PFfread(void* buf, br_size_t size, unsigned int n, void* f);
 
@@ -500,5 +504,6 @@ void C2_HOOK_FASTCALL DisposeOpponentsCars(tRace_info* pRace_info);
 void C2_HOOK_FASTCALL GetPairOfFloatPercents(FILE* pF, float* pF1, float* pF2);
 
 void C2_HOOK_FASTCALL GetThreeFloatPercents(FILE* pF, float* pF1, float* pF2, float* pF3);
+
 
 #endif //CARPOCALYPSE2_LOADING_H

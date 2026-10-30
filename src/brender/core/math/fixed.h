@@ -64,6 +64,8 @@ br_fixed_ls C2_HOOK_CDECL BrFixedDivR(br_fixed_ls a, br_fixed_ls b);
 
 br_fixed_ls C2_HOOK_CDECL BrFixedDivF(br_fixed_ls a, br_fixed_ls b);
 
+br_fixed_ls C2_HOOK_CDECL FUN_00537304(br_fixed_ls a, br_fixed_ls b);
+
 br_fixed_ls C2_HOOK_CDECL BrFixedMulDiv(br_fixed_ls a, br_fixed_ls b, br_fixed_ls c);
 
 br_fixed_ls C2_HOOK_CDECL BrFixedMac2Div(br_fixed_ls a, br_fixed_ls b, br_fixed_ls c, br_fixed_ls d, br_fixed_ls e);

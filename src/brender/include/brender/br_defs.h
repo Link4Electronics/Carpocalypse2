@@ -58,6 +58,13 @@
 
 #define BR_SCALAR(x) ((br_scalar)(x))
 
+/* BRender floating-point scalar arithmetic (as in the original BRender headers). The parenthesised
+ * operands matter: VC5 schedules x87 code differently for BR_MUL(a, BR_SQR(b)) than for a * b * b. */
+#define BR_ADD(a, b) ((a) + (b))
+#define BR_SUB(a, b) ((a) - (b))
+#define BR_MUL(a, b) ((a) * (b))
+#define BR_SQR(a) ((a) * (a))
+
 #define BR_COLOUR_RGBA(r, g, b, a) \
     ((((unsigned int)(a)) << 24) | (((unsigned int)(r)) << 16) | (((unsigned int)(g)) << 8) | ((unsigned int)(b)))
 

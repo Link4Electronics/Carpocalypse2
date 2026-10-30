@@ -214,6 +214,11 @@ typedef struct state_stack {
     state_hidden hidden;
 
     br_uint_32 valid;
+#if defined(__vita__) && defined(BREND_DRIVER_GL)
+    /* Internal renderer state only; not a retail/game ABI field. Zero means
+     * no known light contents. Every light writer assigns a fresh revision. */
+    uint64_t light_revision;
+#endif
 } state_stack;
 
 typedef struct {
@@ -234,6 +239,10 @@ typedef struct {
         br_matrix4 view_to_model; /* Inverse of mv, needed for eye_model calc. */
         br_vector4 eye_m;
     } model;
+#if defined(__vita__) && defined(BREND_DRIVER_GL)
+    state_matrix model_input;
+    br_boolean model_input_valid;
+#endif
 } state_cache;
 
 typedef struct state_all {

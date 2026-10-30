@@ -635,7 +635,45 @@ typedef enum br_token {
     BRT_INTERLACE_B = 460,
     BRT_DITHER_B = 461,
     BRT_BLENDER_PROGRAM_P = 462,
+#ifndef CARPOCALYPSE2_MATCHING
+    /* port only: tokens used by the BRender 1.4-style glrend driver */
+    BRT_ALL = 463,
+    BRT_BLEND_PREMULTIPLIED = 464,
+    BRT_COLOUR_KEY_B = 465,
+    BRT_DEPTH_BIAS_F = 466,
+    BRT_DEPTH_BIAS_X = 467,
+    BRT_DIVERT_T = 468,
+    BRT_FACE_GROUP_COUNT_U32 = 469,
+    BRT_FOG_B = 470,
+    BRT_FORCE_BACK_B = 471,
+    BRT_HITHER_Z_F = 472,
+    BRT_HITHER_Z_X = 473,
+    BRT_MSAA_SAMPLES_I32 = 474,
+    BRT_OPENGL_CALLBACKS_P = 475,
+    BRT_OPENGL_FRAGMENT_SHADER_STR = 476,
+    BRT_OPENGL_PROFILE_CORE = 477,
+    BRT_OPENGL_PROFILE_COMPATIBILITY = 478,
+    BRT_OPENGL_PROFILE_ES = 479,
+    BRT_OPENGL_PROFILE_T = 480,
+    BRT_OPENGL_RENDERER_CSTR = 481,
+    BRT_OPENGL_VENDOR_CSTR = 482,
+    BRT_OPENGL_VERSION_CSTR = 483,
+    BRT_OPENGL_VERSION_MAJOR_U8 = 484,
+    BRT_OPENGL_VERSION_MINOR_U8 = 485,
+    BRT_OPENGL_VERTEX_SHADER_STR = 486,
+    BRT_PRELIGHTING_B = 487,
+    BRT_STORED_ONLY_B = 488,
+    BRT_TRIANGLES_DRAWN_COUNT_U32 = 489,
+    BRT_TRIANGLES_RENDERED_COUNT_U32 = 490,
+    BRT_VERTICES_RENDERED_COUNT_U32 = 491,
+    BRT_WINDOW_MONITOR_I32 = 492,
+    BRT_YON_Z_F = 493,
+    BRT_YON_Z_X = 494,
+    BRT_AMBIENT = 495,
+    _BRT_LAST_BUILTIN_TOKEN = BRT_AMBIENT,
+#else
     _BRT_LAST_BUILTIN_TOKEN = BRT_BLENDER_PROGRAM_P,
+#endif
     _BRT_MAX = 134217727,
 } br_token;
 
@@ -1154,6 +1192,7 @@ typedef struct br_associative_array_tag {
 } br_associative_array;
 
 #if 0
+#ifndef BR_DEVICE_PRIVATE
 typedef struct br_device {                               // size: 68
     br_uint_32 magic;                                    // @0
     char* identifier;                                    // @4
@@ -1173,6 +1212,9 @@ typedef struct br_device {                               // size: 68
     dev_clone_cbfn* clone;                               // @60
     dev_free_cbfn* free;                                 // @64
 } br_device;
+#else
+typedef struct br_device br_device;
+#endif
 #endif
 
 typedef struct br_outfcty_desc {
@@ -1188,11 +1230,16 @@ typedef struct br_outfcty_desc {
     br_boolean fullscreen;
 } br_outfcty_desc;
 
+#ifndef BR_RENDERER_FACILITY_PRIVATE
 typedef struct br_renderer_facility {
     struct br_renderer_facility_dispatch* dispatch;
 } br_renderer_facility;
+#else
+typedef struct br_renderer_facility br_renderer_facility;
+#endif
 
 typedef struct br_device_pixelmap_dispatch br_device_pixelmap_dispatch;
+#ifndef BR_DEVICE_PIXELMAP_PRIVATE
 typedef struct br_device_pixelmap {        // size: 0x44
     br_device_pixelmap_dispatch* dispatch; // @0x0
     char* pm_identifier;                   // @0x4
@@ -1216,6 +1263,9 @@ typedef struct br_device_pixelmap {        // size: 0x44
     void* pm_user;                         // @0x3c
     void* pm_stored;                       // @0x40
 } br_device_pixelmap;
+#else
+typedef struct br_device_pixelmap br_device_pixelmap;
+#endif
 
 typedef struct br_primitive_library {
     struct br_primitive_library_dispatch* dispatch;
@@ -1225,9 +1275,13 @@ typedef struct br_geometry br_geometry;
 
 typedef struct br_renderer_dispatch br_renderer_dispatch;
 
+#ifndef BR_RENDERER_PRIVATE
 typedef struct br_renderer {
     br_renderer_dispatch* dispatch;
 } br_renderer;
+#else
+typedef struct br_renderer br_renderer;
+#endif
 
 typedef struct br_material {            // size: 0x9c
     br_uint_32 _reserved;               // @0x0
@@ -1794,9 +1848,13 @@ typedef struct br_device_dispatch {
 } br_device_dispatch;
 
 // br_device. Not sure when this is used
+#ifndef BR_DEVICE_PRIVATE
 typedef struct br_device {
     br_device_dispatch* dispatch;
 } br_device;
+#else
+typedef struct br_device br_device;
+#endif
 
 typedef struct br_object_dispatch {
     void (C2_HOOK_CDECL*__reserved0)(br_object*);
@@ -1819,9 +1877,13 @@ typedef struct br_object_dispatch {
 } br_object_dispatch;
 
 typedef struct br_geometry_stored_dispatch br_geometry_stored_dispatch;
+#ifndef BR_GEOMETRY_STORED_PRIVATE
 typedef struct br_geometry_stored {
     br_geometry_stored_dispatch* dispatch;
 } br_geometry_stored;
+#else
+typedef struct br_geometry_stored br_geometry_stored;
+#endif
 
 typedef struct br_renderer_state_stored_dispatch {
     void (C2_HOOK_CDECL*__reserved0)(br_object*);
@@ -1843,14 +1905,22 @@ typedef struct br_renderer_state_stored_dispatch {
     br_error (C2_HOOK_CDECL*_queryAllSize)(br_object*, br_size_t*);
 } br_renderer_state_stored_dispatch;
 
+#ifndef BR_RENDERER_STATE_STORED_PRIVATE
 typedef struct br_renderer_state_stored {
     br_renderer_state_stored_dispatch* dispatch;
 } br_renderer_state_stored;
+#else
+typedef struct br_renderer_state_stored br_renderer_state_stored;
+#endif
 
 typedef struct br_buffer_stored_dispatch br_buffer_stored_dispatch;
+#ifndef BR_BUFFER_STORED_PRIVATE
 typedef struct br_buffer_stored {
     br_buffer_stored_dispatch* dispatch;
 } br_buffer_stored;
+#else
+typedef struct br_buffer_stored br_buffer_stored;
+#endif
 
 typedef struct br_device_pixelmap_dispatch {                                                                       // size: 0xe0
     void (C2_HOOK_CDECL*__reserved0)(br_object*);                                                                               // @0x0
@@ -2032,6 +2102,15 @@ typedef struct br_renderer_dispatch {
     /* br_error (C2_HOOK_CDECL *_testRender)(br_renderer*, br_token, brp_vertex*, brp_vertex*, brp_vertex*); */
     br_error (C2_HOOK_CDECL *_partQueryCapability)(br_renderer*, br_token, br_int_32, br_token_value*, br_size_t);
     br_error (C2_HOOK_CDECL *_stateQueryPerformance)(br_renderer*, br_fixed_lu*);
+#ifndef CARPOCALYPSE2_MATCHING
+    /* port only: BRender 1.4-style hooks (NULL in softrend; used by glrend) */
+    br_error (C2_HOOK_CDECL *_frameBegin)(br_renderer*);
+    br_error (C2_HOOK_CDECL *_frameEnd)(br_renderer*);
+    br_error (C2_HOOK_CDECL *_focusLossBegin)(br_renderer*);
+    br_error (C2_HOOK_CDECL *_focusLossEnd)(br_renderer*);
+    void (C2_HOOK_CDECL *_sceneBegin)(br_renderer*);
+    void (C2_HOOK_CDECL *_sceneEnd)(br_renderer*);
+#endif
 } br_renderer_dispatch;
 
 typedef struct br_geometry_stored_dispatch {
@@ -2058,9 +2137,13 @@ typedef struct br_geometry_stored_dispatch {
 
 typedef struct br_geometry_v1_model_dispatch br_geometry_v1_model_dispatch;
 
+#ifndef BR_GEOMETRY_V1_MODEL_PRIVATE
 typedef struct br_geometry_v1_model {
     struct br_geometry_v1_model_dispatch *dispatch;
 } br_geometry_v1_model;
+#else
+typedef struct br_geometry_v1_model br_geometry_v1_model;
+#endif
 
 struct br_geometry_v1_model_dispatch {
     void (C2_HOOK_CDECL *__reserved0)(br_object*);
@@ -2113,9 +2196,13 @@ typedef struct br_geometry_v1_buckets_dispatch {
     br_error (C2_HOOK_CDECL *_renderOnScreen)(br_geometry_v1_buckets*, br_renderer*, br_primitive**, br_int_32);
 } br_geometry_v1_buckets_dispatch;
 
+#ifndef BR_GEOMETRY_V1_BUCKETS_PRIVATE
 typedef struct br_geometry_v1_buckets {
     br_geometry_v1_buckets_dispatch* dispatch;
 } br_geometry_v1_buckets;
+#else
+typedef struct br_geometry_v1_buckets br_geometry_v1_buckets;
+#endif
 
 typedef struct br_file_struct_member {
     br_uint_16 type;
@@ -2180,9 +2267,13 @@ typedef struct br_file_enum {
 } br_file_enum;
 
 typedef struct br_device_clut_dispatch br_device_clut_dispatch;
+#ifndef BR_DEVICE_CLUT_PRIVATE
 typedef struct br_device_clut {
     br_device_clut_dispatch* dispatch;
 } br_device_clut;
+#else
+typedef struct br_device_clut br_device_clut;
+#endif
 
 typedef struct br_device_clut_dispatch {
     void (C2_HOOK_CDECL*__reserved0)(br_object*);
@@ -2354,9 +2445,13 @@ typedef struct br_renderer_facility_dispatch {
 } br_renderer_facility_dispatch;
 
 typedef struct br_output_facility_dispatch br_output_facility_dispatch;
+#ifndef BR_OUTPUT_FACILITY_PRIVATE
 typedef struct br_output_facility {
     br_output_facility_dispatch* dispatch;
 } br_output_facility;
+#else
+typedef struct br_output_facility br_output_facility;
+#endif
 
 typedef struct br_output_facility_dispatch {
     void (C2_HOOK_CDECL*__reserved0)(br_object*);

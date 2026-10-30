@@ -27,7 +27,7 @@ typedef struct gl_vertex_f {
 
 typedef struct gl_groupinfo {
     /*
-     * Count for glDrawElements(). Use GL_TRIANGLES.
+     * Index count for glDrawElements().
      */
     GLsizei count;
 
@@ -66,9 +66,12 @@ typedef struct br_geometry_stored {
     GLuint gl_vbo_posn;
     GLuint gl_vbo;
     GLuint gl_ibo;
+    GLenum gl_primitive;
 
     gl_groupinfo* groups;
 } br_geometry_stored;
+
+void StoredGLUseEdges(br_geometry_stored* self);
 
 #endif
 

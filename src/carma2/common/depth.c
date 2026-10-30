@@ -276,6 +276,91 @@ br_scalar C2_HOOK_FASTCALL CalculateWrappingMultiplier(br_scalar pValue, br_scal
     return (float)(trunc_k / CARPOCALYPSE2_TAU * pValue);
 }
 
+// C2PORT-NONMATCHING: best 35.44% | difftest PASS 2000 trials (spec difftest/specs/004459e0_DoHorizon.json) | reason x87-order/regalloc
+// FUNCTION: CARMA2_HW 0x004459e0
+void C2_HOOK_FAKE_THISCALL DoHorizon(br_pixelmap* pRender_buffer, undefined4 pEdx, br_actor* pCamera, br_matrix34* pCamera_to_world) {
+    br_pixelmap* sky_map;
+    br_camera* camera_data;
+    double half_fov;
+    double horizontal_scale;
+    float tangent_half_fov;
+    volatile br_angle horizontal_fov;
+    br_angle yaw;
+    int angle_scale;
+    int source_x;
+    int source_y;
+    int screen_y;
+    int copy_width;
+    int copied_width;
+    int remaining_width;
+    int top_height;
+    int bottom_height;
+    float pitch_cosine;
+    float pitch_sine;
+    float angle_fraction;
+    tU8 top_colour;
+    tU8 bottom_colour;
+
+    (void)pEdx;
+    copied_width = 0;
+    sky_map = gHorizon_material->colour_map;
+    camera_data = pCamera->type_data;
+    half_fov = (double)((tU16)camera_data->field_of_view >> 1) * (PI / 32768.0);
+    tangent_half_fov = (float)(sin(half_fov) / cos(half_fov));
+    horizontal_scale = (double)(camera_data->aspect * tangent_half_fov)
+            * sky_map->width / pRender_buffer->width;
+    horizontal_fov = BrRadianToAngle(atan(horizontal_scale));
+    horizontal_fov *= 2;
+    angle_scale = 0xfff0 / (int)(1.0f / ((double)horizontal_fov / 65536.0) + 0.5f);
+
+    yaw = BrRadianToAngle(atan2(pCamera_to_world->m[2][0], pCamera_to_world->m[2][2]));
+    yaw = (tU16)yaw;
+    angle_fraction = (float)((double)angle_scale * (1.0 / 65536.0));
+    source_x = (int)(-(((double)yaw * (1.0 / 65536.0)) / angle_fraction) * sky_map->width);
+    for (; source_x < 0; source_x += sky_map->width) {
+    }
+    for (; sky_map->width < source_x; source_x -= sky_map->width) {
+    }
+
+    pitch_cosine = sqrt(pCamera_to_world->m[2][0] * pCamera_to_world->m[2][0]
+            + pCamera_to_world->m[2][2] * pCamera_to_world->m[2][2]);
+    pitch_sine = pCamera_to_world->m[2][1] / pitch_cosine;
+    pitch_sine = pitch_sine / tangent_half_fov;
+    source_y = ((int)gSky_image_underground * sky_map->height) / (int)gSky_image_height;
+    source_y -= (int)(pitch_sine * pRender_buffer->height * 0.5f);
+    source_y -= sky_map->height;
+    screen_y = source_y;
+
+    if (pRender_buffer->width != 0) {
+        do {
+            remaining_width = sky_map->width - source_x;
+            copy_width = pRender_buffer->width - copied_width;
+            if (remaining_width <= copy_width) {
+                copy_width = remaining_width;
+            }
+            DRPixelmapRectangleCopy(pRender_buffer, copied_width - pRender_buffer->origin_x,
+                    screen_y, sky_map, source_x - sky_map->origin_x, -sky_map->origin_y,
+                    copy_width, sky_map->height);
+            copied_width += copy_width;
+            source_x = 0;
+        } while (copied_width < pRender_buffer->width);
+    }
+
+    top_height = screen_y + pRender_buffer->origin_y;
+    if (top_height > 0) {
+        top_colour = *(tU8*)sky_map->pixels;
+        DRPixelmapRectangleFill(pRender_buffer, -pRender_buffer->origin_x, -pRender_buffer->origin_y,
+                pRender_buffer->width, top_height, top_colour);
+    }
+
+    bottom_height = pRender_buffer->height - screen_y - sky_map->height - pRender_buffer->origin_y;
+    if (bottom_height > 0) {
+        bottom_colour = *((tU8*)sky_map->pixels + sky_map->row_bytes * (sky_map->height - 1));
+        DRPixelmapRectangleFill(pRender_buffer, -pRender_buffer->origin_x,
+                screen_y + sky_map->height, pRender_buffer->width, bottom_height, bottom_colour);
+    }
+}
+
 // FUNCTION: CARMA2_HW 0x00445e20
 void C2_HOOK_FASTCALL MungeSkyModel(br_actor* pCamera, br_model* pModel) {
     br_camera* camera_data;
@@ -426,6 +511,27 @@ void C2_HOOK_FASTCALL SkyTextureChanged(void) {
 void C2_HOOK_FASTCALL SetSkyColour(br_colour c) {
 
     gHorizon_material->colour = c;
+}
+
+// FUNCTION: CARMA2_HW 0x004472c0
+void C2_HOOK_FASTCALL FUN_004472c0(br_model* pModel, tPMFMCB* pCallback) {
+    tU16 f;
+    br_material* possible_mat;
+    br_material* new_mat;
+
+    new_mat = NULL;
+    for (f = 0; f < pModel->nfaces; f++) {
+        if (pModel->faces[f].material != NULL) {
+            possible_mat = pCallback(pModel, f);
+            if (possible_mat != NULL) {
+                pModel->faces[f].material = possible_mat;
+                new_mat = possible_mat;
+            }
+        }
+    }
+    if (new_mat != NULL) {
+        BrModelUpdate(pModel, BR_MODU_ALL);
+    }
 }
 
 // FUNCTION: CARMA2_HW 0x00447220

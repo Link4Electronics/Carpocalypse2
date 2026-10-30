@@ -34,7 +34,15 @@
 #include "carpocalypse2_types.h"
 
 #include "c2_string.h"
+
+#include "c2_stdio.h"
+
+#include "c2_stdlib.h"
+
 #include <ctype.h>
+
+#include <math.h>
+
 extern void C2_HOOK_FASTCALL DisplayJoystickSettings(tFrontend_spec *pFrontend);
 extern int C2_HOOK_FASTCALL NetInitialise(void);
 extern void C2_HOOK_FASTCALL AboutToLoadFirstCar(void);
@@ -553,6 +561,101 @@ int gFrontend_controls_indices[15] = {
 int C2_HOOK_FASTCALL temp(tFrontend_spec* pFrontend) {
 
     return 0;
+}
+
+// GLOBAL: CARMA2_HW 0x0058a050
+const double gDouble_0058a050 = 0.523470938205719;
+
+// GLOBAL: CARMA2_HW 0x0058a058
+const double gDouble_0058a058 = 1.2;
+
+// GLOBAL: CARMA2_HW 0x0058a060
+const double gDouble_0058a060 = 0.1;
+
+// GLOBAL: CARMA2_HW 0x0058a068
+const double gDouble_0058a068 = 0.577;
+
+// C2PORT-NONMATCHING: best 79.26% | difftest PASS 2000 trials (spec difftest/specs/00466460_FUN_00466460.json) | reason x87-order-stack-layout
+// FUNCTION: CARMA2_HW 0x00466460
+void C2_HOOK_FASTCALL FUN_00466460(br_actor* pActor, int pX, int pY) {
+    float local_18[6];
+    float width;
+    float height;
+    float depth;
+    br_actor* world;
+    br_actor* camera_actor;
+    br_actor* light_actor;
+    br_pixelmap* pixelmap;
+    volatile float extent;
+    float distance_f;
+    volatile float camera_y;
+    double distance;
+
+    if (pActor == NULL) {
+        return;
+    }
+    BrActorToBounds((br_bounds*)local_18, pActor);
+    width = local_18[3] - local_18[0];
+    height = local_18[4] - local_18[1];
+    depth = local_18[5] - local_18[2];
+    BrMatrix34PostRotateY(&pActor->t.t.mat, 0x71c);
+
+    world = BrActorAllocate(BR_ACTOR_NONE, NULL);
+    camera_actor = BrActorAllocate(BR_ACTOR_CAMERA, NULL);
+    light_actor = BrActorAllocate(BR_ACTOR_LIGHT, NULL);
+
+    ((br_camera*)camera_actor->type_data)->type = BR_CAMERA_PERSPECTIVE_FOV_OLD;
+    ((br_camera*)camera_actor->type_data)->field_of_view = 0x1554;
+    ((br_camera*)camera_actor->type_data)->hither_z = 0.1f;
+    ((br_camera*)camera_actor->type_data)->yon_z = gCamera_yon;
+    ((br_light*)light_actor->type_data)->type = BR_LIGHT_DIRECT;
+
+    BrMatrix34PostRotateX(&light_actor->t.t.mat, 0xfc72);
+    BrMatrix34PostRotateY(&light_actor->t.t.mat, 0xc004);
+
+    ((br_light*)light_actor->type_data)->colour = 0xffffff;
+    ((br_light*)light_actor->type_data)->attenuation_c = 0.5f;
+
+    if (width > height) {
+        if (width > depth) {
+            extent = width;
+        } else {
+            extent = depth;
+        }
+    } else {
+        if (depth >= height) {
+            extent = depth;
+        } else {
+            extent = height;
+        }
+    }
+    distance = (extent / (sin(gDouble_0058a050) / cos(gDouble_0058a050))) * gDouble_0058a058;
+    distance_f = (float)distance;
+    if (distance_f <= gDouble_0058a060) {
+        distance = gDouble_0058a060;
+    } else {
+        distance = distance_f;
+    }
+    camera_y = (float)(distance * gDouble_0058a068);
+    BrMatrix34Translate(&camera_actor->t.t.mat, 0.f, camera_y, (float)distance);
+    BrMatrix34PreRotateX(&camera_actor->t.t.mat, 0xeaac);
+
+    BrActorAdd(world, camera_actor);
+    BrActorAdd(world, light_actor);
+    BrLightEnable(light_actor);
+
+    pixelmap = BrPixelmapAllocateSub(gBack_screen, pX + 0x14, pY + 0x5a, 100, 0x3c);
+    BrPixelmapFill(gDepth_buffer, (br_colour)-1);
+    BrPixelmapFill(pixelmap, 0);
+    BrZbsSceneRenderBegin(world, camera_actor, pixelmap, gDepth_buffer);
+    BrZbsSceneRenderAdd(pActor);
+    BrZbsSceneRenderEnd();
+
+    BrActorRemove(camera_actor);
+    BrActorFree(camera_actor);
+    BrActorRemove(light_actor);
+    BrActorFree(light_actor);
+    BrActorFree(world);
 }
 
 // int C2_HOOK_FASTCALL GetItemAtMousePos(tFrontend_spec *pFrontend, int pX, int pY); // Moved for inlining purposes

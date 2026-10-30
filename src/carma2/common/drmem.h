@@ -3,7 +3,6 @@
 
 #include "brender/br_types.h"
 
-
 #include "c2_hooks.h"
 #include "brender/brender.h"
 
@@ -14,6 +13,8 @@ extern void C2_HOOK_FASTCALL ResetNonFatalAllocationErrors(void);
 extern void C2_HOOK_FASTCALL MAMSInitMem(void);
 
 extern void C2_HOOK_FASTCALL PrintMemoryDump(int pFlags, char* pTitle);
+
+extern void C2_HOOK_FASTCALL TouchMemoryPages(void* pMemory, br_size_t pSize);
 
 extern void* C2_HOOK_CDECL DRStdlibAllocate(br_size_t size, br_uint_8 type);
 
@@ -39,7 +40,6 @@ extern void C2_HOOK_FASTCALL CheckMemory(void);
 
 #include "c2_hooks.h"
 
-
 extern br_allocator gAllocator;
 
 extern int gNon_fatal_allocation_errors;
@@ -50,6 +50,5 @@ int C2_HOOK_FASTCALL AllocationErrorsAreFatal(void);
 
 void C2_HOOK_FASTCALL CloseGlobalPackedFile(void);
 
-void C2_HOOK_FASTCALL TouchMemoryPages(void* pMemory, br_size_t pSize);
 
 #endif // GUARD_DRMEM_H

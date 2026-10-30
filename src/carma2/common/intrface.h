@@ -32,7 +32,6 @@ extern void C2_HOOK_FASTCALL SelectThisItemIn(tFrontend_spec* pFrontend, int pGr
 
 #include "carpocalypse2_types.h"
 
-
 extern int gAlways_typing;
 
 extern int gDisabled_count;

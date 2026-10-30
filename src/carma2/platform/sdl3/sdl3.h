@@ -73,7 +73,7 @@ extern void PDEnterDebugger(const char *pStr);
 
 extern int PDFileUnlock(const char *pThe_path);
 
-extern void PDEnumPath(const char* path, tEnumPathCallback pCallback, void* data);
+extern int PDEnumPath(const char* path, tEnumPathCallback pCallback, void* data);
 
 extern int PDmkdir(const char *path);
 

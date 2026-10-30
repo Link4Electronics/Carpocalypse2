@@ -3,7 +3,6 @@
 
 #include "c2_stdio.h"
 
-
 #include "carpocalypse2_types.h"
 #include "brender/brender.h"
 #include "s3/s3.h"
@@ -36,6 +35,7 @@ extern int C2_HOOK_FASTCALL DRS3ReleaseSound(int pSound_id);
 
 extern int C2_HOOK_FASTCALL DRS3StopSound(tS3_sound_tag pSound_tag);
 
+
 extern void C2_HOOK_FASTCALL DRS3Service(void);
 
 extern int C2_HOOK_FASTCALL DRS3SoundStillPlaying(int pTag);
@@ -59,6 +59,8 @@ extern void C2_HOOK_FASTCALL InitSoundSources(void);
 extern void C2_HOOK_FASTCALL DisposeSoundSources(void);
 
 extern int C2_HOOK_FASTCALL DRS3StartSound3D(tS3_outlet* pOutlet, int pSound_id, const br_vector3* pInitial_position, const br_vector3* pInitial_velocity, int pRepeats, int pVolume, int pPitch, int pSpeed);
+
+extern tS3_sound_tag C2_HOOK_FASTCALL DRS3StartSoundFromSource3(tS3_sound_source* pSource, tS3_sound_id pSound, tS3_repeats pRepeats, tS3_volume pVolume, tS3_pitch pPitch, tS3_speed pSpeed);
 
 extern void C2_HOOK_FASTCALL MungeEngineNoise(void);
 
@@ -113,7 +115,6 @@ extern void C2_HOOK_FASTCALL SetDefaultSoundFolderName(void);
 #include "c2_stdio.h"
 
 #include "carpocalypse2_types.h"
-
 
 extern int gSound_detail_level;
 

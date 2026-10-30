@@ -3,6 +3,16 @@
 
 #include "c2_hooks.h"
 
+typedef struct tQuickTime_name_code {
+    char name[32];
+    unsigned int code;
+} tQuickTime_name_code;
+
+extern const tQuickTime_name_code gQuickTime_compressor_options[8];
+extern const tQuickTime_name_code gQuickTime_quality_options[6];
+extern int gQuickTime_compressor_code;
+extern int gQuickTime_quality_code;
+
 extern char gQuick_time_temp_path[256];
 extern char gQuick_time_movie_path_stub[256];
 extern char gQuick_time_banner_texture_name[256];
@@ -27,17 +37,20 @@ extern char gQuick_time_banner_texture_name[256];
 
 // MovieStartNewMovie
 
-extern int C2_HOOK_FASTCALL MovieStopRecordingAndSave(void);
+// MovieStopRecordingAndSave
 
-// extern void C2_HOOK_FASTCALL FreeOffQTshite(void);
+// FreeOffQTshite
 
 extern void C2_HOOK_CDECL InitQuickTimeStuff(void);
+extern int C2_HOOK_FASTCALL MovieStopRecordingAndSave(void);
+
+
 
 extern void C2_HOOK_FASTCALL SetQuickTimeDefaults(void);
 
-// MovieRecordButtonPressed
+void C2_HOOK_FASTCALL MovieRecordButtonPressed(void);
 
-extern int C2_HOOK_FASTCALL MovieStopRecordingIfNecessary(void);
+int C2_HOOK_FASTCALL MovieStopRecordingIfNecessary(void);
 
 // GenerateOneMovieFrame
 
@@ -58,5 +71,7 @@ extern int C2_HOOK_FASTCALL MovieStopRecordingIfNecessary(void);
 // TrapS3SoundOutput
 
 // FreeS3SoundOutput
+
+void C2_HOOK_FASTCALL NoOp_004e1c30(void);
 
 #endif // GUARD_MOVIE_H

@@ -11,6 +11,8 @@
 #include "carpocalypse2_macros.h"
 #include "carpocalypse2_types.h"
 
+#include <math.h>
+
 #include "c2_string.h"
 #include "joystick.h"
 
@@ -28,6 +30,16 @@
 #include "win32/win32_dinput.h"
 #endif
 #include <string.h>
+
+extern void C2_HOOK_FASTCALL ChangeHeadupFont(int pHeadup_index, int pFont);
+extern void C2_HOOK_FASTCALL ChangeHeadupText(int pHeadup_index, char* pText);
+extern void C2_HOOK_FASTCALL FUN_0045a0c0(void);
+extern const char* C2_HOOK_FASTCALL GetCurrentJoystickName(void);
+
+// GLOBAL: CARMA2_HW 0x00595f84
+int gUNK_00595f84 = 7500;
+int C2_HOOK_FASTCALL InsertHeadupText(tHeadup_text_buffer* pText_buffer, tHeadup_text* pText, int pSortAlphabetically);
+
 #include <stdio.h>
 extern void C2_HOOK_FASTCALL ChangeHeadupFont(int pHeadup_index, int pFont);
 extern void C2_HOOK_FASTCALL ChangeHeadupText(int pHeadup_index, char* pText);
@@ -69,6 +81,28 @@ typedef struct tJoystick_preference_node {
 
 // GLOBAL: CARMA2_HW 0x00655e5c
 float Force_feedback_lower_limit = 1.5f;
+
+// GLOBAL: CARMA2_HW 0x00655e58
+float gForce_feedback_upper_limit = 2.7f;
+
+// GLOBAL: CARMA2_HW 0x00589f80
+const double gJoystick_collision_force_scale = 10000.0;
+
+// GLOBAL: CARMA2_HW 0x00589f88
+const float gJoystick_collision_force_min_length = 0.0000002384185791015625f;
+
+// GLOBAL: CARMA2_HW 0x00589f90
+const double gJoystick_collision_force_one = 1.0;
+
+// GLOBAL: CARMA2_HW 0x00589f98
+const float gJoystick_collision_force_one_f = 1.0f;
+
+// GLOBAL: CARMA2_HW 0x00589f9c
+const float gJoystick_collision_force_zero_f = 0.0f;
+
+// GLOBAL: CARMA2_HW 0x00589fa0
+const double gJoystick_collision_force_radians_to_degrees = 57.29577951308;
+
 // GLOBAL: CARMA2_HW 0x0079d8a0
 tHeadup_text_buffer gJoystick_headup_buffer_0079d8a0;
 
@@ -104,12 +138,10 @@ extern int gINT_0068b8e4;
 extern int gINT_0068b8e8;
 extern int gRace_head_ups[22];
 
-float gForce_feedback_upper_limit = 2.7f;
 float gOriginal_joystick_x;
 float gOriginal_joystick_y;
 int gOriginal_joystick_fbb;
 int gOriginal_joystick_dpad;
-int gOrig_joystick_index;
 // GLOBAL: CARMA2_HW 0x00596308
 int gINT_00596308 = -1;
 
@@ -440,6 +472,36 @@ void C2_HOOK_FASTCALL InitJoysticks(void) {
     PDInitJoysticks();
 }
 
+typedef struct {
+    const char* name;
+    int key;
+} tJoystick_action_entry;
+
+// GLOBAL: CARMA2_HW 0x00596250
+tJoystick_action_entry gJoystick_actions[21] = {
+    { "Recover", 0x3c },
+    { "Reapir", 0x2d },
+    { "Hand Brake", 0x36 },
+    { "Use Powerup", 0x3d },
+    { "Next Powerup", 0x40 },
+    { "Prev Powerup", 0x3f },
+    { "Wheel Spin", 0x38 },
+    { "Map", 0x39 },
+    { "Cockpit View", 0x2e },
+    { "Buy Armour", 0x43 },
+    { "Buy Power", 0x44 },
+    { "Buy Offensive", 0x45 },
+    { "Target Lock", 0x48 },
+    { "Cycle Target", 0x49 },
+    { "Camera Mode", 0x4b },
+    { "Doors", 0x4a },
+    { "Horn", 0x3b },
+    { "Accelerate", 0x31 },
+    { "Brake", 0x32 },
+    { "Left", 0x2f },
+    { "Right", 0x30 },
+};
+
 // FUNCTION: CARMA2_HW 0x0045c8d0
 float C2_HOOK_FASTCALL GetJoystickX(void) {
 
@@ -464,10 +526,57 @@ float C2_HOOK_FASTCALL GetJoystickY(void) {
     return gJoystick_y_throttle;
 }
 
-// UNLABELED: CARMA2_HW 0x0045c910
-void C2_HOOK_FASTCALL FUN_0045c910(tCar_spec* pCar, br_vector3* pPoint, br_vector3* pForce, float pImpulse) {
+// C2PORT-NONMATCHING: best 50.55% | difftest PASS 2000 trials (spec difftest/specs/0045c910_FUN_0045c910.json) | reason x87-order
+// FUNCTION: CARMA2_HW 0x0045c910
+void C2_HOOK_FASTCALL FUN_0045c910(tCar_spec* pCar, const br_vector3* pPosition, br_vector3* pForce, float pMagnitude) {
+    float force_length;
+    float inverse_force_length;
+    br_vector3 normalized_position;
+    register int angle_degrees;
+    int magnitude;
+    float force_x;
+    float force_y;
+    float force_z;
 
-    NOT_IMPLEMENTED();
+    (void)pForce;
+    (void)pCar;
+
+    if (pMagnitude > gForce_feedback_upper_limit) {
+        pMagnitude = gForce_feedback_upper_limit;
+    }
+    if (pMagnitude < Force_feedback_lower_limit) {
+        pMagnitude = Force_feedback_lower_limit;
+    }
+    magnitude = (int)(pMagnitude * (gJoystick_collision_force_scale / gForce_feedback_upper_limit));
+
+    force_x = pPosition->v[0];
+    force_y = pPosition->v[1];
+    force_z = pPosition->v[2];
+    force_length = sqrt(force_x * force_x + force_y * force_y + force_z * force_z);
+    if (force_length > gJoystick_collision_force_min_length) {
+        inverse_force_length = gJoystick_collision_force_one / force_length;
+        normalized_position.v[0] = force_x * inverse_force_length;
+        normalized_position.v[1] = force_y * inverse_force_length;
+        normalized_position.v[2] = force_z * inverse_force_length;
+    }
+    else {
+        normalized_position.v[0] = gJoystick_collision_force_one_f;
+        normalized_position.v[1] = gJoystick_collision_force_zero_f;
+        normalized_position.v[2] = gJoystick_collision_force_zero_f;
+    }
+
+    angle_degrees = (int)(acos(-(double)normalized_position.v[2]) * gJoystick_collision_force_radians_to_degrees);
+    if (angle_degrees < 45) {
+        angle_degrees = 90 - angle_degrees;
+    }
+    if (angle_degrees > 135) {
+        angle_degrees = 270 - angle_degrees;
+    }
+    if (normalized_position.v[0] <= 0.0f) {
+        angle_degrees = 360 - angle_degrees;
+    }
+
+    SetJoystickFFBCollisionForce(magnitude, angle_degrees * 100);
 }
 
 // FUNCTION: CARMA2_HW 0x0045c7f0
@@ -535,6 +644,8 @@ void C2_HOOK_FASTCALL SetJoystickFFBGain(int pValue) {
     }
 }
 
+extern void C2_HOOK_FASTCALL SelectNextDInputJoystick(void);
+
 // FUNCTION: CARMA2_HW 0x0045c570
 void C2_HOOK_FASTCALL SetJoystickDPadEnabled(int pEnabled) {
     tButtonJoystickInfo* joystick_info;
@@ -584,6 +695,8 @@ void C2_HOOK_FASTCALL Joystick_BackupSettings(void) {
     gJoystick_index = gOrig_joystick_index;
 }
 
+int C2_HOOK_FASTCALL InsertHeadupText(tHeadup_text_buffer* pText_buffer, tHeadup_text* pText, int pSortAlphabetically);
+
 // FUNCTION: CARMA2_HW 0x0045bd50
 void C2_HOOK_FASTCALL EnableJoysticks(void) {
     tButtonJoystickInfo* info;
@@ -607,7 +720,7 @@ void C2_HOOK_FASTCALL DisableJoysticks(void) {
 }
 
 // FUNCTION: CARMA2_HW 0x0045b0a0
-void C2_HOOK_FASTCALL FUN_0045b0a0(tHeadup_text_buffer* pText_buffer) {
+void C2_HOOK_FASTCALL AdjustHeadupTextBuffer(tHeadup_text_buffer* pText_buffer) {
     tHeadup_text* node;
     tHeadup_text* current;
     int index;
@@ -811,7 +924,7 @@ void C2_HOOK_FASTCALL MungeJoystickHeadups(void) {
             }
         }
 munge:
-        FUN_0045b0a0(&gJoystick_headup_buffer_0079d8a0);
+        AdjustHeadupTextBuffer(&gJoystick_headup_buffer_0079d8a0);
         headup_text = gJoystick_headup_buffer_0079d8a0.field_0x4;
         joystick_info = PDGetCurrentJoystickData();
         if (joystick_info == NULL) {

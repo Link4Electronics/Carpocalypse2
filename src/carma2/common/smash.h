@@ -14,13 +14,13 @@ extern void C2_HOOK_FASTCALL InitExplosions(void);
 
 // MungeExplosions
 
-extern void C2_HOOK_FASTCALL CopyExplosionData(int pIndex, tExplosion* pExplosion);
+// CopyExplosionData
 
 // DoExplosionette
 
 // Explode
 
-extern void C2_HOOK_FASTCALL RemoveExplosions(tCar_spec* pCar_spec);
+// RemoveExplosions
 
 // CalcRandomPointBetween
 
@@ -55,6 +55,11 @@ extern void C2_HOOK_FASTCALL RemoveExplosions(tCar_spec* pCar_spec);
 // DoAward
 
 extern void C2_HOOK_FASTCALL DoSpillage(tSlick_spec* pSlick, br_actor* pActor);
+extern void C2_HOOK_FASTCALL CopyExplosionData(int pIndex, tExplosion* pExplosion);
+
+
+extern void C2_HOOK_FASTCALL RemoveExplosions(tCar_spec* pCar_spec);
+
 
 extern void C2_HOOK_FASTCALL FreeConnotations(tConnotations* pConnotations, int pKeep_actors);
 
@@ -146,9 +151,9 @@ extern void C2_HOOK_FASTCALL FreeConnotations(tConnotations* pConnotations, int 
 
 // KillFragment
 
-extern void C2_HOOK_FASTCALL AddRepairAnimationToQueue(tCar_spec* pCar_spec, tCar_crush_smashable_part* pSmashable);
+// AddRepairAnimationToQueue
 
-extern void C2_HOOK_FASTCALL RepairSmash(tCar_spec* pCar_spec, tCar_crush_buffer_entry* pSmash_data);
+// RepairSmash
 
 // TotallyRepairSmash
 
@@ -161,6 +166,8 @@ extern void C2_HOOK_FASTCALL RepairSmash(tCar_spec* pCar_spec, tCar_crush_buffer
 // ReadPowerupSmash
 
 extern void C2_HOOK_FASTCALL InitSmashing(void);
+extern void C2_HOOK_FASTCALL AddRepairAnimationToQueue(tCar_spec* pCar_spec, tCar_crush_smashable_part* pSmashable);
+
 
 // VerySimpleRotate
 
@@ -176,8 +183,7 @@ extern void C2_HOOK_FASTCALL InitSmashing(void);
 
 extern void C2_HOOK_FASTCALL CleanUpSmashStuff(void);
 
-// DisposeSmashData
-void C2_HOOK_FASTCALL DisposeSmashData(tCar_crush_buffer_entry* pCrush_data);
+extern void C2_HOOK_FASTCALL DisposeSmashData(tCar_crush_buffer_entry* pCrush_data);
 
 // DoBackwardShrapnel
 
@@ -255,10 +261,9 @@ void C2_HOOK_FASTCALL DisposeSmashData(tCar_crush_buffer_entry* pCrush_data);
 
 // LinkSmashies
 
-// RepairModels (static in smash.c)
+// RepairModels
 
-// FUNCTION: CARMA2_HW 0x004f5a00
-extern intptr_t C2_HOOK_FASTCALL RepairAllSmashes(tCar_spec* pCar_spec);
+// RepairAllSmashes
 
 // SmashEverythingCB
 
@@ -292,13 +297,12 @@ extern void C2_HOOK_FASTCALL SmashRemoveSomeFaces(br_model* pModel, int pCount);
 
 // TurnOffSmashDecal
 
-void C2_HOOK_FASTCALL TurnOnSmashDecal(int pIndex);
-
-void C2_HOOK_FASTCALL TurnOffSmashDecal(int pIndex);
-
 // ChangeSmashTexture
 
 void C2_HOOK_FASTCALL QueueNetSmash(tQueued_net_smash* pSmash);
+void C2_HOOK_FASTCALL TurnOnSmashDecal(int pIndex);
+
+
 
 void C2_HOOK_FASTCALL DoNetSmash(tQueued_net_smash* pSmash);
 
@@ -311,5 +315,12 @@ void C2_HOOK_FASTCALL DoNetSmash(tQueued_net_smash* pSmash);
 // ReceivedSmashShraps
 
 // MungeSmashEdgeTriggers
+
+void C2_HOOK_FASTCALL TurnOffSmashDecal(int pIndex);
+
+// FUNCTION: CARMA2_HW 0x004f5a00
+extern intptr_t C2_HOOK_FASTCALL RepairAllSmashes(tCar_spec* pCar_spec);
+
+extern void C2_HOOK_FASTCALL RepairSmash(tCar_spec* pCar_spec, tCar_crush_buffer_entry* pSmash_data);
 
 #endif // GUARD_SMASH_H

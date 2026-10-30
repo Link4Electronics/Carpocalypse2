@@ -4,7 +4,15 @@
 #include "physics.h"
 #include "globvars.h"
 #include "compress.h"
+
+#include "smash.h"
+
 #include "piping.h"
+
+#include "world.h"
+
+#include "car.h"
+
 #include "spark.h"
 #include "utility.h"
 #include "carpocalypse2_macros.h"
@@ -75,6 +83,21 @@ br_scalar gChance_of_inverse_buckle;
 
 // GLOBAL: CARMA2_HW 0x0067be78
 br_vector3 gBatty_gravity;
+// GLOBAL: CARMA2_HW 0x00589a70
+const br_scalar gFloat_00589a70 = 0.005f;
+
+// GLOBAL: CARMA2_HW 0x00589a78
+const br_scalar gFloat_00589a78 = 47.6099967956543f;
+
+extern br_scalar gMax_crush_dist_sq;
+extern br_scalar gCrushZero;
+extern br_scalar gCrushSqrtHalf;
+extern const br_scalar gFLOAT_00589a54;
+extern br_scalar gFLOAT_00589a5c;
+extern const double gDOUBLE_00589a60;
+int C2_HOOK_FASTCALL TooFarToCrush(const br_model* pModel, int pCount, const br_vector3* pVertices, float pMax_dist_sq);
+void C2_HOOK_FASTCALL FUN_004c7f40(br_model* pModel, br_vector3* pSrc, const float* pScalars);
+
 // FUNCTION: CARMA2_HW 0x00429bb0
 
 void C2_HOOK_FASTCALL ReadCrushSettings(FILE* pF) {
@@ -359,6 +382,141 @@ void C2_HOOK_FASTCALL DisposeVertexData(tModel_detail_vertex_data* pVertex_data)
     if (pVertex_data != NULL) {
         BrMemFree(pVertex_data);
     }
+}
+
+// C2PORT-NONMATCHING: best 48.93% | difftest PASS 2000 trials (spec difftest/specs/0042c540_SimpleCrushModel.json) | reason x87-order-stack-layout
+// FUNCTION: CARMA2_HW 0x0042c540
+void C2_HOOK_FASTCALL SimpleCrushModel(br_model* pModel, int pCount, float* pPoints, float* pDir, float* pBounds) {
+    float unique[12];
+    float weights[1024];
+    float* pCur;
+    float* pNext;
+    float* pOut;
+    float* pVert;
+    int remaining;
+    int count;
+    int axis;
+    int found;
+    int k;
+    float len;
+    float scale;
+    float norm_x;
+    float norm_y;
+    float bend;
+    float a;
+    float b;
+    float dist_sq;
+    tU16 v;
+
+    if (pModel == NULL) {
+        return;
+    }
+    if (pModel->nvertices > 0x400) {
+        PDFatalError("SimpleCrushModel can't cope with that many vertices");
+    }
+    if (pCount <= 0) {
+        return;
+    }
+    if (pCount > 4) {
+        pCount = 4;
+    }
+
+    count = 1;
+    unique[0] = pPoints[0];
+    unique[1] = pPoints[1];
+    unique[2] = pPoints[2];
+    if (pCount > 1) {
+        remaining = pCount - 1;
+        pCur = pPoints;
+        pOut = unique + 4;
+        do {
+            pNext = pCur + 3;
+            found = 0;
+            for (k = 0; k < count; k++) {
+                float* pU = unique + k * 3;
+                if ((float)fabs(pU[0] - pNext[0]) < gFloat_00589a70 && (float)fabs(pU[1] - pNext[1]) < gFloat_00589a70 &&
+                    (float)fabs(pU[2] - pNext[2]) < gFloat_00589a70) {
+                    found = 1;
+                    break;
+                }
+            }
+            if (!found) {
+                pOut[-1] = pNext[0];
+                pOut[0] = pNext[1];
+                pOut[1] = pNext[2];
+                pOut += 3;
+                count++;
+            }
+            remaining--;
+            pCur = pNext;
+        } while (remaining != 0);
+    }
+
+    if (TooFarToCrush(pModel, count, (br_vector3*)unique, gMax_crush_dist_sq) != 0) {
+        return;
+    }
+
+    len = (float)sqrt(pDir[0] * pDir[0] + pDir[2] * pDir[2] + pDir[1] * pDir[1]);
+    if (len <= gFLOAT_00589a5c) {
+        norm_y = gCrushZero;
+        norm_x = gFLOAT_00589a54;
+    } else {
+        scale = (float)gDOUBLE_00589a60 / len;
+        norm_y = pDir[1] * scale;
+        norm_x = pDir[0] * scale;
+    }
+
+    if ((float)fabs(norm_x) <= gCrushSqrtHalf) {
+        axis = 1;
+        if ((float)fabs(norm_y) <= gCrushSqrtHalf) {
+            axis = 2;
+        }
+    } else {
+        axis = 0;
+    }
+
+    v = 0;
+    if (pModel->nvertices != 0) {
+        do {
+            pVert = (float*)((tU8*)pModel->vertices + (tU32)v * 0x28);
+            dist_sq = CrushShapeDistSq(pVert, count, unique);
+            if (dist_sq <= gMax_crush_dist_sq) {
+                bend = gFLOAT_00589a54 - (float)sqrt(dist_sq * gFloat_00589a78);
+            } else {
+                bend = gCrushZero;
+            }
+            weights[v] = bend;
+            if (bend != gCrushZero) {
+                a = (pBounds[axis] - pVert[axis]) / pDir[axis];
+                b = (pBounds[axis + 3] - pVert[axis]) / pDir[axis];
+                if (b <= a) {
+                    a = b;
+                }
+                if (gCrushZero < a) {
+                    if (a < bend) {
+                        weights[v] = a;
+                    }
+                } else {
+                    weights[v] = gCrushZero;
+                }
+                if (weights[v] != gCrushZero) {
+                    pVert[0] = pVert[0] + weights[v] * pDir[0];
+                    pVert[1] = pDir[1] * weights[v] + pVert[1];
+                    pVert[2] = pDir[2] * weights[v] + pVert[2];
+                }
+            }
+            v++;
+        } while (v < pModel->nvertices);
+    }
+
+    FUN_004c7f40(pModel, (br_vector3*)pDir, weights);
+
+    if ((pModel->flags & 0x20) != 0 && pModel->user != NULL) {
+        *(int*)pModel->user = 1;
+        return;
+    }
+    pModel->custom = JitModelUpdate;
+    pModel->flags = pModel->flags | 0x20;
 }
 
 // BuckleTheBugger
@@ -1064,6 +1222,8 @@ intptr_t C2_HOOK_CDECL TotallyRepairCarCB(br_actor* pActor, void* data) {
     }
     return 0;
 }
+
+extern int gUNK_0075bc24;
 
 // FUNCTION: CARMA2_HW 0x00439510
 void C2_HOOK_FASTCALL TotallyRepairACar(tCar_spec* pCar_spec) {

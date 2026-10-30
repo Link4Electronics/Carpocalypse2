@@ -4,11 +4,12 @@
 #include "carpocalypse2_types.h"
 #include <brender/brender.h>
 
-
 #include "c2_hooks.h"
 #include "brender/brender.h"
 
 extern br_material* gDefault_track_material;
+
+void C2_HOOK_FASTCALL GetGlassFragmentCounts(int* pVisible_count, int* pActive_count);
 
 // AssertNoncars
 
@@ -49,7 +50,6 @@ extern void C2_HOOK_STDCALL SetYonFactor(br_scalar pNew);
 
 #include "c2_hooks.h"
 
-
 extern int gRender_alternative_track_actors;
 
 br_scalar C2_HOOK_STDCALL GetYonFactor(void);
@@ -62,7 +62,6 @@ void C2_HOOK_FASTCALL GetModelTextureArea(br_model* pModel, int* pArea_1, int* p
 
 void C2_HOOK_FASTCALL SetSmashableModel(br_actor* pActor);
 
-void C2_HOOK_FASTCALL GetGlassFragmentCounts(int* pVisible_count, int* pActive_count);
 
 intptr_t C2_HOOK_CDECL ProcessModelsCB(br_actor* pActor, void* data);
 

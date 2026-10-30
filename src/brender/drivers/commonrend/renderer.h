@@ -43,6 +43,11 @@ typedef struct br_renderer {
     state_all state;
 
     int has_begun;
+#if defined(BREND_DRIVER_GL)
+    struct gl_transparent_draw* transparent_head;
+    GLuint transparent_vao, transparent_vbo, transparent_ibo;
+#endif
+
 
     struct {
         br_uint_32 face_group_count;

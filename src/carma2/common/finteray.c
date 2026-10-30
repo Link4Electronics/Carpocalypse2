@@ -1,8 +1,16 @@
 #include "finteray.h"
 
 #include "brucetrk.h"
+
+#include "crush.h"
+
+#include "errors.h"
+
 #include "globvars.h"
 #include "physics.h"
+
+#include "raycast.h"
+
 #include "spark.h"
 #include "world.h"
 
@@ -11,6 +19,11 @@
 #include "carpocalypse2_macros.h"
 
 #include "c2_math.h"
+
+extern const br_scalar gFLOAT_0058996c;
+extern const char gEmpty_string_00676920[];
+extern const double gDouble_00589a08;
+
 /*
  * Face-intersection raycasting (ported from finteray.c — real implementation).
  */
@@ -23,6 +36,13 @@
 int C2_HOOK_FASTCALL BadDiv__finteray(br_scalar a, br_scalar b);
 extern void C2_HOOK_FASTCALL XZToColumnXZ(tU8* pColumn_x, tU8* pColumn_z, br_scalar pX, br_scalar pZ, tTrack_spec* pTrack_spec);
 extern br_material* gBlack_material;
+extern const br_scalar gFLOAT_00589968;
+extern const br_scalar gFLOAT_0058996c;
+extern const br_scalar gFLOAT_00589978;
+extern const br_scalar gFLOAT_005899a8;
+extern const double gDouble_005899b0;
+extern const char gEmpty_string_00676920[];
+
 // GLOBAL: CARMA2_HW 0x005964c0
 int gPling_materials = 1;
 
@@ -55,6 +75,58 @@ int gActorBoxPick_StopGroovidelics = 1;
 
 // GLOBAL: CARMA2_HW 0x005896d4
 br_scalar gFloat_005896d4 = 0.14492753148078918f;
+
+// GLOBAL: CARMA2_HW 0x00589a08
+const double gDouble_00589a08 = 0.707;
+
+// GLOBAL: CARMA2_HW 0x00589a10
+const float gFLOAT_00589a10 = 0.005f;
+
+// GLOBAL: CARMA2_HW 0x00589a14
+const float gFLOAT_00589a14 = -0.005f;
+
+// GLOBAL: CARMA2_HW 0x00589a1c
+const float gFLOAT_00589a1c = 0.5f;
+
+// GLOBAL: CARMA2_HW 0x00589a20
+const float gFLOAT_00589a20 = 0.2f;
+
+// GLOBAL: CARMA2_HW 0x00589fac
+const float gUNK_00589fac = 0.0f;
+
+// GLOBAL: CARMA2_HW 0x00589fc4
+const float gUNK_00589fc4 = 2.384185791015625e-7f;
+
+// GLOBAL: CARMA2_HW 0x00589fd0
+const float gFloat_00589fd0 = 2.0f;
+
+// GLOBAL: CARMA2_HW 0x00589fd8
+const double gDouble_00589fd8 = 0.000001;
+
+// GLOBAL: CARMA2_HW 0x00589fe0
+const double gDouble_00589fe0 = -0.002;
+
+// GLOBAL: CARMA2_HW 0x00589fe8
+const double gDouble_00589fe8 = 1.0;
+
+// GLOBAL: CARMA2_HW 0x00589ff4
+const float gFLOAT_00589ff4 = 0.002f;
+
+// GLOBAL: CARMA2_HW 0x00589ff8
+const float gFLOAT_00589ff8 = -2.0f;
+
+// GLOBAL: CARMA2_HW 0x0058a000
+const double gDouble_0058a000 = 0.002;
+
+// GLOBAL: CARMA2_HW 0x0058a038
+const float gUNK_0058a038 = -0.002f;
+
+// GLOBAL: CARMA2_HW 0x0058f7f0
+const tPolyhedron_edge_indexes gBox_edges_0058f7f0[12] = {
+    { 0, 1 }, { 2, 3 }, { 4, 5 }, { 6, 7 },
+    { 0, 2 }, { 1, 3 }, { 4, 6 }, { 5, 7 },
+    { 0, 4 }, { 1, 5 }, { 2, 6 }, { 3, 7 },
+};
 
 #include "world2.h"
 #include "structur.h"
@@ -1264,6 +1336,15 @@ int C2_HOOK_FASTCALL FindFacesInBox(tBounds* bnds, tFace_ref* face_list, int max
     return j;
 }
 
+typedef struct {
+    int type;
+    float max_xyz[3];
+    float min_xyz[3];
+    undefined4 field_0x1c[9];
+    br_vector3* vectors_a;
+    br_vector3* vectors_b;
+} tFinteray_corner_source;
+
 static int C2_HOOK_FASTCALL FinteraySphereFacePoint(tFace_ref* face, const volatile br_vector3* normal, const volatile br_vector3* point) {
     int axis;
     int axis_0;
@@ -1394,7 +1475,7 @@ void C2_HOOK_FASTCALL StationarySphereEdgeCollide(br_vector3* pEdge_start, br_ve
 
 
 // FUNCTION: CARMA2_HW  0x0045e020
-void C2_HOOK_FASTCALL PointSphereCollision(br_vector3* pVertex, br_vector3* pSphere_start, br_vector3* pSphere_end, br_vector3* pSphere_direction, tCollision_shape_sphere_data* pSphere, br_vector3* pPoint, br_vector3* pNormal, br_scalar* pT) {
+void C2_HOOK_FASTCALL FUN_0045e020(br_vector3* pVertex, br_vector3* pSphere_start, br_vector3* pSphere_end, br_vector3* pSphere_direction, tCollision_shape_sphere_data* pSphere, br_vector3* pPoint, br_vector3* pNormal, br_scalar* pT) {
     br_scalar x;
     br_scalar y;
     br_scalar z;
@@ -2033,3 +2114,1597 @@ void C2_HOOK_FASTCALL FUN_0041e3f0(br_vector3* pRay_pos, br_vector3* pRay_dir, b
     RayCastInBox(&scaled_ray_pos, &scaled_ray_dir, pHit_pos, pT, *(tPhysics_object**)((tU8*)pRay_context + 8));
 }
 
+// FUNCTION: CARMA2_HW 0x004227a0
+tFace_ref* C2_HOOK_FASTCALL FUN_004227a0(br_vector3* pRay_pos, br_vector3* pRay_dir, br_vector3* pHit_normal, br_scalar* pBest_t, br_vector3* pHit_pos, tFace_ref** pFaces, int pFace_count) {
+	br_vector3 hit_normal;
+	br_vector3 hit_pos;
+	br_scalar t;
+	br_vector3* output_pos;
+	int face_count;
+
+	*pBest_t = 2.0f;
+	if (pFace_count > 0) {
+		face_count = pFace_count;
+		output_pos = pHit_pos;
+		do {
+			CheckSingleFace(*pFaces, pRay_pos, pRay_dir, &hit_normal, &t, &hit_pos);
+			if (t < *pBest_t) {
+				*pBest_t = t;
+				pHit_pos = (br_vector3*)*pFaces;
+				pHit_normal->v[0] = hit_normal.v[0];
+				pHit_normal->v[1] = hit_normal.v[1];
+				pHit_normal->v[2] = hit_normal.v[2];
+				output_pos->v[0] = hit_pos.v[0];
+				output_pos->v[1] = hit_pos.v[1];
+				output_pos->v[2] = hit_pos.v[2];
+			}
+			pFaces++;
+			face_count--;
+		} while (face_count != 0);
+	}
+	if (*pBest_t < gFLOAT_00589968) {
+		return (tFace_ref*)pHit_pos;
+	}
+	return NULL;
+}
+
+#pragma auto_inline(off)
+// FUNCTION: CARMA2_HW 0x00425ca0
+int C2_HOOK_FASTCALL FUN_00425ca0(tPhysics_object* pObject1, tPhysics_object* pObject2, void* pRecords, int pRecord_count) {
+    tU16 point_counts1[66];
+    tU16 point_counts2[18];
+    br_vector3 vertices1[128][2];
+    br_vector3 vertices2[128][2];
+    br_matrix34 inverse_object1;
+    br_matrix34 object2_to_object1;
+    br_matrix34 inverse_actor1;
+    br_matrix34 actor2_to_actor1;
+    br_vector3 point;
+    br_vector3 translated_point;
+    tPhysics_shape* shape1;
+    tPhysics_shape* shape2;
+    br_vector3* vertices1_for_shape;
+    br_vector3* vertices2_for_shape;
+    tU16* point_count1;
+    tU16* point_count2;
+    tU16* point_count1_for_shape;
+    tU16* point_count2_for_shape;
+    int vertex_count1;
+    int vertex_count2;
+    int point_count;
+    int i;
+    int contact_count;
+    float collision_factor;
+
+
+    if (pRecord_count > 0x24) {
+        return 0;
+    }
+
+    BrMatrix34LPInverse(&inverse_object1, &pObject1->transform_matrix);
+    BrMatrix34Mul(&object2_to_object1, &pObject2->transform_matrix, &inverse_object1);
+    BrMatrix34LPInverse(&inverse_actor1, &pObject1->actor->t.t.mat);
+    BrMatrix34Mul(&actor2_to_actor1, &pObject2->actor->t.t.mat, &inverse_actor1);
+
+    /* Object 2 vertices are expressed in object 1 space; object 1 vertices
+     * use the inverse relative transform to enter object 2 space. */
+    point_count2 = point_counts2;
+    vertices2_for_shape = &vertices2[0][0];
+    for (shape2 = pObject2->shape; shape2 != NULL; shape2 = shape2->common.next) {
+        switch (shape2->common.type) {
+        case kCollisionShapeType_Box:
+            point_count = 8;
+            for (i = 0; i < 8; i++) {
+                point.v[0] = (i & 2) ? shape2->box.common.bb.min.v[0] : shape2->box.common.bb.max.v[0];
+                point.v[1] = (i & 1) ? shape2->box.common.bb.min.v[1] : shape2->box.common.bb.max.v[1];
+                point.v[2] = (i & 4) ? shape2->box.common.bb.min.v[2] : shape2->box.common.bb.max.v[2];
+                BrMatrix34ApplyP(&vertices2_for_shape[i * 2], &point, &object2_to_object1);
+                BrMatrix34ApplyP(&vertices2_for_shape[i * 2 + 1], &point, &actor2_to_actor1);
+            }
+            break;
+        case kCollisionShapeType_Polyhedron:
+        case kCollisionShapeType_Wireframe_Polyhedron:
+            point_count = shape2->polyhedron.polyhedron.count_points;
+            for (i = 0; i < point_count; i++) {
+                point = shape2->polyhedron.polyhedron.points[i];
+                BrMatrix34ApplyP(&vertices2_for_shape[i * 2], &point, &object2_to_object1);
+                BrMatrix34ApplyP(&vertices2_for_shape[i * 2 + 1], &point, &actor2_to_actor1);
+            }
+            break;
+        case kCollisionShapeType_Wireframe:
+            point_count = shape2->wireframe.wireframe.count_points;
+            for (i = 0; i < point_count; i++) {
+                point = shape2->wireframe.wireframe.points[i];
+                BrMatrix34ApplyP(&vertices2_for_shape[i * 2], &point, &object2_to_object1);
+                BrMatrix34ApplyP(&vertices2_for_shape[i * 2 + 1], &point, &actor2_to_actor1);
+            }
+            break;
+        case kCollisionShapeType_Sphere:
+            point_count = 1;
+            point = shape2->sphere.sphere.center;
+            BrMatrix34ApplyP(&vertices2_for_shape[0], &point, &object2_to_object1);
+            BrMatrix34ApplyP(&vertices2_for_shape[1], &point, &actor2_to_actor1);
+            break;
+        default:
+            PhysicsError(ePhysicsError_UnknownShapeType, NULL);
+            point_count = 0;
+            break;
+        }
+        *point_count2++ = (tU16)point_count;
+        vertices2_for_shape += point_count * 2;
+    }
+
+    point_count1 = point_counts1;
+    vertices1_for_shape = &vertices1[0][0];
+    for (shape1 = pObject1->shape; shape1 != NULL; shape1 = shape1->common.next) {
+        switch (shape1->common.type) {
+        case kCollisionShapeType_Box:
+            point_count = 8;
+            for (i = 0; i < 8; i++) {
+                point.v[0] = (i & 2) ? shape1->box.common.bb.min.v[0] : shape1->box.common.bb.max.v[0];
+                point.v[1] = (i & 1) ? shape1->box.common.bb.min.v[1] : shape1->box.common.bb.max.v[1];
+                point.v[2] = (i & 4) ? shape1->box.common.bb.min.v[2] : shape1->box.common.bb.max.v[2];
+                translated_point.v[0] = point.v[0] - object2_to_object1.m[3][0];
+                translated_point.v[1] = point.v[1] - object2_to_object1.m[3][1];
+                translated_point.v[2] = point.v[2] - object2_to_object1.m[3][2];
+                BrMatrix34TApplyV(&vertices1_for_shape[i * 2], &translated_point, &object2_to_object1);
+                translated_point.v[0] = point.v[0] - actor2_to_actor1.m[3][0];
+                translated_point.v[1] = point.v[1] - actor2_to_actor1.m[3][1];
+                translated_point.v[2] = point.v[2] - actor2_to_actor1.m[3][2];
+                BrMatrix34TApplyV(&vertices1_for_shape[i * 2 + 1], &translated_point, &actor2_to_actor1);
+            }
+            break;
+        case kCollisionShapeType_Polyhedron:
+        case kCollisionShapeType_Wireframe_Polyhedron:
+            point_count = shape1->polyhedron.polyhedron.count_points;
+            for (i = 0; i < point_count; i++) {
+                point = shape1->polyhedron.polyhedron.points[i];
+                translated_point.v[0] = point.v[0] - object2_to_object1.m[3][0];
+                translated_point.v[1] = point.v[1] - object2_to_object1.m[3][1];
+                translated_point.v[2] = point.v[2] - object2_to_object1.m[3][2];
+                BrMatrix34TApplyV(&vertices1_for_shape[i * 2], &translated_point, &object2_to_object1);
+                translated_point.v[0] = point.v[0] - actor2_to_actor1.m[3][0];
+                translated_point.v[1] = point.v[1] - actor2_to_actor1.m[3][1];
+                translated_point.v[2] = point.v[2] - actor2_to_actor1.m[3][2];
+                BrMatrix34TApplyV(&vertices1_for_shape[i * 2 + 1], &translated_point, &actor2_to_actor1);
+            }
+            break;
+        case kCollisionShapeType_Wireframe:
+            point_count = shape1->wireframe.wireframe.count_points;
+            for (i = 0; i < point_count; i++) {
+                point = shape1->wireframe.wireframe.points[i];
+                translated_point.v[0] = point.v[0] - object2_to_object1.m[3][0];
+                translated_point.v[1] = point.v[1] - object2_to_object1.m[3][1];
+                translated_point.v[2] = point.v[2] - object2_to_object1.m[3][2];
+                BrMatrix34TApplyV(&vertices1_for_shape[i * 2], &translated_point, &object2_to_object1);
+                translated_point.v[0] = point.v[0] - actor2_to_actor1.m[3][0];
+                translated_point.v[1] = point.v[1] - actor2_to_actor1.m[3][1];
+                translated_point.v[2] = point.v[2] - actor2_to_actor1.m[3][2];
+                BrMatrix34TApplyV(&vertices1_for_shape[i * 2 + 1], &translated_point, &actor2_to_actor1);
+            }
+            break;
+        case kCollisionShapeType_Sphere:
+            point_count = 1;
+            point = shape1->sphere.sphere.center;
+            translated_point.v[0] = point.v[0] - object2_to_object1.m[3][0];
+            translated_point.v[1] = point.v[1] - object2_to_object1.m[3][1];
+            translated_point.v[2] = point.v[2] - object2_to_object1.m[3][2];
+            BrMatrix34TApplyV(&vertices1_for_shape[0], &translated_point, &object2_to_object1);
+            translated_point.v[0] = point.v[0] - actor2_to_actor1.m[3][0];
+            translated_point.v[1] = point.v[1] - actor2_to_actor1.m[3][1];
+            translated_point.v[2] = point.v[2] - actor2_to_actor1.m[3][2];
+            BrMatrix34TApplyV(&vertices1_for_shape[1], &translated_point, &actor2_to_actor1);
+            break;
+        default:
+            PhysicsError(ePhysicsError_UnknownShapeType, NULL);
+            point_count = 0;
+            break;
+        }
+        *point_count1++ = (tU16)point_count;
+        vertices1_for_shape += point_count * 2;
+    }
+
+    contact_count = 0;
+    point_count1_for_shape = point_counts1;
+    vertices1_for_shape = &vertices1[0][0];
+    for (shape1 = pObject1->shape; shape1 != NULL; shape1 = shape1->common.next) {
+        vertex_count1 = *point_count1_for_shape;
+        point_count2_for_shape = point_counts2;
+        vertices2_for_shape = &vertices2[0][0];
+        for (shape2 = pObject2->shape; shape2 != NULL; shape2 = shape2->common.next) {
+            vertex_count2 = *point_count2_for_shape;
+            if (shape1->common.type == kCollisionShapeType_Sphere) {
+                if (shape2->common.type == kCollisionShapeType_Sphere) {
+                    collision_factor = 100.0f;
+                    FUN_0045d5e0(&shape1->sphere.sphere, &shape2->sphere.sphere,
+                            &vertices2_for_shape[0], &vertices2_for_shape[1],
+                            &point, &collision_factor);
+                    if (collision_factor <= gFLOAT_0058996c) {
+                        br_vector3 contact1;
+                        br_vector3 contact2;
+                        br_vector3 normal_start;
+                        br_vector3 normal_end;
+                        br_vector3 world_normal;
+                        br_vector3 local_normal_start;
+                        br_vector3 local_normal_end;
+                        br_vector3 local_normal;
+                        float remaining;
+
+                        /* Contact positions stay in their owner's local space. The normal
+                         * is interpolated between the physics and actor orientations. */
+                        BrVector3Scale(&contact1, &point, -shape1->sphere.sphere.radius);
+                        BrVector3Accumulate(&contact1, &shape1->sphere.sphere.center);
+                        BrMatrix34ApplyV(&normal_start, &point, &pObject1->transform_matrix);
+                        BrMatrix34ApplyV(&normal_end, &point, &pObject1->actor->t.t.mat);
+                        remaining = gFLOAT_0058996c - collision_factor;
+                        for (i = 0; i < 3; i++) {
+                            normal_start.v[i] *= remaining;
+                            normal_end.v[i] *= collision_factor;
+                            world_normal.v[i] = normal_start.v[i] + normal_end.v[i];
+                        }
+                        BrMatrix34TApplyV(&local_normal_start, &world_normal, &pObject2->transform_matrix);
+                        BrMatrix34TApplyV(&local_normal_end, &world_normal, &pObject2->actor->t.t.mat);
+                        for (i = 0; i < 3; i++) {
+                            local_normal_start.v[i] *= remaining;
+                            local_normal_end.v[i] *= collision_factor;
+                            local_normal.v[i] = local_normal_start.v[i] + local_normal_end.v[i];
+                        }
+                        BrVector3Scale(&contact2, &local_normal, shape2->sphere.sphere.radius);
+                        BrVector3Accumulate(&contact2, &shape2->sphere.sphere.center);
+                        contact_count = AddObjectObjectForce((float*)((tU8*)pRecords + pRecord_count * 0x60),
+                                &contact1, collision_factor, &contact2, &world_normal,
+                                contact_count, pObject1, pObject2, 7, NULL, 0.0f);
+                    }
+                } else {
+                    contact_count = FUN_004269c0(pObject1, pObject2, shape1, shape2,
+                            vertices1_for_shape, vertices2_for_shape,
+                            vertex_count1, vertex_count2,
+                            (tU8*)pRecords + pRecord_count * 0x60,
+                            contact_count, 0x28 - pRecord_count);
+                }
+            } else if (shape2->common.type == kCollisionShapeType_Sphere) {
+                contact_count = FUN_004269c0(pObject2, pObject1, shape2, shape1,
+                        vertices2_for_shape, vertices1_for_shape,
+                        vertex_count2, vertex_count1,
+                        (tU8*)pRecords + pRecord_count * 0x60,
+                        contact_count, 0x28 - pRecord_count);
+            } else {
+                contact_count = FUN_00427870(pObject1, pObject2, shape1, shape2,
+                        vertices1_for_shape, vertices2_for_shape,
+                        vertex_count1, vertex_count2,
+                        (tU8*)pRecords + pRecord_count * 0x60,
+                        contact_count, 0x28 - pRecord_count);
+            }
+            vertices2_for_shape += vertex_count2 * 2;
+            point_count2_for_shape++;
+        }
+        vertices1_for_shape += vertex_count1 * 2;
+        point_count1_for_shape++;
+    }
+
+    if (contact_count != 0) {
+        float* record;
+        float normal_dot;
+        int result;
+
+        pObject1->omega = pObject1->rotate_omega;
+        pObject2->omega = pObject2->rotate_omega;
+        result = 1;
+        if (contact_count > 1) {
+            record = (float*)((tU8*)pRecords + pRecord_count * 0x60 + 0x94);
+            do {
+                if (*(tPhysics_object**)(record - 12) == *(tPhysics_object**)((tU8*)pRecords + pRecord_count * 0x60 + 4)) {
+                    normal_dot = record[0] * *(float*)((tU8*)pRecords + pRecord_count * 0x60 + 0x34)
+                            + record[-1] * *(float*)((tU8*)pRecords + pRecord_count * 0x60 + 0x30)
+                            + record[-2] * *(float*)((tU8*)pRecords + pRecord_count * 0x60 + 0x2c);
+                } else {
+                    normal_dot = -(record[0] * *(float*)((tU8*)pRecords + pRecord_count * 0x60 + 0x40)
+                            + record[-1] * *(float*)((tU8*)pRecords + pRecord_count * 0x60 + 0x3c)
+                            + record[-2] * *(float*)((tU8*)pRecords + pRecord_count * 0x60 + 0x38));
+                }
+                if (normal_dot < (float)gDouble_00589a08) {
+                    return result;
+                }
+                result++;
+                record += 0x18;
+            } while (result < contact_count);
+        }
+        return result;
+    }
+    return 0;
+}
+
+extern br_scalar gFloat_005896d4;
+extern const br_scalar gFLOAT_00589968;
+extern const br_scalar gFLOAT_0058996c;
+extern const br_scalar gFLOAT_00589978;
+extern const br_scalar gFLOAT_005899a8;
+extern const double gDouble_005899b0;
+
+#pragma auto_inline(on)
+
+#pragma auto_inline(off)
+// FUNCTION: CARMA2_HW 0x004269c0
+int C2_HOOK_FASTCALL FUN_004269c0(tPhysics_object* pObject1, tPhysics_object* pObject2, tPhysics_shape* pShape1, tPhysics_shape* pShape2, const br_vector3* pVertices1, const br_vector3* pVertices2, int pCount1, int pCount2, void* pRecords, int pRecord_count, int pRemaining) {
+    tU8 outcodes[64];
+    tU8 outcodes_and;
+    br_vector3 box_points[8];
+    const br_vector3* points;
+    const tPolyhedron_edge_indexes* edges;
+    int edge_count;
+    int i;
+    int hit;
+    int bit0;
+    int bit1;
+    int bit2;
+    int bit3;
+    int bit4;
+    int bit5;
+    tU8 code;
+    tU8 code1;
+    tU8 code2;
+    const float* vertex;
+    float fVar1;
+    float fVar2;
+    float fVar3;
+    float fVar4;
+    float fVar5;
+    float fVar6;
+    float factor;
+    float weight;
+    float length;
+    float scale;
+    float dot;
+    br_vector3 hit_normal;
+    br_vector3 hit_position;
+    br_vector3 normal;
+    br_vector3 blend;
+    br_vector3 sphere_point;
+    br_vector3 relative;
+    br_vector3 temp1;
+    br_vector3 temp2;
+    br_vector3 temp3;
+    br_vector3 temp4;
+    br_vector3 local_b;
+    br_vector3 local_c;
+    br_vector3 local_d;
+    br_vector3 local_e;
+    br_vector3 local_f;
+    br_vector3 local_g;
+    br_vector3 local_h;
+    br_vector3 local_i;
+    br_vector3 local_j;
+    br_vector3 local_k;
+    br_vector3 local_l;
+
+    (void)pCount1;
+    (void)pRemaining;
+    i = 0;
+    outcodes_and = 0xff;
+    if (pCount2 > 0) {
+        fVar1 = pShape1->common.bb.min.v[0] - gFLOAT_00589a10;
+        fVar2 = pShape1->common.bb.min.v[1] - gFLOAT_00589a10;
+        fVar3 = pShape1->common.bb.min.v[2] - gFLOAT_00589a10;
+        fVar4 = pShape1->common.bb.max.v[0] - gFLOAT_00589a14;
+        fVar5 = pShape1->common.bb.max.v[1] - gFLOAT_00589a14;
+        fVar6 = pShape1->common.bb.max.v[2] - gFLOAT_00589a14;
+        vertex = (const float*)((const tU8*)pVertices2 + 4);
+        do {
+            bit0 = vertex[-1] < fVar1 && vertex[2] < fVar1;
+            bit1 = vertex[0] < fVar2 && vertex[3] < fVar2;
+            bit2 = vertex[1] < fVar3 && vertex[4] < fVar3;
+            bit3 = vertex[-1] > fVar4 && vertex[2] > fVar4;
+            bit4 = vertex[0] > fVar5 && vertex[3] > fVar5;
+            bit5 = vertex[1] > fVar6 && vertex[4] > fVar6;
+            code = (((((bit5 * 2 + bit4) * 2 + bit3) * 2 + bit2) * 2 + bit1) * 2 + bit0);
+            vertex += 6;
+            outcodes[i] = code;
+            outcodes_and &= code;
+            i++;
+        } while (i < pCount2);
+    }
+    if (outcodes_and != 0) {
+        return pRecord_count;
+    }
+
+    points = NULL;
+    switch (pShape2->common.type) {
+    case kCollisionShapeType_Box:
+        for (i = 0; i < 8; i++) {
+            box_points[i].v[0] = (i & 2) ? pShape2->common.bb.min.v[0] : pShape2->common.bb.max.v[0];
+            box_points[i].v[1] = (i & 1) ? pShape2->common.bb.min.v[1] : pShape2->common.bb.max.v[1];
+            box_points[i].v[2] = (i & 4) ? pShape2->common.bb.min.v[2] : pShape2->common.bb.max.v[2];
+        }
+        points = box_points;
+        break;
+    case kCollisionShapeType_Polyhedron:
+    case kCollisionShapeType_Wireframe_Polyhedron:
+        points = pShape2->polyhedron.polyhedron.points;
+        break;
+    case kCollisionShapeType_Wireframe:
+        points = pShape2->wireframe.wireframe.points;
+        break;
+    default:
+        break;
+    }
+
+    for (i = 0; i < pCount2; i++) {
+        if (outcodes[i] != 0) {
+            continue;
+        }
+        hit = LineSphereCollWithSphere(&pVertices2[i * 2], &pVertices2[i * 2 + 1], &pShape1->sphere.sphere, &hit_position, &hit_normal, &factor);
+        if (hit == 0) {
+            continue;
+        }
+        if (hit == -1) {
+            outcodes[i] = 0xff;
+            continue;
+        }
+        BrMatrix34ApplyV(&normal, &hit_normal, &pObject1->actor->t.t.mat);
+        BrMatrix34ApplyV(&blend, &hit_normal, &pObject1->transform_matrix);
+        weight = gFLOAT_0058996c - factor;
+        blend.v[0] = blend.v[0] * weight;
+        blend.v[1] = blend.v[1] * weight;
+        blend.v[2] = blend.v[2] * weight;
+        fVar1 = factor * normal.v[0] + blend.v[0];
+        fVar2 = factor * normal.v[1] + blend.v[1];
+        fVar3 = factor * normal.v[2] + blend.v[2];
+        length = sqrtf(fVar3 * fVar3 + fVar2 * fVar2 + fVar1 * fVar1);
+        if (length > gFLOAT_005899a8) {
+            scale = (float)(gDouble_005899b0 / length);
+            normal.v[0] = scale * fVar1;
+            normal.v[1] = scale * fVar2;
+            normal.v[2] = scale * fVar3;
+        } else {
+            normal.v[0] = 1.0f;
+            normal.v[1] = 0.0f;
+            normal.v[2] = 0.0f;
+        }
+        pRecord_count = AddObjectObjectForce((float*)pRecords, &hit_position, factor, (br_vector3*)&points[i], &normal, pRecord_count, pObject1, pObject2, 5, NULL, 0.0f);
+    }
+
+    switch (pShape2->common.type) {
+    case kCollisionShapeType_Box:
+        FUN_0045e4e0(&pShape1->sphere.sphere.radius, (float*)pShape2, (float*)&pVertices1[0], (float*)&pVertices1[1], hit_position.v, hit_normal.v, &factor);
+        break;
+    case kCollisionShapeType_Polyhedron:
+    case kCollisionShapeType_Wireframe_Polyhedron:
+        FUN_0045e200(&pShape1->sphere.sphere.radius, &pShape2->polyhedron.polyhedron, &pVertices1[0], &pVertices1[1], &hit_position, &hit_normal, &factor);
+        break;
+    default:
+        factor = 100.0f;
+        break;
+    }
+
+    if (factor <= gFLOAT_0058996c) {
+        BrMatrix34ApplyV(&normal, &hit_normal, &pObject2->actor->t.t.mat);
+        BrMatrix34ApplyV(&blend, &hit_normal, &pObject2->transform_matrix);
+        weight = gFLOAT_0058996c - factor;
+        blend.v[0] = blend.v[0] * weight;
+        blend.v[1] = blend.v[1] * weight;
+        blend.v[2] = blend.v[2] * weight;
+        fVar1 = factor * normal.v[0] + blend.v[0];
+        fVar2 = factor * normal.v[1] + blend.v[1];
+        fVar3 = factor * normal.v[2] + blend.v[2];
+        length = sqrtf(fVar3 * fVar3 + fVar2 * fVar2 + fVar1 * fVar1);
+        if (length > gFLOAT_005899a8) {
+            scale = (float)(gDouble_005899b0 / length);
+            normal.v[0] = scale * fVar1;
+            normal.v[1] = scale * fVar2;
+            normal.v[2] = scale * fVar3;
+        } else {
+            normal.v[0] = 1.0f;
+            normal.v[1] = 0.0f;
+            normal.v[2] = 0.0f;
+        }
+        BrMatrix34TApplyV(&blend, &normal, &pObject1->transform_matrix);
+        BrMatrix34TApplyV(&sphere_point, &normal, &pObject1->actor->t.t.mat);
+        weight = gFLOAT_0058996c - factor;
+        blend.v[0] = blend.v[0] * weight;
+        blend.v[1] = blend.v[1] * weight;
+        blend.v[2] = blend.v[2] * weight;
+        fVar1 = factor * sphere_point.v[0] + blend.v[0];
+        fVar2 = factor * sphere_point.v[1] + blend.v[1];
+        fVar3 = factor * sphere_point.v[2] + blend.v[2];
+        length = sqrtf(fVar3 * fVar3 + fVar2 * fVar2 + fVar1 * fVar1);
+        if (length > gFLOAT_005899a8) {
+            scale = (float)(gDouble_005899b0 / length);
+            fVar1 = scale * fVar1;
+            fVar2 = scale * fVar2;
+            fVar3 = scale * fVar3;
+        } else {
+            fVar1 = gFLOAT_0058996c;
+            fVar2 = gFLOAT_00589978;
+            fVar3 = gFLOAT_00589978;
+        }
+        sphere_point.v[0] = pShape1->sphere.sphere.radius * fVar1 + pShape1->sphere.sphere.center.v[0];
+        sphere_point.v[1] = pShape1->sphere.sphere.center.v[1] + pShape1->sphere.sphere.radius * fVar2;
+        sphere_point.v[2] = pShape1->sphere.sphere.center.v[2] + pShape1->sphere.sphere.radius * fVar3;
+        BrMatrix34ApplyP(&blend, &pShape1->sphere.sphere.center, &pObject1->transform_matrix);
+        relative.v[0] = blend.v[0] - pObject2->transform_matrix.m[3][0];
+        relative.v[1] = blend.v[1] - pObject2->transform_matrix.m[3][1];
+        relative.v[2] = blend.v[2] - pObject2->transform_matrix.m[3][2];
+        BrMatrix34TApplyV(&local_b, &relative, &pObject2->transform_matrix);
+        BrMatrix34ApplyP(&blend, &pShape1->sphere.sphere.center, &pObject1->actor->t.t.mat);
+        relative.v[0] = blend.v[0] - pObject2->actor->t.t.mat.m[3][0];
+        relative.v[1] = blend.v[1] - pObject2->actor->t.t.mat.m[3][1];
+        relative.v[2] = blend.v[2] - pObject2->actor->t.t.mat.m[3][2];
+        BrMatrix34TApplyV(&local_c, &relative, &pObject2->actor->t.t.mat);
+        local_c.v[0] = local_c.v[0] - local_b.v[0];
+        local_c.v[1] = local_c.v[1] - local_b.v[1];
+        local_c.v[2] = local_c.v[2] - local_b.v[2];
+        dot = local_c.v[0] * hit_normal.v[0] + local_c.v[1] * hit_normal.v[1] + local_c.v[2] * hit_normal.v[2];
+        pRecord_count = AddObjectObjectForce((float*)pRecords, &hit_position, factor, &sphere_point, &normal, pRecord_count, pObject2, pObject1, 8, NULL, dot);
+    }
+
+    switch (pShape2->common.type) {
+    case kCollisionShapeType_Box:
+        edges = gBox_edges_0058f7f0;
+        edge_count = 12;
+        break;
+    case kCollisionShapeType_Polyhedron:
+    case kCollisionShapeType_Wireframe_Polyhedron:
+        edges = pShape2->polyhedron.polyhedron.edges;
+        edge_count = pShape2->polyhedron.polyhedron.count_edges;
+        break;
+    case kCollisionShapeType_Wireframe:
+        edges = pShape2->wireframe.wireframe.lines;
+        edge_count = pShape2->wireframe.wireframe.count_lines;
+        break;
+    default:
+        PhysicsError(ePhysicsError_UnknownShapeType, gEmpty_string_00676920);
+        edges = NULL;
+        edge_count = 0;
+        break;
+    }
+
+    for (; edge_count > 0; edge_count--, edges++) {
+        code1 = outcodes[edges->index1];
+        code2 = outcodes[edges->index2];
+        if ((code1 & code2 & 0x3f) != 0) {
+            continue;
+        }
+        code1 |= 0x80;
+        outcodes[edges->index1] = code1;
+        code2 |= 0x80;
+        outcodes[edges->index2] = code2;
+        FUN_0045d920((br_scalar*)&points[edges->index1], (br_scalar*)&points[edges->index2], (br_scalar*)&pVertices1[0], (br_scalar*)&pVertices1[1], &pShape1->sphere.sphere.radius, hit_position.v, hit_normal.v, &factor, code1, code2);
+        if (factor > gFLOAT_0058996c) {
+            continue;
+        }
+        BrMatrix34ApplyV(&normal, &hit_normal, &pObject2->actor->t.t.mat);
+        BrMatrix34ApplyV(&blend, &hit_normal, &pObject2->transform_matrix);
+        weight = gFLOAT_0058996c - factor;
+        blend.v[0] = blend.v[0] * weight;
+        blend.v[1] = blend.v[1] * weight;
+        blend.v[2] = blend.v[2] * weight;
+        fVar1 = factor * normal.v[0] + blend.v[0];
+        fVar2 = factor * normal.v[1] + blend.v[1];
+        fVar3 = factor * normal.v[2] + blend.v[2];
+        length = sqrtf(fVar3 * fVar3 + fVar2 * fVar2 + fVar1 * fVar1);
+        if (length > gFLOAT_005899a8) {
+            scale = (float)(gDouble_005899b0 / length);
+            normal.v[0] = scale * fVar1;
+            normal.v[1] = scale * fVar2;
+            normal.v[2] = scale * fVar3;
+        } else {
+            normal.v[0] = 1.0f;
+            normal.v[1] = 0.0f;
+            normal.v[2] = 0.0f;
+        }
+        BrMatrix34TApplyV(&blend, &normal, &pObject1->transform_matrix);
+        BrMatrix34TApplyV(&sphere_point, &normal, &pObject1->actor->t.t.mat);
+        weight = gFLOAT_0058996c - factor;
+        blend.v[0] = blend.v[0] * weight;
+        blend.v[1] = blend.v[1] * weight;
+        blend.v[2] = blend.v[2] * weight;
+        fVar1 = factor * sphere_point.v[0] + blend.v[0];
+        fVar2 = factor * sphere_point.v[1] + blend.v[1];
+        fVar3 = factor * sphere_point.v[2] + blend.v[2];
+        length = sqrtf(fVar3 * fVar3 + fVar2 * fVar2 + fVar1 * fVar1);
+        if (length > gFLOAT_005899a8) {
+            scale = (float)(gDouble_005899b0 / length);
+            fVar1 = scale * fVar1;
+            fVar2 = scale * fVar2;
+            fVar3 = scale * fVar3;
+        } else {
+            fVar1 = gFLOAT_0058996c;
+            fVar2 = gFLOAT_00589978;
+            fVar3 = gFLOAT_00589978;
+        }
+        sphere_point.v[0] = pShape1->sphere.sphere.radius * fVar1 + pShape1->sphere.sphere.center.v[0];
+        sphere_point.v[1] = pShape1->sphere.sphere.center.v[1] + pShape1->sphere.sphere.radius * fVar2;
+        sphere_point.v[2] = pShape1->sphere.sphere.center.v[2] + pShape1->sphere.sphere.radius * fVar3;
+        BrMatrix34ApplyP(&blend, &pShape1->sphere.sphere.center, &pObject1->transform_matrix);
+        relative.v[0] = blend.v[0] - pObject2->transform_matrix.m[3][0];
+        relative.v[1] = blend.v[1] - pObject2->transform_matrix.m[3][1];
+        relative.v[2] = blend.v[2] - pObject2->transform_matrix.m[3][2];
+        BrMatrix34TApplyV(&local_b, &relative, &pObject2->transform_matrix);
+        BrMatrix34ApplyP(&blend, &pShape1->sphere.sphere.center, &pObject1->actor->t.t.mat);
+        relative.v[0] = blend.v[0] - pObject2->actor->t.t.mat.m[3][0];
+        relative.v[1] = blend.v[1] - pObject2->actor->t.t.mat.m[3][1];
+        relative.v[2] = blend.v[2] - pObject2->actor->t.t.mat.m[3][2];
+        BrMatrix34TApplyV(&local_c, &relative, &pObject2->actor->t.t.mat);
+        local_c.v[0] = local_c.v[0] - local_b.v[0];
+        local_c.v[1] = local_c.v[1] - local_b.v[1];
+        local_c.v[2] = local_c.v[2] - local_b.v[2];
+        dot = local_c.v[0] * hit_normal.v[0] + local_c.v[1] * hit_normal.v[1] + local_c.v[2] * hit_normal.v[2];
+        pRecord_count = AddObjectObjectForce((float*)pRecords, &hit_position, factor, &sphere_point, &normal, pRecord_count, pObject2, pObject1, 8, NULL, dot);
+        if (pRecord_count == 500) {
+            BrMatrix34ApplyP(&local_d, &hit_position, &pObject2->transform_matrix);
+            BrMatrix34ApplyP(&local_e, &hit_position, &pObject2->actor->t.t.mat);
+            BrMatrix34ApplyP(&local_f, &sphere_point, &pObject1->transform_matrix);
+            BrMatrix34ApplyP(&local_g, &sphere_point, &pObject1->actor->t.t.mat);
+            temp1.v[0] = local_d.v[0] - pObject1->transform_matrix.m[3][0];
+            temp1.v[1] = local_d.v[1] - pObject1->transform_matrix.m[3][1];
+            temp1.v[2] = local_d.v[2] - pObject1->transform_matrix.m[3][2];
+            BrMatrix34TApplyV(&local_h, &temp1, &pObject1->transform_matrix);
+            temp2.v[0] = local_e.v[0] - pObject1->actor->t.t.mat.m[3][0];
+            temp2.v[1] = local_e.v[1] - pObject1->actor->t.t.mat.m[3][1];
+            temp2.v[2] = local_e.v[2] - pObject1->actor->t.t.mat.m[3][2];
+            BrMatrix34TApplyV(&local_i, &temp2, &pObject1->actor->t.t.mat);
+            BrMatrix34TApplyV(&local_j, &normal, &pObject1->transform_matrix);
+            temp3.v[0] = local_f.v[0] - pObject2->transform_matrix.m[3][0];
+            temp3.v[1] = local_f.v[1] - pObject2->transform_matrix.m[3][1];
+            temp3.v[2] = local_f.v[2] - pObject2->transform_matrix.m[3][2];
+            BrMatrix34TApplyV(&local_k, &temp3, &pObject2->transform_matrix);
+            temp4.v[0] = local_g.v[0] - pObject2->actor->t.t.mat.m[3][0];
+            temp4.v[1] = local_g.v[1] - pObject2->actor->t.t.mat.m[3][1];
+            temp4.v[2] = local_g.v[2] - pObject2->actor->t.t.mat.m[3][2];
+            BrMatrix34TApplyV(&local_l, &temp4, &pObject2->actor->t.t.mat);
+            BrMatrix34TApplyV(&local_j, &normal, &pObject2->transform_matrix);
+        }
+    }
+    return pRecord_count;
+}
+#pragma auto_inline(on)
+
+// FUNCTION: CARMA2_HW 0x00427870
+int C2_HOOK_FASTCALL FUN_00427870(tPhysics_object* pObject1, tPhysics_object* pObject2, tPhysics_shape* pShape1, tPhysics_shape* pShape2, const br_vector3* pVertices1, const br_vector3* pVertices2, int pCount1, int pCount2, void* pRecords, int pRecord_count, undefined4 pArg11) {
+    int count_before;
+    int count_after;
+    int i;
+    int collided;
+    tU8 local_80[64];
+    tU8 local_40[64];
+    tU8 common1;
+    tU8 common2;
+    char bit0;
+    char bit1;
+    char bit2;
+    char bit3;
+    char bit4;
+    char bit5;
+    tU8 code;
+    const float* vertex;
+    float fVar1;
+    float fVar2;
+    float fVar3;
+    float fVar4;
+    float fVar5;
+    float fVar6;
+    br_vector3 center1;
+    br_vector3 center2;
+    br_vector3 transformed1;
+    br_vector3 transformed_vector;
+    br_vector3 normal;
+    br_vector3 world_normal;
+    float length;
+    float scale;
+    union {
+        const br_vector3* pointer;
+        float scalar;
+    } vertices_arg;
+
+    common1 = 0xff;
+    common2 = 0xff;
+    i = 0;
+    if (pCount2 > 0) {
+        fVar1 = pShape1->common.bb.min.v[0] - gFLOAT_00589a10;
+        fVar2 = pShape1->common.bb.min.v[1] - gFLOAT_00589a10;
+        fVar3 = pShape1->common.bb.min.v[2] - gFLOAT_00589a10;
+        fVar4 = pShape1->common.bb.max.v[0] - gFLOAT_00589a14;
+        fVar5 = pShape1->common.bb.max.v[1] - gFLOAT_00589a14;
+        fVar6 = pShape1->common.bb.max.v[2] - gFLOAT_00589a14;
+        vertex = (const float*)((const tU8*)pVertices2 + 4);
+        do {
+            if (fVar1 <= vertex[-1] || fVar1 <= vertex[2]) bit0 = 0; else bit0 = 1;
+            if (fVar2 <= vertex[0] || fVar2 <= vertex[3]) bit1 = 0; else bit1 = 1;
+            if (fVar3 <= vertex[1] || fVar3 <= vertex[4]) bit2 = 0; else bit2 = 1;
+            if (vertex[-1] <= fVar4 || vertex[2] <= fVar4) bit3 = 0; else bit3 = 1;
+            if (vertex[0] <= fVar5 || vertex[3] <= fVar5) bit4 = 0; else bit4 = 1;
+            if (vertex[1] <= fVar6 || vertex[4] <= fVar6) bit5 = 0; else bit5 = 1;
+            code = (((((bit5 * 2 + bit4) * 2 + bit3) * 2 + bit2) * 2 + bit1) * 2 + bit0);
+            local_80[i] = code;
+            common2 &= code;
+            vertex += 6;
+            i++;
+        } while (i < pCount2);
+    }
+    if (common2 != 0) return pRecord_count;
+
+    i = 0;
+    if (pCount1 > 0) {
+        fVar1 = pShape2->common.bb.min.v[0] - gFLOAT_00589a10;
+        fVar2 = pShape2->common.bb.min.v[1] - gFLOAT_00589a10;
+        fVar3 = pShape2->common.bb.min.v[2] - gFLOAT_00589a10;
+        fVar4 = pShape2->common.bb.max.v[0] - gFLOAT_00589a14;
+        fVar5 = pShape2->common.bb.max.v[1] - gFLOAT_00589a14;
+        fVar6 = pShape2->common.bb.max.v[2] - gFLOAT_00589a14;
+        vertex = (const float*)((const tU8*)pVertices1 + 4);
+        do {
+            if (fVar1 <= vertex[-1] || fVar1 <= vertex[2]) bit0 = 0; else bit0 = 1;
+            if (fVar2 <= vertex[0] || fVar2 <= vertex[3]) bit1 = 0; else bit1 = 1;
+            if (fVar3 <= vertex[1] || fVar3 <= vertex[4]) bit2 = 0; else bit2 = 1;
+            if (vertex[-1] <= fVar4 || vertex[2] <= fVar4) bit3 = 0; else bit3 = 1;
+            if (vertex[0] <= fVar5 || vertex[3] <= fVar5) bit4 = 0; else bit4 = 1;
+            if (vertex[1] <= fVar6 || vertex[4] <= fVar6) bit5 = 0; else bit5 = 1;
+            code = (((((bit5 * 2 + bit4) * 2 + bit3) * 2 + bit2) * 2 + bit1) * 2 + bit0);
+            local_40[i] = code;
+            common1 &= code;
+            vertex += 6;
+            i++;
+        } while (i < pCount1);
+    }
+    if (common1 != 0) return pRecord_count;
+
+    count_before = pRecord_count;
+    if (((pObject1->flags | pObject2->flags) & 0x100) != 0) {
+        center1.v[0] = (pObject1->bb1.min.v[0] + pObject1->bb1.max.v[0]) * gFLOAT_00589a1c;
+        center1.v[1] = (pObject1->bb1.min.v[1] + pObject1->bb1.max.v[1]) * gFLOAT_00589a1c;
+        center1.v[2] = (pObject1->bb1.min.v[2] + pObject1->bb1.max.v[2]) * gFLOAT_00589a1c;
+        BrMatrix34ApplyP(&transformed1, &center1, &pObject1->transform_matrix);
+        center2.v[0] = transformed1.v[0] - pObject2->transform_matrix.m[3][0];
+        center2.v[1] = transformed1.v[1] - pObject2->transform_matrix.m[3][1];
+        center2.v[2] = transformed1.v[2] - pObject2->transform_matrix.m[3][2];
+        BrMatrix34TApplyV(&transformed_vector, &center2, &pObject2->transform_matrix);
+        normal.v[0] = transformed_vector.v[0] - (pObject2->bb1.min.v[0] + pObject2->bb1.max.v[0]) * gFLOAT_00589a1c;
+        normal.v[1] = transformed_vector.v[1] - (pObject2->bb1.min.v[1] + pObject2->bb1.max.v[1]) * gFLOAT_00589a1c;
+        normal.v[2] = transformed_vector.v[2] - (pObject2->bb1.min.v[2] + pObject2->bb1.max.v[2]) * gFLOAT_00589a1c;
+        length = sqrtf(normal.v[0] * normal.v[0] + normal.v[1] * normal.v[1] + normal.v[2] * normal.v[2]);
+        if (length <= gFLOAT_005899a8) {
+            normal.v[0] = 1.0f;
+            normal.v[1] = 0.0f;
+            normal.v[2] = 0.0f;
+        } else {
+            scale = (float)(gDouble_005899b0 / length);
+            normal.v[0] *= scale;
+            normal.v[1] *= scale;
+            normal.v[2] *= scale;
+        }
+        collided = 0;
+        count_after = FUN_00427fd0(pObject1, pObject2, pShape1, pShape2, (int)pVertices1, (float*)pRecords, pRecord_count, pArg11, local_40, &collided, normal.v);
+        BrMatrix34ApplyV(&world_normal, &normal, &pObject1->transform_matrix);
+        BrMatrix34TApplyV(&normal, &world_normal, &pObject2->transform_matrix);
+        normal.v[0] = -normal.v[0];
+        normal.v[1] = -normal.v[1];
+        normal.v[2] = -normal.v[2];
+        count_after = FUN_00427fd0(pObject2, pObject1, pShape2, pShape1, (int)pVertices2, (float*)pRecords, count_after, pArg11, local_80, &collided, normal.v);
+        if (collided != 0) {
+            pObject1->flags |= 0x200;
+            pObject2->flags |= 0x200;
+            if (pObject1->parent != NULL && pObject1->parent == pObject2->parent) return count_before;
+            return count_after;
+        }
+    }
+
+    if (pShape2->common.type != 2) {
+        vertices_arg.pointer = pVertices1;
+        pRecord_count = FUN_00428530(pObject1, pObject2, pShape1, pShape2, vertices_arg.scalar, pCount1, (float*)pRecords, pRecord_count, pArg11, local_40);
+    }
+    if (pShape1->common.type != 2) {
+        vertices_arg.pointer = pVertices2;
+        pRecord_count = FUN_00428530(pObject2, pObject1, pShape2, pShape1, vertices_arg.scalar, pCount2, (float*)pRecords, pRecord_count, pArg11, local_80);
+    }
+    if (pRecord_count != 0 && pObject1 != *(tPhysics_object**)((tU8*)pRecords + count_before * 0x60 + 4)) {
+        return FUN_004287a0(pObject2, pObject1, pShape2, pShape1, pVertices2, pVertices1, pRecords, pRecord_count, pArg11, local_80, local_40);
+    }
+    return FUN_004287a0(pObject1, pObject2, pShape1, pShape2, pVertices1, pVertices2, pRecords, pRecord_count, pArg11, local_40, local_80);
+}
+
+// FUNCTION: CARMA2_HW 0x00427fd0
+int C2_HOOK_FASTCALL FUN_00427fd0(tPhysics_object* pObj1, tPhysics_object* pObj2, tPhysics_shape* pEdgeShape, tPhysics_shape* pRayShape, int pVertices, float* pRecords, int pRecordCount, undefined4 pUnused, const tU8* pEdge_visibility, int* pCollided, float* pNormal) {
+    float fVar1;
+    float fVar2;
+    float fVar3;
+    tU32 uVar4;
+    tU32 uVar5;
+    const tU8* pbVar6;
+    float local_58;
+    int local_54;
+    int local_50;
+    float local_4c;
+    br_vector3 local_48;
+    br_vector3 local_3c;
+    br_vector3 local_30;
+    br_vector3 local_24;
+    br_vector3 local_18;
+    br_vector3 local_c;
+
+    switch (pEdgeShape->common.type) {
+    case kCollisionShapeType_Box:
+        pbVar6 = (const tU8*)gBox_edges_0058f7f0;
+        local_54 = 0xc;
+        break;
+    case kCollisionShapeType_Polyhedron:
+    case kCollisionShapeType_Wireframe_Polyhedron:
+        local_54 = pEdgeShape->polyhedron.polyhedron.count_edges;
+        pbVar6 = (const tU8*)pEdgeShape->polyhedron.polyhedron.edges;
+        break;
+    case kCollisionShapeType_Wireframe:
+        local_54 = pEdgeShape->wireframe.wireframe.count_lines;
+        pbVar6 = (const tU8*)pEdgeShape->wireframe.wireframe.lines;
+        break;
+    default:
+        PhysicsError(1, gEmpty_string_00676920);
+        pbVar6 = (const tU8*)pRayShape;
+        break;
+    }
+    local_50 = 0;
+    if (0 < local_54) {
+        do {
+            if ((pEdge_visibility[pbVar6[1]] & pEdge_visibility[pbVar6[0]]) == 0) {
+                uVar4 = ShapeRayCast((const br_vector3*)(pVertices + (tU32)pbVar6[0] * 0x18),
+                    (const br_vector3*)(pVertices + (tU32)pbVar6[1] * 0x18), pRayShape,
+                    &local_18, &local_58, &local_30);
+                if (uVar4 != 0) {
+                    *pCollided = 1;
+                    if ((uVar4 & 0x40) == 0) {
+                        uVar5 = ShapeRayCast((const br_vector3*)(pVertices + (tU32)pbVar6[1] * 0x18),
+                            (const br_vector3*)(pVertices + (tU32)pbVar6[0] * 0x18), pRayShape,
+                            &local_48, &local_4c, &local_3c);
+                        if ((uVar5 & 0x40) == 0) {
+                            goto LAB_00428440;
+                        }
+                        uVar4 = uVar4 & 0xff;
+                    } else {
+                        uVar4 = ShapeRayCast((const br_vector3*)(pVertices + (tU32)pbVar6[1] * 0x18),
+                            (const br_vector3*)(pVertices + (tU32)pbVar6[0] * 0x18), pRayShape,
+                            &local_18, &local_58, &local_30);
+                        local_58 = gFLOAT_0058996c - local_58;
+                    }
+                    if ((uVar4 & 0x40) == 0) {
+                        local_30.v[1] = -local_30.v[1];
+                        local_30.v[2] = -local_30.v[2];
+                        local_30.v[0] = -local_30.v[0];
+                        if (gFLOAT_00589a20 <= local_30.v[0] * pNormal[0]
+                                + pNormal[1] * local_30.v[1]
+                                + pNormal[2] * local_30.v[2]) {
+                            local_48.v[0] = local_18.v[0] - pObj2->cmpos.v[0];
+                            local_48.v[1] = local_18.v[1] - pObj2->cmpos.v[1];
+                            local_48.v[2] = local_18.v[2] - pObj2->cmpos.v[2];
+                            local_3c.v[0] = pObj2->velocity_car_space.v[0]
+                                + (pObj2->rotate_omega.v[1] * local_48.v[2] - pObj2->rotate_omega.v[2] * local_48.v[1]);
+                            local_3c.v[1] = pObj2->velocity_car_space.v[1]
+                                + (pObj2->rotate_omega.v[2] * local_48.v[0] - pObj2->rotate_omega.v[0] * local_48.v[2]);
+                            local_3c.v[2] = pObj2->velocity_car_space.v[2]
+                                + (pObj2->rotate_omega.v[0] * local_48.v[1] - pObj2->rotate_omega.v[1] * local_48.v[0]);
+                            fVar3 = local_3c.v[0] * local_30.v[0];
+                            fVar1 = local_3c.v[1] * local_30.v[1];
+                            fVar2 = local_3c.v[2] * local_30.v[2];
+                            GetShapePoint(&local_48, (tPhysics_shape*)pEdgeShape, pbVar6[0]);
+                            GetShapePoint(&local_3c, (tPhysics_shape*)pEdgeShape, pbVar6[1]);
+                            local_24.v[0] = local_48.v[0] + local_58 * (local_3c.v[0] - local_48.v[0]);
+                            local_24.v[1] = local_48.v[1] + local_58 * (local_3c.v[1] - local_48.v[1]);
+                            local_24.v[2] = local_48.v[2] + local_58 * (local_3c.v[2] - local_48.v[2]);
+                            local_48.v[0] = local_24.v[0] - pObj1->cmpos.v[0];
+                            local_48.v[1] = local_24.v[1] - pObj1->cmpos.v[1];
+                            local_48.v[2] = local_24.v[2] - pObj1->cmpos.v[2];
+                            local_3c.v[0] = pObj1->velocity_car_space.v[0]
+                                + (pObj1->rotate_omega.v[1] * local_48.v[2] - pObj1->rotate_omega.v[2] * local_48.v[1]);
+                            local_3c.v[1] = pObj1->velocity_car_space.v[1]
+                                + (pObj1->rotate_omega.v[2] * local_48.v[0] - pObj1->rotate_omega.v[0] * local_48.v[2]);
+                            local_3c.v[2] = pObj1->velocity_car_space.v[2]
+                                + (pObj1->rotate_omega.v[0] * local_48.v[1] - pObj1->rotate_omega.v[1] * local_48.v[0]);
+                            BrMatrix34ApplyV(&local_c, &local_30, &pObj2->transform_matrix);
+                            BrMatrix34TApplyV(&local_48, &local_c, &pObj1->transform_matrix);
+                            if (gFLOAT_00589978 < (fVar2 + fVar1 + fVar3)
+                                    - (local_3c.v[2] * local_48.v[2] + local_3c.v[1] * local_48.v[1] + local_3c.v[0] * local_48.v[0])) {
+                                pRecordCount = AddObjectObjectForce(pRecords, &local_24, 0.0f,
+                                    &local_18, &local_c, pRecordCount,
+                                    pObj1, pObj2, 6, (br_vector3*)(size_t)local_50, 0.0f);
+                            }
+                        }
+                    }
+                }
+            }
+LAB_00428440:
+            local_50 = local_50 + 1;
+            pbVar6 = pbVar6 + 2;
+        } while (local_50 < local_54);
+    }
+    return pRecordCount;
+}
+
+// FUNCTION: CARMA2_HW 0x00428530
+int C2_HOOK_FASTCALL FUN_00428530(tPhysics_object* pObject1, tPhysics_object* pObject2, tPhysics_shape* pCorner_shape, tPhysics_shape* pShape, float pT, int pEdge_count, float* pRecords, int pRecord_count, undefined4 pArg9, tU8* pEdge_visibility) {
+    float fVar1;
+    float fVar2;
+    tU32 uVar3;
+    int iVar4;
+    tFinteray_ray_cast_locals local;
+
+    uVar3 = pShape->common.type;
+    uVar3 -= 2;
+    if (uVar3 == 0) {
+        return pRecord_count;
+    }
+    iVar4 = 0;
+    if (0 < pEdge_count) {
+        local.edge_record = (br_vector3*)(uintptr_t)*(tU32*)&pT;
+        do {
+            if (pEdge_visibility[iVar4] == 0
+                    && (uVar3 = ShapeRayCastWithSphere(local.edge_record,
+                        (br_vector3*)((tU8*)local.edge_record + 0xc), pShape,
+                        &local.hit_position_and_corner[0], &local.shape_normal, &pT)) != 0) {
+                if (uVar3 == 0xFFFFFFFF) {
+                    pEdge_visibility[iVar4] = 0xFF;
+                    pObject1->flags |= 0x200;
+                    pObject2->flags |= 0x200;
+                } else {
+                    GetShapePoint(&local.hit_position_and_corner[1], (tPhysics_shape*)pCorner_shape, iVar4);
+                    if ((uVar3 & 0x40) != 0) {
+                        pT = 1.05f;
+                        BrMatrix34ApplyV(&local.actor_normal, &local.shape_normal, &pObject2->actor->t.t.mat);
+                        local.actor_normal.v[0] = -local.actor_normal.v[0];
+                        local.actor_normal.v[1] = -local.actor_normal.v[1];
+                        local.actor_normal.v[2] = -local.actor_normal.v[2];
+                    } else {
+                        BrMatrix34ApplyV(&local.actor_normal, &local.shape_normal, &pObject2->actor->t.t.mat);
+                        BrMatrix34ApplyV(&local.object_normal, &local.shape_normal, &pObject2->transform_matrix);
+                        fVar1 = -(gFLOAT_0058996c - pT);
+                        local.object_normal.v[0] = local.object_normal.v[0] * fVar1;
+                        local.object_normal.v[1] = local.object_normal.v[1] * fVar1;
+                        fVar2 = -pT;
+                        local.object_normal.v[2] = local.object_normal.v[2] * fVar1;
+                        local.actor_normal.v[0] = local.actor_normal.v[0] * fVar2 + local.object_normal.v[0];
+                        local.actor_normal.v[1] = local.actor_normal.v[1] * fVar2 + local.object_normal.v[1];
+                        fVar1 = local.actor_normal.v[2] * fVar2 + local.object_normal.v[2];
+                        local.actor_normal.v[2] = sqrtf(fVar1 * fVar1
+                            + local.actor_normal.v[1] * local.actor_normal.v[1]
+                            + local.actor_normal.v[0] * local.actor_normal.v[0]);
+                        if (local.actor_normal.v[2] <= gFLOAT_005899a8) {
+                            local.actor_normal.v[0] = 1.0f;
+                            local.actor_normal.v[1] = 0.0f;
+                            local.actor_normal.v[2] = 0.0f;
+                        } else {
+                            local.actor_normal.v[2] = (float)(gDouble_005899b0 / local.actor_normal.v[2]);
+                            local.actor_normal.v[0] = local.actor_normal.v[2] * local.actor_normal.v[0];
+                            local.actor_normal.v[1] = local.actor_normal.v[2] * local.actor_normal.v[1];
+                            local.actor_normal.v[2] = local.actor_normal.v[2] * fVar1;
+                        }
+                    }
+                    pRecord_count = AddObjectObjectForce(pRecords, &local.hit_position_and_corner[1], pT,
+                        &local.hit_position_and_corner[0], &local.actor_normal, pRecord_count,
+                        pObject1, pObject2, 5, NULL, 0.0f);
+                }
+            }
+            iVar4 = iVar4 + 1;
+            local.edge_record = (br_vector3*)((tU8*)local.edge_record + 0x18);
+        } while (iVar4 < pEdge_count);
+    }
+    return pRecord_count;
+}
+
+#pragma auto_inline(off)
+// FUNCTION: CARMA2_HW 0x004287a0
+int C2_HOOK_FASTCALL FUN_004287a0(tPhysics_object* pObject1, tPhysics_object* pObject2, tPhysics_shape* pShape1, tPhysics_shape* pShape2, const br_vector3* pVertices1, const br_vector3* pVertices2, void* pRecords, int pRecord_count, undefined4 pArg11, const tU8* pVisibility1, const tU8* pVisibility2) {
+    int iVar1;
+    float uVar2;
+    float fVar3;
+    float fVar4;
+    tU8 bVar5;
+    tU8 bVar6;
+    int iVar7;
+    tU8* pbVar8;
+    int iVar9;
+    tU8* local_12ec;
+    int local_12e8;
+    tU8* local_12e4;
+    int local_12e0;
+    int local_12dc;
+    int local_12cc;
+    br_vector3 shape_endpoint;
+    br_vector3 edge_direction;
+    br_vector3 edge_motion;
+    br_vector3 vertex_motion;
+    br_vector3 hit_position;
+    float ray_factor;
+    tPhysics_joint_data candidate;
+    tU8 edge_indices[188];
+    br_vector3 edge_starts[186];
+    br_vector3 edge_deltas[186];
+
+    /* Retail: 186 starts/deltas and one contiguous 0x60-byte candidate. */
+    C2_HOOK_BUG_ON(sizeof(candidate) != 0x60);
+    (void)pArg11;
+    switch (pShape1->common.type) {
+    case kCollisionShapeType_Box:
+        local_12ec = (tU8*)gBox_edges_0058f7f0;
+        local_12e8 = 0xc;
+        break;
+    case kCollisionShapeType_Polyhedron:
+    case kCollisionShapeType_Wireframe_Polyhedron:
+        local_12ec = (tU8*)pShape1->polyhedron.polyhedron.edges;
+        local_12e8 = pShape1->polyhedron.polyhedron.count_edges;
+        break;
+    case kCollisionShapeType_Wireframe:
+        local_12ec = (tU8*)pShape1->wireframe.wireframe.lines;
+        local_12e8 = pShape1->wireframe.wireframe.count_lines;
+        break;
+    default:
+        PhysicsError(ePhysicsError_UnknownShapeType, gEmpty_string_00676920);
+        local_12ec = (tU8*)pShape1;
+        local_12e8 = 0;
+        break;
+    }
+    *(float*)&candidate.field_0x00 = 2.0f;
+    switch (pShape2->common.type) {
+    case kCollisionShapeType_Box:
+        local_12e4 = (tU8*)gBox_edges_0058f7f0;
+        local_12dc = 0xc;
+        break;
+    case kCollisionShapeType_Polyhedron:
+    case kCollisionShapeType_Wireframe_Polyhedron:
+        local_12e4 = (tU8*)pShape2->polyhedron.polyhedron.edges;
+        local_12dc = pShape2->polyhedron.polyhedron.count_edges;
+        break;
+    case kCollisionShapeType_Wireframe:
+        local_12e4 = (tU8*)pShape2->wireframe.wireframe.lines;
+        local_12dc = pShape2->wireframe.wireframe.count_lines;
+        break;
+    default:
+        PhysicsError(ePhysicsError_UnknownShapeType, gEmpty_string_00676920);
+        local_12e4 = (tU8*)pShape2;
+        local_12dc = 0;
+        break;
+    }
+
+    iVar9 = 0;
+    local_12e0 = 0;
+    local_12cc = 0;
+    pbVar8 = local_12e4;
+    if (0 < local_12dc) {
+        do {
+            if ((pVisibility2[pbVar8[1]] & pVisibility2[pbVar8[0]]) == 0) {
+                switch (pShape2->common.type) {
+                case kCollisionShapeType_Box:
+                    uVar2 = (pbVar8[0] & 2) == 0 ? pShape2->box.common.bb.max.v[0] : pShape2->box.common.bb.min.v[0];
+                    *(float*)((tU8*)edge_starts + iVar9) = uVar2;
+                    uVar2 = (pbVar8[0] & 1) == 0 ? pShape2->box.common.bb.max.v[1] : pShape2->box.common.bb.min.v[1];
+                    *(float*)((tU8*)edge_starts + iVar9 + 4) = uVar2;
+                    uVar2 = (pbVar8[0] & 4) == 0 ? pShape2->box.common.bb.max.v[2] : pShape2->box.common.bb.min.v[2];
+                    *(float*)((tU8*)edge_starts + iVar9 + 8) = uVar2;
+                    bVar5 = pbVar8[1];
+                    shape_endpoint.v[0] = (bVar5 & 2) == 0 ? pShape2->box.common.bb.max.v[0] : pShape2->box.common.bb.min.v[0];
+                    shape_endpoint.v[1] = (bVar5 & 1) == 0 ? pShape2->box.common.bb.max.v[1] : pShape2->box.common.bb.min.v[1];
+                    shape_endpoint.v[2] = (bVar5 & 4) == 0 ? pShape2->box.common.bb.max.v[2] : pShape2->box.common.bb.min.v[2];
+                    break;
+                case kCollisionShapeType_Polyhedron:
+                case kCollisionShapeType_Wireframe_Polyhedron:
+                    iVar7 = (int)(tU32)pShape2->polyhedron.polyhedron.points;
+                    goto copy_shape_points;
+                case kCollisionShapeType_Wireframe:
+                    iVar7 = (int)(tU32)pShape2->wireframe.wireframe.points;
+copy_shape_points:
+                    *(tU32*)((tU8*)edge_starts + iVar9) = *(tU32*)(iVar7 + (tU32)pbVar8[0] * 0xc);
+                    *(tU32*)((tU8*)edge_starts + iVar9 + 4) = *(tU32*)(iVar7 + 4 + (tU32)pbVar8[0] * 0xc);
+                    *(tU32*)((tU8*)edge_starts + iVar9 + 8) = *(tU32*)(iVar7 + 8 + (tU32)pbVar8[0] * 0xc);
+                    iVar1 = iVar7 + (tU32)pbVar8[1] * 0xc;
+                    shape_endpoint.v[0] = *(float*)(iVar7 + (tU32)pbVar8[1] * 0xc);
+                    shape_endpoint.v[1] = *(float*)(iVar1 + 4);
+                    shape_endpoint.v[2] = *(float*)(iVar1 + 8);
+                    break;
+                default:
+                    PhysicsError(ePhysicsError_UnknownShapeType, gEmpty_string_00676920);
+                    break;
+                }
+                fVar3 = *(float*)((tU8*)edge_starts + iVar9 + 4);
+                fVar4 = *(float*)((tU8*)edge_starts + iVar9 + 8);
+                *(float*)((tU8*)edge_deltas + iVar9) = shape_endpoint.v[0] - *(float*)((tU8*)edge_starts + iVar9);
+                *(float*)((tU8*)edge_deltas + iVar9 + 4) = shape_endpoint.v[1] - fVar3;
+                edge_indices[local_12e0] = (tU8)local_12cc;
+                local_12e0++;
+                *(float*)((tU8*)edge_deltas + iVar9 + 8) = shape_endpoint.v[2] - fVar4;
+                iVar9 += 0xc;
+            }
+            local_12cc++;
+            pbVar8 += 2;
+        } while (local_12cc < local_12dc);
+    }
+
+    if (0 < local_12e8) {
+        do {
+            bVar5 = pVisibility1[local_12ec[1]];
+            bVar6 = pVisibility1[local_12ec[0]];
+            if ((bVar5 & bVar6) == 0 && bVar6 != 0xff && bVar5 != 0xff) {
+                iVar9 = 0;
+                edge_direction.v[0] = ((const float*)((const tU8*)pVertices1 + (tU32)local_12ec[1] * 0x18))[0]
+                    - ((const float*)((const tU8*)pVertices1 + (tU32)local_12ec[0] * 0x18))[0];
+                edge_direction.v[1] = ((const float*)((const tU8*)pVertices1 + (tU32)local_12ec[1] * 0x18))[1]
+                    - ((const float*)((const tU8*)pVertices1 + (tU32)local_12ec[0] * 0x18))[1];
+                edge_direction.v[2] = ((const float*)((const tU8*)pVertices1 + (tU32)local_12ec[1] * 0x18))[2]
+                    - ((const float*)((const tU8*)pVertices1 + (tU32)local_12ec[0] * 0x18))[2];
+                edge_motion.v[0] = (((const float*)((const tU8*)pVertices1 + (tU32)local_12ec[1] * 0x18))[3]
+                    - ((const float*)((const tU8*)pVertices1 + (tU32)local_12ec[0] * 0x18))[3]) - edge_direction.v[0];
+                edge_motion.v[1] = (((const float*)((const tU8*)pVertices1 + (tU32)local_12ec[1] * 0x18))[4]
+                    - ((const float*)((const tU8*)pVertices1 + (tU32)local_12ec[0] * 0x18))[4]) - edge_direction.v[1];
+                edge_motion.v[2] = (((const float*)((const tU8*)pVertices1 + (tU32)local_12ec[1] * 0x18))[5]
+                    - ((const float*)((const tU8*)pVertices1 + (tU32)local_12ec[0] * 0x18))[5]) - edge_direction.v[2];
+                vertex_motion.v[0] = ((const float*)((const tU8*)pVertices1 + (tU32)local_12ec[0] * 0x18))[3]
+                    - ((const float*)((const tU8*)pVertices1 + (tU32)local_12ec[0] * 0x18))[0];
+                vertex_motion.v[1] = ((const float*)((const tU8*)pVertices1 + (tU32)local_12ec[0] * 0x18))[4]
+                    - ((const float*)((const tU8*)pVertices1 + (tU32)local_12ec[0] * 0x18))[1];
+                vertex_motion.v[2] = ((const float*)((const tU8*)pVertices1 + (tU32)local_12ec[0] * 0x18))[5]
+                    - ((const float*)((const tU8*)pVertices1 + (tU32)local_12ec[0] * 0x18))[2];
+                if (0 < local_12e0) {
+                    do {
+                        iVar7 = FUN_00424990((float*)((tU8*)edge_starts + iVar9),
+                                (float*)((tU8*)edge_deltas + iVar9),
+                                (float*)((const tU8*)pVertices1 + (tU32)local_12ec[0] * 0x18),
+                                edge_direction.v, vertex_motion.v, edge_motion.v, (float*)&candidate, 0,
+                                (int)(tU32)pObject1, (int)(tU32)pObject2);
+                        if (iVar7 != 0) {
+                            bVar5 = edge_indices[iVar9 / 0xc];
+                            iVar7 = ShapeRayCast(
+                                (const br_vector3*)((const tU8*)pVertices1 + (tU32)local_12ec[0] * 0x18),
+                                (const br_vector3*)((const tU8*)pVertices1 + (tU32)local_12ec[1] * 0x18),
+                                pShape2, &hit_position, &ray_factor, NULL);
+                            if (iVar7 == 0) {
+                                iVar7 = ShapeRayCast(
+                                    (const br_vector3*)((const tU8*)pVertices2 + (tU32)local_12e4[(tU32)bVar5 * 2] * 0x18),
+                                    (const br_vector3*)((const tU8*)pVertices2 + (tU32)local_12e4[(tU32)bVar5 * 2 + 1] * 0x18),
+                                    pShape1, &hit_position, &ray_factor, NULL);
+                                if (iVar7 == 0) {
+                                    pRecord_count = AddObjectObjectForce((float*)pRecords, &candidate.anchor1,
+                                            *(float*)&candidate.field_0x00, &candidate.anchor2,
+                                            &candidate.axis1, pRecord_count, pObject1, pObject2,
+                                            6, NULL, 0.0f);
+                                    *(float*)&candidate.field_0x00 = 2.0f;
+                                }
+                            }
+                        }
+                        iVar9 += 0xc;
+                    } while (iVar9 / 0xc < local_12e0);
+                }
+            }
+            local_12ec += 2;
+            local_12e8--;
+        } while (local_12e8 != 0);
+    }
+    return pRecord_count;
+}
+#pragma auto_inline(on)
+
+#pragma auto_inline(off)
+// FUNCTION: CARMA2_HW 0x0045d5e0
+void C2_HOOK_FASTCALL FUN_0045d5e0(tCollision_shape_sphere_data* pSphere1, tCollision_shape_sphere_data* pSphere2, br_vector3* pStart, br_vector3* pEnd, br_vector3* pNormal, float* pFactor) {
+    float* start_values;
+    float* end_values;
+    float delta_x;
+    float delta_y;
+    float delta_z;
+    float delta_length_squared;
+    float center_delta_x;
+    float center_delta_y;
+    float center_delta_z;
+    float radius_sum;
+    float projection;
+    float perpendicular_distance_squared;
+    float normal_length;
+    float scale;
+
+    start_values = pStart->v;
+    end_values = pEnd->v;
+    *pFactor = 100.0f;
+    delta_x = end_values[0] - start_values[0];
+    delta_y = end_values[1] - start_values[1];
+    delta_z = end_values[2] - start_values[2];
+    delta_length_squared = delta_z * delta_z + delta_y * delta_y + delta_x * delta_x;
+    center_delta_x = start_values[0] - pSphere1->center.v[0];
+    center_delta_y = start_values[1] - pSphere1->center.v[1];
+    center_delta_z = start_values[2] - pSphere1->center.v[2];
+    radius_sum = pSphere1->radius + pSphere2->radius;
+
+    if (gDouble_00589fd8 <= delta_length_squared) {
+        projection = -((center_delta_z * delta_z + center_delta_y * delta_y + center_delta_x * delta_x)
+            / delta_length_squared);
+        perpendicular_distance_squared = center_delta_z * center_delta_z
+            + center_delta_y * center_delta_y + center_delta_x * center_delta_x
+            - projection * projection * delta_length_squared;
+        if (!((radius_sum - gDouble_00589fe0) * (radius_sum - gDouble_00589fe0) >= perpendicular_distance_squared)) {
+            return;
+        }
+        if (perpendicular_distance_squared > radius_sum * radius_sum) {
+            goto point_collision;
+        }
+        projection -= sqrtf((radius_sum * radius_sum - perpendicular_distance_squared) / delta_length_squared);
+        if (!(gUNK_00589fac <= projection && projection <= gUNK_00589fb0)) {
+            goto point_collision;
+        }
+        center_delta_x = delta_x * -projection - center_delta_x;
+        center_delta_y = delta_y * -projection - center_delta_y;
+        center_delta_z = delta_z * -projection - center_delta_z;
+        normal_length = sqrtf(center_delta_x * center_delta_x
+            + center_delta_z * center_delta_z + center_delta_y * center_delta_y);
+        *pFactor = projection;
+        pNormal->v[0] = center_delta_x;
+        pNormal->v[1] = center_delta_y;
+        pNormal->v[2] = center_delta_z;
+        if (gUNK_00589fc4 < normal_length) {
+            scale = (float)(gDouble_00589fe8 / normal_length);
+            pNormal->v[0] = scale * center_delta_x;
+            pNormal->v[1] = scale * center_delta_y;
+            pNormal->v[2] = scale * center_delta_z;
+        } else {
+            pNormal->v[0] = 1.0f;
+            pNormal->v[1] = 0.0f;
+            pNormal->v[2] = 0.0f;
+        }
+        return;
+    }
+point_collision:
+    PointSphereCollision(&pSphere1->center, pEnd, radius_sum, pNormal, pFactor);
+}
+#pragma auto_inline(on)
+
+// FUNCTION: CARMA2_HW 0x0045d860
+void C2_HOOK_FASTCALL PointSphereCollision(br_vector3* pPoint, br_vector3* pSphere_center, br_scalar pRadius, br_vector3* pNormal, br_scalar* pCollision_t) {
+    br_scalar dx;
+    br_scalar dy;
+    br_scalar dz;
+    volatile br_scalar distance_squared;
+    br_scalar radius_squared;
+    br_scalar scale;
+
+    dx = pPoint->v[0] - pSphere_center->v[0];
+    dy = pPoint->v[1] - pSphere_center->v[1];
+    dz = pPoint->v[2] - pSphere_center->v[2];
+    distance_squared = dx * dx + dy * dy + dz * dz;
+    if ((pRadius - -0.002f) * (pRadius - -0.002f) > distance_squared) {
+        radius_squared = pRadius * pRadius;
+        if (radius_squared < distance_squared) {
+            scale = (br_scalar)(1.0 / sqrt(distance_squared));
+            pNormal->v[0] = scale * dx;
+            pNormal->v[1] = scale * dy;
+            pNormal->v[2] = scale * dz;
+            *pCollision_t = 1.0f;
+        }
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x0045d920
+void C2_HOOK_FASTCALL FUN_0045d920(br_scalar* pStart, br_scalar* pEnd, br_scalar* pEdge_start, br_scalar* pEdge_end, br_scalar* pSphere, br_scalar* pCollision_pos, br_scalar* pNormal, br_scalar* pT, tU32 pStart_flags, tU32 pEnd_flags) {
+    volatile br_vector3 ray_delta;
+    volatile br_vector3 edge_delta;
+    float fVar1;
+    float fVar2;
+    float fVar3;
+    float fVar4;
+    float fVar5;
+    volatile float local_3c;
+    volatile float local_38;
+    volatile float local_34;
+    volatile float local_30;
+    volatile float local_2c;
+    volatile float local_28;
+    volatile float local_24;
+    volatile float local_20;
+    volatile float local_1c;
+    volatile float local_c;
+    volatile float local_8;
+    volatile float local_4;
+
+    *pT = 100.0f;
+    ray_delta.v[0] = pEnd[0] - pStart[0];
+    ray_delta.v[1] = pEnd[1] - pStart[1];
+    edge_delta.v[0] = pEdge_end[0] - pEdge_start[0];
+    edge_delta.v[1] = pEdge_end[1] - pEdge_start[1];
+    ray_delta.v[2] = pEnd[2] - pStart[2];
+    edge_delta.v[2] = pEdge_end[2] - pEdge_start[2];
+    fVar1 = ray_delta.v[2] * ray_delta.v[2] + ray_delta.v[1] * ray_delta.v[1] + ray_delta.v[0] * ray_delta.v[0];
+    local_4 = (edge_delta.v[2] * ray_delta.v[2] + edge_delta.v[1] * ray_delta.v[1] + edge_delta.v[0] * ray_delta.v[0]) / fVar1;
+    local_c = ray_delta.v[0] * local_4;
+    local_3c = edge_delta.v[0] - local_c;
+    local_8 = ray_delta.v[1] * local_4;
+    local_38 = edge_delta.v[1] - local_8;
+    local_4 = ray_delta.v[2] * local_4;
+    local_24 = pStart[0] - pEdge_start[0];
+    local_34 = edge_delta.v[2] - local_4;
+    local_20 = pStart[1] - pEdge_start[1];
+    local_1c = pStart[2] - pEdge_start[2];
+    fVar3 = local_34 * local_34 + local_38 * local_38 + local_3c * local_3c;
+    fVar2 = -((local_1c * ray_delta.v[2] + local_20 * ray_delta.v[1] + local_24 * ray_delta.v[0]) / fVar1);
+    local_30 = ray_delta.v[0] * fVar2 + local_24;
+    local_2c = ray_delta.v[1] * fVar2 + local_20;
+    local_28 = ray_delta.v[2] * fVar2 + local_1c;
+    if (fVar3 < (float)gDouble_00589fd8) {
+        StationarySphereEdgeCollide((const br_vector3*)pStart, (const br_vector3*)pEnd, (br_vector3*)&ray_delta, fVar1, (const br_vector3*)pEdge_end, (const tCollision_shape_sphere_data*)pSphere, (br_vector3*)pCollision_pos, (br_vector3*)pNormal, pT);
+        return;
+    }
+    fVar2 = (local_28 * local_34 + local_2c * local_38 + local_30 * local_3c) / fVar3;
+    local_3c = local_3c * fVar2;
+    local_38 = local_38 * fVar2;
+    fVar4 = (local_28 * local_28 + local_2c * local_2c + local_30 * local_30)
+        - (local_34 * fVar2 * local_34 * fVar2 + local_38 * local_38 + local_3c * local_3c);
+    if (pSphere[4] - pSphere[0] * gFLOAT_00589ff4 * gFLOAT_00589ff8 < fVar4) {
+        return;
+    }
+    if (fVar4 <= pSphere[4]) {
+        fVar2 = fVar2 - sqrtf((pSphere[4] - fVar4) / fVar3);
+        local_c = (local_c * fVar2 + local_30) - local_24;
+        local_8 = (local_8 * fVar2 + local_2c) - local_20;
+        local_4 = (local_4 * fVar2 + local_28) - local_1c;
+        fVar3 = (local_4 * ray_delta.v[2] + local_8 * ray_delta.v[1] + local_c * ray_delta.v[0]) / fVar1;
+        if (gUNK_00589fac <= fVar3) {
+            if (fVar3 <= gUNK_00589fb0) {
+                if (gUNK_00589fac <= fVar2 && fVar2 <= gUNK_00589fb0) {
+                    pCollision_pos[0] = pStart[0] + local_c;
+                    pCollision_pos[1] = local_8 + pStart[1];
+                    fVar1 = pStart[2];
+                    pCollision_pos[2] = local_4 + fVar1;
+                    fVar5 = pCollision_pos[0] - (pEdge_start[0] + (pEdge_end[0] - pEdge_start[0]) * fVar2);
+                    fVar3 = pCollision_pos[1] - ((pEdge_end[1] - pEdge_start[1]) * fVar2 + pEdge_start[1]);
+                    fVar4 = (local_4 + fVar1) - ((pEdge_end[2] - pEdge_start[2]) * fVar2 + pEdge_start[2]);
+                    fVar1 = sqrtf(fVar4 * fVar4 + fVar3 * fVar3 + fVar5 * fVar5);
+                    if (gUNK_00589fc4 < fVar1) {
+                        fVar1 = (float)(gDouble_00589fe8 / fVar1);
+                        pNormal[0] = fVar1 * fVar5;
+                        pNormal[1] = fVar1 * fVar3;
+                        pNormal[2] = fVar1 * fVar4;
+                        *pT = fVar2;
+                        return;
+                    }
+                    pNormal[0] = 1.0f;
+                    pNormal[1] = 0.0f;
+                    pNormal[2] = 0.0f;
+                    *pT = fVar2;
+                    return;
+                }
+                goto collision_fallback;
+            }
+            if ((pEnd_flags & 0x80) == 0) {
+                FUN_0045e020((const br_vector3*)pEnd, (const br_vector3*)pEdge_start, (const br_vector3*)pEdge_end, (const br_vector3*)&edge_delta, (const tCollision_shape_sphere_data*)pSphere, (br_vector3*)pCollision_pos, (br_vector3*)pNormal, pT);
+            }
+        } else if ((pStart_flags & 0x80) == 0) {
+            FUN_0045e020((const br_vector3*)pStart, (const br_vector3*)pEdge_start, (const br_vector3*)pEdge_end, (const br_vector3*)&edge_delta, (const tCollision_shape_sphere_data*)pSphere, (br_vector3*)pCollision_pos, (br_vector3*)pNormal, pT);
+            if (*pT < gFloat_00589fd0) {
+                return;
+            }
+            goto collision_fallback;
+        }
+        if (*pT < gFloat_00589fd0) {
+            return;
+        }
+    }
+collision_fallback:
+    StationarySphereEdgeCollide((const br_vector3*)pStart, (const br_vector3*)pEnd, (br_vector3*)&ray_delta, fVar1, (const br_vector3*)pEdge_end, (const tCollision_shape_sphere_data*)pSphere, (br_vector3*)pCollision_pos, (br_vector3*)pNormal, pT);
+}
+
+// FUNCTION: CARMA2_HW 0x0045e200
+void C2_HOOK_FASTCALL FUN_0045e200(br_scalar* pClearance, tCollision_shape_polyhedron_data* pShape, const br_vector3* pStart, const br_vector3* pEnd, br_vector3* pHit_position, br_vector3* pNormal, br_scalar* pFactor) {
+    float fVar1;
+    float fVar2;
+    float fVar3;
+    float fVar4;
+    float fVar5;
+    float fVar6;
+    float fVar7;
+    float* pfVar8;
+    int iVar9;
+    int iVar10;
+    int iVar11;
+    int local_400;
+    int local_3f4;
+    float afStack_3e0[124];
+    float afStack_1f0[124];
+    iVar9 = 0;
+    *pFactor = 100.0f;
+    iVar11 = pShape->count_planes;
+    if (0 < iVar11) {
+        pfVar8 = (float*)pShape->planes;
+        do {
+            fVar1 = pStart->v[2] * pfVar8[2];
+            fVar2 = pStart->v[1] * pfVar8[1];
+            fVar3 = *pfVar8 * pStart->v[0];
+            fVar4 = pEnd->v[2] * pfVar8[2];
+            fVar5 = pEnd->v[1] * pfVar8[1];
+            fVar6 = *pfVar8 * pEnd->v[0];
+            fVar7 = fVar3 + fVar2 + fVar1 + *pClearance + pfVar8[3];
+            afStack_1f0[iVar9] = fVar7;
+            fVar1 = fVar6 + fVar5 + fVar4 + *pClearance + pfVar8[3];
+            afStack_3e0[iVar9] = fVar1;
+            if (fVar7 < gDouble_00589fe0 && fVar1 < gDouble_00589fe0) {
+                return;
+            }
+            iVar9++;
+            pfVar8 += 4;
+        } while (iVar9 < iVar11);
+    }
+    local_400 = 0;
+    if (iVar11 <= 0) {
+        return;
+    }
+    local_3f4 = 0;
+    do {
+        fVar1 = gUNK_00589fb0;
+        if (gDouble_00589fe0 < afStack_3e0[local_400] && afStack_1f0[local_400] < gUNK_00589fac) {
+            if (afStack_3e0[local_400] < gUNK_00589fac) {
+                fVar1 = gUNK_00589fb0;
+                pHit_position->v[0] = pEnd->v[0];
+                pHit_position->v[1] = pEnd->v[1];
+                pHit_position->v[2] = pEnd->v[2];
+            } else {
+                fVar1 = -afStack_1f0[local_400] / (afStack_3e0[local_400] - afStack_1f0[local_400]);
+                fVar2 = gUNK_00589fb0 - fVar1;
+                pHit_position->v[0] = pStart->v[0] * fVar2;
+                pHit_position->v[1] = pStart->v[1] * fVar2;
+                pHit_position->v[2] = pStart->v[2] * fVar2;
+                fVar2 = pEnd->v[2];
+                fVar3 = pEnd->v[0];
+                pHit_position->v[1] = pEnd->v[1] * fVar1 + pHit_position->v[1];
+                pHit_position->v[2] = fVar2 * fVar1 + pHit_position->v[2];
+                pHit_position->v[0] = fVar3 * fVar1 + pHit_position->v[0];
+            }
+            iVar9 = 0;
+            pfVar8 = (float*)((char*)pShape->planes + local_3f4);
+            fVar2 = *pfVar8;
+            fVar5 = pfVar8[1] * *pClearance + pHit_position->v[1];
+            fVar4 = pfVar8[2] * *pClearance + pHit_position->v[2];
+            fVar3 = *pClearance;
+            pHit_position->v[1] = fVar5;
+            pHit_position->v[0] = fVar2 * fVar3 + pHit_position->v[0];
+            pHit_position->v[2] = fVar4;
+            iVar11 = pShape->count_planes;
+            if (0 < iVar11) {
+                iVar10 = 0;
+                do {
+                    if (iVar9 != local_400) {
+                        pfVar8 = (float*)((char*)pShape->planes + iVar10);
+                        if (pfVar8[2] * fVar4 + pfVar8[1] * fVar5 + *pfVar8 * pHit_position->v[0] + pfVar8[3] <= gUNK_00589fac) {
+                            break;
+                        }
+                    }
+                    iVar9++;
+                    iVar10 += 0x10;
+                } while (iVar9 < iVar11);
+            }
+            if (iVar9 == iVar11) {
+                *pFactor = fVar1;
+                local_400 *= 0x10;
+                pNormal->v[0] = ((br_vector4*)((char*)pShape->planes + local_400))->v[0];
+                pNormal->v[1] = ((br_vector4*)((char*)pShape->planes + local_400))->v[1];
+                pNormal->v[2] = ((br_vector4*)((char*)pShape->planes + local_400))->v[2];
+                return;
+            }
+        }
+        local_400++;
+        local_3f4 += 0x10;
+        if (iVar11 <= local_400) {
+            return;
+        }
+    } while (1);
+}
+
+// FUNCTION: CARMA2_HW 0x0045e4e0
+void C2_HOOK_FASTCALL FUN_0045e4e0(float* param_1, float* param_2, float* param_3, float* param_4, float* param_5, float* param_6, float* param_7) {
+    float fVar1;
+    float fVar2;
+    float fVar3;
+    float fVar4;
+    float* pfVar5;
+    int iVar6;
+    int iVar7;
+    int iVar8;
+    float* pfVar9;
+    float* pfVar10;
+    float* local_18;
+
+    *param_7 = 100.0f;
+    fVar3 = *param_1;
+    iVar7 = 0;
+    pfVar5 = param_4;
+    pfVar9 = param_2 + 1;
+    do {
+        fVar1 = (float)((pfVar9[3] + fVar3) - gDouble_00589fe0);
+        if ((fVar1 < *(float*)(((int)param_3 - (int)param_4) + (int)pfVar5)) && (fVar1 < *pfVar5)) {
+            return;
+        }
+        fVar1 = (float)((*pfVar9 - fVar3) - gDouble_0058a000);
+        if ((*(float*)(((int)param_3 - (int)param_4) + (int)pfVar5) < fVar1) && (*pfVar5 < fVar1)) {
+            return;
+        }
+        iVar7 = iVar7 + 1;
+        pfVar5 = pfVar5 + 1;
+        pfVar9 = pfVar9 + 1;
+    } while (iVar7 < 3);
+    iVar8 = 0;
+    param_2 = param_2 + 4;
+    iVar7 = (int)param_4 - (int)param_3;
+    pfVar9 = param_3;
+    local_18 = param_2;
+    do {
+        fVar4 = gUNK_00589fb0;
+        fVar1 = local_18[-3] - fVar3;
+        if ((*pfVar9 < fVar1) && (fVar1 - gDouble_0058a000 < *(float*)(iVar7 + (int)pfVar9))) {
+            if (fVar1 < *(float*)(iVar7 + (int)pfVar9)) {
+                fVar4 = (fVar1 - *pfVar9) / (*(float*)(iVar7 + (int)pfVar9) - *pfVar9);
+                fVar1 = gUNK_00589fb0 - fVar4;
+                *param_5 = *param_3 * fVar1;
+                param_5[1] = param_3[1] * fVar1;
+                param_5[2] = param_3[2] * fVar1;
+                fVar1 = param_4[2];
+                fVar2 = *param_4;
+                param_5[1] = param_4[1] * fVar4 + param_5[1];
+                param_5[2] = fVar1 * fVar4 + param_5[2];
+                *param_5 = fVar2 * fVar4 + *param_5;
+                param_5[iVar8] = fVar3 + param_5[iVar8];
+            } else {
+                *param_5 = *param_4;
+                param_5[1] = param_4[1];
+                param_5[2] = param_4[2];
+            }
+            iVar6 = 0;
+            pfVar5 = param_2;
+            pfVar10 = param_5;
+            do {
+                if ((iVar6 != iVar8) && ((*pfVar10 < pfVar5[-3] || (*pfVar5 < *pfVar10)))) {
+                    break;
+                }
+                iVar6 = iVar6 + 1;
+                pfVar10 = pfVar10 + 1;
+                pfVar5 = pfVar5 + 1;
+            } while (iVar6 < 3);
+            if (iVar6 == 3) {
+                *param_7 = fVar4;
+                BrVector3SetFloat((br_vector3*)param_6, 0.0f, 0.0f, 0.0f);
+                param_6[iVar8] = 1.0f;
+                return;
+            }
+        }
+        fVar4 = gUNK_00589fb0;
+        fVar1 = fVar3 + *local_18;
+        if ((fVar1 < *pfVar9) && (*(float*)(iVar7 + (int)pfVar9) < fVar1 - gDouble_00589fe0)) {
+            if (*(float*)(iVar7 + (int)pfVar9) < fVar1) {
+                fVar4 = (fVar1 - *pfVar9) / (*(float*)(iVar7 + (int)pfVar9) - *pfVar9);
+                fVar1 = gUNK_00589fb0 - fVar4;
+                *param_5 = *param_3 * fVar1;
+                param_5[1] = param_3[1] * fVar1;
+                param_5[2] = param_3[2] * fVar1;
+                fVar1 = param_4[2];
+                fVar2 = *param_4;
+                param_5[1] = param_4[1] * fVar4 + param_5[1];
+                param_5[2] = fVar1 * fVar4 + param_5[2];
+                *param_5 = fVar2 * fVar4 + *param_5;
+                param_5[iVar8] = param_5[iVar8] - fVar3;
+            } else {
+                *param_5 = *param_4;
+                param_5[1] = param_4[1];
+                param_5[2] = param_4[2];
+            }
+            iVar6 = 0;
+            pfVar5 = param_2;
+            pfVar10 = param_5;
+            do {
+                if ((iVar6 != iVar8) && ((*pfVar10 < pfVar5[-3] || (*pfVar5 < *pfVar10)))) {
+                    break;
+                }
+                iVar6 = iVar6 + 1;
+                pfVar10 = pfVar10 + 1;
+                pfVar5 = pfVar5 + 1;
+            } while (iVar6 < 3);
+            if (iVar6 == 3) {
+                *param_7 = fVar4;
+                BrVector3SetFloat((br_vector3*)param_6, 0.0f, 0.0f, 0.0f);
+                param_6[iVar8] = -1.0f;
+                return;
+            }
+        }
+        iVar8 = iVar8 + 1;
+        local_18 = local_18 + 1;
+        pfVar9 = pfVar9 + 1;
+        if (2 < iVar8) {
+            return;
+        }
+    } while (1);
+}

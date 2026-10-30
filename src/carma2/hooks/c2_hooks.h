@@ -41,8 +41,10 @@ extern C2_NORETURN void carpocalypse2_error(const char *reason, const char *func
 #ifdef CARPOCALYPSE2_MATCHING
 #define NOT_IMPLEMENTED() carpocalypse2_error("Not implemented", C2_FUNCTION, __FILE__, __LINE__)
 #else
-/* Non-matching builds: stubs become no-ops so boot proceeds past unimplemented code. */
-#define NOT_IMPLEMENTED() do { } while (0)
+/* Non-matching builds: stubs do not abort so boot proceeds past unimplemented code;
+ * the first hit of each site is appended to porttest_notimpl.log (porttest build only). */
+extern void carpocalypse2_not_implemented(const char *function, const char *file, int line);
+#define NOT_IMPLEMENTED() carpocalypse2_not_implemented(C2_FUNCTION, __FILE__, __LINE__)
 #endif
 #define UNUSED() carpocalypse2_error("Unused", C2_FUNCTION, __FILE__, __LINE__)
 

@@ -106,6 +106,8 @@ extern void C2_HOOK_FASTCALL DisposeCar(tCar_spec* pCar_spec, int pOwner);
 
 extern void C2_HOOK_FASTCALL DisposeRaceInfo(tRace_info* pRace_info);
 
+extern void C2_HOOK_FASTCALL LoadingNoOp(void);
+
 extern void C2_HOOK_FASTCALL DisposeOpponentsCars(tRace_info* pRace_info);
 
 extern void C2_HOOK_FASTCALL DisposeRace(void);
@@ -115,5 +117,7 @@ extern void C2_HOOK_FASTCALL DisposeRace(void);
 // DisposeTrack
 
 extern int GetRegisterSourceLocation(char* pSource_location);
+
+tU32 C2_HOOK_FASTCALL DecimalDigitsToBitmask(tU32 pValue);
 
 #endif // GUARD_LOADING1_H

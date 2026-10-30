@@ -1,6 +1,11 @@
 #include "drone.h"
 
 #include "compress.h"
+
+#include "car.h"
+
+#include "displays.h"
+
 #include "errors.h"
 #include "finteray.h"
 #include "globvars.h"
@@ -26,6 +31,11 @@
 #include "drone.h"
 
 extern void C2_HOOK_CDECL FUN_00528130(br_uint_32* pDestination, br_uint_32 pValue, int pCount);
+
+extern const br_scalar gFLOAT_00589318;
+extern const br_scalar gFLOAT_0058931c;
+extern const br_scalar gFLOAT_00589320;
+
 // GLOBAL: CARMA2_HW 0x006820d0
 int gCount_drones;
 
@@ -139,14 +149,26 @@ char gDrone_selection_buffer[256];
 // GLOBAL: CARMA2_HW 0x00684534
 int gDrone_path_output_ready;
 
+// GLOBAL: CARMA2_HW 0x00684538
+int gStatic_drone_path_model_vertex_capacity;
+
+// GLOBAL: CARMA2_HW 0x0068453c
+int gStatic_drone_path_model_face_capacity;
+
 // GLOBAL: CARMA2_HW 0x00681fb8
 tPath_name gDrone_path_output_name;
 
 // GLOBAL: CARMA2_HW 0x00684518
 int gTraffic_disabled;
 
+// GLOBAL: CARMA2_HW 0x0068451c
+br_model* gStatic_drone_path_model;
+
 // GLOBAL: CARMA2_HW 0x00589dc4
 float gDrone_render_zero = 0.0f;
+
+// GLOBAL: CARMA2_HW 0x00684524
+br_actor* gStatic_drone_path_model_actor;
 
 // FUNCTION: CARMA2_HW 0x00452810
 void C2_HOOK_FASTCALL SetDroneRender(int pIndex, int pRender) {
@@ -800,11 +822,157 @@ void C2_HOOK_FASTCALL ProcessThisDrone(int pIndex) {
 }
 
 // FUNCTION: CARMA2_HW 0x00452ba0
-void C2_HOOK_FASTCALL InitialiseEditModelsEtc(void) {
+int C2_HOOK_FASTCALL InitialiseEditModelsEtc(void) {
+    int uVar1;
+    tU16* puVar2;
+    tS16* psVar6;
+    int iVar4;
+    int iVar7;
+    int iVar8;
+    int iVar5;
+    int local_c;
+    int local_8;
+    int local_4;
+    tU8 bVar3;
+    tU32 uVar9;
+    tU32 uVar10;
+    tU32 uVar11;
+    br_material* material1;
+    br_material* material2;
+    tDrone_path_node* node;
+    br_vector3* other_position;
 
-    NOT_IMPLEMENTED();
+    if (gStatic_drone_path_model_actor == NULL) {
+        gStatic_drone_path_model_actor = BrActorAllocate(BR_ACTOR_MODEL, NULL);
+        BrActorAdd(gNon_track_actor, gStatic_drone_path_model_actor);
+    }
+    if (gDrone_path_model_actor == NULL) {
+        gDrone_path_model_actor = BrActorAllocate(BR_ACTOR_MODEL, NULL);
+        BrActorAdd(gNon_track_actor, gDrone_path_model_actor);
+    }
+    if (gStatic_drone_path_model == NULL) {
+        gStatic_drone_path_model = BrModelAllocate("StaticDronePathModel", 3, 1);
+        gStatic_drone_path_model->flags |= BR_MODF_DONT_WELD | BR_MODF_KEEP_ORIGINAL | BR_MODF_GENERATE_TAGS;
+        BrModelAdd(gStatic_drone_path_model);
+    }
+    if (gElasticatey_drone_path_model == NULL) {
+        gElasticatey_drone_path_model = BrModelAllocate("ElasticateyDronePathModel", 3, 1);
+        gElasticatey_drone_path_model->flags |= BR_MODF_DONT_WELD | BR_MODF_KEEP_ORIGINAL | BR_MODF_GENERATE_TAGS;
+        BrModelAdd(gElasticatey_drone_path_model);
+    }
+    if (gStatic_drone_path_model_actor == NULL || gDrone_path_model_actor == NULL || gStatic_drone_path_model == NULL || gElasticatey_drone_path_model == NULL) {
+        return 0;
+    }
+
+    gStatic_drone_path_model_actor->model = gStatic_drone_path_model;
+    gStatic_drone_path_model_actor->type = BR_ACTOR_MODEL;
+    gStatic_drone_path_model_actor->render_style = gCount_drone_path_nodes != 0 ? BR_RSTYLE_FACES : BR_RSTYLE_NONE;
+    gDrone_path_model_actor->model = gElasticatey_drone_path_model;
+    gDrone_path_model_actor->type = BR_ACTOR_MODEL;
+    gDrone_path_model_actor->render_style = gDrone_paths_elasticating != 0 ? BR_RSTYLE_FACES : BR_RSTYLE_NONE;
+
+    FUN_00452f40(gElasticatey_drone_path_model, 2, 4);
+    iVar7 = gCount_drone_path_nodes * 8;
+    iVar8 = gCount_drone_path_nodes * 12;
+    if (0 < gCount_drone_path_nodes) {
+        puVar2 = (tU16*)((tU8*)gDrone_path_nodes + 0x12c);
+        iVar4 = gCount_drone_path_nodes;
+        do {
+            uVar1 = *puVar2;
+            if (uVar1 > 0) {
+                iVar7 += uVar1 * 4;
+                iVar8 += uVar1 * 2;
+            }
+            puVar2 += 0x9a;
+            iVar4--;
+        } while (iVar4 != 0);
+    }
+    if (iVar7 > gStatic_drone_path_model_vertex_capacity || iVar8 > gStatic_drone_path_model_face_capacity) {
+        FUN_00452f40(gStatic_drone_path_model, iVar8, iVar7);
+        gStatic_drone_path_model_vertex_capacity = iVar7;
+        gStatic_drone_path_model_face_capacity = iVar8;
+    } else {
+        gStatic_drone_path_model->nvertices = (br_uint_16)iVar7;
+        gStatic_drone_path_model->nfaces = (br_uint_16)iVar8;
+    }
+
+    iVar4 = 0;
+    iVar8 = 0;
+    iVar7 = 0;
+    if (0 < gCount_drone_path_nodes) {
+        node = gDrone_path_nodes;
+        do {
+            if (iVar7 != gSelected_edit_drone_path) {
+                uVar9 = (tU32)gMat_dk_grn;
+                uVar10 = (tU32)gMat_md_grn;
+                uVar11 = (tU32)gMat_lt_grn;
+                if ((node->field_0x12e & 1) != 0) {
+                    uVar9 = (tU32)gMat_dk_yel;
+                    uVar10 = (tU32)gMat_md_yel;
+                    uVar11 = (tU32)gMat_lt_yel;
+                }
+            } else {
+                uVar9 = (tU32)gMat_dk_turq;
+                uVar10 = (tU32)gMat_lt_turq;
+                uVar11 = (tU32)gMat_lt_turq;
+            }
+            BuildDronePathNodeMesh(gStatic_drone_path_model, iVar8, iVar4, &node->position, uVar9, uVar10, uVar11);
+            iVar4 += 0xc;
+            iVar8 += 8;
+            iVar7++;
+            node++;
+        } while (iVar7 < gCount_drone_path_nodes);
+    }
+
+    local_4 = 0;
+    if (0 < gCount_drone_path_nodes) {
+        local_8 = 0;
+        iVar5 = (int)gDrone_path_nodes;
+        do {
+            local_c = 0;
+            node = (tDrone_path_node*)(iVar5 + local_8);
+            psVar6 = (tS16*)((tU8*)node + 0xc);
+            while (1) {
+                bVar3 = node->field_0x12e & 1;
+                if (bVar3 != 0) {
+                    uVar1 = 1;
+                } else {
+                    uVar1 = node->count_sections;
+                }
+                if (local_c >= uVar1) {
+                    break;
+                }
+                if (bVar3 == 0 || *psVar6 >= 0) {
+                    if (bVar3 != 0) {
+                        material1 = gMat_dk_yel;
+                        material2 = gMat_lt_yel;
+                    } else {
+                        material1 = gMat_dk_grn;
+                        material2 = gMat_lt_grn;
+                    }
+                    other_position = &gDrone_path_nodes[*psVar6].position;
+                    MakeAISimpleEditSectionHere(gStatic_drone_path_model, iVar8, iVar4, node, other_position, material1, material2);
+                    iVar8 += 4;
+                    iVar4 += 2;
+                    iVar5 = (int)gDrone_path_nodes;
+                }
+                local_c++;
+                psVar6 += 0x12;
+            }
+            local_4++;
+            local_8 += 0x134;
+        } while (local_4 < gCount_drone_path_nodes);
+    }
+
+    if (iVar8 != 0) {
+        BrModelUpdate(gStatic_drone_path_model, BR_MODU_ALL);
+        WriteOutDronePaths();
+        return 1;
+    }
+    gStatic_drone_path_model_actor->render_style = BR_RSTYLE_NONE;
+    WriteOutDronePaths();
+    return 1;
 }
-
 void C2_HOOK_FASTCALL UpdateEditModels(void) {
 
     if (gDrone_path_model_actor != NULL && gElasticatey_drone_path_model != NULL && gDrone_paths_elasticating && gSelected_drone_path_node_index >= 0) {
@@ -1047,6 +1215,12 @@ static void C2_HOOK_FASTCALL CalculateDrivingInfo(tDrone_spec* pDrone) {
     DoNotDprintf("CalculateDrivingInfo called - centre node %d, radius %f, section after corner %p",
         pDrone->field_0xc, pDrone->field_0x68, (void*)pDrone->field_0x10);
 }
+
+typedef enum {
+    eDDS_straight_start = 0,
+    eDDS_straight_driving = 1,
+    eDDS_corner = 2,
+} tDrone_driving_state;
 
 // FUNCTION: CARMA2_HW 0x0044d2a0
 void C2_HOOK_FASTCALL MoveThisDronePlane(tDrone_spec* pDrone) {
@@ -1634,6 +1808,59 @@ void C2_HOOK_FASTCALL SelectNearestDrone(void) {
         }
     } else {
         NewTextHeadupSlot(4, 0, 3000, -1, "No drones close enough");
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x00453460
+void C2_HOOK_FASTCALL ShowDronePaths(void) {
+    tDrone_spec* drone;
+
+    if (gSelected_drone_path_index >= 0) {
+        gDrone_specs[gSelected_drone_path_index].actor->render_style = 4;
+        gSelected_drone_path_index = -1;
+    }
+    if (!gShow_drone_paths) {
+        if (!InitialiseEditModelsEtc()) {
+            NewTextHeadupSlot(4, 0, 5000, -1, "Drone Path Error - Can't allocate actors/models");
+            return;
+        }
+        gShow_drone_paths = 1;
+        PutOpponentsInNeutral();
+        for (drone = gDrone_specs; drone < gDrone_specs + gCount_drones; drone++) {
+            if (drone->field_0x44) {
+                drone->field_0x44 = 0;
+                gCount_active_drones--;
+                if (drone->actor->render_style == 4) {
+                    DoNotDprintf("STOP RENDERING: %d", drone->id);
+                    gCount_rendered_drones--;
+                    drone->actor->render_style = 1;
+                    PipeSingleDroneRender(drone, 0);
+                }
+                PHILRemoveObject(&drone->collision_info);
+                if (gDrone_state_functions[drone->current_state] != NULL) {
+                    gDrone_state_functions[drone->current_state](drone, 2);
+                }
+                DoNotDprintf("PROCESSING OFF: Frame %d, Drone %d, state %d", gFrame, drone->id, drone->current_state);
+                CrappyLittleVector3DPrintf("     Pos", (br_vector3*)&drone->actor->t.t.mat.m[3]);
+            }
+            DoNotDprintf("NewDroneState() Drone %d, Current state %d, New state %d", drone->id, drone->current_state, 1);
+            if (drone->current_state != 1) {
+                if (gDrone_state_functions[drone->current_state] != NULL) {
+                    gDrone_state_functions[drone->current_state](drone, eDrone_state_STOP);
+                }
+                drone->time_last_munge = gTime_stamp_for_this_munging;
+                drone->prev_states[1] = drone->prev_states[0];
+                drone->prev_states[0] = drone->current_state;
+                drone->current_state = 1;
+                if (gDrone_state_functions[eDrone_state_RUN] != NULL) {
+                    gDrone_state_functions[eDrone_state_RUN](drone, eDrone_state_START);
+                }
+            }
+        }
+        NewTextHeadupSlot(4, 0, 3000, -1, "Showing Drone Paths");
+        SelectNearestDrone();
+    } else {
+        NewTextHeadupSlot(4, 0, 3000, -1, "Already Showing Drone Paths");
     }
 }
 

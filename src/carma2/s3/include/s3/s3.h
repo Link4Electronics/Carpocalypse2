@@ -241,7 +241,7 @@ extern tS3_error_codes C2_HOOK_FASTCALL S3ReleaseOutlet(tS3_outlet* pOutlet);
 
 extern int C2_HOOK_FASTCALL S3SetOutletVolume(tS3_outlet* pOutlet, int pVolume);
 
-extern void C2_HOOK_FASTCALL S3StopAllOutletSounds(void);
+extern int C2_HOOK_FASTCALL S3StopAllOutletSounds(void);
 
 extern int C2_HOOK_FASTCALL S3StopOutletSound(tS3_outlet* pOutlet);
 
@@ -250,6 +250,10 @@ extern int C2_HOOK_FASTCALL S3ReleaseSoundSource(tS3_sound_source* src);
 extern int C2_HOOK_FASTCALL S3StartSound(tS3_outlet* pOutlet, tS3_sound_id pSound);
 
 extern int C2_HOOK_FASTCALL S3SetChannelVolume(int pChannel_tag, int pVolume);
+
+extern int C2_HOOK_FASTCALL S3SetChannelPosition(tS3_sound_tag pChannel_tag, const tS3_vector3* pPosition);
+
+extern int C2_HOOK_FASTCALL S3SetChannelVelocity(tS3_sound_tag pChannel_tag, const tS3_vector3* pVelocity);
 
 extern int C2_HOOK_FASTCALL S3StartSound2(tS3_outlet* pOutlet, tS3_sound_id pSound, unsigned int pRepeats, int pLeft_volume, int pRight_volume, int pLeft_pitch, int pRight_pitch);
 
@@ -272,16 +276,21 @@ extern int C2_HOOK_FASTCALL PDReverseAudio(tS3_channel* pChannel);
 extern int C2_HOOK_FASTCALL S3DisableSound(void);
 
 extern int C2_HOOK_FASTCALL S3SoundStillPlaying(int pTag);
+extern void C2_HOOK_FASTCALL S3BindListenerPositionBRender(br_vector3* pos);
+
 
 extern int C2_HOOK_FASTCALL S3SetVolume(int pVolume);
 
-extern void C2_HOOK_FASTCALL S3BindListenerPositionBRender(br_vector3* pos);
+
+extern void C2_HOOK_FASTCALL S3BindListenerPosition(tS3_vector3* pos);
 
 extern void C2_HOOK_FASTCALL S3BindListenerVelocityBRender(br_vector3* vel);
 
 extern void C2_HOOK_FASTCALL S3BindListenerLeftBRender(br_vector3* left);
 
 extern int C2_HOOK_FASTCALL S3StartSound3D(tS3_outlet *pOutlet, int pSound, const br_vector3* pInitial_position, const br_vector3* pInitial_velocity, int pRepeats, int pVolume, int pPitch, int pSpeed);
+
+extern tS3_sound_tag C2_HOOK_FASTCALL S3StartSoundFromSource3(tS3_sound_id pSound, tS3_sound_source* pSource, tS3_repeats pRepeats, tS3_volume pVolume, tS3_pitch pPitch, tS3_speed pSpeed);
 
 extern tS3_sound_source* C2_HOOK_FASTCALL S3CreateSoundSource(void* pPosition, void* pVelocity, tS3_outlet* pBound_outlet);
 

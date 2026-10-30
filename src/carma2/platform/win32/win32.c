@@ -18,6 +18,8 @@
 #include "utility.h"
 #include "packfile.h"
 
+#include "world.h"
+
 #include "carpocalypse2_macros.h"
 
 #include "c2_direct.h"
@@ -174,6 +176,8 @@ int gPDActionReplayBufferSize;
 // GLOBAL: CARMA2_HW 0x006ad46c
 HPALETTE gPDPalette;
 
+// GLOBAL: CARMA2_HW 0x006ad4cc
+int gSignal_handler_entered;
 
 // GLOBAL: CARMA2_HW 0x0079ea84
 SYSTEM_INFO gSystem_info;
@@ -700,6 +704,56 @@ int C2_HOOK_FASTCALL PDGetMicroseconds(void) {
     return 0;
 }
 
+// FUNCTION: CARMA2_HW 0x0051a6b0
+void C2_HOOK_FASTCALL SignalHandler(int pSignal) {
+    char buffer[256];
+
+    if (gSignal_handler_entered == 0) {
+        strcpy(buffer, "*** SIGNAL RECEIVED: ");
+        gSignal_handler_entered = 1;
+        switch (pSignal) {
+        case 0x16:
+            strcat(buffer, "SIGABRT");
+            break;
+        case 8:
+            strcat(buffer, "SIGFPE");
+            break;
+        case 4:
+            strcat(buffer, "SIGILL");
+            break;
+        case 0xb:
+            strcat(buffer, "SIGSEGV");
+            break;
+        case 0xf:
+            strcat(buffer, "SIGTERM");
+            break;
+        }
+        dr_dprintf(buffer);
+        PDShutdownSystem();
+    }
+    ExitProcess(0x2bd);
+}
+
+// C2PORT-NONMATCHING: best 40.00% | difftest PASS 2000 trials (spec difftest/specs/0051d900_PDGetElapsedMilliseconds.json) | reason vc5-64bit-helper-sequence
+// FUNCTION: CARMA2_HW 0x0051d900
+tU32 C2_HOOK_FASTCALL PDGetElapsedMilliseconds(void) {
+    LARGE_INTEGER perfCountValue;
+    unsigned __int64 elapsed;
+    volatile int shift;
+
+    if (gPerformanceCounterInitialized) {
+        QueryPerformanceCounter(&perfCountValue);
+        elapsed = perfCountValue.HighPart;
+        shift = 0x10;
+        elapsed <<= shift;
+        elapsed <<= shift;
+        elapsed += perfCountValue.LowPart;
+        elapsed -= (unsigned __int64)gPerformanceCounterStart.QuadPart;
+        return (tU32)(elapsed / (unsigned __int64)gPerformanceCounterFrequency_ms.QuadPart);
+    }
+    return 0;
+}
+
 // FUNCTION: CARMA2_HW 0x0051a7b0
 void C2_HOOK_FASTCALL PDEnterDebugger(const char *pStr) {
     dr_dprintf("PDEnterDebugger(): %s", pStr);
@@ -720,7 +774,7 @@ int C2_HOOK_FASTCALL PDFileUnlock(const char *pThe_path) {
 }
 
 // FUNCTION: CARMA2_HW 0x00486c30
-void C2_HOOK_FASTCALL PDEnumPath(const char *path, tEnumPathCallback pCallback, void *data) {
+int C2_HOOK_FASTCALL PDEnumPath(const char *path, tEnumPathCallback pCallback, void *data) {
     char originalCurrentDirectory[MAX_PATH];
     tPath_name filePath;
     BOOL bSucceeded;
@@ -730,10 +784,11 @@ void C2_HOOK_FASTCALL PDEnumPath(const char *path, tEnumPathCallback pCallback, 
     size_t lenLnk;
     int callback_res;
 
+    callback_res = 0;
     GetCurrentDirectory(CARPOCALYPSE2_ASIZE(originalCurrentDirectory), originalCurrentDirectory);
     bSucceeded = SetCurrentDirectoryA(path);
     if (!bSucceeded) {
-        return;
+        return 0;
     }
     hFindFile = FindFirstFileA("*.???", &findFileData);
     if (hFindFile != NULL) {
@@ -761,6 +816,7 @@ void C2_HOOK_FASTCALL PDEnumPath(const char *path, tEnumPathCallback pCallback, 
         FindClose(hFindFile);
     }
     SetCurrentDirectoryA(originalCurrentDirectory);
+    return callback_res;
 }
 
 // FUNCTION: CARMA2_HW 0x00486c20

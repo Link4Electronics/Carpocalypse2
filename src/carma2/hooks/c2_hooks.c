@@ -18,6 +18,33 @@
 #include <windows.h>
 #endif
 
+/* porttest: log each distinct NOT_IMPLEMENTED site once, in order of first hit. */
+void carpocalypse2_not_implemented(const char *function, const char *file, int line) {
+    static struct { const char *function; int line; } seen[1024];
+    static int nseen;
+    static int seq;
+    int i;
+    FILE *f;
+
+    for (i = 0; i < nseen; i++) {
+        if (seen[i].function == function && seen[i].line == line) {
+            return;
+        }
+    }
+    if (nseen < 1024) {
+        seen[nseen].function = function;
+        seen[nseen].line = line;
+        nseen++;
+    }
+    seq++;
+    f = fopen("porttest_notimpl.log", "a");
+    if (f != NULL) {
+        fprintf(f, "NOT_IMPLEMENTED #%d: %s (%s:%d)\n", seq, function, file, line);
+        fclose(f);
+    }
+    fprintf(stderr, "NOT_IMPLEMENTED #%d: %s (%s:%d)\n", seq, function, file, line);
+}
+
 extern C2_NORETURN void carpocalypse2_error(const char *reason, const char *function, const char *file, int line) {
     char buffer[512];
 

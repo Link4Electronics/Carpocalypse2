@@ -15,6 +15,8 @@ void C2_HOOK_FASTCALL LoadKeyNames(void);
 
 void C2_HOOK_FASTCALL DisposeKeyNames(void);
 
+void C2_HOOK_FASTCALL FUN_004b4070(void);
+
 void C2_HOOK_FASTCALL BackupKeyMappings(void);
 
 void C2_HOOK_FASTCALL Joystick_BackupSettings(void);

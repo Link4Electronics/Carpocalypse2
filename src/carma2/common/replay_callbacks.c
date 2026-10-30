@@ -933,7 +933,7 @@ void C2_HOOK_FASTCALL UndoScreenWobble(tPipe_chunk** pChunk, tPipe_chunk* pPrev_
 void C2_HOOK_FASTCALL ApplyGrooveStop(tPipe_chunk** pChunk) {
     tPipe_chunk_groove_stop* chunk = (tPipe_chunk_groove_stop*)*pChunk;
 
-    return SetGrooveInterrupt(chunk->field_0x0, (const br_matrix34*)&chunk->field_0x14, chunk->field_0x4, chunk->field_0x8, *(float*)&chunk->field_0xc, *(float*)&chunk->field_0x10);
+    return SetGrooveInterrupt(chunk->groove_index, &chunk->matrix, chunk->path_interrupt, chunk->object_interrupt, chunk->path_resumption, chunk->object_resumption);
 }
 
 // FUNCTION: CARMA2_HW 0x004c91b0

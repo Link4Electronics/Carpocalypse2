@@ -3,7 +3,6 @@
 
 #include "carpocalypse2_types.h"
 
-
 #include "c2_hooks.h"
 
 extern float gFlic_sound_delay_pre_smack;
@@ -56,13 +55,17 @@ extern void C2_HOOK_FASTCALL FlicPaletteAllocate(void);
 // DoUncompressedTrans
 
 // DoMini
-void C2_HOOK_FASTCALL DoMini(tFlic_descriptor* pFlic_info, tU32 chunk_length);
 
 // DrawTranslations
 
 // PlayNextFlicFrame
 
 extern void C2_HOOK_FASTCALL InitFlics(void);
+// DoMini
+void C2_HOOK_FASTCALL DoMini(tFlic_descriptor* pFlic_info, tU32 chunk_length);
+
+// DoMini
+
 
 extern int C2_HOOK_FASTCALL LoadFlic(int pIndex);
 
@@ -87,7 +90,6 @@ extern void C2_HOOK_FASTCALL LoadInterfaceStrings(void);
 #include "c2_hooks.h"
 
 #include "carpocalypse2_types.h"
-
 
 int C2_HOOK_FASTCALL GetPanelFlicFrameIndex(int pIndex);
 
@@ -142,6 +144,8 @@ void C2_HOOK_FASTCALL FreeFlic(int pIndex);
 void C2_HOOK_FASTCALL RunFlicAt(int pIndex, int pX, int pY);
 
 void C2_HOOK_FASTCALL RunFlic(int pIndex);
+
+void C2_HOOK_FASTCALL FUN_00461980(int pSound_ID, tU32 pSound_time);
 
 void C2_HOOK_FASTCALL PreloadBunchOfFlics(int pBunch_index);
 

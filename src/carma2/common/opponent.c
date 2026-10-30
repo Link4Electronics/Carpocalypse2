@@ -2,8 +2,18 @@
 
 #include "car.h"
 #include "controls.h"
+
+#include "crush.h"
+
+#include "displays.h"
+
+#include "drone.h"
+
 #include "errors.h"
 #include "finteray.h"
+
+#include "graphics.h"
+
 #include "globvars.h"
 #include "globvrkm.h"
 #include "globvrme.h"
@@ -14,6 +24,9 @@
 #include "physics.h"
 #include "piping.h"
 #include "platform.h"
+
+#include "skidmark.h"
+
 #include "structur.h"
 #include "trig.h"
 #include "utility.h"
@@ -26,6 +39,37 @@
 
 #include <stdarg.h>
 #include "c2_math.h"
+
+extern const char gEmpty_string_00676920[];
+
+// GLOBAL: CARMA2_HW 0x0065a750
+const char gFormat_opponent_headup_0065a750[] = "%s: obj: %d nsect: %d sect: %d(%d%s)%s%s";
+
+// GLOBAL: CARMA2_HW 0x0065a77c
+const char gSection_text_0065a77c[] = "T";
+
+// GLOBAL: CARMA2_HW 0x0065a780
+const char gSection_text_0065a780[] = "1";
+
+// GLOBAL: CARMA2_HW 0x0065a784
+const char gSection_text_0065a784[] = "0";
+
+// GLOBAL: CARMA2_HW 0x0065a788
+const char gSection_text_0065a788[] = "*";
+
+extern const br_scalar gFLOAT_0058a61c;
+
+// GLOBAL: CARMA2_HW 0x0058a620
+const br_scalar gFLOAT_0058a620 = 6.9f;
+
+// GLOBAL: CARMA2_HW 0x0058a69c
+const br_scalar gFLOAT_0058a69c = 0.0625f;
+
+// GLOBAL: CARMA2_HW 0x0058a6a0
+const br_scalar gFLOAT_0058a6a0 = -0.001f;
+
+// GLOBAL: CARMA2_HW 0x0058a6a4
+const br_scalar gFLOAT_0058a6a4 = 0.14492753148078918f;
 
 #include <float.h>
 
@@ -123,6 +167,12 @@ tU32 gNext_grudge_reduction;
 // GLOBAL: CARMA2_HW 0x00691738
 int gFirst_frame;
 
+// GLOBAL: CARMA2_HW 0x00761a40
+#define gOppo_path_nodes (gProgram_state.AI_vehicles.path_nodes)
+
+// GLOBAL: CARMA2_HW 0x00761a44
+#define gOppo_junction_table ((tU32)(uintptr_t)gProgram_state.AI_vehicles.path_sections)
+
 // GLOBAL: CARMA2_HW 0x00691724
 int gGrudge_reduction_per_period;
 
@@ -154,6 +204,15 @@ int gChallenger_index__opponent = -1;
 tU8* gBit_per_node;
 
 // GLOBAL: CARMA2_HW 0x0069171c
+br_scalar gSFS_shortest_dist;
+
+// GLOBAL: CARMA2_HW 0x0069172c
+int gSFS_routes_found;
+
+// GLOBAL: CARMA2_HW 0x0069174c
+int gSFS_routes_found_copy;
+
+// GLOBAL: CARMA2_HW 0x0069171c
 static float sfs_shortest_dist;
 
 // GLOBAL: CARMA2_HW 0x0069172c
@@ -168,11 +227,71 @@ int gSFS_count;
 // GLOBAL: CARMA2_HW 0x0069176c
 int gSFS_cycles_this_time;
 
+// GLOBAL: CARMA2_HW 0x00691770
+int gSFS_search_count;
+
 // GLOBAL: CARMA2_HW 0x00691774
 int gSFS_total_cycles;
 
 // GLOBAL: CARMA2_HW 0x00691778
 int gSFS_max_cycles;
+
+// GLOBAL: CARMA2_HW 0x0058a47c
+float DAT_0058a47c = 100.0f;
+
+// GLOBAL: CARMA2_HW 0x0058a55c
+float DAT_0058a55c = -0.0625f;
+
+// GLOBAL: CARMA2_HW 0x0058a4e0
+double DAT_0058a4e0 = 0.14492753623188406;
+
+// GLOBAL: CARMA2_HW 0x0058a4a0
+const double DAT_0058a4a0 = 1.0;
+
+// GLOBAL: CARMA2_HW 0x0058a4a8
+const double DAT_0058a4a8 = 10430.378350470453;
+
+// GLOBAL: CARMA2_HW 0x0058a4b0
+const double DAT_0058a4b0 = 6.9;
+
+// GLOBAL: CARMA2_HW 0x0058a4b8
+const float DAT_0058a4b8 = -1.0f;
+
+// GLOBAL: CARMA2_HW 0x0058a4bc
+const float DAT_0058a4bc = -100.0f;
+
+// GLOBAL: CARMA2_HW 0x0058a4c0
+const float DAT_0058a4c0 = -5.0f;
+
+// GLOBAL: CARMA2_HW 0x0058a4c4
+const float DAT_0058a4c4 = -0.05f;
+
+// GLOBAL: CARMA2_HW 0x0058a4c8
+const float DAT_0058a4c8 = -0.05f;
+
+// GLOBAL: CARMA2_HW 0x0058a4d0
+const double DAT_0058a4d0 = -10430.378350470453;
+
+// GLOBAL: CARMA2_HW 0x0058a4d8
+const float DAT_0058a4d8 = 0.14492753148078918f;
+
+// GLOBAL: CARMA2_HW 0x0058a4e8
+const float DAT_0058a4e8 = 0.0000002384185791015625f;
+
+// GLOBAL: CARMA2_HW 0x0058a4ec
+const float DAT_0058a4ec = 10.0f;
+
+// GLOBAL: CARMA2_HW 0x0058a4f0
+const float DAT_0058a4f0 = 0.1f;
+
+// GLOBAL: CARMA2_HW 0x0069177c
+int gRematerialisation_count;
+
+// GLOBAL: CARMA2_HW 0x00691780
+int gRematerialisation_extra_attempts;
+
+// GLOBAL: CARMA2_HW 0x00691784
+int gRematerialisation_max_extra_attempts;
 
 // GLOBAL: CARMA2_HW 0x00676858
 br_material* gMat_dk_yel = NULL;
@@ -231,6 +350,9 @@ int gNum_of_opponents_getting_near;
 // GLOBAL: CARMA2_HW 0x00691758
 int gNum_of_opponents_completing_race;
 
+// GLOBAL: CARMA2_HW 0x00691730
+float gCop_pursuit_speed_value_00691730;
+
 // GLOBAL: CARMA2_HW 0x00691734
 float gDefinite_no_cop_pursuit_speed;
 
@@ -240,8 +362,53 @@ float gCop_pursuit_speed_percentage_multiplier;
 // GLOBAL: CARMA2_HW 0x0058a478
 float gOppo_render_zero = 0.0f;
 
+// GLOBAL: CARMA2_HW 0x0058a480
+float gOppo_pursuit_one = 1.0f;
+
+// GLOBAL: CARMA2_HW 0x0058a488
+float gOppo_pursuit_reverse_brake = 15.0f;
+
+// GLOBAL: CARMA2_HW 0x0058a48c
+float gOppo_pursuit_velocity_scale = 0.5f;
+
+// GLOBAL: CARMA2_HW 0x0058a494
+float gOppo_pursuit_minimum_velocity_ratio = 2.0f;
+
+// GLOBAL: CARMA2_HW 0x0058a504
+float gOppo_pursuit_height_offset = -0.15f;
+
+// GLOBAL: CARMA2_HW 0x0058a50c
+float gOppo_pursuit_precinct_distance = 75.0f;
+
+// GLOBAL: CARMA2_HW 0x0058a510
+float gOppo_pursuit_near_distance = 3.0f;
+
+// GLOBAL: CARMA2_HW 0x0058a514
+float gOppo_pursuit_stationary_speed = 0.043478261679410934f;
+
+// GLOBAL: CARMA2_HW 0x0058a518
+float gOppo_pursuit_cheat_distance = 30.0f;
+
+// GLOBAL: CARMA2_HW 0x0058a51c
+float gOppo_pursuit_sight_distance = 35.0f;
+
+// GLOBAL: CARMA2_HW 0x0058a520
+float gOppo_pursuit_trail_distance = 20.0f;
+
+// GLOBAL: CARMA2_HW 0x0058a524
+float gOppo_pursuit_reverse_acceleration = -8.0f;
+
 // GLOBAL: CARMA2_HW 0x0065a3cc
 float gOpponent_nastyness_frigger = 1.0f;
+
+// GLOBAL: CARMA2_HW 0x0058a5a8
+const double gCop_nastiness_skill_adjustment = -0.5;
+
+// GLOBAL: CARMA2_HW 0x0058a5d8
+const double gCop_nastiness_bias = -2.25;
+
+// GLOBAL: CARMA2_HW 0x0058a5b0
+const double gCop_nastiness_divisor = 0.33333333333333331;
 
 // GLOBAL: CARMA2_HW 0x0074a684
 int gMinTimeOpponentRepair;
@@ -277,6 +444,147 @@ void C2_HOOK_FASTCALL PointActorAlongVectorWithUp(br_actor* pThe_actor, br_vecto
     BrVector3Copy(&trans.t.look_up.up, pUp);
     BrVector3Copy(&trans.t.look_up.t, &pThe_actor->t.t.translate.t);
     BrTransformToTransform(&pThe_actor->t, &trans);
+}
+
+// GLOBAL: CARMA2_HW 0x00676850
+int gPalette_materials_initialized;
+
+// FUNCTION: CARMA2_HW 0x004014a0
+void C2_HOOK_FASTCALL InitialiseOpponentPaletteMaterials(void) {
+    br_material* material;
+    br_colour* palette_colours;
+    br_colour palette_colour;
+
+    if (!gPalette_materials_initialized) {
+        material = BrMaterialAllocate(NULL);
+        palette_colours = gRender_palette->pixels;
+        palette_colour = palette_colours[0x32];
+        material->index_base = 0x32;
+        material->colour = palette_colour;
+        material->index_range = 1;
+        material->flags = 0x1000;
+        material->index_shade = NULL;
+        material->colour_map = NULL;
+        material->identifier = NULL;
+        BrMaterialAdd(material);
+        gMat_dk_yel = material;
+
+        material = BrMaterialAllocate(NULL);
+        palette_colours = gRender_palette->pixels;
+        palette_colour = palette_colours[0x33];
+        material->index_base = 0x33;
+        material->colour = palette_colour;
+        material->index_range = 1;
+        material->flags = 0x1000;
+        material->index_shade = NULL;
+        material->colour_map = NULL;
+        material->identifier = NULL;
+        BrMaterialAdd(material);
+        gMat_md_yel = material;
+
+        material = BrMaterialAllocate(NULL);
+        palette_colours = gRender_palette->pixels;
+        palette_colour = palette_colours[0x34];
+        material->index_base = 0x34;
+        material->colour = palette_colour;
+        material->index_range = 1;
+        material->flags = 0x1000;
+        material->index_shade = NULL;
+        material->colour_map = NULL;
+        material->identifier = NULL;
+        BrMaterialAdd(material);
+        gMat_lt_yel = material;
+
+        material = BrMaterialAllocate(NULL);
+        palette_colours = gRender_palette->pixels;
+        palette_colour = palette_colours[2];
+        material->index_base = 2;
+        material->colour = palette_colour;
+        material->index_range = 1;
+        material->flags = 0x1000;
+        material->index_shade = NULL;
+        material->colour_map = NULL;
+        material->identifier = NULL;
+        BrMaterialAdd(material);
+        gMat_dk_red = material;
+
+        material = BrMaterialAllocate(NULL);
+        palette_colours = gRender_palette->pixels;
+        palette_colour = palette_colours[3];
+        material->index_base = 3;
+        material->colour = palette_colour;
+        material->index_range = 1;
+        material->flags = 0x1000;
+        material->index_shade = NULL;
+        material->colour_map = NULL;
+        material->identifier = NULL;
+        BrMaterialAdd(material);
+        gMat_md_red = material;
+
+        material = BrMaterialAllocate(NULL);
+        palette_colours = gRender_palette->pixels;
+        palette_colour = palette_colours[4];
+        material->index_base = 4;
+        material->colour = palette_colour;
+        material->index_range = 1;
+        material->flags = 0x1000;
+        material->index_shade = NULL;
+        material->colour_map = NULL;
+        material->identifier = NULL;
+        BrMaterialAdd(material);
+        gMat_lt_red = material;
+
+        material = BrMaterialAllocate(NULL);
+        palette_colours = gRender_palette->pixels;
+        palette_colour = palette_colours[0x42];
+        material->index_base = 0x42;
+        material->colour = palette_colour;
+        material->index_range = 1;
+        material->flags = 0x1000;
+        material->index_shade = NULL;
+        material->colour_map = NULL;
+        material->identifier = NULL;
+        BrMaterialAdd(material);
+        gMat_dk_grn = material;
+
+        material = BrMaterialAllocate(NULL);
+        palette_colours = gRender_palette->pixels;
+        palette_colour = palette_colours[0x43];
+        material->index_base = 0x43;
+        material->colour = palette_colour;
+        material->index_range = 1;
+        material->flags = 0x1000;
+        material->index_shade = NULL;
+        material->colour_map = NULL;
+        material->identifier = NULL;
+        BrMaterialAdd(material);
+        gMat_md_grn = material;
+
+        material = BrMaterialAllocate(NULL);
+        palette_colours = gRender_palette->pixels;
+        palette_colour = palette_colours[0x44];
+        material->index_base = 0x44;
+        material->colour = palette_colour;
+        material->index_range = 1;
+        material->flags = 0x1000;
+        material->index_shade = NULL;
+        material->colour_map = NULL;
+        material->identifier = NULL;
+        BrMaterialAdd(material);
+        gMat_lt_grn = material;
+
+        gMat_dk_blu = CreateSimpleMaterial(0xa2);
+        gMat_lt_blu = CreateSimpleMaterial(0xa4);
+        gMat_dk_turq = CreateSimpleMaterial(0x82);
+        gMat_lt_turq = CreateSimpleMaterial(0x84);
+        gMat_dk_gry = CreateSimpleMaterial(0xfd);
+        gMat_md_gry = CreateSimpleMaterial(0xfe);
+        material = CreateSimpleMaterial(0xff);
+        gPalette_materials_initialized = 1;
+        gMat_lt_gry = material;
+    }
+    FUN_004af490();
+    ShowDronePaths();
 }
 
 void C2_HOOK_FASTCALL ReallocExtraPathNodes(int pCount) {
@@ -505,6 +813,45 @@ int C2_HOOK_FASTCALL PointVisibleFromHere(br_vector3* pFrom, br_vector3* pTo) {
     }
 }
 
+// C2PORT-NONMATCHING: best 87.96% | difftest PASS 2000 trials (spec difftest/specs/004ad910_PossiblyRepairOpponent.json) | reason VC5 early-return and branch layout
+// FUNCTION: CARMA2_HW 0x004ad910
+void C2_HOOK_FASTCALL PossiblyRepairOpponent(tOpponent_spec* pOpponent_spec) {
+    char copied_message[256];
+    char repairing_message[256];
+    tU8* pCar_probe;
+    int i;
+
+    if ((((tU16)pOpponent_spec->car_spec->car_ID >> 8) != 3)
+            && gTime_stamp_for_this_munging > pOpponent_spec->next_repair_check
+            && (pOpponent_spec->cheating != 0)
+            && pOpponent_spec->current_objective != eOOT_levitate
+            && pOpponent_spec->current_objective != eOOT_knackered_and_freewheeling
+            && pOpponent_spec->car_spec->knackered == 0) {
+        pOpponent_spec->next_repair_check = IRandomBetween(0, 2000) + 3000 + gTime_stamp_for_this_munging;
+        if (gTime_stamp_for_this_munging > pOpponent_spec->car_spec->field_0x1548 + pOpponent_spec->repair_interval) {
+            i = 0;
+            pCar_probe = (tU8*)pOpponent_spec->car_spec + 0x4d8;
+            do {
+                if (i != 2 && pCar_probe != NULL) {
+                    goto repair;
+                }
+                i++;
+                pCar_probe += 0x2c;
+            } while (i < 0xc);
+            return;
+repair:
+            DoNotDprintf_opponent("*** Opponent %d, REPAIRING, timestamp %d", pOpponent_spec->car_spec->driver_name, gTime_stamp_for_this_munging);
+            TotallyRepairACar(pOpponent_spec->car_spec);
+            sprintf(repairing_message, "%s %s", pOpponent_spec->car_spec->driver_name, GetMiscString(0x111));
+            strcpy(copied_message, repairing_message);
+            i = IRandomBetween(gMinTimeOpponentRepair, gMaxTimeOpponentRepair);
+            pOpponent_spec->repair_interval = i * 60000;
+            pOpponent_spec->last_repair_time = gTime_stamp_for_this_munging;
+            DoNotDprintf_opponent("*** Opponent %s, repair_interval is %d", pOpponent_spec->car_spec->driver_name, pOpponent_spec->repair_interval);
+        }
+    }
+}
+
 // FUNCTION: CARMA2_HW 0x004adae0
 void C2_HOOK_FASTCALL CalcPlayerConspicuousness(tOpponent_spec* pOpponent_spec)  {
     br_vector3 pos_in_cop_space;
@@ -558,6 +905,77 @@ void C2_HOOK_FASTCALL DisposeOpponentPaths(void) {
     gProgram_state.AI_vehicles.path_nodes = NULL;
     gProgram_state.AI_vehicles.path_sections = NULL;
     gBit_per_node = NULL;
+}
+
+// C2PORT-NONMATCHING: best 48.21% | difftest PASS 2000 trials (spec difftest/specs/004a9cb0_UpdateViewedOpponentHeadup.json) | reason vc5-regalloc-branch-layout
+// FUNCTION: CARMA2_HW 0x004a9cb0
+void C2_HOOK_FASTCALL UpdateViewedOpponentHeadup(void) {
+    int i;
+    tOpponent_spec* opponent;
+    tCar_spec** car_specs;
+    int* opponent_data;
+    int displayed_section_no;
+    const char* cheating_marker;
+    int section_no;
+    const char* direction;
+    const char* extra_section;
+    char message[256];
+    tCar_spec* viewed_car;
+
+    viewed_car = gCar_to_view;
+    if (viewed_car == NULL || viewed_car->driver != eDriver_oppo) {
+        message[0] = '\0';
+    } else {
+        if ((viewed_car->car_ID & 0xff00) == 0x0200) {
+            for (i = 0, car_specs = &gProgram_state.AI_vehicles.opponents[0].car_spec;
+                i < gProgram_state.AI_vehicles.number_of_opponents;
+                i++, car_specs += sizeof(tOpponent_spec) / sizeof(*car_specs)) {
+                if (*car_specs == viewed_car) {
+                    opponent_data = (int*)&gProgram_state.AI_vehicles.opponents[0]
+                        + i * sizeof(tOpponent_spec) / sizeof(int);
+                    goto opponent_found;
+                }
+            }
+        } else if ((viewed_car->car_ID & 0xff00) == 0x0300) {
+            for (i = 0, car_specs = &gProgram_state.AI_vehicles.cops[0].car_spec;
+                i < gNumber_of_cops_before_faffage;
+                i++, car_specs += sizeof(tOpponent_spec) / sizeof(*car_specs)) {
+                if (*car_specs == viewed_car) {
+                    opponent_data = (int*)&gProgram_state.AI_vehicles.cops[0]
+                        + i * sizeof(tOpponent_spec) / sizeof(int);
+                    goto opponent_found;
+                }
+            }
+        }
+        opponent_data = NULL;
+
+opponent_found:
+        opponent = (tOpponent_spec*)opponent_data;
+        section_no = opponent->follow_path_data.section_no;
+        cheating_marker = gSection_text_0065a788;
+        if (!opponent->cheating) {
+            cheating_marker = gEmpty_string_00676920;
+        }
+
+        if (section_no < 20000 || opponent->next_sections[section_no - 20000].direction != 0) {
+            direction = gSection_text_0065a780;
+        } else {
+            direction = gSection_text_0065a784;
+        }
+        if (section_no < 15000 || section_no >= 20000) {
+            extra_section = gEmpty_string_00676920;
+        } else {
+            extra_section = gSection_text_0065a77c;
+        }
+        displayed_section_no = section_no;
+        if (section_no >= 20000) {
+            displayed_section_no = opponent->next_sections[section_no - 20000].section_no;
+        }
+        sprintf(message, gFormat_opponent_headup_0065a750, viewed_car->name,
+            opponent->current_objective, opponent->nnext_sections, section_no, displayed_section_no,
+            extra_section, direction, cheating_marker);
+    }
+    ChangeHeadupText(gProgram_state.frame_rate_headup, message);
 }
 
 // FUNCTION: CARMA2_HW 0x004a7ea0
@@ -705,6 +1123,99 @@ void C2_HOOK_FASTCALL RebuildActiveCarList(void) {
     if (gNum_active_cars != new_count_active_cars) {
         gNum_active_cars = new_count_active_cars;
     }
+}
+
+// C2PORT-NONMATCHING: best 57.78% | difftest PASS 2000 trials (spec difftest/specs/004ae380_SetInitialCopPositions.json) | reason VC5 pointer-base and loop register allocation
+// FUNCTION: CARMA2_HW 0x004ae380
+void C2_HOOK_FASTCALL SetInitialCopPositions(void) {
+    int i;
+    tU32 time_stamp;
+    volatile tU32* pCop_fields;
+    volatile tU32* pStart_words;
+
+    i = 0;
+    gNumber_of_cops_before_faffage = gProgram_state.AI_vehicles.number_of_cops;
+    gDefinite_no_cop_pursuit_speed = 17.8788f;
+    gCop_pursuit_speed_value_00691730 = 44.697f;
+    gCop_pursuit_speed_percentage_multiplier = 3.7288110256195068359375f;
+
+    /* pCop_fields starts at stun_time_ends; its relative words address the full tOpponent_spec. */
+    if (gProgram_state.AI_vehicles.number_of_cops > 0) {
+        pCop_fields = (volatile tU32*)&gProgram_state.AI_vehicles.cops[0].stun_time_ends;
+        pStart_words = (tU32*)&gProgram_state.AI_vehicles.cop_start_points[0].v[1];
+        do {
+            PossibleService();
+            ((tCar_spec*)pCop_fields[-0x15])->car_ID = i + 0x300;
+            pCop_fields[-0x17] = 0x62;
+            time_stamp = gTime_stamp_for_this_munging;
+            pCop_fields[4] = time_stamp;
+            pCop_fields[5] = time_stamp;
+            pCop_fields[2] = time_stamp;
+            pCop_fields[3] = 0;
+            pCop_fields[0] = 0;
+            pCop_fields[1] = IRandomBetween(0, 900) + 5000 + gTime_stamp_for_this_munging;
+            pCop_fields[-4] = gTime_stamp_for_this_munging + 500;
+            *(volatile tU32*)&pCop_fields[0x15] = (*(volatile tU32*)&pCop_fields[0x15] & 0xfffff7c9) | 8;
+            *(tU16*)&pCop_fields[7] = 0xffff;
+            pCop_fields[8] = 0;
+            *(volatile tU32*)&pCop_fields[0x15] |= 1;
+            pCop_fields[-0x16] = 0;
+            *(volatile tU32*)&pCop_fields[0x15] &= 0xfffff8ff;
+            /* The original pointer walk writes this value into opponents[i].nastiness. */
+            *(volatile float*)&pCop_fields[-0xc62] = (((gCurrent_race.race_spec->opponent_nastiness_level - (float)gProgram_state.skill_level * gCop_nastiness_skill_adjustment) - gCop_nastiness_bias) * gCop_nastiness_divisor) * gOpponent_nastyness_frigger;
+            pCop_fields[-0x10] = pStart_words[-1];
+            pCop_fields[-0xf] = pStart_words[0];
+            pCop_fields[-0xe] = pStart_words[1];
+            pCop_fields[-0xd] = pStart_words[0x1d];
+            pCop_fields[-0xc] = pStart_words[0x1e];
+            pCop_fields[-0xb] = pStart_words[0x1f];
+            pCop_fields[-10] = 0;
+            pCop_fields[-9] = 0;
+            pCop_fields[-8] = 0;
+            gViewable_car_list[gNum_viewable_cars] = (tCar_spec*)pCop_fields[-0x15];
+            gNum_viewable_cars++;
+            ((tCar_spec*)pCop_fields[-0x15])->last_person_to_hit_us = NULL;
+            ((tCar_spec*)pCop_fields[-0x15])->last_person_we_hit = NULL;
+            ((tCar_spec*)pCop_fields[-0x15])->last_collision_time = 0;
+            ((tCar_spec*)pCop_fields[-0x15])->field_0x1548 = 0;
+            ((tCar_spec*)pCop_fields[-0x15])->no_of_processes_recording_my_trail = 0;
+            ((tCar_spec*)pCop_fields[-0x15])->grudge_raised_recently = 1;
+            gOpponents[pCop_fields[-0x17]].psyche.grudge_against_player = 10;
+            ((tCar_spec*)pCop_fields[-0x15])->acc_force = 0.f;
+            ((tCar_spec*)pCop_fields[-0x15])->brake_force = 0.f;
+            ((tCar_spec*)pCop_fields[-0x15])->curvature = 0.f;
+            time_stamp = gTime_stamp_for_this_munging + 0x0fffffff;
+            if (pCop_fields[0] > time_stamp) {
+                time_stamp = pCop_fields[0];
+            }
+            pCop_fields[0] = time_stamp;
+            i++;
+            pStart_words += 3;
+            pCop_fields += 0x69;
+        } while (i < gProgram_state.AI_vehicles.number_of_cops);
+    }
+
+    i = 0;
+    pCop_fields = (volatile tU32*)&gProgram_state.AI_vehicles.cops[0].car_spec;
+    pStart_words = (tU32*)&gProgram_state.AI_vehicles.cop_start_points[0].v[1];
+second_cop_loop:
+    if (i >= *(volatile int*)&gNumber_of_cops_before_faffage) {
+        goto done;
+    }
+    PossibleService();
+    *(tU32*)&((tCar_spec*)pCop_fields[0])->car_master_actor->t.t.translate.t.v[0] = pStart_words[-1];
+    *(tU32*)&((tCar_spec*)pCop_fields[0])->car_master_actor->t.t.translate.t.v[1] = pStart_words[0];
+    *(tU32*)&((tCar_spec*)pCop_fields[0])->car_master_actor->t.t.translate.t.v[2] = pStart_words[1];
+    PointActorAlongThisBloodyVector(((tCar_spec*)pCop_fields[0])->car_master_actor, (br_vector3*)(pStart_words + 0x1d));
+    pCop_fields[0x2a] &= 0xfffffff7;
+    RematerialiseOpponent((tOpponent_spec*)&pCop_fields[-2], 0.f);
+    InitCarSkidStuff((tCar_spec*)pCop_fields[0]);
+    i++;
+    pStart_words += 3;
+    pCop_fields += 0x69;
+    goto second_cop_loop;
+done:
+    return;
 }
 
 // FUNCTION: CARMA2_HW 0x004ae5d0
@@ -1126,6 +1637,161 @@ void C2_HOOK_FASTCALL CalcNegativeXVector(br_vector3* pNegative_x_vector, br_vec
     BrVector3Scale(pNegative_x_vector, pNegative_x_vector, pLength);
 }
 
+// GLOBAL: CARMA2_HW 0x00589318
+const br_scalar gFLOAT_00589318 = -0.15f;
+
+// GLOBAL: CARMA2_HW 0x0058931c
+const br_scalar gFLOAT_0058931c = -0.1f;
+
+// GLOBAL: CARMA2_HW 0x00589320
+const br_scalar gFLOAT_00589320 = 0.1f;
+
+// C2PORT-NONMATCHING: best 39.27% | difftest PASS 2000 trials (spec 00401aa0_FUN_00401aa0.json) | reason VC5 x87 scheduling and register allocation
+// FUNCTION: CARMA2_HW 0x00401aa0
+void C2_HOOK_FASTCALL BuildDronePathNodeMesh(br_model* pModel, int pVert_index, int pFace_index, const br_vector3* pPosition, tU32 pMaterial1, tU32 pMaterial2, tU32 pMaterial3) {
+    tU32 uVar2;
+    tU32 uVar3;
+    float fVar5;
+    int iVar1;
+    int iVar6;
+    int iVar7;
+    int iVar8;
+    int iVar9;
+    int iVar10;
+    int vertex1;
+    int vertex2;
+    int vertex3;
+    int vertex4;
+    int vertex5;
+    int vertex6;
+    int vertex7;
+    tS16 sVar4;
+    float* pfVar11;
+    br_face* faces;
+
+    uVar2 = *(tU32*)&pPosition->v[0];
+    uVar3 = *(tU32*)&pPosition->v[2];
+    fVar5 = pPosition->v[1] - gFLOAT_00589318;
+    vertex1 = pVert_index + 1;
+    vertex2 = pVert_index + 2;
+    vertex3 = pVert_index + 3;
+    vertex4 = pVert_index + 4;
+    vertex5 = pVert_index + 5;
+    vertex6 = pVert_index + 6;
+    vertex7 = pVert_index + 7;
+    iVar6 = pVert_index * 0x28;
+    *(tU32*)((tU8*)pModel->vertices + iVar6) = uVar2;
+    *(float*)((tU8*)pModel->vertices + iVar6 + 4) = fVar5;
+    *(tU32*)((tU8*)pModel->vertices + iVar6 + 8) = uVar3;
+    pfVar11 = (float*)((tU8*)pModel->vertices + iVar6);
+    *pfVar11 = *pfVar11 - gFLOAT_0058931c;
+    *(float*)((tU8*)pModel->vertices + iVar6 + 4) = *(float*)((tU8*)pModel->vertices + iVar6 + 4) - gFLOAT_0058931c;
+    *(float*)((tU8*)pModel->vertices + iVar6 + 8) = *(float*)((tU8*)pModel->vertices + iVar6 + 8) - gFLOAT_0058931c;
+    iVar6 = pVert_index + 1;
+    iVar7 = iVar6 * 0x28;
+    *(tU32*)((tU8*)pModel->vertices + iVar7) = uVar2;
+    *(float*)((tU8*)pModel->vertices + iVar7 + 4) = fVar5;
+    *(tU32*)((tU8*)pModel->vertices + iVar7 + 8) = uVar3;
+    pfVar11 = (float*)((tU8*)pModel->vertices + iVar7);
+    *pfVar11 = *pfVar11 - gFLOAT_0058931c;
+    *(float*)((tU8*)pModel->vertices + iVar7 + 4) = *(float*)((tU8*)pModel->vertices + iVar7 + 4) - gFLOAT_00589320;
+    *(float*)((tU8*)pModel->vertices + iVar7 + 8) = *(float*)((tU8*)pModel->vertices + iVar7 + 8) - gFLOAT_0058931c;
+    iVar7 = pVert_index + 2;
+    iVar8 = iVar7 * 0x28;
+    *(tU32*)((tU8*)pModel->vertices + iVar8) = uVar2;
+    *(float*)((tU8*)pModel->vertices + iVar8 + 4) = fVar5;
+    *(tU32*)((tU8*)pModel->vertices + iVar8 + 8) = uVar3;
+    pfVar11 = (float*)((tU8*)pModel->vertices + iVar8);
+    *pfVar11 = *pfVar11 - gFLOAT_00589320;
+    *(float*)((tU8*)pModel->vertices + iVar8 + 4) = *(float*)((tU8*)pModel->vertices + iVar8 + 4) - gFLOAT_00589320;
+    *(float*)((tU8*)pModel->vertices + iVar8 + 8) = *(float*)((tU8*)pModel->vertices + iVar8 + 8) - gFLOAT_0058931c;
+    iVar8 = (pVert_index + 3) * 0x28;
+    *(tU32*)((tU8*)pModel->vertices + iVar8) = uVar2;
+    *(float*)((tU8*)pModel->vertices + iVar8 + 4) = fVar5;
+    *(tU32*)((tU8*)pModel->vertices + iVar8 + 8) = uVar3;
+    pfVar11 = (float*)((tU8*)pModel->vertices + iVar8);
+    *pfVar11 = *pfVar11 - gFLOAT_00589320;
+    *(float*)((tU8*)pModel->vertices + iVar8 + 4) = *(float*)((tU8*)pModel->vertices + iVar8 + 4) - gFLOAT_0058931c;
+    *(float*)((tU8*)pModel->vertices + iVar8 + 8) = *(float*)((tU8*)pModel->vertices + iVar8 + 8) - gFLOAT_0058931c;
+    iVar8 = (pVert_index + 4) * 0x28;
+    *(tU32*)((tU8*)pModel->vertices + iVar8) = uVar2;
+    *(float*)((tU8*)pModel->vertices + iVar8 + 4) = fVar5;
+    *(tU32*)((tU8*)pModel->vertices + iVar8 + 8) = uVar3;
+    pfVar11 = (float*)((tU8*)pModel->vertices + iVar8);
+    *pfVar11 = *pfVar11 - gFLOAT_0058931c;
+    *(float*)((tU8*)pModel->vertices + iVar8 + 4) = *(float*)((tU8*)pModel->vertices + iVar8 + 4) - gFLOAT_0058931c;
+    *(float*)((tU8*)pModel->vertices + iVar8 + 8) = *(float*)((tU8*)pModel->vertices + iVar8 + 8) - gFLOAT_00589320;
+    iVar9 = pVert_index + 5;
+    iVar9 = iVar9 * 0x28;
+    *(tU32*)((tU8*)pModel->vertices + iVar9) = uVar2;
+    *(float*)((tU8*)pModel->vertices + iVar9 + 4) = fVar5;
+    *(tU32*)((tU8*)pModel->vertices + iVar9 + 8) = uVar3;
+    pfVar11 = (float*)((tU8*)pModel->vertices + iVar9);
+    *pfVar11 = *pfVar11 - gFLOAT_0058931c;
+    *(float*)((tU8*)pModel->vertices + iVar9 + 4) = *(float*)((tU8*)pModel->vertices + iVar9 + 4) - gFLOAT_00589320;
+    *(float*)((tU8*)pModel->vertices + iVar9 + 8) = *(float*)((tU8*)pModel->vertices + iVar9 + 8) - gFLOAT_00589320;
+    iVar1 = pVert_index + 6;
+    iVar9 = iVar1 * 0x28;
+    *(tU32*)((tU8*)pModel->vertices + iVar9) = uVar2;
+    *(float*)((tU8*)pModel->vertices + iVar9 + 4) = fVar5;
+    *(tU32*)((tU8*)pModel->vertices + iVar9 + 8) = uVar3;
+    pfVar11 = (float*)((tU8*)pModel->vertices + iVar9);
+    *pfVar11 = *pfVar11 - gFLOAT_00589320;
+    *(float*)((tU8*)pModel->vertices + iVar9 + 4) = *(float*)((tU8*)pModel->vertices + iVar9 + 4) - gFLOAT_00589320;
+    *(float*)((tU8*)pModel->vertices + iVar9 + 8) = *(float*)((tU8*)pModel->vertices + iVar9 + 8) - gFLOAT_00589320;
+    iVar9 = pVert_index + 7;
+    iVar10 = iVar9 * 0x28;
+    *(tU32*)((tU8*)pModel->vertices + iVar10) = uVar2;
+    *(float*)((tU8*)pModel->vertices + iVar10 + 4) = fVar5;
+    *(tU32*)((tU8*)pModel->vertices + iVar10 + 8) = uVar3;
+    pfVar11 = (float*)((tU8*)pModel->vertices + iVar10);
+    *pfVar11 = *pfVar11 - gFLOAT_00589320;
+    *(float*)((tU8*)pModel->vertices + iVar10 + 4) = *(float*)((tU8*)pModel->vertices + iVar10 + 4) - gFLOAT_0058931c;
+    *(float*)((tU8*)pModel->vertices + iVar10 + 8) = *(float*)((tU8*)pModel->vertices + iVar10 + 8) - gFLOAT_00589320;
+    sVar4 = (tS16)pVert_index;
+    iVar10 = pFace_index * 0x28;
+    *(tS16*)((tU8*)pModel->faces + iVar10) = sVar4 + 3;
+    *(tS16*)((tU8*)pModel->faces + iVar10 + 2) = sVar4 + 2;
+    *(tS16*)((tU8*)pModel->faces + iVar10 + 4) = sVar4 + 1;
+    *(tU16*)((tU8*)pModel->faces + iVar10 + 6) = 0xffff;
+    *(tU32*)((tU8*)pModel->faces + iVar10 + 8) = pMaterial1;
+    iVar10 = (pFace_index + 1) * 0x28;
+    *(tS16*)((tU8*)pModel->faces + iVar10) = sVar4;
+    *(tS16*)((tU8*)pModel->faces + iVar10 + 2) = sVar4 + 3;
+    *(tS16*)((tU8*)pModel->faces + iVar10 + 4) = sVar4 + 1;
+    *(tU16*)((tU8*)pModel->faces + iVar10 + 6) = 0xffff;
+    *(tU32*)((tU8*)pModel->faces + iVar10 + 8) = pMaterial1;
+    iVar10 = (pFace_index + 2) * 0x28;
+    *(tS16*)((tU8*)pModel->faces + iVar10) = sVar4 + 1;
+    *(tS16*)((tU8*)pModel->faces + iVar10 + 2) = sVar4 + 5;
+    *(tS16*)((tU8*)pModel->faces + iVar10 + 4) = sVar4 + 4;
+    *(tU16*)((tU8*)pModel->faces + iVar10 + 6) = 0xffff;
+    *(tU32*)((tU8*)pModel->faces + iVar10 + 8) = pMaterial2;
+    iVar10 = (pFace_index + 3) * 0x28;
+    *(tS16*)((tU8*)pModel->faces + iVar10) = sVar4 + 1;
+    *(tS16*)((tU8*)pModel->faces + iVar10 + 2) = sVar4 + 4;
+    *(tS16*)((tU8*)pModel->faces + iVar10 + 4) = sVar4;
+    *(tU16*)((tU8*)pModel->faces + iVar10 + 6) = 0xffff;
+    *(tU32*)((tU8*)pModel->faces + iVar10 + 8) = pMaterial2;
+    iVar10 = (pFace_index + 4) * 0x28;
+    *(tS16*)((tU8*)pModel->faces + iVar10) = sVar4;
+    *(tS16*)((tU8*)pModel->faces + iVar10 + 2) = sVar4 + 4;
+    *(tS16*)((tU8*)pModel->faces + iVar10 + 4) = sVar4 + 3;
+    *(tU16*)((tU8*)pModel->faces + iVar10 + 6) = 0xffff;
+    *(tU32*)((tU8*)pModel->faces + iVar10 + 8) = pMaterial3;
+    iVar10 = (pFace_index + 5) * 0x28;
+    *(tS16*)((tU8*)pModel->faces + iVar10) = sVar4 + 3;
+    *(tS16*)((tU8*)pModel->faces + iVar10 + 2) = sVar4 + 4;
+    *(tS16*)((tU8*)pModel->faces + iVar10 + 4) = sVar4 + 7;
+    *(tU16*)((tU8*)pModel->faces + iVar10 + 6) = 0xffff;
+    *(tU32*)((tU8*)pModel->faces + iVar10 + 8) = pMaterial3;    MakeFaceAndTextureIt((int)pModel, pFace_index + 6, vertex4, vertex5, vertex7, pMaterial1);
+    MakeFaceAndTextureIt((int)pModel, pFace_index + 7, vertex5, vertex6, vertex7, pMaterial1);
+    MakeFaceAndTextureIt((int)pModel, pFace_index + 8, vertex2, vertex7, vertex6, pMaterial2);
+    MakeFaceAndTextureIt((int)pModel, pFace_index + 9, vertex2, vertex3, vertex7, pMaterial2);
+    MakeFaceAndTextureIt((int)pModel, pFace_index + 10, vertex1, vertex2, vertex6, pMaterial3);
+    MakeFaceAndTextureIt((int)pModel, pFace_index + 11, vertex1, vertex6, vertex5, pMaterial3);
+}
+
 // FUNCTION: CARMA2_HW 0x004a9550
 void C2_HOOK_FASTCALL CalcOpponentConspicuousnessWithAViewToCheatingLikeFuck(tOpponent_spec* pOpponent_spec) {
 
@@ -1378,6 +2044,12 @@ void C2_HOOK_FASTCALL ClearTwattageOccurrenceVariables(tOpponent_spec* pOpponent
     pOpponent_spec->car_spec->last_person_to_hit_us = NULL;
     pOpponent_spec->car_spec->last_person_we_hit = NULL;
 }
+
+// GLOBAL: CARMA2_HW 0x0058a4fc
+static const float gTrail_minimum_distance = .3f;
+
+// GLOBAL: CARMA2_HW 0x0058a500
+static const float gTrail_obstructed_distance = 1.5f;
 
 // FUNCTION: CARMA2_HW 0x004a9e10
 void C2_HOOK_FASTCALL MungeOpponents(void) {

@@ -38,9 +38,12 @@ extern void C2_HOOK_FASTCALL DisposeSavedShadeTables(void);
 
 // RenderLollipops
 
-extern void C2_HOOK_FASTCALL SetupDepthBuffer(void);
+// SetupDepthBuffer
 
 extern void C2_HOOK_FASTCALL SetBRenderScreenAndBuffers(int pX_offset, int pY_offset, int pWidth, int pHeight);
+extern void C2_HOOK_FASTCALL SetupDepthBuffer(void);
+
+
 
 // AdjustRenderScreenSize
 
@@ -52,7 +55,8 @@ extern void C2_HOOK_FASTCALL SetBRenderScreenAndBuffers(int pX_offset, int pY_of
 
 extern void C2_HOOK_FASTCALL InitWobbleStuff(void);
 
-extern void C2_HOOK_FASTCALL NewScreenWobble(double pAmplitude_x, double pAmplitude_y, double pPeriod);
+// NewScreenWobble
+extern void C2_HOOK_STDCALL NewScreenWobble(double pAmplitude_x, double pAmplitude_y, double pPeriod);
 
 // SetScreenWobble
 

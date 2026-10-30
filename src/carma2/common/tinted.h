@@ -28,10 +28,13 @@ int C2_HOOK_FASTCALL CreateTintedPoly(int x0, int y0, int width, int height, int
 br_model* C2_HOOK_FASTCALL BuildTintedPolyModel(int x0, int y0, int width, int height, int nbX, int nbY);
 
 void C2_HOOK_FASTCALL FreeTintedPolyActor(int pTintedIndex);
+void C2_HOOK_FASTCALL UpdateTintedPolyByMaterial(int pTintedIndex);
+
 
 void C2_HOOK_FASTCALL FreeAllTintedPolyActors(void);
 
-void C2_HOOK_FASTCALL UpdateTintedPolyByMaterial(int pTintedIndex);
+
+void C2_HOOK_FASTCALL UpdateTintedPolyActor(int pTintedIndex);
 
 void C2_HOOK_FASTCALL TurnTintedPolyOn(int pTintedIndex);
 

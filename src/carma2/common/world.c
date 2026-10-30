@@ -195,6 +195,9 @@ int gCount_track_smashable_environment_specs;
 // GLOBAL: CARMA2_HW 0x006a8288
 int gCount_track_smashable_environment_specs_2;
 
+// GLOBAL: CARMA2_HW 0x006a8294
+int gINT_006a8294;
+
 // GLOBAL: CARMA2_HW 0x006a3330
 int gCapacity_track_smashables;
 

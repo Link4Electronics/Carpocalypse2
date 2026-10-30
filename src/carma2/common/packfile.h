@@ -16,6 +16,10 @@ extern void C2_HOOK_FASTCALL ClosePackFile(tTWTVFS twt);
 
 extern int C2_HOOK_FASTCALL PFfclose(FILE* pFile);
 
+#ifndef CARMA2_PF_FCLOSE_DECLARED
+#define CARMA2_PF_FCLOSE_DECLARED
+#endif
+
 extern FILE* C2_HOOK_FASTCALL PFfopen(const char* pPath, const char* mode);
 
 extern int C2_HOOK_FASTCALL PFfgetc(FILE* pFile);
@@ -49,5 +53,7 @@ extern void C2_HOOK_FASTCALL ClosePackFileAndSetTiffLoading(tTWTVFS twt);
 extern void C2_HOOK_FASTCALL PackFileRevertTiffLoading(void);
 
 extern void C2_HOOK_FASTCALL PackFileRerevertTiffLoading(void);
+
+void C2_HOOK_FASTCALL PackfileNoOp(void);
 
 #endif // GUARD_PACKFILE_H

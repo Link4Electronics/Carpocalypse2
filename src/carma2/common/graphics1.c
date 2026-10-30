@@ -279,7 +279,7 @@ void C2_HOOK_FASTCALL InitWobbleStuff(void) {
 }
 
 // FUNCTION: CARMA2_HW 0x004e4db0
-void C2_HOOK_FASTCALL NewScreenWobble(double pAmplitude_x, double pAmplitude_y, double pPeriod) {
+void C2_HOOK_STDCALL NewScreenWobble(double pAmplitude_x, double pAmplitude_y, double pPeriod) {
     int i;
     int index = -1;
     int oldest_time = INT_MAX;

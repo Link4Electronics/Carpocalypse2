@@ -3,7 +3,6 @@
 
 #include "carpocalypse2_types.h"
 
-
 #include "c2_hooks.h"
 
 extern void C2_HOOK_FASTCALL InitOilSpills(void);
@@ -29,6 +28,8 @@ void C2_HOOK_FASTCALL QueueOilSpill2(
 
 void C2_HOOK_FASTCALL QueueOilSpill(tCar_spec* pCar);
 
+void C2_HOOK_FASTCALL FUN_004a78e0(tNet_message_chunk* pChunk);
+
 // OKToSpillOil
 
 // MungeOilsHeightAboveGround
@@ -47,18 +48,22 @@ void C2_HOOK_FASTCALL QueueOilSpill(tCar_spec* pCar);
 
 // GetOilFrictionFactors
 
-extern void C2_HOOK_FASTCALL AdjustOilSpill(int pIndex, br_matrix34* pMat, br_scalar pFull_size, br_scalar pGrow_rate, tU32 pSpill_time, tU32 pStop_time, tCar_spec* pCar, br_vector3* pOriginal_pos, br_pixelmap* pPixelmap);
+// AdjustOilSpill
 
 extern void C2_HOOK_FASTCALL ReceivedOilSpill(tNet_message_chunk* pContents);
+extern void C2_HOOK_FASTCALL AdjustOilSpill(int pIndex, br_matrix34* pMat, br_scalar pFull_size, br_scalar pGrow_rate, tU32 pSpill_time, tU32 pStop_time, tCar_spec* pCar, br_vector3* pOriginal_pos, br_pixelmap* pPixelmap);
+
 
 extern void C2_HOOK_FASTCALL RemoveCarsOilSlicks(tCar_spec* pCar);
+
+
+// RemoveCarsOilSlicks
 
 #define CARPOCALYPSE2_OIL_H
 
 #include "carpocalypse2_types.h"
 
 #include "c2_hooks.h"
-
 
 extern int gNext_oil_pixie;
 
@@ -78,9 +83,9 @@ int C2_HOOK_FASTCALL GetOilSpillCount(void);
 
 void C2_HOOK_FASTCALL GetOilSpillDetails(int pIndex, br_actor** pActor, br_scalar* pSize);
 
-void C2_HOOK_FASTCALL GetOilFrictionFactors(tCar_spec* pCar, br_scalar* pFl, br_scalar* pFr, br_scalar* pRl, br_scalar* pRr);
+int C2_HOOK_FASTCALL PointInSpill(br_vector3* pV, int pSpill);
 
-int C2_HOOK_FASTCALL PointInSpill(br_vector3* pPoint, int pIndex);
+void C2_HOOK_FASTCALL GetOilFrictionFactors(tCar_spec* pCar, br_scalar* pFl, br_scalar* pFr, br_scalar* pRl, br_scalar* pRr);
 
 void C2_HOOK_FASTCALL MungeIndexedOilsHeightAboveGround(int pIndex);
 

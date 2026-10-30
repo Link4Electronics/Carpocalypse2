@@ -94,6 +94,23 @@ skip:
 #endif
 }
 
+// STUB: CARMA2_HW 0x0056a900
+C2_NAKED OSErr C2_HOOK_CDECL GetMoviesError(void) {
+#ifdef CARPOCALYPSE2_MATCHING
+    __asm {
+        mov eax, dword ptr [gQuickTime_trap_callback]
+        or eax, eax
+        je skip
+        call dword ptr [gQuickTime_trap_callback]
+skip:
+        mov eax, 0x20002
+        jmp dword ptr [gQuickTime_trap_dispatcher]
+    }
+#else
+    return 0x1;
+#endif
+}
+
 // STUB: CARMA2_HW 0x0056baa0
 C2_NAKED OSErr C2_HOOK_CDECL CloseMovieFile(short resRefNum) {
 #ifdef CARPOCALYPSE2_MATCHING
@@ -126,6 +143,24 @@ skip:
     }
 #else
     (void)theMovie;
+#endif
+}
+
+// STUB: CARMA2_HW 0x0056b340
+C2_NAKED OSErr C2_HOOK_CDECL BeginMediaEdits(Media theMedia) {
+#ifdef CARPOCALYPSE2_MATCHING
+    __asm {
+        mov eax, dword ptr [gQuickTime_trap_callback]
+        or eax, eax
+        je skip
+        call dword ptr [gQuickTime_trap_callback]
+skip:
+        mov eax, 0x20072
+        jmp dword ptr [gQuickTime_trap_dispatcher]
+    }
+#else
+    (void)theMedia;
+    return 1;
 #endif
 }
 

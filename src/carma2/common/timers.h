@@ -71,7 +71,7 @@ static void inline Timers_Pop(int pType) {
 
     gTimers[pType].durations[gTimers[pType].index] +=PDGetMicroseconds() - gTimers[pType].start_time;
     if (gTimers_stack_size > 1) {
-        prev_type = gTimers_stack_size - 1;
+        prev_type = gTimers_stack[gTimers_stack_size - 1];
     } else {
         prev_type = gTimers_max_index;
     }

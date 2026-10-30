@@ -168,6 +168,8 @@ int C2_HOOK_FASTCALL GetRecoverVoucherCount(void);
 
 extern void C2_HOOK_FASTCALL InitAbuseomatic(void);
 
+tU32 C2_HOOK_FASTCALL GetKeyStateBit27(void);
+
 extern void C2_HOOK_FASTCALL DisposeAbuseomatic(void);
 
 // ChangeCameraTypeInGame
@@ -240,6 +242,8 @@ extern int gRepair_last_time;
 extern tU32 gLast_repair_time;
 
 void C2_HOOK_FASTCALL SetSoundDetailLevel(int pLevel);
+
+void C2_HOOK_FASTCALL FUN_0040e530(br_actor* pActor);
 
 void C2_HOOK_FASTCALL ReallySetSoundDetailLevel(int pLevel);
 
@@ -399,6 +403,8 @@ void C2_HOOK_FASTCALL FUN_0045a670(void);
 
 void C2_HOOK_FASTCALL FUN_0045acf0(void);
 
+void C2_HOOK_FASTCALL FUN_0045ae20(void);
+
 void C2_HOOK_FASTCALL BuyPSPowerup(int pIndex);
 
 void C2_HOOK_FASTCALL FinishRace(int i);
@@ -416,6 +422,10 @@ void C2_HOOK_FASTCALL ToggleSky(void);
 void C2_HOOK_FASTCALL CycleYonFactor(void);
 
 void C2_HOOK_FASTCALL ToggleAccessoryRendering(void);
+
+void C2_HOOK_FASTCALL DecreaseYon(void);
+
+void C2_HOOK_FASTCALL IncreaseYon(void);
 
 void C2_HOOK_FASTCALL CycleSoundDetailLevel(void);
 
@@ -453,13 +463,16 @@ void C2_HOOK_FASTCALL EarnDosh(void);
 
 void C2_HOOK_FASTCALL LoseDosh(void);
 
-void C2_HOOK_FASTCALL FUN_0040e530(br_actor* pActor);
-
 void C2_HOOK_FASTCALL ViewOpponent(void);
 
-void C2_HOOK_FASTCALL MungeRepulseRays(tU32 pTime);
+void C2_HOOK_FASTCALL ReallyViewOpponent(void);
 
+void C2_HOOK_FASTCALL ToggleShellModel(void);
+
+void C2_HOOK_FASTCALL MungeRepulseRays(tU32 pTime);
 void C2_HOOK_FASTCALL GotPowerupN(int pN);
+
+
 
 void C2_HOOK_FASTCALL GotPowerup0(void);
 

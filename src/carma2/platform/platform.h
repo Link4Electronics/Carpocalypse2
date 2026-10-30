@@ -53,7 +53,7 @@ extern void C2_HOOK_FASTCALL PDSetPaletteEntries(br_pixelmap* pPalette, int pFir
 
 extern void C2_HOOK_FASTCALL PDSetPalette(br_pixelmap *pixelmap);
 
-extern void C2_HOOK_FASTCALL PDEnumPath(const char* path, tEnumPathCallback pCallback, void* data);
+extern int C2_HOOK_FASTCALL PDEnumPath(const char* path, tEnumPathCallback pCallback, void* data);
 
 extern int C2_HOOK_FASTCALL PDmkdir(const char* path);
 
@@ -123,11 +123,17 @@ extern void C2_HOOK_FASTCALL PDReadJoysticks(void);
 
 extern void C2_HOOK_FASTCALL PDInitJoysticks(void);
 
+extern const char* C2_HOOK_FASTCALL GetCurrentJoystickName(void);
+
+extern int C2_HOOK_FASTCALL IsJoystickPresent(int pIndex);
+
 extern void C2_HOOK_FASTCALL PDPlayFFBEffectIndex(int index);
 
 extern int C2_HOOK_FASTCALL PDFindJoystickEffect(const char* effectName);
 
 extern void C2_HOOK_FASTCALL PDPlayFFBEffect(const char* effectName);
+
+extern int C2_HOOK_FASTCALL SetJoystickFFBCollisionForce(long pMagnitude, long pDirection);
 
 extern tU32 C2_HOOK_FASTCALL PDGetJoy1Button1(void);
 

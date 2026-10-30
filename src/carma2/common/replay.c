@@ -29,6 +29,18 @@
 // GLOBAL: CARMA2_HW 0x00679278
 int gAction_replay_manual_camera_target_type;
 
+// GLOBAL: CARMA2_HW 0x0067927c
+br_vector3 gAction_replay_manual_camera_target_position;
+
+// GLOBAL: CARMA2_HW 0x00679288
+tCar_spec* gAction_replay_manual_camera_target_car;
+
+// GLOBAL: CARMA2_HW 0x0067928c
+tPedestrian* gAction_replay_manual_camera_target_pedestrian;
+
+// GLOBAL: CARMA2_HW 0x00679290
+br_actor* gAction_replay_manual_camera_target_character_actor;
+
 // GLOBAL: CARMA2_HW 0x0058f600
 tU8 gCamera_type_allowed_replay[9] = {
     1, 1, 1, 1, 1, 0, 0, 1, 1,

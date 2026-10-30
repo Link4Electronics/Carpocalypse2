@@ -1,20 +1,35 @@
 #include "piping.h"
 
+extern const br_scalar gFLOAT_00589330;
+
 #include "compress.h"
 
 #include "crush.h"
 #include "errors.h"
+
+#include "flap.h"
+
 #include "globvars.h"
+
+#include "input.h"
+
 #include "network.h"
 #include "opponent.h"
 #include "pedestrn.h"
 #include "physics.h"
 #include "platform.h"
+
+#include "replay.h"
+
 #include "smashing.h"
 #include "sound.h"
 #include "utility.h"
 
+#include "video.h"
+
 #include <brender/brender.h>
+
+#include <math.h>
 
 #include <s3/internal/audio.h>
 
@@ -33,6 +48,12 @@ void C2_HOOK_FASTCALL ARAdvanceChunkPtr(tPipe_chunk** pChunk_ptr, tPipe_chunk_ty
 // GLOBAL: CARMA2_HW 0x00676918
 int gDisable_sound;
 
+// GLOBAL: CARMA2_HW 0x00589338
+const double gDouble_00589338 = 1500.0;
+
+// GLOBAL: CARMA2_HW 0x00589340
+const double gDouble_00589340 = 0.0000152587890625;
+
 // GLOBAL: CARMA2_HW 0x00694104
 undefined4* gCrush_space;
 
@@ -45,8 +66,17 @@ int gPlay_direction = 0;
 // GLOBAL: CARMA2_HW 0x006768bc
 tU8* gPipe_record_ptr = NULL;
 
+// GLOBAL: CARMA2_HW 0x006768a8
+tU32 gPipe_UNK_006768a8;
+
 // GLOBAL: CARMA2_HW 0x006768ac
 tU8* gPipe_buffer_oldest = NULL;
+
+// GLOBAL: CARMA2_HW 0x006768b0
+tU32 gPipe_UNK_006768b0;
+
+// GLOBAL: CARMA2_HW 0x00676904
+tU32 gPipe_UNK_00676904;
 
 // GLOBAL: CARMA2_HW 0x00694108
 tU32 gYoungest_time;
@@ -70,10 +100,13 @@ tCar_spec* gCar_ptr;
 tU32 gTrigger_time;
 
 // GLOBAL: CARMA2_HW 0x0069410c
-volatile undefined4 gUNK_0069410c;
+volatile br_scalar gUNK_0069410c;
 
 // GLOBAL: CARMA2_HW 0x0058a908
 const double gDouble_0058a908 = 468099.99999999994;
+
+// GLOBAL: CARMA2_HW 0x0058ab98
+const double gDouble_0058ab98 = 0.000004;
 
 
 // GLOBAL: CARMA2_HW 0x00676908
@@ -101,6 +134,9 @@ int gReentrancy_count = 0;
 // GLOBAL: CARMA2_HW 0x006768d0
 tPipe_chunk_type gReentrancy_array[5];
 
+// GLOBAL: CARMA2_HW 0x006768cc
+tPipe_chunk_type gReentrancy_array_base_minus_one;
+
 // GLOBAL: CARMA2_HW 0x006768b4
 tU8* gLocal_buffer = NULL;
 
@@ -124,6 +160,12 @@ tU8* gPipe_buffer_end_marker = NULL;
 
 // GLOBAL: CARMA2_HW 0x0058f1e8
 const int gPipe_session_search_limit = 1000;
+
+// GLOBAL: CARMA2_HW 0x006768a4
+tU32 gReplay_saved_frame_period;
+
+// GLOBAL: CARMA2_HW 0x006768f8
+tU32 gReplay_saved_average_frame_period;
 
 // GLOBAL: CARMA2_HW 0x006940d4
 tPipe_smudge_data* gSmudge_space;
@@ -1010,11 +1052,11 @@ void C2_HOOK_FASTCALL ScanCarsPositions(tCar_spec* pCar, br_vector3* pSource_pos
 // FUNCTION: CARMA2_HW 0x004c82e0
 void C2_HOOK_FASTCALL PipeSingleOilSpill(int pIndex, br_matrix34* pMat, br_scalar pFull_size, br_scalar pGrow_rate, tU32 pSpill_time, tU32 pStop_time, tCar_spec* pCar, br_vector3* pOriginal_pos, br_pixelmap* pPixelmap) {
 
-    gUNK_0069410c = *(tU32*)&pFull_size;
+    gUNK_0069410c_u32 = *(tU32*)&pFull_size;
     ARDoSingleVariedSession(0x10, pIndex, 8,
         0x30, 0, pMat,
-        4, 0x30, gUNK_0069410c,
-        4, 0x34, gUNK_0069410c,
+        4, 0x30, gUNK_0069410c_u32,
+        4, 0x34, gUNK_0069410c_u32,
         4, 0x38, pSpill_time,
         4, 0x3c, pStop_time,
         4, 0x40, pCar,
@@ -1049,7 +1091,7 @@ void C2_HOOK_FASTCALL PipeSinglePedMove(tPedestrian* pPed, tS16 pArg2, tS16 pOri
     C2_HOOK_STATIC_ASSERT_STRUCT_MEMBER_SIZE(tPipe_ped_move_data, action, 4);
     C2_HOOK_STATIC_ASSERT_STRUCT_MEMBER_SIZE(tPipe_ped_move_data, field_0x34, 48);
 
-    gUNK_0069410c = pArg5;
+    gUNK_0069410c_u32 = pArg5;
     ARDoSingleVariedSession(ePipe_chunk_ped_move, (uintptr_t)pPed, 12,
         SIZE_OFFSET_PIPING(tPipe_ped_move_data, original_move_id), pOriginal_move_id,
         SIZE_OFFSET_PIPING(tPipe_ped_move_data, move_id),          pMove_id,
@@ -1088,7 +1130,7 @@ void C2_HOOK_FASTCALL PipeSinglePedDir(int pId, const br_vector3* pDir) {
 // FUNCTION: CARMA2_HW 0x004c8c30
 void C2_HOOK_FASTCALL PipeSinglePedMoveStatus(tPedestrian* pPed, float pValue, float pArg3) {
 
-    gUNK_0069410c = *(tU32*)&pValue;
+    gUNK_0069410c_u32 = *(tU32*)&pValue;
     ARDoSingleVariedSession(ePipe_chunk_ped_move_status, (uintptr_t)pPed, 2,
         4, 0,  *(tU32*)&pValue,
         4, 4,  *(tU32*)&pValue);
@@ -1188,6 +1230,73 @@ void C2_HOOK_FASTCALL ARCompressModelMash(tCompressed_vector3 *pDest, br_model* 
 
     for (i = 0; i < pModel->nvertices; i++) {
         CompressVector3(&pDest[i], &pSrc[i], -10.f, 10.f);
+    }
+}
+
+// C2PORT-NONMATCHING: best 54.69% | difftest PASS 2000 trials (spec difftest/specs/0043c240_FUN_0043c240.json) | reason VC5 x87 scheduling and stack/register allocation
+// FUNCTION: CARMA2_HW 0x0043c240
+void C2_HOOK_FASTCALL FUN_0043c240(tCar_spec* pCar_spec, float* pPlane) {
+    br_model** car_models;
+    tCar_crush_spec* car_crush_spec;
+    br_model* temporary_model;
+    float plane[4];
+    br_model** car_model_ptr;
+    br_model** crush_models;
+    br_model** crush_model_ptr;
+    br_model* model;
+    br_material* material;
+    int i;
+    int model_offset;
+    int group;
+
+    plane[0] = pPlane[0];
+    plane[1] = pPlane[1];
+    plane[2] = pPlane[2];
+    plane[3] = pPlane[3];
+    car_crush_spec = pCar_spec->car_crush_spec;
+    car_models = (br_model**)pCar_spec->car_model_actor->user;
+    crush_models = car_crush_spec->field_0x4c4;
+    plane[3] = pPlane[3] - (pCar_spec->car_model_actor->t.t.mat.m[3][2] * plane[2]
+        + pCar_spec->car_model_actor->t.t.mat.m[3][0] * plane[0]
+        + pCar_spec->car_model_actor->t.t.mat.m[3][1] * plane[1]);
+
+    FUN_0042f5d0(car_models[0], crush_models, &car_crush_spec->model_actor->model, plane, 0);
+    i = 1;
+    car_model_ptr = car_models;
+    if (i < pCar_spec->count_detail_levels) {
+        model_offset = (int)crush_models - (int)car_models;
+        do {
+            if (car_model_ptr[1] != NULL) {
+                FUN_0042f5d0(car_model_ptr[1], (br_model**)((int)car_model_ptr + 4 + model_offset), &temporary_model, plane, 1);
+            }
+            i++;
+            car_model_ptr++;
+        } while (i < pCar_spec->count_detail_levels);
+    }
+    i = 0;
+    if (i < pCar_spec->count_detail_levels) {
+        model_offset = (int)car_models - (int)crush_models;
+        crush_model_ptr = crush_models;
+        do {
+            temporary_model = *crush_model_ptr;
+            *crush_model_ptr = *(br_model**)((int)crush_model_ptr + model_offset);
+            *(br_model**)((int)crush_model_ptr + model_offset) = temporary_model;
+            i++;
+            crush_model_ptr++;
+        } while (i < pCar_spec->count_detail_levels);
+    }
+    pCar_spec->car_model_actor->model = car_models[0];
+    DRActorEnumRecurse(pCar_spec->car_model_actor, MakeCarModelsMaterialsDoubleSided, pCar_spec);
+
+    model = car_crush_spec->model_actor->model;
+    if (model != NULL) {
+        for (group = 0; group < model->prepared->ngroups; group++) {
+            material = model->faces[*model->prepared->groups[group].face_user].material;
+            if (material != NULL && (material->flags & BR_MATF_TWO_SIDED) == 0) {
+                material->flags |= BR_MATF_TWO_SIDED;
+                BrMaterialUpdate(material, BR_MATU_RENDERING);
+            }
+        }
     }
 }
 
@@ -1331,7 +1440,7 @@ void C2_HOOK_FASTCALL PipeSingleGraphicalWheelStuff(tCar_spec* pCar) {
 // FUNCTION: CARMA2_HW 0x004c8540
 void C2_HOOK_FASTCALL PipeSingleCarIncident(tCar_spec* pCar, br_vector3* pPosition, float pForce) {
 
-    gUNK_0069410c = *(tU32*)&pForce;
+    gUNK_0069410c_u32 = *(tU32*)&pForce;
     ARDoSingleVariedSession(ePipe_chunk_ped_incident, 1, 3,
         4, 0, *(tU32*)&pForce,
         2, 4, (tU16)pCar->car_ID,
@@ -1339,13 +1448,13 @@ void C2_HOOK_FASTCALL PipeSingleCarIncident(tCar_spec* pCar, br_vector3* pPositi
 }
 
 // FUNCTION: CARMA2_HW 0x004c85b0
-void C2_HOOK_FASTCALL PipeSingleLocalCarIncident(br_vector3* pPosition, float pForce) {
+void C2_HOOK_STDCALL PipeSingleLocalCarIncident(br_scalar pArg) {
 }
 
 // FUNCTION: CARMA2_HW 0x004c8580
 void C2_HOOK_FASTCALL PipeSinglePedIncident(tPedestrian* pPed, br_actor* pActor) {
 
-    gUNK_0069410c = 0;
+    gUNK_0069410c_u32 = 0;
     ARDoSingleVariedSession(ePipe_chunk_ped_incident, 0, 3,
         SIZE_OFFSET_PIPING(tPipe_ped_incident, field_0x0), 0,
         SIZE_OFFSET_PIPING(tPipe_ped_incident, ped), pPed,
@@ -1523,11 +1632,11 @@ void C2_HOOK_FASTCALL PipeSingleShrapnelShower(uintptr_t pId, undefined4 pArg2, 
 // FUNCTION: CARMA2_HW 0x004c8ce0
 void C2_HOOK_FASTCALL PipeSingleGibShower(uintptr_t pId, undefined4 pArg2, undefined4 pArg3, undefined4 pArg4, undefined4 pArg5, br_vector3* pArg6, br_vector3* pArg7, br_vector3* pArg8) {
 
-    gUNK_0069410c = pArg4;
+    gUNK_0069410c_u32 = pArg4;
     ARDoSingleVariedSession(0x31, pId, 7,
         4, 8, pArg2,
         4, 4, pArg3,
-        4, 0xc, gUNK_0069410c,
+        4, 0xc, gUNK_0069410c_u32,
         4, 0, pArg5,
         0xc, 0x10, pArg6,
         0xc, 0x1c, pArg7,
@@ -1682,6 +1791,142 @@ int C2_HOOK_FASTCALL SoundTimeout(tU32 pTime) {
         || gPipe_sound_start_time - pTime < gPipe_sound_time_window;
 }
 
+// FUNCTION: CARMA2_HW 0x00403990
+void C2_HOOK_FASTCALL ScanAndPlaySoundsToBe(tPipe_chunk* pSession, tU32 pOldest_time, tU32 pYoungest_time) {
+    int iVar3;
+    int iVar4;
+    tU32 uVar5;
+    int iVar6;
+    tPipe_chunk* piVar7;
+    tPipe_chunk* chunk;
+    tU32 local_time;
+
+    if (gDisable_sound == 0) {
+        gPipe_UNK_00676904 = pYoungest_time;
+        gPipe_UNK_006768b0 = pOldest_time;
+        gPipe_UNK_006768a8 = (tU32)(fabs(gReplay_rate) * gDouble_00589338);
+        local_time = pOldest_time;
+        do {
+            int forward;
+
+            if (gPipe_play_ptr == gPipe_record_ptr) {
+                forward = 0;
+            } else if (gPipe_play_ptr == gPipe_buffer_oldest) {
+                forward = 1;
+            } else if (gReplay_rate != 0.0f) {
+                forward = gReplay_rate > 0.0f;
+            } else {
+                forward = gPlay_direction > 0;
+            }
+
+            if (forward) {
+                iVar4 = 0;
+                uVar5 = 0;
+                if (pSession->count > 0) {
+                    do {
+                        iVar3 = LengthOfChunk((tPipe_chunk*)((tU8*)pSession + sizeof(tPipe_chunk) + iVar4), pSession->type);
+                        iVar4 += iVar3;
+                        uVar5++;
+                    } while (uVar5 < pSession->count);
+                }
+                iVar4 += 10;
+                if ((iVar4 & 1) != 0) {
+                    FatalError(0x62);
+                }
+                piVar7 = (tPipe_chunk*)((tU8*)pSession + iVar4);
+                pSession = piVar7;
+                if ((tU8*)pSession >= gPipe_buffer_working_end) {
+                    if ((tU8*)piVar7 == gPipe_record_ptr) {
+                        return;
+                    }
+                    pSession = (tPipe_chunk*)gPipe_buffer_start;
+                }
+                if ((tU8*)pSession == gPipe_record_ptr) {
+                    return;
+                }
+            } else {
+                if ((tU8*)pSession == gPipe_buffer_oldest && (tU8*)pSession != gPipe_record_ptr) {
+                    return;
+                }
+                if ((tU8*)pSession == gPipe_buffer_start) {
+                    pSession = (tPipe_chunk*)gPipe_buffer_working_end;
+                }
+                pSession = (tPipe_chunk*)((tU8*)pSession - 2);
+                pSession = (tPipe_chunk*)((tU8*)pSession - *(tU16*)pSession);
+            }
+
+            iVar3 = 0;
+            uVar5 = 0;
+            if (pSession->count > 0) {
+                do {
+                    tReplay_callback* callback;
+
+                    callback = (tReplay_callback*)gPipe_callbacks + pSession->type;
+                    if (callback->calc_length != NULL) {
+                        iVar6 = callback->calc_length((tPipe_chunk*)((tU8*)pSession + sizeof(tPipe_chunk) + iVar3)) + 4 + callback->length;
+                    } else {
+                        iVar6 = callback->length + 4;
+                    }
+                    iVar3 += iVar6;
+                    uVar5++;
+                } while (uVar5 < pSession->count);
+            }
+            iVar3 += 10;
+            if ((iVar3 & 1) != 0) {
+                FatalError(0x62);
+            }
+            gPipe_buffer_end_marker = (tU8*)pSession + iVar3 - 2;
+            if (pSession->type == 0) {
+                local_time = ((tU32*)pSession)[3];
+            } else if (pSession->type == 2) {
+                iVar4 = pSession->count;
+                chunk = (tPipe_chunk*)((tU8*)pSession + sizeof(tPipe_chunk));
+                if (iVar4 > 0) {
+                    do {
+                        iVar3 = FUN_00564e5e(*(int*)chunk);
+                        if (*(int*)((tU8*)chunk + 4) > 1) {
+                            iVar3 = (int)((double)iVar3 / ((double)*(int*)((tU8*)chunk + 4) * gDouble_00589340));
+                        }
+                        piVar7 = chunk;
+                        iVar3 += local_time;
+                        if ((iVar3 < gPipe_UNK_00676904) || (gPipe_UNK_006768b0 <= iVar3)) {
+                            if (gPipe_undo_enabled == 0) {
+                                tU32 size;
+
+                                if (gPipe_callbacks[2].calc_length == NULL) {
+                                    size = gPipe_callbacks[2].length + 4;
+                                } else {
+                                    size = gPipe_callbacks[2].calc_length(chunk) + 4 + gPipe_callbacks[2].length;
+                                }
+                                piVar7 = (tPipe_chunk*)((tU8*)chunk + size);
+                                if ((tU8*)piVar7 == gPipe_buffer_end_marker || (intptr_t)piVar7 > (intptr_t)gPipe_buffer_end_marker) {
+                                    piVar7 = chunk;
+                                }
+                            }
+                        } else {
+                            if (gPipe_callbacks[2].apply != NULL) {
+                                gPipe_callbacks[2].apply(&chunk);
+                                piVar7 = chunk;
+                            }
+                        }
+                        chunk = piVar7;
+                        iVar4--;
+                    } while (iVar4 != 0);
+                }
+            }
+            iVar3 = gPipe_UNK_00676904;
+            if (iVar3 < local_time) {
+                continue;
+            }
+            iVar3 -= local_time;
+            if (iVar3 < gPipe_UNK_006768a8) {
+                continue;
+            }
+            break;
+        } while (1);
+    }
+}
+
 // ScanAndPlaySoundsToBe
 
 // FUNCTION: CARMA2_HW 0x00403020
@@ -1788,7 +2033,7 @@ void C2_HOOK_FASTCALL AddFlameToPipingSession(int pIndex, int pFrame, br_scalar 
     (void)pOffset_x;
     (void)pOffset_z;
     memcpy(&bits, &pScale_x, sizeof(bits));
-    gUNK_0069410c = bits;
+    gUNK_0069410c_u32 = bits;
     ARAddVariedDataToSession((tPipe_chunk_type)18, pIndex, 5,
         2, 0, pFrame, 4, 4, bits, 4, 8, bits, 4, 12, bits, 4, 16, bits);
 }
@@ -1816,9 +2061,23 @@ void C2_HOOK_FASTCALL AddExtendedSplashToPipingSession(tPhysics_object* pCollisi
     *(volatile float*)&gUNK_0069410c = pCollision->water_d;
     ARAddVariedDataToSession(0x3b, (uintptr_t)pArg2, 4,
         1, 0, (*(int*)&flag) & 0xff,
-        4, 4, gUNK_0069410c,
+        4, 4, gUNK_0069410c_u32,
         0xc, 8, &pCollision->water_normal,
         0x18, 0x14, &pCollision->bb2);
+}
+
+// FUNCTION: CARMA2_HW 0x004c71e0
+void C2_HOOK_FASTCALL FUN_004c71e0(uintptr_t pOwner, void* pData, undefined4 pArg3, undefined4 pArg4, undefined4 pArg5, undefined4 pArg6, undefined4 pArg7, void* pArg8, undefined4 pArg9) {
+    gUNK_0069410c_u32 = pArg3;
+    ARAddVariedDataToSession(0x10, pOwner, 8,
+        0x30, 0, pData,
+        4, 0x30, gUNK_0069410c_u32,
+        4, 0x34, gUNK_0069410c_u32,
+        4, 0x38, pArg5,
+        4, 0x3c, pArg6,
+        4, 0x40, pArg7,
+        0xc, 0x44, pArg8,
+        4, 0x50, pArg9);
 }
 
 // AddCarToPipingSession
@@ -2232,9 +2491,267 @@ void C2_HOOK_FASTCALL PedPreCollisionStuff(void) {
 // ===== Ported from bojan1986819 fork (exact-match replay pipe helpers) =====
 
 #pragma auto_inline(off)
-// STUB: CARMA2_HW 0x00403260
+// C2PORT-NONMATCHING: best 35.23% | difftest PASS 2000 trials (spec difftest/specs/00403260_ARDoActionReplay.json) | reason stack-layout
+// FUNCTION: CARMA2_HW 0x00403260
 void C2_HOOK_FASTCALL ARDoActionReplay(int pStep_count, tARDoActionReplay_step_callback* pStep_callback, tARDoActionReplay_frame_callback* pFrame_start_callback, tARDoActionReplay_frame_callback* pFrame_end_callback) {
-    NOT_IMPLEMENTED();
+    tPipe_chunk* local_34;
+    tPipe_chunk* piVar4;
+    tPipe_chunk* piVar8;
+    tPipe_chunk* piVar9;
+    tPipe_chunk* current_chunk;
+    tPipe_chunk* chunk_data_start;
+    tPipe_chunk* next_session;
+    tPipe_chunk_data* undo_target;
+    int* session_count;
+    const tReplay_callback* callback;
+    int iVar2;
+    int iVar3;
+    int iVar5;
+    int iVar6;
+    int iVar10;
+    int local_14;
+    tU32 uVar11;
+    tU32 uStack_24;
+    int bVar12;
+    tU32 start_time;
+    tPipe_chunk* initial_session;
+
+    local_34 = (tPipe_chunk*)gPipe_play_ptr;
+    initial_session = local_34;
+    start_time = GetTotalTime();
+    local_14 = 0;
+    iVar5 = (pStep_count ^ (pStep_count >> 31)) - (pStep_count >> 31);
+    piVar9 = NULL;
+    if (iVar5 < 1) {
+        goto replay_complete;
+    }
+
+replay_outer:
+    piVar4 = local_34;
+    if ((piVar9 != local_34) && (KeyIsDown(0) == 0)) {
+        if (pStep_count > 0) {
+            if (gPipe_play_ptr != gPipe_record_ptr) {
+                iVar6 = local_34->type;
+                piVar9 = local_34;
+                while (iVar6 != 0) {
+                    iVar6 = LengthOfSession(piVar9);
+                    piVar8 = (tPipe_chunk*)((tU8*)piVar9 + iVar6);
+                    piVar9 = piVar8;
+
+                    if ((tU8*)piVar8 >= gPipe_buffer_working_end) {
+                        if ((tU8*)piVar8 == gPipe_record_ptr) {
+                            goto replay_reset_callbacks;
+                        }
+                        piVar9 = (tPipe_chunk*)gPipe_buffer_start;
+                    }
+                    if ((tU8*)piVar9 == gPipe_record_ptr) {
+                        goto replay_reset_callbacks;
+                    }
+                    iVar6 = piVar9->type;
+                }
+                gLast_replay_frame_time = *(tU32*)((tU8*)piVar9 + 0xc);
+            }
+        } else if (local_34 != (tPipe_chunk*)gPipe_buffer_oldest || local_34 == (tPipe_chunk*)gPipe_record_ptr) {
+            piVar9 = local_34;
+            if ((tU8*)local_34 == gPipe_buffer_start) {
+                piVar9 = (tPipe_chunk*)gPipe_buffer_working_end;
+            }
+            piVar9 = (tPipe_chunk*)((tU8*)piVar9 - 2);
+            piVar9 = (tPipe_chunk*)((tU8*)piVar9 - *(tU16*)piVar9);
+            for (;;) {
+                if ((tU8*)piVar9 == gPipe_buffer_oldest && (tU8*)piVar9 != gPipe_record_ptr) {
+                    goto replay_reset_callbacks;
+                }
+                if ((tU8*)piVar9 == gPipe_buffer_start) {
+                    piVar9 = (tPipe_chunk*)gPipe_buffer_working_end;
+                }
+                piVar9 = (tPipe_chunk*)((tU8*)piVar9 - 2);
+                piVar9 = (tPipe_chunk*)((tU8*)piVar9 - *(tU16*)piVar9);
+                if (piVar9->type == 0) {
+                    break;
+                }
+            }
+            gLast_replay_frame_time = *(tU32*)((tU8*)piVar9 + 0xc);
+        }
+
+replay_reset_callbacks:
+        if (((gPlay_direction > 0) && (gPipe_play_ptr != gPipe_record_ptr)) ||
+            ((gPlay_direction < 0) && (gPipe_play_ptr != gPipe_buffer_oldest))) {
+            iVar6 = 0;
+            iVar10 = 0;
+            if (gPipe_count_callbacks > 0) {
+                do {
+                    callback = (const tReplay_callback*)((const tU8*)gPipe_callbacks + iVar10);
+                    if (callback->reset != NULL) {
+                        callback->reset();
+                    }
+                    iVar6++;
+                    iVar10 += sizeof(tReplay_callback);
+                } while (iVar6 < gPipe_count_callbacks);
+            }
+        }
+        pFrame_start_callback(gFrame_period);
+        if (pStep_count > 0) {
+            for (;;) {
+                if (local_34 == (tPipe_chunk*)gPipe_record_ptr) {
+                    bVar12 = 1;
+                } else {
+                    iVar6 = 0;
+                    uVar11 = 0;
+                    session_count = (int*)((tU8*)local_34 + 4);
+                    chunk_data_start = (tPipe_chunk*)((tU8*)local_34 + 8);
+                    if (*session_count != 0) {
+                        do {
+                            iVar10 = LengthOfChunk((tPipe_chunk*)((tU8*)chunk_data_start + iVar6), local_34->type);
+                            iVar6 += iVar10;
+                            uVar11++;
+                        } while (uVar11 < (tU32)*session_count);
+                    }
+                    if (((iVar6 + 10U) & 1) != 0) {
+                        FatalError(0x62);
+                    }
+                    gPipe_buffer_end_marker = (tU8*)local_34 + iVar6 + 8;
+                    iVar6 = local_34->type;
+                    uVar11 = 0;
+                    current_chunk = chunk_data_start;
+                    if (*session_count != 0) {
+                        do {
+                            callback = &gPipe_callbacks[iVar6];
+                            if (callback->apply != NULL) {
+                                callback->apply(&current_chunk);
+                            }
+                            ARAdvanceChunkPtr(&current_chunk, iVar6);
+                            uVar11++;
+                        } while (uVar11 < (tU32)*session_count);
+                    }
+                    iVar10 = LengthOfSession(local_34);
+                    local_34 = (tPipe_chunk*)((tU8*)local_34 + iVar10);
+                    if (gPipe_buffer_working_end <= (tU8*)local_34 && local_34 != (tPipe_chunk*)gPipe_record_ptr) {
+                        local_34 = (tPipe_chunk*)gPipe_buffer_start;
+                    }
+                    bVar12 = iVar6 == 0;
+                }
+                piVar9 = local_34;
+                if (bVar12) {
+                    break;
+                }
+                pStep_callback(pStep_count);
+            }
+        } else {
+            piVar9 = (tPipe_chunk*)gPipe_play_ptr;
+            if (pStep_count < 0) {
+                do {
+                    iVar6 = MoveSessionPointerBackOne((tU8**)&local_34);
+                    if (iVar6 == 0) {
+                        iVar6 = LengthOfSession(local_34);
+                        uStack_24 = 0;
+                        gPipe_buffer_end_marker = (tU8*)local_34 + iVar6 - 2;
+                        if (local_34->count != 0) {
+                            current_chunk = (tPipe_chunk*)((tU8*)local_34 + sizeof(tPipe_chunk));
+                            callback = &gPipe_callbacks[local_34->type];
+                            do {
+                                iVar3 = (int)gPipe_buffer_end_marker;
+                                iVar2 = callback->flags;
+                                if (iVar2 < 2 || iVar2 == 5) {
+                                    undo_target = NULL;
+                                } else {
+                                    undo_target = FUN_00403800(local_34, local_34->type, ((tPipe_chunk_data*)current_chunk)->count);
+                                    callback = &gPipe_callbacks[local_34->type];
+                                }
+                                gPipe_buffer_end_marker = (tU8*)iVar3;
+                                switch (callback->flags) {
+                                case 1:
+                                    if (callback->reset != NULL) {
+                                        callback->reset();
+                                        goto reverse_advance_chunk;
+                                    }
+                                    break;
+                                case 2:
+                                    if (callback->undo != NULL) {
+                                        if (undo_target != NULL) {
+                                            gPipe_undo_enabled = 1;
+                                            callback->undo(&current_chunk, (tPipe_chunk*)undo_target);
+                                            gPipe_undo_enabled = 0;
+                                        }
+                                        goto reverse_advance_chunk;
+                                    }
+                                    break;
+                                case 3:
+                                    if (callback->apply != NULL) {
+                                        if (undo_target != NULL) {
+                                            gPipe_undo_enabled = 1;
+                                            callback->undo(&current_chunk, (tPipe_chunk*)undo_target);
+                                            gPipe_undo_enabled = 0;
+                                            goto reverse_advance_chunk;
+                                        }
+                                        callback->apply(&current_chunk);
+                                        callback = &gPipe_callbacks[local_34->type];
+                                    }
+                                    break;
+                                case 4:
+                                case 5:
+                                    if (callback->undo != NULL) {
+                                        callback->undo(&current_chunk, (tPipe_chunk*)undo_target);
+                                    }
+reverse_advance_chunk:
+                                    ARAdvanceChunkPtr(&current_chunk, local_34->type);
+                                    callback = &gPipe_callbacks[local_34->type];
+                                    break;
+                                }
+                                uStack_24++;
+                            } while (uStack_24 < local_34->count);
+                        }
+                        next_session = local_34;
+                        iVar6 = MoveSessionPointerBackOne((tU8**)&next_session);
+                        if (iVar6 == 0) {
+                            bVar12 = next_session->type == 0;
+                        } else {
+                            bVar12 = 1;
+                        }
+                    } else {
+                        bVar12 = 1;
+                    }
+                    if (bVar12) {
+                        break;
+                    }
+                    pStep_callback(pStep_count);
+                } while (1);
+                gPipe_play_ptr = (tU8*)local_34;
+                piVar9 = (tPipe_chunk*)gPipe_play_ptr;
+            }
+        }
+        gPipe_play_ptr = (tU8*)piVar9;
+        pFrame_end_callback(gFrame_period);
+        local_14++;
+        piVar9 = piVar4;
+        if (iVar5 <= local_14) {
+            goto replay_complete;
+        }
+        goto replay_outer;
+    }
+
+replay_complete:
+    if (gPipe_play_ptr == gPipe_record_ptr) {
+        bVar12 = 0;
+    } else if (gPipe_play_ptr == gPipe_buffer_oldest) {
+        bVar12 = 1;
+    } else if (gReplay_rate == 0.0f) {
+        bVar12 = 0 < gPlay_direction;
+    } else if (gReplay_rate <= 0.0f) {
+        bVar12 = 0;
+    } else {
+        bVar12 = 1;
+    }
+    if (!bVar12) {
+        ScanAndPlaySoundsToBe(initial_session, start_time, GetTotalTime());
+    }
+    if (piVar9 == local_34) {
+        gReplay_rate = 0.0f;
+        gReplay_pause_state = 1;
+    }
+    if (KeyIsDown(0) != 0) {
+        WaitForNoKeys();
+    }
 }
 #pragma auto_inline(on)
 
@@ -2278,6 +2795,25 @@ void C2_HOOK_FASTCALL FUN_004c6e40(br_model* pModel, br_vector3* pDirection, con
         ARAddDataToSession(3, -1, pipe_data, data_size);
     }
 }
+
+// C2PORT-NONMATCHING: best 75.76% | difftest PASS 2000 trials (spec difftest/specs/004c8650_FUN_004c8650.json) | reason register allocation
+// FUNCTION: CARMA2_HW 0x004c8650
+void C2_HOOK_FASTCALL FUN_004c8650(br_model* pModel, br_vector3* pMash) {
+    int size;
+    tPipe_model_mash* pipe_model_mash;
+
+    pipe_model_mash = (tPipe_model_mash*)gCrush_space;
+    if (pipe_model_mash != NULL) {
+        size = (int)pModel->nvertices * 6 + 4;
+        if ((unsigned int)size > CRUSH_SPACE_SIZE) {
+            FatalError(kFatalError_ChunkIsTooLargeToPipe);
+        }
+        pipe_model_mash->model = pModel;
+        ARCompressModelMash(pipe_model_mash->vectors, pModel, pMash);
+        ARDoSingleSession(ePipe_model_mash, -1, pipe_model_mash, size);
+    }
+}
+
 #pragma inline_depth()
 #pragma auto_inline(on)
 
@@ -2609,13 +3145,13 @@ void C2_HOOK_FASTCALL PipeSingleCar(int pCar_id, br_matrix34* pMatrix, br_vector
 
 // FUNCTION: CARMA2_HW 0x004c8710
 void C2_HOOK_FASTCALL FUN_004c8710(uintptr_t pOwner, tU16 pValue_0, tU16 pValue_2, tU16 pValue_4, br_vector3* pVector, br_scalar pValue_20) {
-    gUNK_0069410c = *(tU32*)&pValue_20;
+    gUNK_0069410c_u32 = *(tU32*)&pValue_20;
     ARDoSingleVariedSession(0x1c, pOwner, 5,
         2, 0, pValue_0,
         2, 2, pValue_2,
         2, 4, pValue_4,
         0xc, 8, pVector,
-        4, 0x14, gUNK_0069410c);
+        4, 0x14, gUNK_0069410c_u32);
 }
 #pragma auto_inline(on)
 
@@ -2704,5 +3240,84 @@ void C2_HOOK_FASTCALL ReceivedCrushDetach(tU8* pContents) {
                 gCount_net_crush_detach_list += 1;
             }
         }
+    }
+}
+
+// C2PORT-NONMATCHING: best 79.82% | difftest PASS 2000 trials (spec difftest/specs/0043cbd0_ReceivedFullDetachBit.json) | reason regalloc-loop
+// FUNCTION: CARMA2_HW 0x0043cbd0
+void C2_HOOK_FASTCALL ReceivedFullDetachBit(tU8* pParam) {
+    tCar_spec* car;
+    tCar_crush_spec* crush;
+    register tPhysics_object* object;
+    br_actor* actor;
+    tFind_crush_actor_arg find_arg;
+    br_vector3 local_3c;
+    br_vector3 local_30;
+    br_vector3 local_24;
+    br_bounds3 local_18;
+    int local_48;
+    register int count;
+    tU32* pPhysics_object;
+
+    if (gCount_net_crush_full_detach_bit_list == CARPOCALYPSE2_ASIZE(gNet_crush_full_detach_bit_list)) {
+        return;
+    }
+    car = NetCarFromPlayerID(*(tPlayer_ID*)(pParam + 4));
+    if (car == NULL) {
+        return;
+    }
+    crush = car->car_crush_spec;
+    if (crush != NULL) {
+        int i;
+
+        count = crush->field_0x270;
+        i = 0;
+        if (count > 0) {
+            pPhysics_object = (tU32*)&crush->field_0x274[0].field_0x8;
+            while (i < count) {
+                object = (tPhysics_object*)*pPhysics_object;
+                if (object->uid == pParam[8]) {
+                    goto found_crush_bit;
+                }
+                i++;
+                pPhysics_object += 5;
+            }
+        }
+    }
+    object = NULL;
+found_crush_bit:
+    if (object == NULL) {
+        find_arg.id = pParam[8];
+        find_arg.actor = NULL;
+        actor = DRActorEnumRecurse(car->car_model_actor, FindActorByCrushEntryID, &find_arg)
+            ? find_arg.actor
+            : NULL;
+        if (actor == NULL) {
+            return;
+        }
+        ExpandVector3(&local_24, (tCompressed_vector3*)(pParam + 0x10), -10.f, 10.f);
+        ExpandVector3(&local_30, (tCompressed_vector3*)(pParam + 0x16), -10.f, 10.f);
+        ExpandVector3(&local_3c, (tCompressed_vector3*)(pParam + 0x1c), -10.f, 10.f);
+        ExpandVector3(&local_18.min, (tCompressed_vector3*)(pParam + 0x22), -10.f, 10.f);
+        ExpandVector3(&local_18.max, (tCompressed_vector3*)(pParam + 0x28), -10.f, 10.f);
+        object = SemiDetachBit(car, actor, 0.f, &local_48, &local_24, &local_18, &local_30, &local_3c);
+        if (object == NULL) {
+            return;
+        }
+    }
+    {
+        int list_count;
+        int i;
+
+        list_count = gCount_net_crush_full_detach_bit_list;
+        for (i = 0; i < list_count; i++) {
+            if (gNet_crush_full_detach_bit_list[i].object == object) {
+                return;
+            }
+        }
+        gNet_crush_full_detach_bit_list[list_count].car = car;
+        gNet_crush_full_detach_bit_list[list_count].object = object;
+        *(tU32*)gNet_crush_full_detach_bit_list[list_count].field_0x8 = *(tU32*)(pParam + 0xc);
+        gCount_net_crush_full_detach_bit_list++;
     }
 }

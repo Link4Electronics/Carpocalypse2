@@ -8,9 +8,9 @@
 
 // FractionToScalar
 
-extern void C2_HOOK_FASTCALL GetOrientationFromMatrix(tU16* pOrientation, const br_matrix34* pMatrix);
+// GetOrientationFromMatrix
 
-extern void C2_HOOK_FASTCALL GetMatrixFromOrientation(br_matrix34* pMatrix, const tU16* pOrientation);
+// GetMatrixFromOrientation
 
 // OmegaCompScalarTo16
 
@@ -38,6 +38,9 @@ extern void C2_HOOK_FASTCALL GetMatrixFromOrientation(br_matrix34* pMatrix, cons
 
 // GetNetworkDataSize
 extern int C2_HOOK_FASTCALL GetNetworkDataSize(tU8* pNet_data);
+extern void C2_HOOK_FASTCALL GetOrientationFromMatrix(tU16* pOrientation, const br_matrix34* pMatrix);
+
+
 
 // GetSingleMatrixFromNetworkData
 extern int C2_HOOK_FASTCALL GetSingleMatrixFromNetworkData(tU8* pNet_data, br_matrix34* pMatrix);
@@ -55,6 +58,8 @@ extern int C2_HOOK_FASTCALL PHILRemoveObject(tPhysics_object* pObject);
 // PHILGetNextObject
 
 extern tU32 C2_HOOK_FASTCALL PHILReturnObjectStatus(tPhysics_object* pObject);
+
+// PHILMakeObjectPassive
 
 extern int C2_HOOK_FASTCALL PHILMakeObjectPassive(tPhysics_object* pObject);
 
@@ -97,5 +102,7 @@ extern int C2_HOOK_FASTCALL PHILMakeObjectPassive(tPhysics_object* pObject);
 // PHILDoPhysics
 
 // PHILApplyPHILObject
+
+extern void C2_HOOK_FASTCALL GetMatrixFromOrientation(br_matrix34* pMatrix, const tU16* pOrientation);
 
 #endif // GUARD_PHIL_H

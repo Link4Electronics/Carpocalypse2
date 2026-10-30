@@ -18,6 +18,8 @@ extern void C2_HOOK_FASTCALL DRSetPalette2(br_pixelmap* pThe_palette, int pSet_c
 
 extern void C2_HOOK_FASTCALL DRSetPalette(br_pixelmap* pThe_palette);
 
+extern void C2_HOOK_FASTCALL DRSetPaletteByName(const char* pPalette_name);
+
 extern void C2_HOOK_FASTCALL InitializePalettes(void);
 
 extern void C2_HOOK_FASTCALL InitPaletteAnimate(void);
@@ -42,7 +44,7 @@ extern void C2_HOOK_FASTCALL InitPaletteAnimate(void);
 
 extern void C2_HOOK_FASTCALL InitTransientBitmaps(void);
 
-// DeallocateTransientBitmap
+// SetAllShapeStatusFlags
 
 // DeallocateAllTransientBitmaps
 
@@ -71,12 +73,18 @@ extern void C2_HOOK_FASTCALL KillSplashScreen(void);
 
 // FUNCTION: CARMA2_HW 0x0047b990
 extern void C2_HOOK_FASTCALL SplashScreenWith(const char* pPixmap_name);
+extern void C2_HOOK_FASTCALL DRPixelmapBlit(br_int_16 pX, br_int_16 pY, const br_pixelmap* pSource);
+
 
 extern void C2_HOOK_FASTCALL DRPixelmapRectangleMaskedCopy(br_pixelmap* pDest, br_int_16 pDest_x, br_int_16 pDest_y, const br_pixelmap* pSource, br_int_16 pSource_x, br_int_16 pSource_y, br_int_16 pWidth, br_int_16 pHeight);
 
-extern void C2_HOOK_FASTCALL DRPixelmapBlit(br_int_16 pX, br_int_16 pY, const br_pixelmap* pSource);
 
-// DRMaskedStamp
+extern void C2_HOOK_FASTCALL DRMaskedStamp(br_int_16 pDest_x, br_int_16 pDest_y, const br_pixelmap* pSource);
+
+void C2_HOOK_FASTCALL FUN_0047bc80(br_pixelmap* pDest, br_int_16 pDest_x, br_int_16 pDest_y, const br_pixelmap* pSource, br_int_16 pSource_x, br_int_16 pSource_y, br_int_16 pWidth, br_int_16 pHeight);
+
+void C2_HOOK_FASTCALL FUN_0047d700(br_pixelmap* pDest, const br_pixelmap* pSource, unsigned int pArg3, unsigned int pDest_y, unsigned int pWidth, unsigned int pHeight);
+
 
 // SwitchToHiresMode
 

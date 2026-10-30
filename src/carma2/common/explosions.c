@@ -1,10 +1,16 @@
 #include "explosions.h"
 
 #include "animation.h"
+
+#include "errors.h"
+
 #include "globvars.h"
 #include "graphics.h"
 #include "loading.h"
 #include "piping.h"
+
+#include "smashing.h"
+
 #include "utility.h"
 #include "world.h"
 
@@ -14,6 +20,13 @@
 #include "c2_string.h"
 
 #include "carpocalypse2_macros.h"
+
+// GLOBAL: CARMA2_HW 0x006a55c8
+extern tExplosion gExplosions[50];
+extern const double gDouble_0058aeb8;
+
+// GLOBAL: CARMA2_HW 0x006a6d40
+
 // GLOBAL: CARMA2_HW 0x006a55c8
 extern tExplosion gExplosions[50];
 // GLOBAL: CARMA2_HW 0x006a6d40
@@ -135,6 +148,12 @@ int gNext_explosion_slot;
 // FUNCTION: CARMA2_HW 0x004c8920
 void C2_HOOK_FASTCALL PipeSingleExplosion(int pIndex, const tExplosion* pData) {
     ARDoSingleVariedSession(ePipe_chunk_explosion, pIndex, 1, sizeof(tExplosion), 0, pData);
+}
+
+// FUNCTION: CARMA2_HW 0x004c89f0
+void C2_HOOK_FASTCALL FUN_004c89f0(uintptr_t pOwner) {
+
+    return ARDoSingleSession(0x23, pOwner, &gZero_vector__smash, sizeof(gZero_vector__smash.v[0]));
 }
 
 // FUNCTION: CARMA2_HW 0x004ead00

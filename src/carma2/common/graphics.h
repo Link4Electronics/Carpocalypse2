@@ -170,10 +170,13 @@ void C2_HOOK_FASTCALL StartMouseCursor(void);
 void C2_HOOK_FASTCALL EndMouseCursor(void);
 
 void C2_HOOK_FASTCALL InitTransientBitmaps(void);
+void C2_HOOK_FASTCALL DeallocateTransientBitmap(int pIndex);
+
 
 void C2_HOOK_FASTCALL RemoveTransientBitmaps(int pGraphically_remove_them);
 
-void C2_HOOK_FASTCALL DeallocateTransientBitmap(int pIndex);
+
+void C2_HOOK_FASTCALL SetAllShapeStatusFlags(tCar_crush_network_shapes* pShapes);
 
 void C2_HOOK_FASTCALL DeallocateAllTransientBitmaps(void);
 
@@ -225,8 +228,9 @@ void C2_HOOK_FASTCALL PossibleLock(int pValue);
 
 int C2_HOOK_FASTCALL PossibleUnlock(int pValue);
 
-
 void C2_HOOK_FASTCALL GlorifyMaterial(br_material** pMaterials, int pCount, tRendererShadingType pShading);
+
+int C2_HOOK_FASTCALL FindBestMatchingPaletteIndex(br_colour pColour);
 
 void C2_HOOK_FASTCALL DisableLights(void);
 
@@ -265,6 +269,10 @@ void C2_HOOK_FASTCALL StartRenderingHeadups(void);
 void C2_HOOK_FASTCALL RenderAFrame(int pDepth_mask_on);
 
 void C2_HOOK_FASTCALL ResetLollipopQueue(void);
+
+int C2_HOOK_FASTCALL AddToLollipopQueue(void* pItem, int pIndex);
+
+void C2_HOOK_FASTCALL DisposeActorAndModel(br_actor* pActor);
 
 void C2_HOOK_FASTCALL RevertPalette(void);
 

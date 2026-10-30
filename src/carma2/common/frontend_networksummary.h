@@ -6,10 +6,11 @@
 #include "carpocalypse2_types.h"
 
 extern tFrontend_spec gFrontend_NETWORK_SUMMARY;
+void C2_HOOK_FASTCALL NetworkSummarySetup(tFrontend_spec* pFrontend);
+
+
 extern int gPlayer_lookup_netsummary[14];
 
-
-void C2_HOOK_FASTCALL NetworkSummarySetup(tFrontend_spec* pFrontend);
 
 int C2_HOOK_FASTCALL NetSummary_Infunc(tFrontend_spec* pFrontend);
 

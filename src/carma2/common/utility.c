@@ -246,6 +246,29 @@ int C2_HOOK_FASTCALL LoadTextureTryAllLocations(char* pName, br_pixelmap** pMaps
     return i;
 }
 
+int C2_HOOK_FASTCALL GetBlendificatiousnessOfMaterialTablishly(br_material *pMaterial) {
+
+    if (pMaterial->index_blend == BrTableFind("BLEND75.TAB")) {
+        return 25;
+    }
+    if (pMaterial->index_blend == BrTableFind("BLEND50.TAB")) {
+        return 50;
+    }
+    if (pMaterial->index_blend == BrTableFind("BLEND25.TAB")) {
+        return 75;
+    }
+    return 100;
+}
+
+int C2_HOOK_FASTCALL GetBlendificatiousnessOfMaterialPrimitively(br_material *pMaterial) {
+    br_token_value* prims = pMaterial->extra_prim;
+
+    if (prims != NULL && prims[0].t == BRT_BLEND_B && prims[0].v.b && prims[1].t == BRT_OPACITY_X) {
+        return (100 * BrFixedToInt(prims[1].v.x)) >> 8;
+    }
+    return 100;
+}
+
 int C2_HOOK_FASTCALL GetBlenficatiousnessOfMaterialTablishly(br_material *pMaterial) {
 
     if (pMaterial->index_blend == BrTableFind("BLEND75.TAB")) {
@@ -1793,6 +1816,125 @@ void C2_HOOK_FASTCALL NobbleNonzeroBlacks(br_pixelmap* pPalette) {
     if (modified) {
         BrMapUpdate(pPalette, BR_MAPU_ALL);
     }
+}
+
+// C2PORT-NONMATCHING: best 40.61% | difftest PASS 2000 trials (spec difftest/specs/00518010_FUN_00518010.json) | reason regalloc-loop-stack
+// FUNCTION: CARMA2_HW 0x00518010
+tU8* C2_HOOK_FASTCALL FUN_00518010(br_pixelmap* pPixelmap) {
+    int iVar1;
+    char cVar2;
+    tU16 uVar3;
+    char* extraout_EAX;
+    tU32* extraout_EAX_00;
+    tU32* extraout_EAX_01;
+    tU8* pbVar4;
+    tU32 uVar5;
+    tU16 uVar6;
+    tU16* puVar7;
+    tU32 uVar8;
+    int iVar9;
+    tU32* puVar10;
+    char* pcVar11;
+    char* pcVar12;
+    tU32* puVar13;
+    int bVar14;
+    tU32 local_24;
+    int local_14;
+    tU8 local_10;
+    tU32 local_c;
+    br_pixelmap* pBack_screen;
+    tU32* source_palette;
+
+    iVar1 = (int)gRender_palette;
+    if ((g16bit_palette == NULL) &&
+        (g16bit_palette = BrPixelmapAllocate(5, 1, 0x100, NULL, 0), g16bit_palette == NULL)) {
+        FatalError(kFatalError_OOM_S, "16-bit palette");
+    }
+    if ((gPalette_changed == 0) || (gPalette_source != (br_pixelmap*)iVar1)) {
+        puVar7 = *(tU16**)((tU8*)g16bit_palette + 8);
+        pBack_screen = gBack_screen;
+        source_palette = ((br_pixelmap*)iVar1)->pixels;
+        iVar9 = 0;
+        do {
+            switch (pBack_screen->type) {
+            case 4:
+                uVar8 = source_palette[iVar9 / 4];
+                uVar3 = (tU16)(uVar8 >> 9) & 0x7c00;
+                uVar6 = (tU16)(uVar8 >> 6) & 0x3e0;
+                goto LAB_005180d2;
+            case 5:
+                uVar8 = source_palette[iVar9 / 4];
+                uVar3 = (tU16)(uVar8 >> 8) & 0xf800;
+                uVar6 = (tU16)(uVar8 >> 5) & 0x7e0;
+LAB_005180d2:
+                uVar3 = uVar3 | uVar6 | (tU16)(uVar8 >> 3) & 0x1f;
+                break;
+            default:
+                BrFailure("Unsupported back buffer type.");
+                uVar3 = 0;
+            }
+            *puVar7 = uVar3;
+            iVar9 += 4;
+            puVar7++;
+        } while (iVar9 < 0x400);
+        gPalette_changed = 1;
+        gPalette_source = (br_pixelmap*)iVar1;
+    }
+    iVar1 = *(int*)((tU8*)g16bit_palette + 8);
+    extraout_EAX = BrMemAllocate((((pPixelmap->width + 0x3d) / 62) * 125 + 2), 0xfd);
+    extraout_EAX_00 = BrMemAllocate((((pPixelmap->width + 0x3d) / 62) * 125 + 2) * pPixelmap->height, 0xfd);
+    uVar8 = 2;
+    *(tU16*)extraout_EAX_00 = pPixelmap->height;
+    local_c = 2;
+    local_14 = 0;
+    if (pPixelmap->height != 0) {
+        do {
+            iVar9 = local_14 * pPixelmap->row_bytes;
+            pbVar4 = (tU8*)(iVar9 + (int)pPixelmap->pixels);
+            uVar8 = 2;
+            bVar14 = *(char*)(iVar9 + (int)pPixelmap->pixels) == '\0';
+            iVar9 = 0;
+            cVar2 = '\0';
+            local_24 = 0;
+            pcVar12 = extraout_EAX + 1;
+            while (1) {
+                pcVar11 = pcVar12++;
+                iVar9 = 0;
+                while (iVar9 < 0x3e && local_24 != pPixelmap->width &&
+                       ((local_10 = *pbVar4, (local_10 == 0) == bVar14))) {
+                    if (!bVar14) {
+                        uVar8 += 2;
+                        *(tU16*)pcVar12 = *(tU16*)(iVar1 + (tU32)local_10 * 2);
+                        pcVar12 += 2;
+                    }
+                    iVar9++;
+                    local_24++;
+                    pbVar4++;
+                }
+                if (!bVar14) {
+                    *pcVar11 = (char)(iVar9 * -2);
+                } else {
+                    *pcVar11 = (char)(iVar9 << 1);
+                }
+                bVar14 = local_10 == 0;
+                iVar9 = 0;
+                cVar2++;
+                if (local_24 == pPixelmap->width) {
+                    break;
+                }
+                uVar8++;
+            }
+            *extraout_EAX = cVar2;
+            memcpy((char*)extraout_EAX_00 + local_c, extraout_EAX, uVar8);
+            uVar8 = local_c + uVar8;
+            local_14++;
+            local_c = uVar8;
+        } while (local_14 < pPixelmap->height);
+    }
+    extraout_EAX_01 = BrMemAllocate(uVar8, 0xfd);
+    memcpy(extraout_EAX_01, extraout_EAX_00, uVar8);
+    BrMemFree(extraout_EAX_00);
+    return (tU8*)extraout_EAX_01;
 }
 
 // FUNCTION: CARMA2_HW 0x005182f0

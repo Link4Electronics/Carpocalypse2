@@ -28,6 +28,8 @@ tU32 C2_HOOK_FASTCALL PDNetExtractGameID(tNet_game_details* pDetails);
 
 tPlayer_ID C2_HOOK_FASTCALL PDNetExtractPlayerID(tNet_game_details* pDetails);
 
+void C2_HOOK_FASTCALL PDNetSetPlayerSystemInfo(tNet_game_player_info* pPlayer, void* pSender_address);
+
 // PDNetObtainSystemUserName
 
 // PDNetSendMessageToAddress
@@ -35,8 +37,6 @@ tPlayer_ID C2_HOOK_FASTCALL PDNetExtractPlayerID(tNet_game_details* pDetails);
 // PDNetGetNextMessage
 
 // SetForRecieve
-
-extern void C2_HOOK_FASTCALL PDNetSetPlayerSystemInfo(tNet_game_player_info* pPlayer, void* pSender_address);
 
 // PDNetGetHeaderSize
 

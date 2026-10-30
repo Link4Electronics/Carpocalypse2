@@ -14,9 +14,9 @@ extern void C2_HOOK_FASTCALL ShutdownNetIfRequired(void);
 
 // ReenableNetService
 
-extern int C2_HOOK_FASTCALL PermitNetServiceReentrancy(void);
+// PermitNetServiceReentrancy
 
-extern void C2_HOOK_FASTCALL HaltNetServiceReentrancy(void);
+// HaltNetServiceReentrancy
 
 // NetSendHeadupToAllPlayers
 
@@ -27,6 +27,9 @@ extern void C2_HOOK_FASTCALL HaltNetServiceReentrancy(void);
 // InitialisePlayerStati
 
 extern void C2_HOOK_FASTCALL LeaveTempGame(void);
+extern int C2_HOOK_FASTCALL PermitNetServiceReentrancy(void);
+
+
 
 extern void C2_HOOK_FASTCALL DisposeCurrentJoinPollGame(void);
 
@@ -57,10 +60,12 @@ extern void C2_HOOK_FASTCALL FillInThisPlayer(tNet_game_details* pGame, tNet_gam
 void C2_HOOK_FASTCALL DisposeCarN(int pPlayer_index);
 
 // PlayerHasLeft
+extern void C2_HOOK_FASTCALL RemoveNetPlayer(tPlayer_ID pPlayer_id);
 
 // RemoveReferencesToCar
 
 // NetPlayersChanged
+extern void C2_HOOK_FASTCALL NetPlayersChanged(int pPlayer_count, tNet_game_player_info* pPlayers);
 
 // NetHostGame
 
@@ -78,6 +83,7 @@ extern int C2_HOOK_FASTCALL NetSendMessageToAddress(tNet_game_details* pDetails,
 
 // NetReallySendMessageToPlayer
 
+// NetSendMessageToPlayer
 extern int C2_HOOK_FASTCALL NetSendMessageToPlayer(tNet_game_details* pNet_game, tNet_message* pMessage, tPlayer_ID pPlayer_id);
 
 extern int C2_HOOK_FASTCALL NetSendMessageToHost(tNet_game_details* pDetails, tNet_message* pMessage);
@@ -242,7 +248,6 @@ extern tCar_spec* C2_HOOK_FASTCALL NetCarFromPlayerID(tPlayer_ID pPlayer);
 
 #include "c2_hooks.h"
 
-
 extern br_pixelmap* gDigits_pix;
 
 extern tMin_message* gMin_messages;
@@ -274,8 +279,8 @@ extern tU16 gGuarantee_number;
 extern int gNext_guarantee;
 
 extern int gDont_allow_joiners;
-
 extern tNet_message_memory* gMessage_to_free;
+
 
 extern int gJoin_list_mode;
 
@@ -307,6 +312,8 @@ extern void C2_HOOK_FASTCALL NetSendHeadupToEverybody(const char* pMessage);
 
 extern void C2_HOOK_FASTCALL NetSendHeadupToAllPlayers(char* pMessage);
 
+extern void C2_HOOK_FASTCALL NetSendHeadupToPlayer(const char* pMessage, tPlayer_ID pPlayer_id);
+
 extern void C2_HOOK_FASTCALL CheckForNeedyEnvironmentRecipients(void);
 
 extern void C2_HOOK_FASTCALL GetCheckSum(tNet_message* pMessage);
@@ -327,7 +334,7 @@ extern void C2_HOOK_FASTCALL NetEndJoinList(void);
 
 extern void C2_HOOK_FASTCALL NetDisposeGameDetails(tNet_game_details* pDetails);
 
-extern tNet_game_details* C2_HOOK_FASTCALL NetHostGame(tNet_game_type pNet_type, tNet_game_options* pOptions, int pRace_index, const char* pHost_name, int pCar_index);
+tNet_game_details* C2_HOOK_FASTCALL NetHostGame(tNet_game_type pNet_type, tNet_game_options* pOptions, int pRace_index, const char* pHost_name, int pCar_index);
 
 extern int C2_HOOK_FASTCALL NetJoinGame(tNet_game_details *pGame_details,char *pPlayer_name,int pCar_index);
 
@@ -354,6 +361,7 @@ extern void C2_HOOK_FASTCALL NetReallyDisposeMessage(tNet_game_details* pDetails
 extern int C2_HOOK_FASTCALL NetGuaranteedSendMessageToAllPlayers(tNet_game_details* pDetails, tNet_message* pMessage, undefined4 *pArg3);
 
 extern int C2_HOOK_FASTCALL NetReallySendMessageToPlayer(tNet_game_details* pNet_game, tNet_message* pMessage, tPlayer_ID pPlayer_id);
+extern int C2_HOOK_FASTCALL FUN_0049f0d0(tNet_game_details* pNet_game, tNet_message* pMessage);
 
 extern void* C2_HOOK_FASTCALL NetGetToPlayerContentsSize(tNet_game_player_info* pNet_player, int pSize);
 
@@ -366,5 +374,13 @@ extern void C2_HOOK_FASTCALL NetBroadcastContents(tNet_message_chunk* pMessage);
 extern int C2_HOOK_FASTCALL NetGuaranteedSendMessageToEverybody(tNet_game_details* pNet_game, tNet_message* pMessage, undefined4 pArg3);
 
 extern int C2_HOOK_FASTCALL SendGuaranteedMessageToPlayer(tNet_game_details* pNet_game, tNet_message* pMessage, undefined4 pPlayer, undefined4 pArg4);
+
+void C2_HOOK_FASTCALL NetworkNoOp(void);
+
+int C2_HOOK_FASTCALL FUN_004a64b0(unsigned int pArg);
+
+extern tNet_message_memory* gMessage_to_free;
+
+extern void C2_HOOK_FASTCALL HaltNetServiceReentrancy(void);
 
 #endif // GUARD_NETWORK_H

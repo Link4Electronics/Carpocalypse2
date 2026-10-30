@@ -7,9 +7,51 @@
 #include "opponent.h"
 #include "platform.h"
 #include "sound.h"
+#include "flicplay.h"
+#include "grafdata.h"
+#include "displays.h"
+#include "graphics2.h"
+#include "globvars.h"
+#include "utility.h"
 
 #include "carpocalypse2_macros.h"
 #include "oppoproc.h"
+
+// GLOBAL: CARMA2_HW 0x00691790
+br_pixelmap* gDials_pix;
+
+// GLOBAL: CARMA2_HW 0x0058a61c
+const br_scalar gFLOAT_0058a61c = 0.0f;
+
+// GLOBAL: CARMA2_HW 0x0058a630
+const double gDOUBLE_0058a630 = 1.0;
+
+// GLOBAL: CARMA2_HW 0x0058a638
+const br_scalar gFLOAT_0058a638 = 1.0f;
+
+// GLOBAL: CARMA2_HW 0x0058a644
+const br_scalar gFLOAT_0058a644 = -1.0f;
+
+// GLOBAL: CARMA2_HW 0x0058a64c
+const br_scalar gFLOAT_0058a64c = 0.1f;
+
+// GLOBAL: CARMA2_HW 0x0058a670
+const br_scalar gFLOAT_0058a670 = 2.384185791015625e-7f;
+
+// GLOBAL: CARMA2_HW 0x0058a688
+const br_scalar gFLOAT_0058a688 = 0.001f;
+
+// GLOBAL: CARMA2_HW 0x0058a68c
+const br_scalar gFLOAT_0058a68c = -2.0f;
+
+// GLOBAL: CARMA2_HW 0x0058a690
+const br_scalar gFLOAT_0058a690 = 9.0f;
+
+// GLOBAL: CARMA2_HW 0x0058a694
+const br_scalar gFLOAT_0058a694 = 0.3333333432674408f;
+
+// GLOBAL: CARMA2_HW 0x0058a698
+const br_scalar gFLOAT_0058a698 = 0.7f;
 
 double C2_HOOK_CDECL NavigationFloatDifference(const float* pA, const float* pB) {
     double result;
@@ -541,6 +583,103 @@ int C2_HOOK_FASTCALL CalcSOCs(int pNext_section, int pCount_corners, tCorner* pC
     return count;
 }
 
+#define DRAW_DIAL_FRAME(pY) \
+    RemoveTransientBitmaps(1); \
+    DRPixelmapRectangleMaskedCopy(gBack_screen, \
+        *(br_int_16*)((int*)&gCurrent_graf_data->field_0x114 + pDial_index), \
+        *(br_int_16*)((int*)&gCurrent_graf_data->field_0x11c + pDial_index), \
+        gDials_pix, 0, (pY), gDials_pix->width, 64); \
+    ProcessFlicQueue(gFrame_period); \
+    DoMouseCursor(); \
+    PDScreenBufferSwap(0)
+
+// FUNCTION: CARMA2_HW 0x004b1d80
+void C2_HOOK_FASTCALL DrawDial(int pDial_index, volatile int pFrom_value, int pTo_value) {
+    int initial_time;
+    int interval_start;
+    int elapsed;
+    int frame_value;
+    tU32 elapsed_u;
+
+    DRAW_DIAL_FRAME(pFrom_value * 64);
+    initial_time = PDGetTotalTime();
+    elapsed = PDGetTotalTime();
+    for (elapsed = elapsed - initial_time; elapsed < 100; elapsed = elapsed - initial_time) {
+        frame_value = pFrom_value + elapsed * (pTo_value - pFrom_value) / 100;
+        DRAW_DIAL_FRAME(frame_value * 64);
+        elapsed = PDGetTotalTime();
+    }
+    DRAW_DIAL_FRAME(pTo_value * 64);
+
+    interval_start = PDGetTotalTime();
+    frame_value = pTo_value < 0x18 ? pTo_value + 1 : 0x16;
+    DRAW_DIAL_FRAME(frame_value * 64);
+    elapsed_u = (tU32)(PDGetTotalTime() - interval_start);
+    while (elapsed_u < 0x14) {
+        elapsed_u = (tU32)(PDGetTotalTime() - interval_start);
+    }
+
+    interval_start = PDGetTotalTime();
+    frame_value = pTo_value == 0 ? 2 : pTo_value - 1;
+    DRAW_DIAL_FRAME(frame_value * 64);
+    elapsed_u = (tU32)(PDGetTotalTime() - interval_start);
+    while (elapsed_u < 0x14) {
+        elapsed_u = (tU32)(PDGetTotalTime() - interval_start);
+    }
+
+    interval_start = PDGetTotalTime();
+    frame_value = pTo_value < 0x18 ? pTo_value + 1 : 0x16;
+    DRAW_DIAL_FRAME(frame_value * 64);
+    elapsed_u = (tU32)(PDGetTotalTime() - interval_start);
+    while (elapsed_u < 0x14) {
+        elapsed_u = (tU32)(PDGetTotalTime() - interval_start);
+    }
+
+    interval_start = PDGetTotalTime();
+    DRAW_DIAL_FRAME(initial_time);
+    elapsed_u = (tU32)(PDGetTotalTime() - interval_start);
+    while (elapsed_u < 0x14) {
+        elapsed_u = (tU32)(PDGetTotalTime() - interval_start);
+    }
+
+    interval_start = PDGetTotalTime();
+    frame_value = pTo_value == 0 ? 2 : pTo_value - 1;
+    DRAW_DIAL_FRAME(frame_value * 64);
+    elapsed_u = (tU32)(PDGetTotalTime() - interval_start);
+    while (elapsed_u < 0x14) {
+        elapsed_u = (tU32)(PDGetTotalTime() - interval_start);
+    }
+
+    DRAW_DIAL_FRAME(initial_time);
+}
+
+#undef DRAW_DIAL_FRAME
+
+// GLOBAL: CARMA2_HW 0x0075bbf0
+int gUNK_0075bbf0;
+
+// GLOBAL: CARMA2_HW 0x0075bbf4
+int gUNK_0075bbf4;
+
+// FUNCTION: CARMA2_HW 0x004b1ca0
+void C2_HOOK_FASTCALL FUN_004b1ca0(void) {
+
+    RemoveTransientBitmaps(1);
+    DRPixelmapRectangleMaskedCopy(gBack_screen, gCurrent_graf_data->field_0x114, gCurrent_graf_data->field_0x11c,
+        gDials_pix, 0, 0, gDials_pix->width, 64);
+    ProcessFlicQueue(gFrame_period);
+    DoMouseCursor();
+    PDScreenBufferSwap(0);
+    RemoveTransientBitmaps(1);
+    DRPixelmapRectangleMaskedCopy(gBack_screen, gCurrent_graf_data->field_0x118, gCurrent_graf_data->field_0x120,
+        gDials_pix, 0, 0, gDials_pix->width, 64);
+    ProcessFlicQueue(gFrame_period);
+    DoMouseCursor();
+    PDScreenBufferSwap(0);
+    DrawDial(0, 0, gUNK_0075bbf0 * 4);
+    DrawDial(1, 0, gUNK_0075bbf4 * 4);
+}
+
 // FUNCTION: CARMA2_HW 0x004b25c0
 int C2_HOOK_FASTCALL FUN_004b25c0(int* pArg1, int* pArg2) {
     if (*pArg2 == 0) {
@@ -557,4 +696,192 @@ int C2_HOOK_FASTCALL FUN_004b25c0(int* pArg1, int* pArg2) {
 
 failed:
     return 0;
+}
+
+// GLOBAL: CARMA2_HW 0x00691788
+int gUNK_00691788;
+
+// GLOBAL: CARMA2_HW 0x006918cc
+tU8* gUNK_006918cc;
+
+// GLOBAL: CARMA2_HW 0x0065bd78
+tDial_flic_option gDial_flic_options[13] = {
+    { 4, 36, 0, { 132, 175, 221, 253, 0 } },
+    { 3, 45, 0, { 132, 157, 217, 0, 0 } },
+    { 3, 54, 0, { 132, 183, 236, 0, 0 } },
+    { 3, 67, 0, { 132, 194, 234, 0, 0 } },
+    { 3, 76, 0, { 132, 194, 234, 0, 0 } },
+    { 4, 89, 0, { 132, 176, 204, 246, 0 } },
+    { 4, 98, 0, { 132, 176, 204, 246, 0 } },
+    { 2, 111, 0, { 132, 158, 0, 0, 0 } },
+    { 2, 120, 0, { 132, 158, 0, 0, 0 } },
+    { 2, 129, 0, { 132, 158, 0, 0, 0 } },
+    { 2, 138, 0, { 132, 158, 0, 0, 0 } },
+    { 3, 150, 0, { 132, 164, 207, 0, 0 } },
+    { 4, 153, 0, { 177, 199, 220, 242, 0 } },
+};
+
+// GLOBAL: CARMA2_HW 0x00768f68
+int gUNK_00768f68;
+
+// C2PORT-NONMATCHING: best 72.16% | difftest PASS 2000 trials (spec difftest/specs/004b24f0_FUN_004b24f0.json) | reason register-allocation/struct-interior-operands
+// FUNCTION: CARMA2_HW 0x004b24f0
+int C2_HOOK_FASTCALL FUN_004b24f0(int* pDial_index) {
+    int dial_value;
+    int current_selection;
+    int next_selection;
+
+    DRS3StartSound(gEffects_outlet, 3000);
+    dial_value = *pDial_index;
+    next_selection = gDial_flic_options[dial_value - 2].selected + 1;
+    if (next_selection == gDial_flic_options[dial_value - 2].count) {
+        next_selection = 0;
+    }
+    current_selection = gDial_flic_options[dial_value - 2].selected;
+    RemoveTransientBitmaps(1);
+    DontLetFlicFuckWithPalettes();
+    TurnFlicTransparencyOn();
+    RunFlicAt(0x11f, gDial_flic_options[dial_value - 2].flic_frames[current_selection], gDial_flic_options[dial_value - 2].y);
+    TurnFlicTransparencyOff();
+    LetFlicFuckWithPalettes();
+    RemoveTransientBitmaps(1);
+    DontLetFlicFuckWithPalettes();
+    TurnFlicTransparencyOn();
+    RunFlicAt(0x120, gDial_flic_options[dial_value - 2].flic_frames[next_selection], gDial_flic_options[dial_value - 2].y);
+    TurnFlicTransparencyOff();
+    LetFlicFuckWithPalettes();
+    gDial_flic_options[dial_value - 2].selected = next_selection;
+    return 1;
+}
+// C2PORT-NONMATCHING: best 51.16% | difftest PASS 2000 trials (spec difftest/specs/004b2740_FUN_004b2740.json) | reason unknown-source-shape
+// FUNCTION: CARMA2_HW 0x004b2740
+int C2_HOOK_FASTCALL FUN_004b2740(int* pArg1) {
+    int idx;
+    int cur;
+    int next;
+    tDial_flic_option* dial;
+
+    DRS3StartSound(gEffects_outlet, 3000);
+    idx = *pArg1 - 2;
+    dial = &gDial_flic_options[idx];
+    next = dial->selected + 1;
+    if (next == dial->count) {
+        next = 0;
+    }
+    cur = dial->selected;
+    RemoveTransientBitmaps(1);
+    DontLetFlicFuckWithPalettes();
+    TurnFlicTransparencyOn();
+    RunFlicAt(0x11f, dial->flic_frames[cur], dial->y);
+    TurnFlicTransparencyOff();
+    LetFlicFuckWithPalettes();
+    RemoveTransientBitmaps(1);
+    DontLetFlicFuckWithPalettes();
+    TurnFlicTransparencyOn();
+    RunFlicAt(0x120, dial->flic_frames[next], dial->y);
+    TurnFlicTransparencyOff();
+    LetFlicFuckWithPalettes();
+    dial->selected = next;
+    return 0;
+}
+
+// C2PORT-NONMATCHING: best 79.17% | difftest PASS 2000 trials (spec difftest/specs/004b2430_FUN_004b2430.json) | reason register-allocation
+// FUNCTION: CARMA2_HW 0x004b2430
+int C2_HOOK_FASTCALL FUN_004b2430(int* pDial_index) {
+    int dial_value;
+    int previous_selection;
+    int selection;
+
+    DRS3StartSound(gEffects_outlet, 3000);
+    dial_value = *pDial_index;
+    selection = gDial_flic_options[dial_value - 2].selected - 1;
+    if (selection < 0) {
+        selection = gDial_flic_options[dial_value - 2].count - 1;
+    }
+    previous_selection = gDial_flic_options[dial_value - 2].selected;
+    RemoveTransientBitmaps(1);
+    DontLetFlicFuckWithPalettes();
+    TurnFlicTransparencyOn();
+    RunFlicAt(0x11f, gDial_flic_options[dial_value - 2].flic_frames[previous_selection], gDial_flic_options[dial_value - 2].y);
+    TurnFlicTransparencyOff();
+    LetFlicFuckWithPalettes();
+    RemoveTransientBitmaps(1);
+    DontLetFlicFuckWithPalettes();
+    TurnFlicTransparencyOn();
+    RunFlicAt(0x120, gDial_flic_options[dial_value - 2].flic_frames[selection], gDial_flic_options[dial_value - 2].y);
+    TurnFlicTransparencyOff();
+    LetFlicFuckWithPalettes();
+    gDial_flic_options[dial_value - 2].selected = selection;
+    return 1;
+}
+
+// C2PORT-NONMATCHING: best 78.87% | difftest PASS 2000 trials (spec difftest/specs/004b2640_FUN_004b2640.json) | reason vc5-loop-register-layout-and-struct-interior-operands
+// FUNCTION: CARMA2_HW 0x004b2640
+int C2_HOOK_FAKE_THISCALL FUN_004b2640(int* pDial_index, undefined4 pArg2, int pX_offset, undefined4 pArg3) {
+    int dial_index;
+    int selection;
+    int previous_selection;
+    int left_edge;
+    int* pFrame;
+    tU8* pGraf_data;
+
+    CARPOCALYPSE2_THISCALL_UNUSED(pArg2);
+    CARPOCALYPSE2_THISCALL_UNUSED(pArg3);
+    dial_index = *pDial_index + -2;
+    selection = gDial_flic_options[dial_index].count - 1;
+    if (selection >= 0) {
+        pGraf_data = *(tU8**)((tU8*)gUNK_006918cc + 0x120);
+        left_edge = *(int*)(pGraf_data + gReal_graf_data_index * 4 + 0x60) + pX_offset + 3;
+        pFrame = &gDial_flic_options[dial_index].flic_frames[selection];
+        while (left_edge < *pFrame) {
+            selection--;
+            pFrame--;
+            if (selection < 0) {
+                return 0;
+            }
+        }
+
+        DRS3StartSound(gEffects_outlet, 3000);
+        dial_index = *pDial_index - 2;
+        previous_selection = gDial_flic_options[dial_index].selected;
+        RemoveTransientBitmaps(1);
+        DontLetFlicFuckWithPalettes();
+        TurnFlicTransparencyOn();
+        RunFlicAt(0x11f, gDial_flic_options[dial_index].flic_frames[previous_selection], gDial_flic_options[dial_index].y);
+        TurnFlicTransparencyOff();
+        LetFlicFuckWithPalettes();
+        RemoveTransientBitmaps(1);
+        DontLetFlicFuckWithPalettes();
+        TurnFlicTransparencyOn();
+        RunFlicAt(0x120, gDial_flic_options[dial_index].flic_frames[selection], gDial_flic_options[dial_index].y);
+        TurnFlicTransparencyOff();
+        LetFlicFuckWithPalettes();
+        gDial_flic_options[dial_index].selected = selection;
+    }
+    return 0;
+}
+
+// FUNCTION: CARMA2_HW 0x004b2800
+void C2_HOOK_FASTCALL FUN_004b2800(int pIndex) {
+    tU8* pGraf_data;
+
+    if (gUNK_00691788 != pIndex) {
+        if (gUNK_00691788 - 2 >= 0) {
+            pGraf_data = *(tU8**)((tU8*)gUNK_006918cc + 0x120);
+            DrawRectangleOutline(gBack_screen,
+                *(int*)(pGraf_data + gReal_graf_data_index * 4 + 0x60) - 6,
+                gDial_flic_options[gUNK_00691788 - 2].y - 3,
+                *(int*)(pGraf_data + gReal_graf_data_index * 4 + 0x70) + 3,
+                gUNK_00768f68 + 2 + gDial_flic_options[gUNK_00691788 - 2].y, 0);
+        }
+        if (pIndex - 2 >= 0) {
+            pGraf_data = *(tU8**)((tU8*)gUNK_006918cc + 0x120);
+            DrawRectangleOutline(gBack_screen,
+                *(int*)(pGraf_data + gReal_graf_data_index * 4 + 0x60) - 6,
+                gDial_flic_options[pIndex - 2].y - 3,
+                *(int*)(pGraf_data + gReal_graf_data_index * 4 + 0x70) + 3,
+                gUNK_00768f68 + 2 + gDial_flic_options[pIndex - 2].y, 0x2d);
+        }
+        gUNK_00691788 = pIndex;
+    }
 }

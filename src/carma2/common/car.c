@@ -1,3 +1,5 @@
+#include <stdlib.h>
+
 #include "car.h"
 #ifndef CARPOCALYPSE2_MATCHING
 #include "errors.h"
@@ -7,6 +9,9 @@
 #include "compress.h"
 #include "controls.h"
 #include "crush.h"
+
+extern int gUnknown_006b9c60[100];
+
 #include "depth.h"
 #include "displays.h"
 #include "drone.h"
@@ -16,6 +21,9 @@
 #include "globvrkm.h"
 #include "globvrpb.h"
 #include "graphics.h"
+
+#include "input.h"
+
 #include "loading.h"
 #include "netgame.h"
 #include "network.h"
@@ -51,6 +59,8 @@
 #include "c2_math.h"
 #include "car.h"
 #include "joystick.h"
+
+extern tU8 gNon_car_spec_indices[100];
 
 // GLOBAL: CARMA2_HW 0x005895f0
 double gZero = 1.0;
@@ -227,6 +237,15 @@ tU32 gLast_cunning_stunt;
 br_actor* gPed_actor;
 
 // GLOBAL: CARMA2_HW 0x0058f5e8
+int gCamera_incident_flag = 1;
+
+// GLOBAL: CARMA2_HW 0x0058f630
+int gCamera_incident_mode = 3;
+
+// GLOBAL: CARMA2_HW 0x0058f634
+int gCamera_incident_direction = 1;
+
+// GLOBAL: CARMA2_HW 0x0058f5e8
 int gCamera_incident_flag;
 
 // GLOBAL: CARMA2_HW 0x0058f630
@@ -289,6 +308,297 @@ tFloat_bunch_info gCar_car_damage_multiplier;
 
 // GLOBAL: CARMA2_HW 0x0068b8d0
 br_vector3 gZero_v__car;  // FIXME: make const?
+
+// GLOBAL: CARMA2_HW 0x0058f6a4
+int gCar_to_car_collisions = 1;
+
+// GLOBAL: CARMA2_HW 0x005897fc
+const br_scalar gFloat_005897fc = 0.1725f;
+
+// GLOBAL: CARMA2_HW 0x00589800
+const br_scalar gFloat_00589800 = -0.1725f;
+
+// GLOBAL: CARMA2_HW 0x0058989c
+const br_scalar gFlyCarPitchRate = 3.0f;
+
+// GLOBAL: CARMA2_HW 0x00589918
+const br_scalar gFlyCarReversePitchRate = -3.0f;
+
+// GLOBAL: CARMA2_HW 0x0058991c
+const br_scalar gFlyCarAccelerationRate = -10.0f;
+
+// GLOBAL: CARMA2_HW 0x00589688
+const double gFlyCarAngleDamping = 0.1449275362318841;
+
+// GLOBAL: CARMA2_HW 0x005896b8
+const br_scalar gFlyCarAccelerationRate2 = 10.0f;
+
+// GLOBAL: CARMA2_HW 0x00589790
+const double gDouble_00589790 = 1.4492753623188406;
+
+// GLOBAL: CARMA2_HW 0x00589738
+const double gDouble_00589738 = 0.05;
+
+// GLOBAL: CARMA2_HW 0x005897a0
+const double gDouble_005897a0 = -0.005;
+
+// GLOBAL: CARMA2_HW 0x00589798
+const double gDouble_00589798 = 0.057971014492753624;
+
+// GLOBAL: CARMA2_HW 0x005897a8
+const double gDouble_005897a8 = -0.05;
+
+// GLOBAL: CARMA2_HW 0x005897b0
+const double gDouble_005897b0 = 0.005;
+
+// GLOBAL: CARMA2_HW 0x005895b0
+const br_scalar gFloat_005895b0 = 500.0f;
+
+// GLOBAL: CARMA2_HW 0x00589628
+const double gDouble_00589628 = 6.9;
+
+// GLOBAL: CARMA2_HW 0x00589638
+const double gDouble_00589638 = 0.5;
+
+// GLOBAL: CARMA2_HW 0x00589668
+const br_scalar gFloat_00589668 = -1.0f;
+
+// GLOBAL: CARMA2_HW 0x005896d8
+const br_scalar gFloat_005896d8 = 7.0f;
+
+// GLOBAL: CARMA2_HW 0x0058969c
+const br_scalar gFloat_0058969c = 0.0005f;
+
+// GLOBAL: CARMA2_HW 0x00589740
+const double gDouble_00589740 = -0.01;
+
+// GLOBAL: CARMA2_HW 0x00589808
+const br_scalar gFloat_00589808 = 0.02f;
+
+// GLOBAL: CARMA2_HW 0x00589810
+const double gDouble_00589810 = 0.0000002384185791015625;
+
+// GLOBAL: CARMA2_HW 0x00589818
+const double gDouble_00589818 = 0.0001;
+
+// GLOBAL: CARMA2_HW 0x00589820
+const double gDouble_00589820 = 0.999;
+
+// GLOBAL: CARMA2_HW 0x00589828
+const double gDouble_00589828 = 0.98;
+
+// GLOBAL: CARMA2_HW 0x00589830
+const br_scalar gFloat_00589830 = 0.707107f;
+
+// GLOBAL: CARMA2_HW 0x00589834
+const br_scalar gFloat_00589834 = -0.707107f;
+
+// GLOBAL: CARMA2_HW 0x00589838
+const double gDouble_00589838 = 0.0009;
+
+// GLOBAL: CARMA2_HW 0x00589840
+const br_scalar gFloat_00589840 = -2.8985507f;
+
+// GLOBAL: CARMA2_HW 0x00589844
+const br_scalar gFloat_00589844 = 0.06f;
+
+// GLOBAL: CARMA2_HW 0x00589848
+const br_scalar gFloat_00589848 = 0.001f;
+
+// GLOBAL: CARMA2_HW 0x0058984c
+const br_scalar gFloat_0058984c = 0.0002f;
+
+// GLOBAL: CARMA2_HW 0x005895c0
+const br_scalar gFlyCarZero = 0.0f;
+
+// GLOBAL: CARMA2_HW 0x00589920
+const double gFlyCarRadiansToAngle = 10430.37835047045;
+
+// GLOBAL: CARMA2_HW 0x00589928
+const br_scalar gFlyCarCollisionStep = -0.05f;
+
+// GLOBAL: CARMA2_HW 0x0058992c
+const br_scalar gFlyCarCollisionStep2 = -0.05f;
+
+// GLOBAL: CARMA2_HW 0x00589930
+const double gFlyCarRadiansToAngleNeg = -10430.37835047045;
+
+// GLOBAL: CARMA2_HW 0x0058f704
+int gFlyCarMode = 2;
+
+// GLOBAL: CARMA2_HW 0x00679414
+br_scalar gFlyCarAngularVelocity;
+
+extern br_scalar gFloat_005896d4;
+
+// GLOBAL: CARMA2_HW 0x00679310
+br_scalar gManual_camera_yaw;
+
+// GLOBAL: CARMA2_HW 0x00679314
+br_scalar gManual_camera_dolly;
+
+// GLOBAL: CARMA2_HW 0x00679318
+br_scalar gManual_camera_vertical;
+
+// GLOBAL: CARMA2_HW 0x0067935c
+int gCrash_noise_volume;
+
+// GLOBAL: CARMA2_HW 0x00679410
+int gCrash_noise_tag;
+
+// GLOBAL: CARMA2_HW 0x00589410
+const br_scalar gManual_camera_turn_step = 0.00025f;
+
+// GLOBAL: CARMA2_HW 0x00589414
+const br_scalar gManual_camera_reverse_step = -0.00025f;
+
+// GLOBAL: CARMA2_HW 0x00589418
+const br_scalar gFLOAT_00589418 = 0.0f;
+
+// GLOBAL: CARMA2_HW 0x0058941c
+const br_scalar gManual_camera_min_height = -10.0f;
+
+// GLOBAL: CARMA2_HW 0x00589428
+const double gHalf_00589428 = 0.5;
+
+// GLOBAL: CARMA2_HW 0x00589430
+const br_scalar gFLOAT_00589430 = 2.384185791015625e-7f;
+
+// GLOBAL: CARMA2_HW 0x00589438
+const double gOne_00589438 = 1.0;
+
+// GLOBAL: CARMA2_HW 0x00589448
+const double gRadiansToAngle_00589448 = 10430.378350470453;
+
+// GLOBAL: CARMA2_HW 0x00589478
+const double gDOUBLE_00589478 = 102.91955471539592;
+
+// GLOBAL: CARMA2_HW 0x0058948c
+const br_scalar gFLOAT_0058948c = 25.0f;
+
+// GLOBAL: CARMA2_HW 0x005894a8
+const double gDOUBLE_005894a8 = 205.83910943079184;
+
+// GLOBAL: CARMA2_HW 0x00589400
+const double gDegreesToAngle_00589400 = 182.04444444444445;
+
+// GLOBAL: CARMA2_HW 0x00589460
+const double gSwing_forward_speed_threshold = 0.0001;
+
+// GLOBAL: CARMA2_HW 0x005894f0
+const double gSwing_reverse_speed_threshold = 0.0006;
+
+// GLOBAL: CARMA2_HW 0x00589510
+const float gSwing_milliseconds_to_seconds = 0.001f;
+
+// GLOBAL: CARMA2_HW 0x00589528
+const double gSwing_fast_acceleration = 0.06;
+
+// GLOBAL: CARMA2_HW 0x00589530
+const double gSwing_slow_acceleration = 0.04;
+
+// GLOBAL: CARMA2_HW 0x00589538
+const double gSwing_reverse_acceleration_time = 200.0;
+
+// GLOBAL: CARMA2_HW 0x00589540
+const float gSwing_negative_min_angular_speed = -0.0872664600610733f;
+
+// GLOBAL: CARMA2_HW 0x00589548
+const double gSwing_initial_acceleration_time = 50.0;
+
+// GLOBAL: CARMA2_HW 0x00589550
+const double gSwing_turn_dot_threshold = -0.7;
+
+// GLOBAL: CARMA2_HW 0x00589558
+const double gSwing_turn_speed_threshold = 0.8;
+
+// GLOBAL: CARMA2_HW 0x00589560
+const double gSwing_fast_max_degrees = 40.0;
+
+// GLOBAL: CARMA2_HW 0x00589568
+const double gSwing_slow_max_degrees = 10.0;
+
+// GLOBAL: CARMA2_HW 0x0058f680
+const int gCrash_noise_sound_ids[5] = {
+    5000,
+    5001,
+    5002,
+    5003,
+    5004,
+};
+
+// GLOBAL: CARMA2_HW 0x0058f698
+const int gINT_0058f698[3] = {
+    5010,
+    5011,
+    5012,
+};
+
+// GLOBAL: CARMA2_HW 0x0058f6a8
+float gFloat_0058f6a8 = 0.2f;
+
+// GLOBAL: CARMA2_HW 0x00679400
+int gINT_00679400;
+
+// GLOBAL: CARMA2_HW 0x00679404
+int gINT_00679404;
+
+// GLOBAL: CARMA2_HW 0x00589508
+const double gBrAngleToRadiansScale = 0.00009587379924285257;
+
+// GLOBAL: CARMA2_HW 0x005895a8
+const double gManualCameraPickScreenScale = 0.004166666666666667;
+
+// GLOBAL: CARMA2_HW 0x00589650
+const br_scalar gFloat_00589650 = 0.5f;
+
+// GLOBAL: CARMA2_HW 0x005896d0
+const br_scalar gFloat_005896d0 = 200.0f;
+
+// GLOBAL: CARMA2_HW 0x00589858
+const double gDouble_00589858 = 1.2;
+
+// GLOBAL: CARMA2_HW 0x00589860
+const double gDouble_00589860 = 0.9;
+
+// GLOBAL: CARMA2_HW 0x00589868
+const br_scalar gFloat_00589868 = 0.2f;
+
+// GLOBAL: CARMA2_HW 0x00589870
+const double gDouble_00589870 = -0.7;
+
+// GLOBAL: CARMA2_HW 0x00589878
+const double gDouble_00589878 = 1.4285714285714286;
+
+// GLOBAL: CARMA2_HW 0x00589880
+const br_scalar gFloat_00589880 = 1.5f;
+
+// GLOBAL: CARMA2_HW 0x00589888
+const double gDouble_00589888 = 0.003;
+
+// GLOBAL: CARMA2_HW 0x00661678
+const br_vector3 gVector3_00661678 = { { 0.f, 1.f, 0.f } };
+
+// GLOBAL: CARMA2_HW 0x00589a38
+const double gDOUBLE_00589a38 = 0.14492753623188406;
+
+// GLOBAL: CARMA2_HW 0x00589af8
+const double gDOUBLE_00589af8 = 6.9;
+
+// GLOBAL: CARMA2_HW 0x00589b00
+const double gDOUBLE_00589b00 = 0.0054931640625;
+
+// GLOBAL: CARMA2_HW 0x00589b08
+const br_scalar gFLOAT_00589b08 = 180.0f;
+
+// GLOBAL: CARMA2_HW 0x00589b0c
+const br_scalar gFLOAT_00589b0c = 360.0f;
+
+// GLOBAL: CARMA2_HW 0x00589b10
+const br_scalar gFLOAT_00589b10 = 0.03f;
+
+// GLOBAL: CARMA2_HW 0x00589440
+const br_scalar gFLOAT_00589440 = 1.0f;
 
 static int CheckForWall(br_vector3* start, br_vector3* end) {
     br_vector3 dir;
@@ -2161,6 +2471,131 @@ void C2_HOOK_FASTCALL GetAverageGridPosition(tRace_info* pThe_race) {
     }
 }
 
+// C2PORT-NONMATCHING: best 45.73% | difftest PASS 2000 trials (spec difftest/specs/00413860_PickActionReplayManualCameraTarget.json) | reason x87-order, regalloc-loop
+// FUNCTION: CARMA2_HW 0x00413860
+void C2_HOOK_FASTCALL PickActionReplayManualCameraTarget(int pCursor_x, int pCursor_y, float pArg3) {
+    br_actor* camera_actor;
+    br_camera* camera_data;
+    br_vector3 ray_direction;
+    br_vector3 face_normal;
+    br_material* face_material;
+    br_actor* face_actor;
+    float horizontal_offset;
+    float vertical_offset;
+    br_vector3* camera_position;
+    tCar_spec* nearest_car;
+    tPedestrian* nearest_pedestrian;
+    br_actor* nearest_character_actor;
+    tPedestrian* pedestrian;
+    int category;
+    int car_count;
+    int car_index;
+    int pedestrian_index;
+
+    camera_actor = gCamera;
+    camera_data = (br_camera*)camera_actor->type_data;
+    if (gAction_replay_camera_mode != kActionReplayCameraMode_Manual || pArg3 != 0.0f) {
+        return;
+    }
+    ray_direction.v[0] = -camera_actor->t.t.mat.m[2][0] * camera_data->yon_z;
+    ray_direction.v[1] = -camera_actor->t.t.mat.m[2][1] * camera_data->yon_z;
+    ray_direction.v[2] = -camera_actor->t.t.mat.m[2][2] * camera_data->yon_z;
+    vertical_offset = (float)((240 - pCursor_y) * gManualCameraPickScreenScale
+        * tan((camera_data->field_of_view >> 1) * gBrAngleToRadiansScale) * camera_data->yon_z);
+    pArg3 = (float)(tan((camera_data->field_of_view >> 1) * gBrAngleToRadiansScale) * camera_data->yon_z);
+    horizontal_offset = (float)((pCursor_x - 320) * gManualCameraPickScreenScale * pArg3);
+    ray_direction.v[0] = camera_actor->t.t.mat.m[0][0] * horizontal_offset
+        + (camera_actor->t.t.mat.m[1][0] * vertical_offset + ray_direction.v[0]);
+    ray_direction.v[1] = camera_actor->t.t.mat.m[0][1] * horizontal_offset
+        + (camera_actor->t.t.mat.m[1][1] * vertical_offset + ray_direction.v[1]);
+    ray_direction.v[2] = camera_actor->t.t.mat.m[0][2] * horizontal_offset
+        + (camera_actor->t.t.mat.m[1][2] * vertical_offset + ray_direction.v[2]);
+
+    ActorFindFace(&camera_actor->t.t.translate.t, &ray_direction, gTrack_actor, &face_normal, &pArg3, &face_material, &face_actor);
+    if (pArg3 < gFLOAT_00589440) {
+        ray_direction.v[0] *= pArg3;
+        ray_direction.v[1] *= pArg3;
+        ray_direction.v[2] *= pArg3;
+    }
+    camera_position = &gCamera->t.t.translate.t;
+    gAction_replay_manual_camera_target_position.v[0] = gCamera->t.t.translate.t.v[0] + ray_direction.v[0];
+    gAction_replay_manual_camera_target_position.v[1] = gCamera->t.t.translate.t.v[1] + ray_direction.v[1];
+    gAction_replay_manual_camera_target_position.v[2] = gCamera->t.t.translate.t.v[2] + ray_direction.v[2];
+    gAction_replay_manual_camera_target_type = 1;
+    pArg3 = gFLOAT_00589440;
+    nearest_car = NULL;
+    category = 0;
+    do {
+        car_count = category == eVehicle_self ? 1 : GetCarCount(category);
+        car_index = 0;
+        if (car_count > 0) {
+            do {
+                tCar_spec* car;
+                br_vector3 local_origin;
+                br_vector3 local_direction;
+                br_vector3 local_end;
+                br_vector3 hit_point;
+
+                car = category == eVehicle_self ? &gProgram_state.current_car : GetCarSpec(category, car_index);
+                DrMatrix34ApplyLPInverse(&local_origin, camera_position, &car->car_master_actor->t.t.mat);
+                BrMatrix34TApplyV(&local_direction, &ray_direction, &car->car_master_actor->t.t.mat);
+                BrVector3Add(&local_end, &local_origin, &local_direction);
+                LineBoxColl(&local_origin, &local_end, &car->collision_info->bb2, &hit_point, &pArg3);
+                if (pArg3 < gFLOAT_00589440) {
+                    ray_direction.v[0] *= pArg3;
+                    ray_direction.v[1] *= pArg3;
+                    ray_direction.v[2] *= pArg3;
+                    pArg3 = gFLOAT_00589440;
+                    nearest_car = car;
+                }
+                car_index++;
+            } while (car_index < car_count);
+        }
+        category++;
+    } while (category < 5);
+    gAction_replay_manual_camera_target_car = nearest_car;
+    if (nearest_car != NULL) {
+        gAction_replay_manual_camera_target_type = 2;
+    }
+
+    nearest_pedestrian = NULL;
+    nearest_character_actor = NULL;
+    pedestrian = gPedestrian_array;
+    pedestrian_index = 0;
+    if (gPed_count > 0) {
+        do {
+            if ((pedestrian->flags & 1) != 0) {
+                br_actor* character_actor;
+                br_vector3 local_origin;
+                br_vector3 local_direction;
+                br_vector3 local_end;
+                br_vector3 hit_point;
+
+                character_actor = GetCharacterActorPtr(pedestrian->character);
+                DrMatrix34ApplyLPInverse(&local_origin, camera_position, &character_actor->t.t.mat);
+                BrMatrix34TApplyV(&local_direction, &ray_direction, &character_actor->t.t.mat);
+                BrVector3Add(&local_end, &local_origin, &local_direction);
+                LineBoxColl(&local_origin, &local_end, &pedestrian->character->personality->bb, &hit_point, &pArg3);
+                if (pArg3 < gFLOAT_00589440) {
+                    ray_direction.v[0] *= pArg3;
+                    ray_direction.v[1] *= pArg3;
+                    ray_direction.v[2] *= pArg3;
+                    pArg3 = gFLOAT_00589440;
+                    nearest_pedestrian = pedestrian;
+                    nearest_character_actor = character_actor;
+                }
+            }
+            pedestrian_index++;
+            pedestrian++;
+        } while (pedestrian_index < gPed_count);
+    }
+    gAction_replay_manual_camera_target_pedestrian = nearest_pedestrian;
+    if (nearest_pedestrian != NULL) {
+        gAction_replay_manual_camera_target_type = 3;
+        gAction_replay_manual_camera_target_character_actor = nearest_character_actor;
+    }
+}
+
 // FUNCTION: CARMA2_HW 0x00420880
 int C2_HOOK_FASTCALL GetPrecalculatedFacesUnderCar(tCar_spec* pCar, tFace_ref** pFace_refs) {
 
@@ -2179,18 +2614,11 @@ int C2_HOOK_FASTCALL FUN_0042dfd0(tCollision_contact* pContacts, float* pImpulse
     return 0;
 }
 
-// UNLABELED: CARMA2_HW 0x004d2320
-void C2_HOOK_FASTCALL FUN_004d2320(tPhysics_object* pDoor, tPhysics_object* pOther, tFace_ref* pFace, float pImpulse, br_vector3* pPoint) {
-
-    NOT_IMPLEMENTED();
-}
-
-void C2_HOOK_FASTCALL CrushAndDamageCar(tCar_spec* pCar1, br_vector3* pPoint, br_vector3* pForce, tCar_spec* pCar2, int pChain_count, br_vector3* pChain, br_actor* pActor);
+void C2_HOOK_FASTCALL FUN_0041deb0(tCar_spec* pCar, const br_vector3* pPosition, const br_vector3* pImpulse, tCar_spec* pOtherCar, undefined4 pArg5, const br_vector3* pPoints, undefined4 pArg7);
 void C2_HOOK_FASTCALL QueueDroneCrush(tPhysics_object* pObject1, int pChain_count, br_vector3* pChain, br_vector3* pForce);
-void C2_HOOK_FASTCALL FUN_0045c910(tCar_spec* pCar, br_vector3* pPoint, br_vector3* pForce, float pImpulse);
-void C2_HOOK_FASTCALL FUN_004f7d60(br_vector3* pPoint, br_vector3* pVelocity, br_vector3* pForce, br_scalar pSparkiness, tCar_spec* pOwner);
-void C2_HOOK_FASTCALL FUN_004f8290(br_vector3* pPoint, br_vector3* pVelocity, br_vector3* pForce, tCar_spec* pOwner1, tCar_spec* pOwner2);
-void C2_HOOK_FASTCALL FUN_004ddc20(tPhysics_object* pObject1, tPhysics_object* pObject2, float pImpulse);
+void C2_HOOK_FASTCALL FUN_0045c910(tCar_spec* pCar, const br_vector3* pPoint, br_vector3* pForce, float pImpulse);
+void C2_HOOK_FASTCALL CreateSparks(const br_vector3* pPosition, br_vector3* pVelocity, const br_vector3* pForce, br_scalar pStrength, tCar_spec* pCar);
+void C2_HOOK_FASTCALL CreateSparkShower(br_vector3* pPosition, br_vector3* pVelocity, br_vector3* pForce, tNon_car_spec* pOwner1, tNon_car_spec* pOwner2);
 
 // GLOBAL: CARMA2_HW 0x006b9c60
 // Bashable-track-object table indexed by the two digits of a "&NN" actor
@@ -2581,8 +3009,8 @@ merge_done:
         if (object1 != NULL && object1->owner != NULL && object1->flags_0x238 == 1
                 && impulse > 0.02f) {
             if (object2 != NULL && object2->owner != NULL && object2->flags_0x238 == 1) {
-                CrushAndDamageCar((tCar_spec*)object1->owner, &point1, &force1, (tCar_spec*)object2->owner, chain_count, chain1, object1->actor);
-                CrushAndDamageCar((tCar_spec*)object2->owner, &point2, &force2, (tCar_spec*)object1->owner, chain_count, chain2, object2->actor);
+                FUN_0041deb0((tCar_spec*)object1->owner, &point1, &force1, (tCar_spec*)object2->owner, chain_count, chain1, object1->actor);
+                FUN_0041deb0((tCar_spec*)object2->owner, &point2, &force2, (tCar_spec*)object1->owner, chain_count, chain2, object2->actor);
                 CrashEarnings((tCar_spec*)object1->owner, (tCar_spec*)object2->owner);
                 if (BrVector3LengthSquared(&object1->v) > 0.0009 || BrVector3LengthSquared(&object2->v) > 0.0009) {
                     BrVector3Scale(&world_velocity, &object2->v, 2.f);
@@ -2593,11 +3021,11 @@ merge_done:
                     world_force.v[1] *= 6.9;
                     world_force.v[2] *= 6.9;
                     effects = 1;
-                    FUN_004f8290(&world_point, &world_velocity, &world_force, (tCar_spec*)object1->owner, (tCar_spec*)object2->owner);
+                    CreateSparkShower(&world_point, &world_velocity, &world_force, (tCar_spec*)object1->owner, (tCar_spec*)object2->owner);
                     CrashNoise(&world_force, &world_point, 0);
                 }
             } else {
-                CrushAndDamageCar((tCar_spec*)object1->owner, &point1, &force1, NULL, chain_count, chain1, object1->actor);
+                FUN_0041deb0((tCar_spec*)object1->owner, &point1, &force1, NULL, chain_count, chain1, object1->actor);
                 if (pContacts[k].object2 == NULL && pContacts[k].field_0xc != NULL) {
                     if (object1->v.v[1] < -2.89855f) {
                         force1.v[0] *= 2.f;
@@ -2622,7 +3050,7 @@ merge_done:
                         sparkiness = gFriction_materials[material].sparkiness;
                         if ((object1->owner != NULL && ((tCar_spec*)object1->owner)->driver > 5)
                                 || (((tNon_car_spec*)object1->owner)->flags & 0x200000) != 0) {
-                            FUN_004f7d60(&world_point, &world_velocity, &world_force, sparkiness, (tCar_spec*)object1->owner);
+                            CreateSparks(&world_point, &world_velocity, &world_force, sparkiness, (tCar_spec*)object1->owner);
                         }
                         CrashNoise(&world_force, &world_point, material);
                         volume = (int)((int)(BrVector3Length(&world_velocity) * 7.0f) * 6.9);
@@ -2685,7 +3113,7 @@ merge_done:
         if (impulse > 0.001f) {
             if ((object1 != NULL && object1->flags_0x238 == 0x40)
                     || (object2 != NULL && object2->flags_0x238 == 0x40)) {
-                FUN_004ddc20(object1, object2, impulse);
+                CollideShitMine(object1, object2, impulse);
             }
         }
         if (gPinball_factor != 0.f && pContacts[k].object2 == NULL && impulse > 0.0002f) {
@@ -3847,6 +4275,70 @@ int C2_HOOK_FASTCALL IsCarInTheSea(void) {
     return gInTheSea;
 }
 
+// C2PORT-NONMATCHING: best 62.88% | difftest PASS 2000 trials (spec difftest/specs/0043aa80_FUN_0043aa80.json) | reason VC5 register and x87 scheduling
+// FUNCTION: CARMA2_HW 0x0043aa80
+void C2_HOOK_FASTCALL FUN_0043aa80(tCar_spec* pCar, void* pArg2) {
+    int i;
+    br_actor** wheel_actor;
+    br_vector3 vector;
+    br_vector3 new_position;
+
+    wheel_actor = pCar->wheel_actors;
+    i = 0;
+    do {
+        br_actor* actor;
+        tGroovidelic_spec* groove;
+
+        actor = wheel_actor[6];
+        if (actor == NULL) {
+            actor = wheel_actor[0];
+        }
+        if (actor != NULL) {
+            groove = ActorsGroove(actor);
+            if (groove != NULL && groove->path_type == eGroove_path_straight) {
+                br_vector3* centre;
+                br_vector3* crush_position;
+
+                centre = &groove->path_data.straight_info.centre;
+                crush_position = (br_vector3*)((tU8*)pCar->car_crush_spec->field_0x1ec + i);
+                BrVector3Negate(&vector, centre);
+                BrVector3Copy(centre, crush_position);
+                FUN_00434f60(centre, pArg2);
+                centre->v[1] = crush_position->v[1];
+                BrVector3Add(&vector, centre, &vector);
+                PipeSingleVector3(centre, &vector);
+            }
+        }
+        i += 0xc;
+        wheel_actor++;
+    } while (i < 0x48);
+
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(pCar->wpos); i++) {
+        new_position.v[0] = pCar->car_crush_spec->field_0x234[i].v[0] * gDOUBLE_00589a38;
+        new_position.v[1] = pCar->car_crush_spec->field_0x234[i].v[1] * gDOUBLE_00589a38;
+        new_position.v[2] = pCar->car_crush_spec->field_0x234[i].v[2] * gDOUBLE_00589a38;
+        FUN_00434f60(&new_position, pArg2);
+        pCar->wpos[i].v[0] = new_position.v[0] * gDOUBLE_00589af8;
+        pCar->wpos[i].v[1] = new_position.v[1] * gDOUBLE_00589af8;
+        pCar->wpos[i].v[2] = new_position.v[2] * gDOUBLE_00589af8;
+    }
+
+    SetCarSuspGiveAndHeight(pCar, 1.f, 1.f, 1.f, 0.f, 0.f);
+    {
+        tU8* model_data;
+        float angle;
+
+        model_data = *(tU8**)((tU8*)pArg2 + 0x34);
+        if (*(float*)(model_data + 0x20) == pCar->car_crush_spec->bend_z_min) {
+            angle = *(tU16*)(model_data + 0x3e) * gDOUBLE_00589b00;
+            if (angle >= gFLOAT_00589b08) {
+                angle -= gFLOAT_00589b0c;
+            }
+            pCar->field_0x1260 = angle * gFLOAT_00589b10;
+        }
+    }
+}
+
 // FUNCTION: CARMA2_HW 0x0043b840
 float C2_HOOK_FASTCALL RepairCar(tU16 pCar_ID, tU32 pFrame_period, br_scalar* pTotal_deflection) {
 
@@ -3936,6 +4428,8 @@ void C2_HOOK_FASTCALL FinishCars(tU32 pLast_frame_time, tU32 pTime) {
         BrVector3Normalise(&gCar_to_view->direction, &tv);
     }
 }
+
+extern void C2_HOOK_FASTCALL AddNonCarActorToPipingSession(int pCar_ID, br_actor* pActor);
 
 // FUNCTION: CARMA2_HW 0x004207a0
 int C2_HOOK_FASTCALL PipeNonCarObject(tPhysics_object* pCollision_info, void* pUser_data) {
@@ -4532,6 +5026,8 @@ void C2_HOOK_FASTCALL MoveAndCollideCar(tCar_spec* pCar, br_scalar pDt) {
         SkidMark(pCar, i);
     }
 }
+
+#undef C2_MOVE_AND_COLLIDE_CAR_BODY
 
 // GLOBAL: CARMA2_HW 0x00661678
 static br_vector3 gUp_vector__car = { { 0.f, 1.f, 0.f } };
@@ -6280,9 +6776,150 @@ void C2_HOOK_FASTCALL CrashNoise(br_vector3* pForce, br_vector3* pPosition, int 
 }
 
 // FUNCTION: CARMA2_HW 0x0041deb0
-void C2_HOOK_FASTCALL CrushAndDamageCar(tCar_spec* pCar1, br_vector3* pPoint, br_vector3* pForce, tCar_spec* pCar2, int pChain_count, br_vector3* pChain, br_actor* pActor) {
+void C2_HOOK_FASTCALL FUN_0041deb0(tCar_spec* pCar, const br_vector3* pPosition, const br_vector3* pImpulse, tCar_spec* pOtherCar, undefined4 pArg5, const br_vector3* pPoints, undefined4 pArg7) {
+    float fVar1;
+    float fVar2;
+    int iVar3;
+    register int five = 5;
+    register int seven;
+    struct {
+        float impulse[3];
+        float force[3];
+        float output[3];
+        br_matrix34 matrix;
+    } local;
 
-    NOT_IMPLEMENTED();
+    (void)pArg5;
+    (void)pArg7;
+
+    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tCar_spec, field_0xc8, 0xc8);
+    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tCar_spec, damage_magnitude_accumulator, 0x133c);
+    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tCar_spec, invulnerable_no_damage, 0x1b8);
+    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tCar_spec, knackered, 0x1d4);
+    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tCar_spec, power_up_levels, 0x18a8);
+    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tCar_spec, softness_factor, 0x18d0);
+    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tCar_spec, time_last_hit, 0x13e4);
+    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tCar_spec, field_0x4c8, 0x4c8);
+    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tCar_spec, damage_multiplier, 0x4cc);
+
+    if (pOtherCar != NULL) {
+        if (pOtherCar->field_0xc8 == NULL || pOtherCar->driver > five) {
+            pOtherCar->field_0xc8 = (undefined*)pCar;
+        }
+        if (pCar->field_0xc8 != NULL) {
+            if (pCar == NULL) {
+                return;
+            }
+            if (pCar->driver > five) {
+                goto after_link;
+            }
+        }
+        pCar->field_0xc8 = (undefined*)pOtherCar;
+    }
+after_link:
+    if (pCar == NULL || pCar->driver <= five) {
+        return;
+    }
+
+    if (gNet_mode == eNet_mode_none) {
+        fVar1 = gCar_softness.initial[gProgram_state.skill_level];
+    } else {
+        fVar1 = gCar_softness.initial_network[gCurrent_net_game->type];
+    }
+    if (pCar->driver == 6) {
+        local.force[0] = pCar->pos.v[0] - gCamera_to_world.m[3][0];
+        local.force[1] = pCar->pos.v[1] - gCamera_to_world.m[3][1];
+        fVar2 = pCar->pos.v[2] - gCamera_to_world.m[3][2];
+        if (fVar2 * fVar2 + local.force[1] * local.force[1] + local.force[0] * local.force[0] > gFloat_005896d0) {
+            return;
+        }
+    }
+    seven = 7;
+    if (pOtherCar == NULL) {
+        if (pCar->driver == 6) {
+            fVar1 = pCar->softness_factor * fVar1;
+            if (5000 < PDGetTotalTime() - pCar->time_last_hit) {
+                fVar1 *= gFloat_00589868;
+            }
+        }
+    } else {
+        if (pOtherCar->driver > five) {
+            TwoCarsHitEachOther(pCar, pOtherCar);
+        }
+        if (pCar->driver >= seven) {
+            fVar1 = (float)(gArmour_starting_value[pCar->power_up_levels[0]] * gDouble_00589858 * fVar1);
+        }
+        iVar3 = pOtherCar->driver;
+        if (iVar3 >= seven) {
+            if (gNet_mode == eNet_mode_none) {
+                fVar2 = gCar_car_damage_multiplier.initial[gProgram_state.skill_level];
+            } else {
+                fVar2 = gCar_car_damage_multiplier.initial_network[gCurrent_net_game->type];
+            }
+            fVar1 = (float)(fVar1 * fVar2 * gOffensive_starting_value[pOtherCar->power_up_levels[2]] * pOtherCar->damage_multiplier * gDouble_00589860);
+        }
+        if (pCar->driver == 6 && iVar3 == 6) {
+            fVar1 *= gFloat_00589868;
+        }
+        if (iVar3 < 6) {
+            pOtherCar = NULL;
+        } else {
+            fVar1 = (float)(fVar1 / ((pOtherCar->softness_factor - gDouble_00589870) * gDouble_00589878));
+        }
+    }
+
+    fVar1 *= gFloat_00589868;
+    local.impulse[0] = pImpulse->v[0] * fVar1;
+    local.impulse[1] = pImpulse->v[1] * fVar1;
+    local.impulse[2] = pImpulse->v[2] * fVar1;
+    fVar1 = local.impulse[2] * local.impulse[2] + local.impulse[1] * local.impulse[1] + local.impulse[0] * local.impulse[0];
+    iVar3 = pCar->driver;
+    if (iVar3 <= five || pCar->invulnerable_no_damage == 0) {
+        pCar->damage_magnitude_accumulator += fVar1;
+    }
+    five = 8;
+    if (iVar3 < seven) {
+        local.force[0] = local.impulse[0] * gFloat_00589880;
+        local.force[1] = local.impulse[1] * gFloat_00589880;
+        local.force[2] = local.impulse[2] * gFloat_00589880;
+    } else {
+        if (pCar->field_0x4c8 != gZero) {
+            local.impulse[0] /= pCar->field_0x4c8;
+            local.impulse[1] /= pCar->field_0x4c8;
+            local.impulse[2] /= pCar->field_0x4c8;
+        }
+        local.force[0] = local.impulse[0] * gFloat_00589650;
+        local.force[1] = local.impulse[1] * gFloat_00589650;
+        local.force[2] = local.impulse[2] * gFloat_00589650;
+        if (iVar3 == five) {
+            DoPratcamHit((br_vector3*)&local.impulse[0]);
+        }
+    }
+    if (gNet_mode == 2 && gCurrent_net_game->type == 7 && pOtherCar != NULL
+        && pCar->driver >= seven && pOtherCar->driver >= seven) {
+        if (pCar == gNet_players[gIt_or_fox].car) {
+            if (pOtherCar->knackered == 0) {
+                CarInContactWithFox(NetPlayerFromCar(pOtherCar));
+            }
+        } else if (pOtherCar == gNet_players[gIt_or_fox].car && pCar->knackered == 0) {
+            CarInContactWithFox(NetPlayerFromCar(pCar));
+        }
+    }
+    if (gNet_mode != 3 || pOtherCar == NULL) {
+        DamageCarInDirection(pCar, (float*)pPosition, &local.impulse[0], pOtherCar != NULL);
+    }
+    FUN_0042d400(pCar, *(int*)&fVar1, pPoints, (br_vector3*)&local.force[0], gPHIL_last_physics_tick);
+    if (pOtherCar != NULL && pOtherCar->driver == five && fVar1 > gDouble_00589888) {
+        PipeSingleCarIncident(pCar, (br_vector3*)pPosition, *(int*)&fVar1);
+    }
+    if (pOtherCar == NULL && pCar->driver == five && fVar1 > gDouble_00589888) {
+        BrMatrix34Copy(&local.matrix, &pCar->car_master_actor->t.t.mat);
+        local.matrix.m[3][0] *= gFloat_005896d4;
+        local.matrix.m[3][1] *= gFloat_005896d4;
+        local.matrix.m[3][2] *= gFloat_005896d4;
+        BrMatrix34ApplyP((br_vector3*)&local.output[0], pPosition, &local.matrix);
+        PipeSingleLocalCarIncident(fVar1);
+    }
 }
 
 // PointInFaceByQuiteABitActually

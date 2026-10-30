@@ -3,6 +3,7 @@
 
 #include "c2_hooks.h"
 
+#include "carpocalypse2_types.h"
 #include <brender/brender.h>
 
 // LoadTrackModels
@@ -23,9 +24,10 @@
 
 // SmoothificatePowerupMaterial
 
+void C2_HOOK_FASTCALL SmoothificatePowerupMaterial(br_material* pMaterial);
+
 // SmoothificateWorldMaterial
 
-// SmoothificateCarMaterial
 void C2_HOOK_FASTCALL SmoothificateCarMaterial(br_material* pMaterial);
 
 // MungeLightingEffects
