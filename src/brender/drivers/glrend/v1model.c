@@ -1,3 +1,4 @@
+#include <stdlib.h>
 /*
  * Support routines for rendering models
  */
@@ -113,7 +114,18 @@ static void apply_depth_properties(state_stack* state, uint32_t states) {
 
 // take a pixelmap and palette and convert 8 bit to 32 bit just in time
 static void update_paletted_texture(br_pixelmap *src, const br_uint_32 *palette) {
-    uint32_t* buffer = BrScratchAllocate(sizeof(uint32_t) * src->width * src->height);
+    uint32_t* buffer;
+
+    /* port: a pixelmap's own palette (pm->map) takes precedence over the device CLUT, as with the
+     * original 3Dfx driver: the Smacker cutscenes give their frame textures the video palette so */
+    if (src->map != NULL && src->map->pixels != NULL && src->map->type == BR_PMT_RGBX_888
+            && src->map->width * src->map->height >= 256) {
+        palette = (const br_uint_32*)src->map->pixels;
+    }
+    if (palette == NULL) {
+        return;
+    }
+    buffer = BrScratchAllocate(sizeof(uint32_t) * src->width * src->height);
     if (BREND_FN(Pixelmap, ExpandToRGBA8888)(src->pixels, src->width, src->height, src->row_bytes, BR_PMT_INDEX_8, buffer, palette) != BRE_OK) {
         BrScratchFree(buffer);
         return;
@@ -198,7 +210,8 @@ void StoredGLApplyProperties(HVIDEO hVideo, state_stack* state, uint32_t states,
         GLenum minFilter, magFilter;
         GLfloat maxAnisotropy;
         extern int gAnisotropy_level;
-        if (gAnisotropy_level > 0 && GLAD_GL_EXT_texture_filter_anisotropic) {
+        /* Font/UI atlases requesting nearest sampling must keep crisp texel edges. */
+        if (filter_linear && gAnisotropy_level > 0 && GLAD_GL_EXT_texture_filter_anisotropic) {
             maxAnisotropy = (GLfloat)gAnisotropy_level;
             if (maxAnisotropy > hVideo->maxAnisotropy)
                 maxAnisotropy = hVideo->maxAnisotropy;

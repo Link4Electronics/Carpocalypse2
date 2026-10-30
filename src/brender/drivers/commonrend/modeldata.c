@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include "drv.h"
 #include "commonrend.h"
 
@@ -19,7 +20,8 @@ void BREND_FN(State, FillModel)(state_stack* state, uint32_t states, shader_data
             float b = BR_BLU(colour) / 255.0f;
             BrVector4Set(&model->surface_colour, r, g, b, state->surface.opacity);
         } else {
-            BrVector4Set(&model->surface_colour, 0.0f, 1.0f, 1.0f, state->surface.opacity);
+            /* Geometry already supplies RGB; use a neutral modulation colour. */
+            BrVector4Set(&model->surface_colour, 1.0f, 1.0f, 1.0f, state->surface.opacity);
         }
 
         model->ka = state->surface.ka;
@@ -44,16 +46,29 @@ void BREND_FN(State, FillModel)(state_stack* state, uint32_t states, shader_data
 
         BrMatrix4Copy23(&model->map_transform, &state->surface.map_transform);
 
-        model->prelit = state->surface.prelighting;
+        /* BR_MATF_PRELIT selects geometry colour and disables dynamic lighting. */
+        model->prelit = state->surface.prelighting || state->surface.colour_source == BRT_GEOMETRY;
         model->lighting = state->surface.lighting;
+        { static int nolight = -1; /* port debug: C2_GL_NOLIGHT=1 */
+            if (nolight < 0) { const char* e = getenv("C2_GL_NOLIGHT"); nolight = e != NULL && e[0] == '1'; }
+            if (nolight) model->lighting = 0;
+        }
     }
 
     if (states & MASK_STATE_PRIMITIVE) {
-        model->fog_enabled = state->prim.fog_enabled;
+        /* Materials only ever send BRT_FOG_T (prepmatl.c): BRT_LINEAR when the
+         * material has BR_MATF_FOG_LOCAL, BRT_NONE otherwise. BRT_FOG_B is kept
+         * for completeness but no material sets it, so keying fog_enabled off
+         * the boolean alone left distance fog disabled for everything. */
+        model->fog_enabled = state->prim.fog_type == BRT_LINEAR || state->prim.fog_enabled;
         BrVector4Set(&model->fog_colour, BR_RED(state->prim.fog_colour) / 255.0f,
             BR_GRN(state->prim.fog_colour) / 255.0f, BR_BLU(state->prim.fog_colour) / 255.0f, 0.0f);
         model->fog_min = state->prim.fog_min;
         model->fog_max = state->prim.fog_max;
+        { static int nofog = -1; /* port debug switch: C2_NO_FOG=1 turns fog back off */
+            if (nofog < 0) { const char* e = getenv("C2_NO_FOG"); nofog = e != NULL && e[0] == '1'; }
+            if (nofog) model->fog_enabled = 0;
+        }
     }
 }
 
@@ -70,7 +85,9 @@ void BREND_FN(State, FillModelTexture)(state_stack* state, uint32_t states, shad
     /* Only use the states we want (if valid). */
     states = state->valid & states;
 
-    model->alpha = state->prim.alpha_val / 255.0f;
+    /* port: alpha_val is a float (default 1); the game also sets it on a 0..255 scale
+     * (headup panels); material opacity comes with the surface part */
+    model->alpha = (state->prim.alpha_val > 1.0f ? state->prim.alpha_val / 255.0f : state->prim.alpha_val) * state->surface.opacity;
 
     *colour_map = (states & MASK_STATE_PRIMITIVE) ? state->prim.colour_map : NULL;
 

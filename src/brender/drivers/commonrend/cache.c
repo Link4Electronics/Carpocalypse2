@@ -6,6 +6,7 @@
 #include "shortcut.h"
 
 #include "vecifns.h"
+#include <string.h>
 
 /*
 ** Process each light, doing as much once-per-frame work as possible.
@@ -131,7 +132,12 @@ static void UpdateMatrices(state_cache* cache, state_matrix* matrix) {
     /*
      * Normal Matrix
      */
+#if defined(__vita__) && defined(BREND_DRIVER_GL)
+    /* Same input and inverse as view_to_model above, including singular cases. */
+    cache->model.normal = cache->model.view_to_model;
+#else
     BrMatrix4Inverse(&cache->model.normal, &cache->model.mv);
+#endif
     BrMatrix4Transpose(&cache->model.normal);
 }
 
@@ -195,9 +201,23 @@ static br_vector4 EyeInModel(state_cache* cache, const state_matrix* matrix) {
 }
 
 void BREND_FN(State, UpdateModel)(state_cache* cache, state_matrix* matrix) {
+#if defined(__vita__) && defined(BREND_DRIVER_GL)
+    static unsigned checks, hits;
+    int same = cache->model_input_valid && !memcmp(&cache->model_input, matrix, sizeof(*matrix));
+    hits += same;
+    if (++checks % 8192 == 0) {
+        extern void C2VitaLog(const char*, ...);
+        C2VitaLog("VITA MATRIX checks=%u hits=%u\n", checks, hits);
+    }
+    if (same) return;
+#endif
     UpdateMatrices(cache, matrix);
 
     cache->model.eye_m = EyeInModel(cache, matrix);
+#if defined(__vita__) && defined(BREND_DRIVER_GL)
+    cache->model_input = *matrix;
+    cache->model_input_valid = BR_TRUE;
+#endif
 }
 
 void BREND_FN(State, UpdateScene)(state_cache* cache, state_stack* state) {
@@ -224,6 +244,9 @@ static void ResetCacheLight(shader_data_light* alp) {
 }
 
 void BREND_FN(State, Reset)(state_cache* cache) {
+#if defined(__vita__) && defined(BREND_DRIVER_GL)
+    cache->model_input_valid = BR_FALSE;
+#endif
     BrMatrix4Identity(&cache->model.p_br);
     BrMatrix4Identity(&cache->model.p);
     BrMatrix4Identity(&cache->model.mv);

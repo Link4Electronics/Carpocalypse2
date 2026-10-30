@@ -366,6 +366,17 @@ void C2_HOOK_CDECL BrDbSceneRenderBegin(br_actor* world, br_actor* camera) {
     BrSetupClipPlanes(world, &tfm, v1db.ttype, &vtos);
     BrSetupEnvironment(world, &tfm, v1db.ttype);
     BrSetupHorizons(world,&tfm, v1db.ttype);
+#ifndef CARPOCALYPSE2_MATCHING
+    /*
+     * Port-only: the hardware drivers implement per-scene setup (SDL3 GPU
+     * render pass/viewport/push uniforms, GL program/FBO binding) in their
+     * _sceneBegin method. The original 1.2 core never dispatched it, so the
+     * ported drivers' sceneBegin never ran; call it here like dethrace does.
+     */
+    if (v1db.renderer->dispatch->_sceneBegin != NULL) {
+        v1db.renderer->dispatch->_sceneBegin(v1db.renderer);
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00521e10
@@ -419,6 +430,12 @@ void C2_HOOK_CDECL BrZbSceneRenderAdd(br_actor* tree) {
 void C2_HOOK_CDECL BrZbSceneRenderEnd(void) {
 
     v1db.renderer->dispatch->_flush(v1db.renderer, 0);
+#ifndef CARPOCALYPSE2_MATCHING
+    /* Port-only: see BrDbSceneRenderBegin. */
+    if (v1db.renderer->dispatch->_sceneEnd != NULL) {
+        v1db.renderer->dispatch->_sceneEnd(v1db.renderer);
+    }
+#endif
     v1db.rendering = 0;
     v1db.render_root = NULL;
 }
@@ -479,6 +496,12 @@ void C2_HOOK_CDECL BrZbSceneRender(br_actor* world, br_actor* camera, br_pixelma
     }
 
     v1db.renderer->dispatch->_flush(v1db.renderer, 0);
+#ifndef CARPOCALYPSE2_MATCHING
+    /* Port-only: see BrDbSceneRenderBegin. */
+    if (v1db.renderer->dispatch->_sceneEnd != NULL) {
+        v1db.renderer->dispatch->_sceneEnd(v1db.renderer);
+    }
+#endif
 
     v1db.rendering = 0;
     v1db.render_root = NULL;
@@ -529,6 +552,12 @@ void C2_HOOK_CDECL BrZsSceneRenderEnd(void) {
         RenderOrderTableList();
     }
     v1db.renderer->dispatch->_flush(v1db.renderer, 0);
+#ifndef CARPOCALYPSE2_MATCHING
+    /* Port-only: see BrDbSceneRenderBegin. */
+    if (v1db.renderer->dispatch->_sceneEnd != NULL) {
+        v1db.renderer->dispatch->_sceneEnd(v1db.renderer);
+    }
+#endif
     v1db.rendering = 0;
     v1db.render_root = NULL;
 }
@@ -581,6 +610,12 @@ void C2_HOOK_CDECL BrZsSceneRender(br_actor* world, br_actor* camera, br_pixelma
         RenderOrderTableList();
     }
     v1db.renderer->dispatch->_flush(v1db.renderer, 0);
+#ifndef CARPOCALYPSE2_MATCHING
+    /* Port-only: see BrDbSceneRenderBegin. */
+    if (v1db.renderer->dispatch->_sceneEnd != NULL) {
+        v1db.renderer->dispatch->_sceneEnd(v1db.renderer);
+    }
+#endif
     v1db.rendering = 0;
     v1db.render_root = NULL;
 }
@@ -607,6 +642,13 @@ void C2_HOOK_CDECL BrZbsSceneRenderBegin(br_actor* world, br_actor* camera, br_p
 
     v1db.renderer->dispatch->_partSet(v1db.renderer, BRT_OUTPUT, 0, BRT_COLOUR_BUFFER_O, (uintptr_t)colour_buffer);
     v1db.renderer->dispatch->_partSet(v1db.renderer, BRT_OUTPUT, 0, BRT_DEPTH_BUFFER_O, (uintptr_t)NULL);
+#ifndef CARPOCALYPSE2_MATCHING
+    /* Port (from the Vita/hardware port): the Zbs path is the hardware scene
+     * path. Give the renderer the scene's depth buffer so depth testing works
+     * in glrend/sdl3gpurend; the 1.2 code always cleared it because softrend
+     * hid surfaces on the CPU. */
+    v1db.renderer->dispatch->_partSet(v1db.renderer, BRT_OUTPUT, 0, BRT_DEPTH_BUFFER_O, (uintptr_t)depth_buffer);
+#endif
     v1db.heap.current = v1db.heap.base;
     camera_data = camera->type_data;
     v1db.default_order_table->max_z = camera_data->yon_z;
@@ -639,6 +681,12 @@ void C2_HOOK_CDECL BrZbsSceneRenderEnd(void) {
         RenderOrderTableList();
     }
     v1db.renderer->dispatch->_flush(v1db.renderer, 0);
+#ifndef CARPOCALYPSE2_MATCHING
+    /* Port-only: see BrDbSceneRenderBegin. */
+    if (v1db.renderer->dispatch->_sceneEnd != NULL) {
+        v1db.renderer->dispatch->_sceneEnd(v1db.renderer);
+    }
+#endif
     v1db.rendering = 0;
     v1db.render_root = NULL;
 }
@@ -691,6 +739,12 @@ void C2_HOOK_CDECL BrZbsSceneRender(br_actor* world, br_actor* camera, br_pixelm
         RenderOrderTableList();
     }
     v1db.renderer->dispatch->_flush(v1db.renderer, 0);
+#ifndef CARPOCALYPSE2_MATCHING
+    /* Port-only: see BrDbSceneRenderBegin. */
+    if (v1db.renderer->dispatch->_sceneEnd != NULL) {
+        v1db.renderer->dispatch->_sceneEnd(v1db.renderer);
+    }
+#endif
     v1db.rendering = 0;
     v1db.render_root = NULL;
 }

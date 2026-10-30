@@ -34,7 +34,7 @@ static const char deviceProduct[] = DEVICE_PRODUCT;
 #define A(a) ((br_uintptr_t)(a))
 
 static struct br_tv_template_entry deviceTemplateEntries[] = {
-    { BRT(IDENTIFIER_CSTR), F(identifier), BRTV_QUERY | BRTV_ALL, BRTV_CONV_COPY, 0 },
+    { BRT(IDENTIFIER_CSTR), F(identifier), BRTV_QUERY | BRTV_ALL, BRTV_CONV_POINTER, 0 },
     {
         BRT(CLUT_O),
         0,
@@ -45,9 +45,9 @@ static struct br_tv_template_entry deviceTemplateEntries[] = {
     { BRT(VERSION_U32), 0, BRTV_QUERY | BRTV_ALL, BRTV_CONV_DIRECT, DEVICE_VERSION },
     { BRT(BRENDER_VERSION_U32), 0, BRTV_QUERY | BRTV_ALL, BRTV_CONV_DIRECT, __BRENDER__ },
     { BRT(DDI_VERSION_U32), 0, BRTV_QUERY | BRTV_ALL, BRTV_CONV_DIRECT, __BRENDER_DDI__ },
-    { BRT(CREATOR_CSTR), A(deviceCreator), BRTV_QUERY | BRTV_ALL | BRTV_ABS, BRTV_CONV_COPY, 0 },
-    { BRT(TITLE_CSTR), A(deviceTitle), BRTV_QUERY | BRTV_ALL | BRTV_ABS, BRTV_CONV_COPY, 0 },
-    { BRT(PRODUCT_CSTR), A(deviceProduct), BRTV_QUERY | BRTV_ALL | BRTV_ABS, BRTV_CONV_COPY, 0 },
+    { BRT(CREATOR_CSTR), A(deviceCreator), BRTV_QUERY | BRTV_ALL | BRTV_ABS, BRTV_CONV_POINTER, 0 },
+    { BRT(TITLE_CSTR), A(deviceTitle), BRTV_QUERY | BRTV_ALL | BRTV_ABS, BRTV_CONV_POINTER, 0 },
+    { BRT(PRODUCT_CSTR), A(deviceProduct), BRTV_QUERY | BRTV_ALL | BRTV_ABS, BRTV_CONV_POINTER, 0 },
 
 #if defined(BREND_DRIVER_GL)
     /*
@@ -91,13 +91,7 @@ static const br_token insignificantMatchTokens[] = {
  *
  * makes a copy of token/value list
  */
-struct token_match {
-    br_token_value* original;
-    br_token_value* query;
-    br_int_32 n;
-    void* extra;
-    br_size_t extra_size;
-};
+/* struct token_match comes from our br_types.h */
 
 br_device* BREND_FN(Device, Allocate)(const char* identifier, const char* arguments) {
     br_device* self;

@@ -1,6 +1,10 @@
 #include "prepmatl.h"
 
 #include "dbsetup.h"
+#ifndef CARPOCALYPSE2_MATCHING
+#include "../fw/brprintf.h"
+#include "prepmap.h"
+#endif
 
 /*
  * Mask of renderer state parts that materials are mapped to
@@ -232,6 +236,21 @@ void C2_HOOK_CDECL BrMaterialUpdate(br_material* mat, br_uint_16 flags) {
     }
 
     if (flags & BR_MATU_COLOURMAP) {
+#ifndef CARPOCALYPSE2_MATCHING
+        /* Port: hardware drivers reference the colour map's stored buffer
+         * object. Some materials (notably the frontend/poly fonts) are built
+         * lazily and their pixelmaps were never updated through BrMapUpdate,
+         * so the stored object is missing and the material would end up
+         * untextured. Create/refresh it on demand. */
+        if (mat->colour_map != NULL && mat->colour_map->stored == NULL) {
+            BrMapUpdate(mat->colour_map, BR_MAPU_ALL);
+        }
+        if (mat->colour_map != NULL) {
+            static int dbg;
+            if (dbg++ < 20)
+                BrLogPrintf("DBG mat '%s' cm=%p cmstored=%p stored=%p\n", mat->identifier ? mat->identifier : "?", (void*)mat->colour_map, (void*)mat->colour_map->stored, (void*)mat->stored);
+        }
+#endif
         tvp = tva;
 
         tvp->t = BRT_COLOUR_MAP_O;
@@ -280,6 +299,11 @@ void C2_HOOK_CDECL BrMaterialUpdate(br_material* mat, br_uint_16 flags) {
     } else {
         v1db.renderer->dispatch->_stateStoredNew(v1db.renderer, &mat->stored, PARTS_MASK, 0);
     }
+    { static int dbg; if (dbg++ < 20) {
+        uintptr_t cm = 0;
+        v1db.renderer->dispatch->_partQuery(v1db.renderer, BRT_PRIMITIVE, 0, (br_uint_32*)&cm, BRT_COLOUR_MAP_O);
+        BrLogPrintf("DBG matpost stored=%p curcm=%p matcm=%p\n", (void*)mat->stored, (void*)cm, (void*)mat->colour_map);
+    } }
     v1db.renderer->dispatch->_statePop(v1db.renderer, PARTS_MASK);
 }
 

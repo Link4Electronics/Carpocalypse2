@@ -24,6 +24,11 @@ static br_tv_template_entry template_entries[] = {
     { BRT(SPECULAR_POWER_X), F(surface.power), Q | S | AX, BRTV_CONV_FIXED_SCALAR, 0, TM_PART },
     { BRT(SPECULAR_POWER_F), F(surface.power), Q | S | AF, BRTV_CONV_FLOAT_SCALAR, 0, TM_PART },
 
+    /* port: our 1.2-era core sends these with the surface part (prepmatl.c); they live in the
+     * primitive flags here */
+    { BRT(BLEND_B), F(prim.flags), S, BRTV_CONV_BIT, PRIMF_BLEND, TM_PART },
+    { BRT(MODULATE_B), F(prim.flags), S, BRTV_CONV_BIT, PRIMF_MODULATE, TM_PART },
+
     { BRT(LIGHTING_B), F(surface.lighting), Q | S | A, BRTV_CONV_COPY, 0, TM_PART | TM_INVALID_CC },
     { BRT(PRELIGHTING_B), F(surface.prelighting), Q | S | A, BRTV_CONV_COPY, 0, TM_PART | TM_INVALID_CC },
     { BRT(FORCE_FRONT_B), F(surface.force_front), Q | S | A, BRTV_CONV_COPY, 0, TM_PART | TM_INVALID_CC },

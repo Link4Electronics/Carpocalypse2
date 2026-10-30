@@ -64,6 +64,23 @@ br_error BREND_FN(Pixelmap, ExpandToRGBA8888)(const void* src, int width, int he
         return BRE_OK;
     }
 
+    if (type == BR_PMT_RGBA_4444) {
+        /* 16-bit ARGB4444 with alpha in the top nibble (see glrend's
+         * updateMemory, which expands the same layout). */
+        for (int y = 0; y < height; y++) {
+            const br_uint_16* row = (const br_uint_16*)(base + y * src_row_bytes);
+            for (int x = 0; x < width; x++) {
+                br_uint_16 c = row[x];
+                uint8_t* d = (uint8_t*)&dst[y * width + x];
+                d[0] = (uint8_t)(((c >> 8) & 0xF) * 17);
+                d[1] = (uint8_t)(((c >> 4) & 0xF) * 17);
+                d[2] = (uint8_t)((c & 0xF) * 17);
+                d[3] = (uint8_t)(((c >> 12) & 0xF) * 17);
+            }
+        }
+        return BRE_OK;
+    }
+
     if (type == BR_PMT_RGB_888) {
         for (int y = 0; y < height; y++) {
             const char* row = base + y * src_row_bytes;

@@ -2778,7 +2778,7 @@ track_path:
                     bary_a = (pl - bary_b * e2l) / e1l;
                 }
                 if (bary_a >= 0.0001 && bary_b >= 0.0001 && bary_a + bary_b <= 0.999) {
-                    object = object1;
+                    object = pContacts[i].object1;
                     goto smash_path;
                 }
             }
@@ -2814,7 +2814,7 @@ nearest_vertex:
                 point.v[2] = face->v[closest].v[2] * 0.98 - (face->v[other1].v[2] + face->v[other2].v[2]) * -0.01;
             }
         }
-        object = object1;
+        object = pContacts[i].object1;
         goto smash_path;
 
 pair_path:

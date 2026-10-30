@@ -23,7 +23,79 @@
  * (Re)create the renderbuffers and attach them to the framebuffer.
  */
 br_error BREND_FN(DevicePixelmap, RecreateRenderBuffers)(br_device_pixelmap* self) {
+#if defined(BREND_DRIVER_GL)
+    /* port: from BRender 1.4 glrend (the copy we got from upstream had this stubbed out).
+     * Colour targets are RGBA8 and depth is DEPTH_COMPONENT24: both are renderable on
+     * GL 3.2 core and GLES 3.0. */
+    GLuint fbo = 0;
+
+    if (self->use_type == BRT_OFFSCREEN) {
+        const GLenum draw_buffers[1] = { GL_COLOR_ATTACHMENT0 };
+
+        if (self->asBack.glFbo == 0)
+            glGenFramebuffers(1, &self->asBack.glFbo);
+        fbo = self->asBack.glFbo;
+
+        if (self->asBack.glTex != 0)
+            glDeleteTextures(1, &self->asBack.glTex);
+        glGenTextures(1, &self->asBack.glTex);
+        glBindTexture(GL_TEXTURE_2D, self->asBack.glTex);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, self->pm_width * GLBackScale(self), self->pm_height * GLBackScale(self), 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+        glBindTexture(GL_TEXTURE_2D, 0);
+
+        glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, self->asBack.glTex, 0);
+#ifndef __vita__
+        glDrawBuffers(1, draw_buffers);
+#endif
+    } else if (self->use_type == BRT_DEPTH) {
+        fbo = self->asDepth.backbuffer->asBack.glFbo;
+
+#ifdef __vita__
+        /* VitaGL allocates depth storage with its render target. Its ordinary
+         * texture upload API does not accept desktop depth texture formats. */
+        if (self->asDepth.glDepth != 0)
+            glDeleteRenderbuffers(1, &self->asDepth.glDepth);
+        glGenRenderbuffers(1, &self->asDepth.glDepth);
+        glBindRenderbuffer(GL_RENDERBUFFER, self->asDepth.glDepth);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24,
+            self->pm_width * GLBackScale(self), self->pm_height * GLBackScale(self));
+        glBindRenderbuffer(GL_RENDERBUFFER, 0);
+        glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, self->asDepth.glDepth);
+#else
+        if (self->asDepth.glDepth != 0)
+            glDeleteTextures(1, &self->asDepth.glDepth);
+        glGenTextures(1, &self->asDepth.glDepth);
+        glBindTexture(GL_TEXTURE_2D, self->asDepth.glDepth);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, self->pm_width * GLBackScale(self), self->pm_height * GLBackScale(self), 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, NULL);
+        glBindTexture(GL_TEXTURE_2D, 0);
+
+        glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, self->asDepth.glDepth, 0);
+#endif
+    } else {
+        return BRE_OK;
+    }
+
+    {
+        GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        if (status != GL_FRAMEBUFFER_COMPLETE) {
+            BrWarning("glrend: framebuffer %s incomplete (0x%x)", self->pm_identifier, (unsigned)status);
+            return BRE_FAIL;
+        }
+    }
+    GL_CHECK_ERROR();
+#else
     (void)self;
+#endif
     return BRE_OK;
 }
 
@@ -131,12 +203,29 @@ br_error BREND_CMETHOD_DECL(BREND_CLASS(br_device_pixelmap_), allocateSub)(br_de
 }
 
 br_error BREND_CMETHOD_DECL(BREND_CLASS(br_device_pixelmap_), directUnlock)(br_device_pixelmap* self) {
-    ASSERT(self->pm_pixels != NULL);
     ASSERT(self->use_type == BRT_OFFSCREEN);
 
+    self->asBack.locked = 0;
+#if defined(BREND_DRIVER_GL)
+    /* port: the overlay stays mapped (backbuf.c) */
+    if (self->root != NULL) {
+        self->pm_pixels = self->root->asBack.lockedPixels;
+        self->root->asBack.possiblyDirty = 1;
+    }
+#elif defined(BREND_DRIVER_SDL3GPUREND)
+    /* port: same contract as glrend — the offscreen CPU overlay is mapped for
+     * the whole life of the pixelmap (devpixmp.c pixelmapMatch) because the
+     * game writes headup text/screen captures without locking. PossibleUnlock()
+     * is called all over the game, so clearing pm_pixels here left gBack_screen
+     * with NULL pixels and DRPixelmapText() wrote through it. */
+    if (self->use_type == BRT_OFFSCREEN) {
+        self->pm_pixels = self->asBack.lockedPixels;
+        self->asBack.possiblyDirty = 1;
+    }
+#else
     self->pm_pixels = NULL;
     self->asBack.possiblyDirty = 1;
-    self->asBack.locked = 0;
+#endif
 
     return BRE_OK;
 }

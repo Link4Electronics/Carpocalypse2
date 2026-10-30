@@ -32,19 +32,7 @@ br_pool_block *__bp; /* Hmm, this global is not optimizer friendly */
 #endif
 #endif
 
-		br_uint_32 max_count;
-typedef struct br_pool_block {
-		struct br_pool_block *next;
-} br_pool_block;
-
-		br_uint_32 count;
-
-#if BR_POOL_DEBUG
-
-typedef struct br_pool {
-		br_pool_block *free;
-		br_uint_32	block_size;
-		br_uint_32	chunk_size;
-		int			mem_type;
-
 #endif
+
+
+

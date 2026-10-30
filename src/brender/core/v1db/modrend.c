@@ -84,11 +84,27 @@ void C2_HOOK_STDCALL renderFaces(br_actor* actor, br_model* model, br_material* 
 
     if (model->stored != NULL) {
         // stored_geometry = (br_geometry_stored*)model->stored;
+#ifndef CARPOCALYPSE2_MATCHING
+        /* Port (from the Vita/hardware port): BRender 1.4's stored-geometry
+         * render call takes the actor material's stored state as the default
+         * state for groups without their own. The 1.2 call passes only two
+         * arguments, so the hardware drivers (glrend/sdl3gpurend) received a
+         * garbage default state and drew every group untextured. */
+        {
+            typedef br_error C2_HOOK_CDECL stored_render_fn(br_geometry_stored*, br_renderer*, void*);
+            br_geometry_stored* gs = (br_geometry_stored*)model->stored;
+            stored_render_fn* fn = (stored_render_fn*)(on_screen == BRT_ACCEPT
+                    ? (void*)gs->dispatch->_renderOnScreen
+                    : (void*)gs->dispatch->_render);
+            fn(gs, v1db.renderer, material != NULL ? material->stored : NULL);
+        }
+#else
         if (on_screen == BRT_ACCEPT) {
             ((br_geometry_stored*)model->stored)->dispatch->_renderOnScreen((br_geometry_stored*)model->stored, v1db.renderer);
         } else {
             ((br_geometry_stored*)model->stored)->dispatch->_render((br_geometry_stored*)model->stored, v1db.renderer);
         }
+#endif
     } else if (model->prepared != NULL) {
         // v1_model = (br_geometry_v1_model*)v1db.format_model;
         if (on_screen == BRT_ACCEPT) {

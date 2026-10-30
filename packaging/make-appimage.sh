@@ -35,8 +35,11 @@ fi
 
 echo "Installing package dependencies..."
 echo "---------------------------------------------------------------"
+# glslang is a build-only dependency: sdl3gpurend compiles its SPIR-V
+# shaders with it at build time.
 pacman -Syu --noconfirm \
     cmake     \
+    glslang   \
     libdecor  \
     patchelf  \
     sdl3

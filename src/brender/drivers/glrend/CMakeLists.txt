@@ -1,31 +1,31 @@
-﻿project(glrend C)
+project(glrend C)
 
 # Embed shared shaders (drivers/commonrend)
 set(SHADER_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../commonrend")
 
 add_custom_command(
         OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/default.vert.glsl.h"
-        COMMAND "${CMAKE_COMMAND}" "-DSOURCE_DIR=${SHADER_DIR}" "-DFILE=default.vert.glsl" -P "${BRender_SOURCE_DIR}/cmake/EmbedResource.cmake"
+        COMMAND "${CMAKE_COMMAND}" "-DSOURCE_DIR=${SHADER_DIR}" "-DFILE=default.vert.glsl" -P "${CMAKE_SOURCE_DIR}/cmake/EmbedResource.cmake"
         DEPENDS "${SHADER_DIR}/default.vert.glsl"
 )
 add_custom_command(
         OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/default.frag.glsl.h"
-        COMMAND "${CMAKE_COMMAND}" "-DSOURCE_DIR=${SHADER_DIR}" "-DFILE=default.frag.glsl" -P "${BRender_SOURCE_DIR}/cmake/EmbedResource.cmake"
+        COMMAND "${CMAKE_COMMAND}" "-DSOURCE_DIR=${SHADER_DIR}" "-DFILE=default.frag.glsl" -P "${CMAKE_SOURCE_DIR}/cmake/EmbedResource.cmake"
         DEPENDS "${SHADER_DIR}/default.frag.glsl"
 )
 add_custom_command(
         OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/brender.vert.glsl.h"
-        COMMAND "${CMAKE_COMMAND}" "-DSOURCE_DIR=${SHADER_DIR}" "-DFILE=brender.vert.glsl" -P "${BRender_SOURCE_DIR}/cmake/EmbedResource.cmake"
+        COMMAND "${CMAKE_COMMAND}" "-DSOURCE_DIR=${SHADER_DIR}" "-DFILE=brender.vert.glsl" -P "${CMAKE_SOURCE_DIR}/cmake/EmbedResource.cmake"
         DEPENDS "${SHADER_DIR}/brender.vert.glsl"
 )
 add_custom_command(
         OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/brender.frag.glsl.h"
-        COMMAND "${CMAKE_COMMAND}" "-DSOURCE_DIR=${SHADER_DIR}" "-DFILE=brender.frag.glsl" -P "${BRender_SOURCE_DIR}/cmake/EmbedResource.cmake"
+        COMMAND "${CMAKE_COMMAND}" "-DSOURCE_DIR=${SHADER_DIR}" "-DFILE=brender.frag.glsl" -P "${CMAKE_SOURCE_DIR}/cmake/EmbedResource.cmake"
         DEPENDS "${SHADER_DIR}/brender.frag.glsl"
 )
 add_custom_command(
         OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/text.frag.glsl.h"
-        COMMAND "${CMAKE_COMMAND}" "-DSOURCE_DIR=${SHADER_DIR}" "-DFILE=text.frag.glsl" -P "${BRender_SOURCE_DIR}/cmake/EmbedResource.cmake"
+        COMMAND "${CMAKE_COMMAND}" "-DSOURCE_DIR=${SHADER_DIR}" "-DFILE=text.frag.glsl" -P "${CMAKE_SOURCE_DIR}/cmake/EmbedResource.cmake"
         DEPENDS "${SHADER_DIR}/text.frag.glsl"
 )
 
@@ -53,6 +53,8 @@ set(RENDERER_FILES
 
         gstored.h
         v1model.c
+        transparency.c
+        transparency.h
 
         sbuffer.h
         sbuffer.c
@@ -74,6 +76,10 @@ set(GLREND_FILES
         glassert.h
 
         glad.c
+
+        compat/compat.c
+        backbuf.c
+        display_layout.c
         )
 
 set(INC_FILES
@@ -117,7 +123,12 @@ add_library(glrend
         )
 
 brender_common_target_setup(glrend BREND_DRIVER_GL GL gl "glrend")
-target_link_libraries(glrend PUBLIC glrend-headers)
+target_link_libraries(glrend PUBLIC glrend-headers PRIVATE brender-static c2_hooks)
+target_compile_definitions(glrend PRIVATE BASED_FLOAT=1 BASED_FIXED=0)
+target_include_directories(glrend PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/compat" "${CMAKE_CURRENT_SOURCE_DIR}/../ddi" "${CMAKE_CURRENT_SOURCE_DIR}/../.." "${CMAKE_CURRENT_SOURCE_DIR}/../../include/brender")
+# The decompiled core's dispatch tables use br_uint_32* instead of the upstream
+# typed pointers; the layouts and calling conventions are identical.
+target_compile_options(glrend PRIVATE -Wno-incompatible-pointer-types -Wno-int-conversion)
 
 set_target_properties(glrend PROPERTIES
         C_STANDARD 11

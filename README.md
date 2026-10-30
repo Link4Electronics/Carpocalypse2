@@ -54,6 +54,9 @@ requires uninstalling first.
 ## Build requirements
 
 - SDL3
+- [glslang](https://github.com/KhronosGroup/glslang): compiles BRender's GLSL
+  shaders to SPIR-V for the default SDL3 GPU renderer (`glslang` or
+  `glslangValidator` must be on `PATH` when CMake configures)
 - 32-bit x86 compiler:
   - MSVC 11.0 (Visual Studio 97 SP3) compiler for matching build, or
   - a modern MinGW or MSVC toolchain
@@ -70,6 +73,11 @@ mkdir build && cd build
 cmake .. -DCMAKE_BUILD_TYPE=Release
 make
 ```
+
+On macOS install glslang with `brew install glslang`; on Windows put
+`glslang.exe`/`glslangValidator.exe` from a
+[glslang release](https://github.com/KhronosGroup/glslang/releases) on `PATH`
+before configuring CMake.
 
 ## Goals
 

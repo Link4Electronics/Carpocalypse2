@@ -605,6 +605,18 @@ br_error C2_HOOK_CDECL BrTokenValueQuery(br_uint_32* pvalue, br_uint_32* extra, 
     tep = template->map_query_entry[o];
     if (tep != NULL) {
         r = ValueQuery(&tv, (void**)&extra, &extra_size, block, tep);
+#ifndef CARPOCALYPSE2_MATCHING
+        /*
+         * Port-only: this single-value query is used to read object pointers
+         * (BRT_OUTPUT_FACILITY_O, BRT_RENDERER_FACILITY_O, ...). Writing only
+         * tv.v.u32 truncates them on 64-bit hosts; the caller always passes a
+         * pointer-sized slot for pointer-valued tokens.
+         */
+        if (tep->conv == 33 /* BRTV_CONV_POINTER */) {
+            *(void**)pvalue = *(void**)&tv.v;
+            return r;
+        }
+#endif
         *pvalue = tv.v.u32;
         return r;
     }
@@ -786,6 +798,16 @@ br_error C2_HOOK_CDECL BrTokenValueSetMany(void* mem, br_int_32* pcount, br_uint
         }
         if (template->map_set_entry[o])  {
             r = ValueSet(mem, tv, template->map_set_entry[o]);
+#ifndef CARPOCALYPSE2_MATCHING
+            if (tv->t == BRT_COLOUR_MAP_O) {
+                static int dbg;
+                if (dbg++ < 12)
+                    BrLogPrintf("DBG setcm tv=%p val=%p conv=%d off=%x r=%d\n",
+                        (void*)&tv->v, (void*)*(void**)&tv->v,
+                        (int)template->map_set_entry[o]->conv,
+                        (unsigned)template->map_set_entry[o]->offset, (int)r);
+            }
+#endif
             if (r != 0) {
                 continue;
             }

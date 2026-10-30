@@ -96,6 +96,92 @@ jobs:
         id: sdl
         uses: ./.github/actions/setup-sdl3
 
+      # sdl3gpurend compiles the shared GLSL shaders to SPIR-V at build time
+      # (src/brender/drivers/sdl3gpurend/CMakeLists.txt), so glslang has to be
+      # on PATH before CMake configures. Brew on macOS, the prebuilt Khronos release on Windows.
+      - name: Install glslang (macOS)
+        if: ${{ runner.os == 'macOS' }}
+        run: brew install glslang
+
+      - name: Install glslang (Windows)
+        if: ${{ runner.os == 'Windows' }}
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          # Pinned release rather than main-tot: the shader compiler is part of
+          # the build and should not change under a green run.
+          $url = 'https://github.com/KhronosGroup/glslang/releases/download/16.6.0/glslang-16.6.0-windows-x86_64-release.zip'
+          Invoke-WebRequest -Uri $url -OutFile glslang.zip
+          Expand-Archive glslang.zip -DestinationPath glslang
+          echo "$((Resolve-Path glslang/bin).Path)" >> $env:GITHUB_PATH
+
+      # sdl3gpurend embeds SPIR-V for Vulkan plus cross-compiled MSL (Metal)
+      # and DXIL (D3D12) for the other SDL3 GPU backends. SDL_shadercross is
+      # the same translator SDL3 itself uses; its CLI is built here because no
+      # runner ships it.
+      #
+      # CMAKE_PREFIX_PATH is not optional here: shadercross' own CMakeLists
+      # does find_package(SDL3 3.1.3) for the CLI, and setup-sdl3 only exposes
+      # its install root as an output -- unlike dethrace's libsdl-org/setup-sdl
+      # with add-to-environment, which leaves an SDL3 the shadercross configure
+      # can see. Without it the configure fails with "Could not find SDL3".
+      - name: Build SDL_shadercross (Linux/macOS)
+        if: ${{ runner.os != 'Windows' }}
+        run: |
+          git clone --depth 1 https://github.com/libsdl-org/SDL_shadercross.git
+          # The vendored build needs every external/ submodule checked out;
+          # DirectXShaderCompiler is required by sdl_check_project_in_subfolder
+          # even though DXC itself is only built for the D3D12 backend.
+          git -C SDL_shadercross submodule update --init --depth 1 \
+            external/SPIRV-Cross external/SPIRV-Headers \
+            external/SPIRV-Tools external/DirectXShaderCompiler
+          cmake -S SDL_shadercross -B SDL_shadercross/build -GNinja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_PREFIX_PATH="${{ steps.sdl.outputs.prefix }}" \
+            -DSDLSHADERCROSS_CLI=ON \
+            -DSDLSHADERCROSS_SHARED=ON \
+            -DSDLSHADERCROSS_STATIC=ON \
+            -DSDLSHADERCROSS_TESTS=OFF \
+            -DSDLSHADERCROSS_VENDORED=ON \
+            -DSDLSHADERCROSS_DXC=OFF
+          cmake --build SDL_shadercross/build --target shadercross
+          echo "$PWD/SDL_shadercross/build" >>"$GITHUB_PATH"
+
+      - name: Build SDL_shadercross (Windows)
+        if: ${{ runner.os == 'Windows' }}
+        shell: bash
+        run: |
+          git clone --depth 1 https://github.com/libsdl-org/SDL_shadercross.git
+          git -C SDL_shadercross submodule update --init --depth 1 external/SPIRV-Cross
+          # Build + install SPIRV-Cross (shared) for
+          # find_package(spirv_cross_c_shared).
+          cmake -S SDL_shadercross/external/SPIRV-Cross -B spirv-cross-build -GNinja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DSPIRV_CROSS_SHARED=ON \
+            -DSPIRV_CROSS_CLI=OFF \
+            -DCMAKE_INSTALL_PREFIX="$PWD/spirv-cross-prefix"
+          cmake --build spirv-cross-build
+          cmake --install spirv-cross-build
+          # Download the prebuilt DXC binaries (dxcompiler.dll / dxil.dll).
+          cmake -P SDL_shadercross/build-scripts/download-prebuilt-DirectXShaderCompiler.cmake
+          # find_package hints must be exported to THIS shell: GITHUB_ENV only
+          # applies to subsequent steps, but the shadercross configure runs here.
+          export spirv_cross_c_shared_ROOT="$(cygpath -w "$PWD/spirv-cross-prefix");$(cygpath -w "$PWD/spirv-cross-prefix/share/spirv_cross_c_shared")"
+          export DirectXShaderCompiler_ROOT="$(cygpath -w "$PWD/SDL_shadercross/external/DirectXShaderCompiler-binaries")"
+          cmake -S SDL_shadercross -B SDL_shadercross/build -GNinja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_PREFIX_PATH="${{ steps.sdl.outputs.prefix }}" \
+            -DSDLSHADERCROSS_CLI=ON \
+            -DSDLSHADERCROSS_SHARED=ON \
+            -DSDLSHADERCROSS_STATIC=ON \
+            -DSDLSHADERCROSS_TESTS=OFF \
+            -DSDLSHADERCROSS_VENDORED=OFF \
+            -DSDLSHADERCROSS_DXC=ON
+          cmake --build SDL_shadercross/build --target shadercross
+          echo "$(cygpath -w "$PWD/SDL_shadercross/build")" >>"$GITHUB_PATH"
+          echo "$(cygpath -w "$PWD/spirv-cross-prefix/bin")" >>"$GITHUB_PATH"
+          echo "$(cygpath -w "$PWD/SDL_shadercross/external/DirectXShaderCompiler-binaries/windows/bin/x64")" >>"$GITHUB_PATH"
+
       # -- Build -------------------------------------------------------------
       - name: Configure (CMake)
         run: |
@@ -251,6 +337,13 @@ jobs:
       - name: Set up Ninja
         uses: ./.github/actions/setup-ninja
 
+      # The SDL3 GPU driver's SPIR-V shaders are compiled on the host, so the
+      # cross-build needs glslang just like the desktop legs.
+      - name: Install glslang
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y glslang-tools
+
       - name: Install NDK and SDL3
         id: sdl
         uses: ./.github/actions/setup-sdl3-android
@@ -400,7 +493,7 @@ jobs:
           path: dist/*.apk
           if-no-files-found: error
 
-  # The Linux release, as an AppImage only -- the shape dethrace ships: an
+  # The Linux release, as an AppImage only: an
   # Arch container for a fixed userspace, pkgforge's anylinux toolchain
   # (quick-sharun bundles the libraries, its appimagetool writes the image
   # and the .zsync), and a monolithic packaging/make-appimage.sh that

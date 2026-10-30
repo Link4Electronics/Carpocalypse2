@@ -59,5 +59,9 @@ void BREND_FN(State, InitLight)(state_all* state) {
         state->default_.light[i] = default_state;
     }
 
+#if defined(__vita__) && defined(BREND_DRIVER_GL)
+    extern void StateGLTouchLights(state_stack* state);
+    StateGLTouchLights(&state->default_);
+#endif
     state->default_.valid |= MASK_STATE_LIGHT;
 }

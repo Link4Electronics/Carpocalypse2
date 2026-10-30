@@ -15,9 +15,9 @@ static const struct br_geometry_v1_buckets_dispatch geometryV1BucketsDispatch;
 #define F(f) offsetof(struct br_geometry_v1_buckets, f)
 
 static struct br_tv_template_entry geometryV1BucketsTemplateEntries[] = {
-    {BRT(IDENTIFIER_CSTR),     F(identifier),        BRTV_QUERY | BRTV_ALL, BRTV_CONV_COPY},
-    {BRT(RENDERER_FACILITY_O), F(renderer_facility), BRTV_QUERY | BRTV_ALL, BRTV_CONV_COPY},
-    {BRT(FACILITY_O),          F(renderer_facility), BRTV_QUERY,            BRTV_CONV_COPY},
+    {BRT(IDENTIFIER_CSTR),     F(identifier),        BRTV_QUERY | BRTV_ALL, BRTV_CONV_POINTER},
+    {BRT(RENDERER_FACILITY_O), F(renderer_facility), BRTV_QUERY | BRTV_ALL, BRTV_CONV_POINTER},
+    {BRT(FACILITY_O),          F(renderer_facility), BRTV_QUERY,            BRTV_CONV_POINTER},
 };
 #undef F
 
@@ -133,10 +133,10 @@ br_error BR_CMETHOD_DECL(br_geometry_v1_buckets_gl, render)(br_geometry_v1_bucke
  * Default dispatch table for renderer type
  */
 static const struct br_geometry_v1_buckets_dispatch geometryV1BucketsDispatch = {
-    .__reserved0 = NULL,
-    .__reserved1 = NULL,
-    .__reserved2 = NULL,
-    .__reserved3 = NULL,
+    ._reserved0 = NULL,
+    ._reserved1 = NULL,
+    ._reserved2 = NULL,
+    ._reserved3 = NULL,
     ._free       = BR_CMETHOD_REF(br_geometry_v1_buckets_gl, free),
     ._identifier = BR_CMETHOD_REF(br_geometry_v1_buckets_gl, identifier),
     ._type       = BR_CMETHOD_REF(br_geometry_v1_buckets_gl, type),

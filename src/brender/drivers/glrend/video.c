@@ -92,7 +92,12 @@ GLuint VIDEOI_CreateAndCompileShader(const char *name, GLenum type, const char* 
     ASSERT(type == GL_VERTEX_SHADER || type == GL_FRAGMENT_SHADER);
 
     // processed_shader was alloc'd from scratch
+#ifdef __vita__
+    processed_shader = BrScratchAllocate(size);
+    memcpy(processed_shader, shader, size);
+#else
     processed_shader = preprocessShader(shader, size);
+#endif
 
     s = glCreateShader(type);
     _size = (GLint)size;
@@ -104,6 +109,12 @@ GLuint VIDEOI_CreateAndCompileShader(const char *name, GLenum type, const char* 
     status = GL_FALSE;
     glGetShaderiv(s, GL_COMPILE_STATUS, &status);
     if (status != GL_TRUE) {
+#ifdef __vita__
+        char errorBuffer[1024] = "No shader compiler diagnostic returned";
+        GLint written = 0;
+        glGetShaderInfoLog(s, sizeof(errorBuffer), &written, errorBuffer);
+        errorBuffer[sizeof(errorBuffer) - 1] = '\0';
+#else
         char errorBuffer[1024];
         GLint maxLength;
         glGetShaderiv(s, GL_INFO_LOG_LENGTH, &maxLength);
@@ -113,6 +124,7 @@ GLuint VIDEOI_CreateAndCompileShader(const char *name, GLenum type, const char* 
 
         glGetShaderInfoLog(s, maxLength, &maxLength, errorBuffer);
         errorBuffer[maxLength - 1] = '\0';
+#endif
 
         BR_FATAL2("VIDEO: Error compiling shader %s:\n%s", name, errorBuffer);
         glDeleteShader(s);
@@ -156,11 +168,24 @@ GLuint VIDEOI_CreateAndCompileProgram(GLuint vert, GLuint frag) {
     glAttachShader(program, vert);
     glAttachShader(program, frag);
 
+#ifdef __vita__
+    /* Fullscreen geometry uses these fixed slots; model VAOs query them. */
+    glBindAttribLocation(program, 0, "aPosition");
+    glBindAttribLocation(program, 1, "aColour");
+    glBindAttribLocation(program, 2, "aUV");
+    glBindAttribLocation(program, 3, "aNormal");
+#endif
     glLinkProgram(program);
 
     status = GL_FALSE;
     glGetProgramiv(program, GL_LINK_STATUS, &status);
     if (status != GL_TRUE) {
+#ifdef __vita__
+        char errorBuffer[1024] = "No shader compiler diagnostic returned";
+        GLint written = 0;
+        glGetProgramInfoLog(program, sizeof(errorBuffer), &written, errorBuffer);
+        errorBuffer[sizeof(errorBuffer) - 1] = '\0';
+#else
         char errorBuffer[1024];
         GLint maxLength;
         glGetProgramiv(program, GL_INFO_LOG_LENGTH, &maxLength);
@@ -170,10 +195,13 @@ GLuint VIDEOI_CreateAndCompileProgram(GLuint vert, GLuint frag) {
 
         glGetProgramInfoLog(program, maxLength, &maxLength, errorBuffer);
         errorBuffer[maxLength - 1] = '\0';
+#endif
         BR_FATAL1("VIDEO: Error linking program:\n%s", errorBuffer);
 
+#ifndef __vita__
         glDetachShader(program, vert);
         glDetachShader(program, frag);
+#endif
         glDeleteProgram(program);
         program = 0;
     }
@@ -188,11 +216,15 @@ HVIDEO VIDEO_Open(HVIDEO hVideo, const char* vertShader, const char* fragShader)
         return NULL;
     }
 
+#ifndef __vita__
     glGetIntegerv(GL_MAX_UNIFORM_BLOCK_SIZE, &hVideo->maxUniformBlockSize);
     glGetIntegerv(GL_MAX_UNIFORM_BUFFER_BINDINGS, &hVideo->maxUniformBufferBindings);
     glGetIntegerv(GL_MAX_VERTEX_UNIFORM_BLOCKS, &hVideo->maxVertexUniformBlocks);
     glGetIntegerv(GL_MAX_FRAGMENT_UNIFORM_BLOCKS, &hVideo->maxFragmentUniformBlocks);
     glGetIntegerv(GL_MAX_SAMPLES, &hVideo->maxSamples);
+#else
+    hVideo->maxSamples = 0; /* First native GPU build uses no MSAA. */
+#endif
 
     if (GLAD_GL_EXT_texture_filter_anisotropic) {
         glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &hVideo->maxAnisotropy);

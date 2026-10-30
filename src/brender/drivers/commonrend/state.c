@@ -1,8 +1,21 @@
 #include "drv.h"
 #include "commonrend.h"
+#include <stddef.h>
+#include <string.h>
+
+#if defined(__vita__) && defined(BREND_DRIVER_GL)
+void StateGLTouchLights(state_stack* state) {
+    static uint64_t next_revision;
+    state->light_revision = ++next_revision;
+}
+#endif
 
 void BREND_FN(State, Init)(state_all* state, void* res) {
     state->res = res;
+#if defined(__vita__) && defined(BREND_DRIVER_GL)
+    state->default_.light_revision = 0;
+    for (unsigned i = 0; i < MAX_STATE_STACK; ++i) state->stack[i].light_revision = 0;
+#endif
 
     BREND_FN(State, InitMatrix)(state);
     BREND_FN(State, InitClip)(state);
@@ -44,13 +57,21 @@ void BREND_FN(State, Copy)(state_stack* dst, state_stack* src, uint32_t mask) {
     if (mask & MASK_STATE_OUTPUT)
         dst->output = src->output;
 
-    if (mask & MASK_STATE_LIGHT)
+    if (mask & MASK_STATE_LIGHT) {
         for (int i = 0; i < MAX_STATE_LIGHTS; ++i)
             dst->light[i] = src->light[i];
+#if defined(__vita__) && defined(BREND_DRIVER_GL)
+        dst->light_revision = src->light_revision;
+#endif
+    }
 }
 
 br_boolean BREND_FN(State, Push)(state_all* state, uint32_t mask) {
+#if defined(__vita__) && defined(BREND_DRIVER_GL)
+    if (state->top >= MAX_STATE_STACK - 1)
+#else
     if (state->top >= MAX_STATE_STACK)
+#endif
         return BR_FALSE;
 
     state_stack* old = state->current;
@@ -58,7 +79,27 @@ br_boolean BREND_FN(State, Push)(state_all* state, uint32_t mask) {
     ++state->current;
 
     // BREND_FN(State, Copy)(state->current, old, mask);
+#if defined(__vita__) && defined(BREND_DRIVER_GL)
+    /* The child still inherits EVERY state part, irrespective of push mask.
+     * Reused stack slots already hold the same48 lights in the usual case.
+     * Copy both other ranges unconditionally, and only elide lights when a
+     * nonzero revision proves their complete contents match. */
+    static unsigned pushes, light_copies;
+    if (old->light_revision == 0 || state->current->light_revision != old->light_revision) {
+        memcpy(state->current->light, old->light, sizeof(old->light));
+        ++light_copies;
+    }
+    memcpy(state->current, old, offsetof(state_stack, light));
+    memcpy((char*)state->current + offsetof(state_stack, hidden),
+        (char*)old + offsetof(state_stack, hidden), sizeof(*old) - offsetof(state_stack, hidden));
+    if (++pushes % 8192 == 0) {
+        extern void C2VitaLog(const char*, ...);
+        C2VitaLog("VITA STATE pushes=%u light_copies=%u light_bytes_avoided=%llu\n",
+            pushes, light_copies, (unsigned long long)(pushes-light_copies)*sizeof(old->light));
+    }
+#else
     *state->current = *old;
+#endif
     return BR_TRUE;
 }
 

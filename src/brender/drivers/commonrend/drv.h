@@ -37,6 +37,8 @@ extern "C" {
 
 #if defined(BREND_DRIVER_GL)
 #define BR_GEOMETRY_V1_BUCKETS_PRIVATE
+#elif defined(BREND_DRIVER_SDL3GPUREND)
+#define BR_GEOMETRY_V1_BUCKETS_PRIVATE
 #endif
 
 #include "brddi.h"
@@ -61,8 +63,8 @@ extern "C" {
 #include "sbuffer.h"
 #include "gstored.h"
 #include "gv1model.h"
-#if defined(BREND_DRIVER_GL)
 #include "gv1buckt.h"
+#if defined(BREND_DRIVER_GL)
 #include "glassert.h"
 #else
 /* SDL3 GPU has no assert helpers yet. */
