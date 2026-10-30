@@ -23,8 +23,8 @@ static struct br_tv_template_entry outputFacilityTemplateEntries[] = {
     { BRT(PIXEL_BITS_I32), A(-1), BRTV_QUERY | BRTV_ALL | BRTV_ABS, BRTV_CONV_COPY },
     { BRT(PIXEL_TYPE_U8), A(BR_PMT_MAX), BRTV_QUERY | BRTV_ALL | BRTV_ABS, BRTV_CONV_COPY },
     { BRT(INDEXED_B), A(0), BRTV_QUERY | BRTV_ALL | BRTV_ABS, BRTV_CONV_COPY },
-    { BRT(IDENTIFIER_CSTR), F(identifier), BRTV_QUERY | BRTV_ALL, BRTV_CONV_COPY },
-    { BRT(RENDERER_FACILITY_O), F(renderer_facility), BRTV_QUERY | BRTV_ALL, BRTV_CONV_COPY },
+    { BRT(IDENTIFIER_CSTR), F(identifier), BRTV_QUERY | BRTV_ALL, BRTV_CONV_POINTER },
+    { BRT(RENDERER_FACILITY_O), F(renderer_facility), BRTV_QUERY | BRTV_ALL, BRTV_CONV_POINTER },
 
     /*
      * We don't use these, but we need BrDevBeginVar to accept them.

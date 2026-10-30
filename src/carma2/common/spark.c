@@ -265,6 +265,24 @@ int gSmoke_flags;
 // GLOBAL: CARMA2_HW 0x006aa594
 int gN_smoke;
 
+#ifndef CARPOCALYPSE2_MATCHING
+// The original keeps the smoke prim's token list as a raw blob at 0x660148
+// (BRT_BLEND_B = 1, BRT_OPACITY_X = 0x4b0000, BR_NULL_TOKEN) and points every
+// smoke material at it; RenderRecordedSmokeCircles rewrites the opacity entry
+// just before each BrMaterialUpdate, so one shared list is enough.
+//
+// That blob is a 32-bit br_token_value array, which only lines up in the
+// 32-bit matching build. On 64-bit br_value is 8 bytes wide, so a typed copy
+// is needed here: without one the portable InitSmokeStuff leaves extra_prim
+// NULL and the first recorded smoke circle faults writing
+// smoke->material->extra_prim[1].v.x (spark.c, RenderRecordedSmokeCircles).
+static br_token_value gSmoke_extra_prim[] = {
+    { BRT_BLEND_B,   { 1u } },       // v.u32
+    { BRT_OPACITY_X, { 0x4b0000u } }, // v.x (16.16 fixed; rewritten per smoke)
+    { BR_NULL_TOKEN, { 0u } },
+};
+#endif
+
 void (C2_HOOK_FASTCALL * StopCarBeingIt_original)(tCar_spec* pCar);
 // GLOBAL: CARMA2_HW 0x006b7880
 br_material* gBlack_material;
@@ -3343,6 +3361,7 @@ void C2_HOOK_FASTCALL InitSmokeStuff(void) {
         gBR_smoke_structs[i].material = BrMaterialAllocate(NULL);
         gBR_smoke_structs[i].material->flags &= ~BR_MATF_LIGHT;
         gBR_smoke_structs[i].material->flags |= BR_MATF_ALWAYS_VISIBLE;
+        gBR_smoke_structs[i].material->extra_prim = gSmoke_extra_prim;
         BrMaterialAdd(gBR_smoke_structs[i].material);
     }
 #else

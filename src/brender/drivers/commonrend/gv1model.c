@@ -4,6 +4,17 @@
 #include "brassert.h"
 #include "drv.h"
 #include "commonrend.h"
+#if defined(__vita__) && defined(BREND_DRIVER_GL)
+#include "vita_geometry_cache.h"
+#endif
+#if defined(__vita__) && defined(BREND_DRIVER_GL)
+#include "../../../carma2/platform/sdl3/vita_perf.h"
+#define VPB(x) do { if (C2VitaPerfDetail) C2VitaPerfBegin(x); } while (0)
+#define VPE(x) do { if (C2VitaPerfDetail) C2VitaPerfEnd(x); } while (0)
+#else
+#define VPB(x) ((void)0)
+#define VPE(x) ((void)0)
+#endif
 
 /*
  * Default dispatch table for renderer type (defined at and of file)
@@ -17,9 +28,9 @@ static const struct br_geometry_v1_model_dispatch geometryV1ModelDispatch;
 #define A(a) ((br_uintptr_t)(a))
 
 static struct br_tv_template_entry geometryV1ModelTemplateEntries[] = {
-    { BRT(IDENTIFIER_CSTR), F(identifier), BRTV_QUERY | BRTV_ALL, BRTV_CONV_COPY },
-    { BRT(RENDERER_FACILITY_O), F(renderer_facility), BRTV_QUERY | BRTV_ALL, BRTV_CONV_COPY },
-    { BRT(FACILITY_O), F(renderer_facility), BRTV_QUERY, BRTV_CONV_COPY },
+    { BRT(IDENTIFIER_CSTR), F(identifier), BRTV_QUERY | BRTV_ALL, BRTV_CONV_POINTER },
+    { BRT(RENDERER_FACILITY_O), F(renderer_facility), BRTV_QUERY | BRTV_ALL, BRTV_CONV_POINTER },
+    { BRT(FACILITY_O), F(renderer_facility), BRTV_QUERY, BRTV_CONV_POINTER },
     { BRT(STORED_ONLY_B), A(BR_TRUE), BRTV_QUERY | BRTV_ALL | BRTV_ABS, BRTV_CONV_COPY },
 };
 #undef F
@@ -47,6 +58,9 @@ br_geometry_v1_model* BREND_FN(GeometryV1Model, Allocate)(br_renderer_facility* 
 static void BREND_CMETHOD_DECL(BREND_CLASS(br_geometry_v1_model_), free)(br_object* _self) {
     br_geometry_v1_model* self = (br_geometry_v1_model*)_self;
 
+#if defined(__vita__) && defined(BREND_DRIVER_GL)
+    GLVitaGeometryCacheClearOwner(self);
+#endif
     ObjectContainerRemove(self->renderer_facility, (br_object*)self);
 
     BrResFreeNoCallback(self);
@@ -110,20 +124,52 @@ static br_error BREND_CMETHOD_DECL(BREND_CLASS(br_geometry_v1_model_),
 br_error BREND_CMETHOD_DECL(BREND_CLASS(br_geometry_v1_model_), render)(struct br_geometry_v1_model* self,
     struct br_renderer* renderer, struct v11model_f* model,
     struct br_renderer_state_stored* default_state, br_token type) {
-    static br_boolean warned_imm = BR_FALSE;
+    /*
+     * Immediate mode (our 1.2-era core renders updateable models, e.g. crushed cars and
+     * pedestrians, straight from the prepared v11 data): upload into a temporary stored
+     * geometry, draw it and free it. GL lines use the prepared edge IDs.
+     */
+    typedef br_error BR_METHOD stored_render_fn(struct br_geometry_stored*, struct br_renderer*, struct br_renderer_state_stored*);
+    struct br_geometry_stored* sg;
+    br_error r;
+#if defined(__vita__) && defined(BREND_DRIVER_GL)
+    int cached;
+#endif
 
-    (void)self;
-    (void)renderer;
-    (void)model;
-    (void)default_state;
-    (void)type;
+    if (model == NULL) return BRE_OK;
+#if defined(BREND_DRIVER_GL)
+    if (type != BRT_TRIANGLE && type != BRT_LINE) return BRE_OK;
+#else
+    if (type != BRT_TRIANGLE) return BRE_OK;
+#endif
 
-    if (warned_imm != BR_TRUE) {
-        BR_FATAL0("Immediate-mode rendering is not supported.");
-        warned_imm = BR_TRUE;
-    }
+#if defined(__vita__) && defined(BREND_DRIVER_GL)
+    C2VitaPerfCount(C2VPC_MODELS);
+    VPB(C2VP_G_LOOKUP);
+    sg=GLVitaGeometryCacheGet(self,renderer,(struct v11model*)model,type);
+    VPE(C2VP_G_LOOKUP);
+    cached=sg!=NULL;
+    if (!cached) C2VitaPerfCount(C2VPC_CACHE_MISSES);
+    if (!cached)
+#endif
+    if ((sg = BREND_FN(GeometryStored, Allocate)(self, "IMMEDIATE", renderer, (struct v11model*)model)) == NULL)
+        return BRE_FAIL;
 
-    return BRE_FAIL;
+#if defined(BREND_DRIVER_GL)
+#ifdef __vita__
+    if (!cached && type == BRT_LINE) StoredGLUseEdges(sg);
+#else
+    if (type == BRT_LINE) StoredGLUseEdges(sg);
+#endif
+#endif
+    VPB(C2VP_G_RENDER);
+    r = ((stored_render_fn*)sg->dispatch->_render)(sg, renderer, default_state);
+    VPE(C2VP_G_RENDER);
+#if defined(__vita__) && defined(BREND_DRIVER_GL)
+    if (!cached)
+#endif
+    sg->dispatch->_free((br_object*)sg);
+    return r;
 }
 
 /*

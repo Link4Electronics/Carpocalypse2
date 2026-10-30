@@ -190,6 +190,7 @@ typedef struct state_primitive {
     br_token mip_filter;
 
     br_boolean fog_enabled;
+    br_token fog_type;
     br_colour fog_colour;
     br_scalar fog_min;
     br_scalar fog_max;

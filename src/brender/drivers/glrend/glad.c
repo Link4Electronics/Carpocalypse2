@@ -869,6 +869,11 @@ int gladLoadGLLoader(GLADloadproc load) {
 	if(glGetString == NULL) return 0;
 	if(glGetString(GL_VERSION) == NULL) return 0;
 	find_coreGL();
+#ifdef __vita__
+    /* VitaGL reports GLES 2 and supplies the later APIs used by this driver.
+     * Load them without inventing a desktop context version. */
+    GLAD_GL_VERSION_3_0 = GLAD_GL_VERSION_3_1 = GLAD_GL_VERSION_3_2 = 1;
+#endif
 	load_GL_VERSION_1_0(load);
 	load_GL_VERSION_1_1(load);
 	load_GL_VERSION_1_2(load);
@@ -882,6 +887,10 @@ int gladLoadGLLoader(GLADloadproc load) {
 	load_GL_VERSION_3_2(load);
 
 	if (!find_extensionsGL()) return 0;
+#ifdef __vita__
+    /* VitaGL's sampler state does not expose desktop anisotropy queries. */
+    GLAD_GL_EXT_texture_filter_anisotropic = 0;
+#endif
 	return GLVersion.major != 0 || GLVersion.minor != 0;
 }
 

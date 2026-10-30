@@ -23,9 +23,6 @@ precision lowp usampler2D;
 #define UV_SOURCE_ENV_L              1
 #define UV_SOURCE_ENV_I              2
 
-// 3dfx driver uses a fog table. This approximates the behavior :/
-#define FOGGING_EMULATE_3DFX_DENSITY_MULTIPLIER 80
-
 struct br_light
 {
     vec4 position;    /* (X, Y, Z, 1) */
@@ -221,19 +218,19 @@ void processClipPlanes() {
 
 void doDistanceFog() {
     if (fog_enabled) {
-
         // Compute linear depth from view-space Z (passed as varying from vertex shader).
         // In view space, visible objects have z < 0, so negate to get positive depth.
         float linear_depth = -v_view_z;
+        float range = fog_max - fog_min;
 
-        if (linear_depth < fog_min) {
-            //return;
+        // Linear fog between fog_min and fog_max, matching the original D3D
+        // driver: fog = (z - fog_min) / (fog_max - fog_min), clamped to 0..1.
+        // The game sets fog_min/fog_max to real world distances
+        // (DepthCueingShiftToDistance), e.g. 13.9 .. 35.0.
+        if (range > 0.0) {
+            float fogging_factor = clamp((linear_depth - fog_min) / range, 0.0, 1.0);
+            fragColour.rgb = mix(fragColour.rgb, fog_colour.rgb, fogging_factor);
         }
-
-        float linear_depth_normalized = linear_depth / yon_z;
-        float density = 1/fog_max * FOGGING_EMULATE_3DFX_DENSITY_MULTIPLIER;
-        float fogging_factor = 1.0 - exp(-density * linear_depth_normalized * linear_depth_normalized);
-        fragColour.rgb = mix(fragColour.rgb, fog_colour.rgb, clamp(fogging_factor, 0.0, 1.0));
     }
 }
 
@@ -252,9 +249,13 @@ void main() {
         if(!disable_colour_key && textureColour.rgb == vec3(0)) {
             discard;
         }
+        // port: alpha textures (ARGB4444): fully transparent texels write nothing
+        if(textureColour.a < 0.004) {
+            discard;
+        }
     }
 
-    if (lighting == 1u) {
+    if (lighting == 1u || prelit == 1u) {
         fragColour.rgb = colour.rgb * textureColour.rgb;
     } else {
         fragColour.rgb = textureColour.rgb;
@@ -278,12 +279,10 @@ void main() {
 #endif
 
     // Apply alpha transparency
-    fragColour.a = alpha;
+    fragColour.a = alpha * (disable_texture ? 1.0 : textureColour.a); /* port: texture alpha */
 
     // Apply lighting
-    if (lighting == 1u && prelit == 0u) {
-        fragColour.rgb *= vec3(ka, ka, ka);
-    }
+    /* port: ka is applied as the ambient term in the vertex shader */
 
     doDistanceFog();
 }

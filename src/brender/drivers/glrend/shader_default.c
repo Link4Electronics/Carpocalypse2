@@ -1,7 +1,13 @@
 #include "drv.h"
 #include "brassert.h"
+#ifdef __vita__
+#include "vita_shaders.h"
+#define DEFAULT_FRAG_GLSL VITA_DEFAULT_FRAG
+#define DEFAULT_VERT_GLSL VITA_DEFAULT_VERT
+#else
 #include "default.frag.glsl.h"
 #include "default.vert.glsl.h"
+#endif
 
 
 br_boolean VIDEOI_CompileDefaultShader(HVIDEO hVideo) {

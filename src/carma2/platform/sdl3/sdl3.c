@@ -3,6 +3,7 @@
 #include <SDL3/SDL.h>
 
 #include "sdl3_input.h"
+#include "sdl3_hwrend.h"
 #include "sdl3_ssdx.h"
 
 #include "grafdata.h"
@@ -389,6 +390,23 @@ void PDSetPaletteEntries(br_pixelmap *pPalette, int pFirst_colour, int pCount) {
         colours[i].b = c >> 0;
     }
     SDL_SetPaletteColors(g_SDL_Palette, colours, pFirst_colour, pCount);
+
+    if (carpocalypse2_UseHardwareRenderer()) {
+        /* Hardware drivers convert 8-bit textures at draw time with the device
+         * CLUT, so the palette has to reach BRender, not only SDL. */
+        br_colour entries[256];
+
+        if (pCount > (int)SDL_arraysize(entries)) {
+            pCount = (int)SDL_arraysize(entries);
+        }
+        for (i = 0; i < pCount; i++) {
+            tU32 c = pixels[pFirst_colour + i];
+            entries[i] = BR_COLOUR_RGB(c >> 16, c >> 8, c);
+        }
+        BrPixelmapPaletteEntrySetMany(gScreen, pFirst_colour, pCount, entries);
+        return;
+    }
+
     BrPixelmapDoubleBuffer(gScreen, gBack_screen);
 }
 
@@ -404,6 +422,15 @@ int PDServiceSystem(tU32 pTime_since_last_call) {
 void PDScreenBufferSwap(int pRendering_area_only) {
     extern void carpocalypse2_PresentFrame(void);
     (void)pRendering_area_only;
+
+    if (carpocalypse2_UseHardwareRenderer()) {
+        /* Hardware drivers composite the 3D scene (+ the CPU overlay) and call
+         * back into the platform swap once the frame has been presented. */
+        SDL3ServiceMessages();
+        BrPixelmapDoubleBuffer(gScreen, gBack_screen);
+        return;
+    }
+
     carpocalypse2_PresentFrame();
 }
 
@@ -765,19 +792,35 @@ void PDAllocateScreenAndBack(void) {
     gNbPixelBits = 16;
     {
         extern void carpocalypse2_RegisterSDLRenderer(void);
-        br_error dev_r;
+        br_error dev_r = 0x1002; /* BRE_FAIL */
 
-        carpocalypse2_RegisterSDLRenderer();
+        if (carpocalypse2_GetRenderer() != C2_RENDERER_SOFTWARE) {
+            /* Retail 3dfx path: open a real BRender hardware driver. */
+            dev_r = carpocalypse2_OpenHardwareScreen(&gScreen);
+            gRenderer = carpocalypse2_UseGL() ? "glrend" : "sdl3gpurend";
+            if (dev_r != 0 || gScreen == NULL) {
+                SDL_Log("carpocalypse2: %s failed (%d); falling back to the software screen",
+                    carpocalypse2_UseGL() ? "glrend" : "sdl3gpurend", (int)dev_r);
+                gScreen = NULL;
+            }
+        }
 
-        dev_r = BrDevBeginVar(&gScreen, gRenderer,
-            BRT_WINDOW_FULLSCREEN_B, 1,
-            BRT_WINDOW_HANDLE_H, gHWnd,
-            BRT_WIDTH_I32, 640,
-            BRT_HEIGHT_I32, 480,
-            BRT_PIXEL_BITS_I32, 16,
-            BRT_PIXEL_TYPE_U8, BR_PMT_RGB_565,
-            BR_NULL_TOKEN
-        );
+        if (gScreen == NULL) {
+            /* Legacy memory screen (softrend + sdl3_plib). Kept only as a
+             * fallback: its primitive emulation is known to be broken. */
+            gRenderer = "SDLREND";
+            carpocalypse2_RegisterSDLRenderer();
+
+            dev_r = BrDevBeginVar(&gScreen, gRenderer,
+                BRT_WINDOW_FULLSCREEN_B, 1,
+                BRT_WINDOW_HANDLE_H, gHWnd,
+                BRT_WIDTH_I32, 640,
+                BRT_HEIGHT_I32, 480,
+                BRT_PIXEL_BITS_I32, 16,
+                BRT_PIXEL_TYPE_U8, BR_PMT_RGB_565,
+                BR_NULL_TOKEN
+            );
+        }
         dr_dprintf("BrDevBeginVar('%s') -> %d", gRenderer, dev_r);
     }
     if (gScreen == NULL) {
@@ -818,7 +861,9 @@ void PDAllocateScreenAndBack(void) {
     gDouble_back_screen = BrPixelmapMatch(gBack_screen, BR_PMMATCH_OFFSCREEN);
     gHas_double_back_screen = 1;
 
-    SDL_memset(gBack_screen->pixels, 0, gBack_screen->height * gBack_screen->row_bytes);
+    if (gBack_screen->pixels != NULL) { /* hardware back buffers are GPU/overlay backed */
+        SDL_memset(gBack_screen->pixels, 0, gBack_screen->height * gBack_screen->row_bytes);
+    }
 
     BrPixelmapDoubleBuffer(gScreen, gBack_screen);
 
@@ -933,6 +978,17 @@ void carpocalypse2_PresentFrame(void) {
      * driven every frame or the window stops responding and mouse position
      * never updates */
     SDL3ServiceMessages();
+
+    if (carpocalypse2_UseHardwareRenderer()) {
+        /* The hardware driver presents the scene itself; the loading screens
+         * still call this hook, so keep them swapping too. */
+        if (gScreen != NULL && gBack_screen != NULL) {
+            BrPixelmapDoubleBuffer(gScreen, gBack_screen);
+        } else {
+            SDL_Delay(16);
+        }
+        return;
+    }
 
     if (g_SDL_Window == NULL || gBack_screen == NULL || gBack_screen->pixels == NULL) {
         SDL_Delay(16);

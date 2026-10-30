@@ -1227,7 +1227,7 @@ int C2_HOOK_STDCALL DfBlockWriteText(br_datafile* df, void* base, int block_size
     if ((size != 1) || (block_count != 1)) {
         block = BrScratchAllocate(block_count * block_size * size);
         for (count = 0; count < block_count; count++) {
-            BrMemCpy(block + count * block_size * size, (br_uint_8*)base + count * block_stride * size, block_size * size);
+            BrMemCpy(block + count * block_size * size, (br_uint_8*)base + count * block_stride, block_size * size);
         }
         BrSwapBlock(block, block_count * block_size, size);
     }
@@ -1317,7 +1317,7 @@ int C2_HOOK_STDCALL DfBlockWriteBinary(br_datafile* df, void* base, int block_si
     if ((size != 1) || (block_count != 1)) {
         block = BrScratchAllocate(block_count * block_size * size);
         for (count = 0; count < block_count; count++) {
-            BrMemCpy((br_uint_8*)block + count * block_size * size, (br_uint_8*)base + count * block_stride * size, block_size * size);
+            BrMemCpy((br_uint_8*)block + count * block_size * size, (br_uint_8*)base + count * block_stride, block_size * size);
         }
         BrSwapBlock(block, block_count * block_size, size);
     }

@@ -3,6 +3,13 @@
  */
 #include "drv.h"
 #include "commonrend.h"
+
+br_geometry_lighting* GeometryLightingNullAllocate(br_renderer_facility* type, const char* id); /* glrend/compat/compat.c */
+#if defined(BREND_DRIVER_GL)
+br_geometry_v1_buckets* GeometryV1BucketsGLAllocate(br_renderer_facility* type, const char* id);
+#else
+br_geometry_v1_buckets* GeometryV1BucketsSDL3GPURENDAllocate(br_renderer_facility* type, const char* id);
+#endif
 #include <stddef.h>
 
 /*
@@ -16,7 +23,7 @@ static const struct br_renderer_facility_dispatch rendererFacilityDispatch;
 #define F(f) offsetof(struct br_renderer_facility, f)
 
 static struct br_tv_template_entry rendererFacilityTemplateEntries[] = {
-    { BRT(IDENTIFIER_CSTR), F(identifier), BRTV_QUERY | BRTV_ALL, BRTV_CONV_COPY, 0 },
+    { BRT(IDENTIFIER_CSTR), F(identifier), BRTV_QUERY | BRTV_ALL, BRTV_CONV_POINTER, 0 },
     { BRT(RENDERER_MAX_I32), 0, BRTV_QUERY | BRTV_ALL, BRTV_CONV_DIRECT, 1 },
 };
 
@@ -36,7 +43,14 @@ br_renderer_facility* BREND_FN(RendererFacility, Init)(br_device* device) {
     self->object_list = BrObjectListAllocate(self);
 
     /* Create geometry objects */
-    if (GeometryPrimitivesNullAllocate(self, "Primitives") == NULL || GeometryLightingNullAllocate(self, "Lighting") == NULL || BREND_FN(GeometryV1Model, Allocate)(self, "V1Model") == NULL) {
+    /* our core has no nulldev: only the V1 model geometry is needed (the game renders through it) */
+    if (GeometryLightingNullAllocate(self, "Lighting") == NULL || BREND_FN(GeometryV1Model, Allocate)(self, "V1Model") == NULL
+#if defined(BREND_DRIVER_GL)
+        || GeometryV1BucketsGLAllocate(self, "V1Buckets") == NULL /* our core's Zs/Zbs scenes require a buckets format */
+#else
+        || GeometryV1BucketsSDL3GPURENDAllocate(self, "V1Buckets") == NULL /* our core's Zs/Zbs scenes require a buckets format */
+#endif
+    ) {
 #if defined(BREND_DRIVER_GL)
         BR_ERROR("GLREND: Error creating geometry objects.");
 #else
@@ -118,8 +132,8 @@ struct newRendererTokens {
 #define F(f) offsetof(struct newRendererTokens, f)
 
 static struct br_tv_template_entry rendererNewTemplateEntries[] = {
-    { BRT(DESTINATION_O), F(dest), BRTV_SET, BRTV_CONV_COPY },
-    { BRT(OUTPUT_FACILITY_O), F(dest), BRTV_SET, BRTV_CONV_COPY },
+    { BRT(DESTINATION_O), F(dest), BRTV_SET, BRTV_CONV_POINTER },
+    { BRT(OUTPUT_FACILITY_O), F(dest), BRTV_SET, BRTV_CONV_POINTER },
 };
 
 #undef F

@@ -305,7 +305,15 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
     add_subdirectory(drivers/d3d)
 endif()
 
+add_library(BRender::DDI ALIAS brender_ddi)
 add_library(BRender::BRender ALIAS brender-static)
+
+if(NOT CARPOCALYPSE2_MATCHING)
+    add_subdirectory(drivers/glrend)
+    if(CARPOCALYPSE2_PLATFORM_SDL3)
+        add_subdirectory(drivers/sdl3gpurend)
+    endif()
+endif()
 
 if(CARPOCALYPSE2_MATCHING)
     set(CMAKE_CXX_FLAGS "/W3 /GX /DWIN32 /D_WINDOWS")

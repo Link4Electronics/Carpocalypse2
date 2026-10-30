@@ -3,6 +3,9 @@
  */
 
 #include "drv.h"
+#include "brgl_display.h"
+#include <math.h>
+#include <stdlib.h>
 #include <brassert.h>
 
 /*
@@ -39,14 +42,14 @@ static struct br_tv_template_entry devicePixelmapFrontTemplateEntries[] = {
     { BRT(WIDTH_I32), F(pm_width), BRTV_QUERY | BRTV_ALL, BRTV_CONV_I32_U16, 0 },
     { BRT(HEIGHT_I32), F(pm_height), BRTV_QUERY | BRTV_ALL, BRTV_CONV_I32_U16, 0 },
     { BRT(PIXEL_TYPE_U8), F(pm_type), BRTV_QUERY | BRTV_ALL, BRTV_CONV_I32_U8, 0 },
-    { BRT(OUTPUT_FACILITY_O), F(output_facility), BRTV_QUERY | BRTV_ALL, BRTV_CONV_COPY, 0 },
-    { BRT(FACILITY_O), F(output_facility), BRTV_QUERY, BRTV_CONV_COPY, 0 },
-    { BRT(IDENTIFIER_CSTR), F(pm_identifier), BRTV_QUERY | BRTV_ALL, BRTV_CONV_COPY, 0 },
+    { BRT(OUTPUT_FACILITY_O), F(output_facility), BRTV_QUERY | BRTV_ALL, BRTV_CONV_POINTER, 0 },
+    { BRT(FACILITY_O), F(output_facility), BRTV_QUERY, BRTV_CONV_POINTER, 0 },
+    { BRT(IDENTIFIER_CSTR), F(pm_identifier), BRTV_QUERY | BRTV_ALL, BRTV_CONV_POINTER, 0 },
     { BRT(MSAA_SAMPLES_I32), F(msaa_samples), BRTV_QUERY | BRTV_ALL, BRTV_CONV_COPY, 0 },
     { BRT(OPENGL_CALLBACKS_P), 0, BRTV_QUERY | BRTV_ALL, BRTV_CONV_DIRECT },
-    { BRT(OPENGL_VERSION_CSTR), FF(gl_version), BRTV_QUERY | BRTV_ALL, BRTV_CONV_COPY, 0 },
-    { BRT(OPENGL_VENDOR_CSTR), FF(gl_vendor), BRTV_QUERY | BRTV_ALL, BRTV_CONV_COPY, 0 },
-    { BRT(OPENGL_RENDERER_CSTR), FF(gl_renderer), BRTV_QUERY | BRTV_ALL, BRTV_CONV_COPY, 0 },
+    { BRT(OPENGL_VERSION_CSTR), FF(gl_version), BRTV_QUERY | BRTV_ALL, BRTV_CONV_POINTER, 0 },
+    { BRT(OPENGL_VENDOR_CSTR), FF(gl_vendor), BRTV_QUERY | BRTV_ALL, BRTV_CONV_POINTER, 0 },
+    { BRT(OPENGL_RENDERER_CSTR), FF(gl_renderer), BRTV_QUERY | BRTV_ALL, BRTV_CONV_POINTER, 0 },
 
     { DEV(OPENGL_NUM_EXTENSIONS_I32), FF(gl_num_extensions), BRTV_QUERY | BRTV_ALL, BRTV_CONV_COPY, 0 },
     { DEV(OPENGL_EXTENSIONS_PL), FF(gl_extensions), BRTV_QUERY | BRTV_ALL, BRTV_CONV_LIST, 0 },
@@ -55,7 +58,8 @@ static struct br_tv_template_entry devicePixelmapFrontTemplateEntries[] = {
         0,
         F(clut),
         BRTV_QUERY | BRTV_ALL,
-        BRTV_CONV_COPY,
+        BRTV_CONV_POINTER,
+        0
     }
 };
 #undef FF
@@ -79,8 +83,8 @@ static struct br_tv_template_entry pixelmapNewTemplateEntries[] = {
     { BRT(PIXEL_BITS_I32), F(pixel_bits), BRTV_SET, BRTV_CONV_COPY },
     { BRT(PIXEL_TYPE_U8), F(pixel_type), BRTV_SET, BRTV_CONV_COPY },
     { BRT(MSAA_SAMPLES_I32), F(msaa_samples), BRTV_SET, BRTV_CONV_COPY },
-    { BRT(OPENGL_CALLBACKS_P), F(callbacks), BRTV_SET, BRTV_CONV_COPY },
-    { BRT(OPENGL_FRAGMENT_SHADER_STR), F(fragment_shader), BRTV_SET, BRTV_CONV_COPY }
+    { BRT(OPENGL_CALLBACKS_P), F(callbacks), BRTV_SET, BRTV_CONV_POINTER },
+    { BRT(OPENGL_FRAGMENT_SHADER_STR), F(fragment_shader), BRTV_SET, BRTV_CONV_POINTER }
 };
 #undef F
 
@@ -196,6 +200,22 @@ br_device_pixelmap* DevicePixelmapGLAllocateFront(br_device* dev, br_output_faci
      */
     self->asFront.callbacks = *pt.callbacks;
 
+    /* port: back buffers render at the window resolution (rounded up) unless the platform sets gGLRenderScale */
+    self->root = self;
+    {
+        int vx, vy;
+        float wm, hm;
+        extern int gGLRenderScale; /* set by the platform layer */
+        self->asFront.callbacks.get_viewport(&vx, &vy, &wm, &hm);
+        self->asFront.render_scale = (int)ceilf(wm > hm ? wm : hm);
+        if (gGLRenderScale > 0)
+            self->asFront.render_scale = gGLRenderScale;
+        if (self->asFront.render_scale < 1)
+            self->asFront.render_scale = 1;
+        if (self->asFront.render_scale > 8)
+            self->asFront.render_scale = 8;
+    }
+
     if (gladLoadGLLoader(DevicePixelmapGLGetGetProcAddress(self)) == 0) {
         BR_ERROR("GLREND: Unable to load OpenGL functions.");
         goto cleanup_context;
@@ -209,10 +229,12 @@ br_device_pixelmap* DevicePixelmapGLAllocateFront(br_device* dev, br_output_faci
     BrLogPrintf("GLREND: OpenGL Vendor   = %s\n", self->asFront.gl_vendor);
     BrLogPrintf("GLREND: OpenGL Renderer = %s\n", self->asFront.gl_renderer);
 
+#ifndef __vita__
     if (GLVersion.major < 3 || (GLVersion.major == 3 && GLVersion.minor < 1)) {
         BR_FATAL2("GLREND: Got OpenGL %d.%d context, expected 3.1", GLVersion.major, GLVersion.minor);
         goto cleanup_context;
     }
+#endif
 
     /*
      * Get a copy of the extension list.
@@ -302,6 +324,42 @@ br_error BR_CMETHOD_DECL(br_device_pixelmap_glf, doubleBuffer)(br_device_pixelma
     // ensure all dirty pixel writes have been flushed
     BrPixelmapFlush((br_pixelmap*)src);
 
+    /* port: draw the back buffer's FBO texture to the window (FBO rows are bottom-up) */
+    {
+        int x, y;
+        float wm, hm;
+        br_device_pixelmap* root = src->root != NULL ? src->root : src;
+
+        DevicePixelmapGLGetViewport(self, &x, &y, &wm, &hm);
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glDisable(GL_SCISSOR_TEST);
+        glClearColor(0.f, 0.f, 0.f, 1.f);
+        glClear(GL_COLOR_BUFFER_BIT);
+#ifdef __vita__
+        /* VitaGL's blit owns its FBO/display row conversion. Present directly
+         * through that path instead of relying on the generic Cg flip uniform. */
+        glBindFramebuffer(GL_READ_FRAMEBUFFER, root->asBack.glFbo);
+        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+        glBlitFramebuffer(0, 0, root->pm_width * GLBackScale(root), root->pm_height * GLBackScale(root),
+            x, y, x + (int)(self->pm_width * wm), y + (int)(self->pm_height * hm), GL_COLOR_BUFFER_BIT, GL_NEAREST);
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+#else
+        GLBackDrawTexture(self, root->asBack.glTex, x, y, (int)(self->pm_width * wm), (int)(self->pm_height * hm), 1, 0);
+#endif
+        if (!gGLFrameHasWorld && !gGLFrameHasWide) {
+            int vw = (int)(self->pm_width * wm), vh = (int)(self->pm_height * hm);
+            int uiw = vh * 4 / 3;
+            if (uiw < vw) {
+                int border = (vw - uiw) / 2;
+                /* Clear stale world pixels outside a menu's proportional area. */
+                glEnable(GL_SCISSOR_TEST);
+                glScissor(x,y,border,vh); glClear(GL_COLOR_BUFFER_BIT);
+                glScissor(x+border+uiw,y,vw-border-uiw,vh); glClear(GL_COLOR_BUFFER_BIT);
+                glDisable(GL_SCISSOR_TEST);
+            }
+        }
+    }
+
     DevicePixelmapGLSwapBuffers(self);
 
     // prep for next frame
@@ -382,7 +440,5 @@ static const struct br_device_pixelmap_dispatch devicePixelmapFrontDispatch = {
     ._flush = BR_CMETHOD_REF(br_device_pixelmap_fail, flush),
     ._synchronise = BR_CMETHOD_REF(br_device_pixelmap_fail, synchronise),
     ._directLock = BR_CMETHOD_REF(br_device_pixelmap_fail, directLock),
-    ._directUnlock = BR_CMETHOD_REF(br_device_pixelmap_fail, directUnlock),
-    ._getControls = BR_CMETHOD_REF(br_device_pixelmap_fail, getControls),
-    ._setControls = BR_CMETHOD_REF(br_device_pixelmap_fail, setControls)
+    ._directUnlock = BR_CMETHOD_REF(br_device_pixelmap_fail, directUnlock)
 };

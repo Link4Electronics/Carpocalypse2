@@ -26,7 +26,7 @@ static const struct br_geometry_stored_dispatch geometryStoredDispatch;
 #define F(f) offsetof(br_geometry_stored, f)
 
 static struct br_tv_template_entry templateEntries[] = {
-    { BRT(IDENTIFIER_CSTR), F(identifier), BRTV_QUERY | BRTV_ALL, BRTV_CONV_COPY },
+    { BRT(IDENTIFIER_CSTR), F(identifier), BRTV_QUERY | BRTV_ALL, BRTV_CONV_POINTER },
     { BRT(GEOMETRY_V1_MODEL), F(gv1model), BRTV_QUERY | BRTV_ALL, BRTV_CONV_COPY },
     { BRT(SHARED_B), F(shared), BRTV_QUERY | BRTV_ALL, BRTV_CONV_COPY },
 };
@@ -34,6 +34,7 @@ static struct br_tv_template_entry templateEntries[] = {
 
 #if defined(BREND_DRIVER_GL)
 /* ------------------------------------------------------------------ GL --- */
+#include "edge_indices.h"
 
 static GLuint create_vao(HVIDEO hVideo, GLuint vbo_posn, GLuint vbo, GLuint ibo) {
     GLuint vao;
@@ -77,8 +78,9 @@ static GLuint build_vbo_posn(const struct v11model* model, size_t total_vertices
 
     for (br_uint_16 i = 0; i < model->ngroups; ++i) {
         const struct v11group* gp = model->groups + i;
-        memcpy(next, gp->position, gp->nvertices * sizeof(br_vector3_f));
-        next += gp->nvertices;
+        for (br_uint_16 v = 0; v < gp->nvertices; ++v) {
+            *next++ = *(br_vector3_f*)&gp->vertices[v].p; /* our core: array-of-structs fmt_vertex */
+        }
     }
 
     glGenBuffers(1, &buf);
@@ -97,8 +99,8 @@ static GLuint build_vbo(const struct v11model* model, size_t total_vertices) {
     for (br_uint_16 i = 0; i < model->ngroups; ++i) {
         const struct v11group* gp = model->groups + i;
         for (br_uint_16 v = 0; v < gp->nvertices; ++v, ++nextVtx) {
-            nextVtx->map = *(br_vector2_f*)(gp->map + v);
-            nextVtx->n = *(br_vector3_f*)(gp->normal + v);
+            nextVtx->map = *(br_vector2_f*)&gp->vertices[v].map;
+            nextVtx->n = *(br_vector3_f*)&gp->vertices[v].n;
             nextVtx->c.v[0] = BR_RED(gp->vertex_colours[v]) / 255.0f;
             nextVtx->c.v[1] = BR_GRN(gp->vertex_colours[v]) / 255.0f;
             nextVtx->c.v[2] = BR_BLU(gp->vertex_colours[v]) / 255.0f;
@@ -124,10 +126,28 @@ static GLuint build_ibo(const struct v11model* model, size_t total_faces, gl_gro
     for (br_uint_16 i = 0; i < model->ngroups; ++i) {
         const struct v11group* gp = model->groups + i;
         for (br_uint_16 f = 0; f < gp->nfaces; ++f) {
-            const br_vector3_u16* fp = gp->vertex_numbers + f;
-            *nextIdx++ = fp->v[0] + offset;
-            *nextIdx++ = fp->v[1] + offset;
-            *nextIdx++ = fp->v[2] + offset;
+            const v11face* fp = gp->faces + f;
+            /* port: a face indexing outside its group (or past the 16-bit range) would make the GPU
+             * read beyond the vertex buffer; desktop drivers tolerate that, the Vita GPU can hang.
+             * Draw such a face as a degenerate triangle instead and report the model. */
+            if (fp->vertices[0] >= gp->nvertices || fp->vertices[1] >= gp->nvertices
+                    || fp->vertices[2] >= gp->nvertices || (br_uint_32)offset + gp->nvertices > 0x10000u) {
+                static int reported;
+                if (reported < 8) {
+                    ++reported;
+                    BrWarning("glrend: bad face %u/%u in group %u/%u: vertices %u,%u,%u of %u (offset %u)",
+                        (unsigned)f, (unsigned)gp->nfaces, (unsigned)i, (unsigned)model->ngroups,
+                        (unsigned)fp->vertices[0], (unsigned)fp->vertices[1], (unsigned)fp->vertices[2],
+                        (unsigned)gp->nvertices, (unsigned)offset);
+                }
+                *nextIdx++ = offset;
+                *nextIdx++ = offset;
+                *nextIdx++ = offset;
+                continue;
+            }
+            *nextIdx++ = fp->vertices[0] + offset;
+            *nextIdx++ = fp->vertices[1] + offset;
+            *nextIdx++ = fp->vertices[2] + offset;
         }
 
         groups[i].count = (GLsizei)gp->nfaces * 3;
@@ -186,6 +206,16 @@ static int get_render_mode(const state_stack* state) {
         /* Has a blend table? Defer. */
         if (state->prim.index_blend != NULL)
             return RM_TRANS;
+
+#if defined(BREND_DRIVER_SDL3GPUREND)
+        /* Alpha textures (car glass, ARGB4444) select the blended pipeline in
+         * modelrender.c. They must also be sorted into the transparent bucket,
+         * otherwise they are drawn in the opaque front-to-back order and the
+         * glass can be overwritten by geometry behind it. glrend gets this
+         * ordering from its deferred transparent pass. */
+        if (state->prim.colour_map != NULL && state->prim.colour_map->blended)
+            return RM_TRANS;
+#endif
 
         if (state->prim.colour_map && state->prim.colour_map->source) {
             /* Keyed transparency? Defer. */
@@ -325,10 +355,13 @@ static br_uint_16 calculate_bucket(const br_order_table* ot, const state_stack* 
         break;
     }
 
-    return base + BrZsPrimitiveBucketSelect(&tmp_depth, BR_PRIMITIVE_POINT, ot->min_z, ot->max_z, count, ot->type);
+    (void)tmp_depth; (void)count;
+    return base; /* unused: want_defer() is off in the port */
 }
 
 static br_boolean want_defer(const state_hidden* hidden) {
+    /* port: our core has no 1.4 order-table bucket helpers (BrZsPrimitiveBucketSelect); draw immediately */
+    return BR_FALSE;
     if (hidden->type != BRT_BUCKET_SORT)
         return BR_FALSE;
 
@@ -356,9 +389,10 @@ static sdl3_vertex_f* GenerateVBOData(const struct v11model* model, size_t total
     for (br_uint_16 i = 0; i < model->ngroups; ++i) {
         const struct v11group* gp = model->groups + i;
         for (br_uint_16 v = 0; v < gp->nvertices; ++v, ++next) {
-            next->p = *(br_vector3_f*)(gp->position + v);
-            next->map = *(br_vector2_f*)(gp->map + v);
-            next->n = *(br_vector3_f*)(gp->normal + v);
+            /* our core: array-of-structs fmt_vertex, not v1.4 split arrays */
+            next->p = *(br_vector3_f*)&gp->vertices[v].p;
+            next->map = *(br_vector2_f*)&gp->vertices[v].map;
+            next->n = *(br_vector3_f*)&gp->vertices[v].n;
             next->c.v[0] = BR_RED(gp->vertex_colours[v]) / 255.0f;
             next->c.v[1] = BR_GRN(gp->vertex_colours[v]) / 255.0f;
             next->c.v[2] = BR_BLU(gp->vertex_colours[v]) / 255.0f;
@@ -384,10 +418,19 @@ static br_uint_16* GenerateIBOData(const struct v11model* model, size_t total_fa
         }
 
         for (br_uint_16 f = 0; f < gp->nfaces; ++f) {
-            const br_vector3_u16* fp = gp->vertex_numbers + f;
-            *next++ = fp->v[0] + offset;
-            *next++ = fp->v[1] + offset;
-            *next++ = fp->v[2] + offset;
+            const v11face* fp = gp->faces + f;
+            /* port: a face indexing outside its group (or past the 16-bit range) would make the GPU
+             * read beyond the vertex buffer; mirror the GL path and draw a degenerate triangle. */
+            if (fp->vertices[0] >= gp->nvertices || fp->vertices[1] >= gp->nvertices
+                    || fp->vertices[2] >= gp->nvertices || (br_uint_32)offset + gp->nvertices > 0x10000u) {
+                *next++ = offset;
+                *next++ = offset;
+                *next++ = offset;
+                continue;
+            }
+            *next++ = fp->vertices[0] + offset;
+            *next++ = fp->vertices[1] + offset;
+            *next++ = fp->vertices[2] + offset;
         }
 
         face_offset += (br_size_t)gp->nfaces * 3 * sizeof(br_uint_16);
@@ -559,10 +602,13 @@ br_geometry_stored* BREND_FN(GeometryStored, Allocate)(br_geometry_v1_model* gv1
     }
 
 #if defined(BREND_DRIVER_GL)
-    self->groups = BrResAllocate(gv1model, sizeof(gl_groupinfo) * model->ngroups, BR_MEMORY_OBJECT_DATA);
+    /* Immediate models free this object after each draw; its groups must share
+     * that lifetime rather than accumulating under the geometry factory. */
+    self->groups = BrResAllocate(self, sizeof(gl_groupinfo) * model->ngroups, BR_MEMORY_OBJECT_DATA);
 
     glBindVertexArray(0);
 
+    self->gl_primitive = GL_TRIANGLES;
     self->gl_vbo_posn = build_vbo_posn(model, total_vertices);
     self->gl_vbo = build_vbo(model, total_vertices);
     self->gl_ibo = build_ibo(model, total_faces, self->groups);
@@ -590,12 +636,40 @@ br_geometry_stored* BREND_FN(GeometryStored, Allocate)(br_geometry_v1_model* gv1
     return (br_geometry_stored*)self;
 }
 
+#if defined(BREND_DRIVER_GL)
+/* Reuse the immediate model's vertex buffers with its prepared visible edges. */
+void StoredGLUseEdges(br_geometry_stored* self) {
+    br_size_t faces = 0, max_edges = 0, count;
+    br_uint_8* scratch;
+    br_uint_16* indices;
+    for (br_uint_16 g = 0; g < self->model->ngroups; ++g) {
+        const struct v11group* group = &self->model->groups[g];
+        faces += group->nfaces;
+        if (group->nedges > max_edges) max_edges = group->nedges;
+    }
+    scratch = BrScratchAllocate(faces * 6 * sizeof(br_uint_16) + max_edges + 1);
+    indices = (br_uint_16*)scratch;
+    count = GLBuildEdgeIndices(self->model, indices, self->groups,
+        scratch + faces * 6 * sizeof(br_uint_16));
+    self->gl_primitive = GL_LINES;
+    glBindVertexArray(self->gl_vao);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, self->gl_ibo);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(br_uint_16), indices, GL_STATIC_DRAW);
+    glBindVertexArray(0);
+    BrScratchFree(scratch);
+}
+#endif
+
 /* ------------------------------------------------------------ Object --- */
 
 #if defined(BREND_DRIVER_GL)
 static void BREND_CMETHOD_DECL(BREND_CLASS(br_geometry_stored), free)(br_object* _self) {
     br_geometry_stored* self = (br_geometry_stored*)_self;
 
+#ifdef __vita__
+    extern void GLVitaGeometryCacheForget(br_geometry_stored*);
+    GLVitaGeometryCacheForget(self);
+#endif
     ObjectContainerRemove(self->gv1model->renderer_facility, (br_object*)self);
 
     glDeleteVertexArrays(1, &self->gl_vao);
@@ -713,12 +787,11 @@ static br_error V1Model_RenderStored(br_geometry_stored* self, br_renderer* rend
              */
             if (state->hidden.insert_fn != NULL) {
                 state->hidden.insert_fn(prim, state->hidden.insert_arg1, state->hidden.insert_arg2,
-                    state->hidden.insert_arg3, ot, &prim->depth);
+                    state->hidden.insert_arg3, ot, &distance_from_zero); /* 1.2 br_primitive has no depth */
                 continue;
             }
 
             bucket = calculate_bucket(ot, stored ? &stored->state : state, &distance_from_zero);
-            prim->depth = distance_from_zero;
             BrZsOrderTablePrimitiveInsert(ot, prim, bucket);
         } else {
             StoredGLRenderGroup(self, renderer, groupinfo);

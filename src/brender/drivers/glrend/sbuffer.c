@@ -1,3 +1,4 @@
+#include <string.h>
 /*
  * Stored buffer methods
  */
@@ -76,7 +77,53 @@ static br_error updateMemory(br_buffer_stored* self, br_pixelmap* pm) {
      * The pixelmap is a plain BRender memory pixelmap. Make sure that the pixels can be accessed
      */
     if ((pm->flags & BR_PMF_NO_ACCESS) || pm->pixels == NULL)
-        return BRE_FAIL;
+        do { static int lg; if (lg++ < 4) BrWarning("glrend: updateMemory fail at line %d for '%s' type %d flags %x pixels %p", __LINE__, pm->identifier ? pm->identifier : "?", pm->type, pm->flags, pm->pixels); return BRE_FAIL; } while (0);
+
+    if (pm->type == BR_PMT_RGBA_4444) {
+        /* port: ARGB4444 (alpha in the top nibble, as the 3Dfx path uses it), expanded on the
+         * CPU to RGBA8 so the same upload works on GL, GLES 3 and vitaGL */
+        br_uint_8* buffer = BrScratchAllocate(pm->width * pm->height * 4);
+        int x, y;
+        br_boolean has_alpha = BR_FALSE;
+
+        for (y = 0; y < pm->height; y++) {
+            const br_uint_16* src = (const br_uint_16*)((const br_uint_8*)pm->pixels + (pm->base_y + y) * pm->row_bytes) + pm->base_x;
+            br_uint_8* dst = buffer + y * pm->width * 4;
+            for (x = 0; x < pm->width; x++) {
+                br_uint_16 c = src[x];
+                dst[x * 4 + 0] = (br_uint_8)(((c >> 8) & 0xf) * 17);
+                dst[x * 4 + 1] = (br_uint_8)(((c >> 4) & 0xf) * 17);
+                dst[x * 4 + 2] = (br_uint_8)((c & 0xf) * 17);
+                dst[x * 4 + 3] = (br_uint_8)(((c >> 12) & 0xf) * 17);
+                if ((c >> 12) != 15) has_alpha = BR_TRUE;
+            }
+        }
+        if (self->gl_tex == 0) {
+            glGenTextures(1, &self->gl_tex);
+        }
+        glBindTexture(GL_TEXTURE_2D, self->gl_tex);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        /* These uploads are packed RGBA8/RGB565; VitaGL uses alignment1. */
+#ifndef __vita__
+        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+#endif
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, pm->width, pm->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
+        /* These uploads are packed RGBA8/RGB565; VitaGL uses alignment1. */
+#ifndef __vita__
+        glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+#endif
+        glGenerateMipmap(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D, 0);
+        BrScratchFree(buffer);
+        /* Fully opaque RGBA textures still belong in the opaque depth pass. */
+        self->blended = has_alpha;
+        self->paletted_source_dirty = BR_FALSE;
+        self->source = pm;
+        self->source_flags = pm->flags;
+        GL_CHECK_ERROR();
+        return BRE_OK;
+    }
 
     r = VIDEOI_BrPixelmapGetTypeDetails(pm->type, &internal_format, &format, &type, &elem_bytes, &self->blended);
     if (r != BRE_OK)
@@ -90,7 +137,7 @@ static br_error updateMemory(br_buffer_stored* self, br_pixelmap* pm) {
 
         BR_FATAL0("updateMemory path not implemented\n");
 
-        return BRE_FAIL;
+        do { static int lg; if (lg++ < 4) BrWarning("glrend: updateMemory fail at line %d for '%s' type %d flags %x pixels %p", __LINE__, pm->identifier ? pm->identifier : "?", pm->type, pm->flags, pm->pixels); return BRE_FAIL; } while (0);
     }
 
     if (self->gl_tex == 0) {
@@ -103,7 +150,7 @@ static br_error updateMemory(br_buffer_stored* self, br_pixelmap* pm) {
 
         if ((err = glGetError()) != 0) {
             BR_ERROR1("GLREND: glGenTextures() failed with %s", gl_strerror(err));
-            return BRE_FAIL;
+            do { static int lg; if (lg++ < 4) BrWarning("glrend: updateMemory fail at line %d for '%s' type %d flags %x pixels %p", __LINE__, pm->identifier ? pm->identifier : "?", pm->type, pm->flags, pm->pixels); return BRE_FAIL; } while (0);
         }
     }
 
@@ -118,13 +165,13 @@ static br_error updateMemory(br_buffer_stored* self, br_pixelmap* pm) {
     } else if (pm->type == BR_PMT_RGB_565) {
         glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, pm->width, pm->height, format, type, pm->pixels);
     } else {
-        return BRE_FAIL;
+        do { static int lg; if (lg++ < 4) BrWarning("glrend: updateMemory fail at line %d for '%s' type %d flags %x pixels %p", __LINE__, pm->identifier ? pm->identifier : "?", pm->type, pm->flags, pm->pixels); return BRE_FAIL; } while (0);
     }
 
     if ((err = glGetError()) != 0) {
         BR_FATAL1("GLREND: glTexImage2D() failed with %s", gl_strerror(err));
         glBindTexture(GL_TEXTURE_2D, 0);
-        return BRE_FAIL;
+        do { static int lg; if (lg++ < 4) BrWarning("glrend: updateMemory fail at line %d for '%s' type %d flags %x pixels %p", __LINE__, pm->identifier ? pm->identifier : "?", pm->type, pm->flags, pm->pixels); return BRE_FAIL; } while (0);
     }
 
     glGenerateMipmap(GL_TEXTURE_2D);
@@ -142,7 +189,10 @@ br_error BREND_CMETHOD_DECL(BREND_CLASS(br_buffer_stored_), update)(struct br_bu
     br_device* pm_device;
     (void)tv;
 
-    if (pm->pm_type != BR_PMT_INDEX_8 && pm->pm_type != BR_PMT_RGB_565) {
+    if (pm->pm_type != BR_PMT_INDEX_8 && pm->pm_type != BR_PMT_RGB_565 && pm->pm_type != BR_PMT_RGBA_4444) {
+        static int logged;
+        if (logged++ < 10)
+            BrWarning("glrend: texture '%s' type %d %dx%d unsupported", pm->pm_identifier ? pm->pm_identifier : "?", pm->pm_type, pm->pm_width, pm->pm_height);
         return BRE_FAIL;
     }
 

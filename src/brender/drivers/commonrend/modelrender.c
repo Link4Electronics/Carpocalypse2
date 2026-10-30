@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include "brassert.h"
 #include "drv.h"
 #include "formats.h"
@@ -6,6 +7,34 @@
 #include "video.h"
 #include "sbuffer.h"
 #include <string.h>
+#if defined(__vita__) && defined(BREND_DRIVER_GL)
+#include "../../../carma2/platform/sdl3/vita_perf.h"
+#define VPB(x) do { if (C2VitaPerfDetail) C2VitaPerfBegin(x); } while (0)
+#define VPE(x) do { if (C2VitaPerfDetail) C2VitaPerfEnd(x); } while (0)
+#else
+#define VPB(x) ((void)0)
+#define VPE(x) ((void)0)
+#endif
+#if defined(BREND_DRIVER_GL)
+#include "transparency.h"
+
+/* BRender front faces in GL window space (determined on the desktop port). */
+#define C2_GL_FRONT GL_CW
+#define C2_GL_FRONT_REVERSED GL_CCW
+/* Sign of det(mvp): a negative determinant (mirror view, flipped target) reverses the
+ * screen-space winding of every face. */
+static int mvp_reverses_winding(const br_matrix4* m) {
+    float a = m->m[0][0], b = m->m[0][1], c = m->m[0][2], d = m->m[0][3];
+    float e = m->m[1][0], f = m->m[1][1], g = m->m[1][2], h = m->m[1][3];
+    float i = m->m[2][0], j = m->m[2][1], k = m->m[2][2], l = m->m[2][3];
+    float n = m->m[3][0], o = m->m[3][1], p = m->m[3][2], q = m->m[3][3];
+    float det = (a * f - b * e) * (k * q - l * p) - (a * g - c * e) * (j * q - l * o)
+        + (a * h - d * e) * (j * p - k * o) + (b * g - c * f) * (i * q - l * n)
+        - (b * h - d * f) * (i * p - k * n) + (c * h - d * g) * (i * o - j * n);
+    return det < 0.f;
+}
+#endif
+#include "core/v1db/custsupt.h"
 
 /*
  * Per-group model render, shared by the glrend/sdl3gpurend drivers.
@@ -37,8 +66,13 @@ void StoredSDL3GPURENDRenderGroup(br_geometry_stored* self, br_renderer* rendere
     br_renderer_state_stored* default_state = groupinfo->default_state;
     shader_data_model model = {0};
 
+#if defined(__vita__) && defined(BREND_DRIVER_GL)
+    C2VitaPerfCount(C2VPC_GROUPS);
+#endif
     /* 1. Update the per-model cache (matrices and lights). */
+    VPB(C2VP_G_UPDATEMODEL);
     BREND_FN(State, UpdateModel)(cache, &renderer->state.current->matrix);
+    VPE(C2VP_G_UPDATEMODEL);
 
     /* 2. Copy matrices into the model UBO. */
     model.projection_brender = cache->model.p_br;
@@ -52,14 +86,22 @@ void StoredSDL3GPURENDRenderGroup(br_geometry_stored* self, br_renderer* rendere
     /* 3. Resolve the group's material state into state.current. The matrix in
      * state.current is left untouched so deferred (order-table) renders keep
      * the model's matrix that was snapshotted at insertion time. */
+    { static int dbg; if (dbg++ < 120)
+        BrLogPrintf("DBG grp %d cnt=%u stored=%p scm=%p dflt=%p dcm=%p\n",
+            dbg, (unsigned)groupinfo->count, (void*)stored,
+            stored ? (void*)stored->state.prim.colour_map : NULL,
+            (void*)default_state,
+            default_state ? (void*)default_state->state.prim.colour_map : NULL); }
+    VPB(C2VP_G_STATECOPY);
     if (stored) {
         BREND_FN(State, Copy)(renderer->state.current, &stored->state,
             MASK_STATE_SURFACE | MASK_STATE_PRIMITIVE | MASK_STATE_CULL);
-    } else {
+    } else if (default_state != NULL) {
         renderer->state.current->surface = default_state->state.surface;
         renderer->state.current->prim = default_state->state.prim;
         renderer->state.current->cull = default_state->state.cull;
     }
+    VPE(C2VP_G_STATECOPY);
 
     /* 4. The vertex shader adds clear_colour to every lit model when no direct
      * light exists; the game driver leaves it black. */
@@ -86,17 +128,57 @@ void StoredSDL3GPURENDRenderGroup(br_geometry_stored* self, br_renderer* rendere
         GLuint default_tex;
         if (stored) {
             default_tex = screen->asFront.tex_white;
-        } else if (groupinfo->default_state->state.prim.colour_map) {
+        } else if (groupinfo->default_state != NULL && groupinfo->default_state->state.prim.colour_map) {
             default_tex = groupinfo->default_state->state.prim.colour_map->gl_tex;
         } else {
-            default_tex = renderer->pixelmap->asFront.tex_white;
+            default_tex = screen->asFront.tex_white; /* port: renderer->pixelmap is a back buffer, not the screen */
         }
 
+        VPB(C2VP_G_PROPS);
+        /* port: also apply the material cull state (BRT_ONE_SIDED culls back faces, as the
+         * software renderer did); it was resolved above but never reached GL, so every face
+         * was rasterised two-sided. */
         StoredGLApplyProperties(hVideo, renderer->state.current,
-            MASK_STATE_PRIMITIVE | MASK_STATE_SURFACE, &model, default_tex);
-
-        glBufferData(GL_UNIFORM_BUFFER, sizeof(model), &model, GL_STATIC_DRAW);
-        glDrawElements(GL_TRIANGLES, groupinfo->count, GL_UNSIGNED_SHORT, groupinfo->offset);
+            MASK_STATE_PRIMITIVE | MASK_STATE_SURFACE | MASK_STATE_CULL, &model, default_tex);
+        glFrontFace(mvp_reverses_winding(&model.mvp) ? C2_GL_FRONT_REVERSED : C2_GL_FRONT);
+        VPE(C2VP_G_PROPS);
+        { static int skip = -1; /* port debug: C2_GL_SKIPUNTEX=1 skips untextured draws */
+            if (skip < 0) { const char* e = getenv("C2_GL_SKIPUNTEX"); skip = e != NULL && e[0] == '1'; }
+            if (skip && model.disable_texture) { glBindVertexArray(0); return; }
+        }
+        /* BrSetScreenZOffset (C2 custsupt): softrend adds gScreenZOffset to every screen z, in units
+         * of the 16-bit depth buffer. Car shadows (drawn before the track at offset 2) and other
+         * decals depend on it to win the depth test; one GL polygon offset unit is one step of the
+         * GL_DEPTH_COMPONENT16 buffer. */
+#ifdef __vita__
+        /* Vita: the GXM depth bias behind glPolygonOffset works in units of the 32-bit float depth
+         * buffer and pulled the car shadows (re-drawn ground faces) far in front of the cars, hiding
+         * their wheels and underside. Apply the softrend offset itself: N steps of a 16-bit buffer. */
+        model.depth_bias = gScreenZOffset * (2.f / 65535.f);
+        glDisable(GL_POLYGON_OFFSET_FILL);
+#else
+        if (gScreenZOffset != 0.f) {
+            glEnable(GL_POLYGON_OFFSET_FILL);
+            glPolygonOffset(0.f, gScreenZOffset);
+        } else {
+            glDisable(GL_POLYGON_OFFSET_FILL);
+        }
+#endif
+        /* A forced foreground draw must remain after the pending alpha surfaces. */
+        if (renderer->state.current->surface.force_front) GLFlushTransparent(renderer);
+        if (self->gl_primitive != GL_TRIANGLES || !GLQueueTransparent(renderer, groupinfo->group, &model)) {
+#ifdef __vita__
+            /* Per-draw uniforms are transient, not long-lived GPU geometry. */
+            VPB(C2VP_G_UBO);
+            glBufferData(GL_UNIFORM_BUFFER, sizeof(model), &model, GL_STREAM_DRAW);
+            VPE(C2VP_G_UBO);
+#else
+            glBufferData(GL_UNIFORM_BUFFER, sizeof(model), &model, GL_STATIC_DRAW);
+#endif
+            VPB(C2VP_G_DRAW);
+            glDrawElements(self->gl_primitive, groupinfo->count, GL_UNSIGNED_SHORT, groupinfo->offset);
+            VPE(C2VP_G_DRAW);
+        }
         GL_CHECK_ERROR();
     }
 #else
@@ -109,7 +191,16 @@ void StoredSDL3GPURENDRenderGroup(br_geometry_stored* self, br_renderer* rendere
 
         br_boolean blending_on = (renderer->state.current->prim.flags & PRIMF_BLEND) ||
             (renderer->state.current->prim.colour_map != NULL && renderer->state.current->prim.colour_map->blended);
-        br_boolean depth_off = renderer->state.current->surface.force_front || renderer->state.current->surface.force_back;
+        /* Match glrend: hardware depth testing is only valid when the scene
+         * actually supplied a depth output buffer. BrZbsSceneRenderBegin sets
+         * BRT_DEPTH_BUFFER_O to NULL (the Zs path relies on CPU hidden-surface
+         * sorting), and its geometry sits at the cleared depth, so testing
+         * against the depth attachment would reject every fragment. */
+        br_boolean depth_valid = BR_TRUE;
+        if (renderer->state.current->valid & BR_STATE_OUTPUT)
+            depth_valid = renderer->state.current->output.depth != NULL;
+        br_boolean depth_off = !depth_valid ||
+            renderer->state.current->surface.force_front || renderer->state.current->surface.force_back;
         br_boolean depth_le = renderer->state.current->prim.depth_test == BRT_LESS_OR_EQUAL;
 
         SDL_GPUGraphicsPipeline* pipeline = blending_on
@@ -228,6 +319,12 @@ void StoredSDL3GPURENDRenderGroup(br_geometry_stored* self, br_renderer* rendere
 
     /* 6. Tally scene stats. */
     renderer->scene_stats.face_group_count++;
+#if defined(BREND_DRIVER_GL)
+    if (self->gl_primitive == GL_LINES) {
+        renderer->scene_stats.vertices_rendered_count += groupinfo->count;
+        return;
+    }
+#endif
     renderer->scene_stats.triangles_rendered_count += groupinfo->group->nfaces;
     renderer->scene_stats.triangles_drawn_count += groupinfo->group->nfaces;
     renderer->scene_stats.vertices_rendered_count += groupinfo->group->nfaces * 3;

@@ -28,20 +28,6 @@ struct fmt_vertex {
 	br_int_8 _pad[PAD_SIZE];
 #endif
 };
-// This groups together all the faces with the same material.
-struct v11group {
-	void *stored;					/* Group material (or NULL) 			*/
-
-// This groups together all the faces with the same material.
-struct v11group {
-	void *stored;					/* Group material (or NULL) 			*/
-
-struct v11model {
-	br_size_t size;
-	br_uint_32 flags;
-	br_uint_16 ngroups;
-	br_vector3 pivot;
-
 
 struct fmt_vertex_x {
 	br_vector3_x p;			/* Point in model space				*/
@@ -150,24 +136,4 @@ struct v11model_f {
         float centred_radius;
 };
 #endif
-	// jeff: Added to avoid 64 bit issues in Carmageddon packing a br_material*
-	// into the br_colour `face_colours`. eek ;)
-	void* user;
-};
-
-//	struct fmt_vertex *vertices;	/* vertices in group					*/
-	br_vector3 * position;
-	br_vector2 * map;
-	br_vector3 * normal;
-    br_colour *vertex_colours;   	/* Colour for geometry				    */
-    br_uint_16 *vertex_user;        /* Per vertex user data                 */
-
-//	struct v11face *faces;  	 	/* faces in group						*/
-	br_vector3_u16 *vertex_numbers;
-	br_vector3_u16 *edges;
-	br_vector4 * eqn;
-    br_colour *face_colours;   		/* Colour for geometry				    */
-    br_uint_16 *face_user;          /* Per face user data                   */
-	br_uint_8 *face_flags;			/* Per face flags                       */
-
 #endif

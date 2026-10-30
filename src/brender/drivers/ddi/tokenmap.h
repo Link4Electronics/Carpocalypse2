@@ -68,25 +68,19 @@ enum {
 	BRTV_CONV_BOOL_TOKEN,
 
 	BRTV_CONV_BIT,
-	BRTV_CONV_NOT_BIT
-};
-/*
- * Template structure used to map token/values to a structure
- */
-typedef struct br_tv_template_entry {
-	br_token token;
-	BRTV_CONV_BIT,
-	BRTV_CONV_NOT_BIT
-};
+	BRTV_CONV_NOT_BIT,
 
-	char * name;
-    br_uintptr_t offset;
-	br_int_16 flags;
-	br_int_16 conv;
-    br_uintptr_t conv_arg;
-    br_uintptr_t mask;
-} br_tv_template_entry;
-
+#ifndef CARPOCALYPSE2_MATCHING
+	/*
+	 * Port-only: BRTV_CONV_COPY stores a 32-bit word, which truncates the
+	 * pointers the hardware drivers receive through their templates on 64-bit
+	 * hosts (BRT_OPENGL_CALLBACKS_P, BRT_SDL3GPU_CALLBACKS_P, the hidden-state
+	 * V1*_P pointers). tokenval.c implements this conversion as a full-width
+	 * pointer copy; the original 32-bit binary never needed it.
+	 */
+	BRTV_CONV_POINTER = 33,
+#endif
+};
 
 /*
  * Booleans are 32 bit at the moment
@@ -157,44 +151,5 @@ enum br_tv_flag {
 
 	BRTV_ABS		= 0x0008	/* 'offset' member of template contains value	*/
 };
-	BRTV_ABS		= 0x0008	/* 'offset' member of template contains value	*/
-};
-
-/*
- * Typedef for custom conversion function
- */
-typedef br_error BR_CALLBACK br_tv_custom_query_cbfn(br_value *pvalue, void **extra, br_size_t *pextra_size,
-	void *block, struct br_tv_template_entry *tep);
-typedef br_error BR_CALLBACK br_tv_custom_set_cbfn(void *block, br_value *pvalue, struct br_tv_template_entry *tep);
-typedef br_size_t BR_CALLBACK br_tv_custom_extra_size_cbfn(void *block, struct br_tv_template_entry *tep);
-
-
-typedef struct br_tv_custom {
-	br_tv_custom_query_cbfn *query;
-	br_tv_custom_set_cbfn *set;
-	br_tv_custom_extra_size_cbfn *extra_size;
-} br_tv_custom;
-
-	/*
-	 * Resource to which cache info gets attached (if it was attached directly
-	 * to template, then template could not be static)
-	 */
-	void *res;
-} br_tv_template;
-
-	br_boolean names_resolved;
-
-	br_tv_template_entry **map_query_entry;
-	br_tv_template_entry **map_set_entry;
-
-	/*
-	 * Cached mapping information
-	 */
-	br_int_32 map_base;
-	br_int_32 n_map_entries;
-
-typedef struct br_tv_template {
-	int n_entries;
-	struct br_tv_template_entry *entries;
 
 #endif

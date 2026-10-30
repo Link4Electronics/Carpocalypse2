@@ -272,17 +272,25 @@ vec3 lightingColourSpotAtten(in vec4 p, in vec4 n, in br_light alp)
 
 vec4 fragmain()
 {
-    if (num_lights == 0u || lighting == 0u) {
-        return surface_colour;
+    /* port: as in BRender 1.x, lighting a textured face modulates the texture's intensity;
+     * the material colour only applies to untextured faces */
+    vec4 base_colour = disable_texture ? surface_colour : vec4(1.0, 1.0, 1.0, surface_colour.a);
+
+    if (lighting == 0u) {
+        return base_colour;
+    }
+    if (num_lights == 0u) {
+        /* C2 shadows disable direct lights and darken the ground with ka. */
+        return vec4(clamp(base_colour.rgb * ka, 0.0, 1.0), base_colour.a);
     }
 
 #if DEBUG_DISABLE_LIGHTS
     return surface_colour;
 #else
 
-    vec3 _colour = surface_colour.xyz;
+    vec3 _colour = base_colour.xyz;
 
-    vec3 lightColour = vec3(0.0);
+    vec3 lightColour = vec3(ka); /* port: BRender 1.x ambient term (material ka) */
     vec3 directLightColour = vec3(0.0);
     directLightExists = false;
 
@@ -346,21 +354,23 @@ void main()
 
     position = model_view * pos;
     v_view_z = position.z;
-    normal = vec4(normalize(mat3(normal_matrix) * aNormal), 0);
+    /* port: some C2 models (road, sky) have zero normals; normalize(0) is NaN */
+    vec3 nrm = mat3(normal_matrix) * aNormal;
+    normal = vec4(dot(nrm, nrm) > 1e-12 ? normalize(nrm) : vec3(0.0), 0);
     uv = aUV;
 
-    if (lighting == 1u) {
-        if (prelit == 1u) {
-            colour = vec4(aColour.rgb, 1);
-        } else {
-            colour = fragmain();
-        }
+    if (prelit == 1u) {
+        colour = vec4(aColour.rgb, 1);
+    } else if (lighting == 1u) {
+        colour = fragmain();
+    } else {
+        colour = vec4(1.0);
     }
 
     rawPosition = aPosition;
     rawNormal   = aNormal;
 
-    if (!directLightExists && num_lights > 0u && lighting == 1u) {
+    if (!directLightExists && num_lights > 0u && lighting == 1u && prelit == 0u) {
         colour += vec4(clear_colour.rgb, 0.0);
     }
 

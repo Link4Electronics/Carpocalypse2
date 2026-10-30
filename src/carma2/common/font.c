@@ -27,6 +27,28 @@
 
 #include <string.h>
 
+#ifndef CARPOCALYPSE2_MATCHING
+static void DumpFontPixmap(const char* tag, br_pixelmap* pm) {
+    static int n;
+    char path[160];
+    FILE* f;
+    int x, y;
+    if (n > 80 || pm == NULL || pm->pixels == NULL) return;
+    snprintf(path, sizeof(path), "/tmp/opencode/font_%s_%d.ppm", tag, n++);
+    f = fopen(path, "wb");
+    if (f == NULL) return;
+    fprintf(f, "P6\n%d %d\n255\n", pm->width, pm->height);
+    for (y = 0; y < pm->height; y++) {
+        for (x = 0; x < pm->width; x++) {
+            unsigned short v = *(unsigned short*)((char*)pm->pixels + y * pm->row_bytes + x * 2);
+            unsigned char rgb[3] = { (unsigned char)(((v >> 8) & 0xF) * 17), (unsigned char)(((v >> 4) & 0xF) * 17), (unsigned char)((v & 0xF) * 17) };
+            fwrite(rgb, 1, 3, f);
+        }
+    }
+    fclose(f);
+}
+#endif
+
 #define POLYFONT_MATERIAL_STORE_PROPS(MATERIAL, CHARACTER, FONTIDX, COUNTER)  do { (MATERIAL)->user = (void*)(uintptr_t)((CHARACTER) | ((FONTIDX) << 8) | ((COUNTER) << 16)); } while (0)
 #define POLYFONT_MATERIAL_GET_CHARACTER(MATERIAL) ((((uintptr_t)(MATERIAL)->user) >> 0) & 0xff)
 #define POLYFONT_MATERIAL_GET_FONTIDX(MATERIAL) ((((uintptr_t)(MATERIAL)->user) >> 8) & 0xff)
@@ -986,6 +1008,10 @@ void C2_HOOK_FASTCALL CreatePolyFont(const char* pName, int pSize, int pIndex) {
                         0, 0,
                         pSize, pSize);
                 BrMapUpdate(gTexture_maps[gSize_font_texture_pages], BR_MAPU_ALL);
+#ifndef CARPOCALYPSE2_MATCHING
+                DumpFontPixmap("page", gTexture_maps[gSize_font_texture_pages]);
+                DumpFontPixmap("glyph", map);
+#endif
                 gPoly_fonts[pIndex].glyphs[ascii].index = gSize_font_texture_pages;
                 gPoly_fonts[pIndex].glyphs[ascii].used = 1;
                 BrVector2Set(&gPoly_fonts[pIndex].glyphs[ascii].texCoord, (float) tex_x / 64.0f, (float)tex_y  / 64.0f);

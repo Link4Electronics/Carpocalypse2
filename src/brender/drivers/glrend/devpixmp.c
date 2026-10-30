@@ -26,7 +26,11 @@ static br_error custom_query(br_value* pvalue, void** extra, br_size_t* pextra_s
         if (self->use_type == BRT_OFFSCREEN)
             pvalue->u32 = self->asBack.glTex;
         else if (self->use_type == BRT_DEPTH)
+#ifdef __vita__
+            pvalue->u32 = 0; /* Native renderbuffer is not a sampled texture. */
+#else
             pvalue->u32 = self->asDepth.glDepth;
+#endif
         else
             pvalue->u32 = 0;
 
@@ -50,9 +54,9 @@ static struct br_tv_template_entry devicePixelmapTemplateEntries[] = {
     { BRT(WIDTH_I32), F(pm_width), BRTV_QUERY | BRTV_ALL, BRTV_CONV_I32_U16, 0 },
     { BRT(HEIGHT_I32), F(pm_height), BRTV_QUERY | BRTV_ALL, BRTV_CONV_I32_U16, 0 },
     { BRT(PIXEL_TYPE_U8), F(pm_type), BRTV_QUERY | BRTV_ALL, BRTV_CONV_I32_U8, 0 },
-    { BRT(OUTPUT_FACILITY_O), F(output_facility), BRTV_QUERY | BRTV_ALL, BRTV_CONV_COPY, 0 },
-    { BRT(FACILITY_O), F(output_facility), BRTV_QUERY, BRTV_CONV_COPY, 0 },
-    { BRT(IDENTIFIER_CSTR), F(pm_identifier), BRTV_QUERY | BRTV_ALL, BRTV_CONV_COPY, 0 },
+    { BRT(OUTPUT_FACILITY_O), F(output_facility), BRTV_QUERY | BRTV_ALL, BRTV_CONV_POINTER, 0 },
+    { BRT(FACILITY_O), F(output_facility), BRTV_QUERY, BRTV_CONV_POINTER, 0 },
+    { BRT(IDENTIFIER_CSTR), F(pm_identifier), BRTV_QUERY | BRTV_ALL, BRTV_CONV_POINTER, 0 },
     { BRT(MSAA_SAMPLES_I32), F(msaa_samples), BRTV_QUERY | BRTV_ALL, BRTV_CONV_COPY, 0 },
     { DEV(OPENGL_TEXTURE_U32), 0, BRTV_QUERY | BRTV_ALL, BRTV_CONV_CUSTOM, (br_uintptr_t)&custom },
 };
@@ -64,7 +68,19 @@ static struct br_tv_template_entry devicePixelmapTemplateEntries[] = {
  * kept commented out for reference.
  */
 void BREND_FN(DevicePixelmap, DeleteResources)(br_device_pixelmap* self) {
-    (void)self;
+    if (self->use_type == BRT_DEPTH) {
+#ifdef __vita__
+        glDeleteRenderbuffers(1, &self->asDepth.glDepth);
+#else
+        glDeleteTextures(1, &self->asDepth.glDepth);
+#endif
+        self->asDepth.glDepth = 0;
+    } else if (self->use_type == BRT_OFFSCREEN) {
+        glDeleteFramebuffers(1, &self->asBack.glFbo);
+        glDeleteTextures(1, &self->asBack.glTex);
+        self->asBack.glFbo = 0;
+        self->asBack.glTex = 0;
+    }
 
     //BrLogPrintf("GLREND: Freeing %s", self->pm_identifier);
 
@@ -215,9 +231,9 @@ br_error BREND_CMETHOD_DECL(BREND_CLASS(br_device_pixelmap_), match)(br_device_p
     pm->pm_base_y = 0;
     pm->sub_pixelmap = 0;
     if (mt.use_type == BRT_OFFSCREEN) {
-        // pm->asBack.depthbuffer = NULL;
-        // glGenFramebuffers(1, &pm->asBack.glFbo);
+        pm->root = pm; /* FBO created by RecreateRenderBuffers */
     } else {
+        pm->root = self->root != NULL ? self->root : self;
         ASSERT(mt.use_type == BRT_DEPTH);
         self->asBack.depthbuffer = pm;
         pm->asDepth.backbuffer = self;
@@ -228,6 +244,14 @@ br_error BREND_CMETHOD_DECL(BREND_CLASS(br_device_pixelmap_), match)(br_device_p
         BREND_FN(DevicePixelmap, DeleteResources)(pm);
         BrResFreeNoCallback(pm);
         return BRE_FAIL;
+    }
+
+    /* port: like the 3Dfx back buffer, the game may write pixels without locking
+     * (headup text): keep the CPU overlay mapped all the time */
+    if (mt.use_type == BRT_OFFSCREEN) {
+        GLBackEnsureOverlay(pm);
+        pm->pm_pixels = pm->asBack.lockedPixels;
+        pm->pm_flags &= ~BR_PMF_NO_ACCESS;
     }
 
     /*
@@ -242,134 +266,16 @@ br_error BREND_CMETHOD_DECL(BREND_CLASS(br_device_pixelmap_), match)(br_device_p
     return BRE_OK;
 }
 
+br_error GLBackRectangleFill(br_device_pixelmap* self, br_rectangle* rect, br_uint_32 colour);
+br_error GLBackRectangleCopy(br_device_pixelmap* self, br_point* p, br_device_pixelmap* src, br_rectangle* sr);
 br_error BREND_CMETHOD_DECL(BREND_CLASS(br_device_pixelmap_), rectangleFill)(br_device_pixelmap* self, br_rectangle* rect, br_uint_32 colour) {
-    br_uint_8* px8;
-    br_uint_16* px16;
-
-    // TODO: handle the colour format correctly
-    br_rectangle rr;
-    // if(PixelmapRectangleClip(&rr, rect, (br_pixelmap *)self) == BR_CLIP_REJECT)
-    // 	return BRE_OK;
-
-    // rr.x = self->pm_base_x + rr.x;
-    // rr.y = self->pm_base_y + rr.y;
-    // rr.w = self->pm_base_x + rr.x + rr.w;
-    // rr.y self->pm_base_y + rr.y + rr.h
-
-    VIDEOI_BrRectToGL((br_pixelmap*)self, rect);
-
-    if (self->use_type == BRT_OFFSCREEN) {
-        if (self->pm_pixels != NULL) {
-            switch (self->pm_type) {
-            case BR_PMT_INDEX_8: {
-                int stride = self->pm_row_bytes;
-                int base_y = self->pm_base_y;
-                int base_x = self->pm_base_x;
-                px8 = self->pm_pixels;
-                br_uint_8 index = colour & 0xFF;
-                for (int y = rect->y; y < rect->y + rect->h; y++) {
-                    for (int x = rect->x; x < rect->x + rect->w; x++) {
-                        px8[(y + base_y) * stride + (x + base_x)] = index;
-                    }
-                }
-                break;
-            }
-
-            case BR_PMT_RGB_565: {
-                int stride = self->pm_row_bytes / 2;
-                int base_y = self->pm_base_y;
-                int base_x = self->pm_base_x;
-                px16 = self->pm_pixels;
-                br_uint_16 rgb565 = (br_uint_16)(((BR_RED(colour) >> 3) << 11) | ((BR_GRN(colour) >> 2) << 5) | (BR_BLU(colour) >> 3));
-                for (int y = rect->y; y < rect->y + rect->h; y++) {
-                    for (int x = rect->x; x < rect->x + rect->w; x++) {
-                        px16[(y + base_y) * stride + (x + base_x)] = rgb565;
-                    }
-                }
-                break;
-            }
-
-            default:
-                return BRE_UNSUPPORTED;
-            }
-        }
-        else {
-            //glBindFramebuffer(GL_FRAMEBUFFER, self->asBack.glFbo);
-            //glClearColor(colour & 0xff, colour & 0xff, colour & 0xff, 0xff);
-            glClear(GL_COLOR_BUFFER_BIT);
-            //glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        }
-    } else if (self->use_type == BRT_DEPTH) {
-        //glBindFramebuffer(GL_FRAMEBUFFER, self->asBack.depthbuffer->asBack.glFbo);
-        glClear(GL_DEPTH_BUFFER_BIT);
-    } else {
-        return BRE_UNSUPPORTED;
-    }
-
-    GL_CHECK_ERROR();
-    return BRE_OK;
+    return GLBackRectangleFill(self, rect, colour); /* backbuf.c */
 }
 
+br_error GLBackRectangleCopyTo(br_device_pixelmap* self, br_point* p, br_device_pixelmap* src, br_rectangle* sr);
 br_error BREND_CMETHOD_DECL(BREND_CLASS(br_device_pixelmap_), rectangleCopyTo)(br_device_pixelmap* self, br_point* p,
     br_device_pixelmap* src, br_rectangle* sr) {
-    /* Pixelmap->Device, addressable same-size copy. */
-
-    p->x = -self->pm_origin_x;
-    p->y = -self->pm_origin_y;
-    sr->x = -src->pm_origin_x;
-    sr->y = -src->pm_origin_y;
-
-    glBindTexture(GL_TEXTURE_2D, self->asBack.glTex);
-
-    switch (src->pm_type) {
-
-    case BR_PMT_RGB_565: {
-        br_uint_16* buffer = BrScratchAllocate(sizeof(uint16_t) * sr->w * sr->h);
-        br_uint_16* buffer_ptr = buffer;
-        br_uint_16* src_px = src->pm_pixels;
-        for (int y = sr->y; y < sr->y + sr->h; y++) {
-            for (int x = sr->x; x < sr->x + sr->w; x++) {
-                br_uint_16 c = src_px[y * src->pm_row_bytes / 2 + x];
-                *buffer_ptr = c;
-                buffer_ptr++;
-            }
-        }
-        glTexSubImage2D(GL_TEXTURE_2D, 0, p->x, p->y, sr->w, sr->h, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, buffer);
-        BrScratchFree(buffer);
-        break;
-    }
-    case BR_PMT_INDEX_8: {
-        uint32_t* buffer = BrScratchAllocate(sizeof(uint32_t) * sr->w * sr->h);
-        char* src_px = src->pm_pixels;
-        uint32_t* map;
-        if (src->pm_map) {
-            map = src->pm_map->pixels;
-        } else {
-            map = ObjectDevice(self)->clut->entries;
-        }
-        for (int y = sr->y; y < sr->y + sr->h; y++) {
-            for (int x = sr->x; x < sr->x + sr->w; x++) {
-                int index = src_px[y * src->pm_row_bytes + x];
-                uint8_t* dst = (uint8_t*)buffer + ((y - sr->y) * sr->w + (x - sr->x)) * 4;
-                dst[0] = BR_RED(map[index]);
-                dst[1] = BR_GRN(map[index]);
-                dst[2] = BR_BLU(map[index]);
-                dst[3] = 0xff;
-            }
-        }
-        glTexSubImage2D(GL_TEXTURE_2D, 0, p->x, p->y, sr->w, sr->h, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
-        BrScratchFree(buffer);
-        break;
-    }
-    default:
-        ASSERT(0);
-    }
-
-    glBindTexture(GL_TEXTURE_2D, 0);
-
-    GL_CHECK_ERROR();
-
-    return BRE_OK;
+    return GLBackRectangleCopyTo(self, p, src, sr); /* backbuf.c */
 }
 
 /*
@@ -530,7 +436,7 @@ br_error BR_CMETHOD(br_device_pixelmap_gl, text)(br_device_pixelmap* self, br_po
     float rx, ry;
     GLint prevProgram, prevViewport[4];
     GLboolean blendEnabled, depthEnabled;
-    GLint prevTexture;
+    GLint prevTexture, prevFramebuffer;
     int count;
     const unsigned char* s;
 
@@ -567,8 +473,16 @@ br_error BR_CMETHOD(br_device_pixelmap_gl, text)(br_device_pixelmap* self, br_po
     glGetIntegerv(GL_TEXTURE_BINDING_2D, &prevTexture);
 
     /* Text is addressed in game pixels, like the scene output. */
-    BREND_FN(DevicePixelmap, GetViewport)(self->screen, &vx, &vy, &rx, &ry);
-    glViewport(vx, vy, (GLsizei)(self->pm_width * rx), (GLsizei)(self->pm_height * ry));
+    glGetIntegerv(GL_FRAMEBUFFER_BINDING,&prevFramebuffer);
+    if (self->use_type == BRT_OFFSCREEN) {
+        int vw,vh;
+        GLBackBindTarget(self);
+        GLBackViewport(self,&vx,&vy,&vw,&vh);
+        glViewport(vx,vy,vw,vh);
+    } else {
+        BREND_FN(DevicePixelmap, GetViewport)(self->screen, &vx, &vy, &rx, &ry);
+        glViewport(vx,vy,(GLsizei)(self->pm_width*rx),(GLsizei)(self->pm_height*ry));
+    }
 
     glUseProgram(hVideo->textProgram.program);
     glUniform4f(hVideo->textProgram.uTextColour, colour4[0], colour4[1], colour4[2], colour4[3]);
@@ -664,6 +578,7 @@ br_error BR_CMETHOD(br_device_pixelmap_gl, text)(br_device_pixelmap* self, br_po
     glBindVertexArray(0);
     glBindTexture(GL_TEXTURE_2D, 0);
     glUseProgram(prevProgram);
+    glBindFramebuffer(GL_FRAMEBUFFER,prevFramebuffer);
     glViewport(prevViewport[0], prevViewport[1], prevViewport[2], prevViewport[3]);
     if (blendEnabled)
         glEnable(GL_BLEND);
@@ -679,68 +594,23 @@ br_error BR_CMETHOD(br_device_pixelmap_gl, text)(br_device_pixelmap* self, br_po
 }
 
 br_error BREND_CMETHOD_DECL(BREND_CLASS(br_device_pixelmap_), flush)(br_device_pixelmap* self) {
-    int err;
-    GLint gl_internal_format;
-    GLenum gl_format, gl_type;
-    GLsizeiptr gl_elem_bytes;
-
-    if (!self->asBack.possiblyDirty) {
-        return BRE_OK;
-    }
-
-    err = VIDEOI_BrPixelmapGetTypeDetails(self->pm_type, &gl_internal_format, &gl_format, &gl_type, &gl_elem_bytes, NULL);
-    if (err != BRE_OK)
-        return err;
-
-    glBindTexture(GL_TEXTURE_2D, self->asBack.overlayTexture);
-    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, self->pm_width, self->pm_height, gl_format, gl_type, self->asBack.lockedPixels);
-
-    // render locked pixels to framebuffer texture, ignoring purple pixels
-    RenderFullScreenTextureToFrameBuffer(self->screen, self->asBack.overlayTexture, 0, 0, 1);
-
-    // reset pixels back to gamedev purple
-
-    switch (self->pm_type) {
-    case BR_PMT_RGB_565:
-        _MemFill_A(self->asBack.lockedPixels, 0, self->pm_width * self->pm_height, 2, BR_COLOUR_565(31, 0, 31));
-        break;
-    default:
-        ASSERT(0);
-    }
-
-    self->asBack.possiblyDirty = 0;
-
-    glBindTexture(GL_TEXTURE_2D, 0);
-
-    GL_CHECK_ERROR();
+    GLBackFlushOverlay(self); /* backbuf.c */
     return BRE_OK;
 }
 
 br_error BREND_CMETHOD_DECL(BREND_CLASS(br_device_pixelmap_), directLock)(br_device_pixelmap* self, br_boolean block) {
-    GLint gl_internal_format;
-    GLenum gl_format, gl_type;
-    GLsizeiptr gl_elem_bytes;
+    br_device_pixelmap* root = self->root != NULL ? self->root : self;
+    (void)block;
 
-    ASSERT(self->pm_pixels == NULL);
-    ASSERT(self->use_type == BRT_OFFSCREEN);
+    if (self->use_type != BRT_OFFSCREEN)
+        return BRE_FAIL;
 
-    if (self->asBack.overlayTexture == 0) {
-        VIDEOI_BrPixelmapGetTypeDetails(self->pm_type, &gl_internal_format, &gl_format, &gl_type, &gl_elem_bytes, NULL);
-        glGenTextures(1, &self->asBack.overlayTexture);
-        glBindTexture(GL_TEXTURE_2D, self->asBack.overlayTexture);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexImage2D(GL_TEXTURE_2D, 0, gl_internal_format, self->pm_width, self->pm_height, 0, gl_format, gl_type, NULL);
-        self->asBack.lockedPixels = BrMemAllocate(self->pm_height * self->pm_row_bytes, BR_MEMORY_PIXELS);
-    }
-
-    self->pm_pixels = self->asBack.lockedPixels;
-
+    GLBackEnsureOverlay(root);
+    /* sub-pixelmaps address the root's pixels through pm_base_x/y */
+    self->pm_pixels = root->asBack.lockedPixels;
+    self->pm_row_bytes = root->pm_width * 2;
     self->asBack.locked = 1;
-    self->asBack.possiblyDirty = 1;
-
-    GL_CHECK_ERROR();
-
+    root->asBack.possiblyDirty = 1;
     return BRE_OK;
 }
 
@@ -786,7 +656,7 @@ static const struct br_device_pixelmap_dispatch devicePixelmapDispatch = {
 
     ._rectangle = BR_CMETHOD_REF(br_device_pixelmap_gen, rectangle),
     ._rectangle2 = BR_CMETHOD_REF(br_device_pixelmap_gen, rectangle2),
-    ._rectangleCopy = BREND_CMETHOD_REF(BREND_CLASS(br_device_pixelmap_), rectangleCopy),
+    ._rectangleCopy = GLBackRectangleCopy, /* backbuf.c */
     ._rectangleCopyTo = BREND_CMETHOD_REF(BREND_CLASS(br_device_pixelmap_), rectangleCopyTo),
     ._rectangleCopyFrom = BR_CMETHOD_REF(br_device_pixelmap_gl, rectangleCopyFrom),
     ._rectangleStretchCopy = BREND_CMETHOD_REF(BREND_CLASS(br_device_pixelmap_), rectangleStretchCopy),
@@ -813,7 +683,5 @@ static const struct br_device_pixelmap_dispatch devicePixelmapDispatch = {
     ._flush = BREND_CMETHOD_REF(BREND_CLASS(br_device_pixelmap_), flush),
     ._synchronise = BR_CMETHOD_REF(br_device_pixelmap_fail, synchronise),
     ._directLock = BREND_CMETHOD_REF(BREND_CLASS(br_device_pixelmap_), directLock),
-    ._directUnlock = BREND_CMETHOD_REF(BREND_CLASS(br_device_pixelmap_), directUnlock),
-    ._getControls = BR_CMETHOD_REF(br_device_pixelmap_fail, getControls),
-    ._setControls = BR_CMETHOD_REF(br_device_pixelmap_fail, setControls)
+    ._directUnlock = BREND_CMETHOD_REF(BREND_CLASS(br_device_pixelmap_), directUnlock)
 };

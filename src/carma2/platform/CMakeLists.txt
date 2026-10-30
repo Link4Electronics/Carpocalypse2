@@ -58,6 +58,8 @@ elseif(CARPOCALYPSE2_PLATFORM_SDL3)
         sdl3/main.c
         sdl3/sdl3.c
         sdl3/sdl3.h
+        sdl3/sdl3_hwrend.c
+        sdl3/sdl3_hwrend.h
         sdl3/sdl3_input.c
         sdl3/sdl3_input.h
         sdl3/sdl3_audio.c
@@ -69,6 +71,15 @@ elseif(CARPOCALYPSE2_PLATFORM_SDL3)
         sdl3/sdl3_ssdx.h
     )
     target_link_libraries(c2_platform PRIVATE SDL3::SDL3)
+    if(NOT CARPOCALYPSE2_MATCHING)
+        # BRender hardware drivers for the retail 3dfx path. sdl3gpurend is the
+        # default; glrend is opt-in with C2_RENDERER=gl. Both share
+        # drivers/commonrend.
+        target_link_libraries(c2_platform PRIVATE
+            BRender::Drivers::SDL3GPUREND
+            BRender::Drivers::GLRend
+        )
+    endif()
     if(WIN32)
         target_link_libraries(c2_platform PRIVATE ws2_32)
     endif()

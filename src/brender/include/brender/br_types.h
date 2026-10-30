@@ -668,6 +668,9 @@ typedef enum br_token {
     BRT_VERTICES_RENDERED_COUNT_U32 = 491,
     BRT_WINDOW_MONITOR_I32 = 492,
     BRT_YON_Z_F = 493,
+    /* port only: tokens used by the SDL3 GPU driver */
+    BRT_SDL3GPU_CALLBACKS_P = 494,
+    BRT_SDL3GPU_DEBUG_MODE = 495,
     BRT_YON_Z_X = 494,
     BRT_AMBIENT = 495,
     _BRT_LAST_BUILTIN_TOKEN = BRT_AMBIENT,
