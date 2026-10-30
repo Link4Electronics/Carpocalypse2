@@ -23,6 +23,9 @@
 #include "physics.h"
 #include "piping.h"
 #include "platform.h"
+
+#include "raycast.h"
+
 #include "shrapnel.h"
 #include "skidmark.h"
 #include "smashing.h"
@@ -39,6 +42,15 @@
 #include "carpocalypse2_types.h"
 
 #include <math.h>
+
+#include <stdlib.h>
+
+// GLOBAL: CARMA2_HW 0x0058abf0
+const double gDOUBLE_0058abf0 = 0.45;
+
+// GLOBAL: CARMA2_HW 0x0058abf8
+const double gDOUBLE_0058abf8 = 0.99;
+
 extern float gPedestrian_speed_factor;
 extern int gExploding_pedestrians;
 extern int gPed_dismemberfest;
@@ -56,8 +68,35 @@ const double gDouble_0058abe0 = 6.9;
 // GLOBAL: CARMA2_HW 0x0058abe8
 const double gDouble_0058abe8 = 6.283185307179586;
 
+// GLOBAL: CARMA2_HW 0x0058ac10
+const float gFLOAT_0058ac10 = 2.384185791015625e-7f;
+
+// GLOBAL: CARMA2_HW 0x0058ac18
+const double gDOUBLE_0058ac18 = 1.0;
+
+// GLOBAL: CARMA2_HW 0x0058ac20
+const float gFLOAT_0058ac20 = 1.0f;
+
+// GLOBAL: CARMA2_HW 0x0058ac48
+const double gDOUBLE_0058ac48 = 1.4285714285714286;
+
+// GLOBAL: CARMA2_HW 0x0058ac40
+const float gFLOAT_0058ac40 = 0.1f;
+
+// GLOBAL: CARMA2_HW 0x0058ac8c
+const float gFLOAT_0058ac8c = 25.0f;
+
+// GLOBAL: CARMA2_HW 0x0058ac88
+const float gFLOAT_0058ac88 = 0.025f;
+
+// GLOBAL: CARMA2_HW 0x0058ac80
+const double gDOUBLE_0058ac80 = 0.1;
+
 // GLOBAL: CARMA2_HW 0x0058ac00
 const float gFLOAT_0058ac00 = 0.5f;
+
+// GLOBAL: CARMA2_HW 0x0058ac0c
+const float gFLOAT_0058ac0c = 0.0f;
 
 // GLOBAL: CARMA2_HW 0x0058ac50
 const float gBounce_rate_const = 1000.0f;
@@ -104,6 +143,9 @@ const double gDOUBLE_0058ac60 = -1000.0;
 // GLOBAL: CARMA2_HW 0x0058ac68
 const double gDOUBLE_0058ac68 = 0.15;
 
+// GLOBAL: CARMA2_HW 0x0058ac78
+const double gDOUBLE_0058ac78 = 1000.0;
+
 // GLOBAL: CARMA2_HW 0x0058ac70
 const double gDOUBLE_0058ac70 = -0.15;
 
@@ -135,6 +177,9 @@ tPowerup_respawn_spec* gPowerup_respawn_specs;
 // GLOBAL: CARMA2_HW 0x006a0ad8
 void* gDrug_trip_data;
 
+// GLOBAL: CARMA2_HW 0x0075d33c
+int gPowerup_net_state[56];
+
 static void C2_HOOK_FASTCALL PaletteFuckedUpByDrugs(br_pixelmap* pPixelmap, int pOffset) {
     int i;
     tU32* dst;
@@ -152,8 +197,75 @@ static void C2_HOOK_FASTCALL PaletteFuckedUpByDrugs(br_pixelmap* pPixelmap, int 
     }
 }
 
+// FUNCTION: CARMA2_HW 0x004dedf0
+void C2_HOOK_FASTCALL SendCurrentPowerups(void) {
+    tCar_spec* car;
+    tNet_message_chunk* message;
+    int locals[3];
+    int player_id;
+    int net_player_index;
+    int powerup_index;
+    int* powerup_time;
+    int current_time;
+    tNet_game_player_info* net_player;
+
+    player_id = locals[2];
+    locals[1] = 0;
+    do {
+        locals[0] = locals[1] == 0 ? 1 : GetCarCount(locals[1]);
+        locals[2] = 0;
+        if (locals[0] > 0) {
+            do {
+                if (locals[1] == 0) {
+                    car = &gProgram_state.current_car;
+                } else {
+                    car = GetCarSpec(locals[1], locals[2]);
+                }
+                net_player_index = 0;
+                if (gNumber_of_net_players > 0) {
+                    net_player = gNet_players;
+                    while (net_player_index < gNumber_of_net_players) {
+                        if (net_player->car == car) {
+                            player_id = gNet_players[net_player_index].ID;
+                            break;
+                        }
+                        net_player_index++;
+                        net_player++;
+                    }
+                }
+                powerup_index = 0;
+                if (gNumber_of_powerups > 0) {
+                    powerup_time = car->powerups;
+                    do {
+                        if (*powerup_time != 0) {
+                            message = NetStartBroadcastContents(eNet_message_chunk_type_powerup, 0);
+                            if (message != NULL) {
+                                message->powerup.field_0x10 = 1;
+                                message->powerup.player_id = player_id;
+                                message->powerup.powerup_index = powerup_index;
+                                current_time = GetTotalTime();
+                                message->powerup.time_remaining = *powerup_time - current_time;
+                                NetBroadcastContents(message);
+                            }
+                        }
+                        powerup_index++;
+                        powerup_time++;
+                    } while (powerup_index < gNumber_of_powerups);
+                }
+                locals[2]++;
+            } while (locals[2] < locals[0]);
+        }
+        locals[1]++;
+    } while (locals[1] <= 1);
+}
+
 // GLOBAL: CARMA2_HW 0x006a0a68
 int gPissed_next_time;
+
+// Amplitudes, periods, and phase offsets, each with twelve reserved slots.
+
+// GLOBAL: CARMA2_HW 0x00705be4
+float gPissed_flicker[36];
 
 // GLOBAL: CARMA2_HW 0x00705c14
 float gPissed_flicker_frames[2];
@@ -1131,16 +1243,16 @@ void C2_HOOK_FASTCALL FillInMine(tNet_message_chunk* pChunk, tShit_mine* pMine, 
 
 #ifndef CARPOCALYPSE2_MATCHING
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tNet_message_chunk, mine_explode.mine_index, 0x2);
-    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tNet_message_chunk, mine_explode.field_0x3, 0x3);
-    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tNet_message_chunk, mine_explode.field_0x4, 0x4);
-    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tNet_message_chunk, mine_explode.field_0x5, 0x5);
+    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tNet_message_chunk, mine_explode.owner_index, 0x3);
+    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tNet_message_chunk, mine_explode.powerup_index, 0x4);
+    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tNet_message_chunk, mine_explode.player_index, 0x5);
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tNet_message_chunk, mine_explode.field_0x8, 0x8);
 #endif
 
     pChunk->mine_explode.mine_index = pMine - gShit_mines;
-    pChunk->mine_explode.field_0x3 = pMine->field_0x35;
-    pChunk->mine_explode.field_0x4 = pMine->field_0x34;
-    pChunk->mine_explode.field_0x5 = NetPlayerFromCar(pMine->field_0x30) - gNet_players;
+    pChunk->mine_explode.owner_index = pMine->field_0x35;
+    pChunk->mine_explode.powerup_index = pMine->field_0x34;
+    pChunk->mine_explode.player_index = NetPlayerFromCar(pMine->field_0x30) - gNet_players;
     pChunk->mine_explode.field_0x8 = pArg3;
     GetHierarchyNetworkStuff(pMine->collision_info, pChunk->mine_explode.object_hierarchy, NET_OBJECT_HIERARCHY_DEFAULT_SIZE);
 }
@@ -1193,10 +1305,73 @@ int C2_HOOK_FASTCALL CarVulnerableByMine(tCar_spec* pCar) {
     return 1;
 }
 
-// UNLABELED: CARMA2_HW 0x004ddc20
-void C2_HOOK_FASTCALL FUN_004ddc20(tPhysics_object* pObject1, tPhysics_object* pObject2, float pImpulse) {
+// FUNCTION: CARMA2_HW 0x004ddc20
+void C2_HOOK_FASTCALL CollideShitMine(tPhysics_object* pObject1, tPhysics_object* pObject2, float pCollision_speed) {
+    tShit_mine* mine;
+    tPhysics_object* other_object;
+    tCar_spec* car;
+    void* other_owner;
+    tNet_game_player_info* net_player;
 
-    NOT_IMPLEMENTED();
+    mine = NULL;
+    other_object = NULL;
+    if (gNet_mode == 3) {
+        return;
+    }
+    if (pObject1 != NULL && pObject1->flags_0x238 == '@') {
+        mine = (tShit_mine*)pObject1->owner;
+        other_object = pObject2;
+        if (mine->flags & 0x20) {
+            return;
+        }
+    } else if (pObject2 != NULL && pObject2->flags_0x238 == '@') {
+        mine = (tShit_mine*)pObject2->owner;
+        other_object = pObject1;
+        if (mine->flags & 0x20) {
+            return;
+        }
+    }
+    if (mine != NULL && other_object != NULL) {
+        other_owner = other_object->owner;
+        car = (tCar_spec*)other_owner;
+        if (other_owner == NULL || other_object->flags_0x238 != 1) {
+            car = NULL;
+        }
+        if (car == NULL || car->driver == 0 || (car->driver != 4 && car->driver != 2 && car->driver != 3)
+                || (*(tU32*)((tU8*)car + 0x100) & 0x10000) == 0) {
+            if (other_object->flags_0x238 == '@') {
+                ((tShit_mine*)other_owner)->flags |= 0x20;
+                return;
+            }
+            if (other_owner == NULL || other_object->flags_0x238 != 1
+                    || ((((tCar_spec*)other_owner)->driver != 0
+                            && (((tCar_spec*)other_owner)->driver == 2 || ((tCar_spec*)other_owner)->driver == 3))
+                        || ((tCar_spec*)other_owner)->driver <= 5)) {
+                FUN_004d9d00(other_object, 0);
+                mine->flags |= 0x20;
+                return;
+            }
+            if (car->field_0x4c8 <= gDOUBLE_0058ac18
+                    && (gNet_mode == 0 || (net_player = NetPlayerFromCar(car)) == NULL
+                        || (net_player = NetPlayerFromCar(car), net_player->field_0x80 == 0))) {
+                mine->car = car;
+                mine->flags |= 0x80;
+                mine->max_damage = (float)(car->softness_factor * gDOUBLE_0058ac48);
+                mine->flags |= 0x20;
+                return;
+            }
+            mine->flags |= 0x20;
+            return;
+        }
+    }
+    if (pCollision_speed <= mine->field_0x1c || gPinball_factor != gFLOAT_0058ac0c) {
+        if (pCollision_speed > gFLOAT_0058ac88) {
+            DRS3StartSound3D(gCar_outlet, 0x151b, &mine->collision_info->actor->t.t.translate.t,
+                    &gZero_v__car, 1, 0xff, 0x10000, 0x10000);
+        }
+        return;
+    }
+    mine->flags |= 0x20;
 }
 
 // FUNCTION: CARMA2_HW 0x004dde20
@@ -1403,6 +1578,8 @@ void C2_HOOK_FASTCALL DoPowerupPeriodics(tU32 pFrame_period) {
     }
     MungeKeyboardPowerup();
 }
+
+#undef PERIODIC_POWERUP
 
 // FUNCTION: CARMA2_HW 0x004df650
 void C2_HOOK_CDECL RenderSpinningPowerup(br_actor* actor, br_model* model, br_material* material, void* order_table, br_uint_8 style, int on_screen) {
@@ -2948,9 +3125,9 @@ void C2_HOOK_FASTCALL SendMines(tU32 pNext_frame_time) {
             continue;
         }
         tmp->mine_index = (tS8)(mine - gShit_mines);
-        tmp->field_0x3 = mine->field_0x35;
-        tmp->field_0x4 = mine->field_0x34;
-        tmp->field_0x5 = (tU8)(NetPlayerFromCar(mine->field_0x30) - gNet_players);
+        tmp->owner_index = mine->field_0x35;
+        tmp->powerup_index = mine->field_0x34;
+        tmp->player_index = (tU8)(NetPlayerFromCar(mine->field_0x30) - gNet_players);
         tmp->field_0x8 = (tS32)pNext_frame_time;
         GetHierarchyNetworkStuff(mine->collision_info, tmp->object_hierarchy, NET_OBJECT_HIERARCHY_DEFAULT_SIZE);
         hierarchy_size = GetHierarchyNetworkSize(mine->collision_info);
@@ -3325,6 +3502,7 @@ void C2_HOOK_FASTCALL RemoveRepulseLinksForCar(tCar_spec* pCar) {
         if (link->time != 0
                 && (link->car == pCar || link->field_0x24 == (undefined4)(uintptr_t)pCar)) {
             link->time = 0;
+
             if (link->actor->parent == gNon_track_actor) {
                 BrActorRemove(link->actor);
             }
@@ -3387,6 +3565,77 @@ void C2_HOOK_FASTCALL InitializeMineMotion(tShit_mine* pMine, tCar_spec* pCar) {
     pMine->collision_info->omega.v[0] = 0.f;
     pMine->collision_info->omega.v[1] = 0.f;
     pMine->collision_info->omega.v[2] = 0.f;
+}
+
+// C2PORT-NONMATCHING: best 72.37% | difftest PASS 2000 trials (spec difftest/specs/004dd210_ReceiveMineUpdate.json) | reason VC5 register allocation and branch layout
+// FUNCTION: CARMA2_HW 0x004dd210
+void C2_HOOK_FASTCALL ReceiveMineUpdate(tNet_message_chunk_mine_explode* pChunk) {
+    int mine_offset;
+    tShit_mine* mine;
+    tU32 mine_index;
+    int player_index;
+    tU32 hierarchy_size;
+    tCar_spec* car;
+    tPowerup* powerup;
+
+    mine_index = pChunk->mine_index;
+    player_index = pChunk->player_index;
+    mine_offset = mine_index * sizeof(tShit_mine);
+    mine = (tShit_mine*)((tU8*)gShit_mines + mine_offset);
+    powerup = &gPowerup_array[pChunk->powerup_index];
+    car = gNet_players[0].car;
+    if (player_index >= 0 && player_index < gNumber_of_net_players) {
+        car = gNet_players[player_index].car;
+    }
+    if (pChunk->field_0x8 == -1) {
+        if (mine->field_0x35 != pChunk->owner_index
+                && ((mine->flags & 0x2) || !(mine->flags & 0x1))) {
+            return;
+        }
+        if (!(mine->flags & 0x1)) {
+            ConfigureShitMine(mine, powerup, car);
+        }
+        SelectCrushNetwork((undefined4*)pChunk->object_hierarchy, mine->collision_info, 2);
+        MineExplode(mine);
+        return;
+    }
+    if (mine->flags & 0x1) {
+        if (mine->field_0x35 == pChunk->owner_index) {
+            goto set_owner;
+        }
+    }
+    if (!(mine->flags & 0x1)) {
+        ConfigureShitMine(mine, powerup, car);
+    }
+    if (player_index >= 0 && player_index < gNumber_of_net_players) {
+        InitializeMineMotion(mine, mine->field_0x30);
+    } else {
+        BrMatrix34Translate(&mine->collision_info->transform_matrix, 1000.f, 1000.f, 1000.f);
+        BrMatrix34Copy(&mine->collision_info->actor->t.t.mat,
+            &mine->collision_info->transform_matrix);
+    }
+    if (mine->flags & 0x40) {
+        DRS3StartSound3D(gXXX_outlet, 0x151d,
+            &mine->collision_info->actor->t.t.translate.t, &gZero_v__car,
+            1, 0xff, 0x10000, 0x10000);
+    } else {
+        DRS3StartSound3D(gXXX_outlet, 0x151c,
+            &mine->collision_info->actor->t.t.translate.t, &gZero_v__car,
+            1, 0xff, 0x10000, 0x10000);
+    }
+    if (mine->field_0x30 != NULL && mine->field_0x30->driver == eDriver_local_human) {
+        PlayExclusiveFFBEffect("Mine_Shit", 0);
+    }
+set_owner:
+    mine->field_0x35 = pChunk->owner_index;
+    mine->collision_info->message_time = pChunk->field_0x8;
+    mine->collision_info->field_0x261 = pChunk->header.type;
+    mine->collision_info->disable_move_rotate = 0;
+    hierarchy_size = pChunk->header.size - 0xc;
+    if (hierarchy_size > 0x48) {
+        hierarchy_size = 0x48;
+    }
+    memcpy(&mine->collision_info->field_0x294, pChunk->object_hierarchy, hierarchy_size);
 }
 
 // FUNCTION: CARMA2_HW 0x004df070

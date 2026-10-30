@@ -621,6 +621,15 @@ br_fixed_ls C2_NAKED C2_HOOK_CDECL BrFixedDivF(br_fixed_ls a, br_fixed_ls b) {
 #endif
 }
 
+// C2PORT-NONMATCHING: best 17.65% | difftest PASS 2000 trials (spec difftest/specs/00537304_FUN_00537304.json) | reason VC5 lowers the signed 64-bit divide to helpers
+// FUNCTION: CARMA2_HW 0x00537304
+br_fixed_ls C2_HOOK_CDECL FUN_00537304(br_fixed_ls a, br_fixed_ls b) {
+    uint32_t quotient;
+
+    quotient = (uint32_t)((((br_int_64)a) << 30) / b);
+    return (br_fixed_ls)(0x80000000u - (quotient << 1));
+}
+
 // FUNCTION: CARMA2_HW 0x00537322
 br_fixed_ls C2_NAKED C2_HOOK_CDECL BrFixedMulDiv(br_fixed_ls a, br_fixed_ls b, br_fixed_ls c) {
 #ifndef CARPOCALYPSE2_MATCHING

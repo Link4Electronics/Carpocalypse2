@@ -20,6 +20,13 @@
 #include <dinput.h>
 #include <iforce2.h>
 
+#include <brender/brender.h>
+
+extern const char gEmpty_string_00676920[];
+
+// GLOBAL: CARMA2_HW 0x0058b398
+extern const GUID IID_IDirectInputDevice2A;
+
 #define MAX_COUNT_JOYSTICKS 16
 #define MAX_COUNT_EFFECTS 30
 
@@ -77,6 +84,9 @@ int gBasic_force_joystick_effect_index = -1;
 
 // GLOBAL: CARMA2_HW 0x00595f80
 int gCollision_force_joystick_effect_index = -1;
+
+// GLOBAL: CARMA2_HW 0x0059630c
+int gCurrent_joystick_effect_index = -1;
 
 // GLOBAL: CARMA2_HW 0x0079e040
 IFR_Project * gIfr_project;
@@ -148,6 +158,35 @@ static int InitDirectInput(void) {
         gDirectInputJoystickEnumerated = 0;
     }
     return 0;
+}
+
+// C2PORT-NONMATCHING: best 47.22% | difftest PASS 2000 trials (spec difftest/specs/004587c0_FUN_004587c0.json) | reason initializer-loop
+// FUNCTION: CARMA2_HW 0x004587c0
+void C2_HOOK_FASTCALL FUN_004587c0(void) {
+    tU32* fields;
+    int zero;
+    tU32* fields_end;
+
+    C2_HOOK_BUG_ON(sizeof(tDirectInputJoystickInfo) != 0x68);
+    zero = 0;
+    if (gDirectInputJoystickHandle == (IDirectInputA*)zero) {
+        memset(gDirectInputJoystickDevices, 0, sizeof(gDirectInputJoystickDevices));
+        fields = (tU32*)gDirectInputJoystickInfos;
+        fields_end = fields + CARPOCALYPSE2_ASIZE(gDirectInputJoystickInfos) * 0x1a;
+        do {
+            fields[0] = zero;
+            fields[1] = zero;
+            fields[2] = zero;
+            ((tU8*)fields)[12] = (tU8)zero;
+            fields[0x18] = zero;
+            fields[0x19] = zero;
+            fields += 0x1a;
+        } while (fields < fields_end);
+        memset(gDirectInputEffects, 0, sizeof(gDirectInputEffects));
+        gJoystickFFB = zero;
+        gCountEnumeratedJoystickDinputDevices = zero;
+        DirectInputCreateA(GetModuleHandleA((LPCSTR)zero), 0x0500, &gDirectInputJoystickHandle, (LPVOID)zero);
+    }
 }
 
 void C2_HOOK_FASTCALL CloseDirectInput(void) {
@@ -405,6 +444,29 @@ void C2_HOOK_FASTCALL AttachJoystickButtonInfos(size_t pSize, tWin32_void_voidpt
     }
     gJoystick_index = original_index;
 }
+
+// FUNCTION: CARMA2_HW 0x00459970
+void C2_HOOK_FASTCALL CloseDInputJoysticks(void) {
+    IDirectInputDevice2A** device;
+
+    if (gDirectInputJoystickHandle != NULL) {
+        device = gDirectInputJoystickDevices;
+        /* Visit every device slot. */
+        do {
+            if (*device != NULL) {
+                IDirectInputDevice2_Unacquire(*device);
+                IDirectInputDevice2_Release(*device);
+                *device = NULL;
+            }
+            device++;
+        } while ((int)device < (int)(gDirectInputJoystickDevices + CARPOCALYPSE2_ASIZE(gDirectInputJoystickDevices)));
+        IDirectInput_Release(gDirectInputJoystickHandle);
+        gDirectInputJoystickHandle = NULL;
+    }
+    gJoystickFFB = 0;
+    gCountEnumeratedJoystickDinputDevices = 0;
+}
+
 #pragma auto_inline(on)
 
 // FUNCTION: CARMA2_HW 0x004599d0
@@ -432,6 +494,30 @@ void C2_HOOK_FASTCALL SelectNextDInputJoystick(void) {
             NewTextHeadupSlot(4, 0, 3000, -1, buffer);
         }
     }
+}
+
+// FUNCTION: CARMA2_HW 0x00459b50
+int C2_HOOK_FASTCALL SetDirectInputDeviceRange(IDirectInputDevice2A* pDevice, LONG pMin, LONG pMax) {
+    DIPROPRANGE range;
+    HRESULT hResult;
+
+    range.diph.dwSize = sizeof(range);
+    range.diph.dwHeaderSize = sizeof(range.diph);
+    range.diph.dwHow = DIPH_BYOFFSET;
+    range.lMin = pMin;
+    range.lMax = pMax;
+    range.diph.dwObj = 0;
+    hResult = IDirectInputDevice2_SetProperty(pDevice, DIPROP_RANGE, &range.diph);
+    if (hResult == DI_OK) {
+        range.diph.dwObj = 4;
+        hResult = IDirectInputDevice2_SetProperty(pDevice, DIPROP_RANGE, &range.diph);
+    }
+    if (hResult != DI_OK) {
+        dr_dprintf("IDirectInputDevice::SetProperty(DIPH_RANGE)  FAILED\n");
+        IDirectInputDevice2_Release(pDevice);
+        return 0;
+    }
+    return 1;
 }
 
 #pragma auto_inline(off)
@@ -856,6 +942,19 @@ void C2_HOOK_FASTCALL StopDinputEffect(int pIndex) {
     if (effect != NULL) {
         IDirectInputEffect_Stop(effect);
     }
+}
+
+// FUNCTION: CARMA2_HW 0x00457ef0
+int C2_HOOK_FASTCALL StartJoystickEffectByName(const char* pName) {
+    int i;
+
+    for (i = 0; i < gCount_joystick_effects; i++) {
+        if (strcmp(pName, gJoystick_effects[i].name) == 0) {
+            StartDinputEffect(i);
+            return 1;
+        }
+    }
+    return 0;
 }
 
 // FUNCTION: CARMA2_HW 0x00458610
@@ -1624,6 +1723,126 @@ tJoystick_force_effect* C2_HOOK_FASTCALL GetJoystickEffect(int pIndex) {
         return NULL;
     }
     return &gJoystick_effects[pIndex];
+}
+
+// FUNCTION: CARMA2_HW 0x00458150
+int C2_HOOK_FASTCALL FUN_00458150(int pEffect_index, int pStart_effect, int* pDirection, tU32* pDuration, tU32* pGain, char* pType_specific_params, int* pTrigger_button, int* pEffect_data) {
+    IDirectInputEffect* direct_input_effect;
+    int value;
+    tU32 params_size;
+    tU32 flags;
+    tU32 saved_flags;
+
+    flags = 0;
+    saved_flags = 0;
+    if (pDirection != NULL) {
+        if (*pDirection > 0x168) {
+            *pDirection = 0x168;
+        } else if (*pDirection < 0) {
+            *pDirection = 0;
+        }
+        value = *pDirection * 100;
+        *pDirection = value;
+        if (gJoystick_effects[pEffect_index].field_0x60 != value) {
+            flags = 0x40;
+            gJoystick_effects[pEffect_index].field_0x60 = value;
+            saved_flags = flags;
+        }
+    }
+    if (pDuration != NULL) {
+        if (*pDuration == 0xffffff) {
+            *pDuration = 0xffffffff;
+        } else {
+            if (*pDuration > 0x5dc) {
+                *pDuration = 0x5dc;
+            }
+            *pDuration *= 1000;
+        }
+        if (gJoystick_effects[pEffect_index].di_effect.dwDuration != *pDuration) {
+            flags |= 1;
+            gJoystick_effects[pEffect_index].di_effect.dwDuration = *pDuration;
+            saved_flags = flags;
+        }
+    }
+    if (pGain != NULL) {
+        if (10000 < *pGain) {
+            *pGain = 10000;
+        }
+        if (gJoystick_effects[pEffect_index].di_effect.dwGain != *pGain) {
+            flags |= 4;
+            gJoystick_effects[pEffect_index].di_effect.dwGain = *pGain;
+            saved_flags = flags;
+        }
+    }
+    if (pType_specific_params != NULL) {
+        params_size = gJoystick_effects[pEffect_index].di_effect.cbTypeSpecificParams;
+        flags = saved_flags;
+        if (memcmp(&gJoystick_effects[pEffect_index].type_specific_params, pType_specific_params, params_size) != 0) {
+            memcpy(&gJoystick_effects[pEffect_index].type_specific_params, pType_specific_params, params_size);
+            flags = saved_flags | 0x100;
+        }
+    }
+    if (pTrigger_button != NULL && (value = *pTrigger_button, value < 0x20)) {
+        if (value == -1) {
+            value = -1;
+        } else {
+            value += 0x30;
+        }
+        flags |= 8;
+        gJoystick_effects[pEffect_index].di_effect.dwTriggerButton = value;
+    }
+    if (pEffect_data != NULL) {
+        if ((((*(int*)&gJoystick_effects[pEffect_index].field_0x4c[4] != *pEffect_data) ||
+                (*(int*)&gJoystick_effects[pEffect_index].field_0x4c[8] != pEffect_data[1])) ||
+                (*(int*)&gJoystick_effects[pEffect_index].field_0x4c[12] != pEffect_data[2])) ||
+                (*(int*)&gJoystick_effects[pEffect_index].field_0x4c[16] != pEffect_data[3])) {
+            *(int*)&gJoystick_effects[pEffect_index].field_0x4c[4] = *pEffect_data;
+            *(int*)&gJoystick_effects[pEffect_index].field_0x4c[8] = pEffect_data[1];
+            *(int*)&gJoystick_effects[pEffect_index].field_0x4c[12] = pEffect_data[2];
+            *(int*)&gJoystick_effects[pEffect_index].field_0x4c[16] = pEffect_data[3];
+            flags |= 0x80;
+        }
+    }
+    if (flags == 0) {
+        if (pStart_effect == 1) {
+            StartDinputEffect(pEffect_index);
+        }
+        return 0;
+    }
+    direct_input_effect = gDirectInputEffects[pEffect_index];
+    if (direct_input_effect != NULL) {
+        IDirectInputEffect_SetParameters(direct_input_effect, &gJoystick_effects[pEffect_index], flags);
+    }
+    if (pStart_effect != 0) {
+        StartDinputEffect(pEffect_index);
+    }
+    return 1;
+}
+
+// FUNCTION: CARMA2_HW 0x00458460
+void C2_HOOK_FASTCALL FUN_00458460(void) {
+    tU32 duration;
+    tJoystick_effect_description description;
+    int effect_index;
+
+    duration = 250000;
+    description.type = eJoystick_effect_ConstantForce;
+    description.type_specific_params.constant.field_0x0 = 5000;
+    description.time_ms = 500000;
+    description.field_0x38 = 1000;
+    description.field_0x3c = 10000;
+    description.field_0x44 = -1;
+    description.field_0x48 = 0;
+    description.field_0x4c = 0x5a;
+    effect_index = CreateDinputEffect(gJoystick_index, &description, "Hello");
+    if (effect_index >= 0) {
+        StartDinputEffect(effect_index);
+        Sleep(100);
+        FUN_00458150(effect_index, 1, NULL, &duration, NULL, NULL, NULL, NULL);
+        StartDinputEffect(effect_index);
+        Sleep(500);
+        ResetDInputJoystickFFB(gJoystick_index);
+    }
 }
 
 // FUNCTION: CARMA2_HW 0x004580e0

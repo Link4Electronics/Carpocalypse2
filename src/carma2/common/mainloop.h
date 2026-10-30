@@ -37,7 +37,6 @@ void C2_HOOK_FASTCALL QueueWastedMessage(int pIndex);
 
 #include "carpocalypse2_types.h"
 
-
 extern tU32 gLast_tick_count;
 
 extern tU32 gOld_camera_time;
@@ -115,5 +114,6 @@ void C2_HOOK_FASTCALL CheckTimer(void);
 int C2_HOOK_FASTCALL MungeRaceFinished(void);
 
 void C2_HOOK_FASTCALL LoseOldestWastedMessage(void);
+
 
 #endif // GUARD_MAINLOOP_H

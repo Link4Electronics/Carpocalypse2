@@ -59,6 +59,8 @@ extern int gPrev_ps_apo_levels[3];
 extern int gPrev_ps_drawn_levels[3];
 extern int gPS_apo_level_changed[3];
 
+int C2_HOOK_FASTCALL GetOpponentDamageScore(tCar_spec* pCar);
+
 extern int gBack_original_origin_x;
 extern int gBack_original_origin_y;
 extern int gBack_original_base_x;
@@ -91,10 +93,15 @@ extern int C2_HOOK_FASTCALL NewTextHeadupSlot(int pSlot_index, int pFlash_rate, 
 extern int C2_HOOK_FASTCALL NewImageHeadupSlot(int pSlot_index, int pFlash_rate, int pLifetime, int pImage_index);
 
 extern void C2_HOOK_FASTCALL DoFancyHeadup(int pIndex);
+extern void C2_HOOK_FASTCALL FUN_0044a8a0(int pHeadup_index, int pX, int pY);
+
+
+extern void C2_HOOK_FASTCALL UpdateHeadupPositions(void);
 
 extern void C2_HOOK_FASTCALL MoveHeadupTo(int pHeadup_index, int pX, int pY);
 
-extern void C2_HOOK_FASTCALL FUN_0044a8a0(int pHeadup_index, int pX, int pY);
+
+extern void C2_HOOK_FASTCALL PlaceHeadupAt(int pHeadup_index, int pX, int pY);
 
 // IsHeadupTextClever
 
@@ -104,19 +111,31 @@ extern void C2_HOOK_FASTCALL ChangeHeadupText(int pHeadup_index, char* pNew_text
 
 extern void C2_HOOK_FASTCALL ChangeHeadupFont(int pHeadup_index, int pFont);
 
+extern void C2_HOOK_FASTCALL ChangeHeadupImage(int pHeadup_index, int pImage_index);
+
 extern void C2_HOOK_CDECL DimRectangle(br_pixelmap* pPixelmap, int pLeft, int pTop, int pRight, int pBottom, int pKnock_out_corners);
 
 extern void C2_HOOK_FASTCALL DimRectangleClipped(br_pixelmap* pPixelmap, int pLeft, int pTop, int pRight, int pBottom, int pKnock_out_corners);
+extern void C2_HOOK_FASTCALL DrawRectangleOutline(br_pixelmap* pMap, int pLeft, int pTop, int pRight, int pBottom, br_uint_32 pColour);
 
 extern void C2_HOOK_FASTCALL DeviouslyDimRectangle(br_pixelmap* pPixelmap, int pLeft, int pTop, int pRight, int pBottom, int pKnock_out_corners);
 
 extern void C2_HOOK_FASTCALL DoDamageScreen(tU32 pThe_time);
 
+void C2_HOOK_FASTCALL DrawCockpitHands(void);
+
 extern void C2_HOOK_FASTCALL DoHeadups(tU32 pThe_time);
 
 extern void C2_HOOK_FASTCALL RedrawHeadupTexts(tU32 pThe_time);
 
+extern int C2PortGetShowFps(void);
+
+extern void C2PortSetShowFps(int pOn);
+
+extern void C2PortDrawFpsCounter(void);
+
 extern void C2_HOOK_FASTCALL DoInstruments(tU32 pThe_time);
+
 
 extern void C2_HOOK_FASTCALL PoshDrawLine(br_pixelmap* pDestn, int pX1, float pAngle, int pY1, int pX2, int pY2, int pColour);
 
@@ -128,7 +147,7 @@ extern void C2_HOOK_FASTCALL DoTestHeadup(void);
 
 // EarnCredits
 
-extern void C2_HOOK_FASTCALL EarnCredits100(int pAmount);
+// EarnCredits100
 
 // SpendCredits
 
@@ -137,6 +156,9 @@ extern void C2_HOOK_FASTCALL EarnCredits100(int pAmount);
 // AwardTime5
 
 extern int C2_HOOK_FASTCALL HighResHeadupWidth(int pWidth);
+extern void C2_HOOK_FASTCALL EarnCredits100(int pAmount);
+
+
 
 extern int C2_HOOK_FASTCALL HighResHeadupHeight(int pHeight);
 
@@ -147,7 +169,6 @@ extern int C2_HOOK_FASTCALL HighResHeadupHeight(int pHeight);
 #include "c2_hooks.h"
 
 #include "carpocalypse2_types.h"
-
 
 extern tHeadup gHeadups[37];
 
@@ -208,6 +229,8 @@ void C2_HOOK_FASTCALL EarnCredits(int pAmount);
 int C2_HOOK_FASTCALL SpendCredits(int pAmount);
 
 void C2_HOOK_FASTCALL AwardTime(tU32 pTime);
+
+void C2_HOOK_FASTCALL AwardTime5(tU32 pTime);
 
 void C2_HOOK_FASTCALL ChangingView(void);
 

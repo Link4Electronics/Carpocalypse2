@@ -3,7 +3,6 @@
 
 #include "c2_hooks.h"
 
-
 #include "carpocalypse2_types.h"
 
 // DRActorToRoot
@@ -43,7 +42,6 @@ extern void C2_HOOK_FASTCALL InitRayCasting(void);
 #include "c2_hooks.h"
 
 #include "carpocalypse2_types.h"
-
 
 extern br_actor* gY_picking_camera;
 
@@ -94,5 +92,35 @@ int C2_HOOK_CDECL FindHighestCallBack__raycast(br_actor* pActor, br_model* pMode
 void C2_HOOK_FASTCALL FindBestY(br_vector3* pPosition, br_actor* pWorld, br_scalar pStarting_height, br_scalar* pNearest_y_above, br_scalar* pNearest_y_below, br_model** pNearest_above_model, br_model** pNearest_below_model, int* pNearest_above_face_index, int* pNearest_below_face_index);
 
 void C2_HOOK_FASTCALL DrMatrix34ApplyLPInverse(br_vector3* pDest, const br_vector3* pOrigin, const br_matrix34* pMatrix);
+
+tFace_ref* C2_HOOK_FASTCALL FUN_004226d0(const br_vector3* pRay_pos, const br_vector3* pRay_dir, br_vector3* pHit_normal, br_scalar* pDistance, br_vector3* pHit_position, tFace_ref* pFaces, int pFace_count);
+
+int C2_HOOK_FASTCALL FUN_004228b0(tPhysics_object* pObject, void* pCollision_buffer, int pIndex);
+
+int C2_HOOK_FASTCALL FUN_00423320(tPhysics_object* pObject, tPhysics_shape* pShape, br_matrix34* pMatrix);
+
+int C2_HOOK_FASTCALL FUN_004236a0(tPhysics_object* pObject, tPhysics_shape* pShape, void* pCollision_slot, int pCollision_count, int pMax_collisions, tCollision_shape_test_data* pShape_data, void* pScratch, int* pHas_collision);
+
+int C2_HOOK_FASTCALL FUN_00423ed0(tPhysics_object* pObject, tPhysics_shape* pShape, void* pCollision_slot, int pCollision_count, int pMax_collisions, tCollision_shape_test_data* pShape_data, void* pScratch);
+int C2_HOOK_FASTCALL FUN_00423c00(tPhysics_object* pOwner, br_scalar* pSphere, void* pCollision_list, int pCollision_count, int pUnused5, br_vector3* pEdge_start, br_vector3* pEdge_end, void* pUnused8);
+
+
+void C2_HOOK_FASTCALL FUN_0045e850(tFace_ref* pFace, br_vector3* pSphere_center, br_vector3* pSphere_vertex, br_scalar pRadius, br_vector3* pNormal, br_vector3* pClosest_point, br_scalar* pDistance);
+
+int C2_HOOK_FASTCALL FUN_00424270(float* pStart, float* pEnd, int* volatile param_3, int param_4, undefined4 param_5, int param_6, int param_7, int param_8);
+
+int C2_HOOK_FASTCALL FUN_00424990(float* p1, float* p2, float* p3, float* p4, float* p5, float* p6, float* p7, undefined4 p8, int p9, int p10);
+
+int C2_HOOK_FASTCALL FUN_00422fe0(float* pCollision_list, float* pContact_pos, float pT, float* pNormal, undefined4 pUnk5, int pCollision_count, tPhysics_object* pOwner, int pType, void* pCollision_data, float* pOptional_normal);
+
+int C2_HOOK_FASTCALL FUN_00423ce0(br_vector3* pStart, br_vector3* pEnd, tPhysics_object* pOwner, br_scalar* pSphere, void* pCollision_list, int pCollision_count, br_vector3* pEdge_start, br_vector3* pEdge_end, void* pCollision_data);
+
+int C2_HOOK_FASTCALL FUN_00424140(tPhysics_object* pObject, tPhysics_shape* pBounds_shape, tPhysics_shape* pRay_shape, int pCollision_count, undefined4 pArg5, tU8* pPolyhedron_data, undefined4 pArg7);
+
+int C2_HOOK_FASTCALL FUN_00425630(const br_vector3* param_1, const br_vector3* param_2, const br_vector3* param_3, const br_vector3* param_4, const br_vector3* param_5, const br_vector3* param_6, const br_vector3* param_7, const br_vector3* param_8, float* param_9, undefined4 param_10, const tPhysics_object* param_11, const tPhysics_object* param_12);
+
+extern int gSensible_place_collect_active;
+
+extern int gSensible_place_collect_active; // also written by TestForObjectInSensiblePlace (physics.c)
 
 #endif // GUARD_RAYCAST_H

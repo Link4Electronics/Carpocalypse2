@@ -91,6 +91,9 @@ int gMusic_available;
 // GLOBAL: CARMA2_HW 0x00684568
 int gINT_00684568;
 
+// GLOBAL: CARMA2_HW 0x0079e140
+int gINT_0079e140;
+
 // GLOBAL: CARMA2_HW 0x00684554
 int gINT_00684554;
 
@@ -188,6 +191,15 @@ int gCount_environmental_sound_sources;
 
 // GLOBAL: CARMA2_HW 0x0079e17c
 int gEnvironmental_sound_sources_buffer_index;
+
+// GLOBAL: CARMA2_HW 0x00589ea8
+const double gDOUBLE_00589ea8 = 1.0;
+
+// GLOBAL: CARMA2_HW 0x00589f14
+const br_scalar gFLOAT_00589f14 = 2.38418579e-7f;
+
+// GLOBAL: CARMA2_HW 0x00589f1c
+const br_scalar gFLOAT_00589f1c = 0.1f;
 
 // FUNCTION: CARMA2_HW 0x00456af0
 void C2_HOOK_FASTCALL DoEnvSound(tSpecial_volume* pVolume, br_vector3* pP, tSpecial_volume_soundfx_type pType, tSpecial_volume_soundfx_data* pSound_data, float pSound_dist, br_vector3 *pSound_dir) {
@@ -818,6 +830,14 @@ int C2_HOOK_FASTCALL DRS3StartSound3D(tS3_outlet* pOutlet, int pSound_id, const 
     } else {
         return 0;
     }
+}
+
+// FUNCTION: CARMA2_HW 0x00456010
+tS3_sound_tag C2_HOOK_FASTCALL DRS3StartSoundFromSource3(tS3_sound_source* pSource, tS3_sound_id pSound, tS3_repeats pRepeats, tS3_volume pVolume, tS3_pitch pPitch, tS3_speed pSpeed) {
+    if (gSound_enabled) {
+        return S3StartSoundFromSource3(pSound, pSource, pRepeats, pVolume, pPitch, pSpeed);
+    }
+    return 0;
 }
 
 // FUNCTION: CARMA2_HW 0x00456070

@@ -7,6 +7,8 @@ extern const tReplay_callback gReplay_callbacks[70];
 
 void C2_HOOK_FASTCALL ApplyFrameBoundary(tPipe_chunk** pChunk);
 
+void C2_HOOK_FASTCALL ApplyReplayFrameTime(tPipe_chunk** pChunk);
+
 void C2_HOOK_FASTCALL ApplySound(tPipe_chunk** pChunk);
 
 int C2_HOOK_FASTCALL CalcCrushLength(tPipe_chunk* pChunk);
@@ -242,5 +244,9 @@ void C2_HOOK_FASTCALL ApplyTransformType(tPipe_chunk** pChunk);
 void C2_HOOK_FASTCALL UndoTransformType(tPipe_chunk** pChunk, tPipe_chunk* pPrev_chunk);
 
 void C2_HOOK_FASTCALL ApplyOppoRenderage(tPipe_chunk** pChunk);
+
+void C2_HOOK_FASTCALL FUN_004ca4d0(int pIndex, const br_vector3* pDir);
+
+void C2_HOOK_FAKE_THISCALL FUN_004ca650(tPedestrian* pPed, undefined4 pEdx, float pSpeed);
 
 #endif //CARPOCALYPSE2_REPLAY_CALLBACKS_H

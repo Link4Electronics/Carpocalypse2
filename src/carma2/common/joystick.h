@@ -36,6 +36,17 @@ extern void C2_HOOK_FASTCALL BackupJoystickPreferences(void);
 
 extern void C2_HOOK_FASTCALL RestoreJoystickPreferences(void);
 
+void C2_HOOK_FASTCALL FUN_0045c240(void);
+
+void C2_HOOK_FASTCALL FUN_0045c420(void);
+void C2_HOOK_FASTCALL FUN_0045c910(tCar_spec* pCar, const br_vector3* pPosition, br_vector3* pForce, float pMagnitude);
+
+int C2_HOOK_FASTCALL ReadJoystickInfo(FILE* pFile, tButtonJoystickInfo* pInfo);
+
+int C2_HOOK_FASTCALL WriteJoystickInfo(FILE* pFile, tButtonJoystickInfo* pInfo);
+
+int C2_HOOK_FASTCALL FUN_0045b7e0(FILE* pFile, char* pString);
+
 extern float gForce_feedback_upper_limit;
 
 extern float Force_feedback_lower_limit;
@@ -55,6 +66,7 @@ extern int gINT_00596308;
 extern int gCurrent_ffb_effect_index;
 
 extern tHeadup_text_buffer gJoystick_headup_buffer_0079d8a0;
+extern tHeadup_text_buffer gHeadup_text_buffer_0079d880;
 
 typedef struct tJoystick_headup_text {
     const char* text;
@@ -95,18 +107,24 @@ int C2_HOOK_FASTCALL IncreaseJoystickFFBGain(void);
 
 int C2_HOOK_FASTCALL PDEnableJoysticks(void);
 
+void C2_HOOK_FASTCALL FUN_0045a070(void);
+
 void C2_HOOK_FASTCALL Joystick_BackupSettings(void);
 
 void C2_HOOK_FASTCALL EnableJoysticks(void);
 
 void C2_HOOK_FASTCALL DisableJoysticks(void);
 
-void C2_HOOK_FASTCALL FUN_0045b0a0(tHeadup_text_buffer* pText_buffer);
 
-int C2_HOOK_FASTCALL FUN_0045a920(tHeadup_text_buffer* pText_buffer, tHeadup_text* pText, int pSorted);
+void C2_HOOK_FASTCALL AdjustHeadupTextBuffer(tHeadup_text_buffer* pText_buffer);
+int C2_HOOK_FASTCALL InsertHeadupText(tHeadup_text_buffer* pText_buffer, tHeadup_text* pText, int pSortAlphabetically);
+
+int C2_HOOK_FASTCALL FUN_CheckJoystickHeadupButtons(tButtonJoystickInfo** pJoystick_info);
 
 void C2_HOOK_FASTCALL MungeJoystickHeadups(void);
 
 int C2_HOOK_FASTCALL HasCurrentJoystick(void);
+
+int C2_HOOK_FASTCALL FUN_0045a920(tHeadup_text_buffer* pText_buffer, tHeadup_text* pText, int pSorted);
 
 #endif /* CARPOCALYPSE2_JOYSTICK_H */

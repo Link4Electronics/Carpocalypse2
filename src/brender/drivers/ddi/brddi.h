@@ -12,6 +12,23 @@
 #include "brender.h"
 #endif
 
+#include "brender14.h"
+#include "tokenmap.h"
+
+/* core internals the drivers call (object/container/token/resource helpers) */
+#include "core/fw/object.h"
+#include "core/fw/objectc.h"
+#include "core/fw/resource.h"
+#include "core/fw/token.h"
+#include "core/fw/tokenval.h"
+#include "core/fw/brprintf.h"
+#include "core/fw/diag.h"
+#include "core/fw/mem.h"
+#include "core/fw/brlists.h"
+#include "core/fw/scratch.h"
+#include "core/math/matrix4.h"
+#include "core/v1db/otable.h"
+
 #ifndef _POOL_H_
 #include "pool.h"
 #endif

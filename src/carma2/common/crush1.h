@@ -61,7 +61,6 @@ extern void C2_HOOK_FASTCALL InitCrushSystems(void);
 // FindNearestVertex
 
 // DistanceToBounds
-float C2_HOOK_FASTCALL DistanceToBounds(const br_vector3* pPoint, const br_bounds3* pBounds);
 
 // FindNearestParentVertex
 
@@ -92,6 +91,8 @@ float C2_HOOK_FASTCALL DistanceToBounds(const br_vector3* pPoint, const br_bound
 // InitPhysModCrushData
 
 extern void C2_HOOK_FASTCALL DisposeMasterCrushData(tCar_crush_spec* pCar_crush, tCar_spec* pCar);
+// DistanceToBounds
+float C2_HOOK_FASTCALL DistanceToBounds(const br_vector3* pPoint, const br_bounds3* pBounds);
 
 // DisposeCrushData
 void C2_HOOK_FASTCALL DisposeCrushData(tCar_crush_buffer_entry* pCrush_data);
@@ -99,25 +100,32 @@ void C2_HOOK_FASTCALL DisposeCrushData(tCar_crush_buffer_entry* pCrush_data);
 // DisposeVertexData
 void C2_HOOK_FASTCALL DisposeVertexData(tModel_detail_vertex_data* pVertex_data);
 
+extern void C2_HOOK_FASTCALL FUN_0042c4f0(tU8* pData);
+extern void C2_HOOK_FASTCALL FreeIfNotNull(void* pPtr);
+
+// DisposeCrushData
+
+// DisposeVertexData
+
 // BuckleTheBugger
 
-float C2_HOOK_FASTCALL DistSq(const br_vector3* pP, int pCount, const br_vector3* pVertices);
+// OutsideEdgeLine
 
-float C2_HOOK_FASTCALL PointTriangleDistSq(const br_vector3* pP, const br_vector3* pA, const br_vector3* pB, const br_vector3* pC);
+// PointTriangleDistSq
 
-int C2_HOOK_FASTCALL OutsideEdgeLine(const br_vector3* pPoint, const br_vector3* pA, const br_vector3* pDirection, const br_vector3* pInside);
+// PointRectDistSq
 
-float C2_HOOK_FASTCALL PointRectDistSq(const br_vector3* pP, const br_vector3* pA, const br_vector3* pB, const br_vector3* pC);
+// PointSimplexDistSq
 
-float C2_HOOK_FASTCALL PointSimplexDistSq(const br_vector3* pP, int pCount, const br_vector3* pVertices);
+// DistSq
 
 // LimitImpactScale
 
 // GetImpactScale
 
-int C2_HOOK_FASTCALL TooFarToCrush(const br_model* pModel, int pCount, const br_vector3* pVertices, float pMax_dist_sq);
+// TooFarToCrush
 
-int C2_HOOK_FASTCALL NearestAxis(const br_vector3* pVector);
+// NearestAxis
 
 // CrushModel
 
@@ -143,9 +151,26 @@ int C2_HOOK_FASTCALL NearestAxis(const br_vector3* pVector);
 
 // ExpandCrush
 
-void C2_HOOK_FASTCALL RemoveDuplicatePoints(int* pCount_out, br_vector3* pPoints_out, int pCount_in, const br_vector3* pPoints_in);
+// RemoveDuplicatePoints
 
 // SimpleCrushModel
+void C2_HOOK_FASTCALL SimpleCrushModel(br_model* pModel, int pCount, float* pPoints, float* pDir, float* pBounds);
+float C2_HOOK_FASTCALL DistSq(const br_vector3* pP, int pCount, const br_vector3* pVertices);
+
+float C2_HOOK_FASTCALL PointTriangleDistSq(const br_vector3* pP, const br_vector3* pA, const br_vector3* pB, const br_vector3* pC);
+
+int C2_HOOK_FASTCALL OutsideEdgeLine(const br_vector3* pPoint, const br_vector3* pA, const br_vector3* pDirection, const br_vector3* pInside);
+
+float C2_HOOK_FASTCALL PointRectDistSq(const br_vector3* pP, const br_vector3* pA, const br_vector3* pB, const br_vector3* pC);
+
+float C2_HOOK_FASTCALL PointSimplexDistSq(const br_vector3* pP, int pCount, const br_vector3* pVertices);
+
+int C2_HOOK_FASTCALL TooFarToCrush(const br_model* pModel, int pCount, const br_vector3* pVertices, float pMax_dist_sq);
+
+int C2_HOOK_FASTCALL NearestAxis(const br_vector3* pVector);
+
+void C2_HOOK_FASTCALL RemoveDuplicatePoints(int* pCount_out, br_vector3* pPoints_out, int pCount_in, const br_vector3* pPoints_in);
+
 
 // CrushDrone
 
@@ -153,7 +178,7 @@ void C2_HOOK_FASTCALL RemoveDuplicatePoints(int* pCount_out, br_vector3* pPoints
 
 // DoDroneCrushing
 
-extern void C2_HOOK_FASTCALL AddDroneCrush(tQueued_drone_crush_item* pCrush, const br_vector3* pVector, float pScale, int pCount, const br_vector3* pPoints);
+// AddDroneCrush
 
 // QueueDroneCrush
 
@@ -267,7 +292,7 @@ extern void C2_HOOK_FASTCALL AddDroneCrush(tQueued_drone_crush_item* pCrush, con
 
 // SplitCarCollisionShapes
 
-extern int C2_HOOK_FASTCALL QuantizeWithinBounds(br_scalar pQuant, br_scalar pMin, br_scalar pMax, br_scalar* pValue);
+// QuantizeWithinBounds
 
 // SaveVitalBitsOfObject
 
@@ -283,11 +308,11 @@ extern int C2_HOOK_FASTCALL QuantizeWithinBounds(br_scalar pQuant, br_scalar pMi
 
 // SplitCar
 
-extern void C2_HOOK_FASTCALL QuantizePlane(br_vector4* pPlane);
+// QuantizePlane
 
-extern int C2_HOOK_FASTCALL WithinBounds(br_scalar pValue, br_scalar pMin, br_scalar pMax);
+// WithinBounds
 
-extern int C2_HOOK_FASTCALL SplitCheck(tCar_spec* pCar, int pMode, const br_vector3* pLine, br_scalar pHeight, br_vector4* pPlane);
+// SplitCheck
 
 // FindForceEdge
 
@@ -396,6 +421,16 @@ extern int C2_HOOK_FASTCALL SplitCheck(tCar_spec* pCar, int pMode, const br_vect
 // SendReAttachAllBits
 
 extern void C2_HOOK_FASTCALL TotallyRepairACar(tCar_spec* pCar_spec);
+extern void C2_HOOK_FASTCALL AddDroneCrush(tQueued_drone_crush_item* pCrush, const br_vector3* pVector, float pScale, int pCount, const br_vector3* pPoints);
+
+extern int C2_HOOK_FASTCALL QuantizeWithinBounds(br_scalar pQuant, br_scalar pMin, br_scalar pMax, br_scalar* pValue);
+
+extern void C2_HOOK_FASTCALL QuantizePlane(br_vector4* pPlane);
+
+extern int C2_HOOK_FASTCALL WithinBounds(br_scalar pValue, br_scalar pMin, br_scalar pMax);
+
+extern int C2_HOOK_FASTCALL SplitCheck(tCar_spec* pCar, int pMode, const br_vector3* pLine, br_scalar pHeight, br_vector4* pPlane);
+
 
 // TotallyRepairCar
 
@@ -422,9 +457,8 @@ extern void C2_HOOK_FASTCALL TotallyRepairACar(tCar_spec* pCar_spec);
 // UnBendOtherThings
 
 // NormalizedAngle
-br_scalar C2_HOOK_FASTCALL NormalizedAngle(br_angle pAngle);
 
-br_scalar C2_HOOK_FASTCALL CalculateAmountRepairedFraction(br_angle pOriginal_x, br_angle pOriginal_y, br_angle pOriginal_z, br_angle pRepair_x, br_angle pRepair_y, br_angle pRepair_z, br_scalar* pOriginal_amount);
+// CalculateAmountRepairedFraction
 
 // UnBendCar
 
@@ -453,19 +487,14 @@ br_scalar C2_HOOK_FASTCALL CalculateAmountRepairedFraction(br_angle pOriginal_x,
 // ARCompressModelMash
 
 // ARApplyModelMash
-void C2_HOOK_FASTCALL ARApplyModelMash(br_model* pModel, tCompressed_vector3* pSrc);
 
 // ARUndoModelMash
-void C2_HOOK_FASTCALL ARUndoModelMash(br_model* pModel, tCompressed_vector3* pSrc);
 
 // ARApplyFlap
-void C2_HOOK_FASTCALL ARApplyFlap(br_actor* pActor, tS16 pAngle);
 
 // ARApplySplitWeld
-void C2_HOOK_FASTCALL ARApplySplitWeld(tCar_spec* pCar_spec, br_vector3* pVector);
 
 // ARUndoSplitWeld
-void C2_HOOK_FASTCALL ARUndoSplitWeld(tCar_spec* pCar_spec);
 
 // ReceivedCrush
 
@@ -515,7 +544,7 @@ void C2_HOOK_FASTCALL ARUndoSplitWeld(tCar_spec* pCar_spec);
 
 // GetNetShapeDataLengthFromData
 
-extern void C2_HOOK_FASTCALL EncodeNetShapeData(tU8* pData, tCar_spec* pCar);
+// EncodeNetShapeData
 
 // DecodeNetShapeData
 
@@ -523,12 +552,40 @@ extern void C2_HOOK_FASTCALL EncodeNetShapeData(tU8* pData, tCar_spec* pCar);
 
 // Vector4Equal
 
+// CompressPlane
+
+// ExpandPlane
+
+// CopySplitInMessage
+
+// SetAllShapeStatusFlags
+
+extern void C2_HOOK_FASTCALL SetAllShapeStatusFlags(tCar_crush_network_shapes* pShapes);
+// NormalizedAngle
+br_scalar C2_HOOK_FASTCALL NormalizedAngle(br_angle pAngle);
+
+br_scalar C2_HOOK_FASTCALL CalculateAmountRepairedFraction(br_angle pOriginal_x, br_angle pOriginal_y, br_angle pOriginal_z, br_angle pRepair_x, br_angle pRepair_y, br_angle pRepair_z, br_scalar* pOriginal_amount);
+
+// ARApplyModelMash
+void C2_HOOK_FASTCALL ARApplyModelMash(br_model* pModel, tCompressed_vector3* pSrc);
+
+// ARUndoModelMash
+void C2_HOOK_FASTCALL ARUndoModelMash(br_model* pModel, tCompressed_vector3* pSrc);
+
+// ARApplyFlap
+void C2_HOOK_FASTCALL ARApplyFlap(br_actor* pActor, tS16 pAngle);
+
+// ARApplySplitWeld
+void C2_HOOK_FASTCALL ARApplySplitWeld(tCar_spec* pCar_spec, br_vector3* pVector);
+
+// ARUndoSplitWeld
+void C2_HOOK_FASTCALL ARUndoSplitWeld(tCar_spec* pCar_spec);
+
+extern void C2_HOOK_FASTCALL EncodeNetShapeData(tU8* pData, tCar_spec* pCar);
+
 extern void C2_HOOK_FASTCALL CompressPlane(tU16 pDest[4], const br_vector4* pSrc);
 
 extern void C2_HOOK_FASTCALL ExpandPlane(br_vector4* pDest, const tU16 pSrc[4]);
 
-// CopySplitInMessage
-
-extern void C2_HOOK_FASTCALL SetAllShapeStatusFlags(tCar_crush_network_shapes* pShapes);
 
 #endif // GUARD_CRUSH1_H

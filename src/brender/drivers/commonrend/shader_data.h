@@ -54,6 +54,13 @@ typedef struct shader_data_scene {
     alignas(16) shader_data_light lights[BR_MAX_LIGHTS];
 
 } shader_data_scene;
+/* The native Cg scene block ends before the unused GLSL lights array.
+ * Keep both allocation and every upload bounded to the same block size. */
+#ifdef __vita__
+#define GL_SCENE_UNIFORM_BYTES offsetof(shader_data_scene, lights)
+#else
+#define GL_SCENE_UNIFORM_BYTES sizeof(shader_data_scene)
+#endif
 BR_STATIC_ASSERT(sizeof(((shader_data_scene*)NULL)->lights) == sizeof(shader_data_light) * BR_MAX_LIGHTS,
     "std::array<shader_data_light> fucked up");
 
@@ -77,6 +84,7 @@ typedef struct shader_data_model {
     alignas(4) uint32_t disable_colour_key;
     alignas(4) uint32_t disable_texture;
     alignas(4) uint32_t fog_enabled;
+    alignas(4) float depth_bias; /* port (Vita Cg shaders): clip-space z offset per unit of w, see modelrender.c */
     alignas(16) br_vector4 fog_colour;
     alignas(4) float fog_min;
     alignas(4) float fog_max;

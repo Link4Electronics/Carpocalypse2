@@ -244,8 +244,34 @@ int C2_HOOK_FASTCALL FUN_00564e5e(int pSample_id) {
     return locals.buffer_description->sample_size * 1000 / locals.buffer_description->sample_rate;
 }
 
+// C2PORT-NONMATCHING: best 80.39% | difftest PASS 2000 trials (spec difftest/specs/00569865_S3PlaySample.json) | reason stack-layout
 // FUNCTION: CARMA2_HW 0x00569865
-int C2_HOOK_FASTCALL S3PlaySample(tS3_channel* pChannel) {
+int C2_HOOK_FASTCALL S3PlaySample(tS3_channel* pChannel, tS3_descriptor* pDescriptor) {
+    int unused;
+    void* sound_buffer;
+    int looping;
 
-    return PDS3PlaySample(pChannel);
+    (void)pDescriptor;
+    unused = 0;
+    looping = 0;
+#if defined(CARPOCALYPSE2_PLATFORM_WIN32)
+    if (pChannel->descriptor != NULL && pChannel->descriptor->type == pChannel->type) {
+        sound_buffer = pChannel->descriptor->pd_handle;
+        if (sound_buffer != NULL) {
+            if (pChannel->repetitions == 0) {
+                looping = 1;
+            }
+            ((int (C2_HOOK_STDCALL *)(void*, unsigned int, int, unsigned int))(*(void***)sound_buffer)[12])(sound_buffer, 0, 0, looping);
+            if (looping == 0) {
+                ((int (C2_HOOK_STDCALL *)(void*, unsigned int))(*(void***)sound_buffer)[13])(sound_buffer, 0);
+            }
+        }
+    }
+#else
+    PDS3PlaySample(pChannel);
+#endif
+    PDS3UpdateChannelVolume(pChannel);
+    PDS3UpdateChannelFrequency(pChannel);
+    (void)unused;
+    return 1;
 }

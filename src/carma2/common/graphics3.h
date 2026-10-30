@@ -84,6 +84,6 @@ extern void C2_HOOK_FASTCALL ConvertCarIcons(br_pixelmap* pMap);
 
 // AddSmashTarget
 
-int NearestPowerOfTwo(int pValue);
+int C2_HOOK_FASTCALL NearestPowerOfTwo(int pValue);
 
 #endif // GUARD_GRAPHICS3_H

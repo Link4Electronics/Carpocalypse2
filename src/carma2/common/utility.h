@@ -4,7 +4,6 @@
 #include "c2_stdio.h"
 #include <stdint.h>
 
-
 #include "brender/br_types.h"
 #include "c2_hooks.h"
 #include "carpocalypse2_types.h"
@@ -24,6 +23,8 @@ extern int C2_HOOK_FASTCALL IRandomBetween(int pA, int pB);
 extern int C2_HOOK_FASTCALL PercentageChance(int pC);
 
 extern int C2_HOOK_FASTCALL IRandomPosNeg(int pN);
+
+extern float C2_HOOK_FASTCALL signf(float pValue);
 
 extern float C2_HOOK_STDCALL FRandomBetween(float pA, float pB);
 
@@ -89,6 +90,8 @@ extern const char* C2_HOOK_FASTCALL GetMiscString(int pIndex);
 
 extern int C2_HOOK_FASTCALL Flash(tU32 pPeriod, tU32* pLast_change, int* pCurrent_state);
 
+extern void C2_HOOK_FASTCALL CopyBrMaterial(br_material* pDestination, const br_material* pSource);
+
 extern double C2_HOOK_FASTCALL RGBDifferenceSqr(tRGB_colour* pColour_1, tRGB_colour* pColour_2);
 
 extern int C2_HOOK_FASTCALL FindBestMatch(tRGB_colour* pRGB_colour, br_pixelmap* pPalette);
@@ -108,6 +111,8 @@ extern void C2_HOOK_FASTCALL PossibleService(void);
 extern void C2_HOOK_FASTCALL DRMatrix34TApplyP(br_vector3* pA, const br_vector3* pB, const br_matrix34* pC);
 
 extern void C2_HOOK_FASTCALL DRPixelmapRectangleCopy(br_pixelmap* dst, br_int_16 dx, br_int_16 dy, br_pixelmap* src, br_int_16 sx, br_int_16 sy, br_int_16 w, br_int_16 h);
+extern void C2_HOOK_FASTCALL DRPixelmapRectangleFill(br_pixelmap* dst, br_int_16 x, br_int_16 y, br_uint_16 w, br_uint_16 h, br_uint_32 colour);
+extern void C2_HOOK_FASTCALL FUN_005192c0(tU16* pPixel);
 
 extern int C2_HOOK_FASTCALL NormalSideOfPlane(br_vector3* pPoint, br_vector3* pNormal, br_scalar pD);
 
@@ -119,9 +124,10 @@ extern void C2_HOOK_FASTCALL DRstrlwr(char* s);
 
 int C2_HOOK_FASTCALL PDCheckDriveExists(const char* pThe_path);
 
+extern void* C2_HOOK_FASTCALL EncodePixelmapRunLength(br_pixelmap* pPixelmap);
+
 extern br_actor* C2_HOOK_FASTCALL CloneActor(br_actor* pActor);
 
-extern void* C2_HOOK_FASTCALL EncodePixelmapRunLength(br_pixelmap* pPixelmap);
 
 extern void C2_HOOK_FASTCALL CalcActorGlobalPos(br_vector3* pResult, br_actor* pActor);
 
@@ -141,11 +147,14 @@ extern void C2_HOOK_FASTCALL DRModelUpdateAndKevificateMaterials(br_model* pMode
 
 extern int C2_HOOK_FASTCALL DRModelUpdateDeluxTurbo(br_actor* pActor, br_model* pModel, br_uint_16 pFlags);
 
+// DistanceFromFace
 extern br_scalar C2_HOOK_FASTCALL DistanceFromFace(const br_vector3* pP, const tFace_ref* pFace);
 
 extern void C2_HOOK_FASTCALL DRBoundsCopy(br_bounds3* pDest, const br_bounds3* pSrc);
 
 extern int C2_HOOK_FASTCALL TestForNan(const float* f);
+
+extern int C2_HOOK_FASTCALL DRVector2TestForNan(const br_vector2* pV);
 
 extern int C2_HOOK_FASTCALL DRVector3TestForNan(const br_vector3* pV);
 
@@ -186,10 +195,13 @@ extern void C2_HOOK_FASTCALL DRPixelmapCopy(br_pixelmap* dst, br_pixelmap* src);
 // tMaterial_exception* C2_HOOK_FASTCALL FindExceptionInList(const char* pIdentifier, tMaterial_exception* pList)
 
 extern void C2_HOOK_FASTCALL NobbleNonzeroBlacks(br_pixelmap* pPalette);
+extern int C2_HOOK_FASTCALL FindBestColourMatch(br_colour pColour);
+
 
 extern void C2_HOOK_FASTCALL GlorifyMaterial(br_material** pMaterials, int pCount, tRendererShadingType pShading);
 
-extern int C2_HOOK_FASTCALL FindBestColourMatch(br_colour pColour);
+
+// FindBestColourMatch
 
 extern void C2_HOOK_FASTCALL WhitenVertexRGB(br_model** pModels, int pCount);
 
@@ -223,7 +235,6 @@ extern void C2_HOOK_FASTCALL ConvertPixelmapType(br_pixelmap* pMap, int pPixel_t
 
 extern void C2_HOOK_FASTCALL FUN_005192a0(br_uint_16* pPixel);
 
-extern void C2_HOOK_FASTCALL FUN_005192c0(tU16* pPixel);
 
 #define CARPOCALYPSE2_UTILITY_H
 
@@ -235,7 +246,6 @@ extern void C2_HOOK_FASTCALL FUN_005192c0(tU16* pPixel);
 #include "c2_stdio.h"
 
 #include <stdint.h>
-
 
 extern const tU8 gLong_key[16];
 
@@ -249,6 +259,8 @@ extern br_pixelmap* g16bit_palette;
 
 extern br_pixelmap* gPalette_source;
 
+tU8* C2_HOOK_FASTCALL FUN_00518010(br_pixelmap* pPixelmap);
+
 void C2_HOOK_FASTCALL StringTransformToLower(char* pStr);
 
 char * C2_HOOK_FASTCALL GetALineWithNoPossibleService(FILE* pF, char* pS);
@@ -260,6 +272,10 @@ void C2_HOOK_FASTCALL DecodeLine2(char* pS);
 void C2_HOOK_FASTCALL EncodeLine2(char* pS);
 
 void C2_HOOK_FASTCALL EncodeFile(char* pThe_path);
+
+void C2_HOOK_FASTCALL EncodeAllFilesInDirectory(char* pThe_path);
+
+void C2_HOOK_FASTCALL EncodeFileWrapper(char* pThe_path);
 
 float C2_HOOK_STDCALL tandeg(float pAngle);
 
@@ -282,5 +298,7 @@ tU16 C2_HOOK_FASTCALL Colour24BitTo16Bit(br_colour pColour);
 int C2_HOOK_FASTCALL sign(int pNumber);
 
 void C2_HOOK_FASTCALL WaitFor(tU32 pDelay);
+
+int C2_HOOK_FASTCALL FUN_005137c0(int pArg);
 
 #endif // GUARD_UTILITY_H

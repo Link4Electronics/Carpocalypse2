@@ -87,7 +87,7 @@ void C2_HOOK_FASTCALL DisposeJoinableGame(int pIndex) {
 }
 
 // GLOBAL: CARMA2_HW 0x0074c6cc
-static tNet_game_options* gChosen_net_game_options;
+tNet_game_options* gChosen_net_game_options;
 
 // FUNCTION: CARMA2_HW 0x00468d70
 int C2_HOOK_FASTCALL ChooseNetCar(tNet_game_details* pNet_game, tNet_game_options* pOptions, int* pCar_index, int pIm_the_host_so_fuck_off) {

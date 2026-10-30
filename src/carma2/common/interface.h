@@ -427,4 +427,6 @@ extern void C2_HOOK_FASTCALL IString_Free(void);
 
 extern const char* C2_HOOK_FASTCALL IString_Get(int pIndex);
 
+int C2_HOOK_FASTCALL InterfaceReturnTrue(void);
+
 #endif // GUARD_INTERFACE_H

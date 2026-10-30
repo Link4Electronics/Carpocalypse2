@@ -40,7 +40,7 @@ void * BR_RESIDENT_ENTRY _BrExceptionResource(void);
  * error.c
  */
 void BR_RESIDENT_ENTRY BrLastErrorSet(br_error type, void *value);
-br_error BR_RESIDENT_ENTRY BrLastErrorGet(void **valuep);
+br_error BR_RESIDENT_ENTRY BrLastErrorGet(void);
 
 /*
  * token.c

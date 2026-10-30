@@ -41,6 +41,8 @@ void C2_HOOK_FASTCALL DoGameOverAnimation(void);
 
 void C2_HOOK_FASTCALL DoGameCompletedAnimation(void);
 
+void C2_HOOK_FASTCALL DoFeatureUnavailableInDemo(void);
+
 void C2_HOOK_FASTCALL StartLoadingScreen(void);
 
 #endif // GUARD_CUTSCENE_H

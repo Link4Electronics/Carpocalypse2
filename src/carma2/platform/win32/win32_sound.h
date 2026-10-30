@@ -17,6 +17,7 @@ extern MCI_OPEN_PARMS gPDS3_mci_open_parms;
 extern MCI_SET_PARMS gPDS3_mci_set_parms;
 extern int gPDS3_cda_initialized;
 extern int gPDS3_midi_playing;
+extern int gPDS3_midi_restart_required;
 extern int gPDS3_cda_media_present;
 extern int gPDS3_cda_is_playing;
 extern int gPDS3_cda_paused;
@@ -24,6 +25,7 @@ extern int gPDS3_cda_track;
 extern MCI_STATUS_PARMS gPDS3_cda_status_parms;
 extern int gPDS3_Number_of_tracks;
 extern MCI_STATUS_PARMS gPDS3_mci_midi_status_parms;
+extern MCI_SEQ_SET_PARMS gPDS3_mci_seq_set_parms;
 extern MCI_OPEN_PARMS mci_open_params;
 extern MCI_PLAY_PARMS mci_play_parms;
 extern MCI_PLAY_PARMS gPDS3_cda_play_parms;
@@ -50,6 +52,11 @@ extern int C2_HOOK_FASTCALL PDS3StopMidiChannel(tS3_channel* pChannel);
 
 extern void C2_HOOK_FASTCALL PDS3CheckCDAMedia(void);
 
+extern int C2_HOOK_FASTCALL PDS3ResumeMidiChannel(tS3_channel* pChannel);
+extern int C2_HOOK_FASTCALL PDS3PauseMidiChannel(tS3_channel* pChannel);
+
+extern int C2_HOOK_FASTCALL PDS3UnmuteMidiChannel(tS3_channel* pChannel);
+
 extern int C2_HOOK_FASTCALL PDS3StopCDAChannel(tS3_channel* pChannel);
 
 extern int C2_HOOK_FASTCALL PDS3StopSampleChannel(tS3_channel* pChannel);
@@ -61,6 +68,12 @@ extern void C2_HOOK_FASTCALL PDS3UpdateCDAVolume(tS3_channel* pChannel, int pVol
 extern void C2_HOOK_FASTCALL PDS3Stop(void);
 
 extern int C2_HOOK_FASTCALL PDS3IsMIDIStopped(tS3_channel *pChannel);
+
+extern int C2_HOOK_FASTCALL PDS3UpdateMidiChannelPitch(tS3_channel* pChannel, int pPitch);
+
+extern int C2_HOOK_FASTCALL PDS3PauseCDA(volatile undefined4 pUnused_arg);
+
+extern int C2_HOOK_FASTCALL PDS3ResumeCDA(tS3_channel* pChannel);
 
 extern int C2_HOOK_FASTCALL PDS3IsCDAPlaying(void);
 
@@ -75,5 +88,9 @@ extern tS3_error_codes C2_HOOK_FASTCALL PDS3StartMidiChannel(tS3_channel* pChann
 extern tS3_error_codes C2_HOOK_FASTCALL PDS3PlayCDAChannel(tS3_channel* pChannel);
 
 extern void C2_HOOK_FASTCALL PDS3ServiceCDA(tS32 pDelta_time);
+
+int C2_HOOK_FASTCALL PDS3Return0(void);
+
+int C2_HOOK_FASTCALL PDS3Return0_B(void);
 
 #endif

@@ -15,9 +15,14 @@
 #include "loadsave.h"
 #include "main.h"
 #include "newgame.h"
+
+#include "structur.h"
+
 #include "network.h"
 #include "utility.h"
 #include "platform.h"
+
+#include "world.h"
 
 #include "c2_string.h"
 
@@ -45,6 +50,9 @@ int gFrontend_net_car_index;
 
 // GLOBAL: CARMA2_HW 0x00763600
 char gFrontend_host_join_buffer[256];
+
+// GLOBAL: CARMA2_HW 0x007638a8
+const char* gJoined_game_notification;
 
 
 // GLOBAL: CARMA2_HW 0x0068703c
@@ -519,6 +527,115 @@ int C2_HOOK_FASTCALL NetworkJoinGoAhead(tFrontend_spec* pFrontend) {
     gLast_graph_sel = -1;
     NetStartProducingJoinList(AddToJoinList);
     return 0;
+}
+
+// FUNCTION: CARMA2_HW 0x00468460
+int C2_HOOK_FASTCALL StartNetworkGame(tFrontend_spec* pFrontend) {
+    int i;
+    int selection;
+
+    (void)pFrontend;
+    ClearAlwaysTyping();
+    if (gLast_graph_sel < 0) {
+        return 0;
+    }
+    NetEndJoinList();
+    selection = gLast_graph_sel;
+    {
+        tJoinable_game* game;
+
+        for (i = 0, game = gGames_to_join; (int)game < (int)&gGames_to_join[CARPOCALYPSE2_ASIZE(gGames_to_join)]; i++, game++) {
+            if (i != selection && game->game != NULL) {
+                NetDisposeGameDetails(game->game);
+                game->game = NULL;
+            }
+        }
+    }
+    SaveOptions();
+    gGame_to_join = gGames_to_join[gLast_graph_sel].game;
+    if (gFrontend_net_mode == eNet_mode_thinking_about_it) {
+        if (gGame_to_join != NULL) {
+            SolidPolyFontText("Joining a game", 200, 100, kPolyfont_hand_green_15pt_lit, eJust_left, 1);
+            gFrontend_net_car_index = -1;
+            do {
+                int i;
+
+                gNet_join_host_result = 0;
+                for (i = 0; i < kMax_netplayers; i++) {
+                    gCurrent_race.opponent_list[i].car_spec = NULL;
+                }
+                gNet_storage_space_initialized = 1;
+                InitialiseStorageSpace(0, &gNet_cars_storage_space, 2000, 50, 2000, 2000, 50);
+                gNet_join_host_result = NetJoinGame(gGame_to_join, gProgram_state.player_name,
+                                                    gFrontend_net_car_index);
+                if (gNet_join_host_result == 0) {
+                    tNet_game_details* game_to_join;
+
+                    LoadRaces(gRace_list, &gNumber_of_races, gCurrent_net_game->type);
+                    game_to_join = gGame_to_join;
+                    gProgram_state.skill_level = 1;
+                    InitGame(game_to_join->start_race);
+                    ReenableNetService();
+                    gJoined_game_notification = GetMiscString(eMiscString_has_joined_the_game);
+                    strcpy(gFrontend_host_join_buffer, gProgram_state.player_name);
+                    strcat(gFrontend_host_join_buffer, " ");
+                    strcat(gFrontend_host_join_buffer, gJoined_game_notification);
+                    NetSendHeadupToAllPlayers(gFrontend_host_join_buffer);
+                    gNet_join_host_result = 1;
+                } else {
+                    if (gNet_storage_space_initialized != 0) {
+                        DisposeStorageSpace(&gNet_cars_storage_space);
+                    }
+                    gNet_storage_space_initialized = 0;
+                }
+            } while (gNet_join_host_result == -4);
+            if (gNet_join_host_result > 0) {
+                goto success;
+            }
+            NetDisposeGameDetails(gGame_to_join);
+        }
+    } else {
+        gFrontend_net_car_index = -1;
+        gRace_index = gProgram_state.current_race_index;
+        gChosen_net_game_options = &gFrontend_net_options;
+        SetNetAvailability(&gFrontend_net_options);
+        gFrontend_net_car_index = PickARandomCar();
+        if (gFrontend_net_car_index >= 0) {
+            gCar_details[gFrontend_net_car_index].ownership = eCar_owner_someone;
+        }
+        InitNetStorageSpace();
+        if (NetHostGame(gFrontend_game_type, &gFrontend_net_options, gRace_index,
+                        gProgram_state.player_name, gFrontend_net_car_index) != NULL) {
+            gProgram_state.skill_level = 1;
+            {
+                tNet_game_details* current_game;
+
+                current_game = gCurrent_net_game;
+                InitGame(current_game->start_race);
+            }
+            ReenableNetService();
+            goto success;
+        }
+        if (gNet_storage_space_initialized != 0) {
+            DisposeStorageSpace(&gNet_cars_storage_space);
+        }
+        gNet_storage_space_initialized = 0;
+        ReenableNetService();
+        NetLeaveGame(gCurrent_net_game);
+    }
+    {
+        tJoinable_game* game;
+
+        for (game = gGames_to_join; (int)game < (int)&gGames_to_join[CARPOCALYPSE2_ASIZE(gGames_to_join)]; game++) {
+            game->game = NULL;
+        }
+    }
+    gLast_graph_sel = -1;
+    NetStartProducingJoinList(AddToJoinList);
+    return 0;
+
+success:
+    return 1;
 }
 
 // FUNCTION: CARMA2_HW 0x00468e80

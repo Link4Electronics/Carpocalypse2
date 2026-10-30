@@ -5,20 +5,25 @@
 
 
 #include "carpocalypse2_types.h"
-#include "physics.h"
 
 extern int gCunning_stunt_bonus[3];
+#include "physics.h"
+
 extern float gArmour_starting_value[100];
 extern float gPower_starting_value[100];
 extern float gOffensive_starting_value[100];
 extern tFloat_bunch_info gCar_softness;
 extern tFloat_bunch_info gCar_car_damage_multiplier;
 extern br_vector3 gZero_v__car;
+extern int gCar_to_car_collisions;
+extern int gCrash_noise_volume;
+extern int gCrash_noise_tag;
+extern const int gCrash_noise_sound_ids[5];
 extern tCar_spec* gRecalc_mass_car;
 
-extern void C2_HOOK_FASTCALL DamageUnit(tCar_spec* pCar, tDamage_type pUnit_type, int pDamage_amount);
-extern void C2_HOOK_FASTCALL DamageEngine(int pDamage_amount);
-extern void C2_HOOK_FASTCALL DamageLFWheel(int pDamage_amount);
+void C2_HOOK_FASTCALL ToggleCarToCarCollisions(void);
+
+void C2_HOOK_FASTCALL DamageUnit(tCar_spec* pCar, tDamage_type pDamage_type, int pMagnitude);
 
 // SwitchCarModel
 
@@ -142,6 +147,7 @@ void C2_HOOK_FASTCALL SkidNoise(tCar_spec* pCar, int pSide, br_scalar pV, int pM
 
 // StopSkid
 
+// CrashNoise
 void C2_HOOK_FASTCALL CrashNoise(br_vector3* pForce, br_vector3* pPosition, int pMaterial);
 
 // CrushAndDamageCar
@@ -203,15 +209,12 @@ void C2_HOOK_FASTCALL CrashNoise(br_vector3* pForce, br_vector3* pPosition, int 
 // CheckForDeAttachmentOfNonCars
 
 // AdjustNonCar
-extern void C2_HOOK_FASTCALL AdjustNonCar(br_actor* pActor, const br_matrix34* pMatrix);
 
 // GetPrecalculatedFacesUnderCar
 
 // TurnOnNonCar
-extern void C2_HOOK_FASTCALL TurnOnNonCar(int pIndex);
 
 // TurnOffNonCar
-extern void C2_HOOK_FASTCALL TurnOffNonCar(int pIndex);
 
 #define CARPOCALYPSE2_CAR_H
 
@@ -221,6 +224,15 @@ extern void C2_HOOK_FASTCALL TurnOffNonCar(int pIndex);
 
 
 extern int gOver_shoot;
+// AdjustNonCar
+extern void C2_HOOK_FASTCALL AdjustNonCar(br_actor* pActor, const br_matrix34* pMatrix);
+
+// TurnOnNonCar
+extern void C2_HOOK_FASTCALL TurnOnNonCar(int pIndex);
+
+// TurnOffNonCar
+extern void C2_HOOK_FASTCALL TurnOffNonCar(int pIndex);
+
 
 extern tCar_spec* gActive_car_list[139];
 
@@ -235,6 +247,8 @@ extern int gFreeze_mechanics;
 extern int gCar_simplification_level;
 
 extern tNon_car_spec* gActive_non_car_list[99];
+
+void C2_HOOK_FASTCALL RemoveNonCarFromActiveList(br_actor* pActor);
 
 extern br_scalar gMin_world_y;
 
@@ -263,8 +277,8 @@ extern int gNet_player_to_view_index;
 extern int gInTheSea;
 
 extern int gStop_opponents_moving;
-
 extern int gMetal_crunch_sound_id[5];
+
 
 extern int gSkid_tag[2];
 
@@ -277,8 +291,10 @@ extern tCamera_key_flags gCamera_key_flags;
 extern tU32 gLast_cunning_stunt;
 
 extern br_actor* gPed_actor;
-
 void C2_HOOK_FASTCALL SetUpPanningCamera(tCar_spec* c);
+
+
+void C2_HOOK_FASTCALL PutOpponentsInNeutral(void);
 
 int C2_HOOK_FASTCALL CollideCamera2(br_vector3* car_pos, br_vector3* cam_pos, br_vector3* old_camera_pos, int manual_move, tPhysics_object *collision_info);
 
@@ -297,9 +313,9 @@ float C2_HOOK_FASTCALL GetCarOverallBoundsMinY(tCar_spec* pCar);
 
 void C2_HOOK_FAKE_THISCALL SetCarSuspGiveAndHeight(tCar_spec* pCar, float pFront_give_factor, float pRear_give_factor, float pDamping_factor, float pExtra_front_height, float pExtra_rear_height);
 
-int C2_HOOK_FASTCALL TestForCarInSensiblePlace(tCar_spec *pCar_spec, br_vector3 *pVec3);
+void C2_HOOK_FASTCALL FUN_0043aa80(tCar_spec* pCar, void* pArg2);
 
-void C2_HOOK_FASTCALL RemoveNonCarFromActiveList(br_actor* pActor);
+int C2_HOOK_FASTCALL TestForCarInSensiblePlace(tCar_spec *pCar_spec, br_vector3 *pVec3);
 
 void C2_HOOK_FAKE_THISCALL ControlCar4(tCar_spec* c, undefined4 pArg2, br_scalar dt);
 
@@ -338,6 +354,7 @@ void C2_HOOK_FASTCALL SetTextureBits(tCar_spec* pCar);
 void C2_HOOK_FASTCALL MungeSomeOtherCarGraphics(void);
 
 void C2_HOOK_FASTCALL GetAverageGridPosition(tRace_info* pThe_race);
+void C2_HOOK_FASTCALL PickActionReplayManualCameraTarget(int pCursor_x, int pCursor_y, float pArg3);
 
 int C2_HOOK_FASTCALL GetPrecalculatedFacesUnderCar(tCar_spec* pCar, tFace_ref** pFace_refs);
 
@@ -348,8 +365,10 @@ int C2_HOOK_FASTCALL ProcessJointForcesCallback(undefined4 param_1,undefined4 pa
 void C2_HOOK_FASTCALL NewFacesListCallback(tPhysics_object* pCollision, undefined4 *arg2);
 
 tNon_car_spec* C2_HOOK_FASTCALL DoPullActorFromWorld(br_actor* actor);
+int C2_HOOK_FASTCALL FUN_00420360(tPhysics_object* pObject);
 
 tNon_car_spec* C2_HOOK_FASTCALL PullActorFromWorld(br_actor* actor);
+int C2_HOOK_FASTCALL FUN_00420310(tPhysics_object* pObject);
 
 float C2_HOOK_FASTCALL GetFrictionFromFace(void *arg1);
 
@@ -382,8 +401,8 @@ void C2_HOOK_FASTCALL PositionCarMountedCamera(tCar_spec* pCar, tU32 pTime);
 tCar_spec* C2_HOOK_FASTCALL GetRaceLeader(void);
 
 void C2_HOOK_FASTCALL CheckCameraHither(void);
-
 void C2_HOOK_FASTCALL AmIGettingBoredWatchingCameraSpin(void);
+
 
 void C2_HOOK_FASTCALL SaveCameraPosition(int i);
 
@@ -392,6 +411,8 @@ void C2_HOOK_FASTCALL RestoreCameraPosition(int i);
 void C2_HOOK_FASTCALL GeneralisedPositionExternalCamera(tCar_spec* pCar, br_matrix34* pMat, br_vector3* pPos, float pSpeed, float pSpeedo_speed, br_vector3* pDirection, br_vector3* pOmega, tU32 pTime_difference);
 
 void C2_HOOK_FASTCALL NormalPositionExternalCamera(tCar_spec* pCar, tU32 pTime);
+
+extern br_angle gPanning_camera_angle;
 
 void C2_HOOK_FASTCALL SetPanningFieldOfView(void);
 
@@ -447,7 +468,7 @@ void C2_HOOK_FASTCALL MakeLiftGoUp(tNon_car_spec* pNon_car);
 
 void C2_HOOK_FASTCALL SetCollisionFlagsAndStuff(tCar_spec* pCar);
 float C2_HOOK_FASTCALL ComputeCarImpact(tCar_spec* pCar, int pDelta, float* pOut);
-void C2_HOOK_FASTCALL SelectCrushNetwork(undefined4* pField, tPhysics_object* pObj, int pMode);
+int C2_HOOK_FASTCALL SelectCrushNetwork(undefined4* pField, tPhysics_object* pObject, int pMode);
 void C2_HOOK_FASTCALL CrushCarByNetwork(tCar_spec* pCar);
 void C2_HOOK_FASTCALL WeldCarByNetwork(tCar_spec* pCar);
 void C2_HOOK_FASTCALL WeldCarPartial(tCar_spec* pCar);
@@ -458,6 +479,8 @@ void C2_HOOK_FASTCALL AddDrag(tCar_spec* pCar, tPhysics_object* pObject, br_scal
 void C2_HOOK_FASTCALL DragChildren(tCar_spec* pCar, tPhysics_object* pChild);
 
 void C2_HOOK_FASTCALL MoveAndCollideCar(tCar_spec* pCar, br_scalar pDt);
+
+void C2_HOOK_FASTCALL MoveNonCar(tNon_car_spec* pNon_car, br_scalar pDt);
 
 void C2_HOOK_FASTCALL MoveAndCollideNonCar(tNon_car_spec* pNon_car, br_scalar pDt);
 

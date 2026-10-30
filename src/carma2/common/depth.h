@@ -3,7 +3,6 @@
 
 #include <brender/brender.h>
 
-
 #include "c2_hooks.h"
 #include "brender/brender.h"
 #include "carpocalypse2_types.h"
@@ -39,6 +38,7 @@ extern void C2_HOOK_FASTCALL InstantDepthChange(tDepth_effect_type pType, br_pix
 extern void C2_HOOK_FASTCALL InitDepthEffects(void);
 
 // DoHorizon
+extern void C2_HOOK_FAKE_THISCALL DoHorizon(br_pixelmap* pRender_buffer, undefined4 pEdx, br_actor* pCamera, br_matrix34* pCamera_to_world);
 
 // DoDepthCue
 
@@ -58,11 +58,14 @@ extern void C2_HOOK_FASTCALL InitDepthEffects(void);
 
 // AssertYons
 
-extern void C2_HOOK_FASTCALL IncreaseYon(void);
+// IncreaseYon
 
-extern void C2_HOOK_FASTCALL DecreaseYon(void);
+// DecreaseYon
 
 extern void C2_HOOK_STDCALL SetYon(br_scalar pYon);
+extern void C2_HOOK_FASTCALL IncreaseYon(void);
+
+
 
 // GetYon
 
@@ -99,14 +102,13 @@ extern void C2_HOOK_FASTCALL ToggleDepthCueingQuietly(void);
 #include "carpocalypse2_types.h"
 #include <brender/brender.h>
 
-
 extern int gSky_on;
 
 extern br_pixelmap* gFog_shade_table;
 
 extern br_pixelmap* gAcid_shade_table;
-
 extern tSpecial_volume* gDAT_0079ec44;
+
 
 extern tDepth_effect_type gSwap_depth_effect_type;
 
@@ -182,6 +184,8 @@ void C2_HOOK_FASTCALL SkyTextureChanged(void);
 
 void C2_HOOK_FASTCALL SetSkyColour(br_colour c);
 
+void C2_HOOK_FASTCALL FUN_004472c0(br_model* pModel, tPMFMCB* pCallback);
+
 void C2_HOOK_FASTCALL ChangeDepthEffect(void);
 
 void C2_HOOK_FASTCALL DepthEffectSky(br_pixelmap* pRender_buffer, br_pixelmap* pDepth_buffer, br_actor* pCamera, br_matrix34* pCamera_to_world);
@@ -189,5 +193,9 @@ void C2_HOOK_FASTCALL DepthEffectSky(br_pixelmap* pRender_buffer, br_pixelmap* p
 void C2_HOOK_FASTCALL DoWobbleCamera(br_actor* pCamera);
 
 void C2_HOOK_FASTCALL DoSpecialCameraEffect(br_actor* pCamera, br_matrix34* pCamera_to_world);
+
+extern tSpecial_volume* gDAT_0079ec44;
+
+extern void C2_HOOK_FASTCALL DecreaseYon(void);
 
 #endif // GUARD_DEPTH_H

@@ -7,6 +7,7 @@
 #include "c2_stdio.h"
 
 extern const char* gSmash_side_effect_direction_names[3];
+extern br_actor* gSmashable_noncar_shrapnel_actors[100];
 
 intptr_t C2_HOOK_CDECL AddGhostActorToBuffer(br_actor* pActor, void* data);
 

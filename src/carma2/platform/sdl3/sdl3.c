@@ -533,9 +533,10 @@ static int CI_ResolveDirCaseInsensitive(const char* pPath, char* out, size_t out
 }
 #endif
 
-void PDEnumPath(const char* path, tEnumPathCallback pCallback, void* data) {
+int PDEnumPath(const char* path, tEnumPathCallback pCallback, void* data) {
     int count;
     int i;
+    int callback_res;
     char **files;
 #if defined(CARPOCALYPSE2_FIX_BUGS) && !defined(SDL_PLATFORM_WINDOWS)
     char resolved_path[256];
@@ -546,6 +547,10 @@ void PDEnumPath(const char* path, tEnumPathCallback pCallback, void* data) {
 #else
     files = SDL_GlobDirectory(path, "*.*", 0, &count);
 #endif
+    callback_res = 0;
+    if (!files) {
+        return 0;
+    }
     for (i = 0; i < count; i++) {
         tPath_name found_path;
         SDL_PathInfo info;
@@ -564,11 +569,13 @@ void PDEnumPath(const char* path, tEnumPathCallback pCallback, void* data) {
         if (info.type != SDL_PATHTYPE_FILE) {
             continue;
         }
-        if (pCallback(found_path, data) != 0) {
+        callback_res = pCallback(found_path, data);
+        if (callback_res != 0) {
             break;
         }
     }
     SDL_free(files);
+    return callback_res;
 }
 
 int PDmkdir(const char *path) {

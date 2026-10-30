@@ -62,6 +62,9 @@ typedef struct br_device_pixelmap {
 
             GLuint screen_buffer_vao, screen_buffer_ebo;
 
+            /* port: back buffers render at render_scale x their pixelmap size */
+            int render_scale;
+
             br_int_32 num_refs;
         } asFront;
         struct {
@@ -86,11 +89,23 @@ typedef struct br_device_pixelmap {
         } asDepth;
     };
     struct br_device_clut* clut;
+
+    /* port: the full-size pixelmap that owns the FBO/texture and the CPU overlay
+     * (sub-pixelmaps share it; the front screen points to itself) */
+    struct br_device_pixelmap* root;
 } br_device_pixelmap;
 
 BR_DEVICE_PIXELMAP_COMMON_DECLS;
 
 void RenderFullScreenTextureToFrameBuffer(br_device_pixelmap* self, GLuint textureId, GLuint fb, int flipVertically, int discardPurplePixels);
+
+/* port: FBO-backed back buffers (backbuf.c) */
+int GLBackScale(const br_device_pixelmap* self);
+void GLBackViewport(br_device_pixelmap* self, int* x, int* y, int* w, int* h);
+void GLBackBindTarget(br_device_pixelmap* self);
+void GLBackFlushOverlay(br_device_pixelmap* self);
+void GLBackEnsureOverlay(br_device_pixelmap* root);
+void GLBackDrawTexture(br_device_pixelmap* screen, GLuint tex, int vx, int vy, int vw, int vh, int flip, int discard_purple);
 
 #endif
 

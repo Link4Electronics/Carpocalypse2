@@ -258,7 +258,7 @@ void C2_HOOK_FASTCALL RepairSmash(tCar_spec* pCar_spec, tCar_crush_buffer_entry*
 
 // TotallyRepairSmash
 
-static void C2_HOOK_FASTCALL InitGlassFragments(void) {
+void C2_HOOK_FASTCALL InitGlassFragments(void) {
     int i;
     tSmash_vertex* smash_vertex;
 

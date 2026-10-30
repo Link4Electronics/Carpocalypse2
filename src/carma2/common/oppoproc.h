@@ -5,18 +5,6 @@
 #include "carpocalypse2_types.h"
 #include <brender/brender.h>
 
-double C2_HOOK_CDECL NavigationFloatDifference(const float* pA, const float* pB);
-double C2_HOOK_CDECL NavigationAdd(double pA, double pB);
-double C2_HOOK_CDECL NavigationSubtract(double pA, double pB);
-double C2_HOOK_CDECL NavigationMultiply(double pA, double pB);
-double C2_HOOK_CDECL NavigationDivide(double pA, double pB);
-double C2_HOOK_CDECL NavigationSqrt(double pA);
-float C2_HOOK_CDECL NavigationScalarRound(double pA);
-int C2_HOOK_CDECL NavigationOrderedGreater(double pA, double pB);
-int C2_HOOK_CDECL NavigationLessOrUnordered(double pA, double pB);
-int C2_HOOK_CDECL NavigationTruncate(double pValue);
-double C2_HOOK_CDECL NavigationCornerSectionLength(tOpponent_spec* pOpponent_spec, tCorner* pCorner, int pSection);
-
 // DoNotDprintf
 
 // StraightestArcForCorner2D
@@ -62,7 +50,27 @@ double C2_HOOK_CDECL NavigationCornerSectionLength(tOpponent_spec* pOpponent_spe
 
 #include "c2_hooks.h"
 
+typedef struct tDial_flic_option {
+    int count;
+    int y;
+    int selected;
+    int flic_frames[5];
+} tDial_flic_option;
+double C2_HOOK_CDECL NavigationFloatDifference(const float* pA, const float* pB);
+double C2_HOOK_CDECL NavigationAdd(double pA, double pB);
+double C2_HOOK_CDECL NavigationSubtract(double pA, double pB);
+double C2_HOOK_CDECL NavigationMultiply(double pA, double pB);
+double C2_HOOK_CDECL NavigationDivide(double pA, double pB);
+double C2_HOOK_CDECL NavigationSqrt(double pA);
+float C2_HOOK_CDECL NavigationScalarRound(double pA);
+int C2_HOOK_CDECL NavigationOrderedGreater(double pA, double pB);
+int C2_HOOK_CDECL NavigationLessOrUnordered(double pA, double pB);
+int C2_HOOK_CDECL NavigationTruncate(double pValue);
+double C2_HOOK_CDECL NavigationCornerSectionLength(tOpponent_spec* pOpponent_spec, tCorner* pCorner, int pSection);
 
+
+
+extern tDial_flic_option gDial_flic_options[13];
 
 void C2_HOOK_CDECL DoNotDprintf_oppoproc(const char* pMessage, ...);
 
@@ -75,5 +83,12 @@ int C2_HOOK_FASTCALL GetStraight(br_vector2* pStart, br_vector2* pFinish, float*
 int C2_HOOK_FASTCALL CalcCorners(tCorner* pCorners, int pSection, float pWidth, const br_vector2* pStart, tOpponent_spec* pOpponent_spec);
 
 int C2_HOOK_FASTCALL CalcSOCs(int pNext_section, int pCount_corners, tCorner *pCorners, tOpponent_spec *pOpponent_spec, tSOC* pSocs, tCar_spec* pCar);
+
+int C2_HOOK_FASTCALL FUN_004b24f0(int* pDial_index);
+int C2_HOOK_FASTCALL FUN_004b2430(int* pDial_index);
+
+int C2_HOOK_FAKE_THISCALL FUN_004b2640(int* pDial_index, undefined4 pArg2, int pX_offset, undefined4 pArg3);
+
+int C2_HOOK_FASTCALL FUN_004b25c0(int* pArg1, int* pArg2);
 
 #endif // GUARD_OPPOPROC_H

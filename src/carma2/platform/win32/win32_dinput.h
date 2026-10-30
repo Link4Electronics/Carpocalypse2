@@ -15,6 +15,11 @@ extern int gForceFeedbackAvailable;
 extern IDirectInputDevice2A* gDirectInputJoystickDevices[16];
 extern tDirectInputJoystickInfo gDirectInputJoystickInfos[16];
 
+extern int gCurrent_joystick_effect_index;
+extern void C2_HOOK_FASTCALL FUN_004587c0(void);
+
+extern int C2_HOOK_FASTCALL SetDirectInputDeviceRange(IDirectInputDevice2A* pDevice, LONG pMin, LONG pMax);
+
 extern void C2_HOOK_FASTCALL KeyBegin(void);
 
 extern void C2_HOOK_FASTCALL Win32InitInputDevice(void);
@@ -57,6 +62,7 @@ extern void C2_HOOK_FASTCALL Win32InitInputDevice(void);
 
 extern int C2_HOOK_FASTCALL JoystickDInputBegin(void);
 
+
 extern tU32 C2_HOOK_FASTCALL PDGetJoystickButtonStates(void);
 
 extern void C2_HOOK_FASTCALL PDSetKeyArray(int* pKeys, int pMark);
@@ -94,6 +100,8 @@ extern int C2_HOOK_FASTCALL PDGetJoy2Y(void);
 extern void C2_HOOK_FASTCALL PDInitJoysticks(void);
 
 extern void C2_HOOK_FASTCALL FUN_0045c420(void);
+
+extern tJoystick_force_effect* C2_HOOK_FASTCALL FUN_00458430(int pIndex);
 
 extern void C2_HOOK_FASTCALL PDPlayFFBEffectIndex(int index);
 

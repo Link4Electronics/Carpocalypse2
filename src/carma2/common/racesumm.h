@@ -4,7 +4,6 @@
 #include "c2_hooks.h"
 #include "carpocalypse2_types.h"
 
-
 // SortScores
 
 // SortGameScores
@@ -26,7 +25,6 @@ extern int C2_HOOK_FASTCALL AnyBuyableCars(void);
 #include "c2_hooks.h"
 
 #include "carpocalypse2_types.h"
-
 
 extern int gPlayer_lookup_racesumm[14];
 

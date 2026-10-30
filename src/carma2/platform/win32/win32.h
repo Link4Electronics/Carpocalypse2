@@ -38,6 +38,8 @@ extern LARGE_INTEGER gPerformanceCounterFrequency_s;
 extern LARGE_INTEGER gPerformanceCounterFrequency_ms;
 extern LARGE_INTEGER gPerformanceCounterFrequency_us;
 
+extern tU32 C2_HOOK_FASTCALL PDGetElapsedMilliseconds(void);
+
 extern tU32 gTime_app_activated;
 
 extern HINSTANCE gHInstance;

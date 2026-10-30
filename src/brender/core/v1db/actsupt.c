@@ -135,6 +135,17 @@ void C2_HOOK_CDECL BrActorRelink(br_actor* parent, br_actor* a) {
     BrActorAdd(parent, BrActorRemove(a));
 }
 
+// FUNCTION: CARMA2_HW 0x0040ca40
+void C2_HOOK_CDECL BrActorRelink_library(br_actor* parent, br_actor* a) {
+    br_matrix34 mat;
+
+    if (a->parent != parent) {
+        BrActorToActorMatrix34(&mat, a, parent);
+        BrMatrix34ToTransform(&a->t, &mat);
+        BrActorAdd(parent, BrActorRemove(a));
+    }
+}
+
 // FUNCTION: CARMA2_HW 0x0051e1a0
 br_actor* C2_HOOK_CDECL BrActorAllocate(br_uint_8 type, void* type_data) {
     br_actor* a;
@@ -428,6 +439,94 @@ br_uint_16 C2_HOOK_CDECL BrActorToActorMatrix34(br_matrix34* m, br_actor* a, br_
     BrMatrix34Mul(m, &mata, &matc);
 
     return BrTransformCombineTypes(at, bt);
+}
+
+// FUNCTION: CARMA2_HW 0x0040c660
+br_uint_8 C2_HOOK_CDECL BrActorToActorMatrix34_Legacy(br_matrix34* m, br_actor* a, br_actor* b) {
+    br_uint_8 transform_type_combine[49] = {
+        0, 0, 0, 0, 0, 0, 0,
+        0, 1, 1, 1, 1, 1, 1,
+        0, 1, 1, 1, 1, 2, 2,
+        0, 1, 1, 1, 1, 3, 3,
+        0, 1, 1, 1, 1, 4, 4,
+        0, 1, 2, 3, 4, 5, 5,
+        0, 1, 2, 3, 4, 5, 6,
+    };
+    br_matrix34 mat_a;
+    br_matrix34 mat_b;
+    br_matrix34 mat_c;
+    br_uint_8 a_type;
+    br_uint_8 b_type;
+
+    if (a == b) {
+        BrMatrix34Identity(m);
+        return BR_TRANSFORM_IDENTITY;
+    }
+    if (a->parent == b) {
+        BrTransformToMatrix34(m, &a->t);
+        return (br_uint_8)a->t.type;
+    }
+    if (b->parent == a) {
+        BrTransformToMatrix34(&mat_b, &b->t);
+        if (b->t.type != BR_TRANSFORM_MATRIX34) {
+            BrMatrix34LPInverse(m, &mat_b);
+        } else {
+            BrMatrix34Inverse(m, &mat_b);
+        }
+        return (br_uint_8)b->t.type;
+    }
+
+    a_type = BR_TRANSFORM_IDENTITY;
+    BrMatrix34Identity(&mat_a);
+    b_type = BR_TRANSFORM_IDENTITY;
+    BrMatrix34Identity(&mat_b);
+
+    while (a != NULL && b != NULL && a != b) {
+        if (a->depth > b->depth) {
+            if (a->t.type != BR_TRANSFORM_IDENTITY) {
+                BrMatrix34PostTransform(&mat_a, &a->t);
+                a_type = transform_type_combine[a_type * 7 + a->t.type];
+            }
+            a = a->parent;
+        } else if (b->depth > a->depth) {
+            if (b->t.type != BR_TRANSFORM_IDENTITY) {
+                BrMatrix34PostTransform(&mat_b, &b->t);
+                b_type = transform_type_combine[b_type * 7 + b->t.type];
+            }
+            b = b->parent;
+        } else {
+            if (a->t.type != BR_TRANSFORM_IDENTITY) {
+                BrMatrix34PostTransform(&mat_a, &a->t);
+                a_type = transform_type_combine[a_type * 7 + a->t.type];
+            }
+            if (b->t.type != BR_TRANSFORM_IDENTITY) {
+                BrMatrix34PostTransform(&mat_b, &b->t);
+                b_type = transform_type_combine[b_type * 7 + b->t.type];
+            }
+            a = a->parent;
+            b = b->parent;
+        }
+    }
+
+    if (b_type == BR_TRANSFORM_IDENTITY) {
+        BrMatrix34Copy(m, &mat_a);
+        return a_type;
+    }
+    if (a_type == BR_TRANSFORM_IDENTITY) {
+        if (b_type != BR_TRANSFORM_MATRIX34) {
+            BrMatrix34LPInverse(m, &mat_b);
+        } else {
+            BrMatrix34Inverse(m, &mat_b);
+        }
+        return b_type;
+    }
+    if (b_type != BR_TRANSFORM_MATRIX34) {
+        BrMatrix34LPInverse(&mat_c, &mat_b);
+    } else {
+        BrMatrix34Inverse(&mat_c, &mat_b);
+    }
+    BrMatrix34Mul(m, &mat_a, &mat_c);
+    return transform_type_combine[a_type * 7 + b_type];
 }
 
 // FUNCTION: CARMA2_HW 0x0051eae0

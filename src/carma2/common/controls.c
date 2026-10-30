@@ -9,6 +9,9 @@
 #include "drone.h"
 #include "errors.h"
 #include "finteray.h"
+
+#include "frontend_controls.h"
+
 #include "globvars.h"
 #include "globvrkm.h"
 #include "globvrme.h"
@@ -221,6 +224,24 @@ tToggle_element gToggle_array[44] = {
 
 // GLOBAL: CARMA2_HW 0x0067c3f8
 int gRecovery_voucher_count;
+
+// GLOBAL: CARMA2_HW 0x006923d8
+tPhysics_object* gUnknown_006923d8;
+
+// GLOBAL: CARMA2_HW 0x00594e9c
+const char gAct_file_extension[] = ".ACT";
+
+// GLOBAL: CARMA2_HW 0x0079d860
+tHeadup_text_buffer gHeadup_text_buffer_0079d860;
+
+extern int C2_HOOK_FASTCALL FUN_0045a7f0(char* pFilename, int* pArg2);
+extern const char* gSelected_actor_name;
+extern void C2_HOOK_CDECL MurderLastActor(void);
+
+// GLOBAL: CARMA2_HW 0x0079d880
+tHeadup_text_buffer gHeadup_text_buffer_0079d880;
+
+extern const char* gSelected_actor_name;
 
 // FUNCTION: CARMA2_HW 0x00444700
 void C2_HOOK_FASTCALL AddVouchers(int amount) {
@@ -2614,6 +2635,221 @@ void C2_HOOK_FASTCALL FUN_0045acf0(void) {
     NOT_IMPLEMENTED();
 }
 
+// C2PORT-NONMATCHING: best 74.80% | difftest PASS 2000 trials (spec difftest/specs/0045ae20_FUN_0045ae20.json) | reason regalloc-loop
+// FUNCTION: CARMA2_HW 0x0045ae20
+void C2_HOOK_FASTCALL FUN_0045ae20(void) {
+    tU32 start_time;
+    int i;
+    int j;
+    int font;
+    tHeadup_text* text;
+    tHeadup_text* current;
+    int* headup;
+
+    if (gINT_0068b8e4 == 0) {
+        return;
+    }
+    start_time = PDGetTotalTime();
+    if (PDKeyDown(0x42)) {
+        if (&gHeadup_text_buffer_0079d860 != NULL
+                && gHeadup_text_buffer_0079d860.text_last_add != NULL
+                && gHeadup_text_buffer_0079d860.text_last_add != gHeadup_text_buffer_0079d860.texts) {
+            gHeadup_text_buffer_0079d860.text_last_add = gHeadup_text_buffer_0079d860.texts;
+            gHeadup_text_buffer_0079d860.pos_last_add--;
+            i = gHeadup_text_buffer_0079d860.pos_last_add;
+            if (i > 0) {
+                do {
+                    gHeadup_text_buffer_0079d860.text_last_add = gHeadup_text_buffer_0079d860.text_last_add->next;
+                    i--;
+                } while (i != 0);
+            }
+        }
+        do {
+            i = PDGetTotalTime();
+        } while ((tU32)(i - start_time) < 100U);
+    }
+    if (PDKeyDown(0x43)) {
+        if (&gHeadup_text_buffer_0079d860 != NULL
+                && gHeadup_text_buffer_0079d860.text_last_add != NULL
+                && gHeadup_text_buffer_0079d860.text_last_add->next != NULL) {
+            gHeadup_text_buffer_0079d860.text_last_add = gHeadup_text_buffer_0079d860.text_last_add->next;
+            gHeadup_text_buffer_0079d860.pos_last_add++;
+        }
+        do {
+            i = PDGetTotalTime();
+        } while ((tU32)(i - start_time) < 100U);
+    }
+    if (PDKeyDown(0x44)) {
+        i = gHeadup_text_buffer_0079d860.field_0x10 - 1;
+        if (i > 0) {
+            do {
+                if (&gHeadup_text_buffer_0079d860 != NULL
+                        && gHeadup_text_buffer_0079d860.text_last_add != NULL
+                        && gHeadup_text_buffer_0079d860.text_last_add != gHeadup_text_buffer_0079d860.texts) {
+                    gHeadup_text_buffer_0079d860.pos_last_add--;
+                    gHeadup_text_buffer_0079d860.text_last_add = gHeadup_text_buffer_0079d860.texts;
+                    j = gHeadup_text_buffer_0079d860.pos_last_add;
+                    if (j > 0) {
+                        do {
+                            gHeadup_text_buffer_0079d860.text_last_add = gHeadup_text_buffer_0079d860.text_last_add->next;
+                            j--;
+                        } while (j != 0);
+                    }
+                }
+                i--;
+            } while (i != 0);
+        }
+        while (PDKeyDown(0x44)) {
+        }
+    }
+    if (PDKeyDown(0x45)) {
+        i = gHeadup_text_buffer_0079d860.field_0x10 - 1;
+        current = gHeadup_text_buffer_0079d860.text_last_add;
+        if (i > 0) {
+            do {
+                if (&gHeadup_text_buffer_0079d860 != NULL && current != NULL && current->next != NULL) {
+                    current = current->next;
+                    gHeadup_text_buffer_0079d860.text_last_add = current;
+                    gHeadup_text_buffer_0079d860.pos_last_add++;
+                }
+                i--;
+            } while (i != 0);
+        }
+        while (PDKeyDown(0x45)) {
+        }
+    }
+    if (PDKeyDown(0x40)) {
+        gSelected_actor_name = (const char*)gHeadup_text_buffer_0079d860.text_last_add;
+        DropActor(0, 0);
+        gSelected_actor_name = NULL;
+        while (PDKeyDown(0x40)) {
+        }
+    }
+    if (PDKeyDown(0x41)) {
+        MurderLastActor();
+        while (PDKeyDown(0x41)) {
+        }
+    }
+    AdjustHeadupTextBuffer(&gHeadup_text_buffer_0079d860);
+    text = gHeadup_text_buffer_0079d860.field_0x4;
+    headup = gRace_head_ups;
+    do {
+        if (text != NULL) {
+            font = -1;
+            if (text != gHeadup_text_buffer_0079d860.text_last_add) {
+                font = -2;
+            }
+            ChangeHeadupFont(*headup, font);
+            ChangeHeadupText(*headup, text->text);
+            text = text->next;
+        } else {
+            ChangeHeadupText(*headup, "");
+        }
+        headup++;
+    } while ((int)headup < (int)&gRace_head_ups[22]);
+}
+
+// FUNCTION: CARMA2_HW 0x0045b150
+void C2_HOOK_FASTCALL FUN_0045b150(void) {
+    tU32 start_time;
+    tHeadup_text* text;
+    tHeadup_text* current;
+    int* headup;
+    int i;
+    int j;
+    int font;
+
+    if (gINT_0068b8e4 == 0) {
+        return;
+    }
+    start_time = PDGetTotalTime();
+    if (PDKeyDown(0x42)) {
+        if (&gHeadup_text_buffer_0079d880 != NULL
+                && gHeadup_text_buffer_0079d880.text_last_add != NULL
+                && gHeadup_text_buffer_0079d880.text_last_add != gHeadup_text_buffer_0079d880.texts) {
+            gHeadup_text_buffer_0079d880.text_last_add = gHeadup_text_buffer_0079d880.texts;
+            gHeadup_text_buffer_0079d880.pos_last_add--;
+            i = gHeadup_text_buffer_0079d880.pos_last_add;
+            if (i > 0) {
+                do {
+                    gHeadup_text_buffer_0079d880.text_last_add = gHeadup_text_buffer_0079d880.text_last_add->next;
+                    i--;
+                } while (i != 0);
+            }
+        }
+        do {
+            i = PDGetTotalTime();
+        } while ((tU32)(i - start_time) < 100U);
+    }
+    if (PDKeyDown(0x43)) {
+        if (&gHeadup_text_buffer_0079d880 != NULL
+                && gHeadup_text_buffer_0079d880.text_last_add != NULL
+                && gHeadup_text_buffer_0079d880.text_last_add->next != NULL) {
+            gHeadup_text_buffer_0079d880.text_last_add = gHeadup_text_buffer_0079d880.text_last_add->next;
+            gHeadup_text_buffer_0079d880.pos_last_add++;
+        }
+        do {
+            i = PDGetTotalTime();
+        } while ((tU32)(i - start_time) < 100U);
+    }
+    if (PDKeyDown(0x44)) {
+        i = gHeadup_text_buffer_0079d880.field_0x10 - 1;
+        if (i > 0) {
+            do {
+                if (&gHeadup_text_buffer_0079d880 != NULL
+                        && gHeadup_text_buffer_0079d880.text_last_add != NULL
+                        && gHeadup_text_buffer_0079d880.text_last_add != gHeadup_text_buffer_0079d880.texts) {
+                    gHeadup_text_buffer_0079d880.pos_last_add--;
+                    gHeadup_text_buffer_0079d880.text_last_add = gHeadup_text_buffer_0079d880.texts;
+                    j = gHeadup_text_buffer_0079d880.pos_last_add;
+                    if (j > 0) {
+                        do {
+                            gHeadup_text_buffer_0079d880.text_last_add = gHeadup_text_buffer_0079d880.text_last_add->next;
+                            j--;
+                        } while (j != 0);
+                    }
+                }
+                i--;
+            } while (i != 0);
+        }
+        while (PDKeyDown(0x44)) {
+        }
+    }
+    if (PDKeyDown(0x45)) {
+        i = gHeadup_text_buffer_0079d880.field_0x10 - 1;
+        current = gHeadup_text_buffer_0079d880.text_last_add;
+        if (i > 0) {
+            do {
+                if (&gHeadup_text_buffer_0079d880 != NULL && current != NULL && current->next != NULL) {
+                    current = current->next;
+                    gHeadup_text_buffer_0079d880.text_last_add = current;
+                    gHeadup_text_buffer_0079d880.pos_last_add++;
+                }
+                i--;
+            } while (i != 0);
+        }
+        while (PDKeyDown(0x45)) {
+        }
+    }
+    AdjustHeadupTextBuffer(&gHeadup_text_buffer_0079d880);
+    text = gHeadup_text_buffer_0079d880.field_0x4;
+    headup = gRace_head_ups;
+    do {
+        if (text == NULL) {
+            ChangeHeadupText(*headup, "");
+        } else {
+            font = -1;
+            if (text != gHeadup_text_buffer_0079d880.text_last_add) {
+                font = -2;
+            }
+            ChangeHeadupFont(*headup, font);
+            ChangeHeadupText(*headup, text->text);
+            text = text->next;
+        }
+        headup++;
+    } while (headup < &gRace_head_ups[22]);
+}
+
 // FUNCTION: CARMA2_HW 0x0045c760
 void C2_HOOK_FASTCALL FUN_0045c760(void) {
 #ifdef CARPOCALYPSE2_PLATFORM_WIN32
@@ -3067,7 +3303,7 @@ void C2_HOOK_FASTCALL FUN_0040e530(br_actor* pActor) {
 }
 
 // GLOBAL: CARMA2_HW 0x0058f628
-static int gView_opponent_index;
+int gView_opponent_index = -1;
 
 // FUNCTION: CARMA2_HW 0x0040e590
 void C2_HOOK_FASTCALL ViewOpponent(void) {

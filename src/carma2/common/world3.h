@@ -73,6 +73,9 @@ extern int C2_HOOK_FASTCALL LoadModelsFromListFile(tBrender_storage* pStorage_sp
 
 extern int C2_HOOK_FASTCALL AddPixelmaps(tBrender_storage* pStorage_space, const char* path);
 
+
+
+
 extern br_pixelmap* C2_HOOK_FASTCALL LoadSinglePixelmap(tBrender_storage* pStorage, const char* pName);
 
 extern br_pixelmap* C2_HOOK_FASTCALL LoadSingleShadeTable(tBrender_storage* pStorage_space, const char* pName);

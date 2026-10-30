@@ -32,6 +32,9 @@
 
 #include <stdlib.h>
 
+// GLOBAL: CARMA2_HW 0x00589d28
+float gFLOAT_00589d28 = 6.9f;
+
 #include "netgame.h"
 #include "loading1.h"
 #include "graphics1.h"
@@ -749,6 +752,17 @@ tOpponent_Status C2_HOOK_FASTCALL GetOpponentStatus(tCar_spec* pCar) {
     }
 }
 
+// FUNCTION: CARMA2_HW 0x00575bf0
+char* C2_HOOK_CDECL LookForChar(const char* pString, int pChar) {
+    while (*pString != '\0') {
+        if (*pString == (char)pChar) {
+            return (char*)pString;
+        }
+        pString++;
+    }
+    return NULL;
+}
+
 // GLOBAL: CARMA2_HW 0x0068d900
 tU32 gOppo_stat_flash_change_1;
 // GLOBAL: CARMA2_HW 0x0068d904
@@ -757,6 +771,10 @@ tU32 gOppo_stat_flash_change_2;
 int gOppo_stat_flash_state_1;
 // GLOBAL: CARMA2_HW 0x0068d90c
 int gOppo_stat_flash_state_2;
+
+// GLOBAL: CARMA2_HW 0x00659b24
+int gOppo_stat_message_index = -1;
+
 // GLOBAL: CARMA2_HW 0x00659b24
 int gOppo_stat_message_index;
 
@@ -1674,7 +1692,7 @@ void C2_HOOK_FASTCALL DimRectangleClipped(br_pixelmap* pPixelmap, int pLeft, int
 }
 
 // FUNCTION: CARMA2_HW 0x0047ca50
-void C2_HOOK_FASTCALL DrawRRectangle(br_pixelmap* pPixelmap, int pLeft, int pTop, int pRight, int pBottom, br_uint_32 pColour) {
+void C2_HOOK_FASTCALL DrawRectangleOutline(br_pixelmap* pPixelmap, int pLeft, int pTop, int pRight, int pBottom, br_uint_32 pColour) {
 
     BrPixelmapLine(pPixelmap, pLeft + 1, pTop, pRight - 1, pTop, pColour);
     BrPixelmapLine(pPixelmap, pLeft + 1, pBottom, pRight - 1, pBottom, pColour);
@@ -2335,6 +2353,10 @@ void C2_HOOK_FASTCALL RedrawHeadupTexts(tU32 pThe_time) {
         }
     }
 }
+
+/* gFrame_rate is CalculateFrameRate's 31-frame average in tenths of a frame per second;
+ * the shown value is refreshed twice a second so it stays readable. */
+
 #endif
 
 // FUNCTION: CARMA2_HW 0x0044aad0

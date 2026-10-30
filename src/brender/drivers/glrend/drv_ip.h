@@ -182,14 +182,18 @@ void BREND_FN(DevicePixelmap, GetViewport)(br_device_pixelmap* self, int *x, int
 void BREND_FN(DevicePixelmap, SwapBuffers)(br_device_pixelmap* self);
 
 void BREND_FN(DevicePixelmap, Free)(br_device_pixelmap* self);
-
 /*
  * Hijack nulldev's no-op implementations.
  * They're designed for this.
  */
 br_geometry_lighting* GeometryLightingNullAllocate(br_renderer_facility* type, const char* id);
 
-br_geometry_primitives* GeometryPrimitivesNullAllocate(br_renderer_facility* type, const char* id);
+
+/*
+ * Hijack nulldev's no-op implementations.
+ * They're designed for this.
+ */
+
 
 /*
  * devclut.c
@@ -205,4 +209,11 @@ struct br_device_clut* DeviceClutGLAllocate(br_device* dev, char* identifier);
 #endif
 
 #endif
+br_geometry_primitives* GeometryPrimitivesNullAllocate(br_renderer_facility* type, const char* id);
+
+/*
+ * Hijack nulldev's no-op implementations.
+ * They're designed for this.
+ */
+
 #endif /* _DRV_IP_H_ */

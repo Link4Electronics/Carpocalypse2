@@ -52,9 +52,13 @@ int C2_HOOK_FASTCALL DoMultiplayerStartStuff(tNet_mode pNet_mode);
 
 int C2_HOOK_FASTCALL NetworkJoinGoAhead(tFrontend_spec* pFrontend);
 
+int C2_HOOK_FASTCALL StartNetworkGame(tFrontend_spec* pFrontend);
+
 int C2_HOOK_FASTCALL NetworkStartHost(tFrontend_spec* pFrontend);
 
 void C2_HOOK_FASTCALL NetworkUpdateSelectedGameInfo(tFrontend_spec* pFrontend);
+
+int C2_HOOK_FASTCALL NetToggleMode(tFrontend_spec* pFrontend);
 
 int C2_HOOK_FASTCALL NetJoinChooseThisGame(tFrontend_spec* pFrontend);
 
@@ -62,6 +66,5 @@ int C2_HOOK_FASTCALL NetGameToggleTyping(tFrontend_spec* pFrontend);
 
 int C2_HOOK_FASTCALL NetworkStartJoin(tFrontend_spec* pFrontend);
 
-int C2_HOOK_FASTCALL NetToggleMode(tFrontend_spec* pFrontend);
 
 #endif /* FRONTEND_NETWORK_H */

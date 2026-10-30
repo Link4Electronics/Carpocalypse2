@@ -3,12 +3,61 @@
 #include "camera.h"
 #include "world.h"
 #include "opponent.h"
+
+#include "replay.h"
+
 #include "globvars.h"
 #include "pedestrn.h"
 #include "utility.h"
 #include "drone.h"
+
+#include "brucetrk.h"
+
+#include "car.h"
+
+#include "graphics.h"
+
+#include "globvrpb.h"
+
+#include "network.h"
+
+#include "piping.h"
+
+#include "smashing.h"
+
+extern tNapalm_bolt gNapalm_bolts[5];
+extern float gConst_replay_rate_zero;
+extern br_scalar gFLOAT_00589a5c;
+extern const double gDOUBLE_00589a60;
+extern int gMax_count_non_cars;
+extern const br_scalar gFloat_0058aec0;
+extern const br_scalar gFloat_0058aec4;
+extern const double gDouble_0058aec8;
+extern const br_vector3 gVector3_00661678;
+
+// GLOBAL: CARMA2_HW 0x006a829c
+int gCount_shrapnel_shower_calls;
+
+// GLOBAL: CARMA2_HW 0x0058aee0
+const br_scalar gFloat_0058aee0 = 10.0f;
+
+// GLOBAL: CARMA2_HW 0x0058aeb8
+const double gDouble_0058aeb8 = 0.14492753623188406;
+
+// GLOBAL: CARMA2_HW 0x0058aee8
+const double gDouble_0058aee8 = 0.001;
+
+// GLOBAL: CARMA2_HW 0x0058aef0
+const double gDouble_0058aef0 = 6.283185307179586;
+extern void C2_HOOK_FASTCALL FUN_004f8b50(const br_vector3* pPosition, const br_vector3* pVelocity, const br_vector3* pDirection, br_scalar pStrength, int pMaterialCount, br_material** pMaterials);
+extern void C2_HOOK_FASTCALL FUN_004c8940(uintptr_t pOwner);
+typedef void (C2_HOOK_FASTCALL *tCreateSmokeColumn2Worker)(int, br_actor*, int, int, int);
+
 #include "powerups.h"
 #include "spark.h"
+
+#include "compress.h"
+
 #include "crush.h"
 
 // Replay pipe worker helpers (no orig PDB symbols; the Apply/Undo wrappers in
@@ -126,7 +175,7 @@ void C2_HOOK_FASTCALL WorkerDroneCornerPos(int pDrone_index, tU16 pSpeed, tU16 p
     DoDroneFunkyGroovyThings(drone);
 }
 
-void C2_HOOK_FASTCALL WorkerFlap(int field_0x4, tS16 field_0x8) {
+void C2_HOOK_FASTCALL WorkerFlap(br_actor* pActor, tS16 pDelta) {
 
     NOT_IMPLEMENTED();
 }
@@ -547,10 +596,277 @@ void C2_HOOK_FASTCALL WorkerSplitWeldUndo(void* roadMachine) {
     NOT_IMPLEMENTED();
 }
 
+// C2PORT-NONMATCHING: best 33.84% | difftest PASS 2000 trials (spec difftest/specs/004eb8f0_WorkerShrapnelShower.json) | reason stack-layout/register-allocation
 // FUNCTION: CARMA2_HW 0x004eb8f0
 void C2_HOOK_FASTCALL WorkerShrapnelShower(int pOwner, int* pShrapnel_spec, tU32 pSeed, undefined4 pArg4, undefined4 pArg5, undefined4 pArg6, undefined4 pArg7, int pTime, undefined4 pArg9, br_matrix34* pTransform, undefined4 pFragment_owner, br_vector3* pPosition, float pDistance, undefined4 pArg14, undefined4 pArg15) {
+    float fVar1;
+    undefined4 uVar2;
+    int iVar3;
+    int iVar4;
+    tU32 uVar5;
+    int iVar6;
+    int iVar7;
+    int iVar8;
+    undefined4 uVar9;
+    undefined4 uVar10;
+    undefined4 uVar11;
+    int bVar12;
+    tU8* local_c8;
+    int local_c4;
+    int local_c0;
+    tU32 local_70;
+    br_matrix34 basis;
+    br_matrix34 scale_matrix;
+    br_matrix34 emission_transform;
+    br_vector3 initial_velocity;
+    br_vector3 initial_omega;
+    float width;
+    float height;
+    if (gAction_replay_mode != 0) {
+        BrMatrix34Copy(&basis, pTransform);
+    } else     if ((((*pShrapnel_spec == 2) || (*pShrapnel_spec == 3))
+                && (pShrapnel_spec[10] == 2)) && (gINT_006a3334 != 0)) {
+            basis.m[0][0] = gMatrix34_006b78a0.m[1][0] - gMatrix34_006b78a0.m[0][0];
+            basis.m[0][1] = gMatrix34_006b78a0.m[1][1] - gMatrix34_006b78a0.m[0][1];
+            fVar1 = gMatrix34_006b78a0.m[1][2] - gMatrix34_006b78a0.m[0][2];
+            basis.m[0][2] = (float)sqrt(fVar1 * fVar1 + basis.m[0][1] * basis.m[0][1] + basis.m[0][0] * basis.m[0][0]);
+            if (basis.m[0][2] <= gFloat_0058aec4) {
+                basis.m[0][0] = 1.0f;
+                basis.m[0][1] = 0.0f;
+                basis.m[0][2] = 0.0f;
+            } else {
+                basis.m[0][2] = (float)gDouble_0058aec8 / basis.m[0][2];
+                basis.m[0][0] = basis.m[0][2] * basis.m[0][0];
+                basis.m[0][1] = basis.m[0][2] * basis.m[0][1];
+                basis.m[0][2] = basis.m[0][2] * fVar1;
+            }
+            basis.m[1][0] = gMatrix34_006b78a0.m[2][0] - gMatrix34_006b78a0.m[0][0];
+            basis.m[1][1] = gMatrix34_006b78a0.m[2][1] - gMatrix34_006b78a0.m[0][1];
+            fVar1 = gMatrix34_006b78a0.m[2][2] - gMatrix34_006b78a0.m[0][2];
+            basis.m[1][2] = (float)sqrt(fVar1 * fVar1 + basis.m[1][1] * basis.m[1][1] + basis.m[1][0] * basis.m[1][0]);
+            if (basis.m[1][2] <= gFloat_0058aec4) {
+                basis.m[1][0] = 1.0f;
+                basis.m[1][1] = 0.0f;
+                basis.m[1][2] = 0.0f;
+            } else {
+                basis.m[1][2] = (float)gDouble_0058aec8 / basis.m[1][2];
+                basis.m[1][0] = basis.m[1][2] * basis.m[1][0];
+                basis.m[1][1] = basis.m[1][2] * basis.m[1][1];
+                basis.m[1][2] = basis.m[1][2] * fVar1;
+            }
+            basis.m[2][2] = (float)sqrt(gVector3_006a4688.v[2] * gVector3_006a4688.v[2]
+                    + gVector3_006a4688.v[1] * gVector3_006a4688.v[1]
+                    + gVector3_006a4688.v[0] * gVector3_006a4688.v[0]);
+            if (basis.m[2][2] <= gFloat_0058aec4) {
+                basis.m[2][0] = 1.0f;
+                basis.m[2][1] = 0.0f;
+                basis.m[2][2] = 0.0f;
+            } else {
+                basis.m[2][2] = (float)gDouble_0058aec8 / basis.m[2][2];
+                basis.m[2][0] = basis.m[2][2] * gVector3_006a4688.v[0];
+                basis.m[2][1] = basis.m[2][2] * gVector3_006a4688.v[1];
+                basis.m[2][2] = basis.m[2][2] * gVector3_006a4688.v[2];
+            }
+            basis.m[3][0] = gMatrix34_006b78a0.m[1][0];
+            basis.m[3][1] = gMatrix34_006b78a0.m[1][1];
+            basis.m[3][2] = gMatrix34_006b78a0.m[1][2];
+    }
 
-    NOT_IMPLEMENTED();
+    switch (*pShrapnel_spec) {
+    case 0:
+        if (gAction_replay_mode != 0 || PointOutOfSight((br_vector3*)pArg6, gYon_squared, gYon_squared) == 0) {
+            if (pPosition == NULL) {
+                pPosition = (br_vector3*)&gVector3_00661678;
+            }
+            FUN_004f8b50((br_vector3*)pArg6, &gZero_vector__smash, pPosition,
+                    (float)sqrt(pDistance) * gFloat_0058aee0,
+                    pShrapnel_spec[0xe], (br_material**)(pShrapnel_spec + 0xf));
+        }
+        break;
+    case 1:
+        if (gAction_replay_mode != 0 || PointOutOfSight((br_vector3*)pArg6, 0, gYon_squared) == 0) {
+            if (pOwner == 0) {
+                uVar9 = 0;
+                uVar11 = 0;
+                uVar10 = 0;
+                uVar2 = 0;
+            } else {
+                uVar9 = *(undefined4*)(pOwner + 0x70);
+                uVar11 = *(undefined4*)(pOwner + 0x6c);
+                uVar10 = *(undefined4*)(pOwner + 0x78);
+                uVar2 = *(undefined4*)(pOwner + 0x74);
+            }
+            CreateSmashedGlassFragments(pSeed, (br_vector3*)pArg4, (br_actor*)pArg7,
+                    (tU32)pTime, (int)uVar2, (const tU16*)uVar10, (int)uVar11,
+                    (const tU16*)uVar9, pShrapnel_spec[0xe], pShrapnel_spec[0x10],
+                    *(float*)(pShrapnel_spec + 0xf), (tSmashable_initial_speed_spec*)(pShrapnel_spec + 1),
+                    (const int*)(pShrapnel_spec + 8), (tU32)pArg9, (br_matrix34*)pTransform);
+        }
+        break;
+    case 2:
+        if (gAction_replay_mode != 0 || PointOutOfSight((br_vector3*)pArg6, 0, gYon_squared) == 0) {
+            local_c8 = gINT_006a3334 != 0 ? (tU8*)&basis : NULL;
+            uVar5 = rand();
+            srand(pSeed);
+            iVar3 = pShrapnel_spec[0xe];
+            if (iVar3 >= 0) {
+                iVar4 = IRandomBetween(iVar3, pShrapnel_spec[0xf]);
+            } else {
+                iVar4 = pShrapnel_spec[0x10];
+            }
+            if (local_c8 != NULL && *(float*)&pShrapnel_spec[0x11] != gFloat_0058aec0
+                    && *(float*)&pShrapnel_spec[0x12] != gFloat_0058aec0) {
+                width = (float)sqrt(
+                    (gMatrix34_006b78a0.m[1][0] - gMatrix34_006b78a0.m[0][0]) * (gMatrix34_006b78a0.m[1][0] - gMatrix34_006b78a0.m[0][0]) +
+                    (gMatrix34_006b78a0.m[1][1] - gMatrix34_006b78a0.m[0][1]) * (gMatrix34_006b78a0.m[1][1] - gMatrix34_006b78a0.m[0][1]) +
+                    (gMatrix34_006b78a0.m[1][2] - gMatrix34_006b78a0.m[0][2]) * (gMatrix34_006b78a0.m[1][2] - gMatrix34_006b78a0.m[0][2]));
+                height = (float)sqrt(
+                    (gMatrix34_006b78a0.m[2][0] - gMatrix34_006b78a0.m[0][0]) * (gMatrix34_006b78a0.m[2][0] - gMatrix34_006b78a0.m[0][0]) +
+                    (gMatrix34_006b78a0.m[2][1] - gMatrix34_006b78a0.m[0][1]) * (gMatrix34_006b78a0.m[2][1] - gMatrix34_006b78a0.m[0][1]) +
+                    (gMatrix34_006b78a0.m[2][2] - gMatrix34_006b78a0.m[0][2]) * (gMatrix34_006b78a0.m[2][2] - gMatrix34_006b78a0.m[0][2]));
+                if (width < gDouble_0058aee8 || height < gDouble_0058aee8) {
+                    break;
+                }
+                BrMatrix34Scale(&scale_matrix, width / *(float*)&pShrapnel_spec[0x11], height / *(float*)&pShrapnel_spec[0x12], 1.0f);
+                BrMatrix34Mul(&emission_transform, &scale_matrix, &basis);
+                local_c8 = (tU8*)&emission_transform;
+            }
+
+            iVar6 = 0;
+            if (iVar4 > 0) {
+                do {
+                    if (iVar3 >= 0) {
+                        iVar7 = IRandomBetween(0, pShrapnel_spec[0x10] - 1);
+                        local_c4 = *(int*)((tU8*)pShrapnel_spec[0x13] + iVar7 * 4);
+                    } else {
+                        local_c4 = *(int*)((tU8*)pShrapnel_spec[0x13] + iVar6 * 4);
+                    }
+                    iVar7 = (int)FindShrapnelFragment(((br_actor*)local_c4)->model, (tU32)pArg9, 4);
+                    if (iVar7 == 0) {
+                        break;
+                    }
+                    fVar1 = PositionFragment(((tSmash_vertex*)iVar7)->actor,
+                            (tSmashable_initial_position_spec*)(pShrapnel_spec + 10),
+                            local_c4, (br_vector3*)pArg5, (br_vector3*)pArg6,
+                            pArg7, (undefined4*)pFragment_owner, (int)local_c8);
+                    ApplyInitialMovement((undefined4*)(pShrapnel_spec + 1),
+                            (br_vector3*)pArg4, &((tSmash_vertex*)iVar7)->v, &((tSmash_vertex*)iVar7)->omega,
+                            fVar1, &gZero_vector__smash, (br_vector3*)pArg14,
+                            &((tSmash_vertex*)iVar7)->actor->t.t.translate.t);
+                    *(int*)(iVar7 + 0xc) = pTime;
+                    *(int*)(iVar7 + 0x14) = pTime;
+                    *(int*)(iVar7 + 8) = pTime + pShrapnel_spec[9];
+                    iVar8 = IRandomBetween(pShrapnel_spec[8], pShrapnel_spec[9]);
+                    iVar6++;
+                    *(int*)(iVar7 + 0x10) = iVar8 + pTime;
+                } while (iVar6 < iVar4);
+            }
+            srand(uVar5);
+        }
+        break;
+    case 3:
+        bVar12 = gINT_006a3334 != 0;
+        local_c0 = 0;
+        if (gNet_mode != 3 || gINT_006a8294 != 0) {
+            iVar3 = pShrapnel_spec[0xe];
+            if (iVar3 >= 0) {
+                iVar4 = IRandomBetween(iVar3, pShrapnel_spec[0xf]);
+            } else {
+                iVar4 = pShrapnel_spec[0x10];
+            }
+            local_c4 = 0;
+            if (iVar4 > 0) {
+                do {
+                    uVar5 = rand();
+                    local_70 = uVar5;
+                    if (gMax_count_non_cars <= gProgram_state.track_spec.count_non_cars) {
+                        break;
+                    }
+                    if (gNet_mode == 2) {
+                        local_c0 = (int)NetBuildGuaranteedMessage(0x22, 0);
+                        *(tU32*)(local_c0 + 0x1c) = uVar5;
+                        *(tU16*)(local_c0 + 0x20) = (tU16)gProgram_state.track_spec.count_non_cars;
+                    }
+                    if (iVar3 >= 0) {
+                        iVar6 = IRandomBetween(0, pShrapnel_spec[0x10] - 1);
+                        iVar6 = *(int*)((tU8*)pShrapnel_spec[0x11] + iVar6 * 4);
+                    } else {
+                        iVar6 = *(int*)((tU8*)pShrapnel_spec[0x11] + local_c4 * 4);
+                    }
+                    if (gNet_mode == 2) {
+                        *(tU16*)(local_c0 + 0x22) = *(tU16*)(*(int*)(iVar6 + 0x14) + 1);
+                    }
+                    iVar6 = (int)CloneActor((br_actor*)iVar6);
+                    sprintf((char*)(*(int*)(iVar6 + 0x14) + 4), "%04d.ACT", gProgram_state.track_spec.count_non_cars);
+                    gProgram_state.track_spec.non_car_list[gProgram_state.track_spec.count_non_cars] = (br_actor*)iVar6;
+                    gProgram_state.track_spec.count_non_cars++;
+                    BrActorAdd(gDont_render_actor, (br_actor*)iVar6);
+                    fVar1 = PositionFragment((br_actor*)iVar6,
+                            (tSmashable_initial_position_spec*)(pShrapnel_spec + 10), iVar6,
+                            (br_vector3*)pArg5, (br_vector3*)pArg6, pArg7,
+                            (undefined4*)pFragment_owner, (int)(uintptr_t)&basis);
+                    if (*(int*)(iVar6 + 0x5c) != 0 || (iVar7 = (int)DoPullActorFromWorld((br_actor*)iVar6)) == 0) {
+                        BrActorRemove((br_actor*)iVar6);
+                        BrActorFree((br_actor*)iVar6);
+                        gProgram_state.track_spec.count_non_cars--;
+                        break;
+                    }
+                    uVar5 = rand();
+                    ApplyInitialMovement((undefined4*)(pShrapnel_spec + 1),
+                            (br_vector3*)pArg4, &initial_velocity, &initial_omega,
+                            fVar1, &gZero_vector__smash, (br_vector3*)pArg14,
+                            &((br_actor*)iVar6)->t.t.translate.t);
+                    *(float*)(*(int*)(iVar7 + 8) + 0x68) = initial_velocity.v[0] * gDouble_0058aeb8;
+                    *(float*)(*(int*)(iVar7 + 8) + 0x6c) = initial_velocity.v[1] * gDouble_0058aeb8;
+                    *(float*)(*(int*)(iVar7 + 8) + 0x70) = initial_velocity.v[2] * gDouble_0058aeb8;
+                    *(float*)(*(int*)(iVar7 + 8) + 0x74) = initial_omega.v[0] * gDouble_0058aef0;
+                    *(float*)(*(int*)(iVar7 + 8) + 0x78) = initial_omega.v[1] * gDouble_0058aef0;
+                    *(float*)(*(int*)(iVar7 + 8) + 0x7c) = initial_omega.v[2] * gDouble_0058aef0;
+                    *(tU8*)(*(int*)(iVar7 + 8) + 0xec) = 0;
+                    srand(local_70);
+                    iVar8 = PercentageChance(pShrapnel_spec[0x12]);
+                    if (iVar8 != 0 && pShrapnel_spec[0x13] > 0) {
+                        iVar8 = 0;
+                        do {
+                            uVar9 = IRandomBetween(0, *(tU16*)(*(int*)(*(int*)(*(int*)(iVar6 + 0x18) + 0x4c) + 0x18) + 0x1e));
+                            IRandomBetween(pShrapnel_spec[0x14], pShrapnel_spec[0x15]);
+                            ((tCreateSmokeColumn2Worker)CreateSmokeColumn2)(2, (br_actor*)iVar6,
+                                    iVar7, 0, (int)uVar9);
+                            iVar8++;
+                        } while (iVar8 < pShrapnel_spec[0x13]);
+                    }
+                    if (gNet_mode == 2) {
+                        BrMatrix34Copy(&basis, &gMatrix34_006b78a0);
+                        *(undefined4*)(local_c0 + 0x24) = *(undefined4*)(*(int*)(iVar7 + 8) + 0x68);
+                        *(undefined4*)(local_c0 + 0x28) = *(undefined4*)(*(int*)(iVar7 + 8) + 0x6c);
+                        *(undefined4*)(local_c0 + 0x2c) = *(undefined4*)(*(int*)(iVar7 + 8) + 0x70);
+                        *(undefined4*)(local_c0 + 0x30) = *(undefined4*)(*(int*)(iVar7 + 8) + 0x74);
+                        *(undefined4*)(local_c0 + 0x34) = *(undefined4*)(*(int*)(iVar7 + 8) + 0x78);
+                        *(undefined4*)(local_c0 + 0x38) = *(undefined4*)(*(int*)(iVar7 + 8) + 0x7c);
+                        *(int*)(local_c0 + 0x6c) = pShrapnel_spec[0x12];
+                        *(int*)(local_c0 + 0x70) = pShrapnel_spec[0x13];
+                        *(int*)(local_c0 + 0x74) = pShrapnel_spec[0x14];
+                        *(int*)(local_c0 + 0x78) = pShrapnel_spec[0x15];
+                    }
+                    FUN_004c8940(gProgram_state.track_spec.count_non_cars - 1);
+                    if (gNet_mode == 2) {
+                        NetGuaranteedSendMessageToAllPlayers(gCurrent_net_game, (tNet_message*)local_c0, 0);
+                    }
+                    srand(uVar5);
+                    local_c4++;
+                } while (local_c4 < iVar4);
+            }
+        }
+        break;
+    }
+    if (*pShrapnel_spec == 2 || *pShrapnel_spec == 1) {
+        PipeSingleShrapnelShower(pArg9, pTime, pSeed, pOwner, (br_vector3*)pArg4,
+                pPosition, pDistance, (br_vector3*)pArg5, (br_vector3*)pArg6,
+                (undefined4)pShrapnel_spec, (br_bounds3*)pFragment_owner, pArg7,
+                *pShrapnel_spec == 2 ? &basis : pTransform,
+                (br_vector3*)pArg14, &gMatrix34_006b78a0);
+        gCount_shrapnel_shower_calls++;
+    }
 }
 
 void C2_HOOK_FASTCALL WorkerShrapnelShowerUndo(tU32 chunk_0x48, tU32 prev_0x4, tU32 prev_0x84, tU32 prev_0x44, br_vector3* prev_0x8, br_vector3* prev_0x20, br_vector3* prev_0x2c, tU32 prev_0x50, tU32 prev_0x48, tU32 prev_0x0, br_vector3* prev_0x54, br_vector3* prev_0x88, br_vector3* prev_0x14, tU32 prev_0xa0, br_vector3* prev_0x38) {
