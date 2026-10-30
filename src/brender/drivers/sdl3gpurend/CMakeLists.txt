@@ -327,9 +327,6 @@ target_include_directories(sdl3gpurend PRIVATE
         "${CMAKE_CURRENT_SOURCE_DIR}/../.."
         "${CMAKE_CURRENT_SOURCE_DIR}/../../include/brender"
         )
-# See glrend/CMakeLists.txt: the decompiled dispatch tables use br_uint_32*
-# instead of the upstream typed pointers, but the layouts match.
-target_compile_options(sdl3gpurend PRIVATE -Wno-incompatible-pointer-types -Wno-int-conversion)
 
 set_target_properties(sdl3gpurend PROPERTIES
         C_STANDARD 11

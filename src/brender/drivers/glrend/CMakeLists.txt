@@ -126,9 +126,6 @@ brender_common_target_setup(glrend BREND_DRIVER_GL GL gl "glrend")
 target_link_libraries(glrend PUBLIC glrend-headers PRIVATE brender-static c2_hooks)
 target_compile_definitions(glrend PRIVATE BASED_FLOAT=1 BASED_FIXED=0)
 target_include_directories(glrend PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/compat" "${CMAKE_CURRENT_SOURCE_DIR}/../ddi" "${CMAKE_CURRENT_SOURCE_DIR}/../.." "${CMAKE_CURRENT_SOURCE_DIR}/../../include/brender")
-# The decompiled core's dispatch tables use br_uint_32* instead of the upstream
-# typed pointers; the layouts and calling conventions are identical.
-target_compile_options(glrend PRIVATE -Wno-incompatible-pointer-types -Wno-int-conversion)
 
 set_target_properties(glrend PROPERTIES
         C_STANDARD 11

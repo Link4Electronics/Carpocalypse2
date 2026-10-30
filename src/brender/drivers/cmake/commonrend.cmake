@@ -80,5 +80,17 @@ function(brender_common_target_setup target driver_define driver_suffix_upper dr
             ${REND_COMMON_DIR}
             )
 
+    # The decompiled core's dispatch tables (commonrend/*.c) use br_uint_32*
+    # instead of the upstream typed pointers; the layouts and calling
+    # conventions are identical. Silence the mismatch on gcc/clang only --
+    # MSVC rejects these -Wno- flags outright (D8021) and already reports
+    # them at most as C4047/C4024 warnings, never errors.
+    if(NOT MSVC)
+        target_compile_options(${target} PRIVATE
+                -Wno-incompatible-pointer-types
+                -Wno-int-conversion
+                )
+    endif()
+
     target_link_libraries(${target} PRIVATE BRender::DDI)
 endfunction()

@@ -178,9 +178,26 @@ jobs:
             -DSDLSHADERCROSS_VENDORED=OFF \
             -DSDLSHADERCROSS_DXC=ON
           cmake --build SDL_shadercross/build --target shadercross
+          # shadercross links SDL3, SPIRV-Cross and DXC as DLLs. Linux/macOS
+          # binaries find those through their build RPATH; Windows has no
+          # equivalent, and adding the directories to GITHUB_PATH alone did
+          # not stop STATUS_DLL_NOT_FOUND (0xc0000135) at shader-build time.
+          # Copy every runtime next to the executable, where the loader looks
+          # first, then smoke-test it here so a missing dependency fails this
+          # step with context instead of the middle of the shader build.
+          dxc_dir="$(cygpath -u "$PWD/SDL_shadercross/external/DirectXShaderCompiler-binaries/windows/bin/x64")"
+          build_dir="$(cygpath -u "$PWD/SDL_shadercross/build")"
+          cp "$(cygpath -u "${{ steps.sdl.outputs.prefix }}")/bin/SDL3.dll" "$build_dir/"
+          cp "$(cygpath -u "$PWD/spirv-cross-prefix/bin")/spirv-cross-c-shared.dll" "$build_dir/"
+          cp "$dxc_dir/dxcompiler.dll" "$build_dir/"
+          cp "$dxc_dir/dxil.dll" "$build_dir/"
+          echo "shadercross imports:"
+          dumpbin -nologo -dependents "$(cygpath -w "$build_dir/shadercross.exe")" | grep -i '\.dll' || true
+          "$build_dir/shadercross.exe" -h >/dev/null
           echo "$(cygpath -w "$PWD/SDL_shadercross/build")" >>"$GITHUB_PATH"
           echo "$(cygpath -w "$PWD/spirv-cross-prefix/bin")" >>"$GITHUB_PATH"
           echo "$(cygpath -w "$PWD/SDL_shadercross/external/DirectXShaderCompiler-binaries/windows/bin/x64")" >>"$GITHUB_PATH"
+          echo "$(cygpath -w "${{ steps.sdl.outputs.prefix }}/bin")" >>"$GITHUB_PATH"
 
       # -- Build -------------------------------------------------------------
       - name: Configure (CMake)

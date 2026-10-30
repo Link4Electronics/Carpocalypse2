@@ -299,11 +299,13 @@ void C2_HOOK_CDECL BrMaterialUpdate(br_material* mat, br_uint_16 flags) {
     } else {
         v1db.renderer->dispatch->_stateStoredNew(v1db.renderer, &mat->stored, PARTS_MASK, 0);
     }
+#ifndef CARPOCALYPSE2_MATCHING
     { static int dbg; if (dbg++ < 20) {
         uintptr_t cm = 0;
         v1db.renderer->dispatch->_partQuery(v1db.renderer, BRT_PRIMITIVE, 0, (br_uint_32*)&cm, BRT_COLOUR_MAP_O);
         BrLogPrintf("DBG matpost stored=%p curcm=%p matcm=%p\n", (void*)mat->stored, (void*)cm, (void*)mat->colour_map);
     } }
+#endif
     v1db.renderer->dispatch->_statePop(v1db.renderer, PARTS_MASK);
 }
 
