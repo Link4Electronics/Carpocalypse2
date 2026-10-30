@@ -898,6 +898,12 @@ void C2_HOOK_FASTCALL InitDepthEffects(void) {
 
     horizon_material = BrMaterialAllocate("Horizon");
     horizon_material->flags |= BR_MATF_MAP_INTERPOLATION;
+    /* The sky is a self-illuminated backdrop: BRender's default material (which
+     * BrMaterialAllocate copies) is lit, and the vertex shader would modulate
+     * the sky texture by the material colour, which the game keeps at 0 (the
+     * net-game SetSkyColour path). The original HORIZON.MAT is unlit, so drop
+     * BR_MATF_LIGHT or the whole sky renders black. */
+    horizon_material->flags &= ~BR_MATF_LIGHT;
     horizon_material->colour = 0;
     BrMaterialAdd(horizon_material);
     gHorizon_material = horizon_material;
