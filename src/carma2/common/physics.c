@@ -3067,6 +3067,15 @@ int C2_HOOK_FASTCALL CollectPlacementFaces(tPhysics_object* pObject, tCollision_
         if ((face->flags & 0x80) != 0) {
             continue;
         }
+        /* The in-place culler used by the 32-bit path (FUN_00423320) marks
+           water/pling faces ('!' and '>') non-solid for the duration of the
+           collision pass. The portable collector has no culler, so water
+           surfaces used to generate support contacts and the car stood on
+           them instead of sinking. */
+        if (face->material != NULL && face->material->identifier != NULL
+                && (face->material->identifier[0] == '!' || face->material->identifier[0] == '>')) {
+            continue;
+        }
         deepest = 1.e30f;
         for (j = 0; j < 8; j++) {
             d = BrVector3Dot(&face->normal, &corners[j]) - face->d;
@@ -4745,33 +4754,34 @@ void C2_HOOK_FASTCALL ProcessGravity(tPHIL_queued_header* pObject_info, tPhysics
 
 // FUNCTION: CARMA2_HW 0x004c2c30
 void C2_HOOK_FASTCALL PhysicsObjectApplyTorque(tPhysics_object* pObject, const br_vector3* pTorque) {
-    float tx;
-    float ty;
-    float tz;
+    br_vector3 t;
+    br_vector3 i;
 
-    tx = pTorque->v[1] * 0.0210039914f;
-    ty = pTorque->v[2] * 0.0210039914f;
-    tz = pTorque->v[0] * 0.0210039914f;
-    pObject->omega.v[1] += tx / pObject->I.v[1];
-    pObject->omega.v[2] += ty / pObject->I.v[2];
-    pObject->omega.v[0] += tz / pObject->I.v[0];
+    t.v[0] = pTorque->v[0];
+    t.v[1] = pTorque->v[1];
+    t.v[2] = pTorque->v[2];
+    i.v[0] = pObject->I.v[0];
+    i.v[1] = pObject->I.v[1];
+    i.v[2] = pObject->I.v[2];
+    pObject->omega.v[1] += t.v[1] * 0.0210039914f / i.v[1];
+    pObject->omega.v[2] += t.v[2] * 0.0210039914f / i.v[2];
+    pObject->omega.v[0] += t.v[0] * 0.0210039914f / i.v[0];
 }
 
 // FUNCTION: CARMA2_HW 0x004c2c90
 void C2_HOOK_FASTCALL ApplyWaterOmegaBrake(tPhysics_object* pObject, const br_vector3* pV) {
+    br_vector3 om;
     br_scalar b0;
     br_scalar b1;
     br_scalar b2;
-    br_vector3 om;
 
     b0 = (pV->v[0] * 0.0210039914f) / pObject->I.v[0];
     om = pObject->omega;
     b1 = (pV->v[1] * 0.0210039914f) / pObject->I.v[1];
     b2 = (pV->v[2] * 0.0210039914f) / pObject->I.v[2];
-
-    pObject->omega.v[0] -= b0;
-    pObject->omega.v[1] -= b1;
-    pObject->omega.v[2] -= b2;
+    pObject->omega.v[0] = pObject->omega.v[0] - b0;
+    pObject->omega.v[1] = pObject->omega.v[1] - b1;
+    pObject->omega.v[2] = pObject->omega.v[2] - b2;
 
     if (om.v[0] * pObject->omega.v[0] <= 0.0f) {
         pObject->omega.v[0] = 0.0f;
@@ -4788,6 +4798,7 @@ void C2_HOOK_FASTCALL ApplyWaterOmegaBrake(tPhysics_object* pObject, const br_ve
 void C2_HOOK_FASTCALL ProcessDrag2(tPHIL_queued_header* pObject_info, tPhysics_object* pObject, float pDrag, int pObject_info_flags, tSpecial_volume* pSpecial_volume) {
     br_scalar drag;
     br_scalar s;
+    double kd;
     tSpecial_volume* sp;
     br_vector3 v;
 
@@ -4798,16 +4809,17 @@ void C2_HOOK_FASTCALL ProcessDrag2(tPHIL_queued_header* pObject_info, tPhysics_o
     }
     if (sp != NULL) {
         if (pObject_info->field_0x14 == 0.0f || sp->viscosity_multiplier <= 2.0) {
-            drag = sp->viscosity_multiplier * pObject->water_depth_factor * drag;
+            drag = drag * (sp->viscosity_multiplier * pObject->water_depth_factor);
         } else {
-            drag = pObject->water_depth_factor * sp->viscosity_multiplier * drag * 0.5;
+            drag = drag * (pObject->water_depth_factor * sp->viscosity_multiplier) * 0.5;
         }
     }
 
     s = BrVector3Length(&pObject->v);
-    v.v[0] = pObject->v.v[0] * (s * drag * 6.9 / pObject->M);
-    v.v[1] = pObject->v.v[1] * (s * drag * 6.9 / pObject->M);
-    v.v[2] = pObject->v.v[2] * (s * drag * 6.9 / pObject->M);
+    kd = s * drag * 6.9 / pObject->M;
+    v.v[0] = pObject->v.v[0] * kd;
+    v.v[1] = pObject->v.v[1] * kd;
+    v.v[2] = pObject->v.v[2] * kd;
     DRVector3Diminish(&pObject->v, &v);
 
     s = BrVector3Length(&pObject->omega);
@@ -4858,7 +4870,7 @@ void C2_HOOK_FASTCALL LevelOutOnSurface(tPhysics_object *pObject) {
     n.v[1] = -1.0f * v1;
     n.v[2] = -1.0f * v2;
 
-    dot = n.v[2] * pObject->water_normal.v[2] + n.v[0] * pObject->water_normal.v[0] + n.v[1] * pObject->water_normal.v[1];
+    dot = pObject->water_normal.v[2] * n.v[2] + pObject->water_normal.v[0] * n.v[0] + pObject->water_normal.v[1] * n.v[1];
 
     if (dot > -0.99) {
         px = pObject->water_normal.v[1] * n.v[2] - pObject->water_normal.v[2] * n.v[1];

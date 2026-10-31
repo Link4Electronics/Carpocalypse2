@@ -4045,7 +4045,7 @@ typedef struct {
     int (C2_HOOK_FASTCALL * active_halted)(tPed_character_instance*, tPhysics_object*);
     void (C2_HOOK_FASTCALL * moved_by_physics)(tPed_character_instance*, tPhysics_object*, undefined4);
     int (C2_HOOK_FASTCALL * move_completed)(tPed_character_instance*);
-    void (C2_HOOK_FASTCALL * fill_in_object)(undefined4*, undefined4);
+    void (C2_HOOK_FASTCALL * fill_in_object)(tPhysics_object*, undefined4);
     void (C2_HOOK_FASTCALL * load_form)(tPed_form* pPed_form, FILE* pF);
     void (C2_HOOK_FASTCALL * dispose_form)(undefined4*);
     void (C2_HOOK_FASTCALL * load_personality)(tPed_personality*, FILE*);

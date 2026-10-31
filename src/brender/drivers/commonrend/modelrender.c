@@ -86,12 +86,6 @@ void StoredSDL3GPURENDRenderGroup(br_geometry_stored* self, br_renderer* rendere
     /* 3. Resolve the group's material state into state.current. The matrix in
      * state.current is left untouched so deferred (order-table) renders keep
      * the model's matrix that was snapshotted at insertion time. */
-    { static int dbg; if (dbg++ < 120)
-        BrLogPrintf("DBG grp %d cnt=%u stored=%p scm=%p dflt=%p dcm=%p\n",
-            dbg, (unsigned)groupinfo->count, (void*)stored,
-            stored ? (void*)stored->state.prim.colour_map : NULL,
-            (void*)default_state,
-            default_state ? (void*)default_state->state.prim.colour_map : NULL); }
     VPB(C2VP_G_STATECOPY);
     if (stored) {
         BREND_FN(State, Copy)(renderer->state.current, &stored->state,

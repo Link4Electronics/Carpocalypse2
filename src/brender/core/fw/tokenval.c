@@ -798,16 +798,6 @@ br_error C2_HOOK_CDECL BrTokenValueSetMany(void* mem, br_int_32* pcount, br_uint
         }
         if (template->map_set_entry[o])  {
             r = ValueSet(mem, tv, template->map_set_entry[o]);
-#ifndef CARPOCALYPSE2_MATCHING
-            if (tv->t == BRT_COLOUR_MAP_O) {
-                static int dbg;
-                if (dbg++ < 12)
-                    BrLogPrintf("DBG setcm tv=%p val=%p conv=%d off=%x r=%d\n",
-                        (void*)&tv->v, (void*)*(void**)&tv->v,
-                        (int)template->map_set_entry[o]->conv,
-                        (unsigned)template->map_set_entry[o]->offset, (int)r);
-            }
-#endif
             if (r != 0) {
                 continue;
             }

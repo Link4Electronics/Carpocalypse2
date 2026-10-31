@@ -208,7 +208,7 @@ tPed_face_cache_0x34* gPed_face_caches[4];
 tPed_proximity_side_cache gPed_proximity_side_cache[16];
 
 // GLOBAL: CARMA2_HW 0x0069bc54
-tPed_face_cache_0x50* gPed_face_cache;
+tFace_ref* gPed_face_cache;
 
 // GLOBAL: CARMA2_HW 0x00694124
 int gPed_face_cache_flags;
@@ -407,9 +407,6 @@ int gPed_groups_count;
 // GLOBAL: CARMA2_HW 0x0069bc14
 tPed_group_spec* gPed_groups;
 
-// GLOBAL: CARMA2_HW 0x00694230
-int gPed_animal_count;
-
 // GLOBAL: CARMA2_HW 0x0069fdb8
 tPed_animal_name gPed_animal_names[50];
 
@@ -494,19 +491,8 @@ int gCount_pedestrian_personality_cloned_materials = 0;
 // GLOBAL: CARMA2_HW 0x00677730
 tPed_morph gPed_morphs[20] = { 0 };
 
-/* 0x0067697c is gPed_vtable (below); it was also declared here as a second, never-set global */
-
 // GLOBAL: CARMA2_HW 0x00676914
 int gPed_676914;
-
-// GLOBAL: CARMA2_HW 0x0067697c
-typedef struct {
-    undefined4 field_0x0;
-    undefined4 field_0x4;
-    undefined4 field_0x8;
-    void(C2_HOOK_FASTCALL * field_0xc)(tPed_character_instance* pPed);
-} tPed_system_vtable;
-tPed_system_vtable* gPed_67697c;
 
 // GLOBAL: CARMA2_HW 0x00677234
 int gPed_retain_root_mode;
@@ -712,7 +698,7 @@ int gPed_valium_left;
 tPed_cache_006944c0 gPed_cache_006944c0[100];
 
 // GLOBAL: CARMA2_HW 0x0067697c
-tPedForms_vtable* gPed_vtable = NULL;
+tPedForms_vtable* gPed_67697c = NULL;
 
 // GLOBAL: CARMA2_HW 0x0058f290
 const char* gPed_remap_axis_choices[6] = {
@@ -930,6 +916,9 @@ br_actor* gPed_limbed_actors[30];
 // GLOBAL: CARMA2_HW 0x00694140
 tProximity_ray gProximity_rays[20];
 
+// GLOBAL: CARMA2_HW 0x00694230
+int gPed_animal_count;
+
 // GLOBAL: CARMA2_HW 0x0065e4e4
 const tPed_anim_seq gCalm_ped_anim_sequence = {
     2, { 0, 99 },
@@ -988,7 +977,7 @@ void C2_HOOK_FASTCALL InitBoner(tPedForms_vtable* pTable) {
     C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gPed_moves) != 250);
     C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gPed_remaps) != 10);
 
-    gPed_vtable = pTable;
+    gPed_67697c = pTable;
     memset(gPed_forms, 0, sizeof(gPed_forms));
     memset(gPed_personalities, 0, sizeof(gPed_personalities));
     memset(gPed_moves, 0, sizeof(gPed_moves));
@@ -1050,10 +1039,10 @@ void C2_HOOK_FAKE_THISCALL ScaleModel(br_model* pModel, int pArg2, float pScale)
 
     v = pModel->vertices;
     for (i = 0; i < pModel->nvertices; i++) {
-        v->p.v[0] *= pScale;
-        v->p.v[1] *= pScale;
-        v->p.v[2] *= pScale;
-        v = (br_vertex*)((char*)v + 0x28);
+        v->p.v[0] = v->p.v[0] * pScale;
+        v->p.v[1] = v->p.v[1] * pScale;
+        v->p.v[2] = v->p.v[2] * pScale;
+        v++;
     }
     BrModelUpdate(pModel, BR_MODU_VERTEX_POSITIONS);
 }
@@ -1351,11 +1340,11 @@ void C2_HOOK_FASTCALL InitFaceCaches(void) {
     for (i = 0; i < CARPOCALYPSE2_ASIZE(gPed_cache_sizes_1); i++) {
         gPed_face_cache_heads[i] = BrMemAllocate(gPed_cache_sizes_1[i] * sizeof(tPed_face_cache_0x34), kMem_ped_face_cache);
         for (j = 0; j < gPed_cache_sizes_1[i]; j++) {
-            gPed_face_cache_heads[i][j].field_0x0 = BrMemAllocate(gPed_cache_sizes_2[i] * sizeof(tPed_face_cache_0x50), kMem_ped_face_cache);
+            gPed_face_cache_heads[i][j].field_0x0 = BrMemAllocate(gPed_cache_sizes_2[i] * sizeof(tFace_ref), kMem_ped_face_cache);
             gPed_face_cache_heads[i][j].count = gPed_cache_sizes_2[i];
         }
     }
-    gPed_face_cache = BrMemAllocate((gPed_cache_sizes_2[3] + 1) * sizeof(tPed_face_cache_0x50), kMem_ped_face_cache);
+    gPed_face_cache = BrMemAllocate((gPed_cache_sizes_2[3] + 1) * sizeof(tFace_ref), kMem_ped_face_cache);
 }
 
 void C2_HOOK_FASTCALL InitOtherPedStuff(void) {
@@ -1460,7 +1449,7 @@ int C2_HOOK_FASTCALL DoToPeds(tCar_spec* pCar_spec, int pOnly_alive, float pMax_
         } else {
             t = 100.f;
         }
-        if (t < 1.0) {
+        if (t < gPed_kill_min_height) {
             continue;
         }
         pCallback(ped, pCar_spec, dist_sq, now, pData);
@@ -2643,7 +2632,6 @@ void C2_HOOK_FASTCALL RenderElectroBastardRays(br_pixelmap* pRender_screen, br_p
     br_vector3 ped_pos_cam;
     br_vector3 car_add;
     br_vector3 car_add_c;
-    br_vector3 ray;
     br_vector3 r1;
     br_vector3 from_pos;
     br_vector3 to_pos;
@@ -2679,7 +2667,7 @@ void C2_HOOK_FASTCALL RenderElectroBastardRays(br_pixelmap* pRender_screen, br_p
         AddProxRayToPipingSession(i, gProximity_rays[i].car, gProximity_rays[i].ped - gPedestrian_array, gProximity_rays[i].start_time);
         car_model =  gProximity_rays[i].car->car_actor->model;
 
-        BrVector3Set(&car_add_c, 0.f, (car_model->bounds.max.v[1] - car_model->bounds.min.v[1]) / -5.f, 0.f);
+        BrVector3Set(&car_add_c, gConst_replay_rate_zero, (car_model->bounds.max.v[1] - car_model->bounds.min.v[1]) / -5.f, 0.f);
         BrMatrix34ApplyV(&car_add, &car_add_c, &gProximity_rays[i].car->car_master_actor->t.t.mat);
         BrVector3Add(&car_pos, &gProximity_rays[i].car->pos, &car_add);
         BrVector3Copy(&ped_pos, &gProximity_rays[i].ped->pos);
@@ -2688,16 +2676,25 @@ void C2_HOOK_FASTCALL RenderElectroBastardRays(br_pixelmap* pRender_screen, br_p
 
         BrVector3Sub(&r1, &ped_pos_cam, &car_pos_cam);
         distance = BrVector3Length(&r1);
-        BrVector3Normalise(&r1, &r1);
+        if (distance > gPed_direction_length_epsilon) {
+            float scale = (float)(gPed_kill_min_height / distance);
+            r1.v[0] = scale * r1.v[0];
+            r1.v[1] = scale * r1.v[1];
+            r1.v[2] = scale * r1.v[2];
+        } else {
+            r1.v[0] = 1.0f;
+            r1.v[1] = 0.0f;
+            r1.v[2] = 0.0f;
+        }
 
         from_pos = car_pos_cam;
 
         seed = ped_pos.v[0] + ped_pos.v[1] + ped_pos.v[2] + car_pos.v[0] + car_pos.v[1] + car_pos.v[2];
-        srand(the_time + *(int*)&seed);
+        srand(*(int*)&seed + the_time);
 
-        for (t = 0.f; t < distance; t += .05f) {
-            BrVector3Scale(&ray, &r1, t);
-            BrVector3Add(&to_pos, &ray, &car_pos_cam);
+        for (t = gConst_replay_rate_zero; t < distance; t += .05f) {
+            BrVector3Scale(&to_pos, &r1, t);
+            BrVector3Add(&to_pos, &to_pos, &car_pos_cam);
             to_pos.v[0] += SRandomPosNeg(.1f);
             to_pos.v[1] += SRandomPosNeg(.1f);
             to_pos.v[2] += SRandomPosNeg(.1f);
@@ -2738,17 +2735,19 @@ void C2_HOOK_FASTCALL ScalePeds(br_vector3* scale) {
     s[0] = scale->v[0] / gPed_scale.v[0];
     s[1] = scale->v[1] / gPed_scale.v[1];
     s[2] = scale->v[2] / gPed_scale.v[2];
-    if (s[0] == 1.0 && s[1] == 1.0 && s[2] == 1.0) {
+    if (s[0] == gPed_kill_min_height && s[1] == gPed_kill_min_height && s[2] == gPed_kill_min_height) {
         return;
     }
     (void)ScaleAllPeds(-1, s, 1);
     gPed_scale = *scale;
     gAverage_ped_scale = (gPed_scale.v[0] + gPed_scale.v[1] + gPed_scale.v[2]) * gConst_average_ped_scale_factor;
     if (gPed_676914) {
-        if (ARGetReplayRate() > gConst_replay_rate_zero) {
-            for (i = 0; i < gPed_count; i++) {
-                if (gPedestrian_array[i].flags & 1) {
-                    SetCharacterBonePositions(gPedestrian_array[i].character, 3, 0);
+        if (ARGetReplayRate() < gConst_replay_rate_zero) {
+            tPedestrian* ped = gPedestrian_array;
+
+            for (i = 0; i < gPed_count; i++, ped++) {
+                if (ped->flags & 1) {
+                    SetCharacterBonePositions(ped->character, 3, 0);
                 }
             }
         }
@@ -2766,10 +2765,12 @@ void C2_HOOK_STDCALL ScalePedHeads(float head_scale) {
     (void)ScaleAllPeds(-2, s, 0);
     gPed_head_scale = head_scale;
     if (gPed_676914) {
-        if (ARGetReplayRate() > gConst_replay_rate_zero) {
-            for (i = 0; i < gPed_count; i++) {
-                if (gPedestrian_array[i].flags & 1) {
-                    SetCharacterBonePositions(gPedestrian_array[i].character, 3, 0);
+        if (ARGetReplayRate() < gConst_replay_rate_zero) {
+            tPedestrian* ped = gPedestrian_array;
+
+            for (i = 0; i < gPed_count; i++, ped++) {
+                if (ped->flags & 1) {
+                    SetCharacterBonePositions(ped->character, 3, 0);
                 }
             }
         }
@@ -5013,8 +5014,8 @@ void C2_HOOK_FASTCALL CBMovedByPhysics(tPed_character_instance* pCharacter, tPhy
                 move_speed = 150;
             }
             if (GET_PED_COLLISION_OBJECT(ped)->last_special_volume != NULL) {
-                if (GET_PED_COLLISION_OBJECT(ped)->last_special_volume->gravity_multiplier < 1.0f) {
-                    move_speed = (int)(move_speed * 1.5);
+                if (GET_PED_COLLISION_OBJECT(ped)->last_special_volume->gravity_multiplier < gFLOAT_0058a9d8) {
+                    move_speed = (int)(move_speed * gPed_impact_base);
                 }
             }
         } else {
@@ -5024,15 +5025,15 @@ void C2_HOOK_FASTCALL CBMovedByPhysics(tPed_character_instance* pCharacter, tPhy
     }
 
     if (GET_PED_COLLISION_OBJECT(ped)->last_special_volume != NULL) {
-        if (GET_PED_COLLISION_OBJECT(ped)->last_special_volume->gravity_multiplier < 1.0f) {
+        if (GET_PED_COLLISION_OBJECT(ped)->last_special_volume->gravity_multiplier < gFLOAT_0058a9d8) {
             if (ped->hit_points > 0) {
-                if (BrVector3Length(&pPhysics->omega) < 1.0) {
+                if (BrVector3Length(&pPhysics->omega) < gPed_kill_min_height) {
                     pPhysics->omega.v[0] += SRandomPosNeg(5.f);
                     pPhysics->omega.v[1] += SRandomPosNeg(5.f);
                     pPhysics->omega.v[2] += SRandomPosNeg(5.f);
                 }
-                if (pPhysics->water_depth_factor <= 1.0 && pPhysics->v.v[1] > -0.02) {
-                    if (pPhysics->water_depth_factor < 1.0) {
+                if (pPhysics->water_depth_factor <= gPed_kill_min_height && pPhysics->v.v[1] > -0.02) {
+                    if (pPhysics->water_depth_factor < gPed_kill_min_height) {
                         pPhysics->v.v[1] += FRandomBetween(0.f, -0.3f);
                     }
                 }
@@ -5944,8 +5945,8 @@ tPed_form* C2_HOOK_FASTCALL SetUpCharacterForm(const char* pName) {
         form->count_moves += 1;
     }
 
-    if (gPed_vtable->load_form != NULL) {
-        gPed_vtable->load_form(form, f);
+    if (gPed_67697c->load_form != NULL) {
+        gPed_67697c->load_form(form, f);
     }
     PFfclose(f);
 
@@ -6058,7 +6059,8 @@ br_model* C2_HOOK_FASTCALL BonerCloneModel(br_model *pModel, int pIndex, int pUp
     }
     for (i = 0; i < pModel->nfaces; i++) {
         if (pModel->faces[i].material == original_material) {
-            pModel->faces[i].material = cloned_material;
+            /* Retail 0x40701a writes through the cloned model's face array. */
+            clone->faces[i].material = cloned_material;
         }
     }
     if (pUpdateable) {
@@ -6309,8 +6311,8 @@ tPed_personality* C2_HOOK_FASTCALL ReadPersonality(const char* pName) {
     RemapVector(&personality->centre_of_mass, personality->form->bones[0].remapped_bone);
     personality->radius = CalcBoundsRadius(&personality->bb);
 
-    if (gPed_vtable->load_personality != NULL) {
-        gPed_vtable->load_personality(personality, f);
+    if (gPed_67697c->load_personality != NULL) {
+        gPed_67697c->load_personality(personality, f);
     }
 
     PFfclose(f);
@@ -6354,7 +6356,20 @@ undefined4 C2_HOOK_FASTCALL MakeCharacterRenderable2(tPed_character_instance* pC
         actor_set->field_0x0 = 1;
     }
     pCharacter->field_0x4 = pIndex;
-    BrMatrix34Copy(GetCharacterMatrixPtr(pCharacter), &pCharacter->field_0x2c);
+    {
+        tPed_form* form;
+        br_matrix34* matrix;
+
+        if (pCharacter->field_0x4 < 0) {
+            matrix = &pCharacter->field_0x2c;
+        } else if (pCharacter->field_0xe8 != NULL) {
+            matrix = pCharacter->field_0xe8;
+        } else {
+            form = pCharacter->personality->form;
+            matrix = &form->actor_sets[pCharacter->field_0x4].actors[0]->t.t.mat;
+        }
+        BrMatrix34Copy(matrix, &pCharacter->field_0x2c);
+    }
 
     if (pCharacter->field_0xc != 0) {
         if (pCharacter->field_0x28 != NULL) {
@@ -6389,17 +6404,21 @@ undefined4 C2_HOOK_FASTCALL MakeCharacterRenderable2(tPed_character_instance* pC
 
 // FUNCTION: CARMA2_HW 0x004083b0
 undefined4 C2_HOOK_FASTCALL MakeCharacterRenderable(tPed_character_instance* pCharacter) {
+    tPed_form* form;
+    tPed_form_actor_set* actor_set;
     int i;
 
     if (pCharacter->field_0x4 >= 0) {
         return 2;
     }
-    for (i = 0; i < pCharacter->personality->form->max_rendering_at_once; i++) {
-        if (!pCharacter->personality->form->actor_sets[i].field_0x0) {
+    form = pCharacter->personality->form;
+    actor_set = form->actor_sets;
+    for (i = 0; i < form->max_rendering_at_once; i++) {
+        if (!actor_set[i].field_0x0) {
             break;
         }
     }
-    if (i == pCharacter->personality->form->max_rendering_at_once) {
+    if (i == form->max_rendering_at_once) {
         return 1;
     }
     return MakeCharacterRenderable2(pCharacter, i);
@@ -6443,8 +6462,8 @@ int C2_HOOK_FASTCALL MakeCharacterPhysics(tPed_character_instance* pCharacter, t
             PHILSetObjectProperty(obj, 6, 1);
         }
     }
-    if (gPed_vtable->fill_in_object != NULL) {
-        gPed_vtable->fill_in_object((undefined4*)obj, kind + 2);
+    if (gPed_67697c->fill_in_object != NULL) {
+        gPed_67697c->fill_in_object(obj, kind + 2);
     }
     return 1;
 }
@@ -6840,9 +6859,9 @@ void C2_HOOK_FASTCALL MakePedNoise(tPedestrian* pPed, int pArg2, int pArg3, tPhy
             && pCollision_info->owner != NULL
             && pCollision_info->flags_0x238 == 1
             && ((tCar_spec*)pCollision_info->owner)->driver == eDriver_local_human) {
-        pPed->field_0x0c->field_0x9c = DRS3StartSound2(gPedestrians_outlet, sound, pArg3 == 0, 0xff, 0xff, (int)(65536.0 / gAverage_ped_scale), 0x10000);
+        pPed->field_0x0c->field_0x9c = DRS3StartSound2(gPedestrians_outlet, sound, pArg3 == 0, 0xff, 0xff, (int)(gConst_ped_sound_pitch / gAverage_ped_scale), 0x10000);
     } else {
-        pPed->field_0x0c->field_0x9c = DRS3StartSound3D(gPedestrians_outlet, sound, &pPed->pos, &gZero_v__car, pArg3 == 0, 0xff, (int)(65536.0 / gAverage_ped_scale), 0x10000);
+        pPed->field_0x0c->field_0x9c = DRS3StartSound3D(gPedestrians_outlet, sound, &pPed->pos, &gZero_v__car, pArg3 == 0, 0xff, (int)(gConst_ped_sound_pitch / gAverage_ped_scale), 0x10000);
     }
 }
 
@@ -6957,7 +6976,7 @@ int C2_HOOK_FASTCALL NapalmPedestrianNearCar(tCar_spec* car) {
 }
 
 // FUNCTION: CARMA2_HW 0x004d2060
-void C2_HOOK_FASTCALL CachePedestrianFaces(tPedestrian* pPed, int pArg2, int pCache_key) {
+void C2_HOOK_FASTCALL CachePedestrianFaces(tPedestrian* pPed, br_vector3* pHit_pos, tU32 pCache_key) {
     tPed_face_bounds_context bounds_context;
     br_matrix34* character_matrix;
     tPed_face_cache_0x34* face_cache;
@@ -7059,7 +7078,7 @@ void C2_HOOK_FASTCALL CachePedestrianFaces(tPedestrian* pPed, int pArg2, int pCa
         face_cache = pPed->field_0x0c->field_0xb0;
         character_matrix = GetCharacterMatrixPtr(pPed->character);
         face_cache->field_0x30 = CastRayDownThruFaces((br_vector3*)character_matrix->m[3], face_cache->field_0x0,
-                face_cache->field_0x4, GetClearanceFromCharacterInstance(pPed->character, 0), pArg2);
+                face_cache->field_0x4, GetClearanceFromCharacterInstance(pPed->character, 0), pHit_pos);
     }
 }
 
@@ -7075,66 +7094,43 @@ double gPed_face_normal_threshold = 0.99;
 tPed_face_cache_0x34* C2_HOOK_FASTCALL RecacheAndSetFace(tPedestrian* pPed, int* pArg2, int* pArg3, br_vector3* pArg4, int pArg5, tU32 pTime) {
     br_matrix34* mat;
     tPed_face_cache_0x34* face_cache;
-    tPed_cache_006944c0* cache_slot;
     br_vector3* pos;
-    float dx, dy, dz;
-    int i;
-
-    mat = GetCharacterMatrixPtr(pPed->character);
-    pos = (br_vector3*)mat->m[3];
-
-    cache_slot = (tPed_cache_006944c0*)pPed->field_0x0c;
-    face_cache = cache_slot ? cache_slot->field_0xb4 : NULL;
-
-    if (face_cache != NULL && face_cache->field_0x18 != NULL) {
-        dx = pos->v[0] - (face_cache->field_0x18->min.v[0] + face_cache->field_0x18->max.v[0]) * 0.5f;
-        dy = pos->v[1] - (face_cache->field_0x18->min.v[1] + face_cache->field_0x18->max.v[1]) * 0.5f;
-        dz = pos->v[2] - (face_cache->field_0x18->min.v[2] + face_cache->field_0x18->max.v[2]) * 0.5f;
-
-        if (dx > -0.217391f && dx < 0.217391f
-                && dy > -0.217391f && dy < 0.217391f
-                && dz > -0.217391f && dz < 0.217391f) {
-            return face_cache;
-        }
-    }
 
     *pArg2 = 0;
     *pArg3 = 0;
 
-    if (pArg4 != NULL) {
-        BrVector3Copy(pArg4, pos);
-    }
+    mat = GetCharacterMatrixPtr(pPed->character);
+    pos = (br_vector3*)mat->m[3];
 
-    for (i = 0; i < CARPOCALYPSE2_ASIZE(gPed_face_caches); i++) {
-        tPed_face_cache_0x34* head = gPed_face_caches[i];
-        if (head != NULL && head->field_0x14 == 0) {
-            face_cache = head;
-            gPed_face_caches[i] = head->next;
-            face_cache->next = NULL;
-            face_cache->prev = NULL;
-            face_cache->field_0x14 = (tPedestrian*)pPed;
-            face_cache->field_0x30 = NULL;
-            if (cache_slot != NULL) {
-                cache_slot->field_0xb4 = face_cache;
-            }
-            *pArg2 = 1;
-            return face_cache;
-        }
-    }
+    face_cache = (pPed->field_0x0c != NULL) ? pPed->field_0x0c->field_0xb0 : NULL;
 
-    face_cache = gPed_face_caches[0];
-    if (face_cache != NULL) {
-        gPed_face_caches[0] = face_cache->next;
-        face_cache->next = NULL;
-        face_cache->prev = NULL;
-        face_cache->field_0x14 = (tPedestrian*)pPed;
-        face_cache->field_0x30 = NULL;
-        if (cache_slot != NULL) {
-            cache_slot->field_0xb4 = face_cache;
-        }
+    /*
+     * Retail keeps the faces found by CachePedestrianFaces while the ped stays
+     * inside the (margin-shrunk) cached bounds and just re-casts the ray
+     * against that cached face list. Otherwise it does a full re-cache.
+     */
+    if (pArg5 == 0 && face_cache != NULL
+            && pos->v[0] - face_cache->bounds.max.v[0] <= gPed_face_cache_margin
+            && face_cache->bounds.min.v[0] - pos->v[0] <= gPed_face_cache_margin
+            && pos->v[1] - face_cache->bounds.max.v[1] <= gPed_face_cache_margin
+            && face_cache->bounds.min.v[1] - pos->v[1] <= gPed_face_cache_margin
+            && pos->v[2] - face_cache->bounds.max.v[2] <= gPed_face_cache_margin
+            && face_cache->bounds.min.v[2] - pos->v[2] <= gPed_face_cache_margin) {
+        face_cache->field_0x30 = CastRayDownThruFaces(pos, face_cache->field_0x0,
+                face_cache->field_0x4, GetClearanceFromCharacterInstance(pPed->character, 0), pArg4);
         *pArg2 = 1;
+        if (face_cache->field_0x30 != NULL) {
+            *pArg3 = 1;
+        }
+        return face_cache;
     }
 
+    CachePedestrianFaces(pPed, pArg4, pTime);
+    face_cache = (pPed->field_0x0c != NULL) ? pPed->field_0x0c->field_0xb0 : NULL;
+    *pArg2 = (face_cache != NULL);
+    if (face_cache != NULL && face_cache->field_0x30 != NULL) {
+        *pArg3 = 1;
+    }
     return face_cache;
 }
 
@@ -7349,7 +7345,7 @@ float C2_HOOK_FASTCALL RescanPedProximity(tPedestrian* pPed, br_vector3* pArg2) 
     float nz;
     br_matrix34* mat;
     br_vector3* pMatVec;
-    tPed_face_cache_0x50* entry;
+    tFace_ref* entry;
     int i;
     int matched;
     int use_cache;
@@ -7366,9 +7362,9 @@ float C2_HOOK_FASTCALL RescanPedProximity(tPedestrian* pPed, br_vector3* pArg2) 
     float d1;
     float dot2;
     int r;
-    tPed_face_adjacency* adj;
+    br_actor* adj;
     int idx;
-    tPed_face_adjacency* adj2;
+    br_model* adj2;
     void* key0;
     int key1;
     int idx0;
@@ -7417,7 +7413,7 @@ float C2_HOOK_FASTCALL RescanPedProximity(tPedestrian* pPed, br_vector3* pArg2) 
     }
     for (i = 0; i < head->field_0x4; i++, entry++) {
         matched = 0;
-        if (entry->plane.v[1] > gPed_cos_max_slope) {
+        if (entry->normal.v[1] > gPed_cos_max_slope) {
             int j;
             int n;
             tRace_ped_exclusion_spec* spec;
@@ -7464,11 +7460,11 @@ float C2_HOOK_FASTCALL RescanPedProximity(tPedestrian* pPed, br_vector3* pArg2) 
         if (!matched) {
             float denom;
 
-            denom = BrVector3Dot(&dir, &entry->plane);
+            denom = BrVector3Dot(&dir, &entry->normal);
             if (fabsf(denom) < 0.001) {
                 result = 20.0f;
             } else {
-                result = (entry->d - BrVector3Dot(pMatVec, &entry->plane)) / denom;
+                result = (entry->d - BrVector3Dot(pMatVec, &entry->normal)) / denom;
             }
             if (result < gConst_replay_rate_zero || result > 20.0f || result > best) {
                 continue;
@@ -7497,44 +7493,44 @@ float C2_HOOK_FASTCALL RescanPedProximity(tPedestrian* pPed, br_vector3* pArg2) 
             d1 = BrVector3Dot(pMatVec, &negN);
             u.i = 1;
         }
-            adj = entry->field_0x48;
-            idx = entry->field_0x4c;
-            adj2 = adj->field_0x18;
+            adj = entry->a;
+            idx = entry->g;
+            adj2 = adj->model;
             key1 = idx;
             key0 = adj2;
             if (idx < 0) {
+                br_face* bface;
                 tU16 id;
-                tU16 *rec;
 
-                id = entry->field_0x4e;
-                if (id >= adj2->field_0x12) {
+                id = entry->f;
+                if (id >= adj2->nfaces) {
                     continue;
                 }
-                rec = adj2->field_0x0c[(id & 0xffff) * 5];
-                idx0 = rec[0];
-                idx1 = rec[1];
-                idx2 = rec[2];
+                bface = &adj2->faces[id];
+                idx0 = bface->vertices[0];
+                idx1 = bface->vertices[1];
+                idx2 = bface->vertices[2];
             } else {
-                tPed_face_adjacency* level;
+                v11model* level;
+                v11group* rows;
+                v11group* row;
+                v11face* vface;
                 tU16 id;
-                tMeshRow* rows;
-                tMeshRow* row;
-                tU16 *rec;
 
-                level = adj2->field_0x4c;
-                if (idx >= level->field_0x8) {
+                level = adj2->prepared;
+                if (idx >= level->ngroups) {
                     continue;
                 }
-                rows = (tMeshRow*)level->field_0x18;
-                id = entry->field_0x4e;
+                rows = level->groups;
+                id = entry->f;
                 row = &rows[idx];
-                if (id >= row->field_0x1c) {
+                if (id >= row->nfaces) {
                     continue;
                 }
-                rec = (tU16*)&row->field_0x4[(id & 0xffff) * 7];
-                idx0 = rec[0];
-                idx1 = rec[1];
-                idx2 = rec[2];
+                vface = &row->faces[id];
+                idx0 = vface->vertices[0];
+                idx1 = vface->vertices[1];
+                idx2 = vface->vertices[2];
             }
             cell = NULL;
             if (cell_count > 0) {
@@ -7558,7 +7554,7 @@ float C2_HOOK_FASTCALL RescanPedProximity(tPedestrian* pPed, br_vector3* pArg2) 
             if (use_cache && (cell->flags[idx0] & gPow2_word_array[3])) {
                 r = cell->flags[idx0] & gPow2_word_array[11];
             } else {
-                r = NormalSideOfPlane((br_vector3*)&dirCopy.v[1], &entry->normal1, d0);
+                r = NormalSideOfPlane((br_vector3*)&dirCopy.v[1], &entry->v[0], d0);
                 if (use_cache) {
                     cell->flags[idx0] |= gPow2_word_array[3];
                     if (r) {
@@ -7573,7 +7569,7 @@ float C2_HOOK_FASTCALL RescanPedProximity(tPedestrian* pPed, br_vector3* pArg2) 
             if (use_cache && (cell->flags[idx1] & gPow2_word_array[3])) {
                 r = cell->flags[idx1] & gPow2_word_array[11];
             } else {
-                r = NormalSideOfPlane((br_vector3*)&dirCopy.v[1], &entry->normal2, d0);
+                r = NormalSideOfPlane((br_vector3*)&dirCopy.v[1], &entry->v[1], d0);
                 if (use_cache) {
                     cell->flags[idx1] |= gPow2_word_array[3];
                     if (r) {
@@ -7588,7 +7584,7 @@ float C2_HOOK_FASTCALL RescanPedProximity(tPedestrian* pPed, br_vector3* pArg2) 
             if (use_cache && (cell->flags[idx2] & gPow2_word_array[3])) {
                 r = cell->flags[idx2] & gPow2_word_array[11];
             } else {
-                r = NormalSideOfPlane((br_vector3*)&dirCopy.v[1], &entry->normal3, d0);
+                r = NormalSideOfPlane((br_vector3*)&dirCopy.v[1], &entry->v[2], d0);
                 if (use_cache) {
                     cell->flags[idx2] |= gPow2_word_array[3];
                     if (r) {
@@ -7604,7 +7600,7 @@ float C2_HOOK_FASTCALL RescanPedProximity(tPedestrian* pPed, br_vector3* pArg2) 
             if (use_cache && (cell->flags[idx0] & gPow2_word_array[1])) {
                 r = cell->flags[idx0] & gPow2_word_array[9];
             } else {
-                r = NormalSideOfPlane((br_vector3*)&norm.v[1], &entry->normal1, dot1);
+                r = NormalSideOfPlane((br_vector3*)&norm.v[1], &entry->v[0], dot1);
                 if (use_cache) {
                     cell->flags[idx0] |= gPow2_word_array[1];
                     if (r) {
@@ -7619,7 +7615,7 @@ float C2_HOOK_FASTCALL RescanPedProximity(tPedestrian* pPed, br_vector3* pArg2) 
             if (use_cache && (cell->flags[idx1] & gPow2_word_array[1])) {
                 r = cell->flags[idx1] & gPow2_word_array[9];
             } else {
-                r = NormalSideOfPlane((br_vector3*)&norm.v[1], &entry->normal2, dot1);
+                r = NormalSideOfPlane((br_vector3*)&norm.v[1], &entry->v[1], dot1);
                 if (use_cache) {
                     cell->flags[idx1] |= gPow2_word_array[1];
                     if (r) {
@@ -7634,7 +7630,7 @@ float C2_HOOK_FASTCALL RescanPedProximity(tPedestrian* pPed, br_vector3* pArg2) 
             if (use_cache && (cell->flags[idx2] & gPow2_word_array[1])) {
                 r = cell->flags[idx2] & gPow2_word_array[9];
             } else {
-                r = NormalSideOfPlane((br_vector3*)&norm.v[1], &entry->normal3, dot1);
+                r = NormalSideOfPlane((br_vector3*)&norm.v[1], &entry->v[2], dot1);
                 if (use_cache) {
                     cell->flags[idx2] |= gPow2_word_array[1];
                     if (r) {
@@ -7650,7 +7646,7 @@ float C2_HOOK_FASTCALL RescanPedProximity(tPedestrian* pPed, br_vector3* pArg2) 
             if (use_cache && (cell->flags[idx0] & gPow2_word_array[2])) {
                 r = cell->flags[idx0] & gPow2_word_array[10];
             } else {
-                r = NormalSideOfPlane((br_vector3*)&neg.v[1], &entry->normal1, dot2);
+                r = NormalSideOfPlane((br_vector3*)&neg.v[1], &entry->v[0], dot2);
                 if (use_cache) {
                     cell->flags[idx0] |= gPow2_word_array[2];
                     if (r) {
@@ -7665,7 +7661,7 @@ float C2_HOOK_FASTCALL RescanPedProximity(tPedestrian* pPed, br_vector3* pArg2) 
             if (use_cache && (cell->flags[idx1] & gPow2_word_array[2])) {
                 r = cell->flags[idx1] & gPow2_word_array[10];
             } else {
-                r = NormalSideOfPlane((br_vector3*)&neg.v[1], &entry->normal2, dot2);
+                r = NormalSideOfPlane((br_vector3*)&neg.v[1], &entry->v[1], dot2);
                 if (use_cache) {
                     cell->flags[idx1] |= gPow2_word_array[2];
                     if (r) {
@@ -7680,7 +7676,7 @@ float C2_HOOK_FASTCALL RescanPedProximity(tPedestrian* pPed, br_vector3* pArg2) 
             if (use_cache && (cell->flags[idx2] & gPow2_word_array[2])) {
                 r = cell->flags[idx2] & gPow2_word_array[10];
             } else {
-                r = NormalSideOfPlane((br_vector3*)&neg.v[1], &entry->normal3, dot2);
+                r = NormalSideOfPlane((br_vector3*)&neg.v[1], &entry->v[2], dot2);
                 if (use_cache) {
                     cell->flags[idx2] |= gPow2_word_array[2];
                     if (r) {
@@ -7696,9 +7692,8 @@ float C2_HOOK_FASTCALL RescanPedProximity(tPedestrian* pPed, br_vector3* pArg2) 
                 goto PHASE_D;
             }
             {
-                tPed_face_adjacency* tri_level;
-                int* tri_base;
-                int tri_block;
+                v11model* tri_level;
+                v11group* tri_group;
                 br_vector3* vv0;
                 br_vector3* vv1;
                 br_vector3* vv2;
@@ -7715,12 +7710,11 @@ float C2_HOOK_FASTCALL RescanPedProximity(tPedestrian* pPed, br_vector3* pArg2) 
                 float cross3;
                 float t3;
 
-                tri_level = ((tPed_face_adjacency*)key0)->field_0x4c;
-                tri_base = (int*)tri_level->field_0x18;
-                tri_block = tri_base[key1 * 9 + 4];
-                vv1 = (br_vector3*)(tri_block + idx1 * 32);
-                vv0 = (br_vector3*)(tri_block + idx0 * 32);
-                vv2 = (br_vector3*)(tri_block + idx2 * 32);
+                tri_level = ((br_model*)key0)->prepared;
+                tri_group = &tri_level->groups[key1];
+                vv1 = &tri_group->vertices[idx1].p;
+                vv0 = &tri_group->vertices[idx0].p;
+                vv2 = &tri_group->vertices[idx2].p;
                 e1x = vv1->v[0] - vv0->v[0];
                 e1z = vv1->v[2] - vv0->v[2];
                 cross1 = e1z * nz - e1x * nx;
@@ -7809,12 +7803,12 @@ float C2_HOOK_FASTCALL RescanPedProximity(tPedestrian* pPed, br_vector3* pArg2) 
             {
                 float dot;
 
-                dot = entry->plane.v[1] * dir.v[1] + entry->plane.v[0] * dir.v[0] + entry->plane.v[2] * dir.v[2];
+                dot = entry->normal.v[1] * dir.v[1] + entry->normal.v[0] * dir.v[0] + entry->normal.v[2] * dir.v[2];
                 if (dot > 0.0f) {
                     if (((unsigned char*)&entry->material->flags)[1] & 0x10) {
-                        entry->plane.v[0] *= -1.0f;
-                        entry->plane.v[1] *= -1.0f;
-                        entry->plane.v[2] *= -1.0f;
+                        entry->normal.v[0] *= -1.0f;
+                        entry->normal.v[1] *= -1.0f;
+                        entry->normal.v[2] *= -1.0f;
                         entry->d = -entry->d;
                     }
                 }
@@ -7823,7 +7817,7 @@ float C2_HOOK_FASTCALL RescanPedProximity(tPedestrian* pPed, br_vector3* pArg2) 
             if (use_cache && (cell->flags[idx0] & gPow2_word_array[4])) {
                 r = cell->flags[idx0] & gPow2_word_array[12];
             } else {
-                r = NormalSideOfPlane((br_vector3*)&negN.v[1], &entry->normal1, d1);
+                r = NormalSideOfPlane((br_vector3*)&negN.v[1], &entry->v[0], d1);
                 if (use_cache) {
                     cell->flags[idx0] |= gPow2_word_array[4];
 
@@ -7839,7 +7833,7 @@ float C2_HOOK_FASTCALL RescanPedProximity(tPedestrian* pPed, br_vector3* pArg2) 
             if (use_cache && (cell->flags[idx1] & gPow2_word_array[4])) {
                 r = cell->flags[idx1] & gPow2_word_array[12];
             } else {
-                r = NormalSideOfPlane((br_vector3*)&negN.v[1], &entry->normal2, d1);
+                r = NormalSideOfPlane((br_vector3*)&negN.v[1], &entry->v[1], d1);
                 if (use_cache) {
                     cell->flags[idx1] |= gPow2_word_array[4];
                     if (r) {
@@ -7854,7 +7848,7 @@ float C2_HOOK_FASTCALL RescanPedProximity(tPedestrian* pPed, br_vector3* pArg2) 
             if (use_cache && (cell->flags[idx2] & gPow2_word_array[4])) {
                 r = cell->flags[idx2] & gPow2_word_array[12];
             } else {
-                r = NormalSideOfPlane((br_vector3*)&negN.v[1], &entry->normal3, d1);
+                r = NormalSideOfPlane((br_vector3*)&negN.v[1], &entry->v[2], d1);
                 if (use_cache) {
                     cell->flags[idx2] |= gPow2_word_array[4];
                     if (r) {
@@ -7877,7 +7871,7 @@ float C2_HOOK_FASTCALL RescanPedProximity(tPedestrian* pPed, br_vector3* pArg2) 
             cache->field_0x3c.v[0] = pMatVec->v[0] + result * dir.v[0];
             cache->field_0x3c.v[1] = pMatVec->v[1] + result * dir.v[1];
             cache->field_0x3c.v[2] = pMatVec->v[2] + result * dir.v[2];
-            cache->field_0xa4 = entry->plane;
+            cache->field_0xa4 = entry->normal;
             continue;
     }
     return best;
@@ -8165,7 +8159,7 @@ int C2_HOOK_FASTCALL FUN_00409c20(tPed_character_instance* pCharacter, undefined
     pCharacter->field_0x1c = pCharacter->personality->form->moves[pCharacter->field_0x7].move->count_frames - 1;
     if ((pCharacter->field_0x9 & 0x2) != 0) {
         pCharacter->field_0x9 &= 0xfd;
-        moved = gPed_vtable->move_completed(pCharacter);
+        moved = gPed_67697c->move_completed(pCharacter);
     }
     if ((tS8)pCharacter->field_0x8 >= 0) {
         SetCharacterMove(pCharacter,
@@ -8253,7 +8247,7 @@ tS32 delta;
                             pCharacter->field_0x1c = (tS16)(model->count_frames - 1);
                             if (pCharacter->field_0x9 & 0x2) {
                                 pCharacter->field_0x9 &= (tU8)~0x2;
-                                gPed_67697c->field_0xc(pCharacter);
+                                gPed_67697c->move_completed(pCharacter);
                             }
                             if ((tS32)(tS8)pCharacter->field_0x8 >= 0) {
                                 SetCharacterMove(pCharacter,
@@ -8423,7 +8417,7 @@ void C2_HOOK_FASTCALL DoGibShower(int pId, int pTime, int pSeed, float pForce, i
             if (fragment != NULL) {
                 float v;
 
-                v = PositionFragment(fragment->actor, &gGiblet_initial_position, 0, 0, 0, pArg6, pArg7, 0);
+                v = PositionFragment(fragment->actor, &gGiblet_initial_position, 0, pArg6, pArg7, 0, NULL, 0);
                 InitFragmentSpeed(fragment, &gGiblet_initial_speed, pArg8, v, gGiblet_min_max_time, pTime, &gZero_vector__smash, 0, 0);
             }
         }
@@ -8575,7 +8569,7 @@ void C2_HOOK_FASTCALL SetPedStartRun(tPedestrian* pPed) {
 // FUNCTION: CARMA2_HW 0x004cc660
 void C2_HOOK_FASTCALL StartPedRunning(tPedestrian* pPed, tU32 pTime, int pArg3) {
 
-    if ((!(pPed->character->field_0xc & gPow2_array[3])) && (!(gPow2_array[5] & pPed->character->field_0xc)) && pPed->field_0x0c != NULL) {
+    if ((!(pPed->character->field_0xc & gPed_flags_0058f2e4[0])) && (!(gPed_flags_0058f2e4[2] & pPed->character->field_0xc)) && pPed->field_0x0c != NULL) {
 
         SetPedStartRun(pPed);
         SetPedMove(pPed, pArg3 ? 40 : 41, pPed->field_0x0c->field_0x80, 0, 0, pTime, ePed_action_running);
@@ -8746,8 +8740,8 @@ void C2_HOOK_FASTCALL DisposePedForm(tPed_form* pForm) {
     int i;
     int j;
 
-    if (gPed_vtable->dispose_form != NULL) {
-        gPed_vtable->dispose_form(pForm);
+    if (gPed_67697c->dispose_form != NULL) {
+        gPed_67697c->dispose_form(pForm);
     }
     for (i = 0; i < pForm->max_rendering_at_once; i++) {
         for (j = 0; j < pForm->count_bones; j++) {
@@ -8828,8 +8822,8 @@ void C2_HOOK_FASTCALL DisposePedPersonality(tPed_personality* pPersonality) {
     int j;
     int k;
 
-    if (gPed_vtable->dispose_personality != NULL) {
-        gPed_vtable->dispose_personality(pPersonality);
+    if (gPed_67697c->dispose_personality != NULL) {
+        gPed_67697c->dispose_personality(pPersonality);
     }
     if (pPersonality->moves != NULL) {
         BrMemFree(pPersonality->moves);
@@ -9745,8 +9739,8 @@ int C2_HOOK_FASTCALL BonerActiveHalted2(tPed_character_instance* pCharacter, und
     SetCharacterBonePositions(pCharacter, 3, 0);
     pCharacter->field_0x14 &= ~4;
 
-    if (gPed_67697c->field_0x4 != NULL
-            && ((int(C2_HOOK_FASTCALL*)(tPed_character_instance*, tPhysics_object*))gPed_67697c->field_0x4)(pCharacter, obj) == 0) {
+    if (gPed_67697c->active_halted != NULL
+            && gPed_67697c->active_halted(pCharacter, obj) == 0) {
         pCharacter->field_0x14 |= 4;
         return 0;
     }
@@ -9802,7 +9796,7 @@ int C2_HOOK_FASTCALL BonerActiveHalted2(tPed_character_instance* pCharacter, und
 // GetCharacterModelSet
 
 // FUNCTION: CARMA2_HW 0x0040b620
-int C2_HOOK_FASTCALL BonerPassiveCollision(tPed_character_instance* pCharacter, undefined4 pArg2) {
+int C2_HOOK_FASTCALL BonerPassiveCollision(tPed_character_instance* pCharacter, tPhysics_object* pActivator) {
     tPhysics_object* obj;
 
     if (pCharacter->field_0x14 == 0) {
@@ -9852,8 +9846,8 @@ int C2_HOOK_FASTCALL BonerPassiveCollision(tPed_character_instance* pCharacter, 
         pCharacter->field_0x14 |= 4;
     }
     pCharacter->field_0x14 |= 4;
-    if (gPed_67697c->field_0x0 != NULL) {
-        ((void(C2_HOOK_FASTCALL*)(tPed_character_instance*, tPhysics_object*, undefined4))gPed_67697c->field_0x0)(pCharacter, obj, pArg2);
+    if (gPed_67697c->passive_collision != NULL) {
+        gPed_67697c->passive_collision(pCharacter, obj, pActivator);
     }
     return 0;
 }
@@ -9901,7 +9895,7 @@ void C2_HOOK_FASTCALL BonerPedMovedByPhysics(tPed_character_instance* pCharacter
     {
         void(C2_HOOK_FASTCALL* callback)(tPed_character_instance*, tPhysics_object*, undefined4);
 
-        callback = (void(C2_HOOK_FASTCALL*)(tPed_character_instance*, tPhysics_object*, undefined4))gPed_67697c->field_0x8;
+        callback = gPed_67697c->moved_by_physics;
         if (callback != NULL) {
             callback(pCharacter, obj, pArg2);
         }
@@ -9909,14 +9903,16 @@ void C2_HOOK_FASTCALL BonerPedMovedByPhysics(tPed_character_instance* pCharacter
 }
 
 // FUNCTION: CARMA2_HW 0x004ccab0
-void C2_HOOK_FASTCALL CBFillInObject(undefined4* pArg1, undefined4 pArg2) {
-    char* base = (char*)pArg1;
+void C2_HOOK_FASTCALL CBFillInObject(tPhysics_object* pObject, undefined4 pArg2) {
+    /* Retail writes bytes 0x1a0/0x1a4 of the 32-bit tPhysics_object; those
+     * are field_0x1a0/field_0x1a4 here (0x1a0 is physics_joint2 in the
+     * 64-bit layout, so raw offsets corrupt the joint pointer). */
     if (pArg2 == 5) {
-        *(int*)(base + 0x1a0) = 0x40000;
-        *(int*)(base + 0x1a4) = 0x50000;
+        pObject->field_0x1a0 = 0x40000;
+        pObject->field_0x1a4 = 0x50000;
     } else {
-        *(int*)(base + 0x1a0) = 0x10000;
-        *(int*)(base + 0x1a4) = 0x50000;
+        pObject->field_0x1a0 = 0x10000;
+        pObject->field_0x1a4 = 0x50000;
     }
 }
 // FUNCTION: CARMA2_HW 0x004cc860

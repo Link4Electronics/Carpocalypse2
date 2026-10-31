@@ -460,7 +460,7 @@ void C2_HOOK_FASTCALL APTCChangedObjects(tPhysics_object* pObject, undefined4 pA
 
 int C2_HOOK_FASTCALL APTCActiveHalted(tPhysics_object* pObject);
 
-int C2_HOOK_FASTCALL APTCPassiveActivated(tPhysics_object* pObject, undefined4 pArg2);
+int C2_HOOK_FASTCALL APTCPassiveActivated(tPhysics_object* pObject, tPhysics_object* pActivator);
 
 float C2_HOOK_STDCALL frac(float pN);
 

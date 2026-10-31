@@ -12,7 +12,6 @@
 #include "drv.h"
 #include <brassert.h>
 #include <brfont.h>
-#include <stdio.h>
 #include <string.h>
 
 /*
@@ -358,17 +357,6 @@ br_error BREND_CMETHOD_DECL(BREND_CLASS(br_device_pixelmap_), rectangleCopyTo)(b
     sr->x = -src->pm_origin_x;
     sr->y = -src->pm_origin_y;
 
-    { static int dbg; static int dbg2; if (dbg++ < 60)
-        BrLogPrintf("DBG RECTCOPY dst=%d %dx%d src=%d %dx%d rb=%d px=%p sr=%d,%d,%d,%d p=%d,%d\n",
-            self->pm_type, self->pm_width, self->pm_height,
-            src->pm_type, src->pm_width, src->pm_height, src->pm_row_bytes, src->pm_pixels,
-            sr->x, sr->y, sr->w, sr->h, p->x, p->y);
-      if (dbg2++ < 2 && src->pm_type == BR_PMT_RGB_565 && src->pm_width == 640 && src->pm_height == 480 && src->pm_pixels != NULL) {
-        const br_uint_16* pr = (const br_uint_16*)((const char*)src->pm_pixels + 240 * src->pm_row_bytes);
-        BrLogPrintf("DBG BACKDROP row240 %04x %04x %04x %04x %04x %04x %04x %04x\n",
-            pr[0], pr[100], pr[200], pr[300], pr[400], pr[500], pr[600], pr[639]);
-      } }
-
     if (src->pm_pixels == NULL)
         return BRE_FAIL;
 
@@ -510,17 +498,6 @@ br_error BREND_CMETHOD_DECL(BREND_CLASS(br_device_pixelmap_), flush)(br_device_p
     }
 
     if (hVideo->lockedPixels != NULL) {
-        { static int fd; if (fd < 4) {
-            char p[64];
-            sprintf(p, "/tmp/opencode/locked_%d.raw", fd);
-            FILE* f = fopen(p, "wb");
-            if (f != NULL) {
-                fwrite(hVideo->lockedPixels, 1, (size_t)self->pm_row_bytes * self->pm_height, f);
-                fclose(f);
-                BrLogPrintf("DBG LOCKEDDUMP %s %dx%d rb=%d\n", p, self->pm_width, self->pm_height, self->pm_row_bytes);
-            }
-            fd++;
-        } }
         /* Ensure the overlay texture exists (BGRA8888 — universally supported).
          * The overlay is uploaded from the CPU locked buffer each frame and
          * composited on top of the 3D content in SDL3GPUREND_Present. */

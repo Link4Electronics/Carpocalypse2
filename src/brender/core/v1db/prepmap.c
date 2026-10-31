@@ -36,11 +36,6 @@ void C2_HOOK_STDCALL BrBufferUpdate(br_pixelmap* pm, br_token use, br_uint_16 fl
     } else {
         ((br_buffer_stored*)pm->stored)->dispatch->_update((br_buffer_stored*)pm->stored, (br_device_pixelmap*)pm, tv);
     }
-#ifndef CARPOCALYPSE2_MATCHING
-    { static int dbg; if (dbg++ < 300)
-        BrLogPrintf("DBG map %p '%s' t=%d %dx%d stored=%p\n", (void*)pm,
-            pm->identifier ? pm->identifier : "?", pm->type, pm->width, pm->height, (void*)pm->stored); }
-#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00523280

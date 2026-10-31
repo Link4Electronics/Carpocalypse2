@@ -450,9 +450,6 @@ static br_error BREND_CMETHOD_DECL(BREND_CLASS(br_renderer), stateStoredNew)(br_
     if ((ss = BREND_FN(RendererStateStored, Allocate)(self, self->state.current, mask, tv)) == NULL)
         return BRE_FAIL;
 
-    { static int dbg; if (dbg++ < 40 && ss->state.prim.colour_map != NULL)
-        BrLogPrintf("DBG ssnew %p mask=%x cm=%p\n", (void*)ss, mask, (void*)ss->state.prim.colour_map); }
-
     *pss = ss;
     return BRE_OK;
 }
@@ -702,8 +699,6 @@ static br_error BREND_CMETHOD_DECL(BREND_CLASS(br_renderer), statePop)(br_render
 
 static br_error BREND_CMETHOD_DECL(BREND_CLASS(br_renderer), stateSave)(br_renderer* self, br_renderer_state_stored* save, br_uint_32 mask) {
     BREND_FN(State, Copy)(&save->state, self->state.current, mask);
-    { static int dbg; if (dbg++ < 40 && save->state.prim.colour_map != NULL)
-        BrLogPrintf("DBG sssave %p mask=%x cm=%p\n", (void*)save, mask, (void*)save->state.prim.colour_map); }
     return BRE_OK;
 }
 

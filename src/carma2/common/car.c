@@ -3174,7 +3174,7 @@ void C2_HOOK_FASTCALL NewFacesListCallback(tPhysics_object* pCollision, undefine
         return;
     }
     prop7 = PHILGetObjectProperty(pCollision, 7);
-    if (pCollision->flags_0x238 != 1 && prop7 == 0.f) {
+    if (pCollision->flags_0x238 != 1 && prop7 == gFlyCarZero) {
         return;
     }
     if (pCollision != NULL
@@ -3183,13 +3183,13 @@ void C2_HOOK_FASTCALL NewFacesListCallback(tPhysics_object* pCollision, undefine
         && ((tCar_spec*)pCollision->owner)->driver == eDriver_local_human
         && pCollision->water_d != 10000.f
         && gDouble_pling_water
-        && BrVector3Dot(&pCollision->water_normal, &pCollision->field_0xf4.max) - pCollision->water_d <= 0.f) {
+        && BrVector3Dot(&pCollision->water_normal, &pCollision->field_0xf4.max) - pCollision->water_d <= gFlyCarZero) {
         gInTheSea = 1;
         FreezeCamera();
     }
     if (pFace != NULL && fabsf(pFace->normal.v[1]) > 0.9f) {
         BrVector3Copy(&pCollision->water_normal, &pFace->normal);
-        if (pCollision->water_normal.v[1] < 0.f) {
+        if (pCollision->water_normal.v[1] < gFlyCarZero) {
             BrVector3Negate(&pCollision->water_normal, &pCollision->water_normal);
         }
         pCollision->water_d = (((pFace->v[0].v[2]) * (pCollision->water_normal.v[2])) + ((pFace->v[0].v[1]) * (pCollision->water_normal.v[1]))) + ((pFace->v[0].v[0]) * (pCollision->water_normal.v[0]));
@@ -3198,7 +3198,7 @@ void C2_HOOK_FASTCALL NewFacesListCallback(tPhysics_object* pCollision, undefine
             && pCollision->flags_0x238 == 1
             && ((tCar_spec*)pCollision->owner)->driver == eDriver_local_human) {
             if (pFace->material->identifier[1] == '!') {
-                if (BrVector3Dot(&pCollision->field_0xf4.min, &pCollision->water_normal) - pCollision->water_d < 0.f) {
+                if (BrVector3Dot(&pCollision->field_0xf4.min, &pCollision->water_normal) - pCollision->water_d < gFlyCarZero) {
                     GetNewBoundingBox(&current_bounds, &pCollision->bb1, &pCollision->actor->t.t.mat);
                     if ((((pCollision->water_normal.v[0]) * (current_bounds.min.v[0])) + ((pCollision->water_normal.v[1]) * (current_bounds.min.v[1]))) + ((pCollision->water_normal.v[2]) * (current_bounds.min.v[2])) - pCollision->water_d < 0.f) {
                         gInTheSea = 1;
@@ -3220,7 +3220,7 @@ void C2_HOOK_FASTCALL NewFacesListCallback(tPhysics_object* pCollision, undefine
         }
     }
     if (fabs(old_d - pCollision->water_d) > 1e-05) {
-        if (PHILGetObjectProperty(pCollision, 6) != 0.f) {
+        if (PHILGetObjectProperty(pCollision, 6) != gFlyCarZero) {
             ARStartPipingSession(ePipe_chunk_extended_splash);
             AddExtendedSplashToPipingSession(pCollision, pCollision);
             AREndPipingSession();
@@ -3635,18 +3635,22 @@ void C2_HOOK_FASTCALL CheckDisablePlingMaterials(tCar_spec* pCar) {
     br_scalar height;
     int i;
 
-    height = 0.f;
+    height = gFLOAT_00589418;
     if (pCar->collision_info->water_d != 10000.f) {
         mat = &pCar->car_master_actor->t.t.mat;
         for (i = 0; i < 3; i++) {
-            if (mat->m[i][1] > 0.f) {
+            if (mat->m[i][1] > gFLOAT_00589418) {
                 height += pCar->collision_info->bb2.max.v[i] * mat->m[i][1];
             } else {
                 height += pCar->collision_info->bb2.min.v[i] * mat->m[i][1];
             }
         }
-        if (mat->m[3][1] / WORLD_SCALE + height < pCar->collision_info->water_d) {
-            DisablePlingMaterials();
+        {
+            br_scalar d = mat->m[3][1] / WORLD_SCALE;
+
+            if (d + height < pCar->collision_info->water_d) {
+                DisablePlingMaterials();
+            }
         }
     } else {
         DisablePlingMaterials();
@@ -4806,9 +4810,11 @@ void C2_HOOK_FASTCALL SetCollisionFlagsAndStuff(tCar_spec* pCar) {
 void C2_HOOK_FASTCALL AddDrag(tCar_spec* pCar, tPhysics_object* pObject, br_scalar pDt) {
     br_scalar drag;
     br_scalar k;
+    br_scalar s;
+    double kd;
     br_vector3 v;
 
-    drag = pDt * 0.0005f;
+    drag = pDt * gFloat_0058969c;
     if (pObject->last_special_volume != NULL) {
         k = pObject->last_special_volume->viscosity_multiplier;
         if (pCar->underwater_ability != 0) {
@@ -4818,13 +4824,15 @@ void C2_HOOK_FASTCALL AddDrag(tCar_spec* pCar, tPhysics_object* pObject, br_scal
         drag *= pObject->water_depth_factor;
     }
 
-    k = BrVector3Length(&pObject->v) * drag * 6.9 / pObject->M;
+    s = BrVector3Length(&pObject->v);
+    k = s * drag * gDouble_00589628 / pObject->M;
     v.v[0] = pObject->v.v[0] * k;
     v.v[1] = pObject->v.v[1] * k;
     v.v[2] = pObject->v.v[2] * k;
     DRVector3Diminish(&pObject->v, &v);
 
-    k = BrVector3Length(&pObject->omega) * drag;
+    s = BrVector3Length(&pObject->omega);
+    k = s * drag;
     v.v[0] = pObject->omega.v[0] * k;
     v.v[1] = pObject->omega.v[1] * k;
     v.v[2] = pObject->omega.v[2] * k;
@@ -5445,13 +5453,13 @@ int C2_HOOK_FASTCALL APTCActiveHalted(tPhysics_object* pObject) {
 }
 
 // FUNCTION: CARMA2_HW 0x004162b0
-int C2_HOOK_FASTCALL APTCPassiveActivated(tPhysics_object* pObject, undefined4 pArg2) {
+int C2_HOOK_FASTCALL APTCPassiveActivated(tPhysics_object* pObject, tPhysics_object* pActivator) {
 
     if (pObject != NULL && pObject->owner != NULL && pObject->flags_0x238 >= 2 && pObject->flags_0x238 <= 4) {
-        return BonerPassiveCollision((tPed_character_instance*)pObject->owner, pArg2);
+        return BonerPassiveCollision((tPed_character_instance*)pObject->owner, pActivator);
     }
     if (pObject != NULL && pObject->flags_0x238 == 0x10) {
-        return MyDroneHathCollideth(pObject, (tPhysics_object*)pArg2);
+        return MyDroneHathCollideth(pObject, pActivator);
     }
     return 1;
 }
@@ -6127,7 +6135,22 @@ void C2_HOOK_FASTCALL CalcForce(tCar_spec* pCar, br_scalar pDt) {
         objs[i]->v.v[1] = tmp.v[1] + objs[i]->v.v[1];
         objs[i]->v.v[2] = tmp.v[2] + objs[i]->v.v[2];
         if (gUNK_006793d0 == 2) {
-            pCar->collision_info->field_0x49c = (int)&gZero;
+            pCar->collision_info->field_0x49c = gPHIL_last_physics_tick + 0x28;
+        }
+        if ((objs[i]->flags & 0x800) == 0) {
+            /* retail 0x419341..0x419480: turn the normal impulse applied at
+             * the wheel contact into angular velocity on the hit object. */
+            BrMatrix34ApplyP(&a, &objs[i]->cmpos, &objs[i]->transform_matrix);
+            a.v[0] = wheel_pos[i].v[0] * (1.0 / WORLD_SCALE_D) - a.v[0];
+            a.v[1] = wheel_pos[i].v[1] * (1.0 / WORLD_SCALE_D) - a.v[1];
+            a.v[2] = wheel_pos[i].v[2] * (1.0 / WORLD_SCALE_D) - a.v[2];
+            tmp.v[0] = ts * (a.v[1] * b.v[2] - a.v[2] * b.v[1]);
+            tmp.v[1] = ts * (a.v[2] * b.v[0] - a.v[0] * b.v[2]);
+            tmp.v[2] = ts * (a.v[0] * b.v[1] - a.v[1] * b.v[0]);
+            BrMatrix34TApplyV(&a, &tmp, &objs[i]->transform_matrix);
+            for (j = 0; j < 3; j++) {
+                objs[i]->omega.v[j] += a.v[j] / objs[i]->I.v[j];
+            }
         }
     }
     if (objs[0] != NULL
@@ -6641,25 +6664,42 @@ steer_centre:
             }
             break;
         }
-        BrVector3Scale(&v136, &rightplane, v99);
-        BrVector3Scale(&a, &v103, v109);
+        /* retail 0x41b3d2..0x41b8df: force direction vectors, then one
+         * unrolled block per wheel */
+        BrVector3Scale(&v136, &v103, v109);
+        BrVector3Scale(&a, &rightplane, v99);
         BrVector3Accumulate(&v136, &a);
-        BrVector3Scale(&v123, &rightplane, v98);
-        BrVector3Scale(&a, &v103, v108);
+        BrVector3Scale(&v123, &v103, v108);
+        BrVector3Scale(&a, &rightplane, v98);
         BrVector3Accumulate(&v123, &a);
-        for (i = 0; i < 4; i++) {
-            rightplane = pCar->wpos[i];
-            rightplane.v[1] = rightplane.v[1] - pCar->oldd[i];
-            BrVector3Sub(&rightplane, &rightplane, &pCar->centre_of_mass_world_scale);
-            if (i < 2) {
-                BrVector3Scale(&b, &v136, force[i]);
-            } else {
-                BrVector3Scale(&b, &v123, force[i]);
-            }
-            BrVector3Accumulate(&B, &b);
-            BrVector3Cross(&a, &rightplane, &b);
-            BrVector3Accumulate(&f, &a);
-        }
+        rightplane = pCar->wpos[0];
+        rightplane.v[1] = rightplane.v[1] - pCar->oldd[0];
+        BrVector3Sub(&rightplane, &rightplane, &pCar->centre_of_mass_world_scale);
+        BrVector3Scale(&b, &v136, force[0]);
+        BrVector3Accumulate(&B, &b);
+        BrVector3Cross(&a, &rightplane, &b);
+        BrVector3Accumulate(&f, &a);
+        rightplane = pCar->wpos[1];
+        rightplane.v[1] = rightplane.v[1] - pCar->oldd[1];
+        BrVector3Sub(&rightplane, &rightplane, &pCar->centre_of_mass_world_scale);
+        BrVector3Scale(&b, &v136, force[1]);
+        BrVector3Accumulate(&B, &b);
+        BrVector3Cross(&a, &rightplane, &b);
+        BrVector3Accumulate(&f, &a);
+        rightplane = pCar->wpos[2];
+        rightplane.v[1] = rightplane.v[1] - pCar->oldd[2];
+        BrVector3Sub(&rightplane, &rightplane, &pCar->centre_of_mass_world_scale);
+        BrVector3Scale(&b, &v123, force[2]);
+        BrVector3Accumulate(&B, &b);
+        BrVector3Cross(&a, &rightplane, &b);
+        BrVector3Accumulate(&f, &a);
+        rightplane = pCar->wpos[3];
+        rightplane.v[1] = rightplane.v[1] - pCar->oldd[3];
+        BrVector3Sub(&rightplane, &rightplane, &pCar->centre_of_mass_world_scale);
+        BrVector3Scale(&b, &v123, force[3]);
+        BrVector3Accumulate(&B, &b);
+        BrVector3Cross(&a, &rightplane, &b);
+        BrVector3Accumulate(&f, &a);
     } else {
         pCar->max_force_front = 0.f;
         pCar->max_force_rear = 0.f;
@@ -6676,17 +6716,18 @@ steer_centre:
     PhysicsObjectApplyTorque(pCar->collision_info, &rightplane);
     BrVector3Scale(&rightplane, &b, pDt / (pCar->collision_info->M * WORLD_SCALE));
     BrVector3Accumulate(&pCar->collision_info->v, &rightplane);
-    if (pCar->speed < 0.0001f
+    if (BrVector3Dot(&pCar->collision_info->v, &pCar->collision_info->v) < 0.1f
         && ((!pCar->keys.acc && pCar->joystick.acc <= 0) || !pCar->gear)
         && !pCar->keys.dec
         && pCar->joystick.dec <= 0
         && pCar->bounce_rate == 0.f
-        && BrVector3Length(&pCar->collision_info->omega) < 0.05f) {
+        && BrVector3Length(&pCar->collision_info->omega) < 0.05) {
         if (vol != NULL) {
-            ts2 = pCar->driver > 5 && pCar->underwater_ability != 0
-                ? 1.0 - (1.0 - vol->gravity_multiplier) * 0.6
-                : vol->gravity_multiplier;
-            friction_number = BrVector3Length(&b) / ts2 / gGravity_multiplier;
+            friction_number = BrVector3Length(&b)
+                / (pCar->driver > 5 && pCar->underwater_ability != 0
+                    ? 1.0f - (1.0f - vol->gravity_multiplier) * 0.6
+                    : vol->gravity_multiplier)
+                / gGravity_multiplier;
         } else {
             friction_number = BrVector3Length(&b);
         }
