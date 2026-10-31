@@ -3456,14 +3456,14 @@ void C2_HOOK_FASTCALL InitialiseAIWorldForRace(tRace_info* pRace_info) {
     gFrame_period_for_this_munging = 100;
     gDrone_delta_time = 0.1f;
     BrActorToBounds(&track_bounds, gTrack_actor);
-    if (track_bounds.max.v[1] <= track_bounds.min.v[1]) {
-        gTrack_drone_min_y = track_bounds.max.v[1];
-    } else {
+    if (track_bounds.min.v[1] < track_bounds.max.v[1]) {
         gTrack_drone_min_y = track_bounds.min.v[1];
+    } else {
+        gTrack_drone_min_y = track_bounds.max.v[1];
     }
     PrintMemoryDump(0, "BEFORE InitOpponents()");
     InitOpponents(pRace_info);
     PrintMemoryDump(0, "AFTER InitOpponents(), BEFORE InitDrones()");
-    InitDrones();
+    InitDrones(pRace_info);
     PrintMemoryDump(0, "AFTER InitDrones()");
 }

@@ -2766,7 +2766,7 @@ br_uint_32 C2_HOOK_FASTCALL DeleteBastards(br_actor* pActor, br_matrix34* pMat, 
 
     if ((pActor != gAdditional_actors
             && (pActor->identifier == NULL || pActor->identifier[0] == '&')
-            && Vector3IsZero((br_vector3*)pMat->m[3]))
+            && Vector3EqualElements((br_vector3*)pMat->m[3], gZero_0058b1c8, gZero_0058b1c8, gZero_0058b1c8))
         || (pActor->model == NULL && pActor->type == BR_ACTOR_MODEL)) {
         parent_already_doomed = 0;
         for (i = 0; i < gDelete_count; i++) {

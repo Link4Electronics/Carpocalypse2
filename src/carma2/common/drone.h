@@ -292,7 +292,7 @@ void C2_HOOK_FASTCALL UnPauseDroneState(tDrone_spec* pDrone);
 
 void C2_HOOK_FASTCALL StartProcessingThisDrone(tDrone_spec* pDrone);
 
-void C2_HOOK_FASTCALL InitDrones(void);
+void C2_HOOK_FASTCALL InitDrones(tRace_info* pRace_info);
 
 void C2_HOOK_FASTCALL FreeThingForm(void* pData);
 

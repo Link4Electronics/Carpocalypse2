@@ -563,9 +563,10 @@ void C2_HOOK_FASTCALL StartProcessingThisDrone(tDrone_spec* pDrone) {
 }
 
 // FUNCTION: CARMA2_HW 0x0044f700
-void C2_HOOK_FASTCALL InitDrones(void) {
+void C2_HOOK_FASTCALL InitDrones(tRace_info* pRace_info) {
     int i;
 
+    (void)pRace_info;
     C2_HOOK_BUG_ON(sizeof(tDrone_spec) != 1496);
 
     gDrones_unmodified = 1;

@@ -1217,7 +1217,6 @@ intptr_t C2_HOOK_CDECL TotallyRepairCarCB(br_actor* pActor, void* data) {
     return 0;
 }
 
-extern int gUNK_0075bc24;
 
 // FUNCTION: CARMA2_HW 0x00439510
 void C2_HOOK_FASTCALL TotallyRepairACar(tCar_spec* pCar_spec) {

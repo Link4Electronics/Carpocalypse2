@@ -849,21 +849,19 @@ void C2_HOOK_FASTCALL InstantDepthChange(tDepth_effect_type pType, br_pixelmap* 
     BrMaterialUpdate(gHorizon_material, BR_MATU_ALL);
     MungeSkyVs(gForward_sky_model, gHorizon_material);
 
+    gProgram_state.current_depth_effect.type = pType;
+    gProgram_state.current_depth_effect.start = pStart;
+    gProgram_state.current_depth_effect.end = pEnd;
     gProgram_state.current_depth_effect.colour.red = pRed;
     gProgram_state.current_depth_effect.colour.green = pGreen;
     gProgram_state.current_depth_effect.colour.blue = pBlue;
 
-    gProgram_state.default_depth_effect.colour.red = pRed;
-    gProgram_state.default_depth_effect.colour.green = pGreen;
-    gProgram_state.default_depth_effect.colour.blue = pBlue;
-
-    gProgram_state.current_depth_effect.type = pType;
-    gProgram_state.current_depth_effect.start = pStart;
-    gProgram_state.current_depth_effect.end = pEnd;
-
     gProgram_state.default_depth_effect.type = pType;
     gProgram_state.default_depth_effect.start = pStart;
     gProgram_state.default_depth_effect.end = pEnd;
+    gProgram_state.default_depth_effect.colour.red = pRed;
+    gProgram_state.default_depth_effect.colour.green = pGreen;
+    gProgram_state.default_depth_effect.colour.blue = pBlue;
     if (gNo_fog && pParam_8) {
         FrobFog();
     }
@@ -966,12 +964,11 @@ void C2_HOOK_FASTCALL InitDepthEffects(void) {
         tU8 stripe;
 
         vtxidx = 0;
-        do {
+        for (band = 0; band < 0x15; band++) {
             u_base = 4 * band;
             v_base = u_base + 4;
             cur = vtxidx;
-            stripe = 0;
-            do {
+            for (stripe = 0; stripe < 3; stripe++) {
                 *((tU16*)((tU8*)sky_model->faces + cur)) = (tU16)(u_base + stripe);
                 *((tU16*)((tU8*)sky_model->faces + cur + 2)) = (tU16)(u_base + stripe + 1);
                 *((tU16*)((tU8*)sky_model->faces + cur + 4)) = (tU16)(u_base + stripe + 5);
@@ -983,11 +980,9 @@ void C2_HOOK_FASTCALL InitDepthEffects(void) {
                 *((tU32*)((tU8*)sky_model->faces + cur + 8)) = 0;
                 *((tU32*)((tU8*)sky_model->faces + cur + 0x30)) = 0;
                 cur += 0x50;
-                stripe++;
-            } while (stripe < 3);
+            }
             vtxidx = cur;
-            band++;
-        } while (band < 0x15);
+        }
     }
 
     gForward_sky_model = sky_model;

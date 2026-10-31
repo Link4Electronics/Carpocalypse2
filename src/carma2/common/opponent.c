@@ -155,6 +155,12 @@ static double C2_HOOK_CDECL OpponentHybridLengthSquared(double pX, double pY, do
 // GLOBAL: CARMA2_HW 0x0069173c
 int gActive_car_list_rebuild_required;
 
+// GLOBAL: CARMA2_HW 0x0065a3bc
+const char* gFaceless_cop_name = "Faceless Cop";
+
+// GLOBAL: CARMA2_HW 0x0065a3c0
+const char* gInnocent_civilian_name = "Innocent Civilian";
+
 // GLOBAL: CARMA2_HW 0x0065a3c4
 int gBIG_APC_index = -1;
 
@@ -166,12 +172,6 @@ tU32 gNext_grudge_reduction;
 
 // GLOBAL: CARMA2_HW 0x00691738
 int gFirst_frame;
-
-// GLOBAL: CARMA2_HW 0x00761a40
-#define gOppo_path_nodes (gProgram_state.AI_vehicles.path_nodes)
-
-// GLOBAL: CARMA2_HW 0x00761a44
-#define gOppo_junction_table ((tU32)(uintptr_t)gProgram_state.AI_vehicles.path_sections)
 
 // GLOBAL: CARMA2_HW 0x00691724
 int gGrudge_reduction_per_period;
@@ -1244,9 +1244,9 @@ const char* C2_HOOK_FASTCALL GetDriverName(tVehicle_type pCategory, int pIndex) 
         }
         return "???";
     case eVehicle_rozzer:
-        return "Faceless Cop";
+        return gFaceless_cop_name;
     case eVehicle_drone:
-        return "Innocent Civilian";
+        return gInnocent_civilian_name;
     case eVehicle_not_really:
         return NULL;
     default:

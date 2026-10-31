@@ -134,7 +134,7 @@ int gNext_splash;
 int gSpark_flags;
 
 // GLOBAL: CARMA2_HW 0x006aa5ac
-br_pixelmap* gIt_shade_table;
+br_pixelmap* gIt_shade_table = NULL;
 
 // GLOBAL: CARMA2_HW 0x006aa568
 int gDust_rotate;
@@ -158,7 +158,7 @@ int gShrapnel_flags;
 int gShrapnel_index;
 
 // GLOBAL: CARMA2_HW 0x006aa578
-int gNext_spark;
+int gNext_spark = 0;
 
 // GLOBAL: CARMA2_HW 0x0058aff0
 const br_scalar gFLOAT_0058aff0 = 10.0f;
@@ -3832,7 +3832,7 @@ int C2_HOOK_FASTCALL IsCarSmoking(tCar_spec* pCar) {
 // FUNCTION: CARMA2_HW 0x004fee10
 void* C2_HOOK_FASTCALL GetSplashIndex(tPhysics_object* pObject) {
 
-    if (PHILGetObjectProperty(pObject, 6) != 0.f) {
+    if (PHILGetObjectProperty(pObject, 6) != gFLOAT_0058b008) {
         return pObject;
     }
     if (pObject != NULL && pObject->owner != NULL && pObject->flags_0x238 == 1) {
@@ -3887,17 +3887,15 @@ void C2_HOOK_FASTCALL InitReplaySplashes(void) {
                 if (PHILGetObjectProperty(object, 6) != gFLOAT_0058b008) {
                     replay_object = object;
                     splash_type = 0xff;
-                } else if (object != NULL) {
+                } else if (object != NULL && object->owner != NULL && object->flags_0x238 == 1) {
                     owner = object->owner;
-                    if (owner == NULL || object->flags_0x238 != 1) {
-                        if (object != NULL && object->owner != NULL && object->flags_0x238 >= 2 && object->flags_0x238 <= 4) {
-                            replay_object = object->owner;
-                            splash_type = object->flags_0x238;
-                        }
-                    } else if (owner == NULL || *(int*)&owner->field_0x0c <= 5) {
+                    if (owner == NULL || *(int*)&owner->field_0x0c <= 5) {
                         replay_object = object->actor;
                         splash_type = 1;
                     }
+                } else if (object != NULL && object->owner != NULL && object->flags_0x238 >= 2 && object->flags_0x238 <= 4) {
+                    replay_object = object->owner;
+                    splash_type = object->flags_0x238;
                 }
                 if (replay_object != NULL) {
                     RecordReplaySplash(replay_object, splash_type, *(const tU32*)&object->water_d,

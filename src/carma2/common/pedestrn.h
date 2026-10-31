@@ -363,7 +363,6 @@ void C2_HOOK_FASTCALL AddChangedPoint(const br_vector3* pPoint);
 
 int C2_HOOK_FASTCALL IsItReallyOKThatWeDontMakeAnyEffortToProtectAnySadFuckersOutThereThatDontWishToSeeInnocentPeopleBlownToBitsByHighExplosiveMinesAndShells(void);
 
-void C2_HOOK_FASTCALL FUN_004d35e0(tPedestrian* pPed);
 
 extern void C2_HOOK_FASTCALL SetAnimalsOn(int pNewAnimalsOn);
 
@@ -943,7 +942,7 @@ void C2_HOOK_FASTCALL DisposePedForms(void);
 void C2_HOOK_FASTCALL PlayExclusiveFFBEffect(const char* pEffect_name, int pArg2);
 
 // UNLABELED: CARMA2_HW 0x004ccb10
-void C2_HOOK_FASTCALL DoGibShower(int pId, int pTime, int pSeed, float pForce, int pSize_index, br_vector3* pArg6, br_vector3* pArg7, br_vector3* pArg8);
+void C2_HOOK_FASTCALL DoGibShower(tU32 pFragment_owner, tU32 pTime, tU32 pSeed, float pForce, int pStarting_size, br_vector3* pInitial_position, br_vector3* pInitial_velocity, br_vector3* pDirection);
 
 void C2_HOOK_FASTCALL InitOtherPedStuff(void);
 

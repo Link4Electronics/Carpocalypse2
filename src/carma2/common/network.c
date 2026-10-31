@@ -2589,7 +2589,6 @@ static void C2_HOOK_FASTCALL FUN_0049a410(void) {
 
 #include <limits.h>
 
-extern int gUNK_0075bc24;
 extern void C2_HOOK_FASTCALL DisposeCarN(int pPlayer_index);
 extern char* gCurrent_palette_pixels;
 extern void C2_HOOK_FASTCALL FadePaletteDown(void);

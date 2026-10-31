@@ -177,9 +177,6 @@ tPowerup_respawn_spec* gPowerup_respawn_specs;
 // GLOBAL: CARMA2_HW 0x006a0ad8
 void* gDrug_trip_data;
 
-// GLOBAL: CARMA2_HW 0x0075d33c
-int gPowerup_net_state[56];
-
 static void C2_HOOK_FASTCALL PaletteFuckedUpByDrugs(br_pixelmap* pPixelmap, int pOffset) {
     int i;
     tU32* dst;
@@ -3784,7 +3781,7 @@ void C2_HOOK_FASTCALL FUN_004d9d00(tPhysics_object* pObject, int pMode) {
             return;
         }
         if ((((tPed_character_instance*)pObject->owner)->ped->character->field_0x14 & 4) == 0 && gCrush_deferred == 0) {
-            FUN_004d35e0(((tPed_character_instance*)pObject->owner)->ped);
+            SetThisPedPhysicing(((tPed_character_instance*)pObject->owner)->ped);
         }
         if (pMode != 0xe) {
             pObject->v.v[0] = 0.0f;

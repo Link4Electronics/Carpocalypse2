@@ -3180,28 +3180,20 @@ void C2_HOOK_FASTCALL CycleInvulnerability(void) {
     NewTextHeadupSlot(4, 0, 1000, -4, message);
 }
 
-#pragma optimize("y", off)
 // FUNCTION: CARMA2_HW 0x004d6240
 void C2_HOOK_FASTCALL NextPedCam(void) {
-    int count = gPed_count;
-    int start;
-    int i;
+    int original_ped;
 
-    if (count == 0) {
-        return;
+    if (gPed_count != 0) {
+        original_ped = gSelected_ped;
+        do {
+            gSelected_ped++;
+            if (gSelected_ped >= gPed_count) {
+                gSelected_ped = 0;
+            }
+        } while (!(gPedestrian_array[gSelected_ped].flags & 0x1) && original_ped != gSelected_ped);
     }
-    i = gSelected_ped;
-    start = i;
-    do {
-        i += 1;
-        gSelected_ped = i;
-        if (i >= count) {
-            i = i - i;
-            gSelected_ped = i;
-        }
-    } while (!(gPedestrian_array[i].flags & 1) && start != i);
 }
-#pragma optimize("", on)
 
 // FUNCTION: CARMA2_HW 0x004d6290
 void C2_HOOK_FASTCALL PrevPedCam(void) {
@@ -3232,8 +3224,7 @@ void C2_HOOK_FASTCALL FindNearestPed(void) {
     int count;
     int i;
     int best;
-    float predist;
-    float dist;
+    tU32 predist;
     tPedestrian* p;
 
     count = gPed_count;
@@ -3241,16 +3232,18 @@ void C2_HOOK_FASTCALL FindNearestPed(void) {
         return;
     }
     i = 0;
-    predist = 10000000.0f;
+    predist = 0x4b189680;
     if (i < count) {
-        best = *(int*)&predist;
+        best = predist;
         do {
+            float dist;
+
             p = &gPedestrian_array[i];
             dist = (p->pos.v[0] - gProgram_state.current_car.pos.v[0]) * (p->pos.v[0] - gProgram_state.current_car.pos.v[0])
                  + (p->pos.v[1] - gProgram_state.current_car.pos.v[1]) * (p->pos.v[1] - gProgram_state.current_car.pos.v[1])
                  + (p->pos.v[2] - gProgram_state.current_car.pos.v[2]) * (p->pos.v[2] - gProgram_state.current_car.pos.v[2]);
-            if (dist < predist) {
-                predist = dist;
+            if (dist < *(float*)&predist) {
+                *(float*)&predist = dist;
                 best = i;
             }
             i += 1;

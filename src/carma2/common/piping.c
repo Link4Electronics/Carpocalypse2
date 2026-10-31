@@ -1382,7 +1382,7 @@ void C2_HOOK_FASTCALL PipeSingleOppoRenderage(tOpponent_spec *pOpponent_spec, in
 }
 
 // FUNCTION: CARMA2_HW 0x004c8a90
-void C2_HOOK_FASTCALL PipeSinglePedStatus(const tPedestrian* pPed, undefined pArg2, undefined pArg3, undefined pArg4, undefined pArg5, tS8 pArg6, tU8 pArg7, undefined pArg8, tU8 pArg9, const br_vector3* pArg10, const br_vector3* pArg11, const br_matrix34* pArg12) {
+void C2_HOOK_FASTCALL PipeSinglePedStatus(const tPedestrian* pPed, undefined pArg2, tS8 pArg3, undefined pArg4, undefined pArg5, tS8 pArg6, tU8 pArg7, undefined pArg8, tU8 pArg9, const br_vector3* pArg10, const br_vector3* pArg11, const br_matrix34* pArg12) {
 
     ARDoSingleVariedSession(ePipe_chunk_single_ped_status, (uintptr_t)pPed, 11,
         SIZE_OFFSET_PIPING(tPipe_single_ped_status, field_0x00), pArg2,
@@ -1456,7 +1456,7 @@ void C2_HOOK_FASTCALL PipeSinglePedIncident(tPedestrian* pPed, br_actor* pActor)
 
     gUNK_0069410c_u32 = 0;
     ARDoSingleVariedSession(ePipe_chunk_ped_incident, 0, 3,
-        SIZE_OFFSET_PIPING(tPipe_ped_incident, field_0x0), 0,
+        SIZE_OFFSET_PIPING(tPipe_ped_incident, field_0x0), gUNK_0069410c_u32,
         SIZE_OFFSET_PIPING(tPipe_ped_incident, ped), pPed,
         SIZE_OFFSET_PIPING(tPipe_ped_incident, actor), pActor);
 }
@@ -2481,9 +2481,9 @@ void C2_HOOK_FASTCALL PedPreCollisionStuff(void) {
 
     for (pObject = PHILGetFirstObject(); pObject != NULL; pObject = PHILGetNextObject(pObject)) {
         if (pObject->owner != NULL && pObject->flags_0x238 == 5) {
-            v.v[0] = pObject->omega.v[0] * (BrVector3Length(&pObject->omega) * 4e-06);
-            v.v[1] = pObject->omega.v[1] * (BrVector3Length(&pObject->omega) * 4e-06);
-            v.v[2] = pObject->omega.v[2] * (float)(BrVector3Length(&pObject->omega) * 4e-06);
+            v.v[0] = pObject->omega.v[0] * (BrVector3Length(&pObject->omega) * gDouble_0058ab98);
+            v.v[1] = pObject->omega.v[1] * (BrVector3Length(&pObject->omega) * gDouble_0058ab98);
+            v.v[2] = pObject->omega.v[2] * (float)(BrVector3Length(&pObject->omega) * gDouble_0058ab98);
             ApplyWaterOmegaBrake(pObject, &v);
         }
     }

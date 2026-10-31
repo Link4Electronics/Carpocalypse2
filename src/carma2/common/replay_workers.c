@@ -516,17 +516,16 @@ void C2_HOOK_FASTCALL WorkerSpecialUndo(void) {
     NOT_IMPLEMENTED();
 }
 
-// C2PORT-NONMATCHING: best 75.68% | difftest PASS 2000 trials (spec difftest/specs/004ca680_WorkerPedStatus.json) | reason byte RMW of ped->flags via register, branch layout
 // FUNCTION: CARMA2_HW 0x004ca680
 void C2_HOOK_FASTCALL WorkerPedStatus(int field_0x0, tU8 field_0x4, tU8 field_0x5, tU8 field_0x6, tU8 field_0x7, tU8 field_0x9, tU8 field_0xb, br_vector3* p0xc, br_vector3* p0x18, br_vector3* p0x24) {
     tPedestrian* ped = (tPedestrian*)field_0x0;
 
     if (field_0x5 != 0xff) {
         if (field_0x5 != 0) {
-            ((tU8*)ped)[8] |= 1;
+            ped->flags |= 1;
             MakeCharacterRenderable2(ped->character, (int)(tS8)field_0x9);
         } else {
-            ((tU8*)ped)[8] &= 0xfe;
+            ped->flags &= ~1;
             CharacterNoLongerRenderable(ped->character);
         }
     }
@@ -539,7 +538,6 @@ void C2_HOOK_FASTCALL WorkerPedStatus(int field_0x0, tU8 field_0x4, tU8 field_0x
     }
 }
 
-// C2PORT-NONMATCHING: best 82.08% | difftest PASS 2000 trials (spec difftest/specs/004ca6e0_WorkerPedStatusUndo.json) | reason branch-layout
 // FUNCTION: CARMA2_HW 0x004ca6e0
 void C2_HOOK_FASTCALL WorkerPedStatusUndo(int field_0x0, tU8 field_0x4, tU8 field_0x5, tU8 field_0x6, tU8 field_0x7, tU8 field_0x8, tU8 field_0xa, br_vector3* p0xc, br_vector3* p0x18, br_vector3* p0x24) {
     tPedestrian* ped;
@@ -547,10 +545,10 @@ void C2_HOOK_FASTCALL WorkerPedStatusUndo(int field_0x0, tU8 field_0x4, tU8 fiel
     ped = (tPedestrian*)field_0x0;
     if (field_0x4 != 0xff) {
         if (field_0x4 != 0) {
-            ((tU8*)ped)[8] |= 1;
+            ped->flags |= 1;
             MakeCharacterRenderable2(ped->character, (int)(tS8)field_0x8);
         } else {
-            ((tU8*)ped)[8] &= 0xfe;
+            *(tU8*)&ped->flags &= ~1;
             CharacterNoLongerRenderable(ped->character);
         }
     }
@@ -566,17 +564,14 @@ void C2_HOOK_FASTCALL WorkerPedStatusUndo(int field_0x0, tU8 field_0x4, tU8 fiel
             SetCharacterBonePositions(ped->character, 0, 0);
             return;
         }
-    } else if ((field_0x7 & 4) != 0) {
-        goto update_state;
     }
-    if ((field_0x6 & 4) != 0) {
+    if ((field_0x7 & 4) == 0 && (field_0x6 & 4) != 0) {
         BrMatrix34Copy(&ped->character->field_0x8c, (br_matrix34*)p0x24);
         SetCharacterBonePositions(ped->character, 0, 0);
         ped->character->field_0x14 = (int)(tS8)field_0x6;
         ped->character->field_0x5 = field_0xa;
         return;
     }
-    update_state:
     ped->character->field_0x14 = (int)(tS8)field_0x6;
     ped->character->field_0x5 = field_0xa;
 }

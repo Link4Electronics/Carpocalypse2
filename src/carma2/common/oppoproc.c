@@ -655,12 +655,6 @@ void C2_HOOK_FASTCALL DrawDial(int pDial_index, volatile int pFrom_value, int pT
 
 #undef DRAW_DIAL_FRAME
 
-// GLOBAL: CARMA2_HW 0x0075bbf0
-int gUNK_0075bbf0;
-
-// GLOBAL: CARMA2_HW 0x0075bbf4
-int gUNK_0075bbf4;
-
 // FUNCTION: CARMA2_HW 0x004b1ca0
 void C2_HOOK_FASTCALL FUN_004b1ca0(void) {
 
@@ -676,8 +670,8 @@ void C2_HOOK_FASTCALL FUN_004b1ca0(void) {
     ProcessFlicQueue(gFrame_period);
     DoMouseCursor();
     PDScreenBufferSwap(0);
-    DrawDial(0, 0, gUNK_0075bbf0 * 4);
-    DrawDial(1, 0, gUNK_0075bbf4 * 4);
+    DrawDial(0, 0, gProgram_state.music_volume * 4);
+    DrawDial(1, 0, gProgram_state.effects_volume * 4);
 }
 
 // FUNCTION: CARMA2_HW 0x004b25c0

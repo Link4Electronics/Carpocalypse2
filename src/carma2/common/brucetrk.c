@@ -23,13 +23,13 @@ extern br_scalar gYon_factor;
 int gMax_count_non_cars;
 
 // GLOBAL: CARMA2_HW 0x00679260
-int gCount_track_non_cars;
+extern int gCount_track_non_cars;
 
 // GLOBAL: CARMA2_HW 0x0058f490
 int gRender_alternative_track_actors = 1;
 
 // GLOBAL: CARMA2_HW 0x00679264
-br_actor* gMr_blendy;
+extern br_actor* gMr_blendy;
 
 // GLOBAL: CARMA2_HW 0x00655e60
 br_scalar gYon_factor = 0.25f;
