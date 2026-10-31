@@ -146,11 +146,6 @@ tFace_ref* C2_HOOK_FASTCALL RayCastThruFaceList(br_vector3* pPosition, br_vector
     }
 }
 
-// STUB: CARMA2_HW 0x004226d0
-tFace_ref* C2_HOOK_FASTCALL RayCastThruFaceList2(br_vector3* pPosition, br_vector3* pDirection, br_vector3* pNormal, br_scalar* pT, br_vector3* pCollision_position, tFace_ref* pFaces, int pCount) {
-    NOT_IMPLEMENTED();
-}
-
 // FaceOffCount2
 
 // FaceOffCount
@@ -545,13 +540,6 @@ void C2_HOOK_FAKE_THISCALL RotateObjectFirstOrderRigid(tPhysics_object* pObject,
 
 // RQSingleExpand
 
-#pragma auto_inline(off)
-// STUB: CARMA2_HW 0x004c5830
-int C2_HOOK_FASTCALL RQDcmpV(br_scalar* matrix, int size, br_scalar* orthogonal) {
-    NOT_IMPLEMENTED();
-}
-#pragma auto_inline(on)
-
 // MakeIdentity
 
 // SparseRQDcmpV
@@ -574,7 +562,7 @@ int C2_HOOK_FASTCALL RQDcmpV(br_scalar* matrix, int size, br_scalar* orthogonal)
 
 // FUNCTION: CARMA2_HW 0x004c5b50
 int C2_HOOK_FASTCALL MatrixProcess(br_scalar* pR, br_scalar* pQ, int pDim) {
-    return RQDcmpV(pR, pDim, pQ);
+    return FUN_004c5830((int)pR, pDim, (undefined4*)pQ);
 }
 
 // FUNCTION: CARMA2_HW 0x004c5b60
@@ -9940,11 +9928,6 @@ void C2_HOOK_FASTCALL InitPhysics(void) {
 }
 
 // PointOutOfSightNotAR
-
-// STUB: CARMA2_HW 0x00428530
-void C2_HOOK_FASTCALL Unknown_00428530(void) {
-    NOT_IMPLEMENTED();
-}
 
 // CalcCollObjIDFromCarSpec
 

@@ -3202,7 +3202,7 @@ void C2_HOOK_FASTCALL DoCamouflageThing(tCar_spec* pCar) {
     BrVector3Set(&direction, 0.f, -0.5f, 0.f);
     t = 10.f;
     BrMatrix34ApplyP(&position, &pCar->collision_info->cmpos, &pCar->collision_info->transform_matrix);
-    face = RayCastThruFaceList2(&position, &direction, &normal, &t, &collision_position,
+    face = FUN_004226d0(&position, &direction, &normal, &t, &collision_position,
         &gFace_list__car[pCar->collision_info->box_face_start],
         pCar->collision_info->box_face_end - pCar->collision_info->box_face_start);
     if (face != NULL && face->material != NULL && face->material->colour_map != NULL

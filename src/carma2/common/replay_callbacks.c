@@ -1161,10 +1161,10 @@ void C2_HOOK_FASTCALL ApplySplitWeld(tPipe_chunk** pChunk) {
 
     if ((*(tPipe_chunk_split_weld**)*pChunk)->field_0x14) {
         if ((fn & 0xffffff00u) == 0) {
-            return ARApplySplitWeld(&gProgram_state.current_car, (float*)&swGetChunk(pChunk)->field_0x4);
+            return FUN_0043c240(&gProgram_state.current_car, (float*)&swGetChunk(pChunk)->field_0x4);
         }
 
-        return ARApplySplitWeld(GetCarSpec(fn >> 8, fn & 0xffu), (float*)&swGetChunk(pChunk)->field_0x4);
+        return FUN_0043c240(GetCarSpec(fn >> 8, fn & 0xffu), (float*)&swGetChunk(pChunk)->field_0x4);
     }
 
     if ((fn & 0xffffff00u) == 0) {
@@ -1187,10 +1187,10 @@ void C2_HOOK_FASTCALL UndoSplitWeld(tPipe_chunk** pChunk, tPipe_chunk* pPrev_chu
     }
 
     if ((fn & 0xffffff00u) == 0) {
-        return ARApplySplitWeld(&gProgram_state.current_car, (float*)&swGetChunk(pChunk)->field_0x4);
+        return FUN_0043c240(&gProgram_state.current_car, (float*)&swGetChunk(pChunk)->field_0x4);
     }
 
-    return ARApplySplitWeld(GetCarSpec(fn >> 8, fn & 0xffu), (float*)&swGetChunk(pChunk)->field_0x4);
+    return FUN_0043c240(GetCarSpec(fn >> 8, fn & 0xffu), (float*)&swGetChunk(pChunk)->field_0x4);
 }
 
 // FUNCTION: CARMA2_HW 0x004c9930

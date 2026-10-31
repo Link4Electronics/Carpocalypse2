@@ -2607,15 +2607,7 @@ int C2_HOOK_FASTCALL GetPrecalculatedFacesUnderCar(tCar_spec* pCar, tFace_ref** 
     return 0;
 }
 
-// UNLABELED: CARMA2_HW 0x0042dfd0
-int C2_HOOK_FASTCALL FUN_0042dfd0(tCollision_contact* pContacts, float* pImpulses, int pCount) {
-
-    NOT_IMPLEMENTED();
-    return 0;
-}
-
 void C2_HOOK_FASTCALL FUN_0041deb0(tCar_spec* pCar, const br_vector3* pPosition, const br_vector3* pImpulse, tCar_spec* pOtherCar, undefined4 pArg5, const br_vector3* pPoints, undefined4 pArg7);
-void C2_HOOK_FASTCALL QueueDroneCrush(tPhysics_object* pObject1, int pChain_count, br_vector3* pChain, br_vector3* pForce);
 void C2_HOOK_FASTCALL FUN_0045c910(tCar_spec* pCar, const br_vector3* pPoint, br_vector3* pForce, float pImpulse);
 void C2_HOOK_FASTCALL CreateSparks(const br_vector3* pPosition, br_vector3* pVelocity, const br_vector3* pForce, br_scalar pStrength, tCar_spec* pCar);
 void C2_HOOK_FASTCALL CreateSparkShower(br_vector3* pPosition, br_vector3* pVelocity, br_vector3* pForce, tNon_car_spec* pOwner1, tNon_car_spec* pOwner2);
@@ -2890,7 +2882,7 @@ tail:
         ScaleCollisionImpulses(pContacts, pImpulses, pCount, smash_buffer.smash_indices, num_impacts, max_impulse);
         return 0;
     }
-    if (FUN_0042dfd0(pContacts, pImpulses, pCount) != 0) {
+    if (TrySplitCarOnVerticalForce((tPhysics_joint_data*)pContacts, pImpulses, pCount) != 0) {
         return 0;
     }
     if (FullyDetachSnappedBits(pContacts, pImpulses, pCount) != 0) {
@@ -3091,7 +3083,7 @@ merge_done:
         }
         if (impulse > 0.06f) {
             if (object1 != NULL && object1->flags_0x238 == 0x10) {
-                QueueDroneCrush(object1, chain_count, chain1, &force1);
+                FUN_0042d1e0(object1, chain_count, chain1, &force1);
                 BrMatrix34ApplyV(&world_force, &force1, &object1->transform_matrix);
                 BrMatrix34ApplyP(&world_point, &point1, &object1->transform_matrix);
                 world_force.v[0] *= 6.9;
@@ -3100,7 +3092,7 @@ merge_done:
                 effects = 1;
                 CrashNoise(&world_force, &world_point, 0);
             } else if (object2 != NULL && object2->flags_0x238 == 0x10) {
-                QueueDroneCrush(object2, chain_count, chain2, &force2);
+                FUN_0042d1e0(object2, chain_count, chain2, &force2);
                 BrMatrix34ApplyV(&world_force, &force2, &object2->transform_matrix);
                 BrMatrix34ApplyP(&world_point, &point2, &object2->transform_matrix);
                 effects = 1;
@@ -5876,6 +5868,9 @@ void C2_HOOK_FASTCALL CalcForce(tCar_spec* pCar, br_scalar pDt) {
     br_scalar maxfr;
     br_scalar friction_number;
     br_scalar deltaomega;
+    br_scalar lateral_speed;
+    br_scalar yaw_inertia;
+    br_vector3 velocity_car_space_ws;
     br_scalar v98;
     br_scalar v99;
     br_scalar v87;
@@ -6169,6 +6164,9 @@ void C2_HOOK_FASTCALL CalcForce(tCar_spec* pCar, br_scalar pDt) {
             friction_number = pCar->collision_info->M;
         }
         friction_number = friction_number * gGravity_multiplier * 10.f;
+        /* retail 0x41bcbd..0x41bcea: the per-step gravity velocity the physics solver adds (field_0x54);
+         * it follows water depth and the gravity multiplier */
+        BrVector3SetFloat(&pCar->collision_info->field_0x54, 0.f, -(friction_number / pCar->collision_info->M * pDt) * (1.f / WORLD_SCALE), 0.f);
         B.v[0] = B.v[0] - mat->m[0][1] * friction_number;
         B.v[1] = B.v[1] - mat->m[1][1] * friction_number;
         B.v[2] = B.v[2] - mat->m[2][1] * friction_number;
@@ -6194,10 +6192,12 @@ steer_centre:
                         + pCar->collision_info->omega.v[0] * pCar->road_normal.v[0])
                 * (pDt / (pCar->wpos[0].v[2] - pCar->wpos[2].v[2])));
             ts2 = -(pCar->curvature * pDt);
-            if (fabs(ts) < fabs(ts2) || ts * ts2 < 0.f) {
+            /* retail 0x4197c0..0x4197f4: the curvature decay ts2 is used only when it is at least as
+             * large as the yaw-based correction ts and has the same sign */
+            if (fabs(ts2) >= fabs(ts) && ts * ts2 >= 0.f) {
                 ts = ts2;
             }
-            if (gKey_mapping[47] < 143 && gKey_mapping[48] < 143) {
+            if (gKey_mapping[47] < 143 || gKey_mapping[48] < 143) {
                 pCar->curvature += ts;
                 if (pCar->curvature * ts > 0.f) {
                     pCar->curvature = 0.f;
@@ -6259,6 +6259,9 @@ steer_centre:
         }
         FlushSmashQueue(1);
         BrVector3NormaliseQuick(&pCar->road_normal, &pCar->road_normal);
+        /* retail 0x419b16..0x419bae: from here on CalcForce works with the car-space velocity in
+         * world-scale units (collision_info->velocity_car_space * 6.9, esp+0xb0) */
+        BrVector3Scale(&velocity_car_space_ws, &pCar->collision_info->velocity_car_space, WORLD_SCALE);
         friction_number = pCar->road_normal.v[1] * mat->m[1][1]
             + pCar->road_normal.v[2] * mat->m[2][1]
             + pCar->road_normal.v[0] * mat->m[0][1];
@@ -6267,7 +6270,7 @@ steer_centre:
         }
         friction_number = mat_list[pCar->material_index[0]].down_force * friction_number;
         if (friction_number > 0.f) {
-            friction_number = fabs(pCar->collision_info->velocity_car_space.v[2])
+            friction_number = fabs(velocity_car_space_ws.v[2])
                 * pCar->collision_info->M * 10.0 * friction_number / pCar->downforce_to_weight;
             if (pCar->collision_info->M * 10.0 < friction_number) {
                 friction_number = pCar->collision_info->M * 10.0;
@@ -6303,10 +6306,10 @@ steer_centre:
             }
             B.v[1] = B.v[1] - friction_number;
         }
-        ts2 = BrVector3Dot(&pCar->collision_info->velocity_car_space, &pCar->road_normal);
-        vplane.v[0] = pCar->collision_info->velocity_car_space.v[0] - ts2 * pCar->road_normal.v[0];
-        vplane.v[1] = pCar->collision_info->velocity_car_space.v[1] - ts2 * pCar->road_normal.v[1];
-        vplane.v[2] = pCar->collision_info->velocity_car_space.v[2] - ts2 * pCar->road_normal.v[2];
+        ts2 = BrVector3Dot(&velocity_car_space_ws, &pCar->road_normal);
+        vplane.v[0] = velocity_car_space_ws.v[0] - ts2 * pCar->road_normal.v[0];
+        vplane.v[1] = velocity_car_space_ws.v[1] - ts2 * pCar->road_normal.v[1];
+        vplane.v[2] = velocity_car_space_ws.v[2] - ts2 * pCar->road_normal.v[2];
         if (vplane.v[2] < 0.f) {
             ts = 1.f;
         } else {
@@ -6317,7 +6320,10 @@ steer_centre:
         deltaomega = deltaomega - BrVector3Dot(&pCar->collision_info->omega, &pCar->road_normal);
         BrVector3Set(&v103, pCar->road_normal.v[1], -pCar->road_normal.v[0], 0.f);
         BrVector3Normalise(&v103, &v103);
-        friction_number = pCar->collision_info->I.v[1] / pDt * deltaomega;
+        /* retail 0x41a02a..0x41a053: C2 keeps the yaw inertia in physics units; CalcForce scales it by
+         * 47.61 (= WORLD_SCALE^2) and keeps the product (esp+0x40) for the grip-limit block below */
+        yaw_inertia = pCar->collision_info->I.v[1] * 47.61f;
+        friction_number = yaw_inertia / pDt * deltaomega;
         ts = friction_number / (pCar->wpos[2].v[2] - pCar->wpos[0].v[2]);
         v108 = ts;
         v109 = -ts;
@@ -6325,13 +6331,15 @@ steer_centre:
         BrVector3Normalise(&rightplane, &rightplane);
         v99 = pCar->acc_force;
         friction_number = BrVector3Dot(&rightplane, &vplane);
-        v108 = BrVector3Dot(&v103, &vplane);
-        ts2 = fabs(v108);
+        /* retail keeps this dot product in its own slot (esp+0xbc); v108 (esp+0x44) still holds the
+         * yaw correction ts from above, which the friction force is added to below */
+        lateral_speed = BrVector3Dot(&v103, &vplane);
+        ts2 = fabs(lateral_speed);
         friction_number = (pCar->wpos[0].v[2] - pCar->centre_of_mass_world_scale.v[2]) * friction_number * fabs(pCar->curvature);
         if (pCar->curvature <= 0.f) {
-            friction_number = v108 - friction_number;
+            friction_number = lateral_speed - friction_number;
         } else {
-            friction_number = v108 + friction_number;
+            friction_number = lateral_speed + friction_number;
         }
         friction_number = -(pCar->collision_info->M / pDt * friction_number);
         friction_number = friction_number - BrVector3Dot(&B, &v103);
@@ -6340,7 +6348,7 @@ steer_centre:
         v109 = -wheelratio * friction_number + v109;
         friction_number = (pCar->wpos[0].v[2] - pCar->wpos[2].v[2]) * v108;
         v98 = friction_number * pCar->curvature;
-        friction_number = BrVector3Dot(&pCar->collision_info->velocity_car_space, &rightplane) * pCar->collision_info->M / pDt;
+        friction_number = BrVector3Dot(&velocity_car_space_ws, &rightplane) * pCar->collision_info->M / pDt;
         v129 = BrVector3Dot(&rightplane, &B) + friction_number;
         v128 = pCar->mu.v[0] * pCar->brake_force / (pCar->mu.v[1] / pCar->traction_multiplier + pCar->mu.v[0]);
         v125 = pCar->brake_force - v128;
@@ -6389,7 +6397,7 @@ steer_centre:
         }
         BrVector3Sub(&a, &pCar->wpos[0], &pCar->centre_of_mass_world_scale);
         BrVector3Cross(&a, &pCar->collision_info->omega, &a);
-        BrVector3Accumulate(&a, &pCar->collision_info->velocity_car_space);
+        BrVector3Accumulate(&a, &velocity_car_space_ws);
         if (pCar != NULL && pCar->driver >= eDriver_net_human
             && (((pCar->keys.left || pCar->joystick.left > 0x8000) && pCar->curvature > 0.f && deltaomega > 0.1 && a.v[0] > 0.f)
                 || ((pCar->keys.right || pCar->joystick.right > 0x8000) && pCar->curvature < 0.f && deltaomega < 0.1 && a.v[0] < 0.f))
@@ -6441,9 +6449,27 @@ steer_centre:
             maxfr = friction_number * maxfr;
         }
         if (fabs(v109) > maxfr + maxfl && maxfr + maxfl > 0.1f) {
-            v106 = (maxfr + maxfl) / fabs(v109) * pDt;
-            v109 = v106 * v109;
-            v99 = pCar->traction_multiplier * v106 * v99;
+            /* retail 0x41aa36..0x41abb7: scale the rear forces down to the grip limit, rebalance the
+             * front lateral force so the yaw/lateral motion stays consistent, then undo the scale.
+             * The scale lives in its own temporary; v106 (front rolling/brake force) is used below. */
+            v87 = (maxfr + maxfl) / fabs(v109) * pDt;
+            v109 = v87 * v109;
+            v99 = pCar->traction_multiplier * v87 * v99;
+            friction_number = -((pCar->wpos[2].v[2] - pCar->centre_of_mass_world_scale.v[2]) * v108
+                    * ((pCar->wpos[2].v[2] - pCar->centre_of_mass_world_scale.v[2]) * v108) / yaw_inertia
+                + (v98 * v98 + v108 * v108) / pCar->collision_info->M);
+            ts2 = (BrVector3Dot(&v103, &vplane) + v109 / pCar->collision_info->M) * v108;
+            ts2 = BrVector3Dot(&rightplane, &vplane) * v98 + ts2;
+            ts2 = BrVector3Dot(&pCar->collision_info->omega, &pCar->road_normal) * (pCar->wpos[2].v[2] - pCar->centre_of_mass_world_scale.v[2]) * v108 + ts2;
+            ts2 = (pCar->wpos[0].v[2] - pCar->centre_of_mass_world_scale.v[2]) * (pCar->wpos[2].v[2] - pCar->centre_of_mass_world_scale.v[2])
+                * v109 / yaw_inertia * v108 + ts2;
+            if (fabs(friction_number) > 0.1) {
+                friction_number = ts2 / (friction_number * pDt);
+                v108 = friction_number * v108;
+                v98 = friction_number * v98;
+            }
+            v109 = v109 / v87;
+            v99 = v99 / (pCar->traction_multiplier * v87);
         }
         v98 = v98 - v106;
         v108 = (pCar->wpos[0].v[2] - pCar->wpos[2].v[2]) * pCar->curvature * v106 + v108;

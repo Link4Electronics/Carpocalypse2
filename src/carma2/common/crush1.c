@@ -749,12 +749,6 @@ void C2_HOOK_FASTCALL AddDroneCrush(tQueued_drone_crush_item* pCrush, const br_v
     }
 }
 
-// FUNCTION: CARMA2_HW 0x0042d1e0
-void C2_HOOK_FASTCALL QueueDroneCrush(tPhysics_object* pObject1, int pChain_count, br_vector3* pChain, br_vector3* pForce) {
-
-    NOT_IMPLEMENTED();
-}
-
 // DoCrushing
 
 // FUNCTION: CARMA2_HW 0x0042d770
@@ -1424,11 +1418,6 @@ void C2_HOOK_FASTCALL ARApplyFlap(br_actor* pActor, tS16 pAngle) {
     BrMatrix34PostRotate(&pActor->t.t.mat, flap_data->field_0x4, &axis);
     vertex = &((tUser_crush_data*)pActor->parent->user)->models[0]->vertices[flap_data->field_0xc];
     BrMatrix34PostTranslate(&pActor->t.t.mat, vertex->p.v[0], vertex->p.v[1], vertex->p.v[2]);
-}
-
-// STUB: CARMA2_HW 0x0043c240
-void C2_HOOK_FASTCALL ARApplySplitWeld(tCar_spec* pCar_spec, br_vector3* pVector) {
-    NOT_IMPLEMENTED();
 }
 
 // FUNCTION: CARMA2_HW 0x0043c3d0
