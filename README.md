@@ -4,7 +4,7 @@
   <img src="packaging/icon_source.png" width="256" />
 </p>
 
-Decompilation of 1998's Carmageddon 2.
+Decompilation and native port of 1998's Carmageddon 2.
 
 ## Status
 
