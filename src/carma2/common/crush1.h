@@ -575,9 +575,6 @@ void C2_HOOK_FASTCALL ARUndoModelMash(br_model* pModel, tCompressed_vector3* pSr
 // ARApplyFlap
 void C2_HOOK_FASTCALL ARApplyFlap(br_actor* pActor, tS16 pAngle);
 
-// ARApplySplitWeld
-void C2_HOOK_FASTCALL ARApplySplitWeld(tCar_spec* pCar_spec, br_vector3* pVector);
-
 // ARUndoSplitWeld
 void C2_HOOK_FASTCALL ARUndoSplitWeld(tCar_spec* pCar_spec);
 

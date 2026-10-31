@@ -2299,11 +2299,6 @@ void C2_HOOK_FASTCALL EnsurePixelmapAllowed(br_pixelmap* pMap, undefined4 pArg2)
 
 }
 
-// STUB: CARMA2_HW 0x00518010
-void C2_HOOK_FASTCALL Unknown_00518010(void) {
-    NOT_IMPLEMENTED();
-}
-
 // ===== Ported from bojan1986819 fork =====
 
 // FUNCTION: CARMA2_HW 0x00513720
