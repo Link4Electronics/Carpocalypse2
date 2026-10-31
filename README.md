@@ -4,7 +4,7 @@
   <img src="packaging/icon_source.png" width="256" />
 </p>
 
-Decompilation of 1998's Carmageddon 2.
+Decompilation and native port of 1998's Carmageddon 2.
 
 ## Status
 
@@ -83,6 +83,12 @@ before configuring CMake.
 
 - Exact same behavior as the original
 - Matching binary
+
+## Credits
+
+- [bojan1986819](https://github.com/bojan1986819) vita port and more functions matches
+- [foone](https://github.com/foone) for BRender source code
+- [madebr](https://github.com/madebr) for initial decompilation effort
 
 ## Contributing
 
