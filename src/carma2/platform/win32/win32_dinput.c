@@ -997,23 +997,22 @@ int C2_HOOK_FASTCALL SetJoystickFFBSteeringForce(int pMagnitude) {
     IDirectInputEffect* effect;
     int index;
 
-    if (!gForceFeedbackAvailable) {
-        return 0;
+    if (gForceFeedbackAvailable) {
+        if (pMagnitude > 10000) {
+            pMagnitude = 10000;
+        }
+        index = gBasic_force_joystick_effect_index;
+        if (*(LONG*)&gJoystick_effects[index].type_specific_params != pMagnitude) {
+            *(LONG*)&gJoystick_effects[index].type_specific_params = pMagnitude;
+            effect = gDirectInputEffects[index];
+            if (effect != NULL) {
+                IDirectInputEffect_SetParameters(effect, &gJoystick_effects[index].di_effect, DIEP_TYPESPECIFICPARAMS);
+            }
+            StartDinputEffect(gBasic_force_joystick_effect_index);
+            return 1;
+        }
     }
-    if (pMagnitude > 10000) {
-        pMagnitude = 10000;
-    }
-    index = gBasic_force_joystick_effect_index;
-    if (*(LONG*)&gJoystick_effects[index].type_specific_params == pMagnitude) {
-        return 0;
-    }
-    *(LONG*)&gJoystick_effects[index].type_specific_params = pMagnitude;
-    effect = gDirectInputEffects[index];
-    if (effect != NULL) {
-        IDirectInputEffect_SetParameters(effect, &gJoystick_effects[index].di_effect, DIEP_TYPESPECIFICPARAMS);
-    }
-    StartDinputEffect(gBasic_force_joystick_effect_index);
-    return 1;
+    return 0;
 }
 
 // FUNCTION: CARMA2_HW 0x00458720

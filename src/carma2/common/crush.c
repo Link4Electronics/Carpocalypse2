@@ -6359,7 +6359,7 @@ void C2_HOOK_FASTCALL DoWheelDamage(tU32 pFrame_period) {
         if ((car != NULL && car->driver > 5) && !(car->car_crush_spec != NULL && car->car_crush_spec->field_0x144)) {
             int j;
 
-            for (j = 0; j < CARPOCALYPSE2_ASIZE(car->wheel_dam_offset); j++) {
+            for (j = 0; j < (int)CARPOCALYPSE2_ASIZE(car->wheel_dam_offset); j++) {
                 int damage;
                 br_scalar y_amount;
                 br_scalar z_amount;
@@ -6373,11 +6373,11 @@ void C2_HOOK_FASTCALL DoWheelDamage(tU32 pFrame_period) {
                     car->wheel_dam_offset[j] = 0.f;
                     continue;
                 }
-                if (PointOutOfSight(&car->pos CARPOCALYPSE2_THISCALL_EDX, 32.f)) {
+                if (((int (C2_HOOK_FASTCALL*)(const br_vector3*, br_scalar))PointOutOfSight)(&car->pos, 32.f)) {
                     break;
                 }
-                y_amount = (damage - 30) * gWobble_spam_y[damage % 8];
-                z_amount = (damage - 30) * gWobble_spam_z[damage % 8];
+                y_amount = (damage - 30) * gWobble_spam_y[damage & 7];
+                z_amount = (damage - 30) * gWobble_spam_z[damage & 7];
                 BrMatrix34PreRotateY(&car->wheel_actors[j]->t.t.mat, BrDegreeToAngle(y_amount < 0 ? y_amount + 360.f : y_amount));
                 BrMatrix34PreRotateZ(&car->wheel_actors[j]->t.t.mat, BrDegreeToAngle(z_amount < 0 ? z_amount + 360.f : z_amount));
                 if (j < 2 && car->wheel_actors[4 + j] != NULL) {
@@ -6421,7 +6421,9 @@ void C2_HOOK_FASTCALL DoWheelDamage(tU32 pFrame_period) {
                     br_vector3 temp_vector;
                     br_vector3 wonky_vector;
 
-                    BrVector3Set(&temp_vector, wheel_circum * gWheel_circ_to_width, 0.f, 0.f);
+                    temp_vector.v[0] = wheel_circum * gWheel_circ_to_width;
+                    temp_vector.v[1] = 0.f;
+                    temp_vector.v[2] = 0.f;
                     BrMatrix34ApplyV(&wonky_vector, &temp_vector, &car->wheel_actors[j]->t.t.mat);
                     car->wheel_dam_offset[j] = fabsf(wonky_vector.v[1]);
                 }

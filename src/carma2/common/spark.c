@@ -3315,6 +3315,8 @@ void C2_HOOK_FASTCALL RestoreCarPixelmaps(tCar_spec* pCar_spec) {
 // FUNCTION: CARMA2_HW 0x004f9fc0
 void C2_HOOK_FASTCALL InitSmokeStuff(void) {
 #ifndef CARPOCALYPSE2_MATCHING
+    br_pixelmap* pm;
+    tPath_name path;
     int i;
 
     gBlend_model = BrModelAllocate("BlendModel", 4, 2);
@@ -3357,11 +3359,19 @@ void C2_HOOK_FASTCALL InitSmokeStuff(void) {
     gBlend_actor->render_style = BR_RSTYLE_FACES;
     gBlend_actor->model = gBlend_model;
 
+    memcpy(path, "SMOKE.PIX", sizeof("SMOKE.PIX"));
+    pm = LoadPixelmap(path);
+    if (pm == NULL) {
+        FatalError(kFatalError_CantLoadPixelmapFile_S, path);
+    }
+    pm->map = gRender_palette;
+    BrMapAdd(pm);
+
     for (i = 0; i < CARPOCALYPSE2_ASIZE(gBR_smoke_structs); i++) {
         gBR_smoke_structs[i].material = BrMaterialAllocate(NULL);
-        gBR_smoke_structs[i].material->flags &= ~BR_MATF_LIGHT;
-        gBR_smoke_structs[i].material->flags |= BR_MATF_ALWAYS_VISIBLE;
+        gBR_smoke_structs[i].material->flags = BR_MATF_LIGHT | BR_MATF_PRELIT | BR_MATF_SMOOTH | BR_MATF_PERSPECTIVE;
         gBR_smoke_structs[i].material->extra_prim = gSmoke_extra_prim;
+        gBR_smoke_structs[i].material->colour_map = pm;
         BrMaterialAdd(gBR_smoke_structs[i].material);
     }
 #else

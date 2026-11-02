@@ -586,7 +586,7 @@ void C2_HOOK_FASTCALL InitLastDamageArrayEtc(void) {
                     car->frame_start_damage[j] = 0;
                 }
             }
-            car->car_ID = (cat << 8) | i;
+            car->car_ID = (cat << 8) + i;
         }
     }
 }

@@ -5715,9 +5715,9 @@ void C2_HOOK_FASTCALL CalcEngineForce(tCar_spec* pCar, br_scalar pDt) {
     br_scalar factor;
     tS32 tmp_joy;
 
-    speed = -pCar->collision_info->velocity_car_space.v[2] * 6.9;
+    speed = -pCar->collision_info->velocity_car_space.v[2] * gDouble_00589628;
     pCar->acc_force = 0.f;
-    if (pCar->revs == 0.f) {
+    if (pCar->revs == gFlyCarZero) {
         pCar->gear = 0;
     }
 
@@ -5732,7 +5732,7 @@ void C2_HOOK_FASTCALL CalcEngineForce(tCar_spec* pCar, br_scalar pDt) {
         pCar->joystick.dec = tmp_joy;
     }
     if ((pCar->keys.backwards && pCar->gear > 0) ||
-        (pCar->gear == 0 && speed > 0.5 && pCar->keys.backwards)) {
+        (pCar->gear == 0 && speed > gDouble_00589638 && pCar->keys.backwards)) {
         pCar->keys.backwards = !pCar->keys.backwards;
         pCar->keys.acc ^= pCar->keys.dec;
         pCar->keys.dec ^= pCar->keys.acc;
@@ -5743,7 +5743,7 @@ void C2_HOOK_FASTCALL CalcEngineForce(tCar_spec* pCar, br_scalar pDt) {
     }
     if (pCar->gear == 0 && !pCar->keys.acc && pCar->joystick.acc <= 0 &&
         (pCar->keys.dec || pCar->joystick.dec > 0) && !pCar->keys.backwards &&
-        fabsf(speed) < 1.f) {
+        fabsf(speed) < gOne) {
         pCar->keys.backwards = 1;
         pCar->keys.acc = pCar->keys.dec;
         pCar->keys.dec = 0;
@@ -5754,7 +5754,7 @@ void C2_HOOK_FASTCALL CalcEngineForce(tCar_spec* pCar, br_scalar pDt) {
 
     pCar->torque = pCar->revs * pCar->revs * -1e-08f - 0.2;
     if (pCar->keys.acc || pCar->joystick.acc >= 0) {
-        if (fabsf(pCar->curvature) > pCar->maxcurve * 0.5f && pCar->gear < 2 &&
+        if (fabsf(pCar->curvature) > pCar->maxcurve * gFloat_00589650 && pCar->gear < 2 &&
             pCar->gear != 0 && pCar->traction_control && pCar->joystick.acc < 0) {
             factor = 0.7f;
         } else if (pCar->joystick.acc >= 0) {
@@ -5765,7 +5765,7 @@ void C2_HOOK_FASTCALL CalcEngineForce(tCar_spec* pCar, br_scalar pDt) {
         factor = factor * pCar->field_0x4d4;
         factor = factor * gPower_starting_value[pCar->power_up_levels[1]];
         if (pCar->damage_units[0].damage_level > 10) {
-            factor = factor * (1.f - (pCar->damage_units[0].damage_level - 10) * 0.01f);
+            factor = factor * (gOne - (pCar->damage_units[0].damage_level - 10) * 0.01f);
         }
         pCar->torque = pCar->torque + factor;
     } else {
@@ -5779,7 +5779,7 @@ void C2_HOOK_FASTCALL CalcEngineForce(tCar_spec* pCar, br_scalar pDt) {
             br_scalar q = (pCar->joystick.dec) / 65536;
             pCar->brake_force = pCar->initial_brake + bi * q;
         }
-        if (pCar->brake_force == 0.f) {
+        if (pCar->brake_force == gFlyCarZero) {
             pCar->brake_force = pCar->initial_brake;
         } else {
             br_scalar bi = pCar->brake_increase;
@@ -5798,8 +5798,8 @@ void C2_HOOK_FASTCALL CalcEngineForce(tCar_spec* pCar, br_scalar pDt) {
     pCar->acc_force = pCar->force_torque_ratio * pCar->torque / (float)pCar->gear;
     if (pCar->brake_force != 0.f) {
         pCar->revs = pCar->target_revs;
-    } else if (pCar->revs - 1.f > pCar->target_revs ||
-               pCar->revs + 1.f < pCar->target_revs) {
+    } else if (pCar->revs - gOne > pCar->target_revs ||
+               pCar->revs - gFloat_00589668 < pCar->target_revs) {
         br_scalar lt = gZero / (pCar->speed_revs_ratio * pCar->collision_info->M) / (float)pCar->gear;
         pCar->acc_force = pCar->acc_force +
             (pCar->torque * pDt * 5000.0 + (pCar->revs - pCar->target_revs)) /

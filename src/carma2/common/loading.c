@@ -1297,11 +1297,11 @@ void C2_HOOK_FASTCALL GetDamageProgram(FILE* pF, tCar_spec* pCar_spec, tImpact_l
     count = GetAnInt(pF);
     pCar_spec->damage_programs[pImpact_location].clause_count = count;
     pCar_spec->damage_programs[pImpact_location].clauses = BrMemAllocate(count * sizeof(tDamage_clause), kMem_damage_clauses);
-    strcpy(delim, "\t ,/");
+    strcpy(delim, gSkip_lines_delimiters);
     strcat(delim, "&");
 
+    the_clause = pCar_spec->damage_programs[pImpact_location].clauses;
     for (i = 0; i < count; i++) {
-        the_clause = &pCar_spec->damage_programs[pImpact_location].clauses[i];
         the_clause->condition_count = 0;
         GetALineAndDontArgue(pF, s);
         str = strtok(s, delim);
@@ -1312,13 +1312,6 @@ void C2_HOOK_FASTCALL GetDamageProgram(FILE* pF, tCar_spec* pCar_spec, tImpact_l
                 the_clause->conditions[the_clause->condition_count].axis_comp = eAxis_y;
             } else if (str[0] == 'z') {
                 the_clause->conditions[the_clause->condition_count].axis_comp = eAxis_z;
-            } else {
-                break;
-            }
-            if (str[1] == '>') {
-                the_clause->conditions[the_clause->condition_count].condition_operator = 1;
-            } else if (str[1] == '<') {
-                the_clause->conditions[the_clause->condition_count].condition_operator = 0;
             } else {
                 break;
             }
@@ -1339,8 +1332,8 @@ void C2_HOOK_FASTCALL GetDamageProgram(FILE* pF, tCar_spec* pCar_spec, tImpact_l
             the_clause->effects[j].type = -1;
             /* Damage */
             GetALineAndDontArgue(pF, s);
-            str = strtok(s, "\t ,/");
-            for (k = 0; k < CARPOCALYPSE2_ASIZE(gDamage_names); k++) {
+            str = strtok(s, gSkip_lines_delimiters);
+            for (k = 0; k < (int)CARPOCALYPSE2_ASIZE(gDamage_names); k++) {
                 if (strcmp(str, gDamage_names[k]) == 0) {
                     the_clause->effects[j].type = k;
                     break;
@@ -1349,9 +1342,10 @@ void C2_HOOK_FASTCALL GetDamageProgram(FILE* pF, tCar_spec* pCar_spec, tImpact_l
             if (the_clause->effects[j].type < 0) {
                 FatalError(kFatalError_UnknownDamageType_S, str);
             }
-            str = strtok(NULL, "\t ,/");
+            str = strtok(NULL, gSkip_lines_delimiters);
             sscanf(str, "%f", &the_clause->effects[j].weakness_factor);
         }
+        the_clause++;
     }
 }
 
