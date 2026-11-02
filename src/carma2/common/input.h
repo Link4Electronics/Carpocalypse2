@@ -150,6 +150,8 @@ int C2_HOOK_FASTCALL ChangeCharTo(int pSlot_index, int pChar_index, char pNew_ch
 
 void C2_HOOK_FASTCALL SetSlotXY(int pSlot_index, int pX_coord, int pY_coord);
 
+void C2_HOOK_FASTCALL GetTypedName(char* pDestn, int pMax_length);
+
 void C2_HOOK_FASTCALL KillCursor(int pSlot_index);
 
 void C2_HOOK_FASTCALL SetJoystickArrays(int* pKeys, int pMark);

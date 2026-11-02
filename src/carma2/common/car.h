@@ -27,6 +27,8 @@ void C2_HOOK_FASTCALL DamageUnit(tCar_spec* pCar, tDamage_type pDamage_type, int
 
 void C2_HOOK_FASTCALL DamageEngine(int pDamage_amount);
 
+void C2_HOOK_FASTCALL DamageTrans(int pDamage_amount);
+
 void C2_HOOK_FASTCALL DamageLFWheel(int pDamage_amount);
 
 void C2_HOOK_FASTCALL DamageLFBrake(int pDamage_amount);

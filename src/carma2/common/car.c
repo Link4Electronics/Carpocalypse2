@@ -1023,6 +1023,17 @@ void C2_HOOK_FASTCALL AdjustDownForce(void) {
     NewTextHeadupSlot(4, 0, 1500, -4, s);
 }
 
+// FUNCTION: CARMA2_HW 0x0041f450
+void C2_HOOK_FASTCALL FreezeMechanics(void) {
+
+    gFreeze_mechanics = !gFreeze_mechanics;
+    if (gFreeze_mechanics) {
+        NewTextHeadupSlot(4, 0, 3000, -4, "Mechanics Frozen");
+    } else {
+        NewTextHeadupSlot(4, 0, 3000, -4, "Thawed Mechanics");
+    }
+}
+
 #pragma auto_inline(off)
 // FUNCTION: CARMA2_HW 0x0041f4f0
 void C2_HOOK_FAKE_THISCALL FlyCar(tCar_spec* c, undefined4 pArg2, br_scalar dt) {
@@ -3246,20 +3257,23 @@ void C2_HOOK_FASTCALL NewFacesListCallback(tPhysics_object* pCollision, undefine
     }
 }
 
-// FUNCTION: CARMA2_HW 0x0041ff20
+#pragma auto_inline(off)
+// STUB: CARMA2_HW 0x0041ff20
 tNon_car_spec* C2_HOOK_FASTCALL DoPullActorFromWorld(br_actor* actor) {
 
     NOT_IMPLEMENTED();
     return NULL;
 }
+#pragma auto_inline(on)
 
 // FUNCTION: CARMA2_HW 0x0041ff00
 tNon_car_spec* C2_HOOK_FASTCALL PullActorFromWorld(br_actor* actor) {
 
     if (!gCrush_deferred && !gTesting_car_for_sensible_place) {
         return NULL;
+    } else {
+        return DoPullActorFromWorld(actor);
     }
-    return DoPullActorFromWorld(actor);
 }
 
 // FUNCTION: CARMA2_HW 0x004b5970
@@ -5622,6 +5636,12 @@ void C2_HOOK_FASTCALL DamageUnit(tCar_spec* pCar, tDamage_type pUnit_type, int p
 // FUNCTION: CARMA2_HW 0x00413d00
 void C2_HOOK_FASTCALL DamageEngine(int pDamage_amount) {
     DamageUnit(&gProgram_state.current_car, eDamage_engine, pDamage_amount);
+    SortOutSmoke(&gProgram_state.current_car);
+}
+
+// FUNCTION: CARMA2_HW 0x00413d30
+void C2_HOOK_FASTCALL DamageTrans(int pDamage_amount) {
+    DamageUnit(&gProgram_state.current_car, eDamage_transmission, pDamage_amount);
     SortOutSmoke(&gProgram_state.current_car);
 }
 

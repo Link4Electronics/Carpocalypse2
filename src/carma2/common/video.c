@@ -228,6 +228,7 @@ void C2_HOOK_FASTCALL FUN_004e1400(void* pFrame_pixmap_handle, br_pixelmap* pScr
     PossibleUnlock(1);
 }
 
+// FUNCTION: CARMA2_HW 0x004e2120
 void C2_HOOK_FASTCALL ShowStatusMessage(int msg1, int msg2) {
 
     gShow_status_message = 1;

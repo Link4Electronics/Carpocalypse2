@@ -3706,44 +3706,28 @@ int C2_HOOK_FASTCALL GetOpponentsFirstSection(const tOpponent_spec* pOpponent_sp
 }
 
 // FUNCTION: CARMA2_HW 0x004aedf0
-tS16 C2_HOOK_FASTCALL GetOpponentsSectionMaxSpeed(tOpponent_spec* pOpponent_spec, tS16 pSection, int pTowards_finish) {
-    if (pSection >= 20000) {
-        int sections = pOpponent_spec->nnext_sections;
-        int s = pSection - 20000;
-        if (sections > s) {
-            tS16 idx = pOpponent_spec->next_sections[pSection - 20000].section_no;
-            tU8 rt_dir = pOpponent_spec->next_sections[pSection - 20000].direction;
-            tU8* tab = (tU8*)gProgram_state.AI_vehicles.path_sections + (rt_dir == pTowards_finish);
-            return tab[idx * 5 * 4 + 6];
-        }
-    }
-    if (pSection >= 15000) {
-        goto warn;
-    }
-    if (pSection == 10000) {
+int C2_HOOK_FASTCALL GetOpponentsSectionMaxSpeed(tOpponent_spec* pOpponent_spec, tS16 pSection, int pTowards_finish) {
+    if (pSection >= 20000 && pOpponent_spec->nnext_sections > pSection - 20000) {
+        const tRoute_section* route = &pOpponent_spec->next_sections[pSection - 20000];
+        return gProgram_state.AI_vehicles.path_sections[route->section_no].max_speed[(route->direction ^ pTowards_finish) == 0];
+    } else if (pSection >= 15000) {
+        return 255;
+    } else if (pSection == 10000) {
         return pOpponent_spec->pursue_car_data.direct_line_section.max_speed[pTowards_finish];
     }
-warn:
     DoNotDprintf_opponent("WARNING - GetOpponentsSectionMaxSpeed() - section not found in next_section array for opponent %s", pOpponent_spec->car_spec->driver_name);
     PDEnterDebugger("WARNING - GetOpponentsSectionMaxSpeed()");
-    return 0xff;
+    return 255;
 }
 
 // FUNCTION: CARMA2_HW 0x004aed50
-tS16 C2_HOOK_FASTCALL GetOpponentsSectionMinSpeed(tOpponent_spec* pOpponent_spec, tS16 pSection, int pTowards_finish) {
-    if (pSection >= 20000) {
-        int sections = pOpponent_spec->nnext_sections;
-        int s = pSection - 20000;
-        if (sections > s) {
-            tS16 idx = pOpponent_spec->next_sections[pSection - 20000].section_no;
-            tU8 rt_dir = pOpponent_spec->next_sections[pSection - 20000].direction;
-            return gProgram_state.AI_vehicles.path_sections[idx].min_speed[rt_dir == pTowards_finish];
-        }
-    }
-    if (pSection >= 15000) {
+int C2_HOOK_FASTCALL GetOpponentsSectionMinSpeed(tOpponent_spec* pOpponent_spec, tS16 pSection, int pTowards_finish) {
+    if (pSection >= 20000 && pOpponent_spec->nnext_sections > pSection - 20000) {
+        const tRoute_section* route = &pOpponent_spec->next_sections[pSection - 20000];
+        return gProgram_state.AI_vehicles.path_sections[route->section_no].min_speed[(route->direction ^ pTowards_finish) == 0];
+    } else if (pSection >= 15000) {
         return 0;
-    }
-    if (pSection == 10000) {
+    } else if (pSection == 10000) {
         return pOpponent_spec->pursue_car_data.direct_line_section.min_speed[pTowards_finish];
     }
     DoNotDprintf_opponent("WARNING - GetOpponentsSectionMinSpeed() - section not found in next_section array for opponent %s", pOpponent_spec->car_spec->driver_name);

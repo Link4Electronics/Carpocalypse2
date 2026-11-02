@@ -440,15 +440,16 @@ void C2_HOOK_FASTCALL ResetSparks(void) {
     gSpark_flags = 0;
 }
 
+// FUNCTION: CARMA2_HW 0x004f8b90
 void C2_HOOK_FASTCALL LoadInShrapnel(void) {
 
     gShrapnel_model[0] = LoadModel("FRAG4.DAT");
-    ModelScale(gShrapnel_model[0], 0.5f);
+    DRScaleModel(gShrapnel_model[0], 0.5f);
     gShrapnel_model[1] = LoadModel("FRAG5.DAT");
-    ModelScale(gShrapnel_model[1], 0.5f);
+    DRScaleModel(gShrapnel_model[1], 0.5f);
     BrModelAdd(gShrapnel_model[0]);
     BrModelAdd(gShrapnel_model[1]);
-    gBlack_material = GetSimpleMaterial("M14.MAT", 4);
+    gBlack_material = GetSimpleMaterial("M14.MAT", kRendererShadingType_AmbientOnly);
     gNon_track_actor->material = gBlack_material;
 }
 
@@ -3052,8 +3053,6 @@ void C2_HOOK_FASTCALL CreateSingleSpark(int pIndex_and_colour, br_vector3* pPos,
 // random
 
 // InitShrapnel
-
-// LoadInShrapnel
 
 // KillShrapnel
 

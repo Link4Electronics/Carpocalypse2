@@ -216,10 +216,11 @@ void C2_HOOK_FASTCALL DoAnEnvironmentalSound(void* pSrc_object, tEnvironment_sou
 // FUNCTION: CARMA2_HW 0x00455950
 int C2_HOOK_FASTCALL DRS3SetVolume(int pVolume) {
 
-    if (!gSound_enabled) {
+    if (gSound_enabled) {
+        return S3SetVolume(pVolume);
+    } else {
         return 0;
     }
-    return S3SetVolume(pVolume);
 }
 
 // FUNCTION: CARMA2_HW 0x00457260
@@ -561,6 +562,7 @@ int C2_HOOK_FASTCALL DRS3StopSound(tS3_sound_tag pSound_tag) {
     }
 }
 
+// FUNCTION: CARMA2_HW 0x004558a0
 void C2_HOOK_FASTCALL DRS3Service(void) {
 
     if (gSound_enabled) {

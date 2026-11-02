@@ -568,6 +568,7 @@ void C2_HOOK_FASTCALL NetStartProducingJoinList(tAddToJoinListProc *pAdd_proc) {
     PDNetStartProducingJoinList();
 }
 
+// FUNCTION: CARMA2_HW 0x00468750
 void C2_HOOK_FASTCALL InitNetStorageSpace(void) {
     int i;
 

@@ -75,6 +75,19 @@ void C2_HOOK_FASTCALL DisableChoice(int pChoice) {
     gDisabled_count++;
 }
 
+// FUNCTION: CARMA2_HW 0x00484680
+void C2_HOOK_FASTCALL EnableChoice(int pChoice) {
+    int i;
+
+    for (i = 0; i < gDisabled_count; i++) {
+        if (gDisabled_choices[i] == pChoice) {
+            memcpy(&gDisabled_choices[i], &gDisabled_choices[i + 1], (gDisabled_count - i - 1) * sizeof(gDisabled_choices[0]));
+            gDisabled_count--;
+            break;
+        }
+    }
+}
+
 // FUNCTION: CARMA2_HW 0x00484f10
 void C2_HOOK_FASTCALL ChangeSelectionTo(int pNew_choice, int pNew_mode) {
     int last_choice;

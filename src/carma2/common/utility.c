@@ -1584,7 +1584,7 @@ float C2_HOOK_FASTCALL DistanceFromFaceND(const br_vector3* pP, const br_vector3
 
 // FUNCTION: CARMA2_HW 0x00516350
 int C2_HOOK_FASTCALL DRVector3NonZero(const br_vector3* pV) {
-    if (pV->v[0] == 0.f && pV->v[1] == 0.f && pV->v[2] == 0.f) {
+    if (pV->v[0] == gFloatZero_0058b280 && pV->v[1] == gFloatZero_0058b280 && pV->v[2] == gFloatZero_0058b280) {
         return 0;
     } else {
         return 1;

@@ -180,18 +180,6 @@ tU32 gPipe_buffer_size = 0;
 float gReplay_rate = 0.f;
 extern const br_scalar gFLOAT_00589330;
 
-// GLOBAL: CARMA2_HW 0x006768b0
-tU32 gPipe_sound_time = 0;
-
-// GLOBAL: CARMA2_HW 0x00676904
-tU32 gPipe_sound_start_time = 0;
-
-// GLOBAL: CARMA2_HW 0x006768a8
-tU32 gPipe_sound_time_window = 0;
-
-// GLOBAL: CARMA2_HW 0x00676918
-int gDisable_piped_sounds = 0;
-
 // FUNCTION: CARMA2_HW 0x00403d60
 int C2_HOOK_FASTCALL ARToggleReplay(tTurn_on_AR_callback* pTurn_on_AR_cb, tTurn_off_AR_callback* pTurn_off_AR_cb, tAfter_AR_callback* pAfter_AR_cb, tZappy_AR_callback* pZappy_AR_cb, tPreprocess_AR_callback* pPreprocess_cb, tPostProcess_AR_callback* pPostProcess_cb, int* pArg7, int* pArg8) {
 
@@ -1787,8 +1775,8 @@ int C2_HOOK_FASTCALL MoveSessionPointerBackOne(tU8** pPtr) {
 
 // FUNCTION: CARMA2_HW 0x00403c50
 int C2_HOOK_FASTCALL SoundTimeout(tU32 pTime) {
-    return gPipe_sound_start_time < pTime
-        || gPipe_sound_start_time - pTime < gPipe_sound_time_window;
+    return gPipe_UNK_00676904 < pTime
+        || gPipe_UNK_00676904 - pTime < gPipe_UNK_006768a8;
 }
 
 // FUNCTION: CARMA2_HW 0x00403990

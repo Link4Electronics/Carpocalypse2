@@ -179,18 +179,17 @@ void* gDrug_trip_data;
 
 static void C2_HOOK_FASTCALL PaletteFuckedUpByDrugs(br_pixelmap* pPixelmap, int pOffset) {
     int i;
-    tU32* dst;
-    tU32* src;
 
     (void)pPixelmap;
-    dst = (tU32*)gRender_palette->pixels;
-    src = (tU32*)gDrug_trip_data;
-    for (i = 1; i < 0xe0; i++) {
-        dst[i] = src[(i + pOffset) & 0xff];
+    if (pOffset == 0) {
+        memcpy(gRender_palette->pixels, gDrug_trip_data, 256 * sizeof(tU32));
     }
-    dst[0] = src[0];
-    for (i = 0xe0; i < 0x100; i++) {
-        dst[i] = src[i];
+    for (i = 1; i < 224; i++) {
+        ((tU32*)gRender_palette->pixels)[i] = ((tU32*)gDrug_trip_data)[(i + pOffset) & 0xff];
+    }
+    ((tU32*)gRender_palette->pixels)[0] = ((tU32*)gDrug_trip_data)[0];
+    for (i = 224; i < 256; i++) {
+        ((tU32*)gRender_palette->pixels)[i] = ((tU32*)gDrug_trip_data)[i];
     }
 }
 
@@ -2795,17 +2794,11 @@ void C2_HOOK_FASTCALL ResetUnderwater(tPowerup* powerup, tCar_spec* car) {
 // FUNCTION: CARMA2_HW 0x004de610
 void C2_HOOK_FASTCALL PukeDrugsBackUp(tPowerup* powerup, tCar_spec* car) {
 
-    (void)powerup;
-    if (car == NULL) {
-        return;
+    if (car != NULL && car->driver == eDriver_local_human) {
+        gOn_drugs = 0;
+        PaletteFuckedUpByDrugs(gRender_palette, 0);
+        ResetPalette();
     }
-    if (car->driver != eDriver_local_human) {
-        return;
-    }
-    gOn_drugs = 0;
-    memcpy(gRender_palette->pixels, gDrug_trip_data, 0x400);
-    PaletteFuckedUpByDrugs(gRender_palette, 0);
-    ResetPalette();
 }
 
 // FUNCTION: CARMA2_HW 0x004de6b0
@@ -2995,15 +2988,8 @@ void C2_HOOK_FASTCALL ResetPissed(tPowerup* powerup, tCar_spec* car) {
 
 // FUNCTION: CARMA2_HW 0x004dcc00
 void C2_HOOK_FASTCALL TheEffectsOfDrugs(tPowerup* powerup, tU32 time) {
-    int offset;
 
-    (void)powerup;
-    (void)time;
-    offset = GetTotalTime() / 100;
-    if (offset == 0) {
-        memcpy(gRender_palette->pixels, gDrug_trip_data, 0x400);
-    }
-    PaletteFuckedUpByDrugs(gRender_palette, offset);
+    PaletteFuckedUpByDrugs(gRender_palette, GetTotalTime() / 100);
     ResetPalette();
 }
 

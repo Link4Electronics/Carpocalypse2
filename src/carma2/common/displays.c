@@ -2562,6 +2562,17 @@ void C2_HOOK_FASTCALL ChangeHeadupFont(int pHeadup_index, int pFont) {
     }
 }
 
+extern br_colour gColours[9];
+
+// FUNCTION: CARMA2_HW 0x0044a9b0
+void C2_HOOK_FASTCALL ChangeHeadupColour(int pHeadup_index, int pNew_colour) {
+
+    if (pHeadup_index < 0) {
+    } else {
+        gHeadups[pHeadup_index].data.text_info.colour = gColours[pNew_colour];
+    }
+}
+
 // FUNCTION: CARMA2_HW 0x0044a8d0
 void C2_HOOK_FASTCALL ChangeHeadupText(int pHeadup_index, char* pNew_text) {
     tHeadup* the_headup;
