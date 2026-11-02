@@ -27,7 +27,6 @@
 
 // GLOBAL: CARMA2_HW 0x0058aa08
 const volatile double gPed_electrocution_velocity_scale = 0.7;
-
 // GLOBAL: CARMA2_HW 0x0058aa10
 const volatile double gPed_electrocution_spin_scale = 4.0;
 
@@ -43,6 +42,8 @@ tU32 gPed_giblet_owner_id = 0xffffffff;
 #include "world.h"
 
 #include "brender/brender.h"
+
+extern const int gPed_flags_0058f2e4[3];
 
 #include "c2_stdlib.h"
 #include "c2_string.h"
@@ -2172,8 +2173,8 @@ int C2_HOOK_FASTCALL SetCharacterMove(tPed_character_instance* pPed, int pMove_a
 void C2_HOOK_FASTCALL SetPedMove(tPedestrian* pPed, int pMove_action, int pWalk_speed_factor, int pArg4, int pArg5, int pArg6, int pAction) {
     tPed_action original_action;
     int original_move_id;
-    undefined2 original_field_0x1e;
-    undefined2 original_field_0x1c;
+    int original_field_0x1e;
+    int original_field_0x1c;
     br_vector3 original_pos;
     br_matrix34* character_matrix;
     int new_move_lut_id;
@@ -2194,9 +2195,9 @@ void C2_HOOK_FASTCALL SetPedMove(tPedestrian* pPed, int pMove_action, int pWalk_
         new_move_lut_id = 3;
     } else if (gPanicking_peds) {
         new_move_lut_id = 5;
-    } else if (pPed->character->field_0xc & 0x8) {
+    } else if (pPed->character->field_0xc & gPed_flags_0058f2e4[0]) {
         new_move_lut_id = 1;
-    } else if (pPed->character->field_0xc & 0x20) {
+    } else if (pPed->character->field_0xc & gPed_flags_0058f2e4[2]) {
         new_move_lut_id = 2;
     } else {
         new_move_lut_id = 0;
@@ -3666,11 +3667,16 @@ undefined4 C2_HOOK_FASTCALL CharacterNoLongerRenderable(tPed_character_instance*
 
 // FUNCTION: CARMA2_HW 0x004cd160
 void C2_HOOK_FASTCALL OneLessPed(tPedestrian* pPed) {
+    tU16 flags;
+    tS16 flag;
 
-    if ((tU16)(pPed->flags & 0x100) != 0) {
+    flags = pPed->flags;
+    flag = flags & 0x100;
+    if (flag != 0) {
         return;
     }
-    pPed->flags |= 0x100;
+    flags |= 0x100;
+    pPed->flags = flags;
     if (gCurrent_race.race_spec->race_type == kRaceType_Carma1) {
         gCount_killed_peds++;
         if (gCount_killed_peds >= gPed_count) {
@@ -3680,7 +3686,9 @@ void C2_HOOK_FASTCALL OneLessPed(tPedestrian* pPed) {
         }
     }
     if (gCurrent_race.race_spec->race_type == kRaceType_Peds) {
-        if (pPed->flags & 0x200) {
+        flags = pPed->flags;
+        flag = flags & 0x200;
+        if (flag != 0) {
             gCount_killed_peds++;
             if (gCount_killed_peds >= gTotal_count_smash_peds) {
                 RaceCompleted(eRace_over_1);
@@ -3689,7 +3697,9 @@ void C2_HOOK_FASTCALL OneLessPed(tPedestrian* pPed) {
         }
     }
     if (gCurrent_race.race_spec->race_type == kRaceType_SmashNPed) {
-        if (pPed->flags & 0x200) {
+        flags = pPed->flags;
+        flag = flags & 0x200;
+        if (flag != 0) {
             AccumulateRuntimeVariable(gCurrent_race.race_spec->options.smash_and_peds.var_smash_number, 1);
             if (GetRuntimeVariable(gCurrent_race.race_spec->options.smash_and_peds.var_smash_number) >= gCurrent_race.race_spec->options.smash_and_peds.var_smash_target) {
                 RaceCompleted(eRace_over_3);
@@ -7902,17 +7912,19 @@ void C2_HOOK_FASTCALL SetPedXZDirection(tPedestrian* pPed, br_vector3* pDir, flo
     }
 
     if (pPed->field_0x0c->field_0x6c != 0
-            && (pPed->field_0x0c->field_0x48.v[0] * direction_work[0].v[0]
-                + pPed->field_0x0c->field_0x48.v[1] * direction_work[0].v[1]
-                + pPed->field_0x0c->field_0x48.v[2] * direction_work[0].v[2]) > gPed_direction_hold_dot) {
+            && (pPed->field_0x0c->field_0x48.v[1] * direction_work[0].v[1]
+                + pPed->field_0x0c->field_0x48.v[2] * direction_work[0].v[2]
+                + pPed->field_0x0c->field_0x48.v[0] * direction_work[0].v[0]) > gPed_direction_hold_dot) {
         return;
     }
 
-    pPed->field_0x0c->field_0x48 = direction_work[0];
+    pPed->field_0x0c->field_0x48.v[0] = direction_work[0].v[0];
+    pPed->field_0x0c->field_0x48.v[1] = direction_work[0].v[1];
+    pPed->field_0x0c->field_0x48.v[2] = direction_work[0].v[2];
     character = pPed->character;
     ped_cache = pPed->field_0x0c;
     if (pArg3 != gConst_replay_rate_zero) {
-        ped_cache->field_0x54 = ped_cache->field_0x48;
+        BrVector3Copy(&ped_cache->field_0x54, &ped_cache->field_0x48);
         ped_cache->field_0x6c = pTime;
         turn_speed = sqrtf(character->field_0xd8.v[0] * character->field_0xd8.v[0]
                 + character->field_0xd8.v[1] * character->field_0xd8.v[1]
@@ -10952,10 +10964,10 @@ void C2_HOOK_FASTCALL MakeRotationMatrix(br_matrix34* pMat, tU8 pAngle_x, tU32 p
 
     pMat->m[0][0] = fVar4 * fVar3;
     pMat->m[3][2] = 0.0f;
-    pMat->m[3][1] = 0.0f;
     pMat->m[1][0] = fVar6 * fVar4 * fVar2 - fVar5 * fVar1;
-    pMat->m[3][0] = 0.0f;
+    pMat->m[3][1] = 0.0f;
     pMat->m[2][0] = fVar4 * fVar1 * fVar2 + fVar5 * fVar6;
+    pMat->m[3][0] = 0.0f;
     pMat->m[0][1] = fVar5 * fVar3;
     pMat->m[1][1] = fVar5 * fVar6 * fVar2 + fVar4 * fVar1;
     pMat->m[2][1] = fVar5 * fVar1 * fVar2 - fVar6 * fVar4;
