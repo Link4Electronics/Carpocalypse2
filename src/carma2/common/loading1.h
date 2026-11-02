@@ -8,9 +8,7 @@
 
 extern int gDecode_thing;
 
-extern const char gSkip_lines_format[];
 
-extern const char gSkip_lines_delimiters[5];
 
 extern tU32 C2_HOOK_FASTCALL ReadU32(FILE* pF);
 

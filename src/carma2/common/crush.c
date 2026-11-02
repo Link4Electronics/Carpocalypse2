@@ -5402,7 +5402,7 @@ void C2_HOOK_FASTCALL DoDamage(tCar_spec *pCar, tDamage_type pDamage_type, int p
     }
     damage_unit = &pCar->damage_units[pDamage_type];
     old_level = damage_unit->damage_level;
-    new_level = pMagnitude + old_level;
+    new_level = old_level + pMagnitude;
     damage_unit->damage_level = new_level;
     if (new_level >= 99) {
         if (pMagnitude < 10) {

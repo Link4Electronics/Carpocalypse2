@@ -40,22 +40,6 @@
 #include <stdarg.h>
 #include "c2_math.h"
 
-extern const char gEmpty_string_00676920[];
-
-// GLOBAL: CARMA2_HW 0x0065a750
-const char gFormat_opponent_headup_0065a750[] = "%s: obj: %d nsect: %d sect: %d(%d%s)%s%s";
-
-// GLOBAL: CARMA2_HW 0x0065a77c
-const char gSection_text_0065a77c[] = "T";
-
-// GLOBAL: CARMA2_HW 0x0065a780
-const char gSection_text_0065a780[] = "1";
-
-// GLOBAL: CARMA2_HW 0x0065a784
-const char gSection_text_0065a784[] = "0";
-
-// GLOBAL: CARMA2_HW 0x0065a788
-const char gSection_text_0065a788[] = "*";
 
 extern const br_scalar gFLOAT_0058a61c;
 
@@ -952,26 +936,26 @@ void C2_HOOK_FASTCALL UpdateViewedOpponentHeadup(void) {
 opponent_found:
         opponent = (tOpponent_spec*)opponent_data;
         section_no = opponent->follow_path_data.section_no;
-        cheating_marker = gSection_text_0065a788;
+        cheating_marker = "*";
         if (!opponent->cheating) {
-            cheating_marker = gEmpty_string_00676920;
+            cheating_marker = "";
         }
 
         if (section_no < 20000 || opponent->next_sections[section_no - 20000].direction != 0) {
-            direction = gSection_text_0065a780;
+            direction = "1";
         } else {
-            direction = gSection_text_0065a784;
+            direction = "0";
         }
         if (section_no < 15000 || section_no >= 20000) {
-            extra_section = gEmpty_string_00676920;
+            extra_section = "";
         } else {
-            extra_section = gSection_text_0065a77c;
+            extra_section = "T";
         }
         displayed_section_no = section_no;
         if (section_no >= 20000) {
             displayed_section_no = opponent->next_sections[section_no - 20000].section_no;
         }
-        sprintf(message, gFormat_opponent_headup_0065a750, viewed_car->name,
+        sprintf(message, "%s: obj: %d nsect: %d sect: %d(%d%s)%s%s", viewed_car->name,
             opponent->current_objective, opponent->nnext_sections, section_no, displayed_section_no,
             extra_section, direction, cheating_marker);
     }

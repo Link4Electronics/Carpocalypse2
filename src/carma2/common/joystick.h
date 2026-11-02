@@ -7,7 +7,7 @@
 
 #include <stdio.h>
 
-extern int gINT_00595f84;
+extern int gUNK_00595f84;
 extern int gJoystick_index;
 extern int gUNK_00595f8c;
 extern int gUNK_00596310;

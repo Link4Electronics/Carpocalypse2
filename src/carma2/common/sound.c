@@ -528,7 +528,7 @@ int C2_HOOK_FASTCALL DRS3StartSoundNoPiping(tS3_outlet* pOutlet, tS3_sound_id pS
 int C2_HOOK_FASTCALL DRS3StartSound2(tS3_outlet *pOutlet, tS3_sound_id pSound, int pRepeats, int pLeft_volume, int pRight_volume, int pLeft_pitch, int pRight_pitch) {
 
     if (gSound_enabled) {
-        if (pOutlet != gIndexed_outlets[0]
+        if (pOutlet != gMusic_outlet
                 && pSound != 1000
                 && !(pSound >= 3000 && pSound <= 3007)
                 && !(pSound >= 5300 && pSound <= 5320)

@@ -1991,8 +1991,6 @@ int C2_HOOK_FASTCALL S3UpdateCDAVolume(tS3_channel* pChannel, int pVolume) {
 }
 
 #ifdef _WIN32
-// GLOBAL: CARMA2_HW 0x00662528
-const char gBackslash_00662528[] = "\\";
 
 // GLOBAL: CARMA2_HW 0x006736a8
 FARPROC gQuickTime_dispatcher;
@@ -2008,9 +2006,6 @@ FARPROC gQuickTime_call_component;
 
 // GLOBAL: CARMA2_HW 0x006736bc
 FARPROC gQuickTime_call_component_with_storage;
-
-// GLOBAL: CARMA2_HW 0x0067370c
-const char gQuickTime_qts_0067370c[] = "QuickTime.qts";
 
 #pragma optimize("gty", on)
 
@@ -2047,7 +2042,7 @@ void* C2_HOOK_CDECL LoadQuickTimeModule(void) {
     register char* path_separator;
     char path[0x104];
 
-    module = GetModuleHandleA(gQuickTime_qts_0067370c);
+    module = GetModuleHandleA("QuickTime.qts");
     if (module != NULL) {
         if (GetModuleFileNameA(module, path, sizeof(path)) != 0) {
             return LoadLibraryA(path);
@@ -2061,7 +2056,7 @@ void* C2_HOOK_CDECL LoadQuickTimeModule(void) {
         }
         if (path_separator >= path) {
             path_separator[1] = '\0';
-            strcat(path, gQuickTime_qts_0067370c);
+            strcat(path, "QuickTime.qts");
             module = LoadLibraryA(path);
             if (module != NULL) {
                 return module;
@@ -2071,8 +2066,8 @@ void* C2_HOOK_CDECL LoadQuickTimeModule(void) {
 
     module = NULL;
     if (GetSystemDirectoryA(path, sizeof(path)) != 0) {
-        strcat(path, gBackslash_00662528);
-        strcat(path, gQuickTime_qts_0067370c);
+        strcat(path, "\\");
+        strcat(path, "QuickTime.qts");
         module = LoadLibraryA(path);
     }
     return module;

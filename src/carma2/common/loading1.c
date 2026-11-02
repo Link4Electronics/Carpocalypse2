@@ -39,12 +39,6 @@ int gKey_map_index;
 // GLOBAL: CARMA2_HW 0x00655e30
 int gDecode_thing = '@';
 
-// GLOBAL: CARMA2_HW 0x0058f418
-const char gSkip_lines_format[] = "%d";
-
-// GLOBAL: CARMA2_HW 0x0058f41c
-const char gSkip_lines_delimiters[] = "\t ,/";
-
 // GLOBAL: CARMA2_HW 0x00658610
 int gAllow_open_to_fail = 1;
 
@@ -657,8 +651,8 @@ void C2_HOOK_FASTCALL SkipLines(FILE* pF) {
 
     PossibleService();
     GetALineWithNoPossibleService(pF, line);
-    str = strtok(line, gSkip_lines_delimiters);
-    sscanf(str, gSkip_lines_format, &count);
+    str = strtok(line, "	 ,/");
+    sscanf(str, "%d", &count);
     lines_to_skip = count;
     if (lines_to_skip > 0) {
         do {

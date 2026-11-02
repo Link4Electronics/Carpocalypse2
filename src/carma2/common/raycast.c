@@ -1,6 +1,5 @@
 #include "raycast.h"
 
-extern const char gEmpty_string_00676920[];
 
 extern const br_scalar gFLOAT_00589978;
 extern const double gDouble_00589fe0;
@@ -18,9 +17,6 @@ extern const double gDouble_00589fe0;
 
 #include "carpocalypse2_macros.h"
 #include "raycast.h"
-
-// GLOBAL: CARMA2_HW 0x00676920
-const char gEmpty_string_00676920[] = "";
 
 // DRActorToRoot
 
@@ -814,7 +810,7 @@ int C2_HOOK_FASTCALL FUN_004228b0(tPhysics_object* pObject, void* pCollision_buf
             BrMatrix34ApplyP(&shape_data.points[64], &pShape->sphere.sphere.center, pShape_transform);
             break;
         default:
-            ((void (C2_HOOK_FASTCALL *)(tPhysicsError, const char*))PhysicsError)(ePhysicsError_UnknownShapeType, gEmpty_string_00676920);
+            ((void (C2_HOOK_FASTCALL *)(tPhysicsError, const char*))PhysicsError)(ePhysicsError_UnknownShapeType, "");
             break;
         }
 

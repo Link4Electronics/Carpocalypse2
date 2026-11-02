@@ -59,7 +59,6 @@ typedef struct {
     br_scalar* field_0x18;
 } tPhysics_group_data;
 
-extern const char gEmpty_string_00676920[];
 
 extern const br_scalar gFLOAT_0058a3f8;
 extern const br_scalar gFLOAT_0058a40c;
@@ -139,7 +138,7 @@ tFace_ref* C2_HOOK_FASTCALL RayCastThruFaceList(br_vector3* pPosition, br_vector
             }
         }
     }
-    if (*pT < 2.f) {
+    if (*pT < gFLOAT_00589968) {
         return best;
     } else {
         return NULL;
@@ -586,7 +585,7 @@ void C2_HOOK_FASTCALL RqBackSub(const br_scalar* pR, const br_scalar* pQ, const 
     /* Use back substitution to solve Ry = b, with R a lower-diagonal matrix */
     intermediate[0] = pRhs[0] / pR[0 * pDim + 0];             /*  T[0] = B[0] / R[0, 0] */
     for (i = 1; i < pDim; i++) {
-        sum = 0.0f;
+        sum = gFLOAT_0058a8b8;
         for (j = 0; j < i; j++) {
             sum += intermediate[j] * pR[i * pDim + j];        /*  sum += T[j] * R[i, j] */
         }
@@ -3617,7 +3616,7 @@ void C2_HOOK_FAKE_THISCALL FUN_004b9230(tPhysics_object* pObject, tPhysics_objec
     } else {
         parent = pObject->field_0x230;
         if (parent == NULL) {
-            PhysicsError(11, gEmpty_string_00676920);
+            PhysicsError(11, "");
         }
         if (pObject->flags & 0x400) {
             BrMatrix34Mul(&pObject->actor->t.t.mat, &pObject->field_0x1e8, &parent->actor->t.t.mat);
@@ -10240,7 +10239,7 @@ void C2_HOOK_FASTCALL FUN_004bc190(int* pObject_list, float* pVectors, int pCoun
               local_a0 = local_a0 + 2;
               break;
             default:
-              ((void (C2_HOOK_FASTCALL *)(tPhysicsError, const char*))PhysicsError)(ePhysicsError_UnknownHingeType, gEmpty_string_00676920);
+              ((void (C2_HOOK_FASTCALL *)(tPhysicsError, const char*))PhysicsError)(ePhysicsError_UnknownHingeType, "");
             }
           }
           puVar9 = *(undefined4 **)(*(int *)(iVar14 + 4) + 0x18c);
@@ -10259,7 +10258,7 @@ void C2_HOOK_FASTCALL FUN_004bc190(int* pObject_list, float* pVectors, int pCoun
               iVar14 = 0xc;
               break;
             default:
-              ((void (C2_HOOK_FASTCALL *)(tPhysicsError, const char*))PhysicsError)(ePhysicsError_UnknownHingeType, gEmpty_string_00676920);
+              ((void (C2_HOOK_FASTCALL *)(tPhysicsError, const char*))PhysicsError)(ePhysicsError_UnknownHingeType, "");
               goto LAB_004bc7a6;
             case 5:
               local_98 = local_98 + 2;
@@ -10297,7 +10296,7 @@ LAB_004bc7a6:
           local_90 = iVar14;
           break;
         default:
-          ((void (C2_HOOK_FASTCALL *)(tPhysicsError, const char*))PhysicsError)(ePhysicsError_UnknownHingeType, gEmpty_string_00676920);
+          ((void (C2_HOOK_FASTCALL *)(tPhysicsError, const char*))PhysicsError)(ePhysicsError_UnknownHingeType, "");
           iVar14 = local_90;
         }
       }
@@ -10318,7 +10317,7 @@ LAB_004bc7a6:
           local_90 = local_98;
           break;
         default:
-          ((void (C2_HOOK_FASTCALL *)(tPhysicsError, const char*))PhysicsError)(ePhysicsError_UnknownHingeType, gEmpty_string_00676920);
+          ((void (C2_HOOK_FASTCALL *)(tPhysicsError, const char*))PhysicsError)(ePhysicsError_UnknownHingeType, "");
           local_98 = local_90;
           break;
         case 5:

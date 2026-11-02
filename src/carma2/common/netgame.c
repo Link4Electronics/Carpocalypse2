@@ -303,7 +303,7 @@ void C2_HOOK_FASTCALL PlayerIsIt(tNet_game_player_info* pPlayer) {
     int i;
     char s[256];
 
-    if (pPlayer - gNet_players == gIt_or_fox) {
+    if (gIt_or_fox == pPlayer - gNet_players) {
         return;
     }
     for (i = 0; i < gNumber_of_net_players; i++) {

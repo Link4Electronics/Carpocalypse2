@@ -31,23 +31,16 @@
 #endif
 #include <string.h>
 
-extern void C2_HOOK_FASTCALL ChangeHeadupFont(int pHeadup_index, int pFont);
-extern void C2_HOOK_FASTCALL ChangeHeadupText(int pHeadup_index, char* pText);
-extern void C2_HOOK_FASTCALL FUN_0045a0c0(void);
-extern const char* C2_HOOK_FASTCALL GetCurrentJoystickName(void);
-
-// GLOBAL: CARMA2_HW 0x00595f84
-int gUNK_00595f84 = 7500;
-int C2_HOOK_FASTCALL InsertHeadupText(tHeadup_text_buffer* pText_buffer, tHeadup_text* pText, int pSortAlphabetically);
-
 #include <stdio.h>
 extern void C2_HOOK_FASTCALL ChangeHeadupFont(int pHeadup_index, int pFont);
 extern void C2_HOOK_FASTCALL ChangeHeadupText(int pHeadup_index, char* pText);
 extern void C2_HOOK_FASTCALL FUN_0045a0c0(void);
 extern const char* C2_HOOK_FASTCALL GetCurrentJoystickName(void);
 extern int C2_HOOK_FASTCALL PDIsJoystickAvailable(int pIndex);
+extern int C2_HOOK_FASTCALL InsertHeadupText(tHeadup_text_buffer* pText_buffer, tHeadup_text* pText, int pSortAlphabetically);
+
 // GLOBAL: CARMA2_HW 0x00595f84
-int gINT_00595f84 = 7500;
+int gUNK_00595f84 = 7500;
 
 // GLOBAL: CARMA2_HW 0x00595f88
 int gJoystick_index = -1;
@@ -297,7 +290,7 @@ int C2_HOOK_FASTCALL LoadJoystickPreferences(void) {
     gJoystick_x_steering = info->field_0xd8;
     gJoystick_y_throttle = info->field_0xdc;
     gUNK_00595f9c = info->field_0xd4;
-    gINT_00595f84 = info->field_0xe4;
+    gUNK_00595f84 = info->field_0xe4;
     gUNK_00596310 += 25;
     if (gUNK_00596310 > 100) {
         gUNK_00596310 = 0;

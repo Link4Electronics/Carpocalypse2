@@ -43,6 +43,7 @@
 
 #include <assert.h>
 #include <c2_sys_stat.h>
+
 #include "c2_math.h"
 
 #define RGB565_R(V) (((V) & 0xf800) >> 11)
@@ -214,9 +215,6 @@ const char* gDepth_effect_names[3] = {
     "fog",
     "colour",
 };
-
-// GLOBAL: CARMA2_HW 0x006611dc
-const char gMurdered_headup[] = "Murdered ";
 
 // GLOBAL: CARMA2_HW 0x006b6400
 char gAdditional_model_path[256];
@@ -4395,7 +4393,7 @@ void C2_HOOK_CDECL MurderLastActor(void) {
         if (gLast_actor->parent != gAdditional_actors) {
             RemoveNonCarFromActiveList(gLast_actor);
         }
-        strcpy(text, gMurdered_headup);
+        strcpy(text, "Murdered ");
         if (gLast_actor->identifier != NULL) {
             strcat(text, gLast_actor->identifier);
         }

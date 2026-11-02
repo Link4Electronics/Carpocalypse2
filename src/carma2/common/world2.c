@@ -19,12 +19,6 @@ tRoad_texturing_level gRoad_texturing_level = eRTL_full;
 // GLOBAL: CARMA2_HW 0x00591370
 tWall_texturing_level gWall_texturing_level = eWTL_full;
 
-// GLOBAL: CARMA2_HW 0x005913ac
-char gMaterial_suffix_lwall[] = ".lwall";
-
-// GLOBAL: CARMA2_HW 0x005913b4
-char gMaterial_suffix_pwall[] = ".pwall";
-
 // GLOBAL: CARMA2_HW 0x00591378
 static tPMFMCB* gWall_texturing_tweakers[3][3] = {
     { NULL, WallUntexToLinear, WallUntexToPersp },
@@ -434,10 +428,10 @@ br_material* C2_HOOK_FASTCALL WallLinearToUntex(br_model* pModel, tU16 pFace) {
     old_mat = pModel->faces[pFace].material;
     identifier = old_mat->identifier;
     identifier_length = strlen(identifier);
-    suffix_length = strlen(gMaterial_suffix_pwall);
+    suffix_length = strlen(".pwall");
     if (identifier != NULL) {
         if (identifier_length >= suffix_length) {
-            has_pwall_suffix = strcmp(identifier + identifier_length - suffix_length, gMaterial_suffix_pwall) == 0;
+            has_pwall_suffix = strcmp(identifier + identifier_length - suffix_length, ".pwall") == 0;
         } else {
             has_pwall_suffix = 0;
         }
@@ -454,10 +448,10 @@ br_material* C2_HOOK_FASTCALL WallLinearToUntex(br_model* pModel, tU16 pFace) {
     if (FUN_00447ef0(pModel, pFace) != 0 || old_mat->identifier == NULL || old_mat->colour_map == NULL) {
         return NULL;
     }
-    suffix_length = strlen(gMaterial_suffix_lwall);
+    suffix_length = strlen(".lwall");
     identifier_length = strlen(old_mat->identifier);
     new_id = BrMemAllocate(identifier_length + suffix_length + 1, kMem_new_mat_id);
-    sprintf(new_id, "%s%s", old_mat->identifier, gMaterial_suffix_lwall);
+    sprintf(new_id, "%s%s", old_mat->identifier, ".lwall");
     new_mat = BrMaterialFind(new_id);
     if (new_mat != NULL) {
         BrMemFree(new_id);
@@ -587,13 +581,15 @@ br_material* C2_HOOK_FASTCALL WallPerspToLinear(br_model* pModel, tU16 pFace) {
     br_material* old_mat;
     br_material* new_mat;
     char* new_id;
+    const char* suffix;
 
     old_mat = pModel->faces[pFace].material;
     if (old_mat->colour_map == NULL || (old_mat->flags & BR_MATF_PERSPECTIVE) == 0 || FUN_00447ef0(pModel, pFace) != 0) {
         return NULL;
     }
-    new_id = BrMemAllocate(strlen(old_mat->identifier) + strlen(gMaterial_suffix_pwall) + 1, kMem_new_mat_id);
-    sprintf(new_id, "%s%s", old_mat->identifier, gMaterial_suffix_pwall);
+    suffix = ".pwall";
+    new_id = BrMemAllocate(strlen(old_mat->identifier) + strlen(suffix) + 1, kMem_new_mat_id);
+    sprintf(new_id, "%s%s", old_mat->identifier, ".pwall");
     new_mat = BrMaterialFind(new_id);
     if (new_mat != NULL) {
         BrMemFree(new_id);
@@ -620,9 +616,9 @@ br_material* C2_HOOK_FASTCALL WallPerspToUntex(br_model* pModel, tU16 pFace) {
     old_mat = pModel->faces[pFace].material;
     if (old_mat->colour_map != NULL && FUN_00447ef0(pModel, pFace) == 0) {
         if ((old_mat->flags & BR_MATF_PERSPECTIVE) != 0) {
-            new_mat = SuffixedMaterial(old_mat, gMaterial_suffix_pwall);
+            new_mat = SuffixedMaterial(old_mat, ".pwall");
         } else {
-            new_mat = SuffixedMaterial(old_mat, gMaterial_suffix_lwall);
+            new_mat = SuffixedMaterial(old_mat, ".lwall");
         }
         if (new_mat->colour_map != NULL) {
             new_mat->colour_map = NULL;

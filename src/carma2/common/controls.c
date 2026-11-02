@@ -228,9 +228,6 @@ int gRecovery_voucher_count;
 // GLOBAL: CARMA2_HW 0x006923d8
 tPhysics_object* gUnknown_006923d8;
 
-// GLOBAL: CARMA2_HW 0x00594e9c
-const char gAct_file_extension[] = ".ACT";
-
 // GLOBAL: CARMA2_HW 0x0079d860
 tHeadup_text_buffer gHeadup_text_buffer_0079d860;
 

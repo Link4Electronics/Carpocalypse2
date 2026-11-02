@@ -771,8 +771,8 @@ void C2_HOOK_FASTCALL FUN_0048f6d0(tBrender_storage* pStorage_space, FILE* pFile
     char* token;
 
     GetALineAndDontArgue(pFile, line);
-    token = strtok(line, gSkip_lines_delimiters);
-    sscanf(token, gSkip_lines_format, &count);
+    token = strtok(line, "	 ,/");
+    sscanf(token, "%d", &count);
     LoadPixelmapsFromListFile(pStorage_space, pFile, count);
 }
 
@@ -1297,7 +1297,7 @@ void C2_HOOK_FASTCALL GetDamageProgram(FILE* pF, tCar_spec* pCar_spec, tImpact_l
     count = GetAnInt(pF);
     pCar_spec->damage_programs[pImpact_location].clause_count = count;
     pCar_spec->damage_programs[pImpact_location].clauses = BrMemAllocate(count * sizeof(tDamage_clause), kMem_damage_clauses);
-    strcpy(delim, gSkip_lines_delimiters);
+    strcpy(delim, "	 ,/");
     strcat(delim, "&");
 
     the_clause = pCar_spec->damage_programs[pImpact_location].clauses;
@@ -1332,7 +1332,7 @@ void C2_HOOK_FASTCALL GetDamageProgram(FILE* pF, tCar_spec* pCar_spec, tImpact_l
             the_clause->effects[j].type = -1;
             /* Damage */
             GetALineAndDontArgue(pF, s);
-            str = strtok(s, gSkip_lines_delimiters);
+            str = strtok(s, "	 ,/");
             for (k = 0; k < (int)CARPOCALYPSE2_ASIZE(gDamage_names); k++) {
                 if (strcmp(str, gDamage_names[k]) == 0) {
                     the_clause->effects[j].type = k;
@@ -1342,7 +1342,7 @@ void C2_HOOK_FASTCALL GetDamageProgram(FILE* pF, tCar_spec* pCar_spec, tImpact_l
             if (the_clause->effects[j].type < 0) {
                 FatalError(kFatalError_UnknownDamageType_S, str);
             }
-            str = strtok(NULL, gSkip_lines_delimiters);
+            str = strtok(NULL, "	 ,/");
             sscanf(str, "%f", &the_clause->effects[j].weakness_factor);
         }
         the_clause++;

@@ -45,6 +45,8 @@ extern void C2_HOOK_FASTCALL InitRayCasting(void);
 
 extern br_actor* gY_picking_camera;
 
+extern const br_scalar gFLOAT_00589968;
+
 extern br_scalar gLowest_y_above;
 
 extern br_scalar gHighest_y_below;

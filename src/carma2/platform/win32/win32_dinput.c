@@ -22,7 +22,6 @@
 
 #include <brender/brender.h>
 
-extern const char gEmpty_string_00676920[];
 
 // GLOBAL: CARMA2_HW 0x0058b398
 extern const GUID IID_IDirectInputDevice2A;

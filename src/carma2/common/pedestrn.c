@@ -888,9 +888,6 @@ const tPed_anim_seq gPed_anim_sequence_0065e4e0 = {
     3, { 1, 2, 1 }
 };
 
-// GLOBAL: CARMA2_HW 0x0065e670
-const char gPed_smear_missing_cache_message[] = "Can't smear a ped with no process data";
-
 // GLOBAL: CARMA2_HW 0x0065e5b8
 const float gFlamed_ped_flame_scales[7] = {
     .275f,
@@ -10340,7 +10337,7 @@ void C2_HOOK_FASTCALL FUN_004d2320(tPhysics_object* pObject1, tPhysics_object* p
 
             ped_cache = ped->field_0x0c;
             if (ped_cache == NULL) {
-                dr_dprintf(gPed_smear_missing_cache_message);
+                dr_dprintf("Can't smear a ped with no process data");
                 return;
             }
 

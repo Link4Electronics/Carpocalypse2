@@ -2605,21 +2605,6 @@ extern void C2_HOOK_FASTCALL FUN_0043c940(void* pPayload);
 extern void C2_HOOK_FASTCALL FUN_0043cd60(void* pPayload);
 extern void C2_HOOK_FASTCALL ReceiveMineUpdate(tNet_message_chunk_mine_explode* pChunk);
 
-// GLOBAL: CARMA2_HW 0x0058fd6c
-const char gSTRING_0058fd6c[] = "%s %d";
-
-// GLOBAL: CARMA2_HW 0x0065a2e0
-const char gSTRING_0065a2e0[] = "PLAYER";
-
-// GLOBAL: CARMA2_HW 0x0065a2d4
-const char gSTRING_0065a2d4[] = "%s %s %s %s";
-
-// GLOBAL: CARMA2_HW 0x0065a2c8
-const char gSTRING_0065a2c8[] = "%s %s %s";
-
-// GLOBAL: CARMA2_HW 0x0065a148
-const char gSTRING_0065a148[] = "Trying to send network message to self";
-
 typedef struct tNet_score_entry {
     int player_index;
     int score;

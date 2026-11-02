@@ -4767,7 +4767,7 @@ void C2_HOOK_FASTCALL SetCollisionFlagsAndStuff(tCar_spec* pCar) {
         }
 
         if (pCar->collision_info->disable_move_rotate != 0) {
-            if (BrVector3LengthSquared(&pCar->collision_info->v) != 0.f) {
+            if (BrVector3LengthSquared(&pCar->collision_info->v) != gFlyCarZero) {
                 pCar->collision_info->disable_move_rotate = 0;
             }
         }

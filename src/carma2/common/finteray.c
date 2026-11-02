@@ -21,7 +21,6 @@
 #include "c2_math.h"
 
 extern const br_scalar gFLOAT_0058996c;
-extern const char gEmpty_string_00676920[];
 extern const double gDouble_00589a08;
 
 /*
@@ -41,7 +40,6 @@ extern const br_scalar gFLOAT_0058996c;
 extern const br_scalar gFLOAT_00589978;
 extern const br_scalar gFLOAT_005899a8;
 extern const double gDouble_005899b0;
-extern const char gEmpty_string_00676920[];
 
 // GLOBAL: CARMA2_HW 0x005964c0
 int gPling_materials = 1;
@@ -620,7 +618,7 @@ int C2_HOOK_FASTCALL ActorRayPick2D(br_actor* ap, br_vector3* pPosition, br_vect
         if (this_model != NULL) {
             if (PickBoundsTestRay__finteray(&this_model->bounds, pPosition, pDir, t_near, t_far, &t_near, &t_far)) {
                 t_near = 0.f;
-                if (gNearest_T > 1.f) {
+                if (gNearest_T > gUNK_00589fb0) {
                     t_far = 1.f;
                 } else {
                     t_far = gNearest_T;
@@ -1998,7 +1996,7 @@ tFace_ref* C2_HOOK_FASTCALL CastRayDownThruFaces(br_vector3* pPosition, tFace_re
 
     BrVector3Set(&direction, 0.f, -1.f, 0.f);
     face = RayCastThruFaceList(pPosition, &direction, &normal, &t, pCollision_position, pFaces, pCount);
-    if (face == NULL && pOffset != 0.f) {
+    if (face == NULL && pOffset != gUNK_00589fac) {
         BrVector3Set(&position, pPosition->v[0], pPosition->v[1] + pOffset, pPosition->v[2]);
         face = RayCastThruFaceList(&position, &direction, &normal, &t, pCollision_position, pFaces, pCount);
     }
@@ -2652,7 +2650,7 @@ int C2_HOOK_FASTCALL FUN_004269c0(tPhysics_object* pObject1, tPhysics_object* pO
         edge_count = pShape2->wireframe.wireframe.count_lines;
         break;
     default:
-        PhysicsError(ePhysicsError_UnknownShapeType, gEmpty_string_00676920);
+        PhysicsError(ePhysicsError_UnknownShapeType, "");
         edges = NULL;
         edge_count = 0;
         break;
@@ -2936,7 +2934,7 @@ int C2_HOOK_FASTCALL FUN_00427fd0(tPhysics_object* pObj1, tPhysics_object* pObj2
         pbVar6 = (const tU8*)pEdgeShape->wireframe.wireframe.lines;
         break;
     default:
-        PhysicsError(1, gEmpty_string_00676920);
+        PhysicsError(1, "");
         pbVar6 = (const tU8*)pRayShape;
         break;
     }
@@ -3133,7 +3131,7 @@ int C2_HOOK_FASTCALL FUN_004287a0(tPhysics_object* pObject1, tPhysics_object* pO
         local_12e8 = pShape1->wireframe.wireframe.count_lines;
         break;
     default:
-        PhysicsError(ePhysicsError_UnknownShapeType, gEmpty_string_00676920);
+        PhysicsError(ePhysicsError_UnknownShapeType, "");
         local_12ec = (tU8*)pShape1;
         local_12e8 = 0;
         break;
@@ -3154,7 +3152,7 @@ int C2_HOOK_FASTCALL FUN_004287a0(tPhysics_object* pObject1, tPhysics_object* pO
         local_12dc = pShape2->wireframe.wireframe.count_lines;
         break;
     default:
-        PhysicsError(ePhysicsError_UnknownShapeType, gEmpty_string_00676920);
+        PhysicsError(ePhysicsError_UnknownShapeType, "");
         local_12e4 = (tU8*)pShape2;
         local_12dc = 0;
         break;
@@ -3196,7 +3194,7 @@ copy_shape_points:
                     shape_endpoint.v[2] = *(float*)(iVar1 + 8);
                     break;
                 default:
-                    PhysicsError(ePhysicsError_UnknownShapeType, gEmpty_string_00676920);
+                    PhysicsError(ePhysicsError_UnknownShapeType, "");
                     break;
                 }
                 fVar3 = *(float*)((tU8*)edge_starts + iVar9 + 4);
@@ -3364,7 +3362,7 @@ void C2_HOOK_FASTCALL PointSphereCollision(br_vector3* pPoint, br_vector3* pSphe
     if ((pRadius - -0.002f) * (pRadius - -0.002f) > distance_squared) {
         radius_squared = pRadius * pRadius;
         if (radius_squared < distance_squared) {
-            scale = (br_scalar)(1.0 / sqrt(distance_squared));
+            scale = (br_scalar)(gDouble_00589fe8 / sqrt(distance_squared));
             pNormal->v[0] = scale * dx;
             pNormal->v[1] = scale * dy;
             pNormal->v[2] = scale * dz;

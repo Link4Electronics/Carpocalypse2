@@ -1183,7 +1183,7 @@ int C2_HOOK_FASTCALL LoadPixelmapsFromListFile(tBrender_storage* pStorage_space,
         do {
             PossibleService();
             GetALineAndDontArgue(pFile, line);
-            name = strtok(line, gSkip_lines_delimiters);
+            name = strtok(line, "	 ,/");
             DoNotAllowOpenToFail();
             pixelmaps_left = LoadTextureTryAllLocations(name, pixelmaps, CARPOCALYPSE2_ASIZE(pixelmaps));
             if (pixelmaps_left == 0) {
@@ -1263,7 +1263,7 @@ int C2_HOOK_FASTCALL LoadShadeTablesFromListFile(tBrender_storage* pStorage_spac
         do {
             PossibleService();
             GetALineAndDontArgue(pFile, line);
-            name = strtok(line, gSkip_lines_delimiters);
+            name = strtok(line, "	 ,/");
             PathCat(path, gApplication_path, "SHADETAB");
             PathCat(path, path, name);
             added = 0;
@@ -1347,7 +1347,7 @@ int C2_HOOK_FASTCALL LoadModelsFromListFile(tBrender_storage* pStorage_space, FI
         files_left = pCount;
         do {
             GetALineAndDontArgue(pFile, line);
-            name = strtok(line, gSkip_lines_delimiters);
+            name = strtok(line, "	 ,/");
             PathCat(path, gApplication_path, "MODELS");
             PathCat(path, path, name);
             model_count = BrModelLoadMany(path, models, CARPOCALYPSE2_ASIZE(models));
