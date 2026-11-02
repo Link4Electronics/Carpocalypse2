@@ -569,7 +569,7 @@ void C2_HOOK_FASTCALL GetBoundsFromPointList(const br_vector3* pVertices, int pC
 
 void C2_HOOK_FASTCALL FillInShape(tPhysics_shape* pShape);
 
-tPhysics_object* C2_HOOK_FAKE_THISCALL MungeSphereObject(br_model* pModel, undefined4 pArg2, float pWeight);
+tPhysics_object* C2_HOOK_FAKE_THISCALL MungeSphereObject(br_model* pModel, float pWeight);
 
 void C2_HOOK_FASTCALL WriteNewPositions(tPhysics_object* pObject);
 

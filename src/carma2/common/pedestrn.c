@@ -276,7 +276,7 @@ int gPed_spurt_min_max_time[2];
 br_model* gPed_spurt_model;
 
 // GLOBAL: CARMA2_HW 0x0069411c
-int gGiblet_scrape_start;
+float gGiblet_scrape_start;
 
 // GLOBAL: CARMA2_HW 0x00694468
 tSmashable_initial_position_spec gGiblet_initial_position;
@@ -481,7 +481,7 @@ tPed_personality* gPed_personalities[50] = { 0 };
 float gPed_sin_table[256] = { 0 };
 
 // GLOBAL: CARMA2_HW 0x00677728
-undefined4 gDAT_00677728 = 0;
+float gDAT_00677728 = 0.f;
 
 // GLOBAL: CARMA2_HW 0x0067772c
 int gCount_pedestrian_personality_cloned_materials = 0;
@@ -952,7 +952,7 @@ int C2_HOOK_FASTCALL GetPedPosition(int pIndex, br_vector3* pPos) {
     ped = &gPedestrian_array[pIndex];
     if (ped->hit_points > 0
             && ((ped->flags & 0x1) || gMap_view == 2)
-            && (gCurrent_race.race_spec->race_type != kRaceType_Peds || (ped->flags & 0x200))) {
+            && (gCurrent_race.race_spec->race_type != kRaceType_Peds || ((tS16)ped->flags & 0x200) != 0)) {
         pPos->v[0] = ped->pos.v[0];
         pPos->v[1] = ped->pos.v[1];
         pPos->v[2] = ped->pos.v[2];
@@ -997,7 +997,7 @@ void C2_HOOK_FASTCALL InitBoner(tPedForms_vtable* pTable) {
         gPed_cos_table[i] = c;
     }
 
-    memset(&gDAT_00677728, 0, sizeof(gDAT_00677728));
+    gDAT_00677728 = 0.f;
     gFLOAT_00677230 = 1.f;
     gCount_pedestrian_personality_cloned_materials = 0;
     gPed_overall_movement_disabled = 0;
@@ -1049,8 +1049,8 @@ void C2_HOOK_FAKE_THISCALL ScaleModel(br_model* pModel, int pArg2, float pScale)
     i = 0;
     while (i < pModel->nvertices) {
         v->p.v[0] = v->p.v[0] * pScale;
-        v->p.v[1] = v->p.v[1] * pScale;
-        v->p.v[2] = v->p.v[2] * pScale;
+        v->p.v[1] = pScale * v->p.v[1];
+        v->p.v[2] = pScale * v->p.v[2];
         i++;
         v++;
     }
@@ -1119,20 +1119,19 @@ br_model* ReadSmashableInitialModel(FILE* pFile, br_scalar pScale_factor) {
     return model;
 }
 
+#pragma inline_depth(0)
 // FUNCTION: CARMA2_HW 0x004cb1e0
 void C2_HOOK_FASTCALL ReadPedGiblets(FILE* pFile) {
-    union {
-        tPath_name path;
-        char model_name[512];
-    } scratch;
+    tPath_name the_path;
+    char model_name[256];
     tPed_giblet_size_spec* size_ptr;
     br_model** model_slot;
     int i;
     int j;
 
-    PathCat(scratch.path, gApplication_path, gPedsFolder);
-    PathCat(scratch.path, scratch.path, "GIBLETS");
-    LoadAllStuffInDirectory(&gMisc_storage_space, scratch.path, kRendererShadingType_Diffuse1);
+    PathCat(the_path, gApplication_path, gPedsFolder);
+    PathCat(the_path, the_path, "GIBLETS");
+    LoadAllStuffInDirectory(&gMisc_storage_space, the_path, kRendererShadingType_Diffuse1);
 
     /*
      * ***************************
@@ -1184,10 +1183,10 @@ void C2_HOOK_FASTCALL ReadPedGiblets(FILE* pFile) {
             scale = GetAScalar(pFile);
             index = GetAnInt(pFile);
             GetThreeInts(pFile, &r, &g, &b);
-            GetAString(pFile, scratch.model_name);
-            model = BrModelFind(scratch.model_name);
+            GetAString(pFile, model_name);
+            model = BrModelFind(model_name);
             if (model == NULL) {
-                FatalError(kFatalError_CannotFindGibletModel_S, scratch.model_name);
+                FatalError(kFatalError_CannotFindGibletModel_S, model_name);
             }
             if (i == gGiblet_size_count - 1) {
                 scale *= 3.0f;
@@ -1260,10 +1259,10 @@ void C2_HOOK_FASTCALL ReadPedGiblets(FILE* pFile) {
         scale = GetAScalar(pFile);
         index = GetAnInt(pFile);
         GetThreeInts(pFile, &r, &g, &b);
-        GetAString(pFile, scratch.model_name);
-        model = BrModelFind(scratch.model_name);
+        GetAString(pFile, model_name);
+        model = BrModelFind(model_name);
         if (model == NULL) {
-            FatalError(kFatalError_CannotFindGibletModel_S, scratch.model_name);
+            FatalError(kFatalError_CannotFindGibletModel_S, model_name);
         }
         ScaleModel(model CARPOCALYPSE2_THISCALL_EDX, scale);
         gPed_spurt_model = model;
@@ -1273,6 +1272,7 @@ void C2_HOOK_FASTCALL ReadPedGiblets(FILE* pFile) {
         BrMaterialUpdate(model->faces[0].material, BR_MATU_ALL);
     }
 }
+#pragma inline_depth()
 
 void C2_HOOK_FASTCALL ReadSettingsFile(void) {
     tPath_name the_path;
@@ -2268,7 +2268,7 @@ tPhysics_object* C2_HOOK_FASTCALL GetRootObject(tPed_character_instance *pPed) {
 void C2_HOOK_FASTCALL DropPointOntoPlane(const br_vector3* pPoint, const br_vector3* pPlane, br_vector3* pDest) {
     float dot;
 
-    dot = pPlane->v[0] * pPoint->v[0] + (pPlane->v[2] * pPoint->v[2] + pPlane->v[1] * pPoint->v[1]);
+    dot = BrVector3Dot(pPlane, pPoint);
     BrVector3Scale(pDest, pPlane, -dot);
     BrVector3Accumulate(pDest, pPoint);
 }
@@ -3021,13 +3021,8 @@ void C2_HOOK_FASTCALL ScalePedForm(tPed_form* pForm, int pIndex, br_scalar* pSca
     int start;
     int count;
 
-    if (pIndex == -1) {
-        start = 0;
-        count = pForm->count_bones;
-    } else {
-        start = pIndex;
-        count = pIndex + 1;
-    }
+    start = (pIndex == -1) ? 0 : pIndex;
+    count = (pIndex == -1) ? pForm->count_bones : pIndex + 1;
 
     for (i = start; i < count; i++) {
         tPhysics_joint* hinge = pForm->bones[i].hinge;
@@ -7493,9 +7488,9 @@ int C2_HOOK_FASTCALL DoPedestrianRepulsifictor(tCar_spec* pCar, float pF0, float
 
     data[0] = pF0;
     data[1] = pF1;
-    data[2] = pF2;
     data[3] = pF3;
-    res = DoToPeds(pCar, 1, pF3, 1, data, (tForEachPedestrian_cbfn*)RepulseIt);
+    data[2] = pF2;
+    res = DoToPeds(pCar, 1, data[3], 1, data, (tForEachPedestrian_cbfn*)RepulseIt);
     if (res != 0) {        if (pCar != NULL && pCar->driver == eDriver_local_human) {
             DRS3StartSound(gXXX_outlet, 0x1324);
         } else {
@@ -8780,9 +8775,8 @@ calm_down:
 // FUNCTION: CARMA2_HW 0x00409c20
 int C2_HOOK_FASTCALL FUN_00409c20(tPed_character_instance* pCharacter, undefined4 pTime) {
     tPed_move* move;
-    int moved;
+    int moved = 0;
 
-    moved = 0;
     move = pCharacter->personality->form->moves[pCharacter->field_0x7].move;
     pCharacter->field_0x1c = move->count_frames - 1;
     if ((pCharacter->field_0x9 & 0x2) != 0) {

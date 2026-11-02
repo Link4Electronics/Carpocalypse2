@@ -2574,10 +2574,8 @@ void C2_HOOK_FASTCALL FillInShape(tPhysics_shape* pShape) {
 }
 
 // FUNCTION: CARMA2_HW 0x004da400
-tPhysics_object* C2_HOOK_FAKE_THISCALL MungeSphereObject(br_model* pModel, undefined4 pArg2, float pWeight) {
+tPhysics_object* C2_HOOK_FAKE_THISCALL MungeSphereObject(br_model* pModel, float pWeight) {
     tPhysics_object* collision_info;
-
-    CARPOCALYPSE2_THISCALL_UNUSED(pArg2);
 
     C2_HOOK_BUG_ON(sizeof(tPhysics_object) != 1240);
 

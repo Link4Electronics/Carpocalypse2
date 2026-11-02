@@ -81,20 +81,8 @@ tPowerup* gPowerup_array;
 
 // KeyboardPowerupFinished
 
-// LoseAllSimilarPowerups
+// LoseAllSimilarPowerups (implemented in powerups.c)
 extern int gNumber_of_powerups;
-
-void C2_HOOK_FASTCALL LoseAllSimilarPowerups(tPowerup* pThe_powerup) {
-    int i;
-    tPowerup* the_powerup;
-
-    for (i = 0, the_powerup = gPowerup_array; i < gNumber_of_powerups; i++, the_powerup++) {
-        if (the_powerup != pThe_powerup && the_powerup->got_time != 0
-            && (pThe_powerup->group_inclusion & the_powerup->group_inclusion) != 0) {
-            LosePowerup(the_powerup);
-        }
-    }
-}
 
 // ExcludedPowerup
 
@@ -761,17 +749,6 @@ void C2_HOOK_FASTCALL TurnOffCloaking(tPowerup* pPowerup, tCar_spec* pCar) {
     }
 }
 
-// FUNCTION: CARMA2_HW 0x004e0de0
-void C2_HOOK_FASTCALL PeriodicCloaking(void) {
-    int i;
-
-    if (gNet_mode != eNet_mode_none) {
-
-        for (i = 0; i < gCount_cloaked_cars; i++) {
-            DoCamouflageThing(gCloaked_cars[i]);
-        }
-    }
-}
 // FUNCTION: CARMA2_HW 0x004df200
 void C2_HOOK_FASTCALL FUN_004df200(tPowerup* pPowerup, tCar_spec* pCar) {
 
@@ -792,7 +769,7 @@ void C2_HOOK_FASTCALL QueueIconGoing(tPowerup* pPowerup, tHeadup_icon* pHeadup_i
     int i;
 
     for (i = 0; i < *pCount_icons; i++) {
-        if (pHeadup_icons[i].powerup == pPowerup) {
+        if (pPowerup == pHeadup_icons[i].powerup) {
             pHeadup_icons[i].fizzle_stage = 3;
             pHeadup_icons[i].fizzle_direction = -1;
             pHeadup_icons[i].fizzle_start = GetTotalTime();

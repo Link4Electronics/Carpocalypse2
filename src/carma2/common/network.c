@@ -204,11 +204,8 @@ int gINT_00690234;
 // GLOBAL: CARMA2_HW 0x00690240
 tNet_game_player_info gReceived_net_player_list[12];
 
-// GLOBAL: CARMA2_HW 0x00762430
-int gINT_00762430;
-
-// GLOBAL: CARMA2_HW 0x00763088
-int gINT_00763088[48];
+/* 0x00762430 and 0x00763088 are inside gCurrent_race:
+   number_of_racers and opponent_list[].net_player_index respectively. */
 
 // GLOBAL: CARMA2_HW 0x0068d93c
 int gNet_score_scene_initialised;
@@ -2745,13 +2742,13 @@ void C2_HOOK_FASTCALL FUN_004a48d0(void* pPayload, void* pMessage) {
         }
         gNet_players[0].this_players_time_stamp = PDGetTotalTime();
         iVar3 = gNumber_of_net_players;
-        gINT_00762430 = gNumber_of_net_players;
+        gCurrent_race.number_of_racers = gNumber_of_net_players;
         if (gStart_race_sent != 0 && (iVar4 = 0, 0 < gNumber_of_net_players)) {
             piVar5 = (int*)&gNet_players[0].opponent_list_index;
             do {
                 iVar1 = *piVar5;
                 piVar5 += 0x35;
-                gINT_00763088[iVar1 * 4] = iVar4;
+                gCurrent_race.opponent_list[iVar1].net_player_index = iVar4;
                 iVar4++;
             } while (iVar4 < iVar3);
         }
