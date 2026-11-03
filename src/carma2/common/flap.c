@@ -1071,8 +1071,8 @@ int C2_HOOK_FASTCALL TrySplitCarOnVerticalForce(tPhysics_joint_data* pJoint_data
                 && force_processed[force_index] == 0
                 && joint_data->object2 == NULL
                 && object != NULL
-                && object->flags_0x238 == 1
                 && (car = (tCar_spec*)object->owner) != NULL
+                && object->flags_0x238 == 1
                 && car->driver > 5
                 && (crush_spec = car->car_crush_spec) != NULL
                 && crush_spec->field_0x4b8 == 0

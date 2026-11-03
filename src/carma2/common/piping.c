@@ -3196,7 +3196,6 @@ tPipe_chunk_data* C2_HOOK_FASTCALL FUN_00403800(tPipe_chunk* pSession, tPipe_chu
 void C2_HOOK_FASTCALL ReceivedCrushDetach(tU8* pContents) {
     tCar_spec* car;
     tFind_crush_actor_arg find_arg;
-    tU32* pActor;
     tU32 actor;
     int count;
     int i;
@@ -3205,22 +3204,20 @@ void C2_HOOK_FASTCALL ReceivedCrushDetach(tU8* pContents) {
     if (gCount_net_crush_detach_list != CARPOCALYPSE2_ASIZE(gNet_crush_detach_list)) {
         car = NetCarFromPlayerID(*(tPlayer_ID*)(pContents + 4));
         if (car != NULL) {
+            find_arg.id = pContents[8];
+            find_arg.actor = NULL;
             actor = DRActorEnumRecurse(
                 car->car_model_actor,
                 FindActorByCrushEntryID,
-                (find_arg.id = pContents[8], find_arg.actor = NULL, &find_arg)) != 0
+                &find_arg) != 0
                 ? (tU32)find_arg.actor
                 : 0;
             if (actor != 0) {
                 count = gCount_net_crush_detach_list;
-                i = 0;
-                pActor = (tU32*)&gNet_crush_detach_list[0].actor;
-                while (i < count) {
-                    if (*pActor == actor) {
+                for (i = 0; i < count; i++) {
+                    if (gNet_crush_detach_list[i].actor == (br_actor*)actor) {
                         return;
                     }
-                    i++;
-                    pActor += 9;
                 }
                 gNet_crush_detach_list[count].car = car;
                 gNet_crush_detach_list[count].actor = (br_actor*)actor;

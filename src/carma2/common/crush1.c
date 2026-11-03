@@ -63,9 +63,6 @@ br_scalar gMin_force_to_split_Y_per_tonne;
 // GLOBAL: CARMA2_HW 0x0067bd64
 int gMin_split_damage;
 
-// GLOBAL: CARMA2_HW 0x0067bde8
-br_scalar gMin_bend_force;
-
 // GLOBAL: CARMA2_HW 0x0067bdec
 br_scalar gMax_crush_force;
 

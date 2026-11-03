@@ -660,7 +660,10 @@ tDriver gDetached_bit_driver;
 const br_scalar gFloat_0058aec0 = 0.0f;
 
 // GLOBAL: CARMA2_HW 0x0067bd68
-tPhysics_joint* gTrack_crush_joints[32];
+tPhysics_joint* gTrack_crush_joints[32] = { NULL };
+
+// GLOBAL: CARMA2_HW 0x0067bde8
+br_scalar gMin_bend_force = 0.0f;
 
 // GLOBAL: CARMA2_HW 0x0067b7b8
 tCrush_info_buffer gSplit_car_crush_info_buffer;
@@ -1958,6 +1961,7 @@ void C2_HOOK_FASTCALL LoadCarCrushSmashDataEntries(FILE* pF, tCar_crush_buffer_e
     }
 }
 
+#pragma inline_depth(0)
 // FUNCTION: CARMA2_HW 0x0042a550
 void C2_HOOK_FASTCALL LoadCarCrushDataEntry(FILE* pF, tCar_crush_buffer_entry* pCar_crush_buffer_entry,tBrender_storage *pBrender_storage) {
     int i;
@@ -2012,17 +2016,21 @@ void C2_HOOK_FASTCALL LoadCarCrushDataEntry(FILE* pF, tCar_crush_buffer_entry* p
         pCar_crush_buffer_entry->flap_data->field_0x14 = 1;
         pCar_crush_buffer_entry->flap_data->field_0x15 = 0;
         pCar_crush_buffer_entry->flap_data->field_0x18 = 0;
-        pCar_crush_buffer_entry->flap_data->is_door = strstr(pCar_crush_buffer_entry->actor_name, "door") != NULL || strstr(pCar_crush_buffer_entry->actor_name, "dor") != NULL;
+        if (strstr(pCar_crush_buffer_entry->actor_name, "door") != NULL || strstr(pCar_crush_buffer_entry->actor_name, "dor") != NULL) {
+            pCar_crush_buffer_entry->flap_data->is_door = 1;
+        } else {
+            pCar_crush_buffer_entry->flap_data->is_door = 0;
+        }
         C2_HOOK_BUG_ON(sizeof(tCar_crush_detach_data) != 136);
         pCar_crush_buffer_entry->detach_data = BrMemAllocate(sizeof(tCar_crush_detach_data), kMem_crush_data);
         pCar_crush_buffer_entry->detach_data->field_0x0 = 0.f;
         /* Ease of flap */
         switch (GetALineAndInterpretCommand(pF, gEase_of_detachment_names, CARPOCALYPSE2_ASIZE(gEase_of_detachment_names))) {
         case eEaseOfDetachment_VeryEasy:
-            pCar_crush_buffer_entry->detach_data->force = gNormal_force_to_detach * 0.25f;
+            pCar_crush_buffer_entry->detach_data->force = gNormal_force_to_detach * gFLOAT_00589a28;
             break;
         case eEaseOfDetachment_Easy:
-            pCar_crush_buffer_entry->detach_data->force = gNormal_force_to_detach * 0.5f;
+            pCar_crush_buffer_entry->detach_data->force = gNormal_force_to_detach * gFLOAT_00589a2c;
             break;
         case eEaseOfDetachment_Normal:
         default:
@@ -2062,10 +2070,10 @@ void C2_HOOK_FASTCALL LoadCarCrushDataEntry(FILE* pF, tCar_crush_buffer_entry* p
         /* Ease of detachment */
         switch (GetALineAndInterpretCommand(pF, gEase_of_detachment_names, CARPOCALYPSE2_ASIZE(gEase_of_detachment_names))) {
         case eEaseOfDetachment_VeryEasy:
-            pCar_crush_buffer_entry->detach_data->force = gNormal_force_to_detach * .25f;
+            pCar_crush_buffer_entry->detach_data->force = gNormal_force_to_detach * gFLOAT_00589a28;
             break;
         case eEaseOfDetachment_Easy:
-            pCar_crush_buffer_entry->detach_data->force = gNormal_force_to_detach * .5f;
+            pCar_crush_buffer_entry->detach_data->force = gNormal_force_to_detach * gFLOAT_00589a2c;
             break;
         case eEaseOfDetachment_Normal:
         default:
@@ -2108,6 +2116,7 @@ void C2_HOOK_FASTCALL LoadCarCrushDataEntry(FILE* pF, tCar_crush_buffer_entry* p
     pCar_crush_buffer_entry->field_0x2c = 0;
     LoadCarCrushSmashDataEntries(pF, pCar_crush_buffer_entry, pBrender_storage);
 }
+#pragma inline_depth()
 
 // FUNCTION: CARMA2_HW 0x0042a280
 int C2_HOOK_FASTCALL LoadCarCrush(tCar_crush_buffer* pCar_crush_buffer, const char* pPath, tBrender_storage* pBrender_storage, tCar_crush_spec** pCar_crush_spec) {
@@ -3906,14 +3915,13 @@ int C2_HOOK_FAKE_THISCALL FUN_004358a0(br_actor* pActor, int pArg2, tCar_spec** 
     user_crush_data = pActor->user;
     if (user_crush_data != NULL) {
         piVar2 = (*ppCar)->wheel_actors;
-        for (i = 0; i < 6; i++) {
+        for (i = 0; i < 6; i++, piVar2++) {
             if (pActor == piVar2[6]) {
                 return 0;
             }
             if (pActor == piVar2[0]) {
                 return 0;
             }
-            piVar2++;
         }
         if (user_crush_data->groove != NULL) {
             PipeSingleGrooveOnOff(0, pActor, 3);
@@ -5352,8 +5360,8 @@ int C2_HOOK_FASTCALL GetAverageCrushLevel(tCar_spec* pCar) {
     }
     wheels_avg = pCar->damage_units[eDamage_lr_wheel].damage_level
         + pCar->damage_units[eDamage_rr_wheel].damage_level
-        + pCar->damage_units[eDamage_rf_wheel].damage_level
-        + pCar->damage_units[eDamage_lf_wheel].damage_level;
+        + pCar->damage_units[eDamage_lf_wheel].damage_level
+        + pCar->damage_units[eDamage_rf_wheel].damage_level;
     engine = pCar->damage_units[eDamage_engine].damage_level;
     trans = pCar->damage_units[eDamage_transmission].damage_level;
     driver = pCar->damage_units[eDamage_driver].damage_level;
@@ -5370,7 +5378,7 @@ int C2_HOOK_FASTCALL GetAverageCrushLevel(tCar_spec* pCar) {
         }
         return 100 - wheels_avg;
     }
-    avg = driver + wheels_avg;
+    avg = wheels_avg + driver;
     avg += trans;
     avg += engine;
     avg /= 4;
@@ -5453,9 +5461,9 @@ void C2_HOOK_FASTCALL DamageCarInDirection(tCar_spec* pCar, float* pPosition, fl
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tCar_spec, last_impact_position, 0x13d8);
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPhysics_object, bb1, 0x24);
 
-    impact_strength = (float)sqrt(pImpulse[0] * pImpulse[0]
+    impact_strength = (float)sqrt(pImpulse[1] * pImpulse[1]
         + pImpulse[2] * pImpulse[2]
-        + pImpulse[1] * pImpulse[1]);
+        + pImpulse[0] * pImpulse[0]);
     if (impact_strength == gFloat_00589b64 && pCollision_with_car == 0) {
         return;
     }
@@ -6378,52 +6386,48 @@ void C2_HOOK_FASTCALL DoWheelDamage(tU32 pFrame_period) {
                 }
                 y_amount = (damage - 30) * gWobble_spam_y[damage & 7];
                 z_amount = (damage - 30) * gWobble_spam_z[damage & 7];
-                BrMatrix34PreRotateY(&car->wheel_actors[j]->t.t.mat, BrDegreeToAngle(y_amount < 0 ? y_amount + 360.f : y_amount));
-                BrMatrix34PreRotateZ(&car->wheel_actors[j]->t.t.mat, BrDegreeToAngle(z_amount < 0 ? z_amount + 360.f : z_amount));
+                BrMatrix34PreRotateY(&car->wheel_actors[j]->t.t.mat, BrDegreeToAngle(y_amount < gFloat_00589b64 ? y_amount + 360.f : y_amount));
+                BrMatrix34PreRotateZ(&car->wheel_actors[j]->t.t.mat, BrDegreeToAngle(z_amount < gFloat_00589b64 ? z_amount + 360.f : z_amount));
                 if (j < 2 && car->wheel_actors[4 + j] != NULL) {
-                    BrMatrix34PreRotateY(&car->wheel_actors[4 + j]->t.t.mat, BrDegreeToAngle(y_amount < 0 ? y_amount + 360.f : y_amount));
-                    BrMatrix34PreRotateZ(&car->wheel_actors[4 + j]->t.t.mat, BrDegreeToAngle(z_amount < 0 ? z_amount + 360.f : z_amount));
+                    BrMatrix34PreRotateY(&car->wheel_actors[4 + j]->t.t.mat, BrDegreeToAngle(y_amount < gFloat_00589b64 ? y_amount + 360.f : y_amount));
+                    BrMatrix34PreRotateZ(&car->wheel_actors[4 + j]->t.t.mat, BrDegreeToAngle(z_amount < gFloat_00589b64 ? z_amount + 360.f : z_amount));
                 }
                 switch (j) {
                 case 0:
-                    if (car->driven_wheels_spin_ref_1 < 0) {
-                        wheel_circum = car->non_driven_wheels_circum;
-                    } else {
+                    if (car->driven_wheels_spin_ref_1 >= 0) {
                         wheel_circum = car->driven_wheels_circum;
+                    } else {
+                        wheel_circum = car->non_driven_wheels_circum;
                     }
                     break;
                 case 1:
-                    if (car->driven_wheels_spin_ref_2 < 0) {
-                        wheel_circum = car->non_driven_wheels_circum;
-                    } else {
+                    if (car->driven_wheels_spin_ref_2 >= 0) {
                         wheel_circum = car->driven_wheels_circum;
+                    } else {
+                        wheel_circum = car->non_driven_wheels_circum;
                     }
                     break;
                 case 2:
-                    if (car->driven_wheels_spin_ref_3 < 0) {
-                        wheel_circum = car->non_driven_wheels_circum;
-                    } else {
+                    if (car->driven_wheels_spin_ref_3 >= 0) {
                         wheel_circum = car->driven_wheels_circum;
+                    } else {
+                        wheel_circum = car->non_driven_wheels_circum;
                     }
                     break;
                 case 3:
-                    if (car->driven_wheels_spin_ref_4 < 0) {
-                        wheel_circum = car->non_driven_wheels_circum;
-                    } else {
+                    if (car->driven_wheels_spin_ref_4 >= 0) {
                         wheel_circum = car->driven_wheels_circum;
+                    } else {
+                        wheel_circum = car->non_driven_wheels_circum;
                     }
-                    break;
-                default:
-                    abort();
                     break;
                 }
                 if (gNet_mode == eNet_mode_none || car->driver == eDriver_local_human) {
                     br_vector3 temp_vector;
                     br_vector3 wonky_vector;
 
+                    temp_vector.v[1] = temp_vector.v[2] = 0.f;
                     temp_vector.v[0] = wheel_circum * gWheel_circ_to_width;
-                    temp_vector.v[1] = 0.f;
-                    temp_vector.v[2] = 0.f;
                     BrMatrix34ApplyV(&wonky_vector, &temp_vector, &car->wheel_actors[j]->t.t.mat);
                     car->wheel_dam_offset[j] = fabsf(wonky_vector.v[1]);
                 }
@@ -8340,7 +8344,7 @@ float C2_HOOK_FASTCALL CrushShapeBendFactor(br_vector3* pVertexPos, int pCount, 
     if (dist_sq > gMax_crush_dist_sq) {
         return gCrushZero;
     }
-    return 1.0f - (float)sqrt(dist_sq / pMaxDistSq);
+    return gFLOAT_00589a54 - (float)sqrt(dist_sq / pMaxDistSq);
 }
 
 // C2PORT-NONMATCHING: best 50.52% | difftest PASS 2000 trials (spec difftest/specs/0043c7a0_FUN_0043c7a0.json) | reason x87-scheduling-and-stack-layout
@@ -9299,7 +9303,7 @@ int C2_HOOK_FASTCALL ShapeRayCast(const br_vector3* p1, const br_vector3* p2, co
             pNormal->v[0] = 0.0f;
             pNormal->v[1] = 0.0f;
             pNormal->v[2] = 0.0f;
-            pNormal->v[index] = (result & 4) ? 1.0f : -1.0f;
+            pNormal->v[index] = (result & 4) ? gUNK_00589fb0 : gUNK_00589fb8;
         }
         return result;
     case kCollisionShapeType_Polyhedron:
