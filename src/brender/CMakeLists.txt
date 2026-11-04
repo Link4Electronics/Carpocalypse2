@@ -25,6 +25,8 @@ add_library(brender-static STATIC
     core/fw/brqsort.h
     core/fw/bswap.c
     core/fw/bswap.h
+    core/fw/blockops.c
+    core/fw/blockops.h
     core/fw/datafile.c
     core/fw/datafile.h
     core/fw/devlist.c

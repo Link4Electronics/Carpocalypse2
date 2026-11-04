@@ -12,7 +12,7 @@ typedef struct tReplayControlButtonBounds {
 } tReplayControlButtonBounds;
 
 extern int gAR_camera_type;
-extern int gCar_car_collisions;
+extern int gCar_to_car_collisions;
 extern tU32 gTime_of_last_zappy_headups;
 extern br_pixelmap* gReplay_pixelmaps[11];
 extern int gReplay_progress_bar_left[2];

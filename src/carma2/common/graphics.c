@@ -1167,7 +1167,7 @@ void C2_HOOK_FASTCALL DoACompleteRenderPass(int pMirror, br_matrix34* pCamera_to
             gRear_pixelmap->origin_y = extra_render->material->colour_map->height / 2;
             gRear_pixelmap->width = extra_render->material->colour_map->width;
             gRear_pixelmap->height = extra_render->material->colour_map->height;
-            if (gRear_pixelmap->row_bytes != gRear_pixelmap->width) {
+            if (gRear_pixelmap->width != gRear_pixelmap->row_bytes) {
                 gRear_pixelmap->flags &= ~BR_PMF_ROW_WHOLEPIXELS;
             } else {
                 gRear_pixelmap->flags |= BR_PMF_ROW_WHOLEPIXELS;

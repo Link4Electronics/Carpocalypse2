@@ -500,54 +500,63 @@ void C2_HOOK_FASTCALL DisposeColumns(tTrack_spec* pTrack_spec) {
 
 
 // FUNCTION: CARMA2_HW 0x0040e000
-void C2_HOOK_FASTCALL ProcessNearbyActors(tTrack_spec* pTrack, br_vector3* pPos, float pMax_dist, int pMatch_type, int pIdentifier_value, int pIdentifier_index, int pMatch_flags, tNearbyActors_cbfn* pCallback, void* pContext) {
+int C2_HOOK_FASTCALL ProcessNearbyActors(tTrack_spec* pTrack, br_vector3* pPos, float pMax_dist, int pMatch_type, char pIdentifier_value, tS8 pIdentifier_index, tU16 pMatch_flags, tNearbyActors_cbfn* pCallback, void* pContext) {
 
     tFoundAnActor_context found_an_actor_context;
     float p;
+    float column_origin;
     int x, xmin, xmax;
     int z, zmin, zmax;
 
-    found_an_actor_context.identifier_index = pIdentifier_index;
+    found_an_actor_context.match_type = pMatch_type;
     found_an_actor_context.identifier_value = pIdentifier_value;
-    found_an_actor_context.max_dist_squared = pMax_dist * pMax_dist;
+    found_an_actor_context.identifier_index = pIdentifier_index;
+    found_an_actor_context.match_flags = pMatch_flags;
+    found_an_actor_context.pos = pPos;
+    found_an_actor_context.callback_context = pContext;
+    found_an_actor_context.callback = (int (C2_HOOK_FASTCALL *)(br_actor*, void*))pCallback;
+    found_an_actor_context.max_dist_axis = pMax_dist;
     x = (int)((pPos->v[0] - pTrack->origin_x) / pTrack->column_size_x);
-    p = pTrack->origin_x + (float)x * pTrack->column_size_x;
+    found_an_actor_context.max_dist_squared = pMax_dist * pMax_dist;
+    column_origin = pTrack->origin_x + (float)x * pTrack->column_size_x;
+    p = column_origin;
     xmin = x;
-    while (pPos->v[0] < p + pMax_dist) {
+    while (p + pMax_dist > pPos->v[0]) {
         if (xmin == 0) {
             break;
         }
         p -= pTrack->column_size_x;
         xmin -= 1;
     }
-    p = pTrack->origin_x + (float)x * pTrack->column_size_x + pTrack->column_size_x;
+    p = pTrack->column_size_x + column_origin;
     xmax = x;
     while (pPos->v[0] + pMax_dist > p) {
         if (xmax + 1 >= pTrack->ncolumns_x) {
             break;
         }
         p += pTrack->column_size_x;
-        xmin += 1;
+        xmax += 1;
     }
 
     z = (int)((pPos->v[2] - pTrack->origin_z) / pTrack->column_size_z);
-    p = pTrack->origin_z + (float)z * pTrack->column_size_z;
+    column_origin = pTrack->origin_z + (float)z * pTrack->column_size_z;
+    p = column_origin;
     zmin = z;
-    while (pPos->v[2] < p + pMax_dist) {
+    while (p + pMax_dist > pPos->v[2]) {
         if (zmin == 0) {
             break;
         }
         p -= pTrack->column_size_z;
         zmin -= 1;
     }
-    p = pTrack->origin_z + (float)z * pTrack->column_size_z + pTrack->column_size_z;
+    p = pTrack->column_size_z + column_origin;
     zmax = z;
     while (pPos->v[2] + pMax_dist > p) {
         if (zmax + 1 >= pTrack->ncolumns_z) {
             break;
         }
         p += pTrack->column_size_z;
-        zmin += 1;
+        zmax += 1;
     }
     if (xmin < 0) {
         xmin = 0;
@@ -566,25 +575,21 @@ void C2_HOOK_FASTCALL ProcessNearbyActors(tTrack_spec* pTrack, br_vector3* pPos,
     }
     if (zmax < 0) {
         zmax = 0;
-    } else if (xmax >= pTrack->ncolumns_z) {
+    } else if (zmax >= pTrack->ncolumns_z) {
         zmax = pTrack->ncolumns_z - 1;
     }
 
-    found_an_actor_context.match_type = pMatch_type;
-    found_an_actor_context.match_flags = pMatch_flags;
-    found_an_actor_context.max_dist_axis = pMax_dist;
-    found_an_actor_context.pos = pPos;
-    found_an_actor_context.callback = (int (*)(br_actor*, void*))pCallback;
-    found_an_actor_context.callback_context = pContext;
-    for (x = xmin; x < xmax; x++) {
-        for (z = zmin; z < zmax; z++) {
+    for (x = xmin; x <= xmax; x++) {
+        for (z = zmin; z <= zmax; z++) {
             if (pTrack->columns[z][x].actor_0x0 != NULL) {
-                if (DRActorEnumRecurse(pTrack->columns[z][x].actor_0x0, FoundAnActor, &found_an_actor_context)) {
-                    return;
+                p = (float)(tU32)DRActorEnumRecurse(pTrack->columns[z][x].actor_0x0, FoundAnActor, &found_an_actor_context);
+                if (p != 0.0f) {
+                    return (int)p;
                 }
             }
         }
     }
+    return 0;
 }
 
 // FUNCTION: CARMA2_HW 0x0040e290

@@ -257,6 +257,10 @@ extern br_pixelmap* C2_HOOK_CDECL DOSGfxBegin(const char* setup_string);
 // Various
 extern br_uint_32 C2_HOOK_CDECL BrOnScreenCheck(br_bounds3* bounds);
 
+extern void C2_HOOK_CDECL BrBlockFill(void* pDestination, int pValue, int pCount_dwords);
+extern void C2_HOOK_CDECL BrBlockCopy(void* pDestination, const void* pSource, int pCount_dwords);
+extern void C2_HOOK_CDECL BrFarBlockCopy(void* pDestination, const void* pSource, int pCount_dwords);
+
 extern int C2_HOOK_CDECLBrWriteModeSet(int mode);
 extern br_uint_32 C2_HOOK_CDECL BrSwap32(br_uint_32 l);
 extern br_diaghandler* C2_HOOK_CDECL BrDiagHandlerSet(br_diaghandler* newdh);

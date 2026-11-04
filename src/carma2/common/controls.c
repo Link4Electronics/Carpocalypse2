@@ -1050,21 +1050,11 @@ void C2_HOOK_FASTCALL SetFlag(int i) {
 }
 
 // FUNCTION: CARMA2_HW 0x00444350
-void C2_HOOK_FASTCALL SetFlag2(int i) {
-
+void C2_HOOK_FASTCALL SetFlag2(int pArg) {
+    (void)pArg;
     gAllow_car_flying = 1;
-    if (gNet_mode == eNet_mode_none) {
-        gCar_flying = !gCar_flying;
-        if (gCar_flying) {
-            NewTextHeadupSlot(4, 0, 500, -4, "We haev lift off!!");
-        } else {
-            NewTextHeadupSlot(4, 0, 500, -4, "Back down to Earth");
-        }
-        gAllow_car_flying = gCar_flying;
-    } else {
-        gCar_flying = 0;
-        gAllow_car_flying = 0;
-    }
+    ToggleFlying();
+    gAllow_car_flying = gCar_flying;
 }
 
 // Key: 'f4'
@@ -1254,7 +1244,11 @@ void C2_HOOK_FASTCALL ToggleFlying(void) {
 
     if (gAllow_car_flying && gNet_mode == eNet_mode_none) {
         gCar_flying = !gCar_flying;
-        NewTextHeadupSlot(4, 0, 500, -4, gCar_flying ? "We have lift off!!" : "Back down to Earth");
+        if (gCar_flying) {
+            NewTextHeadupSlot(4, 0, 500, -4, "We have lift off!!");
+        } else {
+            NewTextHeadupSlot(4, 0, 500, -4, "Back down to Earth");
+        }
     } else {
         gCar_flying = 0;
     }
@@ -1320,24 +1314,57 @@ void C2_HOOK_FASTCALL BuyOffense(void) {
 // Key: ' '
 // FUNCTION: CARMA2_HW 0x0040e430
 void C2_HOOK_FASTCALL ViewNetPlayer(void) {
+    tCar_spec* car;
+    tNet_game_player_info* net_player;
+    tNet_message* message;
+
+    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tNet_game_player_info, last_score_index, 0x94);
+    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tNet_message_chunk_view_car, player, 0x4);
 
     if (!gOpponent_viewing_mode) {
+        return;
+    }
+    gNet_player_to_view_index++;
+    if (gNet_player_to_view_index >= gNumber_of_net_players) {
+        gNet_player_to_view_index = -1;
+    }
+    if (gNet_player_to_view_index >= 0) {
+        car = gNet_players[gNet_player_to_view_index].car;
     } else {
-        if (gProgram_state.cockpit_on) {
-            ToggleCockpit();
+        int best;
+        int idx;
+
+        car = gRace_board[0].car;
+        best = gRace_board[0].meter;
+        if (gCurrent_net_game->type == eNet_game_type_foxy) {
+            idx = gIt_or_fox;
+            if (idx >= 0 && idx < gNumber_of_net_players) {
+                car = gRace_board[idx].car;
+                goto leader_done;
+            }
         }
-        gNet_player_to_view_index++;
-        if (gNumber_of_net_players <= gNet_player_to_view_index) {
-            gNet_player_to_view_index = -1;
+        if (gNumber_of_net_players > 1) {
+            for (idx = 1; idx < gNumber_of_net_players; idx++) {
+                if (gRace_board[idx].meter < best) {
+                    best = gRace_board[idx].meter;
+                    car = gRace_board[idx].car;
+                }
+            }
         }
-        if (gNet_player_to_view_index >= 0) {
-            gCar_to_view = gNet_players[gNet_player_to_view_index].car;
-        } else {
-            gCar_to_view = GetRaceLeader();
-        }
+    leader_done:
+        ;
+    }
+    net_player = NetPlayerFromCar(car);
+    if (gNet_mode == eNet_mode_host) {
+        gCar_to_view = car;
         gCamera_yaw = 0;
         InitialiseExternalCamera();
-        PositionExternalCamera(gCar_to_view, 200u);
+        PositionExternalCamera(gCar_to_view, 200);
+    } else if (gNet_mode == eNet_mode_client && gCar_to_view_id != net_player->ID) {
+        gCar_to_view_id = net_player->ID;
+        message = NetBuildGuaranteedMessage(eNet_message_chunk_type_view_car, 0);
+        message->contents.view_car.player = gCar_to_view_id;
+        NetGuaranteedSendMessageToHost(gCurrent_net_game, message, NULL);
     }
 }
 
@@ -2924,32 +2951,6 @@ void C2_HOOK_FASTCALL CycleCarSimplificationLevel(void) {
     sprintf(dst, src, gCar_simplification_level);
     NewTextHeadupSlot(4, 0, 2000, -4, dst);
     BrMemFree(dst);
-}
-
-// FUNCTION: CARMA2_HW 0x00446ee0
-void C2_HOOK_FASTCALL ToggleSky(void) {
-    int new_sky_on;
-
-    new_sky_on = !gSky_on;
-    if (gSky_on != new_sky_on) {
-        br_pixelmap* sky_texture = gSwap_sky_texture;
-        gSwap_sky_texture = gProgram_state.current_depth_effect.sky_texture;
-        gProgram_state.current_depth_effect.sky_texture = sky_texture;
-        gProgram_state.default_depth_effect.sky_texture = sky_texture;
-        if (gHorizon_material != NULL && sky_texture != NULL) {
-            gHorizon_material->colour_map = sky_texture;
-            BrMaterialUpdate(gHorizon_material, BR_MATU_ALL);
-            MungeSkyVs(gForward_sky_model, gHorizon_material);
-        }
-    }
-    if (gProgram_state.current_depth_effect.sky_texture != NULL) {
-        NewTextHeadupSlot(4, 0, 2000, -4, GetMiscString(eMiscString_sky_texture_on));
-    } else if (gSwap_sky_texture != NULL) {
-        NewTextHeadupSlot(4, 0, 2000, -4, GetMiscString(eMiscString_sky_texture_off));
-    } else {
-        NewTextHeadupSlot(4, 0, 2000, -4, GetMiscString(eMiscString_no_sky_texture_for_this_race));
-    }
-    gSky_on = new_sky_on;
 }
 
 // FUNCTION: CARMA2_HW 0x00444720

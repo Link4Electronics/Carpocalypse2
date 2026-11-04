@@ -32,7 +32,7 @@
 br_model* compareModel;
 
 // GLOBAL: CARMA2_HW 0x006ad4e4
-static char* pm_edge_scratch;
+static pm_temp_edge** pm_edge_scratch;
 
 // GLOBAL: CARMA2_HW 0x006ad4dc
 static struct pm_temp_edge * pm_edge_table;
@@ -47,10 +47,9 @@ static int num_edges;
 #define PREP_ALIGN(x) (((x)+(PREP_BOUNDARY-1)) & ~(PREP_BOUNDARY-1))
 
 int C2_HOOK_STDCALL addEdge(br_uint_16 first, br_uint_16 last) {
-    int edge;
     struct pm_temp_edge *tep;
 
-    for (tep = pm_edge_hash[last]; tep != NULL; tep = tep->next) {
+    for (tep = pm_edge_scratch[last]; tep != NULL; tep = tep->next) {
 
         if (tep->last == first && tep->other == 0) {
             tep->other = 1;
@@ -63,13 +62,10 @@ int C2_HOOK_STDCALL addEdge(br_uint_16 first, br_uint_16 last) {
     tep->first = first;
     tep->last = last;
     tep->other = 0;
-    tep->next = pm_edge_hash[first];
-    pm_edge_hash[first] = tep;
+    tep->next = pm_edge_scratch[first];
+    pm_edge_scratch[first] = tep;
 
-    edge = num_edges;
-    num_edges++;
-
-    return edge;
+    return num_edges++;
 }
 
 // FUNCTION: CARMA2_HW 0x00520560
@@ -82,16 +78,11 @@ void C2_HOOK_STDCALL prepareEdges(v11group* group, br_model* model) {
     C2_HOOK_BUG_ON(sizeof(*pm_edge_table) != 12);
     C2_HOOK_BUG_ON(sizeof(*pm_edge_hash) != 4);
 
-    scratch_size = group->nfaces * 3 * sizeof(*pm_edge_table) +
-            group->nvertices * sizeof(*pm_edge_hash);
+    scratch_size = (group->nfaces * 9 + group->nvertices) * sizeof(*pm_edge_hash);
 
-    pm_edge_scratch = BrScratchAllocate(scratch_size);
-
-    pm_edge_hash = (struct pm_temp_edge**)pm_edge_scratch;
-    /* Byte-offset semantics: the hash region is nvertices pointer-sized
-     * entries; adding the count to a pm_temp_edge* would scale by the (larger)
-     * element size and push the table past the end of the scratch block. */
-    pm_edge_table = (struct pm_temp_edge*)(pm_edge_scratch + group->nvertices * sizeof(*pm_edge_hash));
+    pm_edge_hash = (struct pm_temp_edge**)BrScratchAllocate(scratch_size);
+    pm_edge_scratch = pm_edge_hash;
+    pm_edge_table = (struct pm_temp_edge*)((char*)pm_edge_scratch + group->nvertices * sizeof(*pm_edge_hash));
 
     BrMemSet(pm_edge_hash, 0, group->nvertices * sizeof(*pm_edge_hash));
 
@@ -122,7 +113,7 @@ void C2_HOOK_STDCALL prepareEdges(v11group* group, br_model* model) {
 
     group->nedges = num_edges + 1;
 
-    BrScratchFree(pm_edge_scratch);
+    BrScratchFree(pm_edge_hash);
 }
 
 void C2_HOOK_STDCALL BrPrepareEdges(br_model* model) {

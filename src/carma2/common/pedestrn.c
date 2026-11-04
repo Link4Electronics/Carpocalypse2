@@ -9548,7 +9548,7 @@ void C2_HOOK_FASTCALL DisposePedForm(tPed_form* pForm) {
                     tPhysics_object* slot = pForm->boned_physicing[j].collision_infos[idx];
 
                     if (slot->shape != NULL) {
-                        FreeThingForm(slot->shape);
+                        FreeShape(slot->shape);
                     }
                     if (slot != NULL) {
                         BrMemFree(slot);
@@ -9563,7 +9563,7 @@ void C2_HOOK_FASTCALL DisposePedForm(tPed_form* pForm) {
         }
     }
     for (i = 0; i < pForm->max_simple_physicing_at_once; i++) {
-        FreeThingForm(pForm->simple_physicing[i].collision_info->shape);
+        FreeShape(pForm->simple_physicing[i].collision_info->shape);
         if (pForm->simple_physicing[i].collision_info != NULL) {
             BrMemFree(pForm->simple_physicing[i].collision_info);
         }

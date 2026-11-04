@@ -752,7 +752,7 @@ tOpponent_Status C2_HOOK_FASTCALL GetOpponentStatus(tCar_spec* pCar) {
     }
 }
 
-// FUNCTION: CARMA2_HW 0x00575bf0
+// Local helper; the original function at 0x575bf0 is the CRT's _strchr.
 char* C2_HOOK_CDECL LookForChar(const char* pString, int pChar) {
     while (*pString != '\0') {
         if (*pString == (char)pChar) {
@@ -960,21 +960,23 @@ void C2_HOOK_FASTCALL DrawOffsetCheckpoint(br_pixelmap* pMap, int pCheckpoint, t
     static tU32 last_flash;
     // GLOBAL: CARMA2_HW 0x0068d8f4
     static int flash_state;
+    tRace_checkpoint_spec* checkpoint;
 
-    if ((pCheckpoint >= 0 && pCheckpoint < gCurrent_race.check_point_count && gTrack_version > 0 && !pTarget)
-            || Flash(300, &last_flash, &flash_state)) {
-
-        if (gCurrent_race.checkpoints[pCheckpoint].map_position.v[0] >= 0.f
-                && gCurrent_race.checkpoints[pCheckpoint].map_position.v[0] < (float)pMap->width
-                && gCurrent_race.checkpoints[pCheckpoint].map_position.v[1] >= 0.f
-                && gCurrent_race.checkpoints[pCheckpoint].map_position.v[1] < (float)pMap->height) {
-
+    if ((pCheckpoint >= 0 && pCheckpoint < gCurrent_race.check_point_count
+            && gTrack_version > 0 && pTarget == 0) || Flash(300, &last_flash, &flash_state)) {
+        checkpoint = &gCurrent_race.checkpoints[pCheckpoint];
+        if (checkpoint->map_position.v[0] >= 0.0f
+                && checkpoint->map_position.v[0] < (float)pMap->width
+                && checkpoint->map_position.v[1] >= 0.0f
+                && checkpoint->map_position.v[1] < (float)pMap->height) {
             DRPixelmapRectangleMaskedCopy(pMap,
-                (int)(gCurrent_race.checkpoints[pCheckpoint].map_position.v[0] + 8.f - (float)gCheckpoint_digit_center_x),
-                (int)(gCurrent_race.checkpoints[pCheckpoint].map_position.v[1] - (float)gCheckpoint_digit_center_y),
+                (br_int_16)(int)(checkpoint->map_position.v[0] + 8.0f - (float)gCheckpoint_digit_center_x),
+                (br_int_16)(int)(checkpoint->map_position.v[1] - (float)(int)gCheckpoint_digit_center_y),
                 gCheckpoint_numbers,
-                0, pCheckpoint * gCheckpoint_digit_height,
-                gCheckpoint_numbers->width, gCheckpoint_digit_height);
+                0,
+                (br_int_16)(pCheckpoint * gCheckpoint_digit_height),
+                gCheckpoint_numbers->width,
+                (br_int_16)gCheckpoint_digit_height);
         }
     }
 }

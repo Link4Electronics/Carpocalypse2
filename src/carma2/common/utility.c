@@ -924,7 +924,7 @@ void C2_HOOK_FASTCALL TimerString(tU32 pTime, char* pStr, undefined4 pArg3, int 
         }
     } else {
         if (pFloat) {
-            sprintf(pStr, "%.1f", (double)pTime / 1000.0);
+            sprintf(pStr, "%.1f", (double)pTime * gDOUBLE_0058b270);
         } else {
             sprintf(pStr, "%d", seconds);
         }
@@ -1189,7 +1189,7 @@ void C2_HOOK_FASTCALL DRMatrix34TApplyP(br_vector3* pA, const br_vector3* pB, co
 }
 
 // FUNCTION: CARMA2_HW 0x00515690
-void C2_HOOK_FASTCALL DRPixelmapRectangleCopy(br_pixelmap* dst, br_int_16 dx, br_int_16 dy, br_pixelmap* src, br_int_16 sx, br_int_16 sy, br_int_16 w, br_int_16 h) {
+void C2_HOOK_FASTCALL DRPixelmapRectangleCopy(br_pixelmap* dst, br_int_16 dx, br_int_16 dy, br_pixelmap* src, br_int_16 sx, br_int_16 sy, br_uint_16 w, br_uint_16 h) {
 
     BrPixelmapRectangleCopy(dst, dx, dy, src, sx, sy, w, h);
 }
@@ -1579,7 +1579,7 @@ void C2_HOOK_FASTCALL DRScaleModel(br_model* pModel, float pScale) {
 // FUNCTION: CARMA2_HW 0x005162a0
 float C2_HOOK_FASTCALL DistanceFromFaceND(const br_vector3* pP, const br_vector3* pN, br_scalar pF) {
 
-    return BrVector3Dot(pP, pN) - pF;
+    return BrVector3Dot(pN, pP) - pF;
 }
 
 // FUNCTION: CARMA2_HW 0x00516350
@@ -1596,13 +1596,13 @@ void C2_HOOK_FASTCALL DRVector3Diminish(br_vector3* pV1, const br_vector3* pV2) 
     br_vector3 v1 = *pV1;
 
     BrVector3Sub(pV1, pV1, pV2);
-    if (v1.v[0] * pV1->v[0] <= 0.0f) {
+    if (v1.v[0] * pV1->v[0] <= gFloatZero_0058b280) {
         pV1->v[0] = 0.0f;
     }
-    if (v1.v[1] * pV1->v[1] <= 0.0f) {
+    if (v1.v[1] * pV1->v[1] <= gFloatZero_0058b280) {
         pV1->v[1] = 0.0f;
     }
-    if (v1.v[2] * pV1->v[2] <= 0.0f) {
+    if (v1.v[2] * pV1->v[2] <= gFloatZero_0058b280) {
         pV1->v[2] = 0.0f;
     }
 }

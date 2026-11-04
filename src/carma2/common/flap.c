@@ -355,7 +355,7 @@ void C2_HOOK_FASTCALL SendSemiDetachBit(tCar_spec* pCar, br_actor* pActor, float
         CompressVector3(&semi->field_0x24, &bnds.max, -10.f, 10.f);
         semi->field_0x2a = DRScalarToU16(pArg3, 0.f, 40.f);
         if (pArg4) {
-            SendGuaranteedMessageToPlayer(gCurrent_net_game, message, pArg4[0x9], 0);
+            NetGuaranteedSendMessageToPlayer(gCurrent_net_game, message, pArg4[0x9], 0);
         } else {
             NetGuaranteedSendMessageToEverybody(gCurrent_net_game, message, 0);
         }

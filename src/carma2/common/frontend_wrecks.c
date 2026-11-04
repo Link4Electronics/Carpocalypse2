@@ -459,7 +459,7 @@ int C2_HOOK_FASTCALL WrecksUpdateFunc(tFrontend_spec* pFrontend) {
 int C2_HOOK_FASTCALL ScrollToPrevCar(tFrontend_spec* pFrontend) {
 
     if (gFrontend_wreck_bought_car_dz == 0.f
-            && gFrontend_wrecks_pending_hscroll == 0.f
+            && gFrontend_wrecks_pending_hscroll == 0
             && (gFrontend_wrecks_rotate_prev_x == -1 || gFrontend_wrecks_rotate_prev_y == -1)) {
 
         gFrontend_wrecks_pending_hscroll = 30;
@@ -473,7 +473,7 @@ int C2_HOOK_FASTCALL ScrollToPrevCar(tFrontend_spec* pFrontend) {
 int C2_HOOK_FASTCALL ScrollToNextCar(tFrontend_spec* pFrontend) {
 
     if (gFrontend_wreck_bought_car_dz == 0.f
-            && gFrontend_wrecks_pending_hscroll == 0.f
+            && gFrontend_wrecks_pending_hscroll == 0
             && (gFrontend_wrecks_rotate_prev_x == -1 || gFrontend_wrecks_rotate_prev_y == -1)) {
 
         gFrontend_wrecks_pending_hscroll = -30;

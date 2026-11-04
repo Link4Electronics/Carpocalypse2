@@ -27,6 +27,7 @@
 
 extern const br_scalar gFLOAT_005899a8;
 extern const double gDouble_005899b0;
+extern const double gDOUBLE_0058a770;
 
 extern br_quat* C2_HOOK_CDECL BrQuatNormalise(br_quat* q, const br_quat* qq);
 extern br_matrix34* C2_HOOK_CDECL BrQuatToMatrix34(br_matrix34* mat, const br_quat* q);
@@ -481,7 +482,7 @@ void C2_HOOK_FAKE_THISCALL RotateObjectFirstOrderRigid(tPhysics_object* pObject,
     momentum.v[0] = pObject->I.v[0] * pObject->omega.v[0];
     momentum.v[1] = pObject->I.v[1] * pObject->omega.v[1];
     momentum.v[2] = pObject->I.v[2] * pObject->omega.v[2];
-    BrMatrix34Rotate(&rotation, BrRadianToAngle(angle), &axis);
+    BrMatrix34Rotate(&rotation, (br_angle)(long)(angle * gDOUBLE_0058a770), &axis);
     BrMatrix34TApplyV(&rotated, &momentum, &rotation);
     BrMatrix34PreTranslate(&rotation, -pObject->cmpos.v[0], -pObject->cmpos.v[1], -pObject->cmpos.v[2]);
     BrMatrix34PostTranslate(&rotation, pObject->cmpos.v[0], pObject->cmpos.v[1], pObject->cmpos.v[2]);
@@ -2811,21 +2812,14 @@ int C2_HOOK_FASTCALL PhysicsObjectRecurse(tPhysics_object* pCollision_info, tEnu
 }
 
 // FUNCTION: CARMA2_HW 0x004ba4f0
-int C2_HOOK_FASTCALL FlagsAreGo(tPhysics_object* pObj1, tPhysics_object* pObj2) {
+int C2_HOOK_FASTCALL FlagsAreGo(tPhysics_object* pCollision_1, tPhysics_object* pCollision_2) {
+    int blocked;
 
-    if (pObj2->field_0x1a4 & pObj1->field_0x1a0) {
-        return 0;
-    }
-    if (pObj1->field_0x1a4 & pObj2->field_0x1a0) {
-        return 0;
-    }
-    if (pObj1->flags & 4) {
-        return 0;
-    }
-    if (pObj2->flags & 4) {
-        return 0;
-    }
-    return 1;
+    blocked = (pCollision_1->field_0x1a0 & pCollision_2->field_0x1a4)
+        || (pCollision_2->field_0x1a0 & pCollision_1->field_0x1a4)
+        || (pCollision_1->flags & 4)
+        || (pCollision_2->flags & 4);
+    return !blocked;
 }
 
 // FUNCTION: CARMA2_HW 0x004ba550
@@ -2876,82 +2870,71 @@ int C2_HOOK_FASTCALL ScaleCollisionImpulses(tCollision_contact* pContacts, float
     return 1;
 }
 
-// Box edge table over corner indices (bit2 -> x, bit1 -> y, bit0 -> z).
-static const tU8 sBox_shape_edges[12][2] = {
-    { 0, 1 }, { 0, 2 }, { 0, 4 },
-    { 1, 3 }, { 1, 5 }, { 2, 3 },
-    { 2, 6 }, { 3, 7 }, { 4, 5 },
-    { 4, 6 }, { 5, 7 }, { 6, 7 },
-};
-
-#define TEST_SHAPE_MAX_POINTS 512
-
-// UNLABELED: CARMA2_HW 0x00428dc0
-// One-direction convex-shape overlap worker: transforms shapeA's vertices
-// into shapeB's frame and reports whether any shapeA edge touches shapeB's
-// bounding box (expanded by 5mm). Callers invoke both directions.
-// NOTE: for polyhedral shapeB the original runs segment-vs-face tests; this
-// uses the bounding box instead (safe direction: overlapping rather than
-// clear). The original also only tests the first shapeA in a chain; shape
-// chains are single-element in practice.
-int C2_HOOK_FASTCALL TestShapeOverlap(tPhysics_object* pObjA, tPhysics_object* pObjB, tPhysics_shape* pShapeA, tPhysics_shape* pShapeB) {
-    br_vector3 points[TEST_SHAPE_MAX_POINTS];
-    br_vector3 world;
-    br_bounds3 expanded;
-    tCollision_shape_polyhedron_data* poly;
-    const tU8 (*edges)[2];
-    int edge_count;
-    int count;
+// FUNCTION: CARMA2_HW 0x00428dc0
+int C2_HOOK_FASTCALL TestShapeEdgeIntersection(tPhysics_object* pCollision_info_1, tPhysics_object* pCollision_info_2, tPhysics_shape* pCollision_shape_1, tPhysics_shape* pCollision_shape_2) {
+    br_vector3 points[64];
+    br_vector3 transformed;
+    br_vector3 point;
+    br_bounds bounds;
+    br_scalar t;
+    const tPolyhedron_edge_indexes* edges;
+    const tPolyhedron_edge_indexes* edge;
+    int count_edges;
     int i;
-    int e;
 
-    switch (pShapeA->common.type) {
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gBox_edges_0058f7f0) != 12);
+
+    switch (pCollision_shape_1->common.type) {
     case kCollisionShapeType_Polyhedron:
     case kCollisionShapeType_Wireframe_Polyhedron:
-        /* NB: wireframe shapes share the polyhedron data head layout. */
-        poly = &pShapeA->polyhedron.polyhedron;
-        count = poly->count_points;
-        if (count > TEST_SHAPE_MAX_POINTS) {
-            count = TEST_SHAPE_MAX_POINTS;
+        for (i = 0; i < pCollision_shape_1->polyhedron.polyhedron.count_points; i++) {
+            BrMatrix34ApplyP(&transformed, &pCollision_shape_1->polyhedron.polyhedron.points[i], &pCollision_info_1->transform_matrix);
+            DrMatrix34ApplyLPInverse(&points[i], &transformed, &pCollision_info_2->transform_matrix);
         }
-        for (i = 0; i < count; i++) {
-            BrMatrix34ApplyP(&world, &poly->points[i], &pObjA->transform_matrix);
-            BrVector3Sub(&world, &world, (br_vector3*)&pObjB->transform_matrix.m[3]);
-            BrMatrix34TApplyV(&points[i], &world, &pObjB->transform_matrix);
-        }
-        edges = (const tU8(*)[2])poly->edges;
-        edge_count = poly->count_edges;
+        edges = pCollision_shape_1->polyhedron.polyhedron.edges;
+        count_edges = pCollision_shape_1->polyhedron.polyhedron.count_edges;
         break;
     case kCollisionShapeType_Box:
     case kCollisionShapeType_Wireframe:
     case kCollisionShapeType_Sphere:
         for (i = 0; i < 8; i++) {
-            world.v[0] = (i & 4) ? pShapeA->common.bb.max.v[0] : pShapeA->common.bb.min.v[0];
-            world.v[1] = (i & 2) ? pShapeA->common.bb.max.v[1] : pShapeA->common.bb.min.v[1];
-            world.v[2] = (i & 1) ? pShapeA->common.bb.max.v[2] : pShapeA->common.bb.min.v[2];
-            BrMatrix34ApplyP(&points[i], &world, &pObjA->transform_matrix);
-            BrVector3Sub(&points[i], &points[i], (br_vector3*)&pObjB->transform_matrix.m[3]);
-            BrMatrix34TApplyV(&world, &points[i], &pObjB->transform_matrix);
-            points[i] = world;
+            BrVector3Set(&points[i],
+                (i & 0x2) ? pCollision_shape_1->common.bb.min.v[0] : pCollision_shape_1->common.bb.max.v[0],
+                (i & 0x1) ? pCollision_shape_1->common.bb.min.v[1] : pCollision_shape_1->common.bb.max.v[1],
+                (i & 0x4) ? pCollision_shape_1->common.bb.min.v[2] : pCollision_shape_1->common.bb.max.v[2]);
+            BrMatrix34ApplyP(&transformed, &points[i], &pCollision_info_1->transform_matrix);
+            DrMatrix34ApplyLPInverse(&points[i], &transformed, &pCollision_info_2->transform_matrix);
         }
-        count = 8;
-        edges = sBox_shape_edges;
-        edge_count = 12;
+        edges = gBox_edges_0058f7f0;
+        count_edges = CARPOCALYPSE2_ASIZE(gBox_edges_0058f7f0);
         break;
-    default:
-        return 0;
     }
-    for (i = 0; i < 3; i++) {
-        expanded.min.v[i] = pShapeB->common.bb.min.v[i] - 0.005f;
-        expanded.max.v[i] = pShapeB->common.bb.max.v[i] + 0.005f;
-    }
-    for (e = 0; e < edge_count; e++) {
-        if (edges[e][0] >= count || edges[e][1] >= count) {
-            continue;
+    switch (pCollision_shape_2->common.type) {
+    case kCollisionShapeType_Polyhedron:
+    case kCollisionShapeType_Wireframe_Polyhedron:
+        for (i = 0, edge = edges; i < count_edges; i++, edge++) {
+            if (LinePolyColl(&points[edge->index1], &points[edge->index2], &pCollision_shape_2->polyhedron.polyhedron, &point, 0.005f, &t)) {
+                return 1;
+            }
         }
-        if (TestSegmentBox(&points[edges[e][0]], &points[edges[e][1]], &expanded)) {
-            return 1;
+        break;
+    case kCollisionShapeType_Box:
+    case kCollisionShapeType_Wireframe:
+    case kCollisionShapeType_Sphere:
+        BrVector3Set(&bounds.min,
+            pCollision_shape_2->common.bb.min.v[0] - gFLOAT_005899a0,
+            pCollision_shape_2->common.bb.min.v[1] - gFLOAT_005899a0,
+            pCollision_shape_2->common.bb.min.v[2] - gFLOAT_005899a0);
+        BrVector3Set(&bounds.max,
+            pCollision_shape_2->common.bb.max.v[0] - gFLOAT_005899a4,
+            pCollision_shape_2->common.bb.max.v[1] - gFLOAT_005899a4,
+            pCollision_shape_2->common.bb.max.v[2] - gFLOAT_005899a4);
+        for (i = 0, edge = edges; i < count_edges; i++, edge++) {
+            if (LineBoxColl(&points[edge->index1], &points[edge->index2], &bounds, &point, &t)) {
+                return 1;
+            }
         }
+        break;
     }
     return 0;
 }
@@ -3142,10 +3125,10 @@ int C2_HOOK_FASTCALL TestPairOverlap(tPhysics_object* pObj1, tPhysics_object* pO
     /* NOTE: same degenerate chain walk as TestObjectOverlap (see above). */
     for (; shape1 != NULL; shape1 = shape1->common.next) {
         for (; shape2 != NULL; shape2 = shape2->common.next) {
-            if (TestShapeOverlap(pObj1, pObj2, shape1, shape2)) {
+            if (TestShapeEdgeIntersection(pObj1, pObj2, shape1, shape2)) {
                 return 1;
             }
-            if (TestShapeOverlap(pObj2, pObj1, shape2, shape1)) {
+            if (TestShapeEdgeIntersection(pObj2, pObj1, shape2, shape1)) {
                 return 1;
             }
         }
@@ -3328,8 +3311,8 @@ int C2_HOOK_FASTCALL TestForObjectInSensiblePlace(tPhysics_object* pCollision_in
             found = 0;
             for (s2 = shape2; s2 != NULL; s2 = s2->common.next) {
                 for (s1 = shape1; s1 != NULL; s1 = s1->common.next) {
-                    if (TestShapeOverlap(p1, p2, s1, s2)
-                        || TestShapeOverlap(p2, p1, s2, s1)) {
+                    if (TestShapeEdgeIntersection(p1, p2, s1, s2)
+                        || TestShapeEdgeIntersection(p2, p1, s2, s1)) {
                         found = 1;
                         break;
                     }
@@ -4565,30 +4548,31 @@ extern br_scalar gFloat_005896d4;
 
 // FUNCTION: CARMA2_HW 0x0041e480
 int C2_HOOK_FASTCALL RayCastInBox(br_vector3* pRay_pos, br_vector3* pRay_dir, br_vector3* pHit_pos, br_scalar* pT, tPhysics_object* pObject) {
-    br_vector3 normal;
-    br_vector3 coll_pos;
-    br_scalar t;
+    br_vector3 nor2;
+    br_vector3 collision_position;
     int i;
-    int best;
+    int j;
+    br_scalar dist;
+    tFace_ref* face_ref;
 
     *pT = 2.f;
-    for (i = pObject->box_face_start; i < pObject->box_face_end; i++) {
-        if (gUNK_006793d0 != 0 && (gFace_list__car[i].flags & 0x80) != 0) {
+    i = pObject->box_face_start;
+    face_ref = &gFace_list__car[i];
+    for (; i < pObject->box_face_end; i++, face_ref++) {
+        if (gUNK_006793d0 != 0 && (face_ref->flags & 0x80) != 0) {
             continue;
         }
-        CheckSingleFace(&gFace_list__car[i], pRay_pos, pRay_dir, &normal, &t, &coll_pos);
-        if (t < *pT) {
-            *pT = t;
-            best = i;
-            *pHit_pos = normal;
+        CheckSingleFace(face_ref, pRay_pos, pRay_dir, &nor2, &dist, &collision_position);
+        if (dist < *pT) {
+            *pT = dist;
+            j = i;
+            BrVector3Copy(pHit_pos, &nor2);
         }
     }
     if (*pT < 2.f) {
-        int c;
-
-        c = gFace_list__car[best].material->identifier[0] - '/';
-        if (c >= 0 && c < 11) {
-            return c;
+        i = gFace_list__car[j].material->identifier[0] - ('0' - 1);
+        if (i >= 0 && i < 11) {
+            return i;
         }
     }
     return 0;
@@ -5537,211 +5521,100 @@ LAB_004c4320:
   goto LAB_004c3e12;
 }
 
-// C2PORT-NONMATCHING: best 25.30% | difftest PASS 2000 trials (spec difftest/specs/004c5830_FUN_004c5830.json) | reason vc5-register-spills
 // FUNCTION: CARMA2_HW 0x004c5830
 undefined4 C2_HOOK_FASTCALL FUN_004c5830(int param_1, int param_2, undefined4* param_3) {
-  float fVar1;
-  float fVar2;
-  float fVar3;
-  float fVar4;
-  float fVar5;
-  float fVar6;
-  float *pfVar7;
-  int iVar8;
-  register float *pfVar9;
-  float *pfVar10;
-  undefined4 *puVar11;
-  register int iVar12;
-  register int iVar13;
-  register float *pfVar14;
-  undefined4 *puVar15;
-  float *pfVar16;
-  undefined4 *puVar17;
-  float local_38;
-  int local_34;
-  float *local_30;
-  int local_1c;
-  int local_18;
-  int local_10;
-  undefined4 local_c;
+    int i;
+    int j;
+    int k;
+    int singular;
+    br_scalar scale;
+    br_scalar sum;
+    br_scalar norm;
+    br_scalar divisor;
+    br_scalar matrix_sum;
+    br_scalar orthogonal_sum;
+    br_scalar tau;
+    br_scalar tau2;
+    br_scalar* row;
+    br_scalar* pMatrix = (br_scalar*)param_1;
+    br_scalar* pQ = (br_scalar*)param_3;
+    int pDim = param_2;
 
-  local_c = 0;
-  iVar12 = param_2;
-  puVar17 = param_3;
-  puVar15 = param_3;
-  iVar13 = param_2;
-  puVar11 = param_3;
-  if (0 < param_2) {
-    do {
-      for (; iVar12 != 0; iVar12 = iVar12 - 1) {
-        *puVar17 = 0;
-        puVar17 = puVar17 + 1;
-      }
-      *puVar15 = 0x3f800000;
-      iVar13 = iVar13 - 1;
-      iVar12 = param_2;
-      puVar17 = puVar11 + param_2;
-      puVar15 = puVar15 + param_2 + 1;
-      puVar11 = puVar11 + param_2;
-    } while (iVar13 != 0);
-  }
-  iVar12 = 0;
-  if (0 < param_2) {
-    local_34 = 0;
-    local_1c = 0;
-    iVar13 = param_1;
-    do {
-      local_38 = 0.0f;
-      if (iVar12 < param_2) {
-        pfVar14 = (float*)(iVar13 + local_34);
-        iVar8 = param_2 - iVar12;
-        do {
-          fVar5 = (float)fabs(*pfVar14);
-          if ((float)fabs(*pfVar14) < local_38) {
-            fVar5 = local_38;
-          }
-          pfVar14 = pfVar14 + 1;
-          iVar8 = iVar8 - 1;
-          local_38 = fVar5;
-        } while (iVar8 != 0);
-      }
-      if (local_38 == (float)gDOUBLE_0058a8c0) {
-        local_c = 1;
-      }
-      else {
-        if (iVar12 < param_2) {
-          iVar8 = param_2 - iVar12;
-          pfVar14 = (float*)(iVar13 + local_34);
-          do {
-            iVar8 = iVar8 - 1;
-            *pfVar14 = *pfVar14 / local_38;
-            pfVar14 = pfVar14 + 1;
-          } while (iVar8 != 0);
+    /* Using householder transformations, apply RQ decomposition on pMatrix:
+     * - pMatrix is in-place converted into a lower-triangular matrix
+     * - pQ is a orthonormal matrix */
+
+    singular = 0;
+
+    /* pQ starts as a identity matrix */
+    for (i = 0; i < pDim; i++) {
+        for (j = 0; j < pDim; j++) {
+            pQ[i * pDim + j] = 0.0f;
         }
-        fVar5 = gFLOAT_0058a8b8;
-        if (iVar12 < param_2) {
-          pfVar14 = (float*)(iVar13 + local_34);
-          iVar8 = param_2 - iVar12;
-          do {
-            fVar1 = *pfVar14;
-            pfVar14 = pfVar14 + 1;
-            iVar8 = iVar8 - 1;
-            fVar5 = fVar1 * fVar1 + fVar5;
-          } while (iVar8 != 0);
+        pQ[i * pDim + i] = 1.0f;
+    }
+
+    for (i = 0; i < pDim; i++) {
+        // Rotate i-th upper-diagonal row onto base vector
+
+        row = &pMatrix[i * pDim];
+        scale = 0.0f;
+        for (j = i; j < pDim; j++) {
+            scale = (br_scalar)MAX(scale, fabs(row[j]));
         }
-        pfVar14 = (float*)(local_34 + iVar13);
-        fVar5 = (float)fabs(sqrt(fVar5));
-        if (*pfVar14 <= (float)gDOUBLE_0058a8c0) {
-          fVar5 = -fVar5;
+        if (scale == gDOUBLE_0058a8c0) {
+            singular = 1;
+            continue;
         }
-        fVar1 = fVar5 * (fVar5 + *pfVar14);
-        *pfVar14 = fVar5 + *pfVar14;
-        if (-1 < local_34) {
-          pfVar9 = (float*)((int)param_3 + (iVar13 - param_1));
-          local_18 = iVar12 + 1;
-          do {
-            fVar6 = gFLOAT_0058a8b8;
-            if (iVar12 < param_2) {
-              iVar8 = param_2 - iVar12;
-              pfVar7 = pfVar9;
-              pfVar10 = pfVar14;
-              do {
-                fVar2 = *pfVar10;
-                fVar3 = *pfVar7;
-                pfVar10 = pfVar10 + 1;
-                pfVar7 = pfVar7 + param_2;
-                iVar8 = iVar8 - 1;
-                fVar6 = fVar2 * fVar3 + fVar6;
-              } while (iVar8 != 0);
+        // Only normalize the upper-vector that must be rotated onto the base vector
+        // This is done for numerical stability reasons.
+        for (j = i; j < pDim; j++) {
+            row[j] /= scale;
+        }
+        // Calculate norm of the upper-diagonal row
+        sum = gFLOAT_0058a8b8;
+        for (j = i; j < pDim; j++) {
+            sum += row[j] * row[j];
+        }
+        // Apply Householder reflection on pQ and the row+matrix
+        norm = (br_scalar)(row[i] > gDOUBLE_0058a8c0 ? fabs(sqrt(sum)) : -fabs(sqrt(sum)));
+        divisor = norm * (norm + row[i]);
+        row[i] += norm;
+        for (j = 0; j <= i; j++) {
+            sum = gFLOAT_0058a8b8;
+            for (k = i; k < pDim; k++) {
+                sum += row[k] * pQ[k * pDim + j];
             }
-            if (iVar12 < param_2) {
-              iVar8 = param_2 - iVar12;
-              pfVar7 = pfVar9;
-              pfVar10 = pfVar14;
-              do {
-                fVar2 = *pfVar10;
-                pfVar10 = pfVar10 + 1;
-                *pfVar7 = *pfVar7 - (fVar6 / fVar1) * fVar2;
-                pfVar7 = pfVar7 + param_2;
-                iVar8 = iVar8 - 1;
-              } while (iVar8 != 0);
+            tau = sum / divisor;
+            for (k = i; k < pDim; k++) {
+                pQ[k * pDim + j] -= tau * row[k];
             }
-            pfVar9 = pfVar9 + 1;
-            local_18 = local_18 - 1;
-          } while (local_18 != 0);
         }
-        local_10 = iVar12 + 1;
-        if (local_10 < param_2) {
-          pfVar9 = (float*)(param_3 + local_1c + local_10);
-          local_30 = (float*)(param_1 + (iVar12 + param_2 + local_1c) * 4);
-          local_10 = param_2 - local_10;
-          do {
-            fVar6 = gFLOAT_0058a8b8;
-            if (iVar12 < param_2) {
-              iVar8 = param_2 - iVar12;
-              pfVar7 = local_30;
-              pfVar10 = pfVar14;
-              do {
-                fVar2 = *pfVar10;
-                fVar3 = *pfVar7;
-                pfVar7 = pfVar7 + 1;
-                pfVar10 = pfVar10 + 1;
-                iVar8 = iVar8 - 1;
-                fVar6 = fVar2 * fVar3 + fVar6;
-              } while (iVar8 != 0);
+        for (j = i + 1; j < pDim; j++) {
+            matrix_sum = gFLOAT_0058a8b8;
+            for (k = i; k < pDim; k++) {
+                matrix_sum += pMatrix[j * pDim + k] * row[k];
             }
-            fVar2 = gFLOAT_0058a8b8;
-            if (iVar12 < param_2) {
-              pfVar7 = (float*)(param_1 + (param_2 + 1) * iVar12 * 4);
-              iVar8 = param_2 - iVar12;
-              pfVar10 = pfVar9;
-              do {
-                fVar3 = *pfVar10;
-                fVar4 = *pfVar7;
-                pfVar7 = pfVar7 + 1;
-                pfVar10 = pfVar10 + param_2;
-                iVar8 = iVar8 - 1;
-                fVar2 = fVar3 * fVar4 + fVar2;
-              } while (iVar8 != 0);
+            tau2 = matrix_sum / divisor;
+            orthogonal_sum = gFLOAT_0058a8b8;
+            for (k = i; k < pDim; k++) {
+                orthogonal_sum += pQ[k * pDim + j] * pMatrix[i * pDim + k];
             }
-            if (iVar12 < param_2) {
-              iVar8 = param_2 - iVar12;
-              pfVar7 = local_30;
-              pfVar10 = pfVar14;
-              pfVar16 = pfVar9;
-              do {
-                *pfVar7 = *pfVar7 - (fVar6 / fVar1) * *pfVar10;
-                *pfVar16 = *pfVar16 - (fVar2 / fVar1) * *pfVar10;
-                pfVar16 = pfVar16 + param_2;
-                iVar8 = iVar8 - 1;
-                pfVar7 = pfVar7 + 1;
-                pfVar10 = pfVar10 + 1;
-              } while (iVar8 != 0);
+            tau = orthogonal_sum / divisor;
+            for (k = i; k < pDim; k++) {
+                pMatrix[j * pDim + k] -= tau2 * row[k];
+                pQ[k * pDim + j] -= tau * row[k];
             }
-            local_30 = local_30 + param_2;
-            pfVar9 = pfVar9 + 1;
-            local_10 = local_10 - 1;
-          } while (local_10 != 0);
         }
-        *pfVar14 = -(fVar5 * local_38);
-        if (iVar12 + 1 < param_2) {
-          puVar17 = (undefined4*)(iVar13 + 4 + local_34);
-          for (iVar8 = param_2 - (iVar12 + 1); iVar8 != 0; iVar8 = iVar8 - 1) {
-            *puVar17 = 0;
-            puVar17 = puVar17 + 1;
-          }
+        row[i] = -(norm * scale);
+        // Zero upper-dialog values so what remains is lower-diagonal
+        for (j = i + 1; j < pDim; j++) {
+            row[j] = 0.0f;
         }
-      }
-      iVar12 = iVar12 + 1;
-      local_1c = local_1c + param_2;
-      local_34 = local_34 + 4;
-      iVar13 = iVar13 + param_2 * 4;
-    } while (iVar12 < param_2);
-  }
-  return local_c;
+    }
+    return singular;
 }
 
-#pragma auto_inline(off)
 // FUNCTION: CARMA2_HW 0x004c5d00
 void C2_HOOK_FASTCALL ClearPhysicsScratchSpace(void) {
 
@@ -9245,6 +9118,20 @@ int C2_HOOK_FASTCALL GetHierarchyNetworkSize(tPhysics_object* pObject) {
     }
     return size;
 }
+// FUNCTION: CARMA2_HW 0x004225b0
+void C2_HOOK_FASTCALL DrMatrix34ApplyLPInverse(br_vector3* dest, const br_vector3* source, const br_matrix34* matrix) {
+    br_vector3 relative;
+
+    BrVector3Sub(&relative, source, (br_vector3*)matrix->m[3]);
+    BrMatrix34TApplyV(dest, &relative, matrix);
+}
+
+// FUNCTION: CARMA2_HW 0x004c5e70
+void C2_HOOK_FASTCALL FreeShape(void* pData) {
+
+    BrMemFree(pData);
+}
+
 // FUNCTION: CARMA2_HW 0x004c5e80
 void C2_HOOK_FASTCALL FreeShapeList(tPhysics_shape *pShape) {
 

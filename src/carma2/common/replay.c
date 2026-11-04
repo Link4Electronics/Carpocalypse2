@@ -122,7 +122,7 @@ const char* gReplay_pixie_names[11] = {
 int gAR_camera_type = 2;
 
 // GLOBAL: CARMA2_HW 0x0058f6a4
-int gCar_car_collisions = 1;
+int gCar_to_car_collisions = 1;
 
 // SetCameraType
 
@@ -392,7 +392,7 @@ void C2_HOOK_FASTCALL PollActionReplayControls(tU32 *pFrame_period, tU32* pAvera
 // FUNCTION: CARMA2_HW 0x00402360
 int C2_HOOK_FASTCALL ARReplayIsReallyPaused(void) {
 
-    return gReplay_rate == 0.f;
+    return gReplay_rate == gFLOAT_00589330;
 }
 
 // FUNCTION: CARMA2_HW 0x004c80b0

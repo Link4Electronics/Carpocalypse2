@@ -517,25 +517,19 @@ int C2_HOOK_FASTCALL FRONTEND_MainMenuHandler(tFrontend_spec* pFrontend) {
 
 // FUNCTION: CARMA2_HW 0x0046b6a0
 void C2_HOOK_FASTCALL UpdateCarInfo(tFrontend_spec *pFrontend) {
-    int opponent_index;
-    tOpponent* opponent;
 
-    opponent_index = gProgram_state.cars_available[gFrontend_change_car_selected_car];
-    opponent = &gOpponents[opponent_index];
-
-    strcpy(pFrontend->items[2].text, opponent->car_name);
-    strcpy(pFrontend->items[3].text, opponent->name);
-    strcpy(pFrontend->items[5].text, opponent->line4_description);
+    strcpy(pFrontend->items[2].text, gOpponents[gProgram_state.cars_available[gFrontend_change_car_selected_car]].car_name);
+    strcpy(pFrontend->items[3].text, gOpponents[gProgram_state.cars_available[gFrontend_change_car_selected_car]].name);
+    strcpy(pFrontend->items[5].text, gOpponents[gProgram_state.cars_available[gFrontend_change_car_selected_car]].line4_description);
     sprintf(pFrontend->items[4].text, "%s @R%s @R%s",
-        opponent->line1_topspeed,
-        opponent->line2_weight,
-        opponent->line3_acceleration);
+        gOpponents[gProgram_state.cars_available[gFrontend_change_car_selected_car]].line1_topspeed,
+        gOpponents[gProgram_state.cars_available[gFrontend_change_car_selected_car]].line2_weight,
+        gOpponents[gProgram_state.cars_available[gFrontend_change_car_selected_car]].line3_acceleration);
     MungeMetaCharactersChar(pFrontend->items[4].text, 'R', '\r');
     FuckWithWidths(pFrontend);
-    if (gFrontend_car_image_outdated || gFrontend_opponent_profile_pic_needs_update) {
-
-        MenuSetDriverImage(opponent_index, 12);
-        MenuSetCarImage(opponent_index, 6);
+    if (gFrontend_car_image_outdated && gFrontend_opponent_profile_pic_needs_update) {
+        MenuSetDriverImage(gProgram_state.cars_available[gFrontend_change_car_selected_car], 12);
+        MenuSetCarImage(gProgram_state.cars_available[gFrontend_change_car_selected_car], 6);
         gFrontend_opponent_profile_pic_needs_update = 0;
         gFrontend_car_image_outdated = 0;
     }

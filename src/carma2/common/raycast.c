@@ -605,13 +605,6 @@ void C2_HOOK_FASTCALL FindBestY(br_vector3* pPosition, br_actor* pWorld, br_scal
     *pNearest_below_face_index = gBelow_face_index;
 }
 
-// FUNCTION: CARMA2_HW 0x004225b0
-void C2_HOOK_FASTCALL DrMatrix34ApplyLPInverse(br_vector3* pDest, const br_vector3* pOrigin, const br_matrix34* pMatrix) {
-    br_vector3 tv;
-
-    BrVector3Sub(&tv, pOrigin, (br_vector3*)pMatrix->m[3]);
-    BrMatrix34TApplyV(pDest, &tv, pMatrix);
-}
 // FUNCTION: CARMA2_HW 0x004e3660
 void C2_HOOK_FASTCALL InitRayCasting(void) {
 #ifndef CARPOCALYPSE2_MATCHING

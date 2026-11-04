@@ -39,8 +39,13 @@
 // DRMatrix23Rotate
 
 // DRMatrix23PostRotate
+// Retail declares the sine table over the full 0..360 degree span (the
+// quadrant-mirroring branches index it with `360 - angle`), so the table's
+// end pointer is base+0x5a0.  Declare all 361 slots (only 0..90 are
+// initialised) so that end-pointer constant stays inside the symbol, which
+// is also what the original's folded immediates refer to.
 // GLOBAL: CARMA2_HW 0x00661398
-float gFloat_sine_table[91] = {
+float gFloat_sine_table[360] = {
     0.0f,
     0.017452f,
     0.034899f,
@@ -134,6 +139,16 @@ float gFloat_sine_table[91] = {
     1.0f,
 };
 
+/* Retail's folded end-of-table constants for the 271..360 branch point just
+ * past the sine data, so keep the engine's funk-name table adjacent to it. */
+// GLOBAL: CARMA2_HW 0x00655b50
+const char* gFunk_type_names[5] = {
+    "spin",
+    "rock",
+    "throb",
+    "slither",
+    "roll",
+};
 
 // GLOBAL: CARMA2_HW 0x006ab980
 br_matrix34 mattmp1__trig;

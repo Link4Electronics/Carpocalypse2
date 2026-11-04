@@ -71,6 +71,7 @@ tFrontend_spec gFrontend_OPTIONS = {
 
 extern int gFrontend_next_menu;
 
+// GLOBAL: CARMA2_HW 0x00688ae4
 int gValid_stashed_save_game;
 
 // GLOBAL: CARMA2_HW 0x00763820

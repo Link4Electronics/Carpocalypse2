@@ -431,34 +431,30 @@ void C2_HOOK_FASTCALL KillSplashScreen(void) {
 
 // FUNCTION: CARMA2_HW 0x0047b990
 void C2_HOOK_FASTCALL SplashScreenWith(const char* pPixmap_name) {
-    br_pixelmap* the_map;
-    tPixelFlags pixelFlags;
+    br_pixelmap* map;
+    tPixelFlags flags;
 
-    the_map = BrMapFind(pPixmap_name);
-    if (gCurrent_splash != NULL) {
-        if (the_map == gCurrent_splash) {
-            return;
-        }
-        if (gCurrent_splash != NULL) {
-            BrMapRemove(gCurrent_splash);
-            BrPixelmapFree(gCurrent_splash);
-        }
+    map = BrMapFind(pPixmap_name);
+    if (gCurrent_splash != NULL && map == gCurrent_splash) {
+        return;
     }
-    pixelFlags = gPixelFlags;
-    gCurrent_splash = the_map;
-    if (the_map == NULL) {
+    if (gCurrent_splash != NULL) {
+        KillSplashScreen();
+    }
+    flags = gPixelFlags;
+    gCurrent_splash = map;
+    if (map == NULL) {
         gCurrent_splash = LoadPixelmap(pPixmap_name);
         BRPM_convert(gCurrent_splash, gBack_screen->type);
         if (gCurrent_splash != NULL) {
             BrMapAdd(gCurrent_splash);
         }
     }
-    gPixelFlags = pixelFlags;
+    gPixelFlags = flags;
     if (gCurrent_splash != NULL) {
-        DRPixelmapRectangleCopy(gBack_screen,
-                0, 0, gCurrent_splash,
-                0, 0,
-                gCurrent_splash->width, gCurrent_splash->height);
+        PixelmapSwapByteOrder(gCurrent_splash);
+        FRONTEND_Redraw(gBack_screen, 0, 0, gCurrent_splash, 0, 0,
+            (br_int_16)gCurrent_splash->width, (br_int_16)gCurrent_splash->height);
         PDScreenBufferSwap(0);
         BrMapRemove(gCurrent_splash);
         BrPixelmapFree(gCurrent_splash);

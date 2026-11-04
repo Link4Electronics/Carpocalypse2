@@ -30,8 +30,6 @@
 #include <stdarg.h>
 #include "drone.h"
 
-extern void C2_HOOK_CDECL FUN_00528130(br_uint_32* pDestination, br_uint_32 pValue, int pCount);
-
 extern const br_scalar gFLOAT_00589318;
 extern const br_scalar gFLOAT_0058931c;
 extern const br_scalar gFLOAT_00589320;
@@ -419,10 +417,10 @@ int C2_HOOK_FASTCALL TestObjectOverlap(tPhysics_object* pCollision_1, tPhysics_o
        in practice, where this nested form is identical. */
     for (; shape1 != NULL; shape1 = shape1->common.next) {
         for (; shape2 != NULL; shape2 = shape2->common.next) {
-            if (TestShapeOverlap(pCollision_1, pCollision_2, shape1, shape2)) {
+            if (TestShapeEdgeIntersection(pCollision_1, pCollision_2, shape1, shape2)) {
                 return 1;
             }
-            if (TestShapeOverlap(pCollision_2, pCollision_1, shape2, shape1)) {
+            if (TestShapeEdgeIntersection(pCollision_2, pCollision_1, shape2, shape1)) {
                 return 1;
             }
         }
@@ -587,12 +585,6 @@ void C2_HOOK_FASTCALL InitDrones(tRace_info* pRace_info) {
     }
 }
 
-// FUNCTION: CARMA2_HW 0x004c5e70
-void C2_HOOK_FASTCALL FreeThingForm(void* pData) {
-
-    BrMemFree(pData);
-}
-
 // FUNCTION: CARMA2_HW 0x0044fc10
 void C2_HOOK_FASTCALL DisposeDronesRaceStuff(void) {
     int i;
@@ -602,41 +594,39 @@ void C2_HOOK_FASTCALL DisposeDronesRaceStuff(void) {
     }
 
     for (i = 0; i < gCount_drones; i++) {
-        tDrone_spec* drone = &gDrone_specs[i];
 
-        if (drone->actor->parent != NULL) {
-            BrActorRemove(drone->actor);
+        if (gDrone_specs[i].actor->parent != NULL) {
+            BrActorRemove(gDrone_specs[i].actor);
         }
-        BrActorFree(drone->actor);
-        PHILRemoveObject(&drone->collision_info);
-        if (drone->field_0x46) {
-            FreeThingForm(drone->collision_info.shape);
-            drone->field_0x46 = 0;
+        BrActorFree(gDrone_specs[i].actor);
+        RemoveDroneFromPHIL(&gDrone_specs[i]);
+        if (gDrone_specs[i].field_0x46) {
+            FreeShape(gDrone_specs[i].collision_info.shape);
+            gDrone_specs[i].field_0x46 = 0;
         }
 
-        if (drone->funk_grooves != NULL) {
-            BrMemFree(drone->funk_grooves);
-            drone->funk_grooves = NULL;
+        if (gDrone_specs[i].funk_grooves != NULL) {
+            BrMemFree(gDrone_specs[i].funk_grooves);
+            gDrone_specs[i].funk_grooves = NULL;
         }
     }
 
     for (i = 0; i < gCount_drone_forms; i++) {
-        tDrone_form* form = &gDrone_forms[i];
 
-        if (form->field_0x80 != NULL) {
+        if (gDrone_forms[i].field_0x80 != NULL) {
             int j;
 
-            BrMemFree(form->field_0x80);
-            form->field_0x80 = NULL;
-            for (j = 0; j < form->count_models; j++) {
-                BrModelRemove(form->models[j]);
-                form->models[j]->nfaces = 0;
-                form->models[j]->faces = NULL;
-                BrModelFree(form->models[j]);
+            BrMemFree(gDrone_forms[i].field_0x80);
+            gDrone_forms[i].field_0x80 = NULL;
+            for (j = 0; j < gDrone_forms[i].count_models; j++) {
+                BrModelRemove(gDrone_forms[i].models[j]);
+                gDrone_forms[i].models[j]->nfaces = 0;
+                gDrone_forms[i].models[j]->faces = NULL;
+                BrModelFree(gDrone_forms[i].models[j]);
             }
-            if (form->models != NULL) {
-                BrMemFree(form->models);
-                form->models = NULL;
+            if (gDrone_forms[i].models != NULL) {
+                BrMemFree(gDrone_forms[i].models);
+                gDrone_forms[i].models = NULL;
             }
         }
     }
@@ -1974,7 +1964,7 @@ void C2_HOOK_FASTCALL FUN_00452f40(br_model* pModel, int pFace_count, int pVerte
 
     vertex_size = pVertex_count * sizeof(br_vertex);
     new_vertices = BrResAllocate(pModel, vertex_size, BR_MEMORY_VERTICES);
-    FUN_00528130((br_uint_32*)new_vertices, 0, vertex_size / sizeof(br_uint_32));
+    BrBlockFill((br_uint_32*)new_vertices, 0, vertex_size / sizeof(br_uint_32));
     if (pModel->nvertices != 0) {
         i = 0;
         offset = 0;
@@ -1991,7 +1981,7 @@ void C2_HOOK_FASTCALL FUN_00452f40(br_model* pModel, int pFace_count, int pVerte
 
     face_size = pFace_count * sizeof(br_face);
     new_faces = BrResAllocate(pModel, face_size, BR_MEMORY_FACES);
-    FUN_00528130((br_uint_32*)new_faces, 0, face_size / sizeof(br_uint_32));
+    BrBlockFill((br_uint_32*)new_faces, 0, face_size / sizeof(br_uint_32));
     if (pModel->nfaces != 0) {
         i = 0;
         offset = 0;

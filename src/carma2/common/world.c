@@ -339,15 +339,6 @@ const char* gFunk_nature_names[4] = {
     "otherlaps",
 };
 
-// GLOBAL: CARMA2_HW 0x00655b50
-const char* gFunk_type_names[5] = {
-    "spin",
-    "rock",
-    "throb",
-    "slither",
-    "roll",
-};
-
 // GLOBAL: CARMA2_HW 0x00655b80
 const char* gFunk_move_names[7] = {
     "linear",
@@ -2280,21 +2271,19 @@ void C2_HOOK_FASTCALL ReadSmashableEnvironment(FILE* pF, const char* pPath) {
 }
 
 // FUNCTION: CARMA2_HW 0x004f5470
-int C2_HOOK_FASTCALL SmashFaceMustBeUpdateable(br_material *pMaterial) {
+int C2_HOOK_FASTCALL SmashFaceMustBeUpdateable(br_material* pMaterial) {
     int i;
 
     for (i = 0; i < gCount_track_smashable_environment_specs; i++) {
-        tSmashable_item_spec *spec = &gTrack_smashable_environment_specs[i];
+        tSmashable_item_spec* smash = &gTrack_smashable_environment_specs[i];
 
-        if ((spec->trigger_type == kSmashableTrigger_Material && spec->trigger_object.material == pMaterial)
-                && ((spec->mode == kSmashableMode_TextureChange && spec->mode_data.texture_change.count_levels > 0)
-                || spec->mode == kSmashableMode_Remove
-                || spec->mode == kSmashableMode_ReplaceModel)) {
-            C2_HOOK_ASSERT(SmashFaceMustBeUpdateable_original(pMaterial) == 1);
+        if (smash->trigger_type == kSmashableTrigger_Material && smash->trigger_object.material == pMaterial
+                && ((smash->mode_data.texture_change.count_levels > 0 && smash->mode == kSmashableMode_TextureChange)
+                || smash->mode == kSmashableMode_Remove
+                || smash->mode == kSmashableMode_ReplaceModel)) {
             return 1;
         }
     }
-    C2_HOOK_ASSERT(SmashFaceMustBeUpdateable_original(pMaterial) == 0);
     return 0;
 }
 
@@ -2327,9 +2316,12 @@ void C2_HOOK_FASTCALL FreeEnvSmash(tSmashable_item_spec* pSmash) {
 // FUNCTION: CARMA2_HW 0x004f0960
 void C2_HOOK_FASTCALL DisposeSmashableEnvironment(void) {
     int i;
+    tSmashable_item_spec* smash;
 
-    for (i = 0; i < gCount_track_smashable_environment_specs; i++) {
-        FreeEnvSmash(&gTrack_smashable_environment_specs[i]);
+    C2_HOOK_BUG_ON(sizeof(tSmashable_item_spec) != 0x2e0);
+
+    for (i = 0, smash = gTrack_smashable_environment_specs; i < gCount_track_smashable_environment_specs; i++, smash++) {
+        FreeEnvSmash(smash);
     }
     if (gCount_track_smashable_environment_specs != 0) {
         BrMemFree(gTrack_smashable_environment_specs);

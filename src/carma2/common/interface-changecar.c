@@ -27,6 +27,9 @@ void C2_HOOK_FASTCALL UpdateCarInfo(tFrontend_spec* pFrontend);
 extern tS3_outlet* gIndexed_outlets[6];
 extern int C2_HOOK_FASTCALL PDGetTotalTime(void);
 extern void C2_HOOK_FASTCALL PollKeys(void);
+extern void C2_HOOK_FASTCALL EdgeTriggerModeOff(void);
+extern void C2_HOOK_FASTCALL EdgeTriggerModeOn(void);
+extern void C2_HOOK_FASTCALL WaitForNoKeys(void);
 extern void C2_HOOK_FASTCALL GetMousePosition(int* pX, int* pY);
 extern int C2_HOOK_FASTCALL EitherMouseButtonDown(void);
 extern int C2_HOOK_FASTCALL PDKeyDown(int pKey_index);
@@ -34,6 +37,8 @@ extern void C2_HOOK_FASTCALL DRS3StartSound(int pOutlet, int pSound_index);
 extern tFrontend_spec gFrontend_MAIN;
 extern int gFrontend_car_image_outdated;
 extern int gFrontend_opponent_profile_pic_needs_update;
+extern tU32 gFrontend_time_last_input;
+extern int gFrontend_scrollbars_updated;
 extern int gFrontend_scroll_time_increment;
 extern tU32 gFrontend_scroll_last_update;
 extern int gFrontend_scroll_time_left;
@@ -86,6 +91,7 @@ int gFrontend_change_car_selected_car;
 // FUNCTION: CARMA2_HW 0x0046b4e0
 int C2_HOOK_FASTCALL ChangeCarMenuInfunc(tFrontend_spec* pFrontend) {
     int i;
+    int count;
 
     gFrontend_change_car_selected_car = 0;
     if (gProgram_state.number_of_cars >= 2 || gProgram_state.game_completed) {
@@ -95,28 +101,39 @@ int C2_HOOK_FASTCALL ChangeCarMenuInfunc(tFrontend_spec* pFrontend) {
         pFrontend->items[0].enabled = kFrontendItemEnabled_default;
         pFrontend->items[1].enabled = kFrontendItemEnabled_default;
     }
-    DefaultInfunc(pFrontend);
-    ResetInterfaceTimeout();
+    /* DefaultInfunc is in another translation unit here; the original
+       inlines it into this function. Expand it by hand so VC5 emits
+       the same body. */
+    if (!pFrontend->loaded) {
+        LoadMenuSettings(pFrontend);
+        FuckWithWidths(pFrontend);
+        if (pFrontend->previous != NULL) {
+            pFrontend->previous->isPreviousSomeOtherMenu = 1;
+        }
+    }
+    gFrontend_scrollbars_updated = 0;
+    EdgeTriggerModeOff();
+    WaitForNoKeys();
+    EdgeTriggerModeOn();
+    gFrontend_time_last_input = PDGetTotalTime();
     gFrontend_car_image_outdated = 1;
     gFrontend_opponent_profile_pic_needs_update = 1;
     FuckWithWidths(pFrontend);
-
     for (i = 0; i < gProgram_state.number_of_cars; i++) {
         if (gProgram_state.cars_available[i] == gProgram_state.current_car_index) {
             gFrontend_change_car_selected_car = i;
             break;
         }
     }
-
     if (gProgram_state.game_completed) {
-        gProgram_state.number_of_cars = 0;
+        count = 0;
         for (i = 0; i < gNumber_of_racers; i++) {
-
             if (gOpponents[i].network_availability != eNet_avail_never) {
-                gProgram_state.cars_available[gProgram_state.number_of_cars] = i;
-                gProgram_state.number_of_cars += 1;
+                gProgram_state.cars_available[count] = i;
+                count += 1;
             }
         }
+        gProgram_state.number_of_cars = count;
     }
     gFrontend_scroll_time_increment = 50;
     gFrontend_scroll_last_update = PDGetTotalTime();

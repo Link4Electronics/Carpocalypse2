@@ -10,6 +10,10 @@ extern br_quat* C2_HOOK_CDECL BrQuatNormalise(br_quat* q, const br_quat* qq);
 extern br_matrix34* C2_HOOK_CDECL BrQuatToMatrix34(br_matrix34* mat, const br_quat* q);
 
 extern const br_scalar gFLOAT_0058a3f8;
+extern const br_scalar gFLOAT_0058a3fc;
+extern const br_scalar gFLOAT_0058a400;
+extern const br_scalar gFLOAT_0058a404;
+extern const br_scalar gFLOAT_0058a408;
 extern const br_scalar gFLOAT_0058a40c;
 
 // GLOBAL: CARMA2_HW 0x0065d004
@@ -37,45 +41,45 @@ void C2_HOOK_FASTCALL GetOrientationFromMatrix(tU16* pOrientation, const br_matr
 
     BrMatrix34ToQuat(&quaternion, pMatrix);
     value = quaternion.x;
-    if (value > 1.f) {
-        value = 1.f;
+    if (value > gFLOAT_0058a3f8) {
+        value = gFLOAT_0058a3f8;
     }
-    if (value < -1.f) {
-        value = -1.f;
+    if (value < gFLOAT_0058a3fc) {
+        value = gFLOAT_0058a3fc;
     }
-    value = (value + 1.f) * .5f;
-    value *= 65534.f;
-    pOrientation[0] = (tU16)(value + .5f);
+    value = (value - gFLOAT_0058a3fc) * gFLOAT_0058a400;
+    value *= gFLOAT_0058a404;
+    pOrientation[0] = (tU16)(value - gFLOAT_0058a408);
     value = quaternion.y;
-    if (value > 1.f) {
-        value = 1.f;
+    if (value > gFLOAT_0058a3f8) {
+        value = gFLOAT_0058a3f8;
     }
-    if (value < -1.f) {
-        value = -1.f;
+    if (value < gFLOAT_0058a3fc) {
+        value = gFLOAT_0058a3fc;
     }
-    value = (value + 1.f) * .5f;
-    value *= 65534.f;
-    pOrientation[1] = (tU16)(value + .5f);
+    value = (value - gFLOAT_0058a3fc) * gFLOAT_0058a400;
+    value *= gFLOAT_0058a404;
+    pOrientation[1] = (tU16)(value - gFLOAT_0058a408);
     value = quaternion.z;
-    if (value > 1.f) {
-        value = 1.f;
+    if (value > gFLOAT_0058a3f8) {
+        value = gFLOAT_0058a3f8;
     }
-    if (value < -1.f) {
-        value = -1.f;
+    if (value < gFLOAT_0058a3fc) {
+        value = gFLOAT_0058a3fc;
     }
-    value = (value + 1.f) * .5f;
-    value *= 65534.f;
-    pOrientation[2] = (tU16)(value + .5f);
+    value = (value - gFLOAT_0058a3fc) * gFLOAT_0058a400;
+    value *= gFLOAT_0058a404;
+    pOrientation[2] = (tU16)(value - gFLOAT_0058a408);
     value = quaternion.w;
-    if (value > 1.f) {
-        value = 1.f;
+    if (value > gFLOAT_0058a3f8) {
+        value = gFLOAT_0058a3f8;
     }
-    if (value < -1.f) {
-        value = -1.f;
+    if (value < gFLOAT_0058a3fc) {
+        value = gFLOAT_0058a3fc;
     }
-    value = (value + 1.f) * .5f;
-    value *= 65534.f;
-    pOrientation[3] = (tU16)(value + .5f);
+    value = (value - gFLOAT_0058a3fc) * gFLOAT_0058a400;
+    value *= gFLOAT_0058a404;
+    pOrientation[3] = (tU16)(value - gFLOAT_0058a408);
 }
 
 // FUNCTION: CARMA2_HW 0x0049c000

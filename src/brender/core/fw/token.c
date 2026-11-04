@@ -607,18 +607,18 @@ br_int_32 C2_HOOK_CDECL BrTokenCount(const char* pattern) {
     int n;
 
     n = 0;
-    if (pattern == NULL) {
-        te = (br_token_entry*)fw.tokens.head;
-        while (te->node.next != NULL) {
-            n++;
-            te = (br_token_entry*)te->node.next;
-        }
-    } else {
+    if (pattern != NULL) {
         te = (br_token_entry*)fw.tokens.head;
         while (te->node.next != NULL) {
             if (BrNamePatternMatch(pattern, te->identifier) != 0) {
                 n++;
             }
+            te = (br_token_entry*)te->node.next;
+        }
+    } else {
+        te = (br_token_entry*)fw.tokens.head;
+        while (te->node.next != NULL) {
+            n++;
             te = (br_token_entry*)te->node.next;
         }
     }

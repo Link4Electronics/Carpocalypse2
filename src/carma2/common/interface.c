@@ -3727,25 +3727,25 @@ void C2_HOOK_FASTCALL FillInRaceDescription(char *pDest, int pRace_index) {
 // FUNCTION: CARMA2_HW 0x0046aa20
 
 void C2_HOOK_FASTCALL MenuSetCarImage(int pCar_index, int pBrender_index) {
-    tPath_name pack_path;
-    char pack_filename[64];
+    char* car_file_name;
     char* pos_dot;
+    char pack_filename[40];
+    char pm_name[20];
+    tPath_name pack_path;
     tTWTVFS twt;
     int i;
 
-    pos_dot = strrchr(gOpponents[pCar_index].car_file_name, '.');
+    car_file_name = gOpponents[pCar_index].car_file_name;
+    pos_dot = strrchr(car_file_name, '.');
     PathCat(pack_path, gApplication_path, "INTRFACE");
     PathCat(pack_path, pack_path, "CARIMAGE");
-
     strcpy(pack_filename, gOpponents[pCar_index].car_file_name);
     pack_filename[strlen(pack_filename) - 4] = '\0';
     strcat(pack_filename, "CI");
     PathCat(pack_path, pack_path, pack_filename);
     twt = OpenPackFileAndSetTiffLoading(pack_path);
     for (i = 0; i < 6; i++) {
-        char pm_name[20];
-
-        sprintf(pm_name, "%.*s%c.TIF", pos_dot - gOpponents[pCar_index].car_file_name, gOpponents[pCar_index].car_file_name, 'A' + i);
+        sprintf(pm_name, "%.*s%c.TIF", (int)(pos_dot - car_file_name), car_file_name, 'A' + i);
         BrMapRemove(gFrontend_images[i + 1]);
         BrPixelmapFree(gFrontend_images[i + 1]);
         gFrontend_images[i + 1] = GetThisFuckingPixelmapPleaseMrTwatter(pack_path, pm_name);
@@ -3763,13 +3763,15 @@ void C2_HOOK_FASTCALL MenuSetCarImage(int pCar_index, int pBrender_index) {
 // FUNCTION: CARMA2_HW 0x0046b820
 
 void C2_HOOK_FASTCALL MenuSetDriverImage(int pOpponent_index, int pFrontend_index) {
+    char* abbrev_name;
     char* pos_dot;
-    tPath_name pack_path;
     char pack_filename[40];
     char pm_name[20];
+    tPath_name pack_path;
     tTWTVFS twt;
 
-    pos_dot = strrchr(gOpponents[pOpponent_index].abbrev_name, '.');
+    abbrev_name = gOpponents[pOpponent_index].abbrev_name;
+    pos_dot = strrchr(abbrev_name, '.');
     PathCat(pack_path, gApplication_path, "INTRFACE");
     PathCat(pack_path, pack_path, "CARIMAGE");
     strcpy(pack_filename, gOpponents[pOpponent_index].car_file_name);
@@ -3777,8 +3779,7 @@ void C2_HOOK_FASTCALL MenuSetDriverImage(int pOpponent_index, int pFrontend_inde
     strcat(pack_filename, "CI");
     PathCat(pack_path, pack_path, pack_filename);
     twt = OpenPackFileAndSetTiffLoading(pack_path);
-
-    sprintf(pm_name, "%.*s%c%c.TIF", pos_dot - gOpponents[pOpponent_index].abbrev_name, gOpponents[pOpponent_index].abbrev_name, '6', '4');
+    sprintf(pm_name, "%.*s%c%c.TIF", (int)(pos_dot - abbrev_name), abbrev_name, '6', '4');
     BrMapRemove(gFrontend_images[7]);
     BrPixelmapFree(gFrontend_images[7]);
     gFrontend_images[7] = GetThisFuckingPixelmapPleaseMrTwatter(pack_path, pm_name);
@@ -3788,13 +3789,11 @@ void C2_HOOK_FASTCALL MenuSetDriverImage(int pOpponent_index, int pFrontend_inde
     BrPixelmapCopy(gFrontend_brender_items[pFrontend_index].field_0xc, gFrontend_images[7]);
     BrPixelmapCopy(gFrontend_brender_items[pFrontend_index].field_0x10, gFrontend_brender_items[pFrontend_index].field_0xc);
     BrMapUpdate(gFrontend_brender_items[pFrontend_index].field_0xc, BR_MAPU_ALL);
-
     ClosePackFileAndSetTiffLoading(twt);
-
-    gFrontend_brender_items[pFrontend_index].model->vertices[0].p.v[2] = -1.f;
-    gFrontend_brender_items[pFrontend_index].model->vertices[1].p.v[2] = -1.f;
-    gFrontend_brender_items[pFrontend_index].model->vertices[2].p.v[2] = -1.f;
-    gFrontend_brender_items[pFrontend_index].model->vertices[3].p.v[2] = -1.f;
+    gFrontend_brender_items[pFrontend_index].model->vertices[0].p.v[2] = -1.0f;
+    gFrontend_brender_items[pFrontend_index].model->vertices[1].p.v[2] = -1.0f;
+    gFrontend_brender_items[pFrontend_index].model->vertices[2].p.v[2] = -1.0f;
+    gFrontend_brender_items[pFrontend_index].model->vertices[3].p.v[2] = -1.0f;
     BrModelUpdate(gFrontend_brender_items[pFrontend_index].model, BR_MODU_VERTEX_POSITIONS);
 }
 

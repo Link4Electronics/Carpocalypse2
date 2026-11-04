@@ -1022,7 +1022,7 @@ void C2_HOOK_FASTCALL LoadRaceInfo(int pRace_index, tRace_info* pRace_info) {
 }
 
 // FUNCTION: CARMA2_HW 0x004a9600
-void C2_HOOK_FASTCALL LoadCopCars(void) {
+void C2_HOOK_FASTCALL LoadCopCars(tRace_info* pRace_info) {
 
     gProgram_state.AI_vehicles.number_of_cops = 0;
 }
@@ -1349,6 +1349,19 @@ void C2_HOOK_FASTCALL GetDamageProgram(FILE* pF, tCar_spec* pCar_spec, tImpact_l
     }
 }
 
+// FUNCTION: CARMA2_HW 0x004f6740
+void C2_HOOK_FASTCALL LoadCarMaterials(tBrender_storage* pStorage, const char* pPath, tCar_spec* pCar_spec) {
+
+    gMaterial_shading_for_callback = kRendererShadingType_Specular;
+    gStorage_for_callbacks = pStorage;
+    pCar_spec->old_material_count = pStorage->materials_count;
+    PFForEveryFile(pPath, LoadIfItsAMaterial);
+    pCar_spec->new_material_count = pStorage->materials_count;
+    gMaterial_shading_for_callback = kRendererShadingType_Undefined;
+    SmoothlySetCarMaterialFlags(pStorage, pCar_spec);
+}
+
+#pragma auto_inline(off)
 // FUNCTION: CARMA2_HW 0x004f67a0
 void C2_HOOK_FASTCALL SmoothlySetCarMaterialFlags(tBrender_storage* pStorage, tCar_spec* pCar_spec) {
     int i;
@@ -1366,15 +1379,7 @@ void C2_HOOK_FASTCALL SmoothlySetCarMaterialFlags(tBrender_storage* pStorage, tC
         material->user = material->colour_map;
     }
 }
-
-// FUNCTION: CARMA2_HW 0x004f6740
-void C2_HOOK_FASTCALL LoadCarMaterials(tBrender_storage* pStorage, const char* pPath, tCar_spec* pCar_spec) {
-
-    pCar_spec->old_material_count = pStorage->materials_count;
-    LoadAllMaterialsInDirectory(pStorage, pPath, kRendererShadingType_Specular);
-    pCar_spec->new_material_count = pStorage->materials_count;
-    SmoothlySetCarMaterialFlags(pStorage, pCar_spec);
-}
+#pragma auto_inline(on)
 
 // FUNCTION: CARMA2_HW 0x00488f00
 void C2_HOOK_FASTCALL LoadCarShrapnelMaterials(FILE* pF, tCar_spec* pCar_spec) {
@@ -3427,16 +3432,18 @@ void C2_HOOK_FASTCALL LoadPerRaceDroneStuff(void) {
     }
 }
 
+#pragma inline_depth(0)
 // FUNCTION: CARMA2_HW 0x00401070
 void C2_HOOK_FASTCALL LoadAIWorldForRace(tRace_info* pRace_info) {
 
     PrintMemoryDump(0,"BEFORE LoadOpponentsCars()");
     LoadOpponentsCars(pRace_info);
-    LoadCopCars();
+    LoadCopCars(pRace_info);
     PrintMemoryDump(0,"AFTER LoadOpponentsCars(), BEFORE LoadPerRaceDroneStuff()");
     LoadPerRaceDroneStuff();
     PrintMemoryDump(0,"AFTER LoadPerRaceDroneStuff()");
 }
+#pragma inline_depth()
 
 // FUNCTION: CARMA2_HW 0x004010b0
 void C2_HOOK_FASTCALL InitialiseAIWorldForRace(tRace_info* pRace_info) {

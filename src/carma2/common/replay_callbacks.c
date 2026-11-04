@@ -34,7 +34,7 @@
 extern void C2_HOOK_FASTCALL WorkerPedPos(tPedestrian* pPed, br_vector3* pVec);
 extern void C2_HOOK_FASTCALL WorkerNapalmBolt(int pBolt_index, tPedestrian* pPed, br_vector3* pPositions);
 extern void C2_HOOK_FASTCALL WorkerPedPhysics(int field_0x0, br_matrix34* pMatrix);
-extern void C2_HOOK_FASTCALL WorkerDroneCornerPos(int field_0x0, int field_0x4, tU16 field_0x6, tU16 field_0x8, tU16* pField_0xa);
+extern void C2_HOOK_FASTCALL WorkerDroneCornerPos(int field_0x0, tU16 field_0x4, tU16 field_0x6, tU16 field_0x8, tU16* pField_0xa);
 extern void C2_HOOK_FASTCALL WorkerNonCarCreation(int field_0x0);
 extern void C2_HOOK_FASTCALL WorkerNonCarCreationUndo(int field_0x0);
 extern void C2_HOOK_FASTCALL WorkerSmashTextureChange(br_material* pMaterial, tCar_spec* pCar, br_pixelmap* pOld_texture, br_pixelmap* pNew_texture);
@@ -1708,7 +1708,7 @@ void C2_HOOK_FASTCALL ARResetNapalmBolts(void) {
     int i;
     int j;
 
-    for (i = 0; i < CARPOCALYPSE2_ASIZE(gNapalm_bolts); i++) {
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gNapalm_bolts); i++) {
         gNapalm_bolts[i].ped = NULL;
 
         for (j = 0; j < 7; j++) {

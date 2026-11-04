@@ -440,6 +440,7 @@ void C2_HOOK_FASTCALL FreeAllTintedPolyActor(void) {
 void C2_HOOK_FASTCALL UpdateTintedPolyByMaterial(int pIndex) {
     br_uint_32 new_red, new_grn, new_blu;
     tU32 time;
+    tU32 colour_sum;
     int material_changed;
     tU32 time_since_last_update_s;
 
@@ -478,7 +479,9 @@ void C2_HOOK_FASTCALL UpdateTintedPolyByMaterial(int pIndex) {
         new_blu = (br_int_32)new_blu >> 2;
     }
     time = GetTotalTime();
-    if (gTintedPolys[pIndex].color_blu + gTintedPolys[pIndex].color_grn + gTintedPolys[pIndex].color_red == 0) {
+    colour_sum = gTintedPolys[pIndex].color_blu;
+    colour_sum += gTintedPolys[pIndex].color_grn;
+    if (gTintedPolys[pIndex].color_red + colour_sum == 0) {
         gTintedPolys[pIndex].color_red = new_red;
         gTintedPolys[pIndex].color_grn = new_grn;
         gTintedPolys[pIndex].color_blu = new_blu;

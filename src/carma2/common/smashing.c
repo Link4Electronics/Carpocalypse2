@@ -243,12 +243,12 @@ void C2_HOOK_FASTCALL SplondificatalizeIdentifier(br_material* pMaterial, char**
 // FUNCTION: CARMA2_HW 0x004f0bc0
 void C2_HOOK_FASTCALL MungeSmashMaterialNames(void) {
     int i;
+    tSmashable_item_spec* item_spec;
 
     C2_HOOK_BUG_ON(sizeof(tSmashable_item_spec) != 0x2e0);
 
-    for (i = 0; i < gCount_track_smashable_environment_specs; i++) {
-        tSmashable_item_spec* item_spec = &gTrack_smashable_environment_specs[i];
-
+    item_spec = gTrack_smashable_environment_specs;
+    for (i = 0; i < gCount_track_smashable_environment_specs; i++, item_spec++) {
         if (item_spec->trigger_type == kSmashableTrigger_Material) {
             SplondificatalizeIdentifier(
                 item_spec->trigger_object.material,
@@ -299,29 +299,6 @@ void C2_HOOK_FASTCALL FUN_004eff30(tSmash_vertex* pFragment, tU32 pTime, float p
 
 // FUNCTION: CARMA2_HW 0x004f00ca
 void C2_HOOK_FASTCALL DoFragMovement(tSmash_vertex* pFragment, tU32  pTime, float pDelta_time) {
-    float f_dt;
-    float omega;
-    br_vector3 pos;
-    br_vector3 axis;
-    br_actor* actor;
-
-    f_dt = pDelta_time / 1000.f;
-    if (f_dt != 0.f && !pFragment->field_0x34) {
-
-        pFragment->actor->t.t.translate.t.v[0] += pFragment->v.v[0] * f_dt / WORLD_SCALE;
-        pFragment->actor->t.t.translate.t.v[1] += (pFragment->v.v[1] * f_dt - 9.8f / 2.f * gGravity_multiplier * CARPOCALYPSE2_SQR(f_dt)) / WORLD_SCALE;
-        pFragment->actor->t.t.translate.t.v[2] += pFragment->v.v[2] * f_dt / WORLD_SCALE;
-        pFragment->v.v[1] -= f_dt * gGravity_multiplier / WORLD_SCALE;
-        omega = BrVector3Length(&pFragment->omega);
-        BrVector3InvScale(&axis, &pFragment->omega, omega);
-        if (fabsf(f_dt * omega) >= 0.0001) {
-            actor = pFragment->actor;
-            BrVector3Copy(&pos, &actor->t.t.translate.t);
-            BrVector3Set(&actor->t.t.translate.t, 0.f, 0.f, 0.f);
-            BrMatrix34PostRotate(&actor->t.t.mat, BrRadianToAngle(omega * f_dt), &axis);
-            BrVector3Copy(&actor->t.t.translate.t, &pos);
-        }
-    }
     if (pTime < pFragment->field_0x10) {
         pFragment->actor->render_style = BR_RSTYLE_FACES;
     } else {
@@ -356,7 +333,7 @@ void C2_HOOK_FASTCALL MungeGlassFragments2(int pEnd_race) {
             fragment = &gSmash_glass_fragments[i];
             if (fragment->end_time != 0) {
                 if (!pEnd_race && (the_time < fragment->end_time || (gAction_replay_mode && ARGetReplayRate() <= 0.f)) && the_time >= fragment->field_0xc) {
-                    DoFragMovement(fragment, the_time, f_prev_glass_munge);
+                    FUN_004eff30(fragment, the_time, f_prev_glass_munge);
                     if (fragment->field_0x34) {
                         fragment->field_0x34 = 0;
                     }

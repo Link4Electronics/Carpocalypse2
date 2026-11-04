@@ -1564,16 +1564,16 @@ void C2_HOOK_FASTCALL S3ReverseSample(tS3_effect_tag pEffect, tS3_sound_tag pTag
 
 // FUNCTION: CARMA2_HW 0x00564d75
 int C2_HOOK_FASTCALL S3SetSampleFilterCallbacks(tS3_sample_filter pEnable, tS3_sample_filter pDisable) {
+
     if (pEnable != NULL) {
         gS3_sample_filter_func = pEnable;
     }
     if (pDisable != NULL) {
         gS3_sample_filter_disable_func = pDisable;
-    }
-    if (pDisable == NULL) {
+    } else if (pDisable == NULL) {
         gS3_sample_filter_disable_func = gS3_sample_filter_func;
     }
-    if (pEnable == NULL && pDisable == NULL) {
+    if (pEnable == NULL || (pEnable == NULL && pDisable == NULL)) {
         gS3_effects_enabled = 0;
     } else {
         gS3_effects_enabled = 1;

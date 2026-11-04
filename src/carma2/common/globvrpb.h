@@ -12,7 +12,7 @@ extern tNet_game_player_info gNet_players[12];
 /* The race board is a view over each net player starting at last_score_index. */
 #define gRace_board ((tRace_board_entry*)&gNet_players[0].last_score_index)
 extern int gThis_net_player_index;
-extern int gINT_0074c6d4;
+extern int gSynch_race_start;
 extern int gPending_race;
 extern tCar_detail_info gCar_details[60];
 extern int gINT_0074b780;

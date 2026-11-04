@@ -155,22 +155,21 @@ int C2_HOOK_FASTCALL NetOptions_Outfunc(tFrontend_spec* pFrontend) {
 int C2_HOOK_FASTCALL NetOptions_CreditsRoller(tFrontend_spec* pFrontend) {
 
     gFrontend_net_current_roll = PDGetTotalTime();
-    if (gFrontend_net_current_roll - gFrontend_net_last_roll < 300) {
-        return 0;
+    if ((int)(gFrontend_net_current_roll - gFrontend_net_last_roll) >= 300) {
+        gFrontend_net_last_roll = gFrontend_net_current_roll;
+        if (gFrontend_selected_item_index == 28) {
+            gFrontend_net_options.starting_credits += 1000;
+        } else if (gFrontend_selected_item_index == 27) {
+            gFrontend_net_options.starting_credits -= 1000;
+        }
+        if (gFrontend_net_options.starting_credits < 0) {
+            gFrontend_net_options.starting_credits = 0;
+        } else if (gFrontend_net_options.starting_credits > 500000) {
+            gFrontend_net_options.starting_credits = 500000;
+        }
+        sprintf(pFrontend->items[24].text, "%i", gFrontend_net_options.starting_credits);
+        FuckWithWidths(pFrontend);
     }
-    if (gFrontend_selected_item_index == 28) {
-        gFrontend_net_options.starting_credits += 1000;
-    } else if (gFrontend_selected_item_index == 27) {
-        gFrontend_net_options.starting_credits -= 1000;
-    }
-    if (gFrontend_net_options.starting_credits < 0) {
-        gFrontend_net_options.starting_credits = 0;
-    } else if (gFrontend_net_options.starting_credits > 500000) {
-        gFrontend_net_options.starting_credits = 500000;
-    }
-    gFrontend_net_last_roll = gFrontend_net_current_roll;
-    sprintf(pFrontend->items[24].text, "%i", gFrontend_net_options.starting_credits);
-    FuckWithWidths(pFrontend);
     return 0;
 }
 

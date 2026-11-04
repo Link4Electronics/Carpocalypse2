@@ -62,6 +62,8 @@ extern int gUnknown_006b9c60[100];
 
 extern tU8 gNon_car_spec_indices[100];
 
+extern br_scalar gFLOAT_0058a768;
+
 // GLOBAL: CARMA2_HW 0x005895f0
 double gZero = 1.0;
 
@@ -308,9 +310,6 @@ tFloat_bunch_info gCar_car_damage_multiplier;
 
 // GLOBAL: CARMA2_HW 0x0068b8d0
 br_vector3 gZero_v__car;  // FIXME: make const?
-
-// GLOBAL: CARMA2_HW 0x0058f6a4
-int gCar_to_car_collisions = 1;
 
 // GLOBAL: CARMA2_HW 0x005897fc
 const br_scalar gFloat_005897fc = 0.1725f;
@@ -994,8 +993,8 @@ int C2_HOOK_FASTCALL CollideCamera2(br_vector3* car_pos, br_vector3* cam_pos, br
 // FUNCTION: CARMA2_HW 0x0041f360
 void C2_HOOK_FASTCALL ToggleCarToCarCollisions(void) {
 
-    gCar_car_collisions = !gCar_car_collisions;
-    if (gCar_car_collisions) {
+    gCar_to_car_collisions = !gCar_to_car_collisions;
+    if (gCar_to_car_collisions) {
         NewTextHeadupSlot(4, 0, 3000, -4, "Car Car Collisions");
     } else {
         NewTextHeadupSlot(4, 0, 3000, -4, "Ghost Cars");
@@ -1713,7 +1712,7 @@ void C2_HOOK_FASTCALL ControlOurCar(tU32 pTime_difference) {
 }
 
 // FUNCTION: CARMA2_HW 0x00414510
-void C2_HOOK_FASTCALL SetInitialPosition(tRace_info* pThe_race, int pCar_index, int pGrid_index) {
+void C2_HOOK_FASTCALL SetInitialPosition(tRace_info* pThe_race, int pCar_index, tU32 pGrid_index) {
     int place_on_grid;
     int i;
     int start_i;
@@ -1731,10 +1730,11 @@ void C2_HOOK_FASTCALL SetInitialPosition(tRace_info* pThe_race, int pCar_index, 
     br_vector3 dist;
     br_vector3 real_pos;
     br_matrix34 initial_yaw_matrix;
+    tCompressed_matrix3 compressed;
+    int inactive;
 
-    initial_yaw = 0;
-    car_actor = pThe_race->opponent_list[pCar_index].car_spec->car_master_actor;
     car = pThe_race->opponent_list[pCar_index].car_spec;
+    car_actor = car->car_master_actor;
     BrMatrix34Identity(&car_actor->t.t.mat);
     place_on_grid = 1;
     if (gNet_mode != eNet_mode_none && !gCurrent_net_game->options.grid_start && pThe_race->count_network_start_points != 0) {
@@ -1744,11 +1744,11 @@ void C2_HOOK_FASTCALL SetInitialPosition(tRace_info* pThe_race, int pCar_index, 
             for (j = 0; j < gNumber_of_net_players; j++) {
                 if (j != pCar_index) {
                     BrVector3Copy(&real_pos, &pThe_race->opponent_list[j].car_spec->car_master_actor->t.t.translate.t);
-                    if (real_pos.v[0] > 500.f) {
+                    if (real_pos.v[0] > gFloat_005895b0) {
                         BrVector3Sub(&real_pos, &real_pos, &gInitial_position);
                     }
                     BrVector3Sub(&dist, &real_pos, &pThe_race->net_starts[i].pos);
-                    if (BrVector3LengthSquared(&dist) < 16.f) {
+                    if (BrVector3LengthSquared(&dist) < 16.0f) {
                         break;
                     }
                 }
@@ -1757,6 +1757,7 @@ void C2_HOOK_FASTCALL SetInitialPosition(tRace_info* pThe_race, int pCar_index, 
                 BrVector3Copy(&car_actor->t.t.translate.t, &pThe_race->net_starts[i].pos);
                 initial_yaw = BrDegreeToAngle(pThe_race->net_starts[i].yaw);
                 place_on_grid = 0;
+                break;
             }
             i++;
             if (i == pThe_race->count_network_start_points) {
@@ -1764,31 +1765,22 @@ void C2_HOOK_FASTCALL SetInitialPosition(tRace_info* pThe_race, int pCar_index, 
             }
         } while (i != start_i);
     }
-    if (gNet_mode == eNet_mode_none && pGrid_index < 0) {
-        BrVector3Copy(&car_actor->t.t.translate.t, &pThe_race->net_starts[-pGrid_index - 1].pos);
-        initial_yaw = BrDegreeToAngle(pThe_race->net_starts[-pGrid_index - 1].yaw);
+    if (gNet_mode == eNet_mode_none && (int)pGrid_index < 0) {
+        BrVector3Copy(&car_actor->t.t.translate.t, &pThe_race->net_starts[-((int)pGrid_index + 1)].pos);
+        initial_yaw = BrDegreeToAngle(pThe_race->net_starts[-((int)pGrid_index + 1)].yaw);
         place_on_grid = 0;
     }
     if (place_on_grid) {
         initial_yaw = BrDegreeToAngle(pThe_race->initial_yaw);
         BrMatrix34RotateY(&initial_yaw_matrix, initial_yaw);
-        grid_offset.v[0] = -(br_scalar)(pGrid_index % 2);
+        grid_offset.v[0] = -(br_scalar)((int)pGrid_index % 2);
         grid_offset.v[1] = 0.0f;
-        grid_offset.v[2] = 2.0f * (br_scalar)(pGrid_index / 2) + 0.4f * (br_scalar)(pGrid_index % 2);
+        grid_offset.v[2] = (br_scalar)((int)pGrid_index % 2) * 0.4f - (br_scalar)((int)pGrid_index / 2) * -2.0f;
         BrMatrix34ApplyV(&car_actor->t.t.translate.t, &grid_offset, &initial_yaw_matrix);
         BrVector3Accumulate(&car_actor->t.t.translate.t, &pThe_race->initial_position);
     }
     if (gTrack_actor != NULL) {
-        FindBestY(
-            &car_actor->t.t.translate.t,
-            gTrack_actor,
-            10.0f,
-            &nearest_y_above,
-            &nearest_y_below,
-            &above_model,
-            &below_model,
-            &above_face_index,
-            &below_face_index);
+        FindBestY(&car_actor->t.t.translate.t, gTrack_actor, 10.0f, &nearest_y_above, &nearest_y_below, &above_model, &below_model, &above_face_index, &below_face_index);
         if (nearest_y_above != 30000.0f) {
             car_actor->t.t.translate.t.v[1] = nearest_y_above;
         } else if (nearest_y_below != -30000.0f) {
@@ -1799,16 +1791,11 @@ void C2_HOOK_FASTCALL SetInitialPosition(tRace_info* pThe_race, int pCar_index, 
     }
     BrMatrix34PreRotateY(&car_actor->t.t.mat, initial_yaw);
     if (gNet_mode != eNet_mode_none) {
-        tCompressed_matrix3 compressed;
-        int inactive;
-
         CompressMatrix34(&compressed, &inactive, &car_actor->t.t.mat);
         ExpandMatrix34(&car_actor->t.t.mat, &compressed, inactive);
-        BrMatrix34Copy(
-            &gNet_players[pThe_race->opponent_list[pCar_index].net_player_index].initial_position,
-            &car->car_master_actor->t.t.mat);
+        BrMatrix34Copy(&gNet_players[pThe_race->opponent_list[pCar_index].net_player_index].initial_position, &car->car_master_actor->t.t.mat);
     }
-    if (gNet_mode != eNet_mode_none && car->disabled && car_actor->t.t.translate.t.v[0] < 500.0f) {
+    if (gNet_mode != eNet_mode_none && car->disabled && car_actor->t.t.translate.t.v[0] < gFloat_005895b0) {
         DisableCar(car);
     }
 }
@@ -1983,7 +1970,7 @@ void C2_HOOK_FASTCALL InitialiseCarsEtc(tRace_info* pThe_race) {
     tCar_spec* car;
     br_bounds bnds;
 
-    BrVector3Copy(&gProgram_state.initial_position, &pThe_race->initial_position);
+    gProgram_state.initial_position = pThe_race->initial_position;
     gProgram_state.initial_yaw = pThe_race->initial_yaw;
     BrActorToBounds(&bnds, gProgram_state.track_spec.the_actor);
     gMin_world_y = bnds.min.v[1];
@@ -2002,7 +1989,7 @@ void C2_HOOK_FASTCALL InitialiseCarsEtc(tRace_info* pThe_race) {
                 car = GetCarSpec(cat, i);
             }
             if (cat != eVehicle_not_really) {
-                InitialiseCar(car);
+                InitialiseCar2(car, 1);
             }
         }
     }
@@ -2438,10 +2425,10 @@ void C2_HOOK_FASTCALL CameraBugFix(tCar_spec* c, tU32 pTime) {
 void C2_HOOK_FASTCALL SetTextureBits(tCar_spec* pCar) {
 
     pCar->field_0x18cc = 0;
-    if (pCar->keys.brake || (pCar->brake_force != 0.f && fabs(pCar->collision_info->velocity_car_space.v[2]) > 7.2463765e-05)) {
+    if (pCar->keys.brake || (pCar->brake_force != gFlyCarZero && fabs(pCar->collision_info->velocity_car_space.v[2]) > 7.2463765e-05)) {
         pCar->field_0x18cc |= 0x4;
     }
-    if (pCar->gear < 0 || (!(pCar != NULL && pCar->driver == eDriver_local_human) && pCar->collision_info->velocity_car_space.v[2] > 0.f)) {
+    if (pCar->gear < 0 || (!(pCar != NULL && pCar->driver == eDriver_local_human) && pCar->collision_info->velocity_car_space.v[2] > gFlyCarZero)) {
         pCar->field_0x18cc |= 0x8;
     }
 }
@@ -5274,7 +5261,7 @@ void C2_HOOK_FASTCALL GetFacesInBox(tPhysics_object* pCollision, tWorld_callback
         for (i = 0; i < 3; i++) {
             bnds.original_bounds.min.v[i] = pCollision->field_0x10c.min.v[i] - 0.15;
             bnds.original_bounds.max.v[i] = pCollision->field_0x10c.max.v[i] + 0.15;
-            if (vel.v[i] < 0.f) {
+            if (vel.v[i] < gFLOAT_0058a768) {
                 bnds.original_bounds.min.v[i] += vel.v[i];
             } else {
                 bnds.original_bounds.max.v[i] += vel.v[i];
@@ -5416,30 +5403,27 @@ void C2_HOOK_FASTCALL APTCPostCollision(void) {
 // FUNCTION: CARMA2_HW 0x004161a0
 void C2_HOOK_FASTCALL APTCPostCollisionTree(tPhysics_object* node) {
     tPhysics_object* child;
-    void* owner;
-    void* unk;
+    tCar_spec* car;
+    int collided;
 
-    while (node != NULL) {
+    for (; node != NULL; node = node->next) {
         if (gNet_mode == eNet_mode_host) {
-            int need = ((node->collision_flag & 2) != 0) || ((node->flags & 0x1000) != 0);
-
+            collided = (node->collision_flag & 0x2) != 0 || (node->flags & 0x1000) != 0;
             for (child = node->child; child != NULL; child = child->next) {
-                need |= child->collision_flag & 2;
+                collided |= child->collision_flag & 0x2;
             }
-            if (need) {
-                node->field_0x49c = gPHIL_last_physics_tick + 0x28;
-                owner = node->owner;
-                if (owner != NULL && node->flags_0x238 == 1 && *(int*)((char*)owner + 0xc) > 5) {
-                    unk = *(void**)((char*)owner + 0x18d4);
-                    if (unk != NULL) {
-                        DeallocateTransientBitmap(*(int*)((char*)unk + 0x20));
+            if (collided) {
+                node->field_0x49c = gPHIL_last_physics_tick + 40;
+                if (node != NULL && node->owner != NULL && node->flags_0x238 == 1) {
+                    car = node->owner;
+                    if (car->driver > 5 && car->car_crush_spec != NULL) {
+                        SetAllShapeStatusFlags(car->car_crush_spec->network_stuff);
                     }
                 }
             }
         }
-        node->disable_move_rotate &= 0xfd;
+        node->disable_move_rotate &= ~0x2;
         APTCPostCollisionTree(node->child);
-        node = node->next;
     }
 }
 
@@ -6879,10 +6863,6 @@ void C2_HOOK_FASTCALL SkidNoise(tCar_spec* pCar, int pSide, br_scalar pV, int pM
 
 // FUNCTION: CARMA2_HW 0x0041ddc0
 void C2_HOOK_FASTCALL CrashNoise(br_vector3* pForce, br_vector3* pPosition, int pMaterial) {
-    // GLOBAL: CARMA2_HW 0x00679410
-    static tS3_sound_tag crunch_tag;
-    // GLOBAL: CARMA2_HW 0x0067935c
-    static tS3_volume last_crunch_vol;
     tS3_volume vol;
     br_vector3 velocity;
 
@@ -6892,11 +6872,11 @@ void C2_HOOK_FASTCALL CrashNoise(br_vector3* pForce, br_vector3* pPosition, int 
         if (vol > 255) {
             vol = 255;
         }
-        if (crunch_tag == 0 || !DRS3SoundStillPlaying(crunch_tag)) {
+        if (gCrash_noise_tag == 0 || !DRS3SoundStillPlaying(gCrash_noise_tag)) {
             if (vol > 30) {
-                last_crunch_vol = vol;
+                gCrash_noise_volume = vol;
                 BrVector3Set(&velocity, 0.f, 0.f, 0.f);
-                crunch_tag = DRS3StartSound3D(gXXX_outlet,
+                gCrash_noise_tag = DRS3StartSound3D(gXXX_outlet,
                     gMetal_crunch_sound_id[IRandomBetween(0, CARPOCALYPSE2_ASIZE(gMetal_crunch_sound_id) - 1)],
                     pPosition, &velocity, 1, vol, IRandomBetween(49152, 81920), 0x10000);
             }

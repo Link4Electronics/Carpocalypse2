@@ -70,70 +70,6 @@ int gSound_ID;
 // GLOBAL: CARMA2_HW 0x0068630c
 int gDark_mode;
 
-// GLOBAL: CARMA2_HW 0x00599920
-int gFlic_bunch0[29] = {
-    0, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 35, 26,
-    27, 36, 28, 29, 130, 131, 132, 42, 43, 135, 45
-};
-
-// GLOBAL: CARMA2_HW 0x00599998
-int gFlic_bunch1[31] = {
-    140, 141, 42, 43, 144, 145, 146, 147, 45, 150, 151, 42, 43, 154, 155,
-    156, 160, 161, 42, 43, 154, 170, 171, 176, 177, 172, 180, 181, 42, 43, 154
-};
-
-// GLOBAL: CARMA2_HW 0x00599a18
-int gFlic_bunch2[8] = {
-    70, 71, 72, 73, 74, 56, 57, 59
-};
-
-// GLOBAL: CARMA2_HW 0x00599a38
-int gFlic_bunch3[13] = {
-    40, 41, 42, 43, 44, 45, 50, 51, 73, 74, 56, 57, 59
-};
-
-// GLOBAL: CARMA2_HW 0x00599a70
-int gFlic_bunch4[22] = {
-    80, 81, 82, 83, 84, 85, 42, 43, 88, 45, 110, 111, 42, 43, 45, 115,
-    116, 117, 118, 119, 120, 121
-};
-
-// GLOBAL: CARMA2_HW 0x00599ac8
-int gFlic_bunch5[5] = {
-    100, 101, 42, 43, 45
-};
-
-// GLOBAL: CARMA2_HW 0x00599ae0
-int gFlic_bunch6[51] = {
-    190, 191, 192, 42, 43, 195, 200, 201, 210, 212, 213, 220, 221, 222,
-    220, 221, 225, 230, 231, 42, 43, 154, 45, 220, 221, 222, 220, 221,
-    225, 250, 251, 42, 43, 254, 255, 256, 154, 42, 43, 260, 220, 221,
-    222, 220, 221, 225, 280, 281, 42, 43, 284
-};
-
-// GLOBAL: CARMA2_HW 0x00599bb0
-int gFlic_bunch7[7] = {
-    130, 131, 132, 42, 43, 135, 45
-};
-
-// GLOBAL: CARMA2_HW 0x00599bd0
-int gFlic_bunch8[16] = {
-    290, 291, 292, 293, 294, 295, 296, 297, 42, 43, 154, 301, 42, 43, 304, 305
-};
-
-// GLOBAL: CARMA2_HW 0x00599c10
-tFlic_bunch gFlic_bunch[9] = {
-    { CARPOCALYPSE2_ASIZE(gFlic_bunch0), gFlic_bunch0 },
-    { CARPOCALYPSE2_ASIZE(gFlic_bunch1), gFlic_bunch1 },
-    { CARPOCALYPSE2_ASIZE(gFlic_bunch2), gFlic_bunch2 },
-    { CARPOCALYPSE2_ASIZE(gFlic_bunch3), gFlic_bunch3 },
-    { CARPOCALYPSE2_ASIZE(gFlic_bunch4), gFlic_bunch4 },
-    { CARPOCALYPSE2_ASIZE(gFlic_bunch5), gFlic_bunch5 },
-    { CARPOCALYPSE2_ASIZE(gFlic_bunch6), gFlic_bunch6 },
-    { CARPOCALYPSE2_ASIZE(gFlic_bunch7), gFlic_bunch7 },
-    { CARPOCALYPSE2_ASIZE(gFlic_bunch8), gFlic_bunch8 },
-};
-
 // GLOBAL: CARMA2_HW 0x006861e8
 extern tFlic_descriptor* gFirst_flic;
 // GLOBAL: CARMA2_HW 0x006862f8
@@ -546,6 +482,70 @@ tFlic_spec gMain_flic_list[372] = {
     { 0 },
     { 0 },
     { 0 },
+};
+
+// GLOBAL: CARMA2_HW 0x00599920
+int gFlic_bunch0[29] = {
+    0, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 35, 26,
+    27, 36, 28, 29, 130, 131, 132, 42, 43, 135, 45
+};
+
+// GLOBAL: CARMA2_HW 0x00599998
+int gFlic_bunch1[31] = {
+    140, 141, 42, 43, 144, 145, 146, 147, 45, 150, 151, 42, 43, 154, 155,
+    156, 160, 161, 42, 43, 154, 170, 171, 176, 177, 172, 180, 181, 42, 43, 154
+};
+
+// GLOBAL: CARMA2_HW 0x00599a18
+int gFlic_bunch2[8] = {
+    70, 71, 72, 73, 74, 56, 57, 59
+};
+
+// GLOBAL: CARMA2_HW 0x00599a38
+int gFlic_bunch3[13] = {
+    40, 41, 42, 43, 44, 45, 50, 51, 73, 74, 56, 57, 59
+};
+
+// GLOBAL: CARMA2_HW 0x00599a70
+int gFlic_bunch4[22] = {
+    80, 81, 82, 83, 84, 85, 42, 43, 88, 45, 110, 111, 42, 43, 45, 115,
+    116, 117, 118, 119, 120, 121
+};
+
+// GLOBAL: CARMA2_HW 0x00599ac8
+int gFlic_bunch5[5] = {
+    100, 101, 42, 43, 45
+};
+
+// GLOBAL: CARMA2_HW 0x00599ae0
+int gFlic_bunch6[51] = {
+    190, 191, 192, 42, 43, 195, 200, 201, 210, 212, 213, 220, 221, 222,
+    220, 221, 225, 230, 231, 42, 43, 154, 45, 220, 221, 222, 220, 221,
+    225, 250, 251, 42, 43, 254, 255, 256, 154, 42, 43, 260, 220, 221,
+    222, 220, 221, 225, 280, 281, 42, 43, 284
+};
+
+// GLOBAL: CARMA2_HW 0x00599bb0
+int gFlic_bunch7[7] = {
+    130, 131, 132, 42, 43, 135, 45
+};
+
+// GLOBAL: CARMA2_HW 0x00599bd0
+int gFlic_bunch8[16] = {
+    290, 291, 292, 293, 294, 295, 296, 297, 42, 43, 154, 301, 42, 43, 304, 305
+};
+
+// GLOBAL: CARMA2_HW 0x00599c10
+tFlic_bunch gFlic_bunch[9] = {
+    { CARPOCALYPSE2_ASIZE(gFlic_bunch0), gFlic_bunch0 },
+    { CARPOCALYPSE2_ASIZE(gFlic_bunch1), gFlic_bunch1 },
+    { CARPOCALYPSE2_ASIZE(gFlic_bunch2), gFlic_bunch2 },
+    { CARPOCALYPSE2_ASIZE(gFlic_bunch3), gFlic_bunch3 },
+    { CARPOCALYPSE2_ASIZE(gFlic_bunch4), gFlic_bunch4 },
+    { CARPOCALYPSE2_ASIZE(gFlic_bunch5), gFlic_bunch5 },
+    { CARPOCALYPSE2_ASIZE(gFlic_bunch6), gFlic_bunch6 },
+    { CARPOCALYPSE2_ASIZE(gFlic_bunch7), gFlic_bunch7 },
+    { CARPOCALYPSE2_ASIZE(gFlic_bunch8), gFlic_bunch8 },
 };
 
 // Use this function to avoid unaligned memory access.

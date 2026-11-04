@@ -17,6 +17,11 @@
 #include "structur.h"
 #include "utility.h"
 
+extern const br_scalar gFloat_00589b58;
+extern const br_scalar gFloat_00589b5c;
+extern const br_scalar gFloat_00589b60;
+extern const br_scalar gFloat_00589b64;
+
 // GLOBAL: CARMA2_HW 0x0074d3b0
 int gCredits_wasting_car[3];
 
@@ -135,23 +140,23 @@ void C2_HOOK_FASTCALL DoPratcamHit(br_vector3* pVelocity) {
 
     magnitude_squared = BrVector3LengthSquared(pVelocity);
     offset = 0;
-    if (magnitude_squared > 0.2f) {
+    if (magnitude_squared > gFloat_00589b58) {
         offset = 8;
-    } else if (magnitude_squared > 0.015f) {
+    } else if (magnitude_squared > gFloat_00589b5c) {
         offset = 4;
-    } else if (!(magnitude_squared >= 0.001f)) {
+    } else if (!(magnitude_squared >= gFloat_00589b60)) {
         return;
     }
 
     abs_z = fabs(pVelocity->v[2]);
     abs_x = fabs(pVelocity->v[0]);
     if (abs_x > abs_z) {
-        if (pVelocity->v[0] < 0.f) {
+        if (pVelocity->v[0] < gFloat_00589b64) {
             PratcamEvent(offset + 16);
         } else {
             PratcamEvent(offset + 15);
         }
-    } else if (pVelocity->v[2] < 0.f) {
+    } else if (pVelocity->v[2] < gFloat_00589b64) {
         PratcamEvent(offset + 13);
     } else {
         PratcamEvent(offset + 14);

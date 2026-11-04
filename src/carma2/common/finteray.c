@@ -138,7 +138,6 @@ const tPolyhedron_edge_indexes gBox_edges_0058f7f0[12] = {
 
 #include <string.h>
 
-/* FP matching helpers ported from upstream 34-finteray.c (REC2). */
 static float C2_HOOK_FASTCALL FinterayScalar(double value) {
     volatile float scalar = (float)value;
     return scalar;
@@ -1628,7 +1627,7 @@ int C2_HOOK_FASTCALL SphereBoxIntersection(br_bounds* pBounds, br_vector3* pPoin
     int axis;
     br_scalar closest;
     br_scalar difference;
-    br_scalar distance = 0.0f;
+    br_scalar distance = gUNK_00589fac;
 
     for (axis = 0; axis < 3; axis++) {
         if (!(pPoint->v[axis] > pBounds->min.v[axis])) {

@@ -109,6 +109,7 @@ int C2_HOOK_FASTCALL NetSummary_Infunc(tFrontend_spec* pFrontend) {
     return 1;
 }
 
+#pragma inline_depth(0)
 // FUNCTION: CARMA2_HW 0x0044bac0
 void C2_HOOK_FASTCALL DrawThisCarIconNow(int pCar_index, int pX, int pY) {
 
@@ -120,35 +121,14 @@ void C2_HOOK_FASTCALL DrawThisCarIconNow(int pCar_index, int pX, int pY) {
     BrZbsSceneRender(g2d_camera, g2d_camera, gBack_screen, gDepth_buffer);
     BrActorRemove(gCar_icons_model_actor);
 }
+#pragma inline_depth()
 
-void C2_HOOK_FASTCALL NetSummary_Draw(tFrontend_spec* pFrontend) {
-    int i;
-
-    for (i = 0; i < gNumber_of_net_players; i++) {
-
-        pFrontend->items[0 + i].visible = 1;
-        pFrontend->items[12 + i].visible = 1;
-        pFrontend->items[24 + i].visible = 1;
-        pFrontend->items[36 + i].visible = 1;
-        pFrontend->items[48 + i].visible = 1;
-        pFrontend->items[65 + i].visible = 1;
-        DrawThisCarIconNow(gNet_players[i].car_index, 88, 112 + 24 * i);
-    }
-
-    for (i = gNumber_of_net_players; i < kMax_netplayers; i++) {
-
-        pFrontend->items[0 + i].visible = 0;
-        pFrontend->items[12 + i].visible = 0;
-        pFrontend->items[24 + i].visible = 0;
-        pFrontend->items[36 + i].visible = 0;
-        pFrontend->items[48 + i].visible = 0;
-        pFrontend->items[65 + i].visible = 0;
-    }
-}
-
+#pragma inline_depth(0)
 // FUNCTION: CARMA2_HW 0x00474400
 int C2_HOOK_FASTCALL NetSummary_MenuHandler(tFrontend_spec* pFrontend) {
     int result;
+    int i;
+    int player_index;
 
     if (gFrontend_netsummary_first_iteration) {
 
@@ -159,6 +139,26 @@ int C2_HOOK_FASTCALL NetSummary_MenuHandler(tFrontend_spec* pFrontend) {
         return 1;
     }
     result = Generic_MenuHandler(pFrontend);
-    NetSummary_Draw(pFrontend);
+    for (i = 0; i < gNumber_of_net_players; i++) {
+
+        player_index = gPlayer_lookup_netsummary[i];
+        pFrontend->items[player_index].visible = 1;
+        pFrontend->items[12 + player_index].visible = 1;
+        pFrontend->items[24 + player_index].visible = 1;
+        pFrontend->items[36 + player_index].visible = 1;
+        pFrontend->items[48 + player_index].visible = 1;
+        pFrontend->items[65 + player_index].visible = 1;
+        DrawThisCarIconNow(gNet_players[player_index].car_index, 88, 112 + 24 * i);
+    }
+    for (i = gNumber_of_net_players; i < kMax_netplayers; i++) {
+
+        pFrontend->items[0 + i].visible = 0;
+        pFrontend->items[12 + i].visible = 0;
+        pFrontend->items[24 + i].visible = 0;
+        pFrontend->items[36 + i].visible = 0;
+        pFrontend->items[48 + i].visible = 0;
+        pFrontend->items[65 + i].visible = 0;
+    }
     return result;
 }
+#pragma inline_depth()

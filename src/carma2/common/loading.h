@@ -393,7 +393,7 @@ void C2_HOOK_FASTCALL InitFunkGrooveFlags(void);
 
 void C2_HOOK_FASTCALL AboutToLoadFirstCar(void);
 
-void C2_HOOK_FASTCALL LoadCopCars(void);
+void C2_HOOK_FASTCALL LoadCopCars(tRace_info* pRace_info);
 
 void C2_HOOK_FASTCALL LoadAIWorldTrackInfo(FILE* pF);
 
@@ -410,6 +410,8 @@ void C2_HOOK_FASTCALL GetDamageProgram(FILE* pF, tCar_spec* pCar_spec, tImpact_l
 void C2_HOOK_FASTCALL UpdateMaterialsForCar(tBrender_storage* pStorage, tCar_spec* pCar_spec);
 
 void C2_HOOK_FASTCALL LoadCarMaterials(tBrender_storage* pStorage, const char* pPath, tCar_spec* pCar_spec);
+
+void C2_HOOK_FASTCALL SmoothlySetCarMaterialFlags(tBrender_storage* pStorage, tCar_spec* pCar_spec);
 
 void C2_HOOK_FASTCALL LoadCarShrapnelMaterials(FILE* pF, tCar_spec* pCar_spec);
 

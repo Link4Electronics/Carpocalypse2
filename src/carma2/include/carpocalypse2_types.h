@@ -3487,7 +3487,7 @@ typedef enum {
 typedef struct {
     tU16 min_count;
     tU16 max_count;
-    tU16 count_frames;
+    tS16 count_frames;
     tU16 min_start_delay_ms;
     tU16 max_start_delay_ms;
     tU16 min_frametime_ms;
@@ -5496,7 +5496,7 @@ typedef struct {
     int grid_position_set;
     undefined4 field_0x58;
     int opponent_list_index;
-    int field_0x60;
+    int awaiting_confirmation;
     int score2;
     int credits;
     int wasted;
@@ -5736,6 +5736,8 @@ typedef struct {
 } tRepair_animation;
 
 typedef enum {
+    eNet_message_chunk_type_5 = 0x5,
+    eNet_message_chunk_type_start_race = 0xc,
     eNet_message_chunk_type_car_data = 0x10,
     eNet_message_chunk_type_netsynch = 0xe,
     eNet_message_chunk_type_non_car = 0x11,
@@ -5746,12 +5748,27 @@ typedef enum {
     eNet_message_chunk_type_car_crush = 0x20,
     eNet_message_chunk_type_car_crush_sync = 0x2a,
     eNet_message_chunk_type_toggle_doors = 0x2c,
+    eNet_message_chunk_type_view_car = 0x2f,
 } tNet_message_chunk_type;
 
 typedef struct {
     tU8 size;
     tU8 type;
 } tNet_message_chunk_header;
+
+typedef struct {
+    tU8 index;
+    tU8 next_car_index;
+    tCompressed_matrix3 matrix;
+} tNet_start_race_car;
+
+typedef struct {
+    tNet_message_chunk_header header;
+    tU8 car_count;
+    tU8 racing;
+    tU8 next_race;
+    tNet_start_race_car car_list[12];
+} tNet_message_chunk_start_race;
 
 typedef struct {
     tNet_message_chunk_header header;
@@ -5813,6 +5830,12 @@ typedef struct {
     tNet_message_chunk_header header;
     int id;
 } tNet_message_chunk_toggle_doors;
+
+typedef struct {
+    tNet_message_chunk_header header;
+    undefined field_0x2[2];
+    tPlayer_ID player;
+} tNet_message_chunk_view_car;
 
 typedef struct {
     tNet_message_chunk_header header;
@@ -5992,12 +6015,14 @@ typedef struct {
 
 typedef union {
     tNet_message_chunk_raw raw;
+    tNet_message_chunk_start_race start_race; /* type = 0xc */
     tNet_message_chunk_non_car non_car; /* type = 0x11 */
     tNet_message_chunk_non_car_position non_car_position; /* type = 0x1c */
     tNet_message_chunk_scores scores; /* type = 0x18 */
     tNet_message_chunk_oil_spill oil_spill; /* type = 0x1f*/
     tNet_message_car_crush car_crush; /* type = 0x20 */
     tNet_message_chunk_toggle_doors toggle_doors; /* type = 0x2c */
+    tNet_message_chunk_view_car view_car; /* type = 0x2f */
     tNet_message_chunk_mine_explode mine_explode; /* type = 0x31 */
     tNet_message_chunk_detach_bit detach_bit; /* type = 0x33 */
     tNet_message_chunk_powerup powerup; /* type = 0x16 */

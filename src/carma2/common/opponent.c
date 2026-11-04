@@ -1207,9 +1207,11 @@ void C2_HOOK_FASTCALL DisposeOpponents(void) {
     int i;
 
     C2_HOOK_BUG_ON(offsetof(tIntelligent_vehicles, cops) != 12856);
-    for (i = 0; i < gProgram_state.AI_vehicles.number_of_cops; i++) {
-        DisposeCar(gProgram_state.AI_vehicles.cops[i].car_spec, (i == gBIG_APC_index) ? 99 : 98);
-        BrMemFree(gProgram_state.AI_vehicles.cops[i].car_spec);
+    if (gProgram_state.AI_vehicles.number_of_cops != 0) {
+        for (i = 0; i < gProgram_state.AI_vehicles.number_of_cops; i++) {
+            DisposeCar(gProgram_state.AI_vehicles.cops[i].car_spec, (i == gBIG_APC_index) ? 99 : 98);
+            BrMemFree(gProgram_state.AI_vehicles.cops[i].car_spec);
+        }
     }
 }
 
@@ -3808,7 +3810,7 @@ float C2_HOOK_FASTCALL GetOpponentsSectionWidth(const tOpponent_spec* pOpponent_
         }
     }
     if (pSection >= 15000) {
-        return 0.5f;
+        return gOppo_pursuit_velocity_scale;
     }
     if (pSection == 10000) {
         return pOpponent_spec->pursue_car_data.direct_line_section.width;

@@ -410,6 +410,7 @@ void C2_HOOK_FASTCALL CleanPolyFontDanglers(void) {
     gCount_polyfont_glyph_actors = 0;
 }
 
+#pragma inline_depth(0)
 // FUNCTION: CARMA2_HW 0x0044b6a0
 void C2_HOOK_FASTCALL DoTestHeadup(void) {
     // GLOBAL: CARMA2_HW 0x006815c0
@@ -426,8 +427,24 @@ void C2_HOOK_FASTCALL DoTestHeadup(void) {
         gStatbarHUD5_material->colour_map = gDamage_hud;
         BrMaterialUpdate(gStatbarHUD5_material, BR_MATU_COLOURMAP);
     }
-
-    if (gNet_mode == eNet_mode_none) {
+    if (gNet_mode != eNet_mode_none) {
+        if (gHeadup_detail_level % 3 > 0) {
+            BrMatrix34Translate(&gStatbarHUD5_actor->t.t.mat, -448.f, 0.f, 0.f);
+            RenderThisHeadup(gStatbarHUD5_actor);
+            RenderThisHeadup(gStatbarHUD1_actor);
+            if (gHeadup_detail_level % 3 > 1) {
+                BrMatrix34Translate(&gArmour_actor->t.t.mat, 48.f, 35.f, 0.f);
+                BrMatrix34Translate(&gPower_actor->t.t.mat, -102.f, 5.f, 0.f);
+                BrMatrix34Translate(&gOffense_actor->t.t.mat, -252.f, -25.f, 0.f);
+                RenderThisHeadup(gArmour_actor);
+                RenderThisHeadup(gPower_actor);
+                RenderThisHeadup(gOffense_actor);
+            }
+        }
+        if (gHeadup_detail_level > 2) {
+            RenderThisHeadup(gHeadup_actor);
+        }
+    } else {
         BrMatrix34Translate(&gArmour_actor->t.t.mat, 0.f, 0.f, 0.f);
         BrMatrix34Translate(&gPower_actor->t.t.mat, 0.f, 0.f, 0.f);
         BrMatrix34Translate(&gOffense_actor->t.t.mat, 0.f, 0.f, 0.f);
@@ -450,25 +467,12 @@ void C2_HOOK_FASTCALL DoTestHeadup(void) {
                 PolyFontText(gHeadup_oppo_ped_text, 335, 50, kPolyfont_ingame_medium_blue, eJust_centre, 0);
             }
         }
-    } else {
-        if (gHeadup_detail_level % 3 > 0) {
-            BrMatrix34Translate(&gStatbarHUD5_actor->t.t.mat, -448.f, 0.f, 0.f);
-            RenderThisHeadup(gStatbarHUD5_actor);
-            RenderThisHeadup(gStatbarHUD1_actor);
-            if (gHeadup_detail_level % 3 > 1) {
-                BrMatrix34Translate(&gArmour_actor->t.t.mat, 48.f, 35.f, 0.f);
-                BrMatrix34Translate(&gPower_actor->t.t.mat, -102.f, 5.f, 0.f);
-                BrMatrix34Translate(&gOffense_actor->t.t.mat, -252.f, -25.f, 0.f);
-                RenderThisHeadup(gArmour_actor);
-                RenderThisHeadup(gPower_actor);
-                RenderThisHeadup(gOffense_actor);
-            }
+        if (gHeadup_detail_level > 2) {
+            RenderThisHeadup(gHeadup_actor);
         }
     }
-    if (gHeadup_detail_level > 2) {
-        RenderThisHeadup(gHeadup_actor);
-    }
 }
+#pragma inline_depth()
 
 // GLOBAL: CARMA2_HW 0x0074cf90
 br_pixelmap* gDAT_0074cf90;

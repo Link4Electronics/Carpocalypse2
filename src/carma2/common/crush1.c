@@ -24,6 +24,9 @@
 #include <brender/brender.h>
 
 #include "c2_string.h"
+
+extern const double gDouble_00589b40;
+
 // GLOBAL: CARMA2_HW 0x00679698
 br_scalar gDistortion_factor;
 
@@ -88,6 +91,7 @@ const br_scalar gFloat_00589a78 = 47.6099967956543f;
 
 extern br_scalar gMax_crush_dist_sq;
 extern br_scalar gCrushZero;
+extern const br_scalar gFLOAT_00589a2c;
 extern br_scalar gCrushSqrtHalf;
 extern const br_scalar gFLOAT_00589a54;
 extern br_scalar gFLOAT_00589a5c;
@@ -629,19 +633,14 @@ float C2_HOOK_FASTCALL PointSimplexDistSq(const br_vector3* pP, int pCount, cons
     float closest_distance = BR_SCALAR_MAX;
     int i;
 
-    for (i = 0; i < pCount; i++) {
+    for (i = 1; i < pCount; i++) {
         int j;
 
         for (j = i + 1; j < pCount; j++) {
-            int k;
+            float distance = PointTriangleDistSq(pP, &pVertices[0], &pVertices[i], &pVertices[j]);
 
-            for (k = j + 1; k < pCount; k++) {
-                float distance = PointTriangleDistSq(pP, &pVertices[i], &pVertices[j], &pVertices[k]);
-
-                if (distance < closest_distance) {
-                    closest_distance = distance;
-                }
-
+            if (distance < closest_distance) {
+                closest_distance = distance;
             }
         }
     }
@@ -872,24 +871,18 @@ void C2_HOOK_FASTCALL SetCrush(tCar_crush* pCrush, int pCount_vectors, br_vector
 int C2_HOOK_FASTCALL QuantizeWithinBounds(br_scalar pQuant, br_scalar pMin, br_scalar pMax, br_scalar* pValue) {
     br_scalar range = pMax - pMin;
     br_scalar rounded;
-    br_scalar step;
-    int64_t integral;
     tS32 count;
+    br_scalar step;
     tS32 index;
 
     /* Choose a whole number of cells spanning the bounds. */
     rounded = range / pQuant;
-    rounded += rounded > 0.f ? 0.5f : -0.5f;
-    /* Counts and indices wrap to signed 32 bits after truncation. */
-    if (rounded >= -9223372036854775808.0 && rounded < 9223372036854775808.0) {
-        integral = (tU32)(int64_t)rounded;
+    if (rounded > gCrushZero) {
+        rounded += 0.5f;
     } else {
-        integral = 0;
+        rounded -= gFLOAT_00589a2c;
     }
-    if (integral > 0x7fffffff) {
-        integral -= (int64_t)0xffffffffu + 1;
-    }
-    count = (tS32)integral;
+    count = (tS32)rounded;
     if (count == 0) {
         count = 1;
     }
@@ -897,16 +890,12 @@ int C2_HOOK_FASTCALL QuantizeWithinBounds(br_scalar pQuant, br_scalar pMin, br_s
 
     /* Snap to the grid only when the selected cell is within the bounds. */
     rounded = (*pValue - pMin) / step;
-    rounded += rounded > 0.f ? 0.5f : -0.5f;
-    if (rounded >= -9223372036854775808.0 && rounded < 9223372036854775808.0) {
-        integral = (tU32)(int64_t)rounded;
+    if (rounded > gCrushZero) {
+        rounded += 0.5f;
     } else {
-        integral = 0;
+        rounded -= gFLOAT_00589a2c;
     }
-    if (integral > 0x7fffffff) {
-        integral -= (int64_t)0xffffffffu + 1;
-    }
-    index = (tS32)integral;
+    index = (tS32)rounded;
     if (index < 0 || index > count) {
         return 0;
     }
@@ -1297,10 +1286,10 @@ void C2_HOOK_FASTCALL TotallyRepairACar(tCar_spec* pCar_spec) {
 // FUNCTION: CARMA2_HW 0x0043ac90
 br_scalar C2_HOOK_FASTCALL NormalizedAngle(br_angle pAngle) {
     if (pAngle < BR_ANGLE_DEG(180)) {
-        return (br_scalar)(pAngle / 65536.0);
+        return (br_scalar)(pAngle * gDouble_00589b40);
     }
     pAngle = (br_angle)-pAngle;
-    return (br_scalar)(pAngle / 65536.0);
+    return (br_scalar)(pAngle * gDouble_00589b40);
 }
 
 br_scalar C2_HOOK_FASTCALL CalculateAmountRepairedFraction(br_angle pOriginal_x, br_angle pOriginal_y, br_angle pOriginal_z, br_angle pRepair_x, br_angle pRepair_y, br_angle pRepair_z, br_scalar* pOriginal_amount) {
@@ -1400,8 +1389,8 @@ void C2_HOOK_FASTCALL ARApplyFlap(br_actor* pActor, tS16 pAngle) {
     axis.v[1] = user_crush_data->models[0]->vertices[flap_data->hinge1].p.v[1] - vertex->p.v[1];
     axis.v[2] = user_crush_data->models[0]->vertices[flap_data->hinge1].p.v[2] - vertex->p.v[2];
     length = sqrtf(axis.v[0] * axis.v[0] + axis.v[1] * axis.v[1] + axis.v[2] * axis.v[2]);
-    if (length > 2.3841858e-7f) {
-        br_scalar scale = (br_scalar)(1.0 / length);
+    if (length > gFLOAT_00589a5c) {
+        br_scalar scale = (br_scalar)(gDOUBLE_00589a60 / length);
         axis.v[0] *= scale;
         axis.v[1] *= scale;
         axis.v[2] *= scale;
@@ -1438,7 +1427,7 @@ void C2_HOOK_FASTCALL ARUndoSplitWeld(tCar_spec* pCar_spec) {
         } while (i < pCar_spec->count_detail_levels);
     }
     pCar_spec->car_model_actor->model = car_models[0];
-    BrModelFree(BrModelRemove(car_crush_spec->actor->model));
+    BrModelFree(BrModelRemove(car_crush_spec->model_actor->model));
     DRActorEnumRecurse(pCar_spec->car_model_actor, MakeCarModelsMaterialsSingleSided, pCar_spec);
 }
 

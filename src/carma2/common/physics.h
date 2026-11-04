@@ -394,6 +394,7 @@ extern void C2_HOOK_FASTCALL IncreasePhysicsScratchPointer(int pSize);
 // ClonePhysicsJoint
 
 // FreeShape
+extern void C2_HOOK_FASTCALL FreeShape(void* pData);
 
 extern void C2_HOOK_FASTCALL FreeShapeList(tPhysics_shape *pShape);
 
@@ -605,7 +606,7 @@ typedef struct tShape_overlap_work {
 int C2_HOOK_FASTCALL TestObjectOverlapRecurse(tPhysics_object* pCollision_1, tPhysics_object* pCollision_2, tPhysics_shape* pShape_1, tPhysics_shape* pShape_2);
 
 int C2_HOOK_FASTCALL TestForObjectInSensiblePlace(tPhysics_object* pCollision_info_1, tPhysics_object* pCollision_info_2, br_vector3* pVec3, tWorld_callbacks* pCar_callbacks);
-int C2_HOOK_FASTCALL TestShapeOverlap(tPhysics_object* pObjA, tPhysics_object* pObjB, tPhysics_shape* pShapeA, tPhysics_shape* pShapeB);
+int C2_HOOK_FASTCALL TestShapeEdgeIntersection(tPhysics_object* pCollision_info_1, tPhysics_object* pCollision_info_2, tPhysics_shape* pCollision_shape_1, tPhysics_shape* pCollision_shape_2);
 
 
 int C2_HOOK_FASTCALL FUN_004c2d60(tPhysics_object* pObject, tWorld_callbacks* pCar_callbacks);
