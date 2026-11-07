@@ -2706,12 +2706,12 @@ intptr_t C2_HOOK_FASTCALL DRActorEnumRecurseWithTranslation(br_actor* pActor, br
     intptr_t result;
     br_actor* a;
 
-    if (pDelta == NULL) {
-        BrVector3Set(&delta, 0.0f, 0.0f, 0.0f);
-    } else {
+    if (pDelta != NULL) {
         delta.v[0] = pActor->t.t.mat.m[3][0] + pDelta->v[0];
         delta.v[1] = pActor->t.t.mat.m[3][1] + pDelta->v[1];
         delta.v[2] = pActor->t.t.mat.m[3][2] + pDelta->v[2];
+    } else {
+        BrVector3Set(&delta, 0.0f, 0.0f, 0.0f);
     }
     result = cbfn(pActor, &delta, pContext);
     if (result != 0) {
@@ -4554,7 +4554,7 @@ void C2_HOOK_FASTCALL ReAttachBit(tCar_spec* pCar, br_actor* pParent_actor, br_a
             flap_data->field_0x0 = (tU8)zero;
         }
     } else {
-        model = user_crush_data->models[0];
+        model = ((tUser_crush_data*)pActor->user)->models[0];
         vertex = &model->vertices[flap_data->hinge0];
         BrMatrix34Translate(&pActor->t.t.mat,
             -vertex->p.v[0], -vertex->p.v[1], -vertex->p.v[2]);
@@ -4568,16 +4568,18 @@ void C2_HOOK_FASTCALL ReAttachBit(tCar_spec* pCar, br_actor* pParent_actor, br_a
 
         if (gCount_toggled_doors != 16) {
             index = 0;
-            while (index < gCount_toggled_doors && gToggled_doors[index].actor != pActor) {
+            while (index < gCount_toggled_doors) {
+                if (gToggled_doors[index].actor == pActor) {
+                    goto toggled_done;
+                }
                 index++;
             }
-            if (index == gCount_toggled_doors) {
-                gToggled_doors[index].actor = pActor;
-                gToggled_doors[index].car = pCar;
-                gToggled_doors[index].field_0x8 = 1;
-                gToggled_doors[index].field_0xc = 0;
-                gCount_toggled_doors++;
-            }
+            gToggled_doors[gCount_toggled_doors].actor = pActor;
+            gToggled_doors[gCount_toggled_doors].car = pCar;
+            gToggled_doors[gCount_toggled_doors].field_0x8 = 1;
+            gToggled_doors[gCount_toggled_doors].field_0xc = 0;
+            gCount_toggled_doors++;
+toggled_done:;
         }
         FUN_00434320(pActor, zero);
     }
@@ -5494,23 +5496,23 @@ void C2_HOOK_FASTCALL ApplyRandomDamageToCar(tCar_spec* pCar, int pMinDamage, in
 
 // FUNCTION: CARMA2_HW 0x00441350
 int C2_HOOK_FASTCALL GetAverageCrushLevel(tCar_spec* pCar) {
-    int wheels_avg;
     int engine;
     int trans;
     int driver;
+    int wheels_avg;
     int avg;
     int result;
 
     if (pCar->knackered) {
         return 0;
     }
-    wheels_avg = pCar->damage_units[eDamage_lr_wheel].damage_level;
-    wheels_avg += pCar->damage_units[eDamage_rr_wheel].damage_level;
-    wheels_avg += pCar->damage_units[eDamage_lf_wheel].damage_level;
-    wheels_avg += pCar->damage_units[eDamage_rf_wheel].damage_level;
+    wheels_avg = pCar->damage_units[eDamage_lr_wheel].damage_level
+               + pCar->damage_units[eDamage_rr_wheel].damage_level
+               + pCar->damage_units[eDamage_lf_wheel].damage_level;
     engine = pCar->damage_units[eDamage_engine].damage_level;
     trans = pCar->damage_units[eDamage_transmission].damage_level;
     driver = pCar->damage_units[eDamage_driver].damage_level;
+    wheels_avg += pCar->damage_units[eDamage_rf_wheel].damage_level;
     wheels_avg /= 4;
     if (engine > 75 || trans > 75 || driver > 75 || wheels_avg > 75) {
         if (engine > trans && engine > driver && engine > wheels_avg) {
@@ -10564,10 +10566,10 @@ void C2_HOOK_FASTCALL FUN_0043c940(void* pParam) {
                     }
                 }
                 entry = &gNet_crush_semi_detach_bit_list[count];
-                entry->actor = actor;
                 entry->car = car;
+                entry->actor = actor;
                 entry->field_0x8 = *(tU32*)((tU8*)pParam + 0xc);
-                ExpandVector3(&gNet_crush_semi_detach_bit_list[gCount_net_crush_semi_detach_bit_list].field_0xc,
+                ExpandVector3(&entry->field_0xc,
                     (tCompressed_vector3*)((tU8*)pParam + 0x10), -10.f, 10.f);
                 ExpandVector3(&gNet_crush_semi_detach_bit_list[gCount_net_crush_semi_detach_bit_list].field_0x30,
                     (tCompressed_vector3*)((tU8*)pParam + 0x22), -10.f, 10.f);
