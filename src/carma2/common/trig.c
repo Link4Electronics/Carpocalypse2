@@ -177,7 +177,7 @@ float C2_HOOK_FASTCALL FastFloatSin(int pAngle_in_degrees) {
         return -gFloat_sine_table[pAngle_in_degrees - 180];
     }
     if (pAngle_in_degrees > 90) {
-        return gFloat_sine_table[180 - pAngle_in_degrees];
+        return *(gFloat_sine_table + 180 - pAngle_in_degrees);
     }
     return gFloat_sine_table[pAngle_in_degrees];
 }
@@ -200,7 +200,7 @@ float C2_HOOK_FASTCALL FastFloatCos(int pAngle_in_degrees) {
     if (pAngle_in_degrees > 90) {
         return -gFloat_sine_table[pAngle_in_degrees - 90];
     }
-    return gFloat_sine_table[90 - pAngle_in_degrees];
+    return *(gFloat_sine_table + 90 - pAngle_in_degrees);
 }
 
 // FUNCTION: CARMA2_HW 0x005114b0

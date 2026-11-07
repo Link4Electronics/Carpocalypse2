@@ -1030,10 +1030,14 @@ void C2_HOOK_FASTCALL RemoveTail(void) {
         return;
     }
     node = gMutant_tail_first_collision_info;
-    while (node != NULL) {
+    if (gMutant_tail_first_collision_info == NULL) {
+        goto skip;
+    }
+    do {
         BrActorRemove(node->actor);
         node = node->child;
-    }
+    } while (node != NULL);
+skip:
     if (gMutant_tail_state == 2) {
         PHILRemoveFromParentChain(gMutant_tail_first_collision_info);
     } else {

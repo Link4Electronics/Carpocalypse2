@@ -7953,24 +7953,37 @@ void C2_HOOK_FASTCALL SetPedXZDirection(tPedestrian* pPed, br_vector3* pDir, flo
     }
 }
 
+#define PedNormaliseVector3(v1, v2)                              \
+    do {                                                         \
+        br_scalar _scale;                                        \
+        _scale = BR_LENGTH3((v2)->v[0], (v2)->v[1], (v2)->v[2]); \
+        if (_scale > gPed_direction_length_epsilon) {            \
+            _scale = gPed_kill_min_height / _scale;              \
+            (v1)->v[0] = (v2)->v[0] * _scale;                    \
+            (v1)->v[1] = (v2)->v[1] * _scale;                    \
+            (v1)->v[2] = (v2)->v[2] * _scale;                    \
+        } else {                                                 \
+            (v1)->v[0] = 1.0f;                                   \
+            (v1)->v[1] = 0.0f;                                   \
+            (v1)->v[2] = 0.0f;                                   \
+        }                                                        \
+    } while (0)
+
 // FUNCTION: CARMA2_HW 0x004cfab0
 float C2_HOOK_FASTCALL RescanPedProximity(tPedestrian* pPed, br_vector3* pArg2) {
-    tPed_cache_006944c0* cache;
-    tPed_face_cache_0x34* head;
-    tFace_ref* face;
     br_vector3 dir;
+    float len;
     float best;
     float result;
-    float len;
     float nx;
     float nz;
     br_matrix34* mat;
-    br_vector3* pMatVec;
     tFace_ref* entry;
+    br_vector3* pMatVec;
+    tPed_face_cache_0x34* head;
     int i;
     int matched;
     int use_cache;
-    br_vector3 cross;
     br_vector3 norm;
     br_vector3 neg;
     br_vector3 plane;
@@ -7992,46 +8005,34 @@ float C2_HOOK_FASTCALL RescanPedProximity(tPedestrian* pPed, br_vector3* pArg2) 
     int idx1;
     int idx2;
     int cell_count;
-    tPed_flag_cell* cell;
-    union {
-        double d;
-        int i;
-    } u;
+    tPed_proximity_side_cache* cell;
+    double probe_distance;
+    int probe_done;
     int flag;
     int is_running;
 
-    cache = pPed->field_0x0c;
-    head = cache->field_0xb0;
-    if (head == NULL) {
-        return 10000.0f;
+    head = pPed->field_0x0c->field_0xb0;
+    if (head == NULL || head->field_0x30 == NULL) {
+        return gPedProximity_no_hit_distance;
     }
-    face = head->field_0x30;
-    if (face == NULL) {
-        return 10000.0f;
-    }
-    cache->field_0x00.v[0] = face->normal.v[0];
-    cache->field_0x00.v[1] = face->normal.v[1];
-    cache->field_0x00.v[2] = face->normal.v[2];
+    BrVector3Copy(&pPed->field_0x0c->field_0x00, &head->field_0x30->normal);
     if (pArg2 != NULL) {
-        BrVector3Normalise(&dir, pArg2);
+        PedNormaliseVector3(&dir, pArg2);
     } else {
-        BrVector3Normalise(&dir, &pPed->character->field_0xc0);
+        PedNormaliseVector3(&dir, &pPed->character->field_0xc0);
     }
     best = 10000.0f;
-    cache->field_0x0c = dir;
-    len = sqrtf(dir.v[2] * dir.v[2] + dir.v[0] * dir.v[0]);
+    cell_count = 0;
+    probe_done = 0;
+    BrVector3Copy(&pPed->field_0x0c->field_0x0c, &dir);
+    len = sqrtf(dir.v[0] * dir.v[0] + dir.v[2] * dir.v[2]);
     nz = dir.v[2] / len;
     nx = dir.v[0] / len;
     is_running = (pPed->action == ePed_action_running);
-    cache->field_0x18 &= ~0xb;
+    pPed->field_0x0c->field_0x18 &= ~0xb;
     mat = GetCharacterMatrixPtr(pPed->character);
     entry = head->field_0x0;
     pMatVec = (br_vector3*)mat->m[3];
-    cell_count = 0;
-    u.i = 0;
-    if (head->field_0x4 == 0) {
-        return best;
-    }
     for (i = 0; i < head->field_0x4; i++, entry++) {
         matched = 0;
         if (entry->normal.v[1] > gPed_cos_max_slope) {
@@ -8082,37 +8083,37 @@ float C2_HOOK_FASTCALL RescanPedProximity(tPedestrian* pPed, br_vector3* pArg2) 
             float denom;
 
             denom = BrVector3Dot(&dir, &entry->normal);
-            if (fabsf(denom) < 0.001) {
+            if (fabsf(denom) < gPedProximity_parallel_epsilon) {
                 result = 20.0f;
             } else {
                 result = (entry->d - BrVector3Dot(pMatVec, &entry->normal)) / denom;
             }
-            if (result < gConst_replay_rate_zero || result > 20.0f || result > best) {
+            if (result < gConst_replay_rate_zero || result > gPedProximity_max_distance || result > best) {
                 continue;
             }
         }
-        if (!u.i) {
-            face = head->field_0x30;
-            DRVector3SafeCross(&cross, &y_unit_vector, &dir);
-            plane = face->normal;
-            pd = face->d;
-            BrVector3Normalise(&norm, &cross);
-            neg.v[0] = -norm.v[0];
-            neg.v[1] = -norm.v[1];
-            neg.v[2] = -norm.v[2];
-            u.d = (double)pPed->character->personality->bb.max.v[0] * 1.3;
-            v.v[0] = neg.v[0] * u.d + pMatVec->v[0];
-            v.v[1] = neg.v[1] * u.d + pMatVec->v[1];
-            v.v[2] = neg.v[2] * u.d + pMatVec->v[2];
+        if (!probe_done) {
+            BrVector3Copy(&plane, &head->field_0x30->normal);
+            pd = head->field_0x30->d;
+            DRVector3SafeCross(&norm, &y_unit_vector, &dir);
+            PedNormaliseVector3(&norm, &norm);
+            BrVector3Negate(&neg, &norm);
+            probe_distance = (double)pPed->character->personality->bb.max.v[0] * gPedProximity_probe_scale;
+            v.v[0] = neg.v[0] * probe_distance + pMatVec->v[0];
+            v.v[1] = neg.v[1] * probe_distance + pMatVec->v[1];
+            v.v[2] = neg.v[2] * probe_distance + pMatVec->v[2];
             dot1 = BrVector3Dot(&v, &norm);
-            dirCopy = dir;
-            d0 = BrVector3Dot(pMatVec, &dir);
-            negN.v[0] = -face->normal.v[0];
-            negN.v[1] = -face->normal.v[1];
-            negN.v[2] = -face->normal.v[2];
+            v.v[0] = norm.v[0] * probe_distance + pMatVec->v[0];
+            v.v[1] = norm.v[1] * probe_distance + pMatVec->v[1];
+            v.v[2] = norm.v[2] * probe_distance + pMatVec->v[2];
             dot2 = BrVector3Dot(&v, &neg);
+            BrVector3Copy(&dirCopy, &dir);
+            d0 = BrVector3Dot(pMatVec, &dir);
+            probe_done = 1;
+            negN.v[0] = -head->field_0x30->normal.v[0];
+            negN.v[1] = -head->field_0x30->normal.v[1];
+            negN.v[2] = -head->field_0x30->normal.v[2];
             d1 = BrVector3Dot(pMatVec, &negN);
-            u.i = 1;
         }
             adj = entry->a;
             idx = entry->g;
@@ -8158,28 +8159,28 @@ float C2_HOOK_FASTCALL RescanPedProximity(tPedestrian* pPed, br_vector3* pArg2) 
                 int ci;
 
                 for (ci = 0; ci < cell_count; ci++) {
-                    if (gPed_flag_cells[ci].key0 == key0 && gPed_flag_cells[ci].key1 == key1) {
-                        cell = &gPed_flag_cells[ci];
+                    if (gPed_proximity_side_cache[ci].model == key0 && gPed_proximity_side_cache[ci].face_index == key1) {
+                        cell = &gPed_proximity_side_cache[ci];
                         break;
                     }
                 }
             }
             if (cell == NULL && cell_count < 0x10) {
-                cell = &gPed_flag_cells[cell_count];
+                cell = &gPed_proximity_side_cache[cell_count];
                 cell_count++;
-                memset(&cell->flags[0], 0, sizeof(cell->flags));
-                cell->key0 = key0;
-                cell->key1 = key1;
+                memset(&cell->vertex_side_flags[0], 0, sizeof(cell->vertex_side_flags));
+                cell->model = key0;
+                cell->face_index = key1;
             }
             use_cache = (cell != NULL && idx0 < 0x200);
-            if (use_cache && (cell->flags[idx0] & gPow2_word_array[3])) {
-                r = cell->flags[idx0] & gPow2_word_array[11];
+            if (use_cache && (cell->vertex_side_flags[idx0] & gPow2_word_array[3])) {
+                r = cell->vertex_side_flags[idx0] & gPow2_word_array[11];
             } else {
-                r = NormalSideOfPlane((br_vector3*)&dirCopy.v[1], &entry->v[0], d0);
+                r = NormalSideOfPlane(&entry->v[0], &dirCopy, d0);
                 if (use_cache) {
-                    cell->flags[idx0] |= gPow2_word_array[3];
+                    cell->vertex_side_flags[idx0] |= gPow2_word_array[3];
                     if (r) {
-                        cell->flags[idx0] |= gPow2_word_array[11];
+                        cell->vertex_side_flags[idx0] |= gPow2_word_array[11];
                     }
                 }
             }
@@ -8187,14 +8188,14 @@ float C2_HOOK_FASTCALL RescanPedProximity(tPedestrian* pPed, br_vector3* pArg2) 
                 goto PHASE_B;
             }
             use_cache = (cell != NULL && idx1 < 0x200);
-            if (use_cache && (cell->flags[idx1] & gPow2_word_array[3])) {
-                r = cell->flags[idx1] & gPow2_word_array[11];
+            if (use_cache && (cell->vertex_side_flags[idx1] & gPow2_word_array[3])) {
+                r = cell->vertex_side_flags[idx1] & gPow2_word_array[11];
             } else {
-                r = NormalSideOfPlane((br_vector3*)&dirCopy.v[1], &entry->v[1], d0);
+                r = NormalSideOfPlane(&entry->v[1], &dirCopy, d0);
                 if (use_cache) {
-                    cell->flags[idx1] |= gPow2_word_array[3];
+                    cell->vertex_side_flags[idx1] |= gPow2_word_array[3];
                     if (r) {
-                        cell->flags[idx1] |= gPow2_word_array[11];
+                        cell->vertex_side_flags[idx1] |= gPow2_word_array[11];
                     }
                 }
             }
@@ -8202,14 +8203,14 @@ float C2_HOOK_FASTCALL RescanPedProximity(tPedestrian* pPed, br_vector3* pArg2) 
                 goto PHASE_B;
             }
             use_cache = (cell != NULL && idx2 < 0x200);
-            if (use_cache && (cell->flags[idx2] & gPow2_word_array[3])) {
-                r = cell->flags[idx2] & gPow2_word_array[11];
+            if (use_cache && (cell->vertex_side_flags[idx2] & gPow2_word_array[3])) {
+                r = cell->vertex_side_flags[idx2] & gPow2_word_array[11];
             } else {
-                r = NormalSideOfPlane((br_vector3*)&dirCopy.v[1], &entry->v[2], d0);
+                r = NormalSideOfPlane(&entry->v[2], &dirCopy, d0);
                 if (use_cache) {
-                    cell->flags[idx2] |= gPow2_word_array[3];
+                    cell->vertex_side_flags[idx2] |= gPow2_word_array[3];
                     if (r) {
-                        cell->flags[idx2] |= gPow2_word_array[11];
+                        cell->vertex_side_flags[idx2] |= gPow2_word_array[11];
                     }
                 }
             }
@@ -8218,14 +8219,14 @@ float C2_HOOK_FASTCALL RescanPedProximity(tPedestrian* pPed, br_vector3* pArg2) 
             }
         PHASE_B:
             use_cache = (cell != NULL && idx0 < 0x200);
-            if (use_cache && (cell->flags[idx0] & gPow2_word_array[1])) {
-                r = cell->flags[idx0] & gPow2_word_array[9];
+            if (use_cache && (cell->vertex_side_flags[idx0] & gPow2_word_array[1])) {
+                r = cell->vertex_side_flags[idx0] & gPow2_word_array[9];
             } else {
-                r = NormalSideOfPlane((br_vector3*)&norm.v[1], &entry->v[0], dot1);
+                r = NormalSideOfPlane(&entry->v[0], &norm, dot1);
                 if (use_cache) {
-                    cell->flags[idx0] |= gPow2_word_array[1];
+                    cell->vertex_side_flags[idx0] |= gPow2_word_array[1];
                     if (r) {
-                        cell->flags[idx0] |= gPow2_word_array[9];
+                        cell->vertex_side_flags[idx0] |= gPow2_word_array[9];
                     }
                 }
             }
@@ -8233,14 +8234,14 @@ float C2_HOOK_FASTCALL RescanPedProximity(tPedestrian* pPed, br_vector3* pArg2) 
                 goto PHASE_C;
             }
             use_cache = (cell != NULL && idx1 < 0x200);
-            if (use_cache && (cell->flags[idx1] & gPow2_word_array[1])) {
-                r = cell->flags[idx1] & gPow2_word_array[9];
+            if (use_cache && (cell->vertex_side_flags[idx1] & gPow2_word_array[1])) {
+                r = cell->vertex_side_flags[idx1] & gPow2_word_array[9];
             } else {
-                r = NormalSideOfPlane((br_vector3*)&norm.v[1], &entry->v[1], dot1);
+                r = NormalSideOfPlane(&entry->v[1], &norm, dot1);
                 if (use_cache) {
-                    cell->flags[idx1] |= gPow2_word_array[1];
+                    cell->vertex_side_flags[idx1] |= gPow2_word_array[1];
                     if (r) {
-                        cell->flags[idx1] |= gPow2_word_array[9];
+                        cell->vertex_side_flags[idx1] |= gPow2_word_array[9];
                     }
                 }
             }
@@ -8248,14 +8249,14 @@ float C2_HOOK_FASTCALL RescanPedProximity(tPedestrian* pPed, br_vector3* pArg2) 
                 goto PHASE_C;
             }
             use_cache = (cell != NULL && idx2 < 0x200);
-            if (use_cache && (cell->flags[idx2] & gPow2_word_array[1])) {
-                r = cell->flags[idx2] & gPow2_word_array[9];
+            if (use_cache && (cell->vertex_side_flags[idx2] & gPow2_word_array[1])) {
+                r = cell->vertex_side_flags[idx2] & gPow2_word_array[9];
             } else {
-                r = NormalSideOfPlane((br_vector3*)&norm.v[1], &entry->v[2], dot1);
+                r = NormalSideOfPlane(&entry->v[2], &norm, dot1);
                 if (use_cache) {
-                    cell->flags[idx2] |= gPow2_word_array[1];
+                    cell->vertex_side_flags[idx2] |= gPow2_word_array[1];
                     if (r) {
-                        cell->flags[idx2] |= gPow2_word_array[9];
+                        cell->vertex_side_flags[idx2] |= gPow2_word_array[9];
                     }
                 }
             }
@@ -8264,14 +8265,14 @@ float C2_HOOK_FASTCALL RescanPedProximity(tPedestrian* pPed, br_vector3* pArg2) 
             }
         PHASE_C:
             use_cache = (cell != NULL && idx0 < 0x200);
-            if (use_cache && (cell->flags[idx0] & gPow2_word_array[2])) {
-                r = cell->flags[idx0] & gPow2_word_array[10];
+            if (use_cache && (cell->vertex_side_flags[idx0] & gPow2_word_array[2])) {
+                r = cell->vertex_side_flags[idx0] & gPow2_word_array[10];
             } else {
-                r = NormalSideOfPlane((br_vector3*)&neg.v[1], &entry->v[0], dot2);
+                r = NormalSideOfPlane(&entry->v[0], &neg, dot2);
                 if (use_cache) {
-                    cell->flags[idx0] |= gPow2_word_array[2];
+                    cell->vertex_side_flags[idx0] |= gPow2_word_array[2];
                     if (r) {
-                        cell->flags[idx0] |= gPow2_word_array[10];
+                        cell->vertex_side_flags[idx0] |= gPow2_word_array[10];
                     }
                 }
             }
@@ -8279,14 +8280,14 @@ float C2_HOOK_FASTCALL RescanPedProximity(tPedestrian* pPed, br_vector3* pArg2) 
                 goto PHASE_FINAL;
             }
             use_cache = (cell != NULL && idx1 < 0x200);
-            if (use_cache && (cell->flags[idx1] & gPow2_word_array[2])) {
-                r = cell->flags[idx1] & gPow2_word_array[10];
+            if (use_cache && (cell->vertex_side_flags[idx1] & gPow2_word_array[2])) {
+                r = cell->vertex_side_flags[idx1] & gPow2_word_array[10];
             } else {
-                r = NormalSideOfPlane((br_vector3*)&neg.v[1], &entry->v[1], dot2);
+                r = NormalSideOfPlane(&entry->v[1], &neg, dot2);
                 if (use_cache) {
-                    cell->flags[idx1] |= gPow2_word_array[2];
+                    cell->vertex_side_flags[idx1] |= gPow2_word_array[2];
                     if (r) {
-                        cell->flags[idx1] |= gPow2_word_array[10];
+                        cell->vertex_side_flags[idx1] |= gPow2_word_array[10];
                     }
                 }
             }
@@ -8294,14 +8295,14 @@ float C2_HOOK_FASTCALL RescanPedProximity(tPedestrian* pPed, br_vector3* pArg2) 
                 goto PHASE_FINAL;
             }
             use_cache = (cell != NULL && idx2 < 0x200);
-            if (use_cache && (cell->flags[idx2] & gPow2_word_array[2])) {
-                r = cell->flags[idx2] & gPow2_word_array[10];
+            if (use_cache && (cell->vertex_side_flags[idx2] & gPow2_word_array[2])) {
+                r = cell->vertex_side_flags[idx2] & gPow2_word_array[10];
             } else {
-                r = NormalSideOfPlane((br_vector3*)&neg.v[1], &entry->v[2], dot2);
+                r = NormalSideOfPlane(&entry->v[2], &neg, dot2);
                 if (use_cache) {
-                    cell->flags[idx2] |= gPow2_word_array[2];
+                    cell->vertex_side_flags[idx2] |= gPow2_word_array[2];
                     if (r) {
-                        cell->flags[idx2] |= gPow2_word_array[10];
+                        cell->vertex_side_flags[idx2] |= gPow2_word_array[10];
                     }
                 }
             }
@@ -8309,12 +8310,9 @@ float C2_HOOK_FASTCALL RescanPedProximity(tPedestrian* pPed, br_vector3* pArg2) 
             if (r == 0) {
                 continue;
             }
-            if (matched == 0) {
-                goto PHASE_D;
-            }
+            if (matched != 0) {
             {
                 v11model* tri_level;
-                v11group* tri_group;
                 br_vector3* vv0;
                 br_vector3* vv1;
                 br_vector3* vv2;
@@ -8332,167 +8330,200 @@ float C2_HOOK_FASTCALL RescanPedProximity(tPedestrian* pPed, br_vector3* pArg2) 
                 float t3;
 
                 tri_level = ((br_model*)key0)->prepared;
-                tri_group = &tri_level->groups[key1];
-                vv1 = &tri_group->vertices[idx1].p;
-                vv0 = &tri_group->vertices[idx0].p;
-                vv2 = &tri_group->vertices[idx2].p;
+                vv1 = &tri_level->groups[key1].vertices[idx1].p;
+                vv0 = &tri_level->groups[key1].vertices[idx0].p;
+                vv2 = &tri_level->groups[key1].vertices[idx2].p;
                 e1x = vv1->v[0] - vv0->v[0];
                 e1z = vv1->v[2] - vv0->v[2];
-                cross1 = e1z * nz - e1x * nx;
-                if (fabsf(cross1) <= 0.0001) {
-                    t1 = 3.402823466e+38f;
+                cross1 = e1z * nx - e1x * nz;
+                e2x = vv2->v[0] - vv1->v[0];
+                e2z = vv2->v[2] - vv1->v[2];
+                e3x = vv0->v[0] - vv2->v[0];
+                e3z = vv0->v[2] - vv2->v[2];
+                if (fabsf(cross1) <= gPedProximity_edge_epsilon) {
+                    t1 = gPedProximity_max_float;
                 } else {
-                    float rx;
-                    float rz;
-
-                    rx = vv0->v[0] - pMatVec->v[0];
-                    rz = vv0->v[2] - pMatVec->v[2];
-                    t1 = (rx * e1z - rz * e1x) / cross1;
-                    if (t1 < 0.0f) {
-                        t1 = 3.402823466e+38f;
+                    t1 = (pMatVec->v[2] * e1x - pMatVec->v[0] * e1z
+                            + vv0->v[0] * vv1->v[2] - vv1->v[0] * vv0->v[2]) / cross1;
+                    if (t1 < gConst_replay_rate_zero) {
+                        t1 = gPedProximity_max_float;
                     }
                 }
-                e2x = vv2->v[0] - vv0->v[0];
-                e2z = vv2->v[2] - vv0->v[2];
-                cross2 = e2z * nz - e2x * nx;
-                if (fabsf(cross2) <= 0.0001) {
+                cross2 = e2z * nx - e2x * nz;
+                if (fabsf(cross2) <= gPedProximity_edge_epsilon) {
                     t2 = 3.402823466e+38f;
                 } else {
-                    float rx;
-                    float rz;
-
-                    rx = vv0->v[0] - pMatVec->v[0];
-                    rz = vv0->v[2] - pMatVec->v[2];
-                    t2 = (rx * e2z - rz * e2x) / cross2;
-                    if (t2 < 0.0f) {
+                    t2 = (pMatVec->v[2] * e2x - pMatVec->v[0] * e2z
+                            + vv0->v[0] * vv1->v[2] - vv1->v[0] * vv0->v[2]) / cross2;
+                    if (t2 < gConst_replay_rate_zero) {
                         t2 = 3.402823466e+38f;
                     }
                 }
-                e3x = vv2->v[0] - vv1->v[0];
-                e3z = vv2->v[2] - vv1->v[2];
-                cross3 = e3z * nz - e3x * nx;
-                if (fabsf(cross3) <= 0.0001) {
+                cross3 = e3z * nx - e3x * nz;
+                if (fabsf(cross3) <= gPedProximity_edge_epsilon) {
                     t3 = 3.402823466e+38f;
                 } else {
-                    float rx;
-                    float rz;
-
-                    rx = vv1->v[0] - pMatVec->v[0];
-                    rz = vv1->v[2] - pMatVec->v[2];
-                    t3 = (rx * e3z - rz * e3x) / cross3;
-                    if (t3 < 0.0f) {
+                    t3 = (pMatVec->v[2] * e3x - pMatVec->v[0] * e3z
+                            + vv0->v[0] * vv1->v[2] - vv1->v[0] * vv0->v[2]) / cross3;
+                    if (t3 < gConst_replay_rate_zero) {
                         t3 = 3.402823466e+38f;
                     }
                 }
                 {
-                    float edge_x;
-                    float edge_z;
-                    int found;
-
-                    found = 0;
                     if (t1 < t2 && t1 < t3 && t1 < best) {
                         best = t1;
-                        edge_x = e1x;
-                        edge_z = e1z;
-                        found = 1;
-                    } else if (t2 < t3 && t2 < best) {
+                        pPed->field_0x0c->field_0xa4.v[0] = e1x;
+                        pPed->field_0x0c->field_0xa4.v[1] = 0.0f;
+                        pPed->field_0x0c->field_0xa4.v[2] = -e1z;
+                    } else if (t2 < t1 && t2 < t3 && t2 < best) {
                         best = t2;
-                        edge_x = e2x;
-                        edge_z = e2z;
-                        found = 1;
+                        pPed->field_0x0c->field_0xa4.v[0] = e2x;
+                        pPed->field_0x0c->field_0xa4.v[1] = 0.0f;
+                        pPed->field_0x0c->field_0xa4.v[2] = -e2z;
                     } else if (t3 < best) {
                         best = t3;
-                        edge_x = e3x;
-                        edge_z = e3z;
-                        found = 1;
-                    }
-                    if (!found) {
+                        pPed->field_0x0c->field_0xa4.v[0] = e3x;
+                        pPed->field_0x0c->field_0xa4.v[1] = 0.0f;
+                        pPed->field_0x0c->field_0xa4.v[2] = -e3z;
+                    } else {
                         continue;
                     }
-                    cache->field_0xa4.v[0] = edge_x;
-                    cache->field_0xa4.v[1] = 0.0f;
-                    cache->field_0xa4.v[2] = -edge_z;
-                    cache->field_0x30.v[0] = 0.0f;
-                    cache->field_0x30.v[1] = 0.0f;
-                    cache->field_0x30.v[2] = 0.0f;
-                    BrVector3Normalise(&cache->field_0xa4, &cache->field_0xa4);
-                    cache->field_0x18 |= 8;
+                    if (best > gPedProximity_max_distance) {
+                        continue;
+                    }
+                    pPed->field_0x0c->field_0xbc = best * best;
+                    pPed->field_0x0c->field_0x30.v[0] = 0.0f;
+                    pPed->field_0x0c->field_0x30.v[1] = 0.0f;
+                    pPed->field_0x0c->field_0x30.v[2] = 0.0f;
+                    pPed->field_0x0c->field_0x3c.v[0] = pMatVec->v[0] + best * nx;
+                    pPed->field_0x0c->field_0x3c.v[1] = pMatVec->v[1];
+                    pPed->field_0x0c->field_0x3c.v[2] = pMatVec->v[2] + best * nz;
+                    PedNormaliseVector3(&pPed->field_0x0c->field_0xa4, &pPed->field_0x0c->field_0xa4);
+                    pPed->field_0x0c->field_0x18 |= 8;
                 }
                 continue;
             }
-        PHASE_D:
+            }
             {
                 float dot;
 
                 dot = entry->normal.v[1] * dir.v[1] + entry->normal.v[0] * dir.v[0] + entry->normal.v[2] * dir.v[2];
-                if (dot > 0.0f) {
-                    if (((unsigned char*)&entry->material->flags)[1] & 0x10) {
-                        entry->normal.v[0] *= -1.0f;
-                        entry->normal.v[1] *= -1.0f;
-                        entry->normal.v[2] *= -1.0f;
-                        entry->d = -entry->d;
+                matched = (dot > gConst_replay_rate_zero);
+                if (matched && ((((unsigned char*)&entry->material->flags)[1] & 0x10) != 0)) {
+                    entry->normal.v[0] *= gFLOAT_0058a9c8;
+                    entry->normal.v[1] *= gFLOAT_0058a9c8;
+                    entry->normal.v[2] *= gFLOAT_0058a9c8;
+                    entry->d = -entry->d;
+                    matched = 0;
+                }
+                if (matched) {
+                    use_cache = (cell != NULL && idx0 < 0x200);
+                    if (use_cache && (cell->vertex_side_flags[idx0] & gPow2_word_array[4])) {
+                        r = cell->vertex_side_flags[idx0] & gPow2_word_array[12];
+                    } else {
+                        r = NormalSideOfPlane(&entry->v[0], &negN, d1);
+                        if (use_cache) {
+                            cell->vertex_side_flags[idx0] |= gPow2_word_array[4];
+
+                            if (r) {
+                                cell->vertex_side_flags[idx0] |= gPow2_word_array[12];
+                            }
+                        }
                     }
+                    if (!r) {
+                        use_cache = (cell != NULL && idx1 < 0x200);
+                        if (use_cache && (cell->vertex_side_flags[idx1] & gPow2_word_array[4])) {
+                            r = cell->vertex_side_flags[idx1] & gPow2_word_array[12];
+                        } else {
+                            r = NormalSideOfPlane(&entry->v[1], &negN, d1);
+                            if (use_cache) {
+                                cell->vertex_side_flags[idx1] |= gPow2_word_array[4];
+                                if (r) {
+                                    cell->vertex_side_flags[idx1] |= gPow2_word_array[12];
+                                }
+                            }
+                        }
+                        if (!r) {
+                            use_cache = (cell != NULL && idx2 < 0x200);
+                            if (use_cache && (cell->vertex_side_flags[idx2] & gPow2_word_array[4])) {
+                                r = cell->vertex_side_flags[idx2] & gPow2_word_array[12];
+                            } else {
+                                r = NormalSideOfPlane(&entry->v[2], &negN, d1);
+                                if (use_cache) {
+                                    cell->vertex_side_flags[idx2] |= gPow2_word_array[4];
+                                    if (r) {
+                                        cell->vertex_side_flags[idx2] |= gPow2_word_array[12];
+                                    }
+                                }
+                            }
+                            if (!r) {
+                                goto final_checks;
+                            }
+                        }
+                    }
+                    pPed->field_0x0c->field_0x18 |= 1;
+                    goto final_checks;
                 }
             }
             use_cache = (cell != NULL && idx0 < 0x200);
-            if (use_cache && (cell->flags[idx0] & gPow2_word_array[4])) {
-                r = cell->flags[idx0] & gPow2_word_array[12];
+            if (use_cache && (cell->vertex_side_flags[idx0] & gPow2_word_array[0])) {
+                r = cell->vertex_side_flags[idx0] & gPow2_word_array[8];
             } else {
-                r = NormalSideOfPlane((br_vector3*)&negN.v[1], &entry->v[0], d1);
+                r = NormalSideOfPlane(&entry->v[0], &plane, pd);
                 if (use_cache) {
-                    cell->flags[idx0] |= gPow2_word_array[4];
+                    cell->vertex_side_flags[idx0] |= gPow2_word_array[0];
 
                     if (r) {
-                        cell->flags[idx0] |= gPow2_word_array[12];
-                    }
-                }
-            }
-            if (r) {
-                goto PHASE_E;
-            }
-            use_cache = (cell != NULL && idx1 < 0x200);
-            if (use_cache && (cell->flags[idx1] & gPow2_word_array[4])) {
-                r = cell->flags[idx1] & gPow2_word_array[12];
-            } else {
-                r = NormalSideOfPlane((br_vector3*)&negN.v[1], &entry->v[1], d1);
-                if (use_cache) {
-                    cell->flags[idx1] |= gPow2_word_array[4];
-                    if (r) {
-                        cell->flags[idx1] |= gPow2_word_array[12];
-                    }
-                }
-            }
-            if (r) {
-                goto PHASE_E;
-            }
-            use_cache = (cell != NULL && idx2 < 0x200);
-            if (use_cache && (cell->flags[idx2] & gPow2_word_array[4])) {
-                r = cell->flags[idx2] & gPow2_word_array[12];
-            } else {
-                r = NormalSideOfPlane((br_vector3*)&negN.v[1], &entry->v[2], d1);
-                if (use_cache) {
-                    cell->flags[idx2] |= gPow2_word_array[4];
-                    if (r) {
-                        cell->flags[idx2] |= gPow2_word_array[12];
+                        cell->vertex_side_flags[idx0] |= gPow2_word_array[8];
                     }
                 }
             }
             if (!r) {
-                continue;
+                use_cache = (cell != NULL && idx1 < 0x200);
+                if (use_cache && (cell->vertex_side_flags[idx1] & gPow2_word_array[0])) {
+                    r = cell->vertex_side_flags[idx1] & gPow2_word_array[8];
+                } else {
+                    r = NormalSideOfPlane(&entry->v[1], &plane, pd);
+                    if (use_cache) {
+                        cell->vertex_side_flags[idx1] |= gPow2_word_array[0];
+                        if (r) {
+                            cell->vertex_side_flags[idx1] |= gPow2_word_array[8];
+                        }
+                    }
+                }
+                if (!r) {
+                    use_cache = (cell != NULL && idx2 < 0x200);
+                    if (use_cache && (cell->vertex_side_flags[idx2] & gPow2_word_array[0])) {
+                        r = cell->vertex_side_flags[idx2] & gPow2_word_array[8];
+                    } else {
+                        r = NormalSideOfPlane(&entry->v[2], &plane, pd);
+                        if (use_cache) {
+                            cell->vertex_side_flags[idx2] |= gPow2_word_array[0];
+                            if (r) {
+                                cell->vertex_side_flags[idx2] |= gPow2_word_array[8];
+                            }
+                        }
+                    }
+                    if (!r) {
+                        goto final_checks;
+                    }
+                }
             }
+            pPed->field_0x0c->field_0x18 |= 2;
+        final_checks:
         PHASE_E:
-            if (cache->field_0x18 == 0) {
+            if (pPed->field_0x0c->field_0x18 == 0) {
                 continue;
             }
+            pPed->field_0x0c->field_0xbc = result * result;
+            pPed->field_0x0c->field_0x30.v[0] = 0.0f;
+            pPed->field_0x0c->field_0x30.v[1] = 0.0f;
+            pPed->field_0x0c->field_0x30.v[2] = 0.0f;
+            pPed->field_0x0c->field_0x3c.v[0] = pMatVec->v[0] + result * dir.v[0];
+            pPed->field_0x0c->field_0x3c.v[1] = pMatVec->v[1] + result * dir.v[1];
+            pPed->field_0x0c->field_0x3c.v[2] = pMatVec->v[2] + result * dir.v[2];
+            BrVector3Copy(&pPed->field_0x0c->field_0xa4, &entry->normal);
             best = result;
-            cache->field_0xbc = result * result;
-            cache->field_0x30.v[0] = 0.0f;
-            cache->field_0x30.v[1] = 0.0f;
-            cache->field_0x30.v[2] = 0.0f;
-            cache->field_0x3c.v[0] = pMatVec->v[0] + result * dir.v[0];
-            cache->field_0x3c.v[1] = pMatVec->v[1] + result * dir.v[1];
-            cache->field_0x3c.v[2] = pMatVec->v[2] + result * dir.v[2];
-            cache->field_0xa4 = entry->normal;
             continue;
     }
     return best;
