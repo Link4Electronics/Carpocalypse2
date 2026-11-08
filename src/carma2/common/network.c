@@ -78,7 +78,7 @@ extern char* gCurrent_palette_pixels;
 extern void C2_HOOK_FASTCALL FadePaletteDown(void);
 extern void C2_HOOK_FASTCALL ClearEntireScreen(void);
 extern void C2_HOOK_FASTCALL EnsureRenderPalette(void);
-extern void C2_HOOK_FASTCALL Darken(void);
+extern void C2_HOOK_FASTCALL EnsurePaletteUp(void);
 extern void C2_HOOK_FASTCALL FadePaletteUp(void);
 
 #define MIN_MESSAGES_CAPACITY 200
@@ -496,7 +496,7 @@ void C2_HOOK_FASTCALL NetFullScreenMessage(int pStr_index, int pLeave_it_up_ther
         gGraf_specs[gGraf_spec_index].total_height - 64, 1);
     PDScreenBufferSwap(0);
     EnsureRenderPalette();
-    Darken();
+    EnsurePaletteUp();
     if (pLeave_it_up_there) {
     } else {
         start_time = PDGetTotalTime();
@@ -679,29 +679,27 @@ int C2_HOOK_FASTCALL NetReallySendMessageToPlayer(tNet_game_details* pNet_game, 
 }
 
 // FUNCTION: CARMA2_HW 0x004a5140
-void* C2_HOOK_FASTCALL NetGetToPlayerContentsSize(tNet_game_player_info* pNet_player, int pSize) {
+tNet_message_chunk* C2_HOOK_FASTCALL NetGetToPlayerContentsSize(tNet_game_player_info* pPlayer, int pContents_size) {
     tNet_message* message;
-    int offset;
+    tNet_message_chunk* contents;
 
-    C2_HOOK_BUG_ON(sizeof(tNet_message_header) != 0x18);
-
-    if (pNet_player == &gNet_players[gThis_net_player_index]) {
+    if (pPlayer == &gNet_players[gThis_net_player_index]) {
         PDFatalError("Trying to send network message to self");
     }
-    message = pNet_player->field_0xcc;
-    if (pNet_player->field_0xcc != NULL && pNet_player->field_0xcc->header.field_0x16 + pSize > 512) {
-        NetReallySendMessageToPlayer(gCurrent_net_game, pNet_player->field_0xcc, pNet_player->ID);
-        pNet_player->field_0xcc = message = NULL;
+    message = pPlayer->field_0xcc;
+    if (message != NULL && (tS32)(message->header.field_0x16 + pContents_size) > (tS32)(sizeof(tMax_message) - sizeof(void*))) {
+        NetReallySendMessageToPlayer(gCurrent_net_game, message, pPlayer->ID);
+        pPlayer->field_0xcc = message = NULL;
     }
     if (message == NULL) {
-        pNet_player->field_0xcc = message = NetAllocateMessage(512);
+        message = pPlayer->field_0xcc = NetAllocateMessage(sizeof(tMax_message) - sizeof(void*));
         message->header.field_0x16 = (tU16)sizeof(tNet_message_header);
         message->header.field_0x14 = 0;
     }
-    offset = message->header.field_0x16;
-    message->header.field_0x16 += (tU16)pSize;
-    message->header.field_0x14 += 1;
-    return (tU8*)message + offset;
+    contents = (tNet_message_chunk*)((tU8*)message + message->header.field_0x16);
+    message->header.field_0x16 += (tU16)pContents_size;
+    message->header.field_0x14++;
+    return contents;
 }
 
 // FUNCTION: CARMA2_HW 0x004a5b30
@@ -790,51 +788,13 @@ clear_message:
 
 // FUNCTION: CARMA2_HW 0x0049fb70
 void C2_HOOK_FASTCALL NetBroadcastContents(tNet_message_chunk* pMessage) {
-    tNet_message* message;
-    int size;
-    tU8* dest;
+    tNet_message_chunk* contents;
     int i;
-    int j;
-    tPlayer_ID player_id;
-    tNet_game_details* game;
 
     for (i = 0; i < gNumber_of_net_players; i++) {
         if (i != gThis_net_player_index && i != gINT_00659d34) {
-            size = pMessage->raw.header.size;
-            if (&gNet_players[i] == &gNet_players[gThis_net_player_index]) {
-                PDFatalError("Trying to send network message to self");
-            }
-            message = gNet_players[i].field_0xcc;
-            if (message != NULL && message->header.field_0x16 + size > 0x200) {
-                player_id = gNet_players[i].ID;
-                game = gCurrent_net_game;
-                if (gNet_mode != eNet_mode_none) {
-                    message->header.field_0x8 = gLocal_net_ID;
-                    message->header.field_0x10 = PDGetTotalTime();
-                    for (j = 0; j < gNumber_of_net_players; j++) {
-                        if (gNet_players[j].ID == player_id) {
-                            goto send_message;
-                        }
-                    }
-                    goto clear_message;
-
-send_message:
-                    PDNetSendMessageToAddress(game, message, &gNet_players[j]);
-                }
-clear_message:
-                gNet_players[i].field_0xcc = message = NULL;
-            }
-            if (message == NULL) {
-                message = NetAllocateMessage(0x200);
-                gNet_players[i].field_0xcc = message;
-                message->header.field_0x16 = (tU16)sizeof(tNet_message_header);
-                message->header.field_0x14 = 0;
-            }
-            dest = (tU8*)message;
-            dest += message->header.field_0x16;
-            message->header.field_0x16 = size + message->header.field_0x16;
-            message->header.field_0x14 += 1;
-            memcpy(dest, pMessage, pMessage->raw.header.size);
+            contents = NetGetToPlayerContentsSize(&gNet_players[i], pMessage->raw.header.size);
+            memcpy(contents, pMessage, pMessage->raw.header.size);
         }
     }
     gINT_00659d34 = -1;
@@ -1833,21 +1793,25 @@ static int rr_max;
 #pragma auto_inline(off)
 // FUNCTION: CARMA2_HW 0x0049fdb0
 tNet_message* C2_HOOK_FASTCALL NetAllocateMessage(int pSize) {
-    static int rr_min;
-    static int rr_mid;
-    static int rr_max;
-    tU8* pool;
-    tU8* msg;
+    void* pointer;
+    tNet_message_memory* new_message;
+    tNet_message_memory* last_message;
+    tNet_message* message;
+    tU8* test;
     int i;
-    tNet_message_memory* block;
-    tNet_message_memory* tail;
 
-    pool = NULL;
-    if (pSize <= (int)sizeof(tMin_message) - 4) {
+    C2_HOOK_BUG_ON(sizeof(tMin_message) - sizeof(void*) != 0x58);
+    C2_HOOK_BUG_ON(sizeof(tMid_message) - sizeof(void*) != 0x80);
+    C2_HOOK_BUG_ON(sizeof(tMax_message) - sizeof(void*) != 0x200);
+    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tNet_message_memory, message, 0x4);
+
+    pointer = NULL;
+    if (pSize <= sizeof(tMin_message) - sizeof(void*)) {
         for (i = 0; i < MIN_MESSAGES_CAPACITY; i++) {
-            msg = (tU8*)gMin_messages + rr_min * sizeof(tMin_message) + gMessage_header_size;
-            if (msg[0x19] == eNetMsg_none) {
-                pool = (tU8*)gMin_messages + rr_min * sizeof(tMin_message);
+            test = gMin_messages[rr_min].buffer;
+            test += gMessage_header_size;
+            if (((tNet_message*)test)->contents.raw.header.type == eNetMsg_none) {
+                pointer = &gMin_messages[rr_min];
                 break;
             }
             rr_min++;
@@ -1856,11 +1820,12 @@ tNet_message* C2_HOOK_FASTCALL NetAllocateMessage(int pSize) {
             }
         }
     }
-    if (pool == NULL && pSize <= (int)sizeof(tMid_message) - 4) {
+    if (pointer == NULL && pSize <= (int)(sizeof(tMid_message) - sizeof(void*))) {
         for (i = 0; i < MID_MESSAGES_CAPACITY; i++) {
-            msg = (tU8*)gMid_messages + rr_mid * sizeof(tMid_message) + gMessage_header_size;
-            if (msg[0x19] == eNetMsg_none) {
-                pool = (tU8*)gMid_messages + rr_mid * sizeof(tMid_message);
+            test = gMid_messages[rr_mid].buffer;
+            test += gMessage_header_size;
+            if (((tNet_message*)test)->contents.raw.header.type == eNetMsg_none) {
+                pointer = &gMid_messages[rr_mid];
                 break;
             }
             rr_mid++;
@@ -1869,11 +1834,12 @@ tNet_message* C2_HOOK_FASTCALL NetAllocateMessage(int pSize) {
             }
         }
     }
-    if (pool == NULL && pSize <= (int)sizeof(tMax_message) - 4) {
+    if (pointer == NULL && pSize <= (int)(sizeof(tMax_message) - sizeof(void*))) {
         for (i = 0; i < MAX_MESSAGES_CAPACITY; i++) {
-            msg = (tU8*)gMax_messages + rr_max * sizeof(tMax_message) + gMessage_header_size;
-            if (msg[0x19] == eNetMsg_none) {
-                pool = (tU8*)gMax_messages + rr_max * sizeof(tMax_message);
+            test = gMax_messages[rr_max].buffer;
+            test += gMessage_header_size;
+            if (((tNet_message*)test)->contents.raw.header.type == eNetMsg_none) {
+                pointer = &gMax_messages[rr_max];
                 break;
             }
             rr_max++;
@@ -1882,27 +1848,28 @@ tNet_message* C2_HOOK_FASTCALL NetAllocateMessage(int pSize) {
             }
         }
     }
-    if (pool == NULL) {
-        block = BrMemAllocate(gMessage_header_size + pSize + sizeof(void*), kMem_dynamic_message);
-        if (block == NULL) {
-            return NULL;
-        }
-        block->next = NULL;
-        if (gDynamic_messages != NULL) {
-            tail = gDynamic_messages;
-            while (tail->next != NULL) {
-                tail = tail->next;
+    if (pointer == NULL) {
+        pointer = new_message = BrMemAllocate(pSize + offsetof(tNet_message_memory, message) + gMessage_header_size, kMem_dynamic_message);
+        if (new_message != NULL) {
+            new_message->next = NULL;
+            if (gDynamic_messages != NULL) {
+                for (last_message = gDynamic_messages; last_message->next != NULL; last_message = last_message->next) {
+                }
+                last_message->next = new_message;
+            } else {
+                gDynamic_messages = new_message;
             }
-            tail->next = block;
-        } else {
-            gDynamic_messages = block;
+            pointer = &new_message->message;
         }
-        pool = (tU8*)block + sizeof(void*);
     }
-    msg = pool + gMessage_header_size;
-    ((tNet_message*)msg)->header.field_0xc = 1;
-    ((tNet_message*)msg)->header.field_0x4 = MESSAGE_MAGIC_NUMBER;
-    return (tNet_message*)msg;
+    if (pointer != NULL) {
+        message = (tNet_message*)((tU8*)pointer + gMessage_header_size);
+        message->header.field_0xc = 1;
+        message->header.field_0x4 = MESSAGE_MAGIC_NUMBER;
+        return message;
+    } else {
+        return NULL;
+    }
 }
 #pragma auto_inline(on)
 
@@ -2576,7 +2543,7 @@ extern char* gCurrent_palette_pixels;
 extern void C2_HOOK_FASTCALL FadePaletteDown(void);
 extern void C2_HOOK_FASTCALL ClearEntireScreen(void);
 extern void C2_HOOK_FASTCALL EnsureRenderPalette(void);
-extern void C2_HOOK_FASTCALL Darken(void);
+extern void C2_HOOK_FASTCALL EnsurePaletteUp(void);
 extern void C2_HOOK_FASTCALL FadePaletteUp(void);
 extern void C2_HOOK_FASTCALL FUN_004a48d0(void* pPayload, void* pMessage);
 extern void C2_HOOK_FASTCALL FUN_0049bad0(void* pPayload, void* pMessage, int pReceive_time);

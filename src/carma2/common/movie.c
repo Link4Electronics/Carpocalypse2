@@ -114,10 +114,15 @@ int C2_HOOK_FASTCALL MovieStopRecordingAndSave(void) {
 
 // FUNCTION: CARMA2_HW 0x004e1700
 void C2_HOOK_CDECL InitQuickTimeStuff(void) {
+    OSErr err;
 
     gQuickTime_initialized = 0;
-    if (InitializeQTML(0) == noErr && EnterMovies() == noErr) {
-        gQuickTime_initialized = 1;
+    err = InitializeQTML(0);
+    if (err == noErr) {
+        err = EnterMovies();
+        if (err == noErr) {
+            gQuickTime_initialized = 1;
+        }
     }
     gQuick_time_temp_path[0] = '\0';
     gQuick_time_movie_path_stub[0] = '\0';

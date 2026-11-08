@@ -151,6 +151,7 @@ tDrone_crush_data* C2_HOOK_FASTCALL GetDroneCrushData(tPhysics_object* pObject);
 void C2_HOOK_FASTCALL DronePreCollisionStuff(void);
 
 void C2_HOOK_FASTCALL SelectNextDrone(void);
+void C2_HOOK_FASTCALL SelectPreviousDrone(void);
 
 void C2_HOOK_FASTCALL SelectNearestDrone(void);
 

@@ -135,16 +135,18 @@ void C2_HOOK_CDECL BrActorRelink(br_actor* parent, br_actor* a) {
     BrActorAdd(parent, BrActorRemove(a));
 }
 
+#pragma inline_depth(0)
 // FUNCTION: CARMA2_HW 0x0040ca40
 void C2_HOOK_CDECL BrActorRelink_library(br_actor* parent, br_actor* a) {
     br_matrix34 mat;
 
     if (a->parent != parent) {
-        BrActorToActorMatrix34(&mat, a, parent);
+        BrActorToActorMatrix34_Legacy(&mat, a, parent);
         BrMatrix34ToTransform(&a->t, &mat);
         BrActorAdd(parent, BrActorRemove(a));
     }
 }
+#pragma inline_depth()
 
 // FUNCTION: CARMA2_HW 0x0051e1a0
 br_actor* C2_HOOK_CDECL BrActorAllocate(br_uint_8 type, void* type_data) {

@@ -211,7 +211,7 @@ void C2_HOOK_FASTCALL FUN_004c71e0(uintptr_t pOwner, void* pData, undefined4 pAr
 // AddProxRayToPipingSession
 void C2_HOOK_FASTCALL AddSoundToPipingSession(tS3_outlet* pOutlet, int pSound, tS3_volume pL_volume, tS3_volume pR_volume, int pPitch, const br_vector3* pPosition);
 
-void C2_HOOK_FASTCALL AddFlapToPipingSession(uintptr_t pOwner, int pDelta);
+void C2_HOOK_FASTCALL AddFlapToPipingSession(br_actor* pActor, br_angle pAngle);
 void C2_HOOK_FASTCALL WorkerFlap(br_actor* pActor, tS16 pDelta);
 
 // AddModelMashToPipingSession
@@ -767,7 +767,7 @@ void C2_HOOK_FASTCALL PipeSinglePedStatus(const tPedestrian* pPed, undefined pAr
 
 void C2_HOOK_FASTCALL PipeSinglePedPos(const tPedestrian* pPed, const br_vector3* pPos, const br_vector3 *pVelocity);
 
-void C2_HOOK_FASTCALL PipeSingleVanishedDismembered(const tPedestrian* pPed, undefined4 pArg2, undefined4 pArg3);
+void C2_HOOK_FASTCALL PipeSingleVanishedDismembered(const tPedestrian* pPed, tU32 pOld_value, tU32 pNew_value);
 
 void C2_HOOK_FASTCALL PipeSinglePedModelChange(tPedestrian* pPed, undefined4 pArg2, br_model* pModel, undefined4 pArg4, undefined4 pArg5, undefined4 pArg6);
 

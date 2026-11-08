@@ -363,7 +363,7 @@ extern int C2_HOOK_FASTCALL NetGuaranteedSendMessageToAllPlayers(tNet_game_detai
 extern int C2_HOOK_FASTCALL NetReallySendMessageToPlayer(tNet_game_details* pNet_game, tNet_message* pMessage, tPlayer_ID pPlayer_id);
 extern int C2_HOOK_FASTCALL FUN_0049f0d0(tNet_game_details* pNet_game, tNet_message* pMessage);
 
-extern void* C2_HOOK_FASTCALL NetGetToPlayerContentsSize(tNet_game_player_info* pNet_player, int pSize);
+extern tNet_message_chunk* C2_HOOK_FASTCALL NetGetToPlayerContentsSize(tNet_game_player_info* pPlayer, int pContents_size);
 
 extern tPlayer_status C2_HOOK_FASTCALL NetGetPlayerStatus(void);
 

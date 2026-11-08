@@ -1611,7 +1611,7 @@ void C2_HOOK_FASTCALL ChangeCameraTypeInGame(void) {
     if (!gAction_replay_mode) {
 
         ChangeCameraType();
-        NewTextHeadupSlot2(4, 0, 1000, -4, GetMiscString(eMiscString_standard_cam) + gAction_replay_mode, 0);
+        NewTextHeadupSlot2(4, 0, 1000, -4, GetMiscString(eMiscString_standard_cam + gAction_replay_camera_mode), 0);
     }
 }
 
@@ -1722,6 +1722,11 @@ void C2_HOOK_FASTCALL CheckHorn3D(tCar_spec* pCar) {
 
 // FUNCTION: CARMA2_HW 0x00442140
 int C2_HOOK_FASTCALL CarWorldOffFallenCheckThingy(tCar_spec* pCar, int pCheck_around) {
+    br_vector3 car_pos;
+    br_vector3 offset_c;
+    br_vector3 offset_w;
+    int result;
+    int i;
 
     if (gCar_flying && pCar != NULL && pCar->driver == eDriver_local_human) {
         return 0;
@@ -1730,54 +1735,41 @@ int C2_HOOK_FASTCALL CarWorldOffFallenCheckThingy(tCar_spec* pCar, int pCheck_ar
         return 0;
     }
     if (pCar->number_of_wheels_on_ground != 0) {
-        int i;
-
         for (i = pCar->collision_info->box_face_start; i < pCar->collision_info->box_face_end; i++) {
-            const tFace_ref *face_ref;
-            face_ref = &gFace_list__car[i];
-            if (face_ref->material != NULL && face_ref->material->identifier != NULL && face_ref->material->identifier[0] == '^') {
+            if (gFace_list__car[i].material != NULL
+                    && gFace_list__car[i].material->identifier != NULL
+                    && gFace_list__car[i].material->identifier[0] == '^') {
                 return 1;
             }
         }
         return 0;
-    } else {
-        br_vector3 car_pos;
-        br_vector3 offset_c;
-        br_vector3 offset_w;
-        int result;
-
-        BrVector3Copy(&car_pos, &pCar->car_master_actor->t.t.translate.t);
-        car_pos.v[1] += 0.5f;
-        if (FindYVerticallyBelow2(&car_pos) >= -100.f) {
-            if (gMaterial_below->identifier != NULL && gMaterial_below->identifier[0] == '^') {
-                return 1;
-            }
-            return 0;
-        } else {
-            BrVector3Set(&offset_c, 0.f, 1.f, 0.f);
-            BrMatrix34ApplyV(&offset_w, &offset_c, &pCar->car_master_actor->t.t.mat);
-            BrVector3Add(&car_pos, &pCar->car_master_actor->t.t.translate.t, &offset_w);
-            if (FindYVerticallyBelow2(&car_pos) >= -100.f) {
-                return 0;
-            }
-            if (!pCheck_around) {
-                return 1;
-            }
-            pCar->car_master_actor->t.t.translate.t.v[0] += .05f;
-            result = CarWorldOffFallenCheckThingy(pCar, 0);
-            pCar->car_master_actor->t.t.translate.t.v[0] -= .05f;
-            if (!result) {
-                return 0;
-            }
-            pCar->car_master_actor->t.t.translate.t.v[2] += .05f;
-            result = CarWorldOffFallenCheckThingy(pCar, 0);
-            pCar->car_master_actor->t.t.translate.t.v[2] -= .05f;
-            if (!result) {
-                return 0;
-            }
-            return 1;
-        }
     }
+    BrVector3Copy(&car_pos, &pCar->car_master_actor->t.t.translate.t);
+    car_pos.v[1] += 0.5f;
+    if (FindYVerticallyBelow2(&car_pos) < -100.f) {
+        BrVector3Set(&offset_c, 0.f, 1.f, 0.f);
+        BrMatrix34ApplyV(&offset_w, &offset_c, &pCar->car_master_actor->t.t.mat);
+        BrVector3Add(&car_pos, &pCar->car_master_actor->t.t.translate.t, &offset_w);
+        if (FindYVerticallyBelow2(&car_pos) < -100.f) {
+            if (pCheck_around) {
+                pCar->car_master_actor->t.t.translate.t.v[0] += 0.05f;
+                result = CarWorldOffFallenCheckThingy(pCar, 0);
+                pCar->car_master_actor->t.t.translate.t.v[0] -= 0.05f;
+                if (!result) {
+                    return 0;
+                }
+                pCar->car_master_actor->t.t.translate.t.v[2] += 0.05f;
+                result = CarWorldOffFallenCheckThingy(pCar, 0);
+                pCar->car_master_actor->t.t.translate.t.v[2] -= 0.05f;
+                return result;
+            } else {
+                return 1;
+            }
+        }
+    } else if (gMaterial_below->identifier != NULL && gMaterial_below->identifier[0] == '^') {
+        return 1;
+    }
+    return 0;
 }
 
 // FUNCTION: CARMA2_HW 0x00442130
@@ -3554,6 +3546,48 @@ void C2_HOOK_FASTCALL TDamageTrans(void) {
 void C2_HOOK_FASTCALL TDamageLFWheel(void) {
 
     DamageLFWheel(21);
+}
+
+// FUNCTION: CARMA2_HW 0x00442060
+void C2_HOOK_FASTCALL TDamageLFBrake(void) {
+
+    DamageLFBrake(21);
+}
+
+// FUNCTION: CARMA2_HW 0x00442070
+void C2_HOOK_FASTCALL TDamageLRBrake(void) {
+
+    DamageLRBrake(21);
+}
+
+// FUNCTION: CARMA2_HW 0x00442080
+void C2_HOOK_FASTCALL TDamageLRWheel(void) {
+
+    DamageLRWheel(21);
+}
+
+// FUNCTION: CARMA2_HW 0x00442090
+void C2_HOOK_FASTCALL TDamageRFWheel(void) {
+
+    DamageRFWheel(21);
+}
+
+// FUNCTION: CARMA2_HW 0x004420a0
+void C2_HOOK_FASTCALL TDamageRFBrake(void) {
+
+    DamageRFBrake(21);
+}
+
+// FUNCTION: CARMA2_HW 0x004420b0
+void C2_HOOK_FASTCALL TDamageRRBrake(void) {
+
+    DamageRRBrake(21);
+}
+
+// FUNCTION: CARMA2_HW 0x004420c0
+void C2_HOOK_FASTCALL TDamageRRWheel(void) {
+
+    DamageRRWheel(21);
 }
 
 // FUNCTION: CARMA2_HW 0x00444c00

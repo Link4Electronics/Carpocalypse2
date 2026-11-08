@@ -1395,11 +1395,14 @@ void C2_HOOK_FASTCALL PipeSinglePedPos(const tPedestrian* pPed, const br_vector3
 }
 
 // FUNCTION: CARMA2_HW 0x004c8e10
-void C2_HOOK_FASTCALL PipeSingleVanishedDismembered(const tPedestrian* pPed, undefined4 pArg2, undefined4 pArg3) {
+void C2_HOOK_FASTCALL PipeSingleVanishedDismembered(const tPedestrian* pPed, tU32 pOld_value, tU32 pNew_value) {
+    C2_HOOK_STATIC_ASSERT_STRUCT_MEMBER_SIZE(tPipe_single_vanished_dismembered, field_0x0, 0x4);
+    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPipe_single_vanished_dismembered, field_0x4, 0x4);
+    C2_HOOK_STATIC_ASSERT_STRUCT_MEMBER_SIZE(tPipe_single_vanished_dismembered, field_0x4, 0x4);
 
     ARDoSingleVariedSession(ePipe_chunk_single_vanished_dismembered, (uintptr_t)pPed, 2,
-        SIZE_OFFSET_PIPING(tPipe_single_vanished_dismembered, field_0x0), pArg2,
-        SIZE_OFFSET_PIPING(tPipe_single_vanished_dismembered, field_0x4), pArg2);
+        SIZE_OFFSET_PIPING(tPipe_single_vanished_dismembered, field_0x0), pOld_value,
+        SIZE_OFFSET_PIPING(tPipe_single_vanished_dismembered, field_0x4), pNew_value);
 }
 
 // FUNCTION: CARMA2_HW 0x004c8c80
@@ -2077,11 +2080,11 @@ void C2_HOOK_FASTCALL FUN_004c71e0(uintptr_t pOwner, void* pData, undefined4 pAr
 // AddProxRayToPipingSession
 
 // FUNCTION: CARMA2_HW 0x004c7520
-void C2_HOOK_FASTCALL AddFlapToPipingSession(uintptr_t pOwner, int pDelta) {
+void C2_HOOK_FASTCALL AddFlapToPipingSession(br_actor* pActor, br_angle pAngle) {
 
-    ARAddVariedDataToSession(ePipe_chunk_flap_bits, pOwner, 2,
-        SIZE_OFFSET_PIPING(tPipe_chunk_flap, field_0x0), (int)pOwner,
-        2, 4, (tU16)pDelta);
+    ARAddVariedDataToSession(ePipe_chunk_flap_bits, (uintptr_t)pActor, 2,
+        4, 0, (uintptr_t)pActor,
+        2, 4, pAngle);
 }
 
 // AddModelMashToPipingSession

@@ -1759,6 +1759,17 @@ void C2_HOOK_FASTCALL DrawBevelledRectangle(br_pixelmap* pMap, int pLeft, int pT
     BrPixelmapLine(pMap, pLeft, pTop + pHeight - 1, pLeft + pWidth - 1, pTop + pHeight - 1, pColour - 2);
 }
 
+// FUNCTION: CARMA2_HW 0x0047d510
+void C2_HOOK_FASTCALL RectangleFill_LeftRightLine(br_pixelmap* pMap, int pX, int pY, int pWidth, int pHeight, br_colour pColour) {
+
+    if (gBack_screen->type != BR_PMT_INDEX_8) {
+        pColour = PaletteEntry16Bit(gRender_palette, pColour);
+    }
+    BrPixelmapRectangleFill(pMap, pX + 1, pY, pWidth - 2, pHeight, pColour);
+    BrPixelmapLine(pMap, pX, pY, pX, pY + pHeight - 1, pColour + 2);
+    BrPixelmapLine(pMap, pX + pWidth - 1, pY, pX + pWidth - 1, pY + pHeight - 1, pColour - 2);
+}
+
 // FUNCTION: CARMA2_HW 0x004e4910
 int C2_HOOK_FASTCALL AddToLollipopQueue(void* pItem, int pIndex) {
 

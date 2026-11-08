@@ -130,16 +130,18 @@ void C2_HOOK_FASTCALL BackupNetworkOptions(void) {
 // FUNCTION: CARMA2_HW 0x00472ed0
 int C2_HOOK_FASTCALL NetOptions_Infunc(tFrontend_spec* pFrontend) {
 
+    C2_HOOK_BUG_ON(sizeof(tNet_game_options) != 0x30);
+
     Generic_Infunc(pFrontend);
     DisplayNetworkOptions(pFrontend);
     BackupNetworkOptions();
     gUNK_006886e8.field_0x0 = 24;
     gUNK_006886e8.field_0x4 = 28;
     gUNK_006886e8.field_0x8 = 27;
-    gUNK_006886e8.next = &gUNK_006883b0;
     gUNK_006883b0.field_0x0 = 26;
     gUNK_006883b0.field_0x4 = 30;
     gUNK_006883b0.field_0x8 = 29;
+    gUNK_006886e8.next = &gUNK_006883b0;
     gUNK_006883b0.next = NULL;
     gPTR_00686508 = &gUNK_006886e8;
     return 0;

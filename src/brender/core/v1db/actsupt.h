@@ -35,6 +35,8 @@ br_token C2_HOOK_STDCALL CameraToScreenMatrix4(br_matrix4* mat, br_actor* camera
 
 br_uint_16 C2_HOOK_CDECL BrActorToActorMatrix34(br_matrix34* m, br_actor* a, br_actor* b);
 
+br_uint_8 C2_HOOK_CDECL BrActorToActorMatrix34_Legacy(br_matrix34* m, br_actor* a, br_actor* b);
+
 void C2_HOOK_CDECL BrActorToScreenMatrix4(br_matrix4* m, br_actor* a, br_actor* camera);
 
 void C2_HOOK_CDECL BrMatrix34ApplyBounds(br_bounds* d, br_bounds* s, br_matrix34* m);

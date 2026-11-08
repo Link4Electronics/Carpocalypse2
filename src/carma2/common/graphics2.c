@@ -152,64 +152,24 @@ void C2_HOOK_FASTCALL SetFadedPalette(unsigned int pDegree) {
     DRSetPalette2(gScratch_palette, 0);
 }
 
-// FUNCTION: CARMA2_HW 0x004b55f0
-void C2_HOOK_FASTCALL Darken(void) {
-    int i;
-    int start_time;
-    int the_time;
-    br_pixelmap* pal;
-
-    if (gFaded_palette) {
-        gFaded_palette = 0;
-        start_time = PDGetTotalTime();
-        while (1) {
-            the_time = PDGetTotalTime() - start_time;
-            if (the_time >= 500) {
-                break;
-            }
-            i = (the_time * 256) / 500;
-            SetFadedPalette(i);
-        }
-        pal = gCurrent_palette;
-        *((br_int_32*)pal->pixels) = 0;
-        memcpy(gCurrent_palette_pixels, pal->pixels, 4 * 256);
-        gPalette_changed = 0;
-        if (!gFaded_palette) {
-            PDSetPalette(pal);
-        }
-        gPalette_munged |= (pal != gRender_palette);
-    }
-}
-
 // FUNCTION: CARMA2_HW 0x004b5470
 void C2_HOOK_FASTCALL FadePaletteUp(void) {
-    int i;
     int start_time;
     int the_time;
-    br_pixelmap* pal;
 
-    if (gFaded_palette) {
-        gFaded_palette = 0;
-        start_time = PDGetTotalTime();
-        while (1) {
-            the_time = PDGetTotalTime() - start_time;
-            if (the_time >= 500) {
-                break;
-            }
-            i = (the_time * 256) / 500;
-            SetFadedPalette(i);
-        }
-        pal = gCurrent_palette;
-        *((br_int_32*)pal->pixels) = 0;
-        memcpy(gCurrent_palette_pixels, pal->pixels, 4 * 256);
-        gPalette_changed = 0;
-        if (!gFaded_palette) {
-            PDSetPalette(pal);
-        }
-        gPalette_munged |= (pal != gRender_palette);
+    if (!gFaded_palette) {
+        return;
     }
+
+    gFaded_palette = 0;
+    start_time = PDGetTotalTime();
+    while ((the_time = PDGetTotalTime() - start_time) < 500) {
+        SetFadedPalette((the_time * 256) / 500);
+    }
+    DRSetPalette(gCurrent_palette);
 }
 
+// FUNCTION: CARMA2_HW 0x004b55f0
 void C2_HOOK_FASTCALL EnsurePaletteUp(void) {
 
     if (gFaded_palette) {

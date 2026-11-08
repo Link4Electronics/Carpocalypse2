@@ -11,8 +11,10 @@
 #include "finteray.h"
 
 #include "globvars.h"
+#include "globvrkm.h"
 #include "globvrpb.h"
 #include "graphics.h"
+#include "input.h"
 #include "loading.h"
 #include "physics.h"
 #include "phil.h"
@@ -2850,6 +2852,110 @@ void C2_HOOK_FASTCALL FUN_004d63a0(void) {
     ((void (C2_HOOK_CDECL *)(tPed_character_instance*, int))SetCharacterPhysicsLevelAR)(ped->character, 5);
 }
 
+// FUNCTION: CARMA2_HW 0x004d63e0
+void C2_HOOK_FASTCALL GetPedestrianDebugInfo(char* pBuffer, int pPed_index) {
+    tPedestrian* ped;
+    tPedestrian* candidate;
+    br_scalar nearest_distance;
+    br_scalar distance;
+    char physics_mode[32];
+    char action[32];
+    int usage[4];
+    int counts[4];
+    char warnings[32];
+    int i;
+    int j;
+
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gPed_cache_sizes_1) != 4);
+    C2_HOOK_BUG_ON(sizeof(tPed_face_cache_0x34) != 0x34);
+    C2_HOOK_BUG_ON(sizeof(tPedestrian) != 0x54);
+
+    ped = NULL;
+    if (PDKeyDown(4)) {
+        for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gPed_cache_sizes_1); i++) {
+            counts[i] = 0;
+            for (j = 0; j < gPed_cache_sizes_1[i]; j++) {
+                if (gPed_face_cache_heads[i][j].field_0x14 != NULL) {
+                    counts[i]++;
+                }
+            }
+            usage[i] = counts[i] * 100 / gPed_cache_sizes_1[i];
+        }
+        if (gPed_face_cache_flags & 0x1) {
+            strcpy(warnings, "SATURATION!!  ");
+        } else {
+            strcpy(warnings, "");
+        }
+        if (gPed_face_cache_flags & 0x2) {
+            strcat(warnings, "OVERFLOW!!  ");
+        }
+        sprintf(pBuffer, "Cache states: %d%%, %d%%, %d%%, %d%%   %s", usage[0], usage[1], usage[2], usage[3], warnings);
+        gPed_face_cache_flags = 0;
+    } else {
+        if (pPed_index < 0) {
+            nearest_distance = 10000000.f;
+            for (i = 0, candidate = gPedestrian_array; i < gPed_count; i++, candidate++) {
+                if (candidate->flags & 0x1) {
+                    distance = Vector3DistanceSquared((br_vector3*)gCar_to_view->collision_info->actor->t.t.mat.m[3], &candidate->pos);
+                    if (distance < nearest_distance) {
+                        ped = candidate;
+                        nearest_distance = distance;
+                    }
+                }
+            }
+        } else {
+            ped = &gPedestrian_array[pPed_index];
+        }
+        if (ped != NULL) {
+            switch (ped->action) {
+            case ePed_action_walking:
+                strcpy(action, "walking");
+                break;
+            case ePed_action_running:
+                strcpy(action, "running");
+                break;
+            case ePed_action_panicking:
+                strcpy(action, "panicking");
+                break;
+            case ePed_action_falling:
+                strcpy(action, "falling");
+                break;
+            case ePed_action_getting_up:
+                strcpy(action, "getting up");
+                break;
+            case ePed_action_impacting:
+                strcpy(action, "impacting");
+                break;
+            case ePed_action_dead:
+                strcpy(action, "dead");
+                break;
+            }
+            if (ped->character->field_0x4 < 0) {
+                strcpy(physics_mode, "INACTIVE");
+            } else {
+                switch (ped->character->field_0x14) {
+                case 0:
+                    strcpy(physics_mode, "PHYSICS OFF");
+                    break;
+                case 1:
+                    strcpy(physics_mode, "PASSIVE SIMPLE");
+                    break;
+                case 2:
+                    strcpy(physics_mode, "PASSIVE BONED");
+                    break;
+                case 5:
+                    strcpy(physics_mode, "ACTIVE SIMPLE");
+                    break;
+                case 6:
+                    strcpy(physics_mode, "ACTIVE BONED");
+                    break;
+                }
+            }
+            sprintf(pBuffer, "Ped #%d: %s, %s, %s", (int)(ped - gPedestrian_array), ped->character->personality->name, action, physics_mode);
+        }
+    }
+}
+
 // FUNCTION: CARMA2_HW 0x004d69b0
 void C2_HOOK_FASTCALL ScalePeds(br_vector3* scale) {
     br_scalar s[3];
@@ -5642,7 +5748,9 @@ void C2_HOOK_FASTCALL CBLoadPersonality(tPed_personality* pPersonality, FILE* pF
     char s[256];
     tPath_name path;
     FILE* sound_f;
+    tPed_personality_sounds* sounds;
     int i;
+    int j;
 
 #ifndef CARPOCALYPSE2_MATCHING
     C2_HOOK_BUG_ON(sizeof(tPed_personality_sounds) != 0x84);
@@ -5662,22 +5770,20 @@ void C2_HOOK_FASTCALL CBLoadPersonality(tPed_personality* pPersonality, FILE* pF
         FatalError(kFatalError_CannotOpenPedFile_S, s);
     }
 
-    pPersonality->sounds = BrMemAllocate(sizeof(tPed_personality_sounds), kMem_misc_poly_ped);
-
-    for (i = 0; i < CARPOCALYPSE2_ASIZE(pPersonality->sounds->sounds); i++) {
-        int j;
-
-        pPersonality->sounds->sounds[i].count_sounds = GetAnInt(sound_f);
-        for (j = 0; j < pPersonality->sounds->sounds[i].count_sounds; j++) {
-            pPersonality->sounds->sounds[i].sounds[j] = LoadSingleSound(&gPedStorage, GetAnInt(sound_f));
+    sounds = BrMemAllocate(sizeof(*sounds), kMem_misc_poly_ped);
+    pPersonality->sounds = sounds;
+    for (i = 0; i < CARPOCALYPSE2_ASIZE(sounds->sounds); i++) {
+        sounds->sounds[i].count_sounds = (tU16)GetAnInt(sound_f);
+        for (j = 0; j < sounds->sounds[i].count_sounds; j++) {
+            sounds->sounds[i].sounds[j] = (tU16)LoadSingleSound(&gPedStorage, GetAnInt(sound_f));
         }
     }
     PFfclose(sound_f);
 
     pPersonality->jump_height = 0.f;
-    while (!PFfeof(pF)) {
+    if (!PFfeof(pF)) {
         GetAString(pF, s);
-        if (DRStricmp(s,"JUMPHEIGHT") == 0) {
+        if (DRStricmp(s, "JUMPHEIGHT") == 0) {
             pPersonality->jump_height = GetAScalar(pF);
         }
     }
@@ -8031,8 +8137,8 @@ float C2_HOOK_FASTCALL RescanPedProximity(tPedestrian* pPed, br_vector3* pArg2) 
     is_running = (pPed->action == ePed_action_running);
     pPed->field_0x0c->field_0x18 &= ~0xb;
     mat = GetCharacterMatrixPtr(pPed->character);
-    entry = head->field_0x0;
     pMatVec = (br_vector3*)mat->m[3];
+    entry = head->field_0x0;
     for (i = 0; i < head->field_0x4; i++, entry++) {
         matched = 0;
         if (entry->normal.v[1] > gPed_cos_max_slope) {

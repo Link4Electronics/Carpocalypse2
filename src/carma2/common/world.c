@@ -2365,29 +2365,35 @@ void C2_HOOK_FASTCALL DisposeSmashEnvNonCars(void) {
     BrMemFree(gSmashable_noncars);
 }
 
+// FUNCTION: CARMA2_HW 0x004ffd20
+void C2_HOOK_FASTCALL FindInverseAndWorlBox(tSpecial_volume* pSpec) {
+    br_bounds bnds;
+
+    BrVector3Set(&bnds.min, -1.0f, -1.0f, -1.0f);
+    BrVector3Set(&bnds.max, 1.0f, 1.0f, 1.0f);
+    GetNewBoundingBox(&pSpec->boundary.box.bounds, &bnds, &pSpec->boundary.box.mat);
+    BrMatrix34Inverse(&pSpec->boundary.box.inv_mat, &pSpec->boundary.box.mat);
+}
+
 // FUNCTION: CARMA2_HW 0x004ffd80
 void C2_HOOK_FASTCALL ReadSpecialVolumes(FILE* pF) {
+    int i;
+    int j;
+    tSpecial_volume* spec;
+    tSpecial_volume_boundary_type boundary_type;
 
-    /* DEFAULT ENGINE NOISE */
+    C2_HOOK_BUG_ON(sizeof(tSpecial_volume) != 0xdc);
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gSpecial_effects_boundary_choices) != 4);
+
     gDefault_engine_noise_index = GetAnInt(pF);
-
     gDefault_water_spec_vol_real = &gDefault_default_water_spec_vol;
-
-    /* # special effects volumes */
     gProgram_state.special_volume_count = GetAnInt(pF);
     if (gProgram_state.special_volume_count != 0) {
-        int i;
-
-        C2_HOOK_BUG_ON(sizeof(tSpecial_volume) != 0xdc);
         gProgram_state.special_volumes = BrMemAllocate(gProgram_state.special_volume_count * sizeof(tSpecial_volume), kMem_special_volume);
-        for (i = 0; i < gProgram_state.special_volume_count; i++) {
-            br_bounds unit_bounds;
-            tSpecial_volume* spec = &gProgram_state.special_volumes[i];
-
+        for (i = 0, spec = gProgram_state.special_volumes; i < gProgram_state.special_volume_count; i++, spec++) {
             PossibleService();
-
-            C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gSpecial_effects_boundary_choices) != 4);
-            spec->boundary_type = GetALineAndInterpretCommand(pF, gSpecial_effects_boundary_choices, CARPOCALYPSE2_ASIZE(gSpecial_effects_boundary_choices));
+            boundary_type = GetALineAndInterpretCommand(pF, gSpecial_effects_boundary_choices, CARPOCALYPSE2_ASIZE(gSpecial_effects_boundary_choices));
+            spec->boundary_type = boundary_type;
             if (spec->boundary_type == eFx_boundary_new) {
                 spec->boundary_type = eFx_boundary_box;
             }
@@ -2397,24 +2403,17 @@ void C2_HOOK_FASTCALL ReadSpecialVolumes(FILE* pF) {
                 GetThreeScalars(pF, &spec->boundary.box.mat.m[1][0], &spec->boundary.box.mat.m[1][1], &spec->boundary.box.mat.m[1][2]);
                 GetThreeScalars(pF, &spec->boundary.box.mat.m[2][0], &spec->boundary.box.mat.m[2][1], &spec->boundary.box.mat.m[2][2]);
                 GetThreeScalars(pF, &spec->boundary.box.mat.m[3][0], &spec->boundary.box.mat.m[3][1], &spec->boundary.box.mat.m[3][2]);
-                unit_bounds.min.v[0] = -1.0f;
-                unit_bounds.min.v[1] = -1.0f;
-                unit_bounds.min.v[2] = -1.0f;
-                unit_bounds.max.v[0] =  1.0f;
-                unit_bounds.max.v[1] =  1.0f;
-                unit_bounds.max.v[2] =  1.0f;
-                GetNewBoundingBox(&spec->boundary.box.bounds, &unit_bounds, &spec->boundary.box.mat);
-                BrMatrix34Inverse(&spec->boundary.box.inv_mat, &spec->boundary.box.mat);
+                FindInverseAndWorlBox(spec);
                 spec->boundary.box.axis_length.v[0] = BrVector3Length((br_vector3*)spec->boundary.box.inv_mat.m[0]);
                 spec->boundary.box.axis_length.v[1] = BrVector3Length((br_vector3*)spec->boundary.box.inv_mat.m[1]);
                 spec->boundary.box.axis_length.v[2] = BrVector3Length((br_vector3*)spec->boundary.box.inv_mat.m[2]);
-                ParseSpecialVolume(pF, spec, NULL, spec->boundary_type == eFx_boundary_box);
+                ParseSpecialVolume(pF, spec, NULL, boundary_type == eFx_boundary_box);
                 if (spec->soundfx_type != kSoundFx_None) {
-                    int j;
-
-                    for (j = 0; j < 3; j++) {
-                        spec->boundary.box.bounds.min.v[j] -= 10.f;
-                        spec->boundary.box.bounds.max.v[j] += 10.f;
+                    for (j = 0; j < CARPOCALYPSE2_ASIZE(spec->boundary.box.bounds.min.v); j++) {
+                        spec->boundary.box.bounds.min.v[j] -= 10.0f;
+                    }
+                    for (j = 0; j < CARPOCALYPSE2_ASIZE(spec->boundary.box.bounds.max.v); j++) {
+                        spec->boundary.box.bounds.max.v[j] += 10.0f;
                     }
                 }
                 break;
@@ -2427,7 +2426,7 @@ void C2_HOOK_FASTCALL ReadSpecialVolumes(FILE* pF) {
                 gDefault_water_spec_vol_real = spec;
                 break;
             default:
-                FatalError(kFatalError_ProblemWithSpecialVolumeNumber_I, i);
+                FatalError(kFatalError_ProblemWithSpecialVolumeNumber_I);
                 break;
             }
         }

@@ -164,38 +164,39 @@ void C2_HOOK_FASTCALL GetModelTextureArea(br_model* pModel, int* pArea_1, int* p
 
     for (i = 0; i < V11MODEL(pModel)->ngroups; i++) {
         int j;
-        v11group* v11g = &V11MODEL(pModel)->groups[i];
+        fmt_vertex* vertices = V11MODEL(pModel)->groups[i].vertices;
+        v11face* v11f = V11MODEL(pModel)->groups[i].faces;
 
-        for (j = 0; j < v11g->nfaces; j++) {
+        for (j = V11MODEL(pModel)->groups[i].nfaces; j > 0; j--, v11f++) {
             int k;
-            float min_x =  10000.f;
-            float max_x = -10000.f;
-            float min_y =  10000.f;
-            float max_y = -10000.f;
-            v11face* v11f = &v11g->faces[j];
+            br_vector2 min = {{ 10000.f, 10000.f }};
+            br_vector2 max = {{ -10000.f, -10000.f }};
             int dx;
             int dy;
+            int area;
 
             for (k = 0; k < 3; k++) {
-                br_uint_16 vertex_i = v11f->vertices[k];
+                fmt_vertex* vertex = vertices + v11f->vertices[k];
 
-                if (v11g->vertices[vertex_i].map.v[0] < min_x) {
-                    min_x = v11g->vertices[vertex_i].map.v[0];
+                if (vertex->map.v[0] < min.v[0]) {
+                    min.v[0] = vertex->map.v[0];
                 }
-                if (v11g->vertices[vertex_i].map.v[0] > max_x) {
-                    max_x = v11g->vertices[vertex_i].map.v[0];
+                if (vertex->map.v[0] > max.v[0]) {
+                    max.v[0] = vertex->map.v[0];
                 }
-                if (v11g->vertices[vertex_i].map.v[1] < min_y) {
-                    min_y = v11g->vertices[vertex_i].map.v[1];
+                if (vertex->map.v[1] < min.v[1]) {
+                    min.v[1] = vertex->map.v[1];
                 }
-                if (v11g->vertices[vertex_i].map.v[1] > max_y) {
-                    max_y = v11g->vertices[vertex_i].map.v[1];
+                if (vertex->map.v[1] > max.v[1]) {
+                    max.v[1] = vertex->map.v[1];
                 }
             }
-            dy = (int)(max_y - min_y + 0.9);
-            dx = (int)(max_x - min_x + 0.9);
-            *pArea_1 += dx * dy;
-            *pArea_2 += dx * dy;
+            /* The originals subtract a negative double-precision constant. */
+            dy = (int)(max.v[1] - min.v[1] - -0.9);
+            dx = (int)(max.v[0] - min.v[0] - -0.9);
+            area = dx * dy;
+            *pArea_1 += area;
+            *pArea_2 += area;
         }
     }
     *pArea_1 += 50;
@@ -232,43 +233,48 @@ void C2_HOOK_FASTCALL GetGlassFragmentCounts(int* pVisible_count, int* pActive_c
 // FUNCTION: CARMA2_HW 0x004f5cb0
 void C2_HOOK_FASTCALL SetSmashableModel(br_actor* pActor) {
     int i;
+    tSmashable_item_spec* spec;
 
     if (pActor->model == NULL || pActor->model->identifier == NULL) {
         return;
     }
-    for (i = 0; i < gCount_track_smashable_environment_specs; i++) {
-        tSmashable_item_spec* spec;
+    i = 0;
+    if (i < gCount_track_smashable_environment_specs) {
+        spec = gTrack_smashable_environment_specs;
+        do {
+            if (spec->trigger_type == kSmashableTrigger_Model
+                    && spec->trigger_object.model == pActor->model) {
+                char s[64];
+                char s2[64];
+                int len;
 
-        spec = &gTrack_smashable_environment_specs[i];
-        if (spec->trigger_type == kSmashableTrigger_Model && spec->trigger_object.model == pActor->model) {
-            char s[64];
-            char s2[64];
-            size_t len;
+                strcpy(s, pActor->identifier);
+                len = strlen(s);
+                if (len < 4) {
+                    sprintf(s, "Smash material %s has a name that is less than 4 characters long", pActor->identifier);
+                    PDFatalError(s);
+                }
+                strcpy(s2, &s[len - 4]);
+                sprintf(&s[len - 4], "        ");
+                sprintf(&s[5], "%cx", '|');
+                s[6] = i + 1;
+                strcat(s, s2);
+                s[11] = '\0';
+                if (strlen(pActor->identifier) < 12) {
+                    BrResFree(pActor->identifier);
+                    pActor->identifier = BrResStrDup(pActor, s);
+                } else {
+                    strcpy(pActor->identifier, s);
+                }
 
-            strcpy(s, pActor->identifier);
-            len = strlen(s);
-            if (len < 4) {
-                sprintf(s, "Smash material %s has a name that is less than 4 characters long", pActor->identifier);
-                PDFatalError(s);
+                if ((gCurrent_race.race_spec->race_type >= kRaceType_Smash && (tU16)spec->mode_data.shrapnel.connotations.variable_changes.runtime_changes[0].field_0x2 == gCurrent_race.race_spec->options.smash_and_peds.var_smash_number)
+                        || (gNet_mode != eNet_mode_none && gCurrent_net_game->type == eNet_game_type_2 && spec->mode_data.shrapnel.connotations.variable_changes.runtime_changes[0].field_0x2 == 1)) {
+                    AddSmashableRaceTarget(pActor->model, pActor, -1);
+                }
             }
-            strcpy(s2, &s[len - 4]);
-            sprintf(&s[len - 4], "        ");
-            sprintf(&s[5], "%cx", '|');
-            s[6] = i + 1;
-            strcat(s, s2);
-            s[11] = '\0';
-            if (strlen(pActor->identifier) < 12) {
-                BrResFree(pActor->identifier);
-                pActor->identifier = BrResStrDup(pActor, s);
-            } else {
-                strcpy(pActor->identifier, s);
-            }
-
-            if ((gCurrent_race.race_spec->race_type > 3 && spec->mode_data.field_0x14 == gCurrent_race.race_spec->options.cars.count_opponents)
-                    || (gNet_mode != eNet_mode_none && gCurrent_net_game->type == eNet_game_type_2 && spec->mode_data.field_0x14 == 1)) {
-                AddSmashableRaceTarget(pActor->model, pActor, -1);
-            }
-        }
+            i++;
+            spec++;
+        } while (i < gCount_track_smashable_environment_specs);
     }
 }
 

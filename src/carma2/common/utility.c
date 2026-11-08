@@ -1621,7 +1621,7 @@ tU16 C2_HOOK_FASTCALL DRScalarToU16(float pValue, float pMin, float pMax) {
 // FUNCTION: CARMA2_HW 0x00516460
 br_scalar C2_HOOK_FASTCALL DRU16ToScalar(tU16 pValue, float pMin, float pMax) {
 
-    return pMin + (float)pValue * (pMax - pMin) / 65535.f;
+    return ((float)pValue * (pMax - pMin) / 65535.0f) + pMin;
 }
 
 // FUNCTION: CARMA2_HW 0x00516490

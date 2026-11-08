@@ -424,9 +424,9 @@ void C2_HOOK_FASTCALL PointActorAlongVectorWithUp(br_actor* pThe_actor, br_vecto
     br_transform trans;
 
     trans.type = BR_TRANSFORM_LOOK_UP;
+    BrVector3Copy(&trans.t.look_up.t, &pThe_actor->t.t.translate.t);
     BrVector3Copy(&trans.t.look_up.look, pLook);
     BrVector3Copy(&trans.t.look_up.up, pUp);
-    BrVector3Copy(&trans.t.look_up.t, &pThe_actor->t.t.translate.t);
     BrTransformToTransform(&pThe_actor->t, &trans);
 }
 
@@ -2138,22 +2138,17 @@ void C2_HOOK_FASTCALL UnStunTheBugger(tOpponent_spec* pOpponent_spec) {
 // FUNCTION: CARMA2_HW 0x004ae620
 void C2_HOOK_FASTCALL WakeUpOpponentsToTheFactThatTheStartHasBeenJumped(int pWhat_the_countdown_was) {
     int i;
+    tOpponent_spec* opponent;
 
     for (i = 0; i < gProgram_state.AI_vehicles.number_of_opponents; i++) {
-        UnStunTheBugger(&gProgram_state.AI_vehicles.opponents[i]);
-        if (IRandomBetween(1000, 2500) < 1000 * pWhat_the_countdown_was) {
-            StunTheBugger(&gProgram_state.AI_vehicles.opponents[i], IRandomBetween(1000, 2500));
-        } else {
-            StunTheBugger(&gProgram_state.AI_vehicles.opponents[i], 1000 * pWhat_the_countdown_was);
-        }
+        opponent = &gProgram_state.AI_vehicles.opponents[i];
+        UnStunTheBugger(opponent);
+        StunTheBugger(opponent, MIN(IRandomBetween(1000, 2500), 1000 * pWhat_the_countdown_was));
     }
     for (i = 0; i < gProgram_state.AI_vehicles.number_of_cops; i++) {
-        UnStunTheBugger(&gProgram_state.AI_vehicles.cops[i]);
-        if (IRandomBetween(1000, 2500) < 1000 * pWhat_the_countdown_was) {
-            StunTheBugger(&gProgram_state.AI_vehicles.cops[i], IRandomBetween(1000, 2500));
-        } else {
-            StunTheBugger(&gProgram_state.AI_vehicles.cops[i], 1000 * pWhat_the_countdown_was);
-        }
+        opponent = &gProgram_state.AI_vehicles.cops[i];
+        UnStunTheBugger(opponent);
+        StunTheBugger(opponent, MIN(IRandomBetween(1000, 2500), 1000 * pWhat_the_countdown_was));
     }
     gAcknowledged_start = 1;
     gStart_jumped = 1;
@@ -3050,13 +3045,14 @@ void C2_HOOK_FASTCALL ObjectiveComplete(tOpponent_spec* pOpponent_spec) {
 // FUNCTION: CARMA2_HW 0x004ab150
 int C2_HOOK_FASTCALL AddToOpponentsProjectedRoute(tOpponent_spec* pOpponent_spec, tS16 pSection_no, int pDirection) {
 
-    if (pOpponent_spec->nnext_sections >= CARPOCALYPSE2_ASIZE(pOpponent_spec->next_sections)) {
+    if (pOpponent_spec->nnext_sections < (int)CARPOCALYPSE2_ASIZE(pOpponent_spec->next_sections)) {
+        pOpponent_spec->next_sections[pOpponent_spec->nnext_sections].section_no = pSection_no;
+        pOpponent_spec->next_sections[pOpponent_spec->nnext_sections].direction = pDirection;
+        pOpponent_spec->nnext_sections++;
+        return 1;
+    } else {
         return 0;
     }
-    pOpponent_spec->next_sections[pOpponent_spec->nnext_sections].section_no = pSection_no;
-    pOpponent_spec->next_sections[pOpponent_spec->nnext_sections].direction = pDirection;
-    pOpponent_spec->nnext_sections += 1;
-    return 1;
 }
 
 // FUNCTION: CARMA2_HW 0x004a93c0

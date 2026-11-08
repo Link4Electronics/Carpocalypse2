@@ -2989,22 +2989,23 @@ void C2_HOOK_FASTCALL ReadNonCarMechanicsData(FILE* pF, tNon_car_spec* pNon_car_
 }
 
 // FUNCTION: CARMA2_HW 0x00450600
-int C2_HOOK_CDECL LinkyCallback(br_actor* pActor, void* data) {
-    tLinkyCallback_context* context = data;
+int C2_HOOK_CDECL LinkyCallback(br_actor* pActor, void* pData) {
+    tLinkyCallback_context* context;
     int i;
 
+    context = pData;
     if (pActor->type != BR_ACTOR_MODEL) {
         return 0;
     }
     pActor->render_style = BR_RSTYLE_DEFAULT;
     for (i = context->model_start; i < context->model_start + context->model_end; i++) {
-
         if (DRStricmp(gDroneStorage.models[i]->identifier, pActor->model->identifier) == 0) {
             pActor->model = gDroneStorage.models[i];
             return 0;
         }
     }
     PDFatalError("No drone model");
+    return 0;
 }
 
 void C2_HOOK_FASTCALL LinkDroneActorsToModelsAndSetRenderStyle(tDrone_spec* pDrone, int pModel_start, int pModel_end) {
