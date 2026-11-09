@@ -3320,7 +3320,7 @@ void C2_HOOK_FASTCALL EtherealiseMaterial1(void* pMaterial) {
 // FUNCTION: CARMA2_HW 0x004d6b90
 void C2_HOOK_FASTCALL EtherealiseCharacter1(void* pCharacter) {
 
-    *(tU32*)((char*)pCharacter + 0x19c) |= 4;
+    ((tPhysics_object*)pCharacter)->flags |= 4;
 }
 
 // FUNCTION: CARMA2_HW 0x004d6ba0
@@ -3337,7 +3337,7 @@ void C2_HOOK_FASTCALL DeetherealiseMaterial1(void* pMaterial) {
 // FUNCTION: CARMA2_HW 0x004d6c00
 void C2_HOOK_FASTCALL DeetherealiseCharacter1(void* pCharacter) {
 
-    *(tU32*)((char*)pCharacter + 0x19c) &= ~4;
+    ((tPhysics_object*)pCharacter)->flags &= ~4;
 }
 
 // FUNCTION: CARMA2_HW 0x004d6c10
@@ -8819,11 +8819,11 @@ found_target:
             }
         }
         pPed->field_0x28 = pTime;
-        *(tU32*)((char*)pPed + 0x2c) = pTime;
+        pPed->field_0x2c = pTime;
         return;
     }
 
-    if (pTime - *(tU32*)((char*)pPed + 0x2c) > 9999 && ped_cache->field_0x98 < 1) {
+    if (pTime - pPed->field_0x2c > 9999 && ped_cache->field_0x98 < 1) {
         if (pPed->hit_points > 0 && pPed->field_0x0c != NULL) {
             int bone_index;
             int model_set;
@@ -10358,7 +10358,8 @@ void C2_HOOK_FASTCALL FUN_004d2320(tPhysics_object* pObject1, tPhysics_object* p
     tPedestrian* ped;
     tPed_cache_006944c0* ped_cache;
     tPhysics_object* player_collision;
-    void* collision_owner;
+    tFace_ref* face;
+    br_material* material;
     char* collision_name;
     float* collision_vector;
     float* smear_normal;
@@ -10422,9 +10423,11 @@ void C2_HOOK_FASTCALL FUN_004d2320(tPhysics_object* pObject1, tPhysics_object* p
 
     if (gPed_impact_minimum <= pImpact) {
         if (pObject2 == NULL) {
-            if (pCollision_data != NULL
-                    && *(float*)((char*)pCollision_data + 0x38) < gPed_smear_direction_minimum) {
-                ped->flags |= 2;
+            if (pCollision_data != NULL) {
+                face = (tFace_ref*)pCollision_data;
+                if (face->normal.v[1] < gPed_smear_direction_minimum) {
+                    ped->flags |= 2;
+                }
             }
         } else {
             ped->flags |= 4;
@@ -10445,7 +10448,7 @@ void C2_HOOK_FASTCALL FUN_004d2320(tPhysics_object* pObject1, tPhysics_object* p
     }
 
     if ((pObject1->last_special_volume == NULL
-                || gFLOAT_0058a9d8 <= *(float*)((char*)pObject1->last_special_volume + 0x88))
+                || gFLOAT_0058a9d8 <= pObject1->last_special_volume->gravity_multiplier)
             && gGoreLevel > 0) {
         mass_scale = gPed_fall_speed_mass_scale
             / ped->character->personality->form->simple_physicing[(tS8)ped->character->field_0x5].collision_info->M;
@@ -10453,14 +10456,15 @@ void C2_HOOK_FASTCALL FUN_004d2320(tPhysics_object* pObject1, tPhysics_object* p
         DoGiblets(ped, pObject1, pObject2, mass_scale * mass_scale * pImpact, pPosition, starting_size);
 
         if (pObject2 == NULL && pCollision_data != NULL && ped->hit_points < 1) {
-            collision_owner = *(void**)pCollision_data;
-            if (collision_owner != NULL) {
-                void* collision_type_owner = *(void**)((char*)collision_owner + 0x40);
+            face = (tFace_ref*)pCollision_data;
+            material = face->material;
+            if (material != NULL) {
+                br_pixelmap* colour_map = material->colour_map;
 
-                if (collision_type_owner != NULL && *((tU8*)collision_type_owner + 0x2c) == 0x12) {
+                if (colour_map != NULL && colour_map->type == 0x12) {
                     return;
                 }
-                collision_name = *(char**)((char*)collision_owner + 4);
+                collision_name = material->identifier;
                 if (collision_name != NULL && strlen(collision_name) == 0xb && collision_name[5] == '|') {
                     return;
                 }
@@ -10472,8 +10476,8 @@ void C2_HOOK_FASTCALL FUN_004d2320(tPhysics_object* pObject1, tPhysics_object* p
                 return;
             }
 
-            collision_vector = (float*)((char*)pCollision_data + 0x34);
-            smear_normal = (float*)((char*)ped_cache + 0x114);
+            collision_vector = &face->normal.v[0];
+            smear_normal = &ped_cache->field_0x114.v[0];
             if ((ped_cache->field_0xc4 & 2) == 0) {
                 ped_cache->field_0xc4 |= 2;
                 ped_cache->field_0xca = 1;

@@ -4972,7 +4972,8 @@ typedef struct {
     br_vector3 field_0xf0;
     br_vector3 field_0xfc;
     br_vector3 field_0x108;
-    undefined field_0x114[0x124-0x114];
+    br_vector3 field_0x114;
+    undefined field_0x120[4];
     float field_0x124;
     float field_0x128;
 } tPed_cache_006944c0;
@@ -5198,7 +5199,7 @@ typedef struct tPedestrian {
     tRace_ped_exclusion_spec* exclusion_spec;
     br_vector3 pos;
     tU32 field_0x28;
-    undefined field_0x2c[4];
+    tU32 field_0x2c;
     tU32 death_time;
     undefined field_0x34[0x4c - 0x34];
     float speed_factor;
