@@ -263,7 +263,7 @@ tSmoke gSmoke[25];
 int gSmoke_flags;
 
 // GLOBAL: CARMA2_HW 0x006aa594
-int gN_smoke;
+int gSmoke_num;
 
 #ifndef CARPOCALYPSE2_MATCHING
 // The original keeps the smoke prim's token list as a raw blob at 0x660148
@@ -1467,6 +1467,8 @@ void C2_HOOK_FASTCALL GenerateContinuousSmoke(tCar_spec* pCar, int pWheel, tU32 
     CreatePuffOfSmoke(&pos, &v, decay_factor, 2 * decay_factor, colour + 8);
 }
 
+extern const double gDOUBLE_0058b0b0;
+
 // FUNCTION: CARMA2_HW 0x004fb330
 void C2_HOOK_FASTCALL CreatePuffOfSmoke(br_vector3* pPos, br_vector3* pV, float pStrength, float pDecay_factor, int pType) {
     br_vector3 tv;
@@ -1486,28 +1488,30 @@ void C2_HOOK_FASTCALL CreatePuffOfSmoke(br_vector3* pPos, br_vector3* pV, float 
             return;
         }
     }
-    BrVector3InvScale(&gSmoke[gN_smoke].v, pV, WORLD_SCALE);
-    gSmoke[gN_smoke].v.v[1] = (br_scalar)(gSmoke[gN_smoke].v.v[1] + 1.0 / 6.9);
-    BrVector3Copy(&gSmoke[gN_smoke].pos, pPos);
-    gSmoke[gN_smoke].radius = 0.05f;
+    gSmoke[gSmoke_num].v.v[0] = pV->v[0] * gFLOAT_0058b060;
+    gSmoke[gSmoke_num].v.v[1] = pV->v[1] * gFLOAT_0058b060;
+    gSmoke[gSmoke_num].v.v[2] = pV->v[2] * gFLOAT_0058b060;
+    gSmoke[gSmoke_num].v.v[1] = (br_scalar)(gSmoke[gSmoke_num].v.v[1] - gDOUBLE_0058b0b0);
+    BrVector3Copy(&gSmoke[gSmoke_num].pos, pPos);
+    gSmoke[gSmoke_num].radius = 0.05f;
     if ((pType & 0xf) == 7) {
-        gSmoke[gN_smoke].radius = 0.1f;
+        gSmoke[gSmoke_num].radius = 0.1f;
     } else {
-        gSmoke[gN_smoke].pos.v[1] += 0.04f;
+        gSmoke[gSmoke_num].pos.v[1] += 0.04f;
     }
-    gSmoke[gN_smoke].pos.v[1] += 0.04f;
-    if (pStrength > 1.f) {
-        pStrength = 1.f;
+    gSmoke[gSmoke_num].pos.v[1] += 0.04f;
+    if (pStrength > gFLOAT_0058afdc) {
+        pStrength = gFLOAT_0058afdc;
     }
-    gSmoke[gN_smoke].strength = pStrength;
-    gSmoke_flags |= 1 << gN_smoke;
-    gSmoke[gN_smoke].time_sync = gPHIL_mechanics_time_sync;
-    gSmoke[gN_smoke].type = (tU8)pType;
-    gSmoke[gN_smoke].decay_factor = pDecay_factor;
-    gSmoke[gN_smoke].pipe_me = 1;
-    gN_smoke++;
-    if (gN_smoke >= (int)CARPOCALYPSE2_ASIZE(gSmoke)) {
-        gN_smoke = 0;
+    gSmoke[gSmoke_num].strength = pStrength;
+    gSmoke_flags |= 1 << gSmoke_num;
+    gSmoke[gSmoke_num].time_sync = gPHIL_mechanics_time_sync;
+    gSmoke[gSmoke_num].type = (tU8)pType;
+    gSmoke[gSmoke_num].decay_factor = pDecay_factor;
+    gSmoke[gSmoke_num].pipe_me = 1;
+    gSmoke_num++;
+    if (gSmoke_num >= (int)CARPOCALYPSE2_ASIZE(gSmoke)) {
+        gSmoke_num = 0;
     }
 }
 

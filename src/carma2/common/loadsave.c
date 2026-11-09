@@ -51,6 +51,7 @@ int C2_HOOK_FASTCALL DoLoadGame2(tSave_game* pSave_game) {
     int i;
 
     C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gProgram_state.cars_available) != 60);
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gCurrent_APO_levels) != 3);
 
     if (pSave_game->magic != 0x12345678) {
         return 0;
@@ -68,10 +69,8 @@ int C2_HOOK_FASTCALL DoLoadGame2(tSave_game* pSave_game) {
     }
     gProgram_state.number_of_cars = pSave_game->number_of_cars;
     gProgram_state.current_car_index = pSave_game->current_car_index;
-    for (i = 0; i < CARPOCALYPSE2_ASIZE(gProgram_state.cars_available); i++) {
-        gProgram_state.cars_available[i] = pSave_game->cars[i];
-    }
-    for (i = 0; i < 3; i++) {
+    memcpy(gProgram_state.cars_available, pSave_game->cars, sizeof(gProgram_state.cars_available));
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gCurrent_APO_levels); i++) {
         gCurrent_APO_levels[i] = gProgram_state.current_car.power_up_levels[i] = pSave_game->apo_levels[i];
         gCurrent_APO_potential_levels[i] = gProgram_state.current_car.power_up_slots[i] = pSave_game->apo_potential[i];
     }

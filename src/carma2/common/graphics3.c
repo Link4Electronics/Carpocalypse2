@@ -248,12 +248,12 @@ void C2_HOOK_FASTCALL InitMap(void) {
     } else {
         gINT_0074ab8c = gINT_0074ab88;
     }
-    gINT_0074ab94 = gHeadup_map_w + 2 * gINT_0074ab88;
+    gINT_0074ab94 = gHeadup_map_w + 2 * gINT_0074ab8c;
     gINT_0074abec = gHeadup_map_h + 2 * gINT_0074ab88;
     gHeadup_map_half_width = gHeadup_map_w / 2;
     gHeadup_map_half_height = gHeadup_map_h / 2;
     if (gMap_overlay == NULL) {
-        gMap_overlay = DRPixelmapAllocate(gBack_screen->type, MAX(gINT_0074abec, gINT_0074ab94), MAX(gINT_0074abec, gINT_0074ab94), NULL, 0);
+        gMap_overlay = DRPixelmapAllocate(gBack_screen->type, MAX(gINT_0074ab94, gINT_0074abec), MAX(gINT_0074ab94, gINT_0074abec), NULL, 0);
     }
     gMini_map_x = gHeadup_map_x + gHeadup_map_w / 16;
     gMini_map_y = gHeadup_map_y + gHeadup_map_h / 16;
@@ -418,7 +418,7 @@ void C2_HOOK_FASTCALL MapChanged(void) {
 }
 
 // FUNCTION: CARMA2_HW 0x00497620
-void C2_HOOK_FASTCALL CheckMapMoveKeys(int pKey0) {
+void C2_HOOK_FASTCALL CheckMapMoveKeys(int pKey0, int pKey1) {
 
     if (KeyIsDown(31) && pKey0) {
         gHeadup_map_y_float = (float)((double)gHeadup_map_y_float - (double)gFrame_period / 20.0);

@@ -381,31 +381,35 @@ void C2_HOOK_FASTCALL GetNewBoundingBox(br_bounds* b2, br_bounds* b1, br_matrix3
 // FUNCTION: CARMA2_HW 0x0045cd90
 int C2_HOOK_FASTCALL PickBoundsTestRay__finteray(br_bounds* b, br_vector3* rp, br_vector3* rd, br_scalar t_near, br_scalar t_far, br_scalar* new_t_near, br_scalar* new_t_far) {
     int i;
-    float s;
-    float t;
+    br_scalar inverse;
+    br_scalar t;
 
     for (i = 0; i < 3; i++) {
-        if (rd->v[i] < -2.3841858e-7f) {
-            s = (-1.0f / (rd->v[i] * 1.0f)) * (rp->v[i] - b->max.v[i]);
-            if (s > BR_SCALAR_MAX) {
+        if (rd->v[i] < -2 * BR_SCALAR_EPSILON) {
+            inverse = rd->v[i];
+            inverse = -1.f / inverse;
+            t = (rp->v[i] - b->max.v[i]) * inverse;
+            if (t > BR_SCALAR_MAX) {
                 t_near = BR_SCALAR_MAX;
-            } else if (s > t_near) {
-                t_near = s;
+            } else if (t > t_near) {
+                t_near = t;
             }
-            t = (-1.0f / (rd->v[i] * 1.0f)) * (rp->v[i] - b->min.v[i]);
+            t = (rp->v[i] - b->min.v[i]) * inverse;
             if (t < BR_SCALAR_MIN) {
                 t_far = BR_SCALAR_MIN;
             } else if (t < t_far) {
                 t_far = t;
             }
-        } else if (rd->v[i] > 2.3841858e-7f) {
-            s = (-1.0f / (rd->v[i] * 1.0f)) * (rp->v[i] - b->max.v[i]);
-            if (s < BR_SCALAR_MIN) {
+        } else if (rd->v[i] > 2 * BR_SCALAR_EPSILON) {
+            inverse = rd->v[i];
+            inverse = -1.f / inverse;
+            t = (rp->v[i] - b->max.v[i]) * inverse;
+            if (t < BR_SCALAR_MIN) {
                 t_far = BR_SCALAR_MIN;
-            } else if (s < t_far) {
-                t_far = s;
+            } else if (t < t_far) {
+                t_far = t;
             }
-            t = (-1.0f / (rd->v[i] * 1.0f)) * (rp->v[i] - b->min.v[i]);
+            t = (rp->v[i] - b->min.v[i]) * inverse;
             if (t > BR_SCALAR_MAX) {
                 t_near = BR_SCALAR_MAX;
             } else if (t > t_near) {
@@ -419,8 +423,9 @@ int C2_HOOK_FASTCALL PickBoundsTestRay__finteray(br_bounds* b, br_vector3* rp, b
         *new_t_near = t_near;
         *new_t_far = t_far;
         return 1;
+    } else {
+        return 0;
     }
-    return 0;
 }
 
 void C2_HOOK_FASTCALL DRVector2AccumulateScale__finteray(br_vector2* a, const br_vector2* b, br_scalar s) {
@@ -813,30 +818,28 @@ void C2_HOOK_FASTCALL CheckSingleFace(tFace_ref* pFace, br_vector3* ray_pos, br_
 }
 
 // FUNCTION: CARMA2_HW 0x0045f690
-void C2_HOOK_FASTCALL FillInBounds(tBounds* bnds) {
-    br_vector3 a;
+void C2_HOOK_FASTCALL FillInBounds(tBounds* pBounds) {
+    br_vector3 tv;
     br_vector3 c[3];
     int i;
 
-    BrVector3Add(&a, &bnds->original_bounds.min, &bnds->original_bounds.max);
-    BrVector3Scale(&a, &a, 0.5f);
-    BrMatrix34ApplyP(&bnds->box_centre, &a, bnds->mat);
-    BrVector3Sub(&a, &bnds->original_bounds.max, &bnds->original_bounds.min);
-    bnds->radius = BrVector3Length(&a) / 2.f;
-    BrMatrix34ApplyP(&bnds->real_bounds.min, &bnds->original_bounds.min, bnds->mat);
-    BrVector3Copy(&bnds->real_bounds.max, &bnds->real_bounds.min);
+    BrVector3Add(&tv, &pBounds->original_bounds.min, &pBounds->original_bounds.max);
+    BrVector3InvScale(&tv, &tv, 2.0f);
+    BrMatrix34ApplyP(&pBounds->box_centre, &tv, pBounds->mat);
+    BrVector3Sub(&tv, &pBounds->original_bounds.max, &pBounds->original_bounds.min);
+    pBounds->radius = BrVector3Length(&tv) / 2.0f;
+    BrMatrix34ApplyP(&pBounds->real_bounds.min, &pBounds->original_bounds.min, pBounds->mat);
+    BrVector3Copy(&pBounds->real_bounds.max, &pBounds->real_bounds.min);
     for (i = 0; i < 3; ++i) {
-        c[i].v[0] = bnds->mat->m[i][0] * a.v[i];
-        c[i].v[1] = bnds->mat->m[i][1] * a.v[i];
-        c[i].v[2] = bnds->mat->m[i][2] * a.v[i];
+        BrVector3Scale(&c[i], (br_vector3*)pBounds->mat->m[i], tv.v[i]);
     }
     for (i = 0; i < 3; ++i) {
-        bnds->real_bounds.min.v[i] += (float)(c[2].v[i] < 0.f) * c[2].v[i]
-            + (float)(c[1].v[i] < 0.f) * c[1].v[i]
-            + (float)(c[0].v[i] < 0.f) * c[0].v[i];
-        bnds->real_bounds.max.v[i] += (float)(c[0].v[i] > 0.f) * c[0].v[i]
-            + (float)(c[2].v[i] > 0.f) * c[2].v[i]
-            + (float)(c[1].v[i] > 0.f) * c[1].v[i];
+        pBounds->real_bounds.min.v[i] += c[0].v[i] * (float)(c[0].v[i] < 0.0f)
+            + c[1].v[i] * (float)(c[1].v[i] < 0.0f)
+            + c[2].v[i] * (float)(c[2].v[i] < 0.0f);
+        pBounds->real_bounds.max.v[i] += c[0].v[i] * (float)(c[0].v[i] > 0.0f)
+            + c[1].v[i] * (float)(c[1].v[i] > 0.0f)
+            + c[2].v[i] * (float)(c[2].v[i] > 0.0f);
     }
 }
 
@@ -1626,22 +1629,21 @@ void C2_HOOK_FASTCALL SphereFaceCollide(tFace_ref* pFace, br_vector3* pStart, br
 int C2_HOOK_FASTCALL SphereBoxIntersection(br_bounds* pBounds, br_vector3* pPoint, br_scalar pRadius_squared, br_vector3* pClosest) {
     int axis;
     br_scalar closest;
-    br_scalar difference;
-    br_scalar distance = gUNK_00589fac;
+    br_scalar distance;
 
+    distance = 0.f;
     for (axis = 0; axis < 3; axis++) {
-        if (!(pPoint->v[axis] > pBounds->min.v[axis])) {
+        if (pPoint->v[axis] <= pBounds->min.v[axis]) {
             closest = pBounds->min.v[axis];
         } else if (pPoint->v[axis] >= pBounds->max.v[axis]) {
             closest = pBounds->max.v[axis];
         } else {
             closest = pPoint->v[axis];
         }
-        pClosest->v[axis] = (br_scalar)closest;
-        difference = pPoint->v[axis] - closest;
-        distance += difference * difference;
+        pClosest->v[axis] = closest;
+        distance += (pPoint->v[axis] - closest) * (pPoint->v[axis] - closest);
     }
-    return !(distance > pRadius_squared);
+    return distance <= pRadius_squared;
 }
 
 

@@ -688,7 +688,7 @@ char * C2_HOOK_FASTCALL GetALineWithNoPossibleService(FILE* pF, char* pS) {
         if (ch != -1) {
             PFungetc(ch, pF);
         }
-    } while (!isalnum(*result)
+    } while (!isalnum((unsigned char)*result)
              && *result != '*'
              && *result != '-'
              && *result != '+'
@@ -708,11 +708,13 @@ char * C2_HOOK_FASTCALL GetALineWithNoPossibleService(FILE* pF, char* pS) {
 
     if (result != NULL) {
         len = strlen(result);
-        if (len > 0 && (result[len - 1] == '\n' || result[len - 1] == '\r')) {
+        /* The original's && binds first, so it tests result[len - 1] even when len is 0. */
+        if ((len != 0 && result[len - 1] == '\n') || result[len - 1] == '\r') {
             result[len - 1] = '\0';
             len--;
         }
-        if (len > 0 && (result[len - 1] == '\n' || result[len - 1] == '\r')) {
+        /* The original's && binds first, so it tests result[len - 1] even when len is 0. */
+        if ((len != 0 && result[len - 1] == '\n') || result[len - 1] == '\r') {
             result[len - 1] = '\0';
             len--;
         }
@@ -725,12 +727,11 @@ char * C2_HOOK_FASTCALL GetALineWithNoPossibleService(FILE* pF, char* pS) {
 #endif
         memcpy(pS, result, len + 1);
 #ifdef CARPOCALYPSE2_FIX_BUGS
-        return pS;
-#else
-        return result;
+        result = pS;
 #endif
+    } else {
+        pS[0] = '\0';
     }
-    pS[0] = '\0';
     return result;
 
 }
@@ -1149,6 +1150,12 @@ void C2_HOOK_FASTCALL FUN_0044bf40(void) {
 
 // FUNCTION: CARMA2_HW 0x0044bf80
 void C2_HOOK_FASTCALL LoadingNoOp(void) {
+}
+
+// FUNCTION: CARMA2_HW 0x0044bf90
+void C2_HOOK_FASTCALL LoadingFreePixelmap(br_pixelmap* pMap) {
+
+    BrPixelmapFree(pMap);
 }
 
 // FUNCTION: CARMA2_HW 0x0048fb50

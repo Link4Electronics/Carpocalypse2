@@ -1442,17 +1442,18 @@ void C2_HOOK_FASTCALL ProcessFlicQueue(tU32 pInterval) {
     tU32 new_time;
     int finished_playing;
 
+    (void)pInterval;
     DontLetFlicFuckWithPalettes();
     TurnFlicTransparencyOn();
     the_flic = gFirst_flic;
-    last_flic = NULL;
     new_time = PDGetTotalTime();
+    last_flic = NULL;
     while (the_flic != NULL) {
-        if (new_time - the_flic->last_frame < the_flic->frame_period) {
-            finished_playing = 0;
-        } else {
+        if (new_time - the_flic->last_frame >= the_flic->frame_period) {
             the_flic->last_frame = new_time;
             finished_playing = PlayNextFlicFrame(the_flic);
+        } else {
+            finished_playing = 0;
         }
         if (finished_playing) {
             EndFlic(the_flic);
@@ -1622,8 +1623,8 @@ void C2_HOOK_FASTCALL ServicePanelFlics(int pCopy_to_buffer) {
 void C2_HOOK_FASTCALL ChangePanelFlic(int pIndex, tU8* pData, tU32 pData_length) {
 
     EndFlic(&gPanel_flic[pIndex]);
-    gPanel_flic_data[pIndex] = pData;
     gPanel_flic_data_length[pIndex] = pData_length;
+    gPanel_flic_data[pIndex] = pData;
     BrPixelmapFill(gPanel_buffer[pIndex], 0);
     StartFlic(
             gPanel_flic[pIndex].file_name,

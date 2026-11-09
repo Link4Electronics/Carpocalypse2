@@ -5,6 +5,8 @@
 #include "frontend_network.h"
 #include "frontend_quit.h"
 #include "globvars.h"
+#include "input.h"
+#include "interface.h"
 #include "loading.h"
 #include "newgame.h"
 #include "platform.h"
@@ -19,7 +21,25 @@ tStruct_00686508 gUNK_006886e8;
 // GLOBAL: CARMA2_HW 0x006883b0
 tStruct_00686508 gUNK_006883b0;
 
-void C2_HOOK_FASTCALL DisplayNetworkOptions(tFrontend_spec* pFrontend) {
+static __inline void C2_HOOK_FASTCALL NetOptions_GenericInfunc(tFrontend_spec* pFrontend) {
+
+    if (!pFrontend->loaded) {
+        LoadMenuSettings(pFrontend);
+        FuckWithWidths(pFrontend);
+        if (pFrontend->previous != NULL) {
+            pFrontend->previous->isPreviousSomeOtherMenu = 1;
+        }
+    }
+    gFrontend_scrollbars_updated = 0;
+    EdgeTriggerModeOff();
+    WaitForNoKeys();
+    EdgeTriggerModeOn();
+    gCurrent_frontend_scrollbars = NULL;
+    gConnected_items = NULL;
+    gPTR_00686508 = NULL;
+}
+
+__inline void C2_HOOK_FASTCALL DisplayNetworkOptions(tFrontend_spec* pFrontend) {
 
     if (gFrontend_net_options.show_players_on_map) {
         SelectThisItemIn(pFrontend, 1, 2);
@@ -67,13 +87,6 @@ void C2_HOOK_FASTCALL DisplayNetworkOptions(tFrontend_spec* pFrontend) {
     }
     sprintf(pFrontend->items[24].text, "%i", gFrontend_net_options.starting_credits);
     switch (gFrontend_game_type) {
-    case eNet_game_type_fight_to_death:
-    case eNet_game_type_2:
-    case eNet_game_type_checkpoint:
-    case eNet_game_type_4:
-    case eNet_game_type_6:
-        pFrontend->items[25].stringId = 232;
-        break;
     case eNet_game_type_1:
         pFrontend->items[25].stringId = 233;
         break;
@@ -83,12 +96,37 @@ void C2_HOOK_FASTCALL DisplayNetworkOptions(tFrontend_spec* pFrontend) {
     case eNet_game_type_foxy:
         pFrontend->items[25].stringId = 235;
         break;
+    case eNet_game_type_fight_to_death:
+    case eNet_game_type_2:
+    case eNet_game_type_checkpoint:
+    case eNet_game_type_4:
+    case eNet_game_type_6:
+        pFrontend->items[25].stringId = 232;
+        break;
     }
     pFrontend->items[25].enabled = kFrontendItemEnabled_enabled;
     pFrontend->items[26].enabled = kFrontendItemEnabled_enabled;
     pFrontend->items[30].enabled = kFrontendItemEnabled_enabled;
     pFrontend->items[29].enabled = kFrontendItemEnabled_enabled;
     switch (gFrontend_game_type) {
+    case eNet_game_type_1:
+    case eNet_game_type_5:
+        sprintf(pFrontend->items[26].text, "%i", gFrontend_net_options.starting_target);
+        break;
+    case eNet_game_type_foxy:
+        {
+            int seconds = gFrontend_net_options.starting_target / 1000;
+            int hours = seconds / 3600;
+            int minutes = (seconds / 60) % 60;
+
+            seconds %= 60;
+            if (hours != 0) {
+                sprintf(pFrontend->items[26].text, "%02i:%02i:%02i", hours, minutes, seconds);
+            } else {
+                sprintf(pFrontend->items[26].text, "%02i:%02i", minutes, seconds);
+            }
+        }
+        break;
     case eNet_game_type_fight_to_death:
     case eNet_game_type_2:
     case eNet_game_type_checkpoint:
@@ -100,22 +138,6 @@ void C2_HOOK_FASTCALL DisplayNetworkOptions(tFrontend_spec* pFrontend) {
         pFrontend->items[29].enabled = kFrontendItemEnabled_disabled;
         strcpy(pFrontend->items[26].text, "----");
         break;
-    case eNet_game_type_1:
-    case eNet_game_type_5:
-        sprintf(pFrontend->items[26].text, "%i", gFrontend_net_options.starting_target);
-        break;
-    case eNet_game_type_foxy:
-        {
-            int seconds = gFrontend_net_options.starting_target / 1000;
-            int minutes = (seconds / 60) % 60;
-            int hours = seconds / 3600;
-            if (hours == 0) {
-                sprintf(pFrontend->items[26].text, "%02i:%02i", minutes, seconds % 60);
-            } else {
-                sprintf(pFrontend->items[26].text, "%02i:%02i:%02i", hours, minutes, seconds % 60);
-            }
-        }
-        break;
     }
     FuckWithWidths(pFrontend);
 }
@@ -124,7 +146,7 @@ void C2_HOOK_FASTCALL BackupNetworkOptions(void) {
 
     C2_HOOK_BUG_ON(sizeof(gFrontend_net_options) != 0x30);
     C2_HOOK_BUG_ON(sizeof(gFrontend_backup_net_options) != 0x30);
-    memcpy(&gFrontend_backup_net_options, &gFrontend_net_options, sizeof(gFrontend_net_options));
+    gFrontend_backup_net_options = gFrontend_net_options;
 }
 
 // FUNCTION: CARMA2_HW 0x00472ed0
@@ -132,7 +154,7 @@ int C2_HOOK_FASTCALL NetOptions_Infunc(tFrontend_spec* pFrontend) {
 
     C2_HOOK_BUG_ON(sizeof(tNet_game_options) != 0x30);
 
-    Generic_Infunc(pFrontend);
+    NetOptions_GenericInfunc(pFrontend);
     DisplayNetworkOptions(pFrontend);
     BackupNetworkOptions();
     gUNK_006886e8.field_0x0 = 24;

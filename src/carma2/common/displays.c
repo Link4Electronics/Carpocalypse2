@@ -1999,7 +1999,7 @@ void C2_HOOK_FASTCALL DoFancyHeadup(int pIndex) {
     if (gMap_view == 2) {
         return;
     }
-    if (gLast_fancy_index >= 0 && the_time - gLast_fancy_time <= 2000 && pIndex < gLast_fancy_index) {
+    if (gLast_fancy_index >= 0 && the_time - gLast_fancy_time <= 2000 && gLast_fancy_index > pIndex) {
         return;
     }
     temp_ref = NewImageHeadupSlot(6, 0, 2000, pIndex + 10);

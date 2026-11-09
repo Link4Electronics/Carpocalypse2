@@ -364,3 +364,13 @@ void C2_HOOK_FASTCALL DumpVector3Diagnostic(const char* pName, const br_vector3*
     dr_dprintf(pName);
     dr_dprintf("(%8.3f, %8.3f, %8.3f)", pVec->v[0], pVec->v[1], pVec->v[2]);
 }
+
+// FUNCTION: CARMA2_HW 0x0044c5e0
+void C2_HOOK_FASTCALL TraceMatrix34(const char* pName, const br_matrix34* pMat) {
+
+    dr_dprintf(pName);
+    dr_dprintf("[%8.3f, %8.3f, %8.3f]", pMat->m[0][0], pMat->m[0][1], pMat->m[0][2]);
+    dr_dprintf("[%8.3f, %8.3f, %8.3f]", pMat->m[1][0], pMat->m[1][1], pMat->m[1][2]);
+    dr_dprintf("[%8.3f, %8.3f, %8.3f]", pMat->m[2][0], pMat->m[2][1], pMat->m[2][2]);
+    dr_dprintf("[%8.3f, %8.3f, %8.3f]", pMat->m[3][0], pMat->m[3][1], pMat->m[3][2]);
+}

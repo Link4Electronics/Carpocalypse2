@@ -21,15 +21,18 @@ extern const char* carpocalypse2_fix_path_case(const char* pPath);
 #include <sys/types.h>
 #include <sys/stat.h>
 
+static __inline br_pixelmap* C2_HOOK_FASTCALL LoadTiffUsingPalette(const char* pPath, br_pixelmap* pPalette, int pFlags, int* pError_code);
+static __inline int BuildPathWithDirAndSuffix(char* pDest_dir_path, char* pDest_file_path, const char* pOld_path, const char* pNew_dirname, const char *pOld_suffix, const char* pNew_suffix);
+static __inline int C2_HOOK_FASTCALL CheckPixOutdated(const char* pDirectory, const char* pStem, const char* pPix_path);
+
 // FUNCTION: CARMA2_HW 0x00485130
 br_pixelmap* C2_HOOK_FASTCALL LoadTiffPixelmap(const char* path, int flags) {
-    TIFF* tif;
-    br_pixelmap* pm;
     br_uint_16 photometric;
-    br_uint_32 height;
-    br_uint_32 width;
-    br_uint_16 samples_per_pixel;
+    TIFF* tif;
+    br_uint_32 x;
+    br_uint_32 y;
     br_uint_8* scanline_buffer;
+    br_uint_32 width;
 
     tif = TIFFOpen(path, "r");
     if (tif == NULL) {
@@ -37,9 +40,14 @@ br_pixelmap* C2_HOOK_FASTCALL LoadTiffPixelmap(const char* path, int flags) {
     }
     TIFFGetField(tif, TIFFTAG_PHOTOMETRIC, &photometric);
     if (photometric == PHOTOMETRIC_RGB) {
-        br_uint_8* src;
-        br_uint_32 x;
-        br_uint_32 y;
+        br_pixelmap* pm;
+        br_uint_32 height;
+        br_uint_16 samples_per_pixel;
+        br_uint_16* pixels;
+        br_uint_32 red;
+        br_uint_32 grn;
+        br_uint_32 blu;
+        br_uint_32 alp;
 
         TIFFGetField(tif, TIFFTAG_IMAGELENGTH, &height);
         TIFFGetField(tif, TIFFTAG_IMAGEWIDTH, &width);
@@ -49,41 +57,45 @@ br_pixelmap* C2_HOOK_FASTCALL LoadTiffPixelmap(const char* path, int flags) {
             TIFFClose(tif);
             return NULL;
         }
+        pixels = pm->pixels;
         scanline_buffer = _TIFFmalloc(TIFFScanlineSize(tif));
         if (scanline_buffer == NULL) {
             BrPixelmapFree(pm);
             TIFFClose(tif);
             return NULL;
         }
-        for (y = 0; y < height; y++) {
-            if (TIFFReadScanline(tif, scanline_buffer, y, 0) <= 0) {
-                break;
-            }
-            src = scanline_buffer;
+        for (y = 0; y < height && TIFFReadScanline(tif, scanline_buffer, y, 0) > 0; y++) {
             if (samples_per_pixel == 3) {
                 for (x = 0; x < width; x++) {
-                    ((br_uint_16*)pm->pixels)[(y * (int)pm->row_bytes >> 1) + x] = (br_uint_16)(((src[0] >> 3) << 11) | ((src[1] >> 2) << 5) | (src[2] >> 3));
-                    src += 3;
+                    red = scanline_buffer[3 * x + 0] >> 3;
+                    grn = scanline_buffer[3 * x + 1] >> 2;
+                    blu = scanline_buffer[3 * x + 2] >> 3;
+                    pixels[(y * (int)pm->row_bytes >> 1) + x] = (red * 0x40 | grn) * 0x20 | blu;
                 }
             } else {
                 for (x = 0; x < width; x++) {
-                    ((br_uint_16*)pm->pixels)[(y * (int)pm->row_bytes >> 1) + x] = (br_uint_16)(((src[3] >> 4) << 12) | ((src[0] >> 4) << 8) | ((src[1] >> 4) << 4) | (src[2] >> 4));
-                    src += 4;
+                    red = scanline_buffer[4 * x + 0] >> 4;
+                    grn = scanline_buffer[4 * x + 1] >> 4;
+                    blu = scanline_buffer[4 * x + 2] >> 4;
+                    alp = scanline_buffer[4 * x + 3] >> 4;
+                    pixels[(y * (int)pm->row_bytes >> 1) + x] = ((alp * 0x10 | red) * 0x10 | grn) * 0x10 | blu;
                 }
             }
         }
         _TIFFfree(scanline_buffer);
-        TIFFClose(tif);
-        if (y == height) {
-            return pm;
+        if (y != height) {
+            BrPixelmapFree(pm);
+            TIFFClose(tif);
+            return NULL;
         }
-        BrPixelmapFree(pm);
-        return NULL;
+        TIFFClose(tif);
+        return pm;
     }
     if (photometric == PHOTOMETRIC_PALETTE) {
-        br_uint_8* src;
-        br_uint_32 x;
-        br_uint_32 y;
+        br_pixelmap* pm;
+        br_uint_32 height;
+        br_uint_16 samples_per_pixel;
+        br_uint_8* pixels;
         br_uint_16* red;
         br_uint_16* green;
         br_uint_16* blue;
@@ -96,9 +108,10 @@ br_pixelmap* C2_HOOK_FASTCALL LoadTiffPixelmap(const char* path, int flags) {
             TIFFClose(tif);
             return NULL;
         }
+        pixels = pm->pixels;
         if (samples_per_pixel == 1) {
             for (y = 0; y < height; y++) {
-                if (TIFFReadScanline(tif, (br_uint_8*)pm->pixels + y * pm->row_bytes, y, 0) <= 0) {
+                if (TIFFReadScanline(tif, pixels + y * pm->row_bytes, y, 0) <= 0) {
                     break;
                 }
             }
@@ -113,10 +126,8 @@ br_pixelmap* C2_HOOK_FASTCALL LoadTiffPixelmap(const char* path, int flags) {
                 if (TIFFReadScanline(tif, scanline_buffer, y, 0) <= 0) {
                     break;
                 }
-                src = scanline_buffer;
                 for (x = 0; x < width; x++) {
-                    *((br_uint_8*)pm->pixels + y * pm->row_bytes + x) = src[1] < 0x80 ? 0 : src[0];
-                    src += samples_per_pixel;
+                    pixels[y * pm->row_bytes + x] = (scanline_buffer[x * samples_per_pixel + 1] < 0x80) ? 0 : scanline_buffer[x * samples_per_pixel];
                 }
             }
             _TIFFfree(scanline_buffer);
@@ -253,26 +264,15 @@ error:
     return NULL;
 }
 
-int C2_HOOK_FASTCALL CheckPixOutdated(const char* pDirectory, const char* pStem, const char* pPix_path) {
-    tPath_name tif_path;
-
-    sprintf(tif_path, "%s%s%s%s%s%s", pDirectory, gDir_separator, "TIFFRGB", gDir_separator, pStem, ".TIF");
-    ReadFileLink(tif_path,tif_path);
-    if (IsValidFile(tif_path) && (br_uint_32)GetLastModificationTime(tif_path) > (br_uint_32)GetLastModificationTime(pPix_path)) {
-        return 1;
-    } else {
-        return 0;
-    }
-}
-
 // FUNCTION: CARMA2_HW 0x00485750
 br_pixelmap* C2_HOOK_FASTCALL LoadTiffTexture_Ex2(const char* pDirectory, const char* pFile_stem, br_pixelmap* pPalette, int pFlags, int* pError_code, int pTiff_palette) {
     tPath_name tif_path;
-    tPath_name pix_path;
-    tPath_name pix_path_target;
-    tPath_name save_pix_dir_path;
+    tPath_name zz_pix_path_target;
+    tPath_name aa_pix_path;
     tPath_name save_dir_path;
-    tPath_name save_file_path;
+    tPath_name save_pix_dir_path;
+    int is_16bbp;
+    int save_compressed;
     int pix_path_is_link;
     int tif_path_is_link;
     int pix_exists;
@@ -282,22 +282,25 @@ br_pixelmap* C2_HOOK_FASTCALL LoadTiffTexture_Ex2(const char* pDirectory, const 
     br_filesystem* original_filesystem;
 
     sprintf(tif_path, "%s%s%s%s%s%s", pDirectory, gDir_separator, pTiff_palette ? "TIFFX" : "TIFFRGB", gDir_separator, pFile_stem, ".TIF");
-    sprintf(pix_path, "%s%s%s%s%s%s", pDirectory, gDir_separator, (pFlags & kLoadTextureFlags_16bbp) ? "PIX16" : "PIX8", gDir_separator, pFile_stem, ".PIX");
+    is_16bbp = pFlags & kLoadTextureFlags_16bbp;
+    save_compressed = pFlags & kLoadTextureFlags_SaveTextureCompressed;
+    sprintf(aa_pix_path, "%s%s%s%s%s%s", pDirectory, gDir_separator, is_16bbp ? "PIX16" : "PIX8", gDir_separator, pFile_stem, ".PIX");
     tif_path_is_link = ReadFileLink(tif_path, tif_path);
-    pix_path_is_link = ReadFileLink(pix_path_target, pix_path);
+    pix_path_is_link = ReadFileLink(zz_pix_path_target, aa_pix_path);
     tif_exists = IsValidFile(tif_path);
-    pix_exists = IsValidFile(pix_path_is_link ? pix_path_target : pix_path);
+    pix_exists = IsValidFile(pix_path_is_link ? zz_pix_path_target : aa_pix_path);
 
     if (pTiff_palette && pix_exists && !tif_exists) {
-        if (CheckPixOutdated(pDirectory, pFile_stem, pix_path_is_link ? pix_path_target : pix_path)) {
+        const char* pix_path = pix_path_is_link ? zz_pix_path_target : aa_pix_path;
+        if (CheckPixOutdated(pDirectory, pFile_stem, pix_path)) {
             return 0;
         }
     }
-    if (!tif_exists || (((pFlags & kLoadTextureFlags_16bbp) || pTiff_palette) && !(pFlags & kLoadTextureFlags_ForceTiff) && pix_exists && (br_uint_32)GetLastModificationTime(pix_path_is_link ? pix_path_target : pix_path) >= (br_uint_32)GetLastModificationTime(tif_path))) {
+    if (!tif_exists || ((is_16bbp || pTiff_palette) && !(pFlags & kLoadTextureFlags_ForceTiff) && pix_exists && (br_uint_32)GetLastModificationTime(pix_path_is_link ? zz_pix_path_target : aa_pix_path) >= (br_uint_32)GetLastModificationTime(tif_path))) {
 
-        if (pix_exists && ((pFlags & kLoadTextureFlags_16bbp) || pTiff_palette)) {
+        if (pix_exists && (is_16bbp || pTiff_palette)) {
             original_filesystem = BrFilesystemSet(&gZlib_filesystem);
-            pm = BrPixelmapLoad(pix_path_is_link ? pix_path_target : pix_path);
+            pm = BrPixelmapLoad(pix_path_is_link ? zz_pix_path_target : aa_pix_path);
             BrFilesystemSet(original_filesystem);
             *pError_code = (pm != NULL) ? 0 : 3;
             return pm;
@@ -309,18 +312,14 @@ br_pixelmap* C2_HOOK_FASTCALL LoadTiffTexture_Ex2(const char* pDirectory, const 
 
     if (pTiff_palette) {
         pm = LoadTiff8bit(tif_path, pFlags, pError_code);
-    } else if (pFlags & kLoadTextureFlags_16bbp) {
+    } else if (is_16bbp) {
         pm = LoadTiff16bit(tif_path, pFlags, pError_code);
     } else {
         pal = pPalette;
-        if (pPalette == NULL) {
+        if (pal == NULL) {
             pal = LoadDefaultPalette(pDirectory, pFlags, pError_code);
             if (pal == NULL) {
-                pm = LoadTiff16bit(tif_path, pFlags, pError_code);
-                if (pm != NULL) {
-                    *pError_code = 0;
-                }
-                return pm;
+                return NULL;
             }
         }
         pm = LoadTiffUsingPalette(tif_path, pal, pFlags, pError_code);
@@ -337,20 +336,35 @@ br_pixelmap* C2_HOOK_FASTCALL LoadTiffTexture_Ex2(const char* pDirectory, const 
     }
     if (pm != NULL && (pFlags & kLoadTextureFlags_SaveBrenderTexture)) {
         if (!pix_path_is_link) {
-            sprintf(save_pix_dir_path, "%s%s%s", pDirectory, gDir_separator, (pFlags & kLoadTextureFlags_16bbp) ? "PIX16" : "PIX8");
+            sprintf(save_pix_dir_path, "%s%s%s", pDirectory, gDir_separator, is_16bbp ? "PIX16" : "PIX8");
             PDmkdir(save_pix_dir_path);
             if (tif_path_is_link && !pix_exists) {
-                BuildPathWithDirAndSuffix(save_dir_path, save_file_path, tif_path, (pFlags & kLoadTextureFlags_16bbp) ? "PIX16" : "PIX8", ".TIF", ".PIX");
+                int pos_suffix;
+                int pos_filename_sep;
+                int pos_dir_sep;
+                int pos_endsep;
+
+#pragma inline_depth(0)
+                if (DRstrrcasestr(&pos_suffix, tif_path, strlen(tif_path), ".TIF")
+                        && DRstrrcasestr(&pos_filename_sep, tif_path, pos_suffix, gDir_separator)
+                        && DRstrrcasestr(&pos_dir_sep, tif_path, pos_filename_sep, gDir_separator)) {
+#pragma inline_depth()
+                    pos_endsep = pos_filename_sep + strlen(gDir_separator);
+                    sprintf(save_dir_path, "%.*s%s%s", pos_dir_sep, tif_path, gDir_separator, is_16bbp ? "PIX16" : "PIX8");
+                    sprintf(zz_pix_path_target, "%s%s%.*s%s", save_dir_path, gDir_separator, pos_suffix - pos_endsep, tif_path + pos_endsep, ".PIX");
+                }
                 PDmkdir(save_dir_path);
-                WriteFileLink(save_file_path, pix_path);
+#pragma inline_depth(0)
+                WriteFileLink(zz_pix_path_target, aa_pix_path);
+#pragma inline_depth()
                 pix_path_is_link = 1;
             }
         }
-        if (!(pFlags & kLoadTextureFlags_SaveTextureCompressed)) {
+        if (!save_compressed) {
             original_filesystem = BrFilesystemSet(&gZlib_filesystem);
         }
-        BrPixelmapSave(pix_path_is_link ? pix_path_target : pix_path, pm);
-        if (!(pFlags & kLoadTextureFlags_SaveTextureCompressed)) {
+        BrPixelmapSave(pix_path_is_link ? zz_pix_path_target : aa_pix_path, pm);
+        if (!save_compressed) {
             BrFilesystemSet(original_filesystem);
         }
     }
@@ -358,6 +372,18 @@ br_pixelmap* C2_HOOK_FASTCALL LoadTiffTexture_Ex2(const char* pDirectory, const 
         *pError_code = 0;
     }
     return pm;
+}
+
+static __inline int C2_HOOK_FASTCALL CheckPixOutdated(const char* pDirectory, const char* pStem, const char* pPix_path) {
+    tPath_name tif_path;
+
+    sprintf(tif_path, "%s%s%s%s%s%s", pDirectory, gDir_separator, "TIFFRGB", gDir_separator, pStem, ".TIF");
+    ReadFileLink(tif_path,tif_path);
+    if (IsValidFile(tif_path) && (br_uint_32)GetLastModificationTime(tif_path) > (br_uint_32)GetLastModificationTime(pPix_path)) {
+        return 1;
+    } else {
+        return 0;
+    }
 }
 
 // FUNCTION: CARMA2_HW 0x004856c0
@@ -440,22 +466,22 @@ int C2_HOOK_FASTCALL ReadFileLink(char* pDest, const char* pPath) {
 
 // FUNCTION: CARMA2_HW 0x00486b20
 int C2_HOOK_FASTCALL WriteFileLink(const char* pLink_dest, const char* pLink_source) {
-    char *ptr;
-    FILE *f;
+    char* ptr;
+    FILE* f;
     int i;
     char rel_dest[256];
     char s[256];
 
     i = 0;
     strcpy(s, pLink_dest);
-    for (ptr = strstr(s, "DATA") + 5; *ptr != '\0'; ptr++) {
-
+    ptr = strstr(s, "DATA") + 5;
+    while (*ptr != '\0') {
         if (*ptr == ':' || *ptr == '\\') {
-            rel_dest[i] = '\\';
+            rel_dest[i++] = '\\';
         } else {
-            rel_dest[i] = *ptr;
+            rel_dest[i++] = *ptr;
         }
-        i++;
+        ptr += 1;
     }
     rel_dest[i] = '\0';
     f = DRfopen(pLink_source, "wt");
@@ -480,6 +506,7 @@ br_pixelmap* C2_HOOK_FASTCALL LoadTiff8bit(const char *pPath, int pFlags, int *p
     br_uint_8* scanline_buffer;
     br_uint_8* curSrcPos;
     br_uint_32 x;
+    br_uint_8* pixels;
     br_uint_32 y;
     br_uint_16* colorMap_Red;
     br_uint_16* colorMap_Green;
@@ -492,19 +519,22 @@ br_pixelmap* C2_HOOK_FASTCALL LoadTiff8bit(const char *pPath, int pFlags, int *p
     }
     TIFFGetField(tif, TIFFTAG_IMAGELENGTH, &height);
     TIFFGetField(tif, TIFFTAG_IMAGEWIDTH, &width);
-    TIFFGetField(tif, TIFFTAG_SAMPLESPERPIXEL, &samples_per_pixel);
+    TIFFGetFieldDefaulted(tif, TIFFTAG_SAMPLESPERPIXEL, &samples_per_pixel);
     pm = BrPixelmapAllocate(BR_PMT_INDEX_8, width, height, NULL, 0);
     if (pm == NULL) {
         TIFFClose(tif);
         *pError_code = 2;
         return NULL;
     }
+    pixels = pm->pixels;
     if (samples_per_pixel == 1) {
         for (y = 0; y < height; y++) {
-            TIFFReadScanline(tif, (br_uint_8*)pm->pixels + y * pm->row_bytes, y, 0);
+            if (TIFFReadScanline(tif, pixels + y * pm->row_bytes, y, 0) <= 0) {
+                break;
+            }
         }
     } else {
-        scanline_buffer = malloc(TIFFScanlineSize(tif));
+        scanline_buffer = _TIFFmalloc(TIFFScanlineSize(tif));
         if (scanline_buffer == NULL) {
             TIFFClose(tif);
             BrPixelmapFree(pm);
@@ -512,22 +542,16 @@ br_pixelmap* C2_HOOK_FASTCALL LoadTiff8bit(const char *pPath, int pFlags, int *p
             return NULL;
         }
         for (y = 0; y < height; y++) {
-            if (TIFFReadScanline(tif, scanline_buffer, y, 0) < 1) {
+            if (TIFFReadScanline(tif, scanline_buffer, y, 0) <= 0) {
                 break;
             }
-            curSrcPos = scanline_buffer;
             for (x = 0; x < width; x++) {
-                if (curSrcPos[1] < 0x80) {
-                    *(((br_uint_8 *) pm->pixels) + y * pm->row_bytes + x) = 0;
-                } else {
-                    *(((br_uint_8 *) pm->pixels) + y * pm->row_bytes + x) = curSrcPos[0];
-                }
-                curSrcPos += samples_per_pixel;
+                pixels[y * pm->row_bytes + x] = (scanline_buffer[x * samples_per_pixel + 1] < 0x80) ? 0 : scanline_buffer[x * samples_per_pixel];
             }
         }
-        free(scanline_buffer);
+        _TIFFfree(scanline_buffer);
     }
-    if (y < height) {
+    if (y != height) {
         TIFFClose(tif);
         BrPixelmapFree(pm);
         *pError_code = 4;
@@ -552,17 +576,19 @@ br_pixelmap* C2_HOOK_FASTCALL LoadTiff8bit(const char *pPath, int pFlags, int *p
 br_pixelmap* C2_HOOK_FASTCALL LoadTiff16bit(const char *pPath, int pFlags, int *pError_code) {
     TIFF* tif;
     br_pixelmap* pm;
-    br_uint_8 pixel_type;
+    int pixel_type;
     br_uint_32 height;
     br_uint_32 width;
     br_uint_16 samples_per_pixel;
     br_uint_8* scanline_buffer;
+    br_uint_16* pixels;
     br_uint_32 x;
     br_uint_32 y;
-    br_uint_8 red;
-    br_uint_8 grn;
-    br_uint_8 blu;
-    br_uint_8 alp;
+    br_uint_32 red;
+    br_uint_32 grn;
+    br_uint_32 blu;
+    br_uint_32 alp;
+    br_uint_8* curSrcPos;
 
     tif = TIFFOpen(pPath, "r");
     if (tif == NULL) {
@@ -587,6 +613,7 @@ br_pixelmap* C2_HOOK_FASTCALL LoadTiff16bit(const char *pPath, int pFlags, int *
         *pError_code = 2;
         return NULL;
     }
+    pixels = pm->pixels;
     scanline_buffer = _TIFFmalloc(TIFFScanlineSize(tif));
     if (scanline_buffer == NULL) {
         TIFFClose(tif);
@@ -600,30 +627,29 @@ br_pixelmap* C2_HOOK_FASTCALL LoadTiff16bit(const char *pPath, int pFlags, int *
         if (samples_per_pixel == 3) {
             // RGB888 -> RGB565
             for (x = 0; x < width; x++) {
-                red = scanline_buffer[3 * x + 0];
-                grn = scanline_buffer[3 * x + 1];
-                blu = scanline_buffer[3 * x + 2];
-
-                *((br_uint_16*)((br_uint_8*)pm->pixels + y * pm->row_bytes + sizeof(br_uint_16) * x)) = ((red >> 3) << 11) | ((grn >> 2) << 5) | (blu >> 3);
+                red = scanline_buffer[3 * x + 0] >> 3;
+                grn = scanline_buffer[3 * x + 1] >> 2;
+                blu = scanline_buffer[3 * x + 2] >> 3;
+                pixels[(y * (int)pm->row_bytes >> 1) + x] = (red * 0x40 | grn) * 0x20 | blu;
             }
         }
         else if (pFlags & kLoadTextureFlags_UseARGB1555) {
             // RGBA8888 -> ARGB1555
             for (x = 0; x < width; x++) {
-                red = scanline_buffer[4 * x + 0];
-                grn = scanline_buffer[4 * x + 1];
-                blu = scanline_buffer[4 * x + 2];
-                alp = scanline_buffer[4 * x + 3];
-                *((br_uint_16*)((br_uint_8*)pm->pixels + y * pm->row_bytes + sizeof(br_uint_16) * x)) = ((alp >= 0x80) << 15) | ((red >> 3) << 10) | ((grn >> 3) << 5) | (blu >> 3);
+                red = scanline_buffer[4 * x + 0] >> 3;
+                grn = scanline_buffer[4 * x + 1] >> 3;
+                blu = scanline_buffer[4 * x + 2] >> 3;
+                alp = scanline_buffer[4 * x + 3] >= 0x80;
+                pixels[(y * (int)pm->row_bytes >> 1) + x] = ((alp * 0x20 | red) * 0x20 | grn) * 0x20 | blu;
             }
         } else {
             // RGBA8888 -> ARGB4444
             for (x = 0; x < width; x++) {
-                red = scanline_buffer[4 * x + 0];
-                grn = scanline_buffer[4 * x + 1];
-                blu = scanline_buffer[4 * x + 2];
-                alp = scanline_buffer[4 * x + 3];
-                *((br_uint_16*)((br_uint_8*)pm->pixels + y * pm->row_bytes + sizeof(br_uint_16) * x)) = ((alp >> 4) << 12) | ((red >> 4) << 8) | ((grn >> 4) << 4) | (blu >> 4);
+                red = scanline_buffer[4 * x + 0] >> 4;
+                grn = scanline_buffer[4 * x + 1] >> 4;
+                blu = scanline_buffer[4 * x + 2] >> 4;
+                alp = scanline_buffer[4 * x + 3] >> 4;
+                pixels[(y * (int)pm->row_bytes >> 1) + x] = ((alp * 0x10 | red) * 0x10 | grn) * 0x10 | blu;
             }
         }
     }
@@ -637,7 +663,7 @@ br_pixelmap* C2_HOOK_FASTCALL LoadTiff16bit(const char *pPath, int pFlags, int *
     return pm;
 }
 
-br_pixelmap* C2_HOOK_FASTCALL LoadTiffUsingPalette(const char* pPath, br_pixelmap* pPalette, int pFlags, int* pError_code) {
+static __inline br_pixelmap* C2_HOOK_FASTCALL LoadTiffUsingPalette(const char* pPath, br_pixelmap* pPalette, int pFlags, int* pError_code) {
     TIFF* tif;
     br_pixelmap* pm;
     br_uint_32 height;
@@ -646,10 +672,6 @@ br_pixelmap* C2_HOOK_FASTCALL LoadTiffUsingPalette(const char* pPath, br_pixelma
     br_uint_8* scanline_buffer;
     br_uint_32 x;
     br_uint_32 y;
-    br_uint_8 red;
-    br_uint_8 grn;
-    br_uint_8 blu;
-    br_uint_8 alp;
 
     tif = TIFFOpen(pPath, "r");
     if (tif == NULL) {
@@ -673,24 +695,25 @@ br_pixelmap* C2_HOOK_FASTCALL LoadTiffUsingPalette(const char* pPath, br_pixelma
         return NULL;
     }
     for (y = 0; y < height && TIFFReadScanline(tif, scanline_buffer, y, 0) > 0; y++) {
+        br_uint_8* curSrcPos = scanline_buffer;
+
         if (samples_per_pixel == 3) {
             for (x = 0; x < width; x++) {
-                red = scanline_buffer[3 * x + 0];
-                grn = scanline_buffer[3 * x + 1];
-                blu = scanline_buffer[3 * x + 2];
-                *(((br_uint_8*)pm->pixels) + y * pm->row_bytes + x) = FindPaletteColour(BR_COLOUR_RGB(red, grn, blu), pPalette);
+#pragma inline_depth(0)
+                ((br_uint_8*)pm->pixels)[y * pm->row_bytes + x] = FindPaletteColour(BR_COLOUR_RGB(curSrcPos[0], curSrcPos[1], curSrcPos[2]), pPalette);
+#pragma inline_depth()
+                curSrcPos += 3;
             }
         } else {
             for (x = 0; x < width; x++) {
-                red = scanline_buffer[3 * x + 0];
-                grn = scanline_buffer[3 * x + 1];
-                blu = scanline_buffer[3 * x + 2];
-                alp = scanline_buffer[3 * x + 3];
-                if (alp >= 0x80) {
-                    *(((br_uint_8 *) pm->pixels) + y * pm->row_bytes + x) = FindPaletteColour(BR_COLOUR_RGB(red, grn, blu), pPalette);
+                if (curSrcPos[3] < 0x80) {
+                    ((br_uint_8*)pm->pixels)[y * pm->row_bytes + x] = 0;
                 } else {
-                    *(((br_uint_8 *) pm->pixels) + y * pm->row_bytes + x) = 0;
+#pragma inline_depth(0)
+                    ((br_uint_8*)pm->pixels)[y * pm->row_bytes + x] = FindPaletteColour(BR_COLOUR_RGB(curSrcPos[0], curSrcPos[1], curSrcPos[2]), pPalette);
+#pragma inline_depth()
                 }
+                curSrcPos += 4;
             }
         }
     }
@@ -726,7 +749,7 @@ int C2_HOOK_FASTCALL DRstrrcasestr(int* pOffset, const char* pHaystack, int pLen
     }
 }
 
-int BuildPathWithDirAndSuffix(char* pDest_dir_path, char* pDest_file_path, const char* pOld_path, const char* pNew_dirname, const char *pOld_suffix, const char* pNew_suffix) {
+static __inline int BuildPathWithDirAndSuffix(char* pDest_dir_path, char* pDest_file_path, const char* pOld_path, const char* pNew_dirname, const char *pOld_suffix, const char* pNew_suffix) {
     int pos_suffix;
     int pos_filename_sep;
     int pos_dir_sep;
@@ -765,8 +788,8 @@ int C2_HOOK_FASTCALL FindPaletteColourRGB565(br_colour pColour, br_pixelmap *pPa
 
         error = RGB565Error(pColour, pixel[i]);
         if (error < best_error) {
-            best_index = i;
             best_error = error;
+            best_index = i;
         }
     }
     return best_index;
@@ -793,8 +816,8 @@ int C2_HOOK_FASTCALL FindPaletteColourXRGB8888(br_colour pColour, br_pixelmap *p
 
         error = XRGB8888Error(pColour, pixel[i]);
         if (error < best_error) {
-            best_index = i;
             best_error = error;
+            best_index = i;
         }
     }
     return best_index;

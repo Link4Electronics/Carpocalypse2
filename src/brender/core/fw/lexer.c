@@ -349,11 +349,12 @@ br_float C2_HOOK_CDECL BrParseFloat(br_lexer* l) {
     br_boolean neg;
     br_float f;
 
+    neg = 0;
     if (l->current.id == T_PLUS) {
         l->advance(l);
     }
-    neg = l->current.id == T_DASH;
-    if (neg) {
+    if (l->current.id == T_DASH) {
+        neg = 1;
         l->advance(l);
     }
     if (l->current.id == T_REAL) {
@@ -365,7 +366,7 @@ br_float C2_HOOK_CDECL BrParseFloat(br_lexer* l) {
     } else {
         l->error(l, "expecting a float");
         l->advance(l);
-        f = 0.f;
+        f = 0.0f;
     }
     if (neg) {
         f = -f;

@@ -19,7 +19,7 @@
 #include "carpocalypse2_macros.h"
 
 // GLOBAL: CARMA2_HW 0x006aa9e0
-int gUse_DirectDraw;
+int gWindowed;
 
 // GLOBAL: CARMA2_HW 0x006aaa08
 HWND gHWnd_SSDX;
@@ -198,7 +198,7 @@ int C2_HOOK_FASTCALL SSDXStart(void *p_hWnd, int p_DirectDraw, int p_EnumerateDD
 
     hRes = 0;
     dr_dprintf("SSDXStart(): START...");
-    gUse_DirectDraw = p_DirectDraw;
+    gWindowed = p_DirectDraw;
     if (p_EnumerateDDX) {
         gEnumerate_DirectX_surfaces = 1;
         if (p_DirectDraw) {
@@ -242,26 +242,25 @@ void C2_HOOK_FASTCALL SSDXStop(void) {
         gDirectDrawClipper = NULL;
     }
 
-    if (gUse_DirectDraw) {
+    if (gWindowed) {
 
         if (gAttached_surface != NULL) {
-            dr_dprintf("SSDXStop(): Releaseing attached surface...");
+            dr_dprintf("SSDXStop(): Releasing attached surface...");
             IDirectDrawSurface_Release(gAttached_surface);
             gAttached_surface = NULL;
         }
         if (gPrimary_surface != NULL) {
-            dr_dprintf("SSDXStop(): Releaseing primary surface...");
+            dr_dprintf("SSDXStop(): Releasing primary surface...");
             IDirectDrawSurface_Release(gPrimary_surface);
             gPrimary_surface = NULL;
         }
     } else {
-
+        dr_dprintf("SSDXStop(): Restoring display mode");
         if (gDirectDraw2 != NULL) {
-            dr_dprintf("SSDXStop(): Restoring display mode");
             IDirectDraw2_RestoreDisplayMode(gDirectDraw2);
         }
         if (gPrimary_surface != NULL) {
-            dr_dprintf("SSDXStop(): Releaseing primary surface...");
+            dr_dprintf("SSDXStop(): Releasing primary surface...");
             IDirectDrawSurface_Release(gPrimary_surface);
             gAttached_surface = NULL;
             gPrimary_surface = NULL;
@@ -293,7 +292,7 @@ void C2_HOOK_FASTCALL SSDXRelease(void) {
 void C2_HOOK_FASTCALL SSDXDirectDrawSetup(int pWidth, int pHeight, int pBits, int* pPitch) {
     HRESULT result;
 
-    if (gUse_DirectDraw) {
+    if (gWindowed) {
         LocalWindowedDDSetup(pWidth, pHeight, pPitch);
     }
     dr_dprintf("SSDXDirectDrawSetup(): Calling SetDisplayMode( %dx%dx%d )...", pWidth, pHeight, pBits);
@@ -414,7 +413,7 @@ void C2_HOOK_FASTCALL SSDXUnlockAttachedSurface(void) {
 // FUNCTION: CARMA2_HW 0x00500b90
 void C2_HOOK_FASTCALL SSDXBlitOrFlip(void) {
 
-    if (gUse_DirectDraw) {
+    if (gWindowed) {
         SSDXBlit();
     } else {
         IDirectDrawSurface_Flip(gPrimary_surface, NULL, DDFLIP_WAIT);
@@ -430,7 +429,7 @@ void C2_HOOK_FASTCALL SSDXBlit(void) {
 // FUNCTION: CARMA2_HW 0x00500c00
 void C2_HOOK_FASTCALL SSDXSetPaletteEntries(PALETTEENTRY* pPalette, int pStart, int pCount) {
 
-    if (gUse_DirectDraw && gDirectDrawPalette != NULL) {
+    if (gWindowed && gDirectDrawPalette != NULL) {
         int i;
 
         for (i = MAX(10, pStart); i < MIN(0xf6, pStart + pCount - 1); i++) {
@@ -449,7 +448,7 @@ void C2_HOOK_FASTCALL SSDXSetPaletteEntries(PALETTEENTRY* pPalette, int pStart, 
 void C2_HOOK_FASTCALL SSDXSetPrimaryPalette(void) {
     HRESULT result;
 
-    if (!gUse_DirectDraw) {
+    if (!gWindowed) {
         return;
     }
     if (gDirectDrawPalette == NULL) {
@@ -468,7 +467,7 @@ void C2_HOOK_FASTCALL SSDXSetPrimaryPalette(void) {
 // FUNCTION: CARMA2_HW 0x00500cf0
 void C2_HOOK_FASTCALL SSDXWindowPosOrSizeChanged(HWND pHwnd) {
 
-    if (gUse_DirectDraw) {
+    if (gWindowed) {
         GetClientRect(pHwnd, &gSSDXWindowPos);
         ClientToScreen(pHwnd, (POINT*)&gSSDXWindowPos.left);
         ClientToScreen(pHwnd, (POINT*)&gSSDXWindowPos.right);

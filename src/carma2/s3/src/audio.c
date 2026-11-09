@@ -1234,7 +1234,7 @@ tS3_error_codes C2_HOOK_FASTCALL S3ClearBufferOfMidiChannel(int pTag) {
             return eS3_error_bad_stag;
         }
         if (channel->type == 1) {
-            /* nop0_FUN_00569f85(); */
+            PDS3Return0_C(channel);
             channel->descriptor->buffer_description = NULL;
         }
     }
@@ -1698,7 +1698,7 @@ int C2_HOOK_FASTCALL S3StartSound(tS3_outlet* pOutlet, tS3_sound_id pSound) {
             return 0;
         } else if (channel->type == 0) {
             S3ExecuteSampleFilterFuncs(channel);
-            if (S3PlaySample(channel, channel->descriptor) == 0) {
+            if (S3PlaySample(channel, desc) == 0) {
                 gS3_last_error = eS3_error_start_sound;
                 channel->needs_service = 1;
                 return 0;
@@ -1822,7 +1822,7 @@ int C2_HOOK_FASTCALL S3StartSound2(tS3_outlet* pOutlet, tS3_sound_id pSound, uns
             return 0;
         } else if (chan->type == 0) {
             S3ExecuteSampleFilterFuncs(chan);
-            if (!S3PlaySample(chan, chan->descriptor)) {
+            if (!S3PlaySample(chan, descriptor)) {
                 chan->needs_service = 1;
                 gS3_last_error = eS3_error_start_sound;
                 return 0;
@@ -1945,17 +1945,16 @@ tS3_sound_tag C2_HOOK_FASTCALL S3StartSoundFromSource3(tS3_sound_id pSound, tS3_
 tS3_error_codes C2_HOOK_FASTCALL S3MIDITagHasStoppedPlaying(int pTag) {
     tS3_channel* channel;
 
-    if (!gS3_enable_midi) {
-        return eS3_error_digi_init;
+    if (gS3_enable_midi) {
+        channel = S3GetChannelForTag(pTag);
+        if (channel == NULL) {
+            return eS3_error_bad_stag;
+        }
+        if (channel->type == 1) {
+            return PDS3IsMIDIStopped(channel);
+        }
     }
-    channel = S3GetChannelForTag(pTag);
-    if (channel == NULL) {
-        return eS3_error_bad_stag;
-    }
-    if (channel->type != 1) {
-        return eS3_error_digi_init;
-    }
-    return PDS3IsMIDIStopped(channel);
+    return eS3_error_digi_init;
 }
 
 // FUNCTION: CARMA2_HW 0x0056a866

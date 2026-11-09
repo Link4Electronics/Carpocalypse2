@@ -32,10 +32,15 @@ extern int gNoTransients;
 // GLOBAL: CARMA2_HW 0x0068d918
 tU16 gPixelmap_copy_buffer[640];
 
+// GLOBAL: CARMA2_HW 0x0067c390
 int gMouse_started;
+// GLOBAL: CARMA2_HW 0x0079ecb0
 tMouse_coord gMouse_last_pos;
+// GLOBAL: CARMA2_HW 0x0067c348
 int gNext_transient;
+// GLOBAL: CARMA2_HW 0x0067be94
 int gTransient_bitmap_index;
+// GLOBAL: CARMA2_HW 0x0067be90
 int gCurrent_cursor_index;
 int gCursor_line_width = 5;
 // GLOBAL: CARMA2_HW 0x0074ca28
@@ -70,11 +75,17 @@ br_pixelmap* gScratch_palette;
 int gFaded_palette;
 // GLOBAL: CARMA2_HW 0x0079ec14
 int gDim_amount;
+// GLOBAL: CARMA2_HW 0x0067be98
 tTransient_bm gTransient_bitmaps[50];
+// GLOBAL: CARMA2_HW 0x0058fdc8
 int gCursor_tinted_top = -1;
+// GLOBAL: CARMA2_HW 0x0058fdd0
 int gCursor_tinted_left = -1;
+// GLOBAL: CARMA2_HW 0x0058fdcc
 int gCursor_tinted_bottom = -1;
+// GLOBAL: CARMA2_HW 0x0058fdd4
 int gCursor_tinted_right = -1;
+// GLOBAL: CARMA2_HW 0x0058fdd8
 int gCursor_tinted_center = -1;
 
 // GLOBAL: CARMA2_HW 0x0068be20
@@ -83,7 +94,7 @@ br_pixelmap* gCurrent_splash;
 void C2_HOOK_FASTCALL DeallocateAllTransientBitmaps(void) {
     int i;
 
-    for (i = 0; i < CARPOCALYPSE2_ASIZE(gTransient_bitmaps); i++) {
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gTransient_bitmaps); i++) {
         DeallocateTransientBitmap(i);
     }
 }
@@ -93,10 +104,10 @@ void C2_HOOK_FASTCALL RemoveTransientBitmaps(int pGraphically_remove_them) {
     int i;
     int order_number;
 
-    if (gNoTransients && pGraphically_remove_them) {
+    if (!gNoTransients && pGraphically_remove_them) {
         for (order_number = gNext_transient - 1; order_number >= 0; order_number--) {
-            for (i = 0; i < CARPOCALYPSE2_ASIZE(gTransient_bitmaps); i++) {
-                if (gTransient_bitmaps[i].pixmap != NULL && gTransient_bitmaps[i].order_number == order_number) {
+            for (i = 0; i < 50; i++) {
+                if (gTransient_bitmaps[i].pixmap != NULL && order_number == gTransient_bitmaps[i].order_number) {
                     if (gTransient_bitmaps[i].in_use) {
                         BrPixelmapRectangleCopy(gBack_screen,
                                                 gTransient_bitmaps[i].x_coord,
@@ -122,8 +133,8 @@ void C2_HOOK_FASTCALL RemoveTransientBitmaps(int pGraphically_remove_them) {
 #include "carpocalypse2_types.h"
 
 
-static void C2_HOOK_FASTCALL DarkenPaletteByte(tU8* pPtr, unsigned int pDarken_amount) {
-    *pPtr = (*pPtr * pDarken_amount) / 256;
+void C2_HOOK_FASTCALL Darken(tU8* pPtr, tU32 pDarken_amount) {
+    *pPtr = (pDarken_amount * *pPtr) / 256;
 }
 
 void C2_HOOK_FASTCALL DRSetPalette2(br_pixelmap* pThe_palette, int pSet_current_palette) {
@@ -139,15 +150,15 @@ void C2_HOOK_FASTCALL DRSetPalette2(br_pixelmap* pThe_palette, int pSet_current_
 }
 
 // FUNCTION: CARMA2_HW 0x004b5390
-void C2_HOOK_FASTCALL SetFadedPalette(unsigned int pDegree) {
-    int j;
+void C2_HOOK_FASTCALL SetFadedPalette(tU32 pDegree) {
+    int i;
 
-    memcpy(gScratch_pixels, gCurrent_palette->pixels, 4 * 256);
-    for (j = 0; j < 4 * 256; j += 4) {
-        DarkenPaletteByte((tU8*)gScratch_pixels + j, pDegree);
-        DarkenPaletteByte((tU8*)gScratch_pixels + j + 1, pDegree);
-        DarkenPaletteByte((tU8*)gScratch_pixels + j + 2, pDegree);
-        DarkenPaletteByte((tU8*)gScratch_pixels + j + 3, pDegree);
+    memcpy(gScratch_pixels, gCurrent_palette->pixels, 256 * sizeof(br_colour));
+    for (i = 0; i < 256; i++) {
+        Darken(&((tU8*)gScratch_pixels)[4 * i + 0], pDegree);
+        Darken(&((tU8*)gScratch_pixels)[4 * i + 1], pDegree);
+        Darken(&((tU8*)gScratch_pixels)[4 * i + 2], pDegree);
+        Darken(&((tU8*)gScratch_pixels)[4 * i + 3], pDegree);
     }
     DRSetPalette2(gScratch_palette, 0);
 }
@@ -308,7 +319,7 @@ void C2_HOOK_FASTCALL AllocateCursorActors(void) {
     br_pixelmap *mse_cross;
     br_pixelmap *mse_line;
 
-    mse_cross = BrMapFind("mse_corn");
+    BrMapFind("mse_corn");
     mse_cross = BrMapFind("mse_cros");
     mse_line = BrMapFind("mse_line");
     gCursor_tinted_top = CreateTintedPoly(0, 0, gCursor_line_width, gCurrent_graf_data->height, 1, 127, 192, 0);
@@ -323,10 +334,10 @@ void C2_HOOK_FASTCALL AllocateCursorActors(void) {
         gTintedPolys[gCursor_tinted_right].material->colour_map = mse_line;
         BrMaterialUpdate(gTintedPolys[gCursor_tinted_right].material, BR_MATU_ALL);
         gTintedPolys[gCursor_tinted_top].material->colour_map = mse_line;
-        BrMatrix23Rotate(&(gTintedPolys[gCursor_tinted_top].material)->map_transform, BrDegreeToAngle(90));
+        BrMatrix23Rotate(&(gTintedPolys[gCursor_tinted_top].material)->map_transform, BR_ANGLE_DEG(90));
         BrMaterialUpdate(gTintedPolys[gCursor_tinted_top].material, BR_MATU_ALL);
         (gTintedPolys[gCursor_tinted_bottom].material)->colour_map = mse_line;
-        BrMatrix23Rotate(&(gTintedPolys[gCursor_tinted_bottom].material)->map_transform, BrDegreeToAngle(90));
+        BrMatrix23Rotate(&(gTintedPolys[gCursor_tinted_bottom].material)->map_transform, BR_ANGLE_DEG(90));
         BrMaterialUpdate(gTintedPolys[gCursor_tinted_bottom].material, BR_MATU_ALL);
     }
     if (mse_cross != NULL) {

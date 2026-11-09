@@ -353,30 +353,23 @@ tPipe_chunk_data* C2_HOOK_FASTCALL FindNextChunk(tPipe_chunk_type pType, uintptr
 // FUNCTION: CARMA2_HW 0x00403750
 tU32 C2_HOOK_FASTCALL LengthOfSession(tPipe_chunk* pSession) {
     tU32 i;
-    tU32 total;
-    tU32 size;
+    tU32 running_total;
     tPipe_chunk* the_chunk;
 
-    total = 0;
-    for (i = 0; i < pSession->count; i++) {
-        tPipe_chunk_type chunk_type;
-        tU32 length;
+    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPipe_chunk, type, 0x0);
+    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPipe_chunk, count, 0x4);
+    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPipe_chunk, data, 0x8);
 
-        chunk_type = pSession->type;
-        the_chunk = (tPipe_chunk*)((tU8*)pSession + sizeof(tPipe_chunk) + total);
-        if (gPipe_callbacks[chunk_type].calc_length != NULL) {
-            length = gPipe_callbacks[chunk_type].calc_length(the_chunk);
-            size = length + gPipe_callbacks[chunk_type].length + sizeof(void*);
-        } else {
-            size = gPipe_callbacks[chunk_type].length + sizeof(void*);
-        }
-        total += size;
+    running_total = 0;
+    for (i = 0; i < pSession->count; i++) {
+        the_chunk = (tPipe_chunk*)((tU8*)pSession + running_total + offsetof(tPipe_chunk, data));
+        running_total += LengthOfChunk(the_chunk, pSession->type);
     }
-    total += 10;
-    if ((total & 1) != 0) {
+    running_total += offsetof(tPipe_chunk, data) + sizeof(tU16);
+    if (running_total & 0x1) {
         FatalError(0x62);
     }
-    return total;
+    return running_total;
 }
 
 // FUNCTION: CARMA2_HW 0x00402660
@@ -1419,13 +1412,12 @@ void C2_HOOK_FASTCALL PipeSinglePedModelChange(tPedestrian* pPed, undefined4 pAr
 // FUNCTION: CARMA2_HW 0x004c83f0
 void C2_HOOK_FASTCALL PipeSingleGraphicalWheelStuff(tCar_spec* pCar) {
 
-    ARDoSingleVariedSession(ePipe_chunk_single_graphpical_wheel_stuff, (uintptr_t)pCar, 5,
-        SIZE_OFFSET_PIPING(tPipe_single_graphical_wheel_stuff, steering_angle), (int)(pCar->steering_angle * (32767.f / 60.f)),
-        SIZE_OFFSET_PIPING(tPipe_single_graphical_wheel_stuff, lf_sus_position), (int)(pCar->lf_sus_position * 127.f * (20.f / 3.f)),
-        SIZE_OFFSET_PIPING(tPipe_single_graphical_wheel_stuff, rf_sus_position), (int)(pCar->rf_sus_position * 127.f * (20.f / 3.f)),
-        SIZE_OFFSET_PIPING(tPipe_single_graphical_wheel_stuff, lr_sus_position), (int)(pCar->lr_sus_position * 127.f * (20.f / 3.f)),
-        SIZE_OFFSET_PIPING(tPipe_single_graphical_wheel_stuff, rr_sus_position), (int)(pCar->rr_sus_position * 127.f * (20.f / 3.f)));
-
+    ARDoSingleVariedSession(ePipe_chunk_single_graphpical_wheel_stuff, (tU16)pCar->car_ID, 5,
+        SIZE_OFFSET_PIPING(tPipe_single_graphical_wheel_stuff, steering_angle), (int)(pCar->steering_angle * (32767.0 / 60.0)),
+        SIZE_OFFSET_PIPING(tPipe_single_graphical_wheel_stuff, lf_sus_position), (int)(pCar->lf_sus_position * 127.f * (20.0 / 3.0)),
+        SIZE_OFFSET_PIPING(tPipe_single_graphical_wheel_stuff, rf_sus_position), (int)(pCar->rf_sus_position * 127.f * (20.0 / 3.0)),
+        SIZE_OFFSET_PIPING(tPipe_single_graphical_wheel_stuff, lr_sus_position), (int)(pCar->lr_sus_position * 127.f * (20.0 / 3.0)),
+        SIZE_OFFSET_PIPING(tPipe_single_graphical_wheel_stuff, rr_sus_position), (int)(pCar->rr_sus_position * 127.f * (20.0 / 3.0)));
 }
 
 // FUNCTION: CARMA2_HW 0x004c8540

@@ -942,20 +942,22 @@ static void C2_HOOK_CDECL OnWarnCallback(char *text) {
 
 // FUNCTION: CARMA2_HW 0x0051c620
 static void C2_HOOK_CDECL OnErrorCallback(char *text) {
-    const char *msg;
+    const char *str1;
+    const char *str2;
 
     dr_dprintf("*******************************************************************************");
     dr_dprintf("BRender FAILURE: '%s'", text);
     dr_dprintf("*******************************************************************************");
-    msg = "BRender error detected:";
-    if (msg == NULL) {
-        msg = "NULL str1";
+    str1 = "BRender error detected:";
+    str2 = text;
+    if (str1 == NULL) {
+        str1 = "NULL str1";
     }
-    if (text == NULL) {
-        msg = "NULL str2";
+    if (str2 == NULL) {
+        str2 = "NULL str2";
     }
     gIsFatalError = 1;
-    sprintf(gFatalErrorMessage, "%s\n%s", msg, text);
+    sprintf(gFatalErrorMessage, "%s\n%s", str1, str2);
     gExit_code = 700;
     if (gBack_screen != NULL && gBack_screen->pixels != NULL) {
         PossibleUnlock(1);
@@ -1183,6 +1185,27 @@ int C2_HOOK_FASTCALL PDmemicmp(const char* str1, const char* str2, size_t count)
 int C2_HOOK_CDECL PDMissingMaterial(const char* pName) {
 
     dr_dprintf("SOMETHING MISSING WARNING - Can't find material '%s'", pName);
+    return 0;
+}
+
+// FUNCTION: CARMA2_HW 0x0051a7f0
+int C2_HOOK_CDECL PDMissingTable(const char* pName) {
+
+    dr_dprintf("SOMETHING MISSING WARNING - Can't find shade table '%s'", pName);
+    return 0;
+}
+
+// FUNCTION: CARMA2_HW 0x0051a810
+int C2_HOOK_CDECL PDMissingModel(const char* pName) {
+
+    dr_dprintf("SOMETHING MISSING WARNING - Can't find model '%s'", pName);
+    return 0;
+}
+
+// FUNCTION: CARMA2_HW 0x0051a830
+int C2_HOOK_CDECL PDMissingMap(const char* pName) {
+
+    dr_dprintf("SOMETHING MISSING WARNING - Can't find pixelmap '%s'", pName);
     return 0;
 }
 

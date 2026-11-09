@@ -185,6 +185,42 @@ intptr_t C2_HOOK_CDECL DumpVisibleActorsCB(br_actor* pActor, void* pData) {
     return BrActorEnum(pActor, DumpVisibleActorsCB, pData);
 }
 
+// FUNCTION: CARMA2_HW 0x00518cf0
+const char* C2_HOOK_FASTCALL BrActorRenderStyleName(br_actor* pActor) {
+    const char* str;
+
+    switch (pActor->render_style) {
+    case BR_RSTYLE_DEFAULT:
+        str = "BR_RSTYLE_DEFAULT";
+        break;
+    case BR_RSTYLE_NONE:
+        str = "BR_RSTYLE_NONE";
+        break;
+    case BR_RSTYLE_POINTS:
+        str = "BR_RSTYLE_POINTS";
+        break;
+    case BR_RSTYLE_EDGES:
+        str = "BR_RSTYLE_EDGES";
+        break;
+    case BR_RSTYLE_FACES:
+        str = "BR_RSTYLE_FACES";
+        break;
+    case BR_RSTYLE_BOUNDING_POINTS:
+        str = "BR_RSTYLE_BOUNDING_POINTS";
+        break;
+    case BR_RSTYLE_BOUNDING_EDGES:
+        str = "BR_RSTYLE_BOUNDING_EDGES";
+        break;
+    case BR_RSTYLE_BOUNDING_FACES:
+        str = "BR_RSTYLE_BOUNDING_FACES";
+        break;
+    default:
+        str = "******** UNKNOWN ********";
+        break;
+    }
+    return str;
+}
+
 // FUNCTION: CARMA2_HW 0x00518ac0
 void C2_HOOK_FASTCALL DumpVisibleActors(br_actor* pActor, const char* pMsg) {
 
@@ -294,28 +330,38 @@ int C2_HOOK_FASTCALL GetBlenficatiousnessOfMaterialPrimitively(br_material *pMat
 
 // FUNCTION: CARMA2_HW 0x00518e70
 int C2_HOOK_FASTCALL GetBlendificatiousnessOfMaterial(br_material* pMaterial) {
+    br_token_value* prims;
+
     if (gScreen->type == BR_PMT_INDEX_8) {
-        return GetBlenficatiousnessOfMaterialTablishly(pMaterial);
+        if (pMaterial->index_blend == BrTableFind("BLEND75.TAB")) {
+            return 25;
+        }
+        if (pMaterial->index_blend == BrTableFind("BLEND50.TAB")) {
+            return 50;
+        }
+        if (pMaterial->index_blend == BrTableFind("BLEND25.TAB")) {
+            return 75;
+        }
+        return 100;
     }
-    return GetBlenficatiousnessOfMaterialPrimitively(pMaterial);
+    prims = pMaterial->extra_prim;
+    if (prims != NULL && prims[0].t == BRT_BLEND_B && prims[0].v.b == 1 && prims[1].t == BRT_OPACITY_X) {
+        return (100 * (prims[1].v.x >> 16)) / 256;
+    }
+    return 100;
 }
 
 // FUNCTION: CARMA2_HW 0x00517050
 tU16 C2_HOOK_FASTCALL Colour24BitTo16Bit(br_colour pColour) {
-    tU32 colour;
 
     switch (gBack_screen->type) {
-    case BR_PMT_RGB_565:
-        colour = ((pColour >> 3) & 0x1f0000) | (pColour & 0xfc00);
-        colour = (colour >> 2) | (pColour & 0xf8);
-        return (tU16)(colour >> 3);
-    case BR_PMT_RGB_555:
-        colour = ((pColour >> 3) & 0x1f0000) | (pColour & 0xf800);
-        colour = (colour >> 3) | (pColour & 0xf8);
-        return (tU16)(colour >> 3);
     default:
         BrFailure("Unsupported back buffer type.");
-        return 0;
+        break;
+    case BR_PMT_RGB_565:
+        return (((((pColour >> 3) & 0x1f0000) | (pColour & 0xfc00)) >> 2) | (pColour & 0xf8)) >> 3;
+    case BR_PMT_RGB_555:
+        return (((((pColour >> 3) & 0x1f0000) | (pColour & 0xf800)) >> 3) | (pColour & 0xf8)) >> 3;
     }
 }
 
@@ -1364,13 +1410,13 @@ br_actor* C2_HOOK_FASTCALL CloneActor(br_actor* pActor) {
 
 // FUNCTION: CARMA2_HW 0x00515b80
 void C2_HOOK_FASTCALL CalcActorGlobalPos(br_vector3* pResult, br_actor* pActor) {
+    br_vector3 tv;
 
-    BrVector3Set(pResult, 0.f, 0.f, 0.f);
+    BrVector3Set(pResult, 0.0f, 0.0f, 0.0f);
     for (;pActor != NULL && pActor != gNon_track_actor; pActor = pActor->parent) {
-        if (pActor->t.t.mat.m[0][0] == 1.f) {
+        if (pActor->t.t.mat.m[0][0] == 1.0f) {
             BrVector3Accumulate(pResult, &pActor->t.t.translate.t);
         } else {
-            br_vector3 tv;
             BrMatrix34ApplyP(&tv, pResult, &pActor->t.t.mat);
             BrVector3Accumulate(pResult, &tv);
         }
@@ -1527,7 +1573,7 @@ int C2_HOOK_FASTCALL DRModelUpdateDeluxTurbo(br_actor* pActor, br_model* pModel,
 // FUNCTION: CARMA2_HW 0x00516090
 br_scalar C2_HOOK_FASTCALL DistanceFromFace(const br_vector3* pP, const tFace_ref* pFace) {
 
-    return BrVector3Dot(pP, &pFace->normal) - pFace->d;
+    return pFace->normal.v[2] * pP->v[2] + pFace->normal.v[1] * pP->v[1] + pFace->normal.v[0] * pP->v[0] - pFace->d;
 }
 
 // FUNCTION: CARMA2_HW 0x005160c0
@@ -1576,12 +1622,6 @@ void C2_HOOK_FASTCALL DRScaleModel(br_model* pModel, float pScale) {
     }
 }
 
-// FUNCTION: CARMA2_HW 0x005162a0
-float C2_HOOK_FASTCALL DistanceFromFaceND(const br_vector3* pP, const br_vector3* pN, br_scalar pF) {
-
-    return BrVector3Dot(pN, pP) - pF;
-}
-
 // FUNCTION: CARMA2_HW 0x00516350
 int C2_HOOK_FASTCALL DRVector3NonZero(const br_vector3* pV) {
     if (pV->v[0] == gFloatZero_0058b280 && pV->v[1] == gFloatZero_0058b280 && pV->v[2] == gFloatZero_0058b280) {
@@ -1596,7 +1636,7 @@ void C2_HOOK_FASTCALL DRVector3Diminish(br_vector3* pV1, const br_vector3* pV2) 
     br_vector3 v1 = *pV1;
 
     BrVector3Sub(pV1, pV1, pV2);
-    if (v1.v[0] * pV1->v[0] <= gFloatZero_0058b280) {
+    if (pV1->v[0] * v1.v[0] <= gFloatZero_0058b280) {
         pV1->v[0] = 0.0f;
     }
     if (v1.v[1] * pV1->v[1] <= gFloatZero_0058b280) {
@@ -1609,19 +1649,46 @@ void C2_HOOK_FASTCALL DRVector3Diminish(br_vector3* pV1, const br_vector3* pV2) 
 
 // FUNCTION: CARMA2_HW 0x00516410
 tU16 C2_HOOK_FASTCALL DRScalarToU16(float pValue, float pMin, float pMax) {
+    float scaled;
 
     if (pValue < pMin) {
         pValue = pMin;
     } else if (pValue > pMax) {
         pValue = pMax;
     }
-    return (tU16)(((pValue - pMin) * 65535.f) / (pMax - pMin) + 0.5f);
+    scaled = (pValue - pMin) * 65535.0f / (pMax - pMin);
+    return (tU16)(scaled + 0.5f);
 }
 
 // FUNCTION: CARMA2_HW 0x00516460
 br_scalar C2_HOOK_FASTCALL DRU16ToScalar(tU16 pValue, float pMin, float pMax) {
 
     return ((float)pValue * (pMax - pMin) / 65535.0f) + pMin;
+}
+
+// FUNCTION: CARMA2_HW 0x005162a0
+float C2_HOOK_FASTCALL DistanceFromFaceND(const br_vector3* pP, const br_vector3* pN, br_scalar pF) {
+
+    return BrVector3Dot(pP, pN) - pF;
+}
+
+// FUNCTION: CARMA2_HW 0x005162f0
+void C2_HOOK_FASTCALL DRVector4Set(br_vector4* pDst, float pX, float pY, float pZ, float pU) {
+
+    pDst->v[0] = pX;
+    pDst->v[1] = pY;
+    pDst->v[2] = pZ;
+    pDst->v[3] = pU;
+}
+
+// FUNCTION: CARMA2_HW 0x00516310
+void C2_HOOK_FASTCALL DRPlaneEquation(br_vector4* pDst, const br_vector3* pN, const br_vector3* pP) {
+
+    pDst->v[0] = pN->v[0];
+    pDst->v[1] = pN->v[1];
+    pDst->v[2] = pN->v[2];
+    /* FIXME: this should be negative... */
+    pDst->v[3] = BrVector3Dot(pP, pN);
 }
 
 // FUNCTION: CARMA2_HW 0x00516490
@@ -1668,7 +1735,7 @@ void C2_HOOK_FASTCALL ExpandMatrix34(br_matrix34* pMatrix, const tCompressed_mat
     BrVector3Normalise((br_vector3*)pMatrix->m[1], (br_vector3*)pMatrix->m[1]);
     BrVector3Cross((br_vector3*)pMatrix->m[2], (br_vector3*)pMatrix->m[0], (br_vector3*)pMatrix->m[1]);
     BrVector3Normalise((br_vector3*)pMatrix->m[2], (br_vector3*)pMatrix->m[2]);
-    ExpandVector3((br_vector3*)pMatrix->m[3], &pCompressed->p, 300.0f, 300.0f);
+    ExpandVector3((br_vector3*)pMatrix->m[3], &pCompressed->p, -300.0f, 300.0f);
     if (pInactive) {
         BrVector3Set((br_vector3*)pMatrix->m[3],
             pMatrix->m[3][0] + 1000.0f,
@@ -1795,23 +1862,21 @@ void C2_HOOK_FASTCALL NobbleNonzeroBlacks(br_pixelmap* pPalette) {
     int g;
     int b;
 
-    pixels= pPalette->pixels;
+    pixels = pPalette->pixels;
     modified = 0;
-    if (*pixels != BR_COLOUR_RGBA(0, 0, 0, 0)) {
-        *pixels = BR_COLOUR_RGBA(0, 0, 0, 0);
+    if (pixels[0] != BR_COLOUR_RGBA(0, 0, 0, 0)) {
+        pixels[0] = BR_COLOUR_RGBA(0, 0, 0, 0);
         modified = 1;
     }
-    pixels++;
-    for (i = 0; i < 255; i++ ) {
-        c = *pixels;
+    for (i = 1; i < 256; i++) {
+        c = pixels[i];
         r = BR_COLOUR_RED(c);
         g = BR_COLOUR_GRN(c);
         b = BR_COLOUR_BLU(c);
         if (r == 0 && g == 0 && b == 0) {
-            *pixels = BR_COLOUR_RGB(1, 1, 1);
+            pixels[i] = BR_COLOUR_RGB(1, 1, 1);
             modified = 1;
         }
-        pixels++;
     }
     if (modified) {
         BrMapUpdate(pPalette, BR_MAPU_ALL);
@@ -2539,4 +2604,14 @@ void C2_HOOK_FASTCALL FUN_00519400(br_pixelmap* pMap) {
         } while (y < pMap->height);
     }
     pMap->type = 0x1f;
+}
+
+// FUNCTION: CARMA2_HW 0x0047d850
+int C2_HOOK_FASTCALL DRstrcmpi(const char* str1, const char* str2) {
+    return strcasecmp(str1, str2);
+}
+
+// FUNCTION: CARMA2_HW 0x0047d860
+int C2_HOOK_FASTCALL DRmemicmp(const char* str1, const char* str2, size_t count) {
+    return c2_memicmp(str1, str2, count);
 }

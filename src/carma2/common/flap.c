@@ -649,7 +649,7 @@ int C2_HOOK_FASTCALL BitObjectIsSufficientlyOutsideCarObjectToDetach(tPhysics_ob
 
         BrMatrix34ApplyV(&tv, &pObject->physics_joint1->limits[i].child, &pObject->actor->t.t.mat);
         BrMatrix34TApplyV(&tv2, &tv, &pObject->parent->actor->t.t.mat);
-        if (BrVector3Dot(&pObject->physics_joint1->limits[i].parent, &tv2) > gCrushSqrtHalf) {
+        if (BrVector3Dot(&pObject->physics_joint1->limits[i].parent, &tv2) > 0.707107f) {
             return 1;
         }
     }
@@ -1474,7 +1474,7 @@ int C2_HOOK_FASTCALL BendCarOneForce(tCar_spec* pCar, tCar_crush* pCar_crush) {
         QuantizeAngle(angle_x, BrDegreeToAngle(290), BrDegreeToAngle(70), BrDegreeToAngle(20)),
         QuantizeAngle(angle_y, BrDegreeToAngle(310), BrDegreeToAngle(50), BrDegreeToAngle(20)),
         0, &bend_v, bb_z, 1);
-    DRS3StartSound3D(gCar_outlet, eSoundId_BendCar, &pCar->collision_info->actor->t.t.translate.t, &gZero_v__car, 1, 255, IRandomBetween(0xe000, 0x12000), 0x10000);
+    DRS3StartSound3D(gXXX_outlet, eSoundId_BendCar, &pCar->collision_info->actor->t.t.translate.t, &gZero_v__car, 1, 255, IRandomBetween(0xe000, 0x12000), 0x10000);
     return 1;
 }
 

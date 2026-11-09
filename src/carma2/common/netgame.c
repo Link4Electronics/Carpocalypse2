@@ -670,7 +670,7 @@ void C2_HOOK_FASTCALL LoseAllLocalPowerups(tCar_spec* pCar) {
     NOT_IMPLEMENTED();
 }
 
-void C2_HOOK_FASTCALL SendPlayerScores(void) {
+__inline void C2_HOOK_FASTCALL SendPlayerScores(void) {
     tNet_message_chunk* the_contents;
     int i;
 
@@ -1243,7 +1243,7 @@ void C2_HOOK_FASTCALL SendLocalCarData(tU32 pNext_frame_time) {
         }
     }
 
-    message = (tNet_message_chunk_car_data*)NetAllocateMessageChunk(eNet_message_chunk_type_car_data, message_size);
+    message = (tNet_message_chunk_car_data*)NetGetToHostContents(eNet_message_chunk_type_car_data, message_size);
     message->next_frame_time = pNext_frame_time;
     message->player_id = gNet_players[gThis_net_player_index].ID;
     message->curvature = (tU16)(gProgram_state.current_car.curvature / gProgram_state.current_car.maxcurve * gFLOAT_0058a3d0);
@@ -1306,12 +1306,12 @@ void C2_HOOK_FASTCALL SendLocalCarData(tU32 pNext_frame_time) {
     }
 
     if (gProgram_state.current_car.time_to_recover != 0 && gProgram_state.current_car.time_to_recover - 500U < pNext_frame_time) {
-        recover_message = (tNet_message_chunk_recover*)NetAllocateMessageChunk(eNet_message_chunk_type_car_recover, 0);
+        recover_message = (tNet_message_chunk_recover*)NetGetToHostContents(eNet_message_chunk_type_car_recover, 0);
         recover_message->player = gNet_players[gThis_net_player_index].ID;
         recover_message->time = gProgram_state.current_car.time_to_recover;
     }
 
-    crush_sync_message = (tNet_message_chunk_car_crush_sync*)NetAllocateMessageChunk(
+    crush_sync_message = (tNet_message_chunk_car_crush_sync*)NetGetToHostContents(
         eNet_message_chunk_type_car_crush_sync, gNumber_of_net_players * 8 + 4);
     crush_sync_message->player_id = gNet_players[gThis_net_player_index].ID;
     crush_sync_message->count = (tU8)(gNumber_of_net_players - 1);

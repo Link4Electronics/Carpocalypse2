@@ -525,20 +525,20 @@ void C2_HOOK_FASTCALL IncrementLap(void) {
 
 // FUNCTION: CARMA2_HW 0x005033e0
 void C2_HOOK_FASTCALL WrongCheckpoint(int pCheckpoint_index) {
+    int next_checkpoint;
 
     if (gRace_finished) {
         return;
     }
-    if (!(gCurrent_race.race_spec->race_type == kRaceType_Carma1 ||
-        gCurrent_race.race_spec->race_type == kRaceType_Checkpoints)) {
+    if (gCurrent_race.race_spec->race_type != kRaceType_Carma1
+            && gCurrent_race.race_spec->race_type != kRaceType_Checkpoints) {
         return;
     }
     if ((gLast_wrong_checkpoint == pCheckpoint_index && GetTotalTime() - gLast_checkpoint_time > 20000)
             || (gLast_wrong_checkpoint != pCheckpoint_index && GetTotalTime() - gLast_checkpoint_time > 2000)) {
-
         if (gNet_mode == eNet_mode_none) {
-            int next_checkpoint = pCheckpoint_index + 2;
-            if (gCurrent_race.check_point_count < next_checkpoint) {
+            next_checkpoint = pCheckpoint_index + 2;
+            if (next_checkpoint > gCurrent_race.check_point_count) {
                 if (gLap == 1) {
                     next_checkpoint = -1;
                 } else {
@@ -549,11 +549,11 @@ void C2_HOOK_FASTCALL WrongCheckpoint(int pCheckpoint_index) {
                 return;
             }
         }
+        NewTextHeadupSlot(4, 0, 1000, -4, GetMiscString(eMiscString_wrong_checkpoint));
+        DRS3StartSound(gPedestrians_outlet, eSoundId_WrongCheckpoint);
+        gLast_checkpoint_time = GetTotalTime();
+        gLast_wrong_checkpoint = pCheckpoint_index;
     }
-    NewTextHeadupSlot(4, 0, 1000, -4, GetMiscString(eMiscString_wrong_checkpoint));
-    DRS3StartSound(gPedestrians_outlet, eSoundId_WrongCheckpoint);
-    gLast_checkpoint_time = GetTotalTime();
-    gLast_wrong_checkpoint = pCheckpoint_index;
 }
 
 int C2_HOOK_FASTCALL RayHitFace(br_vector3* pV0, br_vector3* pV1, br_vector3* pV2, br_vector3* pNormal, br_vector3* pStart, br_vector3* pDir) {
@@ -685,19 +685,19 @@ int C2_HOOK_FASTCALL PickNetRace(int pCurrent_race, tNet_sequence_type pNet_race
     } else {
         most_seldom_seen = 10000;
         for (i = 0; i < gNumber_of_races; i++) {
-            if (gRace_list[i].been_there_done_that < most_seldom_seen) {
-                most_seldom_seen = gRace_list[i].been_there_done_that;
+            if (gRace_list[i].count_opponents < most_seldom_seen) {
+                most_seldom_seen = gRace_list[i].count_opponents;
             }
         }
         races_count = 0;
         for (i = 0; i < gNumber_of_races; i++) {
-            if (gRace_list[i].been_there_done_that == most_seldom_seen && i != pCurrent_race) {
+            if (gRace_list[i].count_opponents == most_seldom_seen && i != pCurrent_race) {
                 races_to_pick_from[races_count] = i;
                 races_count++;
             }
         }
         new_index = races_to_pick_from[IRandomBetween(0, races_count - 1)];
-        gRace_list[new_index].been_there_done_that++;
+        gRace_list[new_index].count_opponents++;
         return new_index;
     }
 }

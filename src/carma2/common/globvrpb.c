@@ -35,4 +35,6 @@ int gRendering_mirror;
 
 // GLOBAL: CARMA2_HW 0x00686828
 int gFrontend_opponent_profile_pic_needs_update;
+
+// GLOBAL: CARMA2_HW 0x006a0d38
 int gLast_host_query;

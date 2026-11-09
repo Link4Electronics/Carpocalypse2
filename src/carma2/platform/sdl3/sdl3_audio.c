@@ -121,6 +121,11 @@ int PDS3Return0_B(void) {
     return 0;
 }
 
+int PDS3Return0_C(tS3_channel* pChannel) {
+    (void)pChannel;
+    return 0;
+}
+
 int PDS3InitCDA(void) {
     SDL_PathInfo path_info;
     const char* resolved_path;

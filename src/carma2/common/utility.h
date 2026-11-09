@@ -162,6 +162,10 @@ extern void C2_HOOK_FASTCALL DRScaleModel(br_model* pModel, float pScale);
 
 extern float C2_HOOK_FASTCALL DistanceFromFaceND(const br_vector3* pP, const br_vector3* pN, br_scalar pF);
 
+extern void C2_HOOK_FASTCALL DRVector4Set(br_vector4* pDst, float pX, float pY, float pZ, float pU);
+
+extern void C2_HOOK_FASTCALL DRPlaneEquation(br_vector4* pDst, const br_vector3* pN, const br_vector3* pP);
+
 extern int C2_HOOK_FASTCALL DRVector3NonZero(const br_vector3* pV);
 
 extern void C2_HOOK_FASTCALL DRVector3Diminish(br_vector3* pV1, const br_vector3* pV2);

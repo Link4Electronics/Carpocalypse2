@@ -66,7 +66,6 @@ void C2_HOOK_FASTCALL QueueOilSpill2(
     int oldest;
     tU32 time_low;
     tU32 time_high;
-    tU32 smallest_spill_time;
 
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tOil_spill_info, car, 0xc);
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tOil_spill_info, spill_time, 0x10);
@@ -81,35 +80,32 @@ void C2_HOOK_FASTCALL QueueOilSpill2(
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(br_actor, material, 0x1c);
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(br_actor, render_style, 0x20);
 
+    oldest = 0;
+    slot = -1;
     time_low = GetTotalTime();
     time_high = GetTotalTime();
 
-    if (pCar != NULL) {
-for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gOily_spills); i++) {
-            if (gOily_spills[i].car_actor == pActor
-                    && time_low < gOily_spills[i].spill_time + 5000) {
-                return;
-            }
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gOily_spills); i++) {
+        if (pCar != NULL && gOily_spills[i].car_actor == pActor && time_low < gOily_spills[i].spill_time + 5000) {
+            return;
         }
     }
 
-    slot = -1;
-    oldest = 0;
-    smallest_spill_time = time_high;
-    for (i = 0; i < CARPOCALYPSE2_ASIZE(gOily_spills); i++) {
-        if (gOily_spills[i].car_actor == NULL) {
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gOily_spills); i++) {
+        if (gOily_spills[i].car_actor != NULL) {
+            if (gOily_spills[i].spill_time < time_high) {
+                time_high = gOily_spills[i].spill_time;
+                oldest = i;
+            }
+        } else {
             slot = i;
             break;
         }
-        if (gOily_spills[i].spill_time < smallest_spill_time) {
-            smallest_spill_time = gOily_spills[i].spill_time;
-            oldest = i;
-        }
     }
+
     if (slot < 0) {
         slot = oldest;
     }
-
     gOily_spills[slot].actor->material = pMaterial;
     gOily_spills[slot].car = pCar;
     gOily_spills[slot].car_actor = pActor;
@@ -119,12 +115,12 @@ for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gOily_spills); i++) {
     gOily_spills[slot].full_size = SRandomBetween(pFull_size_min, pFull_size_max);
     gOily_spills[slot].grow_rate = SRandomBetween(pGrow_size_min, pGrow_size_max);
     gOily_spills[slot].current_size = pSize;
+    gOily_spills[slot].actor->render_style = BR_RSTYLE_NONE;
     gOily_spills[slot].field_0x40 = pField_0x40;
     gOily_spills[slot].field_0x44 = pField_0x44;
     gOily_spills[slot].field_0x48 = pField_0x48;
     gOily_spills[slot].field_0x4c = pField_0x4c;
     gOily_spills[slot].field_0x50 = pField_0x50;
-    gOily_spills[slot].actor->render_style = BR_RSTYLE_FACES;
 }
 
 // FUNCTION: CARMA2_HW 0x004a6dd0
@@ -386,18 +382,79 @@ void C2_HOOK_FASTCALL GetOilSpillDetails(int pIndex, br_actor** pActor, br_scala
     }
 }
 
+#pragma inline_depth(0)
 // FUNCTION: CARMA2_HW 0x004a7530
 void C2_HOOK_FASTCALL GetOilFrictionFactors(tCar_spec* pCar, br_scalar* pFl, br_scalar* pFr, br_scalar* pRl, br_scalar* pRr) {
-    /* TODO: real implementation */
+    int i;
+    br_vector3 wheel_world;
+
     *pFl = 1.f;
     *pFr = 1.f;
     *pRl = 1.f;
     *pRr = 1.f;
+
+    if (pCar != NULL && pCar->driver > 5) {
+        if (pCar->shadow_intersection_flags != 0) {
+            for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gOily_spills); i++) {
+                float oil_min = gOily_spills[i].field_0x48;
+                float oil_max = gOily_spills[i].field_0x4c;
+                if (oil_max != 0.0f && ((1 << i) & pCar->shadow_intersection_flags)) {
+                    float friction_min = gOily_spills[i].field_0x40;
+                    float friction_max = gOily_spills[i].field_0x44;
+                    BrMatrix34ApplyP(&wheel_world, &pCar->wpos[2], &pCar->car_master_actor->t.t.mat);
+                    if (PointInSpill(&wheel_world, i)) {
+                        pCar->oil_remaining[2] = SRandomBetween(oil_min, oil_max);
+                        pCar->maybe_blood_remaining[2] = SRandomBetween(friction_min, friction_max);
+                        pCar->field_0x16fc[2] = (br_material*)gOily_spills[i].field_0x50;
+                    }
+                    BrMatrix34ApplyP(&wheel_world, &pCar->wpos[3], &pCar->car_master_actor->t.t.mat);
+                    if (PointInSpill(&wheel_world, i)) {
+                        pCar->oil_remaining[3] = SRandomBetween(oil_min, oil_max);
+                        pCar->maybe_blood_remaining[3] = SRandomBetween(friction_min, friction_max);
+                        pCar->field_0x16fc[3] = (br_material*)gOily_spills[i].field_0x50;
+                    }
+                    BrMatrix34ApplyP(&wheel_world, &pCar->wpos[0], &pCar->car_master_actor->t.t.mat);
+                    if (PointInSpill(&wheel_world, i)) {
+                        pCar->oil_remaining[0] = SRandomBetween(oil_min, oil_max);
+                        pCar->maybe_blood_remaining[0] = SRandomBetween(friction_min, friction_max);
+                        pCar->field_0x16fc[0] = (br_material*)gOily_spills[i].field_0x50;
+                    }
+                    BrMatrix34ApplyP(&wheel_world, &pCar->wpos[1], &pCar->car_master_actor->t.t.mat);
+                    if (PointInSpill(&wheel_world, i)) {
+                        pCar->oil_remaining[1] = SRandomBetween(oil_min, oil_max);
+                        pCar->maybe_blood_remaining[1] = SRandomBetween(friction_min, friction_max);
+                        pCar->field_0x16fc[1] = (br_material*)gOily_spills[i].field_0x50;
+                    }
+                }
+            }
+        }
+        if (pCar->oil_remaining[2] != 0.0f) {
+            *pFl = pCar->maybe_blood_remaining[2];
+        }
+        if (pCar->oil_remaining[3] != 0.0f) {
+            *pFr = pCar->maybe_blood_remaining[3];
+        }
+        if (pCar->oil_remaining[0] != 0.0f) {
+            *pRl = pCar->maybe_blood_remaining[0];
+        }
+        if (pCar->oil_remaining[1] != 0.0f) {
+            *pRr = pCar->maybe_blood_remaining[1];
+        }
+    }
 }
+#pragma inline_depth()
+
+// GLOBAL: CARMA2_HW 0x0058a464
+const br_scalar gFloat_0058a464 = 0.8f;
+
+// GLOBAL: CARMA2_HW 0x0058a46c
+const br_scalar gFloat_0058a46c = 0.14492753148078918f;
+
+// GLOBAL: CARMA2_HW 0x0058a470
+const br_scalar gFloat_0058a470 = 0.1f;
 
 // FUNCTION: CARMA2_HW 0x004a77d0
 int C2_HOOK_FASTCALL PointInSpill(br_vector3* pPoint, int pIndex) {
-    const br_scalar inverse_world_scale = 1.f / WORLD_SCALE;
     tOil_spill_info* oil;
     br_actor* actor;
     br_scalar range_squared;
@@ -405,17 +462,18 @@ int C2_HOOK_FASTCALL PointInSpill(br_vector3* pPoint, int pIndex) {
 
     oil = &gOily_spills[pIndex];
     actor = oil->actor;
-    range_squared = oil->current_size * oil->current_size * 0.8f;
-    delta = pPoint->v[0] * inverse_world_scale - actor->t.t.mat.m[3][0];
+    delta = pPoint->v[0] * gFloat_0058a46c - actor->t.t.mat.m[3][0];
+    range_squared = oil->current_size * oil->current_size;
+    range_squared = range_squared * gFloat_0058a464;
     if (delta * delta >= range_squared) {
         return 0;
     }
-    delta = pPoint->v[2] * inverse_world_scale - actor->t.t.mat.m[3][2];
+    delta = pPoint->v[2] * gFloat_0058a46c - actor->t.t.mat.m[3][2];
     if (delta * delta >= range_squared) {
         return 0;
     }
-    delta = pPoint->v[1] * inverse_world_scale - actor->t.t.mat.m[3][1];
-    if (fabs(delta) >= 0.1f) {
+    delta = pPoint->v[1] * gFloat_0058a46c - actor->t.t.mat.m[3][1];
+    if (fabsf(delta) >= gFloat_0058a470) {
         return 0;
     }
     return 1;

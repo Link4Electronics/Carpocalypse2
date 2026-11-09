@@ -219,15 +219,28 @@ static uint16_t fast_rsqrt_table[192] = {
 };
 
 // FUNCTION: CARMA2_HW 0x00537110
-#pragma optimize( "y", off )
-br_fixed_ls C2_HOOK_CDECL BrFixedAbs(br_fixed_ls a) {
-
+br_fixed_ls C2_NAKED C2_HOOK_CDECL BrFixedAbs(br_fixed_ls a) {
+#ifndef CARPOCALYPSE2_MATCHING
     if (a < 0) {
         a = -a;
     }
     return a;
+#else
+    __asm {
+        push ebp
+        mov ebp, esp
+        push edx
+        mov eax, dword ptr [ebp + 8]
+        test eax, eax
+        jns fixed_abs_done
+        neg eax
+fixed_abs_done:
+        pop edx
+        leave
+        ret
+    }
+#endif
 }
-#pragma optimize( "", on )
 
 // FUNCTION: CARMA2_HW 0x00537120
 br_fixed_ls C2_NAKED C2_HOOK_CDECL BrFixedMul(br_fixed_ls a, br_fixed_ls b) {
@@ -1005,7 +1018,7 @@ br_fixed_ls C2_NAKED C2_HOOK_CDECL BrFixedSin(br_angle a) {
         push edx
         mov ax, word ptr [ebp + 8]
         xor ebx, ebx
-        xchg ah, bl
+        xchg bl, ah
         mov cx, word ptr [ebx*2 + fixed_sin_table]
         mov dx, word ptr [ebx*2 + fixed_sin_table + 2]
         sub edx, ecx
@@ -1037,7 +1050,7 @@ br_fixed_ls C2_NAKED C2_HOOK_CDECL BrFixedCos(br_angle a) {
         push edx
         mov ax, word ptr [ebp + 8]
         xor ebx, ebx
-        xchg ah, bl
+        xchg bl, ah
         mov cx, word ptr [ebx*2 + fixed_sin_table + 128]
         mov dx, word ptr [ebx*2 + fixed_sin_table + 130]
         sub edx, ecx
@@ -1074,7 +1087,7 @@ br_angle C2_NAKED C2_HOOK_CDECL BrFixedASin(br_fixed_ls a) {
         add eax, 0x10000
         sar eax, 1
         xor ebx, ebx
-        xchg ah, bl
+        xchg bl, ah
         mov cx, word ptr [ebx*2 + fixed_asin_table]
         mov dx, word ptr [ebx*2 + fixed_asin_table + 2]
         sub edx, ecx
@@ -1109,7 +1122,7 @@ br_angle C2_NAKED C2_HOOK_CDECL BrFixedACos(br_fixed_ls a) {
         add eax, 0x10000
         sar eax, 1
         xor ebx, ebx
-        xchg ah, bl
+        xchg bl, ah
         mov cx, word ptr [ebx*2 + fixed_acos_table]
         mov dx, word ptr [ebx*2 + fixed_acos_table + 2]
         sub edx, ecx

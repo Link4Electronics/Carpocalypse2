@@ -800,7 +800,7 @@ int C2_HOOK_FASTCALL UnloadDinputFFBEfectwithName(const char *name) {
     for (i = 0; i < gCount_joystick_effects; i++) {
         if (strcmp(gJoystick_effects[i].name, name) == 0) {
             UnloadDinputFFBEffectAtIndex(i);
-            return i;
+            return 1;
         }
     }
     return 0;

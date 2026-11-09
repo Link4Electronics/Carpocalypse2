@@ -7,6 +7,7 @@
 #include "c2_hooks.h"
 
 extern int gMaterials_to_adapt_count;
+extern br_material* gMaterials_to_adapt[200];
 
 void C2_HOOK_FASTCALL InitFogificateMaterials(void);
 

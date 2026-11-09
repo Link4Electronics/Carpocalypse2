@@ -56,7 +56,6 @@ int gPicked_wreck;
 
 // FUNCTION: CARMA2_HW 0x0046e830
 int C2_HOOK_FASTCALL WrecksInFunc(tFrontend_spec* pFrontend) {
-    br_camera* camera;
     int car_count;
     int i;
 
@@ -73,14 +72,13 @@ int C2_HOOK_FASTCALL WrecksInFunc(tFrontend_spec* pFrontend) {
     gFrontend_wrecks_camera = BrActorAllocate(BR_ACTOR_CAMERA, NULL);
     gFrontend_wrecks_light = BrActorAllocate(BR_ACTOR_LIGHT, NULL);
 
-    camera = gFrontend_wrecks_camera->type_data;
-    camera->aspect = 1.6346154f;
-    camera->field_of_view = BR_ANGLE_DEG(55);
-    camera->hither_z = 1.f;
-    camera->yon_z = 100.f;
-    camera->type = BR_CAMERA_PERSPECTIVE_FOV;
-    camera->width = 640.f;
-    camera->height = 480.f;
+    ((br_camera*)gFrontend_wrecks_camera->type_data)->aspect = 1.6346154f;
+    ((br_camera*)gFrontend_wrecks_camera->type_data)->field_of_view = BR_ANGLE_DEG(55);
+    ((br_camera*)gFrontend_wrecks_camera->type_data)->hither_z = 1.f;
+    ((br_camera*)gFrontend_wrecks_camera->type_data)->yon_z = 100.f;
+    ((br_camera*)gFrontend_wrecks_camera->type_data)->type = BR_CAMERA_PERSPECTIVE_FOV;
+    ((br_camera*)gFrontend_wrecks_camera->type_data)->width = 640.f;
+    ((br_camera*)gFrontend_wrecks_camera->type_data)->height = 480.f;
     BrActorAdd(gFrontend_wrecks_actor, gFrontend_wrecks_camera);
 
     gFrontend_wrecks_pixelmap = BrPixelmapAllocateSub(gBack_screen, 65, 55, 510, 312);
@@ -104,15 +102,15 @@ int C2_HOOK_FASTCALL WrecksInFunc(tFrontend_spec* pFrontend) {
             BrActorRemove(actor);
         }
         BrActorAdd(gFrontend_wrecks_actor, actor);
-        gWreck_gallery_car_infos[i].original_matrix = actor->t.t.mat;
+        gWreck_gallery_car_infos[gFrontend_wrecks_car_count].original_matrix = actor->t.t.mat;
         BrMatrix34Identity(&actor->t.t.mat);
-        BrMatrix34Identity(&gWreck_gallery_car_infos[i].field_0x14);
-        BrMatrix34Identity(&gWreck_gallery_car_infos[i].field_0x74);
-        gWreck_gallery_car_infos[i].actor = actor;
+        BrMatrix34Identity(&gWreck_gallery_car_infos[gFrontend_wrecks_car_count].field_0x14);
+        BrMatrix34Identity(&gWreck_gallery_car_infos[gFrontend_wrecks_car_count].field_0x74);
+        gWreck_gallery_car_infos[gFrontend_wrecks_car_count].actor = actor;
         gFrontend_wrecks_car_count += 1;
     }
-    gFrontend_wreck_bought_car_dz = 0.f;
     memset(gWreck_gallery_sell_infos, 0, sizeof(gWreck_gallery_sell_infos));
+    gFrontend_wreck_bought_car_dz = 0.f;
 
     gFrontend_selected_item_index = 0;
     gFrontend_wrecks_current = 0;
@@ -485,20 +483,24 @@ int C2_HOOK_FASTCALL ScrollToNextCar(tFrontend_spec* pFrontend) {
 
 // FUNCTION: CARMA2_HW 0x0046e780
 int C2_HOOK_FASTCALL BuyCurrentCar(tFrontend_spec* pFrontend) {
+    tCar_spec* car;
+    tOpponent_spec* opponent;
 
-    if (gFrontend_wreck_bought_car_dz == 0.f
-            && !gWreck_gallery_sell_infos[gFrontend_wrecks_current].sold) {
-        tCar_spec*car;
-        tOpponent_spec* opponent;
+    C2_HOOK_BUG_ON(sizeof(tWreck_gallery_sell_info) != 0x8);
 
-        car = GetCarSpec(eVehicle_opponent, gFrontend_wrecks_current);
-        opponent = GetOpponentSpecFromCarSpec(car);
-        gProgram_state.cars_available[gProgram_state.number_of_cars] = car->index;
-        gProgram_state.number_of_cars += 1;
-        gProgram_state.current_car_index = car->index;
-        gProgram_state.credits -= gOpponents[opponent->index].price;
-        gFrontend_wreck_bought_car_dz = 0.001f;
-        DRS3StartSound(gEffects_outlet, eSoundId_Done);
+    if (gFrontend_wreck_bought_car_dz != 0.f) {
+        return 0;
     }
+    if (gWreck_gallery_sell_infos[gFrontend_wrecks_current].sold) {
+        return 0;
+    }
+    car = GetCarSpec(eVehicle_opponent, gFrontend_wrecks_current);
+    opponent = GetOpponentSpecFromCarSpec(car);
+    gProgram_state.cars_available[gProgram_state.number_of_cars] = car->index;
+    gProgram_state.number_of_cars += 1;
+    gProgram_state.current_car_index = car->index;
+    gProgram_state.credits -= gOpponents[opponent->index].price;
+    gFrontend_wreck_bought_car_dz = 0.001f;
+    DRS3StartSound(gEffects_outlet, eSoundId_Done);
     return 0;
 }

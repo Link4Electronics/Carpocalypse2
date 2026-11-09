@@ -792,58 +792,74 @@ void C2_HOOK_FASTCALL TwatPIX16(const char* pPath) {
 
 // FUNCTION: CARMA2_HW 0x00486860
 int C2_HOOK_FASTCALL LoadTiffTextureCB(const char* filePath, tLoadDirectoryStructureCBData* data) {
-    size_t filePathLength;
-    tPath_name textureName;
+    int filePathLength;
     tLoadDirectoryStructureCBResult* itemResult;
     br_pixelmap* texture;
+    int* errorCode;
+    br_pixelmap* palette;
+    int loadFlags;
+    const char* directory;
+    tPath_name textureName;
 
     filePathLength = strlen(filePath);
-    if (DRstrcmpi(filePath + filePathLength - 4, ".TIF") != 0) {
-        return 0;
+    filePathLength -= 4;
+    if (filePathLength <= 0) {
+        goto return_0;
     }
-    sprintf(textureName, "%.*s", filePathLength - 4, filePath);
+    if (DRstrcmpi(filePath + filePathLength, ".TIF") != 0) {
+        goto return_0;
+    }
+    sprintf(textureName, "%.*s", filePathLength, filePath);
     if (!data->isTiffx && data->results != NULL) {
         for (itemResult = data->results; itemResult != NULL; itemResult = itemResult->next) {
             if (DRstrcmpi(textureName, itemResult->name) == 0) {
-                return 0;
+                break;
             }
+        }
+        if (itemResult != NULL) {
+            goto check_tiffx;
         }
     }
-    if (!(data->loadFlags & kLoadTextureFlags_16bbp)) {
-        texture = LoadTiffTexture_Ex2(data->directory, textureName, data->pPalette, data->loadFlags, data->errorCode, 1);
-        if (texture == NULL) {
-            texture = LoadTiffTexture_Ex2(data->directory, textureName, data->pPalette, data->loadFlags, data->errorCode, 0);
-        }
-        if (texture != NULL) {
-            texture->identifier = BrResStrDup(texture, textureName);
-            if (texture->identifier == NULL) {
-                BrPixelmapFree(texture);
-                *data->errorCode = 2;
-                texture = NULL;
-            }
-        }
-        if (texture != NULL) {
+    loadFlags = data->loadFlags;
+    palette = data->pPalette;
+    directory = data->directory;
+    errorCode = data->errorCode;
+    if ((loadFlags & kLoadTextureFlags_16bbp) == kLoadTextureFlags_16bbp || (texture = LoadTiffTexture_Ex2(directory, textureName, palette, loadFlags, errorCode, 1)) == NULL) {
+        texture = LoadTiffTexture_Ex2(directory, textureName, palette, loadFlags, errorCode, 0);
+    }
+    if (texture != NULL) {
+        texture->identifier = BrResStrDup(texture, textureName);
+        if (texture->identifier == NULL) {
             BrPixelmapFree(texture);
+            *errorCode = 2;
+            texture = NULL;
         }
+    }
+    if (texture != NULL) {
+        BrPixelmapFree(texture);
     }
     if (*data->errorCode != 0) {
         return *data->errorCode;
     }
-    if (!data->isTiffx) {
-        return 0;
+check_tiffx:
+    if (data->isTiffx) {
+        itemResult = BrMemAllocate(sizeof(*itemResult), BR_MEMORY_APPLICATION);
+        if (itemResult == NULL) {
+            goto error;
+        }
+        itemResult->name = BrMemStrDup(textureName);
+        if (itemResult->name != NULL) {
+            itemResult->next = data->results;
+            data->results = itemResult;
+            return 0;
+        }
+    } else {
+        goto return_0;
     }
-    itemResult = BrMemAllocate(sizeof(*itemResult), BR_MEMORY_APPLICATION);
-    if (itemResult == NULL) {
-        *data->errorCode = 2;
-        return 2;
-    }
-    itemResult->name = BrMemStrDup(textureName);
-    if (itemResult->name == NULL) {
-        *data->errorCode = 2;
-        return 2;
-    }
-    itemResult->next = data->results;
-    data->results = itemResult;
+error:
+    *data->errorCode = 2;
+    return 2;
+return_0:
     return 0;
 }
 
@@ -947,16 +963,6 @@ int C2_HOOK_FASTCALL CreatePathLink(const char* targetPath, const char* linkPath
     fclose(f);
     return 1;
 
-}
-
-// FUNCTION: CARMA2_HW 0x0047d850
-int C2_HOOK_FASTCALL DRstrcmpi(const char* str1, const char* str2) {
-    return strcasecmp(str1, str2);
-}
-
-// FUNCTION: CARMA2_HW 0x0047d860
-int C2_HOOK_FASTCALL DRmemicmp(const char* str1, const char* str2, size_t count) {
-    return c2_memicmp(str1, str2, count);
 }
 
 int C2_HOOK_FASTCALL FindLastOccurrenceOfString_CaseInsensitive(int* offset, const char* haystack, size_t haystackLen, const char* needle) {
@@ -3342,22 +3348,24 @@ void C2_HOOK_FASTCALL GrooveThisDelic(tGroovidelic_spec* pGroove, tU32 pTime, in
     the_actor = pGroove->actor;
     pGroove->done_this_frame = 1;
     CalcActorGlobalPos(&actor_pos, the_actor);
-    if (PointOutOfSight(&actor_pos, 0, pGroove->mode == eGroove_mode_distance ? gYon_squared : 36.f)) {
+    if (((int (C2_HOOK_FASTCALL*)(const br_vector3*, br_scalar))PointOutOfSight)(&actor_pos, pGroove->mode == eGroove_mode_distance ? gYon_squared : 36.f)) {
         return;
     }
 
     the_mat = &the_actor->t.t.mat;
     if ((!gAction_replay_mode
-        || !ARReplayIsReallyPaused()
-        || pGroove->path_mode == eMove_controlled
-        || pGroove->path_mode == eMove_absolute) && !(pGroove->block_flags & 0x1)) {
+            || !ARReplayIsReallyPaused()
+            || pGroove->path_mode == eMove_controlled
+            || pGroove->path_mode == eMove_absolute)
+        && !(pGroove->block_flags & 0x1)) {
         PathGrooveBastard(pGroove, pTime, the_mat, pInterrupt_it);
     }
-    if (((pGroove->object_type != eGroove_object_none || pGroove->lollipop_mode != eLollipop_none)
-            && (!gAction_replay_mode
-                    || !ARReplayIsReallyPaused()
-                    || pGroove->object_mode == eMove_controlled
-                    || pGroove->object_mode == eMove_absolute)) & !(pGroove->block_flags & 0x2)) {
+    if ((pGroove->object_type != eGroove_object_none || pGroove->lollipop_mode != eLollipop_none)
+        && (!gAction_replay_mode
+            || !ARReplayIsReallyPaused()
+            || pGroove->object_mode == eMove_controlled
+            || pGroove->object_mode == eMove_absolute)
+        && !(pGroove->block_flags & 0x2)) {
         the_mat->m[0][0] = 1.0f;
         the_mat->m[0][1] = 0.0f;
         the_mat->m[0][2] = 0.0f;
@@ -3371,14 +3379,14 @@ void C2_HOOK_FASTCALL GrooveThisDelic(tGroovidelic_spec* pGroove, tU32 pTime, in
         the_mat->m[3][1] = -pGroove->object_centre.v[1];
         the_mat->m[3][2] = -pGroove->object_centre.v[2];
         ObjectGrooveBastard(pGroove, pTime, the_mat, pInterrupt_it);
-        the_actor->t.t.mat.m[3][0] += pGroove->object_position.v[0] + pGroove->object_centre.v[0];
-        the_actor->t.t.mat.m[3][1] += pGroove->object_position.v[1] + pGroove->object_centre.v[1];
-        the_actor->t.t.mat.m[3][2] += pGroove->object_position.v[2] + pGroove->object_centre.v[2];
+        the_mat->m[3][0] = pGroove->object_position.v[0] + the_mat->m[3][0] + pGroove->object_centre.v[0];
+        the_mat->m[3][1] = pGroove->object_position.v[1] + the_mat->m[3][1] + pGroove->object_centre.v[1];
+        the_mat->m[3][2] = pGroove->object_position.v[2] + the_mat->m[3][2] + pGroove->object_centre.v[2];
         if (pGroove->lollipop_mode != eLollipop_none) {
             LollipopizeActor(pGroove->actor, &gCamera_to_world, pGroove->lollipop_mode);
         }
     }
-    if (pGroove->path_interrupt_status != old_path_interrupt || pGroove->object_interrupt_status != old_object_interrupt) {
+    if (old_path_interrupt != pGroove->path_interrupt_status || old_object_interrupt != pGroove->object_interrupt_status) {
         PipeSingleGrooveStop(
             pGroove - gGroovidelics_array,
             the_mat,

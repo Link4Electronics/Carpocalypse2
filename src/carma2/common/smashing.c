@@ -925,7 +925,7 @@ void C2_HOOK_FASTCALL SmashItIntoVerySmallPiecesIndeed(tPhysics_object* pObject,
     int value;
 
     if (pConnotations->count_sounds != 0) {
-        DRS3StartSound3D(gCar_outlet,
+        DRS3StartSound3D(gXXX_outlet,
             pConnotations->sounds[IRandomBetween(0, pConnotations->count_sounds - 1)],
             pSound_position, &gZero_v__car, 1, 255, IRandomBetween(0xe000, 0x12000), 0x10000);
     }

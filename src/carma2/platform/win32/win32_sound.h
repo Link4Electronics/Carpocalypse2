@@ -93,4 +93,6 @@ int C2_HOOK_FASTCALL PDS3Return0(void);
 
 int C2_HOOK_FASTCALL PDS3Return0_B(void);
 
+int C2_HOOK_FASTCALL PDS3Return0_C(tS3_channel* pChannel);
+
 #endif

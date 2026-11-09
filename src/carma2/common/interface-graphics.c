@@ -16,6 +16,11 @@
 extern int C2_HOOK_FASTCALL Generic_MenuHandler(tFrontend_spec* pFrontend);
 extern int gCar_simplification_level;
 extern br_scalar gYon_factor;
+extern float gUNK_0058a6e0;
+extern const br_scalar gFloat_0058a6e4;
+extern const br_scalar gFloat_0058a6e8;
+extern const br_scalar gFloat_0058a6ec;
+extern const br_scalar gFloat_0058a6f0;
 extern tShadow_level gShadow_level;
 extern int gSound_detail_level;
 extern int gGoreLevel;
@@ -105,6 +110,7 @@ tFrontend_spec gFrontend_GRAPHICS = {
 // FUNCTION: CARMA2_HW 0x004b4090
 void C2_HOOK_FASTCALL GetGraphicsSettingsData(tFrontend_spec* pFrontend) {
     float yon_factor;
+    float yon;
 
     switch (GetCarSimplificationLevel()) {
     case 0:
@@ -121,7 +127,8 @@ void C2_HOOK_FASTCALL GetGraphicsSettingsData(tFrontend_spec* pFrontend) {
         break;
     }
 
-    switch ((int)((35.f - GetYon()) / 5.f)) {
+    yon = GetYon();
+    switch ((int)((gUNK_0058a6e0 - yon) * gFloat_0058a6e4)) {
     case 0:
         SelectThisItemIn(pFrontend, 2, 8);
         break;
@@ -137,11 +144,11 @@ void C2_HOOK_FASTCALL GetGraphicsSettingsData(tFrontend_spec* pFrontend) {
     }
 
     yon_factor = GetYonFactor();
-    if (yon_factor >= 1.f) {
+    if (yon_factor >= gFloat_0058a6e8) {
         SelectThisItemIn(pFrontend, 3, 13);
-    } else if (yon_factor >= 0.5f) {
+    } else if (yon_factor >= gFloat_0058a6ec) {
         SelectThisItemIn(pFrontend, 3, 14);
-    } else if (yon_factor >= 0.25f) {
+    } else if (yon_factor >= gFloat_0058a6f0) {
         SelectThisItemIn(pFrontend, 3, 15);
     } else {
         SelectThisItemIn(pFrontend, 3, 16);
@@ -302,13 +309,13 @@ void C2_HOOK_FASTCALL SetGraphicsSettingsData(tFrontend_spec* pFrontend) {
 
     switch (WhichItemIsSelectedIn(pFrontend, 4)) {
     case 18:
-        SetShadowLevel(3);
+        SetShadowLevel(eShadow_everyone);
         break;
     case 19:
-        SetShadowLevel(1);
+        SetShadowLevel(eShadow_us_only);
         break;
     case 20:
-        SetShadowLevel(0);
+        SetShadowLevel(eShadow_none);
         break;
     }
 

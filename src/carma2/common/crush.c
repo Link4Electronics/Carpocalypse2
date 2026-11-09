@@ -4455,7 +4455,7 @@ void C2_HOOK_FASTCALL WeldCar(tCar_spec* pCar_spec) {
     crush_spec->field_0x4b8 = 0;
 
     if (gProgram_state.racing != 0) {
-        DRS3StartSound3D(gCar_outlet, 0x1484, &pCar_spec->collision_info->actor->t.t.translate.t,
+        DRS3StartSound3D(gXXX_outlet, 0x1484, &pCar_spec->collision_info->actor->t.t.translate.t,
                 &gZero_v__car, 1, 0xff, IRandomBetween(0xe000, 0x12000), 0x10000);
     }
 
@@ -5550,38 +5550,33 @@ void C2_HOOK_FASTCALL CrushPanelWithForce(tCar_spec* pCar, tU32 pFlag_a, tU32 pF
 
 // FUNCTION: CARMA2_HW 0x0043f930
 void C2_HOOK_FASTCALL DoDamage(tCar_spec *pCar, tDamage_type pDamage_type, int pMagnitude) {
-    tDamage_unit* damage_unit;
-    int old_level;
-    int new_level;
+    tDamage_unit* the_damage;
+    int last_level;
 
     if (pCar != NULL && pCar->driver >= eDriver_net_human && pDamage_type == eDamage_driver) {
         return;
     }
-    if (pCar->invulnerable_no_damage || pMagnitude < 5) {
-        return;
-    }
-    damage_unit = &pCar->damage_units[pDamage_type];
-    old_level = damage_unit->damage_level;
-    new_level = pMagnitude + old_level;
-    damage_unit->damage_level = new_level;
-    if (new_level >= 99) {
-        if (pMagnitude < 10) {
-            damage_unit->damage_level = old_level;
-        } else {
-            damage_unit->damage_level = 99;
+
+    if (!pCar->invulnerable_no_damage && pMagnitude >= 5) {
+        the_damage = &pCar->damage_units[pDamage_type];
+        last_level = the_damage->damage_level;
+        the_damage->damage_level += pMagnitude;
+        if (the_damage->damage_level >= 99) {
+            if (pMagnitude < 10) {
+                the_damage->damage_level = last_level;
+            } else {
+                the_damage->damage_level = 99;
+            }
         }
-    }
-    if (SetKnackeredFlag(pCar)) {
-        return;
-    }
-    if (pCar == NULL || pCar->driver != eDriver_oppo) {
-        if (gNet_mode == eNet_mode_none
-            && ((pCar->damage_units[eDamage_engine].damage_level >= 99
-                    && pCar->damage_units[eDamage_engine].last_level < 99
-                    && pCar->damage_units[eDamage_transmission].last_level < 99)
-                || (pCar->damage_units[eDamage_transmission].damage_level >= 99
-                    && pCar->damage_units[eDamage_engine].last_level < 99
-                    && pCar->damage_units[eDamage_transmission].last_level < 99))) {
+        if (!SetKnackeredFlag(pCar)
+                && (pCar == NULL || pCar->driver != eDriver_oppo)
+                && gNet_mode == eNet_mode_none
+                && ((pCar->damage_units[eDamage_engine].damage_level >= 99
+                        && pCar->damage_units[eDamage_engine].last_level < 99
+                        && pCar->damage_units[eDamage_transmission].last_level < 99)
+                    || (pCar->damage_units[eDamage_transmission].damage_level >= 99
+                        && pCar->damage_units[eDamage_engine].last_level < 99
+                        && pCar->damage_units[eDamage_transmission].last_level < 99))) {
             QueueOilSpill(pCar);
         }
     }
@@ -6507,6 +6502,8 @@ void C2_HOOK_FASTCALL CrashEarnings(tCar_spec* pCar1, tCar_spec* pCar2) {
 // FUNCTION: CARMA2_HW 0x00440350
 void C2_HOOK_FASTCALL DoWheelDamage(tU32 pFrame_period) {
     int i;
+    br_vector3 temp_vector;
+    br_vector3 wonky_vector;
 
     if (gAction_replay_mode && ARReplayIsReallyPaused()) {
         return;
@@ -6538,11 +6535,11 @@ void C2_HOOK_FASTCALL DoWheelDamage(tU32 pFrame_period) {
                 }
                 y_amount = (damage - 30) * gWobble_spam_y[damage & 7];
                 z_amount = (damage - 30) * gWobble_spam_z[damage & 7];
-                BrMatrix34PreRotateY(&car->wheel_actors[j]->t.t.mat, BrDegreeToAngle(y_amount < gFloat_00589b64 ? y_amount + 360.f : y_amount));
-                BrMatrix34PreRotateZ(&car->wheel_actors[j]->t.t.mat, BrDegreeToAngle(z_amount < gFloat_00589b64 ? z_amount + 360.f : z_amount));
+                BrMatrix34PreRotateY(&car->wheel_actors[j]->t.t.mat, BrDegreeToAngle(y_amount < 0.f ? y_amount + 360.f : y_amount));
+                BrMatrix34PreRotateZ(&car->wheel_actors[j]->t.t.mat, BrDegreeToAngle(z_amount < 0.f ? z_amount + 360.f : z_amount));
                 if (j < 2 && car->wheel_actors[4 + j] != NULL) {
-                    BrMatrix34PreRotateY(&car->wheel_actors[4 + j]->t.t.mat, BrDegreeToAngle(y_amount < gFloat_00589b64 ? y_amount + 360.f : y_amount));
-                    BrMatrix34PreRotateZ(&car->wheel_actors[4 + j]->t.t.mat, BrDegreeToAngle(z_amount < gFloat_00589b64 ? z_amount + 360.f : z_amount));
+                    BrMatrix34PreRotateY(&car->wheel_actors[4 + j]->t.t.mat, BrDegreeToAngle(y_amount < 0.f ? y_amount + 360.f : y_amount));
+                    BrMatrix34PreRotateZ(&car->wheel_actors[4 + j]->t.t.mat, BrDegreeToAngle(z_amount < 0.f ? z_amount + 360.f : z_amount));
                 }
                 switch (j) {
                 case 0:
@@ -6575,14 +6572,9 @@ void C2_HOOK_FASTCALL DoWheelDamage(tU32 pFrame_period) {
                     break;
                 }
                 if (gNet_mode == eNet_mode_none || car->driver == eDriver_local_human) {
-                    br_vector3 wonky_vector;
-                    br_vector3 temp_vector;
-
-                    temp_vector.v[1] = 0.f;
-                    temp_vector.v[2] = 0.f;
-                    temp_vector.v[0] = wheel_circum * gWheel_circ_to_width;
+                    BrVector3Set(&temp_vector, wheel_circum * gWheel_circ_to_width, 0.f, 0.f);
                     BrMatrix34ApplyV(&wonky_vector, &temp_vector, &car->wheel_actors[j]->t.t.mat);
-                    car->wheel_dam_offset[j] = fabsf(wonky_vector.v[1]);
+                    car->wheel_dam_offset[j] = (float)fabs(wonky_vector.v[1]);
                 }
             }
         }

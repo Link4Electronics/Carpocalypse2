@@ -2815,8 +2815,8 @@ int C2_HOOK_FASTCALL PhysicsObjectRecurse(tPhysics_object* pCollision_info, tEnu
 int C2_HOOK_FASTCALL FlagsAreGo(tPhysics_object* pCollision_1, tPhysics_object* pCollision_2) {
     int blocked;
 
-    blocked = (pCollision_1->field_0x1a0 & pCollision_2->field_0x1a4)
-        || (pCollision_2->field_0x1a0 & pCollision_1->field_0x1a4)
+    blocked = (pCollision_2->field_0x1a4 & pCollision_1->field_0x1a0)
+        || (pCollision_1->field_0x1a4 & pCollision_2->field_0x1a0)
         || (pCollision_1->flags & 4)
         || (pCollision_2->flags & 4);
     return !blocked;
@@ -3513,48 +3513,34 @@ void C2_HOOK_FAKE_THISCALL FUN_004b8ee0(tPhysics_object* pObject, undefined4 pAr
     WriteNewPositions(pObject);
 }
 
-// C2PORT-NONMATCHING: best 47.77% | difftest PASS 2000 trials (spec difftest/specs/004b8fe0_FUN_004b8fe0.json) | reason x87 order and register/stack allocation
 // FUNCTION: CARMA2_HW 0x004b8fe0
 void C2_HOOK_FAKE_THISCALL FUN_004b8fe0(tPhysics_object* pObject, undefined4 pArg2, float pDelta_time) {
-    br_vector3 joint_axis;
-    br_vector3 joint_position;
-    br_vector3 old_translation;
-    float axis_offset;
-    float axis_speed;
+    br_vector3 axis;
+    br_vector3 tv;
+    br_scalar ts;
 
     (void)pArg2;
     if (pObject->physics_joint2->type == eJoint_translation) {
-        BrMatrix34ApplyV(&joint_axis, &pObject->physics_joint2->hinge_axis, &pObject->transform_matrix);
-        old_translation.v[0] = pObject->actor->t.t.mat.m[3][0];
-        old_translation.v[1] = pObject->actor->t.t.mat.m[3][1];
-        old_translation.v[2] = pObject->actor->t.t.mat.m[3][2];
-        axis_offset = old_translation.v[0] * joint_axis.v[0]
-                    + old_translation.v[1] * joint_axis.v[1]
-                    + old_translation.v[2] * joint_axis.v[2];
-        BrMatrix34ApplyP(&joint_position, &pObject->physics_joint2->field_0x08, &pObject->actor->t.t.mat);
-        pObject->actor->t.t.mat.m[3][0] += pObject->field_0x17c.v[0] - joint_position.v[0];
-        pObject->actor->t.t.mat.m[3][1] += pObject->field_0x17c.v[1] - joint_position.v[1];
-        pObject->actor->t.t.mat.m[3][2] += pObject->field_0x17c.v[2] - joint_position.v[2];
-        axis_offset -= pObject->actor->t.t.mat.m[3][0] * joint_axis.v[0]
-                     + pObject->actor->t.t.mat.m[3][1] * joint_axis.v[1]
-                     + pObject->actor->t.t.mat.m[3][2] * joint_axis.v[2];
-        pObject->actor->t.t.mat.m[3][0] += axis_offset * joint_axis.v[0];
-        pObject->actor->t.t.mat.m[3][1] += axis_offset * joint_axis.v[1];
-        pObject->actor->t.t.mat.m[3][2] += axis_offset * joint_axis.v[2];
-        axis_speed = pObject->v.v[0] * joint_axis.v[0]
-                   + pObject->v.v[1] * joint_axis.v[1]
-                   + pObject->v.v[2] * joint_axis.v[2];
-        pObject->v.v[0] = axis_speed * joint_axis.v[0];
-        pObject->v.v[1] = axis_speed * joint_axis.v[1];
-        pObject->v.v[2] = axis_speed * joint_axis.v[2];
-        pObject->actor->t.t.mat.m[3][0] += pDelta_time * axis_speed * joint_axis.v[0];
-        pObject->actor->t.t.mat.m[3][1] += pDelta_time * axis_speed * joint_axis.v[1];
-        pObject->actor->t.t.mat.m[3][2] += pDelta_time * axis_speed * joint_axis.v[2];
+        BrMatrix34ApplyV(&axis, &pObject->physics_joint2->hinge_axis, &pObject->transform_matrix);
+        ts = BrVector3Dot(&pObject->actor->t.t.translate.t, &axis);
+        BrMatrix34ApplyP(&tv, &pObject->physics_joint2->field_0x08, &pObject->actor->t.t.mat);
+        BrVector3Sub(&tv, &pObject->field_0x17c, &tv);
+        BrVector3Accumulate(&pObject->actor->t.t.translate.t, &tv);
+        ts -= BrVector3Dot(&pObject->actor->t.t.translate.t, &axis);
+        BrVector3Scale(&tv, &axis, ts);
+        BrVector3Accumulate(&pObject->actor->t.t.translate.t, &tv);
+        ts = BrVector3Dot(&pObject->v, &axis);
+        BrVector3Scale(&pObject->v, &axis, ts);
+        {
+            br_vector3 delta;
+
+            BrVector3Scale(&delta, &pObject->v, pDelta_time);
+            BrVector3Accumulate(&pObject->actor->t.t.translate.t, &delta);
+        }
     } else {
-        BrMatrix34ApplyP(&joint_position, &pObject->physics_joint2->field_0x08, &pObject->actor->t.t.mat);
-        pObject->actor->t.t.mat.m[3][0] += pObject->field_0x17c.v[0] - joint_position.v[0];
-        pObject->actor->t.t.mat.m[3][1] += pObject->field_0x17c.v[1] - joint_position.v[1];
-        pObject->actor->t.t.mat.m[3][2] += pObject->field_0x17c.v[2] - joint_position.v[2];
+        BrMatrix34ApplyP(&tv, &pObject->physics_joint2->field_0x08, &pObject->actor->t.t.mat);
+        BrVector3Sub(&tv, &pObject->field_0x17c, &tv);
+        BrVector3Accumulate(&pObject->actor->t.t.translate.t, &tv);
     }
 }
 
@@ -4735,42 +4721,35 @@ void C2_HOOK_FASTCALL ProcessGravity(tPHIL_queued_header* pObject_info, tPhysics
 
 // FUNCTION: CARMA2_HW 0x004c2c30
 void C2_HOOK_FASTCALL PhysicsObjectApplyTorque(tPhysics_object* pObject, const br_vector3* pTorque) {
-    br_vector3 t;
-    br_vector3 i;
+    br_vector3 torque;
+    br_vector3 inertia;
 
-    t.v[0] = pTorque->v[0];
-    t.v[1] = pTorque->v[1];
-    t.v[2] = pTorque->v[2];
-    i.v[0] = pObject->I.v[0];
-    i.v[1] = pObject->I.v[1];
-    i.v[2] = pObject->I.v[2];
-    pObject->omega.v[1] += t.v[1] * 0.0210039914f / i.v[1];
-    pObject->omega.v[2] += t.v[2] * 0.0210039914f / i.v[2];
-    pObject->omega.v[0] += t.v[0] * 0.0210039914f / i.v[0];
+    BrVector3Scale(&torque, pTorque, 1.0f / (WORLD_SCALE * WORLD_SCALE));
+    BrVector3Copy(&inertia, &pObject->I);
+    pObject->omega.v[0] += torque.v[0] / inertia.v[0];
+    pObject->omega.v[1] += torque.v[1] / inertia.v[1];
+    pObject->omega.v[2] += torque.v[2] / inertia.v[2];
 }
 
 // FUNCTION: CARMA2_HW 0x004c2c90
 void C2_HOOK_FASTCALL ApplyWaterOmegaBrake(tPhysics_object* pObject, const br_vector3* pV) {
-    br_vector3 om;
-    br_scalar b0;
-    br_scalar b1;
-    br_scalar b2;
+    br_vector3 original_omega;
+    br_vector3 tv;
+    br_vector3 inertia;
 
-    b0 = (pV->v[0] * 0.0210039914f) / pObject->I.v[0];
-    om = pObject->omega;
-    b1 = (pV->v[1] * 0.0210039914f) / pObject->I.v[1];
-    b2 = (pV->v[2] * 0.0210039914f) / pObject->I.v[2];
-    pObject->omega.v[0] = pObject->omega.v[0] - b0;
-    pObject->omega.v[1] = pObject->omega.v[1] - b1;
-    pObject->omega.v[2] = pObject->omega.v[2] - b2;
-
-    if (om.v[0] * pObject->omega.v[0] <= 0.0f) {
+    original_omega = pObject->omega;
+    BrVector3Scale(&tv, pV, (br_scalar)(1.0 / (WORLD_SCALE_D * WORLD_SCALE_D)));
+    BrVector3Copy(&inertia, &pObject->I);
+    pObject->omega.v[0] -= tv.v[0] / inertia.v[0];
+    pObject->omega.v[1] -= tv.v[1] / inertia.v[1];
+    pObject->omega.v[2] -= tv.v[2] / inertia.v[2];
+    if (original_omega.v[0] * pObject->omega.v[0] <= 0.0f) {
         pObject->omega.v[0] = 0.0f;
     }
-    if (om.v[1] * pObject->omega.v[1] <= 0.0f) {
+    if (original_omega.v[1] * pObject->omega.v[1] <= 0.0f) {
         pObject->omega.v[1] = 0.0f;
     }
-    if (om.v[2] * pObject->omega.v[2] <= 0.0f) {
+    if (original_omega.v[2] * pObject->omega.v[2] <= 0.0f) {
         pObject->omega.v[2] = 0.0f;
     }
 }
@@ -7866,17 +7845,13 @@ void C2_HOOK_FASTCALL RotateObjectFirstOrder(void* pContact, tWorld_callbacks* p
 
 // FUNCTION: CARMA2_HW 0x004c1840
 void C2_HOOK_FASTCALL CapOmega(tPhysics_object* pObject) {
-    br_scalar t;
-
-    t = (pObject->omega.v[0] * pObject->omega.v[0] + pObject->omega.v[1] * pObject->omega.v[1] + pObject->omega.v[2] * pObject->omega.v[2]) * 0.0016f;
-    if (!(t > 2.4649f)) {
-        return;
+    br_scalar ts = BrVector3LengthSquared(&pObject->omega) * gFLOAT_0058a824;
+    if (ts > gFLOAT_0058a828) {
+        ts = (br_scalar)sqrt(ts) * gFLOAT_0058a85c;
+        pObject->omega.v[0] = pObject->omega.v[0] / (2.f * ts);
+        pObject->omega.v[1] = pObject->omega.v[1] / (2.f * ts);
+        pObject->omega.v[2] = pObject->omega.v[2] / (2.f * ts);
     }
-    t = sqrtf(t) * 0.6369f;
-    t += t;
-    pObject->omega.v[0] /= t;
-    pObject->omega.v[1] /= t;
-    pObject->omega.v[2] /= t;
 }
 
 #pragma auto_inline(off)
@@ -8401,17 +8376,20 @@ int C2_HOOK_FASTCALL PhysicsObjectRecurseChildren(tPhysics_object* pObject, tEnu
     return 0;
 }
 
+extern const br_scalar gFLOAT_0058a404;
+extern const br_scalar gFLOAT_0058a408;
+
 // FUNCTION: CARMA2_HW 0x0049c5e0
 int C2_HOOK_STDCALL QuantizeFloatToInt(float pVal, float pMin, float pMax) {
 
     if (pVal > pMax) {
-
         pVal = pMax;
     }
     if (pVal < pMin) {
         pVal = pMin;
     }
-    return (int)((pVal - pMin) / (pMax - pMin) * 65534.f - 0.5f);
+    pVal = ((pVal - pMin) / (pMax - pMin)) * gFLOAT_0058a404;
+    return (int)(pVal - gFLOAT_0058a408);
 }
 
 // C2PORT-NONMATCHING: best 27.23% | difftest PASS 2000 trials (spec difftest/specs/004b8350_FUN_004b8350.json) | reason VC5 stack/register allocation

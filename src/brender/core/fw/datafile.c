@@ -244,8 +244,8 @@ void C2_HOOK_STDCALL DfPush(int type, void* value, unsigned int count) {
         BrFailure("DatafileStack Overflow");
     }
     DatafileStack[DatafileStackTop].type = type;
-    DatafileStack[DatafileStackTop].count = count;
     DatafileStack[DatafileStackTop].value = value;
+    DatafileStack[DatafileStackTop].count = count;
     DatafileStackTop++;
 }
 

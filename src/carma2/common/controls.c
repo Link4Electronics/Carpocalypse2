@@ -743,7 +743,7 @@ void C2_HOOK_FASTCALL ReallySetSoundDetailLevel(int pLevel) {
         if (gSound_enabled) {
             S3StopOutletSound(pOutlet);
         }
-        pOutlet = gXXX_outlet;
+        pOutlet = gCar_outlet;
         if (gSound_enabled) {
             S3StopOutletSound(pOutlet);
         }
@@ -767,12 +767,15 @@ void C2_HOOK_FASTCALL ReallySetSoundDetailLevel(int pLevel) {
 // FUNCTION: CARMA2_HW 0x004420e0
 void C2_HOOK_FASTCALL ToggleMiniMap(void) {
 
-    if (gMap_view == 2) {
-        return;
+    if (gMap_view != 2) {
+        gMini_map_visible = !gMini_map_visible;
+        if (!gMini_map_visible) {
+            NewTextHeadupSlot(4, 0, 500, -4, GetMiscString(eMiscString_minimap_off));
+        } else {
+            NewTextHeadupSlot(4, 0, 500, -4, GetMiscString(eMiscString_minimap_on));
+        }
+        UpdateMapAndSaveOptions();
     }
-    gMini_map_visible = !gMini_map_visible;
-    NewTextHeadupSlot(4, 0, 500, -4, GetMiscString(gMini_map_visible ? eMiscString_minimap_on : eMiscString_minimap_off));
-    UpdateMapAndSaveOptions();
 }
 
 // Key: 'Enter'
@@ -787,7 +790,7 @@ void C2_HOOK_FASTCALL ToggleFlaps(void) {
             ToggleFlapsCB,
             &gProgram_state.current_car);
     } else {
-        tNet_message_chunk* chunk = NetAllocateMessageChunk(eNet_message_chunk_type_toggle_doors, 0);
+        tNet_message_chunk* chunk = NetGetToHostContents(eNet_message_chunk_type_toggle_doors, 0);
         tNet_game_player_info *player_info = NetPlayerFromCar(&gProgram_state.current_car);
         if (player_info != NULL) {
             chunk->toggle_doors.id = player_info->ID;
@@ -2070,7 +2073,7 @@ void C2_HOOK_FASTCALL CheckOtherRacingKeys(void) {
             total_difference %= 100;
             cost = 10 * (cost / 10);
             if (((total_repair_cost == 0 && cost != 0) || bodywork_repair_amount != 0.0f) && sound_tag == 0) {
-                sound_tag = DRS3StartSound(gCar_outlet, eSoundId_DamageRepair);
+                sound_tag = DRS3StartSound(gXXX_outlet, eSoundId_DamageRepair);
             }
             StopCarSmoking(&gProgram_state.current_car);
             if (cost == 0 && bodywork_repair_amount == 0.0) {
@@ -2405,11 +2408,13 @@ void C2_HOOK_FASTCALL EnterUserMessage(void) {
 
 // FUNCTION: CARMA2_HW 0x00444270
 void C2_HOOK_FASTCALL PollCameraControls(tU32 pCamera_period) {
-    int down0;
+    int left;
+    int right;
 
-    down0 = PDKeyDown(0);
-    if (down0 || PDKeyDown(1)) {
-        CheckMapMoveKeys(down0);
+    left = PDKeyDown(0);
+    right = PDKeyDown(1);
+    if (left || right) {
+        CheckMapMoveKeys(left, right);
         gCamera_key_flags.field_0x0_bit1 = 0;
         gCamera_key_flags.field_0x0_bit2 = 0;
         gCamera_key_flags.field_0x0_bit3 = 0;
@@ -2493,7 +2498,7 @@ C2_MATCHING_INLINE void C2_HOOK_FASTCALL BrakeInstantly(void) {
     if (gProgram_state.current_car.number_of_wheels_on_ground != 0 && speed_squared > .0001f) {
         PratcamEvent(41);
         for (i = 0; i < 5; i++) {
-            DRS3StartSound(gCar_outlet, eSoundId_TyreScreeching + i);
+            DRS3StartSound(gXXX_outlet, eSoundId_TyreScreeching + i);
         }
     }
     if (speed_squared > .1f) {

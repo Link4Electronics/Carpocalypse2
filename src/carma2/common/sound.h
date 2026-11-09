@@ -138,11 +138,11 @@ extern tS3_outlet* gDriver_outlet;
 
 extern tS3_outlet* gMusic_outlet;
 
-extern tS3_outlet* gCar_outlet;
+extern tS3_outlet* gXXX_outlet;
 
 extern tS3_outlet* gPedestrians_outlet;
 
-extern tS3_outlet* gXXX_outlet;
+extern tS3_outlet* gCar_outlet;
 
 extern tS3_outlet* gIndexed_outlets[6];
 

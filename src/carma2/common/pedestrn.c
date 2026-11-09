@@ -1526,25 +1526,27 @@ int C2_HOOK_FASTCALL DoToPeds(tCar_spec* pCar_spec, int pOnly_alive, float pMax_
 // FUNCTION: CARMA2_HW 0x004ca9f0
 void C2_HOOK_FASTCALL ReadPedSpecs(FILE* pF) {
     int i;
+    int j;
+    int index;
+    int len;
+    int exclusions_ok_when_scared;
     char s[256];
-    char s2[256];
+    char s2[32];
+
+    C2_HOOK_BUG_ON(sizeof(tRace_ped_spec) != 0x20);
+    C2_HOOK_BUG_ON(sizeof(tRace_spec_exclusion_material) != 8);
+    C2_HOOK_BUG_ON(sizeof(tPed_movement_spec) != 0x14);
+    C2_HOOK_BUG_ON(sizeof(tPed_group_spec) != 8);
+    C2_HOOK_BUG_ON(sizeof(tPedestrian) != 0x54);
 
     /* Number of ped spawn sets */
     gCount_race_pedestrian_specs = GetAnInt(pF);
-
-    C2_HOOK_BUG_ON(sizeof(tRace_ped_spec) != 0x20);
     gRace_pedestrian_specs = BrMemAllocate(gCount_race_pedestrian_specs * sizeof(tRace_ped_spec), kMem_misc_poly_ped);
-
     for (i = 0; i < gCount_race_pedestrian_specs; i++) {
-        tRace_ped_spec* spec = &gRace_pedestrian_specs[i];
-        int index;
-        int j;
-        int exclusions_ok_when_scared = 1;
-
         /* Material name */
         GetAString(pF, s);
-        spec->spawn_material = BrMaterialFind(s);
-        if (spec->spawn_material == NULL) {
+        gRace_pedestrian_specs[i].spawn_material = BrMaterialFind(s);
+        if (gRace_pedestrian_specs[i].spawn_material == NULL) {
             FatalError(kFatalError_CannotFindPedSpawnMaterial_S, s);
         }
 
@@ -1553,79 +1555,64 @@ void C2_HOOK_FASTCALL ReadPedSpecs(FILE* pF) {
         if (index < 0 || index >= gPed_movements_count) {
             FatalError(kFatalError_CannotMovePedIndexOutOfRangeForMaterial_S, s);
         }
-        spec->movement = &gPed_movements[index];
+        gRace_pedestrian_specs[i].movement = &gPed_movements[index];
 
         /* Group index */
         index = GetAnInt(pF);
         if (index < 0 || index >= gPed_groups_count) {
             FatalError(kFatalError_CannotGroupPedIndexOutOfRangeForMaterial_S, s);
         }
-        spec->group = &gPed_groups[index];
+        gRace_pedestrian_specs[i].group = &gPed_groups[index];
 
         /* Peds per 100 square metres */
-        spec->density = GetAScalar(pF);
-
-        spec->field_0x10 = 0;
+        gRace_pedestrian_specs[i].density = GetAScalar(pF);
+        gRace_pedestrian_specs[i].field_0x10 = 0;
 
         /* Number of exclusion materials */
-        spec->exclusion.count_exclusion_materials = GetAnInt(pF);
-
-        spec->exclusion.exclusion_materials = BrMemAllocate(spec->exclusion.count_exclusion_materials * sizeof(tRace_spec_exclusion_material), kMem_misc_poly_ped);
-        C2_HOOK_BUG_ON(sizeof(tRace_spec_exclusion_material) != 8);
-
-        exclusions_ok_when_scared = 1;
-
-        for (j = 0; j < spec->exclusion.count_exclusion_materials; j++) {
-            tRace_spec_exclusion_material* exclusion = &spec->exclusion.exclusion_materials[j];
-
+        gRace_pedestrian_specs[i].exclusion.count_exclusion_materials = (tU8)GetAnInt(pF);
+        gRace_pedestrian_specs[i].exclusion.exclusion_materials = BrMemAllocate(gRace_pedestrian_specs[i].exclusion.count_exclusion_materials * sizeof(tRace_spec_exclusion_material), kMem_misc_poly_ped);
+        exclusions_ok_when_scared = 0x1;
+        for (j = 0; j < gRace_pedestrian_specs[i].exclusion.count_exclusion_materials; j++) {
             /* Exclusion flags (1 = OK when scared) */
-            exclusion->flags = GetAnInt(pF);
-            exclusions_ok_when_scared &= exclusion->flags;
+            gRace_pedestrian_specs[i].exclusion.exclusion_materials[j].flags = (tU8)GetAnInt(pF);
+            exclusions_ok_when_scared &= gRace_pedestrian_specs[i].exclusion.exclusion_materials[j].flags;
 
             /* Exclusion material #1 name */
             GetAString(pF, s2);
-            exclusion->material = BrMaterialFind(s2);
-            if (exclusion->material == NULL) {
+            gRace_pedestrian_specs[i].exclusion.exclusion_materials[j].material = BrMaterialFind(s2);
+            if (gRace_pedestrian_specs[i].exclusion.exclusion_materials[j].material == NULL) {
                 FatalError(kFatalError_CannotFindPedSpawnMaterial_S, s2);
             }
         }
-        if (exclusions_ok_when_scared) {
-            spec->exclusion.exclusions_ok_when_scared = 1;
+        if (exclusions_ok_when_scared & 0x1) {
+            gRace_pedestrian_specs[i].exclusion.exclusions_ok_when_scared = 1;
         }
 
         /* Number of exception materials */
-        spec->exclusion.count_exception_materials = GetAnInt(pF);
-        spec->exclusion.exception_materials = BrMemAllocate(spec->exclusion.count_exception_materials * sizeof(br_material*), kMem_misc_poly_ped);
-
-        for (j = 0; j < spec->exclusion.count_exception_materials; j++) {
-
+        gRace_pedestrian_specs[i].exclusion.count_exception_materials = (tU8)GetAnInt(pF);
+        gRace_pedestrian_specs[i].exclusion.exception_materials = BrMemAllocate(gRace_pedestrian_specs[i].exclusion.count_exception_materials * sizeof(br_material*), kMem_misc_poly_ped);
+        for (j = 0; j < gRace_pedestrian_specs[i].exclusion.count_exception_materials; j++) {
             GetAString(pF, s2);
-            spec->exclusion.exception_materials[j] = BrMaterialFind(s2);
-            if (spec->exclusion.exception_materials[j] == NULL) {
+            gRace_pedestrian_specs[i].exclusion.exception_materials[j] = BrMaterialFind(s2);
+            if (gRace_pedestrian_specs[i].exclusion.exception_materials[j] == NULL) {
                 FatalError(kFatalError_CannotFindPedSpawnMaterial_S, s2);
             }
         }
     }
-
     for (i = 0; i < gCount_race_pedestrian_specs; i++) {
-        tRace_ped_spec* spec = &gRace_pedestrian_specs[i];
-        size_t len;
-
-        len = strlen(spec->spawn_material->identifier);
+        len = strlen(gRace_pedestrian_specs[i].spawn_material->identifier);
         if (len < 4) {
             len = 4;
         }
-        if (len - 4 < 8) {
-            strcpy(s2, spec->spawn_material->identifier);
-            strcpy(&s2[len], "xxxxxxxx.MAT");
-            BrResFree(spec->spawn_material->identifier);
-            spec->spawn_material->identifier = BrResStrDup(spec->spawn_material, s2);
+        if (len - 4 <= 7) {
+            strcpy(s2, gRace_pedestrian_specs[i].spawn_material->identifier);
+            strcpy(&s2[len - 4], "xxxxxxxx.MAT");
+            BrResFree(gRace_pedestrian_specs[i].spawn_material->identifier);
+            gRace_pedestrian_specs[i].spawn_material->identifier = BrResStrDup(gRace_pedestrian_specs[i].spawn_material, s2);
         }
-        spec->spawn_material->identifier[7] = '?';
+        gRace_pedestrian_specs[i].spawn_material->identifier[7] = '?';
     }
-
     gPedestrian_array = BrMemAllocate(PEDESTRIAN_MAX_COUNT * sizeof(tPedestrian), kMem_ped_array);
-    C2_HOOK_BUG_ON(sizeof(tPedestrian) != 0x54);
 }
 
 // FUNCTION: CARMA2_HW 0x00407900
@@ -2371,8 +2358,13 @@ void C2_HOOK_FASTCALL SetCharacterDirection(tPed_character_instance* pPed, const
 
 // FUNCTION: CARMA2_HW 0x004d5730
 int C2_HOOK_FASTCALL OrientationChanged(const br_matrix34* pOrientation_1, const br_matrix34* pOrientation_2, float pCos_angle) {
-
-    return ORIENTATION_CHANGED(pOrientation_1, pOrientation_2, pCos_angle);
+    if (BrVector3Dot((br_vector3*)pOrientation_1->m[0], (br_vector3*)pOrientation_2->m[0]) < pCos_angle
+        || BrVector3Dot((br_vector3*)pOrientation_1->m[1], (br_vector3*)pOrientation_2->m[1]) < pCos_angle
+        || BrVector3Dot((br_vector3*)pOrientation_1->m[2], (br_vector3*)pOrientation_2->m[2]) < pCos_angle) {
+        return 1;
+    } else {
+        return 0;
+    }
 }
 
 // FUNCTION: CARMA2_HW 0x004d57c0
@@ -2954,6 +2946,14 @@ void C2_HOOK_FASTCALL GetPedestrianDebugInfo(char* pBuffer, int pPed_index) {
             sprintf(pBuffer, "Ped #%d: %s, %s, %s", (int)(ped - gPedestrian_array), ped->character->personality->name, action, physics_mode);
         }
     }
+}
+
+// FUNCTION: CARMA2_HW 0x004d6820
+void C2_HOOK_FASTCALL ShowActivePedCount(void) {
+    char text[256];
+
+    sprintf(text, "%d out of %d peds are active", gCount_active_peds, gPed_count);
+    NewTextHeadupSlot2(4, 0, 1000, -4, text, 0);
 }
 
 // FUNCTION: CARMA2_HW 0x004d69b0
@@ -7673,9 +7673,9 @@ int C2_HOOK_FASTCALL NapalmPedestrianNearCar(tCar_spec* car) {
             bolt->actors[0]->t.t.translate.t.v[1] = car->pos.v[1];
             bolt->actors[0]->t.t.translate.t.v[2] = car->pos.v[2];
             if (car != NULL && car->driver == eDriver_local_human) {
-                DRS3StartSound(gCar_outlet, 0xe75);
+                DRS3StartSound(gXXX_outlet, 0xe75);
             } else {
-                DRS3StartSound3D(gCar_outlet, 0xe75, &car->pos, &gZero_v__car, 1, 0xff, 0x10000, 0x10000);
+                DRS3StartSound3D(gXXX_outlet, 0xe75, &car->pos, &gZero_v__car, 1, 0xff, 0x10000, 0x10000);
             }
             return 1;
         }

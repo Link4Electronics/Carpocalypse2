@@ -502,15 +502,13 @@ void C2_HOOK_FASTCALL GetFourFloats(FILE * pF, float* pF1, float* pF2, float* pF
 
 // FUNCTION: CARMA2_HW 0x004b4ac0
 int C2_HOOK_FASTCALL DRfgetpos(FILE* pFile, fpos_t* pos) {
-    tTwatVfsFile* twtFile;
 
-    if ((int)pFile < CARPOCALYPSE2_ASIZE(gTwatVfsFiles)) {
-        twtFile = &gTwatVfsFiles[(uintptr_t)pFile];
-        *(tU8 **) pos = twtFile->pos;
-        twtFile->error = 0;
-        return 0;
+    if ((uintptr_t)pFile >= CARPOCALYPSE2_ASIZE(gTwatVfsFiles)) {
+        return fgetpos(pFile, pos);
     }
-    return fgetpos(pFile, pos);
+    *(br_uint_64*)pos = (br_uint_64)gTwatVfsFiles[(uintptr_t)pFile].pos;
+    gTwatVfsFiles[(uintptr_t)pFile].error = 0;
+    return 0;
 }
 
 // FUNCTION: CARMA2_HW 0x004b4c40
@@ -719,14 +717,14 @@ void C2_HOOK_FASTCALL LoadHeadups(FILE* pF, int pIndex, tCar_spec* pCar_spec) {
         str = strtok(NULL, "\t ,/");
         strcpy(s, str);
         switch (s[0]) {
-        case 'c':
-            pCar_spec->headup_slots[pIndex][j].justification = eJust_centre;
-            break;
         case 'l':
             pCar_spec->headup_slots[pIndex][j].justification = eJust_left;
             break;
         case 'r':
             pCar_spec->headup_slots[pIndex][j].justification = eJust_right;
+            break;
+        case 'c':
+            pCar_spec->headup_slots[pIndex][j].justification = eJust_centre;
             break;
         }
         if (s[1] == 'c') {
@@ -734,9 +732,7 @@ void C2_HOOK_FASTCALL LoadHeadups(FILE* pF, int pIndex, tCar_spec* pCar_spec) {
         }
         str = strtok(NULL, "\t ,/");
         sscanf(str, "%d", &pCar_spec->headup_slots[pIndex][j].dim_left);
-        if (pCar_spec->headup_slots[pIndex][j].dim_left < 0) {
-            pCar_spec->headup_slots[pIndex][j].dimmed_background = 0;
-        } else {
+        if (pCar_spec->headup_slots[pIndex][j].dim_left >= 0) {
             pCar_spec->headup_slots[pIndex][j].dimmed_background = 1;
             str = strtok(NULL, "\t ,/");
             sscanf(str, "%d", &pCar_spec->headup_slots[pIndex][j].dim_top);
@@ -744,6 +740,8 @@ void C2_HOOK_FASTCALL LoadHeadups(FILE* pF, int pIndex, tCar_spec* pCar_spec) {
             sscanf(str, "%d", &pCar_spec->headup_slots[pIndex][j].dim_right);
             str = strtok(NULL, "\t ,/");
             sscanf(str, "%d", &pCar_spec->headup_slots[pIndex][j].dim_bottom);
+        } else {
+            pCar_spec->headup_slots[pIndex][j].dimmed_background = 0;
         }
     }
 }
@@ -2261,6 +2259,12 @@ void C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, tCar_spec*
 void C2_HOOK_FASTCALL LoadingNoOp2(void) {
 }
 
+static __inline void LoadOpponentsCars_AboutToLoadFirstCar(void) {
+
+    memset(&gFunk_groove_flags[1], 0, (CARPOCALYPSE2_ASIZE(gFunk_groove_flags) - 1) * sizeof(int));
+    gGroove_funk_offset = 0;
+}
+
 // FUNCTION: CARMA2_HW 0x0048cda0
 void C2_HOOK_FASTCALL LoadOpponentsCars(tRace_info* pRace_info) {
     int i;
@@ -2273,7 +2277,7 @@ void C2_HOOK_FASTCALL LoadOpponentsCars(tRace_info* pRace_info) {
 
     sod_counter = 0;
     if (gNet_mode == eNet_mode_none) {
-        AboutToLoadFirstCar();
+        LoadOpponentsCars_AboutToLoadFirstCar();
         PrintMemoryDump(0, "JUST BEFORE LOADING YOUR CAR");
         LoadCar(gOpponents[gProgram_state.current_car_index].car_file_name, eDriver_local_human, &gProgram_state.current_car, 0, gProgram_state.player_name, &gOur_car_storage_space);
         SetCarStorageTexturingLevel(&gOur_car_storage_space, GetCarTexturingLevel(), eCTL_full);

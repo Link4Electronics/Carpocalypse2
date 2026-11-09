@@ -45,80 +45,115 @@ intptr_t C2_HOOK_CDECL AddGhostActorToBuffer(br_actor* pActor, void* data) {
     return 0;
 }
 
+static __inline br_actor* C2_HOOK_FASTCALL ReadShrapnelSpec_LoadActor(const char* pName) {
+    tPath_name path;
+
+    PathCat(path, gSmashable_track_environment_path, pName);
+    return BrActorLoad(path);
+}
+
+static __inline void ReadShrapnelSpec_MovementSpec(FILE* pF, tMovement_spec* pInitial_speed) {
+
+    GetPairOfFloats(pF, &pInitial_speed->min_speed, &pInitial_speed->max_speed);
+    pInitial_speed->impactee_velocity_factor = GetAScalar(pF);
+    pInitial_speed->random_velocity_max = GetAScalar(pF);
+    pInitial_speed->random_up_velocity_max = GetAScalar(pF);
+    pInitial_speed->random_normal_velocity_max = GetAScalar(pF);
+    pInitial_speed->random_spin_rate_max = GetAScalar(pF) * 0.1f;
+}
+
+static __inline void ReadShrapnelSpec_InitialPosition(FILE* pF, tSmashable_initial_position_spec* pInitial_pos) {
+
+    pInitial_pos->type = GetALineAndInterpretCommand(pF, gInitial_smashable_position_type_names, CARPOCALYPSE2_ASIZE(gInitial_smashable_position_type_names));
+    switch (pInitial_pos->type) {
+    case kInitialSmashablePosition_SphereClumped:
+        pInitial_pos->position.sphere.radius = GetAScalar(pF);
+        pInitial_pos->position.sphere.where = GetALineAndInterpretCommand(pF, gInitial_position_sphere_where, CARPOCALYPSE2_ASIZE(gInitial_position_sphere_where));
+        break;
+    case kInitialSmashablePosition_BoxClumped:
+        GetThreeFloats(pF, &pInitial_pos->position.box.v[0], &pInitial_pos->position.box.v[1], &pInitial_pos->position.box.v[2]);
+        break;
+    default:
+        break;
+    }
+}
+
+static __inline void ReadShrapnelSpec_TimeInfo(FILE* pF, int* pTimes) {
+    float min_time;
+    float max_time;
+
+    GetPairOfFloats(pF, &min_time, &max_time);
+    pTimes[0] = (int)(min_time * 1000.0);
+    pTimes[1] = (int)(max_time * 1000.0);
+}
+
+static __inline void AddMaterialToFogification(br_material* pMaterial) {
+    int count = gMaterials_to_adapt_count;
+
+    if (count < (int)CARPOCALYPSE2_ASIZE(gMaterials_to_adapt)) {
+        gMaterials_to_adapt[count] = pMaterial;
+        gMaterials_to_adapt_count = count + 1;
+    }
+}
+
 // FUNCTION: CARMA2_HW 0x004eed70
 void C2_HOOK_FASTCALL ReadShrapnelSpec(FILE* pF, tShrapnel_spec* pShrapnel_specs, int* pShrapnel_count) {
     char s[256];
-    char s2[256];
+    char actor_name[256];
+    br_actor* actor_buffer[50];
+    br_bounds bounds;
     int i;
     int j;
     int k;
-
-    /* FIXME: add documentation */
+    tShrapnel_spec* spec;
+    tSmashable_environment_name* noncar_name;
 
     *pShrapnel_count = GetAnInt(pF);
-
-    for (i = 0; i < *pShrapnel_count; i++) {
-        tShrapnel_spec *spec = &pShrapnel_specs[i];
-
+    for (i = 0, spec = pShrapnel_specs; i < *pShrapnel_count; i++, spec++) {
         spec->type = GetALineAndInterpretCommand(pF, gShrapnel_type_names, CARPOCALYPSE2_ASIZE(gShrapnel_type_names));
         if (spec->type == kShrapnelType_Abstract) {
             spec->type_info.abstract.count_materials = GetAnInt(pF);
             for (j = 0; j < spec->type_info.abstract.count_materials; j++) {
-
                 GetAString(pF, s);
-                spec->type_info.abstract.materials[j] = LoadTemporaryMaterial(s);
+                spec->type_info.abstract.materials[j] = BrMaterialFind(s);
+                if (spec->type_info.abstract.materials[j] == NULL) {
+                    FatalError(kFatalError_CannotFindSmashMaterial_S, s);
+                }
+                AddMaterialToFogification(spec->type_info.abstract.materials[j]);
             }
             continue;
         }
-
-        /* Min, max towards you speed */
-        GetPairOfFloats(pF, &spec->min_speed_towards_you, &spec->max_speed_towards_you);
-        /* Impactee velocity factor */
-        spec->impactee_velocity_factor = GetAScalar(pF);
-        /* Random velocity (max) */
-        spec->random_velocity_max = GetAScalar(pF);
-        /* Random up velocity (max) */
-        spec->random_up_velocity_max = GetAScalar(pF);
-        /* Random normal velocity (max) */
-        spec->random_normal_velocity_max = GetAScalar(pF);
-        /* Random spin rate (max) */
-        spec->random_spin_rate_max = 0.1f * GetAScalar(pF);
-
+        ReadShrapnelSpec_MovementSpec(pF, &spec->initial_speed);
         if (spec->type != kShrapnelType_Shards) {
-            ReadSmashableInitialPosition(pF, &spec->initial_pos);
+            ReadShrapnelSpec_InitialPosition(pF, &spec->initial_pos);
         }
         if (spec->type != kShrapnelType_NonCars) {
-            float min_time, max_time;
-
-            /* Min time, Max time */
-            GetPairOfFloats(pF, &min_time, &max_time);
-            spec->min_time_ms = 1000.f * min_time;
-            spec->max_time_ms = 1000.f * max_time;
+            ReadShrapnelSpec_TimeInfo(pF, &spec->time_info.min_time);
         }
         switch (spec->type) {
         case kShrapnelType_Shards:
             spec->type_info.shard.field_0x4 = GetAScalar(pF);
             spec->type_info.shard.field_0x8 = GetAnInt(pF);
             GetAString(pF, s);
-            spec->type_info.shard.material = LoadTemporaryMaterial(s);
+            spec->type_info.shard.material = BrMaterialFind(s);
+            if (spec->type_info.shard.material == NULL) {
+                FatalError(kFatalError_CannotFindSmashMaterial_S, s);
+            }
+            AddMaterialToFogification(spec->type_info.shard.material);
             spec->type_info.shard.material->flags = BR_MATF_TWO_SIDED;
             BrMatrix23Identity(&spec->type_info.shard.material->map_transform);
             BrMaterialUpdate(spec->type_info.shard.material, BR_MATU_ALL);
             break;
-
         case kShrapnelType_GhostParts:
             GetPairOfInts(pF, &spec->type_info.ghost.field_0x0, &spec->type_info.ghost.field_0x4);
             spec->type_info.ghost.count_actors = GetAnInt(pF);
             if (spec->type_info.ghost.count_actors > 0) {
-
-                spec->type_info.ghost.actors = BrMemAllocate(spec->type_info.ghost.count_actors * sizeof(br_actor *), kMem_smashable_env_info);
+                spec->type_info.ghost.actors = BrMemAllocate(spec->type_info.ghost.count_actors * sizeof(*spec->type_info.ghost.actors), kMem_smashable_env_info);
                 spec->type_info.ghost.bounds_dx = 0.f;
                 spec->type_info.ghost.bounds_dy = 0.f;
                 for (j = 0; j < spec->type_info.ghost.count_actors; j++) {
-
                     GetAString(pF, s);
-                    PathCat(s2, gSmashable_track_environment_path, s);
-                    spec->type_info.ghost.actors[j] = BrActorLoad(s2);
+                    spec->type_info.ghost.actors[j] = ReadShrapnelSpec_LoadActor(s);
                     if (spec->type_info.ghost.actors[j] == NULL) {
                         FatalError(kFatalError_CannotFindSmashActorModel_S, s);
                     }
@@ -126,37 +161,30 @@ void C2_HOOK_FASTCALL ReadShrapnelSpec(FILE* pF, tShrapnel_spec* pShrapnel_specs
                 }
             } else {
                 br_actor* actor;
-                br_actor *actor_buffer[50];
-                br_bounds bounds;
 
                 GetAString(pF, s);
-                PathCat(s2, gSmashable_track_environment_path, s);
-                actor = BrActorLoad(s2);
+                actor = ReadShrapnelSpec_LoadActor(s);
                 if (actor == NULL) {
                     FatalError(kFatalError_CannotFindSmashActorModel_S, s);
                 }
                 ProcessMaterials(actor, TemporaryMaterialStore);
-
+                gShrapnel_ghost_actor_count = 0;
                 BrActorToBounds(&bounds, actor);
                 spec->type_info.ghost.bounds_dx = bounds.max.v[0] - bounds.min.v[0];
                 spec->type_info.ghost.bounds_dy = bounds.max.v[1] - bounds.min.v[1];
-
-                gShrapnel_ghost_actor_count = 0;
                 BrActorEnum(actor, AddGhostActorToBuffer, actor_buffer);
                 spec->type_info.ghost.count_actors = gShrapnel_ghost_actor_count;
-                spec->type_info.ghost.actors = BrMemAllocate(gShrapnel_ghost_actor_count * sizeof(br_actor*), kMem_smashable_env_info);
-                for (k = 0; k < spec->type_info.ghost.count_actors; k++) {
-                    BrActorRemove(actor_buffer[k]);
-                    spec->type_info.ghost.actors[k] = actor_buffer[k];
+                spec->type_info.ghost.actors = BrMemAllocate(gShrapnel_ghost_actor_count * sizeof(*spec->type_info.ghost.actors), kMem_smashable_env_info);
+                for (j = 0; j < spec->type_info.ghost.count_actors; j++) {
+                    BrActorRemove(actor_buffer[j]);
+                    spec->type_info.ghost.actors[j] = actor_buffer[j];
                 }
                 BrActorFree(actor);
             }
             break;
-
         case kShrapnelType_NonCars: {
-            br_actor *actor;
+            br_actor* actor;
 
-            /* Min number,Max number (-1,-1 means use exactly one of each type of bit) */
             GetPairOfInts(pF, &spec->type_info.noncar.amount_min, &spec->type_info.noncar.amount_max);
             /* % Chance of fire/smoke */
             spec->type_info.noncar.probability_fire = GetAnInt(pF);
@@ -166,46 +194,32 @@ void C2_HOOK_FASTCALL ReadShrapnelSpec(FILE* pF, tShrapnel_spec* pShrapnel_specs
                 /* Min,Max smokiness (0 = fire, 1 = black smoke, 2 = grey smoke, 3 = white smoke) */
                 GetPairOfInts(pF, &spec->type_info.noncar.min_smokiness, &spec->type_info.noncar.max_smokiness);
             }
-            /* Name of actor file */
             GetAString(pF, s);
-            PathCat(s2, gSmashable_track_environment_path, s);
-            actor = BrActorLoad(s2);
+            actor = ReadShrapnelSpec_LoadActor(s);
             if (actor == NULL) {
                 FatalError(kFatalError_CannotFindSmashActorModel_S, s);
             }
             ProcessMaterials(actor, TemporaryMaterialStore);
-            /* Number of separate actors in file */
             spec->type_info.noncar.count_actors = GetAnInt(pF);
-            spec->type_info.noncar.actors = BrMemAllocate(spec->type_info.noncar.count_actors * sizeof(br_actor*), kMem_smashable_env_info);
-
+            spec->type_info.noncar.actors = BrMemAllocate(spec->type_info.noncar.count_actors * sizeof(*spec->type_info.noncar.actors), kMem_smashable_env_info);
             for (j = 0; j < spec->type_info.noncar.count_actors; j++) {
-                br_actor *sep_actor;
-                br_actor *match_sep_actor;
+                br_actor* sep_actor;
+                br_actor* match_sep_actor;
 
-                /* Actor name */
                 GetAString(pF, s);
                 sep_actor = DRActorFindRecurse(actor, s);
+                match_sep_actor = sep_actor;
                 if (sep_actor == NULL) {
                     FatalError(kFatalError_CannotFindSmashActorModel_S, s);
                 }
-                match_sep_actor = sep_actor;
                 for (k = 0; k < gCount_smashable_noncar_shrapnel_actors; k++) {
-
-#if 1
-                    /* FIXME: is this the correct version? */
-                    if (strcmp(gSmashable_noncar_shrapnel_actors[k]->identifier, sep_actor->identifier) == 0) {
-                        match_sep_actor = gSmashable_noncar_shrapnel_actors[k];
-                        break;
-                    }
-#else
                     if (strcmp(gSmashable_noncar_shrapnel_actors[j]->identifier, sep_actor->identifier) == 0) {
                         match_sep_actor = gSmashable_noncar_shrapnel_actors[j];
                         break;
                     }
-#endif
                 }
                 if (k == gCount_smashable_noncar_shrapnel_actors) {
-                    if (gCount_smashable_noncar_shrapnel_actors < CARPOCALYPSE2_ASIZE(gSmashable_noncar_shrapnel_actors)) {
+                    if (gCount_smashable_noncar_shrapnel_actors < (int)CARPOCALYPSE2_ASIZE(gSmashable_noncar_shrapnel_actors)) {
                         gSmashable_noncar_shrapnel_actors[gCount_smashable_noncar_shrapnel_actors] = match_sep_actor;
                         gCount_smashable_noncar_shrapnel_actors += 1;
                     }
@@ -215,28 +229,25 @@ void C2_HOOK_FASTCALL ReadShrapnelSpec(FILE* pF, tShrapnel_spec* pShrapnel_specs
                 }
                 spec->type_info.noncar.actors[j] = match_sep_actor;
                 GetAString(pF, s);
-                for (k = 0; k < gCount_smashable_noncars; k++) {
-                    if (strcmp(gSmashable_noncars[k], s) == 0) {
+                for (k = 0, noncar_name = gSmashable_noncars; k < gCount_smashable_noncars; k++, noncar_name++) {
+                    if (strcmp(s, *noncar_name) == 0) {
                         break;
                     }
                 }
                 if (k == gCount_smashable_noncars) {
-                    strcpy(gSmashable_noncars[gCount_smashable_noncars], s);
+                    strcpy(*noncar_name, s);
                     gCount_smashable_noncars += 1;
                 }
                 BrResFree(match_sep_actor->identifier);
-                sprintf(s2, "&%c%c!bbbb.ACT", s[0], s[1]);
-                match_sep_actor->identifier = BrResStrDup(match_sep_actor, s2);
+                sprintf(actor_name, "&%c%c!bbbb.ACT", s[0], s[1]);
+                match_sep_actor->identifier = BrResStrDup(match_sep_actor, actor_name);
             }
-            if (spec->type_info.noncar.count_actors != 1) {
-                BrActorFree(actor);
-            }
-            if (spec->type_info.noncar.actors[0] != actor) {
+            if (spec->type_info.noncar.count_actors != 1 || spec->type_info.noncar.actors[0] != actor) {
                 BrActorFree(actor);
             }
             break;
         }
-        case kShrapnelType_Abstract:
+        default:
             break;
         }
     }

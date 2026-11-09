@@ -138,7 +138,7 @@ tEnvironment_sound_source gEnvironment_sound_sources[5];
 tS3_outlet* gEffects_outlet;
 
 // GLOBAL: CARMA2_HW 0x00684600
-tS3_outlet* gCar_outlet;
+tS3_outlet* gXXX_outlet;
 
 // GLOBAL: CARMA2_HW 0x00684604
 tS3_outlet* gEngine_outlet;
@@ -153,7 +153,7 @@ tS3_outlet* gPedestrians_outlet;
 tS3_outlet* gMusic_outlet;
 
 // GLOBAL: CARMA2_HW 0x00684614
-tS3_outlet* gXXX_outlet;
+tS3_outlet* gCar_outlet;
 
 // GLOBAL: CARMA2_HW 0x0079e160
 tS3_outlet* gIndexed_outlets[6];
@@ -339,7 +339,7 @@ void C2_HOOK_FASTCALL MungeEnvironmentalSound(void) {
         for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gEnvironment_sound_sources); i++) {
 
             if (gEnvironment_sound_sources[i].field_0x18 == 0 && gEnvironment_sound_sources[i].field_0x10 != NULL) {
-                S3UpdateSoundSource(gXXX_outlet, -1, gEnvironment_sound_sources[i].source, -1.f, -1, -1, 0, -1, -1);
+                S3UpdateSoundSource(gCar_outlet, -1, gEnvironment_sound_sources[i].source, -1.f, -1, -1, 0, -1, -1);
                 gEnvironment_sound_sources[i].field_0x10 = NULL;
             }
         }
@@ -441,9 +441,9 @@ void C2_HOOK_FASTCALL InitSound(void) {
         DRS3SetOutletVolume(gMusic_outlet, gProgram_state.music_volume);
     }
     if (gSound_detail_level != gOld_sound_detail_level) {
-        if (gCar_outlet != NULL) {
-            S3ReleaseOutlet(gCar_outlet);
-            gCar_outlet = NULL;
+        if (gXXX_outlet != NULL) {
+            S3ReleaseOutlet(gXXX_outlet);
+            gXXX_outlet = NULL;
         }
         if (gPedestrians_outlet != NULL) {
             S3ReleaseOutlet(gPedestrians_outlet);
@@ -453,9 +453,9 @@ void C2_HOOK_FASTCALL InitSound(void) {
             S3ReleaseOutlet(gEngine_outlet);
             gEngine_outlet = NULL;
         }
-        if (gXXX_outlet != NULL) {
-            S3ReleaseOutlet(gXXX_outlet);
-            gXXX_outlet = NULL;
+        if (gCar_outlet != NULL) {
+            S3ReleaseOutlet(gCar_outlet);
+            gCar_outlet = NULL;
         }
         if (gEngine_outlet == NULL) {
             gIndexed_outlets[1] = gEngine_outlet = S3CreateOutlet(engine_channel_count, engine_channel_count);
@@ -465,13 +465,13 @@ void C2_HOOK_FASTCALL InitSound(void) {
             }
             DRS3SetOutletVolume(gEngine_outlet, gProgram_state.effects_volume);
         }
-        if (gCar_outlet == NULL) {
-            gIndexed_outlets[3] = gCar_outlet = S3CreateOutlet(car_channel_count, car_channel_count);
-            if (gCar_outlet == NULL) {
+        if (gXXX_outlet == NULL) {
+            gIndexed_outlets[3] = gXXX_outlet = S3CreateOutlet(car_channel_count, car_channel_count);
+            if (gXXX_outlet == NULL) {
                 gSound_available = 0;
                 return;
             }
-            DRS3SetOutletVolume(gCar_outlet, gProgram_state.effects_volume);
+            DRS3SetOutletVolume(gXXX_outlet, gProgram_state.effects_volume);
         }
         if (gPedestrians_outlet == NULL) {
             gIndexed_outlets[4] = gPedestrians_outlet = S3CreateOutlet(ped_channel_count, ped_channel_count);
@@ -481,13 +481,13 @@ void C2_HOOK_FASTCALL InitSound(void) {
             }
             DRS3SetOutletVolume(gPedestrians_outlet, gProgram_state.effects_volume);
         }
-        if (gXXX_outlet == NULL) {
-            gIndexed_outlets[5] = gXXX_outlet = S3CreateOutlet(xxx_channel_count, xxx_channel_count);
-            if (gXXX_outlet == NULL) {
+        if (gCar_outlet == NULL) {
+            gIndexed_outlets[5] = gCar_outlet = S3CreateOutlet(xxx_channel_count, xxx_channel_count);
+            if (gCar_outlet == NULL) {
                 gSound_available = 0;
                 return;
             }
-            DRS3SetOutletVolume(gXXX_outlet, gProgram_state.effects_volume);
+            DRS3SetOutletVolume(gCar_outlet, gProgram_state.effects_volume);
         }
     }
     if (gEffects_outlet == NULL) {
@@ -642,9 +642,9 @@ int C2_HOOK_FASTCALL DRS3StopAllOutletSounds(void) {
 int C2_HOOK_FASTCALL DRS3StopAllOutletSoundsExceptCDA(void) {
 
     if (gSound_enabled) {
-        DRS3StopOutletSound(gCar_outlet);
-        DRS3StopOutletSound(gEngine_outlet);
         DRS3StopOutletSound(gXXX_outlet);
+        DRS3StopOutletSound(gEngine_outlet);
+        DRS3StopOutletSound(gCar_outlet);
         DRS3StopOutletSound(gEffects_outlet);
         DRS3StopOutletSound(gPedestrians_outlet);
         return 1;
@@ -734,9 +734,9 @@ void C2_HOOK_FASTCALL InitSoundSources(void) {
 
                 if ((car != NULL && car->driver == eDriver_local_human) || gSound_detail_level >= 3 || cat == eVehicle_rozzer) {
 
-                    car->sound_source = S3CreateSoundSourceBR(&car->pos, &car->vel, gIndexed_outlets[0]);
+                    car->sound_source = S3CreateSoundSourceBR(&car->pos, &car->vel, gEngine_outlet);
                     if (car->sound_source != NULL) {
-                        S3BindAmbientSoundToOutlet(gIndexed_outlets[0], cat == eVehicle_rozzer ? eSoundId_Cop_Siren : car->engine_noises[0], car->sound_source, 250.0f, 0, 0, 0, BR_FIXED_INT(1), BR_FIXED_INT(1));
+                        S3BindAmbientSoundToOutlet(gEngine_outlet, cat == eVehicle_rozzer ? eSoundId_Cop_Siren : car->engine_noises[0], car->sound_source, 250.0f, 0, 0, 0, BR_FIXED_INT(1), BR_FIXED_INT(1));
                     }
                 }
             }
@@ -747,9 +747,9 @@ void C2_HOOK_FASTCALL InitSoundSources(void) {
             env_src = &gEnvironment_sound_sources[i];
             env_src->field_0x10 = NULL;
             if (env_src->source == NULL) {
-                env_src->source = S3CreateSoundSourceBR(&env_src->position, &gZero_v__car, gIndexed_outlets[0]);
+                env_src->source = S3CreateSoundSourceBR(&env_src->position, &gZero_v__car, gCar_outlet);
                 if (env_src->source != NULL) {
-                    S3BindAmbientSoundToOutlet(gIndexed_outlets[0], eSoundId_Cop_Siren, env_src->source, 100.f, 0, 0, 0, BR_FIXED_INT(1), BR_FIXED_INT(1));
+                    S3BindAmbientSoundToOutlet(gCar_outlet, eSoundId_Cop_Siren, env_src->source, 100.f, 0, 0, 0, BR_FIXED_INT(1), BR_FIXED_INT(1));
                 }
             }
         }
@@ -927,7 +927,7 @@ void C2_HOOK_FASTCALL MungeEngineNoise(void) {
                 if (the_car->field_0x4d4 > 1.0) {
                     vol = (float)(vol * (1.0 + (the_car->field_0x4d4 - 1.0f) / 12.0f));
                 }
-                S3UpdateSoundSource(gIndexed_outlets[0], -1, the_car->sound_source, (float)(gAction_replay_mode ? 300 : 250), 0, 0, (int)vol, (int)pitch, BR_FIXED_INT(1));
+                S3UpdateSoundSource(gEngine_outlet, -1, the_car->sound_source, (float)(gAction_replay_mode ? 300 : 250), 0, 0, (int)vol, (int)pitch, BR_FIXED_INT(1));
             }
         }
     }

@@ -196,15 +196,6 @@ int gSFS_routes_found;
 // GLOBAL: CARMA2_HW 0x0069174c
 int gSFS_routes_found_copy;
 
-// GLOBAL: CARMA2_HW 0x0069171c
-static float sfs_shortest_dist;
-
-// GLOBAL: CARMA2_HW 0x0069172c
-static int sfs_routes_found;
-
-// GLOBAL: CARMA2_HW 0x0069174c
-int gWanky_arse_tit_fuck;
-
 // GLOBAL: CARMA2_HW 0x00691770
 int gSFS_count;
 
@@ -787,51 +778,52 @@ int C2_HOOK_FASTCALL PointVisibleFromHere(br_vector3* pFrom, br_vector3* pTo) {
 
     BrVector3Sub(&dir, pTo, pFrom);
     BrVector3Copy(&from, pFrom);
-    from.v[1] += 0.15f;
-    dir.v[1] += 0.15f;
+    from.v[1] -= gOppo_pursuit_height_offset;
+    dir.v[1] -= gOppo_pursuit_height_offset;
     FindFace(&from, &dir, &norm, &t, &material);
-    if (t > 1.0f) {
+    if (t > gOppo_pursuit_one) {
         return 1;
     } else {
         return 0;
     }
 }
 
-// C2PORT-NONMATCHING: best 87.96% | difftest PASS 2000 trials (spec difftest/specs/004ad910_PossiblyRepairOpponent.json) | reason VC5 early-return and branch layout
+int C2_HOOK_FASTCALL OpponentRepairNecessary(tOpponent_spec* pOpponent_spec) {
+    int i;
+    tDamage_unit* damage;
+
+    for (i = 0, damage = pOpponent_spec->car_spec->damage_units;
+            i < (int)CARPOCALYPSE2_ASIZE(pOpponent_spec->car_spec->damage_units);
+            i++, damage++) {
+        if (i != eDamage_driver && damage != NULL) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
 // FUNCTION: CARMA2_HW 0x004ad910
 void C2_HOOK_FASTCALL PossiblyRepairOpponent(tOpponent_spec* pOpponent_spec) {
-    char copied_message[256];
-    char repairing_message[256];
-    tU8* pCar_probe;
-    int i;
+    char message[256];
+    char headup[256];
 
-    if ((((tU16)pOpponent_spec->car_spec->car_ID >> 8) != 3)
+    if (((tU16)pOpponent_spec->car_spec->car_ID >> 8) != 3
             && gTime_stamp_for_this_munging > pOpponent_spec->next_repair_check
-            && (pOpponent_spec->cheating != 0)
+            && pOpponent_spec->cheating
             && pOpponent_spec->current_objective != eOOT_levitate
             && pOpponent_spec->current_objective != eOOT_knackered_and_freewheeling
-            && pOpponent_spec->car_spec->knackered == 0) {
+            && !pOpponent_spec->car_spec->knackered) {
         pOpponent_spec->next_repair_check = IRandomBetween(0, 2000) + 3000 + gTime_stamp_for_this_munging;
         if (gTime_stamp_for_this_munging > pOpponent_spec->car_spec->field_0x1548 + pOpponent_spec->repair_interval) {
-            i = 0;
-            pCar_probe = (tU8*)pOpponent_spec->car_spec + 0x4d8;
-            do {
-                if (i != 2 && pCar_probe != NULL) {
-                    goto repair;
-                }
-                i++;
-                pCar_probe += 0x2c;
-            } while (i < 0xc);
-            return;
-repair:
-            DoNotDprintf_opponent("*** Opponent %d, REPAIRING, timestamp %d", pOpponent_spec->car_spec->driver_name, gTime_stamp_for_this_munging);
-            TotallyRepairACar(pOpponent_spec->car_spec);
-            sprintf(repairing_message, "%s %s", pOpponent_spec->car_spec->driver_name, GetMiscString(0x111));
-            strcpy(copied_message, repairing_message);
-            i = IRandomBetween(gMinTimeOpponentRepair, gMaxTimeOpponentRepair);
-            pOpponent_spec->repair_interval = i * 60000;
-            pOpponent_spec->last_repair_time = gTime_stamp_for_this_munging;
-            DoNotDprintf_opponent("*** Opponent %s, repair_interval is %d", pOpponent_spec->car_spec->driver_name, pOpponent_spec->repair_interval);
+            if (OpponentRepairNecessary(pOpponent_spec)) {
+                DoNotDprintf_opponent("*** Opponent %d, REPAIRING, timestamp %d", pOpponent_spec->car_spec->driver_name, gTime_stamp_for_this_munging);
+                TotallyRepairACar(pOpponent_spec->car_spec);
+                sprintf(message, "%s %s", pOpponent_spec->car_spec->driver_name, GetMiscString(0x111));
+                strcpy(headup, message);
+                pOpponent_spec->repair_interval = IRandomBetween(gMinTimeOpponentRepair, gMaxTimeOpponentRepair) * 60000;
+                pOpponent_spec->last_repair_time = gTime_stamp_for_this_munging;
+                DoNotDprintf_opponent("*** Opponent %s, repair_interval is %d", pOpponent_spec->car_spec->driver_name, pOpponent_spec->repair_interval);
+            }
         }
     }
 }
@@ -1245,7 +1237,7 @@ void C2_HOOK_FASTCALL StunTheBugger(tOpponent_spec* pOpponent_spec, int pMillise
     pOpponent_spec->car_spec->acc_force = 0.f;
     pOpponent_spec->car_spec->brake_force = 0.f;
     pOpponent_spec->car_spec->curvature = 0.f;
-    pOpponent_spec->stun_time_ends = MAX(gTime_stamp_for_this_munging + pMilliseconds, pOpponent_spec->stun_time_ends);
+    pOpponent_spec->stun_time_ends = MAX(pOpponent_spec->stun_time_ends, gTime_stamp_for_this_munging + pMilliseconds);
 }
 
 // FUNCTION: CARMA2_HW 0x004ae970
@@ -3211,74 +3203,68 @@ void C2_HOOK_FASTCALL ProcessWaitForSomeHaplessSod(tOpponent_spec* pOpponent_spe
 
     switch (pCommand) {
     case ePOC_start:
-        pOpponent_spec->car_spec->brake_force = 15.f * pOpponent_spec->car_spec->collision_info->M;
-        break;
+        pOpponent_spec->car_spec->brake_force = pOpponent_spec->car_spec->collision_info->M * gOppo_pursuit_reverse_brake;
+        return;
     case ePOC_run:
-        pOpponent_spec->car_spec->brake_force = 15.f * pOpponent_spec->car_spec->collision_info->M;
-        break;
-    default:
-        break;
+        pOpponent_spec->car_spec->brake_force = pOpponent_spec->car_spec->collision_info->M * gOppo_pursuit_reverse_brake;
+        return;
+    case ePOC_die:
+        return;
     }
 }
 
 // FUNCTION: CARMA2_HW 0x004abf60
 void C2_HOOK_FASTCALL CalcReturnToStartPointRoute(tOpponent_spec* pOpponent_spec) {
-    int num_of_perm_store_sections;
-    int sections_to_copy;
-    tS16 section_no;
+    br_vector3 direction;
     br_vector3 intersect;
-    br_vector3 section_v;
     br_scalar distance;
-    tRoute_section temp_store[10];
-    tRoute_section perm_store[10];
+    br_scalar scale;
+    tRoute_section route[10];
+    tRoute_section best[10];
+    tS16 section;
+    int best_count;
+    int count;
 
-    pOpponent_spec->nnext_sections = 0;
-    section_no = FindNearestGeneralSection(NULL, &pOpponent_spec->car_spec->car_master_actor->t.t.translate.t, &section_v, &intersect, &distance);
-    {
-        br_scalar len = (br_scalar)sqrt(section_v.v[0] * section_v.v[0] + section_v.v[1] * section_v.v[1] + section_v.v[2] * section_v.v[2]);
-        if (len > BR_SCALAR_EPSILON * 2) {
-            len = 1.0 / len;
-            section_v.v[0] *= len;
-            section_v.v[1] *= len;
-            section_v.v[2] *= len;
-        } else {
-            section_v.v[0] = 1.0f;
-            section_v.v[1] = 0.0f;
-            section_v.v[2] = 0.0f;
-        }
-    }
-    if (BrVector3Dot(&pOpponent_spec->car_spec->direction, &section_v) > gOppo_render_zero) {
-        if (pOpponent_spec->nnext_sections < (int)CARPOCALYPSE2_ASIZE(pOpponent_spec->next_sections)) {
-            pOpponent_spec->next_sections[pOpponent_spec->nnext_sections].section_no = section_no;
-            pOpponent_spec->next_sections[pOpponent_spec->nnext_sections].direction = 1;
-            pOpponent_spec->nnext_sections++;
-        }
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(pOpponent_spec->next_sections) != 12);
+    C2_HOOK_BUG_ON(sizeof(tRoute_section) != 4);
+
+    ClearOpponentsProjectedRoute(pOpponent_spec);
+    section = FindNearestPathSection(&pOpponent_spec->car_spec->car_master_actor->t.t.translate.t, &direction, &intersect, &distance);
+    scale = BR_LENGTH3(direction.v[0], direction.v[1], direction.v[2]);
+    if (scale > DAT_0058a4e8) {
+        scale = DAT_0058a4a0 / scale;
+        direction.v[0] = direction.v[0] * scale;
+        direction.v[1] = direction.v[1] * scale;
+        direction.v[2] = direction.v[2] * scale;
     } else {
-        if (pOpponent_spec->nnext_sections < (int)CARPOCALYPSE2_ASIZE(pOpponent_spec->next_sections)) {
-            pOpponent_spec->next_sections[pOpponent_spec->nnext_sections].section_no = section_no;
-            pOpponent_spec->next_sections[pOpponent_spec->nnext_sections].direction = 0;
-            pOpponent_spec->nnext_sections++;
-        }
+        direction.v[0] = 1.0f;
+        direction.v[1] = 0.0f;
+        direction.v[2] = 0.0f;
     }
-    temp_store[0].section_no = pOpponent_spec->next_sections[pOpponent_spec->nnext_sections - 1].section_no;
-    temp_store[0].direction = pOpponent_spec->next_sections[pOpponent_spec->nnext_sections - 1].direction;
-    gSFS_count++;
+    if (BrVector3Dot(&pOpponent_spec->car_spec->direction, &direction) > gOppo_render_zero) {
+        AddToOpponentsProjectedRoute(pOpponent_spec, section, 1);
+    } else {
+        AddToOpponentsProjectedRoute(pOpponent_spec, section, 0);
+    }
+    route[0].section_no = pOpponent_spec->next_sections[pOpponent_spec->nnext_sections - 1].section_no;
+    route[0].direction = pOpponent_spec->next_sections[pOpponent_spec->nnext_sections - 1].direction;
     gSFS_cycles_this_time = 0;
-    SearchForSection(temp_store, perm_store, &num_of_perm_store_sections, pOpponent_spec->return_to_start_data.section_no, 1, 0.0f, pOpponent_spec);
+    gSFS_count++;
+    SearchForSection(route, best, &best_count, pOpponent_spec->return_to_start_data.section_no, 1, 0.0f, pOpponent_spec);
     gSFS_total_cycles += gSFS_cycles_this_time;
     if (gSFS_cycles_this_time > gSFS_max_cycles) {
         gSFS_max_cycles = gSFS_cycles_this_time;
     }
-    DoNotDprintf_opponent(">>>SearchForSection() - max %d, avg %.1f", gSFS_max_cycles, (double)gSFS_total_cycles / gSFS_count);
-    if (num_of_perm_store_sections > 1) {
-        sections_to_copy = MIN(num_of_perm_store_sections - 1, (int)CARPOCALYPSE2_ASIZE(pOpponent_spec->next_sections) - pOpponent_spec->nnext_sections);
-        memcpy(&pOpponent_spec->next_sections[pOpponent_spec->nnext_sections], &perm_store[1], sections_to_copy * sizeof(tRoute_section));
-        pOpponent_spec->nnext_sections += sections_to_copy;
+    DoNotDprintf_opponent(">>>SearchForSection() - max %d, avg %.1f", gSFS_max_cycles, (double)gSFS_total_cycles / (double)gSFS_count);
+    if (best_count > 1) {
+        count = MIN(best_count - 1, (int)CARPOCALYPSE2_ASIZE(pOpponent_spec->next_sections) - pOpponent_spec->nnext_sections);
+        memcpy(&pOpponent_spec->next_sections[pOpponent_spec->nnext_sections], &best[1], count * sizeof(tRoute_section));
+        pOpponent_spec->nnext_sections += count;
         TopUpRandomRoute(pOpponent_spec, 2);
     } else {
         DoNotDprintf_opponent("%s: CalcReturnToStartPointRoute() - SearchForSection() produced bugger all", pOpponent_spec->car_spec->driver_name);
         if (pOpponent_spec->nnext_sections <= (int)CARPOCALYPSE2_ASIZE(pOpponent_spec->next_sections)) {
-            TopUpRandomRoute(pOpponent_spec, 14 - pOpponent_spec->nnext_sections);
+            TopUpRandomRoute(pOpponent_spec, (int)CARPOCALYPSE2_ASIZE(pOpponent_spec->next_sections) + 2 - pOpponent_spec->nnext_sections);
         }
     }
 }
@@ -3861,8 +3847,8 @@ int C2_HOOK_FASTCALL SearchForSection(tRoute_section* pTemp_store, tRoute_sectio
     if (pDepth == 1) {
         DoNotDprintf_opponent("%sSearchForSection() - First time called", depth_indent);
         memset(gBit_per_node, 0, (gProgram_state.AI_vehicles.number_of_path_nodes + 7) / 8);
-        sfs_shortest_dist = FLT_MAX;
-        sfs_routes_found = 0;
+        gSFS_shortest_dist = FLT_MAX;
+        gSFS_routes_found = 0;
         *pNum_of_perm_store_sections = 0;
     }
     if (pDepth >= 10) {
@@ -3893,13 +3879,13 @@ int C2_HOOK_FASTCALL SearchForSection(tRoute_section* pTemp_store, tRoute_sectio
         pTemp_store[pDepth].section_no = section;
         pTemp_store[pDepth].direction = direction;
         length = gProgram_state.AI_vehicles.path_sections[section].length + pDistance_so_far;
-        if (section == pTarget_section && length < sfs_shortest_dist) {
-            sfs_shortest_dist = length;
+        if (section == pTarget_section && length < gSFS_shortest_dist) {
+            gSFS_shortest_dist = length;
             *pNum_of_perm_store_sections = pDepth + 1;
             memcpy(pPerm_store, pTemp_store, (pDepth + 1) * sizeof(tRoute_section));
-            gWanky_arse_tit_fuck = sfs_routes_found + 1;
-            sfs_routes_found++;
-            if (sfs_routes_found >= 2) {
+            gSFS_routes_found_copy = gSFS_routes_found + 1;
+            gSFS_routes_found++;
+            if (gSFS_routes_found >= 2) {
                 DoNotDprintf_opponent("%sSearchForSection() - Found final target", depth_indent);
                 return 1;
             }

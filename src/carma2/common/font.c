@@ -56,12 +56,6 @@ int polyFontMaterialCounter; // FIXME: unknown purpose
 // GLOBAL: CARMA2_HW 0x00686480
 int currentPolyFontMaterialIdx;
 
-// GLOBAL: CARMA2_HW 0x00764f00
-br_pixelmap* gPixelmapBuffer[1000];
-
-// GLOBAL: CARMA2_HW 0x007663d0
-int gPixelmapBufferSize;
-
 // GLOBAL: CARMA2_HW 0x0076c960
 br_pixelmap* gTexture_maps[1024];
 
@@ -97,10 +91,10 @@ const char* gFont_names[24] = {
 };
 
 // GLOBAL: CARMA2_HW 0x00764f00
-br_pixelmap* gPixelmap_buffer[1000];
+br_pixelmap* gPixelmapBuffer[1000];
 
 // GLOBAL: CARMA2_HW 0x007663d0
-size_t gPixelmap_buffer_size;
+int gPixelmapBufferSize;
 
 // GLOBAL: CARMA2_HW 0x0076d960
 tPolyFont gPoly_fonts[27];
@@ -319,96 +313,78 @@ void C2_HOOK_FASTCALL PolyFontTextInABox(int pFont, const char* pText, int pLeft
 void C2_HOOK_FASTCALL TransparentPolyFontTextInABox(int pFont, const char* pText, int pLeft, int pTop, int pRight, int pBottom, tJustification pJust, undefined4 pUnknown, double pBlend) {
     char s[256];
     int s_len;
-    int x;
     int y;
     int in_start_put;
     int in_end_put;
-    int in_pos;
+    int str_i;
     int newline;
     int text_x;
-    int max_width;
-
-    if (pText == NULL) {
-        return;
-    }
 
     in_start_put = 0;
     text_x = 0;
-    max_width = pRight - pLeft;
-    in_pos = 0;
-    s_len = 0;
-    s[s_len] = '\0';
-    y = pTop;
+    if (pText != NULL) {
+        str_i = 0;
+        s_len = 0;
+        s[s_len] = '\0';
+        y = pTop;
 
-    while (pText[in_pos] != '\0') {
-        tU8 chr;
+        while (pText[str_i] != '\0') {
+            int chr;
 
-        chr = pText[in_pos];
-        newline = chr == '\r';
-        s[s_len] = chr;
-        if (newline) {
-            s[s_len] = ' ';
-        }
-        s[s_len + 1] = '\0';
-        if (!newline) {
-            if (chr >= 'a' && chr <= 'z') {
-                chr -= 0x20;
+            chr = pText[str_i];
+            newline = chr == '\r';
+            s[s_len] = chr;
+            if (newline) {
+                s[s_len] = ' ';
             }
-            if (gPoly_fonts[pFont].glyphs[(tU8)chr].used) {
-                text_x += gPoly_fonts[pFont].glyphs[(tU8)chr].glyph_width;
+            s[s_len + 1] = '\0';
+            if (!newline) {
+                text_x += CharacterWidth(pFont, (tU8)chr);
+            }
+            in_end_put = str_i;
+            if (text_x <= pRight - pLeft && !newline) {
+                s_len++;
+                str_i++;
             } else {
-                text_x += gPoly_fonts[pFont].widthOfBlank;
+                int len_put;
+
+                /* Avoid breaking words in parts ... */
+                while (in_end_put > in_start_put && pText[in_end_put] != ' ') {
+                    in_end_put -= 1;
+                }
+                /* ... but break when the word is too long */
+                if (in_end_put == in_start_put) {
+                    in_end_put = str_i;
+                }
+                len_put = in_end_put - in_start_put;
+                s[len_put + 1] = '\0';
+                if (pText[in_end_put] == ' ') {
+                    in_end_put += 1;
+                }
+                s[len_put] = '\0';
+                if (pJust == eJust_centre) {
+                    TransparentPolyFontText(s, (pRight + pLeft) / 2, y, pFont, pJust, gRender_poly_text, pBlend);
+                } else {
+                    TransparentPolyFontText(s, pLeft, y, pFont, pJust, gRender_poly_text, pBlend);
+                }
+                while (pText[in_end_put] == '\r' || pText[in_end_put] == ' ') {
+                    in_end_put++;
+                }
+                y += (2 * PolyFontHeight(pFont)) / 2;
+                text_x = 0;
+                in_start_put = in_end_put;
+                s_len = 0;
+                str_i = in_start_put;
             }
         }
-        in_end_put = in_pos;
-        if (text_x > max_width || newline) {
-            int len_put;
+        if (s_len != 0) {
 
-            /* Avoid breaking words in parts ... */
-            while (in_end_put > in_start_put && pText[in_end_put] != ' ') {
-                in_end_put -= 1;
-            }
-            /* ... but break when the word is too long */
-            if (in_end_put == in_start_put) {
-                in_end_put = in_pos;
-            }
-            len_put = in_end_put - in_start_put;
-            s[len_put + 1] = '\0';
-            if (pText[in_end_put] == ' ') {
-                in_end_put += 1;
-            }
-            s[len_put] = '\0';
-            in_pos = in_end_put;
             if (pJust == eJust_centre) {
-                x = (pRight + pLeft) / 2;
+                TransparentPolyFontText(s, (pRight + pLeft) / 2, y, pFont, pJust, gRender_poly_text, pBlend);
             } else {
-                x = pLeft;
+                TransparentPolyFontText(s, pLeft, y, pFont, pJust, gRender_poly_text, pBlend);
             }
-            TransparentPolyFontText(s, x, y, pFont, pJust, gRender_poly_text, pBlend);
-            while (pText[in_pos] == '\r' || pText[in_pos] == ' ') {
-                in_pos++;
-            }
-            y += PolyFontHeight(pFont);
-            text_x = 0;
-            in_start_put = in_pos;
-            s_len = 0;
-        } else {
-            s_len++;
-            in_pos++;
         }
-    }
-    if (s_len != 0) {
-        int x;
-        tJustification justif;
-
-        if (pJust == eJust_centre) {
-            x = (pRight + pLeft) / 2;
-            justif = eJust_centre;
-        } else {
-            x = pLeft;
-            justif = pJust;
-        }
-        TransparentPolyFontText(s, x, y, pFont, justif, gRender_poly_text, pBlend);
     }
 }
 
@@ -580,16 +556,16 @@ br_pixelmap* C2_HOOK_FASTCALL GetThisFuckingPixelmap(const char* path, const cha
     if (f != NULL) {
         PFfclose(f);
         if (loadFromDisk) {
-            gPixelmap_buffer_size = BrPixelmapLoadMany(pathBuffer, gPixelmap_buffer, CARPOCALYPSE2_ASIZE(gPixelmap_buffer));
+            gPixelmapBufferSize = BrPixelmapLoadMany(pathBuffer, gPixelmapBuffer, CARPOCALYPSE2_ASIZE(gPixelmapBuffer));
         }
         strcpy(pathBuffer, glyph_name);
 
         str = strchr(pathBuffer, '.');
         *str = '\0';
 
-        for (i = 0; i < gPixelmap_buffer_size; i++) {
-            if (gPixelmap_buffer[i] != NULL && DRStricmp(gPixelmap_buffer[i]->identifier, pathBuffer) == 0) {
-                return gPixelmap_buffer[i];
+        for (i = 0; i < gPixelmapBufferSize; i++) {
+            if (gPixelmapBuffer[i] != NULL && DRStricmp(gPixelmapBuffer[i]->identifier, pathBuffer) == 0) {
+                return gPixelmapBuffer[i];
             }
         }
         return NULL;
@@ -602,14 +578,14 @@ br_pixelmap* C2_HOOK_FASTCALL GetThisFuckingPixelmap(const char* path, const cha
 void C2_HOOK_FASTCALL KillThePixies(void) {
     size_t i;
 
-    for (i = 0; i < gPixelmap_buffer_size; i++) {
+    for (i = 0; i < gPixelmapBufferSize; i++) {
 
-        if (gPixelmap_buffer[i] != NULL) {
-            BrPixelmapFree(gPixelmap_buffer[i]);
-            gPixelmap_buffer[i] = NULL;
+        if (gPixelmapBuffer[i] != NULL) {
+            BrPixelmapFree(gPixelmapBuffer[i]);
+            gPixelmapBuffer[i] = NULL;
         }
     }
-    gPixelmap_buffer_size = 0;
+    gPixelmapBufferSize = 0;
 }
 
 // FUNCTION: CARMA2_HW 0x004640d0

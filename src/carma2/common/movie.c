@@ -133,10 +133,10 @@ void C2_HOOK_CDECL InitQuickTimeStuff(void) {
 void C2_HOOK_FASTCALL SetQuickTimeDefaults(void) {
 
     if (gQuick_time_quality[0] == '\0') {
-        strcpy(gQuick_time_quality, gDefault_quick_time_quality);
+        strcpy(gQuick_time_quality, gQuickTime_quality_options[0].name);
     }
     if (gQuick_time_compressor[0] == '\0') {
-        strcpy(gQuick_time_compressor, gDefault_quick_time_compressor);
+        strcpy(gQuick_time_compressor, gQuickTime_compressor_options[0].name);
     }
     if (gQuick_time_temp_path[0] == '\0') {
         PathCat(gQuick_time_temp_path, gApplication_path, "QTTMP");
@@ -469,4 +469,16 @@ int C2_HOOK_FASTCALL MovieStopRecordingIfNecessary(void) {
 
 // FUNCTION: CARMA2_HW 0x004e1c30
 void C2_HOOK_FASTCALL NoOp_004e1c30(void) {
+}
+
+// FUNCTION: CARMA2_HW 0x004e1c40
+void C2_HOOK_FASTCALL NoOp_004e1c40(void) {
+}
+
+// FUNCTION: CARMA2_HW 0x004e1c50
+void C2_HOOK_FASTCALL NoOp_004e1c50(void) {
+}
+
+// FUNCTION: CARMA2_HW 0x004e1c60
+void C2_HOOK_FASTCALL NoOp_004e1c60(undefined4 pArg1, undefined4 pArg2, undefined4 pArg3) {
 }

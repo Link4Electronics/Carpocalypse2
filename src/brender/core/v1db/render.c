@@ -116,6 +116,7 @@ br_uint_32 C2_HOOK_CDECL BrOnScreenCheck(br_bounds3* bounds) {
 
 br_uint_16 C2_HOOK_STDCALL prependActorTransform(br_actor* ap, br_uint_16 t) {
     br_matrix34 mt;
+    br_uint_16 combine;
 
     if (ap->t.type <= BR_TRANSFORM_MATRIX34_LP) {
         v1db.renderer->dispatch->_modelMulF(v1db.renderer, (br_matrix34_f*)&ap->t.t.mat);
@@ -123,7 +124,9 @@ br_uint_16 C2_HOOK_STDCALL prependActorTransform(br_actor* ap, br_uint_16 t) {
         BrTransformToMatrix34(&mt, &ap->t);
         v1db.renderer->dispatch->_modelMulF(v1db.renderer, (br_matrix34_f*)&mt);
     }
-    return v1db.renderer->dispatch->_partSet(v1db.renderer, BRT_MATRIX, 0, BRT_MODEL_TO_VIEW_HINT_T, ap->t.type == BR_TRANSFORM_MATRIX34_LP ? BRT_LENGTH_PRESERVING : BRT_NONE);
+    combine = BrTransformCombineTypes(t, ap->t.type);
+    v1db.renderer->dispatch->_partSet(v1db.renderer, BRT_MATRIX, 0, BRT_MODEL_TO_VIEW_HINT_T, combine ? BRT_LENGTH_PRESERVING : BRT_NONE);
+    return combine;
 }
 
 // FUNCTION: CARMA2_HW 0x005221e0
@@ -155,7 +158,7 @@ void C2_HOOK_STDCALL actorRender(br_actor* ap, br_model* model, br_material* mat
             }
             break;
         case BR_ACTOR_BOUNDS:
-            s = BrOnScreenCheck(&this_model->bounds);
+            s = BrOnScreenCheck((br_bounds3*)ap->type_data);
             if (s == BRT_REJECT) {
                 return;
             }
@@ -199,16 +202,21 @@ void C2_HOOK_STDCALL actorRender(br_actor* ap, br_model* model, br_material* mat
             break;
         case BR_ACTOR_BOUNDS_CORRECT:
             s = BrOnScreenCheck((br_bounds3*)ap->type_data);
-            if (s == BRT_ACCEPT) {
+            switch (s) {
+            case BRT_ACCEPT:
                 for (a = ap->children; a != NULL; a = a->next) {
                     actorRenderOnScreen(a, this_model, this_material, this_render_data, style, t);
                 }
-            } else if (s == BRT_REJECT) {
-                v1db.renderer->dispatch->_statePop(v1db.renderer, 0x2);
-                return;
+                break;
+            case BRT_REJECT:
+                break;
+            default:
+                goto render_children;
             }
-            break;
+            v1db.renderer->dispatch->_statePop(v1db.renderer, 0x2);
+            return;
         }
+    render_children:
         for (a = ap->children; a != NULL; a = a->next) {
             actorRender(a, this_model, this_material, this_render_data, style, t);
         }
@@ -231,7 +239,7 @@ void C2_HOOK_STDCALL actorRenderOnScreen(br_actor* ap, br_model* model, br_mater
     }
     this_material = ap->material != NULL ? ap->material : material;
     this_model = ap->model != NULL ? ap->model : model;
-    this_render_data = ap->render_data != NULL ? ap->render_data : model;
+    this_render_data = ap->render_data != NULL ? ap->render_data : render_data;
     if (ap->t.type == BR_TRANSFORM_IDENTITY) {
         if (ap->type == BR_ACTOR_MODEL) {
             BrDbModelRender(ap, this_model, this_material, this_render_data, style, BRT_ACCEPT, 1);

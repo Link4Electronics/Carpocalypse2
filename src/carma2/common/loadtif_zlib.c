@@ -32,12 +32,6 @@ br_uint_32 C2_HOOK_CDECL ZlibFsGetAttributes(void) {
     return BR_FS_ATTR_READABLE | BR_FS_ATTR_WRITEABLE | BR_FS_ATTR_HAS_BINARY;
 }
 
-// FUNCTION: CARMA2_HW 0x0055db20
-void* C2_HOOK_FASTCALL ZlibOpenWithMode(const char* path, const char* mode) {
-
-    return gzopen(path, mode);
-}
-
 // FUNCTION: CARMA2_HW 0x0051dc10
 void* C2_HOOK_CDECL ZlibFsOpenRead(const char* buffer, br_size_t capacity, br_mode_test_cbfn* cbfn, int* type) {
 
@@ -136,10 +130,11 @@ void C2_HOOK_CDECL ZlibFsPutLine(char* line, void* context) {
 
 // FUNCTION: CARMA2_HW 0x0051db60
 void C2_HOOK_CDECL ZlibFsAdvance(br_size_t advance, void* context) {
-    size_t i;
     char buffer[1];
 
-    for (i = 0; i != advance; i++) {
-        gzread(context, buffer, sizeof(buffer));
+    if (advance != 0) {
+        do {
+            gzread(context, buffer, sizeof(buffer));
+        } while (--advance != 0);
     }
 }
