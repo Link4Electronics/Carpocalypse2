@@ -3409,10 +3409,50 @@ void C2_HOOK_FASTCALL CheckWheelPositions(const tCar_spec* pCar_spec) {
     }
 }
 
+// C2PORT-NONMATCHING: best 68.04% | difftest PASS 2000 trials (spec difftest/specs/0042aa20_InitPhysModCrushData.json) | reason x87-loop-scheduling
 // FUNCTION: CARMA2_HW 0x0042aa20
 void C2_HOOK_FASTCALL InitPhysModCrushData(tCar_spec* pCar_spec) {
+    int wheel_index;
+    tPhysics_shape* shape;
+    br_vector3* wheel_position;
+    int plane_index;
+    br_vector4* plane;
+    int outside_all_shapes;
+    int outside_shape;
+    br_scalar x;
+    br_scalar y;
+    br_scalar z;
 
-    CheckWheelPositions(pCar_spec);
+    wheel_position = pCar_spec->wpos;
+    for (wheel_index = 0; wheel_index < 4; wheel_index++, wheel_position++) {
+        outside_all_shapes = 1;
+        shape = pCar_spec->collision_info->shape;
+        while (shape != NULL) {
+            if (shape->common.type == kCollisionShapeType_Polyhedron) {
+                x = (br_scalar)(wheel_position->v[0] * gDOUBLE_00589a38);
+                y = (br_scalar)(wheel_position->v[1] * gDOUBLE_00589a38);
+                z = (br_scalar)(wheel_position->v[2] * gDOUBLE_00589a38);
+                plane_index = 0;
+                outside_shape = 1;
+                while (plane_index < shape->polyhedron.polyhedron.count_planes) {
+                    plane = &shape->polyhedron.polyhedron.planes[plane_index];
+                    if (plane->v[0] * x + plane->v[1] * y + plane->v[2] * z + plane->v[3] < gCrushZero) {
+                        outside_shape = 0;
+                        break;
+                    }
+                    plane_index++;
+                }
+                if (outside_shape) {
+                    outside_all_shapes = 0;
+                    break;
+                }
+            }
+            shape = shape->common.next;
+        }
+        if (outside_all_shapes) {
+            PDFatalError("Wheels outside all shapes");
+        }
+    }
     if (pCar_spec->car_crush_spec != NULL) {
         SwitchCarModels(pCar_spec, 0);
         InitModelMasterCrushData(pCar_spec);
@@ -5072,7 +5112,6 @@ void C2_HOOK_FASTCALL DeleteFarCrushes(tCar_spec* pCar);
 int C2_HOOK_FASTCALL DRActorRecurseWithPredicate(br_actor* pActor, void* pPredicate, tCar_spec* pCar);
 int C2_HOOK_CDECL PredicateSpamPanel(br_actor* pActor, tCar_spec* pCar);
 void C2_HOOK_FASTCALL InitialiseSpamCrush(tCar_spec* pCar, void* pContext);
-void C2_HOOK_FASTCALL CrushPanelWithForce(tCar_spec* pCar, tU32 pFlag_a, tU32 pFlag_b, tU32 pFlag_c, br_vector3* pVec, tU32 pFlag_d, tU32 pFlag_e);
 intptr_t C2_HOOK_FASTCALL CrushCarActorCbfn(br_actor* pActor, br_matrix34* pMat, void* pContext);
 intptr_t C2_HOOK_FASTCALL CrushCarModelCbfn(br_actor* pActor, br_matrix34* pMat, void* pContext);
 
@@ -5306,7 +5345,7 @@ paint:
         spam_arg.count = 0;
         spam_arg.v.v[1] = *(float*)((tU8*)pMorph_a + 0x34);
         spam_arg.v.v[2] = *(float*)((tU8*)pSpec_a + 0x14c);
-        CrushPanelWithForce(pCar_spec, 0xe002, 0, 0, &spam_arg.v, *(tU32*)((tU8*)pMorph_a + 0x38), 0);
+        BendCar(pCar_spec, 0xe002, 0, 0, &spam_arg.v, *(float*)((tU8*)pMorph_a + 0x38), 0);
         return;
     }
 
@@ -5317,7 +5356,7 @@ paint:
         spam_arg.count = 0;
         spam_arg.v.v[1] = *(float*)((tU8*)pMorph_b + 0x28);
         spam_arg.v.v[2] = *(float*)((tU8*)pSpec_b + 0x14c);
-        CrushPanelWithForce(pCar_spec, 0x1ffe, 0, 0, &spam_arg.v, *(tU32*)((tU8*)pMorph_b + 0x38), 0);
+        BendCar(pCar_spec, 0x1ffe, 0, 0, &spam_arg.v, *(float*)((tU8*)pMorph_b + 0x38), 0);
         return;
     }
 
@@ -5328,7 +5367,7 @@ paint:
         spam_arg.v.v[0] = *(float*)((tU8*)pMorph_c + 0x24);
         spam_arg.v.v[1] = 0.0f;
         spam_arg.v.v[2] = *(float*)((tU8*)pSpec_c + 0x14c);
-        CrushPanelWithForce(pCar_spec, 0, 0xe002, 0, &spam_arg.v, *(tU32*)((tU8*)pMorph_c + 0x38), 0);
+        BendCar(pCar_spec, 0, 0xe002, 0, &spam_arg.v, *(float*)((tU8*)pMorph_c + 0x38), 0);
         return;
     }
 
@@ -5339,7 +5378,7 @@ paint:
         spam_arg.v.v[0] = *(float*)((tU8*)pMorph_d + 0x30);
         spam_arg.v.v[1] = 0.0f;
         spam_arg.v.v[2] = *(float*)((tU8*)pSpec_d + 0x14c);
-        CrushPanelWithForce(pCar_spec, 0, 0x1ffe, 0, &spam_arg.v, *(tU32*)((tU8*)pMorph_d + 0x38), 0);
+        BendCar(pCar_spec, 0, 0x1ffe, 0, &spam_arg.v, *(float*)((tU8*)pMorph_d + 0x38), 0);
         return;
     }
 
@@ -5353,7 +5392,7 @@ paint:
         spam_arg.v.v[0] = (*(float*)((tU8*)pMorph_e + 0x24) + *(float*)((tU8*)pMorph_e + 0x30)) * 0.5f;
         spam_arg.v.v[1] = (*(float*)((tU8*)pMorph_e + 0x28) + *(float*)((tU8*)pMorph_e + 0x34)) * 0.5f;
         spam_arg.v.v[2] = *(float*)((tU8*)pSpec_e + 0x150);
-        CrushPanelWithForce(pCar_spec, 0, 0x1ffe, 0, &spam_arg.v, *(tU32*)((tU8*)pMorph_e + 0x2c), 0);
+        BendCar(pCar_spec, 0, 0x1ffe, 0, &spam_arg.v, *(float*)((tU8*)pMorph_e + 0x2c), 0);
         return;
     }
     }
@@ -5539,11 +5578,6 @@ int C2_HOOK_FASTCALL GetAverageCrushLevel(tCar_spec* pCar) {
         return result;
     }
     return 25;
-}
-
-void C2_HOOK_FASTCALL CrushPanelWithForce(tCar_spec* pCar, tU32 pFlag_a, tU32 pFlag_b, tU32 pFlag_c, br_vector3* pVec, tU32 pFlag_d, tU32 pFlag_e) {
-
-    NOT_IMPLEMENTED();
 }
 
 #pragma auto_inline(on)
@@ -6535,11 +6569,11 @@ void C2_HOOK_FASTCALL DoWheelDamage(tU32 pFrame_period) {
                 }
                 y_amount = (damage - 30) * gWobble_spam_y[damage & 7];
                 z_amount = (damage - 30) * gWobble_spam_z[damage & 7];
-                BrMatrix34PreRotateY(&car->wheel_actors[j]->t.t.mat, BrDegreeToAngle(y_amount < 0.f ? y_amount + 360.f : y_amount));
-                BrMatrix34PreRotateZ(&car->wheel_actors[j]->t.t.mat, BrDegreeToAngle(z_amount < 0.f ? z_amount + 360.f : z_amount));
+                BrMatrix34PreRotateY(&car->wheel_actors[j]->t.t.mat, BrDegreeToAngle(y_amount < gFloat_00589b64 ? y_amount + 360.f : y_amount));
+                BrMatrix34PreRotateZ(&car->wheel_actors[j]->t.t.mat, BrDegreeToAngle(z_amount < gFloat_00589b64 ? z_amount + 360.f : z_amount));
                 if (j < 2 && car->wheel_actors[4 + j] != NULL) {
-                    BrMatrix34PreRotateY(&car->wheel_actors[4 + j]->t.t.mat, BrDegreeToAngle(y_amount < 0.f ? y_amount + 360.f : y_amount));
-                    BrMatrix34PreRotateZ(&car->wheel_actors[4 + j]->t.t.mat, BrDegreeToAngle(z_amount < 0.f ? z_amount + 360.f : z_amount));
+                    BrMatrix34PreRotateY(&car->wheel_actors[4 + j]->t.t.mat, BrDegreeToAngle(y_amount < gFloat_00589b64 ? y_amount + 360.f : y_amount));
+                    BrMatrix34PreRotateZ(&car->wheel_actors[4 + j]->t.t.mat, BrDegreeToAngle(z_amount < gFloat_00589b64 ? z_amount + 360.f : z_amount));
                 }
                 switch (j) {
                 case 0:
@@ -9695,100 +9729,166 @@ int C2_HOOK_FASTCALL FUN_0043a560(void* pThis, void* pArg2, void* pArg3) {
 
 #pragma auto_inline(off)
 
-typedef struct {
-    tCar_spec* car_spec;
-    float step;
-    float repaired;
-    float deflection;
-} tRepairCarContext;
-
-static intptr_t C2_HOOK_CDECL RepairCarCB(br_actor* pActor, void* pData) {
-    tRepairCarContext* ctx = pData;
-    tUser_crush_data* user_crush_data;
+// FUNCTION: CARMA2_HW 0x0043ace0
+float C2_HOOK_FASTCALL ComputeCarImpact(register tCar_spec* pCar, register int pDelta, float* pOut) {
+    tCar_crush_spec* pCrush;
+    tCrush_displacement_context context;
+    float result;
     int i;
 
-    user_crush_data = pActor->user;
-    if (user_crush_data == NULL || user_crush_data->crush_data == NULL) {
-        return 0;
+    pCar->repair_time += pDelta;
+    if (pCar->use_shell_model != 0 || pCar == NULL || pCar->driver < 7) {
+        return gCrushZero;
     }
-    for (i = 0; i < ctx->car_spec->count_detail_levels; i++) {
-        br_model* model = user_crush_data->models[i];
-        int j;
+    pCrush = pCar->car_crush_spec;
+    if (pCrush == NULL || pCrush->field_0x4b8 != 0 || gAusterity_mode != 0) {
+        return gCrushZero;
+    }
+    if (pCrush->field_0x144 != 0) {
+        result = DoCrushNetwork(pCar, pDelta, pOut);
+    } else {
+        if (gNet_mode == eNet_mode_none || gNet_mode == eNet_mode_host) {
+            for (i = 0; i < pCrush->field_0x2b0; i++) {
+                tCar_bit_spec* pBit = &pCrush->field_0x2b4[i];
+                tCar_crush_detach_data* pDetach_data;
+                br_model* pModel;
+                br_vertex* pVertices;
+                br_vector3* pSaved;
+                br_vector3* pCurrent;
+                float fVar3;
+                float fVar5;
+                float fVar4;
+                int found;
+                int j;
 
-        if (model == NULL || model->user == NULL || model->user == (void*)(uintptr_t)1 || model->nvertices == 0) {
-            continue;
-        }
-        /* tUser_detail_level_model with original (undamaged) vertices in field_0x4. */
-        {
-            tModel_detail_vertex_data* vertex_data = ((tUser_detail_level_model*)model->user)->field_0x4;
-            int touched;
-
-            if (vertex_data == NULL) {
-                continue;
-            }
-            touched = 0;
-            for (j = 0; j < model->nvertices; j++) {
-                br_vector3 undamaged;
-                int k;
-
-                ExpandVector3(&undamaged, &vertex_data[j].p, -10.f, 10.f);
-                for (k = 0; k < 3; k++) {
-                    float deviation = fabsf(undamaged.v[k] - model->vertices[j].p.v[k]);
-                    float before;
-
-                    ctx->deflection += deviation;
-                    if (undamaged.v[k] == model->vertices[j].p.v[k]) {
-                        continue;
-                    }
-                    before = model->vertices[j].p.v[k];
-                    if (undamaged.v[k] < model->vertices[j].p.v[k]) {
-                        model->vertices[j].p.v[k] -= ctx->step;
-                        if (model->vertices[j].p.v[k] < undamaged.v[k]) {
-                            model->vertices[j].p.v[k] = undamaged.v[k];
-                        }
-                        ctx->repaired += before - model->vertices[j].p.v[k];
-                    } else {
-                        model->vertices[j].p.v[k] += ctx->step;
-                        if (model->vertices[j].p.v[k] > undamaged.v[k]) {
-                            model->vertices[j].p.v[k] = undamaged.v[k];
-                        }
-                        ctx->repaired += model->vertices[j].p.v[k] - before;
-                    }
-                    touched = 1;
+                pDetach_data = pBit->field_0xc;
+                if (pDetach_data == NULL || pBit->field_0x4 == NULL
+                    || pBit->field_0x4->user == NULL
+                    || ((tUser_crush_data*)pBit->field_0x4->user)->models[0] == NULL) {
+                    continue;
                 }
-                if (model->vertices[j].p.v[0] == undamaged.v[0]
-                    && model->vertices[j].p.v[1] == undamaged.v[1]
-                    && model->vertices[j].p.v[2] == undamaged.v[2]) {
-                    vertex_data[j].flags &= ~0x4;
+                pModel = ((tUser_crush_data*)pBit->field_0x4->user)->models[0];
+                pVertices = pModel->vertices;
+                pSaved = &pDetach_data->field_0xc;
+                pCurrent = &pVertices[pDetach_data->min_vertex].p;
+                fVar3 = pCurrent->v[0] - pSaved->v[0];
+                fVar5 = pCurrent->v[1] - pSaved->v[1];
+                fVar4 = pCurrent->v[2] - pSaved->v[2];
+                if (!(fVar4 * fVar4 + fVar5 * fVar5 + fVar3 * fVar3 < gCrushReattachDistanceSquared)) {
+                    continue;
+                }
+                pSaved = &pDetach_data->field_0x18;
+                pCurrent = &pVertices[pDetach_data->max_vertex].p;
+                fVar3 = pCurrent->v[0] - pSaved->v[0];
+                fVar5 = pCurrent->v[1] - pSaved->v[1];
+                fVar4 = pCurrent->v[2] - pSaved->v[2];
+                if (!(fVar4 * fVar4 + fVar5 * fVar5 + fVar3 * fVar3 < gCrushReattachDistanceSquared)) {
+                    continue;
+                }
+                if (gNet_mode == eNet_mode_host) {
+                    found = 0;
+                    for (j = 0; j < gCount_net_crush_reattach_bit_list; j++) {
+                        if (gNet_crush_reattach_bit_list[j].field_0x0 == (tU32)pBit->field_0x0) {
+                            found = 1;
+                            break;
+                        }
+                    }
+                    if (!found) {
+                        FUN_0043b250(pCar, pBit->field_0x8);
+                    }
+                } else {
+                    ReAttachBit(pCar, pBit->field_0x4, pBit->field_0x0, NULL);
                 }
             }
-            if (touched) {
-                SetModelForUpdate(model);
+            for (i = 0; i < pCrush->field_0x270; i++) {
+                tCar_bit_spec* pBit = &pCrush->field_0x274[i];
+                tCar_crush_detach_data* pDetach_data;
+                br_model* pModel;
+                br_vertex* pVertices;
+                br_vector3* pSaved;
+                br_vector3* pCurrent;
+                float fVar3;
+                float fVar5;
+                float fVar4;
+
+                pDetach_data = pBit->field_0xc;
+                if (pDetach_data == NULL || pBit->field_0x4 == NULL
+                    || pBit->field_0x4->user == NULL
+                    || ((tUser_crush_data*)pBit->field_0x4->user)->models[0] == NULL) {
+                    continue;
+                }
+                pModel = ((tUser_crush_data*)pBit->field_0x4->user)->models[0];
+                pVertices = pModel->vertices;
+                pSaved = &pDetach_data->field_0xc;
+                pCurrent = &pVertices[pDetach_data->min_vertex].p;
+                fVar3 = pCurrent->v[0] - pSaved->v[0];
+                fVar5 = pCurrent->v[1] - pSaved->v[1];
+                fVar4 = pCurrent->v[2] - pSaved->v[2];
+                if (!(fVar4 * fVar4 + fVar5 * fVar5 + fVar3 * fVar3 < gCrushReattachDistanceSquared)) {
+                    continue;
+                }
+                pSaved = &pDetach_data->field_0x18;
+                pCurrent = &pVertices[pDetach_data->max_vertex].p;
+                fVar3 = pCurrent->v[0] - pSaved->v[0];
+                fVar5 = pCurrent->v[1] - pSaved->v[1];
+                fVar4 = pCurrent->v[2] - pSaved->v[2];
+                if (!(fVar4 * fVar4 + fVar5 * fVar5 + fVar3 * fVar3 < gCrushReattachDistanceSquared)) {
+                    continue;
+                }
+                if (gNet_mode == eNet_mode_host) {
+                    FUN_0043b250(pCar, pBit->field_0x8);
+                } else {
+                    ReAttachBit(pCar, pBit->field_0x4, pBit->field_0x0, pBit->field_0x8);
+                }
+            }
+            MungeDetachLists(pCrush);
+        }
+        *pOut = gCrushZero;
+        context.car = pCar;
+        context.step = (float)pDelta * gCrushRepairStepFactor;
+        context.total_displacement = pOut;
+        context.displacement = gCrushZero;
+        PhysicsObjectRecurse(pCar->collision_info, (tEnumCollision_cbfn*)FUN_0043b400, &context);
+        SmoothCarCrushShapePoints(pCar, context.step);
+        for (i = 0; i < pCrush->field_0x2b0; i++) {
+            DRActorEnumRecurse(pCrush->field_0x2b4[i].field_0x0, (br_actor_enum_cbfn*)FUN_0043b2e0, &context);
+        }
+        result = context.displacement;
+        if (result == gCrushZero) {
+            RepairAllSmashes(pCar);
+            TotallyRepairCarCollisionShapes(pCar);
+            if (gNet_mode == eNet_mode_none) {
+                for (i = 0; i < pCrush->field_0x2b0; i++) {
+                    ReAttachBit(pCar, pCrush->field_0x2b4[i].field_0x4, pCrush->field_0x2b4[i].field_0x0, NULL);
+                }
+                pCrush->field_0x2b0 = 0;
+                for (i = 0; i < pCrush->field_0x270; i++) {
+                    ReAttachBit(pCar, pCrush->field_0x274[i].field_0x4, pCrush->field_0x274[i].field_0x0, pCrush->field_0x274[i].field_0x8);
+                }
+                pCrush->field_0x270 = 0;
+            } else if (gNet_mode == eNet_mode_host) {
+                FUN_0043b2a0(pCar);
+            }
+            DRActorEnumRecurse(pCar->car_model_actor, MakeCarModelsMaterialsSingleSided, pCar);
+            PipeSingleDSModel(0, pCar);
+            gCount_toggled_doors = 0;
+            gCount_crush_detach_list = 0;
+            if (*pOut == gCrushZero
+                && (gNet_mode == eNet_mode_none || (pCrush->field_0x270 < 1 && pCrush->field_0x2b0 < 1))) {
+                PhysicsObjectRecurse(pCar->collision_info, BattenDownTheObjects, pCar);
+                if (pCar->driver == 8) {
+                    pCar->repair_time += 100000;
+                }
+                pCar->use_shell_model = 1;
+            } else {
+                result = 1.1920929e-07f;
             }
         }
     }
-    return 0;
-}
-
-// FUNCTION: CARMA2_HW 0x0043ace0
-float C2_HOOK_FASTCALL ComputeCarImpact(tCar_spec* pCar, int pDelta, float* pOut) {
-    tRepairCarContext ctx;
-
-    if (pCar == NULL || pCar->car_model_actor == NULL) {
-        if (pOut != NULL) {
-            *pOut = 0.f;
-        }
-        return 0.f;
+    if (SwapShapesIfPossible(pCar) && pCar->driver == 8) {
+        NewTextHeadupSlot(4, 0, 1000, -4, GetMiscString(6));
     }
-    ctx.car_spec = pCar;
-    ctx.step = (float)pDelta * 0.00005f;
-    ctx.repaired = 0.f;
-    ctx.deflection = 0.f;
-    DRActorEnumRecurse(pCar->car_model_actor, RepairCarCB, &ctx);
-    if (pOut != NULL) {
-        *pOut = ctx.deflection;
-    }
-    return ctx.repaired;
+    return result;
 }
 
 // C2PORT-NONMATCHING: best 86.09% | difftest PASS 2000 trials (spec difftest/specs/0049cd90_SelectCrushNetwork.json) | reason VC5 register and loop layout
@@ -10142,7 +10242,7 @@ void C2_HOOK_FASTCALL WeldCarByNetwork(tCar_spec* pCar) {
         v.v[1] = (info->bb1.min.v[1] + info->bb1.max.v[1]) * 0.5f;
         break;
     }
-    CrushPanelWithForce(pCar, id_a, id_b, id_c, &v, *(tU32*)&temp, 0);
+    BendCar(pCar, id_a, id_b, id_c, &v, temp, 0);
 }
 
 // FUNCTION: CARMA2_HW 0x0043df10
@@ -10471,22 +10571,57 @@ void C2_HOOK_FASTCALL SphericizePhysics(tCar_spec* pCar, const br_vector3* pCent
     gGonad_sphere_collision_shape->common.type = kCollisionShapeType_Sphere;
     pCar->field_0x18c8 = 2;
 }
+// C2PORT-NONMATCHING: best 62.48% | difftest PASS 2000 trials (spec difftest/specs/004391d0_SphericizeCar.json) | reason x87-scheduling-inlined-loop
 // FUNCTION: CARMA2_HW 0x004391d0
 void C2_HOOK_FASTCALL SphericizeCar(tCar_spec* pCar) {
     br_vector3 center;
+    br_vector3 tv;
+    br_vector3 delta;
     br_scalar radius;
+    br_scalar length;
     br_model* shell_model;
+    int i;
 
     shell_model = pCar->shell_model;
     if (shell_model != NULL) {
         Vector3Average(&center, &shell_model->bounds.min, &shell_model->bounds.max);
         radius = Vector3Distance(&center, &shell_model->bounds.min);
-        SphericizeModel(shell_model, &center, radius);
+        for (i = 0; i < shell_model->nvertices; i++) {
+            BrVector3Sub(&tv, &shell_model->vertices[i].p, &center);
+            length = BrVector3Length(&tv);
+            if (length > gFLOAT_00589a5c) {
+                BrVector3Scale(&tv, &tv, 1.f / length);
+            } else {
+                BrVector3Set(&tv, gFLOAT_00589a54, gCrushZero, gCrushZero);
+            }
+            BrVector3Scale(&shell_model->vertices[i].p, &tv, radius);
+            BrVector3Accumulate(&shell_model->vertices[i].p, &center);
+        }
+        BrModelUpdate(shell_model, BR_MODU_VERTEX_POSITIONS);
         pCar->car_model_actor->children = NULL;
-        SphericizePhysics(pCar, &center, radius);
+        gGonad_sphere_collision_shape->sphere.sphere.radius = radius;
+        BrVector3Copy(&gGonad_sphere_collision_shape->sphere.sphere.center, &center);
+        gGonad_sphere_collision_shape->common.next = NULL;
+        FillInShape(gGonad_sphere_collision_shape);
+        pCar->collision_info->shape = gGonad_sphere_collision_shape;
+        UpdateCollisionObject(pCar->collision_info);
+        BrVector3Copy(&pCar->collision_info->cmpos, &center);
+        pCar->collision_info->M = 50.f;
+        BrVector3Set(&pCar->collision_info->I,
+            CARPOCALYPSE2_SQR(pCar->collision_info->shape->sphere.sphere.radius) * pCar->collision_info->M * (1.f / 6.f),
+            CARPOCALYPSE2_SQR(pCar->collision_info->shape->sphere.sphere.radius) * pCar->collision_info->M * (1.f / 6.f),
+            CARPOCALYPSE2_SQR(pCar->collision_info->shape->sphere.sphere.radius) * pCar->collision_info->M * (1.f / 6.f));
+        pCar->collision_info->world_friction = 16.f;
+        gGonad_sphere_collision_shape->common.type = kCollisionShapeType_Box;
+        while (!TestForCarInSensiblePlace(pCar, &delta)) {
+            BrVector3InvScale(&delta, &delta, 2.f * WORLD_SCALE);
+            BrVector3Accumulate((br_vector3*)&pCar->collision_info->transform_matrix.m[3], &delta);
+        }
+        gGonad_sphere_collision_shape->common.type = kCollisionShapeType_Sphere;
         pCar->invulnerable_no_crushage = 1;
         pCar->invulnerable_no_damage = 1;
         pCar->use_shell_model = 1;
+        pCar->field_0x18c8 = 2;
     }
 }
 

@@ -739,7 +739,7 @@ tPhysics_object** C2_HOOK_FASTCALL AppendOverlappingObjects(tPhysics_object* pOb
 void C2_HOOK_FASTCALL SetFieldF0Tree(tPhysics_object* pObject, int pValue);
 void C2_HOOK_FASTCALL FUN_004bddd0(tPhysics_object* pObject1, tPhysics_object* pObject2);
 
-void C2_HOOK_FASTCALL FUN_004be4b0(float* pNormal, float* pScaledVector, const float* pVector1, const float* pVector2, tPhysics_object* pObject);
+void C2_HOOK_FASTCALL SetUpForce(float* pNormal, float* pScaledVector, const float* pVector1, const float* pVector2, tPhysics_object* pObject);
 
 tPhysics_object* C2_HOOK_FASTCALL FUN_004be550(br_vector3* pAngular_delta, br_vector3* pLinear_delta, br_vector3* pAngular_delta_other, br_vector3* pLinear_delta_other, const br_vector3* pImpulse, tPhysics_object* pObject);
 tPhysics_object* C2_HOOK_FASTCALL FUN_004becf0(br_vector3* pAngular_delta, br_vector3* pLinear_delta, br_vector3* pAngular_delta_other, br_vector3* pLinear_delta_other, tPhysics_object* pObject);

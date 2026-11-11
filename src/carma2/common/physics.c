@@ -751,6 +751,8 @@ br_scalar gFLOAT_0065d00c = 1.f;
 // GLOBAL: CARMA2_HW 0x0058a768
 br_scalar gFLOAT_0058a768 = 0.0f;
 
+extern const br_scalar gFLOAT_0058a8b0;
+
 // GLOBAL: CARMA2_HW 0x0058a780
 const double gDOUBLE_0058a780 = 1.0;
 
@@ -2815,8 +2817,10 @@ int C2_HOOK_FASTCALL PhysicsObjectRecurse(tPhysics_object* pCollision_info, tEnu
 int C2_HOOK_FASTCALL FlagsAreGo(tPhysics_object* pCollision_1, tPhysics_object* pCollision_2) {
     int blocked;
 
-    blocked = (pCollision_2->field_0x1a4 & pCollision_1->field_0x1a0)
-        || (pCollision_1->field_0x1a4 & pCollision_2->field_0x1a0)
+    /* Volatile keeps retail's load order (0x1a4 before 0x1a0); VC5 otherwise
+       canonicalises the commutative ANDs and the byte diff never closes. */
+    blocked = (*(volatile int*)&pCollision_2->field_0x1a4 & *(volatile int*)&pCollision_1->field_0x1a0)
+        || (*(volatile int*)&pCollision_1->field_0x1a4 & *(volatile int*)&pCollision_2->field_0x1a0)
         || (pCollision_1->flags & 4)
         || (pCollision_2->flags & 4);
     return !blocked;
@@ -4724,7 +4728,7 @@ void C2_HOOK_FASTCALL PhysicsObjectApplyTorque(tPhysics_object* pObject, const b
     br_vector3 torque;
     br_vector3 inertia;
 
-    BrVector3Scale(&torque, pTorque, 1.0f / (WORLD_SCALE * WORLD_SCALE));
+    BrVector3Scale(&torque, pTorque, gFLOAT_0058a8b0);
     BrVector3Copy(&inertia, &pObject->I);
     pObject->omega.v[0] += torque.v[0] / inertia.v[0];
     pObject->omega.v[1] += torque.v[1] / inertia.v[1];
@@ -4738,7 +4742,7 @@ void C2_HOOK_FASTCALL ApplyWaterOmegaBrake(tPhysics_object* pObject, const br_ve
     br_vector3 inertia;
 
     original_omega = pObject->omega;
-    BrVector3Scale(&tv, pV, (br_scalar)(1.0 / (WORLD_SCALE_D * WORLD_SCALE_D)));
+    BrVector3Scale(&tv, pV, gFLOAT_0058a8b0);
     BrVector3Copy(&inertia, &pObject->I);
     pObject->omega.v[0] -= tv.v[0] / inertia.v[0];
     pObject->omega.v[1] -= tv.v[1] / inertia.v[1];
@@ -4753,6 +4757,12 @@ void C2_HOOK_FASTCALL ApplyWaterOmegaBrake(tPhysics_object* pObject, const br_ve
         pObject->omega.v[2] = 0.0f;
     }
 }
+
+
+
+
+
+
 
 // FUNCTION: CARMA2_HW 0x004b6ce0
 void C2_HOOK_FASTCALL ProcessDrag2(tPHIL_queued_header* pObject_info, tPhysics_object* pObject, float pDrag, int pObject_info_flags, tSpecial_volume* pSpecial_volume) {
@@ -4859,6 +4869,9 @@ void C2_HOOK_FASTCALL MarkObjectAndChildrenAsPassive(tPhysics_object* pObject) {
         MarkObjectAndChildrenAsPassive(child);
     }
 }
+
+// GLOBAL: CARMA2_HW 0x0058a8b0
+const br_scalar gFLOAT_0058a8b0 = 0.021003990758244065f;
 
 // GLOBAL: CARMA2_HW 0x0058a8b8
 const br_scalar gFLOAT_0058a8b8 = 0.0f;
@@ -9149,7 +9162,7 @@ void C2_HOOK_FASTCALL FUN_004b8cf0(tPhysics_object* pObject) {
     /* retail esp+0x120/0xc0/0x60: three consecutive 0x60-byte solver rows, walked below by
      * stepping 0x60 bytes from the first. Separate locals only worked where the compiler happened
      * to lay them out contiguously (MSVC x86); GCC/ARM did not and the solver read garbage objects
-     * (Vita 00.23 crash in FUN_004be4b0 via FUN_004bf490). */
+     * (Vita 00.23 crash in SetUpForce via FUN_004bf490). */
     union {
         tCollision_contact contact;
         tPhysics_joint_data joint;
@@ -9469,7 +9482,7 @@ LAB_004bfbea:
         }
       }
       else {
-        FUN_004be4b0(&local_d0, &local_60, (const float*)(iVar1 + 0x14), (const float*)(iVar1 + 0x2c), (tPhysics_object*)iVar8);
+        SetUpForce(&local_d0, &local_60, (const float*)(iVar1 + 0x14), (const float*)(iVar1 + 0x2c), (tPhysics_object*)iVar8);
         if (*(int *)(iVar8 + 0x1e4) == 0) {
           local_e0 = 0;
         }
@@ -9479,7 +9492,7 @@ LAB_004bfbea:
         iVar8 = 0;
         local_68 = 0;
         if ((iVar9 != 0) &&
-           (FUN_004be4b0(&local_dc, &local_54, (const float*)(iVar1 + 0x20), (const float*)(iVar1 + 0x38), (tPhysics_object*)iVar9), *(int *)(iVar9 + 0x1e4) != 0)) {
+           (SetUpForce(&local_dc, &local_54, (const float*)(iVar1 + 0x20), (const float*)(iVar1 + 0x38), (tPhysics_object*)iVar9), *(int *)(iVar9 + 0x1e4) != 0)) {
           iVar8 = (int)(uintptr_t)FUN_004becf0(&local_dc, &local_54, &local_88, &local_c, (tPhysics_object*)iVar9);
           local_68 = iVar8;
         }
@@ -10356,27 +10369,23 @@ void C2_HOOK_FAKE_THISCALL FUN_004c28a0(tPhysics_object* pObject, float pDt) {
 }
 
 // FUNCTION: CARMA2_HW 0x004be4b0
-void C2_HOOK_FASTCALL FUN_004be4b0(float* pNormal, float* pScaledVector, const float* pVector1, const float* pVector2, tPhysics_object* pObject) {
-    float fVar1;
-    int iVar2;
+void C2_HOOK_FASTCALL SetUpForce(float* pNormal, float* pScaledVector, const float* pVector1, const float* pVector2, tPhysics_object* pObject) {
+    double inverse_mass;
+    int i;
 
-    if ((pObject->flags & 0x800) == 0) {
-        pNormal[0] = pVector1[1] * pVector2[2] - pVector1[2] * pVector2[1];
-        pNormal[1] = pVector1[2] * pVector2[0] - pVector2[2] * pVector1[0];
-        pNormal[2] = pVector2[1] * pVector1[0] - pVector1[1] * pVector2[0];
-        for (iVar2 = 0; iVar2 < 3; iVar2++) {
-            pNormal[iVar2] = pNormal[iVar2] / pObject->I.v[iVar2];
+    if (!(pObject->flags & 0x800)) {
+        BrVector3Cross((br_vector3*)pNormal, (const br_vector3*)pVector1, (const br_vector3*)pVector2);
+        for (i = 0; i < 3; i++) {
+            pNormal[i] /= pObject->I.v[i];
         }
     } else {
-        pNormal[0] = 0.f;
-        pNormal[1] = 0.f;
-        pNormal[2] = 0.f;
+        BrVector3Set((br_vector3*)pNormal, 0.0f, 0.0f, 0.f);
     }
-    fVar1 = (float)(1.0 / pObject->M);
-    pScaledVector[0] = fVar1 * pVector2[0];
-    pScaledVector[1] = fVar1 * pVector2[1];
-    pScaledVector[2] = fVar1 * pVector2[2];
+    inverse_mass = gDOUBLE_0058a780 / pObject->M;
+    BrVector3Scale((br_vector3*)pScaledVector, (const br_vector3*)pVector2, inverse_mass);
 }
+
+
 
 // C2PORT-NONMATCHING: best 29.39% | difftest PASS 2000 trials (spec difftest/specs/004be550_FUN_004be550.json) | reason x87-order
 // FUNCTION: CARMA2_HW 0x004be550
@@ -10837,7 +10846,7 @@ void C2_HOOK_FAKE_THISCALL FUN_004b7960(tPhysics_joint_data* pJoint_data, float 
             pObject1->omega.v[2] += angular_delta.v[2] / pObject1->I.v[2];
         }
     } else {
-        FUN_004be4b0(angular_delta.v, linear_delta.v, pJoint_data->anchor1.v, pJoint_data->axis1.v, pObject1);
+        SetUpForce(angular_delta.v, linear_delta.v, pJoint_data->anchor1.v, pJoint_data->axis1.v, pObject1);
         pPartner = FUN_004becf0(&angular_delta, &linear_delta, &angular_delta_other, &linear_delta_other, pObject1);
         angular_delta.v[0] *= pDt;
         angular_delta.v[1] *= pDt;
@@ -10875,7 +10884,7 @@ void C2_HOOK_FAKE_THISCALL FUN_004b7960(tPhysics_joint_data* pJoint_data, float 
 
     if (pObject2 != NULL && pJoint_data->field_0x5c != 0xe) {
         if (pObject2->field_0x1e4 != 0) {
-            FUN_004be4b0(angular_delta.v, linear_delta.v, pJoint_data->anchor2.v, pJoint_data->axis2.v, pObject2);
+            SetUpForce(angular_delta.v, linear_delta.v, pJoint_data->anchor2.v, pJoint_data->axis2.v, pObject2);
             pPartner = FUN_004becf0(&angular_delta, &linear_delta, &angular_delta_other, &linear_delta_other, pObject2);
             pDt = -pDt;
             angular_delta.v[0] *= pDt;
