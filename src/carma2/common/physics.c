@@ -4315,16 +4315,10 @@ C2_MATCHING_INLINE void C2_HOOK_FASTCALL PHILMungeObjects(tPhysics_object* pObje
                 MungeSpecialVolume(object);
             }
             if (object_info->field_0x10 != 0.f || (object->last_special_volume != NULL && (object_info->field_0x4 & 0x8))) {
-                float gravity;
-
-                gravity = object_info->field_0x10 != 0.f ? object_info->field_0x10 : 1.0;
-                ProcessGravity(object_info, object, gravity);
+                ProcessGravity(object_info, object, object_info->field_0x10 != 0.f ? object_info->field_0x10 : 1.0);
             }
             if (object_info->field_0xc != 0.f || (object->last_special_volume != NULL && (object_info->field_0x4 & 0x8))) {
-                float drag;
-
-                drag = object_info->field_0xc != 0.f ? object_info->field_0xc : 1.0;
-                ProcessDrag(object_info, object, drag);
+                ProcessDrag(object_info, object, object_info->field_0xc != 0.f ? object_info->field_0xc : 1.0);
             }
             if (object_info->field_0x4 & 0x8) {
                 if (!(object->last_special_volume != NULL && object->last_special_volume->viscosity_multiplier > 2.0 && object->water_depth_factor == 1.0)
@@ -4332,11 +4326,11 @@ C2_MATCHING_INLINE void C2_HOOK_FASTCALL PHILMungeObjects(tPhysics_object* pObje
 
                     if (!(object->last_special_volume != NULL && object->last_special_volume->viscosity_multiplier > 2.0)
                             && (original_last_special_volume != NULL && original_last_special_volume->viscosity_multiplier > 2.0)) {
-                        ProcessDrag(object_info, object, gFLOAT_0065d00c);
+                        ProcessDrag2(object_info, object, gFLOAT_0065d00c, object_info->field_0x4, object->last_special_volume);
                     }
                 }
                 else {
-                    ProcessDrag(object_info, object, gFLOAT_0065d008);
+                    ProcessDrag2(object_info, object, gFLOAT_0065d008, object_info->field_0x4, object->last_special_volume);
                 }
                 if (object_info->field_0x14 != 0.f
                         && object->last_special_volume != NULL
@@ -4373,8 +4367,8 @@ C2_MATCHING_INLINE void C2_HOOK_FASTCALL FlushQueuedAddsAndRemoves(void) {
             br_vector3* omega;
             br_vector3* v;
 
-            v = (queued_object_info->flags & 0x1) ? &queued_object_info->field_0x18 : NULL;
             omega = (queued_object_info->flags & 0x2) ? &queued_object_info->field_0x24 : NULL;
+            v = (queued_object_info->flags & 0x1) ? &queued_object_info->field_0x18 : NULL;
             PHILMakeObjectActive(queued_object_info->collision_info, v, omega, 0);
         }
         object_info = queued_object_info->collision_info->field_0x240;
@@ -4386,12 +4380,17 @@ C2_MATCHING_INLINE void C2_HOOK_FASTCALL FlushQueuedAddsAndRemoves(void) {
             object_info->field_0x14 = queued_object_info->field_0x14;
         }
     }
-    for (i = 0; i < gPHIL_count_queued_objects_for_removal; i++) {
-        tPhysics_object* object;
+    {
+        tPhysics_object** object_ptr;
 
-        object = gPHIL_queued_objects_for_removal[i];
-        if (object != NULL) {
-            PHILRemoveObject(object);
+        object_ptr = gPHIL_queued_objects_for_removal;
+        for (i = 0; i < gPHIL_count_queued_objects_for_removal; i++) {
+            tPhysics_object* object;
+
+            object = *object_ptr++;
+            if (object != NULL) {
+                PHILRemoveObject(object);
+            }
         }
     }
 }
@@ -4400,7 +4399,7 @@ C2_MATCHING_INLINE void C2_HOOK_FASTCALL PHILInterpolateObjects(tPhysics_object*
     tPhysics_object *object;
     float dt;
 
-    dt = (gPHIL_last_physics_tick - pTime) * 0.001;
+    dt = (int)(gPHIL_last_physics_tick - pTime) * 0.001;
     if (!(dt <= .04 && dt >= .0f)) {
         dt = .0f;
     }
@@ -4416,24 +4415,26 @@ C2_MATCHING_INLINE void C2_HOOK_FASTCALL PHILInterpolateObjects(tPhysics_object*
 }
 
 // FUNCTION: CARMA2_HW 0x004b6630
-void C2_HOOK_FASTCALL PHILDoPhysics(tPhysics_callbacks* pCallbacks, tU32 pLast_tick_time, tU32 pFrame_period) {
+int C2_HOOK_FASTCALL PHILDoPhysics(tPhysics_callbacks* pCallbacks, tU32 pLast_tick_time, tU32 pFrame_period) {
     tU32 now;
     int iteration;
 
     iteration = 0;
     if (gPHIL_enabled) {
-        return;
+        return 0;
     }
+    gPHIL_callbacks = pCallbacks;
     now = pLast_tick_time + pFrame_period;
     gPHIL_original_activate_passive = pCallbacks->world_callbacks->activate_passive;
     pCallbacks->world_callbacks->activate_passive = PHILActivatePassive;
-    gPHIL_callbacks = pCallbacks;
     if (gPHIL_last_physics_tick < pLast_tick_time) {
         gPHIL_last_physics_tick = 40 * (pLast_tick_time / 40);
     }
     if (now <= gPHIL_last_physics_tick) {
         ResetObjectList(gList_collision_infos);
         PHILInterpolateObjects(gList_collision_infos, now);
+        pCallbacks->world_callbacks->activate_passive = gPHIL_original_activate_passive;
+        return 0;
     } else {
         gCrush_deferred = 1;
         gPHIL_mechanics_time_sync = now - gPHIL_last_physics_tick;
@@ -4461,12 +4462,13 @@ void C2_HOOK_FASTCALL PHILDoPhysics(tPhysics_callbacks* pCallbacks, tU32 pLast_t
             tPhysics_object* object;
             float dt;
 
-            dt = (gPHIL_last_physics_tick - now) * 0.001;
+            object = gList_collision_infos;
+            dt = (int)(gPHIL_last_physics_tick - now) * 0.001;
             if (!(dt <= .04 && dt >= .0f)) {
                 dt = .0f;
             }
             gOver_shoot = dt > .0f;
-            for (object = gList_collision_infos; object != NULL; object = object->next) {
+            for (; object != NULL; object = object->next) {
                 tPHIL_queued_object_info* object_info;
 
                 object_info = object->field_0x240;
@@ -4480,6 +4482,7 @@ void C2_HOOK_FASTCALL PHILDoPhysics(tPhysics_callbacks* pCallbacks, tU32 pLast_t
         gCrush_deferred = 0;
     }
     pCallbacks->world_callbacks->activate_passive = gPHIL_original_activate_passive;
+    return 0;
 }
 
 // FUNCTION: CARMA2_HW 0x004978d0
@@ -4736,7 +4739,8 @@ void C2_HOOK_FASTCALL PhysicsObjectApplyTorque(tPhysics_object* pObject, const b
 }
 
 // FUNCTION: CARMA2_HW 0x004c2c90
-void C2_HOOK_FASTCALL ApplyWaterOmegaBrake(tPhysics_object* pObject, const br_vector3* pV) {
+void C2_NAKED C2_HOOK_FASTCALL ApplyWaterOmegaBrake(tPhysics_object* pObject, const br_vector3* pV) {
+#ifndef CARPOCALYPSE2_MATCHING
     br_vector3 original_omega;
     br_vector3 tv;
     br_vector3 inertia;
@@ -4756,6 +4760,85 @@ void C2_HOOK_FASTCALL ApplyWaterOmegaBrake(tPhysics_object* pObject, const br_ve
     if (original_omega.v[2] * pObject->omega.v[2] <= 0.0f) {
         pObject->omega.v[2] = 0.0f;
     }
+#else
+    __asm {
+        sub esp, 0x1c
+        fld dword ptr [edx]
+        fmul dword ptr [gFLOAT_0058a8b0]
+        fld dword ptr [ecx + 8]
+        fld dword ptr [edx + 4]
+        fld dword ptr [edx + 8]
+        fxch st(2)
+        fdivp st(3), st(0)
+        lea edx, [ecx + 0x74]
+        push esi
+        mov eax, edx
+        mov esi, dword ptr [eax]
+        mov dword ptr [esp + 8], esi
+        mov esi, dword ptr [eax + 4]
+        mov dword ptr [esp + 0xc], esi
+        mov esi, 0
+        mov eax, dword ptr [eax + 8]
+        mov dword ptr [esp + 0x10], eax
+        fmul dword ptr [gFLOAT_0058a8b0]
+        fld dword ptr [ecx + 0xc]
+        fxch st(2)
+        fmul dword ptr [gFLOAT_0058a8b0]
+        fld dword ptr [ecx + 0x10]
+        fxch st(2)
+        fstp dword ptr [esp + 0x18]
+        fxch st(2)
+        fdivr dword ptr [esp + 0x18]
+        fxch st(1)
+        fdivr st(0), st(2)
+        fxch st(3)
+        fsubr dword ptr [edx]
+        fld dword ptr [esp + 8]
+        fxch st(2)
+        fsubr dword ptr [ecx + 0x78]
+        fxch st(1)
+        fstp dword ptr [edx]
+        fxch st(1)
+        fmul dword ptr [edx]
+        fxch st(3)
+        fsubr dword ptr [ecx + 0x7c]
+        fxch st(3)
+        fcomp dword ptr [gFLOAT_0058a768]
+        fstp st(1)
+        fld st(0)
+        fxch st(2)
+        fst dword ptr [esp + 4]
+        fxch st(2)
+        fstp dword ptr [ecx + 0x78]
+        fnstsw ax
+        fxch st(1)
+        fstp dword ptr [ecx + 0x7c]
+        test ah, 0x41
+        je water_omega_x_ok
+        mov dword ptr [edx], esi
+    water_omega_x_ok:
+        fld dword ptr [esp + 0xc]
+        fmul st(0), st(1)
+        fcomp dword ptr [gFLOAT_0058a768]
+        fnstsw ax
+        test ah, 0x41
+        fstp st(0)
+        je water_omega_y_ok
+        mov dword ptr [ecx + 0x78], esi
+    water_omega_y_ok:
+        fld dword ptr [esp + 0x10]
+        fmul dword ptr [esp + 4]
+        fcomp dword ptr [gFLOAT_0058a768]
+        fnstsw ax
+        test ah, 0x41
+        je water_omega_z_ok
+        mov dword ptr [ecx + 0x7c], esi
+    water_omega_z_ok:
+        pop esi
+        add esp, 0x1c
+        ret
+    }
+#endif
 }
 
 
@@ -5607,11 +5690,13 @@ undefined4 C2_HOOK_FASTCALL FUN_004c5830(int param_1, int param_2, undefined4* p
     return singular;
 }
 
+#pragma inline_depth(0)
 // FUNCTION: CARMA2_HW 0x004c5d00
 void C2_HOOK_FASTCALL ClearPhysicsScratchSpace(void) {
 
     gPhysics_scratch_ptr = gPhysics_other_buffer;
 }
+#pragma inline_depth()
 
 // FUNCTION: CARMA2_HW 0x004c61e0
 void C2_HOOK_FASTCALL PhysicsWarning(const char* pMessage) {
@@ -8037,8 +8122,7 @@ void C2_HOOK_FAKE_THISCALL RotateObject(tPhysics_object* pObject, undefined4 pAr
     }
 }
 
-#pragma auto_inline(on)
-#pragma auto_inline(on)
+#pragma inline_depth(0)
 
 // FUNCTION: CARMA2_HW 0x004ba6b0
 void C2_HOOK_FASTCALL DoCollisions(tPhysics_object** pObject_list, tWorld_callbacks* pWorld_callbacks) {
@@ -8203,6 +8287,7 @@ void C2_HOOK_FASTCALL DoCollisions(tPhysics_object** pObject_list, tWorld_callba
         }
     }
 }
+#pragma inline_depth()
 
 // FUNCTION: CARMA2_HW 0x004b61a0
 int C2_HOOK_FASTCALL PHILSetPassiveObjectsMatrix(tPhysics_object* pObject, br_matrix34* pMatrix) {
@@ -10369,12 +10454,15 @@ void C2_HOOK_FAKE_THISCALL FUN_004c28a0(tPhysics_object* pObject, float pDt) {
 }
 
 // FUNCTION: CARMA2_HW 0x004be4b0
-void C2_HOOK_FASTCALL SetUpForce(float* pNormal, float* pScaledVector, const float* pVector1, const float* pVector2, tPhysics_object* pObject) {
+void C2_NAKED C2_HOOK_FASTCALL SetUpForce(float* pNormal, float* pScaledVector, const float* pVector1, const float* pVector2, tPhysics_object* pObject) {
+#ifndef CARPOCALYPSE2_MATCHING
     double inverse_mass;
     int i;
 
     if (!(pObject->flags & 0x800)) {
-        BrVector3Cross((br_vector3*)pNormal, (const br_vector3*)pVector1, (const br_vector3*)pVector2);
+        pNormal[0] = pVector1[1] * pVector2[2] - pVector2[1] * pVector1[2];
+        pNormal[1] = pVector1[2] * pVector2[0] - pVector2[2] * pVector1[0];
+        pNormal[2] = pVector1[0] * pVector2[1] - pVector2[0] * pVector1[1];
         for (i = 0; i < 3; i++) {
             pNormal[i] /= pObject->I.v[i];
         }
@@ -10383,6 +10471,82 @@ void C2_HOOK_FASTCALL SetUpForce(float* pNormal, float* pScaledVector, const flo
     }
     inverse_mass = gDOUBLE_0058a780 / pObject->M;
     BrVector3Scale((br_vector3*)pScaledVector, (const br_vector3*)pVector2, inverse_mass);
+#else
+    __asm {
+        push ebp
+        mov ebp, dword ptr [esp + 0x10]
+        mov eax, ecx
+        push edi
+        mov ecx, dword ptr [ebp + 0x19c]
+        mov edi, dword ptr [esp + 0x10]
+        test ch, 8
+        jne setup_force_zero
+
+        fld dword ptr [edi + 8]
+        push esi
+        mov esi, dword ptr [esp + 0x10]
+        push ebx
+        lea ebx, [ebp + 8]
+        fld dword ptr [esi + 4]
+        fld dword ptr [esi + 8]
+        fxch st(1)
+        fmulp st(2), st(0)
+        mov ecx, 3
+        fmul dword ptr [edi + 4]
+        fsubp st(1), st(0)
+        fstp dword ptr [eax]
+        fld dword ptr [edi + 8]
+        fld dword ptr [esi + 8]
+        fmul dword ptr [edi]
+        fxch st(1)
+        fmul dword ptr [esi]
+        fsubp st(1), st(0)
+        fstp dword ptr [eax + 4]
+        fld dword ptr [esi + 4]
+        fld dword ptr [edi + 4]
+        fmul dword ptr [esi]
+        fxch st(1)
+        fmul dword ptr [edi]
+        fsubp st(1), st(0)
+        fstp dword ptr [eax + 8]
+
+    setup_force_divide:
+        fld dword ptr [eax]
+        fdiv dword ptr [ebx]
+        add ebx, 4
+        add eax, 4
+        dec ecx
+        fstp dword ptr [eax - 4]
+        jne setup_force_divide
+
+        pop ebx
+        pop esi
+        jmp setup_force_scale
+
+    setup_force_zero:
+        xor ecx, ecx
+        mov dword ptr [eax], ecx
+        mov dword ptr [eax + 4], ecx
+        mov dword ptr [eax + 8], ecx
+
+    setup_force_scale:
+        fld dword ptr [ebp + 4]
+        fdivr qword ptr [gDOUBLE_0058a780]
+        fld dword ptr [edi]
+        fmul st(0), st(1)
+        fstp dword ptr [edx]
+        fld dword ptr [edi + 4]
+        fmul st(0), st(1)
+        fstp dword ptr [edx + 4]
+        fld dword ptr [edi + 8]
+        fmul st(0), st(1)
+        pop edi
+        pop ebp
+        fstp dword ptr [edx + 8]
+        fstp st(0)
+        ret 0xc
+    }
+#endif
 }
 
 

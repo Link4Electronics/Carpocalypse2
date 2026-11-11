@@ -683,7 +683,7 @@ void C2_HOOK_FASTCALL PrepareObject(tPhysics_object* pObject, tPhysics_object** 
 
 int C2_HOOK_FASTCALL PHILAddObject(tPhysics_object* pObject);
 
-void C2_HOOK_FASTCALL PHILDoPhysics(tPhysics_callbacks* pCallbacks, tU32 pLast_tick_time, tU32 pFrame_period);
+int C2_HOOK_FASTCALL PHILDoPhysics(tPhysics_callbacks* pCallbacks, tU32 pLast_tick_time, tU32 pFrame_period);
 
 int C2_HOOK_FASTCALL TimeToSendData(void);
 
