@@ -3321,16 +3321,16 @@ void C2_HOOK_FAKE_THISCALL ControlCar2(tCar_spec* c, undefined4 arg2, br_scalar 
 
     c->acc_force = 0.0f;
     if (c->keys.acc) {
-        c->acc_force = 7.0f * c->collision_info->M;
+        c->acc_force = gFloat_005896d8 * c->collision_info->M;
     }
     if (c->keys.dec) {
-        c->acc_force = -(7.0f * c->collision_info->M);
+        c->acc_force = -(gFloat_005896d8 * c->collision_info->M);
     }
     if (c->keys.left) {
-        if (c->turn_speed < 0.0f) {
+        if (c->turn_speed < gFlyCarZero) {
             c->turn_speed = 0.0f;
         }
-        if (c->curvature < 0.0f) {
+        if (c->curvature < gFlyCarZero) {
             c->turn_speed = (float)(c->turn_speed + 0.01 * dt / 0.04f / 2.0);
         } else {
             time_steps = dt / 0.04f;
@@ -3338,14 +3338,14 @@ void C2_HOOK_FAKE_THISCALL ControlCar2(tCar_spec* c, undefined4 arg2, br_scalar 
         }
     }
     if (c->keys.right) {
-        if (c->turn_speed > 0.0f) {
+        if (c->turn_speed > gFlyCarZero) {
             c->turn_speed = 0.0f;
         }
-        if (c->curvature > 0.0f) {
+        if (c->curvature > gFlyCarZero) {
             c->turn_speed = (float)(c->turn_speed - 0.01 * dt / 0.04f / 2.0);
         } else {
             time_steps = dt / 0.04f;
-            c->turn_speed -= time_steps * (0.05f / (5.0f + BrVector3Length(&c->collision_info->v))) / 2.0f;
+            c->turn_speed -= time_steps * (0.05f / (5.0f + BrVector3Length(&c->collision_info->v))) * gFloat_00589650;
         }
     }
     if (!c->keys.left && !c->keys.right) {
@@ -3367,10 +3367,10 @@ void C2_HOOK_FAKE_THISCALL ControlCar3(tCar_spec* c, undefined4 arg2, br_scalar 
     CARPOCALYPSE2_THISCALL_UNUSED(arg2);
 
     if (c->keys.left) {
-        if (c->turn_speed < 0.0f) {
+        if (c->turn_speed < gFlyCarZero) {
             c->turn_speed = 0.0f;
         }
-        if (c->curvature < 0.0f || c->collision_info->omega.v[1] < 0.0f) {
+        if (c->curvature < gFlyCarZero || c->collision_info->omega.v[1] < gFlyCarZero) {
             c->turn_speed = (float)(c->turn_speed + 0.01 * dt / 0.04f / 2.0 * 3.0);
         } else {
             time_steps = dt / 0.04f;
@@ -3378,14 +3378,14 @@ void C2_HOOK_FAKE_THISCALL ControlCar3(tCar_spec* c, undefined4 arg2, br_scalar 
         }
     }
     if (c->keys.right) {
-        if (c->turn_speed > 0.0f) {
+        if (c->turn_speed > gFlyCarZero) {
             c->turn_speed = 0.0f;
         }
-        if (c->curvature > 0.0f || c->collision_info->omega.v[1] > 0.0f) {
+        if (c->curvature > gFlyCarZero || c->collision_info->omega.v[1] > gFlyCarZero) {
             c->turn_speed = (float)(c->turn_speed - 0.01 * dt / 0.04f / 2.0 * 3.0);
         } else {
             time_steps = dt / 0.04f;
-            c->turn_speed = (float)(c->turn_speed - time_steps * (0.05f / (5.0f + BrVector3Length(&c->collision_info->v))) / 2.0f * 0.75);
+            c->turn_speed = (float)(c->turn_speed - time_steps * (0.05f / (5.0f + BrVector3Length(&c->collision_info->v))) * gFloat_00589650 * 0.75);
         }
     }
     if (!c->keys.left && !c->keys.right) {
@@ -3408,45 +3408,45 @@ void C2_HOOK_FAKE_THISCALL ControlCar5(tCar_spec* c, undefined4 arg2, br_scalar 
 
     c->acc_force = 0.0f;
     if (c->keys.acc) {
-        c->acc_force = 7.0f * c->collision_info->M;
+        c->acc_force = gFloat_005896d8 * c->collision_info->M;
     }
     if (c->keys.dec) {
-        c->acc_force = -(7.0f * c->collision_info->M);
+        c->acc_force = -(gFloat_005896d8 * c->collision_info->M);
     }
     if (c->keys.left) {
-        if (c->turn_speed < 0.0f) {
+        if (c->turn_speed < gFlyCarZero) {
             c->turn_speed = 0.0f;
         }
-        if (c->curvature < 0.0f) {
+        if (c->curvature < gFlyCarZero) {
             c->turn_speed = (float)(c->turn_speed + 0.01 * dt / 0.04f / 2.0 * 0.5);
         } else {
             time_steps = dt / 0.04f;
-            c->turn_speed = (float)(c->turn_speed + time_steps * (0.05f / (5.0f + BrVector3Length(&c->collision_info->v))) / 2.0f * 0.5);
+            c->turn_speed = (float)(c->turn_speed + time_steps * (0.05f / (5.0f + BrVector3Length(&c->collision_info->v))) / 2.0f * gDouble_00589638);
         }
     }
     if (c->keys.right) {
-        if (c->turn_speed > 0.0f) {
+        if (c->turn_speed > gFlyCarZero) {
             c->turn_speed = 0.0f;
         }
-        if (c->curvature > 0.0f) {
+        if (c->curvature > gFlyCarZero) {
             c->turn_speed = (float)(c->turn_speed - 0.01 * dt / 0.04f / 2.0 * 0.5);
         } else {
             time_steps = dt / 0.04f;
-            c->turn_speed = (float)(c->turn_speed - time_steps * (0.05f / (5.0f + BrVector3Length(&c->collision_info->v))) / 2.0f * 0.5);
+            c->turn_speed = (float)(c->turn_speed - time_steps * (0.05f / (5.0f + BrVector3Length(&c->collision_info->v))) * gFloat_00589650 * gDouble_00589638);
         }
     }
     if (!c->keys.left && !c->keys.right) {
         c->turn_speed = 0.0f;
-        if (c->curvature < 0.0f && !c->keys.holdw) {
+        if (c->curvature < gFlyCarZero && !c->keys.holdw) {
             time_steps = dt / 0.04f;
             c->curvature = (float)(c->curvature + (0.05f / (5.0f + BrVector3Length(&c->collision_info->v))) * time_steps / 2.0f * 4.0);
-            if (c->curvature > 0.0f) {
+            if (c->curvature > gFlyCarZero) {
                 c->curvature = 0.0f;
             }
-        } else if (c->curvature > 0.0f && !c->keys.holdw) {
+        } else if (c->curvature > gFlyCarZero && !c->keys.holdw) {
             time_steps = dt / 0.04f;
-            c->curvature = (float)(c->curvature - (0.05f / (5.0f + BrVector3Length(&c->collision_info->v))) * time_steps / 2.0f * 4.0);
-            if (c->curvature < 0.0f) {
+            c->curvature = (float)(c->curvature - (0.05f / (5.0f + BrVector3Length(&c->collision_info->v))) * time_steps * gFloat_00589650 * 4.0);
+            if (c->curvature < gFlyCarZero) {
                 c->curvature = 0.0f;
             }
         }
@@ -4624,7 +4624,7 @@ void C2_HOOK_FASTCALL APTCPreCollision(void) {
                                     || car->collision_info->box_face_start <= gFace_count)) {
                             GetFacesInBox(car->collision_info, &gWorld_callbacks);
                         }
-                        if (car->dt != 0.f) {
+                        if (car->dt != gFlyCarZero) {
                             MoveAndCollideCar(car, 0.04f);
                         }
                         if (car->collision_info->child != NULL) {
@@ -4665,7 +4665,7 @@ void C2_HOOK_FASTCALL APTCPreCollision(void) {
                     || (non_car->flags & 0xff) != 0
                     || (non_car->flags & 0xff00) != 0) {
                 non_car->collision_info->disable_move_rotate = 0;
-                if (non_car->dt != 0.f) {
+                if (non_car->dt != gFlyCarZero) {
                     MoveAndCollideNonCar(non_car, 0.04f);
                 }
                 if (non_car->collision_info->child != NULL) {

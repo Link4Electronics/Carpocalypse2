@@ -267,15 +267,12 @@ int C2_HOOK_FASTCALL PHILRemoveObject(tPhysics_object* pObject) {
     for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gPhil_queued_objects.headers); i++) {
         if (gPhil_queued_objects.headers[i].collision_info != NULL
             && gPhil_queued_objects.headers[i].collision_info->next == pObject) {
+            gPhil_queued_objects.headers[i].collision_info->next = pObject->next;
+            if (pObject->next != NULL) {
+                pObject->next->prev = gPhil_queued_objects.headers[i].collision_info;
+            }
             break;
         }
-    }
-    if (i >= (int)CARPOCALYPSE2_ASIZE(gPhil_queued_objects.headers)) {
-        return 0;
-    }
-    gPhil_queued_objects.headers[i].collision_info->next = pObject->next;
-    if (pObject->next != NULL) {
-        pObject->next->prev = gPhil_queued_objects.headers[i].collision_info;
     }
     return 0;
 }

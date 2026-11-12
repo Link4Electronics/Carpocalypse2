@@ -503,6 +503,8 @@ extern int gPHIL_count_list_collision_infos;
 
 extern tPhysics_object* gSensible_place_blocker;
 
+extern tPhysics_object* gUnknown_006923d8;
+
 extern tPhysics_object* gList_collision_infos;
 
 extern int gPHIL_munging_objects;
@@ -649,7 +651,7 @@ void C2_HOOK_FASTCALL FUN_004b73a0(tPhysics_object* pObject, const br_matrix34* 
 
 void C2_HOOK_FAKE_THISCALL MoveJointedObject(tPhysics_object* pObject, undefined4 pArg2, float pDelta_time);
 
-void C2_HOOK_FAKE_THISCALL FUN_004b8fe0(tPhysics_object* pObject, undefined4 pArg2, float pDelta_time);
+void C2_HOOK_FAKE_THISCALL FUN_004b8fe0(tPhysics_object* pObject, float pDelta_time);
 
 void C2_HOOK_FAKE_THISCALL FUN_004b9230(tPhysics_object* pObject, tPhysics_object** ppChanged_object, float pDelta_time);
 
