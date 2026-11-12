@@ -2165,7 +2165,6 @@ address,type,x-text
 0x65cfd0,string,"Wire frame shape has no points"
 0x65cff0,string,"Unknown shape type"
 0x65d01c,string,"Stupid trial position"
-0x65d034,string,"Too many loops in DoCollisions"
 0x65d054,string,"Corrupt group"
 0x65d068,string,"Matrix solve loop overflow"
 0x65d084,string,"This polyhedron is too wierd for me"
