@@ -9085,7 +9085,8 @@ L4c182d:
 #pragma auto_inline(on)
 
 // FUNCTION: CARMA2_HW 0x004c1840
-void C2_HOOK_FASTCALL CapOmega(tPhysics_object* pObject) {
+void C2_NAKED C2_HOOK_FASTCALL CapOmega(tPhysics_object* pObject) {
+#ifndef CARPOCALYPSE2_MATCHING
     br_scalar ts = BrVector3LengthSquared(&pObject->omega) * gFLOAT_0058a824;
     if (ts > gFLOAT_0058a828) {
         ts = (br_scalar)sqrt(ts) * gFLOAT_0058a85c;
@@ -9093,11 +9094,66 @@ void C2_HOOK_FASTCALL CapOmega(tPhysics_object* pObject) {
         pObject->omega.v[1] = pObject->omega.v[1] / (2.f * ts);
         pObject->omega.v[2] = pObject->omega.v[2] / (2.f * ts);
     }
+#else
+    __asm {
+        push    ecx
+        fld     dword ptr [ecx + 0x74]
+        fld     dword ptr [ecx + 0x78]
+        fld     dword ptr [ecx + 0x7c]
+        fxch    st(2)
+        fst     dword ptr [esp]
+        fld     st(1)
+        fxch    st(1)
+        fmul    dword ptr [esp]
+        fxch    st(1)
+        fmul    st, st(2)
+        fxch    st(3)
+        fst     dword ptr [esp]
+        fmul    dword ptr [esp]
+        fxch    st(3)
+        faddp   st(1), st(0)
+        fxch    st(2)
+        faddp   st(2), st(0)
+        fxch    st(1)
+        fmul    dword ptr [gFLOAT_0058a824]
+        fstp    st(1)
+        fcomp   dword ptr [gFLOAT_0058a828]
+        fnstsw  ax
+        test    ah, 0x41
+        jne     L004c18bf
+        fsqrt
+        fmul    dword ptr [gFLOAT_0058a85c]
+        fld     dword ptr [ecx + 0x74]
+        fld     dword ptr [ecx + 0x78]
+        fxch    st(2)
+        fadd    st(0), st(0)
+        fld     dword ptr [ecx + 0x7c]
+        fxch    st(1)
+        fstp    dword ptr [esp]
+        fxch    st(1)
+        fdiv    dword ptr [esp]
+        fxch    st(2)
+        fdiv    dword ptr [esp]
+        fxch    st(1)
+        fdiv    dword ptr [esp]
+        fxch    st(2)
+        fstp    dword ptr [ecx + 0x74]
+        fstp    dword ptr [ecx + 0x78]
+        fstp    dword ptr [ecx + 0x7c]
+        pop     ecx
+        ret
+L004c18bf:
+        fstp    st(0)
+        pop     ecx
+        ret
+    }
+#endif
 }
 
 #pragma auto_inline(off)
 // FUNCTION: CARMA2_HW 0x004c18d0
-void C2_HOOK_FASTCALL TranslateObject(tPhysics_object* pObject) {
+void C2_NAKED C2_HOOK_FASTCALL TranslateObject(tPhysics_object* pObject) {
+#ifndef CARPOCALYPSE2_MATCHING
     tPhysics_joint* joint;
     tPhysics_object* child;
     br_vector3 axis;
@@ -9193,6 +9249,279 @@ void C2_HOOK_FASTCALL TranslateObject(tPhysics_object* pObject) {
             TranslateObject(child);
         }
     }
+#else
+    __asm {
+        sub     esp, 0x5c
+        push    ebx
+        push    ebp
+        push    esi
+        mov     esi, ecx
+        push    edi
+        mov     ecx, dword ptr [esi + 0x188]
+        test    ecx, ecx
+        je L004c1af1
+        fld     dword ptr [ecx + 4]
+        fcomp   dword ptr [gFLOAT_0058a768]
+        fnstsw  ax
+        test    ah, 0x40
+        jne L004c1af1
+        mov     eax, dword ptr [esi + 0x230]
+        test    eax, eax
+        je L004c1af1
+        fld     dword ptr [ecx + 4]
+        fmul    dword ptr [gFLOAT_0058a7f8]
+        fld     dword ptr [gFLOAT_0058a768]
+        lea     ecx, [esi + 8]
+        lea     edx, [esi + 0x8c]
+        fld     st(1)
+        fmul st, st(2)
+        fxch    st(1)
+        fstp    dword ptr [esp + 0x10]
+        mov     dword ptr [esp + 0x18], ecx
+        lea     ecx, [esp + 0x30]
+        fstp    dword ptr [esp + 0x24]
+        mov     dword ptr [esp + 0x14], edx
+        mov     dword ptr [esp + 0x1c], ecx
+        lea     edi, [esp + 0x48]
+        mov     dword ptr [esp + 0x20], 3
+        fstp    st(0)
+L004c194d:
+        add     eax, 0x8c
+        lea     edx, [esp + 0x3c]
+        push    eax
+        mov     eax, dword ptr [esp + 0x18]
+        push    eax
+        push    edx
+        call    BrMatrix34TApplyV
+        mov     eax, dword ptr [esi + 0x230]
+        mov     ebp, dword ptr [esp + 0x24]
+        mov     dword ptr [esp + 0x34], 3
+        add     esp, 0xc
+        fld     dword ptr [eax + 0x74]
+        fld     dword ptr [eax + 0x7c]
+        fld     dword ptr [eax + 0x78]
+        fxch    st(2)
+        fmul    dword ptr [esp + 0x3c]
+        fxch    st(1)
+        fmul    dword ptr [esp + 0x44]
+        fxch    st(2)
+        fmul    dword ptr [esp + 0x40]
+        fxch    st(2)
+        faddp st(1), st(0)
+        fxch    st(1)
+        faddp st(1), st(0)
+        lea     ebx, [eax + 8]
+        lea     edx, [esp + 0x3c]
+        mov     ecx, edi
+        fsub    dword ptr [ebp + 0x6c]
+        mov     ebp, dword ptr [esp + 0x28]
+        fstp    dword ptr [esp + 0x2c]
+L004c19ae:
+        fld     dword ptr [edx]
+        fdiv    dword ptr [ebx]
+        add     edx, 4
+        add     ebx, 4
+        add     ecx, 4
+        dec     ebp
+        fstp    dword ptr [ecx - 4]
+        jne L004c19ae
+        mov     edx, dword ptr [esp + 0x18]
+        mov     ebp, dword ptr [esp + 0x14]
+        add     ebp, 0xc
+        fld     dword ptr [edx]
+        fdivr   qword ptr [gDOUBLE_0058a780]
+        add     edx, 4
+        mov     dword ptr [esp + 0x14], ebp
+        mov     dword ptr [esp + 0x18], edx
+        fld     dword ptr [edi]
+        fld     dword ptr [edi + 8]
+        fld     dword ptr [edi + 4]
+        fxch    st(2)
+        fmul    dword ptr [esp + 0x3c]
+        fxch    st(1)
+        fmul    dword ptr [esp + 0x44]
+        fxch    st(2)
+        fmul    dword ptr [esp + 0x40]
+        fxch    st(2)
+        faddp st(1), st(0)
+        fxch    st(1)
+        faddp st(1), st(0)
+        fxch    st(1)
+        faddp st(1), st(0)
+        mov     edi, ecx
+        mov     ecx, dword ptr [esp + 0x1c]
+        add     ecx, 4
+        fdivr   dword ptr [esp + 0x2c]
+        mov     dword ptr [esp + 0x1c], ecx
+        fld     st(0)
+        fld     st(0)
+        fmul st, st(1)
+        fadd    dword ptr [esp + 0x10]
+        fxch    st(2)
+        fstp    dword ptr [ecx - 4]
+        mov     ecx, dword ptr [esp + 0x20]
+        fxch    st(1)
+        fstp    dword ptr [esp + 0x10]
+        dec     ecx
+        mov     dword ptr [esp + 0x20], ecx
+        fstp    st(0)
+        jne L004c194d
+        fld     dword ptr [esp + 0x10]
+        fcomp   dword ptr [esp + 0x24]
+        fnstsw  ax
+        test    ah, 0x41
+        jne L004c1a7b
+        fld     dword ptr [esp + 0x24]
+        fdiv    dword ptr [esp + 0x10]
+        fsqrt
+        fld     st(0)
+        fld     st(1)
+        fxch    st(1)
+        fmul    dword ptr [esp + 0x30]
+        fxch    st(1)
+        fmul    dword ptr [esp + 0x34]
+        fxch    st(2)
+        fmul    dword ptr [esp + 0x38]
+        fxch    st(1)
+        fstp    dword ptr [esp + 0x30]
+        fxch    st(1)
+        fstp    dword ptr [esp + 0x34]
+        fstp    dword ptr [esp + 0x38]
+L004c1a7b:
+        lea     eax, [esp + 0x48]
+        lea     edx, [esp + 0x30]
+        lea     ecx, [esi + 0x74]
+        mov     ebx, 3
+L004c1a8b:
+        fld     dword ptr [edx]
+        fdiv    dword ptr [ecx - 0x6c]
+        add     ecx, 4
+        add     edx, 4
+        fld     dword ptr [eax]
+        fld     dword ptr [edx - 4]
+        fchs
+        fxch    st(1)
+        fmul st, st(1)
+        fxch    st(2)
+        fadd    dword ptr [ecx - 4]
+        fxch    st(2)
+        fstp    dword ptr [eax]
+        fld     dword ptr [eax + 4]
+        fmul st, st(1)
+        fxch    st(2)
+        fstp    dword ptr [ecx - 4]
+        mov     edi, dword ptr [esi + 0x230]
+        add     eax, 0xc
+        fxch    st(1)
+        fstp    dword ptr [eax - 8]
+        fmul    dword ptr [eax - 4]
+        fst     dword ptr [eax - 4]
+        fld     dword ptr [eax - 0xc]
+        fadd    dword ptr [edi + 0x74]
+        fld     dword ptr [eax - 8]
+        fxch    st(1)
+        fstp    dword ptr [edi + 0x74]
+        mov     edi, dword ptr [esi + 0x230]
+        dec     ebx
+        fadd    dword ptr [edi + 0x78]
+        fstp    dword ptr [edi + 0x78]
+        mov     edi, dword ptr [esi + 0x230]
+        fadd    dword ptr [edi + 0x7c]
+        fstp    dword ptr [edi + 0x7c]
+        jne L004c1a8b
+L004c1af1:
+        mov     ecx, dword ptr [esi + 0x18c]
+        test    ecx, ecx
+        je L004c1bae
+        fld     dword ptr [ecx + 4]
+        fcomp   dword ptr [gFLOAT_0058a768]
+        fnstsw  ax
+        test    ah, 0x40
+        jne L004c1bae
+        fld     dword ptr [ecx + 4]
+        fmul    dword ptr [gFLOAT_0058a7f8]
+        fld     dword ptr [gFLOAT_0058a768]
+        lea     eax, [esi + 8]
+        lea     ecx, [esp + 0x30]
+        fld     st(1)
+        fmul st, st(2)
+        fxch    st(1)
+        fstp    st(2)
+        mov     edx, 3
+L004c1b36:
+        fld     dword ptr [eax + 0x6c]
+        fmul    dword ptr [eax]
+        add     eax, 4
+        add     ecx, 4
+        dec     edx
+        fld     st(0)
+        fld     st(0)
+        fmul st, st(1)
+        faddp st(4), st(0)
+        fxch    st(1)
+        fstp    dword ptr [ecx - 4]
+        fstp    st(0)
+        jne L004c1b36
+        fld     st(1)
+        fcomp   st(1)
+        fnstsw  ax
+        test    ah, 0x41
+        jne L004c1b8a
+        fdivrp st(1), st(0)
+        fsqrt
+        fld     st(0)
+        fld     st(1)
+        fxch    st(1)
+        fmul    dword ptr [esp + 0x30]
+        fxch    st(1)
+        fmul    dword ptr [esp + 0x34]
+        fxch    st(2)
+        fmul    dword ptr [esp + 0x38]
+        fxch    st(1)
+        fstp    dword ptr [esp + 0x30]
+        fxch    st(1)
+        fstp    dword ptr [esp + 0x34]
+        fstp    dword ptr [esp + 0x38]
+        jmp     L004c1b8e
+L004c1b8a:
+        fstp    st(0)
+        fstp    st(0)
+L004c1b8e:
+        lea     ecx, [esp + 0x30]
+        lea     eax, [esi + 0x74]
+        mov     edx, 3
+L004c1b9a:
+        fld     dword ptr [ecx]
+        fdiv    dword ptr [eax - 0x6c]
+        add     ecx, 4
+        add     eax, 4
+        dec     edx
+        fsubr   dword ptr [eax - 4]
+        fstp    dword ptr [eax - 4]
+        jne L004c1b9a
+L004c1bae:
+        mov     esi, dword ptr [esi + 0x224]
+        test    esi, esi
+        je L004c1bd3
+L004c1bb8:
+        mov     al, byte ptr [esi + 0xec]
+        test    al, al
+        jne L004c1bc9
+        mov     ecx, esi
+        call    TranslateObject
+L004c1bc9:
+        mov     esi, dword ptr [esi + 0x220]
+        test    esi, esi
+        jne L004c1bb8
+L004c1bd3:
+        pop     edi
+        pop     esi
+        pop     ebp
+        pop     ebx
+        add     esp, 0x5c
+        ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004c1be0
