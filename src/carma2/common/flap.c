@@ -30,6 +30,11 @@
 #include "c2_math.h"
 #include "carpocalypse2_macros.h"
 
+#ifdef CARPOCALYPSE2_MATCHING
+/* CRT x87 float-to-int helper, called by the naked asm bodies. */
+extern void __cdecl _ftol(void);
+#endif
+
 extern br_scalar gCrushZero;
 extern br_scalar gTorque_to_snap_per_tonne;
 extern br_scalar gCrushSqrtHalf;
@@ -112,7 +117,19 @@ const br_scalar gFLOAT_00589aa4 = -0.007246376946568489f;
 const br_scalar gFLOAT_00589b2c = -1.0f;
 
 // GLOBAL: CARMA2_HW 0x00589b30
-const br_scalar gFLOAT_00589b30 = 0.0f;
+const br_scalar gFLOAT_00589b30 = -0.01f;
+
+// GLOBAL: CARMA2_HW 0x00589b18
+const double gDOUBLE_00589b18 = 99.0;
+
+// GLOBAL: CARMA2_HW 0x00589b20
+const double gDOUBLE_00589b20 = -0.05;
+
+// GLOBAL: CARMA2_HW 0x00589b28
+const br_scalar gFLOAT_00589b28 = 5.0f;
+
+// GLOBAL: CARMA2_HW 0x00589b34
+const br_scalar gFLOAT_00589b34 = 0.001f;
 
 // C2PORT-NONMATCHING: best 50.48% | difftest PASS 2000 trials (spec difftest/specs/00433350_DetachBit.json) | reason VC5 register allocation and x87/loop codegen
 // FUNCTION: CARMA2_HW 0x00433350
@@ -879,14 +896,13 @@ void C2_HOOK_FASTCALL MakeModelMaterialsDoubleSided(br_model* pModel) {
     }
 }
 
-// C2PORT-NONMATCHING: best 58.04% | difftest PASS 2000 trials (spec difftest/specs/004384c0_FlapBit.json) | reason x87-order, register-allocation, stack-layout
 // FUNCTION: CARMA2_HW 0x004384c0
-intptr_t C2_HOOK_FASTCALL FlapBit(br_actor* pActor, br_matrix34* pMat, void* pContext) {
+intptr_t C2_NAKED C2_HOOK_FASTCALL FlapBit(br_actor* pActor, br_matrix34* pMat, void* pContext) {
+#ifndef CARPOCALYPSE2_MATCHING
     tUser_crush_data* user_crush_data;
     tCar_crush_buffer_entry* crush_data;
     tCar_crush_flap_data* flap_data;
     br_model* model;
-    br_model* parent_model;
     br_vertex* hinge0_vertex;
     br_vertex* hinge1_vertex;
     br_vertex* hinge2_vertex;
@@ -896,10 +912,9 @@ intptr_t C2_HOOK_FASTCALL FlapBit(br_actor* pActor, br_matrix34* pMat, void* pCo
     br_vector3 transformed_hinge2_offset;
     br_scalar axis_length;
     br_scalar inverse_axis_length;
-    double moment;
+    br_scalar moment;
     int angle_delta;
     tU16 old_angle;
-    tU16 new_angle;
 
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(br_actor, user, 0x60);
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tUser_crush_data, crush_data, 0x8);
@@ -923,67 +938,51 @@ intptr_t C2_HOOK_FASTCALL FlapBit(br_actor* pActor, br_matrix34* pMat, void* pCo
         return 0;
     }
 
-    model = user_crush_data->models[0];
-    hinge0_vertex = &model->vertices[flap_data->hinge0];
-    hinge1_vertex = &model->vertices[flap_data->hinge1];
-    hinge_axis.v[0] = hinge1_vertex->p.v[0] - hinge0_vertex->p.v[0];
-    hinge_axis.v[1] = hinge1_vertex->p.v[1] - hinge0_vertex->p.v[1];
-    hinge_axis.v[2] = hinge1_vertex->p.v[2] - hinge0_vertex->p.v[2];
-    axis_length = (br_scalar)sqrt((double)(hinge_axis.v[2] * hinge_axis.v[2]
-        + hinge_axis.v[1] * hinge_axis.v[1]
-        + hinge_axis.v[0] * hinge_axis.v[0]));
+    hinge0_vertex = &user_crush_data->models[0]->vertices[flap_data->hinge0];
+    BrVector3Sub(&hinge_axis, &user_crush_data->models[0]->vertices[flap_data->hinge1].p, &hinge0_vertex->p);
+    axis_length = BrVector3Length(&hinge_axis);
     if (axis_length > gFLOAT_00589a5c) {
-        inverse_axis_length = (br_scalar)(gDOUBLE_00589a60 / axis_length);
-        hinge_axis.v[0] *= inverse_axis_length;
-        hinge_axis.v[1] *= inverse_axis_length;
-        hinge_axis.v[2] *= inverse_axis_length;
+        inverse_axis_length = gDOUBLE_00589a60 / axis_length;
+        hinge_axis.v[0] = hinge_axis.v[0] * inverse_axis_length;
+        hinge_axis.v[1] = hinge_axis.v[1] * inverse_axis_length;
+        hinge_axis.v[2] = hinge_axis.v[2] * inverse_axis_length;
     } else {
         hinge_axis.v[0] = 1.0f;
         hinge_axis.v[1] = 0.0f;
         hinge_axis.v[2] = 0.0f;
     }
 
-    hinge2_vertex = &model->vertices[flap_data->hinge2];
-    hinge2_offset.v[0] = hinge2_vertex->p.v[0] - hinge0_vertex->p.v[0];
-    hinge2_offset.v[1] = hinge2_vertex->p.v[1] - hinge0_vertex->p.v[1];
-    hinge2_offset.v[2] = hinge2_vertex->p.v[2] - hinge0_vertex->p.v[2];
-    axis_length = (br_scalar)sqrt((double)(hinge2_offset.v[2] * hinge2_offset.v[2]
-        + hinge2_offset.v[1] * hinge2_offset.v[1]
-        + hinge2_offset.v[0] * hinge2_offset.v[0]));
+    BrVector3Sub(&hinge2_offset, &user_crush_data->models[0]->vertices[flap_data->hinge2].p, &hinge0_vertex->p);
+    axis_length = BrVector3Length(&hinge2_offset);
     if (axis_length > gFLOAT_00589a5c) {
-        inverse_axis_length = (br_scalar)(gDOUBLE_00589a60 / axis_length);
-        hinge2_offset.v[0] *= inverse_axis_length;
-        hinge2_offset.v[1] *= inverse_axis_length;
-        hinge2_offset.v[2] *= inverse_axis_length;
+        inverse_axis_length = gDOUBLE_00589a60 / axis_length;
+        hinge2_offset.v[0] = hinge2_offset.v[0] * inverse_axis_length;
+        hinge2_offset.v[1] = hinge2_offset.v[1] * inverse_axis_length;
+        hinge2_offset.v[2] = hinge2_offset.v[2] * inverse_axis_length;
     } else {
         hinge2_offset.v[0] = 1.0f;
         hinge2_offset.v[1] = 0.0f;
         hinge2_offset.v[2] = 0.0f;
     }
-    BrMatrix34ApplyV(&transformed_hinge2_offset, (const br_vector3*)(const void*)&hinge2_offset, pMat);
+    BrMatrix34ApplyV(&transformed_hinge2_offset, &hinge2_offset, pMat);
 
-    moment = (double)((tFlapBit_arg*)pContext)->force.v[0]
-        * (hinge_axis.v[2] * transformed_hinge2_offset.v[1]
-            - hinge_axis.v[1] * transformed_hinge2_offset.v[2]);
-    moment += (double)((tFlapBit_arg*)pContext)->force.v[2]
-        * (hinge_axis.v[1] * transformed_hinge2_offset.v[0]
-            - hinge_axis.v[0] * transformed_hinge2_offset.v[1]);
-    moment += (double)((tFlapBit_arg*)pContext)->force.v[1]
-        * (hinge_axis.v[0] * transformed_hinge2_offset.v[2]
-            - hinge_axis.v[2] * transformed_hinge2_offset.v[0]);
+    {
+        br_vector3 cross;
+
+        BrVector3Cross(&cross, &hinge_axis, &transformed_hinge2_offset);
+        moment = BrVector3Dot(&cross, &((tFlapBit_arg*)pContext)->force);
+    }
     angle_delta = (int)(atan2(moment * gFlap_inertia_fudge_biscuit,
         crush_data->field_0x24) * gDOUBLE_00589ad0);
     if ((tS16)angle_delta != 0) {
         old_angle = flap_data->field_0x4;
-        new_angle = (tU16)(old_angle + angle_delta);
-        flap_data->field_0x4 = new_angle;
-        if ((tU16)(new_angle - flap_data->field_0x2) > flap_data->field_0x8) {
-            if ((tU16)(new_angle - flap_data->field_0x6) < 0x3ffc) {
-                new_angle = (tU16)flap_data->field_0x6;
+        flap_data->field_0x4 = (tU16)(old_angle + angle_delta);
+        if ((tU16)(flap_data->field_0x4 - flap_data->field_0x2) > flap_data->field_0x8) {
+            if ((tU16)(flap_data->field_0x4 - flap_data->field_0x6) < 0x3ffc) {
+                flap_data->field_0x4 = flap_data->field_0x6;
             } else {
-                new_angle = (tU16)flap_data->field_0x2;
+                flap_data->field_0x4 = flap_data->field_0x2;
             }
-            flap_data->field_0x4 = new_angle;
         }
 
         BrMatrix34Translate(&pActor->t.t.mat,
@@ -991,19 +990,287 @@ intptr_t C2_HOOK_FASTCALL FlapBit(br_actor* pActor, br_matrix34* pMat, void* pCo
             -hinge0_vertex->p.v[1],
             -hinge0_vertex->p.v[2]);
         BrMatrix34PostRotate(&pActor->t.t.mat, (br_angle)flap_data->field_0x4, &hinge_axis);
-        parent_model = ((tUser_crush_data*)pActor->parent->user)->models[0];
-        parent_vertex = &parent_model->vertices[flap_data->field_0xc];
+        parent_vertex = &((tUser_crush_data*)pActor->parent->user)->models[0]->vertices[flap_data->field_0xc];
         BrMatrix34PostTranslate(&pActor->t.t.mat,
             parent_vertex->p.v[0],
             parent_vertex->p.v[1],
             parent_vertex->p.v[2]);
         if (old_angle != flap_data->field_0x4) {
-            AddFlapToPipingSession((uintptr_t)pActor, (tS16)(flap_data->field_0x4 - old_angle));
+            AddFlapToPipingSession(pActor, (br_angle)(flap_data->field_0x4 - old_angle));
         }
     }
     return 0;
+#else
+    __asm {
+        sub esp, 0x28
+        mov dword ptr [esp], ecx
+        mov ecx, dword ptr [ecx+0x60]
+        push ebx
+        push ebp
+        push esi
+        push edi
+        test ecx, ecx
+        je L004387be
+        mov ebp, dword ptr [ecx+8]
+        test ebp, ebp
+        je L004387be
+        mov esi, dword ptr [ebp+0x30]
+        test esi, esi
+        je L004387be
+        mov al, byte ptr [esi+0x20]
+        test al, al
+        jne L004387be
+        cmp byte ptr [esi], 0
+        je L004387be
+        mov eax, dword ptr [ecx]
+        mov ebx, dword ptr [eax+8]
+        xor eax, eax
+        mov ax, word ptr [esi+0xa]
+        lea eax, [eax+eax*4]
+        lea edi, [ebx+eax*8]
+        xor eax, eax
+        mov ax, word ptr [esi+0xe]
+        lea eax, [eax+eax*4]
+        fld dword ptr [ebx+eax*8]
+        fsub dword ptr [edi]
+        xor eax, eax
+        fstp dword ptr [esp+0x14]
+        mov ebx, dword ptr [ecx]
+        mov ax, word ptr [esi+0xe]
+        mov ebx, dword ptr [ebx+8]
+        lea eax, [eax+eax*4]
+        fld dword ptr [ebx+eax*8+4]
+        fsub dword ptr [edi+4]
+        xor eax, eax
+        fstp dword ptr [esp+0x18]
+        mov ebx, dword ptr [ecx]
+        mov ax, word ptr [esi+0xe]
+        mov ebx, dword ptr [ebx+8]
+        lea eax, [eax+eax*4]
+        fld dword ptr [ebx+eax*8+8]
+        fsub dword ptr [edi+8]
+        fld dword ptr [esp+0x14]
+        fmul dword ptr [esp+0x14]
+        fld dword ptr [esp+0x18]
+        fmul dword ptr [esp+0x18]
+        faddp st(1), st(0)
+        fld st(1)
+        fmul st(0), st(2)
+        faddp st(1), st(0)
+        fsqrt
+        fcom dword ptr [gFLOAT_00589a5c]
+        fnstsw ax
+        test ah, 0x41
+        jne L004385a6
+        fdivr qword ptr [gDOUBLE_00589a60]
+        fld st(0)
+        fld st(1)
+        fxch st(1)
+        fmul dword ptr [esp+0x14]
+        fxch st(1)
+        fmul dword ptr [esp+0x18]
+        fxch st(2)
+        fmul st(0), st(3)
+        fxch st(1)
+        fstp dword ptr [esp+0x14]
+        fxch st(1)
+        fstp dword ptr [esp+0x18]
+        fstp dword ptr [esp+0x1c]
+        fstp st(0)
+        jmp L004385c2
+L004385a6:
+        fstp st(0)
+        fstp st(0)
+        mov dword ptr [esp+0x14], 0x3f800000
+        mov dword ptr [esp+0x18], 0
+        mov dword ptr [esp+0x1c], 0
+L004385c2:
+        mov ebx, dword ptr [ecx]
+        xor eax, eax
+        mov ax, word ptr [esi+0x10]
+        mov ebx, dword ptr [ebx+8]
+        lea eax, [eax+eax*4]
+        fld dword ptr [ebx+eax*8]
+        fsub dword ptr [edi]
+        xor eax, eax
+        fstp dword ptr [esp+0x20]
+        mov ebx, dword ptr [ecx]
+        mov ax, word ptr [esi+0x10]
+        mov ebx, dword ptr [ebx+8]
+        lea eax, [eax+eax*4]
+        fld dword ptr [ebx+eax*8+4]
+        fsub dword ptr [edi+4]
+        xor eax, eax
+        fstp dword ptr [esp+0x24]
+        mov ecx, dword ptr [ecx]
+        mov ax, word ptr [esi+0x10]
+        mov ecx, dword ptr [ecx+8]
+        lea eax, [eax+eax*4]
+        fld dword ptr [ecx+eax*8+8]
+        fsub dword ptr [edi+8]
+        fld dword ptr [esp+0x20]
+        fmul dword ptr [esp+0x20]
+        fld dword ptr [esp+0x24]
+        fmul dword ptr [esp+0x24]
+        faddp st(1), st(0)
+        fld st(1)
+        fmul st(0), st(2)
+        faddp st(1), st(0)
+        fsqrt
+        fcom dword ptr [gFLOAT_00589a5c]
+        fnstsw ax
+        test ah, 0x41
+        jne L0043865c
+        fdivr qword ptr [gDOUBLE_00589a60]
+        fld st(0)
+        fld st(1)
+        fxch st(1)
+        fmul dword ptr [esp+0x20]
+        fxch st(1)
+        fmul dword ptr [esp+0x24]
+        fxch st(2)
+        fmul st(0), st(3)
+        fxch st(1)
+        fstp dword ptr [esp+0x20]
+        fxch st(1)
+        fstp dword ptr [esp+0x24]
+        fstp dword ptr [esp+0x28]
+        fstp st(0)
+        jmp L00438678
+L0043865c:
+        fstp st(0)
+        fstp st(0)
+        mov dword ptr [esp+0x20], 0x3f800000
+        mov dword ptr [esp+0x24], 0
+        mov dword ptr [esp+0x28], 0
+L00438678:
+        lea eax, [esp+0x20]
+        push edx
+        lea ecx, [esp+0x30]
+        push eax
+        push ecx
+        call BrMatrix34ApplyV
+        fld dword ptr [esp+0x28]
+        fld dword ptr [esp+0x24]
+        fld dword ptr [esp+0x24]
+        fld dword ptr [esp+0x20]
+        fxch st(3)
+        fmul dword ptr [esp+0x3c]
+        fld dword ptr [esp+0x20]
+        fxch st(3)
+        fmul dword ptr [esp+0x40]
+        fxch st(2)
+        fmul dword ptr [esp+0x38]
+        fxch st(2)
+        fsubp st(1), st(0)
+        fxch st(3)
+        fmul dword ptr [esp+0x3c]
+        fxch st(3)
+        mov eax, dword ptr [esp+0x48]
+        add esp, 0xc
+        fmul dword ptr [eax+4]
+        fld dword ptr [esp+0x1c]
+        fxch st(3)
+        fmul dword ptr [esp+0x34]
+        fxch st(4)
+        fsubp st(2), st(0)
+        fld dword ptr [eax+0xc]
+        fxch st(3)
+        fmul dword ptr [esp+0x2c]
+        fxch st(3)
+        fmulp st(2), st(0)
+        fxch st(2)
+        fsubp st(3), st(0)
+        faddp st(1), st(0)
+        fld dword ptr [eax+8]
+        fmulp st(2), st(0)
+        fld dword ptr [ebp+0x24]
+        fxch st(2)
+        faddp st(1), st(0)
+        fmul dword ptr [gFlap_inertia_fudge_biscuit]
+        fxch st(1)
+        fpatan
+        fmul qword ptr [gDOUBLE_00589ad0]
+        call _ftol
+        test ax, ax
+        je L004387be
+        mov cx, word ptr [esi+4]
+        add eax, ecx
+        mov ebp, ecx
+        mov cx, word ptr [esi+2]
+        mov edx, eax
+        sub edx, ecx
+        mov word ptr [esi+4], ax
+        cmp dx, word ptr [esi+8]
+        jbe L0043873f
+        mov dx, word ptr [esi+6]
+        sub eax, edx
+        cmp ax, 0x3ffc
+        jae L0043873b
+        mov word ptr [esi+4], dx
+        jmp L0043873f
+L0043873b:
+        mov word ptr [esi+4], cx
+L0043873f:
+        fld dword ptr [edi+8]
+        fchs
+        push ecx
+        mov eax, dword ptr [esp+0x14]
+        fstp dword ptr [esp]
+        fld dword ptr [edi+4]
+        fchs
+        push ecx
+        lea ebx, [eax+0x2c]
+        fstp dword ptr [esp]
+        fld dword ptr [edi]
+        fchs
+        push ecx
+        fstp dword ptr [esp]
+        push ebx
+        call BrMatrix34Translate
+        mov dx, word ptr [esi+4]
+        add esp, 0x10
+        lea ecx, [esp+0x14]
+        push ecx
+        push edx
+        push ebx
+        call BrMatrix34PostRotate
+        mov edi, dword ptr [esp+0x1c]
+        xor eax, eax
+        mov ax, word ptr [esi+0xc]
+        add esp, 0xc
+        mov ecx, dword ptr [edi+0xc]
+        lea eax, [eax+eax*4]
+        mov edx, dword ptr [ecx+0x60]
+        mov ecx, dword ptr [edx]
+        mov edx, dword ptr [ecx+8]
+        mov ecx, dword ptr [edx+eax*8+8]
+        push ecx
+        lea eax, [edx+eax*8]
+        mov edx, dword ptr [eax+4]
+        mov eax, dword ptr [eax]
+        push edx
+        push eax
+        push ebx
+        call BrMatrix34PostTranslate
+        mov dx, word ptr [esi+4]
+        add esp, 0x10
+        cmp bp, dx
+        je L004387be
+        sub edx, ebp
+        mov ecx, edi
+        call AddFlapToPipingSession
+L004387be:
+        pop edi
+        pop esi
+        pop ebp
+        xor eax, eax
+        pop ebx
+        add esp, 0x28
+        ret 4
+    }
+#endif
 }
-
 static __inline void C2_HOOK_FASTCALL StartFlapping(br_actor* pActor, tCar_spec* pCar, tU8 pBits, float pArg4) {
     tUser_crush_data* user_crush;
 
@@ -1022,9 +1289,19 @@ static __inline void C2_HOOK_FASTCALL StartFlapping(br_actor* pActor, tCar_spec*
     }
 }
 
-void C2_HOOK_FASTCALL FlapBits(tCar_spec* pCar) {
-    // GLOBAL: CARMA2_HW 0x0067be88
-    static tU32 last_flap_bits;
+// GLOBAL: CARMA2_HW 0x0067be88
+static tU32 last_flap_bits;
+
+/* The shared BrVector3InvScale macro multiplies by a reciprocal; retail's
+ * inlined code divides each component, so use a division form here. */
+static __inline void FlapInvScale(br_vector3* v1, const br_vector3* v2, br_scalar s) {
+    v1->v[0] = v2->v[0] / s;
+    v1->v[1] = v2->v[1] / s;
+    v1->v[2] = v2->v[2] / s;
+}
+
+#ifndef CARPOCALYPSE2_MATCHING
+static __inline void C2_HOOK_FASTCALL FlapBits(tCar_spec* pCar) {
     tCar_crush_spec* car_crush_spec;
 
     car_crush_spec = pCar->car_crush_spec;
@@ -1034,36 +1311,45 @@ void C2_HOOK_FASTCALL FlapBits(tCar_spec* pCar) {
             br_vector3 force;
             tFlapBit_arg flapbit_arg;
 
-            dt = (float)(gPHIL_last_physics_tick - last_flap_bits) * 0.001f;
             BrVector3Sub(&force, &pCar->collision_info->v, &car_crush_spec->field_0x138);
-            BrVector3InvScale(&force, &force, dt);
-            BrVector3Add(&force, &gBatty_gravity, &force);
+            dt = (float)(gPHIL_last_physics_tick - last_flap_bits) * gFLOAT_00589b34;
+            FlapInvScale(&force, &force, dt);
+            force.v[0] = gBatty_gravity.v[0] + force.v[0];
+            force.v[1] = gBatty_gravity.v[1] + force.v[1];
+            force.v[2] = gBatty_gravity.v[2] + force.v[2];
             BrMatrix34TApplyV(&flapbit_arg.force, &force, &pCar->car_master_actor->t.t.mat);
             flapbit_arg.car = pCar;
             ARStartPipingSession(ePipe_chunk_flap_bits);
             DRActorEnumRecurseWithSnart(pCar->car_model_actor, NULL, FlapBit, &flapbit_arg);
             AREndPipingSession();
         }
-        car_crush_spec->field_0x138 = pCar->collision_info->v;
+        BrVector3Copy(&car_crush_spec->field_0x138, &pCar->collision_info->v);
         last_flap_bits = gPHIL_last_physics_tick;
     }
 }
+#endif
 
 // FUNCTION: CARMA2_HW 0x004381b0
-void C2_HOOK_FASTCALL DoFlapping(void) {
+void C2_NAKED C2_HOOK_FASTCALL DoFlapping(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     int i;
 
     for (i = 0; i < gCount_toggled_doors; i++) {
         tToggled_door *toggle_door = &gToggled_doors[i];
-        if (toggle_door->actor != NULL) {
-            tUser_crush_data *user_crush_data = toggle_door->actor->user;
-            if (user_crush_data != NULL && user_crush_data->crush_data != NULL &&
-                user_crush_data->crush_data->flap_data != NULL) {
-                tCar_crush_flap_data *flap_data = user_crush_data->crush_data->flap_data;
-                if (!flap_data->field_0x0 && (toggle_door->field_0x8 & 0x1)) {
-                    StartFlapping(toggle_door->actor, toggle_door->car, flap_data->field_0x0, toggle_door->field_0xc);
-                } else if (flap_data->field_0x0 && !(toggle_door->field_0x8 & 0x1)) {
-                    StopFlapping(toggle_door->actor, toggle_door->car);
+        br_actor *actor = toggle_door->actor;
+        if (actor != NULL) {
+            tUser_crush_data *user_crush_data = actor->user;
+            if (user_crush_data != NULL) {
+                tCar_crush_buffer_entry *crush_data = user_crush_data->crush_data;
+                if (crush_data != NULL) {
+                    tCar_crush_flap_data *flap_data = crush_data->flap_data;
+                    if (flap_data != NULL) {
+                        if (!flap_data->field_0x0 && (toggle_door->field_0x8 & 0x1)) {
+                            StartFlapping(actor, toggle_door->car, flap_data->field_0x0, toggle_door->field_0xc);
+                        } else if (flap_data->field_0x0 && !(toggle_door->field_0x8 & 0x1)) {
+                            StopFlapping(actor, toggle_door->car);
+                        }
+                    }
                 }
             }
         }
@@ -1073,12 +1359,277 @@ void C2_HOOK_FASTCALL DoFlapping(void) {
         tCar_spec* car;
 
         car = gActive_car_list[i];
-        if (car != NULL && car->driver >= eDriver_oppo) {
+        if (car != NULL && car->driver > eDriver_oppo - 1) {
+#ifdef CARPOCALYPSE2_MATCHING
+            {
+                tCar_crush_spec* car_crush_spec;
+                float dt;
+                br_vector3 force;
+                tFlapBit_arg flapbit_arg;
+
+                car_crush_spec = car->car_crush_spec;
+                if (car_crush_spec != NULL) {
+                    if (car_crush_spec->field_0x134) {
+                        BrVector3Sub(&force, &car->collision_info->v, &car_crush_spec->field_0x138);
+                        dt = (float)(gPHIL_last_physics_tick - last_flap_bits) * gFLOAT_00589b34;
+                        FlapInvScale(&force, &force, dt);
+                        force.v[0] = gBatty_gravity.v[0] + force.v[0];
+                        force.v[1] = gBatty_gravity.v[1] + force.v[1];
+                        force.v[2] = gBatty_gravity.v[2] + force.v[2];
+                        BrMatrix34TApplyV(&flapbit_arg.force, &force, &car->car_master_actor->t.t.mat);
+                        flapbit_arg.car = car;
+                        ARStartPipingSession(ePipe_chunk_flap_bits);
+                        DRActorEnumRecurseWithSnart(car->car_model_actor, NULL, FlapBit, &flapbit_arg);
+                        AREndPipingSession();
+                    }
+                    BrVector3Copy(&car_crush_spec->field_0x138, &car->collision_info->v);
+                    last_flap_bits = gPHIL_last_physics_tick;
+                }
+            }
+#else
             FlapBits(car);
+#endif
         }
     }
+#else
+    __asm {
+        sub esp, 0x34
+        mov eax, dword ptr [gCount_toggled_doors]
+        push ebx
+        push ebp
+        push esi
+        test eax, eax
+        push edi
+        mov dword ptr [esp+0x14], 0
+        jle L00438329
+        mov esi, offset gToggled_doors+0x8
+        mov dword ptr [esp+0x18], esi
+L004381d5:
+        mov ecx, dword ptr [esi - 8]
+        test ecx, ecx
+        je L0043830b
+        mov ebx, dword ptr [ecx+0x60]
+        test ebx, ebx
+        je L0043830b
+        mov eax, dword ptr [ebx+8]
+        test eax, eax
+        je L0043830b
+        mov eax, dword ptr [eax+0x30]
+        test eax, eax
+        je L0043830b
+        mov al, byte ptr [eax]
+        test al, al
+        jne L004382fe
+        test byte ptr [esi], 1
+        je L004382fa
+        mov eax, dword ptr [esi+4]
+        mov ebp, dword ptr [esi - 4]
+        test ebx, ebx
+        mov dword ptr [esp+0x1c], eax
+        mov dword ptr [esp+0x10], ebp
+        je L0043830b
+        mov eax, dword ptr [ebx+8]
+        test eax, eax
+        je L0043830b
+        mov edi, dword ptr [eax+0x30]
+        test edi, edi
+        mov dword ptr [esp+0x20], edi
+        je L0043830b
+        mov al, byte ptr [edi+0x20]
+        test al, al
+        je L00438268
+        mov edx, dword ptr [esp+0x1c]
+        push 1
+        push edx
+        mov edx, ebp
+        call SetBitForDetachment
+        mov dword ptr [ebp+0xe24], 0
+        jmp L0043830b
+L00438268:
+        mov esi, dword ptr [ebx]
+        test esi, esi
+        je L004382c7
+        mov eax, dword ptr [esi+0x4c]
+        xor ebp, ebp
+        cmp word ptr [eax+8], bp
+        jbe L004382c3
+        xor edi, edi
+L0043827b:
+        mov eax, dword ptr [eax+0x18]
+        mov ecx, dword ptr [eax+edi+0xc]
+        xor eax, eax
+        mov ax, word ptr [ecx]
+        lea edx, [eax+eax*4]
+        mov eax, dword ptr [esi+0xc]
+        mov eax, dword ptr [eax+edx*8+8]
+        test eax, eax
+        je L004382ae
+        mov ecx, dword ptr [eax+0x20]
+        test ch, 0x10
+        jne L004382ae
+        or ch, 0x10
+        push 2
+        push eax
+        mov dword ptr [eax+0x20], ecx
+        call BrMaterialUpdate
+        add esp, 8
+L004382ae:
+        mov eax, dword ptr [esi+0x4c]
+        xor ecx, ecx
+        inc ebp
+        add edi, 0x24
+        mov cx, word ptr [eax+8]
+        cmp ebp, ecx
+        jl L0043827b
+        mov edi, dword ptr [esp+0x20]
+L004382c3:
+        mov ebp, dword ptr [esp+0x10]
+L004382c7:
+        mov edx, dword ptr [ebx]
+        mov ecx, 1
+        call PipeSingleDSModel
+        mov eax, dword ptr [ebp+0x18d4]
+        mov esi, dword ptr [esp+0x18]
+        mov cl, byte ptr [eax+0x134]
+        inc cl
+        mov byte ptr [eax+0x134], cl
+        mov byte ptr [edi], 1
+        mov dword ptr [ebp+0xe24], 0
+        jmp L0043830b
+L004382fa:
+        test al, al
+        je L0043830b
+L004382fe:
+        test byte ptr [esi], 1
+        jne L0043830b
+        mov edx, dword ptr [esi - 4]
+        call StopFlapping
+L0043830b:
+        mov eax, dword ptr [esp+0x14]
+        mov ecx, dword ptr [gCount_toggled_doors]
+        inc eax
+        add esi, 0x10
+        cmp eax, ecx
+        mov dword ptr [esp+0x14], eax
+        mov dword ptr [esp+0x18], esi
+        jl L004381d5
+L00438329:
+        mov eax, dword ptr [gNum_active_cars]
+        xor ebp, ebp
+        cmp eax, ebp
+        mov dword ptr [gCount_toggled_doors], ebp
+        jle L004384b1
+        mov ecx, dword ptr [gPHIL_last_physics_tick]
+        mov edx, dword ptr [last_flap_bits]
+        mov ebx, offset gActive_car_list
+L0043834f:
+        mov esi, dword ptr [ebx]
+        test esi, esi
+        je L004384a0
+        cmp dword ptr [esi+0xc], 5
+        jle L004384a0
+        mov edi, dword ptr [esi+0x18d4]
+        test edi, edi
+        je L004384a0
+        mov al, byte ptr [edi+0x134]
+        test al, al
+        je L0043846e
+        mov eax, dword ptr [esi+8]
+        sub ecx, edx
+        mov dword ptr [esp+0x24], 0
+        mov dword ptr [esp+0x20], ecx
+        fld dword ptr [eax+0x68]
+        fsub dword ptr [edi+0x138]
+        fild qword ptr [esp+0x20]
+        fxch st(1)
+        fstp dword ptr [esp+0x28]
+        fld dword ptr [eax+0x6c]
+        fsub dword ptr [edi+0x13c]
+        fxch st(1)
+        fmul dword ptr [gFLOAT_00589b34]
+        fxch st(1)
+        fstp dword ptr [esp+0x2c]
+        fld dword ptr [eax+0x70]
+        fsub dword ptr [edi+0x140]
+        fld dword ptr [esp+0x28]
+        fld dword ptr [esp+0x2c]
+        fld st(2)
+        fxch st(4)
+        fstp dword ptr [esp+0x10]
+        fxch st(1)
+        fdiv dword ptr [esp+0x10]
+        fxch st(1)
+        mov edx, dword ptr [esi+0x10]
+        lea eax, [esp+0x28]
+        add edx, 0x2c
+        lea ecx, [esp+0x38]
+        push edx
+        push eax
+        push ecx
+        fdiv dword ptr [esp+0x1c]
+        fxch st(3)
+        fdiv dword ptr [esp+0x1c]
+        fld dword ptr [gBatty_gravity]
+        fld dword ptr [gBatty_gravity+0x4]
+        fld dword ptr [gBatty_gravity+0x8]
+        fxch st(4)
+        fstp dword ptr [esp+0x34]
+        fxch st(1)
+        fadd dword ptr [esp+0x34]
+        fxch st(5)
+        fstp dword ptr [esp+0x38]
+        fadd dword ptr [esp+0x38]
+        fxch st(1)
+        fstp dword ptr [esp+0x3c]
+        fxch st(1)
+        fadd dword ptr [esp+0x3c]
+        fxch st(3)
+        fstp dword ptr [esp+0x34]
+        fstp dword ptr [esp+0x38]
+        fxch st(1)
+        fstp dword ptr [esp+0x3c]
+        fstp st(0)
+        call BrMatrix34TApplyV
+        add esp, 0xc
+        mov ecx, 0x17
+        mov dword ptr [esp+0x34], esi
+        call ARStartPipingSession
+        mov ecx, dword ptr [esi+0xe0c]
+        lea edx, [esp+0x34]
+        push edx
+        push offset FlapBit
+        xor edx, edx
+        call DRActorEnumRecurseWithSnart
+        call AREndPipingSession
+L0043846e:
+        mov eax, dword ptr [esi+8]
+        mov ecx, dword ptr [eax+0x68]
+        mov dword ptr [edi+0x138], ecx
+        mov edx, dword ptr [esi+8]
+        mov eax, dword ptr [edx+0x6c]
+        mov dword ptr [edi+0x13c], eax
+        mov ecx, dword ptr [esi+8]
+        mov edx, dword ptr [ecx+0x70]
+        mov dword ptr [edi+0x140], edx
+        mov ecx, dword ptr [gPHIL_last_physics_tick]
+        mov edx, ecx
+        mov dword ptr [last_flap_bits], edx
+L004384a0:
+        mov eax, dword ptr [gNum_active_cars]
+        inc ebp
+        add ebx, 4
+        cmp ebp, eax
+        jl L0043834f
+L004384b1:
+        pop edi
+        pop esi
+        pop ebp
+        pop ebx
+        add esp, 0x34
+        ret
+    }
+#endif
 }
-
 // FUNCTION: CARMA2_HW 0x00434910
 int C2_HOOK_FASTCALL BitObjectIsSufficientlyOutsideCarObjectToDetach(tPhysics_object* pObject) {
     int i;
@@ -2397,382 +2948,1465 @@ void C2_HOOK_FASTCALL FUN_00433b90(br_model* pModel, const br_vector3* pOffset) 
     pModel->flags |= BR_MODF_CUSTOM;
 }
 
-// C2PORT-NONMATCHING: best 37.21% | difftest PASS 2000 trials (spec difftest/specs/00437480_FUN_00437480.json) | reason x87-order and register allocation
 // FUNCTION: CARMA2_HW 0x00437480
-void C2_HOOK_FASTCALL FUN_00437480(undefined4* param_1, int param_2, int param_3, int param_4, undefined4 param_5, undefined4* param_6) {
-    tU8 bVar1;
-    tU8 bVar2;
-    float fVar3;
-    float fVar4;
-    float fVar5;
-    undefined4* puVar6;
-    undefined4 uVar7;
-    int iVar8;
-    tU32 uVar9;
-    tU32 uVar10;
-    br_vector3 local_0;
-
-    param_1[0] = 3;
-    if (param_6 == NULL) {
-        if (param_3 != 0) {
-            param_1[2] = *(undefined4*)&(*(br_vertex**)(param_4 + 8))[*(tU16*)((char*)param_3 + 0xa)].p.v[0];
-            param_1[3] = *(undefined4*)&(*(br_vertex**)(param_4 + 8))[*(tU16*)((char*)param_3 + 0xa)].p.v[1];
-            param_1[4] = *(undefined4*)&(*(br_vertex**)(param_4 + 8))[*(tU16*)((char*)param_3 + 0xa)].p.v[2];
-            goto LAB_0043752a;
-        }
-        param_1[2] = *(undefined4*)&(*(br_vertex**)(param_4 + 8))[*(tU16*)((char*)param_2 + 0x30)].p.v[0];
-        param_1[3] = *(undefined4*)&(*(br_vertex**)(param_4 + 8))[*(tU16*)((char*)param_2 + 0x30)].p.v[1];
-        uVar7 = *(undefined4*)&(*(br_vertex**)(param_4 + 8))[*(tU16*)((char*)param_2 + 0x30)].p.v[2];
-    } else {
-        param_1[2] = *(undefined4*)param_6;
-        param_1[3] = *((undefined4*)param_6 + 1);
-        uVar7 = *((undefined4*)param_6 + 2);
-    }
-    param_1[4] = uVar7;
-LAB_0043752a:
-    BrMatrix34ApplyP(&local_0, (br_vector3*)&param_1[2], &((tPhysics_object*)param_5)->actor->t.t.mat);
-    DrMatrix34ApplyLPInverse((br_vector3*)&param_1[5], &local_0, &((tPhysics_object*)param_5)->parent->actor->t.t.mat);
-    param_1[0x14] = 2;
-    iVar8 = 0;
-    puVar6 = param_1 + 0x16;
-    do {
-        puVar6[-1] = 0;
-        *puVar6 = 0;
-        iVar8 = iVar8 + 1;
-        puVar6 = puVar6 + 8;
-    } while (iVar8 < (int)param_1[0x14]);
-    if (param_3 != 0) {
-        ((float*)param_1)[0x17] = (*(br_vertex**)(param_4 + 8))[*(tU16*)((char*)param_3 + 0xe)].p.v[0]
-                - (*(br_vertex**)(param_4 + 8))[*(tU16*)((char*)param_3 + 0xa)].p.v[0];
-        ((float*)param_1)[0x18] = (*(br_vertex**)(param_4 + 8))[*(tU16*)((char*)param_3 + 0xe)].p.v[1]
-                - (*(br_vertex**)(param_4 + 8))[*(tU16*)((char*)param_3 + 0xa)].p.v[1];
-        fVar3 = (*(br_vertex**)(param_4 + 8))[*(tU16*)((char*)param_3 + 0xe)].p.v[2]
-                - (*(br_vertex**)(param_4 + 8))[*(tU16*)((char*)param_3 + 0xa)].p.v[2];
-        ((float*)param_1)[0x19] = fVar3;
-        fVar3 = sqrtf(fVar3 * fVar3
-                + ((float*)param_1)[0x18] * ((float*)param_1)[0x18]
-                + ((float*)param_1)[0x17] * ((float*)param_1)[0x17]);
-        if (fVar3 <= gFLOAT_00589a5c) {
-            ((float*)param_1)[0x17] = 1.0f;
-            ((float*)param_1)[0x18] = 0.0f;
-            ((float*)param_1)[0x19] = 0.0f;
-        } else {
-            fVar3 = (float)gDOUBLE_00589a60 / fVar3;
-            ((float*)param_1)[0x17] = ((float*)param_1)[0x17] * fVar3;
-            ((float*)param_1)[0x18] = ((float*)param_1)[0x18] * fVar3;
-            ((float*)param_1)[0x19] = ((float*)param_1)[0x19] * fVar3;
-        }
-        ((float*)param_1)[0x1f] = (*(br_vertex**)(param_4 + 8))[*(tU16*)((char*)param_3 + 0x10)].p.v[0]
-                - (*(br_vertex**)(param_4 + 8))[*(tU16*)((char*)param_3 + 0xa)].p.v[0];
-        ((float*)param_1)[0x20] = (*(br_vertex**)(param_4 + 8))[*(tU16*)((char*)param_3 + 0x10)].p.v[1]
-                - (*(br_vertex**)(param_4 + 8))[*(tU16*)((char*)param_3 + 0xa)].p.v[1];
-        fVar3 = (*(br_vertex**)(param_4 + 8))[*(tU16*)((char*)param_3 + 0x10)].p.v[2]
-                - (*(br_vertex**)(param_4 + 8))[*(tU16*)((char*)param_3 + 0xa)].p.v[2];
-        ((float*)param_1)[0x21] = fVar3;
-        fVar3 = sqrtf(fVar3 * fVar3
-                + ((float*)param_1)[0x20] * ((float*)param_1)[0x20]
-                + ((float*)param_1)[0x1f] * ((float*)param_1)[0x1f]);
-        if (fVar3 <= gFLOAT_00589a5c) {
-            ((float*)param_1)[0x1f] = 1.0f;
-            ((float*)param_1)[0x20] = 0.0f;
-            ((float*)param_1)[0x21] = 0.0f;
-        } else {
-            fVar3 = (float)gDOUBLE_00589a60 / fVar3;
-            ((float*)param_1)[0x1f] = ((float*)param_1)[0x1f] * fVar3;
-            ((float*)param_1)[0x20] = ((float*)param_1)[0x20] * fVar3;
-            ((float*)param_1)[0x21] = ((float*)param_1)[0x21] * fVar3;
-        }
-        ((float*)param_1)[0x1a] = ((float*)param_1)[0x21] * ((float*)param_1)[0x18]
-                - ((float*)param_1)[0x20] * ((float*)param_1)[0x19];
-        fVar3 = ((float*)param_1)[0x19] * ((float*)param_1)[0x1f]
-                - ((float*)param_1)[0x17] * ((float*)param_1)[0x21];
-        ((float*)param_1)[0x1b] = fVar3;
-        fVar4 = ((float*)param_1)[0x17] * gFLOAT_00589a58;
-        ((float*)param_1)[0x1c] = ((float*)param_1)[0x19] * gFLOAT_00589a58
-                + (((float*)param_1)[0x17] * ((float*)param_1)[0x20] - ((float*)param_1)[0x18] * ((float*)param_1)[0x1f]);
-        fVar4 = ((float*)param_1)[0x1f] * gFLOAT_00589a58 + fVar4 + ((float*)param_1)[0x1a];
-        fVar3 = ((float*)param_1)[0x20] * gFLOAT_00589a58
-                + ((float*)param_1)[0x18] * gFLOAT_00589a58 + fVar3;
-        fVar5 = ((float*)param_1)[0x21] * gFLOAT_00589a58 + ((float*)param_1)[0x1c];
-        ((float*)param_1)[0x1a] = fVar4;
-        ((float*)param_1)[0x1b] = fVar3;
-        ((float*)param_1)[0x1c] = fVar5;
-        fVar5 = sqrtf(fVar5 * fVar5 + fVar3 * fVar3 + fVar4 * fVar4);
-        if (fVar5 <= gFLOAT_00589a5c) {
-            ((float*)param_1)[0x1a] = 1.0f;
-            ((float*)param_1)[0x1b] = 0.0f;
-            ((float*)param_1)[0x1c] = 0.0f;
-        } else {
-            fVar5 = (float)gDOUBLE_00589a60 / fVar5;
-            ((float*)param_1)[0x1a] = fVar5 * fVar4;
-            ((float*)param_1)[0x1b] = fVar5 * fVar3;
-            ((float*)param_1)[0x1c] = ((float*)param_1)[0x1c] * fVar5;
-        }
-        ((float*)param_1)[0x22] = ((float*)param_1)[0x1a];
-        ((float*)param_1)[0x23] = ((float*)param_1)[0x1b];
-        ((float*)param_1)[0x24] = ((float*)param_1)[0x1c];
-        return;
-    }
-    bVar1 = *((tU8*)param_2 + 0x33);
-    bVar2 = *((tU8*)param_2 + 0x32);
-    iVar8 = (int)(tU32)bVar1 >> 1;
-    ((float*)param_1)[0x1a] = 0.0f;
-    ((float*)param_1)[0x1b] = 0.0f;
-    ((float*)param_1)[0x1c] = 0.0f;
-    uVar7 = *(undefined4*)&gFLOAT_00589b2c;
-    if ((bVar1 & 1) != 0) {
-        uVar7 = *(undefined4*)&gFLOAT_00589a54;
-    }
-    param_1[iVar8 + 0x1a] = uVar7;
-    param_1[0x24] = param_1[0x1c];
-    param_1[0x23] = param_1[0x1b];
-    param_1[0x22] = param_1[0x1a];
-    uVar9 = (iVar8 + 1U) % 3;
-    uVar7 = *(undefined4*)&gFLOAT_00589a54;
-    if (((int)(tU32)bVar2 >> (char)uVar9 & 1U) != 0) {
-        uVar7 = *(undefined4*)&gFLOAT_00589b2c;
-    }
-    param_1[uVar9 + 0x17] = uVar7;
-    uVar10 = (iVar8 + 2U) % 3;
-    param_1[uVar10 + 0x17] = 0;
-    fVar3 = gFLOAT_00589b30;
-    if ((bVar1 & 1) != 0) {
-        fVar3 = gFLOAT_00589a58;
-    }
-    ((float*)param_1)[iVar8 + 0x17] = fVar3;
-    fVar3 = sqrtf(((float*)param_1)[0x19] * ((float*)param_1)[0x19]
-            + ((float*)param_1)[0x18] * ((float*)param_1)[0x18]
-            + ((float*)param_1)[0x17] * ((float*)param_1)[0x17]);
-    if (fVar3 <= gFLOAT_00589a5c) {
-        ((float*)param_1)[0x17] = 1.0f;
-        ((float*)param_1)[0x18] = 0.0f;
-        ((float*)param_1)[0x19] = 0.0f;
-    } else {
-        fVar3 = (float)gDOUBLE_00589a60 / fVar3;
-        ((float*)param_1)[0x17] = ((float*)param_1)[0x17] * fVar3;
-        ((float*)param_1)[0x18] = ((float*)param_1)[0x18] * fVar3;
-        ((float*)param_1)[0x19] = ((float*)param_1)[0x19] * fVar3;
-    }
-    param_1[uVar9 + 0x1f] = 0;
-    uVar7 = *(undefined4*)&gFLOAT_00589a54;
-    if (((int)(tU32)bVar2 >> (char)uVar10 & 1U) != 0) {
-        uVar7 = *(undefined4*)&gFLOAT_00589b2c;
-    }
-    param_1[uVar10 + 0x1f] = uVar7;
-    fVar3 = gFLOAT_00589b30;
-    if ((bVar1 & 1) != 0) {
-        fVar3 = gFLOAT_00589a58;
-    }
-    ((float*)param_1)[iVar8 + 0x1f] = fVar3;
-    fVar3 = sqrtf(((float*)param_1)[0x21] * ((float*)param_1)[0x21]
-            + ((float*)param_1)[0x20] * ((float*)param_1)[0x20]
-            + ((float*)param_1)[0x1f] * ((float*)param_1)[0x1f]);
-    if (fVar3 <= gFLOAT_00589a5c) {
-        ((float*)param_1)[0x1f] = 1.0f;
-        ((float*)param_1)[0x20] = 0.0f;
-        ((float*)param_1)[0x21] = 0.0f;
-        return;
-    }
-    fVar3 = (float)gDOUBLE_00589a60 / fVar3;
-    ((float*)param_1)[0x1f] = ((float*)param_1)[0x1f] * fVar3;
-    ((float*)param_1)[0x20] = ((float*)param_1)[0x20] * fVar3;
-    ((float*)param_1)[0x21] = ((float*)param_1)[0x21] * fVar3;
-}
-
-// C2PORT-NONMATCHING: best 46.95% | difftest PASS 2000 trials (spec difftest/specs/00437ac0_SetUpFlapJoint.json) | reason x87-order
-// FUNCTION: CARMA2_HW 0x00437ac0
-void C2_HOOK_FASTCALL SetUpFlapJoint(tPhysics_joint* pJoint, tCar_crush_flap_data* pFlap_data, br_model* pModel, tPhysics_object* pObject, br_vector3* pPoint1, br_vector3* pPoint2, br_vector3* pPoint3) {
-    float* pfVar1;
-    float fVar2;
-    float fVar3;
-    int bVar4;
-    float fVar5;
-    float fVar6;
-    float fVar7;
-    float* pfVar8;
-    float* joint;
-    float* point_1;
-    float* point_2;
-    float* point_3;
+void C2_NAKED C2_HOOK_FASTCALL FUN_00437480(tPhysics_joint* pJoint, tCar_crush_detach_data* pDetach_data, tCar_crush_flap_data* pFlap_data, br_model* pModel, tPhysics_object* pObject, br_vector3* pPoint) {
+#ifndef CARPOCALYPSE2_MATCHING
     br_vector3 local_point;
-    br_matrix34 rotation;
+    br_scalar length;
+    br_scalar inverse_length;
+    br_scalar fVar1;
+    br_scalar fVar2;
+    br_scalar fVar3;
+    int axis_bits;
+    int sign_bits;
+    int axis;
+    int i;
+    int j;
 
-    joint = (float*)pJoint;
-    point_1 = (float*)pPoint1;
-    point_2 = (float*)pPoint2;
-    point_3 = (float*)pPoint3;
-    *(int *)joint = 4;
-    if (point_1 == (float *)0x0) {
-        point_1 = (float *)&pModel->vertices[pFlap_data->hinge0].p;
-    }
-    pfVar8 = point_2;
-    if (point_2 == (float *)0x0) {
-        pfVar8 = (float *)&pModel->vertices[pFlap_data->hinge1].p;
-    }
-    if (point_3 == (float *)0x0) {
-        point_2 = (float *)&pModel->vertices[pFlap_data->hinge2].p;
-    }
-    else {
-        point_2 = point_3;
-    }
-    joint[2] = *point_1;
-    joint[3] = point_1[1];
-    joint[4] = point_1[2];
-    BrMatrix34ApplyP(&local_point, (br_vector3 *)&joint[2], &pObject->actor->t.t.mat);
-    DrMatrix34ApplyLPInverse((br_vector3 *)&joint[5], &local_point, &pObject->parent->actor->t.t.mat);
-    pfVar1 = (float *)(joint + 0xe);
-    *pfVar1 = *pfVar8 - *point_1;
-    joint[0xf] = pfVar8[1] - point_1[1];
-    fVar2 = pfVar8[2] - point_1[2];
-    joint[0x10] = fVar2;
-    fVar2 = sqrtf(fVar2 * fVar2 + (float)joint[0xf] * (float)joint[0xf] + *pfVar1 * *pfVar1);
-    if (gFLOAT_00589a5c < fVar2) {
-        fVar2 = (float)gDOUBLE_00589a60 / fVar2;
-        *pfVar1 = *pfVar1 * fVar2;
-        joint[0xf] = (float)joint[0xf] * fVar2;
-        joint[0x10] = (float)joint[0x10] * fVar2;
+    pJoint->type = eJoint_ball_n_socket;
+    if (pPoint != NULL) {
+        BrVector3Copy(&pJoint->field_0x08, pPoint);
+    } else if (pFlap_data != NULL) {
+        BrVector3Copy(&pJoint->field_0x08, &pModel->vertices[pFlap_data->hinge0].p);
     } else {
-        *pfVar1 = 1.0;
-        joint[0xf] = 0;
-        joint[0x10] = 0;
+        BrVector3Copy(&pJoint->field_0x08, &pModel->vertices[pDetach_data->field_0x30].p);
     }
-    bVar4 = *pfVar1 == gCrushZero;
-    joint[0x11] = *pfVar1;
-    joint[0x12] = joint[0xf];
-    joint[0x13] = joint[0x10];
-    if ((bVar4) && ((float)joint[0x10] == gCrushZero)) {
-        joint[8] = 1.0f;
-        joint[9] = 0;
-        joint[10] = 0;
+    BrMatrix34ApplyP(&local_point, &pJoint->field_0x08, &pObject->actor->t.t.mat);
+    DrMatrix34ApplyLPInverse(&pJoint->field_0x14, &local_point, &pObject->parent->actor->t.t.mat);
+    pJoint->count_limits = 2;
+    for (i = 0; i < pJoint->count_limits; i++) {
+        pJoint->limits[i].type = eJoint_limit_plane;
+        pJoint->limits[i].value = 0.0f;
     }
-    else {
-        joint[8] = -(float)joint[0x10];
-        joint[10] = *pfVar1;
-        joint[9] = 0;
-    }
-    fVar2 = sqrtf((float)joint[10] * (float)joint[10] + (float)joint[8] * (float)joint[8]);
-    if (gFLOAT_00589a5c < fVar2) {
-        fVar2 = (float)gDOUBLE_00589a60 / fVar2;
-        joint[9] = 0;
-        joint[8] = (float)joint[8] * fVar2;
-        joint[10] = (float)joint[10] * fVar2;
-    } else {
-        joint[8] = 1.0f;
-        joint[9] = 0;
-        joint[10] = 0;
-    }
-    joint[0xb] = (float)joint[0xf] * (float)joint[10] - (float)joint[0x10] * (float)joint[9]
-    ;
-    joint[0xc] = (float)joint[8] * (float)joint[0x10] - *pfVar1 * (float)joint[10];
-    fVar3 = *pfVar1 * (float)joint[9] - (float)joint[8] * (float)joint[0xf];
-    joint[0xd] = fVar3;
-    fVar2 = sqrtf(fVar3 * fVar3 +
-                              (float)joint[0xc] * (float)joint[0xc] + (float)joint[0xb] * (float)joint[0xb]
-                            );
-    if (gFLOAT_00589a5c < fVar2) {
-        fVar2 = (float)gDOUBLE_00589a60 / fVar2;
-        joint[0xb] = (float)joint[0xb] * fVar2;
-        joint[0xc] = (float)joint[0xc] * fVar2;
-        joint[0xd] = fVar2 * fVar3;
-    } else {
-        joint[0xb] = 1.0f;
-        joint[0xc] = 0;
-        joint[0xd] = 0;
-    }
-    ((tPhysics_joint *)joint)->count_limits = 2;
-    joint[0x17] = *point_2 - *point_1;
-    joint[0x18] = point_2[1] - point_1[1];
-    fVar2 = point_2[2];
-    fVar3 = point_1[2];
-    joint[0x19] = fVar2 - fVar3;
-    fVar2 = (float)joint[0x17] -
-                    *pfVar1 * (*pfVar1 * (float)joint[0x17] + (float)joint[0x10] * (fVar2 - fVar3) +
-                                        (float)joint[0xf] * (float)joint[0x18]);
-    fVar3 = (float)joint[0x18] -
-                    ((float)joint[0x10] * (float)joint[0x19] + (float)joint[0xf] * (float)joint[0x18]
-                    + (float)joint[0x17] * *pfVar1) * (float)joint[0xf];
-    fVar6 = (float)joint[0x19] -
-                    (float)joint[0x10] *
-                    ((float)joint[0x18] * (float)joint[0xf] + (float)joint[0x10] * (float)joint[0x19]
-                    + (float)joint[0x17] * *pfVar1);
-    joint[0x17] = fVar2;
-    fVar7 = gFLOAT_00589a5c;
-    fVar5 = sqrtf(fVar6 * fVar6 + fVar3 * fVar3 + fVar2 * fVar2);
-    joint[0x18] = fVar3;
-    joint[0x19] = fVar6;
-    if (fVar7 < fVar5) {
-        fVar5 = (float)gDOUBLE_00589a60 / fVar5;
-        joint[0x17] = fVar5 * fVar2;
-        joint[0x18] = fVar5 * fVar3;
-        joint[0x19] = (float)joint[0x19] * fVar5;
-    } else {
-        joint[0x17] = 1.0f;
-        joint[0x18] = 0;
-        joint[0x19] = 0;
-    }
-    joint[0x1a] =
-              (float)joint[0xf] * (float)joint[0x19] - (float)joint[0x10] * (float)joint[0x18];
-    pfVar8 = (float *)(joint + 0x1f);
-    joint[0x1b] = (float)joint[0x10] * (float)joint[0x17] - *pfVar1 * (float)joint[0x19];
-    *pfVar8 = (float)joint[0x17];
-    fVar3 = *pfVar1 * (float)joint[0x18] - (float)joint[0x17] * (float)joint[0xf];
-    joint[0x20] = joint[0x18];
-    joint[0x21] = joint[0x19];
-    joint[0x1c] = fVar3;
-    fVar2 = sqrtf(fVar3 * fVar3 +
-                              (float)joint[0x1b] * (float)joint[0x1b] +
-                              (float)joint[0x1a] * (float)joint[0x1a]);
-    if (gFLOAT_00589a5c < fVar2) {
-        fVar2 = (float)gDOUBLE_00589a60 / fVar2;
-        joint[0x1a] = (float)joint[0x1a] * fVar2;
-        joint[0x1b] = (float)joint[0x1b] * fVar2;
-        joint[0x1c] = fVar2 * fVar3;
-    } else {
-        joint[0x1a] = 1.0f;
-        joint[0x1b] = 0;
-        joint[0x1c] = 0;
-    }
-    BrMatrix34Rotate(&rotation, (br_angle)(pFlap_data->field_0x6 - 0x3ffc), (br_vector3 *)pfVar1);
-    BrMatrix34ApplyV((br_vector3 *)&joint[0x22], (br_vector3 *)&joint[0x1f], &rotation);
-    fVar7 = gFLOAT_00589a5c;
-    fVar2 = (float)joint[0x1a] * gFLOAT_00589a58 + (float)joint[0x17];
-    fVar6 = (float)joint[0x1b] * gFLOAT_00589a58 + (float)joint[0x18];
-    fVar5 = (float)joint[0x1c] * gFLOAT_00589a58 + (float)joint[0x19];
-    fVar3 = sqrtf(fVar5 * fVar5 + fVar6 * fVar6 + fVar2 * fVar2);
-    joint[0x17] = fVar2;
-    joint[0x18] = fVar6;
-    joint[0x19] = fVar5;
-    if (fVar7 < fVar3) {
-        fVar3 = (float)gDOUBLE_00589a60 / fVar3;
-        joint[0x17] = fVar3 * fVar2;
-        joint[0x18] = fVar3 * fVar6;
-        joint[0x19] = (float)joint[0x19] * fVar3;
-    } else {
-        joint[0x17] = 1.0f;
-        joint[0x18] = 0;
-        joint[0x19] = 0;
-    }
-    fVar2 = (float)joint[0x22] * gFLOAT_00589a58 + *pfVar8;
-    fVar6 = (float)joint[0x23] * gFLOAT_00589a58 + (float)joint[0x20];
-    fVar5 = (float)joint[0x24] * gFLOAT_00589a58 + (float)joint[0x21];
-    *pfVar8 = fVar2;
-    fVar7 = gFLOAT_00589a5c;
-    fVar3 = sqrtf(fVar5 * fVar5 + fVar6 * fVar6 + fVar2 * fVar2);
-    joint[0x20] = fVar6;
-    joint[0x21] = fVar5;
-    if (fVar7 < fVar3) {
-        fVar3 = (float)gDOUBLE_00589a60 / fVar3;
-        *pfVar8 = fVar3 * fVar2;
-        joint[0x20] = fVar3 * fVar6;
-        joint[0x21] = fVar3 * fVar5;
+    if (pFlap_data != NULL) {
+        BrVector3Sub(&pJoint->limits[0].child, &pModel->vertices[pFlap_data->hinge1].p, &pModel->vertices[pFlap_data->hinge0].p);
+        length = BrVector3Length(&pJoint->limits[0].child);
+        if (length > gFLOAT_00589a5c) {
+            inverse_length = gDOUBLE_00589a60 / length;
+            pJoint->limits[0].child.v[0] = inverse_length * pJoint->limits[0].child.v[0];
+            pJoint->limits[0].child.v[1] = pJoint->limits[0].child.v[1] * inverse_length;
+            pJoint->limits[0].child.v[2] = pJoint->limits[0].child.v[2] * inverse_length;
+        } else {
+            pJoint->limits[0].child.v[0] = 1.0f;
+            pJoint->limits[0].child.v[1] = 0.0f;
+            pJoint->limits[0].child.v[2] = 0.0f;
+        }
+        BrVector3Sub(&pJoint->limits[1].child, &pModel->vertices[pFlap_data->hinge2].p, &pModel->vertices[pFlap_data->hinge0].p);
+        length = BrVector3Length(&pJoint->limits[1].child);
+        if (length > gFLOAT_00589a5c) {
+            inverse_length = gDOUBLE_00589a60 / length;
+            pJoint->limits[1].child.v[0] = pJoint->limits[1].child.v[0] * inverse_length;
+            pJoint->limits[1].child.v[1] = pJoint->limits[1].child.v[1] * inverse_length;
+            pJoint->limits[1].child.v[2] = pJoint->limits[1].child.v[2] * inverse_length;
+        } else {
+            pJoint->limits[1].child.v[0] = 1.0f;
+            pJoint->limits[1].child.v[1] = 0.0f;
+            pJoint->limits[1].child.v[2] = 0.0f;
+        }
+        pJoint->limits[0].parent.v[0] = pJoint->limits[1].child.v[2] * pJoint->limits[0].child.v[1]
+            - pJoint->limits[1].child.v[1] * pJoint->limits[0].child.v[2];
+        pJoint->limits[0].parent.v[1] = pJoint->limits[0].child.v[2] * pJoint->limits[1].child.v[0]
+            - pJoint->limits[0].child.v[0] * pJoint->limits[1].child.v[2];
+        fVar1 = pJoint->limits[0].child.v[0] * gFLOAT_00589a58;
+        pJoint->limits[0].parent.v[2] = pJoint->limits[0].child.v[2] * gFLOAT_00589a58
+            + (pJoint->limits[0].child.v[0] * pJoint->limits[1].child.v[1] - pJoint->limits[0].child.v[1] * pJoint->limits[1].child.v[0]);
+        fVar1 = pJoint->limits[1].child.v[0] * gFLOAT_00589a58 + fVar1 + pJoint->limits[0].parent.v[0];
+        fVar2 = pJoint->limits[1].child.v[1] * gFLOAT_00589a58 + pJoint->limits[0].child.v[1] * gFLOAT_00589a58 + pJoint->limits[0].parent.v[1];
+        fVar3 = pJoint->limits[1].child.v[2] * gFLOAT_00589a58 + pJoint->limits[0].parent.v[2];
+        pJoint->limits[0].parent.v[0] = fVar1;
+        pJoint->limits[0].parent.v[1] = fVar2;
+        pJoint->limits[0].parent.v[2] = fVar3;
+        length = BrVector3Length(&pJoint->limits[0].parent);
+        if (length > gFLOAT_00589a5c) {
+            inverse_length = gDOUBLE_00589a60 / length;
+            pJoint->limits[0].parent.v[0] = pJoint->limits[0].parent.v[0] * inverse_length;
+            pJoint->limits[0].parent.v[1] = pJoint->limits[0].parent.v[1] * inverse_length;
+            pJoint->limits[0].parent.v[2] = pJoint->limits[0].parent.v[2] * inverse_length;
+        } else {
+            pJoint->limits[0].parent.v[0] = 1.0f;
+            pJoint->limits[0].parent.v[1] = 0.0f;
+            pJoint->limits[0].parent.v[2] = 0.0f;
+        }
+        BrVector3Copy(&pJoint->limits[1].parent, &pJoint->limits[0].parent);
         return;
     }
-    *pfVar8 = 1.0;
-    joint[0x20] = 0;
-    joint[0x21] = 0;
-    return;
+    axis_bits = pDetach_data->field_0x33;
+    sign_bits = pDetach_data->field_0x32;
+    axis = axis_bits >> 1;
+    pJoint->limits[0].parent.v[0] = 0.0f;
+    pJoint->limits[0].parent.v[1] = 0.0f;
+    pJoint->limits[0].parent.v[2] = 0.0f;
+    pJoint->limits[0].parent.v[axis] = (axis_bits & 1) ? gFLOAT_00589a54 : gFLOAT_00589b2c;
+    BrVector3Copy(&pJoint->limits[1].parent, &pJoint->limits[0].parent);
+    i = (axis + 1) % 3;
+    pJoint->limits[0].child.v[i] = ((sign_bits >> i) & 1) ? gFLOAT_00589b2c : gFLOAT_00589a54;
+    j = (axis + 2) % 3;
+    pJoint->limits[0].child.v[j] = 0.0f;
+    pJoint->limits[0].child.v[axis] = (axis_bits & 1) ? gFLOAT_00589a58 : gFLOAT_00589b30;
+    length = BrVector3Length(&pJoint->limits[0].child);
+    if (length > gFLOAT_00589a5c) {
+        inverse_length = gDOUBLE_00589a60 / length;
+        pJoint->limits[0].child.v[0] = inverse_length * pJoint->limits[0].child.v[0];
+        pJoint->limits[0].child.v[1] = pJoint->limits[0].child.v[1] * inverse_length;
+        pJoint->limits[0].child.v[2] = pJoint->limits[0].child.v[2] * inverse_length;
+    } else {
+        pJoint->limits[0].child.v[0] = 1.0f;
+        pJoint->limits[0].child.v[1] = 0.0f;
+        pJoint->limits[0].child.v[2] = 0.0f;
+    }
+    pJoint->limits[1].child.v[i] = 0.0f;
+    pJoint->limits[1].child.v[j] = ((sign_bits >> j) & 1) ? gFLOAT_00589b2c : gFLOAT_00589a54;
+    pJoint->limits[1].child.v[axis] = (axis_bits & 1) ? gFLOAT_00589a58 : gFLOAT_00589b30;
+    length = BrVector3Length(&pJoint->limits[1].child);
+    if (length > gFLOAT_00589a5c) {
+        inverse_length = gDOUBLE_00589a60 / length;
+        pJoint->limits[1].child.v[0] = pJoint->limits[1].child.v[0] * inverse_length;
+        pJoint->limits[1].child.v[1] = pJoint->limits[1].child.v[1] * inverse_length;
+        pJoint->limits[1].child.v[2] = pJoint->limits[1].child.v[2] * inverse_length;
+    } else {
+        pJoint->limits[1].child.v[0] = 1.0f;
+        pJoint->limits[1].child.v[1] = 0.0f;
+        pJoint->limits[1].child.v[2] = 0.0f;
+    }
+#else
+    __asm {
+        sub esp, 0xc
+        push ebx
+        mov ebx, dword ptr [esp+0x18]
+        push ebp
+        push esi
+        mov esi, ecx
+        push edi
+        mov ecx, dword ptr [esp+0x2c]
+        mov edi, dword ptr [esp+0x20]
+        test ecx, ecx
+        mov ebp, edx
+        mov dword ptr [esi], 3
+        je L004374b3
+        mov edx, dword ptr [ecx]
+        lea eax, [esi+8]
+        mov dword ptr [eax], edx
+        mov edx, dword ptr [ecx+4]
+        mov dword ptr [esi+0xc], edx
+        mov ecx, dword ptr [ecx+8]
+        jmp L00437527
+L004374b3:
+        test edi, edi
+        lea eax, [esi+8]
+        je L004374f3
+        xor ecx, ecx
+        mov cx, word ptr [edi+0xa]
+        lea edx, [ecx+ecx*4]
+        mov ecx, dword ptr [ebx+8]
+        mov edx, dword ptr [ecx+edx*8]
+        xor ecx, ecx
+        mov dword ptr [eax], edx
+        mov cx, word ptr [edi+0xa]
+        mov edx, dword ptr [ebx+8]
+        lea ecx, [ecx+ecx*4]
+        mov ecx, dword ptr [edx+ecx*8+4]
+        mov dword ptr [esi+0xc], ecx
+        xor ecx, ecx
+        mov cx, word ptr [edi+0xa]
+        lea edx, [ecx+ecx*4]
+        mov ecx, dword ptr [ebx+8]
+        mov edx, dword ptr [ecx+edx*8+8]
+        mov dword ptr [esi+0x10], edx
+        jmp L0043752a
+L004374f3:
+        mov edx, dword ptr [ebx+8]
+        xor ecx, ecx
+        mov cx, word ptr [ebp+0x30]
+        lea ecx, [ecx+ecx*4]
+        mov ecx, dword ptr [edx+ecx*8]
+        mov dword ptr [eax], ecx
+        xor ecx, ecx
+        mov cx, word ptr [ebp+0x30]
+        lea edx, [ecx+ecx*4]
+        mov ecx, dword ptr [ebx+8]
+        mov edx, dword ptr [ecx+edx*8+4]
+        xor ecx, ecx
+        mov dword ptr [esi+0xc], edx
+        mov cx, word ptr [ebp+0x30]
+        mov edx, dword ptr [ebx+8]
+        lea ecx, [ecx+ecx*4]
+        mov ecx, dword ptr [edx+ecx*8+8]
+L00437527:
+        mov dword ptr [esi+0x10], ecx
+L0043752a:
+        mov edx, dword ptr [esp+0x28]
+        mov ecx, dword ptr [edx]
+        lea edx, [esp+0x10]
+        add ecx, 0x2c
+        push ecx
+        push eax
+        push edx
+        call BrMatrix34ApplyP
+        mov eax, dword ptr [esp+0x34]
+        add esp, 0xc
+        mov ecx, dword ptr [eax+0x228]
+        mov edx, dword ptr [ecx]
+        lea ecx, [esi+0x14]
+        add edx, 0x2c
+        push edx
+        lea edx, [esp+0x14]
+        call DrMatrix34ApplyLPInverse
+        xor edx, edx
+        mov dword ptr [esi+0x50], 2
+        xor ecx, ecx
+        lea eax, [esi+0x58]
+L0043756c:
+        mov dword ptr [eax - 4], edx
+        mov dword ptr [eax], edx
+        inc ecx
+        add eax, 0x20
+        cmp ecx, dword ptr [esi+0x50]
+        jl L0043756c
+        cmp edi, edx
+        je L004378c2
+        xor eax, eax
+        mov ecx, dword ptr [ebx+8]
+        mov ax, word ptr [edi+0xe]
+        lea ebp, [eax+eax*4]
+        xor eax, eax
+        mov ax, word ptr [edi+0xa]
+        fld dword ptr [ecx+ebp*8]
+        lea eax, [eax+eax*4]
+        fsub dword ptr [ecx+eax*8]
+        xor eax, eax
+        fstp dword ptr [esi+0x5c]
+        mov ax, word ptr [edi+0xe]
+        mov ecx, dword ptr [ebx+8]
+        lea ebp, [eax+eax*4]
+        xor eax, eax
+        mov ax, word ptr [edi+0xa]
+        fld dword ptr [ecx+ebp*8+4]
+        lea eax, [eax+eax*4]
+        fsub dword ptr [ecx+eax*8+4]
+        xor eax, eax
+        fstp dword ptr [esi+0x60]
+        mov ax, word ptr [edi+0xe]
+        mov ecx, dword ptr [ebx+8]
+        lea ebp, [eax+eax*4]
+        xor eax, eax
+        mov ax, word ptr [edi+0xa]
+        fld dword ptr [ecx+ebp*8+8]
+        lea eax, [eax+eax*4]
+        fsub dword ptr [ecx+eax*8+8]
+        fst dword ptr [esi+0x64]
+        fld dword ptr [esi+0x5c]
+        fstp dword ptr [esp+0x28]
+        fld dword ptr [esi+0x60]
+        fstp dword ptr [esp+0x2c]
+        fld dword ptr [esp+0x28]
+        fmul dword ptr [esp+0x28]
+        fld dword ptr [esp+0x2c]
+        fmul dword ptr [esp+0x2c]
+        faddp st(1), st(0)
+        fld st(1)
+        fmul st(0), st(2)
+        faddp st(1), st(0)
+        fsqrt
+        fstp st(1)
+        fcom dword ptr [gFLOAT_00589a5c]
+        fnstsw ax
+        test ah, 0x41
+        jne L00437647
+        fdivr qword ptr [gDOUBLE_00589a60]
+        fld dword ptr [esi+0x5c]
+        fld dword ptr [esi+0x60]
+        fld dword ptr [esi+0x64]
+        fxch st(2)
+        fxch st(1)
+        fxch st(1)
+        fmul st(0), st(3)
+        fxch st(1)
+        fmul st(0), st(3)
+        fxch st(2)
+        fmul st(0), st(3)
+        fxch st(1)
+        fstp dword ptr [esi+0x5c]
+        fxch st(1)
+        fstp dword ptr [esi+0x60]
+        fstp dword ptr [esi+0x64]
+        fstp st(0)
+        jmp L00437656
+L00437647:
+        fstp st(0)
+        mov dword ptr [esi+0x5c], 0x3f800000
+        mov dword ptr [esi+0x60], edx
+        mov dword ptr [esi+0x64], edx
+L00437656:
+        xor eax, eax
+        mov ecx, dword ptr [ebx+8]
+        mov ax, word ptr [edi+0x10]
+        lea ebp, [eax+eax*4]
+        xor eax, eax
+        mov ax, word ptr [edi+0xa]
+        fld dword ptr [ecx+ebp*8]
+        lea eax, [eax+eax*4]
+        fsub dword ptr [ecx+eax*8]
+        xor eax, eax
+        fstp dword ptr [esi+0x7c]
+        mov ax, word ptr [edi+0x10]
+        mov ecx, dword ptr [ebx+8]
+        lea ebp, [eax+eax*4]
+        xor eax, eax
+        mov ax, word ptr [edi+0xa]
+        fld dword ptr [ecx+ebp*8+4]
+        lea eax, [eax+eax*4]
+        fsub dword ptr [ecx+eax*8+4]
+        xor eax, eax
+        fstp dword ptr [esi+0x80]
+        mov ax, word ptr [edi+0x10]
+        mov ebx, dword ptr [ebx+8]
+        lea ecx, [eax+eax*4]
+        xor eax, eax
+        mov ax, word ptr [edi+0xa]
+        fld dword ptr [ebx+ecx*8+8]
+        lea eax, [eax+eax*4]
+        fsub dword ptr [ebx+eax*8+8]
+        fst dword ptr [esi+0x84]
+        fld dword ptr [esi+0x7c]
+        fstp dword ptr [esp+0x28]
+        fld dword ptr [esi+0x80]
+        fstp dword ptr [esp+0x2c]
+        fld dword ptr [esp+0x28]
+        fmul dword ptr [esp+0x28]
+        fld dword ptr [esp+0x2c]
+        fmul dword ptr [esp+0x2c]
+        faddp st(1), st(0)
+        fld st(1)
+        fmul st(0), st(2)
+        faddp st(1), st(0)
+        fsqrt
+        fstp st(1)
+        fcom dword ptr [gFLOAT_00589a5c]
+        fnstsw ax
+        test ah, 0x41
+        jne L00437730
+        fdivr qword ptr [gDOUBLE_00589a60]
+        fld dword ptr [esi+0x7c]
+        fld dword ptr [esi+0x80]
+        fld dword ptr [esi+0x84]
+        fxch st(2)
+        fxch st(1)
+        fxch st(1)
+        fmul st(0), st(3)
+        fxch st(1)
+        fmul st(0), st(3)
+        fxch st(2)
+        fmul st(0), st(3)
+        fxch st(1)
+        fstp dword ptr [esi+0x7c]
+        fxch st(1)
+        fstp dword ptr [esi+0x80]
+        fstp dword ptr [esi+0x84]
+        fstp st(0)
+        jmp L00437745
+L00437730:
+        fstp st(0)
+        mov dword ptr [esi+0x7c], 0x3f800000
+        mov dword ptr [esi+0x80], edx
+        mov dword ptr [esi+0x84], edx
+L00437745:
+        fld dword ptr [esi+0x7c]
+        fld dword ptr [esi+0x64]
+        fld dword ptr [esi+0x84]
+        fld dword ptr [esi+0x5c]
+        fld dword ptr [esi+0x84]
+        fmul dword ptr [esi+0x60]
+        fld dword ptr [esi+0x80]
+        fmul dword ptr [esi+0x64]
+        fsubp st(1), st(0)
+        fstp dword ptr [esi+0x68]
+        fld dword ptr [esi+0x80]
+        fld dword ptr [esi+0x5c]
+        fxch st(4)
+        fmulp st(5), st(0)
+        fld dword ptr [esi+0x7c]
+        fxch st(2)
+        fmulp st(3), st(0)
+        fxch st(2)
+        fsubp st(4), st(0)
+        fld st(3)
+        fxch st(3)
+        fmulp st(2), st(0)
+        fxch st(2)
+        fstp dword ptr [esi+0x6c]
+        fld dword ptr [esi+0x60]
+        fld dword ptr [esi+0x5c]
+        fld dword ptr [esi+0x7c]
+        fxch st(2)
+        fmulp st(4), st(0)
+        fld dword ptr [esi+0x64]
+        fxch st(4)
+        fsubp st(3), st(0)
+        fld dword ptr [esi+0x60]
+        fxch st(4)
+        fmul dword ptr [gFLOAT_00589a58]
+        faddp st(3), st(0)
+        fmul dword ptr [gFLOAT_00589a58]
+        fxch st(2)
+        fstp dword ptr [esi+0x70]
+        fmul dword ptr [gFLOAT_00589a58]
+        fxch st(2)
+        fmul dword ptr [gFLOAT_00589a58]
+        fxch st(2)
+        faddp st(1), st(0)
+        fld dword ptr [esi+0x80]
+        fmul dword ptr [gFLOAT_00589a58]
+        fxch st(1)
+        fadd dword ptr [esi+0x68]
+        fld dword ptr [esi+0x84]
+        fxch st(2)
+        faddp st(3), st(0)
+        fxch st(1)
+        fmul dword ptr [gFLOAT_00589a58]
+        fxch st(2)
+        fadd st(0), st(3)
+        fxch st(1)
+        fst dword ptr [esp+0x28]
+        fxch st(2)
+        fadd dword ptr [esi+0x70]
+        fxch st(1)
+        fst dword ptr [esp+0x2c]
+        fxch st(2)
+        fstp dword ptr [esi+0x68]
+        fxch st(1)
+        fstp dword ptr [esi+0x6c]
+        fstp dword ptr [esp+0x20]
+        fstp st(0)
+        fld dword ptr [esp+0x28]
+        fld dword ptr [esp+0x2c]
+        fld dword ptr [esp+0x20]
+        fxch st(2)
+        fst dword ptr [esp+0x24]
+        fld st(1)
+        fxch st(1)
+        fmul dword ptr [esp+0x24]
+        fxch st(1)
+        fmul st(0), st(2)
+        fxch st(3)
+        fst dword ptr [esp+0x24]
+        fmul dword ptr [esp+0x24]
+        fxch st(3)
+        faddp st(1), st(0)
+        fld dword ptr [esp+0x20]
+        fxch st(3)
+        faddp st(1), st(0)
+        fxch st(2)
+        fstp dword ptr [esi+0x70]
+        fxch st(1)
+        fsqrt
+        fstp st(1)
+        fcom dword ptr [gFLOAT_00589a5c]
+        fnstsw ax
+        test ah, 0x41
+        jne L0043788e
+        fdivr qword ptr [gDOUBLE_00589a60]
+        fld dword ptr [esi+0x70]
+        fld st(1)
+        fld st(2)
+        fxch st(1)
+        fmul dword ptr [esp+0x28]
+        fxch st(1)
+        fmul dword ptr [esp+0x2c]
+        fxch st(2)
+        fmul st(0), st(3)
+        fxch st(1)
+        fstp dword ptr [esi+0x68]
+        fxch st(1)
+        fstp dword ptr [esi+0x6c]
+        fstp dword ptr [esi+0x70]
+        fstp st(0)
+        jmp L0043789d
+L0043788e:
+        fstp st(0)
+        mov dword ptr [esi+0x68], 0x3f800000
+        mov dword ptr [esi+0x6c], edx
+        mov dword ptr [esi+0x70], edx
+L0043789d:
+        mov ecx, dword ptr [esi+0x68]
+        mov edx, dword ptr [esi+0x6c]
+        mov eax, dword ptr [esi+0x70]
+        mov dword ptr [esi+0x88], ecx
+        mov dword ptr [esi+0x8c], edx
+        mov dword ptr [esi+0x90], eax
+        pop edi
+        pop esi
+        pop ebp
+        pop ebx
+        add esp, 0xc
+        ret 0x10
+L004378c2:
+        xor eax, eax
+        xor ebx, ebx
+        mov al, byte ptr [ebp+0x33]
+        mov bl, byte ptr [ebp+0x32]
+        mov edi, eax
+        mov ebp, eax
+        sar edi, 1
+        and ebp, 1
+        mov dword ptr [esp+0x2c], ebx
+        mov dword ptr [esi+0x68], edx
+        mov dword ptr [esi+0x6c], edx
+        mov dword ptr [esi+0x70], edx
+        je L004378ec
+        fld dword ptr [gFLOAT_00589a54]
+        jmp L004378f2
+L004378ec:
+        fld dword ptr [gFLOAT_00589b2c]
+L004378f2:
+        fstp dword ptr [esi+edi*4+0x68]
+        mov eax, dword ptr [esi+0x70]
+        mov edx, dword ptr [esi+0x6c]
+        mov ecx, dword ptr [esi+0x68]
+        mov dword ptr [esi+0x90], eax
+        lea eax, [edi+1]
+        mov dword ptr [esi+0x8c], edx
+        mov dword ptr [esi+0x88], ecx
+        mov ecx, 3
+        cdq
+        idiv ecx
+        mov ecx, edx
+        sar ebx, cl
+        test bl, 1
+        je L0043792d
+        fld dword ptr [gFLOAT_00589b2c]
+        jmp L00437933
+L0043792d:
+        fld dword ptr [gFLOAT_00589a54]
+L00437933:
+        lea eax, [edi+2]
+        mov ebx, 3
+        cdq
+        fstp dword ptr [esi+ecx*4+0x5c]
+        idiv ebx
+        xor ebx, ebx
+        cmp ebp, ebx
+        mov dword ptr [esi+edx*4+0x5c], ebx
+        je L00437954
+        fld dword ptr [gFLOAT_00589a58]
+        jmp L0043795a
+L00437954:
+        fld dword ptr [gFLOAT_00589b30]
+L0043795a:
+        fstp dword ptr [esi+edi*4+0x5c]
+        fld dword ptr [esi+0x5c]
+        fld dword ptr [esi+0x60]
+        fld dword ptr [esi+0x64]
+        fxch st(2)
+        fst dword ptr [esp+0x28]
+        fld st(1)
+        fxch st(1)
+        fmul dword ptr [esp+0x28]
+        fxch st(1)
+        fmul st(0), st(2)
+        fxch st(3)
+        fst dword ptr [esp+0x28]
+        fmul dword ptr [esp+0x28]
+        fxch st(3)
+        faddp st(1), st(0)
+        fxch st(2)
+        faddp st(2), st(0)
+        fxch st(1)
+        fsqrt
+        fstp st(1)
+        fcom dword ptr [gFLOAT_00589a5c]
+        fnstsw ax
+        test ah, 0x41
+        jne L004379ce
+        fdivr qword ptr [gDOUBLE_00589a60]
+        fld dword ptr [esi+0x5c]
+        fld dword ptr [esi+0x60]
+        fld dword ptr [esi+0x64]
+        fxch st(2)
+        fxch st(1)
+        fxch st(1)
+        fmul st(0), st(3)
+        fxch st(1)
+        fmul st(0), st(3)
+        fxch st(2)
+        fmul st(0), st(3)
+        fxch st(1)
+        fstp dword ptr [esi+0x5c]
+        fxch st(1)
+        fstp dword ptr [esi+0x60]
+        fstp dword ptr [esi+0x64]
+        fstp st(0)
+        jmp L004379dd
+L004379ce:
+        fstp st(0)
+        mov dword ptr [esi+0x5c], 0x3f800000
+        mov dword ptr [esi+0x60], ebx
+        mov dword ptr [esi+0x64], ebx
+L004379dd:
+        mov eax, dword ptr [esp+0x2c]
+        mov dword ptr [esi+ecx*4+0x7c], ebx
+        mov ecx, edx
+        sar eax, cl
+        test al, 1
+        je L004379f5
+        fld dword ptr [gFLOAT_00589b2c]
+        jmp L004379fb
+L004379f5:
+        fld dword ptr [gFLOAT_00589a54]
+L004379fb:
+        fstp dword ptr [esi+edx*4+0x7c]
+        cmp ebp, ebx
+        je L00437a0b
+        fld dword ptr [gFLOAT_00589a58]
+        jmp L00437a11
+L00437a0b:
+        fld dword ptr [gFLOAT_00589b30]
+L00437a11:
+        fstp dword ptr [esi+edi*4+0x7c]
+        fld dword ptr [esi+0x7c]
+        fld dword ptr [esi+0x80]
+        fld dword ptr [esi+0x84]
+        fxch st(2)
+        fst dword ptr [esp+0x28]
+        fld st(1)
+        fxch st(1)
+        fmul dword ptr [esp+0x28]
+        fxch st(1)
+        fmul st(0), st(2)
+        fxch st(3)
+        fst dword ptr [esp+0x28]
+        fmul dword ptr [esp+0x28]
+        fxch st(3)
+        faddp st(1), st(0)
+        fxch st(2)
+        faddp st(2), st(0)
+        fxch st(1)
+        fsqrt
+        fstp st(1)
+        fcom dword ptr [gFLOAT_00589a5c]
+        fnstsw ax
+        test ah, 0x41
+        jne L00437a9f
+        fdivr qword ptr [gDOUBLE_00589a60]
+        fld dword ptr [esi+0x7c]
+        fld dword ptr [esi+0x80]
+        fld dword ptr [esi+0x84]
+        fxch st(2)
+        fxch st(1)
+        fxch st(1)
+        fmul st(0), st(3)
+        fxch st(1)
+        fmul st(0), st(3)
+        fxch st(2)
+        fmul st(0), st(3)
+        fxch st(1)
+        fstp dword ptr [esi+0x7c]
+        fxch st(1)
+        fstp dword ptr [esi+0x80]
+        fstp dword ptr [esi+0x84]
+        fstp st(0)
+        pop edi
+        pop esi
+        pop ebp
+        pop ebx
+        add esp, 0xc
+        ret 0x10
+L00437a9f:
+        mov dword ptr [esi+0x7c], 0x3f800000
+        mov dword ptr [esi+0x80], ebx
+        mov dword ptr [esi+0x84], ebx
+        pop edi
+        pop esi
+        pop ebp
+        fstp st(0)
+        pop ebx
+        add esp, 0xc
+        ret 0x10
+    }
+#endif
 }
 
+// FUNCTION: CARMA2_HW 0x00437ac0
+void C2_NAKED C2_HOOK_FASTCALL SetUpFlapJoint(tPhysics_joint* pJoint, tCar_crush_flap_data* pFlap_data, br_model* pModel, tPhysics_object* pObject, br_vector3* pPoint1, br_vector3* pPoint2, br_vector3* pPoint3) {
+#ifndef CARPOCALYPSE2_MATCHING
+    br_vector3* point3;
+    br_vector3 local_point;
+    br_vector3 scaled;
+    br_matrix34 rotation;
+    br_scalar length;
+    br_scalar inverse_length;
+    br_scalar dot;
+
+    pJoint->type = eJoint_quick_hinge;
+    if (pPoint1 == NULL) {
+        pPoint1 = &pModel->vertices[pFlap_data->hinge0].p;
+    }
+    if (pPoint2 == NULL) {
+        pPoint2 = &pModel->vertices[pFlap_data->hinge1].p;
+    }
+    if (pPoint3 != NULL) {
+        point3 = pPoint3;
+    } else {
+        point3 = &pModel->vertices[pFlap_data->hinge2].p;
+    }
+    BrVector3Copy(&pJoint->field_0x08, pPoint1);
+    BrMatrix34ApplyP(&local_point, &pJoint->field_0x08, &pObject->actor->t.t.mat);
+    DrMatrix34ApplyLPInverse(&pJoint->field_0x14, &local_point, &pObject->parent->actor->t.t.mat);
+
+    BrVector3Sub(&pJoint->hinge_axis, pPoint2, pPoint1);
+    length = BrVector3Length(&pJoint->hinge_axis);
+    if (length > gFLOAT_00589a5c) {
+        inverse_length = gDOUBLE_00589a60 / length;
+        pJoint->hinge_axis.v[0] = inverse_length * pJoint->hinge_axis.v[0];
+        pJoint->hinge_axis.v[1] = inverse_length * pJoint->hinge_axis.v[1];
+        pJoint->hinge_axis.v[2] = inverse_length * pJoint->hinge_axis.v[2];
+    } else {
+        pJoint->hinge_axis.v[0] = 1.0f;
+        pJoint->hinge_axis.v[1] = 0.0f;
+        pJoint->hinge_axis.v[2] = 0.0f;
+    }
+    BrVector3Copy(&pJoint->parent_bone_axis, &pJoint->hinge_axis);
+    if (pJoint->hinge_axis.v[0] == gCrushZero && pJoint->hinge_axis.v[2] == gCrushZero) {
+        pJoint->hinge_axis2.v[0] = 1.0f;
+        pJoint->hinge_axis2.v[1] = 0.0f;
+        pJoint->hinge_axis2.v[2] = 0.0f;
+    } else {
+        pJoint->hinge_axis2.v[0] = -pJoint->hinge_axis.v[2];
+        pJoint->hinge_axis2.v[1] = 0.0f;
+        pJoint->hinge_axis2.v[2] = pJoint->hinge_axis.v[0];
+    }
+    length = sqrtf(pJoint->hinge_axis2.v[0] * pJoint->hinge_axis2.v[0] + pJoint->hinge_axis2.v[2] * pJoint->hinge_axis2.v[2]);
+    if (length > gFLOAT_00589a5c) {
+        inverse_length = gDOUBLE_00589a60 / length;
+        pJoint->hinge_axis2.v[0] = pJoint->hinge_axis2.v[0] * inverse_length;
+        pJoint->hinge_axis2.v[1] = 0.0f;
+        pJoint->hinge_axis2.v[2] = pJoint->hinge_axis2.v[2] * inverse_length;
+    } else {
+        pJoint->hinge_axis2.v[0] = 1.0f;
+        pJoint->hinge_axis2.v[1] = 0.0f;
+        pJoint->hinge_axis2.v[2] = 0.0f;
+    }
+    BrVector3Cross(&pJoint->hinge_axis3, &pJoint->hinge_axis, &pJoint->hinge_axis2);
+    length = BrVector3Length(&pJoint->hinge_axis3);
+    if (length > gFLOAT_00589a5c) {
+        inverse_length = gDOUBLE_00589a60 / length;
+        pJoint->hinge_axis3.v[0] = pJoint->hinge_axis3.v[0] * inverse_length;
+        pJoint->hinge_axis3.v[1] = pJoint->hinge_axis3.v[1] * inverse_length;
+        pJoint->hinge_axis3.v[2] = pJoint->hinge_axis3.v[2] * inverse_length;
+    } else {
+        pJoint->hinge_axis3.v[0] = 1.0f;
+        pJoint->hinge_axis3.v[1] = 0.0f;
+        pJoint->hinge_axis3.v[2] = 0.0f;
+    }
+
+    pJoint->count_limits = 2;
+    BrVector3Sub(&pJoint->limits[0].child, point3, pPoint1);
+    dot = BrVector3Dot(&pJoint->hinge_axis, &pJoint->limits[0].child);
+    pJoint->limits[0].child.v[0] = pJoint->limits[0].child.v[0] - pJoint->hinge_axis.v[0] * dot;
+    pJoint->limits[0].child.v[1] = pJoint->limits[0].child.v[1] - pJoint->hinge_axis.v[1] * dot;
+    pJoint->limits[0].child.v[2] = pJoint->limits[0].child.v[2] - pJoint->hinge_axis.v[2] * dot;
+    length = BrVector3Length(&pJoint->limits[0].child);
+    if (length > gFLOAT_00589a5c) {
+        inverse_length = gDOUBLE_00589a60 / length;
+        pJoint->limits[0].child.v[0] = pJoint->limits[0].child.v[0] * inverse_length;
+        pJoint->limits[0].child.v[1] = pJoint->limits[0].child.v[1] * inverse_length;
+        pJoint->limits[0].child.v[2] = pJoint->limits[0].child.v[2] * inverse_length;
+    } else {
+        pJoint->limits[0].child.v[0] = 1.0f;
+        pJoint->limits[0].child.v[1] = 0.0f;
+        pJoint->limits[0].child.v[2] = 0.0f;
+    }
+    BrVector3Cross(&pJoint->limits[0].parent, &pJoint->hinge_axis, &pJoint->limits[0].child);
+    length = BrVector3Length(&pJoint->limits[0].parent);
+    if (length > gFLOAT_00589a5c) {
+        inverse_length = gDOUBLE_00589a60 / length;
+        pJoint->limits[0].parent.v[0] = pJoint->limits[0].parent.v[0] * inverse_length;
+        pJoint->limits[0].parent.v[1] = pJoint->limits[0].parent.v[1] * inverse_length;
+        pJoint->limits[0].parent.v[2] = pJoint->limits[0].parent.v[2] * inverse_length;
+    } else {
+        pJoint->limits[0].parent.v[0] = 1.0f;
+        pJoint->limits[0].parent.v[1] = 0.0f;
+        pJoint->limits[0].parent.v[2] = 0.0f;
+    }
+    BrVector3Copy(&pJoint->limits[1].child, &pJoint->limits[0].child);
+    BrMatrix34Rotate(&rotation, (br_angle)(pFlap_data->field_0x6 - 0x3ffc), &pJoint->hinge_axis);
+    BrMatrix34ApplyV(&pJoint->limits[1].parent, &pJoint->limits[1].child, &rotation);
+    BrVector3Scale(&scaled, &pJoint->limits[0].parent, gFLOAT_00589a58);
+    BrVector3Add(&pJoint->limits[0].child, &pJoint->limits[0].child, &scaled);
+    length = BrVector3Length(&pJoint->limits[0].child);
+    if (length > gFLOAT_00589a5c) {
+        inverse_length = gDOUBLE_00589a60 / length;
+        pJoint->limits[0].child.v[0] = pJoint->limits[0].child.v[0] * inverse_length;
+        pJoint->limits[0].child.v[1] = pJoint->limits[0].child.v[1] * inverse_length;
+        pJoint->limits[0].child.v[2] = pJoint->limits[0].child.v[2] * inverse_length;
+    } else {
+        pJoint->limits[0].child.v[0] = 1.0f;
+        pJoint->limits[0].child.v[1] = 0.0f;
+        pJoint->limits[0].child.v[2] = 0.0f;
+    }
+    BrVector3Scale(&scaled, &pJoint->limits[1].parent, gFLOAT_00589a58);
+    BrVector3Add(&pJoint->limits[1].child, &pJoint->limits[1].child, &scaled);
+    length = BrVector3Length(&pJoint->limits[1].child);
+    if (length > gFLOAT_00589a5c) {
+        inverse_length = gDOUBLE_00589a60 / length;
+        pJoint->limits[1].child.v[0] = pJoint->limits[1].child.v[0] * inverse_length;
+        pJoint->limits[1].child.v[1] = pJoint->limits[1].child.v[1] * inverse_length;
+        pJoint->limits[1].child.v[2] = pJoint->limits[1].child.v[2] * inverse_length;
+    } else {
+        pJoint->limits[1].child.v[0] = 1.0f;
+        pJoint->limits[1].child.v[1] = 0.0f;
+        pJoint->limits[1].child.v[2] = 0.0f;
+    }
+#else
+    __asm {
+        sub esp, 0x40
+        push ebx
+        push ebp
+        push esi
+        push edi
+        mov edi, dword ptr [esp+0x5c]
+        mov esi, ecx
+        mov ecx, dword ptr [esp+0x54]
+        mov dword ptr [esp+0x10], edx
+        test edi, edi
+        mov dword ptr [esi], 4
+        jne L00437aee
+        mov edi, dword ptr [ecx+8]
+        xor eax, eax
+        mov ax, word ptr [edx+0xa]
+        lea eax, [eax+eax*4]
+        lea edi, [edi+eax*8]
+L00437aee:
+        mov ebx, dword ptr [esp+0x60]
+        test ebx, ebx
+        jne L00437b05
+        mov ebx, dword ptr [ecx+8]
+        xor eax, eax
+        mov ax, word ptr [edx+0xe]
+        lea eax, [eax+eax*4]
+        lea ebx, [ebx+eax*8]
+L00437b05:
+        mov eax, dword ptr [esp+0x64]
+        test eax, eax
+        je L00437b13
+        mov dword ptr [esp+0x60], eax
+        jmp L00437b26
+L00437b13:
+        xor eax, eax
+        mov ax, word ptr [edx+0x10]
+        lea edx, [eax+eax*4]
+        mov eax, dword ptr [ecx+8]
+        lea ecx, [eax+edx*8]
+        mov dword ptr [esp+0x60], ecx
+L00437b26:
+        mov edx, dword ptr [edi]
+        mov ebp, dword ptr [esp+0x58]
+        lea eax, [esi+8]
+        mov dword ptr [eax], edx
+        mov ecx, dword ptr [edi+4]
+        mov dword ptr [esi+0xc], ecx
+        mov edx, dword ptr [edi+8]
+        mov dword ptr [esi+0x10], edx
+        mov ecx, dword ptr [ebp]
+        add ecx, 0x2c
+        lea edx, [esp+0x14]
+        push ecx
+        push eax
+        push edx
+        call BrMatrix34ApplyP
+        mov eax, dword ptr [ebp+0x228]
+        add esp, 0xc
+        lea ecx, [esi+0x14]
+        lea edx, [esp+0x14]
+        mov eax, dword ptr [eax]
+        add eax, 0x2c
+        push eax
+        call DrMatrix34ApplyLPInverse
+        fld dword ptr [ebx]
+        fsub dword ptr [edi]
+        lea ecx, [esi+0x38]
+        fstp dword ptr [ecx]
+        fld dword ptr [ebx+4]
+        fsub dword ptr [edi+4]
+        fld dword ptr [ecx]
+        fstp dword ptr [esp+0x5c]
+        fstp dword ptr [esi+0x3c]
+        fld dword ptr [ebx+8]
+        fsub dword ptr [edi+8]
+        fld dword ptr [esi+0x3c]
+        fld dword ptr [esp+0x5c]
+        fxch st(2)
+        fst dword ptr [esp+0x54]
+        fld st(1)
+        fxch st(3)
+        fmul dword ptr [esp+0x5c]
+        fxch st(3)
+        fmul st(0), st(2)
+        fxch st(1)
+        fst dword ptr [esp+0x5c]
+        fmul dword ptr [esp+0x5c]
+        fxch st(1)
+        faddp st(3), st(0)
+        fld dword ptr [esp+0x54]
+        fxch st(1)
+        faddp st(3), st(0)
+        fstp dword ptr [esi+0x40]
+        fxch st(1)
+        fsqrt
+        fstp st(1)
+        fcom dword ptr [gFLOAT_00589a5c]
+        fnstsw ax
+        test ah, 0x41
+        jne L00437c02
+        fdivr qword ptr [gDOUBLE_00589a60]
+        xor ebx, ebx
+        mov edx, 0x3f800000
+        fld dword ptr [ecx]
+        fld dword ptr [esi+0x3c]
+        fld dword ptr [esi+0x40]
+        fxch st(2)
+        fxch st(1)
+        fxch st(1)
+        fmul st(0), st(3)
+        fxch st(1)
+        fmul st(0), st(3)
+        fxch st(2)
+        fmul st(0), st(3)
+        fxch st(1)
+        fstp dword ptr [ecx]
+        fxch st(1)
+        fstp dword ptr [esi+0x3c]
+        fstp dword ptr [esi+0x40]
+        fstp st(0)
+        jmp L00437c13
+L00437c02:
+        mov edx, 0x3f800000
+        xor ebx, ebx
+        fstp st(0)
+        mov dword ptr [ecx], edx
+        mov dword ptr [esi+0x3c], ebx
+        mov dword ptr [esi+0x40], ebx
+L00437c13:
+        mov eax, dword ptr [ecx]
+        fld dword ptr [ecx]
+        fcomp dword ptr [gCrushZero]
+        mov dword ptr [esi+0x44], eax
+        mov eax, dword ptr [esi+0x3c]
+        mov dword ptr [esi+0x48], eax
+        mov eax, dword ptr [esi+0x40]
+        mov dword ptr [esi+0x4c], eax
+        fnstsw ax
+        test ah, 0x40
+        je L00437c4e
+        fld dword ptr [esi+0x40]
+        fcomp dword ptr [gCrushZero]
+        fnstsw ax
+        test ah, 0x40
+        je L00437c4e
+        mov dword ptr [esi+0x20], edx
+        mov dword ptr [esi+0x24], ebx
+        mov dword ptr [esi+0x28], ebx
+        jmp L00437c5e
+L00437c4e:
+        fld dword ptr [esi+0x40]
+        fchs
+        fstp dword ptr [esi+0x20]
+        fld dword ptr [ecx]
+        fstp dword ptr [esi+0x28]
+        mov dword ptr [esi+0x24], ebx
+L00437c5e:
+        fld dword ptr [esi+0x28]
+        fld dword ptr [esi+0x20]
+        fst dword ptr [esp+0x5c]
+        fld st(1)
+        fxch st(1)
+        fmul dword ptr [esp+0x5c]
+        fxch st(1)
+        fmul st(0), st(2)
+        faddp st(1), st(0)
+        fsqrt
+        fstp st(1)
+        fcom dword ptr [gFLOAT_00589a5c]
+        fnstsw ax
+        test ah, 0x41
+        jne L00437ca8
+        fdivr qword ptr [gDOUBLE_00589a60]
+        mov dword ptr [esi+0x24], ebx
+        fld dword ptr [esi+0x28]
+        fld dword ptr [esi+0x20]
+        fmul st(0), st(2)
+        fxch st(1)
+        fmul st(0), st(2)
+        fxch st(1)
+        fstp dword ptr [esi+0x20]
+        fstp dword ptr [esi+0x28]
+        fstp st(0)
+        jmp L00437cb3
+L00437ca8:
+        fstp st(0)
+        mov dword ptr [esi+0x20], edx
+        mov dword ptr [esi+0x24], ebx
+        mov dword ptr [esi+0x28], ebx
+L00437cb3:
+        fld dword ptr [esi+0x28]
+        fld dword ptr [esi+0x3c]
+        fld dword ptr [esi+0x24]
+        fld dword ptr [esi+0x40]
+        fld dword ptr [esi+0x20]
+        fxch st(3)
+        fmulp st(4), st(0)
+        fld dword ptr [esi+0x28]
+        fxch st(1)
+        fmulp st(2), st(0)
+        fxch st(1)
+        fsubp st(3), st(0)
+        fxch st(1)
+        fmul dword ptr [esi+0x40]
+        fxch st(2)
+        fstp dword ptr [esi+0x2c]
+        fld dword ptr [esi+0x2c]
+        fld st(0)
+        fmulp st(1), st(0)
+        fld dword ptr [ecx]
+        fld dword ptr [esi+0x24]
+        fld dword ptr [ecx]
+        fxch st(2)
+        fmulp st(4), st(0)
+        fxch st(3)
+        fsubp st(4), st(0)
+        fmulp st(2), st(0)
+        fxch st(2)
+        fstp dword ptr [esi+0x30]
+        fld dword ptr [esi+0x30]
+        fst dword ptr [esp+0x5c]
+        fmul dword ptr [esp+0x5c]
+        fld dword ptr [esi+0x20]
+        fxch st(1)
+        faddp st(3), st(0)
+        fmul dword ptr [esi+0x3c]
+        fsubp st(1), st(0)
+        fst dword ptr [esp+0x5c]
+        fst dword ptr [esp+0x54]
+        fmul dword ptr [esp+0x54]
+        fld dword ptr [esp+0x5c]
+        fxch st(1)
+        faddp st(2), st(0)
+        fstp dword ptr [esi+0x34]
+        fsqrt
+        fcom dword ptr [gFLOAT_00589a5c]
+        fnstsw ax
+        test ah, 0x41
+        jne L00437d60
+        fdivr qword ptr [gDOUBLE_00589a60]
+        fld dword ptr [esi+0x30]
+        fld dword ptr [esi+0x2c]
+        fld st(2)
+        fmul dword ptr [esp+0x5c]
+        fxch st(1)
+        fmul st(0), st(3)
+        fxch st(2)
+        fmul st(0), st(3)
+        fxch st(2)
+        fstp dword ptr [esi+0x2c]
+        fxch st(1)
+        fstp dword ptr [esi+0x30]
+        fstp dword ptr [esi+0x34]
+        fstp st(0)
+        jmp L00437d6b
+L00437d60:
+        fstp st(0)
+        mov dword ptr [esi+0x2c], edx
+        mov dword ptr [esi+0x30], ebx
+        mov dword ptr [esi+0x34], ebx
+L00437d6b:
+        mov eax, dword ptr [esp+0x60]
+        mov dword ptr [esi+0x50], 2
+        fld dword ptr [eax]
+        fsub dword ptr [edi]
+        fld dword ptr [esi+0x40]
+        fld dword ptr [ecx]
+        fxch st(2)
+        fstp dword ptr [esi+0x5c]
+        fld dword ptr [eax+4]
+        fsub dword ptr [edi+4]
+        fld dword ptr [esi+0x5c]
+        fld dword ptr [esi+0x3c]
+        fxch st(2)
+        fstp dword ptr [esi+0x60]
+        fld dword ptr [eax+8]
+        fsub dword ptr [edi+8]
+        fst dword ptr [esp+0x54]
+        fst dword ptr [esi+0x64]
+        fld dword ptr [esi+0x64]
+        fld dword ptr [esi+0x60]
+        fxch st(4)
+        fmulp st(4), st(0)
+        fxch st(3)
+        fstp dword ptr [esp+0x5c]
+        fxch st(3)
+        fmul dword ptr [esp+0x54]
+        fld dword ptr [esi+0x40]
+        fxch st(5)
+        fmulp st(2), st(0)
+        fld dword ptr [ecx]
+        fxch st(2)
+        faddp st(1), st(0)
+        fld dword ptr [esi+0x5c]
+        fxch st(1)
+        fadd dword ptr [esp+0x5c]
+        fxch st(2)
+        fmulp st(2), st(0)
+        fxch st(1)
+        fstp dword ptr [esp+0x14]
+        fld dword ptr [esi+0x64]
+        fxch st(1)
+        fmul dword ptr [ecx]
+        fxch st(4)
+        fmulp st(2), st(0)
+        fxch st(3)
+        fstp dword ptr [esp+0x54]
+        fadd dword ptr [esp+0x5c]
+        fadd dword ptr [esp+0x54]
+        fld dword ptr [esi+0x40]
+        fmulp st(3), st(0)
+        fmul dword ptr [esi+0x3c]
+        fld dword ptr [esi+0x60]
+        fxch st(1)
+        fstp dword ptr [esp+0x18]
+        fmul dword ptr [esi+0x3c]
+        fld dword ptr [esi+0x40]
+        fld dword ptr [esi+0x5c]
+        fxch st(2)
+        faddp st(4), st(0)
+        fxch st(1)
+        fsub dword ptr [esp+0x14]
+        fxch st(3)
+        fadd dword ptr [esp+0x54]
+        fxch st(3)
+        fstp dword ptr [esp+0x5c]
+        fmulp st(2), st(0)
+        fxch st(1)
+        fstp dword ptr [esp+0x1c]
+        fstp st(0)
+        fld dword ptr [esi+0x60]
+        fsub dword ptr [esp+0x18]
+        fld dword ptr [esi+0x64]
+        fsub dword ptr [esp+0x1c]
+        fld dword ptr [esp+0x5c]
+        fxch st(2)
+        fst dword ptr [esp+0x54]
+        fxch st(1)
+        fst dword ptr [esp+0x58]
+        fxch st(2)
+        fst dword ptr [esp+0x60]
+        fxch st(1)
+        fst dword ptr [esp+0x64]
+        fxch st(1)
+        fmul dword ptr [esp+0x60]
+        fxch st(1)
+        fmul dword ptr [esp+0x64]
+        fxch st(2)
+        fst dword ptr [esp+0x60]
+        fmul dword ptr [esp+0x60]
+        fxch st(2)
+        faddp st(1), st(0)
+        fld dword ptr [esp+0x5c]
+        fld dword ptr [esp+0x54]
+        fxch st(3)
+        faddp st(2), st(0)
+        fld dword ptr [esp+0x58]
+        fxch st(1)
+        fstp dword ptr [esi+0x5c]
+        fxch st(1)
+        fsqrt
+        fst dword ptr [esp+0x60]
+        fcom dword ptr [gFLOAT_00589a5c]
+        fxch st(2)
+        fstp dword ptr [esi+0x60]
+        fstp dword ptr [esi+0x64]
+        fnstsw ax
+        test ah, 0x41
+        jne L00437ecf
+        fdivr qword ptr [gDOUBLE_00589a60]
+        fld dword ptr [esi+0x64]
+        fld st(1)
+        fld st(2)
+        fxch st(1)
+        fmul dword ptr [esp+0x5c]
+        fxch st(1)
+        fmul dword ptr [esp+0x54]
+        fxch st(2)
+        fmul st(0), st(3)
+        fxch st(1)
+        fstp dword ptr [esi+0x5c]
+        fxch st(1)
+        fstp dword ptr [esi+0x60]
+        fstp dword ptr [esi+0x64]
+        fstp st(0)
+        jmp L00437eda
+L00437ecf:
+        fstp st(0)
+        mov dword ptr [esi+0x5c], edx
+        mov dword ptr [esi+0x60], ebx
+        mov dword ptr [esi+0x64], ebx
+L00437eda:
+        fld dword ptr [esi+0x64]
+        fld dword ptr [esi+0x3c]
+        fld dword ptr [esi+0x60]
+        fld dword ptr [esi+0x40]
+        fld dword ptr [esi+0x5c]
+        fld dword ptr [esi+0x40]
+        fxch st(4)
+        fmulp st(5), st(0)
+        fld dword ptr [esi+0x64]
+        fxch st(2)
+        fmulp st(3), st(0)
+        fxch st(2)
+        fsubp st(4), st(0)
+        fxch st(3)
+        fstp dword ptr [esi+0x68]
+        fld dword ptr [esi+0x68]
+        fld st(0)
+        fmulp st(1), st(0)
+        fld dword ptr [ecx]
+        fxch st(3)
+        fmulp st(2), st(0)
+        fxch st(2)
+        fmulp st(3), st(0)
+        fld dword ptr [esi+0x60]
+        fxch st(3)
+        fsubp st(1), st(0)
+        fld dword ptr [ecx]
+        fmulp st(3), st(0)
+        mov eax, dword ptr [esi+0x5c]
+        lea edi, [esi+0x7c]
+        fstp dword ptr [esi+0x6c]
+        fld dword ptr [esi+0x6c]
+        fst dword ptr [esp+0x5c]
+        fmul dword ptr [esp+0x5c]
+        fld dword ptr [esi+0x5c]
+        fxch st(1)
+        faddp st(2), st(0)
+        fmul dword ptr [esi+0x3c]
+        mov dword ptr [edi], eax
+        mov eax, dword ptr [esi+0x60]
+        fsubp st(2), st(0)
+        fxch st(1)
+        fst dword ptr [esp+0x5c]
+        fst dword ptr [esp+0x54]
+        fmul dword ptr [esp+0x54]
+        fld dword ptr [esp+0x5c]
+        fxch st(1)
+        faddp st(2), st(0)
+        mov dword ptr [esi+0x80], eax
+        mov eax, dword ptr [esi+0x64]
+        mov dword ptr [esi+0x84], eax
+        fstp dword ptr [esi+0x70]
+        fsqrt
+        fcom dword ptr [gFLOAT_00589a5c]
+        fnstsw ax
+        test ah, 0x41
+        jne L00437fa3
+        fdivr qword ptr [gDOUBLE_00589a60]
+        fld dword ptr [esi+0x6c]
+        fld dword ptr [esi+0x68]
+        fld st(2)
+        fmul dword ptr [esp+0x5c]
+        fxch st(1)
+        fmul st(0), st(3)
+        fxch st(2)
+        fmul st(0), st(3)
+        fxch st(2)
+        fstp dword ptr [esi+0x68]
+        fxch st(1)
+        fstp dword ptr [esi+0x6c]
+        fstp dword ptr [esi+0x70]
+        fstp st(0)
+        jmp L00437fae
+L00437fa3:
+        fstp st(0)
+        mov dword ptr [esi+0x68], edx
+        mov dword ptr [esi+0x6c], ebx
+        mov dword ptr [esi+0x70], ebx
+L00437fae:
+        mov edx, dword ptr [esp+0x10]
+        push ecx
+        lea ecx, [esp+0x24]
+        mov ax, word ptr [edx+6]
+        sub ax, 0x3ffc
+        push eax
+        push ecx
+        call BrMatrix34Rotate
+        add esp, 0xc
+        lea edx, [esp+0x20]
+        lea ebp, [esi+0x88]
+        push edx
+        push edi
+        push ebp
+        call BrMatrix34ApplyV
+        fld dword ptr [esi+0x68]
+        fld dword ptr [esi+0x6c]
+        fld dword ptr [esi+0x70]
+        fxch st(2)
+        fmul dword ptr [gFLOAT_00589a58]
+        fxch st(1)
+        fmul dword ptr [gFLOAT_00589a58]
+        fxch st(2)
+        fmul dword ptr [gFLOAT_00589a58]
+        fxch st(1)
+        fadd dword ptr [esi+0x5c]
+        fxch st(2)
+        fadd dword ptr [esi+0x60]
+        fxch st(1)
+        fadd dword ptr [esi+0x64]
+        fxch st(2)
+        fst dword ptr [esp+0x68]
+        fxch st(1)
+        fst dword ptr [esp+0x60]
+        fxch st(2)
+        fst dword ptr [esp+0x64]
+        fxch st(1)
+        fst dword ptr [esp+0x6c]
+        fxch st(2)
+        fst dword ptr [esp+0x70]
+        fxch st(2)
+        fmul dword ptr [esp+0x6c]
+        fxch st(2)
+        fmul dword ptr [esp+0x70]
+        fxch st(1)
+        fst dword ptr [esp+0x6c]
+        fmul dword ptr [esp+0x6c]
+        fxch st(1)
+        faddp st(2), st(0)
+        fld dword ptr [esp+0x68]
+        fld dword ptr [esp+0x60]
+        fxch st(2)
+        faddp st(3), st(0)
+        fld dword ptr [esp+0x64]
+        fxch st(3)
+        fsqrt
+        add esp, 0xc
+        fst dword ptr [esp+0x60]
+        fcom dword ptr [gFLOAT_00589a5c]
+        fxch st(1)
+        fstp dword ptr [esi+0x5c]
+        fxch st(1)
+        fstp dword ptr [esi+0x60]
+        fnstsw ax
+        fxch st(1)
+        fstp dword ptr [esi+0x64]
+        test ah, 0x41
+        jne L004380a8
+        fdivr qword ptr [gDOUBLE_00589a60]
+        fld dword ptr [esi+0x64]
+        fld st(1)
+        fld st(2)
+        fxch st(1)
+        fmul dword ptr [esp+0x5c]
+        fxch st(1)
+        fmul dword ptr [esp+0x54]
+        fxch st(2)
+        fmul st(0), st(3)
+        fxch st(1)
+        fstp dword ptr [esi+0x5c]
+        fxch st(1)
+        fstp dword ptr [esi+0x60]
+        fstp dword ptr [esi+0x64]
+        fstp st(0)
+        jmp L004380b7
+L004380a8:
+        fstp st(0)
+        mov dword ptr [esi+0x5c], 0x3f800000
+        mov dword ptr [esi+0x60], ebx
+        mov dword ptr [esi+0x64], ebx
+L004380b7:
+        fld dword ptr [ebp]
+        fld dword ptr [esi+0x8c]
+        fld dword ptr [esi+0x90]
+        fxch st(2)
+        fmul dword ptr [gFLOAT_00589a58]
+        fxch st(1)
+        fmul dword ptr [gFLOAT_00589a58]
+        fxch st(2)
+        fmul dword ptr [gFLOAT_00589a58]
+        fxch st(1)
+        fadd dword ptr [edi]
+        fxch st(2)
+        fadd dword ptr [esi+0x80]
+        fxch st(1)
+        fadd dword ptr [esi+0x84]
+        fld st(2)
+        fld st(2)
+        fld st(2)
+        fxch st(2)
+        fst dword ptr [esp+0x5c]
+        fxch st(1)
+        fst dword ptr [esp+0x54]
+        fxch st(1)
+        fmul dword ptr [esp+0x5c]
+        fxch st(1)
+        fmul dword ptr [esp+0x54]
+        fxch st(2)
+        fst dword ptr [esp+0x5c]
+        fmul dword ptr [esp+0x5c]
+        fxch st(2)
+        faddp st(1), st(0)
+        fld st(4)
+        fld st(4)
+        fxch st(3)
+        faddp st(2), st(0)
+        fld st(3)
+        fxch st(1)
+        fstp dword ptr [edi]
+        fxch st(1)
+        fsqrt
+        fst dword ptr [esp+0x5c]
+        fcom dword ptr [gFLOAT_00589a5c]
+        fxch st(2)
+        fstp dword ptr [esi+0x80]
+        fstp dword ptr [esi+0x84]
+        fnstsw ax
+        test ah, 0x41
+        jne L00438187
+        fdivr qword ptr [gDOUBLE_00589a60]
+        fld st(0)
+        fld st(1)
+        fxch st(1)
+        fmul st(0), st(5)
+        fxch st(1)
+        fmul st(0), st(4)
+        fxch st(2)
+        fmul st(0), st(3)
+        fxch st(1)
+        fstp dword ptr [edi]
+        fxch st(1)
+        fstp dword ptr [esi+0x80]
+        fstp dword ptr [esi+0x84]
+        fstp st(0)
+        fstp st(0)
+        fstp st(0)
+        pop edi
+        pop esi
+        pop ebp
+        pop ebx
+        add esp, 0x40
+        ret 0x14
+L00438187:
+        fstp st(0)
+        fstp st(0)
+        mov dword ptr [edi], 0x3f800000
+        mov dword ptr [esi+0x80], ebx
+        mov dword ptr [esi+0x84], ebx
+        pop edi
+        fstp st(0)
+        pop esi
+        pop ebp
+        fstp st(0)
+        pop ebx
+        add esp, 0x40
+        ret 0x14
+    }
+#endif
+}
 // FUNCTION: CARMA2_HW 0x0042d8f0
 void C2_HOOK_FASTCALL AddToggledDoor(br_actor* pActor, tCar_spec* pCar, int pFlag, float pDelay) {
     int i;

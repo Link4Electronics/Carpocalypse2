@@ -1,6 +1,11 @@
 #include "crush.h"
 #include "crush1.h"
 
+#ifdef CARPOCALYPSE2_MATCHING
+/* CRT x87 float-to-int helper, called by the naked asm bodies. */
+extern void __cdecl _ftol(void);
+#endif
+
 #include "animation.h"
 #include "car.h"
 #include "compress.h"
@@ -62,6 +67,9 @@ extern const double gDouble_0058aec8;
 extern br_scalar gFLOAT_00589a5c;
 extern const br_scalar gFLOAT_00589a54;
 extern const double gDOUBLE_00589a60;
+extern const double gDOUBLE_00589b18;
+extern const double gDOUBLE_00589b20;
+extern const br_scalar gFLOAT_00589b28;
 extern const double gDOUBLE_0058af40;
 extern const br_scalar gFLOAT_00589a28;
 extern const br_scalar gFLOAT_00589a2c;
@@ -99,6 +107,9 @@ const br_scalar gFloat_00589ae8 = 0.15f;
 
 // GLOBAL: CARMA2_HW 0x00589a68
 const br_scalar gCrushReattachDistanceSquared = 0.000210039914236404f;
+
+// GLOBAL: CARMA2_HW 0x00589a6c
+const br_scalar gFLOAT_00589a6c = -0.0014492754125967622f;
 
 // GLOBAL: CARMA2_HW 0x00589b48
 const br_scalar gCrushRepairStepFactor = 0.00005f;
@@ -3163,7 +3174,8 @@ float C2_HOOK_FASTCALL PointEdgeDistSq(const br_vector3* pP, const br_vector3* p
 }
 
 // FUNCTION: CARMA2_HW 0x0042c0e0
-void C2_HOOK_FASTCALL SetFlapCheckVertices(tCar_crush_flap_data* pFlap_data, const br_model* pModel, tModel_detail_vertex_data* pVertex_data) {
+void C2_NAKED C2_HOOK_FASTCALL SetFlapCheckVertices(tCar_crush_flap_data* pFlap_data, const br_model* pModel, tModel_detail_vertex_data* pVertex_data) {
+#ifndef CARPOCALYPSE2_MATCHING
     const br_vector3 *p0, *p1, *p2;
     br_vector3 hinge01;
     br_vector3 hinge02;
@@ -3171,7 +3183,9 @@ void C2_HOOK_FASTCALL SetFlapCheckVertices(tCar_crush_flap_data* pFlap_data, con
     br_scalar hinge_dot;
     br_scalar distance;
     br_scalar plane;
-    int i;
+    br_scalar length;
+    br_scalar inverse_length;
+    tU16 i;
 
     p0 = &pModel->vertices[pFlap_data->hinge0].p;
     p1 = &pModel->vertices[pFlap_data->hinge1].p;
@@ -3179,18 +3193,221 @@ void C2_HOOK_FASTCALL SetFlapCheckVertices(tCar_crush_flap_data* pFlap_data, con
     BrVector3Sub(&hinge02, p2, p0);
     BrVector3Sub(&hinge01, p1, p0);
     BrVector3Cross(&hinge_normal, &hinge01, &hinge02);
-    BrVector3Normalise(&hinge_normal, &hinge_normal);
+    length = BrVector3Length(&hinge_normal);
+    if (length > gFLOAT_00589a5c) {
+        inverse_length = gDOUBLE_00589a60 / length;
+        BrVector3Scale(&hinge_normal, &hinge_normal, inverse_length);
+    } else {
+        hinge_normal.v[0] = 1.0f;
+        hinge_normal.v[1] = 0.0f;
+        hinge_normal.v[2] = 0.0f;
+    }
     hinge_dot = BrVector3Dot(&hinge_normal, p0);
 
     for (i = 0; i < pModel->nvertices; i++) {
         distance = PointEdgeDistSq(&pModel->vertices[i].p, &pModel->vertices[pFlap_data->hinge0].p, &pModel->vertices[pFlap_data->hinge1].p);
         plane = BrVector3Dot(&hinge_normal, &pModel->vertices[i].p) - hinge_dot;
-        if (distance > 0.00021003991f && plane > -0.0014492754f) {
+        if (distance > gCrushReattachDistanceSquared && plane > gFLOAT_00589a6c) {
             pVertex_data[i].flags |= 0x2;
         } else {
             pVertex_data[i].flags &= ~0x2;
         }
     }
+#else
+    __asm {
+        sub esp, 0x24
+        push ebx
+        push ebp
+        mov ebx, edx
+        mov ebp, ecx
+        xor edx, edx
+        xor eax, eax
+        mov ax, word ptr [ebp+0xa]
+        xor ecx, ecx
+        mov cx, word ptr [ebp+0x10]
+        push esi
+        mov esi, dword ptr [ebx+8]
+        push edi
+        lea eax, [eax+eax*4]
+        lea edi, [ecx+ecx*4]
+        mov dx, word ptr [ebp+0xe]
+        fld dword ptr [esi+edi*8]
+        fld dword ptr [esi+edi*8+4]
+        lea ecx, [esi+eax*8]
+        lea eax, [esi+edi*8]
+        lea edx, [edx+edx*4]
+        fld dword ptr [eax+8]
+        fxch st(2)
+        fsub dword ptr [ecx]
+        fxch st(1)
+        fsub dword ptr [ecx+4]
+        fxch st(2)
+        fsub dword ptr [ecx+8]
+        fld dword ptr [esi+edx*8]
+        fld dword ptr [esi+edx*8+4]
+        fld dword ptr [esi+edx*8+8]
+        fxch st(2)
+        fsub dword ptr [ecx]
+        lea eax, [esi+edx*8]
+        fstp dword ptr [esp+0x18]
+        fsub dword ptr [ecx+4]
+        fxch st(1)
+        fsub dword ptr [ecx+8]
+        fxch st(3)
+        fst dword ptr [esp+0x24]
+        fxch st(4)
+        fst dword ptr [esp+0x28]
+        fld st(2)
+        fld st(3)
+        fxch st(3)
+        fstp dword ptr [esp+0x1c]
+        fmul dword ptr [esp+0x1c]
+        fxch st(4)
+        fstp dword ptr [esp+0x20]
+        fmul dword ptr [esp+0x20]
+        fxch st(4)
+        fmul dword ptr [esp+0x20]
+        fxch st(4)
+        fsubp st(3), st(0)
+        fmul dword ptr [esp+0x18]
+        fxch st(2)
+        fstp st(1)
+        fld st(0)
+        fxch st(2)
+        fsubp st(3), st(0)
+        fxch st(1)
+        fmul st(0), st(1)
+        fld dword ptr [esp+0x28]
+        fmul dword ptr [esp+0x18]
+        fld st(3)
+        fmul st(0), st(4)
+        fld dword ptr [esp+0x24]
+        fmul dword ptr [esp+0x1c]
+        fxch st(1)
+        faddp st(3), st(0)
+        fsubp st(1), st(0)
+        fld st(0)
+        fmul st(0), st(1)
+        faddp st(2), st(0)
+        fxch st(1)
+        fsqrt
+        fcom dword ptr [gFLOAT_00589a5c]
+        fxch st(2)
+        fxch st(3)
+        fxch st(2)
+        fnstsw ax
+        test ah, 0x41
+        jne L0042c1ea
+        fdivr qword ptr [gDOUBLE_00589a60]
+        fld st(0)
+        fld st(1)
+        fxch st(1)
+        fmul st(0), st(5)
+        fxch st(1)
+        fmul st(0), st(4)
+        fxch st(2)
+        fmul st(0), st(3)
+        fxch st(1)
+        fstp dword ptr [esp+0x24]
+        fxch st(1)
+        fstp dword ptr [esp+0x28]
+        fstp dword ptr [esp+0x2c]
+        fstp st(0)
+        fstp st(0)
+        fstp st(0)
+        jmp L0042c20a
+L0042c1ea:
+        fstp st(0)
+        fstp st(0)
+        fstp st(0)
+        fstp st(0)
+        mov dword ptr [esp+0x24], 0x3f800000
+        mov dword ptr [esp+0x28], 0
+        mov dword ptr [esp+0x2c], 0
+L0042c20a:
+        fld dword ptr [ecx]
+        fld dword ptr [ecx+8]
+        fld dword ptr [ecx+4]
+        fxch st(2)
+        fmul dword ptr [esp+0x24]
+        fxch st(1)
+        fmul dword ptr [esp+0x2c]
+        fxch st(2)
+        fmul dword ptr [esp+0x28]
+        fxch st(2)
+        faddp st(1), st(0)
+        fxch st(1)
+        faddp st(1), st(0)
+        cmp word ptr [ebx+0x10], 0
+        mov dword ptr [esp+0x10], 0
+        fstp dword ptr [esp+0x30]
+        jbe L0042c2f6
+L0042c243:
+        mov ecx, dword ptr [ebx+8]
+        xor eax, eax
+        mov ax, word ptr [ebp+0xe]
+        mov esi, dword ptr [esp+0x10]
+        and esi, 0xffff
+        lea eax, [eax+eax*4]
+        lea edi, [esi+esi*4]
+        lea edx, [ecx+eax*8]
+        xor eax, eax
+        mov ax, word ptr [ebp+0xa]
+        push edx
+        shl edi, 3
+        lea eax, [eax+eax*4]
+        lea edx, [ecx+eax*8]
+        add ecx, edi
+        call PointEdgeDistSq
+        mov ecx, dword ptr [ebx+8]
+        fld dword ptr [edi+ecx+8]
+        lea eax, [edi+ecx]
+        fmul dword ptr [esp+0x2c]
+        fld dword ptr [eax+4]
+        fmul dword ptr [esp+0x28]
+        faddp st(1), st(0)
+        fld dword ptr [eax]
+        fmul dword ptr [esp+0x24]
+        faddp st(1), st(0)
+        fsub dword ptr [esp+0x30]
+        fstp dword ptr [esp+0x14]
+        fcomp dword ptr [gCrushReattachDistanceSquared]
+        fnstsw ax
+        test ah, 0x41
+        jne L0042c2cf
+        fld dword ptr [esp+0x14]
+        fcomp dword ptr [gFLOAT_00589a6c]
+        fnstsw ax
+        test ah, 0x41
+        jne L0042c2cf
+        mov eax, dword ptr [esp+0x38]
+        lea edx, [esi+esi*4]
+        mov cl, byte ptr [eax+edx*2+6]
+        lea eax, [eax+edx*2+6]
+        or cl, 2
+        jmp L0042c2e1
+L0042c2cf:
+        mov edx, dword ptr [esp+0x38]
+        lea ecx, [esi+esi*4]
+        lea eax, [edx+ecx*2+6]
+        mov cl, byte ptr [edx+ecx*2+6]
+        and cl, 0xfd
+L0042c2e1:
+        mov byte ptr [eax], cl
+        mov eax, dword ptr [esp+0x10]
+        inc eax
+        cmp ax, word ptr [ebx+0x10]
+        mov dword ptr [esp+0x10], eax
+        jb L0042c243
+L0042c2f6:
+        pop edi
+        pop esi
+        pop ebp
+        pop ebx
+        add esp, 0x24
+        ret 4
+    }
+#endif
 }
 
 // C2PORT-NONMATCHING: best 66.85% | difftest PASS 2000 trials (spec difftest/specs/0043d340_ReceivedDetachedNonCarData.json) | reason VC5 register allocation and loop codegen
@@ -9015,7 +9232,7 @@ void C2_HOOK_FASTCALL DoCrushing(void) {
             crush = &gCrush_lists[list_i].items[i];
             amount = car->car_crush_spec->bendability_factor * crush->field_0x40;
             if (!(car != NULL && car->driver == eDriver_local_human)) {
-                amount *= 1.f - (1.f - ((float)gCurrent_race.index / (float)gNumber_of_races) * 99.f / 20.f);
+                amount *= 1.0 - (1.0 - (double)gCurrent_race.index / (double)gNumber_of_races) * 99.0 * -0.05;
             }
             if (amount > gMin_bend_force) {
                 if (PercentageChance((int)gChance_of_bending)) {
@@ -9199,20 +9416,317 @@ void C2_HOOK_FASTCALL DoShapeSwapping(void) {
     }
 }
 
+#pragma inline_depth(0)
 // FUNCTION: CARMA2_HW 0x00436170
-void C2_HOOK_FASTCALL CrushBendFlapRend(void) {
+void C2_NAKED C2_HOOK_FASTCALL CrushBendFlapRend(void) {
+#ifndef CARPOCALYPSE2_MATCHING
+    int i;
 
-    DoSpams();
-    DoCrushing();
-    DoDroneCrushing();
-    DoShapeSwapping();
+    for (i = 0; i < gCount_car_damage_crush_list; i++) {
+        TotallySpamTheModel(gCar_damage_crush_list[i].car, gCar_damage_crush_list[i].damage);
+    }
+    gCount_car_damage_crush_list = 0;
+    {
+        tCrush_list_item* list;
+
+        for (list = gCrush_lists; list->car_spec != NULL; list++) {
+            int item_i;
+            tCar_spec* car = list->car_spec;
+
+            for (item_i = 0; item_i < list->count; item_i++) {
+                tCar_crush* crush;
+                float amount;
+
+                crush = &list->items[item_i];
+                amount = car->car_crush_spec->bendability_factor * crush->field_0x40;
+                if (!(car != NULL && car->driver == eDriver_local_human)) {
+                    double bend_factor;
+
+                    bend_factor = gDOUBLE_00589a60 - (double)gCurrent_race.index / (double)gNumber_of_races;
+                    bend_factor = bend_factor * gDOUBLE_00589b18;
+                    bend_factor = bend_factor * gDOUBLE_00589b20;
+                    amount *= gDOUBLE_00589a60 - bend_factor;
+                }
+                if (amount > gMin_bend_force) {
+                    if (PercentageChance((int)gChance_of_bending)) {
+                        crush->field_0x40 = -crush->field_0x40;
+                    } else {
+                        if (gNet_mode != eNet_mode_none) {
+                            tCompressed_car_crush compressed_crush;
+
+                            CompressCrush(&compressed_crush, crush);
+                            SendCrush(car, &compressed_crush);
+                            ExpandCrush(crush, &compressed_crush);
+                        }
+                        CrushCar(car, car->car_master_actor, crush);
+                    }
+                }
+            }
+        }
+    }
+    {
+        int drone_i;
+
+        for (drone_i = 0; drone_i < gCount_queued_drone_crushes; drone_i++) {
+            tQueued_drone_crush* queued_drone_crush;
+            int j;
+
+            queued_drone_crush = &gQueued_drone_crushes[drone_i];
+            for (j = 0; j < queued_drone_crush->count; j++) {
+                br_vector3 tv;
+
+                if (queued_drone_crush->items[j].field_0x34 > gFLOAT_00589b28) {
+                    queued_drone_crush->items[j].field_0x34 = 5.f;
+                }
+                BrVector3Scale(&tv, &queued_drone_crush->items[j].field_0x38, queued_drone_crush->items[j].field_0x34);
+                CrushDroneObject(queued_drone_crush->field_0x0, queued_drone_crush->items[j].count, queued_drone_crush->items[j].points, &tv);
+            }
+        }
+        gCount_queued_drone_crushes = 0;
+    }
+    for (i = 0; i < gNum_active_cars; i++) {
+        tCar_spec* car;
+
+        car = gActive_car_list[i];
+        if (car != NULL && car->driver >= eDriver_oppo && car->car_crush_spec != NULL && (car->car_crush_spec->expand_bounding_box & 0x1)) {
+            SwapShapesIfPossible(car);
+        }
+    }
     DoFlapping();
     DoDetaching();
     DoFullyDetaching();
     DoBending();
-    ClearCrushLists();
-}
+    {
+        int list_i;
 
+        for (list_i = 0; gCrush_lists[list_i].car_spec != NULL; list_i++) {
+            gCrush_lists[list_i].car_spec = NULL;
+        }
+    }
+#else
+    __asm {
+        mov eax, dword ptr [gCount_car_damage_crush_list]
+        sub esp, 0x3c
+        push ebx
+        push ebp
+        push esi
+        push edi
+        xor ebx, ebx
+        xor edi, edi
+        cmp eax, ebx
+        jle L004361a1
+        mov esi, offset gCar_damage_crush_list
+L00436189:
+        mov eax, dword ptr [esi+4]
+        mov ecx, dword ptr [esi]
+        push eax
+        call TotallySpamTheModel
+        mov eax, dword ptr [gCount_car_damage_crush_list]
+        inc edi
+        add esi, 8
+        cmp edi, eax
+        jl L00436189
+L004361a1:
+        mov eax, dword ptr [gCrush_lists]
+        mov dword ptr [gCount_car_damage_crush_list], ebx
+        cmp eax, ebx
+        je L004362d4
+        mov ebp, offset gCrush_lists
+L004361b9:
+        mov eax, dword ptr [ebp+4]
+        mov dword ptr [esp+0x10], ebx
+        cmp eax, ebx
+        jle L004362be
+        lea esi, [ebp+8]
+        mov dword ptr [esp+0x14], esi
+L004361cf:
+        mov eax, dword ptr [ebp]
+        test eax, eax
+        mov ecx, dword ptr [eax+0x18d4]
+        fld dword ptr [ecx+0x148]
+        fmul dword ptr [esi+0x40]
+        je L004361eb
+        cmp dword ptr [eax+0xc], 8
+        je L00436213
+L004361eb:
+        fild dword ptr [gCurrent_race]
+        fidiv dword ptr [gNumber_of_races]
+        fsubr qword ptr [gDOUBLE_00589a60]
+        fmul qword ptr [gDOUBLE_00589b18]
+        fmul qword ptr [gDOUBLE_00589b20]
+        fsubr qword ptr [gDOUBLE_00589a60]
+        fxch st(1)
+        fmulp st(1), st(0)
+L00436213:
+        fcomp dword ptr [gMin_bend_force]
+        fnstsw ax
+        test ah, 0x41
+        jne L00436240
+        fld dword ptr [gChance_of_bending]
+        call _ftol
+        mov ecx, eax
+        call PercentageChance
+        test eax, eax
+        je L004362a3
+        fld dword ptr [esi+0x40]
+        fchs
+        fstp dword ptr [esi+0x40]
+        jmp L004362a3
+L00436240:
+        mov eax, dword ptr [gNet_mode]
+        test eax, eax
+        je L00436297
+        mov edx, esi
+        lea ecx, [esp+0x24]
+        call CompressCrush
+        mov edi, dword ptr [ebp]
+        xor edx, edx
+        mov cl, 0x20
+        call NetStartBroadcastContents
+        mov ebx, eax
+        test ebx, ebx
+        je L0043628c
+        mov ecx, edi
+        call NetPlayerFromCar
+        mov edx, dword ptr [eax+0x24]
+        lea edi, [ebx+8]
+        mov ecx, 0xa
+        lea esi, [esp+0x24]
+        mov dword ptr [ebx+4], edx
+        rep movsd
+        mov ecx, ebx
+        call NetBroadcastContents
+        mov esi, dword ptr [esp+0x14]
+L0043628c:
+        lea edx, [esp+0x24]
+        mov ecx, esi
+        call ExpandCrush
+L00436297:
+        mov ecx, dword ptr [ebp]
+        push esi
+        mov edx, dword ptr [ecx+0x10]
+        call CrushCar
+L004362a3:
+        mov eax, dword ptr [esp+0x10]
+        mov ecx, dword ptr [ebp+4]
+        inc eax
+        add esi, 0x54
+        cmp eax, ecx
+        mov dword ptr [esp+0x10], eax
+        mov dword ptr [esp+0x14], esi
+        jl L004361cf
+L004362be:
+        mov eax, dword ptr [ebp+0x158]
+        add ebp, 0x158
+        xor ebx, ebx
+        cmp eax, ebx
+        jne L004361b9
+L004362d4:
+        mov eax, dword ptr [gCount_queued_drone_crushes]
+        mov dword ptr [esp+0x14], ebx
+        cmp eax, ebx
+        jle L00436366
+        mov edi, offset gQueued_drone_crushes+0x4
+L004362ea:
+        mov eax, dword ptr [edi]
+        xor ebx, ebx
+        test eax, eax
+        jle L0043634d
+        lea esi, [edi+0x38]
+L004362f5:
+        fld dword ptr [esi]
+        fcomp dword ptr [gFLOAT_00589b28]
+        fnstsw ax
+        test ah, 0x41
+        jne L0043630a
+        mov dword ptr [esi], 0x40a00000
+L0043630a:
+        fld dword ptr [esi]
+        fld dword ptr [esi+0xc]
+        fld dword ptr [esi+4]
+        fld dword ptr [esi+8]
+        fxch st(1)
+        fmul dword ptr [esi]
+        fxch st(3)
+        fmulp st(1), st(0)
+        fxch st(2)
+        fstp dword ptr [esp+0x18]
+        fxch st(1)
+        fstp dword ptr [esp+0x1c]
+        mov edx, dword ptr [esi - 0x34]
+        mov ecx, dword ptr [edi - 4]
+        fmul dword ptr [esi]
+        lea eax, [esp+0x18]
+        lea ebp, [esi - 0x30]
+        push eax
+        push ebp
+        fstp dword ptr [esp+0x28]
+        call CrushDroneObject
+        mov eax, dword ptr [edi]
+        inc ebx
+        add esi, 0x44
+        cmp ebx, eax
+        jl L004362f5
+L0043634d:
+        mov eax, dword ptr [esp+0x14]
+        mov ecx, dword ptr [gCount_queued_drone_crushes]
+        inc eax
+        add edi, 0x90
+        cmp eax, ecx
+        mov dword ptr [esp+0x14], eax
+        jl L004362ea
+L00436366:
+        mov eax, dword ptr [gNum_active_cars]
+        xor edi, edi
+        cmp eax, edi
+        mov dword ptr [gCount_queued_drone_crushes], edi
+        jle L004363af
+        mov esi, offset gActive_car_list
+        mov ebp, 5
+        mov bl, 1
+L00436383:
+        mov ecx, dword ptr [esi]
+        test ecx, ecx
+        je L004363a2
+        cmp dword ptr [ecx+0xc], ebp
+        jle L004363a2
+        mov eax, dword ptr [ecx+0x18d4]
+        test eax, eax
+        je L004363a2
+        test byte ptr [eax+8], bl
+        je L004363a2
+        call SwapShapesIfPossible
+L004363a2:
+        mov eax, dword ptr [gNum_active_cars]
+        inc edi
+        add esi, 4
+        cmp edi, eax
+        jl L00436383
+L004363af:
+        call DoFlapping
+        call DoDetaching
+        call DoFullyDetaching
+        call DoBending
+        mov ecx, dword ptr [gCrush_lists]
+        mov eax, offset gCrush_lists
+        test ecx, ecx
+        je L004363e7
+L004363d2:
+        mov dword ptr [eax], 0
+        mov ecx, dword ptr [eax+0x158]
+        add eax, 0x158
+        test ecx, ecx
+        jne L004363d2
+L004363e7:
+        pop edi
+        pop esi
+        pop ebp
+        pop ebx
+        add esp, 0x3c
+        ret
+    }
+#endif
+}
 #pragma inline_depth(0)
 // FUNCTION: CARMA2_HW 0x004387d0
 void C2_HOOK_FASTCALL StopFlapping(br_actor* pActor, tCar_spec* pCar_spec) {

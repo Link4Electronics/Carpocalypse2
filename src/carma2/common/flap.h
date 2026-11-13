@@ -28,7 +28,7 @@ tPhysics_object* C2_HOOK_FASTCALL SemiDetachBit(tCar_spec* pCar, br_actor* pActo
 
 void C2_HOOK_FASTCALL FUN_00433b90(br_model* pModel, const br_vector3* pOffset);
 
-void C2_HOOK_FASTCALL FUN_00437480(undefined4* pOut, int pDetach_data, int pFace_data, int pModel, undefined4 pPhysics_object, undefined4* pPoint);
+void C2_HOOK_FASTCALL FUN_00437480(tPhysics_joint* pJoint, tCar_crush_detach_data* pDetach_data, tCar_crush_flap_data* pFlap_data, br_model* pModel, tPhysics_object* pObject, br_vector3* pPoint);
 
 void C2_HOOK_FASTCALL SetUpFlapJoint(tPhysics_joint* pJoint, tCar_crush_flap_data* pFlap_data, br_model* pModel, tPhysics_object* pObject, br_vector3* pPoint1, br_vector3* pPoint2, br_vector3* pPoint3);
 
@@ -50,8 +50,6 @@ void C2_HOOK_FASTCALL MakeModelMaterialsDoubleSided(br_model* pModel);
 intptr_t C2_HOOK_CDECL MakeCarModelsMaterialsDoubleSided(br_actor* pActor, void* pArg);
 
 intptr_t C2_HOOK_FASTCALL FlapBit(br_actor* pActor, br_matrix34* pMat, void* pContext);
-
-void C2_HOOK_FASTCALL FlapBits(tCar_spec* pCar);
 
 void C2_HOOK_FASTCALL DoFlapping(void);
 
