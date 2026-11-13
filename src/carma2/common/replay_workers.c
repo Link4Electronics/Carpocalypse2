@@ -110,8 +110,60 @@ void C2_HOOK_FASTCALL WorkerEndShitMine(int field_0x0, br_vector3* pPos) {
     NOT_IMPLEMENTED();
 }
 
+#ifdef CARPOCALYPSE2_MATCHING
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern void C2_HOOK_CDECL BrMatrix34Copy();
+extern undefined4 C2_HOOK_FASTCALL CharacterNoLongerRenderable(tPed_character_instance* pCharacter);
+extern br_scalar C2_HOOK_FASTCALL DRU16ToScalar(tU16 pValue, float pMin, float pMax);
+extern void C2_HOOK_FASTCALL DoDroneFunkyGroovyThings(tDrone_spec *pDrone);
+extern void C2_HOOK_FASTCALL ExpandVector3(br_vector3* pDest, const tCompressed_vector3 *pSrc, float pMin, float pMax);
+extern undefined4 C2_HOOK_FASTCALL MakeCharacterRenderable2(tPed_character_instance* pCharacter, int pIndex);
+extern void C2_HOOK_FASTCALL PointActorAlongThisBloodyVector(br_actor* pThe_actor, br_vector3* pThe_vector);
+extern void C2_HOOK_FASTCALL RecalculateOrientationOfRoot(tPed_character_instance* pPed);
+extern void C2_HOOK_FASTCALL SetCharacterBonePositions(tPed_character_instance* pPed, undefined4 pArg2, undefined4 pArg3);
+extern void C2_HOOK_FASTCALL SetCharacterDirection(tPed_character_instance* pPed, const br_vector3* pDir, const br_vector3* pUp);
+extern void C2_HOOK_FASTCALL SetCharacterPosition(tPed_character_instance* pCharacter, br_vector3* pPos, int pArg3);
+extern br_uint_8 bl;
+extern int gBOOL_00744804;
+extern tDrone_path_node* gDrone_path_nodes;
+extern tDrone_spec* gDrone_specs;
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern void C2_HOOK_FASTCALL ApplyInitialMovement(undefined4* pArg1, br_vector3* pArg2, br_vector3* pArg3, br_vector3* pArg4, float pArg5, br_vector3* pArg6, br_vector3* pArg7, br_vector3* pArg8);
+extern br_actor* C2_HOOK_CDECL BrActorAdd();
+extern void C2_HOOK_CDECL BrActorFree();
+extern br_actor* C2_HOOK_CDECL BrActorRemove();
+extern void C2_HOOK_CDECL BrMatrix34Mul();
+extern void C2_HOOK_CDECL BrMatrix34Scale();
+extern br_actor* C2_HOOK_FASTCALL CloneActor(br_actor* pActor);
+extern void C2_HOOK_FASTCALL CreateSmashedGlassFragments(tU32 pSeed, br_vector3* pDirection, br_actor* pSource_actor, tU32 pTime, int pFace_count, const tU16* pSource_faces, int pVertex_count, const tU16* pSource_vertices, tU32 pOwner, tU32 pFlags, float pLongest_edge_squared, tSmashable_initial_speed_spec* pInitial_speed, const int* pLifetime_range, tU32 pFragment_owner, br_matrix34* pSource_transform);
+extern void C2_HOOK_FASTCALL CreateSmokeColumn2(int pType, br_actor* pActor, tCar_spec* pCar, tPhysics_object* pObject, int pColour, int pVertex, tU32 pLifetime);
+extern tNon_car_spec* C2_HOOK_FASTCALL DoPullActorFromWorld(br_actor* actor);
+extern tSmash_vertex* C2_HOOK_FASTCALL FindShrapnelFragment(br_model* pModel, tU32 pField_0x18, int pPriority);
+extern int C2_HOOK_FASTCALL IRandomBetween(int pA, int pB);
+extern tNet_message* C2_HOOK_FASTCALL NetBuildGuaranteedMessage(tU8 pNet_message_type, int pOption);
+extern int C2_HOOK_FASTCALL NetGuaranteedSendMessageToAllPlayers(tNet_game_details* pDetails, tNet_message* pMessage, void* pNotifyFail);
+extern int C2_HOOK_FASTCALL PercentageChance(int pC);
+extern void C2_HOOK_FASTCALL PipeSingleShrapnelShower(uintptr_t pId, undefined4 pArg2, undefined4 pArg3, undefined4 pArg4, br_vector3* pArg5, br_vector3* pArg6, float pArg7, br_vector3* pArg8, br_vector3* pArg9, undefined4 pArg10, br_bounds3* pArg11, undefined4 pArg12, br_matrix34* pArg13, br_vector3* pArg14, void* pArg15);
+extern int C2_HOOK_FASTCALL PointOutOfSight(const br_vector3* pPoint, undefined4 pArg2, br_scalar pMax_distance);
+extern float C2_HOOK_FASTCALL PositionFragment(br_actor* pActor, tSmashable_initial_position_spec* pInitial_position, br_actor* pSource_actor, br_vector3* pPosition4, br_vector3* pPosition5, br_actor* pRotation_actor, float* pRandom_ranges, br_matrix34* pPost_matrix);
+extern tNet_game_details* gCurrent_net_game;
+extern br_actor* gDont_render_actor;
+extern int gINT_006a3334;
+extern int gINT_006a8294;
+extern br_matrix34 gMatrix34_006b78a0;
+extern tNet_mode gNet_mode;
+extern int gPed_676914;
+extern br_vector3 gVector3_006a4688;
+extern float gYon_squared;
+extern br_vector3 gZero_vector__smash;
+#endif
 // FUNCTION: CARMA2_HW 0x004ca830
-void C2_HOOK_FASTCALL WorkerPedPos(tPedestrian* pPed, br_vector3* pVec) {
+void C2_NAKED C2_HOOK_FASTCALL WorkerPedPos(tPedestrian* pPed, br_vector3* pVec) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     if (gBOOL_00744804 != 0) {
         return;
@@ -126,6 +178,51 @@ void C2_HOOK_FASTCALL WorkerPedPos(tPedestrian* pPed, br_vector3* pVec) {
     if ((pPed->flags & 0x80) != 0) {
         pPed->flags &= ~0x80;
     }
+#else
+    __asm {
+            mov eax, dword ptr [gBOOL_00744804]
+            push esi
+            test eax, eax
+            mov esi, ecx
+            jne L004ca888
+            fld dword ptr [edx]
+            fcomp dword ptr [gConst_replay_rate_zero]
+            fnstsw ax
+            test ah, 0x40
+            je L004ca871
+            fld dword ptr [edx + 4]
+            fcomp dword ptr [gConst_replay_rate_zero]
+            fnstsw ax
+            test ah, 0x40
+            je L004ca871
+            fld dword ptr [edx + 8]
+            fcomp dword ptr [gConst_replay_rate_zero]
+            fnstsw ax
+            test ah, 0x40
+            je L004ca871
+            or byte ptr [esi + 8], 0x80
+            pop esi
+            ret
+    L004ca871:
+            mov ecx, dword ptr [esi]
+            push -1
+            call SetCharacterPosition
+            mov ax, word ptr [esi + 8]
+            test al, 0x80
+            je L004ca888
+            and al, 0x7f
+            mov word ptr [esi + 8], ax
+    L004ca888:
+            pop esi
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 void C2_HOOK_FASTCALL WorkerNapalmBolt(int field_0x0, int field_0x4, br_vector3* pVec) {
@@ -232,7 +329,6 @@ void C2_HOOK_FASTCALL WorkerSmokeColumn(int column_flags, br_vector3* pPos, tU16
 
 // FUNCTION: CARMA2_HW 0x004f6060
 void C2_HOOK_FASTCALL WorkerSmashTextureChange(br_material* pMaterial, tCar_spec* pCar, int field_0xc, br_pixelmap* pColour_map) {
-
     if (pCar != NULL && pCar->field_0x1960 != NULL) {
         pMaterial->user = pColour_map;
     } else {
@@ -301,7 +397,6 @@ void C2_HOOK_FASTCALL WorkerPedFPChange(int field_0x0, tPipe_stack_word field_0x
 
 // FUNCTION: CARMA2_HW 0x004ca8d0
 void C2_HOOK_FASTCALL WorkerPedModelChange(tPedestrian* pPed, int pBone, int pModel, int pSet) {
-
     if (pBone < 0) {
         SetCharacterAllBonesModel(pPed->character, pModel, pSet);
     } else {
@@ -321,7 +416,8 @@ void C2_HOOK_FASTCALL WorkerPedModelChangeUndo(int field_0x0, int field_0x4, int
 }
 
 // FUNCTION: CARMA2_HW 0x00452880
-void C2_HOOK_FASTCALL WorkerDroneStraightPos(int pDrone_index, tDrone_path_node_section* pSection, tU16 pSpeed, tU16 pProgress) {
+void C2_NAKED C2_HOOK_FASTCALL WorkerDroneStraightPos(int pDrone_index, tDrone_path_node_section* pSection, tU16 pSpeed, tU16 pProgress) {
+#ifndef CARPOCALYPSE2_MATCHING
     tDrone_spec* drone;
     br_vector3 direction;
 
@@ -347,11 +443,109 @@ void C2_HOOK_FASTCALL WorkerDroneStraightPos(int pDrone_index, tDrone_path_node_
     }
     PointActorAlongThisBloodyVector(drone->actor, &direction);
     DoDroneFunkyGroovyThings(drone);
+#else
+    __asm {
+            sub esp, 0xc
+            mov eax, ecx
+            push ebx
+            shl eax, 5
+            sub eax, ecx
+            push esi
+            mov esi, edx
+            push edi
+            mov edx, dword ptr [gDrone_specs]
+            lea eax, [eax + eax*2]
+            push 0x43fa0000
+            push 0xc3fa0000
+            lea ecx, [ecx + eax*2]
+            lea edi, [edx + ecx*8]
+            mov ecx, dword ptr [esp + 0x24]
+            call DRU16ToScalar
+            fstp dword ptr [edi + 0xe4]
+            mov ebx, dword ptr [esp + 0x20]
+            push 0x437f0000
+            push 0
+            mov ecx, ebx
+            mov dword ptr [edi + 0xe0], 0
+            call DRU16ToScalar
+            fsubr dword ptr [esi + 0x1c]
+            push 0x437f0000
+            push 0
+            mov ecx, ebx
+            fmul dword ptr [esi + 0x10]
+            fstp dword ptr [esp + 0x14]
+            call DRU16ToScalar
+            fsubr dword ptr [esi + 0x1c]
+            push 0x437f0000
+            push 0
+            mov ecx, ebx
+            fmul dword ptr [esi + 0x14]
+            fstp dword ptr [esp + 0x18]
+            call DRU16ToScalar
+            fsubr dword ptr [esi + 0x1c]
+            movsx eax, word ptr [esi]
+            fmul dword ptr [esi + 0x18]
+            fld dword ptr [esp + 0xc]
+            fchs
+            fstp dword ptr [esp + 0xc]
+            fld dword ptr [esp + 0x10]
+            fchs
+            fstp dword ptr [esp + 0x10]
+            lea ecx, [eax + eax*8]
+            fchs
+            fstp dword ptr [esp + 0x14]
+            lea edx, [eax + ecx*2]
+            mov ecx, dword ptr [gDrone_path_nodes]
+            lea eax, [eax + edx*4]
+            mov edx, dword ptr [edi + 0xec]
+            fld dword ptr [ecx + eax*4]
+            fadd dword ptr [esp + 0xc]
+            fstp dword ptr [edx + 0x50]
+            movsx eax, word ptr [esi]
+            lea ecx, [eax + eax*8]
+            lea edx, [eax + ecx*2]
+            mov ecx, dword ptr [gDrone_path_nodes]
+            lea eax, [eax + edx*4]
+            mov edx, dword ptr [edi + 0xec]
+            fld dword ptr [ecx + eax*4 + 4]
+            fadd dword ptr [esp + 0x10]
+            fstp dword ptr [edx + 0x54]
+            movsx eax, word ptr [esi]
+            lea ecx, [eax + eax*8]
+            lea edx, [eax + ecx*2]
+            mov ecx, dword ptr [gDrone_path_nodes]
+            lea eax, [eax + edx*4]
+            fld dword ptr [ecx + eax*4 + 8]
+            fadd dword ptr [esp + 0x14]
+            mov edx, dword ptr [edi + 0xec]
+            fstp dword ptr [edx + 0x58]
+            mov eax, dword ptr [esi + 0x10]
+            mov ecx, dword ptr [esi + 0x14]
+            mov edx, dword ptr [esi + 0x18]
+            mov dword ptr [esp + 0xc], eax
+            mov dword ptr [esp + 0x10], ecx
+            mov dword ptr [esp + 0x14], edx
+            mov eax, dword ptr [edi + 4]
+            test byte ptr [eax + 0x2c], 0x10
+            je L004529b1
+            mov dword ptr [esp + 0x10], 0
+    L004529b1:
+            mov ecx, dword ptr [edi + 0xec]
+            lea edx, [esp + 0xc]
+            call PointActorAlongThisBloodyVector
+            mov ecx, edi
+            call DoDroneFunkyGroovyThings
+            pop edi
+            pop esi
+            pop ebx
+            add esp, 0xc
+            ret 8
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004da960
 void C2_HOOK_FASTCALL WorkerRepulseRay(int pIndex, br_vector3* pOrigin, br_vector3* pVictim, tU32 pTime) {
-
     gRepulse_links[pIndex].pos_origin = pOrigin;
     gRepulse_links[pIndex].pos_victim = pVictim;
     gRepulse_links[pIndex].time = pTime;
@@ -372,7 +566,8 @@ void C2_HOOK_FASTCALL WorkerSmashModelChangeBUndo(int field_0x0) {
     NOT_IMPLEMENTED();
 }
 // FUNCTION: CARMA2_HW 0x0043bd70
-void C2_HOOK_FASTCALL WorkerCrush(int field_0x4, void* pField_0x8, void* pField_0xe) {
+void C2_NAKED C2_HOOK_FASTCALL WorkerCrush(int field_0x4, void* pField_0x8, void* pField_0xe) {
+#ifndef CARPOCALYPSE2_MATCHING
     br_model* pModel;
     br_vector3 offset;
     br_vector3 scaled_offset;
@@ -408,6 +603,108 @@ void C2_HOOK_FASTCALL WorkerCrush(int field_0x4, void* pField_0x8, void* pField_
     }
     pModel->custom = JitModelUpdate;
     pModel->flags |= BR_MODF_CUSTOM;
+#else
+    __asm {
+            sub esp, 0x18
+            push ebx
+            push ebp
+            push esi
+            push edi
+            mov esi, ecx
+            push 0x3f800000
+            push 0xbf800000
+            lea ecx, [esp + 0x18]
+            call ExpandVector3
+            xor ebx, ebx
+            cmp word ptr [esi + 0x10], bx
+            jbe L0043be0b
+            mov ebp, dword ptr [esp + 0x2c]
+            xor edi, edi
+    L0043bd9a:
+            mov cx, word ptr [ebp]
+            test cx, cx
+            je L0043bdfa
+            push 0x41200000
+            push 0
+            call DRU16ToScalar
+            mov eax, dword ptr [esi + 8]
+            fld st(0)
+            fmul dword ptr [esp + 0x10]
+            fld st(1)
+            fmul dword ptr [esp + 0x14]
+            fxch st(1)
+            fadd dword ptr [eax + edi]
+            fxch st(2)
+            fmul dword ptr [esp + 0x18]
+            fxch st(1)
+            fxch st(2)
+            fxch st(1)
+            fxch st(1)
+            fstp dword ptr [eax + edi]
+            add eax, edi
+            mov ecx, dword ptr [esi + 8]
+            fxch st(1)
+            fadd dword ptr [ecx + edi + 4]
+            fxch st(1)
+            fst dword ptr [esp + 0x24]
+            lea eax, [ecx + edi + 4]
+            fxch st(1)
+            _emit 0xd9
+        _emit 0x18
+            mov edx, dword ptr [esi + 8]
+            fadd dword ptr [edx + edi + 8]
+            lea eax, [edx + edi + 8]
+            _emit 0xd9
+        _emit 0x18
+    L0043bdfa:
+            xor eax, eax
+            inc ebx
+            mov ax, word ptr [esi + 0x10]
+            add ebp, 2
+            add edi, 0x28
+            cmp ebx, eax
+            jl L0043bd9a
+    L0043be0b:
+            mov ax, word ptr [esi + 0x20]
+            test al, 0x20
+            je L0043be2a
+            mov ecx, dword ptr [esi + 0x28]
+            test ecx, ecx
+            je L0043be2a
+            mov dword ptr [ecx], 1
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x18
+            ret 4
+    L0043be2a:
+            or al, 0x20
+            mov dword ptr [esi + 0x24], 0x431590
+            mov word ptr [esi + 0x20], ax
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x18
+            ret 4
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 void C2_HOOK_FASTCALL WorkerCrushUndo(int field_0x4, void* pField_0x8, void* pField_0xe) {
@@ -517,7 +814,8 @@ void C2_HOOK_FASTCALL WorkerSpecialUndo(void) {
 }
 
 // FUNCTION: CARMA2_HW 0x004ca680
-void C2_HOOK_FASTCALL WorkerPedStatus(int field_0x0, tU8 field_0x4, tU8 field_0x5, tU8 field_0x6, tU8 field_0x7, tU8 field_0x9, tU8 field_0xb, br_vector3* p0xc, br_vector3* p0x18, br_vector3* p0x24) {
+void C2_NAKED C2_HOOK_FASTCALL WorkerPedStatus(int field_0x0, tU8 field_0x4, tU8 field_0x5, tU8 field_0x6, tU8 field_0x7, tU8 field_0x9, tU8 field_0xb, br_vector3* p0xc, br_vector3* p0x18, br_vector3* p0x24) {
+#ifndef CARPOCALYPSE2_MATCHING
     tPedestrian* ped = (tPedestrian*)field_0x0;
 
     if (field_0x5 != 0xff) {
@@ -536,10 +834,54 @@ void C2_HOOK_FASTCALL WorkerPedStatus(int field_0x0, tU8 field_0x4, tU8 field_0x
             RecalculateOrientationOfRoot(ped->character);
         }
     }
+#else
+    __asm {
+            mov al, byte ptr [esp + 4]
+            push esi
+            cmp al, 0xff
+            mov esi, ecx
+            je L004ca6ac
+            test al, al
+            je L004ca6a1
+            movsx edx, byte ptr [esp + 0x14]
+            mov ecx, dword ptr [esi]
+            or byte ptr [esi + 8], 1
+            call MakeCharacterRenderable2
+            jmp L004ca6ac
+    L004ca6a1:
+            mov ecx, dword ptr [esi]
+            and byte ptr [esi + 8], 0xfe
+            call CharacterNoLongerRenderable
+    L004ca6ac:
+            mov al, byte ptr [esp + 0x10]
+            cmp al, 0xff
+            je L004ca6d9
+            mov edx, dword ptr [esi]
+            movsx ecx, al
+            mov dword ptr [edx + 0x14], ecx
+            mov ecx, dword ptr [esi]
+            mov dl, byte ptr [esp + 0x18]
+            mov byte ptr [ecx + 5], dl
+            mov cl, byte ptr [esp + 0xc]
+            test cl, 4
+            je L004ca6d9
+            test al, 4
+            jne L004ca6d9
+            mov ecx, dword ptr [esi]
+            call RecalculateOrientationOfRoot
+    L004ca6d9:
+            pop esi
+            ret 0x20
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004ca6e0
-void C2_HOOK_FASTCALL WorkerPedStatusUndo(int field_0x0, tU8 field_0x4, tU8 field_0x5, tU8 field_0x6, tU8 field_0x7, tU8 field_0x8, tU8 field_0xa, br_vector3* p0xc, br_vector3* p0x18, br_vector3* p0x24) {
+void C2_NAKED C2_HOOK_FASTCALL WorkerPedStatusUndo(int field_0x0, tU8 field_0x4, tU8 field_0x5, tU8 field_0x6, tU8 field_0x7, tU8 field_0x8, tU8 field_0xa, br_vector3* p0xc, br_vector3* p0x18, br_vector3* p0x24) {
+#ifndef CARPOCALYPSE2_MATCHING
     tPedestrian* ped;
 
     ped = (tPedestrian*)field_0x0;
@@ -574,6 +916,112 @@ void C2_HOOK_FASTCALL WorkerPedStatusUndo(int field_0x0, tU8 field_0x4, tU8 fiel
     }
     ped->character->field_0x14 = (int)(tS8)field_0x6;
     ped->character->field_0x5 = field_0xa;
+#else
+    __asm {
+            push ebx
+            push esi
+            cmp dl, 0xff
+            mov esi, ecx
+            je L004ca70a
+            test dl, dl
+            je L004ca6ff
+            movsx edx, byte ptr [esp + 0x18]
+            mov ecx, dword ptr [esi]
+            or byte ptr [esi + 8], 1
+            call MakeCharacterRenderable2
+            jmp L004ca70a
+    L004ca6ff:
+            mov ecx, dword ptr [esi]
+            and byte ptr [esi + 8], 0xfe
+            call CharacterNoLongerRenderable
+    L004ca70a:
+            mov bl, byte ptr [esp + 0x10]
+            cmp bl, 0xff
+            je L004ca7bd
+            mov cl, byte ptr [esp + 0x14]
+            mov al, bl
+            and al, 4
+            jne L004ca76c
+            test cl, 4
+            je L004ca771
+            mov ecx, dword ptr [esi]
+            movsx eax, bl
+            mov dword ptr [ecx + 0x14], eax
+            mov edx, dword ptr [esi]
+            mov al, byte ptr [esp + 0x1c]
+            mov ecx, dword ptr [esp + 0x24]
+            mov byte ptr [edx + 5], al
+            mov edx, dword ptr [esp + 0x20]
+            push ecx
+            mov ecx, dword ptr [esi]
+            call SetCharacterDirection
+            mov eax, dword ptr [esi]
+            mov edx, dword ptr [esp + 0x28]
+            add eax, 0x8c
+            push edx
+            push eax
+            call BrMatrix34Copy
+            mov ecx, dword ptr [esi]
+            add esp, 8
+            xor edx, edx
+            push 0
+            call SetCharacterBonePositions
+            pop esi
+            pop ebx
+            ret 0x20
+    L004ca76c:
+            test cl, 4
+            jne L004ca7ac
+    L004ca771:
+            test al, al
+            je L004ca7ac
+            mov edx, dword ptr [esi]
+            mov ecx, dword ptr [esp + 0x28]
+            add edx, 0x8c
+            push ecx
+            push edx
+            call BrMatrix34Copy
+            mov ecx, dword ptr [esi]
+            add esp, 8
+            xor edx, edx
+            push 0
+            call SetCharacterBonePositions
+            mov ecx, dword ptr [esi]
+            movsx eax, bl
+            mov dword ptr [ecx + 0x14], eax
+            mov edx, dword ptr [esi]
+            mov al, byte ptr [esp + 0x1c]
+            mov byte ptr [edx + 5], al
+            pop esi
+            pop ebx
+            ret 0x20
+    L004ca7ac:
+            mov edx, dword ptr [esi]
+            movsx ecx, bl
+            mov dword ptr [edx + 0x14], ecx
+            mov eax, dword ptr [esi]
+            mov cl, byte ptr [esp + 0x1c]
+            mov byte ptr [eax + 5], cl
+    L004ca7bd:
+            pop esi
+            pop ebx
+            ret 0x20
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 void C2_HOOK_FASTCALL WorkerGibShowerUndo(int field_0xc, int prev_0x0, int prev_0xc, int prev_0x8, int prev_0x10, int prev_0x4, br_vector3* prev_0x14, br_vector3* prev_0x20, br_vector3* prev_0x2c) {
@@ -591,9 +1039,9 @@ void C2_HOOK_FASTCALL WorkerSplitWeldUndo(void* roadMachine) {
     NOT_IMPLEMENTED();
 }
 
-// C2PORT-NONMATCHING: best 33.84% | difftest PASS 2000 trials (spec difftest/specs/004eb8f0_WorkerShrapnelShower.json) | reason stack-layout/register-allocation
 // FUNCTION: CARMA2_HW 0x004eb8f0
-void C2_HOOK_FASTCALL WorkerShrapnelShower(int pOwner, int* pShrapnel_spec, tU32 pSeed, undefined4 pArg4, undefined4 pArg5, undefined4 pArg6, undefined4 pArg7, int pTime, undefined4 pArg9, br_matrix34* pTransform, undefined4 pFragment_owner, br_vector3* pPosition, float pDistance, undefined4 pArg14, undefined4 pArg15) {
+void C2_NAKED C2_HOOK_FASTCALL WorkerShrapnelShower(int pOwner, int* pShrapnel_spec, tU32 pSeed, undefined4 pArg4, undefined4 pArg5, undefined4 pArg6, undefined4 pArg7, int pTime, undefined4 pArg9, br_matrix34* pTransform, undefined4 pFragment_owner, br_vector3* pPosition, float pDistance, undefined4 pArg14, undefined4 pArg15) {
+#ifndef CARPOCALYPSE2_MATCHING
     float fVar1;
     undefined4 uVar2;
     int iVar3;
@@ -862,6 +1310,869 @@ void C2_HOOK_FASTCALL WorkerShrapnelShower(int pOwner, int* pShrapnel_spec, tU32
                 (br_vector3*)pArg14, &gMatrix34_006b78a0);
         gCount_shrapnel_shower_calls++;
     }
+#else
+    __asm {
+            sub esp, 0xc8
+            push ebx
+            push ebp
+            push esi
+            push edi
+            mov edi, edx
+            mov ebp, ecx
+            mov edx, dword ptr ds:[gPed_676914]
+            mov dword ptr [esp + 0x1c], ebp
+            test edx, edx
+            je L004ec153
+            mov eax, dword ptr [esp + 0xf8]
+            lea ecx, [esp + 0x38]
+            push eax
+            push ecx
+            call BrMatrix34Copy
+            mov edx, dword ptr ds:[gPed_676914]
+            add esp, 8
+    L004eb92b:
+            mov ecx, dword ptr ds:[gINT_006a3334]
+    L004eb931:
+            mov eax, dword ptr [edi]
+            mov ebx, dword ptr [esp + 0xf0]
+            cmp eax, 3
+            ja L004ec079
+            jmp dword ptr [eax*4 + 0x4ec35c]
+            mov ecx, dword ptr ds:[gYon_squared]
+            test edx, edx
+            mov dword ptr [esp + 0x10], ecx
+            jne L004eb96f
+            mov edx, ecx
+            mov ecx, dword ptr [esp + 0xe8]
+            push edx
+            call PointOutOfSight
+            test eax, eax
+            jne L004ec079
+    L004eb96f:
+            mov eax, dword ptr [esp + 0x100]
+            test eax, eax
+            jne L004eb97f
+            mov eax, offset gVector3_00661678
+    L004eb97f:
+            fld dword ptr [esp + 0x104]
+            fsqrt
+            mov edx, dword ptr [edi + 0x38]
+            lea ecx, [edi + 0x3c]
+            push ecx
+            push edx
+            push ecx
+            mov ecx, dword ptr [esp + 0xf4]
+            mov edx, offset gZero_vector__smash
+            fmul dword ptr ds:[gFloat_0058aee0]
+            _emit 0xd9
+        _emit 0x1c
+        _emit 0x24
+            push eax
+            call FUN_004f8b50
+            jmp L004ec079
+            mov eax, dword ptr ds:[gYon_squared]
+            test edx, edx
+            mov dword ptr [esp + 0x10], eax
+            jne L004eb9d5
+            mov ecx, eax
+            push ecx
+            mov ecx, dword ptr [esp + 0xec]
+            call PointOutOfSight
+            test eax, eax
+            jne L004ec079
+    L004eb9d5:
+            test ebp, ebp
+            je L004eb9de
+            mov esi, dword ptr [ebp + 0x70]
+            jmp L004eb9e0
+    L004eb9de:
+            xor esi, esi
+    L004eb9e0:
+            test ebp, ebp
+            je L004eb9e9
+            mov edx, dword ptr [ebp + 0x6c]
+            jmp L004eb9eb
+    L004eb9e9:
+            xor edx, edx
+    L004eb9eb:
+            test ebp, ebp
+            je L004eb9f4
+            mov ecx, dword ptr [ebp + 0x78]
+            jmp L004eb9f6
+    L004eb9f4:
+            xor ecx, ecx
+    L004eb9f6:
+            test ebp, ebp
+            je L004eb9ff
+            mov eax, dword ptr [ebp + 0x74]
+            jmp L004eba01
+    L004eb9ff:
+            xor eax, eax
+    L004eba01:
+            mov ebp, dword ptr [esp + 0xf8]
+            push ebp
+            mov ebp, dword ptr [esp + 0xf8]
+            push ebp
+            lea ebp, [edi + 0x20]
+            push ebp
+            lea ebp, [edi + 4]
+            push ebp
+            mov ebp, dword ptr [edi + 0x3c]
+            push ebp
+            mov ebp, dword ptr [edi + 0x40]
+            push ebp
+            mov ebp, dword ptr [edi + 0x38]
+            push ebp
+            push esi
+            push edx
+            mov edx, dword ptr [esp + 0x110]
+            push ecx
+            mov ecx, dword ptr [esp + 0x104]
+            push eax
+            push ebx
+            push edx
+            mov edx, dword ptr [esp + 0x114]
+            call CreateSmashedGlassFragments
+            jmp L004ec075
+            mov eax, dword ptr ds:[gYon_squared]
+            test edx, edx
+            mov dword ptr [esp + 0x10], eax
+            jne L004eba74
+            mov ecx, eax
+            push ecx
+            mov ecx, dword ptr [esp + 0xec]
+            call PointOutOfSight
+            test eax, eax
+            jne L004ec079
+            mov ecx, dword ptr ds:[gINT_006a3334]
+    L004eba74:
+            neg ecx
+            sbb ecx, ecx
+            lea edx, [esp + 0x38]
+            and ecx, edx
+            mov ebp, ecx
+            mov dword ptr [esp + 0x10], ebp
+            call rand
+            mov dword ptr [esp + 0x30], eax
+            mov eax, dword ptr [esp + 0xdc]
+            push eax
+            call srand
+            mov ecx, dword ptr [edi + 0x38]
+            add esp, 4
+            xor edx, edx
+            test ecx, ecx
+            setl dl
+            mov esi, edx
+            test esi, esi
+            mov dword ptr [esp + 0x34], esi
+            je L004ebab6
+            mov eax, dword ptr [edi + 0x40]
+            jmp L004ebabe
+    L004ebab6:
+            mov edx, dword ptr [edi + 0x3c]
+            call IRandomBetween
+    L004ebabe:
+            test ebp, ebp
+            mov dword ptr [esp + 0x18], eax
+            je L004ebc18
+            fld dword ptr [edi + 0x44]
+            fcomp dword ptr ds:[gFloat_0058aec0]
+            fnstsw ax
+            test ah, 0x40
+            jne L004ebc18
+            fld dword ptr [edi + 0x48]
+            fcomp dword ptr ds:[gFloat_0058aec0]
+            fnstsw ax
+            test ah, 0x40
+            jne L004ebc18
+            fld dword ptr ds:[0x6b78b0]
+            fld dword ptr ds:[0x6b78ac]
+            fsub dword ptr ds:[gMatrix34_006b78a0]
+            fxch st(1)
+            fsub dword ptr ds:[0x6b78a4]
+            fld dword ptr ds:[0x6b78b4]
+            fsub dword ptr ds:[0x6b78a8]
+            fxch st(2)
+            fst dword ptr [esp + 0x20]
+            fld st(1)
+            fxch st(1)
+            fmul dword ptr [esp + 0x20]
+            fld dword ptr ds:[0x6b78b8]
+            fxch st(2)
+            fmul st(0), st(3)
+            fld dword ptr ds:[0x6b78bc]
+            fxch st(5)
+            fst dword ptr [esp + 0x28]
+            fxch st(3)
+            fsub dword ptr ds:[gMatrix34_006b78a0]
+            fxch st(5)
+            fsub dword ptr ds:[0x6b78a4]
+            fxch st(3)
+            fmul dword ptr [esp + 0x28]
+            fld dword ptr ds:[0x6b78c0]
+            fxch st(6)
+            fst dword ptr [esp + 0x20]
+            fxch st(4)
+            fst dword ptr [esp + 0x24]
+            fxch st(6)
+            fsub dword ptr ds:[0x6b78a8]
+            fst dword ptr [esp + 0x28]
+            fxch st(2)
+            faddp st(3), st(0)
+            fxch st(3)
+            fmul dword ptr [esp + 0x20]
+            fxch st(3)
+            faddp st(2), st(0)
+            fxch st(4)
+            fmul dword ptr [esp + 0x24]
+            fxch st(1)
+            fsqrt
+            fxch st(1)
+            faddp st(2), st(0)
+            fst dword ptr [esp + 0x10]
+            fst dword ptr [esp + 0x10]
+            fcomp qword ptr ds:[gDouble_0058aee8]
+            fxch st(2)
+            fmul dword ptr [esp + 0x28]
+            faddp st(2), st(0)
+            fxch st(1)
+            fnstsw ax
+            fsqrt
+            test ah, 1
+            fstp st(1)
+            fstp dword ptr [esp + 0x14]
+            jne L004ec075
+            fld dword ptr [esp + 0x14]
+            fcomp qword ptr ds:[gDouble_0058aee8]
+            fnstsw ax
+            test ah, 1
+            jne L004ec075
+            fld dword ptr [esp + 0x14]
+            fdiv dword ptr [edi + 0x48]
+            push 0x3f800000
+            push ecx
+            _emit 0xd9
+        _emit 0x1c
+        _emit 0x24
+            fld dword ptr [esp + 0x18]
+            fdiv dword ptr [edi + 0x44]
+            push ecx
+            lea ecx, [esp + 0x84]
+            _emit 0xd9
+        _emit 0x1c
+        _emit 0x24
+            push ecx
+            call BrMatrix34Scale
+            add esp, 0x10
+            lea edx, [esp + 0x78]
+            lea eax, [esp + 0xa8]
+            push ebp
+            push edx
+            push eax
+            call BrMatrix34Mul
+            lea ecx, [esp + 0xb4]
+            add esp, 0xc
+            mov dword ptr [esp + 0x10], ecx
+    L004ebc18:
+            mov eax, dword ptr [esp + 0x18]
+            xor ebp, ebp
+            test eax, eax
+            jle L004ebd04
+            jmp L004ebc2c
+    L004ebc28:
+            mov esi, dword ptr [esp + 0x34]
+    L004ebc2c:
+            test esi, esi
+            je L004ebc3c
+            mov edx, dword ptr [edi + 0x4c]
+            mov eax, dword ptr [edx + ebp*4]
+            mov dword ptr [esp + 0x14], eax
+            jmp L004ebc51
+    L004ebc3c:
+            mov edx, dword ptr [edi + 0x40]
+            xor ecx, ecx
+            dec edx
+            call IRandomBetween
+            mov ecx, dword ptr [edi + 0x4c]
+            mov edx, dword ptr [ecx + eax*4]
+            mov dword ptr [esp + 0x14], edx
+    L004ebc51:
+            mov eax, dword ptr [esp + 0x14]
+            mov edx, dword ptr [esp + 0xf4]
+            push 4
+            mov ecx, dword ptr [eax + 0x18]
+            call FindShrapnelFragment
+            mov esi, eax
+            test esi, esi
+            je L004ebd04
+            mov ecx, dword ptr [esp + 0x10]
+            mov edx, dword ptr [esp + 0xfc]
+            mov eax, dword ptr [esp + 0xec]
+            push ecx
+            mov ecx, dword ptr [esp + 0xec]
+            push edx
+            mov edx, dword ptr [esp + 0xec]
+            push eax
+            mov eax, dword ptr [esp + 0x20]
+            push ecx
+            mov ecx, dword ptr [esi]
+            push edx
+            push eax
+            lea edx, [edi + 0x28]
+            call PositionFragment
+            mov ecx, dword ptr [esi]
+            fstp dword ptr [esp + 0x14]
+            mov edx, dword ptr [esp + 0x108]
+            mov eax, dword ptr [esp + 0x14]
+            add ecx, 0x50
+            push ecx
+            push edx
+            push offset gZero_vector__smash
+            lea ecx, [esi + 0x28]
+            push eax
+            lea edx, [esi + 0x1c]
+            push ecx
+            push edx
+            mov edx, dword ptr [esp + 0xf8]
+            lea ecx, [edi + 4]
+            call ApplyInitialMovement
+            mov dword ptr [esi + 0xc], ebx
+            mov dword ptr [esi + 0x14], ebx
+            mov ecx, dword ptr [edi + 0x24]
+            mov eax, ebx
+            add eax, ecx
+            mov dword ptr [esi + 8], eax
+            mov edx, dword ptr [edi + 0x24]
+            mov ecx, dword ptr [edi + 0x20]
+            call IRandomBetween
+            add eax, ebx
+            inc ebp
+            mov dword ptr [esi + 0x10], eax
+            mov eax, dword ptr [esp + 0x18]
+            cmp ebp, eax
+            jl L004ebc28
+    L004ebd04:
+            mov ecx, dword ptr [esp + 0x30]
+            push ecx
+            call srand
+            add esp, 4
+            jmp L004ec075
+            mov eax, dword ptr ds:[gNet_mode]
+            lea edx, [esp + 0x38]
+            neg ecx
+            sbb ecx, ecx
+            xor esi, esi
+            and ecx, edx
+            cmp eax, 3
+            mov dword ptr [esp + 0x34], ecx
+            mov dword ptr [esp + 0x18], esi
+            jne L004ebd41
+            mov eax, dword ptr ds:[gINT_006a8294]
+            test eax, eax
+            je L004ec079
+    L004ebd41:
+            mov ecx, dword ptr [edi + 0x38]
+            xor eax, eax
+            test ecx, ecx
+            setl al
+            test eax, eax
+            mov dword ptr [esp + 0x30], eax
+            je L004ebd58
+            mov eax, dword ptr [edi + 0x40]
+            jmp L004ebd60
+    L004ebd58:
+            mov edx, dword ptr [edi + 0x3c]
+            call IRandomBetween
+    L004ebd60:
+            test eax, eax
+            mov dword ptr [esp + 0x10], eax
+            mov dword ptr [esp + 0x14], 0
+            jle L004ec079
+    L004ebd74:
+            call rand
+            mov ecx, dword ptr ds:[gMax_count_non_cars]
+            mov ebp, eax
+            mov eax, dword ptr ds:[0x75d73c]
+            mov dword ptr [esp + 0x68], ebp
+            cmp eax, ecx
+            jge L004ec075
+            cmp dword ptr ds:[gNet_mode], 2
+            jne L004ebdb8
+            xor edx, edx
+            mov cl, 0x22
+            call NetBuildGuaranteedMessage
+            mov esi, eax
+            mov dword ptr [esp + 0x18], esi
+            mov dword ptr [esi + 0x1c], ebp
+            mov cx, word ptr ds:[0x75d73c]
+            mov word ptr [esi + 0x20], cx
+    L004ebdb8:
+            mov eax, dword ptr [esp + 0x30]
+            test eax, eax
+            je L004ebdcc
+            mov edx, dword ptr [edi + 0x44]
+            mov eax, dword ptr [esp + 0x14]
+            mov eax, dword ptr [edx + eax*4]
+            jmp L004ebddd
+    L004ebdcc:
+            mov edx, dword ptr [edi + 0x40]
+            xor ecx, ecx
+            dec edx
+            call IRandomBetween
+            mov ecx, dword ptr [edi + 0x44]
+            mov eax, dword ptr [ecx + eax*4]
+    L004ebddd:
+            cmp dword ptr ds:[gNet_mode], 2
+            jne L004ebdf1
+            mov edx, dword ptr [eax + 0x14]
+            mov cx, word ptr [edx + 1]
+            mov word ptr [esi + 0x22], cx
+    L004ebdf1:
+            mov ecx, eax
+            call CloneActor
+            mov edx, dword ptr ds:[0x75d73c]
+            mov esi, eax
+            push edx
+            push 0x660084
+            mov eax, dword ptr [esi + 0x14]
+            add eax, 4
+            push eax
+            call sprintf
+            mov ecx, dword ptr ds:[0x75d73c]
+            mov edx, dword ptr ds:[0x75d740]
+            add esp, 0xc
+            mov dword ptr [edx + ecx*4], esi
+            mov eax, dword ptr ds:[0x75d73c]
+            inc eax
+            push esi
+            mov dword ptr ds:[0x75d73c], eax
+            mov eax, dword ptr ds:[gDont_render_actor]
+            push eax
+            call BrActorAdd
+            mov ecx, dword ptr [esp + 0x3c]
+            mov edx, dword ptr [esp + 0x104]
+            mov eax, dword ptr [esp + 0xf4]
+            add esp, 8
+            push ecx
+            mov ecx, dword ptr [esp + 0xec]
+            push edx
+            mov edx, dword ptr [esp + 0xec]
+            push eax
+            push ecx
+            push edx
+            push esi
+            lea edx, [edi + 0x28]
+            mov ecx, esi
+            call PositionFragment
+            mov eax, dword ptr [esi + 0x5c]
+            fstp dword ptr [esp + 0x2c]
+            test eax, eax
+            jne L004ec058
+            mov ecx, esi
+            call DoPullActorFromWorld
+            mov ebp, eax
+            test ebp, ebp
+            je L004ec058
+            call rand
+            mov ecx, dword ptr [esp + 0x2c]
+            lea edx, [esi + 0x50]
+            push edx
+            mov edx, dword ptr [esp + 0x10c]
+            push edx
+            push offset gZero_vector__smash
+            lea edx, [esp + 0x78]
+            push ecx
+            lea ebx, [esp + 0x30]
+            push edx
+            mov edx, dword ptr [esp + 0xf4]
+            lea ecx, [edi + 4]
+            push ebx
+            mov dword ptr [esp + 0x44], eax
+            call ApplyInitialMovement
+            fld dword ptr [esp + 0x20]
+            fmul qword ptr ds:[gDouble_0058aeb8]
+            mov ecx, dword ptr [ebp + 8]
+            mov eax, dword ptr [esp + 0x68]
+            push eax
+            fstp dword ptr [ecx + 0x68]
+            fld dword ptr [esp + 0x28]
+            fmul qword ptr ds:[gDouble_0058aeb8]
+            mov edx, dword ptr [ebp + 8]
+            fstp dword ptr [edx + 0x6c]
+            fld dword ptr [esp + 0x2c]
+            fmul qword ptr ds:[gDouble_0058aeb8]
+            mov eax, dword ptr [ebp + 8]
+            fstp dword ptr [eax + 0x70]
+            fld dword ptr [esp + 0x70]
+            fmul qword ptr ds:[gDouble_0058aef0]
+            mov ecx, dword ptr [ebp + 8]
+            fstp dword ptr [ecx + 0x74]
+            fld dword ptr [esp + 0x74]
+            fmul qword ptr ds:[gDouble_0058aef0]
+            mov edx, dword ptr [ebp + 8]
+            fstp dword ptr [edx + 0x78]
+            fld dword ptr [esp + 0x78]
+            fmul qword ptr ds:[gDouble_0058aef0]
+            mov eax, dword ptr [ebp + 8]
+            fstp dword ptr [eax + 0x7c]
+            mov ecx, dword ptr [ebp + 8]
+            mov byte ptr [ecx + 0xec], 0
+            call srand
+            mov ecx, dword ptr [edi + 0x48]
+            add esp, 4
+            call PercentageChance
+            test eax, eax
+            je L004ebf91
+            mov eax, dword ptr [edi + 0x4c]
+            xor ebx, ebx
+            test eax, eax
+            jle L004ebf91
+    L004ebf52:
+            mov edx, dword ptr [esi + 0x18]
+            push 0x989680
+            mov eax, dword ptr [edx + 0x4c]
+            xor edx, edx
+            mov ecx, dword ptr [eax + 0x18]
+            mov dx, word ptr [ecx + 0x1e]
+            xor ecx, ecx
+            call IRandomBetween
+            mov edx, dword ptr [edi + 0x54]
+            mov ecx, dword ptr [edi + 0x50]
+            push eax
+            call IRandomBetween
+            mov edx, esi
+            mov ecx, 2
+            push eax
+            push 0
+            push ebp
+            call CreateSmokeColumn2
+            mov eax, dword ptr [edi + 0x4c]
+            inc ebx
+            cmp ebx, eax
+            jl L004ebf52
+    L004ebf91:
+            mov eax, dword ptr ds:[gNet_mode]
+            mov ebx, 2
+            cmp eax, ebx
+            jne L004ec005
+            add esi, 0x2c
+            push esi
+            mov esi, dword ptr [esp + 0x1c]
+            lea edx, [esi + 0x3c]
+            push edx
+            call BrMatrix34Copy
+            mov eax, dword ptr [ebp + 8]
+            add esp, 8
+            mov ecx, dword ptr [eax + 0x68]
+            mov dword ptr [esi + 0x24], ecx
+            mov edx, dword ptr [ebp + 8]
+            mov eax, dword ptr [edx + 0x6c]
+            mov dword ptr [esi + 0x28], eax
+            mov ecx, dword ptr [ebp + 8]
+            mov edx, dword ptr [ecx + 0x70]
+            mov dword ptr [esi + 0x2c], edx
+            mov eax, dword ptr [ebp + 8]
+            mov ecx, dword ptr [eax + 0x74]
+            mov dword ptr [esi + 0x30], ecx
+            mov edx, dword ptr [ebp + 8]
+            mov eax, dword ptr [edx + 0x78]
+            mov dword ptr [esi + 0x34], eax
+            mov ecx, dword ptr [ebp + 8]
+            lea eax, [esi + 0x6c]
+            mov edx, dword ptr [ecx + 0x7c]
+            mov dword ptr [esi + 0x38], edx
+            mov ecx, dword ptr [edi + 0x48]
+            mov dword ptr [eax], ecx
+            mov edx, dword ptr [edi + 0x4c]
+            mov dword ptr [eax + 4], edx
+            mov ecx, dword ptr [edi + 0x50]
+            mov dword ptr [eax + 8], ecx
+            mov edx, dword ptr [edi + 0x54]
+            mov dword ptr [eax + 0xc], edx
+            jmp L004ec009
+    L004ec005:
+            mov esi, dword ptr [esp + 0x18]
+    L004ec009:
+            mov eax, dword ptr ds:[0x75d73c]
+            lea ecx, [eax - 1]
+            call FUN_004c8940
+            cmp dword ptr ds:[gNet_mode], ebx
+            jne L004ec02d
+            mov ecx, dword ptr ds:[gCurrent_net_game]
+            push 0
+            mov edx, esi
+            call NetGuaranteedSendMessageToAllPlayers
+    L004ec02d:
+            mov ecx, dword ptr [esp + 0x2c]
+            push ecx
+            call srand
+            mov eax, dword ptr [esp + 0x18]
+            mov ecx, dword ptr [esp + 0x14]
+            mov ebx, dword ptr [esp + 0xf4]
+            add esp, 4
+            inc eax
+            cmp eax, ecx
+            mov dword ptr [esp + 0x14], eax
+            jl L004ebd74
+            jmp L004ec075
+    L004ec058:
+            push esi
+            call BrActorRemove
+            add esp, 4
+            push esi
+            call BrActorFree
+            mov eax, dword ptr ds:[0x75d73c]
+            add esp, 4
+            dec eax
+            mov dword ptr ds:[0x75d73c], eax
+    L004ec075:
+            mov ebp, dword ptr [esp + 0x1c]
+    L004ec079:
+            mov eax, dword ptr [edi]
+            cmp eax, 2
+            jne L004ec0d6
+            mov edx, dword ptr [esp + 0x108]
+            mov ecx, dword ptr [esp + 0xec]
+            push offset gMatrix34_006b78a0
+            lea eax, [esp + 0x3c]
+            push edx
+            mov edx, dword ptr [esp + 0x104]
+            push eax
+            mov eax, dword ptr [esp + 0xf4]
+            push ecx
+            mov ecx, dword ptr [esp + 0xf4]
+            push edx
+            mov edx, dword ptr [esp + 0x118]
+            push edi
+            push eax
+            mov eax, dword ptr [esp + 0x11c]
+            push ecx
+            mov ecx, dword ptr [esp + 0x100]
+            push edx
+            mov edx, dword ptr [esp + 0x100]
+            push eax
+            push ecx
+            push ebp
+            push edx
+            jmp L004ec132
+    L004ec0d6:
+            cmp eax, 1
+            jne L004ec146
+            mov eax, dword ptr [esp + 0x108]
+            mov ecx, dword ptr [esp + 0xf8]
+            mov edx, dword ptr [esp + 0xec]
+            push offset gMatrix34_006b78a0
+            push eax
+            mov eax, dword ptr [esp + 0x104]
+            push ecx
+            mov ecx, dword ptr [esp + 0xf4]
+            push edx
+            mov edx, dword ptr [esp + 0xf4]
+            push eax
+            mov eax, dword ptr [esp + 0x118]
+            push edi
+            push ecx
+            mov ecx, dword ptr [esp + 0x11c]
+            push edx
+            mov edx, dword ptr [esp + 0x100]
+            push eax
+            mov eax, dword ptr [esp + 0x100]
+            push ecx
+            push edx
+            push ebp
+            push eax
+    L004ec132:
+            mov ecx, dword ptr [esp + 0x128]
+            mov edx, ebx
+            call PipeSingleShrapnelShower
+            inc dword ptr ds:[gCount_shrapnel_shower_calls]
+    L004ec146:
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0xc8
+            ret 0x34
+    L004ec153:
+            mov eax, dword ptr [edi]
+            cmp eax, 2
+            je L004ec163
+            cmp eax, 3
+            jne L004eb92b
+    L004ec163:
+            cmp dword ptr [edi + 0x28], 2
+            jne L004eb92b
+            mov ecx, dword ptr ds:[gINT_006a3334]
+            test ecx, ecx
+            je L004eb931
+            fld dword ptr ds:[0x6b78b0]
+            fld dword ptr ds:[0x6b78ac]
+            fsub dword ptr ds:[gMatrix34_006b78a0]
+            fxch st(1)
+            fsub dword ptr ds:[0x6b78a4]
+            fld dword ptr ds:[0x6b78b4]
+            fsub dword ptr ds:[0x6b78a8]
+            fld st(2)
+            fld st(2)
+            fxch st(1)
+            fmul st(0), st(4)
+            fxch st(1)
+            fmul st(0), st(3)
+            fld st(2)
+            fmul st(0), st(3)
+            fxch st(1)
+            faddp st(2), st(0)
+            faddp st(1), st(0)
+            fsqrt
+            fcom dword ptr ds:[gFloat_0058aec4]
+            fnstsw ax
+            test ah, 0x41
+            jne L004ec1f4
+            fdivr qword ptr ds:[gDouble_0058aec8]
+            fld st(0)
+            fld st(1)
+            fxch st(1)
+            fmul st(0), st(5)
+            fxch st(1)
+            fmul st(0), st(4)
+            fxch st(2)
+            fmul st(0), st(3)
+            fxch st(1)
+            fstp dword ptr [esp + 0x38]
+            fxch st(1)
+            fstp dword ptr [esp + 0x3c]
+            fstp dword ptr [esp + 0x40]
+            fstp st(0)
+            fstp st(0)
+            fstp st(0)
+            jmp L004ec214
+    L004ec1f4:
+            fstp st(0)
+            fstp st(0)
+            fstp st(0)
+            fstp st(0)
+            mov dword ptr [esp + 0x38], 0x3f800000
+            mov dword ptr [esp + 0x3c], 0
+            mov dword ptr [esp + 0x40], 0
+    L004ec214:
+            fld dword ptr ds:[0x6b78bc]
+            fld dword ptr ds:[0x6b78b8]
+            fsub dword ptr ds:[gMatrix34_006b78a0]
+            fxch st(1)
+            fsub dword ptr ds:[0x6b78a4]
+            fld dword ptr ds:[0x6b78c0]
+            fsub dword ptr ds:[0x6b78a8]
+            fld st(2)
+            fld st(2)
+            fxch st(1)
+            fmul st(0), st(4)
+            fxch st(1)
+            fmul st(0), st(3)
+            fld st(2)
+            fmul st(0), st(3)
+            fxch st(1)
+            faddp st(2), st(0)
+            faddp st(1), st(0)
+            fsqrt
+            fcom dword ptr ds:[gFloat_0058aec4]
+            fnstsw ax
+            test ah, 0x41
+            jne L004ec28d
+            fdivr qword ptr ds:[gDouble_0058aec8]
+            fld st(0)
+            fld st(1)
+            fxch st(1)
+            fmul st(0), st(5)
+            fxch st(1)
+            fmul st(0), st(4)
+            fxch st(2)
+            fmul st(0), st(3)
+            fxch st(1)
+            fstp dword ptr [esp + 0x44]
+            fxch st(1)
+            fstp dword ptr [esp + 0x48]
+            fstp dword ptr [esp + 0x4c]
+            fstp st(0)
+            fstp st(0)
+            fstp st(0)
+            jmp L004ec2ad
+    L004ec28d:
+            fstp st(0)
+            fstp st(0)
+            fstp st(0)
+            fstp st(0)
+            mov dword ptr [esp + 0x44], 0x3f800000
+            mov dword ptr [esp + 0x48], 0
+            mov dword ptr [esp + 0x4c], 0
+    L004ec2ad:
+            fld dword ptr ds:[0x6a468c]
+            fld dword ptr ds:[gVector3_006a4688]
+            fmul dword ptr ds:[gVector3_006a4688]
+            fld dword ptr ds:[0x6a4690]
+            fxch st(2)
+            fmul dword ptr ds:[0x6a468c]
+            fxch st(2)
+            fmul dword ptr ds:[0x6a4690]
+            fxch st(2)
+            faddp st(1), st(0)
+            fxch st(1)
+            faddp st(1), st(0)
+            fsqrt
+            fcom dword ptr ds:[gFloat_0058aec4]
+            fnstsw ax
+            test ah, 0x41
+            jne L004ec320
+            fdivr qword ptr ds:[gDouble_0058aec8]
+            fld st(0)
+            fld st(1)
+            fxch st(1)
+            fmul dword ptr ds:[gVector3_006a4688]
+            fxch st(1)
+            fmul dword ptr ds:[0x6a468c]
+            fxch st(2)
+            fmul dword ptr ds:[0x6a4690]
+            fxch st(1)
+            fstp dword ptr [esp + 0x50]
+            fxch st(1)
+            fstp dword ptr [esp + 0x54]
+            fstp dword ptr [esp + 0x58]
+            jmp L004ec33a
+    L004ec320:
+            fstp st(0)
+            mov dword ptr [esp + 0x50], 0x3f800000
+            mov dword ptr [esp + 0x54], 0
+            mov dword ptr [esp + 0x58], 0
+    L004ec33a:
+            mov eax, dword ptr ds:[0x6b78ac]
+            mov dword ptr [esp + 0x5c], eax
+            mov eax, dword ptr ds:[0x6b78b0]
+            mov dword ptr [esp + 0x60], eax
+            mov eax, dword ptr ds:[0x6b78b4]
+            mov dword ptr [esp + 0x64], eax
+            jmp L004eb931
+            mov edi, edi
+            _emit 0x4a
+            _emit 0xb9
+            _emit 0x4e
+            _emit 0x00
+            _emit 0xb1
+            _emit 0xb9
+            _emit 0x4e
+            _emit 0x00
+            _emit 0x4a
+            _emit 0xba
+            _emit 0x4e
+            _emit 0x00
+            _emit 0x16
+            _emit 0xbd
+            _emit 0x4e
+            _emit 0x00
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+    }
+#endif
 }
 
 void C2_HOOK_FASTCALL WorkerShrapnelShowerUndo(tU32 chunk_0x48, tU32 prev_0x4, tU32 prev_0x84, tU32 prev_0x44, br_vector3* prev_0x8, br_vector3* prev_0x20, br_vector3* prev_0x2c, tU32 prev_0x50, tU32 prev_0x48, tU32 prev_0x0, br_vector3* prev_0x54, br_vector3* prev_0x88, br_vector3* prev_0x14, tU32 prev_0xa0, br_vector3* prev_0x38) {

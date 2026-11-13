@@ -284,8 +284,16 @@ br_image Image_BRMAP1 = {
     NULL
 };
 
+#ifdef CARPOCALYPSE2_MATCHING
+extern br_boolean C2_HOOK_CDECL BrImageAdd();
+extern void* C2_HOOK_CDECL BrMemSet();
+extern void* C2_HOOK_CDECL BrResAllocate();
+extern br_resource_class* C2_HOOK_CDECL BrResClassAdd();
+extern pm_type_info pmTypeInfo[32];
+#endif
 // FUNCTION: CARMA2_HW 0x005395a0
-void C2_HOOK_CDECL BrPixelmapBegin(void) {
+void C2_NAKED C2_HOOK_CDECL BrPixelmapBegin(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     int i;
 
     C2_HOOK_BUG_ON(sizeof(br_pixelmap_state) != 12);
@@ -297,6 +305,35 @@ void C2_HOOK_CDECL BrPixelmapBegin(void) {
     }
 
     BrImageAdd(&Image_BRMAP1);
+#else
+    __asm {
+            push esi
+            push 0xc
+            push 0
+            push offset _pixelmap
+            call BrMemSet
+            add esp, 0xc
+            push 0x16
+            push 0
+            push 0
+            call BrResAllocate
+            add esp, 0xc
+            mov dword ptr [_pixelmap], eax
+            mov esi, offset pm_resourceClasses
+    L005395ca:
+            push esi
+            call BrResClassAdd
+            add esi, 0x14
+            add esp, 4
+            cmp esi, offset pmTypeInfo
+            jb L005395ca
+            push offset Image_BRMAP1
+            call BrImageAdd
+            add esp, 4
+            pop esi
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x005395f0

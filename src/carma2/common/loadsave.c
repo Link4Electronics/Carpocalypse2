@@ -38,6 +38,48 @@ void C2_HOOK_FASTCALL RestoreSinglePlayerState(void) {
     gValid_stashed_save_game = 0;
 }
 
+#ifdef CARPOCALYPSE2_MATCHING
+extern void* C2_HOOK_CDECL BrMemAllocate();
+extern FILE* C2_HOOK_FASTCALL DRfopen(const char* pFilename, const char* pMode);
+extern void C2_NORETURN C2_HOOK_FASTCALL PDFatalError(const char* pThe_str);
+extern void C2_HOOK_FASTCALL PDGetCurrentDate(char* pTimeStr);
+extern void C2_HOOK_FASTCALL PDGetCurrentTime(char* pTimeStr);
+extern int C2_HOOK_FASTCALL PFfclose(FILE* pFile);
+extern br_size_t C2_HOOK_FASTCALL PFfread(void* buf, br_size_t size, unsigned int n, void* f);
+extern int C2_HOOK_FASTCALL PFfseek(FILE* pF, int offset, int whence);
+extern int C2_HOOK_FASTCALL PFftell(FILE* pF);
+extern void C2_HOOK_FASTCALL PFrewind(FILE* pF);
+extern void C2_HOOK_FASTCALL PathCat(char* pDestn_str, const char* pStr_1, const char* pStr_2);
+extern tPath_name gApplication_path;
+extern br_matrix34 gCamera_to_world;
+extern int gCancel_recover;
+extern int gCurrent_APO_levels[3];
+extern int gIs_boundary_race;
+extern int gNumber_of_races;
+extern tProgram_state gProgram_state;
+extern tRace_list_spec gRace_list[100];
+extern char g_source_exists[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern void C2_HOOK_CDECL BrMemFree();
+#endif
+
+#ifdef CARPOCALYPSE2_MATCHING
+// GLOBAL: CARMA2_HW 0x00658748
+const char gSaved_games_filename[] = "SAVEDGAMES.ARS";
+
+// GLOBAL: CARMA2_HW 0x00658758
+const char gSaved_games_list_started_str[] = "Saved games list already started";
+
+// GLOBAL: CARMA2_HW 0x00591104
+const char gFile_mode_rb[] = "rb";
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern int C2_HOOK_FASTCALL PDFileUnlock(const char* pThe_path);
+extern int C2_HOOK_FASTCALL PFfwrite(const void* buf, br_size_t size, unsigned int n, void* f);
+extern int gCurrent_APO_potential_levels[3];
+extern tNet_mode gNet_mode;
+#endif
 // FUNCTION: CARMA2_HW 0x00466e90
 void C2_HOOK_FASTCALL MaybeRestoreSavedGame(void) {
 
@@ -79,16 +121,110 @@ int C2_HOOK_FASTCALL DoLoadGame2(tSave_game* pSave_game) {
 }
 
 // FUNCTION: CARMA2_HW 0x00491e50
-void C2_HOOK_FASTCALL DoLoadMostRecentGame(void) {
+void C2_NAKED C2_HOOK_FASTCALL DoLoadMostRecentGame(void) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     if (StartSavedGamesList()) {
         DoLoadGame(0);
         EndSavedGamesList();
     }
+#else
+    __asm {
+            mov eax, dword ptr [gSaved_games]
+            sub esp, 0x100
+            test eax, eax
+            push esi
+            push edi
+            je L00491e6b
+            mov ecx, offset gSaved_games_list_started_str
+            call PDFatalError
+    L00491e6b:
+            push offset gSaved_games_filename
+            mov edx, offset gApplication_path
+            lea ecx, [esp + 0xc]
+            call PathCat
+            mov edx, offset gFile_mode_rb
+            lea ecx, [esp + 8]
+            call DRfopen
+            mov esi, eax
+            test esi, esi
+            je L00491f11
+            push 2
+            xor edx, edx
+            mov ecx, esi
+            call PFfseek
+            mov ecx, esi
+            call PFftell
+            mov ecx, esi
+            mov edi, eax
+            call PFrewind
+            mov eax, 0x446f8657
+            mul edi
+            mov eax, edi
+            push 0xfd
+            sub eax, edx
+            push edi
+            shr eax, 1
+            add eax, edx
+            shr eax, 9
+            mov dword ptr [gCount_saved_games], eax
+            call BrMemAllocate
+            add esp, 8
+            mov edx, 1
+            mov ecx, eax
+            mov dword ptr [gSaved_games], eax
+            push esi
+            push edi
+            call PFfread
+            mov eax, dword ptr [gCount_saved_games]
+            lea ecx, [eax + eax*4]
+            lea ecx, [ecx + ecx*4]
+            lea edx, [eax + ecx*4]
+            mov ecx, dword ptr [gSaved_games]
+            shl edx, 3
+            call SplungeSomeData
+            mov ecx, esi
+            call PFfclose
+            mov eax, dword ptr [gCount_saved_games]
+            mov ecx, eax
+            jmp L00491f18
+    L00491f11:
+            mov eax, dword ptr [gCount_saved_games]
+            xor ecx, ecx
+    L00491f18:
+            test ecx, ecx
+            je L00491f5c
+            mov edx, dword ptr [gSaved_games]
+            test edx, edx
+            je L00491f52
+            test eax, eax
+            jle L00491f45
+            lea ecx, [eax + eax*4]
+            lea ecx, [ecx + ecx*4]
+            lea eax, [eax + ecx*4]
+            lea ecx, [edx + eax*8 - 0x328]
+            call DoLoadGame2
+            mov edx, dword ptr [gSaved_games]
+    L00491f45:
+            test edx, edx
+            je L00491f52
+            push edx
+            call BrMemFree
+            add esp, 4
+    L00491f52:
+            mov dword ptr [gSaved_games], 0
+    L00491f5c:
+            pop edi
+            pop esi
+            add esp, 0x100
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004919a0
-void C2_HOOK_FASTCALL MakeSavedGame(tSave_game* pSave_game) {
+void C2_NAKED C2_HOOK_FASTCALL MakeSavedGame(tSave_game* pSave_game) {
+#ifndef CARPOCALYPSE2_MATCHING
     int i;
 
     C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gProgram_state.cars_available) != 60);
@@ -115,6 +251,101 @@ void C2_HOOK_FASTCALL MakeSavedGame(tSave_game* pSave_game) {
         pSave_game->apo_levels[i] = gCurrent_APO_levels[i];
         pSave_game->apo_potential[i] = gCurrent_APO_potential_levels[i];
     }
+#else
+    __asm {
+            mov eax, dword ptr [gProgram_state+0x20]
+            push ebx
+            mov ebx, ecx
+            push esi
+            push edi
+            mov edi, offset gProgram_state+0x1a5e
+            mov dword ptr [ebx + 0x208], eax
+            mov dword ptr [ebx], 0x12345678
+            mov ecx, dword ptr [gProgram_state+0x84]
+            mov dword ptr [ebx + 0x20c], ecx
+            mov edx, dword ptr [gProgram_state+0x78]
+            mov dword ptr [ebx + 0x308], edx
+            mov eax, dword ptr [gIs_boundary_race]
+            mov dword ptr [ebx + 0x30c], eax
+            mov ecx, dword ptr [gProgram_state]
+            mov dword ptr [ebx + 0x204], ecx
+            or ecx, 0xffffffff
+            xor eax, eax
+            lea edx, [ebx + 0x12]
+            repne scasb
+            not ecx
+            sub edi, ecx
+            mov eax, ecx
+            mov esi, edi
+            mov edi, edx
+            lea edx, [ebx + 4]
+            shr ecx, 2
+            rep movsd
+            mov ecx, eax
+            xor eax, eax
+            and ecx, 3
+            rep movsb
+            mov edi, offset gProgram_state+0x1a10
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            sub edi, ecx
+            mov eax, ecx
+            mov esi, edi
+            mov edi, edx
+            shr ecx, 2
+            rep movsd
+            mov ecx, eax
+            and ecx, 3
+            rep movsb
+            lea ecx, [ebx + 0x52]
+            call PDGetCurrentTime
+            lea ecx, [ebx + 0x32]
+            call PDGetCurrentDate
+            mov ecx, dword ptr [gNumber_of_races]
+            xor eax, eax
+            test ecx, ecx
+            jle L00491a6b
+            mov edx, offset gRace_list+0x184
+            lea ecx, [ebx + 0x74]
+    L00491a53:
+            mov esi, dword ptr [edx]
+            inc eax
+            mov dword ptr [ecx], esi
+            mov esi, dword ptr [gNumber_of_races]
+            add ecx, 4
+            add edx, 0x244
+            cmp eax, esi
+            jl L00491a53
+    L00491a6b:
+            mov ecx, dword ptr [gProgram_state+0x88]
+            lea edi, [ebx + 0x214]
+            mov dword ptr [ebx + 0x210], ecx
+            mov edx, dword ptr [gProgram_state+0x8c]
+            mov ecx, 0x3c
+            mov esi, offset gProgram_state+0x1aa0
+            mov dword ptr [ebx + 0x304], edx
+            xor eax, eax
+            rep movsd
+            lea ecx, [ebx + 0x31c]
+    L00491a9d:
+            mov edx, dword ptr [eax + gCurrent_APO_levels]
+            add eax, 4
+            mov dword ptr [ecx - 0xc], edx
+            mov edx, dword ptr [eax + gCamera_to_world+0x2c]
+            mov dword ptr [ecx], edx
+            add ecx, 4
+            cmp eax, 0xc
+            jl L00491a9d
+            pop edi
+            pop esi
+            pop ebx
+            ret
+            nop
+            nop
+            nop
+    }
+#endif
 }
 #include "carpocalypse2_types.h"
 
@@ -128,7 +359,8 @@ static __inline void C2_HOOK_FASTCALL Encryptificate(tSave_game* pSave_games, in
 // MakeSavedGame
 
 // FUNCTION: CARMA2_HW 0x00491ac0
-void C2_HOOK_FASTCALL DoSaveGame(void) {
+void C2_NAKED C2_HOOK_FASTCALL DoSaveGame(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     tPath_name the_path;
     tSave_game save_game;
     FILE* f;
@@ -157,10 +389,65 @@ void C2_HOOK_FASTCALL DoSaveGame(void) {
     PFfwrite(&save_game, 1, sizeof(save_game), f);
     PFfclose(f);
     gSave_game_out_of_sync = 0;
+#else
+    __asm {
+            mov eax, dword ptr [gNet_mode]
+            sub esp, 0x428
+            test eax, eax
+            push esi
+            jne L00491b9c
+            push offset gSaved_games_filename
+            mov edx, offset gApplication_path
+            lea ecx, [esp + 8]
+            call PathCat
+            lea ecx, [esp + 4]
+            call PDFileUnlock
+            mov edx, offset g_source_exists+0x130
+            lea ecx, [esp + 4]
+            call DRfopen
+            mov esi, eax
+            test esi, esi
+            je L00491b9c
+            push 2
+            xor edx, edx
+            mov ecx, esi
+            call PFfseek
+            mov ecx, dword ptr [gProgram_state+0x1964]
+            mov eax, dword ptr [gProgram_state+0x1960]
+            mov edx, dword ptr [gProgram_state+0x1968]
+            mov dword ptr [gCurrent_APO_potential_levels+0x4], ecx
+            mov ecx, dword ptr [gProgram_state+0x1958]
+            mov dword ptr [gCurrent_APO_potential_levels], eax
+            mov eax, dword ptr [gProgram_state+0x1954]
+            mov dword ptr [gCurrent_APO_potential_levels+0x8], edx
+            mov edx, dword ptr [gProgram_state+0x195c]
+            mov dword ptr [gCurrent_APO_levels+0x4], ecx
+            lea ecx, [esp + 0x104]
+            mov dword ptr [gCurrent_APO_levels], eax
+            mov dword ptr [gCurrent_APO_levels+0x8], edx
+            call MakeSavedGame
+            mov edx, 0x328
+            lea ecx, [esp + 0x104]
+            call SplungeSomeData
+            mov edx, 1
+            lea ecx, [esp + 0x104]
+            push esi
+            push 0x328
+            call PFfwrite
+            mov ecx, esi
+            call PFfclose
+            mov dword ptr [gSave_game_out_of_sync], 0
+    L00491b9c:
+            pop esi
+            add esp, 0x428
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00491bb0
-int C2_HOOK_FASTCALL StartSavedGamesList(void) {
+int C2_NAKED C2_HOOK_FASTCALL StartSavedGamesList(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     tPath_name path;
     FILE* f;
     int filesize;
@@ -184,6 +471,76 @@ int C2_HOOK_FASTCALL StartSavedGamesList(void) {
     Encryptificate(gSaved_games, gCount_saved_games);
     PFfclose(f);
     return gCount_saved_games;
+#else
+    __asm {
+            mov eax, dword ptr [gSaved_games]
+            sub esp, 0x100
+            test eax, eax
+            push esi
+            push edi
+            je L00491bcb
+            mov ecx, offset gSaved_games_list_started_str
+            call PDFatalError
+    L00491bcb:
+            push offset gSaved_games_filename
+            mov edx, offset gApplication_path
+            lea ecx, [esp + 0xc]
+            call PathCat
+            mov edx, offset gFile_mode_rb
+            lea ecx, [esp + 8]
+            call DRfopen
+            mov esi, eax
+            test esi, esi
+            je L00491c7a
+            push 2
+            xor edx, edx
+            mov ecx, esi
+            call PFfseek
+            mov ecx, esi
+            call PFftell
+            mov ecx, esi
+            mov edi, eax
+            call PFrewind
+            mov eax, 0x446f8657
+            mul edi
+            mov eax, edi
+            push 0xfd
+            sub eax, edx
+            push edi
+            shr eax, 1
+            add eax, edx
+            shr eax, 9
+            mov dword ptr [gCount_saved_games], eax
+            call BrMemAllocate
+            add esp, 8
+            mov edx, 1
+            mov ecx, eax
+            mov dword ptr [gSaved_games], eax
+            push esi
+            push edi
+            call PFfread
+            mov eax, dword ptr [gCount_saved_games]
+            lea ecx, [eax + eax*4]
+            lea ecx, [ecx + ecx*4]
+            lea edx, [eax + ecx*4]
+            mov ecx, dword ptr [gSaved_games]
+            shl edx, 3
+            call SplungeSomeData
+            mov ecx, esi
+            call PFfclose
+            mov eax, dword ptr [gCount_saved_games]
+            pop edi
+            pop esi
+            add esp, 0x100
+            ret
+    L00491c7a:
+            pop edi
+            xor eax, eax
+            pop esi
+            add esp, 0x100
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00491c90

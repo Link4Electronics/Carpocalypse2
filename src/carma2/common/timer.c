@@ -39,6 +39,29 @@ tU32 gTimers_frame_start_time;
 // GLOBAL: CARMA2_HW 0x006aaa5c
 tU32 gTimers_tolerance;
 
+#ifdef CARPOCALYPSE2_MATCHING
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern int C2_HOOK_FASTCALL PDGetMicroseconds(void);
+extern tRace_over_reason gRace_over_reason;
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern void C2_NORETURN C2_HOOK_FASTCALL PDFatalError(const char* pThe_str);
+extern int gLoad_last_save_game;
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern void C2_HOOK_CDECL BrPixelmapLine();
+extern void C2_HOOK_CDECL BrPixelmapRectangle();
+extern void C2_HOOK_FASTCALL DRPixelmapText(br_pixelmap* pPixelmap, int pX, int pY, const tDR_font* pFont, const char* pText, int pRight_edge);
+extern void __cdecl _ftol();
+extern br_pixelmap* gBack_screen;
+extern char gFLOAT_0058b130[];
+extern tDR_font gFonts[28];
+extern tFrontend_spec gFrontend_QUIT;
+extern tBrender_storage* gStorage_for_callbacks;
+#endif
 // FUNCTION: CARMA2_HW 0x00504300
 void C2_HOOK_FASTCALL Timers_Init(void) {
     int i;
@@ -96,7 +119,8 @@ void C2_HOOK_FASTCALL Timers_Init(void) {
 }
 
 // FUNCTION: CARMA2_HW 0x00504700
-void C2_HOOK_FASTCALL Timers_StartFrame(void) {
+void C2_NAKED C2_HOOK_FASTCALL Timers_StartFrame(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     int i;
 
     for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gTimers); i++) {
@@ -104,10 +128,40 @@ void C2_HOOK_FASTCALL Timers_StartFrame(void) {
     }
     gTimers[TIMER_OQQ].start_time = PDGetMicroseconds();
     gTimers_frame_start_time = PDGetMicroseconds();
+#else
+    __asm {
+            push esi
+            xor esi, esi
+            xor ecx, ecx
+            mov eax, offset gTimers+0x8
+    L0050470a:
+            xor edx, edx
+            mov dl, byte ptr [eax]
+            add eax, 0x1c
+            add edx, ecx
+            add ecx, 7
+            cmp eax, offset gRace_over_reason
+            mov dword ptr [edx*4 + gTimers+0x4], esi
+            jl L0050470a
+            call PDGetMicroseconds
+            mov dword ptr [gTimers+0x204], eax
+            call PDGetMicroseconds
+            mov dword ptr [gTimers_frame_start_time], eax
+            pop esi
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00504740
-void C2_HOOK_FASTCALL Timers_EndFrame(void) {
+void C2_NAKED C2_HOOK_FASTCALL Timers_EndFrame(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     int i;
     int j;
     tU32 total_duration;
@@ -135,10 +189,88 @@ void C2_HOOK_FASTCALL Timers_EndFrame(void) {
         }
     }
     gTimers_tolerance = abs(total_duration - (gTimers_frame_end_time - gTimers_frame_start_time));
+#else
+    __asm {
+            mov eax, dword ptr [gTimers_stack_size]
+            push ebx
+            xor ebx, ebx
+            push ebp
+            push esi
+            cmp eax, ebx
+            push edi
+            je L00504759
+            mov ecx, offset gLoad_last_save_game+0x164
+            call PDFatalError
+    L00504759:
+            mov eax, dword ptr [gTimers+0x200]
+            and eax, 0xff
+            lea esi, [eax*4 + gTimers+0x1fc]
+            call PDGetMicroseconds
+            mov edi, dword ptr [gTimers+0x204]
+            mov edx, dword ptr [esi]
+            sub eax, edi
+            add edx, eax
+            mov dword ptr [esi], edx
+            call PDGetMicroseconds
+            mov ecx, dword ptr [gTimers_frame_count]
+            mov edi, dword ptr [gTimers_enough_samples]
+            inc ecx
+            cmp edi, ebx
+            mov dword ptr [gTimers_frame_end_time], eax
+            mov dword ptr [gTimers_frame_count], ecx
+            jne L005047b0
+            mov eax, ecx
+            cmp eax, 0x40
+            jle L005047b0
+            mov edi, 1
+            mov dword ptr [gTimers_enough_samples], edi
+    L005047b0:
+            xor esi, esi
+            mov eax, offset gTimers
+    L005047b7:
+            mov dword ptr [eax], ebx
+            lea ecx, [eax + 4]
+            mov edx, 1
+    L005047c1:
+            mov ebp, dword ptr [ecx]
+            add ecx, 4
+            add dword ptr [eax], ebp
+            dec edx
+            jne L005047c1
+            mov edx, dword ptr [eax]
+            mov byte ptr [eax + 8], bl
+            add esi, edx
+            cmp edi, ebx
+            je L005047e2
+            mov ecx, dword ptr [eax]
+            mov edx, dword ptr [eax + 0x10]
+            cmp ecx, edx
+            jbe L005047e2
+            mov dword ptr [eax + 0x10], ecx
+    L005047e2:
+            add eax, 0x1c
+            cmp eax, offset gTimers_max_index
+            jl L005047b7
+            mov ecx, dword ptr [gTimers_frame_start_time]
+            mov edi, dword ptr [gTimers_frame_end_time]
+            lea eax, [esi + ecx]
+            sub eax, edi
+            pop edi
+            cdq
+            xor eax, edx
+            pop esi
+            sub eax, edx
+            pop ebp
+            mov dword ptr [gTimers_tolerance], eax
+            pop ebx
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00504810
-void C2_HOOK_FASTCALL Timers_Draw(br_pixelmap* pScreen) {
+void C2_NAKED C2_HOOK_FASTCALL Timers_Draw(br_pixelmap* pScreen) {
+#ifndef CARPOCALYPSE2_MATCHING
     tU32 longest_duration;
     int longest_duration_timer;
     tU32 total_duration;
@@ -216,4 +348,239 @@ void C2_HOOK_FASTCALL Timers_Draw(br_pixelmap* pScreen) {
         &gFonts[1],
         tolerance_str,
         0);
+#else
+    __asm {
+            sub esp, 0x80
+            push ebx
+            push ebp
+            push esi
+            push edi
+            mov ebx, ecx
+            xor edi, edi
+            xor ecx, ecx
+            mov dword ptr [esp + 0x1c], 0xffffffff
+            mov dword ptr [esp + 0x18], edi
+            mov eax, offset gTimers
+    L00504831:
+            mov ebp, dword ptr [eax]
+            add eax, 0x1c
+            add ecx, ebp
+            cmp eax, offset gTimers_max_index
+            jl L00504831
+            mov edx, dword ptr [gTimers_draw_x]
+            xor eax, eax
+            mov ax, word ptr [ebx + 0x34]
+            add edx, edx
+            sub eax, edx
+            mov dword ptr [esp + 0x14], edi
+            mov dword ptr [esp + 0x10], eax
+            mov esi, offset gTimers
+            fild dword ptr [esp + 0x10]
+            mov dword ptr [esp + 0x10], ecx
+            fidiv dword ptr [esp + 0x10]
+            fstp dword ptr [esp + 0x10]
+    L0050486c:
+            mov ecx, edi
+            mov edx, dword ptr [gTimers_draw_y]
+            imul ecx, dword ptr [gTimers_draw_y_stride]
+            lea eax, [esi + 0x18]
+            push 0
+            push eax
+            lea eax, [ecx + edx - 3]
+            push offset gFonts+0x3a0
+            push eax
+            mov edx, 0xa
+            mov ecx, ebx
+            call DRPixelmapText
+            mov ecx, edi
+            mov edx, dword ptr [gTimers_draw_y]
+            imul ecx, dword ptr [gTimers_draw_y_stride]
+            mov dword ptr [esp + 0x24], 0
+            mov eax, dword ptr [esi + 0x14]
+            lea ebp, [ecx + edx]
+            mov ecx, dword ptr [esi]
+            mov dword ptr [esp + 0x20], ecx
+            push eax
+            fild qword ptr [esp + 0x24]
+            push ebp
+            fmul dword ptr [esp + 0x18]
+            fiadd dword ptr [gTimers_draw_x]
+            call _ftol
+            mov edx, dword ptr [gTimers_draw_x]
+            push eax
+            push ebp
+            push edx
+            push ebx
+            call BrPixelmapLine
+            mov eax, edi
+            mov ecx, dword ptr [gTimers_draw_y]
+            imul eax, dword ptr [gTimers_draw_y_stride]
+            mov dword ptr [esp + 0x44], 0
+            mov edx, dword ptr [esi + 0x14]
+            lea ebp, [eax + ecx + 1]
+            mov eax, dword ptr [esi]
+            mov dword ptr [esp + 0x40], eax
+            add esp, 0x18
+            fild qword ptr [esp + 0x28]
+            push edx
+            push ebp
+            fmul dword ptr [esp + 0x18]
+            fiadd dword ptr [gTimers_draw_x]
+            call _ftol
+            mov ecx, dword ptr [gTimers_draw_x]
+            push eax
+            push ebp
+            push ecx
+            push ebx
+            call BrPixelmapLine
+            mov edx, edi
+            mov eax, dword ptr [gTimers_draw_y]
+            imul edx, dword ptr [gTimers_draw_y_stride]
+            mov dword ptr [esp + 0x4c], 0
+            mov ecx, dword ptr [esi + 0x14]
+            lea ebp, [edx + eax + 2]
+            mov edx, dword ptr [esi]
+            mov dword ptr [esp + 0x48], edx
+            add esp, 0x18
+            fild qword ptr [esp + 0x30]
+            push ecx
+            push ebp
+            fmul dword ptr [esp + 0x18]
+            fiadd dword ptr [gTimers_draw_x]
+            call _ftol
+            push eax
+            mov eax, dword ptr [gTimers_draw_x]
+            push ebp
+            push eax
+            push ebx
+            call BrPixelmapLine
+            mov ecx, dword ptr [esi]
+            add esp, 0x18
+            push ecx
+            push offset gFrontend_QUIT+0xbcb0
+            lea edx, [esp + 0x48]
+            push edx
+            call sprintf
+            mov ecx, edi
+            mov edx, dword ptr [gTimers_draw_y]
+            imul ecx, dword ptr [gTimers_draw_y_stride]
+            add esp, 0xc
+            lea eax, [esp + 0x40]
+            mov dword ptr [esp + 0x3c], 0
+            push 0
+            push eax
+            lea eax, [ecx + edx - 3]
+            mov ecx, dword ptr [esi]
+            mov dword ptr [esp + 0x40], ecx
+            push offset gFonts+0x3a0
+            fild qword ptr [esp + 0x44]
+            push eax
+            fmul dword ptr [esp + 0x20]
+            fiadd dword ptr [gTimers_draw_x]
+            fsub dword ptr [gFLOAT_0058b130+0x48]
+            call _ftol
+            mov edx, eax
+            mov ecx, ebx
+            call DRPixelmapText
+            mov eax, dword ptr [esi]
+            cmp eax, dword ptr [esp + 0x18]
+            jbe L005049ea
+            mov dword ptr [esp + 0x18], eax
+            mov dword ptr [esp + 0x1c], edi
+    L005049ea:
+            add esi, 0x1c
+            inc edi
+            cmp esi, offset gTimers_max_index
+            jl L0050486c
+            mov esi, dword ptr [esp + 0x1c]
+            cmp esi, -1
+            je L00504a71
+            mov edx, dword ptr [gBack_screen]
+            mov ecx, esi
+            mov dword ptr [esp + 0x3c], 0
+            mov al, byte ptr [edx + 0x2c]
+            sub al, 5
+            neg al
+            sbb eax, eax
+            shl ecx, 3
+            sub ecx, esi
+            and eax, 0xffff8020
+            add eax, 0xffdf
+            mov edx, dword ptr [ecx*4 + gTimers]
+            push eax
+            mov dword ptr [esp + 0x3c], edx
+            push 6
+            fild qword ptr [esp + 0x40]
+            fmul dword ptr [esp + 0x18]
+            fsub dword ptr [gFLOAT_0058b130+0x4c]
+            call _ftol
+            imul esi, dword ptr [gTimers_draw_y_stride]
+            mov edx, dword ptr [gTimers_draw_x]
+            push eax
+            mov eax, dword ptr [gTimers_draw_y]
+            add edx, -2
+            lea ecx, [esi + eax - 2]
+            push ecx
+            push edx
+            push ebx
+            call BrPixelmapRectangle
+            add esp, 0x18
+    L00504a71:
+            fld dword ptr [esp + 0x10]
+            fmul qword ptr [gFLOAT_0058b130+0x50]
+            fstp qword ptr [esp + 0x38]
+            fild dword ptr [gTimers_draw_x]
+            fadd qword ptr [esp + 0x38]
+            call _ftol
+            mov ecx, dword ptr [gBack_screen]
+            mov dl, byte ptr [ecx + 0x2c]
+            mov ecx, dword ptr [gTimers_draw_y_stride]
+            sub dl, 5
+            neg dl
+            sbb edx, edx
+            and edx, 0xffff8400
+            add edx, 0xf800
+            push edx
+            lea edx, [ecx + ecx*8]
+            mov ecx, dword ptr [gTimers_draw_y]
+            lea edx, [ecx + edx*2 + 3]
+            dec ecx
+            push edx
+            push eax
+            push ecx
+            push eax
+            push ebx
+            call BrPixelmapLine
+            mov eax, dword ptr [gTimers_tolerance]
+            add esp, 0x18
+            lea ecx, [esp + 0x50]
+            push eax
+            push offset gLoad_last_save_game+0x190
+            push ecx
+            call sprintf
+            fild dword ptr [gTimers_draw_x]
+            mov eax, dword ptr [gTimers_draw_y_stride]
+            mov ecx, dword ptr [gTimers_draw_y]
+            add esp, 0xc
+            lea edx, [esp + 0x50]
+            fadd qword ptr [esp + 0x38]
+            lea eax, [eax + eax*8]
+            push 0
+            push edx
+            push offset gFonts+0x3a0
+            fsub qword ptr [gFLOAT_0058b130+0x58]
+            lea edx, [ecx + eax*2 + 7]
+            push edx
+            call _ftol
+            mov edx, eax
+            mov ecx, ebx
+            call DRPixelmapText
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x80
+            ret
+    }
+#endif
 }

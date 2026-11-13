@@ -9,6 +9,13 @@
 
 #include "c2_string.h"
 
+#ifdef CARPOCALYPSE2_MATCHING
+extern void* C2_HOOK_CDECL BrResAdd();
+extern br_error C2_HOOK_CDECL BrTokenValueSet();
+extern br_error C2_HOOK_CDECL BrTokenValueSetMany();
+extern br_tv_template* C2_HOOK_STDCALL FindStateTemplate(br_soft_renderer* self, soft_state_all** state, br_token part, br_int_32 index);
+extern void C2_HOOK_STDCALL TemplateActions(soft_state_all *state, br_token part, br_int_32 index, br_uint_32 mask);
+#endif
 // FUNCTION: CARMA2_HW 0x005417f0
 br_error C2_HOOK_STDCALL CheckPrimitiveState(br_soft_renderer* self) {
     br_error r;
@@ -28,7 +35,8 @@ br_error C2_HOOK_STDCALL CheckPrimitiveState(br_soft_renderer* self) {
 }
 
 // FUNCTION: CARMA2_HW 0x00541830
-br_error C2_HOOK_CDECL _M_br_soft_renderer_partSet(br_soft_renderer* self, br_token part, br_int_32 index, br_token t, uintptr_t value) {
+br_error C2_NAKED C2_HOOK_CDECL _M_br_soft_renderer_partSet(br_soft_renderer* self, br_token part, br_int_32 index, br_token t, uintptr_t value) {
+#ifndef CARPOCALYPSE2_MATCHING
     br_error r;
     soft_state_all *sp = &self->state;
     struct br_tv_template *tp;
@@ -51,10 +59,104 @@ br_error C2_HOOK_CDECL _M_br_soft_renderer_partSet(br_soft_renderer* self, br_to
     }
 
     return r;
+#else
+    __asm {
+            push ebx
+            mov ebx, dword ptr [esp + 0x10]
+            push ebp
+            mov ebp, dword ptr [esp + 0x10]
+            push esi
+            mov esi, dword ptr [esp + 0x10]
+            push edi
+            push ebx
+            lea eax, [esp + 0x18]
+            push ebp
+            lea edi, [esi + 0x10]
+            push eax
+            push esi
+            mov dword ptr [esp + 0x24], edi
+            call FindStateTemplate
+            test eax, eax
+            mov dword ptr [esp + 0x1c], 0
+            je L00541897
+            mov ecx, dword ptr [esp + 0x24]
+            mov edx, dword ptr [esp + 0x20]
+            push eax
+            push ecx
+            mov ecx, dword ptr [esp + 0x1c]
+            lea eax, [esp + 0x24]
+            push edx
+            push eax
+            push ecx
+            call BrTokenValueSet
+            mov esi, eax
+            mov eax, dword ptr [esp + 0x30]
+            add esp, 0x14
+            test eax, eax
+            je L005418e6
+            push eax
+            push ebx
+            push ebp
+            push edi
+            call TemplateActions
+            mov eax, esi
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            ret
+    L00541897:
+            mov eax, dword ptr [esi + 0x794]
+            lea edi, [esi + 0x794]
+            test eax, eax
+            jne L005418c7
+            mov eax, dword ptr [esi + 0x7a0]
+            push edi
+            push eax
+            mov edx, dword ptr [eax]
+            call dword ptr [edx + 0x6c]
+            add esp, 8
+            test eax, eax
+            jne L005418e8
+            mov eax, dword ptr [edi]
+            push eax
+            push esi
+            call BrResAdd
+            add esp, 8
+    L005418c7:
+            xor eax, eax
+            test eax, eax
+            jne L005418e8
+            mov edx, dword ptr [esp + 0x24]
+            mov eax, dword ptr [edi]
+            push edx
+            mov edx, dword ptr [esp + 0x24]
+            mov ecx, dword ptr [eax]
+            push edx
+            push ebx
+            push ebp
+            push eax
+            call dword ptr [ecx + 0x44]
+            add esp, 0x14
+            mov esi, eax
+    L005418e6:
+            mov eax, esi
+    L005418e8:
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            ret
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x005418f0
-br_error C2_HOOK_CDECL _M_br_soft_renderer_partSetMany(br_soft_renderer* self, br_token part, br_int_32 index, br_token_value* tv, br_int_32* pcount) {
+br_error C2_NAKED C2_HOOK_CDECL _M_br_soft_renderer_partSetMany(br_soft_renderer* self, br_token part, br_int_32 index, br_token_value* tv, br_int_32* pcount) {
+#ifndef CARPOCALYPSE2_MATCHING
     br_error r;
     soft_state_all* sp = &self->state;
     br_tv_template* tp;
@@ -83,6 +185,103 @@ br_error C2_HOOK_CDECL _M_br_soft_renderer_partSetMany(br_soft_renderer* self, b
     }
 
     return r;
+#else
+    __asm {
+            push ebx
+            mov ebx, dword ptr [esp + 0x10]
+            push ebp
+            mov ebp, dword ptr [esp + 0x10]
+            push esi
+            mov esi, dword ptr [esp + 0x10]
+            push edi
+            push ebx
+            lea eax, [esp + 0x18]
+            push ebp
+            lea edi, [esi + 0x10]
+            push eax
+            push esi
+            mov dword ptr [esp + 0x24], edi
+            call FindStateTemplate
+            test eax, eax
+            mov dword ptr [esp + 0x1c], 0
+            je L00541957
+            mov ecx, dword ptr [esp + 0x20]
+            push eax
+            mov eax, dword ptr [esp + 0x28]
+            lea edx, [esp + 0x20]
+            push ecx
+            mov ecx, dword ptr [esp + 0x1c]
+            push edx
+            push eax
+            push ecx
+            call BrTokenValueSetMany
+            mov esi, eax
+            mov eax, dword ptr [esp + 0x30]
+            add esp, 0x14
+            test eax, eax
+            je L005419b8
+            push eax
+            push ebx
+            push ebp
+            push edi
+            call TemplateActions
+            mov eax, esi
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            ret
+    L00541957:
+            mov eax, dword ptr [esi + 0x794]
+            lea edi, [esi + 0x794]
+            test eax, eax
+            jne L00541987
+            mov eax, dword ptr [esi + 0x7a0]
+            push edi
+            push eax
+            mov edx, dword ptr [eax]
+            call dword ptr [edx + 0x6c]
+            add esp, 8
+            test eax, eax
+            jne L005419ba
+            mov eax, dword ptr [edi]
+            push eax
+            push esi
+            call BrResAdd
+            add esp, 8
+    L00541987:
+            xor eax, eax
+            test eax, eax
+            jne L005419ba
+            lea edx, [esp + 0x18]
+            mov dword ptr [esp + 0x18], eax
+            mov eax, dword ptr [edi]
+            push edx
+            mov edx, dword ptr [esp + 0x24]
+            mov ecx, dword ptr [eax]
+            push edx
+            push ebx
+            push ebp
+            push eax
+            call dword ptr [ecx + 0x48]
+            mov esi, eax
+            mov eax, dword ptr [esp + 0x38]
+            add esp, 0x14
+            test eax, eax
+            je L005419b8
+            mov ecx, dword ptr [esp + 0x18]
+            mov dword ptr [eax], ecx
+    L005419b8:
+            mov eax, esi
+    L005419ba:
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            ret
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x005419c0

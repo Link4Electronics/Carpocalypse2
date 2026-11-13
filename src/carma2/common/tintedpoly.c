@@ -90,6 +90,44 @@ int gINT_006a0448;
 // GLOBAL: CARMA2_HW 0x006a044c
 int gINT_006a044c;
 
+#ifdef CARPOCALYPSE2_MATCHING
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern void C2_HOOK_CDECL BrActorFree();
+extern br_actor* C2_HOOK_CDECL BrActorRemove();
+extern void C2_HOOK_CDECL BrMaterialFree();
+extern void C2_HOOK_CDECL BrModelFree();
+extern char gEthereal_pedestrians[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern void C2_HOOK_CDECL BrMapUpdate();
+extern br_model* C2_HOOK_CDECL BrModelAllocate();
+extern void C2_HOOK_CDECL BrModelUpdate();
+extern void C2_HOOK_CDECL BrPixelmapPixelSet();
+extern br_uint_32 C2_HOOK_CDECL BrPixelmapSave();
+extern FILE* C2_HOOK_FASTCALL DRfopen(const char* pFilename, const char* pMode);
+extern int C2_HOOK_FASTCALL IRandomBetween(int pA, int pB);
+extern void C2_HOOK_FASTCALL PathCat(char* pDestn_str, const char* pStr_1, const char* pStr_2);
+extern tPath_name gApplication_path;
+extern int gCancel_recover;
+extern char gNext_crush_actor_id[];
+extern int gUNK_00596310;
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern void C2_HOOK_CDECL BrMaterialUpdate();
+extern br_uint_32 C2_HOOK_CDECL BrPixelmapPixelGet();
+extern tU32 C2_HOOK_FASTCALL GetTotalTime(void);
+extern void __cdecl _ftol();
+extern char gConst_average_ped_scale_factor[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern int C2_HOOK_FASTCALL PDKeyDown(int pKey_index);
+extern tCar_spec* gCar_to_view;
+extern int gPed_676914;
+extern int gPickup_respawn_min_time_ms;
+#endif
 // FUNCTION: CARMA2_HW 0x004d7040
 void C2_HOOK_FASTCALL InitTintedPolyStuff(void) {
     br_camera *camera;
@@ -332,7 +370,8 @@ int C2_HOOK_FASTCALL CreateTintedPoly(int x0, int y0, int width, int height, int
 }
 
 // FUNCTION: CARMA2_HW 0x004d7ad0
-br_model* C2_HOOK_FASTCALL BuildTintedPolyModel(int x0, int y0, int width, int height, int nbX, int nbY) {
+C2_NAKED br_model* C2_HOOK_FASTCALL BuildTintedPolyModel(int x0, int y0, int width, int height, int nbX, int nbY) {
+#ifndef CARPOCALYPSE2_MATCHING
     br_model* model;
     int dx;
     int dy;
@@ -383,6 +422,163 @@ br_model* C2_HOOK_FASTCALL BuildTintedPolyModel(int x0, int y0, int width, int h
     }
     model->flags |= BR_MODF_DONT_WELD | BR_MODF_KEEP_ORIGINAL;
     return model;
+#else
+    __asm {
+            sub esp, 0x1c
+            push ebx
+            push ebp
+            mov ebp, dword ptr [esp + 0x30]
+            push esi
+            cmp ebp, 1
+            push edi
+            mov dword ptr [esp + 0x1c], edx
+            mov ebx, ecx
+            jl L004d7c69
+            mov eax, dword ptr [esp + 0x3c]
+            test eax, eax
+            jl L004d7c69
+            lea esi, [eax + 1]
+            imul eax, ebp
+            lea ecx, [ebp + 1]
+            imul ecx, esi
+            shl eax, 1
+            push eax
+            push ecx
+            push offset gUNK_00596310+0x10c
+            call BrModelAllocate
+            add esp, 0xc
+            mov dword ptr [esp + 0x14], eax
+            test eax, eax
+            je L004d7c69
+            mov eax, dword ptr [esp + 0x30]
+            mov ecx, dword ptr [esp + 0x14]
+            cdq
+            idiv ebp
+            mov ecx, dword ptr [ecx + 8]
+            mov edi, eax
+            mov eax, dword ptr [esp + 0x34]
+            cdq
+            idiv dword ptr [esp + 0x3c]
+            test esi, esi
+            mov dword ptr [esp + 0x28], eax
+            jle L004d7bf0
+            mov edx, eax
+            mov eax, dword ptr [esp + 0x1c]
+            neg edx
+            neg eax
+            mov dword ptr [esp + 0x38], 0
+            mov dword ptr [esp + 0x24], edx
+            mov dword ptr [esp + 0x10], eax
+            mov dword ptr [esp + 0x1c], esi
+    L004d7b62:
+            lea esi, [ebp + 1]
+            test esi, esi
+            jle L004d7bc9
+            fild dword ptr [esp + 0x38]
+            fild dword ptr [esp + 0x34]
+            fild dword ptr [esp + 0x10]
+            fild dword ptr [esp + 0x30]
+            fxch st(2)
+            fdivp st(3), st(0)
+            fxch st(2)
+            xor edx, edx
+            mov dword ptr [esp + 0x18], edx
+    L004d7b85:
+            fild dword ptr [esp + 0x18]
+            fld st(3)
+            fxch st(1)
+            fdiv st(0), st(3)
+            lea eax, [ebx + edx]
+            mov dword ptr [ecx + 8], 0xbf828f5c
+            mov dword ptr [esp + 0x20], eax
+            add edx, edi
+            add ecx, 0x28
+            dec esi
+            mov dword ptr [esp + 0x18], edx
+            fild dword ptr [esp + 0x20]
+            fld st(3)
+            fxch st(1)
+            fstp dword ptr [ecx - 0x28]
+            fxch st(2)
+            fstp dword ptr [ecx - 0x24]
+            fstp dword ptr [ecx - 0x1c]
+            fstp dword ptr [ecx - 0x18]
+            jne L004d7b85
+            mov edx, dword ptr [esp + 0x24]
+            fstp st(0)
+            fstp st(0)
+            fstp st(0)
+    L004d7bc9:
+            mov eax, dword ptr [esp + 0x28]
+            mov esi, dword ptr [esp + 0x38]
+            add esi, eax
+            mov eax, dword ptr [esp + 0x1c]
+            mov dword ptr [esp + 0x38], esi
+            mov esi, dword ptr [esp + 0x10]
+            add esi, edx
+            dec eax
+            mov dword ptr [esp + 0x10], esi
+            mov dword ptr [esp + 0x1c], eax
+            jne L004d7b62
+    L004d7bf0:
+            mov ecx, dword ptr [esp + 0x14]
+            xor ebx, ebx
+            mov dword ptr [esp + 0x34], ebx
+            mov eax, dword ptr [ecx + 0xc]
+            mov ecx, dword ptr [esp + 0x3c]
+            test ecx, ecx
+            jle L004d7c57
+    L004d7c05:
+            xor ecx, ecx
+            test ebp, ebp
+            jle L004d7c4a
+            lea edx, [ebp + 1]
+            mov edi, ebx
+            imul edi, edx
+            inc ebx
+            imul ebx, edx
+    L004d7c17:
+            lea edx, [ecx + edi]
+            lea esi, [ecx + ebx]
+            mov word ptr [eax], dx
+            lea edx, [ecx + edi + 1]
+            mov word ptr [eax + 2], dx
+            mov word ptr [eax + 4], si
+            add eax, 0x28
+            mov word ptr [eax], dx
+            lea edx, [ecx + ebx + 1]
+            mov word ptr [eax + 2], dx
+            mov word ptr [eax + 4], si
+            add eax, 0x28
+            inc ecx
+            cmp ecx, ebp
+            jl L004d7c17
+            mov ebx, dword ptr [esp + 0x34]
+    L004d7c4a:
+            mov ecx, dword ptr [esp + 0x3c]
+            inc ebx
+            cmp ebx, ecx
+            mov dword ptr [esp + 0x34], ebx
+            jl L004d7c05
+    L004d7c57:
+            mov eax, dword ptr [esp + 0x14]
+            or byte ptr [eax + 0x20], 3
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x1c
+            ret 0x10
+    L004d7c69:
+            pop edi
+            pop esi
+            pop ebp
+            xor eax, eax
+            pop ebx
+            add esp, 0x1c
+            ret 0x10
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004d7c80
@@ -408,7 +604,8 @@ void C2_HOOK_FASTCALL FreeTintedPolyActor(int pTintedIndex) {
 }
 
 // FUNCTION: CARMA2_HW 0x004d7d10
-void C2_HOOK_FASTCALL FreeAllTintedPolyActor(void) {
+void C2_NAKED C2_HOOK_FASTCALL FreeAllTintedPolyActor(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     int i;
 
     for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gTintedPolys); i++) {
@@ -431,10 +628,68 @@ void C2_HOOK_FASTCALL FreeAllTintedPolyActor(void) {
         gTintedPolys[i].visible = 0;
         gTintedPolys[i].used = 0;
     }
+#else
+    __asm {
+            push esi
+            push edi
+            mov esi, offset gTintedPolys
+            xor edi, edi
+    L004d7d19:
+            cmp dword ptr [esi + 0x30], edi
+            je L004d7d66
+            mov eax, dword ptr [esi + 4]
+            cmp eax, edi
+            je L004d7d2e
+            push eax
+            call BrMaterialFree
+            add esp, 4
+    L004d7d2e:
+            mov eax, dword ptr [esi + 8]
+            cmp eax, edi
+            je L004d7d3e
+            push eax
+            call BrModelFree
+            add esp, 4
+    L004d7d3e:
+            mov eax, dword ptr [esi]
+            cmp eax, edi
+            je L004d7d5a
+            push eax
+            call BrActorRemove
+            mov eax, dword ptr [esi]
+            add esp, 4
+            push eax
+            call BrActorFree
+            add esp, 4
+            mov dword ptr [esi], edi
+    L004d7d5a:
+            mov dword ptr [esi + 0x38], edi
+            mov dword ptr [esi + 0x2c], edi
+            mov dword ptr [esi + 0x34], edi
+            mov dword ptr [esi + 0x30], edi
+    L004d7d66:
+            add esi, 0x6450
+            cmp esi, offset gEthereal_pedestrians
+            jl L004d7d19
+            pop edi
+            pop esi
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004d7d80
-void C2_HOOK_FASTCALL UpdateTintedPolyByMaterial(int pIndex) {
+void C2_NAKED C2_HOOK_FASTCALL UpdateTintedPolyByMaterial(int pIndex) {
+#ifndef CARPOCALYPSE2_MATCHING
     br_uint_32 new_red, new_grn, new_blu;
     tU32 time;
     tU32 colour_sum;
@@ -532,6 +787,253 @@ void C2_HOOK_FASTCALL UpdateTintedPolyByMaterial(int pIndex) {
             BrMaterialUpdate(gTintedPolys[pIndex].material, BR_MATU_LIGHTING);
         }
     }
+#else
+    __asm {
+            sub esp, 0x14
+            push ebx
+            push ebp
+            push esi
+            lea esi, [ecx + ecx*4]
+            shl esi, 6
+            add esi, ecx
+            push edi
+            lea esi, [esi + esi*4]
+            shl esi, 4
+            mov eax, dword ptr [esi + gTintedPolys+0x34]
+            test eax, eax
+            je L004d803b
+            mov eax, dword ptr [esi + gTintedPolys+0x2c]
+            test eax, eax
+            je L004d803b
+            mov eax, dword ptr [eax + 0x40]
+            test eax, eax
+            je L004d7edd
+            mov ecx, dword ptr [eax + 8]
+            test ecx, ecx
+            je L004d7edd
+            xor ebp, ebp
+            xor ebx, ebx
+            mov bp, word ptr [eax + 0x34]
+            mov bx, word ptr [eax + 0x36]
+            mov dword ptr [esp + 0x20], ebx
+            mov edi, ebp
+            shr ebx, 2
+            shr edi, 2
+            push ebx
+            push edi
+            push eax
+            call BrPixelmapPixelGet
+            xor edx, edx
+            mov dword ptr [esp + 0x1c], eax
+            mov dl, ah
+            and eax, 0xff
+            xor ecx, ecx
+            mov dword ptr [esp + 0x20], eax
+            mov cl, byte ptr [esp + 0x1e]
+            mov eax, dword ptr [esi + gTintedPolys+0x2c]
+            add esp, 0xc
+            mov dword ptr [esp + 0x18], ecx
+            mov ecx, dword ptr [eax + 0x40]
+            sub ebp, edi
+            push ebx
+            push ebp
+            push ecx
+            mov dword ptr [esp + 0x28], edx
+            call BrPixelmapPixelGet
+            mov ecx, dword ptr [esp + 0x24]
+            mov dword ptr [esp + 0x1c], eax
+            xor edx, edx
+            add esp, 0xc
+            mov dl, byte ptr [esp + 0x12]
+            add ecx, edx
+            mov edx, dword ptr [esp + 0x1c]
+            mov dword ptr [esp + 0x18], ecx
+            xor ecx, ecx
+            mov cl, ah
+            and eax, 0xff
+            add edx, ecx
+            mov ecx, dword ptr [esp + 0x14]
+            add ecx, eax
+            mov eax, dword ptr [esp + 0x20]
+            mov dword ptr [esp + 0x1c], edx
+            mov edx, dword ptr [esi + gTintedPolys+0x2c]
+            sub eax, ebx
+            mov dword ptr [esp + 0x14], ecx
+            mov dword ptr [esp + 0x20], eax
+            push eax
+            mov eax, dword ptr [edx + 0x40]
+            push edi
+            push eax
+            call BrPixelmapPixelGet
+            mov ebx, dword ptr [esp + 0x28]
+            mov edi, dword ptr [esp + 0x24]
+            xor edx, edx
+            mov dword ptr [esp + 0x1c], eax
+            xor ecx, ecx
+            mov dl, ah
+            mov cl, byte ptr [esp + 0x1e]
+            add ebx, edx
+            mov edx, dword ptr [esp + 0x20]
+            and eax, 0xff
+            add edi, ecx
+            mov ecx, dword ptr [esi + gTintedPolys+0x2c]
+            add esp, 0xc
+            add edx, eax
+            mov eax, dword ptr [esp + 0x20]
+            mov dword ptr [esp + 0x14], edx
+            mov edx, dword ptr [ecx + 0x40]
+            push eax
+            push ebp
+            push edx
+            call BrPixelmapPixelGet
+            mov dword ptr [esp + 0x1c], eax
+            xor ecx, ecx
+            mov cl, byte ptr [esp + 0x1e]
+            add esp, 0xc
+            add ecx, edi
+            sar ecx, 2
+            xor edx, edx
+            mov edi, ecx
+            mov dl, ah
+            and eax, 0xff
+            add edx, ebx
+            sar edx, 2
+            mov ebx, edx
+            mov edx, dword ptr [esp + 0x14]
+            add eax, edx
+            sar eax, 2
+            mov ebp, eax
+            jmp L004d7eef
+    L004d7edd:
+            mov edi, dword ptr [gTintedColourMap_red]
+            mov ebx, dword ptr [gTintedColourMap_grn]
+            mov ebp, dword ptr [gTintedColourMap_blu]
+    L004d7eef:
+            call GetTotalTime
+            mov edx, dword ptr [esi + gTintedPolys+0x14]
+            mov ecx, dword ptr [esi + gTintedPolys+0xc]
+            add edx, dword ptr [esi + gTintedPolys+0x10]
+            add edx, ecx
+            jne L004d7f4e
+            mov dword ptr [esi + gTintedPolys+0xc], edi
+            mov dword ptr [esi + gTintedPolys+0x10], ebx
+            shl edi, 8
+            or edi, ebx
+            mov dword ptr [esi + gTintedPolys+0x14], ebp
+            mov dword ptr [esi + gTintedPolys+0x3c], eax
+            mov eax, dword ptr [esi + gTintedPolys+0x4]
+            shl edi, 8
+            or edi, ebp
+            push 4
+            mov dword ptr [eax + 8], edi
+            mov ecx, dword ptr [esi + gTintedPolys+0x4]
+            push ecx
+            call BrMaterialUpdate
+            add esp, 8
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x14
+            ret
+    L004d7f4e:
+            sub eax, dword ptr [esi + gTintedPolys+0x3c]
+            xor edx, edx
+            shr eax, 0xc
+            jns L004d7f5d
+            xor eax, eax
+    L004d7f5d:
+            test eax, eax
+            je L004d803b
+            cmp ecx, edi
+            je L004d7f9e
+            jge L004d7f76
+            lea edx, [eax + ecx]
+            mov dword ptr [esi + gTintedPolys+0xc], edx
+            jmp L004d7f7e
+    L004d7f76:
+            sub ecx, eax
+            mov dword ptr [esi + gTintedPolys+0xc], ecx
+    L004d7f7e:
+            mov ecx, dword ptr [esi + gTintedPolys+0xc]
+            mov edx, edi
+            sub edx, eax
+            cmp ecx, edx
+            jle L004d7f99
+            lea edx, [eax + edi]
+            cmp ecx, edx
+            jge L004d7f99
+            mov dword ptr [esi + gTintedPolys+0xc], edi
+    L004d7f99:
+            mov edx, 1
+    L004d7f9e:
+            mov ecx, dword ptr [esi + gTintedPolys+0x10]
+            cmp ecx, ebx
+            je L004d7fd0
+            jge L004d7fae
+            add ecx, eax
+            jmp L004d7fb0
+    L004d7fae:
+            sub ecx, eax
+    L004d7fb0:
+            mov edx, ebx
+            mov dword ptr [esi + gTintedPolys+0x10], ecx
+            sub edx, eax
+            cmp ecx, edx
+            jle L004d7fcb
+            lea edx, [eax + ebx]
+            cmp ecx, edx
+            jge L004d7fcb
+            mov dword ptr [esi + gTintedPolys+0x10], ebx
+    L004d7fcb:
+            mov edx, 1
+    L004d7fd0:
+            mov ecx, dword ptr [esi + gTintedPolys+0x14]
+            cmp ecx, ebp
+            je L004d8001
+            jge L004d7fe0
+            add ecx, eax
+            jmp L004d7fe2
+    L004d7fe0:
+            sub ecx, eax
+    L004d7fe2:
+            mov edx, ebp
+            mov dword ptr [esi + gTintedPolys+0x14], ecx
+            sub edx, eax
+            cmp ecx, edx
+            jle L004d7ffc
+            add eax, ebp
+            cmp ecx, eax
+            jge L004d7ffc
+            mov dword ptr [esi + gTintedPolys+0x14], ebp
+    L004d7ffc:
+            mov edx, 1
+    L004d8001:
+            test edx, edx
+            je L004d803b
+            mov eax, dword ptr [esi + gTintedPolys+0xc]
+            mov ebp, dword ptr [esi + gTintedPolys+0x10]
+            mov edi, dword ptr [esi + gTintedPolys+0x14]
+            mov ecx, dword ptr [esi + gTintedPolys+0x4]
+            shl eax, 8
+            or eax, ebp
+            push 4
+            shl eax, 8
+            or eax, edi
+            mov dword ptr [ecx + 8], eax
+            mov edx, dword ptr [esi + gTintedPolys+0x4]
+            push edx
+            call BrMaterialUpdate
+            add esp, 8
+    L004d803b:
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x14
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004d8220
@@ -626,7 +1128,8 @@ br_material* C2_HOOK_FASTCALL InWater(int pTintedIndex) {
 }
 
 // FUNCTION: CARMA2_HW 0x004d8a20
-void C2_HOOK_FASTCALL UpdateTintedPolys(void) {
+void C2_NAKED C2_HOOK_FASTCALL UpdateTintedPolys(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     int i;
     br_uint_32 red = 0;
     br_uint_32 grn = 0;
@@ -679,10 +1182,159 @@ void C2_HOOK_FASTCALL UpdateTintedPolys(void) {
             }
         }
     }
+#else
+    __asm {
+            push ecx
+            push ebx
+            xor ecx, ecx
+            push ebp
+            push esi
+            mov dword ptr [esp + 0xc], ecx
+            push edi
+            mov edi, dword ptr [esp + 0x10]
+            mov ebx, dword ptr [esp + 0x10]
+            mov ebp, dword ptr [esp + 0x10]
+            mov esi, 0x705cb8
+    L004d8a3c:
+            mov eax, dword ptr [esi - 8]
+            test eax, eax
+            je L004d8b78
+            mov eax, dword ptr [esi]
+            add eax, -2
+            cmp eax, 4
+            ja L004d8b78
+            jmp dword ptr [eax*4 + 0x4d8b9c]
+            mov eax, dword ptr ds:[gCar_to_view]
+            mov edx, dword ptr [eax + 8]
+            mov eax, dword ptr [edx + 0x258]
+            test eax, eax
+            je L004d8a81
+            fld dword ptr [eax + 0x88]
+            fcomp dword ptr ds:[0x58abd0]
+            fnstsw ax
+            test ah, 1
+            jne L004d8a8e
+    L004d8a81:
+            mov eax, dword ptr ds:[gPed_676914]
+            test eax, eax
+            je L004d8b78
+    L004d8a8e:
+            call UpdateTintedPolyByMaterial
+            jmp L004d8b78
+            call UpdatePulsePoly
+            jmp L004d8b78
+            mov ecx, 0x20
+            call PDKeyDown
+            test eax, eax
+            jne L004d8ac0
+            mov eax, dword ptr ds:[gINT_006a0444]
+            test eax, eax
+            jle L004d8ac9
+            cmp eax, 0xc8
+            jg L004d8ac9
+    L004d8ac0:
+            mov ecx, dword ptr [esp + 0x10]
+            call UpdateFirePoly
+    L004d8ac9:
+            mov ecx, 0x23
+            call PDKeyDown
+            test eax, eax
+            jne L004d8aef
+            mov eax, dword ptr ds:[gINT_006a0444]
+            test eax, eax
+            jle L004d8b78
+            cmp eax, 0xc8
+            jg L004d8b78
+    L004d8aef:
+            mov ecx, dword ptr [esp + 0x10]
+            mov dword ptr ds:[gINT_006a0448], 1
+            call UpdateFirePoly
+            jmp L004d8b78
+            mov eax, dword ptr [esi - 4]
+            test eax, eax
+            je L004d8b78
+            mov eax, dword ptr [esi - 0x14]
+            sub eax, 0
+            je L004d8b1d
+            dec eax
+            jne L004d8b58
+            call UpdatePulsePoly
+            jmp L004d8b58
+    L004d8b1d:
+            call GetTotalTime
+            mov ecx, dword ptr [esi + 8]
+            shr eax, cl
+            and eax, 0x1ff
+            cmp eax, 0xff
+            jae L004d8b3a
+            and eax, 0xff
+            jmp L004d8b49
+    L004d8b3a:
+            mov ecx, 0xfffffffe
+            sub ecx, eax
+            and ecx, 0xff
+            mov eax, ecx
+    L004d8b49:
+            mov edi, dword ptr [esi - 0x20]
+            mov ebx, dword ptr [esi - 0x1c]
+            mov ebp, dword ptr [esi - 0x18]
+            and edi, eax
+            and ebx, eax
+            and ebp, eax
+    L004d8b58:
+            mov eax, dword ptr [esi - 0x34]
+            mov edx, edi
+            shl edx, 8
+            or edx, ebx
+            push 4
+            shl edx, 8
+            or edx, ebp
+            mov dword ptr [eax + 8], edx
+            mov ecx, dword ptr [esi - 0x34]
+            push ecx
+            call BrMaterialUpdate
+            add esp, 8
+    L004d8b78:
+            mov ecx, dword ptr [esp + 0x10]
+            add esi, 0x6450
+            inc ecx
+            cmp esi, offset gPickup_respawn_min_time_ms
+            mov dword ptr [esp + 0x10], ecx
+            jl L004d8a3c
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            pop ecx
+            ret
+            lea ecx, [ecx]
+            _emit 0x5c
+            _emit 0x8a
+            _emit 0x4d
+            _emit 0x00
+            _emit 0x98
+            _emit 0x8a
+            _emit 0x4d
+            _emit 0x00
+            _emit 0xa2
+            _emit 0x8a
+            _emit 0x4d
+            _emit 0x00
+            _emit 0x78
+            _emit 0x8b
+            _emit 0x4d
+            _emit 0x00
+            _emit 0x04
+            _emit 0x8b
+            _emit 0x4d
+            _emit 0x00
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004d8bb0
-void C2_HOOK_FASTCALL SetTintedPolySize(int pTintedIndex, int x0, int y0, int width, int height) {
+void C2_NAKED C2_HOOK_FASTCALL SetTintedPolySize(int pTintedIndex, int x0, int y0, int width, int height) {
+#ifndef CARPOCALYPSE2_MATCHING
     tTintedPoly* tinted;
     int nb_x;
     int nb_y;
@@ -720,6 +1372,130 @@ void C2_HOOK_FASTCALL SetTintedPolySize(int pTintedIndex, int x0, int y0, int wi
         }
     }
     BrModelUpdate(tinted->model, BR_MODU_VERTICES);
+#else
+    __asm {
+            sub esp, 0x1c
+            cmp ecx, -1
+            push ebx
+            push ebp
+            push esi
+            push edi
+            mov ebp, edx
+            je L004d8cdb
+            lea eax, [ecx + ecx*4]
+            shl eax, 6
+            add eax, ecx
+            lea eax, [eax + eax*4]
+            shl eax, 4
+            cmp dword ptr [eax + gTintedPolys+0x38], 3
+            jne L004d8be2
+            mov esi, 4
+            mov ebx, esi
+            jmp L004d8be9
+    L004d8be2:
+            mov esi, 1
+            mov ebx, esi
+    L004d8be9:
+            mov ecx, dword ptr [eax + gTintedPolys+0x8]
+            test ecx, ecx
+            mov dword ptr [esp + 0x28], ecx
+            je L004d8cdb
+            mov eax, dword ptr [esp + 0x34]
+            mov ecx, dword ptr [ecx + 8]
+            cdq
+            idiv esi
+            mov edi, eax
+            mov eax, dword ptr [esp + 0x38]
+            cdq
+            idiv ebx
+            lea edx, [ebx + 1]
+            test edx, edx
+            mov dword ptr [esp + 0x14], eax
+            jle L004d8ccc
+            mov ebx, dword ptr [esp + 0x30]
+            lea eax, [esi + 1]
+            mov esi, dword ptr [esp + 0x14]
+            mov dword ptr [esp + 0x24], eax
+            neg esi
+            neg ebx
+            mov dword ptr [esp + 0x10], 0
+            mov dword ptr [esp + 0x20], esi
+            mov dword ptr [esp + 0x30], ebx
+            mov dword ptr [esp + 0x18], edx
+    L004d8c44:
+            test eax, eax
+            jle L004d8caf
+            fild dword ptr [esp + 0x10]
+            fild dword ptr [esp + 0x38]
+            fild dword ptr [esp + 0x30]
+            fild dword ptr [esp + 0x34]
+            fxch st(2)
+            fdivp st(3), st(0)
+            fxch st(2)
+            xor edx, edx
+            mov esi, eax
+            mov dword ptr [esp + 0x30], edx
+    L004d8c66:
+            fild dword ptr [esp + 0x30]
+            fld st(3)
+            fxch st(1)
+            fdiv st(0), st(3)
+            lea eax, [ebp + edx]
+            mov dword ptr [ecx + 8], 0xbf828f5c
+            mov dword ptr [esp + 0x1c], eax
+            add edx, edi
+            add ecx, 0x28
+            dec esi
+            mov dword ptr [esp + 0x30], edx
+            fild dword ptr [esp + 0x1c]
+            fld st(3)
+            fxch st(1)
+            fstp dword ptr [ecx - 0x28]
+            fxch st(2)
+            fstp dword ptr [ecx - 0x24]
+            fstp dword ptr [ecx - 0x1c]
+            fstp dword ptr [ecx - 0x18]
+            jne L004d8c66
+            mov esi, dword ptr [esp + 0x20]
+            mov eax, dword ptr [esp + 0x24]
+            fstp st(0)
+            fstp st(0)
+            fstp st(0)
+    L004d8caf:
+            mov edx, dword ptr [esp + 0x14]
+            add ebx, esi
+            add dword ptr [esp + 0x10], edx
+            mov edx, dword ptr [esp + 0x18]
+            dec edx
+            mov dword ptr [esp + 0x30], ebx
+            mov dword ptr [esp + 0x18], edx
+            jne L004d8c44
+    L004d8ccc:
+            mov eax, dword ptr [esp + 0x28]
+            push 0x40
+            push eax
+            call BrModelUpdate
+            add esp, 8
+    L004d8cdb:
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x1c
+            ret 0xc
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004d8350
@@ -756,7 +1532,8 @@ void C2_HOOK_FASTCALL SetTintedFromSpecialVolume(int pIndex, br_vector3* pPositi
 }
 
 // FUNCTION: CARMA2_HW 0x004d84a0
-void C2_HOOK_FASTCALL ProcessTintedPoly(int pIndex) {
+void C2_NAKED C2_HOOK_FASTCALL ProcessTintedPoly(int pIndex) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     if (gTintedPolys[pIndex].used) {
         switch (gTintedPolys[pIndex].class) {
@@ -812,10 +1589,167 @@ void C2_HOOK_FASTCALL ProcessTintedPoly(int pIndex) {
             }
         }
     }
+#else
+    __asm {
+            push ecx
+            push esi
+            push edi
+            mov edi, ecx
+            lea eax, [edi + edi*4]
+            shl eax, 6
+            add eax, edi
+            lea esi, [eax + eax*4]
+            shl esi, 4
+            mov eax, dword ptr [esi + 0x705cb0]
+            test eax, eax
+            je L004d85c9
+            mov eax, dword ptr [esi + 0x705cb8]
+            add eax, -2
+            cmp eax, 4
+            ja L004d85c9
+            jmp dword ptr [eax*4 + 0x4d8618]
+            mov eax, dword ptr ds:[gCar_to_view]
+            mov ecx, dword ptr [eax + 8]
+            mov eax, dword ptr [ecx + 0x258]
+            test eax, eax
+            je L004d84ff
+            fld dword ptr [eax + 0x88]
+            fcomp dword ptr ds:[0x58abd0]
+            fnstsw ax
+            test ah, 1
+            jne L004d850c
+    L004d84ff:
+            mov eax, dword ptr ds:[gPed_676914]
+            test eax, eax
+            je L004d85c9
+    L004d850c:
+            mov ecx, edi
+            call UpdateTintedPolyByMaterial
+            pop edi
+            pop esi
+            pop ecx
+            ret
+            mov ecx, edi
+            call UpdatePulsePoly
+            pop edi
+            pop esi
+            pop ecx
+            ret
+            mov ecx, 0x20
+            call PDKeyDown
+            test eax, eax
+            jne L004d8540
+            mov eax, dword ptr ds:[gINT_006a0444]
+            test eax, eax
+            jle L004d8547
+            cmp eax, 0xc8
+            jg L004d8547
+    L004d8540:
+            mov ecx, edi
+            call UpdateFirePoly
+    L004d8547:
+            mov ecx, 0x23
+            call PDKeyDown
+            test eax, eax
+            jne L004d8565
+            mov eax, dword ptr ds:[gINT_006a0444]
+            test eax, eax
+            jle L004d85c9
+            cmp eax, 0xc8
+            jg L004d85c9
+    L004d8565:
+            mov ecx, edi
+            mov dword ptr ds:[gINT_006a0448], 1
+            call UpdateFirePoly
+            pop edi
+            pop esi
+            pop ecx
+            ret
+            mov eax, dword ptr [esi + 0x705cb4]
+            test eax, eax
+            je L004d85c9
+            mov eax, dword ptr [esi + 0x705ca4]
+            sub eax, 0
+            je L004d85cd
+            dec eax
+            jne L004d8599
+            mov ecx, edi
+            call UpdatePulsePoly
+    L004d8599:
+            mov ecx, dword ptr [esp + 8]
+            mov edx, dword ptr [esp + 8]
+            mov edi, dword ptr [esp + 8]
+    L004d85a5:
+            mov eax, dword ptr [esi + 0x705c84]
+            push 4
+            shl ecx, 8
+            or ecx, edx
+            shl ecx, 8
+            or ecx, edi
+            mov dword ptr [eax + 8], ecx
+            mov ecx, dword ptr [esi + 0x705c84]
+            push ecx
+            call BrMaterialUpdate
+            add esp, 8
+    L004d85c9:
+            pop edi
+            pop esi
+            pop ecx
+            ret
+    L004d85cd:
+            call GetTotalTime
+            mov ecx, dword ptr [esi + 0x705cc0]
+            shr eax, cl
+            and eax, 0x1ff
+            cmp eax, 0xff
+            jae L004d85ed
+            and eax, 0xff
+            jmp L004d85fc
+    L004d85ed:
+            mov edx, 0xfffffffe
+            sub edx, eax
+            and edx, 0xff
+            mov eax, edx
+    L004d85fc:
+            mov ecx, dword ptr [esi + 0x705c98]
+            mov edx, dword ptr [esi + 0x705c9c]
+            mov edi, dword ptr [esi + 0x705ca0]
+            and ecx, eax
+            and edx, eax
+            and edi, eax
+            jmp L004d85a5
+            mov edi, edi
+            _emit 0xda
+            _emit 0x84
+            _emit 0x4d
+            _emit 0x00
+            _emit 0x17
+            _emit 0x85
+            _emit 0x4d
+            _emit 0x00
+            _emit 0x22
+            _emit 0x85
+            _emit 0x4d
+            _emit 0x00
+            _emit 0xc9
+            _emit 0x85
+            _emit 0x4d
+            _emit 0x00
+            _emit 0x7a
+            _emit 0x85
+            _emit 0x4d
+            _emit 0x00
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004d8050
-void C2_HOOK_FASTCALL UpdatePolyVertexColours(int pTintedIndex) {
+void C2_NAKED C2_HOOK_FASTCALL UpdatePolyVertexColours(int pTintedIndex) {
+#ifndef CARPOCALYPSE2_MATCHING
     br_uint_32 maximum;
     double scale;
     double tint_red;
@@ -851,6 +1785,154 @@ void C2_HOOK_FASTCALL UpdatePolyVertexColours(int pTintedIndex) {
             ((br_colour*)gRender_palette->pixels)[i] = BR_COLOUR_RGB(new_red, new_grn, new_blu);
         }
     }
+#else
+    __asm {
+            mov eax, dword ptr [gTintedPolyCamera+0x4]
+            sub esp, 0x30
+            push ebx
+            xor ebx, ebx
+            cmp eax, ebx
+            je L004d8216
+            cmp ecx, -1
+            je L004d8216
+            lea eax, [ecx + ecx*4]
+            push edi
+            shl eax, 6
+            add eax, ecx
+            push esi
+            push ebp
+            lea eax, [eax + eax*4]
+            shl eax, 4
+            mov ecx, dword ptr [eax + gTintedPolys+0xc]
+            mov edx, dword ptr [eax + gTintedPolys+0x10]
+            cmp ecx, edx
+            mov dword ptr [esp + 0x10], ecx
+            mov dword ptr [esp + 0x14], edx
+            jg L004d8097
+            mov ecx, edx
+    L004d8097:
+            mov eax, dword ptr [eax + gTintedPolys+0x14]
+            cmp ecx, eax
+            mov dword ptr [esp + 0x1c], eax
+            ja L004d80a7
+            mov ecx, eax
+    L004d80a7:
+            mov dword ptr [esp + 0x20], ecx
+            mov dword ptr [esp + 0x24], ebx
+            fild qword ptr [esp + 0x20]
+            fild dword ptr [esp + 0x10]
+            fild dword ptr [esp + 0x14]
+            fxch st(2)
+            fdivr qword ptr [gConst_average_ped_scale_factor+0x8]
+            mov dword ptr [esp + 0x10], 4
+            fild dword ptr [esp + 0x1c]
+            fxch st(2)
+            fmul st(0), st(1)
+            fxch st(3)
+            fmul st(0), st(1)
+            fxch st(2)
+            fmul st(0), st(1)
+            fxch st(3)
+            fmul qword ptr [gConst_average_ped_scale_factor+0x10]
+            fxch st(2)
+            fmul qword ptr [gConst_average_ped_scale_factor+0x10]
+            fxch st(2)
+            fsubr qword ptr [gConst_average_ped_scale_factor+0x18]
+            fxch st(3)
+            fmul qword ptr [gConst_average_ped_scale_factor+0x10]
+            fxch st(2)
+            fsubr qword ptr [gConst_average_ped_scale_factor+0x18]
+            fxch st(3)
+            fstp st(1)
+            fxch st(1)
+            fsubr qword ptr [gConst_average_ped_scale_factor+0x18]
+            fxch st(1)
+            fxch st(2)
+            fxch st(1)
+    L004d8115:
+            mov eax, dword ptr [gTintedPolyCamera+0x4]
+            mov ecx, dword ptr [esp + 0x10]
+            xor edx, edx
+            mov eax, dword ptr [eax + ecx]
+            xor ecx, ecx
+            mov dword ptr [esp + 0x1c], eax
+            mov cl, ah
+            mov dl, byte ptr [esp + 0x1e]
+            and eax, 0xff
+            mov ebp, eax
+            mov edi, edx
+            mov eax, 0xaaaaaaab
+            lea edx, [ebp + ecx]
+            add edx, edi
+            mul edx
+            shr edx, 1
+            mov esi, edx
+            shr esi, 1
+            and esi, 0xff
+            lea eax, [esi + esi]
+            cmp eax, ebx
+            je L004d81f7
+            mov dword ptr [esp + 0x20], eax
+            mov dword ptr [esp + 0x24], ebx
+            fild qword ptr [esp + 0x20]
+            mov dword ptr [esp + 0x14], esi
+            mov dword ptr [esp + 0x18], ebx
+            lea eax, [esi + ecx]
+            mov dword ptr [esp + 0x2c], ebx
+            fdivr qword ptr [gConst_average_ped_scale_factor+0x20]
+            mov dword ptr [esp + 0x28], eax
+            fimul dword ptr [esp + 0x14]
+            fmul qword ptr [gConst_average_ped_scale_factor+0x28]
+            fild qword ptr [esp + 0x28]
+            fmul st(0), st(3)
+            fmul st(0), st(1)
+            call _ftol
+            lea ecx, [esi + edi]
+            mov dword ptr [esp + 0x34], ebx
+            mov dword ptr [esp + 0x30], ecx
+            xor edx, edx
+            fild qword ptr [esp + 0x30]
+            mov dl, al
+            mov dword ptr [esp + 0x1c], edx
+            fmul st(0), st(4)
+            fmul st(0), st(1)
+            call _ftol
+            add esi, ebp
+            mov dword ptr [esp + 0x3c], 0
+            mov dword ptr [esp + 0x38], esi
+            mov ebx, dword ptr [esp + 0x1c]
+            fild qword ptr [esp + 0x38]
+            mov bh, al
+            shl ebx, 8
+            fmul st(0), st(2)
+            fmul st(0), st(1)
+            call _ftol
+            mov edx, dword ptr [gRender_palette]
+            mov ecx, dword ptr [esp + 0x10]
+            and eax, 0xff
+            or ebx, eax
+            mov eax, dword ptr [edx + 8]
+            fstp st(0)
+            mov dword ptr [eax + ecx], ebx
+            xor ebx, ebx
+    L004d81f7:
+            mov eax, dword ptr [esp + 0x10]
+            add eax, 4
+            cmp eax, 0x400
+            mov dword ptr [esp + 0x10], eax
+            jl L004d8115
+            fstp st(0)
+            fstp st(0)
+            pop ebp
+            pop esi
+            fstp st(0)
+            pop edi
+    L004d8216:
+            pop ebx
+            add esp, 0x30
+            ret
+    }
+#endif
 }
 
 #pragma auto_inline(off)
@@ -872,7 +1954,8 @@ void C2_HOOK_FASTCALL UpdatePulsePoly(int pIndex) {
 #pragma auto_inline(on)
 
 // FUNCTION: CARMA2_HW 0x004d86e0
-void C2_HOOK_FASTCALL UpdateFirePoly(int pIndex) {
+void C2_NAKED C2_HOOK_FASTCALL UpdateFirePoly(int pIndex) {
+#ifndef CARPOCALYPSE2_MATCHING
     int i;
     int j;
 
@@ -950,6 +2033,267 @@ void C2_HOOK_FASTCALL UpdateFirePoly(int pIndex) {
         gINT_006a0448 = 0;
         gINT_006a044c = 0;
     }
+#else
+    __asm {
+            sub esp, 0x210
+            mov eax, dword ptr [gINT_006a0444]
+            push ebx
+            push ebp
+            mov edx, ecx
+            push esi
+            push edi
+            test eax, eax
+            mov dword ptr [esp + 0x1c], edx
+            jne L004d8723
+            lea eax, [edx + edx*4]
+            mov ecx, 0x800
+            shl eax, 6
+            add eax, edx
+            lea esi, [eax + eax*4]
+            shl esi, 4
+            xor eax, eax
+            lea edi, [esi + gTintedPolys+0x2448]
+            rep stosd
+            mov ecx, 0x800
+            lea edi, [esi + gTintedPolys+0x4448]
+            rep stosd
+    L004d8723:
+            lea eax, [edx + edx*4]
+            xor edi, edi
+            shl eax, 6
+            add eax, edx
+            mov ebx, 5
+            lea eax, [eax + eax*4]
+            shl eax, 2
+            mov dword ptr [esp + 0x14], eax
+    L004d873c:
+            mov dword ptr [esp + 0x10], 2
+    L004d8744:
+            mov edx, dword ptr [gINT_006a044c]
+            mov esi, 0xff
+            sub esi, edx
+            mov edx, ebx
+            lea ecx, [edi - 5]
+            call IRandomBetween
+            mov edx, 0x13
+            mov ecx, 0xd
+            mov ebp, eax
+            call IRandomBetween
+            add ebp, eax
+            shl ebp, 6
+            add ebp, edi
+            mov dword ptr [esp + 0x18], ebp
+            mov ebp, dword ptr [esp + 0x14]
+            mov eax, dword ptr [esp + 0x18]
+            add eax, ebp
+            mov dword ptr [eax*4 + gTintedPolys+0x2534], esi
+            mov eax, dword ptr [esp + 0x10]
+            dec eax
+            mov dword ptr [esp + 0x10], eax
+            jne L004d8744
+            inc edi
+            dec ebx
+            cmp ebx, 1
+            jg L004d873c
+            mov eax, dword ptr [gINT_006a0444]
+            mov edi, dword ptr [gINT_006a044c]
+            cmp eax, 0x96
+            jle L004d87b3
+            inc edi
+            mov dword ptr [gINT_006a044c], edi
+    L004d87b3:
+            mov eax, dword ptr [gINT_006a0440]
+            inc eax
+            cmp eax, 0x40
+            mov dword ptr [gINT_006a0440], eax
+            jl L004d87cd
+            mov dword ptr [gINT_006a0440], 0
+    L004d87cd:
+            mov ecx, dword ptr [esp + 0x1c]
+            mov dword ptr [esp + 0x10], 0x3e
+            lea eax, [ecx + ecx*4]
+            shl eax, 6
+            add eax, ecx
+            lea ebx, [eax + eax*4]
+            shl ebx, 4
+            mov dword ptr [esp + 0x14], ebx
+            lea esi, [ebx + gTintedPolys+0x2548]
+    L004d87f1:
+            mov ecx, esi
+            mov edx, 0x1e
+    L004d87f8:
+            mov eax, dword ptr [ecx + 0x104]
+            add eax, dword ptr [ecx - 0xfc]
+            add eax, dword ptr [ecx + 8]
+            add eax, dword ptr [ecx]
+            shr eax, 2
+            add eax, dword ptr [ecx + 4]
+            shr eax, 1
+            sub eax, dword ptr [ecx - 0x1ffc]
+            sub eax, edi
+            test eax, eax
+            jle L004d8825
+            mov dword ptr [ecx + 0x2000], eax
+            jmp L004d882f
+    L004d8825:
+            mov dword ptr [ecx + 0x2000], 0
+    L004d882f:
+            add ecx, 0x100
+            dec edx
+            jne L004d87f8
+            mov eax, dword ptr [esp + 0x10]
+            add esi, 4
+            dec eax
+            mov dword ptr [esp + 0x10], eax
+            jne L004d87f1
+            cmp dword ptr [gINT_006a0444], 0x96
+            jge L004d88a1
+            mov edx, 6
+            xor ecx, ecx
+            call IRandomBetween
+            cmp eax, 3
+            jle L004d88a1
+            mov edx, 0x14
+            mov ecx, 0xc
+            call IRandomBetween
+            mov edx, 0x37
+            mov ecx, 0x1e
+            mov esi, eax
+            call IRandomBetween
+            shl esi, 6
+            add esi, eax
+            add esi, ebp
+            shl esi, 2
+            mov dword ptr [esi + gTintedPolys+0x2448], 0xff
+            mov dword ptr [esi + gTintedPolys+0x4448], 0xbf
+    L004d88a1:
+            mov ecx, 0x800
+            lea esi, [ebx + gTintedPolys+0x4448]
+            lea edi, [ebx + gTintedPolys+0x2448]
+            xor ebx, ebx
+            rep movsd
+            lea ecx, [ebp*4 + gTintedPolys+0x4448]
+            mov dword ptr [esp + 0x10], ecx
+    L004d88c1:
+            mov edi, dword ptr [esp + 0x10]
+            xor esi, esi
+    L004d88c7:
+            mov edx, dword ptr [edi]
+            mov ecx, dword ptr [esp + 0x14]
+            add edx, ebp
+            mov eax, dword ptr [edx*4 + gTintedPolys+0x48]
+            mov edx, dword ptr [ecx + gTintedPolys+0x44]
+            push eax
+            push ebx
+            push esi
+            push edx
+            call BrPixelmapPixelSet
+            add esp, 0x10
+            inc esi
+            add edi, 0x100
+            cmp esi, 0x20
+            jl L004d88c7
+            mov ecx, dword ptr [esp + 0x10]
+            inc ebx
+            add ecx, 4
+            cmp ebx, 0x40
+            mov dword ptr [esp + 0x10], ecx
+            jl L004d88c1
+            mov ebp, dword ptr [esp + 0x14]
+            push 0xfff
+            mov eax, dword ptr [ebp + gTintedPolys+0x44]
+            push eax
+            call BrMapUpdate
+            mov ecx, dword ptr [gINT_006a0444]
+            mov esi, 0xa
+            mov eax, ecx
+            add esp, 8
+            cdq
+            idiv esi
+            test edx, edx
+            jne L004d89e9
+            mov eax, dword ptr [gINT_006a0448]
+            xor ebx, ebx
+            cmp eax, ebx
+            je L004d89eb
+            cmp ecx, esi
+            jle L004d89eb
+            mov esi, 1
+    L004d8951:
+            push offset gDefaultOpacity_TintedPoly+0x80
+            mov edx, offset gApplication_path
+            lea ecx, [esp + 0x24]
+            call PathCat
+            lea edi, [esp + 0x20]
+            or ecx, 0xffffffff
+            xor eax, eax
+            push offset gDefaultOpacity_TintedPoly+0x7c
+            repne scasb
+            not ecx
+            dec ecx
+            push esi
+            push offset gDefaultOpacity_TintedPoly+0x74
+            lea ecx, [esp + ecx + 0x2c]
+            push ecx
+            call sprintf
+            add esp, 0x10
+            mov edx, offset gNext_crush_actor_id+0x180
+            lea ecx, [esp + 0x20]
+            call DRfopen
+            cmp eax, ebx
+            je L004d89b0
+            push eax
+            call fclose
+            add esp, 4
+            inc esi
+            cmp esi, 0x2710
+            jl L004d8951
+            jmp L004d89ca
+    L004d89b0:
+            lea edx, [esp + 0x20]
+            lea eax, [esp + 0x120]
+            push edx
+            push offset gCancel_recover+0xbc
+            push eax
+            call sprintf
+            add esp, 0xc
+    L004d89ca:
+            mov ecx, dword ptr [ebp + gTintedPolys+0x44]
+            lea edx, [esp + 0x120]
+            push ecx
+            push edx
+            call BrPixelmapSave
+            mov ecx, dword ptr [gINT_006a0444]
+            add esp, 8
+            jmp L004d89eb
+    L004d89e9:
+            xor ebx, ebx
+    L004d89eb:
+            inc ecx
+            cmp ecx, 0xc8
+            mov dword ptr [gINT_006a0444], ecx
+            jl L004d8a0c
+            mov dword ptr [gINT_006a0444], ebx
+            mov dword ptr [gINT_006a0448], ebx
+            mov dword ptr [gINT_006a044c], ebx
+    L004d8a0c:
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x210
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004d8cf0

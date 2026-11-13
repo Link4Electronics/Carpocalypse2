@@ -34,8 +34,20 @@ static double C2_HOOK_CDECL PhilOrientationScalar(double value) {
     return bits.scalar;
 }
 
+#ifdef CARPOCALYPSE2_MATCHING
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern br_quat* C2_HOOK_CDECL BrMatrix34ToQuat();
+extern void __cdecl _ftol();
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern void C2_HOOK_FASTCALL PhysicsError(tPhysicsError pError, const char* pMessage);
+#endif
 // FUNCTION: CARMA2_HW 0x0049be90
-void C2_HOOK_FASTCALL GetOrientationFromMatrix(tU16* pOrientation, const br_matrix34* pMatrix) {
+void C2_NAKED C2_HOOK_FASTCALL GetOrientationFromMatrix(tU16* pOrientation, const br_matrix34* pMatrix) {
+#ifndef CARPOCALYPSE2_MATCHING
     br_quat quaternion;
     br_scalar value;
 
@@ -80,10 +92,114 @@ void C2_HOOK_FASTCALL GetOrientationFromMatrix(tU16* pOrientation, const br_matr
     value = (value - gFLOAT_0058a3fc) * gFLOAT_0058a400;
     value *= gFLOAT_0058a404;
     pOrientation[3] = (tU16)(value - gFLOAT_0058a408);
+#else
+    __asm {
+            sub esp, 0x10
+            lea eax, [esp]
+            push esi
+            push edx
+            mov esi, ecx
+            push eax
+            call BrMatrix34ToQuat
+            fld dword ptr [esp + 0xc]
+            fld dword ptr [esp + 0xc]
+            fcomp dword ptr [gFLOAT_0058a3f8]
+            add esp, 8
+            fnstsw ax
+            test ah, 0x41
+            jne L0049bec1
+            fstp st(0)
+            fld dword ptr [gFLOAT_0058a3f8]
+    L0049bec1:
+            fcom dword ptr [gFLOAT_0058a3fc]
+            fnstsw ax
+            test ah, 1
+            je L0049bed6
+            fstp st(0)
+            fld dword ptr [gFLOAT_0058a3fc]
+    L0049bed6:
+            fsub dword ptr [gFLOAT_0058a3fc]
+            fmul dword ptr [gFLOAT_0058a400]
+            fmul dword ptr [gFLOAT_0058a404]
+            fsub dword ptr [gFLOAT_0058a408]
+            call _ftol
+            fld dword ptr [esp + 8]
+            fcomp dword ptr [gFLOAT_0058a3f8]
+            fld dword ptr [esp + 8]
+            mov word ptr [esi], ax
+            fnstsw ax
+            test ah, 0x41
+            jne L0049bf13
+            fstp st(0)
+            fld dword ptr [gFLOAT_0058a3f8]
+    L0049bf13:
+            fcom dword ptr [gFLOAT_0058a3fc]
+            fnstsw ax
+            test ah, 1
+            je L0049bf28
+            fstp st(0)
+            fld dword ptr [gFLOAT_0058a3fc]
+    L0049bf28:
+            fsub dword ptr [gFLOAT_0058a3fc]
+            fmul dword ptr [gFLOAT_0058a400]
+            fmul dword ptr [gFLOAT_0058a404]
+            fsub dword ptr [gFLOAT_0058a408]
+            call _ftol
+            fld dword ptr [esp + 0xc]
+            fcomp dword ptr [gFLOAT_0058a3f8]
+            fld dword ptr [esp + 0xc]
+            mov word ptr [esi + 2], ax
+            fnstsw ax
+            test ah, 0x41
+            jne L0049bf66
+            fstp st(0)
+            fld dword ptr [gFLOAT_0058a3f8]
+    L0049bf66:
+            fcom dword ptr [gFLOAT_0058a3fc]
+            fnstsw ax
+            test ah, 1
+            je L0049bf7b
+            fstp st(0)
+            fld dword ptr [gFLOAT_0058a3fc]
+    L0049bf7b:
+            fsub dword ptr [gFLOAT_0058a3fc]
+            fmul dword ptr [gFLOAT_0058a400]
+            fmul dword ptr [gFLOAT_0058a404]
+            fsub dword ptr [gFLOAT_0058a408]
+            call _ftol
+            fld dword ptr [esp + 0x10]
+            fcomp dword ptr [gFLOAT_0058a3f8]
+            fld dword ptr [esp + 0x10]
+            mov word ptr [esi + 4], ax
+            fnstsw ax
+            test ah, 0x41
+            jne L0049bfb9
+            fstp st(0)
+            fld dword ptr [gFLOAT_0058a3f8]
+    L0049bfb9:
+            fcom dword ptr [gFLOAT_0058a3fc]
+            fnstsw ax
+            test ah, 1
+            je L0049bfce
+            fstp st(0)
+            fld dword ptr [gFLOAT_0058a3fc]
+    L0049bfce:
+            fsub dword ptr [gFLOAT_0058a3fc]
+            fmul dword ptr [gFLOAT_0058a400]
+            fmul dword ptr [gFLOAT_0058a404]
+            fsub dword ptr [gFLOAT_0058a408]
+            call _ftol
+            mov word ptr [esi + 6], ax
+            pop esi
+            add esp, 0x10
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0049c000
-void C2_HOOK_FASTCALL GetMatrixFromOrientation(br_matrix34* pMatrix, const tU16* pOrientation) {
+void C2_NAKED C2_HOOK_FASTCALL GetMatrixFromOrientation(br_matrix34* pMatrix, const tU16* pOrientation) {
+#ifndef CARPOCALYPSE2_MATCHING
     br_quat quaternion;
     tU16 parts[4];
     double value;
@@ -100,6 +216,83 @@ void C2_HOOK_FASTCALL GetMatrixFromOrientation(br_matrix34* pMatrix, const tU16*
     }
     BrQuatNormalise(&quaternion, &quaternion);
     BrQuatToMatrix34(pMatrix, &quaternion);
+#else
+    __asm {
+            sub esp, 0x1c
+            xor eax, eax
+            push esi
+            mov ax, word ptr [edx]
+            push edi
+            xor edi, edi
+            mov dword ptr [esp + 8], eax
+            mov di, word ptr [edx + 2]
+            xor eax, eax
+            mov ax, word ptr [edx + 4]
+            mov dword ptr [esp + 0xc], edi
+            fild dword ptr [esp + 8]
+            fild dword ptr [esp + 0xc]
+            xor edi, edi
+            mov dword ptr [esp + 0x10], eax
+            mov di, word ptr [edx + 6]
+            lea esi, [esp + 0x14]
+            fild dword ptr [esp + 0x10]
+            mov dword ptr [esp + 0x10], edi
+            lea edx, [esp + 0x14]
+            fild dword ptr [esp + 0x10]
+            fxch st(3)
+            fmul dword ptr [gFLOAT_0058a40c]
+            fxch st(2)
+            fmul dword ptr [gFLOAT_0058a40c]
+            fxch st(1)
+            fmul dword ptr [gFLOAT_0058a40c]
+            fxch st(3)
+            fmul dword ptr [gFLOAT_0058a40c]
+            fxch st(2)
+            fadd st(0), st(0)
+            fxch st(1)
+            fadd st(0), st(0)
+            fxch st(3)
+            fadd st(0), st(0)
+            fxch st(2)
+            fadd st(0), st(0)
+            fxch st(1)
+            fsub dword ptr [gFLOAT_0058a3f8]
+            fxch st(3)
+            fsub dword ptr [gFLOAT_0058a3f8]
+            fxch st(2)
+            fsub dword ptr [gFLOAT_0058a3f8]
+            fxch st(1)
+            fsub dword ptr [gFLOAT_0058a3f8]
+            fxch st(3)
+            fstp dword ptr [esp + 0x14]
+            fxch st(1)
+            fstp dword ptr [esp + 0x18]
+            push esi
+            push edx
+            fstp dword ptr [esp + 0x24]
+            fstp dword ptr [esp + 0x28]
+            mov esi, ecx
+            call BrQuatNormalise
+            add esp, 8
+            lea eax, [esp + 0x14]
+            push eax
+            push esi
+            call BrQuatToMatrix34
+            add esp, 8
+            pop edi
+            pop esi
+            add esp, 0x1c
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // OmegaCompScalarTo16
@@ -159,7 +352,8 @@ int C2_HOOK_FASTCALL GetNetworkDataSize(tU8* pNet_data) {
 }
 
 // FUNCTION: CARMA2_HW 0x0049cf50
-int C2_HOOK_FASTCALL GetSingleMatrixFromNetworkData(tU8* pNet_data, br_matrix34* pMatrix) {
+int C2_NAKED C2_HOOK_FASTCALL GetSingleMatrixFromNetworkData(tU8* pNet_data, br_matrix34* pMatrix) {
+#ifndef CARPOCALYPSE2_MATCHING
     br_quat quaternion;
 
     switch (pNet_data[0] & 0xF) {
@@ -206,6 +400,252 @@ int C2_HOOK_FASTCALL GetSingleMatrixFromNetworkData(tU8* pNet_data, br_matrix34*
         PhysicsError((tPhysicsError)9, "netphys got messed up");
         return -1;
     }
+#else
+    __asm {
+            sub esp, 0x1c
+            push esi
+            mov esi, ecx
+            push edi
+            mov edi, edx
+            mov al, byte ptr [esi]
+            and eax, 0xf
+            cmp eax, 4
+            ja L0049d1d9
+            jmp dword ptr [eax*4 + 0x49d1f4]
+            lea eax, [esp + 0x14]
+            xor edx, edx
+            mov dx, word ptr [esi + 0x14]
+            push eax
+            xor eax, eax
+            mov dword ptr [esp + 0xc], edx
+            mov ax, word ptr [esi + 0x16]
+            xor edx, edx
+            mov dx, word ptr [esi + 0x18]
+            mov dword ptr [esp + 0x10], eax
+            fild dword ptr [esp + 0xc]
+            fild dword ptr [esp + 0x10]
+            xor eax, eax
+            mov dword ptr [esp + 0x14], edx
+            mov ax, word ptr [esi + 0x1a]
+            lea ecx, [esp + 0x18]
+            fild dword ptr [esp + 0x14]
+            mov dword ptr [esp + 0x14], eax
+            push ecx
+            fild dword ptr [esp + 0x18]
+            fxch st(3)
+            fmul dword ptr ds:[gFLOAT_0058a40c]
+            fxch st(2)
+            fmul dword ptr ds:[gFLOAT_0058a40c]
+            fxch st(1)
+            fmul dword ptr ds:[gFLOAT_0058a40c]
+            fxch st(3)
+            fmul dword ptr ds:[gFLOAT_0058a40c]
+            fxch st(2)
+            fadd st(0), st(0)
+            fxch st(1)
+            fadd st(0), st(0)
+            fxch st(3)
+            fadd st(0), st(0)
+            fxch st(2)
+            fadd st(0), st(0)
+            fxch st(1)
+            fsub dword ptr ds:[gFLOAT_0058a3f8]
+            fxch st(3)
+            fsub dword ptr ds:[gFLOAT_0058a3f8]
+            fxch st(2)
+            fsub dword ptr ds:[gFLOAT_0058a3f8]
+            fxch st(1)
+            fsub dword ptr ds:[gFLOAT_0058a3f8]
+            fxch st(3)
+            fstp dword ptr [esp + 0x1c]
+            fxch st(1)
+            fstp dword ptr [esp + 0x20]
+            fstp dword ptr [esp + 0x24]
+            fstp dword ptr [esp + 0x28]
+            call BrQuatNormalise
+            add esp, 8
+            lea ecx, [esp + 0x14]
+            push ecx
+            push edi
+            call BrQuatToMatrix34
+            mov edx, dword ptr [esi + 0x1c]
+            mov dword ptr [edi + 0x24], edx
+            mov eax, dword ptr [esi + 0x20]
+            mov dword ptr [edi + 0x28], eax
+            mov ecx, dword ptr [esi + 0x24]
+            add esp, 8
+            mov dword ptr [edi + 0x2c], ecx
+            mov eax, 0x28
+            pop edi
+            pop esi
+            add esp, 0x1c
+            ret
+            lea eax, [esi + 4]
+            lea edx, [esp + 0x14]
+            xor esi, esi
+            push edx
+            mov si, word ptr [eax]
+            xor edx, edx
+            mov dx, word ptr [eax + 2]
+            mov dword ptr [esp + 0x14], esi
+            fild dword ptr [esp + 0x14]
+            xor esi, esi
+            mov dword ptr [esp + 0x10], edx
+            mov si, word ptr [eax + 4]
+            xor edx, edx
+            mov dx, word ptr [eax + 6]
+            mov dword ptr [esp + 0xc], esi
+            fild dword ptr [esp + 0x10]
+            fild dword ptr [esp + 0xc]
+            mov dword ptr [esp + 0x14], edx
+            lea ecx, [esp + 0x18]
+            fild dword ptr [esp + 0x14]
+            fxch st(3)
+            fmul dword ptr ds:[gFLOAT_0058a40c]
+            fxch st(2)
+            fmul dword ptr ds:[gFLOAT_0058a40c]
+            fxch st(1)
+            fmul dword ptr ds:[gFLOAT_0058a40c]
+            fxch st(3)
+            fmul dword ptr ds:[gFLOAT_0058a40c]
+            fxch st(2)
+            fadd st(0), st(0)
+            fxch st(1)
+            fadd st(0), st(0)
+            fxch st(3)
+            fadd st(0), st(0)
+            fxch st(2)
+            fadd st(0), st(0)
+            fxch st(1)
+            fsub dword ptr ds:[gFLOAT_0058a3f8]
+            fxch st(3)
+            fsub dword ptr ds:[gFLOAT_0058a3f8]
+            fxch st(2)
+            fsub dword ptr ds:[gFLOAT_0058a3f8]
+            fxch st(1)
+            fsub dword ptr ds:[gFLOAT_0058a3f8]
+            fxch st(3)
+            fstp dword ptr [esp + 0x18]
+            fxch st(1)
+            fstp dword ptr [esp + 0x1c]
+            push ecx
+            fstp dword ptr [esp + 0x24]
+            fstp dword ptr [esp + 0x28]
+            call BrQuatNormalise
+            add esp, 8
+            lea eax, [esp + 0x14]
+            push eax
+            push edi
+            call BrQuatToMatrix34
+            add esp, 8
+            mov eax, 0xc
+            pop edi
+            pop esi
+            add esp, 0x1c
+            ret
+            lea eax, [esi + 8]
+            lea ecx, [esp + 0x14]
+            xor esi, esi
+            push ecx
+            mov si, word ptr [eax]
+            xor ecx, ecx
+            mov cx, word ptr [eax + 2]
+            mov dword ptr [esp + 0x14], esi
+            fild dword ptr [esp + 0x14]
+            xor esi, esi
+            mov dword ptr [esp + 0x10], ecx
+            mov si, word ptr [eax + 4]
+            xor ecx, ecx
+            mov cx, word ptr [eax + 6]
+            mov dword ptr [esp + 0xc], esi
+            fild dword ptr [esp + 0x10]
+            fild dword ptr [esp + 0xc]
+            mov dword ptr [esp + 0x14], ecx
+            lea edx, [esp + 0x18]
+            fild dword ptr [esp + 0x14]
+            fxch st(3)
+            fmul dword ptr ds:[gFLOAT_0058a40c]
+            fxch st(2)
+            fmul dword ptr ds:[gFLOAT_0058a40c]
+            fxch st(1)
+            fmul dword ptr ds:[gFLOAT_0058a40c]
+            fxch st(3)
+            fmul dword ptr ds:[gFLOAT_0058a40c]
+            fxch st(2)
+            fadd st(0), st(0)
+            fxch st(1)
+            fadd st(0), st(0)
+            fxch st(3)
+            fadd st(0), st(0)
+            fxch st(2)
+            fadd st(0), st(0)
+            fxch st(1)
+            fsub dword ptr ds:[gFLOAT_0058a3f8]
+            fxch st(3)
+            fsub dword ptr ds:[gFLOAT_0058a3f8]
+            fxch st(2)
+            fsub dword ptr ds:[gFLOAT_0058a3f8]
+            fxch st(1)
+            fsub dword ptr ds:[gFLOAT_0058a3f8]
+            fxch st(3)
+            fstp dword ptr [esp + 0x18]
+            fxch st(1)
+            fstp dword ptr [esp + 0x1c]
+            push edx
+            fstp dword ptr [esp + 0x24]
+            fstp dword ptr [esp + 0x28]
+            call BrQuatNormalise
+            add esp, 8
+            lea edx, [esp + 0x14]
+            push edx
+            push edi
+            call BrQuatToMatrix34
+            add esp, 8
+            mov eax, 0x10
+            pop edi
+            pop esi
+            add esp, 0x1c
+            ret
+    L0049d1d9:
+            mov edx, 0x659d18
+            mov ecx, 9
+            call PhysicsError
+            or eax, 0xffffffff
+            pop edi
+            pop esi
+            add esp, 0x1c
+            ret
+            lea ecx, [ecx]
+            _emit 0x6e
+            _emit 0xcf
+            _emit 0x49
+            _emit 0x00
+            _emit 0x47
+            _emit 0xd0
+            _emit 0x49
+            _emit 0x00
+            _emit 0x10
+            _emit 0xd1
+            _emit 0x49
+            _emit 0x00
+            _emit 0x10
+            _emit 0xd1
+            _emit 0x49
+            _emit 0x00
+            _emit 0x47
+            _emit 0xd0
+            _emit 0x49
+            _emit 0x00
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+    }
+#endif
 }
 
 // PHILInit
@@ -217,7 +657,6 @@ void C2_HOOK_FASTCALL PHILDisable(void) {
 
 // FUNCTION: CARMA2_HW 0x004b5d30
 int C2_HOOK_FASTCALL FUN_004b5d30(void) {
-
     return 100 - gPHIL_count_list_collision_infos;
 }
 
@@ -395,7 +834,6 @@ void C2_HOOK_FASTCALL PhysicsObjectMoveVelocity(tPhysics_object* pObject) {
 
 // FUNCTION: CARMA2_HW 0x004c2970
 void C2_HOOK_FASTCALL PhysicsObjectMoveVelocityList(tPhysics_object* pObject) {
-
     while (pObject != NULL) {
         if (!pObject->disable_move_rotate) {
             pObject->v.v[0] += pObject->field_0x54.v[0];

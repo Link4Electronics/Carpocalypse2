@@ -26,16 +26,28 @@ br_filesystem gZlib_filesystem = {
     ZlibFsAdvance,
 };
 
+#ifdef CARPOCALYPSE2_MATCHING
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gFile_mode_rb[];
+#endif
 // FUNCTION: CARMA2_HW 0x0051db90
 br_uint_32 C2_HOOK_CDECL ZlibFsGetAttributes(void) {
-
     return BR_FS_ATTR_READABLE | BR_FS_ATTR_WRITEABLE | BR_FS_ATTR_HAS_BINARY;
 }
 
 // FUNCTION: CARMA2_HW 0x0051dc10
-void* C2_HOOK_CDECL ZlibFsOpenRead(const char* buffer, br_size_t capacity, br_mode_test_cbfn* cbfn, int* type) {
+C2_NAKED void* C2_HOOK_CDECL ZlibFsOpenRead(const char* buffer, br_size_t capacity, br_mode_test_cbfn* cbfn, int* type) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     return gzopen(buffer, "rb");
+#else
+    __asm {
+            mov ecx, dword ptr [esp + 4]
+            mov edx, offset gFile_mode_rb
+            jmp gzopen
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0051dc20
@@ -49,13 +61,11 @@ void* C2_HOOK_CDECL ZlibFsOpenWrite(const char* path, int type) {
 
 // FUNCTION: CARMA2_HW 0x0051dba0
 void C2_HOOK_CDECL ZlibFsClose(void* context) {
-
     gzclose(context);
 }
 
 // FUNCTION: CARMA2_HW 0x0051dbb0
 int C2_HOOK_CDECL ZlibFsEof(void* context) {
-
     return 0;
 }
 
@@ -129,7 +139,8 @@ void C2_HOOK_CDECL ZlibFsPutLine(char* line, void* context) {
 }
 
 // FUNCTION: CARMA2_HW 0x0051db60
-void C2_HOOK_CDECL ZlibFsAdvance(br_size_t advance, void* context) {
+void C2_NAKED C2_HOOK_CDECL ZlibFsAdvance(br_size_t advance, void* context) {
+#ifndef CARPOCALYPSE2_MATCHING
     char buffer[1];
 
     if (advance != 0) {
@@ -137,4 +148,37 @@ void C2_HOOK_CDECL ZlibFsAdvance(br_size_t advance, void* context) {
             gzread(context, buffer, sizeof(buffer));
         } while (--advance != 0);
     }
+#else
+    __asm {
+            mov eax, dword ptr [esp + 4]
+            mov ecx, eax
+            dec eax
+            test ecx, ecx
+            je L0051db86
+            push edi
+            mov edi, dword ptr [esp + 0xc]
+            push esi
+            lea esi, [eax + 1]
+    L0051db74:
+            push 1
+            lea edx, [esp + 0x10]
+            mov ecx, edi
+            call gzread
+            dec esi
+            jne L0051db74
+            pop esi
+            pop edi
+    L0051db86:
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }

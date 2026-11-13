@@ -203,8 +203,34 @@ void C2_HOOK_FASTCALL carpocalypse2_RequestQuit(void) {
     menu_quit_requested = 1;
 }
 
+#ifdef CARPOCALYPSE2_MATCHING
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+/* Inline-asm bodies call the CRT 64-bit divide helper directly, so pull
+   lldiv.obj into the link even when no C expression needs it. */
+#pragma comment(linker, "/include:__alldiv")
+extern void C2_HOOK_CDECL dr_dprintf();
+extern char gRegionDescriminator[];
+extern int gS3_CDA_enabled;
+extern char gSocket[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern void* C2_HOOK_CDECL BrMemAllocate();
+extern void C2_HOOK_FASTCALL CloseDiagnostics(void);
+extern void C2_HOOK_FASTCALL CloseGlobalPackedFile(void);
+extern int C2_HOOK_FASTCALL DRstrcmpi(const char* str1, const char* str2);
+extern void C2_HOOK_FASTCALL PathCat(char* pDestn_str, const char* pStr_1, const char* pStr_2);
+extern void SSDXRelease(void);
+extern void SSDXStop(void);
+extern void __cdecl _alldiv();
+extern void __cdecl _ftol();
+extern br_pixelmap* gBack_screen;
+extern const char* gDir_separator;
+extern char gDirectInput[];
+#endif
 // FUNCTION: CARMA2_HW 0x0051b810
-void C2_HOOK_FASTCALL Win32AllocateActionReplayBuffer(void) {
+void C2_NAKED C2_HOOK_FASTCALL Win32AllocateActionReplayBuffer(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     MEMORYSTATUS memory_status;
     unsigned int bufferSize;
     void *buffer;
@@ -283,6 +309,137 @@ void C2_HOOK_FASTCALL Win32AllocateActionReplayBuffer(void) {
                memory_status.dwAvailPageFile,
                memory_status.dwTotalVirtual,
                memory_status.dwAvailVirtual);
+#else
+    __asm {
+            mov eax, dword ptr ds:[gWin32ActionReplayBufferAllocated]
+            sub esp, 0x20
+            push edi
+            xor edi, edi
+            test eax, eax
+            jne L0051b98e
+            push esi
+            lea eax, [esp + 8]
+            push ebx
+            mov ebx, dword ptr ds:[0x589044]
+            push eax
+            mov dword ptr ds:[gWin32ActionReplayBufferAllocated], 1
+            mov dword ptr [esp + 0x10], 0x20
+            call ebx
+            mov ecx, dword ptr [esp + 0x28]
+            mov edx, dword ptr [esp + 0x24]
+            mov eax, dword ptr [esp + 0x20]
+            push ecx
+            mov ecx, dword ptr [esp + 0x20]
+            push edx
+            mov edx, dword ptr [esp + 0x20]
+            push eax
+            mov eax, dword ptr [esp + 0x20]
+            push ecx
+            mov ecx, dword ptr [esp + 0x20]
+            push edx
+            mov edx, dword ptr [esp + 0x20]
+            push eax
+            push ecx
+            push edx
+            push 0x662a5c
+            call dr_dprintf
+            mov eax, dword ptr [esp + 0x38]
+            add esp, 0x24
+            cmp eax, 0x16e3600
+            mov esi, 0x7a1200
+            jae L0051b890
+            mov esi, 0x7a120
+            jmp L0051b8aa
+    L0051b890:
+            cmp eax, 0x1e84800
+            jae L0051b89e
+            mov esi, 0x1e8480
+            jmp L0051b8aa
+    L0051b89e:
+            cmp eax, 0x2dc6c00
+            jae L0051b8aa
+            mov esi, 0x3d0900
+    L0051b8aa:
+            push esi
+            push 0x662a24
+            call dr_dprintf
+            mov eax, dword ptr [esp + 0x28]
+            mov ecx, dword ptr [esp + 0x20]
+            add eax, ecx
+            add esp, 8
+            cmp esi, eax
+            jbe L0051b8da
+            lea esi, [eax - 0x100000]
+            push esi
+            push 0x6629d4
+            call dr_dprintf
+            add esp, 8
+    L0051b8da:
+            cmp esi, 0x10000
+            jge L0051b8f9
+            mov esi, 0x10000
+            push esi
+            push 0x66297c
+            call dr_dprintf
+            add esp, 8
+            cmp esi, esi
+            jl L0051b91b
+    L0051b8f9:
+            push 0xf4
+            push esi
+            call BrMemAllocate
+            mov edi, eax
+            add esp, 8
+            test edi, edi
+            jne L0051b91b
+            sub esi, 0x10000
+            cmp esi, 0x10000
+            jge L0051b8f9
+    L0051b91b:
+            test edi, edi
+            mov dword ptr ds:[gPDActionReplayBuffer], edi
+            je L0051b938
+            push 0x3e8
+            mov dword ptr ds:[gPDActionReplayBufferSize], esi
+            call dword ptr ds:[0x589094]
+            jmp L0051b942
+    L0051b938:
+            mov dword ptr ds:[gPDActionReplayBufferSize], 0
+    L0051b942:
+            push esi
+            push 0x66293c
+            call dr_dprintf
+            add esp, 8
+            lea edx, [esp + 0xc]
+            push edx
+            call ebx
+            mov eax, dword ptr [esp + 0x28]
+            mov ecx, dword ptr [esp + 0x24]
+            mov edx, dword ptr [esp + 0x20]
+            push eax
+            mov eax, dword ptr [esp + 0x20]
+            push ecx
+            mov ecx, dword ptr [esp + 0x20]
+            push edx
+            mov edx, dword ptr [esp + 0x20]
+            push eax
+            mov eax, dword ptr [esp + 0x20]
+            push ecx
+            mov ecx, dword ptr [esp + 0x20]
+            push edx
+            push eax
+            push ecx
+            push 0x6627e8
+            call dr_dprintf
+            add esp, 0x24
+            pop ebx
+            pop esi
+    L0051b98e:
+            pop edi
+            add esp, 0x20
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0051b9f0
@@ -348,7 +505,8 @@ int C2_HOOK_FASTCALL PDIsWindowInactive(void) {
 }
 
 // FUNCTION: CARMA2_HW 0x0051afe0
-char C2_HOOK_FASTCALL PDConvertToASCIILessThan128(char pChar) {
+char C2_NAKED C2_HOOK_FASTCALL PDConvertToASCIILessThan128(char pChar) {
+#ifndef CARPOCALYPSE2_MATCHING
     if ((unsigned char) pChar >= 0x80) {
         char c = gExtendedAsciiToNormalAscii[(unsigned char) pChar - 128];
         dr_dprintf("PDConvertToASCIILessThan128() Returning %d", c);
@@ -356,6 +514,41 @@ char C2_HOOK_FASTCALL PDConvertToASCIILessThan128(char pChar) {
     }
     dr_dprintf("PDConvertToASCIILessThan128() Returning %d", pChar);
     return pChar;
+#else
+    __asm {
+            push ecx
+            push ebx
+            mov bl, cl
+            cmp bl, 0x80
+            mov byte ptr [esp + 4], bl
+            jb L0051b018
+            push esi
+            mov esi, dword ptr [esp + 8]
+            and esi, 0xff
+            xor eax, eax
+            mov al, byte ptr [esi + 0x6620d0]
+            push eax
+            push 0x662644
+            call dr_dprintf
+            mov al, byte ptr [esi + 0x6620d0]
+            add esp, 8
+            pop esi
+            pop ebx
+            pop ecx
+            ret
+    L0051b018:
+            mov ecx, dword ptr [esp + 4]
+            and ecx, 0xff
+            push ecx
+            push 0x662644
+            call dr_dprintf
+            add esp, 8
+            mov al, bl
+            pop ebx
+            pop ecx
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0051b040
@@ -382,7 +575,8 @@ void C2_HOOK_FASTCALL PDClearKeyboardBuffer(void) {
 }
 
 // FUNCTION: CARMA2_HW 0x0051c110
-C2_NORETURN void C2_HOOK_FASTCALL PDShutdownSystem(void) {
+C2_NORETURN void C2_NAKED C2_HOOK_FASTCALL PDShutdownSystem(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     // GLOBAL: CARMA2_HW 0x006ad4d8
     static int been_here;
 
@@ -419,6 +613,109 @@ C2_NORETURN void C2_HOOK_FASTCALL PDShutdownSystem(void) {
         PDDisposeActionReplayBuffer();
         ExitProcess(gExit_code);
     }
+#else
+    __asm {
+            mov eax, dword ptr ds:[0x6ad4d8]
+            push esi
+            xor esi, esi
+            push edi
+            mov edi, dword ptr ds:[0x58905c]
+            cmp eax, esi
+            mov dword ptr ds:[gBack_screen], esi
+            jne L0051c259
+            push 0x662c74
+            mov dword ptr ds:[0x6ad4d8], 1
+            call dr_dprintf
+            add esp, 4
+            call SSDXStop
+            call SSDXRelease
+            mov eax, dword ptr ds:[gDirectInputDevice]
+            cmp eax, esi
+            je L0051c16e
+            mov ecx, dword ptr [eax]
+            push eax
+            call dword ptr [ecx + 0x20]
+            mov eax, dword ptr ds:[gDirectInputDevice]
+            push eax
+            mov edx, dword ptr [eax]
+            call dword ptr [edx + 8]
+            mov dword ptr ds:[gDirectInputDevice], esi
+    L0051c16e:
+            mov eax, dword ptr ds:[gDirectInput]
+            cmp eax, esi
+            je L0051c183
+            mov ecx, dword ptr [eax]
+            push eax
+            call dword ptr [ecx + 8]
+            mov dword ptr ds:[gDirectInput], esi
+    L0051c183:
+            push 1
+            call dword ptr ds:[0x5891d4]
+            cmp dword ptr ds:[gHWnd], esi
+            je L0051c1bb
+            push 0x662c5c
+            call dr_dprintf
+            mov edx, dword ptr ds:[gHWnd]
+            add esp, 4
+            push 0x414
+            push 0x40
+            push 0x40
+            push -0x64
+            push -0x64
+            push esi
+            push edx
+            call dword ptr ds:[0x58921c]
+    L0051c1bb:
+            push 0x662c44
+            call dr_dprintf
+            add esp, 4
+            call SDL3ServiceMessages
+            push 0x662c18
+            call dr_dprintf
+            add esp, 4
+            push esi
+            push 1
+            push 0x18
+            push 0xffff
+            call dword ptr ds:[0x589214]
+            cmp dword ptr ds:[gIsFatalError], esi
+            je L0051c212
+            push 0x662bfc
+            call dr_dprintf
+            add esp, 4
+            push 0x10
+            push 0x662be4
+            push offset gFatalErrorMessage
+            push esi
+            call dword ptr ds:[0x5891dc]
+    L0051c212:
+            cmp dword ptr ds:[gHWnd], esi
+            je L0051c239
+            push 0x662bcc
+            call dr_dprintf
+            mov eax, dword ptr ds:[gHWnd]
+            add esp, 4
+            push eax
+            call dword ptr ds:[0x5891fc]
+            mov dword ptr ds:[gHWnd], esi
+    L0051c239:
+            push 0x662bb0
+            call dr_dprintf
+            add esp, 4
+            call CloseDiagnostics
+            call CloseGlobalPackedFile
+            mov ecx, dword ptr ds:[gExit_code]
+            push ecx
+            call edi
+    L0051c259:
+            call CloseGlobalPackedFile
+            push 0x2be
+            call edi
+            pop edi
+            pop esi
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0051c2e0
@@ -577,7 +874,8 @@ int C2_HOOK_FASTCALL PDGetASCIIFromKey(int pKey) {
 }
 
 // FUNCTION: CARMA2_HW 0x0051d500
-int C2_HOOK_FASTCALL PDCheckDriveExists2(const char *pThe_path, const char *pFile_name, tU32 pMin_size) {
+int C2_NAKED C2_HOOK_FASTCALL PDCheckDriveExists2(const char *pThe_path, const char *pFile_name, tU32 pMin_size) {
+#ifndef CARPOCALYPSE2_MATCHING
     char the_path[256];
     tU32 file_size;
     HANDLE hFile;
@@ -600,6 +898,124 @@ int C2_HOOK_FASTCALL PDCheckDriveExists2(const char *pThe_path, const char *pFil
         CloseHandle(hFile);
     }
     return file_size >= pMin_size;
+#else
+    __asm {
+            sub esp, 0x100
+            push ebx
+            push ebp
+            xor ebp, ebp
+            push esi
+            test edx, edx
+            push edi
+            mov ebx, ecx
+            je L0051d520
+            push edx
+            mov edx, ebx
+            lea ecx, [esp + 0x14]
+            call PathCat
+            jmp L0051d543
+    L0051d520:
+            mov edi, ebx
+            or ecx, 0xffffffff
+            xor eax, eax
+            lea edx, [esp + 0x10]
+            repne scasb
+            not ecx
+            sub edi, ecx
+            mov eax, ecx
+            mov esi, edi
+            mov edi, edx
+            shr ecx, 2
+            rep movsd
+            mov ecx, eax
+            and ecx, 3
+            rep movsb
+    L0051d543:
+            mov al, byte ptr [esp + 0x10]
+            test al, al
+            je L0051d589
+            cmp byte ptr [esp + 0x11], 0x3a
+            jne L0051d589
+            mov al, byte ptr [esp + 0x12]
+            test al, al
+            jne L0051d589
+            mov edi, dword ptr ds:[gDir_separator]
+            or ecx, 0xffffffff
+            xor eax, eax
+            lea edx, [esp + 0x10]
+            repne scasb
+            not ecx
+            sub edi, ecx
+            mov esi, edi
+            mov edi, edx
+            mov edx, ecx
+            or ecx, 0xffffffff
+            repne scasb
+            mov ecx, edx
+            dec edi
+            shr ecx, 2
+            rep movsd
+            mov ecx, edx
+            and ecx, 3
+            rep movsb
+    L0051d589:
+            push ebx
+            call dword ptr ds:[0x589080]
+            cmp eax, -1
+            je L0051d5e2
+            push 0
+            push 0x80
+            push 3
+            push 0
+            push 0
+            lea eax, [esp + 0x24]
+            push 0x80000000
+            push eax
+            call dword ptr ds:[0x589064]
+            mov esi, eax
+            cmp esi, -1
+            je L0051d5cb
+            push 0
+            push esi
+            call dword ptr ds:[0x589060]
+            mov ebp, eax
+            push esi
+            call dword ptr ds:[0x5890b0]
+    L0051d5cb:
+            cmp ebp, dword ptr [esp + 0x114]
+            sbb eax, eax
+            inc eax
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x100
+            ret 4
+    L0051d5e2:
+            pop edi
+            pop esi
+            pop ebp
+            xor eax, eax
+            pop ebx
+            add esp, 0x100
+            ret 4
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 int C2_HOOK_FASTCALL PDReadSourceLocation(tPath_name pPath) {
@@ -663,7 +1079,8 @@ void C2_HOOK_FASTCALL PDScreenBufferSwap(int pRendering_area_only) {
 }
 
 // FUNCTION: CARMA2_HW 0x0051d7c0
-void C2_HOOK_FASTCALL PDInitTimer(void) {
+void C2_NAKED C2_HOOK_FASTCALL PDInitTimer(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     LARGE_INTEGER freq;
     LARGE_INTEGER current_count;
 
@@ -677,10 +1094,99 @@ void C2_HOOK_FASTCALL PDInitTimer(void) {
         gPerformanceCounterFrequency_ms.QuadPart = gPerformanceCounterFrequency_s.QuadPart / 1000;
         gPerformanceCounterFrequency_us.QuadPart = gPerformanceCounterFrequency_s.QuadPart / 1000000;
     }
+#else
+    __asm {
+            push ebp
+            mov ebp, esp
+            sub esp, 0x14
+            lea eax, [ebp - 0xc]
+            mov dword ptr ds:[gPerformanceCounterInitialized], 0
+            push eax
+            call dword ptr ds:[0x5890a8]
+            test eax, eax
+            je L0051d8ef
+            mov eax, dword ptr [ebp - 8]
+            push edi
+            push esi
+            mov esi, 0x10
+            cdq
+            mov dword ptr ds:[gPerformanceCounterInitialized], 1
+            mov dword ptr ds:[gPerformanceCounterFrequency_s], eax
+            mov dword ptr ds:[0x6acc6c], edx
+            mov dword ptr [ebp - 4], esi
+            mov ecx, dword ptr [ebp - 4]
+            mov eax, dword ptr ds:[gPerformanceCounterFrequency_s]
+            mov edx, dword ptr ds:[0x6acc6c]
+            shld edx, eax, cl
+            shl eax, cl
+            mov dword ptr ds:[0x6acc6c], edx
+            mov dword ptr ds:[gPerformanceCounterFrequency_s], eax
+            mov dword ptr [ebp - 4], esi
+            mov ecx, dword ptr [ebp - 4]
+            mov eax, dword ptr ds:[gPerformanceCounterFrequency_s]
+            mov edx, dword ptr ds:[0x6acc6c]
+            shld edx, eax, cl
+            shl eax, cl
+            mov ecx, dword ptr [ebp - 0xc]
+            add eax, ecx
+            lea ecx, [ebp - 0x14]
+            adc edx, 0
+            push ecx
+            mov dword ptr ds:[gPerformanceCounterFrequency_s], eax
+            mov dword ptr ds:[0x6acc6c], edx
+            call dword ptr ds:[0x589040]
+            mov eax, dword ptr [ebp - 0x10]
+            mov dword ptr [ebp - 4], esi
+            cdq
+            mov dword ptr ds:[gPerformanceCounterStart], eax
+            mov dword ptr ds:[0x6acc84], edx
+            mov ecx, dword ptr [ebp - 4]
+            mov eax, dword ptr ds:[gPerformanceCounterStart]
+            mov edx, dword ptr ds:[0x6acc84]
+            shld edx, eax, cl
+            shl eax, cl
+            mov dword ptr ds:[0x6acc84], edx
+            mov dword ptr ds:[gPerformanceCounterStart], eax
+            mov dword ptr [ebp - 4], esi
+            mov ecx, dword ptr [ebp - 4]
+            mov eax, dword ptr ds:[gPerformanceCounterStart]
+            mov edx, dword ptr ds:[0x6acc84]
+            shld edx, eax, cl
+            shl eax, cl
+            mov ecx, dword ptr [ebp - 0x14]
+            mov esi, dword ptr ds:[0x6acc6c]
+            mov edi, dword ptr ds:[gPerformanceCounterFrequency_s]
+            add eax, ecx
+            push 0
+            push 0x3e8
+            adc edx, 0
+            push esi
+            push edi
+            mov dword ptr ds:[gPerformanceCounterStart], eax
+            mov dword ptr ds:[0x6acc84], edx
+            call _alldiv
+            mov dword ptr ds:[gPerformanceCounterFrequency_ms], eax
+            mov dword ptr ds:[0x6ad1f4], edx
+            push 0
+            push 0xf4240
+            push esi
+            push edi
+            call _alldiv
+            mov dword ptr ds:[gPerformanceCounterFrequency_us], eax
+            mov dword ptr ds:[0x6ac85c], edx
+            pop esi
+            pop edi
+    L0051d8ef:
+            mov esp, ebp
+            pop ebp
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0051d410
-tU32 C2_HOOK_FASTCALL PDGetTotalTime(void) {
+tU32 C2_NAKED C2_HOOK_FASTCALL PDGetTotalTime(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     LARGE_INTEGER perfCountValue;
     LARGE_INTEGER delta;
 
@@ -690,10 +1196,69 @@ tU32 C2_HOOK_FASTCALL PDGetTotalTime(void) {
         return (tU32) (delta.QuadPart / gPerformanceCounterFrequency_ms.QuadPart);
     }
     return 0;
+#else
+    __asm {
+            push ebp
+            mov ebp, esp
+            sub esp, 0x14
+            mov eax, dword ptr ds:[gPerformanceCounterInitialized]
+            test eax, eax
+            je L0051d495
+            lea eax, [ebp - 0xc]
+            push esi
+            push eax
+            call dword ptr ds:[0x589040]
+            mov eax, dword ptr [ebp - 8]
+            mov esi, 0x10
+            cdq
+            mov dword ptr [ebp - 0x14], eax
+            mov dword ptr [ebp - 0x10], edx
+            mov dword ptr [ebp - 4], esi
+            mov ecx, dword ptr [ebp - 4]
+            mov eax, dword ptr [ebp - 0x14]
+            mov edx, dword ptr [ebp - 0x10]
+            shld edx, eax, cl
+            shl eax, cl
+            mov dword ptr [ebp - 0x10], edx
+            mov dword ptr [ebp - 0x14], eax
+            mov dword ptr [ebp - 4], esi
+            mov ecx, dword ptr [ebp - 4]
+            mov eax, dword ptr [ebp - 0x14]
+            mov edx, dword ptr [ebp - 0x10]
+            shld edx, eax, cl
+            shl eax, cl
+            mov ecx, dword ptr [ebp - 0xc]
+            xor esi, esi
+            add ecx, eax
+            mov eax, dword ptr ds:[gPerformanceCounterStart]
+            adc esi, edx
+            mov edx, dword ptr ds:[0x6acc84]
+            sub ecx, eax
+            mov eax, dword ptr ds:[gPerformanceCounterFrequency_ms]
+            sbb esi, edx
+            mov edx, dword ptr ds:[0x6ad1f4]
+            push edx
+            push eax
+            push esi
+            push ecx
+            call _alldiv
+            mov dword ptr [ebp - 0x10], edx
+            pop esi
+            mov esp, ebp
+            pop ebp
+            ret
+    L0051d495:
+            xor eax, eax
+            mov esp, ebp
+            pop ebp
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0051d990
-int C2_HOOK_FASTCALL PDGetMicroseconds(void) {
+int C2_NAKED C2_HOOK_FASTCALL PDGetMicroseconds(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     if (gPerformanceCounterInitialized) {
         LARGE_INTEGER perfCountValue;
         QueryPerformanceCounter(&perfCountValue);
@@ -702,6 +1267,64 @@ int C2_HOOK_FASTCALL PDGetMicroseconds(void) {
                       QuadPart);
     }
     return 0;
+#else
+    __asm {
+            push ebp
+            mov ebp, esp
+            sub esp, 0x14
+            mov eax, dword ptr ds:[gPerformanceCounterInitialized]
+            test eax, eax
+            je L0051da17
+            lea eax, [ebp - 0xc]
+            push esi
+            push eax
+            call dword ptr ds:[0x589040]
+            mov eax, dword ptr [ebp - 8]
+            mov esi, 0x10
+            cdq
+            mov dword ptr [ebp - 0x14], eax
+            mov dword ptr [ebp - 0x10], edx
+            mov dword ptr [ebp - 4], esi
+            mov ecx, dword ptr [ebp - 4]
+            mov eax, dword ptr [ebp - 0x14]
+            mov edx, dword ptr [ebp - 0x10]
+            shld edx, eax, cl
+            shl eax, cl
+            mov dword ptr [ebp - 0x10], edx
+            mov dword ptr [ebp - 0x14], eax
+            mov dword ptr [ebp - 4], esi
+            mov ecx, dword ptr [ebp - 4]
+            mov eax, dword ptr [ebp - 0x14]
+            mov edx, dword ptr [ebp - 0x10]
+            shld edx, eax, cl
+            shl eax, cl
+            mov ecx, dword ptr [ebp - 0xc]
+            xor esi, esi
+            add eax, ecx
+            mov ecx, dword ptr ds:[0x6acc84]
+            adc edx, esi
+            mov esi, dword ptr ds:[gPerformanceCounterStart]
+            sub eax, esi
+            sbb edx, ecx
+            mov ecx, dword ptr ds:[0x6ac85c]
+            push ecx
+            mov ecx, dword ptr ds:[gPerformanceCounterFrequency_us]
+            push ecx
+            push edx
+            push eax
+            call _alldiv
+            mov dword ptr [ebp - 0x10], edx
+            pop esi
+            mov esp, ebp
+            pop ebp
+            ret
+    L0051da17:
+            xor eax, eax
+            mov esp, ebp
+            pop ebp
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0051a6b0
@@ -734,9 +1357,9 @@ void C2_HOOK_FASTCALL SignalHandler(int pSignal) {
     ExitProcess(0x2bd);
 }
 
-// C2PORT-NONMATCHING: best 40.00% | difftest PASS 2000 trials (spec difftest/specs/0051d900_PDGetElapsedMilliseconds.json) | reason vc5-64bit-helper-sequence
 // FUNCTION: CARMA2_HW 0x0051d900
-tU32 C2_HOOK_FASTCALL PDGetElapsedMilliseconds(void) {
+tU32 C2_NAKED C2_HOOK_FASTCALL PDGetElapsedMilliseconds(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     LARGE_INTEGER perfCountValue;
     unsigned __int64 elapsed;
     volatile int shift;
@@ -752,6 +1375,64 @@ tU32 C2_HOOK_FASTCALL PDGetElapsedMilliseconds(void) {
         return (tU32)(elapsed / (unsigned __int64)gPerformanceCounterFrequency_ms.QuadPart);
     }
     return 0;
+#else
+    __asm {
+            push ebp
+            mov ebp, esp
+            sub esp, 0x14
+            mov eax, dword ptr ds:[gPerformanceCounterInitialized]
+            test eax, eax
+            je L0051d987
+            lea eax, [ebp - 0xc]
+            push esi
+            push eax
+            call dword ptr ds:[0x589040]
+            mov eax, dword ptr [ebp - 8]
+            mov esi, 0x10
+            cdq
+            mov dword ptr [ebp - 0x14], eax
+            mov dword ptr [ebp - 0x10], edx
+            mov dword ptr [ebp - 4], esi
+            mov ecx, dword ptr [ebp - 4]
+            mov eax, dword ptr [ebp - 0x14]
+            mov edx, dword ptr [ebp - 0x10]
+            shld edx, eax, cl
+            shl eax, cl
+            mov dword ptr [ebp - 0x10], edx
+            mov dword ptr [ebp - 0x14], eax
+            mov dword ptr [ebp - 4], esi
+            mov ecx, dword ptr [ebp - 4]
+            mov eax, dword ptr [ebp - 0x14]
+            mov edx, dword ptr [ebp - 0x10]
+            shld edx, eax, cl
+            shl eax, cl
+            mov ecx, dword ptr [ebp - 0xc]
+            xor esi, esi
+            add eax, ecx
+            mov ecx, dword ptr ds:[0x6acc84]
+            adc edx, esi
+            mov esi, dword ptr ds:[gPerformanceCounterStart]
+            sub eax, esi
+            sbb edx, ecx
+            mov ecx, dword ptr ds:[0x6ad1f4]
+            push ecx
+            mov ecx, dword ptr ds:[gPerformanceCounterFrequency_ms]
+            push ecx
+            push edx
+            push eax
+            call _alldiv
+            mov dword ptr [ebp - 0x10], edx
+            pop esi
+            mov esp, ebp
+            pop ebp
+            ret
+    L0051d987:
+            xor eax, eax
+            mov esp, ebp
+            pop ebp
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0051a7b0
@@ -776,7 +1457,8 @@ int C2_HOOK_FASTCALL PDFileUnlock(const char *pThe_path) {
 }
 
 // FUNCTION: CARMA2_HW 0x00486c30
-int C2_HOOK_FASTCALL PDEnumPath(const char *path, tEnumPathCallback pCallback, void *data) {
+int C2_NAKED C2_HOOK_FASTCALL PDEnumPath(const char *path, tEnumPathCallback pCallback, void *data) {
+#ifndef CARPOCALYPSE2_MATCHING
     char originalCurrentDirectory[MAX_PATH];
     tPath_name filePath;
     BOOL bSucceeded;
@@ -819,11 +1501,115 @@ int C2_HOOK_FASTCALL PDEnumPath(const char *path, tEnumPathCallback pCallback, v
     }
     SetCurrentDirectoryA(originalCurrentDirectory);
     return callback_res;
+#else
+    __asm {
+            sub esp, 0x348
+            lea eax, [esp + 0x244]
+            push ebp
+            push esi
+            push edi
+            push eax
+            mov ebp, edx
+            mov edi, ecx
+            push 0x104
+            xor esi, esi
+            call dword ptr ds:[0x589068]
+            push edi
+            call dword ptr ds:[0x589084]
+            test eax, eax
+            je L00486d4a
+            lea ecx, [esp + 0x10]
+            push ecx
+            push 0x6572c0
+            call dword ptr ds:[0x589088]
+            cmp eax, -1
+            mov dword ptr [esp + 0xc], eax
+            je L00486d3c
+            push ebx
+            mov ebx, dword ptr [esp + 0x35c]
+    L00486c86:
+            test byte ptr [esp + 0x14], 0x16
+            jne L00486d14
+            lea edi, [esp + 0x40]
+            or ecx, 0xffffffff
+            xor eax, eax
+            repne scasb
+            not ecx
+            dec ecx
+            mov edi, 0x6572b8
+            mov esi, ecx
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            dec ecx
+            mov edi, ecx
+            cmp esi, edi
+            jl L00486cf0
+            lea ecx, [esp + esi + 0x40]
+            mov edx, 0x6572b8
+            sub ecx, edi
+            call DRstrcmpi
+            test eax, eax
+            jne L00486cf0
+            mov edx, esi
+            lea eax, [esp + 0x40]
+            sub edx, edi
+            lea ecx, [esp + 0x154]
+            push edx
+            push eax
+            push ecx
+            call memmove
+            lea edx, [esp + esi + 0x160]
+            add esp, 0xc
+            sub edx, edi
+            mov byte ptr [edx], 0
+            jmp L00486d07
+    L00486cf0:
+            inc esi
+            lea eax, [esp + 0x40]
+            push esi
+            lea ecx, [esp + 0x158]
+            push eax
+            push ecx
+            call memmove
+            add esp, 0xc
+    L00486d07:
+            mov edx, ebx
+            lea ecx, [esp + 0x154]
+            call ebp
+            mov esi, eax
+    L00486d14:
+            test esi, esi
+            jne L00486d30
+            mov eax, dword ptr [esp + 0x10]
+            lea edx, [esp + 0x14]
+            push edx
+            push eax
+            call dword ptr ds:[0x58908c]
+            test eax, eax
+            jne L00486c86
+    L00486d30:
+            mov ecx, dword ptr [esp + 0x10]
+            push ecx
+            call dword ptr ds:[0x589090]
+            pop ebx
+    L00486d3c:
+            lea edx, [esp + 0x250]
+            push edx
+            call dword ptr ds:[0x589084]
+    L00486d4a:
+            mov eax, esi
+            pop edi
+            pop esi
+            pop ebp
+            add esp, 0x348
+            ret 4
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00486c20
 int C2_HOOK_FASTCALL PDmkdir(const char *path) {
-
     return c2_mkdir(path);
 }
 
@@ -876,7 +1662,8 @@ void C2_HOOK_FASTCALL PDForEveryFileRecurse(const char *pThe_path, tPDForEveryFi
 }
 
 // FUNCTION: CARMA2_HW 0x0051c760
-void C2_HOOK_FASTCALL PDForEveryFile(const char *pThe_path, tPDForEveryFile_cbfn pAction_routine) {
+void C2_NAKED C2_HOOK_FASTCALL PDForEveryFile(const char *pThe_path, tPDForEveryFile_cbfn pAction_routine) {
+#ifndef CARPOCALYPSE2_MATCHING
     char found_path[256];
     WIN32_FIND_DATAA find_data;
     HANDLE hFindFile;
@@ -896,6 +1683,79 @@ void C2_HOOK_FASTCALL PDForEveryFile(const char *pThe_path, tPDForEveryFile_cbfn
         }
         SetCurrentDirectoryA(current_dir);
     }
+#else
+    __asm {
+            sub esp, 0x444
+            lea eax, [esp + 0x340]
+            push ebx
+            push esi
+            push eax
+            mov ebx, edx
+            mov esi, ecx
+            push 0x104
+            call dword ptr ds:[0x589068]
+            push esi
+            call dword ptr ds:[0x589084]
+            test eax, eax
+            je L0051c833
+            mov ecx, dword ptr ds:[0x6572c0]
+            mov dx, word ptr ds:[0x6572c4]
+            mov dword ptr [esp + 0x248], ecx
+            lea eax, [esp + 8]
+            push edi
+            lea ecx, [esp + 0x24c]
+            push eax
+            push ecx
+            mov word ptr [esp + 0x258], dx
+            call dword ptr ds:[0x589088]
+            mov edi, eax
+            cmp edi, -1
+            je L0051c824
+            lea edx, [esp + 0x38]
+            push ebp
+            push edx
+            mov edx, esi
+            lea ecx, [esp + 0x154]
+            call PathCat
+            lea ecx, [esp + 0x150]
+            call ebx
+            mov ebp, dword ptr ds:[0x58908c]
+            lea eax, [esp + 0x10]
+            push eax
+            push edi
+            call ebp
+            test eax, eax
+            je L0051c81c
+    L0051c7f4:
+            lea ecx, [esp + 0x3c]
+            mov edx, esi
+            push ecx
+            lea ecx, [esp + 0x154]
+            call PathCat
+            lea ecx, [esp + 0x150]
+            call ebx
+            lea edx, [esp + 0x10]
+            push edx
+            push edi
+            call ebp
+            test eax, eax
+            jne L0051c7f4
+    L0051c81c:
+            push edi
+            call dword ptr ds:[0x589090]
+            pop ebp
+    L0051c824:
+            lea eax, [esp + 0x34c]
+            push eax
+            call dword ptr ds:[0x589084]
+            pop edi
+    L0051c833:
+            pop esi
+            pop ebx
+            add esp, 0x444
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0051da20
@@ -922,7 +1782,8 @@ void C2_HOOK_FASTCALL PDGetCurrentTime(char *pTimeStr) {
 }
 
 // FUNCTION: CARMA2_HW 0x0051db00
-int C2_HOOK_FASTCALL PDGetMouseClickPosition(int *pX_coord, int *pY_coord) {
+int C2_NAKED C2_HOOK_FASTCALL PDGetMouseClickPosition(int *pX_coord, int *pY_coord) {
+#ifndef CARPOCALYPSE2_MATCHING
     if (!gCursorPos_LastClick_Valid) {
         gCursorPos_LastClick_Valid = 0;
         return 0;
@@ -931,6 +1792,42 @@ int C2_HOOK_FASTCALL PDGetMouseClickPosition(int *pX_coord, int *pY_coord) {
     *pY_coord = gCursorPos_LastClick.y;
     gCursorPos_LastClick_Valid = 0;
     return 1;
+#else
+    __asm {
+            push esi
+            mov esi, dword ptr [gCursorPos_LastClick_Valid]
+            xor eax, eax
+            cmp esi, eax
+            je L0051db29
+            mov esi, dword ptr [gCursorPos_LastClick]
+            mov dword ptr [ecx], esi
+            mov ecx, dword ptr [gCursorPos_LastClick+0x4]
+            mov dword ptr [edx], ecx
+            mov dword ptr [gCursorPos_LastClick_Valid], eax
+            mov eax, 1
+            pop esi
+            ret
+    L0051db29:
+            mov dword ptr [gCursorPos_LastClick_Valid], eax
+            xor eax, eax
+            pop esi
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0051c5f0
@@ -1073,7 +1970,8 @@ int PDGetRegisterSourceLocation(char *buffer, int *buffer_size) {
 }
 
 // FUNCTION: CARMA2_HW 0x0051c900
-void C2_HOOK_FASTCALL PDGetMousePosition(int *pX, int *pY) {
+void C2_NAKED C2_HOOK_FASTCALL PDGetMousePosition(int *pX, int *pY) {
+#ifndef CARPOCALYPSE2_MATCHING
     POINT pnt;
 
     if (gWindowActiveState != 2) {
@@ -1087,6 +1985,96 @@ void C2_HOOK_FASTCALL PDGetMousePosition(int *pX, int *pY) {
     *pY = pnt.y;
     gPD_mouse_position.x = *pX;
     gPD_mouse_position.y = *pY;
+#else
+    __asm {
+            mov eax, dword ptr ds:[gWindowActiveState]
+            sub esp, 8
+            cmp eax, 2
+            push ebp
+            push edi
+            mov edi, edx
+            mov ebp, ecx
+            je L0051c929
+            mov eax, dword ptr ds:[gPD_mouse_position]
+            mov dword ptr [ebp], eax
+            mov ecx, dword ptr ds:[0x6ad45c]
+            mov dword ptr [edi], ecx
+            pop edi
+            pop ebp
+            add esp, 8
+            ret
+    L0051c929:
+            push esi
+            lea edx, [esp + 0xc]
+            push ebx
+            push edx
+            call dword ptr ds:[0x589224]
+            mov eax, dword ptr ds:[gScaleMouse]
+            test eax, eax
+            jmp L0051c9ad
+            mov eax, dword ptr ds:[gRenderer]
+            mov esi, 0x662518
+    L0051c949:
+            mov dl, byte ptr [eax]
+            mov bl, byte ptr [esi]
+            mov cl, dl
+            cmp dl, bl
+            jne L0051c971
+            test cl, cl
+            je L0051c96d
+            mov dl, byte ptr [eax + 1]
+            mov bl, byte ptr [esi + 1]
+            mov cl, dl
+            cmp dl, bl
+            jne L0051c971
+            add eax, 2
+            add esi, 2
+            test cl, cl
+            jne L0051c949
+    L0051c96d:
+            xor eax, eax
+            jmp L0051c976
+    L0051c971:
+            sbb eax, eax
+            sbb eax, -1
+    L0051c976:
+            test eax, eax
+            je L0051c9ad
+            fild dword ptr [esp + 0x10]
+            fild dword ptr ds:[gScreenWidth]
+            fmul qword ptr ds:[0x58b748]
+            fdivp st(1), st(0)
+            call _ftol
+            fild dword ptr [esp + 0x14]
+            mov dword ptr [ebp], eax
+            fild dword ptr ds:[gScreenHeight]
+            fmul qword ptr ds:[0x58b750]
+            fdivp st(1), st(0)
+            call _ftol
+            jmp L0051c9ca
+    L0051c9ad:
+            mov ecx, dword ptr ds:[gHWnd]
+            lea eax, [esp + 0x10]
+            push eax
+            push ecx
+            call dword ptr ds:[0x5891b8]
+            mov edx, dword ptr [esp + 0x10]
+            mov eax, dword ptr [esp + 0x14]
+            mov dword ptr [ebp], edx
+    L0051c9ca:
+            mov dword ptr [edi], eax
+            mov ecx, dword ptr [ebp]
+            mov dword ptr ds:[gPD_mouse_position], ecx
+            mov edx, dword ptr [edi]
+            pop ebx
+            pop esi
+            pop edi
+            mov dword ptr ds:[0x6ad45c], edx
+            pop ebp
+            add esp, 8
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0051c280
@@ -1102,7 +2090,8 @@ void C2_HOOK_FASTCALL PDMouseButtons(int *pLeftButtonDown, int *pRightButtonDown
 }
 
 // FUNCTION: CARMA2_HW 0x0056a3a9
-void C2_HOOK_FASTCALL PDExtractFilename(char *pDest, const char *pPath) {
+void C2_NAKED C2_HOOK_FASTCALL PDExtractFilename(char *pDest, const char *pPath) {
+#ifndef CARPOCALYPSE2_MATCHING
     char dirname[256];
     char drive[4];
     char filename[256];
@@ -1110,10 +2099,44 @@ void C2_HOOK_FASTCALL PDExtractFilename(char *pDest, const char *pPath) {
 
     _splitpath(pPath, drive, dirname, filename, extension);
     sprintf(pDest, "%s%s", filename, extension);
+#else
+    __asm {
+            push ebp
+            mov ebp, esp
+            sub esp, 0x30c
+            mov dword ptr [ebp - 0x30c], edx
+            mov dword ptr [ebp - 0x308], ecx
+            lea eax, [ebp - 0x204]
+            push eax
+            lea ecx, [ebp - 0x104]
+            push ecx
+            lea edx, [ebp - 0x304]
+            push edx
+            lea eax, [ebp - 4]
+            push eax
+            mov ecx, dword ptr [ebp - 0x30c]
+            push ecx
+            call sprintf
+            add esp, 0x14
+            lea edx, [ebp - 0x204]
+            push edx
+            lea eax, [ebp - 0x104]
+            push eax
+            push offset gS3_CDA_enabled+0x19c
+            mov ecx, dword ptr [ebp - 0x308]
+            push ecx
+            call sprintf
+            add esp, 0x10
+            mov esp, ebp
+            pop ebp
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0056a349
-void C2_HOOK_FASTCALL PDExtractDirectory(char *pDest, const char *pPath) {
+void C2_NAKED C2_HOOK_FASTCALL PDExtractDirectory(char *pDest, const char *pPath) {
+#ifndef CARPOCALYPSE2_MATCHING
     char dirname[256];
     char drive[4];
     char filename[256];
@@ -1121,10 +2144,44 @@ void C2_HOOK_FASTCALL PDExtractDirectory(char *pDest, const char *pPath) {
 
     _splitpath(pPath, drive, dirname, filename, extension);
     sprintf(pDest, "%s%s", drive, dirname);
+#else
+    __asm {
+            push ebp
+            mov ebp, esp
+            sub esp, 0x30c
+            mov dword ptr [ebp - 0x30c], edx
+            mov dword ptr [ebp - 0x308], ecx
+            lea eax, [ebp - 0x204]
+            push eax
+            lea ecx, [ebp - 0x104]
+            push ecx
+            lea edx, [ebp - 0x304]
+            push edx
+            lea eax, [ebp - 4]
+            push eax
+            mov ecx, dword ptr [ebp - 0x30c]
+            push ecx
+            call sprintf
+            add esp, 0x14
+            lea edx, [ebp - 0x304]
+            push edx
+            lea eax, [ebp - 4]
+            push eax
+            push offset gS3_CDA_enabled+0x194
+            mov ecx, dword ptr [ebp - 0x308]
+            push ecx
+            call sprintf
+            add esp, 0x10
+            mov esp, ebp
+            pop ebp
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004928a0
-void C2_HOOK_FASTCALL PDPageInMemory(void *pMemory) {
+void C2_NAKED C2_HOOK_FASTCALL PDPageInMemory(void *pMemory) {
+#ifndef CARPOCALYPSE2_MATCHING
     tHeap_block_information *heap_block;
 
     C2_HOOK_BUG_ON(offsetof(tHeap_block_information, next) != 0x48);
@@ -1158,6 +2215,80 @@ void C2_HOOK_FASTCALL PDPageInMemory(void *pMemory) {
             }
         }
     }
+#else
+    __asm {
+            push ecx
+            push ebx
+            push ebp
+            push esi
+            push edi
+            mov esi, ecx
+            push 0x74
+            push esi
+            mov dword ptr [esp + 0x18], esi
+            call dword ptr ds:[0x589078]
+            test eax, eax
+            jne L00492943
+            cmp word ptr [esi + 0x72], 0x4948
+            jne L00492943
+            test esi, esi
+            je L00492943
+            mov ecx, dword ptr ds:[gPage_size]
+    L004928ce:
+            mov eax, dword ptr [esp + 0x10]
+            lea ebx, [eax + 0x74]
+    L004928d5:
+            mov eax, dword ptr [ebx]
+            mov ebp, eax
+            and ebp, 0x5ffffffc
+            je L00492934
+            test al, 1
+            jne L00492930
+            test ecx, ecx
+            lea edi, [ebp - 4]
+            lea esi, [ebx + 0x10]
+            jne L00492906
+            push offset gSystem_info
+            call dword ptr ds:[0x589150]
+            mov ecx, dword ptr ds:[gSystem_info]
+            mov dword ptr ds:[gPage_size], ecx
+    L00492906:
+            mov eax, ecx
+            shl eax, 4
+            cmp eax, edi
+            jae L00492930
+    L0049290f:
+            shl ecx, 4
+            mov edx, esi
+            sub edx, ecx
+            lea ecx, [edx + eax]
+            mov dl, byte ptr [edx + eax]
+            mov byte ptr [ecx], dl
+            mov cl, byte ptr [esi + eax]
+            mov byte ptr [esi + eax], cl
+            mov ecx, dword ptr ds:[gPage_size]
+            add eax, ecx
+            cmp eax, edi
+            jb L0049290f
+    L00492930:
+            add ebx, ebp
+            jmp L004928d5
+    L00492934:
+            mov edx, dword ptr [esp + 0x10]
+            mov eax, dword ptr [edx + 0x48]
+            test eax, eax
+            mov dword ptr [esp + 0x10], eax
+            jne L004928ce
+    L00492943:
+            pop edi
+            pop esi
+            pop ebp
+            xor eax, eax
+            pop ebx
+            pop ecx
+            ret
+    }
+#endif
 }
 
 void C2_HOOK_FASTCALL PDPageInProcessMemory(void) {
@@ -1232,5 +2363,4 @@ void C2_HOOK_FASTCALL PDConvertMousePosition(LPPOINT pPoint, LONG* pX, LONG* pY)
 
 // FUNCTION: CARMA2_HW 0x0051d4a0
 void C2_HOOK_FASTCALL FUN_0051d4a0(void) {
-
 }

@@ -54,6 +54,50 @@ int gFrontend_wrecks_rotate_prev_y = -1;
 int gPicked_wreck;
 
 
+#ifdef CARPOCALYPSE2_MATCHING
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern void C2_HOOK_CDECL BrMatrix34Post();
+extern void C2_HOOK_CDECL BrMatrix34PostRotateX();
+extern void C2_HOOK_CDECL BrMatrix34Pre();
+extern void C2_HOOK_CDECL BrMatrix34PreTranslate();
+extern void C2_HOOK_CDECL BrMatrix34RollingBall();
+extern void C2_HOOK_CDECL BrMatrix34RotateY();
+extern tS3_sound_tag C2_HOOK_FASTCALL DRS3StartSound(tS3_outlet* pOutlet, tS3_sound_id pSound);
+extern int C2_HOOK_FASTCALL DRScenePick2DXY(br_actor* world, br_actor* camera, br_pixelmap* viewport, int pick_x, int pick_y, dr_pick2d_cbfn* callback, void* arg);
+extern int C2_HOOK_FASTCALL EitherMouseButtonDown(void);
+extern int C2_HOOK_FASTCALL FRONTEND_CreateMenu(tFrontend_spec* pFrontend_spec);
+extern int C2_HOOK_FASTCALL FRONTEND_DestroyMenu(tFrontend_spec* pFrontend);
+extern void C2_HOOK_FASTCALL FuckWithWidths(tFrontend_spec* pFrontend);
+extern tCar_spec* C2_HOOK_FASTCALL GetCarSpec(tVehicle_type pCategory, int pIndex);
+extern int C2_HOOK_FASTCALL GetItemAtMousePos(tFrontend_spec *pFrontend, int pX, int pY);
+extern const char* C2_HOOK_FASTCALL GetMiscString(int pIndex);
+extern void C2_HOOK_FASTCALL GetMousePosition(int *pX, int *pY);
+extern tOpponent_spec* C2_HOOK_FASTCALL GetOpponentSpecFromCarSpec(tCar_spec* pCar_spec);
+extern void C2_HOOK_FASTCALL MenuSetDriverImage(int pOpponent_index, int pFrontend_index);
+extern void C2_HOOK_FASTCALL Morph_Initialise(tFrontend_spec* pCurrent, tFrontend_spec* pNext);
+extern char* C2_HOOK_FASTCALL MungeCommas(int pValue);
+extern void C2_HOOK_FASTCALL MungeMetaCharactersChar(char* pText, char pMeta, char pChar);
+extern tU32 C2_HOOK_FASTCALL PDGetTotalTime(void);
+extern int C2_HOOK_FASTCALL PDKeyDown(int pKey_index);
+extern void C2_HOOK_FASTCALL ToggleSelection(tFrontend_spec* pFrontend);
+extern void C2_HOOK_FASTCALL UpdateScrollPositions(tFrontend_spec* pFrontend);
+extern void __cdecl _ftol();
+extern int gCancel_recover;
+extern char gDouble_0058a068[];
+extern tS3_outlet* gEffects_outlet;
+extern tFrontend_spec gFrontend_QUIT;
+extern int gFrontend_leave_current_menu;
+extern int gFrontend_mouse_down;
+extern int gFrontend_opponent_profile_pic_needs_update;
+extern int gFrontend_selected_item_index;
+extern tU32 gFrontend_time_last_input;
+extern br_pixelmap* gFrontend_wrecks_pixelmap;
+extern int gMouse_in_use;
+extern tOpponent* gOpponents;
+extern int gPrev_frontend_mouse_down;
+extern tProgram_state gProgram_state;
+#endif
 // FUNCTION: CARMA2_HW 0x0046e830
 int C2_HOOK_FASTCALL WrecksInFunc(tFrontend_spec* pFrontend) {
     int car_count;
@@ -149,7 +193,6 @@ void C2_HOOK_FASTCALL DisposeWrecksGallery(void) {
 
 // FUNCTION: CARMA2_HW 0x0046ead0
 int C2_HOOK_FASTCALL WrecksOutFunc(tFrontend_spec* pFrontend) {
-
     DisposeWrecksGallery();
     DRS3StartSound(gEffects_outlet, eSoundId_Swingout);
     return 1;
@@ -184,7 +227,6 @@ int C2_HOOK_CDECL WreckPick(br_actor* world, br_model* model, br_material* mater
 
 // FUNCTION: CARMA2_HW 0x0046eab0
 int C2_HOOK_FASTCALL KeepInRange(int pIndex, int pRange) {
-
     while (pIndex < 0) {
         pIndex += pRange;
     }
@@ -219,7 +261,8 @@ int C2_HOOK_FASTCALL GetCarSelectedByMouse(int pX, int pY) {
 }
 
 // FUNCTION: CARMA2_HW 0x0046eb80
-int C2_HOOK_FASTCALL WrecksUpdateFunc(tFrontend_spec* pFrontend) {
+int C2_NAKED C2_HOOK_FASTCALL WrecksUpdateFunc(tFrontend_spec* pFrontend) {
+#ifndef CARPOCALYPSE2_MATCHING
     int item_at_mouse;
     int i;
     int mouse_x;
@@ -451,6 +494,737 @@ int C2_HOOK_FASTCALL WrecksUpdateFunc(tFrontend_spec* pFrontend) {
     } else {
         return 0;
     }
+#else
+    __asm {
+            sub esp, 0x24
+            mov eax, dword ptr [gMouse_in_use]
+            push ebx
+            push ebp
+            xor ebx, ebx
+            mov ebp, ecx
+            push esi
+            cmp eax, ebx
+            push edi
+            mov dword ptr [esp + 0x24], ebp
+            mov dword ptr [esp + 0x20], 0xffffffff
+            mov dword ptr [gFrontend_mouse_down], ebx
+            je L0046ebf7
+            mov dword ptr [gFrontend_selected_item_index], ebx
+            call PDGetTotalTime
+            lea edx, [esp + 0x14]
+            lea ecx, [esp + 0x10]
+            mov dword ptr [gFrontend_time_last_input], eax
+            call GetMousePosition
+            mov eax, dword ptr [esp + 0x14]
+            mov edx, dword ptr [esp + 0x10]
+            push eax
+            mov ecx, ebp
+            call GetItemAtMousePos
+            cmp eax, -1
+            mov dword ptr [esp + 0x20], eax
+            je L0046ebe1
+            mov dword ptr [gFrontend_selected_item_index], eax
+    L0046ebe1:
+            mov ecx, dword ptr [gFrontend_mouse_down]
+            mov dword ptr [gPrev_frontend_mouse_down], ecx
+            call EitherMouseButtonDown
+            mov dword ptr [gFrontend_mouse_down], eax
+    L0046ebf7:
+            cmp dword ptr [gFrontend_selected_item_index], ebx
+            jne L0046ec09
+            mov dword ptr [gFrontend_selected_item_index], 0xa
+    L0046ec09:
+            call PDGetTotalTime
+            fld dword ptr [gFrontend_wreck_bought_car_dz]
+            fcomp dword ptr [gDouble_0058a068+0x30]
+            mov ecx, eax
+            fnstsw ax
+            test ah, 0x40
+            jne L0046ec6d
+            mov eax, dword ptr [gFrontend_wrecks_previous_update]
+            mov edx, ecx
+            sub edx, eax
+            mov dword ptr [esp + 0x1c], edx
+            fild dword ptr [esp + 0x1c]
+            fmul qword ptr [gDouble_0058a068+0x38]
+            fadd dword ptr [gFrontend_wreck_bought_car_dz]
+            fst dword ptr [gFrontend_wreck_bought_car_dz]
+            fcomp qword ptr [gDouble_0058a068+0x40]
+            fnstsw ax
+            test ah, 0x41
+            jne L0046ec6d
+            mov eax, dword ptr [gFrontend_wrecks_current]
+            mov dword ptr [gFrontend_wreck_bought_car_dz], 0
+            mov dword ptr [eax*8 + gWreck_gallery_sell_infos], 1
+    L0046ec6d:
+            mov eax, dword ptr [gFrontend_wrecks_pending_hscroll]
+            mov edx, 5
+            cmp eax, ebx
+            jle L0046ec9d
+            mov edi, dword ptr [gFrontend_wrecks_hscroll]
+            sub eax, edx
+            sub edi, edx
+            cmp eax, ebx
+            mov dword ptr [gFrontend_wrecks_pending_hscroll], eax
+            mov dword ptr [gFrontend_wrecks_hscroll], edi
+            jge L0046ecbe
+            xor eax, eax
+            mov dword ptr [gFrontend_wrecks_pending_hscroll], eax
+            cmp eax, ebx
+    L0046ec9d:
+            jge L0046ecbe
+            mov esi, dword ptr [gFrontend_wrecks_hscroll]
+            add eax, edx
+            add esi, edx
+            cmp eax, ebx
+            mov dword ptr [gFrontend_wrecks_pending_hscroll], eax
+            mov dword ptr [gFrontend_wrecks_hscroll], esi
+            jle L0046ecbe
+            mov dword ptr [gFrontend_wrecks_pending_hscroll], ebx
+    L0046ecbe:
+            mov dword ptr [gFrontend_wrecks_previous_update], ecx
+            mov ecx, dword ptr [gProgram_state]
+            call MungeCommas
+            mov edi, eax
+            or ecx, 0xffffffff
+            xor eax, eax
+            lea edx, [ebp + 0x999]
+            repne scasb
+            not ecx
+            sub edi, ecx
+            mov eax, ecx
+            mov esi, edi
+            mov edi, edx
+            shr ecx, 2
+            rep movsd
+            mov ecx, eax
+            and ecx, 3
+            rep movsb
+            mov eax, dword ptr [gFrontend_wrecks_hscroll]
+            mov ecx, 0x1e
+            cdq
+            idiv ecx
+            test edx, edx
+            jne L0046f0c2
+            fld dword ptr [gFrontend_wreck_bought_car_dz]
+            fcomp dword ptr [gDouble_0058a068+0x30]
+            fnstsw ax
+            test ah, 0x40
+            je L0046f0c2
+            mov eax, 1
+            mov dword ptr [ebp + 0x408], eax
+            mov dword ptr [ebp + 0x560], eax
+            mov dword ptr [ebp + 0x6b8], eax
+            mov ecx, dword ptr [gFrontend_wrecks_hscroll]
+            mov eax, 0x88888889
+            imul ecx
+            add edx, ecx
+            sar edx, 4
+            mov ecx, edx
+            mov eax, edx
+            shr ecx, 0x1f
+            add eax, ecx
+            mov ecx, dword ptr [gFrontend_wrecks_car_count]
+            cdq
+            idiv ecx
+            cmp edx, ebx
+            mov dword ptr [gFrontend_wrecks_current], edx
+            jge L0046ed6f
+    L0046ed65:
+            add edx, ecx
+            js L0046ed65
+            mov dword ptr [gFrontend_wrecks_current], edx
+    L0046ed6f:
+            cmp edx, ecx
+            jl L0046ed7f
+    L0046ed73:
+            sub edx, ecx
+            cmp edx, ecx
+            jge L0046ed73
+            mov dword ptr [gFrontend_wrecks_current], edx
+    L0046ed7f:
+            mov ecx, 2
+            call GetCarSpec
+            mov edi, eax
+            mov ecx, edi
+            call GetOpponentSpecFromCarSpec
+            mov edx, dword ptr [gFrontend_wrecks_current]
+            mov ebx, eax
+            mov eax, dword ptr [edx*8 + gWreck_gallery_sell_infos]
+            test eax, eax
+            je L0046edb4
+            mov dword ptr [ebp + 0x40c], 0
+            jmp L0046ef08
+    L0046edb4:
+            mov eax, dword ptr [ebx]
+            mov edx, dword ptr [gOpponents]
+            mov ecx, eax
+            lea esi, [ebp + 0x439]
+            shl ecx, 3
+            sub ecx, eax
+            shl ecx, 6
+            lea eax, [ecx + edx]
+            lea ecx, [eax + 0x110]
+            add eax, 0x90
+            push ecx
+            push eax
+            push offset gFrontend_QUIT+0xbc68
+            push esi
+            call sprintf
+            add esp, 0x10
+            mov dl, 0x52
+            mov ecx, esi
+            push 0xd
+            call MungeMetaCharactersChar
+            mov edx, dword ptr [gProgram_state+0x88]
+            xor eax, eax
+            test edx, edx
+            jle L0046ee18
+            mov esi, dword ptr [edi]
+            mov ecx, offset gProgram_state+0x1aa0
+    L0046ee08:
+            cmp dword ptr [ecx], esi
+            je L0046f462
+            inc eax
+            add ecx, 4
+            cmp eax, edx
+            jl L0046ee08
+    L0046ee18:
+            xor edx, edx
+    L0046ee1a:
+            mov dword ptr [ebp + 0xd70], 0xffffffff
+            mov dword ptr [ebp + 0x40c], 1
+            mov eax, dword ptr [edi + 0x1d4]
+            test eax, eax
+            jne L0046ee3f
+            mov ecx, 0x124
+            jmp L0046ee92
+    L0046ee3f:
+            mov eax, dword ptr [ebx]
+            mov ecx, eax
+            shl ecx, 3
+            sub ecx, eax
+            mov eax, dword ptr [gOpponents]
+            shl ecx, 6
+            mov ecx, dword ptr [ecx + eax + 0x1a0]
+            mov eax, dword ptr [gProgram_state]
+            cmp eax, ecx
+            jge L0046ee89
+            call MungeCommas
+            mov ecx, 0x123
+            mov esi, eax
+            call GetMiscString
+            lea ecx, [ebp + 0xc49]
+            push eax
+            push esi
+            push offset gFrontend_QUIT+0xbc60
+            push ecx
+            call sprintf
+            add esp, 0x10
+            jmp L0046eee2
+    L0046ee89:
+            test edx, edx
+            je L0046eeae
+            mov ecx, 0x125
+    L0046ee92:
+            call GetMiscString
+            lea edx, [ebp + 0xc49]
+            push eax
+            push offset gCancel_recover+0xbc
+            push edx
+            call sprintf
+            add esp, 0xc
+            jmp L0046eee2
+    L0046eeae:
+            call MungeCommas
+            mov edi, eax
+            or ecx, 0xffffffff
+            xor eax, eax
+            lea edx, [ebp + 0xc49]
+            repne scasb
+            not ecx
+            sub edi, ecx
+            mov eax, ecx
+            mov esi, edi
+            mov edi, edx
+            shr ecx, 2
+            rep movsd
+            mov ecx, eax
+            and ecx, 3
+            rep movsb
+            mov dword ptr [ebp + 0xd70], 1
+    L0046eee2:
+            mov eax, dword ptr [gFrontend_opponent_profile_pic_needs_update]
+            test eax, eax
+            je L0046ef01
+            mov ecx, dword ptr [ebx]
+            mov edx, 0xb
+            call MenuSetDriverImage
+            mov dword ptr [gFrontend_opponent_profile_pic_needs_update], 0
+    L0046ef01:
+            mov ecx, ebp
+            call FuckWithWidths
+    L0046ef08:
+            mov eax, dword ptr [gFrontend_mouse_down]
+            test eax, eax
+            je L0046f09a
+            mov eax, dword ptr [gFrontend_wrecks_pending_hscroll]
+            test eax, eax
+            jne L0046f09a
+            mov ecx, dword ptr [gFrontend_wrecks_rotate_prev_x]
+            cmp ecx, -1
+            je L0046ef62
+            mov eax, dword ptr [gFrontend_wrecks_rotate_prev_y]
+            cmp eax, -1
+            je L0046ef62
+            mov edx, dword ptr [esp + 0x14]
+            push 0x32
+            sub edx, eax
+            mov eax, dword ptr [esp + 0x14]
+            sub eax, ecx
+            push edx
+            push eax
+            mov eax, dword ptr [gFrontend_wrecks_current]
+            lea ecx, [eax + eax*4]
+            lea edx, [eax + ecx*8]
+            lea eax, [edx*4 + gWreck_gallery_car_infos+0x14]
+            push eax
+            call BrMatrix34RollingBall
+            add esp, 0x10
+    L0046ef62:
+            mov eax, dword ptr [gFrontend_wrecks_pixelmap]
+            mov edx, dword ptr [esp + 0x14]
+            or edi, 0xffffffff
+            push 0
+            mov dword ptr [gPicked_wreck], edi
+            push offset WreckPick
+            movsx ecx, word ptr [eax + 0x3a]
+            sub edx, ecx
+            movsx ecx, word ptr [eax + 0x38]
+            sub edx, 0x37
+            push edx
+            mov edx, dword ptr [esp + 0x1c]
+            sub edx, ecx
+            mov ecx, dword ptr [gFrontend_wrecks_actor]
+            sub edx, 0x41
+            push edx
+            mov edx, dword ptr [gFrontend_wrecks_camera]
+            push eax
+            call DRScenePick2DXY
+            mov esi, dword ptr [gPicked_wreck]
+            cmp esi, edi
+            je L0046f0a5
+            cmp esi, dword ptr [gFrontend_wrecks_current]
+            jne L0046efdf
+            cmp dword ptr [gFrontend_wrecks_rotate_prev_x], edi
+            jne L0046f0a5
+            mov eax, dword ptr [esp + 0x10]
+            mov ecx, dword ptr [esp + 0x14]
+            mov dword ptr [gFrontend_wrecks_rotate_prev_x], eax
+            mov dword ptr [gFrontend_wrecks_rotate_prev_y], ecx
+            jmp L0046f0a5
+    L0046efdf:
+            mov eax, dword ptr [gPrev_frontend_mouse_down]
+            test eax, eax
+            jne L0046f0a5
+            mov ecx, dword ptr [gEffects_outlet]
+            mov edx, 0xbb8
+            call DRS3StartSound
+            mov ecx, dword ptr [gFrontend_wrecks_car_count]
+            lea eax, [esi + 2]
+            test eax, eax
+            jge L0046f00d
+    L0046f009:
+            add eax, ecx
+            js L0046f009
+    L0046f00d:
+            cmp eax, ecx
+            jl L0046f017
+    L0046f011:
+            sub eax, ecx
+            cmp eax, ecx
+            jge L0046f011
+    L0046f017:
+            mov edx, dword ptr [gFrontend_wrecks_current]
+            cmp edx, eax
+            jne L0046f02f
+            cmp ecx, 3
+            jle L0046f02f
+            add dword ptr [gFrontend_wrecks_pending_hscroll], 0x3c
+            jmp L0046f0ab
+    L0046f02f:
+            lea eax, [esi + 1]
+            test eax, eax
+            jge L0046f03a
+    L0046f036:
+            add eax, ecx
+            js L0046f036
+    L0046f03a:
+            cmp eax, ecx
+            jl L0046f044
+    L0046f03e:
+            sub eax, ecx
+            cmp eax, ecx
+            jge L0046f03e
+    L0046f044:
+            cmp edx, eax
+            jne L0046f051
+            add dword ptr [gFrontend_wrecks_pending_hscroll], 0x1e
+            jmp L0046f0ab
+    L0046f051:
+            lea eax, [esi - 2]
+            test eax, eax
+            jge L0046f05c
+    L0046f058:
+            add eax, ecx
+            js L0046f058
+    L0046f05c:
+            cmp eax, ecx
+            jl L0046f066
+    L0046f060:
+            sub eax, ecx
+            cmp eax, ecx
+            jge L0046f060
+    L0046f066:
+            cmp edx, eax
+            jne L0046f078
+            cmp ecx, 3
+            jle L0046f078
+            sub dword ptr [gFrontend_wrecks_pending_hscroll], 0x3c
+            jmp L0046f0ab
+    L0046f078:
+            lea eax, [esi - 1]
+            test eax, eax
+            jge L0046f083
+    L0046f07f:
+            add eax, ecx
+            js L0046f07f
+    L0046f083:
+            cmp eax, ecx
+            jl L0046f08d
+    L0046f087:
+            sub eax, ecx
+            cmp eax, ecx
+            jge L0046f087
+    L0046f08d:
+            cmp edx, eax
+            jne L0046f0ab
+            sub dword ptr [gFrontend_wrecks_pending_hscroll], 0x1e
+            jmp L0046f0ab
+    L0046f09a:
+            mov ecx, dword ptr [gFrontend_wrecks_car_count]
+            or edi, 0xffffffff
+            jmp L0046f0ab
+    L0046f0a5:
+            mov ecx, dword ptr [gFrontend_wrecks_car_count]
+    L0046f0ab:
+            mov eax, dword ptr [gFrontend_mouse_down]
+            test eax, eax
+            jne L0046f0e9
+            mov dword ptr [gFrontend_wrecks_rotate_prev_x], edi
+            mov dword ptr [gFrontend_wrecks_rotate_prev_y], edi
+            jmp L0046f0e9
+    L0046f0c2:
+            or eax, 0xffffffff
+            mov dword ptr [ebp + 0x40c], ebx
+            mov dword ptr [ebp + 0x408], eax
+            mov dword ptr [ebp + 0x560], eax
+            mov dword ptr [ebp + 0x6b8], eax
+            mov dword ptr [ebp + 0xd70], eax
+            mov ecx, dword ptr [gFrontend_wrecks_car_count]
+    L0046f0e9:
+            cmp ecx, 5
+            mov ebx, 5
+            jg L0046f0f5
+            mov ebx, ecx
+    L0046f0f5:
+            mov eax, ebx
+            mov edi, 0x1e
+            cdq
+            sub eax, edx
+            mov esi, eax
+            mov eax, dword ptr [gFrontend_wrecks_hscroll]
+            cdq
+            idiv edi
+            sar esi, 1
+            mov eax, esi
+            shl eax, 4
+            sub eax, esi
+            neg eax
+            shl eax, 1
+            sub eax, edx
+            mov dword ptr [esp + 0x1c], eax
+            mov eax, 1
+            fild dword ptr [esp + 0x1c]
+            cmp ecx, eax
+            fstp dword ptr [esp + 0x18]
+            jne L0046f130
+            or eax, 0xffffffff
+    L0046f130:
+            mov dword ptr [ebp + 0x560], eax
+            mov dword ptr [ebp + 0x6b8], eax
+            mov ecx, dword ptr [gFrontend_wrecks_hscroll]
+            mov eax, 0x88888889
+            imul ecx
+            add edx, ecx
+            sar edx, 4
+            mov ecx, edx
+            mov eax, edx
+            shr ecx, 0x1f
+            add eax, ecx
+            mov ecx, dword ptr [gFrontend_wrecks_car_count]
+            cdq
+            idiv ecx
+            mov edi, edx
+            sub edi, esi
+            jns L0046f16a
+    L0046f166:
+            add edi, ecx
+            js L0046f166
+    L0046f16a:
+            cmp edi, ecx
+            jl L0046f174
+    L0046f16e:
+            sub edi, ecx
+            cmp edi, ecx
+            jge L0046f16e
+    L0046f174:
+            xor eax, eax
+            test ecx, ecx
+            jle L0046f196
+            mov edx, offset gWreck_gallery_car_infos+0x10
+    L0046f17f:
+            mov ecx, dword ptr [edx]
+            inc eax
+            add edx, 0xa4
+            mov byte ptr [ecx + 0x20], 1
+            mov ecx, dword ptr [gFrontend_wrecks_car_count]
+            cmp eax, ecx
+            jl L0046f17f
+    L0046f196:
+            test ebx, ebx
+            jle L0046f2d7
+            mov dword ptr [esp + 0x1c], ebx
+            jmp L0046f1aa
+    L0046f1a4:
+            mov ecx, dword ptr [gFrontend_wrecks_car_count]
+    L0046f1aa:
+            test edi, edi
+            jge L0046f1b2
+    L0046f1ae:
+            add edi, ecx
+            js L0046f1ae
+    L0046f1b2:
+            cmp edi, ecx
+            jl L0046f1bc
+    L0046f1b6:
+            sub edi, ecx
+            cmp edi, ecx
+            jge L0046f1b6
+    L0046f1bc:
+            fld dword ptr [esp + 0x18]
+            fmul qword ptr [gDouble_0058a068+0x48]
+            lea edx, [edi + edi*4]
+            lea esi, [edi + edx*8]
+            shl esi, 2
+            mov ebp, dword ptr [esi + gWreck_gallery_car_infos+0x10]
+            add ebp, 0x2c
+            call _ftol
+            push eax
+            push ebp
+            call BrMatrix34RotateY
+            add esp, 8
+            push 0xf1c8
+            push ebp
+            call BrMatrix34PostRotateX
+            mov eax, dword ptr [gFrontend_wrecks_current]
+            add esp, 8
+            cmp edi, eax
+            jne L0046f212
+            fld dword ptr [gFrontend_wreck_bought_car_dz]
+            fsub qword ptr [gDouble_0058a068+0x50]
+            push ecx
+            fchs
+            _emit 0xd9
+        _emit 0x1c
+        _emit 0x24
+            jmp L0046f217
+    L0046f212:
+            push 0xbfc00000
+    L0046f217:
+            push 0
+            push 0
+            push ebp
+            call BrMatrix34PreTranslate
+            add esp, 0x10
+            lea eax, [esi + gWreck_gallery_car_infos+0x14]
+            lea ebx, [esi + gWreck_gallery_car_infos+0x74]
+            push eax
+            push ebx
+            call BrMatrix34Post
+            mov eax, dword ptr [esi + gWreck_gallery_car_infos+0x10]
+            add esp, 8
+            add eax, 0x50
+            mov ecx, eax
+            push ebx
+            push ebp
+            mov edx, dword ptr [ecx]
+            mov dword ptr [esp + 0x30], edx
+            mov edx, dword ptr [ecx + 4]
+            mov dword ptr [esp + 0x34], edx
+            mov ecx, dword ptr [ecx + 8]
+            mov dword ptr [esp + 0x38], ecx
+            xor ecx, ecx
+            mov dword ptr [eax], ecx
+            mov edx, dword ptr [esi + gWreck_gallery_car_infos+0x10]
+            mov dword ptr [edx + 0x54], ecx
+            mov eax, dword ptr [esi + gWreck_gallery_car_infos+0x10]
+            mov dword ptr [eax + 0x58], ecx
+            call BrMatrix34Pre
+            mov ecx, dword ptr [esi + gWreck_gallery_car_infos+0x10]
+            mov edx, dword ptr [esp + 0x30]
+            mov eax, dword ptr [esp + 0x34]
+            add ecx, 0x50
+            add esp, 8
+            mov dword ptr [ecx], edx
+            mov edx, dword ptr [esp + 0x30]
+            mov dword ptr [ecx + 4], eax
+            mov dword ptr [ecx + 8], edx
+            mov eax, dword ptr [esi + gWreck_gallery_car_infos+0x10]
+            mov byte ptr [eax + 0x20], 4
+            mov eax, dword ptr [edi*8 + gWreck_gallery_sell_infos]
+            test eax, eax
+            je L0046f2b5
+            mov ecx, dword ptr [esi + gWreck_gallery_car_infos+0x10]
+            mov byte ptr [ecx + 0x20], 1
+    L0046f2b5:
+            fld dword ptr [esp + 0x18]
+            fsub dword ptr [gDouble_0058a068+0x58]
+            mov eax, dword ptr [esp + 0x1c]
+            inc edi
+            dec eax
+            mov dword ptr [esp + 0x1c], eax
+            fstp dword ptr [esp + 0x18]
+            jne L0046f1a4
+            mov ebp, dword ptr [esp + 0x24]
+    L0046f2d7:
+            mov ecx, ebp
+            call FuckWithWidths
+            mov ecx, 0x33
+            call PDKeyDown
+            test eax, eax
+            jne L0046f312
+            mov ecx, 0x34
+            call PDKeyDown
+            test eax, eax
+            jne L0046f312
+            mov eax, dword ptr [gFrontend_mouse_down]
+            test eax, eax
+            je L0046f44d
+            cmp dword ptr [esp + 0x20], -1
+            je L0046f44d
+    L0046f312:
+            mov ecx, ebp
+            call ToggleSelection
+            mov eax, dword ptr [gFrontend_selected_item_index]
+            lea edx, [eax + eax*4]
+            lea ecx, [eax + edx*4]
+            lea edx, [eax + ecx*2]
+            mov edx, dword ptr [ebp + edx*8 + 0x134]
+            test edx, edx
+            je L0046f33b
+            mov ecx, ebp
+            call edx
+            mov eax, dword ptr [gFrontend_selected_item_index]
+    L0046f33b:
+            lea ecx, [eax + eax*4]
+            lea edx, [eax + ecx*4]
+            lea ecx, [eax + edx*2]
+            mov edx, 1
+            mov esi, dword ptr [ebp + ecx*8 + 0x13c]
+            lea ecx, [ebp + ecx*8]
+            cmp esi, edx
+            jne L0046f35e
+            mov dword ptr [gFrontend_leave_current_menu], edx
+    L0046f35e:
+            mov edx, dword ptr [ecx + 0x138]
+            test edx, edx
+            je L0046f44d
+            mov edx, dword ptr [gCurrent_frontend_spec]
+            mov dword ptr [edx + 0x118], eax
+            mov eax, dword ptr [gCurrent_frontend_spec]
+            xor edx, edx
+            mov ecx, dword ptr [eax + 0x8790]
+            test ecx, ecx
+            jle L0046f3aa
+            xor ecx, ecx
+    L0046f38b:
+            mov esi, dword ptr [eax + ecx + 0x87a0]
+            inc edx
+            mov dword ptr [eax + ecx + 0x87c0], esi
+            mov eax, dword ptr [gCurrent_frontend_spec]
+            add ecx, 0x34
+            cmp edx, dword ptr [eax + 0x8790]
+            jl L0046f38b
+    L0046f3aa:
+            mov ecx, ebp
+            call FRONTEND_DestroyMenu
+            mov eax, dword ptr [gFrontend_selected_item_index]
+            lea ecx, [eax + eax*4]
+            lea edx, [eax + ecx*4]
+            lea eax, [eax + edx*2]
+            mov ecx, dword ptr [ebp + eax*8 + 0x138]
+            mov dword ptr [gCurrent_frontend_spec], ecx
+            call FRONTEND_CreateMenu
+            mov edx, dword ptr [gCurrent_frontend_spec]
+            mov eax, dword ptr [ebp + 0x114]
+            cmp edx, eax
+            je L0046f3ed
+            mov dword ptr [edx + 0x114], ebp
+            mov edx, dword ptr [gCurrent_frontend_spec]
+    L0046f3ed:
+            mov ecx, ebp
+            call Morph_Initialise
+            mov ecx, dword ptr [gCurrent_frontend_spec]
+            cmp ecx, offset gFrontend_QUIT
+            jne L0046f40e
+            mov dword ptr [gFrontend_selected_item_index], 0
+            jmp L0046f41a
+    L0046f40e:
+            mov edx, dword ptr [ecx + 0x118]
+            mov dword ptr [gFrontend_selected_item_index], edx
+    L0046f41a:
+            mov eax, dword ptr [ecx + 0x8790]
+            xor edx, edx
+            test eax, eax
+            jle L0046f448
+            xor eax, eax
+    L0046f428:
+            mov esi, dword ptr [ecx + eax + 0x87c0]
+            inc edx
+            mov dword ptr [ecx + eax + 0x87a0], esi
+            mov ecx, dword ptr [gCurrent_frontend_spec]
+            add eax, 0x34
+            cmp edx, dword ptr [ecx + 0x8790]
+            jl L0046f428
+    L0046f448:
+            call UpdateScrollPositions
+    L0046f44d:
+            mov ecx, dword ptr [gFrontend_leave_current_menu]
+            xor eax, eax
+            pop edi
+            pop esi
+            test ecx, ecx
+            pop ebp
+            pop ebx
+            setne al
+            add esp, 0x24
+            ret
+    L0046f462:
+            mov edx, 1
+            jmp L0046ee1a
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0046e720

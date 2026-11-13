@@ -77,6 +77,17 @@ int gValid_stashed_save_game;
 // GLOBAL: CARMA2_HW 0x00763820
 tFrontend_slider gOptions_sound_slider;
 
+#ifdef CARPOCALYPSE2_MATCHING
+extern void C2_HOOK_FASTCALL EdgeTriggerModeOff(void);
+extern void C2_HOOK_FASTCALL EdgeTriggerModeOn(void);
+extern void C2_HOOK_FASTCALL FuckWithWidths(tFrontend_spec* pFrontend);
+extern void C2_HOOK_FASTCALL LoadMenuSettings(tFrontend_spec* pFrontend);
+extern void C2_HOOK_FASTCALL SelectThisItemIn(tFrontend_spec* pFrontend, int pGroup, int pValue);
+extern void C2_HOOK_FASTCALL WaitForNoKeys(void);
+extern char gDouble_0058a068[];
+extern tNet_mode gNet_mode;
+extern tProgram_state gProgram_state;
+#endif
 // FUNCTION: CARMA2_HW 0x00474660
 void C2_HOOK_FASTCALL Slider_EffectsProc(tFrontend_slider* pSlider) {
 
@@ -96,7 +107,8 @@ void C2_HOOK_FASTCALL DisplayVolumeSettings(tFrontend_spec* pFrontend) {
 }
 
 // FUNCTION: CARMA2_HW 0x00474530
-int C2_HOOK_FASTCALL Options_Infunc(tFrontend_spec* pFrontend) {
+int C2_NAKED C2_HOOK_FASTCALL Options_Infunc(tFrontend_spec* pFrontend) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     if (!pFrontend->loaded) {
         LoadMenuSettings(pFrontend);
@@ -139,6 +151,87 @@ int C2_HOOK_FASTCALL Options_Infunc(tFrontend_spec* pFrontend) {
         pFrontend->items[4].enabled = kFrontendItemEnabled_disabled;
     }
     return 1;
+#else
+    __asm {
+            push ebx
+            push esi
+            mov esi, ecx
+            xor ebx, ebx
+            push edi
+            mov edi, 1
+            cmp dword ptr [esi + 0xad1c], ebx
+            jne L00474560
+            call LoadMenuSettings
+            mov ecx, esi
+            call FuckWithWidths
+            mov eax, dword ptr [esi + 0x114]
+            cmp eax, ebx
+            je L00474560
+            mov dword ptr [eax + 0xb8c0], edi
+    L00474560:
+            mov dword ptr [gFrontend_scrollbars_updated], ebx
+            call EdgeTriggerModeOff
+            call WaitForNoKeys
+            call EdgeTriggerModeOn
+            fild dword ptr [gProgram_state+0x74]
+            mov eax, dword ptr [gProgram_state+0x70]
+            mov dword ptr [gConnected_items], ebx
+            cmp eax, 0x80
+            mov dword ptr [gPTR_00686508], ebx
+            fmul qword ptr [gDouble_0058a068+0xa0]
+            mov byte ptr [gOptions_sound_slider], bl
+            mov dword ptr [gOptions_sound_slider+0x4], 0xa
+            mov dword ptr [gOptions_sound_slider+0x8], 6
+            mov dword ptr [gOptions_sound_slider+0xc], 0xec
+            mov dword ptr [gOptions_sound_slider+0x1c], 0x474660
+            mov dword ptr [gOptions_sound_slider+0x14], 0
+            fstp dword ptr [gOptions_sound_slider+0x10]
+            mov dword ptr [gOptions_sound_slider+0x18], 0x3f800000
+            mov dword ptr [gOptions_sound_slider+0x20], ebx
+            mov dword ptr [gCurrent_frontend_scrollbars], 0x763820
+            jl L004745f5
+            push 0xe
+            jmp L004745f7
+    L004745f5:
+            push 0xf
+    L004745f7:
+            mov edx, edi
+            mov ecx, esi
+            call SelectThisItemIn
+            mov ecx, dword ptr [gProgram_state+0x28]
+            or eax, 0xffffffff
+            cmp ecx, ebx
+            je L0047461b
+            mov dword ptr [esi + 0x158], edi
+            mov dword ptr [esi + 0x2b0], edi
+            jmp L00474639
+    L0047461b:
+            mov dword ptr [esi + 0x158], eax
+            mov ecx, dword ptr [gProgram_state+0x2c]
+            cmp ecx, ebx
+            je L00474633
+            mov dword ptr [esi + 0x2b0], edi
+            jmp L00474639
+    L00474633:
+            mov dword ptr [esi + 0x2b0], eax
+    L00474639:
+            cmp dword ptr [gNet_mode], ebx
+            jne L0047464d
+            mov dword ptr [esi + 0x6b8], edi
+            mov eax, edi
+            pop edi
+            pop esi
+            pop ebx
+            ret
+    L0047464d:
+            mov dword ptr [esi + 0x6b8], eax
+            mov eax, edi
+            pop edi
+            pop esi
+            pop ebx
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00474690

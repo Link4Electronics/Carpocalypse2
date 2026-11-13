@@ -41,6 +41,14 @@ br_resource_class v1db_resourceClasses[] = {
 // GLOBAL: CARMA2_HW 0x0079efe0
 br_v1db_state v1db;
 
+#ifdef CARPOCALYPSE2_MATCHING
+extern void* C2_HOOK_CDECL BrMemSet();
+extern void* C2_HOOK_STDCALL BrRegistryNew(br_registry* reg);
+extern void* C2_HOOK_CDECL BrResAllocate();
+extern br_resource_class* C2_HOOK_CDECL BrResClassAdd();
+extern br_material* C2_HOOK_CDECL SetupDefaultMaterial();
+extern br_model _BrDefaultModel;
+#endif
 // FUNCTION: CARMA2_HW 0x00525860
 br_error C2_HOOK_CDECL BrV1dbBegin(void) {
     int i;

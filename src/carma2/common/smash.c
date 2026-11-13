@@ -11,6 +11,35 @@
 #include "carpocalypse2_macros.h"
 // GLOBAL: CARMA2_HW 0x006a55c8
 tExplosion gExplosions[50];
+#ifdef CARPOCALYPSE2_MATCHING
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern void C2_HOOK_CDECL BrMatrix34Identity();
+extern void C2_HOOK_FASTCALL DoNetSmash(tQueued_net_smash* pSmash);
+extern int C2_HOOK_FASTCALL FUN_004f0d50(const float* pPoint, const float* pNormal, float pPlane_distance, const float* pVertex0, const float* pVertex1, const float* pVertex2);
+extern void C2_HOOK_FASTCALL FillInBounds(tBounds* bnds);
+extern int C2_HOOK_FASTCALL FindFacesInBox(tBounds* bnds, tFace_ref* face_list, int max_face, tWorld_callbacks* pWorld_callbacks);
+extern void C2_HOOK_FASTCALL FlushSmashQueue(int pFlush_powerups);
+extern tCar_spec* C2_HOOK_FASTCALL GetCarSpec(tVehicle_type pCategory, int pIndex);
+extern float C2_HOOK_FASTCALL SmashEnvironment(tPhysics_object* pObject, undefined4* pArg2, float pArg3, br_vector3* pArg4, br_vector3* pArg5, br_vector3* pArg6, int pArg7, int pArg8);
+extern int gCount_host_smashes;
+extern int gINT_006a8294;
+extern tStored_smash* gNet_host_smashes;
+extern tNet_mode gNet_mode;
+extern tNet_game_player_info gNet_players[12];
+extern int gNumber_of_net_players;
+extern tU32 gPHIL_last_physics_tick;
+extern tProgram_state gProgram_state;
+extern tQueued_net_smash gQueued_net_smashes[50];
+extern tWorld_callbacks gWorld_callbacks;
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern void C2_HOOK_FASTCALL ActuallyRepairSmash(tCar_spec* pCar_spec, tCar_crush_smashable_part* pSmashable, int pLevel);
+extern tU32 C2_HOOK_FASTCALL GetTotalTime(void);
+extern tRepair_animation gRepair_animations[25];
+#endif
 // FUNCTION: CARMA2_HW 0x004ea880
 
 void C2_HOOK_FASTCALL InitExplosions(void) {
@@ -244,7 +273,8 @@ void C2_HOOK_FASTCALL AddRepairAnimationToQueue(tCar_spec* pCar_spec, tCar_crush
 }
 
 // FUNCTION: CARMA2_HW 0x004ef910
-void C2_HOOK_FASTCALL RepairSmash(tCar_spec* pCar_spec, tCar_crush_buffer_entry* pSmash_data) {
+void C2_NAKED C2_HOOK_FASTCALL RepairSmash(tCar_spec* pCar_spec, tCar_crush_buffer_entry* pSmash_data) {
+#ifndef CARPOCALYPSE2_MATCHING
     tCar_crush_smashable_part* smashable = pSmash_data->smashables;
     int i;
 
@@ -254,6 +284,84 @@ void C2_HOOK_FASTCALL RepairSmash(tCar_spec* pCar_spec, tCar_crush_buffer_entry*
             AddRepairAnimationToQueue(pCar_spec, smashable);
         }
     }
+#else
+    __asm {
+            push ecx
+            push ebx
+            push ebp
+            push esi
+            mov esi, edx
+            xor ebp, ebp
+            push edi
+            cmp word ptr [esi + 0x38], bp
+            mov edi, dword ptr [esi + 0x3c]
+            mov dword ptr [esp + 0x10], esi
+            mov ebx, ecx
+            jbe L004ef9b3
+    L004ef92c:
+            mov eax, dword ptr [edi + 0x4c]
+            test eax, eax
+            je L004ef9a1
+            dec eax
+            mov edx, edi
+            push eax
+            mov ecx, ebx
+            call ActuallyRepairSmash
+            or edx, 0xffffffff
+            xor eax, eax
+            mov ecx, offset gRepair_animations
+    L004ef948:
+            cmp dword ptr [ecx], edi
+            je L004ef95a
+            add ecx, 0xc
+            inc eax
+            cmp ecx, offset gRepair_animations+0x12c
+            jl L004ef948
+            jmp L004ef95c
+    L004ef95a:
+            mov edx, eax
+    L004ef95c:
+            test edx, edx
+            jge L004ef980
+            xor eax, eax
+            mov ecx, offset gRepair_animations
+    L004ef967:
+            cmp dword ptr [ecx], 0
+            je L004ef97a
+            add ecx, 0xc
+            inc eax
+            cmp ecx, offset gRepair_animations+0x12c
+            jl L004ef967
+            jmp L004ef97c
+    L004ef97a:
+            mov edx, eax
+    L004ef97c:
+            test edx, edx
+            jl L004ef9a1
+    L004ef980:
+            lea esi, [eax + eax*2]
+            shl esi, 2
+            mov dword ptr [esi + gRepair_animations], edi
+            call GetTotalTime
+            mov dword ptr [esi + gRepair_animations+0x4], eax
+            mov dword ptr [esi + gRepair_animations+0x8], ebx
+            mov esi, dword ptr [esp + 0x10]
+    L004ef9a1:
+            xor eax, eax
+            inc ebp
+            mov ax, word ptr [esi + 0x38]
+            add edi, 0x7c
+            cmp ebp, eax
+            jl L004ef92c
+    L004ef9b3:
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            pop ecx
+            ret
+    }
+#endif
 }
 
 // TotallyRepairSmash
@@ -305,7 +413,6 @@ static __inline void C2_HOOK_FASTCALL InitDecals(void) {
 
 // FUNCTION: CARMA2_HW 0x004efe00
 void C2_HOOK_FASTCALL InitSmashing(void) {
-
     InitGlassFragments();
     InitDecals();
 }
@@ -352,13 +459,11 @@ void C2_HOOK_FASTCALL CleanUpSmashStuff(void) {
 
 // FUNCTION: CARMA2_HW 0x004f6020
 void C2_HOOK_FASTCALL TurnOnSmashDecal(int pIndex) {
-
     BrActorAdd(gOther_selfs[0], gDecals[pIndex].actor);
 }
 
 // FUNCTION: CARMA2_HW 0x004f6040
 void C2_HOOK_FASTCALL TurnOffSmashDecal(int pIndex) {
-
     BrActorRemove(gDecals[pIndex].actor);
 }
 
@@ -558,7 +663,8 @@ void C2_HOOK_FASTCALL SmashRemoveSomeFaces(br_model* pModel, int pCount) {
 // ChangeSmashTexture
 
 // FUNCTION: CARMA2_HW 0x004f60b0
-void C2_HOOK_FASTCALL QueueNetSmash(tQueued_net_smash* pSmash) {
+void C2_NAKED C2_HOOK_FASTCALL QueueNetSmash(tQueued_net_smash* pSmash) {
+#ifndef CARPOCALYPSE2_MATCHING
     int i;
     int is_host;
     tQueued_net_smash* pQueued_smash;
@@ -589,12 +695,220 @@ queue_net_smash_found:
         gCount_host_smashes++;
         *pHost_smash = *pSmash;
     }
+#else
+    __asm {
+            mov eax, dword ptr [gPHIL_last_physics_tick]
+            push esi
+            test eax, eax
+            push edi
+            mov edx, ecx
+            je L004f611d
+            cmp eax, dword ptr [edx + 4]
+            jae L004f611d
+            xor eax, eax
+            mov edi, offset gQueued_net_smashes
+    L004f60c9:
+            mov ecx, dword ptr [edi + 4]
+            test ecx, ecx
+            je L004f60dc
+            inc eax
+            add edi, 0x38
+            cmp eax, 0x32
+            jl L004f60c9
+            pop edi
+            pop esi
+            ret
+    L004f60dc:
+            mov eax, dword ptr [gNet_mode]
+            mov ecx, 0xe
+            mov esi, edx
+            cmp eax, 2
+            rep movsd
+            jne L004f6124
+            mov eax, dword ptr [gCount_host_smashes]
+            cmp eax, 0x3e8
+            jge L004f6124
+            mov esi, dword ptr [gNet_host_smashes]
+            mov ecx, eax
+            shl ecx, 3
+            sub ecx, eax
+            inc eax
+            mov dword ptr [gCount_host_smashes], eax
+            lea edi, [esi + ecx*8]
+            mov ecx, 0xe
+            mov esi, edx
+            rep movsd
+            pop edi
+            pop esi
+            ret
+    L004f611d:
+            mov ecx, edx
+            call DoNetSmash
+    L004f6124:
+            pop edi
+            pop esi
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004f6130
-void C2_HOOK_FASTCALL DoNetSmash(tQueued_net_smash* pSmash) {
+void C2_NAKED C2_HOOK_FASTCALL DoNetSmash(tQueued_net_smash* pSmash) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     NOT_IMPLEMENTED();
+#else
+    __asm {
+            sub esp, 0x6c0
+            push ebx
+            push ebp
+            push esi
+            mov esi, ecx
+            push edi
+            mov dword ptr [esp + 0x18], esi
+            mov ecx, dword ptr [esi + 8]
+            cmp ecx, -1
+            je L004f619c
+            mov eax, dword ptr [gNet_mode]
+            test eax, eax
+            je L004f6170
+            cmp ecx, dword ptr [gNumber_of_net_players]
+            jge L004f616c
+            lea eax, [ecx + ecx*2]
+            lea eax, [eax + eax*8]
+            shl eax, 1
+            sub eax, ecx
+            mov eax, dword ptr [eax*4 + gNet_players+0xc8]
+            jmp L004f618f
+    L004f616c:
+            xor eax, eax
+            jmp L004f618f
+    L004f6170:
+            test ecx, 0xffffff00
+            jne L004f617f
+            mov eax, offset gProgram_state+0xac
+            jmp L004f618f
+    L004f617f:
+            mov edx, ecx
+            and edx, 0xff
+            sar ecx, 8
+            call GetCarSpec
+    L004f618f:
+            test eax, eax
+            je L004f619c
+            mov ecx, dword ptr [eax + 8]
+            mov dword ptr [esp + 0x10], ecx
+            jmp L004f61a4
+    L004f619c:
+            mov dword ptr [esp + 0x10], 0
+    L004f61a4:
+            mov eax, dword ptr [esp + 0x10]
+            test eax, eax
+            je L004f62d1
+            lea eax, [esp + 0x60]
+            lea edx, [esp + 0x60]
+            push eax
+            mov dword ptr [esp + 0x20], edx
+            call BrMatrix34Identity
+            mov ecx, dword ptr [esi + 0x10]
+            mov edx, dword ptr [esi + 0x14]
+            lea eax, [esi + 0x10]
+            mov dword ptr [esp + 0x88], ecx
+            mov dword ptr [esp + 0x18], eax
+            mov eax, dword ptr [esi + 0x18]
+            add esp, 4
+            lea ecx, [esp + 0x1c]
+            mov dword ptr [esp + 0x88], edx
+            mov dword ptr [esp + 0x8c], eax
+            mov dword ptr [esp + 0x20], 0xbd4ccccd
+            mov dword ptr [esp + 0x24], 0xbd4ccccd
+            mov dword ptr [esp + 0x28], 0xbd4ccccd
+            mov dword ptr [esp + 0x2c], 0x3d4ccccd
+            mov dword ptr [esp + 0x30], 0x3d4ccccd
+            mov dword ptr [esp + 0x34], 0x3d4ccccd
+            call FillInBounds
+            lea edx, [esp + 0x90]
+            lea ecx, [esp + 0x1c]
+            push offset gWorld_callbacks
+            push 0x14
+            call FindFacesInBox
+            mov ebp, eax
+            xor edi, edi
+            test ebp, ebp
+            lea ebx, [esp + 0x90]
+            jle L004f62d1
+            lea esi, [esp + 0xa0]
+    L004f6254:
+            mov eax, dword ptr [esi + 0x34]
+            lea ecx, [esi + 0xc]
+            push ecx
+            mov ecx, dword ptr [esp + 0x18]
+            lea edx, [esi - 0xc]
+            push esi
+            push edx
+            push eax
+            lea edx, [esi + 0x24]
+            call FUN_004f0d50
+            test eax, eax
+            jne L004f6287
+            inc edi
+            add ebx, 0x50
+            add esi, 0x50
+            cmp edi, ebp
+            jl L004f6254
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x6c0
+            ret
+    L004f6287:
+            mov eax, dword ptr [esp + 0x18]
+            push 1
+            mov ecx, dword ptr [eax + 0x34]
+            and ecx, 1
+            mov dword ptr [gINT_006a8294], ecx
+            mov edx, dword ptr [eax + 0x34]
+            shr edx, 1
+            and edx, 1
+            lea ecx, [eax + 0x28]
+            push edx
+            lea edx, [eax + 0x1c]
+            push ecx
+            mov ecx, dword ptr [esp + 0x20]
+            push edx
+            mov edx, dword ptr [eax + 0xc]
+            push ecx
+            mov ecx, dword ptr [esp + 0x24]
+            push edx
+            mov edx, ebx
+            call SmashEnvironment
+            xor ecx, ecx
+            fstp st(0)
+            call FlushSmashQueue
+            mov dword ptr [gINT_006a8294], 0
+    L004f62d1:
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x6c0
+            ret
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // ReceivedSmashEnvironment

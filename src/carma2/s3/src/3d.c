@@ -52,9 +52,34 @@ br_vector3* gS3_listener_left_ptr;
 int gS3_listener_left_is_brender;
 
 
+#ifdef CARPOCALYPSE2_MATCHING
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern tS3_channel* C2_HOOK_FASTCALL S3AllocateChannel(tS3_outlet* pOutlet, int pPriority);
+extern int C2_HOOK_FASTCALL S3Calculate3D(tS3_channel* pChannel, int pAmbient);
+extern int C2_HOOK_FASTCALL S3CalculatePriority(int pPriority, int pVolumeFactor);
+extern int C2_HOOK_FASTCALL S3ExecuteSampleFilterFuncs(tS3_channel* pChannel);
+extern int C2_HOOK_FASTCALL S3GenerateTag(tS3_outlet* outlet);
+extern tS3_descriptor* C2_HOOK_FASTCALL S3GetDescriptorByID(int pSample_id);
+extern int C2_HOOK_FASTCALL S3IRandomBetweenLog(int pMin, int pMax, int pDefault);
+extern int C2_HOOK_FASTCALL S3IRandomBetween__dup(int pMin, int pMax, int pDefault);
+extern tS3_error_codes C2_HOOK_FASTCALL S3LoadSample(int pSample_id);
+extern int C2_HOOK_FASTCALL S3PlaySample(tS3_channel* pChannel, tS3_descriptor* pDescriptor);
+extern int C2_HOOK_FASTCALL S3StopChannel(tS3_channel* pChannel);
+extern void __cdecl _ftol();
+extern tS3_channel gS3_channel_template;
+extern int gS3_enabled;
+extern tS3_error_codes gS3_last_error;
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern int gS3_delta_time;
+extern int gS3_inside_cockpit;
+extern char rendererStateStoredDispatch[];
+#endif
 // FUNCTION: CARMA2_HW 0x00567ab8
 void C2_HOOK_FASTCALL S3StopSoundSource(tS3_sound_source* src) {
-
     if (gS3_enabled) {
         if (src == NULL) {
             return;
@@ -70,7 +95,8 @@ void C2_HOOK_FASTCALL S3StopSoundSource(tS3_sound_source* src) {
 }
 
 // FUNCTION: CARMA2_HW 0x00567875
-void C2_HOOK_FASTCALL S3UpdateSoundSource(tS3_outlet* outlet, tS3_sound_tag tag, tS3_sound_source* src, float pMax_distance_squared, int pPeriod, tS3_repeats pAmbient_repeats, tS3_volume pVolume, int pPitch, tS3_speed pSpeed) {
+void C2_NAKED C2_HOOK_FASTCALL S3UpdateSoundSource(tS3_outlet* outlet, tS3_sound_tag tag, tS3_sound_source* src, float pMax_distance_squared, int pPeriod, tS3_repeats pAmbient_repeats, tS3_volume pVolume, int pPitch, tS3_speed pSpeed) {
+#ifndef CARPOCALYPSE2_MATCHING
     tS3_channel* channel;
     int is_sample;
 
@@ -159,6 +185,203 @@ void C2_HOOK_FASTCALL S3UpdateSoundSource(tS3_outlet* outlet, tS3_sound_tag tag,
             src->tag = 0;
         }
     }
+#else
+    __asm {
+            push ebp
+            mov ebp, esp
+            sub esp, 0x1c
+            mov dword ptr [ebp - 0x14], edx
+            mov dword ptr [ebp - 0x10], ecx
+            mov dword ptr [ebp - 4], 0
+            cmp dword ptr [gS3_enabled], 0
+            je L00567ab2
+            cmp dword ptr [ebp + 8], 0
+            jne L005678a0
+            jmp L00567ab2
+    L005678a0:
+            mov eax, dword ptr [ebp + 8]
+            mov ecx, dword ptr [eax]
+            mov dword ptr [ebp - 0xc], ecx
+            cmp dword ptr [ebp - 0x14], -1
+            je L0056790f
+            mov edx, dword ptr [ebp + 8]
+            mov eax, dword ptr [edx + 0x28]
+            cmp eax, dword ptr [ebp - 0x14]
+            je L0056790f
+            mov ecx, dword ptr [ebp - 0x14]
+            call S3GetDescriptorByID
+            mov dword ptr [ebp - 8], eax
+            cmp dword ptr [ebp - 8], 0
+            jne L005678cf
+            jmp L00567ab2
+    L005678cf:
+            mov ecx, dword ptr [ebp - 8]
+            cmp dword ptr [ecx + 4], 0
+            jne L0056790f
+            mov edx, dword ptr [ebp + 8]
+            mov eax, dword ptr [ebp - 0x14]
+            mov dword ptr [edx + 0x28], eax
+            mov ecx, dword ptr [ebp - 8]
+            cmp dword ptr [ecx + 0x40], 0
+            je L005678f7
+            mov edx, dword ptr [ebp - 8]
+            mov eax, dword ptr [edx + 0x30]
+            and eax, 2
+            test eax, eax
+            je L00567908
+    L005678f7:
+            mov ecx, dword ptr [ebp - 0x14]
+            call S3LoadSample
+            test eax, eax
+            jne L00567908
+            jmp L00567ab2
+    L00567908:
+            mov dword ptr [ebp - 4], 1
+    L0056790f:
+            cmp dword ptr [ebp + 0x20], -1
+            je L0056792b
+            cmp dword ptr [ebp + 0x20], 1
+            jge L00567922
+            mov dword ptr [ebp + 0x20], 0x10000
+    L00567922:
+            mov ecx, dword ptr [ebp + 8]
+            mov edx, dword ptr [ebp + 0x20]
+            mov dword ptr [ecx + 0x3c], edx
+    L0056792b:
+            cmp dword ptr [ebp + 0x1c], -1
+            je L005679bd
+            cmp dword ptr [ebp + 0x1c], 1
+            jge L00567942
+            mov dword ptr [ebp + 0x1c], 0x10000
+    L00567942:
+            mov eax, dword ptr [ebp + 8]
+            mov ecx, dword ptr [ebp + 0x1c]
+            mov dword ptr [eax + 0x38], ecx
+            cmp dword ptr [ebp - 0xc], 0
+            je L005679bd
+            mov edx, dword ptr [ebp - 0xc]
+            cmp dword ptr [edx + 0x60], 0
+            je L005679bd
+            mov eax, dword ptr [ebp - 0xc]
+            mov ecx, dword ptr [eax + 0x60]
+            cmp dword ptr [ecx + 4], 0
+            jne L005679bd
+            mov edx, dword ptr [ebp - 0xc]
+            mov eax, dword ptr [edx + 0x60]
+            mov ecx, dword ptr [eax + 0x40]
+            mov edx, dword ptr [ecx + 4]
+            push edx
+            mov eax, dword ptr [ebp - 0xc]
+            mov ecx, dword ptr [eax + 0x60]
+            mov edx, dword ptr [ecx + 0x1c]
+            mov eax, dword ptr [ebp - 0xc]
+            mov ecx, dword ptr [eax + 0x60]
+            mov ecx, dword ptr [ecx + 0x18]
+            call S3IRandomBetweenLog
+            mov edx, dword ptr [ebp - 0xc]
+            mov dword ptr [edx + 0x54], eax
+            mov eax, dword ptr [ebp - 0xc]
+            fild dword ptr [eax + 0x54]
+            fstp qword ptr [ebp - 0x1c]
+            push -0x10
+            mov ecx, dword ptr [ebp + 8]
+            fild dword ptr [ecx + 0x38]
+            sub esp, 8
+            fstp qword ptr [esp]
+            call ldexp
+            add esp, 0xc
+            fmul qword ptr [ebp - 0x1c]
+            call _ftol
+            mov edx, dword ptr [ebp - 0xc]
+            mov dword ptr [edx + 0x54], eax
+    L005679bd:
+            cmp dword ptr [ebp + 0x14], -1
+            je L005679e8
+            xor eax, eax
+            cmp dword ptr [ebp + 0x14], 0
+            setle al
+            dec eax
+            and eax, dword ptr [ebp + 0x14]
+            mov ecx, dword ptr [ebp + 8]
+            mov dword ptr [ecx + 0x20], eax
+            cmp dword ptr [ebp - 0xc], 0
+            je L005679e8
+            mov edx, dword ptr [ebp - 0xc]
+            mov eax, dword ptr [ebp + 8]
+            mov ecx, dword ptr [eax + 0x20]
+            mov dword ptr [edx + 0xc], ecx
+    L005679e8:
+            cmp dword ptr [ebp + 0xc], 0xbf800000
+            je L00567a09
+            mov edx, dword ptr [ebp + 8]
+            mov eax, dword ptr [ebp + 0xc]
+            mov dword ptr [edx + 0x2c], eax
+            cmp dword ptr [ebp - 0xc], 0
+            je L00567a09
+            mov ecx, dword ptr [ebp - 0xc]
+            mov edx, dword ptr [ebp + 0xc]
+            mov dword ptr [ecx + 0x58], edx
+    L00567a09:
+            cmp dword ptr [ebp + 0x10], -1
+            je L00567a18
+            mov eax, dword ptr [ebp + 8]
+            mov ecx, dword ptr [ebp + 0x10]
+            mov dword ptr [eax + 0x30], ecx
+    L00567a18:
+            cmp dword ptr [ebp + 0x18], -1
+            je L00567a5e
+            cmp dword ptr [ebp + 0x18], 0xff
+            jle L00567a2e
+            mov dword ptr [ebp + 0x18], 0xff
+    L00567a2e:
+            cmp dword ptr [ebp + 0x18], 0
+            jge L00567a3b
+            mov dword ptr [ebp + 0x18], 0
+    L00567a3b:
+            mov edx, dword ptr [ebp + 8]
+            mov eax, dword ptr [edx + 0x34]
+            cmp eax, dword ptr [ebp + 0x18]
+            je L00567a4f
+            mov ecx, dword ptr [ebp + 8]
+            mov edx, dword ptr [ebp + 0x18]
+            mov dword ptr [ecx + 0x34], edx
+    L00567a4f:
+            cmp dword ptr [ebp - 0xc], 0
+            je L00567a5e
+            mov eax, dword ptr [ebp - 0xc]
+            mov ecx, dword ptr [ebp + 0x18]
+            mov dword ptr [eax + 0x24], ecx
+    L00567a5e:
+            cmp dword ptr [ebp - 0xc], 0
+            je L00567ab2
+            mov edx, dword ptr [ebp - 0xc]
+            mov eax, dword ptr [edx + 0x74]
+            cmp eax, dword ptr [ebp + 8]
+            je L00567a77
+            mov ecx, dword ptr [ebp - 0xc]
+            call S3StopChannel
+    L00567a77:
+            cmp dword ptr [ebp + 0x18], 0
+            je L00567a83
+            cmp dword ptr [ebp - 4], 0
+            je L00567ab2
+    L00567a83:
+            mov ecx, dword ptr [ebp - 0xc]
+            mov dword ptr [ecx + 0x14], 0
+            mov edx, dword ptr [ebp - 0xc]
+            mov dword ptr [edx + 8], 1
+            mov ecx, dword ptr [ebp - 0xc]
+            call S3StopChannel
+            mov eax, dword ptr [ebp + 8]
+            mov dword ptr [eax], 0
+            mov ecx, dword ptr [ebp + 8]
+            mov dword ptr [ecx + 0x40], 0
+    L00567ab2:
+            mov esp, ebp
+            pop ebp
+            ret 0x1c
+    }
+#endif
 }
 
 #define S3_FUN_00565e39_MACRO(A1, A2, A3) \
@@ -177,14 +400,12 @@ void C2_HOOK_FASTCALL S3UpdateSoundSource(tS3_outlet* outlet, tS3_sound_tag tag,
 
 // FUNCTION: CARMA2_HW 0x00565e39
 int C2_HOOK_STDCALL FUN_00565e39(float a1, float a2, float a3) {
-
     S3_FUN_00565e39_MACRO(a1, a2, a3);
     return 0;
 }
 
 // FUNCTION: CARMA2_HW 0x00565d70
 int C2_HOOK_STDCALL S3Set3DSoundEnvironment(float a1, float a2, float a3) {
-
     S3_FUN_00565e39_MACRO(a1, a2, a3);
     gS3_listener_position_now.v[0] = gS3_listener_position_now.v[1] = gS3_listener_position_now.v[2] = 0.0f;
     gS3_listener_vel_now.v[0] =  gS3_listener_vel_now.v[1] = gS3_listener_vel_now.v[2] = 0.0f;
@@ -194,7 +415,6 @@ int C2_HOOK_STDCALL S3Set3DSoundEnvironment(float a1, float a2, float a3) {
 
 // FUNCTION: CARMA2_HW 0x00565ec7
 void C2_HOOK_FASTCALL S3CopyBrVector3(br_vector3* pDest, br_vector3* pSrc) {
-
     pDest->v[0] = pSrc->v[0];
     pDest->v[1] = pSrc->v[1];
     pDest->v[2] = pSrc->v[2];
@@ -202,7 +422,6 @@ void C2_HOOK_FASTCALL S3CopyBrVector3(br_vector3* pDest, br_vector3* pSrc) {
 
 // FUNCTION: CARMA2_HW 0x0056770a
 void C2_HOOK_FASTCALL S3CopyS3Vector3(tS3_vector3* pDest, tS3_vector3* pSrc) {
-
     pDest->x = pSrc->x;
     pDest->y = pSrc->y;
     pDest->z = pSrc->z;
@@ -210,7 +429,6 @@ void C2_HOOK_FASTCALL S3CopyS3Vector3(tS3_vector3* pDest, tS3_vector3* pSrc) {
 
 // FUNCTION: CARMA2_HW 0x00565faa
 void C2_HOOK_FASTCALL S3BindListenerPositionBRender(br_vector3* pos) {
-
     gS3_listener_pos_ptr = pos;
     gS3_listener_pos_is_brender = 1;
     S3CopyBrVector3(&gS3_listener_position_old, pos);
@@ -218,20 +436,19 @@ void C2_HOOK_FASTCALL S3BindListenerPositionBRender(br_vector3* pos) {
 
 // FUNCTION: CARMA2_HW 0x00565ff1
 void C2_HOOK_FASTCALL S3BindListenerVelocityBRender(br_vector3* vel) {
-
     gS3_listener_vel_ptr = vel;
     gS3_listener_vel_is_brender = 1;
 }
 
 // FUNCTION: CARMA2_HW 0x0056602b
 void C2_HOOK_FASTCALL S3BindListenerLeftBRender(br_vector3* left) {
-
     gS3_listener_left_ptr = left;
     gS3_listener_left_is_brender = 1;
 }
 
 // FUNCTION: CARMA2_HW 0x00566048
-int C2_HOOK_FASTCALL S3StartSound3D(tS3_outlet *pOutlet, int pSound, const br_vector3* pInitial_position, const br_vector3* pInitial_velocity, int pRepeats, int pVolume, int pPitch, int pSpeed) {
+int C2_NAKED C2_HOOK_FASTCALL S3StartSound3D(tS3_outlet *pOutlet, int pSound, const br_vector3* pInitial_position, const br_vector3* pInitial_velocity, int pRepeats, int pVolume, int pPitch, int pSpeed) {
+#ifndef CARPOCALYPSE2_MATCHING
     tS3_descriptor* descriptor;
     tS3_channel* channel;
     float rate;
@@ -321,10 +538,252 @@ int C2_HOOK_FASTCALL S3StartSound3D(tS3_outlet *pOutlet, int pSound, const br_ve
         }
     }
     return 0;
+#else
+    __asm {
+            push ebp
+            mov ebp, esp
+            sub esp, 0x24
+            mov dword ptr [ebp - 0x14], edx
+            mov dword ptr [ebp - 0x10], ecx
+            cmp dword ptr [gS3_enabled], 0
+            je L00566398
+            mov ecx, dword ptr [ebp - 0x14]
+            call S3GetDescriptorByID
+            mov dword ptr [ebp - 4], eax
+            cmp dword ptr [ebp - 4], 0
+            jne L00566083
+            mov dword ptr [gS3_last_error], 6
+            xor eax, eax
+            jmp L0056639a
+    L00566083:
+            mov eax, dword ptr [ebp - 4]
+            cmp dword ptr [eax + 4], 0
+            je L00566093
+            xor eax, eax
+            jmp L0056639a
+    L00566093:
+            mov ecx, dword ptr [ebp - 4]
+            cmp dword ptr [ecx + 0x40], 0
+            je L005660a9
+            mov edx, dword ptr [ebp - 4]
+            mov eax, dword ptr [edx + 0x30]
+            and eax, 2
+            test eax, eax
+            je L005660c6
+    L005660a9:
+            mov ecx, dword ptr [ebp - 0x14]
+            call S3LoadSample
+            test eax, eax
+            jne L005660c6
+            mov dword ptr [gS3_last_error], 8
+            xor eax, eax
+            jmp L0056639a
+    L005660c6:
+            cmp dword ptr [ebp + 0x14], 0xff
+            jle L005660d6
+            mov dword ptr [ebp + 0x14], 0xff
+    L005660d6:
+            cmp dword ptr [ebp + 0x14], 0
+            jge L005660f5
+            push 0x80
+            mov ecx, dword ptr [ebp - 4]
+            mov edx, dword ptr [ecx + 0x14]
+            mov eax, dword ptr [ebp - 4]
+            mov ecx, dword ptr [eax + 0x10]
+            call S3IRandomBetween__dup
+            mov dword ptr [ebp + 0x14], eax
+    L005660f5:
+            push 0x78
+            push 0
+            push offset gS3_channel_template
+            call memset
+            add esp, 0xc
+            mov dword ptr [gS3_channel_template+0x74], 0
+            mov dword ptr [gS3_channel_template+0x58], 0x43160000
+            mov ecx, dword ptr [ebp + 0x14]
+            mov dword ptr [gS3_channel_template+0x24], ecx
+            mov edx, dword ptr [ebp + 0x14]
+            mov dword ptr [gS3_channel_template+0x50], edx
+            mov eax, dword ptr [ebp - 4]
+            mov ecx, dword ptr [eax + 0x40]
+            mov edx, dword ptr [ecx + 4]
+            push edx
+            mov eax, dword ptr [ebp - 4]
+            mov edx, dword ptr [eax + 0x1c]
+            mov ecx, dword ptr [ebp - 4]
+            mov ecx, dword ptr [ecx + 0x18]
+            call S3IRandomBetweenLog
+            mov dword ptr [gS3_channel_template+0x10], eax
+            cmp dword ptr [ebp + 0x18], -1
+            jne L00566159
+            mov dword ptr [ebp + 0x18], 0x10000
+    L00566159:
+            cmp dword ptr [ebp + 0x1c], -1
+            jne L00566166
+            mov dword ptr [ebp + 0x1c], 0x10000
+    L00566166:
+            fild dword ptr [gS3_channel_template+0x10]
+            fstp dword ptr [ebp - 0x18]
+            push -0x10
+            fild dword ptr [ebp + 0x18]
+            sub esp, 8
+            fstp qword ptr [esp]
+            call ldexp
+            add esp, 0xc
+            fst dword ptr [ebp - 0x1c]
+            fmul dword ptr [ebp - 0x18]
+            call _ftol
+            mov dword ptr [gS3_channel_template+0x10], eax
+            mov edx, dword ptr [ebp - 0x10]
+            cmp dword ptr [edx + 0xc], 0
+            jne L005661c7
+            fild dword ptr [gS3_channel_template+0x10]
+            fstp dword ptr [ebp - 0x20]
+            push -0x10
+            fild dword ptr [ebp + 0x1c]
+            sub esp, 8
+            fstp qword ptr [esp]
+            call ldexp
+            add esp, 0xc
+            fst dword ptr [ebp - 0x24]
+            fmul dword ptr [ebp - 0x20]
+            call _ftol
+            mov dword ptr [gS3_channel_template+0x10], eax
+    L005661c7:
+            mov dword ptr [gS3_channel_template+0x28], 0
+            mov eax, dword ptr [gS3_channel_template+0x10]
+            mov dword ptr [gS3_channel_template+0x54], eax
+            mov ecx, dword ptr [ebp + 8]
+            mov edx, dword ptr [ecx]
+            mov dword ptr [gS3_channel_template+0x2c], edx
+            mov eax, dword ptr [ebp + 8]
+            mov ecx, dword ptr [eax + 4]
+            mov dword ptr [gS3_channel_template+0x30], ecx
+            mov edx, dword ptr [ebp + 8]
+            mov eax, dword ptr [edx + 8]
+            mov dword ptr [gS3_channel_template+0x34], eax
+            mov ecx, dword ptr [ebp + 0xc]
+            mov edx, dword ptr [ecx]
+            mov dword ptr [gS3_channel_template+0x38], edx
+            mov eax, dword ptr [ebp + 0xc]
+            mov ecx, dword ptr [eax + 4]
+            mov dword ptr [gS3_channel_template+0x3c], ecx
+            mov edx, dword ptr [ebp + 0xc]
+            mov eax, dword ptr [edx + 8]
+            mov dword ptr [gS3_channel_template+0x40], eax
+            xor edx, edx
+            mov ecx, offset gS3_channel_template
+            call S3Calculate3D
+            test eax, eax
+            je L00566398
+            mov ecx, dword ptr [ebp - 4]
+            mov edx, dword ptr [ecx + 8]
+            mov ecx, dword ptr [gS3_channel_template+0x24]
+            call S3CalculatePriority
+            mov dword ptr [ebp - 8], eax
+            mov edx, dword ptr [ebp - 8]
+            mov ecx, dword ptr [ebp - 0x10]
+            call S3AllocateChannel
+            mov dword ptr [ebp - 0xc], eax
+            cmp dword ptr [ebp - 0xc], 0
+            jne L0056626c
+            mov dword ptr [gS3_last_error], 0xa
+            xor eax, eax
+            jmp L0056639a
+    L0056626c:
+            mov edx, dword ptr [ebp - 0xc]
+            mov eax, dword ptr [gS3_channel_template+0x24]
+            mov dword ptr [edx + 0x24], eax
+            mov ecx, dword ptr [ebp - 0xc]
+            mov edx, dword ptr [gS3_channel_template+0x28]
+            mov dword ptr [ecx + 0x28], edx
+            mov eax, dword ptr [ebp - 0xc]
+            mov ecx, dword ptr [gS3_channel_template+0x10]
+            mov dword ptr [eax + 0x10], ecx
+            mov edx, dword ptr [ebp - 0xc]
+            mov dword ptr [edx + 0x14], 1
+            mov eax, dword ptr [ebp - 0xc]
+            mov dword ptr [eax + 0x74], 0
+            mov ecx, dword ptr [ebp - 0xc]
+            mov edx, dword ptr [ebp - 4]
+            mov dword ptr [ecx + 0x60], edx
+            mov eax, dword ptr [ebp - 0xc]
+            mov dword ptr [eax + 8], 0
+            mov ecx, dword ptr [ebp - 0xc]
+            mov dword ptr [ecx + 4], 0
+            mov edx, dword ptr [ebp - 0xc]
+            add edx, 0x2c
+            mov eax, dword ptr [gS3_channel_template+0x2c]
+            mov dword ptr [edx], eax
+            mov ecx, dword ptr [gS3_channel_template+0x30]
+            mov dword ptr [edx + 4], ecx
+            mov eax, dword ptr [gS3_channel_template+0x34]
+            mov dword ptr [edx + 8], eax
+            mov ecx, dword ptr [ebp - 0xc]
+            add ecx, 0x44
+            mov edx, dword ptr [gS3_channel_template+0x44]
+            mov dword ptr [ecx], edx
+            mov eax, dword ptr [gS3_channel_template+0x48]
+            mov dword ptr [ecx + 4], eax
+            mov edx, dword ptr [gS3_channel_template+0x4c]
+            mov dword ptr [ecx + 8], edx
+            mov eax, dword ptr [ebp - 0xc]
+            add eax, 0x38
+            mov ecx, dword ptr [gS3_channel_template+0x38]
+            mov dword ptr [eax], ecx
+            mov edx, dword ptr [gS3_channel_template+0x3c]
+            mov dword ptr [eax + 4], edx
+            mov ecx, dword ptr [gS3_channel_template+0x40]
+            mov dword ptr [eax + 8], ecx
+            xor edx, edx
+            cmp dword ptr [ebp + 0x10], 0
+            setle dl
+            dec edx
+            and edx, dword ptr [ebp + 0x10]
+            mov eax, dword ptr [ebp - 0xc]
+            mov dword ptr [eax + 0xc], edx
+            mov ecx, dword ptr [ebp - 0x10]
+            call S3GenerateTag
+            mov ecx, dword ptr [ebp - 0xc]
+            mov dword ptr [ecx + 0x1c], eax
+            mov edx, dword ptr [ebp - 0xc]
+            mov eax, dword ptr [gS3_channel_template+0x50]
+            mov dword ptr [edx + 0x50], eax
+            mov ecx, dword ptr [ebp - 0xc]
+            mov edx, dword ptr [gS3_channel_template+0x54]
+            mov dword ptr [ecx + 0x54], edx
+            mov eax, dword ptr [ebp - 0xc]
+            mov ecx, dword ptr [gS3_channel_template+0x58]
+            mov dword ptr [eax + 0x58], ecx
+            mov ecx, dword ptr [ebp - 0xc]
+            call S3ExecuteSampleFilterFuncs
+            mov edx, dword ptr [ebp - 4]
+            mov ecx, dword ptr [ebp - 0xc]
+            call S3PlaySample
+            test eax, eax
+            jne L00566390
+            mov edx, dword ptr [ebp - 0xc]
+            mov dword ptr [edx + 8], 1
+            mov dword ptr [gS3_last_error], 9
+            xor eax, eax
+            jmp L0056639a
+    L00566390:
+            mov eax, dword ptr [ebp - 0xc]
+            mov eax, dword ptr [eax + 0x1c]
+            jmp L0056639a
+    L00566398:
+            xor eax, eax
+    L0056639a:
+            mov esp, ebp
+            pop ebp
+            ret 0x18
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0056773c
-int C2_HOOK_FASTCALL S3BindAmbientSoundToOutlet(tS3_outlet* pOutlet, int pSound, tS3_sound_source* source, float pMax_distance, int pPeriod, int pRepeats, int pVolume, int pPitch, int pSpeed) {
+int C2_NAKED C2_HOOK_FASTCALL S3BindAmbientSoundToOutlet(tS3_outlet* pOutlet, int pSound, tS3_sound_source* source, float pMax_distance, int pPeriod, int pRepeats, int pVolume, int pPitch, int pSpeed) {
+#ifndef CARPOCALYPSE2_MATCHING
     tS3_descriptor* desc;
 
     if (gS3_enabled) {
@@ -367,11 +826,117 @@ int C2_HOOK_FASTCALL S3BindAmbientSoundToOutlet(tS3_outlet* pOutlet, int pSound,
         }
     }
     return eS3_error_none;
+#else
+    __asm {
+            push ebp
+            mov ebp, esp
+            sub esp, 0xc
+            mov dword ptr [ebp - 0xc], edx
+            mov dword ptr [ebp - 8], ecx
+            cmp dword ptr [gS3_enabled], 0
+            je L0056786d
+            cmp dword ptr [ebp + 8], 0
+            jne L00567765
+            mov eax, 0x13
+            jmp L0056786f
+    L00567765:
+            mov ecx, dword ptr [ebp - 0xc]
+            call S3GetDescriptorByID
+            mov dword ptr [ebp - 4], eax
+            cmp dword ptr [ebp - 4], 0
+            jne L00567780
+            mov eax, 6
+            jmp L0056786f
+    L00567780:
+            mov eax, dword ptr [ebp - 4]
+            cmp dword ptr [eax + 4], 0
+            jne L005677b7
+            mov ecx, dword ptr [ebp - 4]
+            cmp dword ptr [ecx + 0x40], 0
+            je L0056779f
+            mov edx, dword ptr [ebp - 4]
+            mov eax, dword ptr [edx + 0x30]
+            and eax, 2
+            test eax, eax
+            je L005677b5
+    L0056779f:
+            mov ecx, dword ptr [ebp - 0xc]
+            call S3LoadSample
+            test eax, eax
+            jne L005677b5
+            mov eax, 8
+            jmp L0056786f
+    L005677b5:
+            jmp L005677be
+    L005677b7:
+            xor eax, eax
+            jmp L0056786f
+    L005677be:
+            cmp dword ptr [ebp + 0x18], 0xff
+            jle L005677ce
+            mov dword ptr [ebp + 0x18], 0xff
+    L005677ce:
+            cmp dword ptr [ebp + 0x18], 0
+            jge L005677db
+            mov dword ptr [ebp + 0x18], 0x80
+    L005677db:
+            cmp dword ptr [ebp + 0x1c], 0
+            jge L005677e8
+            mov dword ptr [ebp + 0x1c], 0x10000
+    L005677e8:
+            cmp dword ptr [ebp + 0x20], 0
+            jge L005677f5
+            mov dword ptr [ebp + 0x20], 0x10000
+    L005677f5:
+            mov ecx, dword ptr [ebp + 8]
+            mov edx, dword ptr [ebp - 8]
+            mov dword ptr [ecx + 0x10], edx
+            mov eax, dword ptr [ebp + 8]
+            mov ecx, dword ptr [ebp - 0xc]
+            mov dword ptr [eax + 0x28], ecx
+            mov edx, dword ptr [ebp + 8]
+            mov eax, dword ptr [ebp + 0x18]
+            mov dword ptr [edx + 0x34], eax
+            mov ecx, dword ptr [ebp + 8]
+            mov edx, dword ptr [ebp + 0xc]
+            mov dword ptr [ecx + 0x2c], edx
+            mov eax, dword ptr [ebp + 8]
+            mov ecx, dword ptr [ebp + 0x10]
+            mov dword ptr [eax + 0x30], ecx
+            mov edx, dword ptr [ebp + 8]
+            mov eax, dword ptr [ebp + 0x1c]
+            mov dword ptr [edx + 0x38], eax
+            mov ecx, dword ptr [ebp + 8]
+            mov edx, dword ptr [ebp + 0x20]
+            mov dword ptr [ecx + 0x3c], edx
+            mov eax, dword ptr [ebp + 8]
+            mov dword ptr [eax + 0x1c], 1
+            xor ecx, ecx
+            cmp dword ptr [ebp + 0x14], 0
+            setle cl
+            dec ecx
+            and ecx, dword ptr [ebp + 0x14]
+            mov edx, dword ptr [ebp + 8]
+            mov dword ptr [edx + 0x20], ecx
+            mov eax, dword ptr [ebp + 8]
+            mov ecx, dword ptr [ebp + 0x10]
+            mov dword ptr [eax + 0x24], ecx
+            mov edx, dword ptr [ebp + 8]
+            mov dword ptr [edx], 0
+            mov eax, dword ptr [ebp + 8]
+            mov dword ptr [eax + 0x40], 0
+    L0056786d:
+            xor eax, eax
+    L0056786f:
+            mov esp, ebp
+            pop ebp
+            ret 0x1c
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x005676da
 void C2_HOOK_FASTCALL S3CopyVector3(void* pDest, void* pSrc, int pIs_BRender) {
-
     if (pIs_BRender) {
         S3CopyBrVector3(pDest, pSrc);
     } else {
@@ -380,7 +945,8 @@ void C2_HOOK_FASTCALL S3CopyVector3(void* pDest, void* pSrc, int pIs_BRender) {
 }
 
 // FUNCTION: CARMA2_HW 0x005675ce
-void C2_HOOK_FASTCALL S3UpdateListenerVectors(void) {
+void C2_NAKED C2_HOOK_FASTCALL S3UpdateListenerVectors(void) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     if (gS3_listener_pos_ptr != NULL) {
         S3CopyVector3(&gS3_listener_position_now, gS3_listener_pos_ptr, gS3_listener_pos_is_brender);
@@ -400,10 +966,75 @@ void C2_HOOK_FASTCALL S3UpdateListenerVectors(void) {
         gS3_listener_left_now.v[1] = gS3_listener_position_now.v[1];
         gS3_listener_left_now.v[2] = gS3_listener_position_now.v[2];
     }
+#else
+    __asm {
+            push ebp
+            mov ebp, esp
+            cmp dword ptr [gS3_listener_pos_ptr], 0
+            je L005675f0
+            mov eax, dword ptr [gS3_listener_pos_is_brender]
+            push eax
+            mov edx, dword ptr [gS3_listener_pos_ptr]
+            mov ecx, offset gS3_listener_position_now
+            call S3CopyVector3
+    L005675f0:
+            cmp dword ptr [gS3_listener_vel_ptr], 0
+            je L00567612
+            mov ecx, dword ptr [gS3_listener_vel_is_brender]
+            push ecx
+            mov edx, dword ptr [gS3_listener_vel_ptr]
+            mov ecx, offset gS3_listener_vel_now
+            call S3CopyVector3
+            jmp L0056768e
+    L00567612:
+            fld dword ptr [gS3_listener_position_now]
+            fsub dword ptr [gS3_listener_position_old]
+            fimul dword ptr [gS3_delta_time]
+            fdiv dword ptr [rendererStateStoredDispatch+0xc48]
+            fstp dword ptr [gS3_listener_vel_now]
+            fld dword ptr [gS3_listener_position_now+0x4]
+            fsub dword ptr [gS3_listener_position_old+0x4]
+            fimul dword ptr [gS3_delta_time]
+            fdiv dword ptr [rendererStateStoredDispatch+0xc48]
+            fstp dword ptr [gS3_listener_vel_now+0x4]
+            fld dword ptr [gS3_listener_position_now+0x8]
+            fsub dword ptr [gS3_listener_position_old+0x8]
+            fimul dword ptr [gS3_delta_time]
+            fdiv dword ptr [rendererStateStoredDispatch+0xc48]
+            fstp dword ptr [gS3_listener_vel_now+0x8]
+            mov edx, dword ptr [gS3_listener_position_now]
+            mov dword ptr [gS3_listener_position_old], edx
+            mov eax, dword ptr [gS3_listener_position_now+0x4]
+            mov dword ptr [gS3_listener_position_old+0x4], eax
+            mov ecx, dword ptr [gS3_listener_position_now+0x8]
+            mov dword ptr [gS3_listener_position_old+0x8], ecx
+    L0056768e:
+            cmp dword ptr [gS3_listener_left_ptr], 0
+            je L005676b0
+            mov edx, dword ptr [gS3_listener_left_is_brender]
+            push edx
+            mov edx, dword ptr [gS3_listener_left_ptr]
+            mov ecx, offset gS3_listener_left_now
+            call S3CopyVector3
+            jmp L005676d8
+    L005676b0:
+            fld dword ptr [gS3_listener_position_now]
+            fsub dword ptr [rendererStateStoredDispatch+0xc74]
+            fstp dword ptr [gS3_listener_left_now]
+            mov eax, dword ptr [gS3_listener_position_now+0x4]
+            mov dword ptr [gS3_listener_left_now+0x4], eax
+            mov ecx, dword ptr [gS3_listener_position_now+0x8]
+            mov dword ptr [gS3_listener_left_now+0x8], ecx
+    L005676d8:
+            pop ebp
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00567b2d
-int C2_HOOK_FASTCALL S3UpdateSourcePosition(tS3_sound_source *pSource) {
+int C2_NAKED C2_HOOK_FASTCALL S3UpdateSourcePosition(tS3_sound_source *pSource) {
+#ifndef CARPOCALYPSE2_MATCHING
     if (pSource == NULL) {
         return 0;
     }
@@ -495,6 +1126,264 @@ int C2_HOOK_FASTCALL S3UpdateSourcePosition(tS3_sound_source *pSource) {
     pSource->tag = 0;
     pSource->channel = NULL;
     return eS3_error_none;
+#else
+    __asm {
+            push ebp
+            mov ebp, esp
+            sub esp, 0x24
+            mov dword ptr [ebp - 0x14], ecx
+            cmp dword ptr [ebp - 0x14], 0
+            jne L00567b43
+            xor eax, eax
+            jmp L00567ea1
+    L00567b43:
+            cmp dword ptr [gS3_enabled], 0
+            je L00567e8c
+            mov eax, dword ptr [ebp - 0x14]
+            cmp dword ptr [eax + 0x1c], 0
+            je L00567e8c
+            mov ecx, dword ptr [ebp - 0x14]
+            mov edx, dword ptr [ecx + 0x10]
+            mov dword ptr [ebp - 0xc], edx
+            mov eax, dword ptr [ebp - 0x14]
+            mov ecx, dword ptr [eax + 0x28]
+            call S3GetDescriptorByID
+            mov dword ptr [ebp - 4], eax
+            cmp dword ptr [ebp - 4], 0
+            jne L00567b8b
+            mov dword ptr [gS3_last_error], 6
+            xor eax, eax
+            jmp L00567ea1
+    L00567b8b:
+            mov ecx, dword ptr [ebp - 4]
+            cmp dword ptr [ecx + 0x40], 0
+            jne L00567b9e
+            mov eax, 0x13
+            jmp L00567ea1
+    L00567b9e:
+            mov edx, dword ptr [ebp - 4]
+            cmp dword ptr [edx + 4], 0
+            je L00567bae
+            xor eax, eax
+            jmp L00567ea1
+    L00567bae:
+            push 0x78
+            push 0
+            push offset gS3_channel_template
+            call memset
+            add esp, 0xc
+            mov eax, dword ptr [ebp - 0x14]
+            mov ecx, dword ptr [eax + 0x34]
+            mov dword ptr [gS3_channel_template+0x50], ecx
+            mov edx, dword ptr [ebp - 4]
+            mov eax, dword ptr [edx + 0x40]
+            mov ecx, dword ptr [eax + 4]
+            push ecx
+            mov edx, dword ptr [ebp - 4]
+            mov edx, dword ptr [edx + 0x1c]
+            mov eax, dword ptr [ebp - 4]
+            mov ecx, dword ptr [eax + 0x18]
+            call S3IRandomBetweenLog
+            mov dword ptr [gS3_channel_template+0x10], eax
+            mov ecx, dword ptr [ebp - 0x14]
+            cmp dword ptr [ecx + 0x38], 0
+            jge L00567bfe
+            mov edx, dword ptr [ebp - 0x14]
+            mov dword ptr [edx + 0x38], 0x10000
+    L00567bfe:
+            mov eax, dword ptr [ebp - 0x14]
+            cmp dword ptr [eax + 0x3c], 0
+            jge L00567c11
+            mov ecx, dword ptr [ebp - 0x14]
+            mov dword ptr [ecx + 0x3c], 0x10000
+    L00567c11:
+            fild dword ptr [gS3_channel_template+0x10]
+            fstp qword ptr [ebp - 0x1c]
+            push -0x10
+            mov edx, dword ptr [ebp - 0x14]
+            fild dword ptr [edx + 0x38]
+            sub esp, 8
+            fstp qword ptr [esp]
+            call ldexp
+            add esp, 0xc
+            fmul qword ptr [ebp - 0x1c]
+            call _ftol
+            mov dword ptr [gS3_channel_template+0x10], eax
+            mov eax, dword ptr [ebp - 0xc]
+            cmp dword ptr [eax + 0xc], 0
+            jne L00567c72
+            fild dword ptr [gS3_channel_template+0x10]
+            fstp qword ptr [ebp - 0x24]
+            push -0x10
+            mov ecx, dword ptr [ebp - 0x14]
+            fild dword ptr [ecx + 0x3c]
+            sub esp, 8
+            fstp qword ptr [esp]
+            call ldexp
+            add esp, 0xc
+            fmul qword ptr [ebp - 0x24]
+            call _ftol
+            mov dword ptr [gS3_channel_template+0x10], eax
+    L00567c72:
+            mov edx, dword ptr [gS3_channel_template+0x10]
+            mov dword ptr [gS3_channel_template+0x54], edx
+            mov eax, dword ptr [ebp - 0x14]
+            mov dword ptr [gS3_channel_template+0x74], eax
+            mov ecx, dword ptr [ebp - 0x14]
+            cmp dword ptr [ecx + 0xc], 0
+            jne L00567ca6
+            mov edx, dword ptr [ebp - 0x14]
+            mov eax, dword ptr [edx + 4]
+            push eax
+            mov ecx, dword ptr [ebp - 0x14]
+            mov edx, dword ptr [ecx + 8]
+            mov ecx, offset gS3_channel_template+0x44
+            call S3CopyVector3
+    L00567ca6:
+            mov edx, dword ptr [ebp - 0x14]
+            mov eax, dword ptr [edx + 0x2c]
+            mov dword ptr [gS3_channel_template+0x58], eax
+            mov edx, 1
+            mov ecx, offset gS3_channel_template
+            call S3Calculate3D
+            test eax, eax
+            je L00567e8c
+            mov ecx, dword ptr [ebp - 4]
+            mov edx, dword ptr [ecx + 8]
+            mov ecx, dword ptr [gS3_channel_template+0x24]
+            call S3CalculatePriority
+            mov dword ptr [ebp - 8], eax
+            mov edx, dword ptr [ebp - 8]
+            mov ecx, dword ptr [ebp - 0xc]
+            call S3AllocateChannel
+            mov dword ptr [ebp - 0x10], eax
+            cmp dword ptr [ebp - 0x10], 0
+            jne L00567d14
+            mov dword ptr [gS3_last_error], 0xa
+            mov edx, dword ptr [ebp - 0x14]
+            mov dword ptr [edx + 0x40], 0
+            mov eax, dword ptr [ebp - 0x14]
+            mov dword ptr [eax], 0
+            xor eax, eax
+            jmp L00567ea1
+    L00567d14:
+            mov ecx, dword ptr [ebp - 4]
+            cmp dword ptr [ecx + 0x40], 0
+            je L00567d2a
+            mov edx, dword ptr [ebp - 4]
+            mov eax, dword ptr [edx + 0x30]
+            and eax, 2
+            test eax, eax
+            je L00567d54
+    L00567d2a:
+            mov ecx, dword ptr [ebp - 0x14]
+            mov ecx, dword ptr [ecx + 0x28]
+            call S3LoadSample
+            test eax, eax
+            jne L00567d54
+            mov dword ptr [gS3_last_error], 8
+            mov edx, dword ptr [ebp - 0x10]
+            mov dword ptr [edx + 8], 1
+            xor eax, eax
+            jmp L00567ea1
+    L00567d54:
+            mov eax, dword ptr [ebp - 0x10]
+            mov ecx, dword ptr [gS3_channel_template+0x24]
+            mov dword ptr [eax + 0x24], ecx
+            mov edx, dword ptr [ebp - 0x10]
+            mov eax, dword ptr [gS3_channel_template+0x28]
+            mov dword ptr [edx + 0x28], eax
+            mov ecx, dword ptr [ebp - 0x10]
+            mov edx, dword ptr [gS3_channel_template+0x10]
+            mov dword ptr [ecx + 0x10], edx
+            mov eax, dword ptr [ebp - 0x10]
+            add eax, 0x2c
+            mov ecx, dword ptr [gS3_channel_template+0x2c]
+            mov dword ptr [eax], ecx
+            mov edx, dword ptr [gS3_channel_template+0x30]
+            mov dword ptr [eax + 4], edx
+            mov ecx, dword ptr [gS3_channel_template+0x34]
+            mov dword ptr [eax + 8], ecx
+            mov edx, dword ptr [ebp - 0x10]
+            add edx, 0x38
+            mov eax, dword ptr [gS3_channel_template+0x38]
+            mov dword ptr [edx], eax
+            mov ecx, dword ptr [gS3_channel_template+0x3c]
+            mov dword ptr [edx + 4], ecx
+            mov eax, dword ptr [gS3_channel_template+0x40]
+            mov dword ptr [edx + 8], eax
+            mov ecx, dword ptr [ebp - 0x10]
+            add ecx, 0x44
+            mov edx, dword ptr [gS3_channel_template+0x44]
+            mov dword ptr [ecx], edx
+            mov eax, dword ptr [gS3_channel_template+0x48]
+            mov dword ptr [ecx + 4], eax
+            mov edx, dword ptr [gS3_channel_template+0x4c]
+            mov dword ptr [ecx + 8], edx
+            mov eax, dword ptr [ebp - 0x10]
+            mov ecx, dword ptr [gS3_channel_template+0x50]
+            mov dword ptr [eax + 0x50], ecx
+            mov edx, dword ptr [ebp - 0x10]
+            mov eax, dword ptr [gS3_channel_template+0x54]
+            mov dword ptr [edx + 0x54], eax
+            mov ecx, dword ptr [ebp - 0x10]
+            mov edx, dword ptr [gS3_channel_template+0x58]
+            mov dword ptr [ecx + 0x58], edx
+            mov eax, dword ptr [ebp - 0x10]
+            mov dword ptr [eax + 0x14], 2
+            mov ecx, dword ptr [ebp - 0x10]
+            mov edx, dword ptr [ebp - 0x14]
+            mov dword ptr [ecx + 0x74], edx
+            mov eax, dword ptr [ebp - 0x10]
+            mov ecx, dword ptr [ebp - 4]
+            mov dword ptr [eax + 0x60], ecx
+            mov ecx, dword ptr [ebp - 0xc]
+            call S3GenerateTag
+            mov edx, dword ptr [ebp - 0x10]
+            mov dword ptr [edx + 0x1c], eax
+            mov eax, dword ptr [ebp - 0x10]
+            mov ecx, dword ptr [ebp - 0x14]
+            mov edx, dword ptr [ecx + 0x20]
+            mov dword ptr [eax + 0xc], edx
+            mov eax, dword ptr [ebp - 0x10]
+            mov dword ptr [eax + 8], 0
+            mov ecx, dword ptr [ebp - 0x10]
+            mov dword ptr [ecx + 4], 0
+            mov ecx, dword ptr [ebp - 0x10]
+            call S3ExecuteSampleFilterFuncs
+            mov edx, dword ptr [ebp - 4]
+            mov ecx, dword ptr [ebp - 0x10]
+            call S3PlaySample
+            test eax, eax
+            jne L00567e70
+            mov edx, dword ptr [ebp - 0x10]
+            mov dword ptr [edx + 8], 1
+            mov dword ptr [gS3_last_error], 9
+            xor eax, eax
+            jmp L00567ea1
+    L00567e70:
+            mov eax, dword ptr [ebp - 0x14]
+            mov ecx, dword ptr [ebp - 0x10]
+            mov edx, dword ptr [ecx + 0x1c]
+            mov dword ptr [eax + 0x40], edx
+            mov eax, dword ptr [ebp - 0x14]
+            mov ecx, dword ptr [ebp - 0x10]
+            mov dword ptr [eax], ecx
+            mov edx, dword ptr [ebp - 0x10]
+            mov eax, dword ptr [edx + 0x1c]
+            jmp L00567ea1
+    L00567e8c:
+            mov eax, dword ptr [ebp - 0x14]
+            mov dword ptr [eax + 0x40], 0
+            mov ecx, dword ptr [ebp - 0x14]
+            mov dword ptr [ecx], 0
+            xor eax, eax
+    L00567ea1:
+            mov esp, ebp
+            pop ebp
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00567ea5
@@ -538,7 +1427,8 @@ int C2_HOOK_FASTCALL S3UpdateSourceVectors(void) {
 }
 
 // FUNCTION: CARMA2_HW 0x0056711c
-int C2_HOOK_FASTCALL S3Calculate3D(tS3_channel* pChannel, int pAmbient) {
+int C2_NAKED C2_HOOK_FASTCALL S3Calculate3D(tS3_channel* pChannel, int pAmbient) {
+#ifndef CARPOCALYPSE2_MATCHING
     float dist_squared;
     float dist;
     float sound_volume_factor;
@@ -611,6 +1501,357 @@ int C2_HOOK_FASTCALL S3Calculate3D(tS3_channel* pChannel, int pAmbient) {
         pChannel->volume_multiplier = 255;
     }
     return 1;
+#else
+    __asm {
+            push ebp
+            mov ebp, esp
+            sub esp, 0x60
+            mov dword ptr [ebp - 0x50], edx
+            mov dword ptr [ebp - 0x4c], ecx
+            mov dword ptr [ebp - 0x40], 0x3f800000
+            mov dword ptr [ebp - 0xc], 0
+            mov dword ptr [ebp - 8], 0xbf800000
+            mov dword ptr [ebp - 4], 0
+            mov eax, dword ptr [ebp - 0x4c]
+            mov ecx, dword ptr [eax + 0x74]
+            mov dword ptr [ebp - 0x18], ecx
+            cmp dword ptr [ebp - 0x18], 0
+            je L00567219
+            mov edx, dword ptr [ebp - 0x18]
+            cmp dword ptr [edx + 8], 0
+            je L00567178
+            mov eax, dword ptr [ebp - 0x18]
+            mov ecx, dword ptr [eax + 4]
+            push ecx
+            mov edx, dword ptr [ebp - 0x18]
+            mov edx, dword ptr [edx + 8]
+            mov ecx, dword ptr [ebp - 0x4c]
+            add ecx, 0x2c
+            call S3CopyVector3
+    L00567178:
+            mov eax, dword ptr [ebp - 0x18]
+            cmp dword ptr [eax + 0xc], 0
+            je L0056719b
+            mov ecx, dword ptr [ebp - 0x18]
+            mov edx, dword ptr [ecx + 4]
+            push edx
+            mov eax, dword ptr [ebp - 0x18]
+            mov edx, dword ptr [eax + 0xc]
+            mov ecx, dword ptr [ebp - 0x4c]
+            add ecx, 0x38
+            call S3CopyVector3
+            jmp L00567219
+    L0056719b:
+            mov ecx, dword ptr [ebp - 0x4c]
+            mov edx, dword ptr [ebp - 0x4c]
+            fld dword ptr [ecx + 0x2c]
+            fsub dword ptr [edx + 0x44]
+            fimul dword ptr [gS3_delta_time]
+            fdiv dword ptr [rendererStateStoredDispatch+0xc48]
+            mov eax, dword ptr [ebp - 0x4c]
+            fstp dword ptr [eax + 0x38]
+            mov ecx, dword ptr [ebp - 0x4c]
+            mov edx, dword ptr [ebp - 0x4c]
+            fld dword ptr [ecx + 0x30]
+            fsub dword ptr [edx + 0x48]
+            fimul dword ptr [gS3_delta_time]
+            fdiv dword ptr [rendererStateStoredDispatch+0xc48]
+            mov eax, dword ptr [ebp - 0x4c]
+            fstp dword ptr [eax + 0x3c]
+            mov ecx, dword ptr [ebp - 0x4c]
+            mov edx, dword ptr [ebp - 0x4c]
+            fld dword ptr [ecx + 0x34]
+            fsub dword ptr [edx + 0x4c]
+            fimul dword ptr [gS3_delta_time]
+            fdiv dword ptr [rendererStateStoredDispatch+0xc48]
+            mov eax, dword ptr [ebp - 0x4c]
+            fstp dword ptr [eax + 0x40]
+            mov ecx, dword ptr [ebp - 0x4c]
+            mov edx, dword ptr [ebp - 0x4c]
+            mov eax, dword ptr [edx + 0x2c]
+            mov dword ptr [ecx + 0x44], eax
+            mov ecx, dword ptr [ebp - 0x4c]
+            mov edx, dword ptr [ebp - 0x4c]
+            mov eax, dword ptr [edx + 0x30]
+            mov dword ptr [ecx + 0x48], eax
+            mov ecx, dword ptr [ebp - 0x4c]
+            mov edx, dword ptr [ebp - 0x4c]
+            mov eax, dword ptr [edx + 0x34]
+            mov dword ptr [ecx + 0x4c], eax
+    L00567219:
+            mov ecx, dword ptr [ebp - 0x4c]
+            fld dword ptr [ecx + 0x2c]
+            fsub dword ptr [gS3_listener_position_now]
+            mov edx, dword ptr [ebp - 0x4c]
+            fld dword ptr [edx + 0x2c]
+            fsub dword ptr [gS3_listener_position_now]
+            fmulp st(1), st(0)
+            mov eax, dword ptr [ebp - 0x4c]
+            fld dword ptr [eax + 0x30]
+            fsub dword ptr [gS3_listener_position_now+0x4]
+            mov ecx, dword ptr [ebp - 0x4c]
+            fld dword ptr [ecx + 0x30]
+            fsub dword ptr [gS3_listener_position_now+0x4]
+            fmulp st(1), st(0)
+            faddp st(1), st(0)
+            mov edx, dword ptr [ebp - 0x4c]
+            fld dword ptr [edx + 0x34]
+            fsub dword ptr [gS3_listener_position_now+0x8]
+            mov eax, dword ptr [ebp - 0x4c]
+            fld dword ptr [eax + 0x34]
+            fsub dword ptr [gS3_listener_position_now+0x8]
+            fmulp st(1), st(0)
+            faddp st(1), st(0)
+            fst dword ptr [ebp - 0x14]
+            fcomp dword ptr [rendererStateStoredDispatch+0xc4c]
+            fnstsw ax
+            test ah, 1
+            je L00567283
+            fld dword ptr [ebp - 0x14]
+            fchs
+            fstp dword ptr [ebp - 0x14]
+    L00567283:
+            mov ecx, dword ptr [ebp - 0x4c]
+            fld dword ptr [ebp - 0x14]
+            fcomp dword ptr [ecx + 0x58]
+            fnstsw ax
+            test ah, 0x41
+            jne L0056729a
+            xor eax, eax
+            jmp L00567571
+    L0056729a:
+            fld dword ptr [ebp - 0x14]
+            fcomp qword ptr [rendererStateStoredDispatch+0xc50]
+            fnstsw ax
+            test ah, 0x40
+            jne L005672c0
+            fld dword ptr [ebp - 0x14]
+            sub esp, 8
+            _emit 0xdd
+        _emit 0x1c
+        _emit 0x24
+            call sqrt
+            add esp, 8
+            fstp dword ptr [ebp - 0x10]
+            jmp L005672c7
+    L005672c0:
+            mov dword ptr [ebp - 0x10], 0
+    L005672c7:
+            cmp dword ptr [ebp - 0x50], 0
+            je L0056738f
+            fld dword ptr [ebp - 0x10]
+            fcomp dword ptr [rendererStateStoredDispatch+0xc4c]
+            fnstsw ax
+            test ah, 0x40
+            jne L0056738f
+            mov edx, dword ptr [ebp - 0x4c]
+            fld dword ptr [edx + 0x2c]
+            fsub dword ptr [gS3_listener_position_now]
+            mov eax, dword ptr [ebp - 0x4c]
+            fld dword ptr [eax + 0x38]
+            fsub dword ptr [gS3_listener_vel_now]
+            fmulp st(1), st(0)
+            mov ecx, dword ptr [ebp - 0x4c]
+            fld dword ptr [ecx + 0x30]
+            fsub dword ptr [gS3_listener_position_now+0x4]
+            mov edx, dword ptr [ebp - 0x4c]
+            fld dword ptr [edx + 0x3c]
+            fsub dword ptr [gS3_listener_vel_now+0x4]
+            fmulp st(1), st(0)
+            faddp st(1), st(0)
+            mov eax, dword ptr [ebp - 0x4c]
+            fld dword ptr [eax + 0x34]
+            fsub dword ptr [gS3_listener_position_now+0x8]
+            mov ecx, dword ptr [ebp - 0x4c]
+            fld dword ptr [ecx + 0x40]
+            fsub dword ptr [gS3_listener_vel_now+0x8]
+            fmulp st(1), st(0)
+            faddp st(1), st(0)
+            fdiv dword ptr [ebp - 0x10]
+            fst dword ptr [ebp - 0x3c]
+            fdiv dword ptr [gFLOAT_006b2c68]
+            fsubr qword ptr [rendererStateStoredDispatch+0xc58]
+            fst dword ptr [ebp - 0x40]
+            fcomp dword ptr [rendererStateStoredDispatch+0xc60]
+            fnstsw ax
+            test ah, 0x41
+            jne L00567362
+            mov dword ptr [ebp - 0x40], 0x40000000
+            jmp L00567379
+    L00567362:
+            fld dword ptr [ebp - 0x40]
+            fcomp qword ptr [rendererStateStoredDispatch+0xc68]
+            fnstsw ax
+            test ah, 1
+            je L00567379
+            mov dword ptr [ebp - 0x40], 0x3f000000
+    L00567379:
+            mov edx, dword ptr [ebp - 0x4c]
+            fild dword ptr [edx + 0x54]
+            fmul dword ptr [ebp - 0x40]
+            call _ftol
+            mov ecx, dword ptr [ebp - 0x4c]
+            mov dword ptr [ecx + 0x10], eax
+            jmp L0056739b
+    L0056738f:
+            mov edx, dword ptr [ebp - 0x4c]
+            mov eax, dword ptr [ebp - 0x4c]
+            mov ecx, dword ptr [eax + 0x54]
+            mov dword ptr [edx + 0x10], ecx
+    L0056739b:
+            fld dword ptr [ebp - 0x10]
+            fdiv dword ptr [rendererStateStoredDispatch+0xc70]
+            fadd dword ptr [rendererStateStoredDispatch+0xc74]
+            fdivr dword ptr [rendererStateStoredDispatch+0xc74]
+            fstp dword ptr [ebp - 0x38]
+            cmp dword ptr [gS3_inside_cockpit], 0
+            jne L005673c8
+            fld dword ptr [ebp - 0x38]
+            fmul dword ptr [rendererStateStoredDispatch+0xc78]
+            fstp dword ptr [ebp - 0x38]
+    L005673c8:
+            mov edx, dword ptr [ebp - 0x4c]
+            fld dword ptr [edx + 0x2c]
+            fsub dword ptr [gS3_listener_position_now]
+            fstp dword ptr [ebp - 0x30]
+            mov eax, dword ptr [ebp - 0x4c]
+            fld dword ptr [eax + 0x30]
+            fsub dword ptr [gS3_listener_position_now+0x4]
+            fstp dword ptr [ebp - 0x2c]
+            mov ecx, dword ptr [ebp - 0x4c]
+            fld dword ptr [ecx + 0x34]
+            fsub dword ptr [gS3_listener_position_now+0x8]
+            fstp dword ptr [ebp - 0x28]
+            mov edx, dword ptr [gS3_listener_left_now]
+            mov dword ptr [ebp - 0x24], edx
+            mov eax, dword ptr [gS3_listener_left_now+0x4]
+            mov dword ptr [ebp - 0x20], eax
+            mov ecx, dword ptr [gS3_listener_left_now+0x8]
+            mov dword ptr [ebp - 0x1c], ecx
+    L0056740f:
+            fld dword ptr [ebp - 0x24]
+            fmul dword ptr [ebp - 0x24]
+            fld dword ptr [ebp - 0x20]
+            fmul dword ptr [ebp - 0x20]
+            faddp st(1), st(0)
+            fld dword ptr [ebp - 0x1c]
+            fmul dword ptr [ebp - 0x1c]
+            faddp st(1), st(0)
+            sub esp, 8
+            _emit 0xdd
+        _emit 0x1c
+        _emit 0x24
+            call sqrt
+            add esp, 8
+            fst dword ptr [ebp - 0x54]
+            fst dword ptr [ebp - 0x44]
+            fcomp dword ptr [rendererStateStoredDispatch+0xc7c]
+            fnstsw ax
+            test ah, 0x41
+            jne L00567472
+            fld dword ptr [ebp - 0x44]
+            fdivr qword ptr [rendererStateStoredDispatch+0xc58]
+            fst dword ptr [ebp - 0x58]
+            fstp dword ptr [ebp - 0x44]
+            fld dword ptr [ebp - 0x24]
+            fmul dword ptr [ebp - 0x44]
+            fstp dword ptr [ebp - 0x24]
+            fld dword ptr [ebp - 0x20]
+            fmul dword ptr [ebp - 0x44]
+            fstp dword ptr [ebp - 0x20]
+            fld dword ptr [ebp - 0x1c]
+            fmul dword ptr [ebp - 0x44]
+            fstp dword ptr [ebp - 0x1c]
+            jmp L00567487
+    L00567472:
+            mov dword ptr [ebp - 0x24], 0x3f800000
+            mov dword ptr [ebp - 0x20], 0
+            mov dword ptr [ebp - 0x1c], 0
+    L00567487:
+            xor edx, edx
+            test edx, edx
+            jne L0056740f
+    L0056748d:
+            fld dword ptr [ebp - 0x30]
+            fmul dword ptr [ebp - 0x30]
+            fld dword ptr [ebp - 0x2c]
+            fmul dword ptr [ebp - 0x2c]
+            faddp st(1), st(0)
+            fld dword ptr [ebp - 0x28]
+            fmul dword ptr [ebp - 0x28]
+            faddp st(1), st(0)
+            sub esp, 8
+            _emit 0xdd
+        _emit 0x1c
+        _emit 0x24
+            call sqrt
+            add esp, 8
+            fst dword ptr [ebp - 0x5c]
+            fst dword ptr [ebp - 0x48]
+            fcomp dword ptr [rendererStateStoredDispatch+0xc7c]
+            fnstsw ax
+            test ah, 0x41
+            jne L005674f0
+            fld dword ptr [ebp - 0x48]
+            fdivr qword ptr [rendererStateStoredDispatch+0xc58]
+            fst dword ptr [ebp - 0x60]
+            fstp dword ptr [ebp - 0x48]
+            fld dword ptr [ebp - 0x30]
+            fmul dword ptr [ebp - 0x48]
+            fstp dword ptr [ebp - 0x30]
+            fld dword ptr [ebp - 0x2c]
+            fmul dword ptr [ebp - 0x48]
+            fstp dword ptr [ebp - 0x2c]
+            fld dword ptr [ebp - 0x28]
+            fmul dword ptr [ebp - 0x48]
+            fstp dword ptr [ebp - 0x28]
+            jmp L00567505
+    L005674f0:
+            mov dword ptr [ebp - 0x30], 0x3f800000
+            mov dword ptr [ebp - 0x2c], 0
+            mov dword ptr [ebp - 0x28], 0
+    L00567505:
+            xor eax, eax
+            test eax, eax
+            jne L0056748d
+            fld dword ptr [ebp - 0x24]
+            fmul dword ptr [ebp - 0x30]
+            fld dword ptr [ebp - 0x20]
+            fmul dword ptr [ebp - 0x2c]
+            faddp st(1), st(0)
+            fld dword ptr [ebp - 0x1c]
+            fmul dword ptr [ebp - 0x28]
+            faddp st(1), st(0)
+            fchs
+            fstp dword ptr [ebp - 0x34]
+            mov ecx, dword ptr [ebp - 0x4c]
+            mov edx, dword ptr [ebp - 0x34]
+            mov dword ptr [ecx + 0x28], edx
+            mov eax, dword ptr [ebp - 0x4c]
+            fild dword ptr [eax + 0x50]
+            fmul dword ptr [ebp - 0x38]
+            call _ftol
+            mov ecx, dword ptr [ebp - 0x4c]
+            mov dword ptr [ecx + 0x24], eax
+            mov edx, dword ptr [ebp - 0x4c]
+            cmp dword ptr [edx + 0x24], 0
+            jge L00567556
+            mov eax, dword ptr [ebp - 0x4c]
+            mov dword ptr [eax + 0x24], 0
+    L00567556:
+            mov ecx, dword ptr [ebp - 0x4c]
+            cmp dword ptr [ecx + 0x24], 0xff
+            jle L0056756c
+            mov edx, dword ptr [ebp - 0x4c]
+            mov dword ptr [edx + 0x24], 0xff
+    L0056756c:
+            mov eax, 1
+    L00567571:
+            mov esp, ebp
+            pop ebp
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00567575
@@ -627,7 +1868,6 @@ int C2_HOOK_FASTCALL S3Service3D(tS3_channel* pChannel) {
 
 // FUNCTION: CARMA2_HW 0x00565ea0
 void C2_HOOK_FASTCALL S3SetVector3(tS3_vector3* pVec, float pX, float pY, float pZ) {
-
     pVec->x = pX;
     pVec->y = pY;
     pVec->z = pZ;
@@ -635,7 +1875,6 @@ void C2_HOOK_FASTCALL S3SetVector3(tS3_vector3* pVec, float pX, float pY, float 
 
 // FUNCTION: CARMA2_HW 0x00565ef9
 void C2_HOOK_FASTCALL S3SetListenerPositionNow(br_vector3* pPos) {
-
     gS3_listener_position_now.v[0] = pPos->v[0];
     gS3_listener_position_now.v[1] = pPos->v[1];
     gS3_listener_position_now.v[2] = pPos->v[2];
@@ -643,7 +1882,6 @@ void C2_HOOK_FASTCALL S3SetListenerPositionNow(br_vector3* pPos) {
 
 // FUNCTION: CARMA2_HW 0x00565f26
 void C2_HOOK_FASTCALL FUN_00565f26(br_vector3* pVec) {
-
     gS3_listener_vel_now.v[0] = pVec->v[0];
     gS3_listener_vel_now.v[1] = pVec->v[1];
     gS3_listener_vel_now.v[2] = pVec->v[2];
@@ -651,7 +1889,6 @@ void C2_HOOK_FASTCALL FUN_00565f26(br_vector3* pVec) {
 
 // FUNCTION: CARMA2_HW 0x00565f53
 void C2_HOOK_FASTCALL S3SetListenerLeftNow(br_vector3* pLeft) {
-
     gS3_listener_left_now.v[0] = pLeft->v[0];
     gS3_listener_left_now.v[1] = pLeft->v[1];
     gS3_listener_left_now.v[2] = pLeft->v[2];
@@ -659,7 +1896,6 @@ void C2_HOOK_FASTCALL S3SetListenerLeftNow(br_vector3* pLeft) {
 
 // FUNCTION: CARMA2_HW 0x00565f80
 void C2_HOOK_FASTCALL S3BindListenerPosition(tS3_vector3* pos) {
-
     gS3_listener_pos_ptr = (br_vector3*)pos;
     gS3_listener_pos_is_brender = 0;
     S3CopyS3Vector3((tS3_vector3*)&gS3_listener_position_old, pos);
@@ -667,14 +1903,12 @@ void C2_HOOK_FASTCALL S3BindListenerPosition(tS3_vector3* pos) {
 
 // FUNCTION: CARMA2_HW 0x00565fd4
 void C2_HOOK_FASTCALL S3BindListenerVelocity(br_vector3* vel) {
-
     gS3_listener_vel_ptr = vel;
     gS3_listener_vel_is_brender = 0;
 }
 
 // FUNCTION: CARMA2_HW 0x0056600e
 void C2_HOOK_FASTCALL S3BindListenerLeft(br_vector3* left) {
-
     gS3_listener_left_ptr = left;
     gS3_listener_left_is_brender = 0;
 }

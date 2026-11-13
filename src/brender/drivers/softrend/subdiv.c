@@ -89,8 +89,13 @@ br_uint_32 hitherYonTable[16] = {
         }                                                                                                                                           \
     } while (0)
 
+#ifdef CARPOCALYPSE2_MATCHING
+extern rend_block_soft rend;
+extern char rendererStateStoredTemplateEntries[];
+#endif
 // FUNCTION: CARMA2_HW 0x0054c400
-void C2_HOOK_CDECL averageVerticesOnScreen(br_soft_renderer* renderer, brp_vertex* dest1, brp_vertex* dest2, brp_vertex* dest3, brp_vertex* src1, brp_vertex* src2, brp_vertex* src3) {
+void C2_NAKED C2_HOOK_CDECL averageVerticesOnScreen(br_soft_renderer* renderer, brp_vertex* dest1, brp_vertex* dest2, brp_vertex* dest3, brp_vertex* src1, brp_vertex* src2, brp_vertex* src3) {
+#ifndef CARPOCALYPSE2_MATCHING
     br_scalar one_div_w1;
     br_scalar one_div_w2;
     br_scalar one_div_w3;
@@ -122,6 +127,286 @@ void C2_HOOK_CDECL averageVerticesOnScreen(br_soft_renderer* renderer, brp_verte
     PROJECT_COMPONENT(C_X, C_SX);
     PROJECT_COMPONENT(C_Y, C_SY);
     PROJECT_COMPONENT(C_Z, C_SZ);
+#else
+    __asm {
+            push ebp
+            mov ebp, esp
+            push ebx
+            push edi
+            push esi
+            mov edi, dword ptr [ebp + 0x1c]
+            mov esi, dword ptr [ebp + 0x20]
+            mov ecx, dword ptr [ebp + 0x14]
+            mov edx, dword ptr [ebp + 0x18]
+            mov eax, dword ptr [ebp + 0xc]
+            mov ebx, dword ptr [ebp + 0x10]
+            fld dword ptr [edx + 4]
+            fadd dword ptr [edi + 4]
+            fld dword ptr [edi + 4]
+            fadd dword ptr [esi + 4]
+            fxch st(1)
+            fmul dword ptr ds:[0x670804]
+            fld dword ptr [edx + 4]
+            fxch st(2)
+            fmul dword ptr ds:[0x670804]
+            fxch st(2)
+            fadd dword ptr [esi + 4]
+            fxch st(1)
+            fstp dword ptr [ecx + 4]
+            fmul dword ptr ds:[0x670804]
+            fxch st(1)
+            fstp dword ptr [eax + 4]
+            fstp dword ptr [ebx + 4]
+            fld dword ptr [edx + 8]
+            fadd dword ptr [edi + 8]
+            fld dword ptr [edi + 8]
+            fadd dword ptr [esi + 8]
+            fxch st(1)
+            fmul dword ptr ds:[0x670804]
+            fld dword ptr [edx + 8]
+            fxch st(2)
+            fmul dword ptr ds:[0x670804]
+            fxch st(2)
+            fadd dword ptr [esi + 8]
+            fxch st(1)
+            fstp dword ptr [ecx + 8]
+            fmul dword ptr ds:[0x670804]
+            fxch st(1)
+            fstp dword ptr [eax + 8]
+            fstp dword ptr [ebx + 8]
+            fld dword ptr [edx + 0xc]
+            fadd dword ptr [edi + 0xc]
+            fld dword ptr [edi + 0xc]
+            fadd dword ptr [esi + 0xc]
+            fxch st(1)
+            fmul dword ptr ds:[0x670804]
+            fld dword ptr [edx + 0xc]
+            fxch st(2)
+            fmul dword ptr ds:[0x670804]
+            fxch st(2)
+            fadd dword ptr [esi + 0xc]
+            fxch st(1)
+            fstp dword ptr [ecx + 0xc]
+            fmul dword ptr ds:[0x670804]
+            fxch st(1)
+            fstp dword ptr [eax + 0xc]
+            fstp dword ptr [ebx + 0xc]
+            fld dword ptr [edx + 0x10]
+            fadd dword ptr [edi + 0x10]
+            fld dword ptr [edi + 0x10]
+            fadd dword ptr [esi + 0x10]
+            fxch st(1)
+            fmul dword ptr ds:[0x670804]
+            fld dword ptr [edx + 0x10]
+            fxch st(2)
+            fmul dword ptr ds:[0x670804]
+            fxch st(2)
+            fadd dword ptr [esi + 0x10]
+            fxch st(1)
+            fstp dword ptr [ecx + 0x10]
+            fmul dword ptr ds:[0x670804]
+            fxch st(1)
+            fstp dword ptr [eax + 0x10]
+            fstp dword ptr [ebx + 0x10]
+            fld dword ptr [eax + 0x10]
+            fmul dword ptr [ebx + 0x10]
+            fld dword ptr [ebx + 0x10]
+            fmul dword ptr [ecx + 0x10]
+            fld st(1)
+            fmul dword ptr [ecx + 0x10]
+            fld dword ptr [eax + 0x10]
+            fmul dword ptr [ecx + 0x10]
+            fxch st(1)
+            fdivr dword ptr ds:[0x670800]
+            push ebp
+            mov ebp, dword ptr ds:[0x79f9cc]
+            mov ebp, dword ptr [ebp + 0x20]
+            and ebp, 0x3800
+            pop ebp
+            mov ebp, dword ptr [ebp + 8]
+            je L0054c5d2
+            fld dword ptr [edx + 0x2c]
+            fadd dword ptr [edi + 0x2c]
+            fld dword ptr [edi + 0x2c]
+            fadd dword ptr [esi + 0x2c]
+            fxch st(1)
+            fmul dword ptr ds:[0x670804]
+            fld dword ptr [edx + 0x2c]
+            fxch st(2)
+            fmul dword ptr ds:[0x670804]
+            fxch st(2)
+            fadd dword ptr [esi + 0x2c]
+            fxch st(1)
+            fstp dword ptr [ecx + 0x2c]
+            fmul dword ptr ds:[0x670804]
+            fxch st(1)
+            fstp dword ptr [eax + 0x2c]
+            fstp dword ptr [ebx + 0x2c]
+            fld dword ptr [edx + 0x30]
+            fadd dword ptr [edi + 0x30]
+            fld dword ptr [edi + 0x30]
+            fadd dword ptr [esi + 0x30]
+            fxch st(1)
+            fmul dword ptr ds:[0x670804]
+            fld dword ptr [edx + 0x30]
+            fxch st(2)
+            fmul dword ptr ds:[0x670804]
+            fxch st(2)
+            fadd dword ptr [esi + 0x30]
+            fxch st(1)
+            fstp dword ptr [ecx + 0x30]
+            fmul dword ptr ds:[0x670804]
+            fxch st(1)
+            fstp dword ptr [eax + 0x30]
+            fstp dword ptr [ebx + 0x30]
+            fld dword ptr [edx + 0x34]
+            fadd dword ptr [edi + 0x34]
+            fld dword ptr [edi + 0x34]
+            fadd dword ptr [esi + 0x34]
+            fxch st(1)
+            fmul dword ptr ds:[0x670804]
+            fld dword ptr [edx + 0x34]
+            fxch st(2)
+            fmul dword ptr ds:[0x670804]
+            fxch st(2)
+            fadd dword ptr [esi + 0x34]
+            fxch st(1)
+            fstp dword ptr [ecx + 0x34]
+            fmul dword ptr ds:[0x670804]
+            fxch st(1)
+            fstp dword ptr [eax + 0x34]
+            fstp dword ptr [ebx + 0x34]
+    L0054c5d2:
+            fld dword ptr [edx + 0x28]
+            fadd dword ptr [edi + 0x28]
+            fld dword ptr [edi + 0x28]
+            fadd dword ptr [esi + 0x28]
+            fxch st(1)
+            fmul dword ptr ds:[0x670804]
+            fld dword ptr [edx + 0x28]
+            fxch st(2)
+            fmul dword ptr ds:[0x670804]
+            fxch st(2)
+            fadd dword ptr [esi + 0x28]
+            fxch st(1)
+            fstp dword ptr [ecx + 0x28]
+            fmul dword ptr ds:[0x670804]
+            fxch st(1)
+            fstp dword ptr [eax + 0x28]
+            fstp dword ptr [ebx + 0x28]
+            fld dword ptr [edx + 0x20]
+            fadd dword ptr [edi + 0x20]
+            fld dword ptr [edi + 0x20]
+            fadd dword ptr [esi + 0x20]
+            fxch st(1)
+            fmul dword ptr ds:[0x670804]
+            fld dword ptr [edx + 0x20]
+            fxch st(2)
+            fmul dword ptr ds:[0x670804]
+            fxch st(2)
+            fadd dword ptr [esi + 0x20]
+            fxch st(1)
+            fstp dword ptr [ecx + 0x20]
+            fmul dword ptr ds:[0x670804]
+            fxch st(1)
+            fstp dword ptr [eax + 0x20]
+            fstp dword ptr [ebx + 0x20]
+            fld dword ptr [edx + 0x24]
+            fadd dword ptr [edi + 0x24]
+            fld dword ptr [edi + 0x24]
+            fadd dword ptr [esi + 0x24]
+            fxch st(1)
+            fmul dword ptr ds:[0x670804]
+            fld dword ptr [edx + 0x24]
+            fxch st(2)
+            fmul dword ptr ds:[0x670804]
+            fxch st(2)
+            fadd dword ptr [esi + 0x24]
+            fxch st(1)
+            fstp dword ptr [ecx + 0x24]
+            fmul dword ptr ds:[0x670804]
+            fxch st(1)
+            fstp dword ptr [eax + 0x24]
+            fstp dword ptr [ebx + 0x24]
+            fmul st(2), st(0)
+            fmul st(1), st(0)
+            fmulp st(3), st(0)
+            fld dword ptr [ebp + 0x5f8]
+            fmul dword ptr [eax + 4]
+            fld dword ptr [ebp + 0x5f8]
+            fmul dword ptr [ebx + 4]
+            fld dword ptr [ebp + 0x5f8]
+            fxch st(2)
+            fmul st(0), st(4)
+            fxch st(1)
+            fmul st(0), st(3)
+            fxch st(1)
+            fadd dword ptr [ebp + 0x5b8]
+            fxch st(2)
+            fmul dword ptr [ecx + 4]
+            fxch st(1)
+            fadd dword ptr [ebp + 0x5b8]
+            fxch st(2)
+            fstp dword ptr [eax + 0x14]
+            fmul st(0), st(4)
+            fxch st(1)
+            fstp dword ptr [ebx + 0x14]
+            fadd dword ptr [ebp + 0x5b8]
+            fstp dword ptr [ecx + 0x14]
+            fld dword ptr [ebp + 0x5fc]
+            fmul dword ptr [eax + 8]
+            fld dword ptr [ebp + 0x5fc]
+            fmul dword ptr [ebx + 8]
+            fld dword ptr [ebp + 0x5fc]
+            fxch st(2)
+            fmul st(0), st(4)
+            fxch st(1)
+            fmul st(0), st(3)
+            fxch st(1)
+            fadd dword ptr [ebp + 0x5bc]
+            fxch st(2)
+            fmul dword ptr [ecx + 8]
+            fxch st(1)
+            fadd dword ptr [ebp + 0x5bc]
+            fxch st(2)
+            fstp dword ptr [eax + 0x18]
+            fmul st(0), st(4)
+            fxch st(1)
+            fstp dword ptr [ebx + 0x18]
+            fadd dword ptr [ebp + 0x5bc]
+            fstp dword ptr [ecx + 0x18]
+            fld dword ptr [ebp + 0x600]
+            fmul dword ptr [eax + 0xc]
+            fld dword ptr [ebp + 0x600]
+            fmul dword ptr [ebx + 0xc]
+            fld dword ptr [ebp + 0x600]
+            fxch st(2)
+            fmul st(0), st(4)
+            fxch st(1)
+            fmul st(0), st(3)
+            fxch st(1)
+            fadd dword ptr [ebp + 0x5c0]
+            fxch st(2)
+            fmul dword ptr [ecx + 0xc]
+            fxch st(1)
+            fadd dword ptr [ebp + 0x5c0]
+            fxch st(2)
+            fstp dword ptr [eax + 0x1c]
+            fmul st(0), st(4)
+            fxch st(1)
+            fstp dword ptr [ebx + 0x1c]
+            fadd dword ptr [ebp + 0x5c0]
+            fstp dword ptr [ecx + 0x1c]
+            fstp st(0)
+            fstp st(0)
+            fstp st(0)
+            pop esi
+            pop edi
+            pop ebx
+            pop ebp
+            ret
+    }
+#endif
 }
 
 static br_uint_32 OUTCODE_ORDINATE(br_uint_32 lValue, br_uint_32 rValue, br_uint_32* tableName1) {
@@ -138,7 +423,8 @@ static br_uint_32 OUTCODE_ORDINATE(br_uint_32 lValue, br_uint_32 rValue, br_uint
 }
 
 // FUNCTION: CARMA2_HW 0x0054c7ef
-void C2_HOOK_CDECL averageVertices(br_soft_renderer* renderer, brp_vertex* dest1, brp_vertex* dest2, brp_vertex* dest3, brp_vertex* src1, brp_vertex* src2, brp_vertex* src3) {
+void C2_NAKED C2_HOOK_CDECL averageVertices(br_soft_renderer* renderer, brp_vertex* dest1, brp_vertex* dest2, brp_vertex* dest3, brp_vertex* src1, brp_vertex* src2, brp_vertex* src3) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     COMPUTE_COMPONENT_MID_POINT_VALUES(C_X);
     COMPUTE_COMPONENT_MID_POINT_VALUES(C_Y);
@@ -216,6 +502,686 @@ void C2_HOOK_CDECL averageVertices(br_soft_renderer* renderer, brp_vertex* dest1
     TEST_AND_PROJECT_VERTEX(dest1);
     TEST_AND_PROJECT_VERTEX(dest2);
     TEST_AND_PROJECT_VERTEX(dest3);
+#else
+    __asm {
+            push ebp
+            mov ebp, esp
+            push ebx
+            push edi
+            push esi
+            mov edi, dword ptr [ebp + 0x1c]
+            mov esi, dword ptr [ebp + 0x20]
+            mov ecx, dword ptr [ebp + 0x14]
+            mov edx, dword ptr [ebp + 0x18]
+            mov eax, dword ptr [ebp + 0xc]
+            mov ebx, dword ptr [ebp + 0x10]
+            fld dword ptr [edx + 4]
+            fadd dword ptr [edi + 4]
+            fld dword ptr [edi + 4]
+            fadd dword ptr [esi + 4]
+            fxch st(1)
+            fmul dword ptr ds:[0x670804]
+            fld dword ptr [edx + 4]
+            fxch st(2)
+            fmul dword ptr ds:[0x670804]
+            fxch st(2)
+            fadd dword ptr [esi + 4]
+            fxch st(1)
+            fstp dword ptr [ecx + 4]
+            fmul dword ptr ds:[0x670804]
+            fxch st(1)
+            fstp dword ptr [eax + 4]
+            fstp dword ptr [ebx + 4]
+            fld dword ptr [edx + 8]
+            fadd dword ptr [edi + 8]
+            fld dword ptr [edi + 8]
+            fadd dword ptr [esi + 8]
+            fxch st(1)
+            fmul dword ptr ds:[0x670804]
+            fld dword ptr [edx + 8]
+            fxch st(2)
+            fmul dword ptr ds:[0x670804]
+            fxch st(2)
+            fadd dword ptr [esi + 8]
+            fxch st(1)
+            fstp dword ptr [ecx + 8]
+            fmul dword ptr ds:[0x670804]
+            fxch st(1)
+            fstp dword ptr [eax + 8]
+            fstp dword ptr [ebx + 8]
+            fld dword ptr [edx + 0xc]
+            fadd dword ptr [edi + 0xc]
+            fld dword ptr [edi + 0xc]
+            fadd dword ptr [esi + 0xc]
+            fxch st(1)
+            fmul dword ptr ds:[0x670804]
+            fld dword ptr [edx + 0xc]
+            fxch st(2)
+            fmul dword ptr ds:[0x670804]
+            fxch st(2)
+            fadd dword ptr [esi + 0xc]
+            fxch st(1)
+            fstp dword ptr [ecx + 0xc]
+            fmul dword ptr ds:[0x670804]
+            fxch st(1)
+            fstp dword ptr [eax + 0xc]
+            fstp dword ptr [ebx + 0xc]
+            fld dword ptr [edx + 0x10]
+            fadd dword ptr [edi + 0x10]
+            fld dword ptr [edi + 0x10]
+            fadd dword ptr [esi + 0x10]
+            fxch st(1)
+            fmul dword ptr ds:[0x670804]
+            fld dword ptr [edx + 0x10]
+            fxch st(2)
+            fmul dword ptr ds:[0x670804]
+            fxch st(2)
+            fadd dword ptr [esi + 0x10]
+            fxch st(1)
+            fstp dword ptr [ecx + 0x10]
+            fmul dword ptr ds:[0x670804]
+            fxch st(1)
+            fstp dword ptr [eax + 0x10]
+            fstp dword ptr [ebx + 0x10]
+            fld dword ptr [edx + 0x2c]
+            fadd dword ptr [edi + 0x2c]
+            fld dword ptr [edi + 0x2c]
+            fadd dword ptr [esi + 0x2c]
+            fxch st(1)
+            fmul dword ptr ds:[0x670804]
+            fld dword ptr [edx + 0x2c]
+            fxch st(2)
+            fmul dword ptr ds:[0x670804]
+            fxch st(2)
+            fadd dword ptr [esi + 0x2c]
+            fxch st(1)
+            fstp dword ptr [ecx + 0x2c]
+            fmul dword ptr ds:[0x670804]
+            fxch st(1)
+            fstp dword ptr [eax + 0x2c]
+            fstp dword ptr [ebx + 0x2c]
+            fld dword ptr [edx + 0x30]
+            fadd dword ptr [edi + 0x30]
+            fld dword ptr [edi + 0x30]
+            fadd dword ptr [esi + 0x30]
+            fxch st(1)
+            fmul dword ptr ds:[0x670804]
+            fld dword ptr [edx + 0x30]
+            fxch st(2)
+            fmul dword ptr ds:[0x670804]
+            fxch st(2)
+            fadd dword ptr [esi + 0x30]
+            fxch st(1)
+            fstp dword ptr [ecx + 0x30]
+            fmul dword ptr ds:[0x670804]
+            fxch st(1)
+            fstp dword ptr [eax + 0x30]
+            fstp dword ptr [ebx + 0x30]
+            fld dword ptr [edx + 0x34]
+            fadd dword ptr [edi + 0x34]
+            fld dword ptr [edi + 0x34]
+            fadd dword ptr [esi + 0x34]
+            fxch st(1)
+            fmul dword ptr ds:[0x670804]
+            fld dword ptr [edx + 0x34]
+            fxch st(2)
+            fmul dword ptr ds:[0x670804]
+            fxch st(2)
+            fadd dword ptr [esi + 0x34]
+            fxch st(1)
+            fstp dword ptr [ecx + 0x34]
+            fmul dword ptr ds:[0x670804]
+            fxch st(1)
+            fstp dword ptr [eax + 0x34]
+            fstp dword ptr [ebx + 0x34]
+            fld dword ptr [edx + 0x28]
+            fadd dword ptr [edi + 0x28]
+            fld dword ptr [edi + 0x28]
+            fadd dword ptr [esi + 0x28]
+            fxch st(1)
+            fmul dword ptr ds:[0x670804]
+            fld dword ptr [edx + 0x28]
+            fxch st(2)
+            fmul dword ptr ds:[0x670804]
+            fxch st(2)
+            fadd dword ptr [esi + 0x28]
+            fxch st(1)
+            fstp dword ptr [ecx + 0x28]
+            fmul dword ptr ds:[0x670804]
+            fxch st(1)
+            fstp dword ptr [eax + 0x28]
+            fstp dword ptr [ebx + 0x28]
+            fld dword ptr [edx + 0x20]
+            fadd dword ptr [edi + 0x20]
+            fld dword ptr [edi + 0x20]
+            fadd dword ptr [esi + 0x20]
+            fxch st(1)
+            fmul dword ptr ds:[0x670804]
+            fld dword ptr [edx + 0x20]
+            fxch st(2)
+            fmul dword ptr ds:[0x670804]
+            fxch st(2)
+            fadd dword ptr [esi + 0x20]
+            fxch st(1)
+            fstp dword ptr [ecx + 0x20]
+            fmul dword ptr ds:[0x670804]
+            fxch st(1)
+            fstp dword ptr [eax + 0x20]
+            fstp dword ptr [ebx + 0x20]
+            fld dword ptr [edx + 0x24]
+            fadd dword ptr [edi + 0x24]
+            fld dword ptr [edi + 0x24]
+            fadd dword ptr [esi + 0x24]
+            fxch st(1)
+            fmul dword ptr ds:[0x670804]
+            fld dword ptr [edx + 0x24]
+            fxch st(2)
+            fmul dword ptr ds:[0x670804]
+            fxch st(2)
+            fadd dword ptr [esi + 0x24]
+            fxch st(1)
+            fstp dword ptr [ecx + 0x24]
+            fmul dword ptr ds:[0x670804]
+            fxch st(1)
+            fstp dword ptr [eax + 0x24]
+            fstp dword ptr [ebx + 0x24]
+            mov edx, 0xfff0000
+            mov eax, dword ptr [ebp + 0xc]
+            mov ebx, dword ptr [eax + 0x10]
+            mov esi, 0x80000000
+            and esi, ebx
+            mov ecx, dword ptr [eax + 4]
+            mov edi, 0x80000000
+            and ebx, 0x7fffffff
+            shr esi, 1
+            and edi, ecx
+            or esi, edi
+            mov edi, ebx
+            and ecx, 0x7fffffff
+            sub edi, ecx
+            sub ecx, ebx
+            shr edi, 3
+            and ecx, 0x80000000
+            shr ecx, 2
+            or esi, edi
+            or esi, ecx
+            lea ebx, [rightLeftTable]
+            shr esi, 0x1c
+            mov ebx, dword ptr [ebx + esi*4]
+            xor edx, ebx
+            mov ebx, dword ptr [eax + 0x10]
+            mov esi, 0x80000000
+            and esi, ebx
+            mov ecx, dword ptr [eax + 8]
+            mov edi, 0x80000000
+            and ebx, 0x7fffffff
+            shr esi, 1
+            and edi, ecx
+            or esi, edi
+            mov edi, ebx
+            and ecx, 0x7fffffff
+            sub edi, ecx
+            sub ecx, ebx
+            shr edi, 3
+            and ecx, 0x80000000
+            shr ecx, 2
+            or esi, edi
+            or esi, ecx
+            lea ebx, [topBottomTable]
+            shr esi, 0x1c
+            mov ebx, dword ptr [ebx + esi*4]
+            xor edx, ebx
+            mov ebx, dword ptr [eax + 0x10]
+            mov esi, 0x80000000
+            and esi, ebx
+            mov ecx, dword ptr [eax + 0xc]
+            mov edi, 0x80000000
+            and ebx, 0x7fffffff
+            shr esi, 1
+            and edi, ecx
+            or esi, edi
+            mov edi, ebx
+            and ecx, 0x7fffffff
+            sub edi, ecx
+            sub ecx, ebx
+            shr edi, 3
+            and ecx, 0x80000000
+            shr ecx, 2
+            or esi, edi
+            or esi, ecx
+            lea ebx, [hitherYonTable]
+            shr esi, 0x1c
+            mov ebx, dword ptr [ebx + esi*4]
+            xor edx, ebx
+            mov dword ptr [eax], edx
+            mov edx, 0xfff0000
+            mov eax, dword ptr [ebp + 0x10]
+            mov ebx, dword ptr [eax + 0x10]
+            mov esi, 0x80000000
+            and esi, ebx
+            mov ecx, dword ptr [eax + 4]
+            mov edi, 0x80000000
+            and ebx, 0x7fffffff
+            shr esi, 1
+            and edi, ecx
+            or esi, edi
+            mov edi, ebx
+            and ecx, 0x7fffffff
+            sub edi, ecx
+            sub ecx, ebx
+            shr edi, 3
+            and ecx, 0x80000000
+            shr ecx, 2
+            or esi, edi
+            or esi, ecx
+            lea ebx, [rightLeftTable]
+            shr esi, 0x1c
+            mov ebx, dword ptr [ebx + esi*4]
+            xor edx, ebx
+            mov ebx, dword ptr [eax + 0x10]
+            mov esi, 0x80000000
+            and esi, ebx
+            mov ecx, dword ptr [eax + 8]
+            mov edi, 0x80000000
+            and ebx, 0x7fffffff
+            shr esi, 1
+            and edi, ecx
+            or esi, edi
+            mov edi, ebx
+            and ecx, 0x7fffffff
+            sub edi, ecx
+            sub ecx, ebx
+            shr edi, 3
+            and ecx, 0x80000000
+            shr ecx, 2
+            or esi, edi
+            or esi, ecx
+            lea ebx, [topBottomTable]
+            shr esi, 0x1c
+            mov ebx, dword ptr [ebx + esi*4]
+            xor edx, ebx
+            mov ebx, dword ptr [eax + 0x10]
+            mov esi, 0x80000000
+            and esi, ebx
+            mov ecx, dword ptr [eax + 0xc]
+            mov edi, 0x80000000
+            and ebx, 0x7fffffff
+            shr esi, 1
+            and edi, ecx
+            or esi, edi
+            mov edi, ebx
+            and ecx, 0x7fffffff
+            sub edi, ecx
+            sub ecx, ebx
+            shr edi, 3
+            and ecx, 0x80000000
+            shr ecx, 2
+            or esi, edi
+            or esi, ecx
+            lea ebx, [hitherYonTable]
+            shr esi, 0x1c
+            mov ebx, dword ptr [ebx + esi*4]
+            xor edx, ebx
+            mov dword ptr [eax], edx
+            mov edx, 0xfff0000
+            mov eax, dword ptr [ebp + 0x14]
+            mov ebx, dword ptr [eax + 0x10]
+            mov esi, 0x80000000
+            and esi, ebx
+            mov ecx, dword ptr [eax + 4]
+            mov edi, 0x80000000
+            and ebx, 0x7fffffff
+            shr esi, 1
+            and edi, ecx
+            or esi, edi
+            mov edi, ebx
+            and ecx, 0x7fffffff
+            sub edi, ecx
+            sub ecx, ebx
+            shr edi, 3
+            and ecx, 0x80000000
+            shr ecx, 2
+            or esi, edi
+            or esi, ecx
+            lea ebx, [rightLeftTable]
+            shr esi, 0x1c
+            mov ebx, dword ptr [ebx + esi*4]
+            xor edx, ebx
+            mov ebx, dword ptr [eax + 0x10]
+            mov esi, 0x80000000
+            and esi, ebx
+            mov ecx, dword ptr [eax + 8]
+            mov edi, 0x80000000
+            and ebx, 0x7fffffff
+            shr esi, 1
+            and edi, ecx
+            or esi, edi
+            mov edi, ebx
+            and ecx, 0x7fffffff
+            sub edi, ecx
+            sub ecx, ebx
+            shr edi, 3
+            and ecx, 0x80000000
+            shr ecx, 2
+            or esi, edi
+            or esi, ecx
+            lea ebx, [topBottomTable]
+            shr esi, 0x1c
+            mov ebx, dword ptr [ebx + esi*4]
+            xor edx, ebx
+            mov ebx, dword ptr [eax + 0x10]
+            mov esi, 0x80000000
+            and esi, ebx
+            mov ecx, dword ptr [eax + 0xc]
+            mov edi, 0x80000000
+            and ebx, 0x7fffffff
+            shr esi, 1
+            and edi, ecx
+            or esi, edi
+            mov edi, ebx
+            and ecx, 0x7fffffff
+            sub edi, ecx
+            sub ecx, ebx
+            shr edi, 3
+            and ecx, 0x80000000
+            shr ecx, 2
+            or esi, edi
+            or esi, ecx
+            lea ebx, [hitherYonTable]
+            shr esi, 0x1c
+            mov ebx, dword ptr [ebx + esi*4]
+            xor edx, ebx
+            mov dword ptr [eax], edx
+            push ebp
+            mov ecx, dword ptr [ebp + 0x14]
+            mov eax, dword ptr [ebp + 0xc]
+            mov ebx, dword ptr [ebp + 0x10]
+            mov ebp, dword ptr [ebp + 8]
+            mov edx, dword ptr ds:[0x79fb10]
+            mov edi, 5
+            test edx, edx
+            je L0054cde4
+    L0054ccf3:
+            lea ebp, [ebp + 0x4a8]
+            cmp esi, 0xe1
+            jne L0054cdda
+            lea edx, [ebp + 4]
+            lea esi, [eax + 4]
+            _emit 0xd9
+        _emit 0x06
+            _emit 0xd8
+        _emit 0x0a
+            fld dword ptr [esi + 4]
+            fmul dword ptr [edx + 4]
+            fld dword ptr [esi + 8]
+            fmul dword ptr [edx + 8]
+            fld dword ptr [esi + 0xc]
+            fmul dword ptr [edx + 0xc]
+            fxch st(3)
+            faddp st(2), st(0)
+            faddp st(2), st(0)
+            faddp st(1), st(0)
+            fstp dword ptr ds:[0x67080c]
+            mov edx, dword ptr ds:[0x67080c]
+            mov esi, dword ptr [eax]
+            test edx, 0x80000000
+            je L0054cd4e
+            mov edx, 0x400040
+            push ecx
+            mov ecx, edi
+            shl edx, cl
+            pop ecx
+            xor esi, edx
+            mov dword ptr [eax], esi
+    L0054cd4e:
+            lea esi, [ebx + 4]
+            _emit 0xd9
+        _emit 0x06
+            _emit 0xd8
+        _emit 0x0a
+            fld dword ptr [esi + 4]
+            fmul dword ptr [edx + 4]
+            fld dword ptr [esi + 8]
+            fmul dword ptr [edx + 8]
+            fld dword ptr [esi + 0xc]
+            fmul dword ptr [edx + 0xc]
+            fxch st(3)
+            faddp st(2), st(0)
+            faddp st(2), st(0)
+            faddp st(1), st(0)
+            fstp dword ptr ds:[0x67080c]
+            mov edx, dword ptr ds:[0x67080c]
+            mov esi, dword ptr [ebx]
+            test edx, 0x80000000
+            je L0054cd4e
+            mov edx, 0x400040
+            push ecx
+            mov ecx, edi
+            shl edx, cl
+            pop ecx
+            xor esi, edx
+            mov dword ptr [ebx], esi
+            lea esi, [ecx + 4]
+            _emit 0xd9
+        _emit 0x06
+            _emit 0xd8
+        _emit 0x0a
+            fld dword ptr [esi + 4]
+            fmul dword ptr [edx + 4]
+            fld dword ptr [esi + 8]
+            fmul dword ptr [edx + 8]
+            fld dword ptr [esi + 0xc]
+            fmul dword ptr [edx + 0xc]
+            fxch st(3)
+            faddp st(2), st(0)
+            faddp st(2), st(0)
+            faddp st(1), st(0)
+            fstp dword ptr ds:[0x67080c]
+            mov edx, dword ptr ds:[0x67080c]
+            mov esi, dword ptr [ecx]
+            test edx, 0x80000000
+            je L0054cd4e
+            mov edx, 0x400040
+            push ecx
+            mov ecx, edi
+            shl edx, cl
+            pop ecx
+            xor esi, edx
+            mov dword ptr [ecx], esi
+    L0054cdda:
+            sub ebp, 0x14
+            dec edi
+            jge L0054ccf3
+    L0054cde4:
+            mov edx, dword ptr [eax]
+            pop ebp
+            mov edi, dword ptr [ebx]
+            mov esi, dword ptr [ecx]
+            mov ebp, dword ptr [ebp + 8]
+            test edx, 0xfff
+            jne L0054cf20
+            test edi, 0xfff
+            jne L0054cf20
+            test esi, 0xfff
+            jne L0054cf20
+            fld dword ptr [eax + 0x10]
+            fmul dword ptr [ebx + 0x10]
+            fld dword ptr [ebx + 0x10]
+            fmul dword ptr [ecx + 0x10]
+            fld st(1)
+            fmul dword ptr [ecx + 0x10]
+            fld dword ptr [eax + 0x10]
+            fmul dword ptr [ecx + 0x10]
+            fxch st(1)
+            fdivr dword ptr ds:[0x670800]
+            fmul st(2), st(0)
+            fmul st(1), st(0)
+            fmulp st(3), st(0)
+            fld dword ptr [ebp + 0x5f8]
+            fmul dword ptr [eax + 4]
+            fld dword ptr [ebp + 0x5f8]
+            fmul dword ptr [ebx + 4]
+            fld dword ptr [ebp + 0x5f8]
+            fxch st(2)
+            fmul st(0), st(4)
+            fxch st(1)
+            fmul st(0), st(3)
+            fxch st(1)
+            fadd dword ptr [ebp + 0x5b8]
+            fxch st(2)
+            fmul dword ptr [ecx + 4]
+            fxch st(1)
+            fadd dword ptr [ebp + 0x5b8]
+            fxch st(2)
+            fstp dword ptr [eax + 0x14]
+            fmul st(0), st(4)
+            fxch st(1)
+            fstp dword ptr [ebx + 0x14]
+            fadd dword ptr [ebp + 0x5b8]
+            fstp dword ptr [ecx + 0x14]
+            fld dword ptr [ebp + 0x5fc]
+            fmul dword ptr [eax + 8]
+            fld dword ptr [ebp + 0x5fc]
+            fmul dword ptr [ebx + 8]
+            fld dword ptr [ebp + 0x5fc]
+            fxch st(2)
+            fmul st(0), st(4)
+            fxch st(1)
+            fmul st(0), st(3)
+            fxch st(1)
+            fadd dword ptr [ebp + 0x5bc]
+            fxch st(2)
+            fmul dword ptr [ecx + 8]
+            fxch st(1)
+            fadd dword ptr [ebp + 0x5bc]
+            fxch st(2)
+            fstp dword ptr [eax + 0x18]
+            fmul st(0), st(4)
+            fxch st(1)
+            fstp dword ptr [ebx + 0x18]
+            fadd dword ptr [ebp + 0x5bc]
+            fstp dword ptr [ecx + 0x18]
+            fld dword ptr [ebp + 0x600]
+            fmul dword ptr [eax + 0xc]
+            fld dword ptr [ebp + 0x600]
+            fmul dword ptr [ebx + 0xc]
+            fld dword ptr [ebp + 0x600]
+            fxch st(2)
+            fmul st(0), st(4)
+            fxch st(1)
+            fmul st(0), st(3)
+            fxch st(1)
+            fadd dword ptr [ebp + 0x5c0]
+            fxch st(2)
+            fmul dword ptr [ecx + 0xc]
+            fxch st(1)
+            fadd dword ptr [ebp + 0x5c0]
+            fxch st(2)
+            fstp dword ptr [eax + 0x1c]
+            fmul st(0), st(4)
+            fxch st(1)
+            fstp dword ptr [ebx + 0x1c]
+            fadd dword ptr [ebp + 0x5c0]
+            fstp dword ptr [ecx + 0x1c]
+            fstp st(0)
+            fstp st(0)
+            fstp st(0)
+            pop esi
+            pop edi
+            pop ebx
+            pop ebp
+            ret
+    L0054cf20:
+            mov edx, dword ptr [eax]
+            test edx, 0xfff
+            jne L0054cf7b
+            fld dword ptr ds:[0x670800]
+            fdiv dword ptr [eax + 0x10]
+            fld dword ptr [eax + 4]
+            fmul st(0), st(1)
+            fld dword ptr [eax + 8]
+            fmul st(0), st(2)
+            fxch st(2)
+            fmul dword ptr [eax + 0xc]
+            fxch st(1)
+            fmul dword ptr [ebp + 0x5f8]
+            fxch st(2)
+            fmul dword ptr [ebp + 0x5fc]
+            fxch st(2)
+            fadd dword ptr [ebp + 0x5b8]
+            fxch st(1)
+            fmul dword ptr [ebp + 0x600]
+            fxch st(2)
+            fadd dword ptr [ebp + 0x5bc]
+            fxch st(1)
+            fstp dword ptr [eax + 0x14]
+            fstp dword ptr [eax + 0x18]
+            fadd dword ptr [ebp + 0x5c0]
+            fstp dword ptr [eax + 0x1c]
+    L0054cf7b:
+            mov edx, dword ptr [ebx]
+            test edx, 0xfff
+            jne L0054cfd6
+            fld dword ptr ds:[0x670800]
+            fdiv dword ptr [ebx + 0x10]
+            fld dword ptr [ebx + 4]
+            fmul st(0), st(1)
+            fld dword ptr [ebx + 8]
+            fmul st(0), st(2)
+            fxch st(2)
+            fmul dword ptr [ebx + 0xc]
+            fxch st(1)
+            fmul dword ptr [ebp + 0x5f8]
+            fxch st(2)
+            fmul dword ptr [ebp + 0x5fc]
+            fxch st(2)
+            fadd dword ptr [ebp + 0x5b8]
+            fxch st(1)
+            fmul dword ptr [ebp + 0x600]
+            fxch st(2)
+            fadd dword ptr [ebp + 0x5bc]
+            fxch st(1)
+            fstp dword ptr [ebx + 0x14]
+            fstp dword ptr [ebx + 0x18]
+            fadd dword ptr [ebp + 0x5c0]
+            fstp dword ptr [ebx + 0x1c]
+    L0054cfd6:
+            mov edx, dword ptr [ecx]
+            test edx, 0xfff
+            jne L0054d031
+            fld dword ptr ds:[0x670800]
+            fdiv dword ptr [ecx + 0x10]
+            fld dword ptr [ecx + 4]
+            fmul st(0), st(1)
+            fld dword ptr [ecx + 8]
+            fmul st(0), st(2)
+            fxch st(2)
+            fmul dword ptr [ecx + 0xc]
+            fxch st(1)
+            fmul dword ptr [ebp + 0x5f8]
+            fxch st(2)
+            fmul dword ptr [ebp + 0x5fc]
+            fxch st(2)
+            fadd dword ptr [ebp + 0x5b8]
+            fxch st(1)
+            fmul dword ptr [ebp + 0x600]
+            fxch st(2)
+            fadd dword ptr [ebp + 0x5bc]
+            fxch st(1)
+            fstp dword ptr [ecx + 0x14]
+            fstp dword ptr [ecx + 0x18]
+            fadd dword ptr [ebp + 0x5c0]
+            fstp dword ptr [ecx + 0x1c]
+    L0054d031:
+            pop esi
+            pop edi
+            pop ebx
+            pop ebp
+            ret
+            jmp dword ptr ds:[0x589018]
+            jmp dword ptr ds:[0x589010]
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00560020

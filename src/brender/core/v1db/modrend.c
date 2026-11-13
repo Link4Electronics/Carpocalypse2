@@ -140,7 +140,8 @@ void C2_HOOK_STDCALL nullRender(br_actor* actor, br_model* model, br_material* m
 }
 
 // FUNCTION: CARMA2_HW 0x00526150
-br_model* C2_HOOK_STDCALL makeMeshFromBounds(br_bounds* b) {
+C2_NAKED br_model* C2_HOOK_STDCALL makeMeshFromBounds(br_bounds* b) {
+#ifndef CARPOCALYPSE2_MATCHING
     int i;
 
     // 1. Modify vertex points
@@ -188,6 +189,83 @@ br_model* C2_HOOK_STDCALL makeMeshFromBounds(br_bounds* b) {
     bounds_model.bounds = *b;
 
     return &bounds_model;
+#else
+    __asm {
+            push esi
+            mov esi, dword ptr [esp + 8]
+            push edi
+            mov eax, dword ptr [esi]
+            mov dword ptr [bounds_vertices], eax
+            fld dword ptr [esi + 4]
+            fstp dword ptr [bounds_vertices+0x4]
+            fld dword ptr [esi + 8]
+            fstp dword ptr [bounds_vertices+0x8]
+            mov ecx, dword ptr [esi]
+            mov dword ptr [bounds_vertices+0x20], ecx
+            mov ecx, esi
+            fld dword ptr [esi + 4]
+            fstp dword ptr [bounds_vertices+0x24]
+            fld dword ptr [esi + 0x14]
+            fstp dword ptr [bounds_vertices+0x28]
+            mov edx, dword ptr [esi]
+            mov dword ptr [bounds_vertices+0x40], edx
+            fld dword ptr [esi + 0x10]
+            fstp dword ptr [bounds_vertices+0x44]
+            fld dword ptr [esi + 8]
+            fstp dword ptr [bounds_vertices+0x48]
+            mov eax, dword ptr [esi]
+            mov dword ptr [bounds_vertices+0x60], eax
+            mov eax, offset bounds_faces+0x18
+            fld dword ptr [esi + 0x10]
+            fstp dword ptr [bounds_vertices+0x64]
+            fld dword ptr [esi + 0x14]
+            fstp dword ptr [bounds_vertices+0x68]
+            fld dword ptr [esi + 0xc]
+            fstp dword ptr [bounds_vertices+0x80]
+            fld dword ptr [esi + 4]
+            fstp dword ptr [bounds_vertices+0x84]
+            fld dword ptr [esi + 8]
+            fstp dword ptr [bounds_vertices+0x88]
+            fld dword ptr [esi + 0xc]
+            fstp dword ptr [bounds_vertices+0xa0]
+            fld dword ptr [esi + 4]
+            fstp dword ptr [bounds_vertices+0xa4]
+            fld dword ptr [esi + 0x14]
+            fstp dword ptr [bounds_vertices+0xa8]
+            fld dword ptr [esi + 0xc]
+            fstp dword ptr [bounds_vertices+0xc0]
+            fld dword ptr [esi + 0x10]
+            fstp dword ptr [bounds_vertices+0xc4]
+            fld dword ptr [esi + 8]
+            fstp dword ptr [bounds_vertices+0xc8]
+            fld dword ptr [esi + 0xc]
+            fstp dword ptr [bounds_vertices+0xe0]
+            fld dword ptr [esi + 0x10]
+            fstp dword ptr [bounds_vertices+0xe4]
+            fld dword ptr [esi + 0x14]
+            fstp dword ptr [bounds_vertices+0xe8]
+    L0052622f:
+            fld dword ptr [ecx + 0xc]
+            add ecx, 4
+            fst dword ptr [eax + 0x1c]
+            _emit 0xd9
+        _emit 0x18
+            fld dword ptr [ecx - 4]
+            fchs
+            fst dword ptr [eax + 0xc4]
+            fstp dword ptr [eax + 0xa8]
+            add eax, 0x38
+            cmp eax, offset bounds_faces+0xc0
+            jl L0052622f
+            mov ecx, 6
+            mov edi, offset bounds_model+0x34
+            rep movsd
+            pop edi
+            mov eax, offset bounds_model
+            pop esi
+            ret 4
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x005260f0

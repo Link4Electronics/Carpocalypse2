@@ -36,6 +36,10 @@ br_filesystem gFile_system = {
 // GLOBAL: CARMA2_HW 0x006815c4
 br_filesystem* gOld_file_system;
 
+#ifdef CARPOCALYPSE2_MATCHING
+extern FILE* C2_HOOK_FASTCALL DRfopen(const char* pFilename, const char* pMode);
+extern char gFile_mode_rb[];
+#endif
 // FUNCTION: CARMA2_HW 0x0044c690
 int C2_HOOK_FASTCALL FUN_0044c690(int pStr_index) {
 
@@ -69,12 +73,25 @@ void C2_HOOK_CDECL DRStdioAdvance(br_size_t count, void *f) {
 }
 
 // FUNCTION: CARMA2_HW 0x0044c700
-void* C2_HOOK_CDECL DRStdioOpenRead(const char* name, br_size_t n_magics, br_mode_test_cbfn* identify, int* mode_result) {
+C2_NAKED void* C2_HOOK_CDECL DRStdioOpenRead(const char* name, br_size_t n_magics, br_mode_test_cbfn* identify, int* mode_result) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     if (mode_result != NULL) {
         *mode_result = 0;
     }
     return DRfopen(name, "rb");
+#else
+    __asm {
+            mov eax, dword ptr [esp + 0x10]
+            test eax, eax
+            je L0044c70e
+            mov dword ptr [eax], 0
+    L0044c70e:
+            mov ecx, dword ptr [esp + 4]
+            mov edx, offset gFile_mode_rb
+            jmp DRfopen
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0044c720

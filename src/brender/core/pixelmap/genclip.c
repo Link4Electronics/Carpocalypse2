@@ -13,7 +13,8 @@ br_clip_result C2_HOOK_CDECL PixelmapPointClip(br_point* out, br_point* in, br_p
 }
 
 // FUNCTION: CARMA2_HW 0x0053da00
-br_clip_result C2_HOOK_CDECL PixelmapLineClip(br_point* s_out, br_point* e_out, br_point* s_in, br_point* e_in, br_pixelmap* pm) {
+br_clip_result C2_NAKED C2_HOOK_CDECL PixelmapLineClip(br_point* s_out, br_point* e_out, br_point* s_in, br_point* e_in, br_pixelmap* pm) {
+#ifndef CARPOCALYPSE2_MATCHING
     int temp;
     br_int_32 w;
     br_int_32 h;
@@ -115,6 +116,197 @@ br_clip_result C2_HOOK_CDECL PixelmapLineClip(br_point* s_out, br_point* e_out, 
     e_out->y = y2;
 
     return BR_CLIP_PARTIAL;
+#else
+    __asm {
+            mov eax, dword ptr [esp + 0x14]
+            push ebx
+            push ebp
+            push esi
+            mov esi, dword ptr [esp + 0x18]
+            push edi
+            mov edi, dword ptr [esp + 0x20]
+            movsx edx, word ptr [eax + 0x38]
+            movsx ebp, word ptr [eax + 0x3a]
+            mov ecx, dword ptr [esi]
+            mov ebx, dword ptr [edi]
+            mov esi, dword ptr [esi + 4]
+            mov edi, dword ptr [edi + 4]
+            add ecx, edx
+            add ebx, edx
+            add esi, ebp
+            add edi, ebp
+            xor edx, edx
+            xor ebp, ebp
+            mov dx, word ptr [eax + 0x34]
+            mov bp, word ptr [eax + 0x36]
+            dec edx
+            dec ebp
+            cmp ecx, ebx
+            mov dword ptr [esp + 0x24], edx
+            jle L0053da4c
+            mov eax, ecx
+            mov ecx, ebx
+            mov ebx, eax
+            mov eax, esi
+            mov esi, edi
+            mov edi, eax
+    L0053da4c:
+            test ebx, ebx
+            jl L0053dba9
+            cmp ecx, edx
+            jg L0053dba9
+            cmp esi, edi
+            jge L0053db03
+            test edi, edi
+            jl L0053dba9
+            cmp esi, ebp
+            jg L0053dba9
+            test esi, esi
+            jge L0053daa3
+            mov eax, ebx
+            mov edx, edi
+            sub eax, ecx
+            sub edx, esi
+            imul eax, esi
+            mov dword ptr [esp + 0x1c], edx
+            xor edx, edx
+            mov esi, dword ptr [esp + 0x1c]
+            neg eax
+            div esi
+            add ecx, eax
+            mov eax, dword ptr [esp + 0x24]
+            cmp ecx, eax
+            jg L0053dba9
+            xor esi, esi
+            mov edx, eax
+    L0053daa3:
+            cmp edi, ebp
+            jle L0053dac6
+            mov eax, edi
+            mov edx, ebx
+            sub eax, ebp
+            sub edx, ecx
+            imul eax, edx
+            sub edi, esi
+            xor edx, edx
+            div edi
+            sub ebx, eax
+            js L0053dba9
+            mov edx, dword ptr [esp + 0x24]
+            mov edi, ebp
+    L0053dac6:
+            test ecx, ecx
+            jge L0053dae3
+            mov eax, edi
+            mov ebp, ebx
+            sub eax, esi
+            sub ebp, ecx
+            imul eax, ecx
+            neg eax
+            xor edx, edx
+            div ebp
+            mov edx, dword ptr [esp + 0x24]
+            add esi, eax
+            xor ecx, ecx
+    L0053dae3:
+            cmp ebx, edx
+            jle L0053db8d
+            mov eax, ebx
+            sub ebx, ecx
+            sub eax, edx
+            mov edx, edi
+            sub edx, esi
+            imul eax, edx
+            xor edx, edx
+            div ebx
+            sub edi, eax
+            jmp L0053db89
+    L0053db03:
+            test esi, esi
+            jl L0053dba9
+            cmp edi, ebp
+            jg L0053dba9
+            cmp esi, ebp
+            jle L0053db36
+            mov eax, esi
+            mov edx, ebx
+            sub eax, ebp
+            sub edx, ecx
+            imul eax, edx
+            sub esi, edi
+            xor edx, edx
+            div esi
+            add ecx, eax
+            mov eax, dword ptr [esp + 0x24]
+            cmp ecx, eax
+            jg L0053dba9
+            mov esi, ebp
+            mov edx, eax
+    L0053db36:
+            test edi, edi
+            jge L0053db55
+            mov eax, ebx
+            mov ebp, esi
+            sub eax, ecx
+            sub ebp, edi
+            imul eax, edi
+            neg eax
+            xor edx, edx
+            div ebp
+            sub ebx, eax
+            js L0053dba9
+            mov edx, dword ptr [esp + 0x24]
+            xor edi, edi
+    L0053db55:
+            test ecx, ecx
+            jge L0053db72
+            mov eax, esi
+            mov ebp, ebx
+            sub eax, edi
+            sub ebp, ecx
+            imul eax, ecx
+            neg eax
+            xor edx, edx
+            div ebp
+            mov edx, dword ptr [esp + 0x24]
+            sub esi, eax
+            xor ecx, ecx
+    L0053db72:
+            cmp ebx, edx
+            jle L0053db8d
+            mov eax, ebx
+            sub ebx, ecx
+            sub eax, edx
+            mov edx, esi
+            sub edx, edi
+            imul eax, edx
+            xor edx, edx
+            div ebx
+            add edi, eax
+    L0053db89:
+            mov ebx, dword ptr [esp + 0x24]
+    L0053db8d:
+            mov eax, dword ptr [esp + 0x14]
+            mov dword ptr [eax], ecx
+            mov dword ptr [eax + 4], esi
+            mov eax, dword ptr [esp + 0x18]
+            mov dword ptr [eax], ebx
+            mov dword ptr [eax + 4], edi
+            mov eax, 1
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            ret
+    L0053dba9:
+            pop edi
+            pop esi
+            pop ebp
+            xor eax, eax
+            pop ebx
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0053dbb0

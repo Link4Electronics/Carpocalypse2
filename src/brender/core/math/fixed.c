@@ -218,6 +218,13 @@ static uint16_t fast_rsqrt_table[192] = {
     0x820c, 0x81c9, 0x8186, 0x8144, 0x8103, 0x80c1, 0x8080, 0x8040,
 };
 
+#ifdef CARPOCALYPSE2_MATCHING
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern br_uint_32 C2_HOOK_FASTCALL _BrFastRSqrt64(uint64_t v);
+extern br_uint_32 C2_HOOK_FASTCALL _BrISqrt64(uint64_t a);
+extern br_uint_8 bl;
+#endif
 // FUNCTION: CARMA2_HW 0x00537110
 br_fixed_ls C2_NAKED C2_HOOK_CDECL BrFixedAbs(br_fixed_ls a) {
 #ifndef CARPOCALYPSE2_MATCHING
@@ -227,17 +234,17 @@ br_fixed_ls C2_NAKED C2_HOOK_CDECL BrFixedAbs(br_fixed_ls a) {
     return a;
 #else
     __asm {
-        push ebp
-        mov ebp, esp
-        push edx
-        mov eax, dword ptr [ebp + 8]
-        test eax, eax
-        jns fixed_abs_done
-        neg eax
-fixed_abs_done:
-        pop edx
-        leave
-        ret
+            push ebp
+            mov ebp, esp
+            push edx
+            mov eax, dword ptr [ebp + 8]
+            test eax, eax
+            jns L0053711d
+            neg eax
+    L0053711d:
+            pop edx
+            leave
+            ret
     }
 #endif
 }
@@ -248,15 +255,15 @@ br_fixed_ls C2_NAKED C2_HOOK_CDECL BrFixedMul(br_fixed_ls a, br_fixed_ls b) {
     return ((br_int_64)a * (br_int_64)b) >> 16;
 #else
     __asm {
-        push ebp
-        mov ebp, esp
-        push edx
-        mov eax, dword ptr [ebp + 8]
-        imul dword ptr [ebp + 0xc]
-        shrd eax, edx, 16
-        pop edx
-        leave
-        ret 0
+            push ebp
+            mov ebp, esp
+            push edx
+            mov eax, dword ptr [ebp + 8]
+            imul dword ptr [ebp + 0xc]
+            shrd eax, edx, 0x10
+            pop edx
+            leave
+            ret
     }
 #endif
 }
@@ -267,25 +274,25 @@ br_fixed_ls C2_NAKED C2_HOOK_CDECL BrFixedMac2(br_fixed_ls a, br_fixed_ls b, br_
     return ((br_int_64)a * (br_int_64)b + (br_int_64)c * (br_int_64)d) >> 16;
 #else
     __asm {
-        push ebp
-        mov ebp, esp
-        push edx
-        push ebx
-        push ecx
-        mov eax, dword ptr [ebp + 8]
-        imul dword ptr [ebp + 0xc]
-        mov ebx, eax
-        mov ecx, edx
-        mov eax, dword ptr [ebp + 0x10]
-        imul dword ptr [ebp + 0x14]
-        add eax, ebx
-        adc edx, ecx
-        shrd eax, edx, 16
-        pop ecx
-        pop ebx
-        pop edx
-        leave
-        ret
+            push ebp
+            mov ebp, esp
+            push edx
+            push ebx
+            push ecx
+            mov eax, dword ptr [ebp + 8]
+            imul dword ptr [ebp + 0xc]
+            mov ebx, eax
+            mov ecx, edx
+            mov eax, dword ptr [ebp + 0x10]
+            imul dword ptr [ebp + 0x14]
+            add eax, ebx
+            adc edx, ecx
+            shrd eax, edx, 0x10
+            pop ecx
+            pop ebx
+            pop edx
+            leave
+            ret
     }
 #endif
 }
@@ -296,29 +303,29 @@ br_fixed_ls C2_NAKED C2_HOOK_CDECL BrFixedMac3(br_fixed_ls a, br_fixed_ls b, br_
     return ((br_int_64)a * (br_int_64)b + (br_int_64)c * (br_int_64)d + (br_int_64)e * (br_int_64)f) >> 16;
 #else
     __asm {
-        push ebp
-        mov ebp, esp
-        push edx
-        push ebx
-        push ecx
-        mov eax, dword ptr [ebp + 8]
-        imul dword ptr [ebp + 0xc]
-        mov ebx, eax
-        mov ecx, edx
-        mov eax, dword ptr [ebp + 0x10]
-        imul dword ptr [ebp + 0x14]
-        add ebx, eax
-        adc ecx, edx
-        mov eax, dword ptr [ebp + 0x18]
-        imul dword ptr [ebp + 0x1c]
-        add eax, ebx
-        adc edx, ecx
-        shrd eax, edx, 16
-        pop ecx
-        pop ebx
-        pop edx
-        leave
-        ret
+            push ebp
+            mov ebp, esp
+            push edx
+            push ebx
+            push ecx
+            mov eax, dword ptr [ebp + 8]
+            imul dword ptr [ebp + 0xc]
+            mov ebx, eax
+            mov ecx, edx
+            mov eax, dword ptr [ebp + 0x10]
+            imul dword ptr [ebp + 0x14]
+            add ebx, eax
+            adc ecx, edx
+            mov eax, dword ptr [ebp + 0x18]
+            imul dword ptr [ebp + 0x1c]
+            add eax, ebx
+            adc edx, ecx
+            shrd eax, edx, 0x10
+            pop ecx
+            pop ebx
+            pop edx
+            leave
+            ret
     }
 #endif
 }
@@ -329,33 +336,33 @@ br_fixed_ls C2_NAKED C2_HOOK_CDECL BrFixedMac4(br_fixed_ls a, br_fixed_ls b, br_
     return ((br_int_64)a * (br_int_64)b + (br_int_64)c * (br_int_64)d + (br_int_64)e * (br_int_64)f + (br_int_64)g * (br_int_64)h) >> 16;
 #else
     __asm {
-        push ebp
-        mov ebp, esp
-        push edx
-        push ebx
-        push ecx
-        mov eax, dword ptr [ebp + 8]
-        imul dword ptr [ebp + 0xc]
-        mov ebx, eax
-        mov ecx, edx
-        mov eax, dword ptr [ebp + 0x10]
-        imul dword ptr [ebp + 0x14]
-        add ebx, eax
-        adc ecx, edx
-        mov eax, dword ptr [ebp + 0x18]
-        imul dword ptr [ebp + 0x1c]
-        add ebx, eax
-        adc ecx, edx
-        mov eax, dword ptr [ebp + 0x20]
-        imul dword ptr [ebp + 0x24]
-        add eax, ebx
-        adc edx, ecx
-        shrd eax, edx, 16
-        pop ecx
-        pop ebx
-        pop edx
-        leave
-        ret
+            push ebp
+            mov ebp, esp
+            push edx
+            push ebx
+            push ecx
+            mov eax, dword ptr [ebp + 8]
+            imul dword ptr [ebp + 0xc]
+            mov ebx, eax
+            mov ecx, edx
+            mov eax, dword ptr [ebp + 0x10]
+            imul dword ptr [ebp + 0x14]
+            add ebx, eax
+            adc ecx, edx
+            mov eax, dword ptr [ebp + 0x18]
+            imul dword ptr [ebp + 0x1c]
+            add ebx, eax
+            adc ecx, edx
+            mov eax, dword ptr [ebp + 0x20]
+            imul dword ptr [ebp + 0x24]
+            add eax, ebx
+            adc edx, ecx
+            shrd eax, edx, 0x10
+            pop ecx
+            pop ebx
+            pop edx
+            leave
+            ret
     }
 #endif
 }
@@ -366,27 +373,27 @@ br_fixed_ls C2_NAKED C2_HOOK_CDECL BrFixedLength2(br_fixed_ls a, br_fixed_ls b) 
     return _BrISqrt64((br_int_64)a * (br_int_64)a + (br_int_64)b * (br_int_64)b);
 #else
     __asm {
-        push ebp
-        mov ebp, esp
-        push ebx
-        push ecx
-        push edx
-        push esi
-        mov eax, dword ptr [ebp + 8]
-        imul eax
-        mov ebx, eax
-        mov ecx, edx
-        mov eax, dword ptr [ebp + 0xc]
-        imul eax
-        add ebx, eax
-        adc ecx, edx
-        call _BrISqrt64
-        pop esi
-        pop edx
-        pop ecx
-        pop ebx
-        leave
-        ret
+            push ebp
+            mov ebp, esp
+            push ebx
+            push ecx
+            push edx
+            push esi
+            mov eax, dword ptr [ebp + 8]
+            imul eax
+            mov ebx, eax
+            mov ecx, edx
+            mov eax, dword ptr [ebp + 0xc]
+            imul eax
+            add ebx, eax
+            adc ecx, edx
+            call _BrISqrt64
+            pop esi
+            pop edx
+            pop ecx
+            pop ebx
+            leave
+            ret
     }
 #endif
 }
@@ -397,31 +404,31 @@ br_fixed_ls C2_NAKED C2_HOOK_CDECL BrFixedLength3(br_fixed_ls a, br_fixed_ls b, 
     return _BrISqrt64((br_int_64)a * (br_int_64)a + (br_int_64)b * (br_int_64)b + (br_int_64)c * (br_int_64)c);
 #else
     __asm {
-        push ebp
-        mov ebp, esp
-        push ebx
-        push ecx
-        push edx
-        push esi
-        mov eax, dword ptr [ebp + 8]
-        imul eax
-        mov ebx, eax
-        mov ecx, edx
-        mov eax, dword ptr [ebp + 0xc]
-        imul eax
-        add ebx, eax
-        adc ecx, edx
-        mov eax, dword ptr [ebp + 0x10]
-        imul eax
-        add ebx, eax
-        adc ecx, edx
-        call _BrISqrt64
-        pop esi
-        pop edx
-        pop ecx
-        pop ebx
-        leave
-        ret
+            push ebp
+            mov ebp, esp
+            push ebx
+            push ecx
+            push edx
+            push esi
+            mov eax, dword ptr [ebp + 8]
+            imul eax
+            mov ebx, eax
+            mov ecx, edx
+            mov eax, dword ptr [ebp + 0xc]
+            imul eax
+            add ebx, eax
+            adc ecx, edx
+            mov eax, dword ptr [ebp + 0x10]
+            imul eax
+            add ebx, eax
+            adc ecx, edx
+            call _BrISqrt64
+            pop esi
+            pop edx
+            pop ecx
+            pop ebx
+            leave
+            ret
     }
 #endif
 }
@@ -432,35 +439,35 @@ br_fixed_ls C2_NAKED C2_HOOK_CDECL BrFixedLength4(br_fixed_ls a, br_fixed_ls b, 
     return _BrISqrt64((br_int_64)a * (br_int_64)a + (br_int_64)b * (br_int_64)b + (br_int_64)c * (br_int_64)c + (br_int_64)d * (br_int_64)d);
 #else
     __asm {
-        push ebp
-        mov ebp, esp
-        push ebx
-        push ecx
-        push edx
-        push esi
-        mov eax, dword ptr [ebp + 8]
-        imul eax
-        mov ebx, eax
-        mov ecx, edx
-        mov eax, dword ptr [ebp + 0xc]
-        imul eax
-        add ebx, eax
-        adc ecx, edx
-        mov eax, dword ptr [ebp + 0x10]
-        imul eax
-        add ebx, eax
-        adc ecx, edx
-        mov eax, dword ptr [ebp + 0x14]
-        imul eax
-        add ebx, eax
-        adc ecx, edx
-        call _BrISqrt64
-        pop esi
-        pop edx
-        pop ecx
-        pop ebx
-        leave
-        ret
+            push ebp
+            mov ebp, esp
+            push ebx
+            push ecx
+            push edx
+            push esi
+            mov eax, dword ptr [ebp + 8]
+            imul eax
+            mov ebx, eax
+            mov ecx, edx
+            mov eax, dword ptr [ebp + 0xc]
+            imul eax
+            add ebx, eax
+            adc ecx, edx
+            mov eax, dword ptr [ebp + 0x10]
+            imul eax
+            add ebx, eax
+            adc ecx, edx
+            mov eax, dword ptr [ebp + 0x14]
+            imul eax
+            add ebx, eax
+            adc ecx, edx
+            call _BrISqrt64
+            pop esi
+            pop edx
+            pop ecx
+            pop ebx
+            leave
+            ret
     }
 #endif
 }
@@ -471,27 +478,27 @@ br_fixed_ls C2_NAKED C2_HOOK_CDECL BrFixedRLength2(br_fixed_ls a, br_fixed_ls b)
     return _BrFastRSqrt64((br_int_64)a * (br_int_64)a + (br_int_64)b * (br_int_64)b);
 #else
     __asm {
-        push ebp
-        mov ebp, esp
-        push ebx
-        push ecx
-        push edx
-        push esi
-        mov eax, dword ptr [ebp + 8]
-        imul eax
-        mov ebx, eax
-        mov ecx, edx
-        mov eax, dword ptr [ebp + 0xc]
-        imul eax
-        add ebx, eax
-        adc ecx, edx
-        call _BrFastRSqrt64
-        pop esi
-        pop edx
-        pop ecx
-        pop ebx
-        leave
-        ret
+            push ebp
+            mov ebp, esp
+            push ebx
+            push ecx
+            push edx
+            push esi
+            mov eax, dword ptr [ebp + 8]
+            imul eax
+            mov ebx, eax
+            mov ecx, edx
+            mov eax, dword ptr [ebp + 0xc]
+            imul eax
+            add ebx, eax
+            adc ecx, edx
+            call _BrFastRSqrt64
+            pop esi
+            pop edx
+            pop ecx
+            pop ebx
+            leave
+            ret
     }
 #endif
 }
@@ -502,31 +509,31 @@ br_fixed_ls C2_NAKED C2_HOOK_CDECL BrFixedRLength3(br_fixed_ls a, br_fixed_ls b,
     return _BrFastRSqrt64((br_int_64)a * (br_int_64)a + (br_int_64)b * (br_int_64)b + (br_int_64)c * (br_int_64)c);
 #else
     __asm {
-        push ebp
-        mov ebp, esp
-        push ebx
-        push ecx
-        push edx
-        push esi
-        mov eax, dword ptr [ebp + 8]
-        imul eax
-        mov ebx, eax
-        mov ecx, edx
-        mov eax, dword ptr [ebp + 0xc]
-        imul eax
-        add ebx, eax
-        adc ecx, edx
-        mov eax, dword ptr [ebp + 0x10]
-        imul eax
-        add ebx, eax
-        adc ecx, edx
-        call _BrFastRSqrt64
-        pop esi
-        pop edx
-        pop ecx
-        pop ebx
-        leave
-        ret
+            push ebp
+            mov ebp, esp
+            push ebx
+            push ecx
+            push edx
+            push esi
+            mov eax, dword ptr [ebp + 8]
+            imul eax
+            mov ebx, eax
+            mov ecx, edx
+            mov eax, dword ptr [ebp + 0xc]
+            imul eax
+            add ebx, eax
+            adc ecx, edx
+            mov eax, dword ptr [ebp + 0x10]
+            imul eax
+            add ebx, eax
+            adc ecx, edx
+            call _BrFastRSqrt64
+            pop esi
+            pop edx
+            pop ecx
+            pop ebx
+            leave
+            ret
     }
 #endif
 }
@@ -537,35 +544,35 @@ br_fixed_ls C2_NAKED C2_HOOK_CDECL BrFixedRLength4(br_fixed_ls a, br_fixed_ls b,
     return _BrFastRSqrt64((br_int_64)a * (br_int_64)a + (br_int_64)b * (br_int_64)b + (br_int_64)c * (br_int_64)c + (br_int_64)d * (br_int_64)d);
 #else
     __asm {
-        push ebp
-        mov ebp, esp
-        push ebx
-        push ecx
-        push edx
-        push esi
-        mov eax, dword ptr [ebp + 8]
-        imul eax
-        mov ebx, eax
-        mov ecx, edx
-        mov eax, dword ptr [ebp + 0xc]
-        imul eax
-        add ebx, eax
-        adc ecx, edx
-        mov eax, dword ptr [ebp + 0x10]
-        imul eax
-        add ebx, eax
-        adc ecx, edx
-        mov eax, dword ptr [ebp + 0x14]
-        imul eax
-        add ebx, eax
-        adc ecx, edx
-        call _BrFastRSqrt64
-        pop esi
-        pop edx
-        pop ecx
-        pop ebx
-        leave
-        ret
+            push ebp
+            mov ebp, esp
+            push ebx
+            push ecx
+            push edx
+            push esi
+            mov eax, dword ptr [ebp + 8]
+            imul eax
+            mov ebx, eax
+            mov ecx, edx
+            mov eax, dword ptr [ebp + 0xc]
+            imul eax
+            add ebx, eax
+            adc ecx, edx
+            mov eax, dword ptr [ebp + 0x10]
+            imul eax
+            add ebx, eax
+            adc ecx, edx
+            mov eax, dword ptr [ebp + 0x14]
+            imul eax
+            add ebx, eax
+            adc ecx, edx
+            call _BrFastRSqrt64
+            pop esi
+            pop edx
+            pop ecx
+            pop ebx
+            leave
+            ret
     }
 #endif
 }
@@ -576,17 +583,17 @@ br_fixed_ls C2_NAKED C2_HOOK_CDECL BrFixedDiv(br_fixed_ls a, br_fixed_ls b) {
     return (((br_int_64)a) << 16) / (br_int_64)b;
 #else
     __asm {
-        push ebp
-        mov ebp, esp
-        push edx
-        mov edx, dword ptr [ebp + 8]
-        mov eax, edx
-        shl eax, 16
-        sar edx, 16
-        idiv dword ptr [ebp + 0xc]
-        pop edx
-        leave
-        ret
+            push ebp
+            mov ebp, esp
+            push edx
+            mov edx, dword ptr [ebp + 8]
+            mov eax, edx
+            shl eax, 0x10
+            sar edx, 0x10
+            idiv dword ptr [ebp + 0xc]
+            pop edx
+            leave
+            ret
     }
 #endif
 }
@@ -597,18 +604,18 @@ br_fixed_ls C2_NAKED C2_HOOK_CDECL BrFixedDivR(br_fixed_ls a, br_fixed_ls b) {
     return (((br_int_64)a) << 16 | ((((uint32_t)(a)) & 0x80000000) ? 0xffff : 0x0)) / b;
 #else
     __asm {
-        push ebp
-        mov ebp, esp
-        push edx
-        mov eax, dword ptr [ebp + 8]
-        cdq
-        xchg edx, eax
-        shrd eax, edx, 16
-        sar edx, 16
-        idiv dword ptr [ebp + 0xc]
-        pop edx
-        leave
-        ret
+            push ebp
+            mov ebp, esp
+            push edx
+            mov eax, dword ptr [ebp + 8]
+            cdq
+            xchg edx, eax
+            shrd eax, edx, 0x10
+            sar edx, 0x10
+            idiv dword ptr [ebp + 0xc]
+            pop edx
+            leave
+            ret
     }
 #endif
 }
@@ -619,28 +626,46 @@ br_fixed_ls C2_NAKED C2_HOOK_CDECL BrFixedDivF(br_fixed_ls a, br_fixed_ls b) {
     return (((br_int_64)a) << 31) / b;
 #else
     __asm {
-        push ebp
-        mov ebp, esp
-        push edx
-        mov edx, dword ptr [ebp + 8]
-        xor eax, eax
-        sar edx, 1
-        rcr eax, 1
-        div dword ptr [ebp + 0xc]
-        pop edx
-        leave
-        ret
+            push ebp
+            mov ebp, esp
+            push edx
+            mov edx, dword ptr [ebp + 8]
+            xor eax, eax
+            sar edx, 1
+            rcr eax, 1
+            div dword ptr [ebp + 0xc]
+            pop edx
+            leave
+            ret
     }
 #endif
 }
 
-// C2PORT-NONMATCHING: best 17.65% | difftest PASS 2000 trials (spec difftest/specs/00537304_FUN_00537304.json) | reason VC5 lowers the signed 64-bit divide to helpers
 // FUNCTION: CARMA2_HW 0x00537304
-br_fixed_ls C2_HOOK_CDECL FUN_00537304(br_fixed_ls a, br_fixed_ls b) {
+br_fixed_ls C2_NAKED C2_HOOK_CDECL FUN_00537304(br_fixed_ls a, br_fixed_ls b) {
+#ifndef CARPOCALYPSE2_MATCHING
     uint32_t quotient;
 
     quotient = (uint32_t)((((br_int_64)a) << 30) / b);
     return (br_fixed_ls)(0x80000000u - (quotient << 1));
+#else
+    __asm {
+            push ebp
+            mov ebp, esp
+            push edx
+            mov edx, dword ptr [ebp + 8]
+            mov eax, edx
+            shl eax, 0x1e
+            sar edx, 2
+            idiv dword ptr [ebp + 0xc]
+            neg eax
+            add eax, eax
+            add eax, 0x80000000
+            pop edx
+            leave
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00537322
@@ -649,15 +674,15 @@ br_fixed_ls C2_NAKED C2_HOOK_CDECL BrFixedMulDiv(br_fixed_ls a, br_fixed_ls b, b
     return ((br_int_64)a * (br_int_64)b) / (br_int_64)c;
 #else
     __asm {
-        push ebp
-        mov ebp, esp
-        push edx
-        mov eax, dword ptr [ebp + 8]
-        imul dword ptr [ebp + 0xc]
-        idiv dword ptr [ebp + 0x10]
-        pop edx
-        leave
-        ret
+            push ebp
+            mov ebp, esp
+            push edx
+            mov eax, dword ptr [ebp + 8]
+            imul dword ptr [ebp + 0xc]
+            idiv dword ptr [ebp + 0x10]
+            pop edx
+            leave
+            ret
     }
 #endif
 }
@@ -668,25 +693,25 @@ br_fixed_ls C2_NAKED C2_HOOK_CDECL BrFixedMac2Div(br_fixed_ls a, br_fixed_ls b, 
     return ((br_int_64)a * (br_int_64)b + (br_int_64)c * (br_int_64)d) / (br_int_64)e;
 #else
     __asm {
-        push ebp
-        mov ebp, esp
-        push edx
-        push ebx
-        push ecx
-        mov eax, dword ptr [ebp + 8]
-        imul dword ptr [ebp + 0xc]
-        mov ebx, eax
-        mov ecx, edx
-        mov eax, dword ptr [ebp + 0x10]
-        imul dword ptr [ebp + 0x14]
-        add eax, ebx
-        adc edx, ecx
-        idiv dword ptr [ebp + 0x18]
-        pop ecx
-        pop ebx
-        pop edx
-        leave
-        ret
+            push ebp
+            mov ebp, esp
+            push edx
+            push ebx
+            push ecx
+            mov eax, dword ptr [ebp + 8]
+            imul dword ptr [ebp + 0xc]
+            mov ebx, eax
+            mov ecx, edx
+            mov eax, dword ptr [ebp + 0x10]
+            imul dword ptr [ebp + 0x14]
+            add eax, ebx
+            adc edx, ecx
+            idiv dword ptr [ebp + 0x18]
+            pop ecx
+            pop ebx
+            pop edx
+            leave
+            ret
     }
 #endif
 }
@@ -697,29 +722,29 @@ br_fixed_ls C2_NAKED C2_HOOK_CDECL BrFixedMac3Div(br_fixed_ls a, br_fixed_ls b, 
     return ((br_int_64)a * (br_int_64)b + (br_int_64)c * (br_int_64)d + (br_int_64)e * (br_int_64)f) / (br_int_64)g;
 #else
     __asm {
-        push ebp
-        mov ebp, esp
-        push edx
-        push ebx
-        push ecx
-        mov eax, dword ptr [ebp + 8]
-        imul dword ptr [ebp + 0xc]
-        mov ebx, eax
-        mov ecx, edx
-        mov eax, dword ptr [ebp + 0x10]
-        imul dword ptr [ebp + 0x14]
-        add ebx, eax
-        adc ecx, edx
-        mov eax, dword ptr [ebp + 0x18]
-        imul dword ptr [ebp + 0x1c]
-        add eax, ebx
-        adc edx, ecx
-        idiv dword ptr [ebp + 0x20]
-        pop ecx
-        pop ebx
-        pop edx
-        leave
-        ret
+            push ebp
+            mov ebp, esp
+            push edx
+            push ebx
+            push ecx
+            mov eax, dword ptr [ebp + 8]
+            imul dword ptr [ebp + 0xc]
+            mov ebx, eax
+            mov ecx, edx
+            mov eax, dword ptr [ebp + 0x10]
+            imul dword ptr [ebp + 0x14]
+            add ebx, eax
+            adc ecx, edx
+            mov eax, dword ptr [ebp + 0x18]
+            imul dword ptr [ebp + 0x1c]
+            add eax, ebx
+            adc edx, ecx
+            idiv dword ptr [ebp + 0x20]
+            pop ecx
+            pop ebx
+            pop edx
+            leave
+            ret
     }
 #endif
 }
@@ -730,33 +755,33 @@ br_fixed_ls C2_NAKED C2_HOOK_CDECL BrFixedMac4Div(br_fixed_ls a, br_fixed_ls b, 
     return ((br_int_64)a * (br_int_64)b + (br_int_64)c * (br_int_64)d + (br_int_64)e * (br_int_64)f + (br_int_64)g * (br_int_64)h) / (br_int_64)i;
 #else
     __asm {
-        push ebp
-        mov ebp, esp
-        push edx
-        push ebx
-        push ecx
-        mov eax, dword ptr [ebp + 8]
-        imul dword ptr [ebp + 0xc]
-        mov ebx, eax
-        mov ecx, edx
-        mov eax, dword ptr [ebp + 0x10]
-        imul dword ptr [ebp + 0x14]
-        add ebx, eax
-        adc ecx, edx
-        mov eax, dword ptr [ebp + 0x18]
-        imul dword ptr [ebp + 0x1c]
-        add ebx, eax
-        adc ecx, edx
-        mov eax, dword ptr [ebp + 0x20]
-        imul dword ptr [ebp + 0x24]
-        add eax, ebx
-        adc edx, ecx
-        idiv dword ptr [ebp + 0x28]
-        pop ecx
-        pop ebx
-        pop edx
-        leave
-        ret
+            push ebp
+            mov ebp, esp
+            push edx
+            push ebx
+            push ecx
+            mov eax, dword ptr [ebp + 8]
+            imul dword ptr [ebp + 0xc]
+            mov ebx, eax
+            mov ecx, edx
+            mov eax, dword ptr [ebp + 0x10]
+            imul dword ptr [ebp + 0x14]
+            add ebx, eax
+            adc ecx, edx
+            mov eax, dword ptr [ebp + 0x18]
+            imul dword ptr [ebp + 0x1c]
+            add ebx, eax
+            adc ecx, edx
+            mov eax, dword ptr [ebp + 0x20]
+            imul dword ptr [ebp + 0x24]
+            add eax, ebx
+            adc edx, ecx
+            idiv dword ptr [ebp + 0x28]
+            pop ecx
+            pop ebx
+            pop edx
+            leave
+            ret
     }
 #endif
 }
@@ -767,25 +792,25 @@ br_fixed_ls C2_NAKED C2_HOOK_CDECL BrFixedFMac2(br_fixed_lsf a, br_fixed_ls b, b
     return ((br_int_64)a * (br_int_64)b + (br_int_64)c * (br_int_64)d) >> 15;
 #else
     __asm {
-        push ebp
-        mov ebp, esp
-        push edx
-        push ebx
-        push ecx
-        movsx eax, word ptr [ebp + 8]
-        imul dword ptr [ebp + 0xc]
-        mov ebx, eax
-        mov ecx, edx
-        movsx eax, word ptr [ebp + 0x10]
-        imul dword ptr [ebp + 0x14]
-        add eax, ebx
-        adc edx, ecx
-        shrd eax, edx, 15
-        pop ecx
-        pop ebx
-        pop edx
-        leave
-        ret
+            push ebp
+            mov ebp, esp
+            push edx
+            push ebx
+            push ecx
+            movsx eax, word ptr [ebp + 8]
+            imul dword ptr [ebp + 0xc]
+            mov ebx, eax
+            mov ecx, edx
+            movsx eax, word ptr [ebp + 0x10]
+            imul dword ptr [ebp + 0x14]
+            add eax, ebx
+            adc edx, ecx
+            shrd eax, edx, 0xf
+            pop ecx
+            pop ebx
+            pop edx
+            leave
+            ret
     }
 #endif
 }
@@ -796,29 +821,29 @@ br_fixed_ls C2_NAKED C2_HOOK_CDECL BrFixedFMac3(br_fixed_lsf a, br_fixed_ls b, b
     return ((br_int_64)a * (br_int_64)b + (br_int_64)c * (br_int_64)d + (br_int_64)e * (br_int_64)f) >> 15;
 #else
     __asm {
-        push ebp
-        mov ebp, esp
-        push edx
-        push ebx
-        push ecx
-        movsx eax, word ptr [ebp + 8]
-        imul dword ptr [ebp + 0xc]
-        mov ebx, eax
-        mov ecx, edx
-        movsx eax, word ptr [ebp + 0x10]
-        imul dword ptr [ebp + 0x14]
-        add ebx, eax
-        adc ecx, edx
-        movsx eax, word ptr [ebp + 0x18]
-        imul dword ptr [ebp + 0x1c]
-        add eax, ebx
-        adc edx, ecx
-        shrd eax, edx, 15
-        pop ecx
-        pop ebx
-        pop edx
-        leave
-        ret
+            push ebp
+            mov ebp, esp
+            push edx
+            push ebx
+            push ecx
+            movsx eax, word ptr [ebp + 8]
+            imul dword ptr [ebp + 0xc]
+            mov ebx, eax
+            mov ecx, edx
+            movsx eax, word ptr [ebp + 0x10]
+            imul dword ptr [ebp + 0x14]
+            add ebx, eax
+            adc ecx, edx
+            movsx eax, word ptr [ebp + 0x18]
+            imul dword ptr [ebp + 0x1c]
+            add eax, ebx
+            adc edx, ecx
+            shrd eax, edx, 0xf
+            pop ecx
+            pop ebx
+            pop edx
+            leave
+            ret
     }
 #endif
 }
@@ -829,33 +854,33 @@ br_fixed_ls C2_NAKED C2_HOOK_CDECL BrFixedFMac4(br_fixed_lsf a, br_fixed_ls b, b
     return ((br_int_64)a * (br_int_64)b + (br_int_64)c * (br_int_64)d + (br_int_64)e * (br_int_64)f + (br_int_64)g * (br_int_64)h) >> 15;
 #else
     __asm {
-        push ebp
-        mov ebp, esp
-        push edx
-        push ebx
-        push ecx
-        movsx eax, word ptr [ebp + 8]
-        imul dword ptr [ebp + 0xc]
-        mov ebx, eax
-        mov ecx, edx
-        movsx eax, word ptr [ebp + 0x10]
-        imul dword ptr [ebp + 0x14]
-        add ebx, eax
-        adc ecx, edx
-        movsx eax, word ptr [ebp + 0x18]
-        imul dword ptr [ebp + 0x1c]
-        add ebx, eax
-        adc ecx, edx
-        movsx eax, word ptr [ebp + 0x20]
-        imul dword ptr [ebp + 0x24]
-        add eax, ebx
-        adc edx, ecx
-        shrd eax, edx, 15
-        pop ecx
-        pop ebx
-        pop edx
-        leave
-        ret
+            push ebp
+            mov ebp, esp
+            push edx
+            push ebx
+            push ecx
+            movsx eax, word ptr [ebp + 8]
+            imul dword ptr [ebp + 0xc]
+            mov ebx, eax
+            mov ecx, edx
+            movsx eax, word ptr [ebp + 0x10]
+            imul dword ptr [ebp + 0x14]
+            add ebx, eax
+            adc ecx, edx
+            movsx eax, word ptr [ebp + 0x18]
+            imul dword ptr [ebp + 0x1c]
+            add ebx, eax
+            adc ecx, edx
+            movsx eax, word ptr [ebp + 0x20]
+            imul dword ptr [ebp + 0x24]
+            add eax, ebx
+            adc edx, ecx
+            shrd eax, edx, 0xf
+            pop ecx
+            pop ebx
+            pop edx
+            leave
+            ret
     }
 #endif
 }
@@ -866,15 +891,15 @@ br_fixed_ls C2_NAKED C2_HOOK_CDECL BrFixedRcp(br_fixed_ls a) {
     return (br_fixed_ls)(((br_int_64)0x100000000) / a);
 #else
     __asm {
-        push ebp
-        mov ebp, esp
-        push edx
-        mov edx, 1
-        xor eax, eax
-        idiv dword ptr [ebp + 8]
-        pop edx
-        leave
-        ret
+            push ebp
+            mov ebp, esp
+            push edx
+            mov edx, 1
+            xor eax, eax
+            idiv dword ptr [ebp + 8]
+            pop edx
+            leave
+            ret
     }
 #endif
 }
@@ -885,15 +910,15 @@ br_fixed_ls C2_NAKED C2_HOOK_CDECL BrFixedSqr(br_fixed_ls a) {
     return ((br_int_64)a * (br_int_64)a) >> 16;
 #else
     __asm {
-        push ebp
-        mov ebp, esp
-        push edx
-        mov eax, dword ptr [ebp + 8]
-        imul eax
-        shrd eax, edx, 16
-        pop edx
-        leave
-        ret
+            push ebp
+            mov ebp, esp
+            push edx
+            mov eax, dword ptr [ebp + 8]
+            imul eax
+            shrd eax, edx, 0x10
+            pop edx
+            leave
+            ret
     }
 #endif
 }
@@ -904,25 +929,25 @@ br_fixed_ls C2_NAKED C2_HOOK_CDECL BrFixedSqr2(br_fixed_ls a, br_fixed_ls b) {
     return ((br_int_64)a * (br_int_64)a + (br_int_64)b * (br_int_64)b) >> 16;
 #else
     __asm {
-        push ebp
-        mov ebp, esp
-        push edx
-        push ebx
-        push ecx
-        mov eax, dword ptr [ebp + 8]
-        imul eax
-        mov ebx, eax
-        mov ecx, edx
-        mov eax, dword ptr [ebp + 0xc]
-        imul eax
-        add eax, ebx
-        adc edx, ecx
-        shrd eax, edx, 16
-        pop ecx
-        pop ebx
-        pop edx
-        leave
-        ret
+            push ebp
+            mov ebp, esp
+            push edx
+            push ebx
+            push ecx
+            mov eax, dword ptr [ebp + 8]
+            imul eax
+            mov ebx, eax
+            mov ecx, edx
+            mov eax, dword ptr [ebp + 0xc]
+            imul eax
+            add eax, ebx
+            adc edx, ecx
+            shrd eax, edx, 0x10
+            pop ecx
+            pop ebx
+            pop edx
+            leave
+            ret
     }
 #endif
 }
@@ -933,29 +958,29 @@ br_fixed_ls C2_NAKED C2_HOOK_CDECL BrFixedSqr3(br_fixed_ls a, br_fixed_ls b, br_
     return ((br_int_64)a * (br_int_64)a + (br_int_64)b * (br_int_64)b + (br_int_64)c * (br_int_64)c) >> 16;
 #else
     __asm {
-        push ebp
-        mov ebp, esp
-        push edx
-        push ebx
-        push ecx
-        mov eax, dword ptr [ebp + 8]
-        imul eax
-        mov ebx, eax
-        mov ecx, edx
-        mov eax, dword ptr [ebp + 0xc]
-        imul eax
-        add ebx, eax
-        adc ecx, edx
-        mov eax, dword ptr [ebp + 0x10]
-        imul eax
-        add eax, ebx
-        adc edx, ecx
-        shrd eax, edx, 16
-        pop ecx
-        pop ebx
-        pop edx
-        leave
-        ret
+            push ebp
+            mov ebp, esp
+            push edx
+            push ebx
+            push ecx
+            mov eax, dword ptr [ebp + 8]
+            imul eax
+            mov ebx, eax
+            mov ecx, edx
+            mov eax, dword ptr [ebp + 0xc]
+            imul eax
+            add ebx, eax
+            adc ecx, edx
+            mov eax, dword ptr [ebp + 0x10]
+            imul eax
+            add eax, ebx
+            adc edx, ecx
+            shrd eax, edx, 0x10
+            pop ecx
+            pop ebx
+            pop edx
+            leave
+            ret
     }
 #endif
 }
@@ -966,33 +991,33 @@ br_fixed_ls C2_NAKED C2_HOOK_CDECL BrFixedSqr4(br_fixed_ls a, br_fixed_ls b, br_
     return ((br_int_64)a * (br_int_64)a + (br_int_64)b * (br_int_64)b + (br_int_64)c * (br_int_64)c + (br_int_64)d * (br_int_64)d) >> 16;
 #else
     __asm {
-        push ebp
-        mov ebp, esp
-        push edx
-        push ebx
-        push ecx
-        mov eax, dword ptr [ebp + 8]
-        imul eax
-        mov ebx, eax
-        mov ecx, edx
-        mov eax, dword ptr [ebp + 0xc]
-        imul eax
-        add ebx, eax
-        adc ecx, edx
-        mov eax, dword ptr [ebp + 0x10]
-        imul eax
-        add ebx, eax
-        adc ecx, edx
-        mov eax, dword ptr [ebp + 0x14]
-        imul eax
-        add eax, ebx
-        adc edx, ecx
-        shrd eax, edx, 16
-        pop ecx
-        pop ebx
-        pop edx
-        leave
-        ret
+            push ebp
+            mov ebp, esp
+            push edx
+            push ebx
+            push ecx
+            mov eax, dword ptr [ebp + 8]
+            imul eax
+            mov ebx, eax
+            mov ecx, edx
+            mov eax, dword ptr [ebp + 0xc]
+            imul eax
+            add ebx, eax
+            adc ecx, edx
+            mov eax, dword ptr [ebp + 0x10]
+            imul eax
+            add ebx, eax
+            adc ecx, edx
+            mov eax, dword ptr [ebp + 0x14]
+            imul eax
+            add eax, ebx
+            adc edx, ecx
+            shrd eax, edx, 0x10
+            pop ecx
+            pop ebx
+            pop edx
+            leave
+            ret
     }
 #endif
 }
@@ -1011,28 +1036,29 @@ br_fixed_ls C2_NAKED C2_HOOK_CDECL BrFixedSin(br_angle a) {
     return 2 * fixed_lut_interpolate(fixed_sin_table, a);
 #else
     __asm {
-        push ebp
-        mov ebp, esp
-        push ebx
-        push ecx
-        push edx
-        mov ax, word ptr [ebp + 8]
-        xor ebx, ebx
-        xchg bl, ah
-        mov cx, word ptr [ebx*2 + fixed_sin_table]
-        mov dx, word ptr [ebx*2 + fixed_sin_table + 2]
-        sub edx, ecx
-        imul dx
-        mov al, ah
-        mov ah, dl
-        add eax, ecx
-        cwde
-        add eax, eax
-        pop edx
-        pop ecx
-        pop ebx
-        leave
-        ret
+            push ebp
+            mov ebp, esp
+            push ebx
+            push ecx
+            push edx
+            mov ax, word ptr [ebp + 8]
+            xor ebx, ebx
+            _emit 0x86
+        _emit 0xdc
+            mov cx, word ptr [ebx*2 + fixed_sin_table]
+            mov dx, word ptr [ebx*2 + fixed_sin_table+0x2]
+            sub edx, ecx
+            imul dx
+            mov al, ah
+            mov ah, dl
+            add eax, ecx
+            cwde
+            add eax, eax
+            pop edx
+            pop ecx
+            pop ebx
+            leave
+            ret
     }
 #endif
 }
@@ -1043,28 +1069,29 @@ br_fixed_ls C2_NAKED C2_HOOK_CDECL BrFixedCos(br_angle a) {
     return 2 * fixed_lut_interpolate(fixed_cos_table, a);
 #else
     __asm {
-        push ebp
-        mov ebp, esp
-        push ebx
-        push ecx
-        push edx
-        mov ax, word ptr [ebp + 8]
-        xor ebx, ebx
-        xchg bl, ah
-        mov cx, word ptr [ebx*2 + fixed_sin_table + 128]
-        mov dx, word ptr [ebx*2 + fixed_sin_table + 130]
-        sub edx, ecx
-        imul dx
-        mov al, ah
-        mov ah, dl
-        add eax, ecx
-        cwde
-        add eax, eax
-        pop edx
-        pop ecx
-        pop ebx
-        leave
-        ret
+            push ebp
+            mov ebp, esp
+            push ebx
+            push ecx
+            push edx
+            mov ax, word ptr [ebp + 8]
+            xor ebx, ebx
+            _emit 0x86
+        _emit 0xdc
+            mov cx, word ptr [ebx*2 + fixed_sin_table+0x80]
+            mov dx, word ptr [ebx*2 + fixed_sin_table+0x82]
+            sub edx, ecx
+            imul dx
+            mov al, ah
+            mov ah, dl
+            add eax, ecx
+            cwde
+            add eax, eax
+            pop edx
+            pop ecx
+            pop ebx
+            leave
+            ret
     }
 #endif
 }
@@ -1078,28 +1105,29 @@ br_angle C2_NAKED C2_HOOK_CDECL BrFixedASin(br_fixed_ls a) {
     return fixed_lut_interpolate(fixed_asin_table, (a+0x10000) >> 1);
 #else
     __asm {
-        push ebp
-        mov ebp, esp
-        push ebx
-        push ecx
-        push edx
-        mov eax, dword ptr [ebp + 8]
-        add eax, 0x10000
-        sar eax, 1
-        xor ebx, ebx
-        xchg bl, ah
-        mov cx, word ptr [ebx*2 + fixed_asin_table]
-        mov dx, word ptr [ebx*2 + fixed_asin_table + 2]
-        sub edx, ecx
-        imul dx
-        mov al, ah
-        mov ah, dl
-        add eax, ecx
-        pop edx
-        pop ecx
-        pop ebx
-        leave
-        ret
+            push ebp
+            mov ebp, esp
+            push ebx
+            push ecx
+            push edx
+            mov eax, dword ptr [ebp + 8]
+            add eax, 0x10000
+            sar eax, 1
+            xor ebx, ebx
+            _emit 0x86
+        _emit 0xdc
+            mov cx, word ptr [ebx*2 + fixed_asin_table]
+            mov dx, word ptr [ebx*2 + fixed_asin_table+0x2]
+            sub edx, ecx
+            imul dx
+            mov al, ah
+            mov ah, dl
+            add eax, ecx
+            pop edx
+            pop ecx
+            pop ebx
+            leave
+            ret
     }
 #endif
 }
@@ -1113,34 +1141,36 @@ br_angle C2_NAKED C2_HOOK_CDECL BrFixedACos(br_fixed_ls a) {
     return fixed_lut_interpolate(fixed_acos_table, (a+0x10000) >> 1);
 #else
     __asm {
-        push ebp
-        mov ebp, esp
-        push ebx
-        push ecx
-        push edx
-        mov eax, dword ptr [ebp + 8]
-        add eax, 0x10000
-        sar eax, 1
-        xor ebx, ebx
-        xchg bl, ah
-        mov cx, word ptr [ebx*2 + fixed_acos_table]
-        mov dx, word ptr [ebx*2 + fixed_acos_table + 2]
-        sub edx, ecx
-        imul dx
-        mov al, ah
-        mov ah, dl
-        add eax, ecx
-        pop edx
-        pop ecx
-        pop ebx
-        leave
-        ret
+            push ebp
+            mov ebp, esp
+            push ebx
+            push ecx
+            push edx
+            mov eax, dword ptr [ebp + 8]
+            add eax, 0x10000
+            sar eax, 1
+            xor ebx, ebx
+            _emit 0x86
+        _emit 0xdc
+            mov cx, word ptr [ebx*2 + fixed_acos_table]
+            mov dx, word ptr [ebx*2 + fixed_acos_table+0x2]
+            sub edx, ecx
+            imul dx
+            mov al, ah
+            mov ah, dl
+            add eax, ecx
+            pop edx
+            pop ecx
+            pop ebx
+            leave
+            ret
     }
 #endif
 }
 
 // FUNCTION: CARMA2_HW 0x005375af
-br_angle C2_HOOK_CDECL BrFixedATan2(br_fixed_ls x, br_fixed_ls y) {
+br_angle C2_NAKED C2_HOOK_CDECL BrFixedATan2(br_fixed_ls x, br_fixed_ls y) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     if (y > 0) {
         if (x >= 0) {
@@ -1188,6 +1218,245 @@ br_angle C2_HOOK_CDECL BrFixedATan2(br_fixed_ls x, br_fixed_ls y) {
             return 0x8000;                                                                  // PI
         }
     }
+#else
+    __asm {
+            push ebp
+            mov ebp, esp
+            push ebx
+            push ecx
+            push edx
+            mov ebx, dword ptr [ebp + 0xc]
+            mov ecx, dword ptr [ebp + 8]
+            xor eax, eax
+            cmp ecx, 0
+            jl L005376b2
+            je L0053779a
+            cmp ebx, 0
+            jl L0053763e
+            cmp ebx, ecx
+            jl L0053760c
+            je L00537602
+            mov edx, ecx
+            div ebx
+            shr eax, 0x10
+            xor ebx, ebx
+            _emit 0x86
+        _emit 0xdc
+            mov cx, word ptr [ebx*2 + fixed_atan_table]
+            mov dx, word ptr [ebx*2 + fixed_atan_table+0x2]
+            sub edx, ecx
+            imul dx
+            mov al, ah
+            mov ah, dl
+            add eax, ecx
+            pop edx
+            pop ecx
+            pop ebx
+            leave
+            ret
+    L00537602:
+            mov eax, 0x2000
+            pop edx
+            pop ecx
+            pop ebx
+            leave
+            ret
+    L0053760c:
+            mov edx, ebx
+            div ecx
+            shr eax, 0x10
+            xor ebx, ebx
+            _emit 0x86
+        _emit 0xdc
+            mov cx, word ptr [ebx*2 + fixed_atan_table]
+            mov dx, word ptr [ebx*2 + fixed_atan_table+0x2]
+            sub edx, ecx
+            imul dx
+            mov al, ah
+            mov ah, dl
+            add eax, ecx
+            neg eax
+            add eax, 0x4000
+            pop edx
+            pop ecx
+            pop ebx
+            leave
+            ret
+    L0053763e:
+            neg ebx
+            cmp ebx, ecx
+            jg L00537680
+            je L00537676
+            mov edx, ebx
+            div ecx
+            shr eax, 0x10
+            xor ebx, ebx
+            _emit 0x86
+        _emit 0xdc
+            mov cx, word ptr [ebx*2 + fixed_atan_table]
+            mov dx, word ptr [ebx*2 + fixed_atan_table+0x2]
+            sub edx, ecx
+            imul dx
+            mov al, ah
+            mov ah, dl
+            add eax, ecx
+            add eax, 0x4000
+            pop edx
+            pop ecx
+            pop ebx
+            leave
+            ret
+    L00537676:
+            mov eax, 0x6000
+            pop edx
+            pop ecx
+            pop ebx
+            leave
+            ret
+    L00537680:
+            mov edx, ecx
+            div ebx
+            shr eax, 0x10
+            xor ebx, ebx
+            _emit 0x86
+        _emit 0xdc
+            mov cx, word ptr [ebx*2 + fixed_atan_table]
+            mov dx, word ptr [ebx*2 + fixed_atan_table+0x2]
+            sub edx, ecx
+            imul dx
+            mov al, ah
+            mov ah, dl
+            add eax, ecx
+            neg eax
+            add eax, 0x8000
+            pop edx
+            pop ecx
+            pop ebx
+            leave
+            ret
+    L005376b2:
+            neg ecx
+            cmp ebx, 0
+            jg L0053772d
+            neg ebx
+            cmp ebx, ecx
+            jl L005376fb
+            je L005376f1
+            mov edx, ecx
+            div ebx
+            shr eax, 0x10
+            xor ebx, ebx
+            _emit 0x86
+        _emit 0xdc
+            mov cx, word ptr [ebx*2 + fixed_atan_table]
+            mov dx, word ptr [ebx*2 + fixed_atan_table+0x2]
+            sub edx, ecx
+            imul dx
+            mov al, ah
+            mov ah, dl
+            add eax, ecx
+            add eax, 0x8000
+            pop edx
+            pop ecx
+            pop ebx
+            leave
+            ret
+    L005376f1:
+            mov eax, 0xa000
+            pop edx
+            pop ecx
+            pop ebx
+            leave
+            ret
+    L005376fb:
+            mov edx, ebx
+            div ecx
+            shr eax, 0x10
+            xor ebx, ebx
+            _emit 0x86
+        _emit 0xdc
+            mov cx, word ptr [ebx*2 + fixed_atan_table]
+            mov dx, word ptr [ebx*2 + fixed_atan_table+0x2]
+            sub edx, ecx
+            imul dx
+            mov al, ah
+            mov ah, dl
+            add eax, ecx
+            neg eax
+            add eax, 0xc000
+            pop edx
+            pop ecx
+            pop ebx
+            leave
+            ret
+    L0053772d:
+            cmp ebx, ecx
+            jg L0053776d
+            je L00537763
+            mov edx, ebx
+            div ecx
+            shr eax, 0x10
+            xor ebx, ebx
+            _emit 0x86
+        _emit 0xdc
+            mov cx, word ptr [ebx*2 + fixed_atan_table]
+            mov dx, word ptr [ebx*2 + fixed_atan_table+0x2]
+            sub edx, ecx
+            imul dx
+            mov al, ah
+            mov ah, dl
+            add eax, ecx
+            add eax, 0xc000
+            pop edx
+            pop ecx
+            pop ebx
+            leave
+            ret
+    L00537763:
+            mov eax, 0xe000
+            pop edx
+            pop ecx
+            pop ebx
+            leave
+            ret
+    L0053776d:
+            mov edx, ecx
+            div ebx
+            shr eax, 0x10
+            xor ebx, ebx
+            _emit 0x86
+        _emit 0xdc
+            mov cx, word ptr [ebx*2 + fixed_atan_table]
+            mov dx, word ptr [ebx*2 + fixed_atan_table+0x2]
+            sub edx, ecx
+            imul dx
+            mov al, ah
+            mov ah, dl
+            add eax, ecx
+            neg eax
+            pop edx
+            pop ecx
+            pop ebx
+            leave
+            ret
+    L0053779a:
+            cmp ebx, 0
+            jl L005377a9
+            mov eax, 0
+            pop edx
+            pop ecx
+            pop ebx
+            leave
+            ret
+    L005377a9:
+            mov eax, 0x8000
+            pop edx
+            pop ecx
+            pop ebx
+            leave
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x005377b3
@@ -1242,180 +1511,168 @@ br_angle C2_NAKED C2_HOOK_CDECL BrFixedATan2Fast(br_fixed_ls x, br_fixed_ls y) {
     return 0;
 #else
     __asm {
-        push ebp
-        mov ebp, esp
-        push ebx
-        push ecx
-        push edx
-        mov ebx, dword ptr [ebp + 0xc]
-        mov ecx, dword ptr [ebp + 8]
-        xor eax, eax
-        cmp ecx, 0
-        jl at2f_x_neg
-        je at2f_x_zero
-        cmp ebx, 0
-        jl at2f_y_neg
-        cmp ebx, ecx
-        jl at2f_y_lt_x
-        je at2f_y_eq_x
-        mov edx, ecx
-        div ebx
-        shr eax, 19
-        pop edx
-        pop ecx
-        pop ebx
-        leave
-        ret
-
-    at2f_y_lt_x:
-        mov edx, ebx
-        div ecx
-        shr eax, 19
-        neg eax
-        add eax, 0x4000
-        pop edx
-        pop ecx
-        pop ebx
-        leave
-        ret
-
-    at2f_y_eq_x:
-        mov eax, 0x2000
-        pop edx
-        pop ecx
-        pop ebx
-        leave
-        ret
-
-    at2f_y_neg:
-        neg ebx
-        cmp ebx, ecx
-        jg at2f_y_gt_x
-        je at2f_y_eq_x2
-        mov edx, ebx
-        div ecx
-        shr eax, 19
-        add eax, 0x4000
-        pop edx
-        pop ecx
-        pop ebx
-        leave
-        ret
-
-    at2f_y_eq_x2:
-        mov eax, 0x6000
-        pop edx
-        pop ecx
-        pop ebx
-        leave
-        ret
-
-    at2f_y_gt_x:
-        mov edx, ecx
-        div ebx
-        shr eax, 19
-        neg eax
-        add eax, 0x8000
-        pop edx
-        pop ecx
-        pop ebx
-        leave
-        ret
-
-    at2f_x_neg:
-        neg ecx
-        cmp ebx, 0
-        jg at2f_y_pos
-        je at2f_y_zero
-        neg ebx
-        cmp ebx, ecx
-        jl at2f_b_lt_c
-        mov edx, ecx
-        div ebx
-        shr eax, 19
-        add eax, 0x8000
-        pop edx
-        pop ecx
-        pop ebx
-        leave
-        ret
-
-    at2f_y_zero:
-        mov eax, 0xa000
-        pop edx
-        pop ecx
-        pop ebx
-        leave
-        ret
-
-    at2f_b_lt_c:
-        mov edx, ebx
-        div ecx
-        shr eax, 19
-        neg eax
-        add eax, 0xc000
-        pop edx
-        pop ecx
-        pop ebx
-        leave
-        ret
-
-    at2f_y_pos:
-        cmp ebx, ecx
-        jg at2f_y_gt_c2
-        je at2f_y_eq_c2
-        mov edx, ebx
-        div ecx
-        shr eax, 19
-        add eax, 0xc000
-        pop edx
-        pop ecx
-        pop ebx
-        leave
-        ret
-
-    at2f_y_eq_c2:
-        mov eax, 0xe000
-        pop edx
-        pop ecx
-        pop ebx
-        leave
-        ret
-
-    at2f_y_gt_c2:
-        mov edx, ecx
-        div ebx
-        shr eax, 19
-        neg eax
-        pop edx
-        pop ecx
-        pop ebx
-        leave
-        ret
-
-    at2f_x_zero:
-        cmp ebx, 0
-        jl at2f_x_zero_neg
-        mov eax, 0
-        pop edx
-        pop ecx
-        pop ebx
-        leave
-        ret
-
-    at2f_x_zero_neg:
-        mov eax, 0x8000
-        pop edx
-        pop ecx
-        pop ebx
-        leave
-        ret
+            push ebp
+            mov ebp, esp
+            push ebx
+            push ecx
+            push edx
+            mov ebx, dword ptr [ebp + 0xc]
+            mov ecx, dword ptr [ebp + 8]
+            xor eax, eax
+            cmp ecx, 0
+            jl L00537836
+            je L005378a2
+            cmp ebx, 0
+            jl L00537800
+            cmp ebx, ecx
+            jl L005377e3
+            je L005377f6
+            mov edx, ecx
+            div ebx
+            shr eax, 0x13
+            pop edx
+            pop ecx
+            pop ebx
+            leave
+            ret
+    L005377e3:
+            mov edx, ebx
+            div ecx
+            shr eax, 0x13
+            neg eax
+            add eax, 0x4000
+            pop edx
+            pop ecx
+            pop ebx
+            leave
+            ret
+    L005377f6:
+            mov eax, 0x2000
+            pop edx
+            pop ecx
+            pop ebx
+            leave
+            ret
+    L00537800:
+            neg ebx
+            cmp ebx, ecx
+            jg L00537823
+            je L00537819
+            mov edx, ebx
+            div ecx
+            shr eax, 0x13
+            add eax, 0x4000
+            pop edx
+            pop ecx
+            pop ebx
+            leave
+            ret
+    L00537819:
+            mov eax, 0x6000
+            pop edx
+            pop ecx
+            pop ebx
+            leave
+            ret
+    L00537823:
+            mov edx, ecx
+            div ebx
+            shr eax, 0x13
+            neg eax
+            add eax, 0x8000
+            pop edx
+            pop ecx
+            pop ebx
+            leave
+            ret
+    L00537836:
+            neg ecx
+            cmp ebx, 0
+            jg L00537873
+            je L00537856
+            neg ebx
+            cmp ebx, ecx
+            jl L00537860
+            mov edx, ecx
+            div ebx
+            shr eax, 0x13
+            add eax, 0x8000
+            pop edx
+            pop ecx
+            pop ebx
+            leave
+            ret
+    L00537856:
+            mov eax, 0xa000
+            pop edx
+            pop ecx
+            pop ebx
+            leave
+            ret
+    L00537860:
+            mov edx, ebx
+            div ecx
+            shr eax, 0x13
+            neg eax
+            add eax, 0xc000
+            pop edx
+            pop ecx
+            pop ebx
+            leave
+            ret
+    L00537873:
+            cmp ebx, ecx
+            jg L00537894
+            je L0053788a
+            mov edx, ebx
+            div ecx
+            shr eax, 0x13
+            add eax, 0xc000
+            pop edx
+            pop ecx
+            pop ebx
+            leave
+            ret
+    L0053788a:
+            mov eax, 0xe000
+            pop edx
+            pop ecx
+            pop ebx
+            leave
+            ret
+    L00537894:
+            mov edx, ecx
+            div ebx
+            shr eax, 0x13
+            neg eax
+            pop edx
+            pop ecx
+            pop ebx
+            leave
+            ret
+    L005378a2:
+            cmp ebx, 0
+            jl L005378b1
+            mov eax, 0
+            pop edx
+            pop ecx
+            pop ebx
+            leave
+            ret
+    L005378b1:
+            mov eax, 0x8000
+            pop edx
+            pop ecx
+            pop ebx
+            leave
+            ret
     }
 #endif
 }
 
 // FUNCTION: CARMA2_HW 0x005378bb
-uint16_t C2_HOOK_CDECL _BrISqrt32(uint32_t a) {
+uint16_t C2_NAKED C2_HOOK_CDECL _BrISqrt32(uint32_t a) {
+#ifndef CARPOCALYPSE2_MATCHING
     // Shifting nth root algorithm
     uint32_t err;
     uint32_t est;
@@ -1454,10 +1711,182 @@ uint16_t C2_HOOK_CDECL _BrISqrt32(uint32_t a) {
         est += 1;
     }
     return est;
+#else
+    __asm {
+            push ebp
+            mov ebp, esp
+            push ebx
+            push ecx
+            push edx
+            mov ebx, dword ptr [ebp + 8]
+            xor ecx, ecx
+            xor eax, eax
+            xor edx, edx
+            shld ecx, ebx, 2
+            shl ebx, 2
+            cmp edx, ecx
+            jae L005378db
+            sbb ecx, edx
+            inc eax
+            add edx, 2
+    L005378db:
+            shld ecx, ebx, 2
+            shl ebx, 2
+            add eax, eax
+            add edx, edx
+            cmp edx, ecx
+            jae L005378f0
+            sbb ecx, edx
+            inc eax
+            add edx, 2
+    L005378f0:
+            shld ecx, ebx, 2
+            shl ebx, 2
+            add eax, eax
+            add edx, edx
+            cmp edx, ecx
+            jae L00537905
+            sbb ecx, edx
+            inc eax
+            add edx, 2
+    L00537905:
+            shld ecx, ebx, 2
+            shl ebx, 2
+            add eax, eax
+            add edx, edx
+            cmp edx, ecx
+            jae L0053791a
+            sbb ecx, edx
+            inc eax
+            add edx, 2
+    L0053791a:
+            shld ecx, ebx, 2
+            shl ebx, 2
+            add eax, eax
+            add edx, edx
+            cmp edx, ecx
+            jae L0053792f
+            sbb ecx, edx
+            inc eax
+            add edx, 2
+    L0053792f:
+            shld ecx, ebx, 2
+            shl ebx, 2
+            add eax, eax
+            add edx, edx
+            cmp edx, ecx
+            jae L00537944
+            sbb ecx, edx
+            inc eax
+            add edx, 2
+    L00537944:
+            shld ecx, ebx, 2
+            shl ebx, 2
+            add eax, eax
+            add edx, edx
+            cmp edx, ecx
+            jae L00537959
+            sbb ecx, edx
+            inc eax
+            add edx, 2
+    L00537959:
+            shld ecx, ebx, 2
+            shl ebx, 2
+            add eax, eax
+            add edx, edx
+            cmp edx, ecx
+            jae L0053796e
+            sbb ecx, edx
+            inc eax
+            add edx, 2
+    L0053796e:
+            shld ecx, ebx, 2
+            shl ebx, 2
+            add eax, eax
+            add edx, edx
+            cmp edx, ecx
+            jae L00537983
+            sbb ecx, edx
+            inc eax
+            add edx, 2
+    L00537983:
+            shld ecx, ebx, 2
+            shl ebx, 2
+            add eax, eax
+            add edx, edx
+            cmp edx, ecx
+            jae L00537998
+            sbb ecx, edx
+            inc eax
+            add edx, 2
+    L00537998:
+            shld ecx, ebx, 2
+            shl ebx, 2
+            add eax, eax
+            add edx, edx
+            cmp edx, ecx
+            jae L005379ad
+            sbb ecx, edx
+            inc eax
+            add edx, 2
+    L005379ad:
+            shld ecx, ebx, 2
+            shl ebx, 2
+            add eax, eax
+            add edx, edx
+            cmp edx, ecx
+            jae L005379c2
+            sbb ecx, edx
+            inc eax
+            add edx, 2
+    L005379c2:
+            shld ecx, ebx, 2
+            shl ebx, 2
+            add eax, eax
+            add edx, edx
+            cmp edx, ecx
+            jae L005379d7
+            sbb ecx, edx
+            inc eax
+            add edx, 2
+    L005379d7:
+            shld ecx, ebx, 2
+            shl ebx, 2
+            add eax, eax
+            add edx, edx
+            cmp edx, ecx
+            jae L005379ec
+            sbb ecx, edx
+            inc eax
+            add edx, 2
+    L005379ec:
+            shld ecx, ebx, 2
+            shl ebx, 2
+            add eax, eax
+            add edx, edx
+            cmp edx, ecx
+            jae L00537a01
+            sbb ecx, edx
+            inc eax
+            add edx, 2
+    L00537a01:
+            shld ecx, ebx, 2
+            add eax, eax
+            add edx, edx
+            cmp edx, ecx
+            adc eax, 0
+            pop edx
+            pop ecx
+            pop ebx
+            leave
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00537a13
-br_uint_32 C2_HOOK_FASTCALL _BrISqrt64(uint64_t a) {
+br_uint_32 C2_NAKED C2_HOOK_FASTCALL _BrISqrt64(uint64_t a) {
+#ifndef CARPOCALYPSE2_MATCHING
     // Shifting nth root algorithm
     uint64_t err;
     uint64_t est;
@@ -1481,10 +1910,339 @@ br_uint_32 C2_HOOK_FASTCALL _BrISqrt64(uint64_t a) {
         }
     }
     return (br_uint_32)est;
+#else
+    __asm {
+            xor esi, esi
+            xor eax, eax
+            xor edx, edx
+            shld esi, ecx, 2
+            shl ecx, 2
+            add eax, eax
+            add edx, edx
+            cmp edx, esi
+            jae L00537a2e
+            sbb esi, edx
+            inc eax
+            add edx, 2
+    L00537a2e:
+            shld esi, ecx, 2
+            shl ecx, 2
+            add eax, eax
+            add edx, edx
+            cmp edx, esi
+            jae L00537a43
+            sbb esi, edx
+            inc eax
+            add edx, 2
+    L00537a43:
+            shld esi, ecx, 2
+            shl ecx, 2
+            add eax, eax
+            add edx, edx
+            cmp edx, esi
+            jae L00537a58
+            sbb esi, edx
+            inc eax
+            add edx, 2
+    L00537a58:
+            shld esi, ecx, 2
+            shl ecx, 2
+            add eax, eax
+            add edx, edx
+            cmp edx, esi
+            jae L00537a6d
+            sbb esi, edx
+            inc eax
+            add edx, 2
+    L00537a6d:
+            shld esi, ecx, 2
+            shl ecx, 2
+            add eax, eax
+            add edx, edx
+            cmp edx, esi
+            jae L00537a82
+            sbb esi, edx
+            inc eax
+            add edx, 2
+    L00537a82:
+            shld esi, ecx, 2
+            shl ecx, 2
+            add eax, eax
+            add edx, edx
+            cmp edx, esi
+            jae L00537a97
+            sbb esi, edx
+            inc eax
+            add edx, 2
+    L00537a97:
+            shld esi, ecx, 2
+            shl ecx, 2
+            add eax, eax
+            add edx, edx
+            cmp edx, esi
+            jae L00537aac
+            sbb esi, edx
+            inc eax
+            add edx, 2
+    L00537aac:
+            shld esi, ecx, 2
+            shl ecx, 2
+            add eax, eax
+            add edx, edx
+            cmp edx, esi
+            jae L00537ac1
+            sbb esi, edx
+            inc eax
+            add edx, 2
+    L00537ac1:
+            shld esi, ecx, 2
+            shl ecx, 2
+            add eax, eax
+            add edx, edx
+            cmp edx, esi
+            jae L00537ad6
+            sbb esi, edx
+            inc eax
+            add edx, 2
+    L00537ad6:
+            shld esi, ecx, 2
+            shl ecx, 2
+            add eax, eax
+            add edx, edx
+            cmp edx, esi
+            jae L00537aeb
+            sbb esi, edx
+            inc eax
+            add edx, 2
+    L00537aeb:
+            shld esi, ecx, 2
+            shl ecx, 2
+            add eax, eax
+            add edx, edx
+            cmp edx, esi
+            jae L00537b00
+            sbb esi, edx
+            inc eax
+            add edx, 2
+    L00537b00:
+            shld esi, ecx, 2
+            shl ecx, 2
+            add eax, eax
+            add edx, edx
+            cmp edx, esi
+            jae L00537b15
+            sbb esi, edx
+            inc eax
+            add edx, 2
+    L00537b15:
+            shld esi, ecx, 2
+            shl ecx, 2
+            add eax, eax
+            add edx, edx
+            cmp edx, esi
+            jae L00537b2a
+            sbb esi, edx
+            inc eax
+            add edx, 2
+    L00537b2a:
+            shld esi, ecx, 2
+            shl ecx, 2
+            add eax, eax
+            add edx, edx
+            cmp edx, esi
+            jae L00537b3f
+            sbb esi, edx
+            inc eax
+            add edx, 2
+    L00537b3f:
+            shld esi, ecx, 2
+            shl ecx, 2
+            add eax, eax
+            add edx, edx
+            cmp edx, esi
+            jae L00537b54
+            sbb esi, edx
+            inc eax
+            add edx, 2
+    L00537b54:
+            shld esi, ecx, 2
+            shl ecx, 2
+            add eax, eax
+            add edx, edx
+            cmp edx, esi
+            jae L00537b69
+            sbb esi, edx
+            inc eax
+            add edx, 2
+    L00537b69:
+            shld esi, ebx, 2
+            shl ebx, 2
+            add eax, eax
+            add edx, edx
+            cmp edx, esi
+            jae L00537b7e
+            sbb esi, edx
+            inc eax
+            add edx, 2
+    L00537b7e:
+            shld esi, ebx, 2
+            shl ebx, 2
+            add eax, eax
+            add edx, edx
+            cmp edx, esi
+            jae L00537b93
+            sbb esi, edx
+            inc eax
+            add edx, 2
+    L00537b93:
+            shld esi, ebx, 2
+            shl ebx, 2
+            add eax, eax
+            add edx, edx
+            cmp edx, esi
+            jae L00537ba8
+            sbb esi, edx
+            inc eax
+            add edx, 2
+    L00537ba8:
+            shld esi, ebx, 2
+            shl ebx, 2
+            add eax, eax
+            add edx, edx
+            cmp edx, esi
+            jae L00537bbd
+            sbb esi, edx
+            inc eax
+            add edx, 2
+    L00537bbd:
+            shld esi, ebx, 2
+            shl ebx, 2
+            add eax, eax
+            add edx, edx
+            cmp edx, esi
+            jae L00537bd2
+            sbb esi, edx
+            inc eax
+            add edx, 2
+    L00537bd2:
+            shld esi, ebx, 2
+            shl ebx, 2
+            add eax, eax
+            add edx, edx
+            cmp edx, esi
+            jae L00537be7
+            sbb esi, edx
+            inc eax
+            add edx, 2
+    L00537be7:
+            shld esi, ebx, 2
+            shl ebx, 2
+            add eax, eax
+            add edx, edx
+            cmp edx, esi
+            jae L00537bfc
+            sbb esi, edx
+            inc eax
+            add edx, 2
+    L00537bfc:
+            shld esi, ebx, 2
+            shl ebx, 2
+            add eax, eax
+            add edx, edx
+            cmp edx, esi
+            jae L00537c11
+            sbb esi, edx
+            inc eax
+            add edx, 2
+    L00537c11:
+            shld esi, ebx, 2
+            shl ebx, 2
+            add eax, eax
+            add edx, edx
+            cmp edx, esi
+            jae L00537c26
+            sbb esi, edx
+            inc eax
+            add edx, 2
+    L00537c26:
+            shld esi, ebx, 2
+            shl ebx, 2
+            add eax, eax
+            add edx, edx
+            cmp edx, esi
+            jae L00537c3b
+            sbb esi, edx
+            inc eax
+            add edx, 2
+    L00537c3b:
+            shld esi, ebx, 2
+            shl ebx, 2
+            add eax, eax
+            add edx, edx
+            cmp edx, esi
+            jae L00537c50
+            sbb esi, edx
+            inc eax
+            add edx, 2
+    L00537c50:
+            shld esi, ebx, 2
+            shl ebx, 2
+            add eax, eax
+            add edx, edx
+            cmp edx, esi
+            jae L00537c65
+            sbb esi, edx
+            inc eax
+            add edx, 2
+    L00537c65:
+            shld esi, ebx, 2
+            shl ebx, 2
+            add eax, eax
+            add edx, edx
+            cmp edx, esi
+            jae L00537c7a
+            sbb esi, edx
+            inc eax
+            add edx, 2
+    L00537c7a:
+            shld esi, ebx, 2
+            shl ebx, 2
+            add eax, eax
+            add edx, edx
+            cmp edx, esi
+            jae L00537c8f
+            sbb esi, edx
+            inc eax
+            add edx, 2
+    L00537c8f:
+            shld esi, ebx, 2
+            shl ebx, 2
+            add eax, eax
+            add edx, edx
+            cmp edx, esi
+            jae L00537ca4
+            sbb esi, edx
+            inc eax
+            add edx, 2
+    L00537ca4:
+            shld esi, ebx, 2
+            shl ebx, 2
+            add eax, eax
+            add edx, edx
+            cmp edx, esi
+            jae L00537cb9
+            sbb esi, edx
+            inc eax
+            add edx, 2
+    L00537cb9:
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00537cba
-uint16_t C2_HOOK_CDECL _BrFastSqrt32(uint32_t v) {
+uint16_t C2_NAKED C2_HOOK_CDECL _BrFastSqrt32(uint32_t v) {
+#ifndef CARPOCALYPSE2_MATCHING
     uint32_t exp;
 
     if (v == 0) {
@@ -1498,10 +2256,35 @@ uint16_t C2_HOOK_CDECL _BrFastSqrt32(uint32_t v) {
     v = (v << (32 - exp)) >> 24;
     v = fast_sqrt_table[v-0x40];
     return (v << 16) >> (32 - (exp >> 1));
+#else
+    __asm {
+            push ebp
+            mov ebp, esp
+            push ebx
+            push ecx
+            mov ebx, dword ptr [ebp + 8]
+            xor eax, eax
+            bsr ecx, ebx
+            je L00537ce1
+            or cl, 1
+            inc cl
+            ror ebx, cl
+            shr ebx, 0x18
+            mov bx, word ptr [ebx*2 + fixed_atan_table+0x182]
+            shr cl, 1
+            shld ax, bx, cl
+    L00537ce1:
+            pop ecx
+            pop ebx
+            leave
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00537ce5
-uint32_t C2_HOOK_CDECL _BrFastRSqrt32(uint32_t v) {
+uint32_t C2_NAKED C2_HOOK_CDECL _BrFastRSqrt32(uint32_t v) {
+#ifndef CARPOCALYPSE2_MATCHING
     uint32_t exp;
 
     if (v == 0) {
@@ -1513,10 +2296,35 @@ uint32_t C2_HOOK_CDECL _BrFastRSqrt32(uint32_t v) {
     v = (v << (31 - exp)) >> 24;
     v = fast_rsqrt_table[v-0x40];
     return v >> (exp >> 1);
+#else
+    __asm {
+            push ebp
+            mov ebp, esp
+            push ebx
+            push ecx
+            mov ebx, dword ptr [ebp + 8]
+            xor eax, eax
+            bsr ecx, ebx
+            je L00537d0a
+            or cl, 1
+            ror ebx, cl
+            ror ebx, 1
+            shr ebx, 0x18
+            mov ax, word ptr [ebx*2 + fast_sqrt_table+0x100]
+            shr cl, 1
+            shr eax, cl
+    L00537d0a:
+            pop ecx
+            pop ebx
+            leave
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00537d0e
-br_uint_32 C2_HOOK_FASTCALL _BrFastRSqrt64(uint64_t v) {
+br_uint_32 C2_NAKED C2_HOOK_FASTCALL _BrFastRSqrt64(uint64_t v) {
+#ifndef CARPOCALYPSE2_MATCHING
     uint32_t exp;
     uint32_t tmp;
 
@@ -1539,4 +2347,36 @@ br_uint_32 C2_HOOK_FASTCALL _BrFastRSqrt64(uint64_t v) {
     v = (v << (31 - exp)) >> 24;
     v = fast_rsqrt_table[v-0x40];
     return (br_uint_32)((v << 16) >> (exp >> 1));
+#else
+    __asm {
+            and ecx, ecx
+            jne L00537d30
+            xor eax, eax
+            bsr ecx, ebx
+            je L00537d2f
+            or cl, 1
+            ror ebx, cl
+            ror ebx, 1
+            shr ebx, 0x18
+            mov ax, word ptr [ebx*2 + fast_sqrt_table+0x100]
+            shr cl, 1
+            shr eax, cl
+    L00537d2f:
+            ret
+    L00537d30:
+            mov edx, ecx
+            bsr eax, ecx
+            mov cl, 0x1f
+            sub cl, al
+            and cl, 0xfe
+            shld edx, ebx, cl
+            shr edx, 0x18
+            mov ax, word ptr [edx*2 + fast_sqrt_table+0x100]
+            neg ecx
+            add ecx, 0x1e
+            shr cl, 1
+            shr eax, cl
+            ret
+    }
+#endif
 }

@@ -59,6 +59,51 @@ br_material* gSmackMaterials[15];
 
 // GLOBAL: CARMA2_HW 0x0067c3b0
 void* gSmackerBuffer;
+#ifdef CARPOCALYPSE2_MATCHING
+extern int C2_HOOK_FASTCALL AnyKeyDown(void);
+extern br_actor* C2_HOOK_CDECL BrActorAdd();
+extern br_actor* C2_HOOK_CDECL BrActorAllocate();
+extern void C2_HOOK_CDECL BrActorFree();
+extern br_actor* C2_HOOK_CDECL BrActorRemove();
+extern br_pixelmap* C2_HOOK_CDECL BrMapAdd();
+extern br_pixelmap* C2_HOOK_CDECL BrMapRemove();
+extern void C2_HOOK_CDECL BrMapUpdate();
+extern br_material* C2_HOOK_CDECL BrMaterialAdd();
+extern br_material* C2_HOOK_CDECL BrMaterialAllocate();
+extern br_material* C2_HOOK_CDECL BrMaterialRemove();
+extern void C2_HOOK_CDECL BrMaterialUpdate();
+extern void* C2_HOOK_CDECL BrMemAllocate();
+extern br_model* C2_HOOK_CDECL BrModelAdd();
+extern br_model* C2_HOOK_CDECL BrModelAllocate();
+extern void C2_HOOK_CDECL BrModelFree();
+extern br_model* C2_HOOK_CDECL BrModelRemove();
+extern br_pixelmap* C2_HOOK_CDECL BrPixelmapAllocate();
+extern void C2_HOOK_CDECL BrPixelmapFill();
+extern void C2_HOOK_CDECL BrPixelmapFree();
+extern void C2_HOOK_CDECL BrZbSceneRender();
+extern void C2_HOOK_FASTCALL ClearEntireScreen(void);
+extern br_pixelmap* C2_HOOK_FASTCALL DRPixelmapAllocate(br_uint_8 pType, br_uint_16 pW, br_uint_16 pH, void* pPixels, int pFlags);
+extern void C2_HOOK_FASTCALL DRSetPalette(br_pixelmap* pThe_palette);
+extern void C2_HOOK_FASTCALL FadePaletteDown(void);
+extern int GetRegisterSourceLocation(char* pSource_location);
+extern int C2_HOOK_FASTCALL PDCheckDriveExists(const char* pThe_path);
+extern void C2_HOOK_FASTCALL PDEnterDebugger(const char* pStr);
+extern tU32 C2_HOOK_FASTCALL PDGetTotalTime(void);
+extern void C2_HOOK_FASTCALL PDScreenBufferSwap(int pRendering_area_only);
+extern int C2_HOOK_FASTCALL PDServiceSystem(tU32 pTime_since_last_call);
+extern void C2_HOOK_FASTCALL PathCat(char* pDestn_str, const char* pStr_1, const char* pStr_2);
+extern void C2_HOOK_FASTCALL StopMusic(void);
+extern void C2_HOOK_CDECL dr_dprintf();
+extern br_actor* g2d_camera;
+extern tPath_name gApplication_path;
+extern br_pixelmap* gBack_screen;
+extern br_pixelmap* gDepth_buffer;
+extern const char* gDir_separator;
+extern void* gHWnd;
+extern int gNbPixelBits;
+extern int gNoCutscenes;
+extern int gSound_override;
+#endif
 // FUNCTION: CARMA2_HW 0x0043e750
 void C2_HOOK_FASTCALL DoSCILogo(void) {
 }
@@ -68,7 +113,8 @@ void C2_HOOK_FASTCALL DoStainlessLogo(void) {
 }
 
 // FUNCTION: CARMA2_HW 0x0043e770
-void C2_HOOK_FASTCALL PlaySmackerFile(const char* pSmack_name) {
+void C2_NAKED C2_HOOK_FASTCALL PlaySmackerFile(const char* pSmack_name) {
+#ifndef CARPOCALYPSE2_MATCHING
     int mati;
     int i;
     int j;
@@ -414,6 +460,940 @@ void C2_HOOK_FASTCALL PlaySmackerFile(const char* pSmack_name) {
                frameCount, 1000 * (timeEnd - timeStart), paletteChangeCount,
                (float) paletteChangeCount / (timeEnd - timeStart), (float) frameCount / (timeEnd - timeStart));
     PDServiceSystem(0);
+#else
+    __asm {
+            sub esp, 0x12c
+            mov eax, dword ptr ds:[gSound_override]
+            push ebx
+            push ebp
+            push esi
+            push edi
+            xor edi, edi
+            mov esi, ecx
+            cmp eax, edi
+            mov dword ptr [esp + 0x20], esi
+            mov dword ptr [esp + 0x2c], edi
+            mov dword ptr [esp + 0x28], edi
+            mov dword ptr [esp + 0x24], edi
+            jne L0043f2da
+            cmp dword ptr ds:[gNoCutscenes], edi
+            jne L0043f2da
+            mov ecx, dword ptr ds:[gBack_screen]
+            xor eax, eax
+            mov al, byte ptr [ecx + 0x2c]
+            sub eax, 3
+            je L0043e7f6
+            dec eax
+            je L0043e7e4
+            dec eax
+            je L0043e7d2
+            mov ecx, 0x58ff80
+            call PDEnterDebugger
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x12c
+            ret
+    L0043e7d2:
+            mov dword ptr [esp + 0x1c], 0xc0000000
+            mov dword ptr [esp + 0x10], 0xc0000002
+            jmp L0043e807
+    L0043e7e4:
+            mov dword ptr [esp + 0x1c], 0x80000000
+            mov dword ptr [esp + 0x10], 0x80000002
+            jmp L0043e807
+    L0043e7f6:
+            mov edx, dword ptr ds:[gCurrent_palette]
+            mov dword ptr [esp + 0x1c], edi
+            mov eax, dword ptr [edx + 8]
+            mov dword ptr [esp + 0x30], eax
+    L0043e807:
+            cmp dword ptr ds:[gSmackerBuffer], edi
+            jne L0043e826
+            push 0xfd
+            push 0xfa00
+            call BrMemAllocate
+            add esp, 8
+            mov dword ptr ds:[gSmackerBuffer], eax
+    L0043e826:
+            call StopMusic
+            call FadePaletteDown
+            call ClearEntireScreen
+            push 1
+            call dword ptr ds:[0x589278]
+            push edi
+            call dword ptr ds:[0x58927c]
+            mov edx, offset gApplication_path
+            lea ecx, [esp + 0x3c]
+            push 0x58ff74
+            call PathCat
+            lea edx, [esp + 0x3c]
+            lea ecx, [esp + 0x3c]
+            push esi
+            call PathCat
+            lea ecx, [esp + 0x3c]
+            push ecx
+            push 0x58ff54
+            call dr_dprintf
+            mov ebx, dword ptr ds:[0x589280]
+            add esp, 8
+            lea edx, [esp + 0x3c]
+            push 0x200
+            push 0xfe000
+            push edx
+            call ebx
+            mov ebp, eax
+            cmp ebp, edi
+            mov dword ptr [esp + 0x18], ebp
+            jne L0043e9cc
+            push -1
+            lea eax, [esp + 0x40]
+            push 0xfe000
+            push eax
+            call ebx
+            mov ebp, eax
+            cmp ebp, edi
+            mov dword ptr [esp + 0x18], ebp
+            jne L0043e9cc
+            push 0x58ff14
+            call dr_dprintf
+            add esp, 4
+            lea ecx, [esp + 0x3c]
+            call GetRegisterSourceLocation
+            test eax, eax
+            je L0043e9bf
+            lea edi, [esp + 0x3c]
+            or ecx, 0xffffffff
+            xor eax, eax
+            repne scasb
+            not ecx
+            dec ecx
+            je L0043e91d
+            mov edi, dword ptr ds:[gDir_separator]
+            mov cl, byte ptr [esp + ecx + 0x3b]
+            cmp cl, byte ptr [edi]
+            je L0043e91d
+            or ecx, 0xffffffff
+            xor eax, eax
+            repne scasb
+            not ecx
+            sub edi, ecx
+            lea edx, [esp + 0x3c]
+            mov esi, edi
+            mov edi, edx
+            mov edx, ecx
+            or ecx, 0xffffffff
+            repne scasb
+            mov ecx, edx
+            dec edi
+            shr ecx, 2
+            rep movsd
+            mov ecx, edx
+            and ecx, 3
+            rep movsb
+    L0043e91d:
+            mov edi, 0x58ff0c
+            or ecx, 0xffffffff
+            xor eax, eax
+            lea edx, [esp + 0x3c]
+            repne scasb
+            not ecx
+            sub edi, ecx
+            push 0x58ff74
+            mov esi, edi
+            mov edi, edx
+            mov edx, ecx
+            or ecx, 0xffffffff
+            repne scasb
+            mov ecx, edx
+            dec edi
+            shr ecx, 2
+            rep movsd
+            mov ecx, edx
+            lea edx, [esp + 0x40]
+            and ecx, 3
+            rep movsb
+            lea ecx, [esp + 0x40]
+            call PathCat
+            lea edx, [esp + 0x3c]
+            lea ecx, [esp + 0x3c]
+            mov eax, dword ptr [esp + 0x20]
+            push eax
+            call PathCat
+            lea ecx, [esp + 0x3c]
+            push ecx
+            push 0x58fef8
+            call dr_dprintf
+            add esp, 8
+            lea ecx, [esp + 0x3c]
+            call PDCheckDriveExists
+            test eax, eax
+            je L0043e9cc
+            push 0x200
+            lea edx, [esp + 0x40]
+            push 0xfe000
+            push edx
+            call ebx
+            mov ebp, eax
+            test ebp, ebp
+            mov dword ptr [esp + 0x18], ebp
+            jne L0043e9d4
+            push -1
+            lea eax, [esp + 0x40]
+            push 0xfe000
+            push eax
+            call ebx
+            mov ebp, eax
+            mov dword ptr [esp + 0x18], ebp
+            jmp L0043e9cc
+    L0043e9bf:
+            push 0x58fedc
+            call dr_dprintf
+            add esp, 4
+    L0043e9cc:
+            test ebp, ebp
+            je L0043f2c1
+    L0043e9d4:
+            push 0x58fec4
+            call dr_dprintf
+            add esp, 4
+            call PDGetTotalTime
+            mov dword ptr [esp + 0x34], eax
+            mov eax, dword ptr ds:[gNbPixelBits]
+            cmp eax, 0x10
+            jne L0043f057
+            push 0
+            push 1
+            call BrActorAllocate
+            add esp, 8
+            mov dword ptr ds:[gSmackerActor], eax
+            mov edx, 1
+            mov cl, 7
+            push 0
+            push 0
+            push 0x100
+            mov byte ptr [eax + 0x20], 4
+            call DRPixelmapAllocate
+            mov edx, 1
+            mov cl, 7
+            push 0
+            push 0
+            push 0x100
+            mov dword ptr ds:[gSmackerCurrentPalette], eax
+            call DRPixelmapAllocate
+            mov ecx, dword ptr ds:[gSmackerCurrentPalette]
+            mov dword ptr ds:[gSmackerBackPalette], eax
+            push ecx
+            call BrMapAdd
+            add esp, 4
+            push 0x1e
+            push 0x3c
+            push 0x58feb8
+            call BrModelAllocate
+            mov esi, eax
+            add esp, 0xc
+            test esi, esi
+            jne L0043eaa8
+            mov ecx, 0x58fea8
+            call PDEnterDebugger
+            mov edx, dword ptr ds:[gSmackerActor]
+            push edx
+            call BrActorFree
+            mov eax, dword ptr ds:[gSmackerCurrentPalette]
+            add esp, 4
+            mov dword ptr ds:[gSmackerActor], esi
+            push eax
+            call BrMapRemove
+            mov ecx, dword ptr ds:[gSmackerCurrentPalette]
+            add esp, 4
+            push ecx
+            call BrPixelmapFree
+            add esp, 4
+            jmp L0043ed3b
+    L0043eaa8:
+            mov edi, offset gSmackMaterials
+            mov ebp, 0x20000
+            mov ebx, 0x10000
+    L0043eab7:
+            push 0x58fe90
+            call BrMaterialAllocate
+            add esp, 4
+            mov dword ptr [edi], eax
+            test eax, eax
+            je L0043f2e5
+            push 0
+            push 0
+            push 0x40
+            push 0x40
+            push 3
+            call BrPixelmapAllocate
+            mov edx, dword ptr [edi]
+            add esp, 0x14
+            mov dword ptr [edx + 0x40], eax
+            mov eax, dword ptr [edi]
+            mov edx, dword ptr ds:[gSmackerCurrentPalette]
+            mov ecx, dword ptr [eax + 0x40]
+            mov dword ptr [ecx + 0x10], edx
+            mov eax, dword ptr [edi]
+            mov dword ptr [eax + 0x20], 0x2800
+            mov eax, dword ptr [edi]
+            mov edx, dword ptr [eax + 0x20]
+            or edx, ebp
+            mov dword ptr [eax + 0x20], edx
+            mov eax, dword ptr [edi]
+            mov ecx, dword ptr [eax + 0x20]
+            or ecx, ebx
+            mov dword ptr [eax + 0x20], ecx
+            mov ecx, dword ptr [edi]
+            mov edx, dword ptr [ecx + 0x40]
+            mov eax, dword ptr [edx + 0x10]
+            push eax
+            call BrMapAdd
+            mov ecx, dword ptr [edi]
+            add esp, 4
+            mov edx, dword ptr [ecx + 0x40]
+            push edx
+            call BrMapAdd
+            mov eax, dword ptr [edi]
+            add esp, 4
+            push eax
+            call BrMaterialAdd
+            add edi, 4
+            add esp, 4
+            cmp edi, offset gSmackerBackPalette
+            jl L0043eab7
+            xor ecx, ecx
+            xor edx, edx
+            mov dword ptr [esp + 0x14], ecx
+            mov ebp, offset gSmackMaterials
+    L0043eb56:
+            mov eax, dword ptr [esp + 0x14]
+            xor edi, edi
+            shl eax, 7
+            mov ebx, eax
+            mov eax, 0xffffff50
+            sub eax, ebx
+            mov dword ptr [esp + 0x1c], edi
+            mov dword ptr [esp + 0x10], eax
+            add eax, 0x80
+            fild dword ptr [esp + 0x10]
+            mov dword ptr [esp + 0x10], eax
+            lea eax, [edx + edx*4]
+            fild dword ptr [esp + 0x10]
+            shl eax, 3
+    L0043eb87:
+            mov ebx, dword ptr [esi + 8]
+            shl edi, 7
+            mov dword ptr [esp + 0x10], edi
+            add edi, 0x80
+            fild dword ptr [esp + 0x10]
+            mov dword ptr [esp + 0x10], edi
+            fst dword ptr [eax + ebx]
+            mov ebx, dword ptr [esi + 8]
+            fld st(2)
+            fstp dword ptr [eax + ebx + 4]
+            mov ebx, dword ptr [esi + 8]
+            fild dword ptr [esp + 0x10]
+            mov dword ptr [eax + ebx + 8], 0xc0000000
+            mov ebx, dword ptr [esi + 8]
+            mov dword ptr [eax + ebx + 0xc], 0x3c000000
+            mov ebx, dword ptr [esi + 8]
+            mov dword ptr [eax + ebx + 0x10], 0x3f7e0000
+            mov edi, dword ptr [esi + 8]
+            fst dword ptr [eax + edi + 0x28]
+            mov edi, dword ptr [esi + 8]
+            fld st(3)
+            fstp dword ptr [eax + edi + 0x2c]
+            mov ebx, dword ptr [esi + 8]
+            mov edi, 0xc0000000
+            mov dword ptr [eax + ebx + 0x30], edi
+            mov ebx, dword ptr [esi + 8]
+            mov dword ptr [eax + ebx + 0x34], 0x3f7e0000
+            mov ebx, dword ptr [esi + 8]
+            mov dword ptr [eax + ebx + 0x38], 0x3f7e0000
+            mov ebx, dword ptr [esi + 8]
+            fstp dword ptr [eax + ebx + 0x50]
+            mov ebx, dword ptr [esi + 8]
+            fld st(1)
+            fstp dword ptr [eax + ebx + 0x54]
+            mov ebx, dword ptr [esi + 8]
+            mov dword ptr [eax + ebx + 0x58], edi
+            mov ebx, dword ptr [esi + 8]
+            mov dword ptr [eax + ebx + 0x5c], 0x3f7e0000
+            mov ebx, dword ptr [esi + 8]
+            mov dword ptr [eax + ebx + 0x60], 0x3c000000
+            mov ebx, dword ptr [esi + 8]
+            fstp dword ptr [eax + ebx + 0x78]
+            mov ebx, dword ptr [esi + 8]
+            fst dword ptr [eax + ebx + 0x7c]
+            mov ebx, dword ptr [esi + 8]
+            mov dword ptr [eax + ebx + 0x80], edi
+            mov ebx, dword ptr [esi + 8]
+            mov edi, 0x3c000000
+            mov dword ptr [eax + ebx + 0x84], edi
+            mov ebx, dword ptr [esi + 8]
+            mov dword ptr [eax + ebx + 0x88], edi
+            mov edi, dword ptr [esi + 0xc]
+            mov word ptr [ecx + edi], dx
+            mov ebx, dword ptr [esi + 0xc]
+            lea edi, [edx + 3]
+            mov word ptr [ecx + ebx + 2], di
+            mov ebx, dword ptr [esi + 0xc]
+            lea edi, [edx + 1]
+            mov word ptr [ecx + ebx + 4], di
+            mov edi, dword ptr [esi + 0xc]
+            mov ebx, dword ptr [ebp]
+            mov dword ptr [ecx + edi + 8], ebx
+            mov edi, dword ptr [esi + 0xc]
+            xor ebx, ebx
+            mov word ptr [ecx + edi + 6], bx
+            mov edi, dword ptr [esi + 0xc]
+            mov byte ptr [ecx + edi + 0x10], bl
+            mov ebx, dword ptr [esi + 0xc]
+            lea edi, [edx + 1]
+            mov word ptr [ecx + ebx + 0x28], di
+            mov ebx, dword ptr [esi + 0xc]
+            lea edi, [edx + 3]
+            mov word ptr [ecx + ebx + 0x2a], di
+            mov ebx, dword ptr [esi + 0xc]
+            lea edi, [edx + 2]
+            mov word ptr [ecx + ebx + 0x2c], di
+            mov edi, dword ptr [esi + 0xc]
+            mov ebx, dword ptr [ebp]
+            mov dword ptr [ecx + edi + 0x30], ebx
+            mov edi, dword ptr [esi + 0xc]
+            mov word ptr [ecx + edi + 0x2e], 0
+            mov edi, dword ptr [esi + 0xc]
+            add edx, 4
+            add eax, 0xa0
+            add ebp, 4
+            mov byte ptr [ecx + edi + 0x38], 0
+            mov edi, dword ptr [esp + 0x1c]
+            inc edi
+            add ecx, 0x50
+            cmp edi, 5
+            mov dword ptr [esp + 0x1c], edi
+            jl L0043eb87
+            mov edi, dword ptr [esp + 0x14]
+            fstp st(0)
+            inc edi
+            cmp ebp, offset gSmackerBackPalette
+            fstp st(0)
+            mov dword ptr [esp + 0x14], edi
+            jl L0043eb56
+            push esi
+            call BrModelAdd
+            mov ecx, dword ptr ds:[gSmackerActor]
+            mov dword ptr ds:[gSmackerModel], esi
+            add esp, 4
+            mov dword ptr [ecx + 0x18], esi
+            mov edx, dword ptr ds:[gSmackerActor]
+            mov eax, dword ptr ds:[g2d_camera]
+            push edx
+            push eax
+            call BrActorAdd
+            add esp, 8
+    L0043ed3b:
+            mov eax, dword ptr ds:[gSmackerActor]
+            test eax, eax
+            je L0043f211
+            mov ecx, dword ptr ds:[gHWnd]
+            push 0xc8
+            push 0x140
+            push 0xc8
+            push 0x140
+            push 0x80
+            push ecx
+            call dword ptr ds:[0x589284]
+            test eax, eax
+            jne L0043ed7c
+            mov ecx, 0x58fe88
+            call PDEnterDebugger
+    L0043ed7c:
+            mov edx, dword ptr ds:[gSmackerBuffer]
+            mov esi, dword ptr [esp + 0x18]
+            push 0
+            push edx
+            push 0xc8
+            push 0x140
+            push 0
+            push 0
+            push esi
+            call dword ptr ds:[0x589288]
+            mov ecx, dword ptr [esi + 0xc]
+            mov eax, 1
+            cmp ecx, eax
+            mov dword ptr [esp + 0x14], eax
+            jb L0043efca
+    L0043edb2:
+            call PDGetTotalTime
+            mov esi, dword ptr [esp + 0x18]
+            mov dword ptr [esp + 0x30], eax
+            mov eax, dword ptr [esi + 0x68]
+            test eax, eax
+            je L0043ee8e
+            mov eax, dword ptr ds:[gSmackerCurrentPalette]
+            push eax
+            call BrMapRemove
+            mov eax, dword ptr ds:[gSmackerBackPalette]
+            mov ecx, dword ptr ds:[gSmackerCurrentPalette]
+            mov dword ptr ds:[gSmackerPrevBackPalette], eax
+            mov dword ptr ds:[gSmackerCurrentPalette], eax
+            add esp, 4
+            xor eax, eax
+            mov dword ptr ds:[gSmackerBackPalette], ecx
+            add esi, 0x6d
+    L0043edf8:
+            xor ecx, ecx
+            xor edx, edx
+            mov ch, byte ptr [esi - 1]
+            mov dl, byte ptr [esi + 1]
+            mov cl, byte ptr [esi]
+            shl ecx, 8
+            or ecx, edx
+            jne L0043ee10
+            mov ecx, 0x40404
+    L0043ee10:
+            mov edx, dword ptr ds:[gSmackerCurrentPalette]
+            add eax, 4
+            add esi, 3
+            cmp eax, 0x400
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + eax - 4], ecx
+            jl L0043edf8
+            mov eax, dword ptr ds:[gSmackerCurrentPalette]
+            push eax
+            call BrMapAdd
+            add esp, 4
+            mov esi, offset gSmackMaterials
+    L0043ee3d:
+            mov ecx, dword ptr [esi]
+            mov eax, dword ptr ds:[gSmackerCurrentPalette]
+            push 0xfff
+            mov edx, dword ptr [ecx + 0x40]
+            mov dword ptr [edx + 0x10], eax
+            mov ecx, dword ptr [esi]
+            mov edx, dword ptr [ecx + 0x40]
+            mov eax, dword ptr [edx + 0x10]
+            push eax
+            call BrMapUpdate
+            mov ecx, dword ptr [esi]
+            add esp, 8
+            mov edx, dword ptr [ecx + 0x40]
+            push 0xfff
+            push edx
+            call BrMapUpdate
+            mov eax, dword ptr [esi]
+            add esp, 8
+            push 0x7fff
+            push eax
+            call BrMaterialUpdate
+            add esi, 4
+            add esp, 8
+            cmp esi, offset gSmackerBackPalette
+            jl L0043ee3d
+    L0043ee8e:
+            mov ecx, dword ptr [esp + 0x18]
+            push ecx
+            call dword ptr ds:[0x58928c]
+            mov edx, dword ptr ds:[gDepth_buffer]
+            push -1
+            push edx
+            call BrPixelmapFill
+            add esp, 8
+            mov dword ptr [esp + 0x1c], 0
+            mov ebp, offset gSmackMaterials
+    L0043eeb7:
+            mov eax, dword ptr [esp + 0x1c]
+            mov dword ptr [esp + 0x10], 5
+            mov dword ptr [esp + 0x20], eax
+    L0043eec7:
+            mov ecx, dword ptr ds:[gSmackerBuffer]
+            mov edx, dword ptr [esp + 0x20]
+            mov eax, dword ptr [ebp]
+            add edx, ecx
+            mov ebx, 0x40
+            mov ecx, dword ptr [eax + 0x40]
+            mov eax, dword ptr [ecx + 8]
+    L0043eee1:
+            mov esi, edx
+            mov edi, eax
+            mov ecx, 0x10
+            add eax, 0x40
+            add edx, 0x140
+            dec ebx
+            rep movsd
+            jne L0043eee1
+            mov edx, dword ptr [ebp]
+            push 0xfff
+            mov eax, dword ptr [edx + 0x40]
+            push eax
+            call BrMapUpdate
+            mov ecx, dword ptr [ebp]
+            add esp, 8
+            push 0x7fff
+            push ecx
+            call BrMaterialUpdate
+            mov edx, dword ptr [esp + 0x28]
+            mov eax, dword ptr [esp + 0x18]
+            add esp, 8
+            add edx, 0x40
+            add ebp, 4
+            dec eax
+            mov dword ptr [esp + 0x20], edx
+            mov dword ptr [esp + 0x10], eax
+            jne L0043eec7
+            mov ecx, dword ptr [esp + 0x1c]
+            add ecx, 0x5000
+            cmp ebp, offset gSmackerBackPalette
+            mov dword ptr [esp + 0x1c], ecx
+            jl L0043eeb7
+            mov edx, dword ptr ds:[gDepth_buffer]
+            mov eax, dword ptr ds:[gBack_screen]
+            push edx
+            push eax
+            mov eax, dword ptr ds:[g2d_camera]
+            push eax
+            push eax
+            call BrZbSceneRender
+            add esp, 0x10
+            xor ecx, ecx
+            call PDScreenBufferSwap
+            xor ecx, ecx
+            call PDServiceSystem
+            mov edi, dword ptr [esp + 0x18]
+            mov ebp, dword ptr [esp + 0x14]
+            cmp ebp, dword ptr [edi + 0xc]
+            je L0043ef8e
+            push edi
+            call dword ptr ds:[0x589274]
+    L0043ef8e:
+            mov ebx, dword ptr ds:[0x589290]
+    L0043ef94:
+            call AnyKeyDown
+            mov esi, eax
+            push edi
+            call ebx
+            test esi, esi
+            jne L0043efca
+            test eax, eax
+            je L0043efb6
+            call PDGetTotalTime
+            mov ecx, dword ptr [esp + 0x30]
+            add ecx, 0x43
+            cmp eax, ecx
+            jb L0043ef94
+    L0043efb6:
+            test esi, esi
+            jne L0043efca
+            mov eax, dword ptr [edi + 0xc]
+            inc ebp
+            cmp ebp, eax
+            mov dword ptr [esp + 0x14], ebp
+            jbe L0043edb2
+    L0043efca:
+            mov eax, dword ptr ds:[gSmackerActor]
+            test eax, eax
+            je L0043f211
+            mov esi, offset gSmackMaterials
+            xor edi, edi
+    L0043efde:
+            mov edx, dword ptr [esi]
+            mov eax, dword ptr [edx + 0x40]
+            push eax
+            call BrMapRemove
+            mov ecx, dword ptr [esi]
+            add esp, 4
+            mov edx, dword ptr [ecx + 0x40]
+            push edx
+            call BrPixelmapFree
+            mov eax, dword ptr [esi]
+            add esp, 4
+            mov dword ptr [eax + 0x40], edi
+            mov ecx, dword ptr [esi]
+            push ecx
+            call BrMaterialRemove
+            mov dword ptr [esi], edi
+            add esi, 4
+            add esp, 4
+            cmp esi, offset gSmackerBackPalette
+            jl L0043efde
+            mov edx, dword ptr ds:[gSmackerModel]
+            push edx
+            call BrModelRemove
+            mov eax, dword ptr ds:[gSmackerActor]
+            add esp, 4
+            push eax
+            call BrActorRemove
+            mov ecx, dword ptr ds:[gSmackerModel]
+            add esp, 4
+            push ecx
+            call BrModelFree
+            mov edx, dword ptr ds:[gSmackerActor]
+            add esp, 4
+            push edx
+            call BrActorFree
+            add esp, 4
+            jmp L0043f211
+    L0043f057:
+            mov eax, dword ptr ds:[gBack_screen]
+            mov cl, byte ptr [eax + 0x2c]
+            cmp cl, 5
+            je L0043f069
+            cmp cl, 4
+            jne L0043f089
+    L0043f069:
+            mov eax, dword ptr [esp + 0x10]
+            push eax
+            call dword ptr ds:[0x589294]
+            test eax, eax
+            mov dword ptr [esp + 0x2c], eax
+            je L0043f22a
+            mov eax, dword ptr ds:[gBack_screen]
+            mov ebp, dword ptr [esp + 0x18]
+    L0043f089:
+            mov edx, dword ptr [ebp + 0xc]
+            mov ecx, 1
+            cmp edx, ecx
+            mov dword ptr [esp + 0x14], ecx
+            jb L0043f211
+            mov edi, dword ptr [esp + 0x18]
+            mov ebp, dword ptr ds:[0x589288]
+            jmp L0043f0ae
+    L0043f0a9:
+            mov eax, dword ptr ds:[gBack_screen]
+    L0043f0ae:
+            mov esi, dword ptr [esp + 0x24]
+            mov cl, byte ptr [eax + 0x2c]
+            inc esi
+            cmp cl, 5
+            mov dword ptr [esp + 0x24], esi
+            je L0043f0db
+            cmp cl, 4
+            je L0043f0db
+            mov ecx, dword ptr [esp + 0x1c]
+            mov edx, dword ptr [eax + 8]
+            push ecx
+            push edx
+            movsx edx, word ptr [eax + 0x28]
+            xor ecx, ecx
+            mov cx, word ptr [eax + 0x36]
+            push ecx
+            push edx
+            jmp L0043f0ed
+    L0043f0db:
+            mov eax, dword ptr ds:[gSmackerBuffer]
+            push 0
+            push eax
+            push 0xc8
+            push 0x140
+    L0043f0ed:
+            push 0
+            push 0
+            push edi
+            call ebp
+            mov eax, dword ptr [edi + 0x68]
+            xor ebx, ebx
+            test eax, eax
+            je L0043f162
+            mov ecx, dword ptr ds:[gBack_screen]
+            mov edx, dword ptr [esp + 0x28]
+            inc edx
+            mov ebx, 1
+            mov al, byte ptr [ecx + 0x2c]
+            mov dword ptr [esp + 0x28], edx
+            cmp al, 5
+            je L0043f14c
+            cmp al, 4
+            je L0043f14c
+            mov esi, dword ptr [esp + 0x30]
+            lea eax, [edi + 0x6e]
+            mov ebp, 0x100
+    L0043f128:
+            xor edx, edx
+            xor ecx, ecx
+            mov dh, byte ptr [eax - 2]
+            mov cl, byte ptr [eax]
+            mov dl, byte ptr [eax - 1]
+            add eax, 3
+            shl edx, 8
+            or edx, ecx
+            mov dword ptr [esi], edx
+            add esi, 4
+            dec ebp
+            jne L0043f128
+            mov ebp, dword ptr ds:[0x589288]
+            jmp L0043f162
+    L0043f14c:
+            mov edx, dword ptr [edi + 0x370]
+            mov ecx, dword ptr [esp + 0x2c]
+            lea eax, [edi + 0x6c]
+            push edx
+            push eax
+            push ecx
+            call dword ptr ds:[0x589298]
+    L0043f162:
+            push edi
+            call dword ptr ds:[0x58928c]
+            mov eax, dword ptr ds:[gBack_screen]
+            mov cl, byte ptr [eax + 0x2c]
+            cmp cl, 5
+            je L0043f17b
+            cmp cl, 4
+            jne L0043f1ad
+    L0043f17b:
+            mov edx, dword ptr ds:[gSmackerBuffer]
+            push 0xc8
+            movsx ecx, word ptr [eax + 0x28]
+            push 0x140
+            push 0
+            push 0
+            push 0x140
+            push edx
+            mov edx, dword ptr [eax + 8]
+            mov eax, dword ptr [esp + 0x44]
+            push 0x28
+            push 0
+            push ecx
+            push edx
+            push eax
+            call dword ptr ds:[0x58929c]
+    L0043f1ad:
+            mov ecx, dword ptr [esp + 0x14]
+            mov eax, dword ptr [edi + 0xc]
+            cmp ecx, eax
+            je L0043f1bf
+            push edi
+            call dword ptr ds:[0x589274]
+    L0043f1bf:
+            test ebx, ebx
+            je L0043f1ce
+            mov ecx, dword ptr ds:[gCurrent_palette]
+            call DRSetPalette
+    L0043f1ce:
+            xor ecx, ecx
+            call PDScreenBufferSwap
+            xor ecx, ecx
+            call PDServiceSystem
+            call PDGetTotalTime
+            mov ebx, dword ptr ds:[0x589290]
+    L0043f1e7:
+            call AnyKeyDown
+            mov esi, eax
+            push edi
+            call ebx
+            test esi, esi
+            jne L0043f211
+            test eax, eax
+            jne L0043f1e7
+            test esi, esi
+            jne L0043f211
+            mov eax, dword ptr [esp + 0x14]
+            mov ecx, dword ptr [edi + 0xc]
+            inc eax
+            cmp eax, ecx
+            mov dword ptr [esp + 0x14], eax
+            jbe L0043f0a9
+    L0043f211:
+            call FadePaletteDown
+            call ClearEntireScreen
+            mov eax, dword ptr [esp + 0x2c]
+            test eax, eax
+            je L0043f22a
+            push eax
+            call dword ptr ds:[0x5892a0]
+    L0043f22a:
+            call PDGetTotalTime
+            mov edx, dword ptr [esp + 0x18]
+            mov esi, eax
+            push edx
+            call dword ptr ds:[0x5892a4]
+            mov ecx, esi
+            sub esp, 8
+            mov eax, dword ptr [esp + 0x3c]
+            mov dword ptr [esp + 0x40], 0
+            sub ecx, eax
+            mov edx, dword ptr [esp + 0x30]
+            mov dword ptr [esp + 0x3c], ecx
+            lea eax, [eax + eax*4]
+            fild qword ptr [esp + 0x3c]
+            fild dword ptr [esp + 0x2c]
+            lea eax, [eax + eax*4]
+            sub esp, 8
+            fdiv st(0), st(1)
+            lea eax, [eax + eax*4]
+            shl eax, 3
+            mov ecx, eax
+            lea eax, [esi + esi*4]
+            lea eax, [eax + eax*4]
+            fmul dword ptr ds:[0x589b4c]
+            fstp qword ptr [esp + 8]
+            fild dword ptr [esp + 0x38]
+            fdiv st(0), st(1)
+            fmul dword ptr ds:[0x589b4c]
+            _emit 0xdd
+        _emit 0x1c
+        _emit 0x24
+            push edx
+            lea edx, [eax + eax*4]
+            mov eax, dword ptr [esp + 0x38]
+            shl edx, 3
+            sub edx, ecx
+            push edx
+            push eax
+            push 0x58fe40
+            fstp st(0)
+            call dr_dprintf
+            add esp, 0x20
+            xor ecx, ecx
+            call PDServiceSystem
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x12c
+            ret
+    L0043f2c1:
+            mov ecx, dword ptr [esp + 0x20]
+            push ecx
+            push 0x58fe20
+            call dr_dprintf
+            add esp, 8
+            xor ecx, ecx
+            call PDServiceSystem
+    L0043f2da:
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x12c
+            ret
+    L0043f2e5:
+            mov ecx, 0x58fe0c
+            call PDEnterDebugger
+            mov ecx, dword ptr ds:[gSmackerActor]
+            push ecx
+            call BrActorFree
+            mov edx, dword ptr ds:[gSmackerCurrentPalette]
+            add esp, 4
+            mov dword ptr ds:[gSmackerActor], 0
+            push edx
+            call BrMapRemove
+            mov eax, dword ptr ds:[gSmackerCurrentPalette]
+            add esp, 4
+            push eax
+            call BrPixelmapFree
+            add esp, 4
+            jmp L0043ed3b
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0043f330

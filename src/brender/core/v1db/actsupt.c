@@ -13,6 +13,20 @@
 #include "core/math/matrix4.h"
 #include "core/math/transfrm.h"
 
+#ifdef CARPOCALYPSE2_MATCHING
+extern void C2_HOOK_CDECL BrMatrix34PreTransform();
+extern br_boolean C2_HOOK_CDECL BrNamePatternMatch();
+extern char IID_IDirectInputDevice2A[];
+extern br_v1db_state v1db;
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern C2_NORETURN void C2_HOOK_CDECL BrFailure();
+extern void C2_HOOK_CDECL BrMatrix34PostTranslate();
+extern void C2_HOOK_CDECL BrMatrix34PreTranslate();
+extern void C2_HOOK_CDECL BrMatrix34Scale();
+extern void C2_HOOK_CDECL BrMatrix4Copy34();
+extern void C2_HOOK_CDECL BrMatrix4Perspective();
+#endif
 // FUNCTION: CARMA2_HW 0x0051ded0
 br_uint_32 C2_HOOK_CDECL BrActorEnum(br_actor* parent, br_actor_enum_cbfn* callback, void* arg) {
     br_actor* a;
@@ -34,7 +48,8 @@ br_uint_32 C2_HOOK_CDECL BrActorEnum(br_actor* parent, br_actor_enum_cbfn* callb
 }
 
 // FUNCTION: CARMA2_HW 0x0051df00
-br_uint_32 C2_HOOK_CDECL BrActorSearchMany(br_actor* root, char* pattern, br_actor** actors, int max) {
+br_uint_32 C2_NAKED C2_HOOK_CDECL BrActorSearchMany(br_actor* root, char* pattern, br_actor** actors, int max) {
+#ifndef CARPOCALYPSE2_MATCHING
     br_actor* a;
     char* sub;
     int n;
@@ -70,6 +85,96 @@ br_uint_32 C2_HOOK_CDECL BrActorSearchMany(br_actor* root, char* pattern, br_act
         a = a->next;
     }
     return max - remaining;
+#else
+    __asm {
+    L0051df00:
+            mov ecx, dword ptr [esp + 8]
+            push ebx
+            push ebp
+            mov ebp, dword ptr [esp + 0x18]
+            push esi
+            push edi
+            xor edi, edi
+            test ecx, ecx
+            je L0051df44
+            cmp byte ptr [ecx], 0x2f
+            jne L0051df23
+    L0051df17:
+            mov al, byte ptr [ecx + 1]
+            inc ecx
+            cmp al, 0x2f
+            je L0051df17
+            mov dword ptr [esp + 0x18], ecx
+    L0051df23:
+            mov al, byte ptr [ecx]
+            mov edi, ecx
+            test al, al
+            je L0051df37
+    L0051df2b:
+            cmp al, 0x2f
+            je L0051df37
+            mov al, byte ptr [edi + 1]
+            inc edi
+            test al, al
+            jne L0051df2b
+    L0051df37:
+            cmp byte ptr [edi], 0x2f
+            jne L0051df44
+    L0051df3c:
+            mov al, byte ptr [edi + 1]
+            inc edi
+            cmp al, 0x2f
+            je L0051df3c
+    L0051df44:
+            mov eax, dword ptr [esp + 0x14]
+            mov ebx, dword ptr [eax + 8]
+            test ebx, ebx
+            je L0051df96
+            mov esi, dword ptr [esp + 0x1c]
+            jmp L0051df59
+    L0051df55:
+            mov ecx, dword ptr [esp + 0x18]
+    L0051df59:
+            test ebp, ebp
+            jle L0051df96
+            mov edx, dword ptr [ebx + 0x14]
+            push edx
+            push ecx
+            call BrNamePatternMatch
+            add esp, 8
+            test eax, eax
+            je L0051df90
+            test edi, edi
+            je L0051df8a
+            cmp byte ptr [edi], 0
+            je L0051df8a
+            push ebp
+            push esi
+            push edi
+            push ebx
+            call L0051df00
+            add esp, 0x10
+            lea esi, [esi + eax*4]
+            sub ebp, eax
+            jmp L0051df90
+    L0051df8a:
+            mov dword ptr [esi], ebx
+            add esi, 4
+            dec ebp
+    L0051df90:
+            mov ebx, dword ptr [ebx]
+            test ebx, ebx
+            jne L0051df55
+    L0051df96:
+            mov eax, dword ptr [esp + 0x20]
+            pop edi
+            sub eax, ebp
+            pop esi
+            pop ebp
+            pop ebx
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0051dfb0
@@ -261,7 +366,8 @@ br_boolean C2_HOOK_STDCALL ActorToRootTyped(br_actor* a, br_actor* world, br_mat
 }
 
 // FUNCTION: CARMA2_HW 0x0051e450
-void C2_HOOK_STDCALL Matrix4PerspectiveNew(br_matrix4* mat, br_angle field_of_view, br_scalar aspect, br_scalar hither, br_scalar yon, br_scalar origin_x, br_scalar origin_y) {
+void C2_NAKED C2_HOOK_STDCALL Matrix4PerspectiveNew(br_matrix4* mat, br_angle field_of_view, br_scalar aspect, br_scalar hither, br_scalar yon, br_scalar origin_x, br_scalar origin_y) {
+#ifndef CARPOCALYPSE2_MATCHING
     br_scalar scale;
 
     scale = BR_COS(field_of_view / 2) / BR_SIN(field_of_view / 2);
@@ -282,10 +388,82 @@ void C2_HOOK_STDCALL Matrix4PerspectiveNew(br_matrix4* mat, br_angle field_of_vi
     mat->m[3][1] = 0.f;
     mat->m[3][2] = -2.f * (yon * hither) / (yon - hither);
     mat->m[3][3] = 0.f;
+#else
+    __asm {
+            mov dx, word ptr [esp + 8]
+            mov eax, dword ptr [esp + 4]
+            shr dx, 1
+            and edx, 0xffff
+            xor ecx, ecx
+            mov dword ptr [esp + 8], edx
+            mov dword ptr [eax + 4], ecx
+            fild dword ptr [esp + 8]
+            fld dword ptr [esp + 0x14]
+            fsub dword ptr [esp + 0x10]
+            fxch st(1)
+            fmul qword ptr [IID_IDirectInputDevice2A+0x3c0]
+            fld dword ptr [esp + 0x14]
+            fmul dword ptr [esp + 0x10]
+            fld st(1)
+            fld st(2)
+            fxch st(1)
+            fcos
+            mov dword ptr [eax + 8], ecx
+            mov dword ptr [eax + 0xc], ecx
+            mov dword ptr [eax + 0x10], ecx
+            mov dword ptr [eax + 0x18], ecx
+            mov dword ptr [eax + 0x1c], ecx
+            mov dword ptr [eax + 0x2c], 0xbf800000
+            mov dword ptr [eax + 0x30], ecx
+            mov dword ptr [eax + 0x34], ecx
+            mov dword ptr [eax + 0x3c], ecx
+            fxch st(1)
+            fsin
+            fxch st(1)
+            fst dword ptr [esp + 8]
+            fxch st(1)
+            fst dword ptr [esp + 8]
+            fdivp st(1), st(0)
+            fld dword ptr [esp + 0x14]
+            fadd dword ptr [esp + 0x10]
+            fxch st(4)
+            fstp dword ptr [esp + 8]
+            fxch st(1)
+            fdiv dword ptr [esp + 8]
+            fxch st(1)
+            fst dword ptr [esp + 0x14]
+            fdiv dword ptr [esp + 0xc]
+            fxch st(3)
+            fdiv dword ptr [esp + 8]
+            fxch st(1)
+            fmul dword ptr [IID_IDirectInputDevice2A+0x3c8]
+            fld dword ptr [esp + 0x18]
+            fld dword ptr [esp + 0x1c]
+            fld dword ptr [esp + 0x14]
+            fxch st(6)
+            _emit 0xd9
+        _emit 0x18
+            fxch st(1)
+            fchs
+            fxch st(1)
+            fchs
+            fxch st(5)
+            fstp dword ptr [eax + 0x14]
+            fxch st(2)
+            fstp dword ptr [eax + 0x28]
+            fstp dword ptr [eax + 0x38]
+            fstp dword ptr [eax + 0x20]
+            fxch st(1)
+            fstp dword ptr [eax + 0x24]
+            fstp st(0)
+            ret 0x1c
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0051e520
-br_token C2_HOOK_STDCALL CameraToScreenMatrix4(br_matrix4* mat, br_actor* camera) {
+br_token C2_NAKED C2_HOOK_STDCALL CameraToScreenMatrix4(br_matrix4* mat, br_actor* camera) {
+#ifndef CARPOCALYPSE2_MATCHING
     br_camera* camera_type;
     br_matrix34 mat34;
 
@@ -349,6 +527,291 @@ br_token C2_HOOK_STDCALL CameraToScreenMatrix4(br_matrix4* mat, br_actor* camera
 		return BRT_PARALLEL;
 	}
 	return BR_NULL_TOKEN;
+#else
+    __asm {
+            mov eax, dword ptr [esp + 8]
+            sub esp, 0x30
+            push esi
+            mov esi, dword ptr [eax + 0x5c]
+            xor eax, eax
+            mov al, byte ptr [esi + 4]
+            cmp eax, 4
+            ja L0051e7a6
+            jmp dword ptr [eax*4 + 0x51e7b0]
+            mov ecx, dword ptr ds:[0x79f4c8]
+            mov edx, dword ptr ds:[0x79f4c4]
+            fld dword ptr [esi + 0xc]
+            push ecx
+            push edx
+            push ecx
+            mov eax, dword ptr [esi + 0x10]
+            fchs
+            _emit 0xd9
+        _emit 0x1c
+        _emit 0x24
+            fld dword ptr [esi + 8]
+            mov edx, dword ptr [esp + 0x44]
+            push ecx
+            mov cx, word ptr [esi + 6]
+            fchs
+            _emit 0xd9
+        _emit 0x1c
+        _emit 0x24
+            push eax
+            push ecx
+            push edx
+            call Matrix4PerspectiveNew
+            mov eax, 0xf1
+            pop esi
+            add esp, 0x30
+            ret 8
+            fld dword ptr [esi + 0xc]
+            push ecx
+            mov eax, dword ptr [esi + 0x10]
+            fchs
+            _emit 0xd9
+        _emit 0x1c
+        _emit 0x24
+            fld dword ptr [esi + 8]
+            mov edx, dword ptr [esp + 0x3c]
+            push ecx
+            mov cx, word ptr [esi + 6]
+            fchs
+            _emit 0xd9
+        _emit 0x1c
+        _emit 0x24
+            push eax
+            push ecx
+            push edx
+            call BrMatrix4Perspective
+            add esp, 0x14
+            mov eax, 0xf1
+            pop esi
+            add esp, 0x30
+            ret 8
+            mov eax, 0xf1
+            pop esi
+            add esp, 0x30
+            ret 8
+            fld dword ptr [esi + 0x14]
+            fcomp dword ptr ds:[0x58b764]
+            fnstsw ax
+            test ah, 0x40
+            je L0051e5dc
+            push 0x663204
+            call BrFailure
+            add esp, 4
+    L0051e5dc:
+            fld dword ptr [esi + 0x18]
+            fcomp dword ptr ds:[0x58b764]
+            fnstsw ax
+            test ah, 0x40
+            je L0051e5f9
+            push 0x663224
+            call BrFailure
+            add esp, 4
+    L0051e5f9:
+            fld dword ptr [esi + 0xc]
+            fcomp dword ptr [esi + 8]
+            fnstsw ax
+            test ah, 0x41
+            je L0051e613
+            push 0x663244
+            call BrFailure
+            add esp, 4
+    L0051e613:
+            fld dword ptr [esi + 0xc]
+            fsub dword ptr [esi + 8]
+            fld dword ptr [esi + 0x10]
+            fld dword ptr [esi + 0x14]
+            fld dword ptr [esi + 0x18]
+            fxch st(3)
+            fdivr qword ptr ds:[0x58b768]
+            fxch st(3)
+            push ecx
+            lea eax, [esp + 8]
+            fdivr qword ptr ds:[0x58b768]
+            fxch st(1)
+            fmulp st(2), st(0)
+            fxch st(1)
+            fdivr qword ptr ds:[0x58b768]
+            fxch st(2)
+            fadd st(0), st(0)
+            fxch st(1)
+            fst dword ptr [esp + 0x40]
+            fxch st(2)
+            fst dword ptr [esp + 0x40]
+            fxch st(2)
+            fadd st(0), st(0)
+            fxch st(1)
+            _emit 0xd9
+        _emit 0x1c
+        _emit 0x24
+            fxch st(1)
+            push ecx
+            fadd st(0), st(0)
+            fxch st(1)
+            _emit 0xd9
+        _emit 0x1c
+        _emit 0x24
+            push ecx
+            _emit 0xd9
+        _emit 0x1c
+        _emit 0x24
+            push eax
+            call BrMatrix34Scale
+            fld dword ptr [esi + 8]
+            fadd dword ptr [esi + 0xc]
+            add esp, 0x10
+            lea ecx, [esp + 4]
+            fmul dword ptr ds:[0x58b774]
+            push ecx
+            _emit 0xd9
+        _emit 0x1c
+        _emit 0x24
+            push 0
+            push 0
+            push ecx
+            call BrMatrix34PreTranslate
+            mov edx, dword ptr ds:[0x79f4c8]
+            mov eax, dword ptr ds:[0x79f4c4]
+            add esp, 0x10
+            lea ecx, [esp + 4]
+            push 0
+            push edx
+            push eax
+            push ecx
+            call BrMatrix34PostTranslate
+            add esp, 0x10
+            mov eax, dword ptr [esp + 0x38]
+            lea edx, [esp + 4]
+            push edx
+            push eax
+            call BrMatrix4Copy34
+            add esp, 8
+            mov eax, 0xf2
+            pop esi
+            add esp, 0x30
+            ret 8
+            fld dword ptr [esi + 0x14]
+            fcomp dword ptr ds:[0x58b764]
+            fnstsw ax
+            test ah, 0x40
+            je L0051e6eb
+            push 0x663270
+            call BrFailure
+            add esp, 4
+    L0051e6eb:
+            fld dword ptr [esi + 0x18]
+            fcomp dword ptr ds:[0x58b764]
+            fnstsw ax
+            test ah, 0x40
+            je L0051e708
+            push 0x663290
+            call BrFailure
+            add esp, 4
+    L0051e708:
+            fld dword ptr [esi + 0xc]
+            fcomp dword ptr [esi + 8]
+            fnstsw ax
+            test ah, 0x41
+            je L0051e722
+            push 0x6632b0
+            call BrFailure
+            add esp, 4
+    L0051e722:
+            fld dword ptr [esi + 0xc]
+            fsub dword ptr [esi + 8]
+            fld dword ptr [esi + 0x18]
+            fld dword ptr [esi + 0x14]
+            fxch st(2)
+            fdivr qword ptr ds:[0x58b768]
+            fxch st(1)
+            push ecx
+            lea ecx, [esp + 8]
+            fdivr qword ptr ds:[0x58b768]
+            fxch st(2)
+            fdivr qword ptr ds:[0x58b768]
+            fld st(1)
+            fxch st(3)
+            fst dword ptr [esp + 0x40]
+            fxch st(3)
+            _emit 0xd9
+        _emit 0x1c
+        _emit 0x24
+            push ecx
+            fst dword ptr [esp + 0x44]
+            fxch st(2)
+            _emit 0xd9
+        _emit 0x1c
+        _emit 0x24
+            fxch st(1)
+            push ecx
+            _emit 0xd9
+        _emit 0x1c
+        _emit 0x24
+            push ecx
+            fstp st(0)
+            call BrMatrix34Scale
+            mov edx, dword ptr [esi + 8]
+            add esp, 0x10
+            lea eax, [esp + 4]
+            push edx
+            push 0
+            push 0
+            push eax
+            call BrMatrix34PreTranslate
+            mov edx, dword ptr [esp + 0x48]
+            add esp, 0x10
+            lea ecx, [esp + 4]
+            push ecx
+            push edx
+            call BrMatrix4Copy34
+            add esp, 8
+            mov eax, 0xf2
+            pop esi
+            add esp, 0x30
+            ret 8
+    L0051e7a6:
+            xor eax, eax
+            pop esi
+            add esp, 0x30
+            ret 8
+            nop
+            _emit 0xbf
+            _emit 0xe5
+            _emit 0x51
+            _emit 0x00
+            _emit 0x40
+            _emit 0xe5
+            _emit 0x51
+            _emit 0x00
+            _emit 0xb3
+            _emit 0xe5
+            _emit 0x51
+            _emit 0x00
+            _emit 0xce
+            _emit 0xe6
+            _emit 0x51
+            _emit 0x00
+            _emit 0x7f
+            _emit 0xe5
+            _emit 0x51
+            _emit 0x00
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0051e7d0
@@ -567,7 +1030,8 @@ void C2_HOOK_CDECL BrMatrix34ApplyBounds(br_bounds* A, br_bounds* B, br_matrix34
 }
 
 // FUNCTION: CARMA2_HW 0x0051ebc0
-void C2_HOOK_STDCALL ActorToBounds(br_bounds* dest, br_actor* ap, br_model* model) {
+void C2_NAKED C2_HOOK_STDCALL ActorToBounds(br_bounds* dest, br_actor* ap, br_model* model) {
+#ifndef CARPOCALYPSE2_MATCHING
     br_actor* a;
     br_bounds new;
     br_matrix34 m2v;
@@ -599,6 +1063,134 @@ void C2_HOOK_STDCALL ActorToBounds(br_bounds* dest, br_actor* ap, br_model* mode
     }
 
     v1db.model_to_view = m2v;
+#else
+    __asm {
+    L0051ebc0:
+            sub esp, 0x48
+            push ebx
+            push ebp
+            mov ebp, dword ptr [esp + 0x58]
+            push esi
+            push edi
+            mov eax, dword ptr [ebp + 0x18]
+            test eax, eax
+            je L0051ebda
+            mov ebx, eax
+            mov dword ptr [esp + 0x64], ebx
+            jmp L0051ebde
+    L0051ebda:
+            mov ebx, dword ptr [esp + 0x64]
+    L0051ebde:
+            lea eax, [ebp + 0x28]
+            mov ecx, 0xc
+            mov esi, offset v1db+0x60
+            lea edi, [esp + 0x28]
+            push eax
+            push offset v1db+0x60
+            rep movsd
+            call BrMatrix34PreTransform
+            mov al, byte ptr [ebp + 0x12]
+            mov ebp, dword ptr [esp + 0x64]
+            add esp, 8
+            cmp al, 1
+            jne L0051ecc6
+            fld dword ptr [v1db+0x84]
+            add ebx, 0x34
+            xor ecx, ecx
+            fst dword ptr [esp + 0x1c]
+            fstp dword ptr [esp + 0x10]
+            fld dword ptr [v1db+0x88]
+            fst dword ptr [esp + 0x20]
+            fstp dword ptr [esp + 0x14]
+            fld dword ptr [v1db+0x8c]
+            fst dword ptr [esp + 0x24]
+            fstp dword ptr [esp + 0x18]
+    L0051ec3d:
+            mov edx, ebx
+            lea esi, [ecx + v1db+0x60]
+            mov edi, 3
+    L0051ec4a:
+            _emit 0xd9
+        _emit 0x06
+            _emit 0xd9
+        _emit 0x02
+            fld dword ptr [edx + 0xc]
+            fxch st(1)
+            fmulp st(2), st(0)
+            _emit 0xd8
+        _emit 0x0e
+            fld st(1)
+            fcomp st(1)
+            fnstsw ax
+            test ah, 1
+            je L0051ec64
+            fxch st(1)
+    L0051ec64:
+            fadd dword ptr [esp + ecx + 0x10]
+            add edx, 4
+            add esi, 0xc
+            dec edi
+            fstp dword ptr [esp + ecx + 0x10]
+            fadd dword ptr [esp + ecx + 0x1c]
+            fstp dword ptr [esp + ecx + 0x1c]
+            jne L0051ec4a
+            add ecx, 4
+            cmp ecx, 0xc
+            jl L0051ec3d
+            lea edx, [esp + 0x10]
+            lea esi, [esp + 0x1c]
+            sub edx, ebp
+            mov ecx, ebp
+            sub esi, ebp
+            mov edi, 3
+    L0051ec98:
+            fld dword ptr [edx + ecx]
+            _emit 0xd8
+        _emit 0x19
+            fnstsw ax
+            test ah, 1
+            je L0051eca9
+            mov eax, dword ptr [edx + ecx]
+            mov dword ptr [ecx], eax
+    L0051eca9:
+            fld dword ptr [esi + ecx]
+            fcomp dword ptr [ecx + 0xc]
+            fnstsw ax
+            test ah, 0x41
+            jne L0051ecbc
+            mov eax, dword ptr [esi + ecx]
+            mov dword ptr [ecx + 0xc], eax
+    L0051ecbc:
+            add ecx, 4
+            dec edi
+            jne L0051ec98
+            mov ebx, dword ptr [esp + 0x64]
+    L0051ecc6:
+            mov ecx, dword ptr [esp + 0x60]
+            mov esi, dword ptr [ecx + 8]
+            test esi, esi
+            je L0051ecdf
+    L0051ecd1:
+            push ebx
+            push esi
+            push ebp
+            call L0051ebc0
+            mov esi, dword ptr [esi]
+            test esi, esi
+            jne L0051ecd1
+    L0051ecdf:
+            mov ecx, 0xc
+            lea esi, [esp + 0x28]
+            mov edi, offset v1db+0x60
+            rep movsd
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x48
+            ret 0xc
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0051eb20

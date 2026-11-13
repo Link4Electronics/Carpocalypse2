@@ -72,6 +72,7 @@
 #define C2_MATCHING_INLINE
 #endif
 extern tU32* C2_HOOK_FASTCALL KevKeyService(void);
+/* VC5 float-to-int runtime helper, called directly from transcribed asm. */
 // GLOBAL: CARMA2_HW 0x0067c474
 int gEntering_message;
 
@@ -240,9 +241,186 @@ tHeadup_text_buffer gHeadup_text_buffer_0079d880;
 
 extern const char* gSelected_actor_name;
 
+#ifdef CARPOCALYPSE2_MATCHING
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern void C2_HOOK_FASTCALL ARPowerupLose(tPowerup* pPowerup, tCar_spec* pCar);
+extern void C2_HOOK_FASTCALL AddLostTime(tU32 pLost_time);
+extern void C2_HOOK_FASTCALL AdjustRenderScreenSize(void);
+extern void C2_HOOK_FASTCALL CheckKeysForMouldiness(void);
+extern void C2_HOOK_FASTCALL CheckOtherRacingKeys(void);
+extern int C2_HOOK_FASTCALL CheckQuit(void);
+extern int C2_HOOK_FASTCALL CheckRecoverCost(void);
+extern void C2_HOOK_FASTCALL EarnCredits(int pAmount);
+extern const char* C2_HOOK_FASTCALL GetMiscString(int pIndex);
+extern tU32 C2_HOOK_FASTCALL GetRaceTime(void);
+extern tU32 C2_HOOK_FASTCALL GetTotalTime(void);
+extern int C2_HOOK_FASTCALL IRandomBetween(int pA, int pB);
+extern void C2_HOOK_FASTCALL InitialiseExternalCamera(void);
+extern int C2_HOOK_FASTCALL KeyIsDown(int pKey_index);
+extern int C2_HOOK_FASTCALL KeyIsDownNoMouldiness(int pKey_index);
+extern tNet_message* C2_HOOK_FASTCALL NetBuildGuaranteedMessage(tU8 pNet_message_type, int pOption);
+extern int C2_HOOK_FASTCALL NetGuaranteedSendMessageToAllPlayers(tNet_game_details* pDetails, tNet_message* pMessage, void* pNotifyFail);
+extern void C2_HOOK_FASTCALL NetGuaranteedSendMessageToHost(tNet_game_details* pDetails, tNet_message* pMessage, void* pNotifyFail);
+extern tNet_game_player_info* C2_HOOK_FASTCALL NetPlayerFromCar(tCar_spec *pCar);
+extern int C2_HOOK_FASTCALL NewTextHeadupSlot(int pSlot_index, int pFlash_rate, int pLifetime, int pFont_index, const char* pText);
+extern int C2_HOOK_FASTCALL NewTextHeadupSlot2(int pSlot_index, int pFlash_rate, int pLifetime, int pFont_index, const char* pText, int pQueue_it);
+extern tU32 C2_HOOK_FASTCALL PDGetTotalTime(void);
+extern int C2_HOOK_FASTCALL PDKeyDown(int pKey_index);
+extern void C2_HOOK_FASTCALL PixelmapSwapByteOrder(br_pixelmap* pMap);
+extern void C2_HOOK_FASTCALL PositionExternalCamera(tCar_spec* pCar_spec, tU32 pTime);
+extern int C2_HOOK_FASTCALL SpendCredits(int pAmount);
+extern void C2_HOOK_FASTCALL UnloadDinputFFBEffectAtIndex(int index);
+extern void __cdecl _ftol();
+extern br_angle gCamera_yaw;
+extern tCar_spec* gCar_to_view;
+extern tU32 gCar_to_view_id;
+extern tNet_game_details* gCurrent_net_game;
+extern tRace_info gCurrent_race;
+extern int gINT_006a0a5c;
+extern int gINT_006a0a6c;
+extern int gInventory[20];
+extern int gInventory_selected;
+extern int gIt_or_fox;
+extern tPlayer_ID gLocal_net_ID;
+extern tU32 gMap_time;
+extern int gMap_view;
+extern tNet_mode gNet_mode;
+extern int gNet_player_to_view_index;
+extern tNet_game_player_info gNet_players[12];
+extern int gNumber_of_icons;
+extern int gNumber_of_net_players;
+extern int gOpponent_viewing_mode;
+extern int gPed_676914;
+extern int gPed_count;
+extern int gPed_nearness;
+extern tPedestrian* gPedestrian_array;
+extern tHeadup_icon gPickedup_powerups[20];
+extern tPowerup* gPowerup_array;
+extern tProgram_state gProgram_state;
+extern tU32 gRace_finished;
+extern int gRecover_car;
+extern tFloat_bunch_info gRecovery_cost;
+extern int gRender_indent;
+extern int gSelected_ped;
+extern int gThis_net_player_index;
+extern tSlot_info gTrade_in_value_APO;
+extern int gTyping;
+extern tU32 gWait_for_it;
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern void C2_HOOK_FASTCALL AREndPipingSession(void);
+extern void C2_HOOK_FASTCALL ARStartPipingSession(tPipe_chunk_type pType);
+extern void C2_HOOK_FASTCALL AddRepulseRayToPipingSession(int pIndex, br_vector3* pOrigin, br_vector3* pVictim, tU32 pTime);
+extern void C2_HOOK_FASTCALL AdjustHeadupTextBuffer(tHeadup_text_buffer* pText_buffer);
+extern void C2_HOOK_FASTCALL BlendifyMaterial(br_material* pMaterial, int pPercent);
+extern br_actor* C2_HOOK_CDECL BrActorAdd();
+extern br_actor* C2_HOOK_CDECL BrActorRemove();
+extern void C2_HOOK_CDECL BrMaterialUpdate();
+extern void C2_HOOK_CDECL BrMatrix34ApplyP();
+extern void C2_HOOK_CDECL BrMatrix34ApplyV();
+extern void C2_HOOK_CDECL BrMatrix34Copy();
+extern void C2_HOOK_CDECL BrMatrix34Rotate();
+extern void C2_HOOK_CDECL BrModelUpdate();
+extern void C2_HOOK_CDECL BrVector3SetFloat();
+extern void C2_HOOK_FASTCALL ChangeHeadupFont(int pHeadup_index, int pFont);
+extern void C2_HOOK_FASTCALL ChangeHeadupText(int pHeadup_index, char* pNew_text);
+extern void C2_HOOK_STDCALL CreateAccentPolyActor(float pX, float pY, float pWidth, float pHeight);
+extern void C2_HOOK_FASTCALL CreatePuffOfSmoke(br_vector3* pPos, br_vector3* pV, float pStrength, float pDecay_factor, int pType);
+extern tS3_sound_tag C2_HOOK_FASTCALL DRS3StartSound(tS3_outlet* pOutlet, tS3_sound_id pSound);
+extern void C2_HOOK_FASTCALL DRstrlwr(char* s);
+extern void C2_HOOK_FASTCALL DisableCar(tCar_spec* pCar);
+extern void C2_HOOK_FASTCALL DropActor(int pIndex, int pPowerup);
+extern void C2_HOOK_FASTCALL EnableCar(tCar_spec* pCar);
+extern void C2_HOOK_FASTCALL FUN_0044a8a0(int pHeadup_index, int pX, int pY);
+extern int C2_HOOK_FASTCALL FUN_0045a920(tHeadup_text_buffer* pText_buffer, tHeadup_text* pText, int pSorted);
+extern void C2_HOOK_FASTCALL FadePaletteDown(void);
+extern void C2_HOOK_FASTCALL FindFace(br_vector3* pPosition, br_vector3* pDir, br_vector3* nor, br_scalar* t, br_material** material);
+extern void C2_HOOK_FASTCALL FlipUpCollisionInfo(tPhysics_object* pCollision_info);
+extern int C2_HOOK_FASTCALL HasCurrentJoystick(void);
+extern void C2_HOOK_FASTCALL JumpTheStart(void);
+extern int C2_HOOK_FASTCALL PDEnumPath(const char* path, tEnumPathCallback pCallback, void* data);
+extern int C2_HOOK_FASTCALL PDIsJoystickDPadEnabled(void);
+extern void C2_HOOK_FASTCALL PDPlayFFBEffect(const char* effectName);
+extern void C2_HOOK_FASTCALL PathCat(char* pDestn_str, const char* pStr_1, const char* pStr_2);
+extern void C2_HOOK_FASTCALL PositionChildren(tPhysics_object *pCollision_info);
+extern void C2_HOOK_FASTCALL PratcamEvent(int pIndex);
+extern void C2_HOOK_FASTCALL SetCollisionInfoChildsDoNothing(tPhysics_object *pCollision_info, tU32 pDisable);
+extern int C2_HOOK_FASTCALL TestForCarInSensiblePlace(tCar_spec *pCar_spec, br_vector3 *pVec3);
+extern void C2_HOOK_FASTCALL WeldCar(tCar_spec* pCar_spec);
+extern br_actor* gAcc_poly_actor;
+extern int gCar_flying;
+extern int gCountdown;
+extern int gCredit_multiplier;
+extern char gDOUBLE_0058ac18[];
+extern char gDefault_drone_direction[];
+extern int gDisable_sound;
+extern char gFLOAT_0058ac0c[];
+extern char gFLOAT_0058ac10[];
+extern char gFLOAT_0058ac20[];
+extern char gFloat_00589c40[];
+extern tJoy_array gJoy_array;
+extern int gKey_mapping[77];
+extern br_actor* gNon_track_actor;
+extern char gPowerup_respawn_specs[];
+extern int gRace_head_ups[22];
+extern char gRace_path[256];
+extern int gRender_acc_poly_actor;
+extern tRepulse_link gRepulse_links[6];
+extern int gUNK_00596310;
+extern tS3_outlet* gXXX_outlet;
+extern br_vector3 y_unit_vector;
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern void C2_HOOK_FASTCALL CancelPendingCunningStunt(void);
+extern int C2_HOOK_FASTCALL DRS3StopOutletSound(tS3_outlet* pOutlet);
+extern int C2_HOOK_FASTCALL DRS3StopSound(tS3_sound_tag pSound_tag);
+extern void C2_HOOK_FASTCALL DoFancyHeadup(int pIndex);
+extern void C2_HOOK_FASTCALL FUN_0045c240(void);
+extern void C2_HOOK_FASTCALL FlipUpCar(tCar_spec* pCar_spec);
+extern tCar_spec* C2_HOOK_FASTCALL GetCarSpec(tVehicle_type pCategory, int pIndex);
+extern int C2_HOOK_FASTCALL IsCarInTheSea(void);
+extern void C2_HOOK_FASTCALL KnackerThisCar(tCar_spec* pCar);
+extern int C2_HOOK_FASTCALL LoadJoystickPreferences(void);
+extern tPlayer_status C2_HOOK_FASTCALL NetGetPlayerStatus(void);
+extern void C2_HOOK_FASTCALL NetPlayerStatusChanged(tPlayer_status pNew_status);
+extern void C2_HOOK_FASTCALL PipeSingleSpecial(tSpecial_type pType);
+extern float C2_HOOK_FASTCALL RepairCar(tU16 pCar_ID, tU32 pFrame_period, br_scalar* pTotal_deflection);
+extern int C2_HOOK_FASTCALL S3SoundStillPlaying(int pTag);
+extern int C2_HOOK_FASTCALL SaveAllJoystickData(void);
+extern void C2_HOOK_FASTCALL SendGameplayToHost(tNet_gameplay_mess pMess, int pParam_1, int pParam_2, int pParam_3, int pParam_4);
+extern void C2_HOOK_FASTCALL SetFadedPalette(unsigned int pDegree);
+extern void C2_HOOK_FASTCALL SetIntegerMapRenders(void);
+extern void C2_HOOK_FASTCALL StopCarSmoking(tCar_spec* pCar);
+extern char gCamera_incident_direction[];
+extern char gNext_crush_actor_id[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern void C2_HOOK_FASTCALL NetSendHeadupToAllPlayers(char* pMessage);
+extern int C2_HOOK_FASTCALL PDAnyKeyDown(void);
+extern void C2_HOOK_FASTCALL PDClearKeyboardBuffer(void);
+extern char C2_HOOK_FASTCALL PDConvertToASCIILessThan128(char pChar);
+extern int C2_HOOK_FASTCALL PDGetKeyboardCharacter(void);
+extern void C2_HOOK_FASTCALL ToggleJoystickHeadup(void);
+extern void C2_HOOK_CDECL dr_dprintf();
+extern br_pixelmap* gBack_screen;
+extern tGraf_data* gCurrent_graf_data;
+extern tU32 gFrame_period;
+extern int gFree_repairs;
+extern int gGraf_data_index;
+extern tU32 gI_am_cheating;
+extern int gMap_render_height_i;
+extern int gMap_render_width_i;
+extern int gMap_render_x_i;
+extern int gMap_render_y_i;
+extern tFloat_bunch_info gRepair_cost;
+#endif
 // FUNCTION: CARMA2_HW 0x00444700
 void C2_HOOK_FASTCALL AddVouchers(int amount) {
-
     gRecovery_voucher_count += amount;
 }
 
@@ -732,7 +910,6 @@ char* gAbuse_text[10];
 #pragma auto_inline(off)
 // FUNCTION: CARMA2_HW 0x00456960
 void C2_HOOK_FASTCALL ReallySetSoundDetailLevel(int pLevel) {
-
     if (gSound_enabled) {
         tS3_outlet* pOutlet;
         pOutlet = gXXX_outlet;
@@ -766,7 +943,6 @@ void C2_HOOK_FASTCALL ReallySetSoundDetailLevel(int pLevel) {
 // Key: 'm'
 // FUNCTION: CARMA2_HW 0x004420e0
 void C2_HOOK_FASTCALL ToggleMiniMap(void) {
-
     if (gMap_view != 2) {
         gMini_map_visible = !gMini_map_visible;
         if (!gMini_map_visible) {
@@ -781,7 +957,6 @@ void C2_HOOK_FASTCALL ToggleMiniMap(void) {
 // Key: 'Enter'
 // FUNCTION: CARMA2_HW 0x0042dd50
 void C2_HOOK_FASTCALL ToggleFlaps(void) {
-
     if (gCountdown || gToo_poor_for_recovery_timeout != 0) {
         return;
     }
@@ -857,9 +1032,10 @@ intptr_t C2_HOOK_CDECL ToggleDoorsActorCallback(br_actor* pActor, void* data) {
     return 0;
 }
 
+// GLOBAL: CARMA2_HW 0x0067c458
+static int old_indent;
+
 void C2_HOOK_FASTCALL ToggleMap2(void) {
-    // GLOBAL: CARMA2_HW 0x0067c458
-    static int old_indent;
     int original_indent;
 
     original_indent = gRender_indent;
@@ -886,36 +1062,120 @@ void C2_HOOK_FASTCALL ToggleMap2(void) {
 
 // Key: 'tab'
 // FUNCTION: CARMA2_HW 0x00444610
-void C2_HOOK_FASTCALL ToggleMap(void) {
+void C2_NAKED C2_HOOK_FASTCALL ToggleMap(void) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     ToggleMap2();
     AdjustRenderScreenSize();
+#else
+    __asm {
+            mov ecx, dword ptr [gMap_view]
+            mov eax, 2
+            cmp ecx, eax
+            jne L00444643
+            mov ecx, dword ptr [gCurrent_race+0xf04]
+            mov eax, dword ptr [old_indent]
+            test ecx, ecx
+            mov dword ptr [gMap_view], 1
+            mov dword ptr [gRender_indent], eax
+            je L004446c7
+            jmp L004446c2
+    L00444643:
+            mov ecx, dword ptr [gPed_676914]
+            test ecx, ecx
+            jne L004446c7
+            mov ecx, dword ptr [gNet_mode]
+            test ecx, ecx
+            je L00444693
+            mov ecx, dword ptr [gCurrent_net_game]
+            cmp dword ptr [ecx + 0x74], 7
+            jne L00444693
+            mov edx, dword ptr [gThis_net_player_index]
+            mov ecx, dword ptr [gIt_or_fox]
+            cmp edx, ecx
+            jne L00444693
+            mov ecx, 0xd6
+            call GetMiscString
+            xor edx, edx
+            mov ecx, 4
+            push eax
+            push -4
+            push 0x3e8
+            call NewTextHeadupSlot
+            jmp L004446c7
+    L00444693:
+            mov ecx, dword ptr [gRender_indent]
+            mov dword ptr [gRender_indent], 0
+            mov dword ptr [old_indent], ecx
+            mov dword ptr [gMap_view], eax
+            call PDGetTotalTime
+            mov ecx, dword ptr [gCurrent_race+0xf04]
+            mov dword ptr [gMap_time], eax
+            test ecx, ecx
+            je L004446c7
+    L004446c2:
+            call PixelmapSwapByteOrder
+    L004446c7:
+            jmp AdjustRenderScreenSize
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00444600
 void C2_HOOK_FASTCALL ToggleHeadupMap(void) {
-
 }
 
 // Key: 'ctrl+tab'
 // FUNCTION: CARMA2_HW 0x00494840
-void C2_HOOK_FASTCALL CycleMapOptions(void) {
+void C2_NAKED C2_HOOK_FASTCALL CycleMapOptions(void) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     gCheckpoint_finder_enabled = !gCheckpoint_finder_enabled;
     NewTextHeadupSlot2(4, 0, 1500, -4, gCheckpoint_finder_enabled ? GetMiscString(eMiscString_checkpoint_finder_turned_on) : GetMiscString(eMiscString_checkpoint_finder_turned_off), 0);
+#else
+    __asm {
+            mov edx, dword ptr [gCheckpoint_finder_enabled]
+            xor eax, eax
+            test edx, edx
+            sete al
+            test eax, eax
+            mov dword ptr [gCheckpoint_finder_enabled], eax
+            push 0
+            mov ecx, 0xff
+            jne L00494862
+            mov ecx, 0xfe
+    L00494862:
+            call GetMiscString
+            xor edx, edx
+            mov ecx, 4
+            push eax
+            push -4
+            push 0x5dc
+            call NewTextHeadupSlot2
+            ret
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // key: 'alt+tab' ('alt' in map mode)
 // FUNCTION: CARMA2_HW 0x00494880
 void C2_HOOK_FASTCALL ToggleMapTransparency(void) {
-
     gMap_trans = !gMap_trans;
     SaveOptions();
 }
 
 // Key: 'r'
 // FUNCTION: CARMA2_HW 0x00442300
-void C2_HOOK_FASTCALL SetRecovery(void) {
+void C2_NAKED C2_HOOK_FASTCALL SetRecovery(void) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     if (gINT_0068b8e4
         || gINT_0068b8e8
@@ -965,10 +1225,151 @@ void C2_HOOK_FASTCALL SetRecovery(void) {
             gToo_late = 1;
         }
     }
+#else
+    __asm {
+            mov eax, dword ptr [gINT_0068b8e4]
+            test eax, eax
+            jne L004424f6
+            mov eax, dword ptr [gINT_0068b8e8]
+            test eax, eax
+            jne L004424f6
+            mov eax, dword ptr [gRace_finished]
+            test eax, eax
+            jne L004424f6
+            mov eax, dword ptr [gProgram_state+0x280]
+            test eax, eax
+            jne L004424f6
+            mov eax, dword ptr [gWait_for_it]
+            test eax, eax
+            jne L004424f6
+            mov eax, dword ptr [gHad_auto_recover]
+            test eax, eax
+            jne L004424f6
+            mov eax, dword ptr [gPalette_fade_time]
+            test eax, eax
+            jne L004424f6
+            mov eax, dword ptr [gNet_mode]
+            test eax, eax
+            je L004424e2
+            mov eax, dword ptr [gProgram_state+0x194c]
+            test eax, eax
+            je L00442428
+            mov eax, dword ptr [gCancel_recover]
+            test eax, eax
+            je L004424f6
+            call GetRaceTime
+            mov ecx, dword ptr [gProgram_state+0x194c]
+            add eax, 0x258
+            cmp ecx, eax
+            jbe L004423fd
+            mov eax, dword ptr [gINT_0067c470]
+            mov dword ptr [gProgram_state+0x194c], 0
+            test eax, eax
+            jne L004423dc
+            mov eax, dword ptr [gNet_mode]
+            test eax, eax
+            je L004423c3
+            mov eax, dword ptr [gCurrent_net_game]
+            mov ecx, dword ptr [eax + 0x74]
+            fld dword ptr [ecx*4 + gRecovery_cost+0xc]
+            jmp L004423d0
+    L004423c3:
+            mov edx, dword ptr [gProgram_state+0x20]
+            fld dword ptr [edx*4 + gRecovery_cost]
+    L004423d0:
+            call _ftol
+            mov ecx, eax
+            call EarnCredits
+    L004423dc:
+            push 0
+            mov ecx, 0x7d
+            call GetMiscString
+            xor edx, edx
+            mov ecx, 4
+            push eax
+            push -4
+            push 0x7d0
+            call NewTextHeadupSlot2
+            ret
+    L004423fd:
+            push 1
+            mov ecx, 0xf2
+            call GetMiscString
+            xor edx, edx
+            mov ecx, 4
+            push eax
+            push -4
+            push 0x7d0
+            call NewTextHeadupSlot2
+            mov dword ptr [gToo_late], 1
+            ret
+    L00442428:
+            mov dword ptr [gCancel_recover], 1
+            call CheckRecoverCost
+            test eax, eax
+            je L004424f6
+            mov eax, dword ptr [gCurrent_net_game]
+            mov eax, dword ptr [eax + 0x74]
+            cmp eax, 7
+            jne L0044248f
+            mov ecx, dword ptr [gThis_net_player_index]
+            mov eax, dword ptr [gIt_or_fox]
+            cmp ecx, eax
+            jne L00442475
+            call GetRaceTime
+            add eax, 0x1388
+            mov dword ptr [gToo_late], 0
+            mov dword ptr [gProgram_state+0x194c], eax
+            ret
+    L00442475:
+            call GetRaceTime
+            add eax, 0x3e8
+            mov dword ptr [gToo_late], 0
+            mov dword ptr [gProgram_state+0x194c], eax
+            ret
+    L0044248f:
+            cmp eax, 6
+            jne L004424c8
+            mov eax, dword ptr [gThis_net_player_index]
+            lea ecx, [eax + eax*2]
+            lea edx, [ecx + ecx*8]
+            shl edx, 1
+            sub edx, eax
+            mov eax, dword ptr [edx*4 + gNet_players+0x80]
+            test eax, eax
+            je L004424c8
+            call GetRaceTime
+            add eax, 0x1f4
+            mov dword ptr [gToo_late], 0
+            mov dword ptr [gProgram_state+0x194c], eax
+            ret
+    L004424c8:
+            call GetRaceTime
+            add eax, 0xbb8
+            mov dword ptr [gToo_late], 0
+            mov dword ptr [gProgram_state+0x194c], eax
+            ret
+    L004424e2:
+            mov dword ptr [gRecover_car], 1
+            mov dword ptr [gRecover_timer], 0
+    L004424f6:
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00442750
-int C2_HOOK_FASTCALL CheckRecoverCost(void) {
+int C2_NAKED C2_HOOK_FASTCALL CheckRecoverCost(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     int recovery_cost;
 
     if (gNet_mode == eNet_mode_none) {
@@ -1012,12 +1413,188 @@ int C2_HOOK_FASTCALL CheckRecoverCost(void) {
     }
     SpendCredits(recovery_cost);
     return 1;
+#else
+    __asm {
+            mov eax, dword ptr [gNet_mode]
+            push ebx
+            push ebp
+            push esi
+            test eax, eax
+            push edi
+            je L00442962
+            mov eax, dword ptr [gProgram_state+0x280]
+            test eax, eax
+            jne L00442958
+            mov eax, dword ptr [gRecovery_voucher_count]
+            test eax, eax
+            jne L00442958
+            mov ecx, offset gProgram_state+0xac
+            call NetPlayerFromCar
+            test eax, eax
+            je L004427a1
+            mov ecx, offset gProgram_state+0xac
+            call NetPlayerFromCar
+            mov ecx, dword ptr [eax + 0x80]
+            test ecx, ecx
+            jne L00442958
+    L004427a1:
+            mov esi, dword ptr [gNet_mode]
+            mov edi, dword ptr [gProgram_state+0x20]
+            mov ebp, dword ptr [gCurrent_net_game]
+            mov dword ptr [gINT_0067c470], 0
+            test esi, esi
+            je L004427cd
+            mov eax, dword ptr [ebp + 0x74]
+            fld dword ptr [eax*4 + gRecovery_cost+0xc]
+            jmp L004427d4
+    L004427cd:
+            fld dword ptr [edi*4 + gRecovery_cost]
+    L004427d4:
+            fild dword ptr [gProgram_state]
+            fcomp st(1)
+            fnstsw ax
+            test ah, 1
+            fstp st(0)
+            je L004428bb
+            test esi, esi
+            je L004427f9
+            mov ecx, dword ptr [ebp + 0x74]
+            fld dword ptr [ecx*4 + gRecovery_cost+0xc]
+            jmp L00442800
+    L004427f9:
+            fld dword ptr [edi*4 + gRecovery_cost]
+    L00442800:
+            call _ftol
+            mov ebx, eax
+            test ebx, ebx
+            jle L004428bb
+    L0044280f:
+            mov eax, dword ptr [gProgram_state+0x1954]
+            test eax, eax
+            jne L0044282e
+            mov eax, dword ptr [gProgram_state+0x1958]
+            test eax, eax
+            jne L0044282e
+            mov eax, dword ptr [gProgram_state+0x195c]
+            test eax, eax
+            je L004428bb
+    L0044282e:
+            mov edx, 2
+            xor ecx, ecx
+            call IRandomBetween
+            mov ecx, dword ptr [eax*4 + gProgram_state+0x1954]
+            mov esi, dword ptr [gNet_mode]
+            mov ebp, dword ptr [gCurrent_net_game]
+            test ecx, ecx
+            je L004428ad
+            dec ecx
+            mov dword ptr [eax*4 + gProgram_state+0x1954], ecx
+            mov edi, dword ptr [gProgram_state+0x20]
+            test esi, esi
+            je L0044286f
+            mov edx, dword ptr [ebp + 0x74]
+            mov eax, dword ptr [edx*4 + gTrade_in_value_APO+0xc]
+            jmp L00442876
+    L0044286f:
+            mov eax, dword ptr [edi*4 + gTrade_in_value_APO]
+    L00442876:
+            sub ebx, eax
+            test esi, esi
+            je L00442896
+            mov eax, dword ptr [ebp + 0x74]
+            mov ecx, dword ptr [gProgram_state]
+            mov eax, dword ptr [eax*4 + gTrade_in_value_APO+0xc]
+            add ecx, eax
+            mov dword ptr [gProgram_state], ecx
+            jmp L004428b3
+    L00442896:
+            mov eax, dword ptr [edi*4 + gTrade_in_value_APO]
+            mov ecx, dword ptr [gProgram_state]
+            add ecx, eax
+            mov dword ptr [gProgram_state], ecx
+            jmp L004428b3
+    L004428ad:
+            mov edi, dword ptr [gProgram_state+0x20]
+    L004428b3:
+            test ebx, ebx
+            jg L0044280f
+    L004428bb:
+            test esi, esi
+            je L004428cb
+            mov ecx, dword ptr [ebp + 0x74]
+            fld dword ptr [ecx*4 + gRecovery_cost+0xc]
+            jmp L004428d2
+    L004428cb:
+            fld dword ptr [edi*4 + gRecovery_cost]
+    L004428d2:
+            fild dword ptr [gProgram_state]
+            fcomp st(1)
+            fnstsw ax
+            test ah, 1
+            fstp st(0)
+            je L00442917
+            call PDGetTotalTime
+            add eax, 0x7d0
+            mov ecx, 0x11e
+            mov dword ptr [gToo_poor_for_recovery_timeout], eax
+            call GetMiscString
+            xor edx, edx
+            mov ecx, 4
+            push eax
+            push -4
+            push 0x3e8
+            call NewTextHeadupSlot
+            xor eax, eax
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            ret
+    L00442917:
+            test esi, esi
+            je L0044293b
+            mov edx, dword ptr [ebp + 0x74]
+            fld dword ptr [edx*4 + gRecovery_cost+0xc]
+            call _ftol
+            mov ecx, eax
+            call SpendCredits
+            mov eax, 1
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            ret
+    L0044293b:
+            fld dword ptr [edi*4 + gRecovery_cost]
+            call _ftol
+            mov ecx, eax
+            call SpendCredits
+            mov eax, 1
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            ret
+    L00442958:
+            mov dword ptr [gINT_0067c470], 1
+    L00442962:
+            pop edi
+            pop esi
+            pop ebp
+            mov eax, 1
+            pop ebx
+            ret
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // Key: 'ctrl+a'
 // FUNCTION: CARMA2_HW 0x00441490
 void C2_HOOK_FASTCALL AbortRace(void) {
-
     if (!gRace_finished) {
         gAbandon_game = 1;
     }
@@ -1025,7 +1602,6 @@ void C2_HOOK_FASTCALL AbortRace(void) {
 
 // FUNCTION: CARMA2_HW 0x00444f40
 void C2_HOOK_FASTCALL ToggleHeadupLevel(void) {
-
     if (PDKeyDown(0)) {
         gHeadup_detail_level -= 1;
         if (gHeadup_detail_level < 0) {
@@ -1063,7 +1639,8 @@ void C2_HOOK_FASTCALL SetFlag2(int pArg) {
 // Key: 'f4'
 #pragma auto_inline( off )
 // FUNCTION: CARMA2_HW 0x004414b0
-void C2_HOOK_FASTCALL F4Key(void) {
+void C2_NAKED C2_HOOK_FASTCALL F4Key(void) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     if (gI_am_cheating == 0xa11ee75d || (gI_am_cheating != 0x564e78b9 && gNet_mode != eNet_mode_none)) {
         char s[256];
@@ -1093,17 +1670,100 @@ void C2_HOOK_FASTCALL F4Key(void) {
     } else {
         gWhich_edit_mode = 0;
     }
+#else
+    __asm {
+            mov eax, dword ptr ds:[gI_am_cheating]
+            sub esp, 0x100
+            cmp eax, 0xa11ee75d
+            je L004414e3
+            cmp eax, 0x564e78b9
+            jne L004414d2
+            mov eax, dword ptr ds:[gNet_mode]
+            test eax, eax
+            je L004414e3
+    L004414d2:
+            mov dword ptr ds:[gWhich_edit_mode], 0
+            add esp, 0x100
+            ret
+    L004414e3:
+            cmp dword ptr ds:[gINT_0068b8e4], 1
+            jne L004414f1
+            _emit 0xe8
+        _emit 0x1f
+        _emit 0xfd
+        _emit 0x0c
+        _emit 0x00
+    L004414f1:
+            cmp dword ptr ds:[gINT_0068b8e4], 2
+            jne L004414ff
+            _emit 0xe8
+        _emit 0x01
+        _emit 0xfd
+        _emit 0x0c
+        _emit 0x00
+    L004414ff:
+            mov eax, dword ptr ds:[gINT_0068b8e8]
+            test eax, eax
+            je L0044150d
+            call ToggleJoystickHeadup
+    L0044150d:
+            xor ecx, ecx
+            call PDKeyDown
+            test eax, eax
+            mov eax, dword ptr ds:[gWhich_edit_mode]
+            je L0044152b
+            test eax, eax
+            jne L00441528
+            mov eax, 1
+            jmp L00441538
+    L00441528:
+            dec eax
+            jmp L00441538
+    L0044152b:
+            inc eax
+            cmp eax, 2
+            mov dword ptr ds:[gWhich_edit_mode], eax
+            jl L0044153d
+            xor eax, eax
+    L00441538:
+            mov dword ptr ds:[gWhich_edit_mode], eax
+    L0044153d:
+            mov eax, dword ptr [eax*4 + gEdit_mode_names]
+            lea ecx, [esp]
+            push eax
+            push 0x590ff0
+            push ecx
+            call sprintf
+            add esp, 0xc
+            lea edx, [esp]
+            mov ecx, 4
+            push 0
+            push edx
+            push -4
+            push 0x7d0
+            xor edx, edx
+            call NewTextHeadupSlot2
+            add esp, 0x100
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 #pragma auto_inline( on )
 
 // FUNCTION: CARMA2_HW 0x004415e0
 void C2_HOOK_FASTCALL EnsureSpecialVolumesHidden(void) {
-
 }
 
 // FUNCTION: CARMA2_HW 0x004415f0
 void C2_HOOK_FASTCALL ShowSpecialVolumesIfRequ(void) {
-
 }
 
 void C2_HOOK_FASTCALL DoEditModeKey(int pIndex) {
@@ -1125,119 +1785,102 @@ void C2_HOOK_FASTCALL DoEditModeKey(int pIndex) {
 // Key: 'f5'
 // FUNCTION: CARMA2_HW 0x00441600
 void C2_HOOK_FASTCALL F5Key(void) {
-
     DoEditModeKey(0);
 }
 
 // Key: 'f6'
 // FUNCTION: CARMA2_HW 0x00441680
 void C2_HOOK_FASTCALL F6Key(void) {
-
     DoEditModeKey(1);
 }
 
 // Key: 'f7'
 // FUNCTION: CARMA2_HW 0x00441700
 void C2_HOOK_FASTCALL F7Key(void) {
-
     DoEditModeKey(2);
 }
 
 // Key: 'f8'
 // FUNCTION: CARMA2_HW 0x00441780
 void C2_HOOK_FASTCALL F8Key(void) {
-
     DoEditModeKey(3);
 }
 
 // Key: 'f10'
 // FUNCTION: CARMA2_HW 0x00441800
 void C2_HOOK_FASTCALL F10Key(void) {
-
     DoEditModeKey(4);
 }
 
 // Key: 'f11'
 // FUNCTION: CARMA2_HW 0x00441880
 void C2_HOOK_FASTCALL F11Key(void) {
-
     DoEditModeKey(5);
 }
 
 // Key: 'f12'
 // FUNCTION: CARMA2_HW 0x00441900
 void C2_HOOK_FASTCALL F12Key(void) {
-
     /* Do nothing */
 }
 
 // Key: '0'
 // FUNCTION: CARMA2_HW 0x00441910
 void C2_HOOK_FASTCALL NumberKey0(void) {
-
     DoEditModeKey(7);
 }
 
 // Key: '1'
 // FUNCTION: CARMA2_HW 0x00441990
 void C2_HOOK_FASTCALL NumberKey1(void) {
-
     DoEditModeKey(8);
 }
 
 // Key: '2'
 // FUNCTION: CARMA2_HW 0x00441a10
 void C2_HOOK_FASTCALL NumberKey2(void) {
-
     DoEditModeKey(9);
 }
 
 // Key: '3'
 // FUNCTION: CARMA2_HW 0x00441a90
 void C2_HOOK_FASTCALL NumberKey3(void) {
-
     DoEditModeKey(10);
 }
 
 // Key: '4'
 // FUNCTION: CARMA2_HW 0x00441b10
 void C2_HOOK_FASTCALL NumberKey4(void) {
-
     DoEditModeKey(11);
 }
 
 // Key: '5'
 // FUNCTION: CARMA2_HW 0x00441b90
 void C2_HOOK_FASTCALL NumberKey5(void) {
-
     DoEditModeKey(12);
 }
 
 // Key: '6'
 // FUNCTION: CARMA2_HW 0x00441c10
 void C2_HOOK_FASTCALL NumberKey6(void) {
-
     DoEditModeKey(13);
 }
 
 // Key: '7'
 // FUNCTION: CARMA2_HW 0x00441c90
 void C2_HOOK_FASTCALL NumberKey7(void) {
-
     DoEditModeKey(14);
 }
 
 // Key: '8'
 // FUNCTION: CARMA2_HW 0x00441d10
 void C2_HOOK_FASTCALL NumberKey8(void) {
-
     DoEditModeKey(15);
 }
 
 // Key: '9'
 // FUNCTION: CARMA2_HW 0x00441d90
 void C2_HOOK_FASTCALL NumberKey9(void) {
-
     DoEditModeKey(16);
 }
 
@@ -1260,7 +1903,6 @@ void C2_HOOK_FASTCALL ToggleFlying(void) {
 // Key: '-'
 // FUNCTION: CARMA2_HW 0x004e4cd0
 void C2_HOOK_FASTCALL ScreenSmaller(void) {
-
     if (gMap_view != 2) {
         gRender_indent += 1;
         if (gRender_indent > 8) {
@@ -1273,7 +1915,6 @@ void C2_HOOK_FASTCALL ScreenSmaller(void) {
 // Key: '='
 // FUNCTION: CARMA2_HW 0x004e4d00
 void C2_HOOK_FASTCALL ScreenLarger(void) {
-
     if (gMap_view != 2) {
         gRender_indent -= 1;
         if (gRender_indent < 0) {
@@ -1286,7 +1927,6 @@ void C2_HOOK_FASTCALL ScreenLarger(void) {
 // Key: 'Del'
 // FUNCTION: CARMA2_HW 0x00502e50
 void C2_HOOK_FASTCALL BuyArmour(void) {
-
     if (gINT_0068b8e4 == 0 && gINT_0068b8e8 == 0) {
         BuyPSPowerup(0);
     }
@@ -1295,7 +1935,6 @@ void C2_HOOK_FASTCALL BuyArmour(void) {
 // Key: 'End'
 // FUNCTION: CARMA2_HW 0x00502fd0
 void C2_HOOK_FASTCALL BuyPower(void) {
-
     if (gINT_0068b8e4 == 0 && gINT_0068b8e8 == 0) {
         if (gNet_mode != eNet_mode_none && gCurrent_net_game->type == eNet_game_type_foxy && gThis_net_player_index == gIt_or_fox) {
             NewTextHeadupSlot(4, 0, 1000, -4, GetMiscString(eMiscString_fox_cant_do_that));
@@ -1308,7 +1947,6 @@ void C2_HOOK_FASTCALL BuyPower(void) {
 // Key: 'PgDn'
 // FUNCTION: CARMA2_HW 0x00503030
 void C2_HOOK_FASTCALL BuyOffense(void) {
-
     if (gINT_0068b8e4 == 0 && gINT_0068b8e8 == 0) {
         BuyPSPowerup(2);
     }
@@ -1316,7 +1954,8 @@ void C2_HOOK_FASTCALL BuyOffense(void) {
 
 // Key: ' '
 // FUNCTION: CARMA2_HW 0x0040e430
-void C2_HOOK_FASTCALL ViewNetPlayer(void) {
+void C2_NAKED C2_HOOK_FASTCALL ViewNetPlayer(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     tCar_spec* car;
     tNet_game_player_info* net_player;
     tNet_message* message;
@@ -1369,12 +2008,104 @@ void C2_HOOK_FASTCALL ViewNetPlayer(void) {
         message->contents.view_car.player = gCar_to_view_id;
         NetGuaranteedSendMessageToHost(gCurrent_net_game, message, NULL);
     }
+#else
+    __asm {
+            mov eax, dword ptr [gOpponent_viewing_mode]
+            push esi
+            test eax, eax
+            push edi
+            je L0040e528
+            mov eax, dword ptr [gNet_player_to_view_index]
+            mov ecx, dword ptr [gNumber_of_net_players]
+            inc eax
+            cmp eax, ecx
+            mov dword ptr [gNet_player_to_view_index], eax
+            jl L0040e45c
+            or eax, 0xffffffff
+            mov dword ptr [gNet_player_to_view_index], eax
+    L0040e45c:
+            test eax, eax
+            jge L0040e484
+            mov eax, dword ptr [gCurrent_net_game]
+            mov edx, dword ptr [gNet_players+0x94]
+            mov esi, dword ptr [gNet_players+0xc8]
+            cmp dword ptr [eax + 0x74], 7
+            jne L0040e497
+            mov eax, dword ptr [gIt_or_fox]
+            test eax, eax
+            jl L0040e497
+            cmp eax, ecx
+            jge L0040e497
+    L0040e484:
+            lea ecx, [eax + eax*2]
+            lea ecx, [ecx + ecx*8]
+            shl ecx, 1
+            sub ecx, eax
+            mov esi, dword ptr [ecx*4 + gNet_players+0xc8]
+            jmp L0040e4b7
+    L0040e497:
+            cmp ecx, 1
+            jle L0040e4b7
+            mov eax, offset gNet_players+0x168
+            lea edi, [ecx - 1]
+    L0040e4a4:
+            mov ecx, dword ptr [eax]
+            cmp ecx, edx
+            jge L0040e4af
+            mov esi, dword ptr [eax + 0x34]
+            mov edx, ecx
+    L0040e4af:
+            add eax, 0xd4
+            dec edi
+            jne L0040e4a4
+    L0040e4b7:
+            mov ecx, esi
+            call NetPlayerFromCar
+            mov ecx, dword ptr [gNet_mode]
+            cmp ecx, 2
+            jne L0040e4f0
+            mov dword ptr [gCar_to_view], esi
+            mov word ptr [gCamera_yaw], 0
+            call InitialiseExternalCamera
+            mov ecx, dword ptr [gCar_to_view]
+            mov edx, 0xc8
+            call PositionExternalCamera
+            pop edi
+            pop esi
+            ret
+    L0040e4f0:
+            cmp ecx, 3
+            jne L0040e528
+            mov eax, dword ptr [eax + 0x24]
+            mov ecx, dword ptr [gCar_to_view_id]
+            cmp ecx, eax
+            je L0040e528
+            xor edx, edx
+            mov cl, 0x2f
+            mov dword ptr [gCar_to_view_id], eax
+            call NetBuildGuaranteedMessage
+            mov edx, dword ptr [gCar_to_view_id]
+            mov dword ptr [eax + 0x1c], edx
+            mov ecx, dword ptr [gCurrent_net_game]
+            push 0
+            mov edx, eax
+            call NetGuaranteedSendMessageToHost
+    L0040e528:
+            pop edi
+            pop esi
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // Key: '`'
 // FUNCTION: CARMA2_HW 0x004448f0
 void C2_HOOK_FASTCALL UserSendMessage(void) {
-
     if (gNet_mode != eNet_mode_none && gCurrent_net_game->options.enable_text_messages) {
         gEntering_message = 1;
     }
@@ -1474,7 +2205,6 @@ void C2_HOOK_FASTCALL CycleTargetLock(void) {
 // Key: ';'
 // FUNCTION: CARMA2_HW 0x004da9d0
 void C2_HOOK_FASTCALL ToggleInventory(void) {
-
     gInventory_cycling = !gInventory_cycling;
     if (gInventory_cycling) {
         gInventory_timeout = GetTotalTime() + 3000;
@@ -1483,7 +2213,8 @@ void C2_HOOK_FASTCALL ToggleInventory(void) {
 
 // Key: '['
 // FUNCTION: CARMA2_HW 0x004dab80
-void C2_HOOK_FASTCALL LeftInventory(void) {
+void C2_NAKED C2_HOOK_FASTCALL LeftInventory(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     int old_index;
     int new_index;
     tPowerup* powerup;
@@ -1542,11 +2273,151 @@ select_new:
         gInventory_selected = new_index;
         return;
     }
+#else
+    __asm {
+            push ebp
+            call GetTotalTime
+            add eax, 0xbb8
+            xor ebp, ebp
+            mov dword ptr [gInventory_timeout], eax
+            mov eax, dword ptr [gInventory_selected]
+            cmp eax, ebp
+            mov dword ptr [gInventory_cycling], 1
+            jl L004dacf1
+            push edi
+            push esi
+            push ebx
+            mov ebx, eax
+    L004dabae:
+            inc ebx
+            cmp ebx, 0x14
+            jl L004dabb6
+            xor ebx, ebx
+    L004dabb6:
+            cmp dword ptr [ebx*4 + gInventory], ebp
+            jl L004dace6
+            mov ecx, dword ptr [eax*4 + gInventory]
+            mov edx, dword ptr [gPowerup_array]
+            mov eax, ecx
+            shl eax, 3
+            sub eax, ecx
+            lea eax, [eax + eax*2]
+            lea ecx, [ecx + eax*2]
+            mov eax, dword ptr [edx + ecx*4 + 0x34]
+            cmp eax, ebp
+            lea esi, [edx + ecx*4]
+            jl L004dabf4
+            cmp dword ptr [gINT_006a0a6c], ebp
+            je L004dacd5
+    L004dabf4:
+            cmp dword ptr [esi + 4], ebp
+            je L004dac07
+            mov eax, dword ptr [esi + 0x40]
+            cmp eax, ebp
+            je L004dac07
+            mov edx, dword ptr [esi + 0x4c]
+            mov ecx, esi
+            call eax
+    L004dac07:
+            test byte ptr [esi + 0x38], 0x80
+            je L004dac17
+            mov edx, dword ptr [esi + 0x4c]
+            mov ecx, esi
+            call ARPowerupLose
+    L004dac17:
+            cmp dword ptr [gNet_mode], ebp
+            je L004dac65
+            xor edx, edx
+            mov cl, 0x16
+            call NetBuildGuaranteedMessage
+            mov ecx, eax
+            mov edx, esi
+            push ebp
+            mov dword ptr [ecx + 0x28], 2
+            mov eax, dword ptr [gLocal_net_ID]
+            mov dword ptr [ecx + 0x1c], eax
+            mov edi, dword ptr [gPowerup_array]
+            sub edx, edi
+            mov eax, 0x2fa0be83
+            imul edx
+            sar edx, 5
+            mov eax, edx
+            shr eax, 0x1f
+            add edx, eax
+            mov dword ptr [ecx + 0x20], edx
+            mov edx, ecx
+            mov ecx, dword ptr [gCurrent_net_game]
+            call NetGuaranteedSendMessageToAllPlayers
+    L004dac65:
+            mov edx, dword ptr [gPowerup_array]
+            mov ecx, esi
+            sub ecx, edx
+            mov eax, 0x2fa0be83
+            imul ecx
+            sar edx, 5
+            mov ecx, edx
+            shr ecx, 0x1f
+            add edx, ecx
+            mov dword ptr [edx*4 + gProgram_state+0x17bc], ebp
+            mov eax, dword ptr [esi + 0x34]
+            cmp eax, ebp
+            jne L004dacd2
+            mov edx, dword ptr [gNumber_of_icons]
+            xor eax, eax
+            cmp edx, ebp
+            jle L004dacd2
+            mov ecx, offset gPickedup_powerups
+    L004dac9f:
+            cmp esi, dword ptr [ecx]
+            je L004dacad
+            inc eax
+            add ecx, 0x14
+            cmp eax, edx
+            jl L004dac9f
+            jmp L004dacd2
+    L004dacad:
+            lea edi, [eax + eax*4]
+            shl edi, 2
+            mov dword ptr [edi + gPickedup_powerups+0x4], 3
+            mov dword ptr [edi + gPickedup_powerups+0x8], 0xffffffff
+            call GetTotalTime
+            mov dword ptr [edi + gPickedup_powerups+0xc], eax
+    L004dacd2:
+            mov dword ptr [esi + 4], ebp
+    L004dacd5:
+            mov eax, ebx
+            mov dword ptr [gINT_006a0a5c], 1
+            mov dword ptr [gInventory_selected], eax
+    L004dace6:
+            cmp ebx, eax
+            jne L004dabae
+            pop ebx
+            pop esi
+            pop edi
+    L004dacf1:
+            pop ebp
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // Key: ']'
 // FUNCTION: CARMA2_HW 0x004daa00
-void C2_HOOK_FASTCALL RightInventory(void) {
+void C2_NAKED C2_HOOK_FASTCALL RightInventory(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     int old_index;
     int new_index;
     tPowerup* powerup;
@@ -1605,12 +2476,149 @@ select_new:
         gInventory_selected = new_index;
         return;
     }
+#else
+    __asm {
+            push ebp
+            call GetTotalTime
+            add eax, 0xbb8
+            xor ebp, ebp
+            mov dword ptr [gInventory_timeout], eax
+            mov eax, dword ptr [gInventory_selected]
+            cmp eax, ebp
+            mov dword ptr [gInventory_cycling], 1
+            jl L004dab71
+            push edi
+            push esi
+            push ebx
+            mov ebx, eax
+    L004daa2e:
+            dec ebx
+            jns L004daa36
+            mov ebx, 0x13
+    L004daa36:
+            cmp dword ptr [ebx*4 + gInventory], ebp
+            jl L004dab66
+            mov ecx, dword ptr [eax*4 + gInventory]
+            mov edx, dword ptr [gPowerup_array]
+            mov eax, ecx
+            shl eax, 3
+            sub eax, ecx
+            lea eax, [eax + eax*2]
+            lea ecx, [ecx + eax*2]
+            mov eax, dword ptr [edx + ecx*4 + 0x34]
+            cmp eax, ebp
+            lea esi, [edx + ecx*4]
+            jl L004daa74
+            cmp dword ptr [gINT_006a0a6c], ebp
+            je L004dab55
+    L004daa74:
+            cmp dword ptr [esi + 4], ebp
+            je L004daa87
+            mov eax, dword ptr [esi + 0x40]
+            cmp eax, ebp
+            je L004daa87
+            mov edx, dword ptr [esi + 0x4c]
+            mov ecx, esi
+            call eax
+    L004daa87:
+            test byte ptr [esi + 0x38], 0x80
+            je L004daa97
+            mov edx, dword ptr [esi + 0x4c]
+            mov ecx, esi
+            call ARPowerupLose
+    L004daa97:
+            cmp dword ptr [gNet_mode], ebp
+            je L004daae5
+            xor edx, edx
+            mov cl, 0x16
+            call NetBuildGuaranteedMessage
+            mov ecx, eax
+            mov edx, esi
+            push ebp
+            mov dword ptr [ecx + 0x28], 2
+            mov eax, dword ptr [gLocal_net_ID]
+            mov dword ptr [ecx + 0x1c], eax
+            mov edi, dword ptr [gPowerup_array]
+            sub edx, edi
+            mov eax, 0x2fa0be83
+            imul edx
+            sar edx, 5
+            mov eax, edx
+            shr eax, 0x1f
+            add edx, eax
+            mov dword ptr [ecx + 0x20], edx
+            mov edx, ecx
+            mov ecx, dword ptr [gCurrent_net_game]
+            call NetGuaranteedSendMessageToAllPlayers
+    L004daae5:
+            mov edx, dword ptr [gPowerup_array]
+            mov ecx, esi
+            sub ecx, edx
+            mov eax, 0x2fa0be83
+            imul ecx
+            sar edx, 5
+            mov ecx, edx
+            shr ecx, 0x1f
+            add edx, ecx
+            mov dword ptr [edx*4 + gProgram_state+0x17bc], ebp
+            mov eax, dword ptr [esi + 0x34]
+            cmp eax, ebp
+            jne L004dab52
+            mov edx, dword ptr [gNumber_of_icons]
+            xor eax, eax
+            cmp edx, ebp
+            jle L004dab52
+            mov ecx, offset gPickedup_powerups
+    L004dab1f:
+            cmp esi, dword ptr [ecx]
+            je L004dab2d
+            inc eax
+            add ecx, 0x14
+            cmp eax, edx
+            jl L004dab1f
+            jmp L004dab52
+    L004dab2d:
+            lea edi, [eax + eax*4]
+            shl edi, 2
+            mov dword ptr [edi + gPickedup_powerups+0x4], 3
+            mov dword ptr [edi + gPickedup_powerups+0x8], 0xffffffff
+            call GetTotalTime
+            mov dword ptr [edi + gPickedup_powerups+0xc], eax
+    L004dab52:
+            mov dword ptr [esi + 4], ebp
+    L004dab55:
+            mov eax, ebx
+            mov dword ptr [gINT_006a0a5c], 1
+            mov dword ptr [gInventory_selected], eax
+    L004dab66:
+            cmp ebx, eax
+            jne L004daa2e
+            pop ebx
+            pop esi
+            pop edi
+    L004dab71:
+            pop ebp
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // Key: '*' (keypad)
 // FUNCTION: CARMA2_HW 0x00444ed0
 void C2_HOOK_FASTCALL ChangeCameraTypeInGame(void) {
-
     if (!gAction_replay_mode) {
 
         ChangeCameraType();
@@ -1661,7 +2669,8 @@ void C2_HOOK_FASTCALL CheckKevKeys(void) {
 }
 
 // FUNCTION: CARMA2_HW 0x00442e90
-void C2_HOOK_FASTCALL CheckSystemKeys(int pRacing) {
+void C2_NAKED C2_HOOK_FASTCALL CheckSystemKeys(int pRacing) {
+#ifndef CARPOCALYPSE2_MATCHING
     tU32 start_menu_time;
 
     start_menu_time = PDGetTotalTime();
@@ -1671,6 +2680,115 @@ void C2_HOOK_FASTCALL CheckSystemKeys(int pRacing) {
     if (pRacing & !gAction_replay_mode) {
         CheckOtherRacingKeys();
     }
+#else
+    __asm {
+            push ebx
+            push esi
+            push edi
+            mov ebx, ecx
+            call PDGetTotalTime
+            mov esi, eax
+            call CheckQuit
+            call PDGetTotalTime
+            mov ecx, eax
+            sub ecx, esi
+            call AddLostTime
+            call CheckKeysForMouldiness
+            mov esi, offset gToggle_array
+            mov edi, 0xfffffffe
+    L00442ebe:
+            mov eax, dword ptr [esi + 8]
+            test eax, eax
+            je L00442ecd
+            test ebx, ebx
+            je L00442f62
+    L00442ecd:
+            mov eax, dword ptr [gTyping]
+            test eax, eax
+            jne L00442edf
+            mov eax, dword ptr [gEntering_message]
+            test eax, eax
+            je L00442ee4
+    L00442edf:
+            cmp dword ptr [esi + 4], edi
+            je L00442f62
+    L00442ee4:
+            mov ecx, dword ptr [esi]
+            cmp ecx, edi
+            je L00442ef3
+            call KeyIsDownNoMouldiness
+            test eax, eax
+            je L00442f51
+    L00442ef3:
+            mov ecx, dword ptr [esi + 4]
+            cmp ecx, edi
+            jne L00442f41
+            mov eax, dword ptr [esi + 0xc]
+            test eax, eax
+            je L00442f41
+            xor ecx, ecx
+            call PDKeyDown
+            test eax, eax
+            jne L00442f3d
+            mov ecx, 1
+            call PDKeyDown
+            test eax, eax
+            jne L00442f3d
+            mov ecx, 2
+            call PDKeyDown
+            test eax, eax
+            jne L00442f3d
+            mov ecx, 3
+            call PDKeyDown
+            test eax, eax
+            jne L00442f3d
+            mov eax, 1
+            jmp L00442f46
+    L00442f3d:
+            xor eax, eax
+            jmp L00442f46
+    L00442f41:
+            call KeyIsDown
+    L00442f46:
+            test eax, eax
+            je L00442f51
+            mov eax, 1
+            jmp L00442f53
+    L00442f51:
+            xor eax, eax
+    L00442f53:
+            cmp dword ptr [esi + 0x10], eax
+            je L00442f62
+            test eax, eax
+            mov dword ptr [esi + 0x10], eax
+            je L00442f62
+            call dword ptr [esi + 0x14]
+    L00442f62:
+            add esi, 0x18
+            cmp esi, offset gEdit_mode_names
+            jb L00442ebe
+            test ebx, ebx
+            je L00442f83
+            mov eax, dword ptr [gPed_676914]
+            test eax, eax
+            jne L00442f83
+            call CheckOtherRacingKeys
+    L00442f83:
+            pop edi
+            pop esi
+            pop ebx
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 void C2_HOOK_FASTCALL CheckToggles(int pRacing) {
@@ -1707,7 +2825,6 @@ void C2_HOOK_FASTCALL CheckToggles(int pRacing) {
 
 // FUNCTION: CARMA2_HW 0x00443ba0
 void C2_HOOK_FASTCALL CheckHorn3D(tCar_spec* pCar) {
-
     if (pCar->keys.horn && pCar->horn_sound_tag == 0) {
         pCar->horn_sound_tag = DRS3StartSound3D(gEffects_outlet, eSoundId_Horn,
                                                 &pCar->car_master_actor->t.t.translate.t, &pCar->vel,
@@ -1777,7 +2894,6 @@ int C2_HOOK_FASTCALL CarWorldOffFallenCheckThingy(tCar_spec* pCar, int pCheck_ar
 
 // FUNCTION: CARMA2_HW 0x00442130
 int C2_HOOK_FASTCALL HasCarFallenOffWorld(tCar_spec* pCar) {
-
     return CarWorldOffFallenCheckThingy(pCar, 1);
 }
 
@@ -1986,7 +3102,6 @@ void C2_HOOK_FASTCALL SortOutRecover(tCar_spec* pCar) {
 
 // FUNCTION: CARMA2_HW 0x00442970
 void C2_HOOK_FASTCALL SetFlipUpCar(tCar_spec* pCar) {
-
     if (gNet_mode != eNet_mode_none && pCar != NULL && pCar->driver == eDriver_local_human) {
         DisableCar(pCar);
         gPalette_fade_time = GetRaceTime();
@@ -1997,7 +3112,8 @@ void C2_HOOK_FASTCALL SetFlipUpCar(tCar_spec* pCar) {
 }
 
 // FUNCTION: CARMA2_HW 0x00442f90
-void C2_HOOK_FASTCALL CheckOtherRacingKeys(void) {
+void C2_NAKED C2_HOOK_FASTCALL CheckOtherRacingKeys(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     int i;
     int new_level;
     int old_level;
@@ -2178,10 +3294,916 @@ void C2_HOOK_FASTCALL CheckOtherRacingKeys(void) {
         PipeSingleSpecial(ePipe_special_fade);
     }
     gRecover_car = 0;
+#else
+    __asm {
+            push ebp
+            mov ebp, esp
+            and esp, 0xfffffff8
+            sub esp, 0x120
+            push ebx
+            push ebp
+            push esi
+            push edi
+            xor edx, edx
+            xor ecx, ecx
+            call GetCarSpec
+            mov ecx, dword ptr [gMap_render_y]
+            mov dword ptr [esp + 0x24], eax
+            mov eax, dword ptr [gMap_render_x]
+            xor ebx, ebx
+            mov dword ptr [esp + 0x20], eax
+            mov eax, dword ptr [gMap_view]
+            cmp eax, 2
+            mov dword ptr [esp + 0x10], ecx
+            jne L0044318a
+            mov edx, dword ptr [gFrame_period]
+            mov dword ptr [esp + 0x1c], ebx
+            mov dword ptr [esp + 0x18], edx
+            fild qword ptr [esp + 0x18]
+            fmul qword ptr [gFloat_00589c40+0x48]
+            call _ftol
+            mov ecx, 8
+            mov dword ptr [esp + 0x18], eax
+            call KeyIsDown
+            mov ecx, 0x1f
+            call KeyIsDown
+            test eax, eax
+            je L00443015
+            fild dword ptr [esp + 0x18]
+            fsubr dword ptr [gMap_render_y]
+            jmp L0044302d
+    L00443015:
+            mov ecx, 0x20
+            call KeyIsDown
+            test eax, eax
+            je L00443033
+            fild dword ptr [esp + 0x18]
+            fadd dword ptr [gMap_render_y]
+    L0044302d:
+            fstp dword ptr [gMap_render_y]
+    L00443033:
+            mov ecx, 0x21
+            call KeyIsDown
+            test eax, eax
+            je L0044304d
+            fild dword ptr [esp + 0x18]
+            fsubr dword ptr [gMap_render_x]
+            jmp L00443065
+    L0044304d:
+            mov ecx, 0x22
+            call KeyIsDown
+            test eax, eax
+            je L0044306b
+            fild dword ptr [esp + 0x18]
+            fadd dword ptr [gMap_render_x]
+    L00443065:
+            fstp dword ptr [gMap_render_x]
+    L0044306b:
+            fld dword ptr [esp + 0x20]
+            fcomp dword ptr [gMap_render_x]
+            fnstsw ax
+            test ah, 0x40
+            je L00443091
+            fld dword ptr [esp + 0x10]
+            fcomp dword ptr [gMap_render_y]
+            fnstsw ax
+            test ah, 0x40
+            jne L0044318a
+    L00443091:
+            call SetIntegerMapRenders
+            mov ecx, dword ptr [gCurrent_graf_data]
+            mov edi, dword ptr [gMap_render_x_i]
+            mov ebp, dword ptr [gGraf_data_index]
+            mov eax, dword ptr [ecx + 0x3e8]
+            cmp edi, eax
+            jge L004430d8
+            cmp ebp, ebx
+            je L004430c5
+            add eax, 3
+            and al, 0xfc
+            mov dword ptr [esp + 0x10], eax
+            fild dword ptr [esp + 0x10]
+            jmp L004430d2
+    L004430c5:
+            add eax, 3
+            and al, 0xfc
+            mov dword ptr [esp + 0x10], eax
+            fild dword ptr [esp + 0x10]
+    L004430d2:
+            fstp dword ptr [gMap_render_x]
+    L004430d8:
+            mov eax, dword ptr [ecx + 0x3ec]
+            mov esi, dword ptr [gMap_render_y_i]
+            cmp esi, eax
+            jge L0044310a
+            cmp ebp, ebx
+            je L004430f9
+            inc eax
+            and al, 0xfe
+            mov dword ptr [esp + 0x10], eax
+            fild dword ptr [esp + 0x10]
+            jmp L00443104
+    L004430f9:
+            inc eax
+            and al, 0xfe
+            mov dword ptr [esp + 0x10], eax
+            fild dword ptr [esp + 0x10]
+    L00443104:
+            fstp dword ptr [gMap_render_y]
+    L0044310a:
+            mov edx, dword ptr [gBack_screen]
+            xor eax, eax
+            mov ax, word ptr [edx + 0x34]
+            sub eax, dword ptr [gMap_render_width_i]
+            sub eax, dword ptr [ecx + 0x3e8]
+            cmp edi, eax
+            jle L00443146
+            cmp ebp, ebx
+            je L00443136
+            and al, 0xfc
+            mov dword ptr [esp + 0x10], eax
+            fild dword ptr [esp + 0x10]
+            jmp L00443140
+    L00443136:
+            and al, 0xfc
+            mov dword ptr [esp + 0x10], eax
+            fild dword ptr [esp + 0x10]
+    L00443140:
+            fstp dword ptr [gMap_render_x]
+    L00443146:
+            mov edi, dword ptr [gMap_render_height_i]
+            xor eax, eax
+            mov ax, word ptr [edx + 0x36]
+            mov edx, dword ptr [ecx + 0x3ec]
+            sub eax, edi
+            sub eax, edx
+            cmp esi, eax
+            jle L00443180
+            cmp ebp, ebx
+            je L00443170
+            and al, 0xfe
+            mov dword ptr [esp + 0x10], eax
+            fild dword ptr [esp + 0x10]
+            jmp L0044317a
+    L00443170:
+            and al, 0xfe
+            mov dword ptr [esp + 0x10], eax
+            fild dword ptr [esp + 0x10]
+    L0044317a:
+            fstp dword ptr [gMap_render_y]
+    L00443180:
+            call SetIntegerMapRenders
+            call AdjustRenderScreenSize
+    L0044318a:
+            cmp dword ptr [gNet_mode], ebx
+            jne L0044320c
+            mov eax, dword ptr [gProgram_state+0x137c]
+            mov ecx, dword ptr [gProgram_state+0x196c]
+            and eax, 0x8000000
+            je L004431bf
+            cmp ecx, ebx
+            jne L004431bf
+            mov ecx, dword ptr [gEffects_outlet]
+            mov edx, 0x1459
+            call DRS3StartSound
+            mov dword ptr [gProgram_state+0x196c], eax
+            jmp L00443233
+    L004431bf:
+            cmp eax, ebx
+            jne L00443233
+            cmp ecx, ebx
+            je L00443233
+            call S3SoundStillPlaying
+            test eax, eax
+            je L004431f5
+    L004431d0:
+            mov ecx, dword ptr [gProgram_state+0x196c]
+            call DRS3StopSound
+            mov ecx, dword ptr [gEffects_outlet]
+            call DRS3StopOutletSound
+            mov ecx, dword ptr [gProgram_state+0x196c]
+            call S3SoundStillPlaying
+            test eax, eax
+            jne L004431d0
+    L004431f5:
+            mov ecx, dword ptr [gProgram_state+0x196c]
+            call S3SoundStillPlaying
+            test eax, eax
+            jne L00443233
+            mov dword ptr [gProgram_state+0x196c], ebx
+            jmp L00443233
+    L0044320c:
+            mov eax, dword ptr [gNumber_of_net_players]
+            xor esi, esi
+            cmp eax, ebx
+            jle L00443233
+            mov edi, offset gNet_players+0xc8
+    L0044321c:
+            mov ecx, dword ptr [edi]
+            call CheckHorn3D
+            mov eax, dword ptr [gNumber_of_net_players]
+            inc esi
+            add edi, 0xd4
+            cmp esi, eax
+            jl L0044321c
+    L00443233:
+            call PDGetTotalTime
+            mov ecx, dword ptr [gAbuse_text+0x2c]
+            sub eax, ecx
+            add ecx, eax
+            mov eax, dword ptr [gProgram_state+0xb0]
+            cmp eax, ebx
+            mov dword ptr [gAbuse_text+0x2c], ecx
+            je L0044325c
+            mov dword ptr [gRecover_timer], ebx
+            jmp L004432de
+    L0044325c:
+            mov eax, dword ptr [gRecover_timer]
+            cmp eax, ebx
+            je L00443292
+            cmp dword ptr [gProgram_state+0x110], ebx
+            jne L00443279
+            cmp dword ptr [gProgram_state+0x1394], ebx
+            je L00443aae
+    L00443279:
+            call IsCarInTheSea
+            test eax, eax
+            jne L00443aa9
+            mov ecx, dword ptr [gAbuse_text+0x2c]
+            mov dword ptr [gRecover_timer], ebx
+    L00443292:
+            mov esi, dword ptr [gToo_poor_for_recovery_timeout+0x4]
+            mov eax, ecx
+            sub eax, esi
+            mov esi, 0xbb8
+            cmp eax, 0xc8
+            jbe L004432c7
+            mov dword ptr [gToo_poor_for_recovery_timeout+0x4], ecx
+            mov edx, 1
+            mov ecx, offset gProgram_state+0xac
+            call CarWorldOffFallenCheckThingy
+            test eax, eax
+            je L004432c7
+            mov dword ptr [gRecover_timer], esi
+    L004432c7:
+            call IsCarInTheSea
+            test eax, eax
+            je L004432de
+            cmp dword ptr [gRecover_timer], ebx
+            jne L004432de
+            mov dword ptr [gRecover_timer], esi
+    L004432de:
+            cmp dword ptr [gPalette_fade_time], ebx
+            je L004433ba
+            call GetRaceTime
+            mov edi, eax
+            mov eax, dword ptr [gPalette_fade_time]
+            sub edi, eax
+            jns L00443306
+            mov dword ptr [gPalette_fade_time], ebx
+            mov dword ptr [gToo_poor_for_recovery_timeout+0x18], ebx
+    L00443306:
+            cmp edi, 0x1f4
+            jl L00443386
+            mov eax, dword ptr [gToo_poor_for_recovery_timeout+0x18]
+            mov ebp, dword ptr [esp + 0x24]
+            cmp eax, 0x1f4
+            jge L0044332c
+            mov ecx, ebp
+            call FlipUpCar
+            xor ecx, ecx
+            call PipeSingleSpecial
+    L0044332c:
+            lea ecx, [edi - 0x3e8]
+            mov eax, 0x10624dd3
+            shl ecx, 8
+            imul ecx
+            sar edx, 5
+            mov ecx, edx
+            shr ecx, 0x1f
+            add edx, ecx
+            mov esi, edx
+            cmp esi, 0x100
+            jl L0044336d
+            mov dword ptr [gPalette_fade_time], ebx
+            mov dword ptr [gToo_poor_for_recovery_timeout+0x18], ebx
+            mov ecx, dword ptr [ebp + 8]
+            xor edx, edx
+            mov esi, 0x100
+            call SetCollisionInfoChildsDoNothing
+            jmp L004433a3
+    L0044336d:
+            mov ecx, dword ptr [ebp + 8]
+            mov al, byte ptr [ecx + 0xec]
+            test al, al
+            jne L004433a3
+            mov edx, 1
+            call SetCollisionInfoChildsDoNothing
+            jmp L004433a3
+    L00443386:
+            mov ecx, edi
+            mov eax, 0x10624dd3
+            shl ecx, 8
+            imul ecx
+            sar edx, 5
+            mov eax, edx
+            mov esi, 0x100
+            shr eax, 0x1f
+            add edx, eax
+            sub esi, edx
+    L004433a3:
+            xor ecx, ecx
+            cmp esi, ebx
+            setle cl
+            dec ecx
+            and ecx, esi
+            call SetFadedPalette
+            mov dword ptr [gToo_poor_for_recovery_timeout+0x18], edi
+            jmp L004433d6
+    L004433ba:
+            cmp dword ptr [gNet_mode], ebx
+            je L004433d6
+            call NetGetPlayerStatus
+            cmp eax, 8
+            jne L004433d6
+            mov ecx, 6
+            call NetPlayerStatusChanged
+    L004433d6:
+            cmp dword ptr [gAuto_repair], ebx
+            jne L004433f0
+            mov ecx, 0x2d
+            call KeyIsDown
+            test eax, eax
+            je L0044373c
+    L004433f0:
+            cmp dword ptr [gRace_finished], ebx
+            jne L0044373c
+            cmp dword ptr [gProgram_state+0x280], ebx
+            jne L0044373c
+            cmp dword ptr [gWait_for_it], ebx
+            jne L0044373c
+            cmp dword ptr [gEntering_message], ebx
+            jne L0044373c
+            mov eax, dword ptr [gProgram_state+0x1980]
+            cmp eax, ebx
+            je L0044343d
+            mov cl, byte ptr [eax + 0x4b8]
+            test cl, cl
+            je L0044343d
+            mov ecx, offset gProgram_state+0xac
+            call FlipUpCar
+    L0044343d:
+            cmp dword ptr [gAuto_repair], ebx
+            jne L0044346c
+            cmp dword ptr [gRepair_last_time], ebx
+            jne L0044346c
+            call GetTotalTime
+            sub eax, dword ptr [gLast_repair_time]
+            cmp eax, 0x4b0
+            jae L0044346c
+            mov esi, 1
+            mov dword ptr [gAuto_repair], esi
+            jmp L00443471
+    L0044346c:
+            mov esi, 1
+    L00443471:
+            call GetTotalTime
+            mov dword ptr [gLast_repair_time], eax
+            mov eax, dword ptr [gToo_poor_for_recovery_timeout+0x10]
+            cmp eax, ebx
+            mov dword ptr [gRepair_last_time], esi
+            jne L00443787
+            mov edx, dword ptr [gFrame_period]
+            mov ecx, dword ptr [gProgram_state+0x12c]
+            push offset gRecovery_voucher_count+0x4
+            call RepairCar
+            mov dword ptr [gToo_poor_for_recovery_timeout+0x10], esi
+            fst dword ptr [esp + 0x18]
+            fcomp dword ptr [gFloat_00589c40+0x10]
+            fnstsw ax
+            test ah, 0x41
+            je L004434c1
+            mov dword ptr [gToo_poor_for_recovery_timeout+0x10], ebx
+    L004434c1:
+            mov esi, offset gProgram_state+0x58c
+    L004434c6:
+            fld dword ptr [gRecovery_voucher_count+0x4]
+            fcomp dword ptr [gFloat_00589c40+0x10]
+            mov edi, dword ptr [esi]
+            mov dword ptr [esp + 0x20], edi
+            fnstsw ax
+            test ah, 0x40
+            jne L00443514
+            fld dword ptr [esp + 0x18]
+            fdiv dword ptr [gRecovery_voucher_count+0x4]
+            sub esp, 8
+            fild dword ptr [esp + 0x28]
+            fild dword ptr [esp + 0x28]
+            fxch st(1)
+            fmulp st(2), st(0)
+            fstp qword ptr [esp + 0x18]
+            _emit 0xdd
+        _emit 0x1c
+        _emit 0x24
+            call floor
+            fsubr qword ptr [esp + 0x18]
+            add esp, 8
+            call _ftol
+            mov ebp, eax
+            jmp L00443516
+    L00443514:
+            xor ebp, ebp
+    L00443516:
+            test ebp, ebp
+            jge L00443522
+            mov dword ptr [esi], 0
+            jmp L00443531
+    L00443522:
+            cmp ebp, 0x64
+            jl L0044352f
+            mov dword ptr [esi], 0x63
+            jmp L00443531
+    L0044352f:
+            mov dword ptr [esi], ebp
+    L00443531:
+            mov eax, dword ptr [gNet_mode]
+            mov ecx, dword ptr [esi]
+            test eax, eax
+            mov dword ptr [esi + 8], ecx
+            je L00443551
+            mov edx, dword ptr [gCurrent_net_game]
+            mov eax, dword ptr [edx + 0x74]
+            fld dword ptr [eax*4 + gRepair_cost+0xc]
+            jmp L0044355e
+    L00443551:
+            mov ecx, dword ptr [gProgram_state+0x20]
+            fld dword ptr [ecx*4 + gRepair_cost]
+    L0044355e:
+            mov ecx, dword ptr [esi]
+            mov edx, edi
+            sub edx, ecx
+            mov dword ptr [esp + 0x28], ebx
+            mov dword ptr [esp + 0x10], edx
+            mov dword ptr [esp + 0x2c], 0
+            fild dword ptr [esp + 0x10]
+            fmul st(0), st(1)
+            fiadd dword ptr [esp + 0x28]
+            call _ftol
+            mov edx, dword ptr [gRecover_timer+0x4]
+            sub edi, ebp
+            add esi, 0x2c
+            add edx, edi
+            cmp esi, offset gProgram_state+0x79c
+            mov ebx, eax
+            fstp st(0)
+            mov dword ptr [gRecover_timer+0x4], edx
+            jl L004434c6
+            mov eax, edx
+            mov ecx, 0x64
+            cdq
+            idiv ecx
+            mov eax, 0xcccccccd
+            xor ebp, ebp
+            mov dword ptr [gRecover_timer+0x4], edx
+            mul ebx
+            mov eax, dword ptr [gToo_poor_for_recovery_timeout+0x8]
+            shr edx, 3
+            lea ebx, [edx + edx*4]
+            shl ebx, 1
+            cmp eax, ebp
+            jne L004435d4
+            cmp ebx, ebp
+            jne L004435e5
+    L004435d4:
+            fld dword ptr [esp + 0x18]
+            fcomp dword ptr [gFloat_00589c40+0x10]
+            fnstsw ax
+            test ah, 0x40
+            jne L00443602
+    L004435e5:
+            cmp dword ptr [gToo_poor_for_recovery_timeout+0xc], ebp
+            jne L00443602
+            mov ecx, dword ptr [gXXX_outlet]
+            mov edx, 0x1450
+            call DRS3StartSound
+            mov dword ptr [gToo_poor_for_recovery_timeout+0xc], eax
+    L00443602:
+            mov ecx, offset gProgram_state+0xac
+            call StopCarSmoking
+            cmp ebx, ebp
+            jne L00443627
+            fld dword ptr [esp + 0x18]
+            fcomp dword ptr [gFloat_00589c40+0x10]
+            fnstsw ax
+            test ah, 0x40
+            je L00443627
+            mov dword ptr [gAuto_repair], ebp
+    L00443627:
+            cmp dword ptr [gFree_repairs], ebp
+            jne L004436d7
+            cmp dword ptr [gProgram_state], ebx
+            jae L004436d0
+            cmp ebx, ebp
+            mov edi, ebx
+            jle L004436d0
+    L00443649:
+            cmp dword ptr [gProgram_state+0x1954], ebp
+            jne L00443661
+            cmp dword ptr [gProgram_state+0x1958], ebp
+            jne L00443661
+            cmp dword ptr [gProgram_state+0x195c], ebp
+            je L004436d0
+    L00443661:
+            mov edx, 2
+            xor ecx, ecx
+            call IRandomBetween
+            mov ecx, dword ptr [eax*4 + gProgram_state+0x1954]
+            cmp ecx, ebp
+            je L004436c8
+            mov esi, dword ptr [gCurrent_net_game]
+            dec ecx
+            mov dword ptr [eax*4 + gProgram_state+0x1954], ecx
+            mov ecx, dword ptr [gNet_mode]
+            mov edx, dword ptr [gProgram_state+0x20]
+            cmp ecx, ebp
+            je L004436a2
+            mov eax, dword ptr [esi + 0x74]
+            mov eax, dword ptr [eax*4 + gTrade_in_value_APO+0xc]
+            jmp L004436a9
+    L004436a2:
+            mov eax, dword ptr [edx*4 + gTrade_in_value_APO]
+    L004436a9:
+            sub edi, eax
+            cmp ecx, ebp
+            je L004436bb
+            mov ecx, dword ptr [esi + 0x74]
+            mov eax, dword ptr [ecx*4 + gTrade_in_value_APO+0xc]
+            jmp L004436c2
+    L004436bb:
+            mov eax, dword ptr [edx*4 + gTrade_in_value_APO]
+    L004436c2:
+            add dword ptr [gProgram_state], eax
+    L004436c8:
+            cmp edi, ebp
+            jg L00443649
+    L004436d0:
+            mov ecx, ebx
+            call SpendCredits
+    L004436d7:
+            mov eax, dword ptr [gToo_poor_for_recovery_timeout+0x8]
+            add eax, ebx
+            mov dword ptr [gToo_poor_for_recovery_timeout+0x8], eax
+            je L00443789
+            cmp dword ptr [gFree_repairs], ebp
+            je L004436fe
+            mov ecx, 4
+            call GetMiscString
+            push eax
+            jmp L00443727
+    L004436fe:
+            mov edx, dword ptr [gToo_poor_for_recovery_timeout+0x8]
+            mov ecx, 5
+            push edx
+            call GetMiscString
+            push eax
+            lea eax, [esp + 0x38]
+            push offset gNext_crush_actor_id+0x50c
+            push eax
+            call sprintf
+            add esp, 0x10
+            lea ecx, [esp + 0x30]
+            push ecx
+    L00443727:
+            push -4
+            push 0x3e8
+            xor edx, edx
+            mov ecx, 4
+            call NewTextHeadupSlot
+            jmp L00443789
+    L0044373c:
+            mov ecx, dword ptr [gToo_poor_for_recovery_timeout+0xc]
+            mov dword ptr [gRepair_last_time], ebx
+            cmp ecx, ebx
+            mov dword ptr [gToo_poor_for_recovery_timeout+0x14], ebx
+            mov dword ptr [gToo_poor_for_recovery_timeout+0x8], ebx
+            mov dword ptr [gRecover_timer+0x4], ebx
+            je L00443787
+            call S3SoundStillPlaying
+            test eax, eax
+            je L00443781
+    L00443767:
+            mov ecx, dword ptr [gToo_poor_for_recovery_timeout+0xc]
+            call DRS3StopSound
+            mov ecx, dword ptr [gToo_poor_for_recovery_timeout+0xc]
+            call S3SoundStillPlaying
+            test eax, eax
+            jne L00443767
+    L00443781:
+            mov dword ptr [gToo_poor_for_recovery_timeout+0xc], ebx
+    L00443787:
+            xor ebp, ebp
+    L00443789:
+            cmp dword ptr [gToo_poor_for_recovery_timeout+0x10], ebp
+            je L0044379f
+            mov edx, dword ptr [gProgram_state+0x1980]
+            mov eax, dword ptr [edx + 8]
+            mov dword ptr [gToo_poor_for_recovery_timeout+0x10], eax
+    L0044379f:
+            cmp dword ptr [gToo_poor_for_recovery_timeout], ebp
+            je L0044380b
+            call PDGetTotalTime
+            cmp eax, dword ptr [gToo_poor_for_recovery_timeout]
+            jae L00443805
+            mov ecx, 0x33
+            call PDKeyDown
+            test eax, eax
+            je L0044380b
+            mov ecx, 0x60
+            call GetMiscString
+            xor edx, edx
+            mov ecx, 4
+            push eax
+            push -4
+            push 0x3e8
+            call NewTextHeadupSlot
+            mov ecx, 0x1b
+            call DoFancyHeadup
+            mov ecx, offset gProgram_state+0xac
+            call KnackerThisCar
+            xor edx, edx
+            mov ecx, 3
+            push ebp
+            push ebp
+            push ebp
+            call SendGameplayToHost
+            jmp L0044380b
+    L00443805:
+            mov dword ptr [gToo_poor_for_recovery_timeout], ebp
+    L0044380b:
+            cmp dword ptr [gRecover_car], ebp
+            je L00443a95
+            cmp dword ptr [gProgram_state+0x280], ebp
+            jne L00443a95
+            mov eax, dword ptr [gNet_mode]
+            mov ecx, dword ptr [esp + 0x24]
+            cmp eax, ebp
+            mov dword ptr [gRecover_timer], ebp
+            je L0044385b
+            cmp ecx, ebp
+            je L0044385b
+            cmp dword ptr [ecx + 0xc], 8
+            jne L0044385b
+            call DisableCar
+            call GetRaceTime
+            mov ecx, 8
+            mov dword ptr [gPalette_fade_time], eax
+            call NetPlayerStatusChanged
+            jmp L00443860
+    L0044385b:
+            call FlipUpCar
+    L00443860:
+            mov esi, dword ptr [gNet_mode]
+            cmp esi, ebp
+            je L00443888
+            push offset gCamera_incident_direction+0xc
+            push -4
+            push 0x5dc
+            xor edx, edx
+            mov ecx, 4
+            call NewTextHeadupSlot
+            mov esi, dword ptr [gNet_mode]
+    L00443888:
+            cmp dword ptr [gRecovery_voucher_count], ebp
+            jne L00443a40
+            cmp esi, ebp
+            je L004438ca
+            mov ecx, offset gProgram_state+0xac
+            call NetPlayerFromCar
+            test eax, eax
+            je L004438bc
+            mov ecx, offset gProgram_state+0xac
+            call NetPlayerFromCar
+            cmp dword ptr [eax + 0x80], ebp
+            jne L00443a38
+    L004438bc:
+            mov esi, dword ptr [gNet_mode]
+            cmp esi, ebp
+            jne L004439ef
+    L004438ca:
+            mov eax, dword ptr [gProgram_state+0x280]
+            mov edi, dword ptr [gProgram_state+0x20]
+            cmp eax, ebp
+            jne L004439bc
+            fild dword ptr [gProgram_state]
+            fcomp dword ptr [edi*4 + gRecovery_cost]
+            fnstsw ax
+            test ah, 1
+            je L004439bc
+            fld dword ptr [edi*4 + gRecovery_cost]
+            call _ftol
+            mov ebx, eax
+            cmp ebx, ebp
+            jle L004439bc
+            mov edx, dword ptr [gCurrent_net_game]
+    L00443911:
+            cmp dword ptr [gProgram_state+0x1954], ebp
+            jne L0044392d
+            cmp dword ptr [gProgram_state+0x1958], ebp
+            jne L0044392d
+            cmp dword ptr [gProgram_state+0x195c], ebp
+            je L004439c2
+    L0044392d:
+            mov edx, 2
+            xor ecx, ecx
+            call IRandomBetween
+            mov ecx, dword ptr [eax*4 + gProgram_state+0x1954]
+            mov esi, dword ptr [gNet_mode]
+            mov edx, dword ptr [gCurrent_net_game]
+            cmp ecx, ebp
+            je L004439ac
+            dec ecx
+            cmp esi, ebp
+            mov dword ptr [eax*4 + gProgram_state+0x1954], ecx
+            mov edi, dword ptr [gProgram_state+0x20]
+            je L0044396e
+            mov ecx, dword ptr [edx + 0x74]
+            mov eax, dword ptr [ecx*4 + gTrade_in_value_APO+0xc]
+            jmp L00443975
+    L0044396e:
+            mov eax, dword ptr [edi*4 + gTrade_in_value_APO]
+    L00443975:
+            sub ebx, eax
+            cmp esi, ebp
+            je L00443995
+            mov eax, dword ptr [edx + 0x74]
+            mov ecx, dword ptr [gProgram_state]
+            mov eax, dword ptr [eax*4 + gTrade_in_value_APO+0xc]
+            add ecx, eax
+            mov dword ptr [gProgram_state], ecx
+            jmp L004439b2
+    L00443995:
+            mov eax, dword ptr [edi*4 + gTrade_in_value_APO]
+            mov ecx, dword ptr [gProgram_state]
+            add ecx, eax
+            mov dword ptr [gProgram_state], ecx
+            jmp L004439b2
+    L004439ac:
+            mov edi, dword ptr [gProgram_state+0x20]
+    L004439b2:
+            cmp ebx, ebp
+            jg L00443911
+            jmp L004439c2
+    L004439bc:
+            mov edx, dword ptr [gCurrent_net_game]
+    L004439c2:
+            cmp esi, ebp
+            je L004439d2
+            mov ecx, dword ptr [edx + 0x74]
+            fld dword ptr [ecx*4 + gRecovery_cost+0xc]
+            jmp L004439d9
+    L004439d2:
+            fld dword ptr [edi*4 + gRecovery_cost]
+    L004439d9:
+            call _ftol
+            mov ecx, eax
+            call SpendCredits
+            mov esi, dword ptr [gNet_mode]
+            cmp esi, ebp
+            je L00443a01
+    L004439ef:
+            mov edx, dword ptr [gCurrent_net_game]
+            mov eax, dword ptr [edx + 0x74]
+            fld dword ptr [eax*4 + gRecovery_cost+0xc]
+            jmp L00443a0e
+    L00443a01:
+            mov ecx, dword ptr [gProgram_state+0x20]
+            fld dword ptr [ecx*4 + gRecovery_cost]
+    L00443a0e:
+            call _ftol
+            push eax
+            mov ecx, 7
+            call GetMiscString
+            lea edx, [esp + 0x34]
+            push eax
+            push offset gNext_crush_actor_id+0x50c
+            push edx
+            call sprintf
+            add esp, 0x10
+            lea eax, [esp + 0x30]
+            push eax
+            jmp L00443a68
+    L00443a38:
+            cmp dword ptr [gRecovery_voucher_count], ebp
+            je L00443a46
+    L00443a40:
+            dec dword ptr [gRecovery_voucher_count]
+    L00443a46:
+            mov ecx, 0x30
+            call GetMiscString
+            lea ecx, [esp + 0x30]
+            push eax
+            push offset gCancel_recover+0xbc
+            push ecx
+            call sprintf
+            add esp, 0xc
+            lea edx, [esp + 0x30]
+            push edx
+    L00443a68:
+            push -4
+            push 0x5dc
+            xor edx, edx
+            mov ecx, 4
+            call NewTextHeadupSlot
+            call CancelPendingCunningStunt
+            xor ecx, ecx
+            call PipeSingleSpecial
+            mov dword ptr [gRecover_car], ebp
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            mov esp, ebp
+            pop ebp
+            ret
+    L00443a95:
+            pop edi
+            mov dword ptr [gHad_auto_recover], ebp
+            mov dword ptr [gRecover_car], ebp
+            pop esi
+            pop ebp
+            pop ebx
+            mov esp, ebp
+            pop ebp
+            ret
+    L00443aa9:
+            mov eax, dword ptr [gRecover_timer]
+    L00443aae:
+            sub eax, dword ptr [gFrame_period]
+            cmp eax, ebx
+            mov dword ptr [gRecover_timer], eax
+            jle L00443acb
+            call IsCarInTheSea
+            cmp eax, 2
+            jne L004432de
+    L00443acb:
+            mov eax, dword ptr [gNet_mode]
+            mov dword ptr [gRecover_timer], ebx
+            cmp eax, ebx
+            je L00443b7f
+            cmp dword ptr [gProgram_state+0x194c], ebx
+            jne L00443b47
+            call CheckRecoverCost
+            test eax, eax
+            jne L00443b3f
+            mov ecx, 0x60
+            call GetMiscString
+            xor edx, edx
+            mov ecx, 4
+            push eax
+            push -4
+            push 0x3e8
+            call NewTextHeadupSlot
+            mov ecx, 0x1b
+            call DoFancyHeadup
+            mov ecx, offset gProgram_state+0xac
+            call KnackerThisCar
+            xor edx, edx
+            mov ecx, 3
+            push ebx
+            push ebx
+            push ebx
+            call SendGameplayToHost
+            mov dword ptr [gHad_auto_recover], 1
+            jmp L004432de
+    L00443b3f:
+            cmp dword ptr [gProgram_state+0x194c], ebx
+            je L00443b5b
+    L00443b47:
+            call GetRaceTime
+            mov ecx, dword ptr [gProgram_state+0x194c]
+            add eax, 0x1f4
+            cmp ecx, eax
+            jbe L00443b8f
+    L00443b5b:
+            call GetRaceTime
+            add eax, 0x1f4
+            mov dword ptr [gCancel_recover], ebx
+            mov dword ptr [gProgram_state+0x194c], eax
+            mov dword ptr [gHad_auto_recover], 1
+            jmp L004432de
+    L00443b7f:
+            mov dword ptr [gRecover_car], 1
+            mov dword ptr [gProgram_state+0x194c], ebx
+    L00443b8f:
+            mov dword ptr [gHad_auto_recover], 1
+            jmp L004432de
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004429b0
-void C2_HOOK_FASTCALL FlipUpCar(tCar_spec* pCar_spec) {
+void C2_NAKED C2_HOOK_FASTCALL FlipUpCar(tCar_spec* pCar_spec) {
+#ifndef CARPOCALYPSE2_MATCHING
     int new_pos;
     int i;
     int j;
@@ -2258,6 +4280,366 @@ void C2_HOOK_FASTCALL FlipUpCar(tCar_spec* pCar_spec) {
         InitialiseExternalCamera();
         PositionExternalCamera(pCar_spec, 100);
     }
+#else
+    __asm {
+            sub esp, 0x38
+            push ebx
+            push ebp
+            push esi
+            mov esi, ecx
+            xor ebp, ebp
+            push edi
+            cmp esi, ebp
+            mov dword ptr [esp + 0x14], ebp
+            je L004429f2
+            cmp dword ptr [esi + 0xc], 8
+            jne L004429f2
+            cmp dword ptr [gNet_mode], ebp
+            jne L004429f2
+            call FadePaletteDown
+            mov ecx, 0x3c
+            call KeyIsDown
+            test eax, eax
+            je L004429f2
+    L004429e4:
+            mov ecx, 0x3c
+            call KeyIsDown
+            test eax, eax
+            jne L004429e4
+    L004429f2:
+            mov eax, dword ptr [esi + 0x18d4]
+            cmp eax, ebp
+            je L00442a0d
+            mov cl, byte ptr [eax + 0x4b8]
+            test cl, cl
+            je L00442a0d
+            mov ecx, esi
+            call WeldCar
+    L00442a0d:
+            mov ecx, dword ptr [esi + 8]
+            xor edx, edx
+            call SetCollisionInfoChildsDoNothing
+            mov ecx, esi
+            call EnableCar
+            mov ebx, 1
+            xor ecx, ecx
+            mov dword ptr [esp + 0x10], ebx
+            lea edx, [esi + 0x1264]
+    L00442a2f:
+            _emit 0xd9
+        _emit 0x02
+            mov eax, ecx
+            sar eax, 1
+            fcomp dword ptr [esi + eax*4 + 0x1218]
+            fnstsw ax
+            test ah, 1
+            jne L00442a49
+            mov dword ptr [esp + 0x10], ebp
+            mov ebx, ebp
+    L00442a49:
+            inc ecx
+            add edx, 4
+            cmp ecx, 4
+            jl L00442a2f
+            jmp L00442a5a
+    L00442a54:
+            mov ebx, dword ptr [esp + 0x10]
+            xor ebp, ebp
+    L00442a5a:
+            mov ecx, dword ptr [esi + 0x10]
+            fld dword ptr [ecx + 0x50]
+            fsub dword ptr [esi + 0xe5c]
+            fstp dword ptr [esp + 0x24]
+            fld dword ptr [ecx + 0x54]
+            fsub dword ptr [esi + 0xe60]
+            fld dword ptr [esp + 0x24]
+            fmul dword ptr [esp + 0x24]
+            fxch st(1)
+            fstp dword ptr [esp + 0x28]
+            fld dword ptr [ecx + 0x58]
+            fsub dword ptr [esi + 0xe64]
+            fld dword ptr [esp + 0x28]
+            fmul dword ptr [esp + 0x28]
+            fxch st(1)
+            fst dword ptr [esp + 0x2c]
+            fmul dword ptr [esp + 0x2c]
+            fxch st(1)
+            faddp st(2), st(0)
+            faddp st(1), st(0)
+            fcomp dword ptr [gFloat_00589c40+0x38]
+            fnstsw ax
+            test ah, 0x41
+            jne L00442ab5
+            mov dword ptr [esp + 0x10], ebp
+            mov ebx, ebp
+    L00442ab5:
+            lea edx, [ebx + ebx*2]
+            add ecx, 0x2c
+            shl edx, 4
+            lea edi, [edx + esi + 0xe38]
+            push edi
+            push ecx
+            call BrMatrix34Copy
+            mov eax, dword ptr [esi + 8]
+            add esp, 8
+            add eax, 0x8c
+            push edi
+            push eax
+            call BrMatrix34Copy
+            add esp, 8
+            lea eax, [esi + 0x1c]
+            push edi
+            push eax
+            call BrMatrix34Copy
+            add esp, 8
+            lea ecx, [esp + 0x20]
+            lea edx, [esp + 0x1c]
+            lea eax, [esp + 0x24]
+            push ecx
+            mov ecx, dword ptr [esi + 0x10]
+            push edx
+            push eax
+            lea edx, [esp + 0x48]
+            add ecx, 0x50
+            mov dword ptr [esp + 0x48], 0
+            mov dword ptr [esp + 0x4c], 0x3e9467e2
+            mov dword ptr [esp + 0x50], 0
+            call FindFace
+            fld dword ptr [esp + 0x1c]
+            fcomp dword ptr [gFloat_00589c40+0x14]
+            fnstsw ax
+            test ah, 0x41
+            jne L00442b9e
+            mov eax, dword ptr [esi + 0x10]
+            fld dword ptr [esp + 0x3c]
+            fadd dword ptr [eax + 0x50]
+            fstp dword ptr [eax + 0x50]
+            mov eax, dword ptr [esi + 0x10]
+            fld dword ptr [esp + 0x40]
+            fadd dword ptr [eax + 0x54]
+            fstp dword ptr [eax + 0x54]
+            mov eax, dword ptr [esi + 0x10]
+            fld dword ptr [esp + 0x44]
+            fadd dword ptr [eax + 0x58]
+            fstp dword ptr [eax + 0x58]
+            mov ecx, dword ptr [esi + 0x10]
+            mov edx, dword ptr [esi + 8]
+            mov eax, dword ptr [ecx + 0x50]
+            mov dword ptr [edx + 0xb0], eax
+            mov ecx, dword ptr [esi + 0x10]
+            mov edx, dword ptr [esi + 8]
+            mov eax, dword ptr [ecx + 0x54]
+            mov dword ptr [edx + 0xb4], eax
+            mov ecx, dword ptr [esi + 0x10]
+            mov edx, dword ptr [esi + 8]
+            mov eax, dword ptr [ecx + 0x58]
+            mov dword ptr [edx + 0xb8], eax
+            mov eax, dword ptr [esi + 0x10]
+            mov ecx, dword ptr [eax + 0x50]
+            mov dword ptr [esi + 0x40], ecx
+            mov edx, dword ptr [eax + 0x54]
+            mov dword ptr [esi + 0x44], edx
+            mov eax, dword ptr [eax + 0x58]
+            mov dword ptr [esi + 0x48], eax
+    L00442b9e:
+            mov ecx, dword ptr [esi + 0x10]
+            mov eax, dword ptr [esi + 8]
+            add ecx, 0x2c
+            lea edx, [esp + 0x24]
+            push ecx
+            add eax, 0x68
+            push edx
+            push eax
+            mov dword ptr [esp + 0x30], 0
+            mov dword ptr [esp + 0x34], 0
+            mov dword ptr [esp + 0x38], 0xb951b717
+            call BrMatrix34ApplyV
+            mov ecx, dword ptr [esi + 8]
+            add esp, 0xc
+            cmp ebx, ebp
+            mov dword ptr [ecx + 0x74], ebp
+            mov edx, dword ptr [esi + 8]
+            mov dword ptr [edx + 0x78], ebp
+            mov eax, dword ptr [esi + 8]
+            mov dword ptr [eax + 0x7c], ebp
+            mov eax, dword ptr [esi + 8]
+            fld dword ptr [eax + 0xa4]
+            fchs
+            fstp dword ptr [esi + 0x70]
+            fld dword ptr [eax + 0xa8]
+            fchs
+            fstp dword ptr [esi + 0x74]
+            fld dword ptr [eax + 0xac]
+            fchs
+            fstp dword ptr [esi + 0x78]
+            jl L00442c2c
+            inc ebx
+    L00442c0c:
+            lea eax, [esi + 0xe38]
+            mov ebp, 0x13
+    L00442c17:
+            lea edi, [eax + 0x30]
+            push edi
+            push eax
+            call BrMatrix34Copy
+            add esp, 8
+            dec ebp
+            mov eax, edi
+            jne L00442c17
+            dec ebx
+            jne L00442c0c
+    L00442c2c:
+            mov ebp, dword ptr [esi + 8]
+            mov edi, dword ptr [ebp + 0x224]
+            test edi, edi
+            je L00442c9b
+    L00442c39:
+            lea eax, [edi + 0x8c]
+            mov dword ptr [esp + 0x18], 3
+    L00442c47:
+            mov ecx, ebp
+            mov edx, 3
+            sub ecx, edi
+    L00442c50:
+            mov ebx, dword ptr [ecx + eax]
+            mov dword ptr [eax], ebx
+            add eax, 4
+            dec edx
+            jne L00442c50
+            mov ecx, dword ptr [esp + 0x18]
+            dec ecx
+            mov dword ptr [esp + 0x18], ecx
+            jne L00442c47
+            push 0
+            push 0
+            lea ecx, [edi + 0x68]
+            push 0
+            push ecx
+            call BrVector3SetFloat
+            add esp, 0x10
+            lea edx, [edi + 0x74]
+            push 0
+            push 0
+            push 0
+            push edx
+            call BrVector3SetFloat
+            add esp, 0x10
+            mov ecx, edi
+            call FlipUpCollisionInfo
+            mov edi, dword ptr [edi + 0x220]
+            test edi, edi
+            jne L00442c39
+    L00442c9b:
+            mov ecx, dword ptr [esi + 8]
+            call PositionChildren
+            lea edx, [esp + 0x30]
+            mov ecx, esi
+            xor edi, edi
+            call TestForCarInSensiblePlace
+            test eax, eax
+            jne L00442d68
+    L00442cb8:
+            cmp edi, 0xa
+            jge L00442d68
+            fld dword ptr [esp + 0x30]
+            fmul dword ptr [gFloat_00589c40+0x44]
+            mov eax, dword ptr [esi + 0x10]
+            inc edi
+            fstp dword ptr [esp + 0x30]
+            fld dword ptr [esp + 0x34]
+            fmul dword ptr [gFloat_00589c40+0x44]
+            fstp dword ptr [esp + 0x34]
+            fld dword ptr [esp + 0x38]
+            fmul dword ptr [gFloat_00589c40+0x44]
+            fstp dword ptr [esp + 0x38]
+            fld dword ptr [esp + 0x30]
+            fadd dword ptr [eax + 0x50]
+            fstp dword ptr [eax + 0x50]
+            mov eax, dword ptr [esi + 0x10]
+            fld dword ptr [esp + 0x34]
+            fadd dword ptr [eax + 0x54]
+            fstp dword ptr [eax + 0x54]
+            mov eax, dword ptr [esi + 0x10]
+            fld dword ptr [esp + 0x38]
+            fadd dword ptr [eax + 0x58]
+            fstp dword ptr [eax + 0x58]
+            mov eax, dword ptr [esi + 0x10]
+            mov ecx, dword ptr [esi + 8]
+            mov edx, dword ptr [eax + 0x50]
+            mov dword ptr [ecx + 0xb0], edx
+            mov eax, dword ptr [esi + 0x10]
+            mov ecx, dword ptr [esi + 8]
+            mov edx, dword ptr [eax + 0x54]
+            mov dword ptr [ecx + 0xb4], edx
+            mov eax, dword ptr [esi + 0x10]
+            mov ecx, dword ptr [esi + 8]
+            mov edx, dword ptr [eax + 0x58]
+            mov dword ptr [ecx + 0xb8], edx
+            mov eax, dword ptr [esi + 0x10]
+            mov ecx, dword ptr [eax + 0x50]
+            mov dword ptr [esi + 0x40], ecx
+            mov edx, dword ptr [eax + 0x54]
+            mov dword ptr [esi + 0x44], edx
+            mov eax, dword ptr [eax + 0x58]
+            lea edx, [esp + 0x30]
+            mov ecx, esi
+            mov dword ptr [esi + 0x48], eax
+            call TestForCarInSensiblePlace
+            test eax, eax
+            je L00442cb8
+    L00442d68:
+            mov ecx, dword ptr [esp + 0x14]
+            inc ecx
+            cmp edi, 0xa
+            mov dword ptr [esp + 0x14], ecx
+            jne L00442d81
+            mov eax, ecx
+            cmp eax, 3
+            jl L00442a54
+    L00442d81:
+            mov ecx, dword ptr [esi + 0x10]
+            mov edx, dword ptr [esi + 8]
+            mov eax, dword ptr [ecx + 0x50]
+            mov dword ptr [edx + 0xb0], eax
+            mov ecx, dword ptr [esi + 0x10]
+            mov edx, dword ptr [esi + 8]
+            mov eax, dword ptr [ecx + 0x54]
+            mov dword ptr [edx + 0xb4], eax
+            mov ecx, dword ptr [esi + 0x10]
+            mov edx, dword ptr [esi + 8]
+            mov eax, dword ptr [ecx + 0x58]
+            mov ecx, 4
+            mov dword ptr [edx + 0xb8], eax
+            xor edx, edx
+            mov dword ptr [esi + 0x1254], edx
+            lea eax, [esi + 0x1264]
+    L00442dc1:
+            mov edi, dword ptr [esi + 0x1220]
+            mov dword ptr [eax], edi
+            add eax, 4
+            dec ecx
+            jne L00442dc1
+            mov ecx, dword ptr [esi + 8]
+            mov dword ptr [esi + 0x1340], edx
+            mov dword ptr [esi + 0x135c], edx
+            cmp esi, edx
+            mov dword ptr [ecx + 0x25c], edx
+            je L00442dff
+            cmp dword ptr [esi + 0xc], 8
+            jne L00442dff
+            call InitialiseExternalCamera
+            mov edx, 0x64
+            mov ecx, esi
+            call PositionExternalCamera
+    L00442dff:
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x38
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00442e10
@@ -2285,12 +4667,12 @@ void C2_HOOK_FASTCALL FlipUpCollisionInfo(tPhysics_object* pCollision_info) {
 
 // FUNCTION: CARMA2_HW 0x00444710
 void C2_HOOK_FASTCALL ResetRecoveryVouchers(void) {
-
     gRecovery_voucher_count = 0;
 }
 
 // FUNCTION: CARMA2_HW 0x00444910
-void C2_HOOK_FASTCALL EnterUserMessage(void) {
+void C2_NAKED C2_HOOK_FASTCALL EnterUserMessage(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     // GLOBAL: CARMA2_HW 0x00590f64
     static int last_key = -1;
     // GLOBAL: CARMA2_HW 0x0067c49c
@@ -2404,6 +4786,347 @@ void C2_HOOK_FASTCALL EnterUserMessage(void) {
             gEntering_message = 0;
         }
     }
+#else
+    __asm {
+            mov eax, dword ptr ds:[gEntering_message]
+            push ebx
+            push ebp
+            xor ebp, ebp
+            push esi
+            cmp eax, ebp
+            push edi
+            je L00444b85
+            cmp dword ptr ds:[gNet_mode], ebp
+            je L00444b85
+            mov eax, dword ptr ds:[gCurrent_net_game]
+            cmp dword ptr [eax + 0x48], ebp
+            je L00444b85
+            call PDAnyKeyDown
+            mov esi, eax
+            mov eax, dword ptr ds:[gEntering_message]
+            mov ebx, 1
+            cmp eax, ebx
+            jne L0044496a
+            cmp esi, -1
+            jne L00444b85
+            mov dword ptr ds:[gEntering_message], 2
+            call PDClearKeyboardBuffer
+    L0044496a:
+            cmp dword ptr ds:[0x67c49c], ebp
+            je L0044498c
+            cmp esi, -1
+            jne L00444b85
+            mov dword ptr ds:[0x67c49c], ebp
+            mov dword ptr ds:[gEntering_message], ebp
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            ret
+    L0044498c:
+            cmp esi, dword ptr ds:[0x590f64]
+            jne L004449b1
+            call PDGetTotalTime
+            mov ecx, dword ptr ds:[0x67c454]
+            cmp eax, ecx
+            jbe L004449aa
+            mov eax, ecx
+            add eax, 0x64
+            jmp L004449c1
+    L004449aa:
+            mov esi, 0xfffffc18
+            jmp L004449c6
+    L004449b1:
+            mov dword ptr ds:[0x590f64], esi
+            call PDGetTotalTime
+            add eax, 0x1f4
+    L004449c1:
+            mov dword ptr ds:[0x67c454], eax
+    L004449c6:
+            lea eax, [esi + 1]
+            cmp eax, 0x47
+            ja L00444a9c
+            xor ecx, ecx
+            mov cl, byte ptr [eax + 0x444bb0]
+            jmp dword ptr [ecx*4 + 0x444b8c]
+            mov eax, dword ptr ds:[gThis_net_player_index]
+            lea ecx, [eax + eax*2]
+            lea edx, [ecx + ecx*8]
+            or ecx, 0xffffffff
+            shl edx, 1
+            sub edx, eax
+            xor eax, eax
+            lea esi, [edx*4 + 0x74bce8]
+            mov edi, esi
+            repne scasb
+            not ecx
+            dec ecx
+            mov ebp, ecx
+            cmp ebp, 0x12
+            jg L00444b85
+            mov edx, 0x67c412
+            mov edi, esi
+            or ecx, 0xffffffff
+            sub edx, ebp
+            repne scasb
+            not ecx
+            sub edi, ecx
+            mov eax, ecx
+            mov esi, edi
+            mov edi, edx
+            shr ecx, 2
+            rep movsd
+            mov ecx, eax
+            and ecx, 3
+            rep movsb
+            mov byte ptr [ebp + edx], 0x3a
+            mov byte ptr [ebp + edx + 1], 0x20
+            mov ecx, edx
+            mov byte ptr ds:[0x67c453], 0
+            call NetSendHeadupToAllPlayers
+            mov ecx, 0xe2
+            mov byte ptr ds:[0x67c414], 0
+            call GetMiscString
+            xor edx, edx
+            mov ecx, 4
+            push eax
+            push -4
+            push 0x3e8
+            call NewTextHeadupSlot
+            mov dword ptr ds:[0x67c49c], ebx
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            ret
+            mov edi, 0x67c414
+            or ecx, 0xffffffff
+            xor eax, eax
+            repne scasb
+            not ecx
+            dec ecx
+            cmp ecx, ebp
+            jle L00444b85
+            mov byte ptr [ecx + 0x67c413], al
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            ret
+    L00444a9c:
+            cmp esi, dword ptr ds:[0x74b6fc]
+            jne L00444aaf
+            mov dword ptr ds:[0x67c49c], ebx
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            ret
+    L00444aaf:
+            cmp esi, 0x4b
+            jl L00444b0f
+            cmp esi, 0x69
+            jg L00444b0f
+            cmp esi, 0x51
+            jl L00444b04
+            cmp esi, 0x5a
+            jg L00444b04
+            cmp esi, 0x51
+            mov eax, 9
+            je L00444ad0
+            lea eax, [esi - 0x52]
+    L00444ad0:
+            mov edi, dword ptr [eax*4 + gAbuse_text]
+            cmp edi, ebp
+            je L00444b85
+            or ecx, 0xffffffff
+            xor eax, eax
+            repne scasb
+            not ecx
+            sub edi, ecx
+            mov edx, ecx
+            mov esi, edi
+            mov edi, 0x67c414
+            shr ecx, 2
+            rep movsd
+            mov ecx, edx
+            and ecx, 3
+            rep movsb
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            ret
+    L00444b04:
+            mov dword ptr ds:[gEntering_message], ebp
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            ret
+    L00444b0f:
+            call PDGetKeyboardCharacter
+            cmp eax, ebp
+            je L00444b85
+    L00444b18:
+            mov cl, al
+            call PDConvertToASCIILessThan128
+            mov dl, al
+            mov edi, 0x67c414
+            or ecx, 0xffffffff
+            xor eax, eax
+            and edx, 0xff
+            repne scasb
+            not ecx
+            dec ecx
+            cmp ecx, 0x3f
+            jge L00444b7c
+            mov byte ptr [ecx + 0x67c414], dl
+            mov eax, dword ptr ds:[0x767274]
+            and edx, 0xff
+            cmp edx, eax
+            jl L00444b5c
+            mov esi, dword ptr ds:[0x767278]
+            add eax, esi
+            cmp edx, eax
+            jl L00444b63
+    L00444b5c:
+            mov byte ptr [ecx + 0x67c414], 0
+    L00444b63:
+            push 0x67c414
+            push 0x5910ac
+            mov byte ptr [ecx + 0x67c415], 0
+            call dr_dprintf
+            add esp, 8
+    L00444b7c:
+            call PDGetKeyboardCharacter
+            cmp eax, ebp
+            jne L00444b18
+    L00444b85:
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            ret
+            mov edi, edi
+            _emit 0x85
+            _emit 0x4b
+            _emit 0x44
+            _emit 0x00
+            _emit 0xa4
+            _emit 0x4a
+            _emit 0x44
+            _emit 0x00
+            _emit 0x7a
+            _emit 0x4a
+            _emit 0x44
+            _emit 0x00
+            _emit 0xe1
+            _emit 0x49
+            _emit 0x44
+            _emit 0x00
+            _emit 0xa4
+            _emit 0x4a
+            _emit 0x44
+            _emit 0x00
+            _emit 0xa4
+            _emit 0x4a
+            _emit 0x44
+            _emit 0x00
+            _emit 0x7a
+            _emit 0x4a
+            _emit 0x44
+            _emit 0x00
+            _emit 0x7a
+            _emit 0x4a
+            _emit 0x44
+            _emit 0x00
+            _emit 0x9c
+            _emit 0x4a
+            _emit 0x44
+            _emit 0x00
+            _emit 0x00
+            _emit 0x00
+            _emit 0x08
+            _emit 0x01
+            _emit 0x01
+            _emit 0x08
+            _emit 0x08
+            _emit 0x08
+            _emit 0x08
+            _emit 0x08
+            _emit 0x08
+            _emit 0x08
+            _emit 0x08
+            _emit 0x08
+            _emit 0x08
+            _emit 0x08
+            _emit 0x08
+            _emit 0x08
+            _emit 0x08
+            _emit 0x08
+            _emit 0x08
+            _emit 0x08
+            _emit 0x08
+            _emit 0x08
+            _emit 0x08
+            _emit 0x08
+            _emit 0x08
+            _emit 0x08
+            _emit 0x08
+            _emit 0x08
+            _emit 0x08
+            _emit 0x08
+            _emit 0x08
+            _emit 0x08
+            _emit 0x08
+            _emit 0x08
+            _emit 0x08
+            _emit 0x08
+            _emit 0x08
+            _emit 0x08
+            _emit 0x08
+            _emit 0x08
+            _emit 0x08
+            _emit 0x08
+            _emit 0x08
+            _emit 0x08
+            _emit 0x08
+            _emit 0x08
+            _emit 0x08
+            _emit 0x08
+            _emit 0x08
+            _emit 0x02
+            _emit 0x03
+            _emit 0x03
+            _emit 0x04
+            _emit 0x08
+            _emit 0x08
+            _emit 0x08
+            _emit 0x08
+            _emit 0x08
+            _emit 0x08
+            _emit 0x08
+            _emit 0x08
+            _emit 0x08
+            _emit 0x05
+            _emit 0x08
+            _emit 0x06
+            _emit 0x08
+            _emit 0x08
+            _emit 0x08
+            _emit 0x08
+            _emit 0x07
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00444270
@@ -2452,7 +5175,8 @@ void C2_HOOK_FASTCALL ExplodeCar(tCar_spec* pCar) {
 }
 
 // FUNCTION: CARMA2_HW 0x00442500
-void C2_HOOK_FASTCALL CheckRecoveryOfCars(tU32 pEndFrameTime) {
+void C2_NAKED C2_HOOK_FASTCALL CheckRecoveryOfCars(tU32 pEndFrameTime) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     if (gProgram_state.current_car.time_to_recover != 0) {
         if (gProgram_state.current_car.knackered) {
@@ -2487,6 +5211,180 @@ void C2_HOOK_FASTCALL CheckRecoveryOfCars(tU32 pEndFrameTime) {
             }
         }
     }
+#else
+    __asm {
+            sub esp, 0x128
+            push ebx
+            push ebp
+            mov ebp, ecx
+            xor ebx, ebx
+            mov ecx, dword ptr [gProgram_state+0x194c]
+            push esi
+            cmp ecx, ebx
+            push edi
+            je L004425c1
+            cmp dword ptr [gProgram_state+0x280], ebx
+            jne L004425bb
+            sub ecx, ebp
+            mov eax, 0x10624dd3
+            add ecx, 0x3e8
+            mul ecx
+            mov esi, edx
+            mov ecx, 0x63
+            shr esi, 6
+            cmp esi, 1
+            jg L0044254b
+            mov ecx, 0x62
+    L0044254b:
+            call GetMiscString
+            mov ecx, 0x61
+            push eax
+            push esi
+            call GetMiscString
+            push eax
+            lea eax, [esp + 0x44]
+            push offset gCancel_recover+0xb0
+            push eax
+            call sprintf
+            mov eax, dword ptr [gToo_late]
+            add esp, 0x14
+            cmp eax, ebx
+            jne L00442599
+            cmp dword ptr [gCancel_recover], ebx
+            je L00442599
+            lea ecx, [esp + 0x38]
+            push ebx
+            push ecx
+            push -4
+            push 0x7d0
+            xor edx, edx
+            mov ecx, 4
+            call NewTextHeadupSlot2
+    L00442599:
+            cmp dword ptr [gProgram_state+0x194c], ebp
+            ja L004425c1
+            cmp dword ptr [gNet_mode], ebx
+            je L004425b1
+            cmp dword ptr [gPalette_fade_time], ebx
+            jne L004425bb
+    L004425b1:
+            mov dword ptr [gRecover_car], 1
+    L004425bb:
+            mov dword ptr [gProgram_state+0x194c], ebx
+    L004425c1:
+            cmp dword ptr [gNet_mode], ebx
+            je L00442742
+            mov eax, dword ptr [gNumber_of_net_players]
+            xor ecx, ecx
+            cmp eax, ebx
+            mov dword ptr [esp + 0x10], ecx
+            jle L00442742
+            mov edi, offset gNet_players+0xc8
+    L004425e5:
+            cmp ecx, dword ptr [gThis_net_player_index]
+            je L0044272a
+            mov edx, dword ptr [edi]
+            mov eax, dword ptr [edx + 0x18a0]
+            cmp eax, ebx
+            je L0044272a
+            cmp eax, ebp
+            ja L0044272a
+            mov dword ptr [edi - 0x80], 8
+            mov eax, dword ptr [edi]
+            mov ecx, dword ptr [eax + 8]
+            mov byte ptr [ecx + 0x261], 0xff
+            mov edx, dword ptr [edi]
+            mov eax, dword ptr [edx + 8]
+            mov dword ptr [eax + 0x268], ebp
+            mov esi, dword ptr [edi]
+            mov ecx, dword ptr [esi + 8]
+            mov dword ptr [ecx + 0x49c], ebx
+            mov eax, dword ptr [esi + 8]
+            mov edx, dword ptr [eax + 0x14]
+            mov dword ptr [esp + 0x14], edx
+            mov ecx, dword ptr [eax + 0x18]
+            mov dword ptr [esp + 0x18], ecx
+            mov edx, dword ptr [eax + 0x1c]
+            mov dword ptr [esp + 0x1c], edx
+            lea ecx, [esp + 0x14]
+            fld dword ptr [eax + 0x68]
+            fmul qword ptr [gFloat_00589c40+0x20]
+            fstp dword ptr [esp + 0x20]
+            fld dword ptr [eax + 0x6c]
+            fmul qword ptr [gFloat_00589c40+0x20]
+            fstp dword ptr [esp + 0x24]
+            fld dword ptr [eax + 0x70]
+            fmul qword ptr [gFloat_00589c40+0x20]
+            fstp dword ptr [esp + 0x28]
+            fld dword ptr [eax + 0x44]
+            fld dword ptr [eax + 0x50]
+            fsub dword ptr [eax + 0x44]
+            mov eax, dword ptr [esi + 0x10]
+            lea edx, [esp + 0x2c]
+            add eax, 0x2c
+            fmul qword ptr [gFloat_00589c40+0x28]
+            push eax
+            push ecx
+            push edx
+            fsubp st(1), st(0)
+            fstp dword ptr [esp + 0x28]
+            call BrMatrix34ApplyP
+            add esp, 0xc
+            lea edx, [esp + 0x20]
+            lea ecx, [esp + 0x2c]
+            push 7
+            push 0x3f800000
+            push 0x3f800000
+            call CreatePuffOfSmoke
+            mov eax, dword ptr [esi + 8]
+            lea ecx, [esp + 0x14]
+            lea edx, [esp + 0x2c]
+            fld dword ptr [eax + 0x44]
+            fld dword ptr [eax + 0x50]
+            fsub dword ptr [eax + 0x44]
+            mov eax, dword ptr [esi + 0x10]
+            add eax, 0x2c
+            fmul qword ptr [gFloat_00589c40+0x30]
+            push eax
+            push ecx
+            push edx
+            fsubp st(1), st(0)
+            fstp dword ptr [esp + 0x28]
+            call BrMatrix34ApplyP
+            add esp, 0xc
+            lea edx, [esp + 0x20]
+            lea ecx, [esp + 0x2c]
+            push 7
+            push 0x3f800000
+            push 0x3f800000
+            call CreatePuffOfSmoke
+            mov eax, dword ptr [esi + 0x18d4]
+            cmp byte ptr [eax + 0x4b8], bl
+            je L00442717
+            mov ecx, esi
+            call WeldCar
+    L00442717:
+            mov ecx, esi
+            call DisableCar
+            mov ecx, dword ptr [edi]
+            mov dword ptr [ecx + 0x18a0], ebx
+            mov ecx, dword ptr [esp + 0x10]
+    L0044272a:
+            mov eax, dword ptr [gNumber_of_net_players]
+            inc ecx
+            add edi, 0xd4
+            cmp ecx, eax
+            mov dword ptr [esp + 0x10], ecx
+            jl L004425e5
+    L00442742:
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x128
+            ret
+    }
+#endif
 }
 
 C2_MATCHING_INLINE void C2_HOOK_FASTCALL BrakeInstantly(void) {
@@ -2508,7 +5406,8 @@ C2_MATCHING_INLINE void C2_HOOK_FASTCALL BrakeInstantly(void) {
 }
 
 // FUNCTION: CARMA2_HW 0x00443e80
-void C2_HOOK_FASTCALL PollCarControls(tU32 pTime_difference) {
+void C2_NAKED C2_HOOK_FASTCALL PollCarControls(tU32 pTime_difference) {
+#ifndef CARPOCALYPSE2_MATCHING
     tCar_controls keys;
     tJoystick joystick;
     tCar_spec* c;
@@ -2642,23 +5541,529 @@ void C2_HOOK_FASTCALL PollCarControls(tU32 pTime_difference) {
     }
     c->keys = keys;
     c->joystick = joystick;
+#else
+    __asm {
+            sub esp, 0x14
+            push ebx
+            push ebp
+            push esi
+            push edi
+            or edi, 0xffffffff
+            xor esi, esi
+            mov ebx, edi
+            mov ebp, edi
+            mov dword ptr [esp + 0x1c], edi
+            mov dword ptr [esp + 0x20], edi
+            call CheckKeysForMouldiness
+            mov eax, dword ptr [gEntering_message]
+            test eax, eax
+            je L00443eb1
+            mov dword ptr [gProgram_state+0x137c], esi
+            jmp L00444244
+    L00443eb1:
+            mov ecx, dword ptr [gKey_mapping+0xbc]
+            mov eax, 0x8f
+            cmp ecx, eax
+            jge L00443eef
+            cmp dword ptr [gKey_mapping+0xc0], eax
+            jge L00443eef
+            mov ecx, 0x2f
+            call KeyIsDownNoMouldiness
+            test eax, eax
+            je L00443edb
+            mov esi, 0x10000
+    L00443edb:
+            mov ecx, 0x30
+            call KeyIsDownNoMouldiness
+            test eax, eax
+            je L00443eef
+            or esi, 0x20000
+    L00443eef:
+            test esi, 0x30000
+            jne L00443f3b
+            call PDIsJoystickDPadEnabled
+            test eax, eax
+            je L00443f25
+            mov ecx, dword ptr [gJoy_array]
+            mov eax, 0xa
+            cmp ecx, eax
+            jle L00443f15
+            or esi, 0x10000
+    L00443f15:
+            cmp dword ptr [gJoy_array+0x4], eax
+            jle L00443f3b
+            or esi, 0x20000
+            jmp L00443f3b
+    L00443f25:
+            mov ebx, dword ptr [gJoy_array]
+            mov ebp, dword ptr [gJoy_array+0x4]
+            test ebx, ebx
+            jge L00443f3b
+            test ebp, ebp
+            jge L00443f3b
+            xor ebx, ebx
+    L00443f3b:
+            mov ecx, 0xd
+            call KeyIsDownNoMouldiness
+            test eax, eax
+            je L00443f4f
+            or esi, 0x800000
+    L00443f4f:
+            mov ecx, 0x36
+            call KeyIsDownNoMouldiness
+            test eax, eax
+            mov eax, dword ptr [gRace_finished]
+            jne L00443f6a
+            test eax, eax
+            je L00444047
+    L00443f6a:
+            mov ecx, dword ptr [gInstant_handbrake]
+            test ecx, ecx
+            je L00444041
+            test eax, eax
+            jne L00444041
+            mov ecx, dword ptr [gProgram_state+0xb4]
+            mov dword ptr [gProgram_state+0x13ec], eax
+            mov eax, dword ptr [gProgram_state+0x1394]
+            fld dword ptr [ecx + 0x68]
+            fld dword ptr [ecx + 0x6c]
+            fld dword ptr [ecx + 0x70]
+            fxch st(2)
+            fst dword ptr [esp + 0x10]
+            fld st(1)
+            fxch st(1)
+            fmul dword ptr [esp + 0x10]
+            fxch st(1)
+            fmul st(0), st(2)
+            fxch st(3)
+            fst dword ptr [esp + 0x10]
+            fmul dword ptr [esp + 0x10]
+            fxch st(3)
+            faddp st(1), st(0)
+            fxch st(2)
+            faddp st(2), st(0)
+            fxch st(1)
+            test eax, eax
+            fstp dword ptr [esp + 0x10]
+            fstp st(0)
+            je L00444007
+            fld dword ptr [esp + 0x10]
+            fcomp dword ptr [gFloat_00589c40+0x50]
+            fnstsw ax
+            test ah, 0x41
+            jne L00444007
+            mov ecx, 0x29
+            call PratcamEvent
+            xor edi, edi
+    L00443fe6:
+            mov ecx, dword ptr [gXXX_outlet]
+            lea edx, [edi + 0x2328]
+            call DRS3StartSound
+            inc edi
+            cmp edi, 5
+            jl L00443fe6
+            mov ecx, dword ptr [gProgram_state+0xb4]
+            mov edi, dword ptr [esp + 0x1c]
+    L00444007:
+            fld dword ptr [esp + 0x10]
+            fcomp dword ptr [gFloat_00589c40+0x54]
+            fnstsw ax
+            test ah, 0x41
+            jne L00444028
+            mov ecx, offset gCancel_recover+0xc0
+            call PDPlayFFBEffect
+            mov ecx, dword ptr [gProgram_state+0xb4]
+    L00444028:
+            xor eax, eax
+            mov dword ptr [ecx + 0x68], eax
+            mov ecx, dword ptr [gProgram_state+0xb4]
+            mov dword ptr [ecx + 0x6c], eax
+            mov edx, dword ptr [gProgram_state+0xb4]
+            mov dword ptr [edx + 0x70], eax
+            jmp L00444047
+    L00444041:
+            or esi, 0x100000
+    L00444047:
+            mov ecx, 0x31
+            call KeyIsDownNoMouldiness
+            test eax, eax
+            je L00444076
+            mov eax, dword ptr [gRace_finished]
+            test eax, eax
+            jne L00444076
+            mov eax, dword ptr [gProgram_state+0x280]
+            test eax, eax
+            jne L00444076
+            mov eax, dword ptr [gWait_for_it]
+            test eax, eax
+            jne L00444076
+            or esi, 0x40000
+    L00444076:
+            test esi, 0x40000
+            jne L004440ac
+            call PDIsJoystickDPadEnabled
+            test eax, eax
+            je L00444098
+            cmp dword ptr [gJoy_array+0x8], 0xa
+            jle L004440ac
+            or esi, 0x40000
+            jmp L004440ac
+    L00444098:
+            call HasCurrentJoystick
+            test eax, eax
+            je L004440ac
+            mov eax, dword ptr [gJoy_array+0x8]
+            mov dword ptr [esp + 0x1c], eax
+            mov edi, eax
+    L004440ac:
+            mov ecx, 0x32
+            call KeyIsDownNoMouldiness
+            test eax, eax
+            je L004440db
+            mov eax, dword ptr [gRace_finished]
+            test eax, eax
+            jne L004440db
+            mov eax, dword ptr [gProgram_state+0x280]
+            test eax, eax
+            jne L004440db
+            mov eax, dword ptr [gWait_for_it]
+            test eax, eax
+            jne L004440db
+            or esi, 0x80000
+    L004440db:
+            test esi, 0x80000
+            jne L00444110
+            call PDIsJoystickDPadEnabled
+            test eax, eax
+            je L004440fd
+            cmp dword ptr [gJoy_array+0xc], 0xa
+            jle L00444110
+            or esi, 0x80000
+            jmp L00444110
+    L004440fd:
+            call HasCurrentJoystick
+            test eax, eax
+            je L00444110
+            mov ecx, dword ptr [gJoy_array+0xc]
+            mov dword ptr [esp + 0x20], ecx
+    L00444110:
+            mov eax, dword ptr [gCredit_multiplier]
+            test eax, eax
+            je L0044417b
+            mov eax, dword ptr [esp + 0x20]
+            mov ecx, esi
+            mov dword ptr [esp + 0x1c], eax
+            mov eax, ebx
+            mov ebx, ebp
+            mov ebp, eax
+            mov eax, esi
+            and esi, 0x40000
+            shr eax, 0x13
+            and eax, 1
+            and ecx, 0xfff7ffff
+            shl esi, 1
+            or ecx, esi
+            and eax, 1
+            and ecx, 0xfffbffff
+            mov dword ptr [esp + 0x20], edi
+            shl eax, 0x12
+            or ecx, eax
+            mov edi, dword ptr [esp + 0x1c]
+            mov eax, ecx
+            mov edx, ecx
+            shr eax, 0x10
+            and eax, 1
+            and edx, 0xfffcffff
+            and eax, 1
+            shl eax, 0x11
+            shr ecx, 1
+            or edx, eax
+            and ecx, 0x10000
+            or edx, ecx
+            mov esi, edx
+    L0044417b:
+            mov ecx, 0x38
+            call KeyIsDownNoMouldiness
+            test eax, eax
+            je L004441f0
+            mov eax, dword ptr [gProgram_state+0x1408]
+            test eax, eax
+            jl L004441f0
+            mov ecx, dword ptr [gProgram_state+0x137c]
+            or esi, 0x4000000
+            test esi, 0x40000
+            mov dword ptr [gProgram_state+0x140c], 1
+            jne L004441d0
+            cmp edi, 0x7d00
+            jg L004441d0
+            cmp eax, 1
+            jle L004441da
+            mov edx, ecx
+            not edx
+            shr edx, 0x1a
+            and edx, 1
+            sub eax, edx
+            mov dword ptr [gProgram_state+0x1408], eax
+            jmp L004441da
+    L004441d0:
+            mov dword ptr [gProgram_state+0x1370], 0
+    L004441da:
+            mov eax, dword ptr [gCountdown]
+            test eax, eax
+            je L004441f0
+            test ecx, 0x4000000
+            jne L004441f0
+            call JumpTheStart
+    L004441f0:
+            mov eax, dword ptr [gCar_flying]
+            test eax, eax
+            je L00444221
+            mov ecx, 0xe
+            call KeyIsDownNoMouldiness
+            test eax, eax
+            je L0044420d
+            or esi, 0x200000
+    L0044420d:
+            mov ecx, 0xc
+            call KeyIsDownNoMouldiness
+            test eax, eax
+            je L00444221
+            or esi, 0x400000
+    L00444221:
+            mov ecx, 0x3b
+            call KeyIsDownNoMouldiness
+            test eax, eax
+            je L0044423e
+            mov eax, dword ptr [gEntering_message]
+            test eax, eax
+            jne L0044423e
+            or esi, 0x8000000
+    L0044423e:
+            mov dword ptr [gProgram_state+0x137c], esi
+    L00444244:
+            mov eax, dword ptr [esp + 0x20]
+            mov dword ptr [gProgram_state+0x1388], edi
+            pop edi
+            mov dword ptr [gProgram_state+0x1384], ebp
+            pop esi
+            mov dword ptr [gProgram_state+0x1380], ebx
+            pop ebp
+            mov dword ptr [gProgram_state+0x138c], eax
+            pop ebx
+            add esp, 0x14
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0045a670
-void C2_HOOK_FASTCALL FUN_0045a670(void) {
+void C2_NAKED C2_HOOK_FASTCALL FUN_0045a670(void) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     NOT_IMPLEMENTED();
+#else
+    __asm {
+            mov eax, dword ptr [gINT_0068b8e4]
+            sub esp, 0x118
+            push ebx
+            xor ebx, ebx
+            push esi
+            cmp eax, ebx
+            push edi
+            je L0045a6bc
+            mov eax, dword ptr [gAcc_poly_actor]
+            mov dword ptr [gINT_0068b8e4], ebx
+            cmp eax, ebx
+            je L0045a7e1
+            cmp dword ptr [gRender_acc_poly_actor], ebx
+            je L0045a7e1
+            push eax
+            call BrActorRemove
+            add esp, 4
+            mov dword ptr [gRender_acc_poly_actor], ebx
+            pop edi
+            pop esi
+            pop ebx
+            add esp, 0x118
+            ret
+    L0045a6bc:
+            mov ecx, dword ptr [gProgram_state+0x64]
+            push 0x15e
+            mov edx, 0xa
+            mov dword ptr [gINT_0068b8e4], 1
+            call FUN_0044a8a0
+            mov edi, offset gRace_head_ups
+            mov esi, 0x78
+    L0045a6e5:
+            mov ecx, dword ptr [edi]
+            push esi
+            mov edx, 0xa
+            call FUN_0044a8a0
+            mov ecx, dword ptr [edi]
+            mov edx, 0xfffffffe
+            call ChangeHeadupFont
+            add esi, 0xa
+            add edi, 4
+            cmp esi, 0x154
+            jl L0045a6e5
+            push 0x43600000
+            push 0x43020000
+            push 0x42ec0000
+            push 0x41000000
+            call CreateAccentPolyActor
+            cmp dword ptr [gHeadup_text_buffer_0079d860+0x8], ebx
+            jne L0045a7e1
+            push offset gDisable_sound+0x8
+            mov edx, offset gRace_path
+            lea ecx, [esp + 0x28]
+            call PathCat
+            cmp dword ptr [gHeadup_text_buffer_0079d860+0x14], 5
+            jge L0045a757
+            mov dword ptr [gHeadup_text_buffer_0079d860+0x14], 0xa
+    L0045a757:
+            mov edi, offset gDefault_drone_direction+0x6dc
+            or ecx, 0xffffffff
+            xor eax, eax
+            lea edx, [esp + 0xc]
+            repne scasb
+            not ecx
+            sub edi, ecx
+            mov dword ptr [gHeadup_text_buffer_0079d860], ebx
+            mov eax, ecx
+            mov esi, edi
+            mov edi, edx
+            mov dword ptr [gHeadup_text_buffer_0079d860+0x8], ebx
+            shr ecx, 2
+            rep movsd
+            mov ecx, eax
+            mov dword ptr [gHeadup_text_buffer_0079d860+0xc], ebx
+            and ecx, 3
+            mov dword ptr [gHeadup_text_buffer_0079d860+0x18], ebx
+            rep movsb
+            lea ecx, [esp + 0xc]
+            mov dword ptr [gHeadup_text_buffer_0079d860+0x4], ebx
+            mov dword ptr [gHeadup_text_buffer_0079d860+0x10], 0x16
+            mov dword ptr [esp + 0x18], 0x79d860
+            call DRstrlwr
+            lea ecx, [esp + 0xc]
+            lea edx, [esp + 0x18]
+            mov dword ptr [esp + 0x1c], ecx
+            push edx
+            mov edx, offset FUN_0045a7f0
+            lea ecx, [esp + 0x28]
+            call PDEnumPath
+            mov eax, dword ptr [gHeadup_text_buffer_0079d860]
+            mov dword ptr [gHeadup_text_buffer_0079d860+0xc], ebx
+            mov dword ptr [gHeadup_text_buffer_0079d860+0x18], eax
+    L0045a7e1:
+            pop edi
+            pop esi
+            pop ebx
+            add esp, 0x118
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0045acf0
-void C2_HOOK_FASTCALL FUN_0045acf0(void) {
+void C2_NAKED C2_HOOK_FASTCALL FUN_0045acf0(void) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     NOT_IMPLEMENTED();
+#else
+    __asm {
+            mov eax, dword ptr [gINT_0068b8e4]
+            push ebx
+            xor ebx, ebx
+            push esi
+            cmp eax, ebx
+            push edi
+            je L0045ad30
+            mov eax, dword ptr [gAcc_poly_actor]
+            mov dword ptr [gINT_0068b8e4], ebx
+            cmp eax, ebx
+            je L0045ae12
+            cmp dword ptr [gRender_acc_poly_actor], ebx
+            je L0045ae12
+            push eax
+            call BrActorRemove
+            add esp, 4
+            mov dword ptr [gRender_acc_poly_actor], ebx
+            pop edi
+            pop esi
+            pop ebx
+            ret
+    L0045ad30:
+            mov ecx, dword ptr [gProgram_state+0x64]
+            push 0x15e
+            mov edx, 0xa
+            mov dword ptr [gINT_0068b8e4], 2
+            call FUN_0044a8a0
+            mov edi, offset gRace_head_ups
+            mov esi, 0x78
+    L0045ad59:
+            mov ecx, dword ptr [edi]
+            push esi
+            mov edx, 0xa
+            call FUN_0044a8a0
+            mov ecx, dword ptr [edi]
+            mov edx, 0xfffffffe
+            call ChangeHeadupFont
+            add esi, 0xa
+            add edi, 4
+            cmp esi, 0x154
+            jl L0045ad59
+            push 0x43600000
+            push 0x43020000
+            push 0x42ec0000
+            push 0x41000000
+            call CreateAccentPolyActor
+            cmp dword ptr [gHeadup_text_buffer_0079d880+0x8], ebx
+            jne L0045ae12
+            cmp dword ptr [gHeadup_text_buffer_0079d880+0x14], 5
+            jge L0045adb4
+            mov dword ptr [gHeadup_text_buffer_0079d880+0x14], 0xa
+    L0045adb4:
+            mov dword ptr [gHeadup_text_buffer_0079d880], ebx
+            mov dword ptr [gHeadup_text_buffer_0079d880+0x8], ebx
+            mov dword ptr [gHeadup_text_buffer_0079d880+0xc], ebx
+            mov dword ptr [gHeadup_text_buffer_0079d880+0x18], ebx
+            mov dword ptr [gHeadup_text_buffer_0079d880+0x4], ebx
+            mov dword ptr [gHeadup_text_buffer_0079d880+0x10], 0x16
+            xor edi, edi
+    L0045adde:
+            push 0x3c
+            call malloc
+            mov esi, eax
+            add esp, 4
+            cmp esi, ebx
+            je L0045ae0c
+            push edi
+            push offset gUNK_00596310+0x128
+            push esi
+            mov dword ptr [esi], ebx
+            call sprintf
+            add esp, 0xc
+            mov edx, esi
+            mov ecx, offset gHeadup_text_buffer_0079d880
+            push ebx
+            call FUN_0045a920
+    L0045ae0c:
+            inc edi
+            cmp edi, 0xa
+            jl L0045adde
+    L0045ae12:
+            pop edi
+            pop esi
+            pop ebx
+            ret
+    }
+#endif
 }
 
-// C2PORT-NONMATCHING: best 74.80% | difftest PASS 2000 trials (spec difftest/specs/0045ae20_FUN_0045ae20.json) | reason regalloc-loop
 // FUNCTION: CARMA2_HW 0x0045ae20
-void C2_HOOK_FASTCALL FUN_0045ae20(void) {
+void C2_NAKED C2_HOOK_FASTCALL FUN_0045ae20(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     tU32 start_time;
     int i;
     int j;
@@ -2768,10 +6173,235 @@ void C2_HOOK_FASTCALL FUN_0045ae20(void) {
         }
         headup++;
     } while ((int)headup < (int)&gRace_head_ups[22]);
+#else
+    __asm {
+            mov eax, dword ptr [gINT_0068b8e4]
+            test eax, eax
+            je L0045b092
+            push edi
+            push esi
+            call PDGetTotalTime
+            mov ecx, 0x42
+            mov esi, eax
+            call PDKeyDown
+            test eax, eax
+            je L0045ae94
+            mov eax, offset gHeadup_text_buffer_0079d860
+            test eax, eax
+            je L0045ae81
+            mov ecx, dword ptr [gHeadup_text_buffer_0079d860+0x18]
+            test ecx, ecx
+            je L0045ae81
+            mov eax, dword ptr [gHeadup_text_buffer_0079d860]
+            cmp ecx, eax
+            je L0045ae81
+            mov ecx, dword ptr [gHeadup_text_buffer_0079d860+0xc]
+            mov dword ptr [gHeadup_text_buffer_0079d860+0x18], eax
+            dec ecx
+            test ecx, ecx
+            mov dword ptr [gHeadup_text_buffer_0079d860+0xc], ecx
+            jle L0045ae81
+    L0045ae76:
+            mov eax, dword ptr [eax + 0x38]
+            dec ecx
+            mov dword ptr [gHeadup_text_buffer_0079d860+0x18], eax
+            jne L0045ae76
+    L0045ae81:
+            xor cl, cl
+            cmp cl, 0x64
+            jae L0045ae94
+    L0045ae88:
+            call PDGetTotalTime
+            sub eax, esi
+            cmp eax, 0x64
+            jb L0045ae88
+    L0045ae94:
+            mov ecx, 0x43
+            call PDKeyDown
+            test eax, eax
+            je L0045aedd
+            mov edx, offset gHeadup_text_buffer_0079d860
+            test edx, edx
+            je L0045aecb
+            mov eax, dword ptr [gHeadup_text_buffer_0079d860+0x18]
+            test eax, eax
+            je L0045aecb
+            mov eax, dword ptr [eax + 0x38]
+            test eax, eax
+            je L0045aecb
+            mov dword ptr [gHeadup_text_buffer_0079d860+0x18], eax
+            mov eax, dword ptr [gHeadup_text_buffer_0079d860+0xc]
+            inc eax
+            mov dword ptr [gHeadup_text_buffer_0079d860+0xc], eax
+    L0045aecb:
+            xor al, al
+            cmp al, 0x64
+            jae L0045aedd
+    L0045aed1:
+            call PDGetTotalTime
+            sub eax, esi
+            cmp eax, 0x64
+            jb L0045aed1
+    L0045aedd:
+            mov ecx, 0x44
+            call PDKeyDown
+            test eax, eax
+            je L0045af5a
+            mov ecx, dword ptr [gHeadup_text_buffer_0079d860+0x10]
+            lea eax, [ecx - 1]
+            test eax, eax
+            jle L0045af3e
+            mov esi, dword ptr [gHeadup_text_buffer_0079d860]
+            mov edx, dword ptr [gHeadup_text_buffer_0079d860+0xc]
+            mov edi, eax
+            mov eax, dword ptr [gHeadup_text_buffer_0079d860+0x18]
+    L0045af0b:
+            mov ecx, offset gHeadup_text_buffer_0079d860
+            test ecx, ecx
+            je L0045af3b
+            test eax, eax
+            je L0045af3b
+            cmp eax, esi
+            je L0045af3b
+            dec edx
+            mov eax, esi
+            test edx, edx
+            mov dword ptr [gHeadup_text_buffer_0079d860+0xc], edx
+            mov dword ptr [gHeadup_text_buffer_0079d860+0x18], eax
+            jle L0045af3b
+            mov ecx, edx
+    L0045af30:
+            mov eax, dword ptr [eax + 0x38]
+            dec ecx
+            mov dword ptr [gHeadup_text_buffer_0079d860+0x18], eax
+            jne L0045af30
+    L0045af3b:
+            dec edi
+            jne L0045af0b
+    L0045af3e:
+            mov ecx, 0x44
+            call PDKeyDown
+            test eax, eax
+            je L0045af5a
+    L0045af4c:
+            mov ecx, 0x44
+            call PDKeyDown
+            test eax, eax
+            jne L0045af4c
+    L0045af5a:
+            mov ecx, 0x45
+            call PDKeyDown
+            test eax, eax
+            je L0045afc3
+            mov edx, dword ptr [gHeadup_text_buffer_0079d860+0x10]
+            lea eax, [edx - 1]
+            test eax, eax
+            jle L0045afa7
+            mov ecx, dword ptr [gHeadup_text_buffer_0079d860+0x18]
+            mov edx, eax
+    L0045af7d:
+            mov eax, offset gHeadup_text_buffer_0079d860
+            test eax, eax
+            je L0045afa4
+            test ecx, ecx
+            je L0045afa4
+            mov eax, dword ptr [ecx + 0x38]
+            test eax, eax
+            je L0045afa4
+            mov ecx, eax
+            mov eax, dword ptr [gHeadup_text_buffer_0079d860+0xc]
+            inc eax
+            mov dword ptr [gHeadup_text_buffer_0079d860+0x18], ecx
+            mov dword ptr [gHeadup_text_buffer_0079d860+0xc], eax
+    L0045afa4:
+            dec edx
+            jne L0045af7d
+    L0045afa7:
+            mov ecx, 0x45
+            call PDKeyDown
+            test eax, eax
+            je L0045afc3
+    L0045afb5:
+            mov ecx, 0x45
+            call PDKeyDown
+            test eax, eax
+            jne L0045afb5
+    L0045afc3:
+            mov ecx, 0x40
+            call PDKeyDown
+            test eax, eax
+            je L0045b00a
+            mov eax, dword ptr [gHeadup_text_buffer_0079d860+0x18]
+            xor edx, edx
+            xor ecx, ecx
+            mov dword ptr [gSelected_actor_name], eax
+            call DropActor
+            mov ecx, 0x40
+            mov dword ptr [gSelected_actor_name], 0
+            call PDKeyDown
+            test eax, eax
+            je L0045b00a
+    L0045affc:
+            mov ecx, 0x40
+            call PDKeyDown
+            test eax, eax
+            jne L0045affc
+    L0045b00a:
+            mov ecx, 0x41
+            call PDKeyDown
+            test eax, eax
+            je L0045b039
+            call MurderLastActor
+            mov ecx, 0x41
+            call PDKeyDown
+            test eax, eax
+            je L0045b039
+    L0045b02b:
+            mov ecx, 0x41
+            call PDKeyDown
+            test eax, eax
+            jne L0045b02b
+    L0045b039:
+            mov ecx, offset gHeadup_text_buffer_0079d860
+            call AdjustHeadupTextBuffer
+            mov edi, dword ptr [gHeadup_text_buffer_0079d860+0x4]
+            mov esi, offset gRace_head_ups
+    L0045b04e:
+            test edi, edi
+            je L0045b079
+            cmp edi, dword ptr [gHeadup_text_buffer_0079d860+0x18]
+            jne L0045b05f
+            or edx, 0xffffffff
+            jmp L0045b064
+    L0045b05f:
+            mov edx, 0xfffffffe
+    L0045b064:
+            mov ecx, dword ptr [esi]
+            call ChangeHeadupFont
+            mov ecx, dword ptr [esi]
+            mov edx, edi
+            call ChangeHeadupText
+            mov edi, dword ptr [edi + 0x38]
+            jmp L0045b085
+    L0045b079:
+            mov ecx, dword ptr [esi]
+            mov edx, offset gDisable_sound+0x8
+            call ChangeHeadupText
+    L0045b085:
+            add esi, 4
+            cmp esi, offset gRace_head_ups+0x58
+            jl L0045b04e
+            pop esi
+            pop edi
+    L0045b092:
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0045b150
-void C2_HOOK_FASTCALL FUN_0045b150(void) {
+void C2_NAKED C2_HOOK_FASTCALL FUN_0045b150(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     tU32 start_time;
     tHeadup_text* text;
     tHeadup_text* current;
@@ -2869,6 +6499,201 @@ void C2_HOOK_FASTCALL FUN_0045b150(void) {
         }
         headup++;
     } while (headup < &gRace_head_ups[22]);
+#else
+    __asm {
+            mov eax, dword ptr [gINT_0068b8e4]
+            test eax, eax
+            je L0045b34c
+            push edi
+            push esi
+            call PDGetTotalTime
+            mov ecx, 0x42
+            mov esi, eax
+            call PDKeyDown
+            test eax, eax
+            je L0045b1c4
+            mov eax, offset gHeadup_text_buffer_0079d880
+            test eax, eax
+            je L0045b1b1
+            mov ecx, dword ptr [gHeadup_text_buffer_0079d880+0x18]
+            test ecx, ecx
+            je L0045b1b1
+            mov eax, dword ptr [gHeadup_text_buffer_0079d880]
+            cmp ecx, eax
+            je L0045b1b1
+            mov ecx, dword ptr [gHeadup_text_buffer_0079d880+0xc]
+            mov dword ptr [gHeadup_text_buffer_0079d880+0x18], eax
+            dec ecx
+            test ecx, ecx
+            mov dword ptr [gHeadup_text_buffer_0079d880+0xc], ecx
+            jle L0045b1b1
+    L0045b1a6:
+            mov eax, dword ptr [eax + 0x38]
+            dec ecx
+            mov dword ptr [gHeadup_text_buffer_0079d880+0x18], eax
+            jne L0045b1a6
+    L0045b1b1:
+            xor cl, cl
+            cmp cl, 0x64
+            jae L0045b1c4
+    L0045b1b8:
+            call PDGetTotalTime
+            sub eax, esi
+            cmp eax, 0x64
+            jb L0045b1b8
+    L0045b1c4:
+            mov ecx, 0x43
+            call PDKeyDown
+            test eax, eax
+            je L0045b20d
+            mov edx, offset gHeadup_text_buffer_0079d880
+            test edx, edx
+            je L0045b1fb
+            mov eax, dword ptr [gHeadup_text_buffer_0079d880+0x18]
+            test eax, eax
+            je L0045b1fb
+            mov eax, dword ptr [eax + 0x38]
+            test eax, eax
+            je L0045b1fb
+            mov dword ptr [gHeadup_text_buffer_0079d880+0x18], eax
+            mov eax, dword ptr [gHeadup_text_buffer_0079d880+0xc]
+            inc eax
+            mov dword ptr [gHeadup_text_buffer_0079d880+0xc], eax
+    L0045b1fb:
+            xor al, al
+            cmp al, 0x64
+            jae L0045b20d
+    L0045b201:
+            call PDGetTotalTime
+            sub eax, esi
+            cmp eax, 0x64
+            jb L0045b201
+    L0045b20d:
+            mov ecx, 0x44
+            call PDKeyDown
+            test eax, eax
+            je L0045b28a
+            mov ecx, dword ptr [gHeadup_text_buffer_0079d880+0x10]
+            lea eax, [ecx - 1]
+            test eax, eax
+            jle L0045b26e
+            mov esi, dword ptr [gHeadup_text_buffer_0079d880]
+            mov edx, dword ptr [gHeadup_text_buffer_0079d880+0xc]
+            mov edi, eax
+            mov eax, dword ptr [gHeadup_text_buffer_0079d880+0x18]
+    L0045b23b:
+            mov ecx, offset gHeadup_text_buffer_0079d880
+            test ecx, ecx
+            je L0045b26b
+            test eax, eax
+            je L0045b26b
+            cmp eax, esi
+            je L0045b26b
+            dec edx
+            mov eax, esi
+            test edx, edx
+            mov dword ptr [gHeadup_text_buffer_0079d880+0xc], edx
+            mov dword ptr [gHeadup_text_buffer_0079d880+0x18], eax
+            jle L0045b26b
+            mov ecx, edx
+    L0045b260:
+            mov eax, dword ptr [eax + 0x38]
+            dec ecx
+            mov dword ptr [gHeadup_text_buffer_0079d880+0x18], eax
+            jne L0045b260
+    L0045b26b:
+            dec edi
+            jne L0045b23b
+    L0045b26e:
+            mov ecx, 0x44
+            call PDKeyDown
+            test eax, eax
+            je L0045b28a
+    L0045b27c:
+            mov ecx, 0x44
+            call PDKeyDown
+            test eax, eax
+            jne L0045b27c
+    L0045b28a:
+            mov ecx, 0x45
+            call PDKeyDown
+            test eax, eax
+            je L0045b2f3
+            mov edx, dword ptr [gHeadup_text_buffer_0079d880+0x10]
+            lea eax, [edx - 1]
+            test eax, eax
+            jle L0045b2d7
+            mov ecx, dword ptr [gHeadup_text_buffer_0079d880+0x18]
+            mov edx, eax
+    L0045b2ad:
+            mov eax, offset gHeadup_text_buffer_0079d880
+            test eax, eax
+            je L0045b2d4
+            test ecx, ecx
+            je L0045b2d4
+            mov eax, dword ptr [ecx + 0x38]
+            test eax, eax
+            je L0045b2d4
+            mov ecx, eax
+            mov eax, dword ptr [gHeadup_text_buffer_0079d880+0xc]
+            inc eax
+            mov dword ptr [gHeadup_text_buffer_0079d880+0x18], ecx
+            mov dword ptr [gHeadup_text_buffer_0079d880+0xc], eax
+    L0045b2d4:
+            dec edx
+            jne L0045b2ad
+    L0045b2d7:
+            mov ecx, 0x45
+            call PDKeyDown
+            test eax, eax
+            je L0045b2f3
+    L0045b2e5:
+            mov ecx, 0x45
+            call PDKeyDown
+            test eax, eax
+            jne L0045b2e5
+    L0045b2f3:
+            mov ecx, offset gHeadup_text_buffer_0079d880
+            call AdjustHeadupTextBuffer
+            mov edi, dword ptr [gHeadup_text_buffer_0079d880+0x4]
+            mov esi, offset gRace_head_ups
+    L0045b308:
+            test edi, edi
+            je L0045b333
+            cmp edi, dword ptr [gHeadup_text_buffer_0079d880+0x18]
+            jne L0045b319
+            or edx, 0xffffffff
+            jmp L0045b31e
+    L0045b319:
+            mov edx, 0xfffffffe
+    L0045b31e:
+            mov ecx, dword ptr [esi]
+            call ChangeHeadupFont
+            mov ecx, dword ptr [esi]
+            mov edx, edi
+            call ChangeHeadupText
+            mov edi, dword ptr [edi + 0x38]
+            jmp L0045b33f
+    L0045b333:
+            mov ecx, dword ptr [esi]
+            mov edx, offset gDisable_sound+0x8
+            call ChangeHeadupText
+    L0045b33f:
+            add esi, 4
+            cmp esi, offset gRace_head_ups+0x58
+            jl L0045b308
+            pop esi
+            pop edi
+    L0045b34c:
+            ret
+            nop
+            nop
+            nop
+            mov eax, dword ptr [edx*4 + gKey_mapping]
+            mov dword ptr [ecx + eax*4], 1
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0045c760
@@ -2919,7 +6744,6 @@ void C2_HOOK_FASTCALL FinishRace(int i) {
 
 // FUNCTION: CARMA2_HW 0x00442e80
 void C2_HOOK_FASTCALL GetPowerup(int pNum) {
-
     GotPowerup(&gProgram_state.current_car, pNum);
 }
 
@@ -3071,7 +6895,8 @@ void C2_HOOK_FASTCALL FUN_0045c240(void) {
 }
 
 // FUNCTION: CARMA2_HW 0x00511240
-void C2_HOOK_FASTCALL ToggleJoystickHeadup(void) {
+void C2_NAKED C2_HOOK_FASTCALL ToggleJoystickHeadup(void) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     if (gINT_0068b8e8) {
         SaveAllJoystickData();
@@ -3080,6 +6905,22 @@ void C2_HOOK_FASTCALL ToggleJoystickHeadup(void) {
     if (!gINT_0068b8e8) {
         LoadJoystickPreferences();
     }
+#else
+    __asm {
+            mov eax, dword ptr [gINT_0068b8e8]
+            test eax, eax
+            je L0051124e
+            call SaveAllJoystickData
+    L0051124e:
+            call FUN_0045c240
+            mov eax, dword ptr [gINT_0068b8e8]
+            test eax, eax
+            jne L00511261
+            jmp LoadJoystickPreferences
+    L00511261:
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00511280
@@ -3143,12 +6984,10 @@ void C2_HOOK_FASTCALL IncreaseJoystickFFB(void) {
 
 // FUNCTION: CARMA2_HW 0x00447330
 void C2_HOOK_FASTCALL FUN_00447330(void) {
-
 }
 
 // FUNCTION: CARMA2_HW 0x00447340
 void C2_HOOK_FASTCALL FUN_00447340(void) {
-
 }
 
 // FUNCTION: CARMA2_HW 0x00444420
@@ -3215,7 +7054,8 @@ void C2_HOOK_FASTCALL PrevPedCam(void) {
 br_vector3 gPredist_point;
 
 // FUNCTION: CARMA2_HW 0x004d62e0
-void C2_HOOK_FASTCALL FindNearestPed(void) {
+void C2_NAKED C2_HOOK_FASTCALL FindNearestPed(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     int count;
     int i;
     int best;
@@ -3246,6 +7086,78 @@ void C2_HOOK_FASTCALL FindNearestPed(void) {
     }
     gSelected_ped = best;
     gPed_nearness = 1;
+#else
+    __asm {
+            sub esp, 8
+            push esi
+            mov esi, dword ptr [gPed_count]
+            test esi, esi
+            je L004d6385
+            xor ecx, ecx
+            push edi
+            test esi, esi
+            mov dword ptr [esp + 0xc], 0x4b189680
+            jle L004d6370
+            mov eax, dword ptr [gPedestrian_array]
+            mov edi, dword ptr [esp + 0xc]
+            lea edx, [eax + 0x20]
+    L004d630d:
+            fld dword ptr [edx]
+            fld dword ptr [edx - 4]
+            fsub dword ptr [gProgram_state+0xf8]
+            fxch st(1)
+            fsub dword ptr [gProgram_state+0xfc]
+            fld dword ptr [edx + 4]
+            fsub dword ptr [gProgram_state+0x100]
+            fxch st(2)
+            fst dword ptr [esp + 8]
+            fld st(1)
+            fxch st(1)
+            fmul dword ptr [esp + 8]
+            fxch st(1)
+            fmul st(0), st(2)
+            fxch st(3)
+            fst dword ptr [esp + 8]
+            fmul dword ptr [esp + 8]
+            fxch st(3)
+            faddp st(1), st(0)
+            fxch st(2)
+            faddp st(2), st(0)
+            fxch st(1)
+            fstp st(1)
+            fcom dword ptr [esp + 0xc]
+            fnstsw ax
+            test ah, 1
+            je L004d6364
+            fstp dword ptr [esp + 0xc]
+            mov edi, ecx
+            jmp L004d6366
+    L004d6364:
+            fstp st(0)
+    L004d6366:
+            inc ecx
+            add edx, 0x54
+            cmp ecx, esi
+            jl L004d630d
+            jmp L004d6374
+    L004d6370:
+            mov edi, dword ptr [esp + 0xc]
+    L004d6374:
+            mov dword ptr [gSelected_ped], edi
+            mov dword ptr [gPed_nearness], 1
+            pop edi
+    L004d6385:
+            pop esi
+            add esp, 8
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00444590
@@ -3261,13 +7173,11 @@ void C2_HOOK_FASTCALL ToggleTimerFreeze(void) {
 
 // FUNCTION: CARMA2_HW 0x004445e0
 void C2_HOOK_FASTCALL EarnDosh(void) {
-
     EarnCredits(5000);
 }
 
 // FUNCTION: CARMA2_HW 0x004445f0
 void C2_HOOK_FASTCALL LoseDosh(void) {
-
     EarnCredits(-5000);
 }
 
@@ -3328,7 +7238,8 @@ void C2_HOOK_FASTCALL ViewOpponent(void) {
 }
 
 // FUNCTION: CARMA2_HW 0x004db8e0
-void C2_HOOK_FASTCALL MungeRepulseRays(tU32 pTime) {
+void C2_NAKED C2_HOOK_FASTCALL MungeRepulseRays(tU32 pTime) {
+#ifndef CARPOCALYPSE2_MATCHING
     int i;
 
     ARStartPipingSession(ePipe_chunk_repulse_ray);
@@ -3408,6 +7319,416 @@ void C2_HOOK_FASTCALL MungeRepulseRays(tU32 pTime) {
         AddRepulseRayToPipingSession(i, link->pos_origin, link->pos_victim, link->time);
     }
     AREndPipingSession();
+#else
+    __asm {
+            sub esp, 0x22c
+            push ebx
+            push ebp
+            mov dword ptr [esp + 0x40], ecx
+            push esi
+            push edi
+            mov ecx, 0x25
+            call ARStartPipingSession
+            mov dword ptr [esp + 0x20], 0
+            mov esi, offset gRepulse_links+0x14
+    L004db905:
+            mov ecx, dword ptr [esi - 0x14]
+            test ecx, ecx
+            je L004dbd81
+            mov eax, dword ptr [esp + 0x48]
+            sub eax, ecx
+            cmp eax, 0x2bc
+            mov dword ptr [esp + 0x50], eax
+            jb L004db94a
+            mov edx, dword ptr [gNon_track_actor]
+            mov dword ptr [esi - 0x14], 0
+            mov eax, dword ptr [esi - 8]
+            mov ecx, dword ptr [eax + 0xc]
+            cmp ecx, edx
+            jne L004dbd81
+            push eax
+            call BrActorRemove
+            add esp, 4
+            jmp L004dbd81
+    L004db94a:
+            mov eax, dword ptr [esi - 0xc]
+            mov ecx, dword ptr [esi - 0x10]
+            mov edx, dword ptr [esi - 8]
+            _emit 0xd9
+        _emit 0x00
+            _emit 0xd8
+        _emit 0x21
+            fld dword ptr [eax + 4]
+            fsub dword ptr [ecx + 4]
+            mov ebp, dword ptr [edx + 0x18]
+            mov dword ptr [esp + 0x4c], ebp
+            fstp dword ptr [esp + 0x18]
+            fld dword ptr [eax + 8]
+            fsub dword ptr [ecx + 8]
+            fstp dword ptr [esp + 0x1c]
+            fcom dword ptr [gFLOAT_0058ac0c]
+            fnstsw ax
+            test ah, 0x40
+            je L004db994
+            fld dword ptr [esp + 0x1c]
+            fcomp dword ptr [gFLOAT_0058ac0c]
+            fnstsw ax
+            test ah, 0x40
+            jne L004dbd7f
+    L004db994:
+            fld st(0)
+            fld dword ptr [esp + 0x18]
+            fxch st(1)
+            fmul st(0), st(2)
+            fld dword ptr [esp + 0x1c]
+            fxch st(2)
+            fmul dword ptr [esp + 0x18]
+            fxch st(2)
+            fmul dword ptr [esp + 0x1c]
+            fxch st(2)
+            faddp st(1), st(0)
+            fxch st(1)
+            xor eax, eax
+            mov ax, word ptr [ebp + 0x10]
+            faddp st(1), st(0)
+            shr eax, 1
+            dec eax
+            fsqrt
+            mov dword ptr [esp + 0x10], eax
+            fild dword ptr [esp + 0x10]
+            fld st(2)
+            fld dword ptr [esp + 0x18]
+            fld dword ptr [esp + 0x1c]
+            fxch st(2)
+            fdiv st(0), st(3)
+            fxch st(1)
+            fdiv st(0), st(3)
+            fxch st(2)
+            fdiv st(0), st(3)
+            fxch st(4)
+            fst dword ptr [esp + 0x10]
+            fstp st(3)
+            fld st(2)
+            fcomp dword ptr [gFLOAT_0058ac10]
+            fstp dword ptr [esp + 0x3c]
+            fnstsw ax
+            fstp dword ptr [esp + 0x40]
+            fxch st(1)
+            fstp dword ptr [esp + 0x44]
+            test ah, 0x41
+            jne L004dba30
+            fdivr qword ptr [gDOUBLE_0058ac18]
+            fld st(0)
+            fld st(1)
+            fxch st(1)
+            fmul st(0), st(3)
+            fxch st(1)
+            fmul dword ptr [esp + 0x18]
+            fxch st(2)
+            fmul dword ptr [esp + 0x1c]
+            fxch st(1)
+            fstp dword ptr [esp + 0x30]
+            fxch st(1)
+            fstp dword ptr [esp + 0x34]
+            fstp dword ptr [esp + 0x38]
+            jmp L004dba4a
+    L004dba30:
+            fstp st(0)
+            mov dword ptr [esp + 0x30], 0x3f800000
+            mov dword ptr [esp + 0x34], 0
+            mov dword ptr [esp + 0x38], 0
+    L004dba4a:
+            fld dword ptr [esp + 0x18]
+            fld dword ptr [esp + 0x1c]
+            fld dword ptr [esp + 0x1c]
+            fld st(3)
+            fxch st(3)
+            fmul dword ptr [y_unit_vector+0x8]
+            fxch st(2)
+            fmul dword ptr [y_unit_vector+0x4]
+            fld dword ptr [esp + 0x18]
+            fxch st(1)
+            fsubp st(3), st(0)
+            fxch st(1)
+            fmul dword ptr [y_unit_vector]
+            fxch st(2)
+            fxch st(4)
+            fxch st(2)
+            fld st(4)
+            fmul st(0), st(5)
+            fxch st(4)
+            fmul dword ptr [y_unit_vector+0x8]
+            fxch st(3)
+            fmul dword ptr [y_unit_vector+0x4]
+            fxch st(2)
+            fmul dword ptr [y_unit_vector]
+            fxch st(3)
+            fsubp st(1), st(0)
+            mov eax, dword ptr [ecx + 4]
+            mov edx, dword ptr [ecx]
+            fld st(0)
+            fxch st(3)
+            fsubp st(2), st(0)
+            fxch st(2)
+            fmul st(0), st(2)
+            fld st(1)
+            fmul st(0), st(2)
+            fxch st(1)
+            faddp st(4), st(0)
+            mov ecx, dword ptr [ecx + 8]
+            mov dword ptr [esp + 0x28], eax
+            mov dword ptr [esp + 0x24], edx
+            mov dword ptr [esp + 0x2c], ecx
+            faddp st(3), st(0)
+            fxch st(2)
+            fsqrt
+            fcom dword ptr [gFLOAT_0058ac10]
+            fxch st(1)
+            fxch st(2)
+            fxch st(1)
+            fnstsw ax
+            test ah, 0x41
+            jne L004dbb0b
+            fdivr qword ptr [gDOUBLE_0058ac18]
+            fld st(0)
+            fld st(1)
+            fxch st(1)
+            fmul st(0), st(5)
+            fxch st(1)
+            fmul st(0), st(4)
+            fxch st(2)
+            fmul st(0), st(3)
+            fxch st(1)
+            fstp dword ptr [esp + 0x5c]
+            fxch st(1)
+            fstp dword ptr [esp + 0x60]
+            fstp dword ptr [esp + 0x64]
+            fstp st(0)
+            fstp st(0)
+            fstp st(0)
+            jmp L004dbb2b
+    L004dbb0b:
+            fstp st(0)
+            fstp st(0)
+            fstp st(0)
+            fstp st(0)
+            mov dword ptr [esp + 0x5c], 0x3f800000
+            mov dword ptr [esp + 0x60], 0
+            mov dword ptr [esp + 0x64], 0
+    L004dbb2b:
+            mov edi, 0x10000
+            lea ebx, [esp + 0x68]
+    L004dbb34:
+            lea edx, [esp + 0x30]
+            mov eax, 0x66666667
+            push edx
+            imul edi
+            sar edx, 1
+            mov eax, edx
+            lea ecx, [esp + 0x180]
+            shr eax, 0x1f
+            add edx, eax
+            push edx
+            push ecx
+            call BrMatrix34Rotate
+            add esp, 0xc
+            lea edx, [esp + 0x17c]
+            lea eax, [esp + 0x5c]
+            push edx
+            push eax
+            push ebx
+            call BrMatrix34ApplyV
+            add edi, 0x10000
+            add esp, 0xc
+            add ebx, 0xc
+            cmp edi, 0x50000
+            jl L004dbb34
+            xor eax, eax
+    L004dbb83:
+            fld dword ptr [esi + 8]
+            fld dword ptr [esi + 8]
+            fld dword ptr [esi + 8]
+            fld dword ptr [esp + eax + 0x5c]
+            fld dword ptr [esp + eax + 0x60]
+            fld dword ptr [esi + 4]
+            fmul dword ptr [esp + eax + 0x5c]
+            fstp dword ptr [esp + eax + 0xec]
+            fld dword ptr [esp + eax + 0x64]
+            fld dword ptr [esi + 4]
+            fmul dword ptr [esp + eax + 0x60]
+            add eax, 0xc
+            fstp dword ptr [esp + eax + 0xe4]
+            fld dword ptr [esi + 4]
+            fmul dword ptr [esp + eax + 0x58]
+            cmp eax, 0x3c
+            fstp dword ptr [esp + eax + 0xe8]
+            fxch st(2)
+            fmulp st(5), st(0)
+            fxch st(4)
+            fstp dword ptr [esp + eax + 0x1a0]
+            fxch st(3)
+            fmulp st(2), st(0)
+            fxch st(2)
+            fmulp st(2), st(0)
+            fstp dword ptr [esp + eax + 0x1a4]
+            fstp dword ptr [esp + eax + 0x1a8]
+            jl L004dbb83
+            mov ecx, dword ptr [ebp + 8]
+            xor eax, eax
+            mov ax, word ptr [ebp + 0x10]
+            xor ebx, ebx
+            shr eax, 1
+            test eax, eax
+            lea edx, [eax + eax*4]
+            lea edi, [ecx + edx*8]
+            jle L004dbcc5
+            fld dword ptr [esp + 0x28]
+            fld dword ptr [esp + 0x24]
+    L004dbc10:
+            mov eax, ebx
+            mov ebp, 5
+            cdq
+            fld dword ptr [esp + 0x2c]
+            fxch st(1)
+            fadd dword ptr [esp + 0x3c]
+            fxch st(2)
+            fadd dword ptr [esp + 0x40]
+            fxch st(1)
+            fadd dword ptr [esp + 0x44]
+            fxch st(1)
+            fxch st(2)
+            fxch st(1)
+            fstp dword ptr [esp + 0x2c]
+            idiv ebp
+            xor ebp, ebp
+            add ecx, 0x28
+            mov dword ptr [esp + 0x10], ebp
+            mov ebp, dword ptr [esp + 0x4c]
+            add edi, 0x28
+            lea eax, [edx + edx*2]
+            shl eax, 2
+            inc ebx
+            fld dword ptr [esp + eax + 0xec]
+            fld dword ptr [esp + eax + 0xf0]
+            fld dword ptr [esp + eax + 0xf4]
+            fld dword ptr [esp + eax + 0x1ac]
+            fld dword ptr [esp + eax + 0x1b0]
+            fld dword ptr [esp + eax + 0x1b4]
+            fxch st(5)
+            fadd st(0), st(6)
+            mov eax, dword ptr [esp + 0x10]
+            fstp dword ptr [ecx - 0x28]
+            fxch st(3)
+            fadd st(0), st(6)
+            fxch st(2)
+            fadd dword ptr [esp + 0x2c]
+            fxch st(1)
+            fadd st(0), st(5)
+            fxch st(3)
+            fadd st(0), st(6)
+            fxch st(4)
+            fadd dword ptr [esp + 0x2c]
+            fxch st(2)
+            fstp dword ptr [ecx - 0x24]
+            fstp dword ptr [ecx - 0x20]
+            fxch st(1)
+            fstp dword ptr [edi - 0x28]
+            fxch st(1)
+            fstp dword ptr [edi - 0x24]
+            fstp dword ptr [edi - 0x20]
+            mov ax, word ptr [ebp + 0x10]
+            shr eax, 1
+            cmp ebx, eax
+            jl L004dbc10
+            fstp st(0)
+            fstp st(0)
+    L004dbcc5:
+            mov ecx, dword ptr [esp + 0x50]
+            mov dword ptr [esp + 0x58], 0
+            mov dword ptr [esp + 0x54], ecx
+            fild qword ptr [esp + 0x54]
+            fmul dword ptr [gFLOAT_0058ac20+0x4]
+            fcom qword ptr [gFLOAT_0058ac20+0x8]
+            fnstsw ax
+            test ah, 0x41
+            jne L004dbcf5
+            fstp st(0)
+            mov edi, 0x19
+            jmp L004dbd22
+    L004dbcf5:
+            fcom qword ptr [gFLOAT_0058ac20+0x10]
+            fnstsw ax
+            test ah, 0x41
+            jne L004dbd0b
+            fstp st(0)
+            mov edi, 0x32
+            jmp L004dbd22
+    L004dbd0b:
+            fcomp qword ptr [gFLOAT_0058ac20+0x18]
+            mov edi, 0x4b
+            fnstsw ax
+            test ah, 0x41
+            je L004dbd22
+            mov edi, 0x64
+    L004dbd22:
+            cmp edi, dword ptr [esi - 4]
+            je L004dbd43
+            mov ecx, dword ptr [esi]
+            mov edx, edi
+            call BlendifyMaterial
+            mov edx, dword ptr [esi]
+            push 0x7fff
+            push edx
+            call BrMaterialUpdate
+            add esp, 8
+            mov dword ptr [esi - 4], edi
+    L004dbd43:
+            push 0x7fff
+            push ebp
+            call BrModelUpdate
+            mov eax, dword ptr [esi - 8]
+            mov ecx, dword ptr [gNon_track_actor]
+            add esp, 8
+            cmp dword ptr [eax + 0xc], ecx
+            je L004dbd69
+            push eax
+            push ecx
+            call BrActorAdd
+            add esp, 8
+    L004dbd69:
+            mov eax, dword ptr [esi - 0x14]
+            mov ecx, dword ptr [esi - 0xc]
+            mov edx, dword ptr [esi - 0x10]
+            push eax
+            push ecx
+            mov ecx, dword ptr [esp + 0x28]
+            call AddRepulseRayToPipingSession
+            jmp L004dbd81
+    L004dbd7f:
+            fstp st(0)
+    L004dbd81:
+            mov edx, dword ptr [esp + 0x20]
+            add esi, 0x28
+            inc edx
+            cmp esi, offset gPowerup_respawn_specs
+            mov dword ptr [esp + 0x20], edx
+            jl L004db905
+            call AREndPipingSession
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x22c
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 void C2_HOOK_FASTCALL GotPowerupN(int pN) {
@@ -3472,7 +7793,6 @@ void C2_HOOK_FASTCALL GotPowerup9(void) {
 
 // FUNCTION: CARMA2_HW 0x00441e10
 void C2_HOOK_FASTCALL LookLeft(void) {
-
     PratcamEvent(27);
     gProgram_state.old_view = gProgram_state.which_view;
     if (gProgram_state.which_view == eView_left) {
@@ -3490,7 +7810,6 @@ void C2_HOOK_FASTCALL LookLeft(void) {
 
 // FUNCTION: CARMA2_HW 0x00441ec0
 void C2_HOOK_FASTCALL LookForward(void) {
-
     if (gProgram_state.which_view == eView_right) {
         PratcamEvent(27);
     } else if (gProgram_state.which_view == eView_left) {
@@ -3507,7 +7826,6 @@ void C2_HOOK_FASTCALL LookForward(void) {
 
 // FUNCTION: CARMA2_HW 0x00441f20
 void C2_HOOK_FASTCALL LookRight(void) {
-
     PratcamEvent(28);
     gProgram_state.old_view = gProgram_state.which_view;
     if (gProgram_state.which_view == eView_right) {
@@ -3525,7 +7843,6 @@ void C2_HOOK_FASTCALL LookRight(void) {
 
 // FUNCTION: CARMA2_HW 0x00441fd0
 void C2_HOOK_FASTCALL DamageTest(void) {
-
 }
 
 // FUNCTION: CARMA2_HW 0x00441fe0
@@ -3549,49 +7866,41 @@ void C2_HOOK_FASTCALL TDamageTrans(void) {
 
 // FUNCTION: CARMA2_HW 0x00442050
 void C2_HOOK_FASTCALL TDamageLFWheel(void) {
-
     DamageLFWheel(21);
 }
 
 // FUNCTION: CARMA2_HW 0x00442060
 void C2_HOOK_FASTCALL TDamageLFBrake(void) {
-
     DamageLFBrake(21);
 }
 
 // FUNCTION: CARMA2_HW 0x00442070
 void C2_HOOK_FASTCALL TDamageLRBrake(void) {
-
     DamageLRBrake(21);
 }
 
 // FUNCTION: CARMA2_HW 0x00442080
 void C2_HOOK_FASTCALL TDamageLRWheel(void) {
-
     DamageLRWheel(21);
 }
 
 // FUNCTION: CARMA2_HW 0x00442090
 void C2_HOOK_FASTCALL TDamageRFWheel(void) {
-
     DamageRFWheel(21);
 }
 
 // FUNCTION: CARMA2_HW 0x004420a0
 void C2_HOOK_FASTCALL TDamageRFBrake(void) {
-
     DamageRFBrake(21);
 }
 
 // FUNCTION: CARMA2_HW 0x004420b0
 void C2_HOOK_FASTCALL TDamageRRBrake(void) {
-
     DamageRRBrake(21);
 }
 
 // FUNCTION: CARMA2_HW 0x004420c0
 void C2_HOOK_FASTCALL TDamageRRWheel(void) {
-
     DamageRRWheel(21);
 }
 
@@ -3783,7 +8092,6 @@ void C2_HOOK_FASTCALL CheckForCheatingGits(void) {
 
 // FUNCTION: CARMA2_HW 0x004446f0
 int C2_HOOK_FASTCALL GetRecoverVoucherCount(void) {
-
     return gRecovery_voucher_count;
 }
 
@@ -3854,7 +8162,6 @@ void C2_HOOK_FASTCALL DisposeAbuseomatic(void) {
 
 // FUNCTION: CARMA2_HW 0x004446d0
 tU32 C2_HOOK_FASTCALL GetKeyStateBit27(void) {
-
     return (*(tU32*)&gProgram_state.current_car.keys >> 27) & 1;
 }
 
@@ -3871,7 +8178,8 @@ void C2_HOOK_FASTCALL ToggleShellModel(void) {
 // ChangeCameraTypeInGame
 
 // FUNCTION: CARMA2_HW 0x0045c5d0
-void C2_HOOK_FASTCALL FUN_0045c5d0(void) {
+void C2_NAKED C2_HOOK_FASTCALL FUN_0045c5d0(void) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     if (gAccent_poly_prims[2].v.i32 != -1) {
 #ifdef CARPOCALYPSE2_PLATFORM_WIN32
@@ -3879,6 +8187,17 @@ void C2_HOOK_FASTCALL FUN_0045c5d0(void) {
 #endif
     }
     gAccent_poly_prims[2].v.i32 = -1;
+#else
+    __asm {
+            mov ecx, dword ptr [gCurrent_ffb_effect_index]
+            cmp ecx, -1
+            je L0045c5e0
+            call UnloadDinputFFBEffectAtIndex
+    L0045c5e0:
+            mov dword ptr [gCurrent_ffb_effect_index], 0xffffffff
+            ret
+    }
+#endif
 }
 
 // SteelBollock

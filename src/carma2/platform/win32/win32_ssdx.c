@@ -74,6 +74,14 @@ MCI_PLAY_PARMS gPDS3_cda_play_parms;
 int gSSDXPitch;
 
 
+#ifdef CARPOCALYPSE2_MATCHING
+extern void C2_HOOK_CDECL dr_dprintf();
+extern char gSoundType_choices[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern void* C2_HOOK_FASTCALL SSDXLockAttachedSurface(void);
+extern void C2_HOOK_FASTCALL SSDXLogError(HRESULT hRes);
+#endif
 // FUNCTION: CARMA2_HW 0x00500070
 HRESULT CALLBACK LocalEnumAttachedSurfacesCallback(LPDIRECTDRAWSURFACE lpSurface, LPDDSURFACEDESC lpSurfaceDesc, LPVOID lpContext) {
     int* counter = lpContext;
@@ -83,7 +91,8 @@ HRESULT CALLBACK LocalEnumAttachedSurfacesCallback(LPDIRECTDRAWSURFACE lpSurface
 }
 
 // FUNCTION: CARMA2_HW 0x005000a0
-void C2_HOOK_FASTCALL LocalWindowedDDSetup(int pWidth, int pHeight, int* pPitch) {
+void C2_NAKED C2_HOOK_FASTCALL LocalWindowedDDSetup(int pWidth, int pHeight, int* pPitch) {
+#ifndef CARPOCALYPSE2_MATCHING
     DDSURFACEDESC desc;
     HRESULT res;
     HDC hdc;
@@ -163,10 +172,189 @@ post_creation:
         }
     }
     *pPitch = gSSDXPitch;
+#else
+    __asm {
+            sub esp, 0x6c
+            push ebx
+            push ebp
+            push esi
+            mov ebx, edx
+            push edi
+            mov ebp, ecx
+            push ebx
+            push ebp
+            push 0
+            push 0
+            push offset gSSDXRect
+            call dword ptr ds:[0x5891cc]
+            mov ecx, 0x1b
+            xor eax, eax
+            lea edi, [esp + 0x10]
+            push 0x660624
+            rep stosd
+            mov dword ptr [esp + 0x14], 0x6c
+            mov dword ptr [esp + 0x18], 1
+            mov dword ptr [esp + 0x7c], 0x200
+            call dr_dprintf
+            mov eax, dword ptr ds:[gDirectDraw]
+            add esp, 4
+            lea edx, [esp + 0x10]
+            mov ecx, dword ptr [eax]
+            push 0
+            push offset gPrimary_surface
+            push edx
+            push eax
+            call dword ptr [ecx + 0x18]
+            mov esi, eax
+            test esi, esi
+            jne L00500261
+            mov ecx, 0x1b
+            lea edi, [esp + 0x10]
+            rep stosd
+            push 0x6605dc
+            mov dword ptr [esp + 0x14], 0x6c
+            mov dword ptr [esp + 0x18], 7
+            mov dword ptr [esp + 0x7c], 0x840
+            mov dword ptr [esp + 0x20], ebp
+            mov dword ptr [esp + 0x1c], ebx
+            call dr_dprintf
+            mov eax, dword ptr ds:[gDirectDraw]
+            add esp, 4
+            lea edx, [esp + 0x10]
+            mov ecx, dword ptr [eax]
+            push esi
+            push offset gAttached_surface
+            push edx
+            push eax
+            call dword ptr [ecx + 0x18]
+            mov esi, eax
+            test esi, esi
+            jne L00500261
+            mov eax, dword ptr ds:[gDirectDraw]
+            push esi
+            push offset gDirectDrawClipper
+            push esi
+            mov ecx, dword ptr [eax]
+            push eax
+            call dword ptr [ecx + 0x10]
+            mov esi, eax
+            test esi, esi
+            jne L00500261
+            mov eax, dword ptr ds:[gDirectDrawClipper]
+            mov ecx, dword ptr ds:[gHWnd_SSDX]
+            push ecx
+            push esi
+            mov edx, dword ptr [eax]
+            push eax
+            call dword ptr [edx + 0x20]
+            mov esi, eax
+            test esi, esi
+            jne L00500261
+            mov eax, dword ptr ds:[gPrimary_surface]
+            mov ecx, dword ptr ds:[gDirectDrawClipper]
+            push ecx
+            push eax
+            mov edx, dword ptr [eax]
+            call dword ptr [edx + 0x70]
+            mov esi, eax
+            test esi, esi
+            jne L00500261
+            mov edx, dword ptr ds:[gHWnd_SSDX]
+            push edx
+            call dword ptr ds:[0x5891c0]
+            mov esi, eax
+            push offset gSSDX_system_palette
+            push 0x100
+            push 0
+            push esi
+            call dword ptr ds:[0x589024]
+            mov eax, dword ptr ds:[gHWnd_SSDX]
+            push esi
+            push eax
+            call dword ptr ds:[0x5891b4]
+            mov eax, 0x6aa5db
+    L005001f0:
+            cmp eax, 0x6aa603
+            jl L00500203
+            cmp eax, 0x6aa9af
+            jg L00500203
+            mov byte ptr [eax], 4
+            jmp L00500206
+    L00500203:
+            mov byte ptr [eax], 0
+    L00500206:
+            add eax, 4
+            cmp eax, 0x6aa9db
+            jl L005001f0
+            push 0x6605a8
+            call dr_dprintf
+            mov eax, dword ptr ds:[gDirectDraw]
+            add esp, 4
+            mov ecx, dword ptr [eax]
+            push 0
+            push offset gDirectDrawPalette
+            push offset gSSDX_system_palette
+            push 0x44
+            push eax
+            call dword ptr [ecx + 0x14]
+            mov esi, eax
+            test esi, esi
+            jne L00500261
+            push 0x660578
+            call dr_dprintf
+            mov eax, dword ptr ds:[gPrimary_surface]
+            mov ecx, dword ptr ds:[gDirectDrawPalette]
+            add esp, 4
+            mov edx, dword ptr [eax]
+            push ecx
+            push eax
+            call dword ptr [edx + 0x7c]
+            mov esi, eax
+            test esi, esi
+            je L00500268
+    L00500261:
+            mov ecx, esi
+            call SSDXLogError
+    L00500268:
+            call SSDXLockAttachedSurface
+            mov eax, dword ptr ds:[gAttached_surface_locked]
+            test eax, eax
+            je L005002ac
+            mov eax, dword ptr ds:[gAttached_surface]
+            mov ecx, dword ptr ds:[gSSDXLockedRect]
+            push ecx
+            push eax
+            mov edx, dword ptr [eax]
+            call dword ptr [edx + 0x80]
+            mov edi, eax
+            test edi, edi
+            jne L00500298
+            mov dword ptr ds:[gAttached_surface_locked], eax
+            jmp L005002ac
+    L00500298:
+            push 0x66052c
+            call dr_dprintf
+            add esp, 4
+            mov ecx, edi
+            call SSDXLogError
+    L005002ac:
+            mov edx, dword ptr [esp + 0x80]
+            mov eax, dword ptr ds:[gSSDXPitch]
+            pop edi
+            mov dword ptr [edx], eax
+            mov eax, esi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x6c
+            ret 4
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x005002d0
-void C2_HOOK_FASTCALL SSDXLogError(HRESULT hRes) {
+void C2_NAKED C2_HOOK_FASTCALL SSDXLogError(HRESULT hRes) {
+#ifndef CARPOCALYPSE2_MATCHING
 
 #define LOG_CASE_DDERR(V) case V: dr_dprintf("%s (%x)", #V, hRes); return
     switch (hRes) {
@@ -190,6 +378,210 @@ void C2_HOOK_FASTCALL SSDXLogError(HRESULT hRes) {
     LOG_CASE_DDERR(DDERR_WRONGMODE);
     }
 #undef LOG_CASE_DDERR
+#else
+    __asm {
+            cmp ecx, 0x80004005
+            jg L00500310
+            je L005002fb
+            cmp ecx, 0x80004001
+            jne L0050049c
+            mov eax, 0x660800
+            push ecx
+            push eax
+            push 0x6607f8
+            call dr_dprintf
+            add esp, 0xc
+            ret
+    L005002fb:
+            mov eax, 0x6607e8
+            push ecx
+            push eax
+            push 0x6607f8
+            call dr_dprintf
+            add esp, 0xc
+            ret
+    L00500310:
+            cmp ecx, 0x80070057
+            jg L00500350
+            je L0050033b
+            cmp ecx, 0x8007000e
+            jne L0050049c
+            mov eax, 0x6607d4
+            push ecx
+            push eax
+            push 0x6607f8
+            call dr_dprintf
+            add esp, 0xc
+            ret
+    L0050033b:
+            mov eax, 0x6607c0
+            push ecx
+            push eax
+            push 0x6607f8
+            call dr_dprintf
+            add esp, 0xc
+            ret
+    L00500350:
+            cmp ecx, 0x88760064
+            jg L00500390
+            je L0050037b
+            cmp ecx, 0x8876005f
+            jne L0050049c
+            mov eax, 0x6607a4
+            push ecx
+            push eax
+            push 0x6607f8
+            call dr_dprintf
+            add esp, 0xc
+            ret
+    L0050037b:
+            mov eax, 0x660790
+            push ecx
+            push eax
+            push 0x6607f8
+            call dr_dprintf
+            add esp, 0xc
+            ret
+    L00500390:
+            cmp ecx, 0x88760082
+            jg L005003d0
+            je L005003bb
+            cmp ecx, 0x88760078
+            jne L0050049c
+            mov eax, 0x66077c
+            push ecx
+            push eax
+            push 0x6607f8
+            call dr_dprintf
+            add esp, 0xc
+            ret
+    L005003bb:
+            mov eax, 0x660768
+            push ecx
+            push eax
+            push 0x6607f8
+            call dr_dprintf
+            add esp, 0xc
+            ret
+    L005003d0:
+            cmp ecx, 0x88760096
+            jg L00500410
+            je L005003fb
+            cmp ecx, 0x88760091
+            jne L0050049c
+            mov eax, 0x66074c
+            push ecx
+            push eax
+            push 0x6607f8
+            call dr_dprintf
+            add esp, 0xc
+            ret
+    L005003fb:
+            mov eax, 0x660738
+            push ecx
+            push eax
+            push 0x6607f8
+            call dr_dprintf
+            add esp, 0xc
+            ret
+    L00500410:
+            cmp ecx, 0x887601ae
+            jg L0050044c
+            je L00500437
+            cmp ecx, 0x887600e1
+            jne L0050049c
+            mov eax, 0x660720
+            push ecx
+            push eax
+            push 0x6607f8
+            call dr_dprintf
+            add esp, 0xc
+            ret
+    L00500437:
+            mov eax, 0x66070c
+            push ecx
+            push eax
+            push 0x6607f8
+            call dr_dprintf
+            add esp, 0xc
+            ret
+    L0050044c:
+            cmp ecx, 0x8876021c
+            jg L00500488
+            je L00500473
+            cmp ecx, 0x887601c2
+            jne L0050049c
+            mov eax, 0x6606f8
+            push ecx
+            push eax
+            push 0x6607f8
+            call dr_dprintf
+            add esp, 0xc
+            ret
+    L00500473:
+            mov eax, 0x6606e0
+            push ecx
+            push eax
+            push 0x6607f8
+            call dr_dprintf
+            add esp, 0xc
+            ret
+    L00500488:
+            cmp ecx, 0x8876024b
+            je L005004dd
+            cmp ecx, 0x8876024c
+            je L005004c8
+            test ecx, ecx
+            je L005004b3
+    L0050049c:
+            mov eax, ecx
+            and eax, 0xffff
+            push eax
+            push ecx
+            push 0x66069c
+            call dr_dprintf
+            add esp, 0xc
+            ret
+    L005004b3:
+            mov eax, 0x660694
+            push ecx
+            push eax
+            push 0x6607f8
+            call dr_dprintf
+            add esp, 0xc
+            ret
+    L005004c8:
+            mov eax, 0x66067c
+            push ecx
+            push eax
+            push 0x6607f8
+            call dr_dprintf
+            add esp, 0xc
+            ret
+    L005004dd:
+            mov eax, 0x66066c
+            push ecx
+            push eax
+            push 0x6607f8
+            call dr_dprintf
+            add esp, 0xc
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00500500
@@ -289,7 +681,8 @@ void C2_HOOK_FASTCALL SSDXRelease(void) {
 }
 
 // FUNCTION: CARMA2_HW 0x00500760
-void C2_HOOK_FASTCALL SSDXDirectDrawSetup(int pWidth, int pHeight, int pBits, int* pPitch) {
+void C2_NAKED C2_HOOK_FASTCALL SSDXDirectDrawSetup(int pWidth, int pHeight, int pBits, int* pPitch) {
+#ifndef CARPOCALYPSE2_MATCHING
     HRESULT result;
 
     if (gWindowed) {
@@ -352,6 +745,238 @@ void C2_HOOK_FASTCALL SSDXDirectDrawSetup(int pWidth, int pHeight, int pBits, in
         dr_dprintf("WARNING: Problems during SSDXDirectDrawSetup()");
         SSDXLogError(result);
     }
+#else
+    __asm {
+            sub esp, 0x470
+            mov eax, dword ptr ds:[gWindowed]
+            push ebx
+            push ebp
+            mov ebx, edx
+            test eax, eax
+            mov ebp, ecx
+            mov dword ptr [esp + 8], 0
+            je L00500795
+            mov eax, dword ptr [esp + 0x480]
+            push eax
+            call LocalWindowedDDSetup
+            pop ebp
+            pop ebx
+            add esp, 0x470
+            ret 8
+    L00500795:
+            push edi
+            push esi
+            mov esi, dword ptr [esp + 0x484]
+            push esi
+            push ebx
+            push ebp
+            push 0x660b1c
+            call dr_dprintf
+            mov eax, dword ptr ds:[gEnumerate_DirectX_surfaces]
+            add esp, 0x10
+            test eax, eax
+            jne L005007c6
+            cmp ebp, 0x140
+            jne L005007c6
+            mov ecx, 1
+            jmp L005007c8
+    L005007c6:
+            xor ecx, ecx
+    L005007c8:
+            mov eax, dword ptr ds:[gDirectDraw2]
+            push ecx
+            push 0
+            push esi
+            mov edx, dword ptr [eax]
+            push ebx
+            push ebp
+            push eax
+            call dword ptr [edx + 0x54]
+            mov esi, eax
+            push ebx
+            push ebp
+            push 0
+            push 0
+            push offset gSSDXWindowPos
+            call dword ptr ds:[0x5891cc]
+            test esi, esi
+            jne L00500984
+            mov ecx, 0x1b
+            xor eax, eax
+            lea edi, [esp + 0x14]
+            push 0x660ae8
+            rep stosd
+            mov eax, dword ptr ds:[gEnumerate_DirectX_surfaces]
+            mov dword ptr [esp + 0x18], 0x6c
+            mov ecx, eax
+            neg ecx
+            sbb ecx, ecx
+            xor edx, edx
+            and ecx, 0x20
+            or ecx, 1
+            test eax, eax
+            setne dl
+            neg eax
+            sbb eax, eax
+            mov dword ptr [esp + 0x1c], ecx
+            and eax, 0x18
+            mov dword ptr [esp + 0x2c], edx
+            or ah, 0xa
+            mov dword ptr [esp + 0x80], eax
+            call dr_dprintf
+            mov eax, dword ptr ds:[gDirectDraw]
+            add esp, 4
+            lea edx, [esp + 0x14]
+            mov ecx, dword ptr [eax]
+            push esi
+            push offset gPrimary_surface
+            push edx
+            push eax
+            call dword ptr [ecx + 0x18]
+            mov esi, eax
+            test esi, esi
+            jne L00500984
+            mov eax, dword ptr ds:[gEnumerate_DirectX_surfaces]
+            test eax, eax
+            je L005008a8
+            push 0x660aac
+            call dr_dprintf
+            mov eax, dword ptr ds:[gPrimary_surface]
+            add esp, 4
+            lea edx, [esp + 0x10]
+            mov ecx, dword ptr [eax]
+            push offset LocalEnumAttachedSurfacesCallback
+            push edx
+            push eax
+            call dword ptr [ecx + 0x24]
+            mov esi, eax
+            mov eax, dword ptr [esp + 0x10]
+            push eax
+            push 0x660a80
+            call dr_dprintf
+            add esp, 8
+            jmp L0050090f
+    L005008a8:
+            push ebx
+            push ebp
+            push 0
+            push 0
+            push offset gSSDXRect
+            call dword ptr ds:[0x5891cc]
+            mov ecx, 0x1b
+            xor eax, eax
+            lea edi, [esp + 0x14]
+            push 0x6605dc
+            rep stosd
+            mov dword ptr [esp + 0x18], 0x6c
+            mov dword ptr [esp + 0x1c], 7
+            mov dword ptr [esp + 0x80], 0x840
+            mov dword ptr [esp + 0x24], ebp
+            mov dword ptr [esp + 0x20], ebx
+            call dr_dprintf
+            mov eax, dword ptr ds:[gDirectDraw]
+            add esp, 4
+            lea edx, [esp + 0x14]
+            mov ecx, dword ptr [eax]
+            push 0
+            push offset gAttached_surface
+            push edx
+            push eax
+            call dword ptr [ecx + 0x18]
+            mov esi, eax
+    L0050090f:
+            test esi, esi
+            jne L00500984
+            lea eax, [esp + 0x82]
+            mov ecx, 0x100
+    L0050091f:
+            mov byte ptr [eax + 1], 0
+            mov byte ptr [eax], 0
+            mov byte ptr [eax - 1], 0
+            mov byte ptr [eax - 2], 0
+            add eax, 4
+            dec ecx
+            jne L0050091f
+            push 0x660a4c
+            call dr_dprintf
+            mov eax, dword ptr ds:[gDirectDraw]
+            add esp, 4
+            lea edx, [esp + 0x80]
+            mov ecx, dword ptr [eax]
+            push 0
+            push offset gDirectDrawPalette
+            push edx
+            push 0x44
+            push eax
+            call dword ptr [ecx + 0x14]
+            mov esi, eax
+            test esi, esi
+            jne L00500984
+            push 0x660a1c
+            call dr_dprintf
+            mov eax, dword ptr ds:[gPrimary_surface]
+            mov edx, dword ptr ds:[gDirectDrawPalette]
+            add esp, 4
+            mov ecx, dword ptr [eax]
+            push edx
+            push eax
+            call dword ptr [ecx + 0x7c]
+            mov esi, eax
+    L00500984:
+            call SSDXLockAttachedSurface
+            mov eax, dword ptr ds:[gAttached_surface_locked]
+            test eax, eax
+            je L005009c8
+            mov eax, dword ptr ds:[gAttached_surface]
+            mov edx, dword ptr ds:[gSSDXLockedRect]
+            push edx
+            push eax
+            mov ecx, dword ptr [eax]
+            call dword ptr [ecx + 0x80]
+            mov edi, eax
+            test edi, edi
+            jne L005009b4
+            mov dword ptr ds:[gAttached_surface_locked], eax
+            jmp L005009c8
+    L005009b4:
+            push 0x66052c
+            call dr_dprintf
+            add esp, 4
+            mov ecx, edi
+            call SSDXLogError
+    L005009c8:
+            mov eax, dword ptr [esp + 0x488]
+            mov ecx, dword ptr ds:[gSSDXPitch]
+            test esi, esi
+            mov dword ptr [eax], ecx
+            je L005009fe
+            push 0x6609ec
+            call dr_dprintf
+            add esp, 4
+            mov ecx, esi
+            call SSDXLogError
+            mov eax, esi
+            pop esi
+            pop edi
+            pop ebp
+            pop ebx
+            add esp, 0x470
+            ret 8
+    L005009fe:
+            mov edx, dword ptr ds:[gSSDXPitch]
+            push edx
+            push 0x6609ac
+            call dr_dprintf
+            add esp, 8
+            mov eax, esi
+            pop esi
+            pop edi
+            pop ebp
+            pop ebx
+            add esp, 0x470
+            ret 8
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00500a30
@@ -411,24 +1036,70 @@ void C2_HOOK_FASTCALL SSDXUnlockAttachedSurface(void) {
 }
 
 // FUNCTION: CARMA2_HW 0x00500b90
-void C2_HOOK_FASTCALL SSDXBlitOrFlip(void) {
-
+void C2_NAKED C2_HOOK_FASTCALL SSDXBlitOrFlip(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     if (gWindowed) {
         SSDXBlit();
     } else {
         IDirectDrawSurface_Flip(gPrimary_surface, NULL, DDFLIP_WAIT);
     }
+#else
+    __asm {
+            mov eax, dword ptr [gWindowed]
+            test eax, eax
+            mov eax, dword ptr [gPrimary_surface]
+            mov ecx, dword ptr [eax]
+            je L00500bbd
+            mov edx, dword ptr [gAttached_surface]
+            push 0
+            push 0x1000000
+            push offset gSSDXRect
+            push edx
+            push offset gSSDXWindowPos
+            push eax
+            call dword ptr [ecx + 0x14]
+            ret
+    L00500bbd:
+            push 1
+            push 0
+            push eax
+            call dword ptr [ecx + 0x2c]
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00500bd0
-void C2_HOOK_FASTCALL SSDXBlit(void) {
+void C2_NAKED C2_HOOK_FASTCALL SSDXBlit(void) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     IDirectDrawSurface_Blt(gPrimary_surface, &gSSDXWindowPos, gAttached_surface, &gSSDXRect, DDBLT_WAIT, NULL);
+#else
+    __asm {
+            mov eax, dword ptr [gWindowed]
+            mov edx, dword ptr [gAttached_surface]
+            test eax, eax
+            mov eax, dword ptr [gPrimary_surface]
+            push 0
+            push 0x1000000
+            push offset gSSDXRect
+            mov ecx, dword ptr [eax]
+            push edx
+            push offset gSSDXWindowPos
+            push eax
+            call dword ptr [ecx + 0x14]
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00500c00
 void C2_HOOK_FASTCALL SSDXSetPaletteEntries(PALETTEENTRY* pPalette, int pStart, int pCount) {
-
     if (gWindowed && gDirectDrawPalette != NULL) {
         int i;
 

@@ -237,6 +237,44 @@ const char* ChunkNames[CHUNKNAMES_NB] = {
 // GLOBAL: CARMA2_HW 0x006b09b0
 int DatafileStackTop;
 
+#ifdef CARPOCALYPSE2_MATCHING
+extern C2_NORETURN void C2_HOOK_CDECL BrFailure();
+extern void C2_HOOK_CDECL BrFileClose();
+extern int C2_HOOK_CDECL BrFileEof();
+extern int C2_HOOK_CDECL BrFileGetLine();
+extern int C2_HOOK_CDECL BrFilePrintf();
+extern void C2_HOOK_CDECL BrFilePutChar();
+extern int C2_HOOK_CDECL BrFileRead();
+extern int C2_HOOK_CDECL BrFileWrite();
+extern void* C2_HOOK_CDECL BrMemCpy();
+extern void* C2_HOOK_CDECL BrResAllocate();
+extern void C2_HOOK_CDECL BrResFree();
+extern void* C2_HOOK_CDECL BrScratchAllocate();
+extern void C2_HOOK_CDECL BrScratchFree();
+extern char* C2_HOOK_CDECL BrScratchString();
+extern int C2_HOOK_CDECL BrStrCmp();
+extern char* C2_HOOK_CDECL BrStrNCpy();
+extern long C2_HOOK_CDECL BrStrToL();
+extern unsigned long C2_HOOK_CDECL BrStrToUL();
+extern br_uint_32 C2_HOOK_CDECL BrSwap32();
+extern void* C2_HOOK_CDECL BrSwapBlock();
+extern char _diag_scratch[];
+extern br_framework_state fw;
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern int C2_HOOK_CDECL BrMemCmp();
+extern char last_begin_screen[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern int C2_HOOK_CDECL BrFileGetChar();
+extern br_fixed_ls C2_HOOK_CDECL BrFixedMul();
+extern br_fixed_ls C2_HOOK_CDECL BrFixedMulDiv();
+extern char* C2_HOOK_CDECL BrResStrDup();
+extern br_size_t C2_HOOK_CDECL BrStrLen();
+extern double C2_HOOK_CDECL BrStrToD();
+extern float C2_HOOK_CDECL BrStrToF();
+extern void __cdecl _ftol();
+#endif
 // FUNCTION: CARMA2_HW 0x00529ff0
 void C2_HOOK_STDCALL DfPush(int type, void* value, unsigned int count) {
 
@@ -266,7 +304,8 @@ void* C2_HOOK_STDCALL DfPop(int type, int* countp) {
 }
 
 // FUNCTION: CARMA2_HW 0x0052a0b0
-void* C2_HOOK_STDCALL DfTop(int type, int* countp) {
+C2_NAKED void* C2_HOOK_STDCALL DfTop(int type, int* countp) {
+#ifndef CARPOCALYPSE2_MATCHING
     if (DatafileStackTop <= 0)
         BrFailure("DatafileStack Underflow");
     if (type != DatafileStack[DatafileStackTop - 1].type)
@@ -274,6 +313,42 @@ void* C2_HOOK_STDCALL DfTop(int type, int* countp) {
     if (countp != NULL)
         *countp = DatafileStack[DatafileStackTop - 1].count;
     return DatafileStack[DatafileStackTop - 1].value;
+#else
+    __asm {
+            mov eax, dword ptr [DatafileStackTop]
+            test eax, eax
+            jg L0052a0cb
+            push offset _BrFilePrimsWriteText+0xb0
+            call BrFailure
+            mov eax, dword ptr [DatafileStackTop]
+            add esp, 4
+    L0052a0cb:
+            mov edx, dword ptr [esp + 4]
+            lea ecx, [eax + eax*2]
+            cmp edx, dword ptr [ecx*4 + _diag_scratch+0x7c]
+            je L0052a0f6
+            mov eax, dword ptr [ecx*4 + DatafileStack]
+            push eax
+            push edx
+            push offset _BrFilePrimsWriteText+0xc8
+            call BrFailure
+            mov eax, dword ptr [DatafileStackTop]
+            add esp, 0xc
+    L0052a0f6:
+            mov ecx, dword ptr [esp + 8]
+            test ecx, ecx
+            je L0052a10f
+            lea edx, [eax + eax*2]
+            mov eax, dword ptr [edx*4 + last_begin_screen]
+            mov dword ptr [ecx], eax
+            mov eax, dword ptr [DatafileStackTop]
+    L0052a10f:
+            dec eax
+            lea ecx, [eax + eax*2]
+            mov eax, dword ptr [ecx*4 + DatafileStack+0x4]
+            ret 8
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0052a120
@@ -285,7 +360,8 @@ int C2_HOOK_STDCALL DfTopType(void) {
 }
 
 // FUNCTION: CARMA2_HW 0x0052b630
-int C2_HOOK_STDCALL TextReadLine(br_datafile* df, char** ident, char** data) {
+int C2_NAKED C2_HOOK_STDCALL TextReadLine(br_datafile* df, char** ident, char** data) {
+#ifndef CARPOCALYPSE2_MATCHING
     char* cp;
 
     while (1) {
@@ -321,6 +397,117 @@ int C2_HOOK_STDCALL TextReadLine(br_datafile* df, char** ident, char** data) {
     }
     *cp = '\0';
     return 1;
+#else
+    __asm {
+            push esi
+            mov esi, dword ptr [esp + 8]
+            mov eax, dword ptr [esi]
+            push eax
+            push 0x100
+            call BrScratchString
+            push eax
+            call BrFileGetLine
+            mov ecx, dword ptr [esi]
+            add esp, 0xc
+            push ecx
+            call BrFileEof
+            add esp, 4
+            test eax, eax
+            jne L0052b698
+    L0052b65a:
+            call BrScratchString
+    L0052b65f:
+            mov cl, byte ptr [eax]
+            cmp cl, 0x20
+            je L0052b66b
+            cmp cl, 9
+            jne L0052b66e
+    L0052b66b:
+            inc eax
+            jmp L0052b65f
+    L0052b66e:
+            cmp byte ptr [eax], 0
+            jne L0052b69e
+            mov edx, dword ptr [esi]
+            push edx
+            push 0x100
+            call BrScratchString
+            push eax
+            call BrFileGetLine
+            mov eax, dword ptr [esi]
+            add esp, 0xc
+            push eax
+            call BrFileEof
+            add esp, 4
+            test eax, eax
+            je L0052b65a
+    L0052b698:
+            xor eax, eax
+            pop esi
+            ret 0xc
+    L0052b69e:
+            mov ecx, dword ptr [esp + 0xc]
+            mov dword ptr [ecx], eax
+            mov cl, byte ptr [eax]
+            cmp cl, 0x20
+            je L0052b6bd
+    L0052b6ab:
+            cmp cl, 9
+            je L0052b6bd
+            test cl, cl
+            je L0052b6bd
+            mov cl, byte ptr [eax + 1]
+            inc eax
+            cmp cl, 0x20
+            jne L0052b6ab
+    L0052b6bd:
+            mov byte ptr [eax], 0
+    L0052b6c0:
+            mov cl, byte ptr [eax + 1]
+            inc eax
+            cmp cl, 0x20
+            je L0052b6c0
+            cmp cl, 9
+            je L0052b6c0
+            mov edx, dword ptr [esp + 0x10]
+            mov dword ptr [edx], eax
+            mov cl, byte ptr [eax]
+            cmp cl, 0x22
+            jne L0052b6fd
+            mov cl, byte ptr [eax + 1]
+            inc eax
+            cmp cl, 0x22
+            je L0052b714
+    L0052b6e4:
+            test cl, cl
+            je L0052b714
+            mov cl, byte ptr [eax + 1]
+            inc eax
+            cmp cl, 0x22
+            jne L0052b6e4
+            mov byte ptr [eax], 0
+            mov eax, 1
+            pop esi
+            ret 0xc
+    L0052b6fd:
+            cmp cl, 0x20
+            je L0052b714
+    L0052b702:
+            cmp cl, 9
+            je L0052b714
+            test cl, cl
+            je L0052b714
+            mov cl, byte ptr [eax + 1]
+            inc eax
+            cmp cl, 0x20
+            jne L0052b702
+    L0052b714:
+            mov byte ptr [eax], 0
+            mov eax, 1
+            pop esi
+            ret 0xc
+    }
+#endif
 }
 
 br_uint_16 C2_HOOK_STDCALL scalarTypeConvert(br_datafile* df, br_uint_16 t) {
@@ -362,7 +549,8 @@ br_uint_16 C2_HOOK_STDCALL scalarTypeConvert(br_datafile* df, br_uint_16 t) {
 }
 
 // FUNCTION: CARMA2_HW 0x0052a140
-br_uint_32 C2_HOOK_STDCALL DfStructWriteBinary(br_datafile* df, br_file_struct* str, void* base) {
+br_uint_32 C2_NAKED C2_HOOK_STDCALL DfStructWriteBinary(br_datafile* df, br_file_struct* str, void* base) {
+#ifndef CARPOCALYPSE2_MATCHING
     unsigned int m;
     int i;
     int n;
@@ -493,10 +681,590 @@ br_uint_32 C2_HOOK_STDCALL DfStructWriteBinary(br_datafile* df, br_file_struct* 
         }
     }
     return 1;
+#else
+    __asm {
+    L0052a140:
+            sub esp, 0xc
+            mov eax, dword ptr [esp + 0x14]
+            push ebp
+            mov dword ptr [esp + 4], 0
+            mov ecx, dword ptr [eax + 4]
+            mov ebp, dword ptr [eax + 8]
+            test ecx, ecx
+            jbe L0052a46a
+            push edi
+            push esi
+            mov esi, dword ptr [esp + 0x1c]
+            push ebx
+    L0052a165:
+            mov edi, dword ptr [ebp + 4]
+            mov edx, dword ptr [esp + 0x28]
+            mov eax, dword ptr [esi + 8]
+            mov bx, word ptr [ebp]
+            add edi, edx
+            sub eax, 0xb
+            je L0052a4ca
+            dec eax
+            mov eax, ebx
+            je L0052a476
+            and eax, 0xffff
+            cmp eax, 0xa
+            je L0052a19b
+            cmp eax, 0x12
+            jle L0052a1a8
+            cmp eax, 0x15
+            jg L0052a1a8
+    L0052a19b:
+            push 0x667718
+            call BrFailure
+            add esp, 4
+    L0052a1a8:
+            mov eax, ebx
+    L0052a1aa:
+            and eax, 0xffff
+            cmp eax, 0x1f
+            ja L0052a44c
+            jmp dword ptr [eax*4 + 0x52a524]
+            mov edx, dword ptr [esi]
+            xor eax, eax
+            mov al, byte ptr [edi + 3]
+            push edx
+            push eax
+            call BrFilePutChar
+            add esp, 8
+            mov ecx, dword ptr [esi]
+            xor edx, edx
+            mov dl, byte ptr [edi + 2]
+            push ecx
+            push edx
+            call BrFilePutChar
+            mov eax, dword ptr [esi]
+            add esp, 8
+            xor ecx, ecx
+            mov cl, byte ptr [edi + 1]
+            push eax
+            push ecx
+            call BrFilePutChar
+            add esp, 8
+            mov edx, dword ptr [esi]
+            xor eax, eax
+            mov al, byte ptr [edi]
+            push edx
+            push eax
+            jmp L0052a444
+            mov ecx, dword ptr [esi]
+            xor edx, edx
+            mov dl, byte ptr [edi + 7]
+            push ecx
+            push edx
+            call BrFilePutChar
+            mov eax, dword ptr [esi]
+            add esp, 8
+            xor ecx, ecx
+            mov cl, byte ptr [edi + 6]
+            push eax
+            push ecx
+            call BrFilePutChar
+            mov edx, dword ptr [esi]
+            add esp, 8
+            xor eax, eax
+            mov al, byte ptr [edi + 5]
+            push edx
+            push eax
+            call BrFilePutChar
+            mov ecx, dword ptr [esi]
+            add esp, 8
+            xor edx, edx
+            mov dl, byte ptr [edi + 4]
+            push ecx
+            push edx
+            call BrFilePutChar
+            mov eax, dword ptr [esi]
+            add esp, 8
+            xor ecx, ecx
+            mov cl, byte ptr [edi + 3]
+            push eax
+            push ecx
+            call BrFilePutChar
+            mov edx, dword ptr [esi]
+            add esp, 8
+            xor eax, eax
+            mov al, byte ptr [edi + 2]
+            push edx
+            push eax
+            call BrFilePutChar
+            add esp, 8
+            mov ecx, dword ptr [esi]
+            xor edx, edx
+            mov dl, byte ptr [edi + 1]
+            push ecx
+            push edx
+            call BrFilePutChar
+            mov eax, dword ptr [esi]
+            add esp, 8
+            xor ecx, ecx
+            mov cl, byte ptr [edi]
+            push eax
+            push ecx
+            jmp L0052a444
+            _emit 0xdb
+        _emit 0x07
+            jmp L0052a2ab
+            movsx edx, word ptr [edi]
+            shl edx, 1
+            mov dword ptr [esp + 0x20], edx
+            fild dword ptr [esp + 0x20]
+            fmul qword ptr ds:[0x58b840]
+            jmp L0052a2b1
+            xor eax, eax
+            mov ax, word ptr [edi]
+            shl eax, 1
+            mov dword ptr [esp + 0x20], eax
+            fild dword ptr [esp + 0x20]
+    L0052a2ab:
+            fmul qword ptr ds:[0x58b838]
+    L0052a2b1:
+            mov ecx, dword ptr [esi]
+            fstp dword ptr [esp + 0x14]
+            mov edx, dword ptr [esp + 0x17]
+            push ecx
+            and edx, 0xff
+            push edx
+            call BrFilePutChar
+            mov ecx, dword ptr [esp + 0x1e]
+            mov eax, dword ptr [esi]
+            add esp, 8
+            and ecx, 0xff
+            push eax
+            push ecx
+            call BrFilePutChar
+            mov eax, dword ptr [esp + 0x1d]
+            mov edx, dword ptr [esi]
+            add esp, 8
+            and eax, 0xff
+            push edx
+            push eax
+            call BrFilePutChar
+            mov edx, dword ptr [esp + 0x1c]
+            mov ecx, dword ptr [esi]
+            add esp, 8
+            and edx, 0xff
+            push ecx
+            push edx
+            jmp L0052a444
+            mov ebx, 2
+            jmp L0052a31c
+            mov ebx, 3
+            jmp L0052a31c
+            mov ebx, 4
+    L0052a31c:
+            test ebx, ebx
+            jle L0052a44c
+    L0052a324:
+            _emit 0xdb
+        _emit 0x07
+            mov eax, dword ptr [esi]
+            push eax
+            fmul qword ptr ds:[0x58b838]
+            fstp dword ptr [esp + 0x18]
+            mov ecx, dword ptr [esp + 0x1b]
+            and ecx, 0xff
+            push ecx
+            call BrFilePutChar
+            mov eax, dword ptr [esp + 0x1e]
+            mov edx, dword ptr [esi]
+            add esp, 8
+            and eax, 0xff
+            push edx
+            push eax
+            call BrFilePutChar
+            mov edx, dword ptr [esp + 0x1d]
+            mov ecx, dword ptr [esi]
+            add esp, 8
+            and edx, 0xff
+            push ecx
+            push edx
+            call BrFilePutChar
+            mov ecx, dword ptr [esp + 0x1c]
+            mov eax, dword ptr [esi]
+            add esp, 8
+            and ecx, 0xff
+            push eax
+            push ecx
+            call BrFilePutChar
+            add esp, 8
+            add edi, 4
+            dec ebx
+            jne L0052a324
+            jmp L0052a44c
+            mov ebx, 2
+            jmp L0052a3a5
+            mov ebx, 3
+            jmp L0052a3a5
+            mov ebx, 4
+    L0052a3a5:
+            test ebx, ebx
+            jle L0052a44c
+    L0052a3ad:
+            mov edx, dword ptr [edi]
+            mov eax, dword ptr [esi]
+            mov dword ptr [esp + 0x14], edx
+            push eax
+            mov ecx, dword ptr [esp + 0x1b]
+            and ecx, 0xff
+            push ecx
+            call BrFilePutChar
+            mov eax, dword ptr [esp + 0x1e]
+            mov edx, dword ptr [esi]
+            add esp, 8
+            and eax, 0xff
+            push edx
+            push eax
+            call BrFilePutChar
+            mov edx, dword ptr [esp + 0x1d]
+            mov ecx, dword ptr [esi]
+            add esp, 8
+            and edx, 0xff
+            push ecx
+            push edx
+            call BrFilePutChar
+            mov ecx, dword ptr [esp + 0x1c]
+            mov eax, dword ptr [esi]
+            add esp, 8
+            and ecx, 0xff
+            push eax
+            push ecx
+            call BrFilePutChar
+            add esp, 8
+            add edi, 4
+            dec ebx
+            jne L0052a3ad
+            jmp L0052a44c
+            mov edx, dword ptr [ebp + 0xc]
+            push edi
+            push edx
+            push esi
+            call L0052a140
+            jmp L0052a44c
+            mov eax, dword ptr [edi]
+            test eax, eax
+            je L0052a43f
+            mov ecx, dword ptr [esi]
+            push ecx
+            push eax
+            call BrStrLen
+            mov edx, dword ptr [edi]
+            add esp, 4
+            push eax
+            push 1
+            push edx
+            call BrFileWrite
+            add esp, 0x10
+    L0052a43f:
+            mov eax, dword ptr [esi]
+            push eax
+            push 0
+    L0052a444:
+            call BrFilePutChar
+            add esp, 8
+    L0052a44c:
+            mov ecx, dword ptr [esp + 0x24]
+            mov eax, dword ptr [esp + 0x10]
+            inc eax
+            add ebp, 0x10
+            mov edx, dword ptr [ecx + 4]
+            mov dword ptr [esp + 0x10], eax
+            cmp eax, edx
+            jb L0052a165
+            pop ebx
+            pop esi
+            pop edi
+    L0052a46a:
+            mov eax, 1
+            pop ebp
+            add esp, 0xc
+            ret 0xc
+    L0052a476:
+            and eax, 0xffff
+            add eax, -0xa
+            cmp eax, 0xb
+            ja L0052a1a8
+            jmp dword ptr [eax*4 + 0x52a5a4]
+            mov eax, 8
+            jmp L0052a1aa
+            mov eax, 0x18
+            jmp L0052a1aa
+            mov eax, 0x19
+            jmp L0052a1aa
+            mov eax, 0x1d
+            jmp L0052a1aa
+            mov eax, 0x1e
+            jmp L0052a1aa
+            mov eax, 0x1f
+            jmp L0052a1aa
+    L0052a4ca:
+            mov ecx, ebx
+            and ecx, 0xffff
+            lea eax, [ecx - 0xa]
+            cmp eax, 0xb
+            ja L0052a1a8
+            jmp dword ptr [eax*4 + 0x52a5d4]
+            mov eax, 6
+            jmp L0052a1aa
+            mov eax, 0x16
+            jmp L0052a1aa
+            mov eax, 0x17
+            jmp L0052a1aa
+            mov eax, 0x1a
+            jmp L0052a1aa
+            mov eax, 0x1b
+            jmp L0052a1aa
+            mov eax, 0x1c
+            jmp L0052a1aa
+            lea ecx, [ecx]
+            _emit 0xf2
+            _emit 0xa1
+            _emit 0x52
+            _emit 0x00
+            _emit 0xf2
+            _emit 0xa1
+            _emit 0x52
+            _emit 0x00
+            _emit 0x65
+            _emit 0xa2
+            _emit 0x52
+            _emit 0x00
+            _emit 0x65
+            _emit 0xa2
+            _emit 0x52
+            _emit 0x00
+            _emit 0xbf
+            _emit 0xa1
+            _emit 0x52
+            _emit 0x00
+            _emit 0xbf
+            _emit 0xa1
+            _emit 0x52
+            _emit 0x00
+            _emit 0x83
+            _emit 0xa2
+            _emit 0x52
+            _emit 0x00
+            _emit 0x65
+            _emit 0xa2
+            _emit 0x52
+            _emit 0x00
+            _emit 0xbf
+            _emit 0xa1
+            _emit 0x52
+            _emit 0x00
+            _emit 0xff
+            _emit 0xa1
+            _emit 0x52
+            _emit 0x00
+            _emit 0x4c
+            _emit 0xa4
+            _emit 0x52
+            _emit 0x00
+            _emit 0x4c
+            _emit 0xa4
+            _emit 0x52
+            _emit 0x00
+            _emit 0x4c
+            _emit 0xa4
+            _emit 0x52
+            _emit 0x00
+            _emit 0xf2
+            _emit 0xa1
+            _emit 0x52
+            _emit 0x00
+            _emit 0x65
+            _emit 0xa2
+            _emit 0x52
+            _emit 0x00
+            _emit 0xbf
+            _emit 0xa1
+            _emit 0x52
+            _emit 0x00
+            _emit 0x12
+            _emit 0xa4
+            _emit 0x52
+            _emit 0x00
+            _emit 0x1f
+            _emit 0xa4
+            _emit 0x52
+            _emit 0x00
+            _emit 0xd0
+            _emit 0xa1
+            _emit 0x52
+            _emit 0x00
+            _emit 0x4c
+            _emit 0xa4
+            _emit 0x52
+            _emit 0x00
+            _emit 0x4c
+            _emit 0xa4
+            _emit 0x52
+            _emit 0x00
+            _emit 0x4c
+            _emit 0xa4
+            _emit 0x52
+            _emit 0x00
+            _emit 0x87
+            _emit 0xa2
+            _emit 0x52
+            _emit 0x00
+            _emit 0x9c
+            _emit 0xa2
+            _emit 0x52
+            _emit 0x00
+            _emit 0xbf
+            _emit 0xa1
+            _emit 0x52
+            _emit 0x00
+            _emit 0xbf
+            _emit 0xa1
+            _emit 0x52
+            _emit 0x00
+            _emit 0x09
+            _emit 0xa3
+            _emit 0x52
+            _emit 0x00
+            _emit 0x10
+            _emit 0xa3
+            _emit 0x52
+            _emit 0x00
+            _emit 0x17
+            _emit 0xa3
+            _emit 0x52
+            _emit 0x00
+            _emit 0x92
+            _emit 0xa3
+            _emit 0x52
+            _emit 0x00
+            _emit 0x99
+            _emit 0xa3
+            _emit 0x52
+            _emit 0x00
+            _emit 0xa0
+            _emit 0xa3
+            _emit 0x52
+            _emit 0x00
+            _emit 0x8e
+            _emit 0xa4
+            _emit 0x52
+            _emit 0x00
+            _emit 0x98
+            _emit 0xa4
+            _emit 0x52
+            _emit 0x00
+            _emit 0xa2
+            _emit 0xa4
+            _emit 0x52
+            _emit 0x00
+            _emit 0xa8
+            _emit 0xa1
+            _emit 0x52
+            _emit 0x00
+            _emit 0xa8
+            _emit 0xa1
+            _emit 0x52
+            _emit 0x00
+            _emit 0xa8
+            _emit 0xa1
+            _emit 0x52
+            _emit 0x00
+            _emit 0xa8
+            _emit 0xa1
+            _emit 0x52
+            _emit 0x00
+            _emit 0xa8
+            _emit 0xa1
+            _emit 0x52
+            _emit 0x00
+            _emit 0xa8
+            _emit 0xa1
+            _emit 0x52
+            _emit 0x00
+            _emit 0xac
+            _emit 0xa4
+            _emit 0x52
+            _emit 0x00
+            _emit 0xb6
+            _emit 0xa4
+            _emit 0x52
+            _emit 0x00
+            _emit 0xc0
+            _emit 0xa4
+            _emit 0x52
+            _emit 0x00
+            _emit 0xe5
+            _emit 0xa4
+            _emit 0x52
+            _emit 0x00
+            _emit 0xef
+            _emit 0xa4
+            _emit 0x52
+            _emit 0x00
+            _emit 0xf9
+            _emit 0xa4
+            _emit 0x52
+            _emit 0x00
+            _emit 0xa8
+            _emit 0xa1
+            _emit 0x52
+            _emit 0x00
+            _emit 0xa8
+            _emit 0xa1
+            _emit 0x52
+            _emit 0x00
+            _emit 0xa8
+            _emit 0xa1
+            _emit 0x52
+            _emit 0x00
+            _emit 0xa8
+            _emit 0xa1
+            _emit 0x52
+            _emit 0x00
+            _emit 0xa8
+            _emit 0xa1
+            _emit 0x52
+            _emit 0x00
+            _emit 0xa8
+            _emit 0xa1
+            _emit 0x52
+            _emit 0x00
+            _emit 0x03
+            _emit 0xa5
+            _emit 0x52
+            _emit 0x00
+            _emit 0x0d
+            _emit 0xa5
+            _emit 0x52
+            _emit 0x00
+            _emit 0x17
+            _emit 0xa5
+            _emit 0x52
+            _emit 0x00
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0052a610
-br_uint_32 C2_HOOK_STDCALL DfStructReadBinary(br_datafile* df, br_file_struct* str, void* base) {
+br_uint_32 C2_NAKED C2_HOOK_STDCALL DfStructReadBinary(br_datafile* df, br_file_struct* str, void* base) {
+#ifndef CARPOCALYPSE2_MATCHING
     char tmp_string[256];
     unsigned int m;
     int i;
@@ -633,10 +1401,589 @@ br_uint_32 C2_HOOK_STDCALL DfStructReadBinary(br_datafile* df, br_file_struct* s
     }
 
     return 1;
+#else
+    __asm {
+    L0052a610:
+            sub esp, 0x10c
+            mov eax, dword ptr [esp + 0x114]
+            push ebx
+            mov dword ptr [esp + 0xc], 0
+            mov ecx, dword ptr [eax + 4]
+            mov ebx, dword ptr [eax + 8]
+            test ecx, ecx
+            jbe L0052a98a
+            push edi
+            push esi
+            mov esi, dword ptr [esp + 0x11c]
+            push ebp
+    L0052a63e:
+            mov edi, dword ptr [ebx + 4]
+            mov edx, dword ptr [esp + 0x128]
+            mov eax, dword ptr [esi + 8]
+            mov bp, word ptr [ebx]
+            add edi, edx
+            sub eax, 0xb
+            je L0052a9ed
+            dec eax
+            mov eax, ebp
+            je L0052a999
+            and eax, 0xffff
+            cmp eax, 0xa
+            je L0052a676
+            cmp eax, 0x12
+            jle L0052a683
+            cmp eax, 0x15
+            jg L0052a683
+    L0052a676:
+            push 0x667718
+            call BrFailure
+            add esp, 4
+    L0052a683:
+            mov eax, ebp
+    L0052a685:
+            and eax, 0xffff
+            cmp eax, 0x1f
+            ja L0052a969
+            jmp dword ptr [eax*4 + 0x52aa44]
+            mov edx, dword ptr [esi]
+            push edx
+            call BrFileGetChar
+            add esp, 4
+            mov byte ptr [edi + 3], al
+            mov eax, dword ptr [esi]
+            push eax
+            call BrFileGetChar
+            add esp, 4
+            mov byte ptr [edi + 2], al
+            mov ecx, dword ptr [esi]
+            push ecx
+            call BrFileGetChar
+            add esp, 4
+            mov byte ptr [edi + 1], al
+            mov edx, dword ptr [esi]
+            push edx
+            call BrFileGetChar
+            add esp, 4
+            mov byte ptr [edi], al
+            jmp L0052a969
+            mov eax, dword ptr [esi]
+            push eax
+            call BrFileGetChar
+            mov ecx, dword ptr [esi]
+            add esp, 4
+            mov byte ptr [esp + 0x13], al
+            push ecx
+            call BrFileGetChar
+            mov edx, dword ptr [esi]
+            add esp, 4
+            mov byte ptr [esp + 0x12], al
+            push edx
+            call BrFileGetChar
+            add esp, 4
+            mov byte ptr [esp + 0x11], al
+            mov eax, dword ptr [esi]
+            push eax
+            call BrFileGetChar
+            mov byte ptr [esp + 0x14], al
+            add esp, 4
+            fld dword ptr [esp + 0x10]
+            fmul dword ptr ds:[0x58b848]
+            call _ftol
+            jmp L0052a967
+            mov ecx, dword ptr [esi]
+            push ecx
+            call BrFileGetChar
+            mov edx, dword ptr [esi]
+            add esp, 4
+            mov byte ptr [esp + 0x13], al
+            push edx
+            call BrFileGetChar
+            add esp, 4
+            mov byte ptr [esp + 0x12], al
+            mov eax, dword ptr [esi]
+            push eax
+            call BrFileGetChar
+            mov ecx, dword ptr [esi]
+            add esp, 4
+            mov byte ptr [esp + 0x11], al
+            push ecx
+            call BrFileGetChar
+            mov byte ptr [esp + 0x14], al
+            add esp, 4
+            fld dword ptr [esp + 0x10]
+            fmul dword ptr ds:[0x58b84c]
+            call _ftol
+            mov word ptr [edi], ax
+            jmp L0052a969
+            mov edx, dword ptr [esi]
+            push edx
+            call BrFileGetChar
+            add esp, 4
+            mov byte ptr [esp + 0x13], al
+            mov eax, dword ptr [esi]
+            push eax
+            call BrFileGetChar
+            mov ecx, dword ptr [esi]
+            add esp, 4
+            mov byte ptr [esp + 0x12], al
+            push ecx
+            call BrFileGetChar
+            mov edx, dword ptr [esi]
+            add esp, 4
+            mov byte ptr [esp + 0x11], al
+            push edx
+            call BrFileGetChar
+            mov byte ptr [esp + 0x14], al
+            add esp, 4
+            fld dword ptr [esp + 0x10]
+            fmul dword ptr ds:[0x58b848]
+            call _ftol
+            mov word ptr [edi], ax
+            jmp L0052a969
+            mov eax, dword ptr [esi]
+            push eax
+            call BrFileGetChar
+            add esp, 4
+            mov byte ptr [edi + 7], al
+            mov ecx, dword ptr [esi]
+            push ecx
+            call BrFileGetChar
+            add esp, 4
+            mov byte ptr [edi + 6], al
+            mov edx, dword ptr [esi]
+            push edx
+            call BrFileGetChar
+            add esp, 4
+            mov byte ptr [edi + 5], al
+            mov eax, dword ptr [esi]
+            push eax
+            call BrFileGetChar
+            add esp, 4
+            mov byte ptr [edi + 4], al
+            mov ecx, dword ptr [esi]
+            push ecx
+            call BrFileGetChar
+            add esp, 4
+            mov byte ptr [edi + 3], al
+            mov edx, dword ptr [esi]
+            push edx
+            call BrFileGetChar
+            add esp, 4
+            mov byte ptr [edi + 2], al
+            mov eax, dword ptr [esi]
+            push eax
+            call BrFileGetChar
+            add esp, 4
+            mov byte ptr [edi + 1], al
+            mov ecx, dword ptr [esi]
+            push ecx
+            call BrFileGetChar
+            add esp, 4
+            mov byte ptr [edi], al
+            jmp L0052a969
+            mov ebp, 2
+            jmp L0052a853
+            mov ebp, 3
+            jmp L0052a853
+            mov ebp, 4
+    L0052a853:
+            test ebp, ebp
+            jle L0052a969
+    L0052a85b:
+            mov edx, dword ptr [esi]
+            push edx
+            call BrFileGetChar
+            add esp, 4
+            mov byte ptr [esp + 0x13], al
+            mov eax, dword ptr [esi]
+            push eax
+            call BrFileGetChar
+            mov ecx, dword ptr [esi]
+            add esp, 4
+            mov byte ptr [esp + 0x12], al
+            push ecx
+            call BrFileGetChar
+            mov edx, dword ptr [esi]
+            add esp, 4
+            mov byte ptr [esp + 0x11], al
+            push edx
+            call BrFileGetChar
+            mov byte ptr [esp + 0x14], al
+            add esp, 4
+            fld dword ptr [esp + 0x10]
+            fmul dword ptr ds:[0x58b848]
+            call _ftol
+            mov dword ptr [edi], eax
+            add edi, 4
+            dec ebp
+            jne L0052a85b
+            jmp L0052a969
+            mov ebp, 2
+            jmp L0052a8c6
+            mov ebp, 3
+            jmp L0052a8c6
+            mov ebp, 4
+    L0052a8c6:
+            test ebp, ebp
+            jle L0052a969
+    L0052a8ce:
+            mov eax, dword ptr [esi]
+            push eax
+            call BrFileGetChar
+            mov ecx, dword ptr [esi]
+            add esp, 4
+            mov byte ptr [esp + 0x13], al
+            push ecx
+            call BrFileGetChar
+            mov edx, dword ptr [esi]
+            add esp, 4
+            mov byte ptr [esp + 0x12], al
+            push edx
+            call BrFileGetChar
+            add esp, 4
+            mov byte ptr [esp + 0x11], al
+            mov eax, dword ptr [esi]
+            push eax
+            call BrFileGetChar
+            mov byte ptr [esp + 0x14], al
+            add esp, 4
+            mov ecx, dword ptr [esp + 0x10]
+            mov dword ptr [edi], ecx
+            add edi, 4
+            dec ebp
+            jne L0052a8ce
+            jmp L0052a969
+            mov edx, dword ptr [ebx + 0xc]
+            push edi
+            push edx
+            push esi
+            call L0052a610
+            jmp L0052a969
+            xor ebp, ebp
+    L0052a927:
+            mov eax, dword ptr [esi]
+            push eax
+            call BrFileGetChar
+            add esp, 4
+            test eax, eax
+            je L0052a948
+            cmp eax, -1
+            je L0052a948
+            mov byte ptr [esp + ebp + 0x1c], al
+            inc ebp
+            cmp ebp, 0xff
+            jl L0052a927
+    L0052a948:
+            mov eax, dword ptr [esi + 0xc]
+            mov byte ptr [esp + ebp + 0x1c], 0
+            test eax, eax
+            jne L0052a959
+            mov eax, dword ptr ds:[0x79f918]
+    L0052a959:
+            lea ecx, [esp + 0x1c]
+            push ecx
+            push eax
+            call BrResStrDup
+            add esp, 8
+    L0052a967:
+            mov dword ptr [edi], eax
+    L0052a969:
+            mov edx, dword ptr [esp + 0x124]
+            mov eax, dword ptr [esp + 0x18]
+            inc eax
+            add ebx, 0x10
+            mov ecx, dword ptr [edx + 4]
+            mov dword ptr [esp + 0x18], eax
+            cmp eax, ecx
+            jb L0052a63e
+            pop ebp
+            pop esi
+            pop edi
+    L0052a98a:
+            mov eax, 1
+            pop ebx
+            add esp, 0x10c
+            ret 0xc
+    L0052a999:
+            and eax, 0xffff
+            add eax, -0xa
+            cmp eax, 0xb
+            ja L0052a683
+            jmp dword ptr [eax*4 + 0x52aac4]
+            mov eax, 8
+            jmp L0052a685
+            mov eax, 0x18
+            jmp L0052a685
+            mov eax, 0x19
+            jmp L0052a685
+            mov eax, 0x1d
+            jmp L0052a685
+            mov eax, 0x1e
+            jmp L0052a685
+            mov eax, 0x1f
+            jmp L0052a685
+    L0052a9ed:
+            mov ecx, ebp
+            and ecx, 0xffff
+            lea eax, [ecx - 0xa]
+            cmp eax, 0xb
+            ja L0052a683
+            jmp dword ptr [eax*4 + 0x52aaf4]
+            mov eax, 6
+            jmp L0052a685
+            mov eax, 0x16
+            jmp L0052a685
+            mov eax, 0x17
+            jmp L0052a685
+            mov eax, 0x1a
+            jmp L0052a685
+            mov eax, 0x1b
+            jmp L0052a685
+            mov eax, 0x1c
+            jmp L0052a685
+            _emit 0xc4
+            _emit 0xa6
+            _emit 0x52
+            _emit 0x00
+            _emit 0xc4
+            _emit 0xa6
+            _emit 0x52
+            _emit 0x00
+            _emit 0x20
+            _emit 0xa8
+            _emit 0x52
+            _emit 0x00
+            _emit 0x20
+            _emit 0xa8
+            _emit 0x52
+            _emit 0x00
+            _emit 0x9a
+            _emit 0xa6
+            _emit 0x52
+            _emit 0x00
+            _emit 0x9a
+            _emit 0xa6
+            _emit 0x52
+            _emit 0x00
+            _emit 0xd6
+            _emit 0xa6
+            _emit 0x52
+            _emit 0x00
+            _emit 0x20
+            _emit 0xa8
+            _emit 0x52
+            _emit 0x00
+            _emit 0x9a
+            _emit 0xa6
+            _emit 0x52
+            _emit 0x00
+            _emit 0xcc
+            _emit 0xa7
+            _emit 0x52
+            _emit 0x00
+            _emit 0x69
+            _emit 0xa9
+            _emit 0x52
+            _emit 0x00
+            _emit 0x69
+            _emit 0xa9
+            _emit 0x52
+            _emit 0x00
+            _emit 0x69
+            _emit 0xa9
+            _emit 0x52
+            _emit 0x00
+            _emit 0xc4
+            _emit 0xa6
+            _emit 0x52
+            _emit 0x00
+            _emit 0x20
+            _emit 0xa8
+            _emit 0x52
+            _emit 0x00
+            _emit 0x9a
+            _emit 0xa6
+            _emit 0x52
+            _emit 0x00
+            _emit 0x18
+            _emit 0xa9
+            _emit 0x52
+            _emit 0x00
+            _emit 0x25
+            _emit 0xa9
+            _emit 0x52
+            _emit 0x00
+            _emit 0xa8
+            _emit 0xa6
+            _emit 0x52
+            _emit 0x00
+            _emit 0x69
+            _emit 0xa9
+            _emit 0x52
+            _emit 0x00
+            _emit 0x69
+            _emit 0xa9
+            _emit 0x52
+            _emit 0x00
+            _emit 0x69
+            _emit 0xa9
+            _emit 0x52
+            _emit 0x00
+            _emit 0x26
+            _emit 0xa7
+            _emit 0x52
+            _emit 0x00
+            _emit 0x79
+            _emit 0xa7
+            _emit 0x52
+            _emit 0x00
+            _emit 0x9a
+            _emit 0xa6
+            _emit 0x52
+            _emit 0x00
+            _emit 0x9a
+            _emit 0xa6
+            _emit 0x52
+            _emit 0x00
+            _emit 0x40
+            _emit 0xa8
+            _emit 0x52
+            _emit 0x00
+            _emit 0x47
+            _emit 0xa8
+            _emit 0x52
+            _emit 0x00
+            _emit 0x4e
+            _emit 0xa8
+            _emit 0x52
+            _emit 0x00
+            _emit 0xb3
+            _emit 0xa8
+            _emit 0x52
+            _emit 0x00
+            _emit 0xba
+            _emit 0xa8
+            _emit 0x52
+            _emit 0x00
+            _emit 0xc1
+            _emit 0xa8
+            _emit 0x52
+            _emit 0x00
+            _emit 0xb1
+            _emit 0xa9
+            _emit 0x52
+            _emit 0x00
+            _emit 0xbb
+            _emit 0xa9
+            _emit 0x52
+            _emit 0x00
+            _emit 0xc5
+            _emit 0xa9
+            _emit 0x52
+            _emit 0x00
+            _emit 0x83
+            _emit 0xa6
+            _emit 0x52
+            _emit 0x00
+            _emit 0x83
+            _emit 0xa6
+            _emit 0x52
+            _emit 0x00
+            _emit 0x83
+            _emit 0xa6
+            _emit 0x52
+            _emit 0x00
+            _emit 0x83
+            _emit 0xa6
+            _emit 0x52
+            _emit 0x00
+            _emit 0x83
+            _emit 0xa6
+            _emit 0x52
+            _emit 0x00
+            _emit 0x83
+            _emit 0xa6
+            _emit 0x52
+            _emit 0x00
+            _emit 0xcf
+            _emit 0xa9
+            _emit 0x52
+            _emit 0x00
+            _emit 0xd9
+            _emit 0xa9
+            _emit 0x52
+            _emit 0x00
+            _emit 0xe3
+            _emit 0xa9
+            _emit 0x52
+            _emit 0x00
+            _emit 0x08
+            _emit 0xaa
+            _emit 0x52
+            _emit 0x00
+            _emit 0x12
+            _emit 0xaa
+            _emit 0x52
+            _emit 0x00
+            _emit 0x1c
+            _emit 0xaa
+            _emit 0x52
+            _emit 0x00
+            _emit 0x83
+            _emit 0xa6
+            _emit 0x52
+            _emit 0x00
+            _emit 0x83
+            _emit 0xa6
+            _emit 0x52
+            _emit 0x00
+            _emit 0x83
+            _emit 0xa6
+            _emit 0x52
+            _emit 0x00
+            _emit 0x83
+            _emit 0xa6
+            _emit 0x52
+            _emit 0x00
+            _emit 0x83
+            _emit 0xa6
+            _emit 0x52
+            _emit 0x00
+            _emit 0x83
+            _emit 0xa6
+            _emit 0x52
+            _emit 0x00
+            _emit 0x26
+            _emit 0xaa
+            _emit 0x52
+            _emit 0x00
+            _emit 0x30
+            _emit 0xaa
+            _emit 0x52
+            _emit 0x00
+            _emit 0x3a
+            _emit 0xaa
+            _emit 0x52
+            _emit 0x00
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0052ab30
-int C2_HOOK_STDCALL DfStructSizeBinary(br_datafile* df, br_file_struct* str, void* base) {
+int C2_NAKED C2_HOOK_STDCALL DfStructSizeBinary(br_datafile* df, br_file_struct* str, void* base) {
+#ifndef CARPOCALYPSE2_MATCHING
     unsigned char* mp;
     unsigned int m;
     br_file_struct_member* sm;
@@ -701,6 +2048,357 @@ int C2_HOOK_STDCALL DfStructSizeBinary(br_datafile* df, br_file_struct* str, voi
     }
 
     return bytes;
+#else
+    __asm {
+    L0052ab30:
+            push ecx
+            mov eax, dword ptr [esp + 0xc]
+            push ebx
+            xor ebx, ebx
+            push edi
+            mov ecx, dword ptr [eax + 4]
+            mov edi, dword ptr [eax + 8]
+            cmp ecx, ebx
+            mov dword ptr [esp + 8], ebx
+            jbe L0052ac16
+            push esi
+            push ebp
+            mov ebp, dword ptr [esp + 0x20]
+    L0052ab51:
+            mov eax, dword ptr [esp + 0x18]
+            mov si, word ptr [edi]
+            mov eax, dword ptr [eax + 8]
+            sub eax, 0xb
+            je L0052ac75
+            dec eax
+            je L0052ac1e
+            mov eax, esi
+            and eax, 0xffff
+            cmp eax, 0xa
+            je L0052ab81
+            cmp eax, 0x12
+            jle L0052ab8e
+            cmp eax, 0x15
+            jg L0052ab8e
+    L0052ab81:
+            push 0x667718
+            call BrFailure
+            add esp, 4
+    L0052ab8e:
+            mov eax, esi
+    L0052ab90:
+            and eax, 0xffff
+            cmp eax, 0x1f
+            ja L0052abf9
+            xor ecx, ecx
+            mov cl, byte ptr [eax + 0x52ad1c]
+            jmp dword ptr [ecx*4 + 0x52accc]
+            add ebx, 2
+            jmp L0052abf9
+            add ebx, 4
+            jmp L0052abf9
+            add ebx, 8
+            jmp L0052abf9
+            add ebx, 0xc
+            jmp L0052abf9
+            add ebx, 0x10
+            jmp L0052abf9
+            test ebp, ebp
+            je L0052abcd
+            mov eax, dword ptr [edi + 4]
+            add eax, ebp
+            jmp L0052abcf
+    L0052abcd:
+            xor eax, eax
+    L0052abcf:
+            mov edx, dword ptr [edi + 0xc]
+            push eax
+            mov eax, dword ptr [esp + 0x1c]
+            push edx
+            push eax
+            call L0052ab30
+            add ebx, eax
+            jmp L0052abf9
+            mov eax, dword ptr [edi + 4]
+            add eax, ebp
+            mov eax, dword ptr [eax]
+            test eax, eax
+            je L0052abf8
+            push eax
+            call BrStrLen
+            add esp, 4
+            add ebx, eax
+    L0052abf8:
+            inc ebx
+    L0052abf9:
+            mov ecx, dword ptr [esp + 0x1c]
+            mov eax, dword ptr [esp + 0x10]
+            inc eax
+            add edi, 0x10
+            mov edx, dword ptr [ecx + 4]
+            mov dword ptr [esp + 0x10], eax
+            cmp eax, edx
+            jb L0052ab51
+            pop ebp
+            pop esi
+    L0052ac16:
+            mov eax, ebx
+            pop edi
+            pop ebx
+            pop ecx
+            ret 0xc
+    L0052ac1e:
+            mov ecx, esi
+            and ecx, 0xffff
+            lea eax, [ecx - 0xa]
+            cmp eax, 0xb
+            ja L0052ab8e
+            jmp dword ptr [eax*4 + 0x52ad3c]
+            mov eax, 8
+            jmp L0052ab90
+            mov eax, 0x18
+            jmp L0052ab90
+            mov eax, 0x19
+            jmp L0052ab90
+            mov eax, 0x1d
+            jmp L0052ab90
+            mov eax, 0x1e
+            jmp L0052ab90
+            mov eax, 0x1f
+            jmp L0052ab90
+    L0052ac75:
+            mov edx, esi
+            and edx, 0xffff
+            lea eax, [edx - 0xa]
+            cmp eax, 0xb
+            ja L0052ab8e
+            jmp dword ptr [eax*4 + 0x52ad6c]
+            mov eax, 6
+            jmp L0052ab90
+            mov eax, 0x16
+            jmp L0052ab90
+            mov eax, 0x17
+            jmp L0052ab90
+            mov eax, 0x1a
+            jmp L0052ab90
+            mov eax, 0x1b
+            jmp L0052ab90
+            mov eax, 0x1c
+            jmp L0052ab90
+            _emit 0xf8
+            _emit 0xab
+            _emit 0x52
+            _emit 0x00
+            _emit 0xa9
+            _emit 0xab
+            _emit 0x52
+            _emit 0x00
+            _emit 0xae
+            _emit 0xab
+            _emit 0x52
+            _emit 0x00
+            _emit 0xa9
+            _emit 0xab
+            _emit 0x52
+            _emit 0x00
+            _emit 0xae
+            _emit 0xab
+            _emit 0x52
+            _emit 0x00
+            _emit 0xb3
+            _emit 0xab
+            _emit 0x52
+            _emit 0x00
+            _emit 0xf8
+            _emit 0xab
+            _emit 0x52
+            _emit 0x00
+            _emit 0xa9
+            _emit 0xab
+            _emit 0x52
+            _emit 0x00
+            _emit 0xae
+            _emit 0xab
+            _emit 0x52
+            _emit 0x00
+            _emit 0xc2
+            _emit 0xab
+            _emit 0x52
+            _emit 0x00
+            _emit 0xe2
+            _emit 0xab
+            _emit 0x52
+            _emit 0x00
+            _emit 0xae
+            _emit 0xab
+            _emit 0x52
+            _emit 0x00
+            _emit 0xae
+            _emit 0xab
+            _emit 0x52
+            _emit 0x00
+            _emit 0xb3
+            _emit 0xab
+            _emit 0x52
+            _emit 0x00
+            _emit 0xb8
+            _emit 0xab
+            _emit 0x52
+            _emit 0x00
+            _emit 0xbd
+            _emit 0xab
+            _emit 0x52
+            _emit 0x00
+            _emit 0xb3
+            _emit 0xab
+            _emit 0x52
+            _emit 0x00
+            _emit 0xb8
+            _emit 0xab
+            _emit 0x52
+            _emit 0x00
+            _emit 0xbd
+            _emit 0xab
+            _emit 0x52
+            _emit 0x00
+            _emit 0xf9
+            _emit 0xab
+            _emit 0x52
+            _emit 0x00
+            _emit 0x00
+            _emit 0x00
+            _emit 0x01
+            _emit 0x01
+            _emit 0x02
+            _emit 0x02
+            _emit 0x02
+            _emit 0x03
+            _emit 0x04
+            _emit 0x05
+            _emit 0x13
+            _emit 0x13
+            _emit 0x13
+            _emit 0x06
+            _emit 0x07
+            _emit 0x08
+            _emit 0x09
+            _emit 0x0a
+            _emit 0x0b
+            _emit 0x13
+            _emit 0x13
+            _emit 0x13
+            _emit 0x0c
+            _emit 0x0c
+            _emit 0x0c
+            _emit 0x0c
+            _emit 0x0d
+            _emit 0x0e
+            _emit 0x0f
+            _emit 0x10
+            _emit 0x11
+            _emit 0x12
+            _emit 0x39
+            _emit 0xac
+            _emit 0x52
+            _emit 0x00
+            _emit 0x43
+            _emit 0xac
+            _emit 0x52
+            _emit 0x00
+            _emit 0x4d
+            _emit 0xac
+            _emit 0x52
+            _emit 0x00
+            _emit 0x8e
+            _emit 0xab
+            _emit 0x52
+            _emit 0x00
+            _emit 0x8e
+            _emit 0xab
+            _emit 0x52
+            _emit 0x00
+            _emit 0x8e
+            _emit 0xab
+            _emit 0x52
+            _emit 0x00
+            _emit 0x8e
+            _emit 0xab
+            _emit 0x52
+            _emit 0x00
+            _emit 0x8e
+            _emit 0xab
+            _emit 0x52
+            _emit 0x00
+            _emit 0x8e
+            _emit 0xab
+            _emit 0x52
+            _emit 0x00
+            _emit 0x57
+            _emit 0xac
+            _emit 0x52
+            _emit 0x00
+            _emit 0x61
+            _emit 0xac
+            _emit 0x52
+            _emit 0x00
+            _emit 0x6b
+            _emit 0xac
+            _emit 0x52
+            _emit 0x00
+            _emit 0x90
+            _emit 0xac
+            _emit 0x52
+            _emit 0x00
+            _emit 0x9a
+            _emit 0xac
+            _emit 0x52
+            _emit 0x00
+            _emit 0xa4
+            _emit 0xac
+            _emit 0x52
+            _emit 0x00
+            _emit 0x8e
+            _emit 0xab
+            _emit 0x52
+            _emit 0x00
+            _emit 0x8e
+            _emit 0xab
+            _emit 0x52
+            _emit 0x00
+            _emit 0x8e
+            _emit 0xab
+            _emit 0x52
+            _emit 0x00
+            _emit 0x8e
+            _emit 0xab
+            _emit 0x52
+            _emit 0x00
+            _emit 0x8e
+            _emit 0xab
+            _emit 0x52
+            _emit 0x00
+            _emit 0x8e
+            _emit 0xab
+            _emit 0x52
+            _emit 0x00
+            _emit 0xae
+            _emit 0xac
+            _emit 0x52
+            _emit 0x00
+            _emit 0xb8
+            _emit 0xac
+            _emit 0x52
+            _emit 0x00
+            _emit 0xc2
+            _emit 0xac
+            _emit 0x52
+            _emit 0x00
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+    }
+#endif
 }
 
 int C2_HOOK_STDCALL EnumFromString(br_file_enum* e, char* str) {
@@ -743,7 +2441,8 @@ br_uint_32 C2_HOOK_STDCALL DfStructWriteText(br_datafile* df, br_file_struct* st
 }
 
 // FUNCTION: CARMA2_HW 0x0052ade0
-br_uint_32 C2_HOOK_STDCALL StructWriteTextSub(br_datafile* df, br_file_struct* str, void* base, int indent) {
+br_uint_32 C2_NAKED C2_HOOK_STDCALL StructWriteTextSub(br_datafile* df, br_file_struct* str, void* base, int indent) {
+#ifndef CARPOCALYPSE2_MATCHING
     unsigned int m;
     int i;
     int w;
@@ -865,6 +2564,897 @@ br_uint_32 C2_HOOK_STDCALL StructWriteTextSub(br_datafile* df, br_file_struct* s
         }
     }
     return 1;
+#else
+    __asm {
+    L0052ade0:
+            push ebp
+            mov ebp, esp
+            and esp, 0xfffffff8
+            sub esp, 0x14
+            mov eax, dword ptr [ebp + 0xc]
+            push ebx
+            push esi
+            push edi
+            mov ecx, dword ptr [eax + 8]
+            mov dword ptr [esp + 0x1c], 0
+            mov dword ptr [esp + 0x10], ecx
+            mov ecx, dword ptr [eax + 4]
+            test ecx, ecx
+            jbe L0052b4b2
+            mov eax, dword ptr [ebp + 0x14]
+            mov edi, dword ptr [ebp + 8]
+            mov ebx, dword ptr [esp + 0x1c]
+            jmp L0052ae18
+    L0052ae15:
+            mov eax, dword ptr [ebp + 0x14]
+    L0052ae18:
+            mov edx, dword ptr [esp + 0x10]
+            mov esi, dword ptr [edx + 4]
+            mov edx, dword ptr [ebp + 0x10]
+            add esi, edx
+            test eax, eax
+            jle L0052ae44
+            mov dword ptr [esp + 0x14], eax
+    L0052ae2c:
+            mov eax, dword ptr [edi]
+            push eax
+            push 0x20
+            call BrFilePutChar
+            mov eax, dword ptr [esp + 0x1c]
+            add esp, 8
+            dec eax
+            mov dword ptr [esp + 0x14], eax
+            jne L0052ae2c
+    L0052ae44:
+            mov edx, dword ptr [esp + 0x10]
+            xor ecx, ecx
+            mov cx, word ptr [edx]
+            mov eax, dword ptr [ecx*4 + member_type_names]
+            mov ecx, dword ptr [edi]
+            push eax
+            push 0x667768
+            push ecx
+            call BrFilePrintf
+            mov edx, dword ptr [esp + 0x1c]
+            add esp, 0xc
+            mov dword ptr [esp + 0x18], 1
+            mov ax, word ptr [edx]
+            mov word ptr [esp + 0x14], ax
+            mov eax, dword ptr [edi + 8]
+            sub eax, 0xb
+            je L0052aef3
+            dec eax
+            mov eax, dword ptr [esp + 0x14]
+            je L0052aeb2
+            and eax, 0xffff
+            cmp eax, 0xa
+            je L0052ae9c
+            cmp eax, 0x12
+            jle L0052aea9
+            cmp eax, 0x15
+            jg L0052aea9
+    L0052ae9c:
+            push 0x667718
+            call BrFailure
+            add esp, 4
+    L0052aea9:
+            mov eax, dword ptr [esp + 0x14]
+            jmp L0052af36
+    L0052aeb2:
+            mov ecx, eax
+            and ecx, 0xffff
+            add ecx, -0xa
+            cmp ecx, 0xb
+            ja L0052af36
+            jmp dword ptr [ecx*4 + 0x52b4cc]
+            mov eax, 8
+            jmp L0052af36
+            mov eax, 0x18
+            jmp L0052af36
+            mov eax, 0x19
+            jmp L0052af36
+            mov eax, 0x1d
+            jmp L0052af36
+            mov eax, 0x1e
+            jmp L0052af36
+            mov eax, 0x1f
+            jmp L0052af36
+    L0052aef3:
+            mov eax, dword ptr [esp + 0x14]
+            mov edx, eax
+            and edx, 0xffff
+            lea ecx, [edx - 0xa]
+            cmp ecx, 0xb
+            ja L0052af36
+            jmp dword ptr [ecx*4 + 0x52b4fc]
+            mov eax, 6
+            jmp L0052af36
+            mov eax, 0x16
+            jmp L0052af36
+            mov eax, 0x17
+            jmp L0052af36
+            mov eax, 0x1a
+            jmp L0052af36
+            mov eax, 0x1b
+            jmp L0052af36
+            mov eax, 0x1c
+    L0052af36:
+            and eax, 0xffff
+            cmp eax, 0x1f
+            ja L0052b449
+            jmp dword ptr [eax*4 + 0x52b52c]
+            movsx eax, byte ptr [esi]
+            mov ecx, dword ptr [edi]
+            push eax
+            push 0x667770
+            push ecx
+            call BrFilePrintf
+            add esp, 0xc
+            jmp L0052b447
+            mov eax, dword ptr [edi]
+            xor edx, edx
+            mov dl, byte ptr [esi]
+            push edx
+            push 0x667774
+            push eax
+            call BrFilePrintf
+            add esp, 0xc
+            jmp L0052b447
+            movsx ecx, word ptr [esi]
+            mov edx, dword ptr [edi]
+            push ecx
+            push 0x667778
+            push edx
+            call BrFilePrintf
+            add esp, 0xc
+            jmp L0052b447
+            mov ecx, dword ptr [edi]
+            xor eax, eax
+            mov ax, word ptr [esi]
+            push eax
+            push 0x66777c
+            push ecx
+            call BrFilePrintf
+            add esp, 0xc
+            jmp L0052b447
+            mov eax, dword ptr [esi]
+            xor ecx, ecx
+            mov edx, eax
+            mov dword ptr [esp + 0x14], eax
+            and edx, 0xff
+            mov cl, ah
+            mov eax, dword ptr [edi]
+            push edx
+            xor edx, edx
+            push ecx
+            mov dl, byte ptr [esp + 0x1e]
+            push edx
+            push 0x667780
+            push eax
+            call BrFilePrintf
+            add esp, 0x14
+            jmp L0052b447
+            mov ecx, dword ptr [esi]
+            mov edx, dword ptr [edi]
+            push ecx
+            push 0x66778c
+            push edx
+            call BrFilePrintf
+            add esp, 0xc
+            jmp L0052b447
+            mov eax, dword ptr [esi]
+            mov ecx, dword ptr [edi]
+            push eax
+            push 0x667790
+            push ecx
+            call BrFilePrintf
+            add esp, 0xc
+            jmp L0052b447
+            _emit 0xdb
+        _emit 0x06
+            mov edx, dword ptr [edi]
+            sub esp, 8
+            fmul qword ptr ds:[0x58b838]
+            _emit 0xdd
+        _emit 0x1c
+        _emit 0x24
+            push 0x667794
+            push edx
+            call BrFilePrintf
+            add esp, 0x10
+            jmp L0052b447
+            movsx eax, word ptr [esi]
+            mov dword ptr [esp + 0x14], eax
+            mov ecx, dword ptr [edi]
+            fild dword ptr [esp + 0x14]
+            sub esp, 8
+            fmul qword ptr ds:[0x58b840]
+            _emit 0xdd
+        _emit 0x1c
+        _emit 0x24
+            push 0x667798
+            push ecx
+            call BrFilePrintf
+            add esp, 0x10
+            jmp L0052b447
+            xor edx, edx
+            mov eax, dword ptr [edi]
+            mov dx, word ptr [esi]
+            sub esp, 8
+            mov dword ptr [esp + 0x1c], edx
+            fild dword ptr [esp + 0x1c]
+            fmul qword ptr ds:[0x58b838]
+            _emit 0xdd
+        _emit 0x1c
+        _emit 0x24
+            push 0x66779c
+            push eax
+            call BrFilePrintf
+            add esp, 0x10
+            jmp L0052b447
+            xor ecx, ecx
+            push 0x1680000
+            mov cx, word ptr [esi]
+            push ecx
+            call BrFixedMul
+            mov dword ptr [esp + 0x1c], eax
+            mov edx, dword ptr [edi]
+            fild dword ptr [esp + 0x1c]
+            add esp, 8
+            sub esp, 8
+            fmul dword ptr ds:[0x58b850]
+            _emit 0xdd
+        _emit 0x1c
+        _emit 0x24
+            push 0x6677a0
+            push edx
+            call BrFilePrintf
+            add esp, 0x10
+            jmp L0052b447
+            _emit 0xd9
+        _emit 0x06
+            mov eax, dword ptr [edi]
+            sub esp, 8
+            _emit 0xdd
+        _emit 0x1c
+        _emit 0x24
+            push 0x6677a4
+            push eax
+            call BrFilePrintf
+            add esp, 0x10
+            jmp L0052b447
+            mov ecx, dword ptr [esi + 4]
+            mov edx, dword ptr [esi]
+            mov eax, dword ptr [edi]
+            push ecx
+            push edx
+            push 0x6677a8
+            push eax
+            call BrFilePrintf
+            add esp, 0x10
+            jmp L0052b447
+            mov ecx, dword ptr [esp + 0x10]
+            xor ebx, ebx
+            mov bl, byte ptr [esi]
+            xor eax, eax
+            mov edx, dword ptr [ecx + 0xc]
+            mov ecx, dword ptr [edx]
+            test ecx, ecx
+            jbe L0052b12c
+            mov edx, dword ptr [edx + 4]
+            mov esi, edx
+    L0052b11c:
+            cmp ebx, dword ptr [esi]
+            je L0052b4c0
+            inc eax
+            add esi, 8
+            cmp eax, ecx
+            jb L0052b11c
+    L0052b12c:
+            push ebx
+            push 0x667748
+            call BrFailure
+            add esp, 8
+            xor eax, eax
+    L0052b13c:
+            mov edx, dword ptr [edi]
+            push eax
+            push 0x6677ac
+            push edx
+            call BrFilePrintf
+            add esp, 0xc
+            jmp L0052b447
+            mov ecx, dword ptr [esp + 0x10]
+            xor eax, eax
+            mov ax, word ptr [esi]
+            mov esi, dword ptr [ecx + 0xc]
+            xor ecx, ecx
+            mov edx, dword ptr [esi]
+            test edx, edx
+            jbe L0052b17f
+            mov esi, dword ptr [esi + 4]
+            mov ebx, esi
+    L0052b16b:
+            cmp eax, dword ptr [ebx]
+            je L0052b179
+            inc ecx
+            add ebx, 8
+            cmp ecx, edx
+            jb L0052b16b
+            jmp L0052b17f
+    L0052b179:
+            mov ecx, dword ptr [esi + ecx*8 + 4]
+            jmp L0052b18f
+    L0052b17f:
+            push eax
+            push 0x667748
+            call BrFailure
+            add esp, 8
+            xor ecx, ecx
+    L0052b18f:
+            mov edx, dword ptr [edi]
+            push ecx
+            push 0x6677b0
+            push edx
+            call BrFilePrintf
+            add esp, 0xc
+            jmp L0052b447
+            mov eax, dword ptr [esp + 0x10]
+            mov esi, dword ptr [esi]
+            mov edx, dword ptr [eax + 0xc]
+            xor eax, eax
+            mov ecx, dword ptr [edx]
+            test ecx, ecx
+            jbe L0052b1cf
+            mov edx, dword ptr [edx + 4]
+            mov ebx, edx
+    L0052b1bb:
+            cmp esi, dword ptr [ebx]
+            je L0052b1c9
+            inc eax
+            add ebx, 8
+            cmp eax, ecx
+            jb L0052b1bb
+            jmp L0052b1cf
+    L0052b1c9:
+            mov eax, dword ptr [edx + eax*8 + 4]
+            jmp L0052b1df
+    L0052b1cf:
+            push esi
+            push 0x667748
+            call BrFailure
+            add esp, 8
+            xor eax, eax
+    L0052b1df:
+            mov ecx, dword ptr [edi]
+            push eax
+            push 0x6677b4
+            push ecx
+            call BrFilePrintf
+            add esp, 0xc
+            jmp L0052b447
+            _emit 0xdb
+        _emit 0x06
+            fild dword ptr [esi + 4]
+            mov edx, dword ptr [edi]
+            sub esp, 8
+            sub esp, 8
+            fmul qword ptr ds:[0x58b838]
+            fxch st(1)
+            fmul qword ptr ds:[0x58b838]
+            fst dword ptr [esp + 0x24]
+            fxch st(1)
+            fstp qword ptr [esp + 8]
+            _emit 0xdd
+        _emit 0x1c
+        _emit 0x24
+            push 0x6677b8
+            push edx
+            call BrFilePrintf
+            add esp, 0x18
+            jmp L0052b447
+            fild dword ptr [esi + 8]
+            fild dword ptr [esi + 4]
+            _emit 0xdb
+        _emit 0x06
+            fxch st(2)
+            fmul qword ptr ds:[0x58b838]
+            fxch st(1)
+            fmul qword ptr ds:[0x58b838]
+            fxch st(2)
+            fmul qword ptr ds:[0x58b838]
+            fld st(1)
+            fxch st(3)
+            fst dword ptr [esp + 0x14]
+            sub esp, 8
+            mov eax, dword ptr [edi]
+            fxch st(3)
+            _emit 0xdd
+        _emit 0x1c
+        _emit 0x24
+            sub esp, 8
+            fst dword ptr [esp + 0x24]
+            fxch st(2)
+            _emit 0xdd
+        _emit 0x1c
+        _emit 0x24
+            fxch st(1)
+            sub esp, 8
+            _emit 0xdd
+        _emit 0x1c
+        _emit 0x24
+            push 0x6677c0
+            push eax
+            fstp st(0)
+            call BrFilePrintf
+            add esp, 0x20
+            jmp L0052b447
+            fild dword ptr [esi + 0xc]
+            fild dword ptr [esi + 8]
+            fild dword ptr [esi + 4]
+            fxch st(2)
+            fmul qword ptr ds:[0x58b838]
+            _emit 0xdb
+        _emit 0x06
+            fxch st(2)
+            fmul qword ptr ds:[0x58b838]
+            fxch st(3)
+            fmul qword ptr ds:[0x58b838]
+            fld st(1)
+            fxch st(3)
+            fmul qword ptr ds:[0x58b838]
+            fxch st(4)
+            fst dword ptr [esp + 0x14]
+            sub esp, 8
+            mov ecx, dword ptr [edi]
+            fxch st(3)
+            _emit 0xdd
+        _emit 0x1c
+        _emit 0x24
+            sub esp, 8
+            fst dword ptr [esp + 0x24]
+            fxch st(2)
+            _emit 0xdd
+        _emit 0x1c
+        _emit 0x24
+            fxch st(2)
+            fst dword ptr [esp + 0x24]
+            sub esp, 8
+            fxch st(1)
+            _emit 0xdd
+        _emit 0x1c
+        _emit 0x24
+            sub esp, 8
+            _emit 0xdd
+        _emit 0x1c
+        _emit 0x24
+            push 0x6677cc
+            push ecx
+            fstp st(0)
+            call BrFilePrintf
+            add esp, 0x28
+            jmp L0052b447
+            fld dword ptr [esi + 4]
+            sub esp, 8
+            mov edx, dword ptr [edi]
+            _emit 0xdd
+        _emit 0x1c
+        _emit 0x24
+            _emit 0xd9
+        _emit 0x06
+            sub esp, 8
+            _emit 0xdd
+        _emit 0x1c
+        _emit 0x24
+            push 0x6677d8
+            push edx
+            call BrFilePrintf
+            add esp, 0x18
+            jmp L0052b447
+            fld dword ptr [esi + 8]
+            sub esp, 8
+            mov eax, dword ptr [edi]
+            _emit 0xdd
+        _emit 0x1c
+        _emit 0x24
+            fld dword ptr [esi + 4]
+            sub esp, 8
+            _emit 0xdd
+        _emit 0x1c
+        _emit 0x24
+            _emit 0xd9
+        _emit 0x06
+            sub esp, 8
+            _emit 0xdd
+        _emit 0x1c
+        _emit 0x24
+            push 0x6677e0
+            push eax
+            call BrFilePrintf
+            add esp, 0x20
+            jmp L0052b447
+            fld dword ptr [esi + 0xc]
+            sub esp, 8
+            mov ecx, dword ptr [edi]
+            _emit 0xdd
+        _emit 0x1c
+        _emit 0x24
+            fld dword ptr [esi + 8]
+            sub esp, 8
+            _emit 0xdd
+        _emit 0x1c
+        _emit 0x24
+            fld dword ptr [esi + 4]
+            sub esp, 8
+            _emit 0xdd
+        _emit 0x1c
+        _emit 0x24
+            _emit 0xd9
+        _emit 0x06
+            sub esp, 8
+            _emit 0xdd
+        _emit 0x1c
+        _emit 0x24
+            push 0x6677ec
+            push ecx
+            call BrFilePrintf
+            add esp, 0x28
+            jmp L0052b447
+            mov edx, dword ptr [esp + 0x10]
+            mov eax, dword ptr [edx + 0xc]
+            mov edx, dword ptr [edi]
+            mov ecx, dword ptr [eax]
+            push ecx
+            push 0x6677f8
+            push edx
+            call BrFilePrintf
+            mov ebx, eax
+            mov eax, dword ptr [esp + 0x1c]
+            add esp, 0xc
+            mov dword ptr [esp + 0x18], 0
+            mov ecx, dword ptr [eax + 8]
+            test ecx, ecx
+            je L0052b3f9
+            cmp ebx, 0x28
+            jge L0052b3e1
+            mov eax, 0x28
+            sub eax, ebx
+            mov dword ptr [esp + 0x14], eax
+    L0052b3c9:
+            mov ecx, dword ptr [edi]
+            push ecx
+            push 0x20
+            call BrFilePutChar
+            mov eax, dword ptr [esp + 0x1c]
+            add esp, 8
+            dec eax
+            mov dword ptr [esp + 0x14], eax
+            jne L0052b3c9
+    L0052b3e1:
+            mov edx, dword ptr [esp + 0x10]
+            mov ecx, dword ptr [edi]
+            mov eax, dword ptr [edx + 8]
+            push eax
+            push 0x6677fc
+            push ecx
+            call BrFilePrintf
+            add esp, 0xc
+    L0052b3f9:
+            mov edx, dword ptr [edi]
+            push edx
+            push 0xa
+            call BrFilePutChar
+            mov eax, dword ptr [ebp + 0x14]
+            mov ecx, dword ptr [esp + 0x18]
+            add esp, 8
+            add eax, 2
+            mov edx, dword ptr [ecx + 0xc]
+            push eax
+            push esi
+            push edx
+            push edi
+            call L0052ade0
+            jmp L0052b449
+            mov esi, dword ptr [esi]
+            test esi, esi
+            je L0052b437
+            mov eax, dword ptr [edi]
+            push esi
+            push 0x667804
+            push eax
+            call BrFilePrintf
+            add esp, 0xc
+            jmp L0052b447
+    L0052b437:
+            mov ecx, dword ptr [edi]
+            push 0x66780c
+            push ecx
+            call BrFilePrintf
+            add esp, 8
+    L0052b447:
+            mov ebx, eax
+    L0052b449:
+            mov eax, dword ptr [esp + 0x18]
+            test eax, eax
+            je L0052b490
+            mov edx, dword ptr [esp + 0x10]
+            mov eax, dword ptr [edx + 8]
+            test eax, eax
+            je L0052b490
+            cmp ebx, 0x28
+            jge L0052b478
+            mov esi, 0x28
+            sub esi, ebx
+    L0052b468:
+            mov eax, dword ptr [edi]
+            push eax
+            push 0x20
+            call BrFilePutChar
+            add esp, 8
+            dec esi
+            jne L0052b468
+    L0052b478:
+            mov ecx, dword ptr [esp + 0x10]
+            mov eax, dword ptr [edi]
+            mov edx, dword ptr [ecx + 8]
+            push edx
+            push 0x667814
+            push eax
+            call BrFilePrintf
+            add esp, 0xc
+    L0052b490:
+            mov ecx, dword ptr [ebp + 0xc]
+            mov eax, dword ptr [esp + 0x1c]
+            mov esi, dword ptr [esp + 0x10]
+            inc eax
+            mov edx, dword ptr [ecx + 4]
+            add esi, 0x10
+            cmp eax, edx
+            mov dword ptr [esp + 0x1c], eax
+            mov dword ptr [esp + 0x10], esi
+            jb L0052ae15
+    L0052b4b2:
+            pop edi
+            pop esi
+            mov eax, 1
+            pop ebx
+            mov esp, ebp
+            pop ebp
+            ret 0x10
+    L0052b4c0:
+            mov eax, dword ptr [edx + eax*8 + 4]
+            jmp L0052b13c
+            lea ecx, [ecx]
+            _emit 0xc9
+            _emit 0xae
+            _emit 0x52
+            _emit 0x00
+            _emit 0xd0
+            _emit 0xae
+            _emit 0x52
+            _emit 0x00
+            _emit 0xd7
+            _emit 0xae
+            _emit 0x52
+            _emit 0x00
+            _emit 0x36
+            _emit 0xaf
+            _emit 0x52
+            _emit 0x00
+            _emit 0x36
+            _emit 0xaf
+            _emit 0x52
+            _emit 0x00
+            _emit 0x36
+            _emit 0xaf
+            _emit 0x52
+            _emit 0x00
+            _emit 0x36
+            _emit 0xaf
+            _emit 0x52
+            _emit 0x00
+            _emit 0x36
+            _emit 0xaf
+            _emit 0x52
+            _emit 0x00
+            _emit 0x36
+            _emit 0xaf
+            _emit 0x52
+            _emit 0x00
+            _emit 0xde
+            _emit 0xae
+            _emit 0x52
+            _emit 0x00
+            _emit 0xe5
+            _emit 0xae
+            _emit 0x52
+            _emit 0x00
+            _emit 0xec
+            _emit 0xae
+            _emit 0x52
+            _emit 0x00
+            _emit 0x0e
+            _emit 0xaf
+            _emit 0x52
+            _emit 0x00
+            _emit 0x15
+            _emit 0xaf
+            _emit 0x52
+            _emit 0x00
+            _emit 0x1c
+            _emit 0xaf
+            _emit 0x52
+            _emit 0x00
+            _emit 0x36
+            _emit 0xaf
+            _emit 0x52
+            _emit 0x00
+            _emit 0x36
+            _emit 0xaf
+            _emit 0x52
+            _emit 0x00
+            _emit 0x36
+            _emit 0xaf
+            _emit 0x52
+            _emit 0x00
+            _emit 0x36
+            _emit 0xaf
+            _emit 0x52
+            _emit 0x00
+            _emit 0x36
+            _emit 0xaf
+            _emit 0x52
+            _emit 0x00
+            _emit 0x36
+            _emit 0xaf
+            _emit 0x52
+            _emit 0x00
+            _emit 0x23
+            _emit 0xaf
+            _emit 0x52
+            _emit 0x00
+            _emit 0x2a
+            _emit 0xaf
+            _emit 0x52
+            _emit 0x00
+            _emit 0x31
+            _emit 0xaf
+            _emit 0x52
+            _emit 0x00
+            _emit 0x4b
+            _emit 0xaf
+            _emit 0x52
+            _emit 0x00
+            _emit 0x64
+            _emit 0xaf
+            _emit 0x52
+            _emit 0x00
+            _emit 0x7e
+            _emit 0xaf
+            _emit 0x52
+            _emit 0x00
+            _emit 0x97
+            _emit 0xaf
+            _emit 0x52
+            _emit 0x00
+            _emit 0xe2
+            _emit 0xaf
+            _emit 0x52
+            _emit 0x00
+            _emit 0xfa
+            _emit 0xaf
+            _emit 0x52
+            _emit 0x00
+            _emit 0x12
+            _emit 0xb0
+            _emit 0x52
+            _emit 0x00
+            _emit 0x8f
+            _emit 0xb0
+            _emit 0x52
+            _emit 0x00
+            _emit 0xcb
+            _emit 0xb0
+            _emit 0x52
+            _emit 0x00
+            _emit 0xe8
+            _emit 0xb0
+            _emit 0x52
+            _emit 0x00
+            _emit 0x49
+            _emit 0xb4
+            _emit 0x52
+            _emit 0x00
+            _emit 0x49
+            _emit 0xb4
+            _emit 0x52
+            _emit 0x00
+            _emit 0x49
+            _emit 0xb4
+            _emit 0x52
+            _emit 0x00
+            _emit 0x04
+            _emit 0xb1
+            _emit 0x52
+            _emit 0x00
+            _emit 0x52
+            _emit 0xb1
+            _emit 0x52
+            _emit 0x00
+            _emit 0xa5
+            _emit 0xb1
+            _emit 0x52
+            _emit 0x00
+            _emit 0x8a
+            _emit 0xb3
+            _emit 0x52
+            _emit 0x00
+            _emit 0x1e
+            _emit 0xb4
+            _emit 0x52
+            _emit 0x00
+            _emit 0xb2
+            _emit 0xaf
+            _emit 0x52
+            _emit 0x00
+            _emit 0x49
+            _emit 0xb4
+            _emit 0x52
+            _emit 0x00
+            _emit 0x49
+            _emit 0xb4
+            _emit 0x52
+            _emit 0x00
+            _emit 0x49
+            _emit 0xb4
+            _emit 0x52
+            _emit 0x00
+            _emit 0x35
+            _emit 0xb0
+            _emit 0x52
+            _emit 0x00
+            _emit 0x61
+            _emit 0xb0
+            _emit 0x52
+            _emit 0x00
+            _emit 0xcb
+            _emit 0xb0
+            _emit 0x52
+            _emit 0x00
+            _emit 0xcb
+            _emit 0xb0
+            _emit 0x52
+            _emit 0x00
+            _emit 0xf5
+            _emit 0xb1
+            _emit 0x52
+            _emit 0x00
+            _emit 0x30
+            _emit 0xb2
+            _emit 0x52
+            _emit 0x00
+            _emit 0x8b
+            _emit 0xb2
+            _emit 0x52
+            _emit 0x00
+            _emit 0xfd
+            _emit 0xb2
+            _emit 0x52
+            _emit 0x00
+            _emit 0x23
+            _emit 0xb3
+            _emit 0x52
+            _emit 0x00
+            _emit 0x52
+            _emit 0xb3
+            _emit 0x52
+            _emit 0x00
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0052b5b0
@@ -884,7 +3474,8 @@ br_uint_32 C2_HOOK_STDCALL DfStructReadText(br_datafile* df, br_file_struct* str
 }
 
 // FUNCTION: CARMA2_HW 0x0052b720
-br_uint_32 C2_HOOK_STDCALL StructReadTextSub(br_datafile* df, br_file_struct* str, void* base) {
+br_uint_32 C2_NAKED C2_HOOK_STDCALL StructReadTextSub(br_datafile* df, br_file_struct* str, void* base) {
+#ifndef CARPOCALYPSE2_MATCHING
     unsigned int m;
     unsigned int r;
     unsigned int g;
@@ -1037,10 +3628,812 @@ br_uint_32 C2_HOOK_STDCALL StructReadTextSub(br_datafile* df, br_file_struct* st
     }
 
     return 1;
+#else
+    __asm {
+    L0052b720:
+            sub esp, 0x14
+            mov eax, dword ptr [esp + 0x1c]
+            push ebx
+            mov dword ptr [esp + 0x14], 0
+            mov ecx, dword ptr [eax + 4]
+            mov ebx, dword ptr [eax + 8]
+            test ecx, ecx
+            mov dword ptr [esp + 8], ebx
+            jbe L0052bcbb
+            push edi
+            push esi
+            push ebp
+    L0052b745:
+            mov edi, dword ptr [esp + 0x28]
+            mov ebp, dword ptr [ebx + 4]
+            mov edx, dword ptr [esp + 0x30]
+            lea eax, [esp + 0x10]
+            lea ecx, [esp + 0x1c]
+            push eax
+            push ecx
+            push edi
+            add ebp, edx
+            call TextReadLine
+            test eax, eax
+            jne L0052b773
+            push 0x667860
+            call BrFailure
+            add esp, 4
+    L0052b773:
+            mov ecx, dword ptr [esp + 0x1c]
+            xor edx, edx
+            mov dx, word ptr [ebx]
+            mov eax, dword ptr [edx*4 + member_type_names]
+            push eax
+            push ecx
+            call BrStrCmp
+            add esp, 8
+            test eax, eax
+            je L0052b7a3
+            mov edx, dword ptr [esp + 0x1c]
+            push edx
+            push 0x667880
+            call BrFailure
+            add esp, 8
+    L0052b7a3:
+            mov eax, dword ptr [edi + 8]
+            mov si, word ptr [ebx]
+            sub eax, 0xb
+            je L0052bd1b
+            dec eax
+            mov eax, esi
+            je L0052bcc7
+            and eax, 0xffff
+            cmp eax, 0xa
+            je L0052b7cf
+            cmp eax, 0x12
+            jle L0052b7dc
+            cmp eax, 0x15
+            jg L0052b7dc
+    L0052b7cf:
+            push 0x667718
+            call BrFailure
+            add esp, 4
+    L0052b7dc:
+            mov eax, esi
+    L0052b7de:
+            and eax, 0xffff
+            cmp eax, 0x1f
+            ja L0052bc99
+            jmp dword ptr [eax*4 + 0x52bd74]
+            mov edx, dword ptr [esp + 0x10]
+            push 0
+            push 0
+            push edx
+            call BrStrToL
+            add esp, 0xc
+            mov byte ptr [ebp], al
+            jmp L0052bc99
+            mov eax, dword ptr [esp + 0x10]
+            push 0
+            push 0
+            push eax
+            call BrStrToUL
+            add esp, 0xc
+            mov byte ptr [ebp], al
+            jmp L0052bc99
+            mov ecx, dword ptr [esp + 0x10]
+            push 0
+            push 0
+            push ecx
+            call BrStrToL
+            add esp, 0xc
+            mov word ptr [ebp], ax
+            jmp L0052bc99
+            mov edx, dword ptr [esp + 0x10]
+            push 0
+            push 0
+            push edx
+            call BrStrToUL
+            add esp, 0xc
+            mov word ptr [ebp], ax
+            jmp L0052bc99
+            mov ecx, dword ptr [esp + 0x10]
+            lea eax, [esp + 0x18]
+            push 0
+            push eax
+            push ecx
+            call BrStrToUL
+            mov edx, dword ptr [esp + 0x24]
+            mov esi, eax
+            add esp, 0xc
+            cmp byte ptr [edx], 0x2c
+            je L0052b885
+            push 0x6678a0
+            call BrFailure
+            add esp, 4
+    L0052b885:
+            mov ecx, dword ptr [esp + 0x18]
+            lea eax, [esp + 0x18]
+            push 0
+            inc ecx
+            push eax
+            push ecx
+            call BrStrToUL
+            mov edx, dword ptr [esp + 0x24]
+            mov edi, eax
+            add esp, 0xc
+            cmp byte ptr [edx], 0x2c
+            je L0052b8b2
+            push 0x6678b4
+            call BrFailure
+            add esp, 4
+    L0052b8b2:
+            mov ecx, dword ptr [esp + 0x18]
+            lea eax, [esp + 0x18]
+            push 0
+            inc ecx
+            push eax
+            push ecx
+            call BrStrToUL
+            shl esi, 8
+            or esi, edi
+            add esp, 0xc
+            shl esi, 8
+            or esi, eax
+            mov dword ptr [ebp], esi
+            jmp L0052bc99
+            mov edx, dword ptr [esp + 0x10]
+            push 0
+            push 0
+            push edx
+            call BrStrToL
+            add esp, 0xc
+            mov dword ptr [ebp], eax
+            jmp L0052bc99
+            mov eax, dword ptr [esp + 0x10]
+            push 0
+            push 0
+            push eax
+            call BrStrToUL
+            add esp, 0xc
+            mov dword ptr [ebp], eax
+            jmp L0052bc99
+            mov ecx, dword ptr [esp + 0x10]
+            push 0
+            push ecx
+            call BrStrToD
+            fmul qword ptr ds:[0x58b858]
+            add esp, 8
+            call _ftol
+            mov dword ptr [ebp], eax
+            jmp L0052bc99
+            mov edx, dword ptr [esp + 0x10]
+            push 0
+            push edx
+            call BrStrToD
+            fmul qword ptr ds:[0x58b860]
+            add esp, 8
+            call _ftol
+            mov word ptr [ebp], ax
+            jmp L0052bc99
+            mov eax, dword ptr [esp + 0x10]
+            push 0
+            push eax
+            call BrStrToD
+            fmul qword ptr ds:[0x58b858]
+            add esp, 8
+            call _ftol
+            mov word ptr [ebp], ax
+            jmp L0052bc99
+            mov ecx, dword ptr [esp + 0x10]
+            push 0x1680000
+            push 0x10000
+            push 0
+            push ecx
+            call BrStrToF
+            fmul dword ptr ds:[0x58b848]
+            add esp, 8
+            call _ftol
+            push eax
+            call BrFixedMulDiv
+            add esp, 0xc
+            mov word ptr [ebp], ax
+            jmp L0052bc99
+            mov edx, dword ptr [esp + 0x10]
+            push 0
+            push edx
+            call BrStrToF
+            _emit 0xd9
+        _emit 0x5d
+        _emit 0x00
+            add esp, 8
+            jmp L0052bc99
+            mov eax, dword ptr [esp + 0x10]
+            push 0
+            push eax
+            call BrStrToD
+            _emit 0xdd
+        _emit 0x5d
+        _emit 0x00
+            add esp, 8
+            jmp L0052bc99
+            mov ecx, dword ptr [esp + 0x14]
+            mov ebx, dword ptr [esp + 0x10]
+            xor edi, edi
+            mov esi, dword ptr [ecx + 0xc]
+            cmp dword ptr [esi], 0
+            jbe L0052ba21
+    L0052b9e9:
+            mov edx, dword ptr [esi + 4]
+            mov eax, dword ptr [edx + edi*8 + 4]
+            mov dl, byte ptr [ebx]
+            mov cl, byte ptr [eax]
+            cmp cl, dl
+            jne L0052ba06
+            push ebx
+            push eax
+            call BrStrCmp
+            add esp, 8
+            test eax, eax
+            je L0052ba0f
+    L0052ba06:
+            mov eax, dword ptr [esi]
+            inc edi
+            cmp edi, eax
+            jb L0052b9e9
+            jmp L0052ba21
+    L0052ba0f:
+            mov edx, dword ptr [esi + 4]
+            mov ebx, dword ptr [esp + 0x14]
+            mov eax, dword ptr [edx + edi*8]
+            mov byte ptr [ebp], al
+            jmp L0052bc99
+    L0052ba21:
+            push ebx
+            push 0x667730
+            call BrFailure
+            mov ebx, dword ptr [esp + 0x1c]
+            add esp, 8
+            xor eax, eax
+            mov byte ptr [ebp], al
+            jmp L0052bc99
+            mov eax, dword ptr [esp + 0x14]
+            mov ebx, dword ptr [esp + 0x10]
+            xor edi, edi
+            mov esi, dword ptr [eax + 0xc]
+            cmp dword ptr [esi], 0
+            jbe L0052ba88
+    L0052ba4f:
+            mov ecx, dword ptr [esi + 4]
+            mov eax, dword ptr [ecx + edi*8 + 4]
+            mov cl, byte ptr [ebx]
+            mov dl, byte ptr [eax]
+            cmp dl, cl
+            jne L0052ba6c
+            push ebx
+            push eax
+            call BrStrCmp
+            add esp, 8
+            test eax, eax
+            je L0052ba75
+    L0052ba6c:
+            mov eax, dword ptr [esi]
+            inc edi
+            cmp edi, eax
+            jb L0052ba4f
+            jmp L0052ba88
+    L0052ba75:
+            mov eax, dword ptr [esi + 4]
+            mov ebx, dword ptr [esp + 0x14]
+            mov edi, dword ptr [eax + edi*8]
+            mov word ptr [ebp], di
+            jmp L0052bc99
+    L0052ba88:
+            push ebx
+            push 0x667730
+            call BrFailure
+            mov ebx, dword ptr [esp + 0x1c]
+            add esp, 8
+            xor edi, edi
+            mov word ptr [ebp], di
+            jmp L0052bc99
+            mov ecx, dword ptr [esp + 0x14]
+            mov ebx, dword ptr [esp + 0x10]
+            xor edi, edi
+            mov esi, dword ptr [ecx + 0xc]
+            cmp dword ptr [esi], 0
+            jbe L0052baef
+    L0052bab7:
+            mov edx, dword ptr [esi + 4]
+            mov eax, dword ptr [edx + edi*8 + 4]
+            mov dl, byte ptr [ebx]
+            mov cl, byte ptr [eax]
+            cmp cl, dl
+            jne L0052bad4
+            push ebx
+            push eax
+            call BrStrCmp
+            add esp, 8
+            test eax, eax
+            je L0052badd
+    L0052bad4:
+            mov eax, dword ptr [esi]
+            inc edi
+            cmp edi, eax
+            jb L0052bab7
+            jmp L0052baef
+    L0052badd:
+            mov edx, dword ptr [esi + 4]
+            mov ebx, dword ptr [esp + 0x14]
+            mov edi, dword ptr [edx + edi*8]
+            mov dword ptr [ebp], edi
+            jmp L0052bc99
+    L0052baef:
+            push ebx
+            push 0x667730
+            call BrFailure
+            mov ebx, dword ptr [esp + 0x1c]
+            add esp, 8
+            xor edi, edi
+            mov dword ptr [ebp], edi
+            jmp L0052bc99
+            mov eax, 2
+            jmp L0052bb1e
+            mov eax, 3
+            jmp L0052bb1e
+            mov eax, 4
+    L0052bb1e:
+            test eax, eax
+            jle L0052bc99
+            mov ecx, dword ptr [esp + 0x10]
+            mov esi, ebp
+            mov edi, eax
+    L0052bb2e:
+            mov al, byte ptr [ecx]
+            cmp al, 0x2c
+            je L0052bb3c
+            cmp al, 0x20
+            je L0052bb3c
+            cmp al, 9
+            jne L0052bb43
+    L0052bb3c:
+            inc ecx
+            mov dword ptr [esp + 0x10], ecx
+            jmp L0052bb2e
+    L0052bb43:
+            cmp byte ptr [ecx], 0
+            jne L0052bb59
+            push 0x6678c8
+            call BrFailure
+            mov ecx, dword ptr [esp + 0x14]
+            add esp, 4
+    L0052bb59:
+            push 0
+            push ecx
+            call BrStrToF
+            fmul dword ptr ds:[0x58b848]
+            add esp, 8
+            call _ftol
+            mov dword ptr [esi], eax
+            mov ecx, dword ptr [esp + 0x10]
+            mov al, byte ptr [ecx]
+            test al, al
+            je L0052bb92
+    L0052bb7b:
+            cmp al, 0x2c
+            je L0052bb92
+            cmp al, 0x20
+            je L0052bb92
+            cmp al, 9
+            je L0052bb92
+            inc ecx
+            mov dword ptr [esp + 0x10], ecx
+            mov al, byte ptr [ecx]
+            test al, al
+            jne L0052bb7b
+    L0052bb92:
+            add esi, 4
+            dec edi
+            jne L0052bb2e
+            jmp L0052bc99
+            mov eax, 2
+            jmp L0052bbb0
+            mov eax, 3
+            jmp L0052bbb0
+            mov eax, 4
+    L0052bbb0:
+            test eax, eax
+            jle L0052bc99
+            mov ecx, dword ptr [esp + 0x10]
+            mov esi, ebp
+            mov edi, eax
+    L0052bbc0:
+            mov al, byte ptr [ecx]
+            cmp al, 0x2c
+            je L0052bbce
+            cmp al, 0x20
+            je L0052bbce
+            cmp al, 9
+            jne L0052bbd5
+    L0052bbce:
+            inc ecx
+            mov dword ptr [esp + 0x10], ecx
+            jmp L0052bbc0
+    L0052bbd5:
+            cmp byte ptr [ecx], 0
+            jne L0052bbeb
+            push 0x6678dc
+            call BrFailure
+            mov ecx, dword ptr [esp + 0x14]
+            add esp, 4
+    L0052bbeb:
+            push 0
+            push ecx
+            call BrStrToF
+            _emit 0xd9
+        _emit 0x1e
+            mov ecx, dword ptr [esp + 0x18]
+            add esp, 8
+            mov al, byte ptr [ecx]
+            test al, al
+            je L0052bc19
+    L0052bc02:
+            cmp al, 0x2c
+            je L0052bc19
+            cmp al, 0x20
+            je L0052bc19
+            cmp al, 9
+            je L0052bc19
+            inc ecx
+            mov dword ptr [esp + 0x10], ecx
+            mov al, byte ptr [ecx]
+            test al, al
+            jne L0052bc02
+    L0052bc19:
+            add esi, 4
+            dec edi
+            jne L0052bbc0
+            jmp L0052bc99
+            mov eax, dword ptr [ebx + 0xc]
+            mov edx, dword ptr [esp + 0x10]
+            mov ecx, dword ptr [eax]
+            push ecx
+            push edx
+            call BrStrCmp
+            add esp, 8
+            test eax, eax
+            je L0052bc4a
+            mov eax, dword ptr [esp + 0x10]
+            push eax
+            push 0x6678f0
+            call BrFailure
+            add esp, 8
+    L0052bc4a:
+            mov ecx, dword ptr [ebx + 0xc]
+            push ebp
+            push ecx
+            push edi
+            call L0052b720
+            jmp L0052bc99
+            mov edx, dword ptr [esp + 0x10]
+            push 0x667910
+            push edx
+            call BrStrCmp
+            add esp, 8
+            test eax, eax
+            je L0052bc92
+            mov ecx, dword ptr [esp + 0x10]
+            cmp byte ptr [ecx], 0x22
+            jne L0052bc92
+            mov eax, dword ptr [edi + 0xc]
+            test eax, eax
+            jne L0052bc82
+            mov eax, dword ptr ds:[0x79f918]
+    L0052bc82:
+            inc ecx
+            push ecx
+            push eax
+            call BrResStrDup
+            add esp, 8
+            mov dword ptr [ebp], eax
+            jmp L0052bc99
+    L0052bc92:
+            mov dword ptr [ebp], 0
+    L0052bc99:
+            mov ecx, dword ptr [esp + 0x2c]
+            mov eax, dword ptr [esp + 0x20]
+            inc eax
+            add ebx, 0x10
+            mov edx, dword ptr [ecx + 4]
+            mov dword ptr [esp + 0x20], eax
+            cmp eax, edx
+            mov dword ptr [esp + 0x14], ebx
+            jb L0052b745
+            pop ebp
+            pop esi
+            pop edi
+    L0052bcbb:
+            mov eax, 1
+            pop ebx
+            add esp, 0x14
+            ret 0xc
+    L0052bcc7:
+            and eax, 0xffff
+            add eax, -0xa
+            cmp eax, 0xb
+            ja L0052b7dc
+            jmp dword ptr [eax*4 + 0x52bdf4]
+            mov eax, 8
+            jmp L0052b7de
+            mov eax, 0x18
+            jmp L0052b7de
+            mov eax, 0x19
+            jmp L0052b7de
+            mov eax, 0x1d
+            jmp L0052b7de
+            mov eax, 0x1e
+            jmp L0052b7de
+            mov eax, 0x1f
+            jmp L0052b7de
+    L0052bd1b:
+            mov ecx, esi
+            and ecx, 0xffff
+            lea eax, [ecx - 0xa]
+            cmp eax, 0xb
+            ja L0052b7dc
+            jmp dword ptr [eax*4 + 0x52be24]
+            mov eax, 6
+            jmp L0052b7de
+            mov eax, 0x16
+            jmp L0052b7de
+            mov eax, 0x17
+            jmp L0052b7de
+            mov eax, 0x1a
+            jmp L0052b7de
+            mov eax, 0x1b
+            jmp L0052b7de
+            mov eax, 0x1c
+            jmp L0052b7de
+            mov edi, edi
+            _emit 0xf3
+            _emit 0xb7
+            _emit 0x52
+            _emit 0x00
+            _emit 0x0c
+            _emit 0xb8
+            _emit 0x52
+            _emit 0x00
+            _emit 0x25
+            _emit 0xb8
+            _emit 0x52
+            _emit 0x00
+            _emit 0x3f
+            _emit 0xb8
+            _emit 0x52
+            _emit 0x00
+            _emit 0xd9
+            _emit 0xb8
+            _emit 0x52
+            _emit 0x00
+            _emit 0xf2
+            _emit 0xb8
+            _emit 0x52
+            _emit 0x00
+            _emit 0x0b
+            _emit 0xb9
+            _emit 0x52
+            _emit 0x00
+            _emit 0x73
+            _emit 0xb9
+            _emit 0x52
+            _emit 0x00
+            _emit 0xa9
+            _emit 0xb9
+            _emit 0x52
+            _emit 0x00
+            _emit 0xc0
+            _emit 0xb9
+            _emit 0x52
+            _emit 0x00
+            _emit 0x99
+            _emit 0xbc
+            _emit 0x52
+            _emit 0x00
+            _emit 0x99
+            _emit 0xbc
+            _emit 0x52
+            _emit 0x00
+            _emit 0x99
+            _emit 0xbc
+            _emit 0x52
+            _emit 0x00
+            _emit 0xd7
+            _emit 0xb9
+            _emit 0x52
+            _emit 0x00
+            _emit 0x3d
+            _emit 0xba
+            _emit 0x52
+            _emit 0x00
+            _emit 0xa5
+            _emit 0xba
+            _emit 0x52
+            _emit 0x00
+            _emit 0x21
+            _emit 0xbc
+            _emit 0x52
+            _emit 0x00
+            _emit 0x57
+            _emit 0xbc
+            _emit 0x52
+            _emit 0x00
+            _emit 0x59
+            _emit 0xb8
+            _emit 0x52
+            _emit 0x00
+            _emit 0x99
+            _emit 0xbc
+            _emit 0x52
+            _emit 0x00
+            _emit 0x99
+            _emit 0xbc
+            _emit 0x52
+            _emit 0x00
+            _emit 0x99
+            _emit 0xbc
+            _emit 0x52
+            _emit 0x00
+            _emit 0x2d
+            _emit 0xb9
+            _emit 0x52
+            _emit 0x00
+            _emit 0x50
+            _emit 0xb9
+            _emit 0x52
+            _emit 0x00
+            _emit 0xa9
+            _emit 0xb9
+            _emit 0x52
+            _emit 0x00
+            _emit 0xa9
+            _emit 0xb9
+            _emit 0x52
+            _emit 0x00
+            _emit 0x0b
+            _emit 0xbb
+            _emit 0x52
+            _emit 0x00
+            _emit 0x12
+            _emit 0xbb
+            _emit 0x52
+            _emit 0x00
+            _emit 0x19
+            _emit 0xbb
+            _emit 0x52
+            _emit 0x00
+            _emit 0x9d
+            _emit 0xbb
+            _emit 0x52
+            _emit 0x00
+            _emit 0xa4
+            _emit 0xbb
+            _emit 0x52
+            _emit 0x00
+            _emit 0xab
+            _emit 0xbb
+            _emit 0x52
+            _emit 0x00
+            _emit 0xdf
+            _emit 0xbc
+            _emit 0x52
+            _emit 0x00
+            _emit 0xe9
+            _emit 0xbc
+            _emit 0x52
+            _emit 0x00
+            _emit 0xf3
+            _emit 0xbc
+            _emit 0x52
+            _emit 0x00
+            _emit 0xdc
+            _emit 0xb7
+            _emit 0x52
+            _emit 0x00
+            _emit 0xdc
+            _emit 0xb7
+            _emit 0x52
+            _emit 0x00
+            _emit 0xdc
+            _emit 0xb7
+            _emit 0x52
+            _emit 0x00
+            _emit 0xdc
+            _emit 0xb7
+            _emit 0x52
+            _emit 0x00
+            _emit 0xdc
+            _emit 0xb7
+            _emit 0x52
+            _emit 0x00
+            _emit 0xdc
+            _emit 0xb7
+            _emit 0x52
+            _emit 0x00
+            _emit 0xfd
+            _emit 0xbc
+            _emit 0x52
+            _emit 0x00
+            _emit 0x07
+            _emit 0xbd
+            _emit 0x52
+            _emit 0x00
+            _emit 0x11
+            _emit 0xbd
+            _emit 0x52
+            _emit 0x00
+            _emit 0x36
+            _emit 0xbd
+            _emit 0x52
+            _emit 0x00
+            _emit 0x40
+            _emit 0xbd
+            _emit 0x52
+            _emit 0x00
+            _emit 0x4a
+            _emit 0xbd
+            _emit 0x52
+            _emit 0x00
+            _emit 0xdc
+            _emit 0xb7
+            _emit 0x52
+            _emit 0x00
+            _emit 0xdc
+            _emit 0xb7
+            _emit 0x52
+            _emit 0x00
+            _emit 0xdc
+            _emit 0xb7
+            _emit 0x52
+            _emit 0x00
+            _emit 0xdc
+            _emit 0xb7
+            _emit 0x52
+            _emit 0x00
+            _emit 0xdc
+            _emit 0xb7
+            _emit 0x52
+            _emit 0x00
+            _emit 0xdc
+            _emit 0xb7
+            _emit 0x52
+            _emit 0x00
+            _emit 0x54
+            _emit 0xbd
+            _emit 0x52
+            _emit 0x00
+            _emit 0x5e
+            _emit 0xbd
+            _emit 0x52
+            _emit 0x00
+            _emit 0x68
+            _emit 0xbd
+            _emit 0x52
+            _emit 0x00
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0052be60
-int C2_HOOK_STDCALL DfStructSizeText(br_datafile* df, br_file_struct* str, void* base) {
+int C2_NAKED C2_HOOK_STDCALL DfStructSizeText(br_datafile* df, br_file_struct* str, void* base) {
+#ifndef CARPOCALYPSE2_MATCHING
     unsigned int m;
     br_file_struct_member* sm;
     int lines;
@@ -1055,6 +4448,51 @@ int C2_HOOK_STDCALL DfStructSizeText(br_datafile* df, br_file_struct* str, void*
         }
     }
     return lines;
+#else
+    __asm {
+    L0052be60:
+            push ebx
+            push ebp
+            mov ebp, dword ptr [esp + 0x10]
+            push esi
+            push edi
+            xor edi, edi
+            mov eax, dword ptr [ebp + 4]
+            mov esi, dword ptr [ebp + 8]
+            test eax, eax
+            mov ebx, 1
+            jbe L0052bea7
+    L0052be79:
+            cmp word ptr [esi], 0x10
+            jne L0052be9b
+            mov eax, dword ptr [esi + 4]
+            mov edx, dword ptr [esp + 0x1c]
+            mov ecx, dword ptr [esi + 0xc]
+            add eax, edx
+            mov edx, dword ptr [esp + 0x14]
+            push eax
+            push ecx
+            push edx
+            call L0052be60
+            add ebx, eax
+            jmp L0052be9c
+    L0052be9b:
+            inc ebx
+    L0052be9c:
+            mov eax, dword ptr [ebp + 4]
+            inc edi
+            add esi, 0x10
+            cmp edi, eax
+            jb L0052be79
+    L0052bea7:
+            pop edi
+            pop esi
+            mov eax, ebx
+            pop ebp
+            pop ebx
+            ret 0xc
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0052beb0
@@ -1071,7 +4509,8 @@ br_uint_32 C2_HOOK_STDCALL DfStructWriteArray(br_datafile* df, br_file_struct* s
 }
 
 // FUNCTION: CARMA2_HW 0x0052bef0
-br_uint_32 C2_HOOK_STDCALL DfStructReadArray(br_datafile* df, br_file_struct* str, void* base, int n) {
+br_uint_32 C2_NAKED C2_HOOK_STDCALL DfStructReadArray(br_datafile* df, br_file_struct* str, void* base, int n) {
+#ifndef CARPOCALYPSE2_MATCHING
     char* cp;
     int i;
 
@@ -1084,6 +4523,46 @@ br_uint_32 C2_HOOK_STDCALL DfStructReadArray(br_datafile* df, br_file_struct* st
         cp += str->mem_size;
     }
     return i;
+#else
+    __asm {
+            mov eax, dword ptr [esp + 0x10]
+            push ebx
+            push ebp
+            xor ebx, ebx
+            push esi
+            mov esi, dword ptr [esp + 0x18]
+            test eax, eax
+            push edi
+            jle L0052bf30
+            mov ebp, dword ptr [esp + 0x18]
+            mov edi, dword ptr [esp + 0x14]
+    L0052bf0a:
+            mov eax, dword ptr [edi]
+            push eax
+            call BrFileEof
+            add esp, 4
+            test eax, eax
+            jne L0052bf30
+            mov ecx, dword ptr [edi + 4]
+            push esi
+            push ebp
+            push edi
+            call dword ptr [ecx + 0x20]
+            mov ecx, dword ptr [ebp + 0xc]
+            inc ebx
+            mov eax, dword ptr [esp + 0x20]
+            add esi, ecx
+            cmp ebx, eax
+            jl L0052bf0a
+    L0052bf30:
+            pop edi
+            pop esi
+            mov eax, ebx
+            pop ebp
+            pop ebx
+            ret 0x10
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0052bf40
@@ -1098,7 +4577,8 @@ int C2_HOOK_STDCALL DfChunkWriteText(br_datafile* df, br_uint_32 id, br_uint_32 
 }
 
 // FUNCTION: CARMA2_HW 0x0052bf90
-int C2_HOOK_STDCALL DfChunkReadText(br_datafile* df, br_uint_32* plength) {
+int C2_NAKED C2_HOOK_STDCALL DfChunkReadText(br_datafile* df, br_uint_32* plength) {
+#ifndef CARPOCALYPSE2_MATCHING
     int i;
     char* id;
     char* data;
@@ -1126,6 +4606,88 @@ int C2_HOOK_STDCALL DfChunkReadText(br_datafile* df, br_uint_32* plength) {
         *plength = BrStrToUL(data, NULL, 0);
     }
     return i;
+#else
+    __asm {
+            push ecx
+            mov edx, dword ptr [esp + 8]
+            lea eax, [esp]
+            lea ecx, [esp + 8]
+            push eax
+            push ecx
+            push edx
+            call TextReadLine
+            test eax, eax
+            jne L0052bfb0
+            or eax, 0xffffffff
+            pop ecx
+            ret 8
+    L0052bfb0:
+            mov eax, dword ptr [esp + 8]
+            push edi
+            push esi
+            cmp byte ptr [eax], 0x2a
+            je L0052bfcc
+            push offset _BrFilePrimsWriteText+0x7b8
+            call BrFailure
+            mov eax, dword ptr [esp + 0x14]
+            add esp, 4
+    L0052bfcc:
+            inc eax
+            mov dword ptr [esp + 0x10], eax
+            cmp byte ptr [eax], 0x30
+            jne L0052bfe7
+            push 0
+            push 0
+            push eax
+            call BrStrToUL
+            add esp, 0xc
+            mov edi, eax
+            jmp L0052c027
+    L0052bfe7:
+            xor edi, edi
+            mov esi, offset ChunkNames
+            jmp L0052bff4
+    L0052bff0:
+            mov eax, dword ptr [esp + 0x10]
+    L0052bff4:
+            push eax
+            mov eax, dword ptr [esi]
+            push eax
+            call BrStrCmp
+            add esp, 8
+            test eax, eax
+            je L0052c010
+            add esi, 4
+            inc edi
+            cmp esi, offset ChunkNames+0xf4
+            jb L0052bff0
+    L0052c010:
+            cmp edi, 0x3d
+            jb L0052c027
+            mov ecx, dword ptr [esp + 0x10]
+            push ecx
+            push offset _BrFilePrimsWriteText+0x7cc
+            call BrFailure
+            add esp, 8
+    L0052c027:
+            mov esi, dword ptr [esp + 0x14]
+            test esi, esi
+            je L0052c042
+            mov edx, dword ptr [esp + 8]
+            push 0
+            push 0
+            push edx
+            call BrStrToUL
+            add esp, 0xc
+            mov dword ptr [esi], eax
+    L0052c042:
+            mov eax, edi
+            pop esi
+            pop edi
+            pop ecx
+            ret 8
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0052c050
@@ -1214,7 +4776,8 @@ br_uint_8* C2_HOOK_STDCALL BlockWriteSetup(void* base, int block_size, int block
 }
 
 // FUNCTION: CARMA2_HW 0x0052c250
-int C2_HOOK_STDCALL DfBlockWriteText(br_datafile* df, void* base, int block_size, int block_stride, int block_count, int size) {
+int C2_NAKED C2_HOOK_STDCALL DfBlockWriteText(br_datafile* df, void* base, int block_size, int block_stride, int block_count, int size) {
+#ifndef CARPOCALYPSE2_MATCHING
     int i;
     br_uint_8* block;
     int count;
@@ -1250,10 +4813,167 @@ int C2_HOOK_STDCALL DfBlockWriteText(br_datafile* df, void* base, int block_size
         BrScratchFree(block);
     }
     return 0;
+#else
+    __asm {
+            sub esp, 8
+            mov ecx, dword ptr [esp + 0x14]
+            push ebx
+            push ebp
+            mov ebp, dword ptr [esp + 0x24]
+            mov eax, ebp
+            mov edx, dword ptr [esp + 0x20]
+            imul eax, ecx
+            push esi
+            cmp edx, ecx
+            push edi
+            mov dword ptr [esp + 0x10], eax
+            mov dword ptr [esp + 0x2c], ecx
+            jne L0052c27d
+            mov dword ptr [esp + 0x2c], eax
+            mov ebp, 1
+    L0052c27d:
+            mov ebx, dword ptr [esp + 0x30]
+            cmp ebx, 1
+            jne L0052c290
+            cmp ebp, ebx
+            jne L0052c290
+            mov ebp, dword ptr [esp + 0x20]
+            jmp L0052c2f7
+    L0052c290:
+            mov esi, ebp
+            imul esi, dword ptr [esp + 0x2c]
+            imul ebx, esi
+            push ebx
+            mov dword ptr [esp + 0x18], esi
+            call BrScratchAllocate
+            mov edi, dword ptr [esp + 0x24]
+            add esp, 4
+            test ebp, ebp
+            mov dword ptr [esp + 0x24], eax
+            mov ebx, eax
+            jle L0052c2dc
+            mov esi, dword ptr [esp + 0x2c]
+            imul esi, dword ptr [esp + 0x30]
+    L0052c2be:
+            push esi
+            push edi
+            push ebx
+            call BrMemCpy
+            mov edx, dword ptr [esp + 0x34]
+            add esp, 0xc
+            add edi, edx
+            add ebx, esi
+            dec ebp
+            jne L0052c2be
+            mov eax, dword ptr [esp + 0x24]
+            mov esi, dword ptr [esp + 0x14]
+    L0052c2dc:
+            mov ecx, dword ptr [esp + 0x30]
+            push ecx
+            push esi
+            push eax
+            call BrSwapBlock
+            mov ebp, dword ptr [esp + 0x30]
+            mov eax, dword ptr [esp + 0x1c]
+            mov ebx, dword ptr [esp + 0x3c]
+            add esp, 0xc
+    L0052c2f7:
+            mov edi, dword ptr [esp + 0x1c]
+            push eax
+            push offset _BrFilePrimsWriteText+0x814
+            mov edx, dword ptr [edi]
+            push edx
+            call BrFilePrintf
+            mov eax, dword ptr [edi]
+            add esp, 0xc
+            push ebx
+            push offset _BrFilePrimsWriteText+0x820
+            push eax
+            call BrFilePrintf
+            mov eax, dword ptr [esp + 0x1c]
+            add esp, 0xc
+            imul eax, dword ptr [esp + 0x30]
+            xor esi, esi
+            mov dword ptr [esp + 0x30], eax
+            test eax, eax
+            jle L0052c38e
+    L0052c330:
+            mov eax, esi
+            cdq
+            xor eax, edx
+            sub eax, edx
+            and eax, 0x1f
+            xor eax, edx
+            mov ebx, eax
+            sub ebx, edx
+            jne L0052c35c
+            mov edx, dword ptr [edi]
+            xor ecx, ecx
+            mov cl, byte ptr [ebp + esi]
+            push ecx
+            push esi
+            push offset _BrFilePrimsWriteText+0x82c
+            push edx
+            call BrFilePrintf
+            add esp, 0x10
+            jmp L0052c373
+    L0052c35c:
+            mov ecx, dword ptr [edi]
+            xor eax, eax
+            mov al, byte ptr [ebp + esi]
+            push eax
+            push offset _BrFilePrimsWriteText+0x83c
+            push ecx
+            call BrFilePrintf
+            add esp, 0xc
+    L0052c373:
+            cmp ebx, 0x1f
+            jne L0052c385
+            mov edx, dword ptr [edi]
+            push edx
+            push 0xa
+            call BrFilePutChar
+            add esp, 8
+    L0052c385:
+            mov eax, dword ptr [esp + 0x30]
+            inc esi
+            cmp esi, eax
+            jl L0052c330
+    L0052c38e:
+            mov eax, esi
+            cdq
+            xor eax, edx
+            sub eax, edx
+            and eax, 0x1f
+            xor eax, edx
+            sub eax, edx
+            je L0052c3ab
+            mov eax, dword ptr [edi]
+            push eax
+            push 0xa
+            call BrFilePutChar
+            add esp, 8
+    L0052c3ab:
+            cmp ebp, dword ptr [esp + 0x20]
+            je L0052c3ba
+            push ebp
+            call BrScratchFree
+            add esp, 4
+    L0052c3ba:
+            pop edi
+            pop esi
+            pop ebp
+            xor eax, eax
+            pop ebx
+            add esp, 8
+            ret 0x18
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0052c3d0
-void* C2_HOOK_STDCALL DfBlockReadText(br_datafile* df, void* base, int* count, int size, int mtype) {
+C2_NAKED void* C2_HOOK_STDCALL DfBlockReadText(br_datafile* df, void* base, int* count, int size, int mtype) {
+#ifndef CARPOCALYPSE2_MATCHING
     char* id;
     char* data;
     int l;
@@ -1298,10 +5018,176 @@ void* C2_HOOK_STDCALL DfBlockReadText(br_datafile* df, void* base, int* count, i
     }
     BrSwapBlock(base, l, size);
     return base;
+#else
+    __asm {
+            sub esp, 0xc
+            lea eax, [esp]
+            lea ecx, [esp + 4]
+            push ebx
+            push ebp
+            mov ebp, dword ptr [esp + 0x18]
+            push esi
+            push edi
+            push eax
+            push ecx
+            push ebp
+            call TextReadLine
+            push offset _BrFilePrimsWriteText+0x844
+            mov edx, dword ptr [esp + 0x18]
+            push edx
+            call BrStrCmp
+            add esp, 8
+            test eax, eax
+            je L0052c40e
+            push offset _BrFilePrimsWriteText+0x84c
+            call BrFailure
+            add esp, 4
+    L0052c40e:
+            mov eax, dword ptr [esp + 0x10]
+            push 0
+            push 0
+            push eax
+            call BrStrToUL
+            add esp, 0xc
+            lea ecx, [esp + 0x10]
+            lea edx, [esp + 0x14]
+            mov ebx, eax
+            push ecx
+            push edx
+            push ebp
+            mov dword ptr [esp + 0x24], ebx
+            call TextReadLine
+            push offset _BrFilePrimsWriteText+0x858
+            mov eax, dword ptr [esp + 0x18]
+            push eax
+            call BrStrCmp
+            add esp, 8
+            test eax, eax
+            je L0052c458
+            push offset _BrFilePrimsWriteText+0x860
+            call BrFailure
+            add esp, 4
+    L0052c458:
+            mov ecx, dword ptr [esp + 0x10]
+            push 0
+            push 0
+            push ecx
+            call BrStrToUL
+            mov ecx, dword ptr [esp + 0x38]
+            add esp, 0xc
+            cmp eax, ecx
+            je L0052c47e
+            push offset _BrFilePrimsWriteText+0x868
+            call BrFailure
+            add esp, 4
+    L0052c47e:
+            mov edi, dword ptr [esp + 0x24]
+            mov esi, dword ptr [esp + 0x28]
+            test edi, edi
+            jne L0052c4b0
+            mov eax, dword ptr [ebp + 0xc]
+            test eax, eax
+            jne L0052c496
+            mov eax, dword ptr [fw+0x438]
+    L0052c496:
+            mov ecx, ebx
+            mov edx, dword ptr [esp + 0x30]
+            imul ecx, dword ptr [esp + 0x2c]
+            push edx
+            push ecx
+            push eax
+            call BrResAllocate
+            add esp, 0xc
+            mov edi, eax
+            jmp L0052c4c2
+    L0052c4b0:
+            cmp dword ptr [esi], ebx
+            jge L0052c4c2
+            push ebx
+            push offset _BrFilePrimsWriteText+0x87c
+            call BrFailure
+            add esp, 8
+    L0052c4c2:
+            mov dword ptr [esi], ebx
+            imul ebx, dword ptr [esp + 0x2c]
+            xor esi, esi
+            mov byte ptr [esp + 0x22], 0
+            test ebx, ebx
+            jle L0052c54c
+    L0052c4d4:
+            lea edx, [esp + 0x10]
+            lea eax, [esp + 0x14]
+            push edx
+            push eax
+            push ebp
+            call TextReadLine
+            push 0x10
+            push 0
+            mov ecx, dword ptr [esp + 0x1c]
+            push ecx
+            call BrStrToL
+            add esp, 0xc
+            cmp esi, eax
+            je L0052c506
+            push offset _BrFilePrimsWriteText+0x8a0
+            call BrFailure
+            add esp, 4
+    L0052c506:
+            mov eax, dword ptr [esp + 0x10]
+            mov cl, byte ptr [eax]
+            test cl, cl
+            je L0052c548
+    L0052c510:
+            mov dl, byte ptr [eax + 1]
+            test dl, dl
+            je L0052c548
+            mov byte ptr [esp + 0x20], cl
+            mov dl, byte ptr [eax + 1]
+            push 0x10
+            lea eax, [esp + 0x24]
+            push 0
+            push eax
+            mov byte ptr [esp + 0x2d], dl
+            call BrStrToUL
+            mov byte ptr [esi + edi], al
+            mov eax, dword ptr [esp + 0x1c]
+            add eax, 2
+            add esp, 0xc
+            mov dword ptr [esp + 0x10], eax
+            inc esi
+            mov cl, byte ptr [eax]
+            test cl, cl
+            jne L0052c510
+    L0052c548:
+            cmp esi, ebx
+            jl L0052c4d4
+    L0052c54c:
+            mov ecx, dword ptr [esp + 0x2c]
+            mov edx, dword ptr [esp + 0x18]
+            push ecx
+            push edx
+            push edi
+            call BrSwapBlock
+            add esp, 0xc
+            mov eax, edi
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0xc
+            ret 0x14
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0052c570
-int C2_HOOK_STDCALL DfBlockWriteBinary(br_datafile* df, void* base, int block_size, int block_stride, int block_count, int size) {
+int C2_NAKED C2_HOOK_STDCALL DfBlockWriteBinary(br_datafile* df, void* base, int block_size, int block_stride, int block_count, int size) {
+#ifndef CARPOCALYPSE2_MATCHING
     int count;
     br_uint_32 l;
     br_uint_32 s;
@@ -1328,10 +5214,124 @@ int C2_HOOK_STDCALL DfBlockWriteBinary(br_datafile* df, void* base, int block_si
         BrScratchFree(block);
     }
     return 0;
+#else
+    __asm {
+            sub esp, 0x10
+            push ebx
+            push ebp
+            mov ebp, dword ptr [esp + 0x2c]
+            push esi
+            push edi
+            mov edi, dword ptr [esp + 0x2c]
+            mov esi, ebp
+            imul esi, edi
+            push esi
+            mov dword ptr [esp + 0x18], esi
+            call BrSwap32
+            mov ebx, dword ptr [esp + 0x3c]
+            add esp, 4
+            mov dword ptr [esp + 0x18], eax
+            push ebx
+            call BrSwap32
+            mov dword ptr [esp + 0x20], eax
+            mov eax, dword ptr [esp + 0x34]
+            add esp, 4
+            cmp eax, edi
+            mov dword ptr [esp + 0x34], edi
+            jne L0052c5bb
+            mov dword ptr [esp + 0x34], esi
+            mov ebp, 1
+    L0052c5bb:
+            cmp ebx, 1
+            jne L0052c5ca
+            cmp ebp, ebx
+            jne L0052c5ca
+            mov ebp, dword ptr [esp + 0x28]
+            jmp L0052c631
+    L0052c5ca:
+            mov esi, ebp
+            imul esi, dword ptr [esp + 0x34]
+            imul ebx, esi
+            push ebx
+            mov dword ptr [esp + 0x14], esi
+            call BrScratchAllocate
+            mov edi, dword ptr [esp + 0x2c]
+            add esp, 4
+            test ebp, ebp
+            mov dword ptr [esp + 0x2c], eax
+            mov ebx, eax
+            jle L0052c616
+            mov esi, dword ptr [esp + 0x34]
+            imul esi, dword ptr [esp + 0x38]
+    L0052c5f8:
+            push esi
+            push edi
+            push ebx
+            call BrMemCpy
+            mov edx, dword ptr [esp + 0x3c]
+            add esp, 0xc
+            add edi, edx
+            add ebx, esi
+            dec ebp
+            jne L0052c5f8
+            mov eax, dword ptr [esp + 0x2c]
+            mov esi, dword ptr [esp + 0x10]
+    L0052c616:
+            mov ecx, dword ptr [esp + 0x38]
+            push ecx
+            push esi
+            push eax
+            call BrSwapBlock
+            mov ebp, dword ptr [esp + 0x38]
+            mov esi, dword ptr [esp + 0x20]
+            mov ebx, dword ptr [esp + 0x44]
+            add esp, 0xc
+    L0052c631:
+            mov edi, dword ptr [esp + 0x24]
+            lea eax, [esp + 0x18]
+            mov edx, dword ptr [edi]
+            push edx
+            push 1
+            push 4
+            push eax
+            call BrFileWrite
+            mov ecx, dword ptr [edi]
+            add esp, 0x10
+            lea edx, [esp + 0x1c]
+            push ecx
+            push 1
+            push 4
+            push edx
+            call BrFileWrite
+            mov eax, dword ptr [edi]
+            add esp, 0x10
+            push eax
+            push ebx
+            push esi
+            push ebp
+            call BrFileWrite
+            mov eax, dword ptr [esp + 0x38]
+            add esp, 0x10
+            cmp ebp, eax
+            je L0052c67c
+            push ebp
+            call BrScratchFree
+            add esp, 4
+    L0052c67c:
+            pop edi
+            pop esi
+            pop ebp
+            xor eax, eax
+            pop ebx
+            add esp, 0x10
+            ret 0x18
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0052c690
-void* C2_HOOK_STDCALL DfBlockReadBinary(br_datafile* df, void* base, int* count, int size, int mtype) {
+C2_NAKED void* C2_HOOK_STDCALL DfBlockReadBinary(br_datafile* df, void* base, int* count, int size, int mtype) {
+#ifndef CARPOCALYPSE2_MATCHING
     int l;
     int s;
 
@@ -1353,12 +5353,122 @@ void* C2_HOOK_STDCALL DfBlockReadBinary(br_datafile* df, void* base, int* count,
     BrFileRead(base, l, size, df->h);
     BrSwapBlock(base, l, size);
     return base;
+#else
+    __asm {
+            push ecx
+            push ebx
+            mov ebx, dword ptr [esp + 0xc]
+            push ebp
+            push esi
+            mov eax, dword ptr [ebx]
+            push edi
+            push eax
+            push 1
+            lea ecx, [esp + 0x20]
+            push 4
+            push ecx
+            call BrFileRead
+            mov edx, dword ptr [esp + 0x28]
+            add esp, 0x10
+            push edx
+            call BrSwap32
+            add esp, 4
+            mov dword ptr [esp + 0x18], eax
+            mov eax, dword ptr [ebx]
+            lea ecx, [esp + 0x10]
+            push eax
+            push 1
+            push 4
+            push ecx
+            call BrFileRead
+            mov edx, dword ptr [esp + 0x20]
+            add esp, 0x10
+            push edx
+            call BrSwap32
+            mov edi, dword ptr [esp + 0x28]
+            add esp, 4
+            cmp eax, edi
+            mov dword ptr [esp + 0x10], eax
+            je L0052c6f8
+            push offset _BrFilePrimsWriteText+0x8b8
+            call BrFailure
+            add esp, 4
+    L0052c6f8:
+            mov esi, dword ptr [esp + 0x1c]
+            mov ebp, dword ptr [esp + 0x20]
+            test esi, esi
+            jne L0052c72a
+            mov eax, dword ptr [ebx + 0xc]
+            test eax, eax
+            jne L0052c710
+            mov eax, dword ptr [fw+0x438]
+    L0052c710:
+            mov edx, dword ptr [esp + 0x18]
+            mov ecx, dword ptr [esp + 0x28]
+            imul edx, edi
+            push ecx
+            push edx
+            push eax
+            call BrResAllocate
+            add esp, 0xc
+            mov esi, eax
+            jmp L0052c743
+    L0052c72a:
+            mov eax, dword ptr [esp + 0x18]
+            mov ecx, dword ptr [ebp]
+            cmp ecx, eax
+            jge L0052c747
+            push eax
+            push offset _BrFilePrimsWriteText+0x8cc
+            call BrFailure
+            add esp, 8
+    L0052c743:
+            mov eax, dword ptr [esp + 0x18]
+    L0052c747:
+            mov dword ptr [ebp], eax
+            mov ecx, dword ptr [ebx]
+            push ecx
+            push edi
+            push eax
+            push esi
+            call BrFileRead
+            mov edx, dword ptr [esp + 0x28]
+            add esp, 0x10
+            push edi
+            push edx
+            push esi
+            call BrSwapBlock
+            add esp, 0xc
+            mov eax, esi
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            pop ecx
+            ret 0x14
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0052c780
-int C2_HOOK_STDCALL DfBlockSizeText(br_datafile* df, void* base, int block_size, int block_stride, int block_count, int size) {
+int C2_NAKED C2_HOOK_STDCALL DfBlockSizeText(br_datafile* df, void* base, int block_size, int block_stride, int block_count, int size) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     return ((size * block_count * block_size + (32 - 1)) >> 5) + 2;
+#else
+    __asm {
+            mov eax, dword ptr [esp + 0x18]
+            imul eax, dword ptr [esp + 0x14]
+            imul eax, dword ptr [esp + 0xc]
+            add eax, 0x1f
+            cdq
+            and edx, 0x1f
+            add eax, edx
+            sar eax, 5
+            add eax, 2
+            ret 0x18
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0052c7a0
@@ -1368,7 +5478,8 @@ int C2_HOOK_STDCALL DfBlockSizeBinary(br_datafile* df, void* base, int block_siz
 }
 
 // FUNCTION: CARMA2_HW 0x0052c7c0
-char* C2_HOOK_STDCALL DfNameReadText(br_datafile* df, char* name) {
+C2_NAKED char* C2_HOOK_STDCALL DfNameReadText(br_datafile* df, char* name) {
+#ifndef CARPOCALYPSE2_MATCHING
     char* id;
     char* data;
 
@@ -1383,6 +5494,60 @@ char* C2_HOOK_STDCALL DfNameReadText(br_datafile* df, char* name) {
     }
     BrFailure("no name string");
     return NULL;
+#else
+    __asm {
+            push ecx
+            mov edx, dword ptr [esp + 8]
+            lea eax, [esp + 8]
+            push esi
+            lea ecx, [esp + 4]
+            push eax
+            push ecx
+            push edx
+            call TextReadLine
+            push offset _BrFilePrimsWriteText+0x8f4
+            mov eax, dword ptr [esp + 8]
+            push eax
+            call BrStrCmp
+            add esp, 8
+            test eax, eax
+            je L0052c7f9
+            push offset _BrFilePrimsWriteText+0x8fc
+            call BrFailure
+            add esp, 4
+    L0052c7f9:
+            mov eax, dword ptr [esp + 0xc]
+            test eax, eax
+            je L0052c806
+            cmp byte ptr [eax], 0x22
+            je L0052c817
+    L0052c806:
+            push offset _BrFilePrimsWriteText+0x904
+            call BrFailure
+            mov eax, dword ptr [esp + 0x10]
+            add esp, 4
+    L0052c817:
+            mov esi, dword ptr [esp + 0x10]
+            inc eax
+            push 0xff
+            push eax
+            push esi
+            call BrStrNCpy
+            add esp, 0xc
+            mov byte ptr [esi + 0xff], 0
+            mov eax, esi
+            pop esi
+            pop ecx
+            ret 8
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0052c840
@@ -1437,7 +5602,8 @@ int C2_HOOK_STDCALL DfNameSizeBinary(br_datafile* df, char* name) {
 }
 
 // FUNCTION: CARMA2_HW 0x0052c920
-int C2_HOOK_STDCALL DfSkipText(br_datafile* df, br_uint_32 length) {
+int C2_NAKED C2_HOOK_STDCALL DfSkipText(br_datafile* df, br_uint_32 length) {
+#ifndef CARPOCALYPSE2_MATCHING
     char* id;
     char* data;
 
@@ -1446,6 +5612,44 @@ int C2_HOOK_STDCALL DfSkipText(br_datafile* df, br_uint_32 length) {
         length--;
     }
     return 0;
+#else
+    __asm {
+            push ecx
+            push esi
+            mov esi, dword ptr [esp + 0xc]
+            push edi
+            mov eax, dword ptr [esi]
+            push eax
+            call BrFileEof
+            add esp, 4
+            test eax, eax
+            jne L0052c960
+            mov edi, dword ptr [esp + 0x14]
+    L0052c93a:
+            mov ecx, edi
+            dec edi
+            test ecx, ecx
+            je L0052c960
+            lea edx, [esp + 0x10]
+            lea eax, [esp + 8]
+            push edx
+            push eax
+            push esi
+            call TextReadLine
+            mov ecx, dword ptr [esi]
+            push ecx
+            call BrFileEof
+            add esp, 4
+            test eax, eax
+            je L0052c93a
+    L0052c960:
+            pop edi
+            xor eax, eax
+            pop esi
+            pop ecx
+            ret 8
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0052c970
@@ -1455,7 +5659,8 @@ int C2_HOOK_STDCALL DfSkipBinary(br_datafile* df, br_uint_32 length) {
 }
 
 // FUNCTION: CARMA2_HW 0x0052c990
-int C2_HOOK_STDCALL DfChunksInterpret(br_datafile* df, br_chunks_table* table) {
+int C2_NAKED C2_HOOK_STDCALL DfChunksInterpret(br_datafile* df, br_chunks_table* table) {
+#ifndef CARPOCALYPSE2_MATCHING
     br_uint_32 length;
     br_uint_32 count;
     br_uint_32 id;
@@ -1488,6 +5693,86 @@ int C2_HOOK_STDCALL DfChunksInterpret(br_datafile* df, br_chunks_table* table) {
         }
     }
     return 0;
+#else
+    __asm {
+            push ebx
+            push ebp
+            push esi
+            push edi
+            mov edi, dword ptr [esp + 0x14]
+            lea ecx, [esp + 0x14]
+            push ecx
+            push edi
+            mov eax, dword ptr [edi + 4]
+            call dword ptr [eax + 0xc]
+            mov ebx, eax
+            cmp ebx, -1
+            je L0052ca1b
+            mov ebp, dword ptr [esp + 0x18]
+    L0052c9af:
+            mov ecx, dword ptr [ebp]
+            xor eax, eax
+            test ecx, ecx
+            jle L0052c9c7
+            mov edx, dword ptr [ebp + 4]
+    L0052c9bb:
+            cmp ebx, dword ptr [edx]
+            je L0052c9c7
+            inc eax
+            add edx, 0xc
+            cmp eax, ecx
+            jl L0052c9bb
+    L0052c9c7:
+            cmp eax, ecx
+            jge L0052c9fc
+            mov edx, dword ptr [ebp + 4]
+            lea esi, [eax + eax*2]
+            shl esi, 2
+            mov al, byte ptr [edx + esi + 4]
+            test al, al
+            je L0052c9e5
+            mov eax, dword ptr [edi + 4]
+            push edi
+            call dword ptr [eax + 0x14]
+            jmp L0052c9e7
+    L0052c9e5:
+            xor eax, eax
+    L0052c9e7:
+            mov edx, dword ptr [esp + 0x14]
+            mov ecx, dword ptr [ebp + 4]
+            push eax
+            push edx
+            push ebx
+            push edi
+            call dword ptr [ecx + esi + 8]
+            test eax, eax
+            jne L0052ca1d
+            jmp L0052ca08
+    L0052c9fc:
+            mov ecx, dword ptr [esp + 0x14]
+            mov eax, dword ptr [edi + 4]
+            push ecx
+            push edi
+            call dword ptr [eax + 4]
+    L0052ca08:
+            mov edx, dword ptr [edi + 4]
+            lea eax, [esp + 0x14]
+            push eax
+            push edi
+            call dword ptr [edx + 0xc]
+            mov ebx, eax
+            cmp ebx, -1
+            jne L0052c9af
+    L0052ca1b:
+            xor eax, eax
+    L0052ca1d:
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            ret 8
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0052ca30
@@ -1498,7 +5783,8 @@ void C2_HOOK_STDCALL BrNullOther(void) {
 }
 
 // FUNCTION: CARMA2_HW 0x0052cb40
-int C2_HOOK_CDECL DfFileIdentify(const br_uint_8* magics, br_size_t n_magics) {
+int C2_NAKED C2_HOOK_CDECL DfFileIdentify(const br_uint_8* magics, br_size_t n_magics) {
+#ifndef CARPOCALYPSE2_MATCHING
     static char text_magics[8] = { '*', 'F', 'I', 'L', 'E', '_', 'I', 'N' };
     static char binary_magics[8] = { '\0', '\0', '\0', '\x12', '\0', '\0', '\0', '\b' };
 
@@ -1510,6 +5796,33 @@ int C2_HOOK_CDECL DfFileIdentify(const br_uint_8* magics, br_size_t n_magics) {
     }
     // file does not match magics
     return BR_FS_MODE_UNKNOWN;
+#else
+    __asm {
+            push esi
+            mov esi, dword ptr [esp + 8]
+            push 8
+            push offset _BrFilePrimsWriteText+0x40
+            push esi
+            call BrMemCmp
+            add esp, 0xc
+            test eax, eax
+            jne L0052cb60
+            mov eax, 1
+            pop esi
+            ret
+    L0052cb60:
+            push 8
+            push offset _BrFilePrimsWriteText+0x48
+            push esi
+            call BrMemCmp
+            add esp, 0xc
+            neg eax
+            sbb eax, eax
+            pop esi
+            and eax, 2
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0052ca50
@@ -1562,7 +5875,8 @@ br_datafile* C2_HOOK_STDCALL DfOpen(const char* name, int write, br_token scalar
 }
 
 // FUNCTION: CARMA2_HW 0x0052cb80
-void C2_HOOK_STDCALL DfClose(br_datafile* df) {
+void C2_NAKED C2_HOOK_STDCALL DfClose(br_datafile* df) {
+#ifndef CARPOCALYPSE2_MATCHING
     br_datafile* dfp;
 
     while (1) {
@@ -1576,6 +5890,81 @@ void C2_HOOK_STDCALL DfClose(br_datafile* df) {
     dfp = DfPop(BR_MEMORY_FILE, NULL);
     BrFileClose(dfp->h);
     BrResFree(dfp);
+#else
+    __asm {
+            push esi
+    L0052cb81:
+            mov eax, dword ptr [DatafileStackTop]
+    L0052cb86:
+            test eax, eax
+            jg L0052cb8e
+            xor ecx, ecx
+            jmp L0052cb98
+    L0052cb8e:
+            lea ecx, [eax + eax*2]
+            mov ecx, dword ptr [ecx*4 + _diag_scratch+0x7c]
+    L0052cb98:
+            cmp ecx, 0x15
+            je L0052cbea
+            test eax, eax
+            jg L0052cba5
+            xor esi, esi
+            jmp L0052cbaf
+    L0052cba5:
+            lea edx, [eax + eax*2]
+            mov esi, dword ptr [edx*4 + _diag_scratch+0x7c]
+    L0052cbaf:
+            test eax, eax
+            jg L0052cbc5
+            push offset _BrFilePrimsWriteText+0x68
+            call BrFailure
+            mov eax, dword ptr [DatafileStackTop]
+            add esp, 4
+    L0052cbc5:
+            dec eax
+            mov dword ptr [DatafileStackTop], eax
+            lea ecx, [eax + eax*2]
+            mov ecx, dword ptr [ecx*4 + DatafileStack]
+            cmp esi, ecx
+            je L0052cb86
+            push ecx
+            push esi
+            push offset _BrFilePrimsWriteText+0x80
+            call BrFailure
+            add esp, 0xc
+            jmp L0052cb81
+    L0052cbea:
+            test eax, eax
+            jg L0052cc00
+            push offset _BrFilePrimsWriteText+0x68
+            call BrFailure
+            mov eax, dword ptr [DatafileStackTop]
+            add esp, 4
+    L0052cc00:
+            dec eax
+            mov dword ptr [DatafileStackTop], eax
+            lea edx, [eax + eax*2]
+            mov eax, dword ptr [edx*4 + DatafileStack]
+            cmp eax, 0x15
+            je L0052cc25
+            push eax
+            push 0x15
+            push offset _BrFilePrimsWriteText+0x80
+            call BrFailure
+            add esp, 0xc
+    L0052cc25:
+            mov esi, dword ptr [esp + 8]
+            mov eax, dword ptr [esi]
+            push eax
+            call BrFileClose
+            add esp, 4
+            push esi
+            call BrResFree
+            add esp, 4
+            pop esi
+            ret 4
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0052cc50

@@ -8,6 +8,12 @@
 
 #include "c2_stdlib.h"
 
+#ifdef CARPOCALYPSE2_MATCHING
+extern void C2_HOOK_CDECL BrModelToScreenQuery();
+extern char IID_IDirectInputDevice2A[];
+extern void __cdecl _ftol();
+extern br_v1db_state v1db;
+#endif
 // FUNCTION: CARMA2_HW 0x00526300
 br_order_table* C2_HOOK_CDECL BrZsOrderTableAllocate(br_uint_16 size, br_uint_32 flags, br_uint_16 type) {
     br_order_table* order_table;
@@ -62,7 +68,8 @@ void C2_HOOK_CDECL BrZsOrderTablePrimitiveInsert(br_order_table* order_table, br
 }
 
 // FUNCTION: CARMA2_HW 0x005263f0
-br_uint_16 C2_HOOK_CDECL BrZsPrimitiveBucketSelect(br_scalar* z, br_uint_16 type, br_scalar min_z, br_scalar max_z, br_uint_16 size, br_uint_16 sort_type) {
+br_uint_16 C2_NAKED C2_HOOK_CDECL BrZsPrimitiveBucketSelect(br_scalar* z, br_uint_16 type, br_scalar min_z, br_scalar max_z, br_uint_16 size, br_uint_16 sort_type) {
+#ifndef CARPOCALYPSE2_MATCHING
     br_uint_16 bucket;
     br_scalar zprim;
     br_scalar range;
@@ -140,6 +147,161 @@ br_uint_16 C2_HOOK_CDECL BrZsPrimitiveBucketSelect(br_scalar* z, br_uint_16 type
         bucket = size - 1;
     }
     return bucket;
+#else
+    __asm {
+            mov eax, dword ptr [esp + 8]
+            push esi
+            and eax, 0xffff
+            sub eax, 0xd1
+            je L005264d9
+            sub eax, 0x39
+            je L00526490
+            dec eax
+            jne L005264e1
+            mov eax, dword ptr [esp + 0x1c]
+            mov ecx, dword ptr [esp + 8]
+            and eax, 0xffff
+            _emit 0xd9
+        _emit 0x01
+            dec eax
+            je L00526480
+            dec eax
+            je L0052645c
+            dec eax
+            jne L005264e5
+            fld dword ptr [ecx + 4]
+            fcomp st(1)
+            fnstsw ax
+            test ah, 0x41
+            jne L00526442
+            fstp st(0)
+            fld dword ptr [ecx + 4]
+    L00526442:
+            fld dword ptr [ecx + 8]
+            fcomp st(1)
+            fnstsw ax
+            test ah, 0x41
+            jne L005264e5
+            fstp st(0)
+            fld dword ptr [ecx + 8]
+            jmp L005264e5
+    L0052645c:
+            fld dword ptr [ecx + 4]
+            fcomp st(1)
+            fnstsw ax
+            test ah, 1
+            je L0052646d
+            fstp st(0)
+            fld dword ptr [ecx + 4]
+    L0052646d:
+            fld dword ptr [ecx + 8]
+            fcomp st(1)
+            fnstsw ax
+            test ah, 1
+            je L005264e5
+            fstp st(0)
+            fld dword ptr [ecx + 8]
+            jmp L005264e5
+    L00526480:
+            fld dword ptr [ecx + 8]
+            fadd dword ptr [ecx + 4]
+            faddp st(1), st(0)
+            fmul dword ptr [IID_IDirectInputDevice2A+0x450]
+            jmp L005264e5
+    L00526490:
+            mov eax, dword ptr [esp + 0x1c]
+            mov ecx, dword ptr [esp + 8]
+            and eax, 0xffff
+            _emit 0xd9
+        _emit 0x01
+            dec eax
+            je L005264ce
+            dec eax
+            je L005264bb
+            dec eax
+            jne L005264e5
+            fld dword ptr [ecx + 4]
+            fcomp st(1)
+            fnstsw ax
+            test ah, 0x41
+            jne L005264e5
+            fstp st(0)
+            fld dword ptr [ecx + 4]
+            jmp L005264e5
+    L005264bb:
+            fld dword ptr [ecx + 4]
+            fcomp st(1)
+            fnstsw ax
+            test ah, 1
+            je L005264e5
+            fstp st(0)
+            fld dword ptr [ecx + 4]
+            jmp L005264e5
+    L005264ce:
+            fadd dword ptr [ecx + 4]
+            fmul dword ptr [IID_IDirectInputDevice2A+0x454]
+            jmp L005264e5
+    L005264d9:
+            mov eax, dword ptr [esp + 8]
+            _emit 0xd9
+        _emit 0x00
+            jmp L005264e5
+    L005264e1:
+            fld dword ptr [esp + 8]
+    L005264e5:
+            fld dword ptr [esp + 0x14]
+            fsub dword ptr [esp + 0x10]
+            mov esi, dword ptr [esp + 0x18]
+            fcom dword ptr [IID_IDirectInputDevice2A+0x458]
+            fnstsw ax
+            test ah, 0x41
+            jne L00526518
+            mov ecx, esi
+            and ecx, 0xffff
+            mov dword ptr [esp + 8], ecx
+            fild dword ptr [esp + 8]
+            fdiv st(0), st(1)
+            fstp dword ptr [esp + 8]
+            fstp st(0)
+            jmp L00526522
+    L00526518:
+            fstp st(0)
+            mov dword ptr [esp + 8], 0x447a0000
+    L00526522:
+            fsub dword ptr [esp + 0x10]
+            fcom dword ptr [IID_IDirectInputDevice2A+0x460]
+            fnstsw ax
+            test ah, 1
+            je L0052653b
+            fstp st(0)
+            fld dword ptr [IID_IDirectInputDevice2A+0x460]
+    L0052653b:
+            fld dword ptr [esp + 8]
+            fmul st(0), st(1)
+            call _ftol
+            cmp ax, si
+            fstp st(0)
+            jb L00526550
+            lea eax, [esi - 1]
+    L00526550:
+            pop esi
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00526560
@@ -187,7 +349,8 @@ void C2_HOOK_STDCALL InsertOrderTableList(br_order_table* order_table) {
 }
 
 // FUNCTION: CARMA2_HW 0x00526600
-void C2_HOOK_STDCALL SetOrderTableBounds(br_bounds* bounds, br_order_table* order_table) {
+void C2_NAKED C2_HOOK_STDCALL SetOrderTableBounds(br_bounds* bounds, br_order_table* order_table) {
+#ifndef CARPOCALYPSE2_MATCHING
     br_uint_32 i;
     br_scalar element;
     br_scalar min_z;
@@ -216,6 +379,112 @@ void C2_HOOK_STDCALL SetOrderTableBounds(br_bounds* bounds, br_order_table* orde
         order_table->max_z = max_z;
     }
     SetOrderTableRange(order_table);
+#else
+    __asm {
+            push ebx
+            mov ebx, dword ptr [esp + 0xc]
+            push esi
+            push edi
+            mov eax, dword ptr [ebx + 0x1c]
+            test al, 1
+            jne L00526619
+            test al, 2
+            je L0052667b
+            cmp word ptr [ebx + 0x22], 1
+            jne L0052667b
+    L00526619:
+            mov edi, dword ptr [esp + 0x10]
+            push offset v1db+0x20
+            lea esi, [edi + 0xc]
+            call BrModelToScreenQuery
+            fld dword ptr [v1db+0x5c]
+            add esp, 4
+            mov ecx, esi
+            fld st(0)
+            mov edx, offset v1db+0x2c
+            sub edi, esi
+    L0052663e:
+            _emit 0xd9
+        _emit 0x02
+            fcom dword ptr [IID_IDirectInputDevice2A+0x460]
+            fnstsw ax
+            test ah, 0x41
+            jne L00526654
+            fld dword ptr [edi + ecx]
+            _emit 0xd9
+        _emit 0x01
+            jmp L00526659
+    L00526654:
+            _emit 0xd9
+        _emit 0x01
+            fld dword ptr [edi + ecx]
+    L00526659:
+            fmul st(0), st(2)
+            fxch st(1)
+            fmul st(0), st(2)
+            fxch st(1)
+            faddp st(4), st(0)
+            add edx, 0x10
+            add ecx, 4
+            faddp st(2), st(0)
+            cmp edx, offset v1db+0x5c
+            fstp st(0)
+            jb L0052663e
+            fstp dword ptr [ebx + 0xc]
+            fstp dword ptr [ebx + 0x10]
+    L0052667b:
+            fld dword ptr [ebx + 0x10]
+            fsub dword ptr [ebx + 0xc]
+            fst dword ptr [esp + 0x14]
+            fcomp dword ptr [IID_IDirectInputDevice2A+0x458]
+            fnstsw ax
+            test ah, 0x41
+            jne L005266a9
+            xor eax, eax
+            mov ax, word ptr [ebx + 4]
+            mov dword ptr [esp + 0x10], eax
+            fild dword ptr [esp + 0x10]
+            fdiv dword ptr [esp + 0x14]
+            fstp dword ptr [ebx + 0x18]
+            jmp L005266b0
+    L005266a9:
+            mov dword ptr [ebx + 0x18], 0x447a0000
+    L005266b0:
+            mov eax, dword ptr [ebx + 0x1c]
+            test al, 8
+            je L005266c3
+            mov ecx, dword ptr [ebx + 0xc]
+            mov dword ptr [ebx + 0x14], ecx
+            pop edi
+            pop esi
+            pop ebx
+            ret 8
+    L005266c3:
+            test al, 0x10
+            je L005266d3
+            mov edx, dword ptr [ebx + 0x10]
+            mov dword ptr [ebx + 0x14], edx
+            pop edi
+            pop esi
+            pop ebx
+            ret 8
+    L005266d3:
+            test al, 0x20
+            je L005266e7
+            fld dword ptr [esp + 0x14]
+            fmul dword ptr [IID_IDirectInputDevice2A+0x454]
+            fadd dword ptr [ebx + 0xc]
+            fstp dword ptr [ebx + 0x14]
+    L005266e7:
+            pop edi
+            pop esi
+            pop ebx
+            ret 8
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x005266f0

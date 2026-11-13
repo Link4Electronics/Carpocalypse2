@@ -123,8 +123,42 @@ int C2_HOOK_FASTCALL AnyModifiersDown(void) {
     return 0;
 }
 
+#ifdef CARPOCALYPSE2_MATCHING
+extern tU32 C2_HOOK_FASTCALL PDGetTotalTime(void);
+extern void C2_HOOK_FASTCALL PDSetKeyArray(int* pKeys, int pMark);
+extern void C2_HOOK_FASTCALL PDSetKeysFromJoystick(int *keys);
+extern void C2_HOOK_FASTCALL SetJoystickArrays(int* pKeys, int pMark);
+extern br_actor* gActor_array[100];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern tU32 C2_HOOK_FASTCALL PDGetJoy1Button1(void);
+extern tU32 C2_HOOK_FASTCALL PDGetJoy1Button2(void);
+extern tU32 C2_HOOK_FASTCALL PDGetJoy1Button3(void);
+extern tU32 C2_HOOK_FASTCALL PDGetJoy1Button4(void);
+extern int C2_HOOK_FASTCALL PDGetJoy1X(void);
+extern int C2_HOOK_FASTCALL PDGetJoy1Y(void);
+extern tU32 C2_HOOK_FASTCALL PDGetJoy2Button1(void);
+extern tU32 C2_HOOK_FASTCALL PDGetJoy2Button2(void);
+extern tU32 C2_HOOK_FASTCALL PDGetJoy2Button3(void);
+extern tU32 C2_HOOK_FASTCALL PDGetJoy2Button4(void);
+extern int C2_HOOK_FASTCALL PDGetJoy2X(void);
+extern int C2_HOOK_FASTCALL PDGetJoy2Y(void);
+extern void C2_HOOK_FASTCALL PDReadJoysticks(void);
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern int C2_HOOK_FASTCALL CheckQuit(void);
+extern void C2_HOOK_FASTCALL CyclePollKeys(void);
+extern void C2_HOOK_FASTCALL GetMousePosition(int *pX, int *pY);
+extern int C2_HOOK_FASTCALL PDGetMouseClickPosition(int* pX_coord, int* pY_coord);
+extern void C2_HOOK_FASTCALL PDMouseButtons(int* pLeftButtonDown, int* pRightButtonDown);
+extern void C2_HOOK_FASTCALL PollKeys(void);
+extern int gJoystick_deadzone;
+#endif
 // FUNCTION: CARMA2_HW 0x00482590
-tKey_down_result C2_HOOK_FASTCALL EdgeTriggeryKey(int pKey_index, int pReset) {
+tKey_down_result C2_NAKED C2_HOOK_FASTCALL EdgeTriggeryKey(int pKey_index, int pReset) {
+#ifndef CARPOCALYPSE2_MATCHING
     tU32 now;
 
     if (pReset) {
@@ -170,6 +204,175 @@ tKey_down_result C2_HOOK_FASTCALL EdgeTriggeryKey(int pKey_index, int pReset) {
     gLast_key_down_time = now;
     gModifiers_down = AnyModifiersDown();
     return tKey_down_yes;
+#else
+    __asm {
+            push ebx
+            xor ebx, ebx
+            push esi
+            cmp edx, ebx
+            push edi
+            mov esi, ecx
+            je L004825b1
+            mov dword ptr [gLast_key_down], 0xffffffff
+            mov dword ptr [gLast_key_down_time], ebx
+            xor eax, eax
+            pop edi
+            pop esi
+            pop ebx
+            ret
+    L004825b1:
+            call PDGetTotalTime
+            sub eax, dword ptr [gLast_poll_keys]
+            cmp eax, 0x1f4
+            jbe L00482650
+            mov ecx, 0x97
+            xor eax, eax
+            mov edi, offset gKey_array
+            mov edx, dword ptr [gKey_poll_counter]
+            rep stosd
+            mov ecx, 8
+            or eax, 0xffffffff
+            mov edi, offset gJoy_array
+            rep stosd
+            xor ecx, ecx
+    L004825ec:
+            cmp dword ptr [ecx + gKey_array], edx
+            jle L00482608
+            cmp ecx, 0x23c
+            mov dword ptr [ecx + gKey_array], ebx
+            jle L00482608
+            mov dword ptr [ecx + gActor_array+0x784], eax
+    L00482608:
+            add ecx, 4
+            cmp ecx, 0x25c
+            jl L004825ec
+            mov edx, 1
+            mov ecx, offset gKey_array
+            mov dword ptr [gKey_poll_counter], 1
+            call PDSetKeyArray
+            mov edx, dword ptr [gKey_poll_counter]
+            mov ecx, offset gKey_array
+            call SetJoystickArrays
+            mov ecx, offset gKey_array
+            call PDSetKeysFromJoystick
+            call PDGetTotalTime
+            mov dword ptr [gLast_poll_keys], eax
+    L00482650:
+            mov eax, dword ptr [gEdge_trigger_mode]
+            cmp eax, ebx
+            mov eax, dword ptr [esi*4 + gKey_array]
+            je L00482754
+            cmp eax, ebx
+            je L0048273a
+            call PDGetTotalTime
+            mov edx, dword ptr [gLast_key_down]
+            cmp esi, edx
+            jne L004826da
+            mov ecx, offset gKey_array
+    L00482680:
+            cmp dword ptr [ecx], ebx
+            jne L00482758
+            add ecx, 4
+            cmp ecx, offset gKey_array+0x28
+            jle L00482680
+            xor ecx, ecx
+    L00482695:
+            cmp dword ptr [gModifiers_down], ecx
+            je L004826b1
+            neg edx
+            mov dword ptr [gLast_key_down], edx
+            mov dword ptr [gLast_key_down_time], ebx
+            xor eax, eax
+            pop edi
+            pop esi
+            pop ebx
+            ret
+    L004826b1:
+            mov esi, dword ptr [gLast_key_down_time]
+            mov ecx, eax
+            sub ecx, esi
+            cmp ecx, 0x12c
+            jb L004826d1
+            mov dword ptr [gLast_key_down_time], eax
+            mov eax, 3
+            pop edi
+            pop esi
+            pop ebx
+            ret
+    L004826d1:
+            mov eax, 2
+            pop edi
+            pop esi
+            pop ebx
+            ret
+    L004826da:
+            neg edx
+            cmp esi, edx
+            je L00482752
+            cmp esi, 0xa
+            jle L00482721
+            mov dword ptr [gLast_key_down_time], eax
+            mov dword ptr [gLast_key_down], esi
+            mov eax, offset gKey_array
+    L004826f5:
+            cmp dword ptr [eax], ebx
+            jne L00482713
+            add eax, 4
+            cmp eax, offset gKey_array+0x28
+            jle L004826f5
+            xor eax, eax
+            mov dword ptr [gModifiers_down], eax
+            mov eax, 1
+            pop edi
+            pop esi
+            pop ebx
+            ret
+    L00482713:
+            mov eax, 1
+            mov dword ptr [gModifiers_down], eax
+            pop edi
+            pop esi
+            pop ebx
+            ret
+    L00482721:
+            mov dword ptr [gLast_key_down_time], ebx
+            mov dword ptr [gLast_key_down], 0xfffffc18
+            mov eax, 1
+            pop edi
+            pop esi
+            pop ebx
+            ret
+    L0048273a:
+            cmp esi, dword ptr [gLast_key_down]
+            jne L00482752
+            mov dword ptr [gLast_key_down_time], ebx
+            mov dword ptr [gLast_key_down], 0xfffffc18
+    L00482752:
+            xor eax, eax
+    L00482754:
+            pop edi
+            pop esi
+            pop ebx
+            ret
+    L00482758:
+            mov ecx, 1
+            jmp L00482695
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004833a0
@@ -393,7 +596,8 @@ void C2_HOOK_FASTCALL PollKeys(void) {
 }
 
 // FUNCTION: CARMA2_HW 0x00482160
-void C2_HOOK_FASTCALL CyclePollKeys(void) {
+void C2_NAKED C2_HOOK_FASTCALL CyclePollKeys(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     int i;
 
     for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gKey_array); i++) {
@@ -405,6 +609,29 @@ void C2_HOOK_FASTCALL CyclePollKeys(void) {
         }
     }
     gKey_poll_counter = 0;
+#else
+    __asm {
+            mov ecx, dword ptr [gKey_poll_counter]
+            push esi
+            xor edx, edx
+            xor eax, eax
+            or esi, 0xffffffff
+    L0048216e:
+            cmp dword ptr [eax + gKey_array], ecx
+            jle L00482189
+            cmp eax, 0x23c
+            mov dword ptr [eax + gKey_array], edx
+            jle L00482189
+            mov dword ptr [eax + gActor_array+0x784], esi
+    L00482189:
+            add eax, 4
+            cmp eax, 0x25c
+            jl L0048216e
+            mov dword ptr [gKey_poll_counter], edx
+            pop esi
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004821a0
@@ -423,13 +650,254 @@ void C2_HOOK_FASTCALL ResetPollKeys(void) {
 }
 
 // FUNCTION: CARMA2_HW 0x004821c0
-void C2_HOOK_FASTCALL CheckKeysForMouldiness(void) {
+void C2_NAKED C2_HOOK_FASTCALL CheckKeysForMouldiness(void) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     if (PDGetTotalTime() - gLast_poll_keys > 500) {
         ResetPollKeys();
         CyclePollKeys();
         PollKeys();
     }
+#else
+    __asm {
+            call PDGetTotalTime
+            sub eax, dword ptr [gLast_poll_keys]
+            cmp eax, 0x1f4
+            jbe L004824bd
+            push edi
+            push esi
+            push ebp
+            mov ecx, 0x97
+            xor eax, eax
+            mov edi, offset gKey_array
+            push ebx
+            or ebx, 0xffffffff
+            rep stosd
+            mov ecx, 8
+            mov eax, ebx
+            mov edi, offset gJoy_array
+            xor ebp, ebp
+            rep stosd
+            mov ecx, dword ptr [gKey_poll_counter]
+            xor eax, eax
+    L00482203:
+            cmp dword ptr [eax + gKey_array], ecx
+            jle L0048221e
+            cmp eax, 0x23c
+            mov dword ptr [eax + gKey_array], ebp
+            jle L0048221e
+            mov dword ptr [eax + gActor_array+0x784], ebx
+    L0048221e:
+            add eax, 4
+            cmp eax, 0x25c
+            jl L00482203
+            mov edx, 1
+            mov ecx, offset gKey_array
+            mov dword ptr [gKey_poll_counter], edx
+            call PDSetKeyArray
+            mov esi, dword ptr [gKey_poll_counter]
+            mov ecx, 0x2c
+            xor eax, eax
+            mov edi, offset gKey_array+0x1ac
+            rep stosd
+            call PDReadJoysticks
+            mov ecx, 8
+            mov eax, ebx
+            mov edi, offset gJoy_array
+            rep stosd
+            mov ecx, 0x24
+            xor eax, eax
+            mov edi, offset gKey_array+0x1ac
+            rep stosd
+            cmp dword ptr [gINT_006621e4], ebp
+            jne L00482282
+            cmp dword ptr [gINT_006621e8], ebp
+            je L004822be
+    L00482282:
+            call PDGetJoy1Button1
+            test eax, eax
+            je L00482291
+            mov dword ptr [gKey_array+0x1ac], esi
+    L00482291:
+            call PDGetJoy1Button2
+            test eax, eax
+            je L004822a0
+            mov dword ptr [gKey_array+0x1b0], esi
+    L004822a0:
+            call PDGetJoy1Button3
+            test eax, eax
+            je L004822af
+            mov dword ptr [gKey_array+0x1b4], esi
+    L004822af:
+            call PDGetJoy1Button4
+            test eax, eax
+            je L004822be
+            mov dword ptr [gKey_array+0x1b8], esi
+    L004822be:
+            cmp dword ptr [gINT_006621ec], ebp
+            jne L004822ce
+            cmp dword ptr [gINT_006621f0], ebp
+            je L0048230a
+    L004822ce:
+            call PDGetJoy2Button1
+            test eax, eax
+            je L004822dd
+            mov dword ptr [gKey_array+0x22c], esi
+    L004822dd:
+            call PDGetJoy2Button2
+            test eax, eax
+            je L004822ec
+            mov dword ptr [gKey_array+0x230], esi
+    L004822ec:
+            call PDGetJoy2Button3
+            test eax, eax
+            je L004822fb
+            mov dword ptr [gKey_array+0x234], esi
+    L004822fb:
+            call PDGetJoy2Button4
+            test eax, eax
+            je L0048230a
+            mov dword ptr [gKey_array+0x238], esi
+    L0048230a:
+            mov eax, dword ptr [gINT_006621e4]
+            mov edi, 0x4000
+            cmp eax, ebp
+            mov ebx, 0xc000
+            je L00482375
+            call PDGetJoy1X
+            cmp eax, -1
+            je L00482370
+            cmp eax, 0x8000
+            jge L00482351
+            cmp eax, edi
+            jge L00482340
+            cmp dword ptr [gJoy1_x], edi
+            jl L00482340
+            mov dword ptr [gKey_array+0x23c], esi
+    L00482340:
+            mov ecx, 0x8000
+            sub ecx, eax
+            shl ecx, 1
+            mov dword ptr [gJoy_array], ecx
+            jmp L00482370
+    L00482351:
+            cmp eax, ebx
+            jle L00482363
+            cmp dword ptr [gJoy1_x], ebx
+            jg L00482363
+            mov dword ptr [gKey_array+0x240], esi
+    L00482363:
+            lea edx, [eax + eax - 0x10000]
+            mov dword ptr [gJoy_array+0x4], edx
+    L00482370:
+            mov dword ptr [gJoy1_x], eax
+    L00482375:
+            cmp dword ptr [gINT_006621e8], ebp
+            je L004823d5
+            call PDGetJoy1Y
+            cmp eax, -1
+            je L004823d0
+            cmp eax, 0x8000
+            jge L004823b1
+            cmp eax, edi
+            jge L004823a0
+            cmp dword ptr [gJoy1_y], edi
+            jl L004823a0
+            mov dword ptr [gKey_array+0x244], esi
+    L004823a0:
+            mov ecx, 0x8000
+            sub ecx, eax
+            shl ecx, 1
+            mov dword ptr [gJoy_array+0x8], ecx
+            jmp L004823d0
+    L004823b1:
+            cmp eax, ebx
+            jle L004823c3
+            cmp dword ptr [gJoy1_y], ebx
+            jg L004823c3
+            mov dword ptr [gKey_array+0x248], esi
+    L004823c3:
+            lea edx, [eax + eax - 0x10000]
+            mov dword ptr [gJoy_array+0xc], edx
+    L004823d0:
+            mov dword ptr [gJoy1_y], eax
+    L004823d5:
+            cmp dword ptr [gINT_006621ec], ebp
+            je L00482435
+            call PDGetJoy2X
+            cmp eax, -1
+            je L00482430
+            cmp eax, 0x8000
+            jge L00482411
+            cmp eax, edi
+            jge L00482400
+            cmp dword ptr [gJoy2_x], edi
+            jl L00482400
+            mov dword ptr [gKey_array+0x24c], esi
+    L00482400:
+            mov ecx, 0x8000
+            sub ecx, eax
+            shl ecx, 1
+            mov dword ptr [gJoy_array+0x10], ecx
+            jmp L00482430
+    L00482411:
+            cmp eax, ebx
+            jle L00482423
+            cmp dword ptr [gJoy2_x], ebx
+            jg L00482423
+            mov dword ptr [gKey_array+0x250], esi
+    L00482423:
+            lea edx, [eax + eax - 0x10000]
+            mov dword ptr [gJoy_array+0x14], edx
+    L00482430:
+            mov dword ptr [gJoy2_x], eax
+    L00482435:
+            cmp dword ptr [gINT_006621f0], ebp
+            je L004824a5
+            call PDGetJoy2Y
+            cmp eax, -1
+            je L004824a0
+            cmp eax, 0x8000
+            jge L00482471
+            cmp eax, edi
+            jge L00482460
+            cmp dword ptr [gJoy2_y], edi
+            jl L00482460
+            mov dword ptr [gKey_array+0x254], esi
+    L00482460:
+            mov ecx, 0x8000
+            sub ecx, eax
+            shl ecx, 1
+            mov dword ptr [gJoy_array+0x18], ecx
+            jmp L004824a0
+    L00482471:
+            mov edx, dword ptr [gJoystick_deadzone]
+            add edx, 0x8000
+            cmp eax, edx
+            jle L004824a0
+            cmp eax, ebx
+            jle L00482493
+            cmp dword ptr [gJoy2_y], ebx
+            jg L00482493
+            mov dword ptr [gKey_array+0x258], esi
+    L00482493:
+            lea ecx, [eax + eax - 0x10000]
+            mov dword ptr [gJoy_array+0x1c], ecx
+    L004824a0:
+            mov dword ptr [gJoy2_y], eax
+    L004824a5:
+            mov ecx, offset gKey_array
+            call PDSetKeysFromJoystick
+            call PDGetTotalTime
+            mov dword ptr [gLast_poll_keys], eax
+            pop ebx
+            pop ebp
+            pop esi
+            pop edi
+    L004824bd:
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004824c0
@@ -474,7 +942,8 @@ int C2_HOOK_FASTCALL PDKeyDown(int pKey_index) {
 // PDKeyDown3
 
 // FUNCTION: CARMA2_HW 0x00482a00
-int C2_HOOK_FASTCALL PDAnyKeyDown(void) {
+int C2_NAKED C2_HOOK_FASTCALL PDAnyKeyDown(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     int i;
 
     CheckKeysForMouldiness();
@@ -497,18 +966,468 @@ int C2_HOOK_FASTCALL PDAnyKeyDown(void) {
         EdgeTriggeryKey(0, 1);
     }
     return -1;
+#else
+    __asm {
+            push ebx
+            push ebp
+            push esi
+            push edi
+            call PDGetTotalTime
+            mov edx, dword ptr ds:[gLast_poll_keys]
+            xor ebp, ebp
+            sub eax, edx
+            cmp eax, 0x1f4
+            jbe L00482cfb
+            mov ecx, 0x97
+            xor eax, eax
+            mov edi, offset gKey_array
+            or ebx, 0xffffffff
+            rep stosd
+            mov ecx, 8
+            mov eax, ebx
+            mov edi, offset gJoy_array
+            rep stosd
+            mov ecx, dword ptr ds:[gKey_poll_counter]
+            xor eax, eax
+    L00482a45:
+            cmp dword ptr [eax + gKey_array], ecx
+            jle L00482a60
+            cmp eax, 0x23c
+            mov dword ptr [eax + gKey_array], ebp
+            jle L00482a60
+            mov dword ptr [eax + 0x74b384], ebx
+    L00482a60:
+            add eax, 4
+            cmp eax, 0x25c
+            jl L00482a45
+            mov edx, 1
+            mov ecx, offset gKey_array
+            mov dword ptr ds:[gKey_poll_counter], edx
+            call PDSetKeyArray
+            mov esi, dword ptr ds:[gKey_poll_counter]
+            mov ecx, 0x2c
+            xor eax, eax
+            mov edi, 0x68c08c
+            rep stosd
+            call PDReadJoysticks
+            mov ecx, 8
+            mov eax, ebx
+            mov edi, offset gJoy_array
+            rep stosd
+            mov ecx, 0x24
+            xor eax, eax
+            mov edi, 0x68c08c
+            rep stosd
+            cmp dword ptr ds:[gINT_006621e4], ebp
+            jne L00482ac4
+            cmp dword ptr ds:[gINT_006621e8], ebp
+            je L00482b00
+    L00482ac4:
+            call PDGetJoy1Button1
+            test eax, eax
+            je L00482ad3
+            mov dword ptr ds:[0x68c08c], esi
+    L00482ad3:
+            call PDGetJoy1Button2
+            test eax, eax
+            je L00482ae2
+            mov dword ptr ds:[0x68c090], esi
+    L00482ae2:
+            call PDGetJoy1Button3
+            test eax, eax
+            je L00482af1
+            mov dword ptr ds:[0x68c094], esi
+    L00482af1:
+            call PDGetJoy1Button4
+            test eax, eax
+            je L00482b00
+            mov dword ptr ds:[0x68c098], esi
+    L00482b00:
+            cmp dword ptr ds:[gINT_006621ec], ebp
+            jne L00482b10
+            cmp dword ptr ds:[gINT_006621f0], ebp
+            je L00482b4c
+    L00482b10:
+            call PDGetJoy2Button1
+            test eax, eax
+            je L00482b1f
+            mov dword ptr ds:[0x68c10c], esi
+    L00482b1f:
+            call PDGetJoy2Button2
+            test eax, eax
+            je L00482b2e
+            mov dword ptr ds:[0x68c110], esi
+    L00482b2e:
+            call PDGetJoy2Button3
+            test eax, eax
+            je L00482b3d
+            mov dword ptr ds:[0x68c114], esi
+    L00482b3d:
+            call PDGetJoy2Button4
+            test eax, eax
+            je L00482b4c
+            mov dword ptr ds:[0x68c118], esi
+    L00482b4c:
+            mov eax, dword ptr ds:[gINT_006621e4]
+            mov edi, 0x4000
+            cmp eax, ebp
+            mov ebx, 0xc000
+            je L00482bb7
+            call PDGetJoy1X
+            cmp eax, -1
+            je L00482bb2
+            cmp eax, 0x8000
+            jge L00482b93
+            cmp eax, edi
+            jge L00482b82
+            cmp dword ptr ds:[gJoy1_x], edi
+            jl L00482b82
+            mov dword ptr ds:[0x68c11c], esi
+    L00482b82:
+            mov ecx, 0x8000
+            sub ecx, eax
+            shl ecx, 1
+            mov dword ptr ds:[gJoy_array], ecx
+            jmp L00482bb2
+    L00482b93:
+            cmp eax, ebx
+            jle L00482ba5
+            cmp dword ptr ds:[gJoy1_x], ebx
+            jg L00482ba5
+            mov dword ptr ds:[0x68c120], esi
+    L00482ba5:
+            lea edx, [eax + eax - 0x10000]
+            mov dword ptr ds:[0x74b5c4], edx
+    L00482bb2:
+            mov dword ptr ds:[gJoy1_x], eax
+    L00482bb7:
+            cmp dword ptr ds:[gINT_006621e8], ebp
+            je L00482c17
+            call PDGetJoy1Y
+            cmp eax, -1
+            je L00482c12
+            cmp eax, 0x8000
+            jge L00482bf3
+            cmp eax, edi
+            jge L00482be2
+            cmp dword ptr ds:[gJoy1_y], edi
+            jl L00482be2
+            mov dword ptr ds:[0x68c124], esi
+    L00482be2:
+            mov ecx, 0x8000
+            sub ecx, eax
+            shl ecx, 1
+            mov dword ptr ds:[0x74b5c8], ecx
+            jmp L00482c12
+    L00482bf3:
+            cmp eax, ebx
+            jle L00482c05
+            cmp dword ptr ds:[gJoy1_y], ebx
+            jg L00482c05
+            mov dword ptr ds:[0x68c128], esi
+    L00482c05:
+            lea edx, [eax + eax - 0x10000]
+            mov dword ptr ds:[0x74b5cc], edx
+    L00482c12:
+            mov dword ptr ds:[gJoy1_y], eax
+    L00482c17:
+            cmp dword ptr ds:[gINT_006621ec], ebp
+            je L00482c77
+            call PDGetJoy2X
+            cmp eax, -1
+            je L00482c72
+            cmp eax, 0x8000
+            jge L00482c53
+            cmp eax, edi
+            jge L00482c42
+            cmp dword ptr ds:[gJoy2_x], edi
+            jl L00482c42
+            mov dword ptr ds:[0x68c12c], esi
+    L00482c42:
+            mov ecx, 0x8000
+            sub ecx, eax
+            shl ecx, 1
+            mov dword ptr ds:[0x74b5d0], ecx
+            jmp L00482c72
+    L00482c53:
+            cmp eax, ebx
+            jle L00482c65
+            cmp dword ptr ds:[gJoy2_x], ebx
+            jg L00482c65
+            mov dword ptr ds:[0x68c130], esi
+    L00482c65:
+            lea edx, [eax + eax - 0x10000]
+            mov dword ptr ds:[0x74b5d4], edx
+    L00482c72:
+            mov dword ptr ds:[gJoy2_x], eax
+    L00482c77:
+            cmp dword ptr ds:[gINT_006621f0], ebp
+            je L00482ce7
+            call PDGetJoy2Y
+            cmp eax, -1
+            je L00482ce2
+            cmp eax, 0x8000
+            jge L00482cb3
+            cmp eax, edi
+            jge L00482ca2
+            cmp dword ptr ds:[gJoy2_y], edi
+            jl L00482ca2
+            mov dword ptr ds:[0x68c134], esi
+    L00482ca2:
+            mov ecx, 0x8000
+            sub ecx, eax
+            shl ecx, 1
+            mov dword ptr ds:[0x74b5d8], ecx
+            jmp L00482ce2
+    L00482cb3:
+            mov edx, dword ptr ds:[gJoystick_deadzone]
+            add edx, 0x8000
+            cmp eax, edx
+            jle L00482ce2
+            cmp eax, ebx
+            jle L00482cd5
+            cmp dword ptr ds:[gJoy2_y], ebx
+            jg L00482cd5
+            mov dword ptr ds:[0x68c138], esi
+    L00482cd5:
+            lea ecx, [eax + eax - 0x10000]
+            mov dword ptr ds:[0x74b5dc], ecx
+    L00482ce2:
+            mov dword ptr ds:[gJoy2_y], eax
+    L00482ce7:
+            mov ecx, offset gKey_array
+            call PDSetKeysFromJoystick
+            call PDGetTotalTime
+            mov dword ptr ds:[gLast_poll_keys], eax
+    L00482cfb:
+            mov edi, 0x8e
+            mov esi, 0x68c118
+    L00482d05:
+            cmp dword ptr [esi], ebp
+            je L00482d2e
+            cmp esi, 0x68bef0
+            je L00482d2e
+            cmp dword ptr ds:[gEdge_trigger_mode], ebp
+            je L00482d56
+            xor edx, edx
+            mov ecx, edi
+            call EdgeTriggeryKey
+            cmp eax, 3
+            ja L00482d2e
+            jmp dword ptr [eax*4 + 0x482d60]
+    L00482d2e:
+            sub esi, 4
+            dec edi
+            cmp esi, offset gKey_array
+            jge L00482d05
+            cmp dword ptr ds:[gEdge_trigger_mode], ebp
+            je L00482d4e
+            mov edx, 1
+            xor ecx, ecx
+            call EdgeTriggeryKey
+    L00482d4e:
+            or eax, 0xffffffff
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            ret
+    L00482d56:
+            mov eax, edi
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            ret
+            lea ecx, [ecx]
+            _emit 0x4e
+            _emit 0x2d
+            _emit 0x48
+            _emit 0x00
+            _emit 0x56
+            _emit 0x2d
+            _emit 0x48
+            _emit 0x00
+            _emit 0x4e
+            _emit 0x2d
+            _emit 0x48
+            _emit 0x00
+            _emit 0x56
+            _emit 0x2d
+            _emit 0x48
+            _emit 0x00
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00482d70
-int C2_HOOK_FASTCALL AnyKeyDown(void) {
+int C2_NAKED C2_HOOK_FASTCALL AnyKeyDown(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     int the_key;
 
     the_key = PDAnyKeyDown();
     return (the_key != -1 && the_key != 4) || EitherMouseButtonDown();
+#else
+    __asm {
+            sub esp, 0x18
+            push ebx
+            push ebp
+            push esi
+            push edi
+            call PDGetTotalTime
+            mov edx, dword ptr ds:[gLast_poll_keys]
+            or ebp, 0xffffffff
+            sub eax, edx
+            xor ebx, ebx
+            cmp eax, 0x1f4
+            jbe L00482e16
+            mov ecx, 0x97
+            xor eax, eax
+            mov edi, offset gKey_array
+            rep stosd
+            mov ecx, 8
+            mov eax, ebp
+            mov edi, offset gJoy_array
+            rep stosd
+            mov ecx, dword ptr ds:[gKey_poll_counter]
+            xor eax, eax
+    L00482db8:
+            cmp dword ptr [eax + gKey_array], ecx
+            jle L00482dd3
+            cmp eax, 0x23c
+            mov dword ptr [eax + gKey_array], ebx
+            jle L00482dd3
+            mov dword ptr [eax + 0x74b384], ebp
+    L00482dd3:
+            add eax, 4
+            cmp eax, 0x25c
+            jl L00482db8
+            mov edx, 1
+            mov ecx, offset gKey_array
+            mov dword ptr ds:[gKey_poll_counter], edx
+            call PDSetKeyArray
+            mov edx, dword ptr ds:[gKey_poll_counter]
+            mov ecx, offset gKey_array
+            call SetJoystickArrays
+            mov ecx, offset gKey_array
+            call PDSetKeysFromJoystick
+            call PDGetTotalTime
+            mov dword ptr ds:[gLast_poll_keys], eax
+    L00482e16:
+            mov edi, 0x8e
+            mov esi, 0x68c118
+    L00482e20:
+            cmp dword ptr [esi], ebx
+            je L00482e49
+            cmp esi, 0x68bef0
+            je L00482e49
+            cmp dword ptr ds:[gEdge_trigger_mode], ebx
+            je L00482e6b
+            xor edx, edx
+            mov ecx, edi
+            call EdgeTriggeryKey
+            cmp eax, 3
+            ja L00482e49
+            jmp dword ptr [eax*4 + 0x482ef4]
+    L00482e49:
+            sub esi, 4
+            dec edi
+            cmp esi, offset gKey_array
+            jge L00482e20
+            cmp dword ptr ds:[gEdge_trigger_mode], ebx
+            je L00482e69
+            mov edx, 1
+            xor ecx, ecx
+            call EdgeTriggeryKey
+    L00482e69:
+            mov edi, ebp
+    L00482e6b:
+            cmp edi, ebp
+            je L00482e74
+            cmp edi, 4
+            jne L00482ee5
+    L00482e74:
+            mov esi, dword ptr ds:[gCurrent_mouse_position]
+            mov edi, dword ptr ds:[gLast_mouse_y_coord]
+            lea edx, [esp + 0x14]
+            lea ecx, [esp + 0x10]
+            call GetMousePosition
+            cmp esi, dword ptr [esp + 0x10]
+            jne L00482ec2
+            cmp edi, dword ptr [esp + 0x14]
+            jne L00482ec2
+            lea edx, [esp + 0x1c]
+            lea ecx, [esp + 0x18]
+            call PDGetMouseClickPosition
+            test eax, eax
+            je L00482ec2
+            mov eax, dword ptr [esp + 0x10]
+            mov ecx, dword ptr [esp + 0x18]
+            cmp eax, ecx
+            jne L00482ec2
+            mov ecx, dword ptr [esp + 0x14]
+            mov eax, dword ptr [esp + 0x1c]
+            cmp ecx, eax
+            je L00482ee5
+    L00482ec2:
+            lea edx, [esp + 0x24]
+            lea ecx, [esp + 0x20]
+            call PDMouseButtons
+            cmp dword ptr [esp + 0x20], ebx
+            jne L00482ee5
+            cmp dword ptr [esp + 0x24], ebx
+            jne L00482ee5
+            xor eax, eax
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x18
+            ret
+    L00482ee5:
+            pop edi
+            pop esi
+            pop ebp
+            mov eax, 1
+            pop ebx
+            add esp, 0x18
+            ret
+            mov edi, edi
+            _emit 0x69
+            _emit 0x2e
+            _emit 0x48
+            _emit 0x00
+            _emit 0x6b
+            _emit 0x2e
+            _emit 0x48
+            _emit 0x00
+            _emit 0x69
+            _emit 0x2e
+            _emit 0x48
+            _emit 0x00
+            _emit 0x6b
+            _emit 0x2e
+            _emit 0x48
+            _emit 0x00
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00482f10
-tU32* C2_HOOK_FASTCALL KevKeyService(void) {
+C2_NAKED tU32* C2_HOOK_FASTCALL KevKeyService(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     // GLOBAL: CARMA2_HW 0x0068c1d4
     static tU32 sum;
     // GLOBAL: CARMA2_HW 0x0068c1d8
@@ -559,10 +1478,115 @@ tU32* C2_HOOK_FASTCALL KevKeyService(void) {
     }
     last_key = (int)keys;
     return return_val;
+#else
+    __asm {
+            push esi
+            mov esi, dword ptr ds:[gKeys_pressed]
+            push edi
+            xor edi, edi
+            cmp esi, 0x6b
+            mov dword ptr ds:[0x68c1e0], edi
+            mov dword ptr ds:[0x68c1e4], edi
+            jb L00482f75
+            cmp esi, 0x6b00
+            ja L00482f61
+            mov ecx, dword ptr ds:[0x657214]
+            mov eax, esi
+            and eax, 0xff
+            cmp ecx, eax
+            je L00482f51
+            mov edx, esi
+            shr edx, 8
+            cmp ecx, edx
+            jne L00482f61
+            cmp ecx, eax
+            jne L00482f56
+    L00482f51:
+            shr esi, 8
+            jmp L00482f7b
+    L00482f56:
+            shr esi, 8
+            cmp ecx, esi
+            jne L00482f61
+            mov esi, eax
+            jmp L00482f7b
+    L00482f61:
+            mov dword ptr ds:[0x68c1d4], edi
+            mov dword ptr ds:[0x68c1d8], edi
+            mov eax, 0x68c1e0
+            pop edi
+            pop esi
+            ret
+    L00482f75:
+            mov dword ptr ds:[0x657214], esi
+    L00482f7b:
+            cmp esi, dword ptr ds:[0x657210]
+            je L00482fdf
+            cmp esi, edi
+            jbe L00482fdf
+            mov eax, dword ptr ds:[0x68c1d4]
+            mov ecx, esi
+            add eax, esi
+            mov dword ptr ds:[0x68c1d4], eax
+            mov eax, dword ptr ds:[0x68c1d8]
+            shl ecx, 0xb
+            add eax, ecx
+            mov ecx, esi
+            imul ecx, esi
+            mov edx, eax
+            shl edx, 4
+            shr eax, 0x11
+            add edx, eax
+            mov eax, dword ptr ds:[0x68c1dc]
+            mov dword ptr ds:[0x68c1d8], edx
+            lea edx, [ecx + eax*8]
+            shr eax, 0x1d
+            add edx, eax
+            mov dword ptr ds:[0x68c1dc], edx
+            call PDGetTotalTime
+            mov dword ptr ds:[0x68be8c], eax
+            mov dword ptr ds:[0x657210], esi
+            mov eax, 0x68c1e0
+            pop edi
+            pop esi
+            ret
+    L00482fdf:
+            call PDGetTotalTime
+            mov ecx, dword ptr ds:[0x68be8c]
+            add ecx, 0x3e8
+            cmp eax, ecx
+            jbe L0048302b
+            mov edx, dword ptr ds:[0x68c1d4]
+            mov eax, dword ptr ds:[0x68c1d8]
+            mov ecx, dword ptr ds:[0x68c1dc]
+            mov dword ptr ds:[0x68c1d8], edi
+            shl edx, 0x15
+            shr eax, 0xb
+            add edx, eax
+            mov dword ptr ds:[0x68c1e4], ecx
+            mov dword ptr ds:[0x68c1e0], edx
+            mov dword ptr ds:[0x68c1dc], edi
+            mov dword ptr ds:[0x68c1d4], edi
+    L0048302b:
+            mov dword ptr ds:[0x657210], esi
+            pop edi
+            mov eax, 0x68c1e0
+            pop esi
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00483040
-int C2_HOOK_FASTCALL KeyIsDown(int pKey_index) {
+int C2_NAKED C2_HOOK_FASTCALL KeyIsDown(int pKey_index) {
+#ifndef CARPOCALYPSE2_MATCHING
     int i;
 
     CheckKeysForMouldiness();
@@ -578,17 +1602,489 @@ int C2_HOOK_FASTCALL KeyIsDown(int pKey_index) {
     } else {
         return gKey_array[gKey_mapping[pKey_index]];
     }
+#else
+    __asm {
+            push ecx
+            push ebx
+            push ebp
+            push esi
+            mov esi, ecx
+            push edi
+            mov dword ptr [esp + 0x10], esi
+            call PDGetTotalTime
+            mov edx, dword ptr [gLast_poll_keys]
+            xor ebp, ebp
+            sub eax, edx
+            cmp eax, 0x1f4
+            jbe L00483346
+            mov ecx, 0x97
+            xor eax, eax
+            mov edi, offset gKey_array
+            or ebx, 0xffffffff
+            rep stosd
+            mov ecx, 8
+            mov eax, ebx
+            mov edi, offset gJoy_array
+            rep stosd
+            mov ecx, dword ptr [gKey_poll_counter]
+            xor eax, eax
+    L0048308c:
+            cmp dword ptr [eax + gKey_array], ecx
+            jle L004830a7
+            cmp eax, 0x23c
+            mov dword ptr [eax + gKey_array], ebp
+            jle L004830a7
+            mov dword ptr [eax + gActor_array+0x784], ebx
+    L004830a7:
+            add eax, 4
+            cmp eax, 0x25c
+            jl L0048308c
+            mov edx, 1
+            mov ecx, offset gKey_array
+            mov dword ptr [gKey_poll_counter], edx
+            call PDSetKeyArray
+            mov esi, dword ptr [gKey_poll_counter]
+            mov ecx, 0x2c
+            xor eax, eax
+            mov edi, offset gKey_array+0x1ac
+            rep stosd
+            call PDReadJoysticks
+            mov ecx, 8
+            mov eax, ebx
+            mov edi, offset gJoy_array
+            rep stosd
+            mov ecx, 0x24
+            xor eax, eax
+            mov edi, offset gKey_array+0x1ac
+            rep stosd
+            cmp dword ptr [gINT_006621e4], ebp
+            jne L0048310b
+            cmp dword ptr [gINT_006621e8], ebp
+            je L00483147
+    L0048310b:
+            call PDGetJoy1Button1
+            test eax, eax
+            je L0048311a
+            mov dword ptr [gKey_array+0x1ac], esi
+    L0048311a:
+            call PDGetJoy1Button2
+            test eax, eax
+            je L00483129
+            mov dword ptr [gKey_array+0x1b0], esi
+    L00483129:
+            call PDGetJoy1Button3
+            test eax, eax
+            je L00483138
+            mov dword ptr [gKey_array+0x1b4], esi
+    L00483138:
+            call PDGetJoy1Button4
+            test eax, eax
+            je L00483147
+            mov dword ptr [gKey_array+0x1b8], esi
+    L00483147:
+            cmp dword ptr [gINT_006621ec], ebp
+            jne L00483157
+            cmp dword ptr [gINT_006621f0], ebp
+            je L00483193
+    L00483157:
+            call PDGetJoy2Button1
+            test eax, eax
+            je L00483166
+            mov dword ptr [gKey_array+0x22c], esi
+    L00483166:
+            call PDGetJoy2Button2
+            test eax, eax
+            je L00483175
+            mov dword ptr [gKey_array+0x230], esi
+    L00483175:
+            call PDGetJoy2Button3
+            test eax, eax
+            je L00483184
+            mov dword ptr [gKey_array+0x234], esi
+    L00483184:
+            call PDGetJoy2Button4
+            test eax, eax
+            je L00483193
+            mov dword ptr [gKey_array+0x238], esi
+    L00483193:
+            mov eax, dword ptr [gINT_006621e4]
+            mov edi, 0x4000
+            cmp eax, ebp
+            mov ebx, 0xc000
+            je L004831fe
+            call PDGetJoy1X
+            cmp eax, -1
+            je L004831f9
+            cmp eax, 0x8000
+            jge L004831da
+            cmp eax, edi
+            jge L004831c9
+            cmp dword ptr [gJoy1_x], edi
+            jl L004831c9
+            mov dword ptr [gKey_array+0x23c], esi
+    L004831c9:
+            mov ecx, 0x8000
+            sub ecx, eax
+            shl ecx, 1
+            mov dword ptr [gJoy_array], ecx
+            jmp L004831f9
+    L004831da:
+            cmp eax, ebx
+            jle L004831ec
+            cmp dword ptr [gJoy1_x], ebx
+            jg L004831ec
+            mov dword ptr [gKey_array+0x240], esi
+    L004831ec:
+            lea edx, [eax + eax - 0x10000]
+            mov dword ptr [gJoy_array+0x4], edx
+    L004831f9:
+            mov dword ptr [gJoy1_x], eax
+    L004831fe:
+            cmp dword ptr [gINT_006621e8], ebp
+            je L0048325e
+            call PDGetJoy1Y
+            cmp eax, -1
+            je L00483259
+            cmp eax, 0x8000
+            jge L0048323a
+            cmp eax, edi
+            jge L00483229
+            cmp dword ptr [gJoy1_y], edi
+            jl L00483229
+            mov dword ptr [gKey_array+0x244], esi
+    L00483229:
+            mov ecx, 0x8000
+            sub ecx, eax
+            shl ecx, 1
+            mov dword ptr [gJoy_array+0x8], ecx
+            jmp L00483259
+    L0048323a:
+            cmp eax, ebx
+            jle L0048324c
+            cmp dword ptr [gJoy1_y], ebx
+            jg L0048324c
+            mov dword ptr [gKey_array+0x248], esi
+    L0048324c:
+            lea edx, [eax + eax - 0x10000]
+            mov dword ptr [gJoy_array+0xc], edx
+    L00483259:
+            mov dword ptr [gJoy1_y], eax
+    L0048325e:
+            cmp dword ptr [gINT_006621ec], ebp
+            je L004832be
+            call PDGetJoy2X
+            cmp eax, -1
+            je L004832b9
+            cmp eax, 0x8000
+            jge L0048329a
+            cmp eax, edi
+            jge L00483289
+            cmp dword ptr [gJoy2_x], edi
+            jl L00483289
+            mov dword ptr [gKey_array+0x24c], esi
+    L00483289:
+            mov ecx, 0x8000
+            sub ecx, eax
+            shl ecx, 1
+            mov dword ptr [gJoy_array+0x10], ecx
+            jmp L004832b9
+    L0048329a:
+            cmp eax, ebx
+            jle L004832ac
+            cmp dword ptr [gJoy2_x], ebx
+            jg L004832ac
+            mov dword ptr [gKey_array+0x250], esi
+    L004832ac:
+            lea edx, [eax + eax - 0x10000]
+            mov dword ptr [gJoy_array+0x14], edx
+    L004832b9:
+            mov dword ptr [gJoy2_x], eax
+    L004832be:
+            cmp dword ptr [gINT_006621f0], ebp
+            je L0048332e
+            call PDGetJoy2Y
+            cmp eax, -1
+            je L00483329
+            cmp eax, 0x8000
+            jge L004832fa
+            cmp eax, edi
+            jge L004832e9
+            cmp dword ptr [gJoy2_y], edi
+            jl L004832e9
+            mov dword ptr [gKey_array+0x254], esi
+    L004832e9:
+            mov ecx, 0x8000
+            sub ecx, eax
+            shl ecx, 1
+            mov dword ptr [gJoy_array+0x18], ecx
+            jmp L00483329
+    L004832fa:
+            mov edx, dword ptr [gJoystick_deadzone]
+            add edx, 0x8000
+            cmp eax, edx
+            jle L00483329
+            cmp eax, ebx
+            jle L0048331c
+            cmp dword ptr [gJoy2_y], ebx
+            jg L0048331c
+            mov dword ptr [gKey_array+0x258], esi
+    L0048331c:
+            lea ecx, [eax + eax - 0x10000]
+            mov dword ptr [gJoy_array+0x1c], ecx
+    L00483329:
+            mov dword ptr [gJoy2_y], eax
+    L0048332e:
+            mov ecx, offset gKey_array
+            call PDSetKeysFromJoystick
+            call PDGetTotalTime
+            mov esi, dword ptr [esp + 0x10]
+            mov dword ptr [gLast_poll_keys], eax
+    L00483346:
+            cmp esi, -2
+            jne L00483356
+            mov eax, 1
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            pop ecx
+            ret
+    L00483356:
+            cmp esi, -1
+            jne L00483388
+            mov eax, offset gGo_ahead_keys
+    L00483360:
+            mov edx, dword ptr [eax]
+            cmp dword ptr [edx*4 + gKey_array], ebp
+            jne L0048337d
+            add eax, 4
+            cmp eax, offset gLast_key_down
+            jb L00483360
+            xor eax, eax
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            pop ecx
+            ret
+    L0048337d:
+            mov eax, 1
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            pop ecx
+            ret
+    L00483388:
+            mov eax, dword ptr [esi*4 + gKey_mapping]
+            pop edi
+            pop esi
+            pop ebp
+            mov eax, dword ptr [eax*4 + gKey_array]
+            pop ebx
+            pop ecx
+            ret
+    }
+#endif
 }
 
 // KeyIsDownNoMouldiness
 
 // FUNCTION: CARMA2_HW 0x004833b0
-void C2_HOOK_FASTCALL WaitForNoKeys(void) {
+void C2_NAKED C2_HOOK_FASTCALL WaitForNoKeys(void) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     do {
         CheckQuit();
     } while (AnyKeyDown() || EitherMouseButtonDown());
     CheckQuit();
+#else
+    __asm {
+            sub esp, 0x30
+            push ebx
+            push ebp
+            push esi
+            or ebp, 0xffffffff
+            push edi
+            xor ebx, ebx
+    L004833bc:
+            call CheckQuit
+            call PDGetTotalTime
+            sub eax, dword ptr ds:[gLast_poll_keys]
+            cmp eax, 0x1f4
+            jbe L00483459
+            mov ecx, 0x97
+            xor eax, eax
+            mov edi, offset gKey_array
+            rep stosd
+            mov ecx, 8
+            mov eax, ebp
+            mov edi, offset gJoy_array
+            rep stosd
+            mov ecx, dword ptr ds:[gKey_poll_counter]
+            xor eax, eax
+    L004833fb:
+            cmp dword ptr [eax + gKey_array], ecx
+            jle L00483416
+            cmp eax, 0x23c
+            mov dword ptr [eax + gKey_array], ebx
+            jle L00483416
+            mov dword ptr [eax + 0x74b384], ebp
+    L00483416:
+            add eax, 4
+            cmp eax, 0x25c
+            jl L004833fb
+            mov edx, 1
+            mov ecx, offset gKey_array
+            mov dword ptr ds:[gKey_poll_counter], edx
+            call PDSetKeyArray
+            mov edx, dword ptr ds:[gKey_poll_counter]
+            mov ecx, offset gKey_array
+            call SetJoystickArrays
+            mov ecx, offset gKey_array
+            call PDSetKeysFromJoystick
+            call PDGetTotalTime
+            mov dword ptr ds:[gLast_poll_keys], eax
+    L00483459:
+            mov edi, 0x8e
+            mov esi, 0x68c118
+    L00483463:
+            cmp dword ptr [esi], ebx
+            je L0048348c
+            cmp esi, 0x68bef0
+            je L0048348c
+            cmp dword ptr ds:[gEdge_trigger_mode], ebx
+            je L004834ae
+            xor edx, edx
+            mov ecx, edi
+            call EdgeTriggeryKey
+            cmp eax, 3
+            ja L0048348c
+            jmp dword ptr [eax*4 + 0x4835bc]
+    L0048348c:
+            sub esi, 4
+            dec edi
+            cmp esi, offset gKey_array
+            jge L00483463
+            cmp dword ptr ds:[gEdge_trigger_mode], ebx
+            je L004834ac
+            mov edx, 1
+            xor ecx, ecx
+            call EdgeTriggeryKey
+    L004834ac:
+            mov edi, ebp
+    L004834ae:
+            cmp edi, ebp
+            je L004834b7
+            cmp edi, 4
+            jne L00483522
+    L004834b7:
+            mov esi, dword ptr ds:[gCurrent_mouse_position]
+            mov edi, dword ptr ds:[gLast_mouse_y_coord]
+            lea edx, [esp + 0x14]
+            lea ecx, [esp + 0x10]
+            call GetMousePosition
+            cmp esi, dword ptr [esp + 0x10]
+            jne L00483505
+            cmp edi, dword ptr [esp + 0x14]
+            jne L00483505
+            lea edx, [esp + 0x24]
+            lea ecx, [esp + 0x20]
+            call PDGetMouseClickPosition
+            test eax, eax
+            je L00483505
+            mov eax, dword ptr [esp + 0x10]
+            mov ecx, dword ptr [esp + 0x20]
+            cmp eax, ecx
+            jne L00483505
+            mov ecx, dword ptr [esp + 0x14]
+            mov eax, dword ptr [esp + 0x24]
+            cmp ecx, eax
+            je L00483522
+    L00483505:
+            lea edx, [esp + 0x2c]
+            lea ecx, [esp + 0x28]
+            call PDMouseButtons
+            cmp dword ptr [esp + 0x28], ebx
+            jne L00483522
+            cmp dword ptr [esp + 0x2c], ebx
+            jne L00483522
+            xor eax, eax
+            jmp L00483527
+    L00483522:
+            mov eax, 1
+    L00483527:
+            cmp eax, ebx
+            jne L004833bc
+            mov esi, dword ptr ds:[gCurrent_mouse_position]
+            mov edi, dword ptr ds:[gLast_mouse_y_coord]
+            lea edx, [esp + 0x1c]
+            lea ecx, [esp + 0x18]
+            call GetMousePosition
+            cmp esi, dword ptr [esp + 0x18]
+            jne L00483584
+            cmp edi, dword ptr [esp + 0x1c]
+            jne L00483584
+            lea edx, [esp + 0x34]
+            lea ecx, [esp + 0x30]
+            call PDGetMouseClickPosition
+            test eax, eax
+            je L00483584
+            mov edx, dword ptr [esp + 0x18]
+            mov eax, dword ptr [esp + 0x30]
+            cmp edx, eax
+            jne L00483584
+            mov eax, dword ptr [esp + 0x1c]
+            mov ecx, dword ptr [esp + 0x34]
+            cmp eax, ecx
+            jne L00483584
+            mov eax, 2
+            jmp L004835a6
+    L00483584:
+            lea edx, [esp + 0x3c]
+            lea ecx, [esp + 0x38]
+            call PDMouseButtons
+            cmp dword ptr [esp + 0x38], ebx
+            jne L004835a1
+            cmp dword ptr [esp + 0x3c], ebx
+            jne L004835a1
+            xor eax, eax
+            jmp L004835a6
+    L004835a1:
+            mov eax, 1
+    L004835a6:
+            cmp eax, ebx
+            jne L004833bc
+            call CheckQuit
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x30
+            ret
+            nop
+            _emit 0xac
+            _emit 0x34
+            _emit 0x48
+            _emit 0x00
+            _emit 0xae
+            _emit 0x34
+            _emit 0x48
+            _emit 0x00
+            _emit 0xac
+            _emit 0x34
+            _emit 0x48
+            _emit 0x00
+            _emit 0xae
+            _emit 0x34
+            _emit 0x48
+            _emit 0x00
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+    }
+#endif
 }
 
 #pragma auto_inline(off)
@@ -728,7 +2224,8 @@ void C2_HOOK_FASTCALL AddRollingNumber(tU32 pNumber, int pWidth, int pX, int pY)
 }
 
 // FUNCTION: CARMA2_HW 0x004835d0
-void C2_HOOK_FASTCALL FUN_004835d0(void) {
+void C2_NAKED C2_HOOK_FASTCALL FUN_004835d0(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     int bVar1;
     int iVar2;
     int iVar3;
@@ -897,6 +2394,988 @@ mouse_activity_found:
             }
         }
     } while (1);
+#else
+    __asm {
+            sub esp, 0x30
+            push esi
+            push edi
+    L004835d5:
+            call CheckQuit
+            call PDGetTotalTime
+            sub eax, dword ptr ds:[gLast_poll_keys]
+            cmp eax, 0x1f4
+            jbe L00483649
+            mov ecx, 0x97
+            xor eax, eax
+            mov edi, offset gKey_array
+            rep stosd
+            mov ecx, 8
+            or eax, 0xffffffff
+            mov edi, offset gJoy_array
+            rep stosd
+            call CyclePollKeys
+            mov edx, dword ptr ds:[gKey_poll_counter]
+            mov ecx, offset gKey_array
+            inc edx
+            mov dword ptr ds:[gKey_poll_counter], edx
+            call PDSetKeyArray
+            mov edx, dword ptr ds:[gKey_poll_counter]
+            mov ecx, offset gKey_array
+            call SetJoystickArrays
+            mov ecx, offset gKey_array
+            call PDSetKeysFromJoystick
+            call PDGetTotalTime
+            mov dword ptr ds:[gLast_poll_keys], eax
+    L00483649:
+            mov edi, 0x8e
+            mov esi, 0x68c118
+    L00483653:
+            cmp dword ptr [esi], 0
+            je L0048367e
+            cmp esi, 0x68bef0
+            je L0048367e
+            mov eax, dword ptr ds:[gEdge_trigger_mode]
+            test eax, eax
+            je L004836a2
+            xor edx, edx
+            mov ecx, edi
+            call EdgeTriggeryKey
+            cmp eax, 3
+            ja L0048367e
+            jmp dword ptr [eax*4 + 0x483950]
+    L0048367e:
+            sub esi, 4
+            dec edi
+            cmp esi, offset gKey_array
+            jge L00483653
+            mov eax, dword ptr ds:[gEdge_trigger_mode]
+            test eax, eax
+            je L0048369f
+            mov edx, 1
+            xor ecx, ecx
+            call EdgeTriggeryKey
+    L0048369f:
+            or edi, 0xffffffff
+    L004836a2:
+            cmp edi, -1
+            je L004836b0
+            cmp edi, 4
+            jne L0048379f
+    L004836b0:
+            mov esi, dword ptr ds:[gCurrent_mouse_position]
+            mov edi, dword ptr ds:[gLast_mouse_y_coord]
+            lea edx, [esp + 0xc]
+            lea ecx, [esp + 8]
+            call GetMousePosition
+            cmp esi, dword ptr [esp + 8]
+            jne L00483702
+            cmp edi, dword ptr [esp + 0xc]
+            jne L00483702
+            lea edx, [esp + 0x1c]
+            lea ecx, [esp + 0x18]
+            call PDGetMouseClickPosition
+            test eax, eax
+            je L00483702
+            mov eax, dword ptr [esp + 8]
+            mov ecx, dword ptr [esp + 0x18]
+            cmp eax, ecx
+            jne L00483702
+            mov ecx, dword ptr [esp + 0xc]
+            mov eax, dword ptr [esp + 0x1c]
+            cmp ecx, eax
+            je L0048379f
+    L00483702:
+            lea edx, [esp + 0x24]
+            lea ecx, [esp + 0x20]
+            call PDMouseButtons
+            mov eax, dword ptr [esp + 0x20]
+            test eax, eax
+            jne L0048379f
+            mov eax, dword ptr [esp + 0x24]
+            test eax, eax
+            jne L0048379f
+            mov esi, dword ptr ds:[gCurrent_mouse_position]
+            mov edi, dword ptr ds:[gLast_mouse_y_coord]
+            lea edx, [esp + 0x14]
+            lea ecx, [esp + 0x10]
+            call GetMousePosition
+            cmp esi, dword ptr [esp + 0x10]
+            jne L00483771
+            cmp edi, dword ptr [esp + 0x14]
+            jne L00483771
+            lea edx, [esp + 0x2c]
+            lea ecx, [esp + 0x28]
+            call PDGetMouseClickPosition
+            test eax, eax
+            je L00483771
+            mov edx, dword ptr [esp + 0x10]
+            mov eax, dword ptr [esp + 0x28]
+            cmp edx, eax
+            jne L00483771
+            mov eax, dword ptr [esp + 0x14]
+            mov ecx, dword ptr [esp + 0x2c]
+            cmp eax, ecx
+            je L0048379f
+    L00483771:
+            lea edx, [esp + 0x34]
+            lea ecx, [esp + 0x30]
+            call PDMouseButtons
+            mov eax, dword ptr [esp + 0x30]
+            test eax, eax
+            jne L00483792
+            mov eax, dword ptr [esp + 0x34]
+            test eax, eax
+            je L004835d5
+    L00483792:
+            mov eax, 1
+            test eax, eax
+            je L004835d5
+    L0048379f:
+            call CheckQuit
+    L004837a4:
+            call CheckQuit
+            call PDGetTotalTime
+            sub eax, dword ptr ds:[gLast_poll_keys]
+            cmp eax, 0x1f4
+            jbe L004837e2
+            mov ecx, 0x97
+            xor eax, eax
+            mov edi, offset gKey_array
+            rep stosd
+            mov ecx, 8
+            or eax, 0xffffffff
+            mov edi, offset gJoy_array
+            rep stosd
+            call CyclePollKeys
+            call PollKeys
+    L004837e2:
+            mov edi, 0x8e
+            mov esi, 0x68c118
+    L004837ec:
+            cmp dword ptr [esi], 0
+            je L00483817
+            cmp esi, 0x68bef0
+            je L00483817
+            mov eax, dword ptr ds:[gEdge_trigger_mode]
+            test eax, eax
+            je L0048383b
+            xor edx, edx
+            mov ecx, edi
+            call EdgeTriggeryKey
+            cmp eax, 3
+            ja L00483817
+            jmp dword ptr [eax*4 + 0x483960]
+    L00483817:
+            sub esi, 4
+            dec edi
+            cmp esi, offset gKey_array
+            jge L004837ec
+            mov eax, dword ptr ds:[gEdge_trigger_mode]
+            test eax, eax
+            je L00483838
+            mov edx, 1
+            xor ecx, ecx
+            call EdgeTriggeryKey
+    L00483838:
+            or edi, 0xffffffff
+    L0048383b:
+            cmp edi, -1
+            je L00483845
+            cmp edi, 4
+            jne L004838b4
+    L00483845:
+            mov esi, dword ptr ds:[gCurrent_mouse_position]
+            mov edi, dword ptr ds:[gLast_mouse_y_coord]
+            lea edx, [esp + 0x10]
+            lea ecx, [esp + 0x14]
+            call GetMousePosition
+            cmp esi, dword ptr [esp + 0x14]
+            jne L00483893
+            cmp edi, dword ptr [esp + 0x10]
+            jne L00483893
+            lea edx, [esp + 0x30]
+            lea ecx, [esp + 0x34]
+            call PDGetMouseClickPosition
+            test eax, eax
+            je L00483893
+            mov ecx, dword ptr [esp + 0x14]
+            mov eax, dword ptr [esp + 0x34]
+            cmp ecx, eax
+            jne L00483893
+            mov edx, dword ptr [esp + 0x10]
+            mov eax, dword ptr [esp + 0x30]
+            cmp edx, eax
+            je L004838b4
+    L00483893:
+            lea edx, [esp + 0x28]
+            lea ecx, [esp + 0x2c]
+            call PDMouseButtons
+            mov eax, dword ptr [esp + 0x2c]
+            test eax, eax
+            jne L004838b4
+            mov eax, dword ptr [esp + 0x28]
+            test eax, eax
+            jne L004838b4
+            xor eax, eax
+            jmp L004838b9
+    L004838b4:
+            mov eax, 1
+    L004838b9:
+            test eax, eax
+            jne L004837a4
+            mov esi, dword ptr ds:[gCurrent_mouse_position]
+            mov edi, dword ptr ds:[gLast_mouse_y_coord]
+            lea edx, [esp + 8]
+            lea ecx, [esp + 0xc]
+            call GetMousePosition
+            cmp esi, dword ptr [esp + 0xc]
+            jne L00483916
+            cmp edi, dword ptr [esp + 8]
+            jne L00483916
+            lea edx, [esp + 0x20]
+            lea ecx, [esp + 0x24]
+            call PDGetMouseClickPosition
+            test eax, eax
+            je L00483916
+            mov eax, dword ptr [esp + 0xc]
+            mov ecx, dword ptr [esp + 0x24]
+            cmp eax, ecx
+            jne L00483916
+            mov ecx, dword ptr [esp + 8]
+            mov eax, dword ptr [esp + 0x20]
+            cmp ecx, eax
+            jne L00483916
+            mov eax, 2
+            jmp L0048393c
+    L00483916:
+            lea edx, [esp + 0x18]
+            lea ecx, [esp + 0x1c]
+            call PDMouseButtons
+            mov eax, dword ptr [esp + 0x1c]
+            test eax, eax
+            jne L00483937
+            mov eax, dword ptr [esp + 0x18]
+            test eax, eax
+            jne L00483937
+            xor eax, eax
+            jmp L0048393c
+    L00483937:
+            mov eax, 1
+    L0048393c:
+            test eax, eax
+            jne L004837a4
+            call CheckQuit
+            pop edi
+            pop esi
+            add esp, 0x30
+            ret
+            nop
+            _emit 0x9f
+            _emit 0x36
+            _emit 0x48
+            _emit 0x00
+            _emit 0xa2
+            _emit 0x36
+            _emit 0x48
+            _emit 0x00
+            _emit 0x9f
+            _emit 0x36
+            _emit 0x48
+            _emit 0x00
+            _emit 0xa2
+            _emit 0x36
+            _emit 0x48
+            _emit 0x00
+            _emit 0x38
+            _emit 0x38
+            _emit 0x48
+            _emit 0x00
+            _emit 0x3b
+            _emit 0x38
+            _emit 0x48
+            _emit 0x00
+            _emit 0x38
+            _emit 0x38
+            _emit 0x48
+            _emit 0x00
+            _emit 0x3b
+            _emit 0x38
+            _emit 0x48
+            _emit 0x00
+            _emit 0x51
+            _emit 0x53
+            _emit 0x55
+            _emit 0x56
+            _emit 0x57
+            _emit 0x89
+            _emit 0x54
+            _emit 0x24
+            _emit 0x10
+            _emit 0x8b
+            _emit 0xf1
+            _emit 0xe8
+            _emit 0x90
+            _emit 0x9a
+            _emit 0x09
+            _emit 0x00
+            _emit 0x8b
+            _emit 0x15
+            _emit 0xc8
+            _emit 0xc1
+            _emit 0x68
+            _emit 0x00
+            _emit 0x83
+            _emit 0xcd
+            _emit 0xff
+            _emit 0x2b
+            _emit 0xc2
+            _emit 0x33
+            _emit 0xdb
+            _emit 0x3d
+            _emit 0xf4
+            _emit 0x01
+            _emit 0x00
+            _emit 0x00
+            _emit 0x0f
+            _emit 0x86
+            _emit 0x82
+            _emit 0x00
+            _emit 0x00
+            _emit 0x00
+            _emit 0xb9
+            _emit 0x97
+            _emit 0x00
+            _emit 0x00
+            _emit 0x00
+            _emit 0x33
+            _emit 0xc0
+            _emit 0xbf
+            _emit 0xe0
+            _emit 0xbe
+            _emit 0x68
+            _emit 0x00
+            _emit 0xf3
+            _emit 0xab
+            _emit 0xb9
+            _emit 0x08
+            _emit 0x00
+            _emit 0x00
+            _emit 0x00
+            _emit 0x8b
+            _emit 0xc5
+            _emit 0xbf
+            _emit 0xc0
+            _emit 0xb5
+            _emit 0x74
+            _emit 0x00
+            _emit 0xf3
+            _emit 0xab
+            _emit 0x8b
+            _emit 0x0d
+            _emit 0xd4
+            _emit 0xbe
+            _emit 0x68
+            _emit 0x00
+            _emit 0x33
+            _emit 0xc0
+            _emit 0x39
+            _emit 0x88
+            _emit 0xe0
+            _emit 0xbe
+            _emit 0x68
+            _emit 0x00
+            _emit 0x7e
+            _emit 0x13
+            _emit 0x3d
+            _emit 0x3c
+            _emit 0x02
+            _emit 0x00
+            _emit 0x00
+            _emit 0x89
+            _emit 0x98
+            _emit 0xe0
+            _emit 0xbe
+            _emit 0x68
+            _emit 0x00
+            _emit 0x7e
+            _emit 0x06
+            _emit 0x89
+            _emit 0xa8
+            _emit 0x84
+            _emit 0xb3
+            _emit 0x74
+            _emit 0x00
+            _emit 0x83
+            _emit 0xc0
+            _emit 0x04
+            _emit 0x3d
+            _emit 0x5c
+            _emit 0x02
+            _emit 0x00
+            _emit 0x00
+            _emit 0x7c
+            _emit 0xdb
+            _emit 0xba
+            _emit 0x01
+            _emit 0x00
+            _emit 0x00
+            _emit 0x00
+            _emit 0xb9
+            _emit 0xe0
+            _emit 0xbe
+            _emit 0x68
+            _emit 0x00
+            _emit 0x89
+            _emit 0x15
+            _emit 0xd4
+            _emit 0xbe
+            _emit 0x68
+            _emit 0x00
+            _emit 0xe8
+            _emit 0xfa
+            _emit 0x94
+            _emit 0x09
+            _emit 0x00
+            _emit 0x8b
+            _emit 0x15
+            _emit 0xd4
+            _emit 0xbe
+            _emit 0x68
+            _emit 0x00
+            _emit 0xb9
+            _emit 0xe0
+            _emit 0xbe
+            _emit 0x68
+            _emit 0x00
+            _emit 0xe8
+            _emit 0x6a
+            _emit 0xed
+            _emit 0xff
+            _emit 0xff
+            _emit 0xb9
+            _emit 0xe0
+            _emit 0xbe
+            _emit 0x68
+            _emit 0x00
+            _emit 0xe8
+            _emit 0x50
+            _emit 0x79
+            _emit 0xfd
+            _emit 0xff
+            _emit 0xe8
+            _emit 0xfb
+            _emit 0x99
+            _emit 0x09
+            _emit 0x00
+            _emit 0xa3
+            _emit 0xc8
+            _emit 0xc1
+            _emit 0x68
+            _emit 0x00
+            _emit 0x83
+            _emit 0xfe
+            _emit 0xfe
+            _emit 0x75
+            _emit 0x07
+            _emit 0xb8
+            _emit 0x01
+            _emit 0x00
+            _emit 0x00
+            _emit 0x00
+            _emit 0xeb
+            _emit 0x37
+            _emit 0x3b
+            _emit 0xf5
+            _emit 0x75
+            _emit 0x25
+            _emit 0xb8
+            _emit 0x00
+            _emit 0x72
+            _emit 0x65
+            _emit 0x00
+            _emit 0x8b
+            _emit 0x08
+            _emit 0x39
+            _emit 0x1c
+            _emit 0x8d
+            _emit 0xe0
+            _emit 0xbe
+            _emit 0x68
+            _emit 0x00
+            _emit 0x75
+            _emit 0x0e
+            _emit 0x83
+            _emit 0xc0
+            _emit 0x04
+            _emit 0x3d
+            _emit 0x0c
+            _emit 0x72
+            _emit 0x65
+            _emit 0x00
+            _emit 0x72
+            _emit 0xeb
+            _emit 0x33
+            _emit 0xc0
+            _emit 0xeb
+            _emit 0x15
+            _emit 0xb8
+            _emit 0x01
+            _emit 0x00
+            _emit 0x00
+            _emit 0x00
+            _emit 0xeb
+            _emit 0x0e
+            _emit 0x8b
+            _emit 0x14
+            _emit 0xb5
+            _emit 0xe0
+            _emit 0xb5
+            _emit 0x74
+            _emit 0x00
+            _emit 0x8b
+            _emit 0x04
+            _emit 0x95
+            _emit 0xe0
+            _emit 0xbe
+            _emit 0x68
+            _emit 0x00
+            _emit 0x3b
+            _emit 0xc3
+            _emit 0x0f
+            _emit 0x85
+            _emit 0x95
+            _emit 0x01
+            _emit 0x00
+            _emit 0x00
+            _emit 0xe8
+            _emit 0xa6
+            _emit 0x99
+            _emit 0x09
+            _emit 0x00
+            _emit 0x2b
+            _emit 0x05
+            _emit 0xc8
+            _emit 0xc1
+            _emit 0x68
+            _emit 0x00
+            _emit 0x3d
+            _emit 0xf4
+            _emit 0x01
+            _emit 0x00
+            _emit 0x00
+            _emit 0x0f
+            _emit 0x86
+            _emit 0x82
+            _emit 0x00
+            _emit 0x00
+            _emit 0x00
+            _emit 0xb9
+            _emit 0x97
+            _emit 0x00
+            _emit 0x00
+            _emit 0x00
+            _emit 0x33
+            _emit 0xc0
+            _emit 0xbf
+            _emit 0xe0
+            _emit 0xbe
+            _emit 0x68
+            _emit 0x00
+            _emit 0xf3
+            _emit 0xab
+            _emit 0xb9
+            _emit 0x08
+            _emit 0x00
+            _emit 0x00
+            _emit 0x00
+            _emit 0x8b
+            _emit 0xc5
+            _emit 0xbf
+            _emit 0xc0
+            _emit 0xb5
+            _emit 0x74
+            _emit 0x00
+            _emit 0xf3
+            _emit 0xab
+            _emit 0x8b
+            _emit 0x0d
+            _emit 0xd4
+            _emit 0xbe
+            _emit 0x68
+            _emit 0x00
+            _emit 0x33
+            _emit 0xc0
+            _emit 0x39
+            _emit 0x88
+            _emit 0xe0
+            _emit 0xbe
+            _emit 0x68
+            _emit 0x00
+            _emit 0x7e
+            _emit 0x13
+            _emit 0x3d
+            _emit 0x3c
+            _emit 0x02
+            _emit 0x00
+            _emit 0x00
+            _emit 0x89
+            _emit 0x98
+            _emit 0xe0
+            _emit 0xbe
+            _emit 0x68
+            _emit 0x00
+            _emit 0x7e
+            _emit 0x06
+            _emit 0x89
+            _emit 0xa8
+            _emit 0x84
+            _emit 0xb3
+            _emit 0x74
+            _emit 0x00
+            _emit 0x83
+            _emit 0xc0
+            _emit 0x04
+            _emit 0x3d
+            _emit 0x5c
+            _emit 0x02
+            _emit 0x00
+            _emit 0x00
+            _emit 0x7c
+            _emit 0xdb
+            _emit 0xba
+            _emit 0x01
+            _emit 0x00
+            _emit 0x00
+            _emit 0x00
+            _emit 0xb9
+            _emit 0xe0
+            _emit 0xbe
+            _emit 0x68
+            _emit 0x00
+            _emit 0x89
+            _emit 0x15
+            _emit 0xd4
+            _emit 0xbe
+            _emit 0x68
+            _emit 0x00
+            _emit 0xe8
+            _emit 0x17
+            _emit 0x94
+            _emit 0x09
+            _emit 0x00
+            _emit 0x8b
+            _emit 0x15
+            _emit 0xd4
+            _emit 0xbe
+            _emit 0x68
+            _emit 0x00
+            _emit 0xb9
+            _emit 0xe0
+            _emit 0xbe
+            _emit 0x68
+            _emit 0x00
+            _emit 0xe8
+            _emit 0x87
+            _emit 0xec
+            _emit 0xff
+            _emit 0xff
+            _emit 0xb9
+            _emit 0xe0
+            _emit 0xbe
+            _emit 0x68
+            _emit 0x00
+            _emit 0xe8
+            _emit 0x6d
+            _emit 0x78
+            _emit 0xfd
+            _emit 0xff
+            _emit 0xe8
+            _emit 0x18
+            _emit 0x99
+            _emit 0x09
+            _emit 0x00
+            _emit 0xa3
+            _emit 0xc8
+            _emit 0xc1
+            _emit 0x68
+            _emit 0x00
+            _emit 0xa1
+            _emit 0xfc
+            _emit 0xb5
+            _emit 0x74
+            _emit 0x00
+            _emit 0x39
+            _emit 0x1c
+            _emit 0x85
+            _emit 0xe0
+            _emit 0xbe
+            _emit 0x68
+            _emit 0x00
+            _emit 0x0f
+            _emit 0x84
+            _emit 0xe3
+            _emit 0x00
+            _emit 0x00
+            _emit 0x00
+            _emit 0xe8
+            _emit 0xfc
+            _emit 0x98
+            _emit 0x09
+            _emit 0x00
+            _emit 0x2b
+            _emit 0x05
+            _emit 0xc8
+            _emit 0xc1
+            _emit 0x68
+            _emit 0x00
+            _emit 0x3d
+            _emit 0xf4
+            _emit 0x01
+            _emit 0x00
+            _emit 0x00
+            _emit 0x0f
+            _emit 0x86
+            _emit 0x82
+            _emit 0x00
+            _emit 0x00
+            _emit 0x00
+            _emit 0xb9
+            _emit 0x97
+            _emit 0x00
+            _emit 0x00
+            _emit 0x00
+            _emit 0x33
+            _emit 0xc0
+            _emit 0xbf
+            _emit 0xe0
+            _emit 0xbe
+            _emit 0x68
+            _emit 0x00
+            _emit 0xf3
+            _emit 0xab
+            _emit 0xb9
+            _emit 0x08
+            _emit 0x00
+            _emit 0x00
+            _emit 0x00
+            _emit 0x8b
+            _emit 0xc5
+            _emit 0xbf
+            _emit 0xc0
+            _emit 0xb5
+            _emit 0x74
+            _emit 0x00
+            _emit 0xf3
+            _emit 0xab
+            _emit 0x8b
+            _emit 0x0d
+            _emit 0xd4
+            _emit 0xbe
+            _emit 0x68
+            _emit 0x00
+            _emit 0x33
+            _emit 0xc0
+            _emit 0x39
+            _emit 0x88
+            _emit 0xe0
+            _emit 0xbe
+            _emit 0x68
+            _emit 0x00
+            _emit 0x7e
+            _emit 0x13
+            _emit 0x3d
+            _emit 0x3c
+            _emit 0x02
+            _emit 0x00
+            _emit 0x00
+            _emit 0x89
+            _emit 0x98
+            _emit 0xe0
+            _emit 0xbe
+            _emit 0x68
+            _emit 0x00
+            _emit 0x7e
+            _emit 0x06
+            _emit 0x89
+            _emit 0xa8
+            _emit 0x84
+            _emit 0xb3
+            _emit 0x74
+            _emit 0x00
+            _emit 0x83
+            _emit 0xc0
+            _emit 0x04
+            _emit 0x3d
+            _emit 0x5c
+            _emit 0x02
+            _emit 0x00
+            _emit 0x00
+            _emit 0x7c
+            _emit 0xdb
+            _emit 0xba
+            _emit 0x01
+            _emit 0x00
+            _emit 0x00
+            _emit 0x00
+            _emit 0xb9
+            _emit 0xe0
+            _emit 0xbe
+            _emit 0x68
+            _emit 0x00
+            _emit 0x89
+            _emit 0x15
+            _emit 0xd4
+            _emit 0xbe
+            _emit 0x68
+            _emit 0x00
+            _emit 0xe8
+            _emit 0x6d
+            _emit 0x93
+            _emit 0x09
+            _emit 0x00
+            _emit 0x8b
+            _emit 0x15
+            _emit 0xd4
+            _emit 0xbe
+            _emit 0x68
+            _emit 0x00
+            _emit 0xb9
+            _emit 0xe0
+            _emit 0xbe
+            _emit 0x68
+            _emit 0x00
+            _emit 0xe8
+            _emit 0xdd
+            _emit 0xeb
+            _emit 0xff
+            _emit 0xff
+            _emit 0xb9
+            _emit 0xe0
+            _emit 0xbe
+            _emit 0x68
+            _emit 0x00
+            _emit 0xe8
+            _emit 0xc3
+            _emit 0x77
+            _emit 0xfd
+            _emit 0xff
+            _emit 0xe8
+            _emit 0x6e
+            _emit 0x98
+            _emit 0x09
+            _emit 0x00
+            _emit 0xa3
+            _emit 0xc8
+            _emit 0xc1
+            _emit 0x68
+            _emit 0x00
+            _emit 0x8b
+            _emit 0x44
+            _emit 0x24
+            _emit 0x10
+            _emit 0x83
+            _emit 0xf8
+            _emit 0xfe
+            _emit 0x75
+            _emit 0x07
+            _emit 0xb8
+            _emit 0x01
+            _emit 0x00
+            _emit 0x00
+            _emit 0x00
+            _emit 0xeb
+            _emit 0x37
+            _emit 0x3b
+            _emit 0xc5
+            _emit 0x75
+            _emit 0x25
+            _emit 0xb8
+            _emit 0x00
+            _emit 0x72
+            _emit 0x65
+            _emit 0x00
+            _emit 0x8b
+            _emit 0x08
+            _emit 0x39
+            _emit 0x1c
+            _emit 0x8d
+            _emit 0xe0
+            _emit 0xbe
+            _emit 0x68
+            _emit 0x00
+            _emit 0x75
+            _emit 0x0e
+            _emit 0x83
+            _emit 0xc0
+            _emit 0x04
+            _emit 0x3d
+            _emit 0x0c
+            _emit 0x72
+            _emit 0x65
+            _emit 0x00
+            _emit 0x72
+            _emit 0xeb
+            _emit 0x33
+            _emit 0xc0
+            _emit 0xeb
+            _emit 0x15
+            _emit 0xb8
+            _emit 0x01
+            _emit 0x00
+            _emit 0x00
+            _emit 0x00
+            _emit 0xeb
+            _emit 0x0e
+            _emit 0x8b
+            _emit 0x14
+            _emit 0x85
+            _emit 0xe0
+            _emit 0xb5
+            _emit 0x74
+            _emit 0x00
+            _emit 0x8b
+            _emit 0x04
+            _emit 0x95
+            _emit 0xe0
+            _emit 0xbe
+            _emit 0x68
+            _emit 0x00
+            _emit 0x3b
+            _emit 0xc3
+            _emit 0x75
+            _emit 0x08
+            _emit 0x33
+            _emit 0xc0
+            _emit 0x5f
+            _emit 0x5e
+            _emit 0x5d
+            _emit 0x5b
+            _emit 0x59
+            _emit 0xc3
+            _emit 0x5f
+            _emit 0x5e
+            _emit 0x5d
+            _emit 0xb8
+            _emit 0x01
+            _emit 0x00
+            _emit 0x00
+            _emit 0x00
+            _emit 0x5b
+            _emit 0x59
+            _emit 0xc3
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00483e90

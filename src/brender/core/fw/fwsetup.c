@@ -651,6 +651,18 @@ br_image Image_BRCORE1 = {
 
 #define NBR_DEV_SLOTS 16
 
+#ifdef CARPOCALYPSE2_MATCHING
+extern br_boolean C2_HOOK_CDECL BrImageAdd();
+extern void C2_HOOK_CDECL BrNewList();
+extern void* C2_HOOK_STDCALL BrRegistryNew(br_registry* reg);
+extern void* C2_HOOK_CDECL BrResAllocate();
+extern br_resource_class* C2_HOOK_CDECL BrResClassAdd();
+extern br_error C2_HOOK_CDECL BrSystemConfigBegin();
+extern void C2_HOOK_CDECL BrTokenBegin();
+extern br_allocator* _BrDefaultAllocator;
+extern br_diaghandler* _BrDefaultDiagHandler;
+extern br_filesystem* _BrDefaultFilesystem;
+#endif
 // FUNCTION: CARMA2_HW 0x00527e20
 br_error C2_HOOK_CDECL BrFwBegin(void) {
     int i;

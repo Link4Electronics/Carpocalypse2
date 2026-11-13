@@ -685,8 +685,14 @@ int gReal_graf_data_index;
 // GLOBAL: CARMA2_HW 0x0074b774
 tGraf_data* gCurrent_graf_data;
 
+#ifdef CARPOCALYPSE2_MATCHING
+extern void C2_NORETURN C2_HOOK_CDECL FatalError();
+extern int gGraf_spec_index;
+extern tGraf_spec gGraf_specs[2];
+#endif
 // FUNCTION: CARMA2_HW 0x0047b3e0
-void C2_HOOK_FASTCALL CalcGrafDataIndex(void) {
+void C2_NAKED C2_HOOK_FASTCALL CalcGrafDataIndex(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     int i;
 
     for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gGraf_data); i++) {
@@ -698,4 +704,49 @@ void C2_HOOK_FASTCALL CalcGrafDataIndex(void) {
         }
     }
     FatalError(kFatalError_ScreenWidthHeightDoesNotMatchGrafData);
+#else
+    __asm {
+            mov eax, dword ptr [gGraf_spec_index]
+            xor ecx, ecx
+            push ebx
+            push esi
+            lea edx, [eax + eax*2]
+            push edi
+            lea edx, [eax + edx*4]
+            mov eax, offset gGraf_data+0x4
+            shl edx, 2
+            mov esi, dword ptr [edx + gGraf_specs+0xc]
+    L0047b3fe:
+            cmp dword ptr [eax - 4], esi
+            jne L0047b40f
+            mov edi, dword ptr [eax]
+            mov ebx, dword ptr [edx + gGraf_specs+0x10]
+            cmp edi, ebx
+            je L0047b42a
+    L0047b40f:
+            add eax, 0x520
+            inc ecx
+            cmp eax, offset gGraf_data+0xa44
+            jl L0047b3fe
+            push 0x18
+            call FatalError
+            add esp, 4
+            pop edi
+            pop esi
+            pop ebx
+            ret
+    L0047b42a:
+            lea eax, [ecx + ecx*4]
+            mov dword ptr [gReal_graf_data_index], ecx
+            mov dword ptr [gGraf_data_index], ecx
+            lea ecx, [ecx + eax*8]
+            shl ecx, 5
+            add ecx, offset gGraf_data
+            mov dword ptr [gCurrent_graf_data], ecx
+            pop edi
+            pop esi
+            pop ebx
+            ret
+    }
+#endif
 }

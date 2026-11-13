@@ -10,8 +10,22 @@
 // FIXME: move this definition (+BR_MAC3+BR_MAC4) to br_defs.h (and remove from matrix34.c matrix4.c ...)
 #define BR_MAC2(A, B, C, D) ((A) * (B) + (C) * (D))
 
+#ifdef CARPOCALYPSE2_MATCHING
+extern void C2_HOOK_CDECL BrMatrix34Identity();
+extern void C2_HOOK_CDECL BrMatrix34PreScale();
+extern void C2_HOOK_CDECL BrMatrix34PreTranslate();
+extern char IID_IDirectInputDevice2A[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gZlib_filesystem[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern void C2_HOOK_CDECL BrMatrix34ApplyP();
+extern void __cdecl _ftol();
+#endif
 // FUNCTION: CARMA2_HW 0x00521490
-void C2_HOOK_CDECL BrModelApplyMap(br_model* model, int map_type, br_matrix34* xform) {
+void C2_NAKED C2_HOOK_CDECL BrModelApplyMap(br_model* model, int map_type, br_matrix34* xform) {
+#ifndef CARPOCALYPSE2_MATCHING
     int v;
     br_vertex* vp;
     br_vector3 mv;
@@ -49,10 +63,170 @@ void C2_HOOK_CDECL BrModelApplyMap(br_model* model, int map_type, br_matrix34* x
             break;
         }
     }
+#else
+    __asm {
+            mov eax, dword ptr [esp + 0xc]
+            sub esp, 0x3c
+            test eax, eax
+            push ebx
+            push ebp
+            push esi
+            push edi
+            jne L005214b4
+            lea eax, [esp + 0x1c]
+            push eax
+            call BrMatrix34Identity
+            lea ecx, [esp + 0x20]
+            add esp, 4
+            mov dword ptr [esp + 0x58], ecx
+    L005214b4:
+            mov ebp, dword ptr [esp + 0x50]
+            xor edi, edi
+            cmp word ptr [ebp + 0x10], di
+            mov esi, dword ptr [ebp + 8]
+            jbe L00521639
+            mov ebx, dword ptr [esp + 0x54]
+    L005214cb:
+            mov edx, dword ptr [esp + 0x58]
+            lea eax, [esp + 0x10]
+            push edx
+            push esi
+            push eax
+            call BrMatrix34ApplyP
+            add esp, 0xc
+            cmp ebx, 4
+            ja L00521627
+            jmp dword ptr [ebx*4 + 0x521644]
+            xor eax, eax
+            mov dword ptr [esi + 0xc], eax
+            mov dword ptr [esi + 0x10], eax
+            jmp L00521627
+            fld dword ptr [esp + 0x10]
+            fsub dword ptr ds:[0x58b7a8]
+            fmul dword ptr ds:[0x58b7ac]
+            jmp L005215c4
+            fld dword ptr [esp + 0x10]
+            fld dword ptr [esp + 0x18]
+            fchs
+            fxch st(1)
+            fpatan
+            fmul qword ptr ds:[0x58b7b0]
+            call _ftol
+            and eax, 0xffff
+            mov dword ptr [esp + 0x50], eax
+            fild dword ptr [esp + 0x50]
+            fmul qword ptr ds:[0x58b7b8]
+            fmul dword ptr ds:[0x58b7c0]
+            fstp dword ptr [esi + 0xc]
+            fld dword ptr [esp + 0x18]
+            fld dword ptr [esp + 0x10]
+            fmul dword ptr [esp + 0x10]
+            fld dword ptr [esp + 0x14]
+            fxch st(2)
+            fmul dword ptr [esp + 0x18]
+            faddp st(1), st(0)
+            fsqrt
+            fxch st(1)
+            fpatan
+            fmul qword ptr ds:[0x58b7b0]
+            call _ftol
+            and eax, 0xffff
+            mov dword ptr [esp + 0x50], eax
+            fild dword ptr [esp + 0x50]
+            fmul qword ptr ds:[0x58b7b8]
+            fmul dword ptr ds:[0x58b7c4]
+            fsubr dword ptr ds:[0x58b7c8]
+            jmp L00521624
+            fld dword ptr [esp + 0x10]
+            fld dword ptr [esp + 0x18]
+            fchs
+            fxch st(1)
+            fpatan
+            fmul qword ptr ds:[0x58b7b0]
+            call _ftol
+            and eax, 0xffff
+            mov dword ptr [esp + 0x50], eax
+            fild dword ptr [esp + 0x50]
+            fmul qword ptr ds:[0x58b7b8]
+            fmul dword ptr ds:[0x58b7c0]
+    L005215c4:
+            fstp dword ptr [esi + 0xc]
+            fld dword ptr [esp + 0x14]
+            fsub dword ptr ds:[0x58b7a8]
+            fmul dword ptr ds:[0x58b7ac]
+            jmp L00521624
+            fld dword ptr [esp + 0x10]
+            fld dword ptr [esp + 0x14]
+            fchs
+            fxch st(1)
+            fpatan
+            fmul qword ptr ds:[0x58b7b0]
+            call _ftol
+            and eax, 0xffff
+            mov dword ptr [esp + 0x50], eax
+            fild dword ptr [esp + 0x50]
+            fmul qword ptr ds:[0x58b7b8]
+            fmul dword ptr ds:[0x58b7c0]
+            fstp dword ptr [esi + 0xc]
+            fld dword ptr [esp + 0x14]
+            fld dword ptr [esp + 0x10]
+            fmul dword ptr [esp + 0x10]
+            fxch st(1)
+            fmul dword ptr [esp + 0x14]
+            faddp st(1), st(0)
+            fsqrt
+    L00521624:
+            fstp dword ptr [esi + 0x10]
+    L00521627:
+            xor ecx, ecx
+            inc edi
+            mov cx, word ptr [ebp + 0x10]
+            add esi, 0x28
+            cmp edi, ecx
+            jl L005214cb
+    L00521639:
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x3c
+            ret
+            lea ecx, [ecx]
+            _emit 0xfb
+            _emit 0x14
+            _emit 0x52
+            _emit 0x00
+            _emit 0x10
+            _emit 0x15
+            _emit 0x52
+            _emit 0x00
+            _emit 0x92
+            _emit 0x15
+            _emit 0x52
+            _emit 0x00
+            _emit 0xd9
+            _emit 0x15
+            _emit 0x52
+            _emit 0x00
+            _emit 0xee
+            _emit 0x14
+            _emit 0x52
+            _emit 0x00
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00521660
-br_matrix34* C2_HOOK_CDECL BrModelFitMap(br_model* model, int axis_0, int axis_1, br_matrix34* transform) {
+C2_NAKED br_matrix34* C2_HOOK_CDECL BrModelFitMap(br_model* model, int axis_0, int axis_1, br_matrix34* transform) {
+#ifndef CARPOCALYPSE2_MATCHING
     br_vector3 axis_3;
     br_vector3 tr;
     br_vector3 sc;
@@ -89,6 +263,152 @@ br_matrix34* C2_HOOK_CDECL BrModelFitMap(br_model* model, int axis_0, int axis_1
     BrMatrix34PreScale(transform, sc.v[0], sc.v[1], sc.v[2]);
     BrMatrix34PreTranslate(transform, tr.v[0], tr.v[1], tr.v[2]);
     return transform;
+#else
+    __asm {
+            sub esp, 0x18
+            push ebx
+            push ebp
+            mov ebp, dword ptr [esp + 0x30]
+            push esi
+            push edi
+            push ebp
+            call BrMatrix34Identity
+            mov eax, dword ptr [esp + 0x38]
+            mov edx, dword ptr [esp + 0x34]
+            add esp, 4
+            lea esi, [esp + 0x10]
+            lea ecx, [eax + eax*2]
+            lea edx, [edx + edx*2]
+            shl ecx, 2
+            shl edx, 2
+            lea edi, [ecx + 0x663348]
+            lea eax, [ebp + 8]
+            fld dword ptr [edx + 0x66334c]
+            fld dword ptr [ecx + 0x663350]
+            fld dword ptr [ecx + 0x663350]
+            fld dword ptr [edx + 0x66334c]
+            fld dword ptr [ecx + 0x66334c]
+            fxch st(3)
+            fmulp st(4), st(0)
+            fld dword ptr [edx + 0x663350]
+            fxch st(3)
+            fmul dword ptr [edx + 0x663350]
+            lea ebx, [edx + 0x663348]
+            mov edx, edi
+            fsubp st(4), st(0)
+            _emit 0xd9
+        _emit 0x07
+            fxch st(4)
+            fstp dword ptr [esp + 0x10]
+            _emit 0xd9
+        _emit 0x03
+            fld dword ptr [ecx + 0x66334c]
+            fxch st(4)
+            fmulp st(5), st(0)
+            _emit 0xd9
+        _emit 0x03
+            fxch st(1)
+            fmulp st(3), st(0)
+            fxch st(2)
+            fsubp st(4), st(0)
+            fxch st(1)
+            fmulp st(2), st(0)
+            fxch st(2)
+            fstp dword ptr [esp + 0x14]
+            _emit 0xd9
+        _emit 0x07
+            fmulp st(2), st(0)
+            fxch st(1)
+            fsubp st(1), st(0)
+            mov ecx, ebx
+            mov edi, 3
+            fstp dword ptr [esp + 0x18]
+    L0052170a:
+            mov ebx, dword ptr [ecx]
+            add ecx, 4
+            mov dword ptr [eax - 8], ebx
+            mov ebx, dword ptr [edx]
+            mov dword ptr [eax - 4], ebx
+            mov ebx, dword ptr [esi]
+            mov dword ptr [eax], ebx
+            add edx, 4
+            add esi, 4
+            add eax, 0xc
+            dec edi
+            jne L0052170a
+            mov eax, dword ptr [esp + 0x2c]
+            lea edx, [esp + 0x1c]
+            mov esi, 3
+            lea ecx, [eax + 0x34]
+            mov eax, ecx
+    L00521739:
+            _emit 0xd9
+        _emit 0x00
+            fld dword ptr [eax + 0xc]
+            fmul dword ptr ds:[0x58b7ac]
+            fxch st(1)
+            fmul dword ptr ds:[0x58b7ac]
+            add eax, 4
+            add edx, 4
+            faddp st(1), st(0)
+            dec esi
+            fchs
+            fstp dword ptr [edx - 4]
+            jne L00521739
+            lea edx, [esp + 0x10]
+            mov esi, 3
+    L00521765:
+            fld dword ptr [ecx + 0xc]
+            _emit 0xd8
+        _emit 0x19
+            fnstsw ax
+            test ah, 0x40
+            jne L00521790
+            _emit 0xd9
+        _emit 0x01
+            fld dword ptr [ecx + 0xc]
+            fmul dword ptr ds:[0x58b7ac]
+            fxch st(1)
+            fmul dword ptr ds:[0x58b7ac]
+            fsubp st(1), st(0)
+            fdivr qword ptr ds:[0x58b7d0]
+            _emit 0xd9
+        _emit 0x1a
+            jmp L00521796
+    L00521790:
+            mov dword ptr [edx], 0x3f800000
+    L00521796:
+            add ecx, 4
+            add edx, 4
+            dec esi
+            jne L00521765
+            mov ecx, dword ptr [esp + 0x18]
+            mov edx, dword ptr [esp + 0x14]
+            mov eax, dword ptr [esp + 0x10]
+            push ecx
+            push edx
+            push eax
+            push ebp
+            call BrMatrix34PreScale
+            mov ecx, dword ptr [esp + 0x34]
+            mov edx, dword ptr [esp + 0x30]
+            mov eax, dword ptr [esp + 0x2c]
+            add esp, 0x10
+            push ecx
+            push edx
+            push eax
+            push ebp
+            call BrMatrix34PreTranslate
+            add esp, 0x10
+            mov eax, ebp
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x18
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x005217e0

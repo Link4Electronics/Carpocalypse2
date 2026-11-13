@@ -12,6 +12,25 @@
 
 static br_error parseTokenValue(br_lexer* l, br_token_value* tv, br_size_t size);
 
+#ifdef CARPOCALYPSE2_MATCHING
+extern void* C2_HOOK_CDECL BrResAllocate();
+extern br_token C2_HOOK_CDECL BrTokenCreate();
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern br_lexer* C2_HOOK_CDECL BrLexerAllocate();
+extern void C2_HOOK_CDECL BrLexerFree();
+extern br_error C2_HOOK_CDECL BrLexerPushString();
+extern int C2_HOOK_CDECL BrMemCmp();
+extern void* C2_HOOK_CDECL BrMemCpy();
+extern int C2_HOOK_CDECL BrStrCmp();
+extern char* C2_HOOK_CDECL BrStrCpy();
+extern br_size_t C2_HOOK_CDECL BrStrLen();
+extern char* C2_HOOK_CDECL BrStrNCpy();
+extern br_token C2_HOOK_CDECL BrTokenFind();
+extern br_token C2_HOOK_CDECL BrTokenFindType();
+extern br_token C2_HOOK_CDECL BrTokenType();
+extern void __cdecl _ftol();
+#endif
 // FUNCTION: CARMA2_HW 0x0052d740
 br_tv_template* C2_HOOK_CDECL BrTVTemplateAllocate(void* res, br_tv_template_entry* entries, int n_entries) {
     br_tv_template* t;
@@ -42,7 +61,8 @@ void C2_HOOK_STDCALL templateResolveNames(br_tv_template* template) {
 }
 
 // FUNCTION: CARMA2_HW 0x0052d7f0
-void C2_HOOK_STDCALL templateMakeMap(br_tv_template* template) {
+void C2_NAKED C2_HOOK_STDCALL templateMakeMap(br_tv_template* template) {
+#ifndef CARPOCALYPSE2_MATCHING
     br_tv_template_entry* tp;
     br_int_32 min;
     br_int_32 max;
@@ -84,6 +104,129 @@ void C2_HOOK_STDCALL templateMakeMap(br_tv_template* template) {
             template->map_set_entry[e] = tp;
         }
     }
+#else
+    __asm {
+            push ebx
+            push esi
+            mov esi, dword ptr [esp + 0xc]
+            push edi
+            mov eax, dword ptr [esi + 0x18]
+            test eax, eax
+            jne L0052d827
+            mov eax, dword ptr [esi]
+            mov edi, dword ptr [esi + 4]
+            xor ebx, ebx
+            test eax, eax
+            jle L0052d827
+    L0052d809:
+            mov eax, dword ptr [edi + 4]
+            test eax, eax
+            je L0052d81d
+            push 0
+            push eax
+            call BrTokenCreate
+            add esp, 8
+            mov dword ptr [edi], eax
+    L0052d81d:
+            mov eax, dword ptr [esi]
+            add edi, 0x18
+            inc ebx
+            cmp ebx, eax
+            jl L0052d809
+    L0052d827:
+            mov eax, dword ptr [esi + 4]
+            mov edx, eax
+            mov edi, dword ptr [eax]
+            mov eax, dword ptr [esi]
+            test eax, eax
+            mov ecx, edi
+            jle L0052d850
+            mov ebx, eax
+    L0052d838:
+            mov eax, dword ptr [edx]
+            test eax, eax
+            je L0052d84a
+            cmp eax, ecx
+            jge L0052d844
+            mov ecx, eax
+    L0052d844:
+            cmp eax, edi
+            jle L0052d84a
+            mov edi, eax
+    L0052d84a:
+            add edx, 0x18
+            dec ebx
+            jne L0052d838
+    L0052d850:
+            mov edx, dword ptr [esi + 0x1c]
+            sub edi, ecx
+            inc edi
+            mov dword ptr [esi + 8], ecx
+            push 0x21
+            mov dword ptr [esi + 0xc], edi
+            lea ecx, [edi*8]
+            push ecx
+            push edx
+            call BrResAllocate
+            mov dword ptr [esi + 0x10], eax
+            lea eax, [eax + edi*4]
+            mov dword ptr [esi + 0x14], eax
+            add esp, 0xc
+            xor eax, eax
+            test edi, edi
+            jle L0052d899
+    L0052d87e:
+            mov ecx, dword ptr [esi + 0x10]
+            inc eax
+            cmp eax, edi
+            mov dword ptr [ecx + eax*4 - 4], 0
+            mov edx, dword ptr [esi + 0x14]
+            mov dword ptr [edx + eax*4 - 4], 0
+            jl L0052d87e
+    L0052d899:
+            mov eax, dword ptr [esi]
+            mov ecx, dword ptr [esi + 4]
+            xor edx, edx
+            test eax, eax
+            jle L0052d8d0
+            mov bl, 1
+    L0052d8a6:
+            mov eax, dword ptr [ecx]
+            test eax, eax
+            je L0052d8c6
+            sub eax, dword ptr [esi + 8]
+            test byte ptr [ecx + 0xc], bl
+            je L0052d8ba
+            mov edi, dword ptr [esi + 0x10]
+            mov dword ptr [edi + eax*4], ecx
+    L0052d8ba:
+            test byte ptr [ecx + 0xc], 2
+            je L0052d8c6
+            mov edi, dword ptr [esi + 0x14]
+            mov dword ptr [edi + eax*4], ecx
+    L0052d8c6:
+            mov eax, dword ptr [esi]
+            add ecx, 0x18
+            inc edx
+            cmp edx, eax
+            jl L0052d8a6
+    L0052d8d0:
+            pop edi
+            pop esi
+            pop ebx
+            ret 4
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 br_fixed_ls* C2_HOOK_STDCALL ConvertFloatToFixed(br_fixed_ls** pextra, br_float* src, br_int_32 count, br_size_t* pextra_space) {
@@ -144,7 +287,8 @@ br_uint_32* C2_HOOK_STDCALL ConvertLongCopy(br_uint_32** pextra, br_uint_32* src
 }
 
 // FUNCTION: CARMA2_HW 0x0052d8e0
-br_error C2_HOOK_STDCALL ValueQuery(br_token_value* tv, void** pextra, br_size_t* pextra_size, void* block, br_tv_template_entry* tep) {
+br_error C2_NAKED C2_HOOK_STDCALL ValueQuery(br_token_value* tv, void** pextra, br_size_t* pextra_size, void* block, br_tv_template_entry* tep) {
+#ifndef CARPOCALYPSE2_MATCHING
     void* mem;
     br_uint_32* lp;
     int t;
@@ -372,10 +516,983 @@ br_error C2_HOOK_STDCALL ValueQuery(br_token_value* tv, void** pextra, br_size_t
         return 0x1001;
     }
     return 0;
+#else
+    __asm {
+            mov eax, dword ptr [esp + 0x14]
+            mov edx, dword ptr [esp + 0x10]
+            push ebx
+            push ebp
+            mov cl, byte ptr [eax + 0xc]
+            push esi
+            test cl, 8
+            push edi
+            je L0052d8f9
+            lea esi, [eax + 8]
+            jmp L0052d8fe
+    L0052d8f9:
+            mov esi, dword ptr [eax + 8]
+            add esi, edx
+    L0052d8fe:
+            movsx ecx, word ptr [eax + 0xe]
+            dec ecx
+            cmp ecx, 0x1f
+            ja L0052e1a3
+            jmp dword ptr [ecx*4 + 0x52e1b0]
+            mov ecx, dword ptr [esp + 0x14]
+            mov eax, dword ptr [esi]
+            mov dword ptr [ecx + 4], eax
+            xor eax, eax
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            ret 0x14
+            mov edx, dword ptr [eax + 0x10]
+            mov eax, dword ptr [esp + 0x14]
+            mov dword ptr [eax + 4], edx
+            xor eax, eax
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            ret 0x14
+            movsx ecx, byte ptr [esi]
+            mov edx, dword ptr [esp + 0x14]
+            xor eax, eax
+            mov dword ptr [edx + 4], ecx
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            ret 0x14
+            movsx eax, word ptr [esi]
+            mov ecx, dword ptr [esp + 0x14]
+            mov dword ptr [ecx + 4], eax
+            xor eax, eax
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            ret 0x14
+            mov eax, dword ptr [esp + 0x14]
+            xor edx, edx
+            mov dl, byte ptr [esi]
+            mov dword ptr [eax + 4], edx
+            xor eax, eax
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            ret 0x14
+            mov edx, dword ptr [esp + 0x14]
+            xor ecx, ecx
+            mov cx, word ptr [esi]
+            xor eax, eax
+            mov dword ptr [edx + 4], ecx
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            ret 0x14
+            mov eax, dword ptr [eax + 0x10]
+            mov edi, dword ptr [esi]
+            mov ecx, dword ptr [esp + 0x14]
+            and eax, edi
+            neg eax
+            sbb eax, eax
+            neg eax
+            mov dword ptr [ecx + 4], eax
+            xor eax, eax
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            ret 0x14
+            mov edx, dword ptr [eax + 0x10]
+            mov edi, dword ptr [esi]
+            mov eax, dword ptr [esp + 0x14]
+            and edx, edi
+            neg edx
+            sbb edx, edx
+            inc edx
+            mov dword ptr [eax + 4], edx
+            xor eax, eax
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            ret 0x14
+            _emit 0xd9
+        _emit 0x06
+            fmul dword ptr ds:[0x58b868]
+            call _ftol
+            mov ecx, dword ptr [esp + 0x14]
+            mov dword ptr [ecx + 4], eax
+            xor eax, eax
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            ret 0x14
+            _emit 0xdb
+        _emit 0x06
+            mov edx, dword ptr [esp + 0x14]
+            xor eax, eax
+            fmul qword ptr ds:[0x58b870]
+            fstp dword ptr [edx + 4]
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            ret 0x14
+            mov edi, dword ptr [esp + 0x18]
+            test edi, edi
+            je L0052e143
+            mov ebp, dword ptr [edi]
+            test ebp, ebp
+            je L0052e143
+            mov ecx, dword ptr [esp + 0x1c]
+            test ecx, ecx
+            je L0052e143
+            mov eax, dword ptr [ecx]
+            cmp eax, 8
+            jb L0052e143
+            add eax, -8
+            mov ebx, 2
+            mov dword ptr [ecx], eax
+    L0052da2c:
+            _emit 0xd9
+        _emit 0x06
+            fmul dword ptr ds:[0x58b868]
+            call _ftol
+            mov ecx, dword ptr [edi]
+            add esi, 4
+            mov dword ptr [ecx], eax
+            mov edx, dword ptr [edi]
+            add edx, 4
+            dec ebx
+            mov dword ptr [edi], edx
+            jne L0052da2c
+            mov eax, ebp
+            jmp L0052e145
+            mov eax, dword ptr [esp + 0x18]
+            test eax, eax
+            je L0052e0e7
+            mov edi, dword ptr [eax]
+            test edi, edi
+            je L0052e0e7
+            mov edx, dword ptr [esp + 0x1c]
+            test edx, edx
+            je L0052e0e7
+            mov ecx, dword ptr [edx]
+            cmp ecx, 8
+            jb L0052e0e7
+            add ecx, -8
+            mov dword ptr [edx], ecx
+            mov ecx, 2
+    L0052da88:
+            _emit 0xdb
+        _emit 0x06
+            mov edx, dword ptr [eax]
+            add esi, 4
+            fmul qword ptr ds:[0x58b870]
+            _emit 0xd9
+        _emit 0x1a
+            mov ebx, dword ptr [eax]
+            add ebx, 4
+            dec ecx
+            mov dword ptr [eax], ebx
+            jne L0052da88
+            mov eax, edi
+            jmp L0052e0e9
+            mov edi, dword ptr [esp + 0x18]
+            test edi, edi
+            je L0052e0e7
+            mov ebp, dword ptr [edi]
+            test ebp, ebp
+            je L0052e0e7
+            mov ecx, dword ptr [esp + 0x1c]
+            test ecx, ecx
+            je L0052e0e7
+            mov eax, dword ptr [ecx]
+            cmp eax, 0xc
+            jb L0052e0e7
+            add eax, -0xc
+            mov ebx, 3
+            mov dword ptr [ecx], eax
+    L0052dadf:
+            _emit 0xd9
+        _emit 0x06
+            fmul dword ptr ds:[0x58b868]
+            call _ftol
+            mov edx, dword ptr [edi]
+            add esi, 4
+            mov dword ptr [edx], eax
+            mov edx, dword ptr [edi]
+            add edx, 4
+            dec ebx
+            mov dword ptr [edi], edx
+            jne L0052dadf
+            mov eax, ebp
+            jmp L0052e0e9
+            mov eax, dword ptr [esp + 0x18]
+            test eax, eax
+            je L0052e0e7
+            mov edi, dword ptr [eax]
+            test edi, edi
+            je L0052e0e7
+            mov edx, dword ptr [esp + 0x1c]
+            test edx, edx
+            je L0052e0e7
+            mov ecx, dword ptr [edx]
+            cmp ecx, 0xc
+            jb L0052e0e7
+            add ecx, -0xc
+            mov dword ptr [edx], ecx
+            mov ecx, 3
+    L0052db3b:
+            _emit 0xdb
+        _emit 0x06
+            mov edx, dword ptr [eax]
+            add esi, 4
+            fmul qword ptr ds:[0x58b870]
+            _emit 0xd9
+        _emit 0x1a
+            mov ebx, dword ptr [eax]
+            add ebx, 4
+            dec ecx
+            mov dword ptr [eax], ebx
+            jne L0052db3b
+            mov eax, edi
+            jmp L0052e0e9
+            mov edi, dword ptr [esp + 0x18]
+            test edi, edi
+            je L0052e0e7
+            mov ebp, dword ptr [edi]
+            test ebp, ebp
+            je L0052e0e7
+            mov ecx, dword ptr [esp + 0x1c]
+            test ecx, ecx
+            je L0052e0e7
+            mov eax, dword ptr [ecx]
+            cmp eax, 0x10
+            jb L0052e0e7
+            add eax, -0x10
+            mov ebx, 4
+            mov dword ptr [ecx], eax
+    L0052db92:
+            _emit 0xd9
+        _emit 0x06
+            fmul dword ptr ds:[0x58b868]
+            call _ftol
+            mov edx, dword ptr [edi]
+            add esi, 4
+            mov dword ptr [edx], eax
+            mov edx, dword ptr [edi]
+            add edx, 4
+            dec ebx
+            mov dword ptr [edi], edx
+            jne L0052db92
+            mov eax, ebp
+            jmp L0052e0e9
+            mov eax, dword ptr [esp + 0x18]
+            test eax, eax
+            je L0052e0e7
+            mov edi, dword ptr [eax]
+            test edi, edi
+            je L0052e0e7
+            mov edx, dword ptr [esp + 0x1c]
+            test edx, edx
+            je L0052e0e7
+            mov ecx, dword ptr [edx]
+            cmp ecx, 0x10
+            jb L0052e0e7
+            add ecx, -0x10
+            mov dword ptr [edx], ecx
+            mov ecx, 4
+    L0052dbee:
+            _emit 0xdb
+        _emit 0x06
+            mov edx, dword ptr [eax]
+            add esi, 4
+            fmul qword ptr ds:[0x58b870]
+            _emit 0xd9
+        _emit 0x1a
+            mov ebx, dword ptr [eax]
+            add ebx, 4
+            dec ecx
+            mov dword ptr [eax], ebx
+            jne L0052dbee
+            mov eax, edi
+            jmp L0052e0e9
+            mov edi, dword ptr [esp + 0x18]
+            test edi, edi
+            je L0052e0e7
+            mov ebp, dword ptr [edi]
+            test ebp, ebp
+            je L0052e0e7
+            mov ecx, dword ptr [esp + 0x1c]
+            test ecx, ecx
+            je L0052e0e7
+            mov eax, dword ptr [ecx]
+            cmp eax, 0x18
+            jb L0052e0e7
+            add eax, -0x18
+            mov ebx, 6
+            mov dword ptr [ecx], eax
+    L0052dc45:
+            _emit 0xd9
+        _emit 0x06
+            fmul dword ptr ds:[0x58b868]
+            call _ftol
+            mov edx, dword ptr [edi]
+            add esi, 4
+            mov dword ptr [edx], eax
+            mov edx, dword ptr [edi]
+            add edx, 4
+            dec ebx
+            mov dword ptr [edi], edx
+            jne L0052dc45
+            mov eax, ebp
+            jmp L0052e0e9
+            mov eax, dword ptr [esp + 0x18]
+            test eax, eax
+            je L0052e0e7
+            mov edi, dword ptr [eax]
+            test edi, edi
+            je L0052e0e7
+            mov edx, dword ptr [esp + 0x1c]
+            test edx, edx
+            je L0052e0e7
+            mov ecx, dword ptr [edx]
+            cmp ecx, 0x18
+            jb L0052e0e7
+            add ecx, -0x18
+            mov dword ptr [edx], ecx
+            mov ecx, 6
+    L0052dca1:
+            _emit 0xdb
+        _emit 0x06
+            mov edx, dword ptr [eax]
+            add esi, 4
+            fmul qword ptr ds:[0x58b870]
+            _emit 0xd9
+        _emit 0x1a
+            mov ebx, dword ptr [eax]
+            add ebx, 4
+            dec ecx
+            mov dword ptr [eax], ebx
+            jne L0052dca1
+            mov eax, edi
+            jmp L0052e0e9
+            mov edi, dword ptr [esp + 0x18]
+            test edi, edi
+            je L0052e0e7
+            mov ebp, dword ptr [edi]
+            test ebp, ebp
+            je L0052e0e7
+            mov ecx, dword ptr [esp + 0x1c]
+            test ecx, ecx
+            je L0052e0e7
+            mov eax, dword ptr [ecx]
+            cmp eax, 0x40
+            jb L0052e0e7
+            add eax, -0x40
+            mov ebx, 0x10
+            mov dword ptr [ecx], eax
+    L0052dcf8:
+            _emit 0xd9
+        _emit 0x06
+            fmul dword ptr ds:[0x58b868]
+            call _ftol
+            mov edx, dword ptr [edi]
+            add esi, 4
+            mov dword ptr [edx], eax
+            mov edx, dword ptr [edi]
+            add edx, 4
+            dec ebx
+            mov dword ptr [edi], edx
+            jne L0052dcf8
+            mov eax, ebp
+            jmp L0052e0e9
+            mov eax, dword ptr [esp + 0x18]
+            test eax, eax
+            je L0052e0e7
+            mov edi, dword ptr [eax]
+            test edi, edi
+            je L0052e0e7
+            mov edx, dword ptr [esp + 0x1c]
+            test edx, edx
+            je L0052e0e7
+            mov ecx, dword ptr [edx]
+            cmp ecx, 0x40
+            jb L0052e0e7
+            add ecx, -0x40
+            mov dword ptr [edx], ecx
+            mov ecx, 0x10
+    L0052dd54:
+            _emit 0xdb
+        _emit 0x06
+            mov edx, dword ptr [eax]
+            add esi, 4
+            fmul qword ptr ds:[0x58b870]
+            _emit 0xd9
+        _emit 0x1a
+            mov ebx, dword ptr [eax]
+            add ebx, 4
+            dec ecx
+            mov dword ptr [eax], ebx
+            jne L0052dd54
+            mov eax, edi
+            jmp L0052e0e9
+            mov edi, dword ptr [esp + 0x18]
+            test edi, edi
+            je L0052e0e7
+            mov ebp, dword ptr [edi]
+            test ebp, ebp
+            je L0052e0e7
+            mov ecx, dword ptr [esp + 0x1c]
+            test ecx, ecx
+            je L0052e0e7
+            mov eax, dword ptr [ecx]
+            cmp eax, 0x30
+            jb L0052e0e7
+            add eax, -0x30
+            mov ebx, 0xc
+            mov dword ptr [ecx], eax
+    L0052ddab:
+            _emit 0xd9
+        _emit 0x06
+            fmul dword ptr ds:[0x58b868]
+            call _ftol
+            mov edx, dword ptr [edi]
+            add esi, 4
+            mov dword ptr [edx], eax
+            mov edx, dword ptr [edi]
+            add edx, 4
+            dec ebx
+            mov dword ptr [edi], edx
+            jne L0052ddab
+            mov eax, ebp
+            jmp L0052e0e9
+            mov eax, dword ptr [esp + 0x18]
+            test eax, eax
+            je L0052e0e7
+            mov edi, dword ptr [eax]
+            test edi, edi
+            je L0052e0e7
+            mov edx, dword ptr [esp + 0x1c]
+            test edx, edx
+            je L0052e0e7
+            mov ecx, dword ptr [edx]
+            cmp ecx, 0x30
+            jb L0052e0e7
+            add ecx, -0x30
+            mov dword ptr [edx], ecx
+            mov ecx, 0xc
+    L0052de07:
+            _emit 0xdb
+        _emit 0x06
+            mov edx, dword ptr [eax]
+            add esi, 4
+            fmul qword ptr ds:[0x58b870]
+            _emit 0xd9
+        _emit 0x1a
+            mov ebx, dword ptr [eax]
+            add ebx, 4
+            dec ecx
+            mov dword ptr [eax], ebx
+            jne L0052de07
+            mov eax, edi
+            jmp L0052e0e9
+            mov eax, dword ptr [esp + 0x18]
+            test eax, eax
+            je L0052e0e7
+            mov edi, dword ptr [eax]
+            test edi, edi
+            je L0052e0e7
+            mov edx, dword ptr [esp + 0x1c]
+            test edx, edx
+            je L0052e0e7
+            mov ecx, dword ptr [edx]
+            cmp ecx, 8
+            jb L0052e0e7
+            add ecx, -8
+            mov dword ptr [edx], ecx
+            mov ecx, 2
+    L0052de5e:
+            mov edx, dword ptr [eax]
+            mov ebx, dword ptr [esi]
+            add esi, 4
+            mov dword ptr [edx], ebx
+            mov ebp, dword ptr [eax]
+            add ebp, 4
+            dec ecx
+            mov dword ptr [eax], ebp
+            jne L0052de5e
+            mov eax, edi
+            jmp L0052e0e9
+            mov eax, dword ptr [esp + 0x18]
+            test eax, eax
+            je L0052e0e7
+            mov edi, dword ptr [eax]
+            test edi, edi
+            je L0052e0e7
+            mov edx, dword ptr [esp + 0x1c]
+            test edx, edx
+            je L0052e0e7
+            mov ecx, dword ptr [edx]
+            cmp ecx, 0xc
+            jb L0052e0e7
+            add ecx, -0xc
+            mov dword ptr [edx], ecx
+            mov ecx, 3
+    L0052deaf:
+            mov edx, dword ptr [eax]
+            mov ebx, dword ptr [esi]
+            add esi, 4
+            mov dword ptr [edx], ebx
+            mov ebp, dword ptr [eax]
+            add ebp, 4
+            dec ecx
+            mov dword ptr [eax], ebp
+            jne L0052deaf
+            mov eax, edi
+            jmp L0052e0e9
+            mov eax, dword ptr [esp + 0x18]
+            test eax, eax
+            je L0052e0e7
+            mov edi, dword ptr [eax]
+            test edi, edi
+            je L0052e0e7
+            mov edx, dword ptr [esp + 0x1c]
+            test edx, edx
+            je L0052e0e7
+            mov ecx, dword ptr [edx]
+            cmp ecx, 0x10
+            jb L0052e0e7
+            add ecx, -0x10
+            mov dword ptr [edx], ecx
+            mov ecx, 4
+    L0052df00:
+            mov edx, dword ptr [eax]
+            mov ebx, dword ptr [esi]
+            add esi, 4
+            mov dword ptr [edx], ebx
+            mov ebp, dword ptr [eax]
+            add ebp, 4
+            dec ecx
+            mov dword ptr [eax], ebp
+            jne L0052df00
+            mov eax, edi
+            jmp L0052e0e9
+            mov eax, dword ptr [esp + 0x18]
+            test eax, eax
+            je L0052e0e7
+            mov edi, dword ptr [eax]
+            test edi, edi
+            je L0052e0e7
+            mov edx, dword ptr [esp + 0x1c]
+            test edx, edx
+            je L0052e0e7
+            mov ecx, dword ptr [edx]
+            cmp ecx, 0x18
+            jb L0052e0e7
+            add ecx, -0x18
+            mov dword ptr [edx], ecx
+            mov ecx, 6
+    L0052df51:
+            mov edx, dword ptr [eax]
+            mov ebx, dword ptr [esi]
+            add esi, 4
+            mov dword ptr [edx], ebx
+            mov ebp, dword ptr [eax]
+            add ebp, 4
+            dec ecx
+            mov dword ptr [eax], ebp
+            jne L0052df51
+            mov eax, edi
+            jmp L0052e0e9
+            mov eax, dword ptr [esp + 0x18]
+            test eax, eax
+            je L0052e0e7
+            mov edi, dword ptr [eax]
+            test edi, edi
+            je L0052e0e7
+            mov edx, dword ptr [esp + 0x1c]
+            test edx, edx
+            je L0052e0e7
+            mov ecx, dword ptr [edx]
+            cmp ecx, 0x40
+            jb L0052e0e7
+            add ecx, -0x40
+            mov dword ptr [edx], ecx
+            mov ecx, 0x10
+    L0052dfa2:
+            mov edx, dword ptr [eax]
+            mov ebx, dword ptr [esi]
+            add esi, 4
+            mov dword ptr [edx], ebx
+            mov ebp, dword ptr [eax]
+            add ebp, 4
+            dec ecx
+            mov dword ptr [eax], ebp
+            jne L0052dfa2
+            mov eax, edi
+            jmp L0052e0e9
+            mov eax, dword ptr [esp + 0x18]
+            test eax, eax
+            je L0052e0e7
+            mov edi, dword ptr [eax]
+            test edi, edi
+            je L0052e0e7
+            mov edx, dword ptr [esp + 0x1c]
+            test edx, edx
+            je L0052e0e7
+            mov ecx, dword ptr [edx]
+            cmp ecx, 0x30
+            jb L0052e0e7
+            add ecx, -0x30
+            mov dword ptr [edx], ecx
+            mov ecx, 0xc
+    L0052dff3:
+            mov edx, dword ptr [eax]
+            mov ebx, dword ptr [esi]
+            add esi, 4
+            mov dword ptr [edx], ebx
+            mov ebp, dword ptr [eax]
+            add ebp, 4
+            dec ecx
+            mov dword ptr [eax], ebp
+            jne L0052dff3
+            mov eax, edi
+            jmp L0052e0e9
+            mov edx, dword ptr [esi]
+            push edx
+            call BrStrLen
+            add esp, 4
+            mov esi, dword ptr [esi]
+            inc eax
+            lea ecx, [eax + 3]
+            mov eax, dword ptr [esp + 0x18]
+            shr ecx, 2
+            test eax, eax
+            je L0052e0e7
+            mov ebp, dword ptr [eax]
+            test ebp, ebp
+            je L0052e0e7
+            mov ebx, dword ptr [esp + 0x1c]
+            test ebx, ebx
+            je L0052e0e7
+            mov edx, dword ptr [ebx]
+            lea edi, [ecx*4]
+            cmp edi, edx
+            ja L0052e0e7
+            sub edx, edi
+            mov dword ptr [ebx], edx
+            mov edx, ecx
+            dec ecx
+            test edx, edx
+            je L0052e0e3
+            inc ecx
+    L0052e064:
+            mov edx, dword ptr [eax]
+            mov edi, dword ptr [esi]
+            add esi, 4
+            mov dword ptr [edx], edi
+            mov ebx, dword ptr [eax]
+            add ebx, 4
+            dec ecx
+            mov dword ptr [eax], ebx
+            jne L0052e064
+            mov eax, ebp
+            jmp L0052e0e9
+            mov ecx, dword ptr [esi]
+            xor edx, edx
+            mov eax, ecx
+            test eax, eax
+            mov dword ptr [esp + 0x24], eax
+            je L0052e100
+            mov esi, dword ptr [eax]
+            add eax, 4
+            test esi, esi
+            je L0052e09c
+    L0052e092:
+            mov esi, dword ptr [eax]
+            inc edx
+            add eax, 4
+            test esi, esi
+            jne L0052e092
+    L0052e09c:
+            mov eax, dword ptr [esp + 0x18]
+            lea edi, [edx + 1]
+            test eax, eax
+            je L0052e0e7
+            mov ebp, dword ptr [eax]
+            test ebp, ebp
+            je L0052e0e7
+            mov ebx, dword ptr [esp + 0x1c]
+            test ebx, ebx
+            je L0052e0e7
+            mov edx, dword ptr [ebx]
+            lea esi, [edi*4]
+            cmp esi, edx
+            ja L0052e0e7
+            sub edx, esi
+            mov dword ptr [ebx], edx
+            mov edx, edi
+            dec edi
+            test edx, edx
+            je L0052e0e3
+            lea edx, [edi + 1]
+    L0052e0d0:
+            mov esi, dword ptr [eax]
+            mov edi, dword ptr [ecx]
+            add ecx, 4
+            mov dword ptr [esi], edi
+            mov ebx, dword ptr [eax]
+            add ebx, 4
+            dec edx
+            mov dword ptr [eax], ebx
+            jne L0052e0d0
+    L0052e0e3:
+            mov eax, ebp
+            jmp L0052e0e9
+    L0052e0e7:
+            xor eax, eax
+    L0052e0e9:
+            mov ecx, dword ptr [esp + 0x14]
+            test eax, eax
+            mov dword ptr [ecx + 4], eax
+            jne L0052e16d
+            mov eax, 0x1004
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            ret 0x14
+    L0052e100:
+            mov eax, dword ptr [esp + 0x18]
+            lea edx, [esp + 0x24]
+            test eax, eax
+            je L0052e143
+            mov edi, dword ptr [eax]
+            test edi, edi
+            je L0052e143
+            mov esi, dword ptr [esp + 0x1c]
+            test esi, esi
+            je L0052e143
+            mov ecx, dword ptr [esi]
+            cmp ecx, 4
+            jb L0052e143
+            add ecx, -4
+            mov dword ptr [esi], ecx
+            xor ecx, ecx
+    L0052e128:
+            mov esi, dword ptr [eax]
+            mov ebx, dword ptr [edx]
+            add edx, 4
+            mov dword ptr [esi], ebx
+            mov ebx, dword ptr [eax]
+            add ebx, 4
+            mov esi, ecx
+            dec ecx
+            mov dword ptr [eax], ebx
+            test esi, esi
+            jne L0052e128
+            mov eax, edi
+            jmp L0052e145
+    L0052e143:
+            xor eax, eax
+    L0052e145:
+            mov edx, dword ptr [esp + 0x14]
+            test eax, eax
+            mov dword ptr [edx + 4], eax
+            jne L0052e16d
+            mov eax, 0x1004
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            ret 0x14
+            mov ecx, dword ptr [esi]
+            xor eax, eax
+            cmp ecx, 1
+            mov ecx, dword ptr [esp + 0x14]
+            setne al
+            mov dword ptr [ecx + 4], eax
+    L0052e16d:
+            xor eax, eax
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            ret 0x14
+            mov ecx, dword ptr [eax + 0x10]
+            test ecx, ecx
+            je L0052e1a3
+            mov ecx, dword ptr [ecx]
+            test ecx, ecx
+            je L0052e1a3
+            push eax
+            mov eax, dword ptr [esp + 0x1c]
+            push edx
+            mov edx, dword ptr [esp + 0x24]
+            push edx
+            mov edx, dword ptr [esp + 0x20]
+            add edx, 4
+            push eax
+            push edx
+            call ecx
+            add esp, 0x14
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            ret 0x14
+    L0052e1a3:
+            pop edi
+            pop esi
+            pop ebp
+            mov eax, 0x1001
+            pop ebx
+            ret 0x14
+            nop
+            _emit 0x25
+            _emit 0xd9
+            _emit 0x52
+            _emit 0x00
+            _emit 0x76
+            _emit 0xe1
+            _emit 0x52
+            _emit 0x00
+            _emit 0x13
+            _emit 0xd9
+            _emit 0x52
+            _emit 0x00
+            _emit 0x27
+            _emit 0xde
+            _emit 0x52
+            _emit 0x00
+            _emit 0x78
+            _emit 0xde
+            _emit 0x52
+            _emit 0x00
+            _emit 0xc9
+            _emit 0xde
+            _emit 0x52
+            _emit 0x00
+            _emit 0x1a
+            _emit 0xdf
+            _emit 0x52
+            _emit 0x00
+            _emit 0xbc
+            _emit 0xdf
+            _emit 0x52
+            _emit 0x00
+            _emit 0x6b
+            _emit 0xdf
+            _emit 0x52
+            _emit 0x00
+            _emit 0x38
+            _emit 0xd9
+            _emit 0x52
+            _emit 0x00
+            _emit 0x4b
+            _emit 0xd9
+            _emit 0x52
+            _emit 0x00
+            _emit 0x5e
+            _emit 0xd9
+            _emit 0x52
+            _emit 0x00
+            _emit 0x72
+            _emit 0xd9
+            _emit 0x52
+            _emit 0x00
+            _emit 0xc0
+            _emit 0xd9
+            _emit 0x52
+            _emit 0x00
+            _emit 0xdd
+            _emit 0xd9
+            _emit 0x52
+            _emit 0x00
+            _emit 0xf5
+            _emit 0xd9
+            _emit 0x52
+            _emit 0x00
+            _emit 0x51
+            _emit 0xda
+            _emit 0x52
+            _emit 0x00
+            _emit 0xa8
+            _emit 0xda
+            _emit 0x52
+            _emit 0x00
+            _emit 0x04
+            _emit 0xdb
+            _emit 0x52
+            _emit 0x00
+            _emit 0x5b
+            _emit 0xdb
+            _emit 0x52
+            _emit 0x00
+            _emit 0xb7
+            _emit 0xdb
+            _emit 0x52
+            _emit 0x00
+            _emit 0x0e
+            _emit 0xdc
+            _emit 0x52
+            _emit 0x00
+            _emit 0x6a
+            _emit 0xdc
+            _emit 0x52
+            _emit 0x00
+            _emit 0x74
+            _emit 0xdd
+            _emit 0x52
+            _emit 0x00
+            _emit 0xd0
+            _emit 0xdd
+            _emit 0x52
+            _emit 0x00
+            _emit 0xc1
+            _emit 0xdc
+            _emit 0x52
+            _emit 0x00
+            _emit 0x1d
+            _emit 0xdd
+            _emit 0x52
+            _emit 0x00
+            _emit 0x0d
+            _emit 0xe0
+            _emit 0x52
+            _emit 0x00
+            _emit 0x7b
+            _emit 0xe0
+            _emit 0x52
+            _emit 0x00
+            _emit 0x5c
+            _emit 0xe1
+            _emit 0x52
+            _emit 0x00
+            _emit 0x87
+            _emit 0xd9
+            _emit 0x52
+            _emit 0x00
+            _emit 0xa4
+            _emit 0xd9
+            _emit 0x52
+            _emit 0x00
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0052e630
-br_error C2_HOOK_STDCALL ValueSet(void* block, br_token_value* tv, br_tv_template_entry* tep) {
+br_error C2_NAKED C2_HOOK_STDCALL ValueSet(void* block, br_token_value* tv, br_tv_template_entry* tep) {
+#ifndef CARPOCALYPSE2_MATCHING
     void* mem;
     int i;
     int t;
@@ -515,10 +1632,424 @@ copy_integers:
         return 0x1001;
     }
     return 0;
+#else
+    __asm {
+            mov eax, dword ptr [esp + 0xc]
+            push ebx
+            push ebp
+            push esi
+            mov cl, byte ptr [eax + 0xc]
+            push edi
+            test cl, 8
+            je L0052e64c
+            mov eax, 0x1002
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            ret 0xc
+    L0052e64c:
+            movsx ecx, word ptr [eax + 0xe]
+            mov esi, dword ptr [eax + 8]
+            mov edx, dword ptr [esp + 0x14]
+            add ecx, -2
+            add esi, edx
+            cmp ecx, 0x1e
+            ja L0052e8b4
+            jmp dword ptr [ecx*4 + 0x52e8c0]
+            mov eax, dword ptr [esp + 0x18]
+            mov ecx, dword ptr [eax + 4]
+            xor eax, eax
+            mov dword ptr [esi], ecx
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            ret 0xc
+            mov edx, dword ptr [esp + 0x18]
+            mov al, byte ptr [edx + 4]
+            mov byte ptr [esi], al
+            xor eax, eax
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            ret 0xc
+            mov ecx, dword ptr [esp + 0x18]
+            xor eax, eax
+            mov dx, word ptr [ecx + 4]
+            mov word ptr [esi], dx
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            ret 0xc
+            mov eax, dword ptr [esp + 0x18]
+            mov cl, byte ptr [eax + 4]
+            xor eax, eax
+            mov byte ptr [esi], cl
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            ret 0xc
+            mov edx, dword ptr [esp + 0x18]
+            mov ax, word ptr [edx + 4]
+            mov word ptr [esi], ax
+            xor eax, eax
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            ret 0xc
+            mov ecx, dword ptr [esp + 0x18]
+            mov edx, dword ptr [ecx + 4]
+            test edx, edx
+            je L0052e704
+            mov edx, dword ptr [eax + 0x10]
+            mov eax, dword ptr [esi]
+            or eax, edx
+            mov dword ptr [esi], eax
+            xor eax, eax
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            ret 0xc
+            mov ecx, dword ptr [esp + 0x18]
+            mov edx, dword ptr [ecx + 4]
+            test edx, edx
+            jne L0052e704
+            mov edx, dword ptr [eax + 0x10]
+            mov eax, dword ptr [esi]
+            or eax, edx
+            mov dword ptr [esi], eax
+            xor eax, eax
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            ret 0xc
+    L0052e704:
+            mov eax, dword ptr [eax + 0x10]
+            mov ecx, dword ptr [esi]
+            not eax
+            and ecx, eax
+            xor eax, eax
+            mov dword ptr [esi], ecx
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            ret 0xc
+            mov ecx, dword ptr [esp + 0x18]
+            xor eax, eax
+            fild dword ptr [ecx + 4]
+            fmul qword ptr ds:[0x58b870]
+            _emit 0xd9
+        _emit 0x1e
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            ret 0xc
+            mov edx, dword ptr [esp + 0x18]
+            fld dword ptr [edx + 4]
+            fmul dword ptr ds:[0x58b868]
+            call _ftol
+            mov dword ptr [esi], eax
+            xor eax, eax
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            ret 0xc
+            mov edx, 2
+            jmp L0052e798
+            mov ebx, 2
+            jmp L0052e7cf
+            mov edx, 3
+            jmp L0052e798
+            mov ebx, 3
+            jmp L0052e7cf
+            mov edx, 4
+            jmp L0052e798
+            mov ebx, 4
+            jmp L0052e7cf
+            mov edx, 6
+            jmp L0052e798
+            mov ebx, 6
+            jmp L0052e7cf
+            mov edx, 0x10
+            jmp L0052e798
+            mov ebx, 0x10
+            jmp L0052e7cf
+            mov edx, 0xc
+    L0052e798:
+            xor eax, eax
+            test edx, edx
+            jle L0052e887
+            mov edi, dword ptr [esp + 0x18]
+    L0052e7a6:
+            mov ebx, dword ptr [edi + 4]
+            lea ecx, [eax*4]
+            inc eax
+            fild dword ptr [ebx + ecx]
+            cmp eax, edx
+            fmul qword ptr ds:[0x58b870]
+            fstp dword ptr [esi + ecx]
+            jl L0052e7a6
+            xor eax, eax
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            ret 0xc
+            mov ebx, 0xc
+    L0052e7cf:
+            xor edi, edi
+            test ebx, ebx
+            jle L0052e887
+            mov ebp, dword ptr [esp + 0x18]
+    L0052e7dd:
+            mov eax, dword ptr [ebp + 4]
+            fld dword ptr [eax + edi*4]
+            fmul dword ptr ds:[0x58b868]
+            call _ftol
+            mov dword ptr [esi + edi*4], eax
+            inc edi
+            cmp edi, ebx
+            jl L0052e7dd
+            xor eax, eax
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            ret 0xc
+            mov ecx, 2
+            jmp L0052e827
+            mov ecx, 3
+            jmp L0052e827
+            mov ecx, 4
+            jmp L0052e827
+            mov ecx, 6
+            jmp L0052e827
+            mov ecx, 0x10
+            jmp L0052e827
+            mov ecx, 0xc
+    L0052e827:
+            xor eax, eax
+            test ecx, ecx
+            jle L0052e887
+            mov edx, dword ptr [esp + 0x18]
+    L0052e831:
+            mov edi, dword ptr [edx + 4]
+            inc eax
+            cmp eax, ecx
+            mov edi, dword ptr [edi + eax*4 - 4]
+            mov dword ptr [esi + eax*4 - 4], edi
+            jl L0052e831
+            xor eax, eax
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            ret 0xc
+            mov ecx, dword ptr [esp + 0x18]
+            mov eax, dword ptr [esi]
+            push 0x40
+            mov edx, dword ptr [ecx + 4]
+            push edx
+            push eax
+            call BrStrNCpy
+            add esp, 0xc
+            xor eax, eax
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            ret 0xc
+            mov ecx, dword ptr [esp + 0x18]
+            mov edx, dword ptr [ecx + 4]
+            test edx, edx
+            je L0052e881
+            mov edx, dword ptr [eax + 0x10]
+            xor eax, eax
+            mov dword ptr [esi], edx
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            ret 0xc
+    L0052e881:
+            mov dword ptr [esi], 1
+    L0052e887:
+            xor eax, eax
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            ret 0xc
+            mov ecx, dword ptr [eax + 0x10]
+            test ecx, ecx
+            je L0052e8b4
+            mov ecx, dword ptr [ecx + 4]
+            test ecx, ecx
+            je L0052e8b4
+            push eax
+            mov eax, dword ptr [esp + 0x1c]
+            add eax, 4
+            push eax
+            push edx
+            call ecx
+            add esp, 0xc
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            ret 0xc
+    L0052e8b4:
+            pop edi
+            pop esi
+            pop ebp
+            mov eax, 0x1001
+            pop ebx
+            ret 0xc
+            _emit 0x90
+            _emit 0xe8
+            _emit 0x52
+            _emit 0x00
+            _emit 0x6c
+            _emit 0xe6
+            _emit 0x52
+            _emit 0x00
+            _emit 0xff
+            _emit 0xe7
+            _emit 0x52
+            _emit 0x00
+            _emit 0x06
+            _emit 0xe8
+            _emit 0x52
+            _emit 0x00
+            _emit 0x0d
+            _emit 0xe8
+            _emit 0x52
+            _emit 0x00
+            _emit 0x14
+            _emit 0xe8
+            _emit 0x52
+            _emit 0x00
+            _emit 0x22
+            _emit 0xe8
+            _emit 0x52
+            _emit 0x00
+            _emit 0x1b
+            _emit 0xe8
+            _emit 0x52
+            _emit 0x00
+            _emit 0x7e
+            _emit 0xe6
+            _emit 0x52
+            _emit 0x00
+            _emit 0x90
+            _emit 0xe6
+            _emit 0x52
+            _emit 0x00
+            _emit 0xa4
+            _emit 0xe6
+            _emit 0x52
+            _emit 0x00
+            _emit 0xb6
+            _emit 0xe6
+            _emit 0x52
+            _emit 0x00
+            _emit 0x18
+            _emit 0xe7
+            _emit 0x52
+            _emit 0x00
+            _emit 0x30
+            _emit 0xe7
+            _emit 0x52
+            _emit 0x00
+            _emit 0x4d
+            _emit 0xe7
+            _emit 0x52
+            _emit 0x00
+            _emit 0x54
+            _emit 0xe7
+            _emit 0x52
+            _emit 0x00
+            _emit 0x5b
+            _emit 0xe7
+            _emit 0x52
+            _emit 0x00
+            _emit 0x62
+            _emit 0xe7
+            _emit 0x52
+            _emit 0x00
+            _emit 0x69
+            _emit 0xe7
+            _emit 0x52
+            _emit 0x00
+            _emit 0x70
+            _emit 0xe7
+            _emit 0x52
+            _emit 0x00
+            _emit 0x77
+            _emit 0xe7
+            _emit 0x52
+            _emit 0x00
+            _emit 0x7e
+            _emit 0xe7
+            _emit 0x52
+            _emit 0x00
+            _emit 0x93
+            _emit 0xe7
+            _emit 0x52
+            _emit 0x00
+            _emit 0xca
+            _emit 0xe7
+            _emit 0x52
+            _emit 0x00
+            _emit 0x85
+            _emit 0xe7
+            _emit 0x52
+            _emit 0x00
+            _emit 0x8c
+            _emit 0xe7
+            _emit 0x52
+            _emit 0x00
+            _emit 0x4a
+            _emit 0xe8
+            _emit 0x52
+            _emit 0x00
+            _emit 0xb4
+            _emit 0xe8
+            _emit 0x52
+            _emit 0x00
+            _emit 0x68
+            _emit 0xe8
+            _emit 0x52
+            _emit 0x00
+            _emit 0xca
+            _emit 0xe6
+            _emit 0x52
+            _emit 0x00
+            _emit 0xe7
+            _emit 0xe6
+            _emit 0x52
+            _emit 0x00
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0052e300
-br_size_t C2_HOOK_STDCALL ValueExtraSize(void* block, br_tv_template_entry* tep) {
+br_size_t C2_NAKED C2_HOOK_STDCALL ValueExtraSize(void* block, br_tv_template_entry* tep) {
+#ifndef CARPOCALYPSE2_MATCHING
     void* mem;
     br_uint_32* lp;
     int t;
@@ -586,6 +2117,189 @@ br_size_t C2_HOOK_STDCALL ValueExtraSize(void* block, br_tv_template_entry* tep)
     default:
         return 0;
     }
+#else
+    __asm {
+            mov eax, dword ptr [esp + 8]
+            push esi
+            push edi
+            mov edi, dword ptr [esp + 0xc]
+            test byte ptr [eax + 0xc], 8
+            mov ecx, dword ptr [eax + 8]
+            jne L0052e315
+            add ecx, edi
+    L0052e315:
+            movsx edx, word ptr [eax + 0xe]
+            lea esi, [edx - 2]
+            cmp esi, 0x1b
+            ja L0052e3cd
+            xor edx, edx
+            mov dl, byte ptr [esi + 0x52e414]
+            jmp dword ptr [edx*4 + 0x52e3d4]
+            mov eax, 8
+            pop edi
+            pop esi
+            ret 8
+            mov eax, 0xc
+            pop edi
+            pop esi
+            ret 8
+            mov eax, 0x10
+            pop edi
+            pop esi
+            ret 8
+            mov eax, 0x18
+            pop edi
+            pop esi
+            ret 8
+            mov eax, 0x40
+            pop edi
+            pop esi
+            ret 8
+            mov eax, 0x30
+            pop edi
+            pop esi
+            ret 8
+            mov eax, dword ptr [ecx]
+            push eax
+            call BrStrLen
+            add eax, 4
+            add esp, 4
+            shr eax, 2
+            shl eax, 2
+            pop edi
+            pop esi
+            ret 8
+            mov eax, dword ptr [ecx]
+            mov ecx, 1
+            test eax, eax
+            je L0052e3a7
+            mov edx, dword ptr [eax]
+            add eax, 4
+            test edx, edx
+            je L0052e3a7
+    L0052e39d:
+            mov edx, dword ptr [eax]
+            inc ecx
+            add eax, 4
+            test edx, edx
+            jne L0052e39d
+    L0052e3a7:
+            lea eax, [ecx*4]
+            pop edi
+            pop esi
+            ret 8
+            mov ecx, dword ptr [eax + 0x10]
+            test ecx, ecx
+            je L0052e3cd
+            mov ecx, dword ptr [ecx + 8]
+            test ecx, ecx
+            je L0052e3cd
+            push eax
+            push edi
+            call ecx
+            add esp, 8
+            pop edi
+            pop esi
+            ret 8
+    L0052e3cd:
+            pop edi
+            xor eax, eax
+            pop esi
+            ret 8
+            _emit 0xb3
+            _emit 0xe3
+            _emit 0x52
+            _emit 0x00
+            _emit 0x34
+            _emit 0xe3
+            _emit 0x52
+            _emit 0x00
+            _emit 0x3e
+            _emit 0xe3
+            _emit 0x52
+            _emit 0x00
+            _emit 0x48
+            _emit 0xe3
+            _emit 0x52
+            _emit 0x00
+            _emit 0x52
+            _emit 0xe3
+            _emit 0x52
+            _emit 0x00
+            _emit 0x66
+            _emit 0xe3
+            _emit 0x52
+            _emit 0x00
+            _emit 0x5c
+            _emit 0xe3
+            _emit 0x52
+            _emit 0x00
+            _emit 0x34
+            _emit 0xe3
+            _emit 0x52
+            _emit 0x00
+            _emit 0x3e
+            _emit 0xe3
+            _emit 0x52
+            _emit 0x00
+            _emit 0x48
+            _emit 0xe3
+            _emit 0x52
+            _emit 0x00
+            _emit 0x52
+            _emit 0xe3
+            _emit 0x52
+            _emit 0x00
+            _emit 0x66
+            _emit 0xe3
+            _emit 0x52
+            _emit 0x00
+            _emit 0x5c
+            _emit 0xe3
+            _emit 0x52
+            _emit 0x00
+            _emit 0x70
+            _emit 0xe3
+            _emit 0x52
+            _emit 0x00
+            _emit 0x89
+            _emit 0xe3
+            _emit 0x52
+            _emit 0x00
+            _emit 0xcd
+            _emit 0xe3
+            _emit 0x52
+            _emit 0x00
+            _emit 0x00
+            _emit 0x0f
+            _emit 0x01
+            _emit 0x02
+            _emit 0x03
+            _emit 0x04
+            _emit 0x05
+            _emit 0x06
+            _emit 0x0f
+            _emit 0x0f
+            _emit 0x0f
+            _emit 0x0f
+            _emit 0x0f
+            _emit 0x0f
+            _emit 0x07
+            _emit 0x07
+            _emit 0x08
+            _emit 0x08
+            _emit 0x09
+            _emit 0x09
+            _emit 0x0a
+            _emit 0x0a
+            _emit 0x0b
+            _emit 0x0b
+            _emit 0x0c
+            _emit 0x0c
+            _emit 0x0d
+            _emit 0x0e
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0052d780
@@ -676,7 +2390,8 @@ br_error C2_HOOK_CDECL BrTokenValueQueryManySize(br_size_t* psize, br_token_valu
 }
 
 // FUNCTION: CARMA2_HW 0x0052e430
-br_error C2_HOOK_CDECL BrTokenValueQueryAll(br_token_value* buffer, br_size_t buffer_size, void* block, br_tv_template* template) {
+br_error C2_NAKED C2_HOOK_CDECL BrTokenValueQueryAll(br_token_value* buffer, br_size_t buffer_size, void* block, br_tv_template* template) {
+#ifndef CARPOCALYPSE2_MATCHING
     br_tv_template_entry* tp;
     int n;
     int e;
@@ -719,10 +2434,121 @@ br_error C2_HOOK_CDECL BrTokenValueQueryAll(br_token_value* buffer, br_size_t bu
     }
     tv->t = BR_NULL_TOKEN;
     return 0;
+#else
+    __asm {
+            push ecx
+            push ebx
+            mov ebx, dword ptr [esp + 0x18]
+            push ebp
+            mov ebp, dword ptr [esp + 0x10]
+            mov eax, dword ptr [ebx + 0x18]
+            push esi
+            test eax, eax
+            push edi
+            mov dword ptr [esp + 0x18], ebp
+            jne L0052e471
+            mov eax, dword ptr [ebx]
+            mov esi, dword ptr [ebx + 4]
+            xor edi, edi
+            test eax, eax
+            jle L0052e471
+    L0052e453:
+            mov eax, dword ptr [esi + 4]
+            test eax, eax
+            je L0052e467
+            push 0
+            push eax
+            call BrTokenCreate
+            add esp, 8
+            mov dword ptr [esi], eax
+    L0052e467:
+            mov eax, dword ptr [ebx]
+            add esi, 0x18
+            inc edi
+            cmp edi, eax
+            jl L0052e453
+    L0052e471:
+            mov edx, dword ptr [ebx]
+            mov esi, dword ptr [ebx + 4]
+            test edx, edx
+            mov edi, 1
+            mov eax, esi
+            jle L0052e495
+            mov ecx, edx
+    L0052e483:
+            cmp dword ptr [eax], 0
+            je L0052e48f
+            test byte ptr [eax + 0xc], 4
+            je L0052e48f
+            inc edi
+    L0052e48f:
+            add eax, 0x18
+            dec ecx
+            jne L0052e483
+    L0052e495:
+            mov eax, dword ptr [esp + 0x1c]
+            lea ecx, [edi*8]
+            add ebp, ecx
+            cmp eax, ecx
+            mov dword ptr [esp + 0x10], ebp
+            jae L0052e4b5
+            mov eax, 0x1004
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            pop ecx
+            ret
+    L0052e4b5:
+            sub eax, ecx
+            xor edi, edi
+            test edx, edx
+            mov dword ptr [esp + 0x24], eax
+            jle L0052e4fc
+            mov ebp, dword ptr [esp + 0x20]
+    L0052e4c5:
+            mov eax, dword ptr [esi]
+            test eax, eax
+            je L0052e4f2
+            test byte ptr [esi + 0xc], 4
+            je L0052e4f2
+            mov ecx, dword ptr [esp + 0x18]
+            push esi
+            lea edx, [esp + 0x28]
+            push ebp
+            mov dword ptr [ecx], eax
+            lea eax, [esp + 0x18]
+            push edx
+            push eax
+            push ecx
+            call ValueQuery
+            test eax, eax
+            jne L0052e508
+            add dword ptr [esp + 0x18], 8
+    L0052e4f2:
+            mov eax, dword ptr [ebx]
+            add esi, 0x18
+            inc edi
+            cmp edi, eax
+            jl L0052e4c5
+    L0052e4fc:
+            mov ecx, dword ptr [esp + 0x18]
+            xor eax, eax
+            mov dword ptr [ecx], 0
+    L0052e508:
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            pop ecx
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0052e510
-br_error C2_HOOK_CDECL BrTokenValueQueryAllSize(br_size_t* psize, void* block, br_tv_template* template) {
+br_error C2_NAKED C2_HOOK_CDECL BrTokenValueQueryAllSize(br_size_t* psize, void* block, br_tv_template* template) {
+#ifndef CARPOCALYPSE2_MATCHING
     br_tv_template_entry* tp;
     int e;
     int n;
@@ -746,6 +2572,79 @@ br_error C2_HOOK_CDECL BrTokenValueQueryAllSize(br_size_t* psize, void* block, b
     }
     *psize = extra_size + sizeof(br_token_value) * n;
     return 0;
+#else
+    __asm {
+            sub esp, 8
+            push ebx
+            push ebp
+            mov ebp, dword ptr [esp + 0x1c]
+            push esi
+            push edi
+            xor edi, edi
+            mov eax, dword ptr [ebp + 0x18]
+            mov dword ptr [esp + 0x14], 1
+            cmp eax, edi
+            mov dword ptr [esp + 0x10], edi
+            jne L0052e559
+            mov eax, dword ptr [ebp]
+            mov esi, dword ptr [ebp + 4]
+            cmp eax, edi
+            jle L0052e559
+    L0052e53a:
+            mov eax, dword ptr [esi + 4]
+            test eax, eax
+            je L0052e54e
+            push 0
+            push eax
+            call BrTokenCreate
+            add esp, 8
+            mov dword ptr [esi], eax
+    L0052e54e:
+            mov eax, dword ptr [ebp]
+            add esi, 0x18
+            inc edi
+            cmp edi, eax
+            jl L0052e53a
+    L0052e559:
+            mov eax, dword ptr [ebp]
+            mov esi, dword ptr [ebp + 4]
+            xor edi, edi
+            test eax, eax
+            jle L0052e593
+            mov ebx, dword ptr [esp + 0x20]
+    L0052e569:
+            cmp dword ptr [esi], 0
+            je L0052e588
+            test byte ptr [esi + 0xc], 4
+            je L0052e588
+            mov ecx, dword ptr [esp + 0x14]
+            push esi
+            inc ecx
+            push ebx
+            mov dword ptr [esp + 0x1c], ecx
+            call ValueExtraSize
+            add dword ptr [esp + 0x10], eax
+    L0052e588:
+            mov eax, dword ptr [ebp]
+            add esi, 0x18
+            inc edi
+            cmp edi, eax
+            jl L0052e569
+    L0052e593:
+            mov ecx, dword ptr [esp + 0x10]
+            mov edx, dword ptr [esp + 0x14]
+            pop edi
+            pop esi
+            lea eax, [ecx + edx*8]
+            mov ecx, dword ptr [esp + 0x14]
+            pop ebp
+            pop ebx
+            mov dword ptr [ecx], eax
+            xor eax, eax
+            add esp, 8
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0052e5b0
@@ -780,7 +2679,8 @@ br_error C2_HOOK_CDECL BrTokenValueSet(void* mem, br_uint_32* pcombined_mask, br
 }
 
 // FUNCTION: CARMA2_HW 0x0052e940
-br_error C2_HOOK_CDECL BrTokenValueSetMany(void* mem, br_int_32* pcount, br_uint_32* pcombined_mask, br_token_value* tv, br_tv_template* template) {
+br_error C2_NAKED C2_HOOK_CDECL BrTokenValueSetMany(void* mem, br_int_32* pcount, br_uint_32* pcombined_mask, br_token_value* tv, br_tv_template* template) {
+#ifndef CARPOCALYPSE2_MATCHING
     br_int_32 o;
     br_int_32 n;
     br_error r;
@@ -812,6 +2712,74 @@ br_error C2_HOOK_CDECL BrTokenValueSetMany(void* mem, br_int_32* pcount, br_uint
         *pcombined_mask |= cm;
     }
     return 0;
+#else
+    __asm {
+            push ebx
+            push ebp
+            push esi
+            push edi
+            mov edi, dword ptr [esp + 0x24]
+            xor ebp, ebp
+            mov eax, dword ptr [edi + 0xc]
+            test eax, eax
+            jne L0052e957
+            push edi
+            call templateMakeMap
+    L0052e957:
+            mov ebx, dword ptr [esp + 0x20]
+            mov dword ptr [esp + 0x24], 0
+            mov eax, dword ptr [ebx]
+            test eax, eax
+            je L0052e9b2
+    L0052e969:
+            sub eax, dword ptr [edi + 8]
+            js L0052e9a8
+            cmp eax, dword ptr [edi + 0xc]
+            jge L0052e9a8
+            lea esi, [eax*4]
+            mov eax, dword ptr [edi + 0x14]
+            mov eax, dword ptr [eax + esi]
+            test eax, eax
+            je L0052e9a8
+            mov ecx, dword ptr [esp + 0x14]
+            push eax
+            push ebx
+            push ecx
+            call ValueSet
+            test eax, eax
+            jne L0052e9a8
+            mov edx, dword ptr [edi + 0x14]
+            mov eax, dword ptr [edx + esi]
+            mov ecx, dword ptr [eax + 0x14]
+            mov eax, dword ptr [esp + 0x24]
+            or ebp, ecx
+            inc eax
+            mov dword ptr [esp + 0x24], eax
+    L0052e9a8:
+            mov eax, dword ptr [ebx + 8]
+            add ebx, 8
+            test eax, eax
+            jne L0052e969
+    L0052e9b2:
+            mov eax, dword ptr [esp + 0x18]
+            test eax, eax
+            je L0052e9c0
+            mov ecx, dword ptr [esp + 0x24]
+            mov dword ptr [eax], ecx
+    L0052e9c0:
+            mov eax, dword ptr [esp + 0x1c]
+            test eax, eax
+            je L0052e9ca
+            or dword ptr [eax], ebp
+    L0052e9ca:
+            pop edi
+            pop esi
+            pop ebp
+            xor eax, eax
+            pop ebx
+            ret
+    }
+#endif
 }
 
 void C2_HOOK_STDCALL DumpMatrixInteger(br_int_32* ip, int rows, int cols, char* prefix, char* info_0, char* info_n, br_putline_cbfn* putline, void* arg) {
@@ -1172,7 +3140,8 @@ void C2_HOOK_CDECL BrTokenValueDump(br_token_value* tv, char* prefix, br_putline
 #define T_TRUE  (T_KEYWORD + 1)
 
 // FUNCTION: CARMA2_HW 0x0052e9f0
-br_error C2_HOOK_CDECL BrStringToTokenValue(br_token_value* buffer, br_size_t buffer_size, char* str) {
+br_error C2_NAKED C2_HOOK_CDECL BrStringToTokenValue(br_token_value* buffer, br_size_t buffer_size, char* str) {
+#ifndef CARPOCALYPSE2_MATCHING
     br_lexer* l;
     br_error r;
     // GLOBAL: CARMA2_HW 0x00667e60
@@ -1196,6 +3165,538 @@ br_error C2_HOOK_CDECL BrStringToTokenValue(br_token_value* buffer, br_size_t bu
     parseTokenValue(l, buffer, buffer_size);
     BrLexerFree(l);
     return 0;
+#else
+    __asm {
+            sub esp, 0x28
+            push ebx
+            push ebp
+            push esi
+            push edi
+            push 4
+            push 0x667e60
+            call BrLexerAllocate
+            mov edi, eax
+            xor ebx, ebx
+            add esp, 8
+            cmp edi, ebx
+            jne L0052ea1b
+            mov eax, 0x1003
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x28
+            ret
+    L0052ea1b:
+            mov eax, dword ptr [esp + 0x44]
+            push ebx
+            push eax
+            push edi
+            call BrLexerPushString
+            add esp, 0xc
+            mov esi, eax
+            cmp esi, ebx
+            push edi
+            je L0052ea43
+            call BrLexerFree
+            add esp, 4
+            mov eax, esi
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x28
+            ret
+    L0052ea43:
+            call dword ptr [edi + 0x18]
+            mov eax, dword ptr [esp + 0x40]
+            mov esi, dword ptr [esp + 0x3c]
+            cmp eax, 8
+            jb L0052ed64
+            lea ebp, [eax - 8]
+            mov eax, dword ptr [edi + 4]
+            cmp eax, ebx
+            je L0052ed5f
+    L0052ea65:
+            cmp eax, 0x2c
+            jne L0052ea74
+    L0052ea6a:
+            push edi
+            call dword ptr [edi + 0x18]
+            cmp dword ptr [edi + 4], 0x2c
+            je L0052ea6a
+    L0052ea74:
+            cmp dword ptr [edi + 4], 2
+            jne L0052ed5f
+            cmp ebp, 8
+            jbe L0052ed5f
+            mov ecx, dword ptr [edi + 8]
+            push 0x27
+            lea edx, [esp + 0x14]
+            push ecx
+            push edx
+            mov byte ptr [esp + 0x43], bl
+            call BrStrNCpy
+            add esp, 0xc
+            push edi
+            call dword ptr [edi + 0x18]
+            cmp byte ptr [esp + 0x11], bl
+            jne L0052eafd
+            mov al, byte ptr [esp + 0x10]
+            cmp al, 0x77
+            je L0052eaeb
+            cmp al, 0x57
+            je L0052eaeb
+            cmp al, 0x68
+            je L0052eadf
+            cmp al, 0x48
+            je L0052eadf
+            cmp al, 0x62
+            je L0052ead3
+            cmp al, 0x42
+            je L0052ead3
+            cmp al, 0x6d
+            je L0052eacc
+            cmp al, 0x4d
+            jne L0052eafd
+    L0052eacc:
+            push 0x667f1c
+            jmp L0052eaf0
+    L0052ead3:
+            lea ecx, [esp + 0x10]
+            push 0x667f10
+            push ecx
+            jmp L0052eaf5
+    L0052eadf:
+            lea edx, [esp + 0x10]
+            push 0x667f08
+            push edx
+            jmp L0052eaf5
+    L0052eaeb:
+            push 0x667f00
+    L0052eaf0:
+            lea eax, [esp + 0x14]
+            push eax
+    L0052eaf5:
+            call BrStrCpy
+            add esp, 8
+    L0052eafd:
+            mov dword ptr [esi], ebx
+            mov eax, dword ptr [edi + 4]
+            cmp eax, 0x3a
+            je L0052eb43
+            cmp eax, 0x3d
+            je L0052eb43
+            push 2
+            lea ecx, [esp + 0x14]
+            push 0x667ee0
+            lea edx, [esp + 0x4c]
+            push ecx
+            push edx
+            call BrTokenFindType
+            cmp eax, ebx
+            mov dword ptr [esi], eax
+            je L0052ed3c
+            cmp dword ptr [esp + 0x44], 2
+            jne L0052ed3c
+            mov dword ptr [esi + 4], 0x81
+            jmp L0052ed3c
+    L0052eb43:
+            push edi
+            call dword ptr [edi + 0x18]
+            mov eax, dword ptr [edi + 4]
+            add eax, -2
+            cmp eax, 0x7f
+            ja L0052ed2c
+            xor ecx, ecx
+            mov cl, byte ptr [eax + 0x52ed90]
+            jmp dword ptr [ecx*4 + 0x52ed78]
+            push 2
+            lea edx, [esp + 0x14]
+            push 0x667e88
+            lea eax, [esp + 0x4c]
+            push edx
+            push eax
+            call BrTokenFindType
+            cmp eax, ebx
+            mov dword ptr [esi], eax
+            je L0052ed38
+            mov eax, dword ptr [esp + 0x44]
+            sub eax, 0xb
+            je L0052eba0
+            dec eax
+            jne L0052ed38
+            fld dword ptr [edi + 8]
+            fstp dword ptr [esi + 4]
+            jmp L0052ed38
+    L0052eba0:
+            fld dword ptr [edi + 8]
+            fmul dword ptr ds:[0x58b868]
+            call _ftol
+            mov dword ptr [esi + 4], eax
+            jmp L0052ed38
+            cmp dword ptr [edi + 8], ebx
+            jl L0052ebce
+            push 9
+            lea ecx, [esp + 0x14]
+            push 0x667e90
+            lea edx, [esp + 0x4c]
+            push ecx
+            push edx
+            jmp L0052ebdf
+    L0052ebce:
+            push 6
+            lea eax, [esp + 0x14]
+            push 0x667eb8
+            lea ecx, [esp + 0x4c]
+            push eax
+            push ecx
+    L0052ebdf:
+            call BrTokenFindType
+            cmp eax, ebx
+            mov dword ptr [esi], eax
+            je L0052ed38
+            mov edx, dword ptr [esp + 0x44]
+            lea eax, [edx - 2]
+            cmp eax, 0xa
+            ja L0052ed38
+            jmp dword ptr [eax*4 + 0x52ee10]
+            mov eax, dword ptr [edi + 8]
+            mov dword ptr [esi + 4], eax
+            jmp L0052ed38
+            mov ecx, dword ptr [edi + 8]
+            mov dword ptr [esi + 4], ecx
+            jmp L0052ed38
+            mov dx, word ptr [edi + 8]
+            mov word ptr [esi + 4], dx
+            jmp L0052ed38
+            mov ax, word ptr [edi + 8]
+            mov word ptr [esi + 4], ax
+            jmp L0052ed38
+            mov cl, byte ptr [edi + 8]
+            mov byte ptr [esi + 4], cl
+            jmp L0052ed38
+            mov dl, byte ptr [edi + 8]
+            mov byte ptr [esi + 4], dl
+            jmp L0052ed38
+            fild dword ptr [edi + 8]
+            fstp dword ptr [esi + 4]
+            jmp L0052ed38
+            mov eax, dword ptr [edi + 8]
+            shl eax, 0x10
+            mov dword ptr [esi + 4], eax
+            jmp L0052ed38
+            mov eax, dword ptr [edi + 8]
+            xor ecx, ecx
+            cmp eax, ebx
+            setne cl
+            mov dword ptr [esi + 4], ecx
+            jmp L0052ed38
+            push 1
+            lea edx, [esp + 0x14]
+            push 0x667ed0
+            lea eax, [esp + 0x4c]
+            push edx
+            push eax
+            call BrTokenFindType
+            cmp eax, ebx
+            mov dword ptr [esi], eax
+            je L0052ed38
+            mov ecx, dword ptr [edi + 8]
+            push ecx
+            call BrTokenFind
+            add esp, 4
+            cmp eax, ebx
+            mov dword ptr [esi + 4], eax
+            jne L0052ed38
+            mov dword ptr [esi], ebx
+            jmp L0052ed38
+            push 1
+            lea edx, [esp + 0x14]
+            push 0x667ed4
+            lea eax, [esp + 0x4c]
+            push edx
+            push eax
+            call BrTokenFindType
+            cmp eax, ebx
+            mov dword ptr [esi], eax
+            je L0052ed38
+            mov eax, dword ptr [edi + 4]
+            xor ecx, ecx
+            cmp eax, 0x81
+            sete cl
+            mov dword ptr [esi + 4], ecx
+            jmp L0052ed38
+            push 2
+            lea edx, [esp + 0x14]
+            push 0x667ed8
+            lea eax, [esp + 0x4c]
+            push edx
+            push eax
+            call BrTokenFindType
+            cmp eax, ebx
+            mov dword ptr [esi], eax
+            je L0052ed38
+            mov ecx, dword ptr [edi + 8]
+            push ecx
+            call BrStrLen
+            add esp, 4
+            inc eax
+            cmp eax, ebp
+            jle L0052ed13
+            mov dword ptr [esi], ebx
+            jmp L0052ed38
+    L0052ed13:
+            sub ebp, eax
+            push eax
+            lea ecx, [ebp + esi]
+            mov dword ptr [esi + 4], ecx
+            mov edx, dword ptr [edi + 8]
+            push edx
+            push ecx
+            call BrMemCpy
+            add esp, 0xc
+            jmp L0052ed38
+    L0052ed2c:
+            push 0x667f24
+            push edi
+            call dword ptr [edi + 0x2c]
+            add esp, 8
+    L0052ed38:
+            push edi
+            call dword ptr [edi + 0x18]
+    L0052ed3c:
+            cmp dword ptr [esi], ebx
+            je L0052ed48
+            add esi, 8
+            sub ebp, 8
+            jmp L0052ed54
+    L0052ed48:
+            push 0x667f38
+            push edi
+            call dword ptr [edi + 0x2c]
+            add esp, 8
+    L0052ed54:
+            mov eax, dword ptr [edi + 4]
+            cmp eax, ebx
+            jne L0052ea65
+    L0052ed5f:
+            mov dword ptr [esi], ebx
+            mov dword ptr [esi + 4], ebx
+    L0052ed64:
+            push edi
+            call BrLexerFree
+            add esp, 4
+            xor eax, eax
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x28
+            ret
+            nop
+            _emit 0x76
+            _emit 0xec
+            _emit 0x52
+            _emit 0x00
+            _emit 0xe2
+            _emit 0xec
+            _emit 0x52
+            _emit 0x00
+            _emit 0xb6
+            _emit 0xeb
+            _emit 0x52
+            _emit 0x00
+            _emit 0x65
+            _emit 0xeb
+            _emit 0x52
+            _emit 0x00
+            _emit 0xb4
+            _emit 0xec
+            _emit 0x52
+            _emit 0x00
+            _emit 0x2c
+            _emit 0xed
+            _emit 0x52
+            _emit 0x00
+            _emit 0x00
+            _emit 0x01
+            _emit 0x02
+            _emit 0x03
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x05
+            _emit 0x04
+            _emit 0x04
+            _emit 0x64
+            _emit 0xec
+            _emit 0x52
+            _emit 0x00
+            _emit 0x38
+            _emit 0xed
+            _emit 0x52
+            _emit 0x00
+            _emit 0x38
+            _emit 0xed
+            _emit 0x52
+            _emit 0x00
+            _emit 0x35
+            _emit 0xec
+            _emit 0x52
+            _emit 0x00
+            _emit 0x40
+            _emit 0xec
+            _emit 0x52
+            _emit 0x00
+            _emit 0x1b
+            _emit 0xec
+            _emit 0x52
+            _emit 0x00
+            _emit 0x28
+            _emit 0xec
+            _emit 0x52
+            _emit 0x00
+            _emit 0x05
+            _emit 0xec
+            _emit 0x52
+            _emit 0x00
+            _emit 0x10
+            _emit 0xec
+            _emit 0x52
+            _emit 0x00
+            _emit 0x56
+            _emit 0xec
+            _emit 0x52
+            _emit 0x00
+            _emit 0x4b
+            _emit 0xec
+            _emit 0x52
+            _emit 0x00
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+    }
+#endif
 }
 
 static br_error parseTokenValue(br_lexer* l, br_token_value* tv, br_size_t size) {
@@ -1386,7 +3887,8 @@ static br_error parseTokenValue(br_lexer* l, br_token_value* tv, br_size_t size)
 }
 
 // FUNCTION: CARMA2_HW 0x0052ee40
-br_boolean C2_HOOK_CDECL BrTokenValueCompare(br_token_value* tv1, br_token_value* tv2) {
+br_boolean C2_NAKED C2_HOOK_CDECL BrTokenValueCompare(br_token_value* tv1, br_token_value* tv2) {
+#ifndef CARPOCALYPSE2_MATCHING
     int i;
 
     if (tv1 == NULL && tv2 == NULL) {
@@ -1558,6 +4060,310 @@ br_boolean C2_HOOK_CDECL BrTokenValueCompare(br_token_value* tv1, br_token_value
         }
     }
     return 0;
+#else
+    __asm {
+            push esi
+            mov esi, dword ptr [esp + 8]
+            push edi
+            mov edi, dword ptr [esp + 0x10]
+            test esi, esi
+            jne L0052ee5a
+            test edi, edi
+            jne L0052ee5a
+            mov eax, 1
+            pop edi
+            pop esi
+            ret
+    L0052ee5a:
+            test esi, esi
+            je L0052ef8b
+            test edi, edi
+            je L0052ef8b
+            mov eax, dword ptr [esi]
+            mov ecx, dword ptr [edi]
+            cmp eax, ecx
+            jne L0052ef8b
+    L0052ee76:
+            test eax, eax
+            je L0052ef83
+            push eax
+            call BrTokenType
+            add esp, 4
+            dec eax
+            cmp eax, 0x22
+            ja L0052ef60
+            xor ecx, ecx
+            mov cl, byte ptr [eax + 0x52efe8]
+            jmp dword ptr [ecx*4 + 0x52ef90]
+            mov edx, dword ptr [edi + 4]
+            mov eax, dword ptr [esi + 4]
+            push edx
+            push eax
+            call BrStrCmp
+            add esp, 8
+            test eax, eax
+            jne L0052ef8b
+            jmp L0052ef6a
+            mov eax, dword ptr [esi + 4]
+    L0052eec0:
+            cmp dword ptr [eax], 0
+            je L0052ef6a
+            add eax, 4
+            jmp L0052eec0
+            mov ecx, dword ptr [edi + 4]
+            mov edx, dword ptr [esi + 4]
+            push 8
+            push ecx
+            push edx
+            jmp L0052ef0c
+            mov eax, dword ptr [edi + 4]
+            mov ecx, dword ptr [esi + 4]
+            push 0xc
+            push eax
+            push ecx
+            jmp L0052ef0c
+            push 0x10
+            jmp L0052ef04
+            mov ecx, dword ptr [edi + 4]
+            mov edx, dword ptr [esi + 4]
+            push 0x18
+            push ecx
+            push edx
+            jmp L0052ef0c
+            mov eax, dword ptr [edi + 4]
+            mov ecx, dword ptr [esi + 4]
+            push 0x30
+            push eax
+            push ecx
+            jmp L0052ef0c
+            push 0x40
+    L0052ef04:
+            mov edx, dword ptr [edi + 4]
+            mov eax, dword ptr [esi + 4]
+            push edx
+            push eax
+    L0052ef0c:
+            call BrMemCmp
+            add esp, 0xc
+            test eax, eax
+            jne L0052ef8b
+            jmp L0052ef6a
+            mov edx, dword ptr [esi + 4]
+            mov eax, dword ptr [edi + 4]
+            xor ecx, ecx
+            test edx, edx
+            sete cl
+            xor edx, edx
+            test eax, eax
+            sete dl
+            cmp ecx, edx
+            jne L0052ef8b
+            mov cl, byte ptr [esi + 4]
+            mov dl, byte ptr [edi + 4]
+            xor eax, eax
+            test cl, cl
+            sete al
+            xor ecx, ecx
+            test dl, dl
+            sete cl
+            cmp eax, ecx
+            jne L0052ef8b
+            xor edx, edx
+            cmp word ptr [esi + 4], dx
+            sete dl
+            xor eax, eax
+            cmp word ptr [edi + 4], ax
+            sete al
+            cmp edx, eax
+            jne L0052ef8b
+    L0052ef60:
+            mov ecx, dword ptr [esi + 4]
+            mov eax, dword ptr [edi + 4]
+            cmp ecx, eax
+            jne L0052ef8b
+    L0052ef6a:
+            mov eax, dword ptr [esi + 8]
+            mov ecx, dword ptr [edi + 8]
+            add esi, 8
+            add edi, 8
+            cmp eax, ecx
+            je L0052ee76
+            xor eax, eax
+            pop edi
+            pop esi
+            ret
+    L0052ef83:
+            mov eax, 1
+            pop edi
+            pop esi
+            ret
+    L0052ef8b:
+            pop edi
+            xor eax, eax
+            pop esi
+            ret
+            _emit 0x6a
+            _emit 0xef
+            _emit 0x52
+            _emit 0x00
+            _emit 0x1a
+            _emit 0xef
+            _emit 0x52
+            _emit 0x00
+            _emit 0x32
+            _emit 0xef
+            _emit 0x52
+            _emit 0x00
+            _emit 0x4a
+            _emit 0xef
+            _emit 0x52
+            _emit 0x00
+            _emit 0xce
+            _emit 0xee
+            _emit 0x52
+            _emit 0x00
+            _emit 0xda
+            _emit 0xee
+            _emit 0x52
+            _emit 0x00
+            _emit 0xe6
+            _emit 0xee
+            _emit 0x52
+            _emit 0x00
+            _emit 0xce
+            _emit 0xee
+            _emit 0x52
+            _emit 0x00
+            _emit 0xda
+            _emit 0xee
+            _emit 0x52
+            _emit 0x00
+            _emit 0xe6
+            _emit 0xee
+            _emit 0x52
+            _emit 0x00
+            _emit 0xce
+            _emit 0xee
+            _emit 0x52
+            _emit 0x00
+            _emit 0xda
+            _emit 0xee
+            _emit 0x52
+            _emit 0x00
+            _emit 0xe6
+            _emit 0xee
+            _emit 0x52
+            _emit 0x00
+            _emit 0xea
+            _emit 0xee
+            _emit 0x52
+            _emit 0x00
+            _emit 0xf6
+            _emit 0xee
+            _emit 0x52
+            _emit 0x00
+            _emit 0x02
+            _emit 0xef
+            _emit 0x52
+            _emit 0x00
+            _emit 0xea
+            _emit 0xee
+            _emit 0x52
+            _emit 0x00
+            _emit 0xf6
+            _emit 0xee
+            _emit 0x52
+            _emit 0x00
+            _emit 0x02
+            _emit 0xef
+            _emit 0x52
+            _emit 0x00
+            _emit 0xa0
+            _emit 0xee
+            _emit 0x52
+            _emit 0x00
+            _emit 0xbd
+            _emit 0xee
+            _emit 0x52
+            _emit 0x00
+            _emit 0x60
+            _emit 0xef
+            _emit 0x52
+            _emit 0x00
+            _emit 0x00
+            _emit 0x01
+            _emit 0x15
+            _emit 0x15
+            _emit 0x02
+            _emit 0x02
+            _emit 0x03
+            _emit 0x03
+            _emit 0x15
+            _emit 0x15
+            _emit 0x15
+            _emit 0x15
+            _emit 0x15
+            _emit 0x15
+            _emit 0x15
+            _emit 0x04
+            _emit 0x05
+            _emit 0x06
+            _emit 0x07
+            _emit 0x08
+            _emit 0x09
+            _emit 0x0a
+            _emit 0x0b
+            _emit 0x0c
+            _emit 0x0d
+            _emit 0x0e
+            _emit 0x0f
+            _emit 0x10
+            _emit 0x11
+            _emit 0x12
+            _emit 0x13
+            _emit 0x13
+            _emit 0x14
+            _emit 0x14
+            _emit 0x14
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x8b
+            _emit 0x44
+            _emit 0x24
+            _emit 0x08
+            _emit 0x83
+            _emit 0x38
+            _emit 0x00
+            _emit 0x74
+            _emit 0x0a
+            _emit 0x8b
+            _emit 0x48
+            _emit 0x08
+            _emit 0x83
+            _emit 0xc0
+            _emit 0x08
+            _emit 0x85
+            _emit 0xc9
+            _emit 0x75
+            _emit 0xf6
+            _emit 0x33
+            _emit 0xc0
+            _emit 0xc2
+            _emit 0x08
+            _emit 0x00
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+    }
+#endif
 }
 
 br_error C2_HOOK_CDECL BrTokenValueDup(br_token_value** dstp, br_token_value* src) {

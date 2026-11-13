@@ -111,6 +111,119 @@ const br_scalar gFLOAT_0058a40c = 0.000015259254723787308f;
 // GLOBAL: CARMA2_HW 0x0068d954
 int gUNK_0068d954;
 
+#ifdef CARPOCALYPSE2_MATCHING
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern br_actor* C2_HOOK_CDECL BrActorAdd();
+extern br_actor* C2_HOOK_CDECL BrActorRemove();
+extern void C2_HOOK_CDECL BrMatrix34Copy();
+extern void C2_HOOK_CDECL BrMatrix34RotateY();
+extern float C2_HOOK_FASTCALL ComputeCarImpact(tCar_spec* pCar, int pDelta, float* pOut);
+extern void C2_HOOK_FASTCALL CrushCarByNetwork(tCar_spec* pCar);
+extern void C2_HOOK_FASTCALL DisposeKevStuffCar(tCar_spec* pCar);
+extern tNon_car_spec* C2_HOOK_FASTCALL DoPullActorFromWorld(br_actor* actor);
+extern void C2_HOOK_FASTCALL ExpandVector3(br_vector3* pDest, const tCompressed_vector3 *pSrc, float pMin, float pMax);
+extern void C2_HOOK_FASTCALL FUN_0042da20(undefined4* pRecipient);
+extern void C2_HOOK_FASTCALL FUN_0043d7d0(tNet_game_player_info* pRecipient);
+extern void C2_HOOK_FASTCALL FUN_00498ab0(void* pArg1, tU8* pSrc);
+extern void C2_HOOK_FASTCALL FUN_004f0f80(tNet_game_player_info* pRecipient);
+extern int C2_HOOK_FASTCALL GetCompressedCrushVertexDataSize(tU8* pData);
+extern int C2_HOOK_FASTCALL GetNetworkDataSize(tU8* pNet_data);
+extern int C2_HOOK_FASTCALL GetSingleMatrixFromNetworkData(tU8* pNet_data, br_matrix34* pMatrix);
+extern tNet_message_chunk* C2_HOOK_FASTCALL NetGetToPlayerContents(tNet_message_type pType, tU32 pSize_decider, tPlayer_ID pPlayer_id);
+extern void C2_HOOK_FASTCALL NetSendMessageStacks(void);
+extern void C2_HOOK_FASTCALL PlayerIsInfected(tNet_game_player_info* pPlayer);
+extern void C2_HOOK_FASTCALL ReallyViewOpponent(void);
+extern int C2_HOOK_FASTCALL SelectCrushNetwork(undefined4* pField, tPhysics_object* pObject, int pMode);
+extern void C2_HOOK_FASTCALL SendDetachedNonCarDataToPlayer(tNet_game_player_info* pRecipient);
+extern void C2_HOOK_FASTCALL SetAllShapeStatusFlags(tCar_crush_network_shapes* pShapes);
+extern void C2_HOOK_FASTCALL SetSmokeLastDamageLevel(tCar_spec* pCar);
+extern void C2_HOOK_FASTCALL SortOutSmoke(tCar_spec* pCar);
+extern void C2_HOOK_FASTCALL StopCarBeingIt(tCar_spec* pCar);
+extern void C2_HOOK_FASTCALL StopCarSmoking(tCar_spec* pCar);
+extern void C2_HOOK_FASTCALL TotallyRepairACar(tCar_spec* pCar_spec);
+extern void C2_HOOK_FASTCALL UpdateCrushVertices(tCar_spec* pCar, tU8* pField);
+extern void C2_HOOK_FASTCALL WeldCar(tCar_spec* pCar_spec);
+extern void C2_HOOK_FASTCALL WeldCarByNetwork(tCar_spec* pCar);
+extern void C2_HOOK_FASTCALL WeldCarPartial(tCar_spec* pCar);
+extern void C2_HOOK_FASTCALL XZToColumnXZ(tU8* pColumn_x, tU8* pColumn_z, br_scalar pX, br_scalar pZ, tTrack_spec* pTrack_spec);
+extern br_uint_8 bl;
+extern tU32 gCar_to_view_id;
+extern tNet_game_details* gCurrent_net_game;
+extern int gFace_num__car;
+extern tNet_mode gNet_mode;
+extern tNet_game_player_info gNet_players[12];
+extern int gNumber_of_net_players;
+extern tProgram_state gProgram_state;
+extern int gThis_net_player_index;
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern int C2_HOOK_FASTCALL CarShapeNeedsSendingToPlayer(tCar_crush_network_shapes* pShapes, int pPlayer_id);
+extern void C2_HOOK_FASTCALL ClearShapeStatusFlag(tCar_crush_network_shapes* pShapes, int pPlayer_id);
+extern void C2_HOOK_FASTCALL CompressCarDataChunk(tU8* pChunk, int pPlayer_index);
+extern void C2_HOOK_FASTCALL CompressPlane(tU16 pDest[4], const br_vector4* pSrc);
+extern void C2_HOOK_FASTCALL DoNetScores2(int pOnly_sort_scores);
+extern void C2_HOOK_FASTCALL EncodeNetShapeData(tU8* pData, tCar_spec* pCar);
+extern int C2_HOOK_FASTCALL FUN_0043d900(tCar_spec* pCar);
+extern void C2_NORETURN C2_HOOK_CDECL FatalError();
+extern int C2_HOOK_FASTCALL GetHierarchyNetworkSize(tPhysics_object* pObject);
+extern int C2_HOOK_FASTCALL GetHierarchyNetworkStuff(tPhysics_object* pObject, tU8* pNet_data, int pRemaining);
+extern const char* C2_HOOK_FASTCALL GetMiscString(int pIndex);
+extern void C2_HOOK_FASTCALL NetBroadcastContents(tNet_message_chunk* pMessage);
+extern tNet_message* C2_HOOK_FASTCALL NetBuildGuaranteedMessage(tU8 pNet_message_type, int pOption);
+extern tNet_message_chunk* C2_HOOK_FASTCALL NetGetToHostContents(tNet_message_type pType, tU32 pSize_decider);
+extern int C2_HOOK_FASTCALL NetGuaranteedSendMessageToAllPlayers(tNet_game_details* pDetails, tNet_message* pMessage, void* pNotifyFail);
+extern int C2_HOOK_FASTCALL NetGuaranteedSendMessageToPlayer(tNet_game_details* pNet_game, tNet_message* pMessage, undefined4 pPlayer, undefined4 pArg4);
+extern void C2_HOOK_FASTCALL NetSendHeadupToPlayer(const char* pMessage, tPlayer_ID pPlayer_id);
+extern tNet_message_chunk* C2_HOOK_FASTCALL NetStartBroadcastContents(tNet_message_type pType, tU32 pSize_decider);
+extern void C2_HOOK_FASTCALL SendDetachedNonCarData(tNon_car_spec* pNon_car, undefined4 pArg2, tNet_game_player_info* pRecipient);
+extern void C2_HOOK_FASTCALL SendLocalCarData(tU32 pNext_frame_time);
+extern void C2_HOOK_FASTCALL SendNonCar(tNon_car_spec* pNon_car, tU32 pPlayer_id);
+extern void C2_HOOK_FASTCALL SendSplitHalfNonCarData(tNon_car_spec* pNon_car, undefined4 pArg2, tNet_game_player_info* pRecipient);
+extern void __cdecl _ftol();
+extern tNon_car_spec* gActive_non_car_list[99];
+extern char gCar_map_colours[];
+extern int gNum_active_non_cars;
+extern tU32 gRace_start;
+extern int gReceived_game_scores;
+extern int gScore_winner;
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern tU32 C2_HOOK_FASTCALL GetTotalTime(void);
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern void C2_HOOK_FASTCALL CancelPendingCunningStunt(void);
+extern void C2_HOOK_FASTCALL CloseDownPowerUpsForCar(tCar_spec* pCar);
+extern void C2_HOOK_FASTCALL CompressMatrix34(tCompressed_matrix3* pCompressed_matrix3, int* pInactive, const br_matrix34* pMatrix);
+extern void C2_HOOK_FASTCALL EmptyInventory(void);
+extern int C2_HOOK_FASTCALL GetAverageCrushLevel(tCar_spec* pCar);
+extern tU32 C2_HOOK_FASTCALL GetRaceTime(void);
+extern int C2_HOOK_FASTCALL GetRuntimeVariable(int pAddress);
+extern int C2_HOOK_FASTCALL IRandomBetween(int pA, int pB);
+extern void C2_HOOK_FASTCALL InitialiseCar(tCar_spec* pCar);
+extern int C2_HOOK_FASTCALL NetGuaranteedSendMessageToEverybody(tNet_game_details* pNet_game, tNet_message* pMessage, undefined4 pArg3);
+extern void C2_HOOK_FASTCALL NetSendHeadupToEverybody(const char* pMessage);
+extern tU32 C2_HOOK_FASTCALL PDGetTotalTime(void);
+extern void C2_HOOK_FASTCALL PossibleService(void);
+extern void C2_HOOK_FASTCALL SendCurrentPowerups(void);
+extern void C2_HOOK_FASTCALL SetFlipUpCar(tCar_spec* pCar);
+extern void C2_HOOK_FASTCALL SetInitialPosition(tRace_info* pThe_race, int pCar_index, tU32 pGrid_index);
+extern int C2_HOOK_FASTCALL SetKnackeredFlag(tCar_spec* pCar);
+extern void C2_HOOK_FASTCALL StopCarSmokingInstantly(tCar_spec* pCar_spec);
+extern int gCancel_recover;
+extern int gCount_smashable_race_targets;
+extern int gCountdown;
+extern tRace_info gCurrent_race;
+extern tU32 gFrame_period;
+extern int gINT_0074b780;
+extern tU32 gRace_finished;
+extern tRace_over_reason gRace_over_reason;
+extern int gSynch_race_start;
+#endif
 // FUNCTION: CARMA2_HW 0x00499260
 
 void C2_HOOK_FASTCALL DisableCar(tCar_spec* pCar) {
@@ -183,7 +296,8 @@ void C2_HOOK_FASTCALL InitialisePlayerScore(tNet_game_player_info* pPlayer) {
 }
 
 // FUNCTION: CARMA2_HW 0x0049b720
-void C2_HOOK_FASTCALL InitPlayers(void) {
+void C2_NAKED C2_HOOK_FASTCALL InitPlayers(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     int i;
 
     for (i = 0; i < gNumber_of_net_players; i++) {
@@ -197,10 +311,96 @@ void C2_HOOK_FASTCALL InitPlayers(void) {
     gNot_shown_race_type_headup = 1;
     gIt_or_fox = -1;
     gWinner_declared = 0;
+#else
+    __asm {
+            mov eax, dword ptr ds:[gNumber_of_net_players]
+            push ebx
+            push esi
+            push edi
+            xor edi, edi
+            xor ebx, ebx
+            cmp eax, edi
+            jle L0049b783
+            mov esi, 0x74bd24
+    L0049b735:
+            call PossibleService
+            mov ecx, dword ptr ds:[gCurrent_net_game]
+            mov eax, dword ptr [ecx + 0x74]
+            cmp eax, 7
+            ja L0049b761
+            jmp dword ptr [eax*4 + 0x49b7c0]
+            mov dword ptr [esi], 0x64
+            jmp L0049b761
+            mov dword ptr [esi], 0xffff
+            jmp L0049b761
+            mov dword ptr [esi], edi
+    L0049b761:
+            mov eax, dword ptr [ecx + 0x58]
+            mov dword ptr [esi + 8], edi
+            mov dword ptr [esi + 4], eax
+            mov eax, dword ptr ds:[gNumber_of_net_players]
+            mov dword ptr [esi - 0x4c], edi
+            mov dword ptr [esi + 0x6c], edi
+            mov dword ptr [esi + 0x1c], edi
+            inc ebx
+            add esi, 0xd4
+            cmp ebx, eax
+            jl L0049b735
+    L0049b783:
+            mov eax, dword ptr ds:[gNet_mode]
+            mov dword ptr ds:[gIt_or_fox], 0xffffffff
+            cmp eax, 2
+            jne L0049b7a3
+            mov dword ptr ds:[gLast_it_change], edi
+            mov dword ptr ds:[gLast_lepper], edi
+    L0049b7a3:
+            mov dword ptr ds:[gTime_for_punishment], edi
+            mov dword ptr ds:[gWinner_declared], edi
+            pop edi
+            pop esi
+            mov dword ptr ds:[gNot_shown_race_type_headup], 1
+            pop ebx
+            ret
+            lea ecx, [ecx]
+            _emit 0x4f
+            _emit 0xb7
+            _emit 0x49
+            _emit 0x00
+            _emit 0x5f
+            _emit 0xb7
+            _emit 0x49
+            _emit 0x00
+            _emit 0x5f
+            _emit 0xb7
+            _emit 0x49
+            _emit 0x00
+            _emit 0x57
+            _emit 0xb7
+            _emit 0x49
+            _emit 0x00
+            _emit 0x5f
+            _emit 0xb7
+            _emit 0x49
+            _emit 0x00
+            _emit 0x5f
+            _emit 0xb7
+            _emit 0x49
+            _emit 0x00
+            _emit 0x5f
+            _emit 0xb7
+            _emit 0x49
+            _emit 0x00
+            _emit 0x5f
+            _emit 0xb7
+            _emit 0x49
+            _emit 0x00
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0049b7e0
-void C2_HOOK_FASTCALL FUN_0049b7e0(tU32 pPlayer_id) {
+void C2_NAKED C2_HOOK_FASTCALL FUN_0049b7e0(tU32 pPlayer_id) {
+#ifndef CARPOCALYPSE2_MATCHING
     int game_type;
     int i;
     int player_count;
@@ -255,18 +455,279 @@ void C2_HOOK_FASTCALL FUN_0049b7e0(tU32 pPlayer_id) {
         return;
     }
     gINT_0068d920 = pPlayer_id;
+#else
+    __asm {
+            mov eax, dword ptr [gCurrent_net_game]
+            push ebx
+            push esi
+            push edi
+            mov eax, dword ptr [eax + 0x74]
+            mov ebx, ecx
+            sub eax, 2
+            je L0049b8bb
+            sub eax, 4
+            je L0049b879
+            dec eax
+            jne L0049b8c1
+            mov eax, dword ptr [gIt_or_fox]
+            lea ecx, [eax + eax*2]
+            lea ecx, [ecx + ecx*8]
+            shl ecx, 1
+            sub ecx, eax
+            cmp dword ptr [ecx*4 + gNet_players+0x24], ebx
+            je L0049b8c1
+            mov eax, dword ptr [gNumber_of_net_players]
+            xor esi, esi
+            test eax, eax
+            jle L0049b845
+            mov edi, offset gNet_players+0xc8
+    L0049b82e:
+            mov ecx, dword ptr [edi]
+            call StopCarBeingIt
+            mov eax, dword ptr [gNumber_of_net_players]
+            inc esi
+            add edi, 0xd4
+            cmp esi, eax
+            jl L0049b82e
+    L0049b845:
+            xor esi, esi
+            test eax, eax
+            jle L0049b8c1
+            mov edi, offset gNet_players+0xc8
+    L0049b850:
+            cmp dword ptr [edi - 0xa4], ebx
+            jne L0049b86a
+            mov ecx, dword ptr [edi]
+            call DisposeKevStuffCar
+            mov eax, dword ptr [gNumber_of_net_players]
+            mov dword ptr [gIt_or_fox], esi
+    L0049b86a:
+            inc esi
+            add edi, 0xd4
+            cmp esi, eax
+            jl L0049b850
+            pop edi
+            pop esi
+            pop ebx
+            ret
+    L0049b879:
+            mov eax, dword ptr [gNumber_of_net_players]
+            xor esi, esi
+            test eax, eax
+            jle L0049b8c1
+            mov edi, offset gNet_players
+    L0049b889:
+            mov eax, dword ptr [edi + 0x80]
+            test eax, eax
+            jne L0049b8a7
+            mov edx, 1
+            mov ecx, esi
+            shl edx, cl
+            test edx, ebx
+            je L0049b8a7
+            mov ecx, edi
+            call PlayerIsInfected
+    L0049b8a7:
+            mov eax, dword ptr [gNumber_of_net_players]
+            inc esi
+            add edi, 0xd4
+            cmp esi, eax
+            jl L0049b889
+            pop edi
+            pop esi
+            pop ebx
+            ret
+    L0049b8bb:
+            mov dword ptr [gINT_0068d920], ebx
+    L0049b8c1:
+            pop edi
+            pop esi
+            pop ebx
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0049bd00
 void C2_HOOK_FASTCALL InitNetGameplayStuff(void) {
-
 }
 
 #pragma auto_inline(off)
 // FUNCTION: CARMA2_HW 0x0049a760
-void C2_HOOK_FASTCALL DeclareWinner(int pWinner_index) {
+void C2_NAKED C2_HOOK_FASTCALL DeclareWinner(int pWinner_index) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     NOT_IMPLEMENTED();
+#else
+    __asm {
+            sub esp, 0x108
+            mov eax, dword ptr [gWinner_declared]
+            push ebx
+            mov ebx, ecx
+            test eax, eax
+            mov dword ptr [esp + 8], ebx
+            jne L0049a934
+            push edi
+            push esi
+            mov ecx, 1
+            push ebp
+            mov dword ptr [gWinner_declared], ecx
+            call DoNetScores2
+            xor edx, edx
+            mov cl, 0xa
+            call NetBuildGuaranteedMessage
+            lea ecx, [ebx + ebx*2]
+            mov dword ptr [eax + 0x1c], 8
+            push 0
+            mov edx, eax
+            lea esi, [ecx + ecx*8]
+            shl esi, 1
+            sub esi, ebx
+            shl esi, 2
+            mov ecx, dword ptr [esi + gNet_players+0x24]
+            push ecx
+            mov ecx, dword ptr [gCurrent_net_game]
+            call NetGuaranteedSendMessageToPlayer
+            mov edx, dword ptr [esi + gNet_players+0x88]
+            inc edx
+            mov dword ptr [esi + gNet_players+0x88], edx
+            mov edx, dword ptr [gCurrent_net_game]
+            mov eax, dword ptr [edx + 0x74]
+            cmp eax, 4
+            je L0049a7df
+            test eax, eax
+            jne L0049a7f2
+    L0049a7df:
+            mov eax, dword ptr [gScore_winner]
+            mov ecx, dword ptr [esi + gNet_players+0x90]
+            add ecx, eax
+            mov dword ptr [esi + gNet_players+0x90], ecx
+    L0049a7f2:
+            mov ecx, 0xbd
+            call GetMiscString
+            lea ecx, [esi + gNet_players+0x28]
+            lea edx, [esp + 0x18]
+            push eax
+            push ecx
+            push offset gCar_map_colours+0x10
+            push edx
+            call sprintf
+            mov ebp, dword ptr [gNumber_of_net_players]
+            add esp, 0x10
+            xor edi, edi
+            test ebp, ebp
+            mov dword ptr [esp + 0x10], edi
+            jle L0049a8d7
+            mov esi, offset gNet_players+0x90
+    L0049a82f:
+            mov eax, dword ptr [gCurrent_net_game]
+            mov eax, dword ptr [eax + 0x74]
+            cmp eax, 4
+            je L0049a884
+            test eax, eax
+            je L0049a884
+            mov edx, dword ptr [esi + 4]
+            test ebp, ebp
+            jle L0049a86e
+            mov ebx, dword ptr [esi - 0x2c]
+            mov eax, offset gNet_players+0x94
+            mov edi, ebp
+    L0049a851:
+            cmp dword ptr [eax - 0x30], ebx
+            jne L0049a85e
+            mov ecx, dword ptr [eax]
+            cmp ecx, edx
+            jge L0049a85e
+            mov edx, ecx
+    L0049a85e:
+            add eax, 0xd4
+            dec edi
+            jne L0049a851
+            mov edi, dword ptr [esp + 0x10]
+            mov ebx, dword ptr [esp + 0x14]
+    L0049a86e:
+            lea ecx, [edx*4]
+            mov edx, offset gScore_winner
+            sub edx, ecx
+            mov ecx, dword ptr [esi]
+            mov eax, dword ptr [edx]
+            add ecx, eax
+            mov dword ptr [esi], ecx
+    L0049a884:
+            mov ecx, dword ptr [esi - 0x14]
+            inc ecx
+            cmp edi, ebx
+            mov dword ptr [esi - 0x14], ecx
+            je L0049a8c4
+            xor edx, edx
+            mov cl, 0xa
+            call NetBuildGuaranteedMessage
+            mov dword ptr [eax + 0x1c], 9
+            mov ecx, dword ptr [esi - 0x6c]
+            push 0
+            push ecx
+            mov ecx, dword ptr [gCurrent_net_game]
+            mov edx, eax
+            call NetGuaranteedSendMessageToPlayer
+            mov edx, dword ptr [esi - 0x6c]
+            lea ecx, [esp + 0x18]
+            call NetSendHeadupToPlayer
+            mov ebp, dword ptr [gNumber_of_net_players]
+    L0049a8c4:
+            inc edi
+            add esi, 0xd4
+            cmp edi, ebp
+            mov dword ptr [esp + 0x10], edi
+            jl L0049a82f
+    L0049a8d7:
+            xor edx, edx
+            mov cl, 0x1e
+            mov dword ptr [gReceived_game_scores], 1
+            call NetBuildGuaranteedMessage
+            mov ecx, dword ptr [gNumber_of_net_players]
+            xor edi, edi
+            test ecx, ecx
+            jle L0049a922
+            mov esi, offset gNet_players+0x88
+            lea ecx, [eax + 0x20]
+    L0049a8fe:
+            mov edx, dword ptr [esi - 0xc]
+            inc edi
+            mov dword ptr [ecx - 4], edx
+            mov edx, dword ptr [esi]
+            mov dword ptr [ecx], edx
+            mov edx, dword ptr [esi + 8]
+            mov dword ptr [ecx + 4], edx
+            mov edx, dword ptr [gNumber_of_net_players]
+            add ecx, 0xc
+            add esi, 0xd4
+            cmp edi, edx
+            jl L0049a8fe
+    L0049a922:
+            mov ecx, dword ptr [gCurrent_net_game]
+            push 0
+            mov edx, eax
+            call NetGuaranteedSendMessageToAllPlayers
+            pop ebp
+            pop esi
+            pop edi
+    L0049a934:
+            pop ebx
+            add esp, 0x108
+            ret
+    }
+#endif
 }
 #pragma auto_inline(on)
 
@@ -325,7 +786,8 @@ void C2_HOOK_FASTCALL PlayerIsIt(tNet_game_player_info* pPlayer) {
 }
 
 // FUNCTION: CARMA2_HW 0x0049abf0
-void C2_HOOK_FASTCALL CalcPlayerScores(void) {
+void C2_NAKED C2_HOOK_FASTCALL CalcPlayerScores(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     int i;
     int j;
     int knock_out_bit;
@@ -600,11 +1062,798 @@ select_wasted_it:
             }
         }
     }
+#else
+    __asm {
+            sub esp, 0x120
+            push ebx
+            push ebp
+            push esi
+            push edi
+            call GetTotalTime
+            mov dword ptr [esp + 0x1c], eax
+            mov eax, dword ptr ds:[gCurrent_net_game]
+            mov ebp, 0
+            mov eax, dword ptr [eax + 0x74]
+            sub eax, 2
+            je L0049ad3b
+            sub eax, 5
+            jne L0049ada1
+            mov ecx, dword ptr ds:[gIt_or_fox]
+            cmp ecx, ebp
+            jge L0049acb9
+            mov edx, dword ptr ds:[gNumber_of_net_players]
+            xor eax, eax
+            cmp edx, ebp
+            mov dword ptr ds:[gLast_lepper], ebp
+            jle L0049ac64
+            xor ecx, ecx
+    L0049ac44:
+            cmp ecx, 0xffffff2c
+            je L0049ac59
+            mov edi, dword ptr [ecx + 0x74bd54]
+            lea esi, [edx - 1]
+            cmp edi, esi
+            je L0049ac9d
+    L0049ac59:
+            inc eax
+            add ecx, 0xd4
+            cmp eax, edx
+            jl L0049ac44
+    L0049ac64:
+            dec edx
+            xor ecx, ecx
+            call IRandomBetween
+            cmp eax, -1
+            jne L0049ac9d
+    L0049ac71:
+            lea ecx, [eax + eax*2]
+            lea edx, [ecx + ecx*8]
+            shl edx, 1
+            sub edx, eax
+            mov ecx, dword ptr [edx*4 + 0x74bd88]
+            cmp dword ptr [ecx + 0x1d4], ebp
+            jne L0049ac9d
+            mov edx, dword ptr ds:[gNumber_of_net_players]
+            xor ecx, ecx
+            dec edx
+            call IRandomBetween
+            cmp eax, -1
+            je L0049ac71
+    L0049ac9d:
+            lea ecx, [eax + eax*2]
+            lea ecx, [ecx + ecx*8]
+            shl ecx, 1
+            sub ecx, eax
+            lea ecx, [ecx*4 + gNet_players]
+            call PlayerIsIt
+            mov ecx, dword ptr ds:[gIt_or_fox]
+    L0049acb9:
+            mov eax, dword ptr ds:[gLast_lepper]
+            cmp eax, ebp
+            je L0049ada1
+            cmp ecx, ebp
+            jl L0049ada1
+            mov eax, dword ptr [eax + 0xc8]
+            lea edx, [ecx + ecx*2]
+            fld dword ptr [eax + 0x4c]
+            lea edx, [edx + edx*8]
+            shl edx, 1
+            fld dword ptr [eax + 0x50]
+            fxch st(1)
+            sub edx, ecx
+            lea ecx, [edx*4 + gNet_players]
+            mov ecx, dword ptr [edx*4 + 0x74bd88]
+            fsub dword ptr [ecx + 0x4c]
+            fxch st(1)
+            fsub dword ptr [ecx + 0x50]
+            fld dword ptr [eax + 0x54]
+            fsub dword ptr [ecx + 0x54]
+            fxch st(2)
+            fst dword ptr [esp + 0x24]
+            fxch st(1)
+            fst dword ptr [esp + 0x28]
+            fxch st(1)
+            fmul dword ptr [esp + 0x24]
+            fxch st(1)
+            fmul dword ptr [esp + 0x28]
+            fld st(2)
+            fmul st(0), st(3)
+            fxch st(1)
+            faddp st(2), st(0)
+            faddp st(1), st(0)
+            fcomp qword ptr ds:[gDOUBLE_0058a3f0]
+            fnstsw ax
+            test ah, 1
+            fstp st(0)
+            jne L0049ada1
+            mov dword ptr ds:[gLast_lepper], ebp
+            jmp L0049ada1
+    L0049ad3b:
+            mov eax, dword ptr ds:[gNumber_of_net_players]
+            xor esi, esi
+            xor edi, edi
+            cmp eax, ebp
+            jle L0049ad6a
+            mov ecx, 0x74bd24
+            mov edx, eax
+    L0049ad4f:
+            mov eax, dword ptr [ecx]
+            cmp eax, esi
+            jle L0049ad5b
+            mov edi, esi
+            mov esi, eax
+            jmp L0049ad61
+    L0049ad5b:
+            cmp eax, edi
+            jle L0049ad61
+            mov edi, eax
+    L0049ad61:
+            add ecx, 0xd4
+            dec edx
+            jne L0049ad4f
+    L0049ad6a:
+            mov ecx, 1
+            call GetRuntimeVariable
+            lea ecx, [edi + esi]
+            mov esi, dword ptr ds:[gCount_smashable_race_targets]
+            add ecx, esi
+            sub ecx, eax
+            mov eax, ecx
+            cdq
+            sub eax, edx
+            mov edx, dword ptr ds:[gCurrent_net_game]
+            sar eax, 1
+            inc eax
+            mov dword ptr ds:[gINT_0068d920], eax
+            mov ecx, dword ptr [edx + 0x60]
+            cmp eax, ecx
+            jle L0049ada1
+            mov dword ptr ds:[gINT_0068d920], ecx
+    L0049ada1:
+            mov ebx, dword ptr ds:[gNumber_of_net_players]
+            xor edi, edi
+            xor ecx, ecx
+            cmp ebx, ebp
+            mov dword ptr [esp + 0x18], 0x270f
+            mov dword ptr [esp + 0x14], edi
+            mov dword ptr [esp + 0x10], ecx
+            jle L0049b1df
+            jmp L0049adc9
+    L0049adc5:
+            mov ecx, dword ptr [esp + 0x10]
+    L0049adc9:
+            lea eax, [ecx + ecx*2]
+            lea esi, [eax + eax*8]
+            shl esi, 1
+            sub esi, ecx
+            shl esi, 2
+            mov eax, dword ptr [esi + 0x74bcd8]
+            mov ebx, dword ptr [esi + 0x74bd88]
+            cmp eax, ebp
+            je L0049af3e
+            cmp dword ptr [esp + 0x1c], eax
+            jl L0049af3e
+            cmp dword ptr ds:[gRace_finished], ebp
+            je L0049ae09
+            cmp dword ptr ds:[gRace_over_reason], -1
+            jne L0049af3e
+    L0049ae09:
+            mov eax, dword ptr ds:[gCurrent_net_game]
+            mov dword ptr [esi + 0x74bd2c], ebp
+            mov dword ptr [esi + 0x74bcd8], ebp
+            mov eax, dword ptr [eax + 0x74]
+            cmp eax, 2
+            je L0049ae45
+            cmp eax, 3
+            je L0049ae45
+            cmp eax, 4
+            je L0049ae45
+            mov ecx, dword ptr [esi + 0x74bd10]
+            mov edx, dword ptr [esi + 0x74bd1c]
+            push ecx
+            mov ecx, offset gCurrent_race
+            call SetInitialPosition
+            jmp L0049ae5b
+    L0049ae45:
+            mov eax, dword ptr [ebx + 0x10]
+            lea edx, [esi + 0x74bd58]
+            add eax, 0x2c
+            push edx
+            push eax
+            call BrMatrix34Copy
+            add esp, 8
+    L0049ae5b:
+            mov ecx, ebx
+            call StopCarSmokingInstantly
+            mov ecx, ebx
+            call CloseDownPowerUpsForCar
+            mov ecx, ebx
+            call InitialiseCar
+            mov ecx, ebx
+            call TotallyRepairACar
+            cmp ebx, ebp
+            je L0049ae95
+            cmp dword ptr [ebx + 0xc], 8
+            jne L0049ae95
+            call PDGetTotalTime
+            add eax, 0x7d0
+            mov dword ptr ds:[gTime_for_punishment], eax
+            call EmptyInventory
+    L0049ae95:
+            mov ecx, ebx
+            call SetFlipUpCar
+            call GetRaceTime
+            mov ecx, dword ptr [ebx + 8]
+            add eax, 0x64
+            xor edx, edx
+            mov dword ptr [ecx + 0x49c], eax
+            mov cl, 0x32
+            mov dword ptr ds:[gSynch_race_start], ebp
+            mov dword ptr ds:[gINT_0074b780], 1
+            call NetBuildGuaranteedMessage
+            mov edx, dword ptr ds:[0x75bba8]
+            mov edi, eax
+            mov al, byte ptr [esp + 0x10]
+            mov dword ptr [edi + 0x1c], edx
+            mov dword ptr [esi + 0x74bcdc], ebp
+            mov dword ptr [esi + 0x74bd30], ebp
+            mov byte ptr [edi + 0x24], al
+            mov ecx, dword ptr [esi + 0x74bd1c]
+            shl ecx, 4
+            mov edx, dword ptr [ecx + 0x763090]
+            lea ecx, [edi + 0x26]
+            mov eax, dword ptr [edx + 0x10]
+            lea edx, [edi + 0x20]
+            add eax, 0x2c
+            push eax
+            call CompressMatrix34
+            mov ecx, dword ptr ds:[gCurrent_net_game]
+            mov edx, edi
+            push ebp
+            call NetGuaranteedSendMessageToAllPlayers
+            cmp dword ptr ds:[0x75bba8], ebp
+            je L0049af20
+            call SendCurrentPowerups
+    L0049af20:
+            cmp ebx, ebp
+            je L0049af3e
+            cmp dword ptr [ebx + 0xc], 8
+            jne L0049af3e
+            call CancelPendingCunningStunt
+            mov ecx, dword ptr ds:[gCurrent_net_game]
+            mov edx, dword ptr [ecx + 0x58]
+            mov dword ptr ds:[gProgram_state], edx
+    L0049af3e:
+            mov eax, dword ptr [esi + 0x74bcdc]
+            cmp eax, ebp
+            je L0049afa9
+            cmp dword ptr [esi + 0x74bd30], ebp
+            jne L0049afa9
+            mov ecx, dword ptr [esp + 0x1c]
+            sub ecx, eax
+            cmp ecx, 0x1f4
+            jle L0049afa9
+            mov ecx, 0xac
+            call GetMiscString
+            lea edx, [esi + 0x74bce8]
+            push eax
+            push edx
+            lea eax, [esp + 0x38]
+            push 0x659b50
+            push eax
+            call sprintf
+            mov ecx, dword ptr ds:[gCurrent_net_game]
+            mov dword ptr [esi + 0x74bcdc], ebp
+            mov dword ptr [esi + 0x74bd30], ebp
+            add esp, 0x10
+            cmp dword ptr [ecx + 0x74], 1
+            jne L0049afa0
+            dec dword ptr [esi + 0x74bd24]
+    L0049afa0:
+            lea ecx, [esp + 0x30]
+            call NetSendHeadupToEverybody
+    L0049afa9:
+            mov ecx, ebx
+            call SetKnackeredFlag
+            cmp dword ptr [ebx + 0x1d4], ebp
+            je L0049b0b6
+            cmp dword ptr [esi + 0x74bd2c], ebp
+            jne L0049b0b6
+            xor edx, edx
+            mov cl, 0x19
+            mov dword ptr [esi + 0x74bd2c], 1
+            call NetBuildGuaranteedMessage
+            mov edx, dword ptr [esi + 0x74bce4]
+            mov dword ptr [eax + 0x20], 0xffffffff
+            mov dword ptr [eax + 0x1c], edx
+            mov ecx, dword ptr ds:[gCurrent_net_game]
+            push ebp
+            mov edx, eax
+            call NetGuaranteedSendMessageToEverybody
+            mov eax, dword ptr ds:[gCurrent_net_game]
+            mov eax, dword ptr [eax + 0x74]
+            cmp eax, 7
+            ja L0049b0b6
+            jmp dword ptr [eax*4 + 0x49b4f4]
+            mov edi, dword ptr ds:[gNumber_of_net_players]
+            xor ecx, ecx
+            xor eax, eax
+            cmp edi, ebp
+            jle L0049b03a
+            mov edx, 0x74bd2c
+    L0049b024:
+            cmp dword ptr [edx], ebp
+            jne L0049b02f
+            inc ecx
+            mov dword ptr [esp + 0x20], eax
+            xor ebp, ebp
+    L0049b02f:
+            inc eax
+            add edx, 0xd4
+            cmp eax, edi
+            jl L0049b024
+    L0049b03a:
+            mov edi, dword ptr [esi + 0x74bd50]
+            lea edx, [ecx*4]
+            mov eax, offset gScore_winner
+            sub eax, edx
+            mov edx, dword ptr [eax]
+            add edi, edx
+            cmp ecx, 1
+            mov dword ptr [esi + 0x74bd50], edi
+            jne L0049b068
+            mov ecx, dword ptr [esp + 0x20]
+            call DeclareWinner
+            jmp L0049b0b6
+    L0049b068:
+            cmp ecx, ebp
+            jg L0049b0b4
+            mov eax, dword ptr ds:[gNumber_of_net_players]
+            xor ebp, ebp
+            test eax, eax
+            jle L0049b0b4
+            mov edi, 0x74bd3c
+    L0049b07c:
+            mov edx, dword ptr [edi]
+            mov cl, 0xa
+            inc edx
+            mov dword ptr [edi], edx
+            xor edx, edx
+            call NetBuildGuaranteedMessage
+            mov dword ptr [eax + 0x1c], 9
+            mov ecx, dword ptr [edi - 0x58]
+            push 0
+            push ecx
+            mov ecx, dword ptr ds:[gCurrent_net_game]
+            mov edx, eax
+            call NetGuaranteedSendMessageToPlayer
+            mov eax, dword ptr ds:[gNumber_of_net_players]
+            inc ebp
+            add edi, 0xd4
+            cmp ebp, eax
+            jl L0049b07c
+    L0049b0b4:
+            xor ebp, ebp
+    L0049b0b6:
+            mov edx, dword ptr ds:[gCurrent_net_game]
+            mov eax, dword ptr [edx + 0x74]
+            cmp eax, 7
+            ja L0049b1c2
+            jmp dword ptr [eax*4 + 0x49b514]
+            cmp dword ptr [ebx + 0x1d4], ebp
+            je L0049b0e6
+            mov dword ptr [esi + 0x74bd24], 0xfff0bdc0
+            jmp L0049b1c2
+    L0049b0e6:
+            mov ecx, ebx
+            call GetAverageCrushLevel
+            mov dword ptr [esi + 0x74bd24], eax
+            jmp L0049b1c2
+            mov eax, dword ptr [esi + 0x74bd24]
+            mov ecx, dword ptr ds:[gINT_0068d920]
+            cmp eax, ecx
+            jl L0049b1c2
+            jmp L0049b148
+            mov eax, dword ptr [esi + 0x74bd24]
+            mov edi, dword ptr ds:[0x7623a8]
+            xor ecx, ecx
+            and eax, 0xffff
+            cmp edi, ebp
+            mov dword ptr [esi + 0x74bd24], eax
+            mov edx, eax
+            jle L0049b137
+    L0049b12d:
+            test al, 1
+            je L0049b132
+            inc ecx
+    L0049b132:
+            sar eax, 1
+            dec edi
+            jne L0049b12d
+    L0049b137:
+            mov eax, ecx
+            shl eax, 0x10
+            or eax, edx
+            cmp ecx, ebp
+            mov dword ptr [esi + 0x74bd24], eax
+            jne L0049b1c2
+    L0049b148:
+            cmp dword ptr ds:[gRace_finished], ebp
+            jne L0049b1c2
+            mov ecx, dword ptr [esp + 0x10]
+            jmp L0049b1bd
+            mov eax, dword ptr [esi + 0x74bd24]
+            cmp eax, ebp
+            jl L0049b1c2
+            mov ecx, dword ptr [esp + 0x18]
+            cmp eax, ecx
+            jge L0049b178
+            lea ecx, [esi + gNet_players]
+            mov dword ptr [esp + 0x18], eax
+            mov dword ptr [esp + 0x14], ecx
+            jmp L0049b1c2
+    L0049b178:
+            jne L0049b1c2
+            mov dword ptr [esp + 0x14], ebp
+            jmp L0049b1c2
+            mov ecx, dword ptr [esp + 0x10]
+            mov eax, dword ptr ds:[gIt_or_fox]
+            cmp ecx, eax
+            jne L0049b1c2
+            cmp dword ptr ds:[gCountdown], ebp
+            jne L0049b1c2
+            cmp dword ptr ds:[gRace_finished], ebp
+            jne L0049b1c2
+            mov edx, dword ptr ds:[gFrame_period]
+            mov edi, dword ptr [esi + 0x74bd24]
+            mov eax, dword ptr ds:[gCurrent_net_game]
+            add edi, edx
+            mov dword ptr [esi + 0x74bd24], edi
+            mov esi, edi
+            cmp esi, dword ptr [eax + 0x60]
+            jl L0049b1c2
+    L0049b1bd:
+            call DeclareWinner
+    L0049b1c2:
+            mov eax, dword ptr [esp + 0x10]
+            mov ecx, dword ptr ds:[gNumber_of_net_players]
+            inc eax
+            cmp eax, ecx
+            mov dword ptr [esp + 0x10], eax
+            jl L0049adc5
+            mov edi, dword ptr [esp + 0x14]
+            mov ebx, ecx
+    L0049b1df:
+            mov ecx, dword ptr ds:[gCurrent_net_game]
+            cmp dword ptr [ecx + 0x74], 4
+            jne L0049b339
+            cmp edi, ebp
+            je L0049b339
+            cmp dword ptr [edi + 0x64], ebp
+            jl L0049b339
+            or ecx, 0xffffffff
+            xor esi, esi
+            xor eax, eax
+            cmp ebx, ebp
+            jle L0049b231
+            mov edx, offset gNet_players
+    L0049b210:
+            cmp dword ptr [edx + 0x64], ebp
+            jl L0049b226
+            cmp edi, edx
+            je L0049b226
+            inc esi
+            cmp ecx, -1
+            mov ecx, eax
+            je L0049b226
+            mov ecx, 0xfffffffe
+    L0049b226:
+            inc eax
+            add edx, 0xd4
+            cmp eax, ebx
+            jl L0049b210
+    L0049b231:
+            cmp esi, ebp
+            je L0049b339
+            mov edx, dword ptr [edi + 0xc8]
+            mov eax, 1
+            mov dword ptr [edx + 0x1d4], eax
+            mov dword ptr [edi + 0x6c], eax
+            lea eax, [esi*4]
+            mov edx, offset gScore_winner
+            sub edx, eax
+            mov dword ptr [edi + 0x64], 0xffffffff
+            mov eax, dword ptr [edx]
+            mov edx, dword ptr [edi + 0x90]
+            add edx, eax
+            cmp ecx, -1
+            mov dword ptr [edi + 0x90], edx
+            jne L0049b2cd
+            mov eax, dword ptr ds:[gNumber_of_net_players]
+            xor edi, edi
+            cmp eax, ebp
+            jle L0049b339
+            mov esi, 0x74bd3c
+    L0049b28b:
+            mov edx, dword ptr [esi]
+            mov cl, 0xa
+            inc edx
+            mov dword ptr [esi], edx
+            xor edx, edx
+            call NetBuildGuaranteedMessage
+            mov dword ptr [eax + 0x1c], 9
+            mov ecx, dword ptr [esi - 0x58]
+            push ebp
+            push ecx
+            mov ecx, dword ptr ds:[gCurrent_net_game]
+            mov edx, eax
+            call NetGuaranteedSendMessageToPlayer
+            mov eax, dword ptr ds:[gNumber_of_net_players]
+            inc edi
+            add esi, 0xd4
+            cmp edi, eax
+            jl L0049b28b
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x120
+            ret
+    L0049b2cd:
+            cmp ecx, ebp
+            jl L0049b2e1
+            call DeclareWinner
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x120
+            ret
+    L0049b2e1:
+            mov esi, dword ptr [edi + 0x24]
+            xor edx, edx
+            mov cl, 0x1b
+            call NetBuildGuaranteedMessage
+            mov dword ptr [eax + 0x1c], 2
+            mov dword ptr [eax + 0x20], ebp
+            mov dword ptr [eax + 0x24], ebp
+            mov dword ptr [eax + 0x28], ebp
+            mov dword ptr [eax + 0x2c], ebp
+            mov ecx, dword ptr ds:[gCurrent_net_game]
+            push ebp
+            push esi
+            mov edx, eax
+            call NetGuaranteedSendMessageToPlayer
+            mov ecx, 0xb8
+            call GetMiscString
+            add edi, 0x28
+            lea edx, [esp + 0x30]
+            push eax
+            push edi
+            push 0x659b50
+            push edx
+            call sprintf
+            add esp, 0x10
+            lea ecx, [esp + 0x30]
+            call NetSendHeadupToEverybody
+    L0049b339:
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x120
+            ret
+            mov edx, dword ptr [esi + 0x74bd24]
+            mov eax, dword ptr ds:[0x7623a8]
+            sar edx, 0x10
+            cmp edx, eax
+            je L0049b39a
+            lea edx, [eax - 1]
+            xor ecx, ecx
+            call IRandomBetween
+            mov ecx, eax
+            mov eax, dword ptr [esi + 0x74bd24]
+            mov edx, 1
+            shl edx, cl
+            test edx, eax
+            je L0049b38b
+            mov edx, dword ptr ds:[0x7623a8]
+    L0049b379:
+            inc ecx
+            cmp ecx, edx
+            jl L0049b380
+            xor ecx, ecx
+    L0049b380:
+            mov edi, 1
+            shl edi, cl
+            test edi, eax
+            jne L0049b379
+    L0049b38b:
+            mov edx, 1
+            shl edx, cl
+            or edx, eax
+            mov dword ptr [esi + 0x74bd24], edx
+    L0049b39a:
+            call GetTotalTime
+            add eax, 0x1388
+            mov dword ptr [esi + 0x74bcd8], eax
+            jmp L0049b0b6
+            call GetTotalTime
+            add eax, 0x1388
+            mov dword ptr [esi + 0x74bcd8], eax
+            mov eax, dword ptr [esi + 0x74bd40]
+            cmp eax, ebp
+            jne L0049b0b6
+            lea ecx, [esi + gNet_players]
+            call PlayerIsInfected
+            jmp L0049b0b6
+            call GetTotalTime
+            add eax, 0x1388
+            mov ecx, dword ptr ds:[gNumber_of_net_players]
+            mov dword ptr [esi + 0x74bcd8], eax
+            mov eax, dword ptr [esi + 0x74bd24]
+            cdq
+            sub eax, edx
+            sar eax, 1
+            cmp ecx, 1
+            mov dword ptr [esi + 0x74bd24], eax
+            jle L0049b0b6
+            mov eax, dword ptr [esp + 0x10]
+            mov edx, dword ptr ds:[gIt_or_fox]
+            cmp eax, edx
+            jne L0049b0b6
+            xor eax, eax
+            cmp ecx, ebp
+            mov dword ptr ds:[gLast_lepper], ebp
+            jle L0049b475
+            mov ecx, 0x74bd54
+    L0049b430:
+            cmp eax, dword ptr [esp + 0x10]
+            je L0049b443
+            mov edx, dword ptr ds:[gNumber_of_net_players]
+            mov edi, dword ptr [ecx]
+            dec edx
+            cmp edi, edx
+            je L0049b45a
+    L0049b443:
+            mov edx, dword ptr ds:[gNumber_of_net_players]
+            inc eax
+            add ecx, 0xd4
+            cmp eax, edx
+            jl L0049b430
+            xor ebp, ebp
+            mov ecx, edx
+            jmp L0049b475
+    L0049b45a:
+            lea ecx, [eax + eax*2]
+            lea ecx, [ecx + ecx*8]
+            shl ecx, 1
+            sub ecx, eax
+            lea ecx, [ecx*4 + gNet_players]
+            call PlayerIsIt
+            jmp L0049b0b4
+    L0049b475:
+            lea edx, [ecx - 1]
+            xor ecx, ecx
+            call IRandomBetween
+            cmp eax, dword ptr [esp + 0x10]
+            jne L0049b4b2
+    L0049b485:
+            lea ecx, [eax + eax*2]
+            lea edx, [ecx + ecx*8]
+            shl edx, 1
+            sub edx, eax
+            mov ecx, dword ptr [edx*4 + 0x74bd88]
+            cmp dword ptr [ecx + 0x1d4], ebp
+            jne L0049b4b2
+            mov edx, dword ptr ds:[gNumber_of_net_players]
+            xor ecx, ecx
+            dec edx
+            call IRandomBetween
+            cmp eax, dword ptr [esp + 0x10]
+            je L0049b485
+    L0049b4b2:
+            lea ecx, [eax + eax*2]
+            lea ecx, [ecx + ecx*8]
+            shl ecx, 1
+            sub ecx, eax
+            lea ecx, [ecx*4 + gNet_players]
+            call PlayerIsIt
+            jmp L0049b0b6
+            call GetTotalTime
+            add eax, 0x1388
+            mov dword ptr [esi + 0x74bcd8], eax
+            mov eax, dword ptr [esi + 0x74bd24]
+            cdq
+            sub eax, edx
+            sar eax, 1
+            mov dword ptr [esi + 0x74bd24], eax
+            jmp L0049b0b6
+            nop
+            _emit 0x11
+            _emit 0xb0
+            _emit 0x49
+            _emit 0x00
+            _emit 0x9a
+            _emit 0xb3
+            _emit 0x49
+            _emit 0x00
+            _emit 0xcd
+            _emit 0xb4
+            _emit 0x49
+            _emit 0x00
+            _emit 0x44
+            _emit 0xb3
+            _emit 0x49
+            _emit 0x00
+            _emit 0x9a
+            _emit 0xb3
+            _emit 0x49
+            _emit 0x00
+            _emit 0x9a
+            _emit 0xb3
+            _emit 0x49
+            _emit 0x00
+            _emit 0xaf
+            _emit 0xb3
+            _emit 0x49
+            _emit 0x00
+            _emit 0xdd
+            _emit 0xb3
+            _emit 0x49
+            _emit 0x00
+            _emit 0xcf
+            _emit 0xb0
+            _emit 0x49
+            _emit 0x00
+            _emit 0xc2
+            _emit 0xb1
+            _emit 0x49
+            _emit 0x00
+            _emit 0xf8
+            _emit 0xb0
+            _emit 0x49
+            _emit 0x00
+            _emit 0x0e
+            _emit 0xb1
+            _emit 0x49
+            _emit 0x00
+            _emit 0x56
+            _emit 0xb1
+            _emit 0x49
+            _emit 0x00
+            _emit 0xc2
+            _emit 0xb1
+            _emit 0x49
+            _emit 0x00
+            _emit 0xc2
+            _emit 0xb1
+            _emit 0x49
+            _emit 0x00
+            _emit 0x80
+            _emit 0xb1
+            _emit 0x49
+            _emit 0x00
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+    }
+#endif
 }
 
 #pragma auto_inline(off)
 // FUNCTION: CARMA2_HW 0x0049b540
-void C2_HOOK_FASTCALL PlayerIsInfected(tNet_game_player_info* pPlayer) {
+void C2_NAKED C2_HOOK_FASTCALL PlayerIsInfected(tNet_game_player_info* pPlayer) {
+#ifndef CARPOCALYPSE2_MATCHING
     int i;
     int offset;
     int infected_count;
@@ -662,6 +1911,114 @@ void C2_HOOK_FASTCALL PlayerIsInfected(tNet_game_player_info* pPlayer) {
             }
         }
     }
+#else
+    __asm {
+            sub esp, 0x100
+            push ebx
+            push esi
+            mov esi, ecx
+            push edi
+            mov eax, dword ptr [esi + 0x80]
+            test eax, eax
+            jne L0049b686
+            mov ecx, dword ptr [esi + 0xc8]
+            call DisposeKevStuffCar
+            mov ecx, dword ptr [esi + 0xc8]
+            mov eax, 1
+            mov dword ptr [ecx + 0x1bc], eax
+            mov edx, dword ptr [esi + 0xc8]
+            mov dword ptr [edx + 0x1b4], eax
+            mov ecx, dword ptr [esi + 0xc8]
+            mov dword ptr [ecx + 0x1b8], eax
+            mov dword ptr [esi + 0x80], eax
+            mov eax, 0x18a8
+    L0049b598:
+            mov ecx, dword ptr [esi + 0xc8]
+            add eax, 4
+            cmp eax, 0x18b4
+            mov edx, dword ptr [eax + ecx + 8]
+            mov dword ptr [eax + ecx - 4], edx
+            jl L0049b598
+            cmp dword ptr [gNet_mode], 2
+            jne L0049b635
+            mov ecx, 0xba
+            call GetMiscString
+            push eax
+            lea eax, [esp + 0x10]
+            push offset gCancel_recover+0xbc
+            push eax
+            call sprintf
+            mov edx, dword ptr [esi + 0x24]
+            add esp, 0xc
+            lea ecx, [esp + 0xc]
+            call NetSendHeadupToPlayer
+            mov eax, dword ptr [gNumber_of_net_players]
+            xor ebx, ebx
+            test eax, eax
+            jle L0049b635
+            mov edi, offset gNet_players+0x24
+    L0049b5f2:
+            lea ecx, [edi - 0x24]
+            cmp ecx, esi
+            je L0049b625
+            mov ecx, 0xb9
+            call GetMiscString
+            lea edx, [esi + 0x28]
+            push eax
+            push edx
+            lea eax, [esp + 0x14]
+            push offset gCar_map_colours+0x10
+            push eax
+            call sprintf
+            mov edx, dword ptr [edi]
+            add esp, 0x10
+            lea ecx, [esp + 0xc]
+            call NetSendHeadupToPlayer
+    L0049b625:
+            mov eax, dword ptr [gNumber_of_net_players]
+            inc ebx
+            add edi, 0xd4
+            cmp ebx, eax
+            jl L0049b5f2
+    L0049b635:
+            call GetTotalTime
+            or ecx, 0xffffffff
+            xor edi, edi
+            sub ecx, eax
+            mov dword ptr [esi + 0x64], ecx
+            mov eax, dword ptr [gProgram_state+0x28]
+            xor ecx, ecx
+            test eax, eax
+            je L0049b686
+            cmp dword ptr [gNet_mode], 2
+            jne L0049b686
+            mov esi, dword ptr [gNumber_of_net_players]
+            xor eax, eax
+            test esi, esi
+            jle L0049b67c
+            mov edx, offset gNet_players+0x80
+    L0049b669:
+            cmp dword ptr [edx], 0
+            jne L0049b671
+            inc edi
+            mov ecx, eax
+    L0049b671:
+            inc eax
+            add edx, 0xd4
+            cmp eax, esi
+            jl L0049b669
+    L0049b67c:
+            cmp edi, 1
+            jg L0049b686
+            call DeclareWinner
+    L0049b686:
+            pop edi
+            pop esi
+            pop ebx
+            add esp, 0x100
+            ret
+    }
+#endif
 }
 #pragma auto_inline(on)
 
@@ -785,7 +2142,8 @@ void C2_HOOK_FASTCALL SetUpNetCarPositions(void) {
 }
 
 // FUNCTION: CARMA2_HW 0x004985f0
-void C2_HOOK_FASTCALL ReceivedCarData(tNet_message_chunk_car_data* pContents) {
+void C2_NAKED C2_HOOK_FASTCALL ReceivedCarData(tNet_message_chunk_car_data* pContents) {
+#ifndef CARPOCALYPSE2_MATCHING
     tCar_spec* car;
     int player_index;
     int i;
@@ -963,10 +2321,417 @@ void C2_HOOK_FASTCALL ReceivedCarData(tNet_message_chunk_car_data* pContents) {
         }
         UpdateCrushVertices(car, (tU8*)&car->collision_info->field_0x2fc);
     }
+#else
+    __asm {
+            push ecx
+            push ebx
+            push ebp
+            push esi
+            push edi
+            mov edi, ecx
+            xor ebx, ebx
+            mov ecx, dword ptr [gNumber_of_net_players]
+            xor esi, esi
+            xor ebp, ebp
+            cmp ecx, ebx
+            jle L00498631
+            mov edx, dword ptr [edi + 4]
+            mov eax, offset gNet_players+0x24
+    L0049860f:
+            cmp dword ptr [eax], edx
+            je L0049861f
+            inc ebp
+            add eax, 0xd4
+            cmp ebp, ecx
+            jl L0049860f
+            jmp L00498631
+    L0049861f:
+            lea eax, [ebp + ebp*2]
+            lea eax, [eax + eax*8]
+            shl eax, 1
+            sub eax, ebp
+            mov esi, dword ptr [eax*4 + gNet_players+0xc8]
+    L00498631:
+            cmp esi, ebx
+            je L00498a9d
+            mov eax, dword ptr [esi + 8]
+            mov edx, dword ptr [edi + 8]
+            mov ecx, dword ptr [eax + 0x268]
+            cmp ecx, edx
+            ja L00498a9d
+            cmp dword ptr [esi + 4], ebx
+            je L004986c8
+            mov ecx, esi
+            call EnableCar
+            mov edx, dword ptr [esi + 8]
+            lea ecx, [edi + 0x34]
+            push 2
+            call SelectCrushNetwork
+            mov edx, dword ptr [gFace_num__car]
+            mov eax, dword ptr [esi + 8]
+            add edx, -2
+            mov word ptr [eax + 0x178], dx
+            mov ecx, dword ptr [esi + 8]
+            mov edx, dword ptr [edi + 8]
+            mov dword ptr [ecx + 0x268], edx
+            mov eax, dword ptr [esi + 8]
+            mov byte ptr [eax + 0x261], 0xff
+            xor eax, eax
+    L00498691:
+            mov ecx, dword ptr [esi + 8]
+            mov dl, byte ptr [eax + edi + 0xc]
+            mov byte ptr [eax + ecx + 0x26c], dl
+            inc eax
+            cmp eax, 4
+            jl L00498691
+            xor eax, eax
+    L004986a7:
+            mov ecx, dword ptr [esi + 8]
+            mov dl, byte ptr [eax + edi + 0x20]
+            mov byte ptr [eax + ecx + 0x280], dl
+            inc eax
+            cmp eax, 0xc
+            jl L004986a7
+            mov ecx, esi
+            call DisableCar
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            pop ecx
+            ret
+    L004986c8:
+            mov ecx, dword ptr [gNet_mode]
+            cmp ecx, 2
+            jne L0049880f
+            cmp ebp, dword ptr [gThis_net_player_index]
+            je L00498a9d
+            mov ecx, dword ptr [edi + 0x14]
+            mov edx, dword ptr [eax + 0x49c]
+            cmp edx, ecx
+            ja L0049875a
+            mov edx, edi
+            mov ecx, esi
+            call FUN_00498ab0
+            mov eax, dword ptr [esi + 0x18d4]
+            mov cx, word ptr [edi + 0x30]
+            cmp cx, word ptr [eax + 0x24]
+            je L0049879e
+            mov ecx, dword ptr [eax + 0x20]
+            call SetAllShapeStatusFlags
+            mov edx, dword ptr [esi + 0x18d4]
+            mov ebp, dword ptr [edi + 4]
+            mov edx, dword ptr [edx + 0x20]
+            cmp edx, ebx
+            je L0049874a
+            xor eax, eax
+            mov ecx, edx
+    L00498729:
+            cmp dword ptr [ecx], ebp
+            je L00498746
+            inc eax
+            add ecx, 8
+            cmp eax, 0xc
+            jl L00498729
+            mov eax, dword ptr [esi + 0x18d4]
+            mov cx, word ptr [edi + 0x30]
+            mov word ptr [eax + 0x26], cx
+            jmp L0049879e
+    L00498746:
+            mov byte ptr [edx + eax*8 + 4], bl
+    L0049874a:
+            mov eax, dword ptr [esi + 0x18d4]
+            mov cx, word ptr [edi + 0x30]
+            mov word ptr [eax + 0x26], cx
+            jmp L0049879e
+    L0049875a:
+            cmp ecx, ebx
+            jne L0049876d
+            mov dword ptr [eax + 0x274], ebx
+            mov edx, dword ptr [esi + 8]
+            mov byte ptr [edx + 0x261], bl
+    L0049876d:
+            mov eax, dword ptr [esi + 0x18d4]
+            mov cx, word ptr [edi + 0x30]
+            cmp cx, word ptr [eax + 0x24]
+            jne L0049879e
+            mov edx, dword ptr [eax + 0x20]
+            mov ebp, dword ptr [edi + 4]
+            cmp edx, ebx
+            je L0049879e
+            xor eax, eax
+            mov ecx, edx
+    L0049878b:
+            cmp dword ptr [ecx], ebp
+            je L0049879a
+            inc eax
+            add ecx, 8
+            cmp eax, 0xc
+            jl L0049878b
+            jmp L0049879e
+    L0049879a:
+            mov byte ptr [edx + eax*8 + 4], bl
+    L0049879e:
+            xor edx, edx
+            xor eax, eax
+            mov dl, byte ptr [edi + 0x2c]
+            xor ecx, ecx
+            mov dword ptr [esi + 0x18a8], edx
+            mov al, byte ptr [edi + 0x2d]
+            mov dword ptr [esi + 0x18ac], eax
+            mov cl, byte ptr [edi + 0x2e]
+            mov dword ptr [esi + 0x18b0], ecx
+            mov edx, dword ptr [edi + 0x10]
+            mov dword ptr [esi + 0x12d0], edx
+            mov eax, dword ptr [edi + 0x10]
+            shl eax, 0x18
+            mov ecx, 0xffffffff
+            js L004987e0
+            sar eax, 0xf
+            mov dword ptr [esi + 0x12dc], eax
+            jmp L004987e6
+    L004987e0:
+            mov dword ptr [esi + 0x12dc], ecx
+    L004987e6:
+            mov edi, dword ptr [edi + 0x10]
+            and edi, 0xffffff00
+            shl edi, 0x10
+            js L00498803
+            sar edi, 0xf
+            mov dword ptr [esi + 0x12e0], edi
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            pop ecx
+            ret
+    L00498803:
+            mov dword ptr [esi + 0x12e0], ecx
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            pop ecx
+            ret
+    L0049880f:
+            cmp ecx, 3
+            jne L00498a9d
+            lea eax, [ebp + ebp*2]
+            mov ecx, dword ptr [gCar_to_view_id]
+            lea eax, [eax + eax*8]
+            shl eax, 1
+            sub eax, ebp
+            cmp ecx, dword ptr [eax*4 + gNet_players+0x24]
+            jne L00498837
+            call ReallyViewOpponent
+    L00498837:
+            cmp ebp, dword ptr [gThis_net_player_index]
+            je L00498a76
+            mov edx, edi
+            mov ecx, esi
+            call FUN_00498ab0
+            xor edx, edx
+            xor eax, eax
+            mov dl, byte ptr [edi + 0x2c]
+            xor ecx, ecx
+            mov dword ptr [esi + 0x18a8], edx
+            mov al, byte ptr [edi + 0x2d]
+            mov dword ptr [esi + 0x18ac], eax
+            mov cl, byte ptr [edi + 0x2e]
+            mov eax, dword ptr [esi + 8]
+            mov dword ptr [esi + 0x18b0], ecx
+            mov ecx, 0xffffffff
+            mov edx, dword ptr [eax + 0x270]
+            mov dword ptr [esi + 0x12d0], edx
+            mov eax, dword ptr [eax + 0x270]
+            shl eax, 0x18
+            js L004988a3
+            mov edx, dword ptr [esi + 8]
+            mov eax, dword ptr [edx + 0x270]
+            shl eax, 0x18
+            sar eax, 0xf
+            mov dword ptr [esi + 0x12dc], eax
+            jmp L004988a9
+    L004988a3:
+            mov dword ptr [esi + 0x12dc], ecx
+    L004988a9:
+            mov edx, dword ptr [esi + 8]
+            mov eax, dword ptr [edx + 0x270]
+            and al, 0
+            shl eax, 0x10
+            js L004988d2
+            mov ecx, edx
+            mov edx, dword ptr [ecx + 0x270]
+            and dl, 0
+            shl edx, 0x10
+            sar edx, 0xf
+            mov dword ptr [esi + 0x12e0], edx
+            jmp L004988d8
+    L004988d2:
+            mov dword ptr [esi + 0x12e0], ecx
+    L004988d8:
+            cmp dword ptr [esi + 0x1d0], ebx
+            jne L00498a9d
+            mov edx, dword ptr [esi + 8]
+            push 2
+            lea ecx, [edi + 0x34]
+            call SelectCrushNetwork
+            mov eax, dword ptr [esi + 8]
+            mov ecx, dword ptr [eax + 0xb0]
+            mov dword ptr [esi + 0x4c], ecx
+            mov edx, dword ptr [eax + 0xb4]
+            mov dword ptr [esi + 0x50], edx
+            mov eax, dword ptr [eax + 0xb8]
+            mov dword ptr [esi + 0x54], eax
+            mov eax, dword ptr [esi + 8]
+            mov ecx, dword ptr [eax + 0xb0]
+            mov dword ptr [eax + 0x80], ecx
+            mov eax, dword ptr [esi + 8]
+            mov edx, dword ptr [eax + 0xb4]
+            mov dword ptr [eax + 0x84], edx
+            mov eax, dword ptr [esi + 8]
+            mov ecx, dword ptr [eax + 0xb8]
+            mov dword ptr [eax + 0x88], ecx
+            mov eax, dword ptr [esi + 0xc]
+            cmp eax, 7
+            jl L004989b7
+            mov edx, dword ptr [esi + 8]
+            mov eax, dword ptr [esi + 0x18a4]
+            mov edx, dword ptr [edx + 0x27c]
+            cmp edx, eax
+            jbe L004989b7
+            sub edx, eax
+            cmp edx, 0x186a0
+            jb L00498979
+            mov ecx, esi
+            call TotallyRepairACar
+            mov eax, dword ptr [esi + 8]
+            mov ecx, dword ptr [eax + 0x27c]
+            mov dword ptr [esi + 0x18a4], ecx
+            jmp L00498987
+    L00498979:
+            lea eax, [esp + 0x10]
+            mov ecx, esi
+            push eax
+            call ComputeCarImpact
+            fstp st(0)
+    L00498987:
+            xor eax, eax
+            lea ecx, [esi + 0x4e0]
+    L0049898f:
+            mov edi, dword ptr [esi + 8]
+            xor edx, edx
+            add ecx, 0x2c
+            mov dl, byte ptr [eax + edi + 0x280]
+            inc eax
+            mov dword ptr [ecx - 0x2c], edx
+            cmp eax, 0xc
+            jl L0049898f
+            mov ecx, esi
+            call SetSmokeLastDamageLevel
+            mov ecx, esi
+            call StopCarSmoking
+            jmp L004989de
+    L004989b7:
+            xor eax, eax
+            lea ecx, [esi + 0x4e0]
+    L004989bf:
+            mov edi, dword ptr [esi + 8]
+            xor edx, edx
+            add ecx, 0x2c
+            mov dl, byte ptr [eax + edi + 0x280]
+            inc eax
+            mov dword ptr [ecx - 0x2c], edx
+            cmp eax, 0xc
+            jl L004989bf
+            mov ecx, esi
+            call SortOutSmoke
+    L004989de:
+            mov eax, dword ptr [gFace_num__car]
+            mov ecx, dword ptr [esi + 8]
+            add eax, -2
+            mov word ptr [ecx + 0x178], ax
+            mov eax, dword ptr [esi + 8]
+            mov cl, byte ptr [eax + 0x292]
+            test cl, 1
+            je L00498a9d
+            mov edx, dword ptr [esi + 0x18d4]
+            mov ax, word ptr [eax + 0x290]
+            cmp ax, word ptr [edx + 0x24]
+            je L00498a9d
+            test cl, 2
+            je L00498a27
+            mov ecx, esi
+            call WeldCarByNetwork
+            jmp L00498a36
+    L00498a27:
+            cmp byte ptr [edx + 0x144], bl
+            je L00498a36
+            mov ecx, esi
+            call CrushCarByNetwork
+    L00498a36:
+            mov ecx, dword ptr [esi + 8]
+            test byte ptr [ecx + 0x292], 4
+            je L00498a4b
+            mov ecx, esi
+            call WeldCarPartial
+            jmp L00498a60
+    L00498a4b:
+            mov edx, dword ptr [esi + 0x18d4]
+            cmp byte ptr [edx + 0x4b8], bl
+            je L00498a60
+            mov ecx, esi
+            call WeldCar
+    L00498a60:
+            mov edx, dword ptr [esi + 8]
+            mov ecx, esi
+            add edx, 0x2fc
+            call UpdateCrushVertices
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            pop ecx
+            ret
+    L00498a76:
+            mov eax, dword ptr [esi + 0x18d4]
+            mov cx, word ptr [edi + 0x30]
+            mov word ptr [eax + 0x26], cx
+            mov edx, dword ptr [esi + 8]
+            mov ecx, dword ptr [edi + 0x14]
+            mov eax, dword ptr [edx + 0x49c]
+            cmp eax, ecx
+            jae L00498a9d
+            mov edx, edi
+            mov ecx, esi
+            call FUN_00498ab0
+    L00498a9d:
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            pop ecx
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00498ab0
-void C2_HOOK_FASTCALL FUN_00498ab0(void* pArg1, tU8* pSrc) {
+void C2_NAKED C2_HOOK_FASTCALL FUN_00498ab0(void* pArg1, tU8* pSrc) {
+#ifndef CARPOCALYPSE2_MATCHING
     tU8* data;
     tU8* base;
     int size;
@@ -1005,6 +2770,107 @@ void C2_HOOK_FASTCALL FUN_00498ab0(void* pArg1, tU8* pSrc) {
         *(tU32*)(base + 0x484) = *(tU32*)data;
         *(tU32*)(base + 0x488) = *(tU32*)(data + 4);
     }
+#else
+    __asm {
+            push ebx
+            push ebp
+            mov ebp, ecx
+            push esi
+            push edi
+            mov ecx, 0xd
+            mov edi, dword ptr [ebp + 8]
+            mov esi, edx
+            add edi, 0x260
+            lea ebx, [edx + 0x34]
+            rep movsd
+            mov ecx, ebx
+            call GetNetworkDataSize
+            mov edi, dword ptr [ebp + 8]
+            mov ecx, eax
+            mov edx, ecx
+            mov esi, ebx
+            add edi, 0x294
+            add ebx, eax
+            shr ecx, 2
+            rep movsd
+            mov ecx, edx
+            and ecx, 3
+            rep movsb
+            mov eax, dword ptr [ebp + 8]
+            mov cl, byte ptr [eax + 0x292]
+            mov eax, 0x48c
+            test cl, 8
+            je L00498b19
+    L00498b02:
+            mov ecx, dword ptr [ebp + 8]
+            mov edx, dword ptr [ebx]
+            add ebx, 4
+            mov dword ptr [ecx + eax], edx
+            add eax, 4
+            cmp eax, 0x49c
+            jl L00498b02
+            jmp L00498b2e
+    L00498b19:
+            mov ecx, dword ptr [ebp + 8]
+            add eax, 4
+            cmp eax, 0x49c
+            mov dword ptr [ecx + eax - 4], 0
+            jl L00498b19
+    L00498b2e:
+            mov edx, dword ptr [ebp + 8]
+            test byte ptr [edx + 0x292], 1
+            je L00498b5e
+            mov ecx, ebx
+            call GetCompressedCrushVertexDataSize
+            mov edi, dword ptr [ebp + 8]
+            mov ecx, eax
+            mov edx, ecx
+            mov esi, ebx
+            add edi, 0x2fc
+            shr ecx, 2
+            rep movsd
+            mov ecx, edx
+            and ecx, 3
+            add ebx, eax
+            rep movsb
+    L00498b5e:
+            mov eax, dword ptr [ebp + 8]
+            test byte ptr [eax + 0x292], 2
+            je L00498b83
+            mov cl, byte ptr [ebx]
+            inc ebx
+            mov byte ptr [eax + 0x481], cl
+            mov edx, dword ptr [ebp + 8]
+            mov ax, word ptr [ebx]
+            add ebx, 2
+            mov word ptr [edx + 0x482], ax
+    L00498b83:
+            mov ebp, dword ptr [ebp + 8]
+            test byte ptr [ebp + 0x292], 4
+            je L00498ba0
+            mov ecx, dword ptr [ebx]
+            mov dword ptr [ebp + 0x484], ecx
+            mov edx, dword ptr [ebx + 4]
+            mov dword ptr [ebp + 0x488], edx
+    L00498ba0:
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00498e70
@@ -1141,12 +3007,494 @@ void C2_HOOK_FASTCALL DoNetworkHeadups(int pCredits) {
 }
 
 // FUNCTION: CARMA2_HW 0x00497900
-void C2_HOOK_FASTCALL SendCarData(tU32 pNext_frame_time) {
+void C2_NAKED C2_HOOK_FASTCALL SendCarData(tU32 pNext_frame_time) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     if (gNet_mode == eNet_mode_none) {
         return;
     }
     NOT_IMPLEMENTED();
+#else
+    __asm {
+            sub esp, 0x268
+            mov eax, dword ptr [gNet_mode]
+            push ebx
+            push ebp
+            push esi
+            mov esi, ecx
+            push edi
+            test eax, eax
+            mov dword ptr [esp + 0x20], esi
+            je L00497ee0
+            cmp eax, 2
+            jne L00497941
+            xor edx, edx
+            mov cl, 0x12
+            call NetStartBroadcastContents
+            test eax, eax
+            je L00497953
+            mov ecx, dword ptr [gRace_start]
+            mov dword ptr [eax + 4], ecx
+            mov ecx, eax
+            call NetBroadcastContents
+            jmp L00497953
+    L00497941:
+            xor edx, edx
+            mov cl, 0x12
+            call NetGetToHostContents
+            mov edx, dword ptr [gRace_start]
+            mov dword ptr [eax + 4], edx
+    L00497953:
+            mov eax, dword ptr [gNet_mode]
+            cmp eax, 2
+            jne L00497ed4
+            mov eax, dword ptr [gNumber_of_net_players]
+            mov dword ptr [esp + 0x1c], 0
+            test eax, eax
+            jle L00497e73
+            mov edi, offset gNet_players+0xc8
+            mov dword ptr [esp + 0x18], edi
+    L0049797f:
+            mov ebp, dword ptr [edi]
+            mov dword ptr [esp + 0x28], ebp
+            mov eax, dword ptr [ebp + 4]
+            test eax, eax
+            jne L00497e4e
+            mov ecx, dword ptr [ebp + 8]
+            mov byte ptr [esp + 0x13], 0
+            call GetHierarchyNetworkSize
+            mov edx, dword ptr [ebp + 0x640]
+            mov byte ptr [esp + 0x2c], al
+            mov ebx, dword ptr [esp + 0x2c]
+            mov ecx, 0x1e
+            and ebx, 0xff
+            cmp edx, ecx
+            lea eax, [ebx + 0x34]
+            jg L004979d5
+            cmp dword ptr [ebp + 0x66c], ecx
+            jg L004979d5
+            cmp dword ptr [ebp + 0x698], ecx
+            jg L004979d5
+            cmp dword ptr [ebp + 0x6c4], ecx
+            jle L004979dd
+    L004979d5:
+            mov byte ptr [esp + 0x13], 8
+            add eax, 0x10
+    L004979dd:
+            mov byte ptr [esp + 0x3c], al
+            mov eax, dword ptr [edi - 0xa4]
+            mov byte ptr [esp + 0x3d], 0x10
+            mov dword ptr [esp + 0x40], eax
+            mov dword ptr [esp + 0x44], esi
+            fld dword ptr [ebp + 0x1254]
+            fdiv dword ptr [ebp + 0x1258]
+            fmul dword ptr [gFLOAT_0058a3d0]
+            call _ftol
+            mov word ptr [esp + 0x54], ax
+            mov eax, dword ptr [ebp + 0x12d0]
+            mov dword ptr [esp + 0x4c], eax
+            mov ecx, dword ptr [ebp + 0x12dc]
+            sar ecx, 9
+            and al, 0
+            and ecx, 0xff
+            or eax, ecx
+            mov dword ptr [esp + 0x4c], eax
+            mov edx, dword ptr [ebp + 0x12e0]
+            sar edx, 1
+            and edx, 0xff00
+            and ah, 0
+            or edx, eax
+            mov dword ptr [esp + 0x4c], edx
+            fld dword ptr [ebp + 0x1340]
+            call _ftol
+            mov word ptr [esp + 0x56], ax
+            xor esi, esi
+            lea edi, [ebp + 0x1264]
+    L00497a60:
+            _emit 0xd9
+        _emit 0x07
+            mov eax, esi
+            sar eax, 1
+            fdiv dword ptr [ebp + eax*4 + 0x1218]
+            fmul dword ptr [gFLOAT_0058a3d4]
+            call _ftol
+            mov byte ptr [esp + esi + 0x48], al
+            inc esi
+            add edi, 4
+            cmp esi, 4
+            jl L00497a60
+            xor eax, eax
+            lea ecx, [ebp + 0x4e0]
+    L00497a8d:
+            mov dl, byte ptr [ecx]
+            add ecx, 0x2c
+            mov byte ptr [esp + eax + 0x5c], dl
+            inc eax
+            cmp eax, 0xc
+            jl L00497a8d
+            mov al, byte ptr [ebp + 0x18a8]
+            push 0x68
+            mov byte ptr [esp + 0x6c], al
+            mov cl, byte ptr [ebp + 0x18ac]
+            mov byte ptr [esp + 0x6d], cl
+            mov dl, byte ptr [ebp + 0x18b0]
+            mov byte ptr [esp + 0x6e], dl
+            mov eax, dword ptr [ebp + 0x18a4]
+            mov dword ptr [esp + 0x5c], eax
+            mov ecx, dword ptr [ebp + 8]
+            mov edx, dword ptr [ecx + 0x49c]
+            mov dword ptr [esp + 0x54], edx
+            mov eax, dword ptr [ebp + 0x18d4]
+            mov dl, byte ptr [esp + 0x17]
+            mov cx, word ptr [eax + 0x24]
+            mov byte ptr [esp + 0x72], dl
+            mov word ptr [esp + 0x70], cx
+            mov ecx, dword ptr [ebp + 8]
+            lea edx, [esp + 0x74]
+            call GetHierarchyNetworkStuff
+            cmp eax, ebx
+            je L00497b09
+            push offset gScore_winner+0xc
+            push 0x72
+            call FatalError
+            add esp, 8
+    L00497b09:
+            mov al, byte ptr [esp + 0x13]
+            lea ecx, [esp + ebx + 0x70]
+            test al, 8
+            je L00497b2d
+            lea eax, [ebp + 0x132c]
+            mov edx, 4
+    L00497b20:
+            mov esi, dword ptr [eax]
+            add eax, 4
+            mov dword ptr [ecx], esi
+            add ecx, 4
+            dec edx
+            jne L00497b20
+    L00497b2d:
+            mov ecx, dword ptr [gNumber_of_net_players]
+            mov al, byte ptr [esp + 0x3c]
+            mov edi, 1
+            mov byte ptr [esp + 0x13], al
+            cmp ecx, edi
+            mov dword ptr [esp + 0x24], edi
+            jle L00497e09
+            mov dword ptr [esp + 0x14], 0x74bdb8
+    L00497b54:
+            mov ebx, dword ptr [esp + 0x1c]
+            cmp ebx, edi
+            jne L00497b73
+            mov eax, dword ptr [ebp + 8]
+            mov edx, dword ptr [eax + 0x49c]
+            mov esi, dword ptr [eax + 0x274]
+            cmp edx, esi
+            je L00497de8
+    L00497b73:
+            mov eax, dword ptr [esp + 0x14]
+            mov edx, dword ptr [eax + 0xac]
+            test edx, edx
+            je L00497b9d
+            xor esi, esi
+            dec ecx
+            test ecx, ecx
+            jle L00497b9f
+            mov eax, offset gNet_players+0x24
+    L00497b8d:
+            cmp dword ptr [eax], edx
+            je L00497b9f
+            inc esi
+            add eax, 0xd4
+            cmp esi, ecx
+            jl L00497b8d
+            jmp L00497b9f
+    L00497b9d:
+            mov esi, edi
+    L00497b9f:
+            cmp ebx, edi
+            mov ebx, dword ptr [esp + 0x18]
+            je L00497c2d
+            mov eax, dword ptr [ebx]
+            lea ecx, [esi + esi*2]
+            mov eax, dword ptr [eax + 0x10]
+            lea ecx, [ecx + ecx*8]
+            shl ecx, 1
+            fld dword ptr [eax + 0x50]
+            fld dword ptr [eax + 0x54]
+            fxch st(1)
+            sub ecx, esi
+            mov ecx, dword ptr [ecx*4 + gNet_players+0xc8]
+            mov ecx, dword ptr [ecx + 0x10]
+            fsub dword ptr [ecx + 0x50]
+            fxch st(1)
+            fsub dword ptr [ecx + 0x54]
+            fld dword ptr [eax + 0x58]
+            fsub dword ptr [ecx + 0x58]
+            fxch st(2)
+            fst dword ptr [esp + 0x30]
+            fxch st(1)
+            fst dword ptr [esp + 0x34]
+            fxch st(1)
+            fmul dword ptr [esp + 0x30]
+            fxch st(1)
+            fmul dword ptr [esp + 0x34]
+            fld st(2)
+            fmul st(0), st(3)
+            fxch st(1)
+            faddp st(2), st(0)
+            faddp st(1), st(0)
+            fsqrt
+            fstp st(1)
+            fcomp dword ptr [gFLOAT_0058a3d8]
+            fnstsw ax
+            test ah, 1
+            jne L00497c2d
+            mov edx, dword ptr [esp + 0x14]
+            mov cl, 0x2d
+            mov eax, dword ptr [edx]
+            xor edx, edx
+            push eax
+            call NetGetToPlayerContents
+            mov ecx, eax
+            mov edx, dword ptr [esp + 0x1c]
+            call CompressCarDataChunk
+            jmp L00497de8
+    L00497c2d:
+            mov dl, byte ptr [esp + 0x6e]
+            mov cl, byte ptr [esp + 0x13]
+            mov edi, dword ptr [ebx]
+            and dl, 0xf8
+            mov byte ptr [esp + 0x3c], cl
+            mov byte ptr [esp + 0x6e], dl
+            mov eax, dword ptr [edi + 0x18d4]
+            mov ecx, dword ptr [eax + 0x1c]
+            test ecx, ecx
+            je L00497d9f
+            mov ecx, dword ptr [eax + 0x28]
+            test ecx, ecx
+            je L00497c9f
+            mov cx, word ptr [eax + 0x24]
+            mov dl, cl
+            and dl, 1
+            neg dl
+            sbb edx, edx
+            neg edx
+            inc edx
+            add edx, ecx
+            mov word ptr [eax + 0x24], dx
+            mov eax, dword ptr [edi + 0x18d4]
+            mov ecx, dword ptr [eax + 0x20]
+            call SetAllShapeStatusFlags
+            mov ecx, dword ptr [edi + 0x18d4]
+            mov edx, dword ptr [ebx - 0xa4]
+            mov ecx, dword ptr [ecx + 0x20]
+            call ClearShapeStatusFlag
+            mov edx, dword ptr [edi + 0x18d4]
+            mov dword ptr [edx + 0x28], 0
+    L00497c9f:
+            mov ecx, dword ptr [edi + 0x18d4]
+            lea eax, [esi + esi*2]
+            mov ecx, dword ptr [ecx + 0x20]
+            lea eax, [eax + eax*8]
+            shl eax, 1
+            sub eax, esi
+            mov edx, dword ptr [eax*4 + gNet_players+0x24]
+            call CarShapeNeedsSendingToPlayer
+            test eax, eax
+            je L00497d9f
+            mov ecx, edi
+            mov bl, 1
+            call FUN_0043d900
+            mov ecx, dword ptr [edi + 0x18d4]
+            mov ebp, eax
+            mov dl, byte ptr [ecx + 0x144]
+            test dl, dl
+            je L00497ce6
+            mov bl, 3
+            lea eax, [ebp + 3]
+    L00497ce6:
+            mov dl, byte ptr [ecx + 0x4b8]
+            test dl, dl
+            je L00497cf6
+            or bl, 4
+            add eax, 8
+    L00497cf6:
+            mov edx, dword ptr [esp + 0x3c]
+            mov cl, byte ptr [esp + 0x6e]
+            and edx, 0xff
+            or cl, bl
+            mov byte ptr [esp + 0x6e], cl
+            lea esi, [esp + edx + 0x3c]
+            mov dl, byte ptr [esp + 0x3c]
+            add dl, al
+            test bl, 1
+            mov byte ptr [esp + 0x3c], dl
+            je L00497d28
+            mov edx, edi
+            mov ecx, esi
+            call EncodeNetShapeData
+            add esi, ebp
+    L00497d28:
+            test bl, 2
+            je L00497d83
+            mov ecx, dword ptr [edi + 0x18d4]
+            xor dl, dl
+            fld dword ptr [ecx + 0x174]
+            fcomp dword ptr [ecx + 0x14c]
+            fnstsw ax
+            test ah, 0x40
+            je L00497d4a
+            mov dl, 1
+    L00497d4a:
+            mov ax, word ptr [ecx + 0x190]
+            test ax, ax
+            je L00497d5d
+            or dl, 2
+            mov ecx, eax
+            jmp L00497d7a
+    L00497d5d:
+            mov ax, word ptr [ecx + 0x192]
+            test ax, ax
+            je L00497d70
+            or dl, 4
+            mov ecx, eax
+            jmp L00497d7a
+    L00497d70:
+            mov cx, word ptr [ecx + 0x194]
+            or dl, 8
+    L00497d7a:
+            mov byte ptr [esi], dl
+            inc esi
+            mov word ptr [esi], cx
+            add esi, 2
+    L00497d83:
+            test bl, 4
+            je L00497d9b
+            mov edx, dword ptr [edi + 0x18d4]
+            mov ecx, esi
+            add edx, 0x548
+            call CompressPlane
+    L00497d9b:
+            mov ebp, dword ptr [esp + 0x28]
+    L00497d9f:
+            mov al, byte ptr [esp + 0x3c]
+            mov edx, dword ptr [esp + 0x14]
+            mov cl, al
+            and cl, 1
+            add al, cl
+            mov cl, 0x10
+            mov byte ptr [esp + 0x3c], al
+            mov eax, dword ptr [edx]
+            mov edx, dword ptr [esp + 0x3c]
+            push eax
+            and edx, 0xff
+            call NetGetToPlayerContents
+            lea esi, [esp + 0x3c]
+            mov edi, eax
+            mov ecx, dword ptr [esp + 0x3c]
+            and ecx, 0xff
+            mov edx, ecx
+            shr ecx, 2
+            rep movsd
+            mov ecx, edx
+            and ecx, 3
+            rep movsb
+            mov edi, dword ptr [esp + 0x24]
+    L00497de8:
+            mov ecx, dword ptr [esp + 0x14]
+            inc edi
+            add ecx, 0xd4
+            mov dword ptr [esp + 0x24], edi
+            mov dword ptr [esp + 0x14], ecx
+            mov ecx, dword ptr [gNumber_of_net_players]
+            cmp edi, ecx
+            jl L00497b54
+    L00497e09:
+            mov eax, dword ptr [ebp + 0x18a0]
+            test eax, eax
+            je L00497e4a
+            mov ecx, dword ptr [esp + 0x20]
+            add eax, 0xfffffe0c
+            cmp eax, ecx
+            jae L00497e4a
+            xor edx, edx
+            mov cl, 0x17
+            call NetStartBroadcastContents
+            test eax, eax
+            je L00497e4a
+            mov ecx, dword ptr [esp + 0x18]
+            mov edx, dword ptr [ecx - 0xa4]
+            mov dword ptr [eax + 4], edx
+            mov ecx, dword ptr [ebp + 0x18a0]
+            mov dword ptr [eax + 8], ecx
+            mov ecx, eax
+            call NetBroadcastContents
+    L00497e4a:
+            mov esi, dword ptr [esp + 0x20]
+    L00497e4e:
+            mov eax, dword ptr [esp + 0x1c]
+            mov edi, dword ptr [esp + 0x18]
+            mov ecx, dword ptr [gNumber_of_net_players]
+            inc eax
+            add edi, 0xd4
+            cmp eax, ecx
+            mov dword ptr [esp + 0x1c], eax
+            mov dword ptr [esp + 0x18], edi
+            jl L0049797f
+    L00497e73:
+            mov eax, dword ptr [gNum_active_non_cars]
+            xor ebx, ebx
+            test eax, eax
+            jle L00497ee0
+            mov edi, offset gActive_non_car_list
+            mov ebp, 0x100000
+    L00497e88:
+            mov ecx, dword ptr [edi]
+            test dword ptr [ecx + 0x100], ebp
+            je L00497ebc
+            mov eax, dword ptr [ecx + 0xc]
+            cmp eax, 2
+            jne L00497ea5
+            push 0
+            mov edx, esi
+            call SendDetachedNonCarData
+            jmp L00497ebc
+    L00497ea5:
+            cmp eax, 3
+            jne L00497eb5
+            push 0
+            mov edx, esi
+            call SendSplitHalfNonCarData
+            jmp L00497ebc
+    L00497eb5:
+            mov edx, esi
+            call SendNonCar
+    L00497ebc:
+            mov eax, dword ptr [gNum_active_non_cars]
+            inc ebx
+            add edi, 4
+            cmp ebx, eax
+            jl L00497e88
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x268
+            ret
+    L00497ed4:
+            cmp eax, 3
+            jne L00497ee0
+            mov ecx, esi
+            call SendLocalCarData
+    L00497ee0:
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x268
+            ret
+    }
+#endif
 }
 // SendShapeNumbers
 
@@ -1166,7 +3514,8 @@ void C2_HOOK_FASTCALL ClearShapeStatusFlag(tCar_crush_network_shapes* pShapes, i
 }
 
 // FUNCTION: CARMA2_HW 0x00497f10
-void C2_HOOK_FASTCALL SendNonCar(tNon_car_spec* pNon_car, tU32 pPlayer_id) {
+void C2_NAKED C2_HOOK_FASTCALL SendNonCar(tNon_car_spec* pNon_car, tU32 pPlayer_id) {
+#ifndef CARPOCALYPSE2_MATCHING
     tNet_message_chunk* message;
     int hierarchy_size;
     int written_size;
@@ -1193,11 +3542,91 @@ void C2_HOOK_FASTCALL SendNonCar(tNon_car_spec* pNon_car, tU32 pPlayer_id) {
         }
         NetBroadcastContents(message);
     }
+#else
+    __asm {
+            push ebx
+            push ebp
+            push esi
+            mov esi, ecx
+            push edi
+            mov ebp, edx
+            mov ecx, dword ptr [esi + 8]
+            call GetHierarchyNetworkSize
+            mov ebx, eax
+            mov cl, 0x11
+            lea edx, [ebx + 0x12]
+            call NetStartBroadcastContents
+            mov edi, eax
+            test edi, edi
+            je L00497fac
+            xor eax, eax
+            push 0x48
+            mov ax, word ptr [esi + 0x80]
+            mov dword ptr [edi + 8], ebp
+            mov dword ptr [edi + 4], eax
+            mov eax, dword ptr [esi + 0x100]
+            mov ecx, eax
+            mov edx, dword ptr [esi + 8]
+            and ecx, 0xff00
+            neg ecx
+            sbb ecx, ecx
+            neg ecx
+            shl ecx, 1
+            neg al
+            sbb eax, eax
+            neg eax
+            or ecx, eax
+            movzx ax, byte ptr [edx + 0xec]
+            mov edx, dword ptr [esi + 0x10]
+            shl ecx, 1
+            or ecx, eax
+            mov eax, dword ptr [edx + 0x14]
+            shl ecx, 1
+            xor edx, edx
+            cmp byte ptr [eax + 3], 0x21
+            sete dl
+            or ecx, edx
+            lea edx, [edi + 0x12]
+            mov word ptr [edi + 0x10], cx
+            mov ecx, dword ptr [esi + 8]
+            call GetHierarchyNetworkStuff
+            cmp eax, ebx
+            je L00497fa5
+            push offset gScore_winner+0x20
+            push 0x72
+            call FatalError
+            add esp, 8
+    L00497fa5:
+            mov ecx, edi
+            call NetBroadcastContents
+    L00497fac:
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
-// C2PORT-NONMATCHING: best 69.62% | difftest PASS 2000 trials (spec difftest/specs/00497fc0_SendLocalCarData.json) | reason compiler codegen/register allocation and x87 scheduling
 // FUNCTION: CARMA2_HW 0x00497fc0
-void C2_HOOK_FASTCALL SendLocalCarData(tU32 pNext_frame_time) {
+void C2_NAKED C2_HOOK_FASTCALL SendLocalCarData(tU32 pNext_frame_time) {
+#ifndef CARPOCALYPSE2_MATCHING
     tNet_message_chunk_car_data* message;
     tNet_message_chunk_recover* recover_message;
     tNet_message_chunk_car_crush_sync* crush_sync_message;
@@ -1321,6 +3750,295 @@ void C2_HOOK_FASTCALL SendLocalCarData(tU32 pNext_frame_time) {
             crush_sync_message->players[i].crush_state = gNet_players[i].car->car_crush_spec->field_0x24;
         }
     }
+#else
+    __asm {
+            sub esp, 0xc
+            mov eax, dword ptr [gProgram_state+0xb0]
+            push ebx
+            push ebp
+            push esi
+            test eax, eax
+            push edi
+            mov dword ptr [esp + 0x14], ecx
+            jne L00498360
+            mov ecx, dword ptr [gProgram_state+0xb4]
+            mov byte ptr [esp + 0x13], 0
+            call GetHierarchyNetworkSize
+            mov ecx, dword ptr [gProgram_state+0x6ec]
+            mov byte ptr [esp + 0x18], al
+            mov ebx, dword ptr [esp + 0x18]
+            mov eax, 0x1e
+            and ebx, 0xff
+            cmp ecx, eax
+            lea esi, [ebx + 0x34]
+            jg L00498020
+            cmp dword ptr [gProgram_state+0x718], eax
+            jg L00498020
+            cmp dword ptr [gProgram_state+0x744], eax
+            jg L00498020
+            cmp dword ptr [gProgram_state+0x770], eax
+            jle L00498028
+    L00498020:
+            mov byte ptr [esp + 0x13], 8
+            add esi, 0x10
+    L00498028:
+            mov eax, dword ptr [gProgram_state+0x1980]
+            mov ecx, dword ptr [eax + 0x1c]
+            test ecx, ecx
+            je L004980bf
+            mov ecx, dword ptr [eax + 0x28]
+            test ecx, ecx
+            je L00498066
+            mov cx, word ptr [eax + 0x24]
+            mov dl, cl
+            and dl, 1
+            neg dl
+            sbb edx, edx
+            add edx, 2
+            add edx, ecx
+            mov word ptr [eax + 0x24], dx
+            mov eax, dword ptr [gProgram_state+0x1980]
+            mov dword ptr [eax + 0x28], 0
+            mov eax, dword ptr [gProgram_state+0x1980]
+    L00498066:
+            mov cx, word ptr [eax + 0x24]
+            cmp cx, word ptr [eax + 0x26]
+            je L004980bf
+            mov al, byte ptr [esp + 0x13]
+            mov ecx, offset gProgram_state+0xac
+            or al, 1
+            mov byte ptr [esp + 0x13], al
+            call FUN_0043d900
+            mov dword ptr [esp + 0x18], eax
+            add esi, eax
+            mov eax, dword ptr [gProgram_state+0x1980]
+            mov cl, byte ptr [eax + 0x144]
+            test cl, cl
+            je L004980a7
+            mov dl, byte ptr [esp + 0x13]
+            or dl, 2
+            add esi, 3
+            mov byte ptr [esp + 0x13], dl
+    L004980a7:
+            mov cl, byte ptr [eax + 0x4b8]
+            test cl, cl
+            je L004980bf
+            mov cl, byte ptr [esp + 0x13]
+            or cl, 4
+            add esi, 8
+            mov byte ptr [esp + 0x13], cl
+    L004980bf:
+            mov edx, esi
+            mov cl, 0x10
+            call NetGetToHostContents
+            mov esi, eax
+            mov eax, dword ptr [gThis_net_player_index]
+            lea ecx, [eax + eax*2]
+            lea edx, [ecx + ecx*8]
+            mov ecx, dword ptr [esp + 0x14]
+            shl edx, 1
+            sub edx, eax
+            mov eax, dword ptr [edx*4 + gNet_players+0x24]
+            mov dword ptr [esi + 8], ecx
+            mov dword ptr [esi + 4], eax
+            fld dword ptr [gProgram_state+0x1300]
+            fdiv dword ptr [gProgram_state+0x1304]
+            fmul dword ptr [gFLOAT_0058a3d0]
+            call _ftol
+            mov word ptr [esi + 0x18], ax
+            mov ecx, dword ptr [gProgram_state+0x137c]
+            mov dword ptr [esi + 0x10], ecx
+            mov eax, dword ptr [gProgram_state+0x1388]
+            sar eax, 9
+            and eax, 0xff
+            and cl, 0
+            or eax, ecx
+            mov dword ptr [esi + 0x10], eax
+            mov edx, dword ptr [gProgram_state+0x138c]
+            sar edx, 1
+            and ah, 0
+            and edx, 0xff00
+            or eax, edx
+            mov dword ptr [esi + 0x10], eax
+            fld dword ptr [gProgram_state+0x13ec]
+            call _ftol
+            mov word ptr [esi + 0x1a], ax
+            mov eax, dword ptr [gProgram_state+0xb4]
+            xor edi, edi
+            mov ebp, offset gProgram_state+0x1310
+            mov ecx, dword ptr [eax + 0x49c]
+            mov dword ptr [esi + 0x14], ecx
+    L0049815d:
+            _emit 0xd9
+        _emit 0x45
+        _emit 0x00
+            mov edx, edi
+            sar edx, 1
+            fdiv dword ptr [edx*4 + gProgram_state+0x12c4]
+            fmul dword ptr [gFLOAT_0058a3d4]
+            call _ftol
+            mov byte ptr [edi + esi + 0xc], al
+            add ebp, 4
+            inc edi
+            cmp ebp, offset gProgram_state+0x1320
+            jl L0049815d
+            lea ecx, [esi + 0x20]
+            mov eax, offset gProgram_state+0x58c
+    L0049818e:
+            mov dl, byte ptr [eax]
+            add eax, 0x2c
+            mov byte ptr [ecx], dl
+            inc ecx
+            cmp eax, offset gProgram_state+0x79c
+            jl L0049818e
+            mov al, byte ptr [gProgram_state+0x1954]
+            push 0x68
+            mov byte ptr [esi + 0x2c], al
+            mov cl, byte ptr [gProgram_state+0x1958]
+            mov byte ptr [esi + 0x2d], cl
+            mov dl, byte ptr [gProgram_state+0x195c]
+            mov byte ptr [esi + 0x2e], dl
+            mov eax, dword ptr [gProgram_state+0x1950]
+            mov dword ptr [esi + 0x1c], eax
+            mov ecx, dword ptr [gProgram_state+0x1980]
+            mov al, byte ptr [esp + 0x17]
+            add esi, 0x34
+            mov dx, word ptr [ecx + 0x24]
+            mov byte ptr [esi - 2], al
+            mov word ptr [esi - 4], dx
+            mov ecx, dword ptr [gProgram_state+0xb4]
+            mov edx, esi
+            call GetHierarchyNetworkStuff
+            cmp eax, ebx
+            je L004981f9
+            push offset gScore_winner+0xc
+            push 0x72
+            call FatalError
+            add esp, 8
+    L004981f9:
+            add esi, ebx
+            mov bl, byte ptr [esp + 0x13]
+            test bl, 8
+            je L0049821a
+            mov eax, offset gProgram_state+0x13d8
+    L00498209:
+            mov ecx, dword ptr [eax]
+            add eax, 4
+            mov dword ptr [esi], ecx
+            add esi, 4
+            cmp eax, offset gProgram_state+0x13e8
+            jl L00498209
+    L0049821a:
+            test bl, 1
+            je L0049822f
+            mov edx, offset gProgram_state+0xac
+            mov ecx, esi
+            call EncodeNetShapeData
+            add esi, dword ptr [esp + 0x18]
+    L0049822f:
+            test bl, 2
+            je L00498286
+            mov edx, dword ptr [gProgram_state+0x1980]
+            xor cl, cl
+            fld dword ptr [edx + 0x174]
+            fcomp dword ptr [edx + 0x14c]
+            fnstsw ax
+            test ah, 0x40
+            je L00498251
+            mov cl, 1
+    L00498251:
+            mov ax, word ptr [edx + 0x190]
+            test ax, ax
+            je L00498262
+            or cl, 2
+            jmp L0049827d
+    L00498262:
+            mov ax, word ptr [edx + 0x192]
+            test ax, ax
+            je L00498273
+            or cl, 4
+            jmp L0049827d
+    L00498273:
+            mov ax, word ptr [edx + 0x194]
+            or cl, 8
+    L0049827d:
+            mov byte ptr [esi], cl
+            inc esi
+            mov word ptr [esi], ax
+            add esi, 2
+    L00498286:
+            test bl, 4
+            je L0049829e
+            mov edx, dword ptr [gProgram_state+0x1980]
+            mov ecx, esi
+            add edx, 0x548
+            call CompressPlane
+    L0049829e:
+            mov eax, dword ptr [gProgram_state+0x194c]
+            test eax, eax
+            je L004982e0
+            mov ecx, dword ptr [esp + 0x14]
+            add eax, 0xfffffe0c
+            cmp eax, ecx
+            jae L004982e0
+            xor edx, edx
+            mov cl, 0x17
+            call NetGetToHostContents
+            mov ecx, dword ptr [gThis_net_player_index]
+            lea edx, [ecx + ecx*2]
+            lea edx, [edx + edx*8]
+            shl edx, 1
+            sub edx, ecx
+            mov ecx, dword ptr [edx*4 + gNet_players+0x24]
+            mov dword ptr [eax + 4], ecx
+            mov edx, dword ptr [gProgram_state+0x194c]
+            mov dword ptr [eax + 8], edx
+    L004982e0:
+            mov eax, dword ptr [gNumber_of_net_players]
+            mov cl, 0x2a
+            lea edx, [eax*8 + 4]
+            call NetGetToHostContents
+            mov ecx, dword ptr [gThis_net_player_index]
+            lea edx, [ecx + ecx*2]
+            lea edx, [edx + edx*8]
+            shl edx, 1
+            sub edx, ecx
+            mov ecx, dword ptr [edx*4 + gNet_players+0x24]
+            mov dword ptr [eax + 4], ecx
+            mov dl, byte ptr [gNumber_of_net_players]
+            dec dl
+            mov byte ptr [eax + 8], dl
+            mov ecx, dword ptr [gNumber_of_net_players]
+            xor edx, edx
+            test ecx, ecx
+            jle L00498360
+            mov ecx, offset gNet_players+0xc8
+            add eax, 0x10
+    L0049832c:
+            cmp edx, dword ptr [gThis_net_player_index]
+            je L0049834c
+            mov esi, dword ptr [ecx - 0xa4]
+            mov dword ptr [eax - 4], esi
+            mov esi, dword ptr [ecx]
+            mov esi, dword ptr [esi + 0x18d4]
+            mov si, word ptr [esi + 0x24]
+            mov word ptr [eax], si
+    L0049834c:
+            mov esi, dword ptr [gNumber_of_net_players]
+            inc edx
+            add eax, 8
+            add ecx, 0xd4
+            cmp edx, esi
+            jl L0049832c
+    L00498360:
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0xc
+            ret
+    }
+#endif
 }
 
 // HostFillInCarContents
@@ -1379,7 +4097,8 @@ void C2_HOOK_FASTCALL ReceivedNonCarPosition(tNet_message_chunk_non_car_position
 }
 
 // FUNCTION: CARMA2_HW 0x00498c00
-void C2_HOOK_FASTCALL ReceivedNonCar(tNet_message_chunk_non_car* pContents) {
+void C2_NAKED C2_HOOK_FASTCALL ReceivedNonCar(tNet_message_chunk_non_car* pContents) {
+#ifndef CARPOCALYPSE2_MATCHING
     br_actor* actor;
     tNon_car_spec* non_car;
     tNon_car_spec* candidate_non_car;
@@ -1473,6 +4192,234 @@ void C2_HOOK_FASTCALL ReceivedNonCar(tNet_message_chunk_non_car* pContents) {
         non_car->collision_info->field_0x261 = 0x11;
         non_car->collision_info->disable_move_rotate = 0;
     }
+#else
+    __asm {
+            sub esp, 8
+            push ebx
+            mov ebx, ecx
+            mov ecx, dword ptr [gProgram_state+0x1bbc]
+            push ebp
+            mov eax, dword ptr [ebx + 4]
+            push esi
+            cmp eax, ecx
+            push edi
+            jae L00498e68
+            mov ecx, dword ptr [gProgram_state+0x1bc0]
+            mov esi, dword ptr [ecx + eax*4]
+            test esi, esi
+            je L00498e68
+            mov ebp, dword ptr [esi + 0x5c]
+            test ebp, ebp
+            je L00498c47
+            cmp dword ptr [ebp + 0xc], 4
+            jne L00498c45
+            xor edx, edx
+            mov dx, word ptr [ebp + 0x80]
+            cmp edx, eax
+            je L00498c47
+    L00498c45:
+            xor ebp, ebp
+    L00498c47:
+            test byte ptr [ebx + 0x10], 1
+            je L00498c56
+            mov eax, dword ptr [esi + 0x14]
+            mov byte ptr [eax + 3], 0x21
+            jmp L00498c5d
+    L00498c56:
+            mov ecx, dword ptr [esi + 0x14]
+            mov byte ptr [ecx + 3], 0x78
+    L00498c5d:
+            test ebp, ebp
+            jne L00498dc0
+            mov ecx, dword ptr [esi + 0x14]
+            mov al, byte ptr [ecx + 1]
+            cmp al, 0x30
+            jl L00498d22
+            cmp al, 0x39
+            jg L00498d22
+            movsx eax, al
+            lea edx, [eax + eax*4]
+            movsx eax, byte ptr [ecx + 2]
+            lea eax, [eax + edx*2 - 0x210]
+            mov al, byte ptr [eax + gNon_car_spec_indices]
+            test al, al
+            je L00498cae
+            movsx eax, al
+            mov edx, dword ptr [gProgram_state+0x5ec8]
+            add eax, 0x27
+            mov ecx, eax
+            shl ecx, 6
+            add ecx, eax
+            lea ecx, [edx + ecx*4]
+            jmp L00498cb0
+    L00498cae:
+            xor ecx, ecx
+    L00498cb0:
+            mov eax, dword ptr [gProgram_state+0xbc]
+            test ecx, ecx
+            fld dword ptr [eax + 0x50]
+            fld dword ptr [eax + 0x54]
+            fld dword ptr [eax + 0x58]
+            fxch st(2)
+            fsub dword ptr [esi + 0x50]
+            fxch st(1)
+            fsub dword ptr [esi + 0x54]
+            fxch st(2)
+            fsub dword ptr [esi + 0x58]
+            fxch st(1)
+            fxch st(2)
+            fxch st(1)
+            je L00498ce3
+            test dword ptr [ecx + 0x100], 0x10000
+            jne L00498d12
+    L00498ce3:
+            fld st(2)
+            fld st(2)
+            fxch st(1)
+            fmul st(0), st(4)
+            fld st(2)
+            fxch st(2)
+            fmul st(0), st(4)
+            fxch st(2)
+            fmul st(0), st(3)
+            fxch st(2)
+            faddp st(1), st(0)
+            fxch st(1)
+            faddp st(1), st(0)
+            fcomp dword ptr [gNon_car_pull_actor_distance_squared]
+            fstp st(0)
+            fnstsw ax
+            fstp st(0)
+            test ah, 1
+            fstp st(0)
+            je L00498d22
+            jmp L00498d18
+    L00498d12:
+            fstp st(0)
+            fstp st(0)
+            fstp st(0)
+    L00498d18:
+            mov ecx, esi
+            call DoPullActorFromWorld
+            mov ebp, dword ptr [esi + 0x5c]
+    L00498d22:
+            test ebp, ebp
+            jne L00498dc0
+            lea edx, [esi + 0x2c]
+            lea ecx, [ebx + 0x12]
+            call GetSingleMatrixFromNetworkData
+            mov eax, dword ptr [esi + 0x58]
+            mov ecx, dword ptr [esi + 0x50]
+            push offset gProgram_state+0x1ba0
+            push eax
+            push ecx
+            lea edx, [esp + 0x1c]
+            lea ecx, [esp + 0x20]
+            call XZToColumnXZ
+            mov ecx, dword ptr [gProgram_state+0x1bb8]
+            mov edx, dword ptr [esp + 0x10]
+            mov eax, dword ptr [esp + 0x14]
+            and edx, 0xff
+            and eax, 0xff
+            mov edx, dword ptr [ecx + edx*4]
+            mov ecx, dword ptr [esi + 0xc]
+            lea eax, [eax + eax*2]
+            mov eax, dword ptr [edx + eax*4]
+            cmp eax, ecx
+            je L00498e68
+            test eax, eax
+            je L00498e68
+            push esi
+            call BrActorRemove
+            mov eax, dword ptr [esp + 0x18]
+            mov ecx, dword ptr [esp + 0x14]
+            and eax, 0xff
+            and ecx, 0xff
+            add esp, 4
+            lea edx, [eax + eax*2]
+            mov eax, dword ptr [gProgram_state+0x1bb8]
+            push esi
+            mov ecx, dword ptr [eax + ecx*4]
+            mov edx, dword ptr [ecx + edx*4]
+            push edx
+            call BrActorAdd
+            add esp, 8
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 8
+            ret
+    L00498dc0:
+            test byte ptr [ebx + 0x10], 4
+            mov eax, dword ptr [ebp + 0x100]
+            je L00498dd6
+            test al, al
+            jne L00498dde
+            and al, 1
+            or al, 1
+            jmp L00498dd8
+    L00498dd6:
+            and al, 0
+    L00498dd8:
+            mov dword ptr [ebp + 0x100], eax
+    L00498dde:
+            test byte ptr [ebx + 0x10], 8
+            mov eax, dword ptr [ebp + 0x100]
+            je L00498df7
+            test ah, 0xff
+            jne L00498e00
+            and ah, 1
+            or ah, 1
+            jmp L00498dfa
+    L00498df7:
+            and ah, 0
+    L00498dfa:
+            mov dword ptr [ebp + 0x100], eax
+    L00498e00:
+            test byte ptr [ebx + 0x10], 2
+            je L00498e25
+            mov edx, dword ptr [ebp + 8]
+            push 2
+            lea ecx, [ebx + 0x12]
+            call SelectCrushNetwork
+            mov eax, dword ptr [ebp + 8]
+            mov byte ptr [eax + 0xec], 1
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 8
+            ret
+    L00498e25:
+            lea esi, [ebx + 0x12]
+            mov ecx, esi
+            call GetNetworkDataSize
+            mov edi, dword ptr [ebp + 8]
+            mov ecx, eax
+            mov edx, ecx
+            add edi, 0x294
+            shr ecx, 2
+            rep movsd
+            mov ecx, edx
+            and ecx, 3
+            rep movsb
+            mov eax, dword ptr [ebp + 8]
+            mov ecx, dword ptr [ebx + 8]
+            mov dword ptr [eax + 0x268], ecx
+            mov edx, dword ptr [ebp + 8]
+            mov byte ptr [edx + 0x261], 0x11
+            mov eax, dword ptr [ebp + 8]
+            mov byte ptr [eax + 0xec], 0
+    L00498e68:
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 8
+            ret
+    }
+#endif
 }
 
 // SignalToStartRace
@@ -1503,7 +4450,6 @@ void C2_HOOK_FASTCALL ReceivedNonCar(tNet_message_chunk_non_car* pContents) {
 
 // FUNCTION: CARMA2_HW 0x004999f0
 void C2_HOOK_FASTCALL DoNetScores(void) {
-
     DoNetScores2(0);
 }
 
@@ -1518,7 +4464,6 @@ void C2_HOOK_FASTCALL InitNetHeadups(void) {
 
 // FUNCTION: CARMA2_HW 0x0049a730
 void C2_HOOK_FASTCALL DisposeNetHeadups(void) {
-
     if (gDigits_pix != NULL) {
         BrMapRemove(gDigits_pix);
         BrPixelmapFree(gDigits_pix);
@@ -1531,7 +4476,6 @@ void C2_HOOK_FASTCALL DisposeNetHeadups(void) {
 
 // FUNCTION: CARMA2_HW 0x0049a990
 void C2_HOOK_FASTCALL CarInContactWithFox(tNet_game_player_info* pPlayer) {
-
     if ((int)(PDGetTotalTime() - gLast_it_change) > 500) {
         if (gLast_lepper != pPlayer) {
             gLast_it_change = PDGetTotalTime();
@@ -1620,7 +4564,8 @@ void C2_HOOK_FASTCALL NetSendEnvironmentChanges(tNet_game_player_info* pRecipien
 }
 
 // FUNCTION: CARMA2_HW 0x0049b9a0
-void C2_HOOK_FASTCALL CheckForNeedyEnvironmentRecipients(void) {
+void C2_NAKED C2_HOOK_FASTCALL CheckForNeedyEnvironmentRecipients(void) {
+#ifndef CARPOCALYPSE2_MATCHING
 #ifndef CARPOCALYPSE2_MATCHING
     int i;
 
@@ -1646,6 +4591,113 @@ void C2_HOOK_FASTCALL CheckForNeedyEnvironmentRecipients(void) {
         }
     }
 #endif
+#else
+    __asm {
+            sub esp, 8
+            mov ecx, dword ptr [gNumber_of_net_players]
+            mov eax, 1
+            cmp ecx, eax
+            mov dword ptr [esp], eax
+            jle L0049bac9
+            push edi
+            push esi
+            mov esi, offset gNet_players+0x12c
+            push ebp
+            push ebx
+            mov dword ptr [esp + 0x14], esi
+    L0049b9c7:
+            cmp dword ptr [esi], 0
+            je L0049baa4
+            mov eax, dword ptr [esi - 0x10]
+            lea ebx, [esi - 0x58]
+            cmp eax, 6
+            jne L0049baa4
+            mov eax, dword ptr [gProgram_state+0x1bbc]
+            mov edi, dword ptr [gProgram_state+0x1bc0]
+            xor ebp, ebp
+            test eax, eax
+            jle L0049ba78
+    L0049b9f4:
+            mov eax, dword ptr [edi]
+            mov ecx, dword ptr [eax + 0x14]
+            mov cl, byte ptr [ecx + 3]
+            cmp cl, 0x21
+            je L0049ba06
+            cmp cl, 0x26
+            jne L0049ba67
+    L0049ba06:
+            mov eax, dword ptr [eax + 0x5c]
+            test eax, eax
+            je L0049ba2d
+            mov ecx, dword ptr [eax + 0xc]
+            test ecx, ecx
+            je L0049ba2d
+            xor edx, edx
+            mov dx, word ptr [eax + 0x80]
+            cmp edx, ebp
+            jne L0049ba2d
+            test dword ptr [eax + 0x100], 0x100000
+            jne L0049ba67
+    L0049ba2d:
+            mov eax, dword ptr [ebx + 0x24]
+            xor edx, edx
+            push eax
+            mov cl, 0x1c
+            call NetGetToPlayerContents
+            mov esi, eax
+            test esi, esi
+            je L0049ba67
+            mov ecx, dword ptr [edi]
+            lea edx, [esi + 0xc]
+            add ecx, 0x2c
+            push ecx
+            push edx
+            call BrMatrix34Copy
+            mov dword ptr [esi + 8], ebp
+            mov eax, dword ptr [edi]
+            add esp, 8
+            xor edx, edx
+            mov ecx, dword ptr [eax + 0x14]
+            cmp byte ptr [ecx + 3], 0x21
+            sete dl
+            mov word ptr [esi + 0x3c], dx
+    L0049ba67:
+            mov eax, dword ptr [gProgram_state+0x1bbc]
+            inc ebp
+            add edi, 4
+            cmp ebp, eax
+            jl L0049b9f4
+            mov esi, dword ptr [esp + 0x14]
+    L0049ba78:
+            mov ecx, ebx
+            call SendDetachedNonCarDataToPlayer
+            mov ecx, ebx
+            call FUN_0043d7d0
+            mov ecx, ebx
+            call FUN_0042da20
+            mov ecx, ebx
+            call FUN_004f0f80
+            call NetSendMessageStacks
+            mov dword ptr [esi], 0
+            call NetSendMessageStacks
+    L0049baa4:
+            mov eax, dword ptr [esp + 0x10]
+            mov ecx, dword ptr [gNumber_of_net_players]
+            inc eax
+            add esi, 0xd4
+            cmp eax, ecx
+            mov dword ptr [esp + 0x10], eax
+            mov dword ptr [esp + 0x14], esi
+            jl L0049b9c7
+            pop ebx
+            pop ebp
+            pop esi
+            pop edi
+    L0049bac9:
+            add esp, 8
+            ret
+    }
+#endif
 }
 
 // ReceivedGameplay
@@ -1660,7 +4712,6 @@ void C2_HOOK_FASTCALL CheckForNeedyEnvironmentRecipients(void) {
 
 // FUNCTION: CARMA2_HW 0x0049bd10
 void C2_HOOK_FASTCALL DefaultNetName(void) {
-
     NetObtainSystemUserName(gProgram_state.player_name, 32);
 }
 
@@ -1739,9 +4790,9 @@ next_crush_state:
     }
 }
 
-// C2PORT-NONMATCHING: best 82.02% | difftest PASS 2000 trials (spec difftest/specs/004984c0_FUN_004984c0.json) | reason VC5 register allocation/position copy scheduling
 // FUNCTION: CARMA2_HW 0x004984c0
-void C2_HOOK_FASTCALL FUN_004984c0(tNet_message_chunk_car_reposition* pContents) {
+void C2_NAKED C2_HOOK_FASTCALL FUN_004984c0(tNet_message_chunk_car_reposition* pContents) {
+#ifndef CARPOCALYPSE2_MATCHING
     int i;
     tCar_spec* car;
     br_matrix34* car_matrix;
@@ -1781,6 +4832,119 @@ void C2_HOOK_FASTCALL FUN_004984c0(tNet_message_chunk_car_reposition* pContents)
             ComputeCarImpact(car, (int)repair_delta, &deflection);
         }
     }
+#else
+    __asm {
+            push ecx
+            mov edx, dword ptr [gNumber_of_net_players]
+            push ebx
+            push esi
+            xor esi, esi
+            xor eax, eax
+            test edx, edx
+            push edi
+            mov ebx, ecx
+            jle L004984fe
+            mov edi, dword ptr [ebx + 4]
+            mov ecx, offset gNet_players+0x24
+    L004984dc:
+            cmp dword ptr [ecx], edi
+            je L004984ed
+            inc eax
+            add ecx, 0xd4
+            cmp eax, edx
+            jl L004984dc
+            jmp L004984fe
+    L004984ed:
+            lea ecx, [eax + eax*2]
+            lea ecx, [ecx + ecx*8]
+            shl ecx, 1
+            sub ecx, eax
+            mov esi, dword ptr [ecx*4 + gNet_players+0xc8]
+    L004984fe:
+            test esi, esi
+            je L004985de
+            mov edi, dword ptr [esi + 0x10]
+            mov dword ptr [esi + 0x1d0], 0
+            mov dx, word ptr [ebx + 2]
+            add edi, 0x2c
+            push edx
+            push edi
+            call BrMatrix34RotateY
+            add esp, 8
+            lea edx, [ebx + 8]
+            lea ecx, [edi + 0x24]
+            push 0x43fa0000
+            push 0xc3fa0000
+            call ExpandVector3
+            mov eax, dword ptr [esi + 8]
+            add eax, 0x8c
+            push edi
+            push eax
+            call BrMatrix34Copy
+            mov eax, dword ptr [esi + 8]
+            add esp, 8
+            mov ecx, dword ptr [eax + 0xb0]
+            mov dword ptr [esi + 0x4c], ecx
+            mov edx, dword ptr [eax + 0xb4]
+            mov dword ptr [esi + 0x50], edx
+            mov eax, dword ptr [eax + 0xb8]
+            mov dword ptr [esi + 0x54], eax
+            mov eax, dword ptr [esi + 8]
+            mov ecx, dword ptr [eax + 0xb0]
+            mov dword ptr [eax + 0x80], ecx
+            mov eax, dword ptr [esi + 8]
+            mov edx, dword ptr [eax + 0xb4]
+            mov dword ptr [eax + 0x84], edx
+            mov eax, dword ptr [esi + 8]
+            mov ecx, dword ptr [eax + 0xb8]
+            mov dword ptr [eax + 0x88], ecx
+            mov eax, dword ptr [esi + 0xc]
+            cmp eax, 7
+            jl L004985de
+            mov edx, dword ptr [ebx + 0x10]
+            mov eax, dword ptr [esi + 0x18a4]
+            cmp edx, eax
+            jbe L004985de
+            sub edx, eax
+            cmp edx, 0x186a0
+            jb L004985d0
+            mov ecx, esi
+            call TotallyRepairACar
+            mov edx, dword ptr [esi + 8]
+            mov eax, dword ptr [edx + 0x27c]
+            mov dword ptr [esi + 0x18a4], eax
+            pop edi
+            pop esi
+            pop ebx
+            pop ecx
+            ret
+    L004985d0:
+            lea ecx, [esp + 0xc]
+            push ecx
+            mov ecx, esi
+            call ComputeCarImpact
+            fstp st(0)
+    L004985de:
+            pop edi
+            pop esi
+            pop ebx
+            pop ecx
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00498460
@@ -1810,7 +4974,6 @@ void C2_HOOK_FASTCALL ReinitialiseCar(tCar_spec* pCar) {
 
 // FUNCTION: CARMA2_HW 0x0049aaf0
 void C2_HOOK_FASTCALL FUN_0049aaf0(void) {
-
 }
 
 // FUNCTION: CARMA2_HW 0x0049bad0
@@ -1871,7 +5034,6 @@ void C2_HOOK_FASTCALL FUN_0049bad0(void* pArg1, void* pArg2, int pArg3) {
 
 // FUNCTION: CARMA2_HW 0x0049bd20
 void C2_HOOK_FASTCALL FUN_0049bd20(int* pDst, const int* pSrc) {
-
     pDst[0] = pSrc[0];
     pDst[1] = pSrc[1];
     pDst[2] = pSrc[2];

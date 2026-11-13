@@ -12,6 +12,18 @@ br_scalar gSight_distance_squared;
 // CalculateTextureBitsValue
 
 // MapSawToTriangle
+#ifdef CARPOCALYPSE2_MATCHING
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern void C2_HOOK_CDECL BrActorFree();
+extern br_actor* C2_HOOK_CDECL BrActorRemove();
+extern void C2_HOOK_CDECL BrMemFree();
+extern void C2_HOOK_CDECL BrPixelmapFree();
+extern int C2_HOOK_FASTCALL EndFlic(tFlic_descriptor_ptr pFlic_info);
+extern void C2_HOOK_FASTCALL PossibleService(void);
+extern tFunkotronic_spec* gFunkotronics_array;
+extern int gFunkotronics_array_size;
+#endif
 // FUNCTION: CARMA2_HW 0x00474880
 
 void C2_HOOK_STDCALL SetSightDistance(br_scalar pYon) {
@@ -30,7 +42,8 @@ void C2_HOOK_STDCALL SetSightDistance(br_scalar pYon) {
 // AddNewFunkotronic
 
 // FUNCTION: CARMA2_HW 0x00474950
-void C2_HOOK_FASTCALL DisposeFunkotronics(int pOwner) {
+void C2_NAKED C2_HOOK_FASTCALL DisposeFunkotronics(int pOwner) {
+#ifndef CARPOCALYPSE2_MATCHING
     int i;
     tFunkotronic_spec* the_funk;
 
@@ -73,6 +86,139 @@ void C2_HOOK_FASTCALL DisposeFunkotronics(int pOwner) {
             }
         }
     }
+#else
+    __asm {
+            push ecx
+            mov eax, dword ptr [gFunkotronics_array]
+            push ebx
+            push ebp
+            xor ebp, ebp
+            cmp eax, ebp
+            mov dword ptr [esp + 8], ecx
+            je L00474aad
+            mov ecx, dword ptr [gFunkotronics_array_size]
+            xor ebx, ebx
+            cmp ecx, ebp
+            jle L00474aad
+            push edi
+            push esi
+            lea esi, [eax + 0x154]
+    L0047497e:
+            call PossibleService
+            mov eax, dword ptr [esp + 0x10]
+            mov ecx, dword ptr [esi - 0x154]
+            cmp ecx, eax
+            jne L00474a97
+            mov eax, dword ptr [esi]
+            mov dword ptr [esi - 0x154], 0xfffffc19
+            cmp eax, ebp
+            je L004749b0
+            mov ecx, eax
+            push ecx
+            call BrMemFree
+            add esp, 4
+    L004749b0:
+            cmp dword ptr [esi - 0x104], ebp
+            jne L004749d0
+            cmp dword ptr [esi - 0xf8], 6
+            jne L004749d0
+            mov edx, dword ptr [esi - 0xf4]
+            push edx
+            call BrMemFree
+            add esp, 4
+    L004749d0:
+            mov eax, dword ptr [esi - 0x104]
+            cmp eax, 1
+            jne L00474a33
+            mov eax, dword ptr [esi - 0xf8]
+            push eax
+            call BrMemFree
+            add esp, 4
+            lea ecx, [esi - 0xf0]
+            call EndFlic
+            mov ecx, dword ptr [esi - 0x14c]
+            mov edx, dword ptr [ecx + 0x40]
+            mov eax, dword ptr [edx + 8]
+            push eax
+            call BrMemFree
+            mov ecx, dword ptr [esi - 0x14c]
+            add esp, 4
+            mov edx, dword ptr [ecx + 0x40]
+            mov dword ptr [edx + 8], ebp
+            mov eax, dword ptr [esi - 0x14c]
+            mov ecx, dword ptr [eax + 0x40]
+            push ecx
+            call BrPixelmapFree
+            mov edx, dword ptr [esi - 0x14c]
+            add esp, 4
+            mov dword ptr [edx + 0x40], ebp
+            jmp L00474a97
+    L00474a33:
+            cmp eax, 2
+            jne L00474a70
+            mov eax, dword ptr [esi - 0xf0]
+            xor ebx, ebx
+            cmp eax, ebp
+            jle L00474a97
+            lea edi, [esi - 0xec]
+    L00474a4a:
+            mov eax, dword ptr [edi]
+            push eax
+            call BrActorRemove
+            mov ecx, dword ptr [edi]
+            add esp, 4
+            push ecx
+            call BrActorFree
+            mov eax, dword ptr [esi - 0xf0]
+            add esp, 4
+            inc ebx
+            add edi, 4
+            cmp ebx, eax
+            jl L00474a4a
+            jmp L00474a97
+    L00474a70:
+            cmp eax, 3
+            jne L00474a97
+            mov eax, dword ptr [esi - 0xf0]
+            cmp eax, ebp
+            je L00474a97
+            push eax
+            call BrActorRemove
+            mov edx, dword ptr [esi - 0xf0]
+            add esp, 4
+            push edx
+            call BrActorFree
+            add esp, 4
+    L00474a97:
+            mov eax, dword ptr [gFunkotronics_array_size]
+            inc ebx
+            add esi, 0x158
+            cmp ebx, eax
+            jl L0047497e
+            pop esi
+            pop edi
+    L00474aad:
+            pop ebp
+            pop ebx
+            pop ecx
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // CalcProximities

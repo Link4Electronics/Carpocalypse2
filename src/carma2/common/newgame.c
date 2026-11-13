@@ -38,9 +38,15 @@ tJoinable_game gGames_to_join[6];
 // GLOBAL: CARMA2_HW 0x00763960
 tNet_game_options gNet_settings[9];
 
+#ifdef CARPOCALYPSE2_MATCHING
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern void C2_HOOK_FASTCALL NetDisposeGameDetails(tNet_game_details* pDetails);
+extern tU32 C2_HOOK_FASTCALL PDGetTotalTime(void);
+extern int gINT_00688748;
+#endif
 // FUNCTION: CARMA2_HW 0x00468140
 void C2_HOOK_FASTCALL SetOptions(tNet_game_type pGame_type, tNet_game_options* pGame_options) {
-
     pGame_options->show_players_on_map = gNet_settings[0].show_players_on_map;
     pGame_options->enable_text_messages = gNet_settings[0].enable_text_messages;
     pGame_options->show_powerups_on_map = gNet_settings[0].show_powerups_on_map;
@@ -53,7 +59,6 @@ void C2_HOOK_FASTCALL SetOptions(tNet_game_type pGame_type, tNet_game_options* p
     pGame_options->race_sequence_type = gNet_settings[0].race_sequence_type;
     pGame_options->car_choice = gNet_settings[0].car_choice;
     pGame_options->starting_target = gNet_settings[pGame_type + 1].starting_target;
-
 }
 
 void C2_HOOK_FASTCALL SetGameTarget(tNet_game_type* pGame_type, tNet_game_options* pGame_options) {
@@ -91,7 +96,6 @@ tNet_game_options* gChosen_net_game_options;
 
 // FUNCTION: CARMA2_HW 0x00468d70
 int C2_HOOK_FASTCALL ChooseNetCar(tNet_game_details* pNet_game, tNet_game_options* pOptions, int* pCar_index, int pIm_the_host_so_fuck_off) {
-
     if (!pIm_the_host_so_fuck_off) {
         return 1;
     }
@@ -105,7 +109,8 @@ int C2_HOOK_FASTCALL ChooseNetCar(tNet_game_details* pNet_game, tNet_game_option
 }
 
 // FUNCTION: CARMA2_HW 0x004681d0
-void C2_HOOK_FASTCALL AddToJoinList(tNet_game_details* pGame) {
+void C2_NAKED C2_HOOK_FASTCALL AddToJoinList(tNet_game_details* pGame) {
+#ifndef CARPOCALYPSE2_MATCHING
     int i;
     int slot_to_use;
     tU32 this_game_ID;
@@ -133,6 +138,77 @@ void C2_HOOK_FASTCALL AddToJoinList(tNet_game_details* pGame) {
         gGames_to_join[slot_to_use].game = pGame;
         gGames_to_join[slot_to_use].time = PDGetTotalTime();
     }
+#else
+    __asm {
+            push ecx
+            push ebx
+            push ebp
+            push esi
+            push edi
+            mov dword ptr [esp + 0x10], ecx
+            or ebp, 0xffffffff
+            _emit 0xe8
+        _emit 0x4f
+        _emit 0x6c
+        _emit 0x03
+        _emit 0x00
+            mov ebx, eax
+            xor edi, edi
+            mov esi, offset gGames_to_join
+    L004681ea:
+            mov ecx, dword ptr [esi]
+            test ecx, ecx
+            je L004681f9
+            _emit 0xe8
+        _emit 0x3b
+        _emit 0x6c
+        _emit 0x03
+        _emit 0x00
+            cmp eax, ebx
+            je L00468207
+    L004681f9:
+            add esi, 8
+            inc edi
+            cmp esi, offset gINT_00688748
+            jl L004681ea
+            jmp L00468220
+    L00468207:
+            mov ecx, dword ptr [edi*8 + gGames_to_join]
+            call NetDisposeGameDetails
+            mov dword ptr [edi*8 + gGames_to_join], 0
+            mov ebp, edi
+    L00468220:
+            test ebp, ebp
+            jge L00468243
+            xor ecx, ecx
+            mov eax, offset gGames_to_join
+    L0046822b:
+            cmp dword ptr [eax], 0
+            je L0046823d
+            add eax, 8
+            inc ecx
+            cmp eax, offset gINT_00688748
+            jl L0046822b
+            jmp L0046823f
+    L0046823d:
+            mov ebp, ecx
+    L0046823f:
+            test ebp, ebp
+            jl L0046825a
+    L00468243:
+            mov eax, dword ptr [esp + 0x10]
+            mov dword ptr [ebp*8 + gGames_to_join], eax
+            call PDGetTotalTime
+            mov dword ptr [ebp*8 + 0x68871c], eax
+    L0046825a:
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            pop ecx
+            ret
+    }
+#endif
 }
 
 void C2_HOOK_FASTCALL SetUpOtherNetThings(tNet_game_details* pGame_details) {

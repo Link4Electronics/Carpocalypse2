@@ -149,6 +149,23 @@ void C2_HOOK_FASTCALL BackupNetworkOptions(void) {
     gFrontend_backup_net_options = gFrontend_net_options;
 }
 
+#ifdef CARPOCALYPSE2_MATCHING
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern int C2_HOOK_FASTCALL SaveOptions(void);
+extern int C2_HOOK_FASTCALL WhichItemIsSelectedIn(tFrontend_spec* pFrontend, int pGroup);
+extern tNet_game_options gFrontend_net_options;
+extern int gNet_last_game_type;
+extern tNet_game_options gNet_settings[9];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern void C2_HOOK_FASTCALL FuckWithWidths(tFrontend_spec* pFrontend);
+extern tU32 C2_HOOK_FASTCALL PDGetTotalTime(void);
+extern tNet_game_type gFrontend_game_type;
+extern tU32 gFrontend_net_current_roll;
+extern tU32 gFrontend_net_last_roll;
+extern int gFrontend_selected_item_index;
+#endif
 // FUNCTION: CARMA2_HW 0x00472ed0
 int C2_HOOK_FASTCALL NetOptions_Infunc(tFrontend_spec* pFrontend) {
 
@@ -171,7 +188,6 @@ int C2_HOOK_FASTCALL NetOptions_Infunc(tFrontend_spec* pFrontend) {
 
 // FUNCTION: CARMA2_HW 0x00473210
 int C2_HOOK_FASTCALL NetOptions_Outfunc(tFrontend_spec* pFrontend) {
-
     return 0;
 }
 
@@ -198,7 +214,8 @@ int C2_HOOK_FASTCALL NetOptions_CreditsRoller(tFrontend_spec* pFrontend) {
 }
 
 // FUNCTION: CARMA2_HW 0x004732b0
-int C2_HOOK_FASTCALL NetOptions_TargetRoller(tFrontend_spec* pFrontend) {
+int C2_NAKED C2_HOOK_FASTCALL NetOptions_TargetRoller(tFrontend_spec* pFrontend) {
+#ifndef CARPOCALYPSE2_MATCHING
     int increment;
     int minimum;
     int maximum;
@@ -267,10 +284,202 @@ int C2_HOOK_FASTCALL NetOptions_TargetRoller(tFrontend_spec* pFrontend) {
     }
     FuckWithWidths(pFrontend);
     return 0;
+#else
+    __asm {
+            push ebx
+            push esi
+            push edi
+            mov ebx, ecx
+            call PDGetTotalTime
+            mov esi, dword ptr ds:[gFrontend_net_last_roll]
+            mov ecx, eax
+            sub ecx, esi
+            mov dword ptr ds:[gFrontend_net_current_roll], eax
+            cmp ecx, 0x12c
+            jl L00473444
+            mov edi, dword ptr ds:[gFrontend_game_type]
+            mov dword ptr ds:[gFrontend_net_last_roll], eax
+            mov eax, edi
+            dec eax
+            je L0047330f
+            sub eax, 4
+            je L00473301
+            sub eax, 2
+            jne L00473444
+            mov eax, 0x7530
+            mov esi, 0x6ddd00
+            mov edx, eax
+            jmp L0047331b
+    L00473301:
+            mov eax, 1
+            mov esi, 0x64
+            mov edx, eax
+            jmp L0047331b
+    L0047330f:
+            mov eax, 1
+            mov esi, 0x40
+            mov edx, eax
+    L0047331b:
+            mov ecx, dword ptr ds:[gFrontend_selected_item_index]
+            cmp ecx, 0x1e
+            jne L00473330
+            mov ecx, dword ptr ds:[0x763b3c]
+            add ecx, eax
+            jmp L0047333d
+    L00473330:
+            cmp ecx, 0x1d
+            mov ecx, dword ptr ds:[0x763b3c]
+            jne L00473343
+            sub ecx, eax
+    L0047333d:
+            mov dword ptr ds:[0x763b3c], ecx
+    L00473343:
+            cmp ecx, edx
+            jge L0047334b
+            mov ecx, edx
+            jmp L00473351
+    L0047334b:
+            cmp ecx, esi
+            jle L00473357
+            mov ecx, esi
+    L00473351:
+            mov dword ptr ds:[0x763b3c], ecx
+    L00473357:
+            cmp edi, 7
+            ja L0047343d
+            jmp dword ptr [edi*4 + 0x47344c]
+            push ecx
+            lea edx, [ebx + 0x2479]
+            push 0x655aa0
+            push edx
+            call sprintf
+            add esp, 0xc
+            mov ecx, ebx
+            call FuckWithWidths
+            xor eax, eax
+            pop edi
+            pop esi
+            pop ebx
+            ret
+            mov eax, 0x10624dd3
+            mov edi, 0x3c
+            imul ecx
+            sar edx, 6
+            mov eax, edx
+            shr eax, 0x1f
+            add edx, eax
+            mov eax, 0x91a2b3c5
+            mov ecx, edx
+            imul ecx
+            add edx, ecx
+            sar edx, 0xb
+            mov eax, edx
+            shr eax, 0x1f
+            add edx, eax
+            mov eax, 0x88888889
+            mov esi, edx
+            imul ecx
+            mov eax, edx
+            add eax, ecx
+            sar eax, 5
+            mov edx, eax
+            shr edx, 0x1f
+            add eax, edx
+            cdq
+            idiv edi
+            mov eax, ecx
+            mov ecx, 0x3c
+            mov edi, edx
+            cdq
+            idiv ecx
+            test esi, esi
+            push edx
+            push edi
+            je L00473402
+            push esi
+            lea edx, [ebx + 0x2479]
+            push 0x655b0c
+            push edx
+            call sprintf
+            add esp, 0x14
+            mov ecx, ebx
+            call FuckWithWidths
+            xor eax, eax
+            pop edi
+            pop esi
+            pop ebx
+            ret
+    L00473402:
+            lea eax, [ebx + 0x2479]
+            push 0x655b00
+            push eax
+            call sprintf
+            add esp, 0x10
+            mov ecx, ebx
+            call FuckWithWidths
+            xor eax, eax
+            pop edi
+            pop esi
+            pop ebx
+            ret
+            mov edx, dword ptr ds:[0x655af8]
+            lea ecx, [ebx + 0x2479]
+            mov dword ptr [ebx + 0x2479], edx
+            mov al, byte ptr ds:[0x655afc]
+            mov byte ptr [ecx + 4], al
+    L0047343d:
+            mov ecx, ebx
+            call FuckWithWidths
+    L00473444:
+            pop edi
+            pop esi
+            xor eax, eax
+            pop ebx
+            ret
+            mov edi, edi
+            _emit 0x23
+            _emit 0x34
+            _emit 0x47
+            _emit 0x00
+            _emit 0x67
+            _emit 0x33
+            _emit 0x47
+            _emit 0x00
+            _emit 0x23
+            _emit 0x34
+            _emit 0x47
+            _emit 0x00
+            _emit 0x23
+            _emit 0x34
+            _emit 0x47
+            _emit 0x00
+            _emit 0x23
+            _emit 0x34
+            _emit 0x47
+            _emit 0x00
+            _emit 0x67
+            _emit 0x33
+            _emit 0x47
+            _emit 0x00
+            _emit 0x23
+            _emit 0x34
+            _emit 0x47
+            _emit 0x00
+            _emit 0x89
+            _emit 0x33
+            _emit 0x47
+            _emit 0x00
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00473470
-int C2_HOOK_FASTCALL NetOptions_Ok(tFrontend_spec* pFrontend) {
+int C2_NAKED C2_HOOK_FASTCALL NetOptions_Ok(tFrontend_spec* pFrontend) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     if (WhichItemIsSelectedIn(pFrontend, 1) == 2) {
         gFrontend_net_options.show_players_on_map = 1;
@@ -306,6 +515,79 @@ int C2_HOOK_FASTCALL NetOptions_Ok(tFrontend_spec* pFrontend) {
     memcpy(&gNet_settings[gNet_last_game_type], &gFrontend_net_options, sizeof(gFrontend_net_options));
     SaveOptions();
     return 0;
+#else
+    __asm {
+            push esi
+            push edi
+            mov esi, ecx
+            mov edx, 1
+            call WhichItemIsSelectedIn
+            sub eax, 2
+            mov edx, 2
+            neg eax
+            sbb eax, eax
+            mov ecx, esi
+            inc eax
+            mov dword ptr [gFrontend_net_options], eax
+            call WhichItemIsSelectedIn
+            sub eax, 5
+            mov edx, 3
+            neg eax
+            sbb eax, eax
+            mov ecx, esi
+            inc eax
+            mov dword ptr [gFrontend_net_options+0xc], eax
+            call WhichItemIsSelectedIn
+            sub eax, 8
+            mov edx, 4
+            neg eax
+            sbb eax, eax
+            mov ecx, esi
+            inc eax
+            mov dword ptr [gFrontend_net_options+0x10], eax
+            call WhichItemIsSelectedIn
+            sub eax, 0xb
+            mov edx, 6
+            neg eax
+            sbb eax, eax
+            mov ecx, esi
+            inc eax
+            mov dword ptr [gFrontend_net_options+0x18], eax
+            call WhichItemIsSelectedIn
+            sub eax, 0x11
+            mov edx, 5
+            neg eax
+            sbb eax, eax
+            mov ecx, esi
+            inc eax
+            mov dword ptr [gFrontend_net_options+0x24], eax
+            call WhichItemIsSelectedIn
+            sub eax, 0xe
+            mov edx, 7
+            mov ecx, esi
+            mov dword ptr [gFrontend_net_options+0x28], eax
+            call WhichItemIsSelectedIn
+            sub eax, 0x14
+            mov ecx, 0xc
+            mov dword ptr [gFrontend_net_options+0x2c], eax
+            mov eax, dword ptr [gNet_last_game_type]
+            mov esi, offset gFrontend_net_options
+            mov edi, offset gNet_settings
+            rep movsd
+            lea edi, [eax + eax*2]
+            mov ecx, 0xc
+            shl edi, 4
+            add edi, offset gNet_settings+0x30
+            mov esi, offset gFrontend_net_options
+            rep movsd
+            call SaveOptions
+            xor eax, eax
+            pop edi
+            pop esi
+            ret
+            nop
+    }
+#endif
 }
 
 void C2_HOOK_FASTCALL RestoreNetworkOptions(void) {
@@ -315,8 +597,31 @@ void C2_HOOK_FASTCALL RestoreNetworkOptions(void) {
 }
 
 // FUNCTION: CARMA2_HW 0x00473550
-int C2_HOOK_FASTCALL NetOptions_Cancel(tFrontend_spec* pFrontend) {
+int C2_NAKED C2_HOOK_FASTCALL NetOptions_Cancel(tFrontend_spec* pFrontend) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     RestoreNetworkOptions();
     return 0;
+#else
+    __asm {
+            push esi
+            push edi
+            mov ecx, 0xc
+            mov esi, offset gFrontend_backup_net_options
+            mov edi, offset gFrontend_net_options
+            xor eax, eax
+            rep movsd
+            pop edi
+            pop esi
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }

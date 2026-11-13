@@ -60,6 +60,24 @@ static void eyeInModel(br_soft_renderer* self) {
     scache.eye_m.v[3] = s2m.m[2][3];
 }
 
+#ifdef CARPOCALYPSE2_MATCHING
+extern void C2_HOOK_STDCALL ActiveLightAccumulateColourSet(active_light* alp);
+extern void C2_HOOK_STDCALL ActiveLightAccumulateIndexSet(active_light* alp);
+extern br_int_32 C2_HOOK_STDCALL GenerateSurfaceFunctions(br_soft_renderer *self, surface_fn **fns, br_uint_32 mask);
+extern char rendererStateStoredDispatch[];
+extern char rendererStateStoredTemplateEntries[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern void C2_HOOK_STDCALL ActiveLightsUpdate(br_soft_renderer* self);
+extern br_scalar C2_HOOK_CDECL BrMatrix34Inverse();
+extern void C2_HOOK_CDECL BrMatrix34Mul();
+extern br_scalar C2_HOOK_CDECL BrMatrix4Inverse();
+extern void C2_HOOK_CDECL BrMatrix4Mul34();
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern void C2_HOOK_CDECL BrMatrix34ApplyP();
+extern void C2_HOOK_CDECL BrMatrix34TApplyV();
+#endif
 // FUNCTION: CARMA2_HW 0x00543ec0
 void C2_HOOK_STDCALL ViewToModelUpdate(br_soft_renderer* self) {
 
@@ -89,7 +107,8 @@ void C2_HOOK_STDCALL StaticCacheUpdate_PerScene(br_soft_renderer* self) {
 }
 
 // FUNCTION: CARMA2_HW 0x00543a80
-void C2_HOOK_STDCALL StaticCacheUpdate_PerModel(br_soft_renderer* self) {
+void C2_NAKED C2_HOOK_STDCALL StaticCacheUpdate_PerModel(br_soft_renderer* self) {
+#ifndef CARPOCALYPSE2_MATCHING
 
 #if COUNTERS
     CounterPerModel++;
@@ -115,10 +134,202 @@ void C2_HOOK_STDCALL StaticCacheUpdate_PerModel(br_soft_renderer* self) {
     }
 
     ActiveLightsUpdate(self);
+#else
+    __asm {
+            mov eax, dword ptr [scache+0x4a0]
+            sub esp, 0x40
+            test eax, eax
+            push esi
+            mov esi, dword ptr [esp + 0x48]
+            jne L00543ab1
+            lea eax, [esi + 0x4ac]
+            push eax
+            push offset scache+0x40
+            call BrMatrix34Inverse
+            fstp st(0)
+            add esp, 8
+            mov dword ptr [scache+0x4a0], 1
+    L00543ab1:
+            mov eax, dword ptr [scache+0x4a4]
+            test eax, eax
+            jne L00543adf
+            lea ecx, [esi + 0x4dc]
+            lea edx, [esi + 0x4ac]
+            push ecx
+            push edx
+            push offset scache
+            call BrMatrix4Mul34
+            add esp, 0xc
+            mov dword ptr [scache+0x4a4], 1
+    L00543adf:
+            mov eax, dword ptr [esi + 0x54c]
+            cmp eax, 0xed
+            mov eax, dword ptr [esi + 0x550]
+            jne L00543be8
+            cmp eax, 0xf1
+            jne L00543bbe
+            fld dword ptr [esi + 0x4b0]
+            fld dword ptr [esi + 0x4ac]
+            fld dword ptr [esi + 0x4d4]
+            fld dword ptr [esi + 0x4d0]
+            fld dword ptr [esi + 0x4b4]
+            fxch st(2)
+            fmulp st(4), st(0)
+            fmulp st(2), st(0)
+            fxch st(1)
+            faddp st(2), st(0)
+            fmul dword ptr [esi + 0x4d8]
+            fld dword ptr [rendererStateStoredDispatch+0x50]
+            fxch st(1)
+            faddp st(2), st(0)
+            fxch st(1)
+            fchs
+            fstp dword ptr [scache+0xf4]
+            fld dword ptr [esi + 0x4bc]
+            fld dword ptr [esi + 0x4d4]
+            fld dword ptr [esi + 0x4c0]
+            fld dword ptr [esi + 0x4d8]
+            fld dword ptr [esi + 0x4b8]
+            fxch st(3)
+            fmulp st(4), st(0)
+            fmulp st(1), st(0)
+            faddp st(2), st(0)
+            fmul dword ptr [esi + 0x4d0]
+            faddp st(1), st(0)
+            fchs
+            fstp dword ptr [scache+0xf8]
+            fld dword ptr [esi + 0x4c4]
+            fld dword ptr [esi + 0x4d0]
+            fld dword ptr [esi + 0x4cc]
+            fld dword ptr [esi + 0x4d8]
+            fld dword ptr [esi + 0x4c8]
+            fxch st(3)
+            fmulp st(4), st(0)
+            fmulp st(1), st(0)
+            faddp st(2), st(0)
+            fmul dword ptr [esi + 0x4d4]
+            fxch st(2)
+            fstp dword ptr [scache+0x100]
+            fxch st(1)
+            faddp st(1), st(0)
+            fchs
+            fstp dword ptr [scache+0xfc]
+            jmp L00543caa
+    L00543bbe:
+            cmp eax, 0xf2
+            jne L00543c55
+            mov eax, dword ptr [esi + 0x4b4]
+            mov dword ptr [scache+0xf4], eax
+            mov ecx, dword ptr [esi + 0x4c0]
+            mov dword ptr [scache+0xf8], ecx
+            mov edx, dword ptr [esi + 0x4cc]
+            jmp L00543c43
+    L00543be8:
+            cmp eax, 0xf1
+            jne L00543c20
+            mov eax, dword ptr [scache+0x64]
+            mov ecx, dword ptr [scache+0x68]
+            mov edx, dword ptr [scache+0x6c]
+            mov dword ptr [scache+0xf4], eax
+            mov dword ptr [scache+0xf8], ecx
+            mov dword ptr [scache+0xfc], edx
+            mov dword ptr [scache+0x100], 0x3f800000
+            jmp L00543caa
+    L00543c20:
+            cmp eax, 0xf2
+            jne L00543c55
+            mov eax, dword ptr [scache+0x58]
+            mov ecx, dword ptr [scache+0x5c]
+            mov edx, dword ptr [scache+0x60]
+            mov dword ptr [scache+0xf4], eax
+            mov dword ptr [scache+0xf8], ecx
+    L00543c43:
+            mov dword ptr [scache+0xfc], edx
+            mov dword ptr [scache+0x100], 0
+            jmp L00543caa
+    L00543c55:
+            lea eax, [esi + 0x4dc]
+            lea ecx, [esi + 0x4ac]
+            push eax
+            push ecx
+            push offset scache
+            call BrMatrix4Mul34
+            add esp, 0xc
+            lea edx, [esp + 4]
+            push offset scache
+            push edx
+            call BrMatrix4Inverse
+            mov eax, dword ptr [esp + 0x2c]
+            mov ecx, dword ptr [esp + 0x30]
+            mov edx, dword ptr [esp + 0x34]
+            mov dword ptr [scache+0xf4], eax
+            mov eax, dword ptr [esp + 0x38]
+            add esp, 8
+            fstp st(0)
+            mov dword ptr [scache+0xf8], ecx
+            mov dword ptr [scache+0xfc], edx
+            mov dword ptr [scache+0x100], eax
+    L00543caa:
+            fld dword ptr [scache+0xf8]
+            fld dword ptr [scache+0xf4]
+            fmul dword ptr [scache+0xf4]
+            fld dword ptr [scache+0xfc]
+            fxch st(2)
+            fmul dword ptr [scache+0xf8]
+            fxch st(2)
+            fmul dword ptr [scache+0xfc]
+            fxch st(2)
+            faddp st(1), st(0)
+            fxch st(1)
+            faddp st(1), st(0)
+            fsqrt
+            fcom dword ptr [rendererStateStoredDispatch+0x58]
+            fnstsw ax
+            test ah, 0x41
+            jne L00543d23
+            fdivr qword ptr [rendererStateStoredDispatch+0x60]
+            fld st(0)
+            fld st(1)
+            fxch st(1)
+            fmul dword ptr [scache+0xf4]
+            fxch st(1)
+            fmul dword ptr [scache+0xf8]
+            fxch st(2)
+            fmul dword ptr [scache+0xfc]
+            fxch st(1)
+            fstp dword ptr [scache+0x104]
+            fxch st(1)
+            fstp dword ptr [scache+0x108]
+            fstp dword ptr [scache+0x10c]
+            jmp L00543d43
+    L00543d23:
+            fstp st(0)
+            mov dword ptr [scache+0x104], 0x3f800000
+            mov dword ptr [scache+0x108], 0
+            mov dword ptr [scache+0x10c], 0
+    L00543d43:
+            cmp dword ptr [esi + 0x554], 0xf6
+            je L00543d6a
+            lea ecx, [esi + 0x51c]
+            lea edx, [esi + 0x4ac]
+            push ecx
+            push edx
+            push offset scache+0x70
+            call BrMatrix34Mul
+            add esp, 0xc
+    L00543d6a:
+            push esi
+            call ActiveLightsUpdate
+            pop esi
+            add esp, 0x40
+            ret 4
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00543d80
-br_error C2_HOOK_STDCALL CacheUpdate(br_soft_renderer* self) {
+br_error C2_NAKED C2_HOOK_STDCALL CacheUpdate(br_soft_renderer* self) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     if (!rend.block_changed && !rend.range_changed && self->state.cache.valid) {
         return 0;
@@ -146,10 +357,108 @@ br_error C2_HOOK_STDCALL CacheUpdate(br_soft_renderer* self) {
     self->state.cache.nconstant_fns = GenerateSurfaceFunctions(self, self->state.cache.constant_fns, rend.block->constant_components);
 
     return 0;
+#else
+    __asm {
+            mov eax, dword ptr [rend+0x50]
+            push esi
+            mov esi, dword ptr [esp + 8]
+            push edi
+            test eax, eax
+            jne L00543da6
+            mov eax, dword ptr [rend+0x54]
+            test eax, eax
+            jne L00543da6
+            mov eax, dword ptr [esi + 0x788]
+            test eax, eax
+            jne L00543eaa
+    L00543da6:
+            mov eax, dword ptr [rend+0x4c]
+            mov edx, 0
+            mov ecx, dword ptr [eax + 0x1c]
+            mov eax, ecx
+            and ecx, 0x30
+            or cl, 0xc0
+            and al, 0x8f
+            shr ecx, 4
+            or eax, ecx
+            je L00543dd6
+            mov ecx, offset rendererStateStoredTemplateEntries+0x90
+    L00543dc9:
+            test al, 1
+            je L00543dcf
+            or edx, dword ptr [ecx]
+    L00543dcf:
+            add ecx, 4
+            shr eax, 1
+            jne L00543dc9
+    L00543dd6:
+            mov eax, dword ptr [esi + 0x794]
+            lea ecx, [esi + 0x5e4]
+            push 0x10
+            lea edi, [esi + 0x5a4]
+            mov dword ptr [esi + 0x5a0], edx
+            mov edx, dword ptr [eax]
+            push ecx
+            push edi
+            push eax
+            call dword ptr [edx + 0x78]
+            fld dword ptr [esi + 0x5c]
+            fld dword ptr [esi + 0x60]
+            fld dword ptr [esi + 0x604]
+            fld dword ptr [esi + 0x4c]
+            fmul dword ptr [esi + 0x604]
+            fld dword ptr [esi + 0x50]
+            fxch st(1)
+            fstp dword ptr [esi + 0x76c]
+            fmul dword ptr [esi + 0x608]
+            fld dword ptr [esi + 0x54]
+            fxch st(1)
+            fstp dword ptr [esi + 0x770]
+            fmul dword ptr [esi + 0x604]
+            fld dword ptr [esi + 0x58]
+            fxch st(1)
+            fstp dword ptr [esi + 0x774]
+            fmul dword ptr [esi + 0x608]
+            fxch st(1)
+            fmulp st(3), st(0)
+            add esp, 0x10
+            lea eax, [esi + 0x728]
+            fstp dword ptr [esi + 0x778]
+            fxch st(1)
+            fadd dword ptr [esi + 0x5c4]
+            fxch st(1)
+            fmul dword ptr [esi + 0x608]
+            fxch st(1)
+            fstp dword ptr [esi + 0x77c]
+            fadd dword ptr [esi + 0x5c8]
+            fstp dword ptr [esi + 0x780]
+            mov ecx, dword ptr [rend+0x4c]
+            mov edx, dword ptr [ecx + 0x1c]
+            push edx
+            push eax
+            push esi
+            call GenerateSurfaceFunctions
+            mov dword ptr [esi + 0x724], eax
+            mov eax, dword ptr [rend+0x4c]
+            lea edx, [esi + 0x74c]
+            mov ecx, dword ptr [eax + 0x18]
+            push ecx
+            push edx
+            push esi
+            call GenerateSurfaceFunctions
+            mov dword ptr [esi + 0x748], eax
+    L00543eaa:
+            pop edi
+            xor eax, eax
+            pop esi
+            ret 4
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00543f10
-void C2_HOOK_STDCALL ActiveLightsFind(br_soft_renderer* self) {
+void C2_NAKED C2_HOOK_STDCALL ActiveLightsFind(br_soft_renderer* self) {
+#ifndef CARPOCALYPSE2_MATCHING
     int l;
     soft_state_light* lp;
     active_light* alp;
@@ -205,10 +514,125 @@ void C2_HOOK_STDCALL ActiveLightsFind(br_soft_renderer* self) {
         alp++;
         scache.nlights_view += 1;
     }
+#else
+    __asm {
+            xor eax, eax
+            push ebx
+            mov dword ptr [scache+0x498], eax
+            mov dword ptr [scache+0x49c], eax
+            mov eax, dword ptr [esp + 8]
+            push ebp
+            push esi
+            push edi
+            lea edi, [eax + 0x6c]
+            mov esi, offset scache+0x118
+            mov ebx, edi
+            mov ebp, 0x10
+    L00543f33:
+            cmp dword ptr [ebx], 1
+            je L00543f6e
+            cmp dword ptr [ebx + 4], 0xb1
+            jne L00543f6e
+            mov dword ptr [esi + 0x34], ebx
+            push esi
+            fld dword ptr [ebx + 0x30]
+            fdivr qword ptr [rendererStateStoredDispatch+0x60]
+            fstp dword ptr [esi + 0x28]
+            mov ecx, dword ptr [ebx]
+            mov dword ptr [esi], ecx
+            call ActiveLightAccumulateIndexSet
+            push esi
+            call ActiveLightAccumulateColourSet
+            mov eax, dword ptr [scache+0x498]
+            add esi, 0x38
+            inc eax
+            mov dword ptr [scache+0x498], eax
+    L00543f6e:
+            add ebx, 0x3c
+            dec ebp
+            jne L00543f33
+            mov ebx, 0x10
+    L00543f79:
+            cmp dword ptr [edi], 1
+            je L00544011
+            cmp dword ptr [edi + 4], 0xb0
+            jne L00544011
+            lea eax, [esi + 4]
+            lea ecx, [edi + 8]
+            mov dword ptr [eax + 0x30], edi
+            fld dword ptr [edi + 0x30]
+            fdivr qword ptr [rendererStateStoredDispatch+0x60]
+            fstp dword ptr [esi + 0x28]
+            mov edx, dword ptr [edi]
+            mov dword ptr [esi], edx
+            mov ebp, dword ptr [ecx]
+            mov edx, eax
+            mov dword ptr [edx], ebp
+            mov ebp, dword ptr [ecx + 4]
+            mov dword ptr [edx + 4], ebp
+            mov ecx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 8], ecx
+            mov ecx, dword ptr [edi]
+            cmp ecx, 0xd0
+            jne L00543fe1
+            fld dword ptr [edi + 0x14]
+            fmul dword ptr [esi + 0x28]
+            fstp dword ptr [esi + 0x10]
+            fld dword ptr [edi + 0x18]
+            fmul dword ptr [esi + 0x28]
+            fstp dword ptr [eax + 0x10]
+            fld dword ptr [edi + 0x1c]
+            fmul dword ptr [esi + 0x28]
+            fstp dword ptr [esi + 0x18]
+            jmp L00543ff7
+    L00543fe1:
+            lea edx, [edi + 0x14]
+            lea eax, [esi + 0x10]
+            mov ecx, dword ptr [edx]
+            mov dword ptr [eax], ecx
+            mov ecx, dword ptr [edx + 4]
+            mov dword ptr [eax + 4], ecx
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [eax + 8], edx
+    L00543ff7:
+            push esi
+            call ActiveLightAccumulateIndexSet
+            push esi
+            call ActiveLightAccumulateColourSet
+            mov eax, dword ptr [scache+0x49c]
+            add esi, 0x38
+            inc eax
+            mov dword ptr [scache+0x49c], eax
+    L00544011:
+            add edi, 0x3c
+            dec ebx
+            jne L00543f79
+            mov eax, dword ptr [scache+0x49c]
+            test eax, eax
+            jne L00544046
+            mov ecx, dword ptr [scache+0x498]
+            mov eax, 1
+            cmp ecx, eax
+            jne L00544046
+            mov ecx, dword ptr [scache+0x118]
+            mov dword ptr [scache+0x114], eax
+            cmp ecx, 0xd0
+            je L00544050
+    L00544046:
+            mov dword ptr [scache+0x114], 0
+    L00544050:
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            ret 4
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00544060
-void C2_HOOK_STDCALL ActiveLightsUpdate(br_soft_renderer* self) {
+void C2_NAKED C2_HOOK_STDCALL ActiveLightsUpdate(br_soft_renderer* self) {
+#ifndef CARPOCALYPSE2_MATCHING
     active_light* alp;
     int l;
 
@@ -248,6 +672,584 @@ void C2_HOOK_STDCALL ActiveLightsUpdate(br_soft_renderer* self) {
             break;
         }
     }
+#else
+    __asm {
+            push ecx
+            mov eax, dword ptr ds:[0x79fe98]
+            push ebx
+            xor ebx, ebx
+            push ebp
+            push esi
+            cmp eax, ebx
+            push edi
+            mov esi, 0x79fb18
+            mov dword ptr [esp + 0x10], ebx
+            jle L005442ca
+            mov ebp, dword ptr [esp + 0x18]
+    L00544081:
+            mov eax, dword ptr [esi]
+            add eax, 0xffffff30
+            cmp eax, 0xe2
+            ja L005442b0
+            xor ecx, ecx
+            mov cl, byte ptr [eax + 0x5443b8]
+            jmp dword ptr [ecx*4 + 0x5443a4]
+            mov edx, dword ptr [esi + 0x34]
+            lea eax, [ebp + 0x4ac]
+            add edx, 0x14
+            lea edi, [esi + 0x10]
+            push eax
+            push edx
+            push edi
+            call BrMatrix34TApplyV
+            _emit 0xd9
+        _emit 0x07
+            fld dword ptr [esi + 0x14]
+            fld dword ptr [esi + 0x18]
+            fxch st(2)
+            fst dword ptr [esp + 0x24]
+            fld st(1)
+            fxch st(1)
+            fmul dword ptr [esp + 0x24]
+            fxch st(1)
+            fmul st(0), st(2)
+            fxch st(3)
+            fst dword ptr [esp + 0x24]
+            fmul dword ptr [esp + 0x24]
+            fxch st(3)
+            faddp st(1), st(0)
+            fxch st(2)
+            faddp st(2), st(0)
+            fxch st(1)
+            add esp, 0xc
+            fsqrt
+            fstp st(1)
+            fcom dword ptr ds:[0x58c8f0]
+            fnstsw ax
+            test ah, 0x41
+            jne L00544129
+            fdivr qword ptr ds:[0x58c8f8]
+            _emit 0xd9
+        _emit 0x07
+            fld dword ptr [esi + 0x14]
+            fld dword ptr [esi + 0x18]
+            fxch st(2)
+            fxch st(1)
+            fxch st(1)
+            fmul st(0), st(3)
+            fxch st(1)
+            fmul st(0), st(3)
+            fxch st(2)
+            fmul st(0), st(3)
+            fxch st(1)
+            _emit 0xd9
+        _emit 0x1f
+            fxch st(1)
+            fstp dword ptr [esi + 0x14]
+            fstp dword ptr [esi + 0x18]
+            fstp st(0)
+            jmp L00544137
+    L00544129:
+            fstp st(0)
+            mov dword ptr [edi], 0x3f800000
+            mov dword ptr [esi + 0x14], ebx
+            mov dword ptr [esi + 0x18], ebx
+    L00544137:
+            fld dword ptr ds:[0x79fb04]
+            _emit 0xd8
+        _emit 0x07
+            fstp dword ptr [esi + 0x1c]
+            fld dword ptr ds:[0x79fb08]
+            fadd dword ptr [esi + 0x14]
+            fstp dword ptr [esi + 0x20]
+            fld dword ptr ds:[0x79fb0c]
+            fadd dword ptr [esi + 0x18]
+            fstp dword ptr [esi + 0x24]
+            fld dword ptr [esi + 0x1c]
+            fld dword ptr [esi + 0x20]
+            fld dword ptr [esi + 0x24]
+            fxch st(2)
+            fst dword ptr [esp + 0x18]
+            fld st(1)
+            fxch st(1)
+            fmul dword ptr [esp + 0x18]
+            fxch st(1)
+            fmul st(0), st(2)
+            fxch st(3)
+            fst dword ptr [esp + 0x18]
+            fmul dword ptr [esp + 0x18]
+            fxch st(3)
+            faddp st(1), st(0)
+            fxch st(2)
+            faddp st(2), st(0)
+            fxch st(1)
+            fsqrt
+            fstp st(1)
+            fcom dword ptr ds:[0x58c8f0]
+            fnstsw ax
+            test ah, 0x41
+            jne L005441ca
+            fdivr qword ptr ds:[0x58c8f8]
+            fld dword ptr [esi + 0x1c]
+            fld dword ptr [esi + 0x20]
+            fld dword ptr [esi + 0x24]
+            fxch st(2)
+            fxch st(1)
+            fxch st(1)
+            fmul st(0), st(3)
+            fxch st(1)
+            fmul st(0), st(3)
+            fxch st(2)
+            fmul st(0), st(3)
+            fxch st(1)
+            fstp dword ptr [esi + 0x1c]
+            fxch st(1)
+            fstp dword ptr [esi + 0x20]
+            fstp dword ptr [esi + 0x24]
+            fstp st(0)
+            jmp L005441d9
+    L005441ca:
+            fstp st(0)
+            mov dword ptr [esi + 0x1c], 0x3f800000
+            mov dword ptr [esi + 0x20], ebx
+            mov dword ptr [esi + 0x24], ebx
+    L005441d9:
+            _emit 0xd9
+        _emit 0x07
+            fld dword ptr [esi + 0x14]
+            fld dword ptr [esi + 0x18]
+            fld dword ptr [esi + 0x28]
+            fld dword ptr [esi + 0x28]
+            fld dword ptr [esi + 0x28]
+            fxch st(5)
+            fmulp st(2), st(0)
+            fxch st(1)
+            _emit 0xd9
+        _emit 0x1f
+            fxch st(2)
+            fmulp st(2), st(0)
+            fmulp st(2), st(0)
+            fstp dword ptr [esi + 0x14]
+            fstp dword ptr [esi + 0x18]
+            jmp L005442b0
+            mov ecx, dword ptr [esi + 0x34]
+            lea edx, [ebp + 0x4ac]
+            add ecx, 0x14
+            lea edi, [esi + 0x10]
+            push edx
+            push ecx
+            push edi
+            call BrMatrix34TApplyV
+            _emit 0xd9
+        _emit 0x07
+            fld dword ptr [esi + 0x14]
+            fld dword ptr [esi + 0x18]
+            fxch st(2)
+            fst dword ptr [esp + 0x24]
+            fld st(1)
+            fxch st(1)
+            fmul dword ptr [esp + 0x24]
+            fxch st(1)
+            fmul st(0), st(2)
+            fxch st(3)
+            fst dword ptr [esp + 0x24]
+            fmul dword ptr [esp + 0x24]
+            fxch st(3)
+            faddp st(1), st(0)
+            fxch st(2)
+            faddp st(2), st(0)
+            fxch st(1)
+            add esp, 0xc
+            fsqrt
+            fstp st(1)
+            fcom dword ptr ds:[0x58c8f0]
+            fnstsw ax
+            test ah, 0x41
+            jne L0054428a
+            fdivr qword ptr ds:[0x58c8f8]
+            _emit 0xd9
+        _emit 0x07
+            fld dword ptr [esi + 0x14]
+            fld dword ptr [esi + 0x18]
+            fxch st(2)
+            fxch st(1)
+            fxch st(1)
+            fmul st(0), st(3)
+            fxch st(1)
+            fmul st(0), st(3)
+            fxch st(2)
+            fmul st(0), st(3)
+            fxch st(1)
+            _emit 0xd9
+        _emit 0x1f
+            fxch st(1)
+            fstp dword ptr [esi + 0x14]
+            fstp dword ptr [esi + 0x18]
+            fstp st(0)
+            jmp L00544298
+    L0054428a:
+            fstp st(0)
+            mov dword ptr [edi], 0x3f800000
+            mov dword ptr [esi + 0x14], ebx
+            mov dword ptr [esi + 0x18], ebx
+    L00544298:
+            mov eax, dword ptr [esi + 0x34]
+            push 0x79fa40
+            add eax, 8
+            lea ecx, [esi + 4]
+            push eax
+            push ecx
+            call BrMatrix34ApplyP
+            add esp, 0xc
+    L005442b0:
+            mov eax, dword ptr [esp + 0x10]
+            mov ecx, dword ptr ds:[0x79fe98]
+            inc eax
+            add esi, 0x38
+            cmp eax, ecx
+            mov dword ptr [esp + 0x10], eax
+            jl L00544081
+    L005442ca:
+            mov eax, dword ptr ds:[0x79fe9c]
+            xor edx, edx
+            cmp eax, ebx
+            jle L0054439b
+            lea ecx, [esi + 0x1c]
+    L005442dc:
+            cmp dword ptr [esi], 0xd0
+            jne L00544387
+            mov eax, dword ptr [ecx + 0x18]
+            mov edi, ecx
+            add eax, 0x14
+            mov ebp, dword ptr [eax]
+            mov dword ptr [edi], ebp
+            mov ebp, dword ptr [eax + 4]
+            mov dword ptr [edi + 4], ebp
+            mov eax, dword ptr [eax + 8]
+            mov dword ptr [edi + 8], eax
+            fld dword ptr [ecx + 8]
+            fsub dword ptr ds:[0x58c900]
+            fstp dword ptr [ecx + 8]
+            _emit 0xd9
+        _emit 0x01
+            fld dword ptr [ecx + 4]
+            fld dword ptr [ecx + 8]
+            fxch st(2)
+            fst dword ptr [esp + 0x18]
+            fld st(1)
+            fxch st(1)
+            fmul dword ptr [esp + 0x18]
+            fxch st(1)
+            fmul st(0), st(2)
+            fxch st(3)
+            fst dword ptr [esp + 0x18]
+            fmul dword ptr [esp + 0x18]
+            fxch st(3)
+            faddp st(1), st(0)
+            fxch st(2)
+            faddp st(2), st(0)
+            fxch st(1)
+            fsqrt
+            fstp st(1)
+            fcom dword ptr ds:[0x58c8f0]
+            fnstsw ax
+            test ah, 0x41
+            jne L00544379
+            fdivr qword ptr ds:[0x58c8f8]
+            _emit 0xd9
+        _emit 0x01
+            fld dword ptr [ecx + 4]
+            fld dword ptr [ecx + 8]
+            fxch st(2)
+            fxch st(1)
+            fxch st(1)
+            fmul st(0), st(3)
+            fxch st(1)
+            fmul st(0), st(3)
+            fxch st(2)
+            fmul st(0), st(3)
+            fxch st(1)
+            _emit 0xd9
+        _emit 0x19
+            fxch st(1)
+            fstp dword ptr [ecx + 4]
+            fstp dword ptr [ecx + 8]
+            fstp st(0)
+            jmp L00544387
+    L00544379:
+            fstp st(0)
+            mov dword ptr [ecx], 0x3f800000
+            mov dword ptr [ecx + 4], ebx
+            mov dword ptr [ecx + 8], ebx
+    L00544387:
+            mov eax, dword ptr ds:[0x79fe9c]
+            inc edx
+            add esi, 0x38
+            add ecx, 0x38
+            cmp edx, eax
+            jl L005442dc
+    L0054439b:
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            pop ecx
+            ret 4
+            nop
+            _emit 0xa2
+            _emit 0x40
+            _emit 0x54
+            _emit 0x00
+            _emit 0x98
+            _emit 0x42
+            _emit 0x54
+            _emit 0x00
+            _emit 0x03
+            _emit 0x42
+            _emit 0x54
+            _emit 0x00
+            _emit 0x98
+            _emit 0x42
+            _emit 0x54
+            _emit 0x00
+            _emit 0xb0
+            _emit 0x42
+            _emit 0x54
+            _emit 0x00
+            _emit 0x00
+            _emit 0x01
+            _emit 0x02
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x04
+            _emit 0x03
+            _emit 0x03
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x005444a0

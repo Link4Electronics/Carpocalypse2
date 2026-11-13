@@ -29,6 +29,7 @@
 #include "world.h"
 #include "c2_math.h"
 
+
 // Unmapped replay pipe worker helpers (orig PDB has no symbols for these;
 // they exist only so the wrappers can emit their call/jmp operands).
 extern void C2_HOOK_FASTCALL WorkerPedPos(tPedestrian* pPed, br_vector3* pVec);
@@ -651,14 +652,71 @@ const tReplay_callback gReplay_callbacks[70] = {
     }
 };
 
+#ifdef CARPOCALYPSE2_MATCHING
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern br_actor* C2_HOOK_CDECL BrActorRemove();
+extern void C2_HOOK_FASTCALL FUN_0043c240(tCar_spec* pCar_spec, float* pPlane);
+extern void C2_HOOK_FAKE_THISCALL FUN_004f0380(tU32 pCurrent_time, int pArg2, int* pArg3, tU32 pArg4, undefined4 pArg5, undefined4 pArg6, undefined4 pArg7, undefined4 pArg8, tU32 pStart_time, tU32 pOwner, undefined4 pArg11, undefined4 pArg12, undefined* pArg13, float pArg14, undefined4 pArg15);
+extern br_matrix34 gMatrix34_006b78a0;
+extern char gPed_slick[];
+extern tProgram_state gProgram_state;
+extern tProximity_ray gProximity_rays[20];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern float C2_HOOK_FASTCALL ARGetReplayRate(void);
+extern void C2_HOOK_CDECL BrMatrix34ApplyV();
+extern void C2_HOOK_CDECL BrMatrix34TApplyV();
+extern int C2_HOOK_FASTCALL DRS3StartSound2(tS3_outlet *pOutlet, tS3_sound_id pSound, int pRepeats, int pLeft_volume, int pRight_volume, int pLeft_pitch, int pRight_pitch);
+extern int C2_HOOK_FASTCALL DRS3StartSound3D(tS3_outlet* pOutlet, int pSound_id, const br_vector3* pInitial_position, const br_vector3* pInitial_velocity, int pRepeats, int pVolume, int pPitch, int pSpeed);
+extern void C2_HOOK_FASTCALL FadePaletteDown(void);
+extern tS3_outlet* C2_HOOK_FASTCALL GetOutletFromIndex(int pIndex);
+extern void __cdecl _ftol();
+extern char gDouble_0058a908[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern void C2_HOOK_CDECL BrPixelmapLine();
+extern void C2_HOOK_FASTCALL DRPixelmapBlit(br_int_16 pX, br_int_16 pY, const br_pixelmap* pSource);
+extern void C2_HOOK_FASTCALL DRPixelmapCentredText(br_pixelmap* pPixelmap, int pX, int pY, const tDR_font* pFont, const char* pText);
+extern void C2_HOOK_FASTCALL DRPixelmapText(br_pixelmap* pPixelmap, int pX, int pY, const tDR_font* pFont, const char* pText, int pRight_edge);
+extern int C2_HOOK_FASTCALL DoMouseCursor(void);
+extern const char* C2_HOOK_FASTCALL GetMiscString(int pIndex);
+extern int C2_HOOK_FASTCALL GetNextReplayRecordState(void);
+extern tU32 C2_HOOK_FASTCALL PDGetTotalTime(void);
+extern int C2_HOOK_FASTCALL PDKeyDown(int pKey_index);
+extern tU16 C2_HOOK_FASTCALL PaletteEntry16Bit(br_pixelmap* pPal, int pEntry);
+extern void C2_HOOK_FASTCALL PossibleLock(int pValue);
+extern int C2_HOOK_FASTCALL PossibleUnlock(int pValue);
+extern tActionReplayCameraMode gAction_replay_camera_mode;
+extern br_pixelmap* gBack_screen;
+extern char gConst_kangeroo_force_factor[];
+extern tGraf_data* gCurrent_graf_data;
+extern tDR_font gFonts[28];
+extern tU32 gLast_replay_frame_time;
+extern undefined4 gNext_replay_record_state;
+extern int gReal_graf_data_index;
+extern int gRecording_mouse_disabled;
+extern br_pixelmap* gRender_palette;
+extern tReplay_headup_graphics gReplay_headup_graphics;
+extern int gReplay_show_controls;
+extern int gReplay_timeline_x1[2];
+extern int gReplay_timeline_x2[2];
+extern int gReplay_timeline_y[2];
+extern int gShow_status_message;
+extern tU32 gUnk_006a2360;
+extern tU32 gUnk_006a2364;
+extern tU32 gUnk_006a23c8;
+#endif
 // FUNCTION: CARMA2_HW 0x004c9360
 void C2_HOOK_FASTCALL ApplyFrameBoundary(tPipe_chunk** pChunk) {
-
     return ApplyTime(((tPipe_chunk_frame_bound*)*pChunk)->field_0x4);
 }
 
 // FUNCTION: CARMA2_HW 0x004c9370
-void C2_HOOK_FASTCALL ApplySound(tPipe_chunk** pChunk) {
+void C2_NAKED C2_HOOK_FASTCALL ApplySound(tPipe_chunk** pChunk) {
+#ifndef CARPOCALYPSE2_MATCHING
     tPipe_chunk_sound* chunk;
 
     if (*(tU32*)0x676918 != 0) return;
@@ -700,6 +758,123 @@ void C2_HOOK_FASTCALL ApplySound(tPipe_chunk** pChunk) {
                 0x10000);
         }
     }
+#else
+    __asm {
+            push ecx
+            mov eax, dword ptr [gDisable_sound]
+            push esi
+            test eax, eax
+            push edi
+            jne L004c9486
+            mov eax, dword ptr [ecx]
+            cmp word ptr [eax + 0x16], 0
+            jne L004c93c3
+            push 0x10000
+            mov esi, eax
+            call ARGetReplayRate
+            fabs
+            fmul qword ptr [gDouble_0058a908+0x48]
+            call _ftol
+            mov edi, dword ptr [esi]
+            push eax
+            push -1
+            xor ecx, ecx
+            mov cx, word ptr [esi + 0x14]
+            push -1
+            push 1
+            call GetOutletFromIndex
+            mov ecx, eax
+            mov edx, edi
+            call DRS3StartSound2
+            pop edi
+            pop esi
+            pop ecx
+            ret
+    L004c93c3:
+            fld dword ptr [eax + 8]
+            fld dword ptr [eax + 0xc]
+            fld dword ptr [eax + 0x10]
+            fxch st(2)
+            fst dword ptr [esp + 8]
+            fld st(1)
+            fxch st(1)
+            fmul dword ptr [esp + 8]
+            fxch st(1)
+            fmul st(0), st(2)
+            fxch st(3)
+            fst dword ptr [esp + 8]
+            fmul dword ptr [esp + 8]
+            fxch st(3)
+            faddp st(1), st(0)
+            fxch st(2)
+            faddp st(2), st(0)
+            fxch st(1)
+            fcomp dword ptr [gDouble_0058a908+0x1c]
+            fnstsw ax
+            test ah, 0x40
+            fstp st(0)
+            je L004c9447
+            mov edi, dword ptr [ecx]
+            xor esi, esi
+            push 0x10000
+            mov si, word ptr [edi + 0x16]
+            call ARGetReplayRate
+            fabs
+            fimul dword ptr [edi + 4]
+            call _ftol
+            push eax
+            mov eax, esi
+            shr eax, 8
+            and esi, 0xff
+            push eax
+            xor ecx, ecx
+            push esi
+            mov cx, word ptr [edi + 0x14]
+            mov esi, dword ptr [edi]
+            push 1
+            call GetOutletFromIndex
+            mov ecx, eax
+            mov edx, esi
+            call DRS3StartSound2
+            pop edi
+            pop esi
+            pop ecx
+            ret
+    L004c9447:
+            mov esi, dword ptr [ecx]
+            push 0x10000
+            call ARGetReplayRate
+            fabs
+            fimul dword ptr [esi + 4]
+            call _ftol
+            xor ecx, ecx
+            mov edi, dword ptr [esi]
+            mov cx, word ptr [esi + 0x16]
+            push eax
+            push ecx
+            push 1
+            lea edx, [esi + 8]
+            xor ecx, ecx
+            mov cx, word ptr [esi + 0x14]
+            push offset gZero_vector__smash
+            push edx
+            call GetOutletFromIndex
+            mov ecx, eax
+            mov edx, edi
+            call DRS3StartSound3D
+    L004c9486:
+            pop edi
+            pop esi
+            pop ecx
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004ca3f0
@@ -723,7 +898,8 @@ void C2_HOOK_FASTCALL UndoCrush(tPipe_chunk** pChunk, tPipe_chunk* pPrev_chunk) 
 }
 
 // FUNCTION: CARMA2_HW 0x004c9490
-void C2_HOOK_FASTCALL ApplyCar(tPipe_chunk** pChunk) {
+void C2_NAKED C2_HOOK_FASTCALL ApplyCar(tPipe_chunk** pChunk) {
+#ifndef CARPOCALYPSE2_MATCHING
     tU32 code = *(tU32*)*pChunk;
     tCar_spec* car;
     br_vector3 scaled;
@@ -776,10 +952,213 @@ void C2_HOOK_FASTCALL ApplyCar(tPipe_chunk** pChunk) {
     *(int*)((tU8*)car + 0x135c) = (*(tU16*)((tU8*)*pChunk + 0x42) >> 12) - 1;
     car->frame_collision_flag = *(tU16*)((tU8*)*pChunk + 0x42) >> 11 & 1;
     car->field_0x18cc = *(int*)((tU8*)*pChunk + 0x44);
+#else
+    __asm {
+            sub esp, 0x1c
+            push ebx
+            push ebp
+            mov ebp, ecx
+            push esi
+            push edi
+            mov eax, dword ptr [ebp]
+            mov ecx, dword ptr [eax]
+            test ecx, 0xffffff00
+            jne L004c94ad
+            mov ebx, offset gProgram_state+0xac
+            jmp L004c94bf
+    L004c94ad:
+            mov edx, ecx
+            and edx, 0xff
+            shr ecx, 8
+            call GetCarSpec
+            mov ebx, eax
+    L004c94bf:
+            mov esi, dword ptr [ebp]
+            mov edi, dword ptr [ebx + 0x10]
+            add esi, 4
+            add edi, 0x2c
+            mov ecx, 0xc
+            rep movsd
+            mov ecx, dword ptr [ebp]
+            mov edx, dword ptr [ebx + 8]
+            add ecx, 0x34
+            add edx, 0x68
+            mov eax, dword ptr [ecx]
+            mov dword ptr [edx], eax
+            mov eax, dword ptr [ecx + 4]
+            mov dword ptr [edx + 4], eax
+            mov ecx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 8], ecx
+            mov eax, dword ptr [ebx + 8]
+            mov edx, dword ptr [ebx + 0x10]
+            add edx, 0x2c
+            lea ecx, [eax + 0x68]
+            push edx
+            add eax, 0x1a8
+            push ecx
+            push eax
+            call BrMatrix34TApplyV
+            mov ecx, dword ptr [ebx + 8]
+            add esp, 0xc
+            fld dword ptr [ecx + 0x1a8]
+            fld dword ptr [ecx + 0x1ac]
+            fld dword ptr [ecx + 0x1b0]
+            fld st(2)
+            fmul st(0), st(3)
+            fld st(2)
+            fmul st(0), st(3)
+            faddp st(1), st(0)
+            fld st(1)
+            fmul st(0), st(2)
+            faddp st(1), st(0)
+            fcomp qword ptr [gDouble_0058a908+0x50]
+            fstp st(0)
+            fnstsw ax
+            fstp st(0)
+            test ah, 1
+            fstp st(0)
+            je L004c955f
+            mov eax, dword ptr [ebx + 0x10]
+            fld dword ptr [eax + 0x44]
+            fchs
+            fstp dword ptr [ebx + 0x70]
+            fld dword ptr [eax + 0x48]
+            fchs
+            fstp dword ptr [ebx + 0x74]
+            fld dword ptr [eax + 0x4c]
+            fchs
+            fstp dword ptr [ebx + 0x78]
+            jmp L004c95d2
+    L004c955f:
+            fld dword ptr [ecx + 0x68]
+            fld dword ptr [ecx + 0x6c]
+            fld dword ptr [ecx + 0x70]
+            fxch st(2)
+            fst dword ptr [esp + 0x10]
+            fld st(1)
+            fxch st(1)
+            fmul dword ptr [esp + 0x10]
+            fxch st(1)
+            fmul st(0), st(2)
+            fxch st(3)
+            fst dword ptr [esp + 0x10]
+            fmul dword ptr [esp + 0x10]
+            fxch st(3)
+            faddp st(1), st(0)
+            fxch st(2)
+            faddp st(2), st(0)
+            fxch st(1)
+            fsqrt
+            fstp st(1)
+            fcom dword ptr [gDouble_0058a908+0x58]
+            fnstsw ax
+            test ah, 0x41
+            jne L004c95c1
+            fdivr qword ptr [gDouble_0058a908+0x60]
+            fld dword ptr [ecx + 0x68]
+            fmul st(0), st(1)
+            fstp dword ptr [ebx + 0x70]
+            fld dword ptr [ecx + 0x6c]
+            fmul st(0), st(1)
+            fstp dword ptr [ebx + 0x74]
+            fld dword ptr [ecx + 0x70]
+            fmul st(0), st(1)
+            fstp dword ptr [ebx + 0x78]
+            fstp st(0)
+            jmp L004c95d2
+    L004c95c1:
+            xor eax, eax
+            mov dword ptr [ebx + 0x70], 0x3f800000
+            fstp st(0)
+            mov dword ptr [ebx + 0x74], eax
+            mov dword ptr [ebx + 0x78], eax
+    L004c95d2:
+            mov edx, dword ptr [ebx + 0x10]
+            lea esi, [ebx + 0x4c]
+            fld dword ptr [ebx + 0x58]
+            add edx, 0x50
+            mov eax, esi
+            mov ecx, dword ptr [edx]
+            fmul dword ptr [gDouble_0058a908+0xc]
+            mov dword ptr [eax], ecx
+            mov ecx, dword ptr [edx + 4]
+            mov dword ptr [eax + 4], ecx
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [eax + 8], edx
+            lea ecx, [esp + 0x14]
+            fstp dword ptr [esp + 0x14]
+            fld dword ptr [ebx + 0x5c]
+            fmul dword ptr [gDouble_0058a908+0xc]
+            lea edx, [esp + 0x20]
+            fstp dword ptr [esp + 0x18]
+            fld dword ptr [ebx + 0x60]
+            fmul dword ptr [gDouble_0058a908+0xc]
+            fstp dword ptr [esp + 0x1c]
+            mov eax, dword ptr [ebx + 0x10]
+            add eax, 0x2c
+            push eax
+            push ecx
+            push edx
+            call BrMatrix34ApplyV
+            fld dword ptr [esp + 0x2c]
+            _emit 0xd8
+        _emit 0x06
+            add esp, 0xc
+            pop edi
+            _emit 0xd9
+        _emit 0x1e
+            fld dword ptr [esp + 0x20]
+            fadd dword ptr [ebx + 0x50]
+            pop esi
+            fstp dword ptr [ebx + 0x50]
+            fld dword ptr [esp + 0x20]
+            fadd dword ptr [ebx + 0x54]
+            fstp dword ptr [ebx + 0x54]
+            mov eax, dword ptr [ebp]
+            movsx ecx, word ptr [eax + 0x40]
+            mov dword ptr [esp + 8], ecx
+            fild dword ptr [esp + 8]
+            fmul qword ptr [gDouble_0058a908+0x68]
+            fstp dword ptr [ebx + 0x4a4]
+            mov edx, dword ptr [ebp]
+            mov ax, word ptr [edx + 0x42]
+            xor edx, edx
+            and eax, 0x7ff
+            lea eax, [eax + eax*4]
+            shl eax, 1
+            mov dword ptr [esp + 8], eax
+            fild dword ptr [esp + 8]
+            fstp dword ptr [ebx + 0x1340]
+            mov ecx, dword ptr [ebp]
+            mov dx, word ptr [ecx + 0x42]
+            shr edx, 0xc
+            dec edx
+            mov dword ptr [ebx + 0x135c], edx
+            mov eax, dword ptr [ebp]
+            mov cx, word ptr [eax + 0x42]
+            shr ecx, 0xb
+            and ecx, 1
+            mov dword ptr [ebx + 0x64], ecx
+            mov edx, dword ptr [ebp]
+            pop ebp
+            mov eax, dword ptr [edx + 0x44]
+            mov dword ptr [ebx + 0x18cc], eax
+            pop ebx
+            add esp, 0x1c
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004c96c0
-void C2_HOOK_FASTCALL ApplyGWS(tPipe_chunk** pChunk) {
+void C2_NAKED C2_HOOK_FASTCALL ApplyGWS(tPipe_chunk** pChunk) {
+#ifndef CARPOCALYPSE2_MATCHING
     tCar_spec* car;
     tU32 code = ((tPipe_chunk_graphpical_wheel_stuff*)*pChunk)->field_0x0;
 
@@ -794,10 +1173,66 @@ void C2_HOOK_FASTCALL ApplyGWS(tPipe_chunk** pChunk) {
     *(float*)((tU8*)car + 0x4b0) = (float)((double)(int)((tPipe_chunk_graphpical_wheel_stuff*)*pChunk)->field_0x8 * 0.001181102362);
     *(float*)((tU8*)car + 0x4b4) = (float)((double)(int)((tPipe_chunk_graphpical_wheel_stuff*)*pChunk)->field_0x9 * 0.001181102362);
     *(float*)((tU8*)car + 0x4a0) = (float)((double)(int)((tPipe_chunk_graphpical_wheel_stuff*)*pChunk)->field_0x4 * 0.001831110569);
+#else
+    __asm {
+            push ecx
+            push esi
+            mov esi, ecx
+            mov eax, dword ptr [esi]
+            mov ecx, dword ptr [eax]
+            test ecx, 0xffffff00
+            jne L004c96d7
+            mov eax, 0x75bc2c
+            jmp L004c96e7
+    L004c96d7:
+            mov edx, ecx
+            and edx, 0xff
+            shr ecx, 8
+            call GetCarSpec
+    L004c96e7:
+            mov ecx, dword ptr [esi]
+            movsx edx, byte ptr [ecx + 6]
+            mov dword ptr [esp + 4], edx
+            fild dword ptr [esp + 4]
+            fmul qword ptr ds:[0x58a978]
+            fstp dword ptr [eax + 0x4a8]
+            mov ecx, dword ptr [esi]
+            movsx edx, byte ptr [ecx + 7]
+            mov dword ptr [esp + 4], edx
+            fild dword ptr [esp + 4]
+            fmul qword ptr ds:[0x58a978]
+            fstp dword ptr [eax + 0x4ac]
+            mov ecx, dword ptr [esi]
+            movsx edx, byte ptr [ecx + 8]
+            mov dword ptr [esp + 4], edx
+            fild dword ptr [esp + 4]
+            fmul qword ptr ds:[0x58a978]
+            fstp dword ptr [eax + 0x4b0]
+            mov ecx, dword ptr [esi]
+            movsx edx, byte ptr [ecx + 9]
+            mov dword ptr [esp + 4], edx
+            fild dword ptr [esp + 4]
+            fmul qword ptr ds:[0x58a978]
+            fstp dword ptr [eax + 0x4b4]
+            mov ecx, dword ptr [esi]
+            pop esi
+            movsx edx, word ptr [ecx + 4]
+            mov dword ptr [esp], edx
+            _emit 0xdb
+        _emit 0x44
+        _emit 0x24
+        _emit 0x00
+            fmul qword ptr ds:[0x58a980]
+            fstp dword ptr [eax + 0x4a0]
+            pop ecx
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004c9770
-void C2_HOOK_FASTCALL ApplyDamage(tPipe_chunk** pChunk) {
+void C2_NAKED C2_HOOK_FASTCALL ApplyDamage(tPipe_chunk** pChunk) {
+#ifndef CARPOCALYPSE2_MATCHING
     tCar_spec* car;
     tU32 code = ((tPipe_chunk_damage*)*pChunk)->field_0x0;
     int* p;
@@ -815,10 +1250,53 @@ void C2_HOOK_FASTCALL ApplyDamage(tPipe_chunk** pChunk) {
         *p += ((tPipe_chunk_damage*)*pChunk)->field_0x4[i];
         p = (int*)((tU8*)p + 0x2c);
     }
+#else
+    __asm {
+            push esi
+            mov esi, ecx
+            push edi
+            mov eax, dword ptr [esi]
+            mov ecx, dword ptr [eax]
+            test ecx, 0xffffff00
+            jne L004c9787
+            mov eax, offset gProgram_state+0xac
+            jmp L004c9797
+    L004c9787:
+            mov edx, ecx
+            and edx, 0xff
+            shr ecx, 8
+            call GetCarSpec
+    L004c9797:
+            xor ecx, ecx
+            add eax, 0x4e0
+    L004c979e:
+            mov edx, dword ptr [esi]
+            mov edi, dword ptr [eax]
+            add eax, 0x2c
+            movsx edx, byte ptr [edx + ecx + 4]
+            add edi, edx
+            inc ecx
+            mov dword ptr [eax - 0x2c], edi
+            cmp ecx, 0xc
+            jl L004c979e
+            pop edi
+            pop esi
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004c9dd0
-void C2_HOOK_FASTCALL UndoDamage(tPipe_chunk** pChunk, tPipe_chunk* pPrev_chunk) {
+void C2_NAKED C2_HOOK_FASTCALL UndoDamage(tPipe_chunk** pChunk, tPipe_chunk* pPrev_chunk) {
+#ifndef CARPOCALYPSE2_MATCHING
     tCar_spec* car;
     tU32 code = ((tPipe_chunk_damage*)*pChunk)->field_0x0;
     int* p;
@@ -836,6 +1314,48 @@ void C2_HOOK_FASTCALL UndoDamage(tPipe_chunk** pChunk, tPipe_chunk* pPrev_chunk)
         *p -= ((tPipe_chunk_damage*)*pChunk)->field_0x4[i];
         p = (int*)((tU8*)p + 0x2c);
     }
+#else
+    __asm {
+            push esi
+            mov esi, ecx
+            push edi
+            mov eax, dword ptr [esi]
+            mov ecx, dword ptr [eax]
+            test ecx, 0xffffff00
+            jne L004c9de7
+            mov eax, offset gProgram_state+0xac
+            jmp L004c9df7
+    L004c9de7:
+            mov edx, ecx
+            and edx, 0xff
+            shr ecx, 8
+            call GetCarSpec
+    L004c9df7:
+            xor ecx, ecx
+            add eax, 0x4e0
+    L004c9dfe:
+            mov edx, dword ptr [esi]
+            mov edi, dword ptr [eax]
+            add eax, 0x2c
+            movsx edx, byte ptr [ecx + edx + 4]
+            sub edi, edx
+            inc ecx
+            mov dword ptr [eax - 0x2c], edi
+            cmp ecx, 0xc
+            jl L004c9dfe
+            pop edi
+            pop esi
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004c97c0
@@ -854,7 +1374,8 @@ void C2_HOOK_FASTCALL ApplySpecial(tPipe_chunk** pChunk) {
 }
 
 // FUNCTION: CARMA2_HW 0x004c9e20
-void C2_HOOK_FASTCALL UndoSpecial(tPipe_chunk** pChunk, tPipe_chunk* pPrev_chunk) {
+void C2_NAKED C2_HOOK_FASTCALL UndoSpecial(tPipe_chunk** pChunk, tPipe_chunk* pPrev_chunk) {
+#ifndef CARPOCALYPSE2_MATCHING
     tU32 type = *(tU32*)*pChunk;
 
     if (type == 0) {
@@ -867,6 +1388,33 @@ void C2_HOOK_FASTCALL UndoSpecial(tPipe_chunk** pChunk, tPipe_chunk* pPrev_chunk
         }
         return UndoInitialTail();
     }
+#else
+    __asm {
+            mov eax, dword ptr [ecx]
+            mov eax, dword ptr [eax]
+            test eax, eax
+            jne L004c9e41
+            call ARGetReplayRate
+            fabs
+            fcomp qword ptr [gDouble_0058a908+0x60]
+            fnstsw ax
+            test ah, 0x41
+            je L004c9e49
+            jmp FadePaletteDown
+    L004c9e41:
+            dec eax
+            jne L004c9e49
+            jmp UndoInitialTail
+    L004c9e49:
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004c9140
@@ -877,7 +1425,8 @@ void C2_HOOK_FASTCALL ApplySpark(tPipe_chunk** pChunk) {
 }
 
 // FUNCTION: CARMA2_HW 0x004f87b0
-void C2_HOOK_FASTCALL ResetShrapnel(void) {
+void C2_NAKED C2_HOOK_FASTCALL ResetShrapnel(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     int i;
 
     if (gShrapnel_flags == 0) {
@@ -889,6 +1438,41 @@ void C2_HOOK_FASTCALL ResetShrapnel(void) {
         }
     }
     gShrapnel_flags = 0;
+#else
+    __asm {
+            mov eax, dword ptr [gShrapnel_flags]
+            test eax, eax
+            je L004f87ff
+            push edi
+            push esi
+            xor edi, edi
+            mov esi, offset gShrapnel
+    L004f87c2:
+            mov eax, 1
+            mov ecx, edi
+            shl eax, cl
+            mov ecx, dword ptr [gShrapnel_flags]
+            test eax, ecx
+            je L004f87e7
+            mov eax, dword ptr [esi]
+            mov ecx, dword ptr [eax + 0xc]
+            test ecx, ecx
+            je L004f87e7
+            push eax
+            call BrActorRemove
+            add esp, 4
+    L004f87e7:
+            add esi, 0x2c
+            inc edi
+            cmp esi, offset gSmoke_column
+            jl L004f87c2
+            pop esi
+            mov dword ptr [gShrapnel_flags], 0
+            pop edi
+    L004f87ff:
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004c9160
@@ -911,14 +1495,12 @@ void C2_HOOK_FASTCALL ResetScreenWobble(void) {
 
 // FUNCTION: CARMA2_HW 0x004c9180
 void C2_HOOK_FASTCALL ApplyScreenWobble(tPipe_chunk** pChunk) {
-
     SetScreenWobble(((tPipe_chunk_screen_wobble*)((tU8*)*pChunk + 4))->wobble_x,
                     ((tPipe_chunk_screen_wobble*)((tU8*)*pChunk + 4))->wobble_y);
 }
 
 // FUNCTION: CARMA2_HW 0x004c9e50
 void C2_HOOK_FASTCALL UndoScreenWobble(tPipe_chunk** pChunk, tPipe_chunk* pPrev_chunk) {
-
     SetPipeUndoFlag();
     if (pPrev_chunk != NULL) {
         tPipe_chunk_screen_wobble* wobble = (tPipe_chunk_screen_wobble*)((tU8*)pPrev_chunk + 4);
@@ -945,7 +1527,6 @@ void C2_HOOK_FASTCALL ApplyNonCar(tPipe_chunk** pChunk) {
 
 // FUNCTION: CARMA2_HW 0x004fb510
 void C2_HOOK_FASTCALL ResetSmoke(void) {
-
     gSmoke_flags = 0;
 }
 
@@ -993,13 +1574,11 @@ int C2_HOOK_FASTCALL CalcSmudgeLength(tPipe_chunk* pChunk) {
 
 // FUNCTION: CARMA2_HW 0x004c9060
 void C2_HOOK_FASTCALL ApplySmudge(tPipe_chunk** pChunk) {
-
     return WorkerSmudge(pChunk, 1);
 }
 
 // FUNCTION: CARMA2_HW 0x004c9db0
 void C2_HOOK_FASTCALL UndoSmudge(tPipe_chunk** pChunk, tPipe_chunk* pPrev_chunk) {
-
     return WorkerSmudge(pChunk, -1);
 }
 
@@ -1043,12 +1622,34 @@ void C2_HOOK_FASTCALL AdjustProxRay(int pRay_index, tU16 pCar_ID, tU16 pPed_inde
 #pragma auto_inline(on)
 
 // FUNCTION: CARMA2_HW 0x004d61f0
-void C2_HOOK_FASTCALL ResetProxRay(void) {
+void C2_NAKED C2_HOOK_FASTCALL ResetProxRay(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     tProximity_ray* ray = gProximity_rays;
     do {
         ray->car = NULL;
         ray++;
     } while ((int)ray < (int)&gProximity_rays[CARPOCALYPSE2_ASIZE(gProximity_rays)]);
+#else
+    __asm {
+            mov eax, offset gProximity_rays+0x8
+    L004d61f5:
+            mov dword ptr [eax], 0
+            add eax, 0xc
+            cmp eax, offset gPed_slick
+            jl L004d61f5
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004c97f0
@@ -1117,7 +1718,7 @@ void C2_HOOK_FASTCALL ApplyRelink(tPipe_chunk** pChunk) {
     br_actor* parent = chunk->field_0xc;
     if (actor->parent != NULL) {
         if (parent != NULL) {
-            BrActorRelink(parent, actor);
+            BrActorRelink_library(parent, actor);
         } else {
             BrActorRemove(actor);
         }
@@ -1135,7 +1736,7 @@ void C2_HOOK_FASTCALL UndoRelink(tPipe_chunk** pChunk, tPipe_chunk* pPrev_chunk)
     br_actor* parent = (br_actor*)chunk->field_0x8;
     if (actor->parent != NULL) {
         if (parent != NULL) {
-            BrActorRelink(parent, actor);
+            BrActorRelink_library(parent, actor);
         } else {
             BrActorRemove(actor);
         }
@@ -1156,7 +1757,8 @@ static tPipe_chunk_split_weld* swGetChunk(tPipe_chunk** pp) {
 }
 
 // FUNCTION: CARMA2_HW 0x004c98b0
-void C2_HOOK_FASTCALL ApplySplitWeld(tPipe_chunk** pChunk) {
+void C2_NAKED C2_HOOK_FASTCALL ApplySplitWeld(tPipe_chunk** pChunk) {
+#ifndef CARPOCALYPSE2_MATCHING
     tU32 fn = (*(tPipe_chunk_split_weld**)*pChunk)->field_0x0;
 
     if ((*(tPipe_chunk_split_weld**)*pChunk)->field_0x14) {
@@ -1172,10 +1774,69 @@ void C2_HOOK_FASTCALL ApplySplitWeld(tPipe_chunk** pChunk) {
     }
 
     return ARUndoSplitWeld(GetCarSpec(fn >> 8, fn & 0xffu));
+#else
+    __asm {
+            push esi
+            mov esi, ecx
+            mov eax, dword ptr [esi]
+            mov ecx, dword ptr [eax + 0x14]
+            test ecx, ecx
+            mov ecx, dword ptr [eax]
+            je L004c98f7
+            test ecx, 0xffffff00
+            jne L004c98d9
+            mov edx, dword ptr [esi]
+            mov eax, offset gProgram_state+0xac
+            add edx, 4
+            mov ecx, eax
+            call FUN_0043c240
+            pop esi
+            ret
+    L004c98d9:
+            mov edx, ecx
+            and edx, 0xff
+            shr ecx, 8
+            call GetCarSpec
+            mov edx, dword ptr [esi]
+            mov ecx, eax
+            add edx, 4
+            call FUN_0043c240
+            pop esi
+            ret
+    L004c98f7:
+            test ecx, 0xffffff00
+            jne L004c990d
+            mov eax, offset gProgram_state+0xac
+            mov ecx, eax
+            call ARUndoSplitWeld
+            pop esi
+            ret
+    L004c990d:
+            mov edx, ecx
+            and edx, 0xff
+            shr ecx, 8
+            call GetCarSpec
+            mov ecx, eax
+            call ARUndoSplitWeld
+            pop esi
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004c9fd0
-void C2_HOOK_FASTCALL UndoSplitWeld(tPipe_chunk** pChunk, tPipe_chunk* pPrev_chunk) {
+void C2_NAKED C2_HOOK_FASTCALL UndoSplitWeld(tPipe_chunk** pChunk, tPipe_chunk* pPrev_chunk) {
+#ifndef CARPOCALYPSE2_MATCHING
     tU32 fn = (*(tPipe_chunk_split_weld**)*pChunk)->field_0x0;
 
     if ((*(tPipe_chunk_split_weld**)*pChunk)->field_0x14) {
@@ -1191,6 +1852,64 @@ void C2_HOOK_FASTCALL UndoSplitWeld(tPipe_chunk** pChunk, tPipe_chunk* pPrev_chu
     }
 
     return FUN_0043c240(GetCarSpec(fn >> 8, fn & 0xffu), (float*)&swGetChunk(pChunk)->field_0x4);
+#else
+    __asm {
+            push esi
+            mov esi, ecx
+            mov eax, dword ptr [esi]
+            mov ecx, dword ptr [eax + 0x14]
+            test ecx, ecx
+            mov ecx, dword ptr [eax]
+            je L004ca00d
+            test ecx, 0xffffff00
+            jne L004c9ff4
+            mov eax, offset gProgram_state+0xac
+            mov ecx, eax
+            call ARUndoSplitWeld
+            pop esi
+            ret
+    L004c9ff4:
+            mov edx, ecx
+            and edx, 0xff
+            shr ecx, 8
+            call GetCarSpec
+            mov ecx, eax
+            call ARUndoSplitWeld
+            pop esi
+            ret
+    L004ca00d:
+            test ecx, 0xffffff00
+            jne L004ca028
+            mov edx, dword ptr [esi]
+            mov eax, offset gProgram_state+0xac
+            add edx, 4
+            mov ecx, eax
+            call FUN_0043c240
+            pop esi
+            ret
+    L004ca028:
+            mov edx, ecx
+            and edx, 0xff
+            shr ecx, 8
+            call GetCarSpec
+            mov edx, dword ptr [esi]
+            mov ecx, eax
+            add edx, 4
+            call FUN_0043c240
+            pop esi
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004c9930
@@ -1223,7 +1942,8 @@ void C2_HOOK_FASTCALL ApplyShrapnelShower(tPipe_chunk** pChunk) {
 }
 
 // FUNCTION: CARMA2_HW 0x004ca070
-void C2_HOOK_FASTCALL UndoShrapnelShower(tPipe_chunk** pChunk, tPipe_chunk* pPrev_chunk) {
+void C2_NAKED C2_HOOK_FASTCALL UndoShrapnelShower(tPipe_chunk** pChunk, tPipe_chunk* pPrev_chunk) {
+#ifndef CARPOCALYPSE2_MATCHING
     tPipe_chunk_shrapnel_shower* chunk = (tPipe_chunk_shrapnel_shower*)*pChunk;
     tPipe_chunk_shrapnel_shower* prev = (tPipe_chunk_shrapnel_shower*)pPrev_chunk;
 
@@ -1234,6 +1954,76 @@ void C2_HOOK_FASTCALL UndoShrapnelShower(tPipe_chunk** pChunk, tPipe_chunk* pPre
     memcpy(&gMatrix34_006b78a0, &prev->field_0xa4, sizeof(prev->field_0xa4));
 
     return FUN_004f0380(chunk->field_0x48, prev->field_0x4, (int*)prev->field_0x84, prev->field_0x44, &prev->field_0x8, &prev->field_0x20, &prev->field_0x2c, prev->field_0x50, prev->field_0x48, prev->field_0x0, &prev->field_0x54, &prev->field_0x88, &prev->field_0x14, *(float*)&prev->field_0xa0, &prev->field_0x38);
+#else
+    __asm {
+            mov eax, ecx
+            push esi
+            mov ecx, dword ptr [eax]
+            mov esi, dword ptr [ecx + 0x84]
+            test esi, esi
+            jne L004ca0f1
+            test edx, edx
+            je L004ca0f1
+            mov ecx, dword ptr [edx + 4]
+            test ecx, ecx
+            je L004ca0f1
+            mov ecx, dword ptr [edx + 0x84]
+            test ecx, ecx
+            je L004ca0f1
+            push edi
+            lea esi, [edx + 0xa4]
+            mov ecx, 0xc
+            mov edi, offset gMatrix34_006b78a0
+            rep movsd
+            lea ecx, [edx + 0x38]
+            mov eax, dword ptr [eax]
+            push ecx
+            mov ecx, dword ptr [edx + 0xa0]
+            push ecx
+            lea ecx, [edx + 0x14]
+            push ecx
+            lea ecx, [edx + 0x88]
+            push ecx
+            lea ecx, [edx + 0x54]
+            push ecx
+            mov ecx, dword ptr [edx]
+            push ecx
+            mov ecx, dword ptr [edx + 0x48]
+            push ecx
+            mov ecx, dword ptr [edx + 0x50]
+            push ecx
+            lea ecx, [edx + 0x2c]
+            push ecx
+            lea ecx, [edx + 0x20]
+            push ecx
+            lea ecx, [edx + 8]
+            push ecx
+            mov ecx, dword ptr [edx + 0x44]
+            push ecx
+            mov ecx, dword ptr [edx + 0x84]
+            mov edx, dword ptr [edx + 4]
+            push ecx
+            mov ecx, dword ptr [eax + 0x48]
+            call FUN_004f0380
+            pop edi
+    L004ca0f1:
+            pop esi
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004c99d0
@@ -1279,13 +2069,11 @@ void C2_HOOK_FASTCALL UndoSmashModelChange(tPipe_chunk** pChunk, tPipe_chunk* pP
 
 // FUNCTION: CARMA2_HW 0x004ca460
 int C2_HOOK_FASTCALL CalcRemoveFacesLength(tPipe_chunk* pChunk) {
-
     return 8 + 8 * ((tPipe_chunk_remove_faces*)pChunk)->count;
 }
 
 // FUNCTION: CARMA2_HW 0x004ca470
 int C2_HOOK_FASTCALL FUN_004ca470(tPedestrian* pPed) {
-
     if (pPed->field_0x0c != NULL && pPed->field_0x0c->field_0xb0 != NULL) {
         return pPed->field_0x0c->field_0xb0->field_0x4;
     }
@@ -1295,7 +2083,6 @@ int C2_HOOK_FASTCALL FUN_004ca470(tPedestrian* pPed) {
 #pragma auto_inline(off)
 // FUNCTION: CARMA2_HW 0x004ca4d0
 void C2_HOOK_FASTCALL FUN_004ca4d0(int pIndex, const br_vector3* pDir) {
-
     if (!gBOOL_00744804) {
         SetCharacterDirection(gPedestrian_array[pIndex & 0xffff].character, pDir, &y_unit_vector);
     }
@@ -1303,7 +2090,6 @@ void C2_HOOK_FASTCALL FUN_004ca4d0(int pIndex, const br_vector3* pDir) {
 
 // FUNCTION: CARMA2_HW 0x004ca650
 void C2_HOOK_FAKE_THISCALL FUN_004ca650(tPedestrian* pPed, undefined4 pEdx, float pSpeed) {
-
     if (!gBOOL_00744804) {
         SetCharacterMove(pPed->character, -1, pSpeed, 0, 0, GetTotalTime());
     }
@@ -1375,7 +2161,6 @@ void C2_HOOK_FASTCALL ApplyRepulseRay(tPipe_chunk** pChunk) {
 
 // FUNCTION: CARMA2_HW 0x004ca450
 int C2_HOOK_FASTCALL CalcEndMyBendLength(tPipe_chunk* pChunk) {
-
     return ((tPipe_chunk_end_my_bend*)pChunk)->length;
 }
 
@@ -1532,7 +2317,6 @@ void C2_HOOK_FASTCALL ApplyBloodSpurt(tPipe_chunk** pChunk) {
 
 // FUNCTION: CARMA2_HW 0x004ca2a0
 void C2_HOOK_FASTCALL UndoBloodSpurt(tPipe_chunk** pChunk, tPipe_chunk* pPrev_chunk) {
-
     if (pPrev_chunk != NULL) {
         tPipe_chunk_blood_spurt* chunk = (tPipe_chunk_blood_spurt*)*pChunk;
         tPipe_chunk_blood_spurt* prev = (tPipe_chunk_blood_spurt*)pPrev_chunk;
@@ -1726,7 +2510,6 @@ void C2_HOOK_FASTCALL ApplyNapalmBolt(tPipe_chunk** pChunk) {
 
 // FUNCTION: CARMA2_HW 0x004ca390
 void C2_HOOK_FASTCALL UndoNapalmBolt(tPipe_chunk** pChunk, tPipe_chunk* pPrev_chunk) {
-
     if (pPrev_chunk != NULL) {
         tPipe_chunk_napalm_bolt* chunk = (tPipe_chunk_napalm_bolt*)*pChunk;
         tPipe_chunk_napalm_bolt* prev = (tPipe_chunk_napalm_bolt*)pPrev_chunk;
@@ -1799,7 +2582,8 @@ void C2_HOOK_FASTCALL ApplyReplayFrameTime(tPipe_chunk** pChunk) {
     return ApplyTime(((tPipe_chunk_frame_bound*)*pChunk)->field_0x4);
 }
 // FUNCTION: CARMA2_HW 0x004e6280
-void C2_HOOK_FASTCALL ActualActionReplayHeadups(int pSpecial_zappy_bastard) {
+void C2_NAKED C2_HOOK_FASTCALL ActualActionReplayHeadups(int pSpecial_zappy_bastard) {
+#ifndef CARPOCALYPSE2_MATCHING
     tU16 colour1;
     tU16 colour2;
     tU16 colour3;
@@ -1949,6 +2733,442 @@ void C2_HOOK_FASTCALL ActualActionReplayHeadups(int pSpecial_zappy_bastard) {
         DoMouseCursor();
         PossibleUnlock(1);
     }
+#else
+    __asm {
+            sub esp, 0x18
+            mov eax, dword ptr [gBack_screen]
+            push ebx
+            push ebp
+            push esi
+            mov esi, ecx
+            mov edx, 4
+            mov cl, byte ptr [eax + 0x2c]
+            mov ebx, 0x51
+            cmp cl, 3
+            push edi
+            mov dword ptr [esp + 0x18], edx
+            mov dword ptr [esp + 0x14], 2
+            mov dword ptr [esp + 0x1c], 0x52
+            mov dword ptr [esp + 0x10], ebx
+            je L004e6302
+            mov ecx, dword ptr [gRender_palette]
+            call PaletteEntry16Bit
+            mov ecx, dword ptr [gRender_palette]
+            mov edx, 2
+            mov dword ptr [esp + 0x18], eax
+            call PaletteEntry16Bit
+            mov ecx, dword ptr [gRender_palette]
+            mov edx, 0x52
+            mov dword ptr [esp + 0x14], eax
+            call PaletteEntry16Bit
+            mov ecx, dword ptr [gRender_palette]
+            mov edx, ebx
+            mov dword ptr [esp + 0x1c], eax
+            call PaletteEntry16Bit
+            mov dword ptr [esp + 0x10], eax
+            mov ebx, eax
+    L004e6302:
+            call PDGetTotalTime
+            xor ecx, ecx
+            mov dword ptr [esp + 0x24], eax
+            call PDKeyDown
+            test eax, eax
+            jne L004e68d8
+            mov ecx, 1
+            call PossibleLock
+            mov ecx, dword ptr [gReplay_headup_graphics+0x4]
+            mov eax, dword ptr [gCurrent_graf_data]
+            push ecx
+            mov dx, word ptr [eax + 0x304]
+            mov cx, word ptr [eax + 0x300]
+            call DRPixelmapBlit
+            call GetNextReplayRecordState
+            test eax, eax
+            je L004e6379
+            mov edx, dword ptr [gReplay_headup_graphics+0x28]
+            mov eax, dword ptr [gCurrent_graf_data]
+            push edx
+            mov dx, word ptr [eax + 0x304]
+            mov cx, word ptr [eax + 0x300]
+            add dx, word ptr [eax + 0x35c]
+            add cx, word ptr [eax + 0x358]
+            call DRPixelmapBlit
+    L004e6379:
+            test esi, esi
+            jge L004e63a9
+            mov eax, dword ptr [gReplay_headup_graphics+0x8]
+            push eax
+            mov eax, dword ptr [gCurrent_graf_data]
+            mov dx, word ptr [eax + 0x314]
+            mov cx, word ptr [eax + 0x310]
+            add dx, word ptr [eax + 0x304]
+            add cx, word ptr [eax + 0x300]
+            jmp L004e64f4
+    L004e63a9:
+            jle L004e63d8
+            mov eax, dword ptr [gCurrent_graf_data]
+            mov ecx, dword ptr [gReplay_headup_graphics+0x20]
+            push ecx
+            mov dx, word ptr [eax + 0x304]
+            mov cx, word ptr [eax + 0x300]
+            add dx, word ptr [eax + 0x344]
+            add cx, word ptr [eax + 0x340]
+            jmp L004e64f4
+    L004e63d8:
+            call ARGetReplayRate
+            fcomp dword ptr [gConst_kangeroo_force_factor+0x128]
+            fnstsw ax
+            test ah, 1
+            je L004e6417
+            mov edx, dword ptr [gReplay_headup_graphics+0xc]
+            mov eax, dword ptr [gCurrent_graf_data]
+            push edx
+            mov dx, word ptr [eax + 0x31c]
+            mov cx, word ptr [eax + 0x318]
+            add dx, word ptr [eax + 0x304]
+            add cx, word ptr [eax + 0x300]
+            jmp L004e64f4
+    L004e6417:
+            call ARGetReplayRate
+            fcomp dword ptr [gConst_kangeroo_force_factor+0x12c]
+            fnstsw ax
+            test ah, 0x41
+            jne L004e6455
+            mov eax, dword ptr [gReplay_headup_graphics+0x1c]
+            push eax
+            mov eax, dword ptr [gCurrent_graf_data]
+            mov dx, word ptr [eax + 0x304]
+            mov cx, word ptr [eax + 0x300]
+            add dx, word ptr [eax + 0x33c]
+            add cx, word ptr [eax + 0x338]
+            jmp L004e64f4
+    L004e6455:
+            call ARGetReplayRate
+            fcomp dword ptr [gConst_kangeroo_force_factor+0x12c]
+            fnstsw ax
+            test ah, 0x40
+            je L004e6491
+            mov eax, dword ptr [gCurrent_graf_data]
+            mov ecx, dword ptr [gReplay_headup_graphics+0x18]
+            push ecx
+            mov dx, word ptr [eax + 0x304]
+            mov cx, word ptr [eax + 0x300]
+            add dx, word ptr [eax + 0x334]
+            add cx, word ptr [eax + 0x330]
+            jmp L004e64f4
+    L004e6491:
+            call ARGetReplayRate
+            fcomp dword ptr [gConst_kangeroo_force_factor+0x128]
+            fnstsw ax
+            test ah, 0x40
+            je L004e64cd
+            mov edx, dword ptr [gReplay_headup_graphics+0x10]
+            mov eax, dword ptr [gCurrent_graf_data]
+            push edx
+            mov dx, word ptr [eax + 0x304]
+            mov cx, word ptr [eax + 0x300]
+            add dx, word ptr [eax + 0x324]
+            add cx, word ptr [eax + 0x320]
+            jmp L004e64f4
+    L004e64cd:
+            mov eax, dword ptr [gReplay_headup_graphics+0x14]
+            push eax
+            mov eax, dword ptr [gCurrent_graf_data]
+            mov dx, word ptr [eax + 0x304]
+            mov cx, word ptr [eax + 0x300]
+            add dx, word ptr [eax + 0x32c]
+            add cx, word ptr [eax + 0x328]
+    L004e64f4:
+            call DRPixelmapBlit
+            mov ecx, dword ptr [gLast_replay_frame_time]
+            mov eax, dword ptr [gUnk_006a2360]
+            mov edx, dword ptr [gUnk_006a2364]
+            sub ecx, eax
+            mov dword ptr [esp + 0x20], ecx
+            sub edx, eax
+            fild dword ptr [esp + 0x20]
+            mov dword ptr [esp + 0x20], edx
+            mov esi, dword ptr [gReal_graf_data_index]
+            fild dword ptr [esp + 0x20]
+            mov ebp, dword ptr [esi*4 + gReplay_timeline_x1]
+            mov eax, dword ptr [esi*4 + gReplay_timeline_x2]
+            fdivp st(1), st(0)
+            sub eax, ebp
+            mov dword ptr [esp + 0x20], eax
+            fimul dword ptr [esp + 0x20]
+            call _ftol
+            mov edi, eax
+            add edi, ebp
+            cmp edi, ebp
+            jle L004e65f3
+            mov eax, dword ptr [esp + 0x14]
+            mov esi, dword ptr [esi*4 + gReplay_timeline_y]
+            mov ecx, dword ptr [gBack_screen]
+            and eax, 0xffff
+            lea ebx, [edi - 1]
+            push eax
+            push esi
+            push ebx
+            push esi
+            push ebp
+            push ecx
+            mov dword ptr [esp + 0x38], eax
+            call BrPixelmapLine
+            mov ebp, dword ptr [esp + 0x30]
+            add esp, 0x18
+            mov esi, 1
+            and ebp, 0xffff
+    L004e6589:
+            mov ecx, dword ptr [gReal_graf_data_index]
+            push ebp
+            mov edx, dword ptr [ecx*4 + gReplay_timeline_y]
+            lea eax, [edx + esi]
+            push eax
+            push ebx
+            push eax
+            mov eax, dword ptr [ecx*4 + gReplay_timeline_x1]
+            mov ecx, dword ptr [gBack_screen]
+            push eax
+            push ecx
+            call BrPixelmapLine
+            add esp, 0x18
+            inc esi
+            cmp esi, 6
+            jl L004e6589
+            mov ecx, dword ptr [gReal_graf_data_index]
+            mov edx, dword ptr [esp + 0x20]
+            push edx
+            mov eax, dword ptr [ecx*4 + gReplay_timeline_y]
+            add eax, 6
+            push eax
+            push ebx
+            push eax
+            mov eax, dword ptr [ecx*4 + gReplay_timeline_x1]
+            mov ecx, dword ptr [gBack_screen]
+            push eax
+            push ecx
+            call BrPixelmapLine
+            mov esi, dword ptr [gReal_graf_data_index]
+            mov ebx, dword ptr [esp + 0x28]
+            add esp, 0x18
+    L004e65f3:
+            mov eax, dword ptr [esi*4 + gReplay_timeline_x2]
+            cmp edi, eax
+            jge L004e669c
+            mov esi, dword ptr [esi*4 + gReplay_timeline_y]
+            mov edx, dword ptr [gBack_screen]
+            mov ebp, ebx
+            and ebp, 0xffff
+            dec eax
+            push ebp
+            push esi
+            push eax
+            push esi
+            push edi
+            push edx
+            call BrPixelmapLine
+            mov ebx, dword ptr [esp + 0x34]
+            add esp, 0x18
+            mov esi, 1
+            and ebx, 0xffff
+    L004e6635:
+            mov ecx, dword ptr [gReal_graf_data_index]
+            mov edx, dword ptr [gBack_screen]
+            push ebx
+            mov eax, dword ptr [ecx*4 + gReplay_timeline_y]
+            mov ecx, dword ptr [ecx*4 + gReplay_timeline_x2]
+            add eax, esi
+            dec ecx
+            push eax
+            push ecx
+            push eax
+            push edi
+            push edx
+            call BrPixelmapLine
+            add esp, 0x18
+            inc esi
+            cmp esi, 6
+            jl L004e6635
+            mov ecx, dword ptr [gReal_graf_data_index]
+            mov edx, dword ptr [gBack_screen]
+            push ebp
+            mov eax, dword ptr [ecx*4 + gReplay_timeline_y]
+            mov ecx, dword ptr [ecx*4 + gReplay_timeline_x2]
+            add eax, 6
+            dec ecx
+            push eax
+            push ecx
+            push eax
+            push edi
+            push edx
+            call BrPixelmapLine
+            mov esi, dword ptr [gReal_graf_data_index]
+            mov ebx, dword ptr [esp + 0x28]
+            add esp, 0x18
+    L004e669c:
+            mov edx, dword ptr [esp + 0x14]
+            mov eax, dword ptr [esi*4 + gReplay_timeline_y]
+            mov esi, dword ptr [esi*4 + gReplay_timeline_x1]
+            and edx, 0xffff
+            push edx
+            lea edx, [eax + 6]
+            lea ecx, [esi - 1]
+            push edx
+            push ecx
+            push eax
+            mov eax, dword ptr [gBack_screen]
+            push ecx
+            push eax
+            call BrPixelmapLine
+            mov ecx, dword ptr [gReal_graf_data_index]
+            add esp, 0x18
+            and ebx, 0xffff
+            mov eax, dword ptr [ecx*4 + gReplay_timeline_y]
+            mov ecx, dword ptr [ecx*4 + gReplay_timeline_x2]
+            push ebx
+            lea edx, [eax + 6]
+            push edx
+            push ecx
+            push eax
+            mov eax, dword ptr [gBack_screen]
+            push ecx
+            push eax
+            call BrPixelmapLine
+            mov eax, dword ptr [gReplay_show_controls]
+            add esp, 0x18
+            test eax, eax
+            je L004e6733
+            mov ecx, dword ptr [gReplay_headup_graphics+0x24]
+            mov eax, dword ptr [gCurrent_graf_data]
+            push ecx
+            mov dx, word ptr [eax + 0x304]
+            mov cx, word ptr [eax + 0x300]
+            add dx, word ptr [eax + 0x34c]
+            add cx, word ptr [eax + 0x348]
+            call DRPixelmapBlit
+    L004e6733:
+            mov ecx, 1
+            call PossibleUnlock
+            mov edi, dword ptr [esp + 0x24]
+            mov ecx, dword ptr [gUnk_006a23c8]
+            mov edx, edi
+            xor esi, esi
+            sub edx, ecx
+            cmp edx, 0x7d0
+            jae L004e679c
+            mov eax, dword ptr [gCurrent_graf_data]
+            mov edx, dword ptr [gAction_replay_camera_mode]
+            mov esi, 1
+            mov ecx, dword ptr [eax + 0x350]
+            shl ecx, 1
+            push ecx
+            lea ecx, [edx + 0x106]
+            call GetMiscString
+            push eax
+            mov eax, dword ptr [gCurrent_graf_data]
+            push offset gFonts+0x3a0
+            mov ecx, dword ptr [eax + 0x354]
+            mov edx, dword ptr [eax + 0x350]
+            push ecx
+            mov ecx, dword ptr [gBack_screen]
+            call DRPixelmapText
+    L004e679c:
+            call GetNextReplayRecordState
+            test eax, eax
+            je L004e686b
+            mov eax, dword ptr [gShow_status_message]
+            test eax, eax
+            je L004e68ad
+            cmp dword ptr [gNext_replay_record_state], 4
+            jne L004e6808
+            mov eax, dword ptr [gCurrent_graf_data]
+            test esi, esi
+            mov edi, dword ptr [eax + 0x350]
+            mov ebx, dword ptr [eax + 0x354]
+            jne L004e68ad
+            mov eax, dword ptr [gBack_screen]
+            mov ecx, dword ptr [gStatus_message_1]
+            xor edx, edx
+            mov dx, word ptr [eax + 0x34]
+            push edx
+            call GetMiscString
+            mov ecx, dword ptr [gBack_screen]
+            mov edx, edi
+            push eax
+            push offset gFonts+0x3a0
+            push ebx
+            call DRPixelmapText
+            jmp L004e68ad
+    L004e6808:
+            mov ecx, dword ptr [gCurrent_graf_data]
+            mov eax, dword ptr [ecx]
+            cdq
+            sub eax, edx
+            mov esi, eax
+            mov eax, dword ptr [ecx + 4]
+            mov ecx, dword ptr [gStatus_message_1]
+            cdq
+            sub eax, edx
+            mov edi, eax
+            sar esi, 1
+            sar edi, 1
+            call GetMiscString
+            lea ecx, [edi - 0x40]
+            mov edx, esi
+            push eax
+            push offset gFonts+0xe80
+            push ecx
+            mov ecx, dword ptr [gBack_screen]
+            call DRPixelmapCentredText
+            mov ecx, dword ptr [gStatus_message_2]
+            test ecx, ecx
+            je L004e68ad
+            call GetMiscString
+            mov ecx, dword ptr [gBack_screen]
+            add edi, -0x20
+            push eax
+            push offset gFonts+0x15c0
+            push edi
+            mov edx, esi
+            call DRPixelmapCentredText
+            jmp L004e68ad
+    L004e686b:
+            mov eax, 0x51eb851f
+            mul edi
+            shr edx, 7
+            test dl, 1
+            je L004e68ad
+            mov ecx, 1
+            call PossibleLock
+            mov edx, dword ptr [gReplay_headup_graphics]
+            mov eax, dword ptr [gCurrent_graf_data]
+            push edx
+            mov dx, word ptr [eax + 0x2fc]
+            mov cx, word ptr [eax + 0x2f8]
+            call DRPixelmapBlit
+            mov ecx, 1
+            call PossibleUnlock
+    L004e68ad:
+            mov eax, dword ptr [gRecording_mouse_disabled]
+            test eax, eax
+            jne L004e68d8
+            call GetNextReplayRecordState
+            test eax, eax
+            jne L004e68d8
+            mov ecx, 1
+            call PossibleLock
+            call DoMouseCursor
+            mov ecx, 1
+            call PossibleUnlock
+    L004e68d8:
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x18
+            ret
+    }
+#endif
 }
 
 // Replay pipe worker helpers live in replay_workers.c so they are not inlined

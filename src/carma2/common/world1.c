@@ -34,7 +34,7 @@ void C2_HOOK_FASTCALL AutoSaveAdditionalStuff(void) {
 
             v = &gProgram_state.special_volumes[index];
             BrMatrix34Copy(&v->boundary.box.mat, &gLast_actor->t.t.mat);
-            FindInverseAndWorldBox(v);
+            FindInverseAndWorlBox(v);
             SetSpecVolMatSize(gLast_actor);
         }
         SaveSpecialVolumes();
@@ -46,7 +46,7 @@ void C2_HOOK_FASTCALL AutoSaveAdditionalStuff(void) {
     FlushAllPedCaches();
 }
 
-// FindInverseAndWorldBox
+// FindInverseAndWorlBox
 
 // MungeMaterialSV
 
@@ -83,7 +83,7 @@ void C2_HOOK_FASTCALL UpdateSpecVol(void) {
 
         v = &gProgram_state.special_volumes[index];
         BrMatrix34Copy(&v->boundary.box.mat, &gLast_actor->t.t.mat);
-        FindInverseAndWorldBox(v);
+        FindInverseAndWorlBox(v);
         SetSpecVolMatSize(gLast_actor);
     }
 }
