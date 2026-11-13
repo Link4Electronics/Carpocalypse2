@@ -36,15 +36,26 @@ tU16 gPixelmap_copy_buffer[640];
 int gMouse_started;
 // GLOBAL: CARMA2_HW 0x0079ecb0
 tMouse_coord gMouse_last_pos;
-// GLOBAL: CARMA2_HW 0x0067c348
-int gNext_transient;
 // GLOBAL: CARMA2_HW 0x0067be94
 int gTransient_bitmap_index;
 // GLOBAL: CARMA2_HW 0x0067be90
 int gCurrent_cursor_index;
 int gCursor_line_width = 5;
+// The original lays these out contiguously at the end of the transient
+// bitmap array: gNext_transient at +0x4b0, gNoTransients at +0x4b4 and
+// gDim_amount at +0x4c0.  The loops' end-of-array compares resolve to
+// these symbols, so keep them explicitly initialized (which places them
+// in .data in declaration order) and adjacent.
+// GLOBAL: CARMA2_HW 0x0067be98
+tTransient_bm gTransient_bitmaps[50] = { 0 };
+// GLOBAL: CARMA2_HW 0x0067c348
+int gNext_transient = 0;
 // GLOBAL: CARMA2_HW 0x0074ca28
-int gNoTransients;
+int gNoTransients = 0;
+int gTransient_pad_0 = 0;
+int gTransient_pad_1 = 0;
+// GLOBAL: CARMA2_HW 0x0067c358
+int gDim_amount = 0;
 // GLOBAL: CARMA2_HW 0x0074a680
 char* gCurrent_palette_pixels;
 // GLOBAL: CARMA2_HW 0x006a27a8
@@ -73,10 +84,6 @@ br_colour* gScratch_pixels;
 br_pixelmap* gScratch_palette;
 // GLOBAL: CARMA2_HW 0x006923c8
 int gFaded_palette;
-// GLOBAL: CARMA2_HW 0x0079ec14
-int gDim_amount;
-// GLOBAL: CARMA2_HW 0x0067be98
-tTransient_bm gTransient_bitmaps[50];
 // GLOBAL: CARMA2_HW 0x0058fdc8
 int gCursor_tinted_top = -1;
 // GLOBAL: CARMA2_HW 0x0058fdd0

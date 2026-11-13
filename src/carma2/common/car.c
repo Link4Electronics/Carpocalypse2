@@ -7471,9 +7471,15 @@ void C2_HOOK_FASTCALL MoveAndCollideNonCar(tNon_car_spec* pNon_car, br_scalar pD
     }
     MoveNonCar(pNon_car, pDt);
     BrMatrix34ApplyP(&pNon_car->pos, &pNon_car->centre_of_mass_world_scale, &pNon_car->actor->t.t.mat);
-    pNon_car->pos.v[0] = pNon_car->pos.v[0] * gFloat_005896d4;
-    pNon_car->pos.v[1] = pNon_car->pos.v[1] * gFloat_005896d4;
-    pNon_car->pos.v[2] = pNon_car->pos.v[2] * gFloat_005896d4;
+    {
+        br_scalar pos_x = pNon_car->pos.v[0];
+        br_scalar pos_y = pNon_car->pos.v[1];
+        br_scalar pos_z = pNon_car->pos.v[2];
+
+        pNon_car->pos.v[0] = pos_x * gFloat_005896d4;
+        pNon_car->pos.v[1] = pos_y * gFloat_005896d4;
+        pNon_car->pos.v[2] = pos_z * gFloat_005896d4;
+    }
 }
 
 // FUNCTION: CARMA2_HW 0x004c2060

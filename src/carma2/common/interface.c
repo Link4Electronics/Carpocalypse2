@@ -4281,6 +4281,25 @@ int C2_HOOK_FASTCALL Controls_Ok(tFrontend_spec* pFrontend) {
 }
 
 
+// FUNCTION: CARMA2_HW 0x00487e10
+void C2_HOOK_FASTCALL LoadKeyMapping(void) {
+    FILE* f;
+    tPath_name the_path;
+    int i;
+
+    PathCat(the_path, gApplication_path, "KEYMAP_X.TXT");
+    the_path[strlen(the_path) - 5] = '0' + gKey_map_index;
+    f = DRfopen(the_path, "rt");
+    if (f == NULL) {
+        FatalError(kFatalError_CouldNotOpenKeyMapFile);
+    }
+
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gKey_mapping); i++) {
+        fscanf((FILE*)f, "%d", &gKey_mapping[i]);
+    }
+    PFfclose(f);
+}
+
 void C2_HOOK_FASTCALL SaveKeyMapping(void) {
     FILE* f;
     tPath_name the_path;

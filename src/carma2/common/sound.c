@@ -36,7 +36,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-extern tS3_outlet* gIndexed_outlets[6];
+extern tS3_outlet* gIndexed_outlets[7];
 // GLOBAL: CARMA2_HW 0x00595c28
 extern const char* gSound_periodicity_choices[3];
 // GLOBAL: CARMA2_HW 0x00595c44
@@ -156,7 +156,10 @@ tS3_outlet* gMusic_outlet;
 tS3_outlet* gCar_outlet;
 
 // GLOBAL: CARMA2_HW 0x0079e160
-tS3_outlet* gIndexed_outlets[6];
+tS3_outlet* gIndexed_outlets[7] = { 0 };
+
+// GLOBAL: CARMA2_HW 0x0079e17c
+int gEnvironmental_sound_sources_buffer_index = 0;
 
 // GLOBAL: CARMA2_HW 0x00595c38
 const char* gSound_generator_type_names[3] = {
@@ -188,9 +191,6 @@ tU32 gNext_sound_generator_munging;
 
 // GLOBAL: CARMA2_HW 0x0079e18c
 int gCount_environmental_sound_sources;
-
-// GLOBAL: CARMA2_HW 0x0079e17c
-int gEnvironmental_sound_sources_buffer_index;
 
 // GLOBAL: CARMA2_HW 0x00589ea8
 const double gDOUBLE_00589ea8 = 1.0;

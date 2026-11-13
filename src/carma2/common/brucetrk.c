@@ -290,7 +290,7 @@ intptr_t C2_HOOK_CDECL ProcessModelsCB(br_actor* pActor, void* data) {
         BrActorAdd(pActor->parent, pTrack_spec->columns[z][x].actor_0x0);
         pTrack_spec->columns[z][x].actor_0x4 = pActor;
         pTrack_spec->columns[z][x].actor_0x8 = NULL;
-        BrActorRelink(pTrack_spec->columns[z][x].actor_0x0, pActor);
+        BrActorRelink_library(pTrack_spec->columns[z][x].actor_0x0, pActor);
         gMr_blendy = NULL;
         if (pActor->model != NULL && !gAusterity_mode) {
             MungeFaces(pActor, pActor->model);

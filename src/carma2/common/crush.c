@@ -6491,42 +6491,38 @@ return_check:
 // FUNCTION: CARMA2_HW 0x00440230
 void C2_HOOK_FASTCALL SortOutSmoke(tCar_spec* pCar) {
     int i;
-    int flag;
+    int colour;
+    int old_colour;
+    int step;
+    int smoking;
 
-    flag = 0;
+    C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gSmoke_part_table) != 12);
 
-    if (pCar == NULL || pCar->driver <= 5) {
-        return;
-    }
-
-    for (i = 0; i < 12; i++) {
-        int mult;
-        int level;
-
-        mult = gSmoke_part_table[i];
-        if (mult == 0) {
-            continue;
+    smoking = 0;
+    if (pCar != NULL && pCar->driver > 5) {
+        for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(pCar->damage_units); i++) {
+            step = gSmoke_part_table[i];
+            if (step != 0) {
+                colour = (99 - pCar->damage_units[i].damage_level) / step;
+                if (colour <= 2) {
+                    smoking = 1;
+                }
+                if (pCar->damage_units[i].damage_level == pCar->damage_units[i].smoke_last_level) {
+                    continue;
+                }
+                step = gSmoke_part_table[i];
+                if (step != 0 && pCar->damage_units[i].damage_level > pCar->damage_units[i].smoke_last_level) {
+                    old_colour = (99 - pCar->damage_units[i].smoke_last_level) / step;
+                    if (step > 0 && colour != old_colour && colour <= 2) {
+                        ConditionalSmokeColumn(pCar, i, colour);
+                    }
+                }
+            }
         }
-        level = (99 - pCar->damage_units[i].damage_level) / mult;
-        if (level <= 2) {
-            flag = 1;
+        if (!smoking && IsCarSmoking(pCar)) {
+            StopCarSmoking(pCar);
         }
-        if (pCar->damage_units[i].damage_level != pCar->damage_units[i].smoke_last_level
-            && mult
-            && pCar->damage_units[i].damage_level > pCar->damage_units[i].smoke_last_level
-            && mult > 0
-            && ((99 - pCar->damage_units[i].smoke_last_level) / mult) != level
-            && level <= 2) {
-            ConditionalSmokeColumn(pCar, i, level);
-        }
-    }
-
-    if (!flag && IsCarSmoking(pCar)) {
-        StopCarSmoking(pCar);
-    }
-
-    for (i = 0; i < CARPOCALYPSE2_ASIZE(pCar->damage_units); i++) {
-        pCar->damage_units[i].smoke_last_level = pCar->damage_units[i].damage_level;
+        SetSmokeLastDamageLevel(pCar);
     }
 }
 

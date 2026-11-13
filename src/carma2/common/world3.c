@@ -1452,6 +1452,20 @@ int C2_HOOK_FASTCALL AddShadeTables(tBrender_storage* pStorage_space, const char
     return total;
 }
 
+// FUNCTION: CARMA2_HW 0x00501dd0
+void C2_HOOK_FASTCALL LoadModelsFromLineInto(tBrender_storage* pStorage_space, FILE* pFile) {
+    tPath_name path;
+    char line[256];
+    char* name;
+
+    PossibleService();
+    GetALineAndDontArgue(pFile, line);
+    name = strtok(line, "\t ,/");
+    PathCat(path, gApplication_path, "MODELS");
+    PathCat(path, path, name);
+    AddModels(pStorage_space, path);
+}
+
 // FUNCTION: CARMA2_HW 0x00501e40
 int C2_HOOK_FASTCALL AddModels(tBrender_storage* pStorage_space, const char* pPath) {
     int i;

@@ -190,7 +190,7 @@ tPhysics_object* C2_HOOK_FASTCALL DetachBit(tCar_spec* pCar, br_actor* pActor, b
 
     PipeSingleIdentity(pActor);
     FUN_004c86b0((tU32)gNon_track_actor, pActor);
-    BrActorRelink(gNon_track_actor, pActor);
+    BrActorRelink_library(gNon_track_actor, pActor);
     BrMatrix34Copy(&collision_info->transform_matrix, &pActor->t.t.mat);
     PHILSendDetachBit((tU16)car->car_ID, pActor);
     pActor->identifier[3] = 0x21;
@@ -548,7 +548,7 @@ tPhysics_object* C2_HOOK_FASTCALL SemiDetachBit(tCar_spec* pCar, br_actor* pActo
 	car_crush->field_0x270++;
 	PipeSingleIdentity(actor);
 	FUN_004c86b0((tU32)gNon_track_actor, actor);
-	BrActorRelink(gNon_track_actor, actor);
+	BrActorRelink_library(gNon_track_actor, actor);
 	BrMatrix34Copy(&collision_info->transform_matrix, &actor->t.t.mat);
 	PHILSendDetachBit(crush_info->car_ID, actor);
 	model = actor_user->models[0];

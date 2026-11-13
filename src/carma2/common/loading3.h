@@ -13,6 +13,8 @@ extern br_pixelmap* C2_HOOK_FASTCALL RealLoadPixelmap(const char* pPath_name);
 
 extern br_pixelmap* C2_HOOK_FASTCALL LoadPixelmap(const char* pPath_name);
 
+extern br_pixelmap* C2_HOOK_FASTCALL LoadPixelmapForcedSize(const char* pPath_name, int pWidth, int pHeight);
+
 extern int C2_HOOK_FASTCALL LoadInterfacePixelmaps(const char *pPath_name, br_pixelmap** pMaps, int pCapacity);
 
 extern br_pixelmap* C2_HOOK_FASTCALL LoadShadeTable(const char* pName);

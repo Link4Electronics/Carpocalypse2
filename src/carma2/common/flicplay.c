@@ -22,7 +22,10 @@
 #include "carpocalypse2_types.h"
 #include "carpocalypse2_macros.h"
 // GLOBAL: CARMA2_HW 0x00686218
-tFlic_descriptor gPanel_flic[2];
+tFlic_descriptor gPanel_flic[2] = { 0 };
+
+// GLOBAL: CARMA2_HW 0x006862f8
+tU32 gLast_panel_frame_time[2] = { 0 };
 
 // GLOBAL: CARMA2_HW 0x006861f0
 int gPanel_flic_left[2];
@@ -72,9 +75,6 @@ int gDark_mode;
 
 // GLOBAL: CARMA2_HW 0x006861e8
 extern tFlic_descriptor* gFirst_flic;
-// GLOBAL: CARMA2_HW 0x006862f8
-tU32 gLast_panel_frame_time[2];
-
 // GLOBAL: CARMA2_HW 0x006861f8
 tU32 gPanel_flic_data_length[2];
 
@@ -1415,7 +1415,7 @@ void C2_HOOK_FASTCALL UnlockBunchOfFlics(int pBunch_index) {
 void C2_HOOK_FASTCALL FlushAllFlics(int pBunch_index) {
     int i;
 
-    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gFlic_bunch); i++) {
+    for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gMain_flic_list); i++) {
         FreeFlic(i);
     }
 }
@@ -1563,7 +1563,7 @@ void C2_HOOK_FASTCALL DisposeFlicPanel(int pIndex) {
 void C2_HOOK_FASTCALL ServicePanelFlics(int pCopy_to_buffer) {
     tU32 time_diff;
     tU32 the_time;
-    tU32 old_last_time[2];
+    tU32 old_last_time[CARPOCALYPSE2_ASIZE(gPanel_flic)];
     int i;
     int j;
     int iteration_count;
@@ -1615,8 +1615,8 @@ void C2_HOOK_FASTCALL ServicePanelFlics(int pCopy_to_buffer) {
             }
         }
     }
-    TurnFlicTransparencyOff();
     LetFlicFuckWithPalettes();
+    TurnFlicTransparencyOff();
 }
 
 // FUNCTION: CARMA2_HW 0x00463270

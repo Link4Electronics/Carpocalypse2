@@ -1117,7 +1117,7 @@ void C2_HOOK_FASTCALL ApplyRelink(tPipe_chunk** pChunk) {
     br_actor* parent = chunk->field_0xc;
     if (actor->parent != NULL) {
         if (parent != NULL) {
-            BrActorRelink(parent, actor);
+            BrActorRelink_library(parent, actor);
         } else {
             BrActorRemove(actor);
         }
@@ -1135,7 +1135,7 @@ void C2_HOOK_FASTCALL UndoRelink(tPipe_chunk** pChunk, tPipe_chunk* pPrev_chunk)
     br_actor* parent = (br_actor*)chunk->field_0x8;
     if (actor->parent != NULL) {
         if (parent != NULL) {
-            BrActorRelink(parent, actor);
+            BrActorRelink_library(parent, actor);
         } else {
             BrActorRemove(actor);
         }

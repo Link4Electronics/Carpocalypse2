@@ -109,7 +109,7 @@ tPolyFontBorderColours gPoly_font_border_colours[27];
 int gInterface_fonts_loaded;
 
 // GLOBAL: CARMA2_HW 0x00765ea0
-int gInitial_count_font_texture_pages;
+int gInitial_count_font_texture_pages = 0;
 
 // GLOBAL: CARMA2_HW 0x00686494
 int gInterface_polyfont_texture_pages;

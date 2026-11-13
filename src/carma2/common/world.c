@@ -298,8 +298,12 @@ tU8 gNon_car_spec_indices[100];
 // GLOBAL: CARMA2_HW 0x0079ed30
 tU8 gNon_car_indices[88];
 
+// gGroove_by_proxy_actor follows the repair animation array in the original,
+// and the array loop's end compare resolves to it.
 // GLOBAL: CARMA2_HW 0x006a7fc8
-tRepair_animation gRepair_animations[25];
+tRepair_animation gRepair_animations[25] = { 0 };
+// GLOBAL: CARMA2_HW 0x0068b854
+br_actor* gGroove_by_proxy_actor = NULL;
 
 // GLOBAL: CARMA2_HW 0x00660258
 const char* gSpecial_effects_boundary_choices[4] = {
@@ -369,9 +373,6 @@ const char* gCamera_animation_names[2] = {
     "static",
     "tracking",
 };
-
-// GLOBAL: CARMA2_HW 0x0068b854
-br_actor* gGroove_by_proxy_actor;
 
 // GLOBAL: CARMA2_HW 0x00655bc8
 const char* gLollipop_names[3] = {
@@ -2718,16 +2719,6 @@ void C2_HOOK_FASTCALL FreeTrack(tTrack_spec* pTrack_spec) {
     }
 }
 
-// FUNCTION: CARMA2_HW 0x004ffd20
-void C2_HOOK_FASTCALL FindInverseAndWorldBox(tSpecial_volume* pSpec) {
-    br_bounds bnds;
-
-    BrVector3Set(&bnds.min, -1.f, -1.f, -1.f);
-    BrVector3Set(&bnds.max,  1.f,  1.f,  1.f);
-    GetNewBoundingBox(&pSpec->boundary.box.bounds, &bnds, &pSpec->boundary.box.mat);
-    BrMatrix34Inverse(&pSpec->boundary.box.inv_mat, &pSpec->boundary.box.mat);
-}
-
 // FUNCTION: CARMA2_HW 0x005074d0
 void C2_HOOK_FASTCALL MungeMaterialSV(br_matrix34* pMat, br_material* pMat_1, br_material* pMat_2, int pAxis_0, int pAxis_1) {
 
@@ -2968,10 +2959,83 @@ void C2_HOOK_FASTCALL AnimateSky(void) {
     }
 }
 
+static __inline int C2_HOOK_FASTCALL CalculateTextureBitsValue(tFunk_texturebits* pTexturebits) {
+    int i;
+    int value;
+
+    value = 0;
+    for (i = 0; i < pTexturebits->count; i++) {
+        if (pTexturebits->car->field_0x18cc & (1 << pTexturebits->bits[i])) {
+            value += 1 << i;
+        }
+    }
+    return value;
+}
+
+#define GROOVE_SAW(T, PERIOD) fmod((T), PERIOD) / (PERIOD)
+
+#define GROOVE_PATH_SIN_COS(TRIG, TIME, PERIOD, AMPLITUDE) \
+    ((PERIOD) != 0.0f \
+            ? (br_scalar)(TRIG(BrAngleToRadian(BrDegreeToAngle( \
+                              GROOVE_SAW(TIME, PERIOD) * 360.0f))) \
+                  * (AMPLITUDE)) \
+            : 0.0f)
+
+#define GROOVE_PATH_FLOAT(MODE, TIME, PERIOD, TEXTUREBITS, AMPLITUDE) \
+    ((MODE) == eMove_continuous \
+            ? ((PERIOD) != 0.0f \
+                      ? GROOVE_SAW(TIME, PERIOD) * (AMPLITUDE) \
+                      : 0.0) \
+            : ((MODE) == eMove_controlled \
+                      ? PERIOD * AMPLITUDE \
+                      : ((MODE) == eMove_absolute \
+                                ? (PERIOD) \
+                                : ((MODE) == eMove_linear \
+                                          ? ((PERIOD) != 0.0f \
+                                                    ? MapSawToTriangle((float)(GROOVE_SAW(TIME, PERIOD))) \
+                                                        * (AMPLITUDE) \
+                                                    : 0.0f) \
+                                          : ((MODE) == eMove_flash \
+                                                    ? (fmod((TIME), (PERIOD)) * 2.0 > (PERIOD) \
+                                                              ? -(AMPLITUDE) \
+                                                              : (AMPLITUDE)) \
+                                                    : ((MODE) == eMove_texturebits \
+                                                              ? CalculateTextureBitsValue(TEXTUREBITS) \
+                                                              : GROOVE_PATH_SIN_COS(sinf, TIME, PERIOD, AMPLITUDE)))))))
+
+#define GROOVE_ANGLE(MODE, TIME, PERIOD, TEXTUREBITS) \
+    BrDegreeToAngle(((MODE) == eMove_continuous \
+            ? ((PERIOD) != 0.0f ? GROOVE_SAW(TIME, PERIOD) * 360.0 : 0.0) \
+            : ((MODE) == eMove_controlled \
+                      ? (PERIOD) * 360.0 \
+                      : ((MODE) == eMove_absolute \
+                                ? (PERIOD) \
+                                : ((MODE) == eMove_linear \
+                                          ? ((PERIOD) != 0.0f ? MapSawToTriangle((float)(GROOVE_SAW(TIME, PERIOD))) * 360.0 : 0.0) \
+                                          : ((MODE) == eMove_flash \
+                                                    ? (fmod((TIME), (PERIOD)) * 2.0 > (PERIOD) ? -360.0 : 360.0) \
+                                                    : ((MODE) == eMove_texturebits \
+                                                              ? CalculateTextureBitsValue(TEXTUREBITS) \
+                                                              : ((PERIOD) != 0.0f ? sin(BrAngleToRadian(BrDegreeToAngle(GROOVE_SAW(TIME, PERIOD) * 360.0))) * 360.0 : 0.0))))))))
+
+#define GROOVE_FLOAT(MODE, TIME, PERIOD, TEXTUREBITS, AMPLITUDE) \
+    ((MODE) == eMove_continuous \
+            ? ((PERIOD) != 0.0f ? GROOVE_SAW(TIME, PERIOD) * (AMPLITUDE) : 0.0) \
+            : ((MODE) == eMove_controlled \
+                      ? (AMPLITUDE) * (PERIOD) \
+                      : ((MODE) == eMove_absolute \
+                                ? (PERIOD) \
+                                : ((MODE) == eMove_linear \
+                                          ? ((PERIOD) != 0.0f ? MapSawToTriangle((float)(GROOVE_SAW(TIME, PERIOD))) * (AMPLITUDE) : 0.0f) \
+                                          : ((MODE) == eMove_flash \
+                                                    ? (fmod((TIME), (PERIOD)) * 2.0 > (PERIOD) ? -(AMPLITUDE) : (AMPLITUDE)) \
+                                                    : ((MODE) == eMove_texturebits \
+                                                              ? CalculateTextureBitsValue(TEXTUREBITS) \
+                                                              : ((PERIOD) != 0.0f ? BR_SIN(BrDegreeToAngle(GROOVE_SAW(TIME, PERIOD) * 360.0)) * (AMPLITUDE) : 0.0f)))))))
+
 // FUNCTION: CARMA2_HW 0x00478e30
 void C2_HOOK_FASTCALL PathGrooveBastard(tGroovidelic_spec* pGroove, tU32 pTime, br_matrix34* pMat, int pInterrupt_it) {
     br_scalar pos;
-    float f_the_time = (float)pTime;
 
 #ifndef CARPOCALYPSE2_MATCHING
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tGroovidelic_spec, path_interrupt_status, 0x20);
@@ -2989,154 +3053,140 @@ void C2_HOOK_FASTCALL PathGrooveBastard(tGroovidelic_spec* pGroove, tU32 pTime, 
     switch (pGroove->path_type) {
     case eGroove_path_straight:
         if (pGroove->path_data.straight_info.x_delta != 0.0f) {
-
-            MOVE_FUNK_PARAMETER(pos, pGroove->path_mode, pGroove->path_data.straight_info.period.value, pGroove->path_data.straight_info.texture_info.data, pGroove->path_data.straight_info.x_delta, -pGroove->path_data.straight_info.x_delta);
-            pos += pGroove->path_data.straight_info.centre.v[0];
+            pos = pGroove->path_data.straight_info.centre.v[0]
+                + (br_scalar)(GROOVE_PATH_FLOAT(pGroove->path_mode, pTime,
+                    pGroove->path_data.straight_info.period.value, pGroove->path_data.straight_info.texture_info.data,
+                    pGroove->path_data.straight_info.x_delta));
             if (pInterrupt_it) {
                 pGroove->path_resumption_value = pos;
-                if (pos >= pMat->m[3][0]) {
-                    pGroove->path_interrupt_status = eInterrupt_greater_than;
-                } else {
+                if (pos < pMat->m[3][0]) {
                     pGroove->path_interrupt_status = eInterrupt_less_than;
+                } else {
+                    pGroove->path_interrupt_status = eInterrupt_greater_than;
                 }
+                pGroove->actor->t.t.translate.t = pGroove->path_data.straight_info.centre;
                 pMat->m[3][0] = pos;
-                BrVector3Copy(&pGroove->actor->t.t.translate.t, &pGroove->path_data.straight_info.centre);
-            } else {
-                if (pGroove->path_interrupt_status == eInterrupt_none) {
-                    pMat->m[3][0] = pos;
-                    BrVector3Copy(&pGroove->actor->t.t.translate.t, &pGroove->path_data.straight_info.centre);
-                } else if (pGroove->path_interrupt_status == eInterrupt_less_than) {
-                    if (pos < pGroove->path_resumption_value) {
-                        pGroove->path_interrupt_status = eInterrupt_none;
-                        pMat->m[3][0] = pos;
-                        BrVector3Copy(&pGroove->actor->t.t.translate.t, &pGroove->path_data.straight_info.centre);
-                    }
-                } else if (pos > pGroove->path_resumption_value) {
+            } else if (pGroove->path_interrupt_status == eInterrupt_none) {
+                pGroove->actor->t.t.translate.t = pGroove->path_data.straight_info.centre;
+                pMat->m[3][0] = pos;
+            } else if (pGroove->path_interrupt_status == eInterrupt_less_than) {
+                if (pGroove->path_resumption_value > pos) {
                     pGroove->path_interrupt_status = eInterrupt_none;
+                    pGroove->actor->t.t.translate.t = pGroove->path_data.straight_info.centre;
                     pMat->m[3][0] = pos;
-                    BrVector3Copy(&pGroove->actor->t.t.translate.t, &pGroove->path_data.straight_info.centre);
                 }
+            } else if (pGroove->path_resumption_value < pos) {
+                pGroove->path_interrupt_status = eInterrupt_none;
+                pGroove->actor->t.t.translate.t = pGroove->path_data.straight_info.centre;
+                pMat->m[3][0] = pos;
             }
         }
 
         if (pGroove->path_data.straight_info.y_delta != 0.0f) {
-
-            MOVE_FUNK_PARAMETER(pos, pGroove->path_mode, pGroove->path_data.straight_info.period.value, pGroove->path_data.straight_info.texture_info.data, pGroove->path_data.straight_info.y_delta, -pGroove->path_data.straight_info.y_delta);
-            pos += pGroove->path_data.straight_info.centre.v[1];
+            pos = pGroove->path_data.straight_info.centre.v[1]
+                + (br_scalar)(GROOVE_PATH_FLOAT(pGroove->path_mode, pTime,
+                    pGroove->path_data.straight_info.period.value, pGroove->path_data.straight_info.texture_info.data,
+                    pGroove->path_data.straight_info.y_delta));
             if (pInterrupt_it) {
                 pGroove->path_resumption_value = pos;
-                if (pos >= pMat->m[3][1]) {
-                    pGroove->path_interrupt_status = eInterrupt_greater_than;
-                } else {
+                if (pos < pMat->m[3][1]) {
                     pGroove->path_interrupt_status = eInterrupt_less_than;
+                } else {
+                    pGroove->path_interrupt_status = eInterrupt_greater_than;
                 }
+                pGroove->actor->t.t.translate.t = pGroove->path_data.straight_info.centre;
                 pMat->m[3][1] = pos;
-                BrVector3Copy(&pGroove->actor->t.t.translate.t, &pGroove->path_data.straight_info.centre);
-            } else {
-                if (pGroove->path_interrupt_status == eInterrupt_none) {
-                    pMat->m[3][1] = pos;
-                    BrVector3Copy(&pGroove->actor->t.t.translate.t, &pGroove->path_data.straight_info.centre);
-                } else if (pGroove->path_interrupt_status == eInterrupt_less_than) {
-                    if (pos < pGroove->path_resumption_value) {
-                        pGroove->path_interrupt_status = eInterrupt_none;
-                        pMat->m[3][1] = pos;
-                        BrVector3Copy(&pGroove->actor->t.t.translate.t, &pGroove->path_data.straight_info.centre);
-                    }
-                } else if (pos > pGroove->path_resumption_value) {
+            } else if (pGroove->path_interrupt_status == eInterrupt_none) {
+                pGroove->actor->t.t.translate.t = pGroove->path_data.straight_info.centre;
+                pMat->m[3][1] = pos;
+            } else if (pGroove->path_interrupt_status == eInterrupt_less_than) {
+                if (pGroove->path_resumption_value > pos) {
                     pGroove->path_interrupt_status = eInterrupt_none;
+                    pGroove->actor->t.t.translate.t = pGroove->path_data.straight_info.centre;
                     pMat->m[3][1] = pos;
-                    BrVector3Copy(&pGroove->actor->t.t.translate.t, &pGroove->path_data.straight_info.centre);
                 }
+            } else if (pGroove->path_resumption_value < pos) {
+                pGroove->path_interrupt_status = eInterrupt_none;
+                pGroove->actor->t.t.translate.t = pGroove->path_data.straight_info.centre;
+                pMat->m[3][1] = pos;
             }
         }
 
         if (pGroove->path_data.straight_info.z_delta != 0.0f) {
-
-            MOVE_FUNK_PARAMETER(pos, pGroove->path_mode, pGroove->path_data.straight_info.period.value, pGroove->path_data.straight_info.texture_info.data, pGroove->path_data.straight_info.z_delta, -pGroove->path_data.straight_info.z_delta);
-            pos += pGroove->path_data.straight_info.centre.v[2];
+            pos = pGroove->path_data.straight_info.centre.v[2]
+                + (br_scalar)(GROOVE_PATH_FLOAT(pGroove->path_mode, pTime,
+                    pGroove->path_data.straight_info.period.value, pGroove->path_data.straight_info.texture_info.data,
+                    pGroove->path_data.straight_info.z_delta));
             if (pInterrupt_it) {
                 pGroove->path_resumption_value = pos;
-                if (pos >= pMat->m[3][2]) {
-                    pGroove->path_interrupt_status = eInterrupt_greater_than;
-                } else {
+                if (pos < pMat->m[3][2]) {
                     pGroove->path_interrupt_status = eInterrupt_less_than;
+                } else {
+                    pGroove->path_interrupt_status = eInterrupt_greater_than;
                 }
-                BrVector3Copy(&pGroove->actor->t.t.translate.t, &pGroove->path_data.straight_info.centre);
+                pGroove->actor->t.t.translate.t = pGroove->path_data.straight_info.centre;
                 pMat->m[3][2] = pos;
-            } else {
-                if (pGroove->path_interrupt_status == eInterrupt_none) {
-                    BrVector3Copy(&pGroove->actor->t.t.translate.t, &pGroove->path_data.straight_info.centre);
-                    pMat->m[3][2] = pos;
-                } else if (pGroove->path_interrupt_status == eInterrupt_less_than) {
-                    if (pos < pGroove->path_resumption_value) {
-                        pGroove->path_interrupt_status = eInterrupt_none;
-                        BrVector3Copy(&pGroove->actor->t.t.translate.t, &pGroove->path_data.straight_info.centre);
-                        pMat->m[3][2] = pos;
-                    }
-                } else if (pos > pGroove->path_resumption_value) {
+            } else if (pGroove->path_interrupt_status == eInterrupt_none) {
+                pGroove->actor->t.t.translate.t = pGroove->path_data.straight_info.centre;
+                pMat->m[3][2] = pos;
+            } else if (pGroove->path_interrupt_status == eInterrupt_less_than) {
+                if (pGroove->path_resumption_value > pos) {
                     pGroove->path_interrupt_status = eInterrupt_none;
-                    BrVector3Copy(&pGroove->actor->t.t.translate.t, &pGroove->path_data.straight_info.centre);
+                    pGroove->actor->t.t.translate.t = pGroove->path_data.straight_info.centre;
                     pMat->m[3][2] = pos;
                 }
+            } else if (pGroove->path_resumption_value < pos) {
+                pGroove->path_interrupt_status = eInterrupt_none;
+                pGroove->actor->t.t.translate.t = pGroove->path_data.straight_info.centre;
+                pMat->m[3][2] = pos;
             }
         }
-        BrVector3Copy(&pGroove->object_position, &pGroove->actor->t.t.translate.t);
+        pGroove->object_position = pGroove->actor->t.t.translate.t;
         break;
     case eGroove_path_circular:
-        BrVector3Copy(&pGroove->actor->t.t.translate.t, &pGroove->path_data.circular_info.centre);
+        pGroove->actor->t.t.translate.t = pGroove->path_data.circular_info.centre;
         if (pGroove->path_data.circular_info.axis == eAxis_y) {
-            if (pGroove->path_data.circular_info.period.value == 0.0f) {
-                pos = 0.f;
-            } else {
-                pos = cosf(BrAngleToRadian(BrDegreeToAngle(fmodf((float)pTime, pGroove->path_data.circular_info.period.value) / pGroove->path_data.circular_info.period.value * 360.0f))) * pGroove->path_data.circular_info.radius;
-            }
-            pMat->m[3][0] = pGroove->path_data.circular_info.centre.v[0] + pos;
+            pMat->m[3][0] = pGroove->path_data.circular_info.centre.v[0]
+                + GROOVE_PATH_SIN_COS(cosf, pTime,
+                    pGroove->path_data.circular_info.period.value,
+                    pGroove->path_data.circular_info.radius);
         } else if (pGroove->path_data.circular_info.axis == eAxis_z) {
-            if (pGroove->path_data.circular_info.period.value == 0.0f) {
-                pos = 0.f;
-            } else {
-                pos = sinf(BrAngleToRadian(BrDegreeToAngle(fmodf((float)pTime, pGroove->path_data.circular_info.period.value) / pGroove->path_data.circular_info.period.value * 360.0f))) * pGroove->path_data.circular_info.radius;
-            }
-            pMat->m[3][0] = pGroove->path_data.circular_info.centre.v[0] + pos;
+            pMat->m[3][0] = pGroove->path_data.circular_info.centre.v[0]
+                + GROOVE_PATH_SIN_COS(sinf, pTime,
+                    pGroove->path_data.circular_info.period.value,
+                    pGroove->path_data.circular_info.radius);
         }
 
         if (pGroove->path_data.circular_info.axis == eAxis_x) {
-            if (pGroove->path_data.circular_info.period.value == 0.0f) {
-                pos = 0.f;
-            } else {
-                pos = sinf(BrAngleToRadian(BrDegreeToAngle(fmodf((float)pTime, pGroove->path_data.circular_info.period.value) / pGroove->path_data.circular_info.period.value * 360.0f))) * pGroove->path_data.circular_info.radius;
-            }
-            pMat->m[3][1] = pGroove->path_data.circular_info.centre.v[1] + pos;
+            pMat->m[3][1] = pGroove->path_data.circular_info.centre.v[1]
+                + GROOVE_PATH_SIN_COS(sinf, pTime,
+                    pGroove->path_data.circular_info.period.value,
+                    pGroove->path_data.circular_info.radius);
         } else if (pGroove->path_data.circular_info.axis == eAxis_z) {
-            if (pGroove->path_data.circular_info.period.value == 0.0f) {
-                pos = 0.f;
-            } else {
-                pos = cosf(BrAngleToRadian(BrDegreeToAngle(fmodf((float)pTime, pGroove->path_data.circular_info.period.value) / pGroove->path_data.circular_info.period.value * 360.0f))) * pGroove->path_data.circular_info.radius;
-            }
-            pMat->m[3][1] = pGroove->path_data.circular_info.centre.v[1] + pos;
+            pMat->m[3][1] = pGroove->path_data.circular_info.centre.v[1]
+                + GROOVE_PATH_SIN_COS(cosf, pTime,
+                    pGroove->path_data.circular_info.period.value,
+                    pGroove->path_data.circular_info.radius);
         }
 
         if (pGroove->path_data.circular_info.axis == eAxis_x) {
-            if (pGroove->path_data.circular_info.period.value == 0.0f) {
-                pos = 0.f;
-            } else {
-                pos = cosf(BrAngleToRadian(BrDegreeToAngle(fmodf((float)pTime, pGroove->path_data.circular_info.period.value) / pGroove->path_data.circular_info.period.value * 360.0f))) * pGroove->path_data.circular_info.radius;
-            }
-            pMat->m[3][2] = pGroove->path_data.circular_info.centre.v[1] + pos;
-        } else if (pGroove->path_data.circular_info.axis == eAxis_z) {
-            if (pGroove->path_data.circular_info.period.value == 0.0f) {
-                pos = 0.f;
-            } else {
-                pos = sinf(BrAngleToRadian(BrDegreeToAngle(fmodf((float)pTime, pGroove->path_data.circular_info.period.value) / pGroove->path_data.circular_info.period.value * 360.0f))) * pGroove->path_data.circular_info.radius;
-            }
-            pMat->m[3][2] = pGroove->path_data.circular_info.centre.v[1] + pos;
+            pMat->m[3][2] = pGroove->path_data.circular_info.centre.v[2]
+                + GROOVE_PATH_SIN_COS(cosf, pTime,
+                    pGroove->path_data.circular_info.period.value,
+                    pGroove->path_data.circular_info.radius);
+        } else if (pGroove->path_data.circular_info.axis == eAxis_y) {
+            pMat->m[3][2] = pGroove->path_data.circular_info.centre.v[2]
+                + GROOVE_PATH_SIN_COS(sinf, pTime,
+                    pGroove->path_data.circular_info.period.value,
+                    pGroove->path_data.circular_info.radius);
         }
-        BrVector3Copy(&pGroove->object_position, &pGroove->actor->t.t.translate.t);
+        pGroove->object_position = pGroove->actor->t.t.translate.t;
         break;
     default:
         break;
     }
 }
+
 
 // FUNCTION: CARMA2_HW 0x00479890
 void C2_HOOK_FASTCALL ObjectGrooveBastard(tGroovidelic_spec* pGroove, tU32 pTime, br_matrix34* pMat, int pInterrupt_it) {
@@ -3146,7 +3196,6 @@ void C2_HOOK_FASTCALL ObjectGrooveBastard(tGroovidelic_spec* pGroove, tU32 pTime
     br_scalar z_size;
     br_scalar pos;
     br_bounds* bounds;
-    float f_the_time = (float)pTime;
 
 #ifndef CARPOCALYPSE2_MATCHING
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tGroovidelic_spec, object_type, 0x5c);
@@ -3174,42 +3223,39 @@ void C2_HOOK_FASTCALL ObjectGrooveBastard(tGroovidelic_spec* pGroove, tU32 pTime
     case eGroove_object_spin:
         switch (pGroove->object_data.spin_info.axis) {
         case eAxis_x:
-            MOVE_FUNK_PARAMETER(pos, pGroove->object_mode, pGroove->object_data.spin_info.period.value, pGroove->object_data.spin_info.texture_info.data, 360.f, -360.f);
-            DRMatrix34PostRotateX(pMat, BrDegreeToAngle(pos));
+            DRMatrix34PostRotateX(pMat, GROOVE_ANGLE(pGroove->object_mode, pTime, pGroove->object_data.spin_info.period.value, pGroove->object_data.spin_info.texture_info.data));
             break;
         case eAxis_y:
-            MOVE_FUNK_PARAMETER(pos, pGroove->object_mode, pGroove->object_data.spin_info.period.value, pGroove->object_data.spin_info.texture_info.data, 360.f, -360.f);
-            DRMatrix34PostRotateY(pMat, BrDegreeToAngle(pos));
+            DRMatrix34PostRotateY(pMat, GROOVE_ANGLE(pGroove->object_mode, pTime, pGroove->object_data.spin_info.period.value, pGroove->object_data.spin_info.texture_info.data));
             break;
         case eAxis_z:
-            MOVE_FUNK_PARAMETER(pos, pGroove->object_mode, pGroove->object_data.spin_info.period.value, pGroove->object_data.spin_info.texture_info.data, 360.f, -360.f);
-            DRMatrix34PostRotateZ(pMat, BrDegreeToAngle(pos));
+            DRMatrix34PostRotateZ(pMat, GROOVE_ANGLE(pGroove->object_mode, pTime, pGroove->object_data.spin_info.period.value, pGroove->object_data.spin_info.texture_info.data));
             break;
         }
         break;
     case eGroove_object_rock:
-        MOVE_FUNK_PARAMETER(pos, pGroove->object_mode, pGroove->object_data.rock_info.period.value, pGroove->object_data.rock_info.texture_info.data, pGroove->object_data.rock_info.max_angle, pGroove->object_data.rock_info.max_angle);
         rock_it = 1;
+        pos = (br_scalar)(GROOVE_FLOAT(pGroove->object_mode, pTime,
+            pGroove->object_data.rock_info.period.value, pGroove->object_data.rock_info.texture_info.data, pGroove->object_data.rock_info.max_angle));
+
         if (pInterrupt_it) {
             pGroove->object_resumption_value = pos;
-            if (pos >= pGroove->object_data.rock_info.current_angle) {
-                pGroove->object_interrupt_status = eInterrupt_greater_than;
-            } else {
+            if (pGroove->object_data.rock_info.current_angle > pos) {
                 pGroove->object_interrupt_status = eInterrupt_less_than;
+            } else {
+                pGroove->object_interrupt_status = eInterrupt_greater_than;
             }
-        } else {
-            if (pGroove->object_interrupt_status == eInterrupt_less_than) {
-                if (pos >= pGroove->object_resumption_value || gAction_replay_mode) {
-                    rock_it = 0;
-                } else {
-                    pGroove->object_interrupt_status = eInterrupt_none;
-                }
-            } else if (pGroove->object_interrupt_status == eInterrupt_greater_than) {
-                if (pos <= pGroove->object_resumption_value || gAction_replay_mode) {
-                    rock_it = 0;
-                } else {
-                    pGroove->object_interrupt_status = eInterrupt_none;
-                }
+        } else if (pGroove->object_interrupt_status == eInterrupt_less_than) {
+            if (pGroove->object_resumption_value > pos && !gAction_replay_mode) {
+                pGroove->object_interrupt_status = eInterrupt_none;
+            } else {
+                rock_it = 0;
+            }
+        } else if (pGroove->object_interrupt_status == eInterrupt_greater_than) {
+            if (pGroove->object_resumption_value < pos && !gAction_replay_mode) {
+                pGroove->object_interrupt_status = eInterrupt_none;
+            } else {
+                rock_it = 0;
             }
         }
         if (rock_it) {
@@ -3229,32 +3275,53 @@ void C2_HOOK_FASTCALL ObjectGrooveBastard(tGroovidelic_spec* pGroove, tU32 pTime
         }
         break;
     case eGroove_object_throb:
-        MOVE_FUNK_PARAMETER(z_size, pGroove->object_mode, pGroove->object_data.throb_info.z_period.value, pGroove->object_data.throb_info.z_texture_info.data, pGroove->object_data.throb_info.z_magnitude, -pGroove->object_data.throb_info.z_magnitude);
-        MOVE_FUNK_PARAMETER(y_size, pGroove->object_mode, pGroove->object_data.throb_info.y_period.value, pGroove->object_data.throb_info.y_texture_info.data, pGroove->object_data.throb_info.y_magnitude, -pGroove->object_data.throb_info.y_magnitude);
-        MOVE_FUNK_PARAMETER(x_size, pGroove->object_mode, pGroove->object_data.throb_info.x_period.value, pGroove->object_data.throb_info.x_texture_info.data, pGroove->object_data.throb_info.x_magnitude, -pGroove->object_data.throb_info.x_magnitude);
-
-        BrMatrix34PostScale(pMat, x_size + 1.f, y_size + 1.f, z_size + 1.f);
+        BrMatrix34PostScale(pMat,
+            (br_scalar)(GROOVE_FLOAT(pGroove->object_mode, pTime,
+                    pGroove->object_data.throb_info.x_period.value, pGroove->object_data.throb_info.x_texture_info.data, pGroove->object_data.throb_info.x_magnitude)
+                + 1.0),
+            (br_scalar)(GROOVE_FLOAT(pGroove->object_mode, pTime,
+                    pGroove->object_data.throb_info.y_period.value, pGroove->object_data.throb_info.y_texture_info.data, pGroove->object_data.throb_info.y_magnitude)
+                + 1.0),
+            (br_scalar)(GROOVE_FLOAT(pGroove->object_mode, pTime,
+                    pGroove->object_data.throb_info.z_period.value, pGroove->object_data.throb_info.z_texture_info.data, pGroove->object_data.throb_info.z_magnitude)
+                + 1.0));
         /* FALLTHROUGH */
     case eGroove_object_shear:
         bounds = &pGroove->actor->model->bounds;
-        if (pGroove->object_data.shear_info.x_magnitude == 0.0) {
-            MOVE_FUNK_PARAMETER(z_size, pGroove->object_mode, pGroove->object_data.shear_info.z_period.value, pGroove->object_data.shear_info.z_texture_info.data, pGroove->object_data.shear_info.z_magnitude, -pGroove->object_data.shear_info.z_magnitude);
-            MOVE_FUNK_PARAMETER(y_size, pGroove->object_mode, pGroove->object_data.shear_info.y_period.value, pGroove->object_data.shear_info.y_texture_info.data, pGroove->object_data.shear_info.y_magnitude, -pGroove->object_data.shear_info.y_magnitude);
-            BrMatrix34PostShearX(pMat, y_size / (bounds->max.v[1] - bounds->min.v[1]), z_size / bounds->max.v[2] - bounds->min.v[2]);
-        } else if (pGroove->object_data.shear_info.y_magnitude == 0.0) {
-            MOVE_FUNK_PARAMETER(z_size, pGroove->object_mode, pGroove->object_data.shear_info.z_period.value, pGroove->object_data.shear_info.z_texture_info.data, pGroove->object_data.shear_info.z_magnitude, -pGroove->object_data.shear_info.z_magnitude);
-            MOVE_FUNK_PARAMETER(x_size, pGroove->object_mode, pGroove->object_data.shear_info.x_period.value, pGroove->object_data.shear_info.x_texture_info.data, pGroove->object_data.shear_info.x_magnitude, -pGroove->object_data.shear_info.x_magnitude);
-            BrMatrix34PostShearY(pMat, x_size / (bounds->max.v[0] - bounds->min.v[0]), z_size / (bounds->max.v[2] - bounds->min.v[2]));
+        x_size = bounds->max.v[0] - bounds->min.v[0];
+        y_size = bounds->max.v[1] - bounds->min.v[1];
+        z_size = bounds->max.v[2] - bounds->min.v[2];
+        if (pGroove->object_data.shear_info.x_magnitude == 0.0f) {
+            BrMatrix34PostShearX(pMat,
+                (br_scalar)(GROOVE_FLOAT(pGroove->object_mode, pTime,
+                    pGroove->object_data.shear_info.y_period.value, pGroove->object_data.shear_info.y_texture_info.data, pGroove->object_data.shear_info.y_magnitude)
+                    / y_size),
+                (br_scalar)(GROOVE_FLOAT(pGroove->object_mode, pTime,
+                    pGroove->object_data.shear_info.z_period.value, pGroove->object_data.shear_info.z_texture_info.data, pGroove->object_data.shear_info.z_magnitude)
+                    / z_size));
+        } else if (pGroove->object_data.shear_info.y_magnitude == 0.0f) {
+            BrMatrix34PostShearY(pMat,
+                (br_scalar)(GROOVE_FLOAT(pGroove->object_mode, pTime,
+                    pGroove->object_data.shear_info.x_period.value, pGroove->object_data.shear_info.x_texture_info.data, pGroove->object_data.shear_info.x_magnitude)
+                    / x_size),
+                (br_scalar)(GROOVE_FLOAT(pGroove->object_mode, pTime,
+                    pGroove->object_data.shear_info.z_period.value, pGroove->object_data.shear_info.z_texture_info.data, pGroove->object_data.shear_info.z_magnitude)
+                    / z_size));
         } else {
-            MOVE_FUNK_PARAMETER(y_size, pGroove->object_mode, pGroove->object_data.shear_info.y_period.value, pGroove->object_data.shear_info.y_texture_info.data, pGroove->object_data.shear_info.y_magnitude, -pGroove->object_data.shear_info.y_magnitude);
-            MOVE_FUNK_PARAMETER(x_size, pGroove->object_mode, pGroove->object_data.shear_info.x_period.value, pGroove->object_data.shear_info.x_texture_info.data, pGroove->object_data.shear_info.x_magnitude, -pGroove->object_data.shear_info.x_magnitude);
-            BrMatrix34PostShearZ(pMat, x_size / (bounds->max.v[0] - bounds->min.v[0]), y_size / (bounds->max.v[1] - bounds->min.v[1]));
+            BrMatrix34PostShearZ(pMat,
+                (br_scalar)(GROOVE_FLOAT(pGroove->object_mode, pTime,
+                    pGroove->object_data.shear_info.x_period.value, pGroove->object_data.shear_info.x_texture_info.data, pGroove->object_data.shear_info.x_magnitude)
+                    / x_size),
+                (br_scalar)(GROOVE_FLOAT(pGroove->object_mode, pTime,
+                    pGroove->object_data.shear_info.y_period.value, pGroove->object_data.shear_info.y_texture_info.data, pGroove->object_data.shear_info.y_magnitude)
+                    / y_size));
         }
         break;
     default:
-        return;
+        break;
     }
 }
+
 
 // FUNCTION: CARMA2_HW 0x004e4650
 void C2_HOOK_FASTCALL LollipopizeActor(br_actor* pSubject_actor, br_matrix34* ref_to_world, tLollipop_mode pWhich_axis) {
@@ -3417,10 +3484,10 @@ void C2_HOOK_FASTCALL GrooveThoseDelics(void) {
 
 float C2_HOOK_FASTCALL MapSawToTriangle(float pNumber) {
 
-    if (pNumber >= 0.5) {
-        return 3.0f - pNumber * 4.0f;
-    } else {
+    if (pNumber < 0.5) {
         return pNumber * 4.0f - 1.0f;
+    } else {
+        return 3.0f - pNumber * 4.0f;
     }
 }
 

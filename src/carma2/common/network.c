@@ -159,9 +159,6 @@ int gMessage_header_size;
 // GLOBAL: CARMA2_HW 0x00690c80
 tU32 gLast_status_broadcast;
 
-// GLOBAL: CARMA2_HW 0x00690230
-tAddToJoinListProc* gAdd_proc;
-
 // GLOBAL: CARMA2_HW 0x00690238
 int gTime_for_next_one;
 
@@ -188,6 +185,9 @@ int gINT_0068d964;
 
 // GLOBAL: CARMA2_HW 0x00690c40
 tU32 gUINT_00690c40;
+
+// GLOBAL: CARMA2_HW 0x00690230
+tAddToJoinListProc* gAdd_proc;
 
 // GLOBAL: CARMA2_HW 0x00690c30
 int gINT_00690c30;
@@ -2065,67 +2065,42 @@ void C2_HOOK_FASTCALL NetPlayerStatusChanged(tPlayer_status pNew_status) {
 // FUNCTION: CARMA2_HW 0x004a5ca0
 void C2_HOOK_FASTCALL AddToGuaranteeList(tNet_message* pMessage, void* pAddress, tPlayer_ID pPlayer, void* pNotifyFail) {
     int i;
-    int n;
-    tU32 time;
-    tU8 size;
-    int idx;
 
     if (pMessage->header.field_0x14 != 0xff) {
         PDFatalError("Guaranteed message not built correctly");
     }
     if (gNext_guarantee >= 200) {
         for (i = 0; i < 10; i++) {
-            gGuarantee_list[i].message->contents.raw.header.type = eNetMsg_none;
+            NetReallyDisposeMessage(NULL, gGuarantee_list[i].message);
         }
-        n = 10;
-        if (gGuarantee_list[9].message == gGuarantee_list[10].message) {
-            /* count consecutive duplicates starting at index 10 */
-            {
-                tU8* p = (tU8*)&gGuarantee_list[10];
-                tU8* end = (tU8*)&gGuarantee_list[200];
-                while (p < end) {
-                    tNet_message* ca = *(tNet_message**)p;
-                    tNet_message* cb = *(tNet_message**)(p + sizeof(tGuaranteed_message));
-                    p += sizeof(tGuaranteed_message);
-                    n++;
-                    if (ca != cb) {
-                        break;
-                    }
-                }
-            }
+        while (gGuarantee_list[i - 1].message == gGuarantee_list[i].message && i < 200) {
+            i++;
         }
-        memmove(&gGuarantee_list[0], &gGuarantee_list[n], (200 - n) * sizeof(tGuaranteed_message));
-        gNext_guarantee -= n;
-        if (gNext_guarantee >= 200) {
-            return;
+        memmove(gGuarantee_list, &gGuarantee_list[i], (200 - i) * sizeof(gGuarantee_list[0]));
+        gNext_guarantee -= i;
+    }
+    if (gNext_guarantee < 200) {
+        *(tU16*)&pMessage->contents.raw.data[pMessage->contents.raw.header.size] = gGuarantee_number;
+        gGuarantee_list[gNext_guarantee].field_0x2c = gGuarantee_number;
+        gGuarantee_number++;
+        if (gGuarantee_number == 0) {
+            gGuarantee_number = 1;
         }
+        gGuarantee_list[gNext_guarantee].message = pMessage;
+        gGuarantee_list[gNext_guarantee].send_time = PDGetTotalTime();
+        gGuarantee_list[gNext_guarantee].next_resend_time = gGuarantee_list[gNext_guarantee].send_time + 100;
+        gGuarantee_list[gNext_guarantee].resend_period = 100;
+        if (pAddress != NULL) {
+            memcpy(gGuarantee_list[gNext_guarantee].pd_address, pAddress, 14);
+            gGuarantee_list[gNext_guarantee].field_0x30 = 1;
+        } else {
+            gGuarantee_list[gNext_guarantee].field_0x30 = 0;
+        }
+        gGuarantee_list[gNext_guarantee].local_id = pPlayer;
+        gGuarantee_list[gNext_guarantee].NotifyFail = pNotifyFail;
+        gGuarantee_list[gNext_guarantee].recieved = 0;
+        gNext_guarantee++;
     }
-    size = pMessage->contents.raw.header.size;
-    *(tU16*)((tU8*)pMessage + size + 0x1a) = gGuarantee_number;
-    idx = gNext_guarantee;
-    gGuarantee_list[idx].field_0x2c = gGuarantee_number;
-    gGuarantee_number++;
-    if (gGuarantee_number == 0) {
-        gGuarantee_number = 1;
-    }
-    gGuarantee_list[idx].message = pMessage;
-    time = PDGetTotalTime();
-    gGuarantee_list[idx].send_time = time;
-    gGuarantee_list[idx].next_resend_time = time + 100;
-    gGuarantee_list[idx].resend_period = 100;
-    if (pAddress == NULL) {
-        gGuarantee_list[idx].field_0x30 = 0;
-    } else {
-        ((tU32*)gGuarantee_list[idx].pd_address)[0] = ((tU32*)pAddress)[0];
-        ((tU32*)gGuarantee_list[idx].pd_address)[1] = ((tU32*)pAddress)[1];
-        ((tU32*)gGuarantee_list[idx].pd_address)[2] = ((tU32*)pAddress)[2];
-        *(tU16*)&gGuarantee_list[idx].pd_address[12] = *(tU16*)((tU8*)pAddress + 12);
-        gGuarantee_list[idx].field_0x30 = 1;
-    }
-    gGuarantee_list[idx].local_id = pPlayer;
-    gGuarantee_list[idx].NotifyFail = pNotifyFail;
-    gGuarantee_list[idx].recieved = 0;
-    gNext_guarantee = idx + 1;
 }
 
 // NetGuaranteedSendMessageToPlayer

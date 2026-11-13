@@ -144,7 +144,7 @@ extern tS3_outlet* gPedestrians_outlet;
 
 extern tS3_outlet* gCar_outlet;
 
-extern tS3_outlet* gIndexed_outlets[6];
+extern tS3_outlet* gIndexed_outlets[7];
 
 extern br_vector3 gCamera_left;
 

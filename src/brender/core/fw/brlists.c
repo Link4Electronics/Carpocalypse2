@@ -30,7 +30,7 @@ void C2_HOOK_CDECL BrAddTail(br_list* list, br_node* node) {
 
     node->next = (br_node*)&list->_null;
     node->prev = list->tail;
-    list->tail->next = node;
+    node->prev->next = node;
     list->tail = node;
 }
 

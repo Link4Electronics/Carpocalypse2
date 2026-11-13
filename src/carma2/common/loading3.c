@@ -118,6 +118,28 @@ br_pixelmap* C2_HOOK_FASTCALL LoadPixelmapAllow(const char* pPath_name) {
     return pm;
 }
 
+// FUNCTION: CARMA2_HW 0x0048ee20
+br_pixelmap* C2_HOOK_FASTCALL LoadPixelmapForcedSize(const char* pPath_name, int pWidth, int pHeight) {
+    br_pixelmap* pm;
+    br_pixelmap* new_pm;
+
+    pm = RealLoadPixelmap(pPath_name);
+    EnsurePixelmapAllowed(pm, 0);
+    if (pm == NULL) {
+        return NULL;
+    }
+    if ((int)pm->width > pWidth || (int)pm->height > pHeight) {
+        PDFatalError("Bugger - LoadPixelmapForcedSize() needs size to be bigger than original\n");
+    }
+    new_pm = BrPixelmapAllocate(pm->type, pWidth, pHeight, NULL, 0);
+    if (new_pm == NULL) {
+        PDFatalError("Bugger - LoadPixelmapForcedSize() could not clone pixelmap\n");
+    }
+    BrPixelmapRectangleCopy(new_pm, 0, 0, pm, 0, 0, pm->width, pm->height);
+    BrPixelmapFree(pm);
+    return new_pm;
+}
+
 // FUNCTION: CARMA2_HW 0x0048eec0
 int C2_HOOK_FASTCALL LoadInterfacePixelmaps(const char *pPath_name, br_pixelmap** pMaps, int pCapacity) {
     tPath_name path;

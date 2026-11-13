@@ -4955,67 +4955,54 @@ void C2_HOOK_FASTCALL PedProcessContact(tPedestrian* pPed, tPhysics_object* pCol
 #pragma auto_inline(on)
 
 #pragma auto_inline(off)
-// C2PORT-NONMATCHING: best 63.00% | difftest PASS 2000 trials (spec difftest/specs/004cd9e0_FUN_004cd9e0.json) | reason regalloc-frame-loop
 // FUNCTION: CARMA2_HW 0x004cd9e0
-int C2_HOOK_FASTCALL FUN_004cd9e0(tPedestrian* pPed, register int pBoneIndex) {
-    register tPed_character_instance* pCharacter;
-    register tPed_form* pForm;
-    register int child_count;
-    register int i;
-    register int* pMask;
-    br_actor* actor;
+int C2_HOOK_FASTCALL FUN_004cd9e0(tPedestrian* pPed, int pBoneIndex) {
+    tPed_character_instance* pCharacter;
     br_vector3 velocity;
     br_vector3 omega;
+    int child_count;
     int result;
-    register tS8 previous_bone_index;
+    int previous_bone_index;
+    int i;
+    tPed_form_actor_set* actor_set;
 
     pCharacter = pPed->character;
-    pForm = pCharacter->personality->form;
     child_count = 0;
-    i = 0;
-    if (pForm->count_bones != 0) {
-        pMask = (int*)gPow2_array;
-        do {
-            if (pForm->bones[i].indices[0] == pBoneIndex
-                    && (*pMask & pCharacter->field_0xc) == 0) {
-                child_count += FUN_004cd9e0(pPed, i);
-            }
-            pMask++;
-            i++;
-            pForm = pCharacter->personality->form;
-        } while (i < pForm->count_bones);
+    for (i = 0; i < pCharacter->personality->form->count_bones; i++) {
+        if (pCharacter->personality->form->bones[i].indices[0] == pBoneIndex
+                && (pCharacter->field_0xc & gPow2_array[i]) == 0) {
+            child_count += FUN_004cd9e0(pPed, i);
+        }
     }
-    ((tU8*)pPed->field_0x0c)[0x23 + pBoneIndex] = (tU8)gPed_dismember_spurting_member_count;
+    pPed->field_0x0c->field_0x23[pBoneIndex] = (tU8)gPed_dismember_spurting_member_count;
 
     if (gExploding_pedestrians != 0) {
         velocity.v[0] = SRandomPosNeg(3.f);
         velocity.v[1] = SRandomBetween(0.f, 3.f);
         velocity.v[2] = SRandomPosNeg(3.f);
-        velocity.v[0] += pCharacter->field_0xd8.v[0];
-        velocity.v[1] += pCharacter->field_0xd8.v[1];
-        velocity.v[2] += pCharacter->field_0xd8.v[2];
+        BrVector3Add(&velocity, &pCharacter->field_0xd8, &velocity);
         omega.v[0] = SRandomPosNeg(20.f);
         omega.v[1] = SRandomPosNeg(20.f);
         omega.v[2] = SRandomPosNeg(20.f);
-        previous_bone_index = (tS8)pCharacter->field_0x6;
+        previous_bone_index = pCharacter->field_0x6;
         result = MakeCharacterBonePhysicworthy(pCharacter, pBoneIndex, &velocity, &omega);
-        if (result != 0 && (tS8)pCharacter->field_0x6 >= 0) {
-            FUN_004c8bf0((int)pCharacter->ped, pBoneIndex, previous_bone_index, (tS8)pCharacter->field_0x6);
-            actor = pCharacter->personality->form->actor_sets[(tS8)pCharacter->field_0x4].actors[pBoneIndex];
-            if (actor->parent == NULL && (pBoneIndex == 0 || (pCharacter->field_0xc & gPow2_array[pBoneIndex]) != 0)) {
-                BrActorAdd(gNon_track_actor, actor);
+        if (result != 0 && pCharacter->field_0x6 >= 0) {
+            FUN_004c8bf0((int)pCharacter->ped, pBoneIndex, previous_bone_index, pCharacter->field_0x6);
+            actor_set = &pCharacter->personality->form->actor_sets[pCharacter->field_0x4];
+            if (actor_set->actors[pBoneIndex]->parent == NULL && (pBoneIndex == 0 || (pCharacter->field_0xc & gPow2_array[pBoneIndex]) != 0)) {
+                BrActorAdd(gNon_track_actor, actor_set->actors[pBoneIndex]);
             }
         }
         return result + child_count;
     }
 
-    previous_bone_index = (tS8)pCharacter->field_0x6;
+    previous_bone_index = pCharacter->field_0x6;
     result = MakeCharacterBonePhysicworthy(pCharacter, pBoneIndex, NULL, NULL);
-    if (result != 0 && (tS8)pCharacter->field_0x6 >= 0) {
-        FUN_004c8bf0((int)pCharacter->ped, pBoneIndex, previous_bone_index, (tS8)pCharacter->field_0x6);
-        actor = pCharacter->personality->form->actor_sets[(tS8)pCharacter->field_0x4].actors[pBoneIndex];
-        if (actor->parent == NULL && (pBoneIndex == 0 || (pCharacter->field_0xc & gPow2_array[pBoneIndex]) != 0)) {
-            BrActorAdd(gNon_track_actor, actor);
+    if (result != 0 && pCharacter->field_0x6 >= 0) {
+        FUN_004c8bf0((int)pCharacter->ped, pBoneIndex, previous_bone_index, pCharacter->field_0x6);
+        actor_set = &pCharacter->personality->form->actor_sets[pCharacter->field_0x4];
+        if (actor_set->actors[pBoneIndex]->parent == NULL && (pBoneIndex == 0 || (pCharacter->field_0xc & gPow2_array[pBoneIndex]) != 0)) {
+            BrActorAdd(gNon_track_actor, actor_set->actors[pBoneIndex]);
         }
     }
     return result + child_count;
@@ -9656,6 +9643,7 @@ void C2_HOOK_FASTCALL DisposeCharacterInstance(tPed_character_instance* pCharact
 void C2_HOOK_FASTCALL DisposePedForm(tPed_form* pForm) {
     int i;
     int j;
+    tPhysics_object* object;
 
     if (gPed_67697c->dispose_form != NULL) {
         gPed_67697c->dispose_form(pForm);
@@ -9671,24 +9659,19 @@ void C2_HOOK_FASTCALL DisposePedForm(tPed_form* pForm) {
             BrMemFree(pForm->actor_sets[i].actors);
         }
     }
-    {
-        int idx;
-
-        for (idx = 0; idx < pForm->count_bones; idx++) {
-            if (pForm->boned_physicing[0].collision_infos[idx] != NULL) {
-                tPhysics_joint* hinge = pForm->bones[idx].hinge;
-
-                if (hinge != NULL) {
-                    FreePhysicsJoint(hinge);
+    for (i = 0; i < pForm->count_bones; i++) {
+        if (pForm->boned_physicing[0].collision_infos[i] != NULL) {
+            if (pForm->bones[i].hinge != NULL) {
+                FreePhysicsJoint(pForm->bones[i].hinge);
+            }
+            for (j = 0; j < pForm->max_boned_physicing_at_once; j++) {
+                if (pForm->boned_physicing[j].collision_infos[i]->shape != NULL) {
+                    FreeShape(pForm->boned_physicing[j].collision_infos[i]->shape);
                 }
-                for (j = 0; j < pForm->max_boned_physicing_at_once; j++) {
-                    tPhysics_object* slot = pForm->boned_physicing[j].collision_infos[idx];
-
-                    if (slot->shape != NULL) {
-                        FreeShape(slot->shape);
-                    }
-                    if (slot != NULL) {
-                        BrMemFree(slot);
+                if (pForm->boned_physicing[j].collision_infos[i] != NULL) {
+                    object = pForm->boned_physicing[j].collision_infos[i];
+                    if (object != NULL) {
+                        BrMemFree(object);
                     }
                 }
             }

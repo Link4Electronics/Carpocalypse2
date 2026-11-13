@@ -74,6 +74,6 @@ void C2_HOOK_FASTCALL ParseSpecialVolume(FILE* pF, tSpecial_volume* pSpec, char*
 
 // SaveSpecialVolumes
 
-// FindInverseAndWorldBox
+// FindInverseAndWorlBox
 
 // ReadSpecialVolumes

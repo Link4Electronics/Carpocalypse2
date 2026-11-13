@@ -24,7 +24,7 @@ int C2_HOOK_FASTCALL CarClickNext(tFrontend_spec* pFrontend);
 int C2_HOOK_FASTCALL ChangeCarOK(tFrontend_spec* pFrontend);
 int C2_HOOK_FASTCALL ChangeCarCancel(tFrontend_spec* pFrontend);
 void C2_HOOK_FASTCALL UpdateCarInfo(tFrontend_spec* pFrontend);
-extern tS3_outlet* gIndexed_outlets[6];
+extern tS3_outlet* gIndexed_outlets[7];
 extern int C2_HOOK_FASTCALL PDGetTotalTime(void);
 extern void C2_HOOK_FASTCALL PollKeys(void);
 extern void C2_HOOK_FASTCALL EdgeTriggerModeOff(void);

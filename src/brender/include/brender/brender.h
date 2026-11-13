@@ -23,6 +23,7 @@ extern br_uint_32 C2_HOOK_CDECL BrActorSave(char* filename, br_actor* ptr);
 br_actor* C2_HOOK_CDECL BrActorAllocate(br_uint_8 type, void* type_data);
 br_actor* C2_HOOK_CDECL BrActorAdd(br_actor* parent, br_actor* a);
 extern void C2_HOOK_CDECL BrActorRelink(br_actor* parent, br_actor* a);
+extern void C2_HOOK_CDECL BrActorRelink_library(br_actor* parent, br_actor* a);
 br_actor* C2_HOOK_CDECL BrActorRemove(br_actor* a);
 extern void C2_HOOK_CDECL BrActorFree(br_actor* a);
 extern br_uint_32 C2_HOOK_CDECL BrActorEnum(br_actor* parent, br_actor_enum_cbfn* callback, void* arg);

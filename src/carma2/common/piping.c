@@ -43,6 +43,11 @@ extern const br_scalar gFLOAT_00589330;
 #define CRUSH_SPACE_SIZE 0x4000
 #define SIZE_OFFSET_PIPING(T, M) ((int)sizeof(((T*)NULL)->M)), ((int)offsetof(T, M))
 
+typedef union tFloat_u32_union {
+    float f;
+    tU32 u;
+} tFloat_u32_union;
+
 void C2_HOOK_FASTCALL ARAdvanceChunkPtr(tPipe_chunk** pChunk_ptr, tPipe_chunk_type pType);
 
 // GLOBAL: CARMA2_HW 0x00676918
@@ -501,42 +506,46 @@ void C2_HOOK_CDECL ARDoSingleVariedSession(int pType, uintptr_t pOwner, int pCou
 
 // FUNCTION: CARMA2_HW 0x00402930
 void C2_HOOK_CDECL ARAddVariedDataToSession(int pType, uintptr_t pOwner, int pCount, ...) {
-    char buffer[5000];
+    va_list ap;
+    int i;
+    int size;
+    int offset;
+    void* data;
+    float value;
+    tU8 buffer[5000];
 
     if (gPipe_buffer_start != NULL && !gPed_676914 && gProgram_state.racing) {
-        int i;
-        va_list ap;
-
         va_start(ap, pCount);
         for (i = 0; i < pCount; i++) {
-            int size;
-            int offset;
-
             size = va_arg(ap, int);
             offset = va_arg(ap, int);
             if (size < 0) {
-                uintptr_t pv = va_arg(ap, uintptr_t);
-                memcpy(buffer + sizeof(uintptr_t) + offset, &pv, sizeof(pv));
+                value = va_arg(ap, tFloat_u32_union).f;
+                *(float*)&buffer[offset] = value;
             } else {
-                uintptr_t pv = va_arg(ap, uintptr_t);
-                if (size == 1) {
-                    tU8 b = (tU8)pv;
-                    memcpy(buffer + sizeof(uintptr_t) + offset, &b, sizeof(b));
-                } else if (size == 2) {
-                    tU16 s = (tU16)pv;
-                    memcpy(buffer + sizeof(uintptr_t) + offset, &s, sizeof(s));
-                } else if (size == 4) {
-                    tU32 i = (tU32)pv;
-                    memcpy(buffer + sizeof(uintptr_t) + offset, &i, sizeof(i));
-                } else if (pv != 0) {
-                    memcpy(buffer + sizeof(uintptr_t) + offset, (void*)pv, size);
+                data = va_arg(ap, void*);
+                switch (size) {
+                case 1:
+                    *(tU8*)&buffer[sizeof(uintptr_t) + offset] = (tU8)(uintptr_t)data;
+                    break;
+                case 2:
+                    *(tU16*)&buffer[sizeof(uintptr_t) + offset] = (tU16)(uintptr_t)data;
+                    break;
+                case 4:
+                    *(tU32*)&buffer[sizeof(uintptr_t) + offset] = (tU32)(uintptr_t)data;
+                    break;
+                default:
+                    if (data != NULL) {
+                        memcpy(&buffer[sizeof(uintptr_t) + offset], data, size);
+                    }
+                    break;
                 }
             }
         }
         va_end(ap);
-        memcpy(buffer, &pOwner, sizeof(uintptr_t));
+        *(uintptr_t*)buffer = pOwner;
 
-        ARAddDataToSession(pType, pOwner, buffer, LengthOfChunk(buffer, pType) - sizeof(void*));
+        ARAddDataToSession(pType, pOwner, &buffer[sizeof(uintptr_t)], LengthOfChunk(buffer, pType) - sizeof(uintptr_t));
     }
 }
 
@@ -1363,7 +1372,7 @@ void C2_HOOK_FASTCALL PipeSingleOppoRenderage(tOpponent_spec *pOpponent_spec, in
 }
 
 // FUNCTION: CARMA2_HW 0x004c8a90
-void C2_HOOK_FASTCALL PipeSinglePedStatus(const tPedestrian* pPed, undefined pArg2, tS8 pArg3, undefined pArg4, undefined pArg5, tS8 pArg6, tU8 pArg7, undefined pArg8, tU8 pArg9, const br_vector3* pArg10, const br_vector3* pArg11, const br_matrix34* pArg12) {
+void C2_HOOK_FASTCALL PipeSinglePedStatus(const tPedestrian* pPed, tS8 pArg2, tS8 pArg3, tS8 pArg4, tS8 pArg5, tS8 pArg6, tU8 pArg7, tS8 pArg8, tU8 pArg9, const br_vector3* pArg10, const br_vector3* pArg11, const br_matrix34* pArg12) {
 
     ARDoSingleVariedSession(ePipe_chunk_single_ped_status, (uintptr_t)pPed, 11,
         SIZE_OFFSET_PIPING(tPipe_single_ped_status, field_0x00), pArg2,
@@ -1371,9 +1380,9 @@ void C2_HOOK_FASTCALL PipeSinglePedStatus(const tPedestrian* pPed, undefined pAr
         SIZE_OFFSET_PIPING(tPipe_single_ped_status, field_0x02), pArg4,
         SIZE_OFFSET_PIPING(tPipe_single_ped_status, field_0x03), pArg5,
         SIZE_OFFSET_PIPING(tPipe_single_ped_status, field_0x04), pArg6,
-        SIZE_OFFSET_PIPING(tPipe_single_ped_status, field_0x05), pArg7,
+        SIZE_OFFSET_PIPING(tPipe_single_ped_status, field_0x05), (tS8)pArg7,
         SIZE_OFFSET_PIPING(tPipe_single_ped_status, field_0x06), pArg8,
-        SIZE_OFFSET_PIPING(tPipe_single_ped_status, field_0x07), pArg9,
+        SIZE_OFFSET_PIPING(tPipe_single_ped_status, field_0x07), (tS8)pArg9,
         SIZE_OFFSET_PIPING(tPipe_single_ped_status, field_0x08), pArg10,
         SIZE_OFFSET_PIPING(tPipe_single_ped_status, field_0x14), pArg11,
         SIZE_OFFSET_PIPING(tPipe_single_ped_status, field_0x20), pArg12);

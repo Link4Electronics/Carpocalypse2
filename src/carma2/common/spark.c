@@ -103,14 +103,22 @@ int gSplash_next;
 // GLOBAL: CARMA2_HW 0x006aa578
 int gSpark_next;
 
+// GLOBAL: CARMA2_HW 0x006a82b8
+tSplash gSplash[32] = { 0 };
+
+// GLOBAL: CARMA2_HW 0x006a8638
+br_pixelmap* gFlame_map[20] = { 0 };
+
+// GLOBAL: CARMA2_HW 0x006a96a8
+tSmoke_column gSmoke_column[10] = { 0 };
+
+// GLOBAL: CARMA2_HW 0x006a9b80
+tSpark gSparks[32] = { 0 };
+
 // GLOBAL: CARMA2_HW 0x006aa380
 br_model* gLollipop_model;
 
-// GLOBAL: CARMA2_HW 0x006a8638
-br_pixelmap* gFlame_map[20];
 
-// GLOBAL: CARMA2_HW 0x006a96a8
-tSmoke_column gSmoke_column[10];
 
 // GLOBAL: CARMA2_HW 0x006aa570
 int gSplash_flags;
@@ -124,8 +132,6 @@ int gNum_splash_types;
 // GLOBAL: CARMA2_HW 0x006a9130
 br_material* gSplash_material[20];
 
-// GLOBAL: CARMA2_HW 0x006a82b8
-tSplash gSplash[32];
 
 // GLOBAL: CARMA2_HW 0x006a82ac
 int gNext_splash;
@@ -134,7 +140,7 @@ int gNext_splash;
 int gSpark_flags;
 
 // GLOBAL: CARMA2_HW 0x006aa5ac
-br_pixelmap* gIt_shade_table = NULL;
+br_pixelmap* gIt_shade_table;
 
 // GLOBAL: CARMA2_HW 0x006aa568
 int gDust_rotate;
@@ -158,7 +164,7 @@ int gShrapnel_flags;
 int gShrapnel_index;
 
 // GLOBAL: CARMA2_HW 0x006aa578
-int gNext_spark = 0;
+int gNext_spark;
 
 // GLOBAL: CARMA2_HW 0x0058aff0
 const br_scalar gFLOAT_0058aff0 = 10.0f;
@@ -247,8 +253,6 @@ br_camera* gSpark_cam;
 // GLOBAL: CARMA2_HW 0x006a8718
 br_matrix4 gCameraToScreen;
 
-// GLOBAL: CARMA2_HW 0x006a9b80
-tSpark gSparks[32];
 
 // GLOBAL: CARMA2_HW 0x006a8760
 tBRender_smoke* gBR_smoke_pointers[35];

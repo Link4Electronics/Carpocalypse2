@@ -57,8 +57,8 @@ const br_scalar gFLOAT_0058a6a4 = 0.14492753148078918f;
 
 #include <float.h>
 
-#define CAR_SPEC_IS_ROZZER(CAR_SPEC) (VEHICLE_TYPE_FROM_ID((CAR_SPEC)->car_ID) == eVehicle_rozzer)
-#define CAR_SPEC_IS_OPPONENT(CAR_SPEC) (VEHICLE_TYPE_FROM_ID((CAR_SPEC)->car_ID) == eVehicle_opponent)
+#define CAR_SPEC_IS_ROZZER(CAR_SPEC) (VEHICLE_TYPE_FROM_ID((tU16)(CAR_SPEC)->car_ID) == eVehicle_rozzer)
+#define CAR_SPEC_IS_OPPONENT(CAR_SPEC) (VEHICLE_TYPE_FROM_ID((tU16)(CAR_SPEC)->car_ID) == eVehicle_opponent)
 
 #define GET_CAR_SPEED_FACTOR(CAR) (CAR_SPEC_IS_ROZZER(CAR) ? gCop_speed_factor : gOpponent_speed_factor)
 #include "opponent.h"
@@ -2290,28 +2290,42 @@ int C2_HOOK_FASTCALL ShiftOpponentsProjectedRoute(tOpponent_spec* pOpponent_spec
     }
 }
 
-int C2_HOOK_FASTCALL AlreadyPursuingCar(tOpponent_spec* pOpponent_spec, tCar_spec* pPursuee) {
+__inline int C2_HOOK_FASTCALL AlreadyPursuingCar(tOpponent_spec* pOpponent_spec, tCar_spec* pPursuee) {
 
     return pOpponent_spec->current_objective == eOOT_pursue_and_twat && pOpponent_spec->pursue_car_data.pursuee == pPursuee;
 }
 
-int C2_HOOK_FASTCALL LastTwatterAPlayer(tOpponent_spec* pOpponent_spec) {
+__inline int C2_HOOK_FASTCALL LastTwatterAPlayer(tOpponent_spec* pOpponent_spec) {
 
     return pOpponent_spec->car_spec->last_person_to_hit_us != NULL && pOpponent_spec->car_spec->last_person_to_hit_us->driver == eDriver_local_human;
 }
 
-int C2_HOOK_FASTCALL LastTwatteeAPlayer(tOpponent_spec* pOpponent_spec) {
+__inline int C2_HOOK_FASTCALL LastTwatteeAPlayer(tOpponent_spec* pOpponent_spec) {
 
     return pOpponent_spec->car_spec->last_person_we_hit != NULL && pOpponent_spec->car_spec->last_person_we_hit->driver == eDriver_local_human;
 }
 
-int C2_HOOK_FASTCALL HeadOnWithPlayerPossible(tOpponent_spec* pOpponent_spec) {
+__inline int C2_HOOK_FASTCALL HeadOnWithPlayerPossible(tOpponent_spec* pOpponent_spec) {
     br_vector3 oppo_to_player_norm;
 
     BrVector3Sub(&oppo_to_player_norm,
         &gProgram_state.current_car.car_master_actor->t.t.translate.t,
         &pOpponent_spec->car_spec->car_master_actor->t.t.translate.t);
-    BrVector3Normalise(&oppo_to_player_norm, &oppo_to_player_norm);
+    {
+        br_scalar _scale;
+
+        _scale = BR_LENGTH3(oppo_to_player_norm.v[0], oppo_to_player_norm.v[1], oppo_to_player_norm.v[2]);
+        if (_scale > DAT_0058a4e8) {
+            _scale = (br_scalar)(DAT_0058a4a0 / _scale);
+            oppo_to_player_norm.v[0] = oppo_to_player_norm.v[0] * _scale;
+            oppo_to_player_norm.v[1] = oppo_to_player_norm.v[1] * _scale;
+            oppo_to_player_norm.v[2] = oppo_to_player_norm.v[2] * _scale;
+        } else {
+            oppo_to_player_norm.v[0] = gOppo_pursuit_one;
+            oppo_to_player_norm.v[1] = gOppo_render_zero;
+            oppo_to_player_norm.v[2] = gOppo_render_zero;
+        }
+    }
     if (BrVector3Dot(&pOpponent_spec->car_spec->direction, &oppo_to_player_norm) > gHead_on_cos_value
             && BrVector3Dot(&gProgram_state.current_car.direction, &oppo_to_player_norm) < -gHead_on_cos_value) {
         DoNotDprintf_opponent("HOORAY! Head-on imminent");
@@ -2330,7 +2344,6 @@ void C2_HOOK_FASTCALL ChooseNewObjective(tOpponent_spec* pOpponent_spec, int pMu
     if (gTime_stamp_for_this_munging > pOpponent_spec->next_out_of_world_check) {
         pOpponent_spec->next_out_of_world_check = gTime_stamp_for_this_munging + 500;
         if (HasCarFallenOffWorld(pOpponent_spec->car_spec)) {
-            DisplayOpponentRecoveringHeadup(pOpponent_spec);
             TeleportOpponentToNearestSafeLocation(pOpponent_spec);
             NewObjective(pOpponent_spec, eOOT_get_near_player);
             return;
@@ -2348,7 +2361,7 @@ void C2_HOOK_FASTCALL ChooseNewObjective(tOpponent_spec* pOpponent_spec, int pMu
     }
 
     if (pOpponent_spec->current_objective == eOOT_frozen) {
-        if (GET_CAR_SPEED_FACTOR(pOpponent_spec->car_spec) == 0.f) {
+        if (GET_CAR_SPEED_FACTOR(pOpponent_spec->car_spec) == gOppo_render_zero) {
             return;
         }
         DoNotDprintf_opponent("%s: Time to unfreeze", pOpponent_spec->car_spec->driver_name);
@@ -2359,17 +2372,24 @@ void C2_HOOK_FASTCALL ChooseNewObjective(tOpponent_spec* pOpponent_spec, int pMu
         }
         return;
     }
-    if (GET_CAR_SPEED_FACTOR(pOpponent_spec->car_spec) == 0.f) {
+    if (GET_CAR_SPEED_FACTOR(pOpponent_spec->car_spec) == gOppo_render_zero) {
         DoNotDprintf_opponent("%s: Decided to freeze", pOpponent_spec->car_spec->driver_name);
-        pOpponent_spec->pursuing_player_before_freeze = pOpponent_spec->current_objective == eOOT_pursue_and_twat || pOpponent_spec->pursue_car_data.pursuee == &gProgram_state.current_car;
+        pOpponent_spec->pursuing_player_before_freeze = pOpponent_spec->current_objective == eOOT_pursue_and_twat && pOpponent_spec->pursue_car_data.pursuee == &gProgram_state.current_car;
         NewObjective(pOpponent_spec, eOOT_frozen);
         return;
     }
     if (!gFirst_frame) {
         int general_grudge_increase;
 
-        general_grudge_increase = (int)(pOpponent_spec->nastiness * 40.0f + 10.0f);
-        if (pOpponent_spec->car_spec->scary_bang && pOpponent_spec->player_to_oppo_d < 10.f) {
+        general_grudge_increase = (int)(pOpponent_spec->nastiness * 40.0f + DAT_0058a4ec);
+        if (pOpponent_spec->car_spec->scary_bang && pOpponent_spec->player_to_oppo_d < DAT_0058a4ec) {
+            int pursuit_percentage;
+
+            if (pOpponent_spec->current_objective == eOOT_pursue_and_twat) {
+                pursuit_percentage = 40;
+            } else {
+                pursuit_percentage = 0;
+            }
             if (CAR_SPEC_IS_ROZZER(pOpponent_spec->car_spec)) {
                 if (PercentageChance(20)) {
                     DoNotDprintf_opponent("%s: Decided to run away", pOpponent_spec->car_spec->driver_name);
@@ -2377,7 +2397,7 @@ void C2_HOOK_FASTCALL ChooseNewObjective(tOpponent_spec* pOpponent_spec, int pMu
                     return;
                 }
             } else if (gOpponents[pOpponent_spec->index].strength_rating < 5) {
-                if (PercentageChance((int)((pOpponent_spec->current_objective == eOOT_pursue_and_twat ? 100 : 60) - 50.f * pOpponent_spec->nastiness))) {
+                if (PercentageChance((int)((pursuit_percentage + 60) - 50.f * pOpponent_spec->nastiness))) {
                     DoNotDprintf_opponent("%s: Decided to run away", pOpponent_spec->car_spec->driver_name);
                     NewObjective(pOpponent_spec, eOOT_run_away);
                     return;
@@ -2386,8 +2406,8 @@ void C2_HOOK_FASTCALL ChooseNewObjective(tOpponent_spec* pOpponent_spec, int pMu
         }
 
         if (pOpponent_spec->current_objective != eOOT_run_away || gTime_stamp_for_this_munging >= pOpponent_spec->time_this_objective_started + 20000) {
-            if (CAR_SPEC_IS_ROZZER(pOpponent_spec->car_spec) && pOpponent_spec->murder_reported && pOpponent_spec->player_to_oppo_d < 20.f && !AlreadyPursuingCar(pOpponent_spec, &gProgram_state.current_car)) {
-                gOpponents[pOpponent_spec->index].psyche.grudge_against_player = MIN(100, MAX(20, gOpponents[pOpponent_spec->index].psyche.grudge_against_player) + general_grudge_increase);
+            if (CAR_SPEC_IS_ROZZER(pOpponent_spec->car_spec) && pOpponent_spec->murder_reported && pOpponent_spec->player_to_oppo_d < gOppo_pursuit_trail_distance && !AlreadyPursuingCar(pOpponent_spec, &gProgram_state.current_car)) {
+                gOpponents[pOpponent_spec->index].psyche.grudge_against_player = (tU8)MIN(100, MAX(gOpponents[pOpponent_spec->index].psyche.grudge_against_player, 20) + general_grudge_increase);
                 sprintf(str, "%s: Furderous melon!", pOpponent_spec->car_spec->driver_name);
                 DoNotDprintf_opponent("%s: Decided to pursue after MURDER", pOpponent_spec->car_spec->driver_name);
                 NewObjective(pOpponent_spec, eOOT_pursue_and_twat, &gProgram_state.current_car);
@@ -2397,7 +2417,7 @@ void C2_HOOK_FASTCALL ChooseNewObjective(tOpponent_spec* pOpponent_spec, int pMu
                     && LastTwatterAPlayer(pOpponent_spec)
                     && !AlreadyPursuingCar(pOpponent_spec, pOpponent_spec->car_spec->last_person_to_hit_us)) {
 
-                gOpponents[pOpponent_spec->index].psyche.grudge_against_player = MIN(100, MAX(20, gOpponents[pOpponent_spec->index].psyche.grudge_against_player) + general_grudge_increase);
+                gOpponents[pOpponent_spec->index].psyche.grudge_against_player = (tU8)MIN(100, MAX(gOpponents[pOpponent_spec->index].psyche.grudge_against_player, 20) + general_grudge_increase);
                 sprintf(str, "%s: Christ! What was that?", pOpponent_spec->car_spec->driver_name);
                 DoNotDprintf_opponent("%s: Decided to pursue after big bang; last person to twat us was %s",
                     pOpponent_spec->car_spec->driver_name,
@@ -2407,7 +2427,7 @@ void C2_HOOK_FASTCALL ChooseNewObjective(tOpponent_spec* pOpponent_spec, int pMu
             }
             if (LastTwatteeAPlayer(pOpponent_spec) && !AlreadyPursuingCar(pOpponent_spec, pOpponent_spec->car_spec->last_person_we_hit)) {
 
-                gOpponents[pOpponent_spec->index].psyche.grudge_against_player = MIN(100, MAX(20, gOpponents[pOpponent_spec->index].psyche.grudge_against_player) + general_grudge_increase);
+                gOpponents[pOpponent_spec->index].psyche.grudge_against_player = (tU8)MIN(100, MAX(gOpponents[pOpponent_spec->index].psyche.grudge_against_player, 20) + general_grudge_increase);
                 sprintf(str, "%s: Ha! Bet you weren't expecting that!", pOpponent_spec->car_spec->driver_name);
                 DoNotDprintf_opponent("%s: Decided to pursue %s after accidentally hitting them",
                     pOpponent_spec->car_spec->driver_name,
@@ -2417,17 +2437,15 @@ void C2_HOOK_FASTCALL ChooseNewObjective(tOpponent_spec* pOpponent_spec, int pMu
             }
             if (!AlreadyPursuingCar(pOpponent_spec, &gProgram_state.current_car)) {
                 if (pOpponent_spec->car_spec->grudge_raised_recently
-                        && (!CAR_SPEC_IS_ROZZER(pOpponent_spec->car_spec) || pOpponent_spec->player_to_oppo_d <= 20.f)
-                        && LastTwatterAPlayer(pOpponent_spec)) {
-                    int grudge = gOpponents[pOpponent_spec->index].psyche.grudge_against_player;
-                    if (grudge > 20) {
-                        gOpponents[pOpponent_spec->index].psyche.grudge_against_player = MIN(grudge + general_grudge_increase, 100);
-                        sprintf(str, "%s: Right! That's enough, %s!", pOpponent_spec->car_spec->driver_name, gProgram_state.current_car.driver_name);
-                        DoNotDprintf_opponent("%s: Decided to pursue after grudginess raised; last person to twat us was %s",
-                            pOpponent_spec->car_spec->driver_name, pOpponent_spec->car_spec->last_person_to_hit_us->driver_name);
-                        NewObjective(pOpponent_spec, eOOT_pursue_and_twat, &gProgram_state.current_car);
-                        return;
-                    }
+                        && (!CAR_SPEC_IS_ROZZER(pOpponent_spec->car_spec) || pOpponent_spec->player_to_oppo_d <= gOppo_pursuit_trail_distance)
+                        && LastTwatterAPlayer(pOpponent_spec)
+                        && gOpponents[pOpponent_spec->index].psyche.grudge_against_player > 20) {
+                    gOpponents[pOpponent_spec->index].psyche.grudge_against_player = (tU8)MIN(100, MAX(gOpponents[pOpponent_spec->index].psyche.grudge_against_player, 20) + general_grudge_increase);
+                    sprintf(str, "%s: Right! That's enough, %s!", pOpponent_spec->car_spec->driver_name, gProgram_state.current_car.driver_name);
+                    DoNotDprintf_opponent("%s: Decided to pursue after grudginess raised; last person to twat us was %s",
+                        pOpponent_spec->car_spec->driver_name, pOpponent_spec->car_spec->last_person_to_hit_us->driver_name);
+                    NewObjective(pOpponent_spec, eOOT_pursue_and_twat, &gProgram_state.current_car);
+                    return;
                 }
                 if (pOpponent_spec->player_in_view_now && !pOpponent_spec->acknowledged_piv) {
                     int pursuit_percentage;
@@ -2435,18 +2453,18 @@ void C2_HOOK_FASTCALL ChooseNewObjective(tOpponent_spec* pOpponent_spec, int pMu
 
                     pOpponent_spec->acknowledged_piv = 1;
                     if (CAR_SPEC_IS_ROZZER(pOpponent_spec->car_spec)) {
-                        pursuit_percentage = (int)((BrVector3Length(&gProgram_state.current_car.collision_info->v) * WORLD_SCALE - gDefinite_no_cop_pursuit_speed) * gCop_pursuit_speed_percentage_multiplier);
-                    } else if (gProgram_state.skill_level + 3 > gNum_of_opponents_pursuing) {
+                        pursuit_percentage = (int)(gCop_pursuit_speed_percentage_multiplier * (BrVector3Length(&gProgram_state.current_car.collision_info->v) * DAT_0058a4b0 - gDefinite_no_cop_pursuit_speed));
+                    } else if (gNum_of_opponents_pursuing < gProgram_state.skill_level + 3) {
                         pursuit_percentage = (int)((float)(gOpponents[pOpponent_spec->index].psyche.grudge_against_player - 20) + 30.f * pOpponent_spec->nastiness);
                     } else {
                         pursuit_percentage = 0;
                     }
 
-                    pursuit_percentage += HeadOnWithPlayerPossible(pOpponent_spec) ? 50 : 0;
+                    pursuit_percentage += 50 * HeadOnWithPlayerPossible(pOpponent_spec);
                     do_it = PercentageChance(pursuit_percentage);
                     DoNotDprintf_opponent("%s: Spotted player; chance of pursuing %d%%: %s", pOpponent_spec->car_spec->driver_name, pursuit_percentage, do_it ? "YES, Decided to pursue" : "NO, Decided NOT to pursue");
                     if (do_it) {
-                        gOpponents[pOpponent_spec->index].psyche.grudge_against_player = MIN(100, MAX(20, gOpponents[pOpponent_spec->index].psyche.grudge_against_player) + general_grudge_increase);
+                        gOpponents[pOpponent_spec->index].psyche.grudge_against_player = (tU8)MIN(100, MAX(gOpponents[pOpponent_spec->index].psyche.grudge_against_player, 20) + general_grudge_increase);
                         sprintf(str, "%s: I've decided to kill you for the fun of it", pOpponent_spec->car_spec->driver_name);
                         NewObjective(pOpponent_spec, eOOT_pursue_and_twat, &gProgram_state.current_car);
                         return;
@@ -2456,7 +2474,7 @@ void C2_HOOK_FASTCALL ChooseNewObjective(tOpponent_spec* pOpponent_spec, int pMu
         }
     }
     if (pMust_choose_one) {
-        DoNotDprintf_opponent("%s: Choosing new objective because we have to...", pOpponent_spec->car_spec->driver_name);
+        DoNotDprintf_opponent("%s: Choosing new objective because we have to...", pOpponent_spec->car_spec->driver_name, pOpponent_spec->car_spec->last_person_to_hit_us);
         if (pOpponent_spec->has_moved_at_some_point) {
             int pursuit_percentage;
 
@@ -2490,7 +2508,7 @@ void C2_HOOK_FASTCALL ChooseNewObjective(tOpponent_spec* pOpponent_spec, int pMu
             return;
         } else if (pOpponent_spec->pursue_from_start) {
 
-            gOpponents[pOpponent_spec->index].psyche.grudge_against_player = (int)MIN(100, MAX(20, gOpponents[pOpponent_spec->index].psyche.grudge_against_player) + 20 + 40 * pOpponent_spec->nastiness);
+            gOpponents[pOpponent_spec->index].psyche.grudge_against_player = (tU8)MIN(DAT_0058a47c, MAX(gOpponents[pOpponent_spec->index].psyche.grudge_against_player, 20) + 20 + 40 * pOpponent_spec->nastiness);
             NewObjective(pOpponent_spec, eOOT_pursue_and_twat, &gProgram_state.current_car);
             return;
         } else {
