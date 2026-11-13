@@ -211,6 +211,16 @@ static __inline void C2_HOOK_FASTCALL ReadMoodMessages(void) {
     }
 }
 
+#ifdef CARPOCALYPSE2_MATCHING
+extern void C2_HOOK_FASTCALL InitMap(void);
+extern int C2_HOOK_FASTCALL KeyIsDown(int pKey_index);
+extern int C2_HOOK_FASTCALL SaveOptions(void);
+extern br_pixelmap* gBack_screen;
+extern char gDouble_0058a068[];
+extern tU32 gFrame_period;
+extern int gHeadup_map_h;
+extern int gHeadup_map_w;
+#endif
 // FUNCTION: CARMA2_HW 0x00496e30
 void C2_HOOK_FASTCALL InitMap(void) {
 
@@ -418,7 +428,8 @@ void C2_HOOK_FASTCALL MapChanged(void) {
 }
 
 // FUNCTION: CARMA2_HW 0x00497620
-void C2_HOOK_FASTCALL CheckMapMoveKeys(int pKey0, int pKey1) {
+void C2_NAKED C2_HOOK_FASTCALL CheckMapMoveKeys(int pKey0, int pKey1) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     if (KeyIsDown(31) && pKey0) {
         gHeadup_map_y_float = (float)((double)gHeadup_map_y_float - (double)gFrame_period / 20.0);
@@ -446,6 +457,135 @@ void C2_HOOK_FASTCALL CheckMapMoveKeys(int pKey0, int pKey1) {
         }
         MapChanged();
     }
+#else
+    __asm {
+            sub esp, 8
+            push esi
+            mov esi, ecx
+            push edi
+            mov ecx, 0x1f
+            call KeyIsDown
+            xor edi, edi
+            test eax, eax
+            je L00497675
+            cmp esi, edi
+            je L00497675
+            mov eax, dword ptr [gFrame_period]
+            mov dword ptr [esp + 0xc], edi
+            fld dword ptr [gHeadup_map_y_float]
+            mov dword ptr [esp + 8], eax
+            fild qword ptr [esp + 8]
+            fmul qword ptr [gDouble_0058a068+0x310]
+            fsubp st(1), st(0)
+            fst dword ptr [gHeadup_map_y_float]
+            fcomp dword ptr [gDouble_0058a068+0x2e8]
+            fnstsw ax
+            test ah, 1
+            je L004976e8
+            mov dword ptr [gHeadup_map_y_float], edi
+            jmp L004976e8
+    L00497675:
+            mov ecx, 0x20
+            call KeyIsDown
+            test eax, eax
+            je L004976f2
+            cmp esi, edi
+            je L004976f2
+            mov ecx, dword ptr [gFrame_period]
+            mov dword ptr [esp + 0xc], edi
+            mov dword ptr [esp + 8], ecx
+            mov edx, dword ptr [gBack_screen]
+            fild qword ptr [esp + 8]
+            xor ecx, ecx
+            fmul qword ptr [gDouble_0058a068+0x310]
+            fadd dword ptr [gHeadup_map_y_float]
+            fstp dword ptr [gHeadup_map_y_float]
+            fld dword ptr [gHeadup_map_y_float]
+            mov cx, word ptr [edx + 0x36]
+            fadd dword ptr [gHeadup_map_h_float]
+            mov dword ptr [esp + 8], ecx
+            fild dword ptr [esp + 8]
+            fcompp
+            fnstsw ax
+            test ah, 1
+            je L004976e8
+            sub ecx, dword ptr [gHeadup_map_h]
+            mov dword ptr [esp + 8], ecx
+            fild dword ptr [esp + 8]
+            fstp dword ptr [gHeadup_map_y_float]
+    L004976e8:
+            call InitMap
+            call SaveOptions
+    L004976f2:
+            mov ecx, 0x21
+            call KeyIsDown
+            test eax, eax
+            je L00497754
+            cmp esi, edi
+            je L00497754
+            mov eax, dword ptr [gFrame_period]
+            mov dword ptr [esp + 0xc], edi
+            fld dword ptr [gHeadup_map_x_float]
+            mov dword ptr [esp + 8], eax
+            fild qword ptr [esp + 8]
+            fmul qword ptr [gDouble_0058a068+0x310]
+            fsubp st(1), st(0)
+            fst dword ptr [gHeadup_map_x_float]
+            fcomp dword ptr [gDouble_0058a068+0x2e8]
+            fnstsw ax
+            test ah, 1
+            je L004977ce
+            mov dword ptr [gHeadup_map_x_float], 0
+            call InitMap
+            call SaveOptions
+            pop edi
+            pop esi
+            add esp, 8
+            ret
+    L00497754:
+            mov ecx, 0x22
+            call KeyIsDown
+            test eax, eax
+            je L004977d8
+            cmp esi, edi
+            je L004977d8
+            mov ecx, dword ptr [gFrame_period]
+            mov dword ptr [esp + 0xc], edi
+            mov dword ptr [esp + 8], ecx
+            mov edx, dword ptr [gBack_screen]
+            fild qword ptr [esp + 8]
+            xor ecx, ecx
+            fmul qword ptr [gDouble_0058a068+0x310]
+            fadd dword ptr [gHeadup_map_x_float]
+            fst dword ptr [gHeadup_map_x_float]
+            mov cx, word ptr [edx + 0x34]
+            fadd dword ptr [gHeadup_map_w_float]
+            mov dword ptr [esp + 8], ecx
+            fild dword ptr [esp + 8]
+            fxch st(1)
+            fsub dword ptr [gDouble_0058a068+0x2fc]
+            fxch st(1)
+            fcompp
+            fnstsw ax
+            test ah, 1
+            je L004977ce
+            sub ecx, dword ptr [gHeadup_map_w]
+            sub ecx, 8
+            mov dword ptr [esp + 8], ecx
+            fild dword ptr [esp + 8]
+            fstp dword ptr [gHeadup_map_x_float]
+    L004977ce:
+            call InitMap
+            call SaveOptions
+    L004977d8:
+            pop edi
+            pop esi
+            add esp, 8
+            ret
+            nop
+            nop
+    }
+#endif
 }
 
 // InitSmashTargets

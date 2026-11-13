@@ -9,8 +9,15 @@
 #define M_DIAG(x) (((br_scalar*)mat->m)[4*(x)])
 #define Q_EL(e) (((br_scalar*)&(q->x))[(e)])
 
+#ifdef CARPOCALYPSE2_MATCHING
+extern char IID_IDirectInputDevice2A[];
+extern char _CIacos[];
+extern br_uint_8 _CombineTransforms[7][7];
+extern void __cdecl _ftol();
+#endif
 // FUNCTION: CARMA2_HW 0x005355e0
-br_quat* C2_HOOK_CDECL BrQuatMul(br_quat* q, const br_quat* l, const br_quat* r) {
+C2_NAKED br_quat* C2_HOOK_CDECL BrQuatMul(br_quat* q, const br_quat* l, const br_quat* r) {
+#ifndef CARPOCALYPSE2_MATCHING
     br_scalar x1;
     br_scalar x2;
     br_scalar x3;
@@ -27,10 +34,141 @@ br_quat* C2_HOOK_CDECL BrQuatMul(br_quat* q, const br_quat* l, const br_quat* r)
     q->z = x4 + (l->y + l->z) * (r->w - r->x) - x2;
     q->w = x4 + (l->z - l->y) * (r->y - r->z) - x1;
     return q;
+#else
+    __asm {
+            sub esp, 0x14
+            mov eax, dword ptr [esp + 0x1c]
+            mov ecx, dword ptr [esp + 0x20]
+            fld dword ptr [eax + 0xc]
+            fld dword ptr [ecx + 0xc]
+            fld dword ptr [eax + 0xc]
+            fld dword ptr [ecx + 0xc]
+            fld dword ptr [eax + 0xc]
+            fxch st(4)
+            _emit 0xd8
+        _emit 0x00
+            fld dword ptr [ecx + 0xc]
+            fxch st(4)
+            _emit 0xd8
+        _emit 0x01
+            fmulp st(1), st(0)
+            fstp dword ptr [esp + 8]
+            fld dword ptr [eax + 0xc]
+            fxch st(2)
+            _emit 0xd8
+        _emit 0x20
+            fld dword ptr [ecx + 8]
+            fadd dword ptr [ecx + 4]
+            fmulp st(1), st(0)
+            fstp dword ptr [esp + 0xc]
+            fld dword ptr [ecx + 4]
+            fxch st(1)
+            _emit 0xd8
+        _emit 0x21
+            fld dword ptr [eax + 4]
+            fadd dword ptr [eax + 8]
+            fmulp st(1), st(0)
+            fstp dword ptr [esp + 0x10]
+            fld dword ptr [eax + 8]
+            fxch st(1)
+            _emit 0xd8
+        _emit 0x01
+            fld dword ptr [eax + 4]
+            fxch st(2)
+            _emit 0xd8
+        _emit 0x00
+            fmulp st(1), st(0)
+            _emit 0xd9
+        _emit 0x5c
+        _emit 0x24
+        _emit 0x00
+            fld dword ptr [ecx + 8]
+            fxch st(4)
+            faddp st(1), st(0)
+            fld dword ptr [ecx + 0xc]
+            fxch st(4)
+            fsubp st(3), st(0)
+            fxch st(2)
+            fmulp st(2), st(0)
+            fsub dword ptr [eax + 4]
+            fxch st(1)
+            fxch st(2)
+            fxch st(1)
+            fxch st(2)
+            fstp dword ptr [esp + 4]
+            fadd dword ptr [ecx + 8]
+            fmulp st(1), st(0)
+            fstp dword ptr [esp + 0x20]
+            fld dword ptr [ecx + 4]
+            fld dword ptr [eax + 8]
+            fld dword ptr [esp + 0x20]
+            fadd dword ptr [esp + 4]
+            fxch st(2)
+            _emit 0xd8
+        _emit 0x29
+            fxch st(1)
+            _emit 0xd8
+        _emit 0x20
+            fxch st(2)
+            _emit 0xd8
+        _emit 0x44
+        _emit 0x24
+        _emit 0x00
+            fxch st(2)
+            fmulp st(1), st(0)
+            fld dword ptr [eax + 8]
+            fld dword ptr [eax + 4]
+            fld dword ptr [ecx + 4]
+            fxch st(4)
+            fstp dword ptr [esp + 0x1c]
+            fld dword ptr [ecx + 8]
+            fxch st(3)
+            fadd dword ptr [esp + 0x1c]
+            fmul dword ptr [IID_IDirectInputDevice2A+0x580]
+            fld st(0)
+            fxch st(2)
+            fsubp st(3), st(0)
+            fxch st(3)
+            fsubp st(4), st(0)
+            fxch st(3)
+            fmulp st(1), st(0)
+            fxch st(2)
+            fadd dword ptr [esp + 8]
+            fld st(1)
+            fadd dword ptr [esp + 0xc]
+            fxch st(3)
+            fadd st(0), st(2)
+            fxch st(1)
+            fsub dword ptr [esp + 0x1c]
+            fxch st(3)
+            fsub dword ptr [esp + 0x20]
+            fxch st(1)
+            _emit 0xd8
+        _emit 0x64
+        _emit 0x24
+        _emit 0x00
+            fxch st(2)
+            fadd dword ptr [esp + 0x10]
+            fxch st(3)
+            mov eax, dword ptr [esp + 0x18]
+            _emit 0xd9
+        _emit 0x18
+            fxch st(1)
+            fstp dword ptr [eax + 0xc]
+            fxch st(1)
+            fsub dword ptr [esp + 4]
+            fxch st(1)
+            fstp dword ptr [eax + 4]
+            fstp dword ptr [eax + 8]
+            add esp, 0x14
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00535710
-br_quat* C2_HOOK_CDECL BrQuatNormalise(br_quat* q, const br_quat* qq) {
+C2_NAKED br_quat* C2_HOOK_CDECL BrQuatNormalise(br_quat* q, const br_quat* qq) {
+#ifndef CARPOCALYPSE2_MATCHING
     br_scalar s;
 
     s = 1.0f / (float)sqrt(qq->x * qq->x + qq->y * qq->y + qq->z * qq->z + qq->w * qq->w);
@@ -39,20 +177,106 @@ br_quat* C2_HOOK_CDECL BrQuatNormalise(br_quat* q, const br_quat* qq) {
     q->z = qq->z * s;
     q->w = qq->w * s;
     return q;
+#else
+    __asm {
+            mov ecx, dword ptr [esp + 8]
+            mov eax, dword ptr [esp + 4]
+            fld dword ptr [ecx + 4]
+            fld dword ptr [ecx + 8]
+            fld dword ptr [ecx + 0xc]
+            fxch st(2)
+            fst dword ptr [esp + 8]
+            fld st(1)
+            fxch st(1)
+            fmul dword ptr [esp + 8]
+            _emit 0xd9
+        _emit 0x01
+            fxch st(2)
+            fmul st(0), st(3)
+            fxch st(4)
+            fst dword ptr [esp + 8]
+            fmul dword ptr [esp + 8]
+            fxch st(2)
+            fst dword ptr [esp + 8]
+            fxch st(4)
+            faddp st(1), st(0)
+            fxch st(3)
+            fmul dword ptr [esp + 8]
+            fxch st(1)
+            faddp st(3), st(0)
+            faddp st(2), st(0)
+            fxch st(1)
+            fsqrt
+            fstp st(1)
+            fdivr dword ptr [IID_IDirectInputDevice2A+0x584]
+            fld st(0)
+            _emit 0xd8
+        _emit 0x09
+            _emit 0xd9
+        _emit 0x18
+            fld dword ptr [ecx + 4]
+            fmul st(0), st(1)
+            fstp dword ptr [eax + 4]
+            fld dword ptr [ecx + 8]
+            fmul st(0), st(1)
+            fstp dword ptr [eax + 8]
+            fld dword ptr [ecx + 0xc]
+            fmul st(0), st(1)
+            fstp dword ptr [eax + 0xc]
+            fstp st(0)
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00535790
-br_quat* C2_HOOK_CDECL BrQuatInvert(br_quat* q, const br_quat* qq) {
+C2_NAKED br_quat* C2_HOOK_CDECL BrQuatInvert(br_quat* q, const br_quat* qq) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     q->x = -qq->x;
     q->y = -qq->y;
     q->z = -qq->z;
     q->w = qq->w;
     return q;
+#else
+    __asm {
+            mov ecx, dword ptr [esp + 8]
+            mov eax, dword ptr [esp + 4]
+            _emit 0xd9
+        _emit 0x01
+            fchs
+            _emit 0xd9
+        _emit 0x18
+            fld dword ptr [ecx + 4]
+            fchs
+            fstp dword ptr [eax + 4]
+            fld dword ptr [ecx + 8]
+            fchs
+            fstp dword ptr [eax + 8]
+            fld dword ptr [ecx + 0xc]
+            fstp dword ptr [eax + 0xc]
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x005357c0
-br_quat* C2_HOOK_CDECL BrQuatSlerp(br_quat* q, const br_quat* l, const br_quat* r, br_scalar a, br_int_16 spins) {
+C2_NAKED br_quat* C2_HOOK_CDECL BrQuatSlerp(br_quat* q, const br_quat* l, const br_quat* r, br_scalar a, br_int_16 spins) {
+#ifndef CARPOCALYPSE2_MATCHING
     int omega;
     int omega_spin;
     br_scalar s_omega;
@@ -91,10 +315,175 @@ br_quat* C2_HOOK_CDECL BrQuatSlerp(br_quat* q, const br_quat* l, const br_quat* 
     q->z = scale_l * l->z + scale_r * t.z;
     q->w = scale_l * l->w + scale_r * t.w;
     return q;
+#else
+    __asm {
+            sub esp, 0x10
+            mov ecx, dword ptr [esp + 0x1c]
+            push esi
+            mov esi, dword ptr [esp + 0x1c]
+            fld dword ptr [ecx + 8]
+            fld dword ptr [esi + 8]
+            fld dword ptr [ecx + 0xc]
+            fld dword ptr [esi + 0xc]
+            fld dword ptr [ecx + 4]
+            fxch st(3)
+            fmulp st(4), st(0)
+            fmulp st(1), st(0)
+            faddp st(2), st(0)
+            _emit 0xd9
+        _emit 0x01
+            fxch st(1)
+            fmul dword ptr [esi + 4]
+            fxch st(1)
+            _emit 0xd8
+        _emit 0x0e
+            fxch st(1)
+            faddp st(2), st(0)
+            faddp st(1), st(0)
+            fst dword ptr [esp + 0x1c]
+            fcomp dword ptr [IID_IDirectInputDevice2A+0x588]
+            fnstsw ax
+            test ah, 1
+            je L00535834
+            _emit 0xd9
+        _emit 0x01
+            fchs
+            fstp dword ptr [esp + 4]
+            fld dword ptr [ecx + 4]
+            fchs
+            fstp dword ptr [esp + 8]
+            fld dword ptr [ecx + 8]
+            fchs
+            fstp dword ptr [esp + 0xc]
+            fld dword ptr [ecx + 0xc]
+            fchs
+            fstp dword ptr [esp + 0x10]
+            fld dword ptr [esp + 0x1c]
+            fchs
+            fstp dword ptr [esp + 0x1c]
+            jmp L0053584f
+    L00535834:
+            fld dword ptr [ecx + 4]
+            fstp dword ptr [esp + 8]
+            fld dword ptr [ecx + 8]
+            mov eax, dword ptr [ecx]
+            fstp dword ptr [esp + 0xc]
+            fld dword ptr [ecx + 0xc]
+            fstp dword ptr [esp + 0x10]
+            mov dword ptr [esp + 4], eax
+    L0053584f:
+            fld dword ptr [IID_IDirectInputDevice2A+0x584]
+            fsub dword ptr [esp + 0x1c]
+            fcomp dword ptr [IID_IDirectInputDevice2A+0x58c]
+            fnstsw ax
+            test ah, 0x41
+            jne L0053591c
+            fld dword ptr [esp + 0x1c]
+            call _CIacos
+            fmul qword ptr [IID_IDirectInputDevice2A+0x590]
+            call _ftol
+            and eax, 0xffff
+            mov ecx, eax
+            mov dword ptr [esp + 0x20], eax
+            and ecx, 0xffff
+            mov dword ptr [esp + 0x1c], ecx
+            fild dword ptr [esp + 0x1c]
+            fild dword ptr [esp + 0x20]
+            fxch st(1)
+            fmul qword ptr [IID_IDirectInputDevice2A+0x598]
+            fxch st(1)
+            fxch st(1)
+            fsin
+            movsx ecx, word ptr [esp + 0x28]
+            mov edx, ecx
+            shl edx, 0xe
+            sub edx, ecx
+            lea eax, [eax + edx*2]
+            mov dword ptr [esp + 0x28], eax
+            fild dword ptr [esp + 0x28]
+            fxch st(1)
+            fst dword ptr [esp + 0x28]
+            fxch st(1)
+            fmul dword ptr [esp + 0x24]
+            fxch st(1)
+            fxch st(2)
+            fxch st(1)
+            fxch st(1)
+            fsub st(0), st(1)
+            call _ftol
+            and eax, 0xffff
+            mov dword ptr [esp + 0x28], eax
+            fild dword ptr [esp + 0x28]
+            fmul qword ptr [IID_IDirectInputDevice2A+0x598]
+            fxch st(1)
+            fxch st(1)
+            fsin
+            fst dword ptr [esp + 0x28]
+            fdiv st(0), st(2)
+            fstp dword ptr [esp + 0x28]
+            call _ftol
+            and eax, 0xffff
+            mov dword ptr [esp + 0x24], eax
+            fild dword ptr [esp + 0x24]
+            fmul qword ptr [IID_IDirectInputDevice2A+0x598]
+            fsin
+            fdivrp st(1), st(0)
+            jmp L00535930
+    L0053591c:
+            fld dword ptr [IID_IDirectInputDevice2A+0x584]
+            fsub dword ptr [esp + 0x24]
+            fld dword ptr [esp + 0x24]
+            fxch st(1)
+            fstp dword ptr [esp + 0x28]
+    L00535930:
+            fld dword ptr [esp + 0x28]
+            fld dword ptr [esp + 4]
+            fmul st(0), st(2)
+            fld dword ptr [esp + 8]
+            fxch st(2)
+            _emit 0xd8
+        _emit 0x0e
+            fld dword ptr [esp + 0xc]
+            fxch st(3)
+            fmul st(0), st(4)
+            fxch st(1)
+            faddp st(2), st(0)
+            fxch st(2)
+            fmul st(0), st(3)
+            fld dword ptr [esp + 0x10]
+            fxch st(2)
+            mov eax, dword ptr [esp + 0x18]
+            _emit 0xd9
+        _emit 0x18
+            fld dword ptr [esi + 4]
+            fmul dword ptr [esp + 0x28]
+            fxch st(2)
+            fmul st(0), st(4)
+            fxch st(3)
+            faddp st(2), st(0)
+            fxch st(1)
+            fstp dword ptr [eax + 4]
+            fld dword ptr [esi + 8]
+            fmul dword ptr [esp + 0x28]
+            fxch st(1)
+            faddp st(1), st(0)
+            fstp dword ptr [eax + 8]
+            fld dword ptr [esi + 0xc]
+            fmul dword ptr [esp + 0x28]
+            fxch st(1)
+            pop esi
+            faddp st(1), st(0)
+            fstp dword ptr [eax + 0xc]
+            fstp st(0)
+            add esp, 0x10
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x005359a0
-br_matrix34* C2_HOOK_CDECL BrQuatToMatrix34(br_matrix34* mat, const br_quat* q) {
+C2_NAKED br_matrix34* C2_HOOK_CDECL BrQuatToMatrix34(br_matrix34* mat, const br_quat* q) {
+#ifndef CARPOCALYPSE2_MATCHING
     br_scalar xs;
     br_scalar ys;
     br_scalar zs;
@@ -135,10 +524,145 @@ br_matrix34* C2_HOOK_CDECL BrQuatToMatrix34(br_matrix34* mat, const br_quat* q) 
     M(3, 2) = 0.f;
 
     return mat;
+#else
+    __asm {
+            sub esp, 0x1c
+            mov eax, dword ptr [esp + 0x24]
+            fld dword ptr [eax + 4]
+            fld dword ptr [eax + 8]
+            fadd st(0), st(0)
+            fld dword ptr [eax + 8]
+            fxch st(2)
+            fadd st(0), st(0)
+            fld dword ptr [eax + 4]
+            fxch st(2)
+            fstp dword ptr [esp + 0x24]
+            _emit 0xd9
+        _emit 0x00
+            fld dword ptr [esp + 0x24]
+            fxch st(4)
+            fmul dword ptr [esp + 0x24]
+            fxch st(2)
+            _emit 0xd9
+        _emit 0x54
+        _emit 0x24
+        _emit 0x00
+            fxch st(1)
+            fadd st(0), st(0)
+            fld dword ptr [eax + 0xc]
+            fld st(1)
+            fld dword ptr [eax + 0xc]
+            fmul st(0), st(3)
+            fstp dword ptr [esp + 0x18]
+            fxch st(1)
+            _emit 0xd8
+        _emit 0x4c
+        _emit 0x24
+        _emit 0x00
+            fstp dword ptr [esp + 0x14]
+            fld dword ptr [eax + 0xc]
+            fmul dword ptr [esp + 0x24]
+            fstp dword ptr [esp + 4]
+            fxch st(2)
+            _emit 0xd8
+        _emit 0x08
+            fxch st(5)
+            _emit 0xd8
+        _emit 0x08
+            fxch st(4)
+            _emit 0xd8
+        _emit 0x4c
+        _emit 0x24
+        _emit 0x00
+            fxch st(3)
+            fst dword ptr [esp + 8]
+            fld dword ptr [eax + 4]
+            fxch st(3)
+            _emit 0xd8
+        _emit 0x08
+            fstp dword ptr [esp + 0x10]
+            fxch st(3)
+            fstp dword ptr [esp + 0xc]
+            fxch st(2)
+            fadd dword ptr [esp + 0xc]
+            fxch st(4)
+            _emit 0xd9
+        _emit 0x54
+        _emit 0x24
+        _emit 0x00
+            _emit 0xd9
+        _emit 0x44
+        _emit 0x24
+        _emit 0x00
+            fxch st(4)
+            _emit 0xd9
+        _emit 0x54
+        _emit 0x24
+        _emit 0x00
+            fxch st(1)
+            fsub dword ptr [esp + 4]
+            fxch st(1)
+            fadd dword ptr [esp + 0x14]
+            fxch st(4)
+            fadd dword ptr [esp + 4]
+            fxch st(2)
+            fmul dword ptr [esp + 0x24]
+            fxch st(5)
+            fsubr dword ptr [IID_IDirectInputDevice2A+0x584]
+            fxch st(5)
+            fstp dword ptr [esp + 0x24]
+            mov eax, dword ptr [esp + 0x20]
+            xor ecx, ecx
+            fxch st(4)
+            _emit 0xd9
+        _emit 0x18
+            fxch st(3)
+            fstp dword ptr [eax + 0xc]
+            fxch st(1)
+            fstp dword ptr [eax + 0x18]
+            fxch st(1)
+            fstp dword ptr [eax + 4]
+            fstp st(0)
+            fld dword ptr [esp + 0xc]
+            fld dword ptr [esp + 8]
+            fadd dword ptr [esp + 0x10]
+            fxch st(1)
+            fadd dword ptr [esp + 0x10]
+            fld dword ptr [esp + 0x24]
+            _emit 0xd9
+        _emit 0x44
+        _emit 0x24
+        _emit 0x00
+            fld dword ptr [esp + 0x24]
+            fxch st(2)
+            fsub dword ptr [esp + 0x18]
+            fxch st(1)
+            fsub dword ptr [esp + 0x14]
+            fxch st(2)
+            fadd dword ptr [esp + 0x18]
+            fxch st(4)
+            fsubr dword ptr [IID_IDirectInputDevice2A+0x584]
+            fxch st(3)
+            fsubr dword ptr [IID_IDirectInputDevice2A+0x584]
+            fxch st(3)
+            fstp dword ptr [eax + 0x10]
+            fstp dword ptr [eax + 0x1c]
+            fstp dword ptr [eax + 8]
+            fxch st(1)
+            fstp dword ptr [eax + 0x14]
+            fstp dword ptr [eax + 0x20]
+            mov dword ptr [eax + 0x24], ecx
+            mov dword ptr [eax + 0x28], ecx
+            mov dword ptr [eax + 0x2c], ecx
+            add esp, 0x1c
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00535ae0
-br_quat* C2_HOOK_CDECL BrMatrix34ToQuat(br_quat* q, const br_matrix34* mat) {
+C2_NAKED br_quat* C2_HOOK_CDECL BrMatrix34ToQuat(br_quat* q, const br_matrix34* mat) {
+#ifndef CARPOCALYPSE2_MATCHING
     br_scalar tr;
     br_scalar s;
     int i;
@@ -166,6 +690,149 @@ br_quat* C2_HOOK_CDECL BrMatrix34ToQuat(br_quat* q, const br_matrix34* mat) {
     Q_EL(k) = (M(i, k) + M(k, i)) * s;
     q->w = (M(k, j) - M(j, k)) * s;
     return q;
+#else
+    __asm {
+            mov ecx, dword ptr [esp + 8]
+            sub esp, 0x14
+            _emit 0xd9
+        _emit 0x01
+            fadd dword ptr [ecx + 0x20]
+            fadd dword ptr [ecx + 0x10]
+            fcom dword ptr [IID_IDirectInputDevice2A+0x588]
+            fnstsw ax
+            test ah, 1
+            jne L00535b4f
+            fsub dword ptr [IID_IDirectInputDevice2A+0x5a4]
+            fld dword ptr [IID_IDirectInputDevice2A+0x580]
+            fxch st(1)
+            fsqrt
+            mov eax, dword ptr [esp + 0x18]
+            fxch st(1)
+            fxch st(1)
+            _emit 0xd9
+        _emit 0x5c
+        _emit 0x24
+        _emit 0x00
+            _emit 0xd8
+        _emit 0x74
+        _emit 0x24
+        _emit 0x00
+            _emit 0xd9
+        _emit 0x44
+        _emit 0x24
+        _emit 0x00
+            fmul dword ptr [IID_IDirectInputDevice2A+0x580]
+            fstp dword ptr [eax + 0xc]
+            fld dword ptr [ecx + 0x14]
+            fsub dword ptr [ecx + 0x1c]
+            fmul st(0), st(1)
+            _emit 0xd9
+        _emit 0x18
+            fld dword ptr [ecx + 0x18]
+            fsub dword ptr [ecx + 8]
+            fmul st(0), st(1)
+            fstp dword ptr [eax + 4]
+            fld dword ptr [ecx + 4]
+            fsub dword ptr [ecx + 0xc]
+            fmul st(0), st(1)
+            fstp dword ptr [eax + 8]
+            fstp st(0)
+            add esp, 0x14
+            ret
+    L00535b4f:
+            fstp st(0)
+            fld dword ptr [ecx + 0x10]
+            _emit 0xd8
+        _emit 0x19
+            push edi
+            push esi
+            xor edx, edx
+            push ebp
+            push ebx
+            mov dword ptr [esp + 0x10], edx
+            fnstsw ax
+            test ah, 0x41
+            jne L00535b70
+            mov edx, 1
+            mov dword ptr [esp + 0x10], edx
+    L00535b70:
+            fld dword ptr [ecx + 0x20]
+            mov eax, edx
+            shl eax, 4
+            fcomp dword ptr [eax + ecx]
+            fnstsw ax
+            test ah, 0x41
+            jne L00535b8b
+            mov edx, 2
+            mov dword ptr [esp + 0x10], edx
+    L00535b8b:
+            lea eax, [edx*4]
+            mov edi, edx
+            mov dword ptr [esp + 0x1c], eax
+            mov eax, dword ptr [eax + _CombineTransforms+0xb8]
+            mov dword ptr [esp + 0x18], eax
+            lea edx, [eax*4]
+            mov dword ptr [esp + 0x20], edx
+            mov edx, dword ptr [edx + _CombineTransforms+0xb8]
+            mov dword ptr [esp + 0x14], edx
+            shl edx, 4
+            shl eax, 4
+            fld dword ptr [edx + ecx]
+            fld dword ptr [IID_IDirectInputDevice2A+0x580]
+            fxch st(1)
+            fadd dword ptr [eax + ecx]
+            mov eax, dword ptr [esp + 0x18]
+            shl edi, 4
+            fsubr dword ptr [edi + ecx]
+            mov ecx, dword ptr [esp + 0x14]
+            lea esi, [eax + eax*2]
+            fsub dword ptr [IID_IDirectInputDevice2A+0x5a4]
+            lea edx, [ecx + esi]
+            lea edi, [ecx + ecx*2]
+            mov dword ptr [esp + 0x18], edx
+            mov edx, dword ptr [esp + 0x10]
+            fsqrt
+            lea ebx, [eax + edi]
+            add esi, edx
+            add edi, edx
+            lea edx, [edx + edx*2]
+            lea ebp, [eax + edx]
+            mov eax, dword ptr [esp + 0x1c]
+            add edx, ecx
+            mov ecx, dword ptr [esp + 0x28]
+            fxch st(1)
+            fxch st(1)
+            fstp dword ptr [esp + 0x10]
+            fdiv dword ptr [esp + 0x10]
+            fld dword ptr [esp + 0x10]
+            fmul dword ptr [IID_IDirectInputDevice2A+0x580]
+            fstp dword ptr [ecx + eax]
+            mov eax, dword ptr [esp + 0x18]
+            mov ecx, dword ptr [esp + 0x2c]
+            fld dword ptr [ecx + eax*4]
+            fsub dword ptr [ecx + ebx*4]
+            mov eax, dword ptr [esp + 0x28]
+            pop ebx
+            fmul st(0), st(1)
+            fstp dword ptr [eax + 0xc]
+            fld dword ptr [ecx + ebp*4]
+            fadd dword ptr [ecx + esi*4]
+            mov esi, dword ptr [esp + 0x1c]
+            pop ebp
+            fmul st(0), st(1)
+            fstp dword ptr [eax + esi]
+            fld dword ptr [ecx + edx*4]
+            fadd dword ptr [ecx + edi*4]
+            mov ecx, dword ptr [esp + 0xc]
+            pop esi
+            pop edi
+            fmul st(0), st(1)
+            fstp dword ptr [eax + ecx*4]
+            fstp st(0)
+            add esp, 0x14
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00535c70

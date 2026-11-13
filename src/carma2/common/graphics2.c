@@ -106,6 +106,28 @@ void C2_HOOK_FASTCALL DeallocateAllTransientBitmaps(void) {
     }
 }
 
+#ifdef CARPOCALYPSE2_MATCHING
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern void C2_HOOK_FASTCALL BRPM_convert(br_pixelmap* pMap, int pPixel_type);
+extern br_pixelmap* C2_HOOK_CDECL BrMapAdd();
+extern br_pixelmap* C2_HOOK_CDECL BrMapFind();
+extern br_pixelmap* C2_HOOK_CDECL BrMapRemove();
+extern void C2_HOOK_CDECL BrPixelmapFree();
+extern void C2_HOOK_CDECL BrPixelmapRectangleCopy();
+extern void C2_HOOK_CDECL BrPixelmapRectangleFill();
+extern int C2_HOOK_FASTCALL FRONTEND_Redraw(br_pixelmap* dst, br_int_16 dx, br_int_16 dy, br_pixelmap* src, br_int_16 sx, br_int_16 sy, br_int_16 w, br_int_16 h);
+extern void C2_HOOK_FASTCALL PDScreenBufferSwap(int pRendering_area_only);
+extern void C2_HOOK_FASTCALL PDSetPalette(br_pixelmap *pixelmap);
+extern void C2_HOOK_FASTCALL PixelmapSwapByteOrder(br_pixelmap* pMap);
+extern br_uint_8 bl;
+extern tPixelFlags gPixelFlags;
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern tNet_mode gNet_mode;
+#endif
 // FUNCTION: CARMA2_HW 0x0043e010
 void C2_HOOK_FASTCALL RemoveTransientBitmaps(int pGraphically_remove_them) {
     int i;
@@ -157,7 +179,8 @@ void C2_HOOK_FASTCALL DRSetPalette2(br_pixelmap* pThe_palette, int pSet_current_
 }
 
 // FUNCTION: CARMA2_HW 0x004b5390
-void C2_HOOK_FASTCALL SetFadedPalette(tU32 pDegree) {
+void C2_NAKED C2_HOOK_FASTCALL SetFadedPalette(tU32 pDegree) {
+#ifndef CARPOCALYPSE2_MATCHING
     int i;
 
     memcpy(gScratch_pixels, gCurrent_palette->pixels, 256 * sizeof(br_colour));
@@ -168,10 +191,85 @@ void C2_HOOK_FASTCALL SetFadedPalette(tU32 pDegree) {
         Darken(&((tU8*)gScratch_pixels)[4 * i + 3], pDegree);
     }
     DRSetPalette2(gScratch_palette, 0);
+#else
+    __asm {
+            mov eax, dword ptr [gCurrent_palette]
+            push esi
+            mov edx, ecx
+            push edi
+            mov esi, dword ptr [eax + 8]
+            mov edi, dword ptr [gScratch_pixels]
+            mov ecx, 0x100
+            xor eax, eax
+            rep movsd
+    L004b53ab:
+            mov esi, dword ptr [gScratch_pixels]
+            xor ecx, ecx
+            mov cl, byte ptr [esi + eax]
+            add eax, 4
+            imul ecx, edx
+            shr ecx, 8
+            mov byte ptr [esi + eax - 4], cl
+            mov esi, dword ptr [gScratch_pixels]
+            xor ecx, ecx
+            mov cl, byte ptr [esi + eax - 3]
+            imul ecx, edx
+            shr ecx, 8
+            mov byte ptr [esi + eax - 3], cl
+            mov esi, dword ptr [gScratch_pixels]
+            xor ecx, ecx
+            mov cl, byte ptr [esi + eax - 2]
+            imul ecx, edx
+            shr ecx, 8
+            mov byte ptr [esi + eax - 2], cl
+            mov esi, dword ptr [gScratch_pixels]
+            xor ecx, ecx
+            mov cl, byte ptr [esi + eax - 1]
+            imul ecx, edx
+            shr ecx, 8
+            mov byte ptr [esi + eax - 1], cl
+            cmp eax, 0x400
+            jl L004b53ab
+            mov eax, dword ptr [gScratch_palette]
+            mov esi, eax
+            mov edx, dword ptr [eax + 8]
+            mov dword ptr [edx], 0
+            mov eax, dword ptr [gFaded_palette]
+            test eax, eax
+            mov dword ptr [gPalette_changed], 0
+            jne L004b5436
+            mov ecx, esi
+            call PDSetPalette
+    L004b5436:
+            mov edx, dword ptr [gRender_palette]
+            mov ecx, dword ptr [gPalette_munged]
+            xor eax, eax
+            cmp esi, edx
+            setne al
+            or ecx, eax
+            pop edi
+            mov dword ptr [gPalette_munged], ecx
+            pop esi
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004b5470
-void C2_HOOK_FASTCALL FadePaletteUp(void) {
+void C2_NAKED C2_HOOK_FASTCALL FadePaletteUp(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     int start_time;
     int the_time;
 
@@ -185,14 +283,251 @@ void C2_HOOK_FASTCALL FadePaletteUp(void) {
         SetFadedPalette((the_time * 256) / 500);
     }
     DRSetPalette(gCurrent_palette);
+#else
+    __asm {
+            mov eax, dword ptr [gFaded_palette]
+            test eax, eax
+            je L004b55e6
+            push edi
+            push esi
+            push ebp
+            push ebx
+            mov dword ptr [gFaded_palette], 0
+            call PDGetTotalTime
+            mov ebp, eax
+            call PDGetTotalTime
+            sub eax, ebp
+            cmp eax, 0x1f4
+            jge L004b5590
+    L004b54a4:
+            shl eax, 8
+            mov ecx, eax
+            mov eax, 0x10624dd3
+            imul ecx
+            sar edx, 5
+            mov eax, edx
+            mov edi, dword ptr [gScratch_pixels]
+            shr eax, 0x1f
+            add edx, eax
+            mov eax, dword ptr [gCurrent_palette]
+            mov ecx, 0x100
+            mov esi, dword ptr [eax + 8]
+            xor eax, eax
+            rep movsd
+    L004b54d1:
+            mov esi, dword ptr [gScratch_pixels]
+            xor ecx, ecx
+            mov ebx, edx
+            mov cl, byte ptr [esi + eax]
+            add eax, 4
+            imul ebx, ecx
+            shr ebx, 8
+            mov byte ptr [esi + eax - 4], bl
+            mov esi, dword ptr [gScratch_pixels]
+            xor ecx, ecx
+            mov ebx, edx
+            mov cl, byte ptr [esi + eax - 3]
+            imul ebx, ecx
+            shr ebx, 8
+            mov byte ptr [esi + eax - 3], bl
+            mov esi, dword ptr [gScratch_pixels]
+            xor ecx, ecx
+            mov ebx, edx
+            mov cl, byte ptr [esi + eax - 2]
+            imul ebx, ecx
+            shr ebx, 8
+            mov byte ptr [esi + eax - 2], bl
+            mov esi, dword ptr [gScratch_pixels]
+            xor ecx, ecx
+            mov ebx, edx
+            mov cl, byte ptr [esi + eax - 1]
+            imul ebx, ecx
+            shr ebx, 8
+            mov byte ptr [esi + eax - 1], bl
+            cmp eax, 0x400
+            jl L004b54d1
+            mov esi, dword ptr [gScratch_palette]
+            mov edx, dword ptr [esi + 8]
+            mov dword ptr [edx], 0
+            mov eax, dword ptr [gFaded_palette]
+            test eax, eax
+            mov dword ptr [gPalette_changed], 0
+            jne L004b5563
+            mov ecx, esi
+            call PDSetPalette
+    L004b5563:
+            mov edi, dword ptr [gRender_palette]
+            xor eax, eax
+            cmp esi, edi
+            mov esi, dword ptr [gPalette_munged]
+            setne al
+            or esi, eax
+            mov dword ptr [gPalette_munged], esi
+            call PDGetTotalTime
+            sub eax, ebp
+            cmp eax, 0x1f4
+            jl L004b54a4
+    L004b5590:
+            mov ebx, dword ptr [gCurrent_palette]
+            mov ecx, dword ptr [ebx + 8]
+            mov dword ptr [ecx], 0
+            mov esi, dword ptr [ebx + 8]
+            mov edi, dword ptr [gCurrent_palette_pixels]
+            mov ecx, 0x100
+            rep movsd
+            mov eax, dword ptr [gFaded_palette]
+            mov dword ptr [gPalette_changed], 0
+            test eax, eax
+            jne L004b55c9
+            mov ecx, ebx
+            call PDSetPalette
+    L004b55c9:
+            mov ecx, dword ptr [gRender_palette]
+            mov eax, dword ptr [gPalette_munged]
+            xor edx, edx
+            cmp ebx, ecx
+            setne dl
+            pop ebx
+            or eax, edx
+            pop ebp
+            pop esi
+            mov dword ptr [gPalette_munged], eax
+            pop edi
+    L004b55e6:
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004b55f0
-void C2_HOOK_FASTCALL EnsurePaletteUp(void) {
-
+void C2_NAKED C2_HOOK_FASTCALL EnsurePaletteUp(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     if (gFaded_palette) {
         FadePaletteUp();
     }
+#else
+    __asm {
+            mov eax, dword ptr [gFaded_palette]
+            test eax, eax
+            je L004b5766
+            push edi
+            push esi
+            push ebp
+            push ebx
+            mov dword ptr [gFaded_palette], 0
+            call PDGetTotalTime
+            mov ebp, eax
+            call PDGetTotalTime
+            sub eax, ebp
+            cmp eax, 0x1f4
+            jge L004b5710
+    L004b5624:
+            shl eax, 8
+            mov ecx, eax
+            mov eax, 0x10624dd3
+            imul ecx
+            sar edx, 5
+            mov eax, edx
+            mov edi, dword ptr [gScratch_pixels]
+            shr eax, 0x1f
+            add edx, eax
+            mov eax, dword ptr [gCurrent_palette]
+            mov ecx, 0x100
+            mov esi, dword ptr [eax + 8]
+            xor eax, eax
+            rep movsd
+    L004b5651:
+            mov esi, dword ptr [gScratch_pixels]
+            xor ecx, ecx
+            mov ebx, edx
+            mov cl, byte ptr [esi + eax]
+            add eax, 4
+            imul ebx, ecx
+            shr ebx, 8
+            mov byte ptr [esi + eax - 4], bl
+            mov esi, dword ptr [gScratch_pixels]
+            xor ecx, ecx
+            mov ebx, edx
+            mov cl, byte ptr [esi + eax - 3]
+            imul ebx, ecx
+            shr ebx, 8
+            mov byte ptr [esi + eax - 3], bl
+            mov esi, dword ptr [gScratch_pixels]
+            xor ecx, ecx
+            mov ebx, edx
+            mov cl, byte ptr [esi + eax - 2]
+            imul ebx, ecx
+            shr ebx, 8
+            mov byte ptr [esi + eax - 2], bl
+            mov esi, dword ptr [gScratch_pixels]
+            xor ecx, ecx
+            mov ebx, edx
+            mov cl, byte ptr [esi + eax - 1]
+            imul ebx, ecx
+            shr ebx, 8
+            mov byte ptr [esi + eax - 1], bl
+            cmp eax, 0x400
+            jl L004b5651
+            mov esi, dword ptr [gScratch_palette]
+            mov edx, dword ptr [esi + 8]
+            mov dword ptr [edx], 0
+            mov eax, dword ptr [gFaded_palette]
+            test eax, eax
+            mov dword ptr [gPalette_changed], 0
+            jne L004b56e3
+            mov ecx, esi
+            call PDSetPalette
+    L004b56e3:
+            mov edi, dword ptr [gRender_palette]
+            xor eax, eax
+            cmp esi, edi
+            mov esi, dword ptr [gPalette_munged]
+            setne al
+            or esi, eax
+            mov dword ptr [gPalette_munged], esi
+            call PDGetTotalTime
+            sub eax, ebp
+            cmp eax, 0x1f4
+            jl L004b5624
+    L004b5710:
+            mov ebx, dword ptr [gCurrent_palette]
+            mov ecx, dword ptr [ebx + 8]
+            mov dword ptr [ecx], 0
+            mov esi, dword ptr [ebx + 8]
+            mov edi, dword ptr [gCurrent_palette_pixels]
+            mov ecx, 0x100
+            rep movsd
+            mov eax, dword ptr [gFaded_palette]
+            mov dword ptr [gPalette_changed], 0
+            test eax, eax
+            jne L004b5749
+            mov ecx, ebx
+            call PDSetPalette
+    L004b5749:
+            mov ecx, dword ptr [gRender_palette]
+            mov eax, dword ptr [gPalette_munged]
+            xor edx, edx
+            cmp ebx, ecx
+            setne dl
+            pop ebx
+            or eax, edx
+            pop ebp
+            pop esi
+            mov dword ptr [gPalette_munged], eax
+            pop edi
+    L004b5766:
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0043e0a0
@@ -368,7 +703,6 @@ void C2_HOOK_FASTCALL StartMouseCursor(void) {
 
 // FUNCTION: CARMA2_HW 0x0043e710
 void C2_HOOK_FASTCALL EndMouseCursor(void) {
-
     RemoveTransientBitmaps(1);
     DeallocateAllTransientBitmaps();
     gMouse_started = 0;
@@ -376,7 +710,6 @@ void C2_HOOK_FASTCALL EndMouseCursor(void) {
 
 // FUNCTION: CARMA2_HW 0x0047b450
 void C2_HOOK_FASTCALL DRDrawLine(br_pixelmap* pDestn, int pX1, int pY1, int pX2, int pY2, int pColour) {
-
     if (gBack_screen->type != BR_PMT_INDEX_8) {
         pColour = PaletteEntry16Bit(gRender_palette, pColour);
     }
@@ -385,7 +718,6 @@ void C2_HOOK_FASTCALL DRDrawLine(br_pixelmap* pDestn, int pX1, int pY1, int pX2,
 
 // FUNCTION: CARMA2_HW 0x0047b880
 void C2_HOOK_FASTCALL ClearEntireScreen(void) {
-
     if (gScreen != NULL) {
         BrPixelmapFill(gScreen, gGraf_specs[gGraf_spec_index].black_value);
     }
@@ -399,7 +731,6 @@ void C2_HOOK_FASTCALL ClearEntireScreen(void) {
 
 // FUNCTION: CARMA2_HW 0x0047b960
 void C2_HOOK_FASTCALL KillSplashScreen(void) {
-
     if (gCurrent_splash != NULL) {
         BrMapRemove(gCurrent_splash);
         BrPixelmapFree(gCurrent_splash);
@@ -408,7 +739,8 @@ void C2_HOOK_FASTCALL KillSplashScreen(void) {
 }
 
 // FUNCTION: CARMA2_HW 0x0047b990
-void C2_HOOK_FASTCALL SplashScreenWith(const char* pPixmap_name) {
+void C2_NAKED C2_HOOK_FASTCALL SplashScreenWith(const char* pPixmap_name) {
+#ifndef CARPOCALYPSE2_MATCHING
     br_pixelmap* map;
     tPixelFlags flags;
 
@@ -438,10 +770,98 @@ void C2_HOOK_FASTCALL SplashScreenWith(const char* pPixmap_name) {
         BrPixelmapFree(gCurrent_splash);
         gCurrent_splash = NULL;
     }
+#else
+    __asm {
+            push ebx
+            push esi
+            push edi
+            mov edi, ecx
+            push edi
+            call BrMapFind
+            mov esi, eax
+            mov eax, dword ptr [gCurrent_splash]
+            add esp, 4
+            test eax, eax
+            je L0047b9cc
+            cmp esi, eax
+            je L0047ba75
+            test eax, eax
+            je L0047b9cc
+            push eax
+            call BrMapRemove
+            mov eax, dword ptr [gCurrent_splash]
+            add esp, 4
+            push eax
+            call BrPixelmapFree
+            add esp, 4
+    L0047b9cc:
+            mov ebx, dword ptr [gPixelFlags]
+            mov ecx, esi
+            test esi, esi
+            mov dword ptr [gCurrent_splash], ecx
+            jne L0047ba15
+            mov ecx, edi
+            call LoadPixelmap
+            mov ecx, dword ptr [gBack_screen]
+            xor edx, edx
+            mov dword ptr [gCurrent_splash], eax
+            mov dl, byte ptr [ecx + 0x2c]
+            mov ecx, eax
+            call BRPM_convert
+            mov ecx, dword ptr [gCurrent_splash]
+            test ecx, ecx
+            je L0047ba15
+            push ecx
+            call BrMapAdd
+            mov ecx, dword ptr [gCurrent_splash]
+            add esp, 4
+    L0047ba15:
+            test ecx, ecx
+            mov dword ptr [gPixelFlags], ebx
+            je L0047ba75
+            call PixelmapSwapByteOrder
+            mov eax, dword ptr [gCurrent_splash]
+            mov dx, word ptr [eax + 0x36]
+            mov cx, word ptr [eax + 0x34]
+            push edx
+            push ecx
+            mov ecx, dword ptr [gBack_screen]
+            push 0
+            push 0
+            push eax
+            push 0
+            xor edx, edx
+            call FRONTEND_Redraw
+            xor ecx, ecx
+            call PDScreenBufferSwap
+            mov edx, dword ptr [gCurrent_splash]
+            push edx
+            call BrMapRemove
+            mov eax, dword ptr [gCurrent_splash]
+            add esp, 4
+            push eax
+            call BrPixelmapFree
+            add esp, 4
+            mov dword ptr [gCurrent_splash], 0
+    L0047ba75:
+            pop edi
+            pop esi
+            pop ebx
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0047ba80
-void C2_HOOK_FASTCALL DRPixelmapRectangleMaskedCopy(br_pixelmap* pDest, br_int_16 pDest_x, br_int_16 pDest_y, const br_pixelmap* pSource, br_int_16 pSource_x, br_int_16 pSource_y, br_int_16 pWidth, br_int_16 pHeight) {
+void C2_NAKED C2_HOOK_FASTCALL DRPixelmapRectangleMaskedCopy(br_pixelmap* pDest, br_int_16 pDest_x, br_int_16 pDest_y, const br_pixelmap* pSource, br_int_16 pSource_x, br_int_16 pSource_y, br_int_16 pWidth, br_int_16 pHeight) {
+#ifndef CARPOCALYPSE2_MATCHING
     int y;
     int x;
     int dest_row_wrap;
@@ -501,16 +921,183 @@ void C2_HOOK_FASTCALL DRPixelmapRectangleMaskedCopy(br_pixelmap* pDest, br_int_1
             }
         }
     }
+#else
+    __asm {
+            sub esp, 8
+            movsx eax, word ptr [esp + 0x18]
+            push ebx
+            push ebp
+            push esi
+            push edi
+            mov edi, dword ptr [esp + 0x20]
+            mov si, dx
+            mov word ptr [esp + 0x10], si
+            movsx ebp, word ptr [edi + 0x28]
+            imul eax, ebp
+            cdq
+            sub eax, edx
+            movsx edx, word ptr [esp + 0x24]
+            sar eax, 1
+            add eax, edx
+            mov edx, dword ptr [edi + 8]
+            lea edi, [edx + eax*2]
+            movsx eax, word ptr [esp + 0x1c]
+            movsx edx, word ptr [ecx + 0x28]
+            mov dword ptr [esp + 0x20], eax
+            imul eax, edx
+            cdq
+            sub eax, edx
+            xor edx, edx
+            mov dx, word ptr [ecx + 0x30]
+            mov ebx, eax
+            movsx eax, si
+            shr edx, 1
+            sar ebx, 1
+            add edx, eax
+            mov dword ptr [esp + 0x14], eax
+            mov eax, dword ptr [ecx + 8]
+            add edx, ebx
+            lea esi, [eax + edx*2]
+            mov eax, ebp
+            movsx edx, word ptr [esp + 0x2c]
+            mov dword ptr [esp + 0x24], edx
+            cdq
+            sub eax, edx
+            mov edx, dword ptr [esp + 0x24]
+            sar eax, 1
+            sub eax, edx
+            mov dword ptr [esp + 0x28], eax
+            movsx eax, word ptr [ecx + 0x28]
+            cdq
+            sub eax, edx
+            mov edx, eax
+            mov eax, dword ptr [esp + 0x24]
+            sar edx, 1
+            sub edx, eax
+            mov eax, dword ptr [esp + 0x1c]
+            test ax, ax
+            mov dword ptr [esp + 0x24], edx
+            jge L0047bb52
+            mov edx, dword ptr [esp + 0x30]
+            add edx, eax
+            test dx, dx
+            mov dword ptr [esp + 0x30], edx
+            jle L0047bc32
+            mov eax, dword ptr [esp + 0x20]
+            mov dword ptr [esp + 0x1c], 0
+            imul eax, ebp
+            cdq
+            sub eax, edx
+            mov edx, dword ptr [esp + 0x24]
+            sar eax, 1
+            neg eax
+            neg ebx
+            lea edi, [edi + eax*2]
+            mov eax, dword ptr [esp + 0x1c]
+            lea esi, [esi + ebx*2]
+    L0047bb52:
+            mov bx, word ptr [ecx + 0x36]
+            movsx ebp, ax
+            mov dword ptr [esp + 0x1c], ebx
+            and ebx, 0xffff
+            cmp ebp, ebx
+            mov dword ptr [esp + 0x24], ebx
+            jge L0047bc32
+            movsx ebx, word ptr [esp + 0x30]
+            add ebx, ebp
+            mov ebp, dword ptr [esp + 0x24]
+            cmp ebx, ebp
+            jle L0047bb88
+            mov ebx, dword ptr [esp + 0x1c]
+            sub ebx, eax
+            mov dword ptr [esp + 0x30], ebx
+    L0047bb88:
+            cmp word ptr [esp + 0x10], 0
+            mov ebp, dword ptr [esp + 0x2c]
+            jge L0047bbc4
+            add ebp, dword ptr [esp + 0x10]
+            test bp, bp
+            mov dword ptr [esp + 0x2c], ebp
+            jle L0047bc32
+            mov ebx, dword ptr [esp + 0x14]
+            mov dword ptr [esp + 0x10], 0
+            lea eax, [ebx + ebx]
+            sub edi, eax
+            sub esi, eax
+            mov eax, dword ptr [esp + 0x28]
+            sub eax, ebx
+            sub edx, ebx
+            mov dword ptr [esp + 0x28], eax
+    L0047bbc4:
+            xor ebx, ebx
+            mov bx, word ptr [ecx + 0x34]
+            movsx ecx, word ptr [esp + 0x10]
+            cmp ecx, ebx
+            jge L0047bc32
+            movsx eax, bp
+            lea ebp, [eax + ecx]
+            cmp ebp, ebx
+            jle L0047bbf5
+            mov ebp, dword ptr [esp + 0x2c]
+            add eax, ecx
+            sub eax, ebx
+            sub ebp, eax
+            mov dword ptr [esp + 0x2c], ebp
+            mov ebp, dword ptr [esp + 0x28]
+            add ebp, eax
+            add edx, eax
+            jmp L0047bbf9
+    L0047bbf5:
+            mov ebp, dword ptr [esp + 0x28]
+    L0047bbf9:
+            movsx eax, word ptr [esp + 0x30]
+            test eax, eax
+            jle L0047bc32
+            movsx ecx, word ptr [esp + 0x2c]
+            mov dword ptr [esp + 0x24], ecx
+            mov ebx, eax
+    L0047bc0d:
+            test ecx, ecx
+            jle L0047bc29
+    L0047bc11:
+            mov ax, word ptr [edi]
+            add edi, 2
+            test ax, ax
+            je L0047bc1f
+            mov word ptr [esi], ax
+    L0047bc1f:
+            add esi, 2
+            dec ecx
+            jne L0047bc11
+            mov ecx, dword ptr [esp + 0x24]
+    L0047bc29:
+            dec ebx
+            lea esi, [esi + edx*2]
+            lea edi, [edi + ebp*2]
+            jne L0047bc0d
+    L0047bc32:
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 8
+            ret 0x18
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0047bc40
 void C2_HOOK_FASTCALL DRPixelmapBlit(br_int_16 pX, br_int_16 pY, const br_pixelmap* pSource) {
-
     DRPixelmapRectangleMaskedCopy(gBack_screen, pX, pY, pSource, 0, 0, pSource->width, pSource->height);
 }
 
 // FUNCTION: CARMA2_HW 0x0047bc80
-void C2_HOOK_FASTCALL FUN_0047bc80(br_pixelmap* pDest, br_int_16 pDest_x, br_int_16 pDest_y, const br_pixelmap* pSource, br_int_16 pSource_x, br_int_16 pSource_y, br_int_16 pWidth, br_int_16 pHeight) {
+void C2_NAKED C2_HOOK_FASTCALL FUN_0047bc80(br_pixelmap* pDest, br_int_16 pDest_x, br_int_16 pDest_y, const br_pixelmap* pSource, br_int_16 pSource_x, br_int_16 pSource_y, br_int_16 pWidth, br_int_16 pHeight) {
+#ifndef CARPOCALYPSE2_MATCHING
     int x;
     int y;
     int dest_row_wrap;
@@ -538,6 +1125,1031 @@ void C2_HOOK_FASTCALL FUN_0047bc80(br_pixelmap* pDest, br_int_16 pDest_x, br_int
         dest_ptr += dest_row_wrap;
         source_ptr += source_row_wrap;
     }
+#else
+    __asm {
+            movsx eax, word ptr [esp + 0x10]
+            push ebx
+            push ebp
+            push esi
+            push edi
+            mov edi, dword ptr [esp + 0x18]
+            mov si, dx
+            movsx ebp, word ptr [ecx + 0x28]
+            movsx ebx, word ptr [edi + 0x28]
+            imul eax, ebx
+            cdq
+            sub eax, edx
+            mov ecx, dword ptr [ecx + 8]
+            movsx edx, word ptr [esp + 0x1c]
+            sar eax, 1
+            add eax, edx
+            mov edx, dword ptr [edi + 8]
+            lea edi, [edx + eax*2]
+            movsx eax, word ptr [esp + 0x14]
+            imul eax, ebp
+            cdq
+            sub eax, edx
+            movsx edx, si
+            sar eax, 1
+            add eax, edx
+            lea esi, [ecx + eax*2]
+            mov eax, ebx
+            cdq
+            movsx ecx, word ptr [esp + 0x24]
+            sub eax, edx
+            mov ebx, eax
+            mov eax, ebp
+            cdq
+            sub eax, edx
+            sar ebx, 1
+            sar eax, 1
+            sub ebx, ecx
+            sub eax, ecx
+            movsx ecx, word ptr [esp + 0x28]
+            test ecx, ecx
+            jle L0047bd11
+            mov ebp, ecx
+    L0047bce9:
+            movsx ecx, word ptr [esp + 0x24]
+            test ecx, ecx
+            jle L0047bd08
+            mov edx, ecx
+    L0047bcf4:
+            mov cx, word ptr [edi]
+            add edi, 2
+            test cx, cx
+            je L0047bd02
+            mov word ptr [esi], cx
+    L0047bd02:
+            add esi, 2
+            dec edx
+            jne L0047bcf4
+    L0047bd08:
+            dec ebp
+            lea esi, [esi + eax*2]
+            lea edi, [edi + ebx*2]
+            jne L0047bce9
+    L0047bd11:
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            ret 0x18
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            sub esp, 0x14
+            push ebx
+            push ebp
+            push esi
+            mov esi, ecx
+            mov ecx, dword ptr [esp + 0x28]
+            xor eax, eax
+            mov dword ptr [esp + 0x10], eax
+            mov dword ptr [esp + 0x18], eax
+            movsx ebx, word ptr [ecx + 0x28]
+            movsx eax, word ptr [esp + 0x30]
+            imul eax, ebx
+            mov word ptr [esp + 0xc], dx
+            mov ecx, dword ptr [ecx + 8]
+            cdq
+            sub eax, edx
+            push edi
+            movsx edx, word ptr [esp + 0x30]
+            sar eax, 1
+            add eax, edx
+            mov dword ptr [esp + 0x18], esi
+            mov dword ptr [esp + 0x2c], ebx
+            lea edi, [ecx + eax*2]
+            movsx eax, word ptr [esp + 0x28]
+            movsx ecx, word ptr [esi + 0x28]
+            mov dword ptr [esp + 0x30], eax
+            imul eax, ecx
+            cdq
+            sub eax, edx
+            mov edx, dword ptr [esi + 8]
+            mov ebp, eax
+            movsx eax, word ptr [esp + 0x10]
+            sar ebp, 1
+            mov dword ptr [esp + 0x20], eax
+            add eax, ebp
+            lea esi, [edx + eax*2]
+            movsx eax, word ptr [esp + 0x38]
+            mov dword ptr [esp + 0x34], eax
+            mov eax, ebx
+            cdq
+            sub eax, edx
+            mov edx, dword ptr [esp + 0x34]
+            mov ebx, eax
+            mov eax, ecx
+            sar ebx, 1
+            sub ebx, edx
+            cdq
+            sub eax, edx
+            mov ecx, eax
+            mov eax, dword ptr [esp + 0x34]
+            sar ecx, 1
+            sub ecx, eax
+            mov eax, dword ptr [esp + 0x28]
+            test ax, ax
+            jge L0047bdf1
+            mov edx, dword ptr [esp + 0x3c]
+            add edx, eax
+            test dx, dx
+            mov dword ptr [esp + 0x3c], edx
+            jle L0047bf7b
+            mov eax, dword ptr [esp + 0x30]
+            mov dword ptr [esp + 0x28], 0
+            imul eax, dword ptr [esp + 0x2c]
+            cdq
+            sub eax, edx
+            sar eax, 1
+            neg eax
+            neg ebp
+            lea edi, [edi + eax*2]
+            mov eax, dword ptr [esp + 0x28]
+            lea esi, [esi + ebp*2]
+    L0047bdf1:
+            mov edx, dword ptr [esp + 0x18]
+            movsx ebp, ax
+            mov dx, word ptr [edx + 0x36]
+            mov dword ptr [esp + 0x30], edx
+            and edx, 0xffff
+            cmp ebp, edx
+            mov dword ptr [esp + 0x34], edx
+            jge L0047bf7b
+            movsx edx, word ptr [esp + 0x3c]
+            add edx, ebp
+            mov ebp, dword ptr [esp + 0x34]
+            cmp edx, ebp
+            jle L0047be2b
+            mov edx, dword ptr [esp + 0x30]
+            sub edx, eax
+            mov dword ptr [esp + 0x3c], edx
+    L0047be2b:
+            cmp word ptr [esp + 0x10], 0
+            mov ebp, dword ptr [esp + 0x38]
+            jge L0047be5f
+            add ebp, dword ptr [esp + 0x10]
+            test bp, bp
+            mov dword ptr [esp + 0x38], ebp
+            jle L0047bf7b
+            mov edx, dword ptr [esp + 0x20]
+            mov dword ptr [esp + 0x10], 0
+            sub ebx, edx
+            lea eax, [edx + edx]
+            sub edi, eax
+            sub esi, eax
+            sub ecx, edx
+    L0047be5f:
+            mov eax, dword ptr [esp + 0x18]
+            xor edx, edx
+            mov dx, word ptr [eax + 0x34]
+            movsx eax, word ptr [esp + 0x10]
+            cmp eax, edx
+            jge L0047bf7b
+            movsx ebp, bp
+            add ebp, eax
+            cmp ebp, edx
+            jle L0047be96
+            movsx ebp, word ptr [esp + 0x38]
+            add eax, ebp
+            sub eax, edx
+            mov edx, dword ptr [esp + 0x38]
+            sub edx, eax
+            add ebx, eax
+            mov dword ptr [esp + 0x38], edx
+            add ecx, eax
+    L0047be96:
+            movsx eax, word ptr [esp + 0x3c]
+            test eax, eax
+            mov dword ptr [esp + 0x34], 0
+            mov dword ptr [esp + 0x30], eax
+            jle L0047bf7b
+    L0047beaf:
+            movsx eax, word ptr [esp + 0x38]
+            test eax, eax
+            jle L0047bece
+            mov edx, eax
+    L0047beba:
+            mov ax, word ptr [edi]
+            add edi, 2
+            test ax, ax
+            je L0047bec8
+            mov word ptr [esi], ax
+    L0047bec8:
+            add esi, 2
+            dec edx
+            jne L0047beba
+    L0047bece:
+            mov eax, dword ptr [esp + 0x14]
+            mov ebp, dword ptr [esp + 0x1c]
+            sar eax, 0x10
+            mov edx, eax
+            mov dword ptr [esp + 0x1c], eax
+            mov eax, dword ptr [esp + 0x40]
+            sub edx, ebp
+            lea edi, [edi + ebx*2]
+            lea ebp, [edx + ecx]
+            lea esi, [esi + ebp*2]
+            mov ebp, dword ptr [esp + 0x14]
+            add ebp, eax
+            mov dword ptr [esp + 0x14], ebp
+            mov ebp, dword ptr [esp + 0x10]
+            add ebp, edx
+            mov dword ptr [esp + 0x10], ebp
+            mov ax, word ptr [esp + 0x10]
+            test ax, ax
+            jge L0047bf33
+            movsx eax, ax
+            mov edx, ebp
+            mov ebp, dword ptr [esp + 0x38]
+            add ebp, edx
+            lea edx, [eax + eax]
+            sub edi, edx
+            sub esi, edx
+            sub ebx, eax
+            mov dword ptr [esp + 0x10], 0
+            sub ecx, eax
+            mov ax, word ptr [esp + 0x10]
+            mov dword ptr [esp + 0x38], ebp
+    L0047bf33:
+            mov ebp, dword ptr [esp + 0x18]
+            xor edx, edx
+            mov dx, word ptr [ebp + 0x34]
+            movsx ebp, ax
+            cmp ebp, edx
+            jge L0047bf7b
+            movsx eax, word ptr [esp + 0x38]
+            add eax, ebp
+            cmp eax, edx
+            jle L0047bf66
+            movsx eax, word ptr [esp + 0x38]
+            add eax, ebp
+            sub eax, edx
+            mov edx, dword ptr [esp + 0x38]
+            sub edx, eax
+            add ebx, eax
+            mov dword ptr [esp + 0x38], edx
+            add ecx, eax
+    L0047bf66:
+            mov eax, dword ptr [esp + 0x34]
+            mov edx, dword ptr [esp + 0x30]
+            inc eax
+            cmp eax, edx
+            mov dword ptr [esp + 0x34], eax
+            jl L0047beaf
+    L0047bf7b:
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x14
+            ret 0x1c
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            cmp word ptr [esp + 0x18], 0
+            push ebx
+            push ebp
+            push esi
+            push edi
+            mov di, dx
+            je L0047c083
+            mov esi, dword ptr [esp + 0x18]
+            movsx eax, word ptr [esp + 0x20]
+            movsx ebp, word ptr [esi + 0x28]
+            imul eax, ebp
+            cdq
+            sub eax, edx
+            movsx edx, word ptr [esp + 0x1c]
+            movsx ebx, word ptr [ecx + 0x28]
+            sar eax, 1
+            add eax, edx
+            mov edx, dword ptr [esi + 8]
+            mov ecx, dword ptr [ecx + 8]
+            lea esi, [edx + eax*2]
+            movsx eax, word ptr [esp + 0x14]
+            imul eax, ebx
+            cdq
+            sub eax, edx
+            movsx edx, di
+            sar eax, 1
+            add eax, edx
+            movsx edi, word ptr [esp + 0x24]
+            lea ecx, [ecx + eax*2]
+            mov eax, ebp
+            cdq
+            sub eax, edx
+            mov ebp, eax
+            mov eax, ebx
+            cdq
+            sub eax, edx
+            mov edx, dword ptr [esp + 0x18]
+            sar eax, 1
+            sub eax, edi
+            movsx ebx, word ptr [esp + 0x28]
+            mov dword ptr [esp + 0x1c], eax
+            xor eax, eax
+            mov ax, word ptr [edx + 0x36]
+            shl eax, 0x10
+            cdq
+            idiv ebx
+            sar ebp, 1
+            sub ebp, edi
+            xor edi, edi
+            mov edx, eax
+            sub edx, 0x10000
+            test ebx, ebx
+            mov dword ptr [esp + 0x20], edx
+            jle L0047c083
+            mov dword ptr [esp + 0x28], ebx
+            jmp L0047c02f
+    L0047c02b:
+            mov edx, dword ptr [esp + 0x20]
+    L0047c02f:
+            movsx eax, word ptr [esp + 0x24]
+            test eax, eax
+            jle L0047c04e
+            mov ebx, eax
+    L0047c03a:
+            mov ax, word ptr [esi]
+            add esi, 2
+            test ax, ax
+            je L0047c048
+            mov word ptr [ecx], ax
+    L0047c048:
+            add ecx, 2
+            dec ebx
+            jne L0047c03a
+    L0047c04e:
+            mov eax, dword ptr [esp + 0x1c]
+            lea ecx, [ecx + eax*2]
+            mov eax, edi
+            add edi, edx
+            mov edx, dword ptr [esp + 0x18]
+            mov ebx, edi
+            shr ebx, 0x10
+            shr eax, 0x10
+            sub ebx, eax
+            movsx eax, word ptr [edx + 0x28]
+            cdq
+            sub eax, edx
+            sar eax, 1
+            imul ebx, eax
+            mov eax, dword ptr [esp + 0x28]
+            add ebx, ebp
+            dec eax
+            lea esi, [esi + ebx*2]
+            mov dword ptr [esp + 0x28], eax
+            jne L0047c02b
+    L0047c083:
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            ret 0x18
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            sub esp, 0x14
+            push ebx
+            mov ebx, dword ptr [esp + 0x20]
+            push ebp
+            mov ebp, dword ptr [esp + 0x20]
+            push esi
+            mov esi, ecx
+            xor eax, eax
+            sub ebp, ebx
+            mov ax, word ptr [esi + 0x36]
+            push edi
+            add ebp, eax
+            mov dword ptr [esp + 0x10], edx
+            mov dword ptr [esp + 0x1c], ebp
+            call PDGetTotalTime
+            mov edi, eax
+            mov dword ptr [esp + 0x2c], edi
+            call PDGetTotalTime
+            lea ecx, [edi + 0x64]
+            cmp eax, ecx
+            mov dword ptr [esp + 0x20], ecx
+            jge L0047c19b
+            mov ecx, dword ptr [esp + 0x30]
+            sub ecx, ebx
+            mov dword ptr [esp + 0x14], ecx
+            jmp L0047c0e2
+    L0047c0de:
+            mov edi, dword ptr [esp + 0x2c]
+    L0047c0e2:
+            sub eax, edi
+            push 0
+            sub eax, 0x64
+            imul eax, ebp
+            mov ecx, eax
+            mov eax, 0x51eb851f
+            imul ecx
+            sar edx, 5
+            mov ecx, edx
+            xor eax, eax
+            mov ax, word ptr [esi + 0x34]
+            shr ecx, 0x1f
+            add edx, ecx
+            mov ecx, dword ptr [esp + 0x14]
+            mov edi, edx
+            mov edx, dword ptr [esp + 0x18]
+            push edx
+            mov edx, dword ptr [gBack_screen]
+            push eax
+            push ebx
+            push ecx
+            push edx
+            call BrPixelmapRectangleFill
+            add esp, 0x18
+            cmp edi, 0x3e8
+            je L0047c18c
+            mov eax, dword ptr [esp + 0x28]
+            xor ecx, ecx
+            mov cx, word ptr [esi + 0x36]
+            mov dword ptr [esp + 0x18], 0
+            lea edx, [edi + eax]
+            mov eax, ebx
+            sub eax, edx
+            mov ebp, ecx
+            test eax, eax
+            jle L0047c151
+            sub ebp, eax
+            mov edi, eax
+            add edx, eax
+            jmp L0047c155
+    L0047c151:
+            mov edi, dword ptr [esp + 0x18]
+    L0047c155:
+            mov eax, dword ptr [esp + 0x30]
+            sub eax, edx
+            sub eax, ecx
+            jns L0047c161
+            add ebp, eax
+    L0047c161:
+            xor ecx, ecx
+            mov eax, dword ptr [gBack_screen]
+            mov cx, word ptr [esi + 0x34]
+            push ebp
+            push ecx
+            push edi
+            push 0
+            push esi
+            push edx
+            mov edx, dword ptr [esp + 0x28]
+            push edx
+            push eax
+            call BrPixelmapRectangleCopy
+            add esp, 0x20
+            xor ecx, ecx
+            call PDScreenBufferSwap
+            mov ebp, dword ptr [esp + 0x1c]
+    L0047c18c:
+            call PDGetTotalTime
+            cmp eax, dword ptr [esp + 0x20]
+            jl L0047c0de
+    L0047c19b:
+            mov edi, dword ptr [esp + 0x30]
+            mov eax, dword ptr [esp + 0x10]
+            mov ecx, edi
+            xor edx, edx
+            mov dx, word ptr [esi + 0x34]
+            sub ecx, ebx
+            push 0
+            push ecx
+            mov ecx, dword ptr [gBack_screen]
+            push edx
+            push ebx
+            push eax
+            push ecx
+            call BrPixelmapRectangleFill
+            mov ecx, dword ptr [esp + 0x40]
+            xor eax, eax
+            mov ax, word ptr [esi + 0x36]
+            sub ebx, ecx
+            add esp, 0x18
+            xor ebp, ebp
+            test ebx, ebx
+            mov edx, eax
+            jle L0047c1dc
+            sub edx, ebx
+            mov ebp, ebx
+            add ecx, ebx
+    L0047c1dc:
+            sub edi, ecx
+            sub edi, eax
+            jns L0047c1e4
+            add edx, edi
+    L0047c1e4:
+            push edx
+            xor edx, edx
+            mov dx, word ptr [esi + 0x34]
+            mov eax, dword ptr [esp + 0x14]
+            push edx
+            push ebp
+            push 0
+            push esi
+            push ecx
+            mov ecx, dword ptr [gBack_screen]
+            push eax
+            push ecx
+            call BrPixelmapRectangleCopy
+            add esp, 0x20
+            xor ecx, ecx
+            call PDScreenBufferSwap
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x14
+            ret 0xc
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            sub esp, 0x14
+            push ebx
+            push ebp
+            mov ebp, dword ptr [esp + 0x28]
+            push esi
+            mov esi, dword ptr [esp + 0x24]
+            mov ebx, ebp
+            push edi
+            sub ebx, esi
+            mov dword ptr [esp + 0x10], edx
+            mov edi, ecx
+            mov dword ptr [esp + 0x1c], ebx
+            call PDGetTotalTime
+            mov esi, eax
+            mov dword ptr [esp + 0x14], esi
+            call PDGetTotalTime
+            lea ecx, [esi + 0x64]
+            cmp eax, ecx
+            mov dword ptr [esp + 0x20], ecx
+            jge L0047c320
+            mov ecx, ebp
+            mov ebp, dword ptr [esp + 0x2c]
+            sub ecx, ebp
+            mov dword ptr [esp + 0x18], ecx
+            jmp L0047c26e
+    L0047c26a:
+            mov esi, dword ptr [esp + 0x14]
+    L0047c26e:
+            sub eax, esi
+            push 0
+            imul eax, ebx
+            mov ecx, eax
+            mov eax, 0x51eb851f
+            imul ecx
+            sar edx, 5
+            mov eax, edx
+            mov ecx, dword ptr [esp + 0x1c]
+            shr eax, 0x1f
+            add edx, eax
+            mov eax, dword ptr [esp + 0x14]
+            mov esi, edx
+            xor edx, edx
+            mov dx, word ptr [edi + 0x34]
+            push ecx
+            mov ecx, dword ptr [gBack_screen]
+            push edx
+            push ebp
+            push eax
+            push ecx
+            call BrPixelmapRectangleFill
+            add esp, 0x18
+            cmp esi, 0x3e8
+            je L0047c30f
+            mov edx, dword ptr [esp + 0x28]
+            mov eax, dword ptr [esp + 0x2c]
+            add edx, esi
+            xor ecx, ecx
+            mov cx, word ptr [edi + 0x36]
+            sub eax, edx
+            xor ebp, ebp
+            mov ebx, ecx
+            test eax, eax
+            jle L0047c2d3
+            sub ebx, eax
+            mov ebp, eax
+            add edx, eax
+    L0047c2d3:
+            mov eax, dword ptr [esp + 0x30]
+            sub eax, edx
+            sub eax, ecx
+            jns L0047c2df
+            add ebx, eax
+    L0047c2df:
+            xor eax, eax
+            mov ecx, dword ptr [esp + 0x10]
+            mov ax, word ptr [edi + 0x34]
+            push ebx
+            push eax
+            push ebp
+            push 0
+            push edi
+            push edx
+            mov edx, dword ptr [gBack_screen]
+            push ecx
+            push edx
+            call BrPixelmapRectangleCopy
+            add esp, 0x20
+            xor ecx, ecx
+            call PDScreenBufferSwap
+            mov ebp, dword ptr [esp + 0x2c]
+            mov ebx, dword ptr [esp + 0x1c]
+    L0047c30f:
+            call PDGetTotalTime
+            cmp eax, dword ptr [esp + 0x20]
+            jl L0047c26a
+            jmp L0047c324
+    L0047c320:
+            mov ebp, dword ptr [esp + 0x2c]
+    L0047c324:
+            mov eax, dword ptr [esp + 0x30]
+            mov ecx, dword ptr [esp + 0x10]
+            sub eax, ebp
+            mov edx, dword ptr [gBack_screen]
+            push 0
+            push eax
+            xor eax, eax
+            mov ax, word ptr [edi + 0x34]
+            push eax
+            push ebp
+            push ecx
+            push edx
+            call BrPixelmapRectangleFill
+            add esp, 0x18
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x14
+            ret 0xc
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            sub esp, 0x14
+            push ebx
+            push ebp
+            mov ebp, dword ptr [esp + 0x28]
+            push esi
+            push edi
+            mov edi, dword ptr [esp + 0x28]
+            sub ebp, edi
+            mov dword ptr [esp + 0x10], edx
+            mov esi, ecx
+            mov dword ptr [esp + 0x1c], ebp
+            call PDGetTotalTime
+            mov edi, eax
+            mov dword ptr [esp + 0x14], edi
+            call PDGetTotalTime
+            mov ebx, dword ptr [esp + 0x2c]
+            lea ecx, [edi + 0x64]
+            cmp eax, ecx
+            mov dword ptr [esp + 0x20], ecx
+            jge L0047c467
+            mov ecx, dword ptr [esp + 0x30]
+            sub ecx, ebx
+            mov dword ptr [esp + 0x2c], ecx
+            jmp L0047c3ae
+    L0047c3aa:
+            mov edi, dword ptr [esp + 0x14]
+    L0047c3ae:
+            mov ecx, edi
+            push 0
+            sub ecx, eax
+            mov eax, 0x51eb851f
+            add ecx, 0x64
+            imul ecx, ebp
+            imul ecx
+            sar edx, 5
+            mov eax, edx
+            mov ecx, dword ptr [esp + 0x30]
+            shr eax, 0x1f
+            add edx, eax
+            mov eax, dword ptr [esp + 0x14]
+            mov edi, edx
+            xor edx, edx
+            mov dx, word ptr [esi + 0x34]
+            push ecx
+            mov ecx, dword ptr [gBack_screen]
+            push edx
+            push ebx
+            push eax
+            push ecx
+            call BrPixelmapRectangleFill
+            add esp, 0x18
+            cmp edi, 0x3e8
+            je L0047c458
+            mov edx, dword ptr [esp + 0x28]
+            mov eax, ebx
+            add edx, edi
+            xor ecx, ecx
+            mov cx, word ptr [esi + 0x36]
+            sub eax, edx
+            test eax, eax
+            mov dword ptr [esp + 0x18], 0
+            mov ebp, ecx
+            jle L0047c41c
+            sub ebp, eax
+            mov edi, eax
+            add edx, eax
+            jmp L0047c420
+    L0047c41c:
+            mov edi, dword ptr [esp + 0x18]
+    L0047c420:
+            mov eax, dword ptr [esp + 0x30]
+            sub eax, edx
+            sub eax, ecx
+            jns L0047c42c
+            add ebp, eax
+    L0047c42c:
+            xor eax, eax
+            mov ecx, dword ptr [esp + 0x10]
+            mov ax, word ptr [esi + 0x34]
+            push ebp
+            push eax
+            push edi
+            push 0
+            push esi
+            push edx
+            mov edx, dword ptr [gBack_screen]
+            push ecx
+            push edx
+            call BrPixelmapRectangleCopy
+            add esp, 0x20
+            xor ecx, ecx
+            call PDScreenBufferSwap
+            mov ebp, dword ptr [esp + 0x1c]
+    L0047c458:
+            call PDGetTotalTime
+            cmp eax, dword ptr [esp + 0x20]
+            jl L0047c3aa
+    L0047c467:
+            mov edi, dword ptr [esp + 0x30]
+            mov edx, dword ptr [esp + 0x10]
+            mov eax, edi
+            xor ecx, ecx
+            mov cx, word ptr [esi + 0x34]
+            sub eax, ebx
+            push 0
+            push eax
+            mov eax, dword ptr [gBack_screen]
+            push ecx
+            push ebx
+            push edx
+            push eax
+            call BrPixelmapRectangleFill
+            mov ecx, dword ptr [esp + 0x40]
+            xor eax, eax
+            mov ax, word ptr [esi + 0x36]
+            sub ebx, ecx
+            add esp, 0x18
+            xor ebp, ebp
+            test ebx, ebx
+            mov edx, eax
+            jle L0047c4a7
+            sub edx, ebx
+            mov ebp, ebx
+            add ecx, ebx
+    L0047c4a7:
+            sub edi, ecx
+            sub edi, eax
+            jns L0047c4af
+            add edx, edi
+    L0047c4af:
+            push edx
+            xor edx, edx
+            mov dx, word ptr [esi + 0x34]
+            mov eax, dword ptr [esp + 0x14]
+            push edx
+            push ebp
+            push 0
+            push esi
+            push ecx
+            mov ecx, dword ptr [gBack_screen]
+            push eax
+            push ecx
+            call BrPixelmapRectangleCopy
+            add esp, 0x20
+            xor ecx, ecx
+            call PDScreenBufferSwap
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x14
+            ret 0xc
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            sub esp, 0x14
+            push ebx
+            mov ebx, dword ptr [esp + 0x1c]
+            push ebp
+            mov ebp, dword ptr [esp + 0x24]
+            push esi
+            push edi
+            mov edi, ecx
+            xor eax, eax
+            sub ebx, ebp
+            mov dword ptr [esp + 0x10], edx
+            mov ax, word ptr [edi + 0x36]
+            add ebx, eax
+            mov dword ptr [esp + 0x1c], ebx
+            call PDGetTotalTime
+            mov esi, eax
+            mov dword ptr [esp + 0x2c], esi
+            call PDGetTotalTime
+            lea ecx, [esi + 0x64]
+            cmp eax, ecx
+            mov dword ptr [esp + 0x20], ecx
+            jge L0047c5f8
+            mov ecx, dword ptr [esp + 0x30]
+            sub ecx, ebp
+            mov dword ptr [esp + 0x14], ecx
+            jmp L0047c542
+    L0047c53e:
+            mov esi, dword ptr [esp + 0x2c]
+    L0047c542:
+            mov ecx, esi
+            push 0
+            sub ecx, eax
+            mov eax, 0x51eb851f
+            imul ecx, ebx
+            imul ecx
+            sar edx, 5
+            mov ecx, edx
+            xor eax, eax
+            mov ax, word ptr [edi + 0x34]
+            shr ecx, 0x1f
+            add edx, ecx
+            mov ecx, dword ptr [esp + 0x14]
+            mov esi, edx
+            mov edx, dword ptr [esp + 0x18]
+            push edx
+            mov edx, dword ptr [gBack_screen]
+            push eax
+            push ebp
+            push ecx
+            push edx
+            call BrPixelmapRectangleFill
+            add esp, 0x18
+            cmp esi, 0x3e8
+            je L0047c5e9
+            mov eax, dword ptr [esp + 0x28]
+            xor ecx, ecx
+            mov cx, word ptr [edi + 0x36]
+            mov dword ptr [esp + 0x18], 0
+            lea edx, [esi + eax]
+            mov eax, ebp
+            sub eax, edx
+            mov ebx, ecx
+            test eax, eax
+            jle L0047c5ae
+            sub ebx, eax
+            mov esi, eax
+            add edx, eax
+            jmp L0047c5b2
+    L0047c5ae:
+            mov esi, dword ptr [esp + 0x18]
+    L0047c5b2:
+            mov eax, dword ptr [esp + 0x30]
+            sub eax, edx
+            sub eax, ecx
+            jns L0047c5be
+            add ebx, eax
+    L0047c5be:
+            xor ecx, ecx
+            mov eax, dword ptr [gBack_screen]
+            mov cx, word ptr [edi + 0x34]
+            push ebx
+            push ecx
+            push esi
+            push 0
+            push edi
+            push edx
+            mov edx, dword ptr [esp + 0x28]
+            push edx
+            push eax
+            call BrPixelmapRectangleCopy
+            add esp, 0x20
+            xor ecx, ecx
+            call PDScreenBufferSwap
+            mov ebx, dword ptr [esp + 0x1c]
+    L0047c5e9:
+            call PDGetTotalTime
+            cmp eax, dword ptr [esp + 0x20]
+            jl L0047c53e
+    L0047c5f8:
+            mov eax, dword ptr [esp + 0x30]
+            mov edx, dword ptr [esp + 0x10]
+            xor ecx, ecx
+            sub eax, ebp
+            mov cx, word ptr [edi + 0x34]
+            push 0
+            push eax
+            mov eax, dword ptr [gBack_screen]
+            push ecx
+            push ebp
+            push edx
+            push eax
+            call BrPixelmapRectangleFill
+            add esp, 0x18
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x14
+            ret 0xc
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            ret 4
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            ret 4
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // DRMaskedStamp
@@ -582,7 +2194,8 @@ void C2_HOOK_FASTCALL EnableLights(void) {
 }
 
 // FUNCTION: CARMA2_HW 0x0047d700
-void C2_HOOK_FASTCALL FUN_0047d700(br_pixelmap* pDest, const br_pixelmap* pSource, unsigned int pArg3, unsigned int pDest_y, unsigned int pWidth, unsigned int pHeight) {
+void C2_NAKED C2_HOOK_FASTCALL FUN_0047d700(br_pixelmap* pDest, const br_pixelmap* pSource, unsigned int pArg3, unsigned int pDest_y, unsigned int pWidth, unsigned int pHeight) {
+#ifndef CARPOCALYPSE2_MATCHING
     const tU16* source_ptr;
     tU16* dest_ptr;
     unsigned int x;
@@ -607,10 +2220,83 @@ void C2_HOOK_FASTCALL FUN_0047d700(br_pixelmap* pDest, const br_pixelmap* pSourc
         } while (y < pHeight);
     }
     (void)pArg3;
+#else
+    __asm {
+            sub esp, 0xc
+            mov eax, dword ptr [esp + 0x1c]
+            push ebp
+            push esi
+            xor ebp, ebp
+            mov esi, edx
+            and eax, 0xffff
+            mov dword ptr [esp + 8], esi
+            mov dword ptr [esp + 0xc], ecx
+            mov dword ptr [esp + 0x10], eax
+            jle L0047d7a6
+            mov edx, dword ptr [esp + 0x1c]
+            push edi
+            push ebx
+            mov ebx, dword ptr [esp + 0x28]
+            and ebx, 0xffff
+            and edx, 0xffff
+            mov dword ptr [esp + 0x2c], edx
+            jmp L0047d748
+    L0047d740:
+            mov esi, dword ptr [esp + 0x10]
+            mov ecx, dword ptr [esp + 0x14]
+    L0047d748:
+            movsx edi, word ptr [esi + 0x28]
+            mov eax, ebp
+            imul eax, edi
+            mov edi, dword ptr [esi + 8]
+            movsx esi, word ptr [ecx + 0x28]
+            add eax, edi
+            mov edi, edx
+            imul edi, esi
+            add edi, dword ptr [ecx + 8]
+            test ebx, ebx
+            jle L0047d780
+            mov ecx, offset gNet_mode+0x8
+            mov esi, ebx
+            sub eax, ecx
+    L0047d76f:
+            mov dx, word ptr [eax + ecx]
+            mov word ptr [ecx], dx
+            add ecx, 2
+            dec esi
+            jne L0047d76f
+            mov edx, dword ptr [esp + 0x2c]
+    L0047d780:
+            lea ecx, [ebx + ebx]
+            mov esi, offset gNet_mode+0x8
+            mov eax, ecx
+            shr ecx, 2
+            rep movsd
+            mov ecx, eax
+            mov eax, dword ptr [esp + 0x18]
+            and ecx, 3
+            inc ebp
+            inc edx
+            cmp ebp, eax
+            rep movsb
+            mov dword ptr [esp + 0x2c], edx
+            jl L0047d740
+            pop ebx
+            pop edi
+    L0047d7a6:
+            pop esi
+            pop ebp
+            add esp, 0xc
+            ret 0x10
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0047d7b0
-void C2_HOOK_FASTCALL DRPixelmapBlend75Copy(br_pixelmap* pDest, br_int_16 pDest_x, br_int_16 pDest_y, br_pixelmap* pSource) {
+void C2_NAKED C2_HOOK_FASTCALL DRPixelmapBlend75Copy(br_pixelmap* pDest, br_int_16 pDest_x, br_int_16 pDest_y, br_pixelmap* pSource) {
+#ifndef CARPOCALYPSE2_MATCHING
     int x;
     int y;
     tU8* dest_ptr;
@@ -622,17 +2308,92 @@ void C2_HOOK_FASTCALL DRPixelmapBlend75Copy(br_pixelmap* pDest, br_int_16 pDest_
             dest_ptr++;
         }
     }
+#else
+    __asm {
+            push ecx
+            push esi
+            mov esi, dword ptr [esp + 0x10]
+            push edi
+            xor edi, edi
+            cmp word ptr [esi + 0x36], di
+            mov dword ptr [esp + 8], ecx
+            jbe L0047d840
+            movsx eax, dx
+            mov dword ptr [esp + 0x14], eax
+            push ebp
+            movsx eax, word ptr [esp + 0x14]
+            push ebx
+            mov dword ptr [esp + 0x18], eax
+    L0047d7d5:
+            movsx edx, word ptr [ecx + 0x28]
+            imul eax, edx
+            mov edx, dword ptr [ecx + 8]
+            mov ebp, dword ptr [esp + 0x1c]
+            add eax, edx
+            xor edx, edx
+            add eax, ebp
+            cmp word ptr [esi + 0x34], dx
+            jbe L0047d82a
+    L0047d7ef:
+            movsx ecx, word ptr [esi + 0x28]
+            mov ebx, edi
+            mov ebp, dword ptr [esi + 8]
+            imul ebx, ecx
+            add ebx, edx
+            xor ecx, ecx
+            mov cl, byte ptr [ebx + ebp]
+            mov ebx, dword ptr [gPalette_0074a5fc]
+            shl ecx, 8
+            mov ebp, dword ptr [ebx + 8]
+            xor ebx, ebx
+            mov bl, byte ptr [eax]
+            add ecx, ebp
+            inc edx
+            inc eax
+            mov cl, byte ptr [ecx + ebx]
+            mov byte ptr [eax - 1], cl
+            xor ecx, ecx
+            mov cx, word ptr [esi + 0x34]
+            cmp edx, ecx
+            jl L0047d7ef
+            mov ecx, dword ptr [esp + 0x10]
+    L0047d82a:
+            mov eax, dword ptr [esp + 0x18]
+            xor edx, edx
+            mov dx, word ptr [esi + 0x36]
+            inc edi
+            inc eax
+            cmp edi, edx
+            mov dword ptr [esp + 0x18], eax
+            jl L0047d7d5
+            pop ebx
+            pop ebp
+    L0047d840:
+            pop edi
+            pop esi
+            pop ecx
+            ret 8
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0047c650
 int C2_HOOK_FASTCALL SwitchToHiresMode(void) {
-
     return 0;
 }
 
 // FUNCTION: CARMA2_HW 0x004b4fd0
 void C2_HOOK_FASTCALL DRSetPaletteEntries(br_pixelmap* pPalette, int pFirst_colour, int pCount) {
-
     if (!pFirst_colour) {
         ((br_int_32*)pPalette->pixels)[0] = 0;
     }
@@ -658,7 +2419,6 @@ void C2_HOOK_FASTCALL DRSetPalette3(br_pixelmap* pThe_palette, int pSet_current_
 
 // FUNCTION: CARMA2_HW 0x004b5030
 void C2_HOOK_FASTCALL DRSetPalette(br_pixelmap* pThe_palette) {
-
     ((br_int_32*)pThe_palette->pixels)[0] = 0;
     memcpy(gCurrent_palette_pixels, pThe_palette->pixels, 4 * 256);
     gPalette_changed = 0;
@@ -709,7 +2469,6 @@ void C2_HOOK_FASTCALL SaveShadeTables(void) {
 
 // FUNCTION: CARMA2_HW 0x004b52a0
 void C2_HOOK_FASTCALL InitPaletteAnimate(void) {
-
     gLast_palette_change = 0;
     gPalette_index = 0;
 }

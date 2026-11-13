@@ -154,8 +154,51 @@ int gFrontend_car_image_outdated;
 // GLOBAL: CARMA2_HW 0x0074c6b4
 int gFrontend_net_initialized;
 
+#ifdef CARPOCALYPSE2_MATCHING
+extern br_actor* C2_HOOK_CDECL BrActorAllocate();
+extern br_actor* C2_HOOK_FASTCALL CreateAPOactor(void);
+extern int C2_HOOK_FASTCALL DRStricmp(const char* p1, const char* p2);
+extern void C2_HOOK_FASTCALL EdgeTriggerModeOff(void);
+extern void C2_HOOK_FASTCALL EdgeTriggerModeOn(void);
+extern int C2_HOOK_FASTCALL EitherMouseButtonDown(void);
+extern int C2_HOOK_FASTCALL FRONTEND_CreateMenu(tFrontend_spec* pFrontend_spec);
+extern int C2_HOOK_FASTCALL FRONTEND_DestroyMenu(tFrontend_spec* pFrontend);
+extern int C2_HOOK_FASTCALL FindPrevActiveItem(tFrontend_spec* pFrontend, int pStart_index);
+extern int C2_HOOK_FASTCALL GetItemAtMousePos(tFrontend_spec *pFrontend, int pX, int pY);
+extern void C2_HOOK_FASTCALL GetMousePosition(int *pX, int *pY);
+extern const char* C2_HOOK_FASTCALL IString_Get(int pIndex);
+extern void C2_HOOK_FASTCALL KillSplashScreen(void);
+extern void C2_HOOK_FASTCALL LoadMenuSettings(tFrontend_spec* pFrontend);
+extern void C2_HOOK_FASTCALL Morph_Initialise(tFrontend_spec* pCurrent, tFrontend_spec* pNext);
+extern char* C2_HOOK_FASTCALL MungeCommas(int pValue);
+extern void C2_HOOK_FASTCALL MungeMetaCharactersChar(char* pText, char pMeta, char pChar);
+extern void C2_HOOK_FASTCALL MungeMetaCharactersNum(char* pText, char pMeta, int pNum);
+extern int C2_HOOK_FASTCALL PDAnyKeyDown(void);
+extern tU32 C2_HOOK_FASTCALL PDGetTotalTime(void);
+extern int C2_HOOK_FASTCALL PDKeyDown(int pKey_index);
+extern void C2_HOOK_FASTCALL PollKeys(void);
+extern int C2_HOOK_FASTCALL PolyFontHeight(int pFont_index);
+extern int C2_HOOK_FASTCALL PolyFontTextWidth(int pFont, const char* pText);
+extern int C2_HOOK_FASTCALL SaveOptions(void);
+extern void C2_HOOK_FASTCALL ServiceGame(void);
+extern void C2_HOOK_FASTCALL SolidPolyFontText(const char* pText, int pX, int pY, int pFont, tJustification pJust, int pRender);
+extern void C2_HOOK_FASTCALL ToggleSelection(tFrontend_spec* pFrontend);
+extern int C2_HOOK_FASTCALL ToggleTyping(tFrontend_spec* pFrontend);
+extern void C2_HOOK_FASTCALL TransparentPolyFontTextInABox(int pFont, const char* pText, int pLeft, int pTop, int pRight, int pBottom, tJustification pJust, undefined4 pUnknown, double pBlend);
+extern void C2_HOOK_FASTCALL UpdateScrollPositions(tFrontend_spec* pFrontend);
+extern void C2_HOOK_FASTCALL WaitForNoKeys(void);
+extern br_pixelmap* gBack_screen;
+extern char gFlic_bunch[];
+extern int gIs_boundary_race;
+extern tNet_mode gNet_mode;
+extern char gNext_crush_actor_id[];
+extern int gNumber_of_races;
+extern tOpponent* gOpponents;
+extern int gTyping;
+#endif
 // FUNCTION: CARMA2_HW 0x00576c00
-int C2_HOOK_CDECL sub_576c00(int pValue, int pDivisor) {
+int C2_NAKED C2_HOOK_CDECL sub_576c00(int pValue, int pDivisor) {
+#ifndef CARPOCALYPSE2_MATCHING
     int quotient;
     int remainder;
 
@@ -166,10 +209,47 @@ int C2_HOOK_CDECL sub_576c00(int pValue, int pDivisor) {
         remainder -= pDivisor;
     }
     return quotient;
+#else
+    __asm {
+            mov ecx, dword ptr [esp + 4]
+            push esi
+            mov esi, dword ptr [esp + 0xc]
+            mov eax, ecx
+            cdq
+            idiv esi
+            push edi
+            mov edi, eax
+            mov eax, ecx
+            cdq
+            idiv esi
+            test ecx, ecx
+            jge L00576c21
+            test edx, edx
+            jle L00576c21
+            inc edi
+            sub edx, esi
+    L00576c21:
+            mov eax, edi
+            pop edi
+            pop esi
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00469a40
-int C2_HOOK_FASTCALL MainMenuInfunc(tFrontend_spec* pFrontend) {
+int C2_NAKED C2_HOOK_FASTCALL MainMenuInfunc(tFrontend_spec* pFrontend) {
+#ifndef CARPOCALYPSE2_MATCHING
     int group;
     int race_index;
     int i;
@@ -235,6 +315,294 @@ int C2_HOOK_FASTCALL MainMenuInfunc(tFrontend_spec* pFrontend) {
     gFrontend_APO_Colour_3 = FudgeBRenderIntoTheNinetiesWithSomeProperFuckingColourSupport(gFrontend_billboard_actors[0]->material->colour_map, 0x00, 0x00, 0xff, 0xff);
     FuckWithWidths(pFrontend);
     return 1;
+#else
+    __asm {
+            sub esp, 0x18
+            push ebx
+            push ebp
+            mov ebp, ecx
+            push esi
+            push edi
+            mov eax, dword ptr [ebp + 0xad1c]
+            test eax, eax
+            jne L00469a73
+            call LoadMenuSettings
+            mov ecx, ebp
+            call FuckWithWidths
+            mov eax, dword ptr [ebp + 0x114]
+            test eax, eax
+            je L00469a73
+            mov dword ptr [eax + 0xb8c0], 1
+    L00469a73:
+            mov dword ptr [gFrontend_scrollbars_updated], 0
+            call EdgeTriggerModeOff
+            call WaitForNoKeys
+            call EdgeTriggerModeOn
+            call PDGetTotalTime
+            mov ecx, dword ptr [gCurrent_race_group]
+            mov dword ptr [gFrontend_time_last_input], eax
+            mov eax, dword ptr [gRace_groups]
+            sub ecx, eax
+            mov eax, 0x2aaaaaab
+            imul ecx
+            sar edx, 1
+            mov ecx, edx
+            mov eax, edx
+            shr ecx, 0x1f
+            add eax, ecx
+            mov ecx, 0xa
+            cdq
+            idiv ecx
+            mov ecx, 0x4e
+            lea ebx, [edx + 1]
+            push ebx
+            call IString_Get
+            lea edx, [esp + 0x20]
+            push eax
+            push offset gNext_crush_actor_id+0x50c
+            push edx
+            call sprintf
+            lea edi, [esp + 0x2c]
+            or ecx, 0xffffffff
+            xor eax, eax
+            add esp, 0x10
+            repne scasb
+            not ecx
+            sub edi, ecx
+            lea edx, [ebp + 0x439]
+            mov eax, ecx
+            mov esi, edi
+            mov edi, edx
+            lea ebx, [ebx*4 - 4]
+            shr ecx, 2
+            rep movsd
+            mov ecx, eax
+            mov dword ptr [esp + 0x10], ebx
+            and ecx, 3
+            rep movsb
+            mov eax, dword ptr [ebp + 0x87a4]
+            mov ecx, dword ptr [ebp + 0x87a8]
+            cmp eax, ecx
+            mov dword ptr [esp + 0x14], eax
+            jg L00469bda
+            lea ecx, [ebx + ebx*8]
+            shl ecx, 4
+            add ecx, ebx
+            lea ebx, [ecx*4 + gRace_list+0x190]
+            mov ecx, eax
+            shl ecx, 3
+            sub ecx, eax
+            lea edx, [ecx + ecx*2]
+            lea eax, [eax + edx*2]
+            lea edx, [ebp + eax*8 + 0x16c]
+    L00469b4b:
+            lea edi, [ebx - 0x190]
+            or ecx, 0xffffffff
+            xor eax, eax
+            lea esi, [edx + 0x1d]
+            repne scasb
+            not ecx
+            sub edi, ecx
+            mov dword ptr [esp + 0x18], esi
+            mov eax, ecx
+            mov esi, edi
+            mov edi, dword ptr [esp + 0x18]
+            shr ecx, 2
+            rep movsd
+            mov ecx, eax
+            mov eax, dword ptr [esp + 0x10]
+            and ecx, 3
+            rep movsb
+            mov esi, dword ptr [gProgram_state+0x78]
+            xor ecx, ecx
+            cmp eax, esi
+            sete cl
+            mov dword ptr [edx], ecx
+            mov eax, dword ptr [ebx]
+            test eax, eax
+            je L00469ba0
+            mov dword ptr [edx - 0x2c], 2
+            mov dword ptr [edx - 0x28], 3
+            jmp L00469bae
+    L00469ba0:
+            mov dword ptr [edx - 0x2c], 0
+            mov dword ptr [edx - 0x28], 1
+    L00469bae:
+            mov ecx, dword ptr [esp + 0x10]
+            mov eax, dword ptr [esp + 0x14]
+            inc ecx
+            add ebx, 0x244
+            mov dword ptr [esp + 0x10], ecx
+            mov ecx, dword ptr [ebp + 0x87a8]
+            inc eax
+            add edx, 0x158
+            cmp eax, ecx
+            mov dword ptr [esp + 0x14], eax
+            jle L00469b4b
+    L00469bda:
+            mov ecx, dword ptr [gIs_boundary_race]
+            mov eax, dword ptr [gProgram_state+0x78]
+            test ecx, ecx
+            jne L00469bff
+            mov ecx, dword ptr [gProgram_state+0x84]
+            test ecx, ecx
+            jne L00469bff
+            mov dword ptr [ebp + 0xac0], 0xffffffff
+            jmp L00469c09
+    L00469bff:
+            mov dword ptr [ebp + 0xac0], 1
+    L00469c09:
+            push 4
+            push eax
+            call sub_576c00
+            mov eax, dword ptr [gProgram_state+0x78]
+            or ecx, 0xffffffff
+            add esp, 8
+            lea edx, [ebp + 0x1f19]
+            lea ebx, [eax + eax*8]
+            shl ebx, 4
+            add ebx, eax
+            xor eax, eax
+            shl ebx, 2
+            push 0xd
+            lea edi, [ebx + gRace_list+0x80]
+            repne scasb
+            not ecx
+            sub edi, ecx
+            mov eax, ecx
+            mov esi, edi
+            mov edi, edx
+            mov dl, 0x52
+            shr ecx, 2
+            rep movsd
+            mov ecx, eax
+            and ecx, 3
+            rep movsb
+            lea esi, [ebp + 0x1f19]
+            mov ecx, esi
+            call MungeMetaCharactersChar
+            mov ecx, dword ptr [ebx + gRace_list+0x194]
+            mov dl, 0x4f
+            push ecx
+            mov ecx, esi
+            call MungeMetaCharactersNum
+            mov edx, dword ptr [ebx + gRace_list+0x1dc]
+            mov ecx, esi
+            push edx
+            mov dl, 0x4c
+            call MungeMetaCharactersNum
+            mov edi, offset gProgram_state+0x1a10
+            or ecx, 0xffffffff
+            xor eax, eax
+            lea edx, [ebp + 0x19b9]
+            repne scasb
+            not ecx
+            sub edi, ecx
+            mov eax, ecx
+            mov esi, edi
+            mov edi, edx
+            shr ecx, 2
+            rep movsd
+            mov ecx, eax
+            and ecx, 3
+            rep movsb
+            mov eax, dword ptr [gProgram_state+0x8c]
+            mov edx, dword ptr [gOpponents]
+            mov ecx, eax
+            shl ecx, 3
+            sub ecx, eax
+            xor eax, eax
+            shl ecx, 6
+            lea edi, [ecx + edx + 0x90]
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            sub edi, ecx
+            lea edx, [ebp + 0x1c69]
+            mov eax, ecx
+            mov esi, edi
+            mov edi, edx
+            shr ecx, 2
+            rep movsd
+            mov ecx, eax
+            and ecx, 3
+            rep movsb
+            mov ecx, dword ptr [gProgram_state]
+            call MungeCommas
+            mov edi, eax
+            or ecx, 0xffffffff
+            lea edx, [ebp + 0x2071]
+            xor eax, eax
+            repne scasb
+            not ecx
+            sub edi, ecx
+            push 0
+            mov eax, ecx
+            mov esi, edi
+            mov edi, edx
+            push 3
+            shr ecx, 2
+            rep movsd
+            mov ecx, eax
+            and ecx, 3
+            rep movsb
+            mov esi, 1
+            mov dword ptr [gFrontend_car_image_outdated], esi
+            mov dword ptr [ebp + 0xb8c0], esi
+            mov dword ptr [gMouse_in_use], 0
+            call BrActorAllocate
+            mov dword ptr [gFrontend_menu_camera], eax
+            mov eax, dword ptr [eax + 0x5c]
+            add esp, 8
+            mov byte ptr [eax + 4], 0
+            mov word ptr [eax + 6], 0x3ffc
+            mov dword ptr [eax + 8], 0x3f800000
+            mov dword ptr [eax + 0xc], 0x40400000
+            mov dword ptr [eax + 0x14], 0x44200000
+            mov dword ptr [eax + 0x18], 0x43f00000
+            call CreateAPOactor
+            mov dword ptr [gFrontend_billboard_actors], eax
+            mov ecx, dword ptr [eax + 0x1c]
+            push 0xff
+            push 0
+            mov ecx, dword ptr [ecx + 0x40]
+            push 0x80
+            mov edx, 0xff
+            call FudgeBRenderIntoTheNinetiesWithSomeProperFuckingColourSupport
+            mov dword ptr [gFrontend_APO_Colour_1], eax
+            mov eax, dword ptr [gFrontend_billboard_actors]
+            push 0xff
+            push 0x80
+            mov ecx, dword ptr [eax + 0x1c]
+            push 0
+            xor edx, edx
+            mov ecx, dword ptr [ecx + 0x40]
+            call FudgeBRenderIntoTheNinetiesWithSomeProperFuckingColourSupport
+            mov dword ptr [gFrontend_APO_Colour_2], eax
+            mov eax, dword ptr [gFrontend_billboard_actors]
+            push 0xff
+            push 0xff
+            mov ecx, dword ptr [eax + 0x1c]
+            push 0
+            xor edx, edx
+            mov ecx, dword ptr [ecx + 0x40]
+            call FudgeBRenderIntoTheNinetiesWithSomeProperFuckingColourSupport
+            mov ecx, ebp
+            mov dword ptr [gFrontend_APO_Colour_3], eax
+            call FuckWithWidths
+            mov eax, esi
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x18
+            ret
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00469df0
@@ -268,7 +636,6 @@ int C2_HOOK_FASTCALL MainMenuOutfunc(tFrontend_spec* pFrontend) {
 
 // FUNCTION: CARMA2_HW 0x00467050
 int C2_HOOK_FASTCALL NewGameToggleTyping(tFrontend_spec* pFrontend) {
-
     ToggleTyping(pFrontend);
     if (!gTyping && strlen(pFrontend->items[gFrontend_selected_item_index].text) != 0) {
 
@@ -279,7 +646,8 @@ int C2_HOOK_FASTCALL NewGameToggleTyping(tFrontend_spec* pFrontend) {
 }
 
 // FUNCTION: CARMA2_HW 0x0046a0e0
-int C2_HOOK_FASTCALL FRONTEND_MainMenuHandler(tFrontend_spec* pFrontend) {
+int C2_NAKED C2_HOOK_FASTCALL FRONTEND_MainMenuHandler(tFrontend_spec* pFrontend) {
+#ifndef CARPOCALYPSE2_MATCHING
     int i;
 
     if (gProgram_state.game_completed) {
@@ -513,6 +881,756 @@ int C2_HOOK_FASTCALL FRONTEND_MainMenuHandler(tFrontend_spec* pFrontend) {
     ServiceGame();
     CheckForCheatingGits();
     return gFrontend_leave_current_menu != 0;
+#else
+    __asm {
+            sub esp, 0x18
+            push ebx
+            push ebp
+            mov ebp, ecx
+            push esi
+            mov ecx, dword ptr [gProgram_state+0x84]
+            xor esi, esi
+            cmp ecx, esi
+            push edi
+            mov dword ptr [esp + 0x14], ebp
+            mov eax, 1
+            jne L0046a118
+            mov dword ptr [ebp + 0x560], esi
+            mov dword ptr [ebp + 0x564], esi
+            mov dword ptr [ebp + 0xc18], esi
+            mov dword ptr [ebp + 0xc1c], esi
+            jmp L0046a130
+    L0046a118:
+            mov dword ptr [ebp + 0x560], eax
+            mov dword ptr [ebp + 0x564], eax
+            mov dword ptr [ebp + 0xc18], eax
+            mov dword ptr [ebp + 0xc1c], eax
+    L0046a130:
+            cmp dword ptr [gIs_boundary_race], esi
+            jne L0046a14c
+            cmp dword ptr [gProgram_state+0x84], esi
+            jne L0046a14c
+            mov dword ptr [ebp + 0xac0], 0xffffffff
+            jmp L0046a152
+    L0046a14c:
+            mov dword ptr [ebp + 0xac0], eax
+    L0046a152:
+            push 0x4062c000
+            push esi
+            push eax
+            mov eax, dword ptr [gBack_screen]
+            xor ecx, ecx
+            xor edx, edx
+            mov cx, word ptr [eax + 0x36]
+            mov dx, word ptr [eax + 0x34]
+            push esi
+            push ecx
+            push edx
+            mov ecx, 0xb
+            call PolyFontHeight
+            mov edx, dword ptr [gBack_screen]
+            xor ecx, ecx
+            mov cx, word ptr [edx + 0x36]
+            mov edx, offset gFrontend_QUIT+0xb95c
+            sub ecx, eax
+            sub ecx, 4
+            push ecx
+            mov ecx, 0xb
+            call PolyFontTextWidth
+            mov edx, dword ptr [gBack_screen]
+            xor ecx, ecx
+            mov cx, word ptr [edx + 0x34]
+            mov edx, offset gFrontend_QUIT+0xb95c
+            sub ecx, eax
+            sub ecx, 4
+            push ecx
+            mov ecx, 0xb
+            call TransparentPolyFontTextInABox
+            mov ecx, dword ptr [gFrontend_selected_item_index]
+            mov eax, 0x15
+            cmp ecx, esi
+            jne L0046a1d3
+            mov dword ptr [ebp + 0x118], eax
+            mov dword ptr [gFrontend_selected_item_index], eax
+    L0046a1d3:
+            cmp dword ptr [gFrontend_car_image_outdated], esi
+            je L0046a1f1
+            mov ecx, dword ptr [gProgram_state+0x8c]
+            mov edx, 0xa
+            call MenuSetCarImage
+            mov dword ptr [gFrontend_car_image_outdated], esi
+    L0046a1f1:
+            mov eax, dword ptr [gCurrent_frontend_spec]
+            mov ecx, dword ptr [eax + 0x87a4]
+            mov edx, dword ptr [eax + 0x87a8]
+            cmp ecx, edx
+            mov dword ptr [esp + 0x1c], ecx
+            jg L0046a2c6
+            mov eax, ecx
+            mov edi, dword ptr [esp + 0x18]
+            shl eax, 3
+            sub eax, ecx
+            lea eax, [eax + eax*2]
+            lea ecx, [ecx + eax*2]
+            lea ebx, [ebp + ecx*8 + 0x14c]
+    L0046a226:
+            mov eax, dword ptr [gNumber_of_races]
+            xor esi, esi
+            test eax, eax
+            jle L0046a264
+            lea ebp, [ebx + 0x3d]
+            mov edi, offset gRace_list
+    L0046a239:
+            mov edx, edi
+            mov ecx, ebp
+            call DRStricmp
+            test eax, eax
+            je L0046a258
+            mov eax, dword ptr [gNumber_of_races]
+            inc esi
+            add edi, 0x244
+            cmp esi, eax
+            jl L0046a239
+            jmp L0046a25c
+    L0046a258:
+            mov dword ptr [esp + 0x18], esi
+    L0046a25c:
+            mov ebp, dword ptr [esp + 0x14]
+            mov edi, dword ptr [esp + 0x18]
+    L0046a264:
+            lea edx, [edi + edi*8]
+            shl edx, 4
+            add edx, edi
+            mov eax, dword ptr [edx*4 + gRace_list+0x184]
+            test eax, eax
+            je L0046a2a3
+            push 0x1f
+            lea eax, [esp + 0x16]
+            push offset gFlic_bunch+0x10f8
+            push eax
+            call sprintf
+            mov ecx, dword ptr [ebx]
+            mov edx, dword ptr [ebx - 4]
+            add esp, 0xc
+            sub edx, 0xa
+            push 1
+            push 2
+            push 3
+            push ecx
+            lea ecx, [esp + 0x22]
+            call SolidPolyFontText
+    L0046a2a3:
+            mov edx, dword ptr [gCurrent_frontend_spec]
+            mov eax, dword ptr [esp + 0x1c]
+            inc eax
+            add ebx, 0x158
+            mov ecx, dword ptr [edx + 0x87a8]
+            mov dword ptr [esp + 0x1c], eax
+            cmp eax, ecx
+            jle L0046a226
+    L0046a2c6:
+            mov dword ptr [gTyping_slot], 0xffffffff
+            call EdgeTriggerModeOn
+            call KillSplashScreen
+            mov eax, dword ptr [gTyping]
+            xor esi, esi
+            cmp eax, esi
+            je L0046a360
+            call ProcessInputString
+            mov ecx, ebp
+            mov esi, eax
+            call FuckWithWidths
+            test esi, esi
+            jge L0046a354
+            mov ecx, ebp
+            call ToggleTyping
+            mov eax, dword ptr [gTyping]
+            test eax, eax
+            jne L0046a354
+            mov ecx, dword ptr [gFrontend_selected_item_index]
+            mov eax, ecx
+            shl eax, 3
+            sub eax, ecx
+            lea eax, [eax + eax*2]
+            lea ecx, [ecx + eax*2]
+            xor eax, eax
+            lea edx, [ebp + ecx*8 + 0x189]
+            or ecx, 0xffffffff
+            mov edi, edx
+            repne scasb
+            not ecx
+            dec ecx
+            je L0046a354
+            mov edi, edx
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            sub edi, ecx
+            mov edx, ecx
+            mov esi, edi
+            mov edi, offset gProgram_state+0x1a10
+            shr ecx, 2
+            rep movsd
+            mov ecx, edx
+            and ecx, 3
+            rep movsb
+            call SaveOptions
+    L0046a354:
+            mov ecx, ebp
+            call FuckWithWidths
+            jmp L0046a7e8
+    L0046a360:
+            call PollKeys
+            call EdgeTriggerModeOff
+            call PDAnyKeyDown
+            cmp eax, -1
+            je L0046a389
+            cmp eax, 4
+            je L0046a389
+            mov dword ptr [gMouse_in_use], esi
+            call PDGetTotalTime
+            mov dword ptr [gFrontend_time_last_input], eax
+    L0046a389:
+            call EdgeTriggerModeOn
+            mov eax, dword ptr [gMouse_in_use]
+            mov dword ptr [esp + 0x18], esi
+            cmp eax, esi
+            je L0046a4d1
+            mov dword ptr [gFrontend_selected_item_index], esi
+            call PDGetTotalTime
+            lea edx, [esp + 0x20]
+            lea ecx, [esp + 0x24]
+            mov dword ptr [gFrontend_time_last_input], eax
+            call GetMousePosition
+            call EitherMouseButtonDown
+            mov edx, dword ptr [esp + 0x24]
+            mov ecx, dword ptr [gCurrent_frontend_spec]
+            mov dword ptr [esp + 0x18], eax
+            mov eax, dword ptr [esp + 0x20]
+            push eax
+            call GetItemAtMousePos
+            mov ebx, eax
+            cmp ebx, -1
+            mov dword ptr [esp + 0x1c], ebx
+            mov ecx, ebx
+            jne L0046a3eb
+            mov ecx, 0x63
+    L0046a3eb:
+            cmp ecx, 3
+            mov dword ptr [gFrontend_selected_item_index], ecx
+            jle L0046a4d5
+            cmp ecx, 8
+            jge L0046a4d5
+            lea edx, [ecx + 1]
+            mov eax, edx
+            shl eax, 3
+            sub eax, edx
+            lea eax, [eax + eax*2]
+            lea edx, [edx + eax*2]
+            cmp dword ptr [ebp + edx*8], esi
+            jle L0046a4d5
+            mov eax, ecx
+            xor esi, esi
+            shl eax, 3
+            sub eax, ecx
+            lea eax, [eax + eax*2]
+            lea ecx, [ecx + eax*2]
+            mov eax, dword ptr [gNumber_of_races]
+            test eax, eax
+            lea ebx, [ebp + ecx*8 + 0x189]
+            jle L0046a45e
+            mov edi, offset gRace_list
+    L0046a441:
+            mov edx, edi
+            mov ecx, ebx
+            call DRStricmp
+            test eax, eax
+            je L0046a462
+            mov eax, dword ptr [gNumber_of_races]
+            inc esi
+            add edi, 0x244
+            cmp esi, eax
+            jl L0046a441
+    L0046a45e:
+            mov esi, dword ptr [esp + 0x24]
+    L0046a462:
+            lea ebx, [esi + esi*8]
+            or ecx, 0xffffffff
+            shl ebx, 4
+            add ebx, esi
+            xor eax, eax
+            shl ebx, 2
+            mov edx, dword ptr [esp + 0x14]
+            push 0xd
+            lea edi, [ebx + gRace_list+0x80]
+            repne scasb
+            not ecx
+            sub edi, ecx
+            lea ebp, [edx + 0x1f19]
+            mov eax, ecx
+            mov esi, edi
+            mov edi, ebp
+            mov dl, 0x52
+            shr ecx, 2
+            rep movsd
+            mov ecx, eax
+            and ecx, 3
+            rep movsb
+            mov ecx, ebp
+            call MungeMetaCharactersChar
+            mov ecx, dword ptr [ebx + gRace_list+0x194]
+            mov dl, 0x4f
+            push ecx
+            mov ecx, ebp
+            call MungeMetaCharactersNum
+            mov edx, dword ptr [ebx + gRace_list+0x1dc]
+            mov ecx, ebp
+            push edx
+            mov dl, 0x4c
+            call MungeMetaCharactersNum
+            xor esi, esi
+            mov ebx, dword ptr [esp + 0x1c]
+            mov ebp, dword ptr [esp + 0x14]
+            jmp L0046a4d5
+    L0046a4d1:
+            mov ebx, dword ptr [esp + 0x1c]
+    L0046a4d5:
+            mov ecx, 0x48
+            call PDKeyDown
+            test eax, eax
+            jne L0046a4f5
+            mov ecx, 0x59
+            call PDKeyDown
+            test eax, eax
+            je L0046a595
+    L0046a4f5:
+            mov eax, dword ptr [gFrontend_selected_item_index]
+            cmp eax, 0xf
+            jne L0046a509
+            mov eax, 0xa
+            mov dword ptr [gFrontend_selected_item_index], eax
+    L0046a509:
+            mov ecx, dword ptr [gCurrent_frontend_spec]
+            dec eax
+            cmp eax, esi
+            jl L0046a53c
+            mov edx, eax
+            shl edx, 3
+            sub edx, eax
+            lea edx, [edx + edx*2]
+            lea edx, [eax + edx*2]
+            lea edx, [ecx + edx*8 + 0x15c]
+    L0046a528:
+            cmp dword ptr [edx - 4], esi
+            jle L0046a531
+            cmp dword ptr [edx], esi
+            jne L0046a54d
+    L0046a531:
+            dec eax
+            sub edx, 0x158
+            cmp eax, esi
+            jge L0046a528
+    L0046a53c:
+            mov edx, dword ptr [ecx + 0x104]
+            call FindPrevActiveItem
+            mov ecx, dword ptr [gCurrent_frontend_spec]
+    L0046a54d:
+            mov edx, dword ptr [gMouse_in_use]
+            mov dword ptr [gFrontend_selected_item_index], eax
+            cmp edx, esi
+            jne L0046a595
+            cmp eax, dword ptr [ecx + 0x87a4]
+            jl L0046a595
+            cmp eax, dword ptr [ecx + 0x87a8]
+            jg L0046a595
+            mov ecx, ebp
+            call ToggleSelection
+            mov ecx, dword ptr [gFrontend_selected_item_index]
+            mov eax, ecx
+            shl eax, 3
+            sub eax, ecx
+            lea eax, [eax + eax*2]
+            lea ecx, [ecx + eax*2]
+            mov eax, dword ptr [ebp + ecx*8 + 0x134]
+            cmp eax, esi
+            je L0046a595
+            mov ecx, ebp
+            call eax
+    L0046a595:
+            mov ecx, 0x49
+            call PDKeyDown
+            test eax, eax
+            jne L0046a5b5
+            mov ecx, 0x53
+            call PDKeyDown
+            test eax, eax
+            je L0046a694
+    L0046a5b5:
+            mov eax, dword ptr [gFrontend_selected_item_index]
+            cmp eax, 0x15
+            jge L0046a60f
+            cmp eax, 0xa
+            jne L0046a5ce
+            mov eax, 0xf
+            mov dword ptr [gFrontend_selected_item_index], eax
+    L0046a5ce:
+            mov esi, dword ptr [gCurrent_frontend_spec]
+            inc eax
+            mov edx, dword ptr [esi + 0x104]
+            dec edx
+            cmp eax, edx
+            jg L0046a60b
+            mov ecx, eax
+            shl ecx, 3
+            sub ecx, eax
+            lea ecx, [ecx + ecx*2]
+            lea ecx, [eax + ecx*2]
+            lea ecx, [esi + ecx*8 + 0x15c]
+    L0046a5f4:
+            mov edi, dword ptr [ecx - 4]
+            test edi, edi
+            jle L0046a600
+            cmp dword ptr [ecx], 0
+            jne L0046a64c
+    L0046a600:
+            inc eax
+            add ecx, 0x158
+            cmp eax, edx
+            jle L0046a5f4
+    L0046a60b:
+            xor eax, eax
+            jmp L0046a64c
+    L0046a60f:
+            mov esi, dword ptr [gCurrent_frontend_spec]
+            mov dword ptr [gFrontend_selected_item_index], 0xffffffff
+            xor ecx, ecx
+            mov edx, dword ptr [esi + 0x104]
+            dec edx
+            test edx, edx
+            jl L0046a648
+            lea eax, [esi + 0x15c]
+    L0046a632:
+            mov edi, dword ptr [eax - 4]
+            test edi, edi
+            jle L0046a63e
+            cmp dword ptr [eax], 0
+            jne L0046a64a
+    L0046a63e:
+            inc ecx
+            add eax, 0x158
+            cmp ecx, edx
+            jle L0046a632
+    L0046a648:
+            xor ecx, ecx
+    L0046a64a:
+            mov eax, ecx
+    L0046a64c:
+            mov ecx, dword ptr [gMouse_in_use]
+            mov dword ptr [gFrontend_selected_item_index], eax
+            test ecx, ecx
+            jne L0046a694
+            cmp eax, dword ptr [esi + 0x87a4]
+            jl L0046a694
+            cmp eax, dword ptr [esi + 0x87a8]
+            jg L0046a694
+            mov ecx, ebp
+            call ToggleSelection
+            mov ecx, dword ptr [gFrontend_selected_item_index]
+            mov eax, ecx
+            shl eax, 3
+            sub eax, ecx
+            lea edx, [eax + eax*2]
+            lea eax, [ecx + edx*2]
+            mov eax, dword ptr [ebp + eax*8 + 0x134]
+            test eax, eax
+            je L0046a694
+            mov ecx, ebp
+            call eax
+    L0046a694:
+            mov ecx, 0x3f
+            call PDKeyDown
+            test eax, eax
+            je L0046a7ba
+            mov ecx, dword ptr [gCurrent_frontend_spec]
+            mov edx, dword ptr [gFrontend_selected_item_index]
+            mov dword ptr [ecx + 0x118], edx
+            mov ecx, dword ptr [gCurrent_frontend_spec]
+            xor edx, edx
+            mov eax, dword ptr [ecx + 0x8790]
+            test eax, eax
+            jle L0046a6ec
+            xor eax, eax
+    L0046a6cc:
+            mov esi, dword ptr [ecx + eax + 0x87a0]
+            inc edx
+            mov dword ptr [ecx + eax + 0x87c0], esi
+            mov ecx, dword ptr [gCurrent_frontend_spec]
+            add eax, 0x34
+            cmp edx, dword ptr [ecx + 0x8790]
+            jl L0046a6cc
+    L0046a6ec:
+            mov ecx, ebp
+            call FRONTEND_DestroyMenu
+            mov ecx, offset gFrontend_OPTIONS
+            mov dword ptr [gCurrent_frontend_spec], 0x632c60
+            call FRONTEND_CreateMenu
+            mov edx, dword ptr [gCurrent_frontend_spec]
+            mov eax, dword ptr [ebp + 0x114]
+            cmp edx, eax
+            je L0046a723
+            mov dword ptr [edx + 0x114], ebp
+            mov edx, dword ptr [gCurrent_frontend_spec]
+    L0046a723:
+            mov ecx, ebp
+            call Morph_Initialise
+            mov ecx, dword ptr [gCurrent_frontend_spec]
+            xor edx, edx
+            mov eax, dword ptr [ecx + 0x8790]
+            test eax, eax
+            jle L0046a75e
+            xor eax, eax
+    L0046a73e:
+            mov esi, dword ptr [ecx + eax + 0x87c0]
+            inc edx
+            mov dword ptr [ecx + eax + 0x87a0], esi
+            mov ecx, dword ptr [gCurrent_frontend_spec]
+            add eax, 0x34
+            cmp edx, dword ptr [ecx + 0x8790]
+            jl L0046a73e
+    L0046a75e:
+            call UpdateScrollPositions
+            mov eax, dword ptr [gCurrent_frontend_spec]
+            mov ecx, dword ptr [eax + 0x118]
+            mov dword ptr [gFrontend_selected_item_index], ecx
+            mov ecx, dword ptr [gProgram_state+0x28]
+            test ecx, ecx
+            je L0046a79e
+            mov ecx, dword ptr [gNet_mode]
+            test ecx, ecx
+            je L0046a7ba
+            cmp dword ptr [eax + 0x118], 5
+            jne L0046a7ba
+            mov edi, 3
+            mov dword ptr [gFrontend_selected_item_index], edi
+            jmp L0046a7bf
+    L0046a79e:
+            mov eax, dword ptr [eax + 0x118]
+            mov edi, 3
+            cmp eax, edi
+            jl L0046a7b2
+            cmp eax, 0x1e
+            jle L0046a7bf
+    L0046a7b2:
+            mov dword ptr [gFrontend_selected_item_index], edi
+            jmp L0046a7bf
+    L0046a7ba:
+            mov edi, 3
+    L0046a7bf:
+            mov ecx, 0x33
+            call PDKeyDown
+            test eax, eax
+            jne L0046a807
+            mov ecx, 0x34
+            call PDKeyDown
+            test eax, eax
+            jne L0046a807
+            mov eax, dword ptr [esp + 0x18]
+            test eax, eax
+            je L0046a7e8
+            cmp ebx, -1
+            jne L0046a807
+    L0046a7e8:
+            call ServiceGame
+            call CheckForCheatingGits
+            mov ecx, dword ptr [gFrontend_leave_current_menu]
+            xor eax, eax
+            test ecx, ecx
+            setne al
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x18
+            ret
+    L0046a807:
+            mov ecx, ebp
+            call ToggleSelection
+            mov eax, dword ptr [gMouse_in_use]
+            mov ecx, dword ptr [gCurrent_frontend_spec]
+            test eax, eax
+            mov eax, dword ptr [gFrontend_selected_item_index]
+            jne L0046a83c
+            cmp eax, dword ptr [ecx + 0x87a4]
+            jl L0046a83c
+            cmp eax, dword ptr [ecx + 0x87a8]
+            jg L0046a83c
+            mov eax, 0x15
+            mov dword ptr [gFrontend_selected_item_index], eax
+    L0046a83c:
+            mov ecx, eax
+            shl ecx, 3
+            sub ecx, eax
+            lea edx, [ecx + ecx*2]
+            lea ecx, [eax + edx*2]
+            mov edx, dword ptr [ebp + ecx*8 + 0x13c]
+            cmp edx, 2
+            lea ecx, [ebp + ecx*8]
+            jne L0046a863
+            mov eax, edx
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x18
+            ret
+    L0046a863:
+            cmp edx, 1
+            jne L0046a86e
+            mov dword ptr [gFrontend_leave_current_menu], edx
+    L0046a86e:
+            mov edx, dword ptr [ecx + 0x134]
+            test edx, edx
+            je L0046a8c0
+            mov ecx, ebp
+            call edx
+            mov esi, eax
+            mov eax, dword ptr [esp + 0x18]
+            cmp eax, 2
+            mov eax, dword ptr [gFrontend_selected_item_index]
+            jne L0046a8c6
+            cmp eax, 4
+            jl L0046a8c6
+            cmp eax, 8
+            jge L0046a8c6
+            mov eax, dword ptr [gProgram_state+0x2c]
+            test eax, eax
+            je L0046a8ac
+            mov eax, 1
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x18
+            ret
+    L0046a8ac:
+            mov dword ptr [gFrontend_next_menu], 6
+            mov eax, edi
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x18
+            ret
+    L0046a8c0:
+            mov esi, dword ptr [ecx + 0x13c]
+    L0046a8c6:
+            cmp esi, 5
+            jne L0046a8da
+            mov esi, 1
+            mov eax, esi
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x18
+            ret
+    L0046a8da:
+            mov ecx, eax
+            shl ecx, 3
+            sub ecx, eax
+            lea edx, [ecx + ecx*2]
+            lea ecx, [eax + edx*2]
+            mov edx, dword ptr [ebp + ecx*8 + 0x138]
+            test edx, edx
+            je L0046aa0f
+            mov edx, dword ptr [gCurrent_frontend_spec]
+            mov dword ptr [edx + 0x118], eax
+            mov eax, dword ptr [gCurrent_frontend_spec]
+            xor edx, edx
+            mov ecx, dword ptr [eax + 0x8790]
+            test ecx, ecx
+            jle L0046a934
+            xor ecx, ecx
+    L0046a915:
+            mov ebx, dword ptr [eax + ecx + 0x87a0]
+            inc edx
+            mov dword ptr [eax + ecx + 0x87c0], ebx
+            mov eax, dword ptr [gCurrent_frontend_spec]
+            add ecx, 0x34
+            cmp edx, dword ptr [eax + 0x8790]
+            jl L0046a915
+    L0046a934:
+            mov ecx, ebp
+            call FRONTEND_DestroyMenu
+            mov ecx, dword ptr [gFrontend_selected_item_index]
+            mov eax, ecx
+            shl eax, 3
+            sub eax, ecx
+            lea eax, [eax + eax*2]
+            lea ecx, [ecx + eax*2]
+            mov ecx, dword ptr [ebp + ecx*8 + 0x138]
+            mov dword ptr [gCurrent_frontend_spec], ecx
+            call FRONTEND_CreateMenu
+            mov edx, dword ptr [gCurrent_frontend_spec]
+            mov eax, dword ptr [ebp + 0x114]
+            cmp edx, eax
+            je L0046a97c
+            mov dword ptr [edx + 0x114], ebp
+            mov edx, dword ptr [gCurrent_frontend_spec]
+    L0046a97c:
+            mov ecx, ebp
+            call Morph_Initialise
+            mov ecx, dword ptr [gCurrent_frontend_spec]
+            cmp ecx, offset gFrontend_QUIT
+            jne L0046a99d
+            mov dword ptr [gFrontend_selected_item_index], 0
+            jmp L0046a9a9
+    L0046a99d:
+            mov edx, dword ptr [ecx + 0x118]
+            mov dword ptr [gFrontend_selected_item_index], edx
+    L0046a9a9:
+            cmp ecx, offset gFrontend_OPTIONS
+            jne L0046a9dc
+            mov eax, dword ptr [gProgram_state+0x28]
+            test eax, eax
+            je L0046a9ce
+            mov eax, dword ptr [gNet_mode]
+            test eax, eax
+            je L0046a9dc
+            cmp dword ptr [ecx + 0x118], 5
+            jne L0046a9dc
+            jmp L0046a9d6
+    L0046a9ce:
+            cmp dword ptr [ecx + 0x118], edi
+            jge L0046a9dc
+    L0046a9d6:
+            mov dword ptr [gFrontend_selected_item_index], edi
+    L0046a9dc:
+            mov eax, dword ptr [ecx + 0x8790]
+            xor edx, edx
+            test eax, eax
+            jle L0046aa0a
+            xor eax, eax
+    L0046a9ea:
+            mov edi, dword ptr [ecx + eax + 0x87c0]
+            inc edx
+            mov dword ptr [ecx + eax + 0x87a0], edi
+            mov ecx, dword ptr [gCurrent_frontend_spec]
+            add eax, 0x34
+            cmp edx, dword ptr [ecx + 0x8790]
+            jl L0046a9ea
+    L0046aa0a:
+            call UpdateScrollPositions
+    L0046aa0f:
+            mov eax, esi
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x18
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0046b6a0
@@ -537,13 +1655,11 @@ void C2_HOOK_FASTCALL UpdateCarInfo(tFrontend_spec *pFrontend) {
 
 // FUNCTION: CARMA2_HW 0x00469a30
 int C2_HOOK_FASTCALL OnePlayerSetup(tFrontend_spec* pFrontend) {
-
     return 0;
 }
 
 // FUNCTION: CARMA2_HW 0x00467eb0
 int C2_HOOK_FASTCALL MultiplayerSetup(tFrontend_spec* pFrontend) {
-
     gFrontend_net_initialized = !NetInitialise();
     if (gFrontend_net_initialized) {
 
@@ -558,7 +1674,6 @@ int C2_HOOK_FASTCALL MultiplayerSetup(tFrontend_spec* pFrontend) {
 
 // FUNCTION: CARMA2_HW 0x0046a010
 int C2_HOOK_FASTCALL testUp(tFrontend_spec *pFrontend) {
-
     if (PDGetTotalTime() - gFrontend_last_scroll > 400) {
         gFrontend_last_scroll = PDGetTotalTime();
         if ((gCurrent_race_group - gRace_groups) % 10 > 0) {
@@ -572,7 +1687,6 @@ int C2_HOOK_FASTCALL testUp(tFrontend_spec *pFrontend) {
 
 // FUNCTION: CARMA2_HW 0x0046a080
 int C2_HOOK_FASTCALL testDn(tFrontend_spec *pFrontend) {
-
     if (PDGetTotalTime() - gFrontend_last_scroll > 400) {
         gFrontend_last_scroll = PDGetTotalTime();
         if ((gCurrent_race_group - gRace_groups) % 10 < 9) {
@@ -584,7 +1698,8 @@ int C2_HOOK_FASTCALL testDn(tFrontend_spec *pFrontend) {
 }
 
 // FUNCTION: CARMA2_HW 0x00469ea0
-int C2_HOOK_FASTCALL MainMenuSelectRace(tFrontend_spec* pFrontend) {
+int C2_NAKED C2_HOOK_FASTCALL MainMenuSelectRace(tFrontend_spec* pFrontend) {
+#ifndef CARPOCALYPSE2_MATCHING
     char group_name[12];
     int race_index;
     int i;
@@ -613,11 +1728,144 @@ int C2_HOOK_FASTCALL MainMenuSelectRace(tFrontend_spec* pFrontend) {
     strcpy(pFrontend->items[2].text, group_name);
     FuckWithWidths(pFrontend);
     return 0;
+#else
+    __asm {
+            sub esp, 0x10
+            push ebx
+            push ebp
+            mov ebp, ecx
+            push esi
+            mov ecx, dword ptr [gFrontend_selected_item_index]
+            xor esi, esi
+            mov eax, ecx
+            push edi
+            shl eax, 3
+            sub eax, ecx
+            lea eax, [eax + eax*2]
+            lea ecx, [ecx + eax*2]
+            mov eax, dword ptr [gNumber_of_races]
+            test eax, eax
+            lea ebx, [ebp + ecx*8 + 0x189]
+            jle L00469ef0
+            mov edi, offset gRace_list
+    L00469ed3:
+            mov edx, edi
+            mov ecx, ebx
+            call DRStricmp
+            test eax, eax
+            je L00469ef4
+            mov eax, dword ptr [gNumber_of_races]
+            inc esi
+            add edi, 0x244
+            cmp esi, eax
+            jl L00469ed3
+    L00469ef0:
+            mov esi, dword ptr [esp + 0x10]
+    L00469ef4:
+            mov eax, 0xb
+            mov dword ptr [gProgram_state+0x78], esi
+            mov dword ptr [ebp + 0x1ed4], eax
+            mov dword ptr [ebp + 0x1ed0], eax
+            mov eax, dword ptr [gMouse_in_use]
+            test eax, eax
+            jne L00469f79
+            lea ebx, [esi + esi*8]
+            or ecx, 0xffffffff
+            shl ebx, 4
+            add ebx, esi
+            xor eax, eax
+            shl ebx, 2
+            lea edx, [ebp + 0x1f19]
+            push 0xd
+            lea edi, [ebx + gRace_list+0x80]
+            repne scasb
+            not ecx
+            sub edi, ecx
+            mov eax, ecx
+            mov esi, edi
+            mov edi, edx
+            mov dl, 0x52
+            shr ecx, 2
+            rep movsd
+            mov ecx, eax
+            and ecx, 3
+            rep movsb
+            lea esi, [ebp + 0x1f19]
+            mov ecx, esi
+            call MungeMetaCharactersChar
+            mov ecx, dword ptr [ebx + gRace_list+0x194]
+            mov dl, 0x4f
+            push ecx
+            mov ecx, esi
+            call MungeMetaCharactersNum
+            mov edx, dword ptr [ebx + gRace_list+0x1dc]
+            mov ecx, esi
+            push edx
+            mov dl, 0x4c
+            call MungeMetaCharactersNum
+    L00469f79:
+            mov eax, dword ptr [gProgram_state+0x78]
+            mov ebx, dword ptr [gRace_groups]
+            lea ecx, [eax + eax*8]
+            shl ecx, 4
+            add ecx, eax
+            mov eax, dword ptr [ecx*4 + gRace_list+0x240]
+            mov dword ptr [gCurrent_race_group], eax
+            sub eax, ebx
+            mov ecx, eax
+            mov eax, 0x2aaaaaab
+            imul ecx
+            mov eax, edx
+            mov ecx, 0xa
+            sar eax, 1
+            mov edx, eax
+            shr edx, 0x1f
+            add eax, edx
+            cdq
+            idiv ecx
+            mov ecx, 0x4e
+            inc edx
+            push edx
+            call IString_Get
+            lea edx, [esp + 0x18]
+            push eax
+            push offset gNext_crush_actor_id+0x50c
+            push edx
+            call sprintf
+            lea edi, [esp + 0x24]
+            or ecx, 0xffffffff
+            xor eax, eax
+            add esp, 0x10
+            repne scasb
+            not ecx
+            sub edi, ecx
+            lea edx, [ebp + 0x439]
+            mov eax, ecx
+            mov esi, edi
+            mov edi, edx
+            shr ecx, 2
+            rep movsd
+            mov ecx, eax
+            and ecx, 3
+            rep movsb
+            mov ecx, ebp
+            call FuckWithWidths
+            xor eax, eax
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x10
+            ret
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00467270
 int C2_HOOK_FASTCALL StartFudge(tFrontend_spec* pFrontend) {
-
     if (gProgram_state.field_0x2c) {
         return 5;
     }

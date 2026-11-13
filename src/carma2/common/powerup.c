@@ -86,8 +86,54 @@ extern int gNumber_of_powerups;
 
 // ExcludedPowerup
 
+#ifdef CARPOCALYPSE2_MATCHING
+extern void C2_HOOK_FASTCALL ARPowerupGot(tPowerup* pPowerup, tCar_spec* pCar);
+extern void C2_HOOK_FASTCALL ARPowerupLose(tPowerup* pPowerup, tCar_spec* pCar);
+extern br_actor* C2_HOOK_CDECL BrActorAllocate();
+extern br_pixelmap* C2_HOOK_CDECL BrMapAdd();
+extern br_material* C2_HOOK_CDECL BrMaterialAdd();
+extern br_material* C2_HOOK_CDECL BrMaterialAllocate();
+extern void C2_HOOK_CDECL BrMaterialUpdate();
+extern void C2_HOOK_CDECL BrMatrix34Identity();
+extern void C2_HOOK_CDECL BrMatrix34PostRotateZ();
+extern void C2_HOOK_CDECL BrMatrix34Scale();
+extern br_model* C2_HOOK_CDECL BrModelAdd();
+extern br_model* C2_HOOK_CDECL BrModelAllocate();
+extern int C2_HOOK_FASTCALL GetHowMuchBloodAndSnotToSmearAbout(void);
+extern const char* C2_HOOK_FASTCALL GetMiscString(int pIndex);
+extern int C2_HOOK_FASTCALL GetPedCount(void);
+extern tU32 C2_HOOK_FASTCALL GetTotalTime(void);
+extern int C2_HOOK_FASTCALL IsItOkayToFireHorribleBallsOfNastyNapalmDeathAtPerfectlyInnocentPassersByAndByInnocentIDoMeanInTheBiblicalSense(void);
+extern int C2_HOOK_FASTCALL IsItReallyOKThatWeDontMakeAnyEffortToProtectAnySadFuckersOutThereThatDontWishToSeeInnocentPeopleBlownToBitsByHighExplosiveMinesAndShells(void);
+extern tNet_message* C2_HOOK_FASTCALL NetBuildGuaranteedMessage(tU8 pNet_message_type, int pOption);
+extern int C2_HOOK_FASTCALL NetGuaranteedSendMessageToAllPlayers(tNet_game_details* pDetails, tNet_message* pMessage, void* pNotifyFail);
+extern int C2_HOOK_FASTCALL NewTextHeadupSlot(int pSlot_index, int pFlash_rate, int pLifetime, int pFont_index, const char* pText);
+extern void C2_HOOK_FASTCALL PratcamEvent(int pIndex);
+extern void C2_HOOK_FASTCALL QueueIconGoing(tPowerup* pPowerup, tHeadup_icon* pHeadup_icons, int* pCount_icons);
+extern void C2_HOOK_FASTCALL RenderThisHeadup(br_actor* pActor);
+extern void __cdecl _ftol();
+extern char gCar_map_colours[];
+extern char gConst_kangeroo_force_factor[];
+extern tNet_game_details* gCurrent_net_game;
+extern tRace_info gCurrent_race;
+extern char gDefaultOpacity_TintedPoly[];
+extern char gFLOAT_0058ac00[];
+extern char gFLOAT_0058ac20[];
+extern char gFizzle_in[];
+extern int gFreeze_timer;
+extern tFrontend_spec gFrontend_QUIT;
+extern int gINT_006a0a5c;
+extern int gINT_006a0a6c;
+extern int gInventory[20];
+extern int gInventory_selected;
+extern tPlayer_ID gLocal_net_ID;
+extern tNet_mode gNet_mode;
+extern int gNumber_of_icons;
+extern tProgram_state gProgram_state;
+#endif
 // FUNCTION: CARMA2_HW 0x004d9150
-int C2_HOOK_FASTCALL GotPowerupX(tCar_spec* pCar, int pIndex, int pArg3, int pMessage, tU32 pTime) {
+int C2_NAKED C2_HOOK_FASTCALL GotPowerupX(tCar_spec* pCar, int pIndex, int pArg3, int pMessage, tU32 pTime) {
+#ifndef CARPOCALYPSE2_MATCHING
     tPowerup* the_powerup;
     int i;
     int ps_power;
@@ -174,6 +220,438 @@ int C2_HOOK_FASTCALL GotPowerupX(tCar_spec* pCar, int pIndex, int pArg3, int pMe
         gNumber_of_icons++;
     }
     return pIndex;
+#else
+    __asm {
+            sub esp, 0x114
+            mov eax, dword ptr [gNumber_of_powerups]
+            push ebx
+            push ebp
+            push esi
+            push edi
+            mov edi, edx
+            cmp edi, eax
+            mov dword ptr [esp + 0x10], edi
+            mov dword ptr [esp + 0x1c], ecx
+            jge L004d963b
+            xor ebp, ebp
+            cmp edi, ebp
+            jl L004d963b
+            mov eax, edi
+            mov edx, dword ptr [gPowerup_array]
+            shl eax, 3
+            sub eax, edi
+            lea eax, [eax + eax*2]
+            lea ecx, [edi + eax*2]
+            mov eax, dword ptr [edx + ecx*4]
+            cmp eax, ebp
+            lea ebx, [edx + ecx*4]
+            mov dword ptr [esp + 0x14], ebx
+            je L004d963b
+            mov esi, dword ptr [gCurrent_race+0x98]
+            call GetPedCount
+            cmp eax, 1
+            jge L004d91b6
+            test byte ptr [ebx + 0x38], 0x40
+            jne L004d9222
+    L004d91b6:
+            mov eax, dword ptr [gNet_mode]
+            cmp eax, ebp
+            je L004d91c9
+            test byte ptr [ebx + 0x38], 2
+            jne L004d9222
+            cmp eax, ebp
+            jne L004d91ce
+    L004d91c9:
+            cmp edi, 0x61
+            je L004d9222
+    L004d91ce:
+            call IsItOkayToFireHorribleBallsOfNastyNapalmDeathAtPerfectlyInnocentPassersByAndByInnocentIDoMeanInTheBiblicalSense
+            test eax, eax
+            jne L004d91dc
+            cmp edi, 0x5b
+            je L004d9222
+    L004d91dc:
+            call IsItReallyOKThatWeDontMakeAnyEffortToProtectAnySadFuckersOutThereThatDontWishToSeeInnocentPeopleBlownToBitsByHighExplosiveMinesAndShells
+            test eax, eax
+            jne L004d91ef
+            cmp edi, 0x34
+            je L004d9222
+            cmp edi, 0x60
+            je L004d9222
+    L004d91ef:
+            call GetHowMuchBloodAndSnotToSmearAbout
+            test eax, eax
+            jle L004d9202
+            cmp edi, 4
+            je L004d9222
+            cmp edi, 0x39
+            je L004d9222
+    L004d9202:
+            mov edx, dword ptr [esi + 0x1d4]
+            xor eax, eax
+            cmp edx, ebp
+            jle L004d922f
+            mov ecx, dword ptr [esi + 0x1d8]
+    L004d9214:
+            cmp edi, dword ptr [ecx]
+            je L004d9222
+            inc eax
+            add ecx, 4
+            cmp eax, edx
+            jl L004d9214
+            jmp L004d922f
+    L004d9222:
+            mov eax, dword ptr [gPowerup_array]
+            mov dword ptr [esp + 0x10], ebp
+            mov dword ptr [esp + 0x14], eax
+    L004d922f:
+            mov edi, dword ptr [esp + 0x14]
+            xor ebx, ebx
+            mov dword ptr [edi + 0x28], 0xffffffff
+            mov eax, dword ptr [gNumber_of_powerups]
+            cmp eax, ebp
+            jle L004d9339
+            mov ecx, dword ptr [gPowerup_array]
+            lea esi, [ecx + 0x40]
+    L004d9252:
+            lea edx, [esi - 0x40]
+            cmp edi, edx
+            je L004d9325
+            cmp dword ptr [esi - 0x3c], ebp
+            je L004d9325
+            mov ax, word ptr [edi + 0x10]
+            test word ptr [esi - 0x30], ax
+            je L004d9325
+            mov eax, dword ptr [esi]
+            cmp eax, ebp
+            je L004d9282
+            mov edx, dword ptr [esi + 0xc]
+            lea ecx, [esi - 0x40]
+            call eax
+    L004d9282:
+            test byte ptr [esi - 8], 0x80
+            je L004d9293
+            mov edx, dword ptr [esi + 0xc]
+            lea ecx, [esi - 0x40]
+            call ARPowerupLose
+    L004d9293:
+            cmp dword ptr [gNet_mode], ebp
+            je L004d92e8
+            xor edx, edx
+            mov cl, 0x16
+            call NetBuildGuaranteedMessage
+            mov edi, eax
+            push ebp
+            mov dword ptr [edi + 0x28], 2
+            mov ecx, dword ptr [gLocal_net_ID]
+            mov dword ptr [edi + 0x1c], ecx
+            mov eax, dword ptr [gPowerup_array]
+            mov ecx, esi
+            sub ecx, eax
+            mov eax, 0x2fa0be83
+            sub ecx, 0x40
+            imul ecx
+            sar edx, 5
+            mov eax, edx
+            shr eax, 0x1f
+            add edx, eax
+            mov dword ptr [edi + 0x20], edx
+            mov ecx, dword ptr [gCurrent_net_game]
+            mov edx, edi
+            call NetGuaranteedSendMessageToAllPlayers
+            mov edi, dword ptr [esp + 0x14]
+    L004d92e8:
+            mov eax, dword ptr [gPowerup_array]
+            lea ecx, [esi - 0x40]
+            mov edx, ecx
+            sub edx, eax
+            mov eax, 0x2fa0be83
+            imul edx
+            sar edx, 5
+            mov eax, edx
+            shr eax, 0x1f
+            add edx, eax
+            mov dword ptr [edx*4 + gProgram_state+0x17bc], ebp
+            mov eax, dword ptr [esi - 0xc]
+            cmp eax, ebp
+            jne L004d9322
+            push offset gNumber_of_icons
+            mov edx, offset gPickedup_powerups
+            call QueueIconGoing
+    L004d9322:
+            mov dword ptr [esi - 0x3c], ebp
+    L004d9325:
+            mov eax, dword ptr [gNumber_of_powerups]
+            inc ebx
+            add esi, 0xac
+            cmp ebx, eax
+            jl L004d9252
+    L004d9339:
+            cmp dword ptr [gNet_mode], ebp
+            je L004d9351
+            cmp dword ptr [edi + 0x3c], 0x4dc470
+            jne L004d9351
+            mov ebx, 1
+            jmp L004d9353
+    L004d9351:
+            xor ebx, ebx
+    L004d9353:
+            mov ecx, dword ptr [esp + 0x14]
+            mov eax, dword ptr [esp + 0x10]
+            mov edx, dword ptr [esp + 0x1c]
+            mov dword ptr [esp + 0x18], ebx
+            mov esi, dword ptr [ecx + 0x3c]
+            mov dword ptr [esp + 0x20], eax
+            cmp esi, ebp
+            mov dword ptr [ecx + 0x4c], edx
+            je L004d9377
+            call esi
+            mov dword ptr [esp + 0x10], eax
+    L004d9377:
+            cmp eax, ebp
+            jl L004d963b
+            mov ecx, dword ptr [esp + 0x10]
+            mov eax, ecx
+            shl eax, 3
+            sub eax, ecx
+            lea edx, [eax + eax*2]
+            lea eax, [ecx + edx*2]
+            mov edx, dword ptr [gPowerup_array]
+            lea ebp, [edx + eax*4]
+            mov al, byte ptr [ebp + 0x50]
+            test al, al
+            lea edi, [ebp + 0x50]
+            je L004d9466
+            mov eax, dword ptr [esp + 0x12c]
+            test eax, eax
+            je L004d9466
+            mov edx, dword ptr [ebp + 0x34]
+            test edx, edx
+            jne L004d9466
+            test ebx, ebx
+            jne L004d9466
+            cmp eax, 2
+            lea ebx, [esp + 0x24]
+            jne L004d93f2
+            push edi
+            mov ecx, 0xbe
+            call GetMiscString
+            push eax
+            lea eax, [esp + 0x2c]
+            push offset gCar_map_colours+0x10
+            push eax
+            call sprintf
+            add esp, 0x10
+            jmp L004d9413
+    L004d93f2:
+            or ecx, 0xffffffff
+            xor eax, eax
+            repne scasb
+            not ecx
+            sub edi, ecx
+            lea edx, [esp + 0x24]
+            mov eax, ecx
+            mov esi, edi
+            mov edi, edx
+            shr ecx, 2
+            rep movsd
+            mov ecx, eax
+            and ecx, 3
+            rep movsb
+    L004d9413:
+            cmp dword ptr [ebp + 0x3c], 0x4dc930
+            jne L004d944a
+            lea ecx, [esp + 0x24]
+            push offset gMass_mine+0x30
+            push ecx
+            call strtok
+            mov ebx, eax
+            mov eax, dword ptr [gFreeze_timer]
+            add esp, 8
+            test eax, eax
+            je L004d944a
+            push offset gMass_mine+0x30
+            push 0
+            call strtok
+            add esp, 8
+            mov ebx, eax
+    L004d944a:
+            push ebx
+            push -4
+            push 0xbb8
+            xor edx, edx
+            mov ecx, 4
+            call NewTextHeadupSlot
+            mov ebx, dword ptr [esp + 0x18]
+            mov ecx, dword ptr [esp + 0x10]
+    L004d9466:
+            test byte ptr [ebp + 0x38], 0x80
+            je L004d9482
+            mov eax, dword ptr [ecx*4 + gProgram_state+0x17bc]
+            test eax, eax
+            jne L004d9482
+            mov edx, dword ptr [esp + 0x1c]
+            mov ecx, ebp
+            call ARPowerupGot
+    L004d9482:
+            mov eax, dword ptr [ebp]
+            mov esi, dword ptr [esp + 0x128]
+            dec eax
+            je L004d94f4
+            dec eax
+            je L004d94ae
+            dec eax
+            jne L004d94f4
+            call GetTotalTime
+            mov edi, dword ptr [esp + 0x10]
+            mov dword ptr [ebp + 4], eax
+            mov dword ptr [edi*4 + gProgram_state+0x17bc], 0xffffffff
+            jmp L004d94f8
+    L004d94ae:
+            call GetTotalTime
+            test esi, esi
+            mov dword ptr [ebp + 4], eax
+            jne L004d94dd
+            mov ecx, dword ptr [gNet_mode]
+            test ecx, ecx
+            je L004d94dd
+            mov edx, dword ptr [esp + 0x130]
+            mov edi, dword ptr [esp + 0x10]
+            add edx, eax
+            mov dword ptr [ebp + 0xc], edx
+            mov dword ptr [edi*4 + gProgram_state+0x17bc], edx
+            jmp L004d94f8
+    L004d94dd:
+            mov ecx, dword ptr [ebp + 8]
+            mov edi, dword ptr [esp + 0x10]
+            add ecx, eax
+            mov edx, ecx
+            mov dword ptr [ebp + 0xc], ecx
+            mov dword ptr [edi*4 + gProgram_state+0x17bc], edx
+            jmp L004d94f8
+    L004d94f4:
+            mov edi, dword ptr [esp + 0x10]
+    L004d94f8:
+            mov ecx, dword ptr [ebp + 0x2c]
+            test ecx, ecx
+            jl L004d9504
+            call PratcamEvent
+    L004d9504:
+            mov eax, dword ptr [gNet_mode]
+            test eax, eax
+            je L004d955b
+            test esi, esi
+            je L004d955b
+            cmp dword ptr [esp + 0x20], edi
+            jne L004d955b
+            test ebx, ebx
+            jne L004d955b
+            cmp dword ptr [ebp + 0x3c], 0x4de1e0
+            je L004d955b
+            xor edx, edx
+            mov cl, 0x16
+            call NetBuildGuaranteedMessage
+            mov dword ptr [eax + 0x28], ebx
+            mov ecx, dword ptr [gLocal_net_ID]
+            mov dword ptr [eax + 0x1c], ecx
+            mov dword ptr [eax + 0x20], edi
+            cmp dword ptr [ebp], 2
+            jne L004d9547
+            mov ecx, dword ptr [ebp + 8]
+            jmp L004d9549
+    L004d9547:
+            xor ecx, ecx
+    L004d9549:
+            mov dword ptr [eax + 0x24], ecx
+            mov ecx, dword ptr [gCurrent_net_game]
+            push 0
+            mov edx, eax
+            call NetGuaranteedSendMessageToAllPlayers
+    L004d955b:
+            cmp dword ptr [ebp], 1
+            je L004d962c
+            mov eax, dword ptr [ebp + 0x14]
+            test eax, eax
+            je L004d962c
+            mov eax, dword ptr [ebp + 0x34]
+            test eax, eax
+            jne L004d962c
+            mov eax, dword ptr [gNumber_of_icons]
+            xor ecx, ecx
+            test eax, eax
+            jle L004d959b
+            mov edx, offset gPickedup_powerups
+    L004d958b:
+            cmp ebp, dword ptr [edx]
+            je L004d964b
+            inc ecx
+            add edx, 0x14
+            cmp ecx, eax
+            jl L004d958b
+    L004d959b:
+            cmp eax, 0x14
+            je L004d962c
+            lea ecx, [eax + eax*4]
+            lea esi, [eax + eax*4]
+            shl ecx, 2
+            shl esi, 2
+            mov dword ptr [ecx + gPickedup_powerups], ebp
+            mov dword ptr [ecx + gPickedup_powerups+0x4], 0
+            mov dword ptr [ecx + gPickedup_powerups+0x8], 1
+            call GetTotalTime
+            mov dword ptr [esi + gPickedup_powerups+0xc], eax
+            mov ebx, dword ptr [ebp + 0x90]
+            test ebx, ebx
+            je L004d961d
+            mov dword ptr [esi + gPickedup_powerups+0x10], ebx
+            lea edi, [ebp + 0x94]
+            mov ecx, 6
+            mov esi, offset gDefaultOpacity_TintedPoly+0x84
+            rep movsd
+            mov eax, dword ptr [ebx + 0x1c]
+            push 0x40
+            mov ecx, dword ptr [eax + 0x58]
+            mov dword ptr [ecx + 0xc], 0xff0000
+            mov edx, dword ptr [ebx + 0x1c]
+            push edx
+            call BrMaterialUpdate
+            add esp, 8
+            mov ecx, ebx
+            mov byte ptr [ebx + 0x20], 1
+            call RenderThisHeadup
+    L004d961d:
+            mov eax, dword ptr [gNumber_of_icons]
+            mov edi, dword ptr [esp + 0x10]
+            inc eax
+            mov dword ptr [gNumber_of_icons], eax
+    L004d962c:
+            mov eax, edi
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x114
+            ret 0xc
+    L004d963b:
+            or eax, 0xffffffff
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x114
+            ret 0xc
+    L004d964b:
+            mov eax, edi
+            lea edx, [ecx + ecx*4]
+            pop edi
+            pop esi
+            pop ebp
+            mov dword ptr [edx*4 + gPickedup_powerups+0x4], 4
+            pop ebx
+            add esp, 0x114
+            ret 0xc
+    }
+#endif
 }
 
 // GotPowerupXX
@@ -181,7 +659,8 @@ int C2_HOOK_FASTCALL GotPowerupX(tCar_spec* pCar, int pIndex, int pArg3, int pMe
 // GotPowerupEarwig
 
 // FUNCTION: CARMA2_HW 0x004d8d40
-void C2_HOOK_FASTCALL GotPowerupEarwig(tCar_spec* pCar, int pIndex, int pMessage, int pSelect_inventory) {
+void C2_NAKED C2_HOOK_FASTCALL GotPowerupEarwig(tCar_spec* pCar, int pIndex, int pMessage, int pSelect_inventory) {
+#ifndef CARPOCALYPSE2_MATCHING
     int i;
 
     GotPowerupX(pCar, pIndex, 0, pMessage, 0);
@@ -196,6 +675,372 @@ void C2_HOOK_FASTCALL GotPowerupEarwig(tCar_spec* pCar, int pIndex, int pMessage
             gInventory_selected = i;
         }
     }
+#else
+    __asm {
+            sub esp, 0x108
+            mov eax, dword ptr [gNumber_of_powerups]
+            push ebx
+            push ebp
+            mov ebx, edx
+            push esi
+            push edi
+            cmp ebx, eax
+            mov edi, ecx
+            mov dword ptr [esp + 0x14], 0xffffffff
+            mov eax, ebx
+            jge L004d90e7
+            shl eax, 3
+            mov edx, dword ptr [gPowerup_array]
+            sub eax, ebx
+            xor ebp, ebp
+            lea eax, [eax + eax*2]
+            lea ecx, [ebx + eax*2]
+            lea eax, [edx + ecx*4]
+            mov dword ptr [esp + 0x10], eax
+            cmp dword ptr [eax + 0x34], ebp
+            je L004d90b9
+            mov esi, dword ptr [gCurrent_race+0x98]
+            call GetPedCount
+            cmp eax, 1
+            jge L004d8da6
+            mov eax, dword ptr [esp + 0x10]
+            test byte ptr [eax + 0x38], 0x40
+            jne L004d90f4
+    L004d8da6:
+            mov eax, dword ptr [gNet_mode]
+            cmp eax, ebp
+            je L004d8dc1
+            mov ecx, dword ptr [esp + 0x10]
+            test byte ptr [ecx + 0x38], 2
+            jne L004d90f9
+            cmp eax, ebp
+            jne L004d8dca
+    L004d8dc1:
+            cmp ebx, 0x61
+            je L004d90f9
+    L004d8dca:
+            call IsItOkayToFireHorribleBallsOfNastyNapalmDeathAtPerfectlyInnocentPassersByAndByInnocentIDoMeanInTheBiblicalSense
+            test eax, eax
+            jne L004d8ddc
+            cmp ebx, 0x5b
+            je L004d90f4
+    L004d8ddc:
+            call IsItReallyOKThatWeDontMakeAnyEffortToProtectAnySadFuckersOutThereThatDontWishToSeeInnocentPeopleBlownToBitsByHighExplosiveMinesAndShells
+            test eax, eax
+            jne L004d8df7
+            cmp ebx, 0x34
+            je L004d90f4
+            cmp ebx, 0x60
+            je L004d90f4
+    L004d8df7:
+            call GetHowMuchBloodAndSnotToSmearAbout
+            test eax, eax
+            jle L004d8e12
+            cmp ebx, 4
+            je L004d90f4
+            cmp ebx, 0x39
+            je L004d90f4
+    L004d8e12:
+            mov edx, dword ptr [esi + 0x1d4]
+            xor eax, eax
+            cmp edx, ebp
+            jle L004d8e34
+            mov ecx, dword ptr [esi + 0x1d8]
+    L004d8e24:
+            cmp ebx, dword ptr [ecx]
+            je L004d90f4
+            inc eax
+            add ecx, 4
+            cmp eax, edx
+            jl L004d8e24
+    L004d8e34:
+            mov eax, dword ptr [esp + 0x11c]
+            cmp eax, ebp
+            je L004d8eec
+            cmp eax, 2
+            lea ebp, [esp + 0x18]
+            jne L004d8e73
+            mov eax, dword ptr [esp + 0x10]
+            mov ecx, 0xbe
+            add eax, 0x50
+            push eax
+            call GetMiscString
+            lea ecx, [esp + 0x1c]
+            push eax
+            push offset gCar_map_colours+0x10
+            push ecx
+            call sprintf
+            add esp, 0x10
+            jmp L004d8e9b
+    L004d8e73:
+            mov edx, dword ptr [esp + 0x10]
+            or ecx, 0xffffffff
+            xor eax, eax
+            lea edi, [edx + 0x50]
+            lea edx, [esp + 0x18]
+            repne scasb
+            not ecx
+            sub edi, ecx
+            mov eax, ecx
+            mov esi, edi
+            mov edi, edx
+            shr ecx, 2
+            rep movsd
+            mov ecx, eax
+            and ecx, 3
+            rep movsb
+    L004d8e9b:
+            mov ecx, dword ptr [esp + 0x10]
+            cmp dword ptr [ecx + 0x3c], 0x4dc930
+            jne L004d8ed6
+            lea edx, [esp + 0x18]
+            push offset gMass_mine+0x30
+            push edx
+            call strtok
+            mov ebp, eax
+            mov eax, dword ptr [gFreeze_timer]
+            add esp, 8
+            test eax, eax
+            je L004d8ed6
+            push offset gMass_mine+0x30
+            push 0
+            call strtok
+            add esp, 8
+            mov ebp, eax
+    L004d8ed6:
+            push ebp
+            push -4
+            push 0xbb8
+            xor edx, edx
+            mov ecx, 4
+            call NewTextHeadupSlot
+            xor ebp, ebp
+    L004d8eec:
+            xor ecx, ecx
+            mov eax, offset gInventory
+    L004d8ef3:
+            cmp dword ptr [eax], ebx
+            je L004d8f04
+            add eax, 4
+            inc ecx
+            cmp eax, offset gFizzle_in
+            jl L004d8ef3
+            jmp L004d8f08
+    L004d8f04:
+            mov dword ptr [esp + 0x14], ecx
+    L004d8f08:
+            mov edi, dword ptr [esp + 0x14]
+            cmp edi, ebp
+            jge L004d8f48
+            xor ecx, ecx
+            mov eax, offset gInventory
+    L004d8f17:
+            cmp dword ptr [eax], ebp
+            jl L004d8f28
+            add eax, 4
+            inc ecx
+            cmp eax, offset gFizzle_in
+            jl L004d8f17
+            jmp L004d8f35
+    L004d8f28:
+            mov eax, dword ptr [esp + 0x10]
+            mov dword ptr [esp + 0x14], ecx
+            mov edi, ecx
+            mov dword ptr [eax + 0x30], ebp
+    L004d8f35:
+            cmp edi, ebp
+            jge L004d8f48
+            mov eax, ebx
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x108
+            ret 8
+    L004d8f48:
+            mov edx, dword ptr [gInventory_selected]
+            cmp edi, edx
+            je L004d9083
+            cmp edx, ebp
+            jl L004d9083
+            mov ecx, dword ptr [edx*4 + gInventory]
+            mov eax, ecx
+            shl eax, 3
+            sub eax, ecx
+            lea eax, [eax + eax*2]
+            lea ecx, [ecx + eax*2]
+            mov eax, dword ptr [gPowerup_array]
+            lea esi, [eax + ecx*4]
+            mov eax, dword ptr [eax + ecx*4 + 0x34]
+            cmp eax, ebp
+            jl L004d8f8e
+            cmp dword ptr [gINT_006a0a6c], ebp
+            je L004d9079
+    L004d8f8e:
+            cmp dword ptr [esi + 4], ebp
+            je L004d8fa1
+            mov eax, dword ptr [esi + 0x40]
+            cmp eax, ebp
+            je L004d8fa1
+            mov edx, dword ptr [esi + 0x4c]
+            mov ecx, esi
+            call eax
+    L004d8fa1:
+            test byte ptr [esi + 0x38], 0x80
+            je L004d8fb1
+            mov edx, dword ptr [esi + 0x4c]
+            mov ecx, esi
+            call ARPowerupLose
+    L004d8fb1:
+            cmp dword ptr [gNet_mode], ebp
+            je L004d8fff
+            xor edx, edx
+            mov cl, 0x16
+            call NetBuildGuaranteedMessage
+            mov ecx, eax
+            push ebp
+            mov dword ptr [ecx + 0x28], 2
+            mov edx, dword ptr [gLocal_net_ID]
+            mov dword ptr [ecx + 0x1c], edx
+            mov eax, dword ptr [gPowerup_array]
+            mov edx, esi
+            sub edx, eax
+            mov eax, 0x2fa0be83
+            imul edx
+            sar edx, 5
+            mov eax, edx
+            shr eax, 0x1f
+            add edx, eax
+            mov dword ptr [ecx + 0x20], edx
+            mov edx, ecx
+            mov ecx, dword ptr [gCurrent_net_game]
+            call NetGuaranteedSendMessageToAllPlayers
+    L004d8fff:
+            mov edx, dword ptr [gPowerup_array]
+            mov ecx, esi
+            sub ecx, edx
+            mov eax, 0x2fa0be83
+            imul ecx
+            sar edx, 5
+            mov ecx, edx
+            shr ecx, 0x1f
+            add edx, ecx
+            mov dword ptr [edx*4 + gProgram_state+0x17bc], ebp
+            mov eax, dword ptr [esi + 0x34]
+            cmp eax, ebp
+            jne L004d9070
+            mov edx, dword ptr [gNumber_of_icons]
+            xor eax, eax
+            cmp edx, ebp
+            jle L004d9070
+            mov ecx, offset gPickedup_powerups
+    L004d9039:
+            cmp esi, dword ptr [ecx]
+            je L004d9047
+            inc eax
+            add ecx, 0x14
+            cmp eax, edx
+            jl L004d9039
+            jmp L004d9070
+    L004d9047:
+            lea edi, [eax + eax*4]
+            shl edi, 2
+            mov dword ptr [edi + gPickedup_powerups+0x4], 3
+            mov dword ptr [edi + gPickedup_powerups+0x8], 0xffffffff
+            call GetTotalTime
+            mov dword ptr [edi + gPickedup_powerups+0xc], eax
+            mov edi, dword ptr [esp + 0x14]
+    L004d9070:
+            mov dword ptr [esi + 4], ebp
+            mov edx, dword ptr [gInventory_selected]
+    L004d9079:
+            mov dword ptr [gINT_006a0a5c], 1
+    L004d9083:
+            cmp dword ptr [esp + 0x120], ebp
+            jne L004d9090
+            cmp edx, ebp
+            jge L004d9096
+    L004d9090:
+            mov dword ptr [gInventory_selected], edi
+    L004d9096:
+            mov eax, dword ptr [esp + 0x10]
+            mov edx, dword ptr [eax + 0x34]
+            mov ecx, dword ptr [eax + 0x30]
+            add ecx, edx
+            mov dword ptr [eax + 0x30], ecx
+            mov dword ptr [edi*4 + gInventory], ebx
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x108
+            ret 8
+    L004d90b9:
+            cmp dword ptr [gNet_mode], ebp
+            je L004d90d2
+            cmp edi, ebp
+            je L004d90d2
+            cmp dword ptr [edi + 0xc], 8
+            jne L004d90d2
+            mov eax, 1
+            jmp L004d90d4
+    L004d90d2:
+            xor eax, eax
+    L004d90d4:
+            mov ecx, dword ptr [esp + 0x11c]
+            push ebp
+            push ecx
+            push eax
+            mov edx, ebx
+            mov ecx, edi
+            call GotPowerupX
+    L004d90e7:
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x108
+            ret 8
+    L004d90f4:
+            mov eax, dword ptr [gNet_mode]
+    L004d90f9:
+            cmp eax, ebp
+            je L004d912c
+            cmp edi, ebp
+            je L004d912c
+            cmp dword ptr [edi + 0xc], 8
+            jne L004d912c
+            mov edx, dword ptr [esp + 0x11c]
+            mov eax, 1
+            push ebp
+            push edx
+            push eax
+            xor edx, edx
+            mov ecx, edi
+            call GotPowerupX
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x108
+            ret 8
+    L004d912c:
+            mov edx, dword ptr [esp + 0x11c]
+            xor eax, eax
+            push ebp
+            push edx
+            push eax
+            xor edx, edx
+            mov ecx, edi
+            call GotPowerupX
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x108
+            ret 8
+    }
+#endif
 }
 
 // AutoGoody
@@ -599,7 +1444,8 @@ void C2_HOOK_FASTCALL ARUndoPowerupRespawn(br_actor* pActor, int pUnused) {
 }
 
 // FUNCTION: CARMA2_HW 0x004e07f0
-void C2_HOOK_FASTCALL PrintPowerupIconIn3D(int pX, int pY, tHeadup_icon* pIcon, tPowerup* pPowerup, int pScale, tU32 pTime) {
+void C2_NAKED C2_HOOK_FASTCALL PrintPowerupIconIn3D(int pX, int pY, tHeadup_icon* pIcon, tPowerup* pPowerup, int pScale, tU32 pTime) {
+#ifndef CARPOCALYPSE2_MATCHING
     float f;
     float scale;
     br_fixed_ls prev_opacity;
@@ -635,10 +1481,164 @@ void C2_HOOK_FASTCALL PrintPowerupIconIn3D(int pX, int pY, tHeadup_icon* pIcon, 
         BrVector3Set(&pIcon->icon_actor->t.t.translate.t, (float)pX + 16.0f, (float)-(pY + 16), 0.0f);
         RenderThisHeadup(pIcon->icon_actor);
     }
+#else
+    __asm {
+            sub esp, 0xc
+            push ebx
+            push esi
+            mov esi, dword ptr [esp + 0x18]
+            push edi
+            test esi, esi
+            mov ebx, edx
+            mov dword ptr [esp + 0xc], ecx
+            jne L004e085a
+            mov eax, dword ptr [esp + 0x20]
+            fild dword ptr [esp + 0xc]
+            mov ecx, dword ptr [eax + 0x90]
+            fsub dword ptr [gConst_kangeroo_force_factor+0x40]
+            mov byte ptr [ecx + 0x20], 4
+            mov edx, dword ptr [eax + 0x90]
+            mov ecx, 0xfffffff0
+            sub ecx, ebx
+            fstp dword ptr [edx + 0x50]
+            mov edx, dword ptr [eax + 0x90]
+            mov dword ptr [esp + 0x1c], ecx
+            fild dword ptr [esp + 0x1c]
+            fstp dword ptr [edx + 0x54]
+            mov ecx, dword ptr [eax + 0x90]
+            mov dword ptr [ecx + 0x58], esi
+            mov ecx, dword ptr [eax + 0x90]
+            call RenderThisHeadup
+            pop edi
+            pop esi
+            pop ebx
+            add esp, 0xc
+            ret 0x10
+    L004e085a:
+            mov eax, dword ptr [esi + 0x10]
+            test eax, eax
+            je L004e09c1
+            mov byte ptr [eax + 0x20], 4
+            mov eax, dword ptr [esp + 0x24]
+            test eax, eax
+            je L004e0955
+            mov edx, dword ptr [esp + 0x28]
+            mov ecx, dword ptr [esi + 0xc]
+            sub edx, ecx
+            mov dword ptr [esp + 0x14], 0
+            mov dword ptr [esp + 0x10], edx
+            mov eax, dword ptr [esi + 8]
+            fild qword ptr [esp + 0x10]
+            test eax, eax
+            fmul dword ptr [gConst_kangeroo_force_factor+0x44]
+            fstp dword ptr [esp + 0x1c]
+            jle L004e08d1
+            fld dword ptr [gFLOAT_0058ac20]
+            fsub dword ptr [esp + 0x1c]
+            push 0x3f800000
+            fst dword ptr [esp + 0x20]
+            fmul dword ptr [gConst_kangeroo_force_factor+0x48]
+            fsubr dword ptr [gFLOAT_0058ac20]
+            fstp dword ptr [esp + 0x24]
+            mov eax, dword ptr [esp + 0x24]
+            push eax
+            push eax
+            mov eax, dword ptr [esi + 0x10]
+            add eax, 0x2c
+            push eax
+            jmp L004e08f1
+    L004e08d1:
+            fld dword ptr [gConst_kangeroo_force_factor+0x4c]
+            fsub dword ptr [esp + 0x1c]
+            mov ecx, dword ptr [esi + 0x10]
+            push 0x3f800000
+            add ecx, 0x2c
+            fstp dword ptr [esp + 0x24]
+            mov eax, dword ptr [esp + 0x24]
+            push eax
+            push eax
+            push ecx
+    L004e08f1:
+            call BrMatrix34Scale
+            fld dword ptr [esp + 0x2c]
+            fmul dword ptr [gFLOAT_0058ac00]
+            add esp, 0x10
+            fsubr dword ptr [gFLOAT_0058ac20]
+            fmul dword ptr [gConst_kangeroo_force_factor+0x50]
+            call _ftol
+            mov edx, dword ptr [esi + 0x10]
+            push eax
+            add edx, 0x2c
+            push edx
+            call BrMatrix34PostRotateZ
+            fld dword ptr [gFLOAT_0058ac20]
+            fsub dword ptr [esp + 0x24]
+            mov eax, dword ptr [esi + 0x10]
+            add esp, 8
+            mov edi, dword ptr [eax + 0x1c]
+            fmul dword ptr [gConst_kangeroo_force_factor+0x54]
+            call _ftol
+            mov ecx, dword ptr [edi + 0x58]
+            push 0x40
+            shl eax, 0x10
+            push edi
+            mov dword ptr [ecx + 0xc], eax
+            call BrMaterialUpdate
+            add esp, 8
+            jmp L004e098a
+    L004e0955:
+            mov edx, dword ptr [esi + 0x10]
+            mov eax, dword ptr [edx + 0x1c]
+            mov ecx, dword ptr [eax + 0x58]
+            mov edx, dword ptr [ecx + 0xc]
+            mov dword ptr [ecx + 0xc], 0xff0000
+            mov ecx, dword ptr [eax + 0x58]
+            cmp edx, dword ptr [ecx + 0xc]
+            je L004e097b
+            push 0x40
+            push eax
+            call BrMaterialUpdate
+            add esp, 8
+    L004e097b:
+            mov edx, dword ptr [esi + 0x10]
+            add edx, 0x2c
+            push edx
+            call BrMatrix34Identity
+            add esp, 4
+    L004e098a:
+            fild dword ptr [esp + 0xc]
+            mov eax, dword ptr [esi + 0x10]
+            mov ecx, 0xfffffff0
+            sub ecx, ebx
+            fsub dword ptr [gConst_kangeroo_force_factor+0x40]
+            mov dword ptr [esp + 0x1c], ecx
+            fstp dword ptr [eax + 0x50]
+            fild dword ptr [esp + 0x1c]
+            mov edx, dword ptr [esi + 0x10]
+            fstp dword ptr [edx + 0x54]
+            mov eax, dword ptr [esi + 0x10]
+            mov dword ptr [eax + 0x58], 0
+            mov ecx, dword ptr [esi + 0x10]
+            call RenderThisHeadup
+    L004e09c1:
+            pop edi
+            pop esi
+            pop ebx
+            add esp, 0xc
+            ret 0x10
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004e09d0
-br_actor* C2_HOOK_FASTCALL CreateBillBoard(br_pixelmap* pTexture) {
+C2_NAKED br_actor* C2_HOOK_FASTCALL CreateBillBoard(br_pixelmap* pTexture) {
+#ifndef CARPOCALYPSE2_MATCHING
     br_actor* actor;
     br_material* material;
     br_model* model;
@@ -686,6 +1686,166 @@ br_actor* C2_HOOK_FASTCALL CreateBillBoard(br_pixelmap* pTexture) {
     BrMaterialAdd(material);
     BrModelAdd(model);
     return actor;
+#else
+    __asm {
+            sub esp, 0x10
+            push ebx
+            push ebp
+            mov ebp, ecx
+            xor eax, eax
+            push esi
+            push edi
+            mov ax, word ptr [ebp + 0x34]
+            push 2
+            mov dword ptr [esp + 0x18], eax
+            xor eax, eax
+            mov ax, word ptr [ebp + 0x36]
+            push 4
+            push offset gFrontend_QUIT+0xbc94
+            mov dword ptr [esp + 0x1c], eax
+            call BrModelAllocate
+            add esp, 0xc
+            mov esi, eax
+            push offset gFrontend_QUIT+0xbc80
+            call BrMaterialAllocate
+            add esp, 4
+            mov edi, eax
+            push 0
+            push 1
+            call BrActorAllocate
+            mov ebx, eax
+            xor ecx, ecx
+            add esp, 8
+            mov dword ptr [ebx + 0x14], 0x655a60
+            mov dword ptr [ebx + 0x18], esi
+            mov dword ptr [ebx + 0x1c], edi
+            mov byte ptr [ebx + 0x20], 4
+            mov eax, dword ptr [esi + 0xc]
+            mov word ptr [eax], cx
+            mov edx, dword ptr [esi + 0xc]
+            mov eax, 2
+            mov word ptr [edx + 2], 1
+            mov edx, dword ptr [esi + 0xc]
+            mov word ptr [edx + 4], ax
+            mov edx, dword ptr [esi + 0xc]
+            mov word ptr [edx + 0x28], ax
+            mov eax, dword ptr [esi + 0xc]
+            mov word ptr [eax + 0x2a], 3
+            mov edx, dword ptr [esi + 0xc]
+            mov word ptr [edx + 0x2c], cx
+            mov eax, dword ptr [esi + 0xc]
+            mov dword ptr [eax + 8], ecx
+            mov edx, dword ptr [esi + 0xc]
+            mov eax, dword ptr [esp + 0x14]
+            mov dword ptr [edx + 0x30], ecx
+            cdq
+            sub eax, edx
+            sar eax, 1
+            neg eax
+            mov dword ptr [esp + 0x18], eax
+            mov eax, dword ptr [esi + 8]
+            fild dword ptr [esp + 0x18]
+            _emit 0xd9
+        _emit 0x10
+            mov eax, dword ptr [esp + 0x10]
+            cdq
+            sub eax, edx
+            mov edx, dword ptr [esi + 8]
+            sar eax, 1
+            mov dword ptr [esp + 0x18], eax
+            fild dword ptr [esp + 0x18]
+            fst dword ptr [esp + 0x1c]
+            fstp dword ptr [edx + 4]
+            mov eax, dword ptr [esi + 8]
+            mov dword ptr [eax + 8], 0xc0000000
+            mov edx, dword ptr [esi + 8]
+            mov eax, dword ptr [esp + 0x10]
+            fstp dword ptr [edx + 0x28]
+            cdq
+            sub eax, edx
+            sar eax, 1
+            neg eax
+            mov dword ptr [esp + 0x18], eax
+            mov eax, dword ptr [esi + 8]
+            fild dword ptr [esp + 0x18]
+            fst dword ptr [eax + 0x2c]
+            mov edx, dword ptr [esi + 8]
+            mov dword ptr [edx + 0x30], 0xc0000000
+            mov eax, dword ptr [esp + 0x14]
+            push ebp
+            cdq
+            sub eax, edx
+            sar eax, 1
+            mov dword ptr [esp + 0x1c], eax
+            mov eax, dword ptr [esi + 8]
+            fild dword ptr [esp + 0x1c]
+            fst dword ptr [esp + 0x1c]
+            fstp dword ptr [eax + 0x50]
+            mov edx, dword ptr [esi + 8]
+            fstp dword ptr [edx + 0x54]
+            mov eax, dword ptr [esi + 8]
+            mov dword ptr [eax + 0x58], 0xc0000000
+            mov edx, dword ptr [esi + 8]
+            mov eax, dword ptr [esp + 0x1c]
+            mov dword ptr [edx + 0x78], eax
+            mov edx, dword ptr [esi + 8]
+            mov eax, dword ptr [esp + 0x20]
+            mov dword ptr [edx + 0x7c], eax
+            mov edx, dword ptr [esi + 8]
+            mov dword ptr [edx + 0x80], 0xc0000000
+            mov eax, dword ptr [esi + 8]
+            mov dword ptr [eax + 0xc], ecx
+            mov edx, dword ptr [esi + 8]
+            mov dword ptr [edx + 0x10], ecx
+            mov eax, dword ptr [esi + 8]
+            mov dword ptr [eax + 0x34], ecx
+            mov edx, dword ptr [esi + 8]
+            mov eax, 0x3f800000
+            mov dword ptr [edx + 0x38], eax
+            mov edx, dword ptr [esi + 8]
+            mov dword ptr [edx + 0x5c], eax
+            mov edx, dword ptr [esi + 8]
+            mov dword ptr [edx + 0x60], eax
+            mov edx, dword ptr [esi + 8]
+            mov dword ptr [edx + 0x84], eax
+            mov eax, dword ptr [esi + 8]
+            mov dword ptr [eax + 0x88], ecx
+            mov dword ptr [edi + 8], ecx
+            mov dword ptr [edi + 0x40], ebp
+            mov dword ptr [edi + 0x20], 0x2800
+            or byte ptr [esi + 0x20], 2
+            call BrMapAdd
+            add esp, 4
+            push edi
+            call BrMaterialAdd
+            add esp, 4
+            push esi
+            call BrModelAdd
+            add esp, 4
+            mov eax, ebx
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x10
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004e0c00

@@ -12,6 +12,10 @@
 
 static br_error parseTokenValue(br_lexer* l, br_token_value* tv, br_size_t size);
 
+#ifdef CARPOCALYPSE2_MATCHING
+extern void* C2_HOOK_CDECL BrResAllocate();
+extern br_token C2_HOOK_CDECL BrTokenCreate();
+#endif
 // FUNCTION: CARMA2_HW 0x0052d740
 br_tv_template* C2_HOOK_CDECL BrTVTemplateAllocate(void* res, br_tv_template_entry* entries, int n_entries) {
     br_tv_template* t;
@@ -42,7 +46,8 @@ void C2_HOOK_STDCALL templateResolveNames(br_tv_template* template) {
 }
 
 // FUNCTION: CARMA2_HW 0x0052d7f0
-void C2_HOOK_STDCALL templateMakeMap(br_tv_template* template) {
+void C2_NAKED C2_HOOK_STDCALL templateMakeMap(br_tv_template* template) {
+#ifndef CARPOCALYPSE2_MATCHING
     br_tv_template_entry* tp;
     br_int_32 min;
     br_int_32 max;
@@ -84,6 +89,129 @@ void C2_HOOK_STDCALL templateMakeMap(br_tv_template* template) {
             template->map_set_entry[e] = tp;
         }
     }
+#else
+    __asm {
+            push ebx
+            push esi
+            mov esi, dword ptr [esp + 0xc]
+            push edi
+            mov eax, dword ptr [esi + 0x18]
+            test eax, eax
+            jne L0052d827
+            mov eax, dword ptr [esi]
+            mov edi, dword ptr [esi + 4]
+            xor ebx, ebx
+            test eax, eax
+            jle L0052d827
+    L0052d809:
+            mov eax, dword ptr [edi + 4]
+            test eax, eax
+            je L0052d81d
+            push 0
+            push eax
+            call BrTokenCreate
+            add esp, 8
+            mov dword ptr [edi], eax
+    L0052d81d:
+            mov eax, dword ptr [esi]
+            add edi, 0x18
+            inc ebx
+            cmp ebx, eax
+            jl L0052d809
+    L0052d827:
+            mov eax, dword ptr [esi + 4]
+            mov edx, eax
+            mov edi, dword ptr [eax]
+            mov eax, dword ptr [esi]
+            test eax, eax
+            mov ecx, edi
+            jle L0052d850
+            mov ebx, eax
+    L0052d838:
+            mov eax, dword ptr [edx]
+            test eax, eax
+            je L0052d84a
+            cmp eax, ecx
+            jge L0052d844
+            mov ecx, eax
+    L0052d844:
+            cmp eax, edi
+            jle L0052d84a
+            mov edi, eax
+    L0052d84a:
+            add edx, 0x18
+            dec ebx
+            jne L0052d838
+    L0052d850:
+            mov edx, dword ptr [esi + 0x1c]
+            sub edi, ecx
+            inc edi
+            mov dword ptr [esi + 8], ecx
+            push 0x21
+            mov dword ptr [esi + 0xc], edi
+            lea ecx, [edi*8]
+            push ecx
+            push edx
+            call BrResAllocate
+            mov dword ptr [esi + 0x10], eax
+            lea eax, [eax + edi*4]
+            mov dword ptr [esi + 0x14], eax
+            add esp, 0xc
+            xor eax, eax
+            test edi, edi
+            jle L0052d899
+    L0052d87e:
+            mov ecx, dword ptr [esi + 0x10]
+            inc eax
+            cmp eax, edi
+            mov dword ptr [ecx + eax*4 - 4], 0
+            mov edx, dword ptr [esi + 0x14]
+            mov dword ptr [edx + eax*4 - 4], 0
+            jl L0052d87e
+    L0052d899:
+            mov eax, dword ptr [esi]
+            mov ecx, dword ptr [esi + 4]
+            xor edx, edx
+            test eax, eax
+            jle L0052d8d0
+            mov bl, 1
+    L0052d8a6:
+            mov eax, dword ptr [ecx]
+            test eax, eax
+            je L0052d8c6
+            sub eax, dword ptr [esi + 8]
+            test byte ptr [ecx + 0xc], bl
+            je L0052d8ba
+            mov edi, dword ptr [esi + 0x10]
+            mov dword ptr [edi + eax*4], ecx
+    L0052d8ba:
+            test byte ptr [ecx + 0xc], 2
+            je L0052d8c6
+            mov edi, dword ptr [esi + 0x14]
+            mov dword ptr [edi + eax*4], ecx
+    L0052d8c6:
+            mov eax, dword ptr [esi]
+            add ecx, 0x18
+            inc edx
+            cmp edx, eax
+            jl L0052d8a6
+    L0052d8d0:
+            pop edi
+            pop esi
+            pop ebx
+            ret 4
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 br_fixed_ls* C2_HOOK_STDCALL ConvertFloatToFixed(br_fixed_ls** pextra, br_float* src, br_int_32 count, br_size_t* pextra_space) {
@@ -676,7 +804,8 @@ br_error C2_HOOK_CDECL BrTokenValueQueryManySize(br_size_t* psize, br_token_valu
 }
 
 // FUNCTION: CARMA2_HW 0x0052e430
-br_error C2_HOOK_CDECL BrTokenValueQueryAll(br_token_value* buffer, br_size_t buffer_size, void* block, br_tv_template* template) {
+br_error C2_NAKED C2_HOOK_CDECL BrTokenValueQueryAll(br_token_value* buffer, br_size_t buffer_size, void* block, br_tv_template* template) {
+#ifndef CARPOCALYPSE2_MATCHING
     br_tv_template_entry* tp;
     int n;
     int e;
@@ -719,10 +848,121 @@ br_error C2_HOOK_CDECL BrTokenValueQueryAll(br_token_value* buffer, br_size_t bu
     }
     tv->t = BR_NULL_TOKEN;
     return 0;
+#else
+    __asm {
+            push ecx
+            push ebx
+            mov ebx, dword ptr [esp + 0x18]
+            push ebp
+            mov ebp, dword ptr [esp + 0x10]
+            mov eax, dword ptr [ebx + 0x18]
+            push esi
+            test eax, eax
+            push edi
+            mov dword ptr [esp + 0x18], ebp
+            jne L0052e471
+            mov eax, dword ptr [ebx]
+            mov esi, dword ptr [ebx + 4]
+            xor edi, edi
+            test eax, eax
+            jle L0052e471
+    L0052e453:
+            mov eax, dword ptr [esi + 4]
+            test eax, eax
+            je L0052e467
+            push 0
+            push eax
+            call BrTokenCreate
+            add esp, 8
+            mov dword ptr [esi], eax
+    L0052e467:
+            mov eax, dword ptr [ebx]
+            add esi, 0x18
+            inc edi
+            cmp edi, eax
+            jl L0052e453
+    L0052e471:
+            mov edx, dword ptr [ebx]
+            mov esi, dword ptr [ebx + 4]
+            test edx, edx
+            mov edi, 1
+            mov eax, esi
+            jle L0052e495
+            mov ecx, edx
+    L0052e483:
+            cmp dword ptr [eax], 0
+            je L0052e48f
+            test byte ptr [eax + 0xc], 4
+            je L0052e48f
+            inc edi
+    L0052e48f:
+            add eax, 0x18
+            dec ecx
+            jne L0052e483
+    L0052e495:
+            mov eax, dword ptr [esp + 0x1c]
+            lea ecx, [edi*8]
+            add ebp, ecx
+            cmp eax, ecx
+            mov dword ptr [esp + 0x10], ebp
+            jae L0052e4b5
+            mov eax, 0x1004
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            pop ecx
+            ret
+    L0052e4b5:
+            sub eax, ecx
+            xor edi, edi
+            test edx, edx
+            mov dword ptr [esp + 0x24], eax
+            jle L0052e4fc
+            mov ebp, dword ptr [esp + 0x20]
+    L0052e4c5:
+            mov eax, dword ptr [esi]
+            test eax, eax
+            je L0052e4f2
+            test byte ptr [esi + 0xc], 4
+            je L0052e4f2
+            mov ecx, dword ptr [esp + 0x18]
+            push esi
+            lea edx, [esp + 0x28]
+            push ebp
+            mov dword ptr [ecx], eax
+            lea eax, [esp + 0x18]
+            push edx
+            push eax
+            push ecx
+            call ValueQuery
+            test eax, eax
+            jne L0052e508
+            add dword ptr [esp + 0x18], 8
+    L0052e4f2:
+            mov eax, dword ptr [ebx]
+            add esi, 0x18
+            inc edi
+            cmp edi, eax
+            jl L0052e4c5
+    L0052e4fc:
+            mov ecx, dword ptr [esp + 0x18]
+            xor eax, eax
+            mov dword ptr [ecx], 0
+    L0052e508:
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            pop ecx
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0052e510
-br_error C2_HOOK_CDECL BrTokenValueQueryAllSize(br_size_t* psize, void* block, br_tv_template* template) {
+br_error C2_NAKED C2_HOOK_CDECL BrTokenValueQueryAllSize(br_size_t* psize, void* block, br_tv_template* template) {
+#ifndef CARPOCALYPSE2_MATCHING
     br_tv_template_entry* tp;
     int e;
     int n;
@@ -746,6 +986,79 @@ br_error C2_HOOK_CDECL BrTokenValueQueryAllSize(br_size_t* psize, void* block, b
     }
     *psize = extra_size + sizeof(br_token_value) * n;
     return 0;
+#else
+    __asm {
+            sub esp, 8
+            push ebx
+            push ebp
+            mov ebp, dword ptr [esp + 0x1c]
+            push esi
+            push edi
+            xor edi, edi
+            mov eax, dword ptr [ebp + 0x18]
+            mov dword ptr [esp + 0x14], 1
+            cmp eax, edi
+            mov dword ptr [esp + 0x10], edi
+            jne L0052e559
+            mov eax, dword ptr [ebp]
+            mov esi, dword ptr [ebp + 4]
+            cmp eax, edi
+            jle L0052e559
+    L0052e53a:
+            mov eax, dword ptr [esi + 4]
+            test eax, eax
+            je L0052e54e
+            push 0
+            push eax
+            call BrTokenCreate
+            add esp, 8
+            mov dword ptr [esi], eax
+    L0052e54e:
+            mov eax, dword ptr [ebp]
+            add esi, 0x18
+            inc edi
+            cmp edi, eax
+            jl L0052e53a
+    L0052e559:
+            mov eax, dword ptr [ebp]
+            mov esi, dword ptr [ebp + 4]
+            xor edi, edi
+            test eax, eax
+            jle L0052e593
+            mov ebx, dword ptr [esp + 0x20]
+    L0052e569:
+            cmp dword ptr [esi], 0
+            je L0052e588
+            test byte ptr [esi + 0xc], 4
+            je L0052e588
+            mov ecx, dword ptr [esp + 0x14]
+            push esi
+            inc ecx
+            push ebx
+            mov dword ptr [esp + 0x1c], ecx
+            call ValueExtraSize
+            add dword ptr [esp + 0x10], eax
+    L0052e588:
+            mov eax, dword ptr [ebp]
+            add esi, 0x18
+            inc edi
+            cmp edi, eax
+            jl L0052e569
+    L0052e593:
+            mov ecx, dword ptr [esp + 0x10]
+            mov edx, dword ptr [esp + 0x14]
+            pop edi
+            pop esi
+            lea eax, [ecx + edx*8]
+            mov ecx, dword ptr [esp + 0x14]
+            pop ebp
+            pop ebx
+            mov dword ptr [ecx], eax
+            xor eax, eax
+            add esp, 8
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0052e5b0

@@ -129,6 +129,35 @@ tU32 gNet_auto_increase_credits_dt[8];
 // GLOBAL: CARMA2_HW 0x0079eb00
 char gHeadup_oppo_ped_text[64];
 
+#ifdef CARPOCALYPSE2_MATCHING
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern tU32 C2_HOOK_FASTCALL GetTotalTime(void);
+extern tU32 C2_HOOK_FASTCALL PDGetTotalTime(void);
+extern tU32 gLast_replay_frame_time;
+extern tU32 gLast_tick_count;
+extern tNet_mode gNet_mode;
+extern int gPed_676914;
+extern tProgram_state gProgram_state;
+extern tU32 gRace_start;
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern br_uint_16 C2_HOOK_CDECL BrActorToActorMatrix34();
+extern br_scalar C2_HOOK_STDCALL FastScalarArcTan2(br_scalar pY, br_scalar pX);
+extern void C2_HOOK_FASTCALL PositionExternalCamera(tCar_spec* pCar_spec, tU32 pTime);
+extern void C2_HOOK_FASTCALL ResetPedNearness(void);
+extern br_actor* gCamera;
+extern float gCamera_to_horiz_angle;
+extern br_matrix34 gCamera_to_world;
+extern char gDouble_0058a068[];
+extern br_vector3* gOur_pos;
+extern br_actor* gPlayer_car_master_actor;
+extern br_actor* gRearview_camera;
+extern br_matrix34 gRearview_camera_to_world;
+extern br_actor* gUniverse_actor;
+extern br_scalar gYon_multiplier;
+extern float gYon_squared;
+#endif
 // FUNCTION: CARMA2_HW 0x00401170
 void C2_HOOK_FASTCALL MungeAIWorld(tU32 pFrame_period) {
 
@@ -149,7 +178,8 @@ void C2_HOOK_FASTCALL MungeAIWorld(tU32 pFrame_period) {
 }
 
 // FUNCTION: CARMA2_HW 0x004940e0
-void C2_HOOK_FASTCALL CalculateCameraStuff(tU32 pCamera_period) {
+void C2_NAKED C2_HOOK_FASTCALL CalculateCameraStuff(tU32 pCamera_period) {
+#ifndef CARPOCALYPSE2_MATCHING
     br_camera* camera;
     br_vector3 delta_camera;
 
@@ -166,6 +196,106 @@ void C2_HOOK_FASTCALL CalculateCameraStuff(tU32 pCamera_period) {
         ResetPedNearness();
     }
     BrVector3Copy(&gPrev_camera_position, (br_vector3*)gCamera_to_world.m[3]);
+#else
+    __asm {
+            sub esp, 8
+            mov eax, dword ptr [gPlayer_car_master_actor]
+            mov edx, ecx
+            add eax, 0x50
+            mov ecx, offset gProgram_state+0xac
+            mov dword ptr [gOur_pos], eax
+            call PositionExternalCamera
+            mov ecx, dword ptr [gUniverse_actor]
+            mov edx, dword ptr [gCamera]
+            push ecx
+            push edx
+            push offset gCamera_to_world
+            call BrActorToActorMatrix34
+            mov eax, dword ptr [gUniverse_actor]
+            mov ecx, dword ptr [gRearview_camera]
+            add esp, 0xc
+            push eax
+            push ecx
+            push offset gRearview_camera_to_world
+            call BrActorToActorMatrix34
+            mov edx, dword ptr [gCamera_to_world+0x10]
+            mov eax, dword ptr [gCamera_to_world+0x1c]
+            add esp, 0xc
+            push edx
+            push eax
+            call FastScalarArcTan2
+            fld dword ptr [gCamera_to_world+0x28]
+            fld dword ptr [gCamera_to_world+0x24]
+            fsub dword ptr [gPrev_camera_position]
+            fxch st(1)
+            fsub dword ptr [gPrev_camera_position+0x4]
+            fld dword ptr [gCamera_to_world+0x2c]
+            fsub dword ptr [gPrev_camera_position+0x8]
+            fxch st(2)
+            _emit 0xd9
+        _emit 0x54
+        _emit 0x24
+        _emit 0x00
+            fxch st(1)
+            fst dword ptr [esp + 4]
+            fxch st(1)
+            _emit 0xd8
+        _emit 0x4c
+        _emit 0x24
+        _emit 0x00
+            fxch st(1)
+            fmul dword ptr [esp + 4]
+            fxch st(2)
+            fst dword ptr [esp + 4]
+            fmul dword ptr [esp + 4]
+            fld dword ptr [gYon_multiplier]
+            fxch st(4)
+            fstp dword ptr [gCamera_to_horiz_angle]
+            mov ecx, dword ptr [gCamera]
+            fxch st(2)
+            faddp st(1), st(0)
+            fxch st(2)
+            fmul dword ptr [gYon_multiplier]
+            fxch st(1)
+            faddp st(2), st(0)
+            mov edx, dword ptr [ecx + 0x5c]
+            mov eax, dword ptr [edx + 0xc]
+            mov dword ptr [esp + 4], eax
+            fmul dword ptr [esp + 4]
+            fxch st(1)
+            fcomp qword ptr [gDouble_0058a068+0x2d0]
+            fmul dword ptr [esp + 4]
+            fnstsw ax
+            test ah, 0x41
+            fstp dword ptr [gYon_squared]
+            jne L004941db
+            call ResetPedNearness
+    L004941db:
+            mov ecx, dword ptr [gCamera_to_world+0x24]
+            mov edx, dword ptr [gCamera_to_world+0x28]
+            mov eax, dword ptr [gCamera_to_world+0x2c]
+            mov dword ptr [gPrev_camera_position], ecx
+            mov dword ptr [gPrev_camera_position+0x4], edx
+            mov dword ptr [gPrev_camera_position+0x8], eax
+            add esp, 8
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00494210
@@ -545,7 +675,8 @@ tRace_result C2_HOOK_FASTCALL MainGameLoop(void) {
                         GetMiscString(eMiscString_lap), gLap,gTotal_laps);
                     ChangeHeadupText(gLaps_headup, the_text);
                 }
-                if (gCurrent_race.race_spec->race_type > 3) { /* kRaceType_Smash or kRaceType_SmashNPed */
+                if (gCurrent_race.race_spec->race_type > 3) {
+ /* kRaceType_Smash or kRaceType_SmashNPed */
                     sprintf(the_text, "%s \xf8%d\xfa/\xf8%d",
                         GetMiscString(eMiscString_targets),
                         GetRuntimeVariable(gCurrent_race.race_spec->options.smash.var_smash_number),
@@ -754,7 +885,8 @@ tRace_result C2_HOOK_FASTCALL MainGameLoop(void) {
     if (gProgram_state.prog_status == eProg_game_ongoing) {
         ResetCarScreens();
     }
-    if (gAbandon_game && gNet_mode == eNet_mode_host && gRace_over_reason < 8 ) { /* FIXME: 8 == eRace_over_count */
+    if (gAbandon_game && gNet_mode == eNet_mode_host && gRace_over_reason < 8 ) {
+ /* FIXME: 8 == eRace_over_count */
         NetFinishRace(gCurrent_net_game, eRace_over_abandoned);
     }
     if (gPed_676914) {
@@ -821,7 +953,8 @@ tRace_result C2_HOOK_FASTCALL DoRace(void) {
 }
 
 // FUNCTION: CARMA2_HW 0x00492680
-void C2_HOOK_FASTCALL UpdateFramePeriod(tU32* pCamera_period) {
+void C2_NAKED C2_HOOK_FASTCALL UpdateFramePeriod(tU32* pCamera_period) {
+#ifndef CARPOCALYPSE2_MATCHING
     tU32 new_tick_count;
     tU32 new_camera_tick_count;
     int error;
@@ -892,6 +1025,161 @@ void C2_HOOK_FASTCALL UpdateFramePeriod(tU32* pCamera_period) {
     } else if (*pCamera_period > 1000) {
         *pCamera_period = 1000;
     }
+#else
+    __asm {
+            mov eax, dword ptr [gPed_676914]
+            push ebx
+            push ebp
+            push esi
+            test eax, eax
+            push edi
+            mov ebx, ecx
+            je L004926eb
+            mov ecx, dword ptr [gLast_replay_frame_time]
+            mov edx, dword ptr [gLast_tick_count]
+            mov eax, ecx
+            mov dword ptr [gLast_tick_count], ecx
+            sub eax, edx
+            cdq
+            xor eax, edx
+            sub eax, edx
+            mov dword ptr [gFrame_period], eax
+            call PDGetTotalTime
+            mov edi, eax
+            call GetTotalTime
+            mov ecx, dword ptr [gOld_camera_time]
+            mov esi, eax
+            test ecx, ecx
+            je L004926cd
+            mov eax, edi
+            sub eax, ecx
+            jmp L004926cf
+    L004926cd:
+            xor eax, eax
+    L004926cf:
+            mov dword ptr [ebx], eax
+            mov eax, dword ptr [gFrame_period]
+            test eax, eax
+            mov dword ptr [gOld_camera_time], edi
+            je L004927d5
+            mov dword ptr [ebx], eax
+            jmp L004927d0
+    L004926eb:
+            call PDGetTotalTime
+            mov edx, dword ptr [gFrame_period]
+            mov esi, eax
+            mov eax, dword ptr [gLast_tick_count]
+            mov ecx, esi
+            add eax, edx
+            mov edx, dword ptr [gActual_last_tick_count]
+            mov edi, esi
+            sub ecx, edx
+            sub edi, eax
+            cmp ecx, 0x1f4
+            mov dword ptr [gLast_tick_count], eax
+            mov dword ptr [gFrame_period], ecx
+            jbe L00492774
+            mov edx, dword ptr [gRace_start]
+            mov eax, esi
+            sub eax, edx
+            cmp eax, 0x7d0
+            jbe L00492774
+            mov eax, 0xcccccccd
+            mov dword ptr [gLast_tick_count], esi
+            mul dword ptr [gAverage_frame_period]
+            mov eax, dword ptr [gNet_mode]
+            mov ecx, edx
+            shr ecx, 3
+            test eax, eax
+            mov dword ptr [gFrame_period], ecx
+            je L00492774
+            sub eax, 2
+            je L00492774
+            dec eax
+            jne L00492774
+            mov ecx, dword ptr [gProgram_state+0xb4]
+            mov dword ptr [ecx + 0x49c], 0
+            mov ecx, dword ptr [gFrame_period]
+    L00492774:
+            mov eax, dword ptr [gAverage_frame_period]
+            mov ebp, dword ptr [gRace_start]
+            lea edx, [eax + eax*8]
+            mov eax, 0xcccccccd
+            mul edx
+            mov eax, esi
+            shr edx, 3
+            sub eax, ebp
+            add edx, ecx
+            cmp eax, 0x7d0
+            mov dword ptr [gAverage_frame_period], edx
+            jbe L004927b1
+            mov eax, 0xcccccccd
+            mul edx
+            mov ecx, edx
+            shr ecx, 3
+            mov dword ptr [gFrame_period], ecx
+    L004927b1:
+            lea eax, [edi + ecx]
+            test eax, eax
+            jg L004927c0
+            mov dword ptr [gLast_tick_count], esi
+            jmp L004927c8
+    L004927c0:
+            mov ecx, eax
+            mov dword ptr [gFrame_period], ecx
+    L004927c8:
+            mov dword ptr [ebx], ecx
+            mov dword ptr [gActual_last_tick_count], esi
+    L004927d0:
+            mov eax, dword ptr [gFrame_period]
+    L004927d5:
+            cmp eax, 0xa
+            jae L004927e6
+            mov dword ptr [gFrame_period], 0xa
+            jmp L004927f7
+    L004927e6:
+            cmp eax, 0x3e8
+            jbe L004927fd
+            mov dword ptr [gFrame_period], 0x3e8
+    L004927f7:
+            mov dword ptr [gLast_tick_count], esi
+    L004927fd:
+            mov eax, dword ptr [ebx]
+            cmp eax, 0xa
+            jae L0049280f
+            mov dword ptr [ebx], 0xa
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            ret
+    L0049280f:
+            cmp eax, 0x3e8
+            jbe L0049281c
+            mov dword ptr [ebx], 0x3e8
+    L0049281c:
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 
@@ -990,7 +1278,8 @@ void C2_HOOK_FASTCALL LoseOldestWastedMessage(void) {
 // LoseOldestWastedMassage
 
 // FUNCTION: CARMA2_HW 0x00492620
-void C2_HOOK_FASTCALL QueueWastedMessage(int pIndex) {
+void C2_NAKED C2_HOOK_FASTCALL QueueWastedMessage(int pIndex) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     if (gQueued_wasted_messages_count == CARPOCALYPSE2_ASIZE(gQueued_wasted_messages)) {
         int i;
@@ -1006,6 +1295,42 @@ void C2_HOOK_FASTCALL QueueWastedMessage(int pIndex) {
     }
     gQueued_wasted_messages[gQueued_wasted_messages_count] = pIndex;
     gQueued_wasted_messages_count++;
+#else
+    __asm {
+            mov eax, dword ptr [gQueued_wasted_messages_count]
+            push esi
+            cmp eax, 5
+            mov esi, ecx
+            jne L00492655
+            mov eax, offset gQueued_wasted_messages+0x4
+    L00492632:
+            mov ecx, dword ptr [eax]
+            mov dword ptr [eax - 4], ecx
+            add eax, 4
+            cmp eax, offset gCompletion_bonus_post_race
+            jl L00492632
+            mov dword ptr [gQueued_wasted_messages_count], 4
+            call GetTotalTime
+            mov dword ptr [gLast_wasted_message_start], eax
+    L00492655:
+            mov eax, dword ptr [gQueued_wasted_messages_count]
+            test eax, eax
+            jne L00492668
+            call GetTotalTime
+            mov dword ptr [gLast_wasted_message_start], eax
+    L00492668:
+            mov eax, dword ptr [gQueued_wasted_messages_count]
+            mov dword ptr [eax*4 + gQueued_wasted_messages], esi
+            inc eax
+            mov dword ptr [gQueued_wasted_messages_count], eax
+            pop esi
+            ret
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // MungeHeadups

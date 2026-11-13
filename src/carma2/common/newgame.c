@@ -38,9 +38,10 @@ tJoinable_game gGames_to_join[6];
 // GLOBAL: CARMA2_HW 0x00763960
 tNet_game_options gNet_settings[9];
 
+#ifdef CARPOCALYPSE2_MATCHING
+#endif
 // FUNCTION: CARMA2_HW 0x00468140
 void C2_HOOK_FASTCALL SetOptions(tNet_game_type pGame_type, tNet_game_options* pGame_options) {
-
     pGame_options->show_players_on_map = gNet_settings[0].show_players_on_map;
     pGame_options->enable_text_messages = gNet_settings[0].enable_text_messages;
     pGame_options->show_powerups_on_map = gNet_settings[0].show_powerups_on_map;
@@ -53,7 +54,6 @@ void C2_HOOK_FASTCALL SetOptions(tNet_game_type pGame_type, tNet_game_options* p
     pGame_options->race_sequence_type = gNet_settings[0].race_sequence_type;
     pGame_options->car_choice = gNet_settings[0].car_choice;
     pGame_options->starting_target = gNet_settings[pGame_type + 1].starting_target;
-
 }
 
 void C2_HOOK_FASTCALL SetGameTarget(tNet_game_type* pGame_type, tNet_game_options* pGame_options) {
@@ -91,7 +91,6 @@ tNet_game_options* gChosen_net_game_options;
 
 // FUNCTION: CARMA2_HW 0x00468d70
 int C2_HOOK_FASTCALL ChooseNetCar(tNet_game_details* pNet_game, tNet_game_options* pOptions, int* pCar_index, int pIm_the_host_so_fuck_off) {
-
     if (!pIm_the_host_so_fuck_off) {
         return 1;
     }

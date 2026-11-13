@@ -308,6 +308,80 @@ const char* gFunk_speed_control_names[2] = {
 /* FIXME: this might be a struct */
 
 #pragma auto_inline(off)
+#ifdef CARPOCALYPSE2_MATCHING
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char * C2_HOOK_FASTCALL GetALineAndDontArgue(FILE* pF, char* pS);
+extern int C2_HOOK_FASTCALL GetAnInt(FILE* pF);
+extern br_material* C2_HOOK_FASTCALL GetSimpleMaterial(char* pName, tRendererShadingType pShading_type);
+extern char _fgetpos[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char _fsetpos[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern tPhysics_joint* C2_HOOK_FASTCALL AllocatePhysicsJoint(int pCount_limits, int pType);
+extern br_actor* C2_HOOK_CDECL BrActorAdd();
+extern br_actor* C2_HOOK_CDECL BrActorAllocate();
+extern void C2_HOOK_CDECL BrActorFree();
+extern br_actor* C2_HOOK_CDECL BrActorLoad();
+extern br_actor* C2_HOOK_CDECL BrActorRemove();
+extern br_material* C2_HOOK_CDECL BrMaterialAdd();
+extern br_material* C2_HOOK_CDECL BrMaterialAllocate();
+extern void C2_HOOK_CDECL BrMaterialUpdate();
+extern void C2_HOOK_CDECL BrMatrix34Copy();
+extern void C2_HOOK_CDECL BrMatrix34Identity();
+extern void* C2_HOOK_CDECL BrMemAllocate();
+extern void* C2_HOOK_CDECL BrMemCalloc();
+extern br_model* C2_HOOK_CDECL BrModelAdd();
+extern br_model* C2_HOOK_CDECL BrModelAllocate();
+extern char* C2_HOOK_CDECL BrResStrDup();
+extern void C2_HOOK_FASTCALL ClosePackFileAndSetTiffLoading(tTWTVFS twt);
+extern intptr_t C2_HOOK_FASTCALL DRActorEnumRecurse(br_actor* pActor, br_actor_enum_cbfn* callback, void* arg);
+extern int C2_HOOK_FASTCALL DRStricmp(const char* p1, const char* p2);
+extern FILE* C2_HOOK_FASTCALL DRfopen(const char* pFilename, const char* pMode);
+extern void C2_HOOK_CDECL DoNotDprintf();
+extern void C2_NORETURN C2_HOOK_CDECL FatalError();
+extern int C2_HOOK_FASTCALL FindBestColourMatch(br_colour pColour);
+extern char * C2_HOOK_FASTCALL GetALineWithNoPossibleService(FILE* pF, char* pS);
+extern br_scalar C2_HOOK_FASTCALL GetAScalar(FILE* pF);
+extern void C2_HOOK_FASTCALL GetAString(FILE* pF, char* pString);
+extern void C2_HOOK_FASTCALL GetPairOfFloats(FILE* pF, float* pF1, float* pF2);
+extern void C2_HOOK_FASTCALL GetThreeFloats(FILE * pF, float* pF1, float* pF2, float* pF3);
+extern void C2_HOOK_FASTCALL GlorifyMaterial(br_material** pMaterials, int pCount, tRendererShadingType pShading);
+extern void C2_HOOK_FASTCALL LoadAllImagesInDirectory(tBrender_storage* pStorage_space, const char* path);
+extern void C2_HOOK_FASTCALL LoadAllMaterialsInDirectory(tBrender_storage* pStorage, const char* pPath, tRendererShadingType pShading);
+extern void C2_HOOK_FASTCALL LoadAllModelsInDirectory(tBrender_storage *pStorage, const char* pPath);
+extern void C2_HOOK_FASTCALL LoadAllShadeTablesInDirectory(tBrender_storage* pStorage, const char* pPath);
+extern tTWTVFS C2_HOOK_FASTCALL OpenPackFileAndSetTiffLoading(const char* path);
+extern void C2_NORETURN C2_HOOK_FASTCALL PDFatalError(const char* pThe_str);
+extern int C2_HOOK_FASTCALL PFfclose(FILE* pFile);
+extern int C2_HOOK_FASTCALL PFfeof(FILE* pFile);
+extern void C2_HOOK_FASTCALL PathCat(char* pDestn_str, const char* pStr_1, const char* pStr_2);
+extern void C2_HOOK_FASTCALL PossibleService(void);
+extern void C2_HOOK_FASTCALL PrintMemoryDump(int pFlags, char* pTitle);
+extern void C2_HOOK_FASTCALL ReadMechanicsShapes(tPhysics_shape** pShape, FILE* pF);
+extern void C2_HOOK_FASTCALL UpdateCollisionObject(tPhysics_object* pCollision_info);
+extern void __cdecl _ftol();
+extern tPath_name gApplication_path;
+extern int gCount_drone_forms;
+extern int gCount_drones;
+extern char gCurrent_load_directory[256];
+extern char gCurrent_load_name[256];
+extern char gDefault_drone_direction[];
+extern char gDouble_0058a068[];
+extern tBrender_storage gDroneStorage;
+extern tDrone_form gDrone_forms[64];
+extern float gDrone_render_zero;
+extern char gDrone_select_max_distance_squared[];
+extern tDrone_spec* gDrone_specs;
+extern const int gMini_map_glowing_line_animation_indices[5];
+extern char gNext_crush_actor_id[];
+extern br_actor* gNon_track_actor;
+extern char gPed_flags_0058f2e4[];
+#endif
 // FUNCTION: CARMA2_HW 0x00457590
 void C2_HOOK_FASTCALL ConfigureZombiePedSoundPath(void) {
     gPed_sound_path = "ZOMSOUND";
@@ -454,7 +528,6 @@ void C2_HOOK_FASTCALL WriteS8L(FILE* pF, tS8 pNumber) {
 
 // FUNCTION: CARMA2_HW 0x0048f9f0
 void C2_HOOK_FASTCALL SkipBytes(FILE* pF, int pBytes_to_skip) {
-
     PFfseek(pF, pBytes_to_skip, SEEK_CUR);
 }
 
@@ -468,7 +541,8 @@ tS32 C2_HOOK_FASTCALL MemReadS32(char** pPtr) {
 }
 
 // FUNCTION: CARMA2_HW 0x00490350
-void C2_HOOK_FASTCALL GetFiveScalars(FILE* pF, br_scalar* pS1, br_scalar* pS2, br_scalar* pS3, br_scalar* pS4, br_scalar* pS5) {
+void C2_NAKED C2_HOOK_FASTCALL GetFiveScalars(FILE* pF, br_scalar* pS1, br_scalar* pS2, br_scalar* pS3, br_scalar* pS4, br_scalar* pS5) {
+#ifndef CARPOCALYPSE2_MATCHING
     char s[256];
     char* str;
 
@@ -483,6 +557,92 @@ void C2_HOOK_FASTCALL GetFiveScalars(FILE* pF, br_scalar* pS1, br_scalar* pS2, b
     sscanf(str, "%f", pS4);
     str = strtok(NULL, "\t ,/");
     sscanf(str, "%f", pS5);
+#else
+    __asm {
+            sub esp, 0x114
+            push esi
+            push edi
+            mov esi, edx
+            mov edi, ecx
+            call PossibleService
+            lea edx, [esp + 0x1c]
+            mov ecx, edi
+            call GetALineWithNoPossibleService
+            lea eax, [esp + 0x1c]
+            push offset gPed_flags_0058f2e4+0x138
+            push eax
+            call strtok
+            add esp, 8
+            lea ecx, [esp + 0x18]
+            push ecx
+            push offset gMini_map_glowing_line_animation_indices+0x7dc
+            push eax
+            call sscanf
+            add esp, 0xc
+            push offset gPed_flags_0058f2e4+0x138
+            push 0
+            call strtok
+            add esp, 8
+            lea edx, [esp + 0x10]
+            push edx
+            push offset gMini_map_glowing_line_animation_indices+0x7dc
+            push eax
+            call sscanf
+            add esp, 0xc
+            push offset gPed_flags_0058f2e4+0x138
+            push 0
+            call strtok
+            add esp, 8
+            lea ecx, [esp + 8]
+            push ecx
+            push offset gMini_map_glowing_line_animation_indices+0x7dc
+            push eax
+            call sscanf
+            add esp, 0xc
+            push offset gPed_flags_0058f2e4+0x138
+            push 0
+            call strtok
+            add esp, 8
+            lea edx, [esp + 0xc]
+            push edx
+            push offset gMini_map_glowing_line_animation_indices+0x7dc
+            push eax
+            call sscanf
+            add esp, 0xc
+            push offset gPed_flags_0058f2e4+0x138
+            push 0
+            call strtok
+            add esp, 8
+            lea ecx, [esp + 0x14]
+            push ecx
+            push offset gMini_map_glowing_line_animation_indices+0x7dc
+            push eax
+            call sscanf
+            mov edx, dword ptr [esp + 0x24]
+            mov eax, dword ptr [esp + 0x12c]
+            fld dword ptr [esp + 0x1c]
+            mov ecx, dword ptr [esp + 0x130]
+            mov dword ptr [esi], edx
+            _emit 0xd9
+        _emit 0x18
+            fld dword ptr [esp + 0x14]
+            mov edx, dword ptr [esp + 0x134]
+            mov eax, dword ptr [esp + 0x138]
+            _emit 0xd9
+        _emit 0x19
+            fld dword ptr [esp + 0x18]
+            add esp, 0xc
+            _emit 0xd9
+        _emit 0x1a
+            fld dword ptr [esp + 0x14]
+            pop edi
+            pop esi
+            _emit 0xd9
+        _emit 0x18
+            add esp, 0x114
+            ret 0x10
+    }
+#endif
 }
 
 void C2_HOOK_FASTCALL GetFourFloats(FILE * pF, float* pF1, float* pF2, float* pF3, float* pF4) {
@@ -501,7 +661,8 @@ void C2_HOOK_FASTCALL GetFourFloats(FILE * pF, float* pF1, float* pF2, float* pF
 }
 
 // FUNCTION: CARMA2_HW 0x004b4ac0
-int C2_HOOK_FASTCALL DRfgetpos(FILE* pFile, fpos_t* pos) {
+int C2_NAKED C2_HOOK_FASTCALL DRfgetpos(FILE* pFile, fpos_t* pos) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     if ((uintptr_t)pFile >= CARPOCALYPSE2_ASIZE(gTwatVfsFiles)) {
         return fgetpos(pFile, pos);
@@ -509,11 +670,47 @@ int C2_HOOK_FASTCALL DRfgetpos(FILE* pFile, fpos_t* pos) {
     *(br_uint_64*)pos = (br_uint_64)gTwatVfsFiles[(uintptr_t)pFile].pos;
     gTwatVfsFiles[(uintptr_t)pFile].error = 0;
     return 0;
+#else
+    __asm {
+            push esi
+            cmp ecx, 0x33
+            mov esi, edx
+            jb L004b4ad4
+            push esi
+            push ecx
+            call fgetpos
+            add esp, 8
+            pop esi
+            ret
+    L004b4ad4:
+            shl ecx, 4
+            mov eax, dword ptr [ecx + gTwatVfsFiles+0x4]
+            lea ecx, [ecx + gTwatVfsFiles]
+            cdq
+            mov dword ptr [esi], eax
+            mov dword ptr [esi + 4], edx
+            mov dword ptr [ecx + 0xc], 0
+            xor eax, eax
+            pop esi
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004b4c40
 int C2_HOOK_FASTCALL DRferror(FILE* pFile) {
-
     if ((uintptr_t)pFile >= CARPOCALYPSE2_ASIZE(gTwatVfsFiles)) {
         return ferror(pFile);
     } else {
@@ -553,30 +750,30 @@ int C2_NAKED C2_HOOK_FASTCALL DRfgetc2(FILE* pFile) {
     return EOF;
 #else
     __asm {
-        cmp ecx, 0x33
-        jb drfgetc2_small
-        push ecx
-        call fgetc
-        add esp, 4
-        ret
-
-    drfgetc2_small:
-        shl ecx, 4
-        mov edx, dword ptr [ecx + gTwatVfsFiles + 4]
-        mov eax, dword ptr [ecx + gTwatVfsFiles + 8]
-        lea ecx, [ecx + gTwatVfsFiles]
-        cmp edx, eax
-        jb drfgetc2_read
-        or eax, 0xffffffff
-        mov dword ptr [ecx + 0xc], eax
-        ret
-
-    drfgetc2_read:
-        mov dword ptr [ecx + 0xc], 0
-        movsx eax, byte ptr [edx]
-        inc edx
-        mov dword ptr [ecx + 4], edx
-        ret
+            cmp ecx, 0x33
+            jb L004b48cf
+            push ecx
+            call fgetc
+            add esp, 4
+            ret
+    L004b48cf:
+            shl ecx, 4
+            mov edx, dword ptr [ecx + gTwatVfsFiles+0x4]
+            mov eax, dword ptr [ecx + gTwatVfsFiles+0x8]
+            lea ecx, [ecx + gTwatVfsFiles]
+            cmp edx, eax
+            jb L004b48ef
+            or eax, 0xffffffff
+            mov dword ptr [ecx + 0xc], eax
+            ret
+    L004b48ef:
+            mov dword ptr [ecx + 0xc], 0
+            movsx eax, byte ptr [edx]
+            inc edx
+            mov dword ptr [ecx + 4], edx
+            ret
+            nop
+            nop
     }
 #endif
 }
@@ -599,31 +796,29 @@ int C2_NAKED C2_HOOK_FASTCALL DRfsetpos(FILE* pF, fpos_t* pos) {
     return 0;
 #else
     __asm {
-        cmp ecx, 0x33
-        jb drfsetpos_small
-        push edx
-        push ecx
-        call fsetpos
-        add esp, 8
-        ret
-
-    drfsetpos_small:
-        shl ecx, 4
-        lea eax, [ecx + gTwatVfsFiles]
-        mov ecx, dword ptr [ecx + gTwatVfsFiles]
-        cmp edx, ecx
-        jb drfsetpos_fail
-        cmp edx, dword ptr [eax + 8]
-        ja drfsetpos_fail
-        mov dword ptr [eax + 4], edx
-        mov dword ptr [eax + 0xc], 0
-        xor eax, eax
-        ret
-
-    drfsetpos_fail:
-        mov dword ptr [eax + 0xc], 0xffffffff
-        or eax, 0xffffffff
-        ret
+            cmp ecx, 0x33
+            jb L004b4b40
+            push edx
+            push ecx
+            call fsetpos
+            add esp, 8
+            ret
+    L004b4b40:
+            shl ecx, 4
+            lea eax, [ecx + gTwatVfsFiles]
+            mov ecx, dword ptr [ecx + gTwatVfsFiles]
+            cmp edx, ecx
+            jb L004b4b65
+            cmp edx, dword ptr [eax + 8]
+            ja L004b4b65
+            mov dword ptr [eax + 4], edx
+            mov dword ptr [eax + 0xc], 0
+            xor eax, eax
+            ret
+    L004b4b65:
+            mov dword ptr [eax + 0xc], 0xffffffff
+            or eax, 0xffffffff
+            ret
     }
 #endif
 }
@@ -748,13 +943,11 @@ void C2_HOOK_FASTCALL LoadHeadups(FILE* pF, int pIndex, tCar_spec* pCar_spec) {
 
 // FUNCTION: CARMA2_HW 0x0048f6a0
 int C2_HOOK_FASTCALL OriginalCarmaCDinDrive(void) {
-
     return gCD_is_in_drive;
 }
 
 // FUNCTION: CARMA2_HW 0x0048f6b0
 int C2_HOOK_FASTCALL CarmaCDinDriveOrFullGameInstalled(void) {
-
     if (gCD_fully_installed) {
         return 1;
     } else {
@@ -789,7 +982,6 @@ br_pixelmap* C2_HOOK_FASTCALL DRPixelmapLoad(char* pFile_name) {
 
 // FUNCTION: CARMA2_HW 0x0048d0e0
 void C2_HOOK_FASTCALL FillInRaceInfo(tRace_info* pThe_race) {
-
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tProgram_state, track_file_name, 0x1a1e);
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tRace_info, race_spec, 0x98);
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tRace_list_spec, file_name, 0x60);
@@ -966,7 +1158,8 @@ void C2_HOOK_FASTCALL LoadDroneTypeInfo(const char* pDrone_name) {
 }
 
 // FUNCTION: CARMA2_HW 0x0044ed10
-void C2_HOOK_FASTCALL LoadPanGameDroneInfo(void) {
+void C2_NAKED C2_HOOK_FASTCALL LoadPanGameDroneInfo(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     int version;
     FILE* f;
     tPath_name the_path;
@@ -999,6 +1192,894 @@ void C2_HOOK_FASTCALL LoadPanGameDroneInfo(void) {
         }
         PFfclose(f);
     }
+#else
+    __asm {
+            sub esp, 0x41c
+            push ebx
+            push ebp
+            push esi
+            push edi
+            mov edi, offset gApplication_path
+            or ecx, 0xffffffff
+            xor eax, eax
+            lea edx, [esp + 0x22c]
+            repne scasb
+            not ecx
+            sub edi, ecx
+            push offset gDefault_drone_direction+0x5f0
+            mov eax, ecx
+            mov esi, edi
+            mov edi, edx
+            lea edx, [esp + 0x230]
+            shr ecx, 2
+            rep movsd
+            mov ecx, eax
+            and ecx, 3
+            rep movsb
+            lea ecx, [esp + 0x230]
+            call PathCat
+            lea edx, [esp + 0x22c]
+            lea ecx, [esp + 0x22c]
+            push offset gDefault_drone_direction+0x5e4
+            call PathCat
+            mov edx, offset gNext_crush_actor_id+0x180
+            lea ecx, [esp + 0x22c]
+            call DRfopen
+            mov ebp, eax
+            test ebp, ebp
+            mov dword ptr [esp + 0x1c], ebp
+            jne L0044eda3
+            lea ecx, [esp + 0x22c]
+            push ecx
+            push 0xaf
+            call FatalError
+            add esp, 8
+    L0044eda3:
+            lea edx, [esp + 0x2c]
+            mov ecx, ebp
+            call GetALineAndDontArgue
+            lea edx, [esp + 0x2c]
+            push offset gPed_flags_0058f2e4+0x138
+            push edx
+            call strtok
+            add esp, 8
+            mov esi, offset gDefault_drone_direction+0x5dc
+            lea eax, [esp + 0x2c]
+    L0044edc9:
+            mov dl, byte ptr [eax]
+            mov bl, byte ptr [esi]
+            mov cl, dl
+            cmp dl, bl
+            jne L0044edf1
+            test cl, cl
+            je L0044eded
+            mov dl, byte ptr [eax + 1]
+            mov bl, byte ptr [esi + 1]
+            mov cl, dl
+            cmp dl, bl
+            jne L0044edf1
+            add eax, 2
+            add esi, 2
+            test cl, cl
+            jne L0044edc9
+    L0044eded:
+            xor eax, eax
+            jmp L0044edf6
+    L0044edf1:
+            sbb eax, eax
+            sbb eax, -1
+    L0044edf6:
+            test eax, eax
+            jne L0044ee2a
+            push offset gPed_flags_0058f2e4+0x138
+            push eax
+            call strtok
+            add esp, 8
+            lea ecx, [esp + 0x28]
+            push ecx
+            push offset gPed_flags_0058f2e4+0x134
+            push eax
+            call sscanf
+            add esp, 0xc
+            cmp eax, 1
+            je L0044ee3f
+            lea edx, [esp + 0x22c]
+            push edx
+            jmp L0044ee32
+    L0044ee2a:
+            lea eax, [esp + 0x22c]
+            push eax
+    L0044ee32:
+            push 0xaf
+            call FatalError
+            add esp, 8
+    L0044ee3f:
+            mov ecx, 0x880
+            xor eax, eax
+            mov edi, offset gDrone_forms
+            lea edx, [esp + 0x2c]
+            rep stosd
+            mov ecx, ebp
+            mov dword ptr [gCount_drone_forms], 0
+            call GetALineAndDontArgue
+            cmp dword ptr [gCount_drone_forms], 0x40
+            jge L0044f623
+    L0044ee6f:
+            mov esi, offset gDefault_drone_direction+0x5cc
+            lea eax, [esp + 0x2c]
+    L0044ee78:
+            mov dl, byte ptr [eax]
+            mov bl, byte ptr [esi]
+            mov cl, dl
+            cmp dl, bl
+            jne L0044eea0
+            test cl, cl
+            je L0044ee9c
+            mov dl, byte ptr [eax + 1]
+            mov bl, byte ptr [esi + 1]
+            mov cl, dl
+            cmp dl, bl
+            jne L0044eea0
+            add eax, 2
+            add esi, 2
+            test cl, cl
+            jne L0044ee78
+    L0044ee9c:
+            xor eax, eax
+            jmp L0044eea5
+    L0044eea0:
+            sbb eax, eax
+            sbb eax, -1
+    L0044eea5:
+            test eax, eax
+            je L0044f623
+            mov ecx, ebp
+            call PFfeof
+            test eax, eax
+            jne L0044f623
+            mov edi, offset gApplication_path
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            sub edi, ecx
+            lea edx, [esp + 0x32c]
+            mov eax, ecx
+            mov esi, edi
+            mov edi, edx
+            push offset gDefault_drone_direction+0x5f0
+            shr ecx, 2
+            rep movsd
+            mov ecx, eax
+            lea edx, [esp + 0x330]
+            and ecx, 3
+            mov dword ptr [esp + 0x24], 0xffffffff
+            rep movsb
+            lea ecx, [esp + 0x330]
+            call PathCat
+            lea ecx, [esp + 0x2c]
+            lea edx, [esp + 0x32c]
+            push ecx
+            lea ecx, [esp + 0x330]
+            call PathCat
+            lea ecx, [esp + 0x32c]
+            call OpenPackFileAndSetTiffLoading
+            lea ecx, [esp + 0x2c]
+            mov dword ptr [esp + 0x24], eax
+            call OpenDroneFile
+            mov edi, eax
+            mov eax, dword ptr [gCount_drone_forms]
+            mov edx, eax
+            mov ecx, edi
+            shl edx, 4
+            add edx, eax
+            mov dword ptr [esp + 0x10], edi
+            lea ebp, [edx*8 + gDrone_forms]
+            lea edx, [esp + 0x12c]
+            mov dword ptr [esp + 0x14], ebp
+            call GetALineAndDontArgue
+            lea eax, [esp + 0x12c]
+            push offset gPed_flags_0058f2e4+0x138
+            push eax
+            call strtok
+            add esp, 8
+            mov esi, offset gDefault_drone_direction+0x5dc
+            lea eax, [esp + 0x12c]
+    L0044ef80:
+            mov dl, byte ptr [eax]
+            mov bl, byte ptr [esi]
+            mov cl, dl
+            cmp dl, bl
+            jne L0044efa8
+            test cl, cl
+            je L0044efa4
+            mov dl, byte ptr [eax + 1]
+            mov bl, byte ptr [esi + 1]
+            mov cl, dl
+            cmp dl, bl
+            jne L0044efa8
+            add eax, 2
+            add esi, 2
+            test cl, cl
+            jne L0044ef80
+    L0044efa4:
+            xor eax, eax
+            jmp L0044efad
+    L0044efa8:
+            sbb eax, eax
+            sbb eax, -1
+    L0044efad:
+            test eax, eax
+            jne L0044efde
+            push offset gPed_flags_0058f2e4+0x138
+            push eax
+            call strtok
+            add esp, 8
+            lea ecx, [esp + 0x18]
+            push ecx
+            push offset gPed_flags_0058f2e4+0x134
+            push eax
+            call sscanf
+            add esp, 0xc
+            cmp eax, 1
+            je L0044eff0
+            lea edx, [esp + 0x2c]
+            push edx
+            jmp L0044efe3
+    L0044efde:
+            lea eax, [esp + 0x2c]
+            push eax
+    L0044efe3:
+            push 0xaf
+            call FatalError
+            add esp, 8
+    L0044eff0:
+            cmp dword ptr [esp + 0x18], 2
+            jge L0044f009
+            lea ecx, [esp + 0x2c]
+            push ecx
+            push 0xaf
+            call FatalError
+            add esp, 8
+    L0044f009:
+            lea edx, [esp + 0x12c]
+            mov ecx, edi
+            call GetALineAndDontArgue
+            lea edx, [esp + 0x12c]
+            push offset gPed_flags_0058f2e4+0x138
+            push edx
+            call strtok
+            add esp, 8
+            mov esi, eax
+            lea ecx, [esp + 0x2c]
+    L0044f032:
+            mov dl, byte ptr [ecx]
+            mov bl, byte ptr [esi]
+            mov al, dl
+            cmp dl, bl
+            jne L0044f05a
+            test al, al
+            je L0044f056
+            mov dl, byte ptr [ecx + 1]
+            mov bl, byte ptr [esi + 1]
+            mov al, dl
+            cmp dl, bl
+            jne L0044f05a
+            add ecx, 2
+            add esi, 2
+            test al, al
+            jne L0044f032
+    L0044f056:
+            xor eax, eax
+            jmp L0044f05f
+    L0044f05a:
+            sbb eax, eax
+            sbb eax, -1
+    L0044f05f:
+            test eax, eax
+            je L0044f075
+            lea eax, [esp + 0x2c]
+            push eax
+            push 0xaf
+            call FatalError
+            add esp, 8
+    L0044f075:
+            lea ecx, [esp + 0x2c]
+            push 0xc
+            push ecx
+            push ebp
+            call strncpy
+            add esp, 0xc
+            lea edx, [esp + 0x12c]
+            mov ecx, edi
+            call GetALineAndDontArgue
+            lea edx, [esp + 0x12c]
+            push offset gPed_flags_0058f2e4+0x138
+            push edx
+            call strtok
+            add esp, 8
+            xor ebp, ebp
+            mov edi, offset gDrone_type_names
+    L0044f0af:
+            mov ecx, dword ptr [edi]
+            mov esi, eax
+    L0044f0b3:
+            mov bl, byte ptr [ecx]
+            mov dl, bl
+            cmp bl, byte ptr [esi]
+            jne L0044f0d7
+            test dl, dl
+            je L0044f0d3
+            mov bl, byte ptr [ecx + 1]
+            mov dl, bl
+            cmp bl, byte ptr [esi + 1]
+            jne L0044f0d7
+            add ecx, 2
+            add esi, 2
+            test dl, dl
+            jne L0044f0b3
+    L0044f0d3:
+            xor ecx, ecx
+            jmp L0044f0dc
+    L0044f0d7:
+            sbb ecx, ecx
+            sbb ecx, -1
+    L0044f0dc:
+            test ecx, ecx
+            je L0044f0f0
+            add edi, 4
+            inc ebp
+            cmp edi, offset gGroove_funk_type_names
+            jl L0044f0af
+            mov ebp, dword ptr [esp + 0x20]
+    L0044f0f0:
+            test ebp, ebp
+            jge L0044f10c
+            lea eax, [esp + 0x2c]
+            push eax
+            push 0xaf
+            call FatalError
+            mov ebx, dword ptr [esp + 0x1c]
+            add esp, 8
+            jmp L0044f113
+    L0044f10c:
+            mov ebx, dword ptr [esp + 0x14]
+            mov dword ptr [ebx + 0x10], ebp
+    L0044f113:
+            mov esi, dword ptr [esp + 0x10]
+            mov ecx, esi
+            call GetAScalar
+            lea ecx, [ebx + 0x38]
+            lea edx, [ebx + 0x34]
+            push ecx
+            push edx
+            fstp dword ptr [ebx + 0x14]
+            lea edx, [ebx + 0x30]
+            mov ecx, esi
+            call GetThreeFloats
+            lea edx, [esp + 0x12c]
+            mov ecx, esi
+            call GetALineAndDontArgue
+            lea eax, [esp + 0x12c]
+            push offset gPed_flags_0058f2e4+0x138
+            push eax
+            call strtok
+            mov edi, eax
+            add esp, 8
+            mov esi, offset gDefault_drone_direction+0x5c4
+            mov ecx, edi
+    L0044f15f:
+            mov al, byte ptr [ecx]
+            mov dl, al
+            cmp al, byte ptr [esi]
+            jne L0044f183
+            test dl, dl
+            je L0044f17f
+            mov al, byte ptr [ecx + 1]
+            mov dl, al
+            cmp al, byte ptr [esi + 1]
+            jne L0044f183
+            add ecx, 2
+            add esi, 2
+            test dl, dl
+            jne L0044f15f
+    L0044f17f:
+            xor ecx, ecx
+            jmp L0044f188
+    L0044f183:
+            sbb ecx, ecx
+            sbb ecx, -1
+    L0044f188:
+            test ecx, ecx
+            jne L0044f196
+            mov eax, dword ptr [ebx + 0x2c]
+            or al, 1
+            mov dword ptr [ebx + 0x2c], eax
+            jmp L0044f1e6
+    L0044f196:
+            mov esi, offset gDefault_drone_direction+0x5bc
+            mov eax, edi
+    L0044f19d:
+            mov dl, byte ptr [eax]
+            mov cl, dl
+            cmp dl, byte ptr [esi]
+            jne L0044f1c1
+            test cl, cl
+            je L0044f1bd
+            mov dl, byte ptr [eax + 1]
+            mov cl, dl
+            cmp dl, byte ptr [esi + 1]
+            jne L0044f1c1
+            add eax, 2
+            add esi, 2
+            test cl, cl
+            jne L0044f19d
+    L0044f1bd:
+            xor eax, eax
+            jmp L0044f1c6
+    L0044f1c1:
+            sbb eax, eax
+            sbb eax, -1
+    L0044f1c6:
+            test eax, eax
+            jne L0044f1d4
+            mov eax, dword ptr [ebx + 0x2c]
+            and al, 0xfe
+            mov dword ptr [ebx + 0x2c], eax
+            jmp L0044f1e6
+    L0044f1d4:
+            lea eax, [esp + 0x2c]
+            push eax
+            push 0xaf
+            call FatalError
+            add esp, 8
+    L0044f1e6:
+            mov ecx, dword ptr [esp + 0x10]
+            lea edx, [esp + 0x12c]
+            call GetALineAndDontArgue
+            lea ecx, [esp + 0x12c]
+            push offset gPed_flags_0058f2e4+0x138
+            push ecx
+            call strtok
+            mov edi, eax
+            add esp, 8
+            mov esi, offset gDefault_drone_direction+0x5b0
+            mov ecx, edi
+    L0044f214:
+            mov al, byte ptr [ecx]
+            mov dl, al
+            cmp al, byte ptr [esi]
+            jne L0044f238
+            test dl, dl
+            je L0044f234
+            mov al, byte ptr [ecx + 1]
+            mov dl, al
+            cmp al, byte ptr [esi + 1]
+            jne L0044f238
+            add ecx, 2
+            add esi, 2
+            test dl, dl
+            jne L0044f214
+    L0044f234:
+            xor ecx, ecx
+            jmp L0044f23d
+    L0044f238:
+            sbb ecx, ecx
+            sbb ecx, -1
+    L0044f23d:
+            test ecx, ecx
+            jne L0044f251
+            mov esi, dword ptr [esp + 0x10]
+            mov ecx, esi
+            call GetAScalar
+            fstp dword ptr [ebx + 0x18]
+            jmp L0044f2c6
+    L0044f251:
+            mov esi, offset gDefault_drone_direction+0x5a4
+            mov eax, edi
+    L0044f258:
+            mov dl, byte ptr [eax]
+            mov cl, dl
+            cmp dl, byte ptr [esi]
+            jne L0044f27c
+            test cl, cl
+            je L0044f278
+            mov dl, byte ptr [eax + 1]
+            mov cl, dl
+            cmp dl, byte ptr [esi + 1]
+            jne L0044f27c
+            add eax, 2
+            add esi, 2
+            test cl, cl
+            jne L0044f258
+    L0044f278:
+            xor eax, eax
+            jmp L0044f281
+    L0044f27c:
+            sbb eax, eax
+            sbb eax, -1
+    L0044f281:
+            test eax, eax
+            jne L0044f2b0
+            mov esi, dword ptr [esp + 0x10]
+            mov dword ptr [ebx + 0x18], 0xbf800000
+            mov ecx, esi
+            call GetAScalar
+            fstp dword ptr [ebx + 0x24]
+            mov ecx, esi
+            call GetAScalar
+            fstp dword ptr [ebx + 0x20]
+            mov ecx, esi
+            call GetAScalar
+            fstp dword ptr [ebx + 0x1c]
+            jmp L0044f2c6
+    L0044f2b0:
+            lea eax, [esp + 0x2c]
+            push eax
+            push 0xaf
+            call FatalError
+            mov esi, dword ptr [esp + 0x18]
+            add esp, 8
+    L0044f2c6:
+            mov ecx, esi
+            call GetAScalar
+            fcom dword ptr [gDrone_render_zero]
+            fstp dword ptr [ebx + 0x28]
+            fnstsw ax
+            test ah, 0x40
+            jne L0044f307
+            lea ecx, [ebx + 0x40]
+            lea edx, [ebx + 0x3c]
+            push ecx
+            mov ecx, esi
+            call GetPairOfFloats
+            lea edx, [ebx + 0x48]
+            mov ecx, esi
+            push edx
+            lea edx, [ebx + 0x44]
+            call GetPairOfFloats
+            lea eax, [ebx + 0x50]
+            lea edx, [ebx + 0x4c]
+            push eax
+            mov ecx, esi
+            call GetPairOfFloats
+    L0044f307:
+            lea edx, [esp + 0x12c]
+            mov ecx, esi
+            call GetALineAndDontArgue
+            lea ecx, [esp + 0x12c]
+            push offset gPed_flags_0058f2e4+0x138
+            push ecx
+            call strtok
+            mov edi, eax
+            add esp, 8
+            mov esi, offset gDefault_drone_direction+0x59c
+            mov ecx, edi
+    L0044f333:
+            mov al, byte ptr [ecx]
+            mov dl, al
+            cmp al, byte ptr [esi]
+            jne L0044f357
+            test dl, dl
+            je L0044f353
+            mov al, byte ptr [ecx + 1]
+            mov dl, al
+            cmp al, byte ptr [esi + 1]
+            jne L0044f357
+            add ecx, 2
+            add esi, 2
+            test dl, dl
+            jne L0044f333
+    L0044f353:
+            xor ecx, ecx
+            jmp L0044f35c
+    L0044f357:
+            sbb ecx, ecx
+            sbb ecx, -1
+    L0044f35c:
+            test ecx, ecx
+            jne L0044f36a
+            mov eax, dword ptr [ebx + 0x2c]
+            or al, 2
+            mov dword ptr [ebx + 0x2c], eax
+            jmp L0044f3ba
+    L0044f36a:
+            mov esi, offset gDefault_drone_direction+0x590
+            mov eax, edi
+    L0044f371:
+            mov dl, byte ptr [eax]
+            mov cl, dl
+            cmp dl, byte ptr [esi]
+            jne L0044f395
+            test cl, cl
+            je L0044f391
+            mov dl, byte ptr [eax + 1]
+            mov cl, dl
+            cmp dl, byte ptr [esi + 1]
+            jne L0044f395
+            add eax, 2
+            add esi, 2
+            test cl, cl
+            jne L0044f371
+    L0044f391:
+            xor eax, eax
+            jmp L0044f39a
+    L0044f395:
+            sbb eax, eax
+            sbb eax, -1
+    L0044f39a:
+            test eax, eax
+            jne L0044f3a8
+            mov eax, dword ptr [ebx + 0x2c]
+            and al, 0xfd
+            mov dword ptr [ebx + 0x2c], eax
+            jmp L0044f3ba
+    L0044f3a8:
+            lea eax, [esp + 0x2c]
+            push eax
+            push 0xaf
+            call FatalError
+            add esp, 8
+    L0044f3ba:
+            mov ecx, dword ptr [esp + 0x10]
+            lea edx, [esp + 0x12c]
+            call GetALineAndDontArgue
+            lea ecx, [esp + 0x12c]
+            push offset gPed_flags_0058f2e4+0x138
+            push ecx
+            call strtok
+            mov edi, eax
+            add esp, 8
+            mov esi, offset gDefault_drone_direction+0x584
+            mov ecx, edi
+    L0044f3e8:
+            mov al, byte ptr [ecx]
+            mov dl, al
+            cmp al, byte ptr [esi]
+            jne L0044f40c
+            test dl, dl
+            je L0044f408
+            mov al, byte ptr [ecx + 1]
+            mov dl, al
+            cmp al, byte ptr [esi + 1]
+            jne L0044f40c
+            add ecx, 2
+            add esi, 2
+            test dl, dl
+            jne L0044f3e8
+    L0044f408:
+            xor ecx, ecx
+            jmp L0044f411
+    L0044f40c:
+            sbb ecx, ecx
+            sbb ecx, -1
+    L0044f411:
+            test ecx, ecx
+            jne L0044f41f
+            mov eax, dword ptr [ebx + 0x2c]
+            or al, 0x10
+            mov dword ptr [ebx + 0x2c], eax
+            jmp L0044f46f
+    L0044f41f:
+            mov esi, offset gDefault_drone_direction+0x57c
+            mov eax, edi
+    L0044f426:
+            mov dl, byte ptr [eax]
+            mov cl, dl
+            cmp dl, byte ptr [esi]
+            jne L0044f44a
+            test cl, cl
+            je L0044f446
+            mov dl, byte ptr [eax + 1]
+            mov cl, dl
+            cmp dl, byte ptr [esi + 1]
+            jne L0044f44a
+            add eax, 2
+            add esi, 2
+            test cl, cl
+            jne L0044f426
+    L0044f446:
+            xor eax, eax
+            jmp L0044f44f
+    L0044f44a:
+            sbb eax, eax
+            sbb eax, -1
+    L0044f44f:
+            test eax, eax
+            jne L0044f45d
+            mov eax, dword ptr [ebx + 0x2c]
+            and al, 0xef
+            mov dword ptr [ebx + 0x2c], eax
+            jmp L0044f46f
+    L0044f45d:
+            lea eax, [esp + 0x2c]
+            push eax
+            push 0xaf
+            call FatalError
+            add esp, 8
+    L0044f46f:
+            mov ecx, dword ptr [esp + 0x10]
+            lea edx, [esp + 0x12c]
+            call GetALineAndDontArgue
+            lea ecx, [esp + 0x12c]
+            push offset gPed_flags_0058f2e4+0x138
+            push ecx
+            call strtok
+            mov edi, eax
+            add esp, 8
+            mov esi, offset gDefault_drone_direction+0x574
+            mov ecx, edi
+    L0044f49d:
+            mov al, byte ptr [ecx]
+            mov dl, al
+            cmp al, byte ptr [esi]
+            jne L0044f4c1
+            test dl, dl
+            je L0044f4bd
+            mov al, byte ptr [ecx + 1]
+            mov dl, al
+            cmp al, byte ptr [esi + 1]
+            jne L0044f4c1
+            add ecx, 2
+            add esi, 2
+            test dl, dl
+            jne L0044f49d
+    L0044f4bd:
+            xor ecx, ecx
+            jmp L0044f4c6
+    L0044f4c1:
+            sbb ecx, ecx
+            sbb ecx, -1
+    L0044f4c6:
+            test ecx, ecx
+            jne L0044f4d4
+            mov eax, dword ptr [ebx + 0x2c]
+            or al, 4
+            mov dword ptr [ebx + 0x2c], eax
+            jmp L0044f524
+    L0044f4d4:
+            mov esi, offset gDefault_drone_direction+0x568
+            mov eax, edi
+    L0044f4db:
+            mov dl, byte ptr [eax]
+            mov cl, dl
+            cmp dl, byte ptr [esi]
+            jne L0044f4ff
+            test cl, cl
+            je L0044f4fb
+            mov dl, byte ptr [eax + 1]
+            mov cl, dl
+            cmp dl, byte ptr [esi + 1]
+            jne L0044f4ff
+            add eax, 2
+            add esi, 2
+            test cl, cl
+            jne L0044f4db
+    L0044f4fb:
+            xor eax, eax
+            jmp L0044f504
+    L0044f4ff:
+            sbb eax, eax
+            sbb eax, -1
+    L0044f504:
+            test eax, eax
+            jne L0044f512
+            mov eax, dword ptr [ebx + 0x2c]
+            and al, 0xfb
+            mov dword ptr [ebx + 0x2c], eax
+            jmp L0044f524
+    L0044f512:
+            lea eax, [esp + 0x2c]
+            push eax
+            push 0xaf
+            call FatalError
+            add esp, 8
+    L0044f524:
+            mov ecx, dword ptr [ebx + 0x2c]
+            mov ebp, 0xfffffff7
+            and ecx, ebp
+            mov dword ptr [ebx + 0x2c], ecx
+            mov eax, dword ptr [esp + 0x18]
+            cmp eax, 3
+            jl L0044f5ee
+            mov ecx, dword ptr [esp + 0x10]
+            lea edx, [esp + 0x12c]
+            call GetALineAndDontArgue
+            lea ecx, [esp + 0x12c]
+            push offset gPed_flags_0058f2e4+0x138
+            push ecx
+            call strtok
+            mov edi, eax
+            add esp, 8
+            mov esi, offset gDefault_drone_direction+0x55c
+            mov ecx, edi
+    L0044f56c:
+            mov al, byte ptr [ecx]
+            mov dl, al
+            cmp al, byte ptr [esi]
+            jne L0044f590
+            test dl, dl
+            je L0044f58c
+            mov al, byte ptr [ecx + 1]
+            mov dl, al
+            cmp al, byte ptr [esi + 1]
+            jne L0044f590
+            add ecx, 2
+            add esi, 2
+            test dl, dl
+            jne L0044f56c
+    L0044f58c:
+            xor ecx, ecx
+            jmp L0044f595
+    L0044f590:
+            sbb ecx, ecx
+            sbb ecx, -1
+    L0044f595:
+            test ecx, ecx
+            jne L0044f5a3
+            mov eax, dword ptr [ebx + 0x2c]
+            or al, 8
+            mov dword ptr [ebx + 0x2c], eax
+            jmp L0044f5ee
+    L0044f5a3:
+            mov esi, offset gDefault_drone_direction+0x54c
+            mov eax, edi
+    L0044f5aa:
+            mov dl, byte ptr [eax]
+            mov cl, dl
+            cmp dl, byte ptr [esi]
+            jne L0044f5ce
+            test cl, cl
+            je L0044f5ca
+            mov dl, byte ptr [eax + 1]
+            mov cl, dl
+            cmp dl, byte ptr [esi + 1]
+            jne L0044f5ce
+            add eax, 2
+            add esi, 2
+            test cl, cl
+            jne L0044f5aa
+    L0044f5ca:
+            xor eax, eax
+            jmp L0044f5d3
+    L0044f5ce:
+            sbb eax, eax
+            sbb eax, -1
+    L0044f5d3:
+            test eax, eax
+            jne L0044f5dc
+            and dword ptr [ebx + 0x2c], ebp
+            jmp L0044f5ee
+    L0044f5dc:
+            lea eax, [esp + 0x2c]
+            push eax
+            push 0xaf
+            call FatalError
+            add esp, 8
+    L0044f5ee:
+            mov ecx, dword ptr [esp + 0x10]
+            call PFfclose
+            mov ecx, dword ptr [esp + 0x24]
+            call ClosePackFileAndSetTiffLoading
+            mov ebp, dword ptr [esp + 0x1c]
+            lea edx, [esp + 0x2c]
+            mov ecx, ebp
+            call GetALineAndDontArgue
+            mov eax, dword ptr [gCount_drone_forms]
+            inc eax
+            cmp eax, 0x40
+            mov dword ptr [gCount_drone_forms], eax
+            jl L0044ee6f
+    L0044f623:
+            mov ecx, ebp
+            call PFfclose
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x41c
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0048c860
@@ -1021,7 +2102,6 @@ void C2_HOOK_FASTCALL LoadRaceInfo(int pRace_index, tRace_info* pRace_info) {
 
 // FUNCTION: CARMA2_HW 0x004a9600
 void C2_HOOK_FASTCALL LoadCopCars(tRace_info* pRace_info) {
-
     gProgram_state.AI_vehicles.number_of_cops = 0;
 }
 
@@ -1349,7 +2429,6 @@ void C2_HOOK_FASTCALL GetDamageProgram(FILE* pF, tCar_spec* pCar_spec, tImpact_l
 
 // FUNCTION: CARMA2_HW 0x004f6740
 void C2_HOOK_FASTCALL LoadCarMaterials(tBrender_storage* pStorage, const char* pPath, tCar_spec* pCar_spec) {
-
     gMaterial_shading_for_callback = kRendererShadingType_Specular;
     gStorage_for_callbacks = pStorage;
     pCar_spec->old_material_count = pStorage->materials_count;
@@ -1380,7 +2459,8 @@ void C2_HOOK_FASTCALL SmoothlySetCarMaterialFlags(tBrender_storage* pStorage, tC
 #pragma auto_inline(on)
 
 // FUNCTION: CARMA2_HW 0x00488f00
-void C2_HOOK_FASTCALL LoadCarShrapnelMaterials(FILE* pF, tCar_spec* pCar_spec) {
+void C2_NAKED C2_HOOK_FASTCALL LoadCarShrapnelMaterials(FILE* pF, tCar_spec* pCar_spec) {
+#ifndef CARPOCALYPSE2_MATCHING
     int i;
     char s[256];
 
@@ -1394,7 +2474,63 @@ void C2_HOOK_FASTCALL LoadCarShrapnelMaterials(FILE* pF, tCar_spec* pCar_spec) {
         GetALineAndDontArgue(pF, s);
         pCar_spec->shrapnel_materials[i] = GetSimpleMaterial(s, (pCar_spec == NULL || pCar_spec->driver < 6) ? 1 : 2);
     }
-
+#else
+    __asm {
+            sub esp, 0x100
+            push ebx
+            push ebp
+            push esi
+            mov esi, edx
+            mov ebp, ecx
+            call GetAnInt
+            xor ebx, ebx
+            mov dword ptr [esi + 0x6c], eax
+            test eax, eax
+            jle L00488f5a
+            push edi
+            lea edi, [esi + 0x84]
+    L00488f22:
+            lea edx, [esp + 0x10]
+            mov ecx, ebp
+            call GetALineAndDontArgue
+            test esi, esi
+            je L00488f3e
+            mov eax, dword ptr [esi + 0xc]
+            mov edx, 2
+            cmp eax, 5
+            jg L00488f43
+    L00488f3e:
+            mov edx, 1
+    L00488f43:
+            lea ecx, [esp + 0x10]
+            call GetSimpleMaterial
+            mov dword ptr [edi], eax
+            mov eax, dword ptr [esi + 0x6c]
+            inc ebx
+            add edi, 4
+            cmp ebx, eax
+            jl L00488f22
+            pop edi
+    L00488f5a:
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x100
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00488f70
@@ -2615,7 +3751,8 @@ void C2_HOOK_FASTCALL ReadMechanics(FILE* pF, tCar_spec* c, int pSpec_version) {
 }
 
 // FUNCTION: CARMA2_HW 0x00488dd0
-br_material* C2_HOOK_FASTCALL GetSimpleMaterial(char* pName, tRendererShadingType pShading_type) {
+C2_NAKED br_material* C2_HOOK_FASTCALL GetSimpleMaterial(char* pName, tRendererShadingType pShading_type) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     int i;
     br_colour colour;
@@ -2655,6 +3792,128 @@ br_material* C2_HOOK_FASTCALL GetSimpleMaterial(char* pName, tRendererShadingTyp
     GlorifyMaterial(&gSimple_materials[i], 1, pShading_type);
     BrMaterialAdd(gSimple_materials[i]);
     return gSimple_materials[i];
+#else
+    __asm {
+            sub esp, 0xc
+            push ebx
+            push ebp
+            push esi
+            mov esi, ecx
+            push edi
+            mov ebp, edx
+            cmp byte ptr [esi], 0x4d
+            jne L00488e46
+            push offset gPed_flags_0058f2e4+0x138
+            push esi
+            call strtok
+            movsx eax, byte ptr [esi + 1]
+            movsx ecx, byte ptr [esi + 2]
+            lea edx, [eax + eax*4]
+            mov eax, dword ptr [gSimple_material_colours]
+            add esp, 8
+            xor esi, esi
+            test eax, eax
+            lea edx, [ecx + edx*2 - 0x210]
+            je L00488e22
+            mov ecx, offset gSimple_material_colours
+    L00488e10:
+            shr eax, 0x18
+            cmp eax, edx
+            je L00488e22
+            mov eax, dword ptr [ecx + 4]
+            add ecx, 4
+            inc esi
+            test eax, eax
+            jne L00488e10
+    L00488e22:
+            mov eax, dword ptr [esi*4 + gSimple_material_colours]
+            test eax, eax
+            jne L00488e37
+            mov ecx, offset gNet_avail_names+0x67c
+            call PDFatalError
+    L00488e37:
+            mov ebx, dword ptr [esi*4 + gSimple_material_colours]
+            and ebx, 0xffffff
+            jmp L00488e79
+    L00488e46:
+            lea eax, [esp + 0x18]
+            lea ecx, [esp + 0x14]
+            push eax
+            lea edx, [esp + 0x14]
+            push ecx
+            push edx
+            push offset gNet_avail_names+0x670
+            push esi
+            call sscanf
+            mov ebx, dword ptr [esp + 0x24]
+            mov edx, dword ptr [esp + 0x28]
+            mov eax, dword ptr [esp + 0x2c]
+            add esp, 0x14
+            shl ebx, 8
+            or ebx, edx
+            shl ebx, 8
+            or ebx, eax
+    L00488e79:
+            mov eax, dword ptr [gSimple_materials]
+            xor edi, edi
+            test eax, eax
+            je L00488e99
+            mov ecx, offset gSimple_materials
+    L00488e89:
+            cmp dword ptr [eax + 8], ebx
+            je L00488ee4
+            mov eax, dword ptr [ecx + 4]
+            add ecx, 4
+            inc edi
+            test eax, eax
+            jne L00488e89
+    L00488e99:
+            cmp edi, 0x20
+            jge L00488ee4
+            push offset gNet_avail_names+0x668
+            call BrMaterialAllocate
+            lea esi, [edi*4 + gSimple_materials]
+            add esp, 4
+            mov dword ptr [esi], eax
+            mov dword ptr [eax + 8], ebx
+            mov eax, dword ptr [esi]
+            mov ecx, dword ptr [eax + 8]
+            call FindBestColourMatch
+            mov ecx, dword ptr [esi]
+            push ebp
+            mov byte ptr [ecx + 0x3c], al
+            mov edx, dword ptr [esi]
+            mov ecx, esi
+            mov byte ptr [edx + 0x3d], 0
+            mov edx, 1
+            call GlorifyMaterial
+            mov eax, dword ptr [esi]
+            push eax
+            call BrMaterialAdd
+            add esp, 4
+    L00488ee4:
+            mov eax, dword ptr [edi*4 + gSimple_materials]
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0xc
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 void C2_HOOK_FASTCALL GetAVector(FILE* pF, br_vector3* pV) {
@@ -2703,17 +3962,16 @@ int C2_HOOK_CDECL ActorModelAttachCrushData(br_actor* pActor, void* pData) {
 
 // FUNCTION: CARMA2_HW 0x0042a210
 void C2_HOOK_FASTCALL AttachCrushDataToActorModels(br_actor* pActor, tCar_spec* pCar_spec) {
-
     DRActorEnumRecurse(pActor, ActorModelAttachCrushData, pCar_spec);
 }
 
 // FUNCTION: CARMA2_HW 0x00486d60
 void C2_HOOK_FASTCALL MungeLightingEffects(void) {
-
 }
 
 // FUNCTION: CARMA2_HW 0x00487ec0
-void C2_HOOK_FASTCALL ReadNonCarMechanicsData(FILE* pF, tNon_car_spec* pNon_car_spec) {
+void C2_NAKED C2_HOOK_FASTCALL ReadNonCarMechanicsData(FILE* pF, tNon_car_spec* pNon_car_spec) {
+#ifndef CARPOCALYPSE2_MATCHING
     int index_version;
     int extra_point_num;
     int i;
@@ -2990,6 +4248,904 @@ void C2_HOOK_FASTCALL ReadNonCarMechanicsData(FILE* pF, tNon_car_spec* pNon_car_
             }
         }
     }
+#else
+    __asm {
+            sub esp, 0x264
+            push ebx
+            push ebp
+            mov ebp, edx
+            push esi
+            push edi
+            mov ebx, ecx
+            mov dword ptr [ebp + 0xc], 0
+            call GetAnInt
+            cmp eax, 0x64
+            mov dword ptr [esp + 0x34], eax
+            jge L004881fd
+            mov dword ptr [ebp], eax
+            lea eax, [esp + 0x14]
+            lea ecx, [esp + 0x10]
+            push eax
+            push ecx
+            lea edx, [esp + 0x28]
+            mov ecx, ebx
+            call GetThreeFloats
+            mov edx, dword ptr [ebp + 8]
+            mov eax, dword ptr [esp + 0x20]
+            mov dword ptr [edx + 0x14], eax
+            mov ecx, dword ptr [ebp + 8]
+            mov edx, dword ptr [esp + 0x10]
+            mov dword ptr [ecx + 0x18], edx
+            mov eax, dword ptr [ebp + 8]
+            mov ecx, dword ptr [esp + 0x14]
+            lea edx, [esp + 0x28]
+            mov dword ptr [eax + 0x1c], ecx
+            lea eax, [esp + 0x2c]
+            push edx
+            push eax
+            lea edx, [esp + 0x38]
+            mov ecx, ebx
+            call GetThreeFloats
+            lea ecx, [esp + 0x14]
+            lea edx, [esp + 0x10]
+            push ecx
+            push edx
+            lea edx, [esp + 0x28]
+            mov ecx, ebx
+            call GetThreeFloats
+            mov eax, dword ptr [esp + 0x20]
+            mov ecx, dword ptr [esp + 0x10]
+            mov edx, dword ptr [esp + 0x14]
+            mov dword ptr [esp + 0x50], eax
+            mov dword ptr [esp + 0x54], ecx
+            lea eax, [esp + 0x14]
+            lea ecx, [esp + 0x10]
+            push eax
+            mov dword ptr [esp + 0x5c], edx
+            push ecx
+            lea edx, [esp + 0x28]
+            mov ecx, ebx
+            call GetThreeFloats
+            mov ecx, dword ptr [esp + 0x14]
+            mov edx, dword ptr [esp + 0x20]
+            mov eax, dword ptr [esp + 0x10]
+            mov dword ptr [esp + 0x64], ecx
+            mov ecx, ebx
+            mov dword ptr [esp + 0x5c], edx
+            mov dword ptr [esp + 0x60], eax
+            call GetAnInt
+            mov esi, eax
+            cmp esi, 6
+            jle L00487fc5
+            mov edx, dword ptr [ebp]
+            lea eax, [esp + 0x174]
+            push edx
+            push offset gPed_flags_0058f2e4+0x134
+            push eax
+            call sprintf
+            add esp, 0xc
+            lea ecx, [esp + 0x174]
+            push ecx
+            push 0x5d
+            call FatalError
+            add esp, 8
+    L00487fc5:
+            test esi, esi
+            jle L00487fe1
+    L00487fc9:
+            lea edx, [esp + 0x3c]
+            lea eax, [esp + 0x44]
+            push edx
+            push eax
+            lea edx, [esp + 0x48]
+            mov ecx, ebx
+            call GetThreeFloats
+            dec esi
+            jne L00487fc9
+    L00487fe1:
+            lea ecx, [esp + 0x10]
+            lea edx, [esp + 0x20]
+            push ecx
+            mov ecx, ebx
+            call GetPairOfFloats
+            fld dword ptr [esp + 0x10]
+            fld dword ptr [esp + 0x20]
+            lea edx, [esp + 0x18]
+            lea eax, [esp + 0x10]
+            fstp dword ptr [ebp + 0xcc]
+            push edx
+            push eax
+            fstp dword ptr [ebp + 0xd0]
+            lea edx, [esp + 0x24]
+            mov ecx, ebx
+            call GetThreeFloats
+            mov ecx, ebx
+            call GetAScalar
+            fst dword ptr [esp + 0x14]
+            fmul qword ptr [gDouble_0058a068+0x1c8]
+            call _ftol
+            and eax, 0xffff
+            mov ecx, ebx
+            mov dword ptr [esp + 0x20], eax
+            fild dword ptr [esp + 0x20]
+            fld dword ptr [esp + 0x14]
+            fmul qword ptr [gDouble_0058a068+0x1d8]
+            fxch st(1)
+            fmul qword ptr [gDouble_0058a068+0x1d0]
+            fcos
+            fld st(1)
+            fmul st(0), st(2)
+            fxch st(1)
+            fstp st(2)
+            fxch st(1)
+            fstp dword ptr [ebp + 0xd8]
+            fstp dword ptr [ebp + 0x18]
+            call GetAScalar
+            fld dword ptr [esp + 0x10]
+            fld dword ptr [esp + 0x18]
+            fxch st(2)
+            fst dword ptr [esp + 0x20]
+            fmul dword ptr [gDouble_0058a068+0x1e0]
+            fld dword ptr [esp + 0x1c]
+            fxch st(2)
+            fmul dword ptr [esp + 0x10]
+            fxch st(3)
+            fmul dword ptr [esp + 0x18]
+            fxch st(2)
+            fmul dword ptr [esp + 0x1c]
+            fxch st(1)
+            fst dword ptr [esp + 0x18]
+            fxch st(3)
+            fst dword ptr [esp + 0x1c]
+            fxch st(2)
+            fst dword ptr [esp + 0x10]
+            fld dword ptr [esp + 0x10]
+            fxch st(4)
+            fmul dword ptr [esp + 0x18]
+            fxch st(4)
+            fadd dword ptr [esp + 0x1c]
+            fxch st(2)
+            fstp dword ptr [esp + 0x10]
+            fxch st(2)
+            fadd dword ptr [esp + 0x10]
+            fxch st(2)
+            fadd dword ptr [esp + 0x10]
+            fxch st(1)
+            fmul dword ptr [gDouble_0058a068+0x1e4]
+            fxch st(2)
+            fmul dword ptr [gDouble_0058a068+0x1e4]
+            fxch st(1)
+            fmul dword ptr [gDouble_0058a068+0x1e4]
+            fxch st(3)
+            fst dword ptr [esp + 0x10]
+            fstp dword ptr [ebp + 0xd4]
+            push 0xf7
+            push 0x50
+            fstp dword ptr [ebp + 0xec]
+            fxch st(1)
+            fstp dword ptr [ebp + 0xe8]
+            fstp dword ptr [ebp + 0xe4]
+            call BrMemAllocate
+            mov ecx, dword ptr [ebp + 8]
+            add esp, 8
+            fld dword ptr [esp + 0x14]
+            fcomp dword ptr [gDouble_0058a068+0x1e8]
+            mov dword ptr [ecx + 0x20], eax
+            mov edx, dword ptr [ebp + 8]
+            mov ecx, 6
+            lea esi, [esp + 0x50]
+            mov edi, dword ptr [edx + 0x20]
+            fnstsw ax
+            add edi, 4
+            test ah, 0x40
+            rep movsd
+            jne L004881d2
+            mov edx, 0xdb
+            mov ecx, 1
+            call AllocatePhysicsJoint
+            mov ecx, dword ptr [ebp + 8]
+            mov dword ptr [ecx + 0x18c], eax
+            mov eax, dword ptr [ebp + 8]
+            mov edx, dword ptr [eax + 0x18c]
+            mov dword ptr [ebp + 0xf0], edx
+            mov eax, dword ptr [eax + 0x18c]
+            mov dword ptr [eax], 3
+            mov ecx, dword ptr [ebp + 8]
+            mov eax, dword ptr [esp + 0x30]
+            mov edx, dword ptr [ecx + 0x18c]
+            mov dword ptr [edx + 8], eax
+            mov ecx, dword ptr [ebp + 8]
+            mov eax, dword ptr [esp + 0x2c]
+            mov edx, dword ptr [ecx + 0x18c]
+            mov dword ptr [edx + 0xc], eax
+            mov ecx, dword ptr [ebp + 8]
+            mov eax, dword ptr [esp + 0x28]
+            mov edx, dword ptr [ecx + 0x18c]
+            mov dword ptr [edx + 0x10], eax
+            mov ecx, dword ptr [ebp + 8]
+            mov edx, dword ptr [ecx + 0x18c]
+            mov dword ptr [edx + 0x50], 1
+            mov eax, dword ptr [ebp + 8]
+            mov ecx, dword ptr [eax + 0x18c]
+            mov dword ptr [ecx + 0x54], 0xa
+            mov edx, dword ptr [ebp + 8]
+            mov ecx, dword ptr [esp + 0x10]
+            mov eax, dword ptr [edx + 0x18c]
+            mov dword ptr [eax + 0x58], ecx
+    L004881d2:
+            mov ecx, dword ptr [ebp + 8]
+            call UpdateCollisionObject
+            mov edx, dword ptr [ebp + 8]
+            mov eax, dword ptr [ebp + 0x10]
+            mov ecx, 6
+            mov dword ptr [edx], eax
+            mov ebp, dword ptr [ebp + 8]
+            lea esi, [ebp + 0x24]
+            lea edi, [ebp + 0x3c]
+            rep movsd
+    L004881f2:
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x264
+            ret
+    L004881fd:
+            mov ecx, ebx
+            call GetAScalar
+            call _ftol
+            lea ecx, [esp + 0x30]
+            lea edx, [esp + 0x2c]
+            push ecx
+            push edx
+            lea edx, [esp + 0x30]
+            mov ecx, ebx
+            mov dword ptr [ebp], eax
+            call GetThreeFloats
+            mov eax, dword ptr [ebp + 8]
+            mov ecx, dword ptr [esp + 0x28]
+            mov dword ptr [eax + 0x14], ecx
+            mov edx, dword ptr [ebp + 8]
+            mov eax, dword ptr [esp + 0x2c]
+            mov dword ptr [edx + 0x18], eax
+            mov ecx, dword ptr [ebp + 8]
+            mov edx, dword ptr [esp + 0x30]
+            lea eax, [esp + 0x38]
+            mov dword ptr [ecx + 0x1c], edx
+            lea ecx, [esp + 0x20]
+            push eax
+            push ecx
+            lea edx, [esp + 0x38]
+            mov ecx, ebx
+            call GetThreeFloats
+            mov ecx, dword ptr [ebp + 8]
+            mov edx, ebx
+            add ecx, 0x20
+            call ReadMechanicsShapes
+            lea edx, [esp + 0x2c]
+            mov ecx, ebx
+            push edx
+            lea edx, [esp + 0x2c]
+            call GetPairOfFloats
+            lea edx, [esp + 0x18]
+            mov eax, dword ptr [esp + 0x28]
+            mov ecx, dword ptr [esp + 0x2c]
+            mov dword ptr [ebp + 0xcc], eax
+            lea eax, [esp + 0x10]
+            mov dword ptr [ebp + 0xd0], ecx
+            push edx
+            push eax
+            lea edx, [esp + 0x24]
+            mov ecx, ebx
+            call GetThreeFloats
+            mov ecx, ebx
+            call GetAScalar
+            fst dword ptr [esp + 0x14]
+            fmul qword ptr [gDouble_0058a068+0x1c8]
+            call _ftol
+            and eax, 0xffff
+            mov ecx, ebx
+            mov dword ptr [esp + 0x28], eax
+            fild dword ptr [esp + 0x28]
+            fmul qword ptr [gDouble_0058a068+0x1d0]
+            fcos
+            fstp dword ptr [ebp + 0xd8]
+            fld dword ptr [esp + 0x14]
+            fmul qword ptr [gDouble_0058a068+0x1d8]
+            fld st(0)
+            fmul st(0), st(1)
+            fstp dword ptr [ebp + 0x18]
+            fstp st(0)
+            call GetAScalar
+            fld dword ptr [esp + 0x10]
+            fld dword ptr [esp + 0x18]
+            fxch st(2)
+            fmul dword ptr [gDouble_0058a068+0x1e0]
+            fld dword ptr [esp + 0x1c]
+            fxch st(2)
+            fmul dword ptr [esp + 0x10]
+            fxch st(3)
+            fmul dword ptr [esp + 0x18]
+            fxch st(2)
+            fmul dword ptr [esp + 0x1c]
+            fld dword ptr [esp + 0x14]
+            fxch st(2)
+            fst dword ptr [esp + 0x10]
+            fxch st(4)
+            fst dword ptr [esp + 0x14]
+            fxch st(3)
+            fxch st(4)
+            fxch st(3)
+            fxch st(2)
+            fxch st(1)
+            fld st(4)
+            fxch st(4)
+            fmul dword ptr [esp + 0x10]
+            fstp dword ptr [esp + 0x18]
+            fxch st(4)
+            fadd dword ptr [esp + 0x14]
+            fxch st(1)
+            fcomp dword ptr [gDouble_0058a068+0x1e8]
+            fxch st(3)
+            fstp dword ptr [esp + 0x10]
+            mov ecx, dword ptr [esp + 0x18]
+            fadd dword ptr [esp + 0x10]
+            fxch st(1)
+            fadd dword ptr [esp + 0x10]
+            fxch st(2)
+            fmul dword ptr [gDouble_0058a068+0x1e4]
+            fxch st(1)
+            fmul dword ptr [gDouble_0058a068+0x1e4]
+            fxch st(2)
+            fmul dword ptr [gDouble_0058a068+0x1e4]
+            fxch st(2)
+            fstp dword ptr [ebp + 0xec]
+            fxch st(1)
+            fstp dword ptr [ebp + 0xe8]
+            fnstsw ax
+            mov dword ptr [ebp + 0xd4], ecx
+            fstp dword ptr [ebp + 0xe4]
+            test ah, 0x40
+            jne L00488425
+            mov edx, 0xdb
+            mov ecx, 1
+            call AllocatePhysicsJoint
+            mov edx, dword ptr [ebp + 8]
+            mov dword ptr [edx + 0x18c], eax
+            mov eax, dword ptr [ebp + 8]
+            mov ecx, dword ptr [eax + 0x18c]
+            mov dword ptr [ebp + 0xf0], ecx
+            mov edx, dword ptr [eax + 0x18c]
+            mov dword ptr [edx], 3
+            mov eax, dword ptr [ebp + 8]
+            mov edx, dword ptr [esp + 0x30]
+            mov ecx, dword ptr [eax + 0x18c]
+            mov dword ptr [ecx + 8], edx
+            mov eax, dword ptr [ebp + 8]
+            mov edx, dword ptr [esp + 0x20]
+            mov ecx, dword ptr [eax + 0x18c]
+            mov dword ptr [ecx + 0xc], edx
+            mov eax, dword ptr [ebp + 8]
+            mov edx, dword ptr [esp + 0x38]
+            mov ecx, dword ptr [eax + 0x18c]
+            mov dword ptr [ecx + 0x10], edx
+            mov eax, dword ptr [ebp + 8]
+            mov ecx, dword ptr [eax + 0x18c]
+            mov dword ptr [ecx + 0x50], 1
+            mov edx, dword ptr [ebp + 8]
+            mov eax, dword ptr [edx + 0x18c]
+            mov dword ptr [eax + 0x54], 0xa
+            mov ecx, dword ptr [ebp + 8]
+            mov eax, dword ptr [esp + 0x18]
+            mov edx, dword ptr [ecx + 0x18c]
+            mov dword ptr [edx + 0x58], eax
+    L00488425:
+            mov ecx, dword ptr [ebp + 8]
+            call UpdateCollisionObject
+            mov ecx, dword ptr [ebp + 8]
+            mov edx, dword ptr [ebp + 0x10]
+            mov dword ptr [ecx], edx
+            mov eax, dword ptr [ebp + 8]
+            mov ecx, 6
+            lea esi, [eax + 0x24]
+            lea edi, [eax + 0x3c]
+            rep movsd
+            mov ecx, ebx
+            call GetAnInt
+            xor edi, edi
+            mov dword ptr [ebp + 0x6c], eax
+            test eax, eax
+            jle L00488498
+            lea esi, [ebp + 0x84]
+    L0048845b:
+            lea edx, [esp + 0x174]
+            mov ecx, ebx
+            call GetALineAndDontArgue
+            test ebp, ebp
+            je L0048847a
+            mov eax, dword ptr [ebp + 0xc]
+            mov edx, 2
+            cmp eax, 5
+            jg L0048847f
+    L0048847a:
+            mov edx, 1
+    L0048847f:
+            lea ecx, [esp + 0x174]
+            call GetSimpleMaterial
+            mov dword ptr [esi], eax
+            mov eax, dword ptr [ebp + 0x6c]
+            inc edi
+            add esi, 4
+            cmp edi, eax
+            jl L0048845b
+    L00488498:
+            mov eax, dword ptr [ebp + 8]
+            mov dword ptr [eax + 0x64], 0x3ecccccd
+            mov eax, dword ptr [esp + 0x34]
+            cmp eax, 0x64
+            jle L004881f2
+            mov edi, 0x10000
+            mov esi, 0xb
+    L004884b9:
+            lea edx, [esp + 0x74]
+            mov ecx, ebx
+            call GetAString
+            mov edx, offset gNet_avail_names+0x5e8
+            lea ecx, [esp + 0x74]
+            call DRStricmp
+            test eax, eax
+            je L004881f2
+            mov edx, offset gNet_avail_names+0x5d8
+            lea ecx, [esp + 0x74]
+            call DRStricmp
+            test eax, eax
+            jne L00488501
+            mov ecx, ebx
+            call GetAScalar
+            mov ecx, dword ptr [ebp + 8]
+            fsub dword ptr [gDouble_0058a068+0x1bc]
+            fstp dword ptr [ecx + 0x60]
+            jmp L004884b9
+    L00488501:
+            mov edx, offset gNet_avail_names+0x5c8
+            lea ecx, [esp + 0x74]
+            call DRStricmp
+            test eax, eax
+            jne L00488528
+            mov ecx, ebx
+            call GetAScalar
+            mov edx, dword ptr [ebp + 8]
+            fsub dword ptr [gDouble_0058a068+0x1bc]
+            fstp dword ptr [edx + 0x64]
+            jmp L004884b9
+    L00488528:
+            mov edx, offset gNet_avail_names+0x5c0
+            lea ecx, [esp + 0x74]
+            call DRStricmp
+            test eax, eax
+            jne L0048855f
+            mov ecx, ebx
+            call GetAScalar
+            fstp dword ptr [ebp + 0xdc]
+            mov ecx, ebx
+            call GetAScalar
+            fmul dword ptr [gDouble_0058a068+0x1e0]
+            fstp dword ptr [ebp + 0xe0]
+            jmp L004884b9
+    L0048855f:
+            mov edx, offset gNet_avail_names+0x5ac
+            lea ecx, [esp + 0x74]
+            call DRStricmp
+            test eax, eax
+            jne L004885ff
+            lea eax, [esp + 0x28]
+            lea ecx, [esp + 0x38]
+            push eax
+            push ecx
+            lea edx, [esp + 0x3c]
+            mov ecx, ebx
+            call GetThreeFloats
+            mov ecx, ebx
+            call GetAScalar
+            fstp dword ptr [esp + 0x10]
+            mov ecx, ebx
+            call GetAnInt
+            mov edx, 0xdb
+            mov ecx, eax
+            call AllocatePhysicsJoint
+            mov edx, dword ptr [ebp + 8]
+            mov ecx, dword ptr [esp + 0x10]
+            mov dword ptr [edx + 0x18c], eax
+            mov eax, dword ptr [ebp + 8]
+            mov eax, dword ptr [eax + 0x18c]
+            mov dword ptr [ebp + 0xf0], eax
+            mov dword ptr [eax + 4], ecx
+            mov edx, dword ptr [ebp + 0xf0]
+            mov eax, dword ptr [esp + 0x34]
+            mov dword ptr [edx + 8], eax
+            mov ecx, dword ptr [ebp + 0xf0]
+            mov edx, dword ptr [esp + 0x38]
+            mov dword ptr [ecx + 0xc], edx
+            mov eax, dword ptr [ebp + 0xf0]
+            mov ecx, dword ptr [esp + 0x28]
+            mov dword ptr [eax + 0x10], ecx
+            mov edx, dword ptr [ebp + 0xf0]
+            mov dword ptr [edx], 3
+            jmp L004884b9
+    L004885ff:
+            mov edx, offset gNet_avail_names+0x598
+            lea ecx, [esp + 0x74]
+            call DRStricmp
+            test eax, eax
+            jne L004886b4
+            lea eax, [esp + 0x48]
+            lea ecx, [esp + 0x30]
+            push eax
+            push ecx
+            lea edx, [esp + 0x34]
+            mov ecx, ebx
+            call GetThreeFloats
+            lea edx, [esp + 0x70]
+            lea eax, [esp + 0x6c]
+            push edx
+            push eax
+            lea edx, [esp + 0x70]
+            mov ecx, ebx
+            call GetThreeFloats
+            mov ecx, ebx
+            call GetAScalar
+            fstp dword ptr [esp + 0x10]
+            mov ecx, ebx
+            call GetAnInt
+            mov edx, 0xdb
+            mov ecx, eax
+            call AllocatePhysicsJoint
+            mov ecx, dword ptr [ebp + 8]
+            mov dword ptr [ecx + 0x18c], eax
+            mov edx, dword ptr [ebp + 8]
+            mov ecx, dword ptr [esp + 0x10]
+            mov eax, dword ptr [edx + 0x18c]
+            mov dword ptr [ebp + 0xf0], eax
+            mov dword ptr [eax + 4], ecx
+            mov edx, dword ptr [ebp + 0xf0]
+            mov eax, dword ptr [esp + 0x2c]
+            mov dword ptr [edx + 8], eax
+            mov ecx, dword ptr [ebp + 0xf0]
+            mov edx, dword ptr [esp + 0x30]
+            mov dword ptr [ecx + 0xc], edx
+            mov eax, dword ptr [ebp + 0xf0]
+            mov ecx, dword ptr [esp + 0x48]
+            mov dword ptr [eax + 0x10], ecx
+            mov edx, dword ptr [ebp + 0xf0]
+            mov dword ptr [edx], 3
+            jmp L004884b9
+    L004886b4:
+            mov edx, offset gNet_avail_names+0x580
+            lea ecx, [esp + 0x74]
+            call DRStricmp
+            test eax, eax
+            jne L004889c4
+            lea eax, [esp + 0x44]
+            lea ecx, [esp + 0x40]
+            push eax
+            push ecx
+            lea edx, [esp + 0x54]
+            mov ecx, ebx
+            call GetThreeFloats
+            lea edx, [esp + 0x1c]
+            lea eax, [esp + 0x14]
+            push edx
+            push eax
+            lea edx, [esp + 0x20]
+            mov ecx, ebx
+            call GetThreeFloats
+            mov ecx, ebx
+            call GetAScalar
+            fstp dword ptr [esp + 0x3c]
+            mov edx, 0xdb
+            mov ecx, 1
+            call AllocatePhysicsJoint
+            mov ecx, dword ptr [ebp + 8]
+            fld dword ptr [esp + 0x18]
+            mov dword ptr [ecx + 0x18c], eax
+            mov edx, dword ptr [ebp + 8]
+            mov ecx, dword ptr [esp + 0x4c]
+            mov eax, dword ptr [edx + 0x18c]
+            mov dword ptr [ebp + 0xf0], eax
+            mov dword ptr [eax + 8], ecx
+            mov edx, dword ptr [ebp + 0xf0]
+            mov eax, dword ptr [esp + 0x40]
+            mov dword ptr [edx + 0xc], eax
+            mov ecx, dword ptr [ebp + 0xf0]
+            mov edx, dword ptr [esp + 0x44]
+            fabs
+            fld dword ptr [esp + 0x14]
+            mov dword ptr [ecx + 0x10], edx
+            mov eax, dword ptr [ebp + 0xf0]
+            mov ecx, dword ptr [esp + 0x18]
+            fabs
+            fstp qword ptr [esp + 0x20]
+            mov dword ptr [eax + 0x38], ecx
+            mov edx, dword ptr [ebp + 0xf0]
+            mov eax, dword ptr [esp + 0x14]
+            fcom qword ptr [esp + 0x20]
+            mov dword ptr [edx + 0x3c], eax
+            mov ecx, dword ptr [ebp + 0xf0]
+            mov edx, dword ptr [esp + 0x1c]
+            mov dword ptr [ecx + 0x40], edx
+            mov ecx, dword ptr [ebp + 0xf0]
+            fnstsw ax
+            add ecx, 0x20
+            test ah, 0x41
+            je L004887bb
+            fld dword ptr [esp + 0x1c]
+            fabs
+            fxch st(1)
+            fcompp
+            fnstsw ax
+            test ah, 0x41
+            je L004887bd
+            fld dword ptr [esp + 0x1c]
+            fstp dword ptr [ecx + 4]
+            fld dword ptr [esp + 0x14]
+            fchs
+            fstp dword ptr [ecx + 8]
+            mov dword ptr [ecx], 0
+            jmp L00488802
+    L004887bb:
+            fstp st(0)
+    L004887bd:
+            fld qword ptr [esp + 0x20]
+            fld dword ptr [esp + 0x1c]
+            fabs
+            fxch st(1)
+            fcompp
+            fnstsw ax
+            test ah, 0x41
+            je L004887ec
+            fld dword ptr [esp + 0x1c]
+            fchs
+            _emit 0xd9
+        _emit 0x19
+            fld dword ptr [esp + 0x18]
+            fchs
+            fstp dword ptr [ecx + 8]
+            mov dword ptr [ecx + 4], 0
+            jmp L00488802
+    L004887ec:
+            fld dword ptr [esp + 0x14]
+            _emit 0xd9
+        _emit 0x19
+            fld dword ptr [esp + 0x18]
+            fchs
+            fstp dword ptr [ecx + 4]
+            mov dword ptr [ecx + 8], 0
+    L00488802:
+            fld dword ptr [ecx + 4]
+            fld dword ptr [ecx + 8]
+            _emit 0xd9
+        _emit 0x01
+            fxch st(2)
+            fst dword ptr [esp + 0x10]
+            fxch st(1)
+            fst dword ptr [esp + 0x20]
+            fxch st(1)
+            fmul dword ptr [esp + 0x10]
+            fxch st(1)
+            fmul dword ptr [esp + 0x20]
+            fld st(2)
+            fmul st(0), st(3)
+            fxch st(1)
+            faddp st(2), st(0)
+            faddp st(1), st(0)
+            fsqrt
+            fstp st(1)
+            fcom dword ptr [gDouble_0058a068+0x1ec]
+            fnstsw ax
+            test ah, 0x41
+            jne L00488865
+            fdivr qword ptr [gDouble_0058a068+0x1f0]
+            fld dword ptr [ecx + 8]
+            fld dword ptr [ecx + 4]
+            fld st(2)
+            _emit 0xd8
+        _emit 0x09
+            fxch st(1)
+            fmul st(0), st(3)
+            fxch st(2)
+            fmul st(0), st(3)
+            fxch st(1)
+            _emit 0xd9
+        _emit 0x19
+            fxch st(1)
+            fstp dword ptr [ecx + 4]
+            fstp dword ptr [ecx + 8]
+            fstp st(0)
+            jmp L00488875
+    L00488865:
+            xor eax, eax
+            mov dword ptr [ecx], 0x3f800000
+            fstp st(0)
+            mov dword ptr [ecx + 4], eax
+            mov dword ptr [ecx + 8], eax
+    L00488875:
+            mov eax, dword ptr [ebp + 0xf0]
+            push 0xde
+            push 0x14
+            fld dword ptr [eax + 0x24]
+            fld dword ptr [eax + 0x28]
+            fmul dword ptr [esp + 0x1c]
+            fxch st(1)
+            fmul dword ptr [esp + 0x24]
+            fld dword ptr [esp + 0x44]
+            fxch st(1)
+            fsubp st(2), st(0)
+            fxch st(1)
+            fstp dword ptr [eax + 0x2c]
+            mov eax, dword ptr [ebp + 0xf0]
+            fld dword ptr [eax + 0x28]
+            fld dword ptr [eax + 0x20]
+            fmul dword ptr [esp + 0x24]
+            fxch st(1)
+            fmul dword ptr [esp + 0x20]
+            fsubp st(1), st(0)
+            fstp dword ptr [eax + 0x30]
+            mov eax, dword ptr [ebp + 0xf0]
+            fld dword ptr [eax + 0x20]
+            fld dword ptr [eax + 0x24]
+            fmul dword ptr [esp + 0x20]
+            fxch st(1)
+            fmul dword ptr [esp + 0x1c]
+            fsubp st(1), st(0)
+            fstp dword ptr [eax + 0x34]
+            mov eax, dword ptr [ebp + 0xf0]
+            mov dword ptr [eax], 5
+            mov edx, dword ptr [ebp + 0x100]
+            mov ecx, dword ptr [ebp + 0xf0]
+            or edx, edi
+            mov dword ptr [ebp + 0x100], edx
+            mov dword ptr [ecx + 0x50], 1
+            mov edx, dword ptr [ebp + 0xf0]
+            mov dword ptr [edx + 0x54], esi
+            mov eax, dword ptr [ebp + 0xf0]
+            fstp dword ptr [eax + 0x58]
+            call BrMemAllocate
+            add esp, 8
+            mov ecx, ebx
+            mov dword ptr [ebp + 0xf4], eax
+            call GetAScalar
+            mov edx, dword ptr [ebp + 0xf4]
+            mov ecx, ebx
+            _emit 0xd9
+        _emit 0x1a
+            call GetAScalar
+            mov eax, dword ptr [ebp + 0xf4]
+            mov ecx, ebx
+            fstp dword ptr [eax + 4]
+            call GetAScalar
+            mov edx, dword ptr [ebp + 0xf4]
+            mov ecx, ebx
+            fstp dword ptr [edx + 8]
+            call GetAScalar
+            mov eax, dword ptr [ebp + 0xf4]
+            mov ecx, ebx
+            fstp dword ptr [eax + 0xc]
+            call GetAnInt
+            mov ecx, dword ptr [ebp + 0xf4]
+            mov dword ptr [ecx + 0x10], eax
+            mov eax, dword ptr [ebp + 0xf4]
+            fld dword ptr [eax + 8]
+            fchs
+            fmul qword ptr [gDouble_0058a068+0x1f8]
+            fldl2e
+            fmulp st(1), st(0)
+            fld st(0)
+            frndint
+            fxch st(1)
+            fsub st(0), st(1)
+            f2xm1
+            fld1
+            faddp st(1), st(0)
+            fscale
+            fstp st(1)
+            fstp dword ptr [eax + 8]
+            mov eax, dword ptr [ebp + 0xf4]
+            fld dword ptr [eax + 0xc]
+            fchs
+            fmul qword ptr [gDouble_0058a068+0x1f8]
+            fldl2e
+            fmulp st(1), st(0)
+            fld st(0)
+            frndint
+            fxch st(1)
+            fsub st(0), st(1)
+            f2xm1
+            fld1
+            faddp st(1), st(0)
+            fscale
+            fstp st(1)
+            fstp dword ptr [eax + 0xc]
+            jmp L004884b9
+    L004889c4:
+            mov edx, offset gNet_avail_names+0x570
+            lea ecx, [esp + 0x74]
+            call DRStricmp
+            test eax, eax
+            jne L004889e5
+            or dword ptr [ebp + 0x100], 0x20000
+            jmp L004884b9
+    L004889e5:
+            mov edx, offset gNet_avail_names+0x55c
+            lea ecx, [esp + 0x74]
+            call DRStricmp
+            test eax, eax
+            jne L00488a06
+            or dword ptr [ebp + 0x100], 0x40000
+            jmp L004884b9
+    L00488a06:
+            mov edx, offset gNet_avail_names+0x548
+            lea ecx, [esp + 0x74]
+            call DRStricmp
+            test eax, eax
+            jne L00488a2a
+            mov ecx, ebx
+            call GetAnInt
+            mov byte ptr [ebp + 0xfd], al
+            jmp L004884b9
+    L00488a2a:
+            mov edx, offset gNet_avail_names+0x53c
+            lea ecx, [esp + 0x74]
+            call DRStricmp
+            test eax, eax
+            jne L00488a4b
+            mov edx, dword ptr [ebp + 8]
+            mov byte ptr [edx + 0x4d4], 1
+            jmp L004884b9
+    L00488a4b:
+            mov edx, offset gNet_avail_names+0x530
+            lea ecx, [esp + 0x74]
+            call DRStricmp
+            test eax, eax
+            jne L00488a74
+            mov eax, dword ptr [ebp + 8]
+            mov ecx, dword ptr [eax + 0x19c]
+            or ch, 8
+            mov dword ptr [eax + 0x19c], ecx
+            jmp L004884b9
+    L00488a74:
+            mov edx, offset gNet_avail_names+0x518
+            lea ecx, [esp + 0x74]
+            call DRStricmp
+            test eax, eax
+            jne L00488a9d
+            mov eax, dword ptr [ebp + 8]
+            mov ecx, dword ptr [eax + 0x19c]
+            or cl, 0x80
+            mov dword ptr [eax + 0x19c], ecx
+            jmp L004884b9
+    L00488a9d:
+            mov edx, offset gNet_avail_names+0x508
+            lea ecx, [esp + 0x74]
+            call DRStricmp
+            test eax, eax
+            jne L00488abe
+            or dword ptr [ebp + 0x100], 0x80000
+            jmp L004884b9
+    L00488abe:
+            mov edx, offset gNet_avail_names+0x500
+            lea ecx, [esp + 0x74]
+            call DRStricmp
+            test eax, eax
+            jne L00488adf
+            or dword ptr [ebp + 0x100], 0x200000
+            jmp L004884b9
+    L00488adf:
+            push 0xae
+            call FatalError
+            add esp, 4
+            jmp L004884b9
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00450600
@@ -3022,7 +5178,8 @@ void C2_HOOK_FASTCALL LinkDroneActorsToModelsAndSetRenderStyle(tDrone_spec* pDro
 }
 
 // FUNCTION: CARMA2_HW 0x00450150
-void C2_HOOK_FASTCALL LoadDroneActorsModels(tDrone_spec* pDrone) {
+void C2_NAKED C2_HOOK_FASTCALL LoadDroneActorsModels(tDrone_spec* pDrone) {
+#ifndef CARPOCALYPSE2_MATCHING
     br_matrix34 mat;
     tPath_name dir_path;
     tPath_name actor_path;
@@ -3117,6 +5274,389 @@ void C2_HOOK_FASTCALL LoadDroneActorsModels(tDrone_spec* pDrone) {
         pDrone->form->field_0x54.max.v[1] = model->bounds.max.v[1] - pDrone->form->crush_limits_top     * 0.01f * (model->bounds.max.v[1] - model->bounds.min.v[1]);
         pDrone->form->field_0x54.max.v[2] = model->bounds.max.v[2] - pDrone->form->crush_limits_front   * 0.01f * (model->bounds.max.v[2] - model->bounds.min.v[2]);
     }
+#else
+    __asm {
+            sub esp, 0x33c
+            push ebx
+            push ebp
+            push esi
+            push edi
+            mov ebx, ecx
+            call PossibleService
+            lea eax, [esp + 0x1c]
+            push eax
+            call BrMatrix34Identity
+            mov eax, dword ptr [ebx + 0xf0]
+            xor esi, esi
+            add esp, 4
+            cmp eax, esi
+            je L0045019d
+            cmp dword ptr [eax + 0xc], esi
+            je L00450188
+            push eax
+            call BrActorRemove
+            add esp, 4
+    L00450188:
+            mov ecx, dword ptr [ebx + 0xf0]
+            push ecx
+            call BrActorFree
+            add esp, 4
+            mov dword ptr [ebx + 0xf0], esi
+    L0045019d:
+            mov eax, dword ptr [ebx + 0xec]
+            cmp eax, esi
+            je L004501e1
+            add eax, 0x2c
+            lea edx, [esp + 0x1c]
+            push eax
+            push edx
+            call BrMatrix34Copy
+            mov eax, dword ptr [ebx + 0xec]
+            add esp, 8
+            cmp dword ptr [eax + 0xc], esi
+            je L004501cc
+            push eax
+            call BrActorRemove
+            add esp, 4
+    L004501cc:
+            mov eax, dword ptr [ebx + 0xec]
+            push eax
+            call BrActorFree
+            add esp, 4
+            mov dword ptr [ebx + 0xec], esi
+    L004501e1:
+            mov ecx, dword ptr [gDefault_drone_direction+0x5f0]
+            mov dx, word ptr [gDefault_drone_direction+0x5f4]
+            mov al, byte ptr [gDefault_drone_direction+0x5f6]
+            mov dword ptr [gCurrent_load_directory], ecx
+            mov word ptr [gCurrent_load_directory+0x4], dx
+            mov byte ptr [gCurrent_load_directory+0x6], al
+            mov edi, dword ptr [ebx + 4]
+            or ecx, 0xffffffff
+            xor eax, eax
+            mov ebp, 3
+            repne scasb
+            not ecx
+            sub edi, ecx
+            push offset gCurrent_load_directory
+            mov edx, ecx
+            mov esi, edi
+            mov edi, offset gCurrent_load_name
+            shr ecx, 2
+            rep movsd
+            mov ecx, edx
+            lea edx, [esp + 0x50]
+            and ecx, ebp
+            rep movsb
+            mov edi, offset gApplication_path
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            sub edi, ecx
+            mov eax, ecx
+            mov esi, edi
+            mov edi, edx
+            lea edx, [esp + 0x50]
+            shr ecx, 2
+            rep movsd
+            mov ecx, eax
+            and ecx, ebp
+            rep movsb
+            lea ecx, [esp + 0x50]
+            call PathCat
+            lea edx, [esp + 0x4c]
+            lea ecx, [esp + 0x4c]
+            push offset gCurrent_load_name
+            call PathCat
+            mov ecx, dword ptr [ebx + 4]
+            mov eax, dword ptr [ecx + 0x70]
+            test eax, eax
+            jge L004503d6
+            mov edx, offset gDefault_drone_direction+0x73c
+            xor ecx, ecx
+            call PrintMemoryDump
+            lea edx, [esp + 0x4c]
+            mov ecx, offset gDroneStorage
+            call LoadAllImagesInDirectory
+            lea edx, [esp + 0x4c]
+            mov ecx, offset gDroneStorage
+            call LoadAllShadeTablesInDirectory
+            mov esi, dword ptr [gDroneStorage+0x8]
+            lea edx, [esp + 0x4c]
+            push 2
+            mov ecx, offset gDroneStorage
+            call LoadAllMaterialsInDirectory
+            cmp esi, dword ptr [gDroneStorage+0x8]
+            jge L0045031e
+            mov edi, 4
+    L004502cc:
+            mov edx, dword ptr [gDroneStorage+0x38]
+            mov eax, dword ptr [edx + esi*4]
+            test eax, eax
+            je L0045030f
+            mov ecx, dword ptr [eax + 0x40]
+            test ecx, ecx
+            je L0045030f
+            mov edx, dword ptr [eax + 0x20]
+            push 0x7fff
+            or edx, ebp
+            mov dword ptr [eax + 0x20], edx
+            mov eax, dword ptr [gDroneStorage+0x38]
+            mov eax, dword ptr [eax + esi*4]
+            mov ecx, dword ptr [eax + 0x20]
+            or ecx, edi
+            mov dword ptr [eax + 0x20], ecx
+            mov ecx, dword ptr [gDroneStorage+0x38]
+            mov edx, dword ptr [ecx + esi*4]
+            push edx
+            call BrMaterialUpdate
+            add esp, 8
+    L0045030f:
+            call PossibleService
+            mov eax, dword ptr [gDroneStorage+0x8]
+            inc esi
+            cmp esi, eax
+            jl L004502cc
+    L0045031e:
+            mov eax, dword ptr [ebx + 4]
+            mov ecx, dword ptr [gDroneStorage+0x4]
+            lea edx, [esp + 0x4c]
+            mov dword ptr [eax + 0x70], ecx
+            mov ecx, offset gDroneStorage
+            call LoadAllModelsInDirectory
+            mov eax, dword ptr [ebx + 4]
+            mov edx, dword ptr [gDroneStorage+0x4]
+            sub edx, dword ptr [eax + 0x70]
+            mov dword ptr [eax + 0x74], edx
+            mov ecx, dword ptr [ebx + 4]
+            fld dword ptr [ecx + 0x28]
+            fcomp dword ptr [gDrone_render_zero]
+            fnstsw ax
+            test ah, 0x40
+            jne L004503ca
+            mov dword ptr [ecx + 0x78], 0xffffffff
+            mov edx, dword ptr [ebx + 4]
+            mov esi, dword ptr [edx + 0x70]
+            mov eax, dword ptr [edx + 0x74]
+            add eax, esi
+            cmp esi, eax
+            jge L0045039d
+    L00450370:
+            mov ecx, dword ptr [gDroneStorage+0x2c]
+            mov eax, dword ptr [ecx + esi*4]
+            mov ecx, dword ptr [eax + 4]
+            call DRStricmp
+            test eax, eax
+            je L00450397
+            mov edx, dword ptr [ebx + 4]
+            inc esi
+            mov ecx, dword ptr [edx + 0x74]
+            mov edi, dword ptr [edx + 0x70]
+            add ecx, edi
+            cmp esi, ecx
+            jl L00450370
+            jmp L0045039d
+    L00450397:
+            mov edx, dword ptr [ebx + 4]
+            mov dword ptr [edx + 0x78], esi
+    L0045039d:
+            mov eax, dword ptr [ebx + 4]
+            mov ecx, dword ptr [eax + 0x78]
+            test ecx, ecx
+            jge L004503ca
+            push eax
+            push eax
+            lea eax, [esp + 0x154]
+            push offset gDefault_drone_direction+0x710
+            push eax
+            call sprintf
+            add esp, 0x10
+            lea ecx, [esp + 0x14c]
+            call PDFatalError
+    L004503ca:
+            mov edx, offset gDefault_drone_direction+0x6ec
+            xor ecx, ecx
+            call PrintMemoryDump
+    L004503d6:
+            push 0
+            push 0
+            call BrActorAllocate
+            add esp, 8
+            mov dword ptr [ebx + 0xec], eax
+            lea ecx, [esp + 0x1c]
+            add eax, 0x2c
+            push ecx
+            push eax
+            call BrMatrix34Copy
+            mov edx, dword ptr [ebx]
+            add esp, 8
+            lea eax, [esp + 0x14c]
+            push edx
+            push offset gDefault_drone_direction+0x6e4
+            push eax
+            call sprintf
+            mov edx, dword ptr [ebx + 0xec]
+            add esp, 0xc
+            lea ecx, [esp + 0x14c]
+            push ecx
+            push edx
+            call BrResStrDup
+            mov ecx, dword ptr [ebx + 0xec]
+            add esp, 8
+            mov dword ptr [ecx + 0x14], eax
+            mov edx, dword ptr [ebx + 0xec]
+            mov eax, dword ptr [gNon_track_actor]
+            push edx
+            push eax
+            call BrActorAdd
+            mov ecx, dword ptr [ebx + 4]
+            add esp, 8
+            lea edx, [esp + 0x4c]
+            push ecx
+            lea ecx, [esp + 0x250]
+            call PathCat
+            mov edi, offset gDefault_drone_direction+0x6dc
+            or ecx, 0xffffffff
+            xor eax, eax
+            lea edx, [esp + 0x24c]
+            repne scasb
+            not ecx
+            sub edi, ecx
+            mov esi, edi
+            mov edi, edx
+            mov edx, ecx
+            or ecx, 0xffffffff
+            repne scasb
+            mov ecx, edx
+            dec edi
+            shr ecx, 2
+            rep movsd
+            mov ecx, edx
+            lea eax, [esp + 0x24c]
+            and ecx, ebp
+            push eax
+            rep movsb
+            call BrActorLoad
+            add esp, 4
+            mov dword ptr [ebx + 0xf0], eax
+            test eax, eax
+            jne L004504c9
+            mov ecx, dword ptr [ebx + 4]
+            lea edx, [esp + 0x14c]
+            push ecx
+            push offset gDefault_drone_direction+0x6b4
+            push edx
+            call sprintf
+            add esp, 0xc
+            lea ecx, [esp + 0x14c]
+            call PDFatalError
+    L004504c9:
+            mov eax, dword ptr [ebx + 4]
+            mov dword ptr [esp + 0x10], ebx
+            mov ecx, dword ptr [eax + 0x70]
+            mov edx, dword ptr [eax + 0x74]
+            lea eax, [esp + 0x10]
+            mov dword ptr [esp + 0x14], ecx
+            mov ecx, dword ptr [ebx + 0xf0]
+            mov dword ptr [esp + 0x18], edx
+            push eax
+            mov edx, offset LinkyCallback
+            call DRActorEnumRecurse
+            mov ecx, dword ptr [ebx + 0xec]
+            mov byte ptr [ecx + 0x20], 1
+            mov edx, dword ptr [ebx + 0xf0]
+            mov eax, dword ptr [ebx + 0xec]
+            push edx
+            push eax
+            call BrActorAdd
+            mov ecx, dword ptr [ebx + 4]
+            add esp, 8
+            mov edx, dword ptr [ecx + 0x2c]
+            test dl, 0x20
+            jne L004505eb
+            mov eax, dword ptr [ebx + 0xf0]
+            fld dword ptr [ecx + 0x44]
+            mov eax, dword ptr [eax + 0x18]
+            add eax, 0x34
+            or edx, 0x20
+            fld dword ptr [eax + 0xc]
+            _emit 0xd8
+        _emit 0x20
+            fxch st(1)
+            fmul qword ptr [gDrone_select_max_distance_squared+0x84]
+            _emit 0xd9
+        _emit 0x00
+            fxch st(1)
+            fmulp st(2), st(0)
+            fld dword ptr [ecx + 0x4c]
+            fmul qword ptr [gDrone_select_max_distance_squared+0x84]
+            fxch st(1)
+            faddp st(2), st(0)
+            fxch st(1)
+            fstp dword ptr [ecx + 0x54]
+            fld dword ptr [eax + 0x10]
+            fsub dword ptr [eax + 4]
+            fld dword ptr [ecx + 0x40]
+            fxch st(2)
+            fmulp st(1), st(0)
+            fxch st(1)
+            fmul qword ptr [gDrone_select_max_distance_squared+0x84]
+            fxch st(1)
+            fadd dword ptr [eax + 4]
+            fld dword ptr [ecx + 0x48]
+            fxch st(1)
+            fstp dword ptr [ecx + 0x58]
+            fld dword ptr [eax + 0x14]
+            fsub dword ptr [eax + 8]
+            fxch st(1)
+            fmul qword ptr [gDrone_select_max_distance_squared+0x84]
+            fxch st(2)
+            fmulp st(1), st(0)
+            fld dword ptr [ecx + 0x50]
+            fxch st(1)
+            fadd dword ptr [eax + 8]
+            fxch st(1)
+            fmul qword ptr [gDrone_select_max_distance_squared+0x84]
+            fld dword ptr [ecx + 0x3c]
+            fxch st(2)
+            fstp dword ptr [ecx + 0x5c]
+            fld dword ptr [eax + 0xc]
+            _emit 0xd8
+        _emit 0x20
+            fld dword ptr [eax + 0xc]
+            fxch st(4)
+            fmulp st(1), st(0)
+            fxch st(2)
+            fmul qword ptr [gDrone_select_max_distance_squared+0x84]
+            fxch st(2)
+            fsubp st(3), st(0)
+            fxch st(2)
+            fstp dword ptr [ecx + 0x60]
+            fld dword ptr [eax + 0x10]
+            fsub dword ptr [eax + 4]
+            fld dword ptr [eax + 0x10]
+            fxch st(3)
+            fmulp st(1), st(0)
+            fsubp st(2), st(0)
+            fxch st(1)
+            fstp dword ptr [ecx + 0x64]
+            fld dword ptr [eax + 0x14]
+            fsub dword ptr [eax + 8]
+            fld dword ptr [eax + 0x14]
+            fxch st(2)
+            fmulp st(1), st(0)
+            mov dword ptr [ecx + 0x2c], edx
+            fsubp st(1), st(0)
+            fstp dword ptr [ecx + 0x68]
+    L004505eb:
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x33c
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00450b30
@@ -3375,7 +5915,8 @@ void C2_HOOK_FASTCALL ResetDroneCrushyModel(const br_model* pSrc, br_model* pDes
 }
 
 // FUNCTION: CARMA2_HW 0x0044fda0
-void C2_HOOK_FASTCALL LoadPerRaceDroneStuff(void) {
+void C2_NAKED C2_HOOK_FASTCALL LoadPerRaceDroneStuff(void) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     int i;
 
@@ -3435,6 +5976,322 @@ void C2_HOOK_FASTCALL LoadPerRaceDroneStuff(void) {
         }
 
     }
+#else
+    __asm {
+            mov edx, dword ptr [gCount_drone_forms]
+            sub esp, 0x30c
+            push ebx
+            xor ebx, ebx
+            push ebp
+            push esi
+            cmp edx, ebx
+            push edi
+            jle L0044fde1
+            mov eax, offset gDrone_forms+0x70
+            mov ecx, edx
+    L0044fdbd:
+            mov dword ptr [eax - 4], ebx
+            mov dword ptr [eax], 0xffffffff
+            mov dword ptr [eax + 4], ebx
+            mov dword ptr [eax + 8], 0xffffffff
+            mov dword ptr [eax + 0xc], ebx
+            mov dword ptr [eax + 0x10], ebx
+            mov dword ptr [eax + 0x14], ebx
+            add eax, 0x88
+            dec ecx
+            jne L0044fdbd
+    L0044fde1:
+            mov eax, dword ptr [gCount_drones]
+            mov dword ptr [esp + 0x10], ebx
+            cmp eax, ebx
+            jle L0044ffe9
+            xor ecx, ecx
+            mov dword ptr [esp + 0x14], ecx
+            jmp L0044fdfe
+    L0044fdfa:
+            mov ecx, dword ptr [esp + 0x14]
+    L0044fdfe:
+            mov eax, dword ptr [gDrone_specs]
+            mov edi, offset gApplication_path
+            push offset gDefault_drone_direction+0x5f0
+            mov eax, dword ptr [eax + ecx + 4]
+            mov edx, dword ptr [eax + 0x6c]
+            inc edx
+            mov dword ptr [eax + 0x6c], edx
+            mov edx, dword ptr [gDrone_specs]
+            xor eax, eax
+            lea ebx, [edx + ecx]
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            sub edi, ecx
+            lea edx, [esp + 0x120]
+            mov eax, ecx
+            mov esi, edi
+            mov edi, edx
+            lea edx, [esp + 0x120]
+            shr ecx, 2
+            rep movsd
+            mov ecx, eax
+            and ecx, 3
+            rep movsb
+            lea ecx, [esp + 0x120]
+            call PathCat
+            mov ecx, dword ptr [ebx + 4]
+            lea edx, [esp + 0x11c]
+            push ecx
+            lea ecx, [esp + 0x120]
+            call PathCat
+            lea ecx, [esp + 0x11c]
+            call OpenPackFileAndSetTiffLoading
+            mov ecx, ebx
+            mov dword ptr [esp + 0x18], eax
+            call LoadDroneActorsModels
+            mov edi, offset gApplication_path
+            or ecx, 0xffffffff
+            xor eax, eax
+            lea edx, [esp + 0x1c]
+            repne scasb
+            not ecx
+            sub edi, ecx
+            mov ebp, dword ptr [ebx + 4]
+            mov eax, ecx
+            mov esi, edi
+            mov edi, edx
+            push offset gDefault_drone_direction+0x5f0
+            shr ecx, 2
+            rep movsd
+            mov ecx, eax
+            lea edx, [esp + 0x20]
+            and ecx, 3
+            rep movsb
+            lea ecx, [esp + 0x20]
+            call PathCat
+            lea edx, [esp + 0x1c]
+            lea ecx, [esp + 0x1c]
+            push ebp
+            call PathCat
+            lea edx, [esp + 0x1c]
+            lea ecx, [esp + 0x1c]
+            push ebp
+            call PathCat
+            mov edi, offset gDefault_drone_direction+0x5f8
+            or ecx, 0xffffffff
+            xor eax, eax
+            lea edx, [esp + 0x1c]
+            repne scasb
+            not ecx
+            sub edi, ecx
+            mov esi, edi
+            mov ebp, ecx
+            mov edi, edx
+            or ecx, 0xffffffff
+            repne scasb
+            mov ecx, ebp
+            dec edi
+            shr ecx, 2
+            rep movsd
+            mov ecx, ebp
+            and ecx, 3
+            mov edx, offset gNext_crush_actor_id+0x180
+            rep movsb
+            lea ecx, [esp + 0x1c]
+            call DRfopen
+            mov edi, eax
+            test edi, edi
+            jne L0044ff31
+            lea eax, [esp + 0x1c]
+            push eax
+            push 0xaf
+            call FatalError
+            add esp, 8
+    L0044ff31:
+            mov ecx, edi
+            call PFfeof
+            test eax, eax
+            jne L0044ff92
+    L0044ff3c:
+            lea edx, [esp + 0x21c]
+            mov ecx, edi
+            call GetALineAndDontArgue
+            mov esi, offset gDefault_drone_direction+0x698
+            lea eax, [esp + 0x21c]
+    L0044ff56:
+            mov dl, byte ptr [eax]
+            mov cl, dl
+            cmp dl, byte ptr [esi]
+            jne L0044ff7a
+            test cl, cl
+            je L0044ff76
+            mov dl, byte ptr [eax + 1]
+            mov cl, dl
+            cmp dl, byte ptr [esi + 1]
+            jne L0044ff7a
+            add eax, 2
+            add esi, 2
+            test cl, cl
+            jne L0044ff56
+    L0044ff76:
+            xor eax, eax
+            jmp L0044ff7f
+    L0044ff7a:
+            sbb eax, eax
+            sbb eax, -1
+    L0044ff7f:
+            test eax, eax
+            je L00450108
+            mov ecx, edi
+            call PFfeof
+            test eax, eax
+            je L0044ff3c
+    L0044ff92:
+            mov ecx, dword ptr [ebx + 4]
+            push ecx
+            push 0xaf
+            call FatalError
+            add esp, 8
+    L0044ffa3:
+            mov edx, edi
+            mov ecx, ebx
+            call LoadFunksAndGrooves
+            mov ecx, edi
+            call PFfclose
+            mov ecx, dword ptr [esp + 0x18]
+            call ClosePackFileAndSetTiffLoading
+            mov eax, dword ptr [esp + 0x10]
+            mov edx, dword ptr [esp + 0x14]
+            mov ecx, dword ptr [gCount_drones]
+            inc eax
+            add edx, 0x5d8
+            cmp eax, ecx
+            mov dword ptr [esp + 0x10], eax
+            mov dword ptr [esp + 0x14], edx
+            jl L0044fdfa
+            mov edx, dword ptr [gCount_drone_forms]
+            xor ebx, ebx
+    L0044ffe9:
+            cmp edx, ebx
+            mov dword ptr [esp + 0x10], ebx
+            jle L004500fd
+            mov ebp, offset gDrone_forms+0x6c
+    L0044fffa:
+            mov ecx, dword ptr [ebp]
+            cmp ecx, ebx
+            je L004500e6
+            fld dword ptr [ebp - 0x44]
+            fcomp dword ptr [gDrone_render_zero]
+            fnstsw ax
+            test ah, 0x40
+            jne L00450025
+            cmp ecx, 0xa
+            jle L00450021
+            mov eax, 0xa
+            jmp L00450027
+    L00450021:
+            mov eax, ecx
+            jmp L00450027
+    L00450025:
+            xor eax, eax
+    L00450027:
+            cmp eax, ebx
+            mov dword ptr [ebp + 0x10], eax
+            je L004500e6
+            push 0xbc
+            push 4
+            push eax
+            call BrMemCalloc
+            add esp, 0xc
+            mov dword ptr [ebp + 0x18], eax
+            mov edx, dword ptr [ebp + 0x10]
+            push 0xbc
+            push 1
+            push edx
+            call BrMemCalloc
+            mov dword ptr [ebp + 0x14], eax
+            mov eax, dword ptr [ebp + 0x10]
+            add esp, 0xc
+            test eax, eax
+            jle L004500de
+    L00450062:
+            mov eax, dword ptr [ebp + 0xc]
+            mov ecx, dword ptr [gDroneStorage+0x2c]
+            xor edx, edx
+            push 0
+            mov esi, dword ptr [ecx + eax*4]
+            mov dx, word ptr [esi + 0x10]
+            mov eax, dword ptr [esi + 4]
+            push edx
+            push eax
+            call BrModelAllocate
+            mov ecx, dword ptr [ebp + 0x18]
+            add esp, 0xc
+            mov dword ptr [ecx + ebx*4], eax
+            mov edx, dword ptr [ebp + 0x18]
+            mov eax, dword ptr [edx + ebx*4]
+            or byte ptr [eax + 0x20], 0x80
+            mov eax, dword ptr [ebp + 0x18]
+            mov ecx, dword ptr [esi + 0xc]
+            mov eax, dword ptr [eax + ebx*4]
+            mov dword ptr [eax + 0xc], ecx
+            mov dx, word ptr [esi + 0x12]
+            xor ecx, ecx
+            mov edi, dword ptr [eax + 8]
+            mov cx, word ptr [eax + 0x10]
+            mov word ptr [eax + 0x12], dx
+            mov esi, dword ptr [esi + 8]
+            lea ecx, [ecx + ecx*4]
+            shl ecx, 3
+            mov eax, ecx
+            shr ecx, 2
+            rep movsd
+            mov ecx, eax
+            and ecx, 3
+            rep movsb
+            mov ecx, dword ptr [ebp + 0x18]
+            mov edx, dword ptr [ecx + ebx*4]
+            push edx
+            call BrModelAdd
+            mov eax, dword ptr [ebp + 0x10]
+            add esp, 4
+            inc ebx
+            cmp ebx, eax
+            jl L00450062
+    L004500de:
+            mov edx, dword ptr [gCount_drone_forms]
+            xor ebx, ebx
+    L004500e6:
+            mov eax, dword ptr [esp + 0x10]
+            add ebp, 0x88
+            inc eax
+            cmp eax, edx
+            mov dword ptr [esp + 0x10], eax
+            jl L0044fffa
+    L004500fd:
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x30c
+            ret
+    L00450108:
+            push offset gDefault_drone_direction+0x66c
+            call DoNotDprintf
+            mov eax, dword ptr [ebx + 4]
+            add esp, 4
+            push eax
+            push offset gDefault_drone_direction+0x634
+            call DoNotDprintf
+            lea esi, [ebx + 0x118]
+            add esp, 8
+            mov edx, edi
+            mov ecx, esi
+            call ReadMechanicsShapes
+            cmp dword ptr [esi], 0
+            je L0044ffa3
+            mov byte ptr [ebx + 0x46], 1
+            jmp L0044ffa3
+    }
+#endif
 }
 
 #pragma inline_depth(0)

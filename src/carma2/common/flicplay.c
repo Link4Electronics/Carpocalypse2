@@ -554,22 +554,57 @@ static void mem_write_u16(void* memory, tU16 u16) {
 
     memcpy(memory, &u16, sizeof(tU16));
 }
+#ifdef CARPOCALYPSE2_MATCHING
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern int C2_HOOK_FASTCALL AnyKeyDown(void);
+extern void* C2_HOOK_CDECL BrMemAllocate();
+extern void C2_HOOK_CDECL BrMemFree();
+extern void C2_HOOK_FASTCALL DRPixelmapText(br_pixelmap* pPixelmap, int pX, int pY, const tDR_font* pFont, const char* pText, int pRight_edge);
+extern tS3_sound_tag C2_HOOK_FASTCALL DRS3StartSound(tS3_outlet* pOutlet, tS3_sound_id pSound);
+extern int C2_HOOK_FASTCALL DRTextWidth(const tDR_font* pFont, const char* pText);
+extern int C2_HOOK_FASTCALL DoMouseCursor(void);
+extern void C2_HOOK_FASTCALL EnsurePaletteUp(void);
+extern int C2_HOOK_FASTCALL LoadFlic(int pIndex);
+extern void C2_HOOK_FASTCALL MAMSUnlock(void** pPtr);
+extern tU32 C2_HOOK_FASTCALL PDGetTotalTime(void);
+extern void C2_HOOK_FASTCALL PDScreenBufferSwap(int pRendering_area_only);
+extern int C2_HOOK_FASTCALL PFfclose(FILE* pFile);
+extern void C2_HOOK_FASTCALL RemoveTransientBitmaps(int pGraphically_remove_them);
+extern void C2_HOOK_FASTCALL ServiceGame(void);
+extern void C2_HOOK_FASTCALL SwapScreen(void);
+extern br_pixelmap* gBack_screen;
+extern tS3_outlet* gEffects_outlet;
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern FILE* C2_HOOK_FASTCALL DRfopen(const char* pFilename, const char* pMode);
+extern void C2_NORETURN C2_HOOK_CDECL FatalError();
+extern tU32 C2_HOOK_FASTCALL GetFileLength(FILE* pF);
+extern tU16 C2_HOOK_FASTCALL MemReadU16(char** pPtr);
+extern tU32 C2_HOOK_FASTCALL MemReadU32(char** pPtr);
+extern void C2_HOOK_FASTCALL MemSkipBytes(char** pPtr, int pBytes_to_skip);
+extern br_size_t C2_HOOK_FASTCALL PFfread(void* buf, br_size_t size, unsigned int n, void* f);
+extern void C2_HOOK_FASTCALL PathCat(char* pDestn_str, const char* pStr_1, const char* pStr_2);
+extern tPath_name gApplication_path;
+extern int gCancel_recover;
+#endif
 // FUNCTION: CARMA2_HW 0x00461a40
 
 int C2_HOOK_FASTCALL GetPanelFlicFrameIndex(int pIndex) {
-
     return gPanel_flic[pIndex].current_frame;
 }
 
 // FUNCTION: CARMA2_HW 0x004619a0
 void C2_HOOK_FASTCALL DontLetFlicFuckWithPalettes(void) {
-
     gPalette_fuck_prevention = 1;
 }
 
 // FUNCTION: CARMA2_HW 0x004619b0
 void C2_HOOK_FASTCALL LetFlicFuckWithPalettes(void) {
-
     gPalette_fuck_prevention = 0;
 }
 
@@ -580,18 +615,17 @@ void C2_HOOK_STDCALL PlayFlicsInDarkness(void) {
 
 // FUNCTION: CARMA2_HW 0x004619f0
 void C2_HOOK_FASTCALL TurnFlicTransparencyOff(void) {
-
     gTransparency_on = 0;
 }
 
 // FUNCTION: CARMA2_HW 0x004619e0
 void C2_HOOK_FASTCALL TurnFlicTransparencyOn(void) {
-
     gTransparency_on = 1;
 }
 
 // FUNCTION: CARMA2_HW 0x00461aa0
-void C2_HOOK_FASTCALL AssertFlicPixelmap(tFlic_descriptor_ptr pFlic_info, br_pixelmap* pDest_pixelmap) {
+void C2_NAKED C2_HOOK_FASTCALL AssertFlicPixelmap(tFlic_descriptor_ptr pFlic_info, br_pixelmap* pDest_pixelmap) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     if (pDest_pixelmap != NULL) {
         pFlic_info->first_pixel = (tU8*)pDest_pixelmap->pixels
@@ -599,10 +633,45 @@ void C2_HOOK_FASTCALL AssertFlicPixelmap(tFlic_descriptor_ptr pFlic_info, br_pix
                                   + pFlic_info->y_offset * pDest_pixelmap->row_bytes;
     }
     pFlic_info->the_pixelmap = pDest_pixelmap;
+#else
+    __asm {
+            test edx, edx
+            je L00461abd
+            movsx eax, word ptr [edx + 0x28]
+            push esi
+            mov esi, dword ptr [ecx + 0x40]
+            imul esi, eax
+            mov eax, dword ptr [ecx + 0x3c]
+            add esi, eax
+            mov eax, dword ptr [edx + 8]
+            add esi, eax
+            mov dword ptr [ecx + 0x28], esi
+            pop esi
+    L00461abd:
+            mov dword ptr [ecx + 0x38], edx
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00461ad0
-int C2_HOOK_FASTCALL StartFlic(char* pFile_name, int pIndex, tFlic_descriptor_ptr pFlic_info, tU32 pSize, tS8* pData_ptr, br_pixelmap* pDest_pixelmap, int pX_offset, int pY_offset, int pFrame_rate) {
+int C2_NAKED C2_HOOK_FASTCALL StartFlic(char* pFile_name, int pIndex, tFlic_descriptor_ptr pFlic_info, tU32 pSize, tS8* pData_ptr, br_pixelmap* pDest_pixelmap, int pX_offset, int pY_offset, int pFrame_rate) {
+#ifndef CARPOCALYPSE2_MATCHING
     tU16 claimed_speed;
     tU16 magic_number;
     tPath_name the_path;
@@ -686,11 +755,239 @@ int C2_HOOK_FASTCALL StartFlic(char* pFile_name, int pIndex, tFlic_descriptor_pt
     pFlic_info->the_index = pIndex;
     AssertFlicPixelmap(pFlic_info, pDest_pixelmap);
     return 0;
+#else
+    __asm {
+            sub esp, 0x104
+            mov eax, dword ptr [gPlay_from_disk]
+            push ebx
+            push ebp
+            push esi
+            push edi
+            xor edi, edi
+            cmp eax, edi
+            mov dword ptr [esp + 0x10], edx
+            mov esi, ecx
+            je L00461bb3
+            push offset gFlic_bunch+0x108c
+            mov edx, offset gApplication_path
+            lea ecx, [esp + 0x18]
+            call PathCat
+            lea edx, [esp + 0x14]
+            lea ecx, [esp + 0x14]
+            push esi
+            call PathCat
+            mov edx, offset gCancel_recover+0x1a4
+            lea ecx, [esp + 0x14]
+            call DRfopen
+            mov ebx, dword ptr [esp + 0x118]
+            cmp eax, edi
+            mov dword ptr [ebx + 0x68], eax
+            jne L00461b37
+            push esi
+            push 0xd
+            call FatalError
+            add esp, 8
+    L00461b37:
+            mov ecx, dword ptr [ebx + 0x68]
+            call GetFileLength
+            mov ebp, eax
+            cmp ebp, 0x124f8
+            jge L00461b4e
+            mov dword ptr [ebx + 0x64], ebp
+            jmp L00461b55
+    L00461b4e:
+            mov dword ptr [ebx + 0x64], 0x124f8
+    L00461b55:
+            cmp dword ptr [ebx + 4], edi
+            jne L00461b6e
+            mov eax, dword ptr [ebx + 0x64]
+            push 0xfd
+            push eax
+            call BrMemAllocate
+            add esp, 8
+            mov dword ptr [ebx + 4], eax
+    L00461b6e:
+            mov edx, dword ptr [ebx + 0x68]
+            mov eax, dword ptr [ebx + 0x64]
+            mov ecx, dword ptr [ebx + 4]
+            push edx
+            push eax
+            mov edx, 1
+            mov dword ptr [ebx], ecx
+            call PFfread
+            mov edi, esi
+            or ecx, 0xffffffff
+            xor eax, eax
+            repne scasb
+            not ecx
+            sub edi, ecx
+            mov edx, ecx
+            mov esi, edi
+            mov edi, offset gLast_flic_name
+            shr ecx, 2
+            rep movsd
+            mov ecx, edx
+            and ecx, 3
+            rep movsb
+            mov eax, dword ptr [ebx + 0x64]
+            sub ebp, eax
+            xor edi, edi
+            mov dword ptr [ebx + 0x60], ebp
+            jmp L00461bc6
+    L00461bb3:
+            mov ebx, dword ptr [esp + 0x118]
+            mov eax, dword ptr [esp + 0x120]
+            mov dword ptr [ebx], eax
+            mov dword ptr [ebx + 0x68], edi
+    L00461bc6:
+            mov ecx, ebx
+            call MemReadU32
+            mov ecx, ebx
+            mov dword ptr [ebx + 0x2c], eax
+            call MemReadU16
+            cmp ax, 0xaf11
+            jne L00461be2
+            mov dword ptr [ebx + 0x58], edi
+            jmp L00461bf3
+    L00461be2:
+            cmp ax, 0xaf12
+            jne L00461d3d
+            mov dword ptr [ebx + 0x58], 1
+    L00461bf3:
+            mov ecx, ebx
+            call MemReadU16
+            and eax, 0xffff
+            mov ecx, ebx
+            mov dword ptr [ebx + 0x4c], eax
+            mov dword ptr [ebx + 0x50], edi
+            call MemReadU16
+            and eax, 0xffff
+            mov ecx, ebx
+            mov dword ptr [ebx + 0x44], eax
+            call MemReadU16
+            and eax, 0xffff
+            mov ecx, ebx
+            mov dword ptr [ebx + 0x48], eax
+            call MemReadU16
+            cmp ax, 8
+            je L00461c3f
+            push offset gLast_flic_name
+            push 0xf
+            call FatalError
+            add esp, 8
+    L00461c3f:
+            mov edx, 2
+            mov ecx, ebx
+            call MemSkipBytes
+            mov ecx, ebx
+            call MemReadU16
+            mov edx, 0x6e
+            mov ecx, ebx
+            mov esi, eax
+            call MemSkipBytes
+            mov eax, dword ptr [esp + 0x128]
+            mov ebp, dword ptr [esp + 0x124]
+            cmp eax, -1
+            mov dword ptr [ebx + 0x38], ebp
+            jne L00461c8e
+            cmp ebp, edi
+            je L00461d4d
+            mov edx, dword ptr [ebx + 0x44]
+            xor eax, eax
+            mov ax, word ptr [ebp + 0x34]
+            sub eax, edx
+            cdq
+            sub eax, edx
+            sar eax, 1
+    L00461c8e:
+            mov dword ptr [ebx + 0x3c], eax
+    L00461c91:
+            mov eax, dword ptr [esp + 0x12c]
+            cmp eax, -1
+            jne L00461cb8
+            cmp ebp, edi
+            je L00461cb3
+            mov edx, dword ptr [ebx + 0x48]
+            xor eax, eax
+            mov ax, word ptr [ebp + 0x36]
+            sub eax, edx
+            cdq
+            sub eax, edx
+            sar eax, 1
+            jmp L00461cb8
+    L00461cb3:
+            mov dword ptr [ebx + 0x40], edi
+            jmp L00461cbb
+    L00461cb8:
+            mov dword ptr [ebx + 0x40], eax
+    L00461cbb:
+            mov ecx, dword ptr [esp + 0x130]
+            cmp ecx, edi
+            je L00461cd3
+            mov eax, 0x3e8
+            cdq
+            idiv ecx
+            mov dword ptr [ebx + 0x30], eax
+            jmp L00461d0b
+    L00461cd3:
+            cmp si, di
+            jne L00461ce9
+            push offset gLast_flic_name
+            push 0x10
+            call FatalError
+            add esp, 8
+            jmp L00461d0b
+    L00461ce9:
+            cmp dword ptr [ebx + 0x58], edi
+            je L00461cf9
+            and esi, 0xffff
+            mov dword ptr [ebx + 0x30], esi
+            jmp L00461d0b
+    L00461cf9:
+            and esi, 0xffff
+            mov ecx, esi
+            shl ecx, 3
+            sub ecx, esi
+            shl ecx, 1
+            mov dword ptr [ebx + 0x30], ecx
+    L00461d0b:
+            mov edx, dword ptr [esp + 0x10]
+            cmp ebp, edi
+            mov dword ptr [ebx + 0x54], edx
+            je L00461d2b
+            movsx eax, word ptr [ebp + 0x28]
+            imul eax, dword ptr [ebx + 0x40]
+            mov edx, dword ptr [ebp + 8]
+            mov ecx, dword ptr [ebx + 0x3c]
+            add eax, edx
+            add eax, ecx
+            mov dword ptr [ebx + 0x28], eax
+    L00461d2b:
+            mov dword ptr [ebx + 0x38], ebp
+            xor eax, eax
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x104
+            ret 0x1c
+    L00461d3d:
+            pop edi
+            pop esi
+            pop ebp
+            or eax, 0xffffffff
+            pop ebx
+            add esp, 0x104
+            ret 0x1c
+    L00461d4d:
+            mov dword ptr [ebx + 0x3c], edi
+            jmp L00461c91
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00461d60
 int C2_HOOK_FASTCALL EndFlic(tFlic_descriptor_ptr pFlic_info) {
-
     if (pFlic_info->f != NULL) {
         BrMemFree(pFlic_info->data_start);
         pFlic_info->data_start = NULL;
@@ -1154,7 +1451,8 @@ void C2_HOOK_FASTCALL DoUncompressedTrans(tFlic_descriptor* pFlic_info, tU32 chu
 }
 
 // FUNCTION: CARMA2_HW 0x00462860
-void C2_HOOK_FASTCALL DrawTranslations(tFlic_descriptor* pFlic_info) {
+void C2_NAKED C2_HOOK_FASTCALL DrawTranslations(tFlic_descriptor* pFlic_info) {
+#ifndef CARPOCALYPSE2_MATCHING
     tTranslation_record* trans;
     int i;
     int x;
@@ -1190,6 +1488,103 @@ void C2_HOOK_FASTCALL DrawTranslations(tFlic_descriptor* pFlic_info) {
                     right_edge);
         }
     }
+#else
+    __asm {
+            push ecx
+            mov eax, dword ptr [gTranslation_count]
+            push ebx
+            test eax, eax
+            mov ebx, ecx
+            mov dword ptr [esp + 4], 0
+            jle L00462920
+            mov eax, dword ptr [gTranslations]
+            push edi
+            push esi
+            mov esi, dword ptr [esp + 0xc]
+            push ebp
+            mov ebp, dword ptr [esp + 0x10]
+            lea edi, [eax + 4]
+    L0046288c:
+            mov ecx, dword ptr [edi - 4]
+            mov eax, dword ptr [ebx + 0x54]
+            cmp ecx, eax
+            jne L00462903
+            mov eax, dword ptr [edi + 8]
+            mov edx, dword ptr [edi + 0x10]
+            mov ecx, dword ptr [eax*4 + gTrans_fonts]
+            call DRTextWidth
+            mov ecx, dword ptr [edi + 0xc]
+            sub ecx, 0
+            je L004628d6
+            dec ecx
+            je L004628c9
+            dec ecx
+            jne L004628e0
+            mov esi, dword ptr [ebx + 0x3c]
+            cdq
+            sub eax, edx
+            mov edx, dword ptr [edi]
+            sar eax, 1
+            add esi, edx
+            sub esi, eax
+            lea ebp, [esi + eax]
+            jmp L004628e0
+    L004628c9:
+            mov esi, dword ptr [ebx + 0x3c]
+            sub esi, eax
+            mov eax, dword ptr [edi]
+            add esi, eax
+            mov ebp, esi
+            jmp L004628e0
+    L004628d6:
+            mov esi, dword ptr [ebx + 0x3c]
+            mov ecx, dword ptr [edi]
+            add esi, ecx
+            lea ebp, [eax + esi]
+    L004628e0:
+            mov edx, dword ptr [edi + 8]
+            mov ecx, dword ptr [edi + 0x10]
+            push ebp
+            push ecx
+            mov eax, dword ptr [edx*4 + gTrans_fonts]
+            mov ecx, dword ptr [ebx + 0x40]
+            mov edx, dword ptr [edi + 4]
+            push eax
+            add ecx, edx
+            mov edx, esi
+            push ecx
+            mov ecx, dword ptr [ebx + 0x38]
+            call DRPixelmapText
+    L00462903:
+            mov eax, dword ptr [esp + 0x10]
+            mov ecx, dword ptr [gTranslation_count]
+            inc eax
+            add edi, 0x18
+            cmp eax, ecx
+            mov dword ptr [esp + 0x10], eax
+            jl L0046288c
+            pop ebp
+            pop esi
+            pop edi
+    L00462920:
+            pop ebx
+            pop ecx
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00461da0
@@ -1292,7 +1687,8 @@ int C2_HOOK_FASTCALL PlayNextFlicFrame(tFlic_descriptor* pFlic_info) {
 }
 
 // FUNCTION: CARMA2_HW 0x00462930
-int C2_HOOK_FASTCALL PlayFlic(int pIndex, tU32 pSize, tS8* pData_ptr, br_pixelmap* pDest_pixelmap, int pX_offset, int pY_offset, tPlayFlic_DoPerFrame DoPerFrame, int pInterruptable, int pFrame_rate) {
+int C2_NAKED C2_HOOK_FASTCALL PlayFlic(int pIndex, tU32 pSize, tS8* pData_ptr, br_pixelmap* pDest_pixelmap, int pX_offset, int pY_offset, tPlayFlic_DoPerFrame DoPerFrame, int pInterruptable, int pFrame_rate) {
+#ifndef CARPOCALYPSE2_MATCHING
     int finished_playing;
     tFlic_descriptor the_flic;
     tU32 last_frame;
@@ -1328,11 +1724,109 @@ int C2_HOOK_FASTCALL PlayFlic(int pIndex, tU32 pSize, tS8* pData_ptr, br_pixelma
     ServiceGame();
     EndFlic(&the_flic);
     return 0;
+#else
+    __asm {
+            sub esp, 0x70
+            mov eax, dword ptr [esp + 0x8c]
+            push ebx
+            push edi
+            push eax
+            mov eax, dword ptr [esp + 0x8c]
+            xor ebx, ebx
+            push eax
+            mov eax, dword ptr [esp + 0x8c]
+            push eax
+            mov eax, dword ptr [esp + 0x8c]
+            push eax
+            mov eax, dword ptr [esp + 0x8c]
+            push eax
+            push edx
+            lea edx, [esp + 0x20]
+            lea eax, [ecx + ecx*8]
+            push edx
+            mov edx, ecx
+            mov ecx, dword ptr [eax*4 + gMain_flic_list]
+            xor edi, edi
+            mov dword ptr [esp + 0x28], ebx
+            call StartFlic
+            test eax, eax
+            je L0046298b
+            or eax, 0xffffffff
+            pop edi
+            pop ebx
+            add esp, 0x70
+            ret 0x1c
+    L0046298b:
+            push esi
+            push ebp
+            mov ebp, dword ptr [esp + 0x94]
+    L00462994:
+            mov eax, dword ptr [esp + 0x98]
+            test eax, eax
+            je L004629a8
+            call AnyKeyDown
+            test eax, eax
+            jne L00462a07
+    L004629a8:
+            test edi, edi
+            jne L00462a07
+            call PDGetTotalTime
+            mov esi, eax
+            mov eax, dword ptr [gSound_time]
+            test eax, eax
+            je L004629d7
+            cmp esi, eax
+            jb L004629d7
+            mov edx, dword ptr [gSound_ID]
+            mov ecx, dword ptr [gEffects_outlet]
+            call DRS3StartSound
+            mov dword ptr [gSound_time], edi
+    L004629d7:
+            mov eax, dword ptr [esp + 0x40]
+            mov ecx, esi
+            sub ecx, ebx
+            cmp ecx, eax
+            jb L00462994
+            lea ecx, [esp + 0x10]
+            mov ebx, esi
+            call PlayNextFlicFrame
+            mov edi, eax
+            call ebp
+            mov eax, dword ptr [gDark_mode]
+            test eax, eax
+            jne L00462a00
+            call EnsurePaletteUp
+    L00462a00:
+            call ServiceGame
+            jmp L00462994
+    L00462a07:
+            call ServiceGame
+            mov eax, dword ptr [esp + 0x78]
+            test eax, eax
+            je L00462a32
+            mov edx, dword ptr [esp + 0x14]
+            push edx
+            call BrMemFree
+            mov ecx, dword ptr [esp + 0x7c]
+            add esp, 4
+            mov dword ptr [esp + 0x14], 0
+            call PFfclose
+    L00462a32:
+            pop ebp
+            pop esi
+            pop edi
+            xor eax, eax
+            pop ebx
+            add esp, 0x70
+            ret 0x1c
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00462c10
 void C2_HOOK_FASTCALL SwapScreen(void) {
-
     PDScreenBufferSwap(0);
 }
 
@@ -1367,7 +1861,6 @@ int C2_HOOK_FASTCALL LoadFlicData(char* pName, tU8** pData, tU32* pData_length) 
 
 // FUNCTION: CARMA2_HW 0x00462b80
 void C2_HOOK_FASTCALL FreeFlic(int pIndex) {
-
     PossibleService();
     if (gMain_flic_list[pIndex].data_ptr != NULL) {
         BrMemFree(gMain_flic_list[pIndex].data_ptr);
@@ -1376,7 +1869,8 @@ void C2_HOOK_FASTCALL FreeFlic(int pIndex) {
 }
 
 // FUNCTION: CARMA2_HW 0x00462bb0
-void C2_HOOK_FASTCALL RunFlicAt(int pIndex, int pX, int pY) {
+void C2_NAKED C2_HOOK_FASTCALL RunFlicAt(int pIndex, int pX, int pY) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     LoadFlic(pIndex);
     PlayFlic(
@@ -1390,16 +1884,63 @@ void C2_HOOK_FASTCALL RunFlicAt(int pIndex, int pX, int pY) {
             0,
             0);
     UnlockFlic(pIndex);
+#else
+    __asm {
+            push ebx
+            push esi
+            push edi
+            mov ebx, edx
+            mov esi, ecx
+            call LoadFlic
+            mov ecx, dword ptr [esp + 0x10]
+            mov edx, dword ptr [gBack_screen]
+            lea eax, [esi + esi*8]
+            push 0
+            shl eax, 2
+            push 0
+            push offset SwapScreen
+            lea edi, [eax + gMain_flic_list+0x1c]
+            push ecx
+            push ebx
+            push edx
+            mov ecx, dword ptr [edi]
+            mov edx, dword ptr [eax + gMain_flic_list+0x20]
+            push ecx
+            mov ecx, esi
+            call PlayFlic
+            test esi, esi
+            jl L00462bfe
+            cmp dword ptr [edi], 0
+            je L00462bfe
+            mov ecx, edi
+            call MAMSUnlock
+    L00462bfe:
+            pop edi
+            pop esi
+            pop ebx
+            ret 4
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00462c20
 void C2_HOOK_FASTCALL RunFlic(int pIndex) {
-
 }
 
 // FUNCTION: CARMA2_HW 0x00462c30
 void C2_HOOK_FASTCALL PreloadBunchOfFlics(int pBunch_index) {
-
 }
 
 // FUNCTION: CARMA2_HW 0x00462c40
@@ -1475,7 +2016,8 @@ void C2_HOOK_FASTCALL ProcessFlicQueue(tU32 pInterval) {
 }
 
 // FUNCTION: CARMA2_HW 0x00462f00
-void C2_HOOK_FASTCALL AddToFlicQueue(int pIndex, int pX, int pY, int pMust_finish) {
+void C2_NAKED C2_HOOK_FASTCALL AddToFlicQueue(int pIndex, int pX, int pY, int pMust_finish) {
+#ifndef CARPOCALYPSE2_MATCHING
     tFlic_descriptor* the_flic = NULL;
     tFlic_descriptor* new_flic = NULL;
     tFlic_descriptor* last_flic = NULL;
@@ -1530,6 +2072,130 @@ void C2_HOOK_FASTCALL AddToFlicQueue(int pIndex, int pX, int pY, int pMust_finis
             pX >= 0 ? pX : gMain_flic_list[pIndex].x_offset,
             pY >= 0 ? pY : gMain_flic_list[pIndex].y_offset,
             20);
+#else
+    __asm {
+            push ecx
+            push ebx
+            push ebp
+            push esi
+            mov esi, dword ptr [gFirst_flic]
+            push edi
+            xor ebp, ebp
+            xor edi, edi
+            cmp esi, ebp
+            mov dword ptr [esp + 0x10], edx
+            mov ebx, ecx
+            je L00462f76
+    L00462f19:
+            cmp dword ptr [esi + 0x3c], edx
+            jne L00462f29
+            mov eax, dword ptr [esp + 0x18]
+            mov ecx, dword ptr [esi + 0x40]
+            cmp ecx, eax
+            je L00462f34
+    L00462f29:
+            mov edi, esi
+            mov esi, dword ptr [esi + 0x6c]
+            cmp esi, ebp
+            jne L00462f19
+            jmp L00462f76
+    L00462f34:
+            cmp dword ptr [esi + 0x68], ebp
+            je L00462f53
+            mov ecx, dword ptr [esi + 4]
+            push ecx
+            call BrMemFree
+            mov ecx, dword ptr [esi + 0x68]
+            add esp, 4
+            mov dword ptr [esi + 4], ebp
+            call PFfclose
+            mov dword ptr [esi + 0x68], ebp
+    L00462f53:
+            cmp dword ptr [esi], ebp
+            je L00462f59
+            mov dword ptr [esi], ebp
+    L00462f59:
+            cmp edi, ebp
+            je L00462f65
+            mov edx, dword ptr [esi + 0x6c]
+            mov dword ptr [edi + 0x6c], edx
+            jmp L00462f6d
+    L00462f65:
+            mov eax, dword ptr [esi + 0x6c]
+            mov dword ptr [gFirst_flic], eax
+    L00462f6d:
+            push esi
+            call BrMemFree
+            add esp, 4
+    L00462f76:
+            mov ecx, ebx
+            call LoadFlic
+            push 0xfd
+            push 0x70
+            call BrMemAllocate
+            mov dword ptr [eax + 0x6c], ebp
+            mov edx, dword ptr [gFirst_flic]
+            add esp, 8
+            cmp edx, ebp
+            jne L00462fa0
+            mov dword ptr [gFirst_flic], eax
+            jmp L00462fb3
+    L00462fa0:
+            mov ecx, dword ptr [edx + 0x6c]
+            cmp ecx, ebp
+            je L00462fb0
+    L00462fa7:
+            mov edx, ecx
+            mov ecx, dword ptr [edx + 0x6c]
+            cmp ecx, ebp
+            jne L00462fa7
+    L00462fb0:
+            mov dword ptr [edx + 0x6c], eax
+    L00462fb3:
+            mov esi, dword ptr [esp + 0x18]
+            mov ecx, dword ptr [esp + 0x1c]
+            cmp esi, ebp
+            mov dword ptr [eax + 0x34], ebp
+            mov dword ptr [eax + 0x54], ebx
+            mov dword ptr [eax + 0x5c], ecx
+            mov dword ptr [eax + 4], ebp
+            jge L00462fd5
+            lea edx, [ebx + ebx*8]
+            mov esi, dword ptr [edx*4 + gMain_flic_list+0x18]
+    L00462fd5:
+            mov edx, dword ptr [esp + 0x10]
+            cmp edx, ebp
+            jge L00462fe7
+            lea ecx, [ebx + ebx*8]
+            mov edx, dword ptr [ecx*4 + gMain_flic_list+0x14]
+    L00462fe7:
+            push 0x14
+            lea ecx, [ebx + ebx*8]
+            push esi
+            push edx
+            mov edx, dword ptr [gBack_screen]
+            shl ecx, 2
+            push edx
+            mov edx, dword ptr [ecx + gMain_flic_list+0x1c]
+            push edx
+            mov edx, dword ptr [ecx + gMain_flic_list+0x20]
+            mov ecx, dword ptr [ecx + gMain_flic_list]
+            push edx
+            push eax
+            mov edx, ebx
+            call StartFlic
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            pop ecx
+            ret 8
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00463020
@@ -1552,7 +2218,6 @@ void C2_HOOK_FASTCALL InitialiseFlicPanel(int pIndex, int pLeft, int pTop, int p
 
 // FUNCTION: CARMA2_HW 0x004630b0
 void C2_HOOK_FASTCALL DisposeFlicPanel(int pIndex) {
-
     EndFlic(&gPanel_flic[pIndex]);
     BrMemFree(gPanel_buffer[pIndex]->pixels);
     BrPixelmapFree(gPanel_buffer[pIndex]);
@@ -1621,7 +2286,6 @@ void C2_HOOK_FASTCALL ServicePanelFlics(int pCopy_to_buffer) {
 
 // FUNCTION: CARMA2_HW 0x00463270
 void C2_HOOK_FASTCALL ChangePanelFlic(int pIndex, tU8* pData, tU32 pData_length) {
-
     EndFlic(&gPanel_flic[pIndex]);
     gPanel_flic_data_length[pIndex] = pData_length;
     gPanel_flic_data[pIndex] = pData;
@@ -1642,49 +2306,41 @@ void C2_HOOK_FASTCALL ChangePanelFlic(int pIndex, tU8* pData, tU32 pData_length)
 
 // FUNCTION: CARMA2_HW 0x00463330
 br_pixelmap* C2_HOOK_FASTCALL GetPanelPixelmap(int pIndex) {
-
     return gPanel_buffer[pIndex];
 }
 
 // FUNCTION: CARMA2_HW 0x00463700
 void C2_HOOK_FASTCALL SuspendPendingFlic(void) {
-
     gPending_pending_flic = gPending_flic;
     gPending_flic = -1;
 }
 
 // FUNCTION: CARMA2_HW 0x00463720
 void C2_HOOK_FASTCALL ResumePendingFlic(void) {
-
     gPending_flic = gPending_pending_flic;
 }
 
 // FUNCTION: CARMA2_HW 0x00461a00
 void C2_HOOK_FASTCALL PlayFlicsFromDisk(void) {
-
     gPlay_from_disk = 1;
 }
 
 // FUNCTION: CARMA2_HW 0x00461a10
 void C2_HOOK_FASTCALL PlayFlicsFromMemory(void) {
-
     gPlay_from_disk = 0;
 }
 
 // FUNCTION: CARMA2_HW 0x00461a20
 void C2_HOOK_FASTCALL TurnOffPanelFlics(void) {
-
     gPanel_flic_disable = 1;
 }
 
 // FUNCTION: CARMA2_HW 0x00461a30
 void C2_HOOK_FASTCALL TurnOnPanelFlics(void) {
-
     gPanel_flic_disable = 0;
 }
 // FUNCTION: CARMA2_HW 0x00461990
 int C2_HOOK_FASTCALL TranslationMode(void) {
-
     return gTranslation_count;
 }
 
@@ -1752,7 +2408,6 @@ void C2_HOOK_FASTCALL InitFlics(void) {
 
 // FUNCTION: CARMA2_HW 0x00462a60
 int C2_HOOK_FASTCALL LoadFlic(int pIndex) {
-
     return 0;
 }
 
@@ -1767,7 +2422,6 @@ void C2_HOOK_FASTCALL UnlockFlic(int pIndex) {
 
 // FUNCTION: CARMA2_HW 0x00462cc0
 void C2_HOOK_FASTCALL InitFlicQueue(void) {
-
     gFirst_flic = NULL;
 }
 
@@ -1776,7 +2430,8 @@ void C2_HOOK_FASTCALL InitFlicQueue(void) {
 // ProcessFlicQueue
 
 // FUNCTION: CARMA2_HW 0x00462dc0
-void C2_HOOK_FASTCALL FlushFlicQueue(void) {
+void C2_NAKED C2_HOOK_FASTCALL FlushFlicQueue(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     tFlic_descriptor* the_flic;
     tFlic_descriptor* doomed_flic;
 
@@ -1795,6 +2450,140 @@ void C2_HOOK_FASTCALL FlushFlicQueue(void) {
         BrMemFree(doomed_flic);
     }
     gFirst_flic = NULL;
+#else
+    __asm {
+            push ebx
+            push ebp
+            push esi
+            push edi
+            xor ebx, ebx
+    L00462dc6:
+            mov esi, dword ptr [gFirst_flic]
+            cmp esi, ebx
+            mov eax, esi
+            je L00462ef1
+    L00462dd6:
+            cmp dword ptr [eax + 0x5c], ebx
+            jne L00462de8
+            mov eax, dword ptr [eax + 0x6c]
+            cmp eax, ebx
+            je L00462eb4
+            jmp L00462dd6
+    L00462de8:
+            mov esi, 1
+            mov ecx, esi
+            call RemoveTransientBitmaps
+            mov dword ptr [gPalette_fuck_prevention], esi
+            mov dword ptr [gTransparency_on], esi
+            mov esi, dword ptr [gFirst_flic]
+            call PDGetTotalTime
+            xor edi, edi
+            cmp esi, ebx
+            mov ebp, eax
+            je L00462e97
+    L00462e17:
+            mov edx, dword ptr [esi + 0x34]
+            mov ecx, dword ptr [esi + 0x30]
+            mov eax, ebp
+            sub eax, edx
+            cmp eax, ecx
+            jb L00462e31
+            mov ecx, esi
+            mov dword ptr [esi + 0x34], ebp
+            call PlayNextFlicFrame
+            jmp L00462e33
+    L00462e31:
+            xor eax, eax
+    L00462e33:
+            cmp eax, ebx
+            je L00462e8e
+            cmp dword ptr [esi + 0x68], ebx
+            je L00462e56
+            mov ecx, dword ptr [esi + 4]
+            push ecx
+            call BrMemFree
+            mov ecx, dword ptr [esi + 0x68]
+            add esp, 4
+            mov dword ptr [esi + 4], ebx
+            call PFfclose
+            mov dword ptr [esi + 0x68], ebx
+    L00462e56:
+            cmp dword ptr [esi], ebx
+            je L00462e5c
+            mov dword ptr [esi], ebx
+    L00462e5c:
+            cmp edi, ebx
+            je L00462e76
+            mov edx, dword ptr [esi + 0x6c]
+            mov eax, esi
+            mov dword ptr [edi + 0x6c], edx
+            mov esi, dword ptr [esi + 0x6c]
+            push eax
+            call BrMemFree
+            add esp, 4
+            jmp L00462e93
+    L00462e76:
+            mov eax, dword ptr [esi + 0x6c]
+            mov dword ptr [gFirst_flic], eax
+            mov eax, esi
+            mov esi, dword ptr [esi + 0x6c]
+            push eax
+            call BrMemFree
+            add esp, 4
+            jmp L00462e93
+    L00462e8e:
+            mov edi, esi
+            mov esi, dword ptr [esi + 0x6c]
+    L00462e93:
+            cmp esi, ebx
+            jne L00462e17
+    L00462e97:
+            mov dword ptr [gTransparency_on], ebx
+            mov dword ptr [gPalette_fuck_prevention], ebx
+            call DoMouseCursor
+            xor ecx, ecx
+            call PDScreenBufferSwap
+            jmp L00462dc6
+    L00462eb4:
+            cmp esi, ebx
+            je L00462ef1
+    L00462eb8:
+            mov eax, dword ptr [esi + 0x68]
+            mov edi, esi
+            cmp eax, ebx
+            je L00462edb
+            mov ecx, dword ptr [esi + 4]
+            push ecx
+            call BrMemFree
+            mov ecx, dword ptr [esi + 0x68]
+            add esp, 4
+            mov dword ptr [esi + 4], ebx
+            call PFfclose
+            mov dword ptr [esi + 0x68], ebx
+    L00462edb:
+            cmp dword ptr [esi], ebx
+            je L00462ee1
+            mov dword ptr [esi], ebx
+    L00462ee1:
+            mov esi, dword ptr [esi + 0x6c]
+            push edi
+            call BrMemFree
+            add esp, 4
+            cmp esi, ebx
+            jne L00462eb8
+    L00462ef1:
+            pop edi
+            pop esi
+            mov dword ptr [gFirst_flic], ebx
+            pop ebp
+            pop ebx
+            ret
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00463340
@@ -1875,7 +2664,6 @@ void C2_HOOK_FASTCALL LoadInterfaceStrings(void) {
 
 // FUNCTION: CARMA2_HW 0x00461980
 void C2_HOOK_FASTCALL FUN_00461980(int pSound_ID, tU32 pSound_time) {
-
     gSound_ID = pSound_ID;
     gSound_time = pSound_time;
 }

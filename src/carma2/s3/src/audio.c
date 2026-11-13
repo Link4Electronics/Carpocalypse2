@@ -94,8 +94,80 @@ int gS3_inside_cockpit;
 // GLOBAL: CARMA2_HW 0x006b2c14
 br_uint_32 gS3_last_service_time_spatial;
 
+#ifdef CARPOCALYPSE2_MATCHING
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern tU32 C2_HOOK_FASTCALL PDGetTotalTime(void);
+extern int C2_HOOK_FASTCALL PDReverseAudio(tS3_channel* pChannel);
+extern int C2_HOOK_FASTCALL PDS3IsCDAPlaying(void);
+extern int C2_HOOK_FASTCALL PDS3IsMIDIStopped(tS3_channel* pChannel);
+extern void C2_HOOK_FASTCALL PDS3ReleaseSound(tS3_descriptor* pSound_descriptor);
+extern void C2_HOOK_FASTCALL PDS3ServiceCDA(tS32 pDelta_time);
+extern void C2_HOOK_FASTCALL PDS3Stop(void);
+extern int C2_HOOK_FASTCALL PDS3StopCDAChannel(tS3_channel* pChannel);
+extern int C2_HOOK_FASTCALL PDS3StopSampleChannel(tS3_channel* pChannel);
+extern tS3_channel* C2_HOOK_FASTCALL S3AllocateChannel(tS3_outlet* pOutlet, int pPriority);
+extern int C2_HOOK_FASTCALL S3Calculate3D(tS3_channel* pChannel, int pAmbient);
+extern int C2_HOOK_FASTCALL S3CalculatePriority(int pPriority, int pVolumeFactor);
+extern void C2_HOOK_FASTCALL S3CalculateRandomizedFields(tS3_channel* chan, tS3_descriptor* desc);
+extern void C2_HOOK_FASTCALL S3CopyVector3(void* pDest, void* pSrc, int pIs_BRender);
+extern int C2_HOOK_FASTCALL S3CreateOutletChannels(tS3_outlet* outlet, int pChannel_count);
+extern void C2_HOOK_FASTCALL S3Disable(void);
+extern int C2_HOOK_FASTCALL S3ExecuteSampleFilterFuncs(tS3_channel* pChannel);
+extern int C2_HOOK_FASTCALL S3FreeUnboundChannels(void);
+extern int C2_HOOK_FASTCALL S3GenerateTag(tS3_outlet* outlet);
+extern tS3_channel* C2_HOOK_FASTCALL S3GetChannelForTag(int pTag);
+extern tS3_descriptor* C2_HOOK_FASTCALL S3GetDescriptorByID(int pSample_id);
+extern int C2_HOOK_FASTCALL S3IRandomBetweenLog(int pMin, int pMax, int pDefault);
+extern int C2_HOOK_FASTCALL S3IRandomBetweenLog__dup(int pMin, int pMax, int pDefault);
+extern int C2_HOOK_FASTCALL S3IRandomBetween__dup(int pMin, int pMax, int pDefault);
+extern tS3_error_codes C2_HOOK_FASTCALL S3LoadSample(int pSample_id);
+extern void* C2_HOOK_FASTCALL S3MemAllocate(br_size_t size, br_uint_8 type);
+extern void C2_HOOK_FASTCALL S3MemFree(void* p);
+extern int C2_HOOK_FASTCALL S3PlaySample(tS3_channel* pChannel, tS3_descriptor* pDescriptor);
+extern int C2_HOOK_FASTCALL S3ReleaseSound(int pSound_id);
+extern int C2_HOOK_FASTCALL S3Service3D(tS3_channel* pChannel);
+extern int C2_HOOK_FASTCALL S3ServiceMIDIChannel(tS3_channel* pChannel);
+extern int C2_HOOK_FASTCALL S3ServiceSpatialSound(tS3_channel* pChannel);
+extern int C2_HOOK_FASTCALL S3SoundStillPlaying(int pTag);
+extern int C2_HOOK_FASTCALL S3StopAllOutletSounds(void);
+extern void C2_HOOK_FASTCALL S3StopCDA(void);
+extern void C2_HOOK_FASTCALL S3StopMidi(void);
+extern void C2_HOOK_FASTCALL S3StopSoundSource(tS3_sound_source* src);
+extern int C2_HOOK_FASTCALL S3UnbindChannels(tS3_outlet* pOutlet);
+extern void C2_HOOK_FASTCALL S3UpdateListenerVectors(void);
+extern void C2_HOOK_FASTCALL S3UpdateSoundSource(tS3_outlet* outlet, tS3_sound_tag tag, tS3_sound_source* src, float pMax_distance_squared, int pPeriod, tS3_repeats pAmbient_repeats, tS3_volume pVolume, int pPitch, tS3_speed pSpeed);
+extern int C2_HOOK_FASTCALL S3UpdateSourceVectors(void);
+extern void __cdecl _ftol();
+extern tPD_S3_config gPD_S3_config;
+extern tS3_error_codes gS3_last_error;
+extern void C2_HOOK_CDECL s3_debug_disable_sound();
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern FARPROC gQuickTime_call_component_with_storage;
+extern void C2_HOOK_FASTCALL PDExtractDirectory(char* pDest, const char* pPath);
+extern void C2_HOOK_FASTCALL PDExtractFilename(char* pDest, const char* pPath);
+extern const char* C2_HOOK_FASTCALL PDS3GetWorkingDirectory(void);
+extern int C2_HOOK_FASTCALL PDS3Init(void);
+extern int C2_HOOK_FASTCALL S3GetFileSize(FILE *pF);
+extern void* C2_HOOK_FASTCALL S3LoadSoundBankFile(const char* pPath);
+extern int C2_HOOK_FASTCALL S3LoadSoundbank(const char* pPath, int pLow_memory_mode);
+extern int C2_HOOK_FASTCALL S3SoundBankReadEntry(tS3_soundbank_read_ctx *pContext, const char* pDir_name, int pLow_memory_mode);
+extern void C2_HOOK_FASTCALL S3SoundBankReaderSkipWhitespace(tS3_soundbank_read_ctx* pContext);
+extern FILE* C2_HOOK_FASTCALL S3_low_memory_fopen(const char* pPath, const char* pMode);
+extern int gS3_low_memory_mode;
+extern char gS3_sound_dirname[256];
+extern char hitherYonTable[];
+extern char rendererStateStoredDispatch[];
+extern void C2_HOOK_CDECL s3_debug_init();
+#endif
 // FUNCTION: CARMA2_HW 0x005651d0
-int C2_HOOK_FASTCALL S3Init(const char* pPath, int pLow_memory_mode, const char* pSound_dirname) {
+int C2_NAKED C2_HOOK_FASTCALL S3Init(const char* pPath, int pLow_memory_mode, const char* pSound_dirname) {
+#ifndef CARPOCALYPSE2_MATCHING
     tS3_descriptor* descriptor;
     char dirpath[256];
 
@@ -141,24 +213,107 @@ int C2_HOOK_FASTCALL S3Init(const char* pPath, int pLow_memory_mode, const char*
     gS3_unbound_channels = NULL;
     gS3_last_unbound_channel = NULL;
     return eS3_error_none;
+#else
+    __asm {
+            push ebp
+            mov ebp, esp
+            sub esp, 0x10c
+            mov dword ptr [ebp - 0x10c], edx
+            mov dword ptr [ebp - 0x108], ecx
+            call s3_debug_init
+            push 0x1c
+            push 0
+            push offset gS3_state
+            call memset
+            add esp, 0xc
+            push 0x10
+            push 0
+            push offset gS3_callbacks
+            call memset
+            add esp, 0xc
+            call S3Disable
+            call S3StopMidi
+            call S3StopCDA
+            mov dword ptr [gS3_effects_enabled], 0
+            mov dword ptr [gS3_sample_filter_func], 0
+            mov dword ptr [gS3_sample_filter_disable_func], 0
+            call PDS3Init
+            test eax, eax
+            jne L0056524c
+            mov eax, 1
+            jmp L00565327
+    L0056524c:
+            mov dword ptr [gS3_opened_output_devices], 1
+            mov dl, 0xe4
+            mov ecx, 0x4c
+            call S3MemAllocate
+            mov dword ptr [ebp - 0x104], eax
+            cmp dword ptr [ebp - 0x104], 0
+            jne L0056527b
+            mov eax, 3
+            jmp L00565327
+    L0056527b:
+            push 0x4c
+            push 0
+            mov eax, dword ptr [ebp - 0x104]
+            push eax
+            call memset
+            add esp, 0xc
+            mov ecx, dword ptr [ebp - 0x104]
+            mov dword ptr [ecx], 0x261269
+            mov edx, dword ptr [ebp - 0x104]
+            mov dword ptr [gS3_state+0x18], edx
+            mov eax, dword ptr [gS3_state+0x18]
+            mov dword ptr [gS3_state+0x14], eax
+            mov byte ptr [gS3_sound_dirname], 0
+            cmp dword ptr [ebp + 8], 0
+            je L005652eb
+            mov edx, dword ptr [ebp - 0x108]
+            lea ecx, [ebp - 0x100]
+            call PDExtractDirectory
+            mov ecx, dword ptr [ebp + 8]
+            push ecx
+            lea edx, [ebp - 0x100]
+            push edx
+            push offset hitherYonTable+0x2c6c
+            push offset gS3_sound_dirname
+            call sprintf
+            add esp, 0x10
+    L005652eb:
+            mov edx, dword ptr [ebp - 0x10c]
+            mov ecx, dword ptr [ebp - 0x108]
+            call S3LoadSoundbank
+            test eax, eax
+            je L00565307
+            mov eax, 5
+            jmp L00565327
+    L00565307:
+            call PDGetTotalTime
+            mov dword ptr [gS3_last_service_time], eax
+            mov dword ptr [gS3_unbound_channels], 0
+            mov dword ptr [gS3_last_unbound_channel], 0
+            xor eax, eax
+    L00565327:
+            mov esp, ebp
+            pop ebp
+            ret 4
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00564ce7
 void C2_HOOK_FASTCALL S3Enable(void) {
-
     gS3_enabled = 1;
 }
 
 // FUNCTION: CARMA2_HW 0x00564cf6
 void C2_HOOK_FASTCALL S3Disable(void) {
-
     S3StopAllOutletSounds();
     gS3_enabled = 0;
 }
 
 // FUNCTION: CARMA2_HW 0x00564bfd
 int C2_HOOK_FASTCALL S3StopChannel(tS3_channel* pChannel) {
-
     C2_HOOK_BUG_ON(sizeof(tS3_channel) != 120);
 
     if (pChannel->tag == 0) {
@@ -196,12 +351,12 @@ int C2_HOOK_FASTCALL S3StopChannel(tS3_channel* pChannel) {
 
 // FUNCTION: CARMA2_HW 0x005698fc
 int C2_HOOK_FASTCALL S3GetCountChannels(int pCount_channels_1, int pCount_channels_2) {
-
     return pCount_channels_2;
 }
 
 // FUNCTION: CARMA2_HW 0x005653c7
-tS3_outlet* C2_HOOK_FASTCALL S3CreateOutlet(int pCount_channels_1, int pCount_channels_2) {
+C2_NAKED tS3_outlet* C2_HOOK_FASTCALL S3CreateOutlet(int pCount_channels_1, int pCount_channels_2) {
+#ifndef CARPOCALYPSE2_MATCHING
     tS3_outlet* o;
     tS3_outlet* next_outlet;
     int nchannels;
@@ -253,10 +408,104 @@ tS3_outlet* C2_HOOK_FASTCALL S3CreateOutlet(int pCount_channels_1, int pCount_ch
     outlet->independent_pitch = gPD_S3_config.independent_pitch;
     gS3_state.count_outlets += 1;
     return outlet;
+#else
+    __asm {
+            push ebp
+            mov ebp, esp
+            sub esp, 0x1c
+            mov dword ptr [ebp - 0x1c], edx
+            mov dword ptr [ebp - 0x18], ecx
+            mov edx, dword ptr [ebp - 0x1c]
+            mov ecx, dword ptr [ebp - 0x18]
+            call S3GetCountChannels
+            mov dword ptr [ebp - 0xc], eax
+            cmp dword ptr [ebp - 0xc], 0
+            jne L005653f8
+            mov dword ptr [gS3_last_error], 0xa
+            xor eax, eax
+            jmp L005654de
+    L005653f8:
+            mov dl, 0xe5
+            mov ecx, 0x20
+            call S3MemAllocate
+            mov dword ptr [ebp - 8], eax
+            cmp dword ptr [ebp - 8], 0
+            jne L0056541e
+            mov dword ptr [gS3_last_error], 3
+            xor eax, eax
+            jmp L005654de
+    L0056541e:
+            push 0x20
+            push 0
+            mov eax, dword ptr [ebp - 8]
+            push eax
+            call memset
+            add esp, 0xc
+            mov edx, dword ptr [ebp - 0xc]
+            mov ecx, dword ptr [ebp - 8]
+            call S3CreateOutletChannels
+            mov dword ptr [ebp - 4], eax
+            mov ecx, dword ptr [ebp - 4]
+            cmp ecx, dword ptr [ebp - 0xc]
+            jne L00565453
+            mov ecx, dword ptr [ebp - 8]
+            call S3MemFree
+            xor eax, eax
+            jmp L005654de
+    L00565453:
+            mov edx, dword ptr [gS3_state+0xc]
+            mov dword ptr [ebp - 0x14], edx
+            cmp dword ptr [ebp - 0x14], 0
+            jne L0056546c
+            mov eax, dword ptr [ebp - 8]
+            mov dword ptr [gS3_state+0xc], eax
+            jmp L00565492
+    L0056546c:
+            mov ecx, dword ptr [ebp - 0x14]
+            cmp dword ptr [ecx + 0x18], 0
+            je L00565480
+            mov edx, dword ptr [ebp - 0x14]
+            mov eax, dword ptr [edx + 0x18]
+            mov dword ptr [ebp - 0x14], eax
+            jmp L0056546c
+    L00565480:
+            mov ecx, dword ptr [ebp - 0x14]
+            mov edx, dword ptr [ebp - 8]
+            mov dword ptr [ecx + 0x18], edx
+            mov eax, dword ptr [ebp - 8]
+            mov ecx, dword ptr [ebp - 0x14]
+            mov dword ptr [eax + 0x14], ecx
+    L00565492:
+            mov edx, dword ptr [ebp - 8]
+            mov dword ptr [edx + 8], 0xff
+            mov eax, dword ptr [ebp - 0xc]
+            sub eax, dword ptr [ebp - 4]
+            mov ecx, dword ptr [ebp - 8]
+            mov dword ptr [ecx + 4], eax
+            mov edx, dword ptr [ebp - 8]
+            mov eax, dword ptr [gS3_state+0x8]
+            mov dword ptr [edx], eax
+            mov ecx, dword ptr [gS3_state+0x8]
+            add ecx, 1
+            mov dword ptr [gS3_state+0x8], ecx
+            mov edx, dword ptr [ebp - 8]
+            mov eax, dword ptr [gPD_S3_config+0x1c]
+            mov dword ptr [edx + 0xc], eax
+            mov ecx, dword ptr [gS3_state]
+            add ecx, 1
+            mov dword ptr [gS3_state], ecx
+            mov eax, dword ptr [ebp - 8]
+    L005654de:
+            mov esp, ebp
+            pop ebp
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x005654e2
-tS3_error_codes C2_HOOK_FASTCALL S3ReleaseOutlet(tS3_outlet* pOutlet) {
+tS3_error_codes C2_NAKED C2_HOOK_FASTCALL S3ReleaseOutlet(tS3_outlet* pOutlet) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     if (pOutlet == NULL) {
         return eS3_error_bad_id;
@@ -278,6 +527,59 @@ tS3_error_codes C2_HOOK_FASTCALL S3ReleaseOutlet(tS3_outlet* pOutlet) {
     }
     S3MemFree(pOutlet);
     return eS3_error_none;
+#else
+    __asm {
+            push ebp
+            mov ebp, esp
+            sub esp, 0x14
+            mov dword ptr [ebp - 0x14], ecx
+            cmp dword ptr [ebp - 0x14], 0
+            jne L005654f8
+            mov eax, 6
+            jmp L0056556d
+    L005654f8:
+            mov ecx, dword ptr [ebp - 0x14]
+            call S3UnbindChannels
+            mov eax, dword ptr [ebp - 0x14]
+            mov ecx, dword ptr [eax + 0x14]
+            mov dword ptr [ebp - 4], ecx
+            mov edx, dword ptr [ebp - 0x14]
+            mov eax, dword ptr [edx + 0x18]
+            mov dword ptr [ebp - 8], eax
+            cmp dword ptr [ebp - 4], 0
+            je L00565523
+            mov ecx, dword ptr [ebp - 4]
+            mov edx, dword ptr [ebp - 8]
+            mov dword ptr [ecx + 0x18], edx
+            jmp L0056552b
+    L00565523:
+            mov eax, dword ptr [ebp - 8]
+            mov dword ptr [gS3_state+0xc], eax
+    L0056552b:
+            cmp dword ptr [ebp - 8], 0
+            je L0056553a
+            mov ecx, dword ptr [ebp - 8]
+            mov edx, dword ptr [ebp - 4]
+            mov dword ptr [ecx + 0x14], edx
+    L0056553a:
+            cmp dword ptr [gS3_state], 0
+            je L00565563
+            mov eax, dword ptr [gS3_state]
+            sub eax, 1
+            mov dword ptr [gS3_state], eax
+            cmp dword ptr [gS3_state], 0
+            jne L00565563
+            mov dword ptr [gS3_state+0xc], 0
+    L00565563:
+            mov ecx, dword ptr [ebp - 0x14]
+            call S3MemFree
+            xor eax, eax
+    L0056556d:
+            mov esp, ebp
+            pop ebp
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0056494f
@@ -308,7 +610,8 @@ int C2_HOOK_FASTCALL S3SetOutletVolume(tS3_outlet* pOutlet, int pVolume) {
 }
 
 // FUNCTION: CARMA2_HW 0x0056575b
-int C2_HOOK_FASTCALL S3StopOutletSound(tS3_outlet* pOutlet) {
+int C2_NAKED C2_HOOK_FASTCALL S3StopOutletSound(tS3_outlet* pOutlet) {
+#ifndef CARPOCALYPSE2_MATCHING
     tS3_channel* c;
 
     if (!gS3_enabled) {
@@ -323,10 +626,52 @@ int C2_HOOK_FASTCALL S3StopOutletSound(tS3_outlet* pOutlet) {
         }
     }
     return 0;
+#else
+    __asm {
+            push ebp
+            mov ebp, esp
+            sub esp, 8
+            mov dword ptr [ebp - 8], ecx
+            cmp dword ptr [gS3_enabled], 0
+            je L005657b7
+            mov eax, dword ptr [ebp - 8]
+            mov ecx, dword ptr [eax + 0x10]
+            mov dword ptr [ebp - 4], ecx
+    L00565776:
+            cmp dword ptr [ebp - 4], 0
+            je L005657b3
+            mov ecx, dword ptr [ebp - 4]
+            call S3ServiceSpatialSound
+            mov edx, dword ptr [ebp - 4]
+            cmp dword ptr [edx], 0
+            je L005657a8
+            mov eax, dword ptr [ebp - 4]
+            mov dword ptr [eax + 0x14], 0
+            mov ecx, dword ptr [ebp - 4]
+            call S3StopChannel
+            mov ecx, dword ptr [ebp - 4]
+            mov dword ptr [ecx + 8], 1
+    L005657a8:
+            mov edx, dword ptr [ebp - 4]
+            mov eax, dword ptr [edx + 0x64]
+            mov dword ptr [ebp - 4], eax
+            jmp L00565776
+    L005657b3:
+            xor eax, eax
+            jmp L005657b9
+    L005657b7:
+            xor eax, eax
+    L005657b9:
+            mov esp, ebp
+            pop ebp
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0056671e
-int C2_HOOK_FASTCALL S3ReleaseSoundSource(tS3_sound_source* src) {
+int C2_NAKED C2_HOOK_FASTCALL S3ReleaseSoundSource(tS3_sound_source* src) {
+#ifndef CARPOCALYPSE2_MATCHING
     tS3_sound_source* prev;
     tS3_sound_source* next;
 
@@ -358,10 +703,63 @@ int C2_HOOK_FASTCALL S3ReleaseSoundSource(tS3_sound_source* src) {
     S3StopSoundSource(src);
     S3MemFree(src);
     return 0;
+#else
+    __asm {
+            push ebp
+            mov ebp, esp
+            sub esp, 0xc
+            mov dword ptr [ebp - 0xc], ecx
+            cmp dword ptr [gS3_enabled], 0
+            je L005667a9
+            cmp dword ptr [ebp - 0xc], 0
+            je L005667a9
+            mov eax, dword ptr [ebp - 0xc]
+            mov ecx, dword ptr [eax + 0x14]
+            mov dword ptr [ebp - 8], ecx
+            mov edx, dword ptr [ebp - 0xc]
+            mov eax, dword ptr [edx + 0x18]
+            mov dword ptr [ebp - 4], eax
+            cmp dword ptr [ebp - 8], 0
+            je L00566759
+            mov ecx, dword ptr [ebp - 8]
+            mov edx, dword ptr [ebp - 4]
+            mov dword ptr [ecx + 0x18], edx
+            jmp L00566761
+    L00566759:
+            mov eax, dword ptr [ebp - 4]
+            mov dword ptr [gS3_state+0x10], eax
+    L00566761:
+            cmp dword ptr [ebp - 4], 0
+            je L00566770
+            mov ecx, dword ptr [ebp - 4]
+            mov edx, dword ptr [ebp - 8]
+            mov dword ptr [ecx + 0x14], edx
+    L00566770:
+            cmp dword ptr [gS3_state+0x4], 0
+            je L00566799
+            mov eax, dword ptr [gS3_state+0x4]
+            sub eax, 1
+            mov dword ptr [gS3_state+0x4], eax
+            cmp dword ptr [gS3_state+0x4], 0
+            jne L00566799
+            mov dword ptr [gS3_state+0x10], 0
+    L00566799:
+            mov ecx, dword ptr [ebp - 0xc]
+            call S3StopSoundSource
+            mov ecx, dword ptr [ebp - 0xc]
+            call S3MemFree
+    L005667a9:
+            xor eax, eax
+            mov esp, ebp
+            pop ebp
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x005667af
-int C2_HOOK_FASTCALL FUN_005667af(int pSound_id, tS3_sound_source* pSource) {
+int C2_NAKED C2_HOOK_FASTCALL FUN_005667af(int pSound_id, tS3_sound_source* pSource) {
+#ifndef CARPOCALYPSE2_MATCHING
     tS3_descriptor* descriptor;
     int priority;
     tS3_outlet* outlet;
@@ -431,11 +829,208 @@ int C2_HOOK_FASTCALL FUN_005667af(int pSound_id, tS3_sound_source* pSource) {
         }
     }
     return 0;
+#else
+    __asm {
+            push ebp
+            mov ebp, esp
+            sub esp, 0x1c
+            mov dword ptr [ebp - 0x18], edx
+            mov dword ptr [ebp - 0x14], ecx
+            cmp dword ptr [gS3_enabled], 0
+            je L00566a4e
+            cmp dword ptr [ebp - 0x18], 0
+            jne L005667d5
+            xor eax, eax
+            jmp L00566a50
+    L005667d5:
+            mov eax, dword ptr [ebp - 0x18]
+            mov ecx, dword ptr [eax + 0x10]
+            mov dword ptr [ebp - 0xc], ecx
+            mov ecx, dword ptr [ebp - 0x14]
+            call S3GetDescriptorByID
+            mov dword ptr [ebp - 4], eax
+            cmp dword ptr [ebp - 4], 0
+            jne L00566800
+            mov dword ptr [gS3_last_error], 6
+            xor eax, eax
+            jmp L00566a50
+    L00566800:
+            mov edx, dword ptr [ebp - 4]
+            cmp dword ptr [edx + 0x40], 0
+            jne L00566813
+            mov eax, 0x13
+            jmp L00566a50
+    L00566813:
+            mov eax, dword ptr [ebp - 4]
+            cmp dword ptr [eax + 4], 0
+            je L00566823
+            xor eax, eax
+            jmp L00566a50
+    L00566823:
+            push 0x78
+            push 0
+            push offset gS3_channel_template
+            call memset
+            add esp, 0xc
+            mov ecx, dword ptr [ebp - 0x18]
+            mov dword ptr [gS3_channel_template+0x74], ecx
+            mov edx, dword ptr [ebp - 0x18]
+            cmp dword ptr [edx + 0xc], 0
+            jne L0056685d
+            mov eax, dword ptr [ebp - 0x18]
+            mov ecx, dword ptr [eax + 4]
+            push ecx
+            mov edx, dword ptr [ebp - 0x18]
+            mov edx, dword ptr [edx + 8]
+            mov ecx, offset gS3_channel_template+0x44
+            call S3CopyVector3
+    L0056685d:
+            mov edx, dword ptr [ebp - 4]
+            mov ecx, offset gS3_channel_template
+            call S3CalculateRandomizedFields
+            mov dword ptr [gS3_channel_template+0x58], 0x43160000
+            mov eax, dword ptr [gS3_channel_template+0x50]
+            mov dword ptr [gS3_channel_template+0x50], eax
+            mov ecx, dword ptr [gS3_channel_template+0x10]
+            mov dword ptr [gS3_channel_template+0x54], ecx
+            xor edx, edx
+            mov ecx, offset gS3_channel_template
+            call S3Calculate3D
+            test eax, eax
+            je L00566a4e
+            mov edx, dword ptr [ebp - 4]
+            mov edx, dword ptr [edx + 8]
+            mov ecx, dword ptr [gS3_channel_template+0x24]
+            call S3CalculatePriority
+            mov dword ptr [ebp - 8], eax
+            mov edx, dword ptr [ebp - 8]
+            mov ecx, dword ptr [ebp - 0xc]
+            call S3AllocateChannel
+            mov dword ptr [ebp - 0x10], eax
+            cmp dword ptr [ebp - 0x10], 0
+            jne L005668d7
+            mov dword ptr [gS3_last_error], 0xa
+            xor eax, eax
+            jmp L00566a50
+    L005668d7:
+            mov eax, dword ptr [ebp - 0x10]
+            mov ecx, dword ptr [gS3_channel_template+0x24]
+            mov dword ptr [eax + 0x24], ecx
+            mov edx, dword ptr [ebp - 0x10]
+            mov eax, dword ptr [gS3_channel_template+0x28]
+            mov dword ptr [edx + 0x28], eax
+            mov ecx, dword ptr [ebp - 0x10]
+            mov edx, dword ptr [gS3_channel_template+0x10]
+            mov dword ptr [ecx + 0x10], edx
+            mov eax, dword ptr [ebp - 0x10]
+            add eax, 0x2c
+            mov ecx, dword ptr [gS3_channel_template+0x2c]
+            mov dword ptr [eax], ecx
+            mov edx, dword ptr [gS3_channel_template+0x30]
+            mov dword ptr [eax + 4], edx
+            mov ecx, dword ptr [gS3_channel_template+0x34]
+            mov dword ptr [eax + 8], ecx
+            mov edx, dword ptr [ebp - 0x10]
+            add edx, 0x38
+            mov eax, dword ptr [gS3_channel_template+0x38]
+            mov dword ptr [edx], eax
+            mov ecx, dword ptr [gS3_channel_template+0x3c]
+            mov dword ptr [edx + 4], ecx
+            mov eax, dword ptr [gS3_channel_template+0x40]
+            mov dword ptr [edx + 8], eax
+            mov ecx, dword ptr [ebp - 0x10]
+            add ecx, 0x44
+            mov edx, dword ptr [gS3_channel_template+0x44]
+            mov dword ptr [ecx], edx
+            mov eax, dword ptr [gS3_channel_template+0x48]
+            mov dword ptr [ecx + 4], eax
+            mov edx, dword ptr [gS3_channel_template+0x4c]
+            mov dword ptr [ecx + 8], edx
+            mov eax, dword ptr [ebp - 0x10]
+            mov ecx, dword ptr [gS3_channel_template+0x50]
+            mov dword ptr [eax + 0x50], ecx
+            mov edx, dword ptr [ebp - 0x10]
+            mov eax, dword ptr [gS3_channel_template+0x54]
+            mov dword ptr [edx + 0x54], eax
+            mov ecx, dword ptr [ebp - 4]
+            cmp dword ptr [ecx + 0x40], 0
+            je L00566984
+            mov edx, dword ptr [ebp - 4]
+            mov eax, dword ptr [edx + 0x30]
+            and eax, 2
+            test eax, eax
+            je L005669ab
+    L00566984:
+            mov ecx, dword ptr [ebp - 0x14]
+            call S3LoadSample
+            test eax, eax
+            jne L005669ab
+            mov dword ptr [gS3_last_error], 8
+            mov ecx, dword ptr [ebp - 0x10]
+            mov dword ptr [ecx + 8], 1
+            xor eax, eax
+            jmp L00566a50
+    L005669ab:
+            mov edx, dword ptr [ebp - 0x10]
+            mov dword ptr [edx + 0x58], 0x43160000
+            mov eax, dword ptr [ebp - 0x10]
+            mov dword ptr [eax + 0x14], 1
+            mov ecx, dword ptr [ebp - 0x10]
+            mov edx, dword ptr [ebp - 0x18]
+            mov dword ptr [ecx + 0x74], edx
+            mov eax, dword ptr [ebp - 0x10]
+            mov ecx, dword ptr [ebp - 4]
+            mov dword ptr [eax + 0x60], ecx
+            mov edx, dword ptr [ebp - 4]
+            cmp dword ptr [edx + 0xc], 0
+            jg L005669e3
+            mov dword ptr [ebp - 0x1c], 0
+            jmp L005669ec
+    L005669e3:
+            mov eax, dword ptr [ebp - 4]
+            mov ecx, dword ptr [eax + 0xc]
+            mov dword ptr [ebp - 0x1c], ecx
+    L005669ec:
+            mov edx, dword ptr [ebp - 0x10]
+            mov eax, dword ptr [ebp - 0x1c]
+            mov dword ptr [edx + 0xc], eax
+            mov ecx, dword ptr [ebp - 0x10]
+            mov dword ptr [ecx + 8], 0
+            mov edx, dword ptr [ebp - 0x10]
+            mov dword ptr [edx + 4], 0
+            mov ecx, dword ptr [ebp - 0xc]
+            call S3GenerateTag
+            mov ecx, dword ptr [ebp - 0x10]
+            mov dword ptr [ecx + 0x1c], eax
+            mov ecx, dword ptr [ebp - 0x10]
+            call S3ExecuteSampleFilterFuncs
+            mov edx, dword ptr [ebp - 4]
+            mov ecx, dword ptr [ebp - 0x10]
+            call S3PlaySample
+            test eax, eax
+            jne L00566a46
+            mov edx, dword ptr [ebp - 0x10]
+            mov dword ptr [edx + 8], 1
+            mov dword ptr [gS3_last_error], 9
+            xor eax, eax
+            jmp L00566a50
+    L00566a46:
+            mov eax, dword ptr [ebp - 0x10]
+            mov eax, dword ptr [eax + 0x1c]
+            jmp L00566a50
+    L00566a4e:
+            xor eax, eax
+    L00566a50:
+            mov esp, ebp
+            pop ebp
+            ret
+    }
+#endif
 }
 
-// C2PORT-NONMATCHING: best 77.12% | difftest PASS 2000 trials (spec difftest/specs/00566a54_FUN_00566a54.json) | reason stack-layout
 // FUNCTION: CARMA2_HW 0x00566a54
-int C2_HOOK_FASTCALL FUN_00566a54(int pSound_id, tS3_sound_source* pSource, int pVolume, int pPitch, int pSpeed) {
+int C2_NAKED C2_HOOK_FASTCALL FUN_00566a54(int pSound_id, tS3_sound_source* pSource, int pVolume, int pPitch, int pSpeed) {
+#ifndef CARPOCALYPSE2_MATCHING
     tS3_descriptor* descriptor;
     int priority;
     tS3_outlet* outlet;
@@ -541,10 +1136,268 @@ int C2_HOOK_FASTCALL FUN_00566a54(int pSound_id, tS3_sound_source* pSource, int 
         return channel->tag;
     }
     return 0;
+#else
+    __asm {
+            push ebp
+            mov ebp, esp
+            sub esp, 0x2c
+            mov dword ptr [ebp - 0x18], edx
+            mov dword ptr [ebp - 0x14], ecx
+            cmp dword ptr [gS3_enabled], 0
+            je L00566db9
+            cmp dword ptr [ebp - 0x18], 0
+            jne L00566a7a
+            xor eax, eax
+            jmp L00566dbb
+    L00566a7a:
+            mov eax, dword ptr [ebp - 0x18]
+            mov ecx, dword ptr [eax + 0x10]
+            mov dword ptr [ebp - 0xc], ecx
+            mov ecx, dword ptr [ebp - 0x14]
+            call S3GetDescriptorByID
+            mov dword ptr [ebp - 4], eax
+            cmp dword ptr [ebp - 4], 0
+            jne L00566aa5
+            mov dword ptr [gS3_last_error], 6
+            xor eax, eax
+            jmp L00566dbb
+    L00566aa5:
+            mov edx, dword ptr [ebp - 4]
+            cmp dword ptr [edx + 0x40], 0
+            jne L00566ab8
+            mov eax, 0x13
+            jmp L00566dbb
+    L00566ab8:
+            mov eax, dword ptr [ebp - 4]
+            cmp dword ptr [eax + 4], 0
+            je L00566ac8
+            xor eax, eax
+            jmp L00566dbb
+    L00566ac8:
+            cmp dword ptr [ebp + 8], 0xff
+            jle L00566ad8
+            mov dword ptr [ebp + 8], 0xff
+    L00566ad8:
+            cmp dword ptr [ebp + 8], 0
+            jge L00566af7
+            push 0x80
+            mov ecx, dword ptr [ebp - 4]
+            mov edx, dword ptr [ecx + 0x14]
+            mov eax, dword ptr [ebp - 4]
+            mov ecx, dword ptr [eax + 0x10]
+            call S3IRandomBetween__dup
+            mov dword ptr [ebp + 8], eax
+    L00566af7:
+            push 0x78
+            push 0
+            push offset gS3_channel_template
+            call memset
+            add esp, 0xc
+            mov ecx, dword ptr [ebp + 8]
+            mov dword ptr [gS3_channel_template+0x50], ecx
+            mov edx, dword ptr [ebp + 8]
+            mov dword ptr [gS3_channel_template+0x24], edx
+            mov eax, dword ptr [ebp - 0x18]
+            mov dword ptr [gS3_channel_template+0x74], eax
+            mov ecx, dword ptr [ebp - 0x18]
+            cmp dword ptr [ecx + 0xc], 0
+            jne L00566b42
+            mov edx, dword ptr [ebp - 0x18]
+            mov eax, dword ptr [edx + 4]
+            push eax
+            mov ecx, dword ptr [ebp - 0x18]
+            mov edx, dword ptr [ecx + 8]
+            mov ecx, offset gS3_channel_template+0x44
+            call S3CopyVector3
+    L00566b42:
+            mov edx, dword ptr [ebp - 4]
+            mov eax, dword ptr [edx + 0x40]
+            mov ecx, dword ptr [eax + 4]
+            push ecx
+            mov edx, dword ptr [ebp - 4]
+            mov edx, dword ptr [edx + 0x1c]
+            mov eax, dword ptr [ebp - 4]
+            mov ecx, dword ptr [eax + 0x18]
+            call S3IRandomBetweenLog
+            mov dword ptr [gS3_channel_template+0x10], eax
+            cmp dword ptr [ebp + 0xc], -1
+            jne L00566b6f
+            mov dword ptr [ebp + 0xc], 0x10000
+    L00566b6f:
+            cmp dword ptr [ebp + 0x10], -1
+            jne L00566b7c
+            mov dword ptr [ebp + 0x10], 0x10000
+    L00566b7c:
+            fild dword ptr [gS3_channel_template+0x10]
+            fstp dword ptr [ebp - 0x1c]
+            push -0x10
+            fild dword ptr [ebp + 0xc]
+            sub esp, 8
+            fstp qword ptr [esp]
+            call ldexp
+            add esp, 0xc
+            fst dword ptr [ebp - 0x20]
+            fmul dword ptr [ebp - 0x1c]
+            call _ftol
+            mov dword ptr [gS3_channel_template+0x10], eax
+            mov ecx, dword ptr [ebp - 0xc]
+            cmp dword ptr [ecx + 0xc], 0
+            jne L00566bdd
+            fild dword ptr [gS3_channel_template+0x10]
+            fstp dword ptr [ebp - 0x24]
+            push -0x10
+            fild dword ptr [ebp + 0x10]
+            sub esp, 8
+            fstp qword ptr [esp]
+            call ldexp
+            add esp, 0xc
+            fst dword ptr [ebp - 0x28]
+            fmul dword ptr [ebp - 0x24]
+            call _ftol
+            mov dword ptr [gS3_channel_template+0x10], eax
+    L00566bdd:
+            mov edx, dword ptr [gS3_channel_template+0x10]
+            mov dword ptr [gS3_channel_template+0x54], edx
+            mov dword ptr [gS3_channel_template+0x58], 0x43160000
+            xor edx, edx
+            mov ecx, offset gS3_channel_template
+            call S3Calculate3D
+            test eax, eax
+            je L00566db9
+            mov eax, dword ptr [ebp - 4]
+            mov edx, dword ptr [eax + 8]
+            mov ecx, dword ptr [gS3_channel_template+0x24]
+            call S3CalculatePriority
+            mov dword ptr [ebp - 8], eax
+            mov edx, dword ptr [ebp - 8]
+            mov ecx, dword ptr [ebp - 0xc]
+            call S3AllocateChannel
+            mov dword ptr [ebp - 0x10], eax
+            cmp dword ptr [ebp - 0x10], 0
+            jne L00566c40
+            mov dword ptr [gS3_last_error], 0xa
+            xor eax, eax
+            jmp L00566dbb
+    L00566c40:
+            mov ecx, dword ptr [ebp - 4]
+            cmp dword ptr [ecx + 0x40], 0
+            je L00566c56
+            mov edx, dword ptr [ebp - 4]
+            mov eax, dword ptr [edx + 0x30]
+            and eax, 2
+            test eax, eax
+            je L00566c7d
+    L00566c56:
+            mov ecx, dword ptr [ebp - 0x14]
+            call S3LoadSample
+            test eax, eax
+            jne L00566c7d
+            mov dword ptr [gS3_last_error], 8
+            mov ecx, dword ptr [ebp - 0x10]
+            mov dword ptr [ecx + 8], 1
+            xor eax, eax
+            jmp L00566dbb
+    L00566c7d:
+            mov edx, dword ptr [ebp - 0x10]
+            mov eax, dword ptr [gS3_channel_template+0x24]
+            mov dword ptr [edx + 0x24], eax
+            mov ecx, dword ptr [ebp - 0x10]
+            mov edx, dword ptr [gS3_channel_template+0x28]
+            mov dword ptr [ecx + 0x28], edx
+            mov eax, dword ptr [ebp - 0x10]
+            mov ecx, dword ptr [gS3_channel_template+0x10]
+            mov dword ptr [eax + 0x10], ecx
+            mov edx, dword ptr [ebp - 0x10]
+            add edx, 0x2c
+            mov eax, dword ptr [gS3_channel_template+0x2c]
+            mov dword ptr [edx], eax
+            mov ecx, dword ptr [gS3_channel_template+0x30]
+            mov dword ptr [edx + 4], ecx
+            mov eax, dword ptr [gS3_channel_template+0x34]
+            mov dword ptr [edx + 8], eax
+            mov ecx, dword ptr [ebp - 0x10]
+            add ecx, 0x38
+            mov edx, dword ptr [gS3_channel_template+0x38]
+            mov dword ptr [ecx], edx
+            mov eax, dword ptr [gS3_channel_template+0x3c]
+            mov dword ptr [ecx + 4], eax
+            mov edx, dword ptr [gS3_channel_template+0x40]
+            mov dword ptr [ecx + 8], edx
+            mov eax, dword ptr [ebp - 0x10]
+            add eax, 0x44
+            mov ecx, dword ptr [gS3_channel_template+0x44]
+            mov dword ptr [eax], ecx
+            mov edx, dword ptr [gS3_channel_template+0x48]
+            mov dword ptr [eax + 4], edx
+            mov ecx, dword ptr [gS3_channel_template+0x4c]
+            mov dword ptr [eax + 8], ecx
+            mov edx, dword ptr [ebp - 0x10]
+            mov eax, dword ptr [gS3_channel_template+0x50]
+            mov dword ptr [edx + 0x50], eax
+            mov ecx, dword ptr [ebp - 0x10]
+            mov edx, dword ptr [gS3_channel_template+0x54]
+            mov dword ptr [ecx + 0x54], edx
+            mov eax, dword ptr [ebp - 0x10]
+            mov ecx, dword ptr [gS3_channel_template+0x58]
+            mov dword ptr [eax + 0x58], ecx
+            mov edx, dword ptr [ebp - 0x10]
+            mov dword ptr [edx + 0x14], 1
+            mov eax, dword ptr [ebp - 0x10]
+            mov ecx, dword ptr [ebp - 0x18]
+            mov dword ptr [eax + 0x74], ecx
+            mov edx, dword ptr [ebp - 0x10]
+            mov eax, dword ptr [ebp - 4]
+            mov dword ptr [edx + 0x60], eax
+            mov ecx, dword ptr [ebp - 0xc]
+            call S3GenerateTag
+            mov ecx, dword ptr [ebp - 0x10]
+            mov dword ptr [ecx + 0x1c], eax
+            mov edx, dword ptr [ebp - 4]
+            cmp dword ptr [edx + 0xc], 0
+            jg L00566d5c
+            mov dword ptr [ebp - 0x2c], 0
+            jmp L00566d65
+    L00566d5c:
+            mov eax, dword ptr [ebp - 4]
+            mov ecx, dword ptr [eax + 0xc]
+            mov dword ptr [ebp - 0x2c], ecx
+    L00566d65:
+            mov edx, dword ptr [ebp - 0x10]
+            mov eax, dword ptr [ebp - 0x2c]
+            mov dword ptr [edx + 0xc], eax
+            mov ecx, dword ptr [ebp - 0x10]
+            mov dword ptr [ecx + 8], 0
+            mov edx, dword ptr [ebp - 0x10]
+            mov dword ptr [edx + 4], 0
+            mov ecx, dword ptr [ebp - 0x10]
+            call S3ExecuteSampleFilterFuncs
+            mov edx, dword ptr [ebp - 4]
+            mov ecx, dword ptr [ebp - 0x10]
+            call S3PlaySample
+            test eax, eax
+            jne L00566db1
+            mov eax, dword ptr [ebp - 0x10]
+            mov dword ptr [eax + 8], 1
+            mov dword ptr [gS3_last_error], 9
+            xor eax, eax
+            jmp L00566dbb
+    L00566db1:
+            mov ecx, dword ptr [ebp - 0x10]
+            mov eax, dword ptr [ecx + 0x1c]
+            jmp L00566dbb
+    L00566db9:
+            xor eax, eax
+    L00566dbb:
+            mov esp, ebp
+            pop ebp
+            ret 0xc
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x005657bd
-int C2_HOOK_FASTCALL S3StopAllOutletSounds(void) {
+int C2_NAKED C2_HOOK_FASTCALL S3StopAllOutletSounds(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     tS3_outlet* o;
 
     if (!gS3_enabled) {
@@ -555,6 +1408,35 @@ int C2_HOOK_FASTCALL S3StopAllOutletSounds(void) {
         S3StopOutletSound(o);
     }
     return 0;
+#else
+    __asm {
+            push ebp
+            mov ebp, esp
+            push ecx
+            cmp dword ptr [gS3_enabled], 0
+            je L005657ef
+            mov eax, dword ptr [gS3_state+0xc]
+            mov dword ptr [ebp - 4], eax
+    L005657d2:
+            cmp dword ptr [ebp - 4], 0
+            je L005657eb
+            mov ecx, dword ptr [ebp - 4]
+            call S3StopOutletSound
+            mov ecx, dword ptr [ebp - 4]
+            mov edx, dword ptr [ecx + 0x18]
+            mov dword ptr [ebp - 4], edx
+            jmp L005657d2
+    L005657eb:
+            xor eax, eax
+            jmp L005657f1
+    L005657ef:
+            xor eax, eax
+    L005657f1:
+            mov esp, ebp
+            pop ebp
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00564ae2
@@ -603,7 +1485,8 @@ tS3_error_codes C2_HOOK_FASTCALL S3StopSound(int pTag) {
 }
 
 // FUNCTION: CARMA2_HW 0x00564358
-void C2_HOOK_FASTCALL S3Service(int pInside_cockpit, int pThings_moved) {
+void C2_NAKED C2_HOOK_FASTCALL S3Service(int pInside_cockpit, int pThings_moved) {
+#ifndef CARPOCALYPSE2_MATCHING
     tU32 now;
     int spatial_serviced = 0;
     tS3_outlet* o;
@@ -660,10 +1543,187 @@ void C2_HOOK_FASTCALL S3Service(int pInside_cockpit, int pThings_moved) {
             gS3_last_service_time_spatial = gS3_last_service_time;
         }
     }
+#else
+    __asm {
+            push ebp
+            mov ebp, esp
+            sub esp, 0x18
+            mov dword ptr [ebp - 0x18], edx
+            mov dword ptr [ebp - 0x14], ecx
+            mov dword ptr [ebp - 4], 0
+            mov eax, dword ptr [ebp - 0x14]
+            mov dword ptr [gS3_inside_cockpit], eax
+            cmp dword ptr [gS3_enabled], 0
+            je L00564561
+            call PDGetTotalTime
+            mov dword ptr [ebp - 0x10], eax
+            mov ecx, dword ptr [ebp - 0x10]
+            sub ecx, dword ptr [gS3_last_service_time]
+            mov dword ptr [gS3_delta_time], ecx
+            mov edx, dword ptr [ebp - 0x10]
+            mov dword ptr [gS3_last_service_time], edx
+            mov ecx, dword ptr [gS3_delta_time]
+            call PDS3ServiceCDA
+            cmp dword ptr [ebp - 0x18], 1
+            jne L005643bb
+            call S3UpdateListenerVectors
+            call S3UpdateSourceVectors
+    L005643bb:
+            mov eax, dword ptr [gS3_state+0xc]
+            mov dword ptr [ebp - 8], eax
+            jmp L005643ce
+    L005643c5:
+            mov ecx, dword ptr [ebp - 8]
+            mov edx, dword ptr [ecx + 0x18]
+            mov dword ptr [ebp - 8], edx
+    L005643ce:
+            cmp dword ptr [ebp - 8], 0
+            je L0056454f
+            mov eax, dword ptr [ebp - 8]
+            mov ecx, dword ptr [eax + 0x10]
+            mov dword ptr [ebp - 0xc], ecx
+            jmp L005643ec
+    L005643e3:
+            mov edx, dword ptr [ebp - 0xc]
+            mov eax, dword ptr [edx + 0x64]
+            mov dword ptr [ebp - 0xc], eax
+    L005643ec:
+            cmp dword ptr [ebp - 0xc], 0
+            je L0056454a
+            mov ecx, dword ptr [ebp - 0xc]
+            cmp dword ptr [ecx + 8], 0
+            je L0056444c
+            mov edx, dword ptr [ebp - 0xc]
+            mov dword ptr [edx + 8], 0
+            mov eax, dword ptr [ebp - 0xc]
+            cmp dword ptr [eax + 0x60], 0
+            je L0056442b
+            mov ecx, dword ptr [ebp - 0xc]
+            mov edx, dword ptr [ecx + 0x60]
+            cmp dword ptr [edx + 0x30], 2
+            jne L0056442b
+            mov eax, dword ptr [ebp - 0xc]
+            mov ecx, dword ptr [eax + 0x60]
+            mov ecx, dword ptr [ecx]
+            call S3ReleaseSound
+    L0056442b:
+            mov edx, dword ptr [ebp - 0xc]
+            mov dword ptr [edx], 0
+            mov eax, dword ptr [ebp - 0xc]
+            cmp dword ptr [eax + 0x20], 1
+            je L00564447
+            mov ecx, dword ptr [ebp - 0xc]
+            mov dword ptr [ecx + 0x1c], 0
+    L00564447:
+            jmp L00564511
+    L0056444c:
+            mov edx, dword ptr [ebp - 0xc]
+            cmp dword ptr [edx + 0x14], 0
+            je L005644f8
+            mov eax, dword ptr [ebp - 0xc]
+            cmp dword ptr [eax], 0
+            je L005644f8
+            mov ecx, dword ptr [ebp - 0xc]
+            call S3Service3D
+            test eax, eax
+            jne L005644b2
+            mov ecx, dword ptr [ebp - 0xc]
+            cmp dword ptr [ecx + 0x74], 0
+            je L005644a8
+            mov edx, dword ptr [ebp - 0xc]
+            mov eax, dword ptr [edx + 0x74]
+            cmp dword ptr [eax + 0x1c], 0
+            je L005644a6
+            push -1
+            push -1
+            push 0
+            push -1
+            push -1
+            push 0xbf800000
+            mov ecx, dword ptr [ebp - 0xc]
+            mov edx, dword ptr [ecx + 0x74]
+            push edx
+            or edx, 0xffffffff
+            xor ecx, ecx
+            call S3UpdateSoundSource
+    L005644a6:
+            jmp L005644b0
+    L005644a8:
+            mov ecx, dword ptr [ebp - 0xc]
+            call S3StopChannel
+    L005644b0:
+            jmp L005644f6
+    L005644b2:
+            mov eax, dword ptr [ebp - 0xc]
+            cmp dword ptr [eax + 0x74], 0
+            je L005644f6
+            mov ecx, dword ptr [ebp - 0xc]
+            mov edx, dword ptr [ecx + 0x74]
+            cmp dword ptr [edx + 0x1c], 0
+            je L005644f6
+            mov eax, dword ptr [ebp - 0xc]
+            mov ecx, dword ptr [eax + 0x1c]
+            call S3SoundStillPlaying
+            test eax, eax
+            jne L005644f6
+            push -1
+            push -1
+            push 0
+            push -1
+            push -1
+            push 0xbf800000
+            mov ecx, dword ptr [ebp - 0xc]
+            mov edx, dword ptr [ecx + 0x74]
+            push edx
+            or edx, 0xffffffff
+            xor ecx, ecx
+            call S3UpdateSoundSource
+    L005644f6:
+            jmp L00564511
+    L005644f8:
+            mov eax, dword ptr [ebp - 0xc]
+            cmp dword ptr [eax + 0x20], 1
+            jne L00564511
+            mov ecx, dword ptr [ebp - 0xc]
+            cmp dword ptr [ecx], 0
+            je L00564511
+            mov ecx, dword ptr [ebp - 0xc]
+            call S3ServiceMIDIChannel
+    L00564511:
+            cmp dword ptr [ebp - 0x18], 2
+            jge L00564545
+            mov edx, dword ptr [gS3_last_service_time_spatial]
+            cmp edx, dword ptr [gS3_last_service_time]
+            jae L00564545
+            mov dword ptr [ebp - 4], 1
+            mov eax, dword ptr [ebp - 0xc]
+            cmp dword ptr [eax], 0
+            jne L00564545
+            mov ecx, dword ptr [ebp - 0xc]
+            cmp dword ptr [ecx + 0x14], 2
+            jne L00564545
+            mov ecx, dword ptr [ebp - 0xc]
+            call S3ServiceSpatialSound
+    L00564545:
+            jmp L005643e3
+    L0056454a:
+            jmp L005643c5
+    L0056454f:
+            cmp dword ptr [ebp - 4], 0
+            je L00564561
+            mov edx, dword ptr [gS3_last_service_time]
+            mov dword ptr [gS3_last_service_time_spatial], edx
+    L00564561:
+            mov esp, ebp
+            pop ebp
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0056532d
-int C2_HOOK_FASTCALL S3DisableSound(void) {
+int C2_NAKED C2_HOOK_FASTCALL S3DisableSound(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     tS3_descriptor* descriptor;
     tS3_outlet* outlet;
     tS3_descriptor* next_descriptor;
@@ -698,11 +1758,65 @@ int C2_HOOK_FASTCALL S3DisableSound(void) {
     }
     s3_debug_disable_sound();
     return 0;
+#else
+    __asm {
+            push ebp
+            mov ebp, esp
+            sub esp, 0x14
+            call S3StopAllOutletSounds
+            call S3StopMidi
+            call S3StopCDA
+            cmp dword ptr [gS3_enabled], 0
+            je L005653ae
+            call S3Disable
+            mov eax, dword ptr [gS3_state+0x14]
+            mov dword ptr [ebp - 4], eax
+    L00565358:
+            cmp dword ptr [ebp - 4], 0
+            je L00565381
+            mov ecx, dword ptr [ebp - 4]
+            mov edx, dword ptr [ecx + 0x2c]
+            mov dword ptr [ebp - 8], edx
+            mov eax, dword ptr [ebp - 4]
+            mov ecx, dword ptr [eax]
+            call S3ReleaseSound
+            mov ecx, dword ptr [ebp - 4]
+            call S3MemFree
+            mov ecx, dword ptr [ebp - 8]
+            mov dword ptr [ebp - 4], ecx
+            jmp L00565358
+    L00565381:
+            mov edx, dword ptr [gS3_state+0xc]
+            mov dword ptr [ebp - 0x10], edx
+    L0056538a:
+            cmp dword ptr [ebp - 0x10], 0
+            je L005653a9
+            mov eax, dword ptr [ebp - 0x10]
+            mov ecx, dword ptr [eax + 0x18]
+            mov dword ptr [ebp - 0xc], ecx
+            mov ecx, dword ptr [ebp - 0x10]
+            call S3ReleaseOutlet
+            mov edx, dword ptr [ebp - 0xc]
+            mov dword ptr [ebp - 0x10], edx
+            jmp L0056538a
+    L005653a9:
+            call S3FreeUnboundChannels
+    L005653ae:
+            cmp dword ptr [gS3_opened_output_devices], 0
+            je L005653bc
+            call PDS3Stop
+    L005653bc:
+            call s3_debug_disable_sound
+            xor eax, eax
+            mov esp, ebp
+            pop ebp
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00565b70
 void C2_HOOK_FASTCALL S3EnableCDA(void) {
-
     gS3_CDA_enabled = 1;
 }
 
@@ -742,7 +1856,8 @@ int C2_HOOK_FASTCALL S3CreateOutletChannels(tS3_outlet* outlet, int pChannel_cou
 }
 
 // FUNCTION: CARMA2_HW 0x00568c2c
-void* C2_HOOK_FASTCALL S3LoadSoundBankFile(const char* pPath) {
+C2_NAKED void* C2_HOOK_FASTCALL S3LoadSoundBankFile(const char* pPath) {
+#ifndef CARPOCALYPSE2_MATCHING
     char path[512];
     char lowmem_path[512];
     char line[512];
@@ -822,10 +1937,180 @@ void* C2_HOOK_FASTCALL S3LoadSoundBankFile(const char* pPath) {
         c2_close(fd);
     }
     return buffer;
+#else
+    __asm {
+            push ebp
+            mov ebp, esp
+            sub esp, 0x638
+            mov dword ptr [ebp - 0x638], ecx
+            cmp dword ptr [gS3_low_memory_mode], 0
+            je L00568d60
+            mov dword ptr [gS3_last_error], 4
+            mov eax, dword ptr [ebp - 0x638]
+            push eax
+            push offset gS3_path_separator
+            push offset gS3_path_separator
+            push offset gS3_CDA_enabled+0xb4
+            lea ecx, [ebp - 0x400]
+            push ecx
+            call sprintf
+            add esp, 0x14
+            mov edx, offset gS3_CDA_enabled+0xc8
+            lea ecx, [ebp - 0x400]
+            call S3_low_memory_fopen
+            mov dword ptr [ebp - 0x634], eax
+            cmp dword ptr [ebp - 0x634], 0
+            jne L00568c9d
+            xor eax, eax
+            jmp L00568ec7
+    L00568c9d:
+            mov ecx, dword ptr [ebp - 0x634]
+            call S3GetFileSize
+            mov dword ptr [ebp - 0x630], eax
+            mov dl, 0xe1
+            mov ecx, dword ptr [ebp - 0x630]
+            add ecx, 1
+            call S3MemAllocate
+            mov dword ptr [ebp - 0x628], eax
+            cmp dword ptr [ebp - 0x628], 0
+            jne L00568ced
+            mov edx, dword ptr [ebp - 0x634]
+            push edx
+            call fclose
+            add esp, 4
+            mov dword ptr [gS3_last_error], 3
+            xor eax, eax
+            jmp L00568ec7
+    L00568ced:
+            mov eax, dword ptr [ebp - 0x628]
+            add eax, dword ptr [ebp - 0x630]
+            mov byte ptr [eax], 0
+            mov ecx, dword ptr [ebp - 0x634]
+            push ecx
+            mov edx, dword ptr [ebp - 0x630]
+            push edx
+            push 1
+            mov eax, dword ptr [ebp - 0x628]
+            push eax
+            call fread
+            add esp, 0x10
+            cmp eax, dword ptr [ebp - 0x630]
+            je L00568d34
+            mov dword ptr [gS3_last_error], 4
+            xor eax, eax
+            jmp L00568ec7
+    L00568d34:
+            mov ecx, dword ptr [ebp - 0x628]
+            mov dword ptr [gS3_soundbank_buffer], ecx
+            mov edx, dword ptr [ebp - 0x630]
+            mov dword ptr [gS3_soundbank_buffer_len], edx
+            mov eax, dword ptr [ebp - 0x634]
+            push eax
+            call fclose
+            add esp, 4
+            jmp L00568ec1
+    L00568d60:
+            movsx ecx, byte ptr [gS3_sound_dirname]
+            test ecx, ecx
+            je L00568dbd
+            mov edx, dword ptr [ebp - 0x638]
+            lea ecx, [ebp - 0x200]
+            call PDExtractFilename
+            lea edx, [ebp - 0x200]
+            push edx
+            push offset gS3_path_separator
+            push offset gS3_sound_dirname
+            push offset gS3_CDA_enabled+0xcc
+            lea eax, [ebp - 0x600]
+            push eax
+            call sprintf
+            add esp, 0x14
+            push 0x8000
+            lea ecx, [ebp - 0x600]
+            push ecx
+            call _open
+            add esp, 8
+            mov dword ptr [ebp - 0x62c], eax
+            jmp L00568dd7
+    L00568dbd:
+            push 0x8000
+            mov edx, dword ptr [ebp - 0x638]
+            push edx
+            call _open
+            add esp, 8
+            mov dword ptr [ebp - 0x62c], eax
+    L00568dd7:
+            cmp dword ptr [ebp - 0x62c], -1
+            jne L00568df1
+            mov dword ptr [gS3_last_error], 4
+            xor eax, eax
+            jmp L00568ec7
+    L00568df1:
+            lea eax, [ebp - 0x624]
+            push eax
+            mov ecx, dword ptr [ebp - 0x62c]
+            push ecx
+            call _fstat
+            add esp, 8
+            test eax, eax
+            je L00568e1c
+            mov dword ptr [gS3_last_error], 4
+            xor eax, eax
+            jmp L00568ec7
+    L00568e1c:
+            mov dl, 0xe1
+            mov ecx, dword ptr [ebp - 0x610]
+            add ecx, 1
+            call S3MemAllocate
+            mov dword ptr [ebp - 0x628], eax
+            cmp dword ptr [ebp - 0x628], 0
+            jne L00568e58
+            mov edx, dword ptr [ebp - 0x62c]
+            push edx
+            call _close
+            add esp, 4
+            mov dword ptr [gS3_last_error], 3
+            xor eax, eax
+            jmp L00568ec7
+    L00568e58:
+            mov eax, dword ptr [ebp - 0x628]
+            add eax, dword ptr [ebp - 0x610]
+            mov byte ptr [eax], 0
+            mov ecx, dword ptr [ebp - 0x610]
+            push ecx
+            mov edx, dword ptr [ebp - 0x628]
+            push edx
+            mov eax, dword ptr [ebp - 0x62c]
+            push eax
+            call read
+            add esp, 0xc
+            cmp eax, dword ptr [ebp - 0x610]
+            je L00568e9a
+            mov dword ptr [gS3_last_error], 4
+            xor eax, eax
+            jmp L00568ec7
+    L00568e9a:
+            mov ecx, dword ptr [ebp - 0x628]
+            mov dword ptr [gS3_soundbank_buffer], ecx
+            mov edx, dword ptr [ebp - 0x610]
+            mov dword ptr [gS3_soundbank_buffer_len], edx
+            mov eax, dword ptr [ebp - 0x62c]
+            push eax
+            call _close
+            add esp, 4
+    L00568ec1:
+            mov eax, dword ptr [ebp - 0x628]
+    L00568ec7:
+            mov esp, ebp
+            pop ebp
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00567fe0
-int C2_HOOK_FASTCALL S3LoadSoundbank(const char* pPath, int pLow_memory_mode) {
+int C2_NAKED C2_HOOK_FASTCALL S3LoadSoundbank(const char* pPath, int pLow_memory_mode) {
+#ifndef CARPOCALYPSE2_MATCHING
     tS3_soundbank_read_ctx read_ctx;
     char soundbank_filename[512];
     void *buffer;
@@ -865,6 +2150,113 @@ int C2_HOOK_FASTCALL S3LoadSoundbank(const char* pPath, int pLow_memory_mode) {
     }
     S3MemFree(buffer);
     return 0;
+#else
+    __asm {
+            push ebp
+            mov ebp, esp
+            sub esp, 0x420
+            mov dword ptr [ebp - 0x420], edx
+            mov dword ptr [ebp - 0x41c], ecx
+            cmp dword ptr [gS3_enabled], 0
+            je L00568189
+            cmp dword ptr [ebp - 0x420], 0x123456
+            jne L00568068
+            mov dword ptr [gS3_low_memory_mode], 1
+            mov dword ptr [ebp - 0x420], 0
+            mov eax, dword ptr [ebp - 0x41c]
+            push eax
+            lea ecx, [ebp - 0x418]
+            push ecx
+            call strcpy
+            add esp, 8
+            mov byte ptr [ebp - 0x200], 0
+            lea ecx, [ebp - 0x418]
+            call S3LoadSoundBankFile
+            mov dword ptr [ebp - 0x218], eax
+            cmp dword ptr [ebp - 0x218], 0
+            jne L00568063
+            mov eax, dword ptr [gS3_last_error]
+            jmp L0056818b
+    L00568063:
+            jmp L00568134
+    L00568068:
+            mov byte ptr [ebp - 0x200], 0
+            mov byte ptr [ebp - 0x418], 0
+            xor ecx, ecx
+            call PDS3GetWorkingDirectory
+            mov dword ptr [ebp - 0x204], eax
+            mov edx, dword ptr [ebp - 0x204]
+            push edx
+            lea eax, [ebp - 0x200]
+            push eax
+            call strcpy
+            add esp, 8
+            push offset gS3_path_separator
+            lea ecx, [ebp - 0x200]
+            push ecx
+            call strcat
+            add esp, 8
+            push offset gS3_CDA_enabled+0x10
+            lea edx, [ebp - 0x200]
+            push edx
+            call strcat
+            add esp, 8
+            push offset gS3_path_separator
+            lea eax, [ebp - 0x200]
+            push eax
+            call strcat
+            add esp, 8
+            push offset gS3_sound_folder_name
+            lea ecx, [ebp - 0x200]
+            push ecx
+            call strcat
+            add esp, 8
+            push offset gS3_path_separator
+            lea edx, [ebp - 0x200]
+            push edx
+            call strcat
+            add esp, 8
+            mov eax, dword ptr [ebp - 0x41c]
+            push eax
+            lea ecx, [ebp - 0x418]
+            push ecx
+            call strcpy
+            add esp, 8
+            lea ecx, [ebp - 0x418]
+            call S3LoadSoundBankFile
+            mov dword ptr [ebp - 0x218], eax
+            cmp dword ptr [ebp - 0x218], 0
+            jne L00568134
+            mov eax, dword ptr [gS3_last_error]
+            jmp L0056818b
+    L00568134:
+            mov edx, dword ptr [ebp - 0x218]
+            mov dword ptr [ebp - 0x208], edx
+            mov eax, dword ptr [gS3_soundbank_buffer_len]
+            mov dword ptr [ebp - 0x214], eax
+            mov dword ptr [ebp - 0x20c], 0
+            lea ecx, [ebp - 0x214]
+            call S3SoundBankReaderSkipWhitespace
+    L00568160:
+            mov ecx, dword ptr [ebp - 0x420]
+            push ecx
+            lea edx, [ebp - 0x200]
+            lea ecx, [ebp - 0x214]
+            call S3SoundBankReadEntry
+            test eax, eax
+            je L0056817e
+            jmp L00568160
+    L0056817e:
+            mov ecx, dword ptr [ebp - 0x218]
+            call S3MemFree
+    L00568189:
+            xor eax, eax
+    L0056818b:
+            mov esp, ebp
+            pop ebp
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0056818f
@@ -1015,7 +2407,6 @@ int C2_HOOK_FASTCALL S3SoundBankReadEntry(tS3_soundbank_read_ctx *pContext, cons
 
 // FUNCTION: CARMA2_HW 0x005686e9
 void C2_HOOK_FASTCALL S3SoundBankReaderNextLine(tS3_soundbank_read_ctx* pContext) {
-
     S3SoundBankReaderSkipToNewline(pContext);
     S3SoundBankReaderSkipWhitespace(pContext);
 }
@@ -1035,13 +2426,13 @@ void C2_HOOK_FASTCALL S3SoundBankReaderSkipToNewline(tS3_soundbank_read_ctx* pCo
 
 // FUNCTION: CARMA2_HW 0x00568260
 void C2_HOOK_FASTCALL S3SoundBankReaderAdvance(tS3_soundbank_read_ctx* pContext, int pAmount) {
-
     pContext->data += pAmount;
     pContext->data_len -= pAmount;
 }
 
 // FUNCTION: CARMA2_HW 0x00565a8a
-tS3_descriptor* C2_HOOK_FASTCALL S3CreateDescriptor(void) {
+C2_NAKED tS3_descriptor* C2_HOOK_FASTCALL S3CreateDescriptor(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     tS3_descriptor* descriptor;
 
     C2_HOOK_BUG_ON(sizeof(tS3_descriptor) != 0x4c);
@@ -1060,10 +2451,49 @@ tS3_descriptor* C2_HOOK_FASTCALL S3CreateDescriptor(void) {
     descriptor->prev = gS3_state.root_descriptor;
     gS3_state.root_descriptor = descriptor;
     return descriptor;
+#else
+    __asm {
+            push ebp
+            mov ebp, esp
+            sub esp, 8
+            mov dl, 0xe7
+            mov ecx, 0x4c
+            call S3MemAllocate
+            mov dword ptr [ebp - 4], eax
+            cmp dword ptr [ebp - 4], 0
+            jne L00565ab3
+            mov dword ptr [gS3_last_error], 3
+            xor eax, eax
+            jmp L00565ae9
+    L00565ab3:
+            push 0x4c
+            push 0
+            mov eax, dword ptr [ebp - 4]
+            push eax
+            call memset
+            add esp, 0xc
+            mov ecx, dword ptr [gS3_state+0x18]
+            mov dword ptr [ebp - 8], ecx
+            mov edx, dword ptr [ebp - 8]
+            mov eax, dword ptr [ebp - 4]
+            mov dword ptr [edx + 0x2c], eax
+            mov ecx, dword ptr [ebp - 4]
+            mov edx, dword ptr [ebp - 8]
+            mov dword ptr [ecx + 0x28], edx
+            mov eax, dword ptr [ebp - 4]
+            mov dword ptr [gS3_state+0x18], eax
+            mov eax, dword ptr [ebp - 4]
+    L00565ae9:
+            mov esp, ebp
+            pop ebp
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00568704
-int C2_HOOK_FASTCALL S3SoundBankReaderReadFilename(char** pPath, tS3_soundbank_read_ctx* pContext, const char* pDir_name) {
+int C2_NAKED C2_HOOK_FASTCALL S3SoundBankReaderReadFilename(char** pPath, tS3_soundbank_read_ctx* pContext, const char* pDir_name) {
+#ifndef CARPOCALYPSE2_MATCHING
     unsigned int dir_name_len;
     char* data_start;
     unsigned int bytes_read;
@@ -1089,11 +2519,108 @@ int C2_HOOK_FASTCALL S3SoundBankReaderReadFilename(char** pPath, tS3_soundbank_r
     memmove(&(*pPath)[dir_name_len], data_start, bytes_read);
     (*pPath)[bytes_read + dir_name_len] = '\0';
     return 1;
+#else
+    __asm {
+            push ebp
+            mov ebp, esp
+            sub esp, 0x18
+            mov dword ptr [ebp - 0x14], edx
+            mov dword ptr [ebp - 0x10], ecx
+            mov eax, dword ptr [ebp - 0x14]
+            mov ecx, dword ptr [eax + 0xc]
+            mov dword ptr [ebp - 0xc], ecx
+            mov edx, dword ptr [ebp + 8]
+            push edx
+            call strlen
+            add esp, 4
+            mov dword ptr [ebp - 4], eax
+    L00568728:
+            mov eax, dword ptr [ebp - 0x14]
+            cmp dword ptr [eax], 0
+            je L00568782
+            cmp dword ptr [gQuickTime_call_component_with_storage+0x5a0], 1
+            jle L00568752
+            push 8
+            mov ecx, dword ptr [ebp - 0x14]
+            mov edx, dword ptr [ecx + 0xc]
+            movsx eax, byte ptr [edx]
+            push eax
+            call _isctype
+            add esp, 8
+            mov dword ptr [ebp - 0x18], eax
+            jmp L0056876d
+    L00568752:
+            mov ecx, dword ptr [ebp - 0x14]
+            mov edx, dword ptr [ecx + 0xc]
+            movsx eax, byte ptr [edx]
+            mov ecx, dword ptr [gQuickTime_call_component_with_storage+0x394]
+            xor edx, edx
+            mov dx, word ptr [ecx + eax*2]
+            and edx, 8
+            mov dword ptr [ebp - 0x18], edx
+    L0056876d:
+            cmp dword ptr [ebp - 0x18], 0
+            jne L00568782
+            mov edx, 1
+            mov ecx, dword ptr [ebp - 0x14]
+            call S3SoundBankReaderAdvance
+            jmp L00568728
+    L00568782:
+            mov eax, dword ptr [ebp - 0x14]
+            mov ecx, dword ptr [eax + 0xc]
+            sub ecx, dword ptr [ebp - 0xc]
+            mov dword ptr [ebp - 8], ecx
+            cmp dword ptr [ebp - 8], 0
+            jne L00568798
+            xor eax, eax
+            jmp L005687f9
+    L00568798:
+            mov dl, 0xdf
+            mov eax, dword ptr [ebp - 8]
+            mov ecx, dword ptr [ebp - 4]
+            lea ecx, [ecx + eax + 1]
+            call S3MemAllocate
+            mov edx, dword ptr [ebp - 0x10]
+            mov dword ptr [edx], eax
+            mov eax, dword ptr [ebp - 0x10]
+            cmp dword ptr [eax], 0
+            jne L005687ba
+            xor eax, eax
+            jmp L005687f9
+    L005687ba:
+            mov ecx, dword ptr [ebp + 8]
+            push ecx
+            mov edx, dword ptr [ebp - 0x10]
+            mov eax, dword ptr [edx]
+            push eax
+            call strcpy
+            add esp, 8
+            mov ecx, dword ptr [ebp - 8]
+            push ecx
+            mov edx, dword ptr [ebp - 0xc]
+            push edx
+            mov eax, dword ptr [ebp - 0x10]
+            mov ecx, dword ptr [eax]
+            add ecx, dword ptr [ebp - 4]
+            push ecx
+            call memmove
+            add esp, 0xc
+            mov edx, dword ptr [ebp - 4]
+            add edx, dword ptr [ebp - 8]
+            mov eax, dword ptr [ebp - 0x10]
+            mov ecx, dword ptr [eax]
+            mov byte ptr [ecx + edx], 0
+            mov eax, 1
+    L005687f9:
+            mov esp, ebp
+            pop ebp
+            ret 4
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0056a41f
 void C2_HOOK_FASTCALL S3StopMidi(void) {
-
     S3StopMidiInternal();
     gS3_enable_midi = 0;
 }
@@ -1101,14 +2628,12 @@ void C2_HOOK_FASTCALL S3StopMidi(void) {
 
 // FUNCTION: CARMA2_HW 0x00565b7f
 void C2_HOOK_FASTCALL S3StopCDA(void) {
-
     S3StopCDAInternal();
     gS3_CDA_enabled = 0;
 }
 
 // FUNCTION: CARMA2_HW 0x0056a7bd
 void C2_HOOK_FASTCALL S3StopMidiInternal(void) {
-
     if (gS3_enable_midi) {
         tS3_outlet* outlet;
         for (outlet = gS3_state.outlets; outlet != NULL; outlet = outlet->next) {
@@ -1125,7 +2650,6 @@ void C2_HOOK_FASTCALL S3StopMidiInternal(void) {
 
 // FUNCTION: CARMA2_HW 0x0056a4cd
 int C2_HOOK_FASTCALL S3StopMIDIChannel(tS3_channel* pChannel) {
-
     if (gS3_enable_midi && pChannel->active && pChannel->type == 1) {
         PDS3StopMidiChannel(pChannel);
         pChannel->active = 0;
@@ -1135,7 +2659,6 @@ int C2_HOOK_FASTCALL S3StopMIDIChannel(tS3_channel* pChannel) {
 
 // FUNCTION: CARMA2_HW 0x00565c22
 int C2_HOOK_FASTCALL S3StopCDAInternal(void) {
-
     if (gS3_CDA_enabled) {
         tS3_outlet* outlet;
 
@@ -1152,22 +2675,41 @@ int C2_HOOK_FASTCALL S3StopCDAInternal(void) {
 }
 
 // FUNCTION: CARMA2_HW 0x00565bfe
-int C2_HOOK_FASTCALL S3StopCDAChannel(tS3_channel* pChannel) {
+int C2_NAKED C2_HOOK_FASTCALL S3StopCDAChannel(tS3_channel* pChannel) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     if (!gS3_CDA_enabled) {
         return 0;
     }
     return PDS3StopCDAChannel(pChannel);
+#else
+    __asm {
+            push ebp
+            mov ebp, esp
+            sub esp, 8
+            mov dword ptr [ebp - 8], ecx
+            cmp dword ptr [gS3_CDA_enabled], 0
+            je L00565c1b
+            mov ecx, dword ptr [ebp - 8]
+            call PDS3StopCDAChannel
+            mov dword ptr [ebp - 4], eax
+    L00565c1b:
+            mov eax, dword ptr [ebp - 4]
+            mov esp, ebp
+            pop ebp
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0056991f
 int C2_HOOK_FASTCALL S3NotifyUnbindChannel(tS3_channel* pChannel) {
-
     return 1;
 }
 
 // FUNCTION: CARMA2_HW 0x00565607
-int C2_HOOK_FASTCALL S3UnbindChannels(tS3_outlet* pOutlet) {
+int C2_NAKED C2_HOOK_FASTCALL S3UnbindChannels(tS3_outlet* pOutlet) {
+#ifndef CARPOCALYPSE2_MATCHING
     tS3_channel* next;
     tS3_channel* c;
 
@@ -1194,10 +2736,70 @@ int C2_HOOK_FASTCALL S3UnbindChannels(tS3_outlet* pOutlet) {
     }
     pOutlet->channel_list = NULL;
     return 1;
+#else
+    __asm {
+            push ebp
+            mov ebp, esp
+            sub esp, 0xc
+            mov dword ptr [ebp - 0xc], ecx
+            mov eax, dword ptr [ebp - 0xc]
+            mov ecx, dword ptr [eax + 0x10]
+            mov dword ptr [ebp - 8], ecx
+    L00565619:
+            cmp dword ptr [ebp - 8], 0
+            je L005656a4
+            mov edx, dword ptr [ebp - 8]
+            cmp dword ptr [edx], 0
+            je L00565647
+            mov eax, dword ptr [ebp - 8]
+            mov dword ptr [eax + 4], 1
+            mov ecx, dword ptr [ebp - 8]
+            call S3StopChannel
+            mov ecx, dword ptr [ebp - 8]
+            mov dword ptr [ecx + 8], 1
+    L00565647:
+            mov edx, dword ptr [ebp - 8]
+            mov eax, dword ptr [edx + 0x64]
+            mov dword ptr [ebp - 4], eax
+            mov ecx, dword ptr [ebp - 8]
+            call S3NotifyUnbindChannel
+            cmp dword ptr [gS3_unbound_channels], 0
+            jne L00565675
+            mov ecx, dword ptr [ebp - 8]
+            mov dword ptr [gS3_unbound_channels], ecx
+            mov edx, dword ptr [ebp - 8]
+            mov dword ptr [gS3_last_unbound_channel], edx
+            jmp L00565689
+    L00565675:
+            mov eax, dword ptr [gS3_last_unbound_channel]
+            mov ecx, dword ptr [ebp - 8]
+            mov dword ptr [eax + 0x64], ecx
+            mov edx, dword ptr [ebp - 8]
+            mov dword ptr [gS3_last_unbound_channel], edx
+    L00565689:
+            push 0x78
+            push 0
+            mov eax, dword ptr [ebp - 8]
+            push eax
+            call memset
+            add esp, 0xc
+            mov ecx, dword ptr [ebp - 4]
+            mov dword ptr [ebp - 8], ecx
+            jmp L00565619
+    L005656a4:
+            mov edx, dword ptr [ebp - 0xc]
+            mov dword ptr [edx + 0x10], 0
+            mov eax, 1
+            mov esp, ebp
+            pop ebp
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00565888
-tS3_channel* C2_HOOK_FASTCALL S3GetChannelForTag(int pTag) {
+C2_NAKED tS3_channel* C2_HOOK_FASTCALL S3GetChannelForTag(int pTag) {
+#ifndef CARPOCALYPSE2_MATCHING
     tS3_channel* channel;
     tS3_outlet* outlet;
     int tag_id;
@@ -1221,11 +2823,68 @@ tS3_channel* C2_HOOK_FASTCALL S3GetChannelForTag(int pTag) {
         channel = channel->next;
     }
     return NULL;
+#else
+    __asm {
+            push ebp
+            mov ebp, esp
+            sub esp, 0x10
+            mov dword ptr [ebp - 0x10], ecx
+            cmp dword ptr [ebp - 0x10], 0
+            jne L0056589b
+            xor eax, eax
+            jmp L00565900
+    L0056589b:
+            mov eax, dword ptr [ebp - 0x10]
+            and eax, 0xff
+            mov dword ptr [ebp - 8], eax
+            mov ecx, dword ptr [gS3_state+0xc]
+            mov dword ptr [ebp - 4], ecx
+    L005658af:
+            cmp dword ptr [ebp - 4], 0
+            je L005658ca
+            mov edx, dword ptr [ebp - 4]
+            mov eax, dword ptr [edx]
+            cmp eax, dword ptr [ebp - 8]
+            je L005658ca
+            mov ecx, dword ptr [ebp - 4]
+            mov edx, dword ptr [ecx + 0x18]
+            mov dword ptr [ebp - 4], edx
+            jmp L005658af
+    L005658ca:
+            cmp dword ptr [ebp - 4], 0
+            jne L005658d4
+            xor eax, eax
+            jmp L00565900
+    L005658d4:
+            mov eax, dword ptr [ebp - 4]
+            mov ecx, dword ptr [eax + 0x10]
+            mov dword ptr [ebp - 0xc], ecx
+    L005658dd:
+            cmp dword ptr [ebp - 0xc], 0
+            je L005658fe
+            mov edx, dword ptr [ebp - 0xc]
+            mov eax, dword ptr [edx + 0x1c]
+            cmp eax, dword ptr [ebp - 0x10]
+            jne L005658f3
+            mov eax, dword ptr [ebp - 0xc]
+            jmp L00565900
+    L005658f3:
+            mov ecx, dword ptr [ebp - 0xc]
+            mov edx, dword ptr [ecx + 0x64]
+            mov dword ptr [ebp - 0xc], edx
+            jmp L005658dd
+    L005658fe:
+            xor eax, eax
+    L00565900:
+            mov esp, ebp
+            pop ebp
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0056a818
 tS3_error_codes C2_HOOK_FASTCALL S3ClearBufferOfMidiChannel(int pTag) {
-
     if (gS3_enable_midi) {
         tS3_channel* channel;
 
@@ -1242,7 +2901,8 @@ tS3_error_codes C2_HOOK_FASTCALL S3ClearBufferOfMidiChannel(int pTag) {
 }
 
 // FUNCTION: CARMA2_HW 0x00568929
-int C2_HOOK_FASTCALL S3ReleaseSound(int pSound_id) {
+int C2_NAKED C2_HOOK_FASTCALL S3ReleaseSound(int pSound_id) {
+#ifndef CARPOCALYPSE2_MATCHING
     tS3_buffer_desc *description;
     tS3_outlet *outlet;
     tS3_channel *channel;
@@ -1279,6 +2939,97 @@ int C2_HOOK_FASTCALL S3ReleaseSound(int pSound_id) {
         }
     }
     return eS3_error_none;
+#else
+    __asm {
+            push ebp
+            mov ebp, esp
+            sub esp, 0x14
+            mov dword ptr [ebp - 0x14], ecx
+            cmp dword ptr [gS3_enabled], 0
+            je L00568a0b
+            mov ecx, dword ptr [ebp - 0x14]
+            call S3GetDescriptorByID
+            mov dword ptr [ebp - 8], eax
+            cmp dword ptr [ebp - 8], 0
+            jne L0056895a
+            mov eax, 6
+            jmp L00568a0d
+    L0056895a:
+            mov eax, dword ptr [ebp - 8]
+            cmp dword ptr [eax + 4], 1
+            jne L005689be
+            mov ecx, dword ptr [gS3_state+0xc]
+            mov dword ptr [ebp - 0xc], ecx
+            jmp L00568977
+    L0056896e:
+            mov edx, dword ptr [ebp - 0xc]
+            mov eax, dword ptr [edx + 0x18]
+            mov dword ptr [ebp - 0xc], eax
+    L00568977:
+            cmp dword ptr [ebp - 0xc], 0
+            je L005689bc
+            mov ecx, dword ptr [ebp - 0xc]
+            mov edx, dword ptr [ecx + 0x10]
+            mov dword ptr [ebp - 0x10], edx
+            jmp L00568991
+    L00568988:
+            mov eax, dword ptr [ebp - 0x10]
+            mov ecx, dword ptr [eax + 0x64]
+            mov dword ptr [ebp - 0x10], ecx
+    L00568991:
+            cmp dword ptr [ebp - 0x10], 0
+            je L005689ba
+            mov edx, dword ptr [ebp - 0x10]
+            cmp dword ptr [edx + 0x60], 0
+            je L005689b8
+            mov eax, dword ptr [ebp - 0x10]
+            mov ecx, dword ptr [eax + 0x60]
+            mov edx, dword ptr [ecx]
+            cmp edx, dword ptr [ebp - 0x14]
+            jne L005689b8
+            mov eax, dword ptr [ebp - 0x10]
+            mov ecx, dword ptr [eax + 0x1c]
+            call S3ClearBufferOfMidiChannel
+    L005689b8:
+            jmp L00568988
+    L005689ba:
+            jmp L0056896e
+    L005689bc:
+            jmp L00568a0b
+    L005689be:
+            mov ecx, dword ptr [ebp - 8]
+            cmp dword ptr [ecx + 4], 0
+            jne L00568a0b
+            mov edx, dword ptr [ebp - 8]
+            cmp dword ptr [edx + 0x40], 0
+            jne L005689d4
+            xor eax, eax
+            jmp L00568a0d
+    L005689d4:
+            mov eax, dword ptr [ebp - 8]
+            mov ecx, dword ptr [eax + 0x40]
+            mov dword ptr [ebp - 4], ecx
+            mov ecx, dword ptr [ebp - 8]
+            call PDS3ReleaseSound
+            mov edx, dword ptr [ebp - 4]
+            cmp dword ptr [edx + 0x14], 0
+            je L005689f9
+            mov eax, dword ptr [ebp - 4]
+            mov ecx, dword ptr [eax + 0x14]
+            call S3MemFree
+    L005689f9:
+            mov ecx, dword ptr [ebp - 4]
+            call S3MemFree
+            mov ecx, dword ptr [ebp - 8]
+            mov dword ptr [ecx + 0x40], 0
+    L00568a0b:
+            xor eax, eax
+    L00568a0d:
+            mov esp, ebp
+            pop ebp
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00566454
@@ -1289,7 +3040,6 @@ double C2_HOOK_STDCALL S3FRandomBetween(double pMin, double pMax) {
 
 // FUNCTION: CARMA2_HW 0x00564278
 int C2_HOOK_FASTCALL S3IRandomBetween(int pMin, int pMax, int pDefault) {
-
     if (pMin == -1) {
         return pDefault;
     }
@@ -1302,7 +3052,6 @@ int C2_HOOK_FASTCALL S3IRandomBetween(int pMin, int pMax, int pDefault) {
 
 // FUNCTION: CARMA2_HW 0x005663a0
 int C2_HOOK_FASTCALL S3IRandomBetween__dup(int pMin, int pMax, int pDefault) {
-
     if (pMin == -1) {
         return pDefault;
     }
@@ -1329,7 +3078,8 @@ int C2_HOOK_FASTCALL S3IRandomBetweenLog(int pMin, int pMax, int pDefault) {
 }
 
 // FUNCTION: CARMA2_HW 0x005656b7
-int C2_HOOK_FASTCALL S3FreeUnboundChannels(void) {
+int C2_NAKED C2_HOOK_FASTCALL S3FreeUnboundChannels(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     tS3_channel *channel;
 
     channel = gS3_unbound_channels;
@@ -1341,6 +3091,31 @@ int C2_HOOK_FASTCALL S3FreeUnboundChannels(void) {
         channel = next;
     }
     return 0;
+#else
+    __asm {
+            push ebp
+            mov ebp, esp
+            sub esp, 8
+            mov eax, dword ptr [gS3_unbound_channels]
+            mov dword ptr [ebp - 8], eax
+    L005656c5:
+            cmp dword ptr [ebp - 8], 0
+            je L005656e4
+            mov ecx, dword ptr [ebp - 8]
+            mov edx, dword ptr [ecx + 0x64]
+            mov dword ptr [ebp - 4], edx
+            mov ecx, dword ptr [ebp - 8]
+            call S3MemFree
+            mov eax, dword ptr [ebp - 4]
+            mov dword ptr [ebp - 8], eax
+            jmp L005656c5
+    L005656e4:
+            xor eax, eax
+            mov esp, ebp
+            pop ebp
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x005657f5
@@ -1386,7 +3161,8 @@ int C2_HOOK_FASTCALL S3SetVolume(int pVolume) {
 }
 
 // FUNCTION: CARMA2_HW 0x00569752
-int C2_HOOK_FASTCALL S3ServiceChannel(tS3_channel* pChannel) {
+int C2_NAKED C2_HOOK_FASTCALL S3ServiceChannel(tS3_channel* pChannel) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     if (pChannel->type == 0) {
         return PDS3IsSamplePlaying(pChannel);
@@ -1396,17 +3172,85 @@ int C2_HOOK_FASTCALL S3ServiceChannel(tS3_channel* pChannel) {
         return PDS3IsCDAPlaying();
     }
     return 0;
+#else
+    __asm {
+            push ebp
+            mov ebp, esp
+            sub esp, 0xc
+            mov dword ptr [ebp - 0xc], ecx
+            mov eax, dword ptr [ebp - 0xc]
+            cmp dword ptr [eax + 0x20], 0
+            jne L005697c1
+            mov ecx, dword ptr [ebp - 0xc]
+            cmp dword ptr [ecx + 0x60], 0
+            je L005697b5
+            mov edx, dword ptr [ebp - 0xc]
+            mov eax, dword ptr [edx + 0x60]
+            mov ecx, dword ptr [ebp - 0xc]
+            mov edx, dword ptr [eax + 4]
+            cmp edx, dword ptr [ecx + 0x20]
+            jne L005697b5
+            mov eax, dword ptr [ebp - 0xc]
+            mov ecx, dword ptr [eax + 0x60]
+            mov edx, dword ptr [ecx + 0x48]
+            mov dword ptr [ebp - 4], edx
+            cmp dword ptr [ebp - 4], 0
+            je L005697b5
+            lea eax, [ebp - 8]
+            push eax
+            mov ecx, dword ptr [ebp - 4]
+            push ecx
+            mov edx, dword ptr [ebp - 4]
+            mov eax, dword ptr [edx]
+            call dword ptr [eax + 0x24]
+            test eax, eax
+            jl L005697b5
+            mov ecx, dword ptr [ebp - 8]
+            and ecx, 1
+            test ecx, ecx
+            je L005697b5
+            mov eax, 1
+            jmp L005697eb
+    L005697b5:
+            mov ecx, dword ptr [ebp - 0xc]
+            call PDS3StopSampleChannel
+            xor eax, eax
+            jmp L005697eb
+    L005697c1:
+            mov edx, dword ptr [ebp - 0xc]
+            cmp dword ptr [edx + 0x20], 1
+            jne L005697d9
+            mov ecx, dword ptr [ebp - 0xc]
+            call PDS3IsMIDIStopped
+            neg eax
+            sbb eax, eax
+            inc eax
+            jmp L005697eb
+    L005697d9:
+            mov eax, dword ptr [ebp - 0xc]
+            cmp dword ptr [eax + 0x20], 2
+            jne L005697e9
+            call PDS3IsCDAPlaying
+            jmp L005697eb
+    L005697e9:
+            xor eax, eax
+    L005697eb:
+            mov esp, ebp
+            pop ebp
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0056a280
 int C2_HOOK_FASTCALL S3ServiceSpatialSound(tS3_channel* pChannel) {
-
     (void) pChannel;
     return 0;
 }
 
 // FUNCTION: CARMA2_HW 0x005665d4
-tS3_sound_source* C2_HOOK_FASTCALL S3CreateSoundSourceInternal(void* pPosition, void* pVelocity, tS3_outlet* pBound_outlet) {
+C2_NAKED tS3_sound_source* C2_HOOK_FASTCALL S3CreateSoundSourceInternal(void* pPosition, void* pVelocity, tS3_outlet* pBound_outlet) {
+#ifndef CARPOCALYPSE2_MATCHING
     tS3_sound_source* src;
 
     C2_HOOK_BUG_ON(sizeof(tS3_sound_source) != 0x44);
@@ -1438,6 +3282,71 @@ tS3_sound_source* C2_HOOK_FASTCALL S3CreateSoundSourceInternal(void* pPosition, 
     }
     gS3_state.count_sources += 1;
     return src;
+#else
+    __asm {
+            push ebp
+            mov ebp, esp
+            sub esp, 0x10
+            mov dword ptr [ebp - 0x10], edx
+            mov dword ptr [ebp - 0xc], ecx
+            mov dl, 0xe9
+            mov ecx, 0x44
+            call S3MemAllocate
+            mov dword ptr [ebp - 8], eax
+            cmp dword ptr [ebp - 8], 0
+            jne L00566603
+            mov dword ptr [gS3_last_error], 3
+            xor eax, eax
+            jmp L00566680
+    L00566603:
+            push 0x44
+            push 0
+            mov eax, dword ptr [ebp - 8]
+            push eax
+            call memset
+            add esp, 0xc
+            mov ecx, dword ptr [ebp - 8]
+            mov edx, dword ptr [ebp + 8]
+            mov dword ptr [ecx + 0x10], edx
+            mov eax, dword ptr [ebp - 8]
+            mov ecx, dword ptr [ebp - 0xc]
+            mov dword ptr [eax + 8], ecx
+            mov edx, dword ptr [ebp - 8]
+            mov eax, dword ptr [ebp - 0x10]
+            mov dword ptr [edx + 0xc], eax
+            mov ecx, dword ptr [gS3_state+0x10]
+            mov dword ptr [ebp - 4], ecx
+            cmp dword ptr [ebp - 4], 0
+            jne L00566648
+            mov edx, dword ptr [ebp - 8]
+            mov dword ptr [gS3_state+0x10], edx
+            jmp L0056666e
+    L00566648:
+            mov eax, dword ptr [ebp - 4]
+            cmp dword ptr [eax + 0x18], 0
+            je L0056665c
+            mov ecx, dword ptr [ebp - 4]
+            mov edx, dword ptr [ecx + 0x18]
+            mov dword ptr [ebp - 4], edx
+            jmp L00566648
+    L0056665c:
+            mov eax, dword ptr [ebp - 4]
+            mov ecx, dword ptr [ebp - 8]
+            mov dword ptr [eax + 0x18], ecx
+            mov edx, dword ptr [ebp - 8]
+            mov eax, dword ptr [ebp - 4]
+            mov dword ptr [edx + 0x14], eax
+    L0056666e:
+            mov ecx, dword ptr [gS3_state+0x4]
+            add ecx, 1
+            mov dword ptr [gS3_state+0x4], ecx
+            mov eax, dword ptr [ebp - 8]
+    L00566680:
+            mov esp, ebp
+            pop ebp
+            ret 4
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00566590
@@ -1457,7 +3366,6 @@ tS3_sound_source* C2_HOOK_FASTCALL S3CreateSoundSourceBR(br_vector3* pPosition, 
 
 // FUNCTION: CARMA2_HW 0x00565bbc
 int C2_HOOK_FASTCALL S3IsCDAEnabled(void) {
-
     if (gS3_CDA_enabled) {
         return 1;
     } else {
@@ -1466,7 +3374,8 @@ int C2_HOOK_FASTCALL S3IsCDAEnabled(void) {
 }
 
 // FUNCTION: CARMA2_HW 0x00564200
-void C2_HOOK_FASTCALL S3CalculateRandomizedFields(tS3_channel* chan, tS3_descriptor* desc) {
+void C2_NAKED C2_HOOK_FASTCALL S3CalculateRandomizedFields(tS3_channel* chan, tS3_descriptor* desc) {
+#ifndef CARPOCALYPSE2_MATCHING
     int vol;
 
     vol = S3IRandomBetween(desc->min_volume, desc->max_volume, 128);
@@ -1475,11 +3384,55 @@ void C2_HOOK_FASTCALL S3CalculateRandomizedFields(tS3_channel* chan, tS3_descrip
     if (desc->type == 0 && desc->buffer_description != NULL) {
         chan->rate = S3IRandomBetweenLog(desc->min_pitch, desc->max_pitch, desc->buffer_description->sample_rate);
     }
+#else
+    __asm {
+            push ebp
+            mov ebp, esp
+            sub esp, 0xc
+            mov dword ptr [ebp - 0xc], edx
+            mov dword ptr [ebp - 8], ecx
+            push 0x80
+            mov eax, dword ptr [ebp - 0xc]
+            mov edx, dword ptr [eax + 0x14]
+            mov ecx, dword ptr [ebp - 0xc]
+            mov ecx, dword ptr [ecx + 0x10]
+            call S3IRandomBetween
+            mov dword ptr [ebp - 4], eax
+            mov edx, dword ptr [ebp - 8]
+            mov eax, dword ptr [ebp - 4]
+            mov dword ptr [edx + 0x50], eax
+            mov ecx, dword ptr [ebp - 8]
+            mov edx, dword ptr [ebp - 4]
+            mov dword ptr [ecx + 0x24], edx
+            mov eax, dword ptr [ebp - 8]
+            mov dword ptr [eax + 0x28], 0
+            mov ecx, dword ptr [ebp - 0xc]
+            cmp dword ptr [ecx + 4], 0
+            jne L00564274
+            mov edx, dword ptr [ebp - 0xc]
+            cmp dword ptr [edx + 0x40], 0
+            je L00564274
+            mov eax, dword ptr [ebp - 0xc]
+            mov ecx, dword ptr [eax + 0x40]
+            mov edx, dword ptr [ecx + 4]
+            push edx
+            mov eax, dword ptr [ebp - 0xc]
+            mov edx, dword ptr [eax + 0x1c]
+            mov ecx, dword ptr [ebp - 0xc]
+            mov ecx, dword ptr [ecx + 0x18]
+            call S3IRandomBetweenLog__dup
+            mov edx, dword ptr [ebp - 8]
+            mov dword ptr [edx + 0x10], eax
+    L00564274:
+            mov esp, ebp
+            pop ebp
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00565b4b
 int C2_HOOK_FASTCALL S3CalculatePriority(int pPriority, int pVolumeFactor) {
-
     return pVolumeFactor / 40 + pPriority;
 }
 
@@ -1490,7 +3443,8 @@ int C2_HOOK_FASTCALL S3GenerateTag(tS3_outlet* outlet) {
 }
 
 // FUNCTION: CARMA2_HW 0x00565904
-tS3_channel* C2_HOOK_FASTCALL S3AllocateChannel(tS3_outlet* pOutlet, int pPriority) {
+C2_NAKED tS3_channel* C2_HOOK_FASTCALL S3AllocateChannel(tS3_outlet* pOutlet, int pPriority) {
+#ifndef CARPOCALYPSE2_MATCHING
     tS3_channel* c;
     int lowest_priority;
     int this_priority;
@@ -1537,6 +3491,121 @@ tS3_channel* C2_HOOK_FASTCALL S3AllocateChannel(tS3_outlet* pOutlet, int pPriori
         lowest_priority_chan->active = 1;
     }
     return NULL;
+#else
+    __asm {
+            push ebp
+            mov ebp, esp
+            sub esp, 0x1c
+            mov dword ptr [ebp - 0x18], edx
+            mov dword ptr [ebp - 0x14], ecx
+            mov eax, dword ptr [ebp - 0x14]
+            mov ecx, dword ptr [eax + 0x10]
+            mov dword ptr [ebp - 0x10], ecx
+            mov edx, dword ptr [ebp - 0x10]
+            mov dword ptr [ebp - 4], edx
+            cmp dword ptr [ebp - 0x10], 0
+            je L00565a37
+    L00565929:
+            cmp dword ptr [ebp - 0x10], 0
+            je L005659d9
+            mov eax, dword ptr [ebp - 0x10]
+            cmp dword ptr [eax], 0
+            je L005659b4
+            mov ecx, dword ptr [ebp - 0x10]
+            cmp dword ptr [ecx + 8], 0
+            jne L005659b4
+            mov edx, dword ptr [ebp - 4]
+            cmp dword ptr [edx + 0x60], 0
+            je L00565966
+            mov eax, dword ptr [ebp - 4]
+            mov edx, dword ptr [eax + 0x24]
+            mov ecx, dword ptr [ebp - 4]
+            mov eax, dword ptr [ecx + 0x60]
+            mov ecx, dword ptr [eax + 8]
+            call S3CalculatePriority
+            mov dword ptr [ebp - 0xc], eax
+            jmp L0056596d
+    L00565966:
+            mov dword ptr [ebp - 0xc], 0
+    L0056596d:
+            mov ecx, dword ptr [ebp - 0x10]
+            cmp dword ptr [ecx + 0x60], 0
+            je L0056598f
+            mov edx, dword ptr [ebp - 0x10]
+            mov edx, dword ptr [edx + 0x24]
+            mov eax, dword ptr [ebp - 0x10]
+            mov ecx, dword ptr [eax + 0x60]
+            mov ecx, dword ptr [ecx + 8]
+            call S3CalculatePriority
+            mov dword ptr [ebp - 8], eax
+            jmp L00565996
+    L0056598f:
+            mov dword ptr [ebp - 8], 0
+    L00565996:
+            mov edx, dword ptr [ebp - 0xc]
+            cmp edx, dword ptr [ebp - 8]
+            jge L005659a6
+            mov eax, dword ptr [ebp - 4]
+            mov dword ptr [ebp - 0x1c], eax
+            jmp L005659ac
+    L005659a6:
+            mov ecx, dword ptr [ebp - 0x10]
+            mov dword ptr [ebp - 0x1c], ecx
+    L005659ac:
+            mov edx, dword ptr [ebp - 0x1c]
+            mov dword ptr [ebp - 4], edx
+            jmp L005659cb
+    L005659b4:
+            mov eax, dword ptr [ebp - 0x10]
+            cmp dword ptr [eax + 8], 0
+            jne L005659cb
+            mov ecx, dword ptr [ebp - 0x10]
+            mov dword ptr [ecx], 1
+            mov eax, dword ptr [ebp - 0x10]
+            jmp L00565a39
+    L005659cb:
+            mov edx, dword ptr [ebp - 0x10]
+            mov eax, dword ptr [edx + 0x64]
+            mov dword ptr [ebp - 0x10], eax
+            jmp L00565929
+    L005659d9:
+            mov ecx, dword ptr [ebp - 4]
+            cmp dword ptr [ecx + 0x60], 0
+            je L00565a04
+            mov edx, dword ptr [ebp - 4]
+            cmp dword ptr [edx + 8], 0
+            jne L00565a04
+            mov eax, dword ptr [ebp - 4]
+            mov edx, dword ptr [eax + 0x24]
+            mov ecx, dword ptr [ebp - 4]
+            mov eax, dword ptr [ecx + 0x60]
+            mov ecx, dword ptr [eax + 8]
+            call S3CalculatePriority
+            mov dword ptr [ebp - 0xc], eax
+            jmp L00565a0b
+    L00565a04:
+            mov dword ptr [ebp - 0xc], 0
+    L00565a0b:
+            mov ecx, dword ptr [ebp - 0x18]
+            cmp ecx, dword ptr [ebp - 0xc]
+            jle L00565a37
+            mov edx, dword ptr [ebp - 4]
+            cmp dword ptr [edx + 8], 0
+            jne L00565a37
+            mov eax, dword ptr [ebp - 4]
+            mov dword ptr [eax + 4], 2
+            mov ecx, dword ptr [ebp - 4]
+            call S3StopChannel
+            mov ecx, dword ptr [ebp - 4]
+            mov dword ptr [ecx], 1
+    L00565a37:
+            xor eax, eax
+    L00565a39:
+            mov esp, ebp
+            pop ebp
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00569b86
@@ -1553,18 +3622,40 @@ tS3_error_codes C2_HOOK_FASTCALL S3MIDILoadSong(tS3_channel* pChannel) {
 }
 
 // FUNCTION: CARMA2_HW 0x00564d4a
-void C2_HOOK_FASTCALL S3ReverseSample(tS3_effect_tag pEffect, tS3_sound_tag pTag) {
+void C2_NAKED C2_HOOK_FASTCALL S3ReverseSample(tS3_effect_tag pEffect, tS3_sound_tag pTag) {
+#ifndef CARPOCALYPSE2_MATCHING
     tS3_channel* channel;
 
     channel = S3GetChannelForTag(pTag);
     if (channel != NULL) {
         PDReverseAudio(channel);
     }
+#else
+    __asm {
+            push ebp
+            mov ebp, esp
+            sub esp, 0x20
+            mov dword ptr [ebp - 0x20], edx
+            mov dword ptr [ebp - 0x1c], ecx
+            mov ecx, dword ptr [ebp - 0x20]
+            call S3GetChannelForTag
+            mov dword ptr [ebp - 0x14], eax
+            cmp dword ptr [ebp - 0x14], 0
+            jne L00564d69
+            jmp L00564d71
+    L00564d69:
+            mov ecx, dword ptr [ebp - 0x14]
+            call PDReverseAudio
+    L00564d71:
+            mov esp, ebp
+            pop ebp
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00564d75
 int C2_HOOK_FASTCALL S3SetSampleFilterCallbacks(tS3_sample_filter pEnable, tS3_sample_filter pDisable) {
-
     if (pEnable != NULL) {
         gS3_sample_filter_func = pEnable;
     }
@@ -1583,7 +3674,6 @@ int C2_HOOK_FASTCALL S3SetSampleFilterCallbacks(tS3_sample_filter pEnable, tS3_s
 
 // FUNCTION: CARMA2_HW 0x00564de0
 int C2_HOOK_FASTCALL S3ExecuteSampleFilterFuncs(tS3_channel* pChannel) {
-
     if (gS3_effects_enabled & (!pChannel->descriptor->effects_enabled)) {
         gS3_sample_filter_func(1, pChannel->tag);
         pChannel->descriptor->effects_enabled = 1;
@@ -1596,7 +3686,6 @@ int C2_HOOK_FASTCALL S3ExecuteSampleFilterFuncs(tS3_channel* pChannel) {
 
 // FUNCTION: CARMA2_HW 0x0056a493
 tS3_error_codes C2_HOOK_FASTCALL S3PlayMIDI(tS3_channel* pChannel) {
-
     if (gS3_enable_midi && pChannel->type == 1) {
         PDS3StopMidiChannel(pChannel);
         pChannel->active = 1;
@@ -1618,7 +3707,6 @@ int C2_HOOK_FASTCALL S3SetMIDIVolume2(tS3_channel* pChannel, int pVolume) {
 
 // FUNCTION: CARMA2_HW 0x0056a505
 int C2_HOOK_FASTCALL S3SetMIDIVolume(tS3_channel* pChannel, int pVolume) {
-
     if (pVolume < 0) {
         pVolume = 0;
     }
@@ -1750,7 +3838,8 @@ int C2_HOOK_FASTCALL S3SetChannelVolume(int pChannel_tag, int pVolume) {
 }
 
 // FUNCTION: CARMA2_HW 0x00564e9b
-int C2_HOOK_FASTCALL S3StartSound2(tS3_outlet* pOutlet, tS3_sound_id pSound, unsigned int pRepeats, int pLeft_volume, int pRight_volume,  tS32 pLeft_pitch, tS32 pRight_pitch) {
+int C2_NAKED C2_HOOK_FASTCALL S3StartSound2(tS3_outlet* pOutlet, tS3_sound_id pSound, unsigned int pRepeats, int pLeft_volume, int pRight_volume,  tS32 pLeft_pitch, tS32 pRight_pitch) {
+#ifndef CARPOCALYPSE2_MATCHING
     tS3_descriptor* descriptor;
     tS3_channel *chan;
     float normalized_delta_volume;
@@ -1843,10 +3932,274 @@ int C2_HOOK_FASTCALL S3StartSound2(tS3_outlet* pOutlet, tS3_sound_id pSound, uns
     } else {
         return 0;
     }
+#else
+    __asm {
+            push ebp
+            mov ebp, esp
+            sub esp, 0x2c
+            push esi
+            mov dword ptr [ebp - 0x18], edx
+            mov dword ptr [ebp - 0x14], ecx
+            cmp dword ptr [gS3_enabled], 0
+            je L005651bb
+            mov ecx, dword ptr [ebp - 0x18]
+            call S3GetDescriptorByID
+            mov dword ptr [ebp - 8], eax
+            cmp dword ptr [ebp - 8], 0
+            jne L00564ed7
+            mov dword ptr [gS3_last_error], 6
+            xor eax, eax
+            jmp L005651bd
+    L00564ed7:
+            cmp dword ptr [ebp + 0xc], 0
+            jge L00564ee4
+            mov dword ptr [ebp + 0xc], 0x80
+    L00564ee4:
+            cmp dword ptr [ebp + 0x10], 0
+            jge L00564ef1
+            mov dword ptr [ebp + 0x10], 0x80
+    L00564ef1:
+            cmp dword ptr [ebp + 0xc], 0xff
+            jle L00564f01
+            mov dword ptr [ebp + 0xc], 0xff
+    L00564f01:
+            cmp dword ptr [ebp + 0x10], 0xff
+            jle L00564f11
+            mov dword ptr [ebp + 0x10], 0xff
+    L00564f11:
+            mov eax, dword ptr [ebp + 0x10]
+            sub eax, dword ptr [ebp + 0xc]
+            mov dword ptr [ebp - 0x1c], eax
+            fild dword ptr [ebp - 0x1c]
+            fdiv dword ptr [rendererStateStoredDispatch+0xc38]
+            fstp dword ptr [ebp - 4]
+            mov ecx, dword ptr [ebp - 8]
+            mov esi, dword ptr [ecx + 8]
+            mov eax, dword ptr [ebp + 0xc]
+            add eax, dword ptr [ebp + 0x10]
+            cdq
+            sub eax, edx
+            mov ecx, eax
+            sar ecx, 1
+            mov edx, esi
+            call S3CalculatePriority
+            mov dword ptr [ebp - 0xc], eax
+            mov edx, dword ptr [ebp - 0xc]
+            mov ecx, dword ptr [ebp - 0x14]
+            call S3AllocateChannel
+            mov dword ptr [ebp - 0x10], eax
+            cmp dword ptr [ebp - 0x10], 0
+            jne L00564f68
+            mov dword ptr [gS3_last_error], 0xa
+            xor eax, eax
+            jmp L005651bd
+    L00564f68:
+            mov edx, dword ptr [ebp - 8]
+            cmp dword ptr [edx + 4], 2
+            jne L00564f73
+            jmp L00564fb9
+    L00564f73:
+            mov eax, dword ptr [ebp - 8]
+            cmp dword ptr [eax + 4], 0
+            jne L00564fb9
+            mov ecx, dword ptr [ebp - 8]
+            cmp dword ptr [ecx + 0x40], 0
+            jne L00564fb9
+            mov ecx, dword ptr [ebp - 0x18]
+            call S3LoadSample
+            test eax, eax
+            je L00564f9e
+            mov edx, dword ptr [ebp - 8]
+            mov eax, dword ptr [edx + 0x30]
+            and eax, 2
+            test eax, eax
+            je L00564fb9
+    L00564f9e:
+            mov ecx, dword ptr [ebp - 0x10]
+            mov dword ptr [ecx + 8], 1
+            mov dword ptr [gS3_last_error], 8
+            xor eax, eax
+            jmp L005651bd
+    L00564fb9:
+            mov edx, dword ptr [ebp - 0x10]
+            cmp dword ptr [edx + 0x60], 0
+            je L00564fe6
+            mov eax, dword ptr [ebp - 0x10]
+            mov ecx, dword ptr [eax + 0x60]
+            cmp dword ptr [ecx + 4], 1
+            jne L00564fe6
+            mov edx, dword ptr [ebp - 0x10]
+            mov eax, dword ptr [edx + 0x60]
+            mov ecx, dword ptr [eax]
+            cmp ecx, dword ptr [ebp - 0x18]
+            je L00564fe6
+            mov edx, dword ptr [ebp - 0x10]
+            mov ecx, dword ptr [edx + 0x1c]
+            call S3ClearBufferOfMidiChannel
+    L00564fe6:
+            mov eax, dword ptr [ebp - 0x10]
+            mov dword ptr [eax + 0x14], 0
+            mov ecx, dword ptr [ebp - 0x10]
+            mov edx, dword ptr [ebp - 8]
+            mov dword ptr [ecx + 0x60], edx
+            mov eax, dword ptr [ebp - 0x10]
+            mov dword ptr [eax + 8], 0
+            mov ecx, dword ptr [ebp - 0x10]
+            mov dword ptr [ecx + 4], 0
+            mov edx, dword ptr [ebp - 0x10]
+            mov eax, dword ptr [ebp - 8]
+            mov ecx, dword ptr [eax + 4]
+            mov dword ptr [edx + 0x20], ecx
+            mov edx, dword ptr [ebp - 0x10]
+            mov dword ptr [edx + 0x74], 0
+            xor eax, eax
+            cmp dword ptr [ebp + 8], 0
+            setle al
+            dec eax
+            and eax, dword ptr [ebp + 8]
+            mov ecx, dword ptr [ebp - 0x10]
+            mov dword ptr [ecx + 0xc], eax
+            mov edx, dword ptr [ebp - 8]
+            mov ecx, dword ptr [ebp - 0x10]
+            call S3CalculateRandomizedFields
+            mov eax, dword ptr [ebp + 0xc]
+            add eax, dword ptr [ebp + 0x10]
+            cdq
+            sub eax, edx
+            sar eax, 1
+            mov edx, dword ptr [ebp - 0x10]
+            mov dword ptr [edx + 0x24], eax
+            mov eax, dword ptr [ebp - 0x10]
+            mov ecx, dword ptr [ebp - 4]
+            mov dword ptr [eax + 0x28], ecx
+            mov ecx, dword ptr [ebp - 0x14]
+            call S3GenerateTag
+            mov edx, dword ptr [ebp - 0x10]
+            mov dword ptr [edx + 0x1c], eax
+            cmp dword ptr [ebp + 0x14], -1
+            jne L00565076
+            mov dword ptr [ebp + 0x14], 0x10000
+    L00565076:
+            cmp dword ptr [ebp + 0x18], -1
+            jne L00565083
+            mov dword ptr [ebp + 0x18], 0x10000
+    L00565083:
+            mov eax, dword ptr [ebp - 0x10]
+            fild dword ptr [eax + 0x10]
+            fstp qword ptr [ebp - 0x24]
+            push -0x10
+            fild dword ptr [ebp + 0x14]
+            sub esp, 8
+            _emit 0xdd
+        _emit 0x1c
+        _emit 0x24
+            call ldexp
+            add esp, 0xc
+            fmul qword ptr [ebp - 0x24]
+            call _ftol
+            mov ecx, dword ptr [ebp - 0x10]
+            mov dword ptr [ecx + 0x10], eax
+            mov edx, dword ptr [ebp - 0x14]
+            cmp dword ptr [edx + 0xc], 0
+            jne L005650e0
+            mov eax, dword ptr [ebp - 0x10]
+            fild dword ptr [eax + 0x10]
+            fstp qword ptr [ebp - 0x2c]
+            push -0x10
+            fild dword ptr [ebp + 0x18]
+            sub esp, 8
+            _emit 0xdd
+        _emit 0x1c
+        _emit 0x24
+            call ldexp
+            add esp, 0xc
+            fmul qword ptr [ebp - 0x2c]
+            call _ftol
+            mov ecx, dword ptr [ebp - 0x10]
+            mov dword ptr [ecx + 0x10], eax
+    L005650e0:
+            mov edx, dword ptr [ebp - 8]
+            cmp dword ptr [edx + 4], 1
+            jne L0056510f
+            mov eax, dword ptr [ebp - 8]
+            cmp dword ptr [eax + 0x40], 0
+            jne L0056510f
+            mov ecx, dword ptr [ebp - 0x10]
+            call S3MIDILoadSong
+            test eax, eax
+            je L0056510f
+            mov ecx, dword ptr [ebp - 0x10]
+            mov dword ptr [ecx + 8], 1
+            xor eax, eax
+            jmp L005651bd
+    L0056510f:
+            mov edx, dword ptr [ebp - 0x10]
+            cmp dword ptr [edx + 0x20], 0
+            jne L00565149
+            mov ecx, dword ptr [ebp - 0x10]
+            call S3ExecuteSampleFilterFuncs
+            mov edx, dword ptr [ebp - 8]
+            mov ecx, dword ptr [ebp - 0x10]
+            call S3PlaySample
+            test eax, eax
+            jne L00565147
+            mov eax, dword ptr [ebp - 0x10]
+            mov dword ptr [eax + 8], 1
+            mov dword ptr [gS3_last_error], 9
+            xor eax, eax
+            jmp L005651bd
+    L00565147:
+            jmp L005651b3
+    L00565149:
+            mov ecx, dword ptr [ebp - 0x10]
+            cmp dword ptr [ecx + 0x20], 1
+            jne L00565186
+            mov ecx, dword ptr [ebp - 0x10]
+            call S3PlayMIDI
+            test eax, eax
+            je L00565176
+            mov edx, dword ptr [ebp - 0x10]
+            mov dword ptr [edx + 8], 1
+            mov dword ptr [gS3_last_error], 0xf
+            xor eax, eax
+            jmp L005651bd
+    L00565176:
+            mov eax, dword ptr [ebp - 0x10]
+            mov edx, dword ptr [eax + 0x24]
+            mov ecx, dword ptr [ebp - 0x10]
+            call S3SetMIDIVolume
+            jmp L005651b3
+    L00565186:
+            mov ecx, dword ptr [ebp - 0x10]
+            cmp dword ptr [ecx + 0x20], 2
+            jne L005651b3
+            mov ecx, dword ptr [ebp - 0x10]
+            call S3PlayCDA
+            test eax, eax
+            je L005651b3
+            mov edx, dword ptr [ebp - 0x10]
+            mov dword ptr [edx + 8], 1
+            mov dword ptr [gS3_last_error], 0x10
+            xor eax, eax
+            jmp L005651bd
+    L005651b3:
+            mov eax, dword ptr [ebp - 0x10]
+            mov eax, dword ptr [eax + 0x1c]
+            jmp L005651bd
+    L005651bb:
+            xor eax, eax
+    L005651bd:
+            pop esi
+            mov esp, ebp
+            pop ebp
+            ret 0x14
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00566dc1
-tS3_sound_tag C2_HOOK_FASTCALL S3StartSoundFromSource3(tS3_sound_id pSound, tS3_sound_source* pSource, tS3_repeats pRepeats, tS3_volume pVolume, tS3_pitch pPitch, tS3_speed pSpeed) {
+tS3_sound_tag C2_NAKED C2_HOOK_FASTCALL S3StartSoundFromSource3(tS3_sound_id pSound, tS3_sound_source* pSource, tS3_repeats pRepeats, tS3_volume pVolume, tS3_pitch pPitch, tS3_speed pSpeed) {
+#ifndef CARPOCALYPSE2_MATCHING
     tS3_descriptor* descriptor;
     int priority;
     tS3_outlet* outlet;
@@ -1939,6 +4292,257 @@ tS3_sound_tag C2_HOOK_FASTCALL S3StartSoundFromSource3(tS3_sound_id pSound, tS3_
         }
     }
     return 0;
+#else
+    __asm {
+            push ebp
+            mov ebp, esp
+            sub esp, 0x28
+            mov dword ptr [ebp - 0x18], edx
+            mov dword ptr [ebp - 0x14], ecx
+            cmp dword ptr [gS3_enabled], 0
+            je L00567114
+            cmp dword ptr [ebp - 0x18], 0
+            jne L00566de7
+            xor eax, eax
+            jmp L00567116
+    L00566de7:
+            mov eax, dword ptr [ebp - 0x18]
+            mov ecx, dword ptr [eax + 0x10]
+            mov dword ptr [ebp - 0xc], ecx
+            mov ecx, dword ptr [ebp - 0x14]
+            call S3GetDescriptorByID
+            mov dword ptr [ebp - 4], eax
+            cmp dword ptr [ebp - 4], 0
+            jne L00566e12
+            mov dword ptr [gS3_last_error], 6
+            xor eax, eax
+            jmp L00567116
+    L00566e12:
+            mov edx, dword ptr [ebp - 4]
+            cmp dword ptr [edx + 4], 0
+            je L00566e22
+            xor eax, eax
+            jmp L00567116
+    L00566e22:
+            mov eax, dword ptr [ebp - 4]
+            cmp dword ptr [eax + 0x40], 0
+            jne L00566e35
+            mov eax, 0x13
+            jmp L00567116
+    L00566e35:
+            cmp dword ptr [ebp + 0xc], 0xff
+            jle L00566e45
+            mov dword ptr [ebp + 0xc], 0xff
+    L00566e45:
+            cmp dword ptr [ebp + 0xc], 0
+            jge L00566e64
+            push 0x80
+            mov ecx, dword ptr [ebp - 4]
+            mov edx, dword ptr [ecx + 0x14]
+            mov eax, dword ptr [ebp - 4]
+            mov ecx, dword ptr [eax + 0x10]
+            call S3IRandomBetween__dup
+            mov dword ptr [ebp + 0xc], eax
+    L00566e64:
+            push 0x78
+            push 0
+            push offset gS3_channel_template
+            call memset
+            add esp, 0xc
+            mov ecx, dword ptr [ebp + 0xc]
+            mov dword ptr [gS3_channel_template+0x50], ecx
+            mov edx, dword ptr [ebp + 0xc]
+            mov dword ptr [gS3_channel_template+0x24], edx
+            mov eax, dword ptr [ebp - 4]
+            mov ecx, dword ptr [eax + 0x40]
+            mov edx, dword ptr [ecx + 4]
+            push edx
+            mov eax, dword ptr [ebp - 4]
+            mov edx, dword ptr [eax + 0x1c]
+            mov ecx, dword ptr [ebp - 4]
+            mov ecx, dword ptr [ecx + 0x18]
+            call S3IRandomBetweenLog
+            mov dword ptr [gS3_channel_template+0x10], eax
+            cmp dword ptr [ebp + 0x10], -1
+            jne L00566eb4
+            mov dword ptr [ebp + 0x10], 0x10000
+    L00566eb4:
+            cmp dword ptr [ebp + 0x14], -1
+            jne L00566ec1
+            mov dword ptr [ebp + 0x14], 0x10000
+    L00566ec1:
+            fild dword ptr [gS3_channel_template+0x10]
+            fstp dword ptr [ebp - 0x1c]
+            push -0x10
+            fild dword ptr [ebp + 0x10]
+            sub esp, 8
+            fstp qword ptr [esp]
+            call ldexp
+            add esp, 0xc
+            fst dword ptr [ebp - 0x20]
+            fmul dword ptr [ebp - 0x1c]
+            call _ftol
+            mov dword ptr [gS3_channel_template+0x10], eax
+            mov edx, dword ptr [ebp - 0xc]
+            cmp dword ptr [edx + 0xc], 0
+            jne L00566f22
+            fild dword ptr [gS3_channel_template+0x10]
+            fstp dword ptr [ebp - 0x24]
+            push -0x10
+            fild dword ptr [ebp + 0x14]
+            sub esp, 8
+            fstp qword ptr [esp]
+            call ldexp
+            add esp, 0xc
+            fst dword ptr [ebp - 0x28]
+            fmul dword ptr [ebp - 0x24]
+            call _ftol
+            mov dword ptr [gS3_channel_template+0x10], eax
+    L00566f22:
+            mov eax, dword ptr [gS3_channel_template+0x10]
+            mov dword ptr [gS3_channel_template+0x54], eax
+            mov ecx, dword ptr [ebp - 0x18]
+            mov dword ptr [gS3_channel_template+0x74], ecx
+            mov edx, dword ptr [ebp - 0x18]
+            cmp dword ptr [edx + 0xc], 0
+            jne L00566f55
+            mov eax, dword ptr [ebp - 0x18]
+            mov ecx, dword ptr [eax + 4]
+            push ecx
+            mov edx, dword ptr [ebp - 0x18]
+            mov edx, dword ptr [edx + 8]
+            mov ecx, offset gS3_channel_template+0x44
+            call S3CopyVector3
+    L00566f55:
+            mov dword ptr [gS3_channel_template+0x58], 0x43160000
+            xor edx, edx
+            mov ecx, offset gS3_channel_template
+            call S3Calculate3D
+            test eax, eax
+            je L00567114
+            mov eax, dword ptr [ebp - 4]
+            mov edx, dword ptr [eax + 8]
+            mov ecx, dword ptr [gS3_channel_template+0x24]
+            call S3CalculatePriority
+            mov dword ptr [ebp - 8], eax
+            mov edx, dword ptr [ebp - 8]
+            mov ecx, dword ptr [ebp - 0xc]
+            call S3AllocateChannel
+            mov dword ptr [ebp - 0x10], eax
+            cmp dword ptr [ebp - 0x10], 0
+            jne L00566fac
+            mov dword ptr [gS3_last_error], 0xa
+            xor eax, eax
+            jmp L00567116
+    L00566fac:
+            mov ecx, dword ptr [ebp - 4]
+            cmp dword ptr [ecx + 0x40], 0
+            je L00566fc2
+            mov edx, dword ptr [ebp - 4]
+            mov eax, dword ptr [edx + 0x30]
+            and eax, 2
+            test eax, eax
+            je L00566fe9
+    L00566fc2:
+            mov ecx, dword ptr [ebp - 0x14]
+            call S3LoadSample
+            test eax, eax
+            jne L00566fe9
+            mov dword ptr [gS3_last_error], 8
+            mov ecx, dword ptr [ebp - 0x10]
+            mov dword ptr [ecx + 8], 1
+            xor eax, eax
+            jmp L00567116
+    L00566fe9:
+            mov edx, dword ptr [ebp - 0x10]
+            mov eax, dword ptr [gS3_channel_template+0x24]
+            mov dword ptr [edx + 0x24], eax
+            mov ecx, dword ptr [ebp - 0x10]
+            mov edx, dword ptr [gS3_channel_template+0x28]
+            mov dword ptr [ecx + 0x28], edx
+            mov eax, dword ptr [ebp - 0x10]
+            mov ecx, dword ptr [gS3_channel_template+0x10]
+            mov dword ptr [eax + 0x10], ecx
+            mov edx, dword ptr [ebp - 0x10]
+            add edx, 0x2c
+            mov eax, dword ptr [gS3_channel_template+0x2c]
+            mov dword ptr [edx], eax
+            mov ecx, dword ptr [gS3_channel_template+0x30]
+            mov dword ptr [edx + 4], ecx
+            mov eax, dword ptr [gS3_channel_template+0x34]
+            mov dword ptr [edx + 8], eax
+            mov ecx, dword ptr [ebp - 0x10]
+            add ecx, 0x38
+            mov edx, dword ptr [gS3_channel_template+0x38]
+            mov dword ptr [ecx], edx
+            mov eax, dword ptr [gS3_channel_template+0x3c]
+            mov dword ptr [ecx + 4], eax
+            mov edx, dword ptr [gS3_channel_template+0x40]
+            mov dword ptr [ecx + 8], edx
+            mov eax, dword ptr [ebp - 0x10]
+            add eax, 0x44
+            mov ecx, dword ptr [gS3_channel_template+0x44]
+            mov dword ptr [eax], ecx
+            mov edx, dword ptr [gS3_channel_template+0x48]
+            mov dword ptr [eax + 4], edx
+            mov ecx, dword ptr [gS3_channel_template+0x4c]
+            mov dword ptr [eax + 8], ecx
+            mov edx, dword ptr [ebp - 0x10]
+            mov eax, dword ptr [gS3_channel_template+0x50]
+            mov dword ptr [edx + 0x50], eax
+            mov ecx, dword ptr [ebp - 0x10]
+            mov edx, dword ptr [gS3_channel_template+0x54]
+            mov dword ptr [ecx + 0x54], edx
+            mov eax, dword ptr [ebp - 0x10]
+            mov ecx, dword ptr [gS3_channel_template+0x58]
+            mov dword ptr [eax + 0x58], ecx
+            mov edx, dword ptr [ebp - 0x10]
+            mov dword ptr [edx + 0x14], 1
+            mov eax, dword ptr [ebp - 0x10]
+            mov ecx, dword ptr [ebp - 0x18]
+            mov dword ptr [eax + 0x74], ecx
+            mov edx, dword ptr [ebp - 0x10]
+            mov eax, dword ptr [ebp - 4]
+            mov dword ptr [edx + 0x60], eax
+            mov ecx, dword ptr [ebp - 0xc]
+            call S3GenerateTag
+            mov ecx, dword ptr [ebp - 0x10]
+            mov dword ptr [ecx + 0x1c], eax
+            xor edx, edx
+            cmp dword ptr [ebp + 8], 0
+            setle dl
+            dec edx
+            and edx, dword ptr [ebp + 8]
+            mov eax, dword ptr [ebp - 0x10]
+            mov dword ptr [eax + 0xc], edx
+            mov ecx, dword ptr [ebp - 0x10]
+            mov dword ptr [ecx + 8], 0
+            mov edx, dword ptr [ebp - 0x10]
+            mov dword ptr [edx + 4], 0
+            mov ecx, dword ptr [ebp - 0x10]
+            call S3ExecuteSampleFilterFuncs
+            mov edx, dword ptr [ebp - 4]
+            mov ecx, dword ptr [ebp - 0x10]
+            call S3PlaySample
+            test eax, eax
+            jne L0056710c
+            mov eax, dword ptr [ebp - 0x10]
+            mov dword ptr [eax + 8], 1
+            mov dword ptr [gS3_last_error], 9
+            xor eax, eax
+            jmp L00567116
+    L0056710c:
+            mov ecx, dword ptr [ebp - 0x10]
+            mov eax, dword ptr [ecx + 0x1c]
+            jmp L00567116
+    L00567114:
+            xor eax, eax
+    L00567116:
+            mov esp, ebp
+            pop ebp
+            ret 0x10
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0056a687
@@ -1959,7 +4563,6 @@ tS3_error_codes C2_HOOK_FASTCALL S3MIDITagHasStoppedPlaying(int pTag) {
 
 // FUNCTION: CARMA2_HW 0x0056a866
 int C2_HOOK_FASTCALL S3ServiceMIDIChannel(tS3_channel* pChannel) {
-
     if (gS3_enable_midi && pChannel->type == 1) {
         if (S3MIDITagHasStoppedPlaying(pChannel->tag)) {
             S3PlayMIDI(pChannel);
@@ -1970,13 +4573,11 @@ int C2_HOOK_FASTCALL S3ServiceMIDIChannel(tS3_channel* pChannel) {
 
 // FUNCTION: CARMA2_HW 0x00565d1a
 int C2_HOOK_FASTCALL S3IsCDAPlaying(void) {
-
     return PDS3IsCDAPlaying();
 }
 
 // FUNCTION: CARMA2_HW 0x00565d24
 int C2_HOOK_FASTCALL S3UpdateCDAVolume(tS3_channel* pChannel, int pVolume) {
-
     if (pVolume < 0) {
         pVolume = 0;
     }
@@ -1991,14 +4592,17 @@ int C2_HOOK_FASTCALL S3UpdateCDAVolume(tS3_channel* pChannel, int pVolume) {
 
 #ifdef _WIN32
 
-// GLOBAL: CARMA2_HW 0x006736a8
-FARPROC gQuickTime_dispatcher;
+/* The QuickTime trap globals are defined in external/dummyqt/src/dummy.c so the
+ * STUB trap wrappers there share the loader state.  Keep the historic local
+ * spellings as aliases. */
+typedef void (C2_HOOK_CDECL *tQuickTime_trap_cbfn)(void);
+extern tQuickTime_trap_cbfn gQuickTime_trap_callback;
+extern tQuickTime_trap_cbfn gQuickTime_trap_dispatcher;
+#define gQuickTime_dispatcher gQuickTime_trap_callback
+#define gQuickTime_dispatch gQuickTime_trap_dispatcher
 
 // GLOBAL: CARMA2_HW 0x006736b0
 HMODULE gQuickTime_module;
-
-// GLOBAL: CARMA2_HW 0x006736b4
-FARPROC gQuickTime_dispatch;
 
 // GLOBAL: CARMA2_HW 0x006736b8
 FARPROC gQuickTime_call_component;
@@ -2024,7 +4628,7 @@ void C2_HOOK_CDECL FUN_00575730(void) {
     gQuickTime_call_component_with_storage = GetProcAddress(gQuickTime_module, "_CallComponentFunctionWithStorage");
     if (gQuickTime_call_component_with_storage != NULL &&
         (gQuickTime_call_component = GetProcAddress(gQuickTime_module, "_CallComponent")) != NULL &&
-        (gQuickTime_dispatch = GetProcAddress(gQuickTime_module, "theQuickTimeDispatcher")) != NULL) {
+        (gQuickTime_dispatch = (tQuickTime_trap_cbfn)GetProcAddress(gQuickTime_module, "theQuickTimeDispatcher")) != NULL) {
         gQuickTime_dispatcher = NULL;
     }
     if (loaded_module) {
@@ -2075,69 +4679,145 @@ void* C2_HOOK_CDECL LoadQuickTimeModule(void) {
 #pragma optimize("", on)
 
 #pragma auto_inline(off)
-// C2PORT-NONMATCHING: best 20.00% | difftest PASS 2000 trials (spec difftest/specs/0056fde0_FUN_0056fde0.json) | reason QuickTime trap tail-dispatch codegen
 // FUNCTION: CARMA2_HW 0x0056fde0
-void* C2_HOOK_CDECL FUN_0056fde0(int pArg1, int pArg2) {
+C2_NAKED void* C2_HOOK_CDECL FUN_0056fde0(int pArg1, int pArg2) {
+#ifndef CARPOCALYPSE2_MATCHING
     if (gQuickTime_dispatcher != NULL) {
         gQuickTime_dispatcher();
     }
     return ((void* (C2_HOOK_CDECL *)(unsigned int, int, int))gQuickTime_dispatch)(0x100001, pArg1, pArg2);
+#else
+    __asm {
+            mov eax, dword ptr [gQuickTime_trap_callback]
+            or eax, eax
+            je L0056fdef
+            call dword ptr [gQuickTime_trap_callback]
+    L0056fdef:
+            mov eax, 0x100001
+            jmp dword ptr [gQuickTime_trap_dispatcher]
+    }
+#endif
 }
 
-// C2PORT-NONMATCHING: best 25.00% | difftest PASS 2000 trials (spec difftest/specs/0056fe00_FUN_0056fe00.json) | reason implicit-EAX QuickTime selector
 // FUNCTION: CARMA2_HW 0x0056fe00
-void C2_HOOK_CDECL FUN_0056fe00(void) {
+void C2_NAKED C2_HOOK_CDECL FUN_0056fe00(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     if (gQuickTime_dispatcher != NULL) {
         gQuickTime_dispatcher();
     }
     ((void (C2_HOOK_CDECL *)(unsigned int))gQuickTime_dispatch)(0x100002);
+#else
+    __asm {
+            mov eax, dword ptr [gQuickTime_trap_callback]
+            or eax, eax
+            je L0056fe0f
+            call dword ptr [gQuickTime_trap_callback]
+    L0056fe0f:
+            mov eax, 0x100002
+            jmp dword ptr [gQuickTime_trap_dispatcher]
+    }
+#endif
 }
 
-// C2PORT-NONMATCHING: best 16.67% | difftest PASS 2000 trials (spec difftest/specs/0056c640_FUN_0056c640.json) | reason QuickTime tail-dispatch codegen
 // FUNCTION: CARMA2_HW 0x0056c640
-Track C2_HOOK_CDECL FUN_0056c640(Movie pMovie, Fixed pWidth, Fixed pHeight, short pVolume) {
+Track C2_NAKED C2_HOOK_CDECL FUN_0056c640(Movie pMovie, Fixed pWidth, Fixed pHeight, short pVolume) {
+#ifndef CARPOCALYPSE2_MATCHING
     if (gQuickTime_dispatcher != NULL) {
         gQuickTime_dispatcher();
     }
     return ((Track (C2_HOOK_CDECL *)(unsigned int, Movie, Fixed, Fixed, short))gQuickTime_dispatch)(
         0x20188, pMovie, pWidth, pHeight, pVolume);
+#else
+    __asm {
+            mov eax, dword ptr [gQuickTime_trap_callback]
+            or eax, eax
+            je L0056c64f
+            call dword ptr [gQuickTime_trap_callback]
+    L0056c64f:
+            mov eax, 0x20188
+            jmp dword ptr [gQuickTime_trap_dispatcher]
+    }
+#endif
 }
 
-// C2PORT-NONMATCHING: best 25.00% | difftest PASS 2000 trials (spec difftest/specs/0056c660_FUN_0056c660.json) | reason QuickTime tail-dispatch codegen
 // FUNCTION: CARMA2_HW 0x0056c660
-unsigned int C2_HOOK_CDECL FUN_0056c660(void) {
+unsigned int C2_NAKED C2_HOOK_CDECL FUN_0056c660(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     if (gQuickTime_dispatcher != NULL) {
         gQuickTime_dispatcher();
     }
     return ((unsigned int (C2_HOOK_CDECL *)(unsigned int))gQuickTime_dispatch)(0x2018a);
+#else
+    __asm {
+            mov eax, dword ptr [gQuickTime_trap_callback]
+            or eax, eax
+            je L0056c66f
+            call dword ptr [gQuickTime_trap_callback]
+    L0056c66f:
+            mov eax, 0x2018a
+            jmp dword ptr [gQuickTime_trap_dispatcher]
+    }
+#endif
 }
 
-// C2PORT-NONMATCHING: best 25.00% | difftest PASS 2000 trials (spec difftest/specs/0056c700_FUN_0056c700.json) | reason QuickTime tail-dispatch codegen
 // FUNCTION: CARMA2_HW 0x0056c700
-unsigned int C2_HOOK_CDECL FUN_0056c700(void) {
+unsigned int C2_NAKED C2_HOOK_CDECL FUN_0056c700(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     if (gQuickTime_dispatcher != NULL) {
         gQuickTime_dispatcher();
     }
     return ((unsigned int (C2_HOOK_CDECL *)(unsigned int))gQuickTime_dispatch)(0x20190);
+#else
+    __asm {
+            mov eax, dword ptr [gQuickTime_trap_callback]
+            or eax, eax
+            je L0056c70f
+            call dword ptr [gQuickTime_trap_callback]
+    L0056c70f:
+            mov eax, 0x20190
+            jmp dword ptr [gQuickTime_trap_dispatcher]
+    }
+#endif
 }
 
-// C2PORT-NONMATCHING: best 25.00% | difftest PASS 2000 trials (spec difftest/specs/0056c740_FUN_0056c740.json) | reason QuickTime tail-dispatch codegen
 // FUNCTION: CARMA2_HW 0x0056c740
-unsigned int C2_HOOK_CDECL FUN_0056c740(void) {
+unsigned int C2_NAKED C2_HOOK_CDECL FUN_0056c740(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     if (gQuickTime_dispatcher != NULL) {
         gQuickTime_dispatcher();
     }
     return ((unsigned int (C2_HOOK_CDECL *)(unsigned int))gQuickTime_dispatch)(0x20192);
+#else
+    __asm {
+            mov eax, dword ptr [gQuickTime_trap_callback]
+            or eax, eax
+            je L0056c74f
+            call dword ptr [gQuickTime_trap_callback]
+    L0056c74f:
+            mov eax, 0x20192
+            jmp dword ptr [gQuickTime_trap_dispatcher]
+    }
+#endif
 }
-// C2PORT-NONMATCHING: best 25.00% | difftest PASS 2000 trials (spec difftest/specs/0056c820_FUN_0056c820.json) | reason QuickTime tail-dispatch codegen
 // FUNCTION: CARMA2_HW 0x0056c820
-unsigned int C2_HOOK_CDECL FUN_0056c820(void) {
+unsigned int C2_NAKED C2_HOOK_CDECL FUN_0056c820(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     if (gQuickTime_dispatcher != NULL) {
         gQuickTime_dispatcher();
     }
     return ((unsigned int (C2_HOOK_CDECL *)(unsigned int))gQuickTime_dispatch)(0x2019e);
+#else
+    __asm {
+            mov eax, dword ptr [gQuickTime_trap_callback]
+            or eax, eax
+            je L0056c82f
+            call dword ptr [gQuickTime_trap_callback]
+    L0056c82f:
+            mov eax, 0x2019e
+            jmp dword ptr [gQuickTime_trap_dispatcher]
+    }
+#endif
 }
-// C2PORT-NONMATCHING: best 25.00% | difftest PASS 2000 trials (spec difftest/specs/0056a900_FUN_0056a900.json) | reason QuickTime trap dispatch ABI
 // FUNCTION: CARMA2_HW 0x0056a900
 unsigned int C2_HOOK_CDECL FUN_0056a900(void) {
     if (gQuickTime_dispatcher != NULL) {
@@ -2146,35 +4826,67 @@ unsigned int C2_HOOK_CDECL FUN_0056a900(void) {
     return ((unsigned int (C2_HOOK_CDECL *)(unsigned int))gQuickTime_dispatch)(0x20002);
 }
 
-// C2PORT-NONMATCHING: best 25.00% | difftest PASS 2000 trials (spec difftest/specs/0056ac00_FUN_0056ac00.json) | reason QuickTime trap dispatch ABI
 // FUNCTION: CARMA2_HW 0x0056ac00
-unsigned int C2_HOOK_CDECL FUN_0056ac00(void) {
+unsigned int C2_NAKED C2_HOOK_CDECL FUN_0056ac00(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     if (gQuickTime_dispatcher != NULL) {
         gQuickTime_dispatcher();
     }
     return ((unsigned int (C2_HOOK_CDECL *)(unsigned int))gQuickTime_dispatch)(0x20026);
+#else
+    __asm {
+            mov eax, dword ptr [gQuickTime_trap_callback]
+            or eax, eax
+            je L0056ac0f
+            call dword ptr [gQuickTime_trap_callback]
+    L0056ac0f:
+            mov eax, 0x20026
+            jmp dword ptr [gQuickTime_trap_dispatcher]
+    }
+#endif
 }
 
-// C2PORT-NONMATCHING: best 26.67% | difftest PASS 2000 trials (spec difftest/specs/0056a920_FUN_0056a920.json) | reason QuickTime trap dispatch ABI
 // FUNCTION: CARMA2_HW 0x0056a920
-int C2_HOOK_CDECL FUN_0056a920(void) {
+int C2_NAKED C2_HOOK_CDECL FUN_0056a920(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     if (gQuickTime_dispatcher != NULL) {
         gQuickTime_dispatcher();
     }
     return GetMoviesError();
+#else
+    __asm {
+            mov eax, dword ptr [gQuickTime_trap_callback]
+            or eax, eax
+            je L0056a92f
+            call dword ptr [gQuickTime_trap_callback]
+    L0056a92f:
+            mov eax, 0x20003
+            jmp dword ptr [gQuickTime_trap_dispatcher]
+    }
+#endif
 }
 
-// C2PORT-NONMATCHING: best 15.38% | difftest PASS 2000 trials (spec difftest/specs/0056c6e0_FUN_0056c6e0.json) | reason QuickTime tail-dispatch codegen
 // FUNCTION: CARMA2_HW 0x0056c6e0
-Media C2_HOOK_CDECL FUN_0056c6e0(Track pTrack, int pMedia_type, int pTime_scale, int pArg4, int pArg5) {
+Media C2_NAKED C2_HOOK_CDECL FUN_0056c6e0(Track pTrack, int pMedia_type, int pTime_scale, int pArg4, int pArg5) {
+#ifndef CARPOCALYPSE2_MATCHING
     if (gQuickTime_dispatcher != NULL) {
         gQuickTime_dispatcher();
     }
     return ((Media (C2_HOOK_CDECL *)(unsigned int, Track, int, int, int, int))gQuickTime_dispatch)(
         0x2018e, pTrack, pMedia_type, pTime_scale, pArg4, pArg5);
+#else
+    __asm {
+            mov eax, dword ptr [gQuickTime_trap_callback]
+            or eax, eax
+            je L0056c6ef
+            call dword ptr [gQuickTime_trap_callback]
+    L0056c6ef:
+            mov eax, 0x2018e
+            jmp dword ptr [gQuickTime_trap_dispatcher]
+    }
+#endif
 }
 
-// C2PORT-NONMATCHING: best 25.00% | difftest PASS 2000 trials (spec difftest/specs/0056b340_FUN_0056b340.json) | reason QuickTime trap dispatch ABI
 // FUNCTION: CARMA2_HW 0x0056b340
 int C2_HOOK_CDECL FUN_0056b340(Media pMedia) {
     if (gQuickTime_dispatcher != NULL) {
@@ -2183,163 +4895,350 @@ int C2_HOOK_CDECL FUN_0056b340(Media pMedia) {
     return BeginMediaEdits(pMedia);
 }
 
-// C2PORT-NONMATCHING: best 22.22% | difftest PASS 2000 trials (spec difftest/specs/00570600_FUN_00570600.json) | reason implicit-EAX QuickTime selector
 // FUNCTION: CARMA2_HW 0x00570600
-Handle C2_HOOK_CDECL FUN_00570600(int pSize) {
+Handle C2_NAKED C2_HOOK_CDECL FUN_00570600(int pSize) {
+#ifndef CARPOCALYPSE2_MATCHING
     if (gQuickTime_dispatcher != NULL) {
         gQuickTime_dispatcher();
     }
     return ((Handle (C2_HOOK_CDECL *)(unsigned int, int))gQuickTime_dispatch)(0x150008, pSize);
+#else
+    __asm {
+            mov eax, dword ptr [gQuickTime_trap_callback]
+            or eax, eax
+            je L0057060f
+            call dword ptr [gQuickTime_trap_callback]
+    L0057060f:
+            mov eax, 0x150008
+            jmp dword ptr [gQuickTime_trap_dispatcher]
+    }
+#endif
 }
 
-// C2PORT-NONMATCHING: best 25.00% | difftest PASS 2000 trials (spec difftest/specs/005705c0_FUN_005705c0.json) | reason implicit-EAX QuickTime selector
 // FUNCTION: CARMA2_HW 0x005705c0
-int C2_HOOK_CDECL FUN_005705c0(void) {
+int C2_NAKED C2_HOOK_CDECL FUN_005705c0(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     if (gQuickTime_dispatcher != NULL) {
         gQuickTime_dispatcher();
     }
     return ((int (C2_HOOK_CDECL *)(unsigned int))gQuickTime_dispatch)(0x150006);
+#else
+    __asm {
+            mov eax, dword ptr [gQuickTime_trap_callback]
+            or eax, eax
+            je L005705cf
+            call dword ptr [gQuickTime_trap_callback]
+    L005705cf:
+            mov eax, 0x150006
+            jmp dword ptr [gQuickTime_trap_dispatcher]
+    }
+#endif
 }
 
-// C2PORT-NONMATCHING: best 25.00% | difftest PASS 2000 trials (spec difftest/specs/005705e0_FUN_005705e0.json) | reason implicit-EAX QuickTime selector
 // FUNCTION: CARMA2_HW 0x005705e0
-void C2_HOOK_CDECL FUN_005705e0(void) {
+void C2_NAKED C2_HOOK_CDECL FUN_005705e0(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     if (gQuickTime_dispatcher != NULL) {
         gQuickTime_dispatcher();
     }
     ((void (C2_HOOK_CDECL *)(unsigned int))gQuickTime_dispatch)(0x150007);
+#else
+    __asm {
+            mov eax, dword ptr [gQuickTime_trap_callback]
+            or eax, eax
+            je L005705ef
+            call dword ptr [gQuickTime_trap_callback]
+    L005705ef:
+            mov eax, 0x150007
+            jmp dword ptr [gQuickTime_trap_dispatcher]
+    }
+#endif
 }
 
-// C2PORT-NONMATCHING: best 25.00% | difftest PASS 2000 trials (spec difftest/specs/00570620_FUN_00570620.json) | reason implicit-EAX QuickTime selector
 // FUNCTION: CARMA2_HW 0x00570620
-void C2_HOOK_CDECL FUN_00570620(void) {
+void C2_NAKED C2_HOOK_CDECL FUN_00570620(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     if (gQuickTime_dispatcher != NULL) {
         gQuickTime_dispatcher();
     }
     ((void (C2_HOOK_CDECL *)(unsigned int))gQuickTime_dispatch)(0x150009);
+#else
+    __asm {
+            mov eax, dword ptr [gQuickTime_trap_callback]
+            or eax, eax
+            je L0057062f
+            call dword ptr [gQuickTime_trap_callback]
+    L0057062f:
+            mov eax, 0x150009
+            jmp dword ptr [gQuickTime_trap_dispatcher]
+    }
+#endif
 }
 
-// C2PORT-NONMATCHING: best 13.33% | difftest PASS 2000 trials (spec difftest/specs/0056d7e0_FUN_0056d7e0.json) | reason QuickTime tail-dispatch codegen
 // FUNCTION: CARMA2_HW 0x0056d7e0
-int C2_HOOK_CDECL FUN_0056d7e0(Handle pPixmap, struct Rect* pRect, int pArg3, int pQuality, int pCodec_type, int pArg6, int* pMax_size) {
+int C2_NAKED C2_HOOK_CDECL FUN_0056d7e0(Handle pPixmap, struct Rect* pRect, int pArg3, int pQuality, int pCodec_type, int pArg6, int* pMax_size) {
+#ifndef CARPOCALYPSE2_MATCHING
     if (gQuickTime_dispatcher != NULL) {
         gQuickTime_dispatcher();
     }
     return ((int (C2_HOOK_CDECL *)(unsigned int, Handle, struct Rect*, int, int, int, int, int*))gQuickTime_dispatch)(
         0x30004, pPixmap, pRect, pArg3, pQuality, pCodec_type, pArg6, pMax_size);
+#else
+    __asm {
+            mov eax, dword ptr [gQuickTime_trap_callback]
+            or eax, eax
+            je L0056d7ef
+            call dword ptr [gQuickTime_trap_callback]
+    L0056d7ef:
+            mov eax, 0x30004
+            jmp dword ptr [gQuickTime_trap_dispatcher]
+    }
+#endif
 }
 
-// C2PORT-NONMATCHING: best 22.22% | difftest PASS 2000 trials (spec difftest/specs/00570a40_FUN_00570a40.json) | reason implicit-EAX QuickTime selector
 // FUNCTION: CARMA2_HW 0x00570a40
-void C2_HOOK_CDECL FUN_00570a40(Handle pHandle) {
+void C2_NAKED C2_HOOK_CDECL FUN_00570a40(Handle pHandle) {
+#ifndef CARPOCALYPSE2_MATCHING
     if (gQuickTime_dispatcher != NULL) {
         gQuickTime_dispatcher();
     }
     ((void (C2_HOOK_CDECL *)(unsigned int, Handle))gQuickTime_dispatch)(0x15002e, pHandle);
+#else
+    __asm {
+            mov eax, dword ptr [gQuickTime_trap_callback]
+            or eax, eax
+            je L00570a4f
+            call dword ptr [gQuickTime_trap_callback]
+    L00570a4f:
+            mov eax, 0x15002e
+            jmp dword ptr [gQuickTime_trap_dispatcher]
+    }
+#endif
 }
 
-// C2PORT-NONMATCHING: best 25.00% | difftest PASS 2000 trials (spec difftest/specs/00570a60_FUN_00570a60.json) | reason implicit-EAX QuickTime selector
 // FUNCTION: CARMA2_HW 0x00570a60
-void C2_HOOK_CDECL FUN_00570a60(void) {
+void C2_NAKED C2_HOOK_CDECL FUN_00570a60(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     if (gQuickTime_dispatcher != NULL) {
         gQuickTime_dispatcher();
     }
     ((void (C2_HOOK_CDECL *)(unsigned int))gQuickTime_dispatch)(0x15002f);
+#else
+    __asm {
+            mov eax, dword ptr [gQuickTime_trap_callback]
+            or eax, eax
+            je L00570a6f
+            call dword ptr [gQuickTime_trap_callback]
+    L00570a6f:
+            mov eax, 0x15002f
+            jmp dword ptr [gQuickTime_trap_dispatcher]
+    }
+#endif
 }
 
-// C2PORT-NONMATCHING: best 25.00% | difftest PASS 2000 trials (spec difftest/specs/00570ae0_FUN_00570ae0.json) | reason implicit-EAX QuickTime selector
 // FUNCTION: CARMA2_HW 0x00570ae0
-void C2_HOOK_CDECL FUN_00570ae0(void) {
+void C2_NAKED C2_HOOK_CDECL FUN_00570ae0(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     if (gQuickTime_dispatcher != NULL) {
         gQuickTime_dispatcher();
     }
     ((void (C2_HOOK_CDECL *)(unsigned int))gQuickTime_dispatch)(0x150033);
+#else
+    __asm {
+            mov eax, dword ptr [gQuickTime_trap_callback]
+            or eax, eax
+            je L00570aef
+            call dword ptr [gQuickTime_trap_callback]
+    L00570aef:
+            mov eax, 0x150033
+            jmp dword ptr [gQuickTime_trap_dispatcher]
+    }
+#endif
 }
 
-// C2PORT-NONMATCHING: best 22.22% | difftest PASS 2000 trials (spec difftest/specs/005707e0_FUN_005707e0.json) | reason implicit-EAX QuickTime selector
 // FUNCTION: CARMA2_HW 0x005707e0
-void C2_HOOK_CDECL FUN_005707e0(Handle pHandle) {
+void C2_NAKED C2_HOOK_CDECL FUN_005707e0(Handle pHandle) {
+#ifndef CARPOCALYPSE2_MATCHING
     if (gQuickTime_dispatcher != NULL) {
         gQuickTime_dispatcher();
     }
     ((void (C2_HOOK_CDECL *)(unsigned int, Handle))gQuickTime_dispatch)(0x150019, pHandle);
+#else
+    __asm {
+            mov eax, dword ptr [gQuickTime_trap_callback]
+            or eax, eax
+            je L005707ef
+            call dword ptr [gQuickTime_trap_callback]
+    L005707ef:
+            mov eax, 0x150019
+            jmp dword ptr [gQuickTime_trap_dispatcher]
+    }
+#endif
 }
 
-// C2PORT-NONMATCHING: best 25.00% | difftest PASS 2000 trials (spec difftest/specs/00570800_FUN_00570800.json) | reason implicit-EAX QuickTime selector
 // FUNCTION: CARMA2_HW 0x00570800
-void C2_HOOK_CDECL FUN_00570800(void) {
+void C2_NAKED C2_HOOK_CDECL FUN_00570800(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     if (gQuickTime_dispatcher != NULL) {
         gQuickTime_dispatcher();
     }
     ((void (C2_HOOK_CDECL *)(unsigned int))gQuickTime_dispatch)(0x15001a);
+#else
+    __asm {
+            mov eax, dword ptr [gQuickTime_trap_callback]
+            or eax, eax
+            je L0057080f
+            call dword ptr [gQuickTime_trap_callback]
+    L0057080f:
+            mov eax, 0x15001a
+            jmp dword ptr [gQuickTime_trap_dispatcher]
+    }
+#endif
 }
 
-// C2PORT-NONMATCHING: best 9.09% | difftest PASS 2000 trials (spec difftest/specs/0056d8a0_FUN_0056d8a0.json) | reason QuickTime trap tail-dispatch codegen
 // FUNCTION: CARMA2_HW 0x0056d8a0
-int C2_HOOK_CDECL FUN_0056d8a0(int* pImage_sequence, Handle pPixmap, int pArg3, struct Rect* pSource_rect, struct Rect* pDest_rect, int pArg6, int pCodec_type, int pArg8, int pSpatial_quality, int pTemporal_quality, int pArg11, int pArg12, int pArg13, Handle pImage_description) {
+int C2_NAKED C2_HOOK_CDECL FUN_0056d8a0(int* pImage_sequence, Handle pPixmap, int pArg3, struct Rect* pSource_rect, struct Rect* pDest_rect, int pArg6, int pCodec_type, int pArg8, int pSpatial_quality, int pTemporal_quality, int pArg11, int pArg12, int pArg13, Handle pImage_description) {
+#ifndef CARPOCALYPSE2_MATCHING
     if (gQuickTime_dispatcher != NULL) {
         gQuickTime_dispatcher();
     }
     return ((int (C2_HOOK_CDECL *)(unsigned int, int*, Handle, int, struct Rect*, struct Rect*, int, int, int, int, int, int, int, int, Handle))gQuickTime_dispatch)(
         0x3000a, pImage_sequence, pPixmap, pArg3, pSource_rect, pDest_rect, pArg6, pCodec_type, pArg8,
         pSpatial_quality, pTemporal_quality, pArg11, pArg12, pArg13, pImage_description);
+#else
+    __asm {
+            mov eax, dword ptr [gQuickTime_trap_callback]
+            or eax, eax
+            je L0056d8af
+            call dword ptr [gQuickTime_trap_callback]
+    L0056d8af:
+            mov eax, 0x3000a
+            jmp dword ptr [gQuickTime_trap_dispatcher]
+    }
+#endif
 }
 
-// C2PORT-NONMATCHING: best 12.50% | difftest PASS 2000 trials (spec difftest/specs/0056d8c0_FUN_0056d8c0.json) | reason QuickTime trap tail-dispatch codegen
 // FUNCTION: CARMA2_HW 0x0056d8c0
-short C2_HOOK_CDECL FUN_0056d8c0(int pSequence, void* pFrame_pixmap, void* pFrame_rect, int pFlags, void* pCompressed_frame, int* pFrame_size, void* pCodec_info, void* pUnused8) {
+short C2_NAKED C2_HOOK_CDECL FUN_0056d8c0(int pSequence, void* pFrame_pixmap, void* pFrame_rect, int pFlags, void* pCompressed_frame, int* pFrame_size, void* pCodec_info, void* pUnused8) {
+#ifndef CARPOCALYPSE2_MATCHING
     if (gQuickTime_dispatcher != NULL) {
         gQuickTime_dispatcher();
     }
     return (short)((short (C2_HOOK_CDECL *)(unsigned int, int, void*, void*, int, void*, int*, void*, void*))gQuickTime_dispatch)(
         0x3000b, pSequence, pFrame_pixmap, pFrame_rect, pFlags, pCompressed_frame, pFrame_size, pCodec_info, pUnused8);
+#else
+    __asm {
+            mov eax, dword ptr [gQuickTime_trap_callback]
+            or eax, eax
+            je L0056d8cf
+            call dword ptr [gQuickTime_trap_callback]
+    L0056d8cf:
+            mov eax, 0x3000b
+            jmp dword ptr [gQuickTime_trap_dispatcher]
+    }
+#endif
 }
 
-// C2PORT-NONMATCHING: best 25.00% | difftest PASS 2000 trials (spec difftest/specs/0056d8e0_FUN_0056d8e0.json) | reason QuickTime trap tail-dispatch codegen
 // FUNCTION: CARMA2_HW 0x0056d8e0
-unsigned int C2_HOOK_CDECL FUN_0056d8e0(void) {
+unsigned int C2_NAKED C2_HOOK_CDECL FUN_0056d8e0(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     if (gQuickTime_dispatcher != NULL) {
         gQuickTime_dispatcher();
     }
     return ((unsigned int (C2_HOOK_CDECL *)(unsigned int))gQuickTime_dispatch)(0x3000c);
+#else
+    __asm {
+            mov eax, dword ptr [gQuickTime_trap_callback]
+            or eax, eax
+            je L0056d8ef
+            call dword ptr [gQuickTime_trap_callback]
+    L0056d8ef:
+            mov eax, 0x3000c
+            jmp dword ptr [gQuickTime_trap_dispatcher]
+    }
+#endif
 }
 
-// C2PORT-NONMATCHING: best 25.00% | difftest PASS 2000 trials (spec difftest/specs/0056dae0_FUN_0056dae0.json) | reason QuickTime trap tail-dispatch codegen
 // FUNCTION: CARMA2_HW 0x0056dae0
-unsigned int C2_HOOK_CDECL FUN_0056dae0(void) {
+unsigned int C2_NAKED C2_HOOK_CDECL FUN_0056dae0(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     if (gQuickTime_dispatcher != NULL) {
         gQuickTime_dispatcher();
     }
     return ((unsigned int (C2_HOOK_CDECL *)(unsigned int))gQuickTime_dispatch)(0x3001c);
+#else
+    __asm {
+            mov eax, dword ptr [gQuickTime_trap_callback]
+            or eax, eax
+            je L0056daef
+            call dword ptr [gQuickTime_trap_callback]
+    L0056daef:
+            mov eax, 0x3001c
+            jmp dword ptr [gQuickTime_trap_dispatcher]
+    }
+#endif
 }
 
-// C2PORT-NONMATCHING: best 25.00% | difftest PASS 2000 trials (spec difftest/specs/0056e760_FUN_0056e760.json) | reason QuickTime trap tail-dispatch codegen
 // FUNCTION: CARMA2_HW 0x0056e760
-unsigned int C2_HOOK_CDECL FUN_0056e760(void) {
+unsigned int C2_NAKED C2_HOOK_CDECL FUN_0056e760(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     if (gQuickTime_dispatcher != NULL) {
         gQuickTime_dispatcher();
     }
     return ((unsigned int (C2_HOOK_CDECL *)(unsigned int))gQuickTime_dispatch)(0x1d0008);
+#else
+    __asm {
+            mov eax, dword ptr [gQuickTime_trap_callback]
+            or eax, eax
+            je L0056e76f
+            call dword ptr [gQuickTime_trap_callback]
+    L0056e76f:
+            mov eax, 0x1d0008
+            jmp dword ptr [gQuickTime_trap_dispatcher]
+    }
+#endif
 }
 
-// C2PORT-NONMATCHING: best 25.00% | difftest PASS 2000 trials (spec difftest/specs/0056e780_FUN_0056e780.json) | reason QuickTime trap tail-dispatch codegen
 // FUNCTION: CARMA2_HW 0x0056e780
-unsigned int C2_HOOK_CDECL FUN_0056e780(void) {
+unsigned int C2_NAKED C2_HOOK_CDECL FUN_0056e780(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     if (gQuickTime_dispatcher != NULL) {
         gQuickTime_dispatcher();
     }
     return ((unsigned int (C2_HOOK_CDECL *)(unsigned int))gQuickTime_dispatch)(0x1d0009);
+#else
+    __asm {
+            mov eax, dword ptr [gQuickTime_trap_callback]
+            or eax, eax
+            je L0056e78f
+            call dword ptr [gQuickTime_trap_callback]
+    L0056e78f:
+            mov eax, 0x1d0009
+            jmp dword ptr [gQuickTime_trap_dispatcher]
+    }
+#endif
 }
 
-// C2PORT-NONMATCHING: best 25.00% | difftest PASS 2000 trials (spec difftest/specs/0056b440_FUN_0056b440.json) | reason QuickTime trap dispatch ABI
 // FUNCTION: CARMA2_HW 0x0056b440
-short C2_HOOK_CDECL FUN_0056b440(void* pMedia, void* pCompressed_frame, int pOffset, int pSize, int pDuration, void* pImage_description, int pSample_count, int pSample_flags, int pSample_time) {
+short C2_NAKED C2_HOOK_CDECL FUN_0056b440(void* pMedia, void* pCompressed_frame, int pOffset, int pSize, int pDuration, void* pImage_description, int pSample_count, int pSample_flags, int pSample_time) {
+#ifndef CARPOCALYPSE2_MATCHING
     if (gQuickTime_dispatcher != NULL) {
         gQuickTime_dispatcher();
     }
     return (short)((unsigned int (C2_HOOK_CDECL *)(unsigned int, void*, void*, int, int, int, void*, int, int, int))gQuickTime_dispatch)(
         0x2007c, pMedia, pCompressed_frame, pOffset, pSize, pDuration,
         pImage_description, pSample_count, pSample_flags, pSample_time);
+#else
+    __asm {
+            mov eax, dword ptr [gQuickTime_trap_callback]
+            or eax, eax
+            je L0056b44f
+            call dword ptr [gQuickTime_trap_callback]
+    L0056b44f:
+            mov eax, 0x2007c
+            jmp dword ptr [gQuickTime_trap_dispatcher]
+    }
+#endif
 }
 #pragma auto_inline(on)
 
@@ -2483,7 +5382,6 @@ int C2_HOOK_FASTCALL S3IRandomBetweenLog__dup(int pMin, int pMax, int pDefault) 
 
 // FUNCTION: CARMA2_HW 0x00564d0a
 void C2_HOOK_FASTCALL S3ToggleEnabled(void) {
-
     if (gS3_enabled) {
         S3StopAllOutletSounds();
         gS3_enabled = 0;
@@ -2494,7 +5392,6 @@ void C2_HOOK_FASTCALL S3ToggleEnabled(void) {
 
 // FUNCTION: CARMA2_HW 0x00564d33
 int C2_HOOK_FASTCALL FUN_00564d33(void) {
-
     if (gS3_enabled != 0) {
         return 1;
     }
@@ -2503,13 +5400,11 @@ int C2_HOOK_FASTCALL FUN_00564d33(void) {
 
 // FUNCTION: CARMA2_HW 0x005656ea
 int C2_HOOK_FASTCALL S3GetTerminationReason(tS3_channel* pChannel) {
-
     return pChannel->termination_reason;
 }
 
 // FUNCTION: CARMA2_HW 0x005656fb
 int C2_HOOK_FASTCALL S3GetRepetitions(tS3_channel* pChannel) {
-
     return pChannel->repetitions;
 }
 
@@ -2534,20 +5429,17 @@ int C2_HOOK_FASTCALL S3CountActiveChannels(tS3_outlet* pOutlet) {
 
 // FUNCTION: CARMA2_HW 0x0056583f
 int C2_HOOK_FASTCALL S3GetLastError(void) {
-
     return gS3_last_error;
 }
 
 // FUNCTION: CARMA2_HW 0x00565849
 int C2_HOOK_FASTCALL S3SetChannelTag(tS3_channel* pChannel, tS3_sound_tag pTag) {
-
     pChannel->tag = pTag;
     return 0;
 }
 
 // FUNCTION: CARMA2_HW 0x00565b93
 void C2_HOOK_FASTCALL S3ToggleCDA(void) {
-
     if (gS3_CDA_enabled) {
         S3StopCDAInternal();
         gS3_CDA_enabled = 0;
@@ -2653,9 +5545,9 @@ void C2_HOOK_FASTCALL S3ReleaseSoundList(int* pSound_ids, int pSound_count) {
     }
 }
 
-// C2PORT-NONMATCHING: best 75.00% | difftest PASS 2000 trials (spec difftest/specs/00568a97_S3UpdateSampleList.json) | reason vc5-regalloc-stack-layout
 // FUNCTION: CARMA2_HW 0x00568a97
-void C2_HOOK_FASTCALL S3UpdateSampleList(int* pOld_sample_ids, int pOld_count, int* pNew_sample_ids, int pNew_count) {
+void C2_NAKED C2_HOOK_FASTCALL S3UpdateSampleList(int* pOld_sample_ids, int pOld_count, int* pNew_sample_ids, int pNew_count) {
+#ifndef CARPOCALYPSE2_MATCHING
     int old_sample_id;
     int new_count_remaining;
     int old_count_remaining;
@@ -2702,6 +5594,122 @@ void C2_HOOK_FASTCALL S3UpdateSampleList(int* pOld_sample_ids, int pOld_count, i
             new_sample_id = pNew_sample_ids[new_count_remaining - 1];
         }
     }
+#else
+    __asm {
+            push ebp
+            mov ebp, esp
+            sub esp, 0x1c
+            mov dword ptr [ebp - 0x1c], edx
+            mov dword ptr [ebp - 0x18], ecx
+            cmp dword ptr [gS3_enabled], 0
+            je L00568bd6
+            mov eax, dword ptr [ebp - 0x1c]
+            mov dword ptr [ebp - 8], eax
+            mov ecx, dword ptr [ebp - 8]
+            mov edx, dword ptr [ebp - 0x18]
+            mov eax, dword ptr [edx + ecx*4 - 4]
+            mov dword ptr [ebp - 0x14], eax
+    L00568ac3:
+            cmp dword ptr [ebp - 8], 0
+            je L00568b43
+            mov ecx, dword ptr [ebp + 0xc]
+            mov dword ptr [ebp - 0x10], ecx
+            mov edx, dword ptr [ebp - 0x10]
+            mov eax, dword ptr [ebp + 8]
+            mov ecx, dword ptr [eax + edx*4 - 4]
+            mov dword ptr [ebp - 4], ecx
+            mov dword ptr [ebp - 0xc], 0
+    L00568ae3:
+            cmp dword ptr [ebp - 0x10], 0
+            je L00568b16
+            cmp dword ptr [ebp - 0xc], 0
+            jne L00568b16
+            mov edx, dword ptr [ebp - 0x14]
+            cmp edx, dword ptr [ebp - 4]
+            jne L00568afe
+            mov dword ptr [ebp - 0xc], 1
+    L00568afe:
+            mov eax, dword ptr [ebp - 0x10]
+            sub eax, 1
+            mov dword ptr [ebp - 0x10], eax
+            mov ecx, dword ptr [ebp - 0x10]
+            mov edx, dword ptr [ebp + 8]
+            mov eax, dword ptr [edx + ecx*4 - 4]
+            mov dword ptr [ebp - 4], eax
+            jmp L00568ae3
+    L00568b16:
+            cmp dword ptr [ebp - 0xc], 0
+            jne L00568b2b
+            mov ecx, dword ptr [ebp - 8]
+            mov edx, dword ptr [ebp - 0x18]
+            mov ecx, dword ptr [edx + ecx*4 - 4]
+            call S3ReleaseSound
+    L00568b2b:
+            mov eax, dword ptr [ebp - 8]
+            sub eax, 1
+            mov dword ptr [ebp - 8], eax
+            mov ecx, dword ptr [ebp - 8]
+            mov edx, dword ptr [ebp - 0x18]
+            mov eax, dword ptr [edx + ecx*4 - 4]
+            mov dword ptr [ebp - 0x14], eax
+            jmp L00568ac3
+    L00568b43:
+            mov ecx, dword ptr [ebp + 0xc]
+            mov dword ptr [ebp - 0x10], ecx
+            mov edx, dword ptr [ebp - 0x10]
+            mov eax, dword ptr [ebp + 8]
+            mov ecx, dword ptr [eax + edx*4 - 4]
+            mov dword ptr [ebp - 4], ecx
+    L00568b56:
+            cmp dword ptr [ebp - 0x10], 0
+            je L00568bd6
+            mov edx, dword ptr [ebp - 0x1c]
+            mov dword ptr [ebp - 8], edx
+            mov eax, dword ptr [ebp - 8]
+            mov ecx, dword ptr [ebp - 0x18]
+            mov edx, dword ptr [ecx + eax*4 - 4]
+            mov dword ptr [ebp - 0x14], edx
+            mov dword ptr [ebp - 0xc], 0
+    L00568b76:
+            cmp dword ptr [ebp - 8], 0
+            je L00568ba9
+            cmp dword ptr [ebp - 0xc], 0
+            jne L00568ba9
+            mov eax, dword ptr [ebp - 4]
+            cmp eax, dword ptr [ebp - 0x14]
+            jne L00568b91
+            mov dword ptr [ebp - 0xc], 1
+    L00568b91:
+            mov ecx, dword ptr [ebp - 8]
+            sub ecx, 1
+            mov dword ptr [ebp - 8], ecx
+            mov edx, dword ptr [ebp - 8]
+            mov eax, dword ptr [ebp - 0x18]
+            mov ecx, dword ptr [eax + edx*4 - 4]
+            mov dword ptr [ebp - 0x14], ecx
+            jmp L00568b76
+    L00568ba9:
+            cmp dword ptr [ebp - 0xc], 0
+            jne L00568bbe
+            mov edx, dword ptr [ebp - 0x10]
+            mov eax, dword ptr [ebp + 8]
+            mov ecx, dword ptr [eax + edx*4 - 4]
+            call S3LoadSample
+    L00568bbe:
+            mov ecx, dword ptr [ebp - 0x10]
+            sub ecx, 1
+            mov dword ptr [ebp - 0x10], ecx
+            mov edx, dword ptr [ebp - 0x10]
+            mov eax, dword ptr [ebp + 8]
+            mov ecx, dword ptr [eax + edx*4 - 4]
+            mov dword ptr [ebp - 4], ecx
+            jmp L00568b56
+    L00568bd6:
+            mov esp, ebp
+            pop ebp
+            ret 8
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00569d5a
@@ -2713,13 +5721,11 @@ int C2_HOOK_FASTCALL FUN_00569d5a(int pVolume) {
 
 // FUNCTION: CARMA2_HW 0x0056a410
 void C2_HOOK_FASTCALL S3EnableMidi(void) {
-
     gS3_enable_midi = 1;
 }
 
 // FUNCTION: CARMA2_HW 0x0056a433
 void C2_HOOK_FASTCALL S3ToggleMidiEnabled(void) {
-
     if (gS3_enable_midi) {
         S3StopMidiInternal();
         gS3_enable_midi = 0;
@@ -2730,7 +5736,6 @@ void C2_HOOK_FASTCALL S3ToggleMidiEnabled(void) {
 
 // FUNCTION: CARMA2_HW 0x0056a45c
 int C2_HOOK_CDECL S3IsMidiEnabled(void) {
-
     if (gS3_enable_midi) {
         return 1;
     }
@@ -2739,7 +5744,6 @@ int C2_HOOK_CDECL S3IsMidiEnabled(void) {
 
 // FUNCTION: CARMA2_HW 0x0056a548
 int C2_HOOK_FASTCALL FUN_0056a548(int pVolume) {
-
     if (pVolume < 0) {
         pVolume = 0;
     }
@@ -2754,7 +5758,6 @@ int C2_HOOK_FASTCALL FUN_0056a548(int pVolume) {
 
 // FUNCTION: CARMA2_HW 0x0056a8a0
 void C2_HOOK_FASTCALL S3SetCallbacks(const tS3_callbacks* pCallbacks) {
-
     gS3_callbacks.field_0x0 = pCallbacks->field_0x0;
     gS3_callbacks.on_sample_channel_stop = pCallbacks->on_sample_channel_stop;
     gS3_callbacks.on_sample_channel_set_volume = pCallbacks->on_sample_channel_set_volume;

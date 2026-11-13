@@ -320,6 +320,111 @@ void C2_HOOK_FASTCALL InitBRFonts(void) {
     gHeadup_font = LoadBRFont("HEADUP.FNT");
 }
 
+#ifdef CARPOCALYPSE2_MATCHING
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern void C2_HOOK_FASTCALL AdjustRenderScreenSize(void);
+extern void C2_HOOK_FASTCALL BRPM_convert(br_pixelmap* pMap, int pPixel_type);
+extern void C2_HOOK_FASTCALL BuildColourTable(br_pixelmap* pPalette);
+extern void C2_HOOK_FASTCALL ClearAllRuntimeVariables(void);
+extern void C2_HOOK_FASTCALL ClearHeadups(void);
+extern void C2_HOOK_FASTCALL ClearWobbles(void);
+extern FILE* C2_HOOK_FASTCALL DRfopen(const char* pFilename, const char* pMode);
+extern float Force_feedback_lower_limit;
+extern char * C2_HOOK_FASTCALL GetALineAndDontArgue(FILE* pF, char* pS);
+extern int C2_HOOK_FASTCALL GetDepthCueingOn(void);
+extern int C2_HOOK_FASTCALL GetSkyTextureOn(void);
+extern void C2_HOOK_FASTCALL HideSkids(void);
+extern void C2_HOOK_FASTCALL InitFogificateMaterials(void);
+extern void C2_HOOK_FASTCALL InitNetGameplayStuff(void);
+extern void C2_HOOK_FASTCALL InitPedsForRace(void);
+extern void C2_HOOK_FASTCALL InitPlayers(void);
+extern void C2_HOOK_FASTCALL InitPratcam(void);
+extern void C2_HOOK_FASTCALL InitRepairAnimations(void);
+extern void C2_HOOK_FASTCALL InitSmashTargets(void);
+extern void C2_HOOK_FASTCALL InitTargetLock(void);
+extern void C2_HOOK_FASTCALL InstantDepthChange(tDepth_effect_type pType, br_pixelmap* pSky_texture, int pStart, int pEnd, int pRed, int pGreen, int pBlue, int pParam_8);
+extern void C2_HOOK_FASTCALL LoadAIWorldForRace(tRace_info* pRace_info);
+extern void C2_HOOK_FASTCALL LoadFont(int pFont_ID);
+extern void C2_HOOK_FASTCALL LoadTrack(const char* pFile_name, tTrack_spec* pTrack_spec, tRace_info* pRace_info);
+extern int C2_HOOK_FASTCALL NewTextHeadupSlot(int pSlot_index, int pFlash_rate, int pLifetime, int pFont_index, const char* pText);
+extern int C2_HOOK_FASTCALL PFfclose(FILE* pFile);
+extern int C2_HOOK_FASTCALL PHILInit(void);
+extern void C2_HOOK_FASTCALL PathCat(char* pDestn_str, const char* pStr_1, const char* pStr_2);
+extern void C2_HOOK_FASTCALL PossibleLock(int pValue);
+extern void C2_HOOK_FASTCALL PossibleService(void);
+extern int C2_HOOK_FASTCALL PossibleUnlock(int pValue);
+extern void C2_HOOK_FASTCALL PrintMemoryDump(int pFlags, char* pTitle);
+extern void C2_HOOK_FASTCALL ReinitSmashing(void);
+extern void C2_HOOK_FASTCALL ResetCrushSystems(void);
+extern void C2_HOOK_FASTCALL ResetExplosions(void);
+extern void C2_HOOK_FASTCALL ResetOilSpills(void);
+extern void C2_HOOK_FASTCALL ResetPedNearness(void);
+extern void C2_HOOK_FASTCALL ResetPowerups(void);
+extern void C2_HOOK_FASTCALL ResetRecoveryVouchers(void);
+extern void C2_HOOK_FASTCALL ResetSparks(void);
+extern void C2_HOOK_FASTCALL SaveShadeTables(void);
+extern void C2_HOOK_FASTCALL SetCameraType(tActionReplayCameraMode pCamPos);
+extern void C2_HOOK_FAKE_THISCALL SetCarSuspGiveAndHeight(tCar_spec* pCar, float pFront_give_factor, float pRear_give_factor, float pDamping_factor, float pExtra_front_height, float pExtra_rear_height);
+extern void C2_HOOK_FASTCALL SetIntegerMapRenders(void);
+extern void C2_HOOK_FASTCALL SetUpTestObjects(void);
+extern void C2_HOOK_FASTCALL ToggleDepthCueingQuietly(void);
+extern void C2_HOOK_FASTCALL ToggleSkyQuietly(void);
+extern int C2_HOOK_FASTCALL TranslationMode(void);
+extern tPath_name gApplication_path;
+extern int gAuto_repair;
+extern br_pixelmap* gBack_screen;
+extern int gCar_kill_count_headup;
+extern int gCheckpoint;
+extern int gCheckpoint_count;
+extern float gCop_speed_factor;
+extern int gCountdown;
+extern int gCredits_won_headup;
+extern tRace_info gCurrent_race;
+extern tSpecial_volume* gDAT_0079ec44;
+extern float gDefault_gravity;
+extern int gDisable_sound;
+extern char gDouble_0058a068[];
+extern tDR_font gFonts[28];
+extern float gForce_feedback_upper_limit;
+extern int gFree_repairs;
+extern int gFreeze_timer;
+extern float gGravity_multiplier;
+extern int gINT_0074b780;
+extern br_pixelmap* gIcons_pix;
+extern int gInitialised_grid;
+extern int gInstant_handbrake;
+extern int gLap;
+extern int gLaps_headup;
+extern br_pixelmap* gLit_op_stat;
+extern tU32 gMap_time;
+extern int gMap_view;
+extern const int gMini_map_glowing_line_animation_indices[5];
+extern int gNet_cash_headup;
+extern tNet_mode gNet_mode;
+extern int gNet_ped_headup;
+extern char gNext_crush_actor_id[];
+extern int gNumber_of_races;
+extern int gOn_drugs;
+extern float gOpponent_speed_factor;
+extern int gPed_676914;
+extern char gPed_flags_0058f2e4[];
+extern int gPed_kill_count_headup;
+extern float gPinball_factor;
+extern tProgram_state gProgram_state;
+extern tU32 gRace_finished;
+extern int gRace_head_ups[22];
+extern int gShow_opponents;
+extern int gShow_peds_on_map;
+extern tDepth_effect_type gSwap_depth_effect_type;
+extern br_pixelmap* gSwap_sky_texture;
+extern br_pixelmap* gTexture_maps[1024];
+extern int gTime_awarded_headup;
+extern tU32 gTimer;
+extern int gTimer_headup;
+extern int gTotal_laps;
+extern br_scalar gYon_multiplier;
+#endif
 // FUNCTION: CARMA2_HW 0x0044c130
 void C2_HOOK_FASTCALL DisposeGameIfNecessary(void) {
     int i;
@@ -431,7 +536,6 @@ void C2_HOOK_FASTCALL ReinitialiseForwardCamera(void) {
 
 // FUNCTION: CARMA2_HW 0x0047dab0
 void C2_HOOK_FASTCALL AllocateRearviewPixelmap(void) {
-
     if (gRearview_screen != NULL) {
         BrPixelmapFree(gRearview_screen);
         gRearview_screen = NULL;
@@ -522,7 +626,8 @@ void C2_HOOK_FASTCALL Modify2DCopyPixelmaps(void) {
 }
 
 // FUNCTION: CARMA2_HW 0x00481830
-void C2_HOOK_FASTCALL InitRace(void) {
+void C2_NAKED C2_HOOK_FASTCALL InitRace(void) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     gMap_view = 1;
     InitFogificateMaterials();
@@ -656,6 +761,414 @@ void C2_HOOK_FASTCALL InitRace(void) {
     SetupFFBValues();
     PossibleLock(1);
     PossibleUnlock(1);
+#else
+    __asm {
+            sub esp, 0x200
+            mov dword ptr [gMap_view], 1
+            push ebx
+            push ebp
+            push esi
+            push edi
+            call InitFogificateMaterials
+            call InitSmashTargets
+            call ClearAllRuntimeVariables
+            call PHILInit
+            call SetUpTestObjects
+            call InitTargetLock
+            call ReinitSmashing
+            call InitRepairAnimations
+            call ResetExplosions
+            call ClearWobbles
+            call ClearHeadups
+            call ResetOilSpills
+            call HideSkids
+            call ResetPedNearness
+            call PossibleService
+            call InitPedsForRace
+            mov ecx, dword ptr [gRender_palette]
+            call BuildColourTable
+            call PossibleService
+            xor ebx, ebx
+            mov dword ptr [gDAT_0074c6d0], ebx
+            mov dword ptr [gINT_0074b780], ebx
+            mov dword ptr [gDAT_0079ec44], ebx
+            call TranslationMode
+            test eax, eax
+            jne L004818d5
+            mov ecx, 1
+            call LoadFont
+            mov ecx, 2
+            call LoadFont
+    L004818d5:
+            mov ecx, 3
+            call LoadFont
+            mov ecx, 4
+            call LoadFont
+            mov ecx, 5
+            call LoadFont
+            call PossibleService
+            mov ecx, 6
+            call LoadFont
+            mov ecx, 7
+            call LoadFont
+            mov ecx, 8
+            call LoadFont
+            mov ecx, 0x17
+            call LoadFont
+            call PossibleService
+            call ResetRecoveryVouchers
+            mov dword ptr [gMap_time], ebx
+            mov dword ptr [gProgram_state+0x50], ebx
+            call PossibleService
+            mov dword ptr [gProgram_state+0x90], 2
+            mov dword ptr [gProgram_state+0x94], ebx
+            mov dword ptr [gProgram_state+0x8], ebx
+            mov dword ptr [gPed_676914], ebx
+            call InitPratcam
+            mov dword ptr [gProgram_state+0xc], ebx
+            mov dword ptr [gProgram_state+0x6c], 0x7d0
+            mov dword ptr [gProgram_state+0x128], 0
+            mov dword ptr [gProgram_state+0x54c], 0
+            mov dword ptr [gProgram_state+0x554], 0
+            mov dword ptr [gProgram_state+0x558], 0
+            mov dword ptr [gProgram_state+0x55c], 0
+            mov dword ptr [gProgram_state+0x560], 0
+            call PossibleService
+            mov dword ptr [gAuto_repair], ebx
+            call SetIntegerMapRenders
+            call AdjustRenderScreenSize
+            mov edx, offset gMini_map_glowing_line_animation_indices+0x824
+            xor ecx, ecx
+            call PrintMemoryDump
+            mov edx, offset gProgram_state+0x1ba0
+            mov ecx, offset gProgram_state+0x1a1e
+            push offset gCurrent_race
+            call LoadTrack
+            fld dword ptr [gYon_multiplier]
+            fcomp dword ptr [gDouble_0058a068+0x1b4]
+            fnstsw ax
+            test ah, 0x40
+            jne L004819f5
+            call AdjustRenderScreenSize
+    L004819f5:
+            mov edx, offset gMini_map_glowing_line_animation_indices+0x804
+            xor ecx, ecx
+            call PrintMemoryDump
+            call ResetCrushSystems
+            mov ecx, offset gCurrent_race
+            call LoadAIWorldForRace
+            xor edi, edi
+            mov esi, offset gRace_head_ups
+    L00481a17:
+            push offset gDisable_sound+0x8
+            push -1
+            push ebx
+            xor edx, edx
+            lea ecx, [edi + 0x10]
+            call NewTextHeadupSlot
+            mov dword ptr [esi], eax
+            add esi, 4
+            inc edi
+            cmp esi, offset gRace_head_ups+0x58
+            jl L00481a17
+            mov eax, dword ptr [gNet_mode]
+            push offset gDisable_sound+0x8
+            cmp eax, ebx
+            push -6
+            push ebx
+            je L00481abd
+            xor edx, edx
+            mov ecx, 0xd
+            call NewTextHeadupSlot
+            xor edx, edx
+            mov ecx, 0xe
+            push offset gDisable_sound+0x8
+            push -6
+            push ebx
+            mov dword ptr [gNet_cash_headup], eax
+            call NewTextHeadupSlot
+            mov ecx, dword ptr [gProgram_state+0x20]
+            mov ebp, dword ptr [gNet_mode]
+            mov edi, dword ptr [gCurrent_net_game]
+            mov dword ptr [gNet_ped_headup], eax
+            xor edx, edx
+            mov eax, offset gInitial_powerup_slots
+            lea esi, [ecx*4 + gMax_APO]
+    L00481a92:
+            cmp ebp, ebx
+            je L00481aa4
+            mov ecx, dword ptr [edi + 0x74]
+            add ecx, edx
+            mov ecx, dword ptr [ecx*4 + gMax_APO+0xc]
+            jmp L00481aa6
+    L00481aa4:
+            mov ecx, dword ptr [esi]
+    L00481aa6:
+            mov dword ptr [eax], ecx
+            add eax, 4
+            add edx, 0xb
+            add esi, 0x2c
+            cmp eax, offset gInitial_powerup_slots+0xc
+            jl L00481a92
+            jmp L00481bf5
+    L00481abd:
+            xor edx, edx
+            mov ecx, 1
+            call NewTextHeadupSlot
+            xor edx, edx
+            mov ecx, 2
+            push offset gDisable_sound+0x8
+            push -6
+            push ebx
+            mov dword ptr [gCredits_won_headup], eax
+            call NewTextHeadupSlot
+            xor edx, edx
+            mov ecx, 0xc
+            push offset gDisable_sound+0x8
+            push -6
+            push ebx
+            mov dword ptr [gPed_kill_count_headup], eax
+            call NewTextHeadupSlot
+            xor edx, edx
+            mov ecx, 7
+            push offset gDisable_sound+0x8
+            push -5
+            push ebx
+            mov dword ptr [gCar_kill_count_headup], eax
+            call NewTextHeadupSlot
+            xor edx, edx
+            mov ecx, 0xb
+            push offset gDisable_sound+0x8
+            push -2
+            push ebx
+            mov dword ptr [gTimer_headup], eax
+            call NewTextHeadupSlot
+            xor edx, edx
+            mov ecx, 8
+            push offset gDisable_sound+0x8
+            push -6
+            push ebx
+            mov dword ptr [gTime_awarded_headup], eax
+            call NewTextHeadupSlot
+            mov edx, dword ptr [gNumber_of_races]
+            mov edi, dword ptr [gCurrent_net_game]
+            mov dword ptr [gLaps_headup], eax
+            mov eax, dword ptr [gProgram_state+0x20]
+            lea ebp, [edx - 1]
+            mov edx, dword ptr [gNet_mode]
+            xor esi, esi
+            mov ecx, offset gInitial_powerup_slots
+            lea ebx, [eax*4]
+            jmp L00481b81
+    L00481b75:
+            mov edi, dword ptr [gCurrent_net_game]
+            mov edx, dword ptr [gNet_mode]
+    L00481b81:
+            test edx, edx
+            je L00481b93
+            mov eax, dword ptr [edi + 0x74]
+            add eax, esi
+            mov eax, dword ptr [eax*4 + gMax_APO+0xc]
+            jmp L00481b99
+    L00481b93:
+            mov eax, dword ptr [ebx + gMax_APO]
+    L00481b99:
+            test edx, edx
+            je L00481bab
+            mov edx, dword ptr [edi + 0x74]
+            add edx, esi
+            mov edx, dword ptr [edx*4 + gInitial_APO_potential+0xc]
+            jmp L00481bb1
+    L00481bab:
+            mov edx, dword ptr [ebx + gInitial_APO_potential]
+    L00481bb1:
+            cmp dword ptr [gNet_mode], 0
+            je L00481bc8
+            mov edi, dword ptr [edi + 0x74]
+            add edi, esi
+            mov edi, dword ptr [edi*4 + gInitial_APO_potential+0xc]
+            jmp L00481bce
+    L00481bc8:
+            mov edi, dword ptr [ebx + gInitial_APO_potential]
+    L00481bce:
+            sub eax, edx
+            add ecx, 4
+            dec eax
+            add esi, 0xb
+            imul eax, dword ptr [gCurrent_race]
+            cdq
+            idiv ebp
+            add ebx, 0x2c
+            cmp ecx, offset gInitial_powerup_slots+0xc
+            lea eax, [eax + edi + 1]
+            mov dword ptr [ecx - 4], eax
+            jl L00481b75
+            xor ebx, ebx
+    L00481bf5:
+            mov ecx, dword ptr [gProgram_state+0x1bd8]
+            mov edx, dword ptr [gProgram_state+0x1bd4]
+            mov eax, dword ptr [gProgram_state+0x1bd0]
+            mov ebp, 1
+            push ebp
+            push ecx
+            mov ecx, dword ptr [gProgram_state+0x1bcc]
+            push edx
+            mov edx, dword ptr [gProgram_state+0x1bc8]
+            push eax
+            push ecx
+            mov ecx, dword ptr [gProgram_state+0x1bc4]
+            push edx
+            mov edx, dword ptr [gProgram_state+0x1bdc]
+            call InstantDepthChange
+            mov dword ptr [gSwap_sky_texture], ebx
+            call GetSkyTextureOn
+            test eax, eax
+            jne L00481c42
+            call ToggleSkyQuietly
+    L00481c42:
+            mov dword ptr [gSwap_depth_effect_type], 0xffffffff
+            call GetDepthCueingOn
+            test eax, eax
+            jne L00481c5a
+            call ToggleDepthCueingQuietly
+    L00481c5a:
+            mov edx, offset gMini_map_glowing_line_animation_indices+0x7e8
+            xor ecx, ecx
+            call PrintMemoryDump
+            call SaveShadeTables
+            mov eax, dword ptr [gProgram_state+0x20]
+            mov dword ptr [gCountdown], 7
+            mov dword ptr [gLap], ebp
+            mov eax, dword ptr [eax*4 + gCurrent_race+0xc]
+            lea eax, [eax + eax*4]
+            lea eax, [eax + eax*4]
+            lea ecx, [eax + eax*4]
+            mov eax, dword ptr [gNet_mode]
+            shl ecx, 3
+            mov dword ptr [gTimer], ecx
+            mov ecx, dword ptr [gCurrent_net_game]
+            cmp eax, ebx
+            je L00481cb3
+            cmp dword ptr [ecx + 0x74], 5
+            jne L00481cb3
+            mov edx, dword ptr [ecx + 0x60]
+            jmp L00481cb9
+    L00481cb3:
+            mov edx, dword ptr [gCurrent_race+0x4]
+    L00481cb9:
+            mov dword ptr [gTotal_laps], edx
+            mov edx, dword ptr [gCurrent_race+0x8]
+            cmp eax, ebx
+            mov dword ptr [gCheckpoint], ebp
+            mov dword ptr [gCheckpoint_count], edx
+            mov dword ptr [gFreeze_timer], ebx
+            mov dword ptr [gFree_repairs], ebx
+            je L00481ceb
+            mov eax, dword ptr [ecx + 0x44]
+            mov dword ptr [gShow_opponents], eax
+            jmp L00481cf1
+    L00481ceb:
+            mov dword ptr [gShow_opponents], ebp
+    L00481cf1:
+            mov ecx, dword ptr [gDefault_gravity]
+            mov dword ptr [gOn_drugs], ebx
+            mov dword ptr [gRace_finished], ebx
+            mov dword ptr [gOpponent_speed_factor], 0x3f800000
+            mov dword ptr [gCop_speed_factor], 0x3f800000
+            mov dword ptr [gGravity_multiplier], ecx
+            mov dword ptr [gPinball_factor], 0
+            mov dword ptr [gInstant_handbrake], ebx
+            mov dword ptr [gShow_peds_on_map], ebx
+            call PossibleService
+            mov ecx, offset gProgram_state+0xac
+            push ebx
+            push ebx
+            push 0x3f800000
+            push 0x3f800000
+            push 0x3f800000
+            call SetCarSuspGiveAndHeight
+            call ResetPowerups
+            call PossibleService
+            call ResetSparks
+            call PossibleService
+            call PossibleService
+            call InitPlayers
+            cmp dword ptr [gNet_mode], ebx
+            je L00481d8c
+            mov edx, dword ptr [gCurrent_net_game]
+            mov eax, dword ptr [edx + 0x58]
+            mov dword ptr [gProgram_state], eax
+            call InitNetGameplayStuff
+    L00481d8c:
+            mov ecx, dword ptr [gAction_replay_camera_mode]
+            mov dword ptr [gInitialised_grid], ebx
+            call SetCameraType
+            mov edx, dword ptr [gBack_screen]
+            xor ecx, ecx
+            mov esi, offset gFonts
+            mov cl, byte ptr [edx + 0x2c]
+            mov edi, ecx
+    L00481daf:
+            mov ecx, dword ptr [esi]
+            mov edx, edi
+            call BRPM_convert
+            add esi, 0x3a0
+            cmp esi, offset gTexture_maps
+            jl L00481daf
+            mov ecx, dword ptr [gIcons_pix]
+            mov edx, edi
+            call BRPM_convert
+            mov ecx, dword ptr [gLit_op_stat]
+            mov edx, edi
+            call BRPM_convert
+            mov edx, offset gApplication_path
+            lea ecx, [esp + 0x110]
+            push offset gMini_map_glowing_line_animation_indices+0x7e0
+            call PathCat
+            mov edx, offset gNext_crush_actor_id+0x180
+            lea ecx, [esp + 0x110]
+            call DRfopen
+            mov esi, eax
+            lea edx, [esp + 0x10]
+            mov ecx, esi
+            call GetALineAndDontArgue
+            lea eax, [esp + 0x10]
+            push offset gPed_flags_0058f2e4+0x138
+            push eax
+            call strtok
+            add esp, 8
+            push offset gForce_feedback_upper_limit
+            push offset gMini_map_glowing_line_animation_indices+0x7dc
+            push eax
+            call sscanf
+            add esp, 0xc
+            lea edx, [esp + 0x10]
+            mov ecx, esi
+            call GetALineAndDontArgue
+            lea ecx, [esp + 0x10]
+            push offset gPed_flags_0058f2e4+0x138
+            push ecx
+            call strtok
+            add esp, 8
+            push offset Force_feedback_lower_limit
+            push offset gMini_map_glowing_line_animation_indices+0x7dc
+            push eax
+            call sscanf
+            add esp, 0xc
+            mov ecx, esi
+            call PFfclose
+            mov ecx, ebp
+            call PossibleLock
+            mov ecx, ebp
+            call PossibleUnlock
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x200
+            ret
+    }
+#endif
 }
 
 void C2_HOOK_FASTCALL LoadInTrack(void) {
@@ -668,7 +1181,6 @@ void C2_HOOK_FASTCALL LoadInTrack(void) {
 
 // FUNCTION: CARMA2_HW 0x0044c220
 void C2_HOOK_FASTCALL DisposeTrack(void) {
-
     FreeTrack(&gProgram_state.track_spec);
 }
 // Modify2DCopyPixelmaps
@@ -1370,13 +1882,11 @@ void C2_HOOK_FASTCALL InitGame(int pStart_race) {
 
 // FUNCTION: CARMA2_HW 0x00481e90
 int C2_HOOK_FASTCALL GetScreenSize(void) {
-
     return gRender_indent;
 }
 
 // FUNCTION: CARMA2_HW 0x00481ea0
 void C2_HOOK_FASTCALL SetScreenSize(int pNew_size) {
-
     gRender_indent = pNew_size;
 }
 // FUNCTION: CARMA2_HW 0x004815d0

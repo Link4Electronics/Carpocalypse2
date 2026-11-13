@@ -237,6 +237,30 @@ const char* ChunkNames[CHUNKNAMES_NB] = {
 // GLOBAL: CARMA2_HW 0x006b09b0
 int DatafileStackTop;
 
+#ifdef CARPOCALYPSE2_MATCHING
+extern C2_NORETURN void C2_HOOK_CDECL BrFailure();
+extern void C2_HOOK_CDECL BrFileClose();
+extern int C2_HOOK_CDECL BrFileEof();
+extern int C2_HOOK_CDECL BrFileGetLine();
+extern int C2_HOOK_CDECL BrFilePrintf();
+extern void C2_HOOK_CDECL BrFilePutChar();
+extern int C2_HOOK_CDECL BrFileRead();
+extern int C2_HOOK_CDECL BrFileWrite();
+extern void* C2_HOOK_CDECL BrMemCpy();
+extern void* C2_HOOK_CDECL BrResAllocate();
+extern void C2_HOOK_CDECL BrResFree();
+extern void* C2_HOOK_CDECL BrScratchAllocate();
+extern void C2_HOOK_CDECL BrScratchFree();
+extern char* C2_HOOK_CDECL BrScratchString();
+extern int C2_HOOK_CDECL BrStrCmp();
+extern char* C2_HOOK_CDECL BrStrNCpy();
+extern long C2_HOOK_CDECL BrStrToL();
+extern unsigned long C2_HOOK_CDECL BrStrToUL();
+extern br_uint_32 C2_HOOK_CDECL BrSwap32();
+extern void* C2_HOOK_CDECL BrSwapBlock();
+extern char _diag_scratch[];
+extern br_framework_state fw;
+#endif
 // FUNCTION: CARMA2_HW 0x00529ff0
 void C2_HOOK_STDCALL DfPush(int type, void* value, unsigned int count) {
 
@@ -285,7 +309,8 @@ int C2_HOOK_STDCALL DfTopType(void) {
 }
 
 // FUNCTION: CARMA2_HW 0x0052b630
-int C2_HOOK_STDCALL TextReadLine(br_datafile* df, char** ident, char** data) {
+int C2_NAKED C2_HOOK_STDCALL TextReadLine(br_datafile* df, char** ident, char** data) {
+#ifndef CARPOCALYPSE2_MATCHING
     char* cp;
 
     while (1) {
@@ -321,6 +346,117 @@ int C2_HOOK_STDCALL TextReadLine(br_datafile* df, char** ident, char** data) {
     }
     *cp = '\0';
     return 1;
+#else
+    __asm {
+            push esi
+            mov esi, dword ptr [esp + 8]
+            mov eax, dword ptr [esi]
+            push eax
+            push 0x100
+            call BrScratchString
+            push eax
+            call BrFileGetLine
+            mov ecx, dword ptr [esi]
+            add esp, 0xc
+            push ecx
+            call BrFileEof
+            add esp, 4
+            test eax, eax
+            jne L0052b698
+    L0052b65a:
+            call BrScratchString
+    L0052b65f:
+            mov cl, byte ptr [eax]
+            cmp cl, 0x20
+            je L0052b66b
+            cmp cl, 9
+            jne L0052b66e
+    L0052b66b:
+            inc eax
+            jmp L0052b65f
+    L0052b66e:
+            cmp byte ptr [eax], 0
+            jne L0052b69e
+            mov edx, dword ptr [esi]
+            push edx
+            push 0x100
+            call BrScratchString
+            push eax
+            call BrFileGetLine
+            mov eax, dword ptr [esi]
+            add esp, 0xc
+            push eax
+            call BrFileEof
+            add esp, 4
+            test eax, eax
+            je L0052b65a
+    L0052b698:
+            xor eax, eax
+            pop esi
+            ret 0xc
+    L0052b69e:
+            mov ecx, dword ptr [esp + 0xc]
+            mov dword ptr [ecx], eax
+            mov cl, byte ptr [eax]
+            cmp cl, 0x20
+            je L0052b6bd
+    L0052b6ab:
+            cmp cl, 9
+            je L0052b6bd
+            test cl, cl
+            je L0052b6bd
+            mov cl, byte ptr [eax + 1]
+            inc eax
+            cmp cl, 0x20
+            jne L0052b6ab
+    L0052b6bd:
+            mov byte ptr [eax], 0
+    L0052b6c0:
+            mov cl, byte ptr [eax + 1]
+            inc eax
+            cmp cl, 0x20
+            je L0052b6c0
+            cmp cl, 9
+            je L0052b6c0
+            mov edx, dword ptr [esp + 0x10]
+            mov dword ptr [edx], eax
+            mov cl, byte ptr [eax]
+            cmp cl, 0x22
+            jne L0052b6fd
+            mov cl, byte ptr [eax + 1]
+            inc eax
+            cmp cl, 0x22
+            je L0052b714
+    L0052b6e4:
+            test cl, cl
+            je L0052b714
+            mov cl, byte ptr [eax + 1]
+            inc eax
+            cmp cl, 0x22
+            jne L0052b6e4
+            mov byte ptr [eax], 0
+            mov eax, 1
+            pop esi
+            ret 0xc
+    L0052b6fd:
+            cmp cl, 0x20
+            je L0052b714
+    L0052b702:
+            cmp cl, 9
+            je L0052b714
+            test cl, cl
+            je L0052b714
+            mov cl, byte ptr [eax + 1]
+            inc eax
+            cmp cl, 0x20
+            jne L0052b702
+    L0052b714:
+            mov byte ptr [eax], 0
+            mov eax, 1
+            pop esi
+            ret 0xc
+    }
+#endif
 }
 
 br_uint_16 C2_HOOK_STDCALL scalarTypeConvert(br_datafile* df, br_uint_16 t) {
@@ -1040,7 +1176,8 @@ br_uint_32 C2_HOOK_STDCALL StructReadTextSub(br_datafile* df, br_file_struct* st
 }
 
 // FUNCTION: CARMA2_HW 0x0052be60
-int C2_HOOK_STDCALL DfStructSizeText(br_datafile* df, br_file_struct* str, void* base) {
+int C2_NAKED C2_HOOK_STDCALL DfStructSizeText(br_datafile* df, br_file_struct* str, void* base) {
+#ifndef CARPOCALYPSE2_MATCHING
     unsigned int m;
     br_file_struct_member* sm;
     int lines;
@@ -1055,6 +1192,51 @@ int C2_HOOK_STDCALL DfStructSizeText(br_datafile* df, br_file_struct* str, void*
         }
     }
     return lines;
+#else
+    __asm {
+    L0052be60:
+            push ebx
+            push ebp
+            mov ebp, dword ptr [esp + 0x10]
+            push esi
+            push edi
+            xor edi, edi
+            mov eax, dword ptr [ebp + 4]
+            mov esi, dword ptr [ebp + 8]
+            test eax, eax
+            mov ebx, 1
+            jbe L0052bea7
+    L0052be79:
+            cmp word ptr [esi], 0x10
+            jne L0052be9b
+            mov eax, dword ptr [esi + 4]
+            mov edx, dword ptr [esp + 0x1c]
+            mov ecx, dword ptr [esi + 0xc]
+            add eax, edx
+            mov edx, dword ptr [esp + 0x14]
+            push eax
+            push ecx
+            push edx
+            call L0052be60
+            add ebx, eax
+            jmp L0052be9c
+    L0052be9b:
+            inc ebx
+    L0052be9c:
+            mov eax, dword ptr [ebp + 4]
+            inc edi
+            add esi, 0x10
+            cmp edi, eax
+            jb L0052be79
+    L0052bea7:
+            pop edi
+            pop esi
+            mov eax, ebx
+            pop ebp
+            pop ebx
+            ret 0xc
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0052beb0
@@ -1214,7 +1396,8 @@ br_uint_8* C2_HOOK_STDCALL BlockWriteSetup(void* base, int block_size, int block
 }
 
 // FUNCTION: CARMA2_HW 0x0052c250
-int C2_HOOK_STDCALL DfBlockWriteText(br_datafile* df, void* base, int block_size, int block_stride, int block_count, int size) {
+int C2_NAKED C2_HOOK_STDCALL DfBlockWriteText(br_datafile* df, void* base, int block_size, int block_stride, int block_count, int size) {
+#ifndef CARPOCALYPSE2_MATCHING
     int i;
     br_uint_8* block;
     int count;
@@ -1250,10 +1433,167 @@ int C2_HOOK_STDCALL DfBlockWriteText(br_datafile* df, void* base, int block_size
         BrScratchFree(block);
     }
     return 0;
+#else
+    __asm {
+            sub esp, 8
+            mov ecx, dword ptr [esp + 0x14]
+            push ebx
+            push ebp
+            mov ebp, dword ptr [esp + 0x24]
+            mov eax, ebp
+            mov edx, dword ptr [esp + 0x20]
+            imul eax, ecx
+            push esi
+            cmp edx, ecx
+            push edi
+            mov dword ptr [esp + 0x10], eax
+            mov dword ptr [esp + 0x2c], ecx
+            jne L0052c27d
+            mov dword ptr [esp + 0x2c], eax
+            mov ebp, 1
+    L0052c27d:
+            mov ebx, dword ptr [esp + 0x30]
+            cmp ebx, 1
+            jne L0052c290
+            cmp ebp, ebx
+            jne L0052c290
+            mov ebp, dword ptr [esp + 0x20]
+            jmp L0052c2f7
+    L0052c290:
+            mov esi, ebp
+            imul esi, dword ptr [esp + 0x2c]
+            imul ebx, esi
+            push ebx
+            mov dword ptr [esp + 0x18], esi
+            call BrScratchAllocate
+            mov edi, dword ptr [esp + 0x24]
+            add esp, 4
+            test ebp, ebp
+            mov dword ptr [esp + 0x24], eax
+            mov ebx, eax
+            jle L0052c2dc
+            mov esi, dword ptr [esp + 0x2c]
+            imul esi, dword ptr [esp + 0x30]
+    L0052c2be:
+            push esi
+            push edi
+            push ebx
+            call BrMemCpy
+            mov edx, dword ptr [esp + 0x34]
+            add esp, 0xc
+            add edi, edx
+            add ebx, esi
+            dec ebp
+            jne L0052c2be
+            mov eax, dword ptr [esp + 0x24]
+            mov esi, dword ptr [esp + 0x14]
+    L0052c2dc:
+            mov ecx, dword ptr [esp + 0x30]
+            push ecx
+            push esi
+            push eax
+            call BrSwapBlock
+            mov ebp, dword ptr [esp + 0x30]
+            mov eax, dword ptr [esp + 0x1c]
+            mov ebx, dword ptr [esp + 0x3c]
+            add esp, 0xc
+    L0052c2f7:
+            mov edi, dword ptr [esp + 0x1c]
+            push eax
+            push offset _BrFilePrimsWriteText+0x814
+            mov edx, dword ptr [edi]
+            push edx
+            call BrFilePrintf
+            mov eax, dword ptr [edi]
+            add esp, 0xc
+            push ebx
+            push offset _BrFilePrimsWriteText+0x820
+            push eax
+            call BrFilePrintf
+            mov eax, dword ptr [esp + 0x1c]
+            add esp, 0xc
+            imul eax, dword ptr [esp + 0x30]
+            xor esi, esi
+            mov dword ptr [esp + 0x30], eax
+            test eax, eax
+            jle L0052c38e
+    L0052c330:
+            mov eax, esi
+            cdq
+            xor eax, edx
+            sub eax, edx
+            and eax, 0x1f
+            xor eax, edx
+            mov ebx, eax
+            sub ebx, edx
+            jne L0052c35c
+            mov edx, dword ptr [edi]
+            xor ecx, ecx
+            mov cl, byte ptr [ebp + esi]
+            push ecx
+            push esi
+            push offset _BrFilePrimsWriteText+0x82c
+            push edx
+            call BrFilePrintf
+            add esp, 0x10
+            jmp L0052c373
+    L0052c35c:
+            mov ecx, dword ptr [edi]
+            xor eax, eax
+            mov al, byte ptr [ebp + esi]
+            push eax
+            push offset _BrFilePrimsWriteText+0x83c
+            push ecx
+            call BrFilePrintf
+            add esp, 0xc
+    L0052c373:
+            cmp ebx, 0x1f
+            jne L0052c385
+            mov edx, dword ptr [edi]
+            push edx
+            push 0xa
+            call BrFilePutChar
+            add esp, 8
+    L0052c385:
+            mov eax, dword ptr [esp + 0x30]
+            inc esi
+            cmp esi, eax
+            jl L0052c330
+    L0052c38e:
+            mov eax, esi
+            cdq
+            xor eax, edx
+            sub eax, edx
+            and eax, 0x1f
+            xor eax, edx
+            sub eax, edx
+            je L0052c3ab
+            mov eax, dword ptr [edi]
+            push eax
+            push 0xa
+            call BrFilePutChar
+            add esp, 8
+    L0052c3ab:
+            cmp ebp, dword ptr [esp + 0x20]
+            je L0052c3ba
+            push ebp
+            call BrScratchFree
+            add esp, 4
+    L0052c3ba:
+            pop edi
+            pop esi
+            pop ebp
+            xor eax, eax
+            pop ebx
+            add esp, 8
+            ret 0x18
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0052c3d0
-void* C2_HOOK_STDCALL DfBlockReadText(br_datafile* df, void* base, int* count, int size, int mtype) {
+C2_NAKED void* C2_HOOK_STDCALL DfBlockReadText(br_datafile* df, void* base, int* count, int size, int mtype) {
+#ifndef CARPOCALYPSE2_MATCHING
     char* id;
     char* data;
     int l;
@@ -1298,10 +1638,176 @@ void* C2_HOOK_STDCALL DfBlockReadText(br_datafile* df, void* base, int* count, i
     }
     BrSwapBlock(base, l, size);
     return base;
+#else
+    __asm {
+            sub esp, 0xc
+            lea eax, [esp]
+            lea ecx, [esp + 4]
+            push ebx
+            push ebp
+            mov ebp, dword ptr [esp + 0x18]
+            push esi
+            push edi
+            push eax
+            push ecx
+            push ebp
+            call TextReadLine
+            push offset _BrFilePrimsWriteText+0x844
+            mov edx, dword ptr [esp + 0x18]
+            push edx
+            call BrStrCmp
+            add esp, 8
+            test eax, eax
+            je L0052c40e
+            push offset _BrFilePrimsWriteText+0x84c
+            call BrFailure
+            add esp, 4
+    L0052c40e:
+            mov eax, dword ptr [esp + 0x10]
+            push 0
+            push 0
+            push eax
+            call BrStrToUL
+            add esp, 0xc
+            lea ecx, [esp + 0x10]
+            lea edx, [esp + 0x14]
+            mov ebx, eax
+            push ecx
+            push edx
+            push ebp
+            mov dword ptr [esp + 0x24], ebx
+            call TextReadLine
+            push offset _BrFilePrimsWriteText+0x858
+            mov eax, dword ptr [esp + 0x18]
+            push eax
+            call BrStrCmp
+            add esp, 8
+            test eax, eax
+            je L0052c458
+            push offset _BrFilePrimsWriteText+0x860
+            call BrFailure
+            add esp, 4
+    L0052c458:
+            mov ecx, dword ptr [esp + 0x10]
+            push 0
+            push 0
+            push ecx
+            call BrStrToUL
+            mov ecx, dword ptr [esp + 0x38]
+            add esp, 0xc
+            cmp eax, ecx
+            je L0052c47e
+            push offset _BrFilePrimsWriteText+0x868
+            call BrFailure
+            add esp, 4
+    L0052c47e:
+            mov edi, dword ptr [esp + 0x24]
+            mov esi, dword ptr [esp + 0x28]
+            test edi, edi
+            jne L0052c4b0
+            mov eax, dword ptr [ebp + 0xc]
+            test eax, eax
+            jne L0052c496
+            mov eax, dword ptr [fw+0x438]
+    L0052c496:
+            mov ecx, ebx
+            mov edx, dword ptr [esp + 0x30]
+            imul ecx, dword ptr [esp + 0x2c]
+            push edx
+            push ecx
+            push eax
+            call BrResAllocate
+            add esp, 0xc
+            mov edi, eax
+            jmp L0052c4c2
+    L0052c4b0:
+            cmp dword ptr [esi], ebx
+            jge L0052c4c2
+            push ebx
+            push offset _BrFilePrimsWriteText+0x87c
+            call BrFailure
+            add esp, 8
+    L0052c4c2:
+            mov dword ptr [esi], ebx
+            imul ebx, dword ptr [esp + 0x2c]
+            xor esi, esi
+            mov byte ptr [esp + 0x22], 0
+            test ebx, ebx
+            jle L0052c54c
+    L0052c4d4:
+            lea edx, [esp + 0x10]
+            lea eax, [esp + 0x14]
+            push edx
+            push eax
+            push ebp
+            call TextReadLine
+            push 0x10
+            push 0
+            mov ecx, dword ptr [esp + 0x1c]
+            push ecx
+            call BrStrToL
+            add esp, 0xc
+            cmp esi, eax
+            je L0052c506
+            push offset _BrFilePrimsWriteText+0x8a0
+            call BrFailure
+            add esp, 4
+    L0052c506:
+            mov eax, dword ptr [esp + 0x10]
+            mov cl, byte ptr [eax]
+            test cl, cl
+            je L0052c548
+    L0052c510:
+            mov dl, byte ptr [eax + 1]
+            test dl, dl
+            je L0052c548
+            mov byte ptr [esp + 0x20], cl
+            mov dl, byte ptr [eax + 1]
+            push 0x10
+            lea eax, [esp + 0x24]
+            push 0
+            push eax
+            mov byte ptr [esp + 0x2d], dl
+            call BrStrToUL
+            mov byte ptr [esi + edi], al
+            mov eax, dword ptr [esp + 0x1c]
+            add eax, 2
+            add esp, 0xc
+            mov dword ptr [esp + 0x10], eax
+            inc esi
+            mov cl, byte ptr [eax]
+            test cl, cl
+            jne L0052c510
+    L0052c548:
+            cmp esi, ebx
+            jl L0052c4d4
+    L0052c54c:
+            mov ecx, dword ptr [esp + 0x2c]
+            mov edx, dword ptr [esp + 0x18]
+            push ecx
+            push edx
+            push edi
+            call BrSwapBlock
+            add esp, 0xc
+            mov eax, edi
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0xc
+            ret 0x14
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0052c570
-int C2_HOOK_STDCALL DfBlockWriteBinary(br_datafile* df, void* base, int block_size, int block_stride, int block_count, int size) {
+int C2_NAKED C2_HOOK_STDCALL DfBlockWriteBinary(br_datafile* df, void* base, int block_size, int block_stride, int block_count, int size) {
+#ifndef CARPOCALYPSE2_MATCHING
     int count;
     br_uint_32 l;
     br_uint_32 s;
@@ -1328,10 +1834,124 @@ int C2_HOOK_STDCALL DfBlockWriteBinary(br_datafile* df, void* base, int block_si
         BrScratchFree(block);
     }
     return 0;
+#else
+    __asm {
+            sub esp, 0x10
+            push ebx
+            push ebp
+            mov ebp, dword ptr [esp + 0x2c]
+            push esi
+            push edi
+            mov edi, dword ptr [esp + 0x2c]
+            mov esi, ebp
+            imul esi, edi
+            push esi
+            mov dword ptr [esp + 0x18], esi
+            call BrSwap32
+            mov ebx, dword ptr [esp + 0x3c]
+            add esp, 4
+            mov dword ptr [esp + 0x18], eax
+            push ebx
+            call BrSwap32
+            mov dword ptr [esp + 0x20], eax
+            mov eax, dword ptr [esp + 0x34]
+            add esp, 4
+            cmp eax, edi
+            mov dword ptr [esp + 0x34], edi
+            jne L0052c5bb
+            mov dword ptr [esp + 0x34], esi
+            mov ebp, 1
+    L0052c5bb:
+            cmp ebx, 1
+            jne L0052c5ca
+            cmp ebp, ebx
+            jne L0052c5ca
+            mov ebp, dword ptr [esp + 0x28]
+            jmp L0052c631
+    L0052c5ca:
+            mov esi, ebp
+            imul esi, dword ptr [esp + 0x34]
+            imul ebx, esi
+            push ebx
+            mov dword ptr [esp + 0x14], esi
+            call BrScratchAllocate
+            mov edi, dword ptr [esp + 0x2c]
+            add esp, 4
+            test ebp, ebp
+            mov dword ptr [esp + 0x2c], eax
+            mov ebx, eax
+            jle L0052c616
+            mov esi, dword ptr [esp + 0x34]
+            imul esi, dword ptr [esp + 0x38]
+    L0052c5f8:
+            push esi
+            push edi
+            push ebx
+            call BrMemCpy
+            mov edx, dword ptr [esp + 0x3c]
+            add esp, 0xc
+            add edi, edx
+            add ebx, esi
+            dec ebp
+            jne L0052c5f8
+            mov eax, dword ptr [esp + 0x2c]
+            mov esi, dword ptr [esp + 0x10]
+    L0052c616:
+            mov ecx, dword ptr [esp + 0x38]
+            push ecx
+            push esi
+            push eax
+            call BrSwapBlock
+            mov ebp, dword ptr [esp + 0x38]
+            mov esi, dword ptr [esp + 0x20]
+            mov ebx, dword ptr [esp + 0x44]
+            add esp, 0xc
+    L0052c631:
+            mov edi, dword ptr [esp + 0x24]
+            lea eax, [esp + 0x18]
+            mov edx, dword ptr [edi]
+            push edx
+            push 1
+            push 4
+            push eax
+            call BrFileWrite
+            mov ecx, dword ptr [edi]
+            add esp, 0x10
+            lea edx, [esp + 0x1c]
+            push ecx
+            push 1
+            push 4
+            push edx
+            call BrFileWrite
+            mov eax, dword ptr [edi]
+            add esp, 0x10
+            push eax
+            push ebx
+            push esi
+            push ebp
+            call BrFileWrite
+            mov eax, dword ptr [esp + 0x38]
+            add esp, 0x10
+            cmp ebp, eax
+            je L0052c67c
+            push ebp
+            call BrScratchFree
+            add esp, 4
+    L0052c67c:
+            pop edi
+            pop esi
+            pop ebp
+            xor eax, eax
+            pop ebx
+            add esp, 0x10
+            ret 0x18
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0052c690
-void* C2_HOOK_STDCALL DfBlockReadBinary(br_datafile* df, void* base, int* count, int size, int mtype) {
+C2_NAKED void* C2_HOOK_STDCALL DfBlockReadBinary(br_datafile* df, void* base, int* count, int size, int mtype) {
+#ifndef CARPOCALYPSE2_MATCHING
     int l;
     int s;
 
@@ -1353,12 +1973,122 @@ void* C2_HOOK_STDCALL DfBlockReadBinary(br_datafile* df, void* base, int* count,
     BrFileRead(base, l, size, df->h);
     BrSwapBlock(base, l, size);
     return base;
+#else
+    __asm {
+            push ecx
+            push ebx
+            mov ebx, dword ptr [esp + 0xc]
+            push ebp
+            push esi
+            mov eax, dword ptr [ebx]
+            push edi
+            push eax
+            push 1
+            lea ecx, [esp + 0x20]
+            push 4
+            push ecx
+            call BrFileRead
+            mov edx, dword ptr [esp + 0x28]
+            add esp, 0x10
+            push edx
+            call BrSwap32
+            add esp, 4
+            mov dword ptr [esp + 0x18], eax
+            mov eax, dword ptr [ebx]
+            lea ecx, [esp + 0x10]
+            push eax
+            push 1
+            push 4
+            push ecx
+            call BrFileRead
+            mov edx, dword ptr [esp + 0x20]
+            add esp, 0x10
+            push edx
+            call BrSwap32
+            mov edi, dword ptr [esp + 0x28]
+            add esp, 4
+            cmp eax, edi
+            mov dword ptr [esp + 0x10], eax
+            je L0052c6f8
+            push offset _BrFilePrimsWriteText+0x8b8
+            call BrFailure
+            add esp, 4
+    L0052c6f8:
+            mov esi, dword ptr [esp + 0x1c]
+            mov ebp, dword ptr [esp + 0x20]
+            test esi, esi
+            jne L0052c72a
+            mov eax, dword ptr [ebx + 0xc]
+            test eax, eax
+            jne L0052c710
+            mov eax, dword ptr [fw+0x438]
+    L0052c710:
+            mov edx, dword ptr [esp + 0x18]
+            mov ecx, dword ptr [esp + 0x28]
+            imul edx, edi
+            push ecx
+            push edx
+            push eax
+            call BrResAllocate
+            add esp, 0xc
+            mov esi, eax
+            jmp L0052c743
+    L0052c72a:
+            mov eax, dword ptr [esp + 0x18]
+            mov ecx, dword ptr [ebp]
+            cmp ecx, eax
+            jge L0052c747
+            push eax
+            push offset _BrFilePrimsWriteText+0x8cc
+            call BrFailure
+            add esp, 8
+    L0052c743:
+            mov eax, dword ptr [esp + 0x18]
+    L0052c747:
+            mov dword ptr [ebp], eax
+            mov ecx, dword ptr [ebx]
+            push ecx
+            push edi
+            push eax
+            push esi
+            call BrFileRead
+            mov edx, dword ptr [esp + 0x28]
+            add esp, 0x10
+            push edi
+            push edx
+            push esi
+            call BrSwapBlock
+            add esp, 0xc
+            mov eax, esi
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            pop ecx
+            ret 0x14
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0052c780
-int C2_HOOK_STDCALL DfBlockSizeText(br_datafile* df, void* base, int block_size, int block_stride, int block_count, int size) {
+int C2_NAKED C2_HOOK_STDCALL DfBlockSizeText(br_datafile* df, void* base, int block_size, int block_stride, int block_count, int size) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     return ((size * block_count * block_size + (32 - 1)) >> 5) + 2;
+#else
+    __asm {
+            mov eax, dword ptr [esp + 0x18]
+            imul eax, dword ptr [esp + 0x14]
+            imul eax, dword ptr [esp + 0xc]
+            add eax, 0x1f
+            cdq
+            and edx, 0x1f
+            add eax, edx
+            sar eax, 5
+            add eax, 2
+            ret 0x18
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0052c7a0
@@ -1368,7 +2098,8 @@ int C2_HOOK_STDCALL DfBlockSizeBinary(br_datafile* df, void* base, int block_siz
 }
 
 // FUNCTION: CARMA2_HW 0x0052c7c0
-char* C2_HOOK_STDCALL DfNameReadText(br_datafile* df, char* name) {
+C2_NAKED char* C2_HOOK_STDCALL DfNameReadText(br_datafile* df, char* name) {
+#ifndef CARPOCALYPSE2_MATCHING
     char* id;
     char* data;
 
@@ -1383,6 +2114,60 @@ char* C2_HOOK_STDCALL DfNameReadText(br_datafile* df, char* name) {
     }
     BrFailure("no name string");
     return NULL;
+#else
+    __asm {
+            push ecx
+            mov edx, dword ptr [esp + 8]
+            lea eax, [esp + 8]
+            push esi
+            lea ecx, [esp + 4]
+            push eax
+            push ecx
+            push edx
+            call TextReadLine
+            push offset _BrFilePrimsWriteText+0x8f4
+            mov eax, dword ptr [esp + 8]
+            push eax
+            call BrStrCmp
+            add esp, 8
+            test eax, eax
+            je L0052c7f9
+            push offset _BrFilePrimsWriteText+0x8fc
+            call BrFailure
+            add esp, 4
+    L0052c7f9:
+            mov eax, dword ptr [esp + 0xc]
+            test eax, eax
+            je L0052c806
+            cmp byte ptr [eax], 0x22
+            je L0052c817
+    L0052c806:
+            push offset _BrFilePrimsWriteText+0x904
+            call BrFailure
+            mov eax, dword ptr [esp + 0x10]
+            add esp, 4
+    L0052c817:
+            mov esi, dword ptr [esp + 0x10]
+            inc eax
+            push 0xff
+            push eax
+            push esi
+            call BrStrNCpy
+            add esp, 0xc
+            mov byte ptr [esi + 0xff], 0
+            mov eax, esi
+            pop esi
+            pop ecx
+            ret 8
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0052c840
@@ -1437,7 +2222,8 @@ int C2_HOOK_STDCALL DfNameSizeBinary(br_datafile* df, char* name) {
 }
 
 // FUNCTION: CARMA2_HW 0x0052c920
-int C2_HOOK_STDCALL DfSkipText(br_datafile* df, br_uint_32 length) {
+int C2_NAKED C2_HOOK_STDCALL DfSkipText(br_datafile* df, br_uint_32 length) {
+#ifndef CARPOCALYPSE2_MATCHING
     char* id;
     char* data;
 
@@ -1446,6 +2232,44 @@ int C2_HOOK_STDCALL DfSkipText(br_datafile* df, br_uint_32 length) {
         length--;
     }
     return 0;
+#else
+    __asm {
+            push ecx
+            push esi
+            mov esi, dword ptr [esp + 0xc]
+            push edi
+            mov eax, dword ptr [esi]
+            push eax
+            call BrFileEof
+            add esp, 4
+            test eax, eax
+            jne L0052c960
+            mov edi, dword ptr [esp + 0x14]
+    L0052c93a:
+            mov ecx, edi
+            dec edi
+            test ecx, ecx
+            je L0052c960
+            lea edx, [esp + 0x10]
+            lea eax, [esp + 8]
+            push edx
+            push eax
+            push esi
+            call TextReadLine
+            mov ecx, dword ptr [esi]
+            push ecx
+            call BrFileEof
+            add esp, 4
+            test eax, eax
+            je L0052c93a
+    L0052c960:
+            pop edi
+            xor eax, eax
+            pop esi
+            pop ecx
+            ret 8
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0052c970
@@ -1455,7 +2279,8 @@ int C2_HOOK_STDCALL DfSkipBinary(br_datafile* df, br_uint_32 length) {
 }
 
 // FUNCTION: CARMA2_HW 0x0052c990
-int C2_HOOK_STDCALL DfChunksInterpret(br_datafile* df, br_chunks_table* table) {
+int C2_NAKED C2_HOOK_STDCALL DfChunksInterpret(br_datafile* df, br_chunks_table* table) {
+#ifndef CARPOCALYPSE2_MATCHING
     br_uint_32 length;
     br_uint_32 count;
     br_uint_32 id;
@@ -1488,6 +2313,86 @@ int C2_HOOK_STDCALL DfChunksInterpret(br_datafile* df, br_chunks_table* table) {
         }
     }
     return 0;
+#else
+    __asm {
+            push ebx
+            push ebp
+            push esi
+            push edi
+            mov edi, dword ptr [esp + 0x14]
+            lea ecx, [esp + 0x14]
+            push ecx
+            push edi
+            mov eax, dword ptr [edi + 4]
+            call dword ptr [eax + 0xc]
+            mov ebx, eax
+            cmp ebx, -1
+            je L0052ca1b
+            mov ebp, dword ptr [esp + 0x18]
+    L0052c9af:
+            mov ecx, dword ptr [ebp]
+            xor eax, eax
+            test ecx, ecx
+            jle L0052c9c7
+            mov edx, dword ptr [ebp + 4]
+    L0052c9bb:
+            cmp ebx, dword ptr [edx]
+            je L0052c9c7
+            inc eax
+            add edx, 0xc
+            cmp eax, ecx
+            jl L0052c9bb
+    L0052c9c7:
+            cmp eax, ecx
+            jge L0052c9fc
+            mov edx, dword ptr [ebp + 4]
+            lea esi, [eax + eax*2]
+            shl esi, 2
+            mov al, byte ptr [edx + esi + 4]
+            test al, al
+            je L0052c9e5
+            mov eax, dword ptr [edi + 4]
+            push edi
+            call dword ptr [eax + 0x14]
+            jmp L0052c9e7
+    L0052c9e5:
+            xor eax, eax
+    L0052c9e7:
+            mov edx, dword ptr [esp + 0x14]
+            mov ecx, dword ptr [ebp + 4]
+            push eax
+            push edx
+            push ebx
+            push edi
+            call dword ptr [ecx + esi + 8]
+            test eax, eax
+            jne L0052ca1d
+            jmp L0052ca08
+    L0052c9fc:
+            mov ecx, dword ptr [esp + 0x14]
+            mov eax, dword ptr [edi + 4]
+            push ecx
+            push edi
+            call dword ptr [eax + 4]
+    L0052ca08:
+            mov edx, dword ptr [edi + 4]
+            lea eax, [esp + 0x14]
+            push eax
+            push edi
+            call dword ptr [edx + 0xc]
+            mov ebx, eax
+            cmp ebx, -1
+            jne L0052c9af
+    L0052ca1b:
+            xor eax, eax
+    L0052ca1d:
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            ret 8
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0052ca30
@@ -1562,7 +2467,8 @@ br_datafile* C2_HOOK_STDCALL DfOpen(const char* name, int write, br_token scalar
 }
 
 // FUNCTION: CARMA2_HW 0x0052cb80
-void C2_HOOK_STDCALL DfClose(br_datafile* df) {
+void C2_NAKED C2_HOOK_STDCALL DfClose(br_datafile* df) {
+#ifndef CARPOCALYPSE2_MATCHING
     br_datafile* dfp;
 
     while (1) {
@@ -1576,6 +2482,81 @@ void C2_HOOK_STDCALL DfClose(br_datafile* df) {
     dfp = DfPop(BR_MEMORY_FILE, NULL);
     BrFileClose(dfp->h);
     BrResFree(dfp);
+#else
+    __asm {
+            push esi
+    L0052cb81:
+            mov eax, dword ptr [DatafileStackTop]
+    L0052cb86:
+            test eax, eax
+            jg L0052cb8e
+            xor ecx, ecx
+            jmp L0052cb98
+    L0052cb8e:
+            lea ecx, [eax + eax*2]
+            mov ecx, dword ptr [ecx*4 + _diag_scratch+0x7c]
+    L0052cb98:
+            cmp ecx, 0x15
+            je L0052cbea
+            test eax, eax
+            jg L0052cba5
+            xor esi, esi
+            jmp L0052cbaf
+    L0052cba5:
+            lea edx, [eax + eax*2]
+            mov esi, dword ptr [edx*4 + _diag_scratch+0x7c]
+    L0052cbaf:
+            test eax, eax
+            jg L0052cbc5
+            push offset _BrFilePrimsWriteText+0x68
+            call BrFailure
+            mov eax, dword ptr [DatafileStackTop]
+            add esp, 4
+    L0052cbc5:
+            dec eax
+            mov dword ptr [DatafileStackTop], eax
+            lea ecx, [eax + eax*2]
+            mov ecx, dword ptr [ecx*4 + DatafileStack]
+            cmp esi, ecx
+            je L0052cb86
+            push ecx
+            push esi
+            push offset _BrFilePrimsWriteText+0x80
+            call BrFailure
+            add esp, 0xc
+            jmp L0052cb81
+    L0052cbea:
+            test eax, eax
+            jg L0052cc00
+            push offset _BrFilePrimsWriteText+0x68
+            call BrFailure
+            mov eax, dword ptr [DatafileStackTop]
+            add esp, 4
+    L0052cc00:
+            dec eax
+            mov dword ptr [DatafileStackTop], eax
+            lea edx, [eax + eax*2]
+            mov eax, dword ptr [edx*4 + DatafileStack]
+            cmp eax, 0x15
+            je L0052cc25
+            push eax
+            push 0x15
+            push offset _BrFilePrimsWriteText+0x80
+            call BrFailure
+            add esp, 0xc
+    L0052cc25:
+            mov esi, dword ptr [esp + 8]
+            mov eax, dword ptr [esi]
+            push eax
+            call BrFileClose
+            add esp, 4
+            push esi
+            call BrResFree
+            add esp, 4
+            pop esi
+            ret 4
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0052cc50

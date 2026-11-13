@@ -100,7 +100,8 @@ void C2_HOOK_FASTCALL PDNetObtainSystemUserName(char* pName, int pMax_length) {
 }
 
 // FUNCTION: CARMA2_HW 0x0051a010
-void C2_HOOK_FASTCALL NetNowIPXLocalTarget2String(char* pString, struct sockaddr* pSock_addr) {
+void C2_NAKED C2_HOOK_FASTCALL NetNowIPXLocalTarget2String(char* pString, struct sockaddr* pSock_addr) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     sprintf(pString,
         "%2.2x%2.2x%2.2x%2.2x:%2.2x%2.2x%2.2x%2.2x%2.2x%2.2x,%2.2x%2.2x",
@@ -116,6 +117,52 @@ void C2_HOOK_FASTCALL NetNowIPXLocalTarget2String(char* pString, struct sockaddr
         pSock_addr->sa_data[9],
         pSock_addr->sa_data[10],
         pSock_addr->sa_data[11]);
+#else
+    __asm {
+            xor eax, eax
+            mov al, byte ptr [edx + 0xd]
+            and eax, 0xff
+            push eax
+            xor eax, eax
+            mov al, byte ptr [edx + 0xc]
+            push eax
+            xor eax, eax
+            mov al, byte ptr [edx + 0xb]
+            push eax
+            xor eax, eax
+            mov al, byte ptr [edx + 0xa]
+            push eax
+            xor eax, eax
+            mov al, byte ptr [edx + 9]
+            push eax
+            xor eax, eax
+            mov al, byte ptr [edx + 8]
+            push eax
+            xor eax, eax
+            mov al, byte ptr [edx + 7]
+            push eax
+            xor eax, eax
+            mov al, byte ptr [edx + 6]
+            push eax
+            xor eax, eax
+            mov al, byte ptr [edx + 5]
+            push eax
+            xor eax, eax
+            mov al, byte ptr [edx + 4]
+            push eax
+            xor eax, eax
+            mov al, byte ptr [edx + 3]
+            push eax
+            xor eax, eax
+            mov al, byte ptr [edx + 2]
+            push eax
+            push offset gSocket+0x84
+            push ecx
+            call sprintf
+            add esp, 0x38
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00519560

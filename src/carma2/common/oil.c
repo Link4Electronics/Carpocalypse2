@@ -31,8 +31,37 @@ int gNext_oil_pixie;
 // GLOBAL: CARMA2_HW 0x0074a68c
 br_material* oily_material = NULL;
 
+#ifdef CARPOCALYPSE2_MATCHING
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern tU32 C2_HOOK_FASTCALL GetTotalTime(void);
+extern br_scalar C2_HOOK_STDCALL SRandomBetween(br_scalar pA, br_scalar pB);
+extern int gBig_bang;
+extern char gSFS_shortest_dist[];
+extern int gStart_jumped;
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern const br_scalar gFloat_0058a464;
+extern void C2_HOOK_CDECL BrMatrix34PreRotateY();
+extern void C2_HOOK_CDECL BrModelUpdate();
+extern void C2_HOOK_FASTCALL CheckSingleFace(tFace_ref* pFace, br_vector3* ray_pos, br_vector3* ray_dir, br_vector3* normal, br_scalar* rt, br_vector3* coll_pos);
+extern int C2_HOOK_FASTCALL FindFacesInBox(tBounds* bnds, tFace_ref* face_list, int max_face, tWorld_callbacks* pWorld_callbacks);
+extern int C2_HOOK_FASTCALL IRandomBetween(int pA, int pB);
+extern tNet_message* C2_HOOK_FASTCALL NetBuildGuaranteedMessage(tU8 pNet_message_type, int pOption);
+extern int C2_HOOK_FASTCALL NetGuaranteedSendMessageToAllPlayers(tNet_game_details* pDetails, tNet_message* pMessage, void* pNotifyFail);
+extern tNet_game_player_info* C2_HOOK_FASTCALL NetPlayerFromCar(tCar_spec *pCar);
+extern int C2_HOOK_FASTCALL NormalSideOfPlane(br_vector3* pPoint, br_vector3* pNormal, br_scalar pD);
+extern void C2_HOOK_FASTCALL PipeSingleOilSpill(int pIndex, br_matrix34* pMat, br_scalar pFull_size, br_scalar pGrow_rate, tU32 pSpill_time, tU32 pStop_time, tCar_spec* pCar, br_vector3* pOriginal_pos, br_pixelmap* pPixelmap);
+extern tNet_game_details* gCurrent_net_game;
+extern char gFLOAT_0058a420[];
+extern tNet_mode gNet_mode;
+extern int gPed_676914;
+#endif
 // FUNCTION: CARMA2_HW 0x004a6c50
-void C2_HOOK_FASTCALL ResetOilSpills(void) {
+void C2_NAKED C2_HOOK_FASTCALL ResetOilSpills(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     int i;
 
     for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gOily_spills); i++) {
@@ -41,6 +70,174 @@ void C2_HOOK_FASTCALL ResetOilSpills(void) {
         gOily_spills[i].car_actor = NULL;
         gOily_spills[i].stop_time = 0;
     }
+#else
+    __asm {
+            push esi
+            mov eax, offset gOily_spills+0xc
+            mov dl, 1
+            xor ecx, ecx
+    L004a6c5a:
+            mov esi, dword ptr [eax - 0xc]
+            add eax, 0x54
+            cmp eax, offset gSFS_shortest_dist
+            mov byte ptr [esi + 0x20], dl
+            mov dword ptr [eax - 0x54], ecx
+            mov dword ptr [eax - 0x5c], ecx
+            mov dword ptr [eax - 0x4c], ecx
+            jl L004a6c5a
+            pop esi
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    L004a6c80:
+            sub esp, 8
+            push ebx
+            push ebp
+            push esi
+            mov esi, edx
+            push edi
+            mov dword ptr [esp + 0x10], ecx
+            mov dword ptr [esp + 0x14], esi
+            xor edi, edi
+            or ebp, 0xffffffff
+            call GetTotalTime
+            mov ebx, eax
+            call GetTotalTime
+            mov ecx, offset gOily_spills+0x10
+    L004a6ca7:
+            mov edx, dword ptr [esp + 0x10]
+            test edx, edx
+            je L004a6cc4
+            cmp dword ptr [ecx - 0xc], esi
+            jne L004a6cc4
+            mov edx, dword ptr [ecx]
+            add edx, 0x1388
+            cmp ebx, edx
+            jb L004a6dbb
+    L004a6cc4:
+            add ecx, 0x54
+            cmp ecx, offset gStart_jumped
+            jl L004a6ca7
+            xor esi, esi
+            mov ecx, offset gOily_spills+0x10
+    L004a6cd6:
+            mov edx, dword ptr [ecx - 0xc]
+            test edx, edx
+            je L004a6cf5
+            mov edx, dword ptr [ecx]
+            cmp edx, eax
+            jae L004a6ce7
+            mov eax, edx
+            mov edi, esi
+    L004a6ce7:
+            add ecx, 0x54
+            inc esi
+            cmp ecx, offset gStart_jumped
+            jl L004a6cd6
+            jmp L004a6cf7
+    L004a6cf5:
+            mov ebp, esi
+    L004a6cf7:
+            test ebp, ebp
+            jge L004a6cfd
+            mov ebp, edi
+    L004a6cfd:
+            mov eax, ebp
+            mov ecx, dword ptr [esp + 0x48]
+            shl eax, 3
+            sub eax, ebp
+            mov edx, dword ptr [esp + 0x10]
+            lea esi, [eax + eax*2]
+            shl esi, 2
+            mov eax, dword ptr [esi + gOily_spills]
+            mov dword ptr [eax + 0x1c], ecx
+            mov eax, dword ptr [esp + 0x14]
+            mov ecx, dword ptr [esp + 0x1c]
+            mov dword ptr [esi + gOily_spills+0xc], edx
+            mov edx, dword ptr [esp + 0x20]
+            mov dword ptr [esi + gOily_spills+0x4], eax
+            mov eax, dword ptr [esp + 0x34]
+            mov dword ptr [esi + gOily_spills+0x8], ecx
+            mov ecx, dword ptr [esp + 0x28]
+            add ebx, edx
+            mov edx, dword ptr [esp + 0x24]
+            push ecx
+            mov dword ptr [esi + gOily_spills+0x10], ebx
+            push edx
+            mov dword ptr [esi + gOily_spills+0x20], eax
+            call SRandomBetween
+            fstp dword ptr [esi + gOily_spills+0x18]
+            mov eax, dword ptr [esp + 0x30]
+            mov ecx, dword ptr [esp + 0x2c]
+            push eax
+            push ecx
+            call SRandomBetween
+            fstp dword ptr [esi + gOily_spills+0x24]
+            mov edx, dword ptr [esp + 0x34]
+            mov ecx, dword ptr [esp + 0x40]
+            mov dword ptr [esi + gOily_spills+0x1c], edx
+            mov eax, dword ptr [esi + gOily_spills]
+            mov edx, dword ptr [esp + 0x44]
+            mov byte ptr [eax + 0x20], 1
+            mov eax, dword ptr [esp + 0x38]
+            mov dword ptr [esi + gOily_spills+0x40], ecx
+            mov ecx, dword ptr [esp + 0x3c]
+            mov dword ptr [esi + gOily_spills+0x44], edx
+            mov edx, dword ptr [esp + 0x4c]
+            mov dword ptr [esi + gOily_spills+0x48], eax
+            mov dword ptr [esi + gOily_spills+0x4c], ecx
+            mov dword ptr [esi + gOily_spills+0x50], edx
+    L004a6dbb:
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 8
+            ret 0x34
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            mov eax, dword ptr [oily_material]
+            mov edx, dword ptr [ecx + 0xe10]
+            push 0
+            push eax
+            push 0x3e19999a
+            mov eax, dword ptr [edx + 0x18]
+            push 0x3c23d70a
+            push 0x40200000
+            mov edx, dword ptr [ecx + 0x10]
+            push 0x3fc00000
+            push 0x3dcccccd
+            push 0x38d1b717
+            push 0x37fba882
+            push 0x3f19999a
+            push 0x3eb33333
+            push 0x1f4
+            push eax
+            call L004a6c80
+            ret
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004a6c80
@@ -60,8 +257,7 @@ void C2_HOOK_FASTCALL QueueOilSpill2(
     float pField_0x44,
     br_material* pMaterial,
     int pField_0x50)
-{
-    int i;
+{    int i;
     int slot;
     int oldest;
     tU32 time_low;
@@ -246,7 +442,8 @@ void C2_HOOK_FASTCALL MungeOilsHeightAboveGround(tOil_spill_info* pOil) {
 }
 
 // FUNCTION: CARMA2_HW 0x004a6e50
-void C2_HOOK_FASTCALL ProcessOilSpills(tU32 pFrame_period) {
+void C2_NAKED C2_HOOK_FASTCALL ProcessOilSpills(tU32 pFrame_period) {
+#ifndef CARPOCALYPSE2_MATCHING
     int i;
     tU32 time;
     br_scalar grow_amount;
@@ -285,7 +482,8 @@ void C2_HOOK_FASTCALL ProcessOilSpills(tU32 pFrame_period) {
                         oil->car_actor = NULL;
                     } else {
                         oil->spill_time = time;
-                        if (gNext_oil_pixie > 0) { /* CARPOCALYPSE2_ASIZE(gOil_pixies) */
+                        if (gNext_oil_pixie > 0) {
+ /* CARPOCALYPSE2_ASIZE(gOil_pixies) */
                             gNext_oil_pixie = 0;
                         }
                         if (oil->car == NULL) {
@@ -364,11 +562,532 @@ void C2_HOOK_FASTCALL ProcessOilSpills(tU32 pFrame_period) {
             MungeOilsHeightAboveGround(oil);
         }
     }
+#else
+    __asm {
+            sub esp, 0x3b4
+            push ebx
+            push ebp
+            push esi
+            push edi
+            call GetTotalTime
+            mov dword ptr [esp + 0x10], eax
+            mov dword ptr [esp + 0x14], 0
+            mov esi, offset gOily_spills+0xc
+    L004a6e70:
+            mov eax, dword ptr [esi - 8]
+            lea edi, [esi - 0xc]
+            test eax, eax
+            je L004a7410
+            mov ecx, dword ptr [edi]
+            mov bl, byte ptr [ecx + 0x20]
+            mov edx, dword ptr [ecx + 0x18]
+            cmp bl, 1
+            mov dword ptr [esp + 0x24], edx
+            jne L004a729c
+            mov eax, dword ptr [esp + 0x10]
+            mov ebp, dword ptr [esi + 4]
+            cmp eax, ebp
+            jb L004a729c
+            mov eax, dword ptr [esi]
+            test eax, eax
+            je L004a6eea
+            mov ebp, dword ptr [eax + 8]
+            fld dword ptr [ebp + 0x68]
+            fabs
+            fcomp dword ptr [gFLOAT_0058a420+0x10]
+            fnstsw ax
+            test ah, bl
+            je L004a729c
+            fld dword ptr [ebp + 0x6c]
+            fabs
+            fcomp dword ptr [gFLOAT_0058a420+0x10]
+            fnstsw ax
+            test ah, bl
+            je L004a729c
+            fld dword ptr [ebp + 0x70]
+            fabs
+            fcomp dword ptr [gFLOAT_0058a420+0x10]
+            fnstsw ax
+            test ah, bl
+            je L004a729c
+    L004a6eea:
+            mov eax, dword ptr [gPed_676914]
+            test eax, eax
+            je L004a6eff
+            mov ecx, edi
+            call SetInitialOilStuff
+            jmp L004a7416
+    L004a6eff:
+            mov eax, dword ptr [esi]
+            test eax, eax
+            je L004a6f26
+            cmp dword ptr [eax + 0xc], 7
+            jl L004a6f26
+            mov edx, dword ptr [eax + 0x4e0]
+            mov ecx, 0x63
+            cmp edx, ecx
+            jge L004a6f26
+            cmp dword ptr [eax + 0x50c], ecx
+            jl L004a728a
+    L004a6f26:
+            mov edx, 0xffff
+            xor ecx, ecx
+            call IRandomBetween
+            fld dword ptr [esi + 0xc]
+            mov ecx, dword ptr [esi - 4]
+            mov edx, dword ptr [edi]
+            fchs
+            fst dword ptr [esp + 0x64]
+            fld dword ptr [ecx + 0x38]
+            fsub qword ptr [gFLOAT_0058a420+0x18]
+            fld dword ptr [esi + 0xc]
+            fld dword ptr [esi + 0xc]
+            fxch st(2)
+            fstp dword ptr [esp + 0x68]
+            fxch st(2)
+            fstp dword ptr [esp + 0x6c]
+            fxch st(1)
+            fstp dword ptr [esp + 0x70]
+            fld dword ptr [ecx + 0x44]
+            mov ebp, eax
+            add edx, 0x2c
+            fstp dword ptr [esp + 0x74]
+            push ebp
+            push edx
+            fstp dword ptr [esp + 0x80]
+            call BrMatrix34PreRotateY
+            mov eax, dword ptr [esi - 8]
+            add esp, 8
+            add eax, 0x2c
+            lea edx, [esp + 0xa4]
+            push 0
+            push 0xa
+            lea ecx, [esp + 0x68]
+            mov dword ptr [esp + 0x68], eax
+            call FindFacesInBox
+            mov ecx, dword ptr [esi - 8]
+            mov edx, eax
+            fld dword ptr [esp + 0x68]
+            mov eax, dword ptr [ecx + 0x50]
+            mov dword ptr [esp + 0x40], edx
+            mov dword ptr [esp + 0x54], eax
+            fld dword ptr [ecx + 0x54]
+            fsub dword ptr [gFLOAT_0058a420+0x20]
+            fxch st(1)
+            fsub dword ptr [esp + 0x74]
+            fxch st(1)
+            fstp dword ptr [esp + 0x58]
+            mov ecx, dword ptr [ecx + 0x58]
+            fst dword ptr [esp + 0x2c]
+            fmul dword ptr [esp + 0x2c]
+            mov dword ptr [esp + 0x5c], ecx
+            fsqrt
+            fcom dword ptr [gFLOAT_0058a420+0x24]
+            fnstsw ax
+            test ah, 0x41
+            jne L004a700d
+            fdivr qword ptr [gFLOAT_0058a420+0x28]
+            mov dword ptr [esp + 0x38], 0
+            mov eax, dword ptr [esp + 0x38]
+            mov ecx, eax
+            mov dword ptr [esp + 0x28], eax
+            mov dword ptr [esp + 0x30], ecx
+            fld st(0)
+            fstp st(1)
+            fmul dword ptr [esp + 0x2c]
+            fstp dword ptr [esp + 0x2c]
+            jmp L004a7027
+    L004a700d:
+            fstp st(0)
+            mov dword ptr [esp + 0x28], 0x3f800000
+            mov dword ptr [esp + 0x2c], 0
+            mov dword ptr [esp + 0x30], 0
+    L004a7027:
+            test edx, edx
+            je L004a728a
+            xor ebx, ebx
+            lea ecx, [esp + 0xa4]
+            test edx, edx
+            mov dword ptr [esp + 0x3c], ecx
+            jle L004a7114
+            mov dword ptr [esp + 0x34], edx
+    L004a7048:
+            test ebx, ebx
+            jne L004a70f6
+            lea edx, [esp + 0x48]
+            lea eax, [esp + 0x44]
+            push edx
+            push eax
+            lea edx, [esp + 0x20]
+            lea eax, [esp + 0x30]
+            push edx
+            push eax
+            lea edx, [esp + 0x64]
+            call CheckSingleFace
+            fld dword ptr [esp + 0x44]
+            fcomp dword ptr [gFLOAT_0058a420+0x38]
+            fnstsw ax
+            test ah, 1
+            je L004a70f6
+            mov ecx, dword ptr [edi]
+            mov edx, dword ptr [esp + 0x18]
+            push ebp
+            mov ebx, 1
+            mov dword ptr [ecx + 0x38], edx
+            mov eax, dword ptr [edi]
+            mov ecx, dword ptr [esp + 0x20]
+            mov dword ptr [eax + 0x3c], ecx
+            mov edx, dword ptr [edi]
+            mov eax, dword ptr [esp + 0x24]
+            mov dword ptr [edx + 0x40], eax
+            mov ecx, dword ptr [edi]
+            fld dword ptr [esp + 0x20]
+            fstp dword ptr [ecx + 0x2c]
+            fld dword ptr [esp + 0x1c]
+            mov edx, dword ptr [edi]
+            xor eax, eax
+            fchs
+            fstp dword ptr [edx + 0x30]
+            mov ecx, dword ptr [edi]
+            mov dword ptr [ecx + 0x34], eax
+            mov edx, dword ptr [edi]
+            mov dword ptr [edx + 0x44], eax
+            mov eax, dword ptr [edi]
+            fld dword ptr [esp + 0x24]
+            fchs
+            fstp dword ptr [eax + 0x48]
+            fld dword ptr [esp + 0x20]
+            mov ecx, dword ptr [edi]
+            fstp dword ptr [ecx + 0x4c]
+            mov edx, dword ptr [esp + 0x4c]
+            mov eax, dword ptr [esp + 0x50]
+            mov ecx, dword ptr [esp + 0x54]
+            mov dword ptr [edi + 0x34], edx
+            mov edx, dword ptr [edi]
+            mov dword ptr [edi + 0x38], eax
+            add edx, 0x2c
+            mov dword ptr [edi + 0x3c], ecx
+            push edx
+            call BrMatrix34PreRotateY
+            add esp, 8
+    L004a70f6:
+            mov ecx, dword ptr [esp + 0x3c]
+            mov eax, dword ptr [esp + 0x34]
+            add ecx, 0x50
+            dec eax
+            mov dword ptr [esp + 0x3c], ecx
+            mov dword ptr [esp + 0x34], eax
+            jne L004a7048
+            mov edx, dword ptr [esp + 0x40]
+    L004a7114:
+            test ebx, ebx
+            je L004a728a
+            fld dword ptr [esp + 0x1c]
+            fcomp dword ptr [gFLOAT_0058a420+0x3c]
+            fnstsw ax
+            test ah, 1
+            jne L004a728a
+            xor ebx, ebx
+            test edx, edx
+            jle L004a71a8
+            lea ebp, [esp + 0xdc]
+    L004a713e:
+            _emit 0xd9
+        _emit 0x45
+        _emit 0x00
+            fld dword ptr [ebp - 4]
+            fld dword ptr [ebp + 4]
+            fxch st(2)
+            fmul dword ptr [esp + 0x1c]
+            fxch st(1)
+            fmul dword ptr [esp + 0x18]
+            fxch st(2)
+            fmul dword ptr [esp + 0x20]
+            fxch st(2)
+            faddp st(1), st(0)
+            fxch st(1)
+            faddp st(1), st(0)
+            lea edx, [ebp - 4]
+            fcom dword ptr [gFLOAT_0058a420+0x40]
+            fnstsw ax
+            test ah, 1
+            je L004a719a
+            fcomp dword ptr [gFloat_0058a464]
+            fnstsw ax
+            test ah, 0x41
+            je L004a728a
+            mov eax, dword ptr [ebp + 0xc]
+            mov ecx, dword ptr [edi]
+            push eax
+            add ecx, 0x50
+            call NormalSideOfPlane
+            test eax, eax
+            je L004a728a
+            jmp L004a719c
+    L004a719a:
+            fstp st(0)
+    L004a719c:
+            mov eax, dword ptr [esp + 0x40]
+            inc ebx
+            add ebp, 0x50
+            cmp ebx, eax
+            jl L004a713e
+    L004a71a8:
+            mov eax, dword ptr [gNext_oil_pixie]
+            mov ecx, dword ptr [esp + 0x10]
+            cmp eax, 1
+            mov dword ptr [esi + 4], ecx
+            jl L004a71c3
+            mov dword ptr [gNext_oil_pixie], 0
+    L004a71c3:
+            mov eax, dword ptr [esi]
+            lea ecx, [esi + 0x1c]
+            test eax, eax
+            je L004a71e3
+            add eax, 0x4c
+            mov edx, ecx
+            mov ebx, dword ptr [eax]
+            mov dword ptr [edx], ebx
+            mov ebx, dword ptr [eax + 4]
+            mov dword ptr [edx + 4], ebx
+            mov eax, dword ptr [eax + 8]
+            mov dword ptr [edx + 8], eax
+            jmp L004a71fb
+    L004a71e3:
+            mov edx, dword ptr [esi - 8]
+            mov eax, ecx
+            add edx, 0x50
+            mov ebx, dword ptr [edx]
+            mov dword ptr [eax], ebx
+            mov ebx, dword ptr [edx + 4]
+            mov dword ptr [eax + 4], ebx
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [eax + 8], edx
+    L004a71fb:
+            mov eax, dword ptr [edi]
+            mov edx, dword ptr [eax + 0x1c]
+            mov edx, dword ptr [edx + 0x40]
+            push edx
+            mov edx, dword ptr [esi + 8]
+            push ecx
+            mov ecx, dword ptr [esi]
+            push ecx
+            mov ecx, dword ptr [esi + 4]
+            push edx
+            mov edx, dword ptr [esi + 0x18]
+            push ecx
+            mov ecx, dword ptr [esi + 0xc]
+            push edx
+            push ecx
+            mov ecx, dword ptr [esp + 0x30]
+            lea edx, [eax + 0x2c]
+            call PipeSingleOilSpill
+            mov ecx, edi
+            mov dword ptr [esi + 8], 0
+            mov edx, dword ptr [esp + 0x24]
+            call SetInitialOilStuff
+            cmp dword ptr [gNet_mode], 2
+            jne L004a7416
+            cmp dword ptr [esi], 0
+            je L004a7416
+            xor edx, edx
+            mov cl, 0x1f
+            call NetBuildGuaranteedMessage
+            mov ecx, dword ptr [esi]
+            mov ebp, eax
+            call NetPlayerFromCar
+            mov edx, dword ptr [eax + 0x24]
+            mov dword ptr [ebp + 0x1c], edx
+            mov eax, dword ptr [esi + 0xc]
+            mov dword ptr [ebp + 0x20], eax
+            mov ecx, dword ptr [esi + 0x18]
+            mov dword ptr [ebp + 0x24], ecx
+            mov edx, dword ptr [esi + 0x10]
+            mov dword ptr [ebp + 0x28], edx
+            mov ecx, dword ptr [gCurrent_net_game]
+            push 0
+            mov edx, ebp
+            call NetGuaranteedSendMessageToAllPlayers
+            jmp L004a7416
+    L004a728a:
+            mov dword ptr [esi], 0
+            mov dword ptr [esi - 8], 0
+            jmp L004a7416
+    L004a729c:
+            cmp bl, 4
+            jne L004a7416
+            mov ebx, dword ptr [esi + 8]
+            test ebx, ebx
+            je L004a72b6
+            cmp dword ptr [esp + 0x10], ebx
+            jae L004a7416
+    L004a72b6:
+            mov eax, dword ptr [esi]
+            test eax, eax
+            je L004a731d
+            fld dword ptr [esi + 0x1c]
+            fld dword ptr [esi + 0x20]
+            fld dword ptr [esi + 0x24]
+            fxch st(2)
+            fsub dword ptr [eax + 0x4c]
+            fxch st(1)
+            fsub dword ptr [eax + 0x50]
+            fxch st(2)
+            fsub dword ptr [eax + 0x54]
+            fxch st(1)
+            fxch st(2)
+            fxch st(1)
+            test ebx, ebx
+            jne L004a7317
+            fld st(2)
+            fld st(2)
+            fxch st(1)
+            fmul st(0), st(4)
+            fld st(2)
+            fxch st(2)
+            fmul st(0), st(4)
+            fxch st(2)
+            fmul st(0), st(3)
+            fxch st(2)
+            faddp st(1), st(0)
+            fxch st(1)
+            faddp st(1), st(0)
+            fcomp dword ptr [gFloat_0058a464+0x4]
+            fstp st(0)
+            fnstsw ax
+            fstp st(0)
+            test ah, 0x41
+            fstp st(0)
+            jne L004a731d
+            mov eax, dword ptr [esp + 0x10]
+            mov dword ptr [esi + 8], eax
+            jmp L004a7436
+    L004a7317:
+            fstp st(0)
+            fstp st(0)
+            fstp st(0)
+    L004a731d:
+            mov eax, dword ptr [esp + 0x10]
+            mov ebx, dword ptr [esi + 4]
+            sub eax, ebx
+            mov dword ptr [esp + 0x24], eax
+            fild dword ptr [esp + 0x24]
+            fmul dword ptr [esi + 0x18]
+            fadd dword ptr [esi + 0x14]
+            fcom dword ptr [esi + 0x14]
+            fnstsw ax
+            test ah, 1
+            je L004a7349
+            fstp st(0)
+            mov byte ptr [ecx + 0x20], 1
+            jmp L004a7416
+    L004a7349:
+            mov byte ptr [ecx + 0x20], 4
+            fcom dword ptr [esi + 0xc]
+            fnstsw ax
+            test ah, 0x41
+            jne L004a73c1
+            mov ecx, dword ptr [edx + 8]
+            push 0x7fff
+            fstp st(0)
+            fld dword ptr [esi + 0xc]
+            fchs
+            _emit 0xd9
+        _emit 0x19
+            fld dword ptr [esi + 0xc]
+            mov eax, dword ptr [edx + 8]
+            push edx
+            fchs
+            fstp dword ptr [eax + 8]
+            mov ecx, dword ptr [edx + 8]
+            mov eax, dword ptr [esi + 0xc]
+            mov dword ptr [ecx + 0x28], eax
+            mov ecx, dword ptr [edx + 8]
+            fld dword ptr [esi + 0xc]
+            fchs
+            fstp dword ptr [ecx + 0x30]
+            mov eax, dword ptr [edx + 8]
+            mov ecx, dword ptr [esi + 0xc]
+            mov dword ptr [eax + 0x50], ecx
+            mov eax, dword ptr [edx + 8]
+            mov ecx, dword ptr [esi + 0xc]
+            mov dword ptr [eax + 0x58], ecx
+            mov eax, dword ptr [edx + 8]
+            fld dword ptr [esi + 0xc]
+            fchs
+            fstp dword ptr [eax + 0x78]
+            mov ecx, dword ptr [edx + 8]
+            mov eax, dword ptr [esi + 0xc]
+            mov dword ptr [ecx + 0x80], eax
+            mov ecx, dword ptr [esi + 0xc]
+            mov dword ptr [esi + 0x10], ecx
+            call BrModelUpdate
+            add esp, 8
+            jmp L004a7416
+    L004a73c1:
+            mov eax, dword ptr [edx + 8]
+            push 0x7fff
+            fld st(0)
+            fchs
+            _emit 0xd9
+        _emit 0x10
+            mov ecx, dword ptr [edx + 8]
+            push edx
+            fst dword ptr [ecx + 8]
+            mov eax, dword ptr [edx + 8]
+            fld st(1)
+            fstp dword ptr [eax + 0x28]
+            mov ecx, dword ptr [edx + 8]
+            fst dword ptr [ecx + 0x30]
+            mov eax, dword ptr [edx + 8]
+            fld st(1)
+            fstp dword ptr [eax + 0x50]
+            mov ecx, dword ptr [edx + 8]
+            fld st(1)
+            fstp dword ptr [ecx + 0x58]
+            mov eax, dword ptr [edx + 8]
+            fstp dword ptr [eax + 0x78]
+            mov ecx, dword ptr [edx + 8]
+            fst dword ptr [ecx + 0x80]
+            fstp dword ptr [esi + 0x10]
+            call BrModelUpdate
+            add esp, 8
+            jmp L004a7416
+    L004a7410:
+            mov edx, dword ptr [edi]
+            mov byte ptr [edx + 0x20], 1
+    L004a7416:
+            mov eax, dword ptr [edi]
+            cmp byte ptr [eax + 0x20], 4
+            jne L004a7436
+            lea ecx, [esi + 0x28]
+            mov edx, eax
+            add edx, 0x50
+            mov eax, dword ptr [ecx]
+            mov dword ptr [edx], eax
+            mov eax, dword ptr [ecx + 4]
+            mov dword ptr [edx + 4], eax
+            mov ecx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 8], ecx
+    L004a7436:
+            mov edx, dword ptr [esp + 0x14]
+            add esi, 0x54
+            inc edx
+            cmp esi, offset gSFS_shortest_dist
+            mov dword ptr [esp + 0x14], edx
+            jl L004a6e70
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x3b4
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004a74e0
 int C2_HOOK_FASTCALL GetOilSpillCount(void) {
-
     return CARPOCALYPSE2_ASIZE(gOily_spills);
 }
 
@@ -454,7 +1173,8 @@ const br_scalar gFloat_0058a46c = 0.14492753148078918f;
 const br_scalar gFloat_0058a470 = 0.1f;
 
 // FUNCTION: CARMA2_HW 0x004a77d0
-int C2_HOOK_FASTCALL PointInSpill(br_vector3* pPoint, int pIndex) {
+int C2_NAKED C2_HOOK_FASTCALL PointInSpill(br_vector3* pPoint, int pIndex) {
+#ifndef CARPOCALYPSE2_MATCHING
     tOil_spill_info* oil;
     br_actor* actor;
     br_scalar range_squared;
@@ -477,6 +1197,68 @@ int C2_HOOK_FASTCALL PointInSpill(br_vector3* pPoint, int pIndex) {
         return 0;
     }
     return 1;
+#else
+    __asm {
+            push ecx
+            mov eax, edx
+            _emit 0xd9
+        _emit 0x01
+            shl eax, 3
+            fmul dword ptr [gFloat_0058a46c]
+            sub eax, edx
+            lea eax, [eax + eax*2]
+            shl eax, 2
+            fld dword ptr [eax + gOily_spills+0x1c]
+            fxch st(1)
+            fld st(1)
+            mov edx, dword ptr [eax + gOily_spills]
+            fmulp st(2), st(0)
+            fsub dword ptr [edx + 0x50]
+            fxch st(1)
+            fmul dword ptr [gFloat_0058a464]
+            fxch st(1)
+            _emit 0xd9
+        _emit 0x54
+        _emit 0x24
+        _emit 0x00
+            _emit 0xd8
+        _emit 0x4c
+        _emit 0x24
+        _emit 0x00
+            fcomp st(1)
+            fnstsw ax
+            test ah, 1
+            je L004a7855
+            fld dword ptr [ecx + 8]
+            fmul dword ptr [gFloat_0058a46c]
+            fsub dword ptr [edx + 0x58]
+            fld st(0)
+            fmul st(0), st(1)
+            fcomp st(2)
+            fnstsw ax
+            fstp st(0)
+            test ah, 1
+            fstp st(0)
+            je L004a7857
+            fld dword ptr [ecx + 4]
+            fmul dword ptr [gFloat_0058a46c]
+            fsub dword ptr [edx + 0x54]
+            fabs
+            fcomp dword ptr [gFloat_0058a470]
+            fnstsw ax
+            test ah, 1
+            je L004a7857
+            mov eax, 1
+            pop ecx
+            ret
+    L004a7855:
+            fstp st(0)
+    L004a7857:
+            xor eax, eax
+            pop ecx
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004a6e20
@@ -485,21 +1267,21 @@ void C2_NAKED C2_HOOK_FASTCALL MungeIndexedOilsHeightAboveGround(int pIndex) {
     MungeOilsHeightAboveGround(&gOily_spills[pIndex]);
 #else
     __asm {
-        mov eax, ecx
-        shl eax, 3
-        sub eax, ecx
-        lea eax, [eax + eax*2]
-        mov edx, dword ptr [eax*4 + gOily_spills]
-        lea eax, [eax*4 + gOily_spills]
-        add edx, 0x50
-        lea ecx, [eax + 0x34]
-        mov eax, dword ptr [eax + 0x34]
-        mov dword ptr [edx], eax
-        mov eax, dword ptr [ecx + 4]
-        mov dword ptr [edx + 4], eax
-        mov ecx, dword ptr [ecx + 8]
-        mov dword ptr [edx + 8], ecx
-        ret
+            mov eax, ecx
+            shl eax, 3
+            sub eax, ecx
+            lea eax, [eax + eax*2]
+            mov edx, dword ptr [eax*4 + gOily_spills]
+            lea eax, [eax*4 + gOily_spills]
+            add edx, 0x50
+            lea ecx, [eax + 0x34]
+            mov eax, dword ptr [eax + 0x34]
+            mov dword ptr [edx], eax
+            mov eax, dword ptr [ecx + 4]
+            mov dword ptr [edx + 4], eax
+            mov ecx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 8], ecx
+            ret
     }
 #endif
 }
@@ -591,7 +1373,6 @@ void C2_HOOK_FASTCALL InitOilSpills(void) {
 
 // FUNCTION: CARMA2_HW 0x004a7860
 void C2_HOOK_FASTCALL AdjustOilSpill(int pIndex, br_matrix34* pMat, br_scalar pFull_size, br_scalar pGrow_rate, tU32 pSpill_time, tU32 pStop_time, tCar_spec* pCar, br_vector3* pOriginal_pos, br_pixelmap* pPixelmap) {
-
     (void)pStop_time;
     (void)pPixelmap;
     BrMatrix34Copy(&gOily_spills[pIndex].actor->t.t.mat, pMat);
@@ -618,7 +1399,8 @@ void C2_HOOK_FASTCALL ReceivedOilSpill(tNet_message_chunk* pContents) {
 }
 
 // FUNCTION: CARMA2_HW 0x004a7940
-void C2_HOOK_FASTCALL RemoveCarsOilSlicks(tCar_spec* pCar) {
+void C2_NAKED C2_HOOK_FASTCALL RemoveCarsOilSlicks(tCar_spec* pCar) {
+#ifndef CARPOCALYPSE2_MATCHING
     int i;
 
     for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gOily_spills); i++) {
@@ -627,4 +1409,22 @@ void C2_HOOK_FASTCALL RemoveCarsOilSlicks(tCar_spec* pCar) {
             gOily_spills[i].car_actor = NULL;
         }
     }
+#else
+    __asm {
+            mov eax, offset gOily_spills+0x4
+            xor edx, edx
+    L004a7947:
+            cmp dword ptr [eax], edx
+            je L004a7955
+            cmp dword ptr [eax + 8], ecx
+            jne L004a7955
+            mov dword ptr [eax + 8], edx
+            mov dword ptr [eax], edx
+    L004a7955:
+            add eax, 0x54
+            cmp eax, offset gBig_bang
+            jl L004a7947
+            ret
+    }
+#endif
 }

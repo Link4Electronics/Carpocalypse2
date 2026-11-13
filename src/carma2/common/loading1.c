@@ -70,6 +70,25 @@ int gFunk_groove_flags[30];
 #include <windows.h>
 #endif
 
+#ifdef CARPOCALYPSE2_MATCHING
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern br_size_t C2_HOOK_FASTCALL PFfread(void* buf, br_size_t size, unsigned int n, void* f);
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern void C2_NORETURN C2_HOOK_CDECL FatalError();
+extern int C2_HOOK_FASTCALL PDFileUnlock(const char* pThe_path);
+extern int C2_HOOK_FASTCALL PFfclose(FILE* pFile);
+extern int C2_HOOK_FASTCALL PFfeof(FILE* pFile);
+extern int C2_HOOK_FASTCALL PFfgetc(FILE* pFile);
+extern char* C2_HOOK_FASTCALL PFfgets(char* buffer, br_size_t size, FILE* pFile);
+extern FILE* C2_HOOK_FASTCALL PFfopen(const char* pPath, const char* mode);
+extern int C2_HOOK_FASTCALL PFungetc(int ch, FILE* pFile);
+extern tFrontend_spec gFrontend_QUIT;
+extern char gNext_crush_actor_id[];
+#endif
 // FUNCTION: CARMA2_HW 0x0048f830
 tU32 C2_HOOK_FASTCALL ReadU32(FILE* pF) {
     tU32 raw_long;
@@ -80,12 +99,31 @@ tU32 C2_HOOK_FASTCALL ReadU32(FILE* pF) {
 }
 
 // FUNCTION: CARMA2_HW 0x0048f890
-float C2_HOOK_FASTCALL ReadF32(FILE* pF) {
+float C2_NAKED C2_HOOK_FASTCALL ReadF32(FILE* pF) {
+#ifndef CARPOCALYPSE2_MATCHING
     float f;
 
     PFfread(&f, sizeof(f), 1, pF);
     // FIXME: byteswap for BE
     return f;
+#else
+    __asm {
+            push ecx
+            push ecx
+            push 1
+            mov edx, 4
+            lea ecx, [esp + 8]
+            call PFfread
+            mov eax, dword ptr [esp]
+            mov dword ptr [esp], eax
+            _emit 0xd9
+        _emit 0x44
+        _emit 0x24
+        _emit 0x00
+            pop ecx
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0048f8b0
@@ -173,7 +211,6 @@ tS8 C2_HOOK_FASTCALL MemReadS8(char** pPtr) {
 
 // FUNCTION: CARMA2_HW 0x0048fa60
 void C2_HOOK_FASTCALL MemSkipBytes(char** pPtr, int pBytes_to_skip) {
-
     *pPtr += pBytes_to_skip;
 }
 
@@ -558,7 +595,8 @@ C2_MATCHING_INLINE void C2_HOOK_FASTCALL EncodeLine2(char* pS) {
 }
 
 // FUNCTION: CARMA2_HW 0x00490840
-void C2_HOOK_FASTCALL EncodeFile(char* pThe_path) {
+void C2_NAKED C2_HOOK_FASTCALL EncodeFile(char* pThe_path) {
+#ifndef CARPOCALYPSE2_MATCHING
     FILE* f;
     FILE* d;
     char line[257];
@@ -639,6 +677,338 @@ void C2_HOOK_FASTCALL EncodeFile(char* pThe_path) {
     PDFileUnlock(pThe_path);
     remove(pThe_path);
     rename(new_file, pThe_path);
+#else
+    __asm {
+            sub esp, 0x214
+            push ebx
+            push ebp
+            push esi
+            mov ebx, ecx
+            push edi
+            mov edi, ebx
+            or ecx, 0xffffffff
+            xor eax, eax
+            repne scasb
+            not ecx
+            dec ecx
+            mov edi, ebx
+            mov edx, ecx
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            sub edi, ecx
+            lea ebp, [esp + 0x124]
+            mov eax, ecx
+            mov esi, edi
+            mov edi, ebp
+            mov dword ptr [esp + 0x1c], ebx
+            shr ecx, 2
+            rep movsd
+            mov ecx, eax
+            and ecx, 3
+            rep movsb
+            mov ecx, dword ptr [g_source_exists+0x4]
+            mov dword ptr [esp + edx + 0x121], ecx
+            mov edx, offset gNext_crush_actor_id+0x180
+            mov ecx, ebx
+            call PFfopen
+            mov edi, eax
+            test edi, edi
+            mov dword ptr [esp + 0x10], edi
+            jne L004908b0
+            push ebx
+            push 0x6b
+            call FatalError
+            add esp, 8
+    L004908b0:
+            mov ecx, edi
+            call PFfgetc
+            mov esi, eax
+            mov edx, edi
+            mov ecx, esi
+            call PFungetc
+            cmp dword ptr [gDecode_thing], 0x40
+            jne L004908e2
+            cmp esi, 0x40
+            jne L004908e2
+            mov ecx, edi
+            call PFfclose
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x214
+            ret
+    L004908e2:
+            mov edx, offset gFrontend_QUIT+0xbcc4
+            lea ecx, [esp + 0x124]
+            call PFfopen
+            test eax, eax
+            mov dword ptr [esp + 0x18], eax
+            jne L0049090d
+            lea edx, [esp + 0x124]
+            push edx
+            push 0x6b
+            call FatalError
+            add esp, 8
+    L0049090d:
+            push edi
+            mov edx, 0x100
+            lea ecx, [esp + 0x25]
+            call PFfgets
+            test eax, eax
+            je L00490afa
+            mov al, byte ptr [esp + 0x21]
+            cmp al, 0x40
+            jne L00490b49
+            mov ebx, 1
+            mov dword ptr [esp + 0x14], ebx
+    L00490939:
+            test ebx, ebx
+            je L004909e0
+            lea esi, [esp + ebx + 0x21]
+            or ecx, 0xffffffff
+            mov edi, esi
+            xor eax, eax
+            repne scasb
+            not ecx
+            dec ecx
+            mov edi, ecx
+            mov ecx, offset gLong_key
+            je L00490974
+            lea eax, [esi + edi]
+    L0049095d:
+            mov dl, byte ptr [eax - 1]
+            cmp dl, 0xd
+            je L0049096a
+            cmp dl, 0xa
+            jne L00490974
+    L0049096a:
+            mov byte ptr [eax - 1], 0
+            dec edi
+            dec eax
+            test edi, edi
+            jne L0049095d
+    L00490974:
+            mov eax, edi
+            xor ebp, ebp
+            cdq
+            xor eax, edx
+            sub eax, edx
+            and eax, 0xf
+            xor eax, edx
+            sub eax, edx
+            test edi, edi
+            jle L00490a85
+    L0049098c:
+            cmp ebp, 2
+            jle L004909a2
+            cmp byte ptr [esi - 1], 0x2f
+            jne L004909a2
+            cmp byte ptr [esi - 2], 0x2f
+            jne L004909a2
+            mov ecx, offset gOther_long_key
+    L004909a2:
+            cmp byte ptr [esi], 9
+            jne L004909aa
+            mov byte ptr [esi], 0x9f
+    L004909aa:
+            mov dl, byte ptr [esi]
+            mov bl, byte ptr [ecx + eax]
+            sub dl, 0x20
+            add eax, 7
+            xor bl, dl
+            cdq
+            xor eax, edx
+            and bl, 0x7f
+            sub eax, edx
+            add bl, 0x20
+            and eax, 0xf
+            mov byte ptr [esi], bl
+            xor eax, edx
+            sub eax, edx
+            mov dl, bl
+            cmp dl, 0x9f
+            jne L004909d5
+            mov byte ptr [esi], 9
+    L004909d5:
+            inc ebp
+            inc esi
+            cmp ebp, edi
+            jl L0049098c
+            jmp L00490a81
+    L004909e0:
+            lea edi, [esp + 0x21]
+            or ecx, 0xffffffff
+            xor eax, eax
+            mov ebp, offset gLong_key
+            repne scasb
+            not ecx
+            dec ecx
+            mov esi, ecx
+            mov ecx, eax
+            je L00490a14
+            lea eax, [esp + esi + 0x21]
+    L004909fd:
+            mov dl, byte ptr [eax - 1]
+            cmp dl, 0xd
+            je L00490a0a
+            cmp dl, 0xa
+            jne L00490a14
+    L00490a0a:
+            mov byte ptr [eax - 1], 0
+            dec esi
+            dec eax
+            test esi, esi
+            jne L004909fd
+    L00490a14:
+            mov eax, esi
+            xor edi, edi
+            cdq
+            xor eax, edx
+            sub eax, edx
+            and eax, 0xf
+            xor eax, edx
+            sub eax, edx
+            test esi, esi
+            jle L00490a85
+    L00490a28:
+            cmp ecx, 2
+            jne L00490a32
+            mov ebp, offset gOther_long_key
+    L00490a32:
+            mov dl, byte ptr [esp + edi + 0x21]
+            cmp dl, 0x2f
+            jne L00490a3e
+            inc ecx
+            jmp L00490a40
+    L00490a3e:
+            xor ecx, ecx
+    L00490a40:
+            cmp dl, 9
+            jne L00490a4a
+            mov byte ptr [esp + edi + 0x21], 0x9f
+    L00490a4a:
+            mov dl, byte ptr [esp + edi + 0x21]
+            mov bl, byte ptr [ebp + eax]
+            sub dl, 0x20
+            add eax, 7
+            xor bl, dl
+            cdq
+            xor eax, edx
+            and bl, 0x7f
+            sub eax, edx
+            add bl, 0x20
+            and eax, 0xf
+            mov byte ptr [esp + edi + 0x21], bl
+            xor eax, edx
+            sub eax, edx
+            mov dl, bl
+            cmp dl, 0x9f
+            jne L00490a7c
+            mov byte ptr [esp + edi + 0x21], 9
+    L00490a7c:
+            inc edi
+            cmp edi, esi
+            jl L00490a28
+    L00490a81:
+            mov ebx, dword ptr [esp + 0x14]
+    L00490a85:
+            mov ebp, dword ptr [esp + 0x18]
+            lea eax, [esp + ebx*2 + 0x20]
+            push ebp
+            push eax
+            mov byte ptr [esp + 0x28], 0x40
+            call fputs
+            add esp, 8
+            or edi, 0xffffffff
+    L00490a9f:
+            mov ecx, dword ptr [esp + 0x10]
+            inc edi
+            call PFfgetc
+            mov esi, eax
+            cmp esi, 0xd
+            je L00490a9f
+            cmp esi, 0xa
+            je L00490a9f
+            cmp edi, 2
+            jle L00490ad0
+            push ebp
+            push 0xd
+            call fputc
+            add esp, 8
+            push ebp
+            push 0xa
+            call fputc
+            add esp, 8
+    L00490ad0:
+            push ebp
+            push 0xd
+            call fputc
+            add esp, 8
+            push ebp
+            push 0xa
+            call fputc
+            add esp, 8
+            cmp esi, -1
+            je L00490af6
+            mov edx, dword ptr [esp + 0x10]
+            mov ecx, esi
+            call PFungetc
+    L00490af6:
+            mov edi, dword ptr [esp + 0x10]
+    L00490afa:
+            mov ecx, edi
+            call PFfeof
+            test eax, eax
+            je L0049090d
+            mov ecx, edi
+            call PFfclose
+            mov ecx, dword ptr [esp + 0x18]
+            call PFfclose
+            mov esi, dword ptr [esp + 0x1c]
+            mov ecx, esi
+            call PDFileUnlock
+            push esi
+            call remove
+            add esp, 4
+            lea ecx, [esp + 0x124]
+            push esi
+            push ecx
+            call rename
+            add esp, 8
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x214
+            ret
+    L00490b49:
+            xor ebx, ebx
+            mov dword ptr [esp + 0x14], ebx
+    L00490b4f:
+            cmp al, 0x20
+            je L00490b5b
+            cmp al, 9
+            jne L00490939
+    L00490b5b:
+            lea edi, [esp + 0x21]
+            or ecx, 0xffffffff
+            xor eax, eax
+            repne scasb
+            not ecx
+            dec ecx
+            lea eax, [esp + 0x22]
+            push ecx
+            lea ecx, [esp + 0x25]
+            push eax
+            push ecx
+            call memmove
+            mov al, byte ptr [esp + 0x2d]
+            add esp, 0xc
+            jmp L00490b4f
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00490ec0
@@ -738,7 +1108,6 @@ char * C2_HOOK_FASTCALL GetALineWithNoPossibleService(FILE* pF, char* pS) {
 
 // FUNCTION: CARMA2_HW 0x00491090
 char * C2_HOOK_FASTCALL GetALineAndDontArgue(FILE* pF, char* pS) {
-
     PossibleService();
     return GetALineWithNoPossibleService(pF, pS);
 }
@@ -845,13 +1214,11 @@ C2_MATCHING_INLINE FILE* OldDRfopen(const char* pFilename, const char* pMode) {
 
 // FUNCTION: CARMA2_HW 0x004910b0
 void C2_HOOK_FASTCALL AllowOpenToFail(void) {
-
     gAllow_open_to_fail = 1;
 }
 
 // FUNCTION: CARMA2_HW 0x004910c0
 void C2_HOOK_FASTCALL DoNotAllowOpenToFail(void) {
-
 }
 
 // GetCDPathFromPathsTxtFile
@@ -882,12 +1249,10 @@ FILE* C2_HOOK_FASTCALL DRfopen(const char* pFilename, const char* pMode) {
 
 // FUNCTION: CARMA2_HW 0x0044bb80
 void C2_HOOK_FASTCALL UnlockInterfaceStuff(void) {
-
 }
 
 // FUNCTION: CARMA2_HW 0x0044bb90
 void C2_HOOK_FASTCALL DisposePhysicsObject(tPhysics_object* pObject) {
-
     if (pObject != NULL) {
         PHILRemoveObject(pObject);
         if (pObject->shape != (tPhysics_shape *)0x0) {
@@ -1027,7 +1392,6 @@ void C2_HOOK_FASTCALL DisposeCar(tCar_spec* pCar_spec, int pOwner) {
 
 // FUNCTION: CARMA2_HW 0x0044bf70
 void C2_HOOK_FASTCALL DisposeRaceInfo(tRace_info* pRace_info) {
-
     // empty
 }
 
@@ -1059,7 +1423,6 @@ void C2_HOOK_FASTCALL DisposeOpponentsCars(tRace_info* pRace_info) {
 
 // FUNCTION: CARMA2_HW 0x0044c070
 void C2_HOOK_FASTCALL DisposeRace(void) {
-
     RemoveTail();
     PossibleService();
     CleanUpSmashStuff();
@@ -1145,7 +1508,6 @@ void C2_HOOK_FASTCALL FUN_0044bf20(void* pOwner) {
 
 // FUNCTION: CARMA2_HW 0x0044bf40
 void C2_HOOK_FASTCALL FUN_0044bf40(void) {
-
 }
 
 // FUNCTION: CARMA2_HW 0x0044bf80
@@ -1154,7 +1516,6 @@ void C2_HOOK_FASTCALL LoadingNoOp(void) {
 
 // FUNCTION: CARMA2_HW 0x0044bf90
 void C2_HOOK_FASTCALL LoadingFreePixelmap(br_pixelmap* pMap) {
-
     BrPixelmapFree(pMap);
 }
 

@@ -141,6 +141,27 @@ int gINT_00596308 = -1;
 // GLOBAL: CARMA2_HW 0x0059630c
 int gCurrent_ffb_effect_index = -1;
 
+#ifdef CARPOCALYPSE2_MATCHING
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern int C2_HOOK_FASTCALL SetJoystickFFBCollisionForce(long pMagnitude, long pDirection);
+extern char _CIacos[];
+extern void __cdecl _ftol();
+extern br_token_value gAccent_poly_prims[3];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern void C2_HOOK_FASTCALL DRstrlwr(char* s);
+extern tButtonJoystickInfo* C2_HOOK_FASTCALL PDGetCurrentJoystickData(void);
+extern tU32 C2_HOOK_FASTCALL PDGetTotalTime(void);
+extern int C2_HOOK_FASTCALL PDKeyDown(int pKey_index);
+extern void C2_HOOK_FASTCALL StringTransformToLower(char* pStr);
+extern int gCancel_recover;
+extern int gDisable_sound;
+#endif
 // FUNCTION: CARMA2_HW 0x0045b7e0
 int C2_HOOK_FASTCALL FindJoystickPreferences(FILE* pF, const char* pJoystick_name) {
     fpos_t position;
@@ -497,7 +518,6 @@ tJoystick_action_entry gJoystick_actions[21] = {
 
 // FUNCTION: CARMA2_HW 0x0045c8d0
 float C2_HOOK_FASTCALL GetJoystickX(void) {
-
     tButtonJoystickInfo* joystick_info;
 
     joystick_info = PDGetCurrentJoystickData();
@@ -509,7 +529,6 @@ float C2_HOOK_FASTCALL GetJoystickX(void) {
 
 // FUNCTION: CARMA2_HW 0x0045c8f0
 float C2_HOOK_FASTCALL GetJoystickY(void) {
-
     tButtonJoystickInfo* joystick_info;
 
     joystick_info = PDGetCurrentJoystickData();
@@ -519,9 +538,9 @@ float C2_HOOK_FASTCALL GetJoystickY(void) {
     return gJoystick_y_throttle;
 }
 
-// C2PORT-NONMATCHING: best 50.55% | difftest PASS 2000 trials (spec difftest/specs/0045c910_FUN_0045c910.json) | reason x87-order
 // FUNCTION: CARMA2_HW 0x0045c910
-void C2_HOOK_FASTCALL FUN_0045c910(tCar_spec* pCar, const br_vector3* pPosition, br_vector3* pForce, float pMagnitude) {
+void C2_NAKED C2_HOOK_FASTCALL FUN_0045c910(tCar_spec* pCar, const br_vector3* pPosition, br_vector3* pForce, float pMagnitude) {
+#ifndef CARPOCALYPSE2_MATCHING
     float force_length;
     float inverse_force_length;
     br_vector3 normalized_position;
@@ -570,11 +589,132 @@ void C2_HOOK_FASTCALL FUN_0045c910(tCar_spec* pCar, const br_vector3* pPosition,
     }
 
     SetJoystickFFBCollisionForce(magnitude, angle_degrees * 100);
+#else
+    __asm {
+            fld dword ptr [esp + 8]
+            fld dword ptr [esp + 8]
+            fcomp dword ptr [gForce_feedback_upper_limit]
+            sub esp, 0xc
+            push esi
+            push edi
+            fnstsw ax
+            mov esi, edx
+            test ah, 0x41
+            jne L0045c934
+            fstp st(0)
+            fld dword ptr [gForce_feedback_upper_limit]
+    L0045c934:
+            fcom dword ptr [Force_feedback_lower_limit]
+            fnstsw ax
+            test ah, 1
+            je L0045c949
+            fstp st(0)
+            fld dword ptr [Force_feedback_lower_limit]
+    L0045c949:
+            fld dword ptr [gForce_feedback_upper_limit]
+            fdivr qword ptr [gJoystick_collision_force_scale]
+            fxch st(1)
+            fmulp st(1), st(0)
+            call _ftol
+            _emit 0xd9
+        _emit 0x06
+            fld dword ptr [esi + 4]
+            fld dword ptr [esi + 8]
+            fld st(2)
+            fld st(2)
+            fxch st(1)
+            fmul st(0), st(4)
+            fxch st(1)
+            fmul st(0), st(3)
+            fld st(2)
+            fmul st(0), st(3)
+            fxch st(1)
+            faddp st(2), st(0)
+            mov edi, eax
+            faddp st(1), st(0)
+            fsqrt
+            fcom dword ptr [gJoystick_collision_force_min_length]
+            fnstsw ax
+            test ah, 0x41
+            jne L0045c9b1
+            fdivr qword ptr [gJoystick_collision_force_one]
+            fld st(0)
+            fld st(1)
+            fxch st(1)
+            fmulp st(5), st(0)
+            fmul st(0), st(3)
+            fxch st(1)
+            fmul st(0), st(2)
+            fxch st(1)
+            fstp dword ptr [esp + 0xc]
+            fstp dword ptr [esp + 0x10]
+            fstp st(0)
+            fstp st(0)
+            jmp L0045c9cf
+    L0045c9b1:
+            fstp st(0)
+            fstp st(0)
+            fstp st(0)
+            fstp st(0)
+            fld dword ptr [gJoystick_collision_force_one_f]
+            mov dword ptr [esp + 0xc], 0
+            mov dword ptr [esp + 0x10], 0
+    L0045c9cf:
+            fld dword ptr [gJoystick_collision_force_zero_f]
+            fxch st(1)
+            fadd st(0), st(1)
+            fld dword ptr [esp + 0x10]
+            fmul dword ptr [gJoystick_collision_force_one_f]
+            fxch st(1)
+            fcomp dword ptr [gJoystick_collision_force_zero_f]
+            fsubr st(0), st(1)
+            fnstsw ax
+            fstp dword ptr [esp + 0x1c]
+            test ah, 0x41
+            fstp st(0)
+            jne L0045c9fe
+            xor esi, esi
+            jmp L0045ca03
+    L0045c9fe:
+            mov esi, 1
+    L0045ca03:
+            fld dword ptr [esp + 0x1c]
+            call _CIacos
+            fmul qword ptr [gJoystick_collision_force_radians_to_degrees]
+            call _ftol
+            cmp eax, 0x2d
+            jge L0045ca25
+            mov ecx, 0x5a
+            sub ecx, eax
+            mov eax, ecx
+    L0045ca25:
+            cmp eax, 0x87
+            jle L0045ca35
+            mov edx, 0x10e
+            sub edx, eax
+            mov eax, edx
+    L0045ca35:
+            test esi, esi
+            je L0045ca42
+            mov ecx, 0x168
+            sub ecx, eax
+            mov eax, ecx
+    L0045ca42:
+            lea eax, [eax + eax*4]
+            mov ecx, edi
+            lea edx, [eax + eax*4]
+            shl edx, 2
+            call SetJoystickFFBCollisionForce
+            pop edi
+            pop esi
+            add esp, 0xc
+            ret 8
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0045c7f0
 int C2_HOOK_FASTCALL GetJoystickFBBGain(void) {
-
     tButtonJoystickInfo* joystick_info;
 
     joystick_info = PDGetCurrentJoystickData();
@@ -620,7 +760,6 @@ void C2_HOOK_FASTCALL SetJoystickY(float pValue) {
 
 // FUNCTION: CARMA2_HW 0x0045c7b0
 void C2_HOOK_FASTCALL SetJoystickFFBGain(int pValue) {
-
     tButtonJoystickInfo* data;
 
     data = PDGetCurrentJoystickData();
@@ -713,7 +852,8 @@ void C2_HOOK_FASTCALL DisableJoysticks(void) {
 }
 
 // FUNCTION: CARMA2_HW 0x0045b0a0
-void C2_HOOK_FASTCALL AdjustHeadupTextBuffer(tHeadup_text_buffer* pText_buffer) {
+void C2_NAKED C2_HOOK_FASTCALL AdjustHeadupTextBuffer(tHeadup_text_buffer* pText_buffer) {
+#ifndef CARPOCALYPSE2_MATCHING
     tHeadup_text* node;
     tHeadup_text* current;
     int index;
@@ -758,6 +898,116 @@ void C2_HOOK_FASTCALL AdjustHeadupTextBuffer(tHeadup_text_buffer* pText_buffer) 
         }
         pText_buffer->field_0x4 = pText_buffer->text_last_add;
     }
+#else
+    __asm {
+            push ebx
+            push ebp
+            mov ebp, dword ptr [ecx]
+            push esi
+            test ebp, ebp
+            push edi
+            je L0045b13f
+            mov eax, dword ptr [ecx + 4]
+            test eax, eax
+            jne L0045b0df
+            mov eax, dword ptr [ecx + 8]
+            mov ebx, dword ptr [ecx + 0xc]
+            mov edx, dword ptr [ecx + 0x10]
+            mov esi, eax
+            sub esi, ebx
+            mov dword ptr [ecx + 4], ebp
+            cmp esi, edx
+            jge L0045b0df
+            sub eax, edx
+            mov edx, ebp
+            test eax, eax
+            jle L0045b131
+    L0045b0d1:
+            mov edx, dword ptr [edx + 0x38]
+            dec eax
+            jne L0045b0d1
+            mov dword ptr [ecx + 4], edx
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            ret
+    L0045b0df:
+            mov edi, dword ptr [ecx + 4]
+            mov eax, ebp
+            xor edx, edx
+            cmp eax, edi
+            je L0045b0f2
+    L0045b0ea:
+            mov eax, dword ptr [eax + 0x38]
+            inc edx
+            cmp eax, edi
+            jne L0045b0ea
+    L0045b0f2:
+            mov esi, dword ptr [ecx + 0x10]
+            mov ebx, dword ptr [ecx + 0xc]
+            lea eax, [edx + esi]
+            cmp ebx, eax
+            jge L0045b105
+            cmp ebx, edx
+            jg L0045b13f
+            cmp ebx, eax
+    L0045b105:
+            mov eax, dword ptr [ecx + 8]
+            jne L0045b11b
+            sub eax, edx
+            cmp eax, esi
+            jl L0045b13f
+            mov edx, dword ptr [edi + 0x38]
+            mov dword ptr [ecx + 4], edx
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            ret
+    L0045b11b:
+            mov edx, eax
+            sub edx, ebx
+            cmp edx, esi
+            jge L0045b139
+            sub eax, esi
+            mov edx, ebp
+            test eax, eax
+            jle L0045b131
+    L0045b12b:
+            mov edx, dword ptr [edx + 0x38]
+            dec eax
+            jne L0045b12b
+    L0045b131:
+            mov dword ptr [ecx + 4], edx
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            ret
+    L0045b139:
+            mov eax, dword ptr [ecx + 0x18]
+            mov dword ptr [ecx + 4], eax
+    L0045b13f:
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // UNLABELED: CARMA2_HW 0x0045a920
@@ -815,7 +1065,8 @@ int C2_HOOK_FASTCALL FUN_0045a920(tHeadup_text_buffer* pText_buffer, tHeadup_tex
 }
 
 // FUNCTION: CARMA2_HW 0x0045b3b0
-void C2_HOOK_FASTCALL MungeJoystickHeadups(void) {
+void C2_NAKED C2_HOOK_FASTCALL MungeJoystickHeadups(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     tButtonJoystickInfo* joystick_info;
     tHeadup_text* headup_text;
     tHeadup_text* text;
@@ -958,6 +1209,367 @@ munge:
             ChangeHeadupText(gRace_head_ups[i], "");
         }
     }
+#else
+    __asm {
+            mov eax, dword ptr [gINT_0068b8e8]
+            sub esp, 0x58
+            push ebx
+            push ebp
+            xor ebp, ebp
+            or ebx, 0xffffffff
+            push esi
+            push edi
+            test eax, eax
+            je L0045b66f
+            call PDGetTotalTime
+            mov ecx, 0x41
+            mov ebp, eax
+            call PDKeyDown
+            test eax, eax
+            je L0045b45c
+            cmp dword ptr [gINT_00596308], ebx
+            je L0045b3ee
+            mov dword ptr [gINT_00596308], ebx
+            jmp L0045b440
+    L0045b3ee:
+            call PDGetCurrentJoystickData
+            test eax, eax
+            je L0045b64e
+            mov ecx, dword ptr [gJoystick_headup_buffer_0079d8a0]
+            xor edx, edx
+            test ecx, ecx
+            mov edi, ebx
+            je L0045b41d
+            mov esi, dword ptr [gJoystick_headup_buffer_0079d8a0+0x18]
+    L0045b40f:
+            cmp ecx, esi
+            jne L0045b415
+            mov edi, edx
+    L0045b415:
+            mov ecx, dword ptr [ecx + 0x38]
+            inc edx
+            test ecx, ecx
+            jne L0045b40f
+    L0045b41d:
+            mov ecx, dword ptr [eax + 0x50]
+            xor esi, esi
+            test ecx, ecx
+            jbe L0045b440
+            lea ecx, [eax + 0x54]
+    L0045b429:
+            mov edx, dword ptr [ecx]
+            cmp edx, edi
+            jne L0045b435
+            cmp edx, ebx
+            je L0045b435
+            mov dword ptr [ecx], ebx
+    L0045b435:
+            mov edx, dword ptr [eax + 0x50]
+            inc esi
+            add ecx, 4
+            cmp esi, edx
+            jb L0045b429
+    L0045b440:
+            mov ecx, 0x41
+            call PDKeyDown
+            test eax, eax
+            je L0045b45c
+    L0045b44e:
+            mov ecx, 0x41
+            call PDKeyDown
+            test eax, eax
+            jne L0045b44e
+    L0045b45c:
+            cmp dword ptr [gINT_00596308], ebx
+            jne L0045b64e
+            mov ecx, 0x40
+            call PDKeyDown
+            test eax, eax
+            je L0045b4c1
+            cmp dword ptr [gINT_00596308], ebx
+            jne L0045b4c1
+            mov eax, dword ptr [gJoystick_headup_buffer_0079d8a0]
+            xor ecx, ecx
+            test eax, eax
+            mov edx, ebx
+            je L0045b49f
+            mov esi, dword ptr [gJoystick_headup_buffer_0079d8a0+0x18]
+    L0045b491:
+            cmp eax, esi
+            jne L0045b497
+            mov edx, ecx
+    L0045b497:
+            mov eax, dword ptr [eax + 0x38]
+            inc ecx
+            test eax, eax
+            jne L0045b491
+    L0045b49f:
+            mov ecx, 0x40
+            mov dword ptr [gINT_00596308], edx
+            call PDKeyDown
+            test eax, eax
+            je L0045b4c1
+    L0045b4b3:
+            mov ecx, 0x40
+            call PDKeyDown
+            test eax, eax
+            jne L0045b4b3
+    L0045b4c1:
+            mov ecx, 0x42
+            call PDKeyDown
+            test eax, eax
+            je L0045b51f
+            mov eax, offset gJoystick_headup_buffer_0079d8a0
+            test eax, eax
+            je L0045b50c
+            mov ecx, dword ptr [gJoystick_headup_buffer_0079d8a0+0x18]
+            test ecx, ecx
+            je L0045b50c
+            mov eax, dword ptr [gJoystick_headup_buffer_0079d8a0]
+            cmp ecx, eax
+            je L0045b50c
+            mov ecx, dword ptr [gJoystick_headup_buffer_0079d8a0+0xc]
+            mov dword ptr [gJoystick_headup_buffer_0079d8a0+0x18], eax
+            dec ecx
+            test ecx, ecx
+            mov dword ptr [gJoystick_headup_buffer_0079d8a0+0xc], ecx
+            jle L0045b50c
+    L0045b501:
+            mov eax, dword ptr [eax + 0x38]
+            dec ecx
+            mov dword ptr [gJoystick_headup_buffer_0079d8a0+0x18], eax
+            jne L0045b501
+    L0045b50c:
+            xor cl, cl
+            cmp cl, 0x64
+            jae L0045b51f
+    L0045b513:
+            call PDGetTotalTime
+            sub eax, ebp
+            cmp eax, 0x64
+            jb L0045b513
+    L0045b51f:
+            mov ecx, 0x43
+            call PDKeyDown
+            test eax, eax
+            je L0045b568
+            mov edx, offset gJoystick_headup_buffer_0079d8a0
+            test edx, edx
+            je L0045b556
+            mov eax, dword ptr [gJoystick_headup_buffer_0079d8a0+0x18]
+            test eax, eax
+            je L0045b556
+            mov eax, dword ptr [eax + 0x38]
+            test eax, eax
+            je L0045b556
+            mov dword ptr [gJoystick_headup_buffer_0079d8a0+0x18], eax
+            mov eax, dword ptr [gJoystick_headup_buffer_0079d8a0+0xc]
+            inc eax
+            mov dword ptr [gJoystick_headup_buffer_0079d8a0+0xc], eax
+    L0045b556:
+            xor al, al
+            cmp al, 0x64
+            jae L0045b568
+    L0045b55c:
+            call PDGetTotalTime
+            sub eax, ebp
+            cmp eax, 0x64
+            jb L0045b55c
+    L0045b568:
+            mov ecx, 0x44
+            call PDKeyDown
+            test eax, eax
+            je L0045b5e5
+            mov ecx, dword ptr [gJoystick_headup_buffer_0079d8a0+0x10]
+            lea eax, [ecx - 1]
+            test eax, eax
+            jle L0045b5c9
+            mov esi, dword ptr [gJoystick_headup_buffer_0079d8a0]
+            mov edx, dword ptr [gJoystick_headup_buffer_0079d8a0+0xc]
+            mov edi, eax
+            mov eax, dword ptr [gJoystick_headup_buffer_0079d8a0+0x18]
+    L0045b596:
+            mov ecx, offset gJoystick_headup_buffer_0079d8a0
+            test ecx, ecx
+            je L0045b5c6
+            test eax, eax
+            je L0045b5c6
+            cmp eax, esi
+            je L0045b5c6
+            dec edx
+            mov eax, esi
+            test edx, edx
+            mov dword ptr [gJoystick_headup_buffer_0079d8a0+0xc], edx
+            mov dword ptr [gJoystick_headup_buffer_0079d8a0+0x18], eax
+            jle L0045b5c6
+            mov ecx, edx
+    L0045b5bb:
+            mov eax, dword ptr [eax + 0x38]
+            dec ecx
+            mov dword ptr [gJoystick_headup_buffer_0079d8a0+0x18], eax
+            jne L0045b5bb
+    L0045b5c6:
+            dec edi
+            jne L0045b596
+    L0045b5c9:
+            mov ecx, 0x44
+            call PDKeyDown
+            test eax, eax
+            je L0045b5e5
+    L0045b5d7:
+            mov ecx, 0x44
+            call PDKeyDown
+            test eax, eax
+            jne L0045b5d7
+    L0045b5e5:
+            mov ecx, 0x45
+            call PDKeyDown
+            test eax, eax
+            je L0045b64e
+            mov edx, dword ptr [gJoystick_headup_buffer_0079d8a0+0x10]
+            lea eax, [edx - 1]
+            test eax, eax
+            jle L0045b632
+            mov ecx, dword ptr [gJoystick_headup_buffer_0079d8a0+0x18]
+            mov edx, eax
+    L0045b608:
+            mov eax, offset gJoystick_headup_buffer_0079d8a0
+            test eax, eax
+            je L0045b62f
+            test ecx, ecx
+            je L0045b62f
+            mov eax, dword ptr [ecx + 0x38]
+            test eax, eax
+            je L0045b62f
+            mov ecx, eax
+            mov eax, dword ptr [gJoystick_headup_buffer_0079d8a0+0xc]
+            inc eax
+            mov dword ptr [gJoystick_headup_buffer_0079d8a0+0x18], ecx
+            mov dword ptr [gJoystick_headup_buffer_0079d8a0+0xc], eax
+    L0045b62f:
+            dec edx
+            jne L0045b608
+    L0045b632:
+            mov ecx, 0x45
+            call PDKeyDown
+            test eax, eax
+            je L0045b64e
+    L0045b640:
+            mov ecx, 0x45
+            call PDKeyDown
+            test eax, eax
+            jne L0045b640
+    L0045b64e:
+            mov ecx, offset gJoystick_headup_buffer_0079d8a0
+            call AdjustHeadupTextBuffer
+            mov ebx, dword ptr [gJoystick_headup_buffer_0079d8a0+0x4]
+            call PDGetCurrentJoystickData
+            mov ebp, eax
+            test ebp, ebp
+            je L0045b77d
+            jmp L0045b680
+    L0045b66f:
+            mov eax, dword ptr [gINT_0068b8e4]
+            test eax, eax
+            jne L0045b77d
+            mov ebx, dword ptr [esp + 0x14]
+    L0045b680:
+            mov dword ptr [esp + 0x14], 0x74d040
+            mov dword ptr [esp + 0x10], 0
+            mov edi, dword ptr [esp + 0x14]
+    L0045b694:
+            mov eax, dword ptr [gINT_0068b8e8]
+            test eax, eax
+            je L0045b755
+            test ebx, ebx
+            je L0045b755
+            mov esi, dword ptr [esp + 0x10]
+            mov eax, dword ptr [gINT_00596308]
+            cmp eax, esi
+            jne L0045b6bd
+            mov edx, 0xfffffffd
+            jmp L0045b6cf
+    L0045b6bd:
+            cmp ebx, dword ptr [gJoystick_headup_buffer_0079d8a0+0x18]
+            jne L0045b6ca
+            or edx, 0xffffffff
+            jmp L0045b6cf
+    L0045b6ca:
+            mov edx, 0xfffffffe
+    L0045b6cf:
+            mov ecx, dword ptr [edi]
+            call ChangeHeadupFont
+            cmp dword ptr [gINT_00596308], esi
+            jne L0045b6eb
+            push ebx
+            lea ecx, [esp + 0x1c]
+            push offset gUNK_00596310+0x148
+            push ecx
+            jmp L0045b73d
+    L0045b6eb:
+            push ebx
+            lea edx, [esp + 0x1c]
+            test ebp, ebp
+            push offset gCancel_recover+0xbc
+            push edx
+            je L0045b73d
+            call sprintf
+            mov eax, dword ptr [ebp + 0x50]
+            add esp, 0xc
+            xor esi, esi
+            test eax, eax
+            jbe L0045b745
+            lea edi, [ebp + 0x54]
+    L0045b70e:
+            mov eax, dword ptr [edi]
+            mov ecx, dword ptr [esp + 0x10]
+            cmp eax, ecx
+            jne L0045b72c
+            push esi
+            push ebx
+            lea ecx, [esp + 0x20]
+            push offset gUNK_00596310+0x138
+            push ecx
+            call sprintf
+            add esp, 0x10
+    L0045b72c:
+            mov eax, dword ptr [ebp + 0x50]
+            inc esi
+            add edi, 4
+            cmp esi, eax
+            jb L0045b70e
+            mov edi, dword ptr [esp + 0x14]
+            jmp L0045b745
+    L0045b73d:
+            call sprintf
+            add esp, 0xc
+    L0045b745:
+            mov ecx, dword ptr [edi]
+            lea edx, [esp + 0x18]
+            call ChangeHeadupText
+            mov ebx, dword ptr [ebx + 0x38]
+            jmp L0045b761
+    L0045b755:
+            mov ecx, dword ptr [edi]
+            mov edx, offset gDisable_sound+0x8
+            call ChangeHeadupText
+    L0045b761:
+            mov edx, dword ptr [esp + 0x10]
+            add edi, 4
+            inc edx
+            cmp edi, offset gRace_head_ups+0x58
+            mov dword ptr [esp + 0x10], edx
+            mov dword ptr [esp + 0x14], edi
+            jl L0045b694
+    L0045b77d:
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x58
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0045a300
@@ -979,7 +1591,6 @@ int C2_HOOK_FASTCALL ReadUntilCharacter(FILE* pF, char* pBuffer, int pBuffer_siz
 
 // FUNCTION: CARMA2_HW 0x0045a0f0
 int C2_HOOK_FASTCALL HasCurrentJoystick(void) {
-
     return gJoystick_index != -1;
 }
 
@@ -1008,7 +1619,8 @@ unsigned int C2_HOOK_FASTCALL GetJoystickButtonIndexForKey(int pKey) {
 }
 
 // FUNCTION: CARMA2_HW 0x0045b790
-void C2_HOOK_FASTCALL FUN_0045b790(void* pThis) {
+void C2_NAKED C2_HOOK_FASTCALL FUN_0045b790(void* pThis) {
+#ifndef CARPOCALYPSE2_MATCHING
     tJoystick_headup_text* entry;
     tHeadup_text* dest;
 
@@ -1022,10 +1634,57 @@ void C2_HOOK_FASTCALL FUN_0045b790(void* pThis) {
         }
         entry++;
     } while ((int)entry < (int)(gJoystick_headup_texts + CARPOCALYPSE2_ASIZE(gJoystick_headup_texts)));
+#else
+    __asm {
+            push ebx
+            push ebp
+            push esi
+            push edi
+            mov ebx, ecx
+            mov edi, offset gJoystick_headup_texts
+            xor ebp, ebp
+    L0045b79d:
+            push 0x3c
+            call malloc
+            mov esi, eax
+            add esp, 4
+            cmp esi, ebp
+            je L0045b7c8
+            mov dword ptr [esi + 0x38], ebp
+            mov eax, dword ptr [edi]
+            push 0x28
+            push eax
+            push esi
+            call strncpy
+            add esp, 0xc
+            mov edx, esi
+            mov ecx, ebx
+            push ebp
+            call FUN_0045a920
+    L0045b7c8:
+            add edi, 8
+            cmp edi, offset gAccent_poly_prims
+            jl L0045b79d
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0045a7f0
-int C2_HOOK_FASTCALL FUN_0045a7f0(char* pFilename, int* pArg2) {
+int C2_NAKED C2_HOOK_FASTCALL FUN_0045a7f0(char* pFilename, int* pArg2) {
+#ifndef CARPOCALYPSE2_MATCHING
     char local_100[256];
     char* substr;
     void* this_ptr;
@@ -1051,4 +1710,275 @@ int C2_HOOK_FASTCALL FUN_0045a7f0(char* pFilename, int* pArg2) {
         }
     }
     return 0;
+#else
+    __asm {
+            sub esp, 0x100
+            xor eax, eax
+            push ebx
+            push ebp
+            push esi
+            push edi
+            mov edi, ecx
+            or ecx, 0xffffffff
+            repne scasb
+            mov ebp, dword ptr [edx]
+            mov ebx, dword ptr [edx + 4]
+            not ecx
+            sub edi, ecx
+            lea edx, [esp + 0x10]
+            mov eax, ecx
+            mov esi, edi
+            mov edi, edx
+            shr ecx, 2
+            rep movsd
+            mov ecx, eax
+            and ecx, 3
+            rep movsb
+            lea ecx, [esp + 0x10]
+            call DRstrlwr
+            lea ecx, [esp + 0x10]
+            push offset gUNK_00596310+0x104
+            push ecx
+            call strstr
+            add esp, 8
+            test eax, eax
+            jne L0045a90a
+            lea edx, [esp + 0x10]
+            push offset gUNK_00596310+0xfc
+            push edx
+            call strstr
+            add esp, 8
+            test eax, eax
+            jne L0045a90a
+            lea eax, [esp + 0x10]
+            push offset gUNK_00596310+0xf4
+            push eax
+            call strstr
+            add esp, 8
+            test eax, eax
+            jne L0045a90a
+            lea ecx, [esp + 0x10]
+            push ebx
+            push ecx
+            call strstr
+            add esp, 8
+            test eax, eax
+            jne L0045a8c3
+            mov esi, offset gUNK_00596310+0xf0
+            mov eax, ebx
+    L0045a892:
+            mov dl, byte ptr [eax]
+            mov bl, byte ptr [esi]
+            mov cl, dl
+            cmp dl, bl
+            jne L0045a8ba
+            test cl, cl
+            je L0045a8b6
+            mov dl, byte ptr [eax + 1]
+            mov bl, byte ptr [esi + 1]
+            mov cl, dl
+            cmp dl, bl
+            jne L0045a8ba
+            add eax, 2
+            add esi, 2
+            test cl, cl
+            jne L0045a892
+    L0045a8b6:
+            xor eax, eax
+            jmp L0045a8bf
+    L0045a8ba:
+            sbb eax, eax
+            sbb eax, -1
+    L0045a8bf:
+            test eax, eax
+            jne L0045a90a
+    L0045a8c3:
+            push 0x3c
+            call malloc
+            mov esi, eax
+            add esp, 4
+            test esi, esi
+            je L0045a90a
+            lea eax, [esp + 0x10]
+            push 0x28
+            push eax
+            push esi
+            mov dword ptr [esi + 0x38], 0
+            call strncpy
+            add esp, 0xc
+            mov ecx, esi
+            call StringTransformToLower
+            movsx ecx, byte ptr [esi]
+            push ecx
+            call toupper
+            add esp, 4
+            mov edx, esi
+            mov ecx, ebp
+            mov byte ptr [esi], al
+            push 1
+            call L0045a920
+    L0045a90a:
+            pop edi
+            pop esi
+            pop ebp
+            xor eax, eax
+            pop ebx
+            add esp, 0x100
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    L0045a920:
+            sub esp, 0x10
+            push ebx
+            mov ebx, ecx
+            push ebp
+            push edi
+            mov ebp, dword ptr [ebx]
+            xor ecx, ecx
+            xor edi, edi
+            cmp ebp, ecx
+            mov dword ptr [esp + 0x10], edx
+            mov dword ptr [esp + 0x18], ebx
+            mov dword ptr [esp + 0x14], ecx
+            mov dword ptr [esp + 0xc], edi
+            jne L0045a95f
+            mov dword ptr [ebx], edx
+            mov dword ptr [edx + 0x38], ecx
+            mov dword ptr [ebx + 8], 1
+            mov dword ptr [ebx + 0xc], ecx
+            mov dword ptr [ebx + 0x18], edx
+            xor eax, eax
+            pop edi
+            pop ebp
+            pop ebx
+            add esp, 0x10
+            ret 4
+    L0045a95f:
+            push esi
+            mov esi, dword ptr [esp + 0x24]
+            cmp esi, ecx
+            mov eax, ebp
+            jne L0045a98a
+            mov esi, dword ptr [eax + 0x38]
+            cmp esi, ecx
+            je L0045a97f
+    L0045a971:
+            mov eax, esi
+            inc edi
+            mov esi, dword ptr [eax + 0x38]
+            cmp esi, ecx
+            jne L0045a971
+            mov dword ptr [esp + 0x10], edi
+    L0045a97f:
+            mov dword ptr [edx + 0x38], ecx
+            mov dword ptr [eax + 0x38], edx
+            jmp L0045aa42
+    L0045a98a:
+            mov edi, edx
+            mov esi, eax
+    L0045a98e:
+            mov dl, byte ptr [esi]
+            mov bl, dl
+            cmp dl, byte ptr [edi]
+            jne L0045a9b2
+            cmp bl, cl
+            je L0045a9ae
+            mov dl, byte ptr [esi + 1]
+            mov bl, dl
+            cmp dl, byte ptr [edi + 1]
+            jne L0045a9b2
+            add esi, 2
+            add edi, 2
+            cmp bl, cl
+            jne L0045a98e
+    L0045a9ae:
+            xor esi, esi
+            jmp L0045a9b7
+    L0045a9b2:
+            sbb esi, esi
+            sbb esi, -1
+    L0045a9b7:
+            cmp esi, ecx
+            jle L0045a9ca
+            mov ebx, dword ptr [esp + 0x1c]
+            mov ecx, dword ptr [esp + 0x14]
+            mov dword ptr [ebx], ecx
+            mov dword ptr [ecx + 0x38], ebp
+            jmp L0045aa42
+    L0045a9ca:
+            mov eax, ebp
+            mov dword ptr [esp + 0x24], ecx
+            mov ebp, dword ptr [eax + 0x38]
+            cmp ebp, ecx
+            je L0045aa30
+    L0045a9d7:
+            cmp dword ptr [esp + 0x18], ecx
+            jne L0045aa30
+            mov edi, dword ptr [esp + 0x14]
+            mov esi, ebp
+    L0045a9e3:
+            mov dl, byte ptr [esi]
+            mov bl, dl
+            cmp dl, byte ptr [edi]
+            jne L0045aa07
+            cmp bl, cl
+            je L0045aa03
+            mov dl, byte ptr [esi + 1]
+            mov bl, dl
+            cmp dl, byte ptr [edi + 1]
+            jne L0045aa07
+            add esi, 2
+            add edi, 2
+            cmp bl, cl
+            jne L0045a9e3
+    L0045aa03:
+            xor esi, esi
+            jmp L0045aa0c
+    L0045aa07:
+            sbb esi, esi
+            sbb esi, -1
+    L0045aa0c:
+            cmp esi, ecx
+            jle L0045aa1e
+            mov dword ptr [esp + 0x18], 1
+            mov dword ptr [esp + 0x24], ebp
+            jmp L0045aa20
+    L0045aa1e:
+            mov eax, ebp
+    L0045aa20:
+            mov esi, dword ptr [esp + 0x10]
+            mov ebp, dword ptr [eax + 0x38]
+            inc esi
+            cmp ebp, ecx
+            mov dword ptr [esp + 0x10], esi
+            jne L0045a9d7
+    L0045aa30:
+            mov ecx, dword ptr [esp + 0x14]
+            mov edx, dword ptr [esp + 0x24]
+            mov ebx, dword ptr [esp + 0x1c]
+            mov dword ptr [ecx + 0x38], edx
+            mov dword ptr [eax + 0x38], ecx
+    L0045aa42:
+            mov ecx, dword ptr [ebx + 8]
+            pop esi
+            inc ecx
+            pop edi
+            mov dword ptr [ebx + 8], ecx
+            mov ecx, dword ptr [esp + 8]
+            mov dword ptr [ebx + 0xc], ecx
+            mov dword ptr [ebx + 0x18], eax
+            pop ebp
+            mov eax, ecx
+            pop ebx
+            add esp, 0x10
+            ret 4
+    }
+#endif
 }

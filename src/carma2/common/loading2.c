@@ -172,6 +172,88 @@ void C2_HOOK_FASTCALL LoadInRegisteeDir(const char *pRoot, const char *pSubDir, 
     LoadInFiles(the_path, "LIGHTS", DRLoadLights);
 }
 
+#ifdef CARPOCALYPSE2_MATCHING
+extern FILE* C2_HOOK_FASTCALL DRfopen(const char* pFilename, const char* pMode);
+extern void C2_NORETURN C2_HOOK_CDECL FatalError();
+extern float C2_HOOK_FASTCALL GetAFloat(FILE* pF);
+extern char * C2_HOOK_FASTCALL GetALineAndDontArgue(FILE* pF, char* pS);
+extern br_scalar C2_HOOK_FASTCALL GetAScalar(FILE* pF);
+extern void C2_HOOK_FASTCALL GetAString(FILE* pF, char* pString);
+extern int C2_HOOK_FASTCALL GetAnInt(FILE* pF);
+extern void C2_HOOK_FASTCALL GetThreeFloats(FILE * pF, float* pF1, float* pF2, float* pF3);
+extern void C2_HOOK_FASTCALL GetThreeInts(FILE* pF, int* pF1, int* pF2, int* pF3);
+extern int C2_HOOK_FASTCALL PFfclose(FILE* pFile);
+extern char* C2_HOOK_FASTCALL PFfgets(char* buffer, br_size_t size, FILE* pFile);
+extern FILE* C2_HOOK_FASTCALL PFfopen(const char* pPath, const char* mode);
+extern void C2_HOOK_FASTCALL ParseSpecialVolume(FILE* pF, tSpecial_volume* pSpec, char* pScreen_name_str, int soundfx);
+extern void C2_HOOK_FASTCALL PathCat(char* pDestn_str, const char* pStr_1, const char* pStr_2);
+extern void C2_HOOK_FASTCALL ReadCrushSettings(FILE* pF);
+extern void __cdecl _ftol();
+extern tPath_name gApplication_path;
+extern float gArmour_starting_value[100];
+extern int gAuto_increase_credits_dt[3];
+extern float gCamera_angle;
+extern float gCamera_cockpit_hither;
+extern br_scalar gCamera_hither;
+extern br_scalar gCamera_yon;
+extern int gCancel_recover;
+extern tFloat_bunch_info gCar_car_damage_multiplier;
+extern tFloat_bunch_info gCar_softness;
+extern tSlot_info gCost_APO;
+extern int gCount_mutant_tail_parts;
+extern int gCredits_checkpoint[3];
+extern int gCredits_per_rank[3];
+extern int gCredits_per_second_time_bonus[3];
+extern float gCredits_per_unit_car_damage[3];
+extern int gCredits_rolling_car[3];
+extern int gCredits_wasting_car[3];
+extern int gCunning_stunt_bonus[3];
+extern int gDecode_thing;
+extern char gDefaultCar[32];
+extern tSpecial_volume gDefault_default_water_spec_vol;
+extern float gDefault_gravity;
+extern int gDisableTiffConversion;
+extern char gDouble_0058a068[];
+extern float gFlic_sound_delay_not_in_demo;
+extern float gFlic_sound_delay_post_demo;
+extern float gFlic_sound_delay_post_smack;
+extern float gFlic_sound_delay_pre_smack;
+extern int gFrontend_net_car_index;
+extern int gGraf_spec_index;
+extern tSlot_info gInitial_APO[3];
+extern tSlot_info gInitial_APO_potential[3];
+extern int gInitial_rank;
+extern int gJump_start_fine[3];
+extern tU32 gKnobbled_frame_period;
+extern float gMass_mine;
+extern float gMass_mutant_tail_ball;
+extern float gMass_mutant_tail_link;
+extern int gMaxTimeOpponentRepair;
+extern tSlot_info gMax_APO[3];
+extern int gMinTimeOpponentRepair;
+extern const int gMini_map_glowing_line_animation_indices[5];
+extern tU32 gNet_auto_increase_credits_dt[8];
+extern int gNet_powerup_time_replacement;
+extern int gNet_starting_money[8];
+extern char gNext_crush_actor_id[];
+extern float gOffensive_starting_value[100];
+extern float gOpponent_nastyness_frigger;
+extern char gPed_flags_0058f2e4[];
+extern int gPickup_respawn_max_extra_time_ms;
+extern int gPickup_respawn_min_time_ms;
+extern tSlot_info gPotential_substitution_value_APO;
+extern float gPower_starting_value[100];
+extern tU32 gRace_finished;
+extern tFloat_bunch_info gRecovery_cost;
+extern tFloat_bunch_info gRepair_cost;
+extern float gSeconds_per_unit_car_damage[3];
+extern int gStarting_money[3];
+extern tSlot_info gSubstitution_value_APO;
+extern int gTime_per_ped_kill[3];
+extern int gTime_rolling_car[3];
+extern int gTime_wasting_car[3];
+extern tSlot_info gTrade_in_value_APO;
+#endif
 // FUNCTION: CARMA2_HW 0x00486e10
 void C2_HOOK_FASTCALL LoadInRegistees(void) {
 
@@ -231,7 +313,8 @@ void C2_HOOK_FASTCALL GetHithers(void) {
 }
 
 // FUNCTION: CARMA2_HW 0x00486ef0
-void C2_HOOK_FASTCALL LoadGeneralParameters(void) {
+void C2_NAKED C2_HOOK_FASTCALL LoadGeneralParameters(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     tPath_name the_path;
     int i;
     char* str;
@@ -493,6 +576,980 @@ void C2_HOOK_FASTCALL LoadGeneralParameters(void) {
 
     /*  Mine / Mortar weight */
     gMass_mine = GetAFloat(gTempFile);
+#else
+    __asm {
+            sub esp, 0x310
+            mov edx, offset gApplication_path
+            lea ecx, [esp + 0x210]
+            push ebx
+            push esi
+            push edi
+            push offset gNet_avail_names+0x4a4
+            call PathCat
+            lea edx, [esp + 0x21c]
+            lea ecx, [esp + 0x21c]
+            push offset gNet_avail_names+0x4f4
+            call PathCat
+            mov edx, offset gCancel_recover+0x1a4
+            lea ecx, [esp + 0x21c]
+            call PFfopen
+            test eax, eax
+            mov dword ptr [gTempFile], eax
+            je L0048705b
+            push eax
+            mov edx, 0xff
+            lea ecx, [esp + 0x120]
+            call PFfgets
+            mov ecx, dword ptr [gTempFile]
+            call PFfclose
+            mov edi, offset gDecode_string
+            or ecx, 0xffffffff
+            xor eax, eax
+            xor edx, edx
+            repne scasb
+            not ecx
+            dec ecx
+            je L00486f99
+            mov bl, 0xce
+    L00486f77:
+            mov cl, byte ptr [edx + gDecode_string]
+            mov edi, offset gDecode_string
+            add cl, bl
+            xor eax, eax
+            mov byte ptr [edx + gDecode_string], cl
+            or ecx, 0xffffffff
+            inc edx
+            repne scasb
+            not ecx
+            dec ecx
+            cmp edx, ecx
+            jb L00486f77
+    L00486f99:
+            mov al, byte ptr [esp + 0x11c]
+            test al, al
+            je L00486fe2
+    L00486fa4:
+            lea edi, [esp + 0x11c]
+            or ecx, 0xffffffff
+            xor eax, eax
+            repne scasb
+            not ecx
+            dec ecx
+            cmp byte ptr [esp + ecx + 0x11b], 0x20
+            jge L00486fe2
+            lea edi, [esp + 0x11c]
+            or ecx, 0xffffffff
+            xor eax, eax
+            repne scasb
+            not ecx
+            dec ecx
+            mov byte ptr [esp + ecx + 0x11b], al
+            mov al, byte ptr [esp + 0x11c]
+            test al, al
+            jne L00486fa4
+    L00486fe2:
+            mov esi, offset gDecode_string
+            lea eax, [esp + 0x11c]
+    L00486fee:
+            mov dl, byte ptr [eax]
+            mov bl, byte ptr [esi]
+            mov cl, dl
+            cmp dl, bl
+            jne L00487016
+            test cl, cl
+            je L00487012
+            mov dl, byte ptr [eax + 1]
+            mov bl, byte ptr [esi + 1]
+            mov cl, dl
+            cmp dl, bl
+            jne L00487016
+            add eax, 2
+            add esi, 2
+            test cl, cl
+            jne L00486fee
+    L00487012:
+            xor eax, eax
+            jmp L0048701b
+    L00487016:
+            sbb eax, eax
+            sbb eax, -1
+    L0048701b:
+            test eax, eax
+            jne L00487024
+            mov dword ptr [gDecode_thing], eax
+    L00487024:
+            mov edi, offset gDecode_string
+            or ecx, 0xffffffff
+            xor eax, eax
+            xor edx, edx
+            repne scasb
+            not ecx
+            dec ecx
+            je L0048705b
+            mov bl, 0x32
+    L00487039:
+            mov cl, byte ptr [edx + gDecode_string]
+            mov edi, offset gDecode_string
+            add cl, bl
+            xor eax, eax
+            mov byte ptr [edx + gDecode_string], cl
+            or ecx, 0xffffffff
+            inc edx
+            repne scasb
+            not ecx
+            dec ecx
+            cmp edx, ecx
+            jb L00487039
+    L0048705b:
+            push offset gNet_avail_names+0x4e8
+            mov edx, offset gApplication_path
+            lea ecx, [esp + 0x220]
+            call PathCat
+            mov edx, offset gNext_crush_actor_id+0x180
+            lea ecx, [esp + 0x21c]
+            call DRfopen
+            test eax, eax
+            mov dword ptr [gTempFile], eax
+            jne L0048709a
+            push 8
+            call FatalError
+            mov eax, dword ptr [gTempFile]
+            add esp, 4
+    L0048709a:
+            mov ecx, eax
+            call GetAnInt
+            mov ecx, dword ptr [gTempFile]
+            mov dword ptr [gDisableTiffConversion], eax
+            mov eax, dword ptr [gNet_avail_names+0x4e4]
+            lea edx, [esp + 0x1c]
+            mov dword ptr [esp + 0xc], eax
+            call GetALineAndDontArgue
+            lea ecx, [esp + 0xc]
+            lea edx, [esp + 0x1c]
+            push ecx
+            push edx
+            call strspn
+            add esp, 8
+            lea ecx, [esp + 0x14]
+            lea edx, [esp + 0x10]
+            mov dword ptr [esp + 0x14], eax
+            push ecx
+            push edx
+            lea eax, [esp + eax + 0x24]
+            push offset gNet_avail_names+0x4dc
+            push eax
+            call sscanf
+            add esp, 0x10
+            test eax, eax
+            jne L0048710b
+            lea ecx, [esp + 0x1c]
+            push offset gNet_avail_names+0x4e8
+            push ecx
+            push 0xb2
+            call FatalError
+            add esp, 0xc
+    L0048710b:
+            mov edx, dword ptr [esp + 0x10]
+            mov ecx, dword ptr [esp + 0x14]
+            mov dword ptr [gCamera_hither], edx
+            lea eax, [esp + 0xc]
+            lea edx, [esp + ecx + 0x1c]
+            push eax
+            push edx
+            call strspn
+            mov ecx, dword ptr [esp + 0x1c]
+            add esp, 8
+            add ecx, eax
+            lea eax, [esp + 0x10]
+            mov dword ptr [esp + 0x14], ecx
+            push eax
+            lea ecx, [esp + ecx + 0x20]
+            push offset gMini_map_glowing_line_animation_indices+0x7dc
+            push ecx
+            call sscanf
+            add esp, 0xc
+            test eax, eax
+            jne L00487158
+            fld dword ptr [gCamera_hither]
+            jmp L0048715c
+    L00487158:
+            fld dword ptr [esp + 0x10]
+    L0048715c:
+            fld dword ptr [gCamera_hither]
+            fadd st(0), st(0)
+            mov ecx, dword ptr [gTempFile]
+            fstp dword ptr [gCamera_hither]
+            fadd st(0), st(0)
+            fstp dword ptr [gCamera_cockpit_hither]
+            call GetAFloat
+            fstp dword ptr [gCamera_yon]
+            mov ecx, dword ptr [gTempFile]
+            call GetAFloat
+            mov ecx, dword ptr [gTempFile]
+            fstp dword ptr [gCamera_angle]
+            call GetAnInt
+            mov ecx, dword ptr [gTempFile]
+            mov dword ptr [gHeadup_images+0xb4], eax
+            call GetAnInt
+            mov ecx, dword ptr [gTempFile]
+            mov edx, offset gCredits_per_rank
+            push offset gCredits_per_rank+0x8
+            push offset gCredits_per_rank+0x4
+            mov dword ptr [gInitial_rank], eax
+            call GetThreeInts
+            mov ecx, dword ptr [gTempFile]
+            call ReadCrushSettings
+            mov ecx, dword ptr [gTempFile]
+            mov edx, offset gTime_per_ped_kill
+            push offset gTime_per_ped_kill+0x8
+            push offset gTime_per_ped_kill+0x4
+            call GetThreeInts
+            mov ecx, dword ptr [gTempFile]
+            mov edx, offset gSeconds_per_unit_car_damage
+            push offset gSeconds_per_unit_car_damage+0x8
+            push offset gSeconds_per_unit_car_damage+0x4
+            call GetThreeFloats
+            mov ecx, dword ptr [gTempFile]
+            mov edx, offset gCredits_per_unit_car_damage
+            push offset gCredits_per_unit_car_damage+0x8
+            push offset gCredits_per_unit_car_damage+0x4
+            call GetThreeFloats
+            mov ecx, dword ptr [gTempFile]
+            mov edx, offset gTime_wasting_car
+            push offset gTime_wasting_car+0x8
+            push offset gTime_wasting_car+0x4
+            call GetThreeInts
+            mov ecx, dword ptr [gTempFile]
+            mov edx, offset gCredits_wasting_car
+            push offset gCredits_wasting_car+0x8
+            push offset gCredits_wasting_car+0x4
+            call GetThreeInts
+            mov ecx, dword ptr [gTempFile]
+            mov edx, offset gTime_rolling_car
+            push offset gTime_rolling_car+0x8
+            push offset gTime_rolling_car+0x4
+            call GetThreeInts
+            mov ecx, dword ptr [gTempFile]
+            mov edx, offset gCredits_rolling_car
+            push offset gCredits_rolling_car+0x8
+            push offset gCredits_rolling_car+0x4
+            call GetThreeInts
+            mov ecx, dword ptr [gTempFile]
+            mov edx, offset gCredits_checkpoint
+            push offset gCredits_checkpoint+0x8
+            push offset gCredits_checkpoint+0x4
+            call GetThreeInts
+            mov ecx, dword ptr [gTempFile]
+            mov edx, offset gJump_start_fine
+            push offset gJump_start_fine+0x8
+            push offset gJump_start_fine+0x4
+            call GetThreeInts
+            mov ecx, dword ptr [gTempFile]
+            mov edx, offset gCredits_per_second_time_bonus
+            push offset gCredits_per_second_time_bonus+0x8
+            push offset gCredits_per_second_time_bonus+0x4
+            call GetThreeInts
+            mov ecx, dword ptr [gTempFile]
+            mov edx, offset gCunning_stunt_bonus
+            push offset gCunning_stunt_bonus+0x8
+            push offset gCunning_stunt_bonus+0x4
+            call GetThreeInts
+            mov ecx, dword ptr [gTempFile]
+            mov edx, offset gDefaultCar
+            call GetAString
+            mov ecx, dword ptr [gTempFile]
+            mov edx, offset gBasic_car_name
+            call GetAString
+            mov ecx, dword ptr [gTempFile]
+            mov dword ptr [gKnobbled_frame_period], 0
+            mov dword ptr [gOpponent_nastyness_frigger], 0x3f800000
+            call GetAScalar
+            call _ftol
+            mov ecx, dword ptr [gTempFile]
+            mov dword ptr [gMinTimeOpponentRepair], eax
+            call GetAScalar
+            call _ftol
+            mov ecx, dword ptr [gTempFile]
+            push 0
+            push offset gUnderwater_screen_name
+            mov edx, offset gDefault_default_water_spec_vol
+            mov dword ptr [gMaxTimeOpponentRepair], eax
+            call ParseSpecialVolume
+            mov ecx, dword ptr [gTempFile]
+            mov edx, offset gInitial_APO
+            push offset gInitial_APO+0x8
+            push offset gInitial_APO+0x4
+            call GetThreeInts
+            mov ecx, dword ptr [gTempFile]
+            lea edx, [esp + 0x1c]
+            call GetALineAndDontArgue
+            lea edx, [esp + 0x1c]
+            push offset gPed_flags_0058f2e4+0x138
+            push edx
+            call strtok
+            add esp, 8
+            mov esi, offset gInitial_APO+0xc
+    L004873ac:
+            push esi
+            push offset gPed_flags_0058f2e4+0x134
+            push eax
+            call sscanf
+            add esp, 0xc
+            push offset gPed_flags_0058f2e4+0x138
+            push 0
+            call strtok
+            add esi, 4
+            add esp, 8
+            cmp esi, offset gInitial_APO+0x2c
+            jl L004873ac
+            mov ecx, dword ptr [gTempFile]
+            push offset gInitial_APO+0x34
+            push offset gInitial_APO+0x30
+            mov edx, offset gInitial_APO+0x2c
+            call GetThreeInts
+            mov ecx, dword ptr [gTempFile]
+            lea edx, [esp + 0x1c]
+            call GetALineAndDontArgue
+            lea eax, [esp + 0x1c]
+            push offset gPed_flags_0058f2e4+0x138
+            push eax
+            call strtok
+            add esp, 8
+            mov esi, offset gInitial_APO+0x38
+    L00487415:
+            push esi
+            push offset gPed_flags_0058f2e4+0x134
+            push eax
+            call sscanf
+            add esp, 0xc
+            push offset gPed_flags_0058f2e4+0x138
+            push 0
+            call strtok
+            add esi, 4
+            add esp, 8
+            cmp esi, offset gInitial_APO+0x58
+            jl L00487415
+            mov ecx, dword ptr [gTempFile]
+            push offset gInitial_APO+0x60
+            push offset gInitial_APO+0x5c
+            mov edx, offset gInitial_APO+0x58
+            call GetThreeInts
+            mov ecx, dword ptr [gTempFile]
+            lea edx, [esp + 0x1c]
+            call GetALineAndDontArgue
+            lea ecx, [esp + 0x1c]
+            push offset gPed_flags_0058f2e4+0x138
+            push ecx
+            call strtok
+            add esp, 8
+            mov esi, offset gInitial_APO+0x64
+    L0048747e:
+            push esi
+            push offset gPed_flags_0058f2e4+0x134
+            push eax
+            call sscanf
+            add esp, 0xc
+            push offset gPed_flags_0058f2e4+0x138
+            push 0
+            call strtok
+            add esi, 4
+            add esp, 8
+            cmp esi, offset gInitial_APO+0x84
+            jl L0048747e
+            mov ecx, dword ptr [gTempFile]
+            push offset gInitial_APO_potential+0x8
+            push offset gInitial_APO_potential+0x4
+            mov edx, offset gInitial_APO_potential
+            call GetThreeInts
+            mov ecx, dword ptr [gTempFile]
+            lea edx, [esp + 0x1c]
+            call GetALineAndDontArgue
+            lea edx, [esp + 0x1c]
+            push offset gPed_flags_0058f2e4+0x138
+            push edx
+            call strtok
+            add esp, 8
+            mov esi, offset gInitial_APO_potential+0xc
+    L004874e7:
+            push esi
+            push offset gPed_flags_0058f2e4+0x134
+            push eax
+            call sscanf
+            add esp, 0xc
+            push offset gPed_flags_0058f2e4+0x138
+            push 0
+            call strtok
+            add esi, 4
+            add esp, 8
+            cmp esi, offset gInitial_APO_potential+0x2c
+            jl L004874e7
+            mov ecx, dword ptr [gTempFile]
+            push offset gInitial_APO_potential+0x34
+            push offset gInitial_APO_potential+0x30
+            mov edx, offset gInitial_APO_potential+0x2c
+            call GetThreeInts
+            mov ecx, dword ptr [gTempFile]
+            lea edx, [esp + 0x1c]
+            call GetALineAndDontArgue
+            lea eax, [esp + 0x1c]
+            push offset gPed_flags_0058f2e4+0x138
+            push eax
+            call strtok
+            add esp, 8
+            mov esi, offset gInitial_APO_potential+0x38
+    L00487550:
+            push esi
+            push offset gPed_flags_0058f2e4+0x134
+            push eax
+            call sscanf
+            add esp, 0xc
+            push offset gPed_flags_0058f2e4+0x138
+            push 0
+            call strtok
+            add esi, 4
+            add esp, 8
+            cmp esi, offset gInitial_APO_potential+0x58
+            jl L00487550
+            mov ecx, dword ptr [gTempFile]
+            push offset gInitial_APO_potential+0x60
+            push offset gInitial_APO_potential+0x5c
+            mov edx, offset gInitial_APO_potential+0x58
+            call GetThreeInts
+            mov ecx, dword ptr [gTempFile]
+            lea edx, [esp + 0x1c]
+            call GetALineAndDontArgue
+            lea ecx, [esp + 0x1c]
+            push offset gPed_flags_0058f2e4+0x138
+            push ecx
+            call strtok
+            add esp, 8
+            mov esi, offset gInitial_APO_potential+0x64
+    L004875b9:
+            push esi
+            push offset gPed_flags_0058f2e4+0x134
+            push eax
+            call sscanf
+            add esp, 0xc
+            push offset gPed_flags_0058f2e4+0x138
+            push 0
+            call strtok
+            add esi, 4
+            add esp, 8
+            cmp esi, offset gGraf_spec_index
+            jl L004875b9
+            mov ecx, dword ptr [gTempFile]
+            push offset gMax_APO+0x8
+            push offset gMax_APO+0x4
+            mov edx, offset gMax_APO
+            call GetThreeInts
+            mov ecx, dword ptr [gTempFile]
+            lea edx, [esp + 0x1c]
+            call GetALineAndDontArgue
+            lea edx, [esp + 0x1c]
+            push offset gPed_flags_0058f2e4+0x138
+            push edx
+            call strtok
+            add esp, 8
+            mov esi, offset gMax_APO+0xc
+    L00487622:
+            push esi
+            push offset gPed_flags_0058f2e4+0x134
+            push eax
+            call sscanf
+            add esp, 0xc
+            push offset gPed_flags_0058f2e4+0x138
+            push 0
+            call strtok
+            add esi, 4
+            add esp, 8
+            cmp esi, offset gMax_APO+0x2c
+            jl L00487622
+            mov ecx, dword ptr [gTempFile]
+            push offset gMax_APO+0x34
+            push offset gMax_APO+0x30
+            mov edx, offset gMax_APO+0x2c
+            call GetThreeInts
+            mov ecx, dword ptr [gTempFile]
+            lea edx, [esp + 0x1c]
+            call GetALineAndDontArgue
+            lea eax, [esp + 0x1c]
+            push offset gPed_flags_0058f2e4+0x138
+            push eax
+            call strtok
+            add esp, 8
+            mov esi, offset gMax_APO+0x38
+    L0048768b:
+            push esi
+            push offset gPed_flags_0058f2e4+0x134
+            push eax
+            call sscanf
+            add esp, 0xc
+            push offset gPed_flags_0058f2e4+0x138
+            push 0
+            call strtok
+            add esi, 4
+            add esp, 8
+            cmp esi, offset gMax_APO+0x58
+            jl L0048768b
+            mov ecx, dword ptr [gTempFile]
+            push offset gMax_APO+0x60
+            push offset gMax_APO+0x5c
+            mov edx, offset gMax_APO+0x58
+            call GetThreeInts
+            mov ecx, dword ptr [gTempFile]
+            lea edx, [esp + 0x1c]
+            call GetALineAndDontArgue
+            lea ecx, [esp + 0x1c]
+            push offset gPed_flags_0058f2e4+0x138
+            push ecx
+            call strtok
+            add esp, 8
+            mov esi, offset gMax_APO+0x64
+    L004876f4:
+            push esi
+            push offset gPed_flags_0058f2e4+0x134
+            push eax
+            call sscanf
+            add esp, 0xc
+            push offset gPed_flags_0058f2e4+0x138
+            push 0
+            call strtok
+            add esi, 4
+            add esp, 8
+            cmp esi, offset gMax_APO+0x84
+            jl L004876f4
+            mov ecx, dword ptr [gTempFile]
+            push offset gCost_APO+0x8
+            push offset gCost_APO+0x4
+            mov edx, offset gCost_APO
+            call GetThreeInts
+            mov ecx, dword ptr [gTempFile]
+            lea edx, [esp + 0x1c]
+            call GetALineAndDontArgue
+            lea edx, [esp + 0x1c]
+            push offset gPed_flags_0058f2e4+0x138
+            push edx
+            call strtok
+            add esp, 8
+            mov esi, offset gCost_APO+0xc
+    L0048775d:
+            push esi
+            push offset gPed_flags_0058f2e4+0x134
+            push eax
+            call sscanf
+            add esp, 0xc
+            push offset gPed_flags_0058f2e4+0x138
+            push 0
+            call strtok
+            add esi, 4
+            add esp, 8
+            cmp esi, offset gCamera_cockpit_hither
+            jl L0048775d
+            mov ecx, dword ptr [gTempFile]
+            push offset gTrade_in_value_APO+0x8
+            push offset gTrade_in_value_APO+0x4
+            mov edx, offset gTrade_in_value_APO
+            call GetThreeInts
+            mov ecx, dword ptr [gTempFile]
+            lea edx, [esp + 0x1c]
+            call GetALineAndDontArgue
+            lea eax, [esp + 0x1c]
+            push offset gPed_flags_0058f2e4+0x138
+            push eax
+            call strtok
+            add esp, 8
+            mov esi, offset gTrade_in_value_APO+0xc
+    L004877c6:
+            push esi
+            push offset gPed_flags_0058f2e4+0x134
+            push eax
+            call sscanf
+            add esp, 0xc
+            push offset gPed_flags_0058f2e4+0x138
+            push 0
+            call strtok
+            add esi, 4
+            add esp, 8
+            cmp esi, offset gTrade_in_value_APO+0x2c
+            jl L004877c6
+            mov ecx, dword ptr [gTempFile]
+            push offset gSubstitution_value_APO+0x8
+            push offset gSubstitution_value_APO+0x4
+            mov edx, offset gSubstitution_value_APO
+            call GetThreeInts
+            mov ecx, dword ptr [gTempFile]
+            lea edx, [esp + 0x1c]
+            call GetALineAndDontArgue
+            lea ecx, [esp + 0x1c]
+            push offset gPed_flags_0058f2e4+0x138
+            push ecx
+            call strtok
+            add esp, 8
+            mov esi, offset gSubstitution_value_APO+0xc
+    L0048782f:
+            push esi
+            push offset gPed_flags_0058f2e4+0x134
+            push eax
+            call sscanf
+            add esp, 0xc
+            push offset gPed_flags_0058f2e4+0x138
+            push 0
+            call strtok
+            add esi, 4
+            add esp, 8
+            cmp esi, offset gSubstitution_value_APO+0x2c
+            jl L0048782f
+            mov ecx, dword ptr [gTempFile]
+            push offset gPotential_substitution_value_APO+0x8
+            push offset gPotential_substitution_value_APO+0x4
+            mov edx, offset gPotential_substitution_value_APO
+            call GetThreeInts
+            mov ecx, dword ptr [gTempFile]
+            lea edx, [esp + 0x1c]
+            call GetALineAndDontArgue
+            lea edx, [esp + 0x1c]
+            push offset gPed_flags_0058f2e4+0x138
+            push edx
+            call strtok
+            add esp, 8
+            mov esi, offset gPotential_substitution_value_APO+0xc
+    L00487898:
+            push esi
+            push offset gPed_flags_0058f2e4+0x134
+            push eax
+            call sscanf
+            add esp, 0xc
+            push offset gPed_flags_0058f2e4+0x138
+            push 0
+            call strtok
+            add esi, 4
+            add esp, 8
+            cmp esi, offset gPotential_substitution_value_APO+0x2c
+            jl L00487898
+            mov ecx, dword ptr [gTempFile]
+            call GetAScalar
+            fstp dword ptr [gArmour_starting_value]
+            mov ecx, dword ptr [gTempFile]
+            call GetAScalar
+            fstp dword ptr [gPower_starting_value]
+            mov ecx, dword ptr [gTempFile]
+            call GetAScalar
+            fstp dword ptr [gOffensive_starting_value]
+            mov ecx, dword ptr [gTempFile]
+            call GetAScalar
+            fstp dword ptr [esp + 0xc]
+            mov ecx, dword ptr [gTempFile]
+            call GetAScalar
+            fstp dword ptr [esp + 0x10]
+            mov ecx, dword ptr [gTempFile]
+            call GetAScalar
+            mov ecx, offset gOffensive_starting_value+0x4
+            xor eax, eax
+    L00487924:
+            fld dword ptr [ecx - 4]
+            lea esi, [eax + gPower_starting_value+0x4]
+            lea edx, [eax + gArmour_starting_value+0x4]
+            fmul st(0), st(1)
+            fld dword ptr [esi - 4]
+            fld dword ptr [edx - 4]
+            fmul dword ptr [esp + 0xc]
+            fxch st(2)
+            _emit 0xd9
+        _emit 0x19
+            add eax, 4
+            add ecx, 4
+            fmul dword ptr [esp + 0x10]
+            fxch st(1)
+            _emit 0xd9
+        _emit 0x1a
+            cmp eax, 0x18c
+            _emit 0xd9
+        _emit 0x1e
+            jl L00487924
+            mov ecx, dword ptr [gTempFile]
+            fstp st(0)
+            call GetAnInt
+            mov ecx, dword ptr [gTempFile]
+            mov edx, offset gStarting_money
+            push offset gStarting_money+0x8
+            push offset gStarting_money+0x4
+            mov dword ptr [gNet_powerup_time_replacement], eax
+            call GetThreeInts
+            mov ecx, dword ptr [gTempFile]
+            lea edx, [esp + 0x11c]
+            call GetALineAndDontArgue
+            lea eax, [esp + 0x11c]
+            push offset gPed_flags_0058f2e4+0x138
+            push eax
+            call strtok
+            add esp, 8
+            mov esi, offset gNet_starting_money
+    L004879b2:
+            push esi
+            push offset gPed_flags_0058f2e4+0x134
+            push eax
+            call sscanf
+            add esp, 0xc
+            push offset gPed_flags_0058f2e4+0x138
+            push 0
+            call strtok
+            add esi, 4
+            add esp, 8
+            cmp esi, offset gNet_starting_money+0x14
+            jl L004879b2
+            mov ecx, dword ptr [gTempFile]
+            push offset gRepair_cost+0x8
+            push offset gRepair_cost+0x4
+            mov edx, offset gRepair_cost
+            call GetThreeFloats
+            mov ecx, dword ptr [gTempFile]
+            lea edx, [esp + 0x1c]
+            call GetALineAndDontArgue
+            lea ecx, [esp + 0x1c]
+            push offset gPed_flags_0058f2e4+0x138
+            push ecx
+            call strtok
+            add esp, 8
+            mov esi, offset gRepair_cost+0xc
+    L00487a1b:
+            push esi
+            push offset gMini_map_glowing_line_animation_indices+0x7dc
+            push eax
+            call sscanf
+            add esp, 0xc
+            push offset gPed_flags_0058f2e4+0x138
+            push 0
+            call strtok
+            add esi, 4
+            add esp, 8
+            cmp esi, offset gRepair_cost+0x2c
+            jl L00487a1b
+            mov ecx, dword ptr [gTempFile]
+            push offset gRecovery_cost+0x8
+            push offset gRecovery_cost+0x4
+            mov edx, offset gRecovery_cost
+            call GetThreeFloats
+            mov ecx, dword ptr [gTempFile]
+            lea edx, [esp + 0x1c]
+            call GetALineAndDontArgue
+            lea edx, [esp + 0x1c]
+            push offset gPed_flags_0058f2e4+0x138
+            push edx
+            call strtok
+            add esp, 8
+            mov esi, offset gRecovery_cost+0xc
+    L00487a84:
+            push esi
+            push offset gMini_map_glowing_line_animation_indices+0x7dc
+            push eax
+            call sscanf
+            add esp, 0xc
+            push offset gPed_flags_0058f2e4+0x138
+            push 0
+            call strtok
+            add esi, 4
+            add esp, 8
+            cmp esi, offset gCountRaceGroups
+            jl L00487a84
+            mov ecx, dword ptr [gTempFile]
+            push offset gCar_softness+0x8
+            push offset gCar_softness+0x4
+            mov edx, offset gCar_softness
+            call GetThreeFloats
+            mov ecx, dword ptr [gTempFile]
+            lea edx, [esp + 0x1c]
+            call GetALineAndDontArgue
+            lea eax, [esp + 0x1c]
+            push offset gPed_flags_0058f2e4+0x138
+            push eax
+            call strtok
+            add esp, 8
+            mov esi, offset gCar_softness+0xc
+    L00487aed:
+            push esi
+            push offset gMini_map_glowing_line_animation_indices+0x7dc
+            push eax
+            call sscanf
+            add esp, 0xc
+            push offset gPed_flags_0058f2e4+0x138
+            push 0
+            call strtok
+            add esi, 4
+            add esp, 8
+            cmp esi, offset gCar_softness+0x2c
+            jl L00487aed
+            mov ecx, dword ptr [gTempFile]
+            push offset gCar_car_damage_multiplier+0x8
+            push offset gCar_car_damage_multiplier+0x4
+            mov edx, offset gCar_car_damage_multiplier
+            call GetThreeFloats
+            mov ecx, dword ptr [gTempFile]
+            lea edx, [esp + 0x1c]
+            call GetALineAndDontArgue
+            lea ecx, [esp + 0x1c]
+            push offset gPed_flags_0058f2e4+0x138
+            push ecx
+            call strtok
+            add esp, 8
+            mov esi, offset gCar_car_damage_multiplier+0xc
+    L00487b56:
+            push esi
+            push offset gMini_map_glowing_line_animation_indices+0x7dc
+            push eax
+            call sscanf
+            add esp, 0xc
+            push offset gPed_flags_0058f2e4+0x138
+            push 0
+            call strtok
+            add esi, 4
+            add esp, 8
+            cmp esi, offset gRace_finished
+            jl L00487b56
+            mov ecx, dword ptr [gTempFile]
+            lea edx, [esp + 0x11c]
+            call GetALineAndDontArgue
+            lea edx, [esp + 0x11c]
+            push offset gPed_flags_0058f2e4+0x138
+            push edx
+            call strtok
+            add esp, 8
+            mov esi, offset gNet_score_targets
+    L00487bab:
+            push esi
+            push offset gPed_flags_0058f2e4+0x134
+            push eax
+            call sscanf
+            add esp, 0xc
+            push offset gPed_flags_0058f2e4+0x138
+            push 0
+            call strtok
+            add esi, 4
+            add esp, 8
+            cmp esi, offset gFrontend_net_car_index
+            jl L00487bab
+            mov ecx, dword ptr [gTempFile]
+            call GetAnInt
+            lea eax, [eax + eax*4]
+            mov ecx, dword ptr [gTempFile]
+            lea eax, [eax + eax*4]
+            lea eax, [eax + eax*4]
+            shl eax, 3
+            mov dword ptr [gPickup_respawn_min_time_ms], eax
+            call GetAnInt
+            lea eax, [eax + eax*4]
+            lea eax, [eax + eax*4]
+            lea ecx, [eax + eax*4]
+            shl ecx, 3
+            mov dword ptr [gPickup_respawn_max_extra_time_ms], ecx
+            mov ecx, dword ptr [gTempFile]
+            call GetAnInt
+            mov ecx, dword ptr [gTempFile]
+            mov dword ptr [gDemo_race_rank_equivalent], eax
+            call GetAnInt
+            xor esi, esi
+            mov dword ptr [gCount_demo_opponents], eax
+            test eax, eax
+            jle L00487c52
+            mov edi, offset gDemo_opponents
+    L00487c38:
+            mov ecx, dword ptr [gTempFile]
+            call GetAnInt
+            mov dword ptr [edi], eax
+            mov eax, dword ptr [gCount_demo_opponents]
+            inc esi
+            add edi, 4
+            cmp esi, eax
+            jl L00487c38
+    L00487c52:
+            mov ecx, dword ptr [gTempFile]
+            call GetAScalar
+            fstp dword ptr [gDefault_gravity]
+            mov ecx, dword ptr [gTempFile]
+            call GetAFloat
+            fstp dword ptr [gFlic_sound_delay_pre_smack]
+            mov ecx, dword ptr [gTempFile]
+            call GetAFloat
+            fstp dword ptr [gFlic_sound_delay_post_smack]
+            mov ecx, dword ptr [gTempFile]
+            call GetAFloat
+            fstp dword ptr [gFlic_sound_delay_not_in_demo]
+            mov ecx, dword ptr [gTempFile]
+            call GetAFloat
+            mov ecx, dword ptr [gTempFile]
+            fstp dword ptr [gFlic_sound_delay_post_demo]
+            call GetAnInt
+            mov dword ptr [esp + 0x18], eax
+            lea eax, [eax + eax*4]
+            lea eax, [eax + eax*4]
+            lea edx, [eax + eax*4]
+            shl edx, 3
+            mov dword ptr [esp + 0xc], edx
+            xor esi, esi
+            fild dword ptr [esp + 0xc]
+    L00487ccc:
+            fld dword ptr [esi + gRecovery_cost]
+            fmul dword ptr [gDouble_0058a068+0x1c0]
+            fdivr st(0), st(1)
+            call _ftol
+            mov dword ptr [esi + gAuto_increase_credits_dt], eax
+            add esi, 4
+            cmp esi, 0xc
+            jl L00487ccc
+            mov ecx, dword ptr [gTempFile]
+            lea edx, [esp + 0x11c]
+            fstp st(0)
+            call GetALineAndDontArgue
+            lea eax, [esp + 0x11c]
+            push offset gPed_flags_0058f2e4+0x138
+            push eax
+            call strtok
+            add esp, 8
+            xor esi, esi
+    L00487d18:
+            lea ecx, [esp + 0x18]
+            push ecx
+            push offset gPed_flags_0058f2e4+0x134
+            push eax
+            call sscanf
+            mov eax, dword ptr [esp + 0x24]
+            add esp, 0xc
+            lea eax, [eax + eax*4]
+            lea eax, [eax + eax*4]
+            lea edx, [eax + eax*4]
+            shl edx, 3
+            mov dword ptr [esp + 0xc], edx
+            fild dword ptr [esp + 0xc]
+            fld dword ptr [esi + gRecovery_cost+0xc]
+            fmul dword ptr [gDouble_0058a068+0x1c0]
+            fdivp st(1), st(0)
+            call _ftol
+            push offset gPed_flags_0058f2e4+0x138
+            push 0
+            mov dword ptr [esi + gNet_auto_increase_credits_dt], eax
+            call strtok
+            add esi, 4
+            add esp, 8
+            cmp esi, 0x20
+            jl L00487d18
+            mov ecx, dword ptr [gTempFile]
+            call GetAnInt
+            mov ecx, dword ptr [gTempFile]
+            mov dword ptr [gCount_mutant_tail_parts], eax
+            call GetAFloat
+            fstp dword ptr [gMass_mutant_tail_link]
+            mov ecx, dword ptr [gTempFile]
+            call GetAFloat
+            fstp dword ptr [gMass_mutant_tail_ball]
+            mov ecx, dword ptr [gTempFile]
+            call GetAFloat
+            fstp dword ptr [gMass_mine]
+            pop edi
+            pop esi
+            pop ebx
+            add esp, 0x310
+            ret
+    }
+#endif
 }
 
 void C2_HOOK_FASTCALL FinishLoadingGeneral(void) {

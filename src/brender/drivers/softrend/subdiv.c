@@ -89,8 +89,13 @@ br_uint_32 hitherYonTable[16] = {
         }                                                                                                                                           \
     } while (0)
 
+#ifdef CARPOCALYPSE2_MATCHING
+extern rend_block_soft rend;
+extern char rendererStateStoredTemplateEntries[];
+#endif
 // FUNCTION: CARMA2_HW 0x0054c400
-void C2_HOOK_CDECL averageVerticesOnScreen(br_soft_renderer* renderer, brp_vertex* dest1, brp_vertex* dest2, brp_vertex* dest3, brp_vertex* src1, brp_vertex* src2, brp_vertex* src3) {
+void C2_NAKED C2_HOOK_CDECL averageVerticesOnScreen(br_soft_renderer* renderer, brp_vertex* dest1, brp_vertex* dest2, brp_vertex* dest3, brp_vertex* src1, brp_vertex* src2, brp_vertex* src3) {
+#ifndef CARPOCALYPSE2_MATCHING
     br_scalar one_div_w1;
     br_scalar one_div_w2;
     br_scalar one_div_w3;
@@ -122,6 +127,286 @@ void C2_HOOK_CDECL averageVerticesOnScreen(br_soft_renderer* renderer, brp_verte
     PROJECT_COMPONENT(C_X, C_SX);
     PROJECT_COMPONENT(C_Y, C_SY);
     PROJECT_COMPONENT(C_Z, C_SZ);
+#else
+    __asm {
+            push ebp
+            mov ebp, esp
+            push ebx
+            push edi
+            push esi
+            mov edi, dword ptr [ebp + 0x1c]
+            mov esi, dword ptr [ebp + 0x20]
+            mov ecx, dword ptr [ebp + 0x14]
+            mov edx, dword ptr [ebp + 0x18]
+            mov eax, dword ptr [ebp + 0xc]
+            mov ebx, dword ptr [ebp + 0x10]
+            fld dword ptr [edx + 4]
+            fadd dword ptr [edi + 4]
+            fld dword ptr [edi + 4]
+            fadd dword ptr [esi + 4]
+            fxch st(1)
+            fmul dword ptr [rendererStateStoredTemplateEntries+0x174]
+            fld dword ptr [edx + 4]
+            fxch st(2)
+            fmul dword ptr [rendererStateStoredTemplateEntries+0x174]
+            fxch st(2)
+            fadd dword ptr [esi + 4]
+            fxch st(1)
+            fstp dword ptr [ecx + 4]
+            fmul dword ptr [rendererStateStoredTemplateEntries+0x174]
+            fxch st(1)
+            fstp dword ptr [eax + 4]
+            fstp dword ptr [ebx + 4]
+            fld dword ptr [edx + 8]
+            fadd dword ptr [edi + 8]
+            fld dword ptr [edi + 8]
+            fadd dword ptr [esi + 8]
+            fxch st(1)
+            fmul dword ptr [rendererStateStoredTemplateEntries+0x174]
+            fld dword ptr [edx + 8]
+            fxch st(2)
+            fmul dword ptr [rendererStateStoredTemplateEntries+0x174]
+            fxch st(2)
+            fadd dword ptr [esi + 8]
+            fxch st(1)
+            fstp dword ptr [ecx + 8]
+            fmul dword ptr [rendererStateStoredTemplateEntries+0x174]
+            fxch st(1)
+            fstp dword ptr [eax + 8]
+            fstp dword ptr [ebx + 8]
+            fld dword ptr [edx + 0xc]
+            fadd dword ptr [edi + 0xc]
+            fld dword ptr [edi + 0xc]
+            fadd dword ptr [esi + 0xc]
+            fxch st(1)
+            fmul dword ptr [rendererStateStoredTemplateEntries+0x174]
+            fld dword ptr [edx + 0xc]
+            fxch st(2)
+            fmul dword ptr [rendererStateStoredTemplateEntries+0x174]
+            fxch st(2)
+            fadd dword ptr [esi + 0xc]
+            fxch st(1)
+            fstp dword ptr [ecx + 0xc]
+            fmul dword ptr [rendererStateStoredTemplateEntries+0x174]
+            fxch st(1)
+            fstp dword ptr [eax + 0xc]
+            fstp dword ptr [ebx + 0xc]
+            fld dword ptr [edx + 0x10]
+            fadd dword ptr [edi + 0x10]
+            fld dword ptr [edi + 0x10]
+            fadd dword ptr [esi + 0x10]
+            fxch st(1)
+            fmul dword ptr [rendererStateStoredTemplateEntries+0x174]
+            fld dword ptr [edx + 0x10]
+            fxch st(2)
+            fmul dword ptr [rendererStateStoredTemplateEntries+0x174]
+            fxch st(2)
+            fadd dword ptr [esi + 0x10]
+            fxch st(1)
+            fstp dword ptr [ecx + 0x10]
+            fmul dword ptr [rendererStateStoredTemplateEntries+0x174]
+            fxch st(1)
+            fstp dword ptr [eax + 0x10]
+            fstp dword ptr [ebx + 0x10]
+            fld dword ptr [eax + 0x10]
+            fmul dword ptr [ebx + 0x10]
+            fld dword ptr [ebx + 0x10]
+            fmul dword ptr [ecx + 0x10]
+            fld st(1)
+            fmul dword ptr [ecx + 0x10]
+            fld dword ptr [eax + 0x10]
+            fmul dword ptr [ecx + 0x10]
+            fxch st(1)
+            fdivr dword ptr [rendererStateStoredTemplateEntries+0x170]
+            push ebp
+            mov ebp, dword ptr [rend+0x4c]
+            mov ebp, dword ptr [ebp + 0x20]
+            and ebp, 0x3800
+            pop ebp
+            mov ebp, dword ptr [ebp + 8]
+            je L0054c5d2
+            fld dword ptr [edx + 0x2c]
+            fadd dword ptr [edi + 0x2c]
+            fld dword ptr [edi + 0x2c]
+            fadd dword ptr [esi + 0x2c]
+            fxch st(1)
+            fmul dword ptr [rendererStateStoredTemplateEntries+0x174]
+            fld dword ptr [edx + 0x2c]
+            fxch st(2)
+            fmul dword ptr [rendererStateStoredTemplateEntries+0x174]
+            fxch st(2)
+            fadd dword ptr [esi + 0x2c]
+            fxch st(1)
+            fstp dword ptr [ecx + 0x2c]
+            fmul dword ptr [rendererStateStoredTemplateEntries+0x174]
+            fxch st(1)
+            fstp dword ptr [eax + 0x2c]
+            fstp dword ptr [ebx + 0x2c]
+            fld dword ptr [edx + 0x30]
+            fadd dword ptr [edi + 0x30]
+            fld dword ptr [edi + 0x30]
+            fadd dword ptr [esi + 0x30]
+            fxch st(1)
+            fmul dword ptr [rendererStateStoredTemplateEntries+0x174]
+            fld dword ptr [edx + 0x30]
+            fxch st(2)
+            fmul dword ptr [rendererStateStoredTemplateEntries+0x174]
+            fxch st(2)
+            fadd dword ptr [esi + 0x30]
+            fxch st(1)
+            fstp dword ptr [ecx + 0x30]
+            fmul dword ptr [rendererStateStoredTemplateEntries+0x174]
+            fxch st(1)
+            fstp dword ptr [eax + 0x30]
+            fstp dword ptr [ebx + 0x30]
+            fld dword ptr [edx + 0x34]
+            fadd dword ptr [edi + 0x34]
+            fld dword ptr [edi + 0x34]
+            fadd dword ptr [esi + 0x34]
+            fxch st(1)
+            fmul dword ptr [rendererStateStoredTemplateEntries+0x174]
+            fld dword ptr [edx + 0x34]
+            fxch st(2)
+            fmul dword ptr [rendererStateStoredTemplateEntries+0x174]
+            fxch st(2)
+            fadd dword ptr [esi + 0x34]
+            fxch st(1)
+            fstp dword ptr [ecx + 0x34]
+            fmul dword ptr [rendererStateStoredTemplateEntries+0x174]
+            fxch st(1)
+            fstp dword ptr [eax + 0x34]
+            fstp dword ptr [ebx + 0x34]
+    L0054c5d2:
+            fld dword ptr [edx + 0x28]
+            fadd dword ptr [edi + 0x28]
+            fld dword ptr [edi + 0x28]
+            fadd dword ptr [esi + 0x28]
+            fxch st(1)
+            fmul dword ptr [rendererStateStoredTemplateEntries+0x174]
+            fld dword ptr [edx + 0x28]
+            fxch st(2)
+            fmul dword ptr [rendererStateStoredTemplateEntries+0x174]
+            fxch st(2)
+            fadd dword ptr [esi + 0x28]
+            fxch st(1)
+            fstp dword ptr [ecx + 0x28]
+            fmul dword ptr [rendererStateStoredTemplateEntries+0x174]
+            fxch st(1)
+            fstp dword ptr [eax + 0x28]
+            fstp dword ptr [ebx + 0x28]
+            fld dword ptr [edx + 0x20]
+            fadd dword ptr [edi + 0x20]
+            fld dword ptr [edi + 0x20]
+            fadd dword ptr [esi + 0x20]
+            fxch st(1)
+            fmul dword ptr [rendererStateStoredTemplateEntries+0x174]
+            fld dword ptr [edx + 0x20]
+            fxch st(2)
+            fmul dword ptr [rendererStateStoredTemplateEntries+0x174]
+            fxch st(2)
+            fadd dword ptr [esi + 0x20]
+            fxch st(1)
+            fstp dword ptr [ecx + 0x20]
+            fmul dword ptr [rendererStateStoredTemplateEntries+0x174]
+            fxch st(1)
+            fstp dword ptr [eax + 0x20]
+            fstp dword ptr [ebx + 0x20]
+            fld dword ptr [edx + 0x24]
+            fadd dword ptr [edi + 0x24]
+            fld dword ptr [edi + 0x24]
+            fadd dword ptr [esi + 0x24]
+            fxch st(1)
+            fmul dword ptr [rendererStateStoredTemplateEntries+0x174]
+            fld dword ptr [edx + 0x24]
+            fxch st(2)
+            fmul dword ptr [rendererStateStoredTemplateEntries+0x174]
+            fxch st(2)
+            fadd dword ptr [esi + 0x24]
+            fxch st(1)
+            fstp dword ptr [ecx + 0x24]
+            fmul dword ptr [rendererStateStoredTemplateEntries+0x174]
+            fxch st(1)
+            fstp dword ptr [eax + 0x24]
+            fstp dword ptr [ebx + 0x24]
+            fmul st(2), st(0)
+            fmul st(1), st(0)
+            fmulp st(3), st(0)
+            fld dword ptr [ebp + 0x5f8]
+            fmul dword ptr [eax + 4]
+            fld dword ptr [ebp + 0x5f8]
+            fmul dword ptr [ebx + 4]
+            fld dword ptr [ebp + 0x5f8]
+            fxch st(2)
+            fmul st(0), st(4)
+            fxch st(1)
+            fmul st(0), st(3)
+            fxch st(1)
+            fadd dword ptr [ebp + 0x5b8]
+            fxch st(2)
+            fmul dword ptr [ecx + 4]
+            fxch st(1)
+            fadd dword ptr [ebp + 0x5b8]
+            fxch st(2)
+            fstp dword ptr [eax + 0x14]
+            fmul st(0), st(4)
+            fxch st(1)
+            fstp dword ptr [ebx + 0x14]
+            fadd dword ptr [ebp + 0x5b8]
+            fstp dword ptr [ecx + 0x14]
+            fld dword ptr [ebp + 0x5fc]
+            fmul dword ptr [eax + 8]
+            fld dword ptr [ebp + 0x5fc]
+            fmul dword ptr [ebx + 8]
+            fld dword ptr [ebp + 0x5fc]
+            fxch st(2)
+            fmul st(0), st(4)
+            fxch st(1)
+            fmul st(0), st(3)
+            fxch st(1)
+            fadd dword ptr [ebp + 0x5bc]
+            fxch st(2)
+            fmul dword ptr [ecx + 8]
+            fxch st(1)
+            fadd dword ptr [ebp + 0x5bc]
+            fxch st(2)
+            fstp dword ptr [eax + 0x18]
+            fmul st(0), st(4)
+            fxch st(1)
+            fstp dword ptr [ebx + 0x18]
+            fadd dword ptr [ebp + 0x5bc]
+            fstp dword ptr [ecx + 0x18]
+            fld dword ptr [ebp + 0x600]
+            fmul dword ptr [eax + 0xc]
+            fld dword ptr [ebp + 0x600]
+            fmul dword ptr [ebx + 0xc]
+            fld dword ptr [ebp + 0x600]
+            fxch st(2)
+            fmul st(0), st(4)
+            fxch st(1)
+            fmul st(0), st(3)
+            fxch st(1)
+            fadd dword ptr [ebp + 0x5c0]
+            fxch st(2)
+            fmul dword ptr [ecx + 0xc]
+            fxch st(1)
+            fadd dword ptr [ebp + 0x5c0]
+            fxch st(2)
+            fstp dword ptr [eax + 0x1c]
+            fmul st(0), st(4)
+            fxch st(1)
+            fstp dword ptr [ebx + 0x1c]
+            fadd dword ptr [ebp + 0x5c0]
+            fstp dword ptr [ecx + 0x1c]
+            fstp st(0)
+            fstp st(0)
+            fstp st(0)
+            pop esi
+            pop edi
+            pop ebx
+            pop ebp
+            ret
+    }
+#endif
 }
 
 static br_uint_32 OUTCODE_ORDINATE(br_uint_32 lValue, br_uint_32 rValue, br_uint_32* tableName1) {

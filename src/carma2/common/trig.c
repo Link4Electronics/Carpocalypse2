@@ -162,6 +162,13 @@ br_matrix23 mat23tmp1;
 // GLOBAL: CARMA2_HW 0x006ab968
 br_matrix23 mat23tmp2;
 
+#ifdef CARPOCALYPSE2_MATCHING
+extern void __cdecl _ftol();
+extern char gDepth_effect_names[];
+extern char gFloat_0058935c[];
+extern char gNegative_half[];
+extern char gVector3_00661678[];
+#endif
 // FUNCTION: CARMA2_HW 0x005113d0
 float C2_HOOK_FASTCALL FastFloatSin(int pAngle_in_degrees) {
 
@@ -222,9 +229,124 @@ br_scalar C2_HOOK_FASTCALL FastScalarCos(int pAngle_in_degrees) {
 }
 
 // FUNCTION: CARMA2_HW 0x00511690
-br_scalar C2_HOOK_FASTCALL FastScalarTan(int pAngle_in_degrees) {
+br_scalar C2_NAKED C2_HOOK_FASTCALL FastScalarTan(int pAngle_in_degrees) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     return FastScalarSin(pAngle_in_degrees) / FastScalarCos(pAngle_in_degrees);
+#else
+    __asm {
+            test ecx, ecx
+            push esi
+            mov eax, ecx
+            jge L005116a7
+            neg eax
+            cdq
+            mov esi, 0x168
+            idiv esi
+            mov eax, esi
+            sub eax, edx
+            jmp L005116b1
+    L005116a7:
+            cdq
+            mov esi, 0x168
+            idiv esi
+            mov eax, edx
+    L005116b1:
+            cmp eax, 0x10e
+            jle L005116c8
+            shl eax, 2
+            mov edx, offset gVector3_00661678+0x2c0
+            sub edx, eax
+            _emit 0xd9
+        _emit 0x02
+            fchs
+            jmp L005116f4
+    L005116c8:
+            cmp eax, 0xb4
+            jle L005116da
+            fld dword ptr [eax*4 + gDepth_effect_names+0x238]
+            fchs
+            jmp L005116f4
+    L005116da:
+            cmp eax, 0x5a
+            jle L005116ed
+            shl eax, 2
+            mov edx, offset gFloat_sine_table+0x2d0
+            sub edx, eax
+            _emit 0xd9
+        _emit 0x02
+            jmp L005116f4
+    L005116ed:
+            fld dword ptr [eax*4 + gFloat_sine_table]
+    L005116f4:
+            test ecx, ecx
+            mov eax, ecx
+            jge L0051170a
+            neg eax
+            cdq
+            mov ecx, 0x168
+            idiv ecx
+            mov eax, ecx
+            sub eax, edx
+            jmp L00511714
+    L0051170a:
+            cdq
+            mov ecx, 0x168
+            idiv ecx
+            mov eax, edx
+    L00511714:
+            cmp eax, 0x10e
+            jle L0051172a
+            fld dword ptr [eax*4 + gDepth_effect_names+0xd0]
+            fld st(0)
+            fdivp st(2), st(0)
+            fstp st(0)
+            pop esi
+            ret
+    L0051172a:
+            cmp eax, 0xb4
+            jle L0051174b
+            lea edx, [eax*4]
+            mov eax, offset gVector3_00661678+0x158
+            sub eax, edx
+            _emit 0xd9
+        _emit 0x00
+            fchs
+            fld st(0)
+            fdivp st(2), st(0)
+            fstp st(0)
+            pop esi
+            ret
+    L0051174b:
+            cmp eax, 0x5a
+            jle L00511761
+            fld dword ptr [eax*4 + gDepth_effect_names+0x3a0]
+            fchs
+            fld st(0)
+            fdivp st(2), st(0)
+            fstp st(0)
+            pop esi
+            ret
+    L00511761:
+            lea ecx, [eax*4]
+            mov edx, offset gFloat_sine_table+0x168
+            sub edx, ecx
+            pop esi
+            _emit 0xd9
+        _emit 0x02
+            fld st(0)
+            fdivp st(2), st(0)
+            fstp st(0)
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00511780
@@ -240,11 +362,140 @@ br_scalar C2_HOOK_FASTCALL FastScalarCosAngle(br_angle pBR_angle) {
 }
 
 // FUNCTION: CARMA2_HW 0x005118a0
-br_scalar C2_HOOK_FASTCALL FastScalarTanAngle(br_angle pBR_angle) {
+br_scalar C2_NAKED C2_HOOK_FASTCALL FastScalarTanAngle(br_angle pBR_angle) {
+#ifndef CARPOCALYPSE2_MATCHING
     int angle_in_degrees;
 
     angle_in_degrees = (int)BrAngleToDegrees(pBR_angle);
     return FastScalarSin(angle_in_degrees) / FastScalarCos(angle_in_degrees);
+#else
+    __asm {
+            push ecx
+            mov word ptr [esp], cx
+            push esi
+            mov eax, dword ptr [esp + 4]
+            and eax, 0xffff
+            mov dword ptr [esp + 4], eax
+            fild dword ptr [esp + 4]
+            fmul qword ptr [gNegative_half+0x1c]
+            call _ftol
+            mov ecx, eax
+            test ecx, ecx
+            jge L005118d9
+            neg eax
+            cdq
+            mov esi, 0x168
+            idiv esi
+            mov eax, esi
+            sub eax, edx
+            jmp L005118e3
+    L005118d9:
+            cdq
+            mov esi, 0x168
+            idiv esi
+            mov eax, edx
+    L005118e3:
+            cmp eax, 0x10e
+            jle L005118fe
+            lea edx, [eax*4]
+            mov eax, offset gVector3_00661678+0x2c0
+            sub eax, edx
+            _emit 0xd9
+        _emit 0x00
+            fchs
+            jmp L0051192e
+    L005118fe:
+            cmp eax, 0xb4
+            jle L00511910
+            fld dword ptr [eax*4 + gDepth_effect_names+0x238]
+            fchs
+            jmp L0051192e
+    L00511910:
+            cmp eax, 0x5a
+            jle L00511927
+            lea edx, [eax*4]
+            mov eax, offset gFloat_sine_table+0x2d0
+            sub eax, edx
+            _emit 0xd9
+        _emit 0x00
+            jmp L0051192e
+    L00511927:
+            fld dword ptr [eax*4 + gFloat_sine_table]
+    L0051192e:
+            test ecx, ecx
+            mov eax, ecx
+            jge L00511944
+            neg eax
+            cdq
+            mov ecx, 0x168
+            idiv ecx
+            mov eax, ecx
+            sub eax, edx
+            jmp L0051194e
+    L00511944:
+            cdq
+            mov ecx, 0x168
+            idiv ecx
+            mov eax, edx
+    L0051194e:
+            cmp eax, 0x10e
+            jle L00511965
+            fld dword ptr [eax*4 + gDepth_effect_names+0xd0]
+            fld st(0)
+            fdivp st(2), st(0)
+            fstp st(0)
+            pop esi
+            pop ecx
+            ret
+    L00511965:
+            cmp eax, 0xb4
+            jle L00511987
+            lea edx, [eax*4]
+            mov eax, offset gVector3_00661678+0x158
+            sub eax, edx
+            _emit 0xd9
+        _emit 0x00
+            fchs
+            fld st(0)
+            fdivp st(2), st(0)
+            fstp st(0)
+            pop esi
+            pop ecx
+            ret
+    L00511987:
+            cmp eax, 0x5a
+            jle L0051199e
+            fld dword ptr [eax*4 + gDepth_effect_names+0x3a0]
+            fchs
+            fld st(0)
+            fdivp st(2), st(0)
+            fstp st(0)
+            pop esi
+            pop ecx
+            ret
+    L0051199e:
+            lea ecx, [eax*4]
+            mov edx, offset gFloat_sine_table+0x168
+            sub edx, ecx
+            pop esi
+            _emit 0xd9
+        _emit 0x02
+            fld st(0)
+            fdivp st(2), st(0)
+            fstp st(0)
+            pop ecx
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x005119c0
@@ -447,7 +698,8 @@ void C2_HOOK_FASTCALL DRMatrix34RotateZ(br_matrix34* mat, br_angle rz) {
 }
 
 // FUNCTION: CARMA2_HW 0x005123f0
-void C2_HOOK_FASTCALL DRMatrix34Rotate(br_matrix34* mat, br_angle r, br_vector3* a) {
+void C2_NAKED C2_HOOK_FASTCALL DRMatrix34Rotate(br_matrix34* mat, br_angle r, br_vector3* a) {
+#ifndef CARPOCALYPSE2_MATCHING
     br_scalar t;
     br_scalar s;
     br_scalar c;
@@ -480,6 +732,217 @@ void C2_HOOK_FASTCALL DRMatrix34Rotate(br_matrix34* mat, br_angle r, br_vector3*
     mat->m[3][2] = 0.f;
     mat->m[3][1] = 0.f;
     mat->m[3][0] = 0.f;
+#else
+    __asm {
+            sub esp, 0x14
+            mov word ptr [esp + 0x10], dx
+            push ebx
+            mov eax, dword ptr [esp + 0x14]
+            push esi
+            and eax, 0xffff
+            mov esi, ecx
+            mov dword ptr [esp + 0x18], eax
+            fild dword ptr [esp + 0x18]
+            fmul qword ptr [gNegative_half+0x1c]
+            call _ftol
+            mov ecx, eax
+            test ecx, ecx
+            jge L0051242e
+            neg eax
+            cdq
+            mov ebx, 0x168
+            idiv ebx
+            mov eax, ebx
+            sub eax, edx
+            jmp L00512438
+    L0051242e:
+            cdq
+            mov ebx, 0x168
+            idiv ebx
+            mov eax, edx
+    L00512438:
+            cmp eax, 0x10e
+            jle L00512453
+            lea edx, [eax*4]
+            mov eax, offset gVector3_00661678+0x2c0
+            sub eax, edx
+            _emit 0xd9
+        _emit 0x00
+            fchs
+            jmp L00512483
+    L00512453:
+            cmp eax, 0xb4
+            jle L00512465
+            fld dword ptr [eax*4 + gDepth_effect_names+0x238]
+            fchs
+            jmp L00512483
+    L00512465:
+            cmp eax, 0x5a
+            jle L0051247c
+            lea edx, [eax*4]
+            mov eax, offset gFloat_sine_table+0x2d0
+            sub eax, edx
+            _emit 0xd9
+        _emit 0x00
+            jmp L00512483
+    L0051247c:
+            fld dword ptr [eax*4 + gFloat_sine_table]
+    L00512483:
+            fstp dword ptr [esp + 0x10]
+            test ecx, ecx
+            mov eax, ecx
+            jge L0051249d
+            neg eax
+            cdq
+            mov ecx, 0x168
+            idiv ecx
+            mov eax, ecx
+            sub eax, edx
+            jmp L005124a7
+    L0051249d:
+            cdq
+            mov ecx, 0x168
+            idiv ecx
+            mov eax, edx
+    L005124a7:
+            cmp eax, 0x10e
+            jle L005124b7
+            fld dword ptr [eax*4 + gDepth_effect_names+0xd0]
+            jmp L005124f2
+    L005124b7:
+            cmp eax, 0xb4
+            jle L005124d2
+            lea edx, [eax*4]
+            mov eax, offset gVector3_00661678+0x158
+            sub eax, edx
+            _emit 0xd9
+        _emit 0x00
+            fchs
+            jmp L005124f2
+    L005124d2:
+            cmp eax, 0x5a
+            jle L005124e2
+            fld dword ptr [eax*4 + gDepth_effect_names+0x3a0]
+            fchs
+            jmp L005124f2
+    L005124e2:
+            lea ecx, [eax*4]
+            mov edx, offset gFloat_sine_table+0x168
+            sub edx, ecx
+            _emit 0xd9
+        _emit 0x02
+    L005124f2:
+            fld dword ptr [gNegative_half+0x30]
+            fxch st(1)
+            fstp dword ptr [esp + 0xc]
+            mov eax, dword ptr [esp + 0x20]
+            fsub dword ptr [esp + 0xc]
+            _emit 0xd9
+        _emit 0x00
+            fld dword ptr [eax + 8]
+            fxch st(2)
+            fst dword ptr [esp + 8]
+            _emit 0xd8
+        _emit 0x08
+            fld dword ptr [eax + 4]
+            fld dword ptr [eax + 8]
+            fxch st(3)
+            fst dword ptr [esp + 0x20]
+            fmul dword ptr [esp + 0x20]
+            fld dword ptr [eax + 4]
+            fxch st(3)
+            fstp dword ptr [esp + 0x20]
+            fxch st(4)
+            fmul dword ptr [esp + 0x20]
+            fxch st(1)
+            fmul dword ptr [esp + 0x20]
+            fxch st(3)
+            fmul dword ptr [esp + 0x10]
+            fxch st(2)
+            fmul dword ptr [esp + 0x10]
+            fxch st(4)
+            fmul dword ptr [esp + 8]
+            fxch st(1)
+            fst dword ptr [esp + 0x18]
+            fxch st(3)
+            fst dword ptr [esp + 0x20]
+            fxch st(2)
+            fst dword ptr [esp + 0x14]
+            fadd dword ptr [esp + 0x20]
+            fxch st(2)
+            fsub dword ptr [esp + 0x14]
+            fxch st(4)
+            fstp dword ptr [esp + 0x14]
+            fxch st(2)
+            fsub dword ptr [esp + 0x14]
+            fld dword ptr [esp + 0x10]
+            fxch st(3)
+            fadd dword ptr [esp + 0xc]
+            fld dword ptr [eax + 8]
+            fmul dword ptr [eax + 4]
+            fmul dword ptr [esp + 8]
+            fstp dword ptr [esp + 0x10]
+            fxch st(3)
+            _emit 0xd8
+        _emit 0x08
+            fxch st(3)
+            _emit 0xd9
+        _emit 0x1e
+            fxch st(1)
+            fstp dword ptr [esi + 4]
+            fstp dword ptr [esi + 8]
+            fxch st(1)
+            fstp dword ptr [esi + 0xc]
+            fld dword ptr [eax + 4]
+            fst dword ptr [esp + 0x20]
+            fmul dword ptr [esp + 0x20]
+            fld dword ptr [esp + 0x14]
+            fxch st(1)
+            fmul dword ptr [esp + 8]
+            fxch st(2)
+            fst dword ptr [esp + 0x20]
+            fadd dword ptr [esp + 0x10]
+            fxch st(1)
+            fadd dword ptr [esp + 0x18]
+            fxch st(2)
+            fadd dword ptr [esp + 0xc]
+            fxch st(1)
+            fstp dword ptr [esi + 0x14]
+            fxch st(1)
+            fstp dword ptr [esi + 0x18]
+            fstp dword ptr [esi + 0x10]
+            fld dword ptr [esp + 0x10]
+            fsub dword ptr [esp + 0x20]
+            fstp dword ptr [esi + 0x1c]
+            fld dword ptr [eax + 8]
+            fld st(0)
+            fmul st(0), st(1)
+            mov dword ptr [esi + 0x2c], 0
+            mov dword ptr [esi + 0x28], 0
+            mov dword ptr [esi + 0x24], 0
+            fmul dword ptr [esp + 8]
+            fadd dword ptr [esp + 0xc]
+            fstp dword ptr [esi + 0x20]
+            pop esi
+            pop ebx
+            fstp st(0)
+            add esp, 0x14
+            ret 4
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00512620
@@ -579,7 +1042,8 @@ void C2_HOOK_FASTCALL DRMatrix23PostRotate(br_matrix23* mat, br_angle rz) {
 }
 
 // FUNCTION: CARMA2_HW 0x0040aed0
-void C2_HOOK_FASTCALL DRMatrix34RotateCos(br_matrix34* pDest, const br_vector3* pAxis, float pCosA) {
+void C2_NAKED C2_HOOK_FASTCALL DRMatrix34RotateCos(br_matrix34* pDest, const br_vector3* pAxis, float pCosA) {
+#ifndef CARPOCALYPSE2_MATCHING
     float sinA;
     float mc;
     float mcx;
@@ -616,4 +1080,162 @@ void C2_HOOK_FASTCALL DRMatrix34RotateCos(br_matrix34* pDest, const br_vector3* 
     pDest->m[3][0] = 0.f;
     pDest->m[3][1] = 0.f;
     pDest->m[3][2] = 0.f;
+#else
+    __asm {
+            fld dword ptr [esp + 4]
+            fcomp dword ptr [gFloat_0058935c+0x8]
+            sub esp, 0x10
+            fnstsw ax
+            test ah, 1
+            je L0040aeee
+            mov dword ptr [esp + 0x14], 0xbf800000
+            jmp L0040af07
+    L0040aeee:
+            fld dword ptr [esp + 0x14]
+            fcomp dword ptr [gFloat_0058935c]
+            fnstsw ax
+            test ah, 0x41
+            jne L0040af07
+            mov dword ptr [esp + 0x14], 0x3f800000
+    L0040af07:
+            fld dword ptr [esp + 0x14]
+            fmul dword ptr [esp + 0x14]
+            fld dword ptr [gFloat_0058935c]
+            fsub dword ptr [esp + 0x14]
+            fxch st(1)
+            fsubr dword ptr [gFloat_0058935c]
+            _emit 0xd9
+        _emit 0x02
+            _emit 0xd9
+        _emit 0x02
+            fxch st(2)
+            fsqrt
+            fxch st(1)
+            fmul st(0), st(3)
+            fxch st(1)
+            fst dword ptr [esp + 0xc]
+            fld dword ptr [edx + 8]
+            fld dword ptr [edx + 4]
+            fld dword ptr [edx + 8]
+            fxch st(3)
+            fstp dword ptr [esp + 4]
+            fxch st(4)
+            _emit 0xd9
+        _emit 0x54
+        _emit 0x24
+        _emit 0x00
+            _emit 0xd8
+        _emit 0x4c
+        _emit 0x24
+        _emit 0x00
+            fld dword ptr [edx + 4]
+            fxch st(4)
+            _emit 0xd9
+        _emit 0x5c
+        _emit 0x24
+        _emit 0x00
+            fxch st(1)
+            _emit 0xd8
+        _emit 0x4c
+        _emit 0x24
+        _emit 0x00
+            fxch st(4)
+            _emit 0xd8
+        _emit 0x4c
+        _emit 0x24
+        _emit 0x00
+            fxch st(2)
+            fmul dword ptr [esp + 4]
+            fxch st(3)
+            fmul dword ptr [esp + 4]
+            fxch st(1)
+            fmul st(0), st(5)
+            fld st(4)
+            fxch st(3)
+            _emit 0xd9
+        _emit 0x54
+        _emit 0x24
+        _emit 0x00
+            fxch st(4)
+            fst dword ptr [esp + 8]
+            _emit 0xd8
+        _emit 0x44
+        _emit 0x24
+        _emit 0x00
+            fxch st(4)
+            fsub dword ptr [esp + 8]
+            fxch st(2)
+            _emit 0xd9
+        _emit 0x5c
+        _emit 0x24
+        _emit 0x00
+            fxch st(2)
+            _emit 0xd8
+        _emit 0x64
+        _emit 0x24
+        _emit 0x00
+            fxch st(2)
+            fadd dword ptr [esp + 0x14]
+            fld dword ptr [edx + 8]
+            fmul dword ptr [edx + 4]
+            _emit 0xd9
+        _emit 0x02
+            fxch st(1)
+            fmul st(0), st(7)
+            fstp dword ptr [esp + 0xc]
+            fxch st(1)
+            _emit 0xd9
+        _emit 0x19
+            fxch st(3)
+            fstp dword ptr [ecx + 4]
+            fxch st(1)
+            fstp dword ptr [ecx + 8]
+            fstp dword ptr [ecx + 0xc]
+            fld dword ptr [edx + 4]
+            fst dword ptr [esp + 8]
+            fmul dword ptr [esp + 8]
+            fxch st(1)
+            fmul dword ptr [esp + 4]
+            fxch st(1)
+            fmul st(0), st(3)
+            fxch st(1)
+            fstp dword ptr [esp + 8]
+            xor eax, eax
+            fadd dword ptr [esp + 0x14]
+            fstp dword ptr [ecx + 0x10]
+            fld dword ptr [esp + 8]
+            _emit 0xd9
+        _emit 0x44
+        _emit 0x24
+        _emit 0x00
+            fld dword ptr [esp + 0xc]
+            fxch st(2)
+            fadd dword ptr [esp + 0xc]
+            fxch st(1)
+            fadd st(0), st(3)
+            fxch st(2)
+            fsub dword ptr [esp + 8]
+            fxch st(1)
+            fstp dword ptr [ecx + 0x14]
+            fxch st(1)
+            fstp dword ptr [ecx + 0x18]
+            fstp dword ptr [ecx + 0x1c]
+            fstp st(0)
+            fld dword ptr [edx + 8]
+            fld st(0)
+            fmul st(0), st(1)
+            mov dword ptr [ecx + 0x2c], eax
+            mov dword ptr [ecx + 0x28], eax
+            mov dword ptr [ecx + 0x24], eax
+            fmul st(0), st(2)
+            fadd dword ptr [esp + 0x14]
+            fstp dword ptr [ecx + 0x20]
+            fstp st(0)
+            fstp st(0)
+            add esp, 0x10
+            ret 4
+            nop
+            nop
+    }
+#endif
 }

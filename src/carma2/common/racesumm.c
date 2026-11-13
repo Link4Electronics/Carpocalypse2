@@ -14,10 +14,36 @@
 // GLOBAL: CARMA2_HW 0x007051a0
 int gPlayer_lookup_racesumm[14];
 
+#ifdef CARPOCALYPSE2_MATCHING
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern tNet_game_player_info gNet_players[12];
+#endif
 // FUNCTION: CARMA2_HW 0x004e33a0
-static int C2_HOOK_CDECL SortScores(const void* pArg1, const void* pArg2) {
+static int C2_NAKED C2_HOOK_CDECL SortScores(const void* pArg1, const void* pArg2) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     return gNet_players[*(int*)pArg2].score - gNet_players[*(int*)pArg1].score;
+#else
+    __asm {
+            mov eax, dword ptr [esp + 8]
+            mov eax, dword ptr [eax]
+            lea ecx, [eax + eax*2]
+            lea edx, [ecx + ecx*8]
+            shl edx, 1
+            sub edx, eax
+            mov eax, dword ptr [esp + 4]
+            mov eax, dword ptr [eax]
+            lea ecx, [eax + eax*2]
+            lea ecx, [ecx + ecx*8]
+            shl ecx, 1
+            sub ecx, eax
+            mov eax, dword ptr [edx*4 + gNet_players+0x90]
+            sub eax, dword ptr [ecx*4 + gNet_players+0x90]
+            ret
+            nop
+    }
+#endif
 }
 
 // SortGameScores

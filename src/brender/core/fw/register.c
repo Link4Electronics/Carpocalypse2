@@ -5,6 +5,11 @@
 #include "pattern.h"
 #include "resource.h"
 
+#ifdef CARPOCALYPSE2_MATCHING
+extern void C2_HOOK_CDECL BrAddHead();
+extern void* C2_HOOK_CDECL BrResAllocate();
+extern br_framework_state fw;
+#endif
 // FUNCTION: CARMA2_HW 0x00529af0
 void* C2_HOOK_STDCALL BrRegistryNew(br_registry* reg) {
 
@@ -39,13 +44,54 @@ void* C2_HOOK_STDCALL BrRegistryAdd(br_registry* reg, void* item) {
 }
 
 // FUNCTION: CARMA2_HW 0x00529b90
-int C2_HOOK_STDCALL BrRegistryAddMany(br_registry* reg, void** items, int n) {
+int C2_NAKED C2_HOOK_STDCALL BrRegistryAddMany(br_registry* reg, void** items, int n) {
+#ifndef CARPOCALYPSE2_MATCHING
     int i;
 
     for(i = 0; i < n; i++) {
         BrRegistryAdd(reg, items[i]);
     }
     return n;
+#else
+    __asm {
+            mov eax, dword ptr [esp + 0xc]
+            test eax, eax
+            jle L00529bdc
+            push edi
+            push esi
+            mov esi, dword ptr [esp + 0xc]
+            push ebp
+            push ebx
+            mov ebx, dword ptr [esp + 0x18]
+            mov ebp, eax
+    L00529ba6:
+            mov eax, dword ptr [fw+0x438]
+            mov edi, dword ptr [ebx]
+            push 0x12
+            push 0xc
+            push eax
+            add ebx, 4
+            call BrResAllocate
+            add esp, 0xc
+            mov dword ptr [eax + 8], edi
+            push eax
+            push esi
+            call BrAddHead
+            mov ecx, dword ptr [esi + 0xc]
+            add esp, 8
+            inc ecx
+            dec ebp
+            mov dword ptr [esi + 0xc], ecx
+            jne L00529ba6
+            mov eax, dword ptr [esp + 0x1c]
+            pop ebx
+            pop ebp
+            pop esi
+            pop edi
+    L00529bdc:
+            ret 0xc
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00529be0

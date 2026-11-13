@@ -513,6 +513,10 @@ token_type tokenTypes[37] = {
     { NULL,     BRT_NONE,             0, },
 };
 
+#ifdef CARPOCALYPSE2_MATCHING
+extern br_boolean C2_HOOK_CDECL BrNamePatternMatch();
+extern br_framework_state fw;
+#endif
 // FUNCTION: CARMA2_HW 0x0052f030
 void C2_HOOK_CDECL BrTokenBegin(void) {
     int i;
@@ -640,7 +644,8 @@ br_token C2_HOOK_CDECL BrTokenFind(const char* pattern) {
 }
 
 // FUNCTION: CARMA2_HW 0x0052f2b0
-br_int_32 C2_HOOK_CDECL BrTokenFindMany(const char* pattern, br_token* tokens, br_int_32 max_tokens) {
+br_int_32 C2_NAKED C2_HOOK_CDECL BrTokenFindMany(const char* pattern, br_token* tokens, br_int_32 max_tokens) {
+#ifndef CARPOCALYPSE2_MATCHING
     br_token_entry* te;
     int n;
 
@@ -655,6 +660,46 @@ br_int_32 C2_HOOK_CDECL BrTokenFindMany(const char* pattern, br_token* tokens, b
         te = (br_token_entry*)te->node.next;
     }
     return n;
+#else
+    __asm {
+            push ebx
+            push ebp
+            push esi
+            mov esi, dword ptr [fw+0x418]
+            xor ebx, ebx
+            push edi
+            cmp dword ptr [esi], 0
+            je L0052f2f2
+            mov ebp, dword ptr [esp + 0x1c]
+            mov edi, dword ptr [esp + 0x18]
+    L0052f2c9:
+            cmp ebx, ebp
+            jge L0052f2f2
+            mov eax, dword ptr [esi + 8]
+            mov ecx, dword ptr [esp + 0x14]
+            push eax
+            push ecx
+            call BrNamePatternMatch
+            add esp, 8
+            test eax, eax
+            je L0052f2eb
+            mov edx, dword ptr [esi + 0x10]
+            mov dword ptr [edi], edx
+            add edi, 4
+            inc ebx
+    L0052f2eb:
+            mov esi, dword ptr [esi]
+            cmp dword ptr [esi], 0
+            jne L0052f2c9
+    L0052f2f2:
+            pop edi
+            pop esi
+            mov eax, ebx
+            pop ebp
+            pop ebx
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0052f300

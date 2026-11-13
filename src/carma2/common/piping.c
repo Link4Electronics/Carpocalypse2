@@ -123,6 +123,60 @@ int gReplay_pause_state = 0;
 // GLOBAL: CARMA2_HW 0x0067690c
 int gPipe_undo_enabled = 0;
 
+#ifdef CARPOCALYPSE2_MATCHING
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern void C2_HOOK_FASTCALL AREndPipingSession(void);
+extern void C2_HOOK_FASTCALL ApplyWaterOmegaBrake(tPhysics_object* pObject, const br_vector3* pV);
+extern void C2_HOOK_CDECL BrMaterialUpdate();
+extern void C2_HOOK_FASTCALL CompressVector3(tCompressed_vector3* pDest, const br_vector3* pSrc, float pMin, float pMax);
+extern intptr_t C2_HOOK_FASTCALL DRActorEnumRecurse(br_actor* pActor, br_actor_enum_cbfn* callback, void* arg);
+extern tU16 C2_HOOK_FASTCALL DRScalarToU16(float pValue, float pMin, float pMax);
+extern void C2_HOOK_FASTCALL EndPipingSession2(int pMunge_reentrancy);
+extern void C2_HOOK_FASTCALL ExpandVector3(br_vector3* pDest, const tCompressed_vector3 *pSrc, float pMin, float pMax);
+extern void C2_HOOK_FASTCALL FUN_0042f5d0(br_model* pSource_model, br_model** pModel_out1, br_model** pModel_out2, float* pPlane, int pArg5);
+extern int C2_HOOK_FASTCALL FUN_00564e5e(int pSample_id);
+extern void C2_NORETURN C2_HOOK_CDECL FatalError();
+extern int C2_HOOK_CDECL FindActorByCrushEntryID();
+extern int C2_HOOK_FASTCALL GetCarCount(tVehicle_type pCategory);
+extern tCar_spec* C2_HOOK_FASTCALL GetCarSpec(tVehicle_type pCategory, int pIndex);
+extern tU32 C2_HOOK_FASTCALL GetTotalTime(void);
+extern intptr_t C2_HOOK_CDECL MakeCarModelsMaterialsDoubleSided();
+extern tCar_spec* C2_HOOK_FASTCALL NetCarFromPlayerID(tPlayer_ID pPlayer);
+extern tPhysics_object* C2_HOOK_FASTCALL PHILGetFirstObject(void);
+extern tPhysics_object* C2_HOOK_FASTCALL PHILGetNextObject(tPhysics_object* pCollision_info);
+extern int C2_HOOK_FASTCALL PhysicsObjectRecurseChildren(tPhysics_object* pObject, tEnumCollision_cbfn* pCallback, void* pContext);
+extern tPhysics_object* C2_HOOK_FASTCALL SemiDetachBit(tCar_spec* pCar, br_actor* pActor, float pArg3, int* pArg4, br_vector3* pArg5, br_bounds3* pArg6, br_vector3* pArg7, br_vector3* pArg8);
+extern void __cdecl _chkstk();
+extern void __cdecl _ftol();
+extern br_uint_8 bl;
+extern int gCount_net_crush_detach_list;
+extern int gCount_net_crush_full_detach_bit_list;
+extern tCrush_net_detach_list_item gNet_crush_detach_list[8];
+extern tCrush_net_full_detach_bit_list_item gNet_crush_full_detach_bit_list[8];
+extern int gPed_676914;
+extern tProgram_state gProgram_state;
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern void C2_HOOK_FASTCALL ARDoActionReplay(int pStep_count, tARDoActionReplay_step_callback* pStep_callback, tARDoActionReplay_frame_callback* pFrame_start_callback, tARDoActionReplay_frame_callback* pFrame_end_callback);
+extern tU8* C2_HOOK_FASTCALL ARGetPipePlayPtr(void);
+extern int C2_HOOK_FASTCALL ARReplayForwards(void);
+extern void C2_HOOK_CDECL BrMatrix34ApplyV();
+extern void C2_HOOK_FASTCALL DisposeReplayPixelmaps(void);
+extern void C2_HOOK_FASTCALL InitializeActionReplayPix(void);
+extern int C2_HOOK_FASTCALL MovieStopRecordingIfNecessary(void);
+extern int C2_HOOK_FASTCALL S3SetSampleFilterCallbacks(tS3_sample_filter pEnable, tS3_sample_filter pDisable);
+extern void C2_HOOK_CDECL dr_dprintf();
+extern tU32 gFrame_period;
+extern br_vector3 gInitial_position;
+extern tU32 gLast_replay_frame_time;
+#endif
 // FUNCTION: CARMA2_HW 0x004030d0
 void C2_HOOK_FASTCALL SetPipeUndoFlag(void) {
     gPipe_undo_enabled = 1;
@@ -186,14 +240,112 @@ float gReplay_rate = 0.f;
 extern const br_scalar gFLOAT_00589330;
 
 // FUNCTION: CARMA2_HW 0x00403d60
-int C2_HOOK_FASTCALL ARToggleReplay(tTurn_on_AR_callback* pTurn_on_AR_cb, tTurn_off_AR_callback* pTurn_off_AR_cb, tAfter_AR_callback* pAfter_AR_cb, tZappy_AR_callback* pZappy_AR_cb, tPreprocess_AR_callback* pPreprocess_cb, tPostProcess_AR_callback* pPostProcess_cb, int* pArg7, int* pArg8) {
+int C2_NAKED C2_HOOK_FASTCALL ARToggleReplay(tTurn_on_AR_callback* pTurn_on_AR_cb, tTurn_off_AR_callback* pTurn_off_AR_cb, tAfter_AR_callback* pAfter_AR_cb, tZappy_AR_callback* pZappy_AR_cb, tPreprocess_AR_callback* pPreprocess_cb, tPostProcess_AR_callback* pPostProcess_cb, int* pArg7, int* pArg8) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     NOT_IMPLEMENTED();
+#else
+    __asm {
+            push ecx
+            mov eax, dword ptr [gPipe_buffer_start]
+            push ebx
+            push esi
+            mov esi, edx
+            test eax, eax
+            mov ebx, ecx
+            je L00403ea2
+            mov eax, dword ptr [gPed_676914]
+            test eax, eax
+            jne L00403df7
+            push offset gPipe_session_search_limit+0x28
+            call dr_dprintf
+            add esp, 4
+            call InitializeActionReplayPix
+            mov eax, dword ptr [esp + 0x20]
+            mov ecx, dword ptr [gFrame_period]
+            test eax, eax
+            je L00403da6
+            mov eax, dword ptr [eax]
+            mov dword ptr [gReplay_saved_frame_period], eax
+            jmp L00403dac
+    L00403da6:
+            mov dword ptr [gReplay_saved_frame_period], ecx
+    L00403dac:
+            mov eax, dword ptr [esp + 0x24]
+            test eax, eax
+            je L00403db6
+            mov ecx, dword ptr [eax]
+    L00403db6:
+            mov dword ptr [gReplay_saved_average_frame_period], ecx
+            mov dword ptr [gReplay_rate], 0x3f800000
+            mov dword ptr [gReplay_pause_state], 1
+            mov dword ptr [gPlay_direction], 1
+            call GetTotalTime
+            mov edx, dword ptr [gPipe_record_ptr]
+            mov dword ptr [gLast_replay_frame_time], eax
+            mov dword ptr [gPipe_play_ptr], edx
+            call ebx
+            jmp L00403e81
+    L00403df7:
+            mov ecx, dword ptr [esp + 0x1c]
+            mov edx, dword ptr [esp + 0x18]
+            mov eax, dword ptr [gReplay_rate]
+            push ecx
+            push edx
+            mov edx, dword ptr [esp + 0x1c]
+            mov ecx, 0x7fffffff
+            mov dword ptr [gDisable_sound], 1
+            mov dword ptr [esp + 0x10], eax
+            mov dword ptr [gReplay_rate], 0x42c80000
+            call ARDoActionReplay
+            xor edx, edx
+            xor ecx, ecx
+            mov eax, dword ptr [esp + 8]
+            mov dword ptr [gDisable_sound], 0
+            mov dword ptr [gReplay_rate], eax
+            call S3SetSampleFilterCallbacks
+            call esi
+            mov eax, dword ptr [esp + 0x20]
+            test eax, eax
+            je L00403e5a
+            mov ecx, dword ptr [gReplay_saved_frame_period]
+            mov dword ptr [eax], ecx
+    L00403e5a:
+            mov eax, dword ptr [esp + 0x24]
+            test eax, eax
+            je L00403e6a
+            mov edx, dword ptr [gReplay_saved_average_frame_period]
+            mov dword ptr [eax], edx
+    L00403e6a:
+            call MovieStopRecordingIfNecessary
+            push offset gPipe_session_search_limit+0x4
+            call dr_dprintf
+            add esp, 4
+            call DisposeReplayPixelmaps
+    L00403e81:
+            mov ecx, dword ptr [gPed_676914]
+            xor eax, eax
+            test ecx, ecx
+            sete al
+            mov dword ptr [gPed_676914], eax
+            call dword ptr [esp + 0x10]
+            mov eax, 1
+            pop esi
+            pop ebx
+            pop ecx
+            ret 0x18
+    L00403ea2:
+            pop esi
+            xor eax, eax
+            pop ebx
+            pop ecx
+            ret 0x18
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004023e0
 void C2_HOOK_FASTCALL ARResetPiping(void) {
-
     gPipe_record_ptr = gPipe_buffer_start;
     gPipe_buffer_working_end = gPipe_buffer_phys_end;
     gPipe_buffer_oldest = NULL;
@@ -202,7 +354,6 @@ void C2_HOOK_FASTCALL ARResetPiping(void) {
 
 // FUNCTION: CARMA2_HW 0x0051b9a0
 void C2_HOOK_FASTCALL PDAllocateActionReplayBuffer(tU8** buffer, tU32* size) {
-
     PDReallyAllocateActionReplayBuffer();
     if (buffer != NULL) {
         *buffer = gPDActionReplayBuffer;
@@ -214,7 +365,6 @@ void C2_HOOK_FASTCALL PDAllocateActionReplayBuffer(tU8** buffer, tU32* size) {
 
 // FUNCTION: CARMA2_HW 0x00402410
 void C2_HOOK_FASTCALL ARInitialise(int pEnable, int pCount_callbacks, const tReplay_callback* pCallbacks) {
-
     if (pEnable == 0) {
         gPipe_buffer_start = NULL;
         gLocal_buffer = NULL;
@@ -232,7 +382,6 @@ void C2_HOOK_FASTCALL ARInitialise(int pEnable, int pCount_callbacks, const tRep
 
 // FUNCTION: CARMA2_HW 0x004025a0
 int C2_HOOK_FASTCALL ARIsActionReplayAvailable(void) {
-
     return gPipe_buffer_start != NULL;
 }
 
@@ -240,7 +389,6 @@ void C2_HOOK_FASTCALL FUN_DisposeReplayBuffer(void* pBuffer);
 
 // FUNCTION: CARMA2_HW 0x004024a0
 void C2_HOOK_FASTCALL DisposePiping(void) {
-
     if (gPipe_buffer_start != NULL) {
         FUN_DisposeReplayBuffer(gPipe_buffer_start);
     }
@@ -271,19 +419,67 @@ void C2_HOOK_FASTCALL StartPipingSession2(tPipe_chunk_type pType, int pMunge_ree
 }
 
 // FUNCTION: CARMA2_HW 0x004025e0
-void C2_HOOK_FASTCALL ARStartPipingSession(tPipe_chunk_type pType) {
+void C2_NAKED C2_HOOK_FASTCALL ARStartPipingSession(tPipe_chunk_type pType) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     StartPipingSession2(pType, 1);
+#else
+    __asm {
+            mov eax, dword ptr [gPipe_buffer_start]
+            push esi
+            test eax, eax
+            mov esi, ecx
+            je L00402655
+            mov eax, dword ptr [gPed_676914]
+            test eax, eax
+            jne L00402655
+            mov eax, dword ptr [gProgram_state+0x28]
+            test eax, eax
+            je L00402655
+            mov eax, dword ptr [gReentrancy_count]
+            test eax, eax
+            je L0040261d
+            mov ecx, dword ptr [gLocal_buffer]
+            mov edx, dword ptr [ecx]
+            xor ecx, ecx
+            mov dword ptr [eax*4 + gReentrancy_array_base_minus_one], edx
+            call EndPipingSession2
+    L0040261d:
+            mov eax, dword ptr [gReentrancy_count]
+            inc eax
+            mov dword ptr [gReentrancy_count], eax
+            mov eax, dword ptr [gLocal_buffer]
+            mov dword ptr [eax], esi
+            mov ecx, dword ptr [gLocal_buffer]
+            mov dword ptr [ecx + 4], 0
+            mov edx, dword ptr [gLocal_buffer]
+            add edx, 8
+            mov dword ptr [gLocal_buffer_size], 8
+            mov dword ptr [gMr_chunky], edx
+    L00402655:
+            pop esi
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00402890
 void C2_HOOK_FASTCALL AREndPipingSession(void) {
-
     EndPipingSession2(1);
 }
 
 // FUNCTION: CARMA2_HW 0x004030f0
-tPipe_chunk_data* C2_HOOK_FASTCALL FindNextChunk(tPipe_chunk_type pType, uintptr_t pOwner) {
+C2_NAKED tPipe_chunk_data* C2_HOOK_FASTCALL FindNextChunk(tPipe_chunk_type pType, uintptr_t pOwner) {
+#ifndef CARPOCALYPSE2_MATCHING
     tPipe_chunk* cur;
     tU32 i;
 
@@ -353,6 +549,131 @@ tPipe_chunk_data* C2_HOOK_FASTCALL FindNextChunk(tPipe_chunk_type pType, uintptr
             return NULL;
         }
     }
+#else
+    __asm {
+            sub esp, 8
+            mov eax, dword ptr [gPipe_record_ptr]
+            push ebx
+            push ebp
+            push esi
+            push edi
+            mov edi, dword ptr [gPipe_play_ptr]
+            mov esi, ecx
+            cmp edi, eax
+            mov dword ptr [esp + 0x14], edx
+            mov dword ptr [esp + 0x10], esi
+            je L004031fd
+            mov edx, dword ptr [gPipe_callbacks]
+    L0040311a:
+            cmp dword ptr [edi], esi
+            jne L0040316f
+            mov eax, dword ptr [edi + 4]
+            xor ebp, ebp
+            test eax, eax
+            lea ebx, [edi + 8]
+            jbe L0040316f
+    L0040312a:
+            mov eax, dword ptr [esp + 0x14]
+            mov ecx, dword ptr [ebx]
+            cmp ecx, eax
+            je L004031f3
+            lea esi, [esi + esi*2]
+            shl esi, 3
+            mov eax, dword ptr [edx + esi + 8]
+            test eax, eax
+            je L0040315a
+            mov ecx, ebx
+            call eax
+            mov edx, dword ptr [gPipe_callbacks]
+            mov ecx, dword ptr [edx + esi + 4]
+            lea esi, [eax + ecx + 4]
+            jmp L00403161
+    L0040315a:
+            mov esi, dword ptr [edx + esi + 4]
+            add esi, 4
+    L00403161:
+            mov eax, dword ptr [edi + 4]
+            add ebx, esi
+            mov esi, dword ptr [esp + 0x10]
+            inc ebp
+            cmp ebp, eax
+            jb L0040312a
+    L0040316f:
+            mov eax, dword ptr [edi + 4]
+            xor ebx, ebx
+            xor ebp, ebp
+            test eax, eax
+            jbe L004031b5
+    L0040317a:
+            mov eax, dword ptr [edi]
+            lea ecx, [ebx + edi + 8]
+            lea esi, [eax + eax*2]
+            shl esi, 3
+            mov eax, dword ptr [edx + esi + 8]
+            test eax, eax
+            je L004031a0
+            call eax
+            mov edx, dword ptr [gPipe_callbacks]
+            mov ecx, dword ptr [edx + esi + 4]
+            lea esi, [eax + ecx + 4]
+            jmp L004031a7
+    L004031a0:
+            mov esi, dword ptr [edx + esi + 4]
+            add esi, 4
+    L004031a7:
+            mov eax, dword ptr [edi + 4]
+            add ebx, esi
+            inc ebp
+            cmp ebp, eax
+            jb L0040317a
+            mov esi, dword ptr [esp + 0x10]
+    L004031b5:
+            add ebx, 0xa
+            test bl, 1
+            je L004031cd
+            push 0x62
+            call FatalError
+            mov edx, dword ptr [gPipe_callbacks]
+            add esp, 4
+    L004031cd:
+            mov eax, dword ptr [gPipe_buffer_working_end]
+            add edi, ebx
+            cmp edi, eax
+            jb L004031e6
+            cmp edi, dword ptr [gPipe_record_ptr]
+            je L004031fd
+            mov edi, dword ptr [gPipe_buffer_start]
+    L004031e6:
+            cmp edi, dword ptr [gPipe_record_ptr]
+            je L004031fd
+            jmp L0040311a
+    L004031f3:
+            mov eax, ebx
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 8
+            ret
+    L004031fd:
+            pop edi
+            pop esi
+            pop ebp
+            xor eax, eax
+            pop ebx
+            add esp, 8
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00403750
@@ -378,7 +699,8 @@ tU32 C2_HOOK_FASTCALL LengthOfSession(tPipe_chunk* pSession) {
 }
 
 // FUNCTION: CARMA2_HW 0x00402660
-void C2_HOOK_FASTCALL EndPipingSession2(int pMunge_reentrancy) {
+void C2_NAKED C2_HOOK_FASTCALL EndPipingSession2(int pMunge_reentrancy) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     if (gPipe_buffer_start == NULL || gPed_676914 || !gProgram_state.racing) {
         return;
@@ -419,6 +741,180 @@ void C2_HOOK_FASTCALL EndPipingSession2(int pMunge_reentrancy) {
             StartPipingSession2(gReentrancy_array[gReentrancy_count - 1], 0);
         }
     }
+#else
+    __asm {
+            sub esp, 0x10
+            mov eax, dword ptr [gPipe_buffer_start]
+            push ebx
+            push ebp
+            push esi
+            test eax, eax
+            push edi
+            mov dword ptr [esp + 0x1c], ecx
+            je L00402883
+            mov eax, dword ptr [gPed_676914]
+            test eax, eax
+            jne L00402883
+            mov eax, dword ptr [gProgram_state+0x28]
+            test eax, eax
+            je L00402883
+            mov eax, dword ptr [gLocal_buffer_size]
+            mov ecx, dword ptr [gLocal_buffer]
+            mov word ptr [eax + ecx], ax
+            mov ecx, dword ptr [gLocal_buffer_size]
+            mov edx, dword ptr [gLocal_buffer]
+            add ecx, 2
+            mov dword ptr [gLocal_buffer_size], ecx
+            mov eax, dword ptr [edx + 4]
+            test eax, eax
+            je L00402819
+            cmp ecx, 0x3a98
+            ja L00402819
+            mov eax, dword ptr [gPipe_record_ptr]
+            mov esi, dword ptr [gPipe_buffer_phys_end]
+            lea edx, [ecx + eax]
+            cmp edx, esi
+            jbe L004026fa
+            mov edi, dword ptr [gPipe_buffer_start]
+            mov dword ptr [gPipe_buffer_working_end], eax
+            mov dword ptr [gPipe_buffer_oldest], edi
+            mov dword ptr [gPipe_record_ptr], edi
+            mov eax, edi
+            jmp L00402700
+    L004026fa:
+            mov edi, dword ptr [gPipe_buffer_oldest]
+    L00402700:
+            cmp eax, edi
+            ja L004027d9
+            mov edx, dword ptr [gPipe_callbacks]
+    L0040270e:
+            lea esi, [ecx + eax]
+            cmp esi, edi
+            jbe L004027d9
+            mov ecx, dword ptr [edi + 4]
+            lea eax, [edi + 4]
+            xor ebx, ebx
+            mov ebp, edi
+            test ecx, ecx
+            mov dword ptr [esp + 0x10], ebx
+            mov dword ptr [esp + 0x18], eax
+            jbe L00402781
+            lea eax, [edi + 8]
+            mov dword ptr [esp + 0x14], eax
+    L00402736:
+            mov eax, dword ptr [ebp]
+            mov ecx, dword ptr [esp + 0x14]
+            add ecx, ebx
+            lea esi, [eax + eax*2]
+            shl esi, 3
+            mov eax, dword ptr [edx + esi + 8]
+            test eax, eax
+            je L00402765
+            call eax
+            mov edx, dword ptr [gPipe_callbacks]
+            mov edi, dword ptr [gPipe_buffer_oldest]
+            mov ecx, dword ptr [edx + esi + 4]
+            lea esi, [eax + ecx + 4]
+            jmp L0040276c
+    L00402765:
+            mov esi, dword ptr [edx + esi + 4]
+            add esi, 4
+    L0040276c:
+            mov ecx, dword ptr [esp + 0x18]
+            mov eax, dword ptr [esp + 0x10]
+            add ebx, esi
+            inc eax
+            mov esi, dword ptr [ecx]
+            mov dword ptr [esp + 0x10], eax
+            cmp eax, esi
+            jb L00402736
+    L00402781:
+            add ebx, 0xa
+            test bl, 1
+            je L0040279f
+            push 0x62
+            call FatalError
+            mov edi, dword ptr [gPipe_buffer_oldest]
+            mov edx, dword ptr [gPipe_callbacks]
+            add esp, 4
+    L0040279f:
+            mov eax, dword ptr [gPipe_buffer_working_end]
+            add edi, ebx
+            cmp edi, eax
+            mov dword ptr [gPipe_buffer_oldest], edi
+            jb L004027c6
+            mov eax, dword ptr [gPipe_buffer_phys_end]
+            mov edi, dword ptr [gPipe_buffer_start]
+            mov dword ptr [gPipe_buffer_working_end], eax
+            mov dword ptr [gPipe_buffer_oldest], edi
+    L004027c6:
+            mov eax, dword ptr [gPipe_record_ptr]
+            mov ecx, dword ptr [gLocal_buffer_size]
+            cmp eax, edi
+            jbe L0040270e
+    L004027d9:
+            test edi, edi
+            jne L004027e2
+            mov dword ptr [gPipe_buffer_oldest], eax
+    L004027e2:
+            mov esi, dword ptr [gLocal_buffer]
+            mov edx, ecx
+            mov edi, eax
+            shr ecx, 2
+            rep movsd
+            mov ecx, edx
+            and ecx, 3
+            rep movsb
+            mov eax, dword ptr [gPipe_record_ptr]
+            mov edx, dword ptr [gLocal_buffer_size]
+            mov ecx, dword ptr [gPipe_buffer_working_end]
+            add eax, edx
+            cmp eax, ecx
+            mov dword ptr [gPipe_record_ptr], eax
+            jbe L00402819
+            mov dword ptr [gPipe_buffer_working_end], eax
+    L00402819:
+            mov eax, dword ptr [esp + 0x1c]
+            test eax, eax
+            je L00402883
+            mov eax, dword ptr [gReentrancy_count]
+            test eax, eax
+            je L00402883
+            dec eax
+            mov dword ptr [gReentrancy_count], eax
+            je L00402883
+            mov ecx, dword ptr [gPipe_buffer_start]
+            mov eax, dword ptr [eax*4 + gReentrancy_array_base_minus_one]
+            test ecx, ecx
+            je L00402883
+            mov ecx, dword ptr [gPed_676914]
+            test ecx, ecx
+            jne L00402883
+            mov ecx, dword ptr [gProgram_state+0x28]
+            test ecx, ecx
+            je L00402883
+            mov ecx, dword ptr [gLocal_buffer]
+            mov dword ptr [ecx], eax
+            mov edx, dword ptr [gLocal_buffer]
+            mov dword ptr [edx + 4], 0
+            mov eax, dword ptr [gLocal_buffer]
+            add eax, 8
+            mov dword ptr [gLocal_buffer_size], 8
+            mov dword ptr [gMr_chunky], eax
+    L00402883:
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x10
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004028a0
@@ -451,7 +947,8 @@ int C2_HOOK_FASTCALL LengthOfChunk(void* pChunk, int pType) {
 }
 
 // FUNCTION: CARMA2_HW 0x00402ab0
-void C2_HOOK_FASTCALL ARDoSingleSession(int pType, uintptr_t pOwner, void* pData, tU32 pSize) {
+void C2_NAKED C2_HOOK_FASTCALL ARDoSingleSession(int pType, uintptr_t pOwner, void* pData, tU32 pSize) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     if (gPipe_buffer_start == NULL || gPed_676914 || !gProgram_state.racing) {
         return;
@@ -459,10 +956,109 @@ void C2_HOOK_FASTCALL ARDoSingleSession(int pType, uintptr_t pOwner, void* pData
     ARStartPipingSession((tPipe_chunk_type)pType);
     ARAddDataToSession(pType, pOwner, pData, pSize);
     EndPipingSession2(1);
+#else
+    __asm {
+            mov eax, dword ptr [gPipe_buffer_start]
+            push esi
+            push edi
+            mov edi, edx
+            test eax, eax
+            mov esi, ecx
+            je L00402bbc
+            mov eax, dword ptr [gPed_676914]
+            test eax, eax
+            jne L00402bbc
+            mov eax, dword ptr [gProgram_state+0x28]
+            test eax, eax
+            je L00402bbc
+            mov eax, dword ptr [gReentrancy_count]
+            push ebx
+            test eax, eax
+            je L00402afd
+            mov ecx, dword ptr [gLocal_buffer]
+            mov edx, dword ptr [ecx]
+            xor ecx, ecx
+            mov dword ptr [eax*4 + gReentrancy_array_base_minus_one], edx
+            call EndPipingSession2
+    L00402afd:
+            mov ecx, dword ptr [gReentrancy_count]
+            mov eax, dword ptr [gLocal_buffer]
+            inc ecx
+            mov dword ptr [gReentrancy_count], ecx
+            mov dword ptr [eax], esi
+            mov ecx, dword ptr [gLocal_buffer]
+            mov dword ptr [ecx + 4], 0
+            mov ecx, dword ptr [gLocal_buffer]
+            mov eax, dword ptr [gPipe_buffer_start]
+            mov dword ptr [gLocal_buffer_size], 8
+            lea edx, [ecx + 8]
+            test eax, eax
+            mov dword ptr [gMr_chunky], edx
+            je L00402bb1
+            mov eax, dword ptr [gPed_676914]
+            test eax, eax
+            jne L00402bb1
+            mov eax, dword ptr [gProgram_state+0x28]
+            test eax, eax
+            je L00402bb1
+            mov eax, dword ptr [esp + 0x14]
+            lea edx, [eax + 0xc]
+            cmp edx, 0x3a98
+            jae L00402bb1
+            mov ebx, dword ptr [ecx + 4]
+            inc ebx
+            mov dword ptr [ecx + 4], ebx
+            mov ecx, dword ptr [gMr_chunky]
+            mov dword ptr [ecx], edi
+            mov esi, dword ptr [gMr_chunky]
+            add esi, 4
+            test eax, eax
+            mov dword ptr [gMr_chunky], esi
+            je L00402b9d
+            mov esi, dword ptr [esp + 0x10]
+            mov edi, dword ptr [gMr_chunky]
+            mov ecx, eax
+            mov ebx, ecx
+            shr ecx, 2
+            rep movsd
+            mov ecx, ebx
+            and ecx, 3
+            rep movsb
+    L00402b9d:
+            mov ecx, dword ptr [gMr_chunky]
+            mov dword ptr [gLocal_buffer_size], edx
+            add ecx, eax
+            mov dword ptr [gMr_chunky], ecx
+    L00402bb1:
+            mov ecx, 1
+            call EndPipingSession2
+            pop ebx
+    L00402bbc:
+            pop edi
+            pop esi
+            ret 8
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00402bd0
-void C2_HOOK_CDECL ARDoSingleVariedSession(int pType, uintptr_t pOwner, int pCount, ...) {
+void C2_NAKED C2_HOOK_CDECL ARDoSingleVariedSession(int pType, uintptr_t pOwner, int pCount, ...) {
+#ifndef CARPOCALYPSE2_MATCHING
     char buffer[5000];
 
     ARStartPipingSession(pType);
@@ -502,6 +1098,180 @@ void C2_HOOK_CDECL ARDoSingleVariedSession(int pType, uintptr_t pOwner, int pCou
         ARAddDataToSession(pType, pOwner, buffer, LengthOfChunk(buffer, pType) - sizeof(void*));
     }
     AREndPipingSession();
+#else
+    __asm {
+            mov eax, 0x1388
+            call _chkstk
+            mov eax, dword ptr [gPipe_buffer_start]
+            push ebx
+            push ebp
+            mov ebp, dword ptr [esp + 0x1394]
+            push esi
+            push edi
+            test eax, eax
+            je L00402c57
+            mov eax, dword ptr [gPed_676914]
+            test eax, eax
+            jne L00402c57
+            mov eax, dword ptr [gProgram_state+0x28]
+            test eax, eax
+            je L00402c57
+            mov eax, dword ptr [gReentrancy_count]
+            test eax, eax
+            je L00402c1f
+            mov ecx, dword ptr [gLocal_buffer]
+            mov edx, dword ptr [ecx]
+            xor ecx, ecx
+            mov dword ptr [eax*4 + gReentrancy_array_base_minus_one], edx
+            call EndPipingSession2
+    L00402c1f:
+            mov eax, dword ptr [gReentrancy_count]
+            inc eax
+            mov dword ptr [gReentrancy_count], eax
+            mov eax, dword ptr [gLocal_buffer]
+            mov dword ptr [eax], ebp
+            mov ecx, dword ptr [gLocal_buffer]
+            mov dword ptr [ecx + 4], 0
+            mov edx, dword ptr [gLocal_buffer]
+            add edx, 8
+            mov dword ptr [gLocal_buffer_size], 8
+            mov dword ptr [gMr_chunky], edx
+    L00402c57:
+            mov eax, dword ptr [gPipe_buffer_start]
+            test eax, eax
+            je L00402db2
+            mov eax, dword ptr [gPed_676914]
+            test eax, eax
+            jne L00402db2
+            mov eax, dword ptr [gProgram_state+0x28]
+            test eax, eax
+            je L00402db2
+            mov ecx, dword ptr [esp + 0x13a4]
+            lea eax, [esp + 0x13a8]
+            test ecx, ecx
+            jle L00402cec
+            mov ebx, ecx
+    L00402c92:
+            mov ecx, dword ptr [eax]
+            add eax, 4
+            add eax, 4
+            test ecx, ecx
+            mov edi, dword ptr [eax - 4]
+            jge L00402cac
+            fld dword ptr [eax]
+            add eax, 4
+            fstp dword ptr [esp + edi + 0x10]
+            jmp L00402ce9
+    L00402cac:
+            mov edx, dword ptr [eax]
+            add eax, 4
+            mov esi, ecx
+            dec esi
+            je L00402ce5
+            dec esi
+            je L00402cde
+            sub esi, 2
+            je L00402cd8
+            test edx, edx
+            je L00402ce9
+            mov esi, edx
+            mov edx, ecx
+            lea edi, [esp + edi + 0x14]
+            shr ecx, 2
+            rep movsd
+            mov ecx, edx
+            and ecx, 3
+            rep movsb
+            jmp L00402ce9
+    L00402cd8:
+            mov dword ptr [esp + edi + 0x14], edx
+            jmp L00402ce9
+    L00402cde:
+            mov word ptr [esp + edi + 0x14], dx
+            jmp L00402ce9
+    L00402ce5:
+            mov byte ptr [esp + edi + 0x14], dl
+    L00402ce9:
+            dec ebx
+            jne L00402c92
+    L00402cec:
+            mov edi, dword ptr [esp + 0x13a0]
+            mov ecx, dword ptr [gPipe_callbacks]
+            lea esi, [ebp + ebp*2]
+            mov dword ptr [esp + 0x10], edi
+            shl esi, 3
+            mov eax, dword ptr [ecx + esi + 8]
+            test eax, eax
+            je L00402d22
+            lea ecx, [esp + 0x10]
+            call eax
+            mov ecx, dword ptr [gPipe_callbacks]
+            mov edx, dword ptr [ecx + esi + 4]
+            lea esi, [eax + edx + 4]
+            jmp L00402d29
+    L00402d22:
+            mov esi, dword ptr [ecx + esi + 4]
+            add esi, 4
+    L00402d29:
+            mov ecx, dword ptr [gPipe_buffer_start]
+            lea eax, [esi - 4]
+            test ecx, ecx
+            je L00402db2
+            mov ecx, dword ptr [gPed_676914]
+            test ecx, ecx
+            jne L00402db2
+            mov ecx, dword ptr [gProgram_state+0x28]
+            test ecx, ecx
+            je L00402db2
+            mov ecx, dword ptr [gLocal_buffer_size]
+            lea edx, [eax + ecx + 4]
+            cmp edx, 0x3a98
+            jae L00402db2
+            mov ecx, dword ptr [gLocal_buffer]
+            mov ebx, dword ptr [ecx + 4]
+            inc ebx
+            mov dword ptr [ecx + 4], ebx
+            mov ecx, dword ptr [gMr_chunky]
+            mov dword ptr [ecx], edi
+            mov esi, dword ptr [gMr_chunky]
+            add esi, 4
+            test eax, eax
+            mov dword ptr [gMr_chunky], esi
+            je L00402d9e
+            mov edi, dword ptr [gMr_chunky]
+            mov ecx, eax
+            mov ebx, ecx
+            lea esi, [esp + 0x14]
+            shr ecx, 2
+            rep movsd
+            mov ecx, ebx
+            and ecx, 3
+            rep movsb
+    L00402d9e:
+            mov ecx, dword ptr [gMr_chunky]
+            mov dword ptr [gLocal_buffer_size], edx
+            add ecx, eax
+            mov dword ptr [gMr_chunky], ecx
+    L00402db2:
+            mov ecx, 1
+            call EndPipingSession2
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x1388
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00402930
@@ -583,7 +1353,6 @@ void C2_HOOK_FASTCALL InitLastDamageArrayEtc(void) {
 
 // FUNCTION: CARMA2_HW 0x004c8600
 void C2_HOOK_FASTCALL PipeSingleSkidAdjustment(int pSkid_num, br_matrix34* pMatrix, br_material* pMaterial) {
-
     ARDoSingleVariedSession(0x16, pSkid_num, 2,
         0x30, 0, pMatrix,
         4, 0x30, pMaterial);
@@ -602,7 +1371,6 @@ void C2_HOOK_FASTCALL AddNonCarToPipingSession(tPhysics_object* pObject, br_acto
 
 // FUNCTION: CARMA2_HW 0x004c6ff0
 void C2_HOOK_FASTCALL AddNonCarActorToPipingSession(int pCar_ID, br_actor* pActor) {
-
     ARAddVariedDataToSession(ePipe_chunk_non_car, (uintptr_t)pCar_ID, 2,
         SIZE_OFFSET_PIPING(tPipe_chunk_non_car, actor), pActor,
         SIZE_OFFSET_PIPING(tPipe_chunk_non_car, matrix), &pActor->t.t.mat);
@@ -644,7 +1412,8 @@ void C2_HOOK_FASTCALL AddDamageToPipingSession(int pCar_id, tU8 *pDamage_deltas)
 }
 
 // FUNCTION: CARMA2_HW 0x004c6640
-void C2_HOOK_FASTCALL PipeCarPositions(void) {
+void C2_NAKED C2_HOOK_FASTCALL PipeCarPositions(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     int category;
     int car_count;
     int car_index;
@@ -720,26 +1489,255 @@ void C2_HOOK_FASTCALL PipeCarPositions(void) {
         }
     }
     AREndPipingSession();
+#else
+    __asm {
+            sub esp, 0x24
+            push ebx
+            push ebp
+            push esi
+            push edi
+            mov ecx, 5
+            call ARStartPipingSession
+            xor esi, esi
+            mov dword ptr [esp + 0x10], esi
+    L004c6657:
+            test esi, esi
+            jne L004c6662
+            mov ebp, 1
+            jmp L004c666b
+    L004c6662:
+            mov ecx, esi
+            call GetCarCount
+            mov ebp, eax
+    L004c666b:
+            xor edi, edi
+            test ebp, ebp
+            jle L004c6726
+            mov ebx, esi
+            shl ebx, 8
+    L004c667a:
+            test esi, esi
+            jne L004c6685
+            mov esi, offset gProgram_state+0xac
+            jmp L004c6690
+    L004c6685:
+            mov edx, edi
+            mov ecx, esi
+            call GetCarSpec
+            mov esi, eax
+    L004c6690:
+            mov eax, dword ptr [esi + 0x18cc]
+            fld dword ptr [esi + 0x1340]
+            push eax
+            push 0x40
+            push 4
+            call _ftol
+            mov ecx, eax
+            mov eax, 0x66666667
+            imul ecx
+            fld dword ptr [esi + 0x4a4]
+            mov eax, dword ptr [esi + 0x135c]
+            sar edx, 2
+            mov ecx, edx
+            shr ecx, 0x1f
+            add edx, ecx
+            mov ecx, dword ptr [esi + 0x64]
+            and edx, 0x7ff
+            inc eax
+            shl eax, 0xc
+            add edx, eax
+            neg ecx
+            sbb ecx, ecx
+            and ecx, 0x800
+            add edx, ecx
+            fmul qword ptr [gDouble_0058a908]
+            push edx
+            push 0x3e
+            push 2
+            call _ftol
+            mov edx, dword ptr [esi + 8]
+            push eax
+            mov eax, dword ptr [esi + 0x10]
+            push 0x3c
+            add edx, 0x68
+            push 2
+            push edx
+            push 0x30
+            add eax, 0x2c
+            push 0xc
+            push eax
+            push 0
+            push 0x30
+            push 5
+            push ebx
+            push 5
+            call ARAddVariedDataToSession
+            mov esi, dword ptr [esp + 0x58]
+            add esp, 0x48
+            inc edi
+            inc ebx
+            cmp edi, ebp
+            jl L004c667a
+    L004c6726:
+            inc esi
+            cmp esi, 4
+            mov dword ptr [esp + 0x10], esi
+            jle L004c6657
+            call AREndPipingSession
+            xor esi, esi
+            mov dword ptr [esp + 0x18], 0
+            mov dword ptr [esp + 0x10], esi
+            test esi, esi
+    L004c6749:
+            jne L004c6755
+            mov dword ptr [esp + 0x14], 1
+            jmp L004c6760
+    L004c6755:
+            mov ecx, esi
+            call GetCarCount
+            mov dword ptr [esp + 0x14], eax
+    L004c6760:
+            mov eax, dword ptr [esp + 0x14]
+            xor ebp, ebp
+            test eax, eax
+            jle L004c681f
+    L004c676e:
+            test esi, esi
+            jne L004c6779
+            mov eax, offset gProgram_state+0xac
+            jmp L004c6782
+    L004c6779:
+            mov edx, ebp
+            mov ecx, esi
+            call GetCarSpec
+    L004c6782:
+            mov ecx, dword ptr [eax + 0x1d0]
+            test ecx, ecx
+            je L004c6812
+            xor edi, edi
+            xor ecx, ecx
+            lea esi, [eax + 0x4e0]
+    L004c679a:
+            mov bl, byte ptr [esi]
+            add esi, 0x2c
+            mov dl, bl
+            sub dl, byte ptr [ecx + eax + 0x6e8]
+            mov byte ptr [ecx + eax + 0x6e8], bl
+            mov byte ptr [esp + ecx + 0x1c], dl
+            movsx edx, dl
+            or edi, edx
+            inc ecx
+            cmp ecx, 0xc
+            jl L004c679a
+            test edi, edi
+            je L004c680e
+            mov eax, dword ptr [esp + 0x18]
+            test eax, eax
+            jne L004c67dc
+            mov ecx, 7
+            call ARStartPipingSession
+            mov dword ptr [esp + 0x18], 1
+    L004c67dc:
+            mov edx, dword ptr [esp + 0x24]
+            mov eax, dword ptr [esp + 0x1c]
+            mov ecx, dword ptr [esp + 0x20]
+            mov dword ptr [esp + 0x30], edx
+            mov edx, dword ptr [esp + 0x10]
+            mov dword ptr [esp + 0x28], eax
+            lea eax, [esp + 0x28]
+            mov dword ptr [esp + 0x2c], ecx
+            shl edx, 8
+            push 0xc
+            push eax
+            add edx, ebp
+            mov ecx, 7
+            call ARAddDataToSession
+    L004c680e:
+            mov esi, dword ptr [esp + 0x10]
+    L004c6812:
+            mov eax, dword ptr [esp + 0x14]
+            inc ebp
+            cmp ebp, eax
+            jl L004c676e
+    L004c681f:
+            inc esi
+            test esi, esi
+            mov dword ptr [esp + 0x10], esi
+            jle L004c6749
+            mov eax, dword ptr [esp + 0x18]
+            test eax, eax
+            je L004c6839
+            call AREndPipingSession
+    L004c6839:
+            mov ecx, 0xe
+            call ARStartPipingSession
+            xor ebx, ebx
+    L004c6845:
+            test ebx, ebx
+            jne L004c6850
+            mov edi, 1
+            jmp L004c6859
+    L004c6850:
+            mov ecx, ebx
+            call GetCarCount
+            mov edi, eax
+    L004c6859:
+            xor esi, esi
+            test edi, edi
+            jle L004c6887
+    L004c685f:
+            test ebx, ebx
+            jne L004c686a
+            mov eax, offset gProgram_state+0xac
+            jmp L004c6873
+    L004c686a:
+            mov edx, esi
+            mov ecx, ebx
+            call GetCarSpec
+    L004c6873:
+            mov ecx, dword ptr [eax + 8]
+            push 0
+            mov edx, offset PipeObjectPosition
+            call PhysicsObjectRecurseChildren
+            inc esi
+            cmp esi, edi
+            jl L004c685f
+    L004c6887:
+            inc ebx
+            cmp ebx, 4
+            jle L004c6845
+            call AREndPipingSession
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x24
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 #pragma auto_inline(off)
 // FUNCTION: CARMA2_HW 0x00402df0
 tU8* C2_HOOK_FASTCALL ARGetPipePlayPtr(void) {
-
     return gPipe_play_ptr;
 }
 #pragma auto_inline(on)
 
 // FUNCTION: CARMA2_HW 0x004023b0
 int C2_HOOK_FASTCALL ARGetReplayDirection(void) {
-
     return gPlay_direction;
 }
 
 #pragma auto_inline(off)
 // FUNCTION: CARMA2_HW 0x00402300
 int C2_HOOK_FASTCALL ARReplayForwards(void) {
-
     if (gPipe_play_ptr == gPipe_record_ptr) {
         return 0;
     }
@@ -760,7 +1758,6 @@ int C2_HOOK_FASTCALL ARReplayForwards(void) {
 
 // FUNCTION: CARMA2_HW 0x00402540
 int C2_HOOK_FASTCALL ARReplayPlaying(void) {
-
     if (gPipe_play_ptr == gPipe_record_ptr) {
         return 0;
     }
@@ -842,7 +1839,6 @@ int C2_HOOK_FASTCALL GetPipeCarStateAtTime(tS32 pOffset, tS32* pMode, br_scalar*
 
 // FUNCTION: CARMA2_HW 0x004c6e00
 static int C2_HOOK_FASTCALL CheckPipeCarState(tPipe_chunk* pChunk, int pChunk_count, tU32 pTime) {
-
     if (ARReplayForwards()) {
         if (pTime <= gOldest_time) {
             return 0;
@@ -859,7 +1855,6 @@ static int C2_HOOK_FASTCALL CheckPipeCarState(tPipe_chunk* pChunk, int pChunk_co
 
 // FUNCTION: CARMA2_HW 0x004c6bc0
 int C2_HOOK_FASTCALL CarTimeout(tU32 pTime) {
-
     if (ARReplayForwards()) {
         if (pTime > gYoungest_time) {
             return 0;
@@ -873,7 +1868,8 @@ int C2_HOOK_FASTCALL CarTimeout(tU32 pTime) {
 }
 
 // FUNCTION: CARMA2_HW 0x004c6a30
-int C2_HOOK_FASTCALL CheckCar(tPipe_chunk* pChunk_ptr, int pChunk_count, tU32 pTime) {
+int C2_NAKED C2_HOOK_FASTCALL CheckCar(tPipe_chunk* pChunk_ptr, int pChunk_count, tU32 pTime) {
+#ifndef CARPOCALYPSE2_MATCHING
 #pragma inline_depth(0)
 
     int i;
@@ -920,10 +1916,156 @@ int C2_HOOK_FASTCALL CheckCar(tPipe_chunk* pChunk_ptr, int pChunk_count, tU32 pT
     }
     return 0;
 #pragma inline_depth()
+#else
+    __asm {
+            sub esp, 0x1c
+            push ebx
+            push esi
+            push edi
+            mov edi, edx
+            mov dword ptr [esp + 0xc], ecx
+            call ARReplayForwards
+            mov ebx, dword ptr [esp + 0x2c]
+            test eax, eax
+            mov eax, dword ptr [gOldest_time]
+            je L004c6a5d
+            cmp ebx, eax
+            ja L004c6a65
+            xor eax, eax
+            pop edi
+            pop esi
+            pop ebx
+            add esp, 0x1c
+            ret 4
+    L004c6a5d:
+            cmp ebx, eax
+            jae L004c6ba7
+    L004c6a65:
+            xor esi, esi
+            test edi, edi
+            jle L004c6ba7
+    L004c6a6f:
+            mov eax, dword ptr [esp + 0xc]
+            mov ecx, dword ptr [eax]
+            test ecx, 0xffffff00
+            jne L004c6a84
+            mov eax, offset gProgram_state+0xac
+            jmp L004c6a94
+    L004c6a84:
+            mov edx, ecx
+            and edx, 0xff
+            shr ecx, 8
+            call GetCarSpec
+    L004c6a94:
+            cmp eax, dword ptr [gCar_ptr]
+            je L004c6aba
+            mov edx, 5
+            lea ecx, [esp + 0xc]
+            call ARAdvanceChunkPtr
+            inc esi
+            cmp esi, edi
+            jl L004c6a6f
+            xor eax, eax
+            pop edi
+            pop esi
+            pop ebx
+            add esp, 0x1c
+            ret 4
+    L004c6aba:
+            mov ecx, dword ptr [esp + 0xc]
+            lea esi, [esp + 0x10]
+            mov edx, dword ptr [ecx + 0x28]
+            mov dword ptr [gCar_pos], edx
+            mov edi, dword ptr [ecx + 0x2c]
+            lea edx, [ecx + 4]
+            mov dword ptr [gCar_pos+0x4], edi
+            mov ecx, dword ptr [ecx + 0x30]
+            push edx
+            mov dword ptr [gCar_pos+0x8], ecx
+            lea edx, [esp + 0x20]
+            fld dword ptr [eax + 0x58]
+            fmul dword ptr [gDouble_0058a908+0xc]
+            push esi
+            push edx
+            fstp dword ptr [esp + 0x1c]
+            fld dword ptr [eax + 0x5c]
+            fmul dword ptr [gDouble_0058a908+0xc]
+            fstp dword ptr [esp + 0x20]
+            fld dword ptr [eax + 0x60]
+            fmul dword ptr [gDouble_0058a908+0xc]
+            fstp dword ptr [esp + 0x24]
+            call BrMatrix34ApplyV
+            fld dword ptr [esp + 0x2c]
+            fld dword ptr [esp + 0x28]
+            fadd dword ptr [gCar_pos]
+            fxch st(1)
+            fadd dword ptr [gCar_pos+0x4]
+            fld dword ptr [esp + 0x30]
+            fadd dword ptr [gCar_pos+0x8]
+            fxch st(2)
+            fst dword ptr [gCar_pos]
+            fsub dword ptr [gReference_pos]
+            fxch st(1)
+            fst dword ptr [gCar_pos+0x4]
+            fsub dword ptr [gReference_pos+0x4]
+            fxch st(2)
+            fst dword ptr [gCar_pos+0x8]
+            fsub dword ptr [gReference_pos+0x8]
+            fxch st(1)
+            fst dword ptr [esp + 0x1c]
+            fxch st(2)
+            fst dword ptr [esp + 0x20]
+            fxch st(2)
+            fmul dword ptr [esp + 0x1c]
+            fxch st(2)
+            fmul dword ptr [esp + 0x20]
+            fld st(1)
+            fmul st(0), st(2)
+            fxch st(1)
+            faddp st(3), st(0)
+            add esp, 0xc
+            mov dword ptr [gTrigger_time], ebx
+            faddp st(2), st(0)
+            fxch st(1)
+            fcomp dword ptr [gMax_distance]
+            fnstsw ax
+            test ah, 0x41
+            fstp st(0)
+            jne L004c6ba7
+            mov eax, 1
+            pop edi
+            pop esi
+            pop ebx
+            add esp, 0x1c
+            ret 4
+    L004c6ba7:
+            pop edi
+            pop esi
+            xor eax, eax
+            pop ebx
+            add esp, 0x1c
+            ret 4
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00402e10
-int C2_HOOK_FASTCALL ARScanBuffer(tU8** pPtr, tPipe_chunk_type pType, tU32 pDefault_time, tARScanBuffer_callback* pCallback, tARScanBuffer_time_check* pTime_check) {
+int C2_NAKED C2_HOOK_FASTCALL ARScanBuffer(tU8** pPtr, tPipe_chunk_type pType, tU32 pDefault_time, tARScanBuffer_callback* pCallback, tARScanBuffer_time_check* pTime_check) {
+#ifndef CARPOCALYPSE2_MATCHING
     tPipe_chunk* chunk;
     tU8* cur;
     int direction;
@@ -1011,10 +2153,218 @@ int C2_HOOK_FASTCALL ARScanBuffer(tU8** pPtr, tPipe_chunk_type pType, tU32 pDefa
         }
         return 0;
     }
+#else
+    __asm {
+            sub esp, 8
+            mov eax, dword ptr [esp + 0xc]
+            push ebx
+            push ebp
+            push esi
+            mov esi, ecx
+            push edi
+            mov dword ptr [esp + 0x14], edx
+            mov dword ptr [esp + 0x10], esi
+            mov dword ptr [esp + 0x1c], eax
+    L00402e29:
+            mov edx, dword ptr [gPipe_callbacks]
+    L00402e2f:
+            mov eax, dword ptr [gPipe_play_ptr]
+            mov edi, dword ptr [gPipe_record_ptr]
+            mov ecx, dword ptr [gPipe_buffer_oldest]
+            cmp eax, edi
+            jne L00402e48
+            xor eax, eax
+            jmp L00402e91
+    L00402e48:
+            cmp eax, ecx
+            jne L00402e53
+            mov eax, 1
+            jmp L00402e91
+    L00402e53:
+            fld dword ptr [gReplay_rate]
+            fcomp dword ptr [gFLOAT_00589330]
+            fnstsw ax
+            test ah, 0x40
+            jne L00402e84
+            fld dword ptr [gReplay_rate]
+            fcomp dword ptr [gFLOAT_00589330]
+            fnstsw ax
+            test ah, 0x41
+            jne L00402e80
+            mov eax, 1
+            jmp L00402e91
+    L00402e80:
+            xor eax, eax
+            jmp L00402e91
+    L00402e84:
+            mov ebx, dword ptr [gPlay_direction]
+            xor eax, eax
+            test ebx, ebx
+            setg al
+    L00402e91:
+            test eax, eax
+            je L00402f26
+            mov edi, dword ptr [esi]
+            xor ebx, ebx
+            xor ebp, ebp
+            mov eax, dword ptr [edi + 4]
+            test eax, eax
+            jbe L00402ee1
+    L00402ea6:
+            mov eax, dword ptr [edi]
+            lea ecx, [ebx + edi + 8]
+            lea esi, [eax + eax*2]
+            shl esi, 3
+            mov eax, dword ptr [edx + esi + 8]
+            test eax, eax
+            je L00402ecc
+            call eax
+            mov edx, dword ptr [gPipe_callbacks]
+            mov ecx, dword ptr [edx + esi + 4]
+            lea esi, [eax + ecx + 4]
+            jmp L00402ed3
+    L00402ecc:
+            mov esi, dword ptr [edx + esi + 4]
+            add esi, 4
+    L00402ed3:
+            mov eax, dword ptr [edi + 4]
+            add ebx, esi
+            inc ebp
+            cmp ebp, eax
+            jb L00402ea6
+            mov esi, dword ptr [esp + 0x10]
+    L00402ee1:
+            add ebx, 0xa
+            test bl, 1
+            je L00402ef3
+            push 0x62
+            call FatalError
+            add esp, 4
+    L00402ef3:
+            mov edx, dword ptr [esi]
+            add edx, ebx
+            mov dword ptr [esi], edx
+            mov ecx, dword ptr [gPipe_buffer_working_end]
+            mov eax, edx
+            cmp eax, ecx
+            jb L00402f15
+            cmp eax, dword ptr [gPipe_record_ptr]
+            je L00402f15
+            mov edx, dword ptr [gPipe_buffer_start]
+            mov dword ptr [esi], edx
+    L00402f15:
+            mov eax, dword ptr [gPipe_record_ptr]
+            mov ecx, dword ptr [esi]
+            cmp ecx, eax
+            je L00403012
+            jmp L00402f56
+    L00402f26:
+            mov eax, dword ptr [esi]
+            cmp eax, ecx
+            jne L00402f34
+            cmp eax, edi
+            jne L00403012
+    L00402f34:
+            cmp eax, dword ptr [gPipe_buffer_start]
+            jne L00402f44
+            mov ecx, dword ptr [gPipe_buffer_working_end]
+            mov dword ptr [esi], ecx
+    L00402f44:
+            mov edx, dword ptr [esi]
+            add edx, -2
+            mov dword ptr [esi], edx
+            mov eax, edx
+            xor edx, edx
+            mov dx, word ptr [eax]
+            sub eax, edx
+            mov dword ptr [esi], eax
+    L00402f56:
+            mov edi, dword ptr [esi]
+            mov edx, dword ptr [gPipe_callbacks]
+            xor ebx, ebx
+            xor ebp, ebp
+            mov eax, dword ptr [edi + 4]
+            test eax, eax
+            jbe L00402fa4
+    L00402f69:
+            mov eax, dword ptr [edi]
+            lea ecx, [ebx + edi + 8]
+            lea esi, [eax + eax*2]
+            shl esi, 3
+            mov eax, dword ptr [edx + esi + 8]
+            test eax, eax
+            je L00402f8f
+            call eax
+            mov edx, dword ptr [gPipe_callbacks]
+            mov ecx, dword ptr [edx + esi + 4]
+            lea esi, [eax + ecx + 4]
+            jmp L00402f96
+    L00402f8f:
+            mov esi, dword ptr [edx + esi + 4]
+            add esi, 4
+    L00402f96:
+            mov eax, dword ptr [edi + 4]
+            add ebx, esi
+            inc ebp
+            cmp ebp, eax
+            jb L00402f69
+            mov esi, dword ptr [esp + 0x10]
+    L00402fa4:
+            add ebx, 0xa
+            test bl, 1
+            je L00402fbc
+            push 0x62
+            call FatalError
+            mov edx, dword ptr [gPipe_callbacks]
+            add esp, 4
+    L00402fbc:
+            mov eax, dword ptr [esi]
+            lea ecx, [ebx + eax - 2]
+            mov dword ptr [gPipe_buffer_end_marker], ecx
+            mov eax, dword ptr [esi]
+            mov ecx, dword ptr [eax]
+            test ecx, ecx
+            jne L00402fd9
+            mov eax, dword ptr [eax + 0xc]
+            mov dword ptr [esp + 0x1c], eax
+            jmp L00402ff8
+    L00402fd9:
+            cmp ecx, dword ptr [esp + 0x14]
+            jne L00402ff8
+            mov ecx, dword ptr [esp + 0x1c]
+            mov edx, dword ptr [eax + 4]
+            push ecx
+            lea ecx, [eax + 8]
+            call dword ptr [esp + 0x24]
+            test eax, eax
+            jne L00403012
+            mov edx, dword ptr [gPipe_callbacks]
+    L00402ff8:
+            mov eax, dword ptr [esp + 0x24]
+            test eax, eax
+            je L00402e2f
+            mov ecx, dword ptr [esp + 0x1c]
+            call eax
+            test eax, eax
+            jne L00402e29
+    L00403012:
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 8
+            ret 0xc
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004c6920
-void C2_HOOK_FASTCALL ScanCarsPositions(tCar_spec* pCar, br_vector3* pSource_pos, br_scalar pMax_distance_sqr, tU32 pOffset_time, tU32 pTime_period, br_vector3* pCar_pos, tU32* pTime_returned) {
+void C2_NAKED C2_HOOK_FASTCALL ScanCarsPositions(tCar_spec* pCar, br_vector3* pSource_pos, br_scalar pMax_distance_sqr, tU32 pOffset_time, tU32 pTime_period, br_vector3* pCar_pos, tU32* pTime_returned) {
+#ifndef CARPOCALYPSE2_MATCHING
     tU8* temp_ptr;
 
     temp_ptr = ARGetPipePlayPtr();
@@ -1037,10 +2387,93 @@ void C2_HOOK_FASTCALL ScanCarsPositions(tCar_spec* pCar, br_vector3* pSource_pos
         BrVector3Sub(pCar_pos, pCar_pos, &gInitial_position);
     }
     *pTime_returned = gTrigger_time;
+#else
+    __asm {
+            push ecx
+            push esi
+            push edi
+            mov esi, edx
+            mov edi, ecx
+            call ARGetPipePlayPtr
+            mov dword ptr [esp + 8], eax
+            mov eax, dword ptr [esp + 0x10]
+            mov dword ptr [gTrigger_time], 0
+            mov dword ptr [gMax_distance], eax
+            mov ecx, dword ptr [esi]
+            mov dword ptr [gReference_pos], ecx
+            mov edx, dword ptr [esi + 4]
+            mov dword ptr [gReference_pos+0x4], edx
+            mov eax, dword ptr [esi + 8]
+            mov dword ptr [gReference_pos+0x8], eax
+            mov dword ptr [gCar_ptr], edi
+            call ARReplayForwards
+            test eax, eax
+            je L004c6989
+            call GetTotalTime
+            mov ecx, dword ptr [esp + 0x14]
+            add eax, ecx
+            mov ecx, dword ptr [esp + 0x18]
+            add ecx, eax
+            mov dword ptr [gOldest_time], eax
+            mov dword ptr [gYoungest_time], ecx
+            jmp L004c69a4
+    L004c6989:
+            call GetTotalTime
+            mov edx, dword ptr [esp + 0x14]
+            mov ecx, dword ptr [esp + 0x18]
+            sub eax, edx
+            mov dword ptr [gOldest_time], eax
+            sub eax, ecx
+            mov dword ptr [gYoungest_time], eax
+    L004c69a4:
+            push offset CarTimeout
+            push offset CheckCar
+            call GetTotalTime
+            mov edx, 5
+            lea ecx, [esp + 0x10]
+            push eax
+            call ARScanBuffer
+            mov eax, dword ptr [gCar_pos]
+            mov ecx, dword ptr [esp + 0x1c]
+            mov edx, ecx
+            mov dword ptr [edx], eax
+            mov eax, dword ptr [gCar_pos+0x4]
+            mov dword ptr [edx + 4], eax
+            mov eax, dword ptr [gCar_pos+0x8]
+            mov dword ptr [edx + 8], eax
+            _emit 0xd9
+        _emit 0x01
+            fcomp dword ptr [gDouble_0058a908+0x8]
+            fnstsw ax
+            test ah, 0x41
+            jne L004c6a12
+            _emit 0xd9
+        _emit 0x01
+            fsub dword ptr [gInitial_position]
+            fld dword ptr [ecx + 4]
+            fld dword ptr [ecx + 8]
+            fxch st(2)
+            _emit 0xd9
+        _emit 0x19
+            fsub dword ptr [gInitial_position+0x4]
+            fstp dword ptr [ecx + 4]
+            fsub dword ptr [gInitial_position+0x8]
+            fstp dword ptr [ecx + 8]
+    L004c6a12:
+            mov ecx, dword ptr [esp + 0x20]
+            mov edx, dword ptr [gTrigger_time]
+            pop edi
+            pop esi
+            mov dword ptr [ecx], edx
+            pop ecx
+            ret 0x14
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004c82e0
-void C2_HOOK_FASTCALL PipeSingleOilSpill(int pIndex, br_matrix34* pMat, br_scalar pFull_size, br_scalar pGrow_rate, tU32 pSpill_time, tU32 pStop_time, tCar_spec* pCar, br_vector3* pOriginal_pos, br_pixelmap* pPixelmap) {
+void C2_NAKED C2_HOOK_FASTCALL PipeSingleOilSpill(int pIndex, br_matrix34* pMat, br_scalar pFull_size, br_scalar pGrow_rate, tU32 pSpill_time, tU32 pStop_time, tCar_spec* pCar, br_vector3* pOriginal_pos, br_pixelmap* pPixelmap) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     gUNK_0069410c_u32 = *(tU32*)&pFull_size;
     ARDoSingleVariedSession(0x10, pIndex, 8,
@@ -1052,10 +2485,59 @@ void C2_HOOK_FASTCALL PipeSingleOilSpill(int pIndex, br_matrix34* pMat, br_scala
         4, 0x40, pCar,
         0xc, 0x44, pOriginal_pos,
         4, 0x50, pPixelmap);
+#else
+    __asm {
+            mov eax, dword ptr [esp + 4]
+            mov dword ptr [gUNK_0069410c], eax
+            mov eax, dword ptr [esp + 0x1c]
+            push eax
+            mov eax, dword ptr [esp + 0x1c]
+            push 0x50
+            push 4
+            push eax
+            mov eax, dword ptr [esp + 0x24]
+            push 0x44
+            push 0xc
+            push eax
+            mov eax, dword ptr [esp + 0x2c]
+            push 0x40
+            push 4
+            push eax
+            mov eax, dword ptr [esp + 0x34]
+            push 0x3c
+            push 4
+            push eax
+            mov eax, dword ptr [gUNK_0069410c]
+            push 0x38
+            push 4
+            push eax
+            push 0x34
+            push 4
+            push eax
+            push 0x30
+            push 4
+            push edx
+            push 0
+            push 0x30
+            push 8
+            push ecx
+            push 0x10
+            call ARDoSingleVariedSession
+            add esp, 0x6c
+            ret 0x1c
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004c8b30
-void C2_HOOK_FASTCALL PipeSinglePedMove(tPedestrian* pPed, tS16 pArg2, tS16 pOriginal_move_id, tS16 pMove_id, undefined4 pArg5,undefined4 pArg6, int pArg7, undefined4 pArg8, br_vector3* pOriginal_pos, br_vector3* pPos, int pOriginal_action, int pAction, br_matrix34* pArg13) {
+void C2_NAKED C2_HOOK_FASTCALL PipeSinglePedMove(tPedestrian* pPed, tS16 pArg2, tS16 pOriginal_move_id, tS16 pMove_id, undefined4 pArg5,undefined4 pArg6, int pArg7, undefined4 pArg8, br_vector3* pOriginal_pos, br_vector3* pPos, int pOriginal_action, int pAction, br_matrix34* pArg13) {
+#ifndef CARPOCALYPSE2_MATCHING
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPipe_ped_move_data, move_id, 0x0);
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPipe_ped_move_data, original_move_id, 0x2);
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPipe_ped_move_data, field_0x4, 0x4);
@@ -1095,11 +2577,88 @@ void C2_HOOK_FASTCALL PipeSinglePedMove(tPedestrian* pPed, tS16 pArg2, tS16 pOri
         SIZE_OFFSET_PIPING(tPipe_ped_move_data, original_action),  pOriginal_action,
         SIZE_OFFSET_PIPING(tPipe_ped_move_data, action),           pAction,
         SIZE_OFFSET_PIPING(tPipe_ped_move_data, field_0x34),       pArg13);
+#else
+    __asm {
+            push esi
+            mov esi, dword ptr [esp + 0x18]
+            xor eax, eax
+            test esi, esi
+            je L004c8b40
+            mov eax, 1
+    L004c8b40:
+            mov esi, dword ptr [esp + 0x10]
+            mov dword ptr [gUNK_0069410c], esi
+            mov esi, dword ptr [esp + 0x30]
+            push esi
+            mov esi, dword ptr [esp + 0x30]
+            push 0x34
+            push 0x30
+            push esi
+            mov esi, dword ptr [esp + 0x38]
+            push 0x30
+            push 4
+            push esi
+            mov esi, dword ptr [esp + 0x40]
+            push 0x2c
+            push 4
+            push esi
+            mov esi, dword ptr [esp + 0x48]
+            push 0x20
+            push 0xc
+            push esi
+            mov esi, dword ptr [esp + 0x50]
+            push 0x14
+            push 0xc
+            push esi
+            push 0x10
+            push 4
+            push eax
+            mov eax, dword ptr [gUNK_0069410c]
+            push 4
+            push 2
+            push eax
+            push 8
+            push 4
+            push eax
+            push 0xc
+            movsx eax, dx
+            movsx edx, word ptr [esp + 0x74]
+            push 4
+            push eax
+            movsx eax, word ptr [esp + 0x78]
+            push 6
+            push 2
+            push edx
+            push 0
+            push 2
+            push eax
+            push 2
+            push 2
+            push 0xc
+            push ecx
+            push 0x2a
+            call ARDoSingleVariedSession
+            add esp, 0x9c
+            pop esi
+            ret 0x2c
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004c8bd0
 void C2_HOOK_FASTCALL PipeSinglePedPhysics(int pId, br_matrix34* pMat) {
-
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPipe_ped_physics_data, matrix, 0x0);
     C2_HOOK_STATIC_ASSERT_STRUCT_MEMBER_SIZE(tPipe_ped_physics_data, matrix, 0x30);
 
@@ -1109,7 +2668,6 @@ void C2_HOOK_FASTCALL PipeSinglePedPhysics(int pId, br_matrix34* pMat) {
 
 // FUNCTION: CARMA2_HW 0x004c8b10
 void C2_HOOK_FASTCALL PipeSinglePedDir(int pId, const br_vector3* pDir) {
-
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPipe_ped_dir_data, direction, 0x0);
     C2_HOOK_STATIC_ASSERT_STRUCT_MEMBER_SIZE(tPipe_ped_dir_data, direction, 0xc);
 
@@ -1119,7 +2677,6 @@ void C2_HOOK_FASTCALL PipeSinglePedDir(int pId, const br_vector3* pDir) {
 
 // FUNCTION: CARMA2_HW 0x004c8c30
 void C2_HOOK_FASTCALL PipeSinglePedMoveStatus(tPedestrian* pPed, float pValue, float pArg3) {
-
     gUNK_0069410c_u32 = *(tU32*)&pValue;
     ARDoSingleVariedSession(ePipe_chunk_ped_move_status, (uintptr_t)pPed, 2,
         4, 0,  *(tU32*)&pValue,
@@ -1128,7 +2685,6 @@ void C2_HOOK_FASTCALL PipeSinglePedMoveStatus(tPedestrian* pPed, float pValue, f
 
 // FUNCTION: CARMA2_HW 0x004c8ea0
 void C2_HOOK_FASTCALL PipeSingleDroneRender(tDrone_spec* pDrone_spec, int pRender) {
-
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPipe_drone_render, render, 0x0);
     C2_HOOK_STATIC_ASSERT_STRUCT_MEMBER_SIZE(tPipe_drone_render, render, 0x2);
 
@@ -1138,7 +2694,6 @@ void C2_HOOK_FASTCALL PipeSingleDroneRender(tDrone_spec* pDrone_spec, int pRende
 
 // FUNCTION: CARMA2_HW 0x004c8ec0
 void C2_HOOK_FASTCALL PipeSingleDroneCornerPos(tDrone_spec* pDrone, tU16 pField_0x48, tU16 pField_0x74, tU16 pField_0x70, tCompressed_matrix34* pMatrix) {
-
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPipe_drone_corner_pos, field_0x48, 0x0);
     C2_HOOK_STATIC_ASSERT_STRUCT_MEMBER_SIZE(tPipe_drone_corner_pos, field_0x48, 0x2);
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPipe_drone_corner_pos, field_0x74, 0x2);
@@ -1159,7 +2714,8 @@ void C2_HOOK_FASTCALL PipeSingleDroneCornerPos(tDrone_spec* pDrone, tU16 pField_
 }
 
 // FUNCTION: CARMA2_HW 0x004c6ea0
-void C2_HOOK_FASTCALL AddSmudgeToPipingSession(tU16 pCar_ID, int pModel_index, int pVertex_count, tSmudged_vertex* pCoordinates) {
+void C2_NAKED C2_HOOK_FASTCALL AddSmudgeToPipingSession(tU16 pCar_ID, int pModel_index, int pVertex_count, tSmudged_vertex* pCoordinates) {
+#ifndef CARPOCALYPSE2_MATCHING
     tU32 data_size;
 
     if (gSmudge_space != NULL) {
@@ -1172,11 +2728,62 @@ void C2_HOOK_FASTCALL AddSmudgeToPipingSession(tU16 pCar_ID, int pModel_index, i
         data_size = offsetof(tPipe_smudge_data, vertex_changes) + pVertex_count * sizeof(tSmudged_vertex);
         ARAddDataToSession(ePipe_chunk_smudge, pCar_ID, gSmudge_space, data_size);
     }
+#else
+    __asm {
+            push ecx
+            push esi
+            mov esi, dword ptr [gSmudge_space]
+            test esi, esi
+            mov word ptr [esp + 4], cx
+            je L004c6f12
+            mov ecx, dword ptr [esp + 0xc]
+            push edi
+            cmp ecx, 0x258
+            jle L004c6ec3
+            mov ecx, 0x258
+    L004c6ec3:
+            lea eax, [ecx*4]
+            mov word ptr [esi], cx
+            mov ecx, dword ptr [gSmudge_space]
+            mov esi, dword ptr [esp + 0x14]
+            mov dword ptr [ecx + 4], edx
+            mov edx, dword ptr [gSmudge_space]
+            mov ecx, eax
+            add eax, 8
+            lea edi, [edx + 8]
+            mov edx, ecx
+            shr ecx, 2
+            rep movsd
+            mov ecx, edx
+            mov edx, dword ptr [esp + 8]
+            and ecx, 3
+            push eax
+            rep movsb
+            mov eax, dword ptr [gSmudge_space]
+            and edx, 0xffff
+            push eax
+            mov ecx, 0x13
+            call ARAddDataToSession
+            pop edi
+    L004c6f12:
+            pop esi
+            pop ecx
+            ret 8
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004c8e30
 void C2_HOOK_FASTCALL PipeSingleDSModel(int pArg1, void* pThing) {
-
     /*     pArg1 | pThing
      *     ----- | ----------
      *         0 | tCar_spec*
@@ -1188,14 +2795,12 @@ void C2_HOOK_FASTCALL PipeSingleDSModel(int pArg1, void* pThing) {
 
 // FUNCTION: CARMA2_HW 0x004c8e80
 void C2_HOOK_FASTCALL PipeSingleVector3(br_vector3* pDest, br_vector3* pValue) {
-
     ARDoSingleVariedSession(ePipe_single_vector3, (uintptr_t)pDest, 1,
         SIZE_OFFSET_PIPING(tPipe_single_vector, vector), pValue);
 }
 
 // FUNCTION: CARMA2_HW 0x004c8d80
 void C2_HOOK_FASTCALL PipeSingleGrooveOnOff(int pOn, br_actor *pActor, int pBlock_flags) {
-
     ARDoSingleVariedSession(ePipe_single_groove_on_off, (uintptr_t)pActor, 2,
         SIZE_OFFSET_PIPING(tPipe_single_groove_on_of, enable), pOn,
         SIZE_OFFSET_PIPING(tPipe_single_groove_on_of, block_flags), pBlock_flags);
@@ -1223,9 +2828,9 @@ void C2_HOOK_FASTCALL ARCompressModelMash(tCompressed_vector3 *pDest, br_model* 
     }
 }
 
-// C2PORT-NONMATCHING: best 54.69% | difftest PASS 2000 trials (spec difftest/specs/0043c240_FUN_0043c240.json) | reason VC5 x87 scheduling and stack/register allocation
 // FUNCTION: CARMA2_HW 0x0043c240
-void C2_HOOK_FASTCALL FUN_0043c240(tCar_spec* pCar_spec, float* pPlane) {
+void C2_NAKED C2_HOOK_FASTCALL FUN_0043c240(tCar_spec* pCar_spec, float* pPlane) {
+#ifndef CARPOCALYPSE2_MATCHING
     br_model** car_models;
     tCar_crush_spec* car_crush_spec;
     br_model* temporary_model;
@@ -1288,10 +2893,161 @@ void C2_HOOK_FASTCALL FUN_0043c240(tCar_spec* pCar_spec, float* pPlane) {
             }
         }
     }
+#else
+    __asm {
+            sub esp, 0x20
+            fld dword ptr [edx]
+            fld dword ptr [edx + 4]
+            fld dword ptr [edx + 8]
+            fld dword ptr [edx + 0xc]
+            fxch st(3)
+            push ebx
+            push ebp
+            push esi
+            mov esi, ecx
+            push edi
+            lea ebx, [esp + 0x20]
+            mov eax, dword ptr [esi + 0xe0c]
+            mov edi, dword ptr [esi + 0x18d4]
+            push 0
+            push ebx
+            mov ecx, dword ptr [eax + 0x60]
+            lea ebp, [edi + 0x4c4]
+            fstp dword ptr [esp + 0x28]
+            fxch st(1)
+            fstp dword ptr [esp + 0x2c]
+            mov dword ptr [esp + 0x18], ecx
+            mov edx, ebp
+            fstp dword ptr [esp + 0x30]
+            mov dword ptr [esp + 0x1c], edi
+            mov dword ptr [esp + 0x20], ebp
+            fstp dword ptr [esp + 0x34]
+            fld dword ptr [eax + 0x54]
+            fld dword ptr [eax + 0x50]
+            fld dword ptr [eax + 0x58]
+            fxch st(2)
+            fmul dword ptr [esp + 0x2c]
+            fxch st(1)
+            fmul dword ptr [esp + 0x28]
+            fxch st(2)
+            fmul dword ptr [esp + 0x30]
+            fxch st(2)
+            faddp st(1), st(0)
+            fxch st(1)
+            faddp st(1), st(0)
+            fsubr dword ptr [esp + 0x34]
+            fstp dword ptr [esp + 0x34]
+            mov eax, dword ptr [edi + 0x4d0]
+            mov ecx, dword ptr [ecx]
+            add eax, 0x18
+            push eax
+            call FUN_0042f5d0
+            mov eax, dword ptr [esi + 0xe14]
+            mov ebx, 1
+            cmp eax, ebx
+            jle L0043c319
+            mov ecx, dword ptr [esp + 0x10]
+            mov eax, ecx
+            lea edi, [ecx + 4]
+            sub ebp, eax
+    L0043c2e8:
+            mov ecx, dword ptr [edi]
+            test ecx, ecx
+            je L0043c303
+            lea edx, [esp + 0x20]
+            push 1
+            lea eax, [esp + 0x20]
+            push edx
+            push eax
+            lea edx, [ebp + edi]
+            call FUN_0042f5d0
+    L0043c303:
+            mov eax, dword ptr [esi + 0xe14]
+            inc ebx
+            add edi, 4
+            cmp ebx, eax
+            jl L0043c2e8
+            mov ebp, dword ptr [esp + 0x18]
+            mov edi, dword ptr [esp + 0x14]
+    L0043c319:
+            mov eax, dword ptr [esi + 0xe14]
+            xor edx, edx
+            test eax, eax
+            jle L0043c349
+            mov ecx, dword ptr [esp + 0x10]
+            mov eax, ebp
+            sub ecx, ebp
+    L0043c32d:
+            mov ebx, dword ptr [eax]
+            mov edi, dword ptr [ecx + eax]
+            mov dword ptr [ecx + eax], ebx
+            mov dword ptr [eax], edi
+            mov edi, dword ptr [esi + 0xe14]
+            inc edx
+            add eax, 4
+            cmp edx, edi
+            jl L0043c32d
+            mov edi, dword ptr [esp + 0x14]
+    L0043c349:
+            mov edx, dword ptr [esp + 0x10]
+            mov ecx, dword ptr [esi + 0xe0c]
+            push esi
+            mov eax, dword ptr [edx]
+            mov edx, offset MakeCarModelsMaterialsDoubleSided
+            mov dword ptr [ecx + 0x18], eax
+            mov ecx, dword ptr [esi + 0xe0c]
+            call DRActorEnumRecurse
+            mov ecx, dword ptr [edi + 0x4d0]
+            mov esi, dword ptr [ecx + 0x18]
+            test esi, esi
+            je L0043c3c7
+            mov eax, dword ptr [esi + 0x4c]
+            xor ebx, ebx
+            cmp word ptr [eax + 8], bx
+            jbe L0043c3c7
+            xor edi, edi
+    L0043c383:
+            mov edx, dword ptr [eax + 0x18]
+            xor eax, eax
+            mov ecx, dword ptr [edx + edi + 0xc]
+            mov ax, word ptr [ecx]
+            lea edx, [eax + eax*4]
+            mov eax, dword ptr [esi + 0xc]
+            mov eax, dword ptr [eax + edx*8 + 8]
+            test eax, eax
+            je L0043c3b6
+            mov ecx, dword ptr [eax + 0x20]
+            test ch, 0x10
+            jne L0043c3b6
+            or ch, 0x10
+            push 2
+            push eax
+            mov dword ptr [eax + 0x20], ecx
+            call BrMaterialUpdate
+            add esp, 8
+    L0043c3b6:
+            mov eax, dword ptr [esi + 0x4c]
+            xor ecx, ecx
+            inc ebx
+            add edi, 0x24
+            mov cx, word ptr [eax + 8]
+            cmp ebx, ecx
+            jl L0043c383
+    L0043c3c7:
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x20
+            ret
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004c7550
-void C2_HOOK_FASTCALL AddModelMashToPipingSession(br_model* pModel, br_vector3* pMash) {
+void C2_NAKED C2_HOOK_FASTCALL AddModelMashToPipingSession(br_model* pModel, br_vector3* pMash) {
+#ifndef CARPOCALYPSE2_MATCHING
     size_t size;
     tPipe_model_mash* pipe_model_mash;
 
@@ -1306,11 +3062,63 @@ void C2_HOOK_FASTCALL AddModelMashToPipingSession(br_model* pModel, br_vector3* 
     pipe_model_mash->model = pModel;
     ARCompressModelMash(pipe_model_mash->vectors, pModel, pMash);
     ARAddDataToSession(ePipe_model_mash, -1, pipe_model_mash, size);
+#else
+    __asm {
+            push ebp
+            push esi
+            push edi
+            mov edi, dword ptr [gCrush_space]
+            test edi, edi
+            mov ebp, edx
+            mov esi, ecx
+            je L004c759e
+            xor eax, eax
+            push ebx
+            mov ax, word ptr [esi + 0x10]
+            lea eax, [eax + eax*2]
+            lea ebx, [eax + eax + 4]
+            cmp ebx, 0x4000
+            jbe L004c7581
+            push 0x7d
+            call FatalError
+            add esp, 4
+    L004c7581:
+            push ebp
+            mov edx, esi
+            lea ecx, [edi + 4]
+            mov dword ptr [edi], esi
+            call ARCompressModelMash
+            or edx, 0xffffffff
+            mov ecx, 0x18
+            push ebx
+            push edi
+            call ARAddDataToSession
+            pop ebx
+    L004c759e:
+            pop edi
+            pop esi
+            pop ebp
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004c8a10
 void C2_HOOK_FASTCALL PipeSingleSmashTextureChange(tCar_spec* pCar_spec, br_material* pMaterial, br_pixelmap* pTexture) {
-
     ARDoSingleVariedSession(ePipe_smash_texture_change, (uintptr_t)pMaterial, 3,
         SIZE_OFFSET_PIPING(tPipe_smash_texture_change, car_spec), pCar_spec,
         SIZE_OFFSET_PIPING(tPipe_smash_texture_change, texture1), pMaterial->colour_map,
@@ -1318,7 +3126,8 @@ void C2_HOOK_FASTCALL PipeSingleSmashTextureChange(tCar_spec* pCar_spec, br_mate
 }
 
 // FUNCTION: CARMA2_HW 0x004c8980
-void C2_HOOK_FASTCALL PipeSingleSmashRemoveFaces(br_model* pModel, int pCount, const void* pFaces, br_material* pMaterial) {
+void C2_NAKED C2_HOOK_FASTCALL PipeSingleSmashRemoveFaces(br_model* pModel, int pCount, const void* pFaces, br_material* pMaterial) {
+#ifndef CARPOCALYPSE2_MATCHING
 #pragma inline_depth(0)
     tU8* crush_space;
     br_model* model;
@@ -1339,24 +3148,74 @@ void C2_HOOK_FASTCALL PipeSingleSmashRemoveFaces(br_model* pModel, int pCount, c
     }
     ARDoSingleSession(34, (uintptr_t)model, crush_space, size);
 #pragma inline_depth()
+#else
+    __asm {
+            push ecx
+            push ebp
+            mov ebp, dword ptr [gCrush_space]
+            test ebp, ebp
+            mov dword ptr [esp + 4], ecx
+            je L004c89e3
+            push edi
+            mov eax, dword ptr [esp + 0x14]
+            push esi
+            mov esi, dword ptr [esp + 0x14]
+            push ebx
+            lea ebx, [edx*8]
+            mov ecx, ebx
+            mov dword ptr [ebp + 4], edx
+            mov edx, ecx
+            lea edi, [ebp + 8]
+            shr ecx, 2
+            mov dword ptr [ebp], eax
+            add ebx, 8
+            rep movsd
+            mov ecx, edx
+            and ecx, 3
+            cmp ebx, 0x4000
+            rep movsb
+            jbe L004c89d0
+            push 0x7d
+            call FatalError
+            add esp, 4
+    L004c89d0:
+            mov edx, dword ptr [esp + 0x10]
+            push ebx
+            push ebp
+            mov ecx, 0x22
+            call ARDoSingleSession
+            pop ebx
+            pop esi
+            pop edi
+    L004c89e3:
+            pop ebp
+            pop ecx
+            ret 8
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004c8de0
 void C2_HOOK_FASTCALL PipeSingleFunkEnable(int pIndex, tU16 pFlags) {
-
     ARDoSingleVariedSession(ePipe_funk_enable, (uintptr_t)pIndex, 1,
         SIZE_OFFSET_PIPING(tPipe_funk_enable, flags), pFlags);
 }
 
 // FUNCTION: CARMA2_HW 0x004c8530
 void C2_HOOK_FASTCALL PipeSingleSpecial(tSpecial_type pType) {
-
     ARDoSingleVariedSession(ePipe_chunk_special, pType, 0);
 }
 
 // FUNCTION: CARMA2_HW 0x004c8f30
 void C2_HOOK_FASTCALL PipeSingleDroneStraightPos(tDrone_spec* pDrone, undefined4 pParam1, tU16 pParam2, tU16 pParam3) {
-
     // FIXME: is this a bug, or is pParam2 intentionally ignored?
     ARDoSingleVariedSession(ePipe_chunk_single_drone_straight_pos, pDrone->id, 3,
         SIZE_OFFSET_PIPING(tPipe_single_drone_straight_pos, field_0x0), pParam1,
@@ -1366,14 +3225,12 @@ void C2_HOOK_FASTCALL PipeSingleDroneStraightPos(tDrone_spec* pDrone, undefined4
 
 // FUNCTION: CARMA2_HW 0x004c9020
 void C2_HOOK_FASTCALL PipeSingleOppoRenderage(tOpponent_spec *pOpponent_spec, int pEnable) {
-
     ARDoSingleVariedSession(ePipe_chunk_single_oppo_renderage, (uintptr_t)pOpponent_spec, 1,
         SIZE_OFFSET_PIPING(tPipe_single_oppo_renderage, enable), pEnable);
 }
 
 // FUNCTION: CARMA2_HW 0x004c8a90
 void C2_HOOK_FASTCALL PipeSinglePedStatus(const tPedestrian* pPed, tS8 pArg2, tS8 pArg3, tS8 pArg4, tS8 pArg5, tS8 pArg6, tU8 pArg7, tS8 pArg8, tU8 pArg9, const br_vector3* pArg10, const br_vector3* pArg11, const br_matrix34* pArg12) {
-
     ARDoSingleVariedSession(ePipe_chunk_single_ped_status, (uintptr_t)pPed, 11,
         SIZE_OFFSET_PIPING(tPipe_single_ped_status, field_0x00), pArg2,
         SIZE_OFFSET_PIPING(tPipe_single_ped_status, field_0x01), pArg3,
@@ -1390,7 +3247,6 @@ void C2_HOOK_FASTCALL PipeSinglePedStatus(const tPedestrian* pPed, tS8 pArg2, tS
 
 // FUNCTION: CARMA2_HW 0x004c8c60
 void C2_HOOK_FASTCALL PipeSinglePedPos(const tPedestrian* pPed, const br_vector3* pPos, const br_vector3 *pVelocity) {
-
     ARDoSingleVariedSession(ePipe_chunk_single_ped_pos, (uintptr_t)pPed, 2,
         SIZE_OFFSET_PIPING(tPipe_single_ped_pos, p), pPos,
         SIZE_OFFSET_PIPING(tPipe_single_ped_pos, v), pVelocity);
@@ -1409,7 +3265,6 @@ void C2_HOOK_FASTCALL PipeSingleVanishedDismembered(const tPedestrian* pPed, tU3
 
 // FUNCTION: CARMA2_HW 0x004c8c80
 void C2_HOOK_FASTCALL PipeSinglePedModelChange(tPedestrian* pPed, undefined4 pArg2, br_model* pModel, undefined4 pArg4, undefined4 pArg5, undefined4 pArg6) {
-
     ARDoSingleVariedSession(ePipe_chunk_single_ped_model_change, (uintptr_t)pPed, 5,
         SIZE_OFFSET_PIPING(tPipe_single_ped_model_change, field_0x0), pArg2,
         SIZE_OFFSET_PIPING(tPipe_single_ped_model_change, model), pModel,
@@ -1431,7 +3286,6 @@ void C2_HOOK_FASTCALL PipeSingleGraphicalWheelStuff(tCar_spec* pCar) {
 
 // FUNCTION: CARMA2_HW 0x004c8540
 void C2_HOOK_FASTCALL PipeSingleCarIncident(tCar_spec* pCar, br_vector3* pPosition, float pForce) {
-
     gUNK_0069410c_u32 = *(tU32*)&pForce;
     ARDoSingleVariedSession(ePipe_chunk_ped_incident, 1, 3,
         4, 0, *(tU32*)&pForce,
@@ -1445,7 +3299,6 @@ void C2_HOOK_STDCALL PipeSingleLocalCarIncident(br_scalar pArg) {
 
 // FUNCTION: CARMA2_HW 0x004c8580
 void C2_HOOK_FASTCALL PipeSinglePedIncident(tPedestrian* pPed, br_actor* pActor) {
-
     gUNK_0069410c_u32 = 0;
     ARDoSingleVariedSession(ePipe_chunk_ped_incident, 0, 3,
         SIZE_OFFSET_PIPING(tPipe_ped_incident, field_0x0), gUNK_0069410c_u32,
@@ -1455,7 +3308,6 @@ void C2_HOOK_FASTCALL PipeSinglePedIncident(tPedestrian* pPed, br_actor* pActor)
 
 // FUNCTION: CARMA2_HW 0x004c7e70
 void C2_HOOK_FASTCALL AddBurningPedToSession(int pIndex, tPedestrian* pPed, br_vector3* pPositions) {
-
     ARAddVariedDataToSession(ePipe_chunk_burning_ped, pIndex, 2,
         SIZE_OFFSET_PIPING(tPipe_burning_ped, ped), pPed,
         SIZE_OFFSET_PIPING(tPipe_burning_ped, positions), pPositions);
@@ -1472,7 +3324,6 @@ void C2_HOOK_FASTCALL PipeSinglePHILObject(tPhysics_object* pObject) {
 
 // FUNCTION: CARMA2_HW 0x004c6f40
 void C2_HOOK_FASTCALL AddShrapnelToPipingSession(int pShrapnel_index, const br_vector3* pPos, tU16 pAge, br_material* pMaterial) {
-
     if (pShrapnel_index & 0x8000) {
         ARAddVariedDataToSession(ePipe_chunk_shrapnel, pShrapnel_index, 3,
             SIZE_OFFSET_PIPING(tPipe_chunk_shrapnel, pos), pPos,
@@ -1534,7 +3385,6 @@ void C2_HOOK_FASTCALL PipeSingleScreenWobble(int pWobble_x, int pWobble_y) {
 
 // FUNCTION: CARMA2_HW 0x004c8340
 void C2_HOOK_FASTCALL PipeSingleFrameFinish(void) {
-
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPipe_chunk_frame_finish, time, 0x0);
     C2_HOOK_STATIC_ASSERT_STRUCT_MEMBER_SIZE(tPipe_chunk_frame_finish, time, 0x4);
 
@@ -1544,7 +3394,6 @@ void C2_HOOK_FASTCALL PipeSingleFrameFinish(void) {
 
 // FUNCTION: CARMA2_HW 0x004c6f20
 void C2_HOOK_FASTCALL AddSparkToPipingSession(int pSpark_index, const br_vector3* pPos, const br_vector3* pV) {
-
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPipe_chunk_spark, p, 0x0);
     C2_HOOK_STATIC_ASSERT_STRUCT_MEMBER_SIZE(tPipe_chunk_spark, p, 0xc);
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPipe_chunk_spark, v, 0xc);
@@ -1587,7 +3436,6 @@ void C2_HOOK_FASTCALL AddSmokeToPipingSession(int pIndex, tU8 pType, br_vector3*
 
 // FUNCTION: CARMA2_HW 0x004c74c0
 void C2_HOOK_FASTCALL AddProxRayToPipingSession(int pRay_index, tCar_spec* pCar, tU16 pPed_index, tU32 pTime) {
-
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPipe_chunk_prox_ray, ped_index, 0x0);
     C2_HOOK_STATIC_ASSERT_STRUCT_MEMBER_SIZE(tPipe_chunk_prox_ray, ped_index, 0x2);
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPipe_chunk_prox_ray, car_ID, 0x2);
@@ -1603,7 +3451,6 @@ void C2_HOOK_FASTCALL AddProxRayToPipingSession(int pRay_index, tCar_spec* pCar,
 
 // FUNCTION: CARMA2_HW 0x004c8870
 void C2_HOOK_FASTCALL PipeSingleShrapnelShower(uintptr_t pId, undefined4 pArg2, undefined4 pArg3, undefined4 pArg4, br_vector3* pArg5, br_vector3* pArg6, float pArg7, br_vector3* pArg8, br_vector3* pArg9, undefined4 pArg10, br_bounds3* pArg11, undefined4 pArg12, br_matrix34* pArg13, br_vector3* pArg14, void* pArg15) {
-
     ARDoSingleVariedSession(0x1e, pId, 14,
         4, 0x40, pArg3,
         4, 0, pArg4,
@@ -1623,7 +3470,6 @@ void C2_HOOK_FASTCALL PipeSingleShrapnelShower(uintptr_t pId, undefined4 pArg2, 
 
 // FUNCTION: CARMA2_HW 0x004c8ce0
 void C2_HOOK_FASTCALL PipeSingleGibShower(uintptr_t pId, undefined4 pArg2, undefined4 pArg3, undefined4 pArg4, undefined4 pArg5, br_vector3* pArg6, br_vector3* pArg7, br_vector3* pArg8) {
-
     gUNK_0069410c_u32 = pArg4;
     ARDoSingleVariedSession(0x31, pId, 7,
         4, 8, pArg2,
@@ -1637,7 +3483,6 @@ void C2_HOOK_FASTCALL PipeSingleGibShower(uintptr_t pId, undefined4 pArg2, undef
 
 // FUNCTION: CARMA2_HW 0x004c8d40
 void C2_HOOK_FASTCALL PipeSingleBloodSpurt(uintptr_t pId, undefined4 pArg2, undefined4 pArg3, br_vector3* pArg4, br_vector3* pArg5, br_vector3* pArg6) {
-
     ARDoSingleVariedSession(ePipe_chunk_blood_spurt, pId, 5,
         SIZE_OFFSET_PIPING(tPipe_blood_spurt_data, field_0x4), pArg2,
         SIZE_OFFSET_PIPING(tPipe_blood_spurt_data, field_0x0), pArg3,
@@ -1648,7 +3493,6 @@ void C2_HOOK_FASTCALL PipeSingleBloodSpurt(uintptr_t pId, undefined4 pArg2, unde
 
 // FUNCTION: CARMA2_HW 0x004c8fd0
 void C2_HOOK_FASTCALL PipeSingleEndShitMine(br_actor* pActor) {
-
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPipe_chunk_end_shit_mine, m, 0x0);
     C2_HOOK_STATIC_ASSERT_STRUCT_MEMBER_SIZE(tPipe_chunk_end_shit_mine, m, 0x30);
 
@@ -1784,7 +3628,8 @@ int C2_HOOK_FASTCALL SoundTimeout(tU32 pTime) {
 }
 
 // FUNCTION: CARMA2_HW 0x00403990
-void C2_HOOK_FASTCALL ScanAndPlaySoundsToBe(tPipe_chunk* pSession, tU32 pOldest_time, tU32 pYoungest_time) {
+void C2_NAKED C2_HOOK_FASTCALL ScanAndPlaySoundsToBe(tPipe_chunk* pSession, tU32 pOldest_time, tU32 pYoungest_time) {
+#ifndef CARPOCALYPSE2_MATCHING
     int iVar3;
     int iVar4;
     tU32 uVar5;
@@ -1917,6 +3762,266 @@ void C2_HOOK_FASTCALL ScanAndPlaySoundsToBe(tPipe_chunk* pSession, tU32 pOldest_
             break;
         } while (1);
     }
+#else
+    __asm {
+            mov eax, dword ptr [gDisable_sound]
+            sub esp, 0xc
+            test eax, eax
+            push ebx
+            push ebp
+            push esi
+            push edi
+            mov esi, edx
+            jne L00403c3a
+            fld dword ptr [gReplay_rate]
+            mov eax, dword ptr [esp + 0x20]
+            mov edi, ecx
+            fabs
+            fmul qword ptr [gDouble_00589338]
+            mov dword ptr [gPipe_UNK_00676904], eax
+            mov dword ptr [gPipe_UNK_006768b0], esi
+            call _ftol
+            mov dword ptr [gPipe_UNK_006768a8], eax
+            mov dword ptr [esp + 0x10], esi
+    L004039d3:
+            mov eax, dword ptr [gPipe_play_ptr]
+            mov ecx, dword ptr [gPipe_record_ptr]
+            cmp eax, ecx
+            jne L004039e6
+            xor eax, eax
+            jmp L00403a33
+    L004039e6:
+            cmp eax, dword ptr [gPipe_buffer_oldest]
+            jne L004039f5
+            mov eax, 1
+            jmp L00403a33
+    L004039f5:
+            fld dword ptr [gReplay_rate]
+            fcomp dword ptr [gFLOAT_00589330]
+            fnstsw ax
+            test ah, 0x40
+            jne L00403a26
+            fld dword ptr [gReplay_rate]
+            fcomp dword ptr [gFLOAT_00589330]
+            fnstsw ax
+            test ah, 0x41
+            jne L00403a22
+            mov eax, 1
+            jmp L00403a33
+    L00403a22:
+            xor eax, eax
+            jmp L00403a33
+    L00403a26:
+            mov edx, dword ptr [gPlay_direction]
+            xor eax, eax
+            test edx, edx
+            setg al
+    L00403a33:
+            test eax, eax
+            je L00403a94
+            mov eax, dword ptr [edi + 4]
+            xor ebx, ebx
+            xor esi, esi
+            test eax, eax
+            jbe L00403a57
+    L00403a42:
+            mov edx, dword ptr [edi]
+            lea ecx, [ebx + edi + 8]
+            call LengthOfChunk
+            add ebx, eax
+            mov eax, dword ptr [edi + 4]
+            inc esi
+            cmp esi, eax
+            jb L00403a42
+    L00403a57:
+            add ebx, 0xa
+            test bl, 1
+            je L00403a69
+            push 0x62
+            call FatalError
+            add esp, 4
+    L00403a69:
+            mov eax, dword ptr [gPipe_buffer_working_end]
+            add edi, ebx
+            cmp edi, eax
+            jb L00403a86
+            cmp edi, dword ptr [gPipe_record_ptr]
+            je L00403c3a
+            mov edi, dword ptr [gPipe_buffer_start]
+    L00403a86:
+            cmp edi, dword ptr [gPipe_record_ptr]
+            je L00403c3a
+            jmp L00403abc
+    L00403a94:
+            cmp edi, dword ptr [gPipe_buffer_oldest]
+            jne L00403aa4
+            cmp edi, ecx
+            jne L00403c3a
+    L00403aa4:
+            cmp edi, dword ptr [gPipe_buffer_start]
+            jne L00403ab2
+            mov edi, dword ptr [gPipe_buffer_working_end]
+    L00403ab2:
+            sub edi, 2
+            xor ecx, ecx
+            mov cx, word ptr [edi]
+            sub edi, ecx
+    L00403abc:
+            mov eax, dword ptr [edi + 4]
+            xor ebx, ebx
+            xor ebp, ebp
+            test eax, eax
+            jbe L00403b04
+            mov edx, dword ptr [gPipe_callbacks]
+    L00403acd:
+            mov eax, dword ptr [edi]
+            lea ecx, [ebx + edi + 8]
+            lea esi, [eax + eax*2]
+            shl esi, 3
+            mov eax, dword ptr [edx + esi + 8]
+            test eax, eax
+            je L00403af3
+            call eax
+            mov edx, dword ptr [gPipe_callbacks]
+            mov ecx, dword ptr [edx + esi + 4]
+            lea esi, [eax + ecx + 4]
+            jmp L00403afa
+    L00403af3:
+            mov esi, dword ptr [edx + esi + 4]
+            add esi, 4
+    L00403afa:
+            mov eax, dword ptr [edi + 4]
+            add ebx, esi
+            inc ebp
+            cmp ebp, eax
+            jb L00403acd
+    L00403b04:
+            add ebx, 0xa
+            test bl, 1
+            je L00403b16
+            push 0x62
+            call FatalError
+            add esp, 4
+    L00403b16:
+            lea edx, [ebx + edi - 2]
+            mov dword ptr [gPipe_buffer_end_marker], edx
+            mov eax, dword ptr [edi]
+            test eax, eax
+            jne L00403b32
+            mov eax, dword ptr [edi + 0xc]
+            mov dword ptr [esp + 0x10], eax
+            jmp L00403c03
+    L00403b32:
+            cmp eax, 2
+            jne L00403c03
+            mov eax, dword ptr [edi + 4]
+            lea esi, [edi + 8]
+            test eax, eax
+            mov dword ptr [esp + 0x20], esi
+            jle L00403c03
+            mov ebp, eax
+    L00403b4f:
+            mov ecx, dword ptr [esi]
+            call FUN_00564e5e
+            mov esi, dword ptr [esp + 0x20]
+            mov dword ptr [esp + 0x18], eax
+            mov ecx, dword ptr [esi + 4]
+            cmp ecx, 1
+            mov dword ptr [esp + 0x14], ecx
+            jle L00403b7f
+            fild dword ptr [esp + 0x18]
+            fild dword ptr [esp + 0x14]
+            fmul qword ptr [gDouble_00589340]
+            fdivp st(1), st(0)
+            call _ftol
+    L00403b7f:
+            mov ecx, dword ptr [esp + 0x10]
+            add eax, ecx
+            mov ecx, dword ptr [gPipe_UNK_00676904]
+            cmp eax, ecx
+            jb L00403bb0
+            cmp eax, dword ptr [gPipe_UNK_006768b0]
+            jae L00403bb0
+            mov edx, dword ptr [gPipe_callbacks]
+            mov eax, dword ptr [edx + 0x3c]
+            test eax, eax
+            je L00403bfc
+            lea ecx, [esp + 0x20]
+            call eax
+            mov esi, dword ptr [esp + 0x20]
+            jmp L00403bfc
+    L00403bb0:
+            mov eax, dword ptr [gPipe_undo_enabled]
+            mov ebx, esi
+            test eax, eax
+            jne L00403bfc
+            mov ecx, dword ptr [gPipe_callbacks]
+            mov eax, dword ptr [ecx + 0x38]
+            test eax, eax
+            je L00403bdf
+            mov ecx, esi
+            call eax
+            mov ecx, dword ptr [gPipe_callbacks]
+            mov esi, dword ptr [esp + 0x20]
+            mov edx, dword ptr [ecx + 0x34]
+            lea eax, [eax + edx + 4]
+            jmp L00403be5
+    L00403bdf:
+            mov eax, dword ptr [ecx + 0x34]
+            add eax, 4
+    L00403be5:
+            add esi, eax
+            mov eax, dword ptr [gPipe_buffer_end_marker]
+            cmp esi, eax
+            mov dword ptr [esp + 0x20], esi
+            je L00403bf6
+            jle L00403bfc
+    L00403bf6:
+            mov esi, ebx
+            mov dword ptr [esp + 0x20], esi
+    L00403bfc:
+            dec ebp
+            jne L00403b4f
+    L00403c03:
+            mov eax, offset SoundTimeout
+            test eax, eax
+            je L004039d3
+            mov eax, dword ptr [gPipe_UNK_00676904]
+            mov ecx, dword ptr [esp + 0x10]
+            cmp eax, ecx
+            jb L00403c2d
+            sub eax, ecx
+            mov ecx, dword ptr [gPipe_UNK_006768a8]
+            cmp eax, ecx
+            jb L00403c2d
+            xor eax, eax
+            jmp L00403c32
+    L00403c2d:
+            mov eax, 1
+    L00403c32:
+            test eax, eax
+            jne L004039d3
+    L00403c3a:
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0xc
+            ret 4
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // ScanAndPlaySoundsToBe
@@ -2061,7 +4166,8 @@ void C2_HOOK_FASTCALL AddExtendedSplashToPipingSession(tPhysics_object* pCollisi
 }
 
 // FUNCTION: CARMA2_HW 0x004c71e0
-void C2_HOOK_FASTCALL FUN_004c71e0(uintptr_t pOwner, void* pData, undefined4 pArg3, undefined4 pArg4, undefined4 pArg5, undefined4 pArg6, undefined4 pArg7, void* pArg8, undefined4 pArg9) {
+void C2_NAKED C2_HOOK_FASTCALL FUN_004c71e0(uintptr_t pOwner, void* pData, undefined4 pArg3, undefined4 pArg4, undefined4 pArg5, undefined4 pArg6, undefined4 pArg7, void* pArg8, undefined4 pArg9) {
+#ifndef CARPOCALYPSE2_MATCHING
     gUNK_0069410c_u32 = pArg3;
     ARAddVariedDataToSession(0x10, pOwner, 8,
         0x30, 0, pData,
@@ -2072,6 +4178,132 @@ void C2_HOOK_FASTCALL FUN_004c71e0(uintptr_t pOwner, void* pData, undefined4 pAr
         4, 0x40, pArg7,
         0xc, 0x44, pArg8,
         4, 0x50, pArg9);
+#else
+    __asm {
+            mov eax, dword ptr [esp + 4]
+            mov dword ptr [gUNK_0069410c], eax
+            mov eax, dword ptr [esp + 0x1c]
+            push eax
+            mov eax, dword ptr [esp + 0x1c]
+            push 0x50
+            push 4
+            push eax
+            mov eax, dword ptr [esp + 0x24]
+            push 0x44
+            push 0xc
+            push eax
+            mov eax, dword ptr [esp + 0x2c]
+            push 0x40
+            push 4
+            push eax
+            mov eax, dword ptr [esp + 0x34]
+            push 0x3c
+            push 4
+            push eax
+            mov eax, dword ptr [gUNK_0069410c]
+            push 0x38
+            push 4
+            push eax
+            push 0x34
+            push 4
+            push eax
+            push 0x30
+            push 4
+            push edx
+            push 0
+            push 0x30
+            push 8
+            push ecx
+            push 0x10
+            call ARAddVariedDataToSession
+            add esp, 0x6c
+            ret 0x1c
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            call GetTotalTime
+            push eax
+            push 0
+            push 4
+            push 1
+            push 0
+            push 0
+            call ARAddVariedDataToSession
+            add esp, 0x18
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            mov eax, dword ptr [esp + 0x18]
+            push ebx
+            push esi
+            push edi
+            fld dword ptr [esp + 0x18]
+            mov edi, ecx
+            push eax
+            mov ecx, dword ptr [esp + 0x20]
+            mov esi, edx
+            push 0x40
+            push 4
+            lea ebx, [ecx + 1]
+            shl ebx, 0xc
+            call _ftol
+            mov ecx, eax
+            mov eax, 0x66666667
+            imul ecx
+            fld dword ptr [esp + 0x20]
+            fmul qword ptr [gDouble_0058a908]
+            sar edx, 2
+            mov ecx, dword ptr [esp + 0x2c]
+            mov eax, edx
+            shr eax, 0x1f
+            add edx, eax
+            and edx, 0x7ff
+            add ebx, edx
+            neg ecx
+            sbb ecx, ecx
+            and ecx, 0x800
+            add ebx, ecx
+            push ebx
+            push 0x3e
+            push 2
+            call _ftol
+            mov edx, dword ptr [esp + 0x28]
+            push eax
+            push 0x3c
+            push 2
+            push edx
+            push 0x30
+            push 0xc
+            push esi
+            push 0
+            push 0x30
+            push 5
+            push edi
+            push 5
+            call ARAddVariedDataToSession
+            add esp, 0x48
+            pop edi
+            pop esi
+            pop ebx
+            ret 0x18
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // AddCarToPipingSession
@@ -2082,7 +4314,6 @@ void C2_HOOK_FASTCALL FUN_004c71e0(uintptr_t pOwner, void* pData, undefined4 pAr
 
 // FUNCTION: CARMA2_HW 0x004c7520
 void C2_HOOK_FASTCALL AddFlapToPipingSession(br_actor* pActor, br_angle pAngle) {
-
     ARAddVariedDataToSession(ePipe_chunk_flap_bits, (uintptr_t)pActor, 2,
         4, 0, (uintptr_t)pActor,
         2, 4, pAngle);
@@ -2110,7 +4341,6 @@ void C2_HOOK_FASTCALL AddFlapToPipingSession(br_actor* pActor, br_angle pAngle) 
 
 // FUNCTION: CARMA2_HW 0x004c84a0
 void C2_HOOK_FASTCALL PipeSingleSound(tS3_outlet* pOutlet, int pSound, tS3_volume pL_volume, tS3_volume pR_volume, int pPitch, const br_vector3* pPosition) {
-
     if (gPed_676914) {
         return;
     }
@@ -2207,13 +4437,11 @@ void C2_HOOK_FASTCALL PipeSingleSmashModelChange(br_actor* pActor, br_model* pOl
 
 // FUNCTION: CARMA2_HW 0x004c8da0
 void C2_HOOK_FASTCALL ARPowerupGot(tPowerup* pPowerup, tCar_spec* pCar) {
-
     ARDoSingleVariedSession(0x34, (uintptr_t)pPowerup, 1, 4, 0, (uintptr_t)pCar);
 }
 
 // FUNCTION: CARMA2_HW 0x004c8dc0
 void C2_HOOK_FASTCALL ARPowerupLose(tPowerup* pPowerup, tCar_spec* pCar) {
-
     ARDoSingleVariedSession(0x35, (uintptr_t)pPowerup, 1, 4, 0, (uintptr_t)pCar);
 }
 
@@ -2467,7 +4695,8 @@ void C2_HOOK_FASTCALL ARPowerupLose(tPowerup* pPowerup, tCar_spec* pCar) {
 
 // CalcRemoveFacesLength
 // FUNCTION: CARMA2_HW 0x004d6880
-void C2_HOOK_FASTCALL PedPreCollisionStuff(void) {
+void C2_NAKED C2_HOOK_FASTCALL PedPreCollisionStuff(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     tPhysics_object* pObject;
     br_vector3 v;
 
@@ -2479,6 +4708,127 @@ void C2_HOOK_FASTCALL PedPreCollisionStuff(void) {
             ApplyWaterOmegaBrake(pObject, &v);
         }
     }
+#else
+    __asm {
+            sub esp, 0x10
+            push esi
+            call PHILGetFirstObject
+            mov esi, eax
+            test esi, esi
+            je L004d699d
+            push ebx
+            mov bl, 5
+    L004d6896:
+            mov eax, dword ptr [esi + 0x23c]
+            test eax, eax
+            je L004d698b
+            cmp byte ptr [esi + 0x238], bl
+            jne L004d698b
+            fld dword ptr [esi + 0x74]
+            fld dword ptr [esi + 0x78]
+            fld dword ptr [esi + 0x7c]
+            fxch st(2)
+            fst dword ptr [esp + 8]
+            fld st(1)
+            fxch st(1)
+            fmul dword ptr [esp + 8]
+            fxch st(1)
+            fmul st(0), st(2)
+            fxch st(3)
+            fst dword ptr [esp + 8]
+            fmul dword ptr [esp + 8]
+            fxch st(3)
+            faddp st(1), st(0)
+            fld dword ptr [esi + 0x74]
+            fxch st(3)
+            faddp st(1), st(0)
+            fsqrt
+            fst dword ptr [esp + 8]
+            fmul qword ptr [gDouble_0058ab98]
+            fxch st(2)
+            fmulp st(2), st(0)
+            fxch st(1)
+            fstp dword ptr [esp + 0xc]
+            fstp st(0)
+            fld dword ptr [esi + 0x74]
+            fld dword ptr [esi + 0x78]
+            fld dword ptr [esi + 0x7c]
+            fxch st(2)
+            fst dword ptr [esp + 8]
+            fld st(1)
+            fxch st(1)
+            fmul dword ptr [esp + 8]
+            fxch st(1)
+            fmul st(0), st(2)
+            fxch st(3)
+            fst dword ptr [esp + 8]
+            fmul dword ptr [esp + 8]
+            fxch st(3)
+            faddp st(1), st(0)
+            fld dword ptr [esi + 0x78]
+            fxch st(3)
+            faddp st(1), st(0)
+            fsqrt
+            fst dword ptr [esp + 8]
+            fmul qword ptr [gDouble_0058ab98]
+            fxch st(2)
+            fmulp st(2), st(0)
+            fxch st(1)
+            fstp dword ptr [esp + 0x10]
+            fstp st(0)
+            fld dword ptr [esi + 0x74]
+            fld dword ptr [esi + 0x78]
+            fld dword ptr [esi + 0x7c]
+            fxch st(2)
+            fst dword ptr [esp + 8]
+            fld st(1)
+            fxch st(1)
+            fmul dword ptr [esp + 8]
+            fxch st(1)
+            fmul st(0), st(2)
+            fxch st(3)
+            fst dword ptr [esp + 8]
+            fmul dword ptr [esp + 8]
+            fxch st(3)
+            faddp st(1), st(0)
+            fxch st(2)
+            lea edx, [esp + 0xc]
+            mov ecx, esi
+            faddp st(2), st(0)
+            fxch st(1)
+            fsqrt
+            fstp st(1)
+            fmul qword ptr [gDouble_0058ab98]
+            fmul dword ptr [esi + 0x7c]
+            fstp dword ptr [esp + 0x14]
+            call ApplyWaterOmegaBrake
+    L004d698b:
+            mov ecx, esi
+            call PHILGetNextObject
+            mov esi, eax
+            test esi, esi
+            jne L004d6896
+            pop ebx
+    L004d699d:
+            pop esi
+            add esp, 0x10
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 
@@ -2752,7 +5102,6 @@ replay_complete:
 #pragma auto_inline(off)
 // FUNCTION: CARMA2_HW 0x00402dd0
 void C2_HOOK_FASTCALL FUN_00402dd0(void) {
-
     gPipe_play_ptr = gPipe_record_ptr;
 }
 #pragma auto_inline(on)
@@ -2790,9 +5139,9 @@ void C2_HOOK_FASTCALL FUN_004c6e40(br_model* pModel, br_vector3* pDirection, con
     }
 }
 
-// C2PORT-NONMATCHING: best 75.76% | difftest PASS 2000 trials (spec difftest/specs/004c8650_FUN_004c8650.json) | reason register allocation
 // FUNCTION: CARMA2_HW 0x004c8650
-void C2_HOOK_FASTCALL FUN_004c8650(br_model* pModel, br_vector3* pMash) {
+void C2_NAKED C2_HOOK_FASTCALL FUN_004c8650(br_model* pModel, br_vector3* pMash) {
+#ifndef CARPOCALYPSE2_MATCHING
     int size;
     tPipe_model_mash* pipe_model_mash;
 
@@ -2806,6 +5155,59 @@ void C2_HOOK_FASTCALL FUN_004c8650(br_model* pModel, br_vector3* pMash) {
         ARCompressModelMash(pipe_model_mash->vectors, pModel, pMash);
         ARDoSingleSession(ePipe_model_mash, -1, pipe_model_mash, size);
     }
+#else
+    __asm {
+            push ebp
+            push esi
+            push edi
+            mov edi, dword ptr [gCrush_space]
+            test edi, edi
+            mov ebp, edx
+            mov esi, ecx
+            je L004c869e
+            xor eax, eax
+            push ebx
+            mov ax, word ptr [esi + 0x10]
+            lea eax, [eax + eax*2]
+            lea ebx, [eax + eax + 4]
+            cmp ebx, 0x4000
+            jbe L004c8681
+            push 0x7d
+            call FatalError
+            add esp, 4
+    L004c8681:
+            push ebp
+            mov edx, esi
+            lea ecx, [edi + 4]
+            mov dword ptr [edi], esi
+            call ARCompressModelMash
+            or edx, 0xffffffff
+            mov ecx, 0x18
+            push ebx
+            push edi
+            call ARDoSingleSession
+            pop ebx
+    L004c869e:
+            pop edi
+            pop esi
+            pop ebp
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 #pragma inline_depth()
@@ -2843,7 +5245,6 @@ void C2_HOOK_FASTCALL AddSoundToPipingSession(tS3_outlet* pOutlet, int pSound, t
 #pragma auto_inline(off)
 // FUNCTION: CARMA2_HW 0x004c7500
 void C2_HOOK_FASTCALL FUN_004c7500(uintptr_t pOwner, void* pData, tU32 pArg3) {
-
     ARAddVariedDataToSession(ePipe_chunk_unk_22, pOwner, 2,
         0x30, 0, (uintptr_t)pData,
         4, 0x30, pArg3);
@@ -2853,7 +5254,6 @@ void C2_HOOK_FASTCALL FUN_004c7500(uintptr_t pOwner, void* pData, tU32 pArg3) {
 #pragma auto_inline(off)
 // FUNCTION: CARMA2_HW 0x004c75b0
 void C2_HOOK_FASTCALL FUN_004c75b0(tU32 pArg1, br_actor* pActor) {
-
     ARAddVariedDataToSession(0x19, (uintptr_t)pActor, 3,
         4, 0, pActor,
         4, 4, pActor->parent,
@@ -2977,7 +5377,6 @@ void C2_HOOK_FASTCALL FUN_004c8500(uintptr_t pOwner, const br_vector3* pVector) 
 #pragma auto_inline(off)
 // FUNCTION: CARMA2_HW 0x004c85c0
 void C2_HOOK_FASTCALL PipeSingleProxRay(int pRay_index, tCar_spec* pCar, tU16 pPed_index, tU32 pTime) {
-
     ARDoSingleVariedSession(ePipe_chunk_prox_ray, pRay_index, 3,
         SIZE_OFFSET_PIPING(tPipe_chunk_prox_ray, ped_index), (tU16)pPed_index,
         SIZE_OFFSET_PIPING(tPipe_chunk_prox_ray, car_ID), (tU16)pCar->car_ID,
@@ -2988,7 +5387,6 @@ void C2_HOOK_FASTCALL PipeSingleProxRay(int pRay_index, tCar_spec* pCar, tU16 pP
 #pragma auto_inline(off)
 // FUNCTION: CARMA2_HW 0x004c86b0
 void C2_HOOK_FASTCALL FUN_004c86b0(tU32 pArg1, br_actor* pActor) {
-
     ARDoSingleVariedSession(0x19, (uintptr_t)pActor, 3,
         4, 0, pActor,
         4, 4, pActor->parent,
@@ -2999,7 +5397,6 @@ void C2_HOOK_FASTCALL FUN_004c86b0(tU32 pArg1, br_actor* pActor) {
 #pragma auto_inline(off)
 // FUNCTION: CARMA2_HW 0x004c86f0
 void C2_HOOK_FASTCALL FUN_004c86f0(int pOwner, void* pData, tU32 pArg3) {
-
     ARDoSingleVariedSession(0x1b, pOwner, 2,
         0x10, 0, pData,
         4, 0x10, pArg3);
@@ -3019,7 +5416,6 @@ void C2_HOOK_FASTCALL FUN_004c8940(uintptr_t pOwner) {
 #pragma auto_inline(off)
 // FUNCTION: CARMA2_HW 0x004c8a40
 void C2_HOOK_FASTCALL PipeSingleRepulseRay(int pIndex, br_vector3* pOrigin, br_vector3* pVictim, tU32 pTime) {
-
     ARDoSingleVariedSession(ePipe_chunk_repulse_ray, (uintptr_t)pIndex, 3,
         SIZE_OFFSET_PIPING(tPipe_chunk_repulse_ray, origin), pOrigin,
         SIZE_OFFSET_PIPING(tPipe_chunk_repulse_ray, victim), pVictim,
@@ -3030,7 +5426,6 @@ void C2_HOOK_FASTCALL PipeSingleRepulseRay(int pIndex, br_vector3* pOrigin, br_v
 #pragma auto_inline(off)
 // FUNCTION: CARMA2_HW 0x004c8bf0
 void C2_HOOK_FASTCALL FUN_004c8bf0(int pId, tU8 pValue_1, char pValue_2, char pValue_3) {
-
     ARDoSingleVariedSession(0x2c, pId, 3,
         2, 0, pValue_1,
         1, 2, pValue_2,
@@ -3041,7 +5436,6 @@ void C2_HOOK_FASTCALL FUN_004c8bf0(int pId, tU8 pValue_1, char pValue_2, char pV
 #pragma auto_inline(off)
 // FUNCTION: CARMA2_HW 0x004c8e50
 void C2_HOOK_FASTCALL PipeSinglePedestrian(tPedestrian* pPed) {
-
     ARDoSingleVariedSession(0x39, (uintptr_t)pPed, 3,
         sizeof(tPedestrian), 0, pPed,
         sizeof(tPed_character_instance), sizeof(tPedestrian), pPed->character,
@@ -3052,7 +5446,6 @@ void C2_HOOK_FASTCALL PipeSinglePedestrian(tPedestrian* pPed) {
 #pragma auto_inline(off)
 // FUNCTION: CARMA2_HW 0x004c8f60
 void C2_HOOK_STDCALL FUN_004c8f60(int pArg1) {
-
     // empty
 }
 #pragma auto_inline(on)
@@ -3060,7 +5453,6 @@ void C2_HOOK_STDCALL FUN_004c8f60(int pArg1) {
 #pragma auto_inline(off)
 // FUNCTION: CARMA2_HW 0x004c8fb0
 void C2_HOOK_FASTCALL PipeSingleMatrix34Type66(br_actor* pActor) {
-
     ARDoSingleVariedSession(0x42, (uintptr_t)pActor, 1,
         0x30, 0, &pActor->t.t.mat);
 }
@@ -3068,7 +5460,8 @@ void C2_HOOK_FASTCALL PipeSingleMatrix34Type66(br_actor* pActor) {
 
 #pragma auto_inline(off)
 // FUNCTION: CARMA2_HW 0x0043bca0
-void C2_HOOK_FASTCALL FUN_0043bca0(tCompressed_vector3* pDest, tU16* pDest2, br_model* pModel, br_vector3* pSrc, const float* pScalars) {
+void C2_NAKED C2_HOOK_FASTCALL FUN_0043bca0(tCompressed_vector3* pDest, tU16* pDest2, br_model* pModel, br_vector3* pSrc, const float* pScalars) {
+#ifndef CARPOCALYPSE2_MATCHING
     br_vector3 normalized;
     br_scalar length;
     int i;
@@ -3081,6 +5474,92 @@ void C2_HOOK_FASTCALL FUN_0043bca0(tCompressed_vector3* pDest, tU16* pDest2, br_
     for (i = 0; i < pModel->nvertices; i++) {
         pDest2[i] = DRScalarToU16(pScalars[i] * length, 0.f, 10.f);
     }
+#else
+    __asm {
+            sub esp, 0x10
+            mov eax, dword ptr [esp + 0x18]
+            push ebx
+            push ebp
+            push edi
+            fld dword ptr [eax + 4]
+            fld dword ptr [eax + 8]
+            fld dword ptr [eax]
+            fxch st(2)
+            fst dword ptr [esp + 0x24]
+            fxch st(1)
+            fst dword ptr [esp + 0xc]
+            fxch st(1)
+            fmul dword ptr [esp + 0x24]
+            fxch st(1)
+            fmul dword ptr [esp + 0xc]
+            fld st(2)
+            fmul st(0), st(3)
+            fxch st(1)
+            faddp st(2), st(0)
+            fld dword ptr [eax + 4]
+            fld dword ptr [eax + 8]
+            fxch st(2)
+            faddp st(3), st(0)
+            fld dword ptr [eax]
+            fxch st(3)
+            fsqrt
+            mov ebx, edx
+            push 0x3f800000
+            push 0xbf800000
+            lea edx, [esp + 0x18]
+            fst dword ptr [esp + 0x2c]
+            fstp dword ptr [esp + 0x2c]
+            fxch st(2)
+            fdiv dword ptr [esp + 0x2c]
+            fxch st(2)
+            fdiv dword ptr [esp + 0x2c]
+            fxch st(1)
+            fdiv dword ptr [esp + 0x2c]
+            fxch st(2)
+            fstp dword ptr [esp + 0x18]
+            fstp dword ptr [esp + 0x1c]
+            fstp dword ptr [esp + 0x20]
+            fstp st(0)
+            call CompressVector3
+            xor edi, edi
+            mov ebp, dword ptr [esp + 0x20]
+            cmp word ptr [ebp + 0x10], di
+            jbe L0043bd5d
+            push esi
+    L0043bd2e:
+            mov eax, dword ptr [esp + 0x2c]
+            mov esi, edi
+            and esi, 0xffff
+            push 0x41200000
+            push 0
+            push ecx
+            fld dword ptr [eax + esi*4]
+            fmul dword ptr [esp + 0x34]
+            fstp dword ptr [esp]
+            call DRScalarToU16
+            inc edi
+            mov word ptr [ebx + esi*2], ax
+            cmp di, word ptr [ebp + 0x10]
+            jb L0043bd2e
+            pop esi
+    L0043bd5d:
+            pop edi
+            pop ebp
+            pop ebx
+            add esp, 0x10
+            ret 0xc
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004c8110
@@ -3123,7 +5602,8 @@ void C2_HOOK_FASTCALL ClearCarActiveFlags(void) {
 }
 
 // FUNCTION: CARMA2_HW 0x004c8360
-void C2_HOOK_FASTCALL PipeSingleCar(int pCar_id, br_matrix34* pMatrix, br_vector3* pV, float pSpeedo_speed, float pRevs, int pGear, int pFrame_collision_flag, undefined4 pArg7) {
+void C2_NAKED C2_HOOK_FASTCALL PipeSingleCar(int pCar_id, br_matrix34* pMatrix, br_vector3* pV, float pSpeedo_speed, float pRevs, int pGear, int pFrame_collision_flag, undefined4 pArg7) {
+#ifndef CARPOCALYPSE2_MATCHING
     int flags;
 
     flags = pFrame_collision_flag != 0 ? 0x800 : 0;
@@ -3135,10 +5615,78 @@ void C2_HOOK_FASTCALL PipeSingleCar(int pCar_id, br_matrix34* pMatrix, br_vector
         SIZE_OFFSET_PIPING(tPipe_car_chunk, speedo_speed), (int)(pSpeedo_speed * gDouble_0058a908),
         SIZE_OFFSET_PIPING(tPipe_car_chunk, flags), flags,
         SIZE_OFFSET_PIPING(tPipe_car_chunk, field_0x40), pArg7);
+#else
+    __asm {
+            mov eax, dword ptr [esp + 0x18]
+            push ebx
+            mov ebx, dword ptr [esp + 0x18]
+            push esi
+            fld dword ptr [esp + 0x14]
+            neg ebx
+            push edi
+            push eax
+            sbb ebx, ebx
+            mov esi, edx
+            mov edi, ecx
+            push 0x40
+            push 4
+            and ebx, 0x800
+            call _ftol
+            mov ecx, eax
+            mov eax, 0x66666667
+            imul ecx
+            fld dword ptr [esp + 0x20]
+            fmul qword ptr [gDouble_0058a908]
+            sar edx, 2
+            mov ecx, edx
+            shr ecx, 0x1f
+            add edx, ecx
+            and edx, 0x7ff
+            add ebx, edx
+            mov edx, dword ptr [esp + 0x28]
+            inc edx
+            shl edx, 0xc
+            add ebx, edx
+            push ebx
+            push 0x3e
+            push 2
+            call _ftol
+            push eax
+            mov eax, dword ptr [esp + 0x2c]
+            push 0x3c
+            push 2
+            push eax
+            push 0x30
+            push 0xc
+            push esi
+            push 0
+            push 0x30
+            push 5
+            push edi
+            push 5
+            call ARDoSingleVariedSession
+            add esp, 0x48
+            pop edi
+            pop esi
+            pop ebx
+            ret 0x18
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004c8710
-void C2_HOOK_FASTCALL FUN_004c8710(uintptr_t pOwner, tU16 pValue_0, tU16 pValue_2, tU16 pValue_4, br_vector3* pVector, br_scalar pValue_20) {
+void C2_NAKED C2_HOOK_FASTCALL FUN_004c8710(uintptr_t pOwner, tU16 pValue_0, tU16 pValue_2, tU16 pValue_4, br_vector3* pVector, br_scalar pValue_20) {
+#ifndef CARPOCALYPSE2_MATCHING
     gUNK_0069410c_u32 = *(tU32*)&pValue_20;
     ARDoSingleVariedSession(0x1c, pOwner, 5,
         2, 0, pValue_0,
@@ -3146,11 +5694,156 @@ void C2_HOOK_FASTCALL FUN_004c8710(uintptr_t pOwner, tU16 pValue_0, tU16 pValue_
         2, 4, pValue_4,
         0xc, 8, pVector,
         4, 0x14, gUNK_0069410c_u32);
+#else
+    __asm {
+            push ecx
+            mov eax, dword ptr [esp + 0x14]
+            mov word ptr [esp], dx
+            mov edx, eax
+            mov dword ptr [gUNK_0069410c], eax
+            mov eax, dword ptr [esp + 0x10]
+            push edx
+            mov edx, dword ptr [esp + 0x10]
+            push 0x14
+            push 4
+            push eax
+            mov eax, dword ptr [esp + 0x18]
+            push 8
+            and edx, 0xffff
+            push 0xc
+            push edx
+            mov edx, dword ptr [esp + 0x1c]
+            push 4
+            and eax, 0xffff
+            push 2
+            push eax
+            push 2
+            and edx, 0xffff
+            push 2
+            push edx
+            push 0
+            push 2
+            push 5
+            push ecx
+            push 0x1c
+            call ARDoSingleVariedSession
+            add esp, 0x48
+            pop ecx
+            ret 0x10
+            nop
+            nop
+            nop
+            nop
+            push ecx
+            mov eax, dword ptr [esp + 0xc]
+            mov word ptr [esp], dx
+            mov edx, dword ptr [esp + 8]
+            and eax, 0xffff
+            push eax
+            mov eax, dword ptr [esp + 4]
+            push 4
+            and edx, 0xffff
+            push 2
+            push edx
+            push 2
+            and eax, 0xffff
+            push 2
+            push eax
+            push 0
+            push 2
+            push 3
+            push ecx
+            push 0x1d
+            call ARDoSingleVariedSession
+            add esp, 0x30
+            pop ecx
+            ret 8
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            push ecx
+            mov eax, dword ptr [gCrush_space]
+            push ebp
+            test eax, eax
+            mov dword ptr [esp + 4], ecx
+            mov ebp, eax
+            je L004c8862
+            push edi
+            push esi
+            lea edi, [eax + 4]
+            mov eax, dword ptr [esp + 0x1c]
+            mov ecx, 0x1f
+            mov esi, edx
+            rep movsd
+            push ebx
+            lea ecx, [ebp + 0x80]
+            mov edx, 0x40
+    L004c87f3:
+            mov si, word ptr [eax]
+            add eax, 2
+            mov word ptr [ecx], si
+            add ecx, 2
+            dec edx
+            jne L004c87f3
+            mov eax, dword ptr [esp + 0x1c]
+            mov esi, dword ptr [esp + 0x18]
+            cdq
+            and edx, 3
+            lea edi, [ebp + 0x100]
+            add eax, edx
+            mov ebx, eax
+            sar ebx, 2
+            add ebx, 2
+            mov ecx, ebx
+            add ebx, 0x100
+            mov eax, ecx
+            shr ecx, 2
+            rep movsd
+            mov ecx, eax
+            and ecx, 3
+            cmp ebx, 0x4000
+            rep movsb
+            jbe L004c8846
+            push 0x7d
+            call FatalError
+            add esp, 4
+    L004c8846:
+            test bl, 1
+            je L004c884c
+            inc ebx
+    L004c884c:
+            mov edx, dword ptr [esp + 0x10]
+            push ebx
+            push ebp
+            mov ecx, 0x26
+            mov dword ptr [ebp], ebx
+            call ARDoSingleSession
+            pop ebx
+            pop esi
+            pop edi
+    L004c8862:
+            pop ebp
+            pop ecx
+            ret 0xc
+    }
+#endif
 }
 #pragma auto_inline(on)
 
 // FUNCTION: CARMA2_HW 0x00403800
-tPipe_chunk_data* C2_HOOK_FASTCALL FUN_00403800(tPipe_chunk* pSession, tPipe_chunk_type pType, tU32 pOwner) {
+C2_NAKED tPipe_chunk_data* C2_HOOK_FASTCALL FUN_00403800(tPipe_chunk* pSession, tPipe_chunk_type pType, tU32 pOwner) {
+#ifndef CARPOCALYPSE2_MATCHING
     int session_count;
     int chunk_index;
     tU8* session_ptr;
@@ -3194,10 +5887,172 @@ tPipe_chunk_data* C2_HOOK_FASTCALL FUN_00403800(tPipe_chunk* pSession, tPipe_chu
             }
         }
     }
+#else
+    __asm {
+            sub esp, 0x10
+            mov eax, dword ptr [esp + 0x14]
+            push ebx
+            push ebp
+            mov ebp, ecx
+            xor ecx, ecx
+            mov dword ptr [esp + 0xc], edx
+            mov edx, dword ptr [gPipe_callbacks]
+            and eax, 0xfff
+            push esi
+            push edi
+            mov dword ptr [esp + 0x18], eax
+    L00403822:
+            cmp ebp, dword ptr [gPipe_buffer_oldest]
+            jne L00403836
+            cmp ebp, dword ptr [gPipe_record_ptr]
+            jne L0040397a
+    L00403836:
+            cmp ebp, dword ptr [gPipe_buffer_start]
+            jne L00403844
+            mov ebp, dword ptr [gPipe_buffer_working_end]
+    L00403844:
+            mov esi, dword ptr [gPipe_session_search_limit]
+            sub ebp, 2
+            xor eax, eax
+            mov ax, word ptr [ebp]
+            sub ebp, eax
+            mov eax, ecx
+            inc ecx
+            cmp eax, esi
+            mov dword ptr [esp + 0x1c], ecx
+            jge L0040397a
+            mov eax, dword ptr [ebp + 4]
+            xor ebx, ebx
+            xor edi, edi
+            mov dword ptr [esp + 0x10], 0
+            test eax, eax
+            jbe L004038af
+    L00403877:
+            mov eax, dword ptr [ebp]
+            lea ecx, [ebx + ebp + 8]
+            lea esi, [eax + eax*2]
+            shl esi, 3
+            mov eax, dword ptr [edx + esi + 8]
+            test eax, eax
+            je L0040389e
+            call eax
+            mov edx, dword ptr [gPipe_callbacks]
+            mov ecx, dword ptr [edx + esi + 4]
+            lea esi, [eax + ecx + 4]
+            jmp L004038a5
+    L0040389e:
+            mov esi, dword ptr [edx + esi + 4]
+            add esi, 4
+    L004038a5:
+            mov eax, dword ptr [ebp + 4]
+            add ebx, esi
+            inc edi
+            cmp edi, eax
+            jb L00403877
+    L004038af:
+            add ebx, 0xa
+            test bl, 1
+            je L004038c7
+            push 0x62
+            call FatalError
+            mov edx, dword ptr [gPipe_callbacks]
+            add esp, 4
+    L004038c7:
+            lea ecx, [ebx + ebp - 2]
+            lea edi, [ebp + 8]
+            mov dword ptr [gPipe_buffer_end_marker], ecx
+            mov eax, dword ptr [ebp + 4]
+            test eax, eax
+            mov dword ptr [esp + 0x24], 0
+            jbe L00403951
+    L004038e3:
+            mov esi, dword ptr [esp + 0x14]
+            mov eax, dword ptr [ebp]
+            cmp eax, esi
+            jne L00403951
+            mov eax, dword ptr [edi]
+            mov ebx, dword ptr [esp + 0x18]
+            and eax, 0xfff
+            cmp eax, ebx
+            je L00403962
+            mov eax, dword ptr [gPipe_undo_enabled]
+            mov ebx, edi
+            test eax, eax
+            jne L00403941
+            lea esi, [esi + esi*2]
+            shl esi, 3
+            mov eax, dword ptr [edx + esi + 8]
+            test eax, eax
+            je L00403930
+            mov ecx, edi
+            call eax
+            mov edx, dword ptr [gPipe_callbacks]
+            mov ecx, dword ptr [edx + esi + 4]
+            lea esi, [eax + ecx + 4]
+            mov ecx, dword ptr [gPipe_buffer_end_marker]
+            jmp L00403937
+    L00403930:
+            mov esi, dword ptr [edx + esi + 4]
+            add esi, 4
+    L00403937:
+            add edi, esi
+            cmp edi, ecx
+            je L0040393f
+            jle L00403941
+    L0040393f:
+            mov edi, ebx
+    L00403941:
+            mov eax, dword ptr [esp + 0x24]
+            mov esi, dword ptr [ebp + 4]
+            inc eax
+            cmp eax, esi
+            mov dword ptr [esp + 0x24], eax
+            jb L004038e3
+    L00403951:
+            mov ecx, dword ptr [esp + 0x1c]
+    L00403955:
+            mov eax, dword ptr [esp + 0x10]
+            test eax, eax
+            jne L0040396e
+            jmp L00403822
+    L00403962:
+            mov eax, edi
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x10
+            ret 4
+    L0040396e:
+            pop edi
+            pop esi
+            pop ebp
+            xor eax, eax
+            pop ebx
+            add esp, 0x10
+            ret 4
+    L0040397a:
+            mov dword ptr [esp + 0x10], 1
+            jmp L00403955
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0043caf0
-void C2_HOOK_FASTCALL ReceivedCrushDetach(tU8* pContents) {
+void C2_NAKED C2_HOOK_FASTCALL ReceivedCrushDetach(tU8* pContents) {
+#ifndef CARPOCALYPSE2_MATCHING
     tCar_spec* car;
     tFind_crush_actor_arg find_arg;
     tU32 actor;
@@ -3232,11 +6087,88 @@ void C2_HOOK_FASTCALL ReceivedCrushDetach(tU8* pContents) {
             }
         }
     }
+#else
+    __asm {
+            mov eax, dword ptr [gCount_net_crush_detach_list]
+            sub esp, 8
+            cmp eax, 8
+            push ebx
+            push esi
+            push edi
+            mov edi, ecx
+            je L0043cbc1
+            mov ecx, dword ptr [edi + 4]
+            call NetCarFromPlayerID
+            mov ebx, eax
+            test ebx, ebx
+            je L0043cbc1
+            mov al, byte ptr [edi + 8]
+            lea ecx, [esp + 0xc]
+            push ecx
+            mov ecx, dword ptr [ebx + 0xe0c]
+            mov edx, offset FindActorByCrushEntryID
+            mov byte ptr [esp + 0x10], al
+            mov dword ptr [esp + 0x14], 0
+            call DRActorEnumRecurse
+            neg eax
+            mov edx, dword ptr [esp + 0x10]
+            sbb eax, eax
+            and eax, edx
+            test eax, eax
+            je L0043cbc1
+            mov ecx, dword ptr [gCount_net_crush_detach_list]
+            xor edx, edx
+            test ecx, ecx
+            jle L0043cb67
+            mov esi, offset gNet_crush_detach_list
+    L0043cb5b:
+            cmp dword ptr [esi], eax
+            je L0043cbc1
+            inc edx
+            add esi, 0x24
+            cmp edx, ecx
+            jl L0043cb5b
+    L0043cb67:
+            lea ecx, [ecx + ecx*8]
+            push 0x41200000
+            shl ecx, 2
+            push 0xc1200000
+            mov dword ptr [ecx + gNet_crush_detach_list+0x4], ebx
+            mov dword ptr [ecx + gNet_crush_detach_list], eax
+            mov edx, dword ptr [edi + 0xc]
+            mov dword ptr [ecx + gNet_crush_detach_list+0x8], edx
+            lea edx, [edi + 0x10]
+            lea ecx, [ecx + gNet_crush_detach_list+0xc]
+            call ExpandVector3
+            mov eax, dword ptr [gCount_net_crush_detach_list]
+            lea edx, [edi + 0x16]
+            push 0x41200000
+            push 0xc1200000
+            lea eax, [eax + eax*8]
+            lea ecx, [eax*4 + gNet_crush_detach_list+0x18]
+            call ExpandVector3
+            inc dword ptr [gCount_net_crush_detach_list]
+    L0043cbc1:
+            pop edi
+            pop esi
+            pop ebx
+            add esp, 8
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
-// C2PORT-NONMATCHING: best 79.82% | difftest PASS 2000 trials (spec difftest/specs/0043cbd0_ReceivedFullDetachBit.json) | reason regalloc-loop
 // FUNCTION: CARMA2_HW 0x0043cbd0
-void C2_HOOK_FASTCALL ReceivedFullDetachBit(tU8* pParam) {
+void C2_NAKED C2_HOOK_FASTCALL ReceivedFullDetachBit(tU8* pParam) {
+#ifndef CARPOCALYPSE2_MATCHING
     tCar_spec* car;
     tCar_crush_spec* crush;
     register tPhysics_object* object;
@@ -3311,4 +6243,145 @@ found_crush_bit:
         *(tU32*)gNet_crush_full_detach_bit_list[list_count].field_0x8 = *(tU32*)(pParam + 0xc);
         gCount_net_crush_full_detach_bit_list++;
     }
+#else
+    __asm {
+            mov eax, dword ptr [gCount_net_crush_full_detach_bit_list]
+            sub esp, 0x48
+            cmp eax, 8
+            push ebx
+            push ebp
+            push esi
+            push edi
+            mov ebp, ecx
+            je L0043cd44
+            mov ecx, dword ptr [ebp + 4]
+            call NetCarFromPlayerID
+            mov ebx, eax
+            test ebx, ebx
+            je L0043cd44
+            mov eax, dword ptr [ebx + 0x18d4]
+            test eax, eax
+            je L0043cc2d
+            mov edi, dword ptr [eax + 0x270]
+            xor ecx, ecx
+            test edi, edi
+            jle L0043cc2d
+            mov dl, byte ptr [ebp + 8]
+            add eax, 0x27c
+    L0043cc17:
+            mov esi, dword ptr [eax]
+            cmp byte ptr [esi + 0x190], dl
+            je L0043cd4c
+            inc ecx
+            add eax, 0x14
+            cmp ecx, edi
+            jl L0043cc17
+    L0043cc2d:
+            xor eax, eax
+    L0043cc2f:
+            test eax, eax
+            jne L0043cd05
+            mov al, byte ptr [ebp + 8]
+            lea ecx, [esp + 0x14]
+            push ecx
+            mov ecx, dword ptr [ebx + 0xe0c]
+            mov edx, offset FindActorByCrushEntryID
+            mov byte ptr [esp + 0x18], al
+            mov dword ptr [esp + 0x1c], 0
+            call DRActorEnumRecurse
+            mov esi, eax
+            mov ecx, dword ptr [esp + 0x18]
+            neg esi
+            sbb esi, esi
+            and esi, ecx
+            test esi, esi
+            je L0043cd44
+            push 0x41200000
+            push 0xc1200000
+            lea edx, [ebp + 0x10]
+            lea ecx, [esp + 0x3c]
+            call ExpandVector3
+            lea edx, [ebp + 0x16]
+            lea ecx, [esp + 0x28]
+            push 0x41200000
+            push 0xc1200000
+            call ExpandVector3
+            lea edx, [ebp + 0x1c]
+            lea ecx, [esp + 0x1c]
+            push 0x41200000
+            push 0xc1200000
+            call ExpandVector3
+            lea edx, [ebp + 0x22]
+            lea ecx, [esp + 0x40]
+            push 0x41200000
+            push 0xc1200000
+            call ExpandVector3
+            lea edx, [ebp + 0x28]
+            lea ecx, [esp + 0x4c]
+            push 0x41200000
+            push 0xc1200000
+            call ExpandVector3
+            lea edx, [esp + 0x1c]
+            lea eax, [esp + 0x28]
+            push edx
+            lea ecx, [esp + 0x44]
+            push eax
+            lea edx, [esp + 0x3c]
+            push ecx
+            lea eax, [esp + 0x1c]
+            push edx
+            push eax
+            push 0
+            mov edx, esi
+            mov ecx, ebx
+            call SemiDetachBit
+            test eax, eax
+            je L0043cd44
+    L0043cd05:
+            mov edx, dword ptr [gCount_net_crush_full_detach_bit_list]
+            xor ecx, ecx
+            test edx, edx
+            jle L0043cd22
+            mov edi, offset gNet_crush_full_detach_bit_list+0x4
+    L0043cd16:
+            cmp dword ptr [edi], eax
+            je L0043cd44
+            inc ecx
+            add edi, 0xc
+            cmp ecx, edx
+            jl L0043cd16
+    L0043cd22:
+            lea ecx, [edx + edx*2]
+            shl ecx, 2
+            inc edx
+            mov dword ptr [ecx + gNet_crush_full_detach_bit_list], ebx
+            mov dword ptr [ecx + gNet_crush_full_detach_bit_list+0x4], eax
+            mov eax, dword ptr [ebp + 0xc]
+            mov dword ptr [gCount_net_crush_full_detach_bit_list], edx
+            mov dword ptr [ecx + gNet_crush_full_detach_bit_list+0x8], eax
+    L0043cd44:
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x48
+            ret
+    L0043cd4c:
+            mov eax, esi
+            jmp L0043cc2f
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }

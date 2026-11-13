@@ -88,6 +88,16 @@ tFrontend_spec gFrontend_CHANGE_CAR = {
 int gFrontend_change_car_selected_car;
 
 
+#ifdef CARPOCALYPSE2_MATCHING
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern int C2_HOOK_FASTCALL FRONTEND_CreateMenu(tFrontend_spec* pFrontend_spec);
+extern int C2_HOOK_FASTCALL FRONTEND_DestroyMenu(tFrontend_spec* pFrontend);
+extern int C2_HOOK_FASTCALL GetItemAtMousePos(tFrontend_spec *pFrontend, int pX, int pY);
+extern void C2_HOOK_FASTCALL Morph_Initialise(tFrontend_spec* pCurrent, tFrontend_spec* pNext);
+extern void C2_HOOK_FASTCALL ToggleSelection(tFrontend_spec* pFrontend);
+extern void C2_HOOK_FASTCALL UpdateScrollPositions(tFrontend_spec* pFrontend);
+#endif
 // FUNCTION: CARMA2_HW 0x0046b4e0
 int C2_HOOK_FASTCALL ChangeCarMenuInfunc(tFrontend_spec* pFrontend) {
     int i;
@@ -145,12 +155,12 @@ int C2_HOOK_FASTCALL ChangeCarMenuInfunc(tFrontend_spec* pFrontend) {
 
 // FUNCTION: CARMA2_HW 0x0046ba70
 int C2_HOOK_FASTCALL ChangeCarMenuOutfunc(tFrontend_spec* pFrontend) {
-
     return 1;
 }
 
 // FUNCTION: CARMA2_HW 0x0046ba80
-int C2_HOOK_FASTCALL FRONTEND_ChangeCarMenuHandler(tFrontend_spec* pFrontend) {
+int C2_NAKED C2_HOOK_FASTCALL FRONTEND_ChangeCarMenuHandler(tFrontend_spec* pFrontend) {
+#ifndef CARPOCALYPSE2_MATCHING
     tU32 now;
 
     if (gFrontend_car_image_outdated || gFrontend_opponent_profile_pic_needs_update) {
@@ -226,11 +236,176 @@ int C2_HOOK_FASTCALL FRONTEND_ChangeCarMenuHandler(tFrontend_spec* pFrontend) {
     else {
         return 0;
     }
+#else
+    __asm {
+            mov eax, dword ptr [gFrontend_car_image_outdated]
+            sub esp, 8
+            test eax, eax
+            push esi
+            mov esi, ecx
+            jne L0046ba98
+            mov eax, dword ptr [gFrontend_opponent_profile_pic_needs_update]
+            test eax, eax
+            je L0046ba9f
+    L0046ba98:
+            mov ecx, esi
+            call UpdateCarInfo
+    L0046ba9f:
+            call PollKeys
+            call PDGetTotalTime
+            mov edx, dword ptr [gFrontend_scroll_last_update]
+            mov ecx, eax
+            mov dword ptr [gFrontend_scroll_last_update], eax
+            mov eax, dword ptr [gFrontend_scroll_time_left]
+            sub ecx, edx
+            sub eax, ecx
+            mov dword ptr [gFrontend_scroll_time_left], eax
+            jns L0046bad0
+            mov dword ptr [gFrontend_scroll_time_left], 0
+    L0046bad0:
+            mov eax, dword ptr [gMouse_in_use]
+            mov dword ptr [gFrontend_scroll_time_increment], 0x32
+            test eax, eax
+            je L0046bb55
+            call PDGetTotalTime
+            lea edx, [esp + 4]
+            lea ecx, [esp + 8]
+            mov dword ptr [gFrontend_time_last_input], eax
+            call GetMousePosition
+            mov eax, dword ptr [esp + 4]
+            mov edx, dword ptr [esp + 8]
+            push eax
+            mov ecx, esi
+            call GetItemAtMousePos
+            cmp eax, -1
+            mov dword ptr [gFrontend_selected_item_index], eax
+            jne L0046bb1e
+            mov dword ptr [gFrontend_selected_item_index], 2
+    L0046bb1e:
+            mov ecx, dword ptr [gFrontend_mouse_down]
+            mov dword ptr [gPrev_frontend_mouse_down], ecx
+            call EitherMouseButtonDown
+            test eax, eax
+            mov dword ptr [gFrontend_mouse_down], eax
+            je L0046bb4b
+            mov eax, dword ptr [gPrev_frontend_mouse_down]
+            mov dword ptr [gFrontend_scroll_time_increment], 0x12c
+            test eax, eax
+            je L0046bb55
+    L0046bb4b:
+            mov dword ptr [gFrontend_scroll_time_increment], 0x64
+    L0046bb55:
+            mov ecx, 0x33
+            call PDKeyDown
+            test eax, eax
+            jne L0046bb7e
+            mov ecx, 0x34
+            call PDKeyDown
+            test eax, eax
+            jne L0046bb7e
+            mov eax, dword ptr [gFrontend_mouse_down]
+            test eax, eax
+            je L0046bc9a
+    L0046bb7e:
+            mov ecx, esi
+            call ToggleSelection
+            mov ecx, dword ptr [gFrontend_selected_item_index]
+            mov eax, ecx
+            shl eax, 3
+            sub eax, ecx
+            lea edx, [eax + eax*2]
+            lea eax, [ecx + edx*2]
+            lea edx, [esi + eax*8]
+            mov eax, dword ptr [esi + eax*8 + 0x13c]
+            cmp eax, 2
+            jne L0046bbac
+            pop esi
+            add esp, 8
+            ret
+    L0046bbac:
+            cmp eax, 1
+            jne L0046bbb6
+            mov dword ptr [gFrontend_leave_current_menu], eax
+    L0046bbb6:
+            mov edx, dword ptr [edx + 0x134]
+            test edx, edx
+            je L0046bbca
+            mov ecx, esi
+            call edx
+            mov ecx, dword ptr [gFrontend_selected_item_index]
+    L0046bbca:
+            mov eax, ecx
+            shl eax, 3
+            sub eax, ecx
+            lea edx, [eax + eax*2]
+            lea eax, [ecx + edx*2]
+            mov edx, dword ptr [esi + eax*8 + 0x138]
+            test edx, edx
+            je L0046bc9a
+            mov edx, dword ptr [gCurrent_frontend_spec]
+            mov dword ptr [edx + 0x118], ecx
+            mov ecx, esi
+            call FRONTEND_DestroyMenu
+            mov ecx, dword ptr [gFrontend_selected_item_index]
+            mov eax, ecx
+            shl eax, 3
+            sub eax, ecx
+            lea eax, [eax + eax*2]
+            lea ecx, [ecx + eax*2]
+            mov ecx, dword ptr [esi + ecx*8 + 0x138]
+            mov dword ptr [gCurrent_frontend_spec], ecx
+            call FRONTEND_CreateMenu
+            mov edx, dword ptr [gCurrent_frontend_spec]
+            mov eax, dword ptr [esi + 0x114]
+            cmp edx, eax
+            je L0046bc3a
+            mov dword ptr [edx + 0x114], esi
+            mov edx, dword ptr [gCurrent_frontend_spec]
+    L0046bc3a:
+            mov ecx, esi
+            call Morph_Initialise
+            mov ecx, dword ptr [gCurrent_frontend_spec]
+            cmp ecx, offset gFrontend_QUIT
+            jne L0046bc5b
+            mov dword ptr [gFrontend_selected_item_index], 0
+            jmp L0046bc67
+    L0046bc5b:
+            mov edx, dword ptr [ecx + 0x118]
+            mov dword ptr [gFrontend_selected_item_index], edx
+    L0046bc67:
+            mov eax, dword ptr [ecx + 0x8790]
+            xor edx, edx
+            test eax, eax
+            jle L0046bc95
+            xor eax, eax
+    L0046bc75:
+            mov esi, dword ptr [ecx + eax + 0x87c0]
+            inc edx
+            mov dword ptr [ecx + eax + 0x87a0], esi
+            mov ecx, dword ptr [gCurrent_frontend_spec]
+            add eax, 0x34
+            cmp edx, dword ptr [ecx + 0x8790]
+            jl L0046bc75
+    L0046bc95:
+            call UpdateScrollPositions
+    L0046bc9a:
+            mov ecx, dword ptr [gFrontend_leave_current_menu]
+            xor eax, eax
+            test ecx, ecx
+            setne al
+            pop esi
+            add esp, 8
+            ret
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0046b640
 int C2_HOOK_FASTCALL CarClickPrev(tFrontend_spec* pFrontend) {
-
     if (gFrontend_scroll_time_left == 0) {
         gFrontend_change_car_selected_car -= 1;
         if (gFrontend_change_car_selected_car < 0) {
@@ -247,7 +422,6 @@ int C2_HOOK_FASTCALL CarClickPrev(tFrontend_spec* pFrontend) {
 
 // FUNCTION: CARMA2_HW 0x0046ba00
 int C2_HOOK_FASTCALL CarClickNext(tFrontend_spec* pFrontend) {
-
     if (gFrontend_scroll_time_left == 0) {
         gFrontend_change_car_selected_car += 1;
         if (gFrontend_change_car_selected_car >= gProgram_state.number_of_cars) {
@@ -264,13 +438,11 @@ int C2_HOOK_FASTCALL CarClickNext(tFrontend_spec* pFrontend) {
 
 // FUNCTION: CARMA2_HW 0x0046b620
 int C2_HOOK_FASTCALL ChangeCarOK(tFrontend_spec* pFrontend) {
-
     gProgram_state.current_car_index = gProgram_state.cars_available[gFrontend_change_car_selected_car];
     return 0;
 }
 
 // FUNCTION: CARMA2_HW 0x0046b610
 int C2_HOOK_FASTCALL ChangeCarCancel(tFrontend_spec* pFrontend) {
-
     return 0;
 }

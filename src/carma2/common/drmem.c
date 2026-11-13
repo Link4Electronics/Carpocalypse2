@@ -308,15 +308,23 @@ br_size_t gPage_size;
 // GLOBAL: CARMA2_HW 0x0079ea80
 SYSTEM_INFO gSystem_info;
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern br_resource_class* C2_HOOK_CDECL BrResClassAdd();
+extern void C2_NORETURN C2_HOOK_CDECL FatalError();
+extern br_uint_8 bl;
+extern tHud_message gHud_messages[46];
+#endif
 // FUNCTION: CARMA2_HW 0x0044c810
 int C2_HOOK_FASTCALL AllocationErrorsAreFatal(void) {
-
     return !gNon_fatal_allocation_errors;
 }
 
 // FUNCTION: CARMA2_HW 0x0044c830
 void C2_HOOK_FASTCALL CloseGlobalPackedFile(void) {
-
     if (gGlobalPackedFile != NULL) {
         PFfclose(gGlobalPackedFile);
         gGlobalPackedFile = NULL;
@@ -327,24 +335,20 @@ void C2_HOOK_FASTCALL CloseGlobalPackedFile(void) {
 
 // FUNCTION: CARMA2_HW 0x0044c7f0
 void C2_HOOK_FASTCALL SetNonFatalAllocationErrors(void) {
-
     gNon_fatal_allocation_errors = 1;
 }
 
 // FUNCTION: CARMA2_HW 0x0044c800
 void C2_HOOK_FASTCALL ResetNonFatalAllocationErrors(void) {
-
     gNon_fatal_allocation_errors = 0;
 }
 
 // FUNCTION: CARMA2_HW 0x0044c820
 void C2_HOOK_FASTCALL MAMSInitMem(void) {
-
 }
 
 // FUNCTION: CARMA2_HW 0x0044c850
 void C2_HOOK_FASTCALL PrintMemoryDump(int pFlags, char* pTitle) {
-
 }
 
 // FUNCTION: CARMA2_HW 0x0044c860
@@ -432,7 +436,6 @@ br_uint_32 C2_HOOK_CDECL Claim4ByteAlignment(br_uint_8 type) {
 
 // FUNCTION: CARMA2_HW 0x0044c9e0
 void C2_HOOK_FASTCALL InstallDRMemCalls(void) {
-
     BrAllocatorSet(&gAllocator);
 }
 
@@ -441,7 +444,8 @@ void C2_HOOK_FASTCALL InstallDRMemCalls(void) {
 // MAMSLock (see plaform)
 
 // FUNCTION: CARMA2_HW 0x0044ca40
-void C2_HOOK_FASTCALL CreateStainlessClasses(void) {
+void C2_NAKED C2_HOOK_FASTCALL CreateStainlessClasses(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     int i;
 
     for (i = 129; i < 129 + (int)CARPOCALYPSE2_ASIZE(gStainless_classes); i++) {
@@ -450,14 +454,41 @@ void C2_HOOK_FASTCALL CreateStainlessClasses(void) {
             FatalError(kFatalError_OOM_S);
         }
     }
+#else
+    __asm {
+            push ebx
+            push esi
+            mov ebx, 0x81
+            mov esi, 0xa14
+    L0044ca4c:
+            lea eax, [esi + gHud_messages+0xe74]
+            mov byte ptr [esi + gHud_messages+0xe7c], bl
+            push eax
+            call BrResClassAdd
+            add esp, 4
+            test eax, eax
+            jne L0044ca6f
+            push 0x5e
+            call FatalError
+            add esp, 4
+    L0044ca6f:
+            add esi, 0x14
+            inc ebx
+            cmp esi, 0x13ec
+            jl L0044ca4c
+            pop esi
+            pop ebx
+            ret
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0044ca80
 void C2_HOOK_FASTCALL CheckMemory(void) {
-
 }
 
 // FUNCTION: CARMA2_HW 0x0051b9d0
 void C2_HOOK_FASTCALL FUN_DisposeReplayBuffer(void* pBuffer) {
-
 }

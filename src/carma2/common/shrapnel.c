@@ -36,6 +36,24 @@ const char* gSmash_side_effect_direction_names[3] = {
 };
 
 
+#ifdef CARPOCALYPSE2_MATCHING
+extern void* C2_HOOK_CDECL BrMemAllocate();
+extern int C2_HOOK_FASTCALL DRStricmp(const char* p1, const char* p2);
+extern int C2_HOOK_FASTCALL GetALineAndInterpretCommand(FILE* pF, const char** pString_list, int pCount);
+extern br_scalar C2_HOOK_FASTCALL GetAScalar(FILE* pF);
+extern void C2_HOOK_FASTCALL GetAString(FILE* pF, char* pString);
+extern int C2_HOOK_FASTCALL GetAnInt(FILE* pF);
+extern void C2_HOOK_FASTCALL GetPairOfFloats(FILE* pF, float* pF1, float* pF2);
+extern void C2_HOOK_FASTCALL GetPairOfInts(FILE* pF, int* pF1, int* pF2);
+extern void C2_HOOK_FASTCALL LoadMinMax(FILE* pF, br_bounds3* pBounds);
+extern const double gDOUBLE_0058af40;
+extern char gDefault_drone_direction[];
+extern tFrontend_spec gFrontend_QUIT;
+extern char* gMaterial_names[2];
+extern float gOpponent_nastyness_frigger;
+extern const char* gPosition_type_names[2];
+extern char gSplit_triangle_vertex_orders[];
+#endif
 // FUNCTION: CARMA2_HW 0x004ef440
 intptr_t C2_HOOK_CDECL AddGhostActorToBuffer(br_actor* pActor, void* data) {
     br_actor** pActorBuffer = data;
@@ -254,7 +272,8 @@ void C2_HOOK_FASTCALL ReadShrapnelSpec(FILE* pF, tShrapnel_spec* pShrapnel_specs
 }
 
 // FUNCTION: CARMA2_HW 0x004ef550
-void C2_HOOK_FASTCALL ReadShrapnelSideEffects(FILE* pF, tShrapnel_side_effects* pShrapnel_side_effects) {
+void C2_NAKED C2_HOOK_FASTCALL ReadShrapnelSideEffects(FILE* pF, tShrapnel_side_effects* pShrapnel_side_effects) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     /* Count smash activation cuboids */
     pShrapnel_side_effects->count_side_effects = GetAnInt(pF);
@@ -300,10 +319,265 @@ void C2_HOOK_FASTCALL ReadShrapnelSideEffects(FILE* pF, tShrapnel_side_effects* 
             pShrapnel_side_effects->side_effects[i].field_0x48 = GetAScalar(pF);
         }
     }
+#else
+    __asm {
+            sub esp, 0x110
+            push ebx
+            push ebp
+            push esi
+            mov esi, ecx
+            mov ebp, edx
+            mov dword ptr [esp + 0xc], esi
+            call GetAnInt
+            xor ebx, ebx
+            mov dword ptr [ebp], eax
+            cmp eax, ebx
+            je L004ef826
+            lea ecx, [eax + eax*8]
+            push 0x9e
+            lea edx, [eax + ecx*2]
+            shl edx, 2
+            push edx
+            call BrMemAllocate
+            mov dword ptr [ebp + 4], eax
+            mov eax, dword ptr [ebp]
+            add esp, 8
+            cmp eax, ebx
+            mov dword ptr [esp + 0x10], ebx
+            jle L004ef826
+            push edi
+            jmp L004ef5a3
+    L004ef59f:
+            mov esi, dword ptr [esp + 0x10]
+    L004ef5a3:
+            lea eax, [esp + 0x1c]
+            lea edx, [esp + 0x18]
+            push eax
+            mov ecx, esi
+            call GetPairOfInts
+            mov edx, dword ptr [ebp + 4]
+            mov eax, dword ptr [esp + 0x18]
+            lea eax, [eax + eax*4]
+            lea eax, [eax + eax*4]
+            lea ecx, [eax + eax*4]
+            shl ecx, 3
+            mov word ptr [ebx + edx], cx
+            mov eax, dword ptr [esp + 0x1c]
+            mov ecx, dword ptr [ebp + 4]
+            lea edx, [esp + 0x20]
+            lea eax, [eax + eax*4]
+            lea eax, [eax + eax*4]
+            lea eax, [eax + eax*4]
+            shl eax, 3
+            mov word ptr [ebx + ecx + 2], ax
+            mov ecx, esi
+            call GetAString
+            lea edi, [esp + 0x20]
+            or ecx, 0xffffffff
+            xor eax, eax
+            mov edx, dword ptr [ebp + 4]
+            repne scasb
+            not ecx
+            sub edi, ecx
+            lea edx, [ebx + edx + 8]
+            mov eax, ecx
+            mov esi, edi
+            mov edi, edx
+            shr ecx, 2
+            rep movsd
+            mov ecx, eax
+            and ecx, 3
+            rep movsb
+            mov edi, offset gOpponent_nastyness_frigger+0x3bc
+            lea esi, [esp + 0x20]
+    L004ef61e:
+            mov cl, byte ptr [esi]
+            mov dl, byte ptr [edi]
+            mov al, cl
+            cmp cl, dl
+            jne L004ef646
+            test al, al
+            je L004ef642
+            mov dl, byte ptr [esi + 1]
+            mov cl, byte ptr [edi + 1]
+            mov al, dl
+            cmp dl, cl
+            jne L004ef646
+            add esi, 2
+            add edi, 2
+            test al, al
+            jne L004ef61e
+    L004ef642:
+            xor eax, eax
+            jmp L004ef64b
+    L004ef646:
+            sbb eax, eax
+            sbb eax, -1
+    L004ef64b:
+            test eax, eax
+            jne L004ef65f
+            mov eax, dword ptr [ebp + 4]
+            mov dword ptr [ebx + eax + 0x28], 0
+            jmp L004ef7c4
+    L004ef65f:
+            cmp byte ptr [esp + 0x20], 0x2a
+            jne L004ef6f9
+            lea edi, [esp + 0x20]
+            or ecx, 0xffffffff
+            xor eax, eax
+            mov edx, offset gMaterial_names+0x70
+            repne scasb
+            not ecx
+            lea eax, [esp + 0x20]
+            dec ecx
+            sub eax, 4
+            add ecx, eax
+            call DRStricmp
+            test eax, eax
+            jne L004ef69f
+            mov ecx, dword ptr [ebp + 4]
+            mov dword ptr [ebx + ecx + 0x28], 1
+            jmp L004ef7c4
+    L004ef69f:
+            cmp byte ptr [esp + 0x20], 0x2a
+            jne L004ef6f9
+            lea esi, [esp + 0x20]
+            lea edi, [esp + 0x20]
+            or ecx, 0xffffffff
+            xor eax, eax
+            sub esi, 4
+            mov edx, offset gFrontend_QUIT+0xbb7c
+            repne scasb
+            not ecx
+            dec ecx
+            add ecx, esi
+            call DRStricmp
+            test eax, eax
+            je L004ef6e9
+            lea edi, [esp + 0x20]
+            or ecx, 0xffffffff
+            xor eax, eax
+            mov edx, offset gDefault_drone_direction+0x6dc
+            repne scasb
+            not ecx
+            dec ecx
+            add ecx, esi
+            call DRStricmp
+            test eax, eax
+            jne L004ef6f9
+    L004ef6e9:
+            mov edx, dword ptr [ebp + 4]
+            mov dword ptr [ebx + edx + 0x28], 2
+            jmp L004ef7c4
+    L004ef6f9:
+            mov edx, offset gSplit_triangle_vertex_orders+0x198
+            lea ecx, [esp + 0x20]
+            call DRStricmp
+            test eax, eax
+            jne L004ef71b
+            mov eax, dword ptr [ebp + 4]
+            mov dword ptr [ebx + eax + 0x28], 3
+            jmp L004ef7c4
+    L004ef71b:
+            cmp byte ptr [esp + 0x20], 0x26
+            jne L004ef73e
+            mov al, byte ptr [esp + 0x21]
+            cmp al, 0x30
+            jl L004ef73e
+            cmp al, 0x39
+            jg L004ef73e
+            mov ecx, dword ptr [ebp + 4]
+            mov dword ptr [ebx + ecx + 0x28], 6
+            jmp L004ef7c4
+    L004ef73e:
+            lea esi, [esp + 0x20]
+            lea edi, [esp + 0x20]
+            or ecx, 0xffffffff
+            xor eax, eax
+            sub esi, 4
+            mov edx, offset gMaterial_names+0x70
+            repne scasb
+            not ecx
+            dec ecx
+            add ecx, esi
+            call DRStricmp
+            test eax, eax
+            jne L004ef770
+            mov edx, dword ptr [ebp + 4]
+            mov dword ptr [ebx + edx + 0x28], 4
+            jmp L004ef7c4
+    L004ef770:
+            lea edi, [esp + 0x20]
+            or ecx, 0xffffffff
+            xor eax, eax
+            mov edx, offset gFrontend_QUIT+0xbb7c
+            repne scasb
+            not ecx
+            dec ecx
+            add ecx, esi
+            call DRStricmp
+            test eax, eax
+            je L004ef7b9
+            lea edi, [esp + 0x20]
+            or ecx, 0xffffffff
+            xor eax, eax
+            mov edx, offset gDefault_drone_direction+0x6dc
+            repne scasb
+            not ecx
+            dec ecx
+            add ecx, esi
+            call DRStricmp
+            test eax, eax
+            je L004ef7b9
+            mov eax, dword ptr [ebp + 4]
+            mov dword ptr [ebx + eax + 0x28], 0
+            jmp L004ef7c4
+    L004ef7b9:
+            mov ecx, dword ptr [ebp + 4]
+            mov dword ptr [ebx + ecx + 0x28], 5
+    L004ef7c4:
+            mov esi, dword ptr [esp + 0x10]
+            push 2
+            mov edx, offset gPosition_type_names
+            mov ecx, esi
+            call GetALineAndInterpretCommand
+            mov edx, dword ptr [ebp + 4]
+            mov ecx, esi
+            mov dword ptr [ebx + edx + 4], eax
+            mov eax, dword ptr [ebp + 4]
+            lea edx, [ebx + eax + 0x2c]
+            call LoadMinMax
+            mov edx, offset gSmash_side_effect_direction_names
+            mov ecx, esi
+            push 3
+            call GetALineAndInterpretCommand
+            mov ecx, dword ptr [ebp + 4]
+            mov dword ptr [ebx + ecx + 0x44], eax
+            mov ecx, esi
+            call GetAScalar
+            mov edx, dword ptr [ebp + 4]
+            mov eax, dword ptr [esp + 0x14]
+            inc eax
+            fstp dword ptr [ebx + edx + 0x48]
+            mov ecx, dword ptr [ebp]
+            add ebx, 0x4c
+            cmp eax, ecx
+            mov dword ptr [esp + 0x14], eax
+            jl L004ef59f
+            pop edi
+    L004ef826:
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x110
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004efce0
-void C2_HOOK_FASTCALL ReadNonCarCuboidActivation(FILE* pF, tNon_car_cuboid_activations* pNon_car_cuboid_activations) {
+void C2_NAKED C2_HOOK_FASTCALL ReadNonCarCuboidActivation(FILE* pF, tNon_car_cuboid_activations* pNon_car_cuboid_activations) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     /* no. of non car cuboids activated */
     pNon_car_cuboid_activations->count_activations = GetAnInt(pF);
@@ -336,4 +610,110 @@ void C2_HOOK_FASTCALL ReadNonCarCuboidActivation(FILE* pF, tNon_car_cuboid_activ
             pNon_car_cuboid_activations->activations[i].field_0x3c = GetAScalar(pF) / 10.f;
         }
     }
+#else
+    __asm {
+            sub esp, 0xc
+            push ebx
+            push ebp
+            push esi
+            mov ebx, edx
+            mov esi, ecx
+            call GetAnInt
+            xor ebp, ebp
+            mov dword ptr [ebx], eax
+            cmp eax, ebp
+            je L004efdef
+            shl eax, 6
+            push 0x9e
+            push eax
+            call BrMemAllocate
+            mov dword ptr [ebx + 4], eax
+            mov eax, dword ptr [ebx]
+            add esp, 8
+            cmp eax, ebp
+            mov dword ptr [esp + 0xc], ebp
+            jle L004efdef
+            push edi
+    L004efd1e:
+            lea eax, [esp + 0x18]
+            lea edx, [esp + 0x14]
+            push eax
+            mov ecx, esi
+            call GetPairOfInts
+            mov edx, dword ptr [ebx + 4]
+            mov eax, dword ptr [esp + 0x14]
+            push 2
+            lea eax, [eax + eax*4]
+            lea eax, [eax + eax*4]
+            lea ecx, [eax + eax*4]
+            shl ecx, 3
+            mov word ptr [edx + ebp], cx
+            mov eax, dword ptr [esp + 0x1c]
+            mov ecx, dword ptr [ebx + 4]
+            mov edx, offset gPosition_type_names
+            lea eax, [eax + eax*4]
+            lea eax, [eax + eax*4]
+            lea eax, [eax + eax*4]
+            shl eax, 3
+            mov word ptr [ecx + ebp + 2], ax
+            mov ecx, esi
+            call GetALineAndInterpretCommand
+            mov edx, dword ptr [ebx + 4]
+            mov ecx, esi
+            mov dword ptr [edx + ebp + 4], eax
+            call GetAnInt
+            mov ecx, dword ptr [ebx + 4]
+            mov byte ptr [ecx + ebp + 8], al
+            mov edx, dword ptr [ebx + 4]
+            mov ecx, esi
+            lea edx, [edx + ebp + 0xc]
+            call LoadMinMax
+            mov eax, dword ptr [ebx + 4]
+            lea edi, [eax + ebp + 0x24]
+            mov edx, edi
+            lea ecx, [edi + 4]
+            push ecx
+            mov ecx, esi
+            call GetPairOfFloats
+            mov ecx, esi
+            call GetAScalar
+            fstp dword ptr [edi + 8]
+            mov ecx, esi
+            call GetAScalar
+            fstp dword ptr [edi + 0xc]
+            mov ecx, esi
+            call GetAScalar
+            fstp dword ptr [edi + 0x10]
+            mov ecx, esi
+            call GetAScalar
+            fstp dword ptr [edi + 0x14]
+            mov ecx, esi
+            call GetAScalar
+            fmul dword ptr [gDOUBLE_0058af40+0x8]
+            mov eax, dword ptr [esp + 0x10]
+            add ebp, 0x40
+            inc eax
+            mov dword ptr [esp + 0x10], eax
+            fstp dword ptr [edi + 0x18]
+            cmp eax, dword ptr [ebx]
+            jl L004efd1e
+            pop edi
+    L004efdef:
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0xc
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }

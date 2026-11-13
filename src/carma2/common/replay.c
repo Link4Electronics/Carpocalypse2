@@ -146,6 +146,61 @@ int C2_HOOK_FASTCALL IsCameraTypeAllowed(tActionReplayCameraMode pCamera_type) {
     return 1;
 }
 
+#ifdef CARPOCALYPSE2_MATCHING
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern void C2_HOOK_CDECL ARDoSingleVariedSession();
+extern void C2_HOOK_FASTCALL BRPM_convert(br_pixelmap* pMap, int pPixel_type);
+extern br_pixelmap* C2_HOOK_CDECL BrMapAdd();
+extern br_pixelmap* C2_HOOK_FASTCALL LoadPixelmap(const char* pPath_name);
+extern br_pixelmap* gBack_screen;
+extern volatile br_scalar gUNK_0069410c;
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern int C2_HOOK_FASTCALL ARGetReplayDirection(void);
+extern float C2_HOOK_FASTCALL ARGetReplayRate(void);
+extern int C2_HOOK_FASTCALL ARGoBackwards(void);
+extern int C2_HOOK_FASTCALL ARGoForwards(void);
+extern int C2_HOOK_FASTCALL ARReplayPauseState(void);
+extern void C2_HOOK_FASTCALL ARSetPause(int pPause);
+extern void C2_HOOK_FASTCALL ARSetReplayDirection(float pDirection);
+extern void C2_HOOK_FASTCALL ARSetReplayRate(float rate);
+extern int C2_HOOK_FASTCALL ARToggleReplay(tTurn_on_AR_callback* pTurn_on_AR_cb, tTurn_off_AR_callback* pTurn_off_AR_cb, tAfter_AR_callback* pAfter_AR_cb, tZappy_AR_callback* pZappy_AR_cb, tPreprocess_AR_callback* pPreprocess_cb, tPostProcess_AR_callback* pPostProcess_cb, int* pArg7, int* pArg8);
+extern void C2_HOOK_FASTCALL AfterActionReplay(void);
+extern br_pixelmap* C2_HOOK_CDECL BrMapRemove();
+extern void C2_HOOK_CDECL BrPixelmapFree();
+extern void C2_HOOK_FASTCALL ChangeCameraType(void);
+extern int C2_HOOK_FASTCALL DRS3StopAllOutletSoundsExceptCDA(void);
+extern void C2_HOOK_FASTCALL EdgeTriggerModeOff(void);
+extern int C2_HOOK_FASTCALL EitherMouseButtonDown(void);
+extern void C2_HOOK_FASTCALL FUN_00403210(tARDoActionReplay_step_callback* pStep_callback, tARDoActionReplay_frame_callback* pFrame_start_callback, tARDoActionReplay_frame_callback* pFrame_end_callback);
+extern void C2_HOOK_FASTCALL FUN_00403c70(tARDoActionReplay_step_callback* pStep_callback, tARDoActionReplay_frame_callback* pFrame_start_callback, tARDoActionReplay_frame_callback* pFrame_end_callback);
+extern const char* C2_HOOK_FASTCALL GetMiscString(int pIndex);
+extern void C2_HOOK_FASTCALL GetMousePosition(int *pX, int *pY);
+extern int C2_HOOK_FASTCALL GetNextReplayRecordState(void);
+extern void C2_HOOK_FASTCALL GrooveThoseDelics(void);
+extern int C2_HOOK_FASTCALL KeyIsDown(int pKey_index);
+extern void C2_HOOK_FASTCALL MovieRecordButtonPressed(void);
+extern void C2_HOOK_FASTCALL MungeCarGraphics(tU32 pFrame_period);
+extern int C2_HOOK_FASTCALL NewTextHeadupSlot(int pSlot_index, int pFlash_rate, int pLifetime, int pFont_index, const char* pText);
+extern int C2_HOOK_FASTCALL PDAnyKeyDown(void);
+extern tU32 C2_HOOK_FASTCALL PDGetTotalTime(void);
+extern void C2_HOOK_FASTCALL PickActionReplayManualCameraTarget(int pCursor_x, int pCursor_y, float pArg3);
+extern void C2_HOOK_FASTCALL RenderAFrame(int pDepth_mask_on);
+extern void C2_HOOK_FASTCALL ServiceGameInRace(void);
+extern void C2_HOOK_FASTCALL TurnOffActionReplay(void);
+extern void C2_HOOK_FASTCALL TurnOnActionReplay(void);
+extern void __cdecl _ftol();
+extern char gConst_kangeroo_force_factor[];
+extern tU32 gFrame_period;
+extern int gMouse_in_use;
+extern int gNoTransients;
+extern int gPed_676914;
+extern int gReal_graf_data_index;
+extern int gRecording_mouse_disabled;
+#endif
 // FUNCTION: CARMA2_HW 0x0040ea30
 void C2_HOOK_FASTCALL PositionExternalCamera(tCar_spec* pCar_spec, tU32 pTime) {
     br_camera* camera;
@@ -222,14 +277,12 @@ void C2_HOOK_FASTCALL PositionExternalCamera(tCar_spec* pCar_spec, tU32 pTime) {
 
 // FUNCTION: CARMA2_HW 0x00403d40
 void C2_HOOK_FASTCALL ARMainLoopStart(void) {
-
     gAction_replay_mode = 0;
     gLast_replay_frame_time = PDGetTotalTime();
 }
 
 // FUNCTION: CARMA2_HW 0x00403d30
 void C2_HOOK_FASTCALL ARService(void) {
-
 }
 
 // FUNCTION: CARMA2_HW 0x004e71c0
@@ -278,13 +331,11 @@ void C2_HOOK_FASTCALL TurnOffActionReplay(void) {
 
 // FUNCTION: CARMA2_HW 0x004e72d0
 void C2_HOOK_FASTCALL AfterActionReplay(void) {
-
     ForceRebuildActiveCarList();
 }
 
 // FUNCTION: CARMA2_HW 0x004e6900
 void C2_HOOK_FASTCALL DoZappyActionReplayHeadups(int pFrame_number) {
-
     tU32 time = PDGetTotalTime();
 
     if (abs(pFrame_number) > 0x2710 &&
@@ -315,7 +366,6 @@ void C2_HOOK_FASTCALL PostProcess(int pFrame_period) {
 
 // FUNCTION: CARMA2_HW 0x004e72e0
 void C2_HOOK_FASTCALL ToggleReplay(int* pArg1, int* pArg2) {
-
     if (gPed_676914) {
         RenderAFrame(1);
         RenderAFrame(1);
@@ -328,7 +378,6 @@ void C2_HOOK_FASTCALL ToggleReplay(int* pArg1, int* pArg2) {
 
 // FUNCTION: CARMA2_HW 0x004c6bf0
 void C2_HOOK_FASTCALL InitialiseActionReplay(void) {
-
     C2_HOOK_BUG_ON(CARPOCALYPSE2_ASIZE(gReplay_callbacks) != 70);
 
     ARInitialise(!gAusterity_mode && gNet_mode == eNet_mode_none, CARPOCALYPSE2_ASIZE(gReplay_callbacks), gReplay_callbacks);
@@ -366,7 +415,6 @@ void C2_HOOK_FASTCALL DisposeActionReplay(void) {
 
 // FUNCTION: CARMA2_HW 0x004e6ff0
 void C2_HOOK_FASTCALL CheckReplayTurnOn(void) {
-
     if (!gAction_replay_mode) {
         if (!KeyIsDown(58) || gEntering_message) {
             gKey_down = -1;
@@ -378,25 +426,535 @@ void C2_HOOK_FASTCALL CheckReplayTurnOn(void) {
 
 // FUNCTION: CARMA2_HW 0x004e68e0
 void C2_HOOK_FASTCALL DoActionReplay(tU32 pFrame_period) {
-
     gTime_of_last_zappy_headups = 0;
     FUN_00403cc0(pFrame_period, DoZappyActionReplayHeadups, PreProcess, PostProcess);
 }
 
 // FUNCTION: CARMA2_HW 0x004e69b0
-void C2_HOOK_FASTCALL PollActionReplayControls(tU32 *pFrame_period, tU32* pAverage_frame_period) {
+void C2_NAKED C2_HOOK_FASTCALL PollActionReplayControls(tU32 *pFrame_period, tU32* pAverage_frame_period) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     NOT_IMPLEMENTED();
+#else
+    __asm {
+            sub esp, 0x18
+            push ebx
+            push ebp
+            push esi
+            push edi
+            mov esi, edx
+            mov edi, ecx
+            call EdgeTriggerModeOff
+            call PDGetTotalTime
+            mov dword ptr [esp + 0x14], eax
+            call ARGetReplayRate
+            fstp dword ptr [esp + 0x10]
+            mov ebx, dword ptr [gKey_down]
+            call PDAnyKeyDown
+            cmp ebx, -1
+            mov dword ptr [gKey_down], eax
+            je L004e69f0
+            cmp ebx, 4
+            jne L004e6a77
+    L004e69f0:
+            mov ecx, 0x3a
+            call KeyIsDown
+            test eax, eax
+            je L004e6a72
+            call DRS3StopAllOutletSoundsExceptCDA
+            mov eax, dword ptr [gPed_676914]
+            test eax, eax
+            je L004e6a1f
+            mov ebp, 1
+            mov ecx, ebp
+            call RenderAFrame
+            mov ecx, ebp
+            call RenderAFrame
+    L004e6a1f:
+            push esi
+            push edi
+            push offset PostProcess
+            push offset PreProcess
+            push offset DoZappyActionReplayHeadups
+            push offset AfterActionReplay
+            mov edx, offset TurnOffActionReplay
+            mov ecx, offset TurnOnActionReplay
+            call ARToggleReplay
+            test eax, eax
+            jne L004e6fd9
+            mov ecx, 0x25
+            call GetMiscString
+            xor edx, edx
+            mov ecx, 4
+            push eax
+            push -4
+            push 0x3e8
+            call NewTextHeadupSlot
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x18
+            ret
+    L004e6a72:
+            mov eax, dword ptr [gKey_down]
+    L004e6a77:
+            cmp eax, -1
+            mov ebp, 1
+            je L004e6a8e
+            xor edi, edi
+            mov dword ptr [gMouse_in_use], edi
+            jmp L004e6b39
+    L004e6a8e:
+            cmp ebx, -1
+            je L004e6aab
+            cmp ebx, 4
+            je L004e6aab
+            cmp ebx, 0x55
+            je L004e6aab
+            cmp ebx, 0x57
+            je L004e6aab
+            cmp ebx, 0x4c
+            jne L004e6b31
+    L004e6aab:
+            call EitherMouseButtonDown
+            test eax, eax
+            je L004e6b2c
+            lea edx, [esp + 0x18]
+            lea ecx, [esp + 0x1c]
+            call GetMousePosition
+            mov eax, dword ptr [gReal_graf_data_index]
+            mov edx, dword ptr [esp + 0x18]
+            mov ecx, dword ptr [esp + 0x1c]
+            xor edi, edi
+            lea eax, [eax + eax*8]
+            xor esi, esi
+            shl eax, 4
+            add eax, offset gReplay_timeline_y+0x34
+    L004e6add:
+            cmp ecx, dword ptr [eax - 4]
+            jl L004e6af0
+            cmp edx, dword ptr [eax]
+            jl L004e6af0
+            cmp ecx, dword ptr [eax + 4]
+            jge L004e6af0
+            cmp edx, dword ptr [eax + 8]
+            jl L004e6b00
+    L004e6af0:
+            inc esi
+            add eax, 0x10
+            cmp esi, 9
+            jl L004e6add
+            mov eax, dword ptr [gKey_down]
+            jmp L004e6b0c
+    L004e6b00:
+            mov eax, dword ptr [esi*4 + gReplay_timeline_y+0x8]
+            mov dword ptr [gKey_down], eax
+    L004e6b0c:
+            cmp esi, 9
+            jne L004e6b24
+            cmp dword ptr [gUnk_006a23c8+0x4], edi
+            jne L004e6b24
+            push edi
+            call PickActionReplayManualCameraTarget
+            mov eax, dword ptr [gKey_down]
+    L004e6b24:
+            mov dword ptr [gUnk_006a23c8+0x4], ebp
+            jmp L004e6b39
+    L004e6b2c:
+            mov eax, dword ptr [gKey_down]
+    L004e6b31:
+            xor edi, edi
+            mov dword ptr [gUnk_006a23c8+0x4], edi
+    L004e6b39:
+            cmp eax, 0x4b
+            jne L004e6b54
+            cmp ebx, -1
+            je L004e6b48
+            cmp ebx, 4
+            jne L004e6b54
+    L004e6b48:
+            call MovieRecordButtonPressed
+            mov eax, dword ptr [gKey_down]
+            jmp L004e6b7f
+    L004e6b54:
+            cmp eax, 0x4c
+            jne L004e6b79
+            cmp ebx, eax
+            mov dword ptr [gReplay_show_controls], ebp
+            je L004e6b7f
+            call ChangeCameraType
+            call PDGetTotalTime
+            mov dword ptr [gUnk_006a23c8], eax
+            mov eax, dword ptr [gKey_down]
+            jmp L004e6b7f
+    L004e6b79:
+            mov dword ptr [gReplay_show_controls], edi
+    L004e6b7f:
+            cmp eax, 0x56
+            je L004e6b89
+            cmp eax, 0x6a
+            jne L004e6b93
+    L004e6b89:
+            cmp ebx, -1
+            je L004e6bcc
+            cmp ebx, 4
+            je L004e6bcc
+    L004e6b93:
+            cmp eax, 0x51
+            je L004e6b9d
+            cmp eax, 0x32
+            jne L004e6be2
+    L004e6b9d:
+            cmp ebx, -1
+            je L004e6ba7
+            cmp ebx, 4
+            jne L004e6be2
+    L004e6ba7:
+            call ARGetReplayDirection
+            neg eax
+            mov dword ptr [esp + 0x20], eax
+            push ecx
+            fild dword ptr [esp + 0x24]
+            _emit 0xd9
+        _emit 0x1c
+        _emit 0x24
+            call ARSetReplayDirection
+            call ARReplayPauseState
+            test eax, eax
+            je L004e6bdd
+            xor ecx, ecx
+            jmp L004e6bd8
+    L004e6bcc:
+            call ARReplayPauseState
+            mov ecx, eax
+            neg ecx
+            sbb ecx, ecx
+            inc ecx
+    L004e6bd8:
+            call ARSetPause
+    L004e6bdd:
+            mov eax, dword ptr [gKey_down]
+    L004e6be2:
+            cmp eax, 0x52
+            jne L004e6c10
+            cmp ebx, -1
+            je L004e6bf1
+            cmp ebx, 4
+            jne L004e6c10
+    L004e6bf1:
+            push 0xbf800000
+            call ARSetReplayRate
+            push 0xbf800000
+            call ARSetReplayDirection
+            mov dword ptr [gSingle_frame_mode], ebp
+            jmp L004e6da2
+    L004e6c10:
+            cmp eax, 0x54
+            jne L004e6c3e
+            cmp ebx, -1
+            je L004e6c1f
+            cmp ebx, 4
+            jne L004e6c3e
+    L004e6c1f:
+            push 0x3f800000
+            call ARSetReplayRate
+            push 0x3f800000
+            call ARSetReplayDirection
+            mov dword ptr [gSingle_frame_mode], ebp
+            jmp L004e6da2
+    L004e6c3e:
+            cmp eax, 0x55
+            je L004e6d34
+            cmp eax, 0x44
+            je L004e6d34
+            cmp eax, 0x57
+            je L004e6cc9
+            cmp eax, 0x45
+            je L004e6cc9
+            cmp eax, 0x3b
+            jne L004e6c7f
+            push 0xbf800000
+            call ARSetReplayRate
+            push 0xbf800000
+            call ARSetReplayDirection
+            xor ecx, ecx
+            call ARSetPause
+            jmp L004e6da2
+    L004e6c7f:
+            cmp eax, 0x3a
+            jne L004e6ca4
+            push 0x3f800000
+            call ARSetReplayRate
+            push 0x3f800000
+            call ARSetReplayDirection
+            xor ecx, ecx
+            call ARSetPause
+            jmp L004e6da2
+    L004e6ca4:
+            call ARReplayPauseState
+            test eax, eax
+            je L004e6cb3
+            push edi
+            jmp L004e6d9d
+    L004e6cb3:
+            call ARGetReplayDirection
+            mov dword ptr [esp + 0x20], eax
+            fild dword ptr [esp + 0x20]
+            push ecx
+            _emit 0xd9
+        _emit 0x1c
+        _emit 0x24
+            jmp L004e6d9d
+    L004e6cc9:
+            call ARGetReplayRate
+            fcomp qword ptr [gConst_kangeroo_force_factor+0x138]
+            fnstsw ax
+            test ah, 1
+            je L004e6ce5
+            push 0x3f99999a
+            call ARSetReplayRate
+    L004e6ce5:
+            cmp dword ptr [gUnk_006a23c8+0x8], edi
+            je L004e6d1b
+            call ARGetReplayRate
+            mov eax, dword ptr [esp + 0x14]
+            mov edx, dword ptr [gUnk_006a23c8+0x8]
+            sub eax, edx
+            mov dword ptr [esp + 0x24], edi
+            mov dword ptr [esp + 0x20], eax
+            push ecx
+            fild qword ptr [esp + 0x24]
+            fmul qword ptr [gConst_kangeroo_force_factor+0x140]
+            fsubp st(1), st(0)
+            _emit 0xd9
+        _emit 0x1c
+        _emit 0x24
+            call ARSetReplayRate
+    L004e6d1b:
+            call ARGetReplayRate
+            fcomp dword ptr [gConst_kangeroo_force_factor+0x148]
+            fnstsw ax
+            test ah, 0x41
+            jne L004e6da2
+            push 0x41000000
+            jmp L004e6d9d
+    L004e6d34:
+            call ARGetReplayRate
+            fcomp qword ptr [gConst_kangeroo_force_factor+0x150]
+            fnstsw ax
+            test ah, 0x41
+            jne L004e6d50
+            push 0xbf99999a
+            call ARSetReplayRate
+    L004e6d50:
+            cmp dword ptr [gUnk_006a23c8+0x8], edi
+            je L004e6d86
+            call ARGetReplayRate
+            mov ecx, dword ptr [esp + 0x14]
+            mov edx, dword ptr [gUnk_006a23c8+0x8]
+            sub ecx, edx
+            mov dword ptr [esp + 0x24], edi
+            mov dword ptr [esp + 0x20], ecx
+            push ecx
+            fild qword ptr [esp + 0x24]
+            fmul qword ptr [gConst_kangeroo_force_factor+0x158]
+            fsubp st(1), st(0)
+            _emit 0xd9
+        _emit 0x1c
+        _emit 0x24
+            call ARSetReplayRate
+    L004e6d86:
+            call ARGetReplayRate
+            fcomp dword ptr [gConst_kangeroo_force_factor+0x160]
+            fnstsw ax
+            test ah, 1
+            je L004e6da2
+            push 0xc1000000
+    L004e6d9d:
+            call ARSetReplayRate
+    L004e6da2:
+            mov eax, dword ptr [gKey_down]
+            cmp eax, 0x58
+            je L004e6db1
+            cmp eax, 0x42
+            jne L004e6dc3
+    L004e6db1:
+            cmp ebx, -1
+            je L004e6e54
+            cmp ebx, 4
+            je L004e6e54
+    L004e6dc3:
+            cmp eax, 0x5a
+            je L004e6dd1
+            cmp eax, 0x43
+            jne L004e6eca
+    L004e6dd1:
+            cmp ebx, -1
+            je L004e6ddf
+            cmp ebx, 4
+            jne L004e6eca
+    L004e6ddf:
+            mov eax, dword ptr [gNoTransients]
+            mov dword ptr [gTime_of_last_zappy_headups], edi
+            cmp eax, edi
+            je L004e6df4
+            mov dword ptr [gRecording_mouse_disabled], ebp
+    L004e6df4:
+            mov ecx, ebp
+            call RenderAFrame
+            mov ecx, ebp
+            call RenderAFrame
+            mov edx, offset PreProcess
+            mov ecx, offset DoZappyActionReplayHeadups
+            push offset PostProcess
+            call FUN_00403210
+            cmp dword ptr [gNoTransients], edi
+            je L004e6e2d
+            call GetNextReplayRecordState
+            test eax, eax
+            jne L004e6e2d
+            mov dword ptr [gRecording_mouse_disabled], edi
+    L004e6e2d:
+            push 0xbf800000
+            call ARSetReplayRate
+            mov ecx, dword ptr [gFrame_period]
+            call MungeCarGraphics
+            call GrooveThoseDelics
+            push edi
+            call ARSetReplayRate
+            push 0xbf800000
+            jmp L004e6ebe
+    L004e6e54:
+            mov eax, dword ptr [gNoTransients]
+            mov dword ptr [gTime_of_last_zappy_headups], edi
+            cmp eax, edi
+            je L004e6e69
+            mov dword ptr [gRecording_mouse_disabled], ebp
+    L004e6e69:
+            mov ecx, ebp
+            call RenderAFrame
+            mov ecx, ebp
+            call RenderAFrame
+            mov edx, offset PreProcess
+            mov ecx, offset DoZappyActionReplayHeadups
+            push offset PostProcess
+            call FUN_00403c70
+            cmp dword ptr [gNoTransients], edi
+            je L004e6e99
+            mov dword ptr [gRecording_mouse_disabled], edi
+    L004e6e99:
+            push 0x3f800000
+            call ARSetReplayRate
+            mov ecx, dword ptr [gFrame_period]
+            call MungeCarGraphics
+            call GrooveThoseDelics
+            push edi
+            call ARSetReplayRate
+            push 0x3f800000
+    L004e6ebe:
+            call ARSetReplayDirection
+            mov ecx, ebp
+            call ARSetPause
+    L004e6eca:
+            fld dword ptr [gUnk_006a2378]
+            fcomp dword ptr [gConst_kangeroo_force_factor+0x130]
+            fnstsw ax
+            test ah, 0x40
+            jne L004e6ef3
+            mov edx, dword ptr [gUnk_006a2378]
+            push edx
+            call ARSetReplayRate
+            mov dword ptr [gUnk_006a2378], 0
+    L004e6ef3:
+            call ARGetReplayRate
+            fmul dword ptr [esp + 0x10]
+            fcomp dword ptr [gConst_kangeroo_force_factor+0x130]
+            fnstsw ax
+            test ah, 1
+            je L004e6f1c
+            call ARGetReplayRate
+            fstp dword ptr [gUnk_006a2378]
+            push edi
+            call ARSetReplayRate
+            jmp L004e6f26
+    L004e6f1c:
+            mov dword ptr [gUnk_006a2378], 0
+    L004e6f26:
+            fld dword ptr [esp + 0x10]
+            fcomp dword ptr [gConst_kangeroo_force_factor+0x130]
+            fnstsw ax
+            test ah, 0x40
+            jne L004e6f5b
+            call ARGetReplayRate
+            fdiv dword ptr [esp + 0x10]
+            mov eax, dword ptr [gFrame_period]
+            mov dword ptr [esp + 0x24], edi
+            mov dword ptr [esp + 0x20], eax
+            fimul dword ptr [esp + 0x20]
+            call _ftol
+            mov dword ptr [gFrame_period], eax
+    L004e6f5b:
+            call ARGetReplayRate
+            fabs
+            fcomp qword ptr [gConst_kangeroo_force_factor+0x138]
+            fnstsw ax
+            test ah, 1
+            je L004e6f77
+            mov dword ptr [gUnk_006a23c8+0x8], edi
+            jmp L004e6f81
+    L004e6f77:
+            mov ecx, dword ptr [esp + 0x14]
+            mov dword ptr [gUnk_006a23c8+0x8], ecx
+    L004e6f81:
+            fld dword ptr [esp + 0x10]
+            fcomp dword ptr [gConst_kangeroo_force_factor+0x130]
+            fnstsw ax
+            test ah, 0x41
+            je L004e6fb1
+            call ARGetReplayRate
+            fcomp dword ptr [gConst_kangeroo_force_factor+0x130]
+            fnstsw ax
+            test ah, 0x41
+            jne L004e6fb1
+            call ARGoForwards
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x18
+            ret
+    L004e6fb1:
+            fld dword ptr [esp + 0x10]
+            fcomp dword ptr [gConst_kangeroo_force_factor+0x130]
+            fnstsw ax
+            test ah, 1
+            jne L004e6fd9
+            call ARGetReplayRate
+            fcomp dword ptr [gConst_kangeroo_force_factor+0x130]
+            fnstsw ax
+            test ah, 1
+            je L004e6fd9
+            call ARGoBackwards
+    L004e6fd9:
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x18
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00402360
 int C2_HOOK_FASTCALL ARReplayIsReallyPaused(void) {
-
     return gReplay_rate == gFLOAT_00589330;
 }
 
 // FUNCTION: CARMA2_HW 0x004c80b0
-void C2_HOOK_FASTCALL PipeSingleGrooveStop(int pGroove_index, br_matrix34* pMatrix, int pPath_interrupt, int pObject_interrupt, float pPath_resumption, float pObject_resumption) {
+void C2_NAKED C2_HOOK_FASTCALL PipeSingleGrooveStop(int pGroove_index, br_matrix34* pMatrix, int pPath_interrupt, int pObject_interrupt, float pPath_resumption, float pObject_resumption) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     gUNK_0069410c = *(tU32*)&pPath_resumption;
     ARDoSingleVariedSession(0xd, pGroove_index, 5,
@@ -405,13 +963,50 @@ void C2_HOOK_FASTCALL PipeSingleGrooveStop(int pGroove_index, br_matrix34* pMatr
         4, 8, *(tU32*)&pPath_resumption,
         4, 0xc, *(tU32*)&pPath_resumption,
         0x30, 0x10, pMatrix);
+#else
+    __asm {
+            mov eax, dword ptr [esp + 0xc]
+            push edx
+            push 0x10
+            push 0x30
+            push eax
+            push 0xc
+            push 4
+            mov dword ptr [gUNK_0069410c], eax
+            push eax
+            mov eax, dword ptr [esp + 0x24]
+            push 8
+            push 4
+            push eax
+            push 4
+            push 4
+            push eax
+            push 0
+            push 4
+            push 5
+            push ecx
+            push 0xd
+            call ARDoSingleVariedSession
+            add esp, 0x48
+            ret 0x10
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // ActualActionReplayHeadups
 
 // FUNCTION: CARMA2_HW 0x004e6270
 void C2_HOOK_FASTCALL DoActionReplayHeadups(void) {
-
     ActualActionReplayHeadups(0);
 }
 
@@ -421,7 +1016,8 @@ void C2_HOOK_FASTCALL ARSetReplayRate(float rate) {
 }
 
 // FUNCTION: CARMA2_HW 0x004e7110
-void C2_HOOK_FASTCALL SynchronizeActionReplay(void) {
+void C2_NAKED C2_HOOK_FASTCALL SynchronizeActionReplay(void) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     while (ARGetReplayRate() != 0.f && (float)(PDGetTotalTime() - gLast_synch_time) < (float)gFrame_period / fabsf(ARGetReplayRate())) {
         ServiceGameInRace();
@@ -431,11 +1027,65 @@ void C2_HOOK_FASTCALL SynchronizeActionReplay(void) {
         ARSetReplayRate(0.f);
         gSingle_frame_mode = 0;
     }
+#else
+    __asm {
+            push ebp
+            mov ebp, esp
+            and esp, 0xfffffff8
+            sub esp, 0x24
+            push esi
+            call ARGetReplayRate
+            fcomp dword ptr [gConst_kangeroo_force_factor+0x130]
+            xor esi, esi
+            fnstsw ax
+            test ah, 0x40
+            jne L004e718d
+    L004e712e:
+            mov eax, dword ptr [gFrame_period]
+            mov dword ptr [esp + 0xc], esi
+            mov dword ptr [esp + 8], eax
+            fild qword ptr [esp + 8]
+            fstp qword ptr [esp + 0x18]
+            call PDGetTotalTime
+            mov ecx, dword ptr [gLast_synch_time]
+            mov dword ptr [esp + 0x14], esi
+            sub eax, ecx
+            mov dword ptr [esp + 0x10], eax
+            fild qword ptr [esp + 0x10]
+            fstp qword ptr [esp + 0x20]
+            call ARGetReplayRate
+            fabs
+            fdivr qword ptr [esp + 0x18]
+            fcomp qword ptr [esp + 0x20]
+            fnstsw ax
+            test ah, 0x41
+            jne L004e718d
+            call ServiceGameInRace
+            call ARGetReplayRate
+            fcomp dword ptr [gConst_kangeroo_force_factor+0x130]
+            fnstsw ax
+            test ah, 0x40
+            je L004e712e
+    L004e718d:
+            call PDGetTotalTime
+            mov dword ptr [gLast_synch_time], eax
+            mov eax, dword ptr [gSingle_frame_mode]
+            cmp eax, esi
+            je L004e71ac
+            push esi
+            call ARSetReplayRate
+            mov dword ptr [gSingle_frame_mode], esi
+    L004e71ac:
+            pop esi
+            mov esp, ebp
+            pop ebp
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004e6260
 void C2_HOOK_FASTCALL DoActionReplayPostSwap(void) {
-
     RemoveTransientBitmaps(1);
 }
 // ActualActionReplayHeadups
@@ -487,7 +1137,8 @@ void C2_HOOK_FASTCALL ARSetPause(int pPause) {
 }
 
 // FUNCTION: CARMA2_HW 0x004e7090
-void C2_HOOK_FASTCALL InitializeActionReplayPix(void) {
+void C2_NAKED C2_HOOK_FASTCALL InitializeActionReplayPix(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     int i;
 
     for (i = 0; i < 11; i++) {
@@ -495,10 +1146,36 @@ void C2_HOOK_FASTCALL InitializeActionReplayPix(void) {
         BRPM_convert(gReplay_pixelmaps[i], gBack_screen->type);
         BrMapAdd(gReplay_pixelmaps[i]);
     }
+#else
+    __asm {
+            push esi
+            xor esi, esi
+    L004e7093:
+            mov ecx, dword ptr [esi + gReplay_pixie_names]
+            call LoadPixelmap
+            mov ecx, dword ptr [gBack_screen]
+            xor edx, edx
+            mov dword ptr [esi + gReplay_headup_graphics], eax
+            mov dl, byte ptr [ecx + 0x2c]
+            mov ecx, eax
+            call BRPM_convert
+            mov edx, dword ptr [esi + gReplay_headup_graphics]
+            push edx
+            call BrMapAdd
+            add esi, 4
+            add esp, 4
+            cmp esi, 0x2c
+            jl L004e7093
+            pop esi
+            ret
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004e70d0
-void C2_HOOK_FASTCALL DisposeReplayPixelmaps(void) {
+void C2_NAKED C2_HOOK_FASTCALL DisposeReplayPixelmaps(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     int i;
 
     for (i = 0; i < 11; i++) {
@@ -508,6 +1185,30 @@ void C2_HOOK_FASTCALL DisposeReplayPixelmaps(void) {
             gReplay_pixelmaps[i] = NULL;
         }
     }
+#else
+    __asm {
+            push esi
+            mov esi, offset gReplay_headup_graphics
+    L004e70d6:
+            mov eax, dword ptr [esi]
+            test eax, eax
+            je L004e70f6
+            push eax
+            call BrMapRemove
+            mov eax, dword ptr [esi]
+            add esp, 4
+            push eax
+            call BrPixelmapFree
+            add esp, 4
+            mov dword ptr [esi], 0
+    L004e70f6:
+            add esi, 4
+            cmp esi, offset gReplay_headup_graphics+0x2c
+            jl L004e70d6
+            pop esi
+            ret
+    }
+#endif
 }
 
 #pragma auto_inline(off)

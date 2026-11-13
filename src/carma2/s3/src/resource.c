@@ -22,8 +22,21 @@ C2_NAKED FILE* C2_HOOK_FASTCALL S3_low_memory_fopen(const char* pPath, const cha
     return NULL;
 #else
     __asm {
-        xor eax, eax
-        ret
+            xor eax, eax
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }

@@ -9,6 +9,9 @@
 #include "c2_stdlib.h"
 #include "c2_string.h"
 
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gQuickTime_call_component_with_storage[];
+#endif
 // FUNCTION: CARMA2_HW 0x0053f030
 int C2_HOOK_CDECL BrMemCmp(const void* s1, const void* s2, size_t n) {
 
@@ -124,27 +127,103 @@ unsigned long C2_HOOK_CDECL BrStrToUL(const char* nptr, char** endptr, int base)
 }
 
 // FUNCTION: CARMA2_HW 0x0053f2d0
-br_boolean C2_HOOK_CDECL BrIsAlpha(int c) {
+br_boolean C2_NAKED C2_HOOK_CDECL BrIsAlpha(int c) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     return isalpha(c);
+#else
+    __asm {
+            cmp dword ptr [gQuickTime_call_component_with_storage+0x5a0], 1
+            jle L0053f2ec
+            mov eax, dword ptr [esp + 4]
+            push 0x103
+            push eax
+            call _isctype
+            add esp, 8
+            ret
+    L0053f2ec:
+            mov ecx, dword ptr [esp + 4]
+            mov edx, dword ptr [gQuickTime_call_component_with_storage+0x394]
+            mov ax, word ptr [edx + ecx*2]
+            and eax, 0x103
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0053f300
-br_boolean C2_HOOK_CDECL BrIsDigit(int c) {
+br_boolean C2_NAKED C2_HOOK_CDECL BrIsDigit(int c) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     return isdigit(c);
+#else
+    __asm {
+            cmp dword ptr [gQuickTime_call_component_with_storage+0x5a0], 1
+            jle L0053f319
+            mov eax, dword ptr [esp + 4]
+            push 4
+            push eax
+            call _isctype
+            add esp, 8
+            ret
+    L0053f319:
+            mov ecx, dword ptr [esp + 4]
+            mov edx, dword ptr [gQuickTime_call_component_with_storage+0x394]
+            mov al, byte ptr [edx + ecx*2]
+            and eax, 4
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0053f330
-br_boolean C2_HOOK_CDECL BrIsSpace(int c) {
+br_boolean C2_NAKED C2_HOOK_CDECL BrIsSpace(int c) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     return isspace(c);
+#else
+    __asm {
+            cmp dword ptr [gQuickTime_call_component_with_storage+0x5a0], 1
+            jle L0053f349
+            mov eax, dword ptr [esp + 4]
+            push 8
+            push eax
+            call _isctype
+            add esp, 8
+            ret
+    L0053f349:
+            mov ecx, dword ptr [esp + 4]
+            mov edx, dword ptr [gQuickTime_call_component_with_storage+0x394]
+            mov al, byte ptr [edx + ecx*2]
+            and eax, 8
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0053f360
-br_boolean C2_HOOK_CDECL BrIsPrint(int c) {
+br_boolean C2_NAKED C2_HOOK_CDECL BrIsPrint(int c) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     return isprint(c);
+#else
+    __asm {
+            cmp dword ptr [gQuickTime_call_component_with_storage+0x5a0], 1
+            jle L0053f37c
+            mov eax, dword ptr [esp + 4]
+            push 0x157
+            push eax
+            call _isctype
+            add esp, 8
+            ret
+    L0053f37c:
+            mov ecx, dword ptr [esp + 4]
+            mov edx, dword ptr [gQuickTime_call_component_with_storage+0x394]
+            mov ax, word ptr [edx + ecx*2]
+            and eax, 0x157
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0053f390

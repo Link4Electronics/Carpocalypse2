@@ -22,6 +22,12 @@ br_error C2_HOOK_CDECL AddRequestedDrivers(void) {
     return 0;
 }
 
+#ifdef CARPOCALYPSE2_MATCHING
+extern void C2_HOOK_CDECL BrImageDereference();
+extern br_boolean C2_HOOK_CDECL BrNamePatternMatch();
+extern br_error C2_HOOK_CDECL BrSystemConfigQueryString();
+extern br_framework_state fw;
+#endif
 // FUNCTION: CARMA2_HW 0x00528490
 br_error C2_HOOK_STDCALL devAdd(br_device** pdev, br_device_begin_fn* dev_begin, const char* args, br_image* image) {
     int i;
@@ -136,7 +142,8 @@ br_error C2_HOOK_CDECL BrDevAddConfig(const char* config) {
 }
 
 // FUNCTION: CARMA2_HW 0x00528800
-br_error C2_HOOK_CDECL BrDevRemove(br_device* dev) {
+br_error C2_NAKED C2_HOOK_CDECL BrDevRemove(br_device* dev) {
+#ifndef CARPOCALYPSE2_MATCHING
     int i;
 
     for (i = 0; i < fw.ndev_slots; i++) {
@@ -150,6 +157,50 @@ br_error C2_HOOK_CDECL BrDevRemove(br_device* dev) {
         }
     }
     return 0;
+#else
+    __asm {
+            mov eax, dword ptr [fw+0x464]
+            push ebx
+            push edi
+            xor ebx, ebx
+            xor edi, edi
+            cmp eax, ebx
+            jle L0052885b
+            push esi
+            mov esi, dword ptr [esp + 0x10]
+    L00528814:
+            mov eax, dword ptr [fw+0x460]
+            cmp dword ptr [eax + edi*8], esi
+            jne L00528850
+            mov ecx, dword ptr [esi]
+            push esi
+            call dword ptr [ecx + 0x10]
+            mov edx, dword ptr [fw+0x460]
+            add esp, 4
+            mov eax, dword ptr [edx + edi*8 + 4]
+            cmp eax, ebx
+            je L0052883e
+            push eax
+            call BrImageDereference
+            add esp, 4
+    L0052883e:
+            mov eax, dword ptr [fw+0x460]
+            mov dword ptr [eax + edi*8], ebx
+            mov ecx, dword ptr [fw+0x460]
+            mov dword ptr [ecx + edi*8 + 4], ebx
+    L00528850:
+            mov eax, dword ptr [fw+0x464]
+            inc edi
+            cmp edi, eax
+            jl L00528814
+            pop esi
+    L0052885b:
+            pop edi
+            xor eax, eax
+            pop ebx
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00528860
@@ -172,7 +223,8 @@ br_error C2_HOOK_CDECL BrDevFind(br_device** pdev, const char* pattern) {
 }
 
 // FUNCTION: CARMA2_HW 0x00528930
-br_error C2_HOOK_CDECL BrDevFindMany(br_device** devices, br_int_32* ndevices, br_int_32 max_devices, const char* pattern) {
+br_error C2_NAKED C2_HOOK_CDECL BrDevFindMany(br_device** devices, br_int_32* ndevices, br_int_32 max_devices, const char* pattern) {
+#ifndef CARPOCALYPSE2_MATCHING
     int i;
     int c;
 
@@ -195,6 +247,90 @@ br_error C2_HOOK_CDECL BrDevFindMany(br_device** devices, br_int_32* ndevices, b
         *ndevices = c;
     }
     return 0;
+#else
+    __asm {
+            mov eax, dword ptr [fw+0x46c]
+            sub esp, 0x100
+            test eax, eax
+            push ebx
+            push ebp
+            push esi
+            push edi
+            jne L00528979
+            lea eax, [esp + 0x10]
+            push 0x100
+            push eax
+            push 0x1a4
+            call BrSystemConfigQueryString
+            mov al, byte ptr [esp + 0x1c]
+            add esp, 0xc
+            test al, al
+            je L0052896f
+            lea ecx, [esp + 0x10]
+            push ecx
+            call BrDevAddConfig
+            add esp, 4
+    L0052896f:
+            mov dword ptr [fw+0x46c], 1
+    L00528979:
+            mov eax, dword ptr [fw+0x464]
+            xor esi, esi
+            xor ebx, ebx
+            test eax, eax
+            jle L005289db
+            mov edi, dword ptr [esp + 0x114]
+            mov ebp, dword ptr [esp + 0x11c]
+    L00528994:
+            mov edx, dword ptr [fw+0x460]
+            mov eax, dword ptr [edx + esi*8]
+            test eax, eax
+            je L005289d1
+            mov ecx, dword ptr [eax]
+            push eax
+            call dword ptr [ecx + 0x14]
+            mov edx, dword ptr [esp + 0x124]
+            add esp, 4
+            push eax
+            push edx
+            call BrNamePatternMatch
+            add esp, 8
+            test eax, eax
+            je L005289d1
+            inc ebx
+            add edi, 4
+            cmp ebx, ebp
+            jge L005289f5
+            mov eax, dword ptr [fw+0x460]
+            mov ecx, dword ptr [eax + esi*8]
+            mov dword ptr [edi], ecx
+    L005289d1:
+            mov eax, dword ptr [fw+0x464]
+            inc esi
+            cmp esi, eax
+            jl L00528994
+    L005289db:
+            mov eax, dword ptr [esp + 0x118]
+            test eax, eax
+            je L005289e8
+            mov dword ptr [eax], ebx
+    L005289e8:
+            xor eax, eax
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x100
+            ret
+    L005289f5:
+            pop edi
+            pop esi
+            pop ebp
+            mov eax, 0x1004
+            pop ebx
+            add esp, 0x100
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00528a10

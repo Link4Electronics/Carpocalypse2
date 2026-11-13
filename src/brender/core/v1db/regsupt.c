@@ -8,6 +8,13 @@
 
 #include "core/fw/register.h"
 
+#ifdef CARPOCALYPSE2_MATCHING
+extern void C2_HOOK_STDCALL BrModelClear(br_model* model);
+extern void C2_HOOK_CDECL BrModelUpdate();
+extern void* C2_HOOK_STDCALL BrRegistryAdd(br_registry* reg, void* item);
+extern void* C2_HOOK_STDCALL BrRegistryRemove(br_registry* reg, void* item);
+extern br_v1db_state v1db;
+#endif
 // FUNCTION: CARMA2_HW 0x0051ed00
 br_model* C2_HOOK_CDECL BrModelAdd(br_model* model) {
 
@@ -41,7 +48,8 @@ br_model_find_cbfn* C2_HOOK_CDECL BrModelFindHook(br_model_find_cbfn* hook) {
 }
 
 // FUNCTION: CARMA2_HW 0x0051ed70
-br_uint_32 C2_HOOK_CDECL BrModelAddMany(br_model** items, int n) {
+br_uint_32 C2_NAKED C2_HOOK_CDECL BrModelAddMany(br_model** items, int n) {
+#ifndef CARPOCALYPSE2_MATCHING
     int i;
     int r;
 
@@ -54,10 +62,63 @@ br_uint_32 C2_HOOK_CDECL BrModelAddMany(br_model** items, int n) {
         }
     }
     return r;
+#else
+    __asm {
+            mov eax, dword ptr [esp + 8]
+            push ebx
+            xor ebx, ebx
+            test eax, eax
+            jle L0051edad
+            push edi
+            mov edi, dword ptr [esp + 0xc]
+            push esi
+            push ebp
+            mov ebp, eax
+    L0051ed84:
+            mov esi, dword ptr [edi]
+            add edi, 4
+            push esi
+            push offset v1db+0x464
+            call BrRegistryAdd
+            push 0x7fff
+            push esi
+            call BrModelUpdate
+            add esp, 8
+            test esi, esi
+            je L0051eda7
+            inc ebx
+    L0051eda7:
+            dec ebp
+            jne L0051ed84
+            pop ebp
+            pop esi
+            pop edi
+    L0051edad:
+            mov eax, ebx
+            pop ebx
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0051edc0
-br_uint_32 C2_HOOK_CDECL BrModelRemoveMany(br_model** items, int n) {
+br_uint_32 C2_NAKED C2_HOOK_CDECL BrModelRemoveMany(br_model** items, int n) {
+#ifndef CARPOCALYPSE2_MATCHING
     int i;
     int r;
 
@@ -69,6 +130,48 @@ br_uint_32 C2_HOOK_CDECL BrModelRemoveMany(br_model** items, int n) {
         }
     }
     return r;
+#else
+    __asm {
+            mov eax, dword ptr [esp + 8]
+            push ebx
+            xor ebx, ebx
+            test eax, eax
+            jle L0051edf5
+            push edi
+            mov edi, dword ptr [esp + 0xc]
+            push esi
+            push ebp
+            mov ebp, eax
+    L0051edd4:
+            mov esi, dword ptr [edi]
+            add edi, 4
+            push esi
+            call BrModelClear
+            push esi
+            push offset v1db+0x464
+            call BrRegistryRemove
+            test eax, eax
+            je L0051edef
+            inc ebx
+    L0051edef:
+            dec ebp
+            jne L0051edd4
+            pop ebp
+            pop esi
+            pop edi
+    L0051edf5:
+            mov eax, ebx
+            pop ebx
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0051ee00

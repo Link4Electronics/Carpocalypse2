@@ -149,6 +149,15 @@ void C2_HOOK_FASTCALL BackupNetworkOptions(void) {
     gFrontend_backup_net_options = gFrontend_net_options;
 }
 
+#ifdef CARPOCALYPSE2_MATCHING
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern int C2_HOOK_FASTCALL SaveOptions(void);
+extern int C2_HOOK_FASTCALL WhichItemIsSelectedIn(tFrontend_spec* pFrontend, int pGroup);
+extern tNet_game_options gFrontend_net_options;
+extern int gNet_last_game_type;
+extern tNet_game_options gNet_settings[9];
+#endif
 // FUNCTION: CARMA2_HW 0x00472ed0
 int C2_HOOK_FASTCALL NetOptions_Infunc(tFrontend_spec* pFrontend) {
 
@@ -171,7 +180,6 @@ int C2_HOOK_FASTCALL NetOptions_Infunc(tFrontend_spec* pFrontend) {
 
 // FUNCTION: CARMA2_HW 0x00473210
 int C2_HOOK_FASTCALL NetOptions_Outfunc(tFrontend_spec* pFrontend) {
-
     return 0;
 }
 
@@ -270,7 +278,8 @@ int C2_HOOK_FASTCALL NetOptions_TargetRoller(tFrontend_spec* pFrontend) {
 }
 
 // FUNCTION: CARMA2_HW 0x00473470
-int C2_HOOK_FASTCALL NetOptions_Ok(tFrontend_spec* pFrontend) {
+int C2_NAKED C2_HOOK_FASTCALL NetOptions_Ok(tFrontend_spec* pFrontend) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     if (WhichItemIsSelectedIn(pFrontend, 1) == 2) {
         gFrontend_net_options.show_players_on_map = 1;
@@ -306,6 +315,79 @@ int C2_HOOK_FASTCALL NetOptions_Ok(tFrontend_spec* pFrontend) {
     memcpy(&gNet_settings[gNet_last_game_type], &gFrontend_net_options, sizeof(gFrontend_net_options));
     SaveOptions();
     return 0;
+#else
+    __asm {
+            push esi
+            push edi
+            mov esi, ecx
+            mov edx, 1
+            call WhichItemIsSelectedIn
+            sub eax, 2
+            mov edx, 2
+            neg eax
+            sbb eax, eax
+            mov ecx, esi
+            inc eax
+            mov dword ptr [gFrontend_net_options], eax
+            call WhichItemIsSelectedIn
+            sub eax, 5
+            mov edx, 3
+            neg eax
+            sbb eax, eax
+            mov ecx, esi
+            inc eax
+            mov dword ptr [gFrontend_net_options+0xc], eax
+            call WhichItemIsSelectedIn
+            sub eax, 8
+            mov edx, 4
+            neg eax
+            sbb eax, eax
+            mov ecx, esi
+            inc eax
+            mov dword ptr [gFrontend_net_options+0x10], eax
+            call WhichItemIsSelectedIn
+            sub eax, 0xb
+            mov edx, 6
+            neg eax
+            sbb eax, eax
+            mov ecx, esi
+            inc eax
+            mov dword ptr [gFrontend_net_options+0x18], eax
+            call WhichItemIsSelectedIn
+            sub eax, 0x11
+            mov edx, 5
+            neg eax
+            sbb eax, eax
+            mov ecx, esi
+            inc eax
+            mov dword ptr [gFrontend_net_options+0x24], eax
+            call WhichItemIsSelectedIn
+            sub eax, 0xe
+            mov edx, 7
+            mov ecx, esi
+            mov dword ptr [gFrontend_net_options+0x28], eax
+            call WhichItemIsSelectedIn
+            sub eax, 0x14
+            mov ecx, 0xc
+            mov dword ptr [gFrontend_net_options+0x2c], eax
+            mov eax, dword ptr [gNet_last_game_type]
+            mov esi, offset gFrontend_net_options
+            mov edi, offset gNet_settings
+            rep movsd
+            lea edi, [eax + eax*2]
+            mov ecx, 0xc
+            shl edi, 4
+            add edi, offset gNet_settings+0x30
+            mov esi, offset gFrontend_net_options
+            rep movsd
+            call SaveOptions
+            xor eax, eax
+            pop edi
+            pop esi
+            ret
+            nop
+    }
+#endif
 }
 
 void C2_HOOK_FASTCALL RestoreNetworkOptions(void) {
@@ -315,8 +397,31 @@ void C2_HOOK_FASTCALL RestoreNetworkOptions(void) {
 }
 
 // FUNCTION: CARMA2_HW 0x00473550
-int C2_HOOK_FASTCALL NetOptions_Cancel(tFrontend_spec* pFrontend) {
+int C2_NAKED C2_HOOK_FASTCALL NetOptions_Cancel(tFrontend_spec* pFrontend) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     RestoreNetworkOptions();
     return 0;
+#else
+    __asm {
+            push esi
+            push edi
+            mov ecx, 0xc
+            mov esi, offset gFrontend_backup_net_options
+            mov edi, offset gFrontend_net_options
+            xor eax, eax
+            rep movsd
+            pop edi
+            pop esi
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }

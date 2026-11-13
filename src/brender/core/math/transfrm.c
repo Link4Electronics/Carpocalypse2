@@ -85,6 +85,9 @@ br_uint_8 _CombineTransforms[7][7] = {
     },
 };
 
+#ifdef CARPOCALYPSE2_MATCHING
+extern void C2_HOOK_CDECL BrMatrix34LPNormalise();
+#endif
 // FUNCTION: CARMA2_HW 0x00531870
 void C2_HOOK_CDECL BrTransformToMatrix34(br_matrix34* mat, const br_transform* xform) {
 
@@ -225,7 +228,8 @@ void C2_HOOK_CDECL BrMatrix34ToTransform(br_transform* xform, const br_matrix34*
 }
 
 // FUNCTION: CARMA2_HW 0x00531d70
-void C2_HOOK_CDECL BrTransformToTransform(br_transform* dest, const br_transform* src) {
+void C2_NAKED C2_HOOK_CDECL BrTransformToTransform(br_transform* dest, const br_transform* src) {
+#ifndef CARPOCALYPSE2_MATCHING
     br_matrix34 temp;
 
     if (src->type == dest->type) {
@@ -244,4 +248,59 @@ void C2_HOOK_CDECL BrTransformToTransform(br_transform* dest, const br_transform
         BrTransformToMatrix34(&temp, src);
         BrMatrix34ToTransform(dest, &temp);
     }
+#else
+    __asm {
+            sub esp, 0x30
+            push esi
+            mov esi, dword ptr [esp + 0x3c]
+            push edi
+            mov edi, dword ptr [esp + 0x3c]
+            mov ax, word ptr [edi]
+            cmp ax, word ptr [esi]
+            jne L00531d92
+            mov ecx, 0xd
+            rep movsd
+            pop edi
+            pop esi
+            add esp, 0x30
+            ret
+    L00531d92:
+            cmp ax, 1
+            ja L00531dbb
+            add edi, 4
+            push esi
+            push edi
+            call BrTransformToMatrix34
+            add esp, 8
+            cmp word ptr [esi], 0
+            jne L00531dd7
+            push edi
+            push edi
+            call BrMatrix34LPNormalise
+            add esp, 8
+            pop edi
+            pop esi
+            add esp, 0x30
+            ret
+    L00531dbb:
+            lea eax, [esp + 8]
+            push esi
+            push eax
+            call BrTransformToMatrix34
+            add esp, 8
+            lea ecx, [esp + 8]
+            push ecx
+            push edi
+            call BrMatrix34ToTransform
+            add esp, 8
+    L00531dd7:
+            pop edi
+            pop esi
+            add esp, 0x30
+            ret
+            nop
+            nop
+            nop
+    }
+#endif
 }

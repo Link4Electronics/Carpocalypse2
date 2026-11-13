@@ -39,6 +39,18 @@ tU32 gTimers_frame_start_time;
 // GLOBAL: CARMA2_HW 0x006aaa5c
 tU32 gTimers_tolerance;
 
+#ifdef CARPOCALYPSE2_MATCHING
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern int C2_HOOK_FASTCALL PDGetMicroseconds(void);
+extern tRace_over_reason gRace_over_reason;
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern void C2_NORETURN C2_HOOK_FASTCALL PDFatalError(const char* pThe_str);
+extern int gLoad_last_save_game;
+#endif
 // FUNCTION: CARMA2_HW 0x00504300
 void C2_HOOK_FASTCALL Timers_Init(void) {
     int i;
@@ -96,7 +108,8 @@ void C2_HOOK_FASTCALL Timers_Init(void) {
 }
 
 // FUNCTION: CARMA2_HW 0x00504700
-void C2_HOOK_FASTCALL Timers_StartFrame(void) {
+void C2_NAKED C2_HOOK_FASTCALL Timers_StartFrame(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     int i;
 
     for (i = 0; i < (int)CARPOCALYPSE2_ASIZE(gTimers); i++) {
@@ -104,10 +117,40 @@ void C2_HOOK_FASTCALL Timers_StartFrame(void) {
     }
     gTimers[TIMER_OQQ].start_time = PDGetMicroseconds();
     gTimers_frame_start_time = PDGetMicroseconds();
+#else
+    __asm {
+            push esi
+            xor esi, esi
+            xor ecx, ecx
+            mov eax, offset gTimers+0x8
+    L0050470a:
+            xor edx, edx
+            mov dl, byte ptr [eax]
+            add eax, 0x1c
+            add edx, ecx
+            add ecx, 7
+            cmp eax, offset gRace_over_reason
+            mov dword ptr [edx*4 + gTimers+0x4], esi
+            jl L0050470a
+            call PDGetMicroseconds
+            mov dword ptr [gTimers+0x204], eax
+            call PDGetMicroseconds
+            mov dword ptr [gTimers_frame_start_time], eax
+            pop esi
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00504740
-void C2_HOOK_FASTCALL Timers_EndFrame(void) {
+void C2_NAKED C2_HOOK_FASTCALL Timers_EndFrame(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     int i;
     int j;
     tU32 total_duration;
@@ -135,6 +178,83 @@ void C2_HOOK_FASTCALL Timers_EndFrame(void) {
         }
     }
     gTimers_tolerance = abs(total_duration - (gTimers_frame_end_time - gTimers_frame_start_time));
+#else
+    __asm {
+            mov eax, dword ptr [gTimers_stack_size]
+            push ebx
+            xor ebx, ebx
+            push ebp
+            push esi
+            cmp eax, ebx
+            push edi
+            je L00504759
+            mov ecx, offset gLoad_last_save_game+0x164
+            call PDFatalError
+    L00504759:
+            mov eax, dword ptr [gTimers+0x200]
+            and eax, 0xff
+            lea esi, [eax*4 + gTimers+0x1fc]
+            call PDGetMicroseconds
+            mov edi, dword ptr [gTimers+0x204]
+            mov edx, dword ptr [esi]
+            sub eax, edi
+            add edx, eax
+            mov dword ptr [esi], edx
+            call PDGetMicroseconds
+            mov ecx, dword ptr [gTimers_frame_count]
+            mov edi, dword ptr [gTimers_enough_samples]
+            inc ecx
+            cmp edi, ebx
+            mov dword ptr [gTimers_frame_end_time], eax
+            mov dword ptr [gTimers_frame_count], ecx
+            jne L005047b0
+            mov eax, ecx
+            cmp eax, 0x40
+            jle L005047b0
+            mov edi, 1
+            mov dword ptr [gTimers_enough_samples], edi
+    L005047b0:
+            xor esi, esi
+            mov eax, offset gTimers
+    L005047b7:
+            mov dword ptr [eax], ebx
+            lea ecx, [eax + 4]
+            mov edx, 1
+    L005047c1:
+            mov ebp, dword ptr [ecx]
+            add ecx, 4
+            add dword ptr [eax], ebp
+            dec edx
+            jne L005047c1
+            mov edx, dword ptr [eax]
+            mov byte ptr [eax + 8], bl
+            add esi, edx
+            cmp edi, ebx
+            je L005047e2
+            mov ecx, dword ptr [eax]
+            mov edx, dword ptr [eax + 0x10]
+            cmp ecx, edx
+            jbe L005047e2
+            mov dword ptr [eax + 0x10], ecx
+    L005047e2:
+            add eax, 0x1c
+            cmp eax, offset gTimers_max_index
+            jl L005047b7
+            mov ecx, dword ptr [gTimers_frame_start_time]
+            mov edi, dword ptr [gTimers_frame_end_time]
+            lea eax, [esi + ecx]
+            sub eax, edi
+            pop edi
+            cdq
+            xor eax, edx
+            pop esi
+            sub eax, edx
+            pop ebp
+            mov dword ptr [gTimers_tolerance], eax
+            pop ebx
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00504810

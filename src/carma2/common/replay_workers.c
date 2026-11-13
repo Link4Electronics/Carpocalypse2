@@ -110,8 +110,30 @@ void C2_HOOK_FASTCALL WorkerEndShitMine(int field_0x0, br_vector3* pPos) {
     NOT_IMPLEMENTED();
 }
 
+#ifdef CARPOCALYPSE2_MATCHING
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern void C2_HOOK_CDECL BrMatrix34Copy();
+extern undefined4 C2_HOOK_FASTCALL CharacterNoLongerRenderable(tPed_character_instance* pCharacter);
+extern br_scalar C2_HOOK_FASTCALL DRU16ToScalar(tU16 pValue, float pMin, float pMax);
+extern void C2_HOOK_FASTCALL DoDroneFunkyGroovyThings(tDrone_spec *pDrone);
+extern void C2_HOOK_FASTCALL ExpandVector3(br_vector3* pDest, const tCompressed_vector3 *pSrc, float pMin, float pMax);
+extern undefined4 C2_HOOK_FASTCALL MakeCharacterRenderable2(tPed_character_instance* pCharacter, int pIndex);
+extern void C2_HOOK_FASTCALL PointActorAlongThisBloodyVector(br_actor* pThe_actor, br_vector3* pThe_vector);
+extern void C2_HOOK_FASTCALL RecalculateOrientationOfRoot(tPed_character_instance* pPed);
+extern void C2_HOOK_FASTCALL SetCharacterBonePositions(tPed_character_instance* pPed, undefined4 pArg2, undefined4 pArg3);
+extern void C2_HOOK_FASTCALL SetCharacterDirection(tPed_character_instance* pPed, const br_vector3* pDir, const br_vector3* pUp);
+extern void C2_HOOK_FASTCALL SetCharacterPosition(tPed_character_instance* pCharacter, br_vector3* pPos, int pArg3);
+extern br_uint_8 bl;
+extern int gBOOL_00744804;
+extern tDrone_path_node* gDrone_path_nodes;
+extern tDrone_spec* gDrone_specs;
+#endif
 // FUNCTION: CARMA2_HW 0x004ca830
-void C2_HOOK_FASTCALL WorkerPedPos(tPedestrian* pPed, br_vector3* pVec) {
+void C2_NAKED C2_HOOK_FASTCALL WorkerPedPos(tPedestrian* pPed, br_vector3* pVec) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     if (gBOOL_00744804 != 0) {
         return;
@@ -126,6 +148,51 @@ void C2_HOOK_FASTCALL WorkerPedPos(tPedestrian* pPed, br_vector3* pVec) {
     if ((pPed->flags & 0x80) != 0) {
         pPed->flags &= ~0x80;
     }
+#else
+    __asm {
+            mov eax, dword ptr [gBOOL_00744804]
+            push esi
+            test eax, eax
+            mov esi, ecx
+            jne L004ca888
+            fld dword ptr [edx]
+            fcomp dword ptr [gConst_replay_rate_zero]
+            fnstsw ax
+            test ah, 0x40
+            je L004ca871
+            fld dword ptr [edx + 4]
+            fcomp dword ptr [gConst_replay_rate_zero]
+            fnstsw ax
+            test ah, 0x40
+            je L004ca871
+            fld dword ptr [edx + 8]
+            fcomp dword ptr [gConst_replay_rate_zero]
+            fnstsw ax
+            test ah, 0x40
+            je L004ca871
+            or byte ptr [esi + 8], 0x80
+            pop esi
+            ret
+    L004ca871:
+            mov ecx, dword ptr [esi]
+            push -1
+            call SetCharacterPosition
+            mov ax, word ptr [esi + 8]
+            test al, 0x80
+            je L004ca888
+            and al, 0x7f
+            mov word ptr [esi + 8], ax
+    L004ca888:
+            pop esi
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 void C2_HOOK_FASTCALL WorkerNapalmBolt(int field_0x0, int field_0x4, br_vector3* pVec) {
@@ -232,7 +299,6 @@ void C2_HOOK_FASTCALL WorkerSmokeColumn(int column_flags, br_vector3* pPos, tU16
 
 // FUNCTION: CARMA2_HW 0x004f6060
 void C2_HOOK_FASTCALL WorkerSmashTextureChange(br_material* pMaterial, tCar_spec* pCar, int field_0xc, br_pixelmap* pColour_map) {
-
     if (pCar != NULL && pCar->field_0x1960 != NULL) {
         pMaterial->user = pColour_map;
     } else {
@@ -301,7 +367,6 @@ void C2_HOOK_FASTCALL WorkerPedFPChange(int field_0x0, tPipe_stack_word field_0x
 
 // FUNCTION: CARMA2_HW 0x004ca8d0
 void C2_HOOK_FASTCALL WorkerPedModelChange(tPedestrian* pPed, int pBone, int pModel, int pSet) {
-
     if (pBone < 0) {
         SetCharacterAllBonesModel(pPed->character, pModel, pSet);
     } else {
@@ -321,7 +386,8 @@ void C2_HOOK_FASTCALL WorkerPedModelChangeUndo(int field_0x0, int field_0x4, int
 }
 
 // FUNCTION: CARMA2_HW 0x00452880
-void C2_HOOK_FASTCALL WorkerDroneStraightPos(int pDrone_index, tDrone_path_node_section* pSection, tU16 pSpeed, tU16 pProgress) {
+void C2_NAKED C2_HOOK_FASTCALL WorkerDroneStraightPos(int pDrone_index, tDrone_path_node_section* pSection, tU16 pSpeed, tU16 pProgress) {
+#ifndef CARPOCALYPSE2_MATCHING
     tDrone_spec* drone;
     br_vector3 direction;
 
@@ -347,11 +413,109 @@ void C2_HOOK_FASTCALL WorkerDroneStraightPos(int pDrone_index, tDrone_path_node_
     }
     PointActorAlongThisBloodyVector(drone->actor, &direction);
     DoDroneFunkyGroovyThings(drone);
+#else
+    __asm {
+            sub esp, 0xc
+            mov eax, ecx
+            push ebx
+            shl eax, 5
+            sub eax, ecx
+            push esi
+            mov esi, edx
+            push edi
+            mov edx, dword ptr [gDrone_specs]
+            lea eax, [eax + eax*2]
+            push 0x43fa0000
+            push 0xc3fa0000
+            lea ecx, [ecx + eax*2]
+            lea edi, [edx + ecx*8]
+            mov ecx, dword ptr [esp + 0x24]
+            call DRU16ToScalar
+            fstp dword ptr [edi + 0xe4]
+            mov ebx, dword ptr [esp + 0x20]
+            push 0x437f0000
+            push 0
+            mov ecx, ebx
+            mov dword ptr [edi + 0xe0], 0
+            call DRU16ToScalar
+            fsubr dword ptr [esi + 0x1c]
+            push 0x437f0000
+            push 0
+            mov ecx, ebx
+            fmul dword ptr [esi + 0x10]
+            fstp dword ptr [esp + 0x14]
+            call DRU16ToScalar
+            fsubr dword ptr [esi + 0x1c]
+            push 0x437f0000
+            push 0
+            mov ecx, ebx
+            fmul dword ptr [esi + 0x14]
+            fstp dword ptr [esp + 0x18]
+            call DRU16ToScalar
+            fsubr dword ptr [esi + 0x1c]
+            movsx eax, word ptr [esi]
+            fmul dword ptr [esi + 0x18]
+            fld dword ptr [esp + 0xc]
+            fchs
+            fstp dword ptr [esp + 0xc]
+            fld dword ptr [esp + 0x10]
+            fchs
+            fstp dword ptr [esp + 0x10]
+            lea ecx, [eax + eax*8]
+            fchs
+            fstp dword ptr [esp + 0x14]
+            lea edx, [eax + ecx*2]
+            mov ecx, dword ptr [gDrone_path_nodes]
+            lea eax, [eax + edx*4]
+            mov edx, dword ptr [edi + 0xec]
+            fld dword ptr [ecx + eax*4]
+            fadd dword ptr [esp + 0xc]
+            fstp dword ptr [edx + 0x50]
+            movsx eax, word ptr [esi]
+            lea ecx, [eax + eax*8]
+            lea edx, [eax + ecx*2]
+            mov ecx, dword ptr [gDrone_path_nodes]
+            lea eax, [eax + edx*4]
+            mov edx, dword ptr [edi + 0xec]
+            fld dword ptr [ecx + eax*4 + 4]
+            fadd dword ptr [esp + 0x10]
+            fstp dword ptr [edx + 0x54]
+            movsx eax, word ptr [esi]
+            lea ecx, [eax + eax*8]
+            lea edx, [eax + ecx*2]
+            mov ecx, dword ptr [gDrone_path_nodes]
+            lea eax, [eax + edx*4]
+            fld dword ptr [ecx + eax*4 + 8]
+            fadd dword ptr [esp + 0x14]
+            mov edx, dword ptr [edi + 0xec]
+            fstp dword ptr [edx + 0x58]
+            mov eax, dword ptr [esi + 0x10]
+            mov ecx, dword ptr [esi + 0x14]
+            mov edx, dword ptr [esi + 0x18]
+            mov dword ptr [esp + 0xc], eax
+            mov dword ptr [esp + 0x10], ecx
+            mov dword ptr [esp + 0x14], edx
+            mov eax, dword ptr [edi + 4]
+            test byte ptr [eax + 0x2c], 0x10
+            je L004529b1
+            mov dword ptr [esp + 0x10], 0
+    L004529b1:
+            mov ecx, dword ptr [edi + 0xec]
+            lea edx, [esp + 0xc]
+            call PointActorAlongThisBloodyVector
+            mov ecx, edi
+            call DoDroneFunkyGroovyThings
+            pop edi
+            pop esi
+            pop ebx
+            add esp, 0xc
+            ret 8
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004da960
 void C2_HOOK_FASTCALL WorkerRepulseRay(int pIndex, br_vector3* pOrigin, br_vector3* pVictim, tU32 pTime) {
-
     gRepulse_links[pIndex].pos_origin = pOrigin;
     gRepulse_links[pIndex].pos_victim = pVictim;
     gRepulse_links[pIndex].time = pTime;
@@ -372,7 +536,8 @@ void C2_HOOK_FASTCALL WorkerSmashModelChangeBUndo(int field_0x0) {
     NOT_IMPLEMENTED();
 }
 // FUNCTION: CARMA2_HW 0x0043bd70
-void C2_HOOK_FASTCALL WorkerCrush(int field_0x4, void* pField_0x8, void* pField_0xe) {
+void C2_NAKED C2_HOOK_FASTCALL WorkerCrush(int field_0x4, void* pField_0x8, void* pField_0xe) {
+#ifndef CARPOCALYPSE2_MATCHING
     br_model* pModel;
     br_vector3 offset;
     br_vector3 scaled_offset;
@@ -408,6 +573,108 @@ void C2_HOOK_FASTCALL WorkerCrush(int field_0x4, void* pField_0x8, void* pField_
     }
     pModel->custom = JitModelUpdate;
     pModel->flags |= BR_MODF_CUSTOM;
+#else
+    __asm {
+            sub esp, 0x18
+            push ebx
+            push ebp
+            push esi
+            push edi
+            mov esi, ecx
+            push 0x3f800000
+            push 0xbf800000
+            lea ecx, [esp + 0x18]
+            call ExpandVector3
+            xor ebx, ebx
+            cmp word ptr [esi + 0x10], bx
+            jbe L0043be0b
+            mov ebp, dword ptr [esp + 0x2c]
+            xor edi, edi
+    L0043bd9a:
+            mov cx, word ptr [ebp]
+            test cx, cx
+            je L0043bdfa
+            push 0x41200000
+            push 0
+            call DRU16ToScalar
+            mov eax, dword ptr [esi + 8]
+            fld st(0)
+            fmul dword ptr [esp + 0x10]
+            fld st(1)
+            fmul dword ptr [esp + 0x14]
+            fxch st(1)
+            fadd dword ptr [eax + edi]
+            fxch st(2)
+            fmul dword ptr [esp + 0x18]
+            fxch st(1)
+            fxch st(2)
+            fxch st(1)
+            fxch st(1)
+            fstp dword ptr [eax + edi]
+            add eax, edi
+            mov ecx, dword ptr [esi + 8]
+            fxch st(1)
+            fadd dword ptr [ecx + edi + 4]
+            fxch st(1)
+            fst dword ptr [esp + 0x24]
+            lea eax, [ecx + edi + 4]
+            fxch st(1)
+            _emit 0xd9
+        _emit 0x18
+            mov edx, dword ptr [esi + 8]
+            fadd dword ptr [edx + edi + 8]
+            lea eax, [edx + edi + 8]
+            _emit 0xd9
+        _emit 0x18
+    L0043bdfa:
+            xor eax, eax
+            inc ebx
+            mov ax, word ptr [esi + 0x10]
+            add ebp, 2
+            add edi, 0x28
+            cmp ebx, eax
+            jl L0043bd9a
+    L0043be0b:
+            mov ax, word ptr [esi + 0x20]
+            test al, 0x20
+            je L0043be2a
+            mov ecx, dword ptr [esi + 0x28]
+            test ecx, ecx
+            je L0043be2a
+            mov dword ptr [ecx], 1
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x18
+            ret 4
+    L0043be2a:
+            or al, 0x20
+            mov dword ptr [esi + 0x24], 0x431590
+            mov word ptr [esi + 0x20], ax
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x18
+            ret 4
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 void C2_HOOK_FASTCALL WorkerCrushUndo(int field_0x4, void* pField_0x8, void* pField_0xe) {
@@ -517,7 +784,8 @@ void C2_HOOK_FASTCALL WorkerSpecialUndo(void) {
 }
 
 // FUNCTION: CARMA2_HW 0x004ca680
-void C2_HOOK_FASTCALL WorkerPedStatus(int field_0x0, tU8 field_0x4, tU8 field_0x5, tU8 field_0x6, tU8 field_0x7, tU8 field_0x9, tU8 field_0xb, br_vector3* p0xc, br_vector3* p0x18, br_vector3* p0x24) {
+void C2_NAKED C2_HOOK_FASTCALL WorkerPedStatus(int field_0x0, tU8 field_0x4, tU8 field_0x5, tU8 field_0x6, tU8 field_0x7, tU8 field_0x9, tU8 field_0xb, br_vector3* p0xc, br_vector3* p0x18, br_vector3* p0x24) {
+#ifndef CARPOCALYPSE2_MATCHING
     tPedestrian* ped = (tPedestrian*)field_0x0;
 
     if (field_0x5 != 0xff) {
@@ -536,10 +804,54 @@ void C2_HOOK_FASTCALL WorkerPedStatus(int field_0x0, tU8 field_0x4, tU8 field_0x
             RecalculateOrientationOfRoot(ped->character);
         }
     }
+#else
+    __asm {
+            mov al, byte ptr [esp + 4]
+            push esi
+            cmp al, 0xff
+            mov esi, ecx
+            je L004ca6ac
+            test al, al
+            je L004ca6a1
+            movsx edx, byte ptr [esp + 0x14]
+            mov ecx, dword ptr [esi]
+            or byte ptr [esi + 8], 1
+            call MakeCharacterRenderable2
+            jmp L004ca6ac
+    L004ca6a1:
+            mov ecx, dword ptr [esi]
+            and byte ptr [esi + 8], 0xfe
+            call CharacterNoLongerRenderable
+    L004ca6ac:
+            mov al, byte ptr [esp + 0x10]
+            cmp al, 0xff
+            je L004ca6d9
+            mov edx, dword ptr [esi]
+            movsx ecx, al
+            mov dword ptr [edx + 0x14], ecx
+            mov ecx, dword ptr [esi]
+            mov dl, byte ptr [esp + 0x18]
+            mov byte ptr [ecx + 5], dl
+            mov cl, byte ptr [esp + 0xc]
+            test cl, 4
+            je L004ca6d9
+            test al, 4
+            jne L004ca6d9
+            mov ecx, dword ptr [esi]
+            call RecalculateOrientationOfRoot
+    L004ca6d9:
+            pop esi
+            ret 0x20
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004ca6e0
-void C2_HOOK_FASTCALL WorkerPedStatusUndo(int field_0x0, tU8 field_0x4, tU8 field_0x5, tU8 field_0x6, tU8 field_0x7, tU8 field_0x8, tU8 field_0xa, br_vector3* p0xc, br_vector3* p0x18, br_vector3* p0x24) {
+void C2_NAKED C2_HOOK_FASTCALL WorkerPedStatusUndo(int field_0x0, tU8 field_0x4, tU8 field_0x5, tU8 field_0x6, tU8 field_0x7, tU8 field_0x8, tU8 field_0xa, br_vector3* p0xc, br_vector3* p0x18, br_vector3* p0x24) {
+#ifndef CARPOCALYPSE2_MATCHING
     tPedestrian* ped;
 
     ped = (tPedestrian*)field_0x0;
@@ -574,6 +886,112 @@ void C2_HOOK_FASTCALL WorkerPedStatusUndo(int field_0x0, tU8 field_0x4, tU8 fiel
     }
     ped->character->field_0x14 = (int)(tS8)field_0x6;
     ped->character->field_0x5 = field_0xa;
+#else
+    __asm {
+            push ebx
+            push esi
+            cmp dl, 0xff
+            mov esi, ecx
+            je L004ca70a
+            test dl, dl
+            je L004ca6ff
+            movsx edx, byte ptr [esp + 0x18]
+            mov ecx, dword ptr [esi]
+            or byte ptr [esi + 8], 1
+            call MakeCharacterRenderable2
+            jmp L004ca70a
+    L004ca6ff:
+            mov ecx, dword ptr [esi]
+            and byte ptr [esi + 8], 0xfe
+            call CharacterNoLongerRenderable
+    L004ca70a:
+            mov bl, byte ptr [esp + 0x10]
+            cmp bl, 0xff
+            je L004ca7bd
+            mov cl, byte ptr [esp + 0x14]
+            mov al, bl
+            and al, 4
+            jne L004ca76c
+            test cl, 4
+            je L004ca771
+            mov ecx, dword ptr [esi]
+            movsx eax, bl
+            mov dword ptr [ecx + 0x14], eax
+            mov edx, dword ptr [esi]
+            mov al, byte ptr [esp + 0x1c]
+            mov ecx, dword ptr [esp + 0x24]
+            mov byte ptr [edx + 5], al
+            mov edx, dword ptr [esp + 0x20]
+            push ecx
+            mov ecx, dword ptr [esi]
+            call SetCharacterDirection
+            mov eax, dword ptr [esi]
+            mov edx, dword ptr [esp + 0x28]
+            add eax, 0x8c
+            push edx
+            push eax
+            call BrMatrix34Copy
+            mov ecx, dword ptr [esi]
+            add esp, 8
+            xor edx, edx
+            push 0
+            call SetCharacterBonePositions
+            pop esi
+            pop ebx
+            ret 0x20
+    L004ca76c:
+            test cl, 4
+            jne L004ca7ac
+    L004ca771:
+            test al, al
+            je L004ca7ac
+            mov edx, dword ptr [esi]
+            mov ecx, dword ptr [esp + 0x28]
+            add edx, 0x8c
+            push ecx
+            push edx
+            call BrMatrix34Copy
+            mov ecx, dword ptr [esi]
+            add esp, 8
+            xor edx, edx
+            push 0
+            call SetCharacterBonePositions
+            mov ecx, dword ptr [esi]
+            movsx eax, bl
+            mov dword ptr [ecx + 0x14], eax
+            mov edx, dword ptr [esi]
+            mov al, byte ptr [esp + 0x1c]
+            mov byte ptr [edx + 5], al
+            pop esi
+            pop ebx
+            ret 0x20
+    L004ca7ac:
+            mov edx, dword ptr [esi]
+            movsx ecx, bl
+            mov dword ptr [edx + 0x14], ecx
+            mov eax, dword ptr [esi]
+            mov cl, byte ptr [esp + 0x1c]
+            mov byte ptr [eax + 5], cl
+    L004ca7bd:
+            pop esi
+            pop ebx
+            ret 0x20
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 void C2_HOOK_FASTCALL WorkerGibShowerUndo(int field_0xc, int prev_0x0, int prev_0xc, int prev_0x8, int prev_0x10, int prev_0x4, br_vector3* prev_0x14, br_vector3* prev_0x20, br_vector3* prev_0x2c) {

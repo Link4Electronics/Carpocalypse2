@@ -60,6 +60,13 @@ static void eyeInModel(br_soft_renderer* self) {
     scache.eye_m.v[3] = s2m.m[2][3];
 }
 
+#ifdef CARPOCALYPSE2_MATCHING
+extern void C2_HOOK_STDCALL ActiveLightAccumulateColourSet(active_light* alp);
+extern void C2_HOOK_STDCALL ActiveLightAccumulateIndexSet(active_light* alp);
+extern br_int_32 C2_HOOK_STDCALL GenerateSurfaceFunctions(br_soft_renderer *self, surface_fn **fns, br_uint_32 mask);
+extern char rendererStateStoredDispatch[];
+extern char rendererStateStoredTemplateEntries[];
+#endif
 // FUNCTION: CARMA2_HW 0x00543ec0
 void C2_HOOK_STDCALL ViewToModelUpdate(br_soft_renderer* self) {
 
@@ -118,7 +125,8 @@ void C2_HOOK_STDCALL StaticCacheUpdate_PerModel(br_soft_renderer* self) {
 }
 
 // FUNCTION: CARMA2_HW 0x00543d80
-br_error C2_HOOK_STDCALL CacheUpdate(br_soft_renderer* self) {
+br_error C2_NAKED C2_HOOK_STDCALL CacheUpdate(br_soft_renderer* self) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     if (!rend.block_changed && !rend.range_changed && self->state.cache.valid) {
         return 0;
@@ -146,10 +154,108 @@ br_error C2_HOOK_STDCALL CacheUpdate(br_soft_renderer* self) {
     self->state.cache.nconstant_fns = GenerateSurfaceFunctions(self, self->state.cache.constant_fns, rend.block->constant_components);
 
     return 0;
+#else
+    __asm {
+            mov eax, dword ptr [rend+0x50]
+            push esi
+            mov esi, dword ptr [esp + 8]
+            push edi
+            test eax, eax
+            jne L00543da6
+            mov eax, dword ptr [rend+0x54]
+            test eax, eax
+            jne L00543da6
+            mov eax, dword ptr [esi + 0x788]
+            test eax, eax
+            jne L00543eaa
+    L00543da6:
+            mov eax, dword ptr [rend+0x4c]
+            mov edx, 0
+            mov ecx, dword ptr [eax + 0x1c]
+            mov eax, ecx
+            and ecx, 0x30
+            or cl, 0xc0
+            and al, 0x8f
+            shr ecx, 4
+            or eax, ecx
+            je L00543dd6
+            mov ecx, offset rendererStateStoredTemplateEntries+0x90
+    L00543dc9:
+            test al, 1
+            je L00543dcf
+            or edx, dword ptr [ecx]
+    L00543dcf:
+            add ecx, 4
+            shr eax, 1
+            jne L00543dc9
+    L00543dd6:
+            mov eax, dword ptr [esi + 0x794]
+            lea ecx, [esi + 0x5e4]
+            push 0x10
+            lea edi, [esi + 0x5a4]
+            mov dword ptr [esi + 0x5a0], edx
+            mov edx, dword ptr [eax]
+            push ecx
+            push edi
+            push eax
+            call dword ptr [edx + 0x78]
+            fld dword ptr [esi + 0x5c]
+            fld dword ptr [esi + 0x60]
+            fld dword ptr [esi + 0x604]
+            fld dword ptr [esi + 0x4c]
+            fmul dword ptr [esi + 0x604]
+            fld dword ptr [esi + 0x50]
+            fxch st(1)
+            fstp dword ptr [esi + 0x76c]
+            fmul dword ptr [esi + 0x608]
+            fld dword ptr [esi + 0x54]
+            fxch st(1)
+            fstp dword ptr [esi + 0x770]
+            fmul dword ptr [esi + 0x604]
+            fld dword ptr [esi + 0x58]
+            fxch st(1)
+            fstp dword ptr [esi + 0x774]
+            fmul dword ptr [esi + 0x608]
+            fxch st(1)
+            fmulp st(3), st(0)
+            add esp, 0x10
+            lea eax, [esi + 0x728]
+            fstp dword ptr [esi + 0x778]
+            fxch st(1)
+            fadd dword ptr [esi + 0x5c4]
+            fxch st(1)
+            fmul dword ptr [esi + 0x608]
+            fxch st(1)
+            fstp dword ptr [esi + 0x77c]
+            fadd dword ptr [esi + 0x5c8]
+            fstp dword ptr [esi + 0x780]
+            mov ecx, dword ptr [rend+0x4c]
+            mov edx, dword ptr [ecx + 0x1c]
+            push edx
+            push eax
+            push esi
+            call GenerateSurfaceFunctions
+            mov dword ptr [esi + 0x724], eax
+            mov eax, dword ptr [rend+0x4c]
+            lea edx, [esi + 0x74c]
+            mov ecx, dword ptr [eax + 0x18]
+            push ecx
+            push edx
+            push esi
+            call GenerateSurfaceFunctions
+            mov dword ptr [esi + 0x748], eax
+    L00543eaa:
+            pop edi
+            xor eax, eax
+            pop esi
+            ret 4
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00543f10
-void C2_HOOK_STDCALL ActiveLightsFind(br_soft_renderer* self) {
+void C2_NAKED C2_HOOK_STDCALL ActiveLightsFind(br_soft_renderer* self) {
+#ifndef CARPOCALYPSE2_MATCHING
     int l;
     soft_state_light* lp;
     active_light* alp;
@@ -205,6 +311,120 @@ void C2_HOOK_STDCALL ActiveLightsFind(br_soft_renderer* self) {
         alp++;
         scache.nlights_view += 1;
     }
+#else
+    __asm {
+            xor eax, eax
+            push ebx
+            mov dword ptr [scache+0x498], eax
+            mov dword ptr [scache+0x49c], eax
+            mov eax, dword ptr [esp + 8]
+            push ebp
+            push esi
+            push edi
+            lea edi, [eax + 0x6c]
+            mov esi, offset scache+0x118
+            mov ebx, edi
+            mov ebp, 0x10
+    L00543f33:
+            cmp dword ptr [ebx], 1
+            je L00543f6e
+            cmp dword ptr [ebx + 4], 0xb1
+            jne L00543f6e
+            mov dword ptr [esi + 0x34], ebx
+            push esi
+            fld dword ptr [ebx + 0x30]
+            fdivr qword ptr [rendererStateStoredDispatch+0x60]
+            fstp dword ptr [esi + 0x28]
+            mov ecx, dword ptr [ebx]
+            mov dword ptr [esi], ecx
+            call ActiveLightAccumulateIndexSet
+            push esi
+            call ActiveLightAccumulateColourSet
+            mov eax, dword ptr [scache+0x498]
+            add esi, 0x38
+            inc eax
+            mov dword ptr [scache+0x498], eax
+    L00543f6e:
+            add ebx, 0x3c
+            dec ebp
+            jne L00543f33
+            mov ebx, 0x10
+    L00543f79:
+            cmp dword ptr [edi], 1
+            je L00544011
+            cmp dword ptr [edi + 4], 0xb0
+            jne L00544011
+            lea eax, [esi + 4]
+            lea ecx, [edi + 8]
+            mov dword ptr [eax + 0x30], edi
+            fld dword ptr [edi + 0x30]
+            fdivr qword ptr [rendererStateStoredDispatch+0x60]
+            fstp dword ptr [esi + 0x28]
+            mov edx, dword ptr [edi]
+            mov dword ptr [esi], edx
+            mov ebp, dword ptr [ecx]
+            mov edx, eax
+            mov dword ptr [edx], ebp
+            mov ebp, dword ptr [ecx + 4]
+            mov dword ptr [edx + 4], ebp
+            mov ecx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 8], ecx
+            mov ecx, dword ptr [edi]
+            cmp ecx, 0xd0
+            jne L00543fe1
+            fld dword ptr [edi + 0x14]
+            fmul dword ptr [esi + 0x28]
+            fstp dword ptr [esi + 0x10]
+            fld dword ptr [edi + 0x18]
+            fmul dword ptr [esi + 0x28]
+            fstp dword ptr [eax + 0x10]
+            fld dword ptr [edi + 0x1c]
+            fmul dword ptr [esi + 0x28]
+            fstp dword ptr [esi + 0x18]
+            jmp L00543ff7
+    L00543fe1:
+            lea edx, [edi + 0x14]
+            lea eax, [esi + 0x10]
+            mov ecx, dword ptr [edx]
+            mov dword ptr [eax], ecx
+            mov ecx, dword ptr [edx + 4]
+            mov dword ptr [eax + 4], ecx
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [eax + 8], edx
+    L00543ff7:
+            push esi
+            call ActiveLightAccumulateIndexSet
+            push esi
+            call ActiveLightAccumulateColourSet
+            mov eax, dword ptr [scache+0x49c]
+            add esi, 0x38
+            inc eax
+            mov dword ptr [scache+0x49c], eax
+    L00544011:
+            add edi, 0x3c
+            dec ebx
+            jne L00543f79
+            mov eax, dword ptr [scache+0x49c]
+            test eax, eax
+            jne L00544046
+            mov ecx, dword ptr [scache+0x498]
+            mov eax, 1
+            cmp ecx, eax
+            jne L00544046
+            mov ecx, dword ptr [scache+0x118]
+            mov dword ptr [scache+0x114], eax
+            cmp ecx, 0xd0
+            je L00544050
+    L00544046:
+            mov dword ptr [scache+0x114], 0
+    L00544050:
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            ret 4
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00544060

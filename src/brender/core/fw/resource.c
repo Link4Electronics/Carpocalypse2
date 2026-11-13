@@ -50,6 +50,10 @@ resource_header* C2_HOOK_CDECL UserToRes(void* r) {
     return (resource_header*)p;
 }
 
+#ifdef CARPOCALYPSE2_MATCHING
+extern br_order_table _BrDefaultOrderTable;
+extern br_framework_state fw;
+#endif
 // FUNCTION: CARMA2_HW 0x005276c0
 void* C2_HOOK_CDECL BrResAllocate(void* vparent, br_size_t size, br_uint_8 res_class) {
     resource_header* res;
@@ -199,20 +203,170 @@ br_uint_32 C2_HOOK_CDECL BrResSize(void* vres) {
 }
 
 // FUNCTION: CARMA2_HW 0x00527ad0
-br_uint_32 C2_HOOK_CDECL ResSizeTotal(void* vres, br_uint_32* ptotal) {
+br_uint_32 C2_NAKED C2_HOOK_CDECL ResSizeTotal(void* vres, br_uint_32* ptotal) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     *ptotal += BrResSize(vres);
     BrResChildEnum(vres, (br_resenum_cbfn*)ResSizeTotal, ptotal);
     return 0;
+#else
+    __asm {
+    L00527ad0:
+            push ebx
+            push esi
+            mov esi, dword ptr [esp + 0xc]
+            push edi
+            mov eax, esi
+            mov dl, byte ptr [esi - 1]
+            lea ecx, [esi - 1]
+            test dl, dl
+            jne L00527aef
+    L00527ae3:
+            mov eax, ecx
+            mov bl, byte ptr [eax - 1]
+            lea ecx, [eax - 1]
+            test bl, bl
+            je L00527ae3
+    L00527aef:
+            xor ecx, ecx
+            xor ebx, ebx
+            mov cl, byte ptr [eax - 0xb]
+            mov bl, byte ptr [eax - 0xc]
+            mov ch, byte ptr [eax - 0xa]
+            mov edi, dword ptr [esp + 0x14]
+            shl ecx, 8
+            or ecx, ebx
+            mov eax, esi
+            sub ecx, 6
+            shl ecx, 4
+            add edi, ecx
+            test dl, dl
+            jne L00527b1b
+    L00527b13:
+            mov cl, byte ptr [eax - 2]
+            dec eax
+            test cl, cl
+            je L00527b13
+    L00527b1b:
+            mov esi, dword ptr [eax - 0x10]
+            test esi, esi
+            je L00527b57
+    L00527b22:
+            xor edx, edx
+            mov dl, byte ptr [esi + 0xf]
+            mov eax, dword ptr [edx*4 + fw+0x18]
+            mov eax, dword ptr [eax + 0x10]
+            test eax, eax
+            jg L00527b3a
+            mov eax, 4
+    L00527b3a:
+            lea ecx, [eax + esi + 0x17]
+            dec eax
+            not eax
+            and ecx, eax
+            push edi
+            push ecx
+            call L00527ad0
+            add esp, 8
+            test eax, eax
+            jne L00527b57
+            mov esi, dword ptr [esi]
+            test esi, esi
+            jne L00527b22
+    L00527b57:
+            pop edi
+            pop esi
+            xor eax, eax
+            pop ebx
+            ret
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00527a30
-br_uint_32 C2_HOOK_CDECL BrResSizeTotal(void* vres) {
+br_uint_32 C2_NAKED C2_HOOK_CDECL BrResSizeTotal(void* vres) {
+#ifndef CARPOCALYPSE2_MATCHING
     br_uint_32 total;
 
     total = 0;
     ResSizeTotal(vres, &total);
     return total;
+#else
+    __asm {
+            push ecx
+            push ebx
+            push esi
+            mov esi, dword ptr [esp + 0x10]
+            push edi
+            mov dword ptr [esp + 0xc], 0
+            mov eax, esi
+            mov dl, byte ptr [esi - 1]
+            lea ecx, [esi - 1]
+            test dl, dl
+            jne L00527a58
+    L00527a4c:
+            mov eax, ecx
+            mov bl, byte ptr [eax - 1]
+            lea ecx, [eax - 1]
+            test bl, bl
+            je L00527a4c
+    L00527a58:
+            xor ecx, ecx
+            xor ebx, ebx
+            mov cl, byte ptr [eax - 0xb]
+            mov bl, byte ptr [eax - 0xc]
+            mov ch, byte ptr [eax - 0xa]
+            mov eax, esi
+            shl ecx, 8
+            or ecx, ebx
+            sub ecx, 6
+            shl ecx, 4
+            test dl, dl
+            lea edi, [esp + ecx + 0xc]
+            jne L00527a82
+    L00527a7a:
+            mov cl, byte ptr [eax - 2]
+            dec eax
+            test cl, cl
+            je L00527a7a
+    L00527a82:
+            mov esi, dword ptr [eax - 0x10]
+            test esi, esi
+            je L00527abe
+    L00527a89:
+            xor edx, edx
+            mov dl, byte ptr [esi + 0xf]
+            mov eax, dword ptr [edx*4 + fw+0x18]
+            mov eax, dword ptr [eax + 0x10]
+            test eax, eax
+            jg L00527aa1
+            mov eax, 4
+    L00527aa1:
+            lea ecx, [eax + esi + 0x17]
+            dec eax
+            not eax
+            and ecx, eax
+            push edi
+            push ecx
+            call ResSizeTotal
+            add esp, 8
+            test eax, eax
+            jne L00527abe
+            mov esi, dword ptr [esi]
+            test esi, esi
+            jne L00527a89
+    L00527abe:
+            mov eax, dword ptr [esp + 0xc]
+            pop edi
+            pop esi
+            pop ebx
+            pop ecx
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00527b60
@@ -285,7 +439,8 @@ void C2_HOOK_CDECL BrResDump(void* vres, br_putline_cbfn* putline, void* arg) {
 }
 
 // FUNCTION: CARMA2_HW 0x00527c60
-char* C2_HOOK_CDECL BrResClassIdentifier(br_uint_8 res_class) {
+C2_NAKED char* C2_HOOK_CDECL BrResClassIdentifier(br_uint_8 res_class) {
+#ifndef CARPOCALYPSE2_MATCHING
     br_resource_class* rclass;
 
     rclass = fw.resource_class_index[res_class];
@@ -293,4 +448,18 @@ char* C2_HOOK_CDECL BrResClassIdentifier(br_uint_8 res_class) {
         return "<NULL>";
     }
     return rclass->identifier;
+#else
+    __asm {
+            mov eax, dword ptr [esp + 4]
+            and eax, 0xff
+            mov eax, dword ptr [eax*4 + fw+0x18]
+            test eax, eax
+            je L00527c78
+            mov eax, dword ptr [eax + 4]
+            ret
+    L00527c78:
+            mov eax, offset _BrDefaultOrderTable+0x48
+            ret
+    }
+#endif
 }

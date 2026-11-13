@@ -58,6 +58,25 @@ int gScreen_wobble_x;
 // GLOBAL: CARMA2_HW 0x00705184
 int gScreen_wobble_y;
 
+#ifdef CARPOCALYPSE2_MATCHING
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern br_pixelmap* C2_HOOK_CDECL BrMapAdd();
+extern void C2_HOOK_CDECL BrPixelmapFree();
+extern br_pixelmap* C2_HOOK_CDECL BrPixelmapMatch();
+extern void C2_HOOK_CDECL BrZbsBegin();
+extern br_pixelmap* C2_HOOK_FASTCALL DRPixelmapAllocate(br_uint_8 pType, br_uint_16 pW, br_uint_16 pH, void* pPixels, int pFlags);
+extern br_pixelmap* C2_HOOK_FASTCALL DRPixelmapAllocateSub(br_pixelmap* pPm, br_uint_16 pX, br_uint_16 pY, br_uint_16 pW, br_uint_16 pH);
+extern void C2_NORETURN C2_HOOK_CDECL FatalError();
+extern void C2_HOOK_FASTCALL PDAllocateScreenAndBack(void);
+extern br_pixelmap* gBack_screen;
+extern int gGraf_spec_index;
+extern tGraf_spec gGraf_specs[2];
+extern br_pixelmap* gRender_screen;
+extern br_pixelmap* gScreen;
+#endif
 // FUNCTION: CARMA2_HW 0x004e4e20
 void C2_HOOK_FASTCALL SetScreenWobble(int pWobble_x, int pWobble_y) {
     gScreen_wobble_x = pWobble_x;
@@ -83,13 +102,11 @@ int gHeadup_detail_level = 5;
 // FUNCTION: CARMA2_HW 0x004e9940
 
 void C2_HOOK_FASTCALL SetShadowLevel(tShadow_level pLevel) {
-
     gShadow_level = pLevel;
 }
 
 // FUNCTION: CARMA2_HW 0x004e9950
 tShadow_level C2_HOOK_FASTCALL GetShadowLevel(void) {
-
     return gShadow_level;
 }
 
@@ -208,7 +225,8 @@ void C2_HOOK_FASTCALL SetupDepthBuffer(void) {
 }
 
 // FUNCTION: CARMA2_HW 0x004e4980
-void C2_HOOK_FASTCALL SetBRenderScreenAndBuffers(int pX_offset, int pY_offset, int pWidth, int pHeight) {
+void C2_NAKED C2_HOOK_FASTCALL SetBRenderScreenAndBuffers(int pX_offset, int pY_offset, int pWidth, int pHeight) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     PDAllocateScreenAndBack();
     if (pWidth == 0) {
@@ -249,6 +267,152 @@ void C2_HOOK_FASTCALL SetBRenderScreenAndBuffers(int pX_offset, int pY_offset, i
     gBrZb_initialized = 1;
     gRear_pixelmap = DRPixelmapAllocate(gScreen->type, 64, 64, NULL, 0);
     BrMapAdd(gRear_pixelmap);
+#else
+    __asm {
+            push ebx
+            push ebp
+            push esi
+            push edi
+            mov ebx, edx
+            mov ebp, ecx
+            call PDAllocateScreenAndBack
+            mov esi, dword ptr [esp + 0x14]
+            mov ecx, dword ptr [gBack_screen]
+            test esi, esi
+            jne L004e49a1
+            xor esi, esi
+            mov si, word ptr [ecx + 0x34]
+    L004e49a1:
+            mov edi, dword ptr [esp + 0x18]
+            test edi, edi
+            jne L004e49ad
+            mov di, word ptr [ecx + 0x36]
+    L004e49ad:
+            push edi
+            push esi
+            push ebx
+            mov edx, ebp
+            call DRPixelmapAllocateSub
+            mov dword ptr [gRender_screen], eax
+            mov eax, dword ptr [gGraf_spec_index]
+            mov dword ptr [gWidth], esi
+            xor esi, esi
+            lea ecx, [eax + eax*2]
+            mov dword ptr [gX_offset], ebp
+            mov dword ptr [gY_offset], ebx
+            mov dword ptr [gHeight], edi
+            lea ecx, [eax + ecx*4]
+            shl ecx, 2
+            cmp dword ptr [ecx + gGraf_specs+0x8], esi
+            je L004e4a3a
+            mov edx, dword ptr [ecx + gGraf_specs+0xc]
+            mov eax, dword ptr [ecx + gGraf_specs+0x28]
+            shl edx, 1
+            mov ecx, dword ptr [gScreen]
+            sub eax, edx
+            cdq
+            sub eax, edx
+            sar eax, 1
+            mov word ptr [ecx + 0x30], ax
+            mov eax, dword ptr [gGraf_spec_index]
+            lea edx, [eax + eax*2]
+            lea eax, [eax + edx*4]
+            shl eax, 2
+            mov ecx, dword ptr [eax + gGraf_specs+0x10]
+            mov eax, dword ptr [eax + gGraf_specs+0x2c]
+            shl ecx, 1
+            sub eax, ecx
+            cdq
+            sub eax, edx
+            mov edx, dword ptr [gScreen]
+            sar eax, 1
+            mov word ptr [edx + 0x32], ax
+            jmp L004e4a82
+    L004e4a3a:
+            mov eax, dword ptr [ecx + gGraf_specs+0x28]
+            mov ebx, dword ptr [ecx + gGraf_specs+0xc]
+            mov ecx, dword ptr [gScreen]
+            sub eax, ebx
+            cdq
+            sub eax, edx
+            sar eax, 1
+            mov word ptr [ecx + 0x30], ax
+            mov eax, dword ptr [gGraf_spec_index]
+            lea edx, [eax + eax*2]
+            lea ecx, [eax + edx*4]
+            shl ecx, 2
+            mov eax, dword ptr [ecx + gGraf_specs+0x2c]
+            mov ebx, dword ptr [ecx + gGraf_specs+0x10]
+            mov ecx, dword ptr [gScreen]
+            sub eax, ebx
+            cdq
+            sub eax, edx
+            sar eax, 1
+            mov word ptr [ecx + 0x32], ax
+    L004e4a82:
+            mov edx, dword ptr [gScreen]
+            mov word ptr [edx + 0x38], si
+            mov eax, dword ptr [gScreen]
+            mov word ptr [eax + 0x3a], si
+            mov eax, dword ptr [gBack_screen]
+            cmp eax, esi
+            jne L004e4aa8
+            push 1
+            call FatalError
+            add esp, 4
+    L004e4aa8:
+            mov eax, dword ptr [gDepth_buffer]
+            cmp eax, esi
+            je L004e4ac0
+            push eax
+            call BrPixelmapFree
+            add esp, 4
+            mov dword ptr [gDepth_buffer], esi
+    L004e4ac0:
+            mov ecx, dword ptr [gBack_screen]
+            push 1
+            push ecx
+            call BrPixelmapMatch
+            add esp, 8
+            cmp eax, esi
+            mov dword ptr [gDepth_buffer], eax
+            jne L004e4ae9
+            push 2
+            call FatalError
+            mov eax, dword ptr [gDepth_buffer]
+            add esp, 4
+    L004e4ae9:
+            mov dl, byte ptr [eax + 0x2c]
+            mov eax, dword ptr [gRender_screen]
+            push 0x493e0
+            push offset gTemporary_physics_render_buffer
+            mov cl, byte ptr [eax + 0x2c]
+            push edx
+            push ecx
+            call BrZbsBegin
+            mov eax, dword ptr [gScreen]
+            add esp, 0x10
+            mov dword ptr [gBrZb_initialized], 1
+            mov edx, 0x40
+            mov cl, byte ptr [eax + 0x2c]
+            push esi
+            push esi
+            push 0x40
+            call DRPixelmapAllocate
+            mov dword ptr [gRear_pixelmap], eax
+            push eax
+            call BrMapAdd
+            add esp, 4
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            ret 8
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // AdjustRenderScreenSize
@@ -320,7 +484,6 @@ void C2_HOOK_STDCALL NewScreenWobble(double pAmplitude_x, double pAmplitude_y, d
 
 // FUNCTION: CARMA2_HW 0x004e5a70
 void C2_HOOK_FASTCALL StartRenderingHeadups(void) {
-
     CleanPolyFontDanglers();
     gHud_actor_storage_size = 0;
     gRender_poly_text = 0;

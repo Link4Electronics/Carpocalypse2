@@ -71,6 +71,65 @@ float gFLOAT_0058b26c = 3.0517578125e-05f;
 // GLOBAL: CARMA2_HW 0x0058b270
 double gDOUBLE_0058b270 = 0.001;
 
+#ifdef CARPOCALYPSE2_MATCHING
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern void* C2_HOOK_CDECL BrMemAllocate();
+extern void C2_HOOK_CDECL BrMemFree();
+extern void C2_HOOK_CDECL BrModelUpdate();
+extern void C2_HOOK_FASTCALL FUN_005192a0(br_uint_16* pPixel);
+extern void C2_HOOK_FASTCALL FUN_005192c0(tU16* pPixel);
+extern void C2_HOOK_FASTCALL WriteU16L(FILE* pF, tU16 pNumber);
+extern void C2_HOOK_FASTCALL WriteU32L(FILE* pF, tU32 pNumber);
+extern void C2_HOOK_FASTCALL WriteU8L(FILE* pF, tU8 pNumber);
+extern br_uint_8 bl;
+extern br_pixelmap* gBack_screen;
+extern br_pixelmap* gCurrent_palette;
+extern tU32 gFrame_period;
+extern tU32 gLast_replay_frame_time;
+extern tNet_mode gNet_mode;
+extern br_actor* gNon_track_actor;
+extern int gPed_676914;
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern void C2_HOOK_CDECL BrMatrix34ApplyP();
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern C2_NORETURN void C2_HOOK_CDECL BrFailure();
+extern br_pixelmap* C2_HOOK_CDECL BrPixelmapAllocate();
+extern void C2_HOOK_CDECL BrPixelmapCopy();
+extern br_pixelmap* C2_HOOK_CDECL BrPixelmapDirectLock();
+extern br_pixelmap* C2_HOOK_CDECL BrPixelmapDirectUnlock();
+extern br_pixelmap* C2_HOOK_CDECL BrPixelmapLoad();
+extern br_uint_32 C2_HOOK_CDECL BrPixelmapSave();
+extern br_pixelmap* C2_HOOK_CDECL BrTableAdd();
+extern br_pixelmap* C2_HOOK_FASTCALL DRLdImg(const char* texturePathDir, const char* textureName, br_pixelmap* pPalette, int flags, int* errorCode);
+extern FILE* C2_HOOK_FASTCALL DRfopen(const char* pFilename, const char* pMode);
+extern void C2_NORETURN C2_HOOK_CDECL FatalError();
+extern int C2_HOOK_FASTCALL GetAdditionalFileName(const char* path, tName_list* pList);
+extern int C2_HOOK_FASTCALL GetFileName(const char *path, tName_list *pList);
+extern void C2_HOOK_FASTCALL PFForEveryFile2(const char* path, tEnumPathCallback pCallback, void* data);
+extern int C2_HOOK_FASTCALL PFfclose(FILE* pFile);
+extern void __cdecl _chkstk();
+extern void __cdecl _ftol();
+extern tPath_name gApplication_path;
+extern char gCurrent_load_directory[256];
+extern char gCurrent_load_name[256];
+extern const char* gDir_separator;
+extern tFrontend_spec gFrontend_QUIT;
+extern int gGraf_spec_index;
+extern tGraf_spec gGraf_specs[2];
+extern int gLast_key_down;
+extern tRendererShadingType gMaterial_shading_for_callback;
+extern char gNext_crush_actor_id[];
+extern int gPalette_changed;
+extern char gPed_flags_0058f2e4[];
+extern char gSplit_triangle_vertex_orders[];
+extern tDepth_effect_type gSwap_depth_effect_type;
+extern char gVector3_00661678[];
+#endif
 // FUNCTION: CARMA2_HW 0x00515910
 void C2_HOOK_FASTCALL StringTransformToLower(char* pStr) {
     int i;
@@ -231,7 +290,8 @@ void C2_HOOK_FASTCALL DumpVisibleActors(br_actor* pActor, const char* pMsg) {
 }
 
 // FUNCTION: CARMA2_HW 0x00513a30
-int C2_HOOK_FASTCALL LoadTextureTryAllLocations(char* pName, br_pixelmap** pMaps, int pCapacity) {
+int C2_NAKED C2_HOOK_FASTCALL LoadTextureTryAllLocations(char* pName, br_pixelmap** pMaps, int pCapacity) {
+#ifndef CARPOCALYPSE2_MATCHING
     tPath_name path1;
     tPath_name path2;
     tPath_name path3;
@@ -280,6 +340,1092 @@ int C2_HOOK_FASTCALL LoadTextureTryAllLocations(char* pName, br_pixelmap** pMaps
         pMaps[i] = DRLdImg(load_path, list.items[i], gRender_palette, gPixelFlags, &error);
     }
     return i;
+#else
+    __asm {
+            mov eax, 0x4298
+            call _chkstk
+            mov dword ptr [esp + 8], edx
+            xor eax, eax
+            push ebx
+            push ebp
+            push esi
+            mov edx, ecx
+            push edi
+            mov edi, edx
+            or ecx, 0xffffffff
+            xor ebx, ebx
+            repne scasb
+            not ecx
+            dec ecx
+            mov dword ptr [esp + 0x424], ebx
+            mov edi, offset gApplication_path
+            mov dword ptr [esp + 0x10], edx
+            mov byte ptr [ecx + edx - 4], al
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            sub edi, ecx
+            lea edx, [esp + 0x24]
+            mov eax, ecx
+            mov esi, edi
+            mov edi, edx
+            shr ecx, 2
+            rep movsd
+            mov ecx, eax
+            xor eax, eax
+            and ecx, 3
+            rep movsb
+            mov edi, offset gCurrent_load_directory
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            dec ecx
+            je L00513aef
+            mov edi, dword ptr [gDir_separator]
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            sub edi, ecx
+            lea edx, [esp + 0x24]
+            mov esi, edi
+            mov ebp, ecx
+            mov edi, edx
+            or ecx, 0xffffffff
+            repne scasb
+            mov ecx, ebp
+            dec edi
+            shr ecx, 2
+            rep movsd
+            mov ecx, ebp
+            lea edx, [esp + 0x24]
+            and ecx, 3
+            rep movsb
+            mov edi, offset gCurrent_load_directory
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            sub edi, ecx
+            mov esi, edi
+            mov ebp, ecx
+            mov edi, edx
+            or ecx, 0xffffffff
+            repne scasb
+            mov ecx, ebp
+            dec edi
+            shr ecx, 2
+            rep movsd
+            mov ecx, ebp
+            and ecx, 3
+            rep movsb
+    L00513aef:
+            mov esi, offset gSplit_triangle_vertex_orders+0x200
+            mov eax, offset gCurrent_load_directory
+    L00513af9:
+            mov dl, byte ptr [eax]
+            mov cl, dl
+            cmp dl, byte ptr [esi]
+            jne L00513b1d
+            test cl, cl
+            je L00513b19
+            mov dl, byte ptr [eax + 1]
+            mov cl, dl
+            cmp dl, byte ptr [esi + 1]
+            jne L00513b1d
+            add eax, 2
+            add esi, 2
+            test cl, cl
+            jne L00513af9
+    L00513b19:
+            xor ebp, ebp
+            jmp L00513b22
+    L00513b1d:
+            sbb ebp, ebp
+            sbb ebp, -1
+    L00513b22:
+            mov dword ptr [esp + 0x14], ebp
+            mov esi, offset gFrontend_QUIT+0xb900
+            mov eax, offset gCurrent_load_directory
+    L00513b30:
+            mov dl, byte ptr [eax]
+            mov cl, dl
+            cmp dl, byte ptr [esi]
+            jne L00513b52
+            test cl, cl
+            je L00513b57
+            mov dl, byte ptr [eax + 1]
+            mov cl, dl
+            cmp dl, byte ptr [esi + 1]
+            jne L00513b52
+            add eax, 2
+            add esi, 2
+            test cl, cl
+            jne L00513b30
+            jmp L00513b57
+    L00513b52:
+            sbb ebx, ebx
+            sbb ebx, -1
+    L00513b57:
+            test ebp, ebp
+            je L00513bf6
+            test ebx, ebx
+            je L00513bf6
+            lea edi, [esp + 0x24]
+            or ecx, 0xffffffff
+            xor eax, eax
+            lea edx, [esp + 0x24]
+            repne scasb
+            not ecx
+            sub edi, ecx
+            mov eax, ecx
+            mov esi, edi
+            mov edi, edx
+            shr ecx, 2
+            rep movsd
+            mov ecx, eax
+            xor eax, eax
+            and ecx, 3
+            rep movsb
+            mov edi, offset gCurrent_load_name
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            dec ecx
+            je L00513bf6
+            mov edi, dword ptr [gDir_separator]
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            sub edi, ecx
+            lea edx, [esp + 0x24]
+            mov esi, edi
+            mov edi, edx
+            mov edx, ecx
+            or ecx, 0xffffffff
+            repne scasb
+            mov ecx, edx
+            dec edi
+            shr ecx, 2
+            rep movsd
+            mov ecx, edx
+            lea edx, [esp + 0x24]
+            and ecx, 3
+            rep movsb
+            mov edi, offset gCurrent_load_name
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            sub edi, ecx
+            mov esi, edi
+            mov edi, edx
+            mov edx, ecx
+            or ecx, 0xffffffff
+            repne scasb
+            mov ecx, edx
+            dec edi
+            shr ecx, 2
+            rep movsd
+            mov ecx, edx
+            and ecx, 3
+            rep movsb
+    L00513bf6:
+            mov eax, dword ptr [gGraf_spec_index]
+            lea edi, [esp + 0x24]
+            lea esi, [esp + 0x24]
+            lea ecx, [eax + eax*2]
+            mov dword ptr [esp + 0x20], esi
+            lea edx, [eax + ecx*4]
+            or ecx, 0xffffffff
+            xor eax, eax
+            repne scasb
+            not ecx
+            sub edi, ecx
+            mov edx, dword ptr [edx*4 + gGraf_specs+0x1c]
+            mov eax, ecx
+            mov esi, edi
+            mov edi, dword ptr [esp + 0x20]
+            shr ecx, 2
+            rep movsd
+            mov ecx, eax
+            xor eax, eax
+            and ecx, 3
+            rep movsb
+            mov edi, edx
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            dec ecx
+            je L00513c9b
+            mov edi, dword ptr [gDir_separator]
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            sub edi, ecx
+            lea ebp, [esp + 0x24]
+            mov esi, edi
+            mov edi, ebp
+            mov ebp, ecx
+            or ecx, 0xffffffff
+            repne scasb
+            mov ecx, ebp
+            dec edi
+            shr ecx, 2
+            rep movsd
+            mov ecx, ebp
+            lea ebp, [esp + 0x24]
+            and ecx, 3
+            rep movsb
+            mov edi, edx
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            sub edi, ecx
+            mov esi, edi
+            mov edx, ecx
+            mov edi, ebp
+            or ecx, 0xffffffff
+            repne scasb
+            mov ecx, edx
+            dec edi
+            shr ecx, 2
+            rep movsd
+            mov ebp, dword ptr [esp + 0x14]
+            mov ecx, edx
+            and ecx, 3
+            rep movsb
+    L00513c9b:
+            lea edi, [esp + 0x24]
+            or ecx, 0xffffffff
+            xor eax, eax
+            lea edx, [esp + 0x24]
+            repne scasb
+            not ecx
+            sub edi, ecx
+            mov eax, ecx
+            mov esi, edi
+            mov edi, edx
+            shr ecx, 2
+            rep movsd
+            mov ecx, eax
+            xor eax, eax
+            and ecx, 3
+            rep movsb
+            mov edi, dword ptr [esp + 0x10]
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            dec ecx
+            je L00513d28
+            mov edi, dword ptr [gDir_separator]
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            sub edi, ecx
+            lea edx, [esp + 0x24]
+            mov esi, edi
+            mov edi, edx
+            mov edx, ecx
+            or ecx, 0xffffffff
+            repne scasb
+            mov ecx, edx
+            dec edi
+            shr ecx, 2
+            rep movsd
+            mov ecx, edx
+            lea edx, [esp + 0x24]
+            and ecx, 3
+            rep movsb
+            mov edi, dword ptr [esp + 0x10]
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            sub edi, ecx
+            mov esi, edi
+            mov edi, edx
+            mov edx, ecx
+            or ecx, 0xffffffff
+            repne scasb
+            mov ecx, edx
+            dec edi
+            shr ecx, 2
+            rep movsd
+            mov ecx, edx
+            and ecx, 3
+            rep movsb
+    L00513d28:
+            mov edi, offset gApplication_path
+            or ecx, 0xffffffff
+            xor eax, eax
+            lea edx, [esp + 0x224]
+            repne scasb
+            not ecx
+            sub edi, ecx
+            mov eax, ecx
+            mov esi, edi
+            mov edi, edx
+            shr ecx, 2
+            rep movsd
+            mov ecx, eax
+            xor eax, eax
+            and ecx, 3
+            rep movsb
+            mov edi, offset gCurrent_load_directory
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            dec ecx
+            je L00513dc1
+            mov edi, dword ptr [gDir_separator]
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            sub edi, ecx
+            lea edx, [esp + 0x224]
+            mov esi, edi
+            mov edi, edx
+            mov edx, ecx
+            or ecx, 0xffffffff
+            repne scasb
+            mov ecx, edx
+            dec edi
+            shr ecx, 2
+            rep movsd
+            mov ecx, edx
+            lea edx, [esp + 0x224]
+            and ecx, 3
+            rep movsb
+            mov edi, offset gCurrent_load_directory
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            sub edi, ecx
+            mov esi, edi
+            mov edi, edx
+            mov edx, ecx
+            or ecx, 0xffffffff
+            repne scasb
+            mov ecx, edx
+            dec edi
+            shr ecx, 2
+            rep movsd
+            mov ecx, edx
+            and ecx, 3
+            rep movsb
+    L00513dc1:
+            test ebp, ebp
+            je L00513e70
+            test ebx, ebx
+            je L00513e70
+            lea edi, [esp + 0x224]
+            or ecx, 0xffffffff
+            xor eax, eax
+            lea edx, [esp + 0x224]
+            repne scasb
+            not ecx
+            sub edi, ecx
+            mov eax, ecx
+            mov esi, edi
+            mov edi, edx
+            shr ecx, 2
+            rep movsd
+            mov ecx, eax
+            xor eax, eax
+            and ecx, 3
+            rep movsb
+            mov edi, offset gCurrent_load_name
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            dec ecx
+            je L00513e70
+            mov edx, dword ptr [gDir_separator]
+            or ecx, 0xffffffff
+            mov edi, edx
+            lea ebx, [esp + 0x224]
+            repne scasb
+            not ecx
+            sub edi, ecx
+            mov esi, edi
+            mov ebp, ecx
+            mov edi, ebx
+            or ecx, 0xffffffff
+            repne scasb
+            mov ecx, ebp
+            dec edi
+            shr ecx, 2
+            rep movsd
+            mov ecx, ebp
+            lea ebx, [esp + 0x224]
+            and ecx, 3
+            rep movsb
+            mov edi, offset gCurrent_load_name
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            sub edi, ecx
+            mov esi, edi
+            mov ebp, ecx
+            mov edi, ebx
+            or ecx, 0xffffffff
+            repne scasb
+            mov ecx, ebp
+            dec edi
+            shr ecx, 2
+            rep movsd
+            mov ecx, ebp
+            and ecx, 3
+            rep movsb
+            jmp L00513e76
+    L00513e70:
+            mov edx, dword ptr [gDir_separator]
+    L00513e76:
+            lea edi, [esp + 0x224]
+            or ecx, 0xffffffff
+            xor eax, eax
+            lea ebx, [esp + 0x224]
+            repne scasb
+            not ecx
+            sub edi, ecx
+            mov eax, ecx
+            mov esi, edi
+            mov edi, ebx
+            mov ebx, dword ptr [esp + 0x10]
+            shr ecx, 2
+            rep movsd
+            mov ecx, eax
+            xor eax, eax
+            and ecx, 3
+            rep movsb
+            mov edi, ebx
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            dec ecx
+            je L00513f0b
+            mov edi, edx
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            sub edi, ecx
+            lea ebp, [esp + 0x224]
+            mov esi, edi
+            mov edi, ebp
+            mov ebp, ecx
+            or ecx, 0xffffffff
+            repne scasb
+            mov ecx, ebp
+            dec edi
+            shr ecx, 2
+            rep movsd
+            mov ecx, ebp
+            lea ebp, [esp + 0x224]
+            and ecx, 3
+            rep movsb
+            mov edi, ebx
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            sub edi, ecx
+            mov esi, edi
+            mov ebx, ecx
+            mov edi, ebp
+            or ecx, 0xffffffff
+            repne scasb
+            mov ecx, ebx
+            dec edi
+            shr ecx, 2
+            rep movsd
+            mov ecx, ebx
+            and ecx, 3
+            rep movsb
+    L00513f0b:
+            lea edi, [esp + 0x24]
+            or ecx, 0xffffffff
+            xor eax, eax
+            lea ebx, [esp + 0x124]
+            repne scasb
+            not ecx
+            sub edi, ecx
+            mov eax, ecx
+            mov esi, edi
+            mov edi, ebx
+            shr ecx, 2
+            rep movsd
+            mov ecx, eax
+            xor eax, eax
+            and ecx, 3
+            rep movsb
+            mov edi, offset gLast_key_down+0xa4
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            dec ecx
+            je L00513f9f
+            mov edi, edx
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            sub edi, ecx
+            lea ebx, [esp + 0x124]
+            mov esi, edi
+            mov edx, ecx
+            mov edi, ebx
+            or ecx, 0xffffffff
+            repne scasb
+            mov ecx, edx
+            dec edi
+            shr ecx, 2
+            rep movsd
+            mov ecx, edx
+            lea edx, [esp + 0x124]
+            and ecx, 3
+            rep movsb
+            mov edi, offset gLast_key_down+0xa4
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            sub edi, ecx
+            mov esi, edi
+            mov ebx, ecx
+            mov edi, edx
+            or ecx, 0xffffffff
+            repne scasb
+            mov ecx, ebx
+            dec edi
+            shr ecx, 2
+            rep movsd
+            mov ecx, ebx
+            and ecx, 3
+            rep movsb
+    L00513f9f:
+            lea eax, [esp + 0x424]
+            mov edx, offset GetFileName
+            push eax
+            lea ecx, [esp + 0x128]
+            call PFForEveryFile2
+            lea edi, [esp + 0x24]
+            or ecx, 0xffffffff
+            xor eax, eax
+            lea edx, [esp + 0x324]
+            repne scasb
+            not ecx
+            sub edi, ecx
+            mov eax, ecx
+            mov esi, edi
+            mov edi, edx
+            shr ecx, 2
+            rep movsd
+            mov ecx, eax
+            xor eax, eax
+            and ecx, 3
+            rep movsb
+            mov edi, offset gLast_key_down+0x84
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            dec ecx
+            je L00514050
+            mov edi, dword ptr [gDir_separator]
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            sub edi, ecx
+            lea edx, [esp + 0x324]
+            mov esi, edi
+            mov ebx, ecx
+            mov edi, edx
+            or ecx, 0xffffffff
+            repne scasb
+            mov ecx, ebx
+            dec edi
+            shr ecx, 2
+            rep movsd
+            mov ecx, ebx
+            lea edx, [esp + 0x324]
+            and ecx, 3
+            rep movsb
+            mov edi, offset gLast_key_down+0x84
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            sub edi, ecx
+            mov esi, edi
+            mov ebx, ecx
+            mov edi, edx
+            or ecx, 0xffffffff
+            repne scasb
+            mov ecx, ebx
+            dec edi
+            shr ecx, 2
+            rep movsd
+            mov ecx, ebx
+            and ecx, 3
+            rep movsb
+    L00514050:
+            lea eax, [esp + 0x424]
+            mov edx, offset GetAdditionalFileName
+            push eax
+            lea ecx, [esp + 0x328]
+            call PFForEveryFile2
+            lea edi, [esp + 0x24]
+            or ecx, 0xffffffff
+            xor eax, eax
+            lea edx, [esp + 0x124]
+            repne scasb
+            not ecx
+            sub edi, ecx
+            mov eax, ecx
+            mov esi, edi
+            mov edi, edx
+            shr ecx, 2
+            rep movsd
+            mov ecx, eax
+            xor eax, eax
+            and ecx, 3
+            rep movsb
+            mov edi, offset gLast_key_down+0x9c
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            dec ecx
+            je L00514101
+            mov edi, dword ptr [gDir_separator]
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            sub edi, ecx
+            lea edx, [esp + 0x124]
+            mov esi, edi
+            mov ebx, ecx
+            mov edi, edx
+            or ecx, 0xffffffff
+            repne scasb
+            mov ecx, ebx
+            dec edi
+            shr ecx, 2
+            rep movsd
+            mov ecx, ebx
+            lea edx, [esp + 0x124]
+            and ecx, 3
+            rep movsb
+            mov edi, offset gLast_key_down+0x9c
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            sub edi, ecx
+            mov esi, edi
+            mov ebx, ecx
+            mov edi, edx
+            or ecx, 0xffffffff
+            repne scasb
+            mov ecx, ebx
+            dec edi
+            shr ecx, 2
+            rep movsd
+            mov ecx, ebx
+            and ecx, 3
+            rep movsb
+    L00514101:
+            lea eax, [esp + 0x424]
+            mov edx, offset GetAdditionalFileName
+            push eax
+            lea ecx, [esp + 0x128]
+            call PFForEveryFile2
+            lea edi, [esp + 0x24]
+            or ecx, 0xffffffff
+            xor eax, eax
+            lea edx, [esp + 0x324]
+            repne scasb
+            not ecx
+            sub edi, ecx
+            mov eax, ecx
+            mov esi, edi
+            mov edi, edx
+            shr ecx, 2
+            rep movsd
+            mov ecx, eax
+            xor eax, eax
+            and ecx, 3
+            rep movsb
+            mov edi, offset gLast_key_down+0x7c
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            dec ecx
+            je L005141b2
+            mov edi, dword ptr [gDir_separator]
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            sub edi, ecx
+            lea edx, [esp + 0x324]
+            mov esi, edi
+            mov ebx, ecx
+            mov edi, edx
+            or ecx, 0xffffffff
+            repne scasb
+            mov ecx, ebx
+            dec edi
+            shr ecx, 2
+            rep movsd
+            mov ecx, ebx
+            lea edx, [esp + 0x324]
+            and ecx, 3
+            rep movsb
+            mov edi, offset gLast_key_down+0x7c
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            sub edi, ecx
+            mov esi, edi
+            mov ebx, ecx
+            mov edi, edx
+            or ecx, 0xffffffff
+            repne scasb
+            mov ecx, ebx
+            dec edi
+            shr ecx, 2
+            rep movsd
+            mov ecx, ebx
+            and ecx, 3
+            rep movsb
+    L005141b2:
+            lea eax, [esp + 0x424]
+            mov edx, offset GetAdditionalFileName
+            push eax
+            lea ecx, [esp + 0x328]
+            call PFForEveryFile2
+            mov eax, dword ptr [esp + 0x424]
+            test eax, eax
+            je L0051422b
+            xor ebx, ebx
+            test eax, eax
+            jle L0051454b
+            mov edi, dword ptr [esp + 0x18]
+            lea esi, [esp + 0x428]
+    L005141eb:
+            mov edx, dword ptr [gPixelFlags]
+            mov eax, dword ptr [gRender_palette]
+            lea ecx, [esp + 0x1c]
+            push ecx
+            push edx
+            push eax
+            mov edx, esi
+            lea ecx, [esp + 0x30]
+            call DRLdImg
+            mov dword ptr [edi], eax
+            inc ebx
+            mov eax, dword ptr [esp + 0x424]
+            add esi, 0x10
+            add edi, 4
+            cmp ebx, eax
+            jl L005141eb
+            mov eax, ebx
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x4298
+            ret 4
+    L0051422b:
+            lea edi, [esp + 0x224]
+            or ecx, 0xffffffff
+            xor eax, eax
+            lea edx, [esp + 0x124]
+            repne scasb
+            not ecx
+            sub edi, ecx
+            mov eax, ecx
+            mov esi, edi
+            mov edi, edx
+            shr ecx, 2
+            rep movsd
+            mov ecx, eax
+            xor eax, eax
+            and ecx, 3
+            rep movsb
+            mov edi, offset gLast_key_down+0xa4
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            dec ecx
+            je L005142c6
+            mov edi, dword ptr [gDir_separator]
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            sub edi, ecx
+            lea edx, [esp + 0x124]
+            mov esi, edi
+            mov ebx, ecx
+            mov edi, edx
+            or ecx, 0xffffffff
+            repne scasb
+            mov ecx, ebx
+            dec edi
+            shr ecx, 2
+            rep movsd
+            mov ecx, ebx
+            lea edx, [esp + 0x124]
+            and ecx, 3
+            rep movsb
+            mov edi, offset gLast_key_down+0xa4
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            sub edi, ecx
+            mov esi, edi
+            mov ebx, ecx
+            mov edi, edx
+            or ecx, 0xffffffff
+            repne scasb
+            mov ecx, ebx
+            dec edi
+            shr ecx, 2
+            rep movsd
+            mov ecx, ebx
+            and ecx, 3
+            rep movsb
+    L005142c6:
+            lea eax, [esp + 0x424]
+            mov edx, offset GetFileName
+            push eax
+            lea ecx, [esp + 0x128]
+            call PFForEveryFile2
+            lea edi, [esp + 0x224]
+            or ecx, 0xffffffff
+            xor eax, eax
+            lea edx, [esp + 0x324]
+            repne scasb
+            not ecx
+            sub edi, ecx
+            mov eax, ecx
+            mov esi, edi
+            mov edi, edx
+            shr ecx, 2
+            rep movsd
+            mov ecx, eax
+            xor eax, eax
+            and ecx, 3
+            rep movsb
+            mov edi, offset gLast_key_down+0x84
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            dec ecx
+            je L0051437a
+            mov edi, dword ptr [gDir_separator]
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            sub edi, ecx
+            lea edx, [esp + 0x324]
+            mov esi, edi
+            mov ebx, ecx
+            mov edi, edx
+            or ecx, 0xffffffff
+            repne scasb
+            mov ecx, ebx
+            dec edi
+            shr ecx, 2
+            rep movsd
+            mov ecx, ebx
+            lea edx, [esp + 0x324]
+            and ecx, 3
+            rep movsb
+            mov edi, offset gLast_key_down+0x84
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            sub edi, ecx
+            mov esi, edi
+            mov ebx, ecx
+            mov edi, edx
+            or ecx, 0xffffffff
+            repne scasb
+            mov ecx, ebx
+            dec edi
+            shr ecx, 2
+            rep movsd
+            mov ecx, ebx
+            and ecx, 3
+            rep movsb
+    L0051437a:
+            lea eax, [esp + 0x424]
+            mov edx, offset GetAdditionalFileName
+            push eax
+            lea ecx, [esp + 0x328]
+            call PFForEveryFile2
+            lea edi, [esp + 0x224]
+            or ecx, 0xffffffff
+            xor eax, eax
+            lea edx, [esp + 0x124]
+            repne scasb
+            not ecx
+            sub edi, ecx
+            mov eax, ecx
+            mov esi, edi
+            mov edi, edx
+            shr ecx, 2
+            rep movsd
+            mov ecx, eax
+            xor eax, eax
+            and ecx, 3
+            rep movsb
+            mov edi, offset gLast_key_down+0x9c
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            dec ecx
+            je L0051442e
+            mov edi, dword ptr [gDir_separator]
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            sub edi, ecx
+            lea edx, [esp + 0x124]
+            mov esi, edi
+            mov ebx, ecx
+            mov edi, edx
+            or ecx, 0xffffffff
+            repne scasb
+            mov ecx, ebx
+            dec edi
+            shr ecx, 2
+            rep movsd
+            mov ecx, ebx
+            lea edx, [esp + 0x124]
+            and ecx, 3
+            rep movsb
+            mov edi, offset gLast_key_down+0x9c
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            sub edi, ecx
+            mov esi, edi
+            mov ebx, ecx
+            mov edi, edx
+            or ecx, 0xffffffff
+            repne scasb
+            mov ecx, ebx
+            dec edi
+            shr ecx, 2
+            rep movsd
+            mov ecx, ebx
+            and ecx, 3
+            rep movsb
+    L0051442e:
+            lea eax, [esp + 0x424]
+            mov edx, offset GetAdditionalFileName
+            push eax
+            lea ecx, [esp + 0x128]
+            call PFForEveryFile2
+            lea edi, [esp + 0x224]
+            or ecx, 0xffffffff
+            xor eax, eax
+            lea edx, [esp + 0x324]
+            repne scasb
+            not ecx
+            sub edi, ecx
+            mov eax, ecx
+            mov esi, edi
+            mov edi, edx
+            shr ecx, 2
+            rep movsd
+            mov ecx, eax
+            xor eax, eax
+            and ecx, 3
+            rep movsb
+            mov edi, offset gLast_key_down+0x7c
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            dec ecx
+            je L005144e2
+            mov edi, dword ptr [gDir_separator]
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            sub edi, ecx
+            lea edx, [esp + 0x324]
+            mov esi, edi
+            mov ebx, ecx
+            mov edi, edx
+            or ecx, 0xffffffff
+            repne scasb
+            mov ecx, ebx
+            dec edi
+            shr ecx, 2
+            rep movsd
+            mov ecx, ebx
+            lea edx, [esp + 0x324]
+            and ecx, 3
+            rep movsb
+            mov edi, offset gLast_key_down+0x7c
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            sub edi, ecx
+            mov esi, edi
+            mov ebx, ecx
+            mov edi, edx
+            or ecx, 0xffffffff
+            repne scasb
+            mov ecx, ebx
+            dec edi
+            shr ecx, 2
+            rep movsd
+            mov ecx, ebx
+            and ecx, 3
+            rep movsb
+    L005144e2:
+            lea eax, [esp + 0x424]
+            mov edx, offset GetAdditionalFileName
+            push eax
+            lea ecx, [esp + 0x328]
+            call PFForEveryFile2
+            mov eax, dword ptr [esp + 0x424]
+            test eax, eax
+            je L0051455a
+            xor ebx, ebx
+            test eax, eax
+            jle L0051454b
+            mov edi, dword ptr [esp + 0x18]
+            lea esi, [esp + 0x428]
+    L00514517:
+            mov edx, dword ptr [gPixelFlags]
+            mov eax, dword ptr [gRender_palette]
+            lea ecx, [esp + 0x1c]
+            push ecx
+            push edx
+            push eax
+            mov edx, esi
+            lea ecx, [esp + 0x230]
+            call DRLdImg
+            mov dword ptr [edi], eax
+            inc ebx
+            mov eax, dword ptr [esp + 0x424]
+            add esi, 0x10
+            add edi, 4
+            cmp ebx, eax
+            jl L00514517
+    L0051454b:
+            mov eax, ebx
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x4298
+            ret 4
+    L0051455a:
+            pop edi
+            pop esi
+            pop ebp
+            xor eax, eax
+            pop ebx
+            add esp, 0x4298
+            ret 4
+    }
+#endif
 }
 
 int C2_HOOK_FASTCALL GetBlendificatiousnessOfMaterialTablishly(br_material *pMaterial) {
@@ -352,7 +1498,8 @@ int C2_HOOK_FASTCALL GetBlendificatiousnessOfMaterial(br_material* pMaterial) {
 }
 
 // FUNCTION: CARMA2_HW 0x00517050
-tU16 C2_HOOK_FASTCALL Colour24BitTo16Bit(br_colour pColour) {
+tU16 C2_NAKED C2_HOOK_FASTCALL Colour24BitTo16Bit(br_colour pColour) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     switch (gBack_screen->type) {
     default:
@@ -363,11 +1510,49 @@ tU16 C2_HOOK_FASTCALL Colour24BitTo16Bit(br_colour pColour) {
     case BR_PMT_RGB_555:
         return (((((pColour >> 3) & 0x1f0000) | (pColour & 0xf800)) >> 3) | (pColour & 0xf8)) >> 3;
     }
+#else
+    __asm {
+            mov edx, dword ptr [gBack_screen]
+            xor eax, eax
+            mov al, byte ptr [edx + 0x2c]
+            sub eax, 4
+            je L00517094
+            dec eax
+            je L00517071
+            push offset gVector3_00661678+0xa8
+            call BrFailure
+            add esp, 4
+            ret
+    L00517071:
+            mov eax, ecx
+            mov edx, ecx
+            shr eax, 3
+            and eax, 0x1f0000
+            and edx, 0xfc00
+            or eax, edx
+            and ecx, 0xf8
+            shr eax, 2
+            or eax, ecx
+            shr eax, 3
+            ret
+    L00517094:
+            mov eax, ecx
+            mov edx, ecx
+            shr eax, 3
+            and eax, 0x1f0000
+            and edx, 0xf800
+            or eax, edx
+            and ecx, 0xf8
+            shr eax, 3
+            or eax, ecx
+            shr eax, 3
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00514930
 int C2_HOOK_FASTCALL sign(int pNumber) {
-
     if (pNumber > 0) {
         return 1;
     } else if (pNumber < 0) {
@@ -461,7 +1646,6 @@ int C2_HOOK_FASTCALL CheckQuit(void) {
 
 // FUNCTION: CARMA2_HW 0x00513510
 double C2_HOOK_FASTCALL sqr(double pN) {
-
     return pN * pN;
 }
 
@@ -480,7 +1664,6 @@ int C2_HOOK_FASTCALL IRandomBetween(int pA, int pB) {
 
 // FUNCTION: CARMA2_HW 0x00513550
 int C2_HOOK_FASTCALL PercentageChance(int pC) {
-
     if (pC == 0) {
         return 0;
     }
@@ -489,7 +1672,6 @@ int C2_HOOK_FASTCALL PercentageChance(int pC) {
 
 // FUNCTION: CARMA2_HW 0x00513580
 int C2_HOOK_FASTCALL IRandomPosNeg(int pN) {
-
     return IRandomBetween(-pN, pN);
 }
 
@@ -523,9 +1705,9 @@ br_scalar C2_HOOK_STDCALL SRandomPosNeg(br_scalar pN) {
 
 // FUNCTION: CARMA2_HW 0x00513690
 void C2_HOOK_FASTCALL PathCat(char* pDestn_str, const char* pStr_1, const char* pStr_2) {
-
 #ifdef CARPOCALYPSE2_FIX_BUGS
-    if (pDestn_str != pStr_1) { // Added to avoid strcpy overlap checks
+    if (pDestn_str != pStr_1) {
+ // Added to avoid strcpy overlap checks
         strcpy(pDestn_str, pStr_1);
     }
 #else
@@ -638,7 +1820,8 @@ void C2_HOOK_FASTCALL SepDirAndFilename(const char* path, char* dirPath, char* s
 // DRLoadMultiplePix
 
 // FUNCTION: CARMA2_HW 0x00514570
-int C2_HOOK_FASTCALL DRPixelmapLoadMany(const char* texturePathNoExt, br_pixelmap** pixelmaps, size_t capacity) {
+int C2_NAKED C2_HOOK_FASTCALL DRPixelmapLoadMany(const char* texturePathNoExt, br_pixelmap** pixelmaps, size_t capacity) {
+#ifndef CARPOCALYPSE2_MATCHING
     tPath_name texturePath;
     tPath_name texturePathDir;
     tPath_name texturePathStem;
@@ -649,6 +1832,136 @@ int C2_HOOK_FASTCALL DRPixelmapLoadMany(const char* texturePathNoExt, br_pixelma
     SepDirAndFilename(texturePath, texturePathDir, texturePathStem);
     pixelmaps[0] = DRLdImg(texturePathDir, texturePathStem, gRender_palette, gPixelFlags, &errorCode);
     return (pixelmaps[0] != NULL && errorCode == 0) ? 1 : 0;
+#else
+    __asm {
+            sub esp, 0x304
+            xor eax, eax
+            push ebx
+            push ebp
+            push esi
+            push edi
+            mov edi, ecx
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            mov ebx, edx
+            sub edi, ecx
+            lea edx, [esp + 0x14]
+            mov eax, ecx
+            mov esi, edi
+            mov edi, edx
+            shr ecx, 2
+            rep movsd
+            mov ecx, eax
+            xor eax, eax
+            and ecx, 3
+            lea edx, [esp + 0x14]
+            rep movsb
+            mov edi, offset gFrontend_QUIT+0xbbac
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            sub edi, ecx
+            mov esi, edi
+            mov ebp, ecx
+            mov edi, edx
+            or ecx, 0xffffffff
+            repne scasb
+            mov ecx, ebp
+            dec edi
+            shr ecx, 2
+            rep movsd
+            mov ecx, ebp
+            xor edx, edx
+            and ecx, 3
+            rep movsb
+            lea edi, [esp + 0x14]
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            dec ecx
+            mov ebp, ecx
+            lea eax, [ebp - 1]
+            test eax, eax
+            je L005145f9
+            mov ecx, dword ptr [gDir_separator]
+            mov cl, byte ptr [ecx]
+    L005145ec:
+            cmp byte ptr [esp + eax + 0x14], cl
+            je L005145f7
+            dec eax
+            jne L005145ec
+            jmp L005145f9
+    L005145f7:
+            mov edx, eax
+    L005145f9:
+            mov ecx, edx
+            lea esi, [esp + 0x14]
+            mov eax, ecx
+            lea edi, [esp + 0x214]
+            shr ecx, 2
+            rep movsd
+            mov ecx, eax
+            and ecx, 3
+            rep movsb
+            mov byte ptr [esp + edx + 0x214], 0
+            mov al, byte ptr [esp + 0x214]
+            test al, al
+            je L00514628
+            inc edx
+    L00514628:
+            lea ecx, [esp + edx + 0x14]
+            xor eax, eax
+            cmp byte ptr [ecx], 0x2e
+            je L0051465f
+            mov esi, edx
+            lea edx, [esp + 0x114]
+            sub esi, edx
+    L0051463e:
+            lea edx, [esp + eax + 0x114]
+            add edx, esi
+            cmp edx, ebp
+            je L0051465f
+            mov dl, byte ptr [eax + ecx]
+            mov byte ptr [esp + eax + 0x114], dl
+            mov dl, byte ptr [eax + ecx + 1]
+            inc eax
+            cmp dl, 0x2e
+            jne L0051463e
+    L0051465f:
+            mov ecx, dword ptr [gPixelFlags]
+            mov edx, dword ptr [gRender_palette]
+            mov byte ptr [esp + eax + 0x114], 0
+            lea eax, [esp + 0x10]
+            push eax
+            push ecx
+            push edx
+            lea edx, [esp + 0x120]
+            lea ecx, [esp + 0x220]
+            call DRLdImg
+            test eax, eax
+            mov dword ptr [ebx], eax
+            je L005146ad
+            mov eax, dword ptr [esp + 0x10]
+            test eax, eax
+            jne L005146ad
+            mov eax, 1
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x304
+            ret 4
+    L005146ad:
+            pop edi
+            pop esi
+            pop ebp
+            xor eax, eax
+            pop ebx
+            add esp, 0x304
+            ret 4
+    }
+#endif
 }
 
 // WaitFor
@@ -672,7 +1985,6 @@ intptr_t C2_HOOK_FASTCALL DRActorEnumRecurse(br_actor* pActor, br_actor_enum_cbf
 
 // FUNCTION: CARMA2_HW 0x005147b0
 intptr_t C2_HOOK_CDECL CompareActorID(br_actor* pActor, void* pArg) {
-
     if (pActor->identifier != NULL && strcmp(pActor->identifier, (const char*)pArg) == 0) {
         return (intptr_t)pActor;
     } else {
@@ -682,7 +1994,6 @@ intptr_t C2_HOOK_CDECL CompareActorID(br_actor* pActor, void* pArg) {
 
 // FUNCTION: CARMA2_HW 0x00514730
 br_actor* C2_HOOK_FASTCALL DRActorFindRecurse(br_actor* pSearch_root, const char* pName) {
-
     return (br_actor*)DRActorEnumRecurse(pSearch_root, CompareActorID, (void*)pName);
 }
 
@@ -752,7 +2063,8 @@ FILE* C2_HOOK_FASTCALL OpenUniqueFileB(char* pPrefix, char* pExtension) {
 }
 
 // FUNCTION: CARMA2_HW 0x00514ab0
-void C2_HOOK_FASTCALL PrintScreenFile(FILE* pF) {
+void C2_NAKED C2_HOOK_FASTCALL PrintScreenFile(FILE* pF) {
+#ifndef CARPOCALYPSE2_MATCHING
     int i;
     int j;
     int bit_map_size;
@@ -815,6 +2127,140 @@ void C2_HOOK_FASTCALL PrintScreenFile(FILE* pF) {
         pixel_ptr -= 2 * gBack_screen->row_bytes;
     }
     WriteU16L(pF, 0);
+#else
+    __asm {
+            mov eax, dword ptr [gBack_screen]
+            push ebx
+            xor ebx, ebx
+            push ebp
+            mov bx, word ptr [eax + 0x36]
+            push esi
+            movsx eax, word ptr [eax + 0x28]
+            push edi
+            mov esi, ecx
+            mov dl, 0x42
+            imul ebx, eax
+            call WriteU8L
+            mov dl, 0x4d
+            mov ecx, esi
+            call WriteU8L
+            lea edx, [ebx + 0x436]
+            mov ecx, esi
+            call WriteU32L
+            xor edx, edx
+            mov ecx, esi
+            call WriteU16L
+            xor edx, edx
+            mov ecx, esi
+            call WriteU16L
+            mov edx, 0x436
+            mov ecx, esi
+            call WriteU32L
+            mov edx, 0x28
+            mov ecx, esi
+            call WriteU32L
+            mov ecx, dword ptr [gBack_screen]
+            movsx edx, word ptr [ecx + 0x28]
+            mov ecx, esi
+            call WriteU32L
+            mov eax, dword ptr [gBack_screen]
+            xor edx, edx
+            mov ecx, esi
+            mov dx, word ptr [eax + 0x36]
+            call WriteU32L
+            mov edx, 1
+            mov ecx, esi
+            call WriteU16L
+            mov edx, 8
+            mov ecx, esi
+            call WriteU16L
+            xor edx, edx
+            mov ecx, esi
+            call WriteU32L
+            xor edx, edx
+            mov ecx, esi
+            call WriteU32L
+            xor edx, edx
+            mov ecx, esi
+            call WriteU32L
+            xor edx, edx
+            mov ecx, esi
+            call WriteU32L
+            xor edx, edx
+            mov ecx, esi
+            call WriteU32L
+            mov edx, 0x100
+            mov ecx, esi
+            call WriteU32L
+            xor edi, edi
+    L00514b85:
+            mov ecx, dword ptr [gCurrent_palette]
+            mov edx, dword ptr [ecx + 8]
+            mov ecx, esi
+            mov dl, byte ptr [edx + edi]
+            call WriteU8L
+            mov eax, dword ptr [gCurrent_palette]
+            mov ecx, dword ptr [eax + 8]
+            mov dl, byte ptr [ecx + edi + 1]
+            mov ecx, esi
+            call WriteU8L
+            mov edx, dword ptr [gCurrent_palette]
+            mov ecx, esi
+            mov eax, dword ptr [edx + 8]
+            mov dl, byte ptr [eax + edi + 2]
+            call WriteU8L
+            xor dl, dl
+            mov ecx, esi
+            call WriteU8L
+            add edi, 4
+            cmp edi, 0x400
+            jl L00514b85
+            mov eax, dword ptr [gBack_screen]
+            xor ebp, ebp
+            movsx ecx, word ptr [eax + 0x28]
+            mov edi, dword ptr [eax + 8]
+            add edi, ebx
+            sub edi, ecx
+            cmp word ptr [eax + 0x36], bp
+            jbe L00514c1f
+    L00514beb:
+            xor ebx, ebx
+            test ecx, ecx
+            jle L00514c09
+    L00514bf1:
+            mov dl, byte ptr [edi]
+            mov ecx, esi
+            inc edi
+            call WriteU8L
+            mov eax, dword ptr [gBack_screen]
+            inc ebx
+            movsx ecx, word ptr [eax + 0x28]
+            cmp ebx, ecx
+            jl L00514bf1
+    L00514c09:
+            movsx ecx, word ptr [eax + 0x28]
+            mov edx, ecx
+            neg edx
+            inc ebp
+            lea edi, [edi + edx*2]
+            xor edx, edx
+            mov dx, word ptr [eax + 0x36]
+            cmp ebp, edx
+            jl L00514beb
+    L00514c1f:
+            xor edx, edx
+            mov ecx, esi
+            call WriteU16L
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            ret
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 void C2_HOOK_FASTCALL PrintScreenFile16(FILE* pF) {
@@ -910,41 +2356,41 @@ tU32 C2_NAKED C2_HOOK_FASTCALL GetTotalTime(void) {
     return gFrame_period + gLast_tick_count - gLost_time;
 #else
     __asm {
-        mov eax, dword ptr [gPed_676914]
-        test eax, eax
-        je get_total_time_not_replay
-        mov eax, dword ptr [gLast_replay_frame_time]
-        ret
-
-    get_total_time_not_replay:
-        mov eax, dword ptr [gNet_mode]
-        test eax, eax
-        je get_total_time_default
-        mov eax, dword ptr [gLast_tick_count]
-        mov ecx, dword ptr [gFrame_period]
-        add eax, ecx
-        ret
-
-    get_total_time_default:
-        mov edx, dword ptr [gLast_tick_count]
-        mov eax, dword ptr [gFrame_period]
-        mov ecx, dword ptr [gLost_time]
-        add eax, edx
-        sub eax, ecx
-        ret
+            mov eax, dword ptr [gPed_676914]
+            test eax, eax
+            je L00514c3f
+            mov eax, dword ptr [gLast_replay_frame_time]
+            ret
+    L00514c3f:
+            mov eax, dword ptr [gNet_mode]
+            test eax, eax
+            je L00514c56
+            mov eax, dword ptr [gLast_tick_count]
+            mov ecx, dword ptr [gFrame_period]
+            add eax, ecx
+            ret
+    L00514c56:
+            mov edx, dword ptr [gLast_tick_count]
+            mov eax, dword ptr [gFrame_period]
+            mov ecx, dword ptr [gLost_time]
+            add eax, edx
+            sub eax, ecx
+            ret
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
 
 // FUNCTION: CARMA2_HW 0x00514c70
 tU32 C2_HOOK_FASTCALL GetRaceTime(void) {
-
     return PDGetTotalTime() - gRace_start;
 }
 
 // FUNCTION: CARMA2_HW 0x00514c80
 void C2_HOOK_FASTCALL AddLostTime(tU32 pLost_time) {
-
     gLost_time += pLost_time;
 }
 
@@ -979,7 +2425,6 @@ void C2_HOOK_FASTCALL TimerString(tU32 pTime, char* pStr, undefined4 pArg3, int 
 
 // FUNCTION: CARMA2_HW 0x00514d70
 const char* C2_HOOK_FASTCALL GetMiscString(int pIndex) {
-
     return gMisc_strings[pIndex];
 }
 
@@ -998,7 +2443,6 @@ int C2_HOOK_FASTCALL Flash(tU32 pPeriod, tU32* pLast_change, int* pCurrent_state
 
 // FUNCTION: CARMA2_HW 0x00514e40
 br_pixelmap* C2_HOOK_FASTCALL GenerateShadeTable(int pHeight, br_pixelmap* pPalette, int pRed_mix, int pGreen_mix, int pBlue_mix, float pQuarter, float pHalf, float pThree_quarter) {
-
     PossibleService();
     return GenerateDarkenedShadeTable(
         pHeight,
@@ -1013,7 +2457,8 @@ br_pixelmap* C2_HOOK_FASTCALL GenerateShadeTable(int pHeight, br_pixelmap* pPale
 }
 
 // FUNCTION: CARMA2_HW 0x00514eb0
-br_pixelmap* C2_HOOK_FASTCALL GenerateDarkenedShadeTable(int pHeight, br_pixelmap* pPalette, int pRed_mix, int pGreen_mix, int pBlue_mix, float pQuarter, float pHalf, float pThree_quarter, br_scalar pDarken) {
+C2_NAKED br_pixelmap* C2_HOOK_FASTCALL GenerateDarkenedShadeTable(int pHeight, br_pixelmap* pPalette, int pRed_mix, int pGreen_mix, int pBlue_mix, float pQuarter, float pHalf, float pThree_quarter, br_scalar pDarken) {
+#ifndef CARPOCALYPSE2_MATCHING
     br_pixelmap* the_table;
     tRGB_colour the_RGB;
     tRGB_colour new_RGB;
@@ -1081,6 +2526,643 @@ br_pixelmap* C2_HOOK_FASTCALL GenerateDarkenedShadeTable(int pHeight, br_pixelma
     }
     BrTableAdd(the_table);
     return the_table;
+#else
+    __asm {
+            push ebp
+            mov ebp, esp
+            and esp, 0xfffffff8
+            sub esp, 0x1ac
+            push ebx
+            mov ebx, ecx
+            mov ecx, dword ptr [ebp + 8]
+            mov dword ptr [esp + 0x50], edx
+            mov eax, ecx
+            push esi
+            cdq
+            and edx, 0xf
+            push edi
+            add eax, edx
+            mov edi, offset gMaterial_shading_for_callback+0x4
+            sar eax, 4
+            add al, 0x41
+            mov byte ptr [esp + 0x38], 0x73
+            mov byte ptr [esp + 0x14], al
+            mov byte ptr [esp + 0x3a], al
+            mov eax, ecx
+            mov ecx, dword ptr [ebp + 0xc]
+            cdq
+            xor eax, edx
+            mov byte ptr [esp + 0x39], 0x74
+            sub eax, edx
+            mov byte ptr [esp + 0x40], 0
+            and eax, 0xf
+            mov dword ptr [esp + 0x24], ebx
+            xor eax, edx
+            sub eax, edx
+            add al, 0x41
+            mov byte ptr [esp + 0x17], al
+            mov byte ptr [esp + 0x3b], al
+            mov eax, ecx
+            cdq
+            and edx, 0xf
+            add eax, edx
+            sar eax, 4
+            add al, 0x41
+            mov byte ptr [esp + 0x16], al
+            mov byte ptr [esp + 0x3c], al
+            mov eax, ecx
+            mov ecx, dword ptr [ebp + 0x10]
+            cdq
+            xor eax, edx
+            sub eax, edx
+            and eax, 0xf
+            xor eax, edx
+            sub eax, edx
+            add al, 0x41
+            mov byte ptr [esp + 0x13], al
+            mov byte ptr [esp + 0x3d], al
+            mov eax, ecx
+            cdq
+            and edx, 0xf
+            add eax, edx
+            sar eax, 4
+            add al, 0x41
+            mov byte ptr [esp + 0x15], al
+            mov byte ptr [esp + 0x3e], al
+            mov eax, ecx
+            or ecx, 0xffffffff
+            cdq
+            xor eax, edx
+            sub eax, edx
+            and eax, 0xf
+            xor eax, edx
+            sub eax, edx
+            lea edx, [esp + 0x38]
+            add al, 0x41
+            mov byte ptr [esp + 0x12], al
+            mov byte ptr [esp + 0x3f], al
+            xor eax, eax
+            repne scasb
+            not ecx
+            sub edi, ecx
+            mov esi, edi
+            mov edi, edx
+            mov edx, ecx
+            or ecx, 0xffffffff
+            repne scasb
+            mov ecx, edx
+            dec edi
+            shr ecx, 2
+            rep movsd
+            mov ecx, edx
+            lea edx, [esp + 0xb8]
+            and ecx, 3
+            rep movsb
+            mov edi, offset gApplication_path
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            sub edi, ecx
+            mov eax, ecx
+            mov esi, edi
+            mov edi, edx
+            shr ecx, 2
+            rep movsd
+            mov ecx, eax
+            xor eax, eax
+            and ecx, 3
+            rep movsb
+            mov edi, offset gSwap_depth_effect_type+0xdc
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            dec ecx
+            je L0051502d
+            mov edi, dword ptr [gDir_separator]
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            sub edi, ecx
+            lea edx, [esp + 0xb8]
+            mov esi, edi
+            mov edi, edx
+            mov edx, ecx
+            or ecx, 0xffffffff
+            repne scasb
+            mov ecx, edx
+            dec edi
+            shr ecx, 2
+            rep movsd
+            mov ecx, edx
+            lea edx, [esp + 0xb8]
+            and ecx, 3
+            rep movsb
+            mov edi, offset gSwap_depth_effect_type+0xdc
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            sub edi, ecx
+            mov esi, edi
+            mov edi, edx
+            mov edx, ecx
+            or ecx, 0xffffffff
+            repne scasb
+            mov ecx, edx
+            dec edi
+            shr ecx, 2
+            rep movsd
+            mov ecx, edx
+            and ecx, 3
+            rep movsb
+    L0051502d:
+            lea edi, [esp + 0xb8]
+            or ecx, 0xffffffff
+            xor eax, eax
+            lea edx, [esp + 0xb8]
+            repne scasb
+            not ecx
+            sub edi, ecx
+            mov eax, ecx
+            mov esi, edi
+            mov edi, edx
+            shr ecx, 2
+            rep movsd
+            mov ecx, eax
+            xor eax, eax
+            and ecx, 3
+            rep movsb
+            lea edi, [esp + 0x38]
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            dec ecx
+            je L005150c6
+            mov edi, dword ptr [gDir_separator]
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            sub edi, ecx
+            lea edx, [esp + 0xb8]
+            mov esi, edi
+            mov edi, edx
+            mov edx, ecx
+            or ecx, 0xffffffff
+            repne scasb
+            mov ecx, edx
+            dec edi
+            shr ecx, 2
+            rep movsd
+            mov ecx, edx
+            lea edx, [esp + 0xb8]
+            and ecx, 3
+            rep movsb
+            lea edi, [esp + 0x38]
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            sub edi, ecx
+            mov esi, edi
+            mov edi, edx
+            mov edx, ecx
+            or ecx, 0xffffffff
+            repne scasb
+            mov ecx, edx
+            dec edi
+            shr ecx, 2
+            rep movsd
+            mov ecx, edx
+            and ecx, 3
+            rep movsb
+    L005150c6:
+            lea eax, [esp + 0xb8]
+            push eax
+            call BrPixelmapLoad
+            mov esi, eax
+            add esp, 4
+            test esi, esi
+            jne L005155ad
+            push eax
+            push eax
+            push ebx
+            push 0x100
+            push 3
+            call BrPixelmapAllocate
+            mov esi, eax
+            add esp, 0x14
+            test esi, esi
+            mov dword ptr [esp + 0x5c], esi
+            jne L00515106
+            push 0x6d
+            call FatalError
+            add esp, 4
+    L00515106:
+            mov ecx, dword ptr [esp + 0x58]
+            mov edi, dword ptr [esi + 8]
+            mov dword ptr [esp + 0x30], 0x100
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [esp + 0x20], edx
+    L0051511c:
+            mov eax, dword ptr [esp + 0x20]
+            mov dword ptr [esp + 0x80], 0
+            mov esi, dword ptr [eax]
+            mov ecx, esi
+            shr ecx, 0x10
+            and ecx, 0xff
+            mov dword ptr [esp + 0x7c], ecx
+            fild qword ptr [esp + 0x7c]
+            fmul dword ptr [ebp + 0x20]
+            call _ftol
+            mov edx, esi
+            mov dword ptr [esp + 0x88], 0
+            shr edx, 8
+            and edx, 0xff
+            mov dword ptr [esp + 0x64], eax
+            mov dword ptr [esp + 0x84], edx
+            fild qword ptr [esp + 0x84]
+            fmul dword ptr [ebp + 0x20]
+            call _ftol
+            and esi, 0xff
+            mov dword ptr [esp + 0x68], eax
+            mov dword ptr [esp + 0x8c], esi
+            xor esi, esi
+            mov dword ptr [esp + 0x90], esi
+            fild qword ptr [esp + 0x8c]
+            fmul dword ptr [ebp + 0x20]
+            call _ftol
+            mov dword ptr [esp + 0x34], edi
+            inc edi
+            cmp ebx, 1
+            mov dword ptr [esp + 0x6c], eax
+            mov dword ptr [esp + 0x60], edi
+            jne L005151bb
+            fld qword ptr [gFloatZero_0058b280+0x8]
+            jmp L005151c6
+    L005151bb:
+            lea eax, [ebx - 1]
+            mov dword ptr [esp + 0x1c], eax
+            fild dword ptr [esp + 0x1c]
+    L005151c6:
+            cmp ebx, esi
+            mov dword ptr [esp + 0x28], esi
+            jle L005155c1
+            fild dword ptr [ebp + 8]
+            fild dword ptr [esp + 0x64]
+            fild dword ptr [ebp + 0xc]
+            fild dword ptr [esp + 0x68]
+            fild dword ptr [ebp + 0x10]
+            fild dword ptr [esp + 0x6c]
+            fxch st(2)
+            fstp qword ptr [esp + 0xb0]
+            fstp qword ptr [esp + 0xa0]
+            fstp qword ptr [esp + 0xa8]
+            jmp L00515204
+    L00515200:
+            mov ebx, dword ptr [esp + 0x24]
+    L00515204:
+            cmp ebx, 1
+            jne L0051520f
+            mov dword ptr [esp + 0x18], ebx
+            jmp L00515217
+    L0051520f:
+            mov ecx, dword ptr [esp + 0x28]
+            mov dword ptr [esp + 0x18], ecx
+    L00515217:
+            fild dword ptr [esp + 0x18]
+            fdiv st(0), st(4)
+            fcom qword ptr [gFloatZero_0058b280+0x10]
+            fnstsw ax
+            test ah, 1
+            je L00515263
+            fcom qword ptr [gFloatZero_0058b280+0x18]
+            fnstsw ax
+            test ah, 1
+            je L00515242
+            fmul dword ptr [ebp + 0x14]
+            fmul qword ptr [gFloatZero_0058b280+0x20]
+            jmp L005152b0
+    L00515242:
+            fld dword ptr [ebp + 0x18]
+            fsub dword ptr [ebp + 0x14]
+            fxch st(1)
+            fsub qword ptr [gFloatZero_0058b280+0x18]
+            fld dword ptr [ebp + 0x14]
+            fxch st(1)
+            fmulp st(2), st(0)
+            fxch st(1)
+            fmul qword ptr [gFloatZero_0058b280+0x28]
+            fsubp st(1), st(0)
+            jmp L005152b0
+    L00515263:
+            fcom qword ptr [gFloatZero_0058b280+0x30]
+            fnstsw ax
+            test ah, 1
+            je L00515291
+            fld dword ptr [ebp + 0x1c]
+            fsub dword ptr [ebp + 0x18]
+            fxch st(1)
+            fsub qword ptr [gFloatZero_0058b280+0x10]
+            fld dword ptr [ebp + 0x18]
+            fxch st(1)
+            fmulp st(2), st(0)
+            fxch st(1)
+            fmul qword ptr [gFloatZero_0058b280+0x28]
+            fsubp st(1), st(0)
+            jmp L005152b0
+    L00515291:
+            fld dword ptr [gFloatZero_0058b280+0x38]
+            fld qword ptr [gFloatZero_0058b280+0x8]
+            fsubrp st(2), st(0)
+            fsub dword ptr [ebp + 0x1c]
+            fmulp st(1), st(0)
+            fmul qword ptr [gFloatZero_0058b280+0x20]
+            fsubr qword ptr [gFloatZero_0058b280+0x8]
+    L005152b0:
+            fld qword ptr [gFloatZero_0058b280+0x8]
+            fsub st(0), st(1)
+            fld st(1)
+            fld st(4)
+            fxch st(1)
+            fmul st(0), st(6)
+            fxch st(1)
+            fmul st(0), st(2)
+            faddp st(1), st(0)
+            call _ftol
+            fld st(1)
+            fld qword ptr [esp + 0xb0]
+            fxch st(1)
+            fmul st(0), st(4)
+            fxch st(1)
+            fmul st(0), st(2)
+            mov ebx, eax
+            faddp st(1), st(0)
+            call _ftol
+            fld qword ptr [esp + 0xa8]
+            fxch st(2)
+            fmul qword ptr [esp + 0xa0]
+            fxch st(2)
+            fmul st(0), st(1)
+            mov dword ptr [esp + 0x98], eax
+            faddp st(2), st(0)
+            fxch st(1)
+            call _ftol
+            mov edx, dword ptr [esp + 0x58]
+            mov dword ptr [esp + 0x9c], eax
+            fstp st(0)
+            fld qword ptr [gFloatZero_0058b280+0x40]
+            mov edi, dword ptr [edx + 8]
+            mov dword ptr [esp + 0x1c], 0x7f
+            fstp qword ptr [esp + 0x70]
+            mov dword ptr [esp + 0x18], 0
+    L00515333:
+            mov eax, dword ptr [edi]
+            xor ecx, ecx
+            mov cl, ah
+            mov dword ptr [esp + 0x2c], eax
+            xor edx, edx
+            mov esi, ecx
+            mov dl, byte ptr [esp + 0x2e]
+            mov ecx, ebx
+            sub ecx, edx
+            mov edx, dword ptr [esp + 0x98]
+            sub edx, esi
+            mov esi, dword ptr [esp + 0x9c]
+            and eax, 0xff
+            sub esi, eax
+            mov eax, ecx
+            imul eax, ecx
+            mov ecx, edx
+            imul ecx, edx
+            mov edx, esi
+            add eax, ecx
+            imul edx, esi
+            add eax, edx
+            mov dword ptr [esp + 0x2c], eax
+            fild dword ptr [esp + 0x2c]
+            fcom qword ptr [esp + 0x70]
+            fnstsw ax
+            test ah, 1
+            je L00515394
+            mov eax, dword ptr [esp + 0x18]
+            fstp qword ptr [esp + 0x70]
+            mov dword ptr [esp + 0x1c], eax
+            jmp L00515396
+    L00515394:
+            fstp st(0)
+    L00515396:
+            mov eax, dword ptr [esp + 0x18]
+            add edi, 4
+            inc eax
+            cmp eax, 0x100
+            mov dword ptr [esp + 0x18], eax
+            jl L00515333
+            mov eax, dword ptr [esp + 0x34]
+            mov cl, byte ptr [esp + 0x1c]
+            mov byte ptr [eax], cl
+            mov ecx, dword ptr [esp + 0x24]
+            add eax, 0x100
+            mov dword ptr [esp + 0x34], eax
+            mov eax, dword ptr [esp + 0x28]
+            inc eax
+            cmp eax, ecx
+            mov dword ptr [esp + 0x28], eax
+            jl L00515200
+            mov edi, dword ptr [esp + 0x60]
+            mov ebx, ecx
+            fstp st(0)
+            fstp st(0)
+            fstp st(0)
+            fstp st(0)
+    L005153df:
+            mov ecx, dword ptr [esp + 0x20]
+            mov eax, dword ptr [esp + 0x30]
+            add ecx, 4
+            dec eax
+            mov dword ptr [esp + 0x20], ecx
+            mov dword ptr [esp + 0x30], eax
+            jne L0051511c
+            mov al, byte ptr [esp + 0x17]
+            mov cl, byte ptr [esp + 0x16]
+            mov byte ptr [esp + 0x3b], al
+            mov al, byte ptr [esp + 0x15]
+            mov byte ptr [esp + 0x3c], cl
+            mov cl, byte ptr [esp + 0x12]
+            mov dl, byte ptr [esp + 0x14]
+            mov byte ptr [esp + 0x3e], al
+            mov byte ptr [esp + 0x3f], cl
+            mov edi, offset gMaterial_shading_for_callback+0x4
+            or ecx, 0xffffffff
+            xor eax, eax
+            repne scasb
+            mov byte ptr [esp + 0x3a], dl
+            mov dl, byte ptr [esp + 0x13]
+            not ecx
+            mov byte ptr [esp + 0x3d], dl
+            sub edi, ecx
+            lea edx, [esp + 0x38]
+            mov esi, edi
+            mov ebx, ecx
+            mov edi, edx
+            or ecx, 0xffffffff
+            mov byte ptr [esp + 0x38], 0x73
+            mov byte ptr [esp + 0x39], 0x74
+            mov byte ptr [esp + 0x40], 0
+            repne scasb
+            mov ecx, ebx
+            dec edi
+            shr ecx, 2
+            rep movsd
+            mov ecx, ebx
+            lea edx, [esp + 0xb8]
+            and ecx, 3
+            rep movsb
+            mov edi, offset gApplication_path
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            sub edi, ecx
+            mov eax, ecx
+            mov esi, edi
+            mov edi, edx
+            mov edx, dword ptr [gDir_separator]
+            shr ecx, 2
+            rep movsd
+            mov ecx, eax
+            xor eax, eax
+            and ecx, 3
+            rep movsb
+            mov edi, offset gSwap_depth_effect_type+0xdc
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            dec ecx
+            je L005154ff
+            mov edi, edx
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            sub edi, ecx
+            lea ebx, [esp + 0xb8]
+            mov esi, edi
+            mov edi, ebx
+            mov ebx, ecx
+            or ecx, 0xffffffff
+            repne scasb
+            mov ecx, ebx
+            dec edi
+            shr ecx, 2
+            rep movsd
+            mov ecx, ebx
+            lea ebx, [esp + 0xb8]
+            and ecx, 3
+            rep movsb
+            mov edi, offset gSwap_depth_effect_type+0xdc
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            sub edi, ecx
+            mov esi, edi
+            mov edi, ebx
+            mov ebx, ecx
+            or ecx, 0xffffffff
+            repne scasb
+            mov ecx, ebx
+            dec edi
+            shr ecx, 2
+            rep movsd
+            mov ecx, ebx
+            and ecx, 3
+            rep movsb
+    L005154ff:
+            lea edi, [esp + 0xb8]
+            or ecx, 0xffffffff
+            xor eax, eax
+            lea ebx, [esp + 0xb8]
+            repne scasb
+            not ecx
+            sub edi, ecx
+            mov eax, ecx
+            mov esi, edi
+            mov edi, ebx
+            shr ecx, 2
+            rep movsd
+            mov ecx, eax
+            xor eax, eax
+            and ecx, 3
+            rep movsb
+            lea edi, [esp + 0x38]
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            dec ecx
+            je L00515594
+            mov edi, edx
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            sub edi, ecx
+            lea ebx, [esp + 0xb8]
+            mov esi, edi
+            mov edx, ecx
+            mov edi, ebx
+            or ecx, 0xffffffff
+            repne scasb
+            mov ecx, edx
+            dec edi
+            shr ecx, 2
+            rep movsd
+            mov ecx, edx
+            lea edx, [esp + 0xb8]
+            and ecx, 3
+            rep movsb
+            lea edi, [esp + 0x38]
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            sub edi, ecx
+            mov esi, edi
+            mov ebx, ecx
+            mov edi, edx
+            or ecx, 0xffffffff
+            repne scasb
+            mov ecx, ebx
+            dec edi
+            shr ecx, 2
+            rep movsd
+            mov ecx, ebx
+            and ecx, 3
+            rep movsb
+    L00515594:
+            mov eax, dword ptr [esp + 0x5c]
+            lea ecx, [esp + 0xb8]
+            push eax
+            push ecx
+            call BrPixelmapSave
+            mov esi, dword ptr [esp + 0x64]
+            add esp, 8
+    L005155ad:
+            push esi
+            call BrTableAdd
+            add esp, 4
+            mov eax, esi
+            pop edi
+            pop esi
+            pop ebx
+            mov esp, ebp
+            pop ebp
+            ret 0x1c
+    L005155c1:
+            fstp st(0)
+            jmp L005153df
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x005155d0
@@ -1096,64 +3178,68 @@ void C2_HOOK_FASTCALL PossibleService(void) {
 }
 
 // FUNCTION: CARMA2_HW 0x00515610
-void C2_HOOK_FASTCALL DRMatrix34TApplyP(br_vector3* pA, const br_vector3* pB, const br_matrix34* pC) {
+void C2_NAKED C2_HOOK_FASTCALL DRMatrix34TApplyP(br_vector3* pA, const br_vector3* pB, const br_matrix34* pC) {
 #if defined(_MSC_VER) && defined(_M_IX86)
     __asm {
-        mov ecx, pA
-        mov edx, pB
-        mov eax, pC
-        fld dword ptr [edx + 4]
-        fld dword ptr [edx + 8]
-        fld dword ptr [edx]
-        fxch st(2)
-        fsub dword ptr [eax + 0x28]
-        fxch st(1)
-        fsub dword ptr [eax + 0x2c]
-        fxch st(2)
-        fsub dword ptr [eax + 0x24]
-        fld dword ptr [eax + 8]
-        fld dword ptr [eax + 4]
-        fmul st(0), st(3)
-        fxch st(1)
-        fmul st(0), st(4)
-        fld st(2)
-        fmul dword ptr [eax]
-        fxch st(1)
-        faddp st(2), st(0)
-        faddp st(1), st(0)
-        fstp dword ptr [ecx]
-        fld dword ptr [eax + 0xc]
-        fld dword ptr [eax + 0x10]
-        fld dword ptr [eax + 0x14]
-        fxch st(2)
-        fmul st(0), st(3)
-        fxch st(1)
-        fmul st(0), st(4)
-        fxch st(2)
-        fmul st(0), st(5)
-        fxch st(2)
-        faddp st(1), st(0)
-        fxch st(1)
-        faddp st(1), st(0)
-        fstp dword ptr [ecx + 4]
-        fld dword ptr [eax + 0x18]
-        fld dword ptr [eax + 0x1c]
-        fld dword ptr [eax + 0x20]
-        fxch st(2)
-        fmul st(0), st(3)
-        fxch st(1)
-        fmul st(0), st(4)
-        fxch st(2)
-        fmul st(0), st(5)
-        fxch st(2)
-        faddp st(1), st(0)
-        fxch st(1)
-        faddp st(1), st(0)
-        fstp dword ptr [ecx + 8]
-        fstp st(0)
-        fxch st(1)
-        fstp st(0)
-        fstp st(0)
+            fld dword ptr [edx + 4]
+            fld dword ptr [edx + 8]
+            _emit 0xd9
+        _emit 0x02
+            fxch st(2)
+            mov eax, dword ptr [esp + 4]
+            fsub dword ptr [eax + 0x28]
+            fxch st(1)
+            fsub dword ptr [eax + 0x2c]
+            fxch st(2)
+            fsub dword ptr [eax + 0x24]
+            fld dword ptr [eax + 8]
+            fld dword ptr [eax + 4]
+            fmul st(0), st(3)
+            fxch st(1)
+            fmul st(0), st(4)
+            fld st(2)
+            _emit 0xd8
+        _emit 0x08
+            fxch st(1)
+            faddp st(2), st(0)
+            faddp st(1), st(0)
+            _emit 0xd9
+        _emit 0x19
+            fld dword ptr [eax + 0xc]
+            fld dword ptr [eax + 0x10]
+            fld dword ptr [eax + 0x14]
+            fxch st(2)
+            fmul st(0), st(3)
+            fxch st(1)
+            fmul st(0), st(4)
+            fxch st(2)
+            fmul st(0), st(5)
+            fxch st(2)
+            faddp st(1), st(0)
+            fxch st(1)
+            faddp st(1), st(0)
+            fstp dword ptr [ecx + 4]
+            fld dword ptr [eax + 0x18]
+            fld dword ptr [eax + 0x1c]
+            fld dword ptr [eax + 0x20]
+            fxch st(2)
+            fmul st(0), st(3)
+            fxch st(1)
+            fmul st(0), st(4)
+            fxch st(2)
+            fmul st(0), st(5)
+            fxch st(2)
+            faddp st(1), st(0)
+            fxch st(1)
+            faddp st(1), st(0)
+            fstp dword ptr [ecx + 8]
+            fstp st(0)
+            fxch st(1)
+            fstp st(0)
+            fstp st(0)
+            ret 4
+            nop
+            nop
     }
 #elif defined(__GNUC__) && defined(__i386__)
     __asm__ volatile(
@@ -1236,14 +3322,77 @@ void C2_HOOK_FASTCALL DRMatrix34TApplyP(br_vector3* pA, const br_vector3* pB, co
 
 // FUNCTION: CARMA2_HW 0x00515690
 void C2_HOOK_FASTCALL DRPixelmapRectangleCopy(br_pixelmap* dst, br_int_16 dx, br_int_16 dy, br_pixelmap* src, br_int_16 sx, br_int_16 sy, br_uint_16 w, br_uint_16 h) {
-
     BrPixelmapRectangleCopy(dst, dx, dy, src, sx, sy, w, h);
 }
 
 // FUNCTION: CARMA2_HW 0x00515700
-int C2_HOOK_FASTCALL NormalSideOfPlane(br_vector3* pPoint, br_vector3* pNormal, br_scalar pD) {
+int C2_NAKED C2_HOOK_FASTCALL NormalSideOfPlane(br_vector3* pPoint, br_vector3* pNormal, br_scalar pD) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     return (BrVector3Dot(pNormal, pPoint) - pD) * BrVector3Dot(pNormal, pNormal) >= 0.0f;
+#else
+    __asm {
+            sub esp, 8
+            fld dword ptr [edx + 4]
+            fld dword ptr [edx + 8]
+            fld dword ptr [edx + 8]
+            fld dword ptr [edx + 4]
+            fld dword ptr [ecx + 8]
+            fxch st(4)
+            _emit 0xd9
+        _emit 0x54
+        _emit 0x24
+        _emit 0x00
+            fxch st(3)
+            fst dword ptr [esp + 4]
+            _emit 0xd9
+        _emit 0x02
+            fld dword ptr [ecx + 4]
+            fxch st(4)
+            fmulp st(6), st(0)
+            _emit 0xd9
+        _emit 0x02
+            fxch st(3)
+            fmulp st(4), st(0)
+            fxch st(3)
+            faddp st(5), st(0)
+            fxch st(1)
+            _emit 0xd8
+        _emit 0x09
+            fld st(2)
+            fxch st(1)
+            faddp st(5), st(0)
+            fxch st(3)
+            _emit 0xd8
+        _emit 0x4c
+        _emit 0x24
+        _emit 0x00
+            fxch st(4)
+            fsub dword ptr [esp + 0xc]
+            fxch st(1)
+            fmul dword ptr [esp + 4]
+            fxch st(3)
+            fmul st(0), st(2)
+            fxch st(3)
+            faddp st(4), st(0)
+            fxch st(2)
+            faddp st(3), st(0)
+            fxch st(2)
+            fmulp st(1), st(0)
+            fcomp dword ptr [gFloatZero_0058b280]
+            fnstsw ax
+            test ah, 1
+            fstp st(0)
+            jne L00515777
+            mov eax, 1
+            add esp, 8
+            ret 4
+    L00515777:
+            xor eax, eax
+            add esp, 8
+            ret 4
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00515780
@@ -1309,13 +3458,12 @@ void C2_HOOK_FASTCALL DRstrlwr(char* s) {
 
 // FUNCTION: CARMA2_HW 0x00515950
 int C2_HOOK_FASTCALL PDCheckDriveExists(const char* pThe_path) {
-
     return PDCheckDriveExists2(pThe_path, NULL, 0);
 }
 
-// C2PORT-NONMATCHING: best 36.23% | difftest PASS 2000 trials (spec difftest/specs/00515960_EncodePixelmapRunLength.json) | reason stack-layout and register allocation
 // FUNCTION: CARMA2_HW 0x00515960
-void* C2_HOOK_FASTCALL EncodePixelmapRunLength(br_pixelmap* pPixelmap) {
+C2_NAKED void* C2_HOOK_FASTCALL EncodePixelmapRunLength(br_pixelmap* pPixelmap) {
+#ifndef CARPOCALYPSE2_MATCHING
     tU8 row_buffer[800];
     tU8* source_row;
     tU8* scratch;
@@ -1385,6 +3533,164 @@ void* C2_HOOK_FASTCALL EncodePixelmapRunLength(br_pixelmap* pPixelmap) {
     memcpy(result, scratch, output_size);
     BrMemFree(scratch);
     return result;
+#else
+    __asm {
+            sub esp, 0x340
+            push ebx
+            push ebp
+            mov ebp, ecx
+            push esi
+            xor ecx, ecx
+            push edi
+            movsx eax, word ptr [ebp + 0x28]
+            mov cx, word ptr [ebp + 0x36]
+            push 0xfd
+            imul eax, ecx
+            push eax
+            call BrMemAllocate
+            mov dx, word ptr [ebp + 0x36]
+            mov esi, eax
+            xor eax, eax
+            add esp, 8
+            mov edi, 2
+            mov word ptr [esi], dx
+            cmp word ptr [ebp + 0x36], ax
+            mov dword ptr [esp + 0x24], esi
+            mov dword ptr [esp + 0x1c], edi
+            mov dword ptr [esp + 0x28], eax
+            jbe L00515ac2
+            mov bl, byte ptr [esp + 0x13]
+    L005159b1:
+            movsx ecx, word ptr [ebp + 0x28]
+            imul eax, ecx
+            mov edx, dword ptr [ebp + 8]
+            xor ecx, ecx
+            add eax, edx
+            mov dword ptr [esp + 0x14], 2
+            mov dword ptr [esp + 0x2c], eax
+            cmp byte ptr [eax], 0
+            sete cl
+            mov eax, ecx
+            xor ecx, ecx
+            xor edi, edi
+            xor esi, esi
+            mov si, word ptr [ebp + 0x34]
+            mov dword ptr [esp + 0x20], ecx
+            lea edx, [esp + 0x32]
+    L005159e5:
+            mov dword ptr [esp + 0x18], edx
+    L005159e9:
+            cmp ecx, 0x7e
+            jg L00515a28
+            cmp edi, esi
+            je L00515a28
+            mov edx, dword ptr [esp + 0x2c]
+            mov bl, byte ptr [edi + edx]
+            xor edx, edx
+            test bl, bl
+            sete dl
+            cmp edx, eax
+            mov byte ptr [esp + 0x13], bl
+            jne L00515a28
+            test eax, eax
+            jne L00515a24
+            mov edx, dword ptr [esp + 0x18]
+            mov byte ptr [edx], bl
+            mov ebx, dword ptr [esp + 0x14]
+            inc ebx
+            inc edx
+            mov dword ptr [esp + 0x14], ebx
+            mov bl, byte ptr [esp + 0x13]
+            mov dword ptr [esp + 0x18], edx
+    L00515a24:
+            inc ecx
+            inc edi
+            jmp L005159e9
+    L00515a28:
+            test eax, eax
+            je L00515a35
+            mov eax, dword ptr [esp + 0x18]
+            mov byte ptr [eax - 1], cl
+            jmp L00515a49
+    L00515a35:
+            mov dl, cl
+            lea eax, [esp + 0x30]
+            not dl
+            inc dl
+            sub eax, ecx
+            mov ecx, dword ptr [esp + 0x14]
+            mov byte ptr [eax + ecx - 1], dl
+    L00515a49:
+            mov edx, dword ptr [esp + 0x20]
+            xor eax, eax
+            test bl, bl
+            sete al
+            xor ecx, ecx
+            inc edx
+            cmp edi, esi
+            mov dword ptr [esp + 0x20], edx
+            je L00515a72
+            mov edx, dword ptr [esp + 0x14]
+            inc edx
+            mov dword ptr [esp + 0x14], edx
+            mov edx, dword ptr [esp + 0x18]
+            inc edx
+            jmp L005159e5
+    L00515a72:
+            mov dl, byte ptr [esp + 0x20]
+            mov eax, dword ptr [esp + 0x1c]
+            mov ecx, dword ptr [esp + 0x14]
+            mov byte ptr [esp + 0x30], dl
+            mov edx, dword ptr [esp + 0x24]
+            lea esi, [esp + 0x30]
+            lea edi, [edx + eax]
+            mov edx, ecx
+            shr ecx, 2
+            rep movsd
+            mov ecx, edx
+            and ecx, 3
+            rep movsb
+            mov edi, edx
+            xor ecx, ecx
+            mov cx, word ptr [ebp + 0x36]
+            add eax, edi
+            mov dword ptr [esp + 0x1c], eax
+            mov eax, dword ptr [esp + 0x28]
+            inc eax
+            cmp eax, ecx
+            mov dword ptr [esp + 0x28], eax
+            jl L005159b1
+            mov edi, dword ptr [esp + 0x1c]
+            mov esi, dword ptr [esp + 0x24]
+    L00515ac2:
+            push 0xfd
+            push edi
+            call BrMemAllocate
+            mov ecx, edi
+            mov ebx, eax
+            mov edx, ecx
+            mov edi, ebx
+            shr ecx, 2
+            rep movsd
+            mov eax, dword ptr [esp + 0x2c]
+            mov ecx, edx
+            add esp, 8
+            and ecx, 3
+            rep movsb
+            push eax
+            call BrMemFree
+            add esp, 4
+            mov eax, ebx
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x340
+            ret
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00515b00
@@ -1409,7 +3715,8 @@ br_actor* C2_HOOK_FASTCALL CloneActor(br_actor* pActor) {
 }
 
 // FUNCTION: CARMA2_HW 0x00515b80
-void C2_HOOK_FASTCALL CalcActorGlobalPos(br_vector3* pResult, br_actor* pActor) {
+void C2_NAKED C2_HOOK_FASTCALL CalcActorGlobalPos(br_vector3* pResult, br_actor* pActor) {
+#ifndef CARPOCALYPSE2_MATCHING
     br_vector3 tv;
 
     BrVector3Set(pResult, 0.0f, 0.0f, 0.0f);
@@ -1421,11 +3728,85 @@ void C2_HOOK_FASTCALL CalcActorGlobalPos(br_vector3* pResult, br_actor* pActor) 
             BrVector3Accumulate(pResult, &tv);
         }
     }
+#else
+    __asm {
+            sub esp, 0xc
+            push esi
+            push edi
+            mov edi, edx
+            mov esi, ecx
+            test edi, edi
+            mov dword ptr [esi], 0
+            mov dword ptr [esi + 4], 0
+            mov dword ptr [esi + 8], 0
+            je L00515c0b
+    L00515ba1:
+            cmp edi, dword ptr [gNon_track_actor]
+            je L00515c0b
+            mov ecx, dword ptr [edi + 0x2c]
+            lea eax, [edi + 0x2c]
+            cmp ecx, 0x3f800000
+            jne L00515bcf
+            fld dword ptr [edi + 0x50]
+            fadd dword ptr [esi]
+            fstp dword ptr [esi]
+            fld dword ptr [edi + 0x54]
+            fadd dword ptr [esi + 4]
+            fstp dword ptr [esi + 4]
+            fld dword ptr [edi + 0x58]
+            fadd dword ptr [esi + 8]
+            jmp L00515c01
+    L00515bcf:
+            push eax
+            lea eax, [esp + 0xc]
+            push esi
+            push eax
+            call BrMatrix34ApplyP
+            fld dword ptr [esi]
+            fld dword ptr [esp + 0x18]
+            fld dword ptr [esp + 0x1c]
+            fxch st(2)
+            fadd dword ptr [esp + 0x14]
+            fxch st(1)
+            fadd dword ptr [esi + 4]
+            fxch st(2)
+            fadd dword ptr [esi + 8]
+            fxch st(1)
+            fstp dword ptr [esi]
+            fxch st(1)
+            fstp dword ptr [esi + 4]
+            add esp, 0xc
+    L00515c01:
+            fstp dword ptr [esi + 8]
+            mov edi, dword ptr [edi + 0xc]
+            test edi, edi
+            jne L00515ba1
+    L00515c0b:
+            pop edi
+            pop esi
+            add esp, 0xc
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00515c20
 float C2_HOOK_STDCALL frac(float pN) {
-
     return pN - (float)(int)pN;
 }
 
@@ -1453,7 +3834,6 @@ intptr_t C2_HOOK_CDECL FindMaterialCB(br_actor* pActor, void* data) {
 
 // FUNCTION: CARMA2_HW 0x00515c40
 br_material* C2_HOOK_FASTCALL FindMaterial(const char* pName, br_actor* pActor, int pRecursive) {
-
     if (pRecursive) {
         return (br_material*)DRActorEnumRecurse(pActor, FindMaterialCB, (void*)pName);
     } else {
@@ -1536,7 +3916,8 @@ void C2_HOOK_FASTCALL BlendifyMaterial(br_material* pMaterial, int pPercent) {
 }
 
 // FUNCTION: CARMA2_HW 0x00515fa0
-void C2_HOOK_FASTCALL DRModelUpdateAndKevificateMaterials(br_model* pModel, br_uint_16 pFlags) {
+void C2_NAKED C2_HOOK_FASTCALL DRModelUpdateAndKevificateMaterials(br_model* pModel, br_uint_16 pFlags) {
+#ifndef CARPOCALYPSE2_MATCHING
     int i;
     v11group* v11g;
 
@@ -1551,10 +3932,69 @@ void C2_HOOK_FASTCALL DRModelUpdateAndKevificateMaterials(br_model* pModel, br_u
             *v11g->face_colours.materials = pModel->faces[*v11g->face_user].material;
         }
     }
+#else
+    __asm {
+            push ecx
+            push esi
+            mov esi, ecx
+            mov word ptr [esp + 4], dx
+            cmp word ptr [esi + 0x10], 0
+            je L00516003
+            cmp word ptr [esi + 0x12], 0
+            je L00516003
+            mov eax, dword ptr [esp + 4]
+            push eax
+            push esi
+            call BrModelUpdate
+            mov eax, dword ptr [esi + 0x4c]
+            xor edx, edx
+            add esp, 8
+            cmp word ptr [eax + 8], dx
+            jbe L00516003
+            push edi
+            push ebx
+            xor edi, edi
+    L00515fd4:
+            mov ecx, dword ptr [eax + 0x18]
+            xor eax, eax
+            add ecx, edi
+            inc edx
+            add edi, 0x24
+            mov ebx, dword ptr [ecx + 0xc]
+            mov ecx, dword ptr [ecx + 8]
+            mov ax, word ptr [ebx]
+            mov ebx, dword ptr [esi + 0xc]
+            lea eax, [eax + eax*4]
+            mov eax, dword ptr [ebx + eax*8 + 8]
+            mov dword ptr [ecx], eax
+            mov eax, dword ptr [esi + 0x4c]
+            xor ecx, ecx
+            mov cx, word ptr [eax + 8]
+            cmp edx, ecx
+            jl L00515fd4
+            pop ebx
+            pop edi
+    L00516003:
+            pop esi
+            pop ecx
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00516010
-int C2_HOOK_FASTCALL DRModelUpdateDeluxTurbo(br_actor* pActor, br_model* pModel, br_uint_16 pFlags) {
+int C2_NAKED C2_HOOK_FASTCALL DRModelUpdateDeluxTurbo(br_actor* pActor, br_model* pModel, br_uint_16 pFlags) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     if (pModel->nfaces == 0 || pModel->nvertices == 0) {
 
@@ -1566,19 +4006,117 @@ int C2_HOOK_FASTCALL DRModelUpdateDeluxTurbo(br_actor* pActor, br_model* pModel,
         DRModelUpdateAndKevificateMaterials(pModel,pFlags);
         return 1;
     }
+#else
+    __asm {
+            push ebx
+            push esi
+            mov esi, edx
+            xor ebx, ebx
+            push edi
+            cmp word ptr [esi + 0x12], bx
+            je L00516076
+            cmp word ptr [esi + 0x10], bx
+            je L00516076
+            mov eax, dword ptr [esp + 0x10]
+            push eax
+            push esi
+            call BrModelUpdate
+            mov eax, dword ptr [esi + 0x4c]
+            add esp, 8
+            xor edx, edx
+            cmp word ptr [eax + 8], bx
+            jbe L0051606b
+            xor edi, edi
+    L0051603e:
+            mov ecx, dword ptr [eax + 0x18]
+            xor eax, eax
+            add ecx, edi
+            inc edx
+            add edi, 0x24
+            mov ebx, dword ptr [ecx + 0xc]
+            mov ecx, dword ptr [ecx + 8]
+            mov ax, word ptr [ebx]
+            mov ebx, dword ptr [esi + 0xc]
+            lea eax, [eax + eax*4]
+            mov eax, dword ptr [ebx + eax*8 + 8]
+            mov dword ptr [ecx], eax
+            mov eax, dword ptr [esi + 0x4c]
+            xor ecx, ecx
+            mov cx, word ptr [eax + 8]
+            cmp edx, ecx
+            jl L0051603e
+    L0051606b:
+            mov eax, 1
+            pop edi
+            pop esi
+            pop ebx
+            ret 4
+    L00516076:
+            pop edi
+            mov byte ptr [ecx + 0x12], bl
+            mov dword ptr [ecx + 0x18], ebx
+            pop esi
+            xor eax, eax
+            pop ebx
+            ret 4
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // DistanceFromFace
 
 // FUNCTION: CARMA2_HW 0x00516090
-br_scalar C2_HOOK_FASTCALL DistanceFromFace(const br_vector3* pP, const tFace_ref* pFace) {
+br_scalar C2_NAKED C2_HOOK_FASTCALL DistanceFromFace(const br_vector3* pP, const tFace_ref* pFace) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     return pFace->normal.v[2] * pP->v[2] + pFace->normal.v[1] * pP->v[1] + pFace->normal.v[0] * pP->v[0] - pFace->d;
+#else
+    __asm {
+            fld dword ptr [edx + 0x3c]
+            fld dword ptr [edx + 0x38]
+            fld dword ptr [ecx + 8]
+            fld dword ptr [ecx + 4]
+            fld dword ptr [edx + 0x34]
+            fxch st(4)
+            fmulp st(2), st(0)
+            fxch st(2)
+            fmulp st(2), st(0)
+            fxch st(2)
+            fmul dword ptr [ecx]
+            fxch st(1)
+            faddp st(2), st(0)
+            faddp st(1), st(0)
+            fsub dword ptr [edx + 0x44]
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x005160c0
 void C2_HOOK_FASTCALL DRBoundsCopy(br_bounds3* pDest, const br_bounds3* pSrc) {
-
     pDest->min.v[0] = pSrc->min.v[0];
     pDest->min.v[1] = pSrc->min.v[1];
     pDest->min.v[2] = pSrc->min.v[2];
@@ -1589,7 +4127,6 @@ void C2_HOOK_FASTCALL DRBoundsCopy(br_bounds3* pDest, const br_bounds3* pSrc) {
 
 // FUNCTION: CARMA2_HW 0x005160f0
 int C2_HOOK_FASTCALL TestForNan(const float* f) {
-
     if (f != NULL) {
         return ((~*(tU32*)f) & 0x7f800000) == 0;
     } else {
@@ -1599,7 +4136,6 @@ int C2_HOOK_FASTCALL TestForNan(const float* f) {
 
 // FUNCTION: CARMA2_HW 0x00516160
 int C2_HOOK_FASTCALL DRVector3TestForNan(const br_vector3* pV) {
-
     if (pV != NULL) {
         return TestForNan(&pV->v[0]) || TestForNan(&pV->v[1]) || TestForNan(&pV->v[2]);
     } else {
@@ -1608,7 +4144,8 @@ int C2_HOOK_FASTCALL DRVector3TestForNan(const br_vector3* pV) {
 }
 
 // FUNCTION: CARMA2_HW 0x00516240
-void C2_HOOK_FASTCALL DRScaleModel(br_model* pModel, float pScale) {
+void C2_NAKED C2_HOOK_FASTCALL DRScaleModel(br_model* pModel, float pScale) {
+#ifndef CARPOCALYPSE2_MATCHING
     int i;
     br_vertex *vertex;
 
@@ -1620,6 +4157,53 @@ void C2_HOOK_FASTCALL DRScaleModel(br_model* pModel, float pScale) {
         }
         BrModelUpdate(pModel, BR_MODU_ALL);
     }
+#else
+    __asm {
+            push esi
+            mov si, word ptr [ecx + 0x10]
+            test si, si
+            je L00516296
+            mov eax, dword ptr [ecx + 8]
+            xor edx, edx
+            test si, si
+            jbe L00516288
+    L00516254:
+            fld dword ptr [eax]
+            fld dword ptr [eax + 4]
+            fld dword ptr [eax + 8]
+            fxch st(2)
+            fmul dword ptr [esp + 8]
+            fxch st(1)
+            fmul dword ptr [esp + 8]
+            fxch st(2)
+            fmul dword ptr [esp + 8]
+            fxch st(1)
+            fstp dword ptr [eax]
+            fxch st(1)
+            fstp dword ptr [eax + 4]
+            fstp dword ptr [eax + 8]
+            xor esi, esi
+            inc edx
+            mov si, word ptr [ecx + 0x10]
+            add eax, 0x28
+            cmp edx, esi
+            jl L00516254
+    L00516288:
+            push 0x7fff
+            push ecx
+            call BrModelUpdate
+            add esp, 8
+    L00516296:
+            pop esi
+            ret 4
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00516350
@@ -1632,7 +4216,8 @@ int C2_HOOK_FASTCALL DRVector3NonZero(const br_vector3* pV) {
 }
 
 // FUNCTION: CARMA2_HW 0x00516390
-void C2_HOOK_FASTCALL DRVector3Diminish(br_vector3* pV1, const br_vector3* pV2) {
+void C2_NAKED C2_HOOK_FASTCALL DRVector3Diminish(br_vector3* pV1, const br_vector3* pV2) {
+#ifndef CARPOCALYPSE2_MATCHING
     br_vector3 v1 = *pV1;
 
     BrVector3Sub(pV1, pV1, pV2);
@@ -1645,6 +4230,60 @@ void C2_HOOK_FASTCALL DRVector3Diminish(br_vector3* pV1, const br_vector3* pV2) 
     if (v1.v[2] * pV1->v[2] <= gFloatZero_0058b280) {
         pV1->v[2] = 0.0f;
     }
+#else
+    __asm {
+            sub esp, 0xc
+            fld dword ptr [ecx]
+            fsub dword ptr [edx]
+            mov eax, ecx
+            push esi
+            mov esi, dword ptr [eax]
+            mov dword ptr [esp + 4], esi
+            mov esi, dword ptr [eax + 4]
+            mov dword ptr [esp + 8], esi
+            mov eax, dword ptr [eax + 8]
+            fstp dword ptr [ecx]
+            fld dword ptr [ecx + 4]
+            fsub dword ptr [edx + 4]
+            mov dword ptr [esp + 0xc], eax
+            fstp dword ptr [ecx + 4]
+            fld dword ptr [ecx + 8]
+            fsub dword ptr [edx + 8]
+            xor edx, edx
+            fstp dword ptr [ecx + 8]
+            fld dword ptr [esp + 4]
+            fmul dword ptr [ecx]
+            fcomp dword ptr [gFloatZero_0058b280]
+            fnstsw ax
+            test ah, 0x41
+            je L005163d9
+            mov dword ptr [ecx], edx
+    L005163d9:
+            fld dword ptr [esp + 8]
+            fmul dword ptr [ecx + 4]
+            fcomp dword ptr [gFloatZero_0058b280]
+            fnstsw ax
+            test ah, 0x41
+            je L005163f0
+            mov dword ptr [ecx + 4], edx
+    L005163f0:
+            fld dword ptr [esp + 0xc]
+            fmul dword ptr [ecx + 8]
+            fcomp dword ptr [gFloatZero_0058b280]
+            fnstsw ax
+            test ah, 0x41
+            je L00516407
+            mov dword ptr [ecx + 8], edx
+    L00516407:
+            pop esi
+            add esp, 0xc
+            ret
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00516410
@@ -1667,14 +4306,43 @@ br_scalar C2_HOOK_FASTCALL DRU16ToScalar(tU16 pValue, float pMin, float pMax) {
 }
 
 // FUNCTION: CARMA2_HW 0x005162a0
-float C2_HOOK_FASTCALL DistanceFromFaceND(const br_vector3* pP, const br_vector3* pN, br_scalar pF) {
+float C2_NAKED C2_HOOK_FASTCALL DistanceFromFaceND(const br_vector3* pP, const br_vector3* pN, br_scalar pF) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     return BrVector3Dot(pP, pN) - pF;
+#else
+    __asm {
+            fld dword ptr [edx + 4]
+            fld dword ptr [edx + 8]
+            fld dword ptr [ecx + 4]
+            fld dword ptr [ecx + 8]
+            fld dword ptr [edx]
+            fxch st(4)
+            fmulp st(2), st(0)
+            fxch st(2)
+            fmulp st(2), st(0)
+            fxch st(2)
+            fmul dword ptr [ecx]
+            fxch st(1)
+            faddp st(2), st(0)
+            faddp st(1), st(0)
+            fsub dword ptr [esp + 4]
+            ret 4
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x005162f0
 void C2_HOOK_FASTCALL DRVector4Set(br_vector4* pDst, float pX, float pY, float pZ, float pU) {
-
     pDst->v[0] = pX;
     pDst->v[1] = pY;
     pDst->v[2] = pZ;
@@ -1683,7 +4351,6 @@ void C2_HOOK_FASTCALL DRVector4Set(br_vector4* pDst, float pX, float pY, float p
 
 // FUNCTION: CARMA2_HW 0x00516310
 void C2_HOOK_FASTCALL DRPlaneEquation(br_vector4* pDst, const br_vector3* pN, const br_vector3* pP) {
-
     pDst->v[0] = pN->v[0];
     pDst->v[1] = pN->v[1];
     pDst->v[2] = pN->v[2];
@@ -1727,7 +4394,8 @@ void C2_HOOK_FASTCALL CompressMatrix34(tCompressed_matrix3* pCompressed_matrix3,
 }
 
 // FUNCTION: CARMA2_HW 0x00516910
-void C2_HOOK_FASTCALL ExpandMatrix34(br_matrix34* pMatrix, const tCompressed_matrix3* pCompressed, int pInactive) {
+void C2_NAKED C2_HOOK_FASTCALL ExpandMatrix34(br_matrix34* pMatrix, const tCompressed_matrix3* pCompressed, int pInactive) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     ExpandVector3((br_vector3*)pMatrix->m[0], &pCompressed->m0, -1.1f, 1.1f);
     BrVector3Normalise((br_vector3*)pMatrix->m[0], (br_vector3*)pMatrix->m[0]);
@@ -1742,11 +4410,288 @@ void C2_HOOK_FASTCALL ExpandMatrix34(br_matrix34* pMatrix, const tCompressed_mat
             pMatrix->m[3][1] + 1000.0f,
             pMatrix->m[3][2] + 1000.0f);
     }
+#else
+    __asm {
+            sub esp, 8
+            xor eax, eax
+            push ebx
+            mov ax, word ptr [edx]
+            push esi
+            mov dword ptr [esp + 0xc], eax
+            xor eax, eax
+            fild dword ptr [esp + 0xc]
+            xor esi, esi
+            push edi
+            mov edi, 0x3f800000
+            fmul dword ptr [gFloatZero_0058b280+0x74]
+            fsub dword ptr [gFloatZero_0058b280+0x60]
+            _emit 0xd9
+        _emit 0x19
+            mov ax, word ptr [edx + 2]
+            _emit 0xd9
+        _emit 0x01
+            mov dword ptr [esp + 0x10], eax
+            fild dword ptr [esp + 0x10]
+            fmul dword ptr [gFloatZero_0058b280+0x74]
+            fld st(1)
+            fxch st(1)
+            fsub dword ptr [gFloatZero_0058b280+0x60]
+            fxch st(1)
+            fmul st(0), st(2)
+            fxch st(1)
+            fstp dword ptr [ecx + 4]
+            mov si, word ptr [edx + 4]
+            fld dword ptr [ecx + 4]
+            mov dword ptr [esp + 0x10], esi
+            xor esi, esi
+            fild dword ptr [esp + 0x10]
+            fmul dword ptr [gFloatZero_0058b280+0x74]
+            fxch st(1)
+            fst dword ptr [esp + 0xc]
+            fxch st(1)
+            fsub dword ptr [gFloatZero_0058b280+0x60]
+            fxch st(1)
+            fmul dword ptr [esp + 0xc]
+            fxch st(1)
+            fst dword ptr [esp + 0x10]
+            fst dword ptr [esp + 0xc]
+            fmul dword ptr [esp + 0xc]
+            fld dword ptr [esp + 0x10]
+            fxch st(1)
+            faddp st(2), st(0)
+            fstp dword ptr [ecx + 8]
+            fxch st(1)
+            faddp st(1), st(0)
+            fsqrt
+            fstp st(1)
+            fcom dword ptr [gFloatZero_0058b280+0x78]
+            fnstsw ax
+            test ah, 0x41
+            jne L005169e2
+            fdivr qword ptr [gFloatZero_0058b280+0x8]
+            fld dword ptr [ecx + 8]
+            fld dword ptr [ecx + 4]
+            fld st(2)
+            _emit 0xd8
+        _emit 0x09
+            fxch st(1)
+            fmul st(0), st(3)
+            fxch st(2)
+            fmul st(0), st(3)
+            fxch st(1)
+            _emit 0xd9
+        _emit 0x19
+            fxch st(1)
+            fstp dword ptr [ecx + 4]
+            fstp dword ptr [ecx + 8]
+            fstp st(0)
+            jmp L005169ec
+    L005169e2:
+            fstp st(0)
+            mov dword ptr [ecx], edi
+            mov dword ptr [ecx + 4], esi
+            mov dword ptr [ecx + 8], esi
+    L005169ec:
+            xor eax, eax
+            xor ebx, ebx
+            mov ax, word ptr [edx + 6]
+            mov dword ptr [esp + 0x10], eax
+            xor eax, eax
+            fild dword ptr [esp + 0x10]
+            fmul dword ptr [gFloatZero_0058b280+0x74]
+            fsub dword ptr [gFloatZero_0058b280+0x60]
+            fstp dword ptr [ecx + 0xc]
+            mov ax, word ptr [edx + 8]
+            mov dword ptr [esp + 0x10], eax
+            fild dword ptr [esp + 0x10]
+            fmul dword ptr [gFloatZero_0058b280+0x74]
+            fsub dword ptr [gFloatZero_0058b280+0x60]
+            fstp dword ptr [ecx + 0x10]
+            mov bx, word ptr [edx + 0xa]
+            mov dword ptr [esp + 0x10], ebx
+            fild dword ptr [esp + 0x10]
+            fmul dword ptr [gFloatZero_0058b280+0x74]
+            fsub dword ptr [gFloatZero_0058b280+0x60]
+            fstp dword ptr [ecx + 0x14]
+            fld dword ptr [ecx + 0xc]
+            fld dword ptr [ecx + 0x10]
+            fld dword ptr [ecx + 0x14]
+            fxch st(2)
+            fst dword ptr [esp + 0x10]
+            fld st(1)
+            fxch st(1)
+            fmul dword ptr [esp + 0x10]
+            fxch st(1)
+            fmul st(0), st(2)
+            fxch st(3)
+            fst dword ptr [esp + 0x10]
+            fmul dword ptr [esp + 0x10]
+            fxch st(3)
+            faddp st(1), st(0)
+            fxch st(2)
+            faddp st(2), st(0)
+            fxch st(1)
+            fsqrt
+            fstp st(1)
+            fcom dword ptr [gFloatZero_0058b280+0x78]
+            fnstsw ax
+            test ah, 0x41
+            jne L00516ab3
+            fdivr qword ptr [gFloatZero_0058b280+0x8]
+            fld dword ptr [ecx + 0xc]
+            fld dword ptr [ecx + 0x10]
+            fld dword ptr [ecx + 0x14]
+            fxch st(2)
+            fxch st(1)
+            fxch st(1)
+            fmul st(0), st(3)
+            fxch st(1)
+            fmul st(0), st(3)
+            fxch st(2)
+            fmul st(0), st(3)
+            fxch st(1)
+            fstp dword ptr [ecx + 0xc]
+            fxch st(1)
+            fstp dword ptr [ecx + 0x10]
+            fstp dword ptr [ecx + 0x14]
+            fstp st(0)
+            jmp L00516abe
+    L00516ab3:
+            fstp st(0)
+            mov dword ptr [ecx + 0xc], edi
+            mov dword ptr [ecx + 0x10], esi
+            mov dword ptr [ecx + 0x14], esi
+    L00516abe:
+            fld dword ptr [ecx + 0x14]
+            fld dword ptr [ecx + 4]
+            fld dword ptr [ecx + 0x10]
+            fld dword ptr [ecx + 8]
+            fld dword ptr [ecx + 0xc]
+            fxch st(3)
+            fmulp st(4), st(0)
+            fld dword ptr [ecx + 0x14]
+            fxch st(1)
+            fmulp st(2), st(0)
+            fxch st(1)
+            fsubp st(3), st(0)
+            fxch st(1)
+            fmul dword ptr [ecx + 8]
+            fxch st(2)
+            fstp dword ptr [ecx + 0x18]
+            fld dword ptr [ecx + 0x18]
+            fld st(0)
+            fmulp st(1), st(0)
+            fld dword ptr [ecx + 0x10]
+            fld dword ptr [ecx + 0xc]
+            fxch st(3)
+            _emit 0xd8
+        _emit 0x09
+            fsubp st(4), st(0)
+            _emit 0xd8
+        _emit 0x09
+            fxch st(3)
+            fstp dword ptr [ecx + 0x1c]
+            fld dword ptr [ecx + 0x1c]
+            fst dword ptr [esp + 0x10]
+            fmul dword ptr [esp + 0x10]
+            fld dword ptr [ecx + 4]
+            fmulp st(3), st(0)
+            faddp st(1), st(0)
+            fxch st(1)
+            fsubp st(2), st(0)
+            fxch st(1)
+            fst dword ptr [esp + 0xc]
+            fst dword ptr [esp + 0x10]
+            fmul dword ptr [esp + 0x10]
+            fld dword ptr [esp + 0xc]
+            fxch st(1)
+            faddp st(2), st(0)
+            fstp dword ptr [ecx + 0x20]
+            fsqrt
+            fcom dword ptr [gFloatZero_0058b280+0x78]
+            fnstsw ax
+            test ah, 0x41
+            jne L00516b69
+            fdivr qword ptr [gFloatZero_0058b280+0x8]
+            fld dword ptr [ecx + 0x1c]
+            fld dword ptr [ecx + 0x18]
+            fld st(2)
+            fmul dword ptr [esp + 0xc]
+            fxch st(1)
+            fmul st(0), st(3)
+            fxch st(2)
+            fmul st(0), st(3)
+            fxch st(2)
+            fstp dword ptr [ecx + 0x18]
+            fxch st(1)
+            fstp dword ptr [ecx + 0x1c]
+            fstp dword ptr [ecx + 0x20]
+            fstp st(0)
+            jmp L00516b74
+    L00516b69:
+            fstp st(0)
+            mov dword ptr [ecx + 0x18], edi
+            mov dword ptr [ecx + 0x1c], esi
+            mov dword ptr [ecx + 0x20], esi
+    L00516b74:
+            lea eax, [edx + 0xc]
+            xor edx, edx
+            mov ebx, dword ptr [esp + 0x18]
+            xor edi, edi
+            mov dx, word ptr [eax]
+            mov dword ptr [esp + 0x10], edx
+            xor edx, edx
+            fild dword ptr [esp + 0x10]
+            cmp ebx, esi
+            fmul dword ptr [gFloatZero_0058b280+0x7c]
+            fsub dword ptr [gFloatZero_0058b280+0x6c]
+            fstp dword ptr [ecx + 0x24]
+            mov dx, word ptr [eax + 2]
+            mov dword ptr [esp + 0x18], edx
+            fild dword ptr [esp + 0x18]
+            fmul dword ptr [gFloatZero_0058b280+0x7c]
+            fsub dword ptr [gFloatZero_0058b280+0x6c]
+            fstp dword ptr [ecx + 0x28]
+            mov di, word ptr [eax + 4]
+            mov dword ptr [esp + 0x18], edi
+            fild dword ptr [esp + 0x18]
+            fmul dword ptr [gFloatZero_0058b280+0x7c]
+            fsub dword ptr [gFloatZero_0058b280+0x6c]
+            fstp dword ptr [ecx + 0x2c]
+            je L00516bfd
+            fld dword ptr [ecx + 0x24]
+            fsub dword ptr [gFloatZero_0058b280+0x80]
+            fld dword ptr [ecx + 0x2c]
+            fld dword ptr [ecx + 0x28]
+            fsub dword ptr [gFloatZero_0058b280+0x80]
+            fxch st(1)
+            fsub dword ptr [gFloatZero_0058b280+0x80]
+            fxch st(2)
+            fstp dword ptr [ecx + 0x24]
+            fstp dword ptr [ecx + 0x28]
+            fstp dword ptr [ecx + 0x2c]
+    L00516bfd:
+            pop edi
+            pop esi
+            pop ebx
+            add esp, 8
+            ret 4
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00516c10
 void C2_HOOK_FASTCALL PossibleLock(int pValue) {
-
     if (gBack_screen->pixels == NULL) {
         BrPixelmapDirectLock(gBack_screen, 1);
     }
@@ -1790,7 +4735,8 @@ tU16 C2_HOOK_FASTCALL PaletteEntry16Bit(br_pixelmap* pPal, int pEntry) {
 // Colour24BitTo16Bit
 
 // FUNCTION: CARMA2_HW 0x005170c0
-__inline br_pixelmap* C2_HOOK_FASTCALL PaletteOf16Bits(br_pixelmap* pSrc) {
+C2_NAKED __inline br_pixelmap* C2_HOOK_FASTCALL PaletteOf16Bits(br_pixelmap* pSrc) {
+#ifndef CARPOCALYPSE2_MATCHING
     tU16* dst_entry;
     int i;
 
@@ -1809,10 +4755,97 @@ __inline br_pixelmap* C2_HOOK_FASTCALL PaletteOf16Bits(br_pixelmap* pSrc) {
         gPalette_source = pSrc;
     }
     return g16bit_palette;
+#else
+    __asm {
+            mov eax, dword ptr [g16bit_palette]
+            push ebx
+            push esi
+            push edi
+            test eax, eax
+            mov ebx, ecx
+            jne L005170fe
+            push eax
+            push eax
+            push 0x100
+            push 1
+            push 5
+            call BrPixelmapAllocate
+            add esp, 0x14
+            mov dword ptr [g16bit_palette], eax
+            test eax, eax
+            jne L005170fe
+            push offset gVector3_00661678+0xc8
+            push 0x5e
+            call FatalError
+            mov eax, dword ptr [g16bit_palette]
+            add esp, 8
+    L005170fe:
+            mov ecx, dword ptr [gPalette_changed]
+            test ecx, ecx
+            je L00517114
+            cmp dword ptr [gPalette_source], ebx
+            je L005171a4
+    L00517114:
+            mov eax, dword ptr [eax + 8]
+            xor esi, esi
+            mov edi, eax
+    L0051711b:
+            mov edx, dword ptr [gBack_screen]
+            mov eax, dword ptr [ebx + 8]
+            xor ecx, ecx
+            mov cl, byte ptr [edx + 0x2c]
+            sub ecx, 4
+            je L0051715c
+            dec ecx
+            je L00517142
+            push offset gVector3_00661678+0xa8
+            call BrFailure
+            add esp, 4
+            xor eax, eax
+            jmp L0051717e
+    L00517142:
+            mov ecx, dword ptr [eax + esi]
+            mov eax, ecx
+            mov edx, ecx
+            shr eax, 8
+            shr edx, 5
+            and eax, 0xf800
+            and edx, 0x7e0
+            jmp L00517174
+    L0051715c:
+            mov ecx, dword ptr [eax + esi]
+            mov eax, ecx
+            mov edx, ecx
+            shr eax, 9
+            shr edx, 6
+            and eax, 0x7c00
+            and edx, 0x3e0
+    L00517174:
+            shr ecx, 3
+            or eax, edx
+            and ecx, 0x1f
+            or eax, ecx
+    L0051717e:
+            mov word ptr [edi], ax
+            add esi, 4
+            add edi, 2
+            cmp esi, 0x400
+            jl L0051711b
+            mov eax, dword ptr [g16bit_palette]
+            mov dword ptr [gPalette_changed], 1
+            mov dword ptr [gPalette_source], ebx
+    L005171a4:
+            pop edi
+            pop esi
+            pop ebx
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x005171b0
-void C2_HOOK_FASTCALL Copy8BitTo16Bit(br_pixelmap* pDst, br_pixelmap* pSrc, br_pixelmap* pPalette) {
+void C2_NAKED C2_HOOK_FASTCALL Copy8BitTo16Bit(br_pixelmap* pDst, br_pixelmap* pSrc, br_pixelmap* pPalette) {
+#ifndef CARPOCALYPSE2_MATCHING
     int x;
     int y;
     tU8* src_start;
@@ -1829,16 +4862,1322 @@ void C2_HOOK_FASTCALL Copy8BitTo16Bit(br_pixelmap* pDst, br_pixelmap* pSrc, br_p
             dst_start++;
         }
     }
+#else
+    __asm {
+            push ecx
+            mov eax, dword ptr [g16bit_palette]
+            push ebx
+            push ebp
+            push esi
+            push edi
+            mov dword ptr [esp + 0x10], edx
+            test eax, eax
+            mov edi, ecx
+            jne L005171f4
+            push eax
+            push eax
+            push 0x100
+            push 1
+            push 5
+            call BrPixelmapAllocate
+            add esp, 0x14
+            mov dword ptr [g16bit_palette], eax
+            test eax, eax
+            jne L005171f4
+            push offset gVector3_00661678+0xc8
+            push 0x5e
+            call FatalError
+            mov eax, dword ptr [g16bit_palette]
+            add esp, 8
+    L005171f4:
+            mov ecx, dword ptr [gPalette_changed]
+            mov ebp, dword ptr [esp + 0x18]
+            test ecx, ecx
+            je L0051720e
+            cmp dword ptr [gPalette_source], ebp
+            je L0051729e
+    L0051720e:
+            mov eax, dword ptr [eax + 8]
+            xor esi, esi
+            mov ebx, eax
+    L00517215:
+            mov edx, dword ptr [gBack_screen]
+            mov eax, dword ptr [ebp + 8]
+            xor ecx, ecx
+            mov cl, byte ptr [edx + 0x2c]
+            sub ecx, 4
+            je L00517256
+            dec ecx
+            je L0051723c
+            push offset gVector3_00661678+0xa8
+            call BrFailure
+            add esp, 4
+            xor eax, eax
+            jmp L00517278
+    L0051723c:
+            mov ecx, dword ptr [eax + esi]
+            mov eax, ecx
+            mov edx, ecx
+            shr eax, 8
+            shr edx, 5
+            and eax, 0xf800
+            and edx, 0x7e0
+            jmp L0051726e
+    L00517256:
+            mov ecx, dword ptr [eax + esi]
+            mov eax, ecx
+            mov edx, ecx
+            shr eax, 9
+            shr edx, 6
+            and eax, 0x7c00
+            and edx, 0x3e0
+    L0051726e:
+            shr ecx, 3
+            or eax, edx
+            and ecx, 0x1f
+            or eax, ecx
+    L00517278:
+            mov word ptr [ebx], ax
+            add esi, 4
+            add ebx, 2
+            cmp esi, 0x400
+            jl L00517215
+            mov eax, dword ptr [g16bit_palette]
+            mov dword ptr [gPalette_changed], 1
+            mov dword ptr [gPalette_source], ebp
+    L0051729e:
+            mov ebx, dword ptr [eax + 8]
+            xor ebp, ebp
+            cmp word ptr [edi + 0x36], bp
+            jbe L005172f9
+    L005172a9:
+            mov ecx, dword ptr [esp + 0x10]
+            mov eax, ebp
+            movsx edx, word ptr [ecx + 0x28]
+            imul eax, edx
+            mov edx, dword ptr [ecx + 8]
+            movsx ecx, word ptr [edi + 0x28]
+            add eax, edx
+            mov edx, ebp
+            imul edx, ecx
+            mov ecx, dword ptr [edi + 8]
+            add edx, ecx
+            xor ecx, ecx
+            cmp word ptr [edi + 0x34], cx
+            jbe L005172ee
+            mov esi, edx
+    L005172d3:
+            xor edx, edx
+            add esi, 2
+            mov dl, byte ptr [eax + ecx]
+            inc ecx
+            mov dx, word ptr [ebx + edx*2]
+            mov word ptr [esi - 2], dx
+            xor edx, edx
+            mov dx, word ptr [edi + 0x34]
+            cmp ecx, edx
+            jl L005172d3
+    L005172ee:
+            xor eax, eax
+            inc ebp
+            mov ax, word ptr [edi + 0x36]
+            cmp ebp, eax
+            jl L005172a9
+    L005172f9:
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            pop ecx
+            ret 4
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            sub esp, 0xc
+            mov eax, dword ptr [g16bit_palette]
+            push ebx
+            push ebp
+            mov ebp, ecx
+            push esi
+            push edi
+            test eax, eax
+            mov word ptr [esp + 0x10], dx
+            mov dword ptr [esp + 0x14], ebp
+            jne L0051735b
+            push eax
+            push eax
+            push 0x100
+            push 1
+            push 5
+            call BrPixelmapAllocate
+            add esp, 0x14
+            mov dword ptr [g16bit_palette], eax
+            test eax, eax
+            jne L0051735b
+            push offset gVector3_00661678+0xc8
+            push 0x5e
+            call FatalError
+            mov eax, dword ptr [g16bit_palette]
+            add esp, 8
+    L0051735b:
+            mov ecx, dword ptr [gPalette_changed]
+            mov ebx, dword ptr [esp + 0x38]
+            test ecx, ecx
+            je L00517375
+            cmp dword ptr [gPalette_source], ebx
+            je L0051740d
+    L00517375:
+            mov eax, dword ptr [eax + 8]
+            xor esi, esi
+            mov edi, eax
+    L0051737c:
+            mov edx, dword ptr [gBack_screen]
+            mov eax, dword ptr [ebx + 8]
+            xor ecx, ecx
+            mov cl, byte ptr [edx + 0x2c]
+            sub ecx, 4
+            je L005173c5
+            dec ecx
+            je L005173a3
+            push offset gVector3_00661678+0xa8
+            call BrFailure
+            add esp, 4
+            xor eax, eax
+            jmp L005173e7
+    L005173a3:
+            mov ecx, dword ptr [eax + esi]
+            mov eax, ecx
+            mov edx, ecx
+            shr eax, 8
+            shr edx, 5
+            and eax, 0xf800
+            and edx, 0x7e0
+            shr ecx, 3
+            or eax, edx
+            and ecx, 0x1f
+            jmp L005173e5
+    L005173c5:
+            mov ecx, dword ptr [eax + esi]
+            mov eax, ecx
+            mov edx, ecx
+            shr eax, 9
+            shr edx, 3
+            and eax, 0x7c00
+            and edx, 0x1f
+            shr ecx, 6
+            or eax, edx
+            and ecx, 0x3e0
+    L005173e5:
+            or eax, ecx
+    L005173e7:
+            mov word ptr [edi], ax
+            add esi, 4
+            add edi, 2
+            cmp esi, 0x400
+            jl L0051737c
+            mov eax, dword ptr [g16bit_palette]
+            mov dword ptr [gPalette_changed], 1
+            mov dword ptr [gPalette_source], ebx
+    L0051740d:
+            mov eax, dword ptr [eax + 8]
+            mov ebx, dword ptr [esp + 0x24]
+            mov edi, dword ptr [esp + 0x2c]
+            mov dword ptr [esp + 0x18], eax
+            mov cx, word ptr [ebx + 0x38]
+            mov eax, dword ptr [esp + 0x28]
+            mov dx, word ptr [ebx + 0x3a]
+            add eax, ecx
+            mov ecx, dword ptr [esp + 0x10]
+            add edi, edx
+            mov dx, word ptr [ebp + 0x38]
+            mov esi, dword ptr [esp + 0x30]
+            add ecx, edx
+            mov dx, word ptr [ebp + 0x3a]
+            mov ebp, dword ptr [esp + 0x20]
+            mov dword ptr [esp + 0x2c], edi
+            add ebp, edx
+            mov dword ptr [esp + 0x10], ecx
+            test ax, ax
+            mov dword ptr [esp + 0x20], ebp
+            jge L0051745f
+            sub ecx, eax
+            add esi, eax
+            mov dword ptr [esp + 0x10], ecx
+            xor eax, eax
+    L0051745f:
+            cmp word ptr [esp + 0x10], 0
+            jge L00517473
+            add esi, ecx
+            sub eax, ecx
+            mov dword ptr [esp + 0x10], 0
+    L00517473:
+            mov edx, dword ptr [esp + 0x34]
+            test di, di
+            jge L0051748a
+            add edx, edi
+            sub ebp, edi
+            xor edi, edi
+            mov dword ptr [esp + 0x20], ebp
+            mov dword ptr [esp + 0x2c], edi
+    L0051748a:
+            test bp, bp
+            jge L0051749f
+            add edx, ebp
+            sub edi, ebp
+            mov dword ptr [esp + 0x2c], edi
+            mov dword ptr [esp + 0x20], 0
+    L0051749f:
+            mov cx, word ptr [ebx + 0x34]
+            movsx edi, ax
+            movsx ebp, si
+            mov dword ptr [esp + 0x34], edi
+            add ebp, edi
+            mov edi, ecx
+            and edi, 0xffff
+            cmp ebp, edi
+            jle L005174bf
+            sub ecx, eax
+            mov esi, ecx
+    L005174bf:
+            movsx ecx, word ptr [esp + 0x10]
+            mov ebp, dword ptr [esp + 0x14]
+            movsx edi, si
+            mov ax, word ptr [ebp + 0x34]
+            add edi, ecx
+            mov ecx, eax
+            and ecx, 0xffff
+            cmp edi, ecx
+            jle L005174e3
+            sub eax, dword ptr [esp + 0x10]
+            mov esi, eax
+    L005174e3:
+            movsx ecx, word ptr [esp + 0x2c]
+            mov ax, word ptr [ebx + 0x36]
+            mov dword ptr [esp + 0x30], ecx
+            movsx edi, dx
+            add edi, ecx
+            mov ecx, eax
+            and ecx, 0xffff
+            cmp edi, ecx
+            jle L00517507
+            sub eax, dword ptr [esp + 0x2c]
+            mov edx, eax
+    L00517507:
+            movsx ecx, word ptr [esp + 0x20]
+            mov ax, word ptr [ebp + 0x36]
+            mov dword ptr [esp + 0x2c], ecx
+            movsx edi, dx
+            add edi, ecx
+            mov ecx, eax
+            and ecx, 0xffff
+            cmp edi, ecx
+            jle L0051752b
+            sub eax, dword ptr [esp + 0x20]
+            mov edx, eax
+    L0051752b:
+            test si, si
+            jle L005175db
+            test dx, dx
+            jle L005175db
+            movsx eax, dx
+            test eax, eax
+            jle L005175db
+            movsx ecx, word ptr [esp + 0x10]
+            movsx edi, si
+            lea edx, [ecx + ecx]
+            mov ecx, dword ptr [esp + 0x2c]
+            mov dword ptr [esp + 0x2c], ecx
+            mov ecx, dword ptr [esp + 0x30]
+            mov dword ptr [esp + 0x38], edx
+            mov dword ptr [esp + 0x20], ecx
+            mov dword ptr [esp + 0x30], eax
+    L0051756b:
+            movsx edx, word ptr [ebx + 0x28]
+            imul ecx, edx
+            mov eax, dword ptr [esp + 0x34]
+            mov esi, dword ptr [ebx + 8]
+            movsx edx, word ptr [ebp + 0x28]
+            add ecx, eax
+            mov eax, dword ptr [esp + 0x2c]
+            imul eax, edx
+            mov edx, dword ptr [esp + 0x38]
+            add ecx, esi
+            mov esi, dword ptr [ebp + 8]
+            add eax, edx
+            add eax, esi
+            xor esi, esi
+            test edi, edi
+            jle L005175be
+    L00517599:
+            mov dl, byte ptr [ecx + esi]
+            test dl, dl
+            je L005175b6
+            mov ebp, dword ptr [esp + 0x18]
+            and edx, 0xff
+            mov dx, word ptr [ebp + edx*2]
+            mov ebp, dword ptr [esp + 0x14]
+            mov word ptr [eax], dx
+    L005175b6:
+            inc esi
+            add eax, 2
+            cmp esi, edi
+            jl L00517599
+    L005175be:
+            mov ecx, dword ptr [esp + 0x20]
+            mov edx, dword ptr [esp + 0x2c]
+            mov eax, dword ptr [esp + 0x30]
+            inc ecx
+            inc edx
+            dec eax
+            mov dword ptr [esp + 0x20], ecx
+            mov dword ptr [esp + 0x2c], edx
+            mov dword ptr [esp + 0x30], eax
+            jne L0051756b
+    L005175db:
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0xc
+            ret 0x1c
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            sub esp, 0xc
+            mov eax, dword ptr [g16bit_palette]
+            push ebx
+            push ebp
+            xor ebp, ebp
+            push esi
+            cmp eax, ebp
+            push edi
+            mov word ptr [esp + 0x10], dx
+            mov dword ptr [esp + 0x14], ecx
+            jne L0051763b
+            push ebp
+            push ebp
+            push 0x100
+            push 1
+            push 5
+            call BrPixelmapAllocate
+            add esp, 0x14
+            cmp eax, ebp
+            mov dword ptr [g16bit_palette], eax
+            jne L0051763b
+            push offset gVector3_00661678+0xc8
+            push 0x5e
+            call FatalError
+            mov eax, dword ptr [g16bit_palette]
+            add esp, 8
+    L0051763b:
+            mov ecx, dword ptr [gPalette_changed]
+            mov ebx, dword ptr [esp + 0x38]
+            cmp ecx, ebp
+            je L00517655
+            cmp dword ptr [gPalette_source], ebx
+            je L005176ed
+    L00517655:
+            mov eax, dword ptr [eax + 8]
+            xor esi, esi
+            mov edi, eax
+    L0051765c:
+            mov edx, dword ptr [gBack_screen]
+            mov eax, dword ptr [ebx + 8]
+            xor ecx, ecx
+            mov cl, byte ptr [edx + 0x2c]
+            sub ecx, 4
+            je L005176a5
+            dec ecx
+            je L00517683
+            push offset gVector3_00661678+0xa8
+            call BrFailure
+            add esp, 4
+            xor eax, eax
+            jmp L005176c7
+    L00517683:
+            mov ecx, dword ptr [eax + esi]
+            mov eax, ecx
+            mov edx, ecx
+            shr eax, 8
+            shr edx, 5
+            and eax, 0xf800
+            and edx, 0x7e0
+            shr ecx, 3
+            or eax, edx
+            and ecx, 0x1f
+            jmp L005176c5
+    L005176a5:
+            mov ecx, dword ptr [eax + esi]
+            mov eax, ecx
+            mov edx, ecx
+            shr eax, 9
+            shr edx, 3
+            and eax, 0x7c00
+            and edx, 0x1f
+            shr ecx, 6
+            or eax, edx
+            and ecx, 0x3e0
+    L005176c5:
+            or eax, ecx
+    L005176c7:
+            mov word ptr [edi], ax
+            add esi, 4
+            add edi, 2
+            cmp esi, 0x400
+            jl L0051765c
+            mov eax, dword ptr [g16bit_palette]
+            mov dword ptr [gPalette_changed], 1
+            mov dword ptr [gPalette_source], ebx
+    L005176ed:
+            mov eax, dword ptr [eax + 8]
+            mov edx, dword ptr [esp + 0x30]
+            mov dword ptr [esp + 0x18], eax
+            mov eax, dword ptr [esp + 0x28]
+            cmp ax, bp
+            jge L0051770f
+            mov ecx, dword ptr [esp + 0x10]
+            add edx, eax
+            sub ecx, eax
+            xor eax, eax
+            mov dword ptr [esp + 0x10], ecx
+    L0051770f:
+            cmp word ptr [esp + 0x10], bp
+            jge L00517722
+            mov ecx, dword ptr [esp + 0x10]
+            mov dword ptr [esp + 0x10], ebp
+            add edx, ecx
+            sub eax, ecx
+    L00517722:
+            mov ecx, dword ptr [esp + 0x2c]
+            cmp cx, bp
+            jge L00517743
+            mov esi, dword ptr [esp + 0x34]
+            mov edi, dword ptr [esp + 0x20]
+            add esi, ecx
+            sub edi, ecx
+            xor ecx, ecx
+            mov dword ptr [esp + 0x20], edi
+            mov dword ptr [esp + 0x2c], ecx
+            jmp L0051774b
+    L00517743:
+            mov edi, dword ptr [esp + 0x20]
+            mov esi, dword ptr [esp + 0x34]
+    L0051774b:
+            cmp di, bp
+            jge L0051775c
+            add esi, edi
+            sub ecx, edi
+            mov dword ptr [esp + 0x2c], ecx
+            mov dword ptr [esp + 0x20], ebp
+    L0051775c:
+            mov ebx, dword ptr [esp + 0x24]
+            movsx edi, ax
+            mov cx, word ptr [ebx + 0x34]
+            mov dword ptr [esp + 0x34], edi
+            movsx ebp, dx
+            add ebp, edi
+            mov edi, ecx
+            and edi, 0xffff
+            cmp ebp, edi
+            jle L00517780
+            sub ecx, eax
+            mov edx, ecx
+    L00517780:
+            movsx ecx, word ptr [esp + 0x10]
+            mov ebp, dword ptr [esp + 0x14]
+            movsx edi, dx
+            mov ax, word ptr [ebp + 0x34]
+            add edi, ecx
+            mov ecx, eax
+            and ecx, 0xffff
+            cmp edi, ecx
+            jle L005177a4
+            sub eax, dword ptr [esp + 0x10]
+            mov edx, eax
+    L005177a4:
+            movsx ecx, word ptr [esp + 0x2c]
+            mov ax, word ptr [ebx + 0x36]
+            mov dword ptr [esp + 0x30], ecx
+            movsx edi, si
+            add edi, ecx
+            mov ecx, eax
+            and ecx, 0xffff
+            cmp edi, ecx
+            jle L005177c8
+            sub eax, dword ptr [esp + 0x2c]
+            mov esi, eax
+    L005177c8:
+            movsx ecx, word ptr [esp + 0x20]
+            mov ax, word ptr [ebp + 0x36]
+            mov dword ptr [esp + 0x2c], ecx
+            movsx edi, si
+            add edi, ecx
+            mov ecx, eax
+            and ecx, 0xffff
+            cmp edi, ecx
+            jle L005177ec
+            sub eax, dword ptr [esp + 0x20]
+            mov esi, eax
+    L005177ec:
+            test dx, dx
+            jle L0051789b
+            test si, si
+            jle L0051789b
+            movsx eax, si
+            test eax, eax
+            jle L0051789b
+            movsx ecx, word ptr [esp + 0x10]
+            add ecx, ecx
+            mov dword ptr [esp + 0x38], ecx
+            mov ecx, dword ptr [esp + 0x30]
+            movsx edi, dx
+            mov edx, dword ptr [esp + 0x2c]
+            mov dword ptr [esp + 0x2c], ecx
+            mov dword ptr [esp + 0x20], edx
+            mov dword ptr [esp + 0x30], eax
+    L0051782b:
+            movsx eax, word ptr [ebx + 0x28]
+            imul ecx, eax
+            mov eax, dword ptr [esp + 0x34]
+            mov esi, dword ptr [ebx + 8]
+            movsx edx, word ptr [ebp + 0x28]
+            add ecx, eax
+            mov eax, dword ptr [esp + 0x20]
+            imul eax, edx
+            mov edx, dword ptr [esp + 0x38]
+            add ecx, esi
+            mov esi, dword ptr [ebp + 8]
+            add eax, edx
+            add eax, esi
+            xor esi, esi
+            test edi, edi
+            jle L0051787e
+    L00517859:
+            mov dl, byte ptr [ecx + esi]
+            test dl, dl
+            je L00517876
+            mov ebp, dword ptr [esp + 0x18]
+            and edx, 0xff
+            mov dx, word ptr [ebp + edx*2]
+            mov ebp, dword ptr [esp + 0x14]
+            mov word ptr [eax], dx
+    L00517876:
+            inc esi
+            add eax, 2
+            cmp esi, edi
+            jl L00517859
+    L0051787e:
+            mov ecx, dword ptr [esp + 0x2c]
+            mov edx, dword ptr [esp + 0x20]
+            mov eax, dword ptr [esp + 0x30]
+            inc ecx
+            inc edx
+            dec eax
+            mov dword ptr [esp + 0x2c], ecx
+            mov dword ptr [esp + 0x20], edx
+            mov dword ptr [esp + 0x30], eax
+            jne L0051782b
+    L0051789b:
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0xc
+            ret 0x1c
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            sub esp, 0xc
+            mov eax, dword ptr [g16bit_palette]
+            push ebx
+            push ebp
+            mov ebp, ecx
+            push esi
+            push edi
+            test eax, eax
+            mov word ptr [esp + 0x10], dx
+            mov dword ptr [esp + 0x18], ebp
+            jne L005178fb
+            push eax
+            push eax
+            push 0x100
+            push 1
+            push 5
+            call BrPixelmapAllocate
+            add esp, 0x14
+            mov dword ptr [g16bit_palette], eax
+            test eax, eax
+            jne L005178fb
+            push offset gVector3_00661678+0xc8
+            push 0x5e
+            call FatalError
+            mov eax, dword ptr [g16bit_palette]
+            add esp, 8
+    L005178fb:
+            mov ecx, dword ptr [gPalette_changed]
+            mov ebx, dword ptr [esp + 0x38]
+            test ecx, ecx
+            je L00517915
+            cmp dword ptr [gPalette_source], ebx
+            je L005179a5
+    L00517915:
+            mov eax, dword ptr [eax + 8]
+            xor esi, esi
+            mov edi, eax
+    L0051791c:
+            mov edx, dword ptr [gBack_screen]
+            mov eax, dword ptr [ebx + 8]
+            xor ecx, ecx
+            mov cl, byte ptr [edx + 0x2c]
+            sub ecx, 4
+            je L0051795d
+            dec ecx
+            je L00517943
+            push offset gVector3_00661678+0xa8
+            call BrFailure
+            add esp, 4
+            xor eax, eax
+            jmp L0051797f
+    L00517943:
+            mov ecx, dword ptr [eax + esi]
+            mov eax, ecx
+            mov edx, ecx
+            shr eax, 8
+            shr edx, 5
+            and eax, 0xf800
+            and edx, 0x7e0
+            jmp L00517975
+    L0051795d:
+            mov ecx, dword ptr [eax + esi]
+            mov eax, ecx
+            mov edx, ecx
+            shr eax, 9
+            shr edx, 6
+            and eax, 0x7c00
+            and edx, 0x3e0
+    L00517975:
+            shr ecx, 3
+            or eax, edx
+            and ecx, 0x1f
+            or eax, ecx
+    L0051797f:
+            mov word ptr [edi], ax
+            add esi, 4
+            add edi, 2
+            cmp esi, 0x400
+            jl L0051791c
+            mov eax, dword ptr [g16bit_palette]
+            mov dword ptr [gPalette_changed], 1
+            mov dword ptr [gPalette_source], ebx
+    L005179a5:
+            mov edi, dword ptr [esp + 0x24]
+            mov eax, dword ptr [eax + 8]
+            mov ecx, dword ptr [esp + 0x28]
+            mov esi, dword ptr [esp + 0x10]
+            mov dx, word ptr [edi + 0x38]
+            mov dword ptr [esp + 0x14], eax
+            mov ax, word ptr [edi + 0x3a]
+            add ecx, edx
+            mov edx, dword ptr [esp + 0x2c]
+            add edx, eax
+            mov ax, word ptr [ebp + 0x38]
+            add esi, eax
+            mov ax, word ptr [ebp + 0x3a]
+            mov dword ptr [esp + 0x10], esi
+            mov esi, dword ptr [esp + 0x20]
+            add esi, eax
+            movsx eax, word ptr [esp + 0x34]
+            test eax, eax
+            jle L00517a82
+            movsx ecx, cx
+            mov dword ptr [esp + 0x24], ecx
+            mov dword ptr [esp + 0x38], eax
+            movsx ecx, word ptr [esp + 0x10]
+            shl ecx, 1
+            mov dword ptr [esp + 0x28], ecx
+            movsx ebx, word ptr [esp + 0x30]
+            movsx ecx, si
+            mov dword ptr [esp + 0x34], ecx
+            movsx ecx, dx
+            mov dword ptr [esp + 0x30], ecx
+    L00517a12:
+            movsx edx, word ptr [edi + 0x28]
+            imul ecx, edx
+            mov eax, dword ptr [esp + 0x24]
+            mov esi, dword ptr [edi + 8]
+            movsx edx, word ptr [ebp + 0x28]
+            add ecx, eax
+            mov eax, dword ptr [esp + 0x34]
+            imul eax, edx
+            mov edx, dword ptr [esp + 0x28]
+            add ecx, esi
+            mov esi, dword ptr [ebp + 8]
+            add eax, edx
+            add eax, esi
+            xor esi, esi
+            test ebx, ebx
+            jle L00517a65
+    L00517a40:
+            mov dl, byte ptr [ecx + esi]
+            test dl, dl
+            je L00517a5d
+            mov ebp, dword ptr [esp + 0x14]
+            and edx, 0xff
+            mov dx, word ptr [ebp + edx*2]
+            mov ebp, dword ptr [esp + 0x18]
+            mov word ptr [eax], dx
+    L00517a5d:
+            inc esi
+            add eax, 2
+            cmp esi, ebx
+            jl L00517a40
+    L00517a65:
+            mov ecx, dword ptr [esp + 0x30]
+            mov edx, dword ptr [esp + 0x34]
+            mov eax, dword ptr [esp + 0x38]
+            inc ecx
+            inc edx
+            dec eax
+            mov dword ptr [esp + 0x30], ecx
+            mov dword ptr [esp + 0x34], edx
+            mov dword ptr [esp + 0x38], eax
+            jne L00517a12
+    L00517a82:
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0xc
+            ret 0x1c
+            nop
+            nop
+            nop
+            nop
+            sub esp, 0x10
+            mov eax, dword ptr [g16bit_palette]
+            push ebx
+            push ebp
+            mov ebp, ecx
+            push esi
+            push edi
+            test eax, eax
+            mov word ptr [esp + 0x10], dx
+            mov dword ptr [esp + 0x14], ebp
+            jne L00517adb
+            push eax
+            push eax
+            push 0x100
+            push 1
+            push 5
+            call BrPixelmapAllocate
+            add esp, 0x14
+            mov dword ptr [g16bit_palette], eax
+            test eax, eax
+            jne L00517adb
+            push offset gVector3_00661678+0xc8
+            push 0x5e
+            call FatalError
+            mov eax, dword ptr [g16bit_palette]
+            add esp, 8
+    L00517adb:
+            mov ecx, dword ptr [gPalette_changed]
+            mov ebx, dword ptr [esp + 0x40]
+            test ecx, ecx
+            je L00517af5
+            cmp dword ptr [gPalette_source], ebx
+            je L00517b8d
+    L00517af5:
+            mov eax, dword ptr [eax + 8]
+            xor esi, esi
+            mov edi, eax
+    L00517afc:
+            mov edx, dword ptr [gBack_screen]
+            mov eax, dword ptr [ebx + 8]
+            xor ecx, ecx
+            mov cl, byte ptr [edx + 0x2c]
+            sub ecx, 4
+            je L00517b45
+            dec ecx
+            je L00517b23
+            push offset gVector3_00661678+0xa8
+            call BrFailure
+            add esp, 4
+            xor eax, eax
+            jmp L00517b67
+    L00517b23:
+            mov ecx, dword ptr [eax + esi]
+            mov eax, ecx
+            mov edx, ecx
+            shr eax, 8
+            shr edx, 5
+            and eax, 0xf800
+            and edx, 0x7e0
+            shr ecx, 3
+            or eax, edx
+            and ecx, 0x1f
+            jmp L00517b65
+    L00517b45:
+            mov ecx, dword ptr [eax + esi]
+            mov eax, ecx
+            mov edx, ecx
+            shr eax, 9
+            shr edx, 3
+            and eax, 0x7c00
+            and edx, 0x1f
+            shr ecx, 6
+            or eax, edx
+            and ecx, 0x3e0
+    L00517b65:
+            or eax, ecx
+    L00517b67:
+            mov word ptr [edi], ax
+            add esi, 4
+            add edi, 2
+            cmp esi, 0x400
+            jl L00517afc
+            mov eax, dword ptr [g16bit_palette]
+            mov dword ptr [gPalette_changed], 1
+            mov dword ptr [gPalette_source], ebx
+    L00517b8d:
+            mov ebx, dword ptr [esp + 0x28]
+            mov edx, dword ptr [esp + 0x2c]
+            mov edi, dword ptr [esp + 0x10]
+            mov eax, dword ptr [eax + 8]
+            mov cx, word ptr [ebx + 0x38]
+            mov si, word ptr [ebx + 0x3a]
+            add edx, ecx
+            mov ecx, dword ptr [esp + 0x30]
+            add ecx, esi
+            mov si, word ptr [ebp + 0x38]
+            add edi, esi
+            mov esi, dword ptr [esp + 0x24]
+            mov dword ptr [esp + 0x10], edi
+            mov di, word ptr [ebp + 0x3a]
+            mov dword ptr [esp + 0x1c], eax
+            xor eax, eax
+            add esi, edi
+            mov edi, dword ptr [esp + 0x38]
+            test cx, cx
+            mov dword ptr [esp + 0x18], eax
+            mov dword ptr [esp + 0x2c], edx
+            jge L00517bdd
+            add edi, ecx
+            sub esi, ecx
+            xor ecx, ecx
+    L00517bdd:
+            test si, si
+            jge L00517be8
+            add edi, esi
+            sub ecx, esi
+            xor esi, esi
+    L00517be8:
+            mov bx, word ptr [ebx + 0x36]
+            mov word ptr [esp + 0x38], bx
+            movsx ebp, cx
+            movsx ebx, di
+            mov dword ptr [esp + 0x30], ebp
+            add ebx, ebp
+            mov ebp, dword ptr [esp + 0x38]
+            and ebp, 0xffff
+            cmp ebx, ebp
+            jle L00517c11
+            mov edi, dword ptr [esp + 0x38]
+            sub edi, ecx
+    L00517c11:
+            mov ebx, dword ptr [esp + 0x14]
+            movsx ecx, si
+            mov bp, word ptr [ebx + 0x36]
+            mov dword ptr [esp + 0x40], ecx
+            mov word ptr [esp + 0x38], bp
+            movsx ebp, di
+            add ebp, ecx
+            mov ecx, dword ptr [esp + 0x38]
+            and ecx, 0xffff
+            cmp ebp, ecx
+            jle L00517c3e
+            mov edi, dword ptr [esp + 0x38]
+            sub edi, esi
+    L00517c3e:
+            test di, di
+            jle L00517d7c
+            mov ecx, dword ptr [esp + 0x34]
+            test dx, dx
+            jge L00517c66
+            mov esi, dword ptr [esp + 0x10]
+            add ecx, edx
+            sub esi, edx
+            xor edx, edx
+            mov dword ptr [esp + 0x34], ecx
+            mov dword ptr [esp + 0x10], esi
+            mov dword ptr [esp + 0x2c], edx
+    L00517c66:
+            mov esi, dword ptr [esp + 0x28]
+            movsx ebp, cx
+            mov si, word ptr [esi + 0x34]
+            mov word ptr [esp + 0x38], si
+            movsx esi, dx
+            add esi, ebp
+            mov ebp, dword ptr [esp + 0x38]
+            and ebp, 0xffff
+            cmp esi, ebp
+            jle L00517c93
+            mov ecx, dword ptr [esp + 0x38]
+            sub ecx, edx
+            mov dword ptr [esp + 0x34], ecx
+    L00517c93:
+            movsx esi, di
+            test esi, esi
+            jle L00517d7c
+            mov edi, dword ptr [esp + 0x40]
+            mov dword ptr [esp + 0x40], edi
+            mov edi, dword ptr [esp + 0x30]
+            mov dword ptr [esp + 0x38], edi
+            mov dword ptr [esp + 0x30], esi
+            jmp L00517cbc
+    L00517cb4:
+            mov edx, dword ptr [esp + 0x2c]
+            mov ecx, dword ptr [esp + 0x34]
+    L00517cbc:
+            mov edi, dword ptr [esp + 0x10]
+            sar eax, 0x10
+            add eax, edi
+            test ax, ax
+            jge L00517cd0
+            add ecx, eax
+            sub edx, eax
+            xor eax, eax
+    L00517cd0:
+            mov di, word ptr [ebx + 0x34]
+            movsx esi, ax
+            movsx ebx, cx
+            mov ebp, edi
+            add ebx, esi
+            and ebp, 0xffff
+            cmp ebx, ebp
+            jle L00517cec
+            sub edi, eax
+            mov ecx, edi
+    L00517cec:
+            test cx, cx
+            jle L00517d49
+            mov edi, dword ptr [esp + 0x28]
+            mov ebx, dword ptr [esp + 0x14]
+            movsx edx, dx
+            movsx eax, word ptr [edi + 0x28]
+            imul eax, dword ptr [esp + 0x38]
+            mov ebp, dword ptr [edi + 8]
+            mov edi, dword ptr [ebx + 8]
+            add eax, ebp
+            add eax, edx
+            movsx edx, word ptr [ebx + 0x28]
+            imul edx, dword ptr [esp + 0x40]
+            add edx, edi
+            lea edi, [edx + esi*2]
+            xor edx, edx
+            movsx esi, cx
+            test esi, esi
+            jle L00517d4d
+            mov ebp, dword ptr [esp + 0x1c]
+    L00517d2a:
+            mov cl, byte ptr [eax + edx]
+            test cl, cl
+            je L00517d3f
+            and ecx, 0xff
+            mov cx, word ptr [ebp + ecx*2]
+            mov word ptr [edi], cx
+    L00517d3f:
+            inc edx
+            add edi, 2
+            cmp edx, esi
+            jl L00517d2a
+            jmp L00517d4d
+    L00517d49:
+            mov ebx, dword ptr [esp + 0x14]
+    L00517d4d:
+            mov eax, dword ptr [esp + 0x18]
+            mov edi, dword ptr [esp + 0x3c]
+            mov esi, dword ptr [esp + 0x38]
+            mov edx, dword ptr [esp + 0x40]
+            mov ecx, dword ptr [esp + 0x30]
+            add eax, edi
+            inc esi
+            inc edx
+            dec ecx
+            mov dword ptr [esp + 0x18], eax
+            mov dword ptr [esp + 0x38], esi
+            mov dword ptr [esp + 0x40], edx
+            mov dword ptr [esp + 0x30], ecx
+            jne L00517cb4
+    L00517d7c:
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x10
+            ret 0x20
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00517d90
-void C2_HOOK_FASTCALL DRPixelmapCopy(br_pixelmap* dst, br_pixelmap* src) {
+void C2_NAKED C2_HOOK_FASTCALL DRPixelmapCopy(br_pixelmap* dst, br_pixelmap* src) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     if (dst->type == src->type) {
         BrPixelmapCopy(dst, src);
     } else if (dst->type != BR_PMT_INDEX_8 && src->type == BR_PMT_INDEX_8) {
         Copy8BitTo16Bit(dst, src, gCurrent_palette);
     }
+#else
+    __asm {
+            push ecx
+            push ebx
+            push ebp
+            push esi
+            push edi
+            mov edi, ecx
+            mov dword ptr [esp + 0x10], edx
+            mov cl, byte ptr [edx + 0x2c]
+            mov al, byte ptr [edi + 0x2c]
+            cmp al, cl
+            je L00517f00
+            cmp al, 3
+            je L00517f0a
+            cmp cl, 3
+            jne L00517f0a
+            mov eax, dword ptr [g16bit_palette]
+            mov ebp, dword ptr [gCurrent_palette]
+            test eax, eax
+            jne L00517df9
+            push eax
+            push eax
+            push 0x100
+            push 1
+            push 5
+            call BrPixelmapAllocate
+            add esp, 0x14
+            mov dword ptr [g16bit_palette], eax
+            test eax, eax
+            jne L00517df9
+            push offset gVector3_00661678+0xc8
+            push 0x5e
+            call FatalError
+            mov eax, dword ptr [g16bit_palette]
+            add esp, 8
+    L00517df9:
+            mov ecx, dword ptr [gPalette_changed]
+            test ecx, ecx
+            je L00517e0f
+            cmp dword ptr [gPalette_source], ebp
+            je L00517e9f
+    L00517e0f:
+            mov eax, dword ptr [eax + 8]
+            xor esi, esi
+            mov ebx, eax
+    L00517e16:
+            mov edx, dword ptr [gBack_screen]
+            mov eax, dword ptr [ebp + 8]
+            xor ecx, ecx
+            mov cl, byte ptr [edx + 0x2c]
+            sub ecx, 4
+            je L00517e57
+            dec ecx
+            je L00517e3d
+            push offset gVector3_00661678+0xa8
+            call BrFailure
+            add esp, 4
+            xor eax, eax
+            jmp L00517e79
+    L00517e3d:
+            mov ecx, dword ptr [eax + esi]
+            mov eax, ecx
+            mov edx, ecx
+            shr eax, 8
+            shr edx, 5
+            and eax, 0xf800
+            and edx, 0x7e0
+            jmp L00517e6f
+    L00517e57:
+            mov ecx, dword ptr [eax + esi]
+            mov eax, ecx
+            mov edx, ecx
+            shr eax, 9
+            shr edx, 6
+            and eax, 0x7c00
+            and edx, 0x3e0
+    L00517e6f:
+            shr ecx, 3
+            or eax, edx
+            and ecx, 0x1f
+            or eax, ecx
+    L00517e79:
+            mov word ptr [ebx], ax
+            add esi, 4
+            add ebx, 2
+            cmp esi, 0x400
+            jl L00517e16
+            mov eax, dword ptr [g16bit_palette]
+            mov dword ptr [gPalette_changed], 1
+            mov dword ptr [gPalette_source], ebp
+    L00517e9f:
+            mov ebx, dword ptr [eax + 8]
+            xor ebp, ebp
+            cmp word ptr [edi + 0x36], bp
+            jbe L00517f0a
+    L00517eaa:
+            mov ecx, dword ptr [esp + 0x10]
+            mov eax, ebp
+            movsx edx, word ptr [ecx + 0x28]
+            imul eax, edx
+            mov edx, dword ptr [ecx + 8]
+            movsx ecx, word ptr [edi + 0x28]
+            add eax, edx
+            mov edx, ebp
+            imul edx, ecx
+            mov ecx, dword ptr [edi + 8]
+            add edx, ecx
+            xor ecx, ecx
+            cmp word ptr [edi + 0x34], cx
+            jbe L00517eef
+            mov esi, edx
+    L00517ed4:
+            xor edx, edx
+            add esi, 2
+            mov dl, byte ptr [eax + ecx]
+            inc ecx
+            mov dx, word ptr [ebx + edx*2]
+            mov word ptr [esi - 2], dx
+            xor edx, edx
+            mov dx, word ptr [edi + 0x34]
+            cmp ecx, edx
+            jl L00517ed4
+    L00517eef:
+            xor eax, eax
+            inc ebp
+            mov ax, word ptr [edi + 0x36]
+            cmp ebp, eax
+            jl L00517eaa
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            pop ecx
+            ret
+    L00517f00:
+            push edx
+            push edi
+            call BrPixelmapCopy
+            add esp, 8
+    L00517f0a:
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            pop ecx
+            ret
+            sub esp, 8
+            push ebx
+            push ebp
+            mov ebp, edx
+            mov ebx, ecx
+            push esi
+            push edi
+            test ebp, ebp
+            mov dword ptr [esp + 0x10], ebx
+            je L00517f8b
+            jmp L00517f29
+    L00517f25:
+            mov ebx, dword ptr [esp + 0x10]
+    L00517f29:
+            mov edi, dword ptr [ebp + 4]
+            movsx eax, byte ptr [edi]
+            push eax
+            call tolower
+            movsx ecx, byte ptr [ebx]
+            add esp, 4
+            mov esi, eax
+            push ecx
+            call tolower
+            mov dword ptr [esp + 0x18], esi
+            mov esi, eax
+            mov edx, dword ptr [esp + 0x18]
+            add esp, 4
+            sub esi, edx
+            jne L00517f80
+    L00517f54:
+            mov al, byte ptr [ebx]
+            inc ebx
+            test al, al
+            je L00517f80
+            mov cl, byte ptr [edi]
+            inc edi
+            test cl, cl
+            je L00517f80
+            movsx edx, byte ptr [ebx]
+            push edx
+            call tolower
+            mov esi, eax
+            add esp, 4
+            movsx eax, byte ptr [edi]
+            push eax
+            call tolower
+            add esp, 4
+            sub esi, eax
+            je L00517f54
+    L00517f80:
+            test esi, esi
+            je L00517f8b
+            mov ebp, dword ptr [ebp]
+            test ebp, ebp
+            jne L00517f25
+    L00517f8b:
+            pop edi
+            mov eax, ebp
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 8
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00517f10
@@ -1883,9 +6222,9 @@ void C2_HOOK_FASTCALL NobbleNonzeroBlacks(br_pixelmap* pPalette) {
     }
 }
 
-// C2PORT-NONMATCHING: best 40.61% | difftest PASS 2000 trials (spec difftest/specs/00518010_FUN_00518010.json) | reason regalloc-loop-stack
 // FUNCTION: CARMA2_HW 0x00518010
-tU8* C2_HOOK_FASTCALL FUN_00518010(br_pixelmap* pPixelmap) {
+C2_NAKED tU8* C2_HOOK_FASTCALL FUN_00518010(br_pixelmap* pPixelmap) {
+#ifndef CARPOCALYPSE2_MATCHING
     int iVar1;
     char cVar2;
     tU16 uVar3;
@@ -2000,6 +6339,278 @@ LAB_005180d2:
     memcpy(extraout_EAX_01, extraout_EAX_00, uVar8);
     BrMemFree(extraout_EAX_00);
     return (tU8*)extraout_EAX_01;
+#else
+    __asm {
+            sub esp, 0x24
+            mov eax, dword ptr [g16bit_palette]
+            push ebx
+            push ebp
+            mov ebp, dword ptr [gRender_palette]
+            push esi
+            push edi
+            mov edi, ecx
+            test eax, eax
+            mov dword ptr [esp + 0x14], edi
+            jne L0051805c
+            push eax
+            push eax
+            push 0x100
+            push 1
+            push 5
+            call BrPixelmapAllocate
+            add esp, 0x14
+            mov dword ptr [g16bit_palette], eax
+            test eax, eax
+            jne L0051805c
+            push offset gVector3_00661678+0xc8
+            push 0x5e
+            call FatalError
+            mov eax, dword ptr [g16bit_palette]
+            add esp, 8
+    L0051805c:
+            mov ecx, dword ptr [gPalette_changed]
+            test ecx, ecx
+            je L00518072
+            cmp dword ptr [gPalette_source], ebp
+            je L00518102
+    L00518072:
+            mov eax, dword ptr [eax + 8]
+            xor esi, esi
+            mov ebx, eax
+    L00518079:
+            mov edx, dword ptr [gBack_screen]
+            mov eax, dword ptr [ebp + 8]
+            xor ecx, ecx
+            mov cl, byte ptr [edx + 0x2c]
+            sub ecx, 4
+            je L005180ba
+            dec ecx
+            je L005180a0
+            push offset gVector3_00661678+0xa8
+            call BrFailure
+            add esp, 4
+            xor eax, eax
+            jmp L005180dc
+    L005180a0:
+            mov ecx, dword ptr [eax + esi]
+            mov eax, ecx
+            mov edx, ecx
+            shr eax, 8
+            shr edx, 5
+            and eax, 0xf800
+            and edx, 0x7e0
+            jmp L005180d2
+    L005180ba:
+            mov ecx, dword ptr [eax + esi]
+            mov eax, ecx
+            mov edx, ecx
+            shr eax, 9
+            shr edx, 6
+            and eax, 0x7c00
+            and edx, 0x3e0
+    L005180d2:
+            shr ecx, 3
+            or eax, edx
+            and ecx, 0x1f
+            or eax, ecx
+    L005180dc:
+            mov word ptr [ebx], ax
+            add esi, 4
+            add ebx, 2
+            cmp esi, 0x400
+            jl L00518079
+            mov eax, dword ptr [g16bit_palette]
+            mov dword ptr [gPalette_changed], 1
+            mov dword ptr [gPalette_source], ebp
+    L00518102:
+            mov eax, dword ptr [eax + 8]
+            xor ecx, ecx
+            mov cx, word ptr [edi + 0x34]
+            mov dword ptr [esp + 0x30], eax
+            add ecx, 0x3d
+            mov eax, 0x84210843
+            imul ecx
+            add edx, ecx
+            push 0xfd
+            sar edx, 5
+            mov ecx, edx
+            shr ecx, 0x1f
+            add edx, ecx
+            lea eax, [edx + edx*4]
+            lea esi, [eax + eax*4]
+            lea esi, [esi + esi*4 + 2]
+            push esi
+            call BrMemAllocate
+            xor edx, edx
+            add esp, 8
+            mov dx, word ptr [edi + 0x36]
+            mov dword ptr [esp + 0x1c], eax
+            imul esi, edx
+            push 0xfd
+            push esi
+            call BrMemAllocate
+            mov ebp, eax
+            mov ax, word ptr [edi + 0x36]
+            add esp, 8
+            mov ebx, 2
+            mov word ptr [ebp], ax
+            cmp word ptr [edi + 0x36], 0
+            mov dword ptr [esp + 0x2c], ebp
+            mov dword ptr [esp + 0x28], ebx
+            mov dword ptr [esp + 0x20], 0
+            jbe L005182a6
+            jmp L00518188
+    L00518184:
+            mov edi, dword ptr [esp + 0x14]
+    L00518188:
+            movsx edx, word ptr [edi + 0x28]
+            mov ecx, dword ptr [esp + 0x20]
+            mov esi, dword ptr [edi + 8]
+            imul ecx, edx
+            mov dl, byte ptr [ecx + esi]
+            add ecx, esi
+            xor eax, eax
+            mov ebp, 2
+            test dl, dl
+            sete al
+            mov esi, eax
+            mov eax, dword ptr [esp + 0x1c]
+            xor edx, edx
+            mov dword ptr [esp + 0x18], edx
+            mov dword ptr [esp + 0x10], edx
+            lea edi, [eax + 2]
+    L005181ba:
+            cmp edx, 0x3e
+            jge L0051820e
+            mov ebx, dword ptr [esp + 0x14]
+            xor eax, eax
+            mov ax, word ptr [ebx + 0x34]
+            mov ebx, dword ptr [esp + 0x10]
+            cmp ebx, eax
+            je L0051820e
+            mov al, byte ptr [ecx]
+            xor ebx, ebx
+            test al, al
+            sete bl
+            cmp ebx, esi
+            mov byte ptr [esp + 0x24], al
+            jne L0051820e
+            test esi, esi
+            jne L00518201
+            mov eax, dword ptr [esp + 0x24]
+            mov ebx, dword ptr [esp + 0x30]
+            and eax, 0xff
+            add ebp, 2
+            add edi, 2
+            mov ax, word ptr [ebx + eax*2]
+            mov word ptr [edi - 2], ax
+    L00518201:
+            mov eax, dword ptr [esp + 0x10]
+            inc ecx
+            inc edx
+            inc eax
+            mov dword ptr [esp + 0x10], eax
+            jmp L005181ba
+    L0051820e:
+            test esi, esi
+            je L00518219
+            shl dl, 1
+            mov byte ptr [edi - 1], dl
+            jmp L0051822b
+    L00518219:
+            mov al, dl
+            mov bl, 0xfe
+            mov esi, dword ptr [esp + 0x1c]
+            imul bl
+            add edx, edx
+            sub esi, edx
+            mov byte ptr [esi + ebp - 1], al
+    L0051822b:
+            mov dl, byte ptr [esp + 0x24]
+            xor eax, eax
+            test dl, dl
+            mov ebx, dword ptr [esp + 0x14]
+            sete al
+            mov esi, eax
+            mov eax, dword ptr [esp + 0x18]
+            xor edx, edx
+            inc eax
+            mov dword ptr [esp + 0x18], eax
+            xor eax, eax
+            mov ax, word ptr [ebx + 0x34]
+            mov ebx, dword ptr [esp + 0x10]
+            cmp ebx, eax
+            je L0051825c
+            inc ebp
+            inc edi
+            jmp L005181ba
+    L0051825c:
+            mov esi, dword ptr [esp + 0x1c]
+            mov cl, byte ptr [esp + 0x18]
+            mov ebx, dword ptr [esp + 0x28]
+            mov edx, dword ptr [esp + 0x2c]
+            mov byte ptr [esi], cl
+            mov ecx, ebp
+            mov eax, ecx
+            lea edi, [edx + ebx]
+            shr ecx, 2
+            rep movsd
+            mov edx, dword ptr [esp + 0x14]
+            mov ecx, eax
+            mov eax, dword ptr [esp + 0x20]
+            and ecx, 3
+            rep movsb
+            xor ecx, ecx
+            add ebx, ebp
+            mov cx, word ptr [edx + 0x36]
+            inc eax
+            cmp eax, ecx
+            mov dword ptr [esp + 0x28], ebx
+            mov dword ptr [esp + 0x20], eax
+            jl L00518184
+            mov ebp, dword ptr [esp + 0x2c]
+    L005182a6:
+            push 0xfd
+            push ebx
+            call BrMemAllocate
+            mov ecx, ebx
+            mov dword ptr [esp + 0x38], eax
+            mov edi, eax
+            mov eax, ecx
+            mov esi, ebp
+            add esp, 8
+            shr ecx, 2
+            rep movsd
+            mov ecx, eax
+            push ebp
+            and ecx, 3
+            rep movsb
+            call BrMemFree
+            mov eax, dword ptr [esp + 0x34]
+            add esp, 4
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x24
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x005182f0
@@ -2103,43 +6714,70 @@ void C2_HOOK_FASTCALL WhitenVertexRGB(br_model** pModels, int pCount) {
 
 #ifdef CARPOCALYPSE2_MATCHING
 // FUNCTION: CARMA2_HW 0x00518700
-void C2_HOOK_FASTCALL BRPM_convert(br_pixelmap* pMap, int pPixel_type) {
-    void* pixel;
-    int row_bytes;
-    int width;
-    int height;
-
-    if (pMap != NULL && pPixel_type == BR_PMT_RGB_555 && pMap->type == BR_PMT_RGB_565 && pMap->pixels != NULL) {
-        pixel = pMap->pixels;
-        row_bytes = pMap->row_bytes;
-        width = pMap->width;
-        height = pMap->height;
-
-        __asm {
-            mov        ecx, dword ptr [height]
-            mov        esi, dword ptr [pixel]
-            mov        edx, dword ptr [row_bytes]
-            mov        edi, dword ptr [width]
-        next_row:
-            push       ecx
-            mov        ecx, edi
-            push       esi
-        next_pixel:
-            mov        eax, dword ptr [esi]
-            mov        ebx, eax
-            and        eax, 0xffc0
-            and        ebx, 0x1f
-            shr        eax, 0x1
-            or         eax, ebx
-            mov        word ptr [esi], ax
-            add        esi, 0x2
-            loop       next_pixel
-            pop        esi
-            add        esi, edx
-            pop        ecx
-            loop       next_row
-        }
-        pMap->type = BR_PMT_RGB_555;
+void C2_NAKED C2_HOOK_FASTCALL BRPM_convert(br_pixelmap* pMap, int pPixel_type) {
+    __asm {
+            push ebp
+            mov ebp, esp
+            sub esp, 0x14
+            test ecx, ecx
+            mov dword ptr [ebp - 0x14], ecx
+            je L00518776
+            cmp edx, 4
+            jne L00518776
+            cmp byte ptr [ecx + 0x2c], 5
+            jne L00518776
+            mov eax, dword ptr [ecx + 8]
+            test eax, eax
+            je L00518776
+            mov dword ptr [ebp - 0xc], eax
+            xor edx, edx
+            movsx eax, word ptr [ecx + 0x28]
+            mov dx, word ptr [ecx + 0x34]
+            mov dword ptr [ebp - 8], eax
+            xor eax, eax
+            push edi
+            mov ax, word ptr [ecx + 0x36]
+            push esi
+            push ebx
+            mov dword ptr [ebp - 4], edx
+            mov dword ptr [ebp - 0x10], eax
+            mov ecx, dword ptr [ebp - 0x10]
+            mov esi, dword ptr [ebp - 0xc]
+            mov edx, dword ptr [ebp - 8]
+            mov edi, dword ptr [ebp - 4]
+    L0051874a:
+            push ecx
+            mov ecx, edi
+            push esi
+    L0051874e:
+            mov eax, dword ptr [esi]
+            mov ebx, eax
+            and eax, 0xffc0
+            and ebx, 0x1f
+            shr eax, 1
+            or eax, ebx
+            mov word ptr [esi], ax
+            add esi, 2
+            loop L0051874e
+            pop esi
+            add esi, edx
+            pop ecx
+            loop L0051874a
+            mov ecx, dword ptr [ebp - 0x14]
+            pop ebx
+            pop esi
+            pop edi
+            mov byte ptr [ecx + 0x2c], 4
+    L00518776:
+            mov esp, ebp
+            pop ebp
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 }
 #else
@@ -2175,7 +6813,8 @@ void C2_HOOK_FASTCALL BRPM_convert(br_pixelmap* pMap, int pPixel_type) {
 #endif
 
 // FUNCTION: CARMA2_HW 0x00518780
-void C2_HOOK_FASTCALL PrintScreen(void) {
+void C2_NAKED C2_HOOK_FASTCALL PrintScreen(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     FILE* f;
 
     f = OpenUniqueFileB("DUMP", "BMP");
@@ -2187,6 +6826,296 @@ void C2_HOOK_FASTCALL PrintScreen(void) {
         }
         PFfclose(f);
     }
+#else
+    __asm {
+            sub esp, 0x104
+            push ebx
+            push ebp
+            push esi
+            push edi
+            xor ebx, ebx
+    L0051878c:
+            mov edi, offset gApplication_path
+            or ecx, 0xffffffff
+            xor eax, eax
+            lea edx, [esp + 0x14]
+            repne scasb
+            not ecx
+            sub edi, ecx
+            mov eax, ecx
+            mov esi, edi
+            mov edi, edx
+            shr ecx, 2
+            rep movsd
+            mov ecx, eax
+            xor eax, eax
+            and ecx, 3
+            rep movsb
+            mov edi, offset gVector3_00661678+0x100
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            dec ecx
+            je L0051881c
+            mov edi, dword ptr [gDir_separator]
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            sub edi, ecx
+            lea edx, [esp + 0x14]
+            mov esi, edi
+            mov ebp, ecx
+            mov edi, edx
+            or ecx, 0xffffffff
+            repne scasb
+            mov ecx, ebp
+            dec edi
+            shr ecx, 2
+            rep movsd
+            mov ecx, ebp
+            lea edx, [esp + 0x14]
+            and ecx, 3
+            rep movsb
+            mov edi, offset gVector3_00661678+0x100
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            sub edi, ecx
+            mov esi, edi
+            mov ebp, ecx
+            mov edi, edx
+            or ecx, 0xffffffff
+            repne scasb
+            mov ecx, ebp
+            dec edi
+            shr ecx, 2
+            rep movsd
+            mov ecx, ebp
+            and ecx, 3
+            rep movsb
+    L0051881c:
+            lea edi, [esp + 0x14]
+            or ecx, 0xffffffff
+            xor eax, eax
+            push offset gVector3_00661678+0xfc
+            repne scasb
+            not ecx
+            dec ecx
+            push ebx
+            push offset gVector3_00661678+0x58
+            lea eax, [esp + ecx + 0x20]
+            push eax
+            call sprintf
+            add esp, 0x10
+            mov edx, offset gNext_crush_actor_id+0x180
+            lea ecx, [esp + 0x14]
+            call DRfopen
+            test eax, eax
+            je L00518a9d
+            mov ecx, eax
+            call PFfclose
+            inc ebx
+            cmp ebx, 0x2710
+            jl L0051878c
+            xor esi, esi
+    L0051886e:
+            test esi, esi
+            je L00518a92
+            mov ecx, dword ptr [gBack_screen]
+            cmp byte ptr [ecx + 0x2c], 3
+            je L00518a84
+            mov eax, dword ptr [ecx + 8]
+            test eax, eax
+            jne L0051889e
+            push 1
+            push ecx
+            call BrPixelmapDirectLock
+            mov ecx, dword ptr [gBack_screen]
+            add esp, 8
+    L0051889e:
+            xor eax, eax
+            xor edx, edx
+            mov ax, word ptr [ecx + 0x34]
+            mov dx, word ptr [ecx + 0x36]
+            imul eax, edx
+            mov dl, 0x42
+            mov ecx, esi
+            lea edi, [eax + eax*2]
+            call WriteU8L
+            mov dl, 0x4d
+            mov ecx, esi
+            call WriteU8L
+            lea edx, [edi + 0x36]
+            mov ecx, esi
+            call WriteU32L
+            xor edx, edx
+            mov ecx, esi
+            call WriteU16L
+            xor edx, edx
+            mov ecx, esi
+            call WriteU16L
+            mov edx, 0x36
+            mov ecx, esi
+            call WriteU32L
+            mov edx, 0x28
+            mov ecx, esi
+            call WriteU32L
+            mov eax, dword ptr [gBack_screen]
+            xor edx, edx
+            mov ecx, esi
+            mov dx, word ptr [eax + 0x34]
+            call WriteU32L
+            mov ecx, dword ptr [gBack_screen]
+            xor edx, edx
+            mov dx, word ptr [ecx + 0x36]
+            mov ecx, esi
+            call WriteU32L
+            mov edx, 1
+            mov ecx, esi
+            call WriteU16L
+            mov edx, 0x18
+            mov ecx, esi
+            call WriteU16L
+            xor edx, edx
+            mov ecx, esi
+            call WriteU32L
+            xor edx, edx
+            mov ecx, esi
+            call WriteU32L
+            xor edx, edx
+            mov ecx, esi
+            call WriteU32L
+            xor edx, edx
+            mov ecx, esi
+            call WriteU32L
+            xor edx, edx
+            mov ecx, esi
+            call WriteU32L
+            mov edx, 0x100
+            mov ecx, esi
+            call WriteU32L
+            mov eax, dword ptr [gBack_screen]
+            xor ecx, ecx
+            mov dword ptr [esp + 0x10], 0
+            mov cx, word ptr [eax + 0x36]
+            mov ebx, dword ptr [eax + 8]
+            movsx edi, word ptr [eax + 0x28]
+            lea edx, [ecx - 1]
+            imul edi, edx
+            add edi, ebx
+            test ecx, ecx
+            jle L00518a54
+    L00518996:
+            xor ebp, ebp
+            cmp word ptr [eax + 0x34], bp
+            jbe L00518a2b
+    L005189a2:
+            mov al, byte ptr [eax + 0x2c]
+            mov bx, word ptr [edi]
+            cmp al, 5
+            jne L005189d0
+            mov dl, bl
+            mov ecx, esi
+            shl dl, 3
+            call WriteU8L
+            mov edx, ebx
+            mov ecx, esi
+            shr edx, 3
+            and dl, 0xf8
+            call WriteU8L
+            xor edx, edx
+            mov dl, bh
+            and dl, 0xf8
+            jmp L00518a0d
+    L005189d0:
+            cmp al, 4
+            jne L005189f9
+            mov dl, bl
+            mov ecx, esi
+            shl dl, 3
+            call WriteU8L
+            mov edx, ebx
+            mov ecx, esi
+            shr edx, 2
+            and dl, 0xf8
+            call WriteU8L
+            mov edx, ebx
+            shr edx, 7
+            and dl, 0xf8
+            jmp L00518a0d
+    L005189f9:
+            xor dl, dl
+            mov ecx, esi
+            call WriteU8L
+            xor dl, dl
+            mov ecx, esi
+            call WriteU8L
+            xor dl, dl
+    L00518a0d:
+            mov ecx, esi
+            call WriteU8L
+            mov eax, dword ptr [gBack_screen]
+            xor ecx, ecx
+            inc ebp
+            add edi, 2
+            mov cx, word ptr [eax + 0x34]
+            cmp ebp, ecx
+            jl L005189a2
+    L00518a2b:
+            movsx ecx, word ptr [eax + 0x28]
+            xor edx, edx
+            mov dx, word ptr [eax + 0x34]
+            shl edx, 1
+            neg ecx
+            sub ecx, edx
+            xor edx, edx
+            mov dx, word ptr [eax + 0x36]
+            add edi, ecx
+            mov ecx, dword ptr [esp + 0x10]
+            inc ecx
+            cmp ecx, edx
+            mov dword ptr [esp + 0x10], ecx
+            jl L00518996
+    L00518a54:
+            xor edx, edx
+            mov ecx, esi
+            call WriteU16L
+            mov eax, dword ptr [gBack_screen]
+            mov ecx, dword ptr [eax + 8]
+            test ecx, ecx
+            je L00518a8b
+            push eax
+            call BrPixelmapDirectUnlock
+            add esp, 4
+            mov ecx, esi
+            call PFfclose
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x104
+            ret
+    L00518a84:
+            mov ecx, esi
+            call PrintScreenFile
+    L00518a8b:
+            mov ecx, esi
+            call PFfclose
+    L00518a92:
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x104
+            ret
+    L00518a9d:
+            mov edx, offset gFrontend_QUIT+0xbcc4
+            lea ecx, [esp + 0x14]
+            call DRfopen
+            mov esi, eax
+            jmp L0051886e
+    }
+#endif
 }
 
 
@@ -2245,7 +7174,8 @@ char* C2_HOOK_FASTCALL MungeCommas(int pValue) {
 }
 
 // FUNCTION: CARMA2_HW 0x00518fa0
-void C2_HOOK_FASTCALL MungeMetaCharacters(char* pText, char pMeta, const char* pRepl) {
+void C2_NAKED C2_HOOK_FASTCALL MungeMetaCharacters(char* pText, char pMeta, const char* pRepl) {
+#ifndef CARPOCALYPSE2_MATCHING
     int len_text;
     int len_repl;
     int i;
@@ -2261,23 +7191,263 @@ void C2_HOOK_FASTCALL MungeMetaCharacters(char* pText, char pMeta, const char* p
             len_text += len_repl - 2;
         }
     }
+#else
+    __asm {
+            sub esp, 0xc
+            push ebx
+            mov byte ptr [esp + 7], dl
+            push ebp
+            push esi
+            mov edx, ecx
+            push edi
+            mov edi, edx
+            or ecx, 0xffffffff
+            xor eax, eax
+            xor ebp, ebp
+            repne scasb
+            mov edi, dword ptr [esp + 0x20]
+            mov dword ptr [esp + 0x18], edx
+            not ecx
+            dec ecx
+            mov esi, ecx
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            dec ecx
+            mov dword ptr [esp + 0x14], esi
+            test esi, esi
+            mov ebx, ecx
+            jle L00519033
+    L00518fd7:
+            mov al, byte ptr [ebp + edx]
+            lea edi, [ebp + edx]
+            cmp al, 0x40
+            jne L0051902e
+            mov al, byte ptr [esp + 0x13]
+            mov cl, byte ptr [ebp + edx + 1]
+            cmp cl, al
+            jne L0051902e
+            sub esi, ebp
+            lea eax, [ebx + ebp]
+            dec esi
+            lea ecx, [ebp + edx + 2]
+            push esi
+            add eax, edx
+            push ecx
+            push eax
+            call memmove
+            mov esi, dword ptr [esp + 0x2c]
+            mov ecx, ebx
+            mov edx, ecx
+            mov eax, dword ptr [esp + 0x20]
+            shr ecx, 2
+            rep movsd
+            mov ecx, edx
+            mov edx, dword ptr [esp + 0x24]
+            and ecx, 3
+            add esp, 0xc
+            rep movsb
+            lea ecx, [eax + ebx - 2]
+            add ebp, ebx
+            mov dword ptr [esp + 0x14], ecx
+            mov esi, ecx
+    L0051902e:
+            inc ebp
+            cmp ebp, esi
+            jl L00518fd7
+    L00519033:
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0xc
+            ret 4
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00519040
-void C2_HOOK_FASTCALL MungeMetaCharactersChar(char* pText, char pMeta, char pChar) {
+void C2_NAKED C2_HOOK_FASTCALL MungeMetaCharactersChar(char* pText, char pMeta, char pChar) {
+#ifndef CARPOCALYPSE2_MATCHING
     char repl[2];
 
     repl[1] = '\0';
     repl[0] = pChar;
     MungeMetaCharacters(pText, pMeta, repl);
+#else
+    __asm {
+            sub esp, 0xc
+            mov al, byte ptr [esp + 0x10]
+            push ebx
+            push ebp
+            push esi
+            mov ebx, ecx
+            push edi
+            mov byte ptr [esp + 0x20], al
+            mov edi, ebx
+            or ecx, 0xffffffff
+            xor eax, eax
+            repne scasb
+            not ecx
+            mov byte ptr [esp + 0x13], dl
+            dec ecx
+            mov edx, ecx
+            lea edi, [esp + 0x20]
+            or ecx, 0xffffffff
+            mov byte ptr [esp + 0x21], 0
+            repne scasb
+            not ecx
+            dec ecx
+            xor ebp, ebp
+            mov esi, ecx
+            mov dword ptr [esp + 0x14], edx
+            test edx, edx
+            mov dword ptr [esp + 0x18], esi
+            jle L005190e0
+    L00519084:
+            mov al, byte ptr [ebp + ebx]
+            lea edi, [ebp + ebx]
+            cmp al, 0x40
+            jne L005190db
+            mov cl, byte ptr [esp + 0x13]
+            mov al, byte ptr [ebp + ebx + 1]
+            cmp al, cl
+            jne L005190db
+            sub edx, ebp
+            lea eax, [esi + ebp]
+            dec edx
+            add eax, ebx
+            push edx
+            lea edx, [ebp + ebx + 2]
+            push edx
+            push eax
+            call memmove
+            mov ecx, esi
+            lea esi, [esp + 0x2c]
+            mov edx, ecx
+            mov eax, dword ptr [esp + 0x24]
+            shr ecx, 2
+            rep movsd
+            mov ecx, edx
+            add esp, 0xc
+            and ecx, 3
+            add ebp, eax
+            rep movsb
+            mov ecx, dword ptr [esp + 0x14]
+            mov esi, eax
+            lea edx, [ecx + eax - 2]
+            mov dword ptr [esp + 0x14], edx
+    L005190db:
+            inc ebp
+            cmp ebp, edx
+            jl L00519084
+    L005190e0:
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0xc
+            ret 4
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x005190f0
-void C2_HOOK_FASTCALL MungeMetaCharactersNum(char* pText, char pMeta, int pNum) {
+void C2_NAKED C2_HOOK_FASTCALL MungeMetaCharactersNum(char* pText, char pMeta, int pNum) {
+#ifndef CARPOCALYPSE2_MATCHING
     char text[16];
 
     sprintf(text, "%d", pNum);
     MungeMetaCharacters(pText, pMeta, text);
+#else
+    __asm {
+            sub esp, 0x18
+            mov eax, dword ptr [esp + 0x1c]
+            push ebx
+            push ebp
+            push esi
+            mov ebx, ecx
+            push edi
+            push eax
+            lea ecx, [esp + 0x1c]
+            push offset gPed_flags_0058f2e4+0x134
+            mov byte ptr [esp + 0x1b], dl
+            push ecx
+            call sprintf
+            mov edi, ebx
+            or ecx, 0xffffffff
+            xor eax, eax
+            add esp, 0xc
+            repne scasb
+            not ecx
+            dec ecx
+            lea edi, [esp + 0x18]
+            mov edx, ecx
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            dec ecx
+            xor ebp, ebp
+            mov esi, ecx
+            mov dword ptr [esp + 0x2c], edx
+            test edx, edx
+            mov dword ptr [esp + 0x14], esi
+            jle L0051919a
+    L0051913e:
+            mov al, byte ptr [ebp + ebx]
+            lea edi, [ebp + ebx]
+            cmp al, 0x40
+            jne L00519195
+            mov al, byte ptr [esp + 0x13]
+            mov cl, byte ptr [ebp + ebx + 1]
+            cmp cl, al
+            jne L00519195
+            sub edx, ebp
+            lea ecx, [ebp + ebx + 2]
+            dec edx
+            push edx
+            lea edx, [esi + ebp]
+            add edx, ebx
+            push ecx
+            push edx
+            call memmove
+            mov ecx, esi
+            lea esi, [esp + 0x24]
+            mov eax, ecx
+            add esp, 0xc
+            shr ecx, 2
+            rep movsd
+            mov ecx, eax
+            mov eax, dword ptr [esp + 0x14]
+            and ecx, 3
+            add ebp, eax
+            rep movsb
+            mov ecx, dword ptr [esp + 0x2c]
+            mov esi, eax
+            lea edx, [ecx + eax - 2]
+            mov dword ptr [esp + 0x2c], edx
+    L00519195:
+            inc ebp
+            cmp ebp, edx
+            jl L0051913e
+    L0051919a:
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x18
+            ret 4
+    }
+#endif
 }
 
 void C2_HOOK_FASTCALL DrPixelmapRectangleCopyPossibleLock(br_pixelmap* dst, br_int_32 dx, br_int_32 dy, br_pixelmap* src, br_int_32 sx, br_int_32 sy, br_int_32 w, br_int_32 h) {
@@ -2293,13 +7463,11 @@ void C2_HOOK_FASTCALL DrPixelmapRectangleCopyPossibleLock(br_pixelmap* dst, br_i
 
 // FUNCTION: CARMA2_HW 0x005191b0
 int C2_HOOK_FASTCALL FRONTEND_Redraw(br_pixelmap* dst, br_int_16 dx, br_int_16 dy, br_pixelmap* src, br_int_16 sx, br_int_16 sy, br_int_16 w, br_int_16 h) {
-
     BrPixelmapRectangleCopy(dst, dx, dy, src, sx, sy, w, h);
 }
 
 // FUNCTION: CARMA2_HW 0x005191f0
 void C2_HOOK_FASTCALL PixelmapSwapByteOrder(br_pixelmap* pMap) {
-
 #if 0 // FIXME: introduce endian.h-like carpocalypse2_endian.h header
     br_uint_16 y;
     br_uint_8* row_ptr;
@@ -2320,7 +7488,8 @@ void C2_HOOK_FASTCALL PixelmapSwapByteOrder(br_pixelmap* pMap) {
 }
 
 // FUNCTION: CARMA2_HW 0x00519200
-void C2_HOOK_FASTCALL ConvertPixelmapType(br_pixelmap* pMap, int pPixel_type) {
+void C2_NAKED C2_HOOK_FASTCALL ConvertPixelmapType(br_pixelmap* pMap, int pPixel_type) {
+#ifndef CARPOCALYPSE2_MATCHING
     void (C2_HOOK_FASTCALL *convert_pixel)(br_uint_16*);
     br_uint_16* row;
     int x;
@@ -2357,11 +7526,84 @@ void C2_HOOK_FASTCALL ConvertPixelmapType(br_pixelmap* pMap, int pPixel_type) {
         }
         pMap->type = (br_uint_8)pPixel_type;
     }
+#else
+    __asm {
+            sub esp, 0xc
+            push ebx
+            push ebp
+            mov ebp, ecx
+            xor ebx, ebx
+            push esi
+            push edi
+            mov al, byte ptr [ebp + 0x2c]
+            mov dword ptr [esp + 0x18], edx
+            cmp al, 5
+            je L00519226
+            cmp al, 0x12
+            jne L00519230
+            cmp edx, 0x1f
+            jne L00519230
+            mov ebx, offset FUN_005192c0
+            jmp L00519230
+    L00519226:
+            cmp edx, 4
+            jne L00519230
+            mov ebx, offset FUN_005192a0
+    L00519230:
+            test ebx, ebx
+            je L00519296
+            mov eax, dword ptr [ebp + 8]
+            cmp word ptr [ebp + 0x36], 0
+            mov dword ptr [esp + 0x10], eax
+            mov dword ptr [esp + 0x14], 0
+            jbe L00519293
+    L0051924a:
+            mov edi, dword ptr [esp + 0x10]
+            xor esi, esi
+            cmp word ptr [ebp + 0x34], si
+            jbe L00519268
+    L00519256:
+            mov ecx, edi
+            call ebx
+            xor ecx, ecx
+            inc esi
+            mov cx, word ptr [ebp + 0x34]
+            add edi, 2
+            cmp esi, ecx
+            jl L00519256
+    L00519268:
+            movsx eax, word ptr [ebp + 0x28]
+            cdq
+            mov ecx, dword ptr [esp + 0x14]
+            sub eax, edx
+            mov edx, dword ptr [esp + 0x10]
+            inc ecx
+            sar eax, 1
+            mov dword ptr [esp + 0x14], ecx
+            lea eax, [edx + eax*2]
+            xor edx, edx
+            mov dx, word ptr [ebp + 0x36]
+            mov dword ptr [esp + 0x10], eax
+            cmp ecx, edx
+            jl L0051924a
+            mov edx, dword ptr [esp + 0x18]
+    L00519293:
+            mov byte ptr [ebp + 0x2c], dl
+    L00519296:
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0xc
+            ret
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x005193f0
 void C2_HOOK_FASTCALL EnsurePixelmapAllowed(br_pixelmap* pMap, undefined4 pArg2) {
-
 }
 
 // ===== Ported from bojan1986819 fork =====
@@ -2404,7 +7646,6 @@ float C2_HOOK_FASTCALL signf(float pValue) {
 
 // FUNCTION: CARMA2_HW 0x00514d80
 void C2_HOOK_FASTCALL CopyMiscString(int pIndex, char* pDest) {
-
     strcpy(pDest, gMisc_strings[pIndex]);
 }
 
@@ -2488,7 +7729,6 @@ void C2_HOOK_FASTCALL SaveGeneratedShadeTable(br_pixelmap* pThe_table, int pR, i
 
 // FUNCTION: CARMA2_HW 0x005156d0
 void C2_HOOK_FASTCALL DRPixelmapRectangleFill(br_pixelmap* dst, br_int_16 x, br_int_16 y, br_uint_16 w, br_uint_16 h, br_uint_32 colour) {
-
     BrPixelmapRectangleFill(dst, x, y, w, h, colour);
 }
 
@@ -2500,7 +7740,6 @@ void C2_HOOK_FASTCALL GetBlendTableName(int pPercent, char* pDest) {
 
 // FUNCTION: CARMA2_HW 0x00516110
 int C2_HOOK_FASTCALL DRVector2TestForNan(const br_vector2* pV) {
-
     if (pV != NULL) {
         return TestForNan(&pV->v[0]) || TestForNan(&pV->v[1]);
     }
@@ -2509,7 +7748,6 @@ int C2_HOOK_FASTCALL DRVector2TestForNan(const br_vector2* pV) {
 
 // FUNCTION: CARMA2_HW 0x005161c0
 int C2_HOOK_FASTCALL DRVector4TestForNan(const float* pV) {
-
     if (pV != NULL) {
         return TestForNan(&pV[0]) || TestForNan(&pV[1]) || TestForNan(&pV[2]) || TestForNan(&pV[3]);
     } else {
@@ -2519,7 +7757,6 @@ int C2_HOOK_FASTCALL DRVector4TestForNan(const float* pV) {
 
 // FUNCTION: CARMA2_HW 0x005162d0
 void C2_HOOK_FASTCALL FUN_005162d0(br_vector4* pDst, const br_vector4* pSrc) {
-
     pDst->v[0] = -pSrc->v[0];
     pDst->v[1] = -pSrc->v[1];
     pDst->v[2] = -pSrc->v[2];
@@ -2528,7 +7765,6 @@ void C2_HOOK_FASTCALL FUN_005162d0(br_vector4* pDst, const br_vector4* pSrc) {
 
 // FUNCTION: CARMA2_HW 0x005192a0
 void C2_HOOK_FASTCALL FUN_005192a0(br_uint_16* pPixel) {
-
     *pPixel = ((*pPixel >> 1) & 0x7fe0) + (*pPixel & 0x1f);
 }
 

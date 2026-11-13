@@ -74,6 +74,10 @@ MCI_PLAY_PARMS gPDS3_cda_play_parms;
 int gSSDXPitch;
 
 
+#ifdef CARPOCALYPSE2_MATCHING
+extern void C2_HOOK_CDECL dr_dprintf();
+extern char gSoundType_choices[];
+#endif
 // FUNCTION: CARMA2_HW 0x00500070
 HRESULT CALLBACK LocalEnumAttachedSurfacesCallback(LPDIRECTDRAWSURFACE lpSurface, LPDDSURFACEDESC lpSurfaceDesc, LPVOID lpContext) {
     int* counter = lpContext;
@@ -166,7 +170,8 @@ post_creation:
 }
 
 // FUNCTION: CARMA2_HW 0x005002d0
-void C2_HOOK_FASTCALL SSDXLogError(HRESULT hRes) {
+void C2_NAKED C2_HOOK_FASTCALL SSDXLogError(HRESULT hRes) {
+#ifndef CARPOCALYPSE2_MATCHING
 
 #define LOG_CASE_DDERR(V) case V: dr_dprintf("%s (%x)", #V, hRes); return
     switch (hRes) {
@@ -190,6 +195,210 @@ void C2_HOOK_FASTCALL SSDXLogError(HRESULT hRes) {
     LOG_CASE_DDERR(DDERR_WRONGMODE);
     }
 #undef LOG_CASE_DDERR
+#else
+    __asm {
+            cmp ecx, 0x80004005
+            jg L00500310
+            je L005002fb
+            cmp ecx, 0x80004001
+            jne L0050049c
+            mov eax, offset gSoundType_choices+0x598
+            push ecx
+            push eax
+            push offset gSoundType_choices+0x590
+            call dr_dprintf
+            add esp, 0xc
+            ret
+    L005002fb:
+            mov eax, offset gSoundType_choices+0x580
+            push ecx
+            push eax
+            push offset gSoundType_choices+0x590
+            call dr_dprintf
+            add esp, 0xc
+            ret
+    L00500310:
+            cmp ecx, 0x80070057
+            jg L00500350
+            je L0050033b
+            cmp ecx, 0x8007000e
+            jne L0050049c
+            mov eax, offset gSoundType_choices+0x56c
+            push ecx
+            push eax
+            push offset gSoundType_choices+0x590
+            call dr_dprintf
+            add esp, 0xc
+            ret
+    L0050033b:
+            mov eax, offset gSoundType_choices+0x558
+            push ecx
+            push eax
+            push offset gSoundType_choices+0x590
+            call dr_dprintf
+            add esp, 0xc
+            ret
+    L00500350:
+            cmp ecx, 0x88760064
+            jg L00500390
+            je L0050037b
+            cmp ecx, 0x8876005f
+            jne L0050049c
+            mov eax, offset gSoundType_choices+0x53c
+            push ecx
+            push eax
+            push offset gSoundType_choices+0x590
+            call dr_dprintf
+            add esp, 0xc
+            ret
+    L0050037b:
+            mov eax, offset gSoundType_choices+0x528
+            push ecx
+            push eax
+            push offset gSoundType_choices+0x590
+            call dr_dprintf
+            add esp, 0xc
+            ret
+    L00500390:
+            cmp ecx, 0x88760082
+            jg L005003d0
+            je L005003bb
+            cmp ecx, 0x88760078
+            jne L0050049c
+            mov eax, offset gSoundType_choices+0x514
+            push ecx
+            push eax
+            push offset gSoundType_choices+0x590
+            call dr_dprintf
+            add esp, 0xc
+            ret
+    L005003bb:
+            mov eax, offset gSoundType_choices+0x500
+            push ecx
+            push eax
+            push offset gSoundType_choices+0x590
+            call dr_dprintf
+            add esp, 0xc
+            ret
+    L005003d0:
+            cmp ecx, 0x88760096
+            jg L00500410
+            je L005003fb
+            cmp ecx, 0x88760091
+            jne L0050049c
+            mov eax, offset gSoundType_choices+0x4e4
+            push ecx
+            push eax
+            push offset gSoundType_choices+0x590
+            call dr_dprintf
+            add esp, 0xc
+            ret
+    L005003fb:
+            mov eax, offset gSoundType_choices+0x4d0
+            push ecx
+            push eax
+            push offset gSoundType_choices+0x590
+            call dr_dprintf
+            add esp, 0xc
+            ret
+    L00500410:
+            cmp ecx, 0x887601ae
+            jg L0050044c
+            je L00500437
+            cmp ecx, 0x887600e1
+            jne L0050049c
+            mov eax, offset gSoundType_choices+0x4b8
+            push ecx
+            push eax
+            push offset gSoundType_choices+0x590
+            call dr_dprintf
+            add esp, 0xc
+            ret
+    L00500437:
+            mov eax, offset gSoundType_choices+0x4a4
+            push ecx
+            push eax
+            push offset gSoundType_choices+0x590
+            call dr_dprintf
+            add esp, 0xc
+            ret
+    L0050044c:
+            cmp ecx, 0x8876021c
+            jg L00500488
+            je L00500473
+            cmp ecx, 0x887601c2
+            jne L0050049c
+            mov eax, offset gSoundType_choices+0x490
+            push ecx
+            push eax
+            push offset gSoundType_choices+0x590
+            call dr_dprintf
+            add esp, 0xc
+            ret
+    L00500473:
+            mov eax, offset gSoundType_choices+0x478
+            push ecx
+            push eax
+            push offset gSoundType_choices+0x590
+            call dr_dprintf
+            add esp, 0xc
+            ret
+    L00500488:
+            cmp ecx, 0x8876024b
+            je L005004dd
+            cmp ecx, 0x8876024c
+            je L005004c8
+            test ecx, ecx
+            je L005004b3
+    L0050049c:
+            mov eax, ecx
+            and eax, 0xffff
+            push eax
+            push ecx
+            push offset gSoundType_choices+0x434
+            call dr_dprintf
+            add esp, 0xc
+            ret
+    L005004b3:
+            mov eax, offset gSoundType_choices+0x42c
+            push ecx
+            push eax
+            push offset gSoundType_choices+0x590
+            call dr_dprintf
+            add esp, 0xc
+            ret
+    L005004c8:
+            mov eax, offset gSoundType_choices+0x414
+            push ecx
+            push eax
+            push offset gSoundType_choices+0x590
+            call dr_dprintf
+            add esp, 0xc
+            ret
+    L005004dd:
+            mov eax, offset gSoundType_choices+0x404
+            push ecx
+            push eax
+            push offset gSoundType_choices+0x590
+            call dr_dprintf
+            add esp, 0xc
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00500500
@@ -411,24 +620,70 @@ void C2_HOOK_FASTCALL SSDXUnlockAttachedSurface(void) {
 }
 
 // FUNCTION: CARMA2_HW 0x00500b90
-void C2_HOOK_FASTCALL SSDXBlitOrFlip(void) {
-
+void C2_NAKED C2_HOOK_FASTCALL SSDXBlitOrFlip(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     if (gWindowed) {
         SSDXBlit();
     } else {
         IDirectDrawSurface_Flip(gPrimary_surface, NULL, DDFLIP_WAIT);
     }
+#else
+    __asm {
+            mov eax, dword ptr [gWindowed]
+            test eax, eax
+            mov eax, dword ptr [gPrimary_surface]
+            mov ecx, dword ptr [eax]
+            je L00500bbd
+            mov edx, dword ptr [gAttached_surface]
+            push 0
+            push 0x1000000
+            push offset gSSDXRect
+            push edx
+            push offset gSSDXWindowPos
+            push eax
+            call dword ptr [ecx + 0x14]
+            ret
+    L00500bbd:
+            push 1
+            push 0
+            push eax
+            call dword ptr [ecx + 0x2c]
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00500bd0
-void C2_HOOK_FASTCALL SSDXBlit(void) {
+void C2_NAKED C2_HOOK_FASTCALL SSDXBlit(void) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     IDirectDrawSurface_Blt(gPrimary_surface, &gSSDXWindowPos, gAttached_surface, &gSSDXRect, DDBLT_WAIT, NULL);
+#else
+    __asm {
+            mov eax, dword ptr [gWindowed]
+            mov edx, dword ptr [gAttached_surface]
+            test eax, eax
+            mov eax, dword ptr [gPrimary_surface]
+            push 0
+            push 0x1000000
+            push offset gSSDXRect
+            mov ecx, dword ptr [eax]
+            push edx
+            push offset gSSDXWindowPos
+            push eax
+            call dword ptr [ecx + 0x14]
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00500c00
 void C2_HOOK_FASTCALL SSDXSetPaletteEntries(PALETTEENTRY* pPalette, int pStart, int pCount) {
-
     if (gWindowed && gDirectDrawPalette != NULL) {
         int i;
 

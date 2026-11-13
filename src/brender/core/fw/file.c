@@ -9,6 +9,11 @@
 #include <stdarg.h>
 #include <stddef.h>
 
+#ifdef CARPOCALYPSE2_MATCHING
+extern char* C2_HOOK_CDECL BrScratchString();
+extern br_int_32 C2_HOOK_CDECL BrVSprintf();
+extern br_framework_state fw;
+#endif
 // FUNCTION: CARMA2_HW 0x0052cc60
 void C2_HOOK_CDECL _BrFileFree(void* res, br_uint_8 res_class, br_size_t size) {
     br_file* file;
@@ -115,7 +120,8 @@ void C2_HOOK_CDECL BrFileAdvance(long count, void* f) {
 }
 
 // FUNCTION: CARMA2_HW 0x0052cee0
-int C2_HOOK_CDECL BrFilePrintf(void* f, char* fmt, ...) {
+int C2_NAKED C2_HOOK_CDECL BrFilePrintf(void* f, char* fmt, ...) {
+#ifndef CARPOCALYPSE2_MATCHING
     int n;
     va_list args;
 
@@ -124,4 +130,34 @@ int C2_HOOK_CDECL BrFilePrintf(void* f, char* fmt, ...) {
     va_end(args);
     BrFileWrite(BrScratchString(), 1, n, f);
     return n;
+#else
+    __asm {
+            mov ecx, dword ptr [esp + 8]
+            push esi
+            lea eax, [esp + 0x10]
+            push edi
+            push eax
+            push ecx
+            call BrScratchString
+            push eax
+            call BrVSprintf
+            mov edx, dword ptr [fw+0x428]
+            mov esi, eax
+            mov eax, dword ptr [esp + 0x18]
+            add esp, 0xc
+            lea edi, [edx + 0x24]
+            mov ecx, dword ptr [eax]
+            push ecx
+            push esi
+            push 1
+            call BrScratchString
+            push eax
+            call dword ptr [edi]
+            add esp, 0x10
+            mov eax, esi
+            pop edi
+            pop esi
+            ret
+    }
+#endif
 }

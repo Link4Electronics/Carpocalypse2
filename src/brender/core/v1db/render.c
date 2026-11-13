@@ -12,8 +12,23 @@
 
 #include "core/fw/diag.h"
 
+#ifdef CARPOCALYPSE2_MATCHING
+extern C2_NORETURN void C2_HOOK_CDECL BrFailure();
+extern br_order_table* C2_HOOK_CDECL BrZsOrderTableClear();
+extern char IID_IDirectInputDevice2A[];
+extern void C2_HOOK_STDCALL InsertOrderTableList(br_order_table* order_table);
+extern int C2_HOOK_STDCALL IsMaterialTransparent(const br_material* material);
+extern void C2_HOOK_STDCALL RenderOrderTableList(void);
+extern void C2_HOOK_STDCALL RenderPrimaryOrderTable(void);
+extern render_style_cbfn RenderStyleCalls[8];
+extern void C2_HOOK_STDCALL SetOrderTableBounds(br_bounds* bounds, br_order_table* order_table);
+extern void __cdecl _ftol();
+extern br_filesystem gZlib_filesystem;
+extern br_v1db_state v1db;
+#endif
 // FUNCTION: CARMA2_HW 0x00521890
-void C2_HOOK_CDECL BrDbModelRender(br_actor* actor, br_model* model, br_material* material, void* render_data, br_uint_8 style, int on_screen, int use_custom) {
+void C2_NAKED C2_HOOK_CDECL BrDbModelRender(br_actor* actor, br_model* model, br_material* material, void* render_data, br_uint_8 style, int on_screen, int use_custom) {
+#ifndef CARPOCALYPSE2_MATCHING
     br_token_value tv[5] = {
         { BRT_V1INSERT_FUNCTION_P },
         { BRT_V1INSERT_ARG1_P },
@@ -104,6 +119,298 @@ void C2_HOOK_CDECL BrDbModelRender(br_actor* actor, br_model* model, br_material
             v1db.bounds_call(actor, model, material, render_data, style, &v1db.model_to_screen, int_bounds);
         }
     }
+#else
+    __asm {
+            sub esp, 0x60
+            mov eax, dword ptr [esp + 0x7c]
+            push ebx
+            push ebp
+            push esi
+            mov esi, dword ptr [esp + 0x74]
+            push edi
+            xor edi, edi
+            mov dword ptr [esp + 0x48], 0x104
+            cmp eax, edi
+            mov dword ptr [esp + 0x4c], edi
+            mov dword ptr [esp + 0x50], 0x105
+            mov dword ptr [esp + 0x54], edi
+            mov dword ptr [esp + 0x58], 0x106
+            mov dword ptr [esp + 0x5c], edi
+            mov dword ptr [esp + 0x60], 0x107
+            mov dword ptr [esp + 0x64], edi
+            mov dword ptr [esp + 0x68], edi
+            mov dword ptr [esp + 0x6c], edi
+            mov dword ptr [v1db+0x90], edi
+            je L0052191d
+            test byte ptr [esi + 0x20], 0x20
+            je L0052191d
+            mov eax, dword ptr [esp + 0x88]
+            mov ecx, dword ptr [esp + 0x84]
+            mov edx, dword ptr [esp + 0x80]
+            push eax
+            mov eax, dword ptr [esp + 0x80]
+            push ecx
+            mov ecx, dword ptr [esp + 0x7c]
+            push edx
+            push eax
+            push esi
+            push ecx
+            call dword ptr [esi + 0x24]
+            add esp, 0x18
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x60
+            ret
+    L0052191d:
+            cmp dword ptr [esi + 0x4c], edi
+            jne L00521941
+            cmp dword ptr [esi + 0x50], edi
+            jne L00521941
+            mov eax, dword ptr [esi + 4]
+            cmp eax, edi
+            jne L00521933
+            mov eax, offset gZlib_filesystem+0x1d0
+    L00521933:
+            push eax
+            push offset gZlib_filesystem+0x1d8
+            call BrFailure
+            add esp, 8
+    L00521941:
+            mov eax, dword ptr [v1db+0x8]
+            mov ebp, dword ptr [esp + 0x80]
+            cmp eax, 2
+            je L00521981
+            cmp eax, 3
+            jne L00521a0a
+            mov ax, word ptr [esi + 0x20]
+            test ah, 0x10
+            jne L00521981
+            test ah, 0x80
+            je L00521a0a
+            mov ebx, dword ptr [esp + 0x7c]
+            push ebx
+            call IsMaterialTransparent
+            test eax, eax
+            je L00521a0e
+            jmp L00521985
+    L00521981:
+            mov ebx, dword ptr [esp + 0x7c]
+    L00521985:
+            cmp ebp, edi
+            je L00521a0e
+            lea edx, [esi + 0x34]
+            push ebp
+            push edx
+            call SetOrderTableBounds
+            cmp word ptr [ebp + 0x22], di
+            jne L005219ac
+            push ebp
+            call BrZsOrderTableClear
+            add esp, 4
+            push ebp
+            call InsertOrderTableList
+    L005219ac:
+            inc word ptr [ebp + 0x22]
+            mov eax, dword ptr [v1db+0xc]
+            push ebp
+            push 0x102
+            mov ecx, dword ptr [eax]
+            push edi
+            push 0x7b
+            push eax
+            call dword ptr [ecx + 0x80]
+            mov eax, dword ptr [v1db+0x4dc]
+            add esp, 0x14
+            cmp eax, edi
+            je L00521a0e
+            mov edx, dword ptr [esp + 0x74]
+            mov dword ptr [esp + 0x4c], eax
+            mov eax, dword ptr [v1db+0xc]
+            mov dword ptr [esp + 0x54], edx
+            lea edx, [esp + 0x8c]
+            mov dword ptr [esp + 0x5c], esi
+            push edx
+            lea edx, [esp + 0x4c]
+            push edx
+            mov dword ptr [esp + 0x6c], ebx
+            mov ecx, dword ptr [eax]
+            push edi
+            push 0x7b
+            push eax
+            call dword ptr [ecx + 0x84]
+            add esp, 0x14
+            jmp L00521a0e
+    L00521a0a:
+            mov ebx, dword ptr [esp + 0x7c]
+    L00521a0e:
+            cmp dword ptr [v1db+0x4e0], edi
+            je L00521bba
+            mov eax, dword ptr [v1db+0xc]
+            mov dword ptr [esp + 0x30], 0xe6
+            mov dword ptr [esp + 0x34], edi
+            mov dword ptr [esp + 0x38], 0xe9
+            mov dword ptr [esp + 0x3c], edi
+            mov dword ptr [esp + 0x40], edi
+            mov dword ptr [esp + 0x44], edi
+            mov ecx, dword ptr [eax]
+            push 0x20
+            push eax
+            call dword ptr [ecx + 0xcc]
+            mov ecx, dword ptr [esp + 0x90]
+            mov eax, dword ptr [esp + 0x8c]
+            add esp, 8
+            mov edx, eax
+            and edx, 0xff
+            push ecx
+            push eax
+            mov eax, dword ptr [esp + 0x7c]
+            push ebp
+            push ebx
+            push esi
+            push eax
+            call dword ptr [edx*4 + RenderStyleCalls]
+            mov eax, dword ptr [v1db+0xc]
+            lea edx, [esp + 0x80]
+            push edx
+            lea edx, [esp + 0x24]
+            mov ecx, dword ptr [eax]
+            push 0x10
+            push edx
+            lea edx, [esp + 0x3c]
+            push edx
+            push edi
+            push 0x7a
+            push eax
+            call dword ptr [ecx + 0x90]
+            mov ebx, dword ptr [esp + 0x50]
+            add esp, 0x1c
+            _emit 0xd9
+        _emit 0x03
+            call _ftol
+            mov esi, eax
+            mov dword ptr [esp + 0x10], esi
+            fld dword ptr [ebx + 4]
+            call _ftol
+            mov ebx, dword ptr [esp + 0x3c]
+            mov dword ptr [esp + 0x14], eax
+            _emit 0xd9
+        _emit 0x03
+            call _ftol
+            mov dword ptr [esp + 0x18], eax
+            fld dword ptr [ebx + 4]
+            call _ftol
+            cmp esi, edi
+            mov dword ptr [esp + 0x1c], eax
+            jge L00521ade
+            xor esi, esi
+            mov dword ptr [esp + 0x10], esi
+    L00521ade:
+            cmp dword ptr [esp + 0x14], edi
+            jge L00521ae8
+            mov dword ptr [esp + 0x14], edi
+    L00521ae8:
+            cmp dword ptr [esp + 0x18], edi
+            jge L00521af2
+            mov dword ptr [esp + 0x18], edi
+    L00521af2:
+            cmp eax, edi
+            jge L00521afc
+            xor eax, eax
+            mov dword ptr [esp + 0x1c], eax
+    L00521afc:
+            mov ecx, dword ptr [v1db+0x4fc]
+            xor edx, edx
+            mov dx, word ptr [ecx + 0x34]
+            cmp esi, edx
+            jl L00521b13
+            lea esi, [edx - 1]
+            mov dword ptr [esp + 0x10], esi
+    L00521b13:
+            mov edi, dword ptr [esp + 0x14]
+            xor edx, edx
+            mov dx, word ptr [ecx + 0x36]
+            cmp edi, edx
+            jl L00521b26
+            dec edx
+            mov dword ptr [esp + 0x14], edx
+    L00521b26:
+            mov edi, dword ptr [esp + 0x18]
+            xor edx, edx
+            mov dx, word ptr [ecx + 0x34]
+            cmp edi, edx
+            jl L00521b39
+            dec edx
+            mov dword ptr [esp + 0x18], edx
+    L00521b39:
+            xor edx, edx
+            mov dx, word ptr [ecx + 0x36]
+            cmp eax, edx
+            jl L00521b4a
+            lea eax, [edx - 1]
+            mov dword ptr [esp + 0x1c], eax
+    L00521b4a:
+            movsx edx, word ptr [ecx + 0x38]
+            mov edi, dword ptr [esp + 0x14]
+            sub esi, edx
+            mov dword ptr [esp + 0x10], esi
+            movsx edx, word ptr [ecx + 0x3a]
+            sub edi, edx
+            mov edx, dword ptr [esp + 0x18]
+            mov dword ptr [esp + 0x14], edi
+            movsx edi, word ptr [ecx + 0x38]
+            sub edx, edi
+            mov dword ptr [esp + 0x18], edx
+            movsx ecx, word ptr [ecx + 0x3a]
+            sub eax, ecx
+            cmp esi, edx
+            mov dword ptr [esp + 0x1c], eax
+            jg L00521be1
+            cmp dword ptr [esp + 0x14], eax
+            jg L00521be1
+            mov eax, dword ptr [esp + 0x84]
+            mov ecx, dword ptr [esp + 0x7c]
+            lea edx, [esp + 0x10]
+            push edx
+            mov edx, dword ptr [esp + 0x7c]
+            push offset v1db+0x20
+            push eax
+            mov eax, dword ptr [esp + 0x80]
+            push ebp
+            push ecx
+            push edx
+            push eax
+            call dword ptr [v1db+0x4e0]
+            add esp, 0x1c
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x60
+            ret
+    L00521bba:
+            mov edx, dword ptr [esp + 0x88]
+            mov eax, dword ptr [esp + 0x84]
+            push edx
+            push eax
+            mov ecx, eax
+            mov eax, dword ptr [esp + 0x7c]
+            push ebp
+            push ebx
+            and ecx, 0xff
+            push esi
+            push eax
+            call dword ptr [ecx*4 + RenderStyleCalls]
+    L00521be1:
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x60
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00521bf0
@@ -414,7 +721,8 @@ void C2_HOOK_STDCALL SetViewport(br_pixelmap* buffer) {
 }
 
 // FUNCTION: CARMA2_HW 0x00521e50
-void C2_HOOK_CDECL BrZbSceneRenderBegin(br_actor* world, br_actor* camera, br_pixelmap* colour_buffer, br_pixelmap* depth_buffer) {
+void C2_NAKED C2_HOOK_CDECL BrZbSceneRenderBegin(br_actor* world, br_actor* camera, br_pixelmap* colour_buffer, br_pixelmap* depth_buffer) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     v1db.rendering = BR_ZB_RENDERING;
     v1db.render_root = world;
@@ -426,6 +734,113 @@ void C2_HOOK_CDECL BrZbSceneRenderBegin(br_actor* world, br_actor* camera, br_pi
     v1db.renderer->dispatch->_partSet(v1db.renderer, BRT_HIDDEN_SURFACE, 0, BRT_TYPE_T, 1);
     v1db.default_render_data = NULL;
     BrDbSceneRenderBegin(world, camera);
+#else
+    __asm {
+            mov eax, dword ptr [esp + 0xc]
+            push esi
+            mov esi, dword ptr [esp + 8]
+            mov dword ptr [v1db+0x8], 1
+            mov dword ptr [v1db+0x98], esi
+            mov dword ptr [v1db+0x4fc], eax
+            mov cx, word ptr [eax + 0x34]
+            push edi
+            movsx edx, word ptr [eax + 0x38]
+            mov edi, ecx
+            and edi, 0xffff
+            shr edi, 1
+            sub edx, edi
+            mov dword ptr [esp + 0xc], edx
+            fild dword ptr [esp + 0xc]
+            shr cx, 1
+            and ecx, 0xffff
+            mov dword ptr [esp + 0xc], ecx
+            fild dword ptr [esp + 0xc]
+            fdivp st(1), st(0)
+            fstp dword ptr [v1db+0x4e4]
+            mov cx, word ptr [eax + 0x36]
+            movsx edx, word ptr [eax + 0x3a]
+            mov edi, ecx
+            and edi, 0xffff
+            shr edi, 1
+            sub edx, edi
+            mov dword ptr [esp + 0xc], edx
+            xor edx, edx
+            fild dword ptr [esp + 0xc]
+            shr cx, 1
+            and ecx, 0xffff
+            mov dword ptr [esp + 0xc], ecx
+            xor ecx, ecx
+            fild dword ptr [esp + 0xc]
+            fdivp st(1), st(0)
+            fchs
+            fstp dword ptr [v1db+0x4e8]
+            mov dx, word ptr [eax + 0x34]
+            mov cx, word ptr [eax + 0x30]
+            shr edx, 1
+            add ecx, edx
+            mov dword ptr [esp + 0xc], ecx
+            fild dword ptr [esp + 0xc]
+            fsub dword ptr [IID_IDirectInputDevice2A+0x440]
+            fstp dword ptr [v1db+0x4ec]
+            mov cx, word ptr [eax + 0x34]
+            shr cx, 1
+            and ecx, 0xffff
+            mov dword ptr [esp + 0xc], ecx
+            fild dword ptr [esp + 0xc]
+            fstp dword ptr [v1db+0x4f4]
+            mov dx, word ptr [eax + 0x36]
+            shr dx, 1
+            and edx, 0xffff
+            mov dword ptr [esp + 0xc], edx
+            fild dword ptr [esp + 0xc]
+            fsub dword ptr [IID_IDirectInputDevice2A+0x440]
+            fstp dword ptr [v1db+0x4f0]
+            mov cx, word ptr [eax + 0x36]
+            shr cx, 1
+            and ecx, 0xffff
+            mov dword ptr [esp + 0xc], ecx
+            mov ecx, dword ptr [v1db+0xc]
+            fild dword ptr [esp + 0xc]
+            fchs
+            fstp dword ptr [v1db+0x4f8]
+            mov edx, dword ptr [ecx]
+            push eax
+            push 0xf9
+            push 0
+            push 0x7d
+            push ecx
+            call dword ptr [edx + 0x80]
+            mov edx, dword ptr [esp + 0x2c]
+            mov eax, dword ptr [v1db+0xc]
+            add esp, 0x14
+            mov ecx, dword ptr [eax]
+            push edx
+            push 0xfa
+            push 0
+            push 0x7d
+            push eax
+            call dword ptr [ecx + 0x80]
+            mov eax, dword ptr [v1db+0xc]
+            add esp, 0x14
+            mov ecx, dword ptr [eax]
+            push 1
+            push 0xac
+            push 0
+            push 0x7b
+            push eax
+            call dword ptr [ecx + 0x80]
+            mov edx, dword ptr [esp + 0x24]
+            add esp, 0x14
+            mov dword ptr [v1db+0x4c0], 0
+            push edx
+            push esi
+            call BrDbSceneRenderBegin
+            add esp, 8
+            pop edi
+            pop esi
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00521fd0
@@ -449,7 +864,8 @@ void C2_HOOK_CDECL BrZbSceneRenderEnd(void) {
 }
 
 // FUNCTION: CARMA2_HW 0x005226d0
-void C2_HOOK_CDECL BrZbSceneRender(br_actor* world, br_actor* camera, br_pixelmap* colour_buffer, br_pixelmap* depth_buffer) {
+void C2_NAKED C2_HOOK_CDECL BrZbSceneRender(br_actor* world, br_actor* camera, br_pixelmap* colour_buffer, br_pixelmap* depth_buffer) {
+#ifndef CARPOCALYPSE2_MATCHING
     br_actor* child;
     br_model* model;
     br_material* material;
@@ -513,10 +929,186 @@ void C2_HOOK_CDECL BrZbSceneRender(br_actor* world, br_actor* camera, br_pixelma
 
     v1db.rendering = 0;
     v1db.render_root = NULL;
+#else
+    __asm {
+            mov edx, dword ptr [v1db+0xc]
+            test edx, edx
+            je L005228d4
+            mov eax, dword ptr [esp + 0xc]
+            push edi
+            push esi
+            mov esi, dword ptr [esp + 0xc]
+            mov dword ptr [v1db+0x8], 1
+            mov dword ptr [v1db+0x98], esi
+            mov dword ptr [v1db+0x4fc], eax
+            mov cx, word ptr [eax + 0x34]
+            movsx edi, word ptr [eax + 0x38]
+            push ebp
+            push ebx
+            mov ebx, ecx
+            and ebx, 0xffff
+            shr ebx, 1
+            sub edi, ebx
+            mov dword ptr [esp + 0x14], edi
+            fild dword ptr [esp + 0x14]
+            shr cx, 1
+            and ecx, 0xffff
+            mov dword ptr [esp + 0x14], ecx
+            fild dword ptr [esp + 0x14]
+            fdivp st(1), st(0)
+            fstp dword ptr [v1db+0x4e4]
+            mov cx, word ptr [eax + 0x36]
+            movsx edi, word ptr [eax + 0x3a]
+            mov ebx, ecx
+            and ebx, 0xffff
+            shr ebx, 1
+            sub edi, ebx
+            mov dword ptr [esp + 0x14], edi
+            xor edi, edi
+            fild dword ptr [esp + 0x14]
+            shr cx, 1
+            and ecx, 0xffff
+            mov dword ptr [esp + 0x14], ecx
+            xor ecx, ecx
+            fild dword ptr [esp + 0x14]
+            fdivp st(1), st(0)
+            fchs
+            fstp dword ptr [v1db+0x4e8]
+            mov di, word ptr [eax + 0x34]
+            mov cx, word ptr [eax + 0x30]
+            shr edi, 1
+            add ecx, edi
+            mov dword ptr [esp + 0x14], ecx
+            fild dword ptr [esp + 0x14]
+            fsub dword ptr [IID_IDirectInputDevice2A+0x440]
+            fstp dword ptr [v1db+0x4ec]
+            mov cx, word ptr [eax + 0x34]
+            shr cx, 1
+            and ecx, 0xffff
+            mov dword ptr [esp + 0x14], ecx
+            fild dword ptr [esp + 0x14]
+            fstp dword ptr [v1db+0x4f4]
+            mov cx, word ptr [eax + 0x36]
+            shr cx, 1
+            and ecx, 0xffff
+            mov dword ptr [esp + 0x14], ecx
+            fild dword ptr [esp + 0x14]
+            fsub dword ptr [IID_IDirectInputDevice2A+0x440]
+            fstp dword ptr [v1db+0x4f0]
+            mov cx, word ptr [eax + 0x36]
+            shr cx, 1
+            and ecx, 0xffff
+            mov dword ptr [esp + 0x14], ecx
+            fild dword ptr [esp + 0x14]
+            fchs
+            fstp dword ptr [v1db+0x4f8]
+            mov ecx, dword ptr [edx]
+            push eax
+            push 0xf9
+            push 0
+            push 0x7d
+            push edx
+            call dword ptr [ecx + 0x80]
+            mov ecx, dword ptr [esp + 0x34]
+            mov eax, dword ptr [v1db+0xc]
+            add esp, 0x14
+            mov edx, dword ptr [eax]
+            push ecx
+            push 0xfa
+            push 0
+            push 0x7d
+            push eax
+            call dword ptr [edx + 0x80]
+            mov eax, dword ptr [v1db+0xc]
+            add esp, 0x14
+            mov edx, dword ptr [eax]
+            push 1
+            push 0xac
+            push 0
+            push 0x7b
+            push eax
+            call dword ptr [edx + 0x80]
+            mov eax, dword ptr [esp + 0x2c]
+            add esp, 0x14
+            mov dword ptr [v1db+0x4c0], 0
+            push eax
+            push esi
+            call BrDbSceneRenderBegin
+            mov eax, dword ptr [esi + 0x18]
+            mov ebx, dword ptr [v1db+0x4b8]
+            mov ebp, dword ptr [v1db+0x4bc]
+            mov edi, dword ptr [v1db+0x4c0]
+            add esp, 8
+            mov byte ptr [esp + 0x14], 0
+            test eax, eax
+            je L00522871
+            mov ebx, eax
+    L00522871:
+            mov eax, dword ptr [esi + 0x1c]
+            test eax, eax
+            je L0052287a
+            mov ebp, eax
+    L0052287a:
+            mov eax, dword ptr [esi + 0x24]
+            test eax, eax
+            je L00522883
+            mov edi, eax
+    L00522883:
+            mov al, byte ptr [esi + 0x20]
+            test al, al
+            je L0052288e
+            mov byte ptr [esp + 0x14], al
+    L0052288e:
+            mov esi, dword ptr [esi + 8]
+            test esi, esi
+            je L005228b1
+    L00522895:
+            mov cx, word ptr [v1db+0x94]
+            mov edx, dword ptr [esp + 0x14]
+            push ecx
+            push edx
+            push edi
+            push ebp
+            push ebx
+            push esi
+            call actorRender
+            mov esi, dword ptr [esi]
+            test esi, esi
+            jne L00522895
+    L005228b1:
+            mov eax, dword ptr [v1db+0xc]
+            push 0
+            push eax
+            mov ecx, dword ptr [eax]
+            call dword ptr [ecx + 0xfc]
+            add esp, 8
+            xor eax, eax
+            mov dword ptr [v1db+0x8], eax
+            mov dword ptr [v1db+0x98], eax
+            pop ebx
+            pop ebp
+            pop esi
+            pop edi
+    L005228d4:
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x005228e0
-void C2_HOOK_CDECL BrZsSceneRenderBegin(br_actor* world, br_actor* camera, br_pixelmap* colour_buffer) {
+void C2_NAKED C2_HOOK_CDECL BrZsSceneRenderBegin(br_actor* world, br_actor* camera, br_pixelmap* colour_buffer) {
+#ifndef CARPOCALYPSE2_MATCHING
     br_camera* camera_data;
 
     v1db.rendering = BR_ZS_RENDERING;
@@ -539,6 +1131,144 @@ void C2_HOOK_CDECL BrZsSceneRenderBegin(br_actor* world, br_actor* camera, br_pi
     v1db.renderer->dispatch->_partSet(v1db.renderer, BRT_HIDDEN_SURFACE, 0, BRT_TYPE_T, BRT_BUCKET_SORT);
     v1db.default_render_data = v1db.default_order_table;
     BrDbSceneRenderBegin(world, camera);
+#else
+    __asm {
+            mov eax, dword ptr [esp + 0xc]
+            push esi
+            mov esi, dword ptr [esp + 8]
+            mov dword ptr [v1db+0x8], 2
+            mov dword ptr [v1db+0x98], esi
+            mov dword ptr [v1db+0x4fc], eax
+            mov cx, word ptr [eax + 0x34]
+            push edi
+            movsx edx, word ptr [eax + 0x38]
+            mov edi, ecx
+            and edi, 0xffff
+            shr edi, 1
+            sub edx, edi
+            mov dword ptr [esp + 0xc], edx
+            fild dword ptr [esp + 0xc]
+            shr cx, 1
+            and ecx, 0xffff
+            mov dword ptr [esp + 0xc], ecx
+            fild dword ptr [esp + 0xc]
+            fdivp st(1), st(0)
+            fstp dword ptr [v1db+0x4e4]
+            mov cx, word ptr [eax + 0x36]
+            movsx edx, word ptr [eax + 0x3a]
+            mov edi, ecx
+            and edi, 0xffff
+            shr edi, 1
+            sub edx, edi
+            mov dword ptr [esp + 0xc], edx
+            xor edx, edx
+            fild dword ptr [esp + 0xc]
+            shr cx, 1
+            and ecx, 0xffff
+            mov dword ptr [esp + 0xc], ecx
+            xor ecx, ecx
+            fild dword ptr [esp + 0xc]
+            fdivp st(1), st(0)
+            fchs
+            fstp dword ptr [v1db+0x4e8]
+            mov dx, word ptr [eax + 0x34]
+            mov cx, word ptr [eax + 0x30]
+            shr edx, 1
+            add ecx, edx
+            mov dword ptr [esp + 0xc], ecx
+            fild dword ptr [esp + 0xc]
+            fsub dword ptr [IID_IDirectInputDevice2A+0x440]
+            fstp dword ptr [v1db+0x4ec]
+            mov cx, word ptr [eax + 0x34]
+            shr cx, 1
+            and ecx, 0xffff
+            mov dword ptr [esp + 0xc], ecx
+            fild dword ptr [esp + 0xc]
+            fstp dword ptr [v1db+0x4f4]
+            mov dx, word ptr [eax + 0x36]
+            shr dx, 1
+            and edx, 0xffff
+            mov dword ptr [esp + 0xc], edx
+            fild dword ptr [esp + 0xc]
+            fsub dword ptr [IID_IDirectInputDevice2A+0x440]
+            fstp dword ptr [v1db+0x4f0]
+            mov cx, word ptr [eax + 0x36]
+            shr cx, 1
+            and ecx, 0xffff
+            mov dword ptr [esp + 0xc], ecx
+            mov ecx, dword ptr [v1db+0xc]
+            fild dword ptr [esp + 0xc]
+            fchs
+            fstp dword ptr [v1db+0x4f8]
+            mov edx, dword ptr [ecx]
+            push eax
+            push 0xf9
+            push 0
+            push 0x7d
+            push ecx
+            call dword ptr [edx + 0x80]
+            mov eax, dword ptr [v1db+0xc]
+            add esp, 0x14
+            mov ecx, dword ptr [eax]
+            push 0
+            push 0xfa
+            push 0
+            push 0x7d
+            push eax
+            call dword ptr [ecx + 0x80]
+            mov edx, dword ptr [v1db+0x4d0]
+            mov edi, dword ptr [esp + 0x24]
+            mov dword ptr [v1db+0x4d8], edx
+            mov edx, dword ptr [v1db+0x4c4]
+            mov eax, dword ptr [edi + 0x5c]
+            add esp, 0x14
+            mov ecx, dword ptr [eax + 0xc]
+            mov dword ptr [edx + 0x10], ecx
+            mov ecx, dword ptr [v1db+0x4c4]
+            mov eax, dword ptr [eax + 8]
+            mov dword ptr [ecx + 0xc], eax
+            mov edx, dword ptr [v1db+0x4c4]
+            mov word ptr [edx + 0x22], 0
+            mov edx, dword ptr [v1db+0x4c4]
+            mov eax, dword ptr [v1db+0xc]
+            push edx
+            push 0x102
+            mov dword ptr [v1db+0x4cc], 0
+            mov ecx, dword ptr [eax]
+            push 0
+            push 0x7b
+            push eax
+            call dword ptr [ecx + 0x80]
+            mov eax, dword ptr [v1db+0xc]
+            add esp, 0x14
+            mov ecx, dword ptr [eax]
+            push offset v1db+0x4d0
+            push 0x103
+            push 0
+            push 0x7b
+            push eax
+            call dword ptr [ecx + 0x80]
+            mov eax, dword ptr [v1db+0xc]
+            add esp, 0x14
+            mov edx, dword ptr [eax]
+            push 0x101
+            push 0xac
+            push 0
+            push 0x7b
+            push eax
+            call dword ptr [edx + 0x80]
+            mov eax, dword ptr [v1db+0x4c4]
+            add esp, 0x14
+            mov dword ptr [v1db+0x4c0], eax
+            push edi
+            push esi
+            call BrDbSceneRenderBegin
+            add esp, 8
+            pop edi
+            pop esi
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00522ae0
@@ -571,7 +1301,8 @@ void C2_HOOK_CDECL BrZsSceneRenderEnd(void) {
 }
 
 // FUNCTION: CARMA2_HW 0x00522b70
-void C2_HOOK_CDECL BrZsSceneRender(br_actor* world, br_actor* camera, br_pixelmap* colour_buffer) {
+void C2_NAKED C2_HOOK_CDECL BrZsSceneRender(br_actor* world, br_actor* camera, br_pixelmap* colour_buffer) {
+#ifndef CARPOCALYPSE2_MATCHING
     br_actor* child;
     br_model* model;
     br_material* material;
@@ -626,6 +1357,107 @@ void C2_HOOK_CDECL BrZsSceneRender(br_actor* world, br_actor* camera, br_pixelma
 #endif
     v1db.rendering = 0;
     v1db.render_root = NULL;
+#else
+    __asm {
+            mov eax, dword ptr [v1db+0xc]
+            test eax, eax
+            je L00522c6f
+            mov eax, dword ptr [esp + 0xc]
+            mov ecx, dword ptr [esp + 8]
+            push edi
+            push esi
+            mov esi, dword ptr [esp + 0xc]
+            push ebp
+            push ebx
+            push eax
+            push ecx
+            push esi
+            call BrZsSceneRenderBegin
+            mov eax, dword ptr [esi + 0x18]
+            mov edx, dword ptr [v1db+0x4b8]
+            mov ebx, dword ptr [v1db+0x4bc]
+            mov ebp, dword ptr [v1db+0x4c0]
+            add esp, 0xc
+            mov dword ptr [esp + 0x18], edx
+            test eax, eax
+            mov byte ptr [esp + 0x1c], 0
+            je L00522bbe
+            mov dword ptr [esp + 0x18], eax
+    L00522bbe:
+            mov eax, dword ptr [esi + 0x1c]
+            test eax, eax
+            je L00522bc7
+            mov ebx, eax
+    L00522bc7:
+            mov eax, dword ptr [esi + 0x24]
+            test eax, eax
+            je L00522bd0
+            mov ebp, eax
+    L00522bd0:
+            mov al, byte ptr [esi + 0x20]
+            test al, al
+            je L00522bdb
+            mov byte ptr [esp + 0x1c], al
+    L00522bdb:
+            mov esi, dword ptr [esi + 8]
+            test esi, esi
+            je L00522c01
+            mov edi, dword ptr [esp + 0x1c]
+    L00522be6:
+            mov ax, word ptr [v1db+0x94]
+            mov ecx, dword ptr [esp + 0x18]
+            push eax
+            push edi
+            push ebp
+            push ebx
+            push ecx
+            push esi
+            call actorRender
+            mov esi, dword ptr [esi]
+            test esi, esi
+            jne L00522be6
+    L00522c01:
+            mov ecx, dword ptr [v1db+0x4fc]
+            mov eax, dword ptr [v1db+0xc]
+            push ecx
+            xor esi, esi
+            mov edx, dword ptr [eax]
+            push 0xf9
+            push esi
+            push 0x7d
+            push eax
+            call dword ptr [edx + 0x80]
+            mov eax, dword ptr [v1db+0x18]
+            add esp, 0x14
+            cmp eax, esi
+            jne L00522c39
+            push offset gZlib_filesystem+0x220
+            call BrFailure
+            add esp, 4
+    L00522c39:
+            cmp dword ptr [v1db+0x4c8], esi
+            je L00522c48
+            call RenderPrimaryOrderTable
+            jmp L00522c4d
+    L00522c48:
+            call RenderOrderTableList
+    L00522c4d:
+            mov eax, dword ptr [v1db+0xc]
+            push esi
+            push eax
+            mov edx, dword ptr [eax]
+            call dword ptr [edx + 0xfc]
+            add esp, 8
+            mov dword ptr [v1db+0x8], esi
+            mov dword ptr [v1db+0x98], esi
+            pop ebx
+            pop ebp
+            pop esi
+            pop edi
+    L00522c6f:
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00522c70
@@ -638,7 +1470,8 @@ br_primitive_cbfn* C2_HOOK_CDECL BrZsPrimitiveCallbackSet(br_primitive_cbfn* new
 }
 
 // FUNCTION: CARMA2_HW 0x00522c80
-void C2_HOOK_CDECL BrZbsSceneRenderBegin(br_actor* world, br_actor* camera, br_pixelmap* colour_buffer, br_pixelmap* depth_buffer) {
+void C2_NAKED C2_HOOK_CDECL BrZbsSceneRenderBegin(br_actor* world, br_actor* camera, br_pixelmap* colour_buffer, br_pixelmap* depth_buffer) {
+#ifndef CARPOCALYPSE2_MATCHING
     br_camera* camera_data;
 
     v1db.rendering = BR_ZB_RENDERING | BR_ZS_RENDERING;
@@ -668,6 +1501,154 @@ void C2_HOOK_CDECL BrZbsSceneRenderBegin(br_actor* world, br_actor* camera, br_p
     v1db.renderer->dispatch->_partSet(v1db.renderer, BRT_HIDDEN_SURFACE, 0, BRT_TYPE_T, BRT_BUCKET_AND_BUFFER);
     v1db.default_render_data = v1db.default_order_table;
     BrDbSceneRenderBegin(world, camera);
+#else
+    __asm {
+            mov eax, dword ptr [esp + 0xc]
+            push esi
+            mov esi, dword ptr [esp + 8]
+            mov dword ptr [v1db+0x8], 3
+            mov dword ptr [v1db+0x98], esi
+            mov dword ptr [v1db+0x4fc], eax
+            mov cx, word ptr [eax + 0x34]
+            push edi
+            movsx edx, word ptr [eax + 0x38]
+            mov edi, ecx
+            and edi, 0xffff
+            shr edi, 1
+            sub edx, edi
+            mov dword ptr [esp + 0xc], edx
+            fild dword ptr [esp + 0xc]
+            shr cx, 1
+            and ecx, 0xffff
+            mov dword ptr [esp + 0xc], ecx
+            fild dword ptr [esp + 0xc]
+            fdivp st(1), st(0)
+            fstp dword ptr [v1db+0x4e4]
+            mov cx, word ptr [eax + 0x36]
+            movsx edx, word ptr [eax + 0x3a]
+            mov edi, ecx
+            and edi, 0xffff
+            shr edi, 1
+            sub edx, edi
+            mov dword ptr [esp + 0xc], edx
+            xor edx, edx
+            fild dword ptr [esp + 0xc]
+            shr cx, 1
+            and ecx, 0xffff
+            mov dword ptr [esp + 0xc], ecx
+            xor ecx, ecx
+            fild dword ptr [esp + 0xc]
+            fdivp st(1), st(0)
+            fchs
+            fstp dword ptr [v1db+0x4e8]
+            mov dx, word ptr [eax + 0x34]
+            mov cx, word ptr [eax + 0x30]
+            shr edx, 1
+            add ecx, edx
+            mov dword ptr [esp + 0xc], ecx
+            fild dword ptr [esp + 0xc]
+            fsub dword ptr [IID_IDirectInputDevice2A+0x440]
+            fstp dword ptr [v1db+0x4ec]
+            mov cx, word ptr [eax + 0x34]
+            shr cx, 1
+            and ecx, 0xffff
+            mov dword ptr [esp + 0xc], ecx
+            fild dword ptr [esp + 0xc]
+            fstp dword ptr [v1db+0x4f4]
+            mov dx, word ptr [eax + 0x36]
+            shr dx, 1
+            and edx, 0xffff
+            mov dword ptr [esp + 0xc], edx
+            fild dword ptr [esp + 0xc]
+            fsub dword ptr [IID_IDirectInputDevice2A+0x440]
+            fstp dword ptr [v1db+0x4f0]
+            mov cx, word ptr [eax + 0x36]
+            shr cx, 1
+            and ecx, 0xffff
+            mov dword ptr [esp + 0xc], ecx
+            mov ecx, dword ptr [v1db+0xc]
+            fild dword ptr [esp + 0xc]
+            fchs
+            fstp dword ptr [v1db+0x4f8]
+            mov edx, dword ptr [ecx]
+            push eax
+            push 0xf9
+            push 0
+            push 0x7d
+            push ecx
+            call dword ptr [edx + 0x80]
+            mov eax, dword ptr [v1db+0xc]
+            add esp, 0x14
+            mov ecx, dword ptr [eax]
+            push 0
+            push 0xfa
+            push 0
+            push 0x7d
+            push eax
+            call dword ptr [ecx + 0x80]
+            mov ecx, dword ptr [esp + 0x2c]
+            mov eax, dword ptr [v1db+0xc]
+            add esp, 0x14
+            mov edx, dword ptr [eax]
+            push ecx
+            push 0xfa
+            push 0
+            push 0x7d
+            push eax
+            call dword ptr [edx + 0x80]
+            mov edx, dword ptr [v1db+0x4d0]
+            mov edi, dword ptr [esp + 0x24]
+            mov dword ptr [v1db+0x4d8], edx
+            mov edx, dword ptr [v1db+0x4c4]
+            mov eax, dword ptr [edi + 0x5c]
+            add esp, 0x14
+            mov ecx, dword ptr [eax + 0xc]
+            mov dword ptr [edx + 0x10], ecx
+            mov ecx, dword ptr [v1db+0x4c4]
+            mov eax, dword ptr [eax + 8]
+            mov dword ptr [ecx + 0xc], eax
+            mov edx, dword ptr [v1db+0x4c4]
+            mov word ptr [edx + 0x22], 0
+            mov edx, dword ptr [v1db+0x4c4]
+            mov eax, dword ptr [v1db+0xc]
+            push edx
+            push 0x102
+            mov dword ptr [v1db+0x4cc], 0
+            mov ecx, dword ptr [eax]
+            push 0
+            push 0x7b
+            push eax
+            call dword ptr [ecx + 0x80]
+            mov eax, dword ptr [v1db+0xc]
+            add esp, 0x14
+            mov ecx, dword ptr [eax]
+            push offset v1db+0x4d0
+            push 0x103
+            push 0
+            push 0x7b
+            push eax
+            call dword ptr [ecx + 0x80]
+            mov eax, dword ptr [v1db+0xc]
+            add esp, 0x14
+            mov edx, dword ptr [eax]
+            push 0x1b3
+            push 0xac
+            push 0
+            push 0x7b
+            push eax
+            call dword ptr [edx + 0x80]
+            mov eax, dword ptr [v1db+0x4c4]
+            add esp, 0x14
+            mov dword ptr [v1db+0x4c0], eax
+            push edi
+            push esi
+            call BrDbSceneRenderBegin
+            add esp, 8
+            pop edi
+            pop esi
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00522ea0
@@ -700,7 +1681,8 @@ void C2_HOOK_CDECL BrZbsSceneRenderEnd(void) {
 }
 
 // FUNCTION: CARMA2_HW 0x00522f30
-void C2_HOOK_CDECL BrZbsSceneRender(br_actor* world, br_actor* camera, br_pixelmap* colour_buffer, br_pixelmap* depth_buffer) {
+void C2_NAKED C2_HOOK_CDECL BrZbsSceneRender(br_actor* world, br_actor* camera, br_pixelmap* colour_buffer, br_pixelmap* depth_buffer) {
+#ifndef CARPOCALYPSE2_MATCHING
     br_actor* child;
     br_model* model;
     br_material* material;
@@ -755,6 +1737,120 @@ void C2_HOOK_CDECL BrZbsSceneRender(br_actor* world, br_actor* camera, br_pixelm
 #endif
     v1db.rendering = 0;
     v1db.render_root = NULL;
+#else
+    __asm {
+            mov eax, dword ptr [v1db+0xc]
+            test eax, eax
+            je L00523034
+            mov eax, dword ptr [esp + 0x10]
+            mov ecx, dword ptr [esp + 0xc]
+            mov edx, dword ptr [esp + 8]
+            push edi
+            push esi
+            mov esi, dword ptr [esp + 0xc]
+            push ebp
+            push ebx
+            push eax
+            push ecx
+            push edx
+            push esi
+            call BrZbsSceneRenderBegin
+            mov eax, dword ptr [v1db+0x4b8]
+            mov ebx, dword ptr [v1db+0x4bc]
+            mov ebp, dword ptr [v1db+0x4c0]
+            mov dword ptr [esp + 0x2c], eax
+            mov eax, dword ptr [esi + 0x18]
+            add esp, 0x10
+            test eax, eax
+            mov byte ptr [esp + 0x20], 0
+            je L00522f82
+            mov dword ptr [esp + 0x1c], eax
+    L00522f82:
+            mov eax, dword ptr [esi + 0x1c]
+            test eax, eax
+            je L00522f8b
+            mov ebx, eax
+    L00522f8b:
+            mov eax, dword ptr [esi + 0x24]
+            test eax, eax
+            je L00522f94
+            mov ebp, eax
+    L00522f94:
+            mov al, byte ptr [esi + 0x20]
+            test al, al
+            je L00522f9f
+            mov byte ptr [esp + 0x20], al
+    L00522f9f:
+            mov esi, dword ptr [esi + 8]
+            test esi, esi
+            je L00522fc6
+            mov edi, dword ptr [esp + 0x20]
+    L00522faa:
+            mov cx, word ptr [v1db+0x94]
+            mov edx, dword ptr [esp + 0x1c]
+            push ecx
+            push edi
+            push ebp
+            push ebx
+            push edx
+            push esi
+            call actorRender
+            mov esi, dword ptr [esi]
+            test esi, esi
+            jne L00522faa
+    L00522fc6:
+            mov edx, dword ptr [v1db+0x4fc]
+            mov eax, dword ptr [v1db+0xc]
+            push edx
+            xor esi, esi
+            mov ecx, dword ptr [eax]
+            push 0xf9
+            push esi
+            push 0x7d
+            push eax
+            call dword ptr [ecx + 0x80]
+            mov eax, dword ptr [v1db+0x18]
+            add esp, 0x14
+            cmp eax, esi
+            jne L00522ffe
+            push offset gZlib_filesystem+0x244
+            call BrFailure
+            add esp, 4
+    L00522ffe:
+            cmp dword ptr [v1db+0x4c8], esi
+            je L0052300d
+            call RenderPrimaryOrderTable
+            jmp L00523012
+    L0052300d:
+            call RenderOrderTableList
+    L00523012:
+            mov eax, dword ptr [v1db+0xc]
+            push esi
+            push eax
+            mov ecx, dword ptr [eax]
+            call dword ptr [ecx + 0xfc]
+            add esp, 8
+            mov dword ptr [v1db+0x8], esi
+            mov dword ptr [v1db+0x98], esi
+            pop ebx
+            pop ebp
+            pop esi
+            pop edi
+    L00523034:
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00523040

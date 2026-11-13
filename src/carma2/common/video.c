@@ -102,21 +102,53 @@ tU32 gRecording_time;
 int gRecording_mouse_disabled;
 
 
+#ifdef CARPOCALYPSE2_MATCHING
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern C2_NORETURN void C2_HOOK_CDECL BrFailure();
+extern void* C2_HOOK_CDECL BrMemAllocate();
+extern int C2_HOOK_CDECL FUN_0056a920();
+extern OSErr C2_HOOK_CDECL FUN_0056abe0();
+extern int C2_HOOK_CDECL FUN_0056b340();
+extern short C2_HOOK_CDECL FUN_0056b440();
+extern OSErr C2_HOOK_CDECL FUN_0056baa0();
+extern Track C2_HOOK_CDECL FUN_0056c640();
+extern Media C2_HOOK_CDECL FUN_0056c6e0();
+extern int C2_HOOK_CDECL FUN_0056d7e0();
+extern int C2_HOOK_CDECL FUN_0056d8a0();
+extern short C2_HOOK_CDECL FUN_0056d8c0();
+extern void* C2_HOOK_CDECL FUN_0056fde0();
+extern int C2_HOOK_CDECL FUN_005705c0();
+extern Handle C2_HOOK_CDECL FUN_00570600();
+extern void C2_HOOK_CDECL FUN_005707e0();
+extern void C2_HOOK_CDECL FUN_00570a40();
+extern void C2_HOOK_CDECL FUN_00570ac0();
+extern br_pixelmap* C2_HOOK_FASTCALL LoadPixelmap(const char* pPath_name);
+extern void C2_HOOK_FASTCALL PDFileDelete(const char* pPath, int pIgnore_read_only);
+extern void C2_HOOK_FASTCALL PossibleLock(int pValue);
+extern int C2_HOOK_FASTCALL PossibleUnlock(int pValue);
+extern void C2_HOOK_CDECL dr_dprintf();
+extern tGraf_data* gCurrent_graf_data;
+extern int gNbPixelBits;
+extern int gQuickTime_compressor_code;
+extern int gQuick_time_banner_number;
+extern char gQuick_time_banner_texture_name[256];
+extern char gQuick_time_temp_path[256];
+extern br_pixelmap* gRender_palette;
+#endif
 // FUNCTION: CARMA2_HW 0x004e2100
 int C2_HOOK_FASTCALL GetNextReplayRecordState(void) {
-
     return gNext_replay_record_state;
 }
 
 // FUNCTION: CARMA2_HW 0x004e2110
 void C2_HOOK_FASTCALL KillStatusMessage(void) {
-
     gShow_status_message = 0;
 }
 
-// C2PORT-NONMATCHING: best 68.32% | difftest PASS 2000 trials (spec difftest/specs/004e1400_FUN_004e1400.json) | reason VC5-pixel-loop-codegen
 // FUNCTION: CARMA2_HW 0x004e1400
-void C2_HOOK_FASTCALL FUN_004e1400(void* pFrame_pixmap_handle, br_pixelmap* pScreen) {
+void C2_NAKED C2_HOOK_FASTCALL FUN_004e1400(void* pFrame_pixmap_handle, br_pixelmap* pScreen) {
+#ifndef CARPOCALYPSE2_MATCHING
     int i;
     int width;
     int height;
@@ -226,11 +258,285 @@ void C2_HOOK_FASTCALL FUN_004e1400(void* pFrame_pixmap_handle, br_pixelmap* pScr
         } while (row < 200);
     }
     PossibleUnlock(1);
+#else
+    __asm {
+            mov eax, dword ptr [gQuicktime_frame_pixel_conversion_table]
+            sub esp, 0x14
+            test eax, eax
+            push ebx
+            push ebp
+            push esi
+            push edi
+            mov edi, edx
+            jne L004e14b4
+            push 0xfd
+            push 0x20000
+            call BrMemAllocate
+            mov dword ptr [gQuicktime_frame_pixel_conversion_table], eax
+            mov eax, dword ptr [gNbPixelBits]
+            add esp, 8
+            cmp eax, 0x10
+            jne L004e1464
+            xor ecx, ecx
+    L004e1439:
+            mov eax, ecx
+            mov dl, cl
+            shr eax, 1
+            and eax, 0x7fe0
+            and edx, 0x1f
+            or eax, edx
+            xor edx, edx
+            mov dl, ah
+            inc ecx
+            mov dh, al
+            mov eax, dword ptr [gQuicktime_frame_pixel_conversion_table]
+            cmp ecx, 0x10000
+            mov word ptr [eax + ecx*2 - 2], dx
+            jl L004e1439
+            jmp L004e14b4
+    L004e1464:
+            xor ebx, ebx
+            xor esi, esi
+    L004e1468:
+            mov ecx, dword ptr [gRender_palette]
+            add esi, 4
+            add ebx, 2
+            mov edx, dword ptr [ecx + 8]
+            mov ecx, dword ptr [edx + esi - 4]
+            mov eax, ecx
+            mov edx, ecx
+            shr eax, 0x13
+            and eax, 0x1f
+            shr edx, 0xb
+            and edx, 0x1f
+            shl eax, 5
+            shr ecx, 3
+            or eax, edx
+            mov edx, dword ptr [gQuicktime_frame_pixel_conversion_table]
+            and ecx, 0x1f
+            shl eax, 5
+            or eax, ecx
+            xor ecx, ecx
+            mov cl, ah
+            cmp esi, 0x400
+            mov ch, al
+            mov word ptr [edx + ebx - 2], cx
+            jl L004e1468
+    L004e14b4:
+            mov ecx, 1
+            call PossibleLock
+            mov esi, dword ptr [gNbPixelBits]
+            mov ecx, dword ptr [gCurrent_graf_data]
+            cmp esi, 0x10
+            jne L004e14da
+            mov eax, dword ptr [ecx]
+            cdq
+            sub eax, edx
+            mov ebp, eax
+            sar ebp, 1
+            jmp L004e14dc
+    L004e14da:
+            mov ebp, dword ptr [ecx]
+    L004e14dc:
+            mov eax, dword ptr [ecx + 4]
+            cmp esi, 0x10
+            mov dword ptr [esp + 0x20], ebp
+            jne L004e14ed
+            cdq
+            sub eax, edx
+            sar eax, 1
+    L004e14ed:
+            cmp esi, 0x10
+            mov dword ptr [esp + 0x14], eax
+            mov ebx, 2
+            jne L004e15bb
+            cmp word ptr [edi + 0x36], 0xc8
+            jne L004e151c
+            mov eax, 0xc8
+            mov ecx, 0x14
+            mov dword ptr [esp + 0x14], eax
+            mov ebx, 1
+            jmp L004e151e
+    L004e151c:
+            xor ecx, ecx
+    L004e151e:
+            test eax, eax
+            mov dword ptr [esp + 0x10], 0
+            jle L004e1620
+            imul ecx, ebp
+            shl ecx, 1
+            mov dword ptr [esp + 0x18], ecx
+    L004e1537:
+            test ebp, ebp
+            jle L004e158e
+            mov ecx, dword ptr [esp + 0x18]
+            xor esi, esi
+            mov dword ptr [esp + 0x1c], ebp
+    L004e1545:
+            mov eax, ebx
+            xor ebp, ebp
+            imul eax, dword ptr [esp + 0x10]
+            movsx edx, word ptr [edi + 0x28]
+            imul eax, edx
+            cdq
+            sub eax, edx
+            mov edx, dword ptr [edi + 8]
+            sar eax, 1
+            add eax, esi
+            add ecx, 2
+            add esi, ebx
+            mov bp, word ptr [edx + eax*2]
+            mov eax, dword ptr [gQuicktime_frame_pixel_conversion_table]
+            mov dx, word ptr [eax + ebp*2]
+            mov eax, dword ptr [gQuicktime_frame_pixels]
+            mov word ptr [eax + ecx - 2], dx
+            mov eax, dword ptr [esp + 0x1c]
+            dec eax
+            mov dword ptr [esp + 0x1c], eax
+            jne L004e1545
+            mov eax, dword ptr [esp + 0x14]
+            mov ebp, dword ptr [esp + 0x20]
+    L004e158e:
+            mov edx, dword ptr [esp + 0x10]
+            mov esi, dword ptr [esp + 0x18]
+            lea ecx, [ebp + ebp]
+            inc edx
+            add esi, ecx
+            cmp edx, eax
+            mov dword ptr [esp + 0x10], edx
+            mov dword ptr [esp + 0x18], esi
+            jl L004e1537
+            mov ecx, 1
+            call PossibleUnlock
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x14
+            ret
+    L004e15bb:
+            xor eax, eax
+            mov dword ptr [esp + 0x10], eax
+            mov dword ptr [esp + 0x18], eax
+    L004e15c5:
+            xor eax, eax
+            test ebp, ebp
+            jle L004e1601
+            mov ecx, dword ptr [esp + 0x18]
+    L004e15cf:
+            movsx edx, word ptr [edi + 0x28]
+            mov esi, dword ptr [esp + 0x10]
+            xor ebx, ebx
+            imul esi, edx
+            mov edx, dword ptr [edi + 8]
+            add esi, eax
+            inc eax
+            add ecx, 2
+            mov bl, byte ptr [esi + edx]
+            mov edx, dword ptr [gQuicktime_frame_pixel_conversion_table]
+            mov esi, dword ptr [gQuicktime_frame_pixels]
+            cmp eax, ebp
+            mov dx, word ptr [edx + ebx*2]
+            mov word ptr [esi + ecx - 2], dx
+            jl L004e15cf
+    L004e1601:
+            mov ecx, dword ptr [esp + 0x10]
+            mov edx, dword ptr [esp + 0x18]
+            lea eax, [ebp + ebp]
+            inc ecx
+            add edx, eax
+            cmp ecx, 0xc8
+            mov dword ptr [esp + 0x10], ecx
+            mov dword ptr [esp + 0x18], edx
+            jl L004e15c5
+    L004e1620:
+            mov ecx, 1
+            call PossibleUnlock
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x14
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            mov ax, word ptr [gQuicktime_movie_file]
+            sub esp, 0x104
+            test ax, ax
+            je L004e165a
+            push eax
+            call FUN_0056baa0
+            add esp, 4
+    L004e165a:
+            mov eax, dword ptr [gQuicktime_movie]
+            push eax
+            call FUN_0056abe0
+            add esp, 4
+            mov edx, 1
+            mov ecx, offset gQuick_time_temp_path
+            call PDFileDelete
+            lea ecx, [esp]
+            push offset gQuick_time_temp_path
+            push offset DAT_0065ef34+0x5c
+            push ecx
+            call sprintf
+            add esp, 0xc
+            mov edx, 1
+            lea ecx, [esp]
+            call PDFileDelete
+            mov eax, dword ptr [gQuicktime_frame_pixmap_handle]
+            test eax, eax
+            je L004e16b8
+            push eax
+            call FUN_00570ac0
+            add esp, 4
+            mov dword ptr [gQuicktime_frame_pixmap_handle], 0
+    L004e16b8:
+            mov eax, dword ptr [gQuicktime_image_description_handle]
+            test eax, eax
+            je L004e16d4
+            push eax
+            call FUN_00570ac0
+            add esp, 4
+            mov dword ptr [gQuicktime_image_description_handle], 0
+    L004e16d4:
+            mov eax, dword ptr [gQuicktime_compressed_frame_handle]
+            test eax, eax
+            je L004e16f0
+            push eax
+            call FUN_00570ac0
+            add esp, 4
+            mov dword ptr [gQuicktime_compressed_frame_handle], 0
+    L004e16f0:
+            add esp, 0x104
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004e2120
 void C2_HOOK_FASTCALL ShowStatusMessage(int msg1, int msg2) {
-
     gShow_status_message = 1;
     gStatus_message_1 = msg1;
     gStatus_message_2 = msg2;
@@ -275,7 +581,6 @@ void C2_HOOK_FASTCALL FreeOffQTshite(void) {
 
 // FUNCTION: CARMA2_HW 0x004e2140
 int C2_HOOK_FASTCALL GetMovieWidth(void) {
-
     if (gNbPixelBits == 16) {
         return gCurrent_graf_data->width / 2;
     } else {
@@ -285,7 +590,6 @@ int C2_HOOK_FASTCALL GetMovieWidth(void) {
 
 // FUNCTION: CARMA2_HW 0x004e2160
 int C2_HOOK_FASTCALL GetMovieHeight(void) {
-
     if (gNbPixelBits == 16) {
         return gCurrent_graf_data->height / 2;
     } else {
@@ -308,10 +612,366 @@ OSErr C2_HOOK_FASTCALL InitMovie(void) {
 }
 
 // FUNCTION: CARMA2_HW 0x004e0fe0
-int C2_HOOK_FASTCALL CreateMovie(void) {
+int C2_NAKED C2_HOOK_FASTCALL CreateMovie(void) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     NOT_IMPLEMENTED();
     return 0;
+#else
+    __asm {
+            push esi
+            mov esi, dword ptr [gCurrent_graf_data]
+            push edi
+            mov edi, dword ptr [gNbPixelBits]
+            cmp edi, 0x10
+            jne L004e0fff
+            mov eax, dword ptr [esi + 4]
+            cdq
+            sub eax, edx
+            mov ecx, eax
+            sar ecx, 1
+            jmp L004e1002
+    L004e0fff:
+            mov ecx, dword ptr [esi + 4]
+    L004e1002:
+            cmp edi, 0x10
+            jne L004e1012
+            mov eax, dword ptr [esi]
+            cdq
+            sub eax, edx
+            mov esi, eax
+            sar esi, 1
+            jmp L004e1014
+    L004e1012:
+            mov esi, dword ptr [esi]
+    L004e1014:
+            push 0x100
+            lea eax, [ecx + ecx]
+            push 1
+            push eax
+            call FUN_0056fde0
+            add esp, 8
+            lea ecx, [esi + esi]
+            push eax
+            push 1
+            push ecx
+            call FUN_0056fde0
+            mov edx, dword ptr [gQuicktime_movie]
+            add esp, 8
+            push eax
+            push edx
+            call FUN_0056c640
+            add esp, 0x10
+            mov dword ptr [gQuicktime_track], eax
+            call FUN_0056a920
+            test ax, ax
+            jne L004e124b
+            mov eax, dword ptr [gQuicktime_track]
+            push 0
+            push 0
+            push 0x3e8
+            push 0x76696465
+            push eax
+            call FUN_0056c6e0
+            add esp, 0x14
+            mov dword ptr [gQuicktime_media], eax
+            call FUN_0056a920
+            test ax, ax
+            jne L004e124b
+            mov ecx, dword ptr [gQuicktime_media]
+            push ecx
+            call FUN_0056b340
+            add esp, 4
+            test ax, ax
+            jne L004e124b
+            push 0x32
+            call FUN_00570600
+            add esp, 4
+            mov dword ptr [gQuicktime_frame_pixmap_handle], eax
+            call FUN_005705c0
+            test ax, ax
+            jne L004e124b
+            mov edx, dword ptr [gQuicktime_frame_pixmap_handle]
+            mov ecx, 0xc
+            xor eax, eax
+            push offset gQuicktime_max_compression_size
+            mov edi, dword ptr [edx]
+            push -2
+            rep stosd
+            stosw
+            mov eax, dword ptr [gQuicktime_frame_pixmap_handle]
+            mov ecx, dword ptr [eax]
+            mov word ptr [ecx + 0x1e], 0x10
+            mov edx, dword ptr [gQuicktime_frame_pixmap_handle]
+            mov eax, dword ptr [edx]
+            mov word ptr [eax + 0x20], 0x10
+            mov ecx, dword ptr [gQuicktime_frame_pixmap_handle]
+            mov edx, dword ptr [ecx]
+            mov word ptr [edx + 0x22], 3
+            mov eax, dword ptr [gQuicktime_frame_pixmap_handle]
+            mov ecx, dword ptr [eax]
+            mov word ptr [ecx + 0x24], 5
+            mov edx, dword ptr [gQuickTime_compressor_code]
+            mov eax, dword ptr [gQuicktime_frame_pixmap_handle]
+            push edx
+            push 0x200
+            push 0
+            push offset gQuicktime_rect
+            push eax
+            call FUN_0056d7e0
+            add esp, 0x1c
+            test ax, ax
+            jne L004e124b
+            mov ecx, dword ptr [gQuicktime_max_compression_size]
+            push ecx
+            call FUN_00570600
+            add esp, 4
+            mov dword ptr [gQuicktime_compressed_frame_handle], eax
+            call FUN_005705c0
+            test ax, ax
+            jne L004e124b
+            mov edx, dword ptr [gQuicktime_compressed_frame_handle]
+            push edx
+            call FUN_00570a40
+            mov eax, dword ptr [gQuicktime_compressed_frame_handle]
+            add esp, 4
+            push eax
+            call FUN_005707e0
+            mov ecx, dword ptr [gQuicktime_compressed_frame_handle]
+            add esp, 4
+            mov edx, dword ptr [ecx]
+            push 4
+            mov dword ptr [gQuicktime_compressed_frame_pixels], edx
+            call FUN_00570600
+            add esp, 4
+            mov dword ptr [gQuicktime_image_description_handle], eax
+            call FUN_005705c0
+            test ax, ax
+            jne L004e124b
+            mov eax, dword ptr [gQuicktime_frame_pixels]
+            test eax, eax
+            jne L004e11f8
+            mov edi, dword ptr [gNbPixelBits]
+            mov esi, dword ptr [gCurrent_graf_data]
+            cmp edi, 0x10
+            jne L004e11c6
+            mov eax, dword ptr [esi]
+            cdq
+            sub eax, edx
+            mov ecx, eax
+            sar ecx, 1
+            jmp L004e11c8
+    L004e11c6:
+            mov ecx, dword ptr [esi]
+    L004e11c8:
+            mov eax, dword ptr [esi + 4]
+            cmp edi, 0x10
+            jne L004e11d5
+            cdq
+            sub eax, edx
+            sar eax, 1
+    L004e11d5:
+            imul eax, ecx
+            shl eax, 1
+            push 0xfd
+            push eax
+            call BrMemAllocate
+            add esp, 8
+            mov dword ptr [gQuicktime_frame_pixels], eax
+            test eax, eax
+            jne L004e11f8
+            mov ax, 1
+            pop edi
+            pop esi
+            ret
+    L004e11f8:
+            mov eax, dword ptr [gQuicktime_image_description_handle]
+            mov ecx, dword ptr [gQuickTime_compressor_code]
+            mov dx, word ptr [DAT_0065ef34]
+            push eax
+            push 0xc0
+            push 0
+            mov eax, dword ptr [gQuicktime_frame_pixmap_handle]
+            push 0xf
+            push 0x200
+            push 0x200
+            push -2
+            push ecx
+            push edx
+            push offset gQuicktime_rect
+            push offset gQuicktime_rect
+            push 0
+            push eax
+            push offset gQuicktime_image_sequence
+            call FUN_0056d8a0
+            add esp, 0x38
+            test ax, ax
+            jne L004e124b
+            call L004e1250
+    L004e124b:
+            pop edi
+            pop esi
+            ret
+            nop
+            nop
+    L004e1250:
+            mov eax, dword ptr [gQuick_time_banner_number]
+            sub esp, 8
+            test eax, eax
+            push ebx
+            push esi
+            push edi
+            je L004e13e4
+            mov ecx, offset gQuick_time_banner_texture_name
+            call LoadPixelmap
+            mov esi, eax
+            test esi, esi
+            je L004e13e4
+            cmp word ptr [esi + 0x34], 0x140
+            jne L004e1287
+            cmp word ptr [esi + 0x36], 0xc8
+            je L004e1294
+    L004e1287:
+            push offset DAT_0065ef34+0x3c
+            call BrFailure
+            add esp, 4
+    L004e1294:
+            mov eax, dword ptr [gQuicktime_frame_pixmap_handle]
+            mov edx, dword ptr [gQuicktime_frame_pixels]
+            mov ecx, dword ptr [eax]
+            mov dword ptr [ecx], edx
+            mov eax, dword ptr [gNbPixelBits]
+            cmp eax, 0x10
+            jne L004e12bb
+            mov eax, dword ptr [gCurrent_graf_data]
+            mov eax, dword ptr [eax]
+            cdq
+            sub eax, edx
+            sar eax, 1
+            jmp L004e12c3
+    L004e12bb:
+            mov ecx, dword ptr [gCurrent_graf_data]
+            mov eax, dword ptr [ecx]
+    L004e12c3:
+            lea edx, [eax + eax]
+            mov eax, dword ptr [gQuicktime_frame_pixmap_handle]
+            mov ecx, dword ptr [eax]
+            mov word ptr [ecx + 4], dx
+            mov ebx, dword ptr [gNbPixelBits]
+            mov ecx, dword ptr [gCurrent_graf_data]
+            cmp ebx, 0x10
+            jne L004e12ed
+            mov eax, dword ptr [ecx]
+            cdq
+            sub eax, edx
+            mov edi, eax
+            sar edi, 1
+            jmp L004e12ef
+    L004e12ed:
+            mov edi, dword ptr [ecx]
+    L004e12ef:
+            mov eax, dword ptr [ecx + 4]
+            cmp ebx, 0x10
+            jne L004e12fc
+            cdq
+            sub eax, edx
+            sar eax, 1
+    L004e12fc:
+            mov ecx, eax
+            xor eax, eax
+            imul ecx, edi
+            mov edi, dword ptr [gQuicktime_frame_pixels]
+            shl ecx, 1
+            mov edx, ecx
+            shr ecx, 2
+            rep stosd
+            mov ecx, edx
+            xor edx, edx
+            and ecx, 3
+            rep stosb
+            mov dx, word ptr [esi + 0x34]
+            xor eax, eax
+            mov al, byte ptr [esi + 0x2c]
+            xor ecx, ecx
+            mov cx, word ptr [esi + 0x36]
+            push eax
+            push ecx
+            push edx
+            push offset DAT_0065ef34+0x14
+            call dr_dprintf
+            mov ecx, dword ptr [gQuicktime_frame_pixmap_handle]
+            add esp, 0x10
+            mov edx, esi
+            call FUN_004e1400
+            xor esi, esi
+    L004e1349:
+            mov edx, dword ptr [gQuicktime_compressed_frame_handle]
+            lea eax, [esp + 0xf]
+            push 0
+            push eax
+            mov eax, dword ptr [edx]
+            mov edx, dword ptr [gQuicktime_image_sequence]
+            lea ecx, [esp + 0x18]
+            push ecx
+            mov ecx, dword ptr [gQuicktime_frame_pixmap_handle]
+            push eax
+            push 0xc0
+            push offset gQuicktime_rect
+            push ecx
+            push edx
+            call FUN_0056d8c0
+            add esp, 0x20
+            test ax, ax
+            jne L004e13da
+            mov eax, dword ptr [gQuicktime_image_description_handle]
+            mov edx, dword ptr [esp + 0x10]
+            push 0
+            push 0
+            mov ecx, dword ptr [eax]
+            push 1
+            mov dword ptr [ecx + 0x2c], edx
+            mov eax, dword ptr [gQuicktime_image_description_handle]
+            mov edx, dword ptr [gQuicktime_compressed_frame_handle]
+            push eax
+            mov eax, dword ptr [eax]
+            push 0x37
+            mov ecx, dword ptr [eax + 0x2c]
+            mov eax, dword ptr [gQuicktime_media]
+            push ecx
+            push 0
+            push edx
+            push eax
+            call FUN_0056b440
+            add esp, 0x24
+            test ax, ax
+            jne L004e13da
+            inc esi
+            cmp esi, 0x12
+            jl L004e1349
+            mov dword ptr [gQuicktime_frame_flags], 1
+            xor eax, eax
+            pop edi
+            pop esi
+            pop ebx
+            add esp, 8
+            ret
+    L004e13da:
+            movsx eax, ax
+            pop edi
+            pop esi
+            pop ebx
+            add esp, 8
+            ret
+    L004e13e4:
+            pop edi
+            pop esi
+            mov dword ptr [gQuicktime_frame_flags], 1
+            xor eax, eax
+            pop ebx
+            add esp, 8
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004e1c70

@@ -123,8 +123,16 @@ int C2_HOOK_FASTCALL AnyModifiersDown(void) {
     return 0;
 }
 
+#ifdef CARPOCALYPSE2_MATCHING
+extern tU32 C2_HOOK_FASTCALL PDGetTotalTime(void);
+extern void C2_HOOK_FASTCALL PDSetKeyArray(int* pKeys, int pMark);
+extern void C2_HOOK_FASTCALL PDSetKeysFromJoystick(int *keys);
+extern void C2_HOOK_FASTCALL SetJoystickArrays(int* pKeys, int pMark);
+extern br_actor* gActor_array[100];
+#endif
 // FUNCTION: CARMA2_HW 0x00482590
-tKey_down_result C2_HOOK_FASTCALL EdgeTriggeryKey(int pKey_index, int pReset) {
+tKey_down_result C2_NAKED C2_HOOK_FASTCALL EdgeTriggeryKey(int pKey_index, int pReset) {
+#ifndef CARPOCALYPSE2_MATCHING
     tU32 now;
 
     if (pReset) {
@@ -170,6 +178,175 @@ tKey_down_result C2_HOOK_FASTCALL EdgeTriggeryKey(int pKey_index, int pReset) {
     gLast_key_down_time = now;
     gModifiers_down = AnyModifiersDown();
     return tKey_down_yes;
+#else
+    __asm {
+            push ebx
+            xor ebx, ebx
+            push esi
+            cmp edx, ebx
+            push edi
+            mov esi, ecx
+            je L004825b1
+            mov dword ptr [gLast_key_down], 0xffffffff
+            mov dword ptr [gLast_key_down_time], ebx
+            xor eax, eax
+            pop edi
+            pop esi
+            pop ebx
+            ret
+    L004825b1:
+            call PDGetTotalTime
+            sub eax, dword ptr [gLast_poll_keys]
+            cmp eax, 0x1f4
+            jbe L00482650
+            mov ecx, 0x97
+            xor eax, eax
+            mov edi, offset gKey_array
+            mov edx, dword ptr [gKey_poll_counter]
+            rep stosd
+            mov ecx, 8
+            or eax, 0xffffffff
+            mov edi, offset gJoy_array
+            rep stosd
+            xor ecx, ecx
+    L004825ec:
+            cmp dword ptr [ecx + gKey_array], edx
+            jle L00482608
+            cmp ecx, 0x23c
+            mov dword ptr [ecx + gKey_array], ebx
+            jle L00482608
+            mov dword ptr [ecx + gActor_array+0x784], eax
+    L00482608:
+            add ecx, 4
+            cmp ecx, 0x25c
+            jl L004825ec
+            mov edx, 1
+            mov ecx, offset gKey_array
+            mov dword ptr [gKey_poll_counter], 1
+            call PDSetKeyArray
+            mov edx, dword ptr [gKey_poll_counter]
+            mov ecx, offset gKey_array
+            call SetJoystickArrays
+            mov ecx, offset gKey_array
+            call PDSetKeysFromJoystick
+            call PDGetTotalTime
+            mov dword ptr [gLast_poll_keys], eax
+    L00482650:
+            mov eax, dword ptr [gEdge_trigger_mode]
+            cmp eax, ebx
+            mov eax, dword ptr [esi*4 + gKey_array]
+            je L00482754
+            cmp eax, ebx
+            je L0048273a
+            call PDGetTotalTime
+            mov edx, dword ptr [gLast_key_down]
+            cmp esi, edx
+            jne L004826da
+            mov ecx, offset gKey_array
+    L00482680:
+            cmp dword ptr [ecx], ebx
+            jne L00482758
+            add ecx, 4
+            cmp ecx, offset gKey_array+0x28
+            jle L00482680
+            xor ecx, ecx
+    L00482695:
+            cmp dword ptr [gModifiers_down], ecx
+            je L004826b1
+            neg edx
+            mov dword ptr [gLast_key_down], edx
+            mov dword ptr [gLast_key_down_time], ebx
+            xor eax, eax
+            pop edi
+            pop esi
+            pop ebx
+            ret
+    L004826b1:
+            mov esi, dword ptr [gLast_key_down_time]
+            mov ecx, eax
+            sub ecx, esi
+            cmp ecx, 0x12c
+            jb L004826d1
+            mov dword ptr [gLast_key_down_time], eax
+            mov eax, 3
+            pop edi
+            pop esi
+            pop ebx
+            ret
+    L004826d1:
+            mov eax, 2
+            pop edi
+            pop esi
+            pop ebx
+            ret
+    L004826da:
+            neg edx
+            cmp esi, edx
+            je L00482752
+            cmp esi, 0xa
+            jle L00482721
+            mov dword ptr [gLast_key_down_time], eax
+            mov dword ptr [gLast_key_down], esi
+            mov eax, offset gKey_array
+    L004826f5:
+            cmp dword ptr [eax], ebx
+            jne L00482713
+            add eax, 4
+            cmp eax, offset gKey_array+0x28
+            jle L004826f5
+            xor eax, eax
+            mov dword ptr [gModifiers_down], eax
+            mov eax, 1
+            pop edi
+            pop esi
+            pop ebx
+            ret
+    L00482713:
+            mov eax, 1
+            mov dword ptr [gModifiers_down], eax
+            pop edi
+            pop esi
+            pop ebx
+            ret
+    L00482721:
+            mov dword ptr [gLast_key_down_time], ebx
+            mov dword ptr [gLast_key_down], 0xfffffc18
+            mov eax, 1
+            pop edi
+            pop esi
+            pop ebx
+            ret
+    L0048273a:
+            cmp esi, dword ptr [gLast_key_down]
+            jne L00482752
+            mov dword ptr [gLast_key_down_time], ebx
+            mov dword ptr [gLast_key_down], 0xfffffc18
+    L00482752:
+            xor eax, eax
+    L00482754:
+            pop edi
+            pop esi
+            pop ebx
+            ret
+    L00482758:
+            mov ecx, 1
+            jmp L00482695
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004833a0

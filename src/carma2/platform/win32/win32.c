@@ -203,6 +203,14 @@ void C2_HOOK_FASTCALL carpocalypse2_RequestQuit(void) {
     menu_quit_requested = 1;
 }
 
+#ifdef CARPOCALYPSE2_MATCHING
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern void C2_HOOK_CDECL dr_dprintf();
+extern char gRegionDescriminator[];
+extern int gS3_CDA_enabled;
+extern char gSocket[];
+#endif
 // FUNCTION: CARMA2_HW 0x0051b810
 void C2_HOOK_FASTCALL Win32AllocateActionReplayBuffer(void) {
     MEMORYSTATUS memory_status;
@@ -348,7 +356,8 @@ int C2_HOOK_FASTCALL PDIsWindowInactive(void) {
 }
 
 // FUNCTION: CARMA2_HW 0x0051afe0
-char C2_HOOK_FASTCALL PDConvertToASCIILessThan128(char pChar) {
+char C2_NAKED C2_HOOK_FASTCALL PDConvertToASCIILessThan128(char pChar) {
+#ifndef CARPOCALYPSE2_MATCHING
     if ((unsigned char) pChar >= 0x80) {
         char c = gExtendedAsciiToNormalAscii[(unsigned char) pChar - 128];
         dr_dprintf("PDConvertToASCIILessThan128() Returning %d", c);
@@ -356,6 +365,41 @@ char C2_HOOK_FASTCALL PDConvertToASCIILessThan128(char pChar) {
     }
     dr_dprintf("PDConvertToASCIILessThan128() Returning %d", pChar);
     return pChar;
+#else
+    __asm {
+            push ecx
+            push ebx
+            mov bl, cl
+            cmp bl, 0x80
+            mov byte ptr [esp + 4], bl
+            jb L0051b018
+            push esi
+            mov esi, dword ptr [esp + 8]
+            and esi, 0xff
+            xor eax, eax
+            mov al, byte ptr [esi + gSocket+0x720]
+            push eax
+            push offset gRegionDescriminator+0x3d4
+            call dr_dprintf
+            mov al, byte ptr [esi + gSocket+0x720]
+            add esp, 8
+            pop esi
+            pop ebx
+            pop ecx
+            ret
+    L0051b018:
+            mov ecx, dword ptr [esp + 4]
+            and ecx, 0xff
+            push ecx
+            push offset gRegionDescriminator+0x3d4
+            call dr_dprintf
+            add esp, 8
+            mov al, bl
+            pop ebx
+            pop ecx
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0051b040
@@ -823,7 +867,6 @@ int C2_HOOK_FASTCALL PDEnumPath(const char *path, tEnumPathCallback pCallback, v
 
 // FUNCTION: CARMA2_HW 0x00486c20
 int C2_HOOK_FASTCALL PDmkdir(const char *path) {
-
     return c2_mkdir(path);
 }
 
@@ -922,7 +965,8 @@ void C2_HOOK_FASTCALL PDGetCurrentTime(char *pTimeStr) {
 }
 
 // FUNCTION: CARMA2_HW 0x0051db00
-int C2_HOOK_FASTCALL PDGetMouseClickPosition(int *pX_coord, int *pY_coord) {
+int C2_NAKED C2_HOOK_FASTCALL PDGetMouseClickPosition(int *pX_coord, int *pY_coord) {
+#ifndef CARPOCALYPSE2_MATCHING
     if (!gCursorPos_LastClick_Valid) {
         gCursorPos_LastClick_Valid = 0;
         return 0;
@@ -931,6 +975,42 @@ int C2_HOOK_FASTCALL PDGetMouseClickPosition(int *pX_coord, int *pY_coord) {
     *pY_coord = gCursorPos_LastClick.y;
     gCursorPos_LastClick_Valid = 0;
     return 1;
+#else
+    __asm {
+            push esi
+            mov esi, dword ptr [gCursorPos_LastClick_Valid]
+            xor eax, eax
+            cmp esi, eax
+            je L0051db29
+            mov esi, dword ptr [gCursorPos_LastClick]
+            mov dword ptr [ecx], esi
+            mov ecx, dword ptr [gCursorPos_LastClick+0x4]
+            mov dword ptr [edx], ecx
+            mov dword ptr [gCursorPos_LastClick_Valid], eax
+            mov eax, 1
+            pop esi
+            ret
+    L0051db29:
+            mov dword ptr [gCursorPos_LastClick_Valid], eax
+            xor eax, eax
+            pop esi
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0051c5f0
@@ -1102,7 +1182,8 @@ void C2_HOOK_FASTCALL PDMouseButtons(int *pLeftButtonDown, int *pRightButtonDown
 }
 
 // FUNCTION: CARMA2_HW 0x0056a3a9
-void C2_HOOK_FASTCALL PDExtractFilename(char *pDest, const char *pPath) {
+void C2_NAKED C2_HOOK_FASTCALL PDExtractFilename(char *pDest, const char *pPath) {
+#ifndef CARPOCALYPSE2_MATCHING
     char dirname[256];
     char drive[4];
     char filename[256];
@@ -1110,10 +1191,44 @@ void C2_HOOK_FASTCALL PDExtractFilename(char *pDest, const char *pPath) {
 
     _splitpath(pPath, drive, dirname, filename, extension);
     sprintf(pDest, "%s%s", filename, extension);
+#else
+    __asm {
+            push ebp
+            mov ebp, esp
+            sub esp, 0x30c
+            mov dword ptr [ebp - 0x30c], edx
+            mov dword ptr [ebp - 0x308], ecx
+            lea eax, [ebp - 0x204]
+            push eax
+            lea ecx, [ebp - 0x104]
+            push ecx
+            lea edx, [ebp - 0x304]
+            push edx
+            lea eax, [ebp - 4]
+            push eax
+            mov ecx, dword ptr [ebp - 0x30c]
+            push ecx
+            call sprintf
+            add esp, 0x14
+            lea edx, [ebp - 0x204]
+            push edx
+            lea eax, [ebp - 0x104]
+            push eax
+            push offset gS3_CDA_enabled+0x19c
+            mov ecx, dword ptr [ebp - 0x308]
+            push ecx
+            call sprintf
+            add esp, 0x10
+            mov esp, ebp
+            pop ebp
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0056a349
-void C2_HOOK_FASTCALL PDExtractDirectory(char *pDest, const char *pPath) {
+void C2_NAKED C2_HOOK_FASTCALL PDExtractDirectory(char *pDest, const char *pPath) {
+#ifndef CARPOCALYPSE2_MATCHING
     char dirname[256];
     char drive[4];
     char filename[256];
@@ -1121,6 +1236,39 @@ void C2_HOOK_FASTCALL PDExtractDirectory(char *pDest, const char *pPath) {
 
     _splitpath(pPath, drive, dirname, filename, extension);
     sprintf(pDest, "%s%s", drive, dirname);
+#else
+    __asm {
+            push ebp
+            mov ebp, esp
+            sub esp, 0x30c
+            mov dword ptr [ebp - 0x30c], edx
+            mov dword ptr [ebp - 0x308], ecx
+            lea eax, [ebp - 0x204]
+            push eax
+            lea ecx, [ebp - 0x104]
+            push ecx
+            lea edx, [ebp - 0x304]
+            push edx
+            lea eax, [ebp - 4]
+            push eax
+            mov ecx, dword ptr [ebp - 0x30c]
+            push ecx
+            call sprintf
+            add esp, 0x14
+            lea edx, [ebp - 0x304]
+            push edx
+            lea eax, [ebp - 4]
+            push eax
+            push offset gS3_CDA_enabled+0x194
+            mov ecx, dword ptr [ebp - 0x308]
+            push ecx
+            call sprintf
+            add esp, 0x10
+            mov esp, ebp
+            pop ebp
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004928a0
@@ -1232,5 +1380,4 @@ void C2_HOOK_FASTCALL PDConvertMousePosition(LPPOINT pPoint, LONG* pX, LONG* pY)
 
 // FUNCTION: CARMA2_HW 0x0051d4a0
 void C2_HOOK_FASTCALL FUN_0051d4a0(void) {
-
 }

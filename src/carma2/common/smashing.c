@@ -145,9 +145,97 @@ int gINT_006a3334;
 
 // InitDecals
 
+#ifdef CARPOCALYPSE2_MATCHING
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern int C2_HOOK_FASTCALL AccumulateRuntimeVariable(int pAddress, int pAmount);
+extern void C2_HOOK_FASTCALL ActuallyRepairSmash(tCar_spec* pCar_spec, tCar_crush_smashable_part* pSmashable, int pLevel);
+extern void C2_HOOK_FASTCALL ActuallySmashCarPart(tCar_spec* pCar_spec, tCar_crush_smashable_part* pSmashable, int pLevel);
+extern void C2_HOOK_FASTCALL AwardTime(tU32 pTime);
+extern void C2_HOOK_FASTCALL AwardTime5(tU32 pTime);
+extern br_uint_16 C2_HOOK_CDECL BrActorToActorMatrix34();
+extern void C2_HOOK_CDECL BrMatrix34ApplyV();
+extern void C2_HOOK_CDECL BrMatrix34Identity();
+extern void C2_HOOK_CDECL BrMatrix34Post();
+extern void C2_HOOK_CDECL BrMatrix34PostRotate();
+extern intptr_t C2_HOOK_FASTCALL DRActorEnumRecurse(br_actor* pActor, br_actor_enum_cbfn* callback, void* arg);
+extern void C2_HOOK_FASTCALL DRModelUpdateAndKevificateMaterials(br_model* pModel, br_uint_16 pFlags);
+extern int C2_HOOK_FASTCALL DRS3StartSound3D(tS3_outlet* pOutlet, int pSound_id, const br_vector3* pInitial_position, const br_vector3* pInitial_velocity, int pRepeats, int pVolume, int pPitch, int pSpeed);
+extern void C2_HOOK_FASTCALL DoFancyHeadup(int pIndex);
+extern void C2_HOOK_FASTCALL DoFragMovement(tSmash_vertex* pFragment, tU32  pTime, float pDelta_time);
+extern void C2_HOOK_FASTCALL EarnCredits(int pAmount);
+extern void C2_HOOK_FASTCALL EarnCredits100(int pAmount);
+extern void C2_HOOK_FASTCALL Explode(tExplosion_animation* pExplosion_animation, br_actor* pActor, br_bounds3* pBounds, br_vector3* pPos);
+extern float C2_HOOK_STDCALL FRandomBetween(float pA, float pB);
+extern float C2_HOOK_STDCALL FRandomPosNeg(float pN);
+extern void C2_HOOK_FASTCALL FUN_004d9d00(tPhysics_object* pObject, int pMode);
+extern int C2_HOOK_CDECL FUN_004edb20();
+extern const char* C2_HOOK_FASTCALL GetMiscString(int pIndex);
+extern int C2_HOOK_FASTCALL GetRuntimeVariable(int pAddress);
+extern tU32 C2_HOOK_FASTCALL GetTotalTime(void);
+extern int C2_HOOK_FASTCALL GotPowerup(tCar_spec* pCar, int pIndex);
+extern int C2_HOOK_FASTCALL IRandomBetween(int pA, int pB);
+extern void C2_HOOK_FASTCALL MayQueuePowerupRespawn(int pPowerup_index, br_actor* actor);
+extern int C2_HOOK_FASTCALL NewTextHeadupSlot2(int pSlot_index, int pFlash_rate, int pLifetime, int pFont_index, const char* pText, int pQueue_it);
+extern int C2_HOOK_FASTCALL PointOutOfSight(const br_vector3* pPoint, undefined4 pArg2, br_scalar pMax_distance);
+extern void QueueOilSpill2();
+extern void C2_HOOK_FASTCALL RaceCompleted(tRace_over_reason pReason);
+extern int C2_HOOK_FASTCALL ToggleRuntimeVariable(int pAddress);
+extern void C2_HOOK_FASTCALL WorkerShrapnelShower(int pOwner, int* pShrapnel_spec, tU32 pSeed, undefined4 pArg4, undefined4 pArg5, undefined4 pArg6, undefined4 pArg7, int pTime, undefined4 pArg9, br_matrix34* pTransform, undefined4 pFragment_owner, br_vector3* pPosition, float pDistance, undefined4 pArg14, undefined4 pArg15);
+extern void C2_HOOK_FASTCALL XZToColumnXZ(tU8* pColumn_x, tU8* pColumn_z, br_scalar pX, br_scalar pZ, tTrack_spec* pTrack_spec);
+extern void __cdecl _ftol();
+extern int gCount_track_smashable_environment_specs;
+extern tRace_info gCurrent_race;
+extern tDecal gDecals[50];
+extern float gGravity_multiplier;
+extern tU32 gINT_00705b70;
+extern int gMutant_tail_state;
+extern tNet_mode gNet_mode;
+extern tNet_game_player_info gNet_players[12];
+extern int gNumber_of_net_players;
+extern tU32 gPHIL_last_physics_tick;
+extern int gPed_676914;
+extern tSmashable_item_spec gPowerup_respawn_smashable;
+extern tProgram_state gProgram_state;
+extern tRepair_animation gRepair_animations[25];
+extern int gSize_powerup_queue;
+extern tSmash_explosion gSmash_explosions[20];
+extern tSmashable_item_spec* gTrack_smashable_environment_specs;
+extern br_actor* gUniverse_actor;
+extern tS3_outlet* gXXX_outlet;
+extern float gYon_squared;
+extern br_vector3 gZero_v__car;
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern void C2_HOOK_CDECL BrMatrix34ApplyP();
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern int gPowerup_respawn_sound_ids[16];
+extern void C2_HOOK_FASTCALL ApplyInitialMovement(undefined4* pArg1, br_vector3* pArg2, br_vector3* pArg3, br_vector3* pArg4, float pArg5, br_vector3* pArg6, br_vector3* pArg7, br_vector3* pArg8);
+extern float C2_HOOK_FASTCALL BashObject(tPhysics_object* pObject, br_actor* pActor, float pArg3, br_vector3 *pArg4, br_vector3* pArg5, br_vector3* pArg6, int pArg7, int pArg8);
+extern void C2_HOOK_CDECL BrMaterialUpdate();
+extern void C2_HOOK_CDECL BrMatrix23Identity();
+extern void C2_HOOK_CDECL BrModelUpdate();
+extern void C2_HOOK_FASTCALL DisableFunkotronic(int pIndex);
+extern tNon_car_spec* C2_HOOK_FASTCALL DoPullActorFromWorld(br_actor* actor);
+extern int C2_HOOK_FASTCALL FindFacesInBox(tBounds* bnds, tFace_ref* face_list, int max_face, tWorld_callbacks* pWorld_callbacks);
+extern tSmash_vertex* C2_HOOK_FASTCALL FindShrapnelFragment(br_model* pModel, tU32 pField_0x18, int pPriority);
+extern void C2_HOOK_FASTCALL MakeLiftGoUp(tNon_car_spec* pNon_car);
+extern void C2_HOOK_FASTCALL MungeCarMaterials(tCar_spec* pCar, int pInternal_cam);
+extern int C2_HOOK_FASTCALL PercentageChance(int pC);
+extern void C2_HOOK_FASTCALL PipeSingleSmashTextureChange(tCar_spec* pCar_spec, br_material* pMaterial, br_pixelmap* pTexture);
+extern float C2_HOOK_FASTCALL SmashEnvironment(tPhysics_object* pObject, undefined4* pArg2, float pArg3, br_vector3* pArg4, br_vector3* pArg5, br_vector3* pArg6, int pArg7, int pArg8);
+extern void __cdecl _chkstk();
+extern tActionReplayCameraMode gAction_replay_camera_mode;
+extern char gDOUBLE_0058aef8[];
+extern char gFLOAT_0058af20[];
+extern char gSmashable_triggers_by_identifier[];
+extern br_actor* gTrack_actor;
+#endif
 // FUNCTION: CARMA2_HW 0x004ee550
 void C2_HOOK_FASTCALL ReadSmashableInitialPosition(FILE* pFile, tSmashable_initial_position_spec*  pInitial_pos) {
-
     /* Initial position type */
     pInitial_pos->type = GetALineAndInterpretCommand(pFile, gInitial_smashable_position_type_names, CARPOCALYPSE2_ASIZE(gInitial_smashable_position_type_names));
 
@@ -198,13 +286,11 @@ void C2_HOOK_FASTCALL ReadMinMaxTimeInMilliseconds(FILE* pFile, int* pTimes) {
 
 // FUNCTION: CARMA2_HW 0x004977e0
 void C2_HOOK_FASTCALL InitSmashTargets(void) {
-
     gCount_smashable_race_targets = 0;
 }
 
 // FUNCTION: CARMA2_HW 0x004977f0
 void C2_HOOK_FASTCALL AddSmashableRaceTarget(br_model* pModel, br_actor* pActor, int pUnknown) {
-
     C2_HOOK_BUG_ON(sizeof(tSmashable_race_target) != 12);
     if (gCount_smashable_race_targets < (int)CARPOCALYPSE2_ASIZE(gSmashable_race_targets)) {
         gSmashable_race_targets[gCount_smashable_race_targets].model = pModel;
@@ -259,7 +345,8 @@ void C2_HOOK_FASTCALL MungeSmashMaterialNames(void) {
 }
 
 // FUNCTION: CARMA2_HW 0x004eff30
-void C2_HOOK_FASTCALL FUN_004eff30(tSmash_vertex* pFragment, tU32 pTime, float pDelta_time) {
+void C2_NAKED C2_HOOK_FASTCALL FUN_004eff30(tSmash_vertex* pFragment, tU32 pTime, float pDelta_time) {
+#ifndef CARPOCALYPSE2_MATCHING
     float dt;
     float gravity_dt;
     float omega;
@@ -295,15 +382,182 @@ void C2_HOOK_FASTCALL FUN_004eff30(tSmash_vertex* pFragment, tU32 pTime, float p
     } else {
         pFragment->actor->render_style = BR_RSTYLE_NONE;
     }
+#else
+    __asm {
+            sub esp, 0x20
+            fld dword ptr [esp + 0x24]
+            fmul dword ptr [gFLOAT_0058af5c]
+            push ebx
+            push esi
+            push edi
+            mov ebx, edx
+            mov esi, ecx
+            fst dword ptr [esp + 0x30]
+            fcomp dword ptr [gFloat_0058aec0]
+            fnstsw ax
+            test ah, 0x40
+            jne DoFragMovement
+            mov al, byte ptr [esi + 0x34]
+            xor ecx, ecx
+            cmp al, cl
+            jne DoFragMovement
+            fld dword ptr [esp + 0x30]
+            fld dword ptr [esi + 0x1c]
+            fld dword ptr [gGravity_multiplier]
+            fmul st(0), st(2)
+            fld dword ptr [esi + 0x20]
+            fxch st(1)
+            fmul st(0), st(3)
+            fxch st(2)
+            fmul dword ptr [esp + 0x30]
+            fxch st(1)
+            fmul dword ptr [esp + 0x30]
+            fxch st(2)
+            fmul qword ptr [gDOUBLE_0058af60]
+            fxch st(1)
+            fmul qword ptr [gDOUBLE_0058af68]
+            mov eax, dword ptr [esi]
+            fld dword ptr [eax + 0x50]
+            fld dword ptr [esi + 0x24]
+            fmul dword ptr [esp + 0x30]
+            fst dword ptr [esp + 0x1c]
+            fxch st(3)
+            fsubp st(4), st(0)
+            fxch st(1)
+            fsubp st(1), st(0)
+            fxch st(1)
+            fmul qword ptr [gDOUBLE_0058af68]
+            fxch st(2)
+            fst dword ptr [esp + 0x18]
+            fxch st(1)
+            fstp dword ptr [eax + 0x50]
+            mov eax, dword ptr [esi]
+            fmul qword ptr [gDOUBLE_0058af68]
+            fld dword ptr [eax + 0x54]
+            fxch st(1)
+            fsubp st(1), st(0)
+            fld dword ptr [esp + 0x30]
+            fxch st(1)
+            fstp dword ptr [eax + 0x54]
+            mov eax, dword ptr [esi]
+            fld dword ptr [eax + 0x58]
+            fxch st(2)
+            fsubp st(2), st(0)
+            fxch st(1)
+            fstp dword ptr [eax + 0x58]
+            mov edi, dword ptr [esi]
+            fmul dword ptr [gGravity_multiplier]
+            fld dword ptr [esi + 0x20]
+            fxch st(1)
+            fmul qword ptr [gDOUBLE_0058af70]
+            add edi, 0x2c
+            fsubp st(1), st(0)
+            fstp dword ptr [esi + 0x20]
+            fstp st(0)
+            fld dword ptr [esi + 0x2c]
+            fld dword ptr [esi + 0x30]
+            fld dword ptr [esi + 0x28]
+            fxch st(2)
+            fst dword ptr [esp + 0xc]
+            fxch st(1)
+            fst dword ptr [esp + 0x10]
+            fxch st(1)
+            fmul dword ptr [esp + 0xc]
+            fxch st(1)
+            fmul dword ptr [esp + 0x10]
+            fld st(2)
+            fmul st(0), st(3)
+            fxch st(1)
+            faddp st(2), st(0)
+            fld dword ptr [esi + 0x28]
+            fxch st(1)
+            faddp st(2), st(0)
+            fxch st(1)
+            fsqrt
+            fst dword ptr [esp + 0x10]
+            fstp st(2)
+            fdiv st(0), st(1)
+            fstp dword ptr [esp + 0x20]
+            fld dword ptr [esi + 0x30]
+            fld dword ptr [esi + 0x2c]
+            fdiv st(0), st(2)
+            fxch st(1)
+            fdiv st(0), st(2)
+            fld dword ptr [esp + 0x30]
+            fmulp st(3), st(0)
+            fxch st(1)
+            fstp dword ptr [esp + 0x24]
+            fld st(1)
+            fabs
+            fst dword ptr [esp + 0x30]
+            fcomp qword ptr [gDOUBLE_0058af78]
+            fstp dword ptr [esp + 0x28]
+            fnstsw ax
+            test ah, 1
+            jne L004f00c8
+            mov eax, dword ptr [edi + 0x24]
+            mov edx, dword ptr [edi + 0x28]
+            fmul qword ptr [gDOUBLE_0058af80]
+            mov dword ptr [esp + 0x14], eax
+            mov dword ptr [esp + 0x18], edx
+            mov edx, dword ptr [edi + 0x2c]
+            lea eax, [esp + 0x20]
+            mov dword ptr [esp + 0x1c], edx
+            mov dword ptr [edi + 0x24], ecx
+            mov dword ptr [edi + 0x28], ecx
+            mov dword ptr [edi + 0x2c], ecx
+            push eax
+            call _ftol
+            push eax
+            push edi
+            call BrMatrix34PostRotate
+            fld dword ptr [esp + 0x20]
+            fld dword ptr [esp + 0x24]
+            fld dword ptr [esp + 0x28]
+            fxch st(2)
+            fstp dword ptr [edi + 0x24]
+            add esp, 0xc
+            fstp dword ptr [edi + 0x28]
+            fstp dword ptr [edi + 0x2c]
+            jmp DoFragMovement
+    L004f00c8:
+            fstp st(0)
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004f00ca
-void C2_HOOK_FASTCALL DoFragMovement(tSmash_vertex* pFragment, tU32  pTime, float pDelta_time) {
+void C2_NAKED C2_HOOK_FASTCALL DoFragMovement(tSmash_vertex* pFragment, tU32  pTime, float pDelta_time) {
+#ifndef CARPOCALYPSE2_MATCHING
     if (pTime < pFragment->field_0x10) {
         pFragment->actor->render_style = BR_RSTYLE_FACES;
     } else {
         pFragment->actor->render_style = BR_RSTYLE_NONE;
     }
+#else
+    __asm {
+            cmp ebx, dword ptr [esi + 0x10]
+            jb L004f00de
+            mov eax, dword ptr [esi]
+            mov byte ptr [eax + 0x20], 1
+            pop edi
+            pop esi
+            pop ebx
+            add esp, 0x20
+            ret 4
+    L004f00de:
+            mov ecx, dword ptr [esi]
+            pop edi
+            pop esi
+            pop ebx
+            mov byte ptr [ecx + 0x20], 4
+            add esp, 0x20
+            ret 4
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 void C2_HOOK_FASTCALL KillFragment(tSmash_vertex* pFragment) {
@@ -385,7 +639,8 @@ void C2_HOOK_FASTCALL MungeAnimationRepairs(void) {
 }
 
 // FUNCTION: CARMA2_HW 0x004f00f0
-void C2_HOOK_FASTCALL MungeGlassFragments(void) {
+void C2_NAKED C2_HOOK_FASTCALL MungeGlassFragments(void) {
+#ifndef CARPOCALYPSE2_MATCHING
 #ifdef CARPOCALYPSE2_MATCHING
     tU32 the_time;
     tRepair_animation* animation;
@@ -410,6 +665,53 @@ void C2_HOOK_FASTCALL MungeGlassFragments(void) {
     MungeGlassFragments2(0);
     MungeAnimationRepairs();
 #endif
+#else
+    __asm {
+            push ebx
+            push ebp
+            push esi
+            push edi
+            xor ecx, ecx
+            call MungeGlassFragments2
+            call GetTotalTime
+            mov ebp, eax
+            mov esi, offset gRepair_animations+0x4
+            xor ebx, ebx
+    L004f0109:
+            mov edi, dword ptr [esi - 4]
+            cmp edi, ebx
+            je L004f013e
+            mov edx, dword ptr [esi]
+            mov eax, ebp
+            sub eax, edx
+            cmp eax, 0x96
+            jb L004f013e
+            mov eax, dword ptr [edi + 0x4c]
+            cmp eax, ebx
+            je L004f0136
+            mov ecx, dword ptr [esi + 4]
+            dec eax
+            push eax
+            mov edx, edi
+            call ActuallyRepairSmash
+            add dword ptr [esi], 0x96
+    L004f0136:
+            cmp dword ptr [edi + 0x4c], ebx
+            jne L004f013e
+            mov dword ptr [esi - 4], ebx
+    L004f013e:
+            add esi, 0xc
+            cmp esi, offset gDecals
+            jl L004f0109
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            ret
+            nop
+            nop
+    }
+#endif
 }
 
 void C2_HOOK_FASTCALL FlushPowerupQueue(void) {
@@ -424,7 +726,8 @@ void C2_HOOK_FASTCALL FlushPowerupQueue(void) {
 }
 
 // FUNCTION: CARMA2_HW 0x004ed860
-void C2_HOOK_FASTCALL QueueNonCarCuboidActivation(br_actor* pActor, tNon_car_cuboid_activations* pActivations, void* pContext) {
+void C2_NAKED C2_HOOK_FASTCALL QueueNonCarCuboidActivation(br_actor* pActor, tNon_car_cuboid_activations* pActivations, void* pContext) {
+#ifndef CARPOCALYPSE2_MATCHING
     tU32 time;
     br_matrix34* matrix;
     int i;
@@ -521,6 +824,235 @@ void C2_HOOK_FASTCALL QueueNonCarCuboidActivation(br_actor* pActor, tNon_car_cub
             queued->what.non_car = delayed;
         }
     }
+#else
+    __asm {
+            sub esp, 0x154
+            push ebx
+            push ebp
+            push esi
+            push edi
+            mov edi, edx
+            mov esi, ecx
+            mov dword ptr [esp + 0x28], edi
+            call GetTotalTime
+            test esi, esi
+            mov dword ptr [esp + 0x2c], eax
+            je L004ed894
+            mov eax, dword ptr [esi + 0x14]
+            test eax, eax
+            je L004ed894
+            cmp byte ptr [eax], 0x26
+            jne L004ed894
+            add esi, 0x2c
+            mov dword ptr [esp + 0x10], esi
+            jmp L004ed8a6
+    L004ed894:
+            mov eax, dword ptr [esp + 0x168]
+            add eax, 0x8c
+            mov dword ptr [esp + 0x10], eax
+            mov esi, eax
+    L004ed8a6:
+            mov eax, dword ptr [edi]
+            mov ebx, dword ptr [edi + 4]
+            test eax, eax
+            mov dword ptr [esp + 0x20], 0
+            mov dword ptr [esp + 0x14], ebx
+            jle L004edb07
+            add ebx, 0xc
+            jmp L004ed8c8
+    L004ed8c4:
+            mov esi, dword ptr [esp + 0x10]
+    L004ed8c8:
+            mov byte ptr [esp + 0x51], 0
+            mov eax, dword ptr [ebx - 8]
+            cmp eax, 1
+            jne L004ed8e4
+            mov ecx, 6
+            mov esi, ebx
+            lea edi, [esp + 0x34]
+            rep movsd
+            jmp L004ed92a
+    L004ed8e4:
+            push esi
+            lea ecx, [esp + 0x38]
+            push ebx
+            push ecx
+            call BrMatrix34ApplyP
+            add esp, 0xc
+            lea edx, [ebx + 0xc]
+            lea eax, [esp + 0x40]
+            push esi
+            push edx
+            push eax
+            call BrMatrix34ApplyP
+            add esp, 0xc
+            lea ecx, [esp + 0x40]
+            mov edx, 3
+    L004ed90e:
+            fld dword ptr [ecx - 0xc]
+            _emit 0xd8
+        _emit 0x19
+            fnstsw ax
+            test ah, 0x41
+            jne L004ed924
+            fld dword ptr [ecx - 0xc]
+            mov eax, dword ptr [ecx]
+            mov dword ptr [ecx - 0xc], eax
+            _emit 0xd9
+        _emit 0x19
+    L004ed924:
+            add ecx, 4
+            dec edx
+            jne L004ed90e
+    L004ed92a:
+            mov eax, dword ptr [esp + 0x3c]
+            lea ecx, [esp + 0x34]
+            mov dword ptr [esp + 0x4c], ecx
+            mov dl, byte ptr [ebx - 4]
+            mov ecx, dword ptr [esp + 0x34]
+            push offset gProgram_state+0x1ba0
+            push eax
+            mov byte ptr [esp + 0x58], dl
+            push ecx
+            lea edx, [esp + 0x3c]
+            lea ecx, [esp + 0x30]
+            call XZToColumnXZ
+            lea ecx, [esp + 0x1c]
+            mov edx, dword ptr [esp + 0x48]
+            mov eax, dword ptr [esp + 0x40]
+            push offset gProgram_state+0x1ba0
+            push edx
+            push eax
+            lea edx, [esp + 0x24]
+            call XZToColumnXZ
+            mov ebp, dword ptr [esp + 0x24]
+            mov ecx, dword ptr [esp + 0x1c]
+            and ebp, 0xff
+            and ecx, 0xff
+            cmp ebp, ecx
+            jg L004ed9ed
+            lea edi, [ebp + ebp*2]
+            shl edi, 2
+    L004ed990:
+            mov esi, dword ptr [esp + 0x30]
+            mov edx, dword ptr [esp + 0x18]
+            and esi, 0xff
+            and edx, 0xff
+            cmp esi, edx
+            jg L004ed9db
+    L004ed9a8:
+            mov eax, dword ptr [gProgram_state+0x1bb8]
+            mov ecx, dword ptr [eax + esi*4]
+            lea eax, [ecx + edi]
+            mov ecx, dword ptr [ecx + edi]
+            test ecx, ecx
+            je L004ed9cd
+            lea edx, [esp + 0x4c]
+            push edx
+            mov edx, offset FUN_004edb20
+            call DRActorEnumRecurse
+            test eax, eax
+            jne L004ed9db
+    L004ed9cd:
+            mov eax, dword ptr [esp + 0x18]
+            inc esi
+            and eax, 0xff
+            cmp esi, eax
+            jle L004ed9a8
+    L004ed9db:
+            mov ecx, dword ptr [esp + 0x1c]
+            inc ebp
+            and ecx, 0xff
+            add edi, 0xc
+            cmp ebp, ecx
+            jle L004ed990
+    L004ed9ed:
+            mov edx, dword ptr [esp + 0x168]
+            xor edi, edi
+            add edx, 0x68
+            mov eax, dword ptr [edx]
+            mov dword ptr [esp + 0xa4], eax
+            mov eax, dword ptr [esp + 0x10]
+            mov ecx, dword ptr [edx + 4]
+            add eax, 0x24
+            mov dword ptr [esp + 0xa8], ecx
+            mov edx, dword ptr [edx + 8]
+            mov ecx, dword ptr [eax]
+            mov dword ptr [esp + 0xac], edx
+            mov dword ptr [esp + 0xb0], ecx
+            mov edx, dword ptr [eax + 4]
+            lea ecx, [ebx + 0x18]
+            mov dword ptr [esp + 0xb4], edx
+            mov dword ptr [esp + 0xbc], ecx
+            mov eax, dword ptr [eax + 8]
+            mov dword ptr [esp + 0xb8], eax
+            movsx eax, byte ptr [esp + 0x51]
+            test eax, eax
+            mov dword ptr [esp + 0xc0], eax
+            jle L004eda93
+            lea esi, [esp + 0xc8]
+            lea ebp, [esp + 0x54]
+    L004eda5f:
+            mov edx, dword ptr [ebp]
+            mov eax, dword ptr [esp + 0x14]
+            mov dword ptr [esi - 4], edx
+            xor edx, edx
+            mov dx, word ptr [ebx - 0xa]
+            xor ecx, ecx
+            mov cx, word ptr [eax]
+            call IRandomBetween
+            mov ecx, dword ptr [esp + 0x2c]
+            add ebp, 4
+            add eax, ecx
+            inc edi
+            mov dword ptr [esi], eax
+            mov eax, dword ptr [esp + 0xc0]
+            add esi, 8
+            cmp edi, eax
+            jl L004eda5f
+    L004eda93:
+            xor ecx, ecx
+            mov eax, offset gSmash_explosions+0x4
+    L004eda9a:
+            cmp dword ptr [eax], 0
+            je L004edaae
+            add eax, 0xc8
+            inc ecx
+            cmp eax, offset gPowerup_respawn_smashable+0x4
+            jl L004eda9a
+            jmp L004edae2
+    L004edaae:
+            lea eax, [ecx + ecx*4]
+            mov ecx, dword ptr [esp + 0x168]
+            lea esi, [esp + 0xa4]
+            lea eax, [eax + eax*4]
+            shl eax, 3
+            mov dword ptr [eax + gSmash_explosions], 0
+            mov dword ptr [eax + gSmash_explosions+0x4], ecx
+            mov ecx, 0x30
+            lea edi, [eax + gSmash_explosions+0x8]
+            rep movsd
+    L004edae2:
+            mov edx, dword ptr [esp + 0x28]
+            mov eax, dword ptr [esp + 0x20]
+            mov esi, dword ptr [esp + 0x14]
+            inc eax
+            mov ecx, dword ptr [edx]
+            add esi, 0x40
+            add ebx, 0x40
+            cmp eax, ecx
+            mov dword ptr [esp + 0x20], eax
+            mov dword ptr [esp + 0x14], esi
+            jl L004ed8c4
+    L004edb07:
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x154
+            ret 4
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004edb20
@@ -568,9 +1100,9 @@ int C2_HOOK_CDECL FUN_004edb20(br_actor* pActor, tSmash_actor_search_context* pC
     return 0;
 }
 
-// C2PORT-NONMATCHING: best 20.27% | difftest PASS 2000 trials (spec difftest/specs/004edbe0_FUN_004edbe0.json) | reason stack-layout-x87-order
 // FUNCTION: CARMA2_HW 0x004edbe0
-void C2_HOOK_FASTCALL FUN_004edbe0(undefined4 param_1, int* param_2, int* param_3, undefined4 param_4, float param_5) {
+void C2_NAKED C2_HOOK_FASTCALL FUN_004edbe0(undefined4 param_1, int* param_2, int* param_3, undefined4 param_4, float param_5) {
+#ifndef CARPOCALYPSE2_MATCHING
   typedef unsigned char byte;
   typedef unsigned short ushort;
   typedef unsigned int uint;
@@ -872,10 +1404,551 @@ code_r0x004ee1ce:
   iVar9 = iVar9 + 1;
   if (piVar8 > (int *)((tU8 *)&gSmash_explosions[0].active + sizeof(gSmash_explosions) - 1)) goto LAB_004ee209;
   goto LAB_004ee1c9;
+#else
+    __asm {
+            mov eax, 0x7e0c
+            call _chkstk
+            mov dword ptr [esp + 0x20], edx
+            push ebx
+            push ebp
+            call GetTotalTime
+            mov ebp, dword ptr [esp + 0x7e18]
+            mov dword ptr [esp + 0x38], eax
+            mov dword ptr [esp + 0x2c], 0
+            mov eax, dword ptr [ebp]
+            mov ebx, dword ptr [ebp + 4]
+            test eax, eax
+            mov dword ptr [esp + 8], ebx
+            jle L004ee243
+            push edi
+            push esi
+    L004edc1c:
+            mov eax, dword ptr [ebx + 4]
+            lea edi, [ebx + 0x2c]
+            cmp eax, 1
+            mov dword ptr [esp + 0x38], edi
+            jne L004edc3d
+            mov esi, edi
+            mov ecx, 6
+            lea edi, [esp + 0xdc]
+            rep movsd
+            jmp L004edc96
+    L004edc3d:
+            mov eax, dword ptr [esp + 0x30]
+            lea ecx, [esp + 0xdc]
+            lea esi, [eax + 0x8c]
+            push esi
+            push edi
+            push ecx
+            call BrMatrix34ApplyP
+            add esp, 0xc
+            add edi, 0xc
+            lea edx, [esp + 0xe8]
+            push esi
+            push edi
+            push edx
+            call BrMatrix34ApplyP
+            add esp, 0xc
+            lea ecx, [esp + 0xe8]
+            mov edx, 3
+    L004edc7a:
+            fld dword ptr [ecx - 0xc]
+            _emit 0xd8
+        _emit 0x19
+            fnstsw ax
+            test ah, 0x41
+            jne L004edc90
+            fld dword ptr [ecx - 0xc]
+            mov eax, dword ptr [ecx]
+            mov dword ptr [ecx - 0xc], eax
+            _emit 0xd9
+        _emit 0x19
+    L004edc90:
+            add ecx, 4
+            dec edx
+            jne L004edc7a
+    L004edc96:
+            mov ecx, dword ptr [gTrack_actor]
+            push 0
+            add ecx, 0x2c
+            push 0x190
+            mov dword ptr [esp + 0xe0], ecx
+            lea edx, [esp + 0x124]
+            lea ecx, [esp + 0xe0]
+            call FindFacesInBox
+            mov ecx, dword ptr [ebx + 0x44]
+            test ecx, ecx
+            jne L004edcf4
+            fld dword ptr [esp + 0x14]
+            fdiv dword ptr [esp + 0x7e28]
+            fstp dword ptr [esp + 0x14]
+            fld dword ptr [esp + 0x18]
+            fdiv dword ptr [esp + 0x7e28]
+            fstp dword ptr [esp + 0x18]
+            fld dword ptr [esp + 0x1c]
+            fdiv dword ptr [esp + 0x7e28]
+            fstp dword ptr [esp + 0x1c]
+    L004edcf4:
+            test eax, eax
+            jle L004ee226
+            lea ebx, [esp + 0x164]
+            mov dword ptr [esp + 0x3c], eax
+    L004edd07:
+            mov eax, dword ptr [ebx - 0x48]
+            or esi, 0xffffffff
+            test eax, eax
+            mov dword ptr [esp + 0x20], 0
+            je L004ede0f
+            mov ebp, dword ptr [eax + 4]
+            test ebp, ebp
+            je L004ede0f
+            mov edi, ebp
+            or ecx, 0xffffffff
+            xor eax, eax
+            repne scasb
+            not ecx
+            dec ecx
+            cmp ecx, 0xb
+            jne L004ede0f
+            cmp byte ptr [ebp + 5], 0x7c
+            jne L004ede0f
+            mov edx, dword ptr [esp + 0x10]
+            mov eax, dword ptr [edx + 0x28]
+            test eax, eax
+            je L004edd98
+            cmp eax, 1
+            je L004edd98
+            cmp eax, 4
+            jne L004ee209
+            mov eax, edx
+            lea edi, [eax + 8]
+            mov eax, ebp
+    L004edd67:
+            mov dl, byte ptr [eax]
+            mov cl, dl
+            cmp dl, byte ptr [edi]
+            jne L004edd8b
+            test cl, cl
+            je L004edd87
+            mov dl, byte ptr [eax + 1]
+            mov cl, dl
+            cmp dl, byte ptr [edi + 1]
+            jne L004edd8b
+            add eax, 2
+            add edi, 2
+            test cl, cl
+            jne L004edd67
+    L004edd87:
+            xor eax, eax
+            jmp L004edd90
+    L004edd8b:
+            sbb eax, eax
+            sbb eax, -1
+    L004edd90:
+            test eax, eax
+            jne L004ee209
+    L004edd98:
+            fld dword ptr [ebx - 0x44]
+            fld dword ptr [ebx - 0x40]
+            fld dword ptr [ebx - 0x3c]
+            fxch st(2)
+            fadd dword ptr [ebx - 0x38]
+            fxch st(1)
+            fadd dword ptr [ebx - 0x34]
+            fxch st(2)
+            fadd dword ptr [ebx - 0x24]
+            fxch st(1)
+            fadd dword ptr [ebx - 0x2c]
+            fxch st(2)
+            fadd dword ptr [ebx - 0x28]
+            fxch st(1)
+            fadd dword ptr [ebx - 0x30]
+            fxch st(2)
+            fmul dword ptr [gFloat_0058af38]
+            fxch st(1)
+            fmul dword ptr [gFloat_0058af38]
+            fxch st(2)
+            fmul dword ptr [gFloat_0058af38]
+            fxch st(1)
+            fstp dword ptr [esp + 0x24]
+            xor eax, eax
+            mov edx, dword ptr [gTrack_smashable_environment_specs]
+            mov al, byte ptr [ebp + 6]
+            xor esi, esi
+            fxch st(1)
+            fstp dword ptr [esp + 0x28]
+            lea ecx, [eax + eax*2]
+            shl ecx, 3
+            sub ecx, eax
+            shl ecx, 5
+            fstp dword ptr [esp + 0x2c]
+            lea eax, [ecx + edx - 0x2e0]
+            mov dword ptr [esp + 0x20], eax
+            jmp L004edf55
+    L004ede0f:
+            mov ebp, dword ptr [ebx]
+            test ebp, ebp
+            je L004edf55
+            mov edx, dword ptr [ebp + 0x14]
+            test edx, edx
+            je L004ede3d
+            mov edi, edx
+            or ecx, 0xffffffff
+            xor eax, eax
+            repne scasb
+            not ecx
+            dec ecx
+            cmp ecx, 0xb
+            jne L004ede37
+            cmp byte ptr [edx + 5], 0x7c
+            je L004ede76
+    L004ede37:
+            cmp byte ptr [edx + 1], 0xa3
+            je L004ede76
+    L004ede3d:
+            test ebp, ebp
+            je L004edf55
+            mov edx, dword ptr [ebp + 0x14]
+            test edx, edx
+            je L004edf55
+            cmp byte ptr [edx], 0x26
+            jne L004edf55
+            movsx eax, byte ptr [edx + 1]
+            movsx ecx, byte ptr [edx + 2]
+            lea eax, [eax + eax*4]
+            lea ecx, [ecx + eax*2]
+            mov eax, dword ptr [ecx*4 + gSmashable_triggers_by_identifier]
+            test eax, eax
+            je L004edf55
+    L004ede76:
+            cmp byte ptr [edx], 0x26
+            jne L004edec6
+            mov cl, byte ptr [edx + 1]
+            cmp cl, 0x30
+            jl L004edec6
+            cmp cl, 0x39
+            jg L004edec6
+            cmp byte ptr [edx + 3], 0x21
+            je L004ee209
+            mov eax, dword ptr [esp + 0x10]
+            mov eax, dword ptr [eax + 0x28]
+            test eax, eax
+            je L004edf18
+            cmp eax, 3
+            je L004edf18
+            cmp eax, 6
+            jne L004ee209
+            mov eax, dword ptr [esp + 0x38]
+            cmp cl, byte ptr [eax - 0x23]
+            jne L004ee209
+            mov cl, byte ptr [edx + 2]
+            cmp cl, byte ptr [eax - 0x22]
+            jne L004ee209
+            jmp L004edf18
+    L004edec6:
+            mov ecx, dword ptr [esp + 0x10]
+            mov eax, dword ptr [ecx + 0x28]
+            test eax, eax
+            je L004edf18
+            cmp eax, 2
+            je L004edf18
+            cmp eax, 5
+            jne L004ee209
+            mov eax, ecx
+            mov edi, edx
+            lea ebp, [eax + 8]
+    L004edee6:
+            mov cl, byte ptr [edi]
+            mov al, cl
+            cmp cl, byte ptr [ebp]
+            jne L004edf0b
+            test al, al
+            je L004edf07
+            mov cl, byte ptr [edi + 1]
+            mov al, cl
+            cmp cl, byte ptr [ebp + 1]
+            jne L004edf0b
+            add edi, 2
+            add ebp, 2
+            test al, al
+            jne L004edee6
+    L004edf07:
+            xor eax, eax
+            jmp L004edf10
+    L004edf0b:
+            sbb eax, eax
+            sbb eax, -1
+    L004edf10:
+            test eax, eax
+            jne L004ee209
+    L004edf18:
+            mov eax, dword ptr [ebx]
+            mov esi, 1
+            mov ecx, dword ptr [eax + 0x50]
+            mov dword ptr [esp + 0x24], ecx
+            mov ecx, dword ptr [eax + 0x54]
+            mov eax, dword ptr [eax + 0x58]
+            mov dword ptr [esp + 0x28], ecx
+            mov dword ptr [esp + 0x2c], eax
+            xor eax, eax
+            mov al, byte ptr [edx + 6]
+            mov edx, dword ptr [gTrack_smashable_environment_specs]
+            lea ecx, [eax + eax*2]
+            shl ecx, 3
+            sub ecx, eax
+            shl ecx, 5
+            lea eax, [ecx + edx - 0x2e0]
+            mov dword ptr [esp + 0x20], eax
+    L004edf55:
+            cmp esi, -1
+            je L004ee209
+            mov eax, offset gSmash_explosions+0x88
+            mov ecx, 1
+    L004edf68:
+            mov edx, dword ptr [eax - 0x84]
+            test edx, edx
+            je L004edfa6
+            cmp dword ptr [eax - 0x88], ecx
+            jne L004edfa6
+            cmp esi, ecx
+            jne L004edf86
+            mov edx, dword ptr [eax]
+            mov edi, dword ptr [ebx]
+            cmp edx, edi
+            je L004edfb4
+    L004edf86:
+            test esi, esi
+            jne L004edfa6
+            mov edx, dword ptr [eax]
+            mov edi, dword ptr [ebx]
+            cmp edx, edi
+            jne L004edfa6
+            mov dx, word ptr [eax + 4]
+            cmp dx, word ptr [ebx + 4]
+            jne L004edfa6
+            mov dx, word ptr [eax + 6]
+            cmp dx, word ptr [ebx + 6]
+            je L004edfb4
+    L004edfa6:
+            add eax, 0xc8
+            cmp eax, offset gPowerup_respawn_sound_ids+0x6c
+            jl L004edf68
+            jmp L004edfbc
+    L004edfb4:
+            mov dword ptr [esp + 0x20], 0
+    L004edfbc:
+            mov eax, dword ptr [esp + 0x20]
+            test eax, eax
+            je L004ee209
+            mov ecx, dword ptr [esp + 0x30]
+            mov eax, dword ptr [ebx]
+            cmp eax, dword ptr [ecx]
+            je L004ee209
+            mov ebp, ecx
+            mov edi, dword ptr [esp + 0x10]
+            lea edx, [ebp + 0x68]
+            mov eax, dword ptr [ebp + 0x68]
+            mov dword ptr [esp + 0x44], eax
+            mov ecx, dword ptr [edx + 4]
+            mov dword ptr [esp + 0x48], ecx
+            xor ecx, ecx
+            mov edx, dword ptr [edx + 8]
+            mov cx, word ptr [edi]
+            mov dword ptr [esp + 0x4c], edx
+            xor edx, edx
+            mov dx, word ptr [edi + 2]
+            call IRandomBetween
+            mov edx, dword ptr [esp + 0x40]
+            mov dword ptr [esp + 0xcc], esi
+            add eax, edx
+            mov dword ptr [esp + 0x5c], eax
+            mov eax, dword ptr [edi + 0x44]
+            dec eax
+            je L004ee069
+            dec eax
+            jne L004ee0fc
+            fld dword ptr [esp + 0x28]
+            fld dword ptr [esp + 0x24]
+            fsub dword ptr [ebp + 0xb0]
+            fxch st(1)
+            fsub dword ptr [ebp + 0xb4]
+            fld dword ptr [esp + 0x2c]
+            fsub dword ptr [ebp + 0xb8]
+            fld st(2)
+            fld st(2)
+            fxch st(1)
+            fmul st(0), st(4)
+            fxch st(1)
+            fmul st(0), st(3)
+            fld st(2)
+            fmul st(0), st(3)
+            fxch st(1)
+            faddp st(2), st(0)
+            faddp st(1), st(0)
+            fsqrt
+            fcom dword ptr [gFloat_0058aec4]
+            fnstsw ax
+            test ah, 0x41
+            jne L004ee0dc
+            jmp L004ee0ae
+    L004ee069:
+            fld dword ptr [ebp + 0xb4]
+            fld dword ptr [ebp + 0xb0]
+            fsub dword ptr [esp + 0x24]
+            fxch st(1)
+            fsub dword ptr [esp + 0x28]
+            fld dword ptr [ebp + 0xb8]
+            fsub dword ptr [esp + 0x2c]
+            fld st(2)
+            fld st(2)
+            fxch st(1)
+            fmul st(0), st(4)
+            fxch st(1)
+            fmul st(0), st(3)
+            fld st(2)
+            fmul st(0), st(3)
+            fxch st(1)
+            faddp st(2), st(0)
+            faddp st(1), st(0)
+            fsqrt
+            fcom dword ptr [gFloat_0058aec4]
+            fnstsw ax
+            test ah, 0x41
+            jne L004ee0dc
+    L004ee0ae:
+            fdivr qword ptr [gDouble_0058aec8]
+            fld st(0)
+            fld st(1)
+            fxch st(1)
+            fmul st(0), st(5)
+            fxch st(1)
+            fmul st(0), st(4)
+            fxch st(2)
+            fmul st(0), st(3)
+            fxch st(1)
+            fstp dword ptr [esp + 0x14]
+            fxch st(1)
+            fstp dword ptr [esp + 0x18]
+            fstp dword ptr [esp + 0x1c]
+            fstp st(0)
+            fstp st(0)
+            fstp st(0)
+            jmp L004ee0fc
+    L004ee0dc:
+            fstp st(0)
+            fstp st(0)
+            fstp st(0)
+            fstp st(0)
+            mov dword ptr [esp + 0x14], 0x3f800000
+            mov dword ptr [esp + 0x18], 0
+            mov dword ptr [esp + 0x1c], 0
+    L004ee0fc:
+            fld dword ptr [edi + 0x48]
+            fcomp dword ptr [gFloat_0058aec0]
+            fnstsw ax
+            test ah, 1
+            jne L004ee141
+            fld dword ptr [edi + 0x48]
+            fld dword ptr [edi + 0x48]
+            fld dword ptr [edi + 0x48]
+            fld dword ptr [edi + 0x48]
+            fxch st(3)
+            fmul dword ptr [esp + 0x14]
+            fxch st(2)
+            fmul dword ptr [esp + 0x18]
+            fxch st(1)
+            fmul dword ptr [esp + 0x1c]
+            fxch st(2)
+            fstp dword ptr [esp + 0x60]
+            fstp dword ptr [esp + 0x64]
+            fstp dword ptr [esp + 0x68]
+            fstp dword ptr [esp + 0xd0]
+            jmp L004ee18d
+    L004ee141:
+            fld dword ptr [esp + 0x7e28]
+            fmul dword ptr [edi + 0x48]
+            fld dword ptr [esp + 0x14]
+            fld dword ptr [esp + 0x18]
+            fld dword ptr [esp + 0x1c]
+            fxch st(3)
+            fchs
+            fstp dword ptr [esp + 0xd0]
+            fxch st(1)
+            fmul dword ptr [esp + 0xd0]
+            fxch st(1)
+            fmul dword ptr [esp + 0xd0]
+            fxch st(2)
+            fmul dword ptr [esp + 0xd0]
+            fxch st(1)
+            fstp dword ptr [esp + 0x60]
+            fxch st(1)
+            fstp dword ptr [esp + 0x64]
+            fstp dword ptr [esp + 0x68]
+    L004ee18d:
+            mov ecx, dword ptr [esp + 0x28]
+            mov eax, dword ptr [esp + 0x24]
+            mov edx, dword ptr [esp + 0x2c]
+            mov dword ptr [esp + 0x54], ecx
+            mov dword ptr [esp + 0x50], eax
+            mov eax, dword ptr [esp + 0x20]
+            mov ecx, 0x14
+            lea esi, [ebx - 0x48]
+            lea edi, [esp + 0x7c]
+            mov dword ptr [esp + 0x58], edx
+            rep movsd
+            mov dword ptr [esp + 0x78], eax
+            mov dword ptr [esp + 0xd4], ebp
+            xor eax, eax
+            mov ecx, offset gSmash_explosions+0x4
+    L004ee1c9:
+            cmp dword ptr [ecx], 0
+            je L004ee1df
+            add ecx, 0xc8
+            inc eax
+            cmp ecx, offset gPowerup_respawn_smashable+0x4
+            jl L004ee1c9
+            jmp L004ee209
+    L004ee1df:
+            lea eax, [eax + eax*4]
+            mov ecx, 0x25
+            lea esi, [esp + 0x44]
+            lea eax, [eax + eax*4]
+            shl eax, 3
+            mov dword ptr [eax + gSmash_explosions], 1
+            lea edi, [eax + gSmash_explosions+0x8]
+            mov dword ptr [eax + gSmash_explosions+0x4], ebp
+            rep movsd
+    L004ee209:
+            mov eax, dword ptr [esp + 0x3c]
+            add ebx, 0x50
+            dec eax
+            mov dword ptr [esp + 0x3c], eax
+            jne L004edd07
+            mov ebp, dword ptr [esp + 0x7e20]
+            mov ebx, dword ptr [esp + 0x10]
+    L004ee226:
+            mov eax, dword ptr [esp + 0x34]
+            mov ecx, dword ptr [ebp]
+            inc eax
+            add ebx, 0x4c
+            cmp eax, ecx
+            mov dword ptr [esp + 0x34], eax
+            mov dword ptr [esp + 0x10], ebx
+            jl L004edc1c
+            pop esi
+            pop edi
+    L004ee243:
+            pop ebp
+            pop ebx
+            add esp, 0x7e0c
+            ret 0xc
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004f1030
-void C2_HOOK_FASTCALL FUN_004f1030(tPhysics_object* pObject, int pMode, br_actor* pActor) {
+void C2_NAKED C2_HOOK_FASTCALL FUN_004f1030(tPhysics_object* pObject, int pMode, br_actor* pActor) {
+#ifndef CARPOCALYPSE2_MATCHING
     tU8* info;
     int type;
 
@@ -911,11 +1984,105 @@ enqueue:
     gPowerup_queue[gSize_powerup_queue].car = &gProgram_state.current_car;
     gPowerup_queue[gSize_powerup_queue].powerup_index = pMode;
     gSize_powerup_queue = gSize_powerup_queue + 1;
+#else
+    __asm {
+            push esi
+            mov esi, dword ptr [ecx + 0x23c]
+            push edi
+            mov edi, edx
+            cmp edi, 0xe
+            jne L004f10b3
+            test ecx, ecx
+            je L004f10a4
+            test esi, esi
+            je L004f10a4
+            cmp byte ptr [ecx + 0x238], 1
+            jne L004f10a4
+            mov eax, dword ptr [esi + 0xc]
+            test eax, eax
+            je L004f1061
+            cmp eax, 2
+            je L004f10a4
+            cmp eax, 3
+            je L004f10a4
+    L004f1061:
+            mov edx, dword ptr [gSize_powerup_queue]
+            cmp edx, 0x32
+            jge L004f10a4
+            cmp dword ptr [esi + 0xc], 5
+            jle L004f10a4
+            mov esi, dword ptr [esp + 0xc]
+            lea eax, [edx + edx*2]
+            shl eax, 2
+            inc edx
+            mov dword ptr [eax + gPowerup_queue+0x8], esi
+            mov ecx, dword ptr [ecx + 0x23c]
+            mov dword ptr [eax + gPowerup_queue], ecx
+            mov dword ptr [eax + gPowerup_queue+0x4], 0xe
+            mov dword ptr [gSize_powerup_queue], edx
+            pop edi
+            pop esi
+            ret 4
+    L004f10a4:
+            mov edx, 0xe
+            call FUN_004d9d00
+            pop edi
+            pop esi
+            ret 4
+    L004f10b3:
+            mov edx, dword ptr [gSize_powerup_queue]
+            test ecx, ecx
+            je L004f10e6
+            test esi, esi
+            je L004f10e6
+            cmp byte ptr [ecx + 0x238], 1
+            jne L004f10e6
+            mov eax, dword ptr [esi + 0xc]
+            test eax, eax
+            je L004f10db
+            cmp eax, 2
+            je L004f10e6
+            cmp eax, 3
+            je L004f10e6
+    L004f10db:
+            cmp edx, 0x32
+            jge L004f10e6
+            cmp dword ptr [esi + 0xc], 8
+            je L004f1110
+    L004f10e6:
+            cmp byte ptr [ecx + 0x238], 0x20
+            jne L004f1137
+            cmp dword ptr [gMutant_tail_state], 2
+            je L004f1110
+            call GetTotalTime
+            sub eax, dword ptr [gINT_00705b70]
+            cmp eax, 0x1d4c
+            jae L004f1137
+            mov edx, dword ptr [gSize_powerup_queue]
+    L004f1110:
+            mov ecx, dword ptr [esp + 0xc]
+            lea eax, [edx + edx*2]
+            shl eax, 2
+            inc edx
+            mov dword ptr [eax + gPowerup_queue+0x8], ecx
+            mov dword ptr [eax + gPowerup_queue], 0x75bc2c
+            mov dword ptr [eax + gPowerup_queue+0x4], edi
+            mov dword ptr [gSize_powerup_queue], edx
+    L004f1137:
+            pop edi
+            pop esi
+            ret 4
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
-// C2PORT-NONMATCHING: best 98.73% | difftest PASS 6000 trials (spec difftest/specs/004ed490_SmashItIntoVerySmallPiecesIndeed.json) | reason award_given store sits before the credits compare instead of between fcomp and fnstsw
 // FUNCTION: CARMA2_HW 0x004ed490
-void C2_HOOK_FASTCALL SmashItIntoVerySmallPiecesIndeed(tPhysics_object* pObject, tSmashable_item_spec* pSpec, undefined4 pArg3, tConnotations* pConnotations, tU32 pSeed, undefined4 pArg6, const br_vector3* pPoint, const br_vector3* pSound_position, br_actor* pActor, tU32 pTime, undefined4 pArg11, br_matrix34* pTransform, br_bounds3* pBounds, br_vector3* pPosition, float pDistance, undefined4 pArg16, int pFlag) {
+void C2_NAKED C2_HOOK_FASTCALL SmashItIntoVerySmallPiecesIndeed(tPhysics_object* pObject, tSmashable_item_spec* pSpec, undefined4 pArg3, tConnotations* pConnotations, tU32 pSeed, undefined4 pArg6, const br_vector3* pPoint, const br_vector3* pSound_position, br_actor* pActor, tU32 pTime, undefined4 pArg11, br_matrix34* pTransform, br_bounds3* pBounds, br_vector3* pPosition, float pDistance, undefined4 pArg16, int pFlag) {
+#ifndef CARPOCALYPSE2_MATCHING
     int i;
     tCar_spec* owner;
     tSide_effects* side_effects;
@@ -1010,6 +2177,354 @@ void C2_HOOK_FASTCALL SmashItIntoVerySmallPiecesIndeed(tPhysics_object* pObject,
             && GetRuntimeVariable(gCurrent_race.race_spec->options.smash.var_smash_number) >= gCurrent_race.race_spec->options.smash.var_smash_target) {
         RaceCompleted(eRace_over_3);
     }
+#else
+    __asm {
+            push ecx
+            push ebx
+            push ebp
+            mov ebp, dword ptr [esp + 0x14]
+            push esi
+            mov esi, ecx
+            push edi
+            mov eax, dword ptr [ebp]
+            mov ebx, edx
+            test eax, eax
+            mov dword ptr [esp + 0x10], esi
+            je L004ed4e8
+            push 0x10000
+            mov edx, 0x12000
+            mov ecx, 0xe000
+            call IRandomBetween
+            mov edx, dword ptr [ebp]
+            xor ecx, ecx
+            push eax
+            mov eax, dword ptr [esp + 0x34]
+            push 0xff
+            push 1
+            push offset gZero_v__car
+            push eax
+            dec edx
+            call IRandomBetween
+            mov edx, dword ptr [ebp + eax*4 + 4]
+            mov ecx, dword ptr [gXXX_outlet]
+            call DRS3StartSound3D
+    L004ed4e8:
+            mov eax, dword ptr [esp + 0x50]
+            test eax, eax
+            jne L004ed5a9
+            mov eax, dword ptr [ebp + 0x25c]
+            lea edi, [ebp + 0x25c]
+            test eax, eax
+            je L004ed510
+            mov ecx, dword ptr [esp + 0x30]
+            push esi
+            mov edx, edi
+            call QueueNonCarCuboidActivation
+    L004ed510:
+            mov ecx, dword ptr [edi + 8]
+            lea eax, [edi + 8]
+            test ecx, ecx
+            je L004ed52e
+            mov ecx, dword ptr [esp + 0x48]
+            mov edx, dword ptr [esp + 0x4c]
+            push ecx
+            push edx
+            push eax
+            mov edx, esi
+            mov ecx, ebx
+            call FUN_004edbe0
+    L004ed52e:
+            mov edx, dword ptr [edi + 0x18]
+            test edx, edx
+            je L004ed5a9
+            test esi, esi
+            je L004ed5a9
+            mov eax, dword ptr [esi + 0x23c]
+            test eax, eax
+            je L004ed5a9
+            cmp byte ptr [esi + 0x238], 1
+            jne L004ed5a9
+            cmp dword ptr [eax + 0xc], 8
+            jne L004ed5a9
+            mov eax, dword ptr [esi]
+            mov ecx, dword ptr [esp + 0x28]
+            fld dword ptr [eax + 0x58]
+            fld dword ptr [eax + 0x54]
+            fsub dword ptr [ecx + 4]
+            fxch st(1)
+            fsub dword ptr [ecx + 8]
+            fld dword ptr [eax + 0x50]
+            _emit 0xd8
+        _emit 0x21
+            fxch st(2)
+            fst dword ptr [esp + 0x1c]
+            fld st(1)
+            fxch st(1)
+            fmul dword ptr [esp + 0x1c]
+            fxch st(1)
+            fmul st(0), st(2)
+            fxch st(3)
+            fst dword ptr [esp + 0x1c]
+            fmul dword ptr [esp + 0x1c]
+            fxch st(3)
+            faddp st(1), st(0)
+            fxch st(2)
+            faddp st(2), st(0)
+            fxch st(1)
+            fcomp qword ptr [gDouble_0058af28]
+            fnstsw ax
+            test ah, 1
+            fstp st(0)
+            je L004ed5a9
+            push 0
+            mov ecx, esi
+            call FUN_004f1030
+    L004ed5a9:
+            mov eax, dword ptr [ebp + 0x10]
+            xor edi, edi
+            test eax, eax
+            jle L004ed61a
+            mov ebx, dword ptr [esp + 0x44]
+            add esi, 0xb0
+            mov dword ptr [esp + 0x1c], esi
+            lea esi, [ebp + 0x14]
+    L004ed5c3:
+            mov eax, dword ptr [esp + 0x50]
+            mov ecx, dword ptr [esp + 0x1c]
+            mov edx, dword ptr [esp + 0x48]
+            push eax
+            mov eax, dword ptr [esp + 0x44]
+            push ecx
+            mov ecx, dword ptr [esp + 0x44]
+            push edx
+            mov edx, dword ptr [esp + 0x44]
+            push ebx
+            push eax
+            mov eax, dword ptr [esp + 0x48]
+            push ecx
+            mov ecx, dword ptr [esp + 0x48]
+            push edx
+            mov edx, dword ptr [esp + 0x48]
+            push eax
+            mov eax, dword ptr [esp + 0x48]
+            push ecx
+            mov ecx, dword ptr [esp + 0x48]
+            push edx
+            mov edx, dword ptr [esp + 0x48]
+            push eax
+            push ecx
+            mov ecx, dword ptr [esp + 0x48]
+            push edx
+            mov edx, esi
+            call WorkerShrapnelShower
+            mov eax, dword ptr [ebp + 0x10]
+            inc edi
+            add esi, 0x58
+            cmp edi, eax
+            jl L004ed5c3
+            mov esi, dword ptr [esp + 0x10]
+    L004ed61a:
+            mov eax, dword ptr [esp + 0x50]
+            test eax, eax
+            jne L004ed756
+            test esi, esi
+            je L004ed63d
+            mov eax, dword ptr [esi + 0x23c]
+            test eax, eax
+            je L004ed63d
+            cmp byte ptr [esi + 0x238], 1
+            je L004ed63f
+    L004ed63d:
+            xor eax, eax
+    L004ed63f:
+            test eax, eax
+            je L004ed663
+            mov ecx, dword ptr [ebp + 0x278]
+            cmp ecx, 2
+            je L004ed65d
+            cmp ecx, 1
+            jne L004ed663
+            mov ecx, dword ptr [ebp + 0x28c]
+            test ecx, ecx
+            jne L004ed663
+    L004ed65d:
+            cmp dword ptr [eax + 0xc], 8
+            je L004ed670
+    L004ed663:
+            cmp dword ptr [ebp + 0x278], 3
+            jne L004ed756
+    L004ed670:
+            fld dword ptr [ebp + 0x27c]
+            fcomp dword ptr [gFloat_0058aec0]
+            mov dword ptr [ebp + 0x28c], 1
+            fnstsw ax
+            test ah, 0x41
+            jne L004ed6a1
+            fld dword ptr [ebp + 0x27c]
+            call _ftol
+            mov ecx, eax
+            call EarnCredits
+            jmp L004ed6ce
+    L004ed6a1:
+            fld dword ptr [esp + 0x48]
+            fmul dword ptr [ebp + 0x27c]
+            fchs
+            fcom dword ptr [gFloat_0058af30]
+            fnstsw ax
+            test ah, 1
+            jne L004ed6c2
+            fstp st(0)
+            fld dword ptr [gFloat_0058af30]
+    L004ed6c2:
+            call _ftol
+            mov ecx, eax
+            call EarnCredits100
+    L004ed6ce:
+            fld dword ptr [ebp + 0x280]
+            fcomp dword ptr [gFloat_0058aec0]
+            fnstsw ax
+            test ah, 0x41
+            jne L004ed6f5
+            fld dword ptr [ebp + 0x280]
+            call _ftol
+            mov ecx, eax
+            call AwardTime
+            jmp L004ed722
+    L004ed6f5:
+            fld dword ptr [esp + 0x48]
+            fmul dword ptr [ebp + 0x280]
+            fchs
+            fcom dword ptr [gFloat_0058af34]
+            fnstsw ax
+            test ah, 1
+            jne L004ed716
+            fstp st(0)
+            fld dword ptr [gFloat_0058af34]
+    L004ed716:
+            call _ftol
+            mov ecx, eax
+            call AwardTime5
+    L004ed722:
+            mov ecx, dword ptr [ebp + 0x284]
+            test ecx, ecx
+            je L004ed747
+            push 0
+            call GetMiscString
+            xor edx, edx
+            mov ecx, 4
+            push eax
+            push -4
+            push 0xbb8
+            call NewTextHeadupSlot2
+    L004ed747:
+            mov ecx, dword ptr [ebp + 0x288]
+            test ecx, ecx
+            je L004ed756
+            call DoFancyHeadup
+    L004ed756:
+            mov eax, dword ptr [gYon_squared]
+            lea esi, [ebp + 0x224]
+            mov dword ptr [esp + 0x48], eax
+            mov eax, dword ptr [gPed_676914]
+            test eax, eax
+            jne L004ed785
+            mov ecx, dword ptr [esp + 0x48]
+            mov edi, dword ptr [esp + 0x30]
+            push ecx
+            lea ecx, [edi + 0x50]
+            call PointOutOfSight
+            test eax, eax
+            jne L004ed79e
+            jmp L004ed789
+    L004ed785:
+            mov edi, dword ptr [esp + 0x30]
+    L004ed789:
+            cmp dword ptr [esi], 0
+            je L004ed79e
+            mov edx, dword ptr [esp + 0x40]
+            push 0
+            push edx
+            mov edx, edi
+            mov ecx, esi
+            call Explode
+    L004ed79e:
+            mov eax, dword ptr [esi + 0x30]
+            test eax, eax
+            je L004ed7e2
+            mov eax, dword ptr [esi + 0x34]
+            mov ecx, dword ptr [esi + 0x30]
+            mov edx, dword ptr [esi + 0x24]
+            push eax
+            mov eax, dword ptr [esi + 0x20]
+            push ecx
+            mov ecx, dword ptr [esi + 0x2c]
+            push edx
+            mov edx, dword ptr [esi + 0x28]
+            push eax
+            mov eax, dword ptr [esi + 0x1c]
+            push ecx
+            mov ecx, dword ptr [esi + 0x18]
+            push edx
+            mov edx, dword ptr [esi + 0x14]
+            push eax
+            mov eax, dword ptr [esi + 0x10]
+            push ecx
+            mov ecx, dword ptr [esi + 0xc]
+            push edx
+            mov edx, dword ptr [esi + 8]
+            push eax
+            mov eax, dword ptr [edi + 0x18]
+            push ecx
+            push edx
+            push eax
+            mov edx, edi
+            xor ecx, ecx
+            call QueueOilSpill2
+    L004ed7e2:
+            mov al, byte ptr [ebp + 0x290]
+            xor edi, edi
+            test al, al
+            lea esi, [ebp + 0x292]
+            jbe L004ed827
+    L004ed7f4:
+            movsx edx, word ptr [esi]
+            cmp edx, 0x270f
+            je L004ed80c
+            xor ecx, ecx
+            mov cx, word ptr [esi + 2]
+            call AccumulateRuntimeVariable
+            jmp L004ed817
+    L004ed80c:
+            xor ecx, ecx
+            mov cx, word ptr [esi + 2]
+            call ToggleRuntimeVariable
+    L004ed817:
+            xor ecx, ecx
+            inc edi
+            mov cl, byte ptr [ebp + 0x290]
+            add esi, 4
+            cmp edi, ecx
+            jl L004ed7f4
+    L004ed827:
+            mov eax, dword ptr [gCurrent_race+0x98]
+            cmp dword ptr [eax + 0x210], 4
+            jl L004ed858
+            mov ecx, dword ptr [eax + 0x214]
+            call GetRuntimeVariable
+            mov edx, dword ptr [gCurrent_race+0x98]
+            cmp eax, dword ptr [edx + 0x218]
+            jl L004ed858
+            mov ecx, 3
+            call RaceCompleted
+    L004ed858:
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            pop ecx
+            ret 0x3c
+    }
+#endif
 }
 
 extern const double gDouble_0058aeb8;
@@ -1017,9 +2532,9 @@ extern const double gDouble_0058aeb8;
 // GLOBAL: CARMA2_HW 0x0058af18
 const double gDouble_0058af18 = 0.09587379924285257;
 
-// C2PORT-NONMATCHING: best 42.86% | difftest PASS 2000 trials (spec difftest/specs/004ecfb0_FlushSmashQueue.json) | reason stack-layout,x87-order,register-allocation
 // FUNCTION: CARMA2_HW 0x004ecfb0
-void C2_HOOK_FASTCALL FlushSmashQueue(int pFlush_powerups) {
+void C2_NAKED C2_HOOK_FASTCALL FlushSmashQueue(int pFlush_powerups) {
+#ifndef CARPOCALYPSE2_MATCHING
     int i;
     int j;
     int k;
@@ -1136,10 +2651,284 @@ void C2_HOOK_FASTCALL FlushSmashQueue(int pFlush_powerups) {
         FlushPowerupQueue();
     }
     gCount_queued_smashes = 0;
+#else
+    __asm {
+            sub esp, 0x70
+            mov edx, dword ptr [gCount_queued_smashes]
+            push ebx
+            push ebp
+            push esi
+            test edx, edx
+            push edi
+            mov dword ptr [esp + 0x4c], ecx
+            mov dword ptr [esp + 0x30], 0
+            jle L004ed25e
+            mov ebp, offset gQueued_smashes+0x4c
+    L004ecfd6:
+            mov eax, dword ptr [ebp - 0x44]
+            mov dword ptr [esp + 0x24], eax
+            mov ecx, dword ptr [eax + 0x18]
+            test ecx, ecx
+            je L004ed1e7
+            mov eax, dword ptr [ebp - 0xc]
+            test eax, eax
+            je L004ed025
+            mov ecx, 0xc
+            mov esi, ebp
+            mov edi, offset gMatrix34_006b78a0
+            lea eax, [ebp + 0x30]
+            rep movsd
+            mov ecx, dword ptr [eax]
+            mov dword ptr [gINT_006a3334], 1
+            mov dword ptr [gVector3_006a4688], ecx
+            mov edx, dword ptr [eax + 4]
+            mov dword ptr [gVector3_006a4688+0x4], edx
+            mov eax, dword ptr [eax + 8]
+            mov dword ptr [gVector3_006a4688+0x8], eax
+            jmp L004ed02f
+    L004ed025:
+            mov dword ptr [gINT_006a3334], 0
+    L004ed02f:
+            mov ecx, dword ptr [ebp - 0x10]
+            mov ebx, dword ptr [ebp - 0x14]
+            mov edx, dword ptr [ebp - 4]
+            mov eax, dword ptr [ebp - 0x48]
+            mov edi, dword ptr [ebp - 0x3c]
+            mov dword ptr [esp + 0x34], ecx
+            mov ecx, dword ptr [ebp - 0x4c]
+            lea esi, [ebp - 0x2c]
+            mov dword ptr [esp + 0x28], ebx
+            mov dword ptr [esp + 0x38], edx
+            mov dword ptr [esp + 0x3c], eax
+            mov dword ptr [esp + 0x2c], ecx
+            call GetTotalTime
+            mov ecx, dword ptr [edi + 0x48]
+            mov edx, dword ptr [edi + 0x4c]
+            mov dword ptr [esp + 0x20], eax
+            mov dword ptr [esp + 0x14], edx
+            lea eax, [ecx - 1]
+            cmp edx, eax
+            jge L004ed1e7
+            cmp ebx, ecx
+            jl L004ed080
+            mov ebx, eax
+            mov dword ptr [esp + 0x28], ebx
+    L004ed080:
+            mov edx, dword ptr [esp + 0x20]
+            mov eax, dword ptr [esp + 0x24]
+            mov ecx, edi
+            xor ecx, edx
+            mov edx, dword ptr [gUniverse_actor]
+            mov dword ptr [esp + 0x44], ecx
+            push edx
+            lea ecx, [esp + 0x54]
+            push eax
+            push ecx
+            call BrActorToActorMatrix34
+            mov ecx, dword ptr [esp + 0x38]
+            add esp, 0xc
+            mov edx, edi
+            push ebx
+            call ActuallySmashCarPart
+            mov edx, dword ptr [gCount_shrapnel_shower_calls]
+            mov ecx, dword ptr [edi + 0x50]
+            lea eax, [ebx + ebx*4]
+            mov dword ptr [esp + 0x40], edx
+            lea edx, [ebx + eax*2]
+            shl edx, 4
+            add edx, ebx
+            lea eax, [ecx + edx*4 + 0x14]
+            mov edx, dword ptr [esp + 0x14]
+            mov dword ptr [esp + 0x48], eax
+            lea eax, [edx + 1]
+            lea edx, [eax + eax*4]
+            lea edx, [eax + edx*2]
+            shl edx, 4
+            add edx, eax
+            cmp eax, ebx
+            lea ecx, [ecx + edx*4]
+            jg L004ed1a9
+            add ecx, 0x2bc
+            mov dword ptr [esp + 0x10], ecx
+            mov ecx, ebx
+            sub ecx, eax
+            inc ecx
+            mov dword ptr [esp + 0x2c], ecx
+    L004ed101:
+            mov eax, dword ptr [esp + 0x10]
+            test byte ptr [eax], 1
+            je L004ed117
+            mov eax, dword ptr [esp + 0x14]
+            mov edx, ebx
+            sub edx, eax
+            cmp edx, 1
+            jne L004ed190
+    L004ed117:
+            fld dword ptr [esi + 4]
+            fld dword ptr [esi + 8]
+            fld dword ptr [esi]
+            fxch st(2)
+            fst dword ptr [esp + 0x18]
+            fxch st(1)
+            fst dword ptr [esp + 0x1c]
+            fxch st(1)
+            fmul dword ptr [esp + 0x18]
+            fxch st(1)
+            fmul dword ptr [esp + 0x1c]
+            fld st(2)
+            fmul st(0), st(3)
+            fxch st(1)
+            faddp st(2), st(0)
+            mov eax, dword ptr [esp + 0x34]
+            mov edx, dword ptr [esp + 0x38]
+            push eax
+            push esi
+            faddp st(1), st(0)
+            push ecx
+            lea eax, [esp + 0x5c]
+            mov ecx, dword ptr [esp + 0x48]
+            lea ebx, [ebp - 0x38]
+            fsqrt
+            fstp st(1)
+            fstp dword ptr [esp]
+            push 0
+            push 0
+            push eax
+            mov eax, dword ptr [esp + 0x58]
+            push eax
+            mov eax, dword ptr [esp + 0x3c]
+            push eax
+            mov eax, dword ptr [esp + 0x44]
+            push eax
+            lea eax, [ebp - 0x20]
+            push eax
+            push eax
+            mov eax, dword ptr [esp + 0x70]
+            push ebx
+            push eax
+            mov eax, dword ptr [esp + 0x7c]
+            push eax
+            push edi
+            call SmashItIntoVerySmallPiecesIndeed
+            mov ecx, dword ptr [esp + 0x2c]
+            mov ebx, dword ptr [esp + 0x28]
+    L004ed190:
+            mov edx, dword ptr [esp + 0x10]
+            add edx, 0x2c4
+            dec ecx
+            mov dword ptr [esp + 0x10], edx
+            mov dword ptr [esp + 0x2c], ecx
+            jne L004ed101
+    L004ed1a9:
+            mov eax, dword ptr [edi + 0x44]
+            test eax, eax
+            je L004ed1e7
+            mov ecx, dword ptr [eax + 4]
+            test ecx, ecx
+            je L004ed1e7
+            mov eax, dword ptr [edi + 0x4c]
+            lea edx, [eax + eax*4]
+            lea edx, [eax + edx*2]
+            shl edx, 4
+            add edx, eax
+            mov eax, dword ptr [edi + 0x50]
+            mov eax, dword ptr [eax + edx*4 + 0x2c0]
+            sub eax, 0
+            je L004ed1e4
+            dec eax
+            je L004ed1df
+            dec eax
+            jne L004ed1e7
+            mov byte ptr [ecx], 0x3f
+            jmp L004ed1e7
+    L004ed1df:
+            mov byte ptr [ecx], 0x3e
+            jmp L004ed1e7
+    L004ed1e4:
+            mov byte ptr [ecx], 0x58
+    L004ed1e7:
+            mov eax, dword ptr [esp + 0x30]
+            mov edx, dword ptr [gCount_queued_smashes]
+            inc eax
+            add ebp, 0x88
+            cmp eax, edx
+            mov dword ptr [esp + 0x30], eax
+            jl L004ecfd6
+            test edx, edx
+            jle L004ed25e
+            mov edi, 1
+            mov esi, offset gQueued_smashes+0x44
+    L004ed212:
+            cmp dword ptr [esi], 0
+            je L004ed250
+            mov ecx, dword ptr [esi - 0x3c]
+            mov edx, 0x7fff
+            mov ebx, dword ptr [ecx + 0x18]
+            mov ecx, ebx
+            call DRModelUpdateAndKevificateMaterials
+            mov edx, dword ptr [gCount_queued_smashes]
+            cmp edi, edx
+            jge L004ed250
+            mov eax, edx
+            lea ecx, [esi + 0x4c]
+            sub eax, edi
+    L004ed23a:
+            mov ebp, dword ptr [ecx]
+            cmp ebx, dword ptr [ebp + 0x18]
+            jne L004ed247
+            mov dword ptr [esi], 0
+    L004ed247:
+            add ecx, 0x88
+            dec eax
+            jne L004ed23a
+    L004ed250:
+            inc edi
+            add esi, 0x88
+            lea eax, [edi - 1]
+            cmp eax, edx
+            jl L004ed212
+    L004ed25e:
+            mov eax, dword ptr [esp + 0x4c]
+            xor ebx, ebx
+            cmp eax, ebx
+            jne L004ed29f
+            mov eax, dword ptr [gSize_powerup_queue]
+            xor edi, edi
+            cmp eax, ebx
+            jle L004ed299
+            mov esi, offset gPowerup_queue+0x4
+    L004ed278:
+            mov edx, dword ptr [esi]
+            mov ecx, dword ptr [esi - 4]
+            call GotPowerup
+            mov edx, dword ptr [esi + 4]
+            mov ecx, dword ptr [esi]
+            call MayQueuePowerupRespawn
+            mov eax, dword ptr [gSize_powerup_queue]
+            inc edi
+            add esi, 0xc
+            cmp edi, eax
+            jl L004ed278
+    L004ed299:
+            mov dword ptr [gSize_powerup_queue], ebx
+    L004ed29f:
+            pop edi
+            pop esi
+            mov dword ptr [gCount_queued_smashes], ebx
+            pop ebp
+            pop ebx
+            add esp, 0x70
+            ret
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004ed2b0
-void C2_HOOK_FASTCALL ActuallySmashCarPart(tCar_spec* pCar_spec, tCar_crush_smashable_part* pSmashable, int pLevel) {
+void C2_NAKED C2_HOOK_FASTCALL ActuallySmashCarPart(tCar_spec* pCar_spec, tCar_crush_smashable_part* pSmashable, int pLevel) {
+#ifndef CARPOCALYPSE2_MATCHING
     br_pixelmap* texture;
     br_pixelmap** pixelmaps;
     int i;
@@ -1221,6 +3010,182 @@ no_transform:
     if (pSmashable->funk >= 0) {
         DisableFunkotronic(pSmashable->funk);
     }
+#else
+    __asm {
+            push ecx
+            push ebx
+            push ebp
+            xor ebp, ebp
+            push esi
+            cmp ecx, ebp
+            push edi
+            mov esi, edx
+            mov dword ptr [esp + 0x10], ecx
+            je L004ed2e3
+            xor ecx, ecx
+            mov eax, offset gRepair_animations
+    L004ed2c8:
+            cmp dword ptr [eax], esi
+            je L004ed2d9
+            add eax, 0xc
+            inc ecx
+            cmp eax, offset gRepair_animations+0x12c
+            jl L004ed2c8
+            jmp L004ed2e3
+    L004ed2d9:
+            lea eax, [ecx + ecx*2]
+            mov dword ptr [eax*4 + gRepair_animations], ebp
+    L004ed2e3:
+            mov edi, dword ptr [esp + 0x18]
+            mov edx, dword ptr [esi + 0x50]
+            lea ecx, [edi + edi*4]
+            lea ebx, [edi + ecx*2]
+            shl ebx, 4
+            add ebx, edi
+            shl ebx, 2
+            mov eax, dword ptr [ebx + edx + 0xc]
+            cmp eax, ebp
+            je L004ed31d
+            lea edx, [eax - 1]
+            xor ecx, ecx
+            call IRandomBetween
+            lea ecx, [edi + edi*4]
+            lea edx, [edi + ecx*2]
+            mov ecx, dword ptr [esi + 0x50]
+            shl edx, 4
+            add edx, edi
+            add eax, edx
+            mov ebp, dword ptr [ecx + eax*4]
+    L004ed31d:
+            mov edx, dword ptr [esi + 0x44]
+            mov ecx, dword ptr [esp + 0x10]
+            push ebp
+            call PipeSingleSmashTextureChange
+            mov edx, dword ptr [esi + 0x44]
+            mov eax, dword ptr [esp + 0x10]
+            test eax, eax
+            mov dword ptr [edx + 0x94], ebp
+            je L004ed345
+            mov ecx, dword ptr [eax + 0x1960]
+            test ecx, ecx
+            jne L004ed34b
+    L004ed345:
+            mov ecx, dword ptr [esi + 0x44]
+            mov dword ptr [ecx + 0x40], ebp
+    L004ed34b:
+            mov edx, dword ptr [esi + 0x50]
+            mov dword ptr [esi + 0x4c], edi
+            test eax, eax
+            mov ebx, dword ptr [ebx + edx + 0x2bc]
+            je L004ed375
+            test bl, 0x1c
+            jne L004ed375
+            mov eax, dword ptr [esi + 0x44]
+            add eax, 0x24
+            push eax
+            call BrMatrix23Identity
+            add esp, 4
+            jmp L004ed445
+    L004ed375:
+            test bl, 4
+            je L004ed397
+            mov ecx, 0x32
+            call PercentageChance
+            test eax, eax
+            je L004ed397
+            mov eax, dword ptr [esi + 0x44]
+            fld dword ptr [eax + 0x24]
+            fmul dword ptr [gFLOAT_0058af20]
+            fstp dword ptr [eax + 0x24]
+    L004ed397:
+            test bl, 8
+            je L004ed3b9
+            mov ecx, 0x32
+            call PercentageChance
+            test eax, eax
+            je L004ed3b9
+            mov eax, dword ptr [esi + 0x44]
+            fld dword ptr [eax + 0x30]
+            fmul dword ptr [gFLOAT_0058af20]
+            fstp dword ptr [eax + 0x30]
+    L004ed3b9:
+            test bl, 0x10
+            je L004ed445
+            mov edx, 3
+            xor ecx, ecx
+            call IRandomBetween
+            sub eax, 0
+            je L004ed427
+            dec eax
+            je L004ed400
+            dec eax
+            jne L004ed445
+            mov eax, dword ptr [esi + 0x44]
+            fld dword ptr [eax + 0x24]
+            fld dword ptr [eax + 0x28]
+            fchs
+            fstp dword ptr [eax + 0x24]
+            mov ecx, dword ptr [esi + 0x44]
+            fchs
+            fstp dword ptr [ecx + 0x28]
+            mov eax, dword ptr [esi + 0x44]
+            mov edx, dword ptr [eax + 0x28]
+            fld dword ptr [eax + 0x2c]
+            mov dword ptr [eax + 0x2c], edx
+            mov eax, dword ptr [esi + 0x44]
+            jmp L004ed442
+    L004ed400:
+            mov eax, dword ptr [esi + 0x44]
+            mov ecx, dword ptr [eax + 0x28]
+            fld dword ptr [eax + 0x24]
+            mov dword ptr [eax + 0x24], ecx
+            mov edx, dword ptr [esi + 0x44]
+            fstp dword ptr [edx + 0x28]
+            mov eax, dword ptr [esi + 0x44]
+            fld dword ptr [eax + 0x2c]
+            fld dword ptr [eax + 0x28]
+            fchs
+            fstp dword ptr [eax + 0x2c]
+            mov eax, dword ptr [esi + 0x44]
+            fchs
+            jmp L004ed442
+    L004ed427:
+            mov eax, dword ptr [esi + 0x44]
+            fld dword ptr [eax + 0x24]
+            fmul dword ptr [gFLOAT_0058af20]
+            fstp dword ptr [eax + 0x24]
+            mov eax, dword ptr [esi + 0x44]
+            fld dword ptr [eax + 0x30]
+            fmul dword ptr [gFLOAT_0058af20]
+    L004ed442:
+            fstp dword ptr [eax + 0x30]
+    L004ed445:
+            mov ecx, dword ptr [esi + 0x44]
+            push 0x7fff
+            push ecx
+            call BrMaterialUpdate
+            mov ecx, dword ptr [esp + 0x18]
+            add esp, 8
+            cmp ecx, offset gProgram_state+0xac
+            jne L004ed475
+            cmp dword ptr [gAction_replay_camera_mode], 8
+            jne L004ed475
+            mov edx, 1
+            call MungeCarMaterials
+    L004ed475:
+            mov ecx, dword ptr [esi + 0x40]
+            test ecx, ecx
+            jl L004ed481
+            call DisableFunkotronic
+    L004ed481:
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            pop ecx
+            ret 4
+    }
+#endif
 }
 
 void C2_HOOK_FASTCALL DoDelayedNonCar(tU32 pTime, tDelayed_non_car* pDelayed_non_car) {
@@ -1303,7 +3268,8 @@ const br_scalar gFloat_0058af30 = 20000.0f;
 const br_scalar gFloat_0058af34 = 60.0f;
 
 // FUNCTION: CARMA2_HW 0x004ecc80
-void C2_HOOK_FASTCALL MungeDelayedSideEffects(void) {
+void C2_NAKED C2_HOOK_FASTCALL MungeDelayedSideEffects(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     int i;
     tU32 the_time;
 
@@ -1334,6 +3300,188 @@ void C2_HOOK_FASTCALL MungeDelayedSideEffects(void) {
         }
 
     }
+#else
+    __asm {
+            sub esp, 0x28
+            push ebx
+            push ebp
+            push esi
+            push edi
+            call GetTotalTime
+            mov esi, eax
+            mov edi, offset gSmash_explosions+0x88
+            mov dword ptr [esp + 0x1c], esi
+    L004ecc97:
+            mov eax, dword ptr [edi - 0x84]
+            xor edx, edx
+            cmp eax, edx
+            je L004ece81
+            mov eax, dword ptr [edi - 0x88]
+            sub eax, edx
+            je L004ecd38
+            dec eax
+            jne L004ece81
+            cmp esi, dword ptr [edi - 0x68]
+            jb L004ece81
+            cmp dword ptr [edi + 8], 1
+            jne L004ecd13
+            mov ecx, dword ptr [edi]
+            mov eax, dword ptr [ecx + 0x14]
+            cmp byte ptr [eax], 0x26
+            jne L004ecd13
+            mov al, byte ptr [eax + 1]
+            cmp al, 0x30
+            jl L004ecd13
+            cmp al, 0x39
+            jg L004ecd13
+            call DoPullActorFromWorld
+            mov eax, dword ptr [edi]
+            lea edx, [edi - 0x64]
+            push 0
+            push 1
+            mov ecx, dword ptr [eax + 0x14]
+            lea eax, [edi - 0x80]
+            push edx
+            push eax
+            mov byte ptr [ecx + 3], 0x21
+            mov edx, dword ptr [edi + 0xc]
+            lea ecx, [edi - 0x74]
+            push ecx
+            mov ecx, dword ptr [edi + 0x10]
+            push edx
+            mov edx, dword ptr [edi]
+            call BashObject
+            fstp st(0)
+            jmp L004ece77
+    L004ecd13:
+            push edx
+            lea eax, [edi - 0x64]
+            push 1
+            lea ecx, [edi - 0x80]
+            push eax
+            mov eax, dword ptr [edi + 0xc]
+            lea edx, [edi - 0x74]
+            push ecx
+            mov ecx, dword ptr [edi + 0x10]
+            push edx
+            push eax
+            lea edx, [edi - 0x48]
+            call SmashEnvironment
+            fstp st(0)
+            jmp L004ece77
+    L004ecd38:
+            mov ecx, dword ptr [edi - 0x64]
+            lea eax, [edi - 0x60]
+            cmp ecx, edx
+            lea ebx, [edi - 0x80]
+            mov dword ptr [esp + 0x14], edx
+            mov dword ptr [esp + 0x10], eax
+            mov dword ptr [esp + 0x18], edx
+            mov ebp, eax
+            jle L004ece64
+    L004ecd57:
+            cmp esi, dword ptr [ebp + 4]
+            jb L004ece3b
+            mov ecx, dword ptr [ebp]
+            mov edx, dword ptr [ecx + 0x5c]
+            test edx, edx
+            jne L004ece2c
+            call DoPullActorFromWorld
+            mov esi, eax
+            test esi, esi
+            je L004ece28
+            test dword ptr [esi + 0x100], 0x10000
+            je L004ecd95
+            mov ecx, esi
+            call MakeLiftGoUp
+            jmp L004ece1e
+    L004ecd95:
+            mov edx, dword ptr [ebp]
+            mov ecx, dword ptr [ebx + 0x18]
+            add edx, 0x50
+            lea eax, [ebx + 0xc]
+            push edx
+            push eax
+            push offset gZero_vector__smash
+            lea edx, [esp + 0x38]
+            push 0x3f800000
+            lea eax, [esp + 0x30]
+            push edx
+            push eax
+            mov edx, ebx
+            call ApplyInitialMovement
+            fld dword ptr [esp + 0x20]
+            fmul qword ptr [gDouble_0058aeb8]
+            mov ecx, dword ptr [esi + 8]
+            fstp dword ptr [ecx + 0x68]
+            fld dword ptr [esp + 0x24]
+            fmul qword ptr [gDouble_0058aeb8]
+            mov edx, dword ptr [esi + 8]
+            fstp dword ptr [edx + 0x6c]
+            fld dword ptr [esp + 0x28]
+            fmul qword ptr [gDouble_0058aeb8]
+            mov eax, dword ptr [esi + 8]
+            fstp dword ptr [eax + 0x70]
+            fld dword ptr [esp + 0x2c]
+            fmul qword ptr [gDouble_0058af18]
+            mov ecx, dword ptr [esi + 8]
+            fstp dword ptr [ecx + 0x74]
+            fld dword ptr [esp + 0x30]
+            fmul qword ptr [gDouble_0058af18]
+            mov edx, dword ptr [esi + 8]
+            fstp dword ptr [edx + 0x78]
+            fld dword ptr [esp + 0x34]
+            fmul qword ptr [gDouble_0058af18]
+            mov eax, dword ptr [esi + 8]
+            fstp dword ptr [eax + 0x7c]
+    L004ece1e:
+            mov ecx, dword ptr [esi + 8]
+            mov byte ptr [ecx + 0xec], 0
+    L004ece28:
+            mov eax, dword ptr [esp + 0x10]
+    L004ece2c:
+            mov ecx, dword ptr [esp + 0x14]
+            mov esi, dword ptr [esp + 0x1c]
+            inc ecx
+            mov dword ptr [esp + 0x14], ecx
+            jmp L004ece4d
+    L004ece3b:
+            mov edx, dword ptr [ebp]
+            mov dword ptr [eax], edx
+            mov ecx, dword ptr [ebp + 4]
+            mov dword ptr [eax + 4], ecx
+            add eax, 8
+            mov dword ptr [esp + 0x10], eax
+    L004ece4d:
+            mov ecx, dword ptr [esp + 0x18]
+            mov edx, dword ptr [edi - 0x64]
+            inc ecx
+            add ebp, 8
+            cmp ecx, edx
+            mov dword ptr [esp + 0x18], ecx
+            jl L004ecd57
+    L004ece64:
+            mov edx, dword ptr [esp + 0x14]
+            mov ecx, dword ptr [ebx + 0x1c]
+            sub ecx, edx
+            mov dword ptr [ebx + 0x1c], ecx
+            mov eax, dword ptr [edi - 0x64]
+            test eax, eax
+            jne L004ece81
+    L004ece77:
+            mov dword ptr [edi - 0x84], 0
+    L004ece81:
+            add edi, 0xc8
+            cmp edi, offset gPowerup_respawn_sound_ids+0x6c
+            jl L004ecc97
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x28
+            ret
+    }
+#endif
 }
 
 // GLOBAL: CARMA2_HW 0x006a7cf8
@@ -1382,7 +3530,8 @@ br_material* gPowerup_respawn_material;
 int gPowerup_respawn_field_0x50;
 
 // FUNCTION: CARMA2_HW 0x004ecea0
-void C2_HOOK_FASTCALL DoPowerupRespawnSmash(br_actor *pActor) {
+void C2_NAKED C2_HOOK_FASTCALL DoPowerupRespawnSmash(br_actor *pActor) {
+#ifndef CARPOCALYPSE2_MATCHING
     br_bounds3* pBounds;
 
     if (gPowerup_respawn_sound_count != 0) {
@@ -1415,6 +3564,100 @@ check_spill:
             gPowerup_respawn_material,
             gPowerup_respawn_field_0x50);
     }
+#else
+    __asm {
+            push ecx
+            mov eax, dword ptr [gPowerup_respawn_sound_count]
+            push esi
+            test eax, eax
+            push edi
+            mov esi, ecx
+            je L004ecef5
+            push 0x10000
+            mov edx, 0x12000
+            mov ecx, 0xe000
+            call IRandomBetween
+            mov ecx, dword ptr [gPowerup_respawn_sound_count]
+            push eax
+            push 0xff
+            push 1
+            lea eax, [esi + 0x50]
+            push offset gZero_v__car
+            lea edx, [ecx - 1]
+            push eax
+            xor ecx, ecx
+            call IRandomBetween
+            mov edx, dword ptr [eax*4 + gPowerup_respawn_sound_ids]
+            mov ecx, dword ptr [gXXX_outlet]
+            call DRS3StartSound3D
+    L004ecef5:
+            mov edi, dword ptr [esi + 0x18]
+            mov eax, dword ptr [gPed_676914]
+            mov edx, dword ptr [gYon_squared]
+            add edi, 0x34
+            test eax, eax
+            mov dword ptr [esp + 8], edx
+            jne L004ecf1d
+            mov eax, edx
+            lea ecx, [esi + 0x50]
+            push eax
+            call PointOutOfSight
+            test eax, eax
+            jne L004ecf35
+    L004ecf1d:
+            mov eax, dword ptr [gPowerup_respawn_explosion]
+            test eax, eax
+            je L004ecf35
+            push 0
+            push edi
+            mov edx, esi
+            mov ecx, offset gPowerup_respawn_explosion
+            call Explode
+    L004ecf35:
+            mov eax, dword ptr [gPowerup_respawn_material]
+            test eax, eax
+            je L004ecf96
+            mov ecx, dword ptr [gPowerup_respawn_field_0x50]
+            mov edx, dword ptr [gPowerup_respawn_field_0x4c]
+            push ecx
+            mov ecx, dword ptr [gPowerup_respawn_field_0x44]
+            push eax
+            mov eax, dword ptr [gPowerup_respawn_field_0x48]
+            push edx
+            mov edx, dword ptr [gPowerup_respawn_field_0x40]
+            push eax
+            mov eax, dword ptr [gPowerup_respawn_size]
+            push ecx
+            mov ecx, dword ptr [gPowerup_respawn_grow_size_max]
+            push edx
+            mov edx, dword ptr [gPowerup_respawn_grow_size_min]
+            push eax
+            mov eax, dword ptr [gPowerup_respawn_full_size_max]
+            push ecx
+            mov ecx, dword ptr [gPowerup_respawn_full_size_min]
+            push edx
+            mov edx, dword ptr [gPowerup_respawn_spill_time_offset]
+            push eax
+            mov eax, dword ptr [esi + 0x18]
+            push ecx
+            push edx
+            push eax
+            mov edx, esi
+            xor ecx, ecx
+            call QueueOilSpill2
+    L004ecf96:
+            pop edi
+            pop esi
+            pop ecx
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004f64d0
@@ -1434,45 +3677,41 @@ void C2_NAKED C2_HOOK_FASTCALL MungeSmashEdgeTriggers(tU32 pTime) {
     gLast_munge_smash_edge_triggers = gPHIL_last_physics_tick;
 #else
     __asm {
-        mov eax, dword ptr [gLast_munge_smash_edge_triggers]
-        mov edx, dword ptr [gPHIL_last_physics_tick]
-        cmp eax, edx
-        push esi
-        je munge_smash_edge_triggers_done
-        mov eax, dword ptr [gCount_track_smashable_environment_specs]
-        xor esi, esi
-        test eax, eax
-        jle munge_smash_edge_triggers_done
-        mov edx, dword ptr [gTrack_smashable_environment_specs]
-        lea eax, [edx + 0x10]
-
-    munge_smash_edge_triggers_loop:
-        mov edx, dword ptr [eax]
-        test edx, edx
-        je munge_smash_edge_triggers_next
-        cmp edx, ecx
-        je munge_smash_edge_triggers_next
-        mov dword ptr [eax], 0
-
-    munge_smash_edge_triggers_next:
-        mov edx, dword ptr [gCount_track_smashable_environment_specs]
-        inc esi
-        add eax, 0x2e0
-        cmp esi, edx
-        jl munge_smash_edge_triggers_loop
-
-    munge_smash_edge_triggers_done:
-        mov eax, dword ptr [gPHIL_last_physics_tick]
-        pop esi
-        mov dword ptr [gLast_munge_smash_edge_triggers], eax
-        ret
+            mov eax, dword ptr [gLast_munge_smash_edge_triggers]
+            mov edx, dword ptr [gPHIL_last_physics_tick]
+            cmp eax, edx
+            push esi
+            je L004f6514
+            mov eax, dword ptr [gCount_track_smashable_environment_specs]
+            xor esi, esi
+            test eax, eax
+            jle L004f6514
+            mov edx, dword ptr [gTrack_smashable_environment_specs]
+            lea eax, [edx + 0x10]
+    L004f64f4:
+            mov edx, dword ptr [eax]
+            test edx, edx
+            je L004f6504
+            cmp edx, ecx
+            je L004f6504
+            mov dword ptr [eax], 0
+    L004f6504:
+            mov edx, dword ptr [gCount_track_smashable_environment_specs]
+            inc esi
+            add eax, 0x2e0
+            cmp esi, edx
+            jl L004f64f4
+    L004f6514:
+            mov eax, dword ptr [gPHIL_last_physics_tick]
+            pop esi
+            mov dword ptr [gLast_munge_smash_edge_triggers], eax
+            ret
     }
 #endif
 }
 
 // FUNCTION: CARMA2_HW 0x004ecfa0
 void C2_HOOK_FASTCALL InitSmashQueue(void) {
-
     gCount_queued_smashes = 0;
 }
 
@@ -1518,7 +3757,8 @@ void C2_HOOK_FASTCALL TotallyRepairSmash(tCar_spec *pCar_Spec, tCar_crush_buffer
 }
 
 // FUNCTION: CARMA2_HW 0x004eb180
-void C2_HOOK_FASTCALL ApplyInitialMovement(undefined4* pArg1, br_vector3* pArg2, br_vector3* pArg3, br_vector3* pArg4, float pArg5, br_vector3* pArg6, br_vector3* pArg7, br_vector3* pArg8) {
+void C2_NAKED C2_HOOK_FASTCALL ApplyInitialMovement(undefined4* pArg1, br_vector3* pArg2, br_vector3* pArg3, br_vector3* pArg4, float pArg5, br_vector3* pArg6, br_vector3* pArg7, br_vector3* pArg8) {
+#ifndef CARPOCALYPSE2_MATCHING
     float* f = (float*)pArg1;
     br_vector3 unit;
     float w = pArg5;
@@ -1581,6 +3821,295 @@ void C2_HOOK_FASTCALL ApplyInitialMovement(undefined4* pArg1, br_vector3* pArg2,
     pArg4->v[0] *= FRandomPosNeg(w * f[0x18]);
     pArg4->v[1] *= FRandomPosNeg(w * f[0x18]);
     pArg4->v[2] *= FRandomPosNeg(w * f[0x18]);
+#else
+    __asm {
+            sub esp, 0xc
+            push ebx
+            push ebp
+            push esi
+            push edi
+            mov edi, ecx
+            mov ebx, dword ptr [esp + 0x20]
+            mov ecx, dword ptr [esp + 0x30]
+            fld dword ptr [edi + 8]
+            fmul dword ptr [edx]
+            test ecx, ecx
+            fstp dword ptr [ebx]
+            fld dword ptr [edx + 4]
+            fmul dword ptr [edi + 8]
+            fstp dword ptr [ebx + 4]
+            fld dword ptr [edx + 8]
+            fmul dword ptr [edi + 8]
+            fstp dword ptr [ebx + 8]
+            je L004eb29c
+            mov edx, dword ptr [esp + 0x34]
+            test edx, edx
+            je L004eb29c
+            fld dword ptr [edi]
+            fst dword ptr [esp + 0x30]
+            fcomp dword ptr [gFloat_0058aec0]
+            fnstsw ax
+            test ah, 0x40
+            jne L004eb29c
+            fld dword ptr [edi + 4]
+            fst dword ptr [esp + 0x20]
+            fcomp dword ptr [gFloat_0058aec0]
+            fnstsw ax
+            test ah, 0x40
+            jne L004eb29c
+            fld dword ptr [ecx + 4]
+            fld dword ptr [ecx]
+            fsub dword ptr [edx]
+            fxch st(1)
+            fsub dword ptr [edx + 4]
+            fld dword ptr [ecx + 8]
+            fsub dword ptr [edx + 8]
+            fxch st(2)
+            fst dword ptr [esp + 0x10]
+            fxch st(1)
+            fst dword ptr [esp + 0x14]
+            fxch st(1)
+            fmul dword ptr [esp + 0x10]
+            fxch st(2)
+            fstp dword ptr [esp + 0x18]
+            mov eax, dword ptr [esp + 0x20]
+            mov ecx, dword ptr [esp + 0x30]
+            fmul dword ptr [esp + 0x14]
+            fld dword ptr [esp + 0x18]
+            fmul dword ptr [esp + 0x18]
+            fxch st(1)
+            faddp st(2), st(0)
+            push eax
+            push ecx
+            faddp st(1), st(0)
+            fsqrt
+            fstp dword ptr [esp + 0x28]
+            call FRandomBetween
+            mov edx, dword ptr [edi + 4]
+            mov eax, dword ptr [edi]
+            fdiv dword ptr [esp + 0x20]
+            push edx
+            push eax
+            fmul dword ptr [esp + 0x18]
+            fstp dword ptr [esp + 0x18]
+            call FRandomBetween
+            mov ecx, dword ptr [edi + 4]
+            mov edx, dword ptr [edi]
+            fdiv dword ptr [esp + 0x20]
+            push ecx
+            push edx
+            fmul dword ptr [esp + 0x1c]
+            fstp dword ptr [esp + 0x1c]
+            call FRandomBetween
+            fdiv dword ptr [esp + 0x20]
+            fmul dword ptr [esp + 0x18]
+            fld dword ptr [ebx]
+            fld dword ptr [esp + 0x14]
+            fxch st(2)
+            fst dword ptr [esp + 0x18]
+            fxch st(1)
+            fadd dword ptr [esp + 0x10]
+            fxch st(2)
+            fadd dword ptr [ebx + 4]
+            fxch st(1)
+            fadd dword ptr [ebx + 8]
+            fxch st(2)
+            fstp dword ptr [ebx]
+            fstp dword ptr [ebx + 4]
+            fstp dword ptr [ebx + 8]
+    L004eb29c:
+            mov ebp, dword ptr [esp + 0x24]
+            mov esi, ebx
+            sub ebp, ebx
+            mov dword ptr [esp + 0x20], 3
+    L004eb2ac:
+            mov eax, dword ptr [edi + 0xc]
+            push eax
+            call FRandomPosNeg
+            fadd dword ptr [esi]
+            push 0x3f800000
+            push 0
+            fmul dword ptr [esp + 0x30]
+            fstp dword ptr [esi]
+            call FRandomBetween
+            fstp dword ptr [ebp + esi]
+            mov eax, dword ptr [esp + 0x20]
+            add esi, 4
+            dec eax
+            mov dword ptr [esp + 0x20], eax
+            jne L004eb2ac
+            mov ecx, dword ptr [edi + 0x10]
+            xor ebp, ebp
+            push ecx
+            push ebp
+            call FRandomBetween
+            fadd dword ptr [ebx + 4]
+            mov ecx, dword ptr [esp + 0x2c]
+            fstp dword ptr [ebx + 4]
+            fld dword ptr [ecx + 4]
+            fld dword ptr [ecx + 8]
+            fld dword ptr [ecx]
+            fxch st(2)
+            fst dword ptr [esp + 0x20]
+            fxch st(1)
+            fst dword ptr [esp + 0x30]
+            fxch st(1)
+            fmul dword ptr [esp + 0x20]
+            fxch st(1)
+            fmul dword ptr [esp + 0x30]
+            fld st(2)
+            fmul st(0), st(3)
+            fxch st(1)
+            faddp st(2), st(0)
+            faddp st(1), st(0)
+            fsqrt
+            fstp st(1)
+            fcom dword ptr [gFloat_0058aec4]
+            fnstsw ax
+            test ah, 0x41
+            jne L004eb35e
+            fdivr qword ptr [gDouble_0058aec8]
+            fld dword ptr [ecx + 4]
+            fld dword ptr [ecx + 8]
+            fld dword ptr [ecx]
+            fxch st(2)
+            fxch st(1)
+            fxch st(2)
+            fmul st(0), st(3)
+            fxch st(1)
+            fmul st(0), st(3)
+            fxch st(2)
+            fmul st(0), st(3)
+            fxch st(1)
+            fstp dword ptr [esp + 0x10]
+            fxch st(1)
+            fstp dword ptr [esp + 0x14]
+            fstp dword ptr [esp + 0x18]
+            fstp st(0)
+            jmp L004eb378
+    L004eb35e:
+            fstp st(0)
+            mov dword ptr [esp + 0x10], 0x3f800000
+            mov dword ptr [esp + 0x14], 0
+            mov dword ptr [esp + 0x18], 0
+    L004eb378:
+            mov edx, dword ptr [edi + 0x14]
+            push edx
+            push ebp
+            call FRandomBetween
+            mov eax, dword ptr [edi + 0x14]
+            fmul dword ptr [esp + 0x10]
+            push eax
+            push ebp
+            fstp dword ptr [esp + 0x18]
+            call FRandomBetween
+            mov ecx, dword ptr [edi + 0x14]
+            fmul dword ptr [esp + 0x14]
+            push ecx
+            push ebp
+            fstp dword ptr [esp + 0x1c]
+            call FRandomBetween
+            fmul dword ptr [esp + 0x18]
+            fld dword ptr [ebx]
+            fld dword ptr [esp + 0x14]
+            fxch st(2)
+            fst dword ptr [esp + 0x18]
+            fxch st(1)
+            fadd dword ptr [esp + 0x10]
+            fxch st(2)
+            fadd dword ptr [ebx + 4]
+            fxch st(1)
+            fadd dword ptr [ebx + 8]
+            fxch st(2)
+            fstp dword ptr [ebx]
+            mov esi, dword ptr [esp + 0x24]
+            fstp dword ptr [ebx + 4]
+            fstp dword ptr [ebx + 8]
+            fld dword ptr [esi + 4]
+            fld dword ptr [esi + 8]
+            fld dword ptr [esi]
+            fxch st(2)
+            fst dword ptr [esp + 0x24]
+            fxch st(1)
+            fst dword ptr [esp + 0x20]
+            fxch st(1)
+            fmul dword ptr [esp + 0x24]
+            fxch st(1)
+            fmul dword ptr [esp + 0x20]
+            fld st(2)
+            fmul st(0), st(3)
+            fxch st(1)
+            faddp st(2), st(0)
+            faddp st(1), st(0)
+            fsqrt
+            fstp st(1)
+            fcom dword ptr [gFloat_0058aec4]
+            fnstsw ax
+            test ah, 0x41
+            jne L004eb43d
+            fdivr qword ptr [gDouble_0058aec8]
+            fld dword ptr [esi + 4]
+            fld dword ptr [esi + 8]
+            fld dword ptr [esi]
+            fxch st(2)
+            fxch st(1)
+            fxch st(2)
+            fmul st(0), st(3)
+            fxch st(1)
+            fmul st(0), st(3)
+            fxch st(2)
+            fmul st(0), st(3)
+            fxch st(1)
+            fstp dword ptr [esi]
+            fxch st(1)
+            fstp dword ptr [esi + 4]
+            fstp dword ptr [esi + 8]
+            fstp st(0)
+            jmp L004eb44b
+    L004eb43d:
+            fstp st(0)
+            mov dword ptr [esi], 0x3f800000
+            mov dword ptr [esi + 4], ebp
+            mov dword ptr [esi + 8], ebp
+    L004eb44b:
+            fld dword ptr [esp + 0x28]
+            fmul dword ptr [edi + 0x18]
+            push ecx
+            fstp dword ptr [esp]
+            call FRandomPosNeg
+            fmul dword ptr [esi]
+            fld dword ptr [esp + 0x28]
+            fxch st(1)
+            fstp dword ptr [esi]
+            push ecx
+            fmul dword ptr [edi + 0x18]
+            fstp dword ptr [esp]
+            call FRandomPosNeg
+            fmul dword ptr [esi + 4]
+            fld dword ptr [esp + 0x28]
+            fxch st(1)
+            fstp dword ptr [esi + 4]
+            push ecx
+            fmul dword ptr [edi + 0x18]
+            fstp dword ptr [esp]
+            call FRandomPosNeg
+            fmul dword ptr [esi + 8]
+            pop edi
+            fstp dword ptr [esi + 8]
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0xc
+            ret 0x18
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 #ifndef CARPOCALYPSE2_MATCHING
@@ -1606,13 +4135,13 @@ static void LogGlassFragmentSource(br_actor* actor, int faces, int vertices, con
 }
 #endif
 
-// C2PORT-NONMATCHING: best 18.17% | difftest PASS 2000 trials (spec difftest/specs/004ec370_CreateSmashedGlassFragments.json; output fixture PASS 2000) | reason VC5 stack layout and x87 scheduling
 // FUNCTION: CARMA2_HW 0x004ec370
 void C2_HOOK_FASTCALL CreateSmashedGlassFragments(tU32 pSeed, br_vector3* pDirection,
         br_actor* pSource_actor, tU32 pTime, int pFace_count, const tU16* pSource_faces,
         int pVertex_count, const tU16* pSource_vertices, tU32 pOwner, tU32 pFlags,
         float pLongest_edge_squared, tSmashable_initial_speed_spec* pInitial_speed,
-        const int* pLifetime_range, tU32 pFragment_owner, br_matrix34* pSource_transform) {
+C2_NAKED         const int* pLifetime_range, tU32 pFragment_owner, br_matrix34* pSource_transform) {
+#ifndef CARPOCALYPSE2_MATCHING
     float vertex_data[2000];
     tU16 face_data[4000];
     int saved_random_seed;
@@ -1847,6 +4376,746 @@ void C2_HOOK_FASTCALL CreateSmashedGlassFragments(tU32 pSeed, br_vector3* pDirec
     }
 
     srand(saved_random_seed);
+#else
+    __asm {
+            mov eax, 0x3ed8
+            call _chkstk
+            mov dword ptr [esp + 0x50], edx
+            push ebp
+            push esi
+            mov esi, dword ptr [esp + 0x3eec]
+            push edi
+            test esi, esi
+            mov edi, ecx
+            je L004ecc2e
+            mov eax, dword ptr [esp + 0x3ef4]
+            test eax, eax
+            je L004ecc2e
+            mov ebp, dword ptr [esp + 0x3ef8]
+            test ebp, ebp
+            je L004ecc2e
+            mov eax, dword ptr [esp + 0x3efc]
+            test eax, eax
+            je L004ecc2e
+            push ebx
+            call rand
+            push edi
+            mov dword ptr [esp + 0x68], eax
+            call srand
+            add esp, 4
+            mov ecx, 0x7d0
+            xor eax, eax
+            lea edi, [esp + 0x68]
+            test ebp, ebp
+            rep stosd
+            jle L004ec42e
+            mov eax, dword ptr [esp + 0x3eec]
+            mov edx, dword ptr [esp + 0x3f00]
+            lea ebx, [esp + 0x68]
+            mov ecx, dword ptr [eax + 0x18]
+            mov dword ptr [esp + 0x1c], ecx
+    L004ec3fc:
+            mov ecx, dword ptr [esp + 0x1c]
+            xor eax, eax
+            mov ax, word ptr [edx]
+            mov edi, ebx
+            mov ecx, dword ptr [ecx + 8]
+            add edx, 2
+            lea eax, [eax + eax*4]
+            add ebx, 0x28
+            dec ebp
+            lea esi, [ecx + eax*8]
+            mov ecx, 0xa
+            rep movsd
+            jne L004ec3fc
+            mov esi, dword ptr [esp + 0x3ef4]
+            mov ebp, dword ptr [esp + 0x3efc]
+    L004ec42e:
+            mov ecx, 0x7d0
+            xor eax, eax
+            lea edi, [esp + 0x1fa8]
+            mov ebx, ebp
+            rep stosd
+            mov ecx, dword ptr [esp + 0x3ef8]
+            mov dword ptr [esp + 0x34], ebx
+            test esi, esi
+            jle L004ec487
+            lea eax, [esp + 0x1fb8]
+            mov edx, esi
+    L004ec458:
+            mov esi, ecx
+            lea edi, [eax - 0x10]
+            add eax, 0x28
+            add ecx, 6
+            mov ebp, dword ptr [esi]
+            dec edx
+            mov dword ptr [edi], ebp
+            mov si, word ptr [esi + 4]
+            mov word ptr [edi + 4], si
+            mov esi, dword ptr [esp + 0x3f04]
+            mov dword ptr [eax - 0x30], esi
+            mov byte ptr [eax - 0x28], 0
+            jne L004ec458
+            mov esi, dword ptr [esp + 0x3ef4]
+    L004ec487:
+            mov eax, esi
+            lea edx, [esp + 0x1fa8]
+            test esi, esi
+            mov dword ptr [esp + 0x20], eax
+            mov dword ptr [esp + 0x30], 0
+            mov dword ptr [esp + 0x50], edx
+            jle L004ec833
+    L004ec4a8:
+            cmp eax, 0xc7
+            jge L004ec833
+            cmp ebx, 0xc7
+            jge L004ec833
+            lea ecx, [eax + eax*4]
+            mov dword ptr [esp + 0x1c], 0
+            lea edx, [esp + ecx*8 + 0x1fa8]
+            lea ecx, [ebx + ebx*4]
+            mov dword ptr [esp + 0x4c], edx
+            lea edi, [esp + ecx*8 + 0x68]
+            jmp L004ec4ea
+    L004ec4de:
+            mov edi, dword ptr [esp + 0x10]
+            mov ebx, dword ptr [esp + 0x34]
+            mov eax, dword ptr [esp + 0x20]
+    L004ec4ea:
+            cmp eax, 0xc7
+            jge L004ec817
+            cmp ebx, 0xc7
+            jge L004ec817
+            mov ecx, dword ptr [esp + 0x50]
+            lea edx, [esp + 0x38]
+            mov esi, 3
+    L004ec50e:
+            xor eax, eax
+            add edx, 4
+            mov ax, word ptr [ecx]
+            add ecx, 2
+            dec esi
+            lea eax, [eax + eax*4]
+            lea eax, [esp + eax*8 + 0x68]
+            mov dword ptr [edx - 4], eax
+            jne L004ec50e
+            mov eax, dword ptr [esp + 0x38]
+            mov ecx, dword ptr [esp + 0x3c]
+            mov edx, dword ptr [esp + 0x40]
+            fld dword ptr [eax + 8]
+            fld dword ptr [eax + 4]
+            fsub dword ptr [ecx + 4]
+            fxch st(1)
+            fsub dword ptr [ecx + 8]
+            _emit 0xd9
+        _emit 0x00
+            _emit 0xd8
+        _emit 0x21
+            fxch st(2)
+            fst dword ptr [esp + 0x10]
+            fld st(1)
+            fxch st(1)
+            fmul dword ptr [esp + 0x10]
+            fld dword ptr [eax + 4]
+            fxch st(2)
+            fmul st(0), st(3)
+            fld dword ptr [eax + 8]
+            fxch st(5)
+            fst dword ptr [esp + 0x10]
+            fmul dword ptr [esp + 0x10]
+            fld dword ptr [edx + 4]
+            fxch st(2)
+            faddp st(3), st(0)
+            fxch st(3)
+            fsub dword ptr [edx + 4]
+            fxch st(5)
+            fsub dword ptr [edx + 8]
+            fxch st(3)
+            faddp st(2), st(0)
+            fxch st(4)
+            fst dword ptr [esp + 0x10]
+            fxch st(2)
+            fst dword ptr [esp + 0x18]
+            fxch st(2)
+            fmul dword ptr [esp + 0x10]
+            fxch st(2)
+            fmul dword ptr [esp + 0x18]
+            fxch st(1)
+            fst dword ptr [esp + 0x18]
+            fcomp dword ptr [esp + 0x3f0c]
+            faddp st(1), st(0)
+            _emit 0xd9
+        _emit 0x00
+            _emit 0xd8
+        _emit 0x22
+            fnstsw ax
+            fst dword ptr [esp + 0x10]
+            fmul dword ptr [esp + 0x10]
+            fxch st(3)
+            fsub dword ptr [ecx + 4]
+            fxch st(3)
+            faddp st(1), st(0)
+            fld dword ptr [edx + 8]
+            fsub dword ptr [ecx + 8]
+            fxch st(3)
+            fst dword ptr [esp + 0x10]
+            fxch st(3)
+            fst dword ptr [esp + 0x14]
+            fxch st(3)
+            fmul dword ptr [esp + 0x10]
+            fxch st(3)
+            fmul dword ptr [esp + 0x14]
+            fxch st(1)
+            fstp dword ptr [esp + 0x10]
+            _emit 0xd9
+        _emit 0x02
+            _emit 0xd8
+        _emit 0x21
+            fxch st(1)
+            faddp st(3), st(0)
+            test ah, 1
+            fst dword ptr [esp + 0x14]
+            fmul dword ptr [esp + 0x14]
+            faddp st(2), st(0)
+            fxch st(1)
+            fstp dword ptr [esp + 0x14]
+            fstp st(0)
+            je L004ec62f
+            fld dword ptr [esp + 0x10]
+            fcomp dword ptr [esp + 0x3f0c]
+            fnstsw ax
+            test ah, 1
+            je L004ec62f
+            fld dword ptr [esp + 0x14]
+            fcomp dword ptr [esp + 0x3f0c]
+            fnstsw ax
+            test ah, 1
+            je L004ec62f
+            xor ecx, ecx
+            call PercentageChance
+            test eax, eax
+            je L004ec813
+    L004ec62f:
+            fld dword ptr [esp + 0x18]
+            fcomp dword ptr [esp + 0x10]
+            fnstsw ax
+            test ah, 1
+            je L004ec665
+            fld dword ptr [esp + 0x18]
+            fcomp dword ptr [esp + 0x14]
+            fnstsw ax
+            test ah, 1
+            je L004ec665
+            mov edx, 1
+            xor ecx, ecx
+            call IRandomBetween
+            lea ecx, [eax + eax*2]
+            lea esi, [ecx*4 + gSplit_triangle_vertex_orders+0x30]
+            jmp L004ec6b1
+    L004ec665:
+            fld dword ptr [esp + 0x14]
+            fcomp dword ptr [esp + 0x10]
+            fnstsw ax
+            test ah, 1
+            je L004ec69b
+            fld dword ptr [esp + 0x14]
+            fcomp dword ptr [esp + 0x18]
+            fnstsw ax
+            test ah, 1
+            je L004ec69b
+            mov edx, 1
+            xor ecx, ecx
+            call IRandomBetween
+            lea edx, [eax + eax*2]
+            lea esi, [edx*4 + gSplit_triangle_vertex_orders]
+            jmp L004ec6b1
+    L004ec69b:
+            mov edx, 1
+            xor ecx, ecx
+            call IRandomBetween
+            lea eax, [eax + eax*2]
+            lea esi, [eax*4 + gSplit_triangle_vertex_orders+0x18]
+    L004ec6b1:
+            mov ecx, dword ptr [esi + 4]
+            mov edx, dword ptr [esi]
+            mov ebp, edi
+            add edi, 0x28
+            inc ebx
+            mov dword ptr [esp + 0x48], edi
+            inc ebx
+            add edi, 0x28
+            push 0x3f4ccccd
+            mov dword ptr [esp + 0x48], ebp
+            mov dword ptr [esp + 0x38], ebx
+            mov ebx, dword ptr [esp + ecx*4 + 0x3c]
+            mov dword ptr [esp + 0x14], edi
+            mov edi, dword ptr [esp + edx*4 + 0x3c]
+            push 0x3e4ccccd
+            call FRandomBetween
+            mov ecx, ebx
+            mov edx, ebp
+            sub ecx, edi
+            mov eax, edi
+            sub edx, edi
+            mov ebx, 3
+    L004ec6f6:
+            fld dword ptr [ecx + eax]
+            _emit 0xd8
+        _emit 0x20
+            add eax, 4
+            dec ebx
+            fmul st(0), st(1)
+            fadd dword ptr [eax - 4]
+            fstp dword ptr [edx + eax - 4]
+            jne L004ec6f6
+            lea eax, [edi + 0xc]
+            mov edi, 2
+    L004ec712:
+            fld dword ptr [eax + ecx]
+            _emit 0xd8
+        _emit 0x20
+            add eax, 4
+            dec edi
+            fmul st(0), st(1)
+            fadd dword ptr [eax - 4]
+            fstp dword ptr [eax + edx - 4]
+            jne L004ec712
+            mov eax, dword ptr [esi + 8]
+            mov ecx, dword ptr [esi]
+            push 0x3f4ccccd
+            push 0x3e4ccccd
+            mov ebx, dword ptr [esp + eax*4 + 0x40]
+            mov edi, dword ptr [esp + ecx*4 + 0x40]
+            fstp st(0)
+            call FRandomBetween
+            mov ecx, ebx
+            mov eax, edi
+            mov edx, dword ptr [esp + 0x48]
+            sub ecx, edi
+            sub edx, edi
+            mov ebx, 3
+    L004ec755:
+            fld dword ptr [ecx + eax]
+            _emit 0xd8
+        _emit 0x20
+            add eax, 4
+            dec ebx
+            fmul st(0), st(1)
+            fadd dword ptr [eax - 4]
+            fstp dword ptr [edx + eax - 4]
+            jne L004ec755
+            lea eax, [edi + 0xc]
+            mov edi, 2
+    L004ec771:
+            fld dword ptr [eax + ecx]
+            _emit 0xd8
+        _emit 0x20
+            add eax, 4
+            dec edi
+            fmul st(0), st(1)
+            fadd dword ptr [eax - 4]
+            fstp dword ptr [eax + edx - 4]
+            jne L004ec771
+            mov edx, dword ptr [esp + 0x4c]
+            mov ebp, dword ptr [esp + 0x3f04]
+            mov ebx, dword ptr [esp + 0x50]
+            mov eax, edx
+            mov edi, dword ptr [esp + 0x20]
+            add edx, 0x28
+            mov ecx, edx
+            add edx, 0x28
+            mov dword ptr [esp + 0x4c], edx
+            mov dword ptr [eax + 8], ebp
+            mov byte ptr [eax + 0x10], 0
+            mov edx, dword ptr [esi + 4]
+            inc edi
+            mov dx, word ptr [ebx + edx*2]
+            inc edi
+            mov word ptr [eax], dx
+            mov edx, dword ptr [esp + 0x34]
+            mov dword ptr [esp + 0x20], edi
+            lea edi, [edx - 2]
+            dec edx
+            mov word ptr [eax + 2], di
+            mov word ptr [eax + 4], dx
+            mov dword ptr [ecx + 8], ebp
+            mov byte ptr [ecx + 0x10], 0
+            mov eax, dword ptr [esi + 4]
+            fstp st(0)
+            mov ax, word ptr [ebx + eax*2]
+            mov word ptr [ecx], ax
+            mov eax, dword ptr [esi + 8]
+            mov ax, word ptr [ebx + eax*2]
+            mov word ptr [ecx + 4], dx
+            mov word ptr [ecx + 2], ax
+            mov ecx, dword ptr [esi + 4]
+            mov word ptr [ebx + ecx*2], di
+            mov eax, dword ptr [esi + 8]
+            mov word ptr [ebx + eax*2], dx
+            mov eax, dword ptr [esp + 0x1c]
+            inc eax
+            cmp eax, 4
+            mov dword ptr [esp + 0x1c], eax
+            jl L004ec4de
+            mov ebx, dword ptr [esp + 0x34]
+    L004ec813:
+            mov eax, dword ptr [esp + 0x20]
+    L004ec817:
+            mov ecx, dword ptr [esp + 0x30]
+            mov esi, dword ptr [esp + 0x50]
+            inc ecx
+            add esi, 0x28
+            cmp ecx, eax
+            mov dword ptr [esp + 0x30], ecx
+            mov dword ptr [esp + 0x50], esi
+            jl L004ec4a8
+    L004ec833:
+            test ebx, ebx
+            mov dword ptr [esp + 0x38], 0
+            mov dword ptr [esp + 0x3c], 0
+            mov dword ptr [esp + 0x40], 0
+            lea esi, [esp + 0x68]
+            jle L004ec8c7
+            mov edi, dword ptr [esp + 0x3f08]
+            mov ebp, ebx
+            mov ebx, dword ptr [esp + 0x3f1c]
+            and edi, 1
+    L004ec866:
+            push ebx
+            lea ecx, [esp + 0x58]
+            push esi
+            push ecx
+            call BrMatrix34ApplyP
+            mov eax, dword ptr [esp + 0x60]
+            mov ecx, dword ptr [esp + 0x64]
+            mov edx, esi
+            add esp, 0xc
+            test edi, edi
+            mov dword ptr [edx], eax
+            mov eax, dword ptr [esp + 0x5c]
+            mov dword ptr [edx + 4], ecx
+            mov dword ptr [edx + 8], eax
+            je L004ec8bd
+            fld dword ptr [esp + 0x38]
+            fld dword ptr [esp + 0x3c]
+            fld dword ptr [esp + 0x40]
+            fxch st(2)
+            fadd dword ptr [esp + 0x54]
+            fxch st(1)
+            fadd dword ptr [esp + 0x58]
+            fxch st(2)
+            fadd dword ptr [esp + 0x5c]
+            fxch st(1)
+            fstp dword ptr [esp + 0x38]
+            fxch st(1)
+            fstp dword ptr [esp + 0x3c]
+            fstp dword ptr [esp + 0x40]
+    L004ec8bd:
+            add esi, 0x28
+            dec ebp
+            jne L004ec866
+            mov eax, dword ptr [esp + 0x20]
+    L004ec8c7:
+            fild dword ptr [esp + 0x34]
+            fld dword ptr [esp + 0x38]
+            fld dword ptr [esp + 0x3c]
+            fld dword ptr [esp + 0x40]
+            fxch st(2)
+            fdiv st(0), st(3)
+            fxch st(1)
+            test eax, eax
+            mov dword ptr [esp + 0x30], 0
+            fdiv st(0), st(3)
+            fxch st(2)
+            fdiv st(0), st(3)
+            fxch st(1)
+            fstp dword ptr [esp + 0x38]
+            fxch st(1)
+            fstp dword ptr [esp + 0x3c]
+            fstp dword ptr [esp + 0x40]
+            fstp st(0)
+            jle L004ecc20
+            lea ebx, [esp + 0x1faa]
+    L004ec90c:
+            mov edx, dword ptr [esp + 0x3f18]
+            push 3
+            xor ecx, ecx
+            call FindShrapnelFragment
+            mov esi, eax
+            test esi, esi
+            je L004ecc20
+            mov ecx, dword ptr [esi]
+            xor eax, eax
+            mov ax, word ptr [ebx - 2]
+            mov edx, dword ptr [ecx + 0x18]
+            lea eax, [eax + eax*4]
+            mov ecx, dword ptr [edx + 8]
+            shl eax, 3
+            mov edx, dword ptr [esp + eax + 0x68]
+            mov dword ptr [ecx], edx
+            mov ecx, dword ptr [esi]
+            mov edx, dword ptr [ecx + 0x18]
+            mov ecx, dword ptr [edx + 8]
+            mov edx, dword ptr [esp + eax + 0x6c]
+            mov dword ptr [ecx + 4], edx
+            mov ecx, dword ptr [esi]
+            mov edx, dword ptr [ecx + 0x18]
+            mov ecx, dword ptr [edx + 8]
+            mov edx, dword ptr [esp + eax + 0x70]
+            mov dword ptr [ecx + 8], edx
+            mov ecx, dword ptr [esi]
+            mov edx, dword ptr [ecx + 0x18]
+            mov ecx, dword ptr [edx + 8]
+            mov edx, dword ptr [ecx + 4]
+            _emit 0xd9
+        _emit 0x01
+            mov dword ptr [esp + 0x28], edx
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [esp + 0x2c], edx
+            mov edx, dword ptr [esp + eax + 0x74]
+            mov dword ptr [ecx + 0xc], edx
+            mov ecx, dword ptr [esi]
+            mov edx, dword ptr [ecx + 0x18]
+            mov ecx, dword ptr [edx + 8]
+            mov edx, dword ptr [esp + eax + 0x78]
+            mov dword ptr [ecx + 0x10], edx
+            mov eax, dword ptr [esi]
+            mov ecx, dword ptr [eax + 0x18]
+            mov eax, dword ptr [ebx + 6]
+            mov edx, dword ptr [ecx + 0xc]
+            mov dword ptr [edx + 8], eax
+            mov ecx, dword ptr [esi]
+            xor eax, eax
+            mov ax, word ptr [ebx]
+            mov edx, dword ptr [ecx + 0x18]
+            mov ecx, dword ptr [edx + 8]
+            lea eax, [eax + eax*4]
+            shl eax, 3
+            mov edx, dword ptr [esp + eax + 0x68]
+            mov dword ptr [ecx + 0x28], edx
+            mov ecx, dword ptr [esi]
+            mov edx, dword ptr [ecx + 0x18]
+            mov ecx, dword ptr [edx + 8]
+            mov edx, dword ptr [esp + eax + 0x6c]
+            mov dword ptr [ecx + 0x2c], edx
+            mov ecx, dword ptr [esi]
+            mov edx, dword ptr [ecx + 0x18]
+            mov ecx, dword ptr [edx + 8]
+            mov edx, dword ptr [esp + eax + 0x70]
+            mov dword ptr [ecx + 0x30], edx
+            mov ecx, dword ptr [esi]
+            mov edx, dword ptr [ecx + 0x18]
+            mov ecx, dword ptr [edx + 8]
+            mov edx, dword ptr [esp + eax + 0x74]
+            fadd dword ptr [ecx + 0x28]
+            fld dword ptr [ecx + 0x2c]
+            fadd dword ptr [esp + 0x28]
+            fstp dword ptr [esp + 0x28]
+            fld dword ptr [ecx + 0x30]
+            mov dword ptr [ecx + 0x34], edx
+            mov ecx, dword ptr [esi]
+            fadd dword ptr [esp + 0x2c]
+            mov edx, dword ptr [ecx + 0x18]
+            mov ecx, dword ptr [edx + 8]
+            mov edx, dword ptr [esp + eax + 0x78]
+            fstp dword ptr [esp + 0x2c]
+            xor eax, eax
+            mov dword ptr [ecx + 0x38], edx
+            mov ax, word ptr [ebx + 2]
+            mov ecx, dword ptr [esi]
+            mov edx, dword ptr [ecx + 0x18]
+            lea eax, [eax + eax*4]
+            shl eax, 3
+            mov ecx, dword ptr [edx + 8]
+            mov edx, dword ptr [esp + eax + 0x68]
+            mov dword ptr [ecx + 0x50], edx
+            mov ecx, dword ptr [esi]
+            mov edx, dword ptr [ecx + 0x18]
+            mov ecx, dword ptr [edx + 8]
+            mov edx, dword ptr [esp + eax + 0x6c]
+            mov dword ptr [ecx + 0x54], edx
+            mov ecx, dword ptr [esi]
+            mov edx, dword ptr [ecx + 0x18]
+            mov ecx, dword ptr [edx + 8]
+            mov edx, dword ptr [esp + eax + 0x70]
+            mov dword ptr [ecx + 0x58], edx
+            mov ecx, dword ptr [esi]
+            mov edx, dword ptr [ecx + 0x18]
+            mov ecx, dword ptr [edx + 8]
+            mov edx, dword ptr [esp + eax + 0x74]
+            fadd dword ptr [ecx + 0x50]
+            fld dword ptr [ecx + 0x54]
+            fadd dword ptr [esp + 0x28]
+            fstp dword ptr [esp + 0x28]
+            fld dword ptr [ecx + 0x58]
+            mov dword ptr [ecx + 0x5c], edx
+            mov ecx, dword ptr [esi]
+            fadd dword ptr [esp + 0x2c]
+            mov edx, dword ptr [ecx + 0x18]
+            mov ecx, dword ptr [edx + 8]
+            mov edx, dword ptr [esp + eax + 0x78]
+            fstp dword ptr [esp + 0x2c]
+            mov dword ptr [ecx + 0x60], edx
+            mov eax, dword ptr [esi]
+            xor ecx, ecx
+            xor edx, edx
+            mov eax, dword ptr [eax + 0x18]
+            mov cx, word ptr [eax + 0x10]
+            mov dword ptr [esp + 0x4c], ecx
+            fild dword ptr [esp + 0x4c]
+            test ecx, ecx
+            fstp dword ptr [esp + 0x10]
+            fdiv dword ptr [esp + 0x10]
+            fstp dword ptr [esp + 0x24]
+            fld dword ptr [esp + 0x28]
+            fdiv dword ptr [esp + 0x10]
+            fstp dword ptr [esp + 0x28]
+            fld dword ptr [esp + 0x2c]
+            fdiv dword ptr [esp + 0x10]
+            fstp dword ptr [esp + 0x2c]
+            jle L004ecb04
+            xor ecx, ecx
+    L004ecab8:
+            mov eax, dword ptr [eax + 8]
+            xor edi, edi
+            add eax, ecx
+            inc edx
+            _emit 0xd9
+        _emit 0x00
+            fsub dword ptr [esp + 0x24]
+            _emit 0xd9
+        _emit 0x18
+            mov eax, dword ptr [esi]
+            mov eax, dword ptr [eax + 0x18]
+            mov eax, dword ptr [eax + 8]
+            fld dword ptr [eax + ecx + 4]
+            fsub dword ptr [esp + 0x28]
+            lea eax, [eax + ecx + 4]
+            _emit 0xd9
+        _emit 0x18
+            mov eax, dword ptr [esi]
+            mov eax, dword ptr [eax + 0x18]
+            mov eax, dword ptr [eax + 8]
+            fld dword ptr [eax + ecx + 8]
+            fsub dword ptr [esp + 0x2c]
+            lea eax, [eax + ecx + 8]
+            add ecx, 0x28
+            _emit 0xd9
+        _emit 0x18
+            mov eax, dword ptr [esi]
+            mov eax, dword ptr [eax + 0x18]
+            mov di, word ptr [eax + 0x10]
+            cmp edx, edi
+            jl L004ecab8
+    L004ecb04:
+            mov ecx, dword ptr [esi]
+            add ecx, 0x2c
+            push ecx
+            call BrMatrix34Identity
+            mov ebp, dword ptr [esp + 0x3f0c]
+            add esp, 4
+            and ebp, 1
+            xor edi, edi
+    L004ecb1e:
+            test ebp, ebp
+            je L004ecb38
+            push 0x3d23d70a
+            call FRandomPosNeg
+            fadd dword ptr [esp + edi + 0x38]
+            mov edx, dword ptr [esi]
+            fstp dword ptr [edx + edi + 0x50]
+            jmp L004ecb4c
+    L004ecb38:
+            push 0x3c75c28f
+            call FRandomPosNeg
+            fadd dword ptr [esp + edi + 0x24]
+            mov eax, dword ptr [esi]
+            fstp dword ptr [eax + edi + 0x50]
+    L004ecb4c:
+            add edi, 4
+            cmp edi, 0xc
+            jl L004ecb1e
+            mov ecx, dword ptr [esi]
+            push 0x15
+            mov edx, dword ptr [ecx + 0x18]
+            push edx
+            call BrModelUpdate
+            mov eax, dword ptr [esi]
+            add esp, 8
+            fld dword ptr [gFloat_0058aec0]
+            mov ecx, dword ptr [eax + 0x18]
+            mov edx, 3
+            lea eax, [ecx + 0x34]
+    L004ecb77:
+            fld dword ptr [eax + 0xc]
+            _emit 0xd8
+        _emit 0x20
+            add eax, 4
+            dec edx
+            faddp st(1), st(0)
+            jne L004ecb77
+            fcom qword ptr [gDOUBLE_0058aef8]
+            fnstsw ax
+            test ah, 1
+            je L004ecba3
+            fsubr qword ptr [gDOUBLE_0058aef8+0x8]
+            fmul qword ptr [gDOUBLE_0058aef8+0x10]
+            fstp dword ptr [esp + 0x1c]
+            jmp L004ecbad
+    L004ecba3:
+            fstp st(0)
+            mov dword ptr [esp + 0x1c], 0x3f000000
+    L004ecbad:
+            mov ecx, dword ptr [ecx + 0x4c]
+            push 0
+            push 0
+            mov edx, dword ptr [ecx + 0x18]
+            mov ecx, dword ptr [esp + 0x24]
+            mov eax, dword ptr [edx + 4]
+            lea edx, [esi + 0x28]
+            add eax, 0xc
+            push eax
+            push ecx
+            mov ecx, dword ptr [esp + 0x3f20]
+            lea eax, [esi + 0x1c]
+            push edx
+            mov edx, dword ptr [esp + 0x74]
+            push eax
+            call ApplyInitialMovement
+            mov edi, dword ptr [esp + 0x3ef0]
+            mov eax, dword ptr [esp + 0x3f14]
+            mov dword ptr [esi + 0xc], edi
+            mov dword ptr [esi + 0x14], edi
+            mov edx, dword ptr [eax + 4]
+            mov ecx, edi
+            add ecx, edx
+            mov dword ptr [esi + 8], ecx
+            mov edx, dword ptr [eax + 4]
+            mov ecx, dword ptr [eax]
+            call IRandomBetween
+            mov ecx, dword ptr [esp + 0x20]
+            add eax, edi
+            mov dword ptr [esi + 0x10], eax
+            mov eax, dword ptr [esp + 0x30]
+            inc eax
+            add ebx, 0x28
+            cmp eax, ecx
+            mov dword ptr [esp + 0x30], eax
+            jl L004ec90c
+    L004ecc20:
+            mov edx, dword ptr [esp + 0x64]
+            push edx
+            call srand
+            add esp, 4
+            pop ebx
+    L004ecc2e:
+            pop edi
+            pop esi
+            pop ebp
+            add esp, 0x3ed8
+            ret 0x34
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004eb070
@@ -1893,7 +5162,8 @@ tSmash_vertex* C2_HOOK_FASTCALL FindShrapnelFragment(br_model* pModel, tU32 pId,
 
 #pragma inline_depth(0)
 // FUNCTION: CARMA2_HW 0x004eb6a0
-void C2_HOOK_FASTCALL FUN_004eb6a0(br_matrix34* pMat) {
+void C2_NAKED C2_HOOK_FASTCALL FUN_004eb6a0(br_matrix34* pMat) {
+#ifndef CARPOCALYPSE2_MATCHING
     float len;
     float inv;
     float x0;
@@ -1948,11 +5218,231 @@ void C2_HOOK_FASTCALL FUN_004eb6a0(br_matrix34* pMat) {
     if (len < 0.9) {
         BrMatrix34Identity(pMat);
     }
+#else
+    __asm {
+            sub esp, 0x10
+            push esi
+            push edi
+            mov esi, ecx
+            xor edi, edi
+            push 0x3f800000
+            mov dword ptr [esi + 0x24], edi
+            mov dword ptr [esi + 0x28], edi
+            mov dword ptr [esi + 0x2c], edi
+            call FRandomPosNeg
+            fstp dword ptr [esi + 0xc]
+            push 0x3f800000
+            call FRandomPosNeg
+            fstp dword ptr [esi + 0x10]
+            push 0x3f800000
+            call FRandomPosNeg
+            fstp dword ptr [esi + 0x14]
+            push 0x3f800000
+            call FRandomPosNeg
+            fstp dword ptr [esi + 0x18]
+            push 0x3f800000
+            call FRandomPosNeg
+            fstp dword ptr [esi + 0x1c]
+            push 0x3f800000
+            call FRandomPosNeg
+            fld dword ptr [esi + 0x18]
+            fld dword ptr [esi + 0x1c]
+            fxch st(2)
+            fst dword ptr [esp + 8]
+            fxch st(1)
+            fst dword ptr [esp + 0x10]
+            fxch st(2)
+            fst dword ptr [esp + 0xc]
+            fxch st(2)
+            fmul dword ptr [esp + 0x10]
+            fxch st(2)
+            fmul dword ptr [esp + 0xc]
+            fxch st(1)
+            fst dword ptr [esp + 0x10]
+            fmul dword ptr [esp + 0x10]
+            fxch st(1)
+            faddp st(2), st(0)
+            fld dword ptr [esp + 8]
+            fxch st(1)
+            faddp st(2), st(0)
+            fstp dword ptr [esi + 0x20]
+            fsqrt
+            fcom dword ptr [gFloat_0058aec4]
+            fnstsw ax
+            test ah, 0x41
+            jne L004eb77a
+            fdivr qword ptr [gDouble_0058aec8]
+            fld dword ptr [esi + 0x18]
+            fld dword ptr [esi + 0x1c]
+            fld dword ptr [esp + 8]
+            fxch st(2)
+            fxch st(1)
+            fxch st(1)
+            fmul st(0), st(3)
+            fxch st(1)
+            fmul st(0), st(3)
+            fxch st(2)
+            fmul st(0), st(3)
+            fxch st(1)
+            fstp dword ptr [esi + 0x18]
+            fxch st(1)
+            fstp dword ptr [esi + 0x1c]
+            fstp dword ptr [esi + 0x20]
+            fstp st(0)
+            jmp L004eb789
+    L004eb77a:
+            fstp st(0)
+            mov dword ptr [esi + 0x18], 0x3f800000
+            mov dword ptr [esi + 0x1c], edi
+            mov dword ptr [esi + 0x20], edi
+    L004eb789:
+            fld dword ptr [esi + 0x18]
+            fld dword ptr [esi + 0x14]
+            fld dword ptr [esi + 0xc]
+            fld dword ptr [esi + 0x20]
+            fld dword ptr [esi + 0xc]
+            fld dword ptr [esi + 0x10]
+            fmul dword ptr [esi + 0x20]
+            fld dword ptr [esi + 0x1c]
+            fmul dword ptr [esi + 0x14]
+            fsubp st(1), st(0)
+            fstp dword ptr [esp + 8]
+            fld dword ptr [esi + 0x1c]
+            fxch st(4)
+            fmulp st(5), st(0)
+            fld dword ptr [esi + 0x18]
+            fxch st(2)
+            fmulp st(3), st(0)
+            fxch st(2)
+            fsubp st(4), st(0)
+            fxch st(3)
+            fst dword ptr [esp + 0xc]
+            fst dword ptr [esp + 0x10]
+            fmul dword ptr [esp + 0x10]
+            fld dword ptr [esi + 0x10]
+            fxch st(3)
+            fmulp st(2), st(0)
+            fxch st(2)
+            fmulp st(3), st(0)
+            fld dword ptr [esp + 8]
+            fxch st(3)
+            fsubp st(1), st(0)
+            fxch st(2)
+            fmul dword ptr [esp + 8]
+            fxch st(2)
+            fst dword ptr [esp + 0x10]
+            fst dword ptr [esp + 0x14]
+            fmul dword ptr [esp + 0x14]
+            fld dword ptr [esp + 0x10]
+            fxch st(1)
+            faddp st(2), st(0)
+            mov eax, dword ptr [esp + 8]
+            mov ecx, dword ptr [esp + 0xc]
+            mov dword ptr [esi], eax
+            mov dword ptr [esi + 4], ecx
+            fstp dword ptr [esi + 8]
+            fxch st(1)
+            faddp st(1), st(0)
+            fsqrt
+            fcom dword ptr [gFloat_0058aec4]
+            fnstsw ax
+            test ah, 0x41
+            jne L004eb846
+            fdivr qword ptr [gDouble_0058aec8]
+            fld st(0)
+            fld st(1)
+            fxch st(1)
+            fmul dword ptr [esp + 8]
+            fxch st(1)
+            fmul dword ptr [esp + 0xc]
+            fxch st(2)
+            fmul dword ptr [esp + 0x10]
+            fxch st(1)
+            fstp dword ptr [esi]
+            fxch st(1)
+            fstp dword ptr [esi + 4]
+            fstp dword ptr [esi + 8]
+            jmp L004eb854
+    L004eb846:
+            fstp st(0)
+            mov dword ptr [esi], 0x3f800000
+            mov dword ptr [esi + 4], edi
+            mov dword ptr [esi + 8], edi
+    L004eb854:
+            fld dword ptr [esi + 8]
+            fld dword ptr [esi + 0x1c]
+            fld dword ptr [esi + 4]
+            fld dword ptr [esi + 0x20]
+            fld dword ptr [esi + 0x20]
+            fld dword ptr [esi + 8]
+            fxch st(4)
+            fmulp st(5), st(0)
+            fld dword ptr [esi + 0x18]
+            fxch st(2)
+            fmulp st(3), st(0)
+            fxch st(2)
+            fsubp st(4), st(0)
+            fxch st(1)
+            fmul dword ptr [esi]
+            fxch st(3)
+            fstp dword ptr [esi + 0xc]
+            fld dword ptr [esi + 0xc]
+            fld st(0)
+            fmul st(0), st(1)
+            fld dword ptr [esi + 4]
+            fld dword ptr [esi + 0x18]
+            fxch st(4)
+            fmulp st(5), st(0)
+            fxch st(4)
+            fsubp st(5), st(0)
+            fxch st(2)
+            fmulp st(3), st(0)
+            fxch st(3)
+            fstp dword ptr [esi + 0x10]
+            fld dword ptr [esi + 0x10]
+            fst dword ptr [esp + 0x14]
+            fmul dword ptr [esp + 0x14]
+            fld dword ptr [esi + 0x1c]
+            fmul dword ptr [esi]
+            fxch st(1)
+            faddp st(2), st(0)
+            fsubp st(2), st(0)
+            fxch st(1)
+            fst dword ptr [esp + 0x10]
+            fst dword ptr [esp + 0x14]
+            fmul dword ptr [esp + 0x14]
+            fld dword ptr [esp + 0x10]
+            fxch st(1)
+            faddp st(2), st(0)
+            fstp dword ptr [esi + 0x14]
+            fcomp qword ptr [gDouble_0058aed8]
+            fnstsw ax
+            test ah, 1
+            fstp st(0)
+            je L004eb8e3
+            push esi
+            call BrMatrix34Identity
+            add esp, 4
+    L004eb8e3:
+            pop edi
+            pop esi
+            add esp, 0x10
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 #pragma inline_depth()
 
 // FUNCTION: CARMA2_HW 0x004eb4a0
-float C2_HOOK_FASTCALL PositionFragment(br_actor* pActor, tSmashable_initial_position_spec* pInitial_position, br_actor* pSource_actor, br_vector3* pPosition4, br_vector3* pPosition5, br_actor* pRotation_actor, float* pRandom_ranges, br_matrix34* pPost_matrix) {
+float C2_NAKED C2_HOOK_FASTCALL PositionFragment(br_actor* pActor, tSmashable_initial_position_spec* pInitial_position, br_actor* pSource_actor, br_vector3* pPosition4, br_vector3* pPosition5, br_actor* pRotation_actor, float* pRandom_ranges, br_matrix34* pPost_matrix) {
+#ifndef CARPOCALYPSE2_MATCHING
     int i;
     float local_1c = 1.f;
     float local_18;
@@ -2009,11 +5499,201 @@ float C2_HOOK_FASTCALL PositionFragment(br_actor* pActor, tSmashable_initial_pos
             break;
     }
     return local_1c;
+#else
+    __asm {
+            sub esp, 0x1c
+            push ebx
+            push ebp
+            push esi
+            push edi
+            mov edi, edx
+            mov ebx, ecx
+            mov dword ptr [esp + 0x10], 0x3f800000
+            mov eax, dword ptr [edi]
+            sub eax, 0
+            je L004eb5c9
+            dec eax
+            je L004eb52a
+            dec eax
+            jne L004eb690
+            mov edx, dword ptr [esp + 0x44]
+            lea eax, [ebx + 0x2c]
+            test edx, edx
+            je L004eb4fb
+            mov ecx, dword ptr [esp + 0x30]
+            mov edi, eax
+            push edx
+            push eax
+            lea esi, [ecx + 0x2c]
+            mov ecx, 0xc
+            rep movsd
+            call BrMatrix34Post
+            fld dword ptr [esp + 0x18]
+            add esp, 8
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x1c
+            ret 0x18
+    L004eb4fb:
+            mov edx, dword ptr [esp + 0x30]
+            mov ecx, 0xc
+            mov edi, eax
+            lea esi, [edx + 0x2c]
+            rep movsd
+            mov ecx, dword ptr [esp + 0x3c]
+            add ecx, 0x2c
+            push ecx
+            push eax
+            call BrMatrix34Post
+            fld dword ptr [esp + 0x18]
+            add esp, 8
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x1c
+            ret 0x18
+    L004eb52a:
+            lea ecx, [ebx + 0x2c]
+            call FUN_004eb6a0
+            mov eax, dword ptr [esp + 0x40]
+            lea ebp, [esp + 0x20]
+            add edi, 4
+            mov esi, eax
+            sub ebp, eax
+            mov dword ptr [esp + 0x30], 3
+    L004eb549:
+            test eax, eax
+            je L004eb55f
+            mov edx, dword ptr [esi + 0xc]
+            mov eax, dword ptr [esi]
+            push edx
+            push eax
+            call FRandomBetween
+            mov eax, dword ptr [esp + 0x40]
+            jmp L004eb565
+    L004eb55f:
+            fld dword ptr [gFloat_0058aec0]
+    L004eb565:
+            fld dword ptr [edi]
+            mov ecx, dword ptr [esp + 0x30]
+            add esi, 4
+            fmul st(0), st(1)
+            add edi, 4
+            dec ecx
+            mov dword ptr [esp + 0x30], ecx
+            fstp dword ptr [ebp + esi - 4]
+            fstp st(0)
+            jne L004eb549
+            mov ecx, dword ptr [esp + 0x3c]
+            lea edx, [esp + 0x20]
+            add ecx, 0x2c
+            lea eax, [esp + 0x14]
+            push ecx
+            push edx
+            push eax
+            call BrMatrix34ApplyV
+            mov eax, dword ptr [esp + 0x40]
+            add esp, 0xc
+            fld dword ptr [esp + 0x14]
+            fadd dword ptr [eax]
+            fstp dword ptr [ebx + 0x50]
+            fld dword ptr [eax + 4]
+            fadd dword ptr [esp + 0x18]
+            fstp dword ptr [ebx + 0x54]
+            fld dword ptr [eax + 8]
+            fadd dword ptr [esp + 0x1c]
+            fstp dword ptr [ebx + 0x58]
+            fld dword ptr [esp + 0x10]
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x1c
+            ret 0x18
+    L004eb5c9:
+            lea ecx, [ebx + 0x2c]
+            call FUN_004eb6a0
+            mov eax, dword ptr [edi + 8]
+            mov esi, dword ptr [esp + 0x38]
+            test eax, eax
+            je L004eb5e0
+            mov esi, dword ptr [esp + 0x34]
+    L004eb5e0:
+            lea ebp, [ebx + 0x50]
+            mov ecx, esi
+            mov edx, ebp
+            push 0x3f800000
+            mov eax, dword ptr [ecx]
+            mov dword ptr [edx], eax
+            mov eax, dword ptr [ecx + 4]
+            mov dword ptr [edx + 4], eax
+            mov ecx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 8], ecx
+            call FRandomPosNeg
+            fstp dword ptr [esp + 0x30]
+            push 0x3f800000
+            call FRandomPosNeg
+            fstp dword ptr [esp + 0x40]
+            push 0x3f800000
+            call FRandomPosNeg
+            mov edx, dword ptr [edi + 4]
+            fstp dword ptr [esp + 0x3c]
+            push edx
+            push 0
+            call FRandomBetween
+            fld dword ptr [esp + 0x40]
+            fld dword ptr [esp + 0x30]
+            fmul dword ptr [esp + 0x30]
+            fld dword ptr [esp + 0x3c]
+            fxch st(2)
+            fmul dword ptr [esp + 0x40]
+            fxch st(3)
+            fstp dword ptr [esp + 0x34]
+            fxch st(1)
+            fmul dword ptr [esp + 0x3c]
+            fxch st(2)
+            faddp st(1), st(0)
+            fld dword ptr [esp + 0x34]
+            fdiv dword ptr [edi + 4]
+            fxch st(2)
+            faddp st(1), st(0)
+            fxch st(1)
+            fstp dword ptr [esp + 0x10]
+            fsqrt
+            fdivr dword ptr [esp + 0x34]
+            fld st(0)
+            fmul dword ptr [esp + 0x30]
+            fld st(1)
+            fmul dword ptr [esp + 0x40]
+            fxch st(1)
+            fadd dword ptr [esi]
+            fxch st(2)
+            fmul dword ptr [esp + 0x3c]
+            fxch st(2)
+            fstp dword ptr [ebp]
+            fadd dword ptr [esi + 4]
+            fstp dword ptr [ebx + 0x54]
+            fadd dword ptr [esi + 8]
+            fstp dword ptr [ebx + 0x58]
+    L004eb690:
+            fld dword ptr [esp + 0x10]
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x1c
+            ret 0x18
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004eb120
 void C2_HOOK_FASTCALL InitFragmentSpeed(tSmash_vertex* pFragment, tSmashable_initial_speed_spec* pSpeed, br_vector3* pArg3, float pArg4, int* pArg5, int pArg6, br_vector3* pArg7, int pArg8, int pArg9) {
-
     ApplyInitialMovement((undefined4*)pSpeed, pArg3, &pFragment->v, &pFragment->omega, pArg4, pArg7, (br_vector3*)(uintptr_t)pArg8, (br_vector3*)(uintptr_t)pArg9);
     pFragment->field_0xc = pArg6;
     pFragment->time_last_move = pArg6;
@@ -2043,7 +5723,8 @@ void C2_HOOK_FAKE_THISCALL FUN_004f0380(tU32 pCurrent_time, int pArg2, int* pArg
 }
 
 // FUNCTION: CARMA2_HW 0x00497860
-void C2_HOOK_FASTCALL FUN_00497860(tNet_message* pMessage, void* pSender_address) {
+void C2_NAKED C2_HOOK_FASTCALL FUN_00497860(tNet_message* pMessage, void* pSender_address) {
+#ifndef CARPOCALYPSE2_MATCHING
     int number_of_players;
     int i;
     tPlayer_ID sender_id;
@@ -2072,10 +5753,64 @@ found_player:
             player->car->collision_info->field_0x49c += 0x28;
         }
     }
+#else
+    __asm {
+            mov eax, dword ptr [gNet_mode]
+            push esi
+            push edi
+            test eax, eax
+            je L004978c1
+            mov esi, dword ptr [gNumber_of_net_players]
+            xor eax, eax
+            test esi, esi
+            jle L004978c1
+            mov edi, dword ptr [edx + 8]
+            mov edx, offset gNet_players+0x24
+    L0049787f:
+            cmp dword ptr [edx], edi
+            je L00497891
+            inc eax
+            add edx, 0xd4
+            cmp eax, esi
+            jl L0049787f
+            pop edi
+            pop esi
+            ret
+    L00497891:
+            lea edx, [eax + eax*2]
+            lea edx, [edx + edx*8]
+            shl edx, 1
+            sub edx, eax
+            mov eax, dword ptr [ecx + 4]
+            shl edx, 2
+            mov dword ptr [edx + gNet_players+0xd0], eax
+            mov ecx, dword ptr [edx + gNet_players+0x24]
+            cmp ecx, eax
+            jne L004978c1
+            mov eax, dword ptr [edx + gNet_players+0xc8]
+            mov eax, dword ptr [eax + 8]
+            add dword ptr [eax + 0x49c], 0x28
+    L004978c1:
+            pop edi
+            pop esi
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004ef830
 void C2_HOOK_FASTCALL ActuallyRepairSmashThunk(tCar_spec* pCar_spec, tCar_crush_smashable_part* pSmashable, int pUnused, int pLevel) {
-
     ActuallyRepairSmash(pCar_spec, pSmashable, pLevel);
 }

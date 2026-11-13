@@ -25,8 +25,35 @@ static __inline br_pixelmap* C2_HOOK_FASTCALL LoadTiffUsingPalette(const char* p
 static __inline int BuildPathWithDirAndSuffix(char* pDest_dir_path, char* pDest_file_path, const char* pOld_path, const char* pNew_dirname, const char *pOld_suffix, const char* pNew_suffix);
 static __inline int C2_HOOK_FASTCALL CheckPixOutdated(const char* pDirectory, const char* pStem, const char* pPix_path);
 
+#ifdef CARPOCALYPSE2_MATCHING
+extern br_filesystem* C2_HOOK_CDECL BrFilesystemSet();
+extern br_pixelmap* C2_HOOK_CDECL BrPixelmapAllocate();
+extern void C2_HOOK_CDECL BrPixelmapFree();
+extern br_pixelmap* C2_HOOK_CDECL BrPixelmapLoad();
+extern br_uint_32 C2_HOOK_CDECL BrPixelmapSave();
+extern void* C2_HOOK_CDECL BrResAdd();
+extern char* C2_HOOK_CDECL BrResStrDup();
+extern br_pixelmap* C2_HOOK_FASTCALL CreatePalettePixelmapFromRGBChannels(br_uint_16* pRed_channel, br_uint_16* pGrn_channel, br_uint_16* pBlu_channel, int pRGB555);
+extern FILE* C2_HOOK_FASTCALL DRfopen(const char* pFilename, const char* pMode);
+extern int C2_HOOK_FASTCALL DRstrrcasestr(int* pOffset, const char* pHaystack, int pLength_haystack, const char* pNeedle);
+extern int C2_HOOK_FASTCALL FindPaletteColour(br_colour pRgb, br_pixelmap *pPalette);
+extern int C2_HOOK_FASTCALL GetLastModificationTime(const char* path);
+extern int C2_HOOK_FASTCALL IsValidFile(const char* path);
+extern br_pixelmap* C2_HOOK_FASTCALL LoadTiff16bit(const char *pPath, int pFlags, int *pError_code);
+extern br_pixelmap* C2_HOOK_FASTCALL LoadTiff8bit(const char *pPath, int pFlags, int *pError_code);
+extern int C2_HOOK_FASTCALL PDmkdir(const char *pPath);
+extern int C2_HOOK_FASTCALL ReadFileLink(char* pDest, const char* pPath);
+extern int C2_HOOK_FASTCALL WriteFileLink(const char* pLink_dest, const char* pLink_source);
+extern int gCancel_recover;
+extern int gDRFont_to_polyfont_mapping[24];
+extern const char* gDir_separator;
+extern tFrontend_spec gFrontend_QUIT;
+extern int gLast_key_down;
+extern br_filesystem gZlib_filesystem;
+#endif
 // FUNCTION: CARMA2_HW 0x00485130
-br_pixelmap* C2_HOOK_FASTCALL LoadTiffPixelmap(const char* path, int flags) {
+C2_NAKED br_pixelmap* C2_HOOK_FASTCALL LoadTiffPixelmap(const char* path, int flags) {
+#ifndef CARPOCALYPSE2_MATCHING
     br_uint_16 photometric;
     TIFF* tif;
     br_uint_32 x;
@@ -151,6 +178,433 @@ br_pixelmap* C2_HOOK_FASTCALL LoadTiffPixelmap(const char* path, int flags) {
     }
     TIFFClose(tif);
     return NULL;
+#else
+    __asm {
+            sub esp, 0x28
+            mov dword ptr [esp + 0x10], edx
+            push edi
+            mov edx, offset gLast_key_down+0x30
+            call TIFFOpen
+            mov edi, eax
+            test edi, edi
+            mov dword ptr [esp + 0x10], edi
+            jne L00485151
+            pop edi
+            add esp, 0x28
+            ret
+    L00485151:
+            push esi
+            push ebp
+            lea eax, [esp + 0x12]
+            push ebx
+            push eax
+            push 0x106
+            push edi
+            call TIFFGetField
+            mov ax, word ptr [esp + 0x22]
+            add esp, 0xc
+            cmp ax, 2
+            jne L0048536b
+            lea ecx, [esp + 0x20]
+            push ecx
+            push 0x101
+            push edi
+            call TIFFGetField
+            add esp, 0xc
+            lea edx, [esp + 0x18]
+            push edx
+            push 0x100
+            push edi
+            call TIFFGetField
+            add esp, 0xc
+            lea eax, [esp + 0x10]
+            push eax
+            push 0x115
+            push edi
+            call TIFFGetFieldDefaulted
+            mov ax, word ptr [esp + 0x1c]
+            mov ecx, dword ptr [esp + 0x2c]
+            mov edx, dword ptr [esp + 0x24]
+            sub ax, 3
+            add esp, 0xc
+            neg ax
+            sbb eax, eax
+            push 0
+            and eax, 0xd
+            push 0
+            push ecx
+            add eax, 5
+            push edx
+            push eax
+            call BrPixelmapAllocate
+            mov ebx, eax
+            add esp, 0x14
+            test ebx, ebx
+            mov dword ptr [esp + 0x24], ebx
+            je L00485571
+            mov ecx, dword ptr [ebx + 8]
+            mov dword ptr [esp + 0x28], ecx
+            mov ecx, edi
+            call TIFFScanlineSize
+            mov ecx, eax
+            call _TIFFmalloc
+            mov esi, eax
+            test esi, esi
+            mov dword ptr [esp + 0x2c], esi
+            jne L00485225
+            push ebx
+            call BrPixelmapFree
+            mov ecx, dword ptr [esp + 0x20]
+            add esp, 4
+            xor ebp, ebp
+            call TIFFClose
+            mov eax, ebp
+            pop ebx
+            pop ebp
+            pop esi
+            pop edi
+            add esp, 0x28
+            ret
+    L00485225:
+            mov eax, dword ptr [esp + 0x20]
+            xor ebx, ebx
+            test eax, eax
+            jbe L00485325
+            jmp L00485239
+    L00485235:
+            mov edi, dword ptr [esp + 0x1c]
+    L00485239:
+            push 0
+            push ebx
+            mov edx, esi
+            mov ecx, edi
+            call TIFFReadScanline
+            test eax, eax
+            jle L00485325
+            cmp word ptr [esp + 0x10], 3
+            jne L004852b0
+            mov eax, dword ptr [esp + 0x18]
+            xor edi, edi
+            test eax, eax
+            jbe L00485318
+            lea ecx, [esi + 2]
+    L00485266:
+            xor eax, eax
+            xor edx, edx
+            mov al, byte ptr [ecx - 2]
+            mov dl, byte ptr [ecx - 1]
+            shr eax, 3
+            mov esi, edx
+            xor edx, edx
+            mov dl, byte ptr [ecx]
+            add ecx, 3
+            shr esi, 2
+            shl eax, 6
+            or eax, esi
+            mov esi, ebx
+            shr edx, 3
+            shl eax, 5
+            or eax, edx
+            mov edx, dword ptr [esp + 0x24]
+            movsx edx, word ptr [edx + 0x28]
+            imul esi, edx
+            mov edx, dword ptr [esp + 0x28]
+            shr esi, 1
+            add esi, edi
+            inc edi
+            mov word ptr [edx + esi*2], ax
+            mov eax, dword ptr [esp + 0x18]
+            cmp edi, eax
+            jb L00485266
+            jmp L00485314
+    L004852b0:
+            mov eax, dword ptr [esp + 0x18]
+            xor ebp, ebp
+            test eax, eax
+            jbe L00485318
+            lea ecx, [esi + 2]
+    L004852bd:
+            xor eax, eax
+            xor edx, edx
+            mov al, byte ptr [ecx - 1]
+            mov dl, byte ptr [ecx - 2]
+            mov esi, eax
+            xor eax, eax
+            mov al, byte ptr [ecx]
+            add ecx, 4
+            mov edi, eax
+            xor eax, eax
+            mov al, byte ptr [ecx - 3]
+            shr eax, 4
+            shr edx, 4
+            shl eax, 4
+            or eax, edx
+            mov edx, dword ptr [esp + 0x24]
+            shr esi, 4
+            movsx edx, word ptr [edx + 0x28]
+            shl eax, 4
+            or eax, esi
+            mov esi, ebx
+            imul esi, edx
+            mov edx, dword ptr [esp + 0x28]
+            shr esi, 1
+            shr edi, 4
+            shl eax, 4
+            add esi, ebp
+            or eax, edi
+            inc ebp
+            mov word ptr [edx + esi*2], ax
+            mov eax, dword ptr [esp + 0x18]
+            cmp ebp, eax
+            jb L004852bd
+    L00485314:
+            mov esi, dword ptr [esp + 0x2c]
+    L00485318:
+            mov eax, dword ptr [esp + 0x20]
+            inc ebx
+            cmp ebx, eax
+            jb L00485235
+    L00485325:
+            mov ecx, esi
+            call _TIFFfree
+            cmp ebx, dword ptr [esp + 0x20]
+            je L00485354
+            mov eax, dword ptr [esp + 0x24]
+            push eax
+            call BrPixelmapFree
+            mov ecx, dword ptr [esp + 0x20]
+            add esp, 4
+            xor ebp, ebp
+            call TIFFClose
+            mov eax, ebp
+            pop ebx
+            pop ebp
+            pop esi
+            pop edi
+            add esp, 0x28
+            ret
+    L00485354:
+            mov ecx, dword ptr [esp + 0x1c]
+            mov ebp, dword ptr [esp + 0x24]
+            call TIFFClose
+            mov eax, ebp
+            pop ebx
+            pop ebp
+            pop esi
+            pop edi
+            add esp, 0x28
+            ret
+    L0048536b:
+            cmp ax, 3
+            jne L00485571
+            lea ecx, [esp + 0x10]
+            push ecx
+            push 0x101
+            push edi
+            call TIFFGetField
+            add esp, 0xc
+            lea edx, [esp + 0x24]
+            push edx
+            push 0x100
+            push edi
+            call TIFFGetField
+            add esp, 0xc
+            lea eax, [esp + 0x2c]
+            push eax
+            push 0x115
+            push edi
+            call TIFFGetFieldDefaulted
+            mov ecx, dword ptr [esp + 0x1c]
+            mov edx, dword ptr [esp + 0x30]
+            add esp, 0xc
+            push 0
+            push 0
+            push ecx
+            push edx
+            push 3
+            call BrPixelmapAllocate
+            mov ebp, eax
+            add esp, 0x14
+            test ebp, ebp
+            je L00485571
+            mov esi, dword ptr [ebp + 8]
+            cmp word ptr [esp + 0x2c], 1
+            mov dword ptr [esp + 0x28], esi
+            jne L0048541a
+            mov eax, dword ptr [esp + 0x10]
+            xor edi, edi
+            test eax, eax
+            jbe L004854bf
+    L004853ed:
+            movsx eax, word ptr [ebp + 0x28]
+            mov edx, edi
+            mov ecx, dword ptr [esp + 0x1c]
+            imul edx, eax
+            push 0
+            push edi
+            add edx, esi
+            call TIFFReadScanline
+            test eax, eax
+            jle L004854bf
+            mov eax, dword ptr [esp + 0x10]
+            inc edi
+            cmp edi, eax
+            jb L004853ed
+            jmp L004854bf
+    L0048541a:
+            mov ecx, edi
+            call TIFFScanlineSize
+            mov ecx, eax
+            call _TIFFmalloc
+            mov esi, eax
+            test esi, esi
+            jne L0048544c
+            push ebp
+            call BrPixelmapFree
+            mov ecx, dword ptr [esp + 0x20]
+            add esp, 4
+            xor ebp, ebp
+            call TIFFClose
+            mov eax, ebp
+            pop ebx
+            pop ebp
+            pop esi
+            pop edi
+            add esp, 0x28
+            ret
+    L0048544c:
+            mov eax, dword ptr [esp + 0x10]
+            xor edi, edi
+            test eax, eax
+            jbe L004854b8
+    L00485456:
+            mov ecx, dword ptr [esp + 0x1c]
+            push 0
+            push edi
+            mov edx, esi
+            call TIFFReadScanline
+            test eax, eax
+            jle L004854b8
+            mov ecx, dword ptr [esp + 0x24]
+            xor eax, eax
+            test ecx, ecx
+            jbe L004854af
+    L00485472:
+            mov ecx, dword ptr [esp + 0x2c]
+            and ecx, 0xffff
+            imul ecx, eax
+            lea edx, [ecx + esi]
+            mov cl, byte ptr [ecx + esi + 1]
+            cmp cl, 0x80
+            jae L0048548f
+            xor ecx, ecx
+            jmp L00485493
+    L0048548f:
+            xor ecx, ecx
+            mov cl, byte ptr [edx]
+    L00485493:
+            movsx edx, word ptr [ebp + 0x28]
+            mov ebx, edi
+            imul ebx, edx
+            mov edx, dword ptr [esp + 0x28]
+            add ebx, edx
+            inc eax
+            mov byte ptr [ebx + eax - 1], cl
+            mov ecx, dword ptr [esp + 0x24]
+            cmp eax, ecx
+            jb L00485472
+    L004854af:
+            mov eax, dword ptr [esp + 0x10]
+            inc edi
+            cmp edi, eax
+            jb L00485456
+    L004854b8:
+            mov ecx, esi
+            call _TIFFfree
+    L004854bf:
+            cmp edi, dword ptr [esp + 0x10]
+            je L004854e3
+            push ebp
+            call BrPixelmapFree
+            mov ecx, dword ptr [esp + 0x20]
+            add esp, 4
+            xor ebp, ebp
+            call TIFFClose
+            mov eax, ebp
+            pop ebx
+            pop ebp
+            pop esi
+            pop edi
+            add esp, 0x28
+            ret
+    L004854e3:
+            lea eax, [esp + 0x18]
+            lea ecx, [esp + 0x30]
+            push eax
+            mov eax, dword ptr [esp + 0x20]
+            lea edx, [esp + 0x38]
+            push ecx
+            push edx
+            push 0x140
+            push eax
+            call TIFFGetField
+            mov ecx, dword ptr [esp + 0x34]
+            mov edx, dword ptr [esp + 0x2c]
+            add esp, 0x14
+            push ecx
+            mov ecx, dword ptr [esp + 0x38]
+            push edx
+            mov edx, dword ptr [esp + 0x38]
+            call CreatePalettePixelmapFromRGBChannels
+            test eax, eax
+            mov dword ptr [ebp + 0x10], eax
+            jne L00485540
+            push ebp
+            call BrPixelmapFree
+            mov ecx, dword ptr [esp + 0x20]
+            add esp, 4
+            xor ebp, ebp
+            call TIFFClose
+            mov eax, ebp
+            pop ebx
+            pop ebp
+            pop esi
+            pop edi
+            add esp, 0x28
+            ret
+    L00485540:
+            push offset gLast_key_down+0x24
+            push ebp
+            call BrResStrDup
+            add esp, 8
+            mov dword ptr [ebp + 4], eax
+            mov eax, dword ptr [ebp + 0x10]
+            push eax
+            push ebp
+            call BrResAdd
+            mov ecx, dword ptr [esp + 0x24]
+            add esp, 8
+            call TIFFClose
+            mov eax, ebp
+            pop ebx
+            pop ebp
+            pop esi
+            pop edi
+            add esp, 0x28
+            ret
+    L00485571:
+            mov ecx, dword ptr [esp + 0x1c]
+            xor ebp, ebp
+            call TIFFClose
+            mov eax, ebp
+            pop ebx
+            pop ebp
+            pop esi
+            pop edi
+            add esp, 0x28
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00485590
@@ -265,7 +719,8 @@ error:
 }
 
 // FUNCTION: CARMA2_HW 0x00485750
-br_pixelmap* C2_HOOK_FASTCALL LoadTiffTexture_Ex2(const char* pDirectory, const char* pFile_stem, br_pixelmap* pPalette, int pFlags, int* pError_code, int pTiff_palette) {
+C2_NAKED br_pixelmap* C2_HOOK_FASTCALL LoadTiffTexture_Ex2(const char* pDirectory, const char* pFile_stem, br_pixelmap* pPalette, int pFlags, int* pError_code, int pTiff_palette) {
+#ifndef CARPOCALYPSE2_MATCHING
     tPath_name tif_path;
     tPath_name zz_pix_path_target;
     tPath_name aa_pix_path;
@@ -372,6 +827,697 @@ br_pixelmap* C2_HOOK_FASTCALL LoadTiffTexture_Ex2(const char* pDirectory, const 
         *pError_code = 0;
     }
     return pm;
+#else
+    __asm {
+            sub esp, 0x930
+            mov eax, dword ptr [esp + 0x940]
+            push ebx
+            push ebp
+            push esi
+            push edi
+            mov edi, ecx
+            test eax, eax
+            mov esi, edx
+            mov dword ptr [esp + 0x3c], edi
+            mov ecx, offset gLast_key_down+0xa4
+            jne L00485777
+            mov ecx, offset gLast_key_down+0x9c
+    L00485777:
+            mov eax, dword ptr [gDir_separator]
+            push offset gFrontend_QUIT+0xbbac
+            push esi
+            push eax
+            push ecx
+            push eax
+            push edi
+            lea eax, [esp + 0x58]
+            push offset gLast_key_down+0x8c
+            push eax
+            call sprintf
+            mov eax, dword ptr [esp + 0x968]
+            add esp, 0x20
+            and eax, 1
+            mov ecx, offset gLast_key_down+0x84
+            mov dword ptr [esp + 0x30], eax
+            je L004857b2
+            mov ecx, offset gLast_key_down+0x7c
+    L004857b2:
+            mov eax, dword ptr [gDir_separator]
+            push offset gDRFont_to_polyfont_mapping+0x314
+            push esi
+            push eax
+            push ecx
+            push eax
+            push edi
+            lea ecx, [esp + 0x158]
+            push offset gLast_key_down+0x8c
+            push ecx
+            call sprintf
+            add esp, 0x20
+            lea edx, [esp + 0x40]
+            lea ecx, [esp + 0x40]
+            call ReadFileLink
+            lea edx, [esp + 0x140]
+            lea ecx, [esp + 0x240]
+            mov dword ptr [esp + 0x28], eax
+            call ReadFileLink
+            mov ebp, eax
+            lea ecx, [esp + 0x40]
+            mov dword ptr [esp + 0x38], ebp
+            call IsValidFile
+            test ebp, ebp
+            mov ebx, eax
+            lea ecx, [esp + 0x240]
+            jne L0048581d
+            lea ecx, [esp + 0x140]
+    L0048581d:
+            call IsValidFile
+            mov dword ptr [esp + 0x24], eax
+            mov eax, dword ptr [esp + 0x950]
+            test eax, eax
+            je L004858cf
+            mov eax, dword ptr [esp + 0x24]
+            test eax, eax
+            je L004858cf
+            test ebx, ebx
+            jne L004858d7
+            test ebp, ebp
+            je L0048585a
+            lea edx, [esp + 0x240]
+            mov dword ptr [esp + 0x14], edx
+            jmp L00485865
+    L0048585a:
+            lea eax, [esp + 0x140]
+            mov dword ptr [esp + 0x14], eax
+    L00485865:
+            mov eax, dword ptr [gDir_separator]
+            push offset gFrontend_QUIT+0xbbac
+            push esi
+            push eax
+            push offset gLast_key_down+0x9c
+            push eax
+            push edi
+            lea ecx, [esp + 0x358]
+            push offset gLast_key_down+0x8c
+            push ecx
+            call sprintf
+            add esp, 0x20
+            lea edx, [esp + 0x340]
+            lea ecx, [esp + 0x340]
+            call ReadFileLink
+            lea ecx, [esp + 0x340]
+            call IsValidFile
+            test eax, eax
+            je L004858cf
+            lea ecx, [esp + 0x340]
+            call GetLastModificationTime
+            mov ecx, dword ptr [esp + 0x14]
+            mov esi, eax
+            call GetLastModificationTime
+            cmp esi, eax
+            ja L00485fc3
+    L004858cf:
+            test ebx, ebx
+            je L00485f42
+    L004858d7:
+            mov eax, dword ptr [esp + 0x30]
+            test eax, eax
+            jne L004858ea
+            mov eax, dword ptr [esp + 0x950]
+            test eax, eax
+            je L0048592a
+    L004858ea:
+            mov ebx, dword ptr [esp + 0x948]
+            test bl, 0x20
+            jne L00485931
+            mov eax, dword ptr [esp + 0x24]
+            test eax, eax
+            je L00485931
+            test ebp, ebp
+            lea ecx, [esp + 0x240]
+            jne L00485910
+            lea ecx, [esp + 0x140]
+    L00485910:
+            call GetLastModificationTime
+            lea ecx, [esp + 0x40]
+            mov esi, eax
+            call GetLastModificationTime
+            cmp eax, esi
+            jbe L00485f42
+            jmp L00485931
+    L0048592a:
+            mov ebx, dword ptr [esp + 0x948]
+    L00485931:
+            mov eax, dword ptr [esp + 0x950]
+            test eax, eax
+            jne L00485d43
+            mov eax, dword ptr [esp + 0x30]
+            test eax, eax
+            jne L00485d2e
+            mov ebp, dword ptr [esp + 0x944]
+            test ebp, ebp
+            je L00485960
+            mov dword ptr [esp + 0x10], ebp
+            jmp L00485afe
+    L00485960:
+            mov eax, dword ptr [gDir_separator]
+            push offset gLast_key_down+0x70
+            push eax
+            push offset gLast_key_down+0x68
+            push eax
+            push edi
+            lea edx, [esp + 0x354]
+            push offset gLast_key_down+0x5c
+            push edx
+            call sprintf
+            add esp, 0x1c
+            mov edx, offset gCancel_recover+0x1a4
+            lea ecx, [esp + 0x340]
+            call DRfopen
+            mov esi, eax
+            test esi, esi
+            je L00485ae3
+            push esi
+            push 1
+            lea eax, [esp + 0x648]
+            push 0x300
+            push eax
+            call fread
+            add esp, 0x10
+            test eax, eax
+            je L00485ae3
+            push esi
+            call fclose
+            add esp, 4
+            test bl, 0x10
+            push 0
+            push 0
+            push 0x100
+            push 1
+            je L00485a43
+            push 5
+            call BrPixelmapAllocate
+            mov ebp, eax
+            add esp, 0x14
+            test ebp, ebp
+            jne L004859fd
+            mov ecx, dword ptr [esp + 0x94c]
+            mov dword ptr [ecx], 2
+            jmp L00485af0
+    L004859fd:
+            mov ecx, dword ptr [ebp + 8]
+            lea eax, [esp + 0x640]
+            mov edi, 0x100
+    L00485a0c:
+            mov bl, byte ptr [eax]
+            add ecx, 2
+            movzx dx, byte ptr [eax + 1]
+            and bl, 0xf8
+            and edx, 0xfffc
+            movzx si, bl
+            mov bl, byte ptr [eax + 2]
+            add eax, 3
+            shl esi, 5
+            shr bl, 3
+            or edx, esi
+            movzx si, bl
+            shl edx, 3
+            or edx, esi
+            dec edi
+            mov word ptr [ecx - 2], dx
+            jne L00485a0c
+            jmp L00485ab6
+    L00485a43:
+            push 7
+            call BrPixelmapAllocate
+            mov ebp, eax
+            add esp, 0x14
+            test ebp, ebp
+            jne L00485a65
+            mov eax, dword ptr [esp + 0x94c]
+            mov dword ptr [eax], 2
+            jmp L00485af0
+    L00485a65:
+            mov eax, dword ptr [ebp + 8]
+            lea ecx, [esp + 0x644]
+            mov esi, 0xff
+            mov byte ptr [eax + 2], 0
+            mov byte ptr [eax + 1], 0
+            mov byte ptr [eax], 0
+            add eax, 5
+    L00485a82:
+            mov dl, byte ptr [ecx + 1]
+            mov byte ptr [eax - 1], dl
+            mov dl, byte ptr [ecx]
+            mov byte ptr [eax], dl
+            mov dl, byte ptr [ecx - 1]
+            mov byte ptr [eax + 1], dl
+            mov bl, byte ptr [eax - 1]
+            test bl, bl
+            jne L00485aad
+            cmp byte ptr [eax], 0
+            jne L00485aad
+            test dl, dl
+            jne L00485aad
+            mov byte ptr [eax + 1], 1
+            mov byte ptr [eax], 1
+            mov byte ptr [eax - 1], 1
+    L00485aad:
+            add ecx, 3
+            add eax, 4
+            dec esi
+            jne L00485a82
+    L00485ab6:
+            push offset gLast_key_down+0x70
+            push ebp
+            call BrResStrDup
+            add esp, 8
+            mov dword ptr [ebp + 4], eax
+            test eax, eax
+            jne L00485af2
+            push ebp
+            call BrPixelmapFree
+            mov eax, dword ptr [esp + 0x950]
+            add esp, 4
+            mov dword ptr [eax], 2
+            jmp L00485af0
+    L00485ae3:
+            mov ecx, dword ptr [esp + 0x94c]
+            mov dword ptr [ecx], 5
+    L00485af0:
+            xor ebp, ebp
+    L00485af2:
+            test ebp, ebp
+            mov dword ptr [esp + 0x10], ebp
+            je L00485fc3
+    L00485afe:
+            mov edx, offset gLast_key_down+0x30
+            lea ecx, [esp + 0x40]
+            call TIFFOpen
+            mov edi, eax
+            test edi, edi
+            mov dword ptr [esp + 0x1c], edi
+            jne L00485b2a
+            mov edx, dword ptr [esp + 0x94c]
+            xor ebx, ebx
+            mov dword ptr [edx], 4
+            jmp L00485cf0
+    L00485b2a:
+            lea eax, [esp + 0x14]
+            push eax
+            push 0x101
+            push edi
+            call TIFFGetField
+            add esp, 0xc
+            lea ecx, [esp + 0x18]
+            push ecx
+            push 0x100
+            push edi
+            call TIFFGetField
+            add esp, 0xc
+            lea edx, [esp + 0x36]
+            push edx
+            push 0x115
+            push edi
+            call TIFFGetFieldDefaulted
+            mov eax, dword ptr [esp + 0x20]
+            mov ecx, dword ptr [esp + 0x24]
+            add esp, 0xc
+            push 0
+            push 0
+            push eax
+            push ecx
+            push 3
+            call BrPixelmapAllocate
+            mov ebx, eax
+            add esp, 0x14
+            test ebx, ebx
+            jne L00485b9a
+            mov ecx, edi
+            call TIFFClose
+            mov edx, dword ptr [esp + 0x94c]
+            mov dword ptr [edx], 2
+            jmp L00485cf0
+    L00485b9a:
+            mov eax, dword ptr [ebx + 8]
+            mov ecx, edi
+            mov dword ptr [esp + 0x20], eax
+            call TIFFScanlineSize
+            mov ecx, eax
+            call _TIFFmalloc
+            mov esi, eax
+            test esi, esi
+            mov dword ptr [esp + 0x2c], esi
+            jne L00485bdd
+            mov ecx, edi
+            call TIFFClose
+            push ebx
+            call BrPixelmapFree
+            mov ecx, dword ptr [esp + 0x950]
+            add esp, 4
+            xor ebx, ebx
+            mov dword ptr [ecx], 2
+            jmp L00485cf0
+    L00485bdd:
+            mov eax, dword ptr [esp + 0x14]
+            xor ebp, ebp
+            test eax, eax
+            jbe L00485cc0
+    L00485beb:
+            push 0
+            push ebp
+            mov edx, esi
+            mov ecx, edi
+            call TIFFReadScanline
+            test eax, eax
+            jle L00485cc0
+            cmp word ptr [esp + 0x36], 3
+            jne L00485c57
+            mov eax, dword ptr [esp + 0x18]
+            xor edi, edi
+            test eax, eax
+            jbe L00485cab
+            mov edx, dword ptr [esp + 0x2c]
+            lea esi, [edx + 2]
+    L00485c1c:
+            mov edx, dword ptr [esp + 0x10]
+            xor ecx, ecx
+            mov ch, byte ptr [esi - 2]
+            xor eax, eax
+            mov cl, byte ptr [esi - 1]
+            mov al, byte ptr [esi]
+            shl ecx, 8
+            or ecx, eax
+            call FindPaletteColour
+            movsx ecx, word ptr [ebx + 0x28]
+            mov edx, ebp
+            add esi, 3
+            imul edx, ecx
+            mov ecx, dword ptr [esp + 0x20]
+            add edx, ecx
+            inc edi
+            mov byte ptr [edx + edi - 1], al
+            mov eax, dword ptr [esp + 0x18]
+            cmp edi, eax
+            jb L00485c1c
+            jmp L00485cab
+    L00485c57:
+            mov eax, dword ptr [esp + 0x18]
+            xor esi, esi
+            test eax, eax
+            jbe L00485cab
+            mov eax, dword ptr [esp + 0x2c]
+            lea edi, [eax + 1]
+    L00485c68:
+            cmp byte ptr [edi + 2], 0x80
+            jae L00485c72
+            xor eax, eax
+            jmp L00485c8c
+    L00485c72:
+            mov edx, dword ptr [esp + 0x10]
+            xor ecx, ecx
+            mov ch, byte ptr [edi - 1]
+            xor eax, eax
+            mov cl, byte ptr [edi]
+            mov al, byte ptr [edi + 1]
+            shl ecx, 8
+            or ecx, eax
+            call FindPaletteColour
+    L00485c8c:
+            movsx ecx, word ptr [ebx + 0x28]
+            mov edx, ebp
+            add edi, 4
+            imul edx, ecx
+            mov ecx, dword ptr [esp + 0x20]
+            add edx, ecx
+            inc esi
+            mov byte ptr [edx + esi - 1], al
+            mov eax, dword ptr [esp + 0x18]
+            cmp esi, eax
+            jb L00485c68
+    L00485cab:
+            mov eax, dword ptr [esp + 0x14]
+            mov edi, dword ptr [esp + 0x1c]
+            mov esi, dword ptr [esp + 0x2c]
+            inc ebp
+            cmp ebp, eax
+            jb L00485beb
+    L00485cc0:
+            mov ecx, esi
+            call _TIFFfree
+            mov ecx, edi
+            call TIFFClose
+            cmp ebp, dword ptr [esp + 0x14]
+            je L00485cec
+            push ebx
+            call BrPixelmapFree
+            mov eax, dword ptr [esp + 0x950]
+            add esp, 4
+            xor ebx, ebx
+            mov dword ptr [eax], 2
+    L00485cec:
+            mov ebp, dword ptr [esp + 0x10]
+    L00485cf0:
+            test ebx, ebx
+            je L00485d18
+            test byte ptr [esp + 0x948], 8
+            je L00485d18
+            mov eax, dword ptr [esp + 0x944]
+            mov dword ptr [ebx + 0x10], ebp
+            test eax, eax
+            jne L00485d58
+            push ebp
+            push ebx
+            call BrResAdd
+            add esp, 8
+            jmp L00485d58
+    L00485d18:
+            mov eax, dword ptr [esp + 0x944]
+            test eax, eax
+            jne L00485d58
+            push ebp
+            call BrPixelmapFree
+            add esp, 4
+            jmp L00485d58
+    L00485d2e:
+            mov ecx, dword ptr [esp + 0x94c]
+            mov edx, ebx
+            push ecx
+            lea ecx, [esp + 0x44]
+            call LoadTiff16bit
+            jmp L00485d56
+    L00485d43:
+            mov edx, dword ptr [esp + 0x94c]
+            lea ecx, [esp + 0x40]
+            push edx
+            mov edx, ebx
+            call LoadTiff8bit
+    L00485d56:
+            mov ebx, eax
+    L00485d58:
+            test ebx, ebx
+            je L00485f33
+            test byte ptr [esp + 0x948], 4
+            je L00485f22
+            mov ebp, dword ptr [esp + 0x38]
+            test ebp, ebp
+            jne L00485ed8
+            mov esi, dword ptr [esp + 0x30]
+            mov eax, offset gLast_key_down+0x84
+            test esi, esi
+            je L00485d8c
+            mov eax, offset gLast_key_down+0x7c
+    L00485d8c:
+            mov ecx, dword ptr [esp + 0x3c]
+            push eax
+            mov eax, dword ptr [gDir_separator]
+            lea edx, [esp + 0x544]
+            push eax
+            push ecx
+            push offset gLast_key_down+0x54
+            push edx
+            call sprintf
+            add esp, 0x14
+            lea ecx, [esp + 0x540]
+            call PDmkdir
+            mov eax, dword ptr [esp + 0x28]
+            test eax, eax
+            je L00485ed8
+            mov eax, dword ptr [esp + 0x24]
+            test eax, eax
+            jne L00485ed8
+            test esi, esi
+            mov ebp, offset gLast_key_down+0x84
+            je L00485ddf
+            mov ebp, offset gLast_key_down+0x7c
+    L00485ddf:
+            lea edi, [esp + 0x40]
+            or ecx, 0xffffffff
+            xor eax, eax
+            push offset gFrontend_QUIT+0xbbac
+            repne scasb
+            not ecx
+            dec ecx
+            lea edx, [esp + 0x44]
+            push ecx
+            lea ecx, [esp + 0x28]
+            call DRstrrcasestr
+            test eax, eax
+            je L00485eb4
+            mov eax, dword ptr [gDir_separator]
+            mov ecx, dword ptr [esp + 0x20]
+            push eax
+            push ecx
+            lea edx, [esp + 0x48]
+            lea ecx, [esp + 0x24]
+            call DRstrrcasestr
+            test eax, eax
+            je L00485eb4
+            mov edx, dword ptr [gDir_separator]
+            mov eax, dword ptr [esp + 0x1c]
+            push edx
+            push eax
+            lea edx, [esp + 0x48]
+            lea ecx, [esp + 0x30]
+            call DRstrrcasestr
+            test eax, eax
+            je L00485eb4
+            mov edx, dword ptr [gDir_separator]
+            or ecx, 0xffffffff
+            mov edi, edx
+            xor eax, eax
+            repne scasb
+            not ecx
+            mov edi, dword ptr [esp + 0x1c]
+            dec ecx
+            mov esi, ecx
+            push ebp
+            push edx
+            mov edx, dword ptr [esp + 0x30]
+            lea ecx, [esp + 0x48]
+            lea eax, [esp + 0x448]
+            push ecx
+            push edx
+            push offset gLast_key_down+0x48
+            push eax
+            add esi, edi
+            call sprintf
+            mov edx, dword ptr [esp + 0x38]
+            mov eax, dword ptr [gDir_separator]
+            add esp, 0x18
+            lea ecx, [esp + esi + 0x40]
+            sub edx, esi
+            push offset gDRFont_to_polyfont_mapping+0x314
+            push ecx
+            push edx
+            lea ecx, [esp + 0x44c]
+            push eax
+            push ecx
+            lea edx, [esp + 0x254]
+            push offset gLast_key_down+0x3c
+            push edx
+            call sprintf
+            add esp, 0x1c
+    L00485eb4:
+            lea ecx, [esp + 0x440]
+            call PDmkdir
+            lea edx, [esp + 0x140]
+            lea ecx, [esp + 0x240]
+            call WriteFileLink
+            mov ebp, 1
+    L00485ed8:
+            mov esi, dword ptr [esp + 0x948]
+            and esi, 0x40
+            jne L00485ef5
+            push offset gZlib_filesystem
+            call BrFilesystemSet
+            add esp, 4
+            mov edi, eax
+            jmp L00485ef9
+    L00485ef5:
+            mov edi, dword ptr [esp + 0x28]
+    L00485ef9:
+            test ebp, ebp
+            lea eax, [esp + 0x240]
+            jne L00485f0b
+            lea eax, [esp + 0x140]
+    L00485f0b:
+            push ebx
+            push eax
+            call BrPixelmapSave
+            add esp, 8
+            test esi, esi
+            jne L00485f22
+            push edi
+            call BrFilesystemSet
+            add esp, 4
+    L00485f22:
+            test ebx, ebx
+            je L00485f33
+            mov eax, dword ptr [esp + 0x94c]
+            mov dword ptr [eax], 0
+    L00485f33:
+            mov eax, ebx
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x930
+            ret 0x10
+    L00485f42:
+            mov eax, dword ptr [esp + 0x24]
+            test eax, eax
+            je L00485fb6
+            mov eax, dword ptr [esp + 0x30]
+            test eax, eax
+            jne L00485f5d
+            mov eax, dword ptr [esp + 0x950]
+            test eax, eax
+            je L00485fb6
+    L00485f5d:
+            push offset gZlib_filesystem
+            call BrFilesystemSet
+            add esp, 4
+            mov edi, eax
+            test ebp, ebp
+            lea eax, [esp + 0x240]
+            jne L00485f7e
+            lea eax, [esp + 0x140]
+    L00485f7e:
+            push eax
+            call BrPixelmapLoad
+            add esp, 4
+            mov esi, eax
+            push edi
+            call BrFilesystemSet
+            mov edx, dword ptr [esp + 0x950]
+            mov ecx, esi
+            add esp, 4
+            mov eax, esi
+            neg ecx
+            sbb ecx, ecx
+            and ecx, 0xfffffffd
+            add ecx, 3
+            mov dword ptr [edx], ecx
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x930
+            ret 0x10
+    L00485fb6:
+            mov eax, dword ptr [esp + 0x94c]
+            mov dword ptr [eax], 1
+    L00485fc3:
+            pop edi
+            pop esi
+            pop ebp
+            xor eax, eax
+            pop ebx
+            add esp, 0x930
+            ret 0x10
+    }
+#endif
 }
 
 static __inline int C2_HOOK_FASTCALL CheckPixOutdated(const char* pDirectory, const char* pStem, const char* pPix_path) {

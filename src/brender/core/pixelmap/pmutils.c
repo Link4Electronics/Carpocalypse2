@@ -8,8 +8,8 @@ br_uint_16 C2_HOOK_CDECL GetSysQual(void) {
 #if defined(__I86__) || defined(_M_IX86)
 #if defined(_MSC_VER)
     __asm {
-        mov ax, ds;
-        ret 0;
+            mov ax, ds
+            ret
     }
 #else
     br_uint_16 result;
