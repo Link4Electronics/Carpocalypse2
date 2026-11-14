@@ -179,6 +179,27 @@ extern br_actor* gHUD_camera;
 extern br_actor* gHUD_root;
 extern char gUNK_0058a038[];
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern C2_NORETURN void C2_HOOK_CDECL BrFailure();
+extern br_pixelmap* C2_HOOK_CDECL BrMapAdd();
+extern void C2_HOOK_CDECL BrMapUpdate();
+extern void C2_HOOK_CDECL BrMatrix23Scale();
+extern br_pixelmap* C2_HOOK_CDECL BrPixelmapAllocate();
+extern void C2_HOOK_CDECL BrPixelmapFree();
+extern void C2_HOOK_FASTCALL ClosePackFileAndSetTiffLoading(tTWTVFS twt);
+extern void C2_HOOK_FASTCALL ColourVertices(br_model* pModel, int pFont_index);
+extern void C2_HOOK_FASTCALL DRPixelmapRectangleCopy(br_pixelmap* dst, br_int_16 dx, br_int_16 dy, br_pixelmap* src, br_int_16 sx, br_int_16 sy, br_uint_16 w, br_uint_16 h);
+extern int C2_HOOK_FASTCALL GetAnInt(FILE* pF);
+extern br_material* C2_HOOK_FASTCALL GetPolyFontMaterial(int pFont_index, char pChar);
+extern tTWTVFS C2_HOOK_FASTCALL OpenPackFileAndSetTiffLoading(const char* path);
+extern int C2_HOOK_FASTCALL PFfclose(FILE* pFile);
+extern FILE* C2_HOOK_FASTCALL PFfopen(const char* pPath, const char* mode);
+extern void C2_HOOK_FASTCALL PathCat(char* pDestn_str, const char* pStr_1, const char* pStr_2);
+extern char gNext_crush_actor_id[];
+extern char gQuickTime_call_component_with_storage[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+#endif
 // FUNCTION: CARMA2_HW 0x00463730
 int C2_HOOK_FASTCALL PolyFontHeight(int pFont_index) {
 
@@ -1354,7 +1375,8 @@ static br_pixelmap* PolyPixGetGlyphMap(tPolyPixSet* ps, int ascii) {
 #endif
 
 // FUNCTION: CARMA2_HW 0x004643f0
-void C2_HOOK_FASTCALL CreatePolyFont(const char* pName, int pSize, int pIndex) {
+void C2_NAKED C2_HOOK_FASTCALL CreatePolyFont(const char* pName, int pSize, int pIndex) {
+#ifndef CARPOCALYPSE2_MATCHING
     int tex_x;
     int tex_y;
     tPath_name the_path;
@@ -1513,6 +1535,513 @@ void C2_HOOK_FASTCALL CreatePolyFont(const char* pName, int pSize, int pIndex) {
     KillThePixies();
     ClosePackFileAndSetTiffLoading(twt);
     gSize_font_texture_pages += 1;
+#else
+    __asm {
+            sub esp, 0x330
+            mov eax, dword ptr [gGraf_spec_index]
+            push ebx
+            push ebp
+            mov ebp, ecx
+            lea ecx, [eax + eax*2]
+            mov dword ptr [esp + 8], edx
+            push esi
+            push edi
+            lea edx, [eax + ecx*4]
+            lea ecx, [esp + 0x40]
+            mov dword ptr [esp + 0x24], ebp
+            mov eax, dword ptr [edx*4 + gGraf_specs+0x1c]
+            mov edx, offset gApplication_path
+            push eax
+            call PathCat
+            lea edx, [esp + 0x40]
+            lea ecx, [esp + 0x40]
+            push offset gDRFont_to_polyfont_mapping+0x2fc
+            call PathCat
+            lea edx, [esp + 0x40]
+            lea ecx, [esp + 0x40]
+            push ebp
+            call PathCat
+            lea ecx, [esp + 0x40]
+            call OpenPackFileAndSetTiffLoading
+            mov dword ptr [esp + 0x38], eax
+            lea edi, [esp + 0x40]
+            or ecx, 0xffffffff
+            xor eax, eax
+            repne scasb
+            not ecx
+            sub edi, ecx
+            lea edx, [esp + 0x140]
+            mov eax, ecx
+            mov esi, edi
+            mov edi, edx
+            push offset gDRFont_to_polyfont_mapping+0x2f0
+            shr ecx, 2
+            rep movsd
+            mov ecx, eax
+            lea edx, [esp + 0x144]
+            and ecx, 3
+            rep movsb
+            lea ecx, [esp + 0x144]
+            call PathCat
+            xor esi, esi
+            mov edx, offset gNext_crush_actor_id+0x180
+            lea ecx, [esp + 0x140]
+            mov dword ptr [esp + 0x14], esi
+            mov dword ptr [esp + 0x18], esi
+            call PFfopen
+            mov ebx, eax
+            cmp ebx, esi
+            jne L004644be
+            push ebp
+            push 0x15
+            call FatalError
+            add esp, 8
+    L004644be:
+            mov eax, dword ptr [esp + 0x344]
+            mov edi, dword ptr [esp + 0x24]
+            lea ecx, [eax + eax*4]
+            lea ecx, [ecx + ecx*4]
+            lea ebp, [eax + ecx*4]
+            or ecx, 0xffffffff
+            xor eax, eax
+            lea ebp, [ebp + ebp*8]
+            shl ebp, 3
+            repne scasb
+            not ecx
+            sub edi, ecx
+            lea edx, [ebp + gPoly_fonts]
+            mov eax, ecx
+            mov esi, edi
+            mov edi, edx
+            mov dword ptr [esp + 0x30], ebp
+            shr ecx, 2
+            rep movsd
+            mov ecx, eax
+            and ecx, 3
+            rep movsb
+            mov ecx, ebx
+            call GetAnInt
+            mov ecx, ebx
+            mov dword ptr [esp + 0x34], eax
+            mov dword ptr [ebp + gPoly_fonts+0x44], eax
+            call GetAnInt
+            mov ecx, ebx
+            mov dword ptr [ebp + gPoly_fonts+0x48], eax
+            call GetAnInt
+            mov ecx, ebx
+            mov dword ptr [ebp + gPoly_fonts+0x4c], eax
+            call GetAnInt
+            mov ecx, ebx
+            mov dword ptr [ebp + gPoly_fonts+0x50], eax
+            call GetAnInt
+            mov edx, dword ptr [esp + 0x10]
+            mov dword ptr [ebp + gPoly_fonts+0x54], eax
+            mov dword ptr [ebp + gPoly_fonts+0x58], edx
+            mov dword ptr [ebp + gPoly_fonts+0x60], 1
+            lea eax, [ebp + gPoly_fonts+0x68]
+            mov ecx, 0x100
+    L00464564:
+            xor esi, esi
+            mov dword ptr [eax - 4], esi
+            mov dword ptr [eax], esi
+            mov dword ptr [eax + 4], esi
+            mov dword ptr [eax + 8], esi
+            mov dword ptr [eax + 0xc], edx
+            add eax, 0x1c
+            dec ecx
+            jne L00464564
+            mov ecx, ebx
+            call PFfclose
+            lea edi, [esp + 0x40]
+            or ecx, 0xffffffff
+            xor eax, eax
+            lea edx, [esp + 0x140]
+            repne scasb
+            not ecx
+            sub edi, ecx
+            push offset gDRFont_to_polyfont_mapping+0x2e4
+            mov eax, ecx
+            mov esi, edi
+            mov edi, edx
+            lea edx, [esp + 0x144]
+            shr ecx, 2
+            rep movsd
+            mov ecx, eax
+            and ecx, 3
+            rep movsb
+            lea ecx, [esp + 0x144]
+            call PathCat
+            mov edx, offset gDRFont_to_polyfont_mapping+0x2e4
+            lea ecx, [esp + 0x40]
+            push 1
+            call GetThisFuckingPixelmap
+            test eax, eax
+            mov dword ptr [esp + 0x3c], eax
+            jne L004645e8
+            push offset gDRFont_to_polyfont_mapping+0x2e4
+            push 0x14
+            call FatalError
+            add esp, 8
+    L004645e8:
+            mov eax, dword ptr [esp + 0x34]
+            xor ebx, ebx
+            test eax, eax
+            mov dword ptr [esp + 0x2c], ebx
+            jle L00464a03
+    L004645fa:
+            lea edi, [esp + 0x40]
+            or ecx, 0xffffffff
+            xor eax, eax
+            lea edx, [esp + 0x140]
+            repne scasb
+            not ecx
+            sub edi, ecx
+            mov eax, ecx
+            mov esi, edi
+            mov edi, edx
+            shr ecx, 2
+            rep movsd
+            mov ecx, eax
+            and ecx, 3
+            rep movsb
+            mov ecx, dword ptr [ebp + gPoly_fonts+0x4c]
+            mov esi, ebx
+            add esi, ecx
+            lea ecx, [esp + 0x240]
+            push esi
+            push offset gDRFont_to_polyfont_mapping+0x2dc
+            push ecx
+            call sprintf
+            add esp, 0xc
+            lea edx, [esp + 0x240]
+            lea ecx, [esp + 0x140]
+            push edx
+            lea edx, [esp + 0x144]
+            call PathCat
+            lea edx, [esp + 0x240]
+            lea ecx, [esp + 0x40]
+            push 0
+            call GetThisFuckingPixelmap
+            mov edi, eax
+            test edi, edi
+            mov dword ptr [esp + 0x1c], edi
+            je L004649f2
+            mov eax, dword ptr [gSize_font_texture_pages]
+            mov ecx, dword ptr [eax*4 + gTexture_maps]
+            test ecx, ecx
+            jne L004646dd
+            mov ecx, dword ptr [esp + 0x3c]
+            push 0
+            push 0
+            push 0x40
+            mov dl, byte ptr [ecx + 0x2c]
+            push 0x40
+            push edx
+            call BrPixelmapAllocate
+            mov ecx, dword ptr [gSize_font_texture_pages]
+            add esp, 0x14
+            test eax, eax
+            mov dword ptr [ecx*4 + gTexture_maps], eax
+            jne L004646c8
+            mov edx, dword ptr [esp + 0x24]
+            push edx
+            push 0xb7
+            call FatalError
+            add esp, 8
+    L004646c8:
+            mov eax, dword ptr [gSize_font_texture_pages]
+            mov ecx, dword ptr [eax*4 + gTexture_maps]
+            push ecx
+            call BrMapAdd
+            add esp, 4
+    L004646dd:
+            mov edx, dword ptr [gSize_font_texture_pages]
+            mov al, byte ptr [edi + 0x2c]
+            mov ecx, dword ptr [edx*4 + gTexture_maps]
+            cmp al, byte ptr [ecx + 0x2c]
+            je L0046472e
+            mov ecx, dword ptr [ebp + gPoly_fonts+0x4c]
+            mov edx, dword ptr [esp + 0x24]
+            lea eax, [ebx + ecx]
+            push eax
+            push eax
+            push edx
+            push offset gDRFont_to_polyfont_mapping+0x2c4
+            call printf
+            add esp, 0x10
+            push offset gQuickTime_call_component_with_storage+0x134
+            call fflush
+            add esp, 4
+            push offset gDRFont_to_polyfont_mapping+0x2b4
+            call BrFailure
+            add esp, 4
+            jmp L004649dd
+    L0046472e:
+            mov eax, dword ptr [esp + 0x10]
+            mov edx, dword ptr [esp + 0x14]
+            push eax
+            push eax
+            mov eax, dword ptr [esp + 0x20]
+            push 0
+            push 0
+            push edi
+            push eax
+            call DRPixelmapRectangleCopy
+            mov ecx, dword ptr [gSize_font_texture_pages]
+            push 0xfff
+            mov edx, dword ptr [ecx*4 + gTexture_maps]
+            push edx
+            call BrMapUpdate
+            fild dword ptr [esp + 0x1c]
+            mov eax, esi
+            mov ecx, dword ptr [gSize_font_texture_pages]
+            shl eax, 3
+            fmul dword ptr [gUNK_0058a038+0x8]
+            sub eax, esi
+            xor edx, edx
+            add esp, 8
+            lea ebx, [ebp + eax*4]
+            mov dword ptr [ebx + gPoly_fonts+0x70], ecx
+            mov dword ptr [ebx + gPoly_fonts+0x6c], 1
+            fstp dword ptr [ebx + gPoly_fonts+0x78]
+            fild dword ptr [esp + 0x18]
+            xor ecx, ecx
+            fmul dword ptr [gUNK_0058a038+0x8]
+            fstp dword ptr [ebx + gPoly_fonts+0x7c]
+            mov dx, word ptr [edi + 0x34]
+            mov cx, word ptr [edi + 0x36]
+            mov edi, edx
+            dec edi
+            js L004647fb
+            mov eax, dword ptr [esp + 0x1c]
+            mov edx, dword ptr [eax + 8]
+            lea esi, [edx + edi*2]
+            mov dword ptr [esp + 0x28], esi
+    L004647c2:
+            xor ebp, ebp
+            test ecx, ecx
+            jle L004647e7
+    L004647c8:
+            cmp word ptr [esi], 0
+            jne L00464a60
+            mov eax, dword ptr [esp + 0x1c]
+            movsx eax, word ptr [eax + 0x28]
+            cdq
+            sub eax, edx
+            sar eax, 1
+            inc ebp
+            cmp ebp, ecx
+            lea esi, [esi + eax*2]
+            jl L004647c8
+    L004647e7:
+            mov esi, dword ptr [esp + 0x28]
+            dec edi
+            sub esi, 2
+            test edi, edi
+            mov dword ptr [esp + 0x28], esi
+            jge L004647c2
+            mov ebp, dword ptr [esp + 0x30]
+    L004647fb:
+            mov edi, 1
+    L00464800:
+            mov dword ptr [ebx + gPoly_fonts+0x74], edi
+            xor edi, edi
+            mov dword ptr [ebx + gPoly_fonts+0x68], edi
+            mov esi, dword ptr [ebp + gPoly_fonts+0x1c64]
+            cmp esi, edi
+            je L00464851
+            fild dword ptr [esp + 0x10]
+            fstp dword ptr [esp + 0x28]
+    L00464820:
+            fld dword ptr [esi + 0x40]
+            fcomp dword ptr [esp + 0x28]
+            fnstsw ax
+            test ah, 0x40
+            je L0046484a
+            mov ecx, dword ptr [esp + 0x10]
+            neg ecx
+            mov dword ptr [esp + 0x20], ecx
+            fild dword ptr [esp + 0x20]
+            fcomp dword ptr [esi + 0x38]
+            fnstsw ax
+            test ah, 0x40
+            jne L0046497f
+    L0046484a:
+            mov esi, dword ptr [esi + 0x28]
+            cmp esi, edi
+            jne L00464820
+    L00464851:
+            push 2
+            push 4
+            push offset gDRFont_to_polyfont_mapping+0x2a4
+            call BrModelAllocate
+            mov edx, dword ptr [ebp + gPoly_fonts+0x1c64]
+            mov esi, eax
+            add esp, 0xc
+            cmp esi, edi
+            mov dword ptr [esi + 0x28], edx
+            mov dword ptr [ebp + gPoly_fonts+0x1c64], esi
+            jne L00464889
+            mov eax, dword ptr [esp + 0x24]
+            push eax
+            push 0xb7
+            call FatalError
+            add esp, 8
+    L00464889:
+            mov ecx, dword ptr [esi + 0xc]
+            mov eax, 2
+            fild dword ptr [esp + 0x10]
+            mov word ptr [ecx], di
+            mov edx, dword ptr [esi + 0xc]
+            mov ecx, 1
+            mov word ptr [edx + 2], cx
+            mov edx, dword ptr [esi + 0xc]
+            mov word ptr [edx + 4], ax
+            mov edx, dword ptr [esi + 0xc]
+            mov word ptr [edx + 0x28], cx
+            mov ecx, dword ptr [esi + 0xc]
+            mov word ptr [ecx + 0x2a], 3
+            mov edx, dword ptr [esi + 0xc]
+            mov word ptr [edx + 0x2c], ax
+            mov eax, dword ptr [esi + 8]
+            mov dword ptr [eax], edi
+            mov ecx, dword ptr [esi + 8]
+            mov eax, 0xbf99999a
+            mov dword ptr [ecx + 4], edi
+            mov edx, dword ptr [esi + 8]
+            mov dword ptr [edx + 8], eax
+            mov ecx, dword ptr [esi + 8]
+            fst dword ptr [ecx + 0x28]
+            mov edx, dword ptr [esi + 8]
+            mov dword ptr [edx + 0x2c], edi
+            mov ecx, dword ptr [esi + 8]
+            mov dword ptr [ecx + 0x30], eax
+            mov ecx, dword ptr [esp + 0x10]
+            mov edx, dword ptr [esi + 8]
+            neg ecx
+            mov dword ptr [esp + 0x20], ecx
+            mov dword ptr [edx + 0x50], edi
+            fild dword ptr [esp + 0x20]
+            mov edx, dword ptr [esi + 8]
+            fst dword ptr [esp + 0x20]
+            fstp dword ptr [edx + 0x54]
+            mov ecx, dword ptr [esi + 8]
+            mov dword ptr [ecx + 0x58], eax
+            mov edx, dword ptr [esi + 8]
+            fstp dword ptr [edx + 0x78]
+            mov ecx, dword ptr [esi + 8]
+            mov edx, dword ptr [esp + 0x20]
+            mov dword ptr [ecx + 0x7c], edx
+            mov ecx, dword ptr [esi + 8]
+            mov dword ptr [ecx + 0x80], eax
+            mov edx, dword ptr [esi + 8]
+            mov dword ptr [edx + 0xc], edi
+            mov eax, dword ptr [esi + 8]
+            mov dword ptr [eax + 0x10], edi
+            mov ecx, dword ptr [esi + 8]
+            mov eax, 0x3f800000
+            mov dword ptr [ecx + 0x34], eax
+            mov edx, dword ptr [esi + 8]
+            mov dword ptr [edx + 0x38], edi
+            mov ecx, dword ptr [esi + 8]
+            mov dword ptr [ecx + 0x5c], edi
+            mov edx, dword ptr [esi + 8]
+            mov dword ptr [edx + 0x60], eax
+            mov ecx, dword ptr [esi + 8]
+            mov dword ptr [ecx + 0x84], eax
+            mov edx, dword ptr [esi + 8]
+            mov ecx, esi
+            mov dword ptr [edx + 0x88], eax
+            mov edx, dword ptr [esp + 0x344]
+            call ColourVertices
+            and word ptr [esi + 0x20], 0xff7d
+            push esi
+            call BrModelAdd
+            add esp, 4
+    L0046497f:
+            mov eax, dword ptr [esp + 0x14]
+            mov edx, dword ptr [esp + 0x10]
+            add eax, edx
+            mov dword ptr [ebx + gPoly_fonts+0x64], esi
+            cmp eax, 0x40
+            mov dword ptr [esp + 0x14], eax
+            jl L004649d9
+            mov eax, dword ptr [esp + 0x18]
+            xor esi, esi
+            add eax, edx
+            mov dword ptr [esp + 0x14], esi
+            cmp eax, 0x40
+            mov dword ptr [esp + 0x18], eax
+            jl L004649d9
+            mov eax, dword ptr [gSize_font_texture_pages]
+            inc eax
+            cmp eax, 0x400
+            mov dword ptr [gSize_font_texture_pages], eax
+            jl L004649d1
+            mov eax, dword ptr [esp + 0x24]
+            push eax
+            push 0xb7
+            call FatalError
+            add esp, 8
+    L004649d1:
+            mov dword ptr [esp + 0x14], esi
+            mov dword ptr [esp + 0x18], esi
+    L004649d9:
+            mov edi, dword ptr [esp + 0x1c]
+    L004649dd:
+            mov eax, dword ptr [esp + 0x38]
+            test eax, eax
+            jge L004649ee
+            push edi
+            call BrPixelmapFree
+            add esp, 4
+    L004649ee:
+            mov ebx, dword ptr [esp + 0x2c]
+    L004649f2:
+            mov eax, dword ptr [esp + 0x34]
+            inc ebx
+            cmp ebx, eax
+            mov dword ptr [esp + 0x2c], ebx
+            jl L004645fa
+    L00464a03:
+            mov eax, dword ptr [gPixelmapBufferSize]
+            xor edi, edi
+            test eax, eax
+            jbe L00464a35
+            mov esi, offset gPixelmapBuffer
+    L00464a13:
+            mov eax, dword ptr [esi]
+            test eax, eax
+            je L00464a28
+            push eax
+            call BrPixelmapFree
+            add esp, 4
+            mov dword ptr [esi], 0
+    L00464a28:
+            mov eax, dword ptr [gPixelmapBufferSize]
+            inc edi
+            add esi, 4
+            cmp edi, eax
+            jb L00464a13
+    L00464a35:
+            mov ecx, dword ptr [esp + 0x38]
+            mov dword ptr [gPixelmapBufferSize], 0
+            call ClosePackFileAndSetTiffLoading
+            mov eax, dword ptr [gSize_font_texture_pages]
+            pop edi
+            inc eax
+            pop esi
+            pop ebp
+            mov dword ptr [gSize_font_texture_pages], eax
+            pop ebx
+            add esp, 0x330
+            ret 4
+    L00464a60:
+            mov ebp, dword ptr [esp + 0x30]
+            inc edi
+            jmp L00464800
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00464b80
@@ -1717,7 +2246,8 @@ void C2_HOOK_FASTCALL InitPolyFontMaterials(void) {
 }
 
 // FUNCTION: CARMA2_HW 0x00465250
-br_material* C2_HOOK_FASTCALL GetPolyFontMaterial(int pFont_index, char pChar) {
+C2_NAKED br_material* C2_HOOK_FASTCALL GetPolyFontMaterial(int pFont_index, char pChar) {
+#ifndef CARPOCALYPSE2_MATCHING
     tU8 uchar;
     br_material* material;
     float f_size;
@@ -1758,6 +2288,107 @@ br_material* C2_HOOK_FASTCALL GetPolyFontMaterial(int pFont_index, char pChar) {
     material->extra_prim = NULL;
     BrMaterialUpdate(material, BR_MATU_ALL);
     return material;
+#else
+    __asm {
+            push ecx
+            lea eax, [ecx + ecx*4]
+            mov byte ptr [esp], dl
+            mov edx, dword ptr [esp]
+            push ebx
+            lea eax, [eax + eax*4]
+            and edx, 0xff
+            push esi
+            push edi
+            lea eax, [ecx + eax*4]
+            shl ecx, 8
+            lea ebx, [eax + eax*8]
+            lea eax, [edx*8]
+            shl ebx, 3
+            sub eax, edx
+            add ecx, edx
+            lea edi, [ebx + eax*4]
+            mov eax, dword ptr [edi + gPoly_fonts+0x68]
+            test eax, eax
+            je L004652b8
+            mov edx, dword ptr [eax + 0x94]
+            and edx, 0xffff
+            cmp edx, ecx
+            jne L004652b8
+            mov edx, dword ptr [polyFontMaterialCounter]
+            and edx, 0xffff
+            shl edx, 0x10
+            add edx, ecx
+            mov dword ptr [eax + 0x94], edx
+            pop edi
+            pop esi
+            pop ebx
+            pop ecx
+            ret
+    L004652b8:
+            mov eax, dword ptr [currentPolyFontMaterialIdx]
+    L004652bd:
+            inc eax
+            inc word ptr [polyFontMaterialCounter]
+            cmp eax, 0x50
+            mov dword ptr [currentPolyFontMaterialIdx], eax
+            jl L004652d6
+            xor eax, eax
+            mov dword ptr [currentPolyFontMaterialIdx], eax
+    L004652d6:
+            mov edx, dword ptr [eax*4 + gPoly_font_materials]
+            mov esi, dword ptr [polyFontMaterialCounter]
+            mov edx, dword ptr [edx + 0x94]
+            shr edx, 0x10
+            sub esi, edx
+            cmp si, 0x50
+            jb L004652bd
+            mov esi, dword ptr [eax*4 + gPoly_font_materials]
+            mov dword ptr [edi + gPoly_fonts+0x68], esi
+            mov eax, dword ptr [edi + gPoly_fonts+0x70]
+            mov edx, dword ptr [eax*4 + gTexture_maps]
+            mov dword ptr [esi + 0x40], edx
+            mov eax, dword ptr [polyFontMaterialCounter]
+            and eax, 0xffff
+            shl eax, 0x10
+            add eax, ecx
+            lea ecx, [esi + 0x24]
+            mov dword ptr [esi + 0x94], eax
+            fild dword ptr [ebx + gPoly_fonts+0x58]
+            fmul dword ptr [gUNK_0058a038+0x8]
+            fstp dword ptr [esp + 0xc]
+            mov eax, dword ptr [esp + 0xc]
+            push eax
+            push eax
+            push ecx
+            call BrMatrix23Scale
+            mov edx, dword ptr [edi + gPoly_fonts+0x78]
+            add esp, 0xc
+            mov dword ptr [esi + 0x34], edx
+            mov eax, dword ptr [edi + gPoly_fonts+0x7c]
+            push 0x7fff
+            push esi
+            mov dword ptr [esi + 0x38], eax
+            mov dword ptr [esi + 0x58], 0
+            call BrMaterialUpdate
+            add esp, 8
+            mov eax, esi
+            pop edi
+            pop esi
+            pop ebx
+            pop ecx
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00464e40

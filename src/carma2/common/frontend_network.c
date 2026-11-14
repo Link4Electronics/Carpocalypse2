@@ -155,6 +155,13 @@ extern int gNet_storage_space_initialized;
 extern int gTyping;
 extern int gTyping_slot;
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern void C2_HOOK_FASTCALL InitNetStorageSpace(void);
+extern int C2_HOOK_FASTCALL PickARandomCar(void);
+extern void C2_HOOK_FASTCALL SetNetAvailability(tNet_game_options* pOptions);
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+#endif
 // FUNCTION: CARMA2_HW 0x00467ef0
 int C2_NAKED C2_HOOK_FASTCALL NetworkJoinMenuInfunc(tFrontend_spec* pFrontend) {
 #ifndef CARPOCALYPSE2_MATCHING
@@ -1904,7 +1911,8 @@ int C2_HOOK_FASTCALL NetworkJoinGoAhead(tFrontend_spec* pFrontend) {
 }
 
 // FUNCTION: CARMA2_HW 0x00468460
-int C2_HOOK_FASTCALL StartNetworkGame(tFrontend_spec* pFrontend) {
+int C2_NAKED C2_HOOK_FASTCALL StartNetworkGame(tFrontend_spec* pFrontend) {
+#ifndef CARPOCALYPSE2_MATCHING
     int i;
     int selection;
 
@@ -2010,6 +2018,229 @@ int C2_HOOK_FASTCALL StartNetworkGame(tFrontend_spec* pFrontend) {
 
 success:
     return 1;
+#else
+    __asm {
+            push ebx
+            push ebp
+            push esi
+            push edi
+            call ClearAlwaysTyping
+            mov eax, dword ptr [gLast_graph_sel]
+            xor ebp, ebp
+            cmp eax, ebp
+            jl L0046873d
+            call NetEndJoinList
+            mov ebx, dword ptr [gLast_graph_sel]
+            xor edi, edi
+            mov esi, offset gGames_to_join
+    L0046848a:
+            cmp edi, ebx
+            je L0046849b
+            mov ecx, dword ptr [esi]
+            cmp ecx, ebp
+            je L0046849b
+            call NetDisposeGameDetails
+            mov dword ptr [esi], ebp
+    L0046849b:
+            add esi, 8
+            inc edi
+            cmp esi, offset gINT_00688748
+            jl L0046848a
+            call SaveOptions
+            mov eax, dword ptr [gLast_graph_sel]
+            mov ecx, dword ptr [gFrontend_net_mode]
+            mov ebx, 1
+            mov eax, dword ptr [eax*8 + gGames_to_join]
+            cmp ecx, ebx
+            mov dword ptr [gGame_to_join], eax
+            jne L00468666
+            cmp eax, ebp
+            je L00468718
+            push ebx
+            push ebp
+            push ebx
+            push 0x64
+            mov edx, 0xc8
+            mov ecx, offset gFrontend_QUIT+0xb94c
+            call SolidPolyFontText
+            mov dword ptr [gFrontend_net_car_index], 0xffffffff
+    L004684f6:
+            mov dword ptr [gNet_join_host_result], ebp
+            mov eax, offset gCurrent_race+0xcf0
+    L00468501:
+            mov dword ptr [eax], ebp
+            add eax, 0x10
+            cmp eax, offset gCurrent_race+0xdb0
+            jl L00468501
+            push 0x32
+            push 0x7d0
+            push 0x7d0
+            push 0x32
+            push 0x7d0
+            mov edx, offset gNet_cars_storage_space
+            xor ecx, ecx
+            mov dword ptr [gNet_storage_space_initialized], ebx
+            call InitialiseStorageSpace
+            mov ecx, dword ptr [gFrontend_net_car_index]
+            mov edx, offset gProgram_state+0x1a10
+            push ecx
+            mov ecx, dword ptr [gGame_to_join]
+            call NetJoinGame
+            cmp eax, ebp
+            mov dword ptr [gNet_join_host_result], eax
+            jne L00468628
+            mov edx, dword ptr [gCurrent_net_game]
+            mov ecx, offset gRace_list
+            mov eax, dword ptr [edx + 0x74]
+            mov edx, offset gNumber_of_races
+            push eax
+            call LoadRaces
+            mov eax, dword ptr [gGame_to_join]
+            mov dword ptr [gProgram_state+0x20], ebx
+            mov ecx, dword ptr [eax + 0x38]
+            call InitGame
+            call ReenableNetService
+            mov ecx, 0x3a
+            call GetMiscString
+            mov edx, eax
+            or ecx, 0xffffffff
+            mov edi, offset gProgram_state+0x1a10
+            xor eax, eax
+            repne scasb
+            not ecx
+            sub edi, ecx
+            mov dword ptr [gJoined_game_notification], edx
+            mov eax, ecx
+            mov esi, edi
+            shr ecx, 2
+            mov edi, offset gFrontend_host_join_buffer
+            rep movsd
+            mov ecx, eax
+            xor eax, eax
+            and ecx, 3
+            rep movsb
+            mov edi, offset gCamera_incident_direction+0xc
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            sub edi, ecx
+            mov esi, edi
+            mov ebp, ecx
+            mov edi, offset gFrontend_host_join_buffer
+            or ecx, 0xffffffff
+            repne scasb
+            mov ecx, ebp
+            dec edi
+            shr ecx, 2
+            rep movsd
+            mov ecx, ebp
+            and ecx, 3
+            rep movsb
+            mov edi, edx
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            sub edi, ecx
+            mov esi, edi
+            mov edx, ecx
+            mov edi, offset gFrontend_host_join_buffer
+            or ecx, 0xffffffff
+            repne scasb
+            mov ecx, edx
+            dec edi
+            shr ecx, 2
+            rep movsd
+            mov ecx, edx
+            and ecx, 3
+            rep movsb
+            mov ecx, offset gFrontend_host_join_buffer
+            call NetSendHeadupToAllPlayers
+            mov eax, ebx
+            xor ebp, ebp
+            mov dword ptr [gNet_join_host_result], eax
+            jmp L00468645
+    L00468628:
+            cmp dword ptr [gNet_storage_space_initialized], ebp
+            je L0046863f
+            mov ecx, offset gNet_cars_storage_space
+            call DisposeStorageSpace
+            mov eax, dword ptr [gNet_join_host_result]
+    L0046863f:
+            mov dword ptr [gNet_storage_space_initialized], ebp
+    L00468645:
+            cmp eax, -4
+            je L004684f6
+            cmp eax, ebp
+            jg L004686e9
+            mov ecx, dword ptr [gGame_to_join]
+            call NetDisposeGameDetails
+            jmp L00468718
+    L00468666:
+            mov eax, dword ptr [gProgram_state+0x78]
+            mov ecx, offset gFrontend_net_options
+            mov dword ptr [gFrontend_net_car_index], 0xffffffff
+            mov dword ptr [gRace_index], eax
+            mov dword ptr [gChosen_net_game_options], 0x763b20
+            call SetNetAvailability
+            call PickARandomCar
+            cmp eax, ebp
+            mov dword ptr [gFrontend_net_car_index], eax
+            jl L004686a6
+            lea ecx, [eax + eax*4]
+            mov dword ptr [ecx*4 + gCar_details], ebx
+    L004686a6:
+            call InitNetStorageSpace
+            mov edx, dword ptr [gFrontend_net_car_index]
+            mov eax, dword ptr [gRace_index]
+            mov ecx, dword ptr [gFrontend_game_type]
+            push edx
+            push offset gProgram_state+0x1a10
+            push eax
+            mov edx, offset gFrontend_net_options
+            call NetHostGame
+            test eax, eax
+            je L004686f0
+            mov eax, dword ptr [gCurrent_net_game]
+            mov dword ptr [gProgram_state+0x20], ebx
+            mov ecx, dword ptr [eax + 0x38]
+            call InitGame
+            call ReenableNetService
+    L004686e9:
+            mov eax, ebx
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            ret
+    L004686f0:
+            cmp dword ptr [gNet_storage_space_initialized], ebp
+            je L00468702
+            mov ecx, offset gNet_cars_storage_space
+            call DisposeStorageSpace
+    L00468702:
+            mov dword ptr [gNet_storage_space_initialized], ebp
+            call ReenableNetService
+            mov ecx, dword ptr [gCurrent_net_game]
+            call NetLeaveGame
+    L00468718:
+            mov eax, offset gGames_to_join
+    L0046871d:
+            mov dword ptr [eax], ebp
+            add eax, 8
+            cmp eax, offset gINT_00688748
+            jl L0046871d
+            mov ecx, offset AddToJoinList
+            mov dword ptr [gLast_graph_sel], 0xffffffff
+            call NetStartProducingJoinList
+    L0046873d:
+            pop edi
+            pop esi
+            pop ebp
+            xor eax, eax
+            pop ebx
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00468e80

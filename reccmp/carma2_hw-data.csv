@@ -4,3 +4,6 @@ address,type,name,size
 0x7623a0,global,gCurrent_race,0x10c0
 # "Too many loops in DoCollisions" (narrow string at 0x65d034), referenced only by DoCollisions.
 0x65d034,global,gTooManyLoopsText,0x1f
+0x658748,global,gSaved_games_filename,0x10
+0x658758,global,gSaved_games_list_started_str,0x20
+0x591104,global,gFile_mode_rb,3

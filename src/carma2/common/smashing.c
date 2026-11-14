@@ -234,6 +234,17 @@ extern char gFLOAT_0058af20[];
 extern char gSmashable_triggers_by_identifier[];
 extern br_actor* gTrack_actor;
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern int gPowerup_respawn_field_0x50;
+extern float C2_HOOK_FASTCALL ARGetReplayRate(void);
+extern br_actor* C2_HOOK_CDECL BrActorRemove();
+extern void C2_HOOK_CDECL BrResFree();
+extern char* C2_HOOK_CDECL BrResStrDup();
+extern void C2_NORETURN C2_HOOK_FASTCALL PDFatalError(const char* pThe_str);
+extern void C2_HOOK_FASTCALL PipeSingleBloodSpurt(uintptr_t pId, undefined4 pArg2, undefined4 pArg3, br_vector3* pArg4, br_vector3* pArg5, br_vector3* pArg6);
+extern void C2_HOOK_FASTCALL PipeSingleGibShower(uintptr_t pId, undefined4 pArg2, undefined4 pArg3, undefined4 pArg4, undefined4 pArg5, br_vector3* pArg6, br_vector3* pArg7, br_vector3* pArg8);
+extern void C2_HOOK_FASTCALL PipeSingleShrapnelShower(uintptr_t pId, undefined4 pArg2, undefined4 pArg3, undefined4 pArg4, br_vector3* pArg5, br_vector3* pArg6, float pArg7, br_vector3* pArg8, br_vector3* pArg9, undefined4 pArg10, br_bounds3* pArg11, undefined4 pArg12, br_matrix34* pArg13, br_vector3* pArg14, void* pArg15);
+#endif
 // FUNCTION: CARMA2_HW 0x004ee550
 void C2_HOOK_FASTCALL ReadSmashableInitialPosition(FILE* pFile, tSmashable_initial_position_spec*  pInitial_pos) {
     /* Initial position type */
@@ -327,7 +338,8 @@ void C2_HOOK_FASTCALL SplondificatalizeIdentifier(br_material* pMaterial, char**
 }
 
 // FUNCTION: CARMA2_HW 0x004f0bc0
-void C2_HOOK_FASTCALL MungeSmashMaterialNames(void) {
+void C2_NAKED C2_HOOK_FASTCALL MungeSmashMaterialNames(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     int i;
     tSmashable_item_spec* item_spec;
 
@@ -342,6 +354,160 @@ void C2_HOOK_FASTCALL MungeSmashMaterialNames(void) {
                 i);
         }
     }
+#else
+    __asm {
+            mov eax, dword ptr [gCount_track_smashable_environment_specs]
+            sub esp, 0x88
+            push ebx
+            xor ebx, ebx
+            test eax, eax
+            jle L004f0d45
+            mov eax, dword ptr [gTrack_smashable_environment_specs]
+            push edi
+            add eax, 4
+            push esi
+            push ebp
+            mov dword ptr [esp + 0x14], eax
+    L004f0be5:
+            mov ecx, dword ptr [eax + 4]
+            test ecx, ecx
+            jne L004f0d26
+            mov ebp, dword ptr [eax]
+            or ecx, 0xffffffff
+            xor eax, eax
+            lea esi, [esp + 0x18]
+            mov edx, dword ptr [ebp + 4]
+            mov dword ptr [esp + 0x10], esi
+            mov edi, edx
+            repne scasb
+            not ecx
+            sub edi, ecx
+            mov eax, ecx
+            mov esi, edi
+            mov edi, dword ptr [esp + 0x10]
+            shr ecx, 2
+            rep movsd
+            mov ecx, eax
+            xor eax, eax
+            and ecx, 3
+            rep movsb
+            lea edi, [esp + 0x18]
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            dec ecx
+            mov esi, ecx
+            cmp esi, 4
+            jge L004f0c4f
+            push edx
+            lea ecx, [esp + 0x1c]
+            push offset gSplit_triangle_vertex_orders+0x1bc
+            push ecx
+            call sprintf
+            add esp, 0xc
+            lea ecx, [esp + 0x18]
+            call PDFatalError
+    L004f0c4f:
+            lea edx, [esp + esi + 0x14]
+            or ecx, 0xffffffff
+            mov edi, edx
+            xor eax, eax
+            repne scasb
+            not ecx
+            lea esi, [esp + 0x58]
+            sub edi, ecx
+            mov eax, ecx
+            mov dword ptr [esp + 0x10], esi
+            mov esi, edi
+            mov edi, dword ptr [esp + 0x10]
+            shr ecx, 2
+            rep movsd
+            mov ecx, eax
+            push offset gSplit_triangle_vertex_orders+0x1b0
+            and ecx, 3
+            push edx
+            rep movsb
+            call sprintf
+            add esp, 8
+            lea ecx, [esp + 0x1d]
+            push 0x7c
+            push offset gSplit_triangle_vertex_orders+0x1ac
+            push ecx
+            call sprintf
+            mov dl, bl
+            add esp, 0xc
+            lea edi, [esp + 0x58]
+            or ecx, 0xffffffff
+            xor eax, eax
+            inc dl
+            repne scasb
+            not ecx
+            mov byte ptr [esp + 0x1e], dl
+            sub edi, ecx
+            lea edx, [esp + 0x18]
+            mov esi, edi
+            mov edi, edx
+            mov edx, ecx
+            or ecx, 0xffffffff
+            repne scasb
+            mov ecx, edx
+            dec edi
+            shr ecx, 2
+            rep movsd
+            mov ecx, edx
+            mov edx, dword ptr [ebp + 4]
+            and ecx, 3
+            rep movsb
+            mov edi, edx
+            or ecx, 0xffffffff
+            mov byte ptr [esp + 0x23], al
+            repne scasb
+            not ecx
+            dec ecx
+            cmp ecx, 0xc
+            jae L004f0d05
+            push edx
+            call BrResFree
+            add esp, 4
+            lea eax, [esp + 0x18]
+            push eax
+            push ebp
+            call BrResStrDup
+            add esp, 8
+            mov dword ptr [ebp + 4], eax
+            jmp L004f0d26
+    L004f0d05:
+            lea edi, [esp + 0x18]
+            or ecx, 0xffffffff
+            xor eax, eax
+            repne scasb
+            not ecx
+            sub edi, ecx
+            mov eax, ecx
+            mov esi, edi
+            mov edi, edx
+            shr ecx, 2
+            rep movsd
+            mov ecx, eax
+            and ecx, 3
+            rep movsb
+    L004f0d26:
+            mov eax, dword ptr [esp + 0x14]
+            mov ecx, dword ptr [gCount_track_smashable_environment_specs]
+            inc ebx
+            add eax, 0x2e0
+            cmp ebx, ecx
+            mov dword ptr [esp + 0x14], eax
+            jl L004f0be5
+            pop ebp
+            pop esi
+            pop edi
+    L004f0d45:
+            pop ebx
+            add esp, 0x88
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004eff30
@@ -567,7 +733,8 @@ void C2_HOOK_FASTCALL KillFragment(tSmash_vertex* pFragment) {
 }
 
 // FUNCTION: CARMA2_HW 0x004f0150
-void C2_HOOK_FASTCALL MungeGlassFragments2(int pEnd_race) {
+void C2_NAKED C2_HOOK_FASTCALL MungeGlassFragments2(int pEnd_race) {
+#ifndef CARPOCALYPSE2_MATCHING
     // GLOBAL: CARMA2_HW 0x006a7fc0
     static tU32 prev_glass_munge;
     tU32 the_time;
@@ -615,6 +782,136 @@ void C2_HOOK_FASTCALL MungeGlassFragments2(int pEnd_race) {
         }
     }
     prev_glass_munge = the_time;
+#else
+    __asm {
+            sub esp, 0x14
+            mov dword ptr [esp + 8], ecx
+            call GetTotalTime
+            mov ecx, eax
+            mov eax, dword ptr [gPowerup_respawn_field_0x50+0x70]
+            test eax, eax
+            mov dword ptr [esp], ecx
+            je L004f02a0
+            mov dword ptr [esp + 0xc], ecx
+            mov dword ptr [esp + 0x10], 0
+            fild qword ptr [esp + 0xc]
+            push edi
+            push esi
+            push ebp
+            push ebx
+            fisub dword ptr [gPowerup_respawn_field_0x50+0x70]
+            mov edi, offset gSmash_glass_fragments+0x34
+            mov dword ptr [esp + 0x14], 0xc8
+            fstp dword ptr [esp + 0x1c]
+    L004f019a:
+            mov eax, dword ptr [edi - 0x2c]
+            test eax, eax
+            je L004f0286
+            mov edx, dword ptr [esp + 0x18]
+            test edx, edx
+            jne L004f01f8
+            cmp ecx, eax
+            jb L004f01cc
+            mov eax, dword ptr [gPed_676914]
+            test eax, eax
+            je L004f01f8
+            call ARGetReplayRate
+            fcomp dword ptr [gFloat_0058aec0]
+            fnstsw ax
+            test ah, 0x41
+            je L004f01f8
+    L004f01cc:
+            mov edx, dword ptr [esp + 0x10]
+            mov eax, dword ptr [edi - 0x28]
+            cmp edx, eax
+            jb L004f01f8
+            mov eax, dword ptr [esp + 0x1c]
+            lea ecx, [edi - 0x34]
+            push eax
+            call FUN_004eff30
+            cmp byte ptr [edi], 0
+            je L004f01ec
+            mov byte ptr [edi], 0
+    L004f01ec:
+            mov ecx, dword ptr [esp + 0x10]
+            mov dword ptr [edi - 0x20], ecx
+            jmp L004f0286
+    L004f01f8:
+            mov edx, dword ptr [esp + 0x10]
+            mov eax, dword ptr [edi - 0x2c]
+            mov ebx, dword ptr [edi - 0x1c]
+            cmp edx, eax
+            jb L004f025a
+            test ebx, ebx
+            jl L004f0230
+            push 0
+            push 0
+            push 0
+            push 0
+            push 0
+            mov edx, dword ptr [edi - 0x20]
+            push 0
+            push 0
+            push 0
+            push 0
+            push 0
+            push 0
+            push 0
+            push 0
+            mov ecx, ebx
+            call PipeSingleShrapnelShower
+            jmp L004f025a
+    L004f0230:
+            push 0
+            push 0
+            test ebx, 0x40000000
+            push 0
+            push 0
+            je L004f0250
+            mov edx, dword ptr [edi - 0x20]
+            push 0
+            push 0
+            mov ecx, ebx
+            call PipeSingleGibShower
+            jmp L004f025a
+    L004f0250:
+            mov edx, dword ptr [edi - 0x20]
+            mov ecx, ebx
+            call PipeSingleBloodSpurt
+    L004f025a:
+            mov esi, offset gSmash_glass_fragments+0x8
+            mov ebp, 0xc8
+    L004f0264:
+            cmp dword ptr [esi], 0
+            je L004f0280
+            cmp dword ptr [esi + 0x10], ebx
+            jne L004f0280
+            mov eax, dword ptr [esi - 8]
+            push eax
+            call BrActorRemove
+            add esp, 4
+            mov dword ptr [esi], 0
+    L004f0280:
+            add esi, 0x38
+            dec ebp
+            jne L004f0264
+    L004f0286:
+            mov eax, dword ptr [esp + 0x14]
+            mov ecx, dword ptr [esp + 0x10]
+            add edi, 0x38
+            dec eax
+            mov dword ptr [esp + 0x14], eax
+            jne L004f019a
+            pop ebx
+            pop ebp
+            pop esi
+            pop edi
+    L004f02a0:
+            mov dword ptr [gPowerup_respawn_field_0x50+0x70], ecx
+            add esp, 0x14
+            ret
+    }
+#endif
 }
 
 void C2_HOOK_FASTCALL MungeAnimationRepairs(void) {

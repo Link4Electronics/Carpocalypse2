@@ -190,6 +190,11 @@ extern tU32 gRace_start;
 extern int gReceived_game_scores;
 extern int gScore_winner;
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern tU32 C2_HOOK_FASTCALL GetTotalTime(void);
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+#endif
 // FUNCTION: CARMA2_HW 0x00499260
 
 void C2_HOOK_FASTCALL DisableCar(tCar_spec* pCar) {
@@ -945,7 +950,8 @@ select_wasted_it:
 
 #pragma auto_inline(off)
 // FUNCTION: CARMA2_HW 0x0049b540
-void C2_HOOK_FASTCALL PlayerIsInfected(tNet_game_player_info* pPlayer) {
+void C2_NAKED C2_HOOK_FASTCALL PlayerIsInfected(tNet_game_player_info* pPlayer) {
+#ifndef CARPOCALYPSE2_MATCHING
     int i;
     int offset;
     int infected_count;
@@ -1003,6 +1009,114 @@ void C2_HOOK_FASTCALL PlayerIsInfected(tNet_game_player_info* pPlayer) {
             }
         }
     }
+#else
+    __asm {
+            sub esp, 0x100
+            push ebx
+            push esi
+            mov esi, ecx
+            push edi
+            mov eax, dword ptr [esi + 0x80]
+            test eax, eax
+            jne L0049b686
+            mov ecx, dword ptr [esi + 0xc8]
+            call DisposeKevStuffCar
+            mov ecx, dword ptr [esi + 0xc8]
+            mov eax, 1
+            mov dword ptr [ecx + 0x1bc], eax
+            mov edx, dword ptr [esi + 0xc8]
+            mov dword ptr [edx + 0x1b4], eax
+            mov ecx, dword ptr [esi + 0xc8]
+            mov dword ptr [ecx + 0x1b8], eax
+            mov dword ptr [esi + 0x80], eax
+            mov eax, 0x18a8
+    L0049b598:
+            mov ecx, dword ptr [esi + 0xc8]
+            add eax, 4
+            cmp eax, 0x18b4
+            mov edx, dword ptr [eax + ecx + 8]
+            mov dword ptr [eax + ecx - 4], edx
+            jl L0049b598
+            cmp dword ptr [gNet_mode], 2
+            jne L0049b635
+            mov ecx, 0xba
+            call GetMiscString
+            push eax
+            lea eax, [esp + 0x10]
+            push offset gCancel_recover+0xbc
+            push eax
+            call sprintf
+            mov edx, dword ptr [esi + 0x24]
+            add esp, 0xc
+            lea ecx, [esp + 0xc]
+            call NetSendHeadupToPlayer
+            mov eax, dword ptr [gNumber_of_net_players]
+            xor ebx, ebx
+            test eax, eax
+            jle L0049b635
+            mov edi, offset gNet_players+0x24
+    L0049b5f2:
+            lea ecx, [edi - 0x24]
+            cmp ecx, esi
+            je L0049b625
+            mov ecx, 0xb9
+            call GetMiscString
+            lea edx, [esi + 0x28]
+            push eax
+            push edx
+            lea eax, [esp + 0x14]
+            push offset gCar_map_colours+0x10
+            push eax
+            call sprintf
+            mov edx, dword ptr [edi]
+            add esp, 0x10
+            lea ecx, [esp + 0xc]
+            call NetSendHeadupToPlayer
+    L0049b625:
+            mov eax, dword ptr [gNumber_of_net_players]
+            inc ebx
+            add edi, 0xd4
+            cmp ebx, eax
+            jl L0049b5f2
+    L0049b635:
+            call GetTotalTime
+            or ecx, 0xffffffff
+            xor edi, edi
+            sub ecx, eax
+            mov dword ptr [esi + 0x64], ecx
+            mov eax, dword ptr [gProgram_state+0x28]
+            xor ecx, ecx
+            test eax, eax
+            je L0049b686
+            cmp dword ptr [gNet_mode], 2
+            jne L0049b686
+            mov esi, dword ptr [gNumber_of_net_players]
+            xor eax, eax
+            test esi, esi
+            jle L0049b67c
+            mov edx, offset gNet_players+0x80
+    L0049b669:
+            cmp dword ptr [edx], 0
+            jne L0049b671
+            inc edi
+            mov ecx, eax
+    L0049b671:
+            inc eax
+            add edx, 0xd4
+            cmp eax, esi
+            jl L0049b669
+    L0049b67c:
+            cmp edi, 1
+            jg L0049b686
+            call DeclareWinner
+    L0049b686:
+            pop edi
+            pop esi
+            pop ebx
+            add esp, 0x100
+            ret
+    }
+#endif
 }
 #pragma auto_inline(on)
 

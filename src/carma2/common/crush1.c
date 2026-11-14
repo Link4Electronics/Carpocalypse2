@@ -149,6 +149,9 @@ extern void C2_HOOK_CDECL dr_dprintf();
 extern char gNext_crush_actor_id[];
 extern tProgram_state gProgram_state;
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern void __cdecl _ftol();
+#endif
 // FUNCTION: CARMA2_HW 0x00429bb0
 
 void C2_HOOK_FASTCALL ReadCrushSettings(FILE* pF) {
@@ -1911,7 +1914,8 @@ void C2_HOOK_FASTCALL SetCrush(tCar_crush* pCrush, int pCount_vectors, br_vector
 // SplitCarCollisionShapes
 
 // FUNCTION: CARMA2_HW 0x00430d80
-int C2_HOOK_FASTCALL QuantizeWithinBounds(br_scalar pQuant, br_scalar pMin, br_scalar pMax, br_scalar* pValue) {
+int C2_NAKED C2_HOOK_FASTCALL QuantizeWithinBounds(br_scalar pQuant, br_scalar pMin, br_scalar pMax, br_scalar* pValue) {
+#ifndef CARPOCALYPSE2_MATCHING
     br_scalar range = pMax - pMin;
     br_scalar rounded;
     tS32 count;
@@ -1944,6 +1948,72 @@ int C2_HOOK_FASTCALL QuantizeWithinBounds(br_scalar pQuant, br_scalar pMin, br_s
     }
     *pValue = (br_scalar)index * step + pMin;
     return 1;
+#else
+    __asm {
+            fld dword ptr [esp + 0xc]
+            fsub dword ptr [esp + 8]
+            push esi
+            push edi
+            mov edi, ecx
+            fld st(0)
+            fdiv dword ptr [esp + 0xc]
+            fcom dword ptr [gCrushZero]
+            fnstsw ax
+            test ah, 0x41
+            jne L00430da7
+            fsub dword ptr [gFLOAT_00589aac+0x4]
+            jmp L00430dad
+    L00430da7:
+            fsub dword ptr [gFLOAT_00589a2c]
+    L00430dad:
+            call _ftol
+            mov esi, eax
+            test esi, esi
+            mov dword ptr [esp + 0x14], esi
+            jne L00430dc5
+            mov esi, 1
+            mov dword ptr [esp + 0x14], esi
+    L00430dc5:
+            fild dword ptr [esp + 0x14]
+            _emit 0xd9
+        _emit 0x07
+            fsub dword ptr [esp + 0x10]
+            fxch st(1)
+            fdivr st(0), st(2)
+            fstp dword ptr [esp + 0xc]
+            fdiv dword ptr [esp + 0xc]
+            fstp st(1)
+            fcom dword ptr [gCrushZero]
+            fnstsw ax
+            test ah, 0x41
+            jne L00430df2
+            fsub dword ptr [gFLOAT_00589aac+0x4]
+            jmp L00430df8
+    L00430df2:
+            fsub dword ptr [gFLOAT_00589a2c]
+    L00430df8:
+            call _ftol
+            test eax, eax
+            mov dword ptr [esp + 0x14], eax
+            jl L00430e21
+            cmp eax, esi
+            jg L00430e21
+            fild dword ptr [esp + 0x14]
+            mov eax, 1
+            fmul dword ptr [esp + 0xc]
+            fadd dword ptr [esp + 0x10]
+            _emit 0xd9
+        _emit 0x1f
+            pop edi
+            pop esi
+            ret 0xc
+    L00430e21:
+            pop edi
+            xor eax, eax
+            pop esi
+            ret 0xc
+    }
+#endif
 }
 
 // SaveVitalBitsOfObject

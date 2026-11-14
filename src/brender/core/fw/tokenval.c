@@ -1093,7 +1093,8 @@ br_error C2_HOOK_CDECL BrTokenValueSet(void* mem, br_uint_32* pcombined_mask, br
 }
 
 // FUNCTION: CARMA2_HW 0x0052e940
-br_error C2_HOOK_CDECL BrTokenValueSetMany(void* mem, br_int_32* pcount, br_uint_32* pcombined_mask, br_token_value* tv, br_tv_template* template) {
+br_error C2_NAKED C2_HOOK_CDECL BrTokenValueSetMany(void* mem, br_int_32* pcount, br_uint_32* pcombined_mask, br_token_value* tv, br_tv_template* template) {
+#ifndef CARPOCALYPSE2_MATCHING
     br_int_32 o;
     br_int_32 n;
     br_error r;
@@ -1125,6 +1126,74 @@ br_error C2_HOOK_CDECL BrTokenValueSetMany(void* mem, br_int_32* pcount, br_uint
         *pcombined_mask |= cm;
     }
     return 0;
+#else
+    __asm {
+            push ebx
+            push ebp
+            push esi
+            push edi
+            mov edi, dword ptr [esp + 0x24]
+            xor ebp, ebp
+            mov eax, dword ptr [edi + 0xc]
+            test eax, eax
+            jne L0052e957
+            push edi
+            call templateMakeMap
+    L0052e957:
+            mov ebx, dword ptr [esp + 0x20]
+            mov dword ptr [esp + 0x24], 0
+            mov eax, dword ptr [ebx]
+            test eax, eax
+            je L0052e9b2
+    L0052e969:
+            sub eax, dword ptr [edi + 8]
+            js L0052e9a8
+            cmp eax, dword ptr [edi + 0xc]
+            jge L0052e9a8
+            lea esi, [eax*4]
+            mov eax, dword ptr [edi + 0x14]
+            mov eax, dword ptr [eax + esi]
+            test eax, eax
+            je L0052e9a8
+            mov ecx, dword ptr [esp + 0x14]
+            push eax
+            push ebx
+            push ecx
+            call ValueSet
+            test eax, eax
+            jne L0052e9a8
+            mov edx, dword ptr [edi + 0x14]
+            mov eax, dword ptr [edx + esi]
+            mov ecx, dword ptr [eax + 0x14]
+            mov eax, dword ptr [esp + 0x24]
+            or ebp, ecx
+            inc eax
+            mov dword ptr [esp + 0x24], eax
+    L0052e9a8:
+            mov eax, dword ptr [ebx + 8]
+            add ebx, 8
+            test eax, eax
+            jne L0052e969
+    L0052e9b2:
+            mov eax, dword ptr [esp + 0x18]
+            test eax, eax
+            je L0052e9c0
+            mov ecx, dword ptr [esp + 0x24]
+            mov dword ptr [eax], ecx
+    L0052e9c0:
+            mov eax, dword ptr [esp + 0x1c]
+            test eax, eax
+            je L0052e9ca
+            or dword ptr [eax], ebp
+    L0052e9ca:
+            pop edi
+            pop esi
+            pop ebp
+            xor eax, eax
+            pop ebx
+            ret
+    }
+#endif
 }
 
 void C2_HOOK_STDCALL DumpMatrixInteger(br_int_32* ip, int rows, int cols, char* prefix, char* info_0, char* info_n, br_putline_cbfn* putline, void* arg) {

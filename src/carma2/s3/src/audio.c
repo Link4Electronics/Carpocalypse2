@@ -165,6 +165,14 @@ extern char hitherYonTable[];
 extern char rendererStateStoredDispatch[];
 extern void C2_HOOK_CDECL s3_debug_init();
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern tS3_descriptor* C2_HOOK_FASTCALL S3CreateDescriptor(void);
+extern void C2_HOOK_FASTCALL S3SoundBankReaderAdvance(tS3_soundbank_read_ctx* pContext, int pAmount);
+extern void C2_HOOK_FASTCALL S3SoundBankReaderNextLine(tS3_soundbank_read_ctx* pContext);
+extern int C2_HOOK_FASTCALL S3SoundBankReaderReadFilename(char** pPath, tS3_soundbank_read_ctx* pContext, const char* pDir_name);
+extern void C2_HOOK_FASTCALL S3SoundBankReaderSkipToNewline(tS3_soundbank_read_ctx* pContext);
+
+#endif
 // FUNCTION: CARMA2_HW 0x005651d0
 int C2_NAKED C2_HOOK_FASTCALL S3Init(const char* pPath, int pLow_memory_mode, const char* pSound_dirname) {
 #ifndef CARPOCALYPSE2_MATCHING
@@ -2260,7 +2268,8 @@ int C2_NAKED C2_HOOK_FASTCALL S3LoadSoundbank(const char* pPath, int pLow_memory
 }
 
 // FUNCTION: CARMA2_HW 0x0056818f
-void C2_HOOK_FASTCALL S3SoundBankReaderSkipWhitespace(tS3_soundbank_read_ctx* pContext) {
+void C2_NAKED C2_HOOK_FASTCALL S3SoundBankReaderSkipWhitespace(tS3_soundbank_read_ctx* pContext) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     while (pContext->data_len != 0) {
         if (!isalnum(*pContext->data) && *pContext->data != '-') {
@@ -2269,10 +2278,58 @@ void C2_HOOK_FASTCALL S3SoundBankReaderSkipWhitespace(tS3_soundbank_read_ctx* pC
         }
         return;
     }
+#else
+    __asm {
+            push ebp
+            mov ebp, esp
+            sub esp, 8
+            mov dword ptr [ebp - 4], ecx
+    L00568198:
+            mov eax, dword ptr [ebp - 4]
+            cmp dword ptr [eax], 0
+            je L00568201
+            cmp dword ptr [gQuickTime_call_component_with_storage+0x5a0], 1
+            jle L005681c5
+            push 0x107
+            mov ecx, dword ptr [ebp - 4]
+            mov edx, dword ptr [ecx + 0xc]
+            movsx eax, byte ptr [edx]
+            push eax
+            call _isctype
+            add esp, 8
+            mov dword ptr [ebp - 8], eax
+            jmp L005681e3
+    L005681c5:
+            mov ecx, dword ptr [ebp - 4]
+            mov edx, dword ptr [ecx + 0xc]
+            movsx eax, byte ptr [edx]
+            mov ecx, dword ptr [gQuickTime_call_component_with_storage+0x394]
+            xor edx, edx
+            mov dx, word ptr [ecx + eax*2]
+            and edx, 0x107
+            mov dword ptr [ebp - 8], edx
+    L005681e3:
+            cmp dword ptr [ebp - 8], 0
+            jne L00568201
+            mov eax, dword ptr [ebp - 4]
+            mov ecx, dword ptr [eax + 0xc]
+            movsx edx, byte ptr [ecx]
+            cmp edx, 0x2d
+            je L00568201
+            mov ecx, dword ptr [ebp - 4]
+            call S3SoundBankReaderSkipToNewline
+            jmp L00568198
+    L00568201:
+            mov esp, ebp
+            pop ebp
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0056828c
-int C2_HOOK_FASTCALL S3SoundBankReadEntry(tS3_soundbank_read_ctx *pContext, const char* pDir_name, int pLow_memory_mode) {
+int C2_NAKED C2_HOOK_FASTCALL S3SoundBankReadEntry(tS3_soundbank_read_ctx *pContext, const char* pDir_name, int pLow_memory_mode) {
+#ifndef CARPOCALYPSE2_MATCHING
     tS3_descriptor* descriptor;
     int i;
     int n;
@@ -2403,6 +2460,387 @@ int C2_HOOK_FASTCALL S3SoundBankReadEntry(tS3_soundbank_read_ctx *pContext, cons
         }
     }
     return 1;
+#else
+    __asm {
+            push ebp
+            mov ebp, esp
+            sub esp, 0x2c
+            mov dword ptr [ebp - 0x2c], edx
+            mov dword ptr [ebp - 0x28], ecx
+            call S3CreateDescriptor
+            mov dword ptr [ebp - 0x18], eax
+            cmp dword ptr [ebp - 0x18], 0
+            jne L005682b0
+            mov eax, dword ptr [gS3_last_error]
+            jmp L005686e3
+    L005682b0:
+            lea eax, [ebp - 4]
+            push eax
+            mov ecx, dword ptr [ebp - 0x18]
+            push ecx
+            push offset gS3_CDA_enabled+0x18
+            mov edx, dword ptr [ebp - 0x28]
+            mov eax, dword ptr [edx + 0xc]
+            push eax
+            call sscanf
+            add esp, 0x10
+            cmp eax, 1
+            je L005682d8
+            xor eax, eax
+            jmp L005686e3
+    L005682d8:
+            mov edx, dword ptr [ebp - 4]
+            mov ecx, dword ptr [ebp - 0x28]
+            call S3SoundBankReaderAdvance
+            mov ecx, dword ptr [ebp - 0x28]
+            call S3SoundBankReaderNextLine
+            lea ecx, [ebp - 4]
+            push ecx
+            mov edx, dword ptr [ebp - 0x18]
+            add edx, 0x30
+            push edx
+            mov eax, dword ptr [ebp - 0x18]
+            add eax, 4
+            push eax
+            push offset gS3_CDA_enabled+0x20
+            mov ecx, dword ptr [ebp - 0x28]
+            mov edx, dword ptr [ecx + 0xc]
+            push edx
+            call sscanf
+            add esp, 0x14
+            cmp eax, 2
+            je L0056831d
+            xor eax, eax
+            jmp L005686e3
+    L0056831d:
+            mov edx, dword ptr [ebp - 4]
+            mov ecx, dword ptr [ebp - 0x28]
+            call S3SoundBankReaderAdvance
+            mov ecx, dword ptr [ebp - 0x28]
+            call S3SoundBankReaderNextLine
+            mov eax, dword ptr [ebp - 0x18]
+            cmp dword ptr [eax + 4], 2
+            jne L00568346
+            mov dword ptr [ebp - 0x2c], 0x6b2c8c
+            mov ecx, dword ptr [ebp - 0x2c]
+            mov byte ptr [ecx], 0
+    L00568346:
+            mov edx, dword ptr [ebp - 0x2c]
+            push edx
+            mov edx, dword ptr [ebp - 0x28]
+            mov ecx, dword ptr [ebp - 0x18]
+            add ecx, 0x44
+            call S3SoundBankReaderReadFilename
+            test eax, eax
+            jne L00568363
+            xor eax, eax
+            jmp L005686e3
+    L00568363:
+            mov ecx, dword ptr [ebp - 0x28]
+            call S3SoundBankReaderNextLine
+            lea eax, [ebp - 4]
+            push eax
+            mov ecx, dword ptr [ebp - 0x18]
+            add ecx, 8
+            push ecx
+            push offset gS3_CDA_enabled+0x28
+            mov edx, dword ptr [ebp - 0x28]
+            mov eax, dword ptr [edx + 0xc]
+            push eax
+            call sscanf
+            add esp, 0x10
+            cmp eax, 1
+            je L00568396
+            xor eax, eax
+            jmp L005686e3
+    L00568396:
+            mov edx, dword ptr [ebp - 4]
+            mov ecx, dword ptr [ebp - 0x28]
+            call S3SoundBankReaderAdvance
+            mov ecx, dword ptr [ebp - 0x28]
+            call S3SoundBankReaderNextLine
+            lea ecx, [ebp - 4]
+            push ecx
+            mov edx, dword ptr [ebp - 0x18]
+            add edx, 0xc
+            push edx
+            push offset gS3_CDA_enabled+0x30
+            mov eax, dword ptr [ebp - 0x28]
+            mov ecx, dword ptr [eax + 0xc]
+            push ecx
+            call sscanf
+            add esp, 0x10
+            cmp eax, 1
+            je L005683d4
+            xor eax, eax
+            jmp L005686e3
+    L005683d4:
+            mov edx, dword ptr [ebp - 4]
+            mov ecx, dword ptr [ebp - 0x28]
+            call S3SoundBankReaderAdvance
+            mov ecx, dword ptr [ebp - 0x28]
+            call S3SoundBankReaderNextLine
+            lea edx, [ebp - 4]
+            push edx
+            mov eax, dword ptr [ebp - 0x18]
+            add eax, 0x14
+            push eax
+            mov ecx, dword ptr [ebp - 0x18]
+            add ecx, 0x10
+            push ecx
+            push offset gS3_CDA_enabled+0x38
+            mov edx, dword ptr [ebp - 0x28]
+            mov eax, dword ptr [edx + 0xc]
+            push eax
+            call sscanf
+            add esp, 0x14
+            cmp eax, 2
+            je L00568419
+            xor eax, eax
+            jmp L005686e3
+    L00568419:
+            mov edx, dword ptr [ebp - 4]
+            mov ecx, dword ptr [ebp - 0x28]
+            call S3SoundBankReaderAdvance
+            mov ecx, dword ptr [ebp - 0x28]
+            call S3SoundBankReaderNextLine
+            lea ecx, [ebp - 4]
+            push ecx
+            lea edx, [ebp - 0x14]
+            push edx
+            lea eax, [ebp - 0xc]
+            push eax
+            push offset gS3_CDA_enabled+0x40
+            mov ecx, dword ptr [ebp - 0x28]
+            mov edx, dword ptr [ecx + 0xc]
+            push edx
+            call sscanf
+            add esp, 0x14
+            cmp eax, 2
+            je L00568458
+            xor eax, eax
+            jmp L005686e3
+    L00568458:
+            mov edx, dword ptr [ebp - 4]
+            mov ecx, dword ptr [ebp - 0x28]
+            call S3SoundBankReaderAdvance
+            mov ecx, dword ptr [ebp - 0x28]
+            call S3SoundBankReaderNextLine
+            fld qword ptr [ebp - 0xc]
+            fcomp qword ptr [rendererStateStoredDispatch+0xc80]
+            fnstsw ax
+            test ah, 0x40
+            je L00568489
+            mov dword ptr [ebp - 0xc], 0
+            mov dword ptr [ebp - 8], 0x3ff00000
+    L00568489:
+            fld qword ptr [ebp - 0x14]
+            fcomp qword ptr [rendererStateStoredDispatch+0xc80]
+            fnstsw ax
+            test ah, 0x40
+            je L005684a7
+            mov dword ptr [ebp - 0x14], 0
+            mov dword ptr [ebp - 0x10], 0x3ff00000
+    L005684a7:
+            push 0x10
+            mov eax, dword ptr [ebp - 8]
+            push eax
+            mov ecx, dword ptr [ebp - 0xc]
+            push ecx
+            call ldexp
+            add esp, 0xc
+            call _ftol
+            mov edx, dword ptr [ebp - 0x18]
+            mov dword ptr [edx + 0x18], eax
+            push 0x10
+            mov eax, dword ptr [ebp - 0x10]
+            push eax
+            mov ecx, dword ptr [ebp - 0x14]
+            push ecx
+            call ldexp
+            add esp, 0xc
+            call _ftol
+            mov edx, dword ptr [ebp - 0x18]
+            mov dword ptr [edx + 0x1c], eax
+            lea eax, [ebp - 4]
+            push eax
+            lea ecx, [ebp - 0x14]
+            push ecx
+            lea edx, [ebp - 0xc]
+            push edx
+            push offset gS3_CDA_enabled+0x4c
+            mov eax, dword ptr [ebp - 0x28]
+            mov ecx, dword ptr [eax + 0xc]
+            push ecx
+            call sscanf
+            add esp, 0x14
+            cmp eax, 2
+            je L0056850d
+            xor eax, eax
+            jmp L005686e3
+    L0056850d:
+            mov edx, dword ptr [ebp - 4]
+            mov ecx, dword ptr [ebp - 0x28]
+            call S3SoundBankReaderAdvance
+            mov ecx, dword ptr [ebp - 0x28]
+            call S3SoundBankReaderNextLine
+            fld qword ptr [ebp - 0xc]
+            fcomp qword ptr [rendererStateStoredDispatch+0xc80]
+            fnstsw ax
+            test ah, 0x40
+            je L0056853e
+            mov dword ptr [ebp - 0xc], 0
+            mov dword ptr [ebp - 8], 0x3ff00000
+    L0056853e:
+            fld qword ptr [ebp - 0x14]
+            fcomp qword ptr [rendererStateStoredDispatch+0xc80]
+            fnstsw ax
+            test ah, 0x40
+            je L0056855c
+            mov dword ptr [ebp - 0x14], 0
+            mov dword ptr [ebp - 0x10], 0x3ff00000
+    L0056855c:
+            push 0x10
+            mov edx, dword ptr [ebp - 8]
+            push edx
+            mov eax, dword ptr [ebp - 0xc]
+            push eax
+            call ldexp
+            add esp, 0xc
+            call _ftol
+            mov ecx, dword ptr [ebp - 0x18]
+            mov dword ptr [ecx + 0x20], eax
+            push 0x10
+            mov edx, dword ptr [ebp - 0x10]
+            push edx
+            mov eax, dword ptr [ebp - 0x14]
+            push eax
+            call ldexp
+            add esp, 0xc
+            call _ftol
+            mov ecx, dword ptr [ebp - 0x18]
+            mov dword ptr [ecx + 0x24], eax
+            lea edx, [ebp - 4]
+            push edx
+            mov eax, dword ptr [ebp - 0x18]
+            add eax, 0x38
+            push eax
+            push offset gS3_CDA_enabled+0x58
+            mov ecx, dword ptr [ebp - 0x28]
+            mov edx, dword ptr [ecx + 0xc]
+            push edx
+            call sscanf
+            add esp, 0x10
+            cmp eax, 1
+            je L005685c1
+            xor eax, eax
+            jmp L005686e3
+    L005685c1:
+            mov edx, dword ptr [ebp - 4]
+            mov ecx, dword ptr [ebp - 0x28]
+            call S3SoundBankReaderAdvance
+            mov ecx, dword ptr [ebp - 0x28]
+            call S3SoundBankReaderNextLine
+            lea eax, [ebp - 4]
+            push eax
+            lea ecx, [ebp - 0x24]
+            push ecx
+            push offset gS3_CDA_enabled+0x60
+            mov edx, dword ptr [ebp - 0x28]
+            mov eax, dword ptr [edx + 0xc]
+            push eax
+            call sscanf
+            add esp, 0x10
+            cmp eax, 1
+            je L005685fc
+            xor eax, eax
+            jmp L005686e3
+    L005685fc:
+            mov edx, dword ptr [ebp - 4]
+            mov ecx, dword ptr [ebp - 0x28]
+            call S3SoundBankReaderAdvance
+            mov ecx, dword ptr [ebp - 0x28]
+            call S3SoundBankReaderNextLine
+            mov ecx, dword ptr [ebp - 0x18]
+            mov dword ptr [ecx + 0x3c], 0xffffffff
+            mov dword ptr [ebp - 0x20], 0
+            jmp L0056862b
+    L00568622:
+            mov edx, dword ptr [ebp - 0x20]
+            add edx, 1
+            mov dword ptr [ebp - 0x20], edx
+    L0056862b:
+            mov eax, dword ptr [ebp - 0x20]
+            cmp eax, dword ptr [ebp - 0x24]
+            jae L00568684
+            lea ecx, [ebp - 4]
+            push ecx
+            lea edx, [ebp - 0x1c]
+            push edx
+            push offset gS3_CDA_enabled+0x68
+            mov eax, dword ptr [ebp - 0x28]
+            mov ecx, dword ptr [eax + 0xc]
+            push ecx
+            call sscanf
+            add esp, 0x10
+            cmp eax, 1
+            je L0056865b
+            xor eax, eax
+            jmp L005686e3
+    L0056865b:
+            mov edx, dword ptr [ebp - 0x20]
+            add edx, 1
+            cmp edx, dword ptr [ebp + 8]
+            jne L0056866f
+            mov eax, dword ptr [ebp - 0x18]
+            mov ecx, dword ptr [ebp - 0x1c]
+            mov dword ptr [eax + 0x3c], ecx
+    L0056866f:
+            mov edx, dword ptr [ebp - 4]
+            mov ecx, dword ptr [ebp - 0x28]
+            call S3SoundBankReaderAdvance
+            mov ecx, dword ptr [ebp - 0x28]
+            call S3SoundBankReaderNextLine
+            jmp L00568622
+    L00568684:
+            mov edx, dword ptr [ebp - 0x18]
+            mov eax, dword ptr [edx + 0x30]
+            and eax, 1
+            test eax, eax
+            je L005686de
+            mov ecx, dword ptr [ebp - 0x18]
+            cmp dword ptr [ecx + 0x3c], -1
+            jne L005686de
+            mov edx, dword ptr [ebp - 0x18]
+            cmp dword ptr [edx + 4], 1
+            jne L005686af
+            mov eax, dword ptr [ebp - 0x18]
+            mov dword ptr [eax + 0x40], 0
+            jmp L005686de
+    L005686af:
+            mov ecx, dword ptr [ebp - 0x18]
+            mov ecx, dword ptr [ecx]
+            call S3LoadSample
+            test eax, eax
+            je L005686de
+            mov edx, dword ptr [ebp - 0x18]
+            mov eax, dword ptr [edx + 0x44]
+            push eax
+            push offset gS3_CDA_enabled+0x70
+            call printf
+            add esp, 8
+            mov ecx, dword ptr [ebp - 0x28]
+            mov dword ptr [ecx], 1
+            xor eax, eax
+            jmp L005686e3
+    L005686de:
+            mov eax, 1
+    L005686e3:
+            mov esp, ebp
+            pop ebp
+            ret 4
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x005686e9

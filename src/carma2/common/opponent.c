@@ -485,6 +485,12 @@ extern int gShow_opponents;
 extern int gStop_opponents_moving;
 extern int gThis_net_player_index;
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern int C2_HOOK_FASTCALL HasCarFallenOffWorld(tCar_spec* pCar);
+extern int C2_HOOK_FASTCALL PercentageChance(int pC);
+extern int C2_HOOK_FASTCALL SearchForSection(tRoute_section* pTemp_store, tRoute_section* pPerm_store, int* pNum_of_perm_store_sections, tS16 pTarget_section, int pDepth, br_scalar pDistance_so_far, tOpponent_spec* pOpponent_spec);
+extern void C2_HOOK_FASTCALL TeleportOpponentToNearestSafeLocation(tOpponent_spec* pOpponent_spec);
+#endif
 // FUNCTION: CARMA2_HW 0x004a7a20
 void C2_HOOK_FASTCALL SetOppoRender(tOpponent_spec* pOpponent_spec, int pRender) {
     if (gAction_replay_mode && ARGetReplayRate() < gOppo_render_zero) {
@@ -5856,7 +5862,8 @@ __inline int C2_HOOK_FASTCALL HeadOnWithPlayerPossible(tOpponent_spec* pOpponent
 }
 
 // FUNCTION: CARMA2_HW 0x004ace70
-void C2_HOOK_FASTCALL ChooseNewObjective(tOpponent_spec* pOpponent_spec, int pMust_choose_one) {
+void C2_NAKED C2_HOOK_FASTCALL ChooseNewObjective(tOpponent_spec* pOpponent_spec, int pMust_choose_one) {
+#ifndef CARPOCALYPSE2_MATCHING
     char str[256];
 
     if (pOpponent_spec->current_objective == eOOT_knackered_and_freewheeling || pOpponent_spec->knackeredness_detected) {
@@ -6036,6 +6043,903 @@ void C2_HOOK_FASTCALL ChooseNewObjective(tOpponent_spec* pOpponent_spec, int pMu
             NewObjective(pOpponent_spec, eOOT_complete_race);
         }
     }
+#else
+    __asm {
+            sub esp, 0x10c
+            push ebx
+            push ebp
+            push esi
+            mov esi, ecx
+            push edi
+            mov dword ptr [esp + 0x14], edx
+            cmp dword ptr [esi + 4], 6
+            je L004ad818
+            test byte ptr [esi + 0xb0], 4
+            jne L004ad818
+            mov eax, dword ptr [gTime_stamp_for_this_munging]
+            mov ecx, dword ptr [esi + 0x4c]
+            cmp eax, ecx
+            jbe L004aced4
+            mov ecx, dword ptr [esi + 8]
+            add eax, 0x1f4
+            mov dword ptr [esi + 0x4c], eax
+            call HasCarFallenOffWorld
+            test eax, eax
+            je L004aced4
+            mov ecx, esi
+            call TeleportOpponentToNearestSafeLocation
+            push 4
+            push esi
+            call NewObjective
+            add esp, 8
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x10c
+            ret
+    L004aced4:
+            mov ebp, dword ptr [esi + 8]
+            mov eax, dword ptr [ebp + 0x1d4]
+            test eax, eax
+            je L004acf40
+            mov eax, dword ptr [esi + 0xb0]
+            test al, 4
+            jne L004acf40
+            add ebp, 0xec
+            or al, 4
+            push ebp
+            push offset gOpponent_nastyness_frigger+0x1198
+            mov dword ptr [esi + 0xb0], eax
+            call DoNotDprintf_opponent
+            mov eax, dword ptr [esi + 8]
+            add esp, 8
+            mov ecx, dword ptr [eax + 0x1cc]
+            test ecx, ecx
+            je L004acf2a
+            push 5
+            push esi
+            call NewObjective
+            add esp, 8
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x10c
+            ret
+    L004acf2a:
+            push 6
+            push esi
+            call NewObjective
+            add esp, 8
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x10c
+            ret
+    L004acf40:
+            mov ebx, dword ptr [esi + 4]
+            cmp ebx, 7
+            jne L004acfa2
+            xor ecx, ecx
+            mov cx, word ptr [ebp + 0x80]
+            and cl, 0
+            cmp ecx, 0x300
+            jne L004acf64
+            fld dword ptr [gCop_speed_factor]
+            jmp L004acf6a
+    L004acf64:
+            fld dword ptr [gOpponent_speed_factor]
+    L004acf6a:
+            fcomp dword ptr [gOppo_render_zero]
+            fnstsw ax
+            test ah, 0x40
+            jne L004ad818
+            add ebp, 0xec
+            push ebp
+            push offset gOpponent_nastyness_frigger+0x1180
+            call DoNotDprintf_opponent
+            mov al, byte ptr [esi + 0xb0]
+            add esp, 8
+            test al, 0x80
+            je L004ad823
+            jmp L004ad8f2
+    L004acfa2:
+            xor edi, edi
+            mov di, word ptr [ebp + 0x80]
+            and edi, 0xffffff00
+            cmp edi, 0x300
+            jne L004acfc1
+            fld dword ptr [gCop_speed_factor]
+            jmp L004acfc7
+    L004acfc1:
+            fld dword ptr [gOpponent_speed_factor]
+    L004acfc7:
+            fcomp dword ptr [gOppo_render_zero]
+            fnstsw ax
+            test ah, 0x40
+            je L004ad032
+            add ebp, 0xec
+            push ebp
+            push offset gOpponent_nastyness_frigger+0x1168
+            call DoNotDprintf_opponent
+            mov eax, dword ptr [esi + 4]
+            add esp, 8
+            cmp eax, 2
+            jne L004ad003
+            cmp dword ptr [esi + 0x114], 0x75bc2c
+            jne L004ad003
+            mov eax, 1
+            jmp L004ad005
+    L004ad003:
+            xor eax, eax
+    L004ad005:
+            mov edx, dword ptr [esi + 0xb0]
+            and eax, 1
+            and dl, 0x7f
+            push 7
+            shl eax, 7
+            or edx, eax
+            push esi
+            mov dword ptr [esi + 0xb0], edx
+            call NewObjective
+            add esp, 8
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x10c
+            ret
+    L004ad032:
+            mov eax, dword ptr [gFirst_frame]
+            test eax, eax
+            jne L004ad73a
+            fld dword ptr [esi + 0xc]
+            fmul dword ptr [DAT_0058a55c+0x4]
+            fsubr dword ptr [DAT_0058a4ec]
+            call _ftol
+            mov dword ptr [esp + 0x18], eax
+            mov al, byte ptr [ebp + 0x153c]
+            test al, 4
+            je L004ad13a
+            fld dword ptr [esi + 0x18]
+            fcomp dword ptr [DAT_0058a4ec]
+            fnstsw ax
+            test ah, 1
+            je L004ad13a
+            xor ecx, ecx
+            cmp ebx, 2
+            setne cl
+            dec ecx
+            and ecx, 0x28
+            cmp edi, 0x300
+            jne L004ad0cb
+            mov ecx, 0x14
+            call PercentageChance
+            test eax, eax
+            je L004ad13a
+            mov eax, dword ptr [esi + 8]
+            add eax, 0xec
+            push eax
+            push offset gOpponent_nastyness_frigger+0x1150
+            call DoNotDprintf_opponent
+            add esp, 8
+            push 3
+            push esi
+            call NewObjective
+            add esp, 8
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x10c
+            ret
+    L004ad0cb:
+            mov eax, dword ptr [esi]
+            mov edx, dword ptr [gOpponents]
+            mov edi, eax
+            shl edi, 3
+            sub edi, eax
+            shl edi, 6
+            cmp dword ptr [edi + edx + 0x19c], 5
+            jge L004ad140
+            add ecx, 0x3c
+            mov dword ptr [esp + 0x10], ecx
+            fild dword ptr [esp + 0x10]
+            fld dword ptr [esi + 0xc]
+            fmul dword ptr [DAT_0058a55c+0x8]
+            fsubp st(1), st(0)
+            call _ftol
+            mov ecx, eax
+            call PercentageChance
+            test eax, eax
+            je L004ad13a
+            mov ecx, dword ptr [esi + 8]
+            add ecx, 0xec
+            push ecx
+            push offset gOpponent_nastyness_frigger+0x1150
+            call DoNotDprintf_opponent
+            add esp, 8
+            push 3
+            push esi
+            call NewObjective
+            add esp, 8
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x10c
+            ret
+    L004ad13a:
+            mov edx, dword ptr [gOpponents]
+    L004ad140:
+            mov edi, dword ptr [esi + 4]
+            cmp edi, 3
+            jne L004ad15e
+            mov eax, dword ptr [esi + 0x70]
+            mov ecx, dword ptr [gTime_stamp_for_this_munging]
+            add eax, 0x4e20
+            cmp ecx, eax
+            jb L004ad73a
+    L004ad15e:
+            mov ebp, dword ptr [esi + 8]
+            xor ecx, ecx
+            mov cx, word ptr [ebp + 0x80]
+            and cl, 0
+            cmp ecx, 0x300
+            jne L004ad23c
+            mov eax, dword ptr [esi + 0xb0]
+            test ah, 8
+            je L004ad23c
+            fld dword ptr [esi + 0x18]
+            fcomp dword ptr [gOppo_pursuit_trail_distance]
+            fnstsw ax
+            test ah, 1
+            je L004ad23c
+            cmp edi, 2
+            jne L004ad1b1
+            cmp dword ptr [esi + 0x114], 0x75bc2c
+            je L004ad23c
+    L004ad1b1:
+            mov eax, dword ptr [esi]
+            mov ecx, eax
+            shl ecx, 3
+            sub ecx, eax
+            shl ecx, 6
+            mov al, byte ptr [ecx + edx + 0x1b8]
+            lea edx, [ecx + edx + 0x1b8]
+            cmp al, 0x14
+            jbe L004ad1d9
+            mov ecx, eax
+            and ecx, 0xff
+            jmp L004ad1de
+    L004ad1d9:
+            mov ecx, 0x14
+    L004ad1de:
+            mov edi, dword ptr [esp + 0x18]
+            add ecx, edi
+            cmp ecx, 0x64
+            jle L004ad1f0
+            mov eax, 0x64
+            jmp L004ad202
+    L004ad1f0:
+            cmp al, 0x14
+            jbe L004ad1fb
+            and eax, 0xff
+            jmp L004ad200
+    L004ad1fb:
+            mov eax, 0x14
+    L004ad200:
+            add eax, edi
+    L004ad202:
+            mov byte ptr [edx], al
+            mov edx, dword ptr [esi + 8]
+            add edx, 0xec
+            lea eax, [esp + 0x1c]
+            push edx
+            push offset gOpponent_nastyness_frigger+0x1138
+            push eax
+            call sprintf
+            mov ecx, dword ptr [esi + 8]
+            add esp, 0xc
+            add ecx, 0xec
+            push ecx
+            push offset gOpponent_nastyness_frigger+0x1114
+            call DoNotDprintf_opponent
+            add esp, 8
+            jmp L004ad8f2
+    L004ad23c:
+            mov ebx, dword ptr [ebp + 0x153c]
+            test bl, 2
+            je L004ad326
+            mov eax, dword ptr [ebp + 0x1560]
+            test eax, eax
+            je L004ad326
+            cmp dword ptr [eax + 0xc], 8
+            jne L004ad326
+            cmp edi, 2
+            jne L004ad274
+            cmp dword ptr [esi + 0x114], eax
+            je L004ad326
+    L004ad274:
+            mov eax, dword ptr [esi]
+            mov ecx, eax
+            shl ecx, 3
+            sub ecx, eax
+            shl ecx, 6
+            mov al, byte ptr [ecx + edx + 0x1b8]
+            lea edx, [ecx + edx + 0x1b8]
+            cmp al, 0x14
+            jbe L004ad29c
+            mov ecx, eax
+            and ecx, 0xff
+            jmp L004ad2a1
+    L004ad29c:
+            mov ecx, 0x14
+    L004ad2a1:
+            mov edi, dword ptr [esp + 0x18]
+            add ecx, edi
+            cmp ecx, 0x64
+            jle L004ad2b3
+            mov eax, 0x64
+            jmp L004ad2c5
+    L004ad2b3:
+            cmp al, 0x14
+            jbe L004ad2be
+            and eax, 0xff
+            jmp L004ad2c3
+    L004ad2be:
+            mov eax, 0x14
+    L004ad2c3:
+            add eax, edi
+    L004ad2c5:
+            mov byte ptr [edx], al
+            mov edx, dword ptr [esi + 8]
+            add edx, 0xec
+            lea eax, [esp + 0x1c]
+            push edx
+            push offset gOpponent_nastyness_frigger+0x10f8
+            push eax
+            call sprintf
+            mov eax, dword ptr [esi + 8]
+            add esp, 0xc
+            mov ecx, dword ptr [eax + 0x1560]
+            add eax, 0xec
+            add ecx, 0xec
+            push ecx
+            push eax
+            push offset gOpponent_nastyness_frigger+0x10b4
+            call DoNotDprintf_opponent
+            mov edx, dword ptr [esi + 8]
+            add esp, 0xc
+            mov eax, dword ptr [edx + 0x1560]
+            push eax
+            push 2
+            push esi
+            call NewObjective
+            add esp, 0xc
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x10c
+            ret
+    L004ad326:
+            mov eax, dword ptr [ebp + 0x1564]
+            test eax, eax
+            je L004ad3e6
+            cmp dword ptr [eax + 0xc], 8
+            jne L004ad3e6
+            cmp edi, 2
+            jne L004ad34f
+            cmp dword ptr [esi + 0x114], eax
+            je L004ad3e6
+    L004ad34f:
+            mov eax, dword ptr [esi]
+            mov ecx, eax
+            shl ecx, 3
+            sub ecx, eax
+            shl ecx, 6
+            mov al, byte ptr [ecx + edx + 0x1b8]
+            lea edx, [ecx + edx + 0x1b8]
+            cmp al, 0x14
+            jbe L004ad377
+            mov ecx, eax
+            and ecx, 0xff
+            jmp L004ad37c
+    L004ad377:
+            mov ecx, 0x14
+    L004ad37c:
+            mov edi, dword ptr [esp + 0x18]
+            add ecx, edi
+            cmp ecx, 0x64
+            jle L004ad38e
+            mov eax, 0x64
+            jmp L004ad3a0
+    L004ad38e:
+            cmp al, 0x14
+            jbe L004ad399
+            and eax, 0xff
+            jmp L004ad39e
+    L004ad399:
+            mov eax, 0x14
+    L004ad39e:
+            add eax, edi
+    L004ad3a0:
+            mov byte ptr [edx], al
+            mov edx, dword ptr [esi + 8]
+            add edx, 0xec
+            lea eax, [esp + 0x1c]
+            push edx
+            push offset gOpponent_nastyness_frigger+0x108c
+            push eax
+            call sprintf
+            mov eax, dword ptr [esi + 8]
+            add esp, 0xc
+            mov ecx, dword ptr [eax + 0x1564]
+            add eax, 0xec
+            add ecx, 0xec
+            push ecx
+            push eax
+            push offset gOpponent_nastyness_frigger+0x1050
+            call DoNotDprintf_opponent
+            add esp, 0xc
+            jmp L004ad8f2
+    L004ad3e6:
+            cmp edi, 2
+            jne L004ad3fb
+            cmp dword ptr [esi + 0x114], 0x75bc2c
+            je L004ad73a
+    L004ad3fb:
+            test bl, 1
+            je L004ad4bb
+            cmp ecx, 0x300
+            jne L004ad420
+            fld dword ptr [esi + 0x18]
+            fcomp dword ptr [gOppo_pursuit_trail_distance]
+            fnstsw ax
+            test ah, 0x41
+            je L004ad4bb
+    L004ad420:
+            mov eax, dword ptr [ebp + 0x1560]
+            test eax, eax
+            je L004ad4bb
+            cmp dword ptr [eax + 0xc], 8
+            jne L004ad4bb
+            mov eax, dword ptr [esi]
+            mov ecx, eax
+            shl ecx, 3
+            sub ecx, eax
+            shl ecx, 6
+            mov al, byte ptr [ecx + edx + 0x1b8]
+            lea ecx, [ecx + edx + 0x1b8]
+            cmp al, 0x14
+            jbe L004ad4bb
+            mov edx, dword ptr [esp + 0x18]
+            and eax, 0xff
+            lea edi, [edx + eax]
+            cmp edi, 0x64
+            jle L004ad46e
+            mov eax, 0x64
+            jmp L004ad470
+    L004ad46e:
+            add eax, edx
+    L004ad470:
+            mov byte ptr [ecx], al
+            mov edx, dword ptr [esi + 8]
+            add edx, 0xec
+            push offset gProgram_state+0x198
+            push edx
+            lea eax, [esp + 0x24]
+            push offset gOpponent_nastyness_frigger+0x1030
+            push eax
+            call sprintf
+            mov eax, dword ptr [esi + 8]
+            add esp, 0x10
+            mov ecx, dword ptr [eax + 0x1560]
+            add eax, 0xec
+            add ecx, 0xec
+            push ecx
+            push eax
+            push offset gOpponent_nastyness_frigger+0xfe0
+            call DoNotDprintf_opponent
+            add esp, 0xc
+            jmp L004ad8f2
+    L004ad4bb:
+            mov eax, dword ptr [esi + 0xb0]
+            test ah, 2
+            je L004ad73a
+            test ah, 4
+            jne L004ad73a
+            or ah, 4
+            xor edx, edx
+            mov dword ptr [esi + 0xb0], eax
+            mov dx, word ptr [ebp + 0x80]
+            and dl, 0
+            cmp edx, 0x300
+            jne L004ad54b
+            mov eax, dword ptr [gProgram_state+0xb4]
+            fld dword ptr [eax + 0x68]
+            fld dword ptr [eax + 0x6c]
+            fld dword ptr [eax + 0x70]
+            fxch st(2)
+            fst dword ptr [esp + 0x10]
+            fld st(1)
+            fxch st(1)
+            fmul dword ptr [esp + 0x10]
+            fxch st(1)
+            fmul st(0), st(2)
+            fxch st(3)
+            fst dword ptr [esp + 0x10]
+            fmul dword ptr [esp + 0x10]
+            fxch st(3)
+            faddp st(1), st(0)
+            fld dword ptr [gCop_pursuit_speed_percentage_multiplier]
+            fxch st(3)
+            faddp st(1), st(0)
+            fsqrt
+            fst dword ptr [esp + 0x10]
+            fmul qword ptr [DAT_0058a4b0]
+            fsub dword ptr [gDefinite_no_cop_pursuit_speed]
+            fxch st(2)
+            fmulp st(2), st(0)
+            fxch st(1)
+            call _ftol
+            fstp st(0)
+            mov edi, eax
+            jmp L004ad598
+    L004ad54b:
+            mov eax, dword ptr [gProgram_state+0x20]
+            mov ecx, dword ptr [gNum_of_opponents_pursuing]
+            add eax, 3
+            cmp ecx, eax
+            jge L004ad596
+            mov eax, dword ptr [esi]
+            xor edx, edx
+            mov ecx, eax
+            shl ecx, 3
+            sub ecx, eax
+            mov eax, dword ptr [gOpponents]
+            shl ecx, 6
+            mov dl, byte ptr [ecx + eax + 0x1b8]
+            sub edx, 0x14
+            mov dword ptr [esp + 0x10], edx
+            fild dword ptr [esp + 0x10]
+            fld dword ptr [esi + 0xc]
+            fmul dword ptr [DAT_0058a55c+0xc]
+            fsubp st(1), st(0)
+            call _ftol
+            mov edi, eax
+            jmp L004ad598
+    L004ad596:
+            xor edi, edi
+    L004ad598:
+            mov ecx, dword ptr [gProgram_state+0xbc]
+            mov eax, dword ptr [ebp + 0x10]
+            fld dword ptr [ecx + 0x54]
+            fld dword ptr [ecx + 0x50]
+            fsub dword ptr [eax + 0x50]
+            fxch st(1)
+            fsub dword ptr [eax + 0x54]
+            fld dword ptr [ecx + 0x58]
+            fsub dword ptr [eax + 0x58]
+            fld st(2)
+            fld st(2)
+            fxch st(1)
+            fmul st(0), st(4)
+            fxch st(1)
+            fmul st(0), st(3)
+            fld st(2)
+            fmul st(0), st(3)
+            fxch st(1)
+            faddp st(2), st(0)
+            faddp st(1), st(0)
+            fsqrt
+            fcom dword ptr [DAT_0058a4e8]
+            fnstsw ax
+            test ah, 0x41
+            jne L004ad5ee
+            fdivr qword ptr [DAT_0058a4a0]
+            fld st(0)
+            fld st(1)
+            fxch st(1)
+            fmulp st(5), st(0)
+            fmulp st(3), st(0)
+            fmulp st(1), st(0)
+            jmp L004ad608
+    L004ad5ee:
+            fstp st(0)
+            fstp st(0)
+            fstp st(0)
+            fstp st(0)
+            fld dword ptr [gOppo_pursuit_one]
+            fld dword ptr [gOppo_render_zero]
+            fld dword ptr [gOppo_render_zero]
+    L004ad608:
+            fld dword ptr [ebp + 0x78]
+            fld dword ptr [ebp + 0x70]
+            fld dword ptr [ebp + 0x74]
+            fxch st(2)
+            fmul st(0), st(3)
+            fxch st(1)
+            fmul st(0), st(5)
+            fxch st(2)
+            fmul st(0), st(4)
+            fxch st(2)
+            faddp st(1), st(0)
+            fxch st(1)
+            faddp st(1), st(0)
+            fcomp dword ptr [gHead_on_cos_value]
+            fnstsw ax
+            test ah, 0x41
+            jne L004ad67b
+            fxch st(2)
+            fmul dword ptr [gProgram_state+0x11c]
+            fxch st(1)
+            fmul dword ptr [gProgram_state+0x120]
+            fld dword ptr [gHead_on_cos_value]
+            fxch st(3)
+            fmul dword ptr [gProgram_state+0x124]
+            fxch st(1)
+            faddp st(2), st(0)
+            fxch st(2)
+            fchs
+            fxch st(2)
+            faddp st(1), st(0)
+            fxch st(1)
+            fcompp
+            fnstsw ax
+            test ah, 0x41
+            jne L004ad681
+            push offset gOpponent_nastyness_frigger+0xfc4
+            call DoNotDprintf_opponent
+            add esp, 4
+            mov eax, 1
+            jmp L004ad683
+    L004ad67b:
+            fstp st(0)
+            fstp st(0)
+            fstp st(0)
+    L004ad681:
+            xor eax, eax
+    L004ad683:
+            lea eax, [eax + eax*4]
+            lea ecx, [eax + eax*4]
+            lea edi, [edi + ecx*2]
+            mov ecx, edi
+            call PercentageChance
+            mov ebp, eax
+            mov eax, offset gOpponent_nastyness_frigger+0xfac
+            test ebp, ebp
+            jne L004ad6a3
+            mov eax, offset gOpponent_nastyness_frigger+0xf90
+    L004ad6a3:
+            mov edx, dword ptr [esi + 8]
+            push eax
+            add edx, 0xec
+            push edi
+            push edx
+            push offset gOpponent_nastyness_frigger+0xf60
+            call DoNotDprintf_opponent
+            add esp, 0x10
+            test ebp, ebp
+            je L004ad73a
+            mov eax, dword ptr [esi]
+            mov edx, dword ptr [gOpponents]
+            mov ecx, eax
+            shl ecx, 3
+            sub ecx, eax
+            shl ecx, 6
+            mov al, byte ptr [ecx + edx + 0x1b8]
+            lea edx, [ecx + edx + 0x1b8]
+            cmp al, 0x14
+            jbe L004ad6ee
+            mov ecx, eax
+            and ecx, 0xff
+            jmp L004ad6f3
+    L004ad6ee:
+            mov ecx, 0x14
+    L004ad6f3:
+            mov edi, dword ptr [esp + 0x18]
+            add ecx, edi
+            cmp ecx, 0x64
+            jle L004ad705
+            mov eax, 0x64
+            jmp L004ad717
+    L004ad705:
+            cmp al, 0x14
+            jbe L004ad710
+            and eax, 0xff
+            jmp L004ad715
+    L004ad710:
+            mov eax, 0x14
+    L004ad715:
+            add eax, edi
+    L004ad717:
+            mov byte ptr [edx], al
+            mov edx, dword ptr [esi + 8]
+            add edx, 0xec
+            lea eax, [esp + 0x1c]
+            push edx
+            push offset gOpponent_nastyness_frigger+0xf30
+            push eax
+            call sprintf
+            add esp, 0xc
+            jmp L004ad8f2
+    L004ad73a:
+            mov eax, dword ptr [esp + 0x14]
+            test eax, eax
+            je L004ad818
+            mov eax, dword ptr [esi + 8]
+            mov ecx, dword ptr [eax + 0x1560]
+            add eax, 0xec
+            push ecx
+            push eax
+            push offset gOpponent_nastyness_frigger+0xefc
+            call DoNotDprintf_opponent
+            mov eax, dword ptr [esi + 0xb0]
+            add esp, 0xc
+            test ah, 1
+            je L004ad839
+            mov edx, dword ptr [esi + 8]
+            xor eax, eax
+            mov ax, word ptr [edx + 0x80]
+            and al, 0
+            cmp eax, 0x300
+            jne L004ad79d
+            push 9
+            push esi
+            call NewObjective
+            add esp, 8
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x10c
+            ret
+    L004ad79d:
+            mov eax, dword ptr [esi + 0xb4]
+            dec eax
+            je L004ad80d
+            dec eax
+            je L004ad823
+            dec eax
+            je L004ad8f2
+            fld dword ptr [esi + 0x18]
+            call _ftol
+            mov edi, eax
+            sub edi, 0xf
+            mov ecx, edi
+            call PercentageChance
+            test eax, eax
+            push edi
+            je L004ad7f6
+            mov ecx, dword ptr [esi + 8]
+            add ecx, 0xec
+            push ecx
+            push offset gOpponent_nastyness_frigger+0xec0
+            call DoNotDprintf_opponent
+            add esp, 0xc
+            push 4
+            push esi
+            call NewObjective
+            add esp, 8
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x10c
+            ret
+    L004ad7f6:
+            mov edx, dword ptr [esi + 8]
+            add edx, 0xec
+            push edx
+            push offset gOpponent_nastyness_frigger+0xe80
+            call DoNotDprintf_opponent
+            add esp, 0xc
+    L004ad80d:
+            push 1
+            push esi
+            call NewObjective
+            add esp, 8
+    L004ad818:
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x10c
+            ret
+    L004ad823:
+            push 4
+            push esi
+            call NewObjective
+            add esp, 8
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x10c
+            ret
+    L004ad839:
+            mov ecx, dword ptr [esi + 8]
+            xor edx, edx
+            mov dx, word ptr [ecx + 0x80]
+            and dl, 0
+            cmp edx, 0x300
+            jne L004ad866
+            push 8
+            push esi
+            call NewObjective
+            add esp, 8
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x10c
+            ret
+    L004ad866:
+            test al, 0x10
+            je L004ad80d
+            mov eax, dword ptr [esi]
+            mov edx, dword ptr [gOpponents]
+            mov ecx, eax
+            shl ecx, 3
+            sub ecx, eax
+            shl ecx, 6
+            lea edi, [ecx + edx + 0x1b8]
+            mov cl, byte ptr [ecx + edx + 0x1b8]
+            cmp cl, 0x14
+            jbe L004ad898
+            mov eax, ecx
+            and eax, 0xff
+            jmp L004ad89d
+    L004ad898:
+            mov eax, 0x14
+    L004ad89d:
+            fld dword ptr [esi + 0xc]
+            fmul dword ptr [DAT_0058a55c+0x4]
+            fld dword ptr [DAT_0058a47c]
+            add eax, 0x14
+            mov dword ptr [esp + 0x14], eax
+            fild dword ptr [esp + 0x14]
+            fsub st(0), st(2)
+            fxch st(1)
+            fcompp
+            fnstsw ax
+            test ah, 1
+            je L004ad8ce
+            fstp st(0)
+            fld dword ptr [DAT_0058a47c]
+            jmp L004ad8eb
+    L004ad8ce:
+            cmp cl, 0x14
+            jbe L004ad8db
+            and ecx, 0xff
+            jmp L004ad8e0
+    L004ad8db:
+            mov ecx, 0x14
+    L004ad8e0:
+            add ecx, 0x14
+            mov dword ptr [esp + 0x14], ecx
+            fisubr dword ptr [esp + 0x14]
+    L004ad8eb:
+            call _ftol
+            mov byte ptr [edi], al
+    L004ad8f2:
+            push offset gProgram_state+0xac
+            push 2
+            push esi
+            call NewObjective
+            add esp, 0xc
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x10c
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004aae20
@@ -9899,7 +10803,8 @@ void C2_HOOK_FASTCALL ProcessWaitForSomeHaplessSod(tOpponent_spec* pOpponent_spe
 }
 
 // FUNCTION: CARMA2_HW 0x004abf60
-void C2_HOOK_FASTCALL CalcReturnToStartPointRoute(tOpponent_spec* pOpponent_spec) {
+void C2_NAKED C2_HOOK_FASTCALL CalcReturnToStartPointRoute(tOpponent_spec* pOpponent_spec) {
+#ifndef CARPOCALYPSE2_MATCHING
     br_vector3 direction;
     br_vector3 intersect;
     br_scalar distance;
@@ -9952,6 +10857,181 @@ void C2_HOOK_FASTCALL CalcReturnToStartPointRoute(tOpponent_spec* pOpponent_spec
             TopUpRandomRoute(pOpponent_spec, (int)CARPOCALYPSE2_ASIZE(pOpponent_spec->next_sections) + 2 - pOpponent_spec->nnext_sections);
         }
     }
+#else
+    __asm {
+            sub esp, 0x70
+            lea eax, [esp + 4]
+            lea edx, [esp + 8]
+            push ebp
+            push esi
+            mov ebp, ecx
+            push edi
+            push eax
+            lea ecx, [esp + 0x24]
+            mov eax, dword ptr [ebp + 8]
+            push ecx
+            mov dword ptr [ebp + 0x7c], 0
+            push edx
+            mov edx, dword ptr [eax + 0x10]
+            xor ecx, ecx
+            add edx, 0x50
+            call FindNearestGeneralSection
+            fld dword ptr [esp + 0x14]
+            fmul dword ptr [esp + 0x14]
+            fld dword ptr [esp + 0x18]
+            fmul dword ptr [esp + 0x18]
+            mov ecx, eax
+            faddp st(1), st(0)
+            fld dword ptr [esp + 0x1c]
+            fmul dword ptr [esp + 0x1c]
+            faddp st(1), st(0)
+            fsqrt
+            fcom dword ptr [DAT_0058a4e8]
+            fnstsw ax
+            test ah, 0x41
+            jne L004abfe9
+            fdivr qword ptr [DAT_0058a4a0]
+            fld st(0)
+            fld st(1)
+            fxch st(1)
+            fmul dword ptr [esp + 0x14]
+            fxch st(1)
+            fmul dword ptr [esp + 0x18]
+            fxch st(2)
+            fmul dword ptr [esp + 0x1c]
+            fxch st(1)
+            fstp dword ptr [esp + 0x14]
+            fxch st(1)
+            fstp dword ptr [esp + 0x18]
+            fstp dword ptr [esp + 0x1c]
+            jmp L004ac003
+    L004abfe9:
+            fstp st(0)
+            mov dword ptr [esp + 0x14], 0x3f800000
+            mov dword ptr [esp + 0x18], 0
+            mov dword ptr [esp + 0x1c], 0
+    L004ac003:
+            mov eax, dword ptr [ebp + 8]
+            fld dword ptr [eax + 0x78]
+            fld dword ptr [eax + 0x70]
+            fld dword ptr [eax + 0x74]
+            fxch st(2)
+            fmul dword ptr [esp + 0x1c]
+            fxch st(1)
+            fmul dword ptr [esp + 0x14]
+            fxch st(2)
+            fmul dword ptr [esp + 0x18]
+            fxch st(2)
+            faddp st(1), st(0)
+            fxch st(1)
+            faddp st(1), st(0)
+            fcomp dword ptr [gOppo_render_zero]
+            fnstsw ax
+            test ah, 0x41
+            mov eax, dword ptr [ebp + 0x7c]
+            jne L004ac053
+            cmp eax, 0xc
+            jge L004ac06e
+            mov word ptr [ebp + eax*4 + 0x80], cx
+            mov ecx, dword ptr [ebp + 0x7c]
+            mov byte ptr [ebp + ecx*4 + 0x82], 1
+            jmp L004ac06b
+    L004ac053:
+            cmp eax, 0xc
+            jge L004ac06e
+            mov word ptr [ebp + eax*4 + 0x80], cx
+            mov edx, dword ptr [ebp + 0x7c]
+            mov byte ptr [ebp + edx*4 + 0x82], 0
+    L004ac06b:
+            inc dword ptr [ebp + 0x7c]
+    L004ac06e:
+            mov eax, dword ptr [ebp + 0x7c]
+            push ebp
+            push 0
+            push 1
+            mov cx, word ptr [ebp + eax*4 + 0x7c]
+            mov word ptr [esp + 0x38], cx
+            mov dl, byte ptr [ebp + eax*4 + 0x7e]
+            mov eax, dword ptr [gSFS_count]
+            mov dword ptr [gSFS_cycles_this_time], 0
+            inc eax
+            lea ecx, [esp + 0x18]
+            mov dword ptr [gSFS_count], eax
+            mov ax, word ptr [ebp + 0x1a0]
+            push eax
+            mov byte ptr [esp + 0x3e], dl
+            push ecx
+            lea edx, [esp + 0x68]
+            lea ecx, [esp + 0x40]
+            call SearchForSection
+            mov eax, dword ptr [gSFS_cycles_this_time]
+            mov esi, dword ptr [gSFS_total_cycles]
+            mov ecx, dword ptr [gSFS_max_cycles]
+            add esi, eax
+            cmp eax, ecx
+            mov dword ptr [gSFS_total_cycles], esi
+            jle L004ac0dc
+            mov ecx, eax
+            mov dword ptr [gSFS_max_cycles], ecx
+    L004ac0dc:
+            fild dword ptr [gSFS_total_cycles]
+            sub esp, 8
+            fidiv dword ptr [gSFS_count]
+            _emit 0xdd
+        _emit 0x1c
+        _emit 0x24
+            push ecx
+            push offset gOpponent_nastyness_frigger+0xb0c
+            call DoNotDprintf_opponent
+            mov ecx, dword ptr [esp + 0x1c]
+            add esp, 0x10
+            cmp ecx, 1
+            jle L004ac140
+            mov edx, dword ptr [ebp + 0x7c]
+            mov eax, 0xc
+            sub eax, edx
+            dec ecx
+            cmp ecx, eax
+            jge L004ac116
+            mov eax, ecx
+    L004ac116:
+            mov ecx, eax
+            lea esi, [esp + 0x58]
+            lea edi, [ebp + edx*4 + 0x80]
+            mov edx, 2
+            rep movsd
+            mov ecx, dword ptr [ebp + 0x7c]
+            add ecx, eax
+            mov dword ptr [ebp + 0x7c], ecx
+            mov ecx, ebp
+            call TopUpRandomRoute
+            pop edi
+            pop esi
+            pop ebp
+            add esp, 0x70
+            ret
+    L004ac140:
+            mov edx, dword ptr [ebp + 8]
+            add edx, 0xec
+            push edx
+            push offset gOpponent_nastyness_frigger+0xac0
+            call DoNotDprintf_opponent
+            mov eax, dword ptr [ebp + 0x7c]
+            add esp, 8
+            cmp eax, 0xc
+            jg L004ac16d
+            mov edx, 0xe
+            mov ecx, ebp
+            sub edx, eax
+            call TopUpRandomRoute
+    L004ac16d:
+            pop edi
+            pop esi
+            pop ebp
+            add esp, 0x70
+            ret
+    }
+#endif
 }
 
 int C2_HOOK_FASTCALL TeleportCopToStart(tOpponent_spec* pOpponent_spec) {

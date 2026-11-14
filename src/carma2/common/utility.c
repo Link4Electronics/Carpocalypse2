@@ -130,6 +130,16 @@ extern char gSplit_triangle_vertex_orders[];
 extern tDepth_effect_type gSwap_depth_effect_type;
 extern char gVector3_00661678[];
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern br_uint_32 C2_HOOK_CDECL BrActorEnum();
+extern char gNegative_half[];
+extern char gQuickTime_call_component_with_storage[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern int gScan_code[256];
+#endif
 // FUNCTION: CARMA2_HW 0x00515910
 void C2_HOOK_FASTCALL StringTransformToLower(char* pStr) {
     int i;
@@ -281,12 +291,36 @@ const char* C2_HOOK_FASTCALL BrActorRenderStyleName(br_actor* pActor) {
 }
 
 // FUNCTION: CARMA2_HW 0x00518ac0
-void C2_HOOK_FASTCALL DumpVisibleActors(br_actor* pActor, const char* pMsg) {
+void C2_NAKED C2_HOOK_FASTCALL DumpVisibleActors(br_actor* pActor, const char* pMsg) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     printf("MSG:\"%s\"\n", pMsg);
     BrActorEnum(pActor, DumpVisibleActorsCB, NULL);
     printf("----------------------------------\n\n");
     fflush(stdout);
+#else
+    __asm {
+            push esi
+            push edx
+            mov esi, ecx
+            push offset gVector3_00661678+0x130
+            call printf
+            add esp, 8
+            push 0
+            push offset DumpVisibleActorsCB
+            push esi
+            call BrActorEnum
+            add esp, 0xc
+            push offset gVector3_00661678+0x108
+            call printf
+            add esp, 4
+            push offset gQuickTime_call_component_with_storage+0x134
+            call fflush
+            add esp, 4
+            pop esi
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00513a30
@@ -1676,31 +1710,119 @@ int C2_HOOK_FASTCALL IRandomPosNeg(int pN) {
 }
 
 // FUNCTION: CARMA2_HW 0x005135b0
-float C2_HOOK_STDCALL FRandomBetween(float pA, float pB) {
+float C2_NAKED C2_HOOK_STDCALL FRandomBetween(float pA, float pB) {
+#ifndef CARPOCALYPSE2_MATCHING
 
 #if RAND_MAX == 0x7fff
     return (float)rand() * (pB - pA) / (float)RAND_MAX + pA;
 #else
     return (float)(rand() % 0x10000) * (pB - pA) / (float)(0x7fff + 1) + pA;
 #endif
+#else
+    __asm {
+            call rand
+            fld dword ptr [esp + 8]
+            fsub dword ptr [esp + 4]
+            mov dword ptr [esp + 8], eax
+            fild dword ptr [esp + 8]
+            fxch st(1)
+            fmulp st(1), st(0)
+            fmul dword ptr [gNegative_half+0x6c]
+            fsubr dword ptr [esp + 4]
+            ret 8
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x005135e0
-float C2_HOOK_STDCALL FRandomPosNeg(float pN) {
+float C2_NAKED C2_HOOK_STDCALL FRandomPosNeg(float pN) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     return FRandomBetween(-pN, pN);
+#else
+    __asm {
+            push ecx
+            fld dword ptr [esp + 8]
+            fchs
+            _emit 0xd9
+        _emit 0x5c
+        _emit 0x24
+        _emit 0x00
+            call rand
+            fld dword ptr [esp + 8]
+            _emit 0xd8
+        _emit 0x64
+        _emit 0x24
+        _emit 0x00
+            mov dword ptr [esp + 8], eax
+            fild dword ptr [esp + 8]
+            fxch st(1)
+            fmulp st(1), st(0)
+            fmul dword ptr [gNegative_half+0x6c]
+            _emit 0xd8
+        _emit 0x6c
+        _emit 0x24
+        _emit 0x00
+            pop ecx
+            ret 4
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00513620
-br_scalar C2_HOOK_STDCALL SRandomBetween(br_scalar pA, br_scalar pB) {
+br_scalar C2_NAKED C2_HOOK_STDCALL SRandomBetween(br_scalar pA, br_scalar pB) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     return FRandomBetween(pA, pB);
+#else
+    __asm {
+            call rand
+            fld dword ptr [esp + 8]
+            fsub dword ptr [esp + 4]
+            mov dword ptr [esp + 8], eax
+            fild dword ptr [esp + 8]
+            fxch st(1)
+            fmulp st(1), st(0)
+            fmul dword ptr [gNegative_half+0x6c]
+            fsubr dword ptr [esp + 4]
+            ret 8
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00513650
-br_scalar C2_HOOK_STDCALL SRandomPosNeg(br_scalar pN) {
+br_scalar C2_NAKED C2_HOOK_STDCALL SRandomPosNeg(br_scalar pN) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     return SRandomBetween(-pN, pN);
+#else
+    __asm {
+            push ecx
+            fld dword ptr [esp + 8]
+            fchs
+            _emit 0xd9
+        _emit 0x5c
+        _emit 0x24
+        _emit 0x00
+            call rand
+            fld dword ptr [esp + 8]
+            _emit 0xd8
+        _emit 0x64
+        _emit 0x24
+        _emit 0x00
+            mov dword ptr [esp + 8], eax
+            fild dword ptr [esp + 8]
+            fxch st(1)
+            fmulp st(1), st(0)
+            fmul dword ptr [gNegative_half+0x6c]
+            _emit 0xd8
+        _emit 0x6c
+        _emit 0x24
+        _emit 0x00
+            pop ecx
+            ret 4
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00513690
@@ -4287,7 +4409,8 @@ void C2_NAKED C2_HOOK_FASTCALL DRVector3Diminish(br_vector3* pV1, const br_vecto
 }
 
 // FUNCTION: CARMA2_HW 0x00516410
-tU16 C2_HOOK_FASTCALL DRScalarToU16(float pValue, float pMin, float pMax) {
+tU16 C2_NAKED C2_HOOK_FASTCALL DRScalarToU16(float pValue, float pMin, float pMax) {
+#ifndef CARPOCALYPSE2_MATCHING
     float scaled;
 
     if (pValue < pMin) {
@@ -4297,6 +4420,36 @@ tU16 C2_HOOK_FASTCALL DRScalarToU16(float pValue, float pMin, float pMax) {
     }
     scaled = (pValue - pMin) * 65535.0f / (pMax - pMin);
     return (tU16)(scaled + 0.5f);
+#else
+    __asm {
+            fld dword ptr [esp + 4]
+            fcom dword ptr [esp + 8]
+            fnstsw ax
+            test ah, 1
+            je L00516427
+            fstp st(0)
+            fld dword ptr [esp + 8]
+            jmp L00516438
+    L00516427:
+            fcom dword ptr [esp + 0xc]
+            fnstsw ax
+            test ah, 0x41
+            jne L00516438
+            fstp st(0)
+            fld dword ptr [esp + 0xc]
+    L00516438:
+            fsub dword ptr [esp + 8]
+            fld dword ptr [esp + 0xc]
+            fsub dword ptr [esp + 8]
+            fxch st(1)
+            fmul dword ptr [gFloatZero_0058b280+0x48]
+            fxch st(1)
+            fdivp st(1), st(0)
+            fsub dword ptr [gFloatZero_0058b280+0x4c]
+            call _ftol
+            ret 0xc
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00516460
@@ -4350,20 +4503,136 @@ void C2_HOOK_FASTCALL DRVector4Set(br_vector4* pDst, float pX, float pY, float p
 }
 
 // FUNCTION: CARMA2_HW 0x00516310
-void C2_HOOK_FASTCALL DRPlaneEquation(br_vector4* pDst, const br_vector3* pN, const br_vector3* pP) {
+void C2_NAKED C2_HOOK_FASTCALL DRPlaneEquation(br_vector4* pDst, const br_vector3* pN, const br_vector3* pP) {
+#ifndef CARPOCALYPSE2_MATCHING
     pDst->v[0] = pN->v[0];
     pDst->v[1] = pN->v[1];
     pDst->v[2] = pN->v[2];
     /* FIXME: this should be negative... */
     pDst->v[3] = BrVector3Dot(pP, pN);
+#else
+    __asm {
+            mov eax, dword ptr [edx]
+            mov dword ptr [ecx], eax
+            mov eax, dword ptr [edx + 4]
+            mov dword ptr [ecx + 4], eax
+            mov eax, dword ptr [edx + 8]
+            mov dword ptr [ecx + 8], eax
+            mov eax, dword ptr [esp + 4]
+            fld dword ptr [eax + 4]
+            fld dword ptr [edx + 4]
+            fld dword ptr [eax + 8]
+            _emit 0xd9
+        _emit 0x00
+            fxch st(2)
+            fmulp st(3), st(0)
+            fmul dword ptr [edx + 8]
+            fxch st(1)
+            _emit 0xd8
+        _emit 0x0a
+            fxch st(1)
+            faddp st(2), st(0)
+            faddp st(1), st(0)
+            fstp dword ptr [ecx + 0xc]
+            ret 4
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00516490
-void C2_HOOK_FASTCALL CompressVector3(tCompressed_vector3* pDest, const br_vector3* pSrc, float pMin, float pMax) {
+void C2_NAKED C2_HOOK_FASTCALL CompressVector3(tCompressed_vector3* pDest, const br_vector3* pSrc, float pMin, float pMax) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     pDest->v[0] = DRScalarToU16(pSrc->v[0], pMin, pMax);
     pDest->v[1] = DRScalarToU16(pSrc->v[1], pMin, pMax);
     pDest->v[2] = DRScalarToU16(pSrc->v[2], pMin, pMax);
+#else
+    __asm {
+            push esi
+            mov esi, edx
+            push edi
+            mov edi, ecx
+            _emit 0xd9
+        _emit 0x06
+            fcom dword ptr [esp + 0xc]
+            fnstsw ax
+            test ah, 1
+            je L005164ab
+            fstp st(0)
+            fld dword ptr [esp + 0xc]
+            jmp L005164bc
+    L005164ab:
+            fcom dword ptr [esp + 0x10]
+            fnstsw ax
+            test ah, 0x41
+            jne L005164bc
+            fstp st(0)
+            fld dword ptr [esp + 0x10]
+    L005164bc:
+            fsub dword ptr [esp + 0xc]
+            fld dword ptr [esp + 0x10]
+            fsub dword ptr [esp + 0xc]
+            fxch st(1)
+            fmul dword ptr [gFloatZero_0058b280+0x48]
+            fdiv st(0), st(1)
+            fsub dword ptr [gFloatZero_0058b280+0x4c]
+            call _ftol
+            mov word ptr [edi], ax
+            fld dword ptr [esi + 4]
+            fcom dword ptr [esp + 0xc]
+            fnstsw ax
+            test ah, 1
+            je L005164f6
+            fstp st(0)
+            fld dword ptr [esp + 0xc]
+            jmp L00516507
+    L005164f6:
+            fcom dword ptr [esp + 0x10]
+            fnstsw ax
+            test ah, 0x41
+            jne L00516507
+            fstp st(0)
+            fld dword ptr [esp + 0x10]
+    L00516507:
+            fsub dword ptr [esp + 0xc]
+            fmul dword ptr [gFloatZero_0058b280+0x48]
+            fdiv st(0), st(1)
+            fsub dword ptr [gFloatZero_0058b280+0x4c]
+            call _ftol
+            mov word ptr [edi + 2], ax
+            fld dword ptr [esi + 8]
+            fcom dword ptr [esp + 0xc]
+            fnstsw ax
+            test ah, 1
+            je L00516538
+            fstp st(0)
+            fld dword ptr [esp + 0xc]
+            jmp L00516549
+    L00516538:
+            fcom dword ptr [esp + 0x10]
+            fnstsw ax
+            test ah, 0x41
+            jne L00516549
+            fstp st(0)
+            fld dword ptr [esp + 0x10]
+    L00516549:
+            fsub dword ptr [esp + 0xc]
+            fmul dword ptr [gFloatZero_0058b280+0x48]
+            fdiv st(0), st(1)
+            fsub dword ptr [gFloatZero_0058b280+0x4c]
+            call _ftol
+            mov word ptr [edi + 4], ax
+            pop edi
+            fstp st(0)
+            pop esi
+            ret 8
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00516570
@@ -4375,7 +4644,8 @@ void C2_HOOK_FASTCALL ExpandVector3(br_vector3* pDest, const tCompressed_vector3
 }
 
 // FUNCTION: CARMA2_HW 0x005165e0
-void C2_HOOK_FASTCALL CompressMatrix34(tCompressed_matrix3* pCompressed_matrix3, int* pInactive, const br_matrix34* pMatrix) {
+void C2_NAKED C2_HOOK_FASTCALL CompressMatrix34(tCompressed_matrix3* pCompressed_matrix3, int* pInactive, const br_matrix34* pMatrix) {
+#ifndef CARPOCALYPSE2_MATCHING
     br_vector3 pos;
 
     if (pMatrix->m[3][0] >= 500.0f) {
@@ -4391,6 +4661,248 @@ void C2_HOOK_FASTCALL CompressMatrix34(tCompressed_matrix3* pCompressed_matrix3,
     CompressVector3(&pCompressed_matrix3->m0, (const br_vector3*)pMatrix->m[0], -1.1f, 1.1f);
     CompressVector3(&pCompressed_matrix3->m1, (const br_vector3*)pMatrix->m[1], -1.1f, 1.1f);
     CompressVector3(&pCompressed_matrix3->p, &pos, -300.0f, 300.0f);
+#else
+    __asm {
+            sub esp, 0xc
+            push esi
+            mov esi, dword ptr [esp + 0x14]
+            push edi
+            mov edi, ecx
+            fld dword ptr [esi + 0x24]
+            fcomp dword ptr [gFloatZero_0058b280+0x54]
+            fnstsw ax
+            test ah, 1
+            jne L00516634
+            mov dword ptr [edx], 1
+            fld dword ptr [esi + 0x24]
+            fld dword ptr [esi + 0x28]
+            fld dword ptr [esi + 0x2c]
+            fxch st(2)
+            fsub dword ptr [gFloatZero_0058b280+0x58]
+            fxch st(1)
+            fsub dword ptr [gFloatZero_0058b280+0x58]
+            fxch st(2)
+            fsub dword ptr [gFloatZero_0058b280+0x58]
+            fxch st(1)
+            fstp dword ptr [esp + 8]
+            fxch st(1)
+            fstp dword ptr [esp + 0xc]
+            fstp dword ptr [esp + 0x10]
+            jmp L0051664f
+    L00516634:
+            mov dword ptr [edx], 0
+            mov eax, dword ptr [esi + 0x24]
+            mov ecx, dword ptr [esi + 0x28]
+            mov edx, dword ptr [esi + 0x2c]
+            mov dword ptr [esp + 8], eax
+            mov dword ptr [esp + 0xc], ecx
+            mov dword ptr [esp + 0x10], edx
+    L0051664f:
+            _emit 0xd9
+        _emit 0x06
+            fcom dword ptr [gFloatZero_0058b280+0x5c]
+            fnstsw ax
+            test ah, 1
+            je L00516668
+            fstp st(0)
+            fld dword ptr [gFloatZero_0058b280+0x5c]
+            jmp L0051667d
+    L00516668:
+            fcom dword ptr [gFloatZero_0058b280+0x60]
+            fnstsw ax
+            test ah, 0x41
+            jne L0051667d
+            fstp st(0)
+            fld dword ptr [gFloatZero_0058b280+0x60]
+    L0051667d:
+            fsub dword ptr [gFloatZero_0058b280+0x5c]
+            fmul dword ptr [gFloatZero_0058b280+0x64]
+            fsub dword ptr [gFloatZero_0058b280+0x4c]
+            call _ftol
+            mov word ptr [edi], ax
+            fld dword ptr [esi + 4]
+            fcom dword ptr [gFloatZero_0058b280+0x5c]
+            fnstsw ax
+            test ah, 1
+            je L005166b1
+            fstp st(0)
+            fld dword ptr [gFloatZero_0058b280+0x5c]
+            jmp L005166c6
+    L005166b1:
+            fcom dword ptr [gFloatZero_0058b280+0x60]
+            fnstsw ax
+            test ah, 0x41
+            jne L005166c6
+            fstp st(0)
+            fld dword ptr [gFloatZero_0058b280+0x60]
+    L005166c6:
+            fsub dword ptr [gFloatZero_0058b280+0x5c]
+            fmul dword ptr [gFloatZero_0058b280+0x64]
+            fsub dword ptr [gFloatZero_0058b280+0x4c]
+            call _ftol
+            mov word ptr [edi + 2], ax
+            fld dword ptr [esi + 8]
+            fcom dword ptr [gFloatZero_0058b280+0x5c]
+            fnstsw ax
+            test ah, 1
+            je L005166fb
+            fstp st(0)
+            fld dword ptr [gFloatZero_0058b280+0x5c]
+            jmp L00516710
+    L005166fb:
+            fcom dword ptr [gFloatZero_0058b280+0x60]
+            fnstsw ax
+            test ah, 0x41
+            jne L00516710
+            fstp st(0)
+            fld dword ptr [gFloatZero_0058b280+0x60]
+    L00516710:
+            fsub dword ptr [gFloatZero_0058b280+0x5c]
+            fmul dword ptr [gFloatZero_0058b280+0x64]
+            fsub dword ptr [gFloatZero_0058b280+0x4c]
+            call _ftol
+            add esi, 0xc
+            mov word ptr [edi + 4], ax
+            _emit 0xd9
+        _emit 0x06
+            fcom dword ptr [gFloatZero_0058b280+0x5c]
+            fnstsw ax
+            test ah, 1
+            je L00516747
+            fstp st(0)
+            fld dword ptr [gFloatZero_0058b280+0x5c]
+            jmp L0051675c
+    L00516747:
+            fcom dword ptr [gFloatZero_0058b280+0x60]
+            fnstsw ax
+            test ah, 0x41
+            jne L0051675c
+            fstp st(0)
+            fld dword ptr [gFloatZero_0058b280+0x60]
+    L0051675c:
+            fsub dword ptr [gFloatZero_0058b280+0x5c]
+            fmul dword ptr [gFloatZero_0058b280+0x64]
+            fsub dword ptr [gFloatZero_0058b280+0x4c]
+            call _ftol
+            mov word ptr [edi + 6], ax
+            fld dword ptr [esi + 4]
+            fcom dword ptr [gFloatZero_0058b280+0x5c]
+            fnstsw ax
+            test ah, 1
+            je L00516791
+            fstp st(0)
+            fld dword ptr [gFloatZero_0058b280+0x5c]
+            jmp L005167a6
+    L00516791:
+            fcom dword ptr [gFloatZero_0058b280+0x60]
+            fnstsw ax
+            test ah, 0x41
+            jne L005167a6
+            fstp st(0)
+            fld dword ptr [gFloatZero_0058b280+0x60]
+    L005167a6:
+            fsub dword ptr [gFloatZero_0058b280+0x5c]
+            fmul dword ptr [gFloatZero_0058b280+0x64]
+            fsub dword ptr [gFloatZero_0058b280+0x4c]
+            call _ftol
+            mov word ptr [edi + 8], ax
+            fld dword ptr [esi + 8]
+            fcom dword ptr [gFloatZero_0058b280+0x5c]
+            fnstsw ax
+            test ah, 1
+            je L005167db
+            fstp st(0)
+            fld dword ptr [gFloatZero_0058b280+0x5c]
+            jmp L005167f0
+    L005167db:
+            fcom dword ptr [gFloatZero_0058b280+0x60]
+            fnstsw ax
+            test ah, 0x41
+            jne L005167f0
+            fstp st(0)
+            fld dword ptr [gFloatZero_0058b280+0x60]
+    L005167f0:
+            fsub dword ptr [gFloatZero_0058b280+0x5c]
+            fmul dword ptr [gFloatZero_0058b280+0x64]
+            fsub dword ptr [gFloatZero_0058b280+0x4c]
+            call _ftol
+            fld dword ptr [esp + 8]
+            fcomp dword ptr [gFloatZero_0058b280+0x68]
+            fld dword ptr [esp + 8]
+            mov word ptr [edi + 0xa], ax
+            lea esi, [edi + 0xc]
+            fnstsw ax
+            test ah, 1
+            je L0051682d
+            fstp st(0)
+            fld dword ptr [gFloatZero_0058b280+0x68]
+            jmp L00516846
+    L0051682d:
+            fld dword ptr [esp + 8]
+            fcomp dword ptr [gFloatZero_0058b280+0x6c]
+            fnstsw ax
+            test ah, 0x41
+            jne L00516846
+            fstp st(0)
+            fld dword ptr [gFloatZero_0058b280+0x6c]
+    L00516846:
+            fsub dword ptr [gFloatZero_0058b280+0x68]
+            fmul dword ptr [gFloatZero_0058b280+0x70]
+            fsub dword ptr [gFloatZero_0058b280+0x4c]
+            call _ftol
+            fld dword ptr [esp + 0xc]
+            fcomp dword ptr [gFloatZero_0058b280+0x68]
+            fld dword ptr [esp + 0xc]
+            mov word ptr [esi], ax
+            fnstsw ax
+            test ah, 1
+            je L0051687f
+            fstp st(0)
+            fld dword ptr [gFloatZero_0058b280+0x68]
+            jmp L00516898
+    L0051687f:
+            fld dword ptr [esp + 0xc]
+            fcomp dword ptr [gFloatZero_0058b280+0x6c]
+            fnstsw ax
+            test ah, 0x41
+            jne L00516898
+            fstp st(0)
+            fld dword ptr [gFloatZero_0058b280+0x6c]
+    L00516898:
+            fsub dword ptr [gFloatZero_0058b280+0x68]
+            fmul dword ptr [gFloatZero_0058b280+0x70]
+            fsub dword ptr [gFloatZero_0058b280+0x4c]
+            call _ftol
+            fld dword ptr [esp + 0x10]
+            fcomp dword ptr [gFloatZero_0058b280+0x68]
+            fld dword ptr [esp + 0x10]
+            mov word ptr [esi + 2], ax
+            fnstsw ax
+            test ah, 1
+            je L005168d2
+            fstp st(0)
+            fld dword ptr [gFloatZero_0058b280+0x68]
+            jmp L005168eb
+    L005168d2:
+            fld dword ptr [esp + 0x10]
+            fcomp dword ptr [gFloatZero_0058b280+0x6c]
+            fnstsw ax
+            test ah, 0x41
+            jne L005168eb
+            fstp st(0)
+            fld dword ptr [gFloatZero_0058b280+0x6c]
+    L005168eb:
+            fsub dword ptr [gFloatZero_0058b280+0x68]
+            fmul dword ptr [gFloatZero_0058b280+0x70]
+            fsub dword ptr [gFloatZero_0058b280+0x4c]
+            call _ftol
+            mov word ptr [esi + 4], ax
+            pop edi
+            pop esi
+            add esp, 0xc
+            ret 4
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00516910
@@ -7150,7 +7662,8 @@ tU32 C2_HOOK_FASTCALL FudgeBRenderIntoTheNinetiesWithSomeProperFuckingColourSupp
 // GetBlenficatiousnessOfMaterial
 
 // FUNCTION: CARMA2_HW 0x00518f20
-char* C2_HOOK_FASTCALL MungeCommas(int pValue) {
+C2_NAKED char* C2_HOOK_FASTCALL MungeCommas(int pValue) {
+#ifndef CARPOCALYPSE2_MATCHING
     // GLOBAL: CARMA2_HW 0x006b5f20
     static char result_buffer[32];
     char buffer[32];
@@ -7171,6 +7684,62 @@ char* C2_HOOK_FASTCALL MungeCommas(int pValue) {
     }
     result_buffer[put_pos] = '\0';
     return result_buffer;
+#else
+    __asm {
+            sub esp, 0x20
+            lea eax, [esp]
+            push esi
+            push edi
+            push ecx
+            push offset gFrontend_QUIT+0xbcb0
+            push eax
+            call sprintf
+            lea edi, [esp + 0x14]
+            or ecx, 0xffffffff
+            xor eax, eax
+            add esp, 0xc
+            repne scasb
+            not ecx
+            dec ecx
+            xor esi, esi
+            xor edi, edi
+            test ecx, ecx
+            jle L00518f86
+            push ebp
+            push ebx
+            mov ebx, ecx
+    L00518f52:
+            mov eax, ebx
+            mov ebp, 3
+            cdq
+            idiv ebp
+            test edx, edx
+            jne L00518f73
+            test esi, esi
+            je L00518f73
+            mov edx, dword ptr [gMisc_strings+0x498]
+            inc edi
+            mov al, byte ptr [edx]
+            mov byte ptr [edi + gScan_code+0x2aaf], al
+    L00518f73:
+            mov dl, byte ptr [esp + esi + 0x10]
+            inc esi
+            mov byte ptr [edi + gScan_code+0x2ab0], dl
+            dec ebx
+            inc edi
+            cmp esi, ecx
+            jl L00518f52
+            pop ebx
+            pop ebp
+    L00518f86:
+            mov byte ptr [edi + gScan_code+0x2ab0], 0
+            pop edi
+            mov eax, offset gScan_code+0x2ab0
+            pop esi
+            add esp, 0x20
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00518fa0

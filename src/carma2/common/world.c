@@ -552,6 +552,13 @@ extern char gSplit_triangle_vertex_orders[];
 extern br_actor* gUniverse_actor;
 extern char gWall_texturing_tweakers[];
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern void C2_HOOK_FASTCALL AssertFlicPixelmap(tFlic_descriptor_ptr pFlic_info, br_pixelmap* pDest_pixelmap);
+extern tU32 C2_HOOK_FASTCALL GetTotalTime(void);
+extern int C2_HOOK_FASTCALL PlayNextFlicFrame(tFlic_descriptor* pFlic_info);
+extern void C2_HOOK_FASTCALL SkyTextureChanged(void);
+extern int C2_HOOK_FASTCALL StartFlic(char* pFile_name, int pIndex, tFlic_descriptor_ptr pFlic_info, tU32 pSize, tS8* pData_ptr, br_pixelmap* pDest_pixelmap, int pX_offset, int pY_offset, int pFrame_rate);
+#endif
 // FUNCTION: CARMA2_HW 0x004488f0
 tWall_texturing_level C2_HOOK_FASTCALL GetWallTexturingLevel(void) {
     return gWall_texturing_level;
@@ -4441,7 +4448,8 @@ void C2_HOOK_FASTCALL DoSaveAdditionalStuff(void) {
 }
 
 // FUNCTION: CARMA2_HW 0x00506e80
-void C2_HOOK_FASTCALL AnimateSky(void) {
+void C2_NAKED C2_HOOK_FASTCALL AnimateSky(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     // GLOBAL: CARMA2_HW 0x006aafc0
     static tU32 prev_sky_animation;
     tU32 now;
@@ -4473,6 +4481,72 @@ void C2_HOOK_FASTCALL AnimateSky(void) {
         prev_sky_animation = now;
         SkyTextureChanged();
     }
+#else
+    __asm {
+            push esi
+            push edi
+            call GetTotalTime
+            mov ecx, dword ptr [gTrack_flic_buffer]
+            test ecx, ecx
+            je L00506f32
+            mov ecx, dword ptr [gTrack_flic_descriptor+0x70]
+            mov edi, eax
+            cmp eax, ecx
+            jge L00506ea8
+            lea edx, [ecx + ecx]
+            sub edx, eax
+            mov eax, edx
+    L00506ea8:
+            test ecx, ecx
+            je L00506eca
+            sub eax, ecx
+            xor edx, edx
+            div dword ptr [gTrack_flic_descriptor+0x30]
+            mov ecx, dword ptr [gTrack_flic_descriptor+0x4c]
+            mov edx, dword ptr [gTrack_flic_descriptor+0x50]
+            add ecx, edx
+            xor edx, edx
+            div ecx
+            jmp L00506ecf
+    L00506eca:
+            mov edx, 1
+    L00506ecf:
+            test edx, edx
+            jle L00506f32
+            mov esi, edx
+    L00506ed5:
+            mov ecx, offset gTrack_flic_descriptor
+            call PlayNextFlicFrame
+            test eax, eax
+            je L00506f24
+            mov ecx, offset gTrack_flic_descriptor
+            call EndFlic
+            mov eax, dword ptr [gTrack_flic_buffer]
+            mov ecx, dword ptr [gTrack_flic_buffer_size]
+            push 0
+            push 0
+            push 0
+            push 0
+            push eax
+            push ecx
+            push offset gTrack_flic_descriptor
+            or edx, 0xffffffff
+            mov ecx, offset gTrack_flic_descriptor+0x8
+            call StartFlic
+            mov edx, dword ptr [gProgram_state+0x1bdc]
+            mov ecx, offset gTrack_flic_descriptor
+            call AssertFlicPixelmap
+    L00506f24:
+            mov dword ptr [gTrack_flic_descriptor+0x70], edi
+            call SkyTextureChanged
+            dec esi
+            jne L00506ed5
+    L00506f32:
+            pop edi
+            pop esi
+            ret
+    }
+#endif
 }
 
 static __inline int C2_HOOK_FASTCALL CalculateTextureBitsValue(tFunk_texturebits* pTexturebits) {

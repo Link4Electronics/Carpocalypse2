@@ -36,10 +36,12 @@ extern int C2_HOOK_FASTCALL S3GetFileSize(FILE *pF);
 extern void* C2_HOOK_FASTCALL S3MemAllocate(br_size_t size, br_uint_8 type);
 extern void C2_HOOK_FASTCALL S3MemFree(void* p);
 extern FILE* C2_HOOK_FASTCALL S3_low_memory_fopen(const char* pPath, const char* pMode);
-extern char gPD_S3_direct_sound[];
 extern int gS3_CDA_enabled;
 extern int gS3_enabled;
 extern char gS3_path_separator[2];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gPD_S3_direct_sound[];
 #endif
 // FUNCTION: CARMA2_HW 0x005687ff
 tS3_buffer_desc* C2_HOOK_FASTCALL S3GetBufferDescription(int pSample_id) {

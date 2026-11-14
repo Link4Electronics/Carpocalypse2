@@ -60,6 +60,20 @@ extern tProgram_state gProgram_state;
 extern tRace_list_spec gRace_list[100];
 extern char g_source_exists[];
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern void C2_HOOK_CDECL BrMemFree();
+#endif
+
+#ifdef CARPOCALYPSE2_MATCHING
+// GLOBAL: CARMA2_HW 0x00658748
+const char gSaved_games_filename[] = "SAVEDGAMES.ARS";
+
+// GLOBAL: CARMA2_HW 0x00658758
+const char gSaved_games_list_started_str[] = "Saved games list already started";
+
+// GLOBAL: CARMA2_HW 0x00591104
+const char gFile_mode_rb[] = "rb";
+#endif
 // FUNCTION: CARMA2_HW 0x00466e90
 void C2_HOOK_FASTCALL MaybeRestoreSavedGame(void) {
 
@@ -101,12 +115,105 @@ int C2_HOOK_FASTCALL DoLoadGame2(tSave_game* pSave_game) {
 }
 
 // FUNCTION: CARMA2_HW 0x00491e50
-void C2_HOOK_FASTCALL DoLoadMostRecentGame(void) {
+void C2_NAKED C2_HOOK_FASTCALL DoLoadMostRecentGame(void) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     if (StartSavedGamesList()) {
         DoLoadGame(0);
         EndSavedGamesList();
     }
+#else
+    __asm {
+            mov eax, dword ptr [gSaved_games]
+            sub esp, 0x100
+            test eax, eax
+            push esi
+            push edi
+            je L00491e6b
+            mov ecx, offset gSaved_games_list_started_str
+            call PDFatalError
+    L00491e6b:
+            push offset gSaved_games_filename
+            mov edx, offset gApplication_path
+            lea ecx, [esp + 0xc]
+            call PathCat
+            mov edx, offset gFile_mode_rb
+            lea ecx, [esp + 8]
+            call DRfopen
+            mov esi, eax
+            test esi, esi
+            je L00491f11
+            push 2
+            xor edx, edx
+            mov ecx, esi
+            call PFfseek
+            mov ecx, esi
+            call PFftell
+            mov ecx, esi
+            mov edi, eax
+            call PFrewind
+            mov eax, 0x446f8657
+            mul edi
+            mov eax, edi
+            push 0xfd
+            sub eax, edx
+            push edi
+            shr eax, 1
+            add eax, edx
+            shr eax, 9
+            mov dword ptr [gCount_saved_games], eax
+            call BrMemAllocate
+            add esp, 8
+            mov edx, 1
+            mov ecx, eax
+            mov dword ptr [gSaved_games], eax
+            push esi
+            push edi
+            call PFfread
+            mov eax, dword ptr [gCount_saved_games]
+            lea ecx, [eax + eax*4]
+            lea ecx, [ecx + ecx*4]
+            lea edx, [eax + ecx*4]
+            mov ecx, dword ptr [gSaved_games]
+            shl edx, 3
+            call SplungeSomeData
+            mov ecx, esi
+            call PFfclose
+            mov eax, dword ptr [gCount_saved_games]
+            mov ecx, eax
+            jmp L00491f18
+    L00491f11:
+            mov eax, dword ptr [gCount_saved_games]
+            xor ecx, ecx
+    L00491f18:
+            test ecx, ecx
+            je L00491f5c
+            mov edx, dword ptr [gSaved_games]
+            test edx, edx
+            je L00491f52
+            test eax, eax
+            jle L00491f45
+            lea ecx, [eax + eax*4]
+            lea ecx, [ecx + ecx*4]
+            lea eax, [eax + ecx*4]
+            lea ecx, [edx + eax*8 - 0x328]
+            call DoLoadGame2
+            mov edx, dword ptr [gSaved_games]
+    L00491f45:
+            test edx, edx
+            je L00491f52
+            push edx
+            call BrMemFree
+            add esp, 4
+    L00491f52:
+            mov dword ptr [gSaved_games], 0
+    L00491f5c:
+            pop edi
+            pop esi
+            add esp, 0x100
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004919a0
@@ -311,14 +418,14 @@ int C2_NAKED C2_HOOK_FASTCALL StartSavedGamesList(void) {
             push esi
             push edi
             je L00491bcb
-            mov ecx, offset g_source_exists+0x144
+            mov ecx, offset gSaved_games_list_started_str
             call PDFatalError
     L00491bcb:
-            push offset g_source_exists+0x134
+            push offset gSaved_games_filename
             mov edx, offset gApplication_path
             lea ecx, [esp + 0xc]
             call PathCat
-            mov edx, offset gCancel_recover+0x1a4
+            mov edx, offset gFile_mode_rb
             lea ecx, [esp + 8]
             call DRfopen
             mov esi, eax

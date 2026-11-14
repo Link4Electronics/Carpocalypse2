@@ -7727,7 +7727,8 @@ intptr_t C2_NAKED C2_HOOK_FASTCALL SoftnessOfNearestPointCB(br_actor* pActor, br
 }
 
 // FUNCTION: CARMA2_HW 0x0042b760
-intptr_t C2_HOOK_FASTCALL DRActorEnumRecurseWithTranslation(br_actor* pActor, br_vector3* pDelta, tDRActorEnumRecurseWithTranslation_cbfn* cbfn, void* pContext) {
+intptr_t C2_NAKED C2_HOOK_FASTCALL DRActorEnumRecurseWithTranslation(br_actor* pActor, br_vector3* pDelta, tDRActorEnumRecurseWithTranslation_cbfn* cbfn, void* pContext) {
+#ifndef CARPOCALYPSE2_MATCHING
     br_vector3 delta;
     intptr_t result;
     br_actor* a;
@@ -7750,6 +7751,69 @@ intptr_t C2_HOOK_FASTCALL DRActorEnumRecurseWithTranslation(br_actor* pActor, br
         }
     }
     return 0;
+#else
+    __asm {
+    L0042b760:
+            sub esp, 0xc
+            test edx, edx
+            push ebx
+            push esi
+            push edi
+            mov esi, ecx
+            je L0042b795
+            fld dword ptr [esi + 0x50]
+            fld dword ptr [esi + 0x54]
+            fld dword ptr [esi + 0x58]
+            fxch st(2)
+            _emit 0xd8
+        _emit 0x02
+            fxch st(1)
+            fadd dword ptr [edx + 4]
+            fxch st(2)
+            fadd dword ptr [edx + 8]
+            fxch st(1)
+            fstp dword ptr [esp + 0xc]
+            fxch st(1)
+            fstp dword ptr [esp + 0x10]
+            fstp dword ptr [esp + 0x14]
+            jmp L0042b7ad
+    L0042b795:
+            mov dword ptr [esp + 0xc], 0
+            mov dword ptr [esp + 0x10], 0
+            mov dword ptr [esp + 0x14], 0
+    L0042b7ad:
+            mov edi, dword ptr [esp + 0x20]
+            mov ebx, dword ptr [esp + 0x1c]
+            push edi
+            lea edx, [esp + 0x10]
+            mov ecx, esi
+            call ebx
+            test eax, eax
+            jne L0042b7e2
+            mov esi, dword ptr [esi + 8]
+            test esi, esi
+            je L0042b7e0
+    L0042b7c9:
+            push edi
+            push ebx
+            lea edx, [esp + 0x14]
+            mov ecx, esi
+            call L0042b760
+            test eax, eax
+            jne L0042b7e2
+            mov esi, dword ptr [esi]
+            test esi, esi
+            jne L0042b7c9
+    L0042b7e0:
+            xor eax, eax
+    L0042b7e2:
+            pop edi
+            pop esi
+            pop ebx
+            add esp, 0xc
+            ret 8
+    }
+#endif
 }
 
 #pragma auto_inline(off)

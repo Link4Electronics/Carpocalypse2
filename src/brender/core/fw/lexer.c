@@ -513,7 +513,8 @@ br_fixed_ls C2_NAKED C2_HOOK_CDECL BrParseFixed(br_lexer* l) {
 }
 
 // FUNCTION: CARMA2_HW 0x0052fb40
-br_float C2_HOOK_CDECL BrParseFloat(br_lexer* l) {
+br_float C2_NAKED C2_HOOK_CDECL BrParseFloat(br_lexer* l) {
+#ifndef CARPOCALYPSE2_MATCHING
     br_boolean neg;
     br_float f;
 
@@ -540,6 +541,59 @@ br_float C2_HOOK_CDECL BrParseFloat(br_lexer* l) {
         f = -f;
     }
     return f;
+#else
+    __asm {
+            push esi
+            mov esi, dword ptr [esp + 8]
+            push edi
+            xor edi, edi
+            cmp dword ptr [esi + 4], 0x2b
+            jne L0052fb52
+            push esi
+            call dword ptr [esi + 0x18]
+    L0052fb52:
+            cmp dword ptr [esi + 4], 0x2d
+            jne L0052fb61
+            push esi
+            mov edi, 1
+            call dword ptr [esi + 0x18]
+    L0052fb61:
+            mov eax, dword ptr [esi + 4]
+            cmp eax, 5
+            jne L0052fb7a
+            fld dword ptr [esi + 8]
+            fstp dword ptr [esp + 0xc]
+            push esi
+            call dword ptr [esi + 0x18]
+            fld dword ptr [esp + 0xc]
+            jmp L0052fba6
+    L0052fb7a:
+            cmp eax, 4
+            jne L0052fb90
+            fild dword ptr [esi + 8]
+            push esi
+            fstp dword ptr [esp + 0x10]
+            call dword ptr [esi + 0x18]
+            fld dword ptr [esp + 0xc]
+            jmp L0052fba6
+    L0052fb90:
+            push offset tokenTypes+0x1d88
+            push esi
+            call dword ptr [esi + 0x2c]
+            add esp, 8
+            push esi
+            call dword ptr [esi + 0x18]
+            fld dword ptr [IID_IDirectInputDevice2A+0x4e4]
+    L0052fba6:
+            test edi, edi
+            je L0052fbac
+            fchs
+    L0052fbac:
+            pop edi
+            pop esi
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0052fbb0

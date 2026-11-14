@@ -10,6 +10,15 @@
 // FIXME: move this definition (+BR_MAC3+BR_MAC4) to br_defs.h (and remove from matrix34.c matrix4.c ...)
 #define BR_MAC2(A, B, C, D) ((A) * (B) + (C) * (D))
 
+#ifdef CARPOCALYPSE2_MATCHING
+extern void C2_HOOK_CDECL BrMatrix34Identity();
+extern void C2_HOOK_CDECL BrMatrix34PreScale();
+extern void C2_HOOK_CDECL BrMatrix34PreTranslate();
+extern char IID_IDirectInputDevice2A[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gZlib_filesystem[];
+#endif
 // FUNCTION: CARMA2_HW 0x00521490
 void C2_HOOK_CDECL BrModelApplyMap(br_model* model, int map_type, br_matrix34* xform) {
     int v;
@@ -52,7 +61,8 @@ void C2_HOOK_CDECL BrModelApplyMap(br_model* model, int map_type, br_matrix34* x
 }
 
 // FUNCTION: CARMA2_HW 0x00521660
-br_matrix34* C2_HOOK_CDECL BrModelFitMap(br_model* model, int axis_0, int axis_1, br_matrix34* transform) {
+C2_NAKED br_matrix34* C2_HOOK_CDECL BrModelFitMap(br_model* model, int axis_0, int axis_1, br_matrix34* transform) {
+#ifndef CARPOCALYPSE2_MATCHING
     br_vector3 axis_3;
     br_vector3 tr;
     br_vector3 sc;
@@ -89,6 +99,152 @@ br_matrix34* C2_HOOK_CDECL BrModelFitMap(br_model* model, int axis_0, int axis_1
     BrMatrix34PreScale(transform, sc.v[0], sc.v[1], sc.v[2]);
     BrMatrix34PreTranslate(transform, tr.v[0], tr.v[1], tr.v[2]);
     return transform;
+#else
+    __asm {
+            sub esp, 0x18
+            push ebx
+            push ebp
+            mov ebp, dword ptr [esp + 0x30]
+            push esi
+            push edi
+            push ebp
+            call BrMatrix34Identity
+            mov eax, dword ptr [esp + 0x38]
+            mov edx, dword ptr [esp + 0x34]
+            add esp, 4
+            lea esi, [esp + 0x10]
+            lea ecx, [eax + eax*2]
+            lea edx, [edx + edx*2]
+            shl ecx, 2
+            shl edx, 2
+            lea edi, [ecx + gZlib_filesystem+0x188]
+            lea eax, [ebp + 8]
+            fld dword ptr [edx + gZlib_filesystem+0x18c]
+            fld dword ptr [ecx + gZlib_filesystem+0x190]
+            fld dword ptr [ecx + gZlib_filesystem+0x190]
+            fld dword ptr [edx + gZlib_filesystem+0x18c]
+            fld dword ptr [ecx + gZlib_filesystem+0x18c]
+            fxch st(3)
+            fmulp st(4), st(0)
+            fld dword ptr [edx + gZlib_filesystem+0x190]
+            fxch st(3)
+            fmul dword ptr [edx + gZlib_filesystem+0x190]
+            lea ebx, [edx + gZlib_filesystem+0x188]
+            mov edx, edi
+            fsubp st(4), st(0)
+            _emit 0xd9
+        _emit 0x07
+            fxch st(4)
+            fstp dword ptr [esp + 0x10]
+            _emit 0xd9
+        _emit 0x03
+            fld dword ptr [ecx + gZlib_filesystem+0x18c]
+            fxch st(4)
+            fmulp st(5), st(0)
+            _emit 0xd9
+        _emit 0x03
+            fxch st(1)
+            fmulp st(3), st(0)
+            fxch st(2)
+            fsubp st(4), st(0)
+            fxch st(1)
+            fmulp st(2), st(0)
+            fxch st(2)
+            fstp dword ptr [esp + 0x14]
+            _emit 0xd9
+        _emit 0x07
+            fmulp st(2), st(0)
+            fxch st(1)
+            fsubp st(1), st(0)
+            mov ecx, ebx
+            mov edi, 3
+            fstp dword ptr [esp + 0x18]
+    L0052170a:
+            mov ebx, dword ptr [ecx]
+            add ecx, 4
+            mov dword ptr [eax - 8], ebx
+            mov ebx, dword ptr [edx]
+            mov dword ptr [eax - 4], ebx
+            mov ebx, dword ptr [esi]
+            mov dword ptr [eax], ebx
+            add edx, 4
+            add esi, 4
+            add eax, 0xc
+            dec edi
+            jne L0052170a
+            mov eax, dword ptr [esp + 0x2c]
+            lea edx, [esp + 0x1c]
+            mov esi, 3
+            lea ecx, [eax + 0x34]
+            mov eax, ecx
+    L00521739:
+            _emit 0xd9
+        _emit 0x00
+            fld dword ptr [eax + 0xc]
+            fmul dword ptr [IID_IDirectInputDevice2A+0x414]
+            fxch st(1)
+            fmul dword ptr [IID_IDirectInputDevice2A+0x414]
+            add eax, 4
+            add edx, 4
+            faddp st(1), st(0)
+            dec esi
+            fchs
+            fstp dword ptr [edx - 4]
+            jne L00521739
+            lea edx, [esp + 0x10]
+            mov esi, 3
+    L00521765:
+            fld dword ptr [ecx + 0xc]
+            _emit 0xd8
+        _emit 0x19
+            fnstsw ax
+            test ah, 0x40
+            jne L00521790
+            _emit 0xd9
+        _emit 0x01
+            fld dword ptr [ecx + 0xc]
+            fmul dword ptr [IID_IDirectInputDevice2A+0x414]
+            fxch st(1)
+            fmul dword ptr [IID_IDirectInputDevice2A+0x414]
+            fsubp st(1), st(0)
+            fdivr qword ptr [IID_IDirectInputDevice2A+0x438]
+            _emit 0xd9
+        _emit 0x1a
+            jmp L00521796
+    L00521790:
+            mov dword ptr [edx], 0x3f800000
+    L00521796:
+            add ecx, 4
+            add edx, 4
+            dec esi
+            jne L00521765
+            mov ecx, dword ptr [esp + 0x18]
+            mov edx, dword ptr [esp + 0x14]
+            mov eax, dword ptr [esp + 0x10]
+            push ecx
+            push edx
+            push eax
+            push ebp
+            call BrMatrix34PreScale
+            mov ecx, dword ptr [esp + 0x34]
+            mov edx, dword ptr [esp + 0x30]
+            mov eax, dword ptr [esp + 0x2c]
+            add esp, 0x10
+            push ecx
+            push edx
+            push eax
+            push ebp
+            call BrMatrix34PreTranslate
+            add esp, 0x10
+            mov eax, ebp
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x18
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x005217e0

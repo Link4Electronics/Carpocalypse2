@@ -471,6 +471,10 @@ extern int C2_HOOK_STDCALL FopWrite_FILE_INFO(br_datafile* df, br_uint_32 type);
 extern char IID_IDirectInputDevice2A[];
 extern br_v1db_state v1db;
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern br_uint_32 C2_HOOK_CDECL BrMaterialCount();
+extern br_uint_32 C2_HOOK_CDECL BrMaterialEnum();
+#endif
 // FUNCTION: CARMA2_HW 0x005232a0
 int C2_HOOK_STDCALL FopRead_VERTICES(br_datafile* df, br_uint_32 id, br_uint_32 length, br_uint_32 count) {
     br_model* mp;
@@ -2318,7 +2322,8 @@ br_uint_32 C2_HOOK_CDECL WriteMaterial(br_material* mp, void* df) {
 }
 
 // FUNCTION: CARMA2_HW 0x00524670
-br_uint_32 C2_HOOK_CDECL BrMaterialSaveMany(char* filename, br_material** materials, br_uint_16 num) {
+br_uint_32 C2_NAKED C2_HOOK_CDECL BrMaterialSaveMany(char* filename, br_material** materials, br_uint_16 num) {
+#ifndef CARPOCALYPSE2_MATCHING
     br_datafile* df;
     int i;
     int count;
@@ -2343,6 +2348,178 @@ br_uint_32 C2_HOOK_CDECL BrMaterialSaveMany(char* filename, br_material** materi
     }
     DfClose(df);
     return count;
+#else
+    __asm {
+            mov eax, dword ptr [esp + 4]
+            push esi
+            push 0xc
+            push 1
+            push eax
+            call DfOpen
+            mov esi, eax
+            test esi, esi
+            jne L00524687
+            pop esi
+            ret
+    L00524687:
+            push edi
+            push 5
+            push esi
+            call FopWrite_FILE_INFO
+            mov eax, dword ptr [esp + 0x10]
+            test eax, eax
+            je L005247c2
+            mov edi, dword ptr [esp + 0x14]
+            and edi, 0xffff
+            mov dword ptr [esp + 0x14], edi
+            jle L005247de
+            push ebp
+            push ebx
+            mov dword ptr [esp + 0x14], eax
+            mov dword ptr [esp + 0x18], edi
+    L005246ba:
+            mov edi, dword ptr [eax]
+            mov ebx, dword ptr [esi + 4]
+            push edi
+            push offset br_material_F
+            push esi
+            call dword ptr [ebx + 0x24]
+            push eax
+            push 0x3c
+            push esi
+            call dword ptr [ebx + 8]
+            mov ecx, dword ptr [esi + 4]
+            push edi
+            push offset br_material_F
+            push esi
+            call dword ptr [ecx + 0x1c]
+            mov ebx, dword ptr [edi + 0x40]
+            test ebx, ebx
+            je L00524701
+            mov edx, dword ptr [ebx + 4]
+            mov ebp, dword ptr [esi + 4]
+            push edx
+            push esi
+            call dword ptr [ebp + 0x3c]
+            push eax
+            push 0x1c
+            push esi
+            call dword ptr [ebp + 8]
+            mov ecx, dword ptr [ebx + 4]
+            mov eax, dword ptr [esi + 4]
+            push ecx
+            push esi
+            call dword ptr [eax + 0x34]
+    L00524701:
+            mov ebx, dword ptr [edi + 0x48]
+            test ebx, ebx
+            je L00524725
+            mov edx, dword ptr [ebx + 4]
+            mov ebp, dword ptr [esi + 4]
+            push edx
+            push esi
+            call dword ptr [ebp + 0x3c]
+            push eax
+            push 0x1f
+            push esi
+            call dword ptr [ebp + 8]
+            mov ecx, dword ptr [ebx + 4]
+            mov eax, dword ptr [esi + 4]
+            push ecx
+            push esi
+            call dword ptr [eax + 0x34]
+    L00524725:
+            mov ebx, dword ptr [edi + 0x4c]
+            test ebx, ebx
+            je L00524749
+            mov edx, dword ptr [ebx + 4]
+            mov ebp, dword ptr [esi + 4]
+            push edx
+            push esi
+            call dword ptr [ebp + 0x3c]
+            push eax
+            push 0x1e
+            push esi
+            call dword ptr [ebp + 8]
+            mov ecx, dword ptr [ebx + 4]
+            mov eax, dword ptr [esi + 4]
+            push ecx
+            push esi
+            call dword ptr [eax + 0x34]
+    L00524749:
+            mov ebx, dword ptr [edi + 0x44]
+            test ebx, ebx
+            je L0052476d
+            mov edx, dword ptr [ebx + 4]
+            mov ebp, dword ptr [esi + 4]
+            push edx
+            push esi
+            call dword ptr [ebp + 0x3c]
+            push eax
+            push 0x20
+            push esi
+            call dword ptr [ebp + 8]
+            mov ecx, dword ptr [ebx + 4]
+            mov eax, dword ptr [esi + 4]
+            push ecx
+            push esi
+            call dword ptr [eax + 0x34]
+    L0052476d:
+            mov edi, dword ptr [edi + 0x50]
+            test edi, edi
+            je L00524791
+            mov edx, dword ptr [edi + 4]
+            mov ebx, dword ptr [esi + 4]
+            push edx
+            push esi
+            call dword ptr [ebx + 0x3c]
+            push eax
+            push 0x3b
+            push esi
+            call dword ptr [ebx + 8]
+            mov ecx, dword ptr [edi + 4]
+            mov eax, dword ptr [esi + 4]
+            push ecx
+            push esi
+            call dword ptr [eax + 0x34]
+    L00524791:
+            push esi
+            call FopWrite_END
+            mov eax, dword ptr [esp + 0x14]
+            mov ecx, dword ptr [esp + 0x18]
+            add eax, 4
+            dec ecx
+            mov dword ptr [esp + 0x14], eax
+            mov dword ptr [esp + 0x18], ecx
+            jne L005246ba
+            mov edi, dword ptr [esp + 0x1c]
+            pop ebx
+            pop ebp
+            push esi
+            call DfClose
+            mov eax, edi
+            pop edi
+            pop esi
+            ret
+    L005247c2:
+            push esi
+            push offset WriteMaterial
+            push 0
+            call BrMaterialEnum
+            add esp, 0xc
+            push 0
+            call BrMaterialCount
+            add esp, 4
+            mov edi, eax
+    L005247de:
+            push esi
+            call DfClose
+            mov eax, edi
+            pop edi
+            pop esi
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x005248e0
@@ -2432,9 +2609,183 @@ br_material* C2_HOOK_CDECL BrMaterialLoad(char* filename) {
 }
 
 // FUNCTION: CARMA2_HW 0x00524a60
-br_uint_32 C2_HOOK_CDECL BrMaterialSave(char* filename, br_material* ptr) {
+br_uint_32 C2_NAKED C2_HOOK_CDECL BrMaterialSave(char* filename, br_material* ptr) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     return BrMaterialSaveMany(filename, &ptr, 1);
+#else
+    __asm {
+            push ecx
+            mov eax, dword ptr [esp + 8]
+            push esi
+            push 0xc
+            push 1
+            push eax
+            call DfOpen
+            mov esi, eax
+            test esi, esi
+            jne L00524a79
+            pop esi
+            pop ecx
+            ret
+    L00524a79:
+            push edi
+            push 5
+            push esi
+            call FopWrite_FILE_INFO
+            lea ecx, [esp + 0x14]
+            test ecx, ecx
+            je L00524bae
+            lea edx, [esp + 0x14]
+            push ebp
+            push ebx
+            mov dword ptr [esp + 0x18], edx
+            mov dword ptr [esp + 0x10], 1
+    L00524aa0:
+            mov eax, dword ptr [esp + 0x18]
+            mov ebx, dword ptr [esi + 4]
+            mov edi, dword ptr [eax]
+            push edi
+            push offset br_material_F
+            push esi
+            call dword ptr [ebx + 0x24]
+            push eax
+            push 0x3c
+            push esi
+            call dword ptr [ebx + 8]
+            mov ecx, dword ptr [esi + 4]
+            push edi
+            push offset br_material_F
+            push esi
+            call dword ptr [ecx + 0x1c]
+            mov ebx, dword ptr [edi + 0x40]
+            test ebx, ebx
+            je L00524aeb
+            mov edx, dword ptr [ebx + 4]
+            mov ebp, dword ptr [esi + 4]
+            push edx
+            push esi
+            call dword ptr [ebp + 0x3c]
+            push eax
+            push 0x1c
+            push esi
+            call dword ptr [ebp + 8]
+            mov ecx, dword ptr [ebx + 4]
+            mov eax, dword ptr [esi + 4]
+            push ecx
+            push esi
+            call dword ptr [eax + 0x34]
+    L00524aeb:
+            mov ebx, dword ptr [edi + 0x48]
+            test ebx, ebx
+            je L00524b0f
+            mov edx, dword ptr [ebx + 4]
+            mov ebp, dword ptr [esi + 4]
+            push edx
+            push esi
+            call dword ptr [ebp + 0x3c]
+            push eax
+            push 0x1f
+            push esi
+            call dword ptr [ebp + 8]
+            mov ecx, dword ptr [ebx + 4]
+            mov eax, dword ptr [esi + 4]
+            push ecx
+            push esi
+            call dword ptr [eax + 0x34]
+    L00524b0f:
+            mov ebx, dword ptr [edi + 0x4c]
+            test ebx, ebx
+            je L00524b33
+            mov edx, dword ptr [ebx + 4]
+            mov ebp, dword ptr [esi + 4]
+            push edx
+            push esi
+            call dword ptr [ebp + 0x3c]
+            push eax
+            push 0x1e
+            push esi
+            call dword ptr [ebp + 8]
+            mov ecx, dword ptr [ebx + 4]
+            mov eax, dword ptr [esi + 4]
+            push ecx
+            push esi
+            call dword ptr [eax + 0x34]
+    L00524b33:
+            mov ebx, dword ptr [edi + 0x44]
+            test ebx, ebx
+            je L00524b57
+            mov edx, dword ptr [ebx + 4]
+            mov ebp, dword ptr [esi + 4]
+            push edx
+            push esi
+            call dword ptr [ebp + 0x3c]
+            push eax
+            push 0x20
+            push esi
+            call dword ptr [ebp + 8]
+            mov ecx, dword ptr [ebx + 4]
+            mov eax, dword ptr [esi + 4]
+            push ecx
+            push esi
+            call dword ptr [eax + 0x34]
+    L00524b57:
+            mov edi, dword ptr [edi + 0x50]
+            test edi, edi
+            je L00524b7b
+            mov edx, dword ptr [edi + 4]
+            mov ebx, dword ptr [esi + 4]
+            push edx
+            push esi
+            call dword ptr [ebx + 0x3c]
+            push eax
+            push 0x3b
+            push esi
+            call dword ptr [ebx + 8]
+            mov ecx, dword ptr [edi + 4]
+            mov eax, dword ptr [esi + 4]
+            push ecx
+            push esi
+            call dword ptr [eax + 0x34]
+    L00524b7b:
+            push esi
+            call FopWrite_END
+            mov ecx, dword ptr [esp + 0x18]
+            mov eax, dword ptr [esp + 0x10]
+            add ecx, 4
+            dec eax
+            mov dword ptr [esp + 0x18], ecx
+            mov dword ptr [esp + 0x10], eax
+            jne L00524aa0
+            pop ebx
+            pop ebp
+            push esi
+            mov edi, 1
+            call DfClose
+            mov eax, edi
+            pop edi
+            pop esi
+            pop ecx
+            ret
+    L00524bae:
+            push esi
+            push offset WriteMaterial
+            push 0
+            call BrMaterialEnum
+            add esp, 0xc
+            push 0
+            call BrMaterialCount
+            add esp, 4
+            mov edi, eax
+            push esi
+            call DfClose
+            mov eax, edi
+            pop edi
+            pop esi
+            pop ecx
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00524be0

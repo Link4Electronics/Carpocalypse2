@@ -192,6 +192,9 @@ extern char gNext_crush_actor_id[];
 extern const char gTooManyLoopsText[];
 extern char gUNK_0058a6f4[];
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern void C2_HOOK_CDECL BrMatrix34PreRotate();
+#endif
 // FUNCTION: CARMA2_HW 0x004268a0
 int C2_HOOK_FASTCALL AddObjectObjectForce(tPhysics_joint_force* pForces, const br_vector3* pPoint_a, br_scalar pT, const br_vector3* pPoint_b, const br_vector3* pNormal, int pCount, tPhysics_object* pObject_a, tPhysics_object* pObject_b, int pType, void* pUnused, br_scalar pValue) {
     int i;
@@ -23674,562 +23677,6 @@ void C2_NAKED C2_HOOK_FASTCALL CapOmega(tPhysics_object* pObject) {
             nop
             nop
             nop
-    L004c18d0:
-            sub esp, 0x5c
-            push ebx
-            push ebp
-            push esi
-            mov esi, ecx
-            push edi
-            mov ecx, dword ptr [esi + 0x188]
-            test ecx, ecx
-            je L004c1af1
-            fld dword ptr [ecx + 4]
-            fcomp dword ptr [gFLOAT_0058a768]
-            fnstsw ax
-            test ah, 0x40
-            jne L004c1af1
-            mov eax, dword ptr [esi + 0x230]
-            test eax, eax
-            je L004c1af1
-            fld dword ptr [ecx + 4]
-            fmul dword ptr [gFLOAT_0058a7f8]
-            fld dword ptr [gFLOAT_0058a768]
-            lea ecx, [esi + 8]
-            lea edx, [esi + 0x8c]
-            fld st(1)
-            fmul st(0), st(2)
-            fxch st(1)
-            fstp dword ptr [esp + 0x10]
-            mov dword ptr [esp + 0x18], ecx
-            lea ecx, [esp + 0x30]
-            fstp dword ptr [esp + 0x24]
-            mov dword ptr [esp + 0x14], edx
-            mov dword ptr [esp + 0x1c], ecx
-            lea edi, [esp + 0x48]
-            mov dword ptr [esp + 0x20], 3
-            fstp st(0)
-    L004c194d:
-            add eax, 0x8c
-            lea edx, [esp + 0x3c]
-            push eax
-            mov eax, dword ptr [esp + 0x18]
-            push eax
-            push edx
-            call BrMatrix34TApplyV
-            mov eax, dword ptr [esi + 0x230]
-            mov ebp, dword ptr [esp + 0x24]
-            mov dword ptr [esp + 0x34], 3
-            add esp, 0xc
-            fld dword ptr [eax + 0x74]
-            fld dword ptr [eax + 0x7c]
-            fld dword ptr [eax + 0x78]
-            fxch st(2)
-            fmul dword ptr [esp + 0x3c]
-            fxch st(1)
-            fmul dword ptr [esp + 0x44]
-            fxch st(2)
-            fmul dword ptr [esp + 0x40]
-            fxch st(2)
-            faddp st(1), st(0)
-            fxch st(1)
-            faddp st(1), st(0)
-            lea ebx, [eax + 8]
-            lea edx, [esp + 0x3c]
-            mov ecx, edi
-            fsub dword ptr [ebp + 0x6c]
-            mov ebp, dword ptr [esp + 0x28]
-            fstp dword ptr [esp + 0x2c]
-    L004c19ae:
-            _emit 0xd9
-        _emit 0x02
-            _emit 0xd8
-        _emit 0x33
-            add edx, 4
-            add ebx, 4
-            add ecx, 4
-            dec ebp
-            fstp dword ptr [ecx - 4]
-            jne L004c19ae
-            mov edx, dword ptr [esp + 0x18]
-            mov ebp, dword ptr [esp + 0x14]
-            add ebp, 0xc
-            _emit 0xd9
-        _emit 0x02
-            fdivr qword ptr [gDOUBLE_0058a780]
-            add edx, 4
-            mov dword ptr [esp + 0x14], ebp
-            mov dword ptr [esp + 0x18], edx
-            _emit 0xd9
-        _emit 0x07
-            fld dword ptr [edi + 8]
-            fld dword ptr [edi + 4]
-            fxch st(2)
-            fmul dword ptr [esp + 0x3c]
-            fxch st(1)
-            fmul dword ptr [esp + 0x44]
-            fxch st(2)
-            fmul dword ptr [esp + 0x40]
-            fxch st(2)
-            faddp st(1), st(0)
-            fxch st(1)
-            faddp st(1), st(0)
-            fxch st(1)
-            faddp st(1), st(0)
-            mov edi, ecx
-            mov ecx, dword ptr [esp + 0x1c]
-            add ecx, 4
-            fdivr dword ptr [esp + 0x2c]
-            mov dword ptr [esp + 0x1c], ecx
-            fld st(0)
-            fld st(0)
-            fmul st(0), st(1)
-            fadd dword ptr [esp + 0x10]
-            fxch st(2)
-            fstp dword ptr [ecx - 4]
-            mov ecx, dword ptr [esp + 0x20]
-            fxch st(1)
-            fstp dword ptr [esp + 0x10]
-            dec ecx
-            mov dword ptr [esp + 0x20], ecx
-            fstp st(0)
-            jne L004c194d
-            fld dword ptr [esp + 0x10]
-            fcomp dword ptr [esp + 0x24]
-            fnstsw ax
-            test ah, 0x41
-            jne L004c1a7b
-            fld dword ptr [esp + 0x24]
-            fdiv dword ptr [esp + 0x10]
-            fsqrt
-            fld st(0)
-            fld st(1)
-            fxch st(1)
-            fmul dword ptr [esp + 0x30]
-            fxch st(1)
-            fmul dword ptr [esp + 0x34]
-            fxch st(2)
-            fmul dword ptr [esp + 0x38]
-            fxch st(1)
-            fstp dword ptr [esp + 0x30]
-            fxch st(1)
-            fstp dword ptr [esp + 0x34]
-            fstp dword ptr [esp + 0x38]
-    L004c1a7b:
-            lea eax, [esp + 0x48]
-            lea edx, [esp + 0x30]
-            lea ecx, [esi + 0x74]
-            mov ebx, 3
-    L004c1a8b:
-            _emit 0xd9
-        _emit 0x02
-            fdiv dword ptr [ecx - 0x6c]
-            add ecx, 4
-            add edx, 4
-            _emit 0xd9
-        _emit 0x00
-            fld dword ptr [edx - 4]
-            fchs
-            fxch st(1)
-            fmul st(0), st(1)
-            fxch st(2)
-            fadd dword ptr [ecx - 4]
-            fxch st(2)
-            _emit 0xd9
-        _emit 0x18
-            fld dword ptr [eax + 4]
-            fmul st(0), st(1)
-            fxch st(2)
-            fstp dword ptr [ecx - 4]
-            mov edi, dword ptr [esi + 0x230]
-            add eax, 0xc
-            fxch st(1)
-            fstp dword ptr [eax - 8]
-            fmul dword ptr [eax - 4]
-            fst dword ptr [eax - 4]
-            fld dword ptr [eax - 0xc]
-            fadd dword ptr [edi + 0x74]
-            fld dword ptr [eax - 8]
-            fxch st(1)
-            fstp dword ptr [edi + 0x74]
-            mov edi, dword ptr [esi + 0x230]
-            dec ebx
-            fadd dword ptr [edi + 0x78]
-            fstp dword ptr [edi + 0x78]
-            mov edi, dword ptr [esi + 0x230]
-            fadd dword ptr [edi + 0x7c]
-            fstp dword ptr [edi + 0x7c]
-            jne L004c1a8b
-    L004c1af1:
-            mov ecx, dword ptr [esi + 0x18c]
-            test ecx, ecx
-            je L004c1bae
-            fld dword ptr [ecx + 4]
-            fcomp dword ptr [gFLOAT_0058a768]
-            fnstsw ax
-            test ah, 0x40
-            jne L004c1bae
-            fld dword ptr [ecx + 4]
-            fmul dword ptr [gFLOAT_0058a7f8]
-            fld dword ptr [gFLOAT_0058a768]
-            lea eax, [esi + 8]
-            lea ecx, [esp + 0x30]
-            fld st(1)
-            fmul st(0), st(2)
-            fxch st(1)
-            fstp st(2)
-            mov edx, 3
-    L004c1b36:
-            fld dword ptr [eax + 0x6c]
-            _emit 0xd8
-        _emit 0x08
-            add eax, 4
-            add ecx, 4
-            dec edx
-            fld st(0)
-            fld st(0)
-            fmul st(0), st(1)
-            faddp st(4), st(0)
-            fxch st(1)
-            fstp dword ptr [ecx - 4]
-            fstp st(0)
-            jne L004c1b36
-            fld st(1)
-            fcomp st(1)
-            fnstsw ax
-            test ah, 0x41
-            jne L004c1b8a
-            fdivrp st(1), st(0)
-            fsqrt
-            fld st(0)
-            fld st(1)
-            fxch st(1)
-            fmul dword ptr [esp + 0x30]
-            fxch st(1)
-            fmul dword ptr [esp + 0x34]
-            fxch st(2)
-            fmul dword ptr [esp + 0x38]
-            fxch st(1)
-            fstp dword ptr [esp + 0x30]
-            fxch st(1)
-            fstp dword ptr [esp + 0x34]
-            fstp dword ptr [esp + 0x38]
-            jmp L004c1b8e
-    L004c1b8a:
-            fstp st(0)
-            fstp st(0)
-    L004c1b8e:
-            lea ecx, [esp + 0x30]
-            lea eax, [esi + 0x74]
-            mov edx, 3
-    L004c1b9a:
-            _emit 0xd9
-        _emit 0x01
-            fdiv dword ptr [eax - 0x6c]
-            add ecx, 4
-            add eax, 4
-            dec edx
-            fsubr dword ptr [eax - 4]
-            fstp dword ptr [eax - 4]
-            jne L004c1b9a
-    L004c1bae:
-            mov esi, dword ptr [esi + 0x224]
-            test esi, esi
-            je L004c1bd3
-    L004c1bb8:
-            mov al, byte ptr [esi + 0xec]
-            test al, al
-            jne L004c1bc9
-            mov ecx, esi
-            call L004c18d0
-    L004c1bc9:
-            mov esi, dword ptr [esi + 0x220]
-            test esi, esi
-            jne L004c1bb8
-    L004c1bd3:
-            pop edi
-            pop esi
-            pop ebp
-            pop ebx
-            add esp, 0x5c
-            ret
-            nop
-            nop
-            nop
-            nop
-            nop
-            sub esp, 0x6c
-            push ebx
-            push esi
-            mov esi, ecx
-            push edi
-            fld dword ptr [esi + 0x74]
-            fld dword ptr [esi + 0x78]
-            fld dword ptr [esi + 0x7c]
-            fxch st(2)
-            fst dword ptr [esp + 0xc]
-            fld st(1)
-            fxch st(1)
-            fmul dword ptr [esp + 0xc]
-            fxch st(1)
-            fmul st(0), st(2)
-            fxch st(3)
-            fst dword ptr [esp + 0xc]
-            fmul dword ptr [esp + 0xc]
-            fld dword ptr [esp + 0x7c]
-            fxch st(4)
-            faddp st(2), st(0)
-            fxch st(3)
-            fmul dword ptr [esp + 0x7c]
-            fxch st(3)
-            faddp st(1), st(0)
-            fxch st(2)
-            mov eax, dword ptr [esi + 0x74]
-            mov ecx, dword ptr [esi + 0x78]
-            mov edx, dword ptr [esi + 0x7c]
-            mov dword ptr [esi + 0x1c0], eax
-            fmulp st(2), st(0)
-            fxch st(1)
-            fstp dword ptr [esp + 0xc]
-            mov dword ptr [esi + 0x1c4], ecx
-            mov dword ptr [esi + 0x1c8], edx
-            fstp st(0)
-            fld dword ptr [esp + 0xc]
-            fcomp qword ptr [gDOUBLE_0058a860]
-            fnstsw ax
-            test ah, 1
-            jne L004c1efe
-            fld dword ptr [esp + 0xc]
-            fcomp dword ptr [gFLOAT_0058a868]
-            fnstsw ax
-            test ah, 0x41
-            jne L004c1e9d
-            fld dword ptr [esp + 0xc]
-            fmul dword ptr [gFLOAT_0058a86c]
-            fsqrt
-            call _ftol
-            mov ebx, eax
-            xor edi, edi
-            inc ebx
-            mov dword ptr [esp + 0xc], ebx
-            fild dword ptr [esp + 0xc]
-            test ebx, ebx
-            fdivr dword ptr [esp + 0x7c]
-            fstp dword ptr [esp + 0x7c]
-            jle L004c1ea9
-    L004c1c9e:
-            cmp edi, 0x190
-            jge L004c1ea9
-            fld dword ptr [esi + 0x74]
-            fld dword ptr [esi + 0x78]
-            fld dword ptr [esi + 0x7c]
-            fxch st(2)
-            fst dword ptr [esp + 0xc]
-            fld st(1)
-            fxch st(1)
-            fmul dword ptr [esp + 0xc]
-            fxch st(1)
-            fmul st(0), st(2)
-            fxch st(3)
-            fst dword ptr [esp + 0xc]
-            fmul dword ptr [esp + 0xc]
-            fxch st(3)
-            faddp st(1), st(0)
-            fld dword ptr [esi + 0x74]
-            fld dword ptr [esi + 0x78]
-            fxch st(4)
-            faddp st(2), st(0)
-            fld dword ptr [esi + 0x7c]
-            fxch st(2)
-            fsqrt
-            lea eax, [esp + 0x24]
-            push eax
-            fst dword ptr [esp + 0x10]
-            fstp dword ptr [esp + 0x10]
-            fdiv dword ptr [esp + 0x10]
-            fxch st(3)
-            fdiv dword ptr [esp + 0x10]
-            fxch st(1)
-            fdiv dword ptr [esp + 0x10]
-            fld dword ptr [esp + 0x10]
-            fmul dword ptr [esp + 0x80]
-            fld dword ptr [esi + 0x74]
-            fld dword ptr [esi + 0x78]
-            fxch st(6)
-            fstp dword ptr [esp + 0x28]
-            fld dword ptr [esi + 0x10]
-            fxch st(4)
-            fstp dword ptr [esp + 0x2c]
-            fmul dword ptr [esi + 8]
-            fxch st(5)
-            fmul dword ptr [esi + 0xc]
-            fxch st(3)
-            fmul dword ptr [esi + 0x7c]
-            fxch st(2)
-            fstp dword ptr [esp + 0x30]
-            fmul qword ptr [gDOUBLE_0058a770]
-            fxch st(4)
-            fstp dword ptr [esp + 0x40]
-            fxch st(1)
-            fstp dword ptr [esp + 0x44]
-            fstp dword ptr [esp + 0x48]
-            fxch st(1)
-            call _ftol
-            shr ax, 1
-            lea ecx, [esp + 0x4c]
-            push eax
-            push ecx
-            fstp st(0)
-            call BrMatrix34Rotate
-            add esp, 0xc
-            lea edx, [esp + 0x48]
-            lea eax, [esp + 0x3c]
-            lea ecx, [esp + 0x30]
-            push edx
-            push eax
-            push ecx
-            call BrMatrix34TApplyV
-            fld dword ptr [esp + 0x3c]
-            fld dword ptr [esp + 0x40]
-            fld dword ptr [esp + 0x44]
-            fxch st(2)
-            fdiv dword ptr [esi + 8]
-            fxch st(1)
-            add esp, 0xc
-            lea edx, [esp + 0x24]
-            push edx
-            fdiv dword ptr [esi + 0xc]
-            fxch st(2)
-            fdiv dword ptr [esi + 0x10]
-            fxch st(2)
-            fstp dword ptr [esp + 0x20]
-            fxch st(1)
-            fstp dword ptr [esp + 0x24]
-            fld st(0)
-            fmul st(0), st(1)
-            fld dword ptr [esp + 0x20]
-            fmul dword ptr [esp + 0x20]
-            faddp st(1), st(0)
-            fld dword ptr [esp + 0x24]
-            fmul dword ptr [esp + 0x24]
-            faddp st(1), st(0)
-            fsqrt
-            fstp dword ptr [esp + 0x10]
-            fdiv dword ptr [esp + 0x10]
-            fstp dword ptr [esp + 0x28]
-            fld dword ptr [esp + 0x20]
-            fdiv dword ptr [esp + 0x10]
-            fstp dword ptr [esp + 0x2c]
-            fld dword ptr [esp + 0x24]
-            fdiv dword ptr [esp + 0x10]
-            fstp dword ptr [esp + 0x30]
-            fld dword ptr [esp + 0x10]
-            fmul dword ptr [esp + 0x80]
-            fmul qword ptr [gDOUBLE_0058a770]
-            call _ftol
-            push eax
-            lea eax, [esp + 0x50]
-            push eax
-            call BrMatrix34Rotate
-            fld dword ptr [esi + 0x1c]
-            add esp, 0xc
-            fchs
-            push ecx
-            _emit 0xd9
-        _emit 0x1c
-        _emit 0x24
-            fld dword ptr [esi + 0x18]
-            push ecx
-            fchs
-            _emit 0xd9
-        _emit 0x1c
-        _emit 0x24
-            fld dword ptr [esi + 0x14]
-            push ecx
-            lea ecx, [esp + 0x54]
-            fchs
-            _emit 0xd9
-        _emit 0x1c
-        _emit 0x24
-            push ecx
-            call BrMatrix34PreTranslate
-            mov edx, dword ptr [esi + 0x1c]
-            mov eax, dword ptr [esi + 0x18]
-            mov ecx, dword ptr [esi + 0x14]
-            add esp, 0x10
-            push edx
-            push eax
-            lea edx, [esp + 0x50]
-            push ecx
-            push edx
-            call BrMatrix34PostTranslate
-            mov ecx, dword ptr [esi]
-            add esp, 0x10
-            lea eax, [esp + 0x48]
-            add ecx, 0x2c
-            push eax
-            push ecx
-            call BrMatrix34Pre
-            add esp, 8
-            lea edx, [esp + 0x48]
-            lea eax, [esp + 0x3c]
-            push edx
-            lea ecx, [esp + 0x34]
-            push eax
-            push ecx
-            call BrMatrix34TApplyV
-            fld dword ptr [esp + 0x3c]
-            fdiv dword ptr [esi + 8]
-            add esp, 0xc
-            inc edi
-            cmp edi, ebx
-            fstp dword ptr [esi + 0x74]
-            fld dword ptr [esp + 0x34]
-            fdiv dword ptr [esi + 0xc]
-            fstp dword ptr [esi + 0x78]
-            fld dword ptr [esp + 0x38]
-            fdiv dword ptr [esi + 0x10]
-            fstp dword ptr [esi + 0x7c]
-            jl L004c1c9e
-            jmp L004c1ea9
-    L004c1e9d:
-            mov edx, dword ptr [esp + 0x7c]
-            mov ecx, esi
-            push edx
-            call RotateObjectFirstOrderRigid
-    L004c1ea9:
-            mov eax, dword ptr [gNet_mode]
-            test eax, eax
-            je L004c1efe
-            mov edx, dword ptr [esi]
-            lea ecx, [esp + 0x10]
-            add edx, 0x2c
-            call GetOrientationFromMatrix
-            mov eax, dword ptr [esi]
-            mov ecx, dword ptr [eax + 0x50]
-            mov edx, dword ptr [eax + 0x54]
-            mov dword ptr [esp + 0x30], ecx
-            mov ecx, dword ptr [eax + 0x58]
-            mov dword ptr [esp + 0x34], edx
-            mov dword ptr [esp + 0x38], ecx
-            lea edx, [esp + 0x10]
-            lea ecx, [eax + 0x2c]
-            call GetMatrixFromOrientation
-            mov edx, dword ptr [esi]
-            mov eax, dword ptr [esp + 0x30]
-            mov dword ptr [edx + 0x50], eax
-            mov ecx, dword ptr [esi]
-            mov edx, dword ptr [esp + 0x34]
-            mov dword ptr [ecx + 0x54], edx
-            mov eax, dword ptr [esi]
-            mov ecx, dword ptr [esp + 0x38]
-            mov dword ptr [eax + 0x58], ecx
-    L004c1efe:
-            pop edi
-            pop esi
-            pop ebx
-            add esp, 0x6c
-            ret 4
     }
 #endif
 }
@@ -25509,7 +24956,8 @@ void C2_NAKED C2_HOOK_FAKE_THISCALL RepositionObjectGroup(tPhysics_object* pObje
 #pragma auto_inline(on)
 
 // FUNCTION: CARMA2_HW 0x004c2670
-void C2_HOOK_FAKE_THISCALL InterpolateSingleObject(tPhysics_object* pObject, float pDt) {
+void C2_NAKED C2_HOOK_FAKE_THISCALL InterpolateSingleObject(tPhysics_object* pObject, float pDt) {
+#ifndef CARPOCALYPSE2_MATCHING
     br_vector3 temp;
     br_vector3 axis;
     float len;
@@ -25537,6 +24985,119 @@ void C2_HOOK_FAKE_THISCALL InterpolateSingleObject(tPhysics_object* pObject, flo
     pObject->actor->t.t.mat.m[3][0] -= temp.v[0];
     pObject->actor->t.t.mat.m[3][1] -= temp.v[1];
     pObject->actor->t.t.mat.m[3][2] -= temp.v[2];
+#else
+    __asm {
+            sub esp, 0x1c
+            push esi
+            mov esi, ecx
+            mov al, byte ptr [esi + 0xec]
+            test al, al
+            jne L004c27b7
+            fld dword ptr [esi + 0x1c0]
+            fld dword ptr [esi + 0x1c4]
+            fld dword ptr [esi + 0x1c8]
+            fxch st(2)
+            fst dword ptr [esp + 4]
+            fld st(1)
+            fxch st(1)
+            fmul dword ptr [esp + 4]
+            fxch st(1)
+            fmul st(0), st(2)
+            fxch st(3)
+            fst dword ptr [esp + 4]
+            fmul dword ptr [esp + 4]
+            fxch st(3)
+            faddp st(1), st(0)
+            fld dword ptr [esi + 0x1c0]
+            fld dword ptr [esi + 0x1c4]
+            fxch st(4)
+            faddp st(2), st(0)
+            fld dword ptr [esi + 0x1c8]
+            fxch st(2)
+            fsqrt
+            fst dword ptr [esp + 4]
+            fstp dword ptr [esp + 4]
+            fdiv dword ptr [esp + 4]
+            fxch st(3)
+            fdiv dword ptr [esp + 4]
+            fxch st(1)
+            fdiv dword ptr [esp + 4]
+            fld dword ptr [esp + 4]
+            fmul dword ptr [esp + 0x24]
+            fxch st(4)
+            fstp dword ptr [esp + 0x14]
+            fxch st(3)
+            fst dword ptr [esp + 0x24]
+            fabs
+            fst dword ptr [esp + 4]
+            fcomp qword ptr [gFLOAT_0058a86c+0x4]
+            fstp dword ptr [esp + 0x18]
+            fxch st(1)
+            fstp dword ptr [esp + 0x1c]
+            fnstsw ax
+            test ah, 1
+            fstp st(0)
+            jne L004c27b7
+            mov eax, dword ptr [esi]
+            push edi
+            add eax, 0x2c
+            lea edi, [esi + 0x14]
+            push eax
+            lea ecx, [esp + 0x10]
+            push edi
+            push ecx
+            call BrMatrix34ApplyV
+            mov eax, dword ptr [esi]
+            add esp, 0xc
+            fld dword ptr [esp + 0xc]
+            fadd dword ptr [eax + 0x50]
+            lea edx, [esp + 0x18]
+            push edx
+            fstp dword ptr [eax + 0x50]
+            mov eax, dword ptr [esi]
+            fld dword ptr [esp + 0x14]
+            fadd dword ptr [eax + 0x54]
+            fstp dword ptr [eax + 0x54]
+            mov eax, dword ptr [esi]
+            fld dword ptr [esp + 0x18]
+            fadd dword ptr [eax + 0x58]
+            fstp dword ptr [eax + 0x58]
+            fld dword ptr [esp + 0x2c]
+            fmul qword ptr [gDOUBLE_0058a770]
+            call _ftol
+            push eax
+            mov eax, dword ptr [esi]
+            add eax, 0x2c
+            push eax
+            call BrMatrix34PreRotate
+            mov ecx, dword ptr [esi]
+            add esp, 0xc
+            add ecx, 0x2c
+            lea edx, [esp + 0xc]
+            push ecx
+            push edi
+            push edx
+            call BrMatrix34ApplyV
+            mov eax, dword ptr [esi]
+            add esp, 0xc
+            fld dword ptr [eax + 0x50]
+            fsub dword ptr [esp + 0xc]
+            pop edi
+            fstp dword ptr [eax + 0x50]
+            mov eax, dword ptr [esi]
+            fld dword ptr [eax + 0x54]
+            fsub dword ptr [esp + 0xc]
+            fstp dword ptr [eax + 0x54]
+            mov esi, dword ptr [esi]
+            fld dword ptr [esi + 0x58]
+            fsub dword ptr [esp + 0x10]
+            fstp dword ptr [esi + 0x58]
+    L004c27b7:
+            pop esi
+            add esp, 0x1c
+            ret 4
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004b6be0

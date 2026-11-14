@@ -503,6 +503,12 @@ extern br_matrix34 gRearview_camera_to_world;
 extern int gRendering_mirror;
 extern char gSplit_triangle_vertex_orders[];
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern br_pixelmap* C2_HOOK_CDECL BrMapAdd();
+extern br_pixelmap* C2_HOOK_FASTCALL LoadPixelmap(const char* pPath_name);
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+#endif
 // FUNCTION: CARMA2_HW 0x004fb910
 void C2_HOOK_FASTCALL GenerateSmokeShades(void) {
     // GLOBAL: CARMA2_HW 0x006aa5b4
@@ -1037,7 +1043,8 @@ void C2_HOOK_FASTCALL LoadInKevStuff(FILE* pF) {
 }
 
 // UNLABELED: CARMA2_HW 0x004fc2e0
-void C2_HOOK_FASTCALL DisposeFlames(void) {
+void C2_NAKED C2_HOOK_FASTCALL DisposeFlames(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     int i;
     int j;
     br_actor* child;
@@ -1060,6 +1067,80 @@ void C2_HOOK_FASTCALL DisposeFlames(void) {
     }
     BrModelRemove(gLollipop_model);
     BrModelFree(gLollipop_model);
+#else
+    __asm {
+            push ebx
+            push ebp
+            push esi
+            push edi
+            mov esi, offset gFlame_map
+    L004fc2e9:
+            mov eax, dword ptr [esi]
+            push eax
+            call BrMapRemove
+            mov ecx, dword ptr [esi]
+            add esp, 4
+            push ecx
+            call BrPixelmapFree
+            add esi, 4
+            add esp, 4
+            cmp esi, offset gFlame_map+0x50
+            jl L004fc2e9
+            xor ebp, ebp
+            mov edi, offset gSmoke_column+0x24
+    L004fc311:
+            mov eax, dword ptr [gColumn_flags]
+            mov edx, 1
+            mov ecx, ebp
+            shl edx, cl
+            test eax, edx
+            je L004fc335
+            mov eax, dword ptr [edi - 8]
+            test eax, eax
+            jne L004fc335
+            mov eax, dword ptr [edi]
+            push eax
+            call BrActorRemove
+            add esp, 4
+    L004fc335:
+            mov ecx, dword ptr [edi]
+            mov ebx, 3
+            mov esi, dword ptr [ecx + 8]
+    L004fc33f:
+            mov edx, dword ptr [esi + 0x1c]
+            push edx
+            call BrMaterialRemove
+            mov eax, dword ptr [esi + 0x1c]
+            add esp, 4
+            push eax
+            call BrMaterialFree
+            mov esi, dword ptr [esi]
+            add esp, 4
+            dec ebx
+            jne L004fc33f
+            mov ecx, dword ptr [edi]
+            push ecx
+            call BrActorFree
+            add esp, 4
+            add edi, 0x7c
+            inc ebp
+            cmp edi, offset gSparks+0x24
+            jl L004fc311
+            mov edx, dword ptr [gLollipop_model]
+            push edx
+            call BrModelRemove
+            mov eax, dword ptr [gLollipop_model]
+            add esp, 4
+            push eax
+            call BrModelFree
+            add esp, 4
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004fe180
@@ -5671,7 +5752,8 @@ void C2_NAKED C2_HOOK_FASTCALL DrMatrix34Rotate(br_matrix34* mat, br_angle r, br
 }
 
 // FUNCTION: CARMA2_HW 0x004fc0e0
-void C2_HOOK_FASTCALL DoSmokeColumn(int i, tU32 pTime, br_vector3* pRet_car_pos) {
+void C2_NAKED C2_HOOK_FASTCALL DoSmokeColumn(int i, tU32 pTime, br_vector3* pRet_car_pos) {
+#ifndef CARPOCALYPSE2_MATCHING
     tSmoke_column* column;
     static const br_scalar upright_tilt_threshold = 0.1f;
     static const br_scalar descent_tilt_threshold = -0.1f;
@@ -5709,6 +5791,167 @@ void C2_HOOK_FASTCALL DoSmokeColumn(int i, tU32 pTime, br_vector3* pRet_car_pos)
     }
     BrMatrix34ApplyP(&column->pos, pRet_car_pos, &column->core.car_actor->t.t.mat);
     column->pos.v[1] -= 0.03f;
+#else
+    __asm {
+            push ebx
+            push ebp
+            push esi
+            mov esi, ecx
+            shl esi, 5
+            sub esi, ecx
+            mov ebx, 1
+            shl esi, 2
+            push edi
+            cmp dword ptr [esi + gSmoke_column], ebx
+            jne L004fc1b6
+            mov eax, dword ptr [esi + gSmoke_column+0x4]
+            mov ecx, dword ptr [eax + 0x10]
+            fld dword ptr [ecx + 0x3c]
+            fcomp dword ptr [gFLOAT_0058aff0+0x14]
+            fnstsw ax
+            test ah, 0x41
+            jne L004fc11e
+            mov dword ptr [esi + gSmoke_column+0x78], ebx
+    L004fc11e:
+            mov edx, dword ptr [esi + gSmoke_column+0x4]
+            mov eax, dword ptr [edx + 0x10]
+            fld dword ptr [eax + 0x3c]
+            fcomp dword ptr [gDOUBLE_0058b0e0+0x8]
+            fnstsw ax
+            test ah, 1
+            je L004fc141
+            mov dword ptr [esi + gSmoke_column+0x78], 0
+    L004fc141:
+            mov ecx, dword ptr [esi + gSmoke_column+0x4]
+            mov edi, dword ptr [esi + gSmoke_column+0x74]
+            shl edi, 5
+            mov eax, dword ptr [ecx + 0xe10]
+            mov edx, eax
+            mov ebx, dword ptr [eax + 0x18]
+            lea ecx, [eax + 0x18]
+            mov ebx, dword ptr [ebx + 0x4c]
+            mov ebx, dword ptr [ebx + 0x18]
+            mov ebx, dword ptr [ebx + 0x10]
+            fld dword ptr [edi + ebx]
+            fadd dword ptr [eax + 0x50]
+            mov edi, dword ptr [esp + 0x14]
+            _emit 0xd9
+        _emit 0x1f
+            mov ebp, dword ptr [ecx]
+            mov ebx, dword ptr [esi + gSmoke_column+0x74]
+            shl ebx, 5
+            mov ebp, dword ptr [ebp + 0x4c]
+            mov ebp, dword ptr [ebp + 0x18]
+            mov ebp, dword ptr [ebp + 0x10]
+            fld dword ptr [ebx + ebp + 4]
+            fadd dword ptr [eax + 0x54]
+            fstp dword ptr [edi + 4]
+            mov ebp, dword ptr [ecx]
+            mov ebx, dword ptr [esi + gSmoke_column+0x74]
+            shl ebx, 5
+            mov ebp, dword ptr [ebp + 0x4c]
+            mov ebp, dword ptr [ebp + 0x18]
+            mov ebp, dword ptr [ebp + 0x10]
+            fld dword ptr [ebx + ebp + 8]
+            fadd dword ptr [eax + 0x58]
+            mov ebx, 1
+            fstp dword ptr [edi + 8]
+            jmp L004fc21c
+    L004fc1b6:
+            mov eax, dword ptr [esi + gSmoke_column+0xc]
+            mov dword ptr [esi + gSmoke_column+0x78], ebx
+            mov edx, dword ptr [esi + gSmoke_column+0x74]
+            mov edi, dword ptr [esp + 0x14]
+            lea ecx, [eax + 0x18]
+            shl edx, 5
+            mov eax, dword ptr [ecx]
+            mov eax, dword ptr [eax + 0x4c]
+            mov eax, dword ptr [eax + 0x18]
+            mov eax, dword ptr [eax + 0x10]
+            mov edx, dword ptr [edx + eax]
+            mov dword ptr [edi], edx
+            mov edx, dword ptr [ecx]
+            mov eax, dword ptr [esi + gSmoke_column+0x74]
+            mov edx, dword ptr [edx + 0x4c]
+            shl eax, 5
+            mov edx, dword ptr [edx + 0x18]
+            mov edx, dword ptr [edx + 0x10]
+            mov eax, dword ptr [eax + edx + 4]
+            mov dword ptr [edi + 4], eax
+            mov eax, dword ptr [ecx]
+            mov edx, dword ptr [esi + gSmoke_column+0x74]
+            mov eax, dword ptr [eax + 0x4c]
+            shl edx, 5
+            mov eax, dword ptr [eax + 0x18]
+            mov eax, dword ptr [eax + 0x10]
+            mov edx, dword ptr [edx + eax + 8]
+            mov dword ptr [edi + 8], edx
+            mov edx, dword ptr [esp + 0x14]
+    L004fc21c:
+            cmp dword ptr [esi + gSmoke_column], ebx
+            jne L004fc287
+            mov eax, dword ptr [gProgram_state+0x4c]
+            test eax, eax
+            je L004fc287
+            mov eax, dword ptr [esi + gSmoke_column+0x4]
+            test eax, eax
+            je L004fc287
+            cmp dword ptr [eax + 0xc], 8
+            jne L004fc287
+            fld dword ptr [eax + 0x484]
+            fsub qword ptr [gDOUBLE_0058b0f0]
+            fld dword ptr [edi + 8]
+            fxch st(1)
+            fcompp
+            fnstsw ax
+            test ah, 0x41
+            jne L004fc27b
+            mov ecx, dword ptr [ecx]
+            mov eax, dword ptr [esi + gSmoke_column+0x74]
+            add edx, 0x2c
+            push edx
+            mov edx, dword ptr [ecx + 0x4c]
+            shl eax, 5
+            mov ecx, dword ptr [edx + 0x18]
+            add eax, dword ptr [ecx + 0x10]
+            push eax
+            push edi
+            call BrMatrix34ApplyP
+            add esp, 0xc
+            jmp L004fc287
+    L004fc27b:
+            fld dword ptr [edi + 4]
+            fsub qword ptr [gDOUBLE_0058b0f8]
+            fstp dword ptr [edi + 4]
+    L004fc287:
+            mov eax, dword ptr [esi + gSmoke_column+0x78]
+            test eax, eax
+            jne L004fc2a9
+            mov edx, dword ptr [esi + gSmoke_column+0x4]
+            mov eax, dword ptr [edx + 8]
+            mov ecx, dword ptr [eax + 0x20]
+            fld dword ptr [ecx + 8]
+            fmul dword ptr [gFLOAT_0058b060]
+            fstp dword ptr [edi + 4]
+    L004fc2a9:
+            mov edx, dword ptr [esi + gSmoke_column+0xc]
+            lea eax, [esi + gSmoke_column+0x34]
+            add edx, 0x2c
+            push edx
+            push edi
+            push eax
+            call BrMatrix34ApplyP
+            fld dword ptr [esi + gSmoke_column+0x38]
+            fsub dword ptr [gDOUBLE_0058b0f8+0x8]
+            add esp, 0xc
+            pop edi
+            fstp dword ptr [esi + gSmoke_column+0x38]
+            pop esi
+            pop ebp
+            pop ebx
+            ret 4
+    }
+#endif
 }
 
 // GLOBAL: CARMA2_HW 0x00660118
@@ -10381,7 +10624,8 @@ void C2_NAKED C2_HOOK_FASTCALL RestoreCarPixelmaps(tCar_spec* pCar_spec) {
 // CmpSmokeZ
 
 // FUNCTION: CARMA2_HW 0x004f9fc0
-void C2_HOOK_FASTCALL InitSmokeStuff(void) {
+void C2_NAKED C2_HOOK_FASTCALL InitSmokeStuff(void) {
+#ifndef CARPOCALYPSE2_MATCHING
 #ifndef CARPOCALYPSE2_MATCHING
     br_pixelmap* pm;
     tPath_name path;
@@ -10561,6 +10805,391 @@ void C2_HOOK_FASTCALL InitSmokeStuff(void) {
     BrModelAdd(gBlend_model);
     BrModelAdd(gBlend_model2);
     BrActorAdd(gDont_render_actor, gBlend_actor);
+#endif
+#else
+    __asm {
+            sub esp, 0x104
+            push ebx
+            push ebp
+            push esi
+            push edi
+            mov edi, 2
+            push edi
+            push 4
+            push offset gDAT_00660148+0xac
+            call BrModelAllocate
+            add esp, 0xc
+            mov dword ptr [gBlend_model], eax
+            push 4
+            push 6
+            push offset gDAT_00660148+0x9c
+            call BrModelAllocate
+            add esp, 0xc
+            xor ebx, ebx
+            mov dword ptr [gBlend_model2], eax
+            push ebx
+            push 1
+            call BrActorAllocate
+            add esp, 8
+            mov dword ptr [gBlend_actor], eax
+            xor ebp, ebp
+            mov esi, offset gBR_smoke_structs+0x1c
+    L004fa013:
+            push offset gDAT_00660148+0x90
+            call BrMaterialAllocate
+            add esp, 4
+            cmp eax, ebx
+            mov dword ptr [esi], eax
+            je L004fa032
+            add esi, 0x24
+            inc ebp
+            cmp esi, offset gSmoke+0x18
+            jl L004fa013
+    L004fa032:
+            cmp dword ptr [gBlend_model], ebx
+            je L004fa047
+            cmp ebp, 0x23
+            jne L004fa047
+            cmp dword ptr [gBlend_actor], ebx
+            jne L004fa051
+    L004fa047:
+            push 0x5e
+            call FatalError
+            add esp, 4
+    L004fa051:
+            mov eax, dword ptr [gBlend_actor]
+            mov dword ptr [eax + 0x14], 0x6601c8
+            mov edx, dword ptr [gBlend_actor]
+            mov ecx, dword ptr [gBlend_model]
+            mov dword ptr [edx + 0x18], ecx
+            mov eax, dword ptr [gBlend_model]
+            mov ecx, dword ptr [eax + 0xc]
+            mov eax, 1
+            mov word ptr [ecx], bx
+            mov edx, dword ptr [gBlend_model]
+            mov ecx, dword ptr [edx + 0xc]
+            mov word ptr [ecx + 2], ax
+            mov edx, dword ptr [gBlend_model]
+            mov ecx, dword ptr [edx + 0xc]
+            mov word ptr [ecx + 4], di
+            mov edx, dword ptr [gBlend_model]
+            mov ecx, dword ptr [edx + 0xc]
+            mov word ptr [ecx + 0x28], di
+            mov edx, dword ptr [gBlend_model]
+            mov ecx, 3
+            mov edx, dword ptr [edx + 0xc]
+            mov word ptr [edx + 0x2a], cx
+            mov edx, dword ptr [gBlend_model]
+            mov edx, dword ptr [edx + 0xc]
+            mov word ptr [edx + 0x2c], bx
+            mov edx, dword ptr [gBlend_model2]
+            mov edx, dword ptr [edx + 0xc]
+            mov word ptr [edx], bx
+            mov edx, dword ptr [gBlend_model2]
+            mov edx, dword ptr [edx + 0xc]
+            mov word ptr [edx + 2], ax
+            mov edx, dword ptr [gBlend_model2]
+            mov edx, dword ptr [edx + 0xc]
+            mov word ptr [edx + 4], di
+            mov edx, dword ptr [gBlend_model2]
+            mov edx, dword ptr [edx + 0xc]
+            mov word ptr [edx + 0x28], di
+            mov edx, dword ptr [gBlend_model2]
+            mov edx, dword ptr [edx + 0xc]
+            mov word ptr [edx + 0x2a], cx
+            mov ecx, dword ptr [gBlend_model2]
+            mov edx, dword ptr [ecx + 0xc]
+            mov word ptr [edx + 0x2c], bx
+            mov ecx, dword ptr [gBlend_model2]
+            mov edx, dword ptr [ecx + 0xc]
+            mov word ptr [edx + 0x50], ax
+            mov ecx, dword ptr [gBlend_model2]
+            mov edx, dword ptr [ecx + 0xc]
+            mov ecx, 5
+            mov word ptr [edx + 0x52], cx
+            mov edx, dword ptr [gBlend_model2]
+            mov edx, dword ptr [edx + 0xc]
+            mov word ptr [edx + 0x54], di
+            mov edx, dword ptr [gBlend_model2]
+            mov edx, dword ptr [edx + 0xc]
+            mov word ptr [edx + 0x78], ax
+            mov eax, dword ptr [gBlend_model2]
+            mov edx, dword ptr [eax + 0xc]
+            mov word ptr [edx + 0x7a], 4
+            mov eax, dword ptr [gBlend_model2]
+            mov edx, dword ptr [eax + 0xc]
+            mov word ptr [edx + 0x7c], cx
+            mov eax, dword ptr [gBlend_model]
+            mov ecx, 0xbf800000
+            mov edx, dword ptr [eax + 8]
+            mov dword ptr [edx], ecx
+            mov eax, dword ptr [gBlend_model]
+            mov edx, dword ptr [eax + 8]
+            mov eax, 0x3f800000
+            mov dword ptr [edx + 4], eax
+            mov edx, dword ptr [gBlend_model]
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 8], ebx
+            mov edx, dword ptr [gBlend_model]
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x28], ecx
+            mov edx, dword ptr [gBlend_model]
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x2c], ecx
+            mov edx, dword ptr [gBlend_model]
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x30], ebx
+            mov edx, dword ptr [gBlend_model]
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x50], eax
+            mov edx, dword ptr [gBlend_model]
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x54], ecx
+            mov edx, dword ptr [gBlend_model]
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x58], ebx
+            mov edx, dword ptr [gBlend_model]
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x78], eax
+            mov edx, dword ptr [gBlend_model]
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x7c], eax
+            mov edx, dword ptr [gBlend_model]
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x80], ebx
+            mov edx, dword ptr [gBlend_model2]
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx], ecx
+            mov edx, dword ptr [gBlend_model2]
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 4], eax
+            mov edx, dword ptr [gBlend_model2]
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 8], ebx
+            mov edx, dword ptr [gBlend_model2]
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x28], ecx
+            mov edx, dword ptr [gBlend_model2]
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x2c], ebx
+            mov edx, dword ptr [gBlend_model2]
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x30], ebx
+            mov edx, dword ptr [gBlend_model2]
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x50], eax
+            mov edx, dword ptr [gBlend_model2]
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x54], ebx
+            mov edx, dword ptr [gBlend_model2]
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x58], ebx
+            mov edx, dword ptr [gBlend_model2]
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x78], eax
+            mov edx, dword ptr [gBlend_model2]
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x7c], eax
+            mov edx, dword ptr [gBlend_model2]
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x80], ebx
+            mov edx, dword ptr [gBlend_model2]
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0xa0], ecx
+            mov ecx, dword ptr [gBlend_model2]
+            mov edx, dword ptr [ecx + 8]
+            mov ecx, 0xbe800000
+            mov dword ptr [edx + 0xa4], ecx
+            mov edx, dword ptr [gBlend_model2]
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0xa8], ebx
+            mov edx, dword ptr [gBlend_model2]
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0xc8], eax
+            mov eax, dword ptr [gBlend_model2]
+            mov edx, dword ptr [eax + 8]
+            mov dword ptr [edx + 0xcc], ecx
+            mov eax, dword ptr [gBlend_model2]
+            mov ecx, dword ptr [eax + 8]
+            mov dword ptr [ecx + 0xd0], ebx
+            mov eax, dword ptr [gBlend_model]
+            or word ptr [eax + 0x20], di
+            mov eax, dword ptr [gBlend_model2]
+            or word ptr [eax + 0x20], di
+            mov edx, dword ptr [gDAT_00660148+0x74]
+            mov eax, dword ptr [gDAT_00660148+0x78]
+            mov dword ptr [esp + 0x14], edx
+            mov cx, word ptr [gDAT_00660148+0x7c]
+            mov dword ptr [esp + 0x18], eax
+            mov word ptr [esp + 0x1c], cx
+            lea ecx, [esp + 0x14]
+            call LoadPixelmap
+            mov edi, eax
+            cmp edi, ebx
+            jne L004fa33a
+            lea edx, [esp + 0x14]
+            push edx
+            push 0x4f
+            call FatalError
+            add esp, 8
+    L004fa33a:
+            mov eax, dword ptr [gRender_palette]
+            push edi
+            mov dword ptr [edi + 0x10], eax
+            call BrMapAdd
+            add esp, 4
+            mov esi, offset gBR_smoke_structs+0x1c
+            mov ebp, offset gDAT_00660148
+    L004fa355:
+            mov ecx, dword ptr [esi]
+            mov dword ptr [ecx + 0x20], 0x27
+            mov edx, dword ptr [esi]
+            mov dword ptr [edx + 0x58], ebp
+            mov eax, dword ptr [esi]
+            mov dword ptr [eax + 0x40], edi
+            mov ecx, dword ptr [esi]
+            push ecx
+            call BrMaterialAdd
+            add esi, 0x24
+            add esp, 4
+            cmp esi, offset gSmoke+0x18
+            jl L004fa355
+            mov edx, dword ptr [gBlend_model]
+            xor ecx, ecx
+            mov eax, dword ptr [edx + 8]
+            mov dword ptr [eax + 0xc], ebx
+            mov cx, word ptr [edi + 0x36]
+            mov dword ptr [esp + 0x10], ecx
+            mov edx, dword ptr [gBlend_model]
+            fild dword ptr [esp + 0x10]
+            mov eax, dword ptr [edx + 8]
+            fdivr dword ptr [gFLOAT_0058afdc]
+            fsubr dword ptr [gFLOAT_0058afdc]
+            fstp dword ptr [eax + 0x10]
+            mov ecx, dword ptr [gBlend_model]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0x34], ebx
+            mov eax, dword ptr [gBlend_model]
+            xor edx, edx
+            mov ecx, dword ptr [eax + 8]
+            mov dword ptr [ecx + 0x38], ebx
+            mov dx, word ptr [edi + 0x34]
+            mov dword ptr [esp + 0x10], edx
+            mov eax, dword ptr [gBlend_model]
+            fild dword ptr [esp + 0x10]
+            mov ecx, dword ptr [eax + 8]
+            fdivr dword ptr [gFLOAT_0058afdc]
+            fsubr dword ptr [gFLOAT_0058afdc]
+            fstp dword ptr [ecx + 0x5c]
+            mov edx, dword ptr [gBlend_model]
+            xor ecx, ecx
+            mov eax, dword ptr [edx + 8]
+            mov dword ptr [eax + 0x60], ebx
+            mov cx, word ptr [edi + 0x34]
+            mov dword ptr [esp + 0x10], ecx
+            mov edx, dword ptr [gBlend_model]
+            fild dword ptr [esp + 0x10]
+            mov eax, dword ptr [edx + 8]
+            xor ecx, ecx
+            fdivr dword ptr [gFLOAT_0058afdc]
+            fsubr dword ptr [gFLOAT_0058afdc]
+            fstp dword ptr [eax + 0x84]
+            mov cx, word ptr [edi + 0x36]
+            mov edx, dword ptr [gBlend_model]
+            mov dword ptr [esp + 0x10], ecx
+            fild dword ptr [esp + 0x10]
+            mov eax, dword ptr [edx + 8]
+            fdivr dword ptr [gFLOAT_0058afdc]
+            fsubr dword ptr [gFLOAT_0058afdc]
+            fstp dword ptr [eax + 0x88]
+            mov ecx, dword ptr [gBlend_model2]
+            xor eax, eax
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0xc], ebx
+            mov ax, word ptr [edi + 0x36]
+            mov dword ptr [esp + 0x10], eax
+            mov ecx, dword ptr [gBlend_model2]
+            fild dword ptr [esp + 0x10]
+            mov edx, dword ptr [ecx + 8]
+            fdivr dword ptr [gFLOAT_0058afdc]
+            fsubr dword ptr [gFLOAT_0058afdc]
+            fstp dword ptr [edx + 0x10]
+            mov eax, dword ptr [gBlend_model2]
+            mov ecx, dword ptr [eax + 8]
+            mov eax, 0x3f000000
+            mov dword ptr [ecx + 0x34], ebx
+            mov edx, dword ptr [gBlend_model2]
+            mov ecx, dword ptr [edx + 8]
+            xor edx, edx
+            mov dword ptr [ecx + 0x38], eax
+            mov dx, word ptr [edi + 0x34]
+            mov dword ptr [esp + 0x10], edx
+            mov ecx, dword ptr [gBlend_model2]
+            fild dword ptr [esp + 0x10]
+            mov edx, dword ptr [ecx + 8]
+            fdivr dword ptr [gFLOAT_0058afdc]
+            fsubr dword ptr [gFLOAT_0058afdc]
+            fstp dword ptr [edx + 0x5c]
+            mov ecx, dword ptr [gBlend_model2]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0x60], eax
+            xor eax, eax
+            mov ax, word ptr [edi + 0x34]
+            mov dword ptr [esp + 0x10], eax
+            mov ecx, dword ptr [gBlend_model2]
+            fild dword ptr [esp + 0x10]
+            mov edx, dword ptr [ecx + 8]
+            xor eax, eax
+            fdivr dword ptr [gFLOAT_0058afdc]
+            fsubr dword ptr [gFLOAT_0058afdc]
+            fstp dword ptr [edx + 0x84]
+            mov ax, word ptr [edi + 0x36]
+            mov ecx, dword ptr [gBlend_model2]
+            mov dword ptr [esp + 0x10], eax
+            fild dword ptr [esp + 0x10]
+            mov edx, dword ptr [ecx + 8]
+            fdivr dword ptr [gFLOAT_0058afdc]
+            fsubr dword ptr [gFLOAT_0058afdc]
+            fstp dword ptr [edx + 0x88]
+            mov eax, dword ptr [gBlend_model2]
+            mov ecx, dword ptr [eax + 8]
+            mov dword ptr [ecx + 0xac], ebx
+            mov edx, dword ptr [gBlend_model2]
+            xor ecx, ecx
+            mov eax, dword ptr [edx + 8]
+            mov dword ptr [eax + 0xb0], ebx
+            mov cx, word ptr [edi + 0x34]
+            mov dword ptr [esp + 0x10], ecx
+            mov edx, dword ptr [gBlend_model2]
+            fild dword ptr [esp + 0x10]
+            mov eax, dword ptr [edx + 8]
+            fdivr dword ptr [gFLOAT_0058afdc]
+            fsubr dword ptr [gFLOAT_0058afdc]
+            fstp dword ptr [eax + 0xd4]
+            mov ecx, dword ptr [gBlend_model2]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0xd8], ebx
+            mov eax, dword ptr [gBlend_model]
+            push eax
+            call BrModelAdd
+            mov ecx, dword ptr [gBlend_model2]
+            add esp, 4
+            push ecx
+            call BrModelAdd
+            mov edx, dword ptr [gBlend_actor]
+            mov eax, dword ptr [gDont_render_actor]
+            add esp, 4
+            push edx
+            push eax
+            call BrActorAdd
+            add esp, 8
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x104
+            ret
+    }
 #endif
 }
 

@@ -1463,7 +1463,8 @@ void C2_NAKED C2_HOOK_FAKE_THISCALL ScaleModelXYZ(br_model* pModel, int pArg2, f
 }
 
 // FUNCTION: CARMA2_HW 0x004042f0
-void C2_HOOK_FAKE_THISCALL ScaleModel(br_model* pModel, int pArg2, float pScale) {
+void C2_NAKED C2_HOOK_FAKE_THISCALL ScaleModel(br_model* pModel, int pArg2, float pScale) {
+#ifndef CARPOCALYPSE2_MATCHING
     br_vertex *v;
     int i;
 
@@ -1479,6 +1480,49 @@ void C2_HOOK_FAKE_THISCALL ScaleModel(br_model* pModel, int pArg2, float pScale)
         v++;
     }
     BrModelUpdate(pModel, BR_MODU_VERTEX_POSITIONS);
+#else
+    __asm {
+            mov eax, dword ptr [ecx + 8]
+            push esi
+            xor esi, esi
+            cmp word ptr [ecx + 0x10], si
+            jbe L00404334
+            push edi
+    L004042fd:
+            _emit 0xd9
+        _emit 0x00
+            fld dword ptr [esp + 0xc]
+            fld dword ptr [esp + 0xc]
+            fxch st(2)
+            fmul dword ptr [esp + 0xc]
+            fxch st(1)
+            fmul dword ptr [eax + 4]
+            fxch st(2)
+            fmul dword ptr [eax + 8]
+            fxch st(1)
+            _emit 0xd9
+        _emit 0x18
+            lea edx, [eax + 8]
+            xor edi, edi
+            fxch st(1)
+            fstp dword ptr [eax + 4]
+            inc esi
+            add eax, 0x28
+            _emit 0xd9
+        _emit 0x1a
+            mov di, word ptr [ecx + 0x10]
+            cmp esi, edi
+            jl L004042fd
+            pop edi
+    L00404334:
+            push 1
+            push ecx
+            call BrModelUpdate
+            add esp, 8
+            pop esi
+            ret 4
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00404350

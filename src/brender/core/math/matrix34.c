@@ -42,7 +42,8 @@ void C2_HOOK_CDECL BrMatrix34Copy(br_matrix34* A, const br_matrix34* B) {
 }
 
 // FUNCTION: CARMA2_HW 0x00532620
-void C2_HOOK_CDECL BrMatrix34Mul(br_matrix34* A, const br_matrix34* B, const br_matrix34* C) {
+void C2_NAKED C2_HOOK_CDECL BrMatrix34Mul(br_matrix34* A, const br_matrix34* B, const br_matrix34* C) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     A(0, 0) = BR_MAC3(B(0, 0), C(0, 0), B(0, 1), C(1, 0), B(0, 2), C(2, 0));
     A(0, 1) = BR_MAC3(B(0, 0), C(0, 1), B(0, 1), C(1, 1), B(0, 2), C(2, 1));
@@ -56,6 +57,190 @@ void C2_HOOK_CDECL BrMatrix34Mul(br_matrix34* A, const br_matrix34* B, const br_
     A(3, 0) = BR_MAC3(B(3, 0), C(0, 0), B(3, 1), C(1, 0), B(3, 2), C(2, 0)) + C(3, 0);
     A(3, 1) = BR_MAC3(B(3, 0), C(0, 1), B(3, 1), C(1, 1), B(3, 2), C(2, 1)) + C(3, 1);
     A(3, 2) = BR_MAC3(B(3, 0), C(0, 2), B(3, 1), C(1, 2), B(3, 2), C(2, 2)) + C(3, 2);
+#else
+    __asm {
+            mov ecx, dword ptr [esp + 8]
+            mov eax, dword ptr [esp + 0xc]
+            mov edx, dword ptr [esp + 4]
+            fld dword ptr [ecx + 8]
+            fld dword ptr [eax + 0x18]
+            fld dword ptr [eax + 0xc]
+            _emit 0xd9
+        _emit 0x00
+            fxch st(2)
+            fmulp st(3), st(0)
+            fmul dword ptr [ecx + 4]
+            fxch st(1)
+            _emit 0xd8
+        _emit 0x09
+            fxch st(1)
+            faddp st(2), st(0)
+            faddp st(1), st(0)
+            _emit 0xd9
+        _emit 0x1a
+            fld dword ptr [eax + 4]
+            fld dword ptr [ecx + 4]
+            fld dword ptr [eax + 0x10]
+            fld dword ptr [eax + 0x1c]
+            fxch st(3)
+            _emit 0xd8
+        _emit 0x09
+            fxch st(1)
+            fmulp st(2), st(0)
+            fxch st(1)
+            faddp st(1), st(0)
+            fxch st(1)
+            fmul dword ptr [ecx + 8]
+            faddp st(1), st(0)
+            fstp dword ptr [edx + 4]
+            fld dword ptr [eax + 8]
+            fld dword ptr [eax + 0x14]
+            fld dword ptr [ecx + 4]
+            fld dword ptr [eax + 0x20]
+            fxch st(3)
+            _emit 0xd8
+        _emit 0x09
+            fxch st(1)
+            fmulp st(2), st(0)
+            fxch st(1)
+            faddp st(1), st(0)
+            fxch st(1)
+            fmul dword ptr [ecx + 8]
+            faddp st(1), st(0)
+            fstp dword ptr [edx + 8]
+            fld dword ptr [ecx + 0xc]
+            fld dword ptr [ecx + 0x10]
+            fld dword ptr [eax + 0xc]
+            fld dword ptr [ecx + 0x14]
+            fxch st(3)
+            _emit 0xd8
+        _emit 0x08
+            fxch st(1)
+            fmulp st(2), st(0)
+            fxch st(1)
+            faddp st(1), st(0)
+            fxch st(1)
+            fmul dword ptr [eax + 0x18]
+            faddp st(1), st(0)
+            fstp dword ptr [edx + 0xc]
+            fld dword ptr [ecx + 0xc]
+            fld dword ptr [eax + 4]
+            fld dword ptr [ecx + 0x14]
+            fld dword ptr [eax + 0x1c]
+            fld dword ptr [ecx + 0x10]
+            fxch st(3)
+            fmulp st(4), st(0)
+            fmulp st(1), st(0)
+            faddp st(2), st(0)
+            fmul dword ptr [eax + 0x10]
+            faddp st(1), st(0)
+            fstp dword ptr [edx + 0x10]
+            fld dword ptr [ecx + 0xc]
+            fld dword ptr [eax + 8]
+            fld dword ptr [ecx + 0x10]
+            fld dword ptr [eax + 0x14]
+            fld dword ptr [ecx + 0x14]
+            fxch st(3)
+            fmulp st(4), st(0)
+            fmulp st(1), st(0)
+            faddp st(2), st(0)
+            fmul dword ptr [eax + 0x20]
+            faddp st(1), st(0)
+            fstp dword ptr [edx + 0x14]
+            fld dword ptr [ecx + 0x18]
+            fld dword ptr [ecx + 0x20]
+            fld dword ptr [eax + 0x18]
+            fld dword ptr [ecx + 0x1c]
+            fxch st(3)
+            _emit 0xd8
+        _emit 0x08
+            fxch st(1)
+            fmulp st(2), st(0)
+            fxch st(1)
+            faddp st(1), st(0)
+            fxch st(1)
+            fmul dword ptr [eax + 0xc]
+            faddp st(1), st(0)
+            fstp dword ptr [edx + 0x18]
+            fld dword ptr [ecx + 0x1c]
+            fld dword ptr [eax + 0x10]
+            fld dword ptr [ecx + 0x18]
+            fld dword ptr [eax + 4]
+            fld dword ptr [ecx + 0x20]
+            fxch st(3)
+            fmulp st(4), st(0)
+            fmulp st(1), st(0)
+            faddp st(2), st(0)
+            fmul dword ptr [eax + 0x1c]
+            faddp st(1), st(0)
+            fstp dword ptr [edx + 0x1c]
+            fld dword ptr [ecx + 0x1c]
+            fld dword ptr [eax + 0x14]
+            fld dword ptr [ecx + 0x18]
+            fld dword ptr [eax + 8]
+            fld dword ptr [ecx + 0x20]
+            fxch st(3)
+            fmulp st(4), st(0)
+            fmulp st(1), st(0)
+            faddp st(2), st(0)
+            fmul dword ptr [eax + 0x20]
+            faddp st(1), st(0)
+            fstp dword ptr [edx + 0x20]
+            fld dword ptr [eax + 0xc]
+            fld dword ptr [ecx + 0x24]
+            fld dword ptr [ecx + 0x28]
+            fld dword ptr [ecx + 0x2c]
+            fxch st(2)
+            _emit 0xd8
+        _emit 0x08
+            fxch st(3)
+            fmulp st(1), st(0)
+            faddp st(2), st(0)
+            fmul dword ptr [eax + 0x18]
+            faddp st(1), st(0)
+            fadd dword ptr [eax + 0x24]
+            fstp dword ptr [edx + 0x24]
+            fld dword ptr [ecx + 0x28]
+            fld dword ptr [eax + 0x10]
+            fld dword ptr [ecx + 0x24]
+            fld dword ptr [eax + 4]
+            fld dword ptr [ecx + 0x2c]
+            fxch st(3)
+            fmulp st(4), st(0)
+            fmulp st(1), st(0)
+            faddp st(2), st(0)
+            fmul dword ptr [eax + 0x1c]
+            faddp st(1), st(0)
+            fadd dword ptr [eax + 0x28]
+            fstp dword ptr [edx + 0x28]
+            fld dword ptr [ecx + 0x24]
+            fld dword ptr [eax + 8]
+            fld dword ptr [ecx + 0x28]
+            fld dword ptr [eax + 0x14]
+            fld dword ptr [ecx + 0x2c]
+            fxch st(3)
+            fmulp st(4), st(0)
+            fmulp st(1), st(0)
+            faddp st(2), st(0)
+            fmul dword ptr [eax + 0x20]
+            faddp st(1), st(0)
+            fadd dword ptr [eax + 0x2c]
+            fstp dword ptr [edx + 0x2c]
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x005327c0
@@ -811,7 +996,8 @@ br_scalar C2_NAKED C2_HOOK_CDECL BrMatrix34Inverse(br_matrix34* B, const br_matr
 }
 
 // FUNCTION: CARMA2_HW 0x00532eb0
-void C2_HOOK_CDECL BrMatrix34LPInverse(br_matrix34* A, const br_matrix34* B) {
+void C2_NAKED C2_HOOK_CDECL BrMatrix34LPInverse(br_matrix34* A, const br_matrix34* B) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     A(0, 0) = B(0, 0);
     A(0, 1) = B(1, 0);
@@ -828,6 +1014,79 @@ void C2_HOOK_CDECL BrMatrix34LPInverse(br_matrix34* A, const br_matrix34* B) {
     A(3, 0) = -BR_MAC3(B(3, 0), A(0, 0), B(3, 1), A(1, 0), B(3, 2), A(2, 0));
     A(3, 1) = -BR_MAC3(B(3, 0), A(0, 1), B(3, 1), A(1, 1), B(3, 2), A(2, 1));
     A(3, 2) = -BR_MAC3(B(3, 0), A(0, 2), B(3, 1), A(1, 2), B(3, 2), A(2, 2));
+#else
+    __asm {
+            mov ecx, dword ptr [esp + 8]
+            mov eax, dword ptr [esp + 4]
+            mov edx, dword ptr [ecx]
+            mov dword ptr [eax], edx
+            mov edx, dword ptr [ecx + 0xc]
+            mov dword ptr [eax + 4], edx
+            mov edx, dword ptr [ecx + 0x18]
+            mov dword ptr [eax + 8], edx
+            mov edx, dword ptr [ecx + 4]
+            mov dword ptr [eax + 0xc], edx
+            mov edx, dword ptr [ecx + 0x10]
+            mov dword ptr [eax + 0x10], edx
+            mov edx, dword ptr [ecx + 0x1c]
+            mov dword ptr [eax + 0x14], edx
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [eax + 0x18], edx
+            mov edx, dword ptr [ecx + 0x14]
+            fld dword ptr [eax + 0x18]
+            mov dword ptr [eax + 0x1c], edx
+            mov edx, dword ptr [ecx + 0x20]
+            mov dword ptr [eax + 0x20], edx
+            fld dword ptr [ecx + 0x24]
+            fld dword ptr [ecx + 0x2c]
+            fld dword ptr [ecx + 0x28]
+            fxch st(2)
+            _emit 0xd8
+        _emit 0x08
+            fxch st(3)
+            fmulp st(1), st(0)
+            faddp st(2), st(0)
+            fmul dword ptr [eax + 0xc]
+            fld dword ptr [eax + 0x1c]
+            fxch st(1)
+            faddp st(2), st(0)
+            fxch st(1)
+            fchs
+            fstp dword ptr [eax + 0x24]
+            fld dword ptr [ecx + 0x2c]
+            fld dword ptr [ecx + 0x24]
+            fld dword ptr [ecx + 0x28]
+            fxch st(2)
+            fmulp st(3), st(0)
+            fld dword ptr [eax + 0x10]
+            fxch st(1)
+            fmul dword ptr [eax + 4]
+            fxch st(1)
+            fxch st(3)
+            fxch st(2)
+            fxch st(1)
+            faddp st(2), st(0)
+            fxch st(2)
+            fmulp st(2), st(0)
+            fld dword ptr [eax + 0x20]
+            fxch st(2)
+            faddp st(1), st(0)
+            fchs
+            fstp dword ptr [eax + 0x28]
+            fld dword ptr [ecx + 0x2c]
+            fld dword ptr [ecx + 0x24]
+            fld dword ptr [ecx + 0x28]
+            fxch st(2)
+            fmulp st(3), st(0)
+            fmul dword ptr [eax + 8]
+            faddp st(2), st(0)
+            fmul dword ptr [eax + 0x14]
+            faddp st(1), st(0)
+            fchs
+            fstp dword ptr [eax + 0x2c]
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00532f60
@@ -1329,19 +1588,135 @@ void C2_HOOK_CDECL BrMatrix34Copy4(br_matrix34* A, const br_matrix4* B) {
 }
 
 // FUNCTION: CARMA2_HW 0x005333a0
-void C2_HOOK_STDCALL BrMatrix34TApplyFV(br_vector3* A, const br_fvector3* B, const br_matrix34* C) {
+void C2_NAKED C2_HOOK_STDCALL BrMatrix34TApplyFV(br_vector3* A, const br_fvector3* B, const br_matrix34* C) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     A->v[0] = BR_MAC3(B->v[0], C(0, 0), B->v[1], C(0, 1), B->v[2], C(0, 2));
     A->v[1] = BR_MAC3(B->v[0], C(1, 0), B->v[1], C(1, 1), B->v[2], C(1, 2));
     A->v[2] = BR_MAC3(B->v[0], C(2, 0), B->v[1], C(2, 1), B->v[2], C(2, 2));
+#else
+    __asm {
+            mov eax, dword ptr [esp + 0xc]
+            mov ecx, dword ptr [esp + 8]
+            mov edx, dword ptr [esp + 4]
+            fld dword ptr [eax + 4]
+            fld dword ptr [eax + 8]
+            fld dword ptr [ecx + 4]
+            fld dword ptr [ecx + 8]
+            _emit 0xd9
+        _emit 0x01
+            fxch st(2)
+            fmulp st(4), st(0)
+            fmulp st(2), st(0)
+            _emit 0xd8
+        _emit 0x08
+            fxch st(1)
+            faddp st(2), st(0)
+            faddp st(1), st(0)
+            _emit 0xd9
+        _emit 0x1a
+            fld dword ptr [eax + 0x14]
+            fld dword ptr [ecx + 8]
+            fld dword ptr [eax + 0x10]
+            fld dword ptr [eax + 0xc]
+            fxch st(2)
+            fmulp st(3), st(0)
+            fmul dword ptr [ecx + 4]
+            fxch st(1)
+            _emit 0xd8
+        _emit 0x09
+            fxch st(1)
+            faddp st(2), st(0)
+            faddp st(1), st(0)
+            fstp dword ptr [edx + 4]
+            fld dword ptr [eax + 0x20]
+            fld dword ptr [ecx + 8]
+            fld dword ptr [eax + 0x1c]
+            fld dword ptr [eax + 0x18]
+            fxch st(2)
+            fmulp st(3), st(0)
+            fmul dword ptr [ecx + 4]
+            fxch st(1)
+            _emit 0xd8
+        _emit 0x09
+            fxch st(1)
+            faddp st(2), st(0)
+            faddp st(1), st(0)
+            fstp dword ptr [edx + 8]
+            ret 0xc
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00533410
-void C2_HOOK_CDECL BrMatrix34Apply(br_vector3* A, const br_vector4* B, const br_matrix34* C) {
+void C2_NAKED C2_HOOK_CDECL BrMatrix34Apply(br_vector3* A, const br_vector4* B, const br_matrix34* C) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     A->v[0] = BR_MAC4(B->v[0], C(0, 0), B->v[1], C(1, 0), B->v[2], C(2, 0), B->v[3], C(3, 0));
     A->v[1] = BR_MAC4(B->v[0], C(0, 1), B->v[1], C(1, 1), B->v[2], C(2, 1), B->v[3], C(3, 1));
     A->v[2] = BR_MAC4(B->v[0], C(0, 2), B->v[1], C(1, 2), B->v[2], C(2, 2), B->v[3], C(3, 2));
+#else
+    __asm {
+            mov eax, dword ptr [esp + 0xc]
+            mov ecx, dword ptr [esp + 8]
+            mov edx, dword ptr [esp + 4]
+            fld dword ptr [eax + 0x24]
+            fld dword ptr [eax + 0x18]
+            fld dword ptr [ecx + 0xc]
+            fld dword ptr [ecx + 8]
+            fld dword ptr [eax + 0xc]
+            fxch st(2)
+            fmulp st(4), st(0)
+            fmulp st(2), st(0)
+            fxch st(1)
+            faddp st(2), st(0)
+            fmul dword ptr [ecx + 4]
+            _emit 0xd9
+        _emit 0x00
+            _emit 0xd8
+        _emit 0x09
+            fxch st(1)
+            faddp st(2), st(0)
+            faddp st(1), st(0)
+            _emit 0xd9
+        _emit 0x1a
+            fld dword ptr [eax + 0x28]
+            fld dword ptr [ecx + 0xc]
+            fld dword ptr [eax + 0x10]
+            fld dword ptr [ecx + 4]
+            fld dword ptr [eax + 0x1c]
+            fxch st(3)
+            fmulp st(4), st(0)
+            fmulp st(1), st(0)
+            faddp st(2), st(0)
+            fmul dword ptr [ecx + 8]
+            fld dword ptr [eax + 4]
+            _emit 0xd8
+        _emit 0x09
+            fxch st(1)
+            faddp st(2), st(0)
+            faddp st(1), st(0)
+            fstp dword ptr [edx + 4]
+            fld dword ptr [eax + 0x20]
+            fld dword ptr [ecx + 8]
+            fld dword ptr [eax + 0x2c]
+            fld dword ptr [ecx + 0xc]
+            fld dword ptr [eax + 0x14]
+            fxch st(3)
+            fmulp st(4), st(0)
+            fmulp st(1), st(0)
+            faddp st(2), st(0)
+            fmul dword ptr [ecx + 4]
+            fld dword ptr [eax + 8]
+            _emit 0xd8
+        _emit 0x09
+            fxch st(1)
+            faddp st(2), st(0)
+            faddp st(1), st(0)
+            fstp dword ptr [edx + 8]
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x005334a0

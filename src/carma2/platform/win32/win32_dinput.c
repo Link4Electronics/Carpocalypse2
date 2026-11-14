@@ -1364,7 +1364,8 @@ void C2_HOOK_FASTCALL ResetDInputJoystickFFB(int pIndex) {
 #endif
 
 // FUNCTION: CARMA2_HW 0x00458520
-void C2_HOOK_FASTCALL RegisterJoystickFFBForces(void) {
+void C2_NAKED C2_HOOK_FASTCALL RegisterJoystickFFBForces(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     tJoystick_effect_description description;
 
 #ifdef CARPOCALYPSE2_FIX_BUGS
@@ -1403,6 +1404,54 @@ void C2_HOOK_FASTCALL RegisterJoystickFFBForces(void) {
     description.field_0x44 = -1;
     description.field_0x4c = 0x5a;
     gCollision_force_joystick_effect_index = CreateDinputEffect(gJoystick_index, &description, "Collision Force");
+#else
+    __asm {
+            sub esp, 0x60
+            mov ecx, dword ptr [gJoystick_index]
+            push esi
+            xor esi, esi
+            mov eax, 0x2710
+            push offset gUNK_00595f9c+0x128
+            lea edx, [esp + 8]
+            mov dword ptr [esp + 8], 0xc
+            mov dword ptr [esp + 0xc], esi
+            mov dword ptr [esp + 0x10], eax
+            mov dword ptr [esp + 0x14], eax
+            mov dword ptr [esp + 0x3c], 0x4c4b40
+            mov dword ptr [esp + 0x44], 0x1388
+            mov dword ptr [esp + 0x4c], 0xffffffff
+            mov dword ptr [esp + 0x54], 0x5a
+            call CreateDinputEffect
+            mov ecx, dword ptr [gJoystick_index]
+            lea edx, [esp + 4]
+            push offset gUNK_00595f9c+0x11c
+            mov dword ptr [gBasic_friction_joystick_effect_index], eax
+            mov dword ptr [esp + 8], esi
+            mov dword ptr [esp + 0xc], esi
+            mov dword ptr [esp + 0x3c], 0x4c4b40
+            mov dword ptr [esp + 0x40], 0x3e8
+            mov dword ptr [esp + 0x44], 0x1388
+            mov dword ptr [esp + 0x4c], 0xffffffff
+            mov dword ptr [esp + 0x54], 0x5a
+            call CreateDinputEffect
+            mov ecx, dword ptr [gJoystick_index]
+            lea edx, [esp + 4]
+            push offset gUNK_00595f9c+0x10c
+            mov dword ptr [gBasic_force_joystick_effect_index], eax
+            mov dword ptr [esp + 8], esi
+            mov dword ptr [esp + 0xc], esi
+            mov dword ptr [esp + 0x3c], 0xf4240
+            mov dword ptr [esp + 0x40], 0x3e8
+            mov dword ptr [esp + 0x44], 0x1388
+            mov dword ptr [esp + 0x4c], 0xffffffff
+            mov dword ptr [esp + 0x54], 0x5a
+            call CreateDinputEffect
+            mov dword ptr [gCollision_force_joystick_effect_index], eax
+            pop esi
+            add esp, 0x60
+            ret
+    }
+#endif
 }
 
 #pragma auto_inline(off)

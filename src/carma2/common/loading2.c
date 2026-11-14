@@ -254,6 +254,12 @@ extern int gTime_rolling_car[3];
 extern int gTime_wasting_car[3];
 extern tSlot_info gTrade_in_value_APO;
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern void* C2_HOOK_CDECL BrMemAllocate();
+extern int C2_HOOK_FASTCALL PFfeof(FILE* pFile);
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+#endif
 // FUNCTION: CARMA2_HW 0x00486e10
 void C2_HOOK_FASTCALL LoadInRegistees(void) {
 
@@ -1933,7 +1939,8 @@ void C2_HOOK_FASTCALL AboutToLoadFirstCar(void) {
 // LoadOpponentsCars
 
 // FUNCTION: CARMA2_HW 0x0048cfc0
-void C2_HOOK_FASTCALL LoadMiscStrings(void) {
+void C2_NAKED C2_HOOK_FASTCALL LoadMiscStrings(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     int i;
     FILE *f;
     char s[256];
@@ -1965,6 +1972,113 @@ void C2_HOOK_FASTCALL LoadMiscStrings(void) {
         gMisc_strings[294][0] = ' ';
     }
     PFfclose(f);
+#else
+    __asm {
+            mov eax, dword ptr [gPedTextTxtPath]
+            sub esp, 0x200
+            test eax, eax
+            push ebx
+            push ebp
+            push esi
+            push edi
+            jne L0048cfdd
+            mov eax, offset gNet_avail_names+0x848
+            mov dword ptr [gPedTextTxtPath], eax
+    L0048cfdd:
+            push eax
+            mov edx, offset gApplication_path
+            lea ecx, [esp + 0x114]
+            call PathCat
+            mov edx, offset gNext_crush_actor_id+0x180
+            lea ecx, [esp + 0x110]
+            call DRfopen
+            mov ebp, eax
+            test ebp, ebp
+            jne L0048d010
+            push 0x63
+            call FatalError
+            add esp, 4
+    L0048d010:
+            mov ebx, offset gMisc_strings
+    L0048d015:
+            mov ecx, ebp
+            call PFfeof
+            test eax, eax
+            jne L0048d076
+            lea edx, [esp + 0x10]
+            mov ecx, ebp
+            call GetALineAndDontArgue
+            lea edi, [esp + 0x10]
+            or ecx, 0xffffffff
+            xor eax, eax
+            push 0xab
+            repne scasb
+            not ecx
+            push ecx
+            call BrMemAllocate
+            mov edx, eax
+            lea edi, [esp + 0x18]
+            or ecx, 0xffffffff
+            xor eax, eax
+            add esp, 8
+            mov dword ptr [ebx], edx
+            repne scasb
+            not ecx
+            sub edi, ecx
+            add ebx, 4
+            mov eax, ecx
+            mov esi, edi
+            mov edi, edx
+            shr ecx, 2
+            rep movsd
+            mov ecx, eax
+            and ecx, 3
+            cmp ebx, offset gPalette_source
+            rep movsb
+            jl L0048d015
+    L0048d076:
+            mov ecx, dword ptr [gMisc_strings+0x498]
+            mov byte ptr [ecx + 1], 0
+            mov ecx, dword ptr [gMisc_strings+0x498]
+            mov al, byte ptr [ecx]
+            cmp al, 0x43
+            jne L0048d0a1
+            mov byte ptr [ecx], 0x2c
+            mov ecx, ebp
+            call PFfclose
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x200
+            ret
+    L0048d0a1:
+            cmp al, 0x50
+            jne L0048d0ba
+            mov byte ptr [ecx], 0x2e
+            mov ecx, ebp
+            call PFfclose
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x200
+            ret
+    L0048d0ba:
+            cmp al, 0x53
+            jne L0048d0c1
+            mov byte ptr [ecx], 0x20
+    L0048d0c1:
+            mov ecx, ebp
+            call PFfclose
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x200
+            ret
+    }
+#endif
 }
 
 // FillInRaceInfo

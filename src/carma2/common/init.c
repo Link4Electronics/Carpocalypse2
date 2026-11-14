@@ -425,6 +425,29 @@ extern int gTimer_headup;
 extern int gTotal_laps;
 extern br_scalar gYon_multiplier;
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern br_actor* C2_HOOK_CDECL BrActorAllocate();
+extern br_material* C2_HOOK_CDECL BrMaterialAdd();
+extern br_material* C2_HOOK_CDECL BrMaterialAllocate();
+extern void C2_HOOK_CDECL BrMatrix34Translate();
+extern br_model* C2_HOOK_CDECL BrModelAdd();
+extern br_model* C2_HOOK_CDECL BrModelAllocate();
+extern br_model* C2_HOOK_CDECL BrModelLoad();
+extern void C2_HOOK_CDECL BrModelUpdate();
+extern void C2_NORETURN C2_HOOK_CDECL FatalError();
+extern int C2_HOOK_FASTCALL HighResHeadupHeight(int pHeight);
+extern int C2_HOOK_FASTCALL HighResHeadupWidth(int pWidth);
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern tFrontend_spec gFrontend_QUIT;
+extern br_pixelmap* gScreen;
+extern int gStatbarRightHUD_dim_h;
+extern int gStatbarRightHUD_dim_w;
+extern int gStatbarRightHUD_dim_x;
+extern int gStatbarRightHUD_dim_y;
+#endif
 // FUNCTION: CARMA2_HW 0x0044c130
 void C2_HOOK_FASTCALL DisposeGameIfNecessary(void) {
     int i;
@@ -1258,7 +1281,8 @@ void C2_HOOK_FASTCALL InitLineStuff(void) {
     BrActorAdd(gDont_render_actor, gLine_actor);
 }
 // FUNCTION: CARMA2_HW 0x0047e720
-void C2_HOOK_FASTCALL Init2DStuff(void) {
+void C2_NAKED C2_HOOK_FASTCALL Init2DStuff(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     // GLOBAL: CARMA2_HW 0x006569c8
     static br_token_value fadealpha_opacity0x80[3] = {
         { BRT_BLEND_B , {1}},
@@ -1672,6 +1696,2848 @@ void C2_HOOK_FASTCALL Init2DStuff(void) {
 
     Prepare2DModelToDim(gOffence_model, gOffence_dim_x, gOffence_dim_y, gOffence_dim_w, gOffence_dim_h);
     BrModelUpdate(gOffence_model, BR_MODU_VERTEX_POSITIONS);
+#else
+    __asm {
+            sub esp, 0x10c
+            push ebx
+            push ebp
+            push esi
+            xor ebx, ebx
+            push edi
+            push ebx
+            push ebx
+            call BrActorAllocate
+            add esp, 8
+            mov dword ptr [gHUD_root_actor], eax
+            add eax, 0x2c
+            push 0x40000000
+            push ebx
+            push ebx
+            push eax
+            call BrMatrix34Translate
+            add esp, 0x10
+            push ebx
+            push 3
+            call BrActorAllocate
+            add esp, 8
+            mov ebp, 2
+            mov dword ptr [g2d_camera], eax
+            push ebp
+            push 4
+            push offset gMini_map_glowing_line_animation_indices+0x7c4
+            call BrModelAllocate
+            add esp, 0xc
+            mov dword ptr [gDim_model], eax
+            push offset gMini_map_glowing_line_animation_indices+0x7b4
+            call BrMaterialAllocate
+            add esp, 4
+            mov dword ptr [gDim_material], eax
+            push ebx
+            push 1
+            call BrActorAllocate
+            add esp, 8
+            mov dword ptr [gDim_actor], eax
+            push ebp
+            push 4
+            push offset gMini_map_glowing_line_animation_indices+0x7a8
+            call BrModelAllocate
+            add esp, 0xc
+            mov dword ptr [gPrat_model], eax
+            push offset gMini_map_glowing_line_animation_indices+0x798
+            call BrMaterialAllocate
+            add esp, 4
+            mov dword ptr [gPrat_material], eax
+            push ebx
+            push 1
+            call BrActorAllocate
+            add esp, 8
+            mov edx, offset gApplication_path
+            lea ecx, [esp + 0x1c]
+            mov dword ptr [gPrat_actor], eax
+            push offset gFrontend_QUIT+0xb900
+            call PathCat
+            lea edx, [esp + 0x1c]
+            lea ecx, [esp + 0x1c]
+            push offset gMini_map_glowing_line_animation_indices+0x790
+            call PathCat
+            mov edi, offset gFrontend_QUIT+0xbb7c
+            or ecx, 0xffffffff
+            xor eax, eax
+            lea edx, [esp + 0x1c]
+            repne scasb
+            not ecx
+            sub edi, ecx
+            mov esi, edi
+            mov edi, edx
+            mov edx, ecx
+            or ecx, 0xffffffff
+            repne scasb
+            mov ecx, edx
+            dec edi
+            shr ecx, 2
+            rep movsd
+            mov ecx, edx
+            and ecx, 3
+            rep movsb
+            lea eax, [esp + 0x1c]
+            push eax
+            call BrModelLoad
+            add esp, 4
+            mov dword ptr [gHeadup_model], eax
+            push offset gMini_map_glowing_line_animation_indices+0x77c
+            call BrMaterialAllocate
+            add esp, 4
+            mov dword ptr [gHeadup_material], eax
+            push ebx
+            push 1
+            call BrActorAllocate
+            add esp, 8
+            mov dword ptr [gHeadup_actor], eax
+            push ebp
+            push 4
+            push offset gMini_map_glowing_line_animation_indices+0x76c
+            call BrModelAllocate
+            add esp, 0xc
+            mov dword ptr [gHeadup2_model], eax
+            push offset gMini_map_glowing_line_animation_indices+0x758
+            call BrMaterialAllocate
+            add esp, 4
+            mov dword ptr [gHeadup2_material], eax
+            push ebx
+            push 1
+            call BrActorAllocate
+            add esp, 8
+            mov dword ptr [gHeadup2_actor], eax
+            push ebp
+            push 4
+            push offset gMini_map_glowing_line_animation_indices+0x744
+            call BrModelAllocate
+            add esp, 0xc
+            mov dword ptr [gPowerupHUD_model], eax
+            push offset gMini_map_glowing_line_animation_indices+0x72c
+            call BrMaterialAllocate
+            add esp, 4
+            mov dword ptr [gPowerupHUD_material], eax
+            push ebx
+            push 1
+            call BrActorAllocate
+            add esp, 8
+            mov dword ptr [gPowerupHUD_actor], eax
+            push ebp
+            push 4
+            push offset gMini_map_glowing_line_animation_indices+0x718
+            call BrModelAllocate
+            add esp, 0xc
+            mov dword ptr [gStatbarHUD1_model], eax
+            push offset gMini_map_glowing_line_animation_indices+0x700
+            call BrMaterialAllocate
+            add esp, 4
+            mov dword ptr [gStatbarHUD1_material], eax
+            push ebx
+            push 1
+            call BrActorAllocate
+            add esp, 8
+            mov dword ptr [gStatbarHUD1_actor], eax
+            push ebp
+            push 4
+            push offset gMini_map_glowing_line_animation_indices+0x6f0
+            call BrModelAllocate
+            add esp, 0xc
+            mov dword ptr [gHUDcurve_model], eax
+            push offset gMini_map_glowing_line_animation_indices+0x6dc
+            call BrMaterialAllocate
+            add esp, 4
+            mov dword ptr [gHUDcurve_material], eax
+            push ebx
+            push 1
+            call BrActorAllocate
+            add esp, 8
+            mov dword ptr [gHUDcurve_actor], eax
+            push ebp
+            push 4
+            push offset gMini_map_glowing_line_animation_indices+0x6c8
+            call BrModelAllocate
+            add esp, 0xc
+            mov dword ptr [gStatbarHUD3_model], eax
+            push offset gMini_map_glowing_line_animation_indices+0x6b0
+            call BrMaterialAllocate
+            add esp, 4
+            mov dword ptr [gStatbarHUD3_material], eax
+            push ebx
+            push 1
+            call BrActorAllocate
+            add esp, 8
+            mov dword ptr [gStatbarHUD3_actor], eax
+            push ebp
+            push 4
+            push offset gMini_map_glowing_line_animation_indices+0x69c
+            call BrModelAllocate
+            add esp, 0xc
+            mov dword ptr [gHUDsquare_model], eax
+            push offset gMini_map_glowing_line_animation_indices+0x688
+            call BrMaterialAllocate
+            add esp, 4
+            mov dword ptr [gHUDsquare_material], eax
+            push ebx
+            push 1
+            call BrActorAllocate
+            add esp, 8
+            mov dword ptr [gHUDsquare_actor], eax
+            push ebp
+            push 4
+            push offset gMini_map_glowing_line_animation_indices+0x674
+            call BrModelAllocate
+            add esp, 0xc
+            mov dword ptr [gStatbarHUD5_model], eax
+            push offset gMini_map_glowing_line_animation_indices+0x65c
+            call BrMaterialAllocate
+            add esp, 4
+            mov dword ptr [gStatbarHUD5_material], eax
+            push ebx
+            push 1
+            call BrActorAllocate
+            add esp, 8
+            mov dword ptr [gStatbarHUD5_actor], eax
+            push ebp
+            push 4
+            push offset gMini_map_glowing_line_animation_indices+0x648
+            call BrModelAllocate
+            add esp, 0xc
+            mov dword ptr [gTimerLeftHUD_model], eax
+            push offset gMini_map_glowing_line_animation_indices+0x630
+            call BrMaterialAllocate
+            add esp, 4
+            mov dword ptr [gTimerLeftHUD_material], eax
+            push ebx
+            push 1
+            call BrActorAllocate
+            add esp, 8
+            mov dword ptr [gTimerLeftHUD_actor], eax
+            push ebp
+            push 4
+            push offset gMini_map_glowing_line_animation_indices+0x618
+            call BrModelAllocate
+            add esp, 0xc
+            mov dword ptr [gTimerRightHUD_model], eax
+            push offset gMini_map_glowing_line_animation_indices+0x600
+            call BrMaterialAllocate
+            add esp, 4
+            mov dword ptr [gTimerRightHUD_material], eax
+            push ebx
+            push 1
+            call BrActorAllocate
+            add esp, 8
+            mov dword ptr [gTimerRightHUD_actor], eax
+            push ebp
+            push 4
+            push offset gMini_map_glowing_line_animation_indices+0x5e8
+            call BrModelAllocate
+            add esp, 0xc
+            mov dword ptr [gStatbarRightHUD_model], eax
+            push offset gMini_map_glowing_line_animation_indices+0x5cc
+            call BrMaterialAllocate
+            add esp, 4
+            mov dword ptr [gStatbarRightHUD_material], eax
+            push ebx
+            push 1
+            call BrActorAllocate
+            add esp, 8
+            mov dword ptr [gStatbarRightHUD_actor], eax
+            push ebp
+            push 4
+            push offset gMini_map_glowing_line_animation_indices+0x5bc
+            call BrModelAllocate
+            add esp, 0xc
+            mov dword ptr [gMapHUD_model], eax
+            push offset gMini_map_glowing_line_animation_indices+0x5a8
+            call BrMaterialAllocate
+            add esp, 4
+            mov dword ptr [gMapHUD_material], eax
+            push ebx
+            push 1
+            call BrActorAllocate
+            add esp, 8
+            mov dword ptr [gMapHUD_actor], eax
+            push ebp
+            push 4
+            push offset gMini_map_glowing_line_animation_indices+0x598
+            call BrModelAllocate
+            add esp, 0xc
+            mov dword ptr [gTestFont_model], eax
+            push offset gMini_map_glowing_line_animation_indices+0x584
+            call BrMaterialAllocate
+            add esp, 4
+            mov dword ptr [gTestFont_material], eax
+            push ebx
+            push 1
+            call BrActorAllocate
+            add esp, 8
+            mov dword ptr [gTestFont_actor], eax
+            push ebp
+            push 4
+            push offset gMini_map_glowing_line_animation_indices+0x574
+            call BrModelAllocate
+            add esp, 0xc
+            mov dword ptr [gArmour_model], eax
+            push offset gMini_map_glowing_line_animation_indices+0x560
+            call BrMaterialAllocate
+            add esp, 4
+            mov dword ptr [gArmour_material], eax
+            push ebx
+            push 1
+            call BrActorAllocate
+            add esp, 8
+            mov dword ptr [gArmour_actor], eax
+            push ebp
+            push 4
+            push offset gMini_map_glowing_line_animation_indices+0x550
+            call BrModelAllocate
+            add esp, 0xc
+            mov dword ptr [gPower_model], eax
+            push offset gMini_map_glowing_line_animation_indices+0x540
+            call BrMaterialAllocate
+            add esp, 4
+            mov dword ptr [gPower_material], eax
+            push ebx
+            push 1
+            call BrActorAllocate
+            add esp, 8
+            mov dword ptr [gPower_actor], eax
+            push ebp
+            push 4
+            push offset gMini_map_glowing_line_animation_indices+0x530
+            call BrModelAllocate
+            add esp, 0xc
+            mov dword ptr [gOffence_model], eax
+            push offset gMini_map_glowing_line_animation_indices+0x51c
+            call BrMaterialAllocate
+            add esp, 4
+            mov dword ptr [gOffence_material], eax
+            push ebx
+            push 1
+            call BrActorAllocate
+            mov ecx, dword ptr [gDim_model]
+            add esp, 8
+            cmp ecx, ebx
+            mov dword ptr [gOffense_actor], eax
+            je L0047edeb
+            cmp dword ptr [gDim_material], ebx
+            je L0047edeb
+            cmp dword ptr [gDim_actor], ebx
+            je L0047edeb
+            cmp dword ptr [gPrat_model], ebx
+            je L0047edeb
+            cmp dword ptr [gPrat_material], ebx
+            je L0047edeb
+            cmp dword ptr [gPrat_actor], ebx
+            je L0047edeb
+            cmp dword ptr [gHeadup_model], ebx
+            je L0047edeb
+            cmp dword ptr [gHeadup_material], ebx
+            je L0047edeb
+            cmp dword ptr [gHeadup_actor], ebx
+            je L0047edeb
+            cmp dword ptr [gHeadup2_model], ebx
+            je L0047edeb
+            cmp dword ptr [gHeadup2_material], ebx
+            je L0047edeb
+            cmp dword ptr [gHeadup2_actor], ebx
+            je L0047edeb
+            cmp dword ptr [gPowerupHUD_model], ebx
+            je L0047edeb
+            cmp dword ptr [gPowerupHUD_material], ebx
+            je L0047edeb
+            cmp dword ptr [gPowerupHUD_actor], ebx
+            je L0047edeb
+            cmp dword ptr [gStatbarHUD1_model], ebx
+            je L0047edeb
+            cmp dword ptr [gStatbarHUD1_material], ebx
+            je L0047edeb
+            cmp dword ptr [gStatbarHUD1_actor], ebx
+            je L0047edeb
+            cmp dword ptr [gHUDcurve_model], ebx
+            je L0047edeb
+            cmp dword ptr [gHUDcurve_material], ebx
+            je L0047edeb
+            cmp dword ptr [gHUDcurve_actor], ebx
+            je L0047edeb
+            cmp dword ptr [gStatbarHUD3_model], ebx
+            je L0047edeb
+            cmp dword ptr [gStatbarHUD3_material], ebx
+            je L0047edeb
+            cmp dword ptr [gStatbarHUD3_actor], ebx
+            je L0047edeb
+            cmp dword ptr [gHUDsquare_model], ebx
+            je L0047edeb
+            cmp dword ptr [gHUDsquare_material], ebx
+            je L0047edeb
+            cmp dword ptr [gHUDsquare_actor], ebx
+            je L0047edeb
+            cmp dword ptr [gStatbarHUD5_model], ebx
+            je L0047edeb
+            cmp dword ptr [gStatbarHUD5_material], ebx
+            je L0047edeb
+            cmp dword ptr [gStatbarHUD5_actor], ebx
+            je L0047edeb
+            cmp dword ptr [gTimerLeftHUD_model], ebx
+            je L0047edeb
+            cmp dword ptr [gTimerLeftHUD_material], ebx
+            je L0047edeb
+            cmp dword ptr [gTimerLeftHUD_actor], ebx
+            je L0047edeb
+            cmp dword ptr [gTimerRightHUD_model], ebx
+            je L0047edeb
+            cmp dword ptr [gTimerRightHUD_material], ebx
+            je L0047edeb
+            cmp dword ptr [gTimerRightHUD_actor], ebx
+            je L0047edeb
+            cmp dword ptr [gStatbarRightHUD_model], ebx
+            je L0047edeb
+            cmp dword ptr [gStatbarRightHUD_material], ebx
+            je L0047edeb
+            cmp dword ptr [gStatbarRightHUD_actor], ebx
+            je L0047edeb
+            cmp dword ptr [gMapHUD_model], ebx
+            je L0047edeb
+            cmp dword ptr [gMapHUD_material], ebx
+            je L0047edeb
+            cmp dword ptr [gMapHUD_actor], ebx
+            je L0047edeb
+            cmp dword ptr [gTestFont_model], ebx
+            je L0047edeb
+            cmp dword ptr [gTestFont_material], ebx
+            je L0047edeb
+            cmp dword ptr [gTestFont_actor], ebx
+            je L0047edeb
+            cmp dword ptr [gArmour_model], ebx
+            je L0047edeb
+            cmp dword ptr [gArmour_material], ebx
+            je L0047edeb
+            cmp dword ptr [gArmour_actor], ebx
+            je L0047edeb
+            cmp dword ptr [gPower_model], ebx
+            je L0047edeb
+            cmp dword ptr [gPower_material], ebx
+            je L0047edeb
+            cmp dword ptr [gPower_actor], ebx
+            je L0047edeb
+            cmp dword ptr [gOffence_model], ebx
+            je L0047edeb
+            cmp dword ptr [gOffence_material], ebx
+            je L0047edeb
+            cmp eax, ebx
+            je L0047edeb
+            cmp dword ptr [g2d_camera], ebx
+            je L0047edeb
+            cmp dword ptr [gHUD_root_actor], ebx
+            jne L0047edf5
+    L0047edeb:
+            push 0x5e
+            call FatalError
+            add esp, 4
+    L0047edf5:
+            mov ecx, dword ptr [g2d_camera]
+            mov esi, 0xc0000000
+            mov edi, 0x43480000
+            mov dword ptr [ecx + 0x14], 0x656ea4
+            mov edx, dword ptr [g2d_camera]
+            xor ecx, ecx
+            mov eax, dword ptr [edx + 0x5c]
+            mov byte ptr [eax + 4], bl
+            mov dword ptr [eax + 8], 0x3f800000
+            mov dword ptr [eax + 0xc], 0x40400000
+            mov edx, dword ptr [gScreen]
+            mov cx, word ptr [edx + 0x34]
+            mov dword ptr [esp + 0x18], ecx
+            xor ecx, ecx
+            fild dword ptr [esp + 0x18]
+            fstp dword ptr [eax + 0x14]
+            mov edx, dword ptr [gScreen]
+            mov cx, word ptr [edx + 0x36]
+            mov dword ptr [esp + 0x18], ecx
+            fild dword ptr [esp + 0x18]
+            fstp dword ptr [eax + 0x18]
+            mov eax, dword ptr [gDim_actor]
+            mov dword ptr [eax + 0x14], 0x656e98
+            mov ecx, dword ptr [gDim_actor]
+            mov edx, dword ptr [gDim_model]
+            mov dword ptr [ecx + 0x18], edx
+            mov ecx, dword ptr [gDim_actor]
+            mov eax, dword ptr [gDim_material]
+            mov dword ptr [ecx + 0x1c], eax
+            mov edx, dword ptr [gDim_model]
+            mov eax, dword ptr [edx + 0xc]
+            mov word ptr [eax], bx
+            mov ecx, dword ptr [gDim_model]
+            mov edx, dword ptr [ecx + 0xc]
+            mov word ptr [edx + 2], 1
+            mov eax, dword ptr [gDim_model]
+            mov ecx, dword ptr [eax + 0xc]
+            mov word ptr [ecx + 4], bp
+            mov edx, dword ptr [gDim_model]
+            mov eax, dword ptr [edx + 0xc]
+            mov word ptr [eax + 0x28], bp
+            mov ecx, dword ptr [gDim_model]
+            mov edx, dword ptr [ecx + 0xc]
+            mov word ptr [edx + 0x2a], 3
+            mov eax, dword ptr [gDim_model]
+            mov ecx, dword ptr [eax + 0xc]
+            mov word ptr [ecx + 0x2c], bx
+            mov edx, dword ptr [gDim_model]
+            mov eax, dword ptr [edx + 8]
+            mov dword ptr [eax], 0x43160000
+            mov ecx, dword ptr [gDim_model]
+            mov edx, dword ptr [ecx + 8]
+            mov ecx, 0xc1a00000
+            mov dword ptr [edx + 4], ecx
+            mov eax, dword ptr [gDim_model]
+            mov edx, dword ptr [eax + 8]
+            mov dword ptr [edx + 8], esi
+            mov eax, dword ptr [gDim_model]
+            mov edx, dword ptr [eax + 8]
+            mov dword ptr [edx + 0x28], 0x43160000
+            mov eax, dword ptr [gDim_model]
+            mov edx, dword ptr [eax + 8]
+            mov eax, 0xc2c80000
+            mov dword ptr [edx + 0x2c], eax
+            mov edx, dword ptr [gDim_model]
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x30], esi
+            mov edx, dword ptr [gDim_model]
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x50], edi
+            mov edx, dword ptr [gDim_model]
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x54], eax
+            mov eax, dword ptr [gDim_model]
+            mov edx, dword ptr [eax + 8]
+            mov dword ptr [edx + 0x58], esi
+            mov eax, dword ptr [gDim_model]
+            mov edx, dword ptr [eax + 8]
+            mov dword ptr [edx + 0x78], edi
+            mov eax, dword ptr [gDim_model]
+            mov edx, dword ptr [eax + 8]
+            mov dword ptr [edx + 0x7c], ecx
+            mov eax, dword ptr [gDim_model]
+            mov ecx, dword ptr [eax + 8]
+            mov dword ptr [ecx + 0x80], esi
+            mov edx, dword ptr [gDim_material]
+            mov dword ptr [edx + 8], ebx
+            mov eax, dword ptr [gDim_material]
+            mov dword ptr [eax + 0x20], 0x2800
+            mov eax, dword ptr [gDim_model]
+            or word ptr [eax + 0x20], bp
+            mov ecx, dword ptr [gDim_material]
+            mov dword ptr [ecx + 0x58], 0x6569c8
+            mov edx, dword ptr [gDim_model]
+            push edx
+            call BrModelAdd
+            mov eax, dword ptr [gDim_material]
+            add esp, 4
+            push eax
+            call BrMaterialAdd
+            mov ecx, dword ptr [gPrat_actor]
+            add esp, 4
+            mov dword ptr [ecx + 0x14], 0x656e8c
+            mov edx, dword ptr [gPrat_actor]
+            mov eax, dword ptr [gPrat_model]
+            mov dword ptr [edx + 0x18], eax
+            mov edx, dword ptr [gPrat_actor]
+            mov ecx, dword ptr [gPrat_material]
+            mov dword ptr [edx + 0x1c], ecx
+            mov eax, dword ptr [gPrat_model]
+            mov ecx, dword ptr [eax + 0xc]
+            mov word ptr [ecx], bx
+            mov edx, dword ptr [gPrat_model]
+            mov eax, dword ptr [edx + 0xc]
+            mov word ptr [eax + 2], 1
+            mov ecx, dword ptr [gPrat_model]
+            mov edx, dword ptr [ecx + 0xc]
+            mov word ptr [edx + 4], bp
+            mov eax, dword ptr [gPrat_model]
+            mov ecx, dword ptr [eax + 0xc]
+            mov word ptr [ecx + 0x28], bp
+            mov edx, dword ptr [gPrat_model]
+            mov eax, dword ptr [edx + 0xc]
+            mov word ptr [eax + 0x2a], 3
+            mov ecx, dword ptr [gPrat_model]
+            mov edx, dword ptr [ecx + 0xc]
+            mov word ptr [edx + 0x2c], bx
+            mov eax, dword ptr [gPrat_model]
+            mov ecx, dword ptr [eax + 8]
+            mov eax, 0xc1a00000
+            mov dword ptr [ecx], 0x43160000
+            mov edx, dword ptr [gPrat_model]
+            mov ecx, dword ptr [edx + 8]
+            mov dword ptr [ecx + 4], eax
+            mov edx, dword ptr [gPrat_model]
+            mov ecx, dword ptr [edx + 8]
+            mov dword ptr [ecx + 8], esi
+            mov edx, dword ptr [gPrat_model]
+            mov ecx, dword ptr [edx + 8]
+            mov dword ptr [ecx + 0x28], 0x43160000
+            mov edx, dword ptr [gPrat_model]
+            mov ecx, 0xc2c80000
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x2c], ecx
+            mov edx, dword ptr [gPrat_model]
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x30], esi
+            mov edx, dword ptr [gPrat_model]
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x50], edi
+            mov edx, dword ptr [gPrat_model]
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x54], ecx
+            mov ecx, dword ptr [gPrat_model]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0x58], esi
+            mov ecx, dword ptr [gPrat_model]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0x78], edi
+            mov ecx, dword ptr [gPrat_model]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0x7c], eax
+            mov eax, dword ptr [gPrat_model]
+            mov ecx, dword ptr [eax + 8]
+            mov dword ptr [ecx + 0x80], esi
+            mov edx, dword ptr [gPrat_material]
+            mov dword ptr [edx + 8], 0xffffff
+            mov eax, dword ptr [gPrat_material]
+            mov dword ptr [eax + 0x20], 0x2800
+            mov eax, dword ptr [gPrat_model]
+            or word ptr [eax + 0x20], bp
+            mov ecx, dword ptr [gPrat_model]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0xc], ebx
+            mov eax, dword ptr [gPrat_model]
+            mov ecx, dword ptr [eax + 8]
+            mov dword ptr [ecx + 0x10], ebx
+            mov edx, dword ptr [gPrat_model]
+            mov eax, dword ptr [edx + 8]
+            mov dword ptr [eax + 0x34], ebx
+            mov ecx, dword ptr [gPrat_model]
+            mov eax, 0x3f800000
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0x38], eax
+            mov ecx, dword ptr [gPrat_model]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0x5c], eax
+            mov ecx, dword ptr [gPrat_model]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0x60], eax
+            mov ecx, dword ptr [gPrat_model]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0x84], eax
+            mov eax, dword ptr [gPrat_model]
+            mov ecx, dword ptr [eax + 8]
+            mov dword ptr [ecx + 0x88], ebx
+            mov edx, dword ptr [gPrat_model]
+            push edx
+            call BrModelAdd
+            mov eax, dword ptr [gPrat_material]
+            add esp, 4
+            push eax
+            call BrMaterialAdd
+            mov ecx, dword ptr [gHeadup_actor]
+            add esp, 4
+            mov dword ptr [ecx + 0x14], 0x656e7c
+            mov edx, dword ptr [gHeadup_actor]
+            mov eax, dword ptr [gHeadup_model]
+            mov dword ptr [edx + 0x18], eax
+            mov edx, dword ptr [gHeadup_actor]
+            mov ecx, dword ptr [gHeadup_material]
+            mov dword ptr [edx + 0x1c], ecx
+            mov eax, dword ptr [gHeadup_material]
+            mov dword ptr [eax + 8], 0x40e4a
+            mov ecx, dword ptr [gHeadup_material]
+            mov dword ptr [ecx + 0x20], 0x2800
+            mov edx, dword ptr [gHeadup_material]
+            mov dword ptr [edx + 0x58], 0x6569e0
+            mov eax, dword ptr [gHeadup_model]
+            or word ptr [eax + 0x20], bp
+            mov ecx, dword ptr [gHeadup_dim_w]
+            fild dword ptr [gHeadup_dim_w]
+            fstp dword ptr [esp + 0x14]
+            call HighResHeadupWidth
+            mov dword ptr [esp + 0x18], eax
+            mov ecx, dword ptr [gHeadup_dim_h]
+            fild dword ptr [esp + 0x18]
+            fdivr dword ptr [esp + 0x14]
+            fstp dword ptr [esp + 0x18]
+            fild dword ptr [gHeadup_dim_h]
+            fstp dword ptr [esp + 0x10]
+            call HighResHeadupHeight
+            mov dword ptr [esp + 0x14], eax
+            mov eax, dword ptr [gHeadup_model]
+            fild dword ptr [esp + 0x14]
+            mov ecx, dword ptr [eax + 8]
+            fdivr dword ptr [esp + 0x10]
+            mov dword ptr [ecx + 0xc], ebx
+            mov edx, dword ptr [gHeadup_model]
+            mov eax, dword ptr [edx + 8]
+            mov dword ptr [eax + 0x10], ebx
+            mov ecx, dword ptr [gHeadup_model]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0x34], ebx
+            mov eax, dword ptr [gHeadup_model]
+            mov ecx, dword ptr [eax + 8]
+            fst dword ptr [ecx + 0x38]
+            mov edx, dword ptr [gHeadup_model]
+            mov ecx, dword ptr [esp + 0x18]
+            mov eax, dword ptr [edx + 8]
+            mov dword ptr [eax + 0x5c], ecx
+            mov edx, dword ptr [gHeadup_model]
+            mov eax, dword ptr [edx + 8]
+            fstp dword ptr [eax + 0x60]
+            mov ecx, dword ptr [gHeadup_model]
+            mov eax, dword ptr [esp + 0x18]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0x84], eax
+            mov ecx, dword ptr [gHeadup_model]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0x88], ebx
+            mov eax, dword ptr [gHeadup_model]
+            push eax
+            call BrModelAdd
+            mov ecx, dword ptr [gHeadup_material]
+            add esp, 4
+            push ecx
+            call BrMaterialAdd
+            mov eax, dword ptr [gHeadup_dim_h]
+            add esp, 4
+            cdq
+            sub eax, edx
+            mov edx, dword ptr [gHeadup_dim_y]
+            sar eax, 1
+            neg edx
+            sub edx, eax
+            mov eax, dword ptr [gHeadup_dim_x]
+            push esi
+            mov dword ptr [esp + 0x14], edx
+            fild dword ptr [esp + 0x14]
+            push ecx
+            mov ecx, dword ptr [gHeadup_dim_w]
+            _emit 0xd9
+        _emit 0x1c
+        _emit 0x24
+            lea edx, [eax + ecx + 0xa]
+            mov eax, dword ptr [gHeadup_actor]
+            mov dword ptr [esp + 0x18], edx
+            push ecx
+            fild dword ptr [esp + 0x1c]
+            add eax, 0x2c
+            _emit 0xd9
+        _emit 0x1c
+        _emit 0x24
+            push eax
+            call BrMatrix34Translate
+            mov ecx, dword ptr [gHeadup2_actor]
+            add esp, 0x10
+            mov dword ptr [ecx + 0x14], 0x656e6c
+            mov edx, dword ptr [gHeadup2_actor]
+            mov eax, dword ptr [gHeadup2_model]
+            mov dword ptr [edx + 0x18], eax
+            mov edx, dword ptr [gHeadup2_actor]
+            mov ecx, dword ptr [gHeadup2_material]
+            mov dword ptr [edx + 0x1c], ecx
+            mov eax, dword ptr [gHeadup2_model]
+            mov ecx, dword ptr [eax + 0xc]
+            mov word ptr [ecx], bx
+            mov edx, dword ptr [gHeadup2_model]
+            mov eax, dword ptr [edx + 0xc]
+            mov word ptr [eax + 2], 1
+            mov ecx, dword ptr [gHeadup2_model]
+            mov edx, dword ptr [ecx + 0xc]
+            mov word ptr [edx + 4], bp
+            mov eax, dword ptr [gHeadup2_model]
+            mov ecx, dword ptr [eax + 0xc]
+            mov word ptr [ecx + 0x28], bp
+            mov edx, dword ptr [gHeadup2_model]
+            mov eax, dword ptr [edx + 0xc]
+            mov word ptr [eax + 0x2a], 3
+            mov ecx, dword ptr [gHeadup2_model]
+            mov edx, dword ptr [ecx + 0xc]
+            mov word ptr [edx + 0x2c], bx
+            mov eax, dword ptr [gHeadup2_model]
+            mov ecx, dword ptr [eax + 8]
+            mov eax, 0xc1a00000
+            mov dword ptr [ecx], 0x43160000
+            mov edx, dword ptr [gHeadup2_model]
+            mov ecx, dword ptr [edx + 8]
+            mov dword ptr [ecx + 4], eax
+            mov edx, dword ptr [gHeadup2_model]
+            mov ecx, dword ptr [edx + 8]
+            mov dword ptr [ecx + 8], esi
+            mov edx, dword ptr [gHeadup2_model]
+            mov ecx, dword ptr [edx + 8]
+            mov dword ptr [ecx + 0x28], 0x43160000
+            mov edx, dword ptr [gHeadup2_model]
+            mov ecx, 0xc2c80000
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x2c], ecx
+            mov edx, dword ptr [gHeadup2_model]
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x30], esi
+            mov edx, dword ptr [gHeadup2_model]
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x50], edi
+            mov edx, dword ptr [gHeadup2_model]
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x54], ecx
+            mov ecx, dword ptr [gHeadup2_model]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0x58], esi
+            mov ecx, dword ptr [gHeadup2_model]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0x78], edi
+            mov ecx, dword ptr [gHeadup2_model]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0x7c], eax
+            mov eax, dword ptr [gHeadup2_model]
+            mov ecx, dword ptr [eax + 8]
+            mov dword ptr [ecx + 0x80], esi
+            mov edx, dword ptr [gHeadup2_material]
+            mov dword ptr [edx + 8], 0x40e4a
+            mov eax, dword ptr [gHeadup2_material]
+            mov dword ptr [eax + 0x20], 0x2800
+            mov ecx, dword ptr [gHeadup2_material]
+            mov dword ptr [ecx + 0x58], 0x6569e0
+            mov eax, dword ptr [gHeadup2_model]
+            or word ptr [eax + 0x20], bp
+            mov ecx, dword ptr [gHeadup2_dim_w]
+            fild dword ptr [gHeadup2_dim_w]
+            fstp dword ptr [esp + 0x14]
+            call HighResHeadupWidth
+            mov dword ptr [esp + 0x10], eax
+            mov ecx, dword ptr [gHeadup2_dim_h]
+            fild dword ptr [esp + 0x10]
+            fdivr dword ptr [esp + 0x14]
+            fstp dword ptr [esp + 0x18]
+            fild dword ptr [gHeadup2_dim_h]
+            fstp dword ptr [esp + 0x14]
+            call HighResHeadupHeight
+            mov dword ptr [esp + 0x10], eax
+            mov edx, dword ptr [gHeadup2_model]
+            fild dword ptr [esp + 0x10]
+            mov eax, dword ptr [edx + 8]
+            fdivr dword ptr [esp + 0x14]
+            mov dword ptr [eax + 0xc], ebx
+            mov ecx, dword ptr [gHeadup2_model]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0x10], ebx
+            mov eax, dword ptr [gHeadup2_model]
+            mov ecx, dword ptr [eax + 8]
+            mov dword ptr [ecx + 0x34], ebx
+            mov edx, dword ptr [gHeadup2_model]
+            mov eax, dword ptr [edx + 8]
+            fst dword ptr [eax + 0x38]
+            mov ecx, dword ptr [gHeadup2_model]
+            mov eax, dword ptr [esp + 0x18]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0x5c], eax
+            mov ecx, dword ptr [gHeadup2_model]
+            mov edx, dword ptr [ecx + 8]
+            fstp dword ptr [edx + 0x60]
+            mov eax, dword ptr [gHeadup2_model]
+            mov edx, dword ptr [esp + 0x18]
+            mov ecx, dword ptr [eax + 8]
+            mov dword ptr [ecx + 0x84], edx
+            mov eax, dword ptr [gHeadup2_model]
+            mov ecx, dword ptr [eax + 8]
+            mov dword ptr [ecx + 0x88], ebx
+            mov edx, dword ptr [gHeadup2_model]
+            push edx
+            call BrModelAdd
+            mov eax, dword ptr [gHeadup2_material]
+            add esp, 4
+            push eax
+            call BrMaterialAdd
+            mov ecx, dword ptr [gPowerupHUD_actor]
+            add esp, 4
+            mov dword ptr [ecx + 0x14], 0x656e58
+            mov edx, dword ptr [gPowerupHUD_actor]
+            mov eax, dword ptr [gPowerupHUD_model]
+            mov dword ptr [edx + 0x18], eax
+            mov edx, dword ptr [gPowerupHUD_actor]
+            mov ecx, dword ptr [gPowerupHUD_material]
+            mov dword ptr [edx + 0x1c], ecx
+            mov eax, dword ptr [gPowerupHUD_model]
+            mov ecx, dword ptr [eax + 0xc]
+            mov word ptr [ecx], bx
+            mov edx, dword ptr [gPowerupHUD_model]
+            mov eax, dword ptr [edx + 0xc]
+            mov word ptr [eax + 2], 1
+            mov ecx, dword ptr [gPowerupHUD_model]
+            mov edx, dword ptr [ecx + 0xc]
+            mov word ptr [edx + 4], bp
+            mov eax, dword ptr [gPowerupHUD_model]
+            mov ecx, dword ptr [eax + 0xc]
+            mov word ptr [ecx + 0x28], bp
+            mov edx, dword ptr [gPowerupHUD_model]
+            mov eax, dword ptr [edx + 0xc]
+            mov word ptr [eax + 0x2a], 3
+            mov ecx, dword ptr [gPowerupHUD_model]
+            mov edx, dword ptr [ecx + 0xc]
+            mov word ptr [edx + 0x2c], bx
+            mov eax, dword ptr [gPowerupHUD_model]
+            mov ecx, dword ptr [eax + 8]
+            mov eax, 0xc1a00000
+            mov dword ptr [ecx], 0x43160000
+            mov edx, dword ptr [gPowerupHUD_model]
+            mov ecx, dword ptr [edx + 8]
+            mov dword ptr [ecx + 4], eax
+            mov edx, dword ptr [gPowerupHUD_model]
+            mov ecx, dword ptr [edx + 8]
+            mov dword ptr [ecx + 8], esi
+            mov edx, dword ptr [gPowerupHUD_model]
+            mov ecx, dword ptr [edx + 8]
+            mov dword ptr [ecx + 0x28], 0x43160000
+            mov edx, dword ptr [gPowerupHUD_model]
+            mov ecx, 0xc2c80000
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x2c], ecx
+            mov edx, dword ptr [gPowerupHUD_model]
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x30], esi
+            mov edx, dword ptr [gPowerupHUD_model]
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x50], edi
+            mov edx, dword ptr [gPowerupHUD_model]
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x54], ecx
+            mov ecx, dword ptr [gPowerupHUD_model]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0x58], esi
+            mov ecx, dword ptr [gPowerupHUD_model]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0x78], edi
+            mov ecx, dword ptr [gPowerupHUD_model]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0x7c], eax
+            mov eax, dword ptr [gPowerupHUD_model]
+            mov ecx, dword ptr [eax + 8]
+            mov dword ptr [ecx + 0x80], esi
+            mov edx, dword ptr [gPowerupHUD_material]
+            mov dword ptr [edx + 8], 0x969696
+            mov eax, dword ptr [gPowerupHUD_material]
+            mov dword ptr [eax + 0x20], 0x2800
+            mov eax, dword ptr [gPowerupHUD_model]
+            or word ptr [eax + 0x20], bp
+            mov ecx, dword ptr [gPowerupHUD_dim_w]
+            fild dword ptr [gPowerupHUD_dim_w]
+            fstp dword ptr [esp + 0x14]
+            call HighResHeadupWidth
+            mov dword ptr [esp + 0x10], eax
+            mov ecx, dword ptr [gPowerupHUD_dim_h]
+            fild dword ptr [esp + 0x10]
+            fdivr dword ptr [esp + 0x14]
+            fstp dword ptr [esp + 0x18]
+            fild dword ptr [gPowerupHUD_dim_h]
+            fstp dword ptr [esp + 0x14]
+            call HighResHeadupHeight
+            mov dword ptr [esp + 0x10], eax
+            mov ecx, dword ptr [gPowerupHUD_model]
+            fild dword ptr [esp + 0x10]
+            mov edx, dword ptr [ecx + 8]
+            fdivr dword ptr [esp + 0x14]
+            mov dword ptr [edx + 0xc], ebx
+            mov eax, dword ptr [gPowerupHUD_model]
+            mov ecx, dword ptr [eax + 8]
+            mov dword ptr [ecx + 0x10], ebx
+            mov edx, dword ptr [gPowerupHUD_model]
+            mov eax, dword ptr [edx + 8]
+            mov dword ptr [eax + 0x34], ebx
+            mov ecx, dword ptr [gPowerupHUD_model]
+            mov edx, dword ptr [ecx + 8]
+            fst dword ptr [edx + 0x38]
+            mov eax, dword ptr [gPowerupHUD_model]
+            mov edx, dword ptr [esp + 0x18]
+            mov ecx, dword ptr [eax + 8]
+            mov dword ptr [ecx + 0x5c], edx
+            mov eax, dword ptr [gPowerupHUD_model]
+            mov ecx, dword ptr [eax + 8]
+            fstp dword ptr [ecx + 0x60]
+            mov edx, dword ptr [gPowerupHUD_model]
+            mov ecx, dword ptr [esp + 0x18]
+            mov eax, dword ptr [edx + 8]
+            mov dword ptr [eax + 0x84], ecx
+            mov edx, dword ptr [gPowerupHUD_model]
+            mov eax, dword ptr [edx + 8]
+            mov dword ptr [eax + 0x88], ebx
+            mov ecx, dword ptr [gPowerupHUD_model]
+            push ecx
+            call BrModelAdd
+            mov edx, dword ptr [gPowerupHUD_material]
+            add esp, 4
+            push edx
+            call BrMaterialAdd
+            mov eax, dword ptr [gStatbarHUD1_actor]
+            add esp, 4
+            mov dword ptr [eax + 0x14], 0x656e44
+            mov ecx, dword ptr [gStatbarHUD1_actor]
+            mov edx, dword ptr [gStatbarHUD1_model]
+            mov dword ptr [ecx + 0x18], edx
+            mov ecx, dword ptr [gStatbarHUD1_actor]
+            mov eax, dword ptr [gStatbarHUD1_material]
+            mov dword ptr [ecx + 0x1c], eax
+            mov edx, dword ptr [gStatbarHUD1_model]
+            mov eax, dword ptr [edx + 0xc]
+            mov word ptr [eax], bx
+            mov ecx, dword ptr [gStatbarHUD1_model]
+            mov edx, dword ptr [ecx + 0xc]
+            mov word ptr [edx + 2], 1
+            mov eax, dword ptr [gStatbarHUD1_model]
+            mov ecx, dword ptr [eax + 0xc]
+            mov word ptr [ecx + 4], bp
+            mov edx, dword ptr [gStatbarHUD1_model]
+            mov eax, dword ptr [edx + 0xc]
+            mov word ptr [eax + 0x28], bp
+            mov ecx, dword ptr [gStatbarHUD1_model]
+            mov edx, dword ptr [ecx + 0xc]
+            mov word ptr [edx + 0x2a], 3
+            mov eax, dword ptr [gStatbarHUD1_model]
+            mov ecx, dword ptr [eax + 0xc]
+            mov word ptr [ecx + 0x2c], bx
+            mov edx, dword ptr [gStatbarHUD1_model]
+            mov eax, dword ptr [edx + 8]
+            mov dword ptr [eax], 0x43160000
+            mov ecx, dword ptr [gStatbarHUD1_model]
+            mov eax, 0xc1a00000
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 4], eax
+            mov ecx, dword ptr [gStatbarHUD1_model]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 8], esi
+            mov ecx, dword ptr [gStatbarHUD1_model]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0x28], 0x43160000
+            mov ecx, dword ptr [gStatbarHUD1_model]
+            mov edx, dword ptr [ecx + 8]
+            mov ecx, 0xc2c80000
+            mov dword ptr [edx + 0x2c], ecx
+            mov edx, dword ptr [gStatbarHUD1_model]
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x30], esi
+            mov edx, dword ptr [gStatbarHUD1_model]
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x50], edi
+            mov edx, dword ptr [gStatbarHUD1_model]
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x54], ecx
+            mov ecx, dword ptr [gStatbarHUD1_model]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0x58], esi
+            mov ecx, dword ptr [gStatbarHUD1_model]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0x78], edi
+            mov ecx, dword ptr [gStatbarHUD1_model]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0x7c], eax
+            mov eax, dword ptr [gStatbarHUD1_model]
+            mov ecx, dword ptr [eax + 8]
+            mov dword ptr [ecx + 0x80], esi
+            mov edx, dword ptr [gStatbarHUD1_material]
+            mov dword ptr [edx + 8], 0x969696
+            mov eax, dword ptr [gStatbarHUD1_material]
+            mov dword ptr [eax + 0x20], 0x2800
+            mov eax, dword ptr [gStatbarHUD1_model]
+            or word ptr [eax + 0x20], bp
+            mov ecx, dword ptr [gStatbarHUD1_dim_w]
+            fild dword ptr [gStatbarHUD1_dim_w]
+            fstp dword ptr [esp + 0x14]
+            call HighResHeadupWidth
+            mov dword ptr [esp + 0x10], eax
+            mov ecx, dword ptr [gStatbarHUD1_dim_h]
+            fild dword ptr [esp + 0x10]
+            fdivr dword ptr [esp + 0x14]
+            fstp dword ptr [esp + 0x18]
+            fild dword ptr [gStatbarHUD1_dim_h]
+            fstp dword ptr [esp + 0x14]
+            call HighResHeadupHeight
+            mov dword ptr [esp + 0x10], eax
+            mov ecx, dword ptr [gStatbarHUD1_model]
+            fild dword ptr [esp + 0x10]
+            mov edx, dword ptr [ecx + 8]
+            fdivr dword ptr [esp + 0x14]
+            mov dword ptr [edx + 0xc], ebx
+            mov eax, dword ptr [gStatbarHUD1_model]
+            mov ecx, dword ptr [eax + 8]
+            mov dword ptr [ecx + 0x10], ebx
+            mov edx, dword ptr [gStatbarHUD1_model]
+            mov eax, dword ptr [edx + 8]
+            mov dword ptr [eax + 0x34], ebx
+            mov ecx, dword ptr [gStatbarHUD1_model]
+            mov edx, dword ptr [ecx + 8]
+            fst dword ptr [edx + 0x38]
+            mov eax, dword ptr [gStatbarHUD1_model]
+            mov edx, dword ptr [esp + 0x18]
+            mov ecx, dword ptr [eax + 8]
+            mov dword ptr [ecx + 0x5c], edx
+            mov eax, dword ptr [gStatbarHUD1_model]
+            mov ecx, dword ptr [eax + 8]
+            fstp dword ptr [ecx + 0x60]
+            mov edx, dword ptr [gStatbarHUD1_model]
+            mov eax, dword ptr [edx + 8]
+            mov ecx, dword ptr [esp + 0x18]
+            mov dword ptr [eax + 0x84], ecx
+            mov edx, dword ptr [gStatbarHUD1_model]
+            mov eax, dword ptr [edx + 8]
+            mov dword ptr [eax + 0x88], ebx
+            mov ecx, dword ptr [gStatbarHUD1_model]
+            push ecx
+            call BrModelAdd
+            mov edx, dword ptr [gStatbarHUD1_material]
+            add esp, 4
+            push edx
+            call BrMaterialAdd
+            mov eax, dword ptr [gHUDcurve_actor]
+            add esp, 4
+            mov dword ptr [eax + 0x14], 0x656e34
+            mov ecx, dword ptr [gHUDcurve_actor]
+            mov edx, dword ptr [gHUDcurve_model]
+            mov dword ptr [ecx + 0x18], edx
+            mov ecx, dword ptr [gHUDcurve_actor]
+            mov eax, dword ptr [gHUDcurve_material]
+            mov dword ptr [ecx + 0x1c], eax
+            mov edx, dword ptr [gHUDcurve_model]
+            mov eax, dword ptr [edx + 0xc]
+            mov word ptr [eax], bx
+            mov ecx, dword ptr [gHUDcurve_model]
+            mov edx, dword ptr [ecx + 0xc]
+            mov word ptr [edx + 2], 1
+            mov eax, dword ptr [gHUDcurve_model]
+            mov ecx, dword ptr [eax + 0xc]
+            mov word ptr [ecx + 4], bp
+            mov edx, dword ptr [gHUDcurve_model]
+            mov eax, dword ptr [edx + 0xc]
+            mov word ptr [eax + 0x28], bp
+            mov ecx, dword ptr [gHUDcurve_model]
+            mov edx, dword ptr [ecx + 0xc]
+            mov word ptr [edx + 0x2a], 3
+            mov eax, dword ptr [gHUDcurve_model]
+            mov ecx, dword ptr [eax + 0xc]
+            mov word ptr [ecx + 0x2c], bx
+            mov edx, dword ptr [gHUDcurve_model]
+            mov eax, dword ptr [edx + 8]
+            mov dword ptr [eax], 0x43160000
+            mov ecx, dword ptr [gHUDcurve_model]
+            mov eax, 0xc1a00000
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 4], eax
+            mov ecx, dword ptr [gHUDcurve_model]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 8], esi
+            mov ecx, dword ptr [gHUDcurve_model]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0x28], 0x43160000
+            mov ecx, dword ptr [gHUDcurve_model]
+            mov edx, dword ptr [ecx + 8]
+            mov ecx, 0xc2c80000
+            mov dword ptr [edx + 0x2c], ecx
+            mov edx, dword ptr [gHUDcurve_model]
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x30], esi
+            mov edx, dword ptr [gHUDcurve_model]
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x50], edi
+            mov edx, dword ptr [gHUDcurve_model]
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x54], ecx
+            mov ecx, dword ptr [gHUDcurve_model]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0x58], esi
+            mov ecx, dword ptr [gHUDcurve_model]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0x78], edi
+            mov ecx, dword ptr [gHUDcurve_model]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0x7c], eax
+            mov eax, dword ptr [gHUDcurve_model]
+            mov ecx, dword ptr [eax + 8]
+            mov dword ptr [ecx + 0x80], esi
+            mov edx, dword ptr [gHUDcurve_material]
+            mov dword ptr [edx + 8], 0x969696
+            mov eax, dword ptr [gHUDcurve_material]
+            mov dword ptr [eax + 0x20], 0x2800
+            mov eax, dword ptr [gHUDcurve_model]
+            or word ptr [eax + 0x20], bp
+            mov ecx, dword ptr [gHUDcurve_model]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0xc], ebx
+            mov eax, dword ptr [gHUDcurve_model]
+            mov ecx, dword ptr [eax + 8]
+            mov dword ptr [ecx + 0x10], ebx
+            mov edx, dword ptr [gHUDcurve_model]
+            mov eax, dword ptr [edx + 8]
+            mov dword ptr [eax + 0x34], ebx
+            mov ecx, dword ptr [gHUDcurve_model]
+            mov eax, 0x3f800000
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0x38], eax
+            mov ecx, dword ptr [gHUDcurve_model]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0x5c], eax
+            mov ecx, dword ptr [gHUDcurve_model]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0x60], eax
+            mov ecx, dword ptr [gHUDcurve_model]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0x84], eax
+            mov eax, dword ptr [gHUDcurve_model]
+            mov ecx, dword ptr [eax + 8]
+            mov dword ptr [ecx + 0x88], ebx
+            mov edx, dword ptr [gHUDcurve_model]
+            push edx
+            call BrModelAdd
+            mov eax, dword ptr [gHUDcurve_material]
+            add esp, 4
+            push eax
+            call BrMaterialAdd
+            mov ecx, dword ptr [gStatbarHUD3_actor]
+            add esp, 4
+            mov dword ptr [ecx + 0x14], 0x656e20
+            mov edx, dword ptr [gStatbarHUD3_actor]
+            mov eax, dword ptr [gStatbarHUD3_model]
+            mov dword ptr [edx + 0x18], eax
+            mov edx, dword ptr [gStatbarHUD3_actor]
+            mov ecx, dword ptr [gStatbarHUD3_material]
+            mov dword ptr [edx + 0x1c], ecx
+            mov eax, dword ptr [gStatbarHUD3_model]
+            mov ecx, dword ptr [eax + 0xc]
+            mov word ptr [ecx], bx
+            mov edx, dword ptr [gStatbarHUD3_model]
+            mov eax, dword ptr [edx + 0xc]
+            mov word ptr [eax + 2], 1
+            mov ecx, dword ptr [gStatbarHUD3_model]
+            mov edx, dword ptr [ecx + 0xc]
+            mov word ptr [edx + 4], bp
+            mov eax, dword ptr [gStatbarHUD3_model]
+            mov ecx, dword ptr [eax + 0xc]
+            mov word ptr [ecx + 0x28], bp
+            mov edx, dword ptr [gStatbarHUD3_model]
+            mov eax, dword ptr [edx + 0xc]
+            mov word ptr [eax + 0x2a], 3
+            mov ecx, dword ptr [gStatbarHUD3_model]
+            mov edx, dword ptr [ecx + 0xc]
+            mov word ptr [edx + 0x2c], bx
+            mov eax, dword ptr [gStatbarHUD3_model]
+            mov ecx, dword ptr [eax + 8]
+            mov dword ptr [ecx], 0x43160000
+            mov edx, dword ptr [gStatbarHUD3_model]
+            mov ecx, 0xc1a00000
+            mov eax, dword ptr [edx + 8]
+            mov dword ptr [eax + 4], ecx
+            mov edx, dword ptr [gStatbarHUD3_model]
+            mov eax, dword ptr [edx + 8]
+            mov dword ptr [eax + 8], esi
+            mov edx, dword ptr [gStatbarHUD3_model]
+            mov eax, dword ptr [edx + 8]
+            mov dword ptr [eax + 0x28], 0x43160000
+            mov edx, dword ptr [gStatbarHUD3_model]
+            mov eax, 0xc2c80000
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x2c], eax
+            mov edx, dword ptr [gStatbarHUD3_model]
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x30], esi
+            mov edx, dword ptr [gStatbarHUD3_model]
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x50], edi
+            mov edx, dword ptr [gStatbarHUD3_model]
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x54], eax
+            mov eax, dword ptr [gStatbarHUD3_model]
+            mov edx, dword ptr [eax + 8]
+            mov dword ptr [edx + 0x58], esi
+            mov eax, dword ptr [gStatbarHUD3_model]
+            mov edx, dword ptr [eax + 8]
+            mov dword ptr [edx + 0x78], edi
+            mov eax, dword ptr [gStatbarHUD3_model]
+            mov edx, dword ptr [eax + 8]
+            mov dword ptr [edx + 0x7c], ecx
+            mov eax, dword ptr [gStatbarHUD3_model]
+            mov ecx, dword ptr [eax + 8]
+            mov dword ptr [ecx + 0x80], esi
+            mov edx, dword ptr [gStatbarHUD3_material]
+            mov dword ptr [edx + 8], 0x40e4a
+            mov eax, dword ptr [gStatbarHUD3_material]
+            mov dword ptr [eax + 0x20], 0x2800
+            mov eax, dword ptr [gStatbarHUD3_model]
+            or word ptr [eax + 0x20], bp
+            mov ecx, dword ptr [gStatbarHUD3_dim_w]
+            fild dword ptr [gStatbarHUD3_dim_w]
+            fstp dword ptr [esp + 0x14]
+            call HighResHeadupWidth
+            mov dword ptr [esp + 0x10], eax
+            mov ecx, dword ptr [gStatbarHUD3_dim_h]
+            fild dword ptr [esp + 0x10]
+            fdivr dword ptr [esp + 0x14]
+            fstp dword ptr [esp + 0x18]
+            fild dword ptr [gStatbarHUD3_dim_h]
+            fstp dword ptr [esp + 0x14]
+            call HighResHeadupHeight
+            mov dword ptr [esp + 0x10], eax
+            mov ecx, dword ptr [gStatbarHUD3_model]
+            fild dword ptr [esp + 0x10]
+            mov edx, dword ptr [ecx + 8]
+            fdivr dword ptr [esp + 0x14]
+            mov dword ptr [edx + 0xc], ebx
+            mov eax, dword ptr [gStatbarHUD3_model]
+            mov ecx, dword ptr [eax + 8]
+            mov dword ptr [ecx + 0x10], ebx
+            mov edx, dword ptr [gStatbarHUD3_model]
+            mov eax, dword ptr [edx + 8]
+            mov dword ptr [eax + 0x34], ebx
+            mov ecx, dword ptr [gStatbarHUD3_model]
+            mov edx, dword ptr [ecx + 8]
+            fst dword ptr [edx + 0x38]
+            mov eax, dword ptr [gStatbarHUD3_model]
+            mov edx, dword ptr [esp + 0x18]
+            mov ecx, dword ptr [eax + 8]
+            mov dword ptr [ecx + 0x5c], edx
+            mov eax, dword ptr [gStatbarHUD3_model]
+            mov ecx, dword ptr [eax + 8]
+            fstp dword ptr [ecx + 0x60]
+            mov edx, dword ptr [gStatbarHUD3_model]
+            mov ecx, dword ptr [esp + 0x18]
+            mov eax, dword ptr [edx + 8]
+            mov dword ptr [eax + 0x84], ecx
+            mov edx, dword ptr [gStatbarHUD3_model]
+            mov eax, dword ptr [edx + 8]
+            mov dword ptr [eax + 0x88], ebx
+            mov ecx, dword ptr [gStatbarHUD3_material]
+            mov dword ptr [ecx + 0x58], 0x6569e0
+            mov edx, dword ptr [gStatbarHUD3_model]
+            push edx
+            call BrModelAdd
+            mov eax, dword ptr [gStatbarHUD3_material]
+            add esp, 4
+            push eax
+            call BrMaterialAdd
+            mov ecx, dword ptr [gHUDsquare_actor]
+            add esp, 4
+            mov dword ptr [ecx + 0x14], 0x656e0c
+            mov edx, dword ptr [gHUDsquare_actor]
+            mov eax, dword ptr [gHUDsquare_model]
+            mov dword ptr [edx + 0x18], eax
+            mov edx, dword ptr [gHUDsquare_actor]
+            mov ecx, dword ptr [gHUDsquare_material]
+            mov dword ptr [edx + 0x1c], ecx
+            mov eax, dword ptr [gHUDsquare_model]
+            mov ecx, dword ptr [eax + 0xc]
+            mov word ptr [ecx], bx
+            mov edx, dword ptr [gHUDsquare_model]
+            mov eax, dword ptr [edx + 0xc]
+            mov word ptr [eax + 2], 1
+            mov ecx, dword ptr [gHUDsquare_model]
+            mov edx, dword ptr [ecx + 0xc]
+            mov word ptr [edx + 4], bp
+            mov eax, dword ptr [gHUDsquare_model]
+            mov ecx, dword ptr [eax + 0xc]
+            mov word ptr [ecx + 0x28], bp
+            mov edx, dword ptr [gHUDsquare_model]
+            mov eax, dword ptr [edx + 0xc]
+            mov word ptr [eax + 0x2a], 3
+            mov ecx, dword ptr [gHUDsquare_model]
+            mov edx, dword ptr [ecx + 0xc]
+            mov word ptr [edx + 0x2c], bx
+            mov eax, dword ptr [gHUDsquare_model]
+            mov ecx, dword ptr [eax + 8]
+            mov eax, 0xc1a00000
+            mov dword ptr [ecx], 0x43160000
+            mov edx, dword ptr [gHUDsquare_model]
+            mov ecx, dword ptr [edx + 8]
+            mov dword ptr [ecx + 4], eax
+            mov edx, dword ptr [gHUDsquare_model]
+            mov ecx, dword ptr [edx + 8]
+            mov dword ptr [ecx + 8], esi
+            mov edx, dword ptr [gHUDsquare_model]
+            mov ecx, dword ptr [edx + 8]
+            mov dword ptr [ecx + 0x28], 0x43160000
+            mov edx, dword ptr [gHUDsquare_model]
+            mov ecx, 0xc2c80000
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x2c], ecx
+            mov edx, dword ptr [gHUDsquare_model]
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x30], esi
+            mov edx, dword ptr [gHUDsquare_model]
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x50], edi
+            mov edx, dword ptr [gHUDsquare_model]
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x54], ecx
+            mov ecx, dword ptr [gHUDsquare_model]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0x58], esi
+            mov ecx, dword ptr [gHUDsquare_model]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0x78], edi
+            mov ecx, dword ptr [gHUDsquare_model]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0x7c], eax
+            mov eax, dword ptr [gHUDsquare_model]
+            mov ecx, dword ptr [eax + 8]
+            mov dword ptr [ecx + 0x80], esi
+            mov edx, dword ptr [gHUDsquare_material]
+            mov dword ptr [edx + 8], 0x969696
+            mov eax, dword ptr [gHUDsquare_material]
+            mov dword ptr [eax + 0x20], 0x2800
+            mov eax, dword ptr [gHUDsquare_model]
+            or word ptr [eax + 0x20], bp
+            mov ecx, dword ptr [gHUDsquare_dim_w]
+            fild dword ptr [gHUDsquare_dim_w]
+            fstp dword ptr [esp + 0x14]
+            call HighResHeadupWidth
+            mov dword ptr [esp + 0x10], eax
+            mov ecx, dword ptr [gHUDsquare_dim_h]
+            fild dword ptr [esp + 0x10]
+            fdivr dword ptr [esp + 0x14]
+            fstp dword ptr [esp + 0x18]
+            fild dword ptr [gHUDsquare_dim_h]
+            fstp dword ptr [esp + 0x14]
+            call HighResHeadupHeight
+            mov dword ptr [esp + 0x10], eax
+            mov ecx, dword ptr [gHUDsquare_model]
+            fild dword ptr [esp + 0x10]
+            mov edx, dword ptr [ecx + 8]
+            fdivr dword ptr [esp + 0x14]
+            mov dword ptr [edx + 0xc], ebx
+            mov eax, dword ptr [gHUDsquare_model]
+            mov ecx, dword ptr [eax + 8]
+            mov dword ptr [ecx + 0x10], ebx
+            mov edx, dword ptr [gHUDsquare_model]
+            mov eax, dword ptr [edx + 8]
+            mov dword ptr [eax + 0x34], ebx
+            mov ecx, dword ptr [gHUDsquare_model]
+            mov edx, dword ptr [ecx + 8]
+            fst dword ptr [edx + 0x38]
+            mov eax, dword ptr [gHUDsquare_model]
+            mov edx, dword ptr [esp + 0x18]
+            mov ecx, dword ptr [eax + 8]
+            mov dword ptr [ecx + 0x5c], edx
+            mov eax, dword ptr [gHUDsquare_model]
+            mov ecx, dword ptr [eax + 8]
+            fstp dword ptr [ecx + 0x60]
+            mov edx, dword ptr [gHUDsquare_model]
+            mov ecx, dword ptr [esp + 0x18]
+            mov eax, dword ptr [edx + 8]
+            mov dword ptr [eax + 0x84], ecx
+            mov edx, dword ptr [gHUDsquare_model]
+            mov eax, dword ptr [edx + 8]
+            mov dword ptr [eax + 0x88], ebx
+            mov ecx, dword ptr [gHUDsquare_model]
+            push ecx
+            call BrModelAdd
+            mov edx, dword ptr [gHUDsquare_material]
+            add esp, 4
+            push edx
+            call BrMaterialAdd
+            mov eax, dword ptr [gStatbarHUD5_actor]
+            add esp, 4
+            mov dword ptr [eax + 0x14], 0x656df8
+            mov ecx, dword ptr [gStatbarHUD5_actor]
+            mov edx, dword ptr [gStatbarHUD5_model]
+            mov dword ptr [ecx + 0x18], edx
+            mov ecx, dword ptr [gStatbarHUD5_actor]
+            mov eax, dword ptr [gStatbarHUD5_material]
+            mov dword ptr [ecx + 0x1c], eax
+            mov edx, dword ptr [gStatbarHUD5_model]
+            mov eax, dword ptr [edx + 0xc]
+            mov word ptr [eax], bx
+            mov ecx, dword ptr [gStatbarHUD5_model]
+            mov edx, dword ptr [ecx + 0xc]
+            mov word ptr [edx + 2], 1
+            mov eax, dword ptr [gStatbarHUD5_model]
+            mov ecx, dword ptr [eax + 0xc]
+            mov word ptr [ecx + 4], bp
+            mov edx, dword ptr [gStatbarHUD5_model]
+            mov eax, dword ptr [edx + 0xc]
+            mov word ptr [eax + 0x28], bp
+            mov ecx, dword ptr [gStatbarHUD5_model]
+            mov edx, dword ptr [ecx + 0xc]
+            mov word ptr [edx + 0x2a], 3
+            mov eax, dword ptr [gStatbarHUD5_model]
+            mov ecx, dword ptr [eax + 0xc]
+            mov word ptr [ecx + 0x2c], bx
+            mov edx, dword ptr [gStatbarHUD5_model]
+            mov eax, dword ptr [edx + 8]
+            mov dword ptr [eax], 0x43160000
+            mov ecx, dword ptr [gStatbarHUD5_model]
+            mov eax, 0xc1a00000
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 4], eax
+            mov ecx, dword ptr [gStatbarHUD5_model]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 8], esi
+            mov ecx, dword ptr [gStatbarHUD5_model]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0x28], 0x43160000
+            mov ecx, dword ptr [gStatbarHUD5_model]
+            mov edx, dword ptr [ecx + 8]
+            mov ecx, 0xc2c80000
+            mov dword ptr [edx + 0x2c], ecx
+            mov edx, dword ptr [gStatbarHUD5_model]
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x30], esi
+            mov edx, dword ptr [gStatbarHUD5_model]
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x50], edi
+            mov edx, dword ptr [gStatbarHUD5_model]
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x54], ecx
+            mov ecx, dword ptr [gStatbarHUD5_model]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0x58], esi
+            mov ecx, dword ptr [gStatbarHUD5_model]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0x78], edi
+            mov ecx, dword ptr [gStatbarHUD5_model]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0x7c], eax
+            mov eax, dword ptr [gStatbarHUD5_model]
+            mov ecx, dword ptr [eax + 8]
+            mov dword ptr [ecx + 0x80], esi
+            mov edx, dword ptr [gStatbarHUD5_material]
+            mov dword ptr [edx + 8], 0x969696
+            mov eax, dword ptr [gStatbarHUD5_material]
+            mov dword ptr [eax + 0x20], 0x2800
+            mov eax, dword ptr [gStatbarHUD5_model]
+            or word ptr [eax + 0x20], bp
+            mov ecx, dword ptr [gStatbarHUD5_dim_w]
+            fild dword ptr [gStatbarHUD5_dim_w]
+            fstp dword ptr [esp + 0x14]
+            call HighResHeadupWidth
+            mov dword ptr [esp + 0x10], eax
+            mov ecx, dword ptr [gStatbarHUD5_dim_h]
+            fild dword ptr [esp + 0x10]
+            fdivr dword ptr [esp + 0x14]
+            fstp dword ptr [esp + 0x18]
+            fild dword ptr [gStatbarHUD5_dim_h]
+            fstp dword ptr [esp + 0x14]
+            call HighResHeadupHeight
+            mov dword ptr [esp + 0x10], eax
+            mov ecx, dword ptr [gStatbarHUD5_model]
+            fild dword ptr [esp + 0x10]
+            mov edx, dword ptr [ecx + 8]
+            fdivr dword ptr [esp + 0x14]
+            mov dword ptr [edx + 0xc], ebx
+            mov eax, dword ptr [gStatbarHUD5_model]
+            mov ecx, dword ptr [eax + 8]
+            mov dword ptr [ecx + 0x10], ebx
+            mov edx, dword ptr [gStatbarHUD5_model]
+            mov eax, dword ptr [edx + 8]
+            mov dword ptr [eax + 0x34], ebx
+            mov ecx, dword ptr [gStatbarHUD5_model]
+            mov edx, dword ptr [ecx + 8]
+            fst dword ptr [edx + 0x38]
+            mov eax, dword ptr [gStatbarHUD5_model]
+            mov edx, dword ptr [esp + 0x18]
+            mov ecx, dword ptr [eax + 8]
+            mov dword ptr [ecx + 0x5c], edx
+            mov eax, dword ptr [gStatbarHUD5_model]
+            mov ecx, dword ptr [eax + 8]
+            fstp dword ptr [ecx + 0x60]
+            mov edx, dword ptr [gStatbarHUD5_model]
+            mov ecx, dword ptr [esp + 0x18]
+            mov eax, dword ptr [edx + 8]
+            mov dword ptr [eax + 0x84], ecx
+            mov edx, dword ptr [gStatbarHUD5_model]
+            mov eax, dword ptr [edx + 8]
+            mov dword ptr [eax + 0x88], ebx
+            mov ecx, dword ptr [gStatbarHUD5_model]
+            push ecx
+            call BrModelAdd
+            mov edx, dword ptr [gStatbarHUD5_material]
+            add esp, 4
+            push edx
+            call BrMaterialAdd
+            mov eax, dword ptr [gTimerLeftHUD_actor]
+            add esp, 4
+            mov dword ptr [eax + 0x14], 0x656de4
+            mov ecx, dword ptr [gTimerLeftHUD_actor]
+            mov edx, dword ptr [gTimerLeftHUD_model]
+            mov dword ptr [ecx + 0x18], edx
+            mov ecx, dword ptr [gTimerLeftHUD_actor]
+            mov eax, dword ptr [gTimerLeftHUD_material]
+            mov dword ptr [ecx + 0x1c], eax
+            mov edx, dword ptr [gTimerLeftHUD_model]
+            mov eax, dword ptr [edx + 0xc]
+            mov word ptr [eax], bx
+            mov ecx, dword ptr [gTimerLeftHUD_model]
+            mov edx, dword ptr [ecx + 0xc]
+            mov word ptr [edx + 2], 1
+            mov eax, dword ptr [gTimerLeftHUD_model]
+            mov ecx, dword ptr [eax + 0xc]
+            mov word ptr [ecx + 4], bp
+            mov edx, dword ptr [gTimerLeftHUD_model]
+            mov eax, dword ptr [edx + 0xc]
+            mov word ptr [eax + 0x28], bp
+            mov ecx, dword ptr [gTimerLeftHUD_model]
+            mov edx, dword ptr [ecx + 0xc]
+            mov word ptr [edx + 0x2a], 3
+            mov eax, dword ptr [gTimerLeftHUD_model]
+            mov ecx, dword ptr [eax + 0xc]
+            mov word ptr [ecx + 0x2c], bx
+            mov edx, dword ptr [gTimerLeftHUD_model]
+            mov eax, dword ptr [edx + 8]
+            mov dword ptr [eax], 0x43160000
+            mov ecx, dword ptr [gTimerLeftHUD_model]
+            mov eax, 0xc1a00000
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 4], eax
+            mov ecx, dword ptr [gTimerLeftHUD_model]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 8], esi
+            mov ecx, dword ptr [gTimerLeftHUD_model]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0x28], 0x43160000
+            mov ecx, dword ptr [gTimerLeftHUD_model]
+            mov edx, dword ptr [ecx + 8]
+            mov ecx, 0xc2c80000
+            mov dword ptr [edx + 0x2c], ecx
+            mov edx, dword ptr [gTimerLeftHUD_model]
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x30], esi
+            mov edx, dword ptr [gTimerLeftHUD_model]
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x50], edi
+            mov edx, dword ptr [gTimerLeftHUD_model]
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x54], ecx
+            mov ecx, dword ptr [gTimerLeftHUD_model]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0x58], esi
+            mov ecx, dword ptr [gTimerLeftHUD_model]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0x78], edi
+            mov ecx, dword ptr [gTimerLeftHUD_model]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0x7c], eax
+            mov eax, dword ptr [gTimerLeftHUD_model]
+            mov ecx, dword ptr [eax + 8]
+            mov dword ptr [ecx + 0x80], esi
+            mov edx, dword ptr [gTimerLeftHUD_material]
+            mov dword ptr [edx + 8], 0x969696
+            mov eax, dword ptr [gTimerLeftHUD_material]
+            mov dword ptr [eax + 0x20], 0x2800
+            mov eax, dword ptr [gTimerLeftHUD_model]
+            or word ptr [eax + 0x20], bp
+            mov ecx, dword ptr [gTimerLeftHUD_model]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0xc], ebx
+            mov eax, dword ptr [gTimerLeftHUD_model]
+            mov ecx, dword ptr [eax + 8]
+            mov dword ptr [ecx + 0x10], ebx
+            mov edx, dword ptr [gTimerLeftHUD_model]
+            mov eax, dword ptr [edx + 8]
+            mov dword ptr [eax + 0x34], ebx
+            mov ecx, dword ptr [gTimerLeftHUD_model]
+            mov eax, 0x3f800000
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0x38], eax
+            mov ecx, dword ptr [gTimerLeftHUD_model]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0x5c], eax
+            mov ecx, dword ptr [gTimerLeftHUD_model]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0x60], eax
+            mov ecx, dword ptr [gTimerLeftHUD_model]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0x84], eax
+            mov eax, dword ptr [gTimerLeftHUD_model]
+            mov ecx, dword ptr [eax + 8]
+            mov dword ptr [ecx + 0x88], ebx
+            mov edx, dword ptr [gTimerLeftHUD_model]
+            push edx
+            call BrModelAdd
+            mov eax, dword ptr [gTimerLeftHUD_material]
+            add esp, 4
+            push eax
+            call BrMaterialAdd
+            mov ecx, dword ptr [gTimerRightHUD_actor]
+            add esp, 4
+            mov dword ptr [ecx + 0x14], 0x656dcc
+            mov edx, dword ptr [gTimerRightHUD_actor]
+            mov eax, dword ptr [gTimerRightHUD_model]
+            mov dword ptr [edx + 0x18], eax
+            mov edx, dword ptr [gTimerRightHUD_actor]
+            mov ecx, dword ptr [gTimerRightHUD_material]
+            mov dword ptr [edx + 0x1c], ecx
+            mov eax, dword ptr [gTimerRightHUD_model]
+            mov ecx, dword ptr [eax + 0xc]
+            mov word ptr [ecx], bx
+            mov edx, dword ptr [gTimerRightHUD_model]
+            mov eax, dword ptr [edx + 0xc]
+            mov word ptr [eax + 2], 1
+            mov ecx, dword ptr [gTimerRightHUD_model]
+            mov edx, dword ptr [ecx + 0xc]
+            mov word ptr [edx + 4], bp
+            mov eax, dword ptr [gTimerRightHUD_model]
+            mov ecx, dword ptr [eax + 0xc]
+            mov word ptr [ecx + 0x28], bp
+            mov edx, dword ptr [gTimerRightHUD_model]
+            mov eax, dword ptr [edx + 0xc]
+            mov word ptr [eax + 0x2a], 3
+            mov ecx, dword ptr [gTimerRightHUD_model]
+            mov edx, dword ptr [ecx + 0xc]
+            mov word ptr [edx + 0x2c], bx
+            mov eax, dword ptr [gTimerRightHUD_model]
+            mov ecx, dword ptr [eax + 8]
+            mov eax, 0xc1a00000
+            mov dword ptr [ecx], 0x43160000
+            mov edx, dword ptr [gTimerRightHUD_model]
+            mov ecx, dword ptr [edx + 8]
+            mov dword ptr [ecx + 4], eax
+            mov edx, dword ptr [gTimerRightHUD_model]
+            mov ecx, dword ptr [edx + 8]
+            mov dword ptr [ecx + 8], esi
+            mov edx, dword ptr [gTimerRightHUD_model]
+            mov ecx, dword ptr [edx + 8]
+            mov dword ptr [ecx + 0x28], 0x43160000
+            mov edx, dword ptr [gTimerRightHUD_model]
+            mov ecx, 0xc2c80000
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x2c], ecx
+            mov edx, dword ptr [gTimerRightHUD_model]
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x30], esi
+            mov edx, dword ptr [gTimerRightHUD_model]
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x50], edi
+            mov edx, dword ptr [gTimerRightHUD_model]
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x54], ecx
+            mov ecx, dword ptr [gTimerRightHUD_model]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0x58], esi
+            mov ecx, dword ptr [gTimerRightHUD_model]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0x78], edi
+            mov ecx, dword ptr [gTimerRightHUD_model]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0x7c], eax
+            mov eax, dword ptr [gTimerRightHUD_model]
+            mov ecx, dword ptr [eax + 8]
+            mov dword ptr [ecx + 0x80], esi
+            mov edx, dword ptr [gTimerRightHUD_material]
+            mov dword ptr [edx + 8], 0x969696
+            mov eax, dword ptr [gTimerRightHUD_material]
+            mov dword ptr [eax + 0x20], 0x2800
+            mov eax, dword ptr [gTimerRightHUD_model]
+            or word ptr [eax + 0x20], bp
+            mov ecx, dword ptr [gTimerRightHUD_dim_w]
+            fild dword ptr [gTimerRightHUD_dim_w]
+            fstp dword ptr [esp + 0x14]
+            call HighResHeadupWidth
+            mov dword ptr [esp + 0x10], eax
+            mov ecx, dword ptr [gTimerRightHUD_dim_h]
+            fild dword ptr [esp + 0x10]
+            fdivr dword ptr [esp + 0x14]
+            fstp dword ptr [esp + 0x18]
+            fild dword ptr [gTimerRightHUD_dim_h]
+            fstp dword ptr [esp + 0x14]
+            call HighResHeadupHeight
+            mov dword ptr [esp + 0x10], eax
+            mov ecx, dword ptr [gTimerRightHUD_model]
+            fild dword ptr [esp + 0x10]
+            mov edx, dword ptr [ecx + 8]
+            fdivr dword ptr [esp + 0x14]
+            mov dword ptr [edx + 0xc], ebx
+            mov eax, dword ptr [gTimerRightHUD_model]
+            mov ecx, dword ptr [eax + 8]
+            mov dword ptr [ecx + 0x10], ebx
+            mov edx, dword ptr [gTimerRightHUD_model]
+            mov eax, dword ptr [edx + 8]
+            mov dword ptr [eax + 0x34], ebx
+            mov ecx, dword ptr [gTimerRightHUD_model]
+            mov edx, dword ptr [ecx + 8]
+            fst dword ptr [edx + 0x38]
+            mov eax, dword ptr [gTimerRightHUD_model]
+            mov edx, dword ptr [esp + 0x18]
+            mov ecx, dword ptr [eax + 8]
+            mov dword ptr [ecx + 0x5c], edx
+            mov eax, dword ptr [gTimerRightHUD_model]
+            mov ecx, dword ptr [eax + 8]
+            fstp dword ptr [ecx + 0x60]
+            mov edx, dword ptr [gTimerRightHUD_model]
+            mov ecx, dword ptr [esp + 0x18]
+            mov eax, dword ptr [edx + 8]
+            mov dword ptr [eax + 0x84], ecx
+            mov edx, dword ptr [gTimerRightHUD_model]
+            mov eax, dword ptr [edx + 8]
+            mov dword ptr [eax + 0x88], ebx
+            mov ecx, dword ptr [gTimerRightHUD_model]
+            push ecx
+            call BrModelAdd
+            mov edx, dword ptr [gTimerRightHUD_material]
+            add esp, 4
+            push edx
+            call BrMaterialAdd
+            mov eax, dword ptr [gStatbarRightHUD_actor]
+            add esp, 4
+            mov dword ptr [eax + 0x14], 0x656db4
+            mov ecx, dword ptr [gStatbarRightHUD_actor]
+            mov edx, dword ptr [gStatbarRightHUD_model]
+            mov dword ptr [ecx + 0x18], edx
+            mov ecx, dword ptr [gStatbarRightHUD_actor]
+            mov eax, dword ptr [gStatbarRightHUD_material]
+            mov dword ptr [ecx + 0x1c], eax
+            mov edx, dword ptr [gStatbarRightHUD_model]
+            mov eax, dword ptr [edx + 0xc]
+            mov word ptr [eax], bx
+            mov ecx, dword ptr [gStatbarRightHUD_model]
+            mov edx, dword ptr [ecx + 0xc]
+            mov word ptr [edx + 2], 1
+            mov eax, dword ptr [gStatbarRightHUD_model]
+            mov ecx, dword ptr [eax + 0xc]
+            mov word ptr [ecx + 4], bp
+            mov edx, dword ptr [gStatbarRightHUD_model]
+            mov eax, dword ptr [edx + 0xc]
+            mov word ptr [eax + 0x28], bp
+            mov ecx, dword ptr [gStatbarRightHUD_model]
+            mov edx, dword ptr [ecx + 0xc]
+            mov word ptr [edx + 0x2a], 3
+            mov eax, dword ptr [gStatbarRightHUD_model]
+            mov ecx, dword ptr [eax + 0xc]
+            mov word ptr [ecx + 0x2c], bx
+            mov edx, dword ptr [gStatbarRightHUD_model]
+            mov eax, dword ptr [edx + 8]
+            mov dword ptr [eax], 0x43160000
+            mov ecx, dword ptr [gStatbarRightHUD_model]
+            mov edx, dword ptr [ecx + 8]
+            mov ecx, 0xc1a00000
+            mov dword ptr [edx + 4], ecx
+            mov eax, dword ptr [gStatbarRightHUD_model]
+            mov edx, dword ptr [eax + 8]
+            mov dword ptr [edx + 8], esi
+            mov eax, dword ptr [gStatbarRightHUD_model]
+            mov edx, dword ptr [eax + 8]
+            mov dword ptr [edx + 0x28], 0x43160000
+            mov eax, dword ptr [gStatbarRightHUD_model]
+            mov edx, dword ptr [eax + 8]
+            mov eax, 0xc2c80000
+            mov dword ptr [edx + 0x2c], eax
+            mov edx, dword ptr [gStatbarRightHUD_model]
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x30], esi
+            mov edx, dword ptr [gStatbarRightHUD_model]
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x50], edi
+            mov edx, dword ptr [gStatbarRightHUD_model]
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x54], eax
+            mov eax, dword ptr [gStatbarRightHUD_model]
+            mov edx, dword ptr [eax + 8]
+            mov dword ptr [edx + 0x58], esi
+            mov eax, dword ptr [gStatbarRightHUD_model]
+            mov edx, dword ptr [eax + 8]
+            mov dword ptr [edx + 0x78], edi
+            mov eax, dword ptr [gStatbarRightHUD_model]
+            mov edx, dword ptr [eax + 8]
+            mov dword ptr [edx + 0x7c], ecx
+            mov eax, dword ptr [gStatbarRightHUD_model]
+            mov ecx, dword ptr [eax + 8]
+            mov dword ptr [ecx + 0x80], esi
+            mov edx, dword ptr [gStatbarRightHUD_material]
+            mov dword ptr [edx + 8], 0x40e4a
+            mov eax, dword ptr [gStatbarRightHUD_material]
+            mov dword ptr [eax + 0x20], 0x2800
+            mov eax, dword ptr [gStatbarRightHUD_model]
+            or word ptr [eax + 0x20], bp
+            mov ecx, dword ptr [gStatbarRightHUD_material]
+            mov dword ptr [ecx + 0x58], 0x6569e0
+            mov edx, dword ptr [gStatbarRightHUD_model]
+            push edx
+            call BrModelAdd
+            mov eax, dword ptr [gStatbarRightHUD_material]
+            add esp, 4
+            push eax
+            call BrMaterialAdd
+            mov ecx, dword ptr [gMapHUD_actor]
+            add esp, 4
+            mov dword ptr [ecx + 0x14], 0x656da4
+            mov edx, dword ptr [gMapHUD_actor]
+            mov eax, dword ptr [gMapHUD_model]
+            mov dword ptr [edx + 0x18], eax
+            mov edx, dword ptr [gMapHUD_actor]
+            mov ecx, dword ptr [gMapHUD_material]
+            mov dword ptr [edx + 0x1c], ecx
+            mov eax, dword ptr [gMapHUD_model]
+            mov ecx, dword ptr [eax + 0xc]
+            mov word ptr [ecx], bx
+            mov edx, dword ptr [gMapHUD_model]
+            mov eax, dword ptr [edx + 0xc]
+            mov word ptr [eax + 2], 1
+            mov ecx, dword ptr [gMapHUD_model]
+            mov edx, dword ptr [ecx + 0xc]
+            mov word ptr [edx + 4], bp
+            mov eax, dword ptr [gMapHUD_model]
+            mov ecx, dword ptr [eax + 0xc]
+            mov word ptr [ecx + 0x28], bp
+            mov edx, dword ptr [gMapHUD_model]
+            mov eax, dword ptr [edx + 0xc]
+            mov word ptr [eax + 0x2a], 3
+            mov ecx, dword ptr [gMapHUD_model]
+            mov edx, dword ptr [ecx + 0xc]
+            mov word ptr [edx + 0x2c], bx
+            mov eax, dword ptr [gMapHUD_model]
+            mov ecx, dword ptr [eax + 8]
+            mov eax, 0xc1a00000
+            mov dword ptr [ecx], 0x43160000
+            mov edx, dword ptr [gMapHUD_model]
+            mov ecx, dword ptr [edx + 8]
+            mov dword ptr [ecx + 4], eax
+            mov edx, dword ptr [gMapHUD_model]
+            mov ecx, dword ptr [edx + 8]
+            mov dword ptr [ecx + 8], esi
+            mov edx, dword ptr [gMapHUD_model]
+            mov ecx, dword ptr [edx + 8]
+            mov dword ptr [ecx + 0x28], 0x43160000
+            mov edx, dword ptr [gMapHUD_model]
+            mov ecx, 0xc2c80000
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x2c], ecx
+            mov edx, dword ptr [gMapHUD_model]
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x30], esi
+            mov edx, dword ptr [gMapHUD_model]
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x50], edi
+            mov edx, dword ptr [gMapHUD_model]
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x54], ecx
+            mov ecx, dword ptr [gMapHUD_model]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0x58], esi
+            mov ecx, dword ptr [gMapHUD_model]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0x78], edi
+            mov ecx, dword ptr [gMapHUD_model]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0x7c], eax
+            mov eax, dword ptr [gMapHUD_model]
+            mov ecx, dword ptr [eax + 8]
+            mov dword ptr [ecx + 0x80], esi
+            mov edx, dword ptr [gMapHUD_material]
+            mov dword ptr [edx + 8], 0x969696
+            mov eax, dword ptr [gMapHUD_material]
+            mov dword ptr [eax + 0x20], 0x2800
+            mov eax, dword ptr [gMapHUD_model]
+            or word ptr [eax + 0x20], bp
+            mov ecx, dword ptr [gMapHUD_model]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0xc], ebx
+            mov eax, dword ptr [gMapHUD_model]
+            mov ecx, dword ptr [eax + 8]
+            mov dword ptr [ecx + 0x10], ebx
+            mov edx, dword ptr [gMapHUD_model]
+            mov eax, dword ptr [edx + 8]
+            mov dword ptr [eax + 0x34], ebx
+            mov ecx, dword ptr [gMapHUD_model]
+            mov eax, 0x3f800000
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0x38], eax
+            mov ecx, dword ptr [gMapHUD_model]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0x5c], eax
+            mov ecx, dword ptr [gMapHUD_model]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0x60], eax
+            mov ecx, dword ptr [gMapHUD_model]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0x84], eax
+            mov eax, dword ptr [gMapHUD_model]
+            mov ecx, dword ptr [eax + 8]
+            mov dword ptr [ecx + 0x88], ebx
+            mov edx, dword ptr [gMapHUD_model]
+            push edx
+            call BrModelAdd
+            mov eax, dword ptr [gMapHUD_material]
+            add esp, 4
+            push eax
+            call BrMaterialAdd
+            mov ecx, dword ptr [gTestFont_actor]
+            add esp, 4
+            mov dword ptr [ecx + 0x14], 0x656d94
+            mov edx, dword ptr [gTestFont_actor]
+            mov eax, dword ptr [gTestFont_model]
+            mov dword ptr [edx + 0x18], eax
+            mov edx, dword ptr [gTestFont_actor]
+            mov ecx, dword ptr [gTestFont_material]
+            mov dword ptr [edx + 0x1c], ecx
+            mov eax, dword ptr [gTestFont_model]
+            mov ecx, dword ptr [eax + 0xc]
+            mov word ptr [ecx], bx
+            mov edx, dword ptr [gTestFont_model]
+            mov eax, dword ptr [edx + 0xc]
+            mov word ptr [eax + 2], 1
+            mov ecx, dword ptr [gTestFont_model]
+            mov edx, dword ptr [ecx + 0xc]
+            mov word ptr [edx + 4], bp
+            mov eax, dword ptr [gTestFont_model]
+            mov ecx, dword ptr [eax + 0xc]
+            mov word ptr [ecx + 0x28], bp
+            mov edx, dword ptr [gTestFont_model]
+            mov eax, dword ptr [edx + 0xc]
+            mov word ptr [eax + 0x2a], 3
+            mov ecx, dword ptr [gTestFont_model]
+            mov edx, dword ptr [ecx + 0xc]
+            mov word ptr [edx + 0x2c], bx
+            mov eax, dword ptr [gTestFont_model]
+            mov ecx, dword ptr [eax + 8]
+            mov eax, 0xc1a00000
+            mov dword ptr [ecx], 0x43160000
+            mov edx, dword ptr [gTestFont_model]
+            mov ecx, dword ptr [edx + 8]
+            mov dword ptr [ecx + 4], eax
+            mov edx, dword ptr [gTestFont_model]
+            mov ecx, dword ptr [edx + 8]
+            mov dword ptr [ecx + 8], esi
+            mov edx, dword ptr [gTestFont_model]
+            mov ecx, dword ptr [edx + 8]
+            mov dword ptr [ecx + 0x28], 0x43160000
+            mov edx, dword ptr [gTestFont_model]
+            mov ecx, 0xc2c80000
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x2c], ecx
+            mov edx, dword ptr [gTestFont_model]
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x30], esi
+            mov edx, dword ptr [gTestFont_model]
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x50], edi
+            mov edx, dword ptr [gTestFont_model]
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x54], ecx
+            mov ecx, dword ptr [gTestFont_model]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0x58], esi
+            mov ecx, dword ptr [gTestFont_model]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0x78], edi
+            mov ecx, dword ptr [gTestFont_model]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0x7c], eax
+            mov eax, dword ptr [gTestFont_model]
+            mov ecx, dword ptr [eax + 8]
+            mov dword ptr [ecx + 0x80], esi
+            mov edx, dword ptr [gTestFont_material]
+            mov dword ptr [edx + 8], 0x223551
+            mov eax, dword ptr [gTestFont_material]
+            mov dword ptr [eax + 0x20], 0x2800
+            mov eax, dword ptr [gTestFont_model]
+            or word ptr [eax + 0x20], bp
+            mov ecx, dword ptr [gTestFont_model]
+            push ecx
+            call BrModelAdd
+            mov edx, dword ptr [gTestFont_material]
+            add esp, 4
+            push edx
+            call BrMaterialAdd
+            mov eax, dword ptr [gArmour_actor]
+            add esp, 4
+            mov dword ptr [eax + 0x14], 0x656d84
+            mov ecx, dword ptr [gArmour_actor]
+            mov edx, dword ptr [gArmour_model]
+            mov dword ptr [ecx + 0x18], edx
+            mov ecx, dword ptr [gArmour_actor]
+            mov eax, dword ptr [gArmour_material]
+            mov dword ptr [ecx + 0x1c], eax
+            mov edx, dword ptr [gArmour_model]
+            mov eax, dword ptr [edx + 0xc]
+            mov word ptr [eax], bx
+            mov ecx, dword ptr [gArmour_model]
+            mov edx, dword ptr [ecx + 0xc]
+            mov word ptr [edx + 2], 1
+            mov eax, dword ptr [gArmour_model]
+            mov ecx, dword ptr [eax + 0xc]
+            mov word ptr [ecx + 4], bp
+            mov edx, dword ptr [gArmour_model]
+            mov eax, dword ptr [edx + 0xc]
+            mov word ptr [eax + 0x28], bp
+            mov ecx, dword ptr [gArmour_model]
+            mov edx, dword ptr [ecx + 0xc]
+            mov word ptr [edx + 0x2a], 3
+            mov eax, dword ptr [gArmour_model]
+            mov ecx, dword ptr [eax + 0xc]
+            mov word ptr [ecx + 0x2c], bx
+            mov edx, dword ptr [gArmour_model]
+            mov eax, dword ptr [edx + 8]
+            mov dword ptr [eax], 0x43160000
+            mov ecx, dword ptr [gArmour_model]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 4], 0xc1a00000
+            mov eax, dword ptr [gArmour_model]
+            mov ecx, dword ptr [eax + 8]
+            mov eax, 0xbfc00000
+            mov dword ptr [ecx + 8], eax
+            mov edx, dword ptr [gArmour_model]
+            mov ecx, dword ptr [edx + 8]
+            mov dword ptr [ecx + 0x28], 0x43160000
+            mov edx, dword ptr [gArmour_model]
+            mov ecx, 0xc2c80000
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x2c], ecx
+            mov edx, dword ptr [gArmour_model]
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x30], eax
+            mov edx, dword ptr [gArmour_model]
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x50], edi
+            mov edx, dword ptr [gArmour_model]
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x54], ecx
+            mov ecx, dword ptr [gArmour_model]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0x58], eax
+            mov ecx, dword ptr [gArmour_model]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0x78], edi
+            mov ecx, dword ptr [gArmour_model]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0x7c], 0xc1a00000
+            mov ecx, dword ptr [gArmour_model]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0x80], eax
+            mov eax, dword ptr [gArmour_material]
+            mov dword ptr [eax + 8], 0x969696
+            mov ecx, dword ptr [gArmour_material]
+            mov dword ptr [ecx + 0x20], 0x2800
+            mov eax, dword ptr [gArmour_model]
+            or word ptr [eax + 0x20], bp
+            mov edx, dword ptr [gArmour_model]
+            mov eax, dword ptr [edx + 8]
+            mov dword ptr [eax + 0xc], ebx
+            mov ecx, dword ptr [gArmour_model]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0x10], ebx
+            mov eax, dword ptr [gArmour_model]
+            mov ecx, dword ptr [eax + 8]
+            mov eax, 0x3f800000
+            mov dword ptr [ecx + 0x34], ebx
+            mov edx, dword ptr [gArmour_model]
+            mov ecx, dword ptr [edx + 8]
+            mov dword ptr [ecx + 0x38], eax
+            mov edx, dword ptr [gArmour_model]
+            mov ecx, dword ptr [edx + 8]
+            mov dword ptr [ecx + 0x5c], eax
+            mov edx, dword ptr [gArmour_model]
+            mov ecx, dword ptr [edx + 8]
+            mov dword ptr [ecx + 0x60], eax
+            mov edx, dword ptr [gArmour_model]
+            mov ecx, dword ptr [edx + 8]
+            mov dword ptr [ecx + 0x84], eax
+            mov edx, dword ptr [gArmour_model]
+            mov eax, dword ptr [edx + 8]
+            mov dword ptr [eax + 0x88], ebx
+            mov ecx, dword ptr [gArmour_model]
+            push ecx
+            call BrModelAdd
+            mov edx, dword ptr [gArmour_material]
+            add esp, 4
+            push edx
+            call BrMaterialAdd
+            mov eax, dword ptr [gPower_actor]
+            add esp, 4
+            mov dword ptr [eax + 0x14], 0x656d74
+            mov ecx, dword ptr [gPower_actor]
+            mov edx, dword ptr [gPower_model]
+            mov dword ptr [ecx + 0x18], edx
+            mov ecx, dword ptr [gPower_actor]
+            mov eax, dword ptr [gPower_material]
+            mov dword ptr [ecx + 0x1c], eax
+            mov edx, dword ptr [gPower_model]
+            mov eax, dword ptr [edx + 0xc]
+            mov word ptr [eax], bx
+            mov ecx, dword ptr [gPower_model]
+            mov edx, dword ptr [ecx + 0xc]
+            mov word ptr [edx + 2], 1
+            mov eax, dword ptr [gPower_model]
+            mov ecx, dword ptr [eax + 0xc]
+            mov word ptr [ecx + 4], bp
+            mov edx, dword ptr [gPower_model]
+            mov eax, dword ptr [edx + 0xc]
+            mov word ptr [eax + 0x28], bp
+            mov ecx, dword ptr [gPower_model]
+            mov edx, dword ptr [ecx + 0xc]
+            mov word ptr [edx + 0x2a], 3
+            mov eax, dword ptr [gPower_model]
+            mov ecx, dword ptr [eax + 0xc]
+            mov word ptr [ecx + 0x2c], bx
+            mov edx, dword ptr [gPower_model]
+            mov eax, dword ptr [edx + 8]
+            mov dword ptr [eax], 0x43160000
+            mov ecx, dword ptr [gPower_model]
+            mov edx, dword ptr [ecx + 8]
+            mov ecx, 0xc1a00000
+            mov dword ptr [edx + 4], ecx
+            mov eax, dword ptr [gPower_model]
+            mov edx, dword ptr [eax + 8]
+            mov dword ptr [edx + 8], esi
+            mov eax, dword ptr [gPower_model]
+            mov edx, dword ptr [eax + 8]
+            mov dword ptr [edx + 0x28], 0x43160000
+            mov eax, dword ptr [gPower_model]
+            mov edx, dword ptr [eax + 8]
+            mov eax, 0xc2c80000
+            mov dword ptr [edx + 0x2c], eax
+            mov edx, dword ptr [gPower_model]
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x30], esi
+            mov edx, dword ptr [gPower_model]
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x50], edi
+            mov edx, dword ptr [gPower_model]
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x54], eax
+            mov eax, dword ptr [gPower_model]
+            mov edx, dword ptr [eax + 8]
+            mov dword ptr [edx + 0x58], esi
+            mov eax, dword ptr [gPower_model]
+            mov edx, dword ptr [eax + 8]
+            mov dword ptr [edx + 0x78], edi
+            mov eax, dword ptr [gPower_model]
+            mov edx, dword ptr [eax + 8]
+            mov dword ptr [edx + 0x7c], ecx
+            mov eax, dword ptr [gPower_model]
+            mov ecx, dword ptr [eax + 8]
+            mov dword ptr [ecx + 0x80], esi
+            mov edx, dword ptr [gPower_material]
+            mov dword ptr [edx + 8], 0x223551
+            mov eax, dword ptr [gPower_material]
+            mov dword ptr [eax + 0x20], 0x2800
+            mov eax, dword ptr [gPower_model]
+            or word ptr [eax + 0x20], bp
+            mov ecx, dword ptr [gPower_model]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0xc], ebx
+            mov eax, dword ptr [gPower_model]
+            mov ecx, dword ptr [eax + 8]
+            mov dword ptr [ecx + 0x10], ebx
+            mov edx, dword ptr [gPower_model]
+            mov eax, dword ptr [edx + 8]
+            mov dword ptr [eax + 0x34], ebx
+            mov ecx, dword ptr [gPower_model]
+            mov eax, 0x3f800000
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0x38], eax
+            mov ecx, dword ptr [gPower_model]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0x5c], eax
+            mov ecx, dword ptr [gPower_model]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0x60], eax
+            mov ecx, dword ptr [gPower_model]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0x84], eax
+            mov eax, dword ptr [gPower_model]
+            mov ecx, dword ptr [eax + 8]
+            mov dword ptr [ecx + 0x88], ebx
+            mov edx, dword ptr [gPower_model]
+            push edx
+            call BrModelAdd
+            mov eax, dword ptr [gPower_material]
+            add esp, 4
+            push eax
+            call BrMaterialAdd
+            mov ecx, dword ptr [gOffense_actor]
+            add esp, 4
+            mov dword ptr [ecx + 0x14], 0x656d64
+            mov edx, dword ptr [gOffense_actor]
+            mov eax, dword ptr [gOffence_model]
+            mov dword ptr [edx + 0x18], eax
+            mov edx, dword ptr [gOffense_actor]
+            mov ecx, dword ptr [gOffence_material]
+            mov dword ptr [edx + 0x1c], ecx
+            mov eax, dword ptr [gOffence_model]
+            mov ecx, dword ptr [eax + 0xc]
+            mov word ptr [ecx], bx
+            mov edx, dword ptr [gOffence_model]
+            mov eax, dword ptr [edx + 0xc]
+            mov word ptr [eax + 2], 1
+            mov ecx, dword ptr [gOffence_model]
+            mov edx, dword ptr [ecx + 0xc]
+            mov word ptr [edx + 4], bp
+            mov eax, dword ptr [gOffence_model]
+            mov ecx, dword ptr [eax + 0xc]
+            mov word ptr [ecx + 0x28], bp
+            mov edx, dword ptr [gOffence_model]
+            mov eax, dword ptr [edx + 0xc]
+            mov word ptr [eax + 0x2a], 3
+            mov ecx, dword ptr [gOffence_model]
+            mov edx, dword ptr [ecx + 0xc]
+            mov word ptr [edx + 0x2c], bx
+            mov eax, dword ptr [gOffence_model]
+            mov ecx, dword ptr [eax + 8]
+            mov dword ptr [ecx], 0x43160000
+            mov edx, dword ptr [gOffence_model]
+            mov ecx, 0xc1a00000
+            mov eax, dword ptr [edx + 8]
+            mov dword ptr [eax + 4], ecx
+            mov edx, dword ptr [gOffence_model]
+            mov eax, dword ptr [edx + 8]
+            mov dword ptr [eax + 8], esi
+            mov edx, dword ptr [gOffence_model]
+            mov eax, dword ptr [edx + 8]
+            mov dword ptr [eax + 0x28], 0x43160000
+            mov edx, dword ptr [gOffence_model]
+            mov eax, 0xc2c80000
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x2c], eax
+            mov edx, dword ptr [gOffence_model]
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x30], esi
+            mov edx, dword ptr [gOffence_model]
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x50], edi
+            mov edx, dword ptr [gOffence_model]
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x54], eax
+            mov eax, dword ptr [gOffence_model]
+            mov edx, dword ptr [eax + 8]
+            mov dword ptr [edx + 0x58], esi
+            mov eax, dword ptr [gOffence_model]
+            mov edx, dword ptr [eax + 8]
+            mov dword ptr [edx + 0x78], edi
+            mov eax, dword ptr [gOffence_model]
+            mov edx, dword ptr [eax + 8]
+            mov dword ptr [edx + 0x7c], ecx
+            mov eax, dword ptr [gOffence_model]
+            mov ecx, dword ptr [eax + 8]
+            mov dword ptr [ecx + 0x80], esi
+            mov edx, dword ptr [gOffence_material]
+            mov dword ptr [edx + 8], 0x223551
+            mov eax, dword ptr [gOffence_material]
+            mov dword ptr [eax + 0x20], 0x2800
+            mov eax, dword ptr [gOffence_model]
+            or word ptr [eax + 0x20], bp
+            mov ecx, dword ptr [gOffence_model]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0xc], ebx
+            mov eax, dword ptr [gOffence_model]
+            mov ecx, dword ptr [eax + 8]
+            mov dword ptr [ecx + 0x10], ebx
+            mov edx, dword ptr [gOffence_model]
+            mov eax, dword ptr [edx + 8]
+            mov dword ptr [eax + 0x34], ebx
+            mov ecx, dword ptr [gOffence_model]
+            mov eax, 0x3f800000
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0x38], eax
+            mov ecx, dword ptr [gOffence_model]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0x5c], eax
+            mov ecx, dword ptr [gOffence_model]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0x60], eax
+            mov ecx, dword ptr [gOffence_model]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0x84], eax
+            mov eax, dword ptr [gOffence_model]
+            mov ecx, dword ptr [eax + 8]
+            mov dword ptr [ecx + 0x88], ebx
+            mov edx, dword ptr [gOffence_model]
+            push edx
+            call BrModelAdd
+            mov eax, dword ptr [gOffence_material]
+            add esp, 4
+            push eax
+            call BrMaterialAdd
+            mov ecx, dword ptr [gHeadup2_model]
+            add esp, 4
+            fild dword ptr [gHeadup2_dim_x]
+            mov edx, dword ptr [ecx + 8]
+            fstp dword ptr [edx + 0x28]
+            mov eax, dword ptr [gHeadup2_model]
+            mov eax, dword ptr [eax + 8]
+            mov ecx, dword ptr [eax + 0x28]
+            mov dword ptr [eax], ecx
+            mov edx, dword ptr [gHeadup2_model]
+            fild dword ptr [gHeadup2_dim_y]
+            mov eax, dword ptr [edx + 8]
+            fchs
+            fstp dword ptr [eax + 0x7c]
+            mov ecx, dword ptr [gHeadup2_model]
+            mov eax, dword ptr [ecx + 8]
+            mov edx, dword ptr [eax + 0x7c]
+            mov dword ptr [eax + 4], edx
+            mov eax, dword ptr [gHeadup2_model]
+            fild dword ptr [gHeadup2_dim_w]
+            mov eax, dword ptr [eax + 8]
+            push 1
+            fadd dword ptr [eax + 0x28]
+            fstp dword ptr [eax + 0x78]
+            mov ecx, dword ptr [gHeadup2_model]
+            mov eax, dword ptr [ecx + 8]
+            mov edx, dword ptr [eax + 0x78]
+            mov dword ptr [eax + 0x50], edx
+            mov eax, dword ptr [gHeadup2_model]
+            fild dword ptr [gHeadup2_dim_h]
+            mov eax, dword ptr [eax + 8]
+            fsubr dword ptr [eax + 0x7c]
+            fstp dword ptr [eax + 0x54]
+            mov ecx, dword ptr [gHeadup2_model]
+            mov eax, dword ptr [ecx + 8]
+            mov edx, dword ptr [eax + 0x54]
+            mov dword ptr [eax + 0x2c], edx
+            mov eax, dword ptr [gHeadup2_model]
+            push eax
+            call BrModelUpdate
+            mov ecx, dword ptr [gPowerupHUD_model]
+            add esp, 8
+            fild dword ptr [gPowerupHUD_dim_x]
+            mov edx, dword ptr [ecx + 8]
+            push 1
+            fstp dword ptr [edx + 0x28]
+            mov eax, dword ptr [gPowerupHUD_model]
+            mov eax, dword ptr [eax + 8]
+            mov ecx, dword ptr [eax + 0x28]
+            mov dword ptr [eax], ecx
+            mov edx, dword ptr [gPowerupHUD_model]
+            fild dword ptr [gPowerupHUD_dim_y]
+            mov eax, dword ptr [edx + 8]
+            fchs
+            fstp dword ptr [eax + 0x7c]
+            mov ecx, dword ptr [gPowerupHUD_model]
+            mov eax, dword ptr [ecx + 8]
+            mov edx, dword ptr [eax + 0x7c]
+            mov dword ptr [eax + 4], edx
+            mov eax, dword ptr [gPowerupHUD_model]
+            fild dword ptr [gPowerupHUD_dim_w]
+            mov eax, dword ptr [eax + 8]
+            fadd dword ptr [eax + 0x28]
+            fstp dword ptr [eax + 0x78]
+            mov ecx, dword ptr [gPowerupHUD_model]
+            mov eax, dword ptr [ecx + 8]
+            mov edx, dword ptr [eax + 0x78]
+            mov dword ptr [eax + 0x50], edx
+            mov eax, dword ptr [gPowerupHUD_model]
+            fild dword ptr [gPowerupHUD_dim_h]
+            mov eax, dword ptr [eax + 8]
+            fsubr dword ptr [eax + 0x7c]
+            fstp dword ptr [eax + 0x54]
+            mov ecx, dword ptr [gPowerupHUD_model]
+            mov eax, dword ptr [ecx + 8]
+            mov edx, dword ptr [eax + 0x54]
+            mov dword ptr [eax + 0x2c], edx
+            mov eax, dword ptr [gPowerupHUD_model]
+            push eax
+            call BrModelUpdate
+            mov ecx, dword ptr [gStatbarHUD1_model]
+            add esp, 8
+            fild dword ptr [gStatbarHUD1_dim_x]
+            mov edx, dword ptr [ecx + 8]
+            fstp dword ptr [edx + 0x28]
+            mov eax, dword ptr [gStatbarHUD1_model]
+            mov eax, dword ptr [eax + 8]
+            mov ecx, dword ptr [eax + 0x28]
+            mov dword ptr [eax], ecx
+            mov edx, dword ptr [gStatbarHUD1_model]
+            fild dword ptr [gStatbarHUD1_dim_y]
+            mov eax, dword ptr [edx + 8]
+            fchs
+            fstp dword ptr [eax + 0x7c]
+            mov ecx, dword ptr [gStatbarHUD1_model]
+            mov eax, dword ptr [ecx + 8]
+            mov edx, dword ptr [eax + 0x7c]
+            push 1
+            mov dword ptr [eax + 4], edx
+            mov eax, dword ptr [gStatbarHUD1_model]
+            fild dword ptr [gStatbarHUD1_dim_w]
+            mov eax, dword ptr [eax + 8]
+            fadd dword ptr [eax + 0x28]
+            fstp dword ptr [eax + 0x78]
+            mov ecx, dword ptr [gStatbarHUD1_model]
+            mov eax, dword ptr [ecx + 8]
+            mov edx, dword ptr [eax + 0x78]
+            mov dword ptr [eax + 0x50], edx
+            mov eax, dword ptr [gStatbarHUD1_model]
+            fild dword ptr [gStatbarHUD1_dim_h]
+            mov eax, dword ptr [eax + 8]
+            fsubr dword ptr [eax + 0x7c]
+            fstp dword ptr [eax + 0x54]
+            mov ecx, dword ptr [gStatbarHUD1_model]
+            mov eax, dword ptr [ecx + 8]
+            mov edx, dword ptr [eax + 0x54]
+            mov dword ptr [eax + 0x2c], edx
+            mov eax, dword ptr [gStatbarHUD1_model]
+            push eax
+            call BrModelUpdate
+            mov ecx, dword ptr [gStatbarHUD3_model]
+            add esp, 8
+            fild dword ptr [gStatbarHUD3_dim_x]
+            mov edx, dword ptr [ecx + 8]
+            push 1
+            fstp dword ptr [edx + 0x28]
+            mov eax, dword ptr [gStatbarHUD3_model]
+            mov eax, dword ptr [eax + 8]
+            mov ecx, dword ptr [eax + 0x28]
+            mov dword ptr [eax], ecx
+            mov edx, dword ptr [gStatbarHUD3_model]
+            fild dword ptr [gStatbarHUD3_dim_y]
+            mov eax, dword ptr [edx + 8]
+            fchs
+            fstp dword ptr [eax + 0x7c]
+            mov ecx, dword ptr [gStatbarHUD3_model]
+            mov eax, dword ptr [ecx + 8]
+            mov edx, dword ptr [eax + 0x7c]
+            mov dword ptr [eax + 4], edx
+            mov eax, dword ptr [gStatbarHUD3_model]
+            fild dword ptr [gStatbarHUD3_dim_w]
+            mov eax, dword ptr [eax + 8]
+            fadd dword ptr [eax + 0x28]
+            fstp dword ptr [eax + 0x78]
+            mov ecx, dword ptr [gStatbarHUD3_model]
+            mov eax, dword ptr [ecx + 8]
+            mov edx, dword ptr [eax + 0x78]
+            mov dword ptr [eax + 0x50], edx
+            mov eax, dword ptr [gStatbarHUD3_model]
+            fild dword ptr [gStatbarHUD3_dim_h]
+            mov eax, dword ptr [eax + 8]
+            fsubr dword ptr [eax + 0x7c]
+            fstp dword ptr [eax + 0x54]
+            mov ecx, dword ptr [gStatbarHUD3_model]
+            mov eax, dword ptr [ecx + 8]
+            mov edx, dword ptr [eax + 0x54]
+            mov dword ptr [eax + 0x2c], edx
+            mov eax, dword ptr [gStatbarHUD3_model]
+            push eax
+            call BrModelUpdate
+            mov ecx, dword ptr [gHUDsquare_model]
+            add esp, 8
+            fild dword ptr [gHUDsquare_dim_x]
+            mov edx, dword ptr [ecx + 8]
+            fstp dword ptr [edx + 0x28]
+            mov eax, dword ptr [gHUDsquare_model]
+            mov eax, dword ptr [eax + 8]
+            mov ecx, dword ptr [eax + 0x28]
+            mov dword ptr [eax], ecx
+            mov edx, dword ptr [gHUDsquare_model]
+            fild dword ptr [gHUDsquare_dim_y]
+            mov eax, dword ptr [edx + 8]
+            fchs
+            fstp dword ptr [eax + 0x7c]
+            mov ecx, dword ptr [gHUDsquare_model]
+            push 1
+            mov eax, dword ptr [ecx + 8]
+            mov edx, dword ptr [eax + 0x7c]
+            mov dword ptr [eax + 4], edx
+            mov eax, dword ptr [gHUDsquare_model]
+            fild dword ptr [gHUDsquare_dim_w]
+            mov eax, dword ptr [eax + 8]
+            fadd dword ptr [eax + 0x28]
+            fstp dword ptr [eax + 0x78]
+            mov ecx, dword ptr [gHUDsquare_model]
+            mov eax, dword ptr [ecx + 8]
+            mov edx, dword ptr [eax + 0x78]
+            mov dword ptr [eax + 0x50], edx
+            mov eax, dword ptr [gHUDsquare_model]
+            fild dword ptr [gHUDsquare_dim_h]
+            mov eax, dword ptr [eax + 8]
+            fsubr dword ptr [eax + 0x7c]
+            fstp dword ptr [eax + 0x54]
+            mov ecx, dword ptr [gHUDsquare_model]
+            mov eax, dword ptr [ecx + 8]
+            mov edx, dword ptr [eax + 0x54]
+            mov dword ptr [eax + 0x2c], edx
+            mov eax, dword ptr [gHUDsquare_model]
+            push eax
+            call BrModelUpdate
+            mov ecx, dword ptr [gStatbarHUD5_model]
+            add esp, 8
+            fild dword ptr [gStatbarHUD5_dim_x]
+            mov edx, dword ptr [ecx + 8]
+            push 1
+            fstp dword ptr [edx + 0x28]
+            mov eax, dword ptr [gStatbarHUD5_model]
+            mov eax, dword ptr [eax + 8]
+            mov ecx, dword ptr [eax + 0x28]
+            mov dword ptr [eax], ecx
+            mov edx, dword ptr [gStatbarHUD5_model]
+            fild dword ptr [gStatbarHUD5_dim_y]
+            mov eax, dword ptr [edx + 8]
+            fchs
+            fstp dword ptr [eax + 0x7c]
+            mov ecx, dword ptr [gStatbarHUD5_model]
+            mov eax, dword ptr [ecx + 8]
+            mov edx, dword ptr [eax + 0x7c]
+            mov dword ptr [eax + 4], edx
+            mov eax, dword ptr [gStatbarHUD5_model]
+            fild dword ptr [gStatbarHUD5_dim_w]
+            mov eax, dword ptr [eax + 8]
+            fadd dword ptr [eax + 0x28]
+            fstp dword ptr [eax + 0x78]
+            mov ecx, dword ptr [gStatbarHUD5_model]
+            mov eax, dword ptr [ecx + 8]
+            mov edx, dword ptr [eax + 0x78]
+            mov dword ptr [eax + 0x50], edx
+            mov eax, dword ptr [gStatbarHUD5_model]
+            fild dword ptr [gStatbarHUD5_dim_h]
+            mov eax, dword ptr [eax + 8]
+            fsubr dword ptr [eax + 0x7c]
+            fstp dword ptr [eax + 0x54]
+            mov ecx, dword ptr [gStatbarHUD5_model]
+            mov eax, dword ptr [ecx + 8]
+            mov edx, dword ptr [eax + 0x54]
+            mov dword ptr [eax + 0x2c], edx
+            mov eax, dword ptr [gStatbarHUD5_model]
+            push eax
+            call BrModelUpdate
+            mov ecx, dword ptr [gTimerLeftHUD_model]
+            add esp, 8
+            fild dword ptr [gTimerLeftHUD_dim_x]
+            mov edx, dword ptr [ecx + 8]
+            fstp dword ptr [edx + 0x28]
+            mov eax, dword ptr [gTimerLeftHUD_model]
+            mov eax, dword ptr [eax + 8]
+            mov ecx, dword ptr [eax + 0x28]
+            mov dword ptr [eax], ecx
+            fild dword ptr [gTimerLeftHUD_dim_y]
+            mov edx, dword ptr [gTimerLeftHUD_model]
+            push 1
+            fchs
+            mov eax, dword ptr [edx + 8]
+            fstp dword ptr [eax + 0x7c]
+            mov ecx, dword ptr [gTimerLeftHUD_model]
+            mov eax, dword ptr [ecx + 8]
+            mov edx, dword ptr [eax + 0x7c]
+            mov dword ptr [eax + 4], edx
+            mov eax, dword ptr [gTimerLeftHUD_model]
+            fild dword ptr [gTimerLeftHUD_dim_w]
+            mov eax, dword ptr [eax + 8]
+            fadd dword ptr [eax + 0x28]
+            fstp dword ptr [eax + 0x78]
+            mov ecx, dword ptr [gTimerLeftHUD_model]
+            mov eax, dword ptr [ecx + 8]
+            mov edx, dword ptr [eax + 0x78]
+            mov dword ptr [eax + 0x50], edx
+            mov eax, dword ptr [gTimerLeftHUD_model]
+            fild dword ptr [gTimerLeftHUD_dim_h]
+            mov eax, dword ptr [eax + 8]
+            fsubr dword ptr [eax + 0x7c]
+            fstp dword ptr [eax + 0x54]
+            mov ecx, dword ptr [gTimerLeftHUD_model]
+            mov eax, dword ptr [ecx + 8]
+            mov edx, dword ptr [eax + 0x54]
+            mov dword ptr [eax + 0x2c], edx
+            mov eax, dword ptr [gTimerLeftHUD_model]
+            push eax
+            call BrModelUpdate
+            mov ecx, dword ptr [gTimerRightHUD_model]
+            add esp, 8
+            fild dword ptr [gTimerRightHUD_dim_x]
+            mov edx, dword ptr [ecx + 8]
+            push 1
+            fstp dword ptr [edx + 0x28]
+            mov eax, dword ptr [gTimerRightHUD_model]
+            mov eax, dword ptr [eax + 8]
+            mov ecx, dword ptr [eax + 0x28]
+            mov dword ptr [eax], ecx
+            mov edx, dword ptr [gTimerRightHUD_model]
+            fild dword ptr [gTimerRightHUD_dim_y]
+            mov eax, dword ptr [edx + 8]
+            fchs
+            fstp dword ptr [eax + 0x7c]
+            mov ecx, dword ptr [gTimerRightHUD_model]
+            mov eax, dword ptr [ecx + 8]
+            mov edx, dword ptr [eax + 0x7c]
+            mov dword ptr [eax + 4], edx
+            mov eax, dword ptr [gTimerRightHUD_model]
+            fild dword ptr [gTimerRightHUD_dim_w]
+            mov eax, dword ptr [eax + 8]
+            fadd dword ptr [eax + 0x28]
+            fstp dword ptr [eax + 0x78]
+            mov ecx, dword ptr [gTimerRightHUD_model]
+            mov eax, dword ptr [ecx + 8]
+            mov edx, dword ptr [eax + 0x78]
+            mov dword ptr [eax + 0x50], edx
+            mov eax, dword ptr [gTimerRightHUD_model]
+            fild dword ptr [gTimerRightHUD_dim_h]
+            mov eax, dword ptr [eax + 8]
+            fsubr dword ptr [eax + 0x7c]
+            fstp dword ptr [eax + 0x54]
+            mov ecx, dword ptr [gTimerRightHUD_model]
+            mov eax, dword ptr [ecx + 8]
+            mov edx, dword ptr [eax + 0x54]
+            mov dword ptr [eax + 0x2c], edx
+            mov eax, dword ptr [gTimerRightHUD_model]
+            push eax
+            call BrModelUpdate
+            mov ecx, dword ptr [gStatbarRightHUD_model]
+            add esp, 8
+            fild dword ptr [gStatbarRightHUD_dim_x]
+            mov edx, dword ptr [ecx + 8]
+            fstp dword ptr [edx + 0x28]
+            mov eax, dword ptr [gStatbarRightHUD_model]
+            mov eax, dword ptr [eax + 8]
+            mov ecx, dword ptr [eax + 0x28]
+            mov dword ptr [eax], ecx
+            mov edx, dword ptr [gStatbarRightHUD_model]
+            fild dword ptr [gStatbarRightHUD_dim_y]
+            mov eax, dword ptr [edx + 8]
+            push 1
+            fchs
+            fstp dword ptr [eax + 0x7c]
+            mov ecx, dword ptr [gStatbarRightHUD_model]
+            mov eax, dword ptr [ecx + 8]
+            mov edx, dword ptr [eax + 0x7c]
+            mov dword ptr [eax + 4], edx
+            mov eax, dword ptr [gStatbarRightHUD_model]
+            fild dword ptr [gStatbarRightHUD_dim_w]
+            mov eax, dword ptr [eax + 8]
+            fadd dword ptr [eax + 0x28]
+            fstp dword ptr [eax + 0x78]
+            mov ecx, dword ptr [gStatbarRightHUD_model]
+            mov eax, dword ptr [ecx + 8]
+            mov edx, dword ptr [eax + 0x78]
+            mov dword ptr [eax + 0x50], edx
+            mov eax, dword ptr [gStatbarRightHUD_model]
+            fild dword ptr [gStatbarRightHUD_dim_h]
+            mov eax, dword ptr [eax + 8]
+            fsubr dword ptr [eax + 0x7c]
+            fstp dword ptr [eax + 0x54]
+            mov ecx, dword ptr [gStatbarRightHUD_model]
+            mov eax, dword ptr [ecx + 8]
+            mov edx, dword ptr [eax + 0x54]
+            mov dword ptr [eax + 0x2c], edx
+            mov eax, dword ptr [gStatbarRightHUD_model]
+            push eax
+            call BrModelUpdate
+            mov ecx, dword ptr [gArmour_model]
+            add esp, 8
+            fild dword ptr [gArmour_dim_x]
+            mov edx, dword ptr [ecx + 8]
+            push 1
+            fstp dword ptr [edx + 0x28]
+            mov eax, dword ptr [gArmour_model]
+            mov eax, dword ptr [eax + 8]
+            mov ecx, dword ptr [eax + 0x28]
+            mov dword ptr [eax], ecx
+            mov edx, dword ptr [gArmour_model]
+            fild dword ptr [gArmour_dim_y]
+            mov eax, dword ptr [edx + 8]
+            fchs
+            fstp dword ptr [eax + 0x7c]
+            mov ecx, dword ptr [gArmour_model]
+            mov eax, dword ptr [ecx + 8]
+            mov edx, dword ptr [eax + 0x7c]
+            mov dword ptr [eax + 4], edx
+            mov eax, dword ptr [gArmour_model]
+            fild dword ptr [gArmour_dim_w]
+            mov eax, dword ptr [eax + 8]
+            fadd dword ptr [eax + 0x28]
+            fstp dword ptr [eax + 0x78]
+            mov ecx, dword ptr [gArmour_model]
+            mov eax, dword ptr [ecx + 8]
+            mov edx, dword ptr [eax + 0x78]
+            mov dword ptr [eax + 0x50], edx
+            mov eax, dword ptr [gArmour_model]
+            fild dword ptr [gArmour_dim_h]
+            mov eax, dword ptr [eax + 8]
+            fsubr dword ptr [eax + 0x7c]
+            fstp dword ptr [eax + 0x54]
+            mov ecx, dword ptr [gArmour_model]
+            mov eax, dword ptr [ecx + 8]
+            mov edx, dword ptr [eax + 0x54]
+            mov dword ptr [eax + 0x2c], edx
+            mov eax, dword ptr [gArmour_model]
+            push eax
+            call BrModelUpdate
+            mov ecx, dword ptr [gPower_model]
+            add esp, 8
+            fild dword ptr [gPower_dim_x]
+            mov edx, dword ptr [ecx + 8]
+            fstp dword ptr [edx + 0x28]
+            mov eax, dword ptr [gPower_model]
+            push 1
+            mov eax, dword ptr [eax + 8]
+            mov ecx, dword ptr [eax + 0x28]
+            mov dword ptr [eax], ecx
+            mov edx, dword ptr [gPower_model]
+            fild dword ptr [gPower_dim_y]
+            mov eax, dword ptr [edx + 8]
+            fchs
+            fstp dword ptr [eax + 0x7c]
+            mov ecx, dword ptr [gPower_model]
+            mov eax, dword ptr [ecx + 8]
+            mov edx, dword ptr [eax + 0x7c]
+            mov dword ptr [eax + 4], edx
+            mov eax, dword ptr [gPower_model]
+            fild dword ptr [gPower_dim_w]
+            mov eax, dword ptr [eax + 8]
+            fadd dword ptr [eax + 0x28]
+            fstp dword ptr [eax + 0x78]
+            mov ecx, dword ptr [gPower_model]
+            mov eax, dword ptr [ecx + 8]
+            mov edx, dword ptr [eax + 0x78]
+            mov dword ptr [eax + 0x50], edx
+            mov eax, dword ptr [gPower_model]
+            fild dword ptr [gPower_dim_h]
+            mov eax, dword ptr [eax + 8]
+            fsubr dword ptr [eax + 0x7c]
+            fstp dword ptr [eax + 0x54]
+            mov ecx, dword ptr [gPower_model]
+            mov eax, dword ptr [ecx + 8]
+            mov edx, dword ptr [eax + 0x54]
+            mov dword ptr [eax + 0x2c], edx
+            mov eax, dword ptr [gPower_model]
+            push eax
+            call BrModelUpdate
+            mov ecx, dword ptr [gOffence_model]
+            add esp, 8
+            fild dword ptr [gOffence_dim_x]
+            mov edx, dword ptr [ecx + 8]
+            push 1
+            fstp dword ptr [edx + 0x28]
+            mov eax, dword ptr [gOffence_model]
+            mov eax, dword ptr [eax + 8]
+            mov ecx, dword ptr [eax + 0x28]
+            mov dword ptr [eax], ecx
+            mov edx, dword ptr [gOffence_model]
+            fild dword ptr [gOffence_dim_y]
+            mov eax, dword ptr [edx + 8]
+            fchs
+            fstp dword ptr [eax + 0x7c]
+            mov ecx, dword ptr [gOffence_model]
+            mov eax, dword ptr [ecx + 8]
+            mov edx, dword ptr [eax + 0x7c]
+            mov dword ptr [eax + 4], edx
+            mov eax, dword ptr [gOffence_model]
+            fild dword ptr [gOffence_dim_w]
+            mov eax, dword ptr [eax + 8]
+            fadd dword ptr [eax + 0x28]
+            fstp dword ptr [eax + 0x78]
+            mov ecx, dword ptr [gOffence_model]
+            mov eax, dword ptr [ecx + 8]
+            mov edx, dword ptr [eax + 0x78]
+            mov dword ptr [eax + 0x50], edx
+            mov eax, dword ptr [gOffence_model]
+            fild dword ptr [gOffence_dim_h]
+            mov eax, dword ptr [eax + 8]
+            fsubr dword ptr [eax + 0x7c]
+            fstp dword ptr [eax + 0x54]
+            mov ecx, dword ptr [gOffence_model]
+            mov eax, dword ptr [ecx + 8]
+            mov edx, dword ptr [eax + 0x54]
+            mov dword ptr [eax + 0x2c], edx
+            mov eax, dword ptr [gOffence_model]
+            push eax
+            call BrModelUpdate
+            add esp, 8
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x10c
+            ret
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // CheckTimedDemo

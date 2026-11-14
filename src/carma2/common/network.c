@@ -360,7 +360,8 @@ extern int gTimers_stack_size;
 #endif
 // FUNCTION: CARMA2_HW 0x0049d780
 
-void C2_HOOK_FASTCALL NetSendHeadupToEverybody(const char* pMessage) {
+void C2_NAKED C2_HOOK_FASTCALL NetSendHeadupToEverybody(const char* pMessage) {
+#ifndef CARPOCALYPSE2_MATCHING
     tNet_message_chunk* chunk;
 
     if (gNet_mode == eNet_mode_none) {
@@ -375,10 +376,304 @@ void C2_HOOK_FASTCALL NetSendHeadupToEverybody(const char* pMessage) {
     }
     strcpy((char*)chunk + sizeof(tNet_message_chunk_header), pMessage);
     NetBroadcastContents(chunk);
+#else
+    __asm {
+            sub esp, 0xc
+            mov eax, dword ptr [gNet_mode]
+            push ebx
+            push ebp
+            push esi
+            push edi
+            mov edi, ecx
+            test eax, eax
+            mov dword ptr [esp + 0x14], edi
+            je L0049d981
+            mov eax, dword ptr [gProgram_state+0x28]
+            test eax, eax
+            je L0049d7b7
+            push edi
+            push -4
+            push 0xbb8
+            xor edx, edx
+            mov ecx, 4
+            call NewTextHeadupSlot
+    L0049d7b7:
+            mov eax, dword ptr [gINT_00659d34]
+            test eax, eax
+            jl L0049d7ca
+            mov ecx, offset gRace_only_flags+0x438
+            call PDFatalError
+    L0049d7ca:
+            mov ecx, dword ptr [gNumber_of_net_players]
+            xor eax, eax
+            test ecx, ecx
+            jle L0049d7e9
+            mov edx, dword ptr [gThis_net_player_index]
+    L0049d7dc:
+            cmp eax, edx
+            jne L0049d989
+            inc eax
+            cmp eax, ecx
+            jl L0049d7dc
+    L0049d7e9:
+            xor ebp, ebp
+    L0049d7eb:
+            test ebp, ebp
+            je L0049d981
+            or ecx, 0xffffffff
+            xor eax, eax
+            repne scasb
+            not ecx
+            sub edi, ecx
+            lea edx, [ebp + 2]
+            mov eax, ecx
+            mov esi, edi
+            mov edi, edx
+            shr ecx, 2
+            rep movsd
+            mov ecx, eax
+            xor eax, eax
+            and ecx, 3
+            mov dword ptr [esp + 0x10], eax
+            rep movsb
+            mov ecx, dword ptr [gNumber_of_net_players]
+            test ecx, ecx
+            jle L0049d977
+            mov ecx, dword ptr [gThis_net_player_index]
+            mov ebx, offset gNet_players
+    L0049d832:
+            cmp eax, ecx
+            je L0049d95e
+            cmp eax, dword ptr [gINT_00659d34]
+            je L0049d95e
+            lea eax, [ecx + ecx*2]
+            xor edx, edx
+            mov dl, byte ptr [ebp]
+            lea eax, [eax + eax*8]
+            mov edi, edx
+            shl eax, 1
+            sub eax, ecx
+            mov dword ptr [esp + 0x18], edi
+            lea ecx, [eax*4 + gNet_players]
+            cmp ebx, ecx
+            jne L0049d870
+            mov ecx, offset gRace_only_flags+0x410
+            call PDFatalError
+    L0049d870:
+            mov esi, dword ptr [ebx + 0xcc]
+            test esi, esi
+            je L0049d903
+            xor edx, edx
+            mov dx, word ptr [esi + 0x16]
+            add edx, edi
+            cmp edx, 0x200
+            jle L0049d8ff
+            mov eax, dword ptr [gCurrent_net_game]
+            mov edi, dword ptr [ebx + 0x24]
+            mov dword ptr [esp + 0x14], eax
+            mov eax, dword ptr [gNet_mode]
+            test eax, eax
+            je L0049d8f3
+            mov ecx, dword ptr [gLocal_net_ID]
+            mov dword ptr [esi + 8], ecx
+            call PDGetTotalTime
+            mov dword ptr [esi + 0x10], eax
+            mov edx, dword ptr [gNumber_of_net_players]
+            xor eax, eax
+            test edx, edx
+            jle L0049d8f3
+            mov ecx, offset gNet_players+0x24
+    L0049d8c5:
+            cmp dword ptr [ecx], edi
+            je L0049d8d6
+            inc eax
+            add ecx, 0xd4
+            cmp eax, edx
+            jl L0049d8c5
+            jmp L0049d8f3
+    L0049d8d6:
+            lea ecx, [eax + eax*2]
+            lea edx, [ecx + ecx*8]
+            mov ecx, dword ptr [esp + 0x14]
+            shl edx, 1
+            sub edx, eax
+            lea eax, [edx*4 + gNet_players]
+            mov edx, esi
+            push eax
+            call PDNetSendMessageToAddress
+    L0049d8f3:
+            mov dword ptr [ebx + 0xcc], 0
+            xor esi, esi
+    L0049d8ff:
+            test esi, esi
+            jne L0049d921
+    L0049d903:
+            mov ecx, 0x200
+            call NetAllocateMessage
+            mov esi, eax
+            mov dword ptr [ebx + 0xcc], eax
+            mov word ptr [esi + 0x16], 0x18
+            mov word ptr [esi + 0x14], 0
+    L0049d921:
+            mov ax, word ptr [esi + 0x16]
+            mov edx, dword ptr [esp + 0x18]
+            mov ecx, eax
+            mov edi, esi
+            and ecx, 0xffff
+            add edx, eax
+            add edi, ecx
+            inc word ptr [esi + 0x14]
+            xor ecx, ecx
+            mov word ptr [esi + 0x16], dx
+            mov cl, byte ptr [ebp]
+            mov esi, ebp
+            mov eax, ecx
+            shr ecx, 2
+            rep movsd
+            mov ecx, eax
+            mov eax, dword ptr [esp + 0x10]
+            and ecx, 3
+            rep movsb
+            mov ecx, dword ptr [gThis_net_player_index]
+    L0049d95e:
+            mov edx, dword ptr [gNumber_of_net_players]
+            inc eax
+            add ebx, 0xd4
+            cmp eax, edx
+            mov dword ptr [esp + 0x10], eax
+            jl L0049d832
+    L0049d977:
+            mov dword ptr [gINT_00659d34], 0xffffffff
+    L0049d981:
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0xc
+            ret
+    L0049d989:
+            lea ecx, [eax + eax*2]
+            xor edx, edx
+            mov dword ptr [gINT_00659d34], eax
+            lea ecx, [ecx + ecx*8]
+            shl ecx, 1
+            sub ecx, eax
+            mov esi, dword ptr [ecx*4 + gNet_players+0x24]
+            mov cl, 0xd
+            call NetGetContentsSize
+            mov edx, dword ptr [gNumber_of_net_players]
+            mov ebx, eax
+            xor eax, eax
+            mov dword ptr [esp + 0x10], ebx
+            test edx, edx
+            jle L0049dae6
+            mov ecx, offset gNet_players+0x24
+    L0049d9c3:
+            cmp dword ptr [ecx], esi
+            je L0049d9db
+            inc eax
+            add ecx, 0xd4
+            cmp eax, edx
+            jl L0049d9c3
+            xor eax, eax
+            mov ebp, eax
+            jmp L0049d7eb
+    L0049d9db:
+            lea ecx, [eax + eax*2]
+            lea edx, [ecx + ecx*8]
+            shl edx, 1
+            sub edx, eax
+            mov eax, dword ptr [gThis_net_player_index]
+            lea ecx, [eax + eax*2]
+            lea ebp, [edx*4 + gNet_players]
+            lea ecx, [ecx + ecx*8]
+            shl ecx, 1
+            sub ecx, eax
+            lea edx, [ecx*4 + gNet_players]
+            cmp ebp, edx
+            jne L0049da10
+            mov ecx, offset gRace_only_flags+0x410
+            call PDFatalError
+    L0049da10:
+            mov esi, dword ptr [ebp + 0xcc]
+            test esi, esi
+            je L0049daa1
+            xor eax, eax
+            mov ax, word ptr [esi + 0x16]
+            add eax, ebx
+            cmp eax, 0x200
+            jle L0049da9d
+            mov eax, dword ptr [gNet_mode]
+            mov edi, dword ptr [ebp + 0x24]
+            mov ebx, dword ptr [gCurrent_net_game]
+            test eax, eax
+            je L0049da8d
+            mov ecx, dword ptr [gLocal_net_ID]
+            mov dword ptr [esi + 8], ecx
+            call PDGetTotalTime
+            mov dword ptr [esi + 0x10], eax
+            mov edx, dword ptr [gNumber_of_net_players]
+            xor eax, eax
+            test edx, edx
+            jle L0049da8d
+            mov ecx, offset gNet_players+0x24
+    L0049da61:
+            cmp dword ptr [ecx], edi
+            je L0049da72
+            inc eax
+            add ecx, 0xd4
+            cmp eax, edx
+            jl L0049da61
+            jmp L0049da8d
+    L0049da72:
+            lea ecx, [eax + eax*2]
+            lea edx, [ecx + ecx*8]
+            mov ecx, ebx
+            shl edx, 1
+            sub edx, eax
+            lea eax, [edx*4 + gNet_players]
+            mov edx, esi
+            push eax
+            call PDNetSendMessageToAddress
+    L0049da8d:
+            mov ebx, dword ptr [esp + 0x10]
+            mov edi, dword ptr [esp + 0x14]
+            xor esi, esi
+            mov dword ptr [ebp + 0xcc], esi
+    L0049da9d:
+            test esi, esi
+            jne L0049dabf
+    L0049daa1:
+            mov ecx, 0x200
+            call NetAllocateMessage
+            mov esi, eax
+            mov dword ptr [ebp + 0xcc], eax
+            mov word ptr [esi + 0x16], 0x18
+            mov word ptr [esi + 0x14], 0
+    L0049dabf:
+            mov cx, word ptr [esi + 0x16]
+            mov eax, esi
+            mov edx, ecx
+            add ecx, ebx
+            and edx, 0xffff
+            mov word ptr [esi + 0x16], cx
+            add eax, edx
+            inc word ptr [esi + 0x14]
+            mov ebp, eax
+            mov byte ptr [eax + 1], 0xd
+            mov byte ptr [eax], bl
+            jmp L0049d7eb
+    L0049dae6:
+            xor eax, eax
+            mov ebp, eax
+            jmp L0049d7eb
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0049d430
-void C2_HOOK_FASTCALL NetSendHeadupToAllPlayers(char* pMessage) {
+void C2_NAKED C2_HOOK_FASTCALL NetSendHeadupToAllPlayers(char* pMessage) {
+#ifndef CARPOCALYPSE2_MATCHING
     tNet_message_chunk* chunk;
 
     if (gNet_mode == eNet_mode_none) {
@@ -390,6 +685,288 @@ void C2_HOOK_FASTCALL NetSendHeadupToAllPlayers(char* pMessage) {
     }
     strcpy((char*)chunk + sizeof(tNet_message_chunk_header), pMessage);
     NetBroadcastContents(chunk);
+#else
+    __asm {
+            sub esp, 0xc
+            mov eax, dword ptr [gNet_mode]
+            push ebx
+            push ebp
+            push esi
+            test eax, eax
+            push edi
+            mov dword ptr [esp + 0x14], ecx
+            je L0049d616
+            mov eax, dword ptr [gINT_00659d34]
+            test eax, eax
+            jl L0049d45b
+            mov ecx, offset gRace_only_flags+0x438
+            call PDFatalError
+    L0049d45b:
+            mov ecx, dword ptr [gNumber_of_net_players]
+            xor eax, eax
+            test ecx, ecx
+            jle L0049d47a
+            mov edx, dword ptr [gThis_net_player_index]
+    L0049d46d:
+            cmp eax, edx
+            jne L0049d61e
+            inc eax
+            cmp eax, ecx
+            jl L0049d46d
+    L0049d47a:
+            xor ebp, ebp
+    L0049d47c:
+            test ebp, ebp
+            je L0049d616
+            mov edi, dword ptr [esp + 0x14]
+            or ecx, 0xffffffff
+            xor eax, eax
+            lea edx, [ebp + 2]
+            repne scasb
+            not ecx
+            sub edi, ecx
+            mov eax, ecx
+            mov esi, edi
+            mov edi, edx
+            shr ecx, 2
+            rep movsd
+            mov ecx, eax
+            xor eax, eax
+            and ecx, 3
+            mov dword ptr [esp + 0x10], eax
+            rep movsb
+            mov ecx, dword ptr [gNumber_of_net_players]
+            test ecx, ecx
+            jle L0049d60c
+            mov ecx, dword ptr [gThis_net_player_index]
+            mov ebx, offset gNet_players
+    L0049d4c7:
+            cmp eax, ecx
+            je L0049d5f3
+            cmp eax, dword ptr [gINT_00659d34]
+            je L0049d5f3
+            lea eax, [ecx + ecx*2]
+            xor edx, edx
+            mov dl, byte ptr [ebp]
+            lea eax, [eax + eax*8]
+            mov edi, edx
+            shl eax, 1
+            sub eax, ecx
+            mov dword ptr [esp + 0x18], edi
+            lea ecx, [eax*4 + gNet_players]
+            cmp ebx, ecx
+            jne L0049d505
+            mov ecx, offset gRace_only_flags+0x410
+            call PDFatalError
+    L0049d505:
+            mov esi, dword ptr [ebx + 0xcc]
+            test esi, esi
+            je L0049d598
+            xor edx, edx
+            mov dx, word ptr [esi + 0x16]
+            add edx, edi
+            cmp edx, 0x200
+            jle L0049d594
+            mov eax, dword ptr [gCurrent_net_game]
+            mov edi, dword ptr [ebx + 0x24]
+            mov dword ptr [esp + 0x14], eax
+            mov eax, dword ptr [gNet_mode]
+            test eax, eax
+            je L0049d588
+            mov ecx, dword ptr [gLocal_net_ID]
+            mov dword ptr [esi + 8], ecx
+            call PDGetTotalTime
+            mov dword ptr [esi + 0x10], eax
+            mov edx, dword ptr [gNumber_of_net_players]
+            xor eax, eax
+            test edx, edx
+            jle L0049d588
+            mov ecx, offset gNet_players+0x24
+    L0049d55a:
+            cmp dword ptr [ecx], edi
+            je L0049d56b
+            inc eax
+            add ecx, 0xd4
+            cmp eax, edx
+            jl L0049d55a
+            jmp L0049d588
+    L0049d56b:
+            lea ecx, [eax + eax*2]
+            lea edx, [ecx + ecx*8]
+            mov ecx, dword ptr [esp + 0x14]
+            shl edx, 1
+            sub edx, eax
+            lea eax, [edx*4 + gNet_players]
+            mov edx, esi
+            push eax
+            call PDNetSendMessageToAddress
+    L0049d588:
+            mov dword ptr [ebx + 0xcc], 0
+            xor esi, esi
+    L0049d594:
+            test esi, esi
+            jne L0049d5b6
+    L0049d598:
+            mov ecx, 0x200
+            call NetAllocateMessage
+            mov esi, eax
+            mov dword ptr [ebx + 0xcc], eax
+            mov word ptr [esi + 0x16], 0x18
+            mov word ptr [esi + 0x14], 0
+    L0049d5b6:
+            mov ax, word ptr [esi + 0x16]
+            mov edx, dword ptr [esp + 0x18]
+            mov ecx, eax
+            mov edi, esi
+            and ecx, 0xffff
+            add edx, eax
+            add edi, ecx
+            inc word ptr [esi + 0x14]
+            xor ecx, ecx
+            mov word ptr [esi + 0x16], dx
+            mov cl, byte ptr [ebp]
+            mov esi, ebp
+            mov eax, ecx
+            shr ecx, 2
+            rep movsd
+            mov ecx, eax
+            mov eax, dword ptr [esp + 0x10]
+            and ecx, 3
+            rep movsb
+            mov ecx, dword ptr [gThis_net_player_index]
+    L0049d5f3:
+            mov edx, dword ptr [gNumber_of_net_players]
+            inc eax
+            add ebx, 0xd4
+            cmp eax, edx
+            mov dword ptr [esp + 0x10], eax
+            jl L0049d4c7
+    L0049d60c:
+            mov dword ptr [gINT_00659d34], 0xffffffff
+    L0049d616:
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0xc
+            ret
+    L0049d61e:
+            lea ecx, [eax + eax*2]
+            xor edx, edx
+            mov dword ptr [gINT_00659d34], eax
+            lea ecx, [ecx + ecx*8]
+            shl ecx, 1
+            sub ecx, eax
+            mov esi, dword ptr [ecx*4 + gNet_players+0x24]
+            mov cl, 0xd
+            call NetGetContentsSize
+            mov edx, dword ptr [gNumber_of_net_players]
+            mov ebx, eax
+            xor eax, eax
+            mov dword ptr [esp + 0x10], ebx
+            test edx, edx
+            jle L0049d773
+            mov ecx, offset gNet_players+0x24
+    L0049d658:
+            cmp dword ptr [ecx], esi
+            je L0049d670
+            inc eax
+            add ecx, 0xd4
+            cmp eax, edx
+            jl L0049d658
+            xor eax, eax
+            mov ebp, eax
+            jmp L0049d47c
+    L0049d670:
+            lea ecx, [eax + eax*2]
+            lea edx, [ecx + ecx*8]
+            shl edx, 1
+            sub edx, eax
+            mov eax, dword ptr [gThis_net_player_index]
+            lea ecx, [eax + eax*2]
+            lea ebp, [edx*4 + gNet_players]
+            lea ecx, [ecx + ecx*8]
+            shl ecx, 1
+            sub ecx, eax
+            lea edx, [ecx*4 + gNet_players]
+            cmp ebp, edx
+            jne L0049d6a5
+            mov ecx, offset gRace_only_flags+0x410
+            call PDFatalError
+    L0049d6a5:
+            mov esi, dword ptr [ebp + 0xcc]
+            test esi, esi
+            je L0049d72e
+            xor eax, eax
+            mov ax, word ptr [esi + 0x16]
+            add eax, ebx
+            cmp eax, 0x200
+            jle L0049d72a
+            mov eax, dword ptr [gNet_mode]
+            mov edi, dword ptr [ebp + 0x24]
+            mov ebx, dword ptr [gCurrent_net_game]
+            test eax, eax
+            je L0049d71e
+            mov ecx, dword ptr [gLocal_net_ID]
+            mov dword ptr [esi + 8], ecx
+            call PDGetTotalTime
+            mov dword ptr [esi + 0x10], eax
+            mov edx, dword ptr [gNumber_of_net_players]
+            xor eax, eax
+            test edx, edx
+            jle L0049d71e
+            mov ecx, offset gNet_players+0x24
+    L0049d6f2:
+            cmp dword ptr [ecx], edi
+            je L0049d703
+            inc eax
+            add ecx, 0xd4
+            cmp eax, edx
+            jl L0049d6f2
+            jmp L0049d71e
+    L0049d703:
+            lea ecx, [eax + eax*2]
+            lea edx, [ecx + ecx*8]
+            mov ecx, ebx
+            shl edx, 1
+            sub edx, eax
+            lea eax, [edx*4 + gNet_players]
+            mov edx, esi
+            push eax
+            call PDNetSendMessageToAddress
+    L0049d71e:
+            mov ebx, dword ptr [esp + 0x10]
+            xor esi, esi
+            mov dword ptr [ebp + 0xcc], esi
+    L0049d72a:
+            test esi, esi
+            jne L0049d74c
+    L0049d72e:
+            mov ecx, 0x200
+            call NetAllocateMessage
+            mov esi, eax
+            mov dword ptr [ebp + 0xcc], eax
+            mov word ptr [esi + 0x16], 0x18
+            mov word ptr [esi + 0x14], 0
+    L0049d74c:
+            mov cx, word ptr [esi + 0x16]
+            mov eax, esi
+            mov edx, ecx
+            add ecx, ebx
+            and edx, 0xffff
+            mov word ptr [esi + 0x16], cx
+            add eax, edx
+            inc word ptr [esi + 0x14]
+            mov ebp, eax
+            mov byte ptr [eax + 1], 0xd
+            mov byte ptr [eax], bl
+            jmp L0049d47c
+    L0049d773:
+            xor eax, eax
+            mov ebp, eax
+            jmp L0049d47c
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0049daf0
@@ -5280,7 +5857,8 @@ void C2_NAKED C2_HOOK_FASTCALL NetPlayerStatusChanged(tPlayer_status pNew_status
 
 // AddToGuaranteeList
 // FUNCTION: CARMA2_HW 0x004a5ca0
-void C2_HOOK_FASTCALL AddToGuaranteeList(tNet_message* pMessage, void* pAddress, tPlayer_ID pPlayer, void* pNotifyFail) {
+void C2_NAKED C2_HOOK_FASTCALL AddToGuaranteeList(tNet_message* pMessage, void* pAddress, tPlayer_ID pPlayer, void* pNotifyFail) {
+#ifndef CARPOCALYPSE2_MATCHING
     int i;
 
     if (pMessage->header.field_0x14 != 0xff) {
@@ -5318,6 +5896,120 @@ void C2_HOOK_FASTCALL AddToGuaranteeList(tNet_message* pMessage, void* pAddress,
         gGuarantee_list[gNext_guarantee].recieved = 0;
         gNext_guarantee++;
     }
+#else
+    __asm {
+            push ebx
+            push ebp
+            push esi
+            push edi
+            mov edi, ecx
+            mov ebx, 0xff
+            mov ebp, edx
+            cmp word ptr [edi + 0x14], bx
+            je L004a5cbd
+            mov ecx, offset gRace_only_flags+0x5d4
+            call PDFatalError
+    L004a5cbd:
+            cmp dword ptr [gNext_guarantee], 0xc8
+            jl L004a5d46
+            mov eax, offset gGuarantee_list
+            mov esi, 0xa
+    L004a5cd3:
+            mov ecx, dword ptr [eax]
+            add eax, 0x34
+            cmp eax, offset gGuarantee_list+0x208
+            mov byte ptr [ecx + 0x19], bl
+            jl L004a5cd3
+            mov edx, dword ptr [gGuarantee_list+0x1d4]
+            mov eax, dword ptr [gGuarantee_list+0x208]
+            cmp edx, eax
+            jne L004a5d0a
+            mov eax, offset gGuarantee_list+0x208
+    L004a5cf6:
+            cmp eax, offset gAdd_proc
+            jge L004a5d0a
+            mov ecx, dword ptr [eax]
+            mov edx, dword ptr [eax + 0x34]
+            add eax, 0x34
+            inc esi
+            cmp ecx, edx
+            je L004a5cf6
+    L004a5d0a:
+            lea edx, [esi + esi*2]
+            mov ecx, 0x28a0
+            lea eax, [esi + edx*4]
+            shl eax, 2
+            sub ecx, eax
+            lea edx, [eax + gGuarantee_list]
+            push ecx
+            push edx
+            push offset gGuarantee_list
+            call memmove
+            mov eax, dword ptr [gNext_guarantee]
+            add esp, 0xc
+            sub eax, esi
+            cmp eax, 0xc8
+            mov dword ptr [gNext_guarantee], eax
+            jge L004a5e15
+    L004a5d46:
+            mov cx, word ptr [gGuarantee_number]
+            xor eax, eax
+            mov al, byte ptr [edi + 0x18]
+            mov esi, 1
+            mov word ptr [eax + edi + 0x1a], cx
+            mov eax, dword ptr [gNext_guarantee]
+            mov cx, word ptr [gGuarantee_number]
+            lea edx, [eax + eax*2]
+            lea eax, [eax + edx*4]
+            shl eax, 2
+            mov word ptr [eax + gGuarantee_list+0x2c], cx
+            inc cx
+            mov word ptr [gGuarantee_number], cx
+            jne L004a5d8a
+            mov word ptr [gGuarantee_number], si
+    L004a5d8a:
+            mov dword ptr [eax + gGuarantee_list], edi
+            call PDGetTotalTime
+            mov edx, dword ptr [gNext_guarantee]
+            lea ecx, [edx + edx*2]
+            lea ecx, [edx + ecx*4]
+            shl ecx, 2
+            mov dword ptr [ecx + gGuarantee_list+0x4], eax
+            add eax, 0x64
+            mov dword ptr [ecx + gGuarantee_list+0x8], eax
+            xor eax, eax
+            cmp ebp, eax
+            mov dword ptr [ecx + gGuarantee_list+0xc], 0x64
+            je L004a5dee
+            mov ebx, dword ptr [ebp]
+            lea edi, [ecx + gGuarantee_list+0x14]
+            mov dword ptr [ecx + gGuarantee_list+0x14], ebx
+            mov ebx, dword ptr [ebp + 4]
+            mov dword ptr [edi + 4], ebx
+            mov ebx, dword ptr [ebp + 8]
+            mov dword ptr [edi + 8], ebx
+            mov bx, word ptr [ebp + 0xc]
+            mov word ptr [edi + 0xc], bx
+            mov dword ptr [ecx + gGuarantee_list+0x30], esi
+            jmp L004a5df4
+    L004a5dee:
+            mov dword ptr [ecx + gGuarantee_list+0x30], eax
+    L004a5df4:
+            mov esi, dword ptr [esp + 0x14]
+            inc edx
+            mov dword ptr [ecx + gGuarantee_list+0x24], esi
+            mov esi, dword ptr [esp + 0x18]
+            mov dword ptr [ecx + gGuarantee_list+0x28], esi
+            mov dword ptr [ecx + gGuarantee_list+0x10], eax
+            mov dword ptr [gNext_guarantee], edx
+    L004a5e15:
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            ret 8
+    }
+#endif
 }
 
 // NetGuaranteedSendMessageToPlayer
